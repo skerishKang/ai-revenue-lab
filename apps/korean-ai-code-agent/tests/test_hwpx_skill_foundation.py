@@ -442,14 +442,17 @@ class AuthorityContractTests(unittest.TestCase):
             self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), value, key)
 
     def test_later_2825_capabilities_are_explicitly_not_claimed(self) -> None:
-        # #2962 built the bounded create foundation, so create is no longer an
-        # unclaimed capability — it is a foundation-only claim and still never
-        # a full create claim. Every later capability stays unclaimed.
+        # #2962 built the bounded create foundation and #2972 the bounded
+        # paragraph-replacement edit foundation, so neither create nor edit is
+        # an unclaimed capability — each is a foundation-only claim and still
+        # never a full capability claim. Every later capability stays unclaimed.
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_CREATE_FOUNDATION"), "PASS")
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_CREATE"), "FOUNDATION_ONLY")
         self.assertNotIn(hwpx_skill.ACCEPTANCE.get("HWPX_CREATE"), {"PASS", "YES"})
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_EDIT_FOUNDATION"), "PASS")
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_EDIT"), "FOUNDATION_ONLY")
+        self.assertNotIn(hwpx_skill.ACCEPTANCE.get("HWPX_EDIT"), {"PASS", "YES"})
         for key in (
-            "HWPX_EDIT",
             "HWPX_TEMPLATE_FILL",
             "TABLE_INSERT",
             "IMAGE_INSERT",
@@ -457,10 +460,12 @@ class AuthorityContractTests(unittest.TestCase):
             self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), "NOT_CLAIMED", key)
             self.assertNotIn(hwpx_skill.ACCEPTANCE.get(key), {"PASS", "YES"})
 
-    def test_only_create_exists_and_edit_surfaces_do_not(self) -> None:
+    def test_create_and_edit_exist_and_later_surfaces_do_not(self) -> None:
+        # #2972 added the bounded hwpx_edit facade, so edit is no longer an
+        # absent surface. Template fill and table/image insertion still are.
         self.assertTrue(callable(getattr(hwpx_skill, "hwpx_create", None)))
+        self.assertTrue(callable(getattr(hwpx_skill, "hwpx_edit", None)))
         for attribute in (
-            "hwpx_edit",
             "hwpx_template_fill",
             "hwpx_insert_table",
             "hwpx_insert_image",

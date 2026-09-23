@@ -1,4 +1,4 @@
-"""#2937/#2962: bounded native HWPX Skill facade — inspect / read / validate / create.
+"""#2937/#2962/#2972: bounded native HWPX Skill facade — inspect / read / validate / create / edit.
 
 This module is a facade and receipt layer over authorities that already exist
 and are already accepted. It introduces no ZIP walker, no XML parser, no
@@ -24,6 +24,25 @@ direction::
     -> hwpx_read()         (existing read authority)
     -> exact round-trip text equality
     -> bounded create receipt + in-memory artifact
+
+``hwpx.edit`` (#2972) composes the same accepted authorities over an existing
+package::
+
+    caller filename + HWPX bytes + zero-based paragraph replacements
+    -> inspect_file()                            (common gate, HWPX_CANDIDATE)
+    -> deserialize_hwpx_package()                (single structured decoder)
+    -> serialize_hwpx_package(source) == input   (canonical-lossless gate)
+    -> bounded replacement targets validated
+    -> serialize_hwpx_package(edited model)      (single byte producer)
+    -> inspect_file() / hwpx_validate() / hwpx_read() on the output
+    -> deserialize_hwpx_package() on the output
+    -> structured equality with the intended model
+    -> bounded edit receipt + in-memory artifact
+
+The edit foundation is intentionally narrow: paragraph text replacement at an
+exact zero-based section/paragraph address only. It adds no insert or delete,
+no template fill, no table, image, style or layout editing, no second parser
+and no second byte producer.
 
 Authority boundaries
 --------------------
@@ -54,18 +73,19 @@ Authority boundaries
 Capability mapping uses existing reserved ids — no Skill Registry edit:
 ``hwpx.inspect`` foundation is served under ``CAPABILITY_FILE_INSPECT``
 (``file.inspect``), ``hwpx.read`` under ``CAPABILITY_HWPX_READ``,
-``hwpx.validate`` under ``CAPABILITY_HWPX_VALIDATE`` and ``hwpx.create`` under
-``CAPABILITY_HWPX_CREATE``.
+``hwpx.validate`` under ``CAPABILITY_HWPX_VALIDATE``, ``hwpx.create`` under
+``CAPABILITY_HWPX_CREATE`` and ``hwpx.edit`` under ``CAPABILITY_HWPX_EDIT``.
 
 Scope honesty (#2825 parent remains OPEN): ``hwpx.create`` is a foundation over
-bounded plain section/paragraph text only. It does not implement edit,
-template fill, table insertion, image insertion or legacy HWP conversion, it
-does not produce style- or specification-complete HWPX, and it does not enable
-document export (``HWPX_FULL_SPEC_SUPPORT=NO``,
-``DOCUMENT_EXPORT_HWPX_ENABLED=NO``). Validation scope stays package gate
-admission plus Core text extraction (``VALIDATION_SCOPE_GATE_AND_TEXT``);
-full HWPX specification conformance is never claimed
-(``full_spec_support_claimed=False`` on every validate receipt).
+bounded plain section/paragraph text only and ``hwpx.edit`` is a foundation
+over bounded paragraph text replacement at an exact zero-based address only.
+Neither implements paragraph/section insert or delete, template fill, table or
+image insertion, style or layout editing, or legacy HWP conversion; neither
+produces style- or specification-complete HWPX; and neither enables document
+export (``HWPX_FULL_SPEC_SUPPORT=NO``, ``DOCUMENT_EXPORT_HWPX_ENABLED=NO``).
+Validation scope stays package gate admission plus Core text extraction
+(``VALIDATION_SCOPE_GATE_AND_TEXT``); full HWPX specification conformance is
+never claimed (``full_spec_support_claimed=False`` on every validate receipt).
 """
 
 from __future__ import annotations
@@ -75,12 +95,15 @@ from dataclasses import dataclass
 from padiem_ai_core.document_semantics import DocumentNormalizationError
 from padiem_ai_core.hwpx_package_serializer import (
     HwpxPackageContent,
+    HwpxPackageSection,
+    deserialize_hwpx_package,
     serialize_hwpx_package,
 )
 
 from .claw_skill_registry import (
     CAPABILITY_FILE_INSPECT,
     CAPABILITY_HWPX_CREATE,
+    CAPABILITY_HWPX_EDIT,
     CAPABILITY_HWPX_READ,
     CAPABILITY_HWPX_VALIDATE,
 )
@@ -99,17 +122,44 @@ __all__ = [
     "HWPX_MEDIA_TYPE",
     "HWPX_SUFFIX",
     "MAX_CREATE_FILENAME_CHARS",
+    "MAX_EDIT_OPERATIONS",
     "REASON_CONTENT_MISMATCH",
     "REASON_CREATE_GATE_REJECTED",
     "REASON_CREATE_READBACK_REJECTED",
     "REASON_CREATE_ROUNDTRIP_MISMATCH",
     "REASON_CREATE_SERIALIZER_REJECTED",
     "REASON_CREATE_VALIDATE_REJECTED",
+    "REASON_EDIT_DUPLICATE_TARGET",
+    "REASON_EDIT_GATE_REJECTED",
+    "REASON_EDIT_INDEX_NEGATIVE",
+    "REASON_EDIT_OPERATIONS_INVALID",
+    "REASON_EDIT_OPERATIONS_LIMIT",
+    "REASON_EDIT_OPERATION_SHAPE",
+    "REASON_EDIT_OUTPUT_COUNT_DRIFT",
+    "REASON_EDIT_OUTPUT_GATE_REJECTED",
+    "REASON_EDIT_OUTPUT_NON_TARGET_DRIFT",
+    "REASON_EDIT_OUTPUT_READBACK_REJECTED",
+    "REASON_EDIT_OUTPUT_ROUNDTRIP_MISMATCH",
+    "REASON_EDIT_OUTPUT_VALIDATE_REJECTED",
+    "REASON_EDIT_PARAGRAPH_OUT_OF_RANGE",
+    "REASON_EDIT_SECTION_OUT_OF_RANGE",
+    "REASON_EDIT_SERIALIZER_REJECTED",
+    "REASON_EDIT_SOURCE_DECODER_REJECTED",
+    "REASON_EDIT_SOURCE_NOT_CANONICAL",
+    "REASON_EDIT_TEXT_REJECTED",
     "REASON_HWpx_ROUTE_REQUIRED",
     "REASON_INTAKE_REJECTED",
     "STATUS_OK",
     "STATUS_REFUSED",
     "VALIDATION_SCOPE_GATE_AND_TEXT",
+    "VALIDATION_STATUS_EDIT_NOT_RUN",
+    "VALIDATION_STATUS_EDIT_OK",
+    "VALIDATION_STATUS_EDIT_OPERATIONS_REFUSED",
+    "VALIDATION_STATUS_EDIT_OUTPUT_MISMATCH",
+    "VALIDATION_STATUS_EDIT_OUTPUT_REFUSED",
+    "VALIDATION_STATUS_EDIT_SERIALIZER_REFUSED",
+    "VALIDATION_STATUS_EDIT_SOURCE_NOT_CANONICAL",
+    "VALIDATION_STATUS_EDIT_SOURCE_REFUSED",
     "VALIDATION_STATUS_GATE_REFUSED",
     "VALIDATION_STATUS_NOT_RUN",
     "VALIDATION_STATUS_READBACK_REFUSED",
@@ -119,11 +169,16 @@ __all__ = [
     "HwpxCreateArtifact",
     "HwpxCreateReceipt",
     "HwpxCreateResult",
+    "HwpxEditArtifact",
+    "HwpxEditReceipt",
+    "HwpxEditResult",
     "HwpxGateMetadata",
     "HwpxInspectReceipt",
+    "HwpxParagraphReplacement",
     "HwpxReadReceipt",
     "HwpxValidateReceipt",
     "hwpx_create",
+    "hwpx_edit",
     "hwpx_inspect",
     "hwpx_read",
     "hwpx_validate",
@@ -189,6 +244,70 @@ MAX_CREATE_FILENAME_CHARS = 120
 #: the package and the existing Core parser produced (or refused) text.
 VALIDATION_SCOPE_GATE_AND_TEXT = "gate_admission_and_text_extraction"
 
+#: One ``hwpx.edit`` request carries at most this many replacements. The bound
+#: is explicit and small so an edit stays a bounded operation over an already
+#: canonical package rather than a document rewrite.
+MAX_EDIT_OPERATIONS = 64
+
+#: Bounded ``hwpx.edit`` refusal vocabulary. Each code names the stage that
+#: refused; that stage's own bounded code travels in the receipt ``note``.
+REASON_EDIT_OPERATIONS_INVALID = "edit_operations_invalid"
+REASON_EDIT_OPERATIONS_LIMIT = "edit_operations_limit"
+REASON_EDIT_OPERATION_SHAPE = "edit_operation_shape"
+REASON_EDIT_INDEX_NEGATIVE = "edit_index_negative"
+REASON_EDIT_SECTION_OUT_OF_RANGE = "edit_section_out_of_range"
+REASON_EDIT_PARAGRAPH_OUT_OF_RANGE = "edit_paragraph_out_of_range"
+REASON_EDIT_DUPLICATE_TARGET = "edit_duplicate_target"
+REASON_EDIT_TEXT_REJECTED = "edit_text_rejected"
+REASON_EDIT_GATE_REJECTED = "edit_gate_rejected"
+REASON_EDIT_SOURCE_DECODER_REJECTED = "edit_source_decoder_rejected"
+REASON_EDIT_SOURCE_NOT_CANONICAL = "edit_source_not_canonical"
+REASON_EDIT_SERIALIZER_REJECTED = "edit_serializer_rejected"
+REASON_EDIT_OUTPUT_GATE_REJECTED = "edit_output_gate_rejected"
+REASON_EDIT_OUTPUT_VALIDATE_REJECTED = "edit_output_validate_rejected"
+REASON_EDIT_OUTPUT_READBACK_REJECTED = "edit_output_readback_rejected"
+REASON_EDIT_OUTPUT_COUNT_DRIFT = "edit_output_count_drift"
+REASON_EDIT_OUTPUT_NON_TARGET_DRIFT = "edit_output_non_target_drift"
+REASON_EDIT_OUTPUT_ROUNDTRIP_MISMATCH = "edit_output_roundtrip_mismatch"
+
+#: Post-edit verification outcome. ``structured_roundtrip_ok`` is the only
+#: value that may accompany a successful edit: the output package was decoded
+#: again and matched the intended edited model paragraph by paragraph.
+VALIDATION_STATUS_EDIT_OK = "structured_roundtrip_ok"
+VALIDATION_STATUS_EDIT_NOT_RUN = "not_run"
+VALIDATION_STATUS_EDIT_SOURCE_REFUSED = "source_refused"
+VALIDATION_STATUS_EDIT_SOURCE_NOT_CANONICAL = "source_not_canonical"
+VALIDATION_STATUS_EDIT_OPERATIONS_REFUSED = "operations_refused"
+VALIDATION_STATUS_EDIT_SERIALIZER_REFUSED = "serializer_refused"
+VALIDATION_STATUS_EDIT_OUTPUT_REFUSED = "output_refused"
+VALIDATION_STATUS_EDIT_OUTPUT_MISMATCH = "output_mismatch"
+
+_EDIT_VALIDATION_STATUSES = frozenset(
+    {
+        VALIDATION_STATUS_EDIT_OK,
+        VALIDATION_STATUS_EDIT_NOT_RUN,
+        VALIDATION_STATUS_EDIT_SOURCE_REFUSED,
+        VALIDATION_STATUS_EDIT_SOURCE_NOT_CANONICAL,
+        VALIDATION_STATUS_EDIT_OPERATIONS_REFUSED,
+        VALIDATION_STATUS_EDIT_SERIALIZER_REFUSED,
+        VALIDATION_STATUS_EDIT_OUTPUT_REFUSED,
+        VALIDATION_STATUS_EDIT_OUTPUT_MISMATCH,
+    }
+)
+
+#: Canonical serializer refusals that a replacement text can cause. The source
+#: model was already proven to serialize into the exact input bytes, so one of
+#: these after a replacement is attributable to the replacement text alone.
+_EDIT_TEXT_LEVEL_SERIALIZE_CODES = frozenset(
+    {
+        "hwpx_serialize_control_char",
+        "hwpx_serialize_paragraph_text_limit",
+        "hwpx_serialize_paragraph_limit",
+        "hwpx_serialize_text_limit",
+        "hwpx_serialize_empty",
+    }
+)
+
 ACCEPTANCE: dict[str, str] = {
     "HWPX_INSPECT_FOUNDATION": "PASS",
     "HWPX_READ_FOUNDATION": "PASS",
@@ -225,10 +344,33 @@ ACCEPTANCE: dict[str, str] = {
     "HWPX_CREATE": "FOUNDATION_ONLY",
     "HWPX_FULL_SPEC_SUPPORT": "NO",
     "DOCUMENT_EXPORT_HWPX_ENABLED": "NO",
-    "HWPX_EDIT": "NOT_CLAIMED",
+    # Edit exists as a bounded paragraph-replacement foundation only (#2972):
+    # no insert/delete, no template fill, no table/image/style/layout edit.
+    "HWPX_EDIT_FOUNDATION": "PASS",
+    "HWPX_EDIT": "FOUNDATION_ONLY",
+    "PARAGRAPH_TEXT_REPLACE": "PASS",
+    "CORE_HWPX_DECODER_REUSED": "YES",
+    "CAPABILITY_HWPX_EDIT_REUSED": "YES",
+    "EXISTING_HWPX_VALIDATE_REUSED": "YES",
+    "SOURCE_CANONICAL_BYTE_ROUNDTRIP_REQUIRED": "YES",
+    "LOSSY_SOURCE_CANONICALIZATION": "0",
+    "UNSUPPORTED_SOURCE_FAILS_CLOSED": "YES",
+    "EDIT_SUCCESS_REQUIRES_STRUCTURED_ROUNDTRIP": "YES",
+    "NON_TARGET_PARAGRAPHS_PRESERVED": "YES",
+    "SECTION_COUNT_PRESERVED": "YES",
+    "PARAGRAPH_COUNT_PRESERVED": "YES",
+    "PARTIAL_EDIT_OUTPUT": "0",
     "HWPX_TEMPLATE_FILL": "NOT_CLAIMED",
+    "PARAGRAPH_INSERT": "NOT_CLAIMED",
+    "PARAGRAPH_DELETE": "NOT_CLAIMED",
+    "SECTION_INSERT": "NOT_CLAIMED",
+    "SECTION_DELETE": "NOT_CLAIMED",
     "TABLE_INSERT": "NOT_CLAIMED",
+    "TABLE_EDIT": "NOT_CLAIMED",
     "IMAGE_INSERT": "NOT_CLAIMED",
+    "IMAGE_EDIT": "NOT_CLAIMED",
+    "STYLE_EDIT": "NOT_CLAIMED",
+    "LAYOUT_FIDELITY": "NOT_CLAIMED",
 }
 
 
@@ -823,6 +965,505 @@ def hwpx_create(
             section_count=section_count,
             paragraph_count=paragraph_count,
             validation_status=VALIDATION_STATUS_ROUNDTRIP_OK,
+        ),
+        artifact=artifact,
+    )
+
+
+# --------------------------------------------------------------------------
+# hwpx.edit (#2972): bounded paragraph replacement over the canonical decoder
+# --------------------------------------------------------------------------
+
+
+@dataclass(frozen=True, slots=True)
+class HwpxParagraphReplacement:
+    """One zero-based paragraph replacement request.
+
+    ``section_index`` and ``paragraph_index`` address the decoded canonical
+    model directly and are both **zero-based**: section 0 is the first section
+    part and paragraph 0 is the first paragraph inside that section. ``text``
+    is the complete replacement text for that paragraph, not a fragment and
+    not a search pattern.
+
+    This shape deliberately carries caller data and enforces nothing itself:
+    :func:`hwpx_edit` is the single place the bounded edit contract is judged.
+    A malformed request — a ``bool`` index, a negative index, a target outside
+    the decoded model, a duplicate target, text the canonical serializer
+    refuses — is therefore answered with one bounded refusal receipt instead of
+    an exception from an intermediate object, which keeps "invalid" and "no
+    output" the same fact.
+    """
+
+    section_index: int
+    paragraph_index: int
+    text: str
+
+
+@dataclass(frozen=True, slots=True)
+class HwpxEditReceipt:
+    """Bounded ``hwpx.edit`` projection.
+
+    On success it reports presentation metadata, the preserved structure
+    counts, how many replacements were applied and the post-edit verification
+    outcome. On refusal every artifact-derived field is ``None``, so a refused
+    edit can never be read as a handoff. It carries bounded metadata and
+    bounded reason vocabulary only — never payload bytes, raw XML, ZIP member
+    names, host paths, or any part of the original or replacement document
+    text. The edited bytes live in :class:`HwpxEditArtifact`, which stays
+    outside the public projection.
+    """
+
+    status: str
+    capability_id: str
+    reason_code: str
+    note: str | None
+    media_type: str | None
+    suggested_filename: str | None
+    byte_size: int | None
+    section_count: int | None
+    paragraph_count: int | None
+    replacement_count: int | None
+    validation_status: str
+
+    def __post_init__(self) -> None:
+        _require_receipt_fields(self.status, self.reason_code)
+        if self.validation_status not in _EDIT_VALIDATION_STATUSES:
+            raise ValueError("hwpx_skill: edit validation_status must be bounded")
+        if self.note is not None and not is_bounded_reason_code(self.note):
+            raise ValueError("hwpx_skill: an edit note must be a bounded identifier")
+
+        if self.status == STATUS_OK:
+            if self.validation_status != VALIDATION_STATUS_EDIT_OK:
+                raise ValueError("hwpx_skill: an ok edit must verify its structured round trip")
+            if self.note is not None:
+                raise ValueError("hwpx_skill: an ok edit receipt carries no note")
+            if self.media_type != HWPX_MEDIA_TYPE:
+                raise ValueError("hwpx_skill: an ok edit must report the HWPX media type")
+            if not isinstance(self.suggested_filename, str) or not (
+                self.suggested_filename.endswith(HWPX_SUFFIX)
+            ):
+                raise ValueError("hwpx_skill: an ok edit name must end with the canonical suffix")
+            if not isinstance(self.byte_size, int) or self.byte_size <= 0:
+                raise ValueError("hwpx_skill: an ok edit must report a positive byte size")
+            if not isinstance(self.section_count, int) or self.section_count <= 0:
+                raise ValueError("hwpx_skill: an ok edit must report its section count")
+            if not isinstance(self.paragraph_count, int) or self.paragraph_count <= 0:
+                raise ValueError("hwpx_skill: an ok edit must report its paragraph count")
+            if not isinstance(self.replacement_count, int) or self.replacement_count <= 0:
+                raise ValueError("hwpx_skill: an ok edit must report its replacement count")
+            return
+
+        if self.validation_status == VALIDATION_STATUS_EDIT_OK:
+            raise ValueError("hwpx_skill: a refused edit must not claim a verified round trip")
+        if any(
+            value is not None
+            for value in (
+                self.media_type,
+                self.suggested_filename,
+                self.byte_size,
+                self.section_count,
+                self.paragraph_count,
+                self.replacement_count,
+            )
+        ):
+            raise ValueError("hwpx_skill: a refused edit receipt carries no artifact metadata")
+
+    def to_public_dict(self) -> dict[str, object]:
+        return {
+            "status": self.status,
+            "capability_id": self.capability_id,
+            "reason_code": self.reason_code,
+            "note": self.note,
+            "media_type": self.media_type,
+            "suggested_filename": self.suggested_filename,
+            "byte_size": self.byte_size,
+            "section_count": self.section_count,
+            "paragraph_count": self.paragraph_count,
+            "replacement_count": self.replacement_count,
+            "validation_status": self.validation_status,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class HwpxEditArtifact:
+    """In-memory edit artifact for artifact handoff.
+
+    This is the only place an edited package's bytes exist. It is deliberately
+    separate from :class:`HwpxEditReceipt` so no public projection can carry
+    the payload, and nothing here is written to the host filesystem.
+    """
+
+    payload: bytes
+    media_type: str
+    suggested_filename: str
+    byte_size: int
+    section_count: int
+    paragraph_count: int
+    replacement_count: int
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.payload, bytes) or not self.payload:
+            raise ValueError("hwpx_skill: an edit artifact requires bounded bytes")
+        if self.media_type != HWPX_MEDIA_TYPE:
+            raise ValueError("hwpx_skill: an edit artifact must be the HWPX media type")
+        if not isinstance(self.suggested_filename, str) or not (
+            self.suggested_filename.endswith(HWPX_SUFFIX)
+        ):
+            raise ValueError("hwpx_skill: an edit artifact name must use the canonical suffix")
+        if self.byte_size != len(self.payload):
+            raise ValueError("hwpx_skill: an edit artifact byte size must match its payload")
+        if self.section_count <= 0 or self.paragraph_count <= 0:
+            raise ValueError("hwpx_skill: an edit artifact must report its bounded counts")
+        if self.replacement_count <= 0:
+            raise ValueError("hwpx_skill: an edit artifact must report its replacements")
+
+
+@dataclass(frozen=True, slots=True)
+class HwpxEditResult:
+    """One edit outcome: the public receipt plus, on success only, the bytes.
+
+    ``to_public_dict`` delegates to the receipt, so the public projection of an
+    edit is exactly the bounded receipt and can never include the payload. A
+    successful receipt always carries its artifact and a refused receipt never
+    does, which keeps "no artifact" and "no success" the same fact.
+    """
+
+    receipt: HwpxEditReceipt
+    artifact: HwpxEditArtifact | None = None
+
+    def __post_init__(self) -> None:
+        if self.receipt.status == STATUS_OK and self.artifact is None:
+            raise ValueError("hwpx_skill: an ok edit result must carry its artifact")
+        if self.receipt.status != STATUS_OK and self.artifact is not None:
+            raise ValueError("hwpx_skill: a refused edit result must not carry an artifact")
+
+    def to_public_dict(self) -> dict[str, object]:
+        return self.receipt.to_public_dict()
+
+
+def _edit_refusal(
+    reason_code: str,
+    *,
+    note: str | None,
+    validation_status: str,
+) -> HwpxEditResult:
+    return HwpxEditResult(
+        receipt=HwpxEditReceipt(
+            status=STATUS_REFUSED,
+            capability_id=CAPABILITY_HWPX_EDIT,
+            reason_code=reason_code,
+            note=note,
+            media_type=None,
+            suggested_filename=None,
+            byte_size=None,
+            section_count=None,
+            paragraph_count=None,
+            replacement_count=None,
+            validation_status=validation_status,
+        ),
+        artifact=None,
+    )
+
+
+def _operation_shape_refusal(
+    operations: tuple[HwpxParagraphReplacement, ...],
+) -> str | None:
+    """First bounded refusal for the request's own shape, or None once it is shaped.
+
+    ``bool`` is rejected explicitly even though it is an ``int`` subclass in
+    Python, so ``True`` can never address paragraph 1.
+    """
+
+    for operation in operations:
+        if not isinstance(operation, HwpxParagraphReplacement):
+            return REASON_EDIT_OPERATION_SHAPE
+        if not isinstance(operation.section_index, int) or isinstance(
+            operation.section_index, bool
+        ):
+            return REASON_EDIT_OPERATION_SHAPE
+        if not isinstance(operation.paragraph_index, int) or isinstance(
+            operation.paragraph_index, bool
+        ):
+            return REASON_EDIT_OPERATION_SHAPE
+        if not isinstance(operation.text, str):
+            return REASON_EDIT_OPERATION_SHAPE
+        if operation.section_index < 0 or operation.paragraph_index < 0:
+            return REASON_EDIT_INDEX_NEGATIVE
+    return None
+
+
+def _operation_target_refusal(
+    operations: tuple[HwpxParagraphReplacement, ...],
+    source: HwpxPackageContent,
+) -> str | None:
+    """First bounded refusal for an address or duplicate, or None once all targets fit.
+
+    Targets are judged against the decoded source model, so an index that no
+    section or paragraph occupies is refused before any edit is applied, and a
+    repeated target is refused rather than resolved by request order.
+    """
+
+    seen: set[tuple[int, int]] = set()
+    for operation in operations:
+        if operation.section_index >= len(source.sections):
+            return REASON_EDIT_SECTION_OUT_OF_RANGE
+        paragraphs = source.sections[operation.section_index].paragraphs
+        if operation.paragraph_index >= len(paragraphs):
+            return REASON_EDIT_PARAGRAPH_OUT_OF_RANGE
+        target = (operation.section_index, operation.paragraph_index)
+        if target in seen:
+            return REASON_EDIT_DUPLICATE_TARGET
+        seen.add(target)
+    return None
+
+
+def _edited_model(
+    source: HwpxPackageContent,
+    operations: tuple[HwpxParagraphReplacement, ...],
+) -> HwpxPackageContent:
+    """Apply validated replacements, preserving section and paragraph counts."""
+
+    replacements = {
+        (operation.section_index, operation.paragraph_index): operation.text
+        for operation in operations
+    }
+    sections: list[HwpxPackageSection] = []
+    for section_index, section in enumerate(source.sections):
+        paragraphs = tuple(
+            replacements.get((section_index, paragraph_index), text)
+            for paragraph_index, text in enumerate(section.paragraphs)
+        )
+        sections.append(HwpxPackageSection(paragraphs=paragraphs))
+    return HwpxPackageContent(sections=tuple(sections))
+
+
+def hwpx_edit(
+    filename: str,
+    payload: bytes,
+    operations: tuple[HwpxParagraphReplacement, ...],
+) -> HwpxEditResult:
+    """Replace bounded paragraph text in an existing canonical HWPX package.
+
+    Composition order, with the common gate always first::
+
+        caller filename + package bytes + zero-based replacement operations
+        -> inspect_file()                     (common gate must admit HWPX_CANDIDATE)
+        -> deserialize_hwpx_package()         (the single structured decoder)
+        -> source is proven canonical-lossless (serialize(source) == input bytes)
+        -> bounded targets validated against the decoded model
+        -> replacements applied to the model
+        -> serialize_hwpx_package()           (the single byte producer)
+        -> inspect_file() / hwpx_validate() / hwpx_read() on the output
+        -> deserialize_hwpx_package() on the output
+        -> structured equality with the intended edited model
+        -> bounded edit receipt + in-memory artifact
+
+    The source-fidelity gate is what keeps this foundation honest: a package
+    whose decoded model does not serialize back into the exact input bytes is
+    refused instead of being silently canonicalized into something the writer
+    owns. That deliberately restricts editing to the canonical subset the
+    current serializer already round-trips.
+
+    Success is proven by the structured model, never by flattened text alone:
+    the read authority must succeed, but two different structures can flatten
+    to the same text, so the proof is that the re-decoded output equals the
+    intended model at every address — every non-target paragraph unchanged,
+    every target paragraph exactly the requested text, and both counts
+    preserved. Any failure at any stage is a bounded refusal with no artifact
+    and no fallback format.
+
+    ``filename`` is used for the common gate and, sanitized onto a flat
+    bounded name ending in ``.hwpx``, as presentation metadata. It is never a
+    package or host authority.
+    """
+
+    if not isinstance(operations, tuple) or not operations:
+        return _edit_refusal(
+            REASON_EDIT_OPERATIONS_INVALID,
+            note=None,
+            validation_status=VALIDATION_STATUS_EDIT_NOT_RUN,
+        )
+    if len(operations) > MAX_EDIT_OPERATIONS:
+        return _edit_refusal(
+            REASON_EDIT_OPERATIONS_LIMIT,
+            note=None,
+            validation_status=VALIDATION_STATUS_EDIT_NOT_RUN,
+        )
+
+    shape_refusal = _operation_shape_refusal(operations)
+    if shape_refusal is not None:
+        return _edit_refusal(
+            shape_refusal,
+            note=None,
+            validation_status=VALIDATION_STATUS_EDIT_OPERATIONS_REFUSED,
+        )
+
+    gate = inspect_file(filename, payload)
+    refusal = _gate_refusal(gate)
+    if refusal is not None:
+        return _edit_refusal(
+            REASON_EDIT_GATE_REJECTED,
+            note=_bounded_note(refusal),
+            validation_status=VALIDATION_STATUS_EDIT_SOURCE_REFUSED,
+        )
+
+    try:
+        source = deserialize_hwpx_package(payload)
+    except DocumentNormalizationError as error:
+        return _edit_refusal(
+            REASON_EDIT_SOURCE_DECODER_REJECTED,
+            note=_bounded_note(getattr(error, "code", None)),
+            validation_status=VALIDATION_STATUS_EDIT_SOURCE_REFUSED,
+        )
+
+    try:
+        canonical_source = serialize_hwpx_package(source)
+    except DocumentNormalizationError:
+        return _edit_refusal(
+            REASON_EDIT_SOURCE_NOT_CANONICAL,
+            note=None,
+            validation_status=VALIDATION_STATUS_EDIT_SOURCE_NOT_CANONICAL,
+        )
+    if canonical_source != payload:
+        return _edit_refusal(
+            REASON_EDIT_SOURCE_NOT_CANONICAL,
+            note=None,
+            validation_status=VALIDATION_STATUS_EDIT_SOURCE_NOT_CANONICAL,
+        )
+
+    target_refusal = _operation_target_refusal(operations, source)
+    if target_refusal is not None:
+        return _edit_refusal(
+            target_refusal,
+            note=None,
+            validation_status=VALIDATION_STATUS_EDIT_OPERATIONS_REFUSED,
+        )
+
+    intended = _edited_model(source, operations)
+
+    try:
+        edited = serialize_hwpx_package(intended)
+    except DocumentNormalizationError as error:
+        # The source model was just proven to serialize into the exact input
+        # bytes, so a refusal here can only have been introduced by a
+        # replacement text. Text-level codes are reported as such; anything
+        # else stays a serializer refusal.
+        code = getattr(error, "code", None)
+        if code in _EDIT_TEXT_LEVEL_SERIALIZE_CODES:
+            return _edit_refusal(
+                REASON_EDIT_TEXT_REJECTED,
+                note=_bounded_note(code),
+                validation_status=VALIDATION_STATUS_EDIT_SERIALIZER_REFUSED,
+            )
+        return _edit_refusal(
+            REASON_EDIT_SERIALIZER_REJECTED,
+            note=_bounded_note(code),
+            validation_status=VALIDATION_STATUS_EDIT_SERIALIZER_REFUSED,
+        )
+    if not isinstance(edited, bytes) or not edited:
+        return _edit_refusal(
+            REASON_EDIT_SERIALIZER_REJECTED,
+            note=None,
+            validation_status=VALIDATION_STATUS_EDIT_SERIALIZER_REFUSED,
+        )
+
+    name = _suggested_filename(filename)
+
+    output_gate = inspect_file(name, edited)
+    output_gate_refusal = _gate_refusal(output_gate)
+    if output_gate_refusal is not None:
+        return _edit_refusal(
+            REASON_EDIT_OUTPUT_GATE_REJECTED,
+            note=_bounded_note(output_gate_refusal),
+            validation_status=VALIDATION_STATUS_EDIT_OUTPUT_REFUSED,
+        )
+
+    validation = hwpx_validate(name, edited)
+    if validation.status != STATUS_OK:
+        return _edit_refusal(
+            REASON_EDIT_OUTPUT_VALIDATE_REJECTED,
+            note=_bounded_note(validation.reason_code),
+            validation_status=VALIDATION_STATUS_EDIT_OUTPUT_REFUSED,
+        )
+
+    read = hwpx_read(name, edited)
+    if read.status != STATUS_OK:
+        return _edit_refusal(
+            REASON_EDIT_OUTPUT_READBACK_REJECTED,
+            note=_bounded_note(read.reason_code),
+            validation_status=VALIDATION_STATUS_EDIT_OUTPUT_REFUSED,
+        )
+
+    try:
+        decoded = deserialize_hwpx_package(edited)
+    except DocumentNormalizationError:
+        return _edit_refusal(
+            REASON_EDIT_OUTPUT_ROUNDTRIP_MISMATCH,
+            note=None,
+            validation_status=VALIDATION_STATUS_EDIT_OUTPUT_MISMATCH,
+        )
+
+    if len(decoded.sections) != len(intended.sections):
+        return _edit_refusal(
+            REASON_EDIT_OUTPUT_COUNT_DRIFT,
+            note=None,
+            validation_status=VALIDATION_STATUS_EDIT_OUTPUT_MISMATCH,
+        )
+    for section_index, section in enumerate(intended.sections):
+        if len(decoded.sections[section_index].paragraphs) != len(section.paragraphs):
+            return _edit_refusal(
+                REASON_EDIT_OUTPUT_COUNT_DRIFT,
+                note=None,
+                validation_status=VALIDATION_STATUS_EDIT_OUTPUT_MISMATCH,
+            )
+
+    targets = {(operation.section_index, operation.paragraph_index) for operation in operations}
+    for section_index, section in enumerate(source.sections):
+        for paragraph_index, text in enumerate(section.paragraphs):
+            if (section_index, paragraph_index) in targets:
+                continue
+            if decoded.sections[section_index].paragraphs[paragraph_index] != text:
+                return _edit_refusal(
+                    REASON_EDIT_OUTPUT_NON_TARGET_DRIFT,
+                    note=None,
+                    validation_status=VALIDATION_STATUS_EDIT_OUTPUT_MISMATCH,
+                )
+    for operation in operations:
+        decoded_text = decoded.sections[operation.section_index].paragraphs[
+            operation.paragraph_index
+        ]
+        if decoded_text != operation.text:
+            return _edit_refusal(
+                REASON_EDIT_OUTPUT_ROUNDTRIP_MISMATCH,
+                note=None,
+                validation_status=VALIDATION_STATUS_EDIT_OUTPUT_MISMATCH,
+            )
+
+    section_count = len(intended.sections)
+    paragraph_count = sum(len(section.paragraphs) for section in intended.sections)
+    replacement_count = len(operations)
+    artifact = HwpxEditArtifact(
+        payload=edited,
+        media_type=HWPX_MEDIA_TYPE,
+        suggested_filename=name,
+        byte_size=len(edited),
+        section_count=section_count,
+        paragraph_count=paragraph_count,
+        replacement_count=replacement_count,
+    )
+    return HwpxEditResult(
+        receipt=HwpxEditReceipt(
+            status=STATUS_OK,
+            capability_id=CAPABILITY_HWPX_EDIT,
+            reason_code="ok",
+            note=None,
+            media_type=HWPX_MEDIA_TYPE,
+            suggested_filename=name,
+            byte_size=len(edited),
+            section_count=section_count,
+            paragraph_count=paragraph_count,
+            replacement_count=replacement_count,
+            validation_status=VALIDATION_STATUS_EDIT_OK,
         ),
         artifact=artifact,
     )
