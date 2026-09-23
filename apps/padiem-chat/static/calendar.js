@@ -1,9 +1,15 @@
-/* #2834 A3 — Padiem Calendar read-only surface (Today / Upcoming).
+/* #2834 A4 — Padiem Calendar surface (Today / Upcoming + native work-record create).
  *
- * Read-only contract:
- * - Uses only the two existing calendar endpoints (GET today, GET upcoming).
+ * Contract:
+ * - Read path uses only the two existing calendar endpoints (GET today, GET upcoming).
+ * - One write path exists: POST /api/calendar/work-logs, the already-registered
+ *   native work-log authority. No other endpoint is ever written.
+ * - The client never sends owner/workspace fields; the server derives scope from
+ *   the authenticated session (a caller-supplied scope is rejected server-side).
+ * - The client validates only what it must to avoid an obviously invalid request.
+ *   The server remains the validation authority, so a 400 is still surfaced.
  * - Renders every server value as plain text; no markup is ever interpreted.
- * - No writes, no client-side item synthesis, no historical run promotion.
+ * - No client-side item synthesis, no historical run promotion.
  * - The explicit timezone comes from the browser and is sent as a required
  *   query parameter; the server timezone of an item is used for display only.
  */
@@ -32,6 +38,23 @@
     today: "calendar-empty-today",
     upcoming: "calendar-empty-upcoming",
   });
+  // The single existing native work-log authority. No second write endpoint and
+  // no client-side scope (owner/workspace) is ever constructed here.
+  const WORK_LOG_ROUTE = "/api/calendar/work-logs";
+  const RECORD_STATUS_KEYS = Object.freeze({
+    created: "calendar-record-created",
+    invalid: "calendar-record-invalid",
+    unauthorized: "calendar-record-unauthorized",
+    unavailable: "calendar-record-unavailable",
+  });
+  const RECORD_STATUS_VALUES = Object.freeze([
+    "created",
+    "invalid",
+    "unauthorized",
+    "unavailable",
+  ]);
+  // Server date grammar (calendar_contracts.parse_date): YYYY-MM-DD only.
+  const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
   // English fallback copy. Korean copy lives in locale.js; this only keeps the
   // surface readable if the locale authority is unavailable.
@@ -47,6 +70,10 @@
     "calendar-empty-today": "Nothing scheduled for today.",
     "calendar-empty-upcoming": "Nothing upcoming.",
     "calendar-all-day": "All day",
+    "calendar-record-created": "Work record saved.",
+    "calendar-record-invalid": "Check the date and title.",
+    "calendar-record-unauthorized": "Please sign in and try again.",
+    "calendar-record-unavailable": "Could not save the work record. Please try again shortly.",
   });
 
   function text(key, variables) {
@@ -127,12 +154,69 @@
     return `${date} ${start}`;
   }
 
+  // The user's calendar date for an EXPLICIT timezone. formatToParts is used
+  // instead of a locale-dependent string format, and a missing/invalid zone
+  // yields "" so the caller fails closed rather than guessing a date.
+  function localDateInZone(timezone, reference) {
+    if (typeof timezone !== "string" || !timezone) return "";
+    const at = reference instanceof Date ? reference : new Date();
+    if (Number.isNaN(at.getTime())) return "";
+    try {
+      const parts = new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        timeZone: timezone,
+      }).formatToParts(at);
+      const values = {};
+      parts.forEach((part) => { values[part.type] = part.value; });
+      if (!values.year || !values.month || !values.day) return "";
+      return `${values.year}-${values.month}-${values.day}`;
+    } catch (_) {
+      return "";
+    }
+  }
+
+  // Bounded work-log payload: exactly the three reviewed server fields. An empty
+  // optional note is omitted rather than sent blank, and no owner/workspace/
+  // tenant key can ever be produced by this builder.
+  function buildWorkLogRequest(input) {
+    const raw = input && typeof input === "object" ? input : {};
+    const date = typeof raw.date === "string" ? raw.date.trim() : "";
+    const title = typeof raw.title === "string" ? raw.title.trim() : "";
+    const content = typeof raw.content === "string" ? raw.content.trim() : "";
+    if (!DATE_ONLY_PATTERN.test(date)) return { ok: false, reason: "invalid_date" };
+    if (!title) return { ok: false, reason: "title_required" };
+    const payload = { date: date, title: title };
+    if (content) payload.content = content;
+    return { ok: true, payload: payload };
+  }
+
+  // Maps the existing endpoint's real status codes onto the four bounded UI
+  // states. A 201 without a usable work_log is still treated as a failure, so a
+  // malformed success response can never be reported as saved.
+  function interpretWorkLogResponse(status, payload) {
+    if (status === 201) {
+      const saved = payload && typeof payload === "object" && payload.ok === true
+        ? payload.work_log
+        : null;
+      if (saved && typeof saved === "object") return { status: "created", item: saved };
+      return { status: "unavailable", item: null };
+    }
+    if (status === 401) return { status: "unauthorized", item: null };
+    if (status === 400) return { status: "invalid", item: null };
+    return { status: "unavailable", item: null };
+  }
+
   const api = Object.freeze({
     TODAY_ROUTE,
     UPCOMING_ROUTE,
+    WORK_LOG_ROUTE,
     KNOWN_ITEM_TYPES,
     ITEM_TYPE_KEYS,
     EMPTY_KEYS,
+    RECORD_STATUS_KEYS,
+    RECORD_STATUS_VALUES,
     routeFor,
     buildQuery,
     isKnownItemType,
@@ -140,6 +224,9 @@
     sourceTypeText,
     formatWhen,
     browserTimezone,
+    localDateInZone,
+    buildWorkLogRequest,
+    interpretWorkLogResponse,
   });
   if (typeof window !== "undefined") window.PadiemCalendarUI = api;
   if (typeof document === "undefined") return;
@@ -165,12 +252,19 @@
     const list = document.getElementById("calendarList");
     const refresh = document.getElementById("calendarRefresh");
     const retry = document.getElementById("calendarRetry");
+    const recordForm = document.getElementById("calendarRecordForm");
+    const recordDate = document.getElementById("calendarRecordDate");
+    const recordTitle = document.getElementById("calendarRecordTitle");
+    const recordContent = document.getElementById("calendarRecordContent");
+    const recordSubmit = document.getElementById("calendarRecordSubmit");
+    const recordStatus = document.getElementById("calendarRecordStatus");
     if (!shell || !navButton || !view || !list) return;
 
     let currentTab = "today";
     let requestToken = 0;
     let wasActive = false;
     let lastItems = null;
+    let lastRecordStatus = null;
 
     function setStatus(status) {
       if (loading) loading.hidden = status !== "loading";
@@ -215,6 +309,79 @@
       lastItems = null;
       list.replaceChildren();
       setStatus("error");
+    }
+
+    function showRecordStatus(kind) {
+      lastRecordStatus = kind;
+      if (!recordStatus) return;
+      const key = RECORD_STATUS_KEYS[kind];
+      if (!key) {
+        recordStatus.hidden = true;
+        recordStatus.textContent = "";
+        delete recordStatus.dataset.recordStatus;
+        return;
+      }
+      recordStatus.textContent = text(key);
+      recordStatus.dataset.recordStatus = kind;
+      recordStatus.hidden = false;
+    }
+
+    function setRecordBusy(busy) {
+      const isBusy = busy === true;
+      if (recordSubmit) recordSubmit.disabled = isBusy;
+      if (recordForm) recordForm.setAttribute("aria-busy", isBusy ? "true" : "false");
+    }
+
+    // The default date is computed from the browser's own timezone with an
+    // explicit accessor; an unresolved zone leaves the field empty so the user
+    // chooses the date instead of the client guessing one.
+    function ensureRecordDate() {
+      if (!recordDate || recordDate.value) return;
+      const today = localDateInZone(browserTimezone());
+      if (today) recordDate.value = today;
+    }
+
+    async function submitRecord(event) {
+      if (event && typeof event.preventDefault === "function") event.preventDefault();
+      if (!recordForm || !recordDate || !recordTitle) return;
+      showRecordStatus(null);
+      const built = buildWorkLogRequest({
+        date: recordDate.value,
+        title: recordTitle.value,
+        content: recordContent ? recordContent.value : "",
+      });
+      if (built.ok !== true) {
+        showRecordStatus("invalid");
+        return;
+      }
+      if (!browserTimezone()) {
+        showRecordStatus("unavailable");
+        return;
+      }
+      setRecordBusy(true);
+      try {
+        const response = await fetch(WORK_LOG_ROUTE, {
+          method: "POST",
+          cache: "no-store",
+          credentials: "same-origin",
+          headers: { Accept: "application/json", "Content-Type": "application/json" },
+          body: JSON.stringify(built.payload),
+        });
+        const data = await response.json().catch(() => null);
+        const outcome = interpretWorkLogResponse(response.status, data);
+        showRecordStatus(outcome.status);
+        if (outcome.status === "created") {
+          recordTitle.value = "";
+          if (recordContent) recordContent.value = "";
+          if (recordDate) recordDate.value = localDateInZone(browserTimezone());
+          ensureRecordDate();
+          await load();
+        }
+      } catch (_) {
+        showRecordStatus("unavailable");
+      } finally {
+        setRecordBusy(false);
+      }
     }
 
     async function load() {
@@ -281,6 +448,7 @@
       if (active) {
         const chatNav = document.getElementById("newChatButton");
         if (chatNav) chatNav.setAttribute("aria-current", "false");
+        ensureRecordDate();
       }
       if (active && !wasActive) load();
       wasActive = active;
@@ -301,9 +469,11 @@
     }
     if (refresh) refresh.addEventListener("click", () => load());
     if (retry) retry.addEventListener("click", () => load());
+    if (recordForm) recordForm.addEventListener("submit", submitRecord);
     window.addEventListener("padiem:localechange", () => {
       if (empty && !empty.hidden) empty.textContent = text(EMPTY_KEYS[currentTab]);
       if (lastItems && lastItems.length) renderItems(lastItems);
+      if (lastRecordStatus) showRecordStatus(lastRecordStatus);
     });
 
     const observer = typeof MutationObserver === "function" ? new MutationObserver(syncVisibility) : null;
