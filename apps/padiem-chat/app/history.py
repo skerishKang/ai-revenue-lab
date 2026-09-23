@@ -16,6 +16,21 @@ MAX_PROJECT_INSTRUCTIONS_CHARS = 1800
 MAX_PROJECTS = 50
 MAX_CLAW_RUNS = 30
 MAX_RUN_RESULT_SUMMARY_CHARS = 200
+MAX_CLAW_HANDOFF_TRUSTED_REQUEST_CHARS = 32000
+
+# #2956: closed server-derived trusted P01 request shape. Unknown keys fail
+# closed so browser-supplied authority fields can never enter the handoff.
+_CLAW_HANDOFF_TRUSTED_REQUEST_KEYS = frozenset(
+    {
+        "app_id",
+        "agent",
+        "messages",
+        "session_id",
+        "additional_system_context",
+        "trace_id",
+        "execution_context",
+    }
+)
 
 
 class HistoryError(RuntimeError):
@@ -87,6 +102,8 @@ class HistoryStore(Protocol):
     async def list_project_conversations(self, user_id: str, project_id: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]: ...
     async def record_claw_run(self, user_id: str, run_id: str, channel: str, action: str, title: str, status: str, result_summary: str | None = None, artifact_document_id: str | None = None, artifact_filename: str | None = None, artifact_media_type: str | None = None, conversation_id: str | None = None, workspace_id: str | None = None) -> None: ...
     async def list_recent_claw_runs(self, user_id: str, limit: int = MAX_CLAW_RUNS, workspace_id: str | None = None) -> list[dict[str, Any]]: ...
+    async def record_claw_approval_handoff(self, user_id: str, run_id: str, continuation_ref: str, pause_id: str, pause_expires_at: str, trusted_request: dict[str, Any], workspace_id: str | None = None, conversation_id: str | None = None) -> None: ...
+    async def load_claw_approval_handoff(self, user_id: str, run_id: str, workspace_id: str | None = None) -> dict[str, Any] | None: ...
 
 
 def _now_iso() -> str:
@@ -118,6 +135,59 @@ def _project_id() -> str:
 
 def _run_history_id() -> str:
     return "crh_" + uuid.uuid4().hex
+
+
+def _handoff_id() -> str:
+    return "clh_" + uuid.uuid4().hex
+
+
+def _handoff_trusted_request_json(trusted_request: object) -> tuple[str, str]:
+    """Serialize and fingerprint the closed trusted P01 request shape (#2956)."""
+    import json
+
+    if not isinstance(trusted_request, dict):
+        raise HistoryError("trusted_request must be an object")
+    if set(trusted_request) - _CLAW_HANDOFF_TRUSTED_REQUEST_KEYS:
+        raise HistoryError("trusted_request carries fields outside the closed handoff shape")
+    if not isinstance(trusted_request.get("app_id"), str) or not trusted_request.get("app_id"):
+        raise HistoryError("trusted_request.app_id is required")
+    messages = trusted_request.get("messages")
+    if not isinstance(messages, list) or not messages:
+        raise HistoryError("trusted_request.messages must be a non-empty list")
+    session_id = trusted_request.get("session_id")
+    if not isinstance(session_id, str) or not session_id:
+        raise HistoryError("trusted_request.session_id is required")
+    try:
+        encoded = json.dumps(
+            trusted_request, sort_keys=True, ensure_ascii=False, separators=(",", ":")
+        )
+    except (TypeError, ValueError) as exc:
+        raise HistoryError("trusted_request is not JSON-serializable") from exc
+    if len(encoded) > MAX_CLAW_HANDOFF_TRUSTED_REQUEST_CHARS:
+        raise HistoryError("trusted_request exceeds the bounded handoff size")
+    fingerprint = hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+    return encoded, fingerprint
+
+
+def _parse_handoff_expiry(value: object) -> datetime | None:
+    if not isinstance(value, str) or not value:
+        return None
+    text = value.strip().replace("Z", "+00:00")
+    try:
+        parsed = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed.astimezone(timezone.utc)
+
+
+def _handoff_expired(expires_at: object, now: datetime | None = None) -> bool:
+    parsed = _parse_handoff_expiry(expires_at)
+    if parsed is None:
+        return True
+    current = now or datetime.now(timezone.utc)
+    return current >= parsed
 
 
 def _validate_hex_id(value: object, prefix: str, label: str) -> str | None:
@@ -660,3 +730,127 @@ class D1HistoryStore:
                 user_id, bounded,
             )
         return [_run_history_public(row) for row in rows]
+
+    async def record_claw_approval_handoff(
+        self,
+        user_id: str,
+        run_id: str,
+        continuation_ref: str,
+        pause_id: str,
+        pause_expires_at: str,
+        trusted_request: dict[str, Any],
+        workspace_id: str | None = None,
+        conversation_id: str | None = None,
+    ) -> None:
+        """Persist one owner-scoped approval handoff under the history owner (#2956).
+
+        Exact replay of the same owner+run identity is idempotent. A conflicting
+        continuation_ref / pause_id / trusted request for the same owner+run
+        fails closed with ``HistoryConflict``. Cross-owner reads never disclose
+        existence because every statement is owner-scoped by ``user_id``.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(run_id, str) or not run_id:
+            raise HistoryError("run_id is required")
+        if not isinstance(continuation_ref, str) or not continuation_ref:
+            raise HistoryError("continuation_ref is required")
+        if not isinstance(pause_id, str) or not pause_id:
+            raise HistoryError("pause_id is required")
+        if not isinstance(pause_expires_at, str) or not pause_expires_at:
+            raise HistoryError("pause_expires_at is required")
+        if _parse_handoff_expiry(pause_expires_at) is None:
+            raise HistoryError("pause_expires_at must be a timezone-aware ISO-8601 timestamp")
+        if conversation_id is not None:
+            conversation_id = validate_conversation_id(conversation_id)
+        if workspace_id is not None:
+            workspace_id = _safe_identifier("workspace_id", workspace_id)
+        encoded, fingerprint = _handoff_trusted_request_json(trusted_request)
+        existing = await self._first(
+            "SELECT id, continuation_ref, pause_id, pause_expires_at, trusted_request_fingerprint, workspace_id, conversation_id "
+            "FROM claw_approval_handoff WHERE user_id=? AND run_id=?",
+            user_id, run_id,
+        )
+        if existing is not None:
+            if (
+                str(existing.get("continuation_ref")) == continuation_ref
+                and str(existing.get("pause_id")) == pause_id
+                and str(existing.get("pause_expires_at")) == pause_expires_at
+                and str(existing.get("trusted_request_fingerprint")) == fingerprint
+                and existing.get("workspace_id") == workspace_id
+                and existing.get("conversation_id") == conversation_id
+            ):
+                return
+            raise HistoryConflict(
+                f"claw approval handoff for run {run_id} already exists with a different identity"
+            )
+        await self._run(
+            "INSERT INTO claw_approval_handoff (id, user_id, run_id, workspace_id, conversation_id, "
+            "continuation_ref, pause_id, pause_expires_at, trusted_request_json, trusted_request_fingerprint, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            _handoff_id(), user_id, run_id, workspace_id, conversation_id,
+            continuation_ref, pause_id, pause_expires_at, encoded, fingerprint, _now_iso(),
+        )
+
+    async def load_claw_approval_handoff(
+        self,
+        user_id: str,
+        run_id: str,
+        workspace_id: str | None = None,
+    ) -> dict[str, Any] | None:
+        """Load one owner+run handoff; cross-scope and expired rows are non-disclosing.
+
+        A foreign owner or foreign workspace returns ``None`` (never an existence
+        oracle). An expired pause is unusable and also returns ``None``.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            return None
+        if not isinstance(run_id, str) or not run_id:
+            return None
+        if workspace_id is not None:
+            scoped = _safe_identifier("workspace_id", workspace_id)
+            row = await self._first(
+                "SELECT user_id, run_id, workspace_id, conversation_id, continuation_ref, pause_id, "
+                "pause_expires_at, trusted_request_json, trusted_request_fingerprint, created_at "
+                "FROM claw_approval_handoff WHERE user_id=? AND run_id=? AND workspace_id=?",
+                user_id, run_id, scoped,
+            )
+        else:
+            row = await self._first(
+                "SELECT user_id, run_id, workspace_id, conversation_id, continuation_ref, pause_id, "
+                "pause_expires_at, trusted_request_json, trusted_request_fingerprint, created_at "
+                "FROM claw_approval_handoff WHERE user_id=? AND run_id=?",
+                user_id, run_id,
+            )
+        if row is None:
+            return None
+        if _handoff_expired(row.get("pause_expires_at")):
+            return None
+        try:
+            import json
+
+            trusted = json.loads(str(row.get("trusted_request_json") or "{}"))
+        except (TypeError, ValueError):
+            return None
+        if not isinstance(trusted, dict):
+            return None
+        try:
+            _encoded, recomputed_fingerprint = _handoff_trusted_request_json(trusted)
+        except HistoryError:
+            return None
+        stored_fingerprint = str(row.get("trusted_request_fingerprint") or "")
+        if not stored_fingerprint or recomputed_fingerprint != stored_fingerprint:
+            return None
+        conversation_id = row.get("conversation_id")
+        return {
+            "user_id": str(row.get("user_id") or ""),
+            "run_id": str(row.get("run_id") or ""),
+            "workspace_id": row.get("workspace_id"),
+            "conversation_id": conversation_id,
+            "continuation_ref": str(row.get("continuation_ref") or ""),
+            "pause_id": str(row.get("pause_id") or ""),
+            "pause_expires_at": str(row.get("pause_expires_at") or ""),
+            "trusted_request": trusted,
+            "trusted_request_fingerprint": str(row.get("trusted_request_fingerprint") or ""),
+            "created_at": str(row.get("created_at") or ""),
+        }

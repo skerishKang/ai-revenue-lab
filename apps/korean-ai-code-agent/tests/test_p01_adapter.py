@@ -424,8 +424,96 @@ class P01CoreAdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(outcome.projection.approval_required)
         self.assertIsNone(outcome.answer)
         self.assertEqual(outcome.continuation_ref, "cont_EngineOpaqueRef_01")
+        # #2956: server-side handoff fields ride the WAITING outcome only.
+        self.assertEqual(outcome.pause_id, "pause_fake001")
+        self.assertEqual(outcome.pause_expires_at, "2026-09-03T10:00:00+00:00")
+        self.assertIsInstance(outcome.trusted_request, dict)
+        self.assertEqual(outcome.trusted_request["app_id"], P01_APP_ID)
+        self.assertEqual(outcome.trusted_request["session_id"], "run_pause")
+        self.assertIn("messages", outcome.trusted_request)
+        self.assertIn("agent", outcome.trusted_request)
+        self.assertNotIn("access_token", outcome.trusted_request)
+        self.assertNotIn("tool_arguments", outcome.trusted_request)
         rendered = outcome.safe_dict()
         self.assertEqual(rendered["continuation_ref"], "cont_EngineOpaqueRef_01")
+        # Browser projection never receives resume authority fields.
+        self.assertNotIn("pause_id", rendered)
+        self.assertNotIn("pause_expires_at", rendered)
+        self.assertNotIn("trusted_request", rendered)
+
+    async def test_completed_outcome_has_no_handoff_fields(self):
+        runner = _FakeRunner(
+            [
+                OrchestrationEventKind.RUN_STARTED,
+                OrchestrationEventKind.CONTEXT_PREPARED,
+                OrchestrationEventKind.RUN_COMPLETED,
+            ],
+        )
+        run = self.local_run("run_done")
+        outcome = await P01CoreOrchestrationAdapter(runner).execute(run)
+        self.assertEqual(run.status, ClawRunStatus.COMPLETED)
+        self.assertIsNone(outcome.continuation_ref)
+        self.assertIsNone(outcome.pause_id)
+        self.assertIsNone(outcome.pause_expires_at)
+        self.assertIsNone(outcome.trusted_request)
+
+    async def test_waiting_without_pause_id_fails_closed(self):
+        runner = _FakeRunner(
+            [
+                OrchestrationEventKind.RUN_STARTED,
+                OrchestrationEventKind.APPROVAL_PAUSED,
+            ],
+            continuation_ref="cont_EngineOpaqueRef_01",
+        )
+        original_run = runner.run
+
+        async def run_without_pause_id(request):
+            paused = await original_run(request)
+            pause = dict(paused.wire.approval_pause)
+            pause.pop("continuation_id", None)
+            return P01PausedWireResult(
+                result=paused.result,
+                wire=EngineApprovalPauseWire(
+                    approval_pause=pause,
+                    continuation_ref=paused.wire.continuation_ref,
+                ),
+            )
+
+        runner.run = run_without_pause_id
+        run = self.local_run("run_pause_no_id")
+        with self.assertRaises(P01AdapterError) as caught:
+            await P01CoreOrchestrationAdapter(runner).execute(run)
+        self.assertEqual(caught.exception.code, "missing_pause_id")
+        self.assertEqual(run.status, ClawRunStatus.FAILED)
+
+    async def test_waiting_without_pause_expiry_fails_closed(self):
+        runner = _FakeRunner(
+            [
+                OrchestrationEventKind.RUN_STARTED,
+                OrchestrationEventKind.APPROVAL_PAUSED,
+            ],
+            continuation_ref="cont_EngineOpaqueRef_01",
+        )
+        original_run = runner.run
+
+        async def run_without_expiry(request):
+            paused = await original_run(request)
+            pause = dict(paused.wire.approval_pause)
+            pause.pop("expires_at", None)
+            return P01PausedWireResult(
+                result=paused.result,
+                wire=EngineApprovalPauseWire(
+                    approval_pause=pause,
+                    continuation_ref=paused.wire.continuation_ref,
+                ),
+            )
+
+        runner.run = run_without_expiry
+        run = self.local_run("run_pause_no_exp")
+        with self.assertRaises(P01AdapterError) as caught:
+            await P01CoreOrchestrationAdapter(runner).execute(run)
+        self.assertEqual(caught.exception.code, "missing_pause_expires_at")
+        self.assertEqual(run.status, ClawRunStatus.FAILED)
 
     async def test_approval_pause_without_engine_continuation_ref_fails_closed(self):
         runner = _FakeRunner(

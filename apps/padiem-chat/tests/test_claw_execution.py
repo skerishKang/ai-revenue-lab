@@ -59,6 +59,9 @@ def _make_outcome(answer: str = "test result", status_value: str = "completed") 
     outcome.p01_run_id = "p01_run_test123"
     outcome.p01_event_count = 2
     outcome.continuation_ref = None
+    outcome.pause_id = None
+    outcome.pause_expires_at = None
+    outcome.trusted_request = None
     return outcome
 
 
@@ -742,6 +745,21 @@ def test_waiting_approval_outcome_projects_opaque_continuation_without_answer(
     waiting = _make_outcome(answer=None, status_value="waiting_approval")
     waiting.answer = None
     waiting.continuation_ref = "cont_EngineOpaqueRef_01"
+    waiting.pause_id = "pause_fake001"
+    waiting.pause_expires_at = "2099-01-01T00:00:00+00:00"
+    waiting.trusted_request = {
+        "app_id": "b54-padiem-claw",
+        "agent": {"id": "b54-padiem-claw"},
+        "messages": [{"role": "user", "content": "테스트"}],
+        "session_id": "run_test123",
+        "additional_system_context": None,
+        "trace_id": "claw_trace",
+        "execution_context": {
+            "trace_id": "claw_trace",
+            "idempotency_key": None,
+            "timeout_seconds": 20.0,
+        },
+    }
     adapter.execute = AsyncMock(return_value=waiting)
     with _injected_adapter(client, adapter):
         resp = client.post(
@@ -757,6 +775,10 @@ def test_waiting_approval_outcome_projects_opaque_continuation_without_answer(
     assert result["result_text"] is None
     assert result["continuation_ref"] == "cont_EngineOpaqueRef_01"
     assert "completed" != result["status"]
+    # Server-only handoff fields never echo to the browser (#2956).
+    assert "pause_id" not in result
+    assert "pause_expires_at" not in result
+    assert "trusted_request" not in result
 
 
 def test_waiting_approval_without_continuation_ref_fails_closed(client: TestClient) -> None:
