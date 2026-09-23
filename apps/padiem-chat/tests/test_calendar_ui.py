@@ -103,9 +103,12 @@ def test_calendar_js_targets_both_existing_endpoints_with_explicit_timezone() ->
     read_block = source.split("async function load() {", 1)[1].split("function selectTab(", 1)[0]
     assert "method:" not in read_block
     assert 'fetch(`${routeFor(currentTab)}${buildQuery(timezone)}`' in read_block
-    # #2834 A4: exactly one write method exists in the whole module, and it is the
-    # native work-log POST. No PUT/PATCH/DELETE is ever used.
-    assert source.count('method: "POST"') == 1
+    # #2834 A4/A5: exactly two write methods exist in the whole module, and both
+    # are pre-registered native authorities (work-log POST, appointment POST).
+    # No PUT/PATCH/DELETE is ever used, and no third write path is introduced.
+    assert source.count('method: "POST"') == 2
+    assert '"/api/calendar/work-logs"' in source
+    assert '"/api/calendar/appointments"' in source
     assert not re.search(r"\b(PUT|PATCH|DELETE)\b", source)
 
 
