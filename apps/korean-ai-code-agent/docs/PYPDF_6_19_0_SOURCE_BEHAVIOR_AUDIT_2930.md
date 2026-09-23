@@ -87,9 +87,11 @@ optional extras (not installed by default):
 ```
 
 PADIEM runs Python >= 3.11, so the baseline wheel has **zero required
-runtime dependencies**. Optional extras change only in-process algorithm or
-image/font support (section 8); they do not add network, shell, or process
-authority.
+runtime dependencies**. Optional extras are not installed by default. This
+audit establishes only how pypdf invokes them; it does **not** establish the
+transitive network, shell, process, filesystem, credential, or native-code
+authority of those third-party packages. Any enabled extra needs its own
+source/provenance review (section 8).
 
 ## 3. Network behavior
 
@@ -231,19 +233,25 @@ PLUGIN_AUTHORITY=ABSENT
 
 Crypt provider selection (`_crypt_providers/__init__.py`): try
 `cryptography` → `ImportError` → try `PyCryptodome` → `ImportError` →
-pure-Python `_fallback`. Each layer provides only in-process cipher
-primitives (RC4/AES-ECB/AES-CBC) consumed by `_encryption.py`. Optional
-crypto libraries therefore **do not change network/shell/process authority**.
+pure-Python `_fallback`. From pypdf's own call sites these providers are
+invoked through Python APIs rather than an explicit crypto subprocess.
+However, this audit does not independently establish the internal or wheel
+authority of `cryptography` or `PyCryptodome`.
 
-Other optional extras: Pillow operates on `BytesIO` for image encode/decode;
-fonttools for font handling; rtl extras for text shaping. None open sockets,
-spawn processes, or read credentials.
+Other optional extras are likewise only characterized at the pypdf integration
+boundary: Pillow is passed in-memory image data, fonttools is used for font
+handling, and rtl extras are used for text shaping. Their own network,
+filesystem, process, credential, native-code, or external-tool behavior is
+outside this pypdf-only audit and must be reviewed separately before enabling
+an extra. Pillow 12.3.0 is tracked separately by #2931.
 
-External non-Python authority remains exactly one: the `jbig2dec` binary on
-PATH (section 5), which is optional and fail-closed when missing.
+Within **pypdf package source itself** at this pin, the only explicit
+subprocess path found is the optional `jbig2dec` path described in section 5.
+That finding must not be generalized to the internals of optional third-party
+dependencies.
 
 ```text
-OPTIONAL_DEPENDENCY_AUTHORITY=PRESENT_BOUNDED (in-process crypto/image/font; single optional external binary)
+OPTIONAL_DEPENDENCY_AUTHORITY=DEFERRED_TRANSITIVE_AUDIT (pypdf call sites bounded; optional dependency internals not established here)
 ```
 
 ## 9. PDF-specific risks (feature vs execution authority)
@@ -287,7 +295,7 @@ acknowledge RC4/AES-ECB as required by the PDF spec. No external `openssl`
 process, no network crypto.
 
 ```text
-CRYPTO_PATHS=IN_PROCESS; OPTIONAL cryptography/PyCryptodome WITH_PURE_PYTHON_FALLBACK
+PYPDF_CRYPTO_CALL_PATHS=IN_PROCESS; OPTIONAL_PROVIDER_INTERNAL_AUTHORITY=OUT_OF_SCOPE; PURE_PYTHON_FALLBACK_AVAILABLE=YES
 ```
 
 Parser resource risks (bounds are real and read from source):
@@ -357,9 +365,12 @@ Restrictions (must travel with the finding):
 2. CWD debug helper `mark_location` and opt-in `debug_path` writers exist in
    the shipped package; callers must not invoke them in production paths.
 3. #2824 file intake gate remains fully mandatory (section 10).
-4. Optional crypto extras are not adopted by this decision; the pure-Python
-   fallback is the default authority at this pin.
-5. This is **not** `RUNTIME_ADOPTION_APPROVED`. Maximum expression:
+4. Optional crypto extras are not adopted by this decision; their own source,
+   native/wheel provenance, and transitive authority are not established by
+   this pypdf-only audit. The pure-Python fallback remains available.
+5. Any optional extra (including Pillow/fonttools/rtl packages) requires its
+   own source/provenance review before it can be enabled in a PADIEM runtime.
+6. This is **not** `RUNTIME_ADOPTION_APPROVED`. Maximum expression:
 
 ```text
 RUNTIME_ADOPTION=0
