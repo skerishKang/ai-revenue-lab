@@ -118,8 +118,8 @@ update_strategy=manual_re_eval
 pinning_strategy=immutable
 test_evidence=review:2925-hwp5-no-verifiable-upstream-tests
 adversarial_evidence=https://pypi.org/project/hwp5/ (placeholder repository URLs)
-known_limitations=provenance not established; license claim not verifiable against a real repository
-decision=REJECTED (gate commercial_use_not_allowed_or_unknown): fail closed, do not weaken the gate
+known_limitations=PyPI metadata describes analytics/calendar/ICS productivity functionality rather than HWP document handling; provenance not established; license claim not verifiable against a real repository
+decision=REJECTED (gate commercial_use_not_allowed_or_unknown): unrelated to the HWP document lane and provenance is not established; fail closed
 ```
 
 ### hwpx (only PyPI package named hwpx; placeholder provenance failure)
