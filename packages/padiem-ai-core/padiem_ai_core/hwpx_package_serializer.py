@@ -306,19 +306,19 @@ def _fixed_member(name: str) -> ZipInfo:
     return info
 
 
-def assemble_hwpx_package_members(members: tuple[tuple[str, bytes], ...]) -> bytes:
-    """Assemble one package from an ordered, already-decided member sequence.
+def _assemble_hwpx_package_members(members: tuple[tuple[str, bytes], ...]) -> bytes:
+    """Internal archive assembly seam for already-decided member sequences.
 
     This is the single place in Core that writes an ``application/hwp+zip``
     archive, and the single place the archive-member policy lives. The
     canonical package creator and the package-preserving mutator both reach the
-    archive through it, so Core keeps exactly one member policy.
+    archive through this private seam, so Core keeps exactly one member policy
+    without exposing a generic raw-member ZIP writer as public API.
 
-    It is a writer, not a content authority. It invents no member, it cannot
-    reorder or drop one, and every name is judged by the same predicate the
-    archive gate applies to every member it walks — so this function can never
-    produce an archive Core's own gate would refuse, and a caller-supplied name
-    can never become an archive path.
+    It is a writer, not a caller-facing content authority. It invents no member,
+    it cannot reorder or drop one, and every name is judged by the same path
+    predicate the archive gate uses — so this function can never produce an
+    archive Core's own gate would refuse.
     """
 
     if not isinstance(members, tuple) or not members:
@@ -370,7 +370,7 @@ def _package_bytes(section_payloads: list[bytes]) -> bytes:
     members: list[tuple[str, bytes]] = [("mimetype", HWPX_MEDIA_TYPE.encode("ascii"))]
     for index, payload in enumerate(section_payloads, start=1):
         members.append((f"Contents/section{index}.xml", payload))
-    return assemble_hwpx_package_members(tuple(members))
+    return _assemble_hwpx_package_members(tuple(members))
 
 
 __all__ = [
@@ -381,7 +381,6 @@ __all__ = [
     "MAX_HWPX_SECTIONS",
     "HwpxPackageContent",
     "HwpxPackageSection",
-    "assemble_hwpx_package_members",
     "deserialize_hwpx_package",
     "serialize_hwpx_package",
     "serialize_hwpx_section_part",

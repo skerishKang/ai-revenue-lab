@@ -34,7 +34,7 @@ It composes the authorities that already exist and owns no primitive of its own:
   ``hwpx_package_serializer.serialize_hwpx_section_part``, produces the one
   member that is allowed to change;
 * Core's single archive writer,
-  ``hwpx_package_serializer.assemble_hwpx_package_members``, rebuilds the
+  private ``hwpx_package_serializer._assemble_hwpx_package_members`` seam rebuilds the
   archive from a preserved member sequence;
 * the writable-subset judgement is the decoder's own, reached through
   ``hwpx_package_serializer.deserialize_hwpx_package``, so the mutator and the
@@ -104,7 +104,7 @@ from .document_semantics import DocumentNormalizationError
 from .hwpx_package_serializer import (
     HWPX_MEDIA_TYPE,
     HwpxPackageSection,
-    assemble_hwpx_package_members,
+    _assemble_hwpx_package_members,
     deserialize_hwpx_package,
     serialize_hwpx_section_part,
     validate_hwpx_paragraph_text,
@@ -264,7 +264,7 @@ def _decode_section(part: bytes) -> HwpxPackageSection:
     Only ``sections[0]``, the addressed part, is returned.
     """
 
-    probe = assemble_hwpx_package_members(
+    probe = _assemble_hwpx_package_members(
         (
             ("mimetype", HWPX_MEDIA_TYPE.encode("ascii")),
             (_PROBE_MEMBER_NAME, part),
@@ -376,7 +376,7 @@ def mutate_hwpx_package_preserving_members(
         else:
             sequence.append((member.name, member.payload))
 
-    output = assemble_hwpx_package_members(tuple(sequence))
+    output = _assemble_hwpx_package_members(tuple(sequence))
     _verify_preservation(members, output, targets)
     return output
 

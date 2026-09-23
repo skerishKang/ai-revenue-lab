@@ -707,12 +707,20 @@ class TestMutationAuthority:
         assert source.count("read_hwpx_package_members(") == 2
         assert source.count("parse_hwpx_sections(") == 1
         assert source.count("serialize_hwpx_section_part(") == 4
-        assert source.count("assemble_hwpx_package_members(") == 2
+        assert source.count("_assemble_hwpx_package_members(") == 2
         assert source.count("deserialize_hwpx_package(") == 1
         assert source.count("validate_ooxml_archive(") == 1
         assert source.count("hwpx_section_index(") == 1
         assert source.count("validate_hwpx_paragraph_text(") == 1
         assert source.count("extract_hwpx_text(") == 1
+
+    def test_raw_member_assembler_is_not_public_api(self) -> None:
+        """The mutator may reuse one internal writer without exposing a raw ZIP API."""
+
+        from padiem_ai_core import hwpx_package_serializer as serializer
+
+        assert not hasattr(serializer, "assemble_hwpx_package_members")
+        assert "_assemble_hwpx_package_members" not in serializer.__all__
 
     def test_section_lookup_uses_the_readers_own_predicate(self) -> None:
         assert document_normalization.hwpx_section_index("Contents/section2.xml") == 2
@@ -750,7 +758,7 @@ class TestMutationAuthority:
 
 class TestMutationAssemblerRefusal:
     def test_assembler_refuses_unsafe_duplicate_and_empty_members(self) -> None:
-        from padiem_ai_core.hwpx_package_serializer import assemble_hwpx_package_members
+        from padiem_ai_core.hwpx_package_serializer import _assemble_hwpx_package_members
 
         for label, members, code in (
             ("empty sequence", (), "hwpx_assemble_model"),
@@ -761,21 +769,21 @@ class TestMutationAssemblerRefusal:
             ("wrong shape", (("mimetype",),), "hwpx_assemble_model"),
         ):
             with pytest.raises(DocumentNormalizationError) as exc:
-                assemble_hwpx_package_members(members)  # type: ignore[arg-type]
+                _assemble_hwpx_package_members(members)  # type: ignore[arg-type]
             assert exc.value.code == code, label
 
     def test_assembler_output_always_passes_the_archive_gate(self) -> None:
-        from padiem_ai_core.hwpx_package_serializer import assemble_hwpx_package_members
+        from padiem_ai_core.hwpx_package_serializer import _assemble_hwpx_package_members
 
-        payload = assemble_hwpx_package_members(
+        payload = _assemble_hwpx_package_members(
             (("mimetype", _MIMETYPE), ("Contents/section1.xml", _section_xml(_para("x"))))
         )
         assert validate_ooxml_archive(payload) is None
 
     def test_assembler_uses_stored_compression_and_a_fixed_timestamp(self) -> None:
-        from padiem_ai_core.hwpx_package_serializer import assemble_hwpx_package_members
+        from padiem_ai_core.hwpx_package_serializer import _assemble_hwpx_package_members
 
-        payload = assemble_hwpx_package_members((("mimetype", _MIMETYPE),))
+        payload = _assemble_hwpx_package_members((("mimetype", _MIMETYPE),))
         with ZipFile(BytesIO(payload)) as archive:
             info = archive.infolist()[0]
         assert info.compress_type == ZIP_STORED
@@ -785,9 +793,9 @@ class TestMutationAssemblerRefusal:
         # member writer, which overwrites whatever the factory set, so they are
         # not part of this authority's policy and are not asserted here.
         # Determinism is: the same member sequence must produce the same bytes.
-        assert assemble_hwpx_package_members((("mimetype", _MIMETYPE),)) == payload
-        assert assemble_hwpx_package_members(
+        assert _assemble_hwpx_package_members((("mimetype", _MIMETYPE),)) == payload
+        assert _assemble_hwpx_package_members(
             (("mimetype", _MIMETYPE), ("a.xml", b"<x/>"))
-        ) == assemble_hwpx_package_members(
+        ) == _assemble_hwpx_package_members(
             (("mimetype", _MIMETYPE), ("a.xml", b"<x/>"))
         )

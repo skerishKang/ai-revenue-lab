@@ -31,7 +31,7 @@ from padiem_ai_core.hwpx_package_mutation import (
 from padiem_ai_core.hwpx_package_serializer import (
     HwpxPackageContent,
     HwpxPackageSection,
-    assemble_hwpx_package_members,
+    _assemble_hwpx_package_members,
     serialize_hwpx_package,
 )
 
@@ -83,7 +83,7 @@ def _template_with_unrelated_member() -> bytes:
     with ZipFile(BytesIO(canonical)) as archive:
         members = [(info.filename, archive.read(info)) for info in archive.infolist()]
     members.append((_UNRELATED_MEMBER_NAME, _UNRELATED_MEMBER_PAYLOAD))
-    return assemble_hwpx_package_members(tuple(members))
+    return _assemble_hwpx_package_members(tuple(members))
 
 
 class HwpxMutationCompositionTests(unittest.TestCase):
