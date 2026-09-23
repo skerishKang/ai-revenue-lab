@@ -808,6 +808,29 @@ def _projection_output_for_update(
         raise ContractError("projection output is immutable once attached")
     return output
 
+
+def _execution_claim_material(
+    *,
+    run_id: str,
+    workspace_id: str,
+    rule_id: str,
+    scheduled_time: datetime,
+) -> tuple[str, str, str, datetime]:
+    """Validate one bounded execution claim before either store touches data.
+
+    A claim carries no payload of its own: it only names the existing
+    scheduled-run row whose ``PENDING`` status is about to become ``RUNNING``.
+    Sharing this material builder keeps the in-memory and durable stores from
+    drifting on what a well-formed claim target is.
+    """
+
+    return (
+        _safe_id(run_id, "run_id"),
+        _safe_id(workspace_id, "workspace_id"),
+        _safe_id(rule_id, "rule_id"),
+        _aware_utc(scheduled_time, "scheduled_time"),
+    )
+
 class ClawAutomationStore(Protocol):
     def save_rule(self, rule: ClawAutomationRule) -> None: ...
     def get_rule(self, rule_id: str, workspace_id: str) -> ClawAutomationRule | None: ...
@@ -818,6 +841,15 @@ class ClawAutomationStore(Protocol):
     def get_run(self, run_id: str, workspace_id: str) -> ClawScheduledRun | None: ...
     def get_run_for_occurrence(self, key: str, workspace_id: str) -> ClawScheduledRun | None: ...
     def list_runs(self, workspace_id: str) -> list[ClawScheduledRun]: ...
+    def claim_execution(
+        self,
+        *,
+        run_id: str,
+        workspace_id: str,
+        rule_id: str,
+        scheduled_time: datetime,
+    ) -> ClawScheduledRun | None: ...
+
     def update_run_projection(
         self,
         *,
@@ -928,6 +960,63 @@ class InMemoryClawAutomationStore:
 
     def list_proposals(self, workspace_id: str) -> list[ClawNotificationProposal]:
         return [proposal for proposal in self._proposals.values() if proposal.workspace_id == workspace_id]
+
+    def claim_execution(
+        self,
+        *,
+        run_id: str,
+        workspace_id: str,
+        rule_id: str,
+        scheduled_time: datetime,
+    ) -> ClawScheduledRun | None:
+        """Claim ONE existing ``PENDING`` row for execution. Never inserts.
+
+        The observable contract is the durable one: exactly one caller turns a
+        ``PENDING`` row into ``RUNNING``, and every other state -- ``RUNNING``,
+        ``COMPLETED``, ``FAILED``, ``CANCELLED`` -- returns ``None`` instead of
+        dispatching again. This store preserves those semantics for tests; the
+        single-statement atomic guarantee belongs to SQLite.
+        """
+
+        (
+            bounded_run_id,
+            bounded_workspace,
+            bounded_rule,
+            scheduled,
+        ) = _execution_claim_material(
+            run_id=run_id,
+            workspace_id=workspace_id,
+            rule_id=rule_id,
+            scheduled_time=scheduled_time,
+        )
+        existing = self._runs.get(bounded_run_id)
+        if existing is None or existing.workspace_id != bounded_workspace:
+            raise ContractError("execution claim requires an existing scheduled run")
+        if existing.rule_id != bounded_rule or existing.scheduled_time != scheduled:
+            raise ContractError(
+                "execution claim cannot change the scheduled occurrence identity"
+            )
+        key = occurrence_key(bounded_workspace, bounded_rule, scheduled)
+        if self._occurrences.get(key) != bounded_run_id:
+            raise ContractError(
+                "execution claim must match the existing occurrence claim"
+            )
+        if existing.status is not ClawScheduledRunStatus.PENDING:
+            return None
+        claimed = ClawScheduledRun(
+            run_id=existing.run_id,
+            workspace_id=existing.workspace_id,
+            rule_id=existing.rule_id,
+            status=ClawScheduledRunStatus.RUNNING,
+            scheduled_time=existing.scheduled_time,
+            started_at=existing.started_at,
+            completed_at=None,
+            output=None,
+            error_message=None,
+        )
+        self._runs[bounded_run_id] = claimed
+        return claimed
+
     def update_run_projection(
         self,
         *,
@@ -1600,6 +1689,81 @@ class SqliteClawAutomationStore:
             (workspace_id,),
         ).fetchall()
         return [self._proposal_from_row(row) for row in rows]
+
+    def claim_execution(
+        self,
+        *,
+        run_id: str,
+        workspace_id: str,
+        rule_id: str,
+        scheduled_time: datetime,
+    ) -> ClawScheduledRun | None:
+        """Atomically claim ONE existing ``PENDING`` row for execution.
+
+        The claim reuses the EXISTING scheduled-run row and its status column.
+        There is no lock table, no claim token, no lease row, no second dedup
+        key and no second run id: ``PENDING -> RUNNING`` is one bounded
+        conditional update on the row the durable tick already claimed.
+
+        ``RUNNING``, ``COMPLETED``, ``FAILED`` and ``CANCELLED`` all resolve to
+        ``None`` -- not claimed -- so a second claimant can never dispatch the
+        same occurrence twice, and a stuck ``RUNNING`` row is preferred over a
+        duplicated external side effect.
+        """
+
+        (
+            bounded_run_id,
+            bounded_workspace,
+            bounded_rule,
+            scheduled,
+        ) = _execution_claim_material(
+            run_id=run_id,
+            workspace_id=workspace_id,
+            rule_id=rule_id,
+            scheduled_time=scheduled_time,
+        )
+        row = self._get_run_row(bounded_run_id)
+        if row is None or row[1] != bounded_workspace:
+            raise ContractError("execution claim requires an existing scheduled run")
+        stored = self._run_from_row(row)
+        if stored.rule_id != bounded_rule or stored.scheduled_time != scheduled:
+            raise ContractError(
+                "execution claim cannot change the scheduled occurrence identity"
+            )
+        key = occurrence_key(bounded_workspace, bounded_rule, scheduled)
+        if self._get_occurrence_run_id(key, bounded_workspace) != bounded_run_id:
+            raise ContractError(
+                "execution claim must match the existing occurrence claim"
+            )
+        if stored.status is not ClawScheduledRunStatus.PENDING:
+            # RUNNING / COMPLETED / FAILED / CANCELLED: never dispatched again.
+            return None
+        self._db.execute("BEGIN IMMEDIATE")
+        try:
+            update_cursor = self._db.execute(
+                "UPDATE claw_runs SET status=? "
+                "WHERE run_id=? AND status=? AND completed_at IS NULL",
+                (
+                    ClawScheduledRunStatus.RUNNING.value,
+                    bounded_run_id,
+                    ClawScheduledRunStatus.PENDING.value,
+                ),
+            )
+            claimed_now = update_cursor.rowcount == 1
+            # Exactly one COMMIT either way: the loser's conditional update
+            # matched no row, so committing persists nothing and no DELETE is
+            # ever issued on the loser path.
+            self._db.execute("COMMIT")
+        except Exception:
+            self._db.execute("ROLLBACK")
+            raise
+        if not claimed_now:
+            return None
+        claimed_row = self._get_run_row(bounded_run_id)
+        if claimed_row is None:
+            raise ContractError("execution claim lost its scheduled run row")
+        return self._run_from_row(claimed_row)
+
     def update_run_projection(
         self,
         *,
@@ -1905,3 +2069,17 @@ AUTO_SEND_ENABLED = False
 AUTO_ORDER_ENABLED = False
 AUTO_MEMORY_CONFIRM_ENABLED = False
 ONE_OCCURRENCE_MAX_CANONICAL_RUNS = 1
+# --- #2833 S2F5B ---
+# The execution claim reuses the existing scheduled-run row and status column.
+# These flags are constants, not claims: no code path in this module can add a
+# second lock table, mint a claim token, introduce a second dedup authority,
+# dispatch a RUNNING or terminal row again, or activate a Production scheduler.
+EXECUTION_CLAIM_AUTHORITY_REUSED = True
+EXECUTION_CLAIM_NEW_LOCK_TABLE = False
+EXECUTION_CLAIM_NEW_CLAIM_TOKEN = False
+EXECUTION_CLAIM_SECOND_DEDUP_AUTHORITY = False
+EXECUTION_CLAIM_SECOND_RUN_ID = False
+EXECUTION_CLAIM_REDISPATCHES_RUNNING = False
+EXECUTION_CLAIM_REDISPATCHES_TERMINAL = False
+EXECUTION_CLAIM_PERFORMS_PROVIDER_CALLS = False
+EXECUTION_CLAIM_ACTIVATES_PRODUCTION_SCHEDULER = False
