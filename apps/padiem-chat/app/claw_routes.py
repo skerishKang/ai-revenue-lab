@@ -84,6 +84,7 @@ from .control_plane_identity_shadow import (
     resolve_refreshed_session,
 )
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
+from .claw_memory_routes import _resolve_memory_workspace
 from .history import (
     MAX_CLAW_RUNS,
     MAX_RUN_RESULT_SUMMARY_CHARS,
@@ -657,6 +658,20 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
         )
         if history_failure is not None:
             return history_failure
+        # #2956: one owner-scoped durable approval handoff after canonical
+        # history success. Server-derived owner/workspace only; the browser
+        # never supplies resume authority fields.
+        handoff_failure = await _record_claw_approval_handoff(
+            request,
+            run_id=run.run_id,
+            continuation_ref=waiting_ref,
+            pause_id=getattr(outcome, "pause_id", None),
+            pause_expires_at=getattr(outcome, "pause_expires_at", None),
+            trusted_request=getattr(outcome, "trusted_request", None),
+            conversation_id=session_conversation_id,
+        )
+        if handoff_failure is not None:
+            return handoff_failure
         return JSONResponse(
             {"ok": True, "result": waiting_result},
             status_code=200,
@@ -868,6 +883,77 @@ async def _record_claw_run_history(
             await outcome_record
     except Exception:
         return _error(503, "run_history_write_failed", "실행 이력 저장에 실패했습니다.")
+    return None
+
+
+async def _record_claw_approval_handoff(
+    request: Request,
+    *,
+    run_id: str,
+    continuation_ref: str,
+    pause_id: Any,
+    pause_expires_at: Any,
+    trusted_request: Any,
+    conversation_id: str | None = None,
+) -> JSONResponse | None:
+    """Persist one owner-scoped approval handoff after WAITING history success (#2956).
+
+    Fail-closed: a store that advertises ``record_claw_approval_handoff`` but
+    raises is a storage failure and returns a stable public-safe 503. A store
+    that does not implement the capability (a presence-only auth stub) is a
+    no-op, and an anonymous run has no owner to record against, so both return
+    ``None``. Missing pause identity or an incomplete trusted request fails
+    closed before any write so a half-formed handoff never reaches storage.
+    """
+    uid = current_user_id(request) if auth_ready(request) else None
+    if uid is None:
+        return None
+    history_store = getattr(request.app.state, "history_store", None)
+    record = getattr(history_store, "record_claw_approval_handoff", None)
+    if record is None:
+        return None
+    if (
+        not isinstance(continuation_ref, str)
+        or not continuation_ref
+        or not isinstance(pause_id, str)
+        or not pause_id
+        or not isinstance(pause_expires_at, str)
+        or not pause_expires_at
+        or not isinstance(trusted_request, dict)
+        or not trusted_request
+    ):
+        return JSONResponse(
+            {
+                "ok": False,
+                "error": {
+                    "code": "engine_execution_failed",
+                    "message": "Engine 실행이 완료되지 않았습니다.",
+                    "detail": P01_FAILURE_DETAIL_CONTRACT,
+                },
+            },
+            status_code=502,
+            headers=_NO_STORE_HEADERS,
+        )
+    workspace_id: str | None = None
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        return _error(503, "approval_handoff_write_failed", "승인 인계 저장에 실패했습니다.")
+    try:
+        outcome_record = record(
+            user_id=uid,
+            run_id=run_id,
+            continuation_ref=continuation_ref,
+            pause_id=pause_id,
+            pause_expires_at=pause_expires_at,
+            trusted_request=trusted_request,
+            workspace_id=workspace_id,
+            conversation_id=conversation_id,
+        )
+        if inspect.isawaitable(outcome_record):
+            await outcome_record
+    except Exception:
+        return _error(503, "approval_handoff_write_failed", "승인 인계 저장에 실패했습니다.")
     return None
 
 
