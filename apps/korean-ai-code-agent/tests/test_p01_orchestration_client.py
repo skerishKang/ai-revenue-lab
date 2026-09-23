@@ -37,12 +37,28 @@ from kagent.p01_adapter import (
     P01_FAILURE_DETAIL_DOWNSTREAM,
     P01_FAILURE_DETAIL_TRANSPORT,
 )
+from kagent.p01_approval_pause_transport import P01PausedWireResult
 from kagent.p01_orchestration_client import P01EngineOrchestrationClient
 from kagent.runs import ClawRun
 
 
 _FAKE_CREDENTIAL = "b54-test-credential-" + ("0" * 32)
 _COMPLETED_RUN_ID = "orch_test_001"
+_ENGINE_CONTINUATION_REF = "cont_EngineOpaqueRef_01"
+
+_ENGINE_APPROVAL_PAUSE_PUBLIC = {
+    "status": "paused",
+    "continuation_id": "pause_engine_001",
+    "run_id": _COMPLETED_RUN_ID,
+    "trace_id": None,
+    "step_index": 1,
+    "agent_id": P01_AGENT_ID,
+    "tool_id": "tool_engine",
+    "requirement": "user_confirmation",
+    "approval_scope": ["tool.execute"],
+    "created_at": "2026-09-05T10:00:00+00:00",
+    "expires_at": "2026-09-06T10:00:00+00:00",
+}
 
 
 class FakeEngineTransport:
@@ -114,6 +130,57 @@ def _public_result(request, *, answer: str = "완료 답변") -> dict:
         events=tuple(events),
     )
     return result.to_public_dict()
+
+
+def _paused_public_result(request) -> dict:
+    kinds = (
+        OrchestrationEventKind.RUN_STARTED,
+        OrchestrationEventKind.CONTEXT_PREPARED,
+        OrchestrationEventKind.APPROVAL_PAUSED,
+    )
+    events = [
+        public_orchestration_event(
+            event_id=f"evt_pause_{sequence:03d}",
+            run_id=_COMPLETED_RUN_ID,
+            trace_id=request.context.trace_id,
+            app_id=request.app_id,
+            kind=kind,
+            sequence=sequence,
+            message=None,
+            timestamp_iso="2026-09-05T10:00:00+00:00",
+        )
+        for sequence, kind in enumerate(kinds, start=1)
+    ]
+    result = OrchestrationResult(
+        execution_result=ExecutionResult(
+            # Core requires a non-empty wire answer even while paused; B54
+            # projects answer=None whenever the Claw run is WAITING_APPROVAL.
+            answer="승인 대기 중",
+            route=B14RouteMetadata(),
+            metadata=RunMetadata(
+                trace_id=request.context.trace_id,
+                app_id=request.app_id,
+                agent_id=P01_AGENT_ID,
+                session_id=request.execution_request.session_id,
+                status=RunStatus.PAUSED,
+            ),
+        ),
+        context=request.context,
+        app_id=request.app_id,
+        subject_id=None,
+        plan=None,
+        activated_skill=None,
+        resolved_tool_ids=(),
+        evidence_graph=None,
+        claim_assessments=(),
+        grounded_citations=(),
+        events=tuple(events),
+    )
+    public = result.to_public_dict()
+    # Engine-owned pause keys the generic Core parser intentionally refuses.
+    public["approval_pause"] = dict(_ENGINE_APPROVAL_PAUSE_PUBLIC)
+    public["continuation_ref"] = _ENGINE_CONTINUATION_REF
+    return public
 
 
 def _ok_transport(public: dict) -> FakeEngineTransport:
@@ -237,16 +304,110 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
             self.run_port(transport, request)
         self.assertEqual(ctx.exception.code, "unsupported_result_field")
 
-    def test_approval_pause_result_fails_closed(self) -> None:
+    def test_engine_approval_pause_wire_projects_waiting_without_minting_authority(
+        self,
+    ) -> None:
+        run, request = _build_request()
+        public = _paused_public_result(request)
+        transport = _ok_transport(public)
+
+        port_result = self.run_port(transport, request)
+
+        self.assertIsInstance(port_result, P01PausedWireResult)
+        wire = port_result.wire
+        self.assertEqual(wire.continuation_ref, _ENGINE_CONTINUATION_REF)
+        self.assertEqual(
+            wire.approval_pause["continuation_id"],
+            _ENGINE_APPROVAL_PAUSE_PUBLIC["continuation_id"],
+        )
+        # Generic Core parser reconstructs the result without pause authority.
+        self.assertIsNone(port_result.result.approval_pause)
+        self.assertIsNone(port_result.result.continuation_state)
+        self.assertEqual(
+            [event.kind for event in port_result.result.events],
+            [
+                OrchestrationEventKind.RUN_STARTED,
+                OrchestrationEventKind.CONTEXT_PREPARED,
+                OrchestrationEventKind.APPROVAL_PAUSED,
+            ],
+        )
+
+        adapter = P01CoreOrchestrationAdapter(
+            P01EngineOrchestrationClient(_client(transport))
+        )
+        outcome = asyncio.run(adapter.execute(run))
+        self.assertEqual(run.status, ClawRunStatus.WAITING_APPROVAL)
+        self.assertIsNone(outcome.answer)
+        self.assertEqual(outcome.continuation_ref, _ENGINE_CONTINUATION_REF)
+        self.assertTrue(outcome.projection.approval_required)
+
+    def test_approval_pause_without_continuation_ref_fails_closed(self) -> None:
         _, request = _build_request()
-        public = _public_result(request)
-        public["approval_pause"] = {"status": "paused", "continuation_id": "cont_abc12345"}
-        public["continuation_ref"] = "cont_abc12345"
+        public = _paused_public_result(request)
+        public["continuation_ref"] = None
         transport = _ok_transport(public)
 
         with self.assertRaises(P01AdapterError) as ctx:
             self.run_port(transport, request)
-        self.assertEqual(ctx.exception.code, "unsupported_result_approval_pause")
+        self.assertEqual(ctx.exception.code, "missing_continuation_ref")
+        self.assertEqual(ctx.exception.failure_detail, P01_FAILURE_DETAIL_CONTRACT)
+
+    def test_malformed_continuation_ref_fails_closed(self) -> None:
+        _, request = _build_request()
+        public = _paused_public_result(request)
+        public["continuation_ref"] = "not-an-engine-ref"
+        transport = _ok_transport(public)
+
+        with self.assertRaises(P01AdapterError) as ctx:
+            self.run_port(transport, request)
+        self.assertEqual(ctx.exception.code, "malformed_continuation_ref")
+        self.assertEqual(ctx.exception.failure_detail, P01_FAILURE_DETAIL_CONTRACT)
+
+    def test_pause_without_lifecycle_evidence_fails_closed(self) -> None:
+        _, request = _build_request()
+        public = _paused_public_result(request)
+        public["events"] = [public["events"][0]]
+        transport = _ok_transport(public)
+
+        with self.assertRaises(P01AdapterError) as ctx:
+            self.run_port(transport, request)
+        self.assertEqual(ctx.exception.code, "pause_without_lifecycle_evidence")
+
+    def test_continuation_without_pause_fails_closed(self) -> None:
+        _, request = _build_request()
+        public = _public_result(request)
+        public["continuation_ref"] = _ENGINE_CONTINUATION_REF
+        transport = _ok_transport(public)
+
+        with self.assertRaises(P01AdapterError) as ctx:
+            self.run_port(transport, request)
+        self.assertEqual(ctx.exception.code, "continuation_without_pause")
+
+    def test_unknown_pause_authority_fields_fail_closed(self) -> None:
+        _, request = _build_request()
+        public = _paused_public_result(request)
+        public["approval_pause"] = {
+            **_ENGINE_APPROVAL_PAUSE_PUBLIC,
+            "invocation_sha256": "a" * 64,
+        }
+        transport = _ok_transport(public)
+
+        with self.assertRaises(P01AdapterError) as ctx:
+            self.run_port(transport, request)
+        self.assertEqual(ctx.exception.code, "unknown_extra_authority_fields")
+
+    def test_pause_event_run_mismatch_fails_closed(self) -> None:
+        _, request = _build_request()
+        public = _paused_public_result(request)
+        public["approval_pause"] = {
+            **_ENGINE_APPROVAL_PAUSE_PUBLIC,
+            "run_id": "orch_somewhere_else",
+        }
+        transport = _ok_transport(public)
+
+        with self.assertRaises(P01AdapterError) as ctx:
+            self.run_port(transport, request)
+        self.assertEqual(ctx.exception.code, "correlation_mismatch")
 
     def test_engine_error_maps_to_bounded_downstream_detail_without_leakage(self) -> None:
         _, request = _build_request()

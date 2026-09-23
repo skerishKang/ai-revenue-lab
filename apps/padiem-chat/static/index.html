@@ -211,7 +211,7 @@
           </div>
           <button type="button" class="calendar-refresh-button" id="calendarRefresh" data-locale-aria-label="calendar-refresh-aria" aria-label="목록 새로고침">↻</button>
         </header>
-        <p class="calendar-view-help" data-locale-key="calendar-help">오늘 예정된 항목과 다가오는 항목을 보여줍니다. 업무 기록은 직접 남길 수 있고, 일정(예약) 생성·수정은 아직 지원하지 않습니다.</p>
+        <p class="calendar-view-help" data-locale-key="calendar-help">오늘 예정된 항목과 다가오는 항목을 보여줍니다. 업무 기록과 일정(예약)을 직접 만들 수 있고, 일정 수정·삭제는 아직 지원하지 않습니다.</p>
         <details class="calendar-record" id="calendarRecord">
           <summary class="calendar-record-summary" data-locale-key="calendar-record-summary">업무 기록 추가</summary>
           <p class="calendar-record-hint" data-locale-key="calendar-record-hint">오늘 한 일을 간단히 남깁니다. AI 장기 기억으로 자동 저장되지 않습니다.</p>
@@ -233,6 +233,59 @@
             </div>
           </form>
           <p class="calendar-record-status" id="calendarRecordStatus" role="status" aria-live="polite" hidden></p>
+        </details>
+        <details class="calendar-record" id="calendarAppointment">
+          <summary class="calendar-record-summary" data-locale-key="calendar-appointment-summary">일정 추가</summary>
+          <p class="calendar-record-hint" data-locale-key="calendar-appointment-hint">Padiem Calendar에 일정을 직접 만듭니다. Google이나 Naver 계정 없이도 저장되며, 장기 기억으로 자동 저장되지 않습니다.</p>
+          <form class="calendar-record-form" id="calendarAppointmentForm" novalidate>
+            <label class="calendar-record-field" for="calendarAppointmentType">
+              <span data-locale-key="calendar-appointment-type-label">종류</span>
+              <select id="calendarAppointmentType" name="appointment_type">
+                <option value="date_only" data-locale-key="calendar-appointment-type-date-only">날짜만</option>
+                <option value="all_day" data-locale-key="calendar-appointment-type-all-day">종일</option>
+                <option value="timed" data-locale-key="calendar-appointment-type-timed">시간 지정</option>
+              </select>
+            </label>
+            <label class="calendar-record-field" for="calendarAppointmentTitle">
+              <span data-locale-key="calendar-appointment-title-label">제목</span>
+              <input type="text" id="calendarAppointmentTitle" name="title" maxlength="200" autocomplete="off" required data-locale-placeholder="calendar-appointment-title-placeholder" placeholder="예) A사 계약 미팅" />
+            </label>
+            <label class="calendar-record-field" for="calendarAppointmentDate">
+              <span data-locale-key="calendar-appointment-date-label">날짜</span>
+              <input type="date" id="calendarAppointmentDate" name="date" required />
+            </label>
+            <label class="calendar-record-field" for="calendarAppointmentTimeZone" id="calendarAppointmentTimeZoneField">
+              <span data-locale-key="calendar-appointment-timezone-label">시간대</span>
+              <input type="text" id="calendarAppointmentTimeZone" name="timezone" autocomplete="off" spellcheck="false" />
+            </label>
+            <label class="calendar-record-field" for="calendarAppointmentStart" id="calendarAppointmentStartField">
+              <span data-locale-key="calendar-appointment-start-label">시작 시각</span>
+              <input type="time" id="calendarAppointmentStart" name="start_time" />
+            </label>
+            <label class="calendar-record-field" for="calendarAppointmentEnd" id="calendarAppointmentEndField">
+              <span data-locale-key="calendar-appointment-end-label">종료 시각 (선택)</span>
+              <input type="time" id="calendarAppointmentEnd" name="end_time" />
+            </label>
+            <label class="calendar-record-field" for="calendarAppointmentReminder">
+              <span data-locale-key="calendar-appointment-reminder-label">알림 (선택)</span>
+              <select id="calendarAppointmentReminder" name="reminder_minutes">
+                <option value="" data-locale-key="calendar-reminder-none">없음</option>
+                <option value="10" data-locale-key="calendar-reminder-10">10분 전</option>
+                <option value="30" data-locale-key="calendar-reminder-30">30분 전</option>
+                <option value="60" data-locale-key="calendar-reminder-60">1시간 전</option>
+                <option value="1440" data-locale-key="calendar-reminder-1440">1일 전</option>
+              </select>
+            </label>
+            <label class="calendar-record-field" for="calendarAppointmentDescription">
+              <span data-locale-key="calendar-appointment-description-label">메모 (선택)</span>
+              <textarea id="calendarAppointmentDescription" name="description" rows="3" maxlength="4000"></textarea>
+            </label>
+            <div class="calendar-record-actions">
+              <button type="submit" class="calendar-record-submit" id="calendarAppointmentSubmit" data-locale-key="calendar-appointment-submit">일정 저장</button>
+            </div>
+          </form>
+          <p class="calendar-appointment-note" data-locale-key="calendar-appointment-timezone-note">시간 지정 일정은 명시적 IANA 시간대가 필요합니다. 브라우저나 서버 시간대로 추측하지 않습니다.</p>
+          <p class="calendar-record-status" id="calendarAppointmentStatus" role="status" aria-live="polite" hidden></p>
         </details>
         <div class="calendar-tabs" id="calendarTabs" role="tablist" data-locale-aria-label="calendar-tabs-aria" aria-label="캘린더 보기 선택">
           <button type="button" class="calendar-tab" id="calendarTodayTab" role="tab" data-calendar-tab="today" aria-selected="true" aria-controls="calendarPanel" data-locale-key="calendar-today">오늘</button>
