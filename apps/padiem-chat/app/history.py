@@ -102,8 +102,10 @@ class HistoryStore(Protocol):
     async def list_project_conversations(self, user_id: str, project_id: str, limit: int = MAX_RECENT_CONVERSATIONS) -> list[dict[str, Any]]: ...
     async def record_claw_run(self, user_id: str, run_id: str, channel: str, action: str, title: str, status: str, result_summary: str | None = None, artifact_document_id: str | None = None, artifact_filename: str | None = None, artifact_media_type: str | None = None, conversation_id: str | None = None, workspace_id: str | None = None) -> None: ...
     async def list_recent_claw_runs(self, user_id: str, limit: int = MAX_CLAW_RUNS, workspace_id: str | None = None) -> list[dict[str, Any]]: ...
-    async def record_claw_approval_handoff(self, user_id: str, run_id: str, continuation_ref: str, pause_id: str, pause_expires_at: str, trusted_request: dict[str, Any], workspace_id: str | None = None, conversation_id: str | None = None) -> None: ...
+    async def update_claw_run_status(self, user_id: str, run_id: str, status: str, result_summary: str | None = None) -> bool: ...
+    async def record_claw_approval_handoff(self, user_id: str, run_id: str, continuation_ref: str, pause_id: str, pause_expires_at: str, trusted_request: dict[str, Any], workspace_id: str | None = None, conversation_id: str | None = None, p01_run_id: str | None = None) -> None: ...
     async def load_claw_approval_handoff(self, user_id: str, run_id: str, workspace_id: str | None = None) -> dict[str, Any] | None: ...
+    async def consume_claw_approval_handoff(self, user_id: str, run_id: str, workspace_id: str | None = None) -> bool: ...
 
 
 def _now_iso() -> str:
@@ -731,6 +733,37 @@ class D1HistoryStore:
             )
         return [_run_history_public(row) for row in rows]
 
+    async def update_claw_run_status(
+        self,
+        user_id: str,
+        run_id: str,
+        status: str,
+        result_summary: str | None = None,
+    ) -> bool:
+        """Narrow status-only update of one existing owner-scoped Claw run row (#2961).
+
+        An owner approve/deny must not rewrite channel, action, title, session or
+        workspace linkage, so this touches only ``status`` / ``updated_at`` and
+        the bounded result summary. Rows are addressed by owner + run id, so a
+        caller can never mutate another owner's run.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            return False
+        if not isinstance(run_id, str) or not run_id:
+            return False
+        owned = await self._first(
+            "SELECT id FROM claw_run_history WHERE run_id=? AND user_id=?",
+            run_id, user_id,
+        )
+        if owned is None:
+            return False
+        summary = result_summary[:MAX_RUN_RESULT_SUMMARY_CHARS] if result_summary else None
+        await self._run(
+            "UPDATE claw_run_history SET status=?, updated_at=?, result_summary=? WHERE id=?",
+            status, _now_iso(), summary, str(owned.get("id")),
+        )
+        return True
+
     async def record_claw_approval_handoff(
         self,
         user_id: str,
@@ -741,6 +774,7 @@ class D1HistoryStore:
         trusted_request: dict[str, Any],
         workspace_id: str | None = None,
         conversation_id: str | None = None,
+        p01_run_id: str | None = None,
     ) -> None:
         """Persist one owner-scoped approval handoff under the history owner (#2956).
 
@@ -748,6 +782,10 @@ class D1HistoryStore:
         continuation_ref / pause_id / trusted request for the same owner+run
         fails closed with ``HistoryConflict``. Cross-owner reads never disclose
         existence because every statement is owner-scoped by ``user_id``.
+
+        #2961: one already-consumed row may be replaced, because a second Engine
+        approval pause for the same Claw run is a new continuation generation and
+        must never reuse the decided identity. An active row still conflicts.
         """
         if not isinstance(user_id, str) or not user_id:
             raise HistoryError("user_id is required")
@@ -765,9 +803,15 @@ class D1HistoryStore:
             conversation_id = validate_conversation_id(conversation_id)
         if workspace_id is not None:
             workspace_id = _safe_identifier("workspace_id", workspace_id)
+        # #2961: the Engine-issued P01 run identity is optional at write time so
+        # a #2956-era caller stays valid, but a handoff written without it can
+        # never be consumed: the decision boundary fails closed instead.
+        if p01_run_id is not None:
+            p01_run_id = _safe_identifier("p01_run_id", p01_run_id)
         encoded, fingerprint = _handoff_trusted_request_json(trusted_request)
         existing = await self._first(
-            "SELECT id, continuation_ref, pause_id, pause_expires_at, trusted_request_fingerprint, workspace_id, conversation_id "
+            "SELECT id, continuation_ref, pause_id, pause_expires_at, trusted_request_fingerprint, "
+            "workspace_id, conversation_id, p01_run_id, consumed_at "
             "FROM claw_approval_handoff WHERE user_id=? AND run_id=?",
             user_id, run_id,
         )
@@ -779,17 +823,30 @@ class D1HistoryStore:
                 and str(existing.get("trusted_request_fingerprint")) == fingerprint
                 and existing.get("workspace_id") == workspace_id
                 and existing.get("conversation_id") == conversation_id
+                and existing.get("p01_run_id") == p01_run_id
             ):
                 return
-            raise HistoryConflict(
-                f"claw approval handoff for run {run_id} already exists with a different identity"
+            if existing.get("consumed_at") is None:
+                raise HistoryConflict(
+                    f"claw approval handoff for run {run_id} already exists with a different identity"
+                )
+            await self._run(
+                "UPDATE claw_approval_handoff SET workspace_id=?, conversation_id=?, continuation_ref=?, "
+                "pause_id=?, pause_expires_at=?, trusted_request_json=?, trusted_request_fingerprint=?, "
+                "p01_run_id=?, consumed_at=NULL WHERE id=?",
+                workspace_id, conversation_id, continuation_ref,
+                pause_id, pause_expires_at, encoded, fingerprint, p01_run_id,
+                str(existing.get("id")),
             )
+            return
         await self._run(
             "INSERT INTO claw_approval_handoff (id, user_id, run_id, workspace_id, conversation_id, "
-            "continuation_ref, pause_id, pause_expires_at, trusted_request_json, trusted_request_fingerprint, created_at) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "continuation_ref, pause_id, pause_expires_at, trusted_request_json, trusted_request_fingerprint, "
+            "p01_run_id, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             _handoff_id(), user_id, run_id, workspace_id, conversation_id,
-            continuation_ref, pause_id, pause_expires_at, encoded, fingerprint, _now_iso(),
+            continuation_ref, pause_id, pause_expires_at, encoded, fingerprint,
+            p01_run_id, _now_iso(),
         )
 
     async def load_claw_approval_handoff(
@@ -801,7 +858,9 @@ class D1HistoryStore:
         """Load one owner+run handoff; cross-scope and expired rows are non-disclosing.
 
         A foreign owner or foreign workspace returns ``None`` (never an existence
-        oracle). An expired pause is unusable and also returns ``None``.
+        oracle). An expired pause is unusable and also returns ``None``. A
+        consumed handoff (#2961) is never returned, so a decided pause cannot be
+        replayed.
         """
         if not isinstance(user_id, str) or not user_id:
             return None
@@ -811,15 +870,16 @@ class D1HistoryStore:
             scoped = _safe_identifier("workspace_id", workspace_id)
             row = await self._first(
                 "SELECT user_id, run_id, workspace_id, conversation_id, continuation_ref, pause_id, "
-                "pause_expires_at, trusted_request_json, trusted_request_fingerprint, created_at "
-                "FROM claw_approval_handoff WHERE user_id=? AND run_id=? AND workspace_id=?",
+                "pause_expires_at, trusted_request_json, trusted_request_fingerprint, p01_run_id, created_at "
+                "FROM claw_approval_handoff WHERE user_id=? AND run_id=? AND workspace_id=? "
+                "AND consumed_at IS NULL",
                 user_id, run_id, scoped,
             )
         else:
             row = await self._first(
                 "SELECT user_id, run_id, workspace_id, conversation_id, continuation_ref, pause_id, "
-                "pause_expires_at, trusted_request_json, trusted_request_fingerprint, created_at "
-                "FROM claw_approval_handoff WHERE user_id=? AND run_id=?",
+                "pause_expires_at, trusted_request_json, trusted_request_fingerprint, p01_run_id, created_at "
+                "FROM claw_approval_handoff WHERE user_id=? AND run_id=? AND consumed_at IS NULL",
                 user_id, run_id,
             )
         if row is None:
@@ -852,5 +912,40 @@ class D1HistoryStore:
             "pause_expires_at": str(row.get("pause_expires_at") or ""),
             "trusted_request": trusted,
             "trusted_request_fingerprint": str(row.get("trusted_request_fingerprint") or ""),
+            "p01_run_id": row.get("p01_run_id"),
             "created_at": str(row.get("created_at") or ""),
         }
+
+    async def consume_claw_approval_handoff(
+        self,
+        user_id: str,
+        run_id: str,
+        workspace_id: str | None = None,
+    ) -> bool:
+        """Mark one owner+run handoff unusable after the Engine proved consumption (#2961).
+
+        One bounded ``consumed_at`` marker under the existing history owner: no
+        new store, no claim token, no Engine state. Scoped by owner (and
+        workspace when supplied) so a caller can never consume another owner's
+        handoff, and never overwrites an already-consumed row.
+        """
+        if not isinstance(user_id, str) or not user_id:
+            return False
+        if not isinstance(run_id, str) or not run_id:
+            return False
+        columns = "SELECT id FROM claw_approval_handoff WHERE user_id=? AND run_id=? AND consumed_at IS NULL"
+        values: list[Any] = [user_id, run_id]
+        if workspace_id is not None:
+            values.append(_safe_identifier("workspace_id", workspace_id))
+            columns += " AND workspace_id=?"
+        else:
+            # An unscoped consume must not become a cross-workspace write.
+            columns += " AND workspace_id IS NULL"
+        owned = await self._first(columns, *values)
+        if owned is None:
+            return False
+        await self._run(
+            "UPDATE claw_approval_handoff SET consumed_at=? WHERE id=?",
+            _now_iso(), str(owned.get("id")),
+        )
+        return True

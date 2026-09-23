@@ -79,10 +79,61 @@ class _FakeStatement:
         self._values = values
         return self
 
-    def _where_names(self) -> list[str]:
+    def _where_predicates(self) -> list[tuple[str, str]]:
+        """Parse ``col=?``, ``col IS NULL`` and ``col IS NOT NULL`` predicates.
+
+        #2961 added NULL-guarded reads and a consumed-row update, so the fake
+        must interpret them with the same semantics D1 has; a predicate the fake
+        could not evaluate would let a scope filter pass vacuously.
+        """
         where = self._sql.split(" WHERE ", 1)[1]
         where = where.split(" ORDER BY ", 1)[0]
-        return [c[: c.index("=")].strip() for c in where.split(" AND ")]
+        predicates: list[tuple[str, str]] = []
+        for clause in where.split(" AND "):
+            clause = clause.strip()
+            if clause.endswith("IS NOT NULL"):
+                predicates.append((clause[: -len("IS NOT NULL")].strip(), "not_null"))
+            elif clause.endswith("IS NULL"):
+                predicates.append((clause[: -len("IS NULL")].strip(), "null"))
+            else:
+                predicates.append((clause[: clause.index("=")].strip(), "eq"))
+        return predicates
+
+    def _matches(self, row: dict[str, Any]) -> bool:
+        values = iter(self._values)
+        for name, kind in self._where_predicates():
+            if kind == "null":
+                if row.get(name) is not None:
+                    return False
+            elif kind == "not_null":
+                if row.get(name) is None:
+                    return False
+            else:
+                if row.get(name) != next(values):
+                    return False
+        return True
+
+    def _candidates(self) -> Any:
+        return (
+            self._db.handoff_rows
+            if "claw_approval_handoff" in self._sql
+            else self._db.rows.values()
+        )
+
+    def _apply_handoff_update(self) -> dict[str, Any]:
+        assignments = self._sql.split(" SET ", 1)[1].split(" WHERE ", 1)[0]
+        row_id = self._values[-1]
+        target = next((row for row in self._db.handoff_rows if row.get("id") == row_id), None)
+        if target is None:
+            return {"success": True, "meta": {"changes": 0}}
+        values = iter(self._values[:-1])
+        for clause in assignments.split(","):
+            column, _, raw = clause.strip().partition("=")
+            if raw.strip().upper() == "NULL":
+                target[column.strip()] = None
+            else:
+                target[column.strip()] = next(values)
+        return {"success": True, "meta": {"changes": 1}}
 
     async def run(self) -> dict[str, Any]:
         sql = self._sql
@@ -96,30 +147,22 @@ class _FakeStatement:
             row = {col: value for col, value in zip(cols, self._values)}
             self._db.rows[row["run_id"]] = row
             return {"success": True, "meta": {"changes": 1}}
+        if sql.startswith("UPDATE claw_approval_handoff"):
+            return self._apply_handoff_update()
         if sql.startswith("UPDATE claw_run_history"):
             return {"success": True, "meta": {"changes": 1}}
         if sql.startswith("SELECT"):
-            names = self._where_names()
-            cond_values = self._values[: len(names)]
             if "claw_approval_handoff" in sql:
                 candidates = self._db.handoff_rows
             else:
                 candidates = list(self._db.rows.values())
-            rows = [
-                dict(row)
-                for row in candidates
-                if all(row.get(n) == v for n, v in zip(names, cond_values))
-            ]
+            rows = [dict(row) for row in candidates if self._matches(row)]
             return {"success": True, "results": rows}
         raise AssertionError(f"unexpected SQL for run(): {sql!r}")
 
     async def first(self) -> dict[str, Any] | None:
-        names = self._where_names()
-        candidates = (
-            self._db.handoff_rows if "claw_approval_handoff" in self._sql else self._db.rows.values()
-        )
-        for row in candidates:
-            if all(row.get(n) == v for n, v in zip(names, self._values)):
+        for row in self._candidates():
+            if self._matches(row):
                 return dict(row)
         return None
 
@@ -375,6 +418,7 @@ class _RecordingHandoffStore:
         trusted_request,
         workspace_id=None,
         conversation_id=None,
+        p01_run_id=None,
     ) -> None:
         self.handoffs.append({
             "user_id": user_id,
@@ -385,6 +429,7 @@ class _RecordingHandoffStore:
             "trusted_request": dict(trusted_request),
             "workspace_id": workspace_id,
             "conversation_id": conversation_id,
+            "p01_run_id": p01_run_id,
         })
 
 
