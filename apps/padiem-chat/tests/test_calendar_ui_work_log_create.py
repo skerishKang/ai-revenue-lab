@@ -193,9 +193,13 @@ def test_write_target_is_the_existing_registered_work_log_authority() -> None:
     assert f'Route("{WORK_LOG_ROUTE}", calendar_work_logs_create, methods=["POST"])' in factory
 
 
-def test_only_one_write_method_exists_in_the_module() -> None:
+def test_only_the_two_native_write_methods_exist_in_the_module() -> None:
     source = _source()
-    assert source.count('method: "POST"') == 1
+    # A4 added the work-log POST; #2834 A5 added the appointment POST. Both are
+    # pre-registered native authorities, and no PUT/PATCH/DELETE is ever used.
+    assert source.count('method: "POST"') == 2
+    assert source.count(f'"{WORK_LOG_ROUTE}"') == 1
+    assert source.count('"/api/calendar/appointments"') == 1
     assert not re.search(r"\b(PUT|PATCH|DELETE)\b", source)
     # The read path stays method-less (GET by default).
     read_block = source.split("async function load() {", 1)[1].split("function selectTab(", 1)[0]
