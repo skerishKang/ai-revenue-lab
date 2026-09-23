@@ -1,0 +1,355 @@
+"""#2918 S2F4C - project an existing P01 outcome onto its scheduled row.
+
+This module is a composition boundary only. It reuses the S2F4B execution
+bridge and the S2F4A existing-row output attachment path. It never claims an
+occurrence, creates a run, resolves an owner, writes History/Task/Alert, or
+calls a provider.
+
+The scheduled run id remains the only identity from occurrence claim through
+P01 execution and terminal projection.
+"""
+
+from __future__ import annotations
+
+import asyncio
+from dataclasses import dataclass
+from datetime import datetime, timezone
+import hashlib
+import json
+from typing import Callable, Protocol, Any
+
+from kagent.claw_automation import (
+    ClawAutomationOutput,
+    ClawAutomationRule,
+    ClawScheduledRun,
+    ClawScheduledRunStatus,
+)
+from kagent.contracts import ClawRunStatus, ContractError, RunProjection, SandboxLease
+from kagent.p01_adapter import ClawOrchestrationOutcome
+
+from .claw_automation_execution_bridge import (
+    CanonicalScheduledExecutionPlan,
+    P01ExecutionPort,
+    execute_scheduled_occurrence,
+    plan_canonical_scheduled_execution,
+)
+
+
+class ScheduledOutcomeProjectionError(RuntimeError):
+    """Fail-closed refusal for an unsafe or mismatched terminal outcome."""
+
+
+class ScheduledOutcomeStore(Protocol):
+    def get_run(self, run_id: str, workspace_id: str) -> ClawScheduledRun | None: ...
+
+    def update_run_projection(
+        self,
+        *,
+        run_id: str,
+        workspace_id: str,
+        rule_id: str,
+        scheduled_time: datetime,
+        status: ClawScheduledRunStatus,
+        completed_at: datetime | None = None,
+        error_message: str | None = None,
+        output: ClawAutomationOutput | None = None,
+    ) -> ClawScheduledRun: ...
+
+
+@dataclass(frozen=True, slots=True)
+class ScheduledOutcomeProjection:
+    """Bounded result of one existing-row terminal projection."""
+
+    scheduled_run: ClawScheduledRun
+    outcome: ClawOrchestrationOutcome | None
+    output: ClawAutomationOutput | None
+
+
+_FAILED_MESSAGE = "P01 execution failed before a safe terminal output was available."
+_UNSAFE_COMPLETED_MESSAGE = "P01 completed without a safe bounded answer."
+_CANCELLED_MESSAGE = "P01 execution was cancelled."
+
+
+def _completion_time(
+    completed_at: datetime | None,
+    clock: Callable[[], datetime] | None,
+) -> datetime:
+    value = completed_at if completed_at is not None else (clock or _utc_now)()
+    if value.tzinfo is None or value.utcoffset() is None:
+        raise ScheduledOutcomeProjectionError("completed_at must be timezone-aware")
+    return value.astimezone(timezone.utc)
+
+
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def _output_id(*, workspace_id: str, rule_id: str, run_id: str) -> str:
+    payload = json.dumps(
+        {"v": 1, "workspace_id": workspace_id, "rule_id": rule_id, "run_id": run_id},
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+    )
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    return f"scheduled_output_{digest}"
+
+
+def _require_existing_row(
+    *,
+    store: ScheduledOutcomeStore,
+    plan: CanonicalScheduledExecutionPlan,
+) -> ClawScheduledRun:
+    current = store.get_run(plan.run.run_id, plan.rule.workspace_id)
+    if current is None:
+        raise ScheduledOutcomeProjectionError(
+            "terminal projection requires an existing scheduled run"
+        )
+    if (
+        current.workspace_id != plan.rule.workspace_id
+        or current.rule_id != plan.rule.rule_id
+        or current.scheduled_time != plan.scheduled_run.scheduled_time
+    ):
+        raise ScheduledOutcomeProjectionError(
+            "stored scheduled row identity does not match the canonical occurrence"
+        )
+    return current
+
+
+def _require_outcome_run(
+    *,
+    outcome: ClawOrchestrationOutcome,
+    plan: CanonicalScheduledExecutionPlan,
+) -> RunProjection:
+    if not isinstance(outcome, ClawOrchestrationOutcome):
+        raise ScheduledOutcomeProjectionError("P01 returned an invalid orchestration outcome")
+    projection = outcome.projection
+    if projection.run_id != plan.run.run_id:
+        raise ScheduledOutcomeProjectionError(
+            "P01 outcome run id does not match the scheduled run"
+        )
+    if projection.run_id != plan.scheduled_run.run_id:
+        raise ScheduledOutcomeProjectionError(
+            "P01 outcome correlation does not match the scheduled occurrence"
+        )
+    return projection
+
+
+def _bounded_output(
+    *,
+    rule: ClawAutomationRule,
+    plan: CanonicalScheduledExecutionPlan,
+    outcome: ClawOrchestrationOutcome,
+) -> ClawAutomationOutput:
+    answer = outcome.answer
+    if not isinstance(answer, str) or not answer.strip():
+        raise ScheduledOutcomeProjectionError(
+            "completed P01 outcome is missing a safe bounded answer"
+        )
+    # The P01 adapter exposes only its already-redacted answer surface. The
+    # ClawAutomationOutput contract applies the final bounded-text validation.
+    return ClawAutomationOutput(
+        output_id=_output_id(
+            workspace_id=rule.workspace_id,
+            rule_id=rule.rule_id,
+            run_id=plan.run.run_id,
+        ),
+        workspace_id=rule.workspace_id,
+        output_type=rule.output_type,
+        title=rule.name,
+        content=answer,
+    )
+
+
+def _same_terminal_result(
+    *,
+    current: ClawScheduledRun,
+    status: ClawScheduledRunStatus,
+    output: ClawAutomationOutput | None,
+) -> ScheduledOutcomeProjection | None:
+    if current.status is ClawScheduledRunStatus.COMPLETED:
+        if status is ClawScheduledRunStatus.COMPLETED and (
+            output is None or current.output == output
+        ):
+            return ScheduledOutcomeProjection(current, None, current.output)
+        if status is ClawScheduledRunStatus.COMPLETED and current.output is None:
+            # S2F4A explicitly permits one bounded output backfill for an
+            # already-completed row. The existing store owns its idempotency.
+            return None
+        raise ScheduledOutcomeProjectionError(
+            "terminal completed scheduled row cannot be changed"
+        )
+    if current.status is ClawScheduledRunStatus.FAILED:
+        if status is ClawScheduledRunStatus.FAILED:
+            return ScheduledOutcomeProjection(current, None, current.output)
+        raise ScheduledOutcomeProjectionError(
+            "terminal failed scheduled row cannot be resurrected"
+        )
+    if current.status is ClawScheduledRunStatus.CANCELLED:
+        if status is ClawScheduledRunStatus.CANCELLED:
+            return ScheduledOutcomeProjection(current, None, current.output)
+        raise ScheduledOutcomeProjectionError(
+            "terminal cancelled scheduled row cannot be resurrected"
+        )
+    return None
+
+
+def _project_status(
+    *,
+    store: ScheduledOutcomeStore,
+    plan: CanonicalScheduledExecutionPlan,
+    current: ClawScheduledRun,
+    status: ClawScheduledRunStatus,
+    completed_at: datetime,
+    error_message: str | None = None,
+    outcome: ClawOrchestrationOutcome | None = None,
+    output: ClawAutomationOutput | None = None,
+) -> ScheduledOutcomeProjection:
+    existing = _same_terminal_result(current=current, status=status, output=output)
+    if existing is not None:
+        return ScheduledOutcomeProjection(existing.scheduled_run, outcome, existing.output)
+    updated = store.update_run_projection(
+        run_id=plan.run.run_id,
+        workspace_id=plan.rule.workspace_id,
+        rule_id=plan.rule.rule_id,
+        scheduled_time=plan.scheduled_run.scheduled_time,
+        status=status,
+        completed_at=completed_at,
+        error_message=error_message,
+        output=output,
+    )
+    return ScheduledOutcomeProjection(updated, outcome, output)
+
+
+def project_p01_outcome_to_scheduled_run(
+    *,
+    rule: ClawAutomationRule,
+    scheduled_run: ClawScheduledRun,
+    outcome: ClawOrchestrationOutcome,
+    store: ScheduledOutcomeStore,
+    completed_at: datetime | None = None,
+    clock: Callable[[], datetime] | None = None,
+) -> ScheduledOutcomeProjection:
+    """Project one already-correlated P01 terminal outcome to the same row."""
+
+    plan = plan_canonical_scheduled_execution(rule, scheduled_run)
+    projection = _require_outcome_run(outcome=outcome, plan=plan)
+    current = _require_existing_row(store=store, plan=plan)
+    terminal_at = _completion_time(completed_at, clock)
+
+    if projection.status is ClawRunStatus.COMPLETED:
+        try:
+            output = _bounded_output(rule=rule, plan=plan, outcome=outcome)
+        except (ContractError, ScheduledOutcomeProjectionError) as exc:
+            return _project_status(
+                store=store,
+                plan=plan,
+                current=current,
+                status=ClawScheduledRunStatus.FAILED,
+                completed_at=terminal_at,
+                error_message=_UNSAFE_COMPLETED_MESSAGE,
+                outcome=outcome,
+            )
+        return _project_status(
+            store=store,
+            plan=plan,
+            current=current,
+            status=ClawScheduledRunStatus.COMPLETED,
+            completed_at=terminal_at,
+            outcome=outcome,
+            output=output,
+        )
+
+    if projection.status is ClawRunStatus.FAILED:
+        return _project_status(
+            store=store,
+            plan=plan,
+            current=current,
+            status=ClawScheduledRunStatus.FAILED,
+            completed_at=terminal_at,
+            error_message=_FAILED_MESSAGE,
+            outcome=outcome,
+        )
+    if projection.status is ClawRunStatus.CANCELLED:
+        return _project_status(
+            store=store,
+            plan=plan,
+            current=current,
+            status=ClawScheduledRunStatus.CANCELLED,
+            completed_at=terminal_at,
+            error_message=None,
+            outcome=outcome,
+        )
+    raise ScheduledOutcomeProjectionError(
+        "P01 outcome is not a terminal lifecycle result"
+    )
+
+
+async def execute_and_project_scheduled_occurrence(
+    *,
+    rule: ClawAutomationRule,
+    scheduled_run: ClawScheduledRun,
+    adapter: P01ExecutionPort,
+    store: ScheduledOutcomeStore,
+    lease: SandboxLease | None = None,
+    product_tier: Any | None = None,
+    completed_at: datetime | None = None,
+    clock: Callable[[], datetime] | None = None,
+) -> ScheduledOutcomeProjection:
+    """Execute through S2F4B, then project the result through S2F4A."""
+
+    plan = plan_canonical_scheduled_execution(rule, scheduled_run)
+    current = _require_existing_row(store=store, plan=plan)
+    if current.status in {
+        ClawScheduledRunStatus.COMPLETED,
+        ClawScheduledRunStatus.FAILED,
+        ClawScheduledRunStatus.CANCELLED,
+    }:
+        # A terminal scheduled row is already the lifecycle authority. Exact
+        # retries are projection reads, never a second P01 execution.
+        return ScheduledOutcomeProjection(current, None, current.output)
+    try:
+        outcome = await execute_scheduled_occurrence(
+            rule=rule,
+            scheduled_run=scheduled_run,
+            adapter=adapter,
+            lease=lease,
+            product_tier=product_tier,
+        )
+    except asyncio.CancelledError:
+        _project_status(
+            store=store,
+            plan=plan,
+            current=current,
+            status=ClawScheduledRunStatus.CANCELLED,
+            completed_at=_completion_time(completed_at, clock),
+            outcome=None,
+        )
+        raise
+    except Exception:
+        _project_status(
+            store=store,
+            plan=plan,
+            current=current,
+            status=ClawScheduledRunStatus.FAILED,
+            completed_at=_completion_time(completed_at, clock),
+            error_message=_FAILED_MESSAGE,
+            outcome=None,
+        )
+        raise
+    return project_p01_outcome_to_scheduled_run(
+        rule=rule,
+        scheduled_run=scheduled_run,
+        outcome=outcome,
+        store=store,
+        completed_at=completed_at,
+        clock=clock,
+    )
+
+
+__all__ = [
+    "ScheduledOutcomeProjection",
+    "ScheduledOutcomeProjectionError",
+    "execute_and_project_scheduled_occurrence",
+    "project_p01_outcome_to_scheduled_run",
+]
