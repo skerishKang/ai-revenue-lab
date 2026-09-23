@@ -74,7 +74,7 @@ _worker_spec.loader.exec_module(_worker_mod)
 
 class _FakeEnv:
     def __init__(self) -> None:
-        self.CONTROL_PLANE_ALLOWED_PRODUCT = PRODUCT_ID
+        self.CONTROL_PLANE_ALLOWED_PRODUCTS = "b62,b54-padiem-claw"
         self.CONTROL_PLANE_IDENTITY = _FakeNamespace()
 
 
@@ -161,7 +161,7 @@ def _make_store() -> CloudflareCanonicalIdentityAuthorityStore:
     return CloudflareCanonicalIdentityAuthorityStore(
         FakeStorage(),
         lookup_key=decode_identity_lookup_key(LOOKUP_KEY),
-        allowed_product_id=PRODUCT_ID,
+        allowed_product_ids=frozenset({PRODUCT_ID}),
     )
 
 
@@ -350,7 +350,7 @@ def test_legacy_session_rows_migrate_with_null_tenant() -> None:
     store = CloudflareCanonicalIdentityAuthorityStore(
         storage,
         lookup_key=decode_identity_lookup_key(LOOKUP_KEY),
-        allowed_product_id=PRODUCT_ID,
+        allowed_product_ids=frozenset({PRODUCT_ID}),
     )
     rows = _rows(store._sql.exec("PRAGMA table_info(canonical_auth_session)"))
     column_names = {str(row["name"]) for row in rows}

@@ -23,7 +23,7 @@ from identity_connector_ticket import (
 
 
 _AUTHORITY_REF = "control-plane.identity.production.v1"
-_ALLOWED_PRODUCT = "b62"
+_ALLOWED_PRODUCTS: frozenset[str] = frozenset({"b62", "b54-padiem-claw"})
 _LINK_KEYS = frozenset({"product_id", "product_user_id", "auth_provider", "provider_subject"})
 _SESSION_KEYS = frozenset({"product_id", "subject", "authenticated_at", "not_after"})
 _RESOLVE_KEYS = frozenset({"session_id"})
@@ -102,15 +102,27 @@ class CanonicalIdentityDurableObject(DurableObject):
 
     def __init__(self, ctx, env):
         super().__init__(ctx, env)
-        allowed = getattr(env, "CONTROL_PLANE_ALLOWED_PRODUCT", _ALLOWED_PRODUCT)
-        if allowed != _ALLOWED_PRODUCT:
-            raise RuntimeError("identity authority product boundary does not match the reviewed product")
+        raw_products = getattr(env, "CONTROL_PLANE_ALLOWED_PRODUCTS", None)
+        if raw_products is None:
+            # Legacy single-product var: accept only if it matches the sole reviewed entry
+            raw_legacy = getattr(env, "CONTROL_PLANE_ALLOWED_PRODUCT", None)
+            parsed: frozenset[str] = (
+                frozenset({raw_legacy.strip()}) if isinstance(raw_legacy, str) and raw_legacy.strip() else _ALLOWED_PRODUCTS
+            )
+        else:
+            parsed = frozenset(
+                p.strip() for p in str(raw_products).split(",") if p.strip()
+            )
+        if parsed != _ALLOWED_PRODUCTS:
+            raise RuntimeError(
+                "identity authority product boundary does not match the reviewed product set"
+            )
         self._store = CloudflareCanonicalIdentityAuthorityStore(
             ctx.storage,
             lookup_key=decode_identity_lookup_key(
                 _required_env(env, "CONTROL_PLANE_IDENTITY_LOOKUP_KEY")
             ),
-            allowed_product_id=_ALLOWED_PRODUCT,
+            allowed_product_ids=_ALLOWED_PRODUCTS,
         )
         self._connector_context_store = CanonicalConnectorContextStore(ctx.storage)
         self._connect_ticket_issuer = GoogleConnectTicketIssuer(
