@@ -170,14 +170,18 @@ class PypdfSourceAuditBehaviorTests(unittest.TestCase):
         self.assertIn("shell=True", self.doc)
         self.assertIn("zero matches", self.doc)
 
-    def test_environment_reads_are_distinguished_from_credential_reads(self) -> None:
+    def test_environment_reads_distinguish_named_reads_from_child_env_propagation(self) -> None:
         self.assertTrue(
             self.findings.environment_reads.status.startswith("PRESENT_CONDITIONAL")
         )
         self.assertTrue(self.findings.credential_reads.absent)
         self.assertIn("os.environ.copy()", self.doc)
         self.assertIn("shutil.which", self.doc)
-        self.assertIn("CREDENTIAL_READS=ABSENT", self.doc)
+        self.assertIn("CREDENTIAL_READS=ABSENT_IN_PYPDF_PACKAGE_SOURCE", self.doc)
+        self.assertIn(
+            "CREDENTIAL_ENV_PROPAGATION=PRESENT_CONDITIONAL_JBIG2DEC", self.doc
+        )
+        self.assertIn("host secrets", self.doc)
 
     def test_javascript_and_uri_are_data_only_not_execution(self) -> None:
         self.assertTrue(self.findings.javascript_execution.absent)
