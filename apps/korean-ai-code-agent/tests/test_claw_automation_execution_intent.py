@@ -15,8 +15,8 @@ supplies those three values explicitly, and nothing more:
   no promotion of a legacy rule through a generic save/update.
 - Persistence rides inside the existing rule JSON document: no table, column or
   migration.
-- Tick and dry-run behaviour is unchanged; no dispatch, no P01 call, no owner
-  resolution.
+- The tick path claims a PENDING occurrence (S2F5A) and the explicit reference
+  dry-run path is unchanged; neither dispatches, calls P01 or resolves an owner.
 """
 
 from __future__ import annotations
@@ -414,7 +414,10 @@ class FutureDispatchMaterialTests(unittest.TestCase):
 
 
 class UnchangedBehaviourTests(unittest.TestCase):
-    def test_tick_dry_run_is_unchanged_for_a_rule_holding_an_intent(self):
+    def test_tick_claims_pending_for_a_rule_holding_an_intent(self):
+        # S2F5A: the durable tick claims a PENDING occurrence. It writes no DRAFT
+        # body and no proposal, so a tick-written output blob cannot exist at all
+        # for intent material to leak through.
         store = InMemoryClawAutomationStore()
         held = rule(execution_intent=intent())
         store.save_rule(held)
@@ -422,16 +425,25 @@ class UnchangedBehaviourTests(unittest.TestCase):
         receipt = runtime.tick(workspace_id="ws_intent", current_time=NOW, membership=membership())
         self.assertEqual(len(receipt.created_run_ids), 1)
         run = store.get_run(receipt.created_run_ids[0], "ws_intent")
-        self.assertEqual(run.status.value, "completed")
-        self.assertIn("DRAFT", run.output.content)
-        self.assertTrue(run.output.proposals[0].approval_gate.approval_required)
-        # The intent never rides into the receipt, the stored output blob, or a
-        # proposal projection — the same three surfaces the B2A leak tests use.
+        self.assertEqual(run.status.value, "pending")
+        self.assertIsNone(run.output)
+        self.assertIsNone(run.completed_at)
+        self.assertEqual(store.list_proposals("ws_intent"), [])
+        # The intent never rides into the receipt, and the claimed row has no
+        # output blob to serialize at all.
         surfaces = [json.dumps(receipt.safe_dict(), sort_keys=True, default=str)]
-        serialized_output = SqliteClawAutomationStore._serialize_output(run.output)
-        if serialized_output is not None:
-            surfaces.append(serialized_output)
-        surfaces.append(json.dumps([p.safe_dict() for p in run.output.proposals], sort_keys=True, default=str))
+        self.assertIsNone(SqliteClawAutomationStore._serialize_output(run.output))
+        # The reference path is the surface that DOES produce an output blob and a
+        # proposal: the same three B2A leak surfaces, unchanged and still clean.
+        reference_item = rule(rule_id="rule_intent_ref", execution_intent=intent())
+        store.save_rule(reference_item)
+        reference_run = FakeClawScheduler(store).execute_rule_dry_run(
+            reference_item, NOW, membership()
+        )
+        serialized_output = SqliteClawAutomationStore._serialize_output(reference_run.output)
+        self.assertIsNotNone(serialized_output)
+        surfaces.append(serialized_output)
+        surfaces.append(json.dumps([p.safe_dict() for p in reference_run.output.proposals], sort_keys=True, default=str))
         for blob in surfaces:
             self.assertNotIn(TASK, blob)
             self.assertNotIn("execution_intent", blob)

@@ -1177,7 +1177,7 @@ class ClawAutomationTickRuntime:
 
         trigger -> explicit workspace -> authoritative membership projection
                 -> current UTC instant -> durable rules -> due occurrences
-                -> occurrence dedup -> bounded run materialization
+                -> occurrence dedup -> PENDING occurrence claim
                 -> durable persistence -> bounded tick receipt
 
     Deliberate boundaries:
@@ -1186,7 +1186,16 @@ class ClawAutomationTickRuntime:
     * Membership is mandatory. There is no "background" mode that omits it.
     * Occurrence identity is the pre-existing ``occurrence_key``; this class
       introduces no second dedup authority and no second lock table.
-    * No external send: runs materialize as local proposals/reports only.
+    * A tick CLAIMS an occurrence; it never completes one. The claimed row is
+      ``PENDING`` with ``output=None`` and ``completed_at=None``, so no
+      synthetic DRAFT/report body and no proposal can be mistaken for an
+      execution outcome. Completion belongs to the later canonical execution
+      path (the existing execution bridge), which consumes this claimed row.
+    * ``self.scheduler`` is reused for due-occurrence/schedule math ONLY.
+      ``FakeClawScheduler.execute_rule_dry_run`` stays available to callers
+      that explicitly ask for reference/fake materialization, but it is NOT
+      this runtime's completion authority.
+    * No external send and no terminal output of any kind.
     """
 
     def __init__(self, store: ClawAutomationStore) -> None:
@@ -1227,7 +1236,7 @@ class ClawAutomationTickRuntime:
         for rule, scheduled in due:
             key = occurrence_key(rule.workspace_id, rule.rule_id, scheduled)
             already = self.store.get_run_for_occurrence(key, workspace)
-            run = self.scheduler.execute_rule_dry_run(rule, scheduled, membership)
+            run = self._claim_pending_occurrence(rule, scheduled, membership)
             if run.run_id in created:
                 continue
             if already is not None:
@@ -1242,6 +1251,60 @@ class ClawAutomationTickRuntime:
             created_run_ids=tuple(sorted(created)),
             deduplicated_count=deduplicated,
         )
+
+    def _claim_pending_occurrence(
+        self,
+        rule: ClawAutomationRule,
+        scheduled: datetime,
+        membership: TrustedWorkspaceMembershipProjection,
+    ) -> ClawScheduledRun:
+        """Claim ONE logical occurrence as a ``PENDING`` scheduled run.
+
+        This is the durable tick path's only materialization step, and it is
+        deliberately not a completion step:
+
+        * ``status`` is ``PENDING`` -- the occurrence is claimed, execution has
+          not started, and this kernel has no authority to start it.
+        * ``output`` stays ``None`` -- no DRAFT body, no report, no proposal is
+          fabricated here, so no caller can read a synthetic result as a real
+          one. The pre-existing completion authority (the canonical execution
+          path) is the only writer of terminal output.
+        * ``completed_at`` stays ``None`` -- the row is not terminal.
+        * ``run_id`` remains the pre-existing occurrence-derived
+          ``sched_run_<digest>``; ``record_run`` remains the only claim
+          authority, so a replay adopts the canonical row instead of creating a
+          second one.
+
+        ``started_at`` is the CLAIM instant (the occurrence instant). The
+        pre-existing schema makes the column mandatory, and for a ``PENDING``
+        row it records when the occurrence was claimed -- never that execution
+        began.
+
+        Pre-I/O guards mirror the refusals the reference scheduler used to make
+        on this path (disabled rule, foreign membership, membership that does
+        not cover the occurrence instant). They fail closed before any store
+        write, and they add no new authority.
+        """
+
+        if not rule.enabled:
+            raise ContractError("disabled automation rule cannot execute")
+        if membership.workspace_id != rule.workspace_id:
+            raise ContractError("membership workspace does not match rule workspace")
+        if not membership.valid_at(scheduled):
+            raise ContractError("expired or not-yet-valid workspace membership")
+        claimed = ClawScheduledRun(
+            run_id=_derived_occurrence_id(
+                "sched_run", rule.workspace_id, rule.rule_id, scheduled
+            ),
+            workspace_id=rule.workspace_id,
+            rule_id=rule.rule_id,
+            status=ClawScheduledRunStatus.PENDING,
+            scheduled_time=scheduled,
+            started_at=scheduled,
+            completed_at=None,
+            output=None,
+        )
+        return self.store.record_run(claimed)
 
     @staticmethod
     def _require_membership(
@@ -1823,6 +1886,13 @@ __all__ = [
 # so no consumer can mistake the kernel for an activated scheduler.
 DURABLE_TICK_RUNTIME = True
 BACKGROUND_RUNTIME_KERNEL = True
+# --- #2833 S2F5A ---
+# The durable tick claims a PENDING occurrence and never fabricates a terminal
+# result. These flags are constants, not claims: no code path in this module
+# can raise the second one or enable the third.
+DURABLE_TICK_CLAIMS_PENDING_OCCURRENCE = True
+DURABLE_TICK_SYNTHETIC_COMPLETION = False
+DURABLE_TICK_REFERENCE_SCHEDULER_IS_COMPLETION_AUTHORITY = False
 REAL_BACKGROUND_TRIGGER = False
 REAL_CLOUD_CRON_REGISTRATION = False
 PRODUCTION_SCHEDULER_ACTIVATION = False
