@@ -182,9 +182,16 @@ def test_source_scan_rejects_host_network_and_second_authority() -> None:
     ):
         assert forbidden not in source, forbidden
     assert source.count("ZipFile(") == 1
-    assert source.count("writestr(") == 2
-    assert 'writestr(_fixed_member("mimetype")' in source
-    assert 'archive.writestr(_fixed_member(f"Contents/section' in source
+    # #2979: one archive writer with one writestr call site, so the canonical
+    # package creator and the package-preserving mutator share a single member
+    # policy instead of each carrying its own.
+    assert source.count("writestr(") == 1
+    assert "archive.writestr(_fixed_member(name), member_payload)" in source
+    # The canonical member sequence is still built here, never caller-supplied.
+    assert '("mimetype", HWPX_MEDIA_TYPE.encode("ascii"))' in source
+    assert 'f"Contents/section{index}.xml"' in source
+    # Every emitted member name is judged by the archive gate's own predicate.
+    assert "validate_ooxml_member_name(name)" in source
 
 
 def test_member_names_are_fixed_not_caller_supplied() -> None:
@@ -555,7 +562,15 @@ def test_decoder_has_no_archive_or_xml_read_surface_of_its_own() -> None:
     assert source.count("parse_hwpx_sections(") == 1
 
 
-def test_core_keeps_exactly_one_hwpx_member_walk() -> None:
+def test_core_keeps_one_gated_hwpx_walk_per_purpose() -> None:
+    """#2979: two bounded HWPX walks, both behind the single archive gate.
+
+    ``parse_hwpx_sections`` walks for structural facts. The raw-member accessor
+    walks for the member payloads a package-preserving mutator has to copy
+    byte-for-byte. Neither adds a parser, neither adds a gate, and each has
+    exactly one archive handle of its own.
+    """
+
     source = inspect.getsource(document_normalization)
     assert source.count("_hwpx_section_index(") == 2  # definition plus the single call site
     assert source.count("def parse_hwpx_sections(") == 1
@@ -563,6 +578,38 @@ def test_core_keeps_exactly_one_hwpx_member_walk() -> None:
     hwpx_walk = source.split("def parse_hwpx_sections")[1].split("def extract_hwpx_text")[0]
     assert hwpx_walk.count("ZipFile(") == 1
     assert source.count("def extract_docx_text") == 1
+
+    # The second walk is the raw-member accessor, and it is the last one.
+    assert source.count("def read_hwpx_package_members(") == 1
+    member_walk = source.split("def read_hwpx_package_members(")[1].split("def _extract_pdf_text")[0]
+    assert member_walk.count("ZipFile(") == 1
+    assert member_walk.count("validate_ooxml_archive(payload)") == 1
+    assert member_walk.count("def ") == 0
+    # It reads bytes; it never becomes a second XML parser.
+    assert "ElementTree" not in member_walk
+    assert "fromstring(" not in member_walk
+    assert "_parse_xml(" not in member_walk
+
+
+def test_section_member_naming_rule_is_exposed_not_restated() -> None:
+    """#2979: the public section-index name is the reader's own predicate."""
+
+    assert document_normalization.hwpx_section_index is document_normalization._hwpx_section_index
+    assert document_normalization.hwpx_section_index("Contents/section3.xml") == 3
+    assert document_normalization.hwpx_section_index("Contents/other.xml") is None
+    assert document_normalization.hwpx_section_index("section3.xml") is None
+
+
+def test_archive_member_name_predicate_is_exposed_not_restated() -> None:
+    """#2979: the writer judges member names with the gate's own predicate."""
+
+    from padiem_ai_core.document_normalization import validate_ooxml_member_name
+
+    assert validate_ooxml_member_name("Contents/section1.xml") == "Contents/section1.xml"
+    for unsafe in ("", "/abs.xml", "../escape.xml", "a\\b.xml", "C:/x.xml", "a//b.xml"):
+        with pytest.raises(DocumentNormalizationError) as exc:
+            validate_ooxml_member_name(unsafe)
+        assert exc.value.code == "ooxml_unsafe_path"
 
 
 

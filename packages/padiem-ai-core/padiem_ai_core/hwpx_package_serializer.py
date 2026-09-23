@@ -1,11 +1,18 @@
 """Single bounded HWPX package content authority for Padiem AI Core.
 
-This module is the only place in Core that assembles ``application/hwp+zip``
-package bytes. Callers supply a small structured in-memory content model of
-section paragraphs only: never raw XML, ZIP member names, or archive paths.
-Output is deterministic memory-only bytes that must re-enter the existing
-common file-intake gate and the existing Core HWPX reader for round-trip
-validation.
+This module is the only place in Core that *creates* an ``application/hwp+zip``
+package from a content model, and the only place that owns the package's
+section-XML shape, member-naming policy and archive-member policy. Callers
+supply a small structured in-memory content model of section paragraphs only:
+never raw XML, ZIP member names, or archive paths. Output is deterministic
+memory-only bytes that must re-enter the existing common file-intake gate and
+the existing Core HWPX reader for round-trip validation.
+
+Editing an already admitted package without destroying the members this model
+cannot represent is a different authority: ``hwpx_package_mutation`` composes
+this module's section producer and member policy with Core's single archive
+gate and single HWPX reader. It is not a second way to create a package — it
+cannot change an archive's member set, so it can only preserve.
 
 Reading bytes back into the model goes through :func:`deserialize_hwpx_package`,
 which reuses Core's single HWPX archive-and-XML reader and adds no parsing of
@@ -26,6 +33,7 @@ from .document_normalization import (
     MAX_DOCUMENT_CHARS,
     MAX_OOXML_ENTRIES,
     parse_hwpx_sections,
+    validate_ooxml_member_name,
 )
 from .document_semantics import (
     MAX_DOCUMENT_SEGMENTS,
@@ -70,7 +78,7 @@ def serialize_hwpx_package(content: HwpxPackageContent) -> bytes:
     """
 
     _validate_content(content)
-    section_payloads = [_section_xml(section.paragraphs) for section in content.sections]
+    section_payloads = [serialize_hwpx_section_part(section.paragraphs) for section in content.sections]
     payload = _package_bytes(section_payloads)
     if len(payload) > MAX_BINARY_DOCUMENT_BYTES:
         raise DocumentNormalizationError(
@@ -191,22 +199,7 @@ def _validate_content(content: HwpxPackageContent) -> None:
                 "HWPX serialize content exceeds the paragraph limit.",
             )
         for text in section.paragraphs:
-            if not isinstance(text, str):
-                raise DocumentNormalizationError(
-                    "hwpx_serialize_model",
-                    "HWPX serialize paragraphs must contain only strings.",
-                )
-            if len(text) > MAX_HWPX_PARAGRAPH_CHARS:
-                raise DocumentNormalizationError(
-                    "hwpx_serialize_paragraph_text_limit",
-                    "HWPX serialize paragraph exceeds the text limit.",
-                )
-            for character in text:
-                if not _is_xml_char(character):
-                    raise DocumentNormalizationError(
-                        "hwpx_serialize_control_char",
-                        "HWPX serialize text contains a disallowed control character.",
-                    )
+            validate_hwpx_paragraph_text(text)
             total_chars += len(text)
         section_text = "\n".join(text for text in section.paragraphs if text).strip()
         if section_text:
@@ -233,11 +226,55 @@ def _is_xml_char(character: str) -> bool:
     )
 
 
+def validate_hwpx_paragraph_text(text: str) -> None:
+    """The single paragraph-text content rule for the writable HWPX subset.
+
+    Type, length and XML-character policy are decided here and nowhere else.
+    The whole-package validator and the package-preserving mutator both call
+    it, so the two can never drift apart about what a writable paragraph may
+    contain.
+    """
+
+    if not isinstance(text, str):
+        raise DocumentNormalizationError(
+            "hwpx_serialize_model",
+            "HWPX serialize paragraphs must contain only strings.",
+        )
+    if len(text) > MAX_HWPX_PARAGRAPH_CHARS:
+        raise DocumentNormalizationError(
+            "hwpx_serialize_paragraph_text_limit",
+            "HWPX serialize paragraph exceeds the text limit.",
+        )
+    for character in text:
+        if not _is_xml_char(character):
+            raise DocumentNormalizationError(
+                "hwpx_serialize_control_char",
+                "HWPX serialize text contains a disallowed control character.",
+            )
+
+
 def _escape_xml_text(text: str) -> str:
     return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def _section_xml(paragraphs: tuple[str, ...]) -> bytes:
+def serialize_hwpx_section_part(paragraphs: tuple[str, ...]) -> bytes:
+    """Produce the one canonical section-part byte shape for this subset.
+
+    This is the single section-XML producer in Core. The package writer calls
+    it for every section it emits, and the package-preserving mutator calls it
+    for the one section member it rewrites, so a rewritten part is
+    byte-identical to what a freshly created package would carry for the same
+    paragraphs. Every paragraph text passes the single content rule before it
+    reaches the XML layer, so no caller can emit text the model would refuse.
+    """
+
+    if not isinstance(paragraphs, tuple):
+        raise DocumentNormalizationError(
+            "hwpx_serialize_model",
+            "HWPX serialize paragraphs must be a tuple of strings.",
+        )
+    for text in paragraphs:
+        validate_hwpx_paragraph_text(text)
     body = "".join(
         f"<hp:p><hp:runs><hp:t>{_escape_xml_text(text)}</hp:t></hp:runs></hp:p>"
         for text in paragraphs
@@ -251,20 +288,89 @@ def _section_xml(paragraphs: tuple[str, ...]) -> bytes:
 
 
 def _fixed_member(name: str) -> ZipInfo:
+    """The single archive-member policy in Core.
+
+    A fixed timestamp, stored compression and a fixed create-system, so the same
+    member sequence always produces the same bytes and no caller-supplied value
+    can influence how a member is stored.
+
+    The member permission bits are *not* set here: the standard library's member
+    writer assigns them itself and overwrites whatever this factory put on the
+    ``ZipInfo``, so an assignment would be dead code that only looked like
+    policy. Determinism comes from the values below, which the writer does keep.
+    """
+
     info = ZipInfo(filename=name, date_time=_FIXED_ZIP_TIMESTAMP)
     info.create_system = 0
-    info.external_attr = 0
     info.compress_type = ZIP_STORED
     return info
 
 
-def _package_bytes(section_payloads: list[bytes]) -> bytes:
+def _assemble_hwpx_package_members(members: tuple[tuple[str, bytes], ...]) -> bytes:
+    """Internal archive assembly seam for already-decided member sequences.
+
+    This is the single place in Core that writes an ``application/hwp+zip``
+    archive, and the single place the archive-member policy lives. The
+    canonical package creator and the package-preserving mutator both reach the
+    archive through this private seam, so Core keeps exactly one member policy
+    without exposing a generic raw-member ZIP writer as public API.
+
+    It is a writer, not a caller-facing content authority. It invents no member,
+    it cannot reorder or drop one, and every name is judged by the same path
+    predicate the archive gate uses — so this function can never produce an
+    archive Core's own gate would refuse.
+    """
+
+    if not isinstance(members, tuple) or not members:
+        raise DocumentNormalizationError(
+            "hwpx_assemble_model",
+            "HWPX package assembly requires a non-empty tuple of members.",
+        )
+    if len(members) > MAX_OOXML_ENTRIES:
+        raise DocumentNormalizationError(
+            "hwpx_assemble_member_count",
+            "HWPX package assembly exceeds the archive entry budget.",
+        )
+    names: list[str] = []
+    for member in members:
+        if not isinstance(member, tuple) or len(member) != 2:
+            raise DocumentNormalizationError(
+                "hwpx_assemble_model",
+                "HWPX package members must be (name, payload) pairs.",
+            )
+        name, member_payload = member
+        names.append(validate_ooxml_member_name(name))
+        if not isinstance(member_payload, bytes) or not member_payload:
+            raise DocumentNormalizationError(
+                "hwpx_assemble_payload",
+                "HWPX package member payload must be non-empty bytes.",
+            )
+    if len(set(names)) != len(names):
+        raise DocumentNormalizationError(
+            "hwpx_assemble_member_name",
+            "HWPX package member names must be unique.",
+        )
+
     buffer = BytesIO()
     with ZipFile(buffer, "w", compression=ZIP_STORED) as archive:
-        archive.writestr(_fixed_member("mimetype"), HWPX_MEDIA_TYPE.encode("ascii"))
-        for index, payload in enumerate(section_payloads, start=1):
-            archive.writestr(_fixed_member(f"Contents/section{index}.xml"), payload)
-    return buffer.getvalue()
+        for name, member_payload in members:
+            archive.writestr(_fixed_member(name), member_payload)
+    payload = buffer.getvalue()
+    if len(payload) > MAX_BINARY_DOCUMENT_BYTES:
+        raise DocumentNormalizationError(
+            "hwpx_assemble_output_size",
+            "HWPX package assembly exceeds the output size limit.",
+        )
+    return payload
+
+
+def _package_bytes(section_payloads: list[bytes]) -> bytes:
+    """Build the canonical member sequence and assemble it."""
+
+    members: list[tuple[str, bytes]] = [("mimetype", HWPX_MEDIA_TYPE.encode("ascii"))]
+    for index, payload in enumerate(section_payloads, start=1):
+        members.append((f"Contents/section{index}.xml", payload))
+    return _assemble_hwpx_package_members(tuple(members))
 
 
 __all__ = [
@@ -277,4 +383,6 @@ __all__ = [
     "HwpxPackageSection",
     "deserialize_hwpx_package",
     "serialize_hwpx_package",
+    "serialize_hwpx_section_part",
+    "validate_hwpx_paragraph_text",
 ]
