@@ -160,7 +160,8 @@ class PillowSourceAudit2931Test(unittest.TestCase):
         self.assertNotIn("bearer ", lowered)
 
     def test_oss_gate_unchanged_and_not_skill_registry(self) -> None:
-        digest = hashlib.sha256(GATE_PATH.read_bytes()).hexdigest().upper()
+        normalized = GATE_PATH.read_bytes().replace(b"\r\n", b"\n")
+        digest = hashlib.sha256(normalized).hexdigest().upper()
         self.assertEqual(digest, GATE_SHA256)
         self.assertFalse(OSS_GATE_IS_SKILL_REGISTRY)
         self.assertFalse(AUTO_RUNTIME_REGISTRATION)
