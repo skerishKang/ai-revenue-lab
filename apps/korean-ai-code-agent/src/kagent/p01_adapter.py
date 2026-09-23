@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
@@ -147,6 +147,28 @@ def _trace_id_for(run: ClawRun) -> str:
     return f"claw_{digest}"
 
 
+def _json_safe_handoff_value(value: object) -> object:
+    """Return a deep JSON-compatible copy without weakening identity semantics.
+
+    Core deliberately freezes AgentProfile mappings with MappingProxyType and
+    tuple containers. The durable B54 handoff boundary owns only a thawed copy:
+    Core identity objects stay immutable, keys stay unchanged, and unsupported
+    values fail closed instead of being stringified lossily.
+    """
+    if value is None or isinstance(value, (str, bool, int, float)):
+        return value
+    if isinstance(value, Mapping):
+        thawed: dict[str, object] = {}
+        for key, item in value.items():
+            if not isinstance(key, str):
+                raise TypeError("trusted P01 handoff mappings require string keys")
+            thawed[key] = _json_safe_handoff_value(item)
+        return thawed
+    if isinstance(value, (tuple, list)):
+        return [_json_safe_handoff_value(item) for item in value]
+    raise TypeError(f"trusted P01 handoff value is not JSON-safe: {type(value).__name__}")
+
+
 def _trusted_p01_request_snapshot(bundle: P01RequestBundle) -> dict[str, object]:
     """Server-derived trusted P01 request shape for one durable handoff (#2956).
 
@@ -157,10 +179,10 @@ def _trusted_p01_request_snapshot(bundle: P01RequestBundle) -> dict[str, object]
     """
     execution_request = bundle.execution_request
     context = bundle.context
-    return {
+    snapshot = {
         "app_id": bundle.orchestration_request.app_id,
         "agent": agent_identity_payload(execution_request),
-        "messages": [dict(message) for message in execution_request.messages],
+        "messages": execution_request.messages,
         "session_id": execution_request.session_id,
         "additional_system_context": execution_request.additional_system_context,
         "trace_id": execution_request.trace_id,
@@ -170,6 +192,10 @@ def _trusted_p01_request_snapshot(bundle: P01RequestBundle) -> dict[str, object]
             "timeout_seconds": context.timeout_seconds,
         },
     }
+    json_safe = _json_safe_handoff_value(snapshot)
+    if not isinstance(json_safe, dict):  # defensive: top-level shape is closed above
+        raise TypeError("trusted P01 handoff snapshot must remain an object")
+    return json_safe
 
 
 def _agent_profile(product_tier: ProductTierLabel = ProductTierLabel.PLUS) -> AgentProfile:
