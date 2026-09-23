@@ -6,8 +6,16 @@ server-side persisted ticket-use row in the Control Plane.
 
 The helper deliberately accepts action callbacks rather than making network
 requests. A real runner may adapt the callbacks to its browser, while this
-contract keeps budgets, ordering, redirect/retry policy, polling, and safe
-diagnostics testable without OAuth execution.
+contract keeps budgets, ordering, redirect/retry policy, polling, safe
+diagnostics, and the reviewed read-only connector scope set testable without
+OAuth execution.
+
+Scope parameterization is deliberately closed. A canary attempt cannot start
+without a `CanaryConnectorScope` drawn from `CANARY_REVIEWED_READONLY_SCOPES`,
+so a reusable adapter has no way to request a write scope. Server-side
+enforcement of the same reviewed scope set already exists in the Control Plane
+ticket/durable-store contracts and in the readonly Google OAuth authority; this
+is harness-side defense in depth, not a replacement for it.
 """
 
 from __future__ import annotations
@@ -21,6 +29,20 @@ from urllib.parse import urlsplit
 
 EXTERNAL_RUNTIME_METADATA_REDACTION = "UNRESOLVED"
 DURABLE_REPLAY_AUTHORITY = "SERVER_SIDE_EXISTING"
+
+GOOGLE_DRIVE_READONLY_SCOPE = "https://www.googleapis.com/auth/drive.readonly"
+GMAIL_READONLY_SCOPE = "https://www.googleapis.com/auth/gmail.readonly"
+
+READONLY_SCOPE_SUFFIX = ".readonly"
+
+# The only connector scopes a reusable canary may be parameterized with. A
+# connector is added here only after its read-only scope set has been reviewed;
+# the table is asserted read-only at import time so a later edit cannot
+# introduce a write scope silently.
+CANARY_REVIEWED_READONLY_SCOPES: Mapping[str, tuple[str, ...]] = {
+    "google-drive": (GOOGLE_DRIVE_READONLY_SCOPE,),
+    "gmail": (GMAIL_READONLY_SCOPE,),
+}
 
 
 class CanaryContractError(ValueError):
@@ -48,8 +70,11 @@ _SAFE_ERROR_CODES = frozenset(
         "consent_failed",
         "consent_timeout",
         "invalid_request",
+        "non_readonly_scope",
+        "scope_required",
         "transition_invalid",
         "ticket_failed",
+        "unreviewed_connector_scope",
     }
 )
 _SAFE_PRESENCE_KEYS = frozenset(
@@ -66,6 +91,65 @@ _SAFE_PRESENCE_KEYS = frozenset(
         "ticket",
     }
 )
+
+
+def _assert_reviewed_scopes_are_readonly() -> None:
+    """Fail closed at import time if the reviewed table ever gains a write scope."""
+
+    if not CANARY_REVIEWED_READONLY_SCOPES:
+        raise CanaryContractError("reviewed canary connector scope table must not be empty")
+    for connector_id, scopes in CANARY_REVIEWED_READONLY_SCOPES.items():
+        if not isinstance(connector_id, str) or not connector_id:
+            raise CanaryContractError("reviewed canary connector id is invalid")
+        if not isinstance(scopes, tuple) or not scopes:
+            raise CanaryContractError("reviewed canary connector scopes must be a non-empty tuple")
+        for scope in scopes:
+            if not isinstance(scope, str) or not scope.endswith(READONLY_SCOPE_SUFFIX):
+                raise CanaryContractError("reviewed canary connector scopes must be read-only")
+
+
+_assert_reviewed_scopes_are_readonly()
+
+
+@dataclass(frozen=True, slots=True)
+class CanaryConnectorScope:
+    """The only scope parameterization a reusable canary attempt may carry."""
+
+    connector_id: str
+    scopes: tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.connector_id, str) or self.connector_id not in CANARY_REVIEWED_READONLY_SCOPES:
+            raise CanaryContractError(
+                "unreviewed_connector_scope: connector is not reviewed for canary use"
+            )
+        if not isinstance(self.scopes, tuple) or not self.scopes:
+            raise CanaryContractError("canary connector scopes must be a non-empty tuple")
+        if any(not isinstance(scope, str) for scope in self.scopes):
+            raise CanaryContractError("canary connector scopes must be strings")
+        if len(set(self.scopes)) != len(self.scopes):
+            raise CanaryContractError("canary connector scopes must be unique")
+        for scope in self.scopes:
+            if not scope.endswith(READONLY_SCOPE_SUFFIX):
+                raise CanaryContractError(
+                    "non_readonly_scope: canary connector scopes must be read-only"
+                )
+        expected = CANARY_REVIEWED_READONLY_SCOPES[self.connector_id]
+        if set(self.scopes) != set(expected):
+            raise CanaryContractError(
+                "unreviewed_connector_scope: scopes must exactly match the reviewed read-only set"
+            )
+
+
+def reviewed_canary_scope(connector_id: str) -> CanaryConnectorScope:
+    """Return the reviewed read-only scope for one canary connector."""
+
+    if not isinstance(connector_id, str):
+        raise CanaryContractError("unreviewed_connector_scope: connector id must be a string")
+    scopes = CANARY_REVIEWED_READONLY_SCOPES.get(connector_id)
+    if scopes is None:
+        raise CanaryContractError("unreviewed_connector_scope: connector is not reviewed for canary use")
+    return CanaryConnectorScope(connector_id=connector_id, scopes=scopes)
 
 
 @dataclass(frozen=True, slots=True)
@@ -183,13 +267,25 @@ class OAuthCanaryAttempt:
     _next_action: int = 0
     _policy: ConnectRequestPolicy | None = None
     _status: AttemptStatus = AttemptStatus.ACTIVE
+    _scope: CanaryConnectorScope | None = None
 
     _ORDER = ("ticket_post", "connect_post", "consent", "callback")
 
-    def start(self) -> None:
+    def start(self, scope: CanaryConnectorScope) -> None:
         if self._started or self._status is AttemptStatus.FAILED:
             raise CanaryContractError("canary attempt already started")
+        if not isinstance(scope, CanaryConnectorScope):
+            raise CanaryContractError(
+                "scope_required: canary attempt requires a reviewed read-only connector scope"
+            )
+        self._scope = scope
         self._started = True
+
+    @property
+    def scope(self) -> CanaryConnectorScope:
+        if self._scope is None:
+            raise CanaryContractError("canary scope is unavailable before start")
+        return self._scope
 
     @property
     def status(self) -> AttemptStatus:
