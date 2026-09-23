@@ -12,9 +12,10 @@ WHAT THIS FILE IS
   mapping, credential-binding boundary, live-execution gate, and the pre-live probe packet.
 
 WHAT IT IS NOT
-  Not a live path. No composition root in this repository constructs LiveE2BSandboxTransport, no
-  credential binding is configured, and no owner authorization record exists. Every transport in
-  this tree is therefore either a scripted test fake or a fail-closed refusal.
+  Not a live path. ``e2b_live_composition.py`` is the one composition root that constructs
+  LiveE2BSandboxTransport, and it wires the objects without arming them: no credential binding is
+  configured, no owner authorization record exists, and the composed object refuses before I/O.
+  Every transport in this tree is therefore either a scripted test fake or a fail-closed refusal.
 ```
 
 Two separations are load-bearing, and both are tested rather than asserted in prose:
@@ -129,7 +130,11 @@ E2B_NON_RUNNING_PROVIDER_STATES = ("paused",) + E2B_TERMINAL_PROVIDER_STATES
 
 #: Live-gate state. These are the assertions the review gates read.
 LIVE_CREDENTIAL_BOUND = False
-E2B_LIVE_TRANSPORT_COMPOSITION_ROOT_WIRED = False
+# #2923 wired a source-only composition root (``e2b_live_composition.py``), so this flag now
+# records that the assembled objects exist. It is the only gate flag that moved: what would
+# authorize a real provider call — credential binding, live readiness, live wire verification and
+# the owner's record — is still closed, and a composed transport still refuses before any I/O.
+E2B_LIVE_TRANSPORT_COMPOSITION_ROOT_WIRED = True
 # E2B_LIVE_EXECUTION_READY is imported, not restated: one flag, one authority (#2800/#2802 rule).
 E2B_WIRE_CONTRACT_LIVE_VERIFIED = False
 E2B_OWNER_LIVE_GATE_REQUIRED = True
@@ -435,7 +440,9 @@ class StdlibE2BHttpRequestPort:
     def __init__(self, *, tls_context: ssl.SSLContext | None = None) -> None:
         if tls_context is not None and not isinstance(tls_context, ssl.SSLContext):
             raise E2BWireError("tls_context must be an ssl.SSLContext or omitted")
-        self._context = tls_context or ssl.create_default_context()
+        # Keep construction completely inert. The OS trust store is loaded lazily only after the
+        # live gate and credential boundary have permitted an actual request attempt.
+        self._context = tls_context
 
     def request(
         self,
@@ -461,13 +468,19 @@ class StdlibE2BHttpRequestPort:
             timeout_seconds, "timeout_seconds", minimum=1, maximum=120
         )
 
+        # Loading the default TLS trust store can touch local files. Defer that local I/O
+        # until request(), never during composition/port construction.
+        context = self._context
+        if context is None:
+            context = ssl.create_default_context()
+
         connection: http.client.HTTPSConnection | None = None
         try:
             connection = http.client.HTTPSConnection(
                 E2B_API_HOST,
                 port=E2B_API_PORT,
                 timeout=timeout,
-                context=self._context,
+                context=context,
             )
             connection.request(
                 method,
@@ -979,10 +992,11 @@ def _no_clock() -> datetime:
 
 
 def e2b_live_transport_readiness() -> dict[str, Any]:
-    """Why no live transport exists in this build, as data a reviewer can check.
+    """Why no armed live transport exists in this build, as data a reviewer can check.
 
-    Deliberately not a factory: a function that could return an armed transport would be the
-    composition root, and the composition root is the owner's decision, not this child's.
+    Deliberately not a factory: the composition root lives in ``e2b_live_composition.py`` and only
+    wires the objects, so a reader here still learns nothing that would arm one. Arming stays the
+    owner's decision, not this child's.
     """
     return {
         "composition_root_wired": E2B_LIVE_TRANSPORT_COMPOSITION_ROOT_WIRED,
