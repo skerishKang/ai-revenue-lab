@@ -539,7 +539,11 @@ ACCEPTANCE: dict[str, str] = {
     # package-preserving mutation authority. It is not a full templating
     # capability and claims no insert of any kind.
     "HWPX_TEMPLATE_FILL_FOUNDATION": "PASS",
-    "HWPX_TEMPLATE_FILL": "FOUNDATION_ONLY",
+    # #2989's bounded template_fill slice itself satisfies its acceptance
+    # contract. PASS is intentionally scoped by the next key; it is not a
+    # claim of table/image/style/full-spec templating support.
+    "HWPX_TEMPLATE_FILL": "PASS",
+    "HWPX_TEMPLATE_FILL_SCOPE": "BOUNDED_FOUNDATION",
     "PLACEHOLDER_GRAMMAR_CANONICAL": "SMALLEST_DETERMINISTIC",
     "PACKAGE_PRESERVATION_AUTHORITY_REUSED": "YES",
     "SINGLE_HWPX_MUTATOR_AUTHORITY": "YES",

@@ -703,7 +703,8 @@ class HwpxTemplateFillAuthorityTests(unittest.TestCase):
     def test_acceptance_block_matches_issue_2989(self) -> None:
         expected = {
             "HWPX_TEMPLATE_FILL_FOUNDATION": "PASS",
-            "HWPX_TEMPLATE_FILL": "FOUNDATION_ONLY",
+            "HWPX_TEMPLATE_FILL": "PASS",
+            "HWPX_TEMPLATE_FILL_SCOPE": "BOUNDED_FOUNDATION",
             "PLACEHOLDER_GRAMMAR_CANONICAL": "SMALLEST_DETERMINISTIC",
             "PACKAGE_PRESERVATION_AUTHORITY_REUSED": "YES",
             "SINGLE_HWPX_MUTATOR_AUTHORITY": "YES",
@@ -738,8 +739,10 @@ class HwpxTemplateFillAuthorityTests(unittest.TestCase):
             self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), "NOT_CLAIMED", key)
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_FULL_SPEC_SUPPORT"), "NO")
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("DOCUMENT_EXPORT_HWPX_ENABLED"), "NO")
-        self.assertNotIn(
-            hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL"), {"PASS", "YES"}
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL"), "PASS")
+        self.assertEqual(
+            hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL_SCOPE"),
+            "BOUNDED_FOUNDATION",
         )
 
 

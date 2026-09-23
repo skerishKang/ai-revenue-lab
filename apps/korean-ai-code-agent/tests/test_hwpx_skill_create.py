@@ -603,8 +603,8 @@ class CreateAuthorityContractTests(unittest.TestCase):
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_EDIT"), "FOUNDATION_ONLY")
         self.assertNotIn(hwpx_skill.ACCEPTANCE.get("HWPX_EDIT"), {"PASS", "YES"})
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL_FOUNDATION"), "PASS")
-        self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL"), "FOUNDATION_ONLY")
-        self.assertNotIn(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL"), {"PASS", "YES"})
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL"), "PASS")
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL_SCOPE"), "BOUNDED_FOUNDATION")
         for key in ("TABLE_INSERT", "IMAGE_INSERT"):
             self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), "NOT_CLAIMED", key)
 

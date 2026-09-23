@@ -714,12 +714,12 @@ class HwpxEditAuthorityTests(unittest.TestCase):
             self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), value, key)
 
     def test_edit_never_claims_a_wider_capability(self) -> None:
-        # #2989 claims HWPX_TEMPLATE_FILL as a foundation, so it is no longer
+        # #2989 completes the bounded HWPX_TEMPLATE_FILL slice; broader templating remains
         # unclaimed. It is still never a full capability claim, which the
         # template-fill test module pins; every other later capability stays
         # unclaimed from edit's point of view.
-        self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL"), "FOUNDATION_ONLY")
-        self.assertNotIn(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL"), {"PASS", "YES"})
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL"), "PASS")
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL_SCOPE"), "BOUNDED_FOUNDATION")
         for key in (
             "PARAGRAPH_INSERT",
             "PARAGRAPH_DELETE",
