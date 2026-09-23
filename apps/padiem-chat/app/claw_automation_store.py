@@ -103,6 +103,18 @@ EXECUTION_CLAIM_NEW_CLAIM_TOKEN = False
 EXECUTION_CLAIM_SECOND_RUN_ID = False
 ONE_OCCURRENCE_MAX_CANONICAL_RUNS = 1
 
+# #2987 S2F6B: the server-owned due-workspace discovery foundation may page
+# across workspaces, but only inside this hard ceiling. The bound is a module
+# constant so a caller cannot widen the scan by passing a bigger number.
+#
+# This does NOT turn the adapter into a caller-facing enumeration surface:
+# ``CALLER_LIST_ALL_WORKSPACES`` stays False because no caller supplies a
+# workspace and no unbounded/arbitrary window is reachable -- the only new read
+# is a bounded, cursor-ordered page used by the internal discovery boundary.
+_MAX_CANDIDATE_WORKSPACE_PAGE_SIZE = 200
+SERVER_OWNED_DUE_WORKSPACE_DISCOVERY_READ = True
+CALLER_SUPPLIED_WORKSPACE_FILTER = False
+
 # --- canonical column order -------------------------------------------------
 # The reference store reads rows positionally, so the adapter hands it tuples in
 # exactly the reference's SELECT order. Naming the columns once here keeps every
@@ -172,6 +184,38 @@ _SELECT_PROPOSALS_FOR_WORKSPACE = (
     "SELECT proposal_id, workspace_id, rule_id, channel, title, summary, "
     "approval_required, approval_reason, suggested_action, approved_by, approved_at, "
     "created_at FROM claw_proposals WHERE workspace_id = ?"
+)
+
+# --- server-owned due-workspace discovery reads (#2987 S2F6B) ----------------
+# These reads are the ONLY place this module looks across more than one
+# workspace, and they are deliberately built so that the result can never
+# become a product surface:
+#
+# * The caller supplies no workspace and no tenant. The scan is bounded by a
+#   caller-supplied PAGE SIZE and a monotonic CURSOR that the caller can only
+#   advance, never fabricate an arbitrary window from.
+# * Only workspaces that currently own at least one ENABLED rule are returned.
+#   A disabled-only workspace is intentionally absent, so downstream discovery
+#   cannot be driven by work that is contractually forbidden to execute
+#   (``DISABLED_RULE_DISCOVERY=0``).
+# * Ordering is by ``workspace_id`` (the same deterministic key the index is
+#   built on), so two identical scans observe the same page sequence.
+# * No row content, no rule body, no run, no proposal and no credential is
+#   returned -- only the bounded set of workspace identifiers.
+#
+# This is a storage read, not an authority: it mints no membership, no
+# execution right and no scheduler claim. Whatever consumes it must still
+# revalidate canonical membership before any execution (see
+# ``claw_automation_due_workspace_discovery``).
+_SELECT_CANDIDATE_WORKSPACES_AFTER = (
+    "SELECT DISTINCT workspace_id FROM claw_rules "
+    "WHERE enabled = 1 AND workspace_id > ? "
+    "ORDER BY workspace_id ASC LIMIT ?"
+)
+_SELECT_CANDIDATE_WORKSPACES_FROM_START = (
+    "SELECT DISTINCT workspace_id FROM claw_rules "
+    "WHERE enabled = 1 "
+    "ORDER BY workspace_id ASC LIMIT ?"
 )
 
 # The occurrence primary key is the only dedup authority. `OR IGNORE` makes a
@@ -548,6 +592,54 @@ class D1ClawAutomationStore(ClawAutomationStore):
             )
             for row in rows
         ]
+
+    # --- server-owned due-workspace discovery reads (#2987) -----------------
+    #
+    # Deliberately NOT a product list surface. The method takes no caller
+    # workspace, returns identifiers only, and is bounded by an explicit page
+    # size. It exists so an internal scheduler-side discovery pass can page
+    # through candidate workspaces that currently own at least one enabled rule without ever
+    # handing a caller a tenant-wide enumeration.
+
+    async def list_candidate_workspace_page(
+        self,
+        *,
+        page_size: int,
+        after_workspace_id: str | None = None,
+    ) -> list[str]:
+        """Return ONE bounded, deterministic page of enabled-rule candidate workspaces.
+
+        ``page_size`` is mandatory and bounded by the caller's own scheduler
+        constant; ``after_workspace_id`` is a monotonic cursor from a previous
+        page. A cursor is not an authority: it can only move the page forward
+        through the same deterministic ``workspace_id`` ordering, so a caller
+        can neither skip nor widen the scan arbitrarily.
+
+        Only workspaces with at least one ENABLED rule are returned, and only
+        their identifiers -- never a rule body, a run, a proposal or a
+        credential. This read grants no membership and no execution authority.
+        """
+
+        if isinstance(page_size, bool) or not isinstance(page_size, int):
+            raise ContractError("page_size must be an integer")
+        if page_size <= 0 or page_size > _MAX_CANDIDATE_WORKSPACE_PAGE_SIZE:
+            raise ContractError(
+                f"page_size must be between 1 and {_MAX_CANDIDATE_WORKSPACE_PAGE_SIZE}"
+            )
+        if after_workspace_id is None:
+            rows = await self._all(_SELECT_CANDIDATE_WORKSPACES_FROM_START, page_size)
+        else:
+            if not isinstance(after_workspace_id, str) or not after_workspace_id:
+                raise ContractError("after_workspace_id cursor must be bounded text")
+            rows = await self._all(
+                _SELECT_CANDIDATE_WORKSPACES_AFTER, after_workspace_id, page_size
+            )
+        ordered: list[str] = []
+        for row in rows:
+            workspace = row.get("workspace_id")
+            if isinstance(workspace, str) and workspace and workspace not in ordered:
+                ordered.append(workspace)
+        return ordered
 
     async def claim_execution(
         self,
