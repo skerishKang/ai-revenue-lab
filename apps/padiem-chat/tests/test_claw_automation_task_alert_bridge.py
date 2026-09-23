@@ -308,6 +308,19 @@ async def test_failed_and_cancelled_terminal_rows_are_no_ops_with_zero_writes(st
     assert store.reads == 0
 
 
+def test_terminal_status_allow_list_is_explicit_and_exhaustive():
+    expected_terminal = {
+        ClawScheduledRunStatus.COMPLETED,
+        ClawScheduledRunStatus.FAILED,
+        ClawScheduledRunStatus.CANCELLED,
+    }
+    assert bridge_module._TERMINAL_STATUSES == frozenset(expected_terminal)
+    assert set(ClawScheduledRunStatus) - expected_terminal == {
+        ClawScheduledRunStatus.PENDING,
+        ClawScheduledRunStatus.RUNNING,
+    }
+
+
 @pytest.mark.parametrize(
     "status", [ClawScheduledRunStatus.PENDING, ClawScheduledRunStatus.RUNNING]
 )
