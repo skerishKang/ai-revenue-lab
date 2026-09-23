@@ -217,7 +217,11 @@ class ArmingMixin(unittest.TestCase):
 
 class GateClosedByRepositoryStateTests(unittest.TestCase):
     def test_repository_reports_the_live_gate_closed(self) -> None:
-        self.assertIs(E2B_LIVE_TRANSPORT_COMPOSITION_ROOT_WIRED, False)
+        # #2923 added the source-only composition root (``e2b_live_composition.py``), so this flag
+        # now records that the objects are wired. It is the only one that moved: everything that
+        # would let a request leave the process is still False, and the composed object's own
+        # tests prove it refuses before I/O.
+        self.assertIs(E2B_LIVE_TRANSPORT_COMPOSITION_ROOT_WIRED, True)
         self.assertIs(E2B_LIVE_EXECUTION_READY, False)
         self.assertIs(E2B_REAL_PROVIDER_CALLS, 0)
         self.assertIs(E2B_TRANSPORT_REAL_CALLS_IN_TEST_OR_CI, 0)
@@ -226,8 +230,8 @@ class GateClosedByRepositoryStateTests(unittest.TestCase):
         self.assertIs(transport_module.E2B_OWNER_LIVE_GATE_REQUIRED, True)
 
         readiness = e2b_live_transport_readiness()
-        for key in ("composition_root_wired", "credential_bound", "live_execution_ready",
-                    "wire_contract_live_verified"):
+        self.assertIs(readiness["composition_root_wired"], True)
+        for key in ("credential_bound", "live_execution_ready", "wire_contract_live_verified"):
             with self.subTest(key=key):
                 self.assertIs(readiness[key], False)
         self.assertIs(readiness["owner_live_gate_required"], True)
@@ -340,15 +344,23 @@ class GateClosedByRepositoryStateTests(unittest.TestCase):
         self.assertEqual(port.calls, [])
         self.assertEqual(adapter.active_leases(), ())
 
-    def test_no_product_module_constructs_the_live_transport(self) -> None:
+    def test_only_the_composition_root_names_the_live_transport(self) -> None:
+        # #2923 added the one reviewed composition root. It joins the prototype as the only module
+        # allowed to name the live transport or the pinned-origin port; any other product module
+        # naming either one is still an unreviewed construction path.
+        allowed = {"e2b_provider_transport.py", "e2b_live_composition.py"}
         offenders = [
             path.name
             for path in sorted((ROOT / "src" / "kagent").glob("*.py"))
-            if path.name != "e2b_provider_transport.py"
+            if path.name not in allowed
             and ("LiveE2BSandboxTransport" in path.read_text(encoding="utf-8")
                  or "StdlibE2BHttpRequestPort" in path.read_text(encoding="utf-8"))
         ]
         self.assertEqual(offenders, [])
+        # The exemption is one file, and it is the file that actually assembles the stack.
+        root = (ROOT / "src" / "kagent" / "e2b_live_composition.py").read_text(encoding="utf-8")
+        self.assertIn("LiveE2BSandboxTransport(", root)
+        self.assertIn("StdlibE2BHttpRequestPort(", root)
 
 
 class ArmingTests(ArmingMixin):
