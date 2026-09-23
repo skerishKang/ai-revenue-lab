@@ -1483,31 +1483,7 @@ class SqliteClawAutomationStore:
         # #2833 B2A: owner_ref rides inside the existing notification_channels
         # JSON payload as an additive field — no new table, no new column. Legacy
         # payloads without it simply persist the key's absence.
-        payload_document: dict[str, Any] = {
-                "rule_id": rule.rule_id,
-                "workspace_id": rule.workspace_id,
-                "name": rule.name,
-                "schedule": {"kind": rule.schedule.kind.value, "expression": rule.schedule.expression, "timezone": rule.schedule.timezone},
-                "target_source": rule.target_source.value,
-                "output_type": rule.output_type.value,
-                "enabled": rule.enabled,
-                "notification_channels": [
-                    {"channel": c.channel.value, "enabled": c.enabled, "recipient_ref": c.recipient_ref}
-                    for c in rule.notification_channels
-                ],
-        }
-        if rule.owner_ref is not None:
-            payload_document["owner_ref"] = rule.owner_ref
-        # #2833 S2F1: additive inside the same document — no new table, column or
-        # migration. Absent for legacy and intent-free rules.
-        intent_document = _execution_intent_document(rule.execution_intent)
-        if intent_document is not None:
-            payload_document["execution_intent"] = intent_document
-        payload = json.dumps(
-            payload_document,
-            sort_keys=True,
-            separators=(",", ":"),
-        ).encode("utf-8")
+        payload = self._serialize_rule(rule)
         try:
             self._db.execute(
                 "INSERT INTO claw_rules(rule_id, workspace_id, name, schedule_kind, schedule_expression, schedule_timezone, target_source, output_type, enabled, notification_channels, created_at, updated_at) "
@@ -1881,6 +1857,47 @@ class SqliteClawAutomationStore:
             (occurrence_key, workspace_id),
         ).fetchone()
         return row[0] if row else None
+
+    @staticmethod
+    def _serialize_rule(rule: ClawAutomationRule) -> bytes:
+        """Encode one rule into the single canonical stored-rule payload.
+
+        #2833 B2A: owner_ref rides inside the existing notification_channels
+        JSON payload as an additive field — no new table, no new column. Legacy
+        payloads without it simply persist the key's absence.
+
+        #2833 S2F1: the execution intent is additive inside the same document —
+        no new table, column or migration. Absent for legacy and intent-free
+        rules.
+
+        This is the ONE rule encoder. The durable reference store and any
+        provider adapter must share it, so the two can never drift on what a
+        stored rule means: a second encoder would be a second rule authority.
+        """
+
+        payload_document: dict[str, Any] = {
+                "rule_id": rule.rule_id,
+                "workspace_id": rule.workspace_id,
+                "name": rule.name,
+                "schedule": {"kind": rule.schedule.kind.value, "expression": rule.schedule.expression, "timezone": rule.schedule.timezone},
+                "target_source": rule.target_source.value,
+                "output_type": rule.output_type.value,
+                "enabled": rule.enabled,
+                "notification_channels": [
+                    {"channel": c.channel.value, "enabled": c.enabled, "recipient_ref": c.recipient_ref}
+                    for c in rule.notification_channels
+                ],
+        }
+        if rule.owner_ref is not None:
+            payload_document["owner_ref"] = rule.owner_ref
+        intent_document = _execution_intent_document(rule.execution_intent)
+        if intent_document is not None:
+            payload_document["execution_intent"] = intent_document
+        return json.dumps(
+            payload_document,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
 
     @staticmethod
     def _rule_from_row(row: tuple) -> ClawAutomationRule:
