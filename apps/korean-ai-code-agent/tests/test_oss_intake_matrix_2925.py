@@ -197,6 +197,7 @@ def hwp5_record() -> OSSIntakeRecord:
         credential_ref=PYPI.format(name="hwp5"),
         pin_ref=PROJECT.format(name="hwp5", version="0.1.0"),
         limitations=(
+            "PyPI metadata describes analytics/calendar/ICS productivity functionality, not HWP document handling",
             "project URLs reference github.com/your-username placeholder repositories",
             "license claim is not verifiable against a real source repository",
         ),
@@ -204,8 +205,8 @@ def hwp5_record() -> OSSIntakeRecord:
         adversarial_ref="https://pypi.org/project/hwp5/",
         decision=OSSDecision.REJECTED,
         decision_reason=(
-            "provenance not established: placeholder repository URLs leave commercial "
-            "and redistribution status unknown"
+            "candidate is not HWP document tooling and provenance is not established: placeholder "
+            "repository URLs leave commercial and redistribution status unknown"
         ),
         audits_reviewed=False,
     )
