@@ -1,9 +1,11 @@
 """#2833 S2F3B — bounded Task/Alert output projection foundation.
 
-FOUNDATION ONLY. This bridge is not called from any scheduler, tick, P01 or
-run-history runtime. It performs no owner resolution, no history write, no P01
-dispatch, no provider call, and creates no new persistence authority. It reuses
-the existing Claw memory contracts and the existing D1 task/alert store.
+FOUNDATION + COMPOSITION SEAM. This bridge owns the bounded projection rules and
+is composed by :mod:`app.claw_automation_task_alert_bridge` (#2929 S2F4E) for the
+terminal scheduled-run path. It is still not called from any scheduler, tick or
+P01 runtime. It performs no owner resolution, no history write, no P01 dispatch,
+no provider call, and creates no new persistence authority. It reuses the
+existing Claw memory contracts and the existing D1 task/alert store.
 
 CENTRAL product decision (fixed): Task/Alert records are created ONLY from the
 automation rule's explicit :class:`ClawAutomationOutputType` and a COMPLETED run::
