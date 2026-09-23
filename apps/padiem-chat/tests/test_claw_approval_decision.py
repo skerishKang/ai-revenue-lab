@@ -62,9 +62,9 @@ CONTINUATION_REF = "cont_EngineOpaqueRef_01"
 NEXT_CONTINUATION_REF = "cont_EngineOpaqueRef_02"
 PAUSE_ID = "pause_fake001"
 NEXT_PAUSE_ID = "pause_fake002"
-FUTURE_EXPIRES = FUTURE_EXPIRES_AT.isoformat()
 NOW = datetime(2026, 9, 23, 12, 0, tzinfo=timezone.utc)
 FUTURE_EXPIRES_AT = datetime(2099, 1, 1, tzinfo=timezone.utc)
+FUTURE_EXPIRES = FUTURE_EXPIRES_AT.isoformat()
 AGENT_ID = "b54-padiem-claw"
 APP_ID = "b54-padiem-claw"
 MODEL_ID = "agnes-ai/agnes-3.0-flash"
