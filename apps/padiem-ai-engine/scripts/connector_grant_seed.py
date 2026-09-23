@@ -1,15 +1,22 @@
 """Connector grant seed/revoke/list script for Engine D1 references only.
 
-Supports the reviewed Gmail READ grant plus Google Drive, Telegram and Google
-Calendar READ capability grants. Credential material is never accepted as an
-argument and never read here.
+Supports the reviewed Gmail READ grant plus Google Drive, Telegram, Google
+Calendar and shared Slack READ capability grants. Credential material is never
+accepted as an argument and never read here.
 
 All connector seeding is fail-closed: the caller must provide trusted
 ``binding_ref`` and ``actor_ref`` values produced by the connector's
 server-side authority flow. Gmail accepts only the reviewed readonly scope;
-Drive, Telegram and Calendar accept only the reviewed ``read`` capability. No
-mutation/write capability can be seeded and no synthetic/default refs are
-accepted.
+Drive, Telegram, Calendar and Slack accept only the reviewed ``read``
+capability. No mutation/write capability can be seeded and no synthetic/default
+refs are accepted.
+
+The Slack grant reuses the existing single grant store, the existing canonical
+grant-seed authority and the already-promoted canonical Slack app/agent/
+connector identity (``b54-padiem-claw-slack`` /
+``agent:padiem:claw_slack_reader@1`` / ``connector:slack:workspace@1``). It adds
+no second Slack runtime, credential authority or grant store, and Slack
+send/write/events capabilities stay impossible to seed here.
 
 Default run (no ``--execute``) prints SQL for review. ``--execute`` is a
 separate Production mutation action and remains outside source/CI work.
@@ -40,11 +47,15 @@ from app.connector_bindings import (
     GMAIL_CONNECTOR_ID,
     GMAIL_MAIL_READER_AGENT_ID,
     GMAIL_REFERENCE_APP_ID,
+    SLACK_AGENT_ID,
+    SLACK_CONNECTOR_ID,
+    SLACK_REFERENCE_APP_ID,
     TELEGRAM_AGENT_ID,
     TELEGRAM_REFERENCE_APP_ID,
 )
 from padiem_ai_core.calendar_capability import CALENDAR_CONNECTOR_ID, CalendarCapability
 from padiem_ai_core.drive_capability import DRIVE_CONNECTOR_ID, DriveCapability
+from padiem_ai_core.slack_capability import SlackCapability
 from padiem_ai_core.telegram_capability import TELEGRAM_CONNECTOR_ID, TelegramCapability
 
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
@@ -58,6 +69,7 @@ _ALLOWED_GMAIL_SCOPES = (_CORE_GMAIL_READONLY_SCOPE, _PROVIDER_GMAIL_READONLY_SC
 _ALLOWED_DRIVE_CAPABILITIES = (DriveCapability.READ.value,)
 _ALLOWED_TELEGRAM_CAPABILITIES = (TelegramCapability.READ.value,)
 _ALLOWED_CALENDAR_CAPABILITIES = (CalendarCapability.READ.value,)
+_ALLOWED_SLACK_CAPABILITIES = (SlackCapability.READ.value,)
 
 
 def _now_iso() -> str:
@@ -69,23 +81,27 @@ _CONNECTOR_IDS = {
     "drive": DRIVE_CONNECTOR_ID,
     "telegram": TELEGRAM_CONNECTOR_ID,
     "calendar": CALENDAR_CONNECTOR_ID,
+    "slack": SLACK_CONNECTOR_ID,
 }
 _APP_IDS = {
     "gmail": GMAIL_REFERENCE_APP_ID,
     "drive": DRIVE_REFERENCE_APP_ID,
     "telegram": TELEGRAM_REFERENCE_APP_ID,
     "calendar": CALENDAR_REFERENCE_APP_ID,
+    "slack": SLACK_REFERENCE_APP_ID,
 }
 _AGENT_IDS = {
     "gmail": GMAIL_MAIL_READER_AGENT_ID,
     "drive": DRIVE_AGENT_ID,
     "telegram": TELEGRAM_AGENT_ID,
     "calendar": CALENDAR_AGENT_ID,
+    "slack": SLACK_AGENT_ID,
 }
 _DEFAULT_READ_CAPABILITIES = {
     "drive": [DriveCapability.READ.value],
     "telegram": [TelegramCapability.READ.value],
     "calendar": [CalendarCapability.READ.value],
+    "slack": [SlackCapability.READ.value],
 }
 
 
@@ -160,6 +176,14 @@ def validate_args(args: argparse.Namespace) -> list[str]:
             errors.append(
                 "Calendar capabilities must be exactly ('read',); "
                 "create/update/delete/respond/write is forbidden"
+            )
+    elif args.connector == "slack":
+        if args.scopes:
+            errors.append("scopes are not accepted for Slack grants; use --capabilities read")
+        if tuple(args.capabilities) != _ALLOWED_SLACK_CAPABILITIES:
+            errors.append(
+                "Slack capabilities must be exactly ('read',); "
+                "post_message/reply_thread/update_message/upload_file/send/write is forbidden"
             )
     else:
         if args.scopes:
@@ -252,7 +276,11 @@ def run_d1(sql: str) -> int:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--action", choices=("seed", "revoke", "list"), required=True)
-    parser.add_argument("--connector", choices=("gmail", "drive", "telegram", "calendar"), default="gmail")
+    parser.add_argument(
+        "--connector",
+        choices=("gmail", "drive", "telegram", "calendar", "slack"),
+        default="gmail",
+    )
     parser.add_argument("--app-id", default=None)
     parser.add_argument("--agent-id", default=None)
     parser.add_argument("--binding-ref", default=None)
