@@ -396,7 +396,7 @@ def test_r21_missing_session_fails_closed():
 
 def test_r22_b54_identity_bridge_constants():
     """R22: b54_identity_bridge module constants are correct."""
-    from b54_identity_bridge import B54_PRODUCT_ID
+    from padiem_control_plane.b54_identity_bridge import B54_PRODUCT_ID
     assert B54_PRODUCT_ID == "b54-padiem-claw"
     # Must not equal B62 product
     assert B54_PRODUCT_ID != "b62"

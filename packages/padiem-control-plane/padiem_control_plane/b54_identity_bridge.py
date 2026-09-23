@@ -20,10 +20,17 @@ Fail-closed chain; no step is optional::
         → resolve_or_create_product_link  (product_id="b54-padiem-claw")
         → IdentityLinkState.ACTIVE check
         → CanonicalSubjectRef
+        → resolve_active_memberships      (canonical tenant membership)
+        → exactly 1: use it / 0: canonical personal-tenant policy / >1: fail closed
         → establish_auth_session          (product_id="b54-padiem-claw")
         → session.product_id == "b54-padiem-claw" guard
         → session.subject == subject guard
+        → session.tenant_id == server-derived tenant guard
         → B54BridgedIdentitySession       (bounded, mints no external authority)
+
+A B54 session without a canonical tenant is never returned: the Engine
+``AuthSessionScopeAuthority`` fails closed on an absent tenant, and this bridge
+gives it no default, alias, caller-supplied value, or product/subject reuse.
 """
 
 from __future__ import annotations
@@ -33,8 +40,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Protocol
 
-from padiem_control_plane import (
-    AuthSessionSnapshot,
+from .auth_sessions import AuthSessionSnapshot
+from .contracts import (
     CanonicalSubjectRef,
     IdentityLinkState,
     ProductIdentityLink,
@@ -173,14 +180,16 @@ async def bridge_trusted_b54_server_auth(
     evidence: TrustedB54ServerAuthEvidence,
     *,
     now: datetime | None = None,
-    ensure_personal_tenant: bool = False,
 ) -> B54BridgedIdentitySession:
     """Resolve canonical identity/session from trusted B54 server authentication evidence.
 
-    The injected authority owns canonical identity/account-linking rules and
-    canonical session IDs/revisions.  B54 validates that the returned authority
-    is bound to the already-authenticated product user and cannot outlive the
-    server authentication evidence that established it.
+    The injected authority owns canonical identity/account-linking rules, canonical
+    tenant membership, and canonical session IDs/revisions.  B54 validates that the
+    returned authority is bound to the already-authenticated product user and cannot
+    outlive the server authentication evidence that established it.
+
+    A canonical tenant is mandatory: every returned session carries the tenant the
+    Control Plane derived for this canonical subject.  The caller never supplies one.
 
     Cross-product isolation is enforced by two independent layers:
 
@@ -239,34 +248,7 @@ async def bridge_trusted_b54_server_auth(
         subject_id=link.canonical_subject_id,
     )
 
-    if ensure_personal_tenant:
-        try:
-            memberships = await _maybe_await(
-                authority.resolve_active_memberships(
-                    canonical_subject_id=subject.subject_id,
-                )
-            )
-            if not isinstance(memberships, tuple) or not all(
-                isinstance(item, str) and item for item in memberships
-            ):
-                raise ValueError("invalid tenant membership projection")
-            if len(memberships) == 0:
-                tenant_id = await _maybe_await(authority.create_tenant())
-                if not isinstance(tenant_id, str) or not tenant_id:
-                    raise ValueError("invalid canonical tenant")
-                await _maybe_await(
-                    authority.assign_tenant_membership(
-                        tenant_id=tenant_id,
-                        canonical_subject_id=subject.subject_id,
-                    )
-                )
-            elif len(memberships) > 1:
-                raise ValueError("ambiguous canonical tenant membership")
-        except Exception as exc:
-            raise _bridge_error(
-                "b54_control_plane_tenant_unavailable",
-                "B54 canonical tenant provisioning is unavailable.",
-            ) from exc
+    tenant_id = await _resolve_canonical_tenant(authority, subject)
 
     try:
         session = await _maybe_await(
@@ -294,6 +276,16 @@ async def bridge_trusted_b54_server_auth(
             "B54 canonical auth session does not match the authenticated identity.",
             403,
         )
+    if session.tenant_id != tenant_id:
+        # The canonical store resolves tenancy from active memberships at mint time
+        # and yields no tenant for a zero- or multi-membership subject.  A session
+        # that did not pick up the tenant just resolved here is a broken authority
+        # projection, so it is rejected rather than returned tenant-less.
+        raise _bridge_error(
+            "b54_control_plane_session_tenant_mismatch",
+            "B54 canonical auth session does not carry the resolved canonical tenant.",
+            403,
+        )
     if (
         session.issued_at < evidence.authenticated_at
         or session.expires_at > evidence.expires_at
@@ -319,6 +311,71 @@ async def bridge_trusted_b54_server_auth(
         identity_link=link,
         auth_session=session,
     )
+
+
+async def _resolve_canonical_tenant(
+    authority: TrustedB54ControlPlaneIdentityAuthority,
+    subject: CanonicalSubjectRef,
+) -> str:
+    """Resolve the one canonical tenant for ``subject``, or fail closed.
+
+    Zero membership is provisioned only through the canonical Control Plane
+    personal-tenant authority — the same policy the reviewed password-authenticated
+    B62 login path already uses.  An authority that does not expose that canonical
+    capability is a policy refusal, not a licence to mint a tenant locally or to
+    proceed without one.
+    """
+
+    try:
+        memberships = await _maybe_await(
+            authority.resolve_active_memberships(
+                canonical_subject_id=subject.subject_id,
+            )
+        )
+    except Exception as exc:
+        raise _bridge_error(
+            "b54_control_plane_tenant_unavailable",
+            "B54 canonical tenant resolution is unavailable.",
+        ) from exc
+    if not isinstance(memberships, tuple) or not all(
+        isinstance(item, str) and item for item in memberships
+    ):
+        raise _bridge_error(
+            "b54_control_plane_tenant_invalid",
+            "B54 canonical tenant authority returned an invalid projection.",
+        )
+    if len(memberships) > 1:
+        raise _bridge_error(
+            "b54_control_plane_tenant_ambiguous",
+            "B54 canonical subject has an ambiguous tenant membership.",
+            403,
+        )
+    if len(memberships) == 1:
+        return memberships[0]
+
+    if not callable(getattr(authority, "create_tenant", None)) or not callable(
+        getattr(authority, "assign_tenant_membership", None)
+    ):
+        raise _bridge_error(
+            "b54_control_plane_personal_tenant_not_permitted",
+            "Canonical personal-tenant provisioning is not permitted for B54.",
+        )
+    try:
+        tenant_id = await _maybe_await(authority.create_tenant())
+        if not isinstance(tenant_id, str) or not tenant_id:
+            raise ValueError("invalid canonical tenant")
+        await _maybe_await(
+            authority.assign_tenant_membership(
+                tenant_id=tenant_id,
+                canonical_subject_id=subject.subject_id,
+            )
+        )
+    except Exception as exc:
+        raise _bridge_error(
+            "b54_control_plane_tenant_unavailable",
+            "B54 canonical tenant provisioning is unavailable.",
+        ) from exc
+    return tenant_id
 
 
 def require_active_b54_canonical_session(

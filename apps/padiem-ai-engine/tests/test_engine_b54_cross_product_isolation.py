@@ -35,11 +35,13 @@ class FakeSessionClient:
         return self.payload
 
 
-def _make_session_payload(*, product_id: str, tenant_id: str = "tenant_test") -> dict[str, Any]:
+def _make_session_payload(
+    *, product_id: str, tenant_id: str = "tenant_test", subject_id: str = "user_2964"
+) -> dict[str, Any]:
     return {
         "session_id": _SESSION_ID,
         "product_id": product_id,
-        "subject": {"subject_type": "user", "subject_id": "user_2964"},
+        "subject": {"subject_type": "user", "subject_id": subject_id},
         "issued_at": (_NOW - timedelta(hours=1)).isoformat(),
         "expires_at": (_NOW + timedelta(hours=1)).isoformat(),
         "state": "active",
@@ -144,3 +146,91 @@ def test_product_id_equality_check_is_present_in_source() -> None:
         "product_id == app_id",
         "auth_scope_mismatch",
     )), "Engine product/app_id firewall check must be present in source"
+
+
+# ---------------------------------------------------------------------------
+# Canonical Control Plane product ids (the #2964 pair), not display aliases.
+#
+# The store mints product_id="b62" and product_id="b54-padiem-claw", so those two
+# literals are the only pair a real B54 canonical session can ever arrive with.
+# ---------------------------------------------------------------------------
+
+
+CP_B62_PRODUCT = "b62"
+CP_B54_PRODUCT = "b54-padiem-claw"
+CP_SUBJECT_ID = "sub_" + "ab" * 16
+CP_TENANT_ID = "tenant_" + "cd" * 16
+
+
+async def test_real_cp_b54_session_accepted_by_b54_app() -> None:
+    """ENGINE_ACCEPTS_B54_SESSION_FOR_B54_APP=YES for the canonical product id pair."""
+    authority = AuthSessionScopeAuthority(
+        session_client=FakeSessionClient(
+            _make_session_payload(
+                product_id=CP_B54_PRODUCT, tenant_id=CP_TENANT_ID, subject_id=CP_SUBJECT_ID
+            )
+        ),
+        clock=lambda: _NOW,
+    )
+    scope = await authority.scope_for_request(
+        app_id=CP_B54_PRODUCT, auth_session_id=_SESSION_ID
+    )
+    assert scope.app_id == CP_B54_PRODUCT
+    assert scope.subject_id == CP_SUBJECT_ID
+    assert scope.tenant_id == CP_TENANT_ID
+
+
+async def test_real_cp_b54_session_rejected_by_b62_app() -> None:
+    """ENGINE_REJECTS_B54_SESSION_FOR_B62=YES."""
+    authority = AuthSessionScopeAuthority(
+        session_client=FakeSessionClient(_make_session_payload(product_id=CP_B54_PRODUCT)),
+        clock=lambda: _NOW,
+    )
+    with pytest.raises(DocumentAuthorityError) as exc:
+        await authority.scope_for_request(app_id=CP_B62_PRODUCT, auth_session_id=_SESSION_ID)
+    assert exc.value.code == "auth_scope_mismatch"
+    assert exc.value.status_code == 403
+
+
+async def test_real_cp_b62_session_rejected_by_b54_app() -> None:
+    """ENGINE_REJECTS_B62_SESSION_FOR_B54=YES."""
+    authority = AuthSessionScopeAuthority(
+        session_client=FakeSessionClient(_make_session_payload(product_id=CP_B62_PRODUCT)),
+        clock=lambda: _NOW,
+    )
+    with pytest.raises(DocumentAuthorityError) as exc:
+        await authority.scope_for_request(app_id=CP_B54_PRODUCT, auth_session_id=_SESSION_ID)
+    assert exc.value.code == "auth_scope_mismatch"
+    assert exc.value.status_code == 403
+
+
+# ---------------------------------------------------------------------------
+# Tenant postures the B54 producer must never emit
+# ---------------------------------------------------------------------------
+
+
+async def test_b54_session_without_a_tenant_is_not_defaulted() -> None:
+    """A tenant-less B54 session fails closed: no default, no alias, no fallback."""
+    payload = _make_session_payload(product_id=CP_B54_PRODUCT)
+    payload.pop("tenant_id")
+    authority = AuthSessionScopeAuthority(
+        session_client=FakeSessionClient(payload), clock=lambda: _NOW
+    )
+    with pytest.raises(DocumentAuthorityError) as exc:
+        await authority.scope_for_request(app_id=CP_B54_PRODUCT, auth_session_id=_SESSION_ID)
+    assert exc.value.code == "tenant_unavailable"
+
+
+@pytest.mark.parametrize("alias", [CP_B54_PRODUCT, CP_SUBJECT_ID])
+async def test_b54_tenant_may_not_be_the_product_or_the_subject(alias: str) -> None:
+    authority = AuthSessionScopeAuthority(
+        session_client=FakeSessionClient(
+            _make_session_payload(
+                product_id=CP_B54_PRODUCT, tenant_id=alias, subject_id=alias
+            )
+        ),
+        clock=lambda: _NOW,
+    )
+    with pytest.raises(DocumentAuthorityError) as exc:
+        await authority.scope_for_request(app_id=CP_B54_PRODUCT, auth_session_id=_SESSION_ID)
+    assert exc.value.code == "tenant_unavailable"
