@@ -38,6 +38,7 @@ from .claw_memory_routes import (
 from .calendar_routes import (
     calendar_appointments_create,
     calendar_appointments_list,
+    calendar_item_detail,
     calendar_items,
     calendar_today,
     calendar_upcoming,
@@ -167,6 +168,11 @@ def create_app(
         Route("/api/calendar/today", calendar_today, methods=["GET"]),
         Route("/api/calendar/upcoming", calendar_upcoming, methods=["GET"]),
         Route("/api/calendar/items", calendar_items, methods=["GET"]),
+        Route(
+            "/api/calendar/items/{calendar_item_id}",
+            calendar_item_detail,
+            methods=["GET"],
+        ),
         Route("/api/calendar/work-logs", calendar_work_logs_list, methods=["GET"]),
         Route("/api/calendar/work-logs", calendar_work_logs_create, methods=["POST"]),
         Route("/api/calendar/appointments", calendar_appointments_list, methods=["GET"]),

@@ -1935,7 +1935,7 @@
     }
   }
 
-  function renderClawInboxItems(kind, items) {
+  function renderClawInboxItems(kind, items, focusItemId = "") {
     resetClawInboxState();
     if (!clawInboxList) return;
     clawInboxList.replaceChildren();
@@ -1953,6 +1953,7 @@
       if (typeof id !== "string" || typeof item.title !== "string") return;
       const card = document.createElement("article");
       card.className = "claw-inbox-item";
+      card.dataset.itemId = id;
       card.setAttribute("role", "listitem");
 
       const copy = document.createElement("div");
@@ -1981,9 +1982,17 @@
       card.append(copy, action);
       clawInboxList.appendChild(card);
     });
+    if (focusItemId) {
+      const target = Array.from(clawInboxList.children).find((card) => card.dataset && card.dataset.itemId === focusItemId);
+      if (target) {
+        target.setAttribute("tabindex", "-1");
+        target.focus?.();
+        target.scrollIntoView?.();
+      }
+    }
   }
 
-  async function loadClawInbox(kind) {
+  async function loadClawInbox(kind, focusItemId = "") {
     if (!authState.authenticated || !clawInbox) return;
     setClawInboxLoading();
     try {
@@ -1993,11 +2002,13 @@
       });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || data.ok !== true || !Array.isArray(data.items)) throw new Error("inbox unavailable");
-      renderClawInboxItems(kind, data.items);
+      renderClawInboxItems(kind, data.items, focusItemId);
     } catch (_) {
       setClawInboxError();
     }
   }
+
+  let pendingClawInboxFocusId = "";
 
   function openClawInbox(kind) {
     if (!clawWorkspace || !clawInbox || !authState.authenticated) return;
@@ -2018,7 +2029,14 @@
     closeSidebar();
     syncApprovedMemoryVisibility();
     syncClawRunHistoryVisibility();
-    loadClawInbox(kind);
+    const focusItemId = pendingClawInboxFocusId;
+    pendingClawInboxFocusId = "";
+    loadClawInbox(kind, focusItemId);
+  }
+
+  function openClawInboxTarget(kind, focusItemId) {
+    pendingClawInboxFocusId = focusItemId;
+    openClawInbox(kind);
   }
 
   function openClawWorkspace() {
@@ -2035,6 +2053,33 @@
     syncApprovedMemoryVisibility();
     syncClawRunHistoryVisibility();
   }
+
+  function openClawRunTarget(runId) {
+    pendingClawRunFocusId = runId;
+    openClawWorkspace();
+  }
+
+  window.addEventListener("padiem:calendar-open-link", (event) => {
+    const detail = event && event.detail && typeof event.detail === "object" ? event.detail : {};
+    const kind = typeof detail.kind === "string" ? detail.kind : "";
+    const targetId = typeof detail.targetId === "string" ? detail.targetId : "";
+    if (kind === "claw_session" && /^chat_[0-9a-f]{32}$/.test(targetId)) {
+      void openSavedConversation(targetId);
+      return;
+    }
+    if (kind === "task" && /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(targetId)) {
+      openClawInboxTarget("tasks", targetId);
+      return;
+    }
+    if (kind === "run" && /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/.test(targetId)) {
+      openClawRunTarget(targetId);
+      return;
+    }
+    if (kind === "artifact" && /^doc_[A-Za-z0-9]{32}$/.test(targetId)) {
+      openClawWorkspace();
+      void downloadClawArtifact(targetId, "");
+    }
+  });
 
   // Connectors informational surface (#2779). This dialog reports what Padiem
   // supports at the shared platform layer; it never reads, infers or claims this
@@ -2792,6 +2837,7 @@
   const clawRunHistoryEmpty = document.getElementById("clawRunHistoryEmpty");
 
   let clawRunHistoryInFlight = false;
+  let pendingClawRunFocusId = "";
 
   function setClawRunHistoryStatus(message) {
     if (!clawRunHistoryError) return;
@@ -2904,6 +2950,8 @@
   // Unguarded fetch: callers hold the single-flight flag while awaiting this.
   async function fetchClawRunHistory() {
     if (!clawRunHistory) return;
+    const focusRunId = pendingClawRunFocusId;
+    pendingClawRunFocusId = "";
     setClawRunHistoryStatus("");
     if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = false;
     if (clawRunHistoryList) clawRunHistoryList.hidden = true;
@@ -2926,6 +2974,14 @@
         if (!run || typeof run.run_id !== "string") return;
         clawRunHistoryList?.appendChild(renderClawRunCard(run));
       });
+      if (focusRunId && clawRunHistoryList) {
+        const target = Array.from(clawRunHistoryList.children).find((card) => card.dataset && card.dataset.runId === focusRunId);
+        if (target) {
+          target.setAttribute("tabindex", "-1");
+          target.focus?.();
+          target.scrollIntoView?.();
+        }
+      }
     } catch (error) {
       if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = true;
       setClawRunHistoryStatus(error instanceof Error ? error.message : clawT("claw-runs-error"));
