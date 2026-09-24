@@ -17,7 +17,6 @@ existing Worker membership authority can feed #2987 discovery.
 from __future__ import annotations
 
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -63,11 +62,11 @@ from test_claw_automation_background_execution import (  # noqa: E402
     RecordingHistoryStore,
     RecordingTaskAlertStore,
     make_rule,
-    make_trigger,
     membership,
     resolver,
 )
 from test_claw_automation_due_workspace_discovery import (  # noqa: E402
+    MIGRATION_019_PATH,
     MIGRATION_PATH,
     DictMembershipAuthority,
     ExplodingMembershipAuthority,
@@ -91,7 +90,8 @@ WS_FOUR = "ws_four"
 @pytest.fixture
 def d1_db() -> SqliteD1Binding:
     binding = SqliteD1Binding()
-    binding.conn.executescript(MIGRATION_PATH.read_text(encoding="utf-8"))
+    for path in (MIGRATION_PATH, MIGRATION_019_PATH):
+        binding.conn.executescript(path.read_text(encoding="utf-8"))
     return binding
 
 
