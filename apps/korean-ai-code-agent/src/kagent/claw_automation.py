@@ -30,6 +30,8 @@ except ImportError:  # pragma: no cover - py<3.9 not supported (requires-python>
     ZoneInfo = None  # type: ignore[assignment]
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
+_CANONICAL_TENANT_ID_RE = re.compile(r"^tenant_[0-9a-f]{32}$")
+_CANONICAL_SUBJECT_ID_RE = re.compile(r"^sub_[0-9a-f]{32}$")
 _CONTROL_RE = re.compile(r"[\x01-\x08-]")
 
 
@@ -432,9 +434,14 @@ class ClawAutomationRule:
     # may attach at rule creation; B54/KAgent never interprets its meaning, and
     # it grants no authority of any kind. Absent on legacy rules (None).
     owner_ref: str | None = None
-    # #2833 S2F1: added last and optional, so every existing positional
-    # construction of the earlier fields keeps working. Legacy rules carry None.
+    # #2833 S2F1: execution_intent remains the final dataclass field and
+    # keeps its pre-existing positional slot. The new authority provenance is
+    # declared before it but keyword-only, so it cannot rebind legacy positional
+    # construction and does not disturb the pinned field-order contract.
+    canonical_subject_id: str | None = field(default=None, kw_only=True)
     execution_intent: ClawAutomationExecutionIntent | None = None
+
+
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "rule_id", _safe_id(self.rule_id, "rule_id"))
@@ -473,6 +480,33 @@ class ClawAutomationRule:
             self.execution_intent, ClawAutomationExecutionIntent
         ):
             raise ContractError("execution_intent must be a ClawAutomationExecutionIntent")
+        if self.canonical_subject_id is not None:
+            if (
+                not isinstance(self.canonical_subject_id, str)
+                or not _CANONICAL_SUBJECT_ID_RE.fullmatch(self.canonical_subject_id)
+            ):
+                raise ContractError("canonical_subject_id must be a canonical subject identifier")
+            object.__setattr__(self, "canonical_subject_id", self.canonical_subject_id)
+
+
+
+class ClawAutomationRuleAuthority(str, Enum):
+    CANONICAL_BACKGROUND_ELIGIBLE = "CANONICAL_BACKGROUND_ELIGIBLE"
+    LEGACY_MISSING_SUBJECT = "LEGACY_MISSING_SUBJECT"
+    LEGACY_NONCANONICAL_WORKSPACE = "LEGACY_NONCANONICAL_WORKSPACE"
+
+
+def classify_rule_background_authority(rule: ClawAutomationRule) -> ClawAutomationRuleAuthority:
+    if not _CANONICAL_TENANT_ID_RE.fullmatch(rule.workspace_id):
+        return ClawAutomationRuleAuthority.LEGACY_NONCANONICAL_WORKSPACE
+    if rule.canonical_subject_id is None:
+        return ClawAutomationRuleAuthority.LEGACY_MISSING_SUBJECT
+    return ClawAutomationRuleAuthority.CANONICAL_BACKGROUND_ELIGIBLE
+
+
+CANONICAL_BACKGROUND_ELIGIBLE = ClawAutomationRuleAuthority.CANONICAL_BACKGROUND_ELIGIBLE
+LEGACY_MISSING_SUBJECT = ClawAutomationRuleAuthority.LEGACY_MISSING_SUBJECT
+LEGACY_NONCANONICAL_WORKSPACE = ClawAutomationRuleAuthority.LEGACY_NONCANONICAL_WORKSPACE
 
 
 @dataclass(frozen=True, slots=True)
@@ -884,7 +918,10 @@ class InMemoryClawAutomationStore:
         # it must echo the previously persisted value exactly.
         if previous is not None and previous.owner_ref != rule.owner_ref:
             raise ContractError("rule owner provenance is immutable")
+        if previous is not None and previous.canonical_subject_id != rule.canonical_subject_id:
+            raise ContractError("rule canonical subject provenance is immutable")
         # #2833 S2F1: execution material is immutable after creation as well. A
+
         # legacy rule must not be promoted to an execution-capable one through a
         # generic save/update, and an existing intent must not be swapped or
         # dropped — that would silently change what a scheduled occurrence runs.
@@ -920,7 +957,9 @@ class InMemoryClawAutomationStore:
             notification_channels=rule.notification_channels,
             owner_ref=rule.owner_ref,
             execution_intent=rule.execution_intent,
+            canonical_subject_id=rule.canonical_subject_id,
         )
+
         self._rules[rule_id] = updated
         return updated
 
@@ -1584,8 +1623,14 @@ class SqliteClawAutomationStore:
             "target_source TEXT NOT NULL, output_type TEXT NOT NULL, "
             "enabled INTEGER NOT NULL DEFAULT 1, "
             "notification_channels TEXT NOT NULL DEFAULT '[]', "
-            "created_at TEXT NOT NULL, updated_at TEXT NOT NULL)"
+            "created_at TEXT NOT NULL, updated_at TEXT NOT NULL, "
+            "canonical_subject_id TEXT)"
         )
+        columns = {
+            str(row[1]) for row in self._db.execute("PRAGMA table_info(claw_rules)")
+        }
+        if "canonical_subject_id" not in columns:
+            self._db.execute("ALTER TABLE claw_rules ADD COLUMN canonical_subject_id TEXT")
         self._db.execute(
             "CREATE TABLE IF NOT EXISTS claw_runs ("
             "run_id TEXT PRIMARY KEY, workspace_id TEXT NOT NULL, rule_id TEXT NOT NULL, "
@@ -1608,20 +1653,20 @@ class SqliteClawAutomationStore:
     # --- rule persistence ---
 
     def save_rule(self, rule: ClawAutomationRule) -> None:
-        # #2833 B2A: owner_ref rides inside the existing notification_channels
-        # JSON payload as an additive field — no new table, no new column. Legacy
-        # payloads without it simply persist the key's absence.
+        # owner_ref remains opaque payload provenance; canonical subject provenance
+        # is stored in its own nullable rule column.
         payload = self._serialize_rule(rule)
         try:
             self._db.execute(
-                "INSERT INTO claw_rules(rule_id, workspace_id, name, schedule_kind, schedule_expression, schedule_timezone, target_source, output_type, enabled, notification_channels, created_at, updated_at) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO claw_rules(rule_id, workspace_id, name, schedule_kind, schedule_expression, schedule_timezone, target_source, output_type, enabled, notification_channels, created_at, updated_at, canonical_subject_id) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     rule.rule_id, rule.workspace_id, rule.name,
                     rule.schedule.kind.value, rule.schedule.expression, rule.schedule.timezone,
                     rule.target_source.value, rule.output_type.value,
                     1 if rule.enabled else 0, payload,
                     _iso(datetime.now(timezone.utc)), _iso(datetime.now(timezone.utc)),
+                    rule.canonical_subject_id,
                 ),
             )
         except sqlite3.IntegrityError:
@@ -1637,7 +1682,10 @@ class SqliteClawAutomationStore:
                 raise ContractError("stored automation rule is corrupt") from exc
             if existing_payload.get("owner_ref") != rule.owner_ref:
                 raise ContractError("rule owner provenance is immutable")
+            if existing[12] != rule.canonical_subject_id:
+                raise ContractError("rule canonical subject provenance is immutable")
             # Execution material is immutable here too, checked before any write so
+
             # a generic update can never promote a legacy rule or swap its task.
             if existing_payload.get("execution_intent") != _execution_intent_document(
                 rule.execution_intent
@@ -1661,7 +1709,7 @@ class SqliteClawAutomationStore:
 
     def list_rules(self, workspace_id: str) -> list[ClawAutomationRule]:
         rows = self._db.execute(
-            "SELECT rule_id, workspace_id, name, schedule_kind, schedule_expression, schedule_timezone, target_source, output_type, enabled, notification_channels, created_at, updated_at FROM claw_rules WHERE workspace_id = ?",
+            "SELECT rule_id, workspace_id, name, schedule_kind, schedule_expression, schedule_timezone, target_source, output_type, enabled, notification_channels, created_at, updated_at, canonical_subject_id FROM claw_rules WHERE workspace_id = ?",
             (workspace_id,),
         ).fetchall()
         return [self._rule_from_row(row) for row in rows]
@@ -1685,7 +1733,9 @@ class SqliteClawAutomationStore:
             notification_channels=rule.notification_channels,
             owner_ref=rule.owner_ref,
             execution_intent=rule.execution_intent,
+            canonical_subject_id=rule.canonical_subject_id,
         )
+
         self.save_rule(updated)
         return updated
 
@@ -1967,7 +2017,7 @@ class SqliteClawAutomationStore:
 
     def _get_rule_row(self, rule_id: str) -> tuple | None:
         row = self._db.execute(
-            "SELECT rule_id, workspace_id, name, schedule_kind, schedule_expression, schedule_timezone, target_source, output_type, enabled, notification_channels, created_at, updated_at FROM claw_rules WHERE rule_id = ?",
+            "SELECT rule_id, workspace_id, name, schedule_kind, schedule_expression, schedule_timezone, target_source, output_type, enabled, notification_channels, created_at, updated_at, canonical_subject_id FROM claw_rules WHERE rule_id = ?",
             (rule_id,),
         ).fetchone()
         return row
@@ -2052,6 +2102,8 @@ class SqliteClawAutomationStore:
                 # Same for S2F1 execution material: no key means no intent, and a
                 # legacy rule stays exactly as legacy as it was.
                 execution_intent=_execution_intent_from_document(payload.get("execution_intent")),
+                canonical_subject_id=row[12] if len(row) > 12 else None,
+
             )
         except Exception as exc:
             raise ContractError("stored automation rule is corrupt") from exc

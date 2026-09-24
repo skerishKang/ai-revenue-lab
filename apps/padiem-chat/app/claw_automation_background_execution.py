@@ -81,12 +81,14 @@ from typing import Any, Callable, Protocol
 from kagent.claw_automation import (
     ClawAutomationOutput,
     ClawAutomationRule,
+    ClawAutomationRuleAuthority,
     ClawScheduledRun,
     ClawScheduledRunStatus,
     ContractError,
     _aware_utc,
     _derived_occurrence_id,
     _safe_id,
+    classify_rule_background_authority,
 )
 from kagent.claw_automation_trigger import (
     ClawAutomationTrigger,
@@ -285,6 +287,7 @@ class BackgroundExecutionReceipt:
             "second_run_id": 0,
             "second_dedup_authority": 0,
             "second_owner_authority": 0,
+            "legacy_rule_background_execution": 0,
             "second_p01_authority": 0,
             "second_history_store": 0,
             "second_session_authority": 0,
@@ -647,6 +650,12 @@ async def compose_background_execution(
         if rule is None:
             # Filtered out by the scan, or the rule stopped being executable
             # between the scan and now. It is not a failure: nothing was claimed.
+            continue
+        if (
+            classify_rule_background_authority(rule)
+            is not ClawAutomationRuleAuthority.CANONICAL_BACKGROUND_ELIGIBLE
+        ):
+            failed_before_dispatch.append(run.run_id)
             continue
         owner = await _resolve_owner_or_none(
             resolver=owner_resolver,

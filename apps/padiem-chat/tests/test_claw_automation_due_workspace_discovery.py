@@ -42,8 +42,6 @@ _KAGENT_SRC = _REPO / "apps" / "korean-ai-code-agent" / "src"
 if (_KAGENT_SRC / "kagent" / "__init__.py").exists():
     sys.path.insert(0, str(_KAGENT_SRC))
 
-import kagent  # noqa: E402
-
 from kagent.claw_automation import (  # noqa: E402
     ClawAutomationOutputType,
     ClawAutomationRule,
@@ -72,6 +70,7 @@ from app.claw_automation_due_workspace_discovery import (  # noqa: E402
 from app.claw_automation_store import D1ClawAutomationStore  # noqa: E402
 
 MIGRATION_PATH = _CHAT / "migrations" / "018_claw_automation_durable_store.sql"
+MIGRATION_019_PATH = _CHAT / "migrations" / "019_claw_automation_rule_provenance.sql"
 NOW = datetime(2026, 9, 24, 3, 0, tzinfo=timezone.utc)
 
 
@@ -155,7 +154,8 @@ class SqliteD1Binding:
 @pytest.fixture
 def d1_db() -> SqliteD1Binding:
     binding = SqliteD1Binding()
-    binding.conn.executescript(MIGRATION_PATH.read_text(encoding="utf-8"))
+    for path in (MIGRATION_PATH, MIGRATION_019_PATH):
+        binding.conn.executescript(path.read_text(encoding="utf-8"))
     return binding
 
 
