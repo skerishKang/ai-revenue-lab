@@ -450,7 +450,11 @@ def test_all_direct_root_imports_reference_declared_exports() -> None:
 def test_root_module_attribute_access_is_declared_or_audited_private_surface() -> None:
     exported = set(core.__all__)
     inventory = collect_package_root_consumers()
-    allowed_private = {"__all__", "_TOOL_RUNTIME_EXPORTS"}
+    allowed_private = {
+        "__all__",
+        "_TOOL_RUNTIME_EXPORTS",
+        "_IMAGE_HELPER_EXPORTS",
+    }
 
     undeclared = {
         str(name)
