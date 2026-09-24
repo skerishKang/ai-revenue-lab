@@ -123,6 +123,72 @@ class CloudM1ProviderLaunchProfileTests(unittest.TestCase):
         self.assertEqual(e2b["timeout_action"], "kill")
         self.assertIs(e2b["auto_resume"], False)
 
+    def test_vercel_candidate_and_cloud_m1_request_shape_are_locked(self):
+        self.assertIs(SandboxProviderCandidate("vercel_sandbox"), SandboxProviderCandidate.VERCEL_SANDBOX)
+        profile = build_candidate_launch_profile(SandboxProviderCandidate.VERCEL_SANDBOX)
+        rendered = profile.safe_dict()
+        self.assertEqual(rendered["candidate"], "vercel_sandbox")
+        self.assertEqual(rendered["profile_ref"], "profile:cloud-m1/vercel_sandbox/v1")
+        self.assertEqual(rendered["max_ttl_seconds"], 900)
+        self.assertTrue(rendered["request_shape_ready"])
+        self.assertFalse(rendered["live_execution_ready"])
+        self.assertFalse(rendered["provider_selected"])
+        self.assertFalse(rendered["deployment_approval"])
+        self.assertFalse(rendered["production_ready_claim"])
+        self.assertFalse(rendered["credential_fields"])
+        self.assertFalse(rendered["provider_endpoint_fields"])
+
+        self.assertEqual(
+            profile.setting_map,
+            {
+                "networkPolicy": "deny-all",
+                "persistent": False,
+                "public_port_count": 0,
+                "guest_secret_count": 0,
+                "snapshot_reuse": False,
+                "fork_reuse": False,
+                "getOrCreate": False,
+                "resume": False,
+                "teardown_sequence": "stop_then_permanent_delete",
+                "exact_revision_verification": True,
+                "padiem_wall_clock_ttl_seconds": "lease_ttl_seconds",
+            },
+        )
+        self.assertNotIn("allow_internet_access", profile.setting_map)
+        self.assertNotIn("timeout_action", profile.setting_map)
+        self.assertEqual(
+            profile.unresolved_live_requirements,
+            (
+                "applied_disk_and_process_hard_limits",
+                "provider_metadata_blocking",
+                "privileged_runtime_semantics",
+                "process_tree_death",
+                "exact_teardown_and_non_resurrectability",
+                "bounded_terminal_and_log_behavior",
+                "padiem_wall_clock_ttl_enforcement",
+            ),
+        )
+
+    def test_invalid_candidate_cannot_inherit_a_provider_profile(self):
+        with self.assertRaises(ContractError):
+            build_candidate_launch_profile("vercel")
+        with self.assertRaises(ContractError):
+            build_candidate_launch_profile("e2b_typo")
+
+    def test_vercel_lease_and_ttl_bounds_remain_fail_closed(self):
+        profile = build_candidate_launch_profile(SandboxProviderCandidate.VERCEL_SANDBOX)
+        profile.validate_lease_request(lease(ttl_seconds=900))
+        with self.assertRaises(ContractError):
+            profile.validate_lease_request(lease(ttl_seconds=901))
+        with self.assertRaises(ContractError):
+            profile.validate_lease_request(lease(execution_mode=ExecutionMode.LOCAL))
+        with self.assertRaises(ContractError):
+            profile.validate_lease_request(lease(requested_revision="main"))
+        with self.assertRaises(ContractError):
+            profile.validate_lease_request(lease(network_policy=NetworkPolicy.RESTRICTED))
+        with self.assertRaises(ContractError):
+            build_candidate_launch_profile(SandboxProviderCandidate.VERCEL_SANDBOX, max_ttl_seconds=3601)
+
     def test_cloud_m1_profile_rejects_weakened_shape_duplicate_or_secret_material(self):
         base = build_candidate_launch_profile(SandboxProviderCandidate.E2B)
         with self.assertRaises(ContractError):
@@ -178,6 +244,34 @@ class CloudM1ProviderLiveProbePlanTests(unittest.TestCase):
         self.assertFalse(rendered["provider_selected"])
         self.assertFalse(rendered["security_certification"])
         self.assertFalse(rendered["deployment_approval"])
+
+    def test_vercel_generated_plan_covers_every_control_exactly_once(self):
+        profile = build_candidate_launch_profile(SandboxProviderCandidate.VERCEL_SANDBOX)
+        plan = build_live_probe_plan(profile)
+        self.assertEqual(plan.candidate, SandboxProviderCandidate.VERCEL_SANDBOX)
+        self.assertEqual(plan.plan_ref, "plan:cloud-m1/vercel_sandbox/live-probe-v1")
+        self.assertEqual(plan.launch_profile_ref, profile.profile_ref)
+        self.assertTrue(
+            all(probe.probe_id.startswith("probe:vercel_sandbox/") for probe in plan.probes)
+        )
+        privileged_probe = next(
+            probe for probe in plan.probes if probe.control == "privileged_runtime_disabled"
+        )
+        self.assertIs(privileged_probe.method, ProbeMethod.IN_SANDBOX_NEGATIVE_TEST)
+        self.assertIn("privileged_runtime_semantics", profile.unresolved_live_requirements)
+        self.assertEqual(
+            [probe.control for probe in plan.probes],
+            list(capability_control_names()),
+        )
+        self.assertEqual(len(plan.probes), len(set(probe.control for probe in plan.probes)))
+        plan.validate_profile(profile)
+        rendered = plan.safe_dict()
+        self.assertTrue(rendered["complete_control_coverage"])
+        self.assertFalse(rendered["real_provider_call_executed"])
+        self.assertFalse(rendered["provider_selected"])
+        self.assertFalse(rendered["security_certification"])
+        self.assertFalse(rendered["deployment_approval"])
+        self.assertFalse(rendered["production_ready_claim"])
 
     def test_probe_methods_match_control_type(self):
         profile = build_candidate_launch_profile(SandboxProviderCandidate.E2B)
