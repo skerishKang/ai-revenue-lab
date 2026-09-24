@@ -82,6 +82,28 @@ Do not exhaustively audit hundreds of repositories before implementation. Stop w
 
 For urgent P0 work, parallelize landscape research with architecture/current-source audit. Keep the result on the parent issue unless a genuinely independent long-lived authority boundary requires another issue.
 
+## 4A. In-flight work continuity
+
+Technology scanning is a **parallel decision layer**, not a retroactive stop-the-world gate.
+
+```text
+ALREADY_APPROVED_IN_FLIGHT_WORK=CONTINUE
+TECH_SCAN=PARALLEL
+RETROACTIVE_PAUSE_BY_DEFAULT=NO
+NEXT_SLICE_USES_NEW_ADOPTION_EVIDENCE=YES
+```
+
+Rules:
+
+- work already approved and actively underway continues unless a concrete security, licensing, data-loss, or architectural hazard is discovered;
+- opening a technology scan does not invalidate an accepted work order by itself;
+- scan results primarily govern the next substantial slice, provider/runtime selection, or component swap;
+- if a clearly superior technology is found while work is in flight, prefer finishing a bounded useful slice and then integrating the new technology behind the stable contract, unless stopping immediately saves material waste;
+- existing implementation may become fallback/reference/test-oracle after a better primary is selected;
+- CENTRAL may explicitly pause a specific work item when evidence shows continuing it would be wasteful or unsafe, but the pause must be explicit.
+
+This preserves delivery momentum while still benefiting from newer technology.
+
 ## 5. Adoption modes
 
 Classify each serious candidate as one of:
