@@ -7,8 +7,6 @@ from io import BytesIO
 from pathlib import Path
 
 import pytest
-from pypdf import PdfWriter
-from pypdf.generic import NameObject, NumberObject
 
 from padiem_ai_core.document_normalization import DocumentNormalizationError
 from padiem_ai_core.pdf_render import (
@@ -18,8 +16,13 @@ from padiem_ai_core.pdf_render import (
     render_pdf_pages,
 )
 
+pypdf = pytest.importorskip("pypdf")
 Image = pytest.importorskip("PIL.Image")
 pytest.importorskip("pypdfium2")
+pypdf_generic = import_module("pypdf.generic")
+PdfWriter = pypdf.PdfWriter
+NameObject = pypdf_generic.NameObject
+NumberObject = pypdf_generic.NumberObject
 image_helpers = import_module("padiem_ai_core.image_helpers")
 image_to_pdf = image_helpers.image_to_pdf
 
