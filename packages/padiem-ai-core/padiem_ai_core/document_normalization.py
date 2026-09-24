@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from io import BytesIO
 from pathlib import PurePath, PurePosixPath
@@ -373,9 +374,9 @@ def _hwpx_section_index(name: str) -> int | None:
 hwpx_section_index = _hwpx_section_index
 
 
-# The serializer-owned HWPX shape is a section holding paragraphs that hold a
-# run holding one text node. Any other element in the part is structure this
-# Core subset cannot represent, wherever it sits in the tree.
+# The legacy public projection recognizes only paragraph/run/text nodes. The
+# structured decoder separately recognizes bounded table nodes through the
+# ordered fact layer below.
 _HWPX_CANONICAL_LOCAL_NAMES = frozenset({"p", "runs", "t"})
 
 
@@ -440,6 +441,20 @@ class HwpxSectionBlockFacts:
     has_carriage_return: bool
     blocks: tuple[HwpxSectionBlockFact, ...]
     paragraphs: tuple[HwpxParsedParagraph, ...]
+    structured_unsupported_nodes: int = 0
+    legacy_unsupported_nodes: int = 0
+
+
+_HWPX_SECTION_FACTS: ContextVar[tuple[HwpxSectionBlockFacts, ...] | None] = ContextVar(
+    "hwpx_section_facts",
+    default=None,
+)
+
+
+def _last_hwpx_section_facts() -> tuple[HwpxSectionBlockFacts, ...] | None:
+    """Return facts from the parse that produced the last public projection."""
+
+    return _HWPX_SECTION_FACTS.get()
 
 
 @dataclass(frozen=True, slots=True)
@@ -538,22 +553,31 @@ def _ordered_section_block_facts(*, index: int, root: ElementTree.Element, part:
         has_carriage_return=13 in part,
         blocks=tuple(blocks),
         paragraphs=legacy,
+        structured_unsupported_nodes=sum(
+            1
+            for node in nodes
+            if node is not root and _local_name(node) not in {"p", "runs", "t", "tbl", "tr", "tc"}
+        ),
+        legacy_unsupported_nodes=sum(
+            1
+            for node in nodes
+            if node is not root and _local_name(node) not in {"p", "runs", "t"}
+        ),
     )
 
 
 def parse_hwpx_sections(payload: bytes) -> tuple[HwpxParsedSection, ...]:
-    """Parse an HWPX package once and return per-section paragraph facts.
+    """Parse one HWPX package and return the stable paragraph projection.
 
-    This is the single HWPX archive-and-XML read authority in Core. It runs the
-    existing OOXML archive gate, the existing ZIP member walk and the existing
-    XML parser, and adds no policy of its own: every projection over the result
-    — the flat text of :func:`extract_hwpx_text` and the structured model of
-    ``deserialize_hwpx_package`` — is derived from here, so the two can never
-    disagree about what a package contains.
+    The ordered structured facts from the same archive walk are retained in a
+    private context-local side channel. The decoder reads them immediately after
+    this call, so both projections remain based on exactly one parse without
+    adding fields to the public result type.
     """
 
     validate_ooxml_archive(payload)
     sections: list[HwpxParsedSection] = []
+    fact_sections: list[HwpxSectionBlockFacts] = []
     try:
         with ZipFile(BytesIO(payload)) as archive:
             names = archive.namelist()
@@ -571,32 +595,13 @@ def parse_hwpx_sections(payload: bytes) -> tuple[HwpxParsedSection, ...]:
                 part = archive.read(section_name)
                 root = _parse_xml(part)
                 facts = _ordered_section_block_facts(index=index, root=root, part=part)
-                nodes = list(root.iter())
-                paragraphs: list[HwpxParsedParagraph] = []
-                for paragraph in nodes:
-                    if _local_name(paragraph) != "p":
-                        continue
-                    descendants = list(paragraph.iter())
-                    text_nodes = [node for node in descendants if _local_name(node) == "t"]
-                    paragraphs.append(
-                        HwpxParsedParagraph(
-                            text="".join(node.text or "" for node in text_nodes),
-                            text_nodes=len(text_nodes),
-                            holds_nested_paragraph=any(
-                                node is not paragraph and _local_name(node) == "p" for node in descendants
-                            ),
-                        )
-                    )
+                fact_sections.append(facts)
                 sections.append(
                     HwpxParsedSection(
-                        index=index,
-                        root_tag=root.tag,
-                        unsupported_nodes=sum(
-                            1
-                            for node in nodes
-                            if node is not root and _local_name(node) not in _HWPX_CANONICAL_LOCAL_NAMES
-                        ),
-                        has_carriage_return=13 in part,
+                        index=facts.index,
+                        root_tag=facts.root_tag,
+                        unsupported_nodes=facts.legacy_unsupported_nodes,
+                        has_carriage_return=facts.has_carriage_return,
                         paragraphs=facts.paragraphs,
                     )
                 )
@@ -604,6 +609,7 @@ def parse_hwpx_sections(payload: bytes) -> tuple[HwpxParsedSection, ...]:
         raise
     except (BadZipFile, OSError, ValueError, RuntimeError) as exc:
         raise DocumentNormalizationError("ooxml_malformed", "Malformed OOXML ZIP archive.") from exc
+    _HWPX_SECTION_FACTS.set(tuple(fact_sections))
     return tuple(sections)
 
 
