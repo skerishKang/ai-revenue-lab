@@ -31,7 +31,7 @@ ALLOWED_CHANNEL_ID = "C0AAAAAAA"
 PRIVATE_CHANNEL_ID = "D0BBBBBBB"
 PORT_KWARGS = {
     "bot_token": FAKE_TOKEN,
-    "allowed_channel_ids": frozenset({ALLOWED_CHANNEL_ID, PRIVATE_CHANNEL_ID}),
+    "allowed_channel_ids": frozenset({ALLOWED_CHANNEL_ID}),
 }
 
 AUTH_TEST_RESPONSE = httpx.Response(
@@ -143,7 +143,7 @@ def test_private_channel_returned_only_when_explicitly_enumerated() -> None:
     calls: list = []
     port = HttpxSlackReadPort(
         bot_token=FAKE_TOKEN,
-        allowed_channel_ids=frozenset({ALLOWED_CHANNEL_ID, PRIVATE_CHANNEL_ID}),
+        allowed_channel_ids=frozenset({ALLOWED_CHANNEL_ID}),
         explicitly_private_channel_ids=frozenset({PRIVATE_CHANNEL_ID}),
         transport=_handler([LIST_RESPONSE], calls),
     )
@@ -152,14 +152,77 @@ def test_private_channel_returned_only_when_explicitly_enumerated() -> None:
     assert sorted(ids) == sorted([ALLOWED_CHANNEL_ID, PRIVATE_CHANNEL_ID])
 
 
-def test_private_subset_outside_allowlist_rejected_at_construction() -> None:
+def test_public_and_private_partition_overlap_rejected_at_construction() -> None:
     with pytest.raises(ValueError) as exc_info:
         HttpxSlackReadPort(
             bot_token=FAKE_TOKEN,
             allowed_channel_ids=frozenset({ALLOWED_CHANNEL_ID}),
-            explicitly_private_channel_ids=frozenset({PRIVATE_CHANNEL_ID}),
+            explicitly_private_channel_ids=frozenset({ALLOWED_CHANNEL_ID}),
         )
     assert str(exc_info.value) == "channel_id_invalid"
+
+
+@pytest.mark.parametrize("path", ["/api/conversations.history", "/api/conversations.replies"])
+def test_explicit_private_channel_direct_read_allowed(path: str) -> None:
+    calls: list = []
+    port = HttpxSlackReadPort(
+        bot_token=FAKE_TOKEN,
+        allowed_channel_ids=frozenset({ALLOWED_CHANNEL_ID}),
+        explicitly_private_channel_ids=frozenset({PRIVATE_CHANNEL_ID}),
+        transport=_handler([HISTORY_RESPONSE], calls),
+    )
+    body = _get(port, path=path, query={"channel": PRIVATE_CHANNEL_ID, "ts": "1.0"})
+    assert body["ok"] is True
+    assert len(calls) == 1
+
+
+@pytest.mark.parametrize("path", ["/api/conversations.history", "/api/conversations.replies"])
+def test_unclassified_channel_direct_read_rejects_before_transport(path: str) -> None:
+    calls: list = []
+    port = HttpxSlackReadPort(
+        bot_token=FAKE_TOKEN,
+        allowed_channel_ids=frozenset({ALLOWED_CHANNEL_ID}),
+        transport=_handler([], calls),
+    )
+    with pytest.raises(ValueError) as exc_info:
+        _get(port, path=path, query={"channel": PRIVATE_CHANNEL_ID, "ts": "1.0"})
+    assert str(exc_info.value) == "channel_not_allowed"
+    assert calls == []
+
+
+def test_caller_privacy_assertion_cannot_widen_direct_read() -> None:
+    calls: list = []
+    port = HttpxSlackReadPort(**PORT_KWARGS, transport=_handler([], calls))
+    with pytest.raises(ValueError) as exc_info:
+        _get(
+            port,
+            path="/api/conversations.history",
+            query={"channel": PRIVATE_CHANNEL_ID, "is_private": "false"},
+        )
+    assert str(exc_info.value) == "channel_id_invalid"
+    assert calls == []
+
+
+def test_conversations_list_drops_unknown_privacy() -> None:
+    response = httpx.Response(
+        200,
+        json={
+            "ok": True,
+            "channels": [
+                {"id": ALLOWED_CHANNEL_ID, "name": "missing"},
+                {"id": PRIVATE_CHANNEL_ID, "name": "invalid", "is_private": "false"},
+            ],
+        },
+    )
+    calls: list = []
+    port = HttpxSlackReadPort(
+        bot_token=FAKE_TOKEN,
+        allowed_channel_ids=frozenset({ALLOWED_CHANNEL_ID}),
+        explicitly_private_channel_ids=frozenset({PRIVATE_CHANNEL_ID}),
+        transport=_handler([response], calls),
+    )
+    body = _get(port, path="/api/conversations.list")
+    assert body["channels"] == []
 
 
 def test_scope_not_permitted_rejected() -> None:

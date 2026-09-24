@@ -498,11 +498,10 @@ async def _telegram_grants_for_env(env: Any) -> dict[str, TelegramGrant]:
 def _slack_port_for_env(env: Any) -> HttpxSlackReadPort | None:
     """Resolve the promoted Slack read port (#2356).
 
-    Requires both the bot-token secret and a non-empty server-derived channel
-    allowlist. The optional private-channel subset is only honored for ids
-    already inside the allowlist. Missing or malformed authorities fail closed
-    by returning ``None``; there is no caller-side override and no Google OAuth
-    dependency.
+    Requires both the bot-token secret and non-empty server-derived public
+    and private channel partitions. The two partitions are disjoint; missing,
+    overlapping, or malformed authorities fail closed by returning ``None``.
+    There is no caller-side override and no Google OAuth dependency.
     """
     bot_token = legacy_worker._binding_value(env, ENGINE_SLACK_BOT_TOKEN_ENV)
     allowed_raw = legacy_worker._binding_value(env, ENGINE_SLACK_ALLOWED_CHANNELS_ENV)

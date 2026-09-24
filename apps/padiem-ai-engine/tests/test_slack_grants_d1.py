@@ -56,6 +56,7 @@ def slack_row(**overrides):
         "binding_ref": BINDING_REF,
         "actor_ref": ACTOR_REF,
         "granted_capabilities_json": json.dumps(["read"]),
+        "granted_scopes_json": json.dumps([]),
         "active": 1,
     }
     row.update(overrides)
@@ -73,6 +74,7 @@ def test_load_slack_grants_returns_grants_on_hit() -> None:
     # Reuses the existing table/columns: no new schema surface.
     assert "padiem_engine_connector_grants" in binding.sqls[0]
     assert "granted_capabilities_json" in binding.sqls[0]
+    assert "granted_scopes_json" in binding.sqls[0]
     assert binding.params[0] == (SLACK_CONNECTOR_ID,)
 
 
@@ -94,6 +96,34 @@ def test_load_slack_grants_rejects_write_capabilities() -> None:
         with pytest.raises(ServiceContractError) as exc_info:
             run(store.load_slack_grants())
         assert exc_info.value.code == "connector_grants_unavailable"
+
+
+def test_load_slack_grants_rejects_nonempty_scopes() -> None:
+    for scopes in (["channels:read"], {"scope": "channels:read"}, ["", "channels:read"]):
+        store = CloudflareD1ConnectorGrantStore(
+            FakeD1Binding(rows=[slack_row(granted_scopes_json=json.dumps(scopes))])
+        )
+        with pytest.raises(ServiceContractError) as exc_info:
+            run(store.load_slack_grants())
+        assert exc_info.value.code == "connector_grants_unavailable"
+
+
+def test_load_slack_grants_raises_on_malformed_scope_json() -> None:
+    store = CloudflareD1ConnectorGrantStore(
+        FakeD1Binding(rows=[slack_row(granted_scopes_json="{oops")])
+    )
+    with pytest.raises(ServiceContractError) as exc_info:
+        run(store.load_slack_grants())
+    assert exc_info.value.code == "connector_grants_unavailable"
+
+
+def test_load_slack_grants_raises_on_missing_scope_field() -> None:
+    row = slack_row()
+    del row["granted_scopes_json"]
+    store = CloudflareD1ConnectorGrantStore(FakeD1Binding(rows=[row]))
+    with pytest.raises(ServiceContractError) as exc_info:
+        run(store.load_slack_grants())
+    assert exc_info.value.code == "connector_grants_unavailable"
 
 
 def test_load_slack_grants_raises_on_malformed_json() -> None:
