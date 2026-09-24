@@ -108,3 +108,13 @@ def test_scheduler_workflow_is_source_or_plan_only() -> None:
     assert "CONFIG_MUTATION=0" in workflow
     assert "apply_migration" not in workflow
     assert "deploy_production" not in workflow
+
+def test_pr_workflows_pin_exact_head_without_persisted_credentials() -> None:
+    for relative in (
+        ".github/workflows/b62-automation-scheduler-config-gate.yml",
+        ".github/workflows/b62-automation-canary-gate.yml",
+    ):
+        workflow = (ROOT / relative).read_text(encoding="utf-8")
+        assert "github.event.pull_request.head.sha" in workflow
+        assert "fetch-depth: 1" in workflow
+        assert "persist-credentials: false" in workflow
