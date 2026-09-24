@@ -422,16 +422,16 @@ class HwpxEditOperationRefusalTests(unittest.TestCase):
         self.assertEqual(result.receipt.reason_code, REASON_EDIT_TEXT_REJECTED)
         self.assertIsNone(result.artifact)
 
-    def test_unsupported_table_source_fails_before_editing(self) -> None:
+    def test_table_source_remains_fail_closed_before_editing(self) -> None:
         payload = _table_source()
-        # The source is admitted as a truthful HWPX candidate and refused by the
-        # structured decoder, not by the gate.
+        # #3019 made bounded table structure decodable by Core. This hand-built
+        # legacy fixture is still not byte-canonical for the writable edit subset,
+        # so the existing canonical-source gate must refuse it before mutation.
         self.assertEqual(
             inspect_file("t.hwpx", payload).detected_format, DetectedFormat.HWPX_CANDIDATE
         )
         result = hwpx_edit("t.hwpx", payload, (_replace(0, 0, "수정"),))
-        self.assertEqual(result.receipt.reason_code, REASON_EDIT_SOURCE_DECODER_REJECTED)
-        self.assertEqual(result.receipt.note, "hwpx_unsupported_structure")
+        self.assertEqual(result.receipt.reason_code, REASON_EDIT_SOURCE_NOT_CANONICAL)
         self.assertIsNone(result.artifact)
 
     def test_non_canonical_source_is_refused_by_the_canonical_source_gate(self) -> None:
@@ -939,12 +939,11 @@ class HwpxEditAuthorityOrderTests(unittest.TestCase):
         result = hwpx_edit("doc.hwpx", _png_bytes(), [_replace(0, 0, "수정")])
         self.assertEqual(result.receipt.reason_code, REASON_EDIT_GATE_REJECTED)
 
-    def test_source_decoder_precedes_operation_validation(self) -> None:
-        """A gate-admitted but undecodable source outranks an empty request."""
+    def test_table_source_gate_precedes_operation_validation(self) -> None:
+        """A decoded but non-canonical table source outranks an empty request."""
 
         result = hwpx_edit("t.hwpx", _table_source(), ())
-        self.assertEqual(result.receipt.reason_code, REASON_EDIT_SOURCE_DECODER_REJECTED)
-        self.assertEqual(result.receipt.note, "hwpx_unsupported_structure")
+        self.assertEqual(result.receipt.reason_code, REASON_EDIT_SOURCE_NOT_CANONICAL)
 
     def test_canonical_source_gate_precedes_operation_validation(self) -> None:
         """A readable but non-byte-stable source outranks an empty request."""

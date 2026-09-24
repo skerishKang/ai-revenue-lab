@@ -3,14 +3,6 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from workers import DurableObject, Response, WorkerEntrypoint
-
-from padiem_control_plane.contracts import (
-    CanonicalSubjectRef,
-    ControlPlaneContractError,
-    SubjectType,
-)
-
 from identity_authority_durable import (
     CloudflareCanonicalIdentityAuthorityStore,
     decode_identity_lookup_key,
@@ -20,7 +12,12 @@ from identity_connector_ticket import (
     GoogleConnectTicketIssuer,
     decode_connect_ticket_key,
 )
-
+from padiem_control_plane.contracts import (
+    CanonicalSubjectRef,
+    ControlPlaneContractError,
+    SubjectType,
+)
+from workers import DurableObject, Response, WorkerEntrypoint
 
 _AUTHORITY_REF = "control-plane.identity.production.v1"
 _ALLOWED_PRODUCTS: frozenset[str] = frozenset({"b62", "b54-padiem-claw"})
@@ -30,10 +27,12 @@ _RESOLVE_KEYS = frozenset({"session_id"})
 _CONNECT_KEYS = frozenset({"session_id", "connector_id"})
 _CONNECTOR_WORKSPACE_KEYS = frozenset({"session_id"})
 _SUBJECT_KEYS = frozenset({"subject_type", "subject_id"})
-_TENANT_CREATE_KEYS = frozenset()
+_TENANT_CREATE_KEYS: frozenset[str] = frozenset()
 _TENANT_GET_KEYS = frozenset({"tenant_id"})
 _TENANT_MEMBERSHIP_KEYS = frozenset({"tenant_id", "canonical_subject_id"})
+_TENANT_MEMBERSHIP_ROLE_KEYS = frozenset({"tenant_id", "canonical_subject_id", "role"})
 _TENANT_MEMBERSHIP_READ_KEYS = frozenset({"canonical_subject_id"})
+_TENANT_MEMBERSHIP_RESOLVE_KEYS = frozenset({"tenant_id", "canonical_subject_id", "now"})
 
 
 def _required_env(env: Any, name: str) -> str:
@@ -245,15 +244,28 @@ class CanonicalIdentityDurableObject(DurableObject):
 
     async def assign_tenant_membership(self, payload: dict) -> dict:
         try:
-            wire = _closed(payload, _TENANT_MEMBERSHIP_KEYS, "tenant-membership RPC")
+            if set(payload) == _TENANT_MEMBERSHIP_ROLE_KEYS:
+                wire = _closed(payload, _TENANT_MEMBERSHIP_ROLE_KEYS, "tenant-membership role RPC")
+                role = wire["role"]
+            else:
+                wire = _closed(payload, _TENANT_MEMBERSHIP_KEYS, "tenant-membership RPC")
+                role = None
             membership = self._store.assign_tenant_membership(
                 tenant_id=wire["tenant_id"],
                 canonical_subject_id=wire["canonical_subject_id"],
                 now=datetime.now().astimezone(),
+                role=role,
             )
             return {"ok": True, "membership": membership.to_public_dict()}
-        except ControlPlaneContractError as exc:
-            return _safe_error(exc)
+        except (ControlPlaneContractError, TypeError, ValueError) as exc:
+            if isinstance(exc, ControlPlaneContractError):
+                return _safe_error(exc)
+            return _safe_error(
+                ControlPlaneContractError(
+                    "invalid_identity_authority_rpc",
+                    "canonical identity request is invalid",
+                )
+            )
 
     async def revoke_tenant_membership(self, payload: dict) -> dict:
         try:
@@ -272,6 +284,18 @@ class CanonicalIdentityDurableObject(DurableObject):
             wire = _closed(payload, _TENANT_MEMBERSHIP_READ_KEYS, "tenant-membership read RPC")
             tenant_ids = self._store._active_membership_tenant_ids(wire["canonical_subject_id"])
             return {"ok": True, "tenant_ids": tenant_ids}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
+    async def resolve_active_tenant_membership(self, payload: dict) -> dict:
+        try:
+            wire = _closed(payload, _TENANT_MEMBERSHIP_RESOLVE_KEYS, "sessionless membership resolve RPC")
+            membership = self._store.resolve_active_tenant_membership(
+                tenant_id=wire["tenant_id"],
+                canonical_subject_id=wire["canonical_subject_id"],
+                now=_parse_time(wire["now"], "now"),
+            )
+            return {"ok": True, "membership": membership.to_public_dict()}
         except ControlPlaneContractError as exc:
             return _safe_error(exc)
 
@@ -318,6 +342,9 @@ class Default(WorkerEntrypoint):
     async def resolve_active_memberships(self, payload: dict) -> dict:
         return await self._stub().resolve_active_memberships(payload)
 
+    async def resolve_active_tenant_membership(self, payload: dict) -> dict:
+        return await self._stub().resolve_active_tenant_membership(payload)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -332,6 +359,9 @@ CONNECT_TICKET_ISSUED_BY_CONTROL_PLANE = True
 CLIENT_ACTOR_ACCOUNT_WORKSPACE_AUTHORITY = False
 READ_ONLY_CONNECTOR_WORKSPACE_RPC = True
 READ_ONLY_WORKSPACE_RPC_CREATES_CONTEXT = False
+SESSIONLESS_MEMBERSHIP_RESOLVER = True
+MEMBERSHIP_ROLE_AUTHORITY = True
+DEFAULT_MEMBERSHIP_ROLE = False
 RAW_CONNECT_TICKET_PUBLIC = False
 GOOGLE_WRITE_SCOPE = False
 PUBLIC_FETCH = False
