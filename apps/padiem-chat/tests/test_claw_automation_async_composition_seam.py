@@ -452,3 +452,253 @@ async def test_retry_of_the_same_invocation_executes_exactly_once(d1_store):
     second, history2, _ = await _compose(
         trigger, boundary=boundary, store=d1_store, adapter=adapter,
         receipt=trigger_receipt,
+    )
+    assert len(adapter.calls) == 1
+    assert second.execution_claimed_run_ids == ()
+    assert set(second.projection_only_run_ids) == set(first.terminal_run_ids)
+    assert set(second.running_unresolved_run_ids) == set()
+    # History stays one canonical row per (user, run): the projection authority
+    # owns idempotency, and the second pass never re-executed P01.
+    assert len(history.rows) == 1
+    assert len(history2.rows) == 1
+    rows = await d1_store.list_runs(WORKSPACE)
+    assert [row.status for row in rows] == [ClawScheduledRunStatus.COMPLETED]
+
+
+# ---------------------------------------------------------------------------
+# 2. bounded continuation across the workspace page bound (async store)
+# ---------------------------------------------------------------------------
+
+
+async def test_continuation_across_workspace_page_bound(d1_store):
+    for index, ws in enumerate((WS_ONE, WS_TWO, WS_THREE, WS_FOUR), start=1):
+        await d1_store.save_rule(_rule(ws, f"rule_cont_{index}"))
+    authority = _authority(WS_ONE, WS_TWO, WS_THREE, WS_FOUR)
+    engine = _discovery(d1_store, authority, _async_boundary(d1_store))
+
+    first = await engine.aadiscover_and_trigger(now=NOW, page_size=2, max_workspaces=3)
+    assert first.truncated is True
+    assert first.next_cursor is not None
+    assert len(first.discovered_workspaces) == 3
+    assert first.examined_count == 3
+
+    second = await engine.aadiscover_and_trigger(
+        now=NOW,
+        page_size=2,
+        max_workspaces=3,
+        continuation=first.next_cursor,
+    )
+    assert second.truncated is False
+    assert second.next_cursor is None
+    # The deterministic tail is reached: union of both passes covers all four.
+    assert set(first.discovered_workspaces) | set(second.discovered_workspaces) == {
+        WS_ONE,
+        WS_TWO,
+        WS_THREE,
+        WS_FOUR,
+    }
+    # Each workspace's due occurrence was claimed exactly once across passes.
+    for ws in (WS_ONE, WS_TWO, WS_THREE, WS_FOUR):
+        rows = await d1_store.list_runs(ws)
+        assert len(rows) == 1
+        assert rows[0].status is ClawScheduledRunStatus.PENDING
+    assert {r.observed_at for r in first.triggered_receipts + second.triggered_receipts} == {NOW}
+
+
+# ---------------------------------------------------------------------------
+# 3. membership: zero synthetic grants, skip never executes, absent fails closed
+# ---------------------------------------------------------------------------
+
+
+async def test_absent_membership_authority_fails_the_pass_closed(d1_store):
+    await d1_store.save_rule(make_rule())
+    engine = ClawAutomationDueWorkspaceDiscovery(
+        store=d1_store,
+        membership_authority=None,
+        trigger_boundary=_async_boundary(d1_store),
+    )
+    with pytest.raises(DueWorkspaceDiscoveryError):
+        await engine.aadiscover_and_trigger(now=NOW)
+    assert await d1_store.list_runs(WORKSPACE) == []
+
+
+async def test_unprovable_membership_is_skipped_never_executed(d1_store):
+    await d1_store.save_rule(make_rule())
+    # Authority proves NOTHING for this workspace: skip, never grant.
+    engine = _discovery(d1_store, StaticMembershipAuthority({}), _async_boundary(d1_store))
+    disc = await engine.aadiscover_and_trigger(now=NOW)
+    assert disc.discovered_workspaces == (WORKSPACE,)
+    assert disc.authorized_workspaces == ()
+    assert disc.skipped_workspaces == (WORKSPACE,)
+    assert disc.triggered_receipts == ()
+    assert await d1_store.list_runs(WORKSPACE) == []
+
+
+async def test_lookalike_membership_is_never_synthesized(d1_store):
+    await d1_store.save_rule(make_rule())
+    engine = _discovery(
+        d1_store, DictMembershipAuthority(), _async_boundary(d1_store)
+    )
+    disc = await engine.aadiscover_and_trigger(now=NOW)
+    assert disc.authorized_workspaces == ()
+    assert disc.safe_dict()["synthetic_membership"] is False
+    assert await d1_store.list_runs(WORKSPACE) == []
+
+
+async def test_exploding_membership_authority_skips_instead_of_granting(d1_store):
+    await d1_store.save_rule(make_rule())
+    engine = _discovery(
+        d1_store, ExplodingMembershipAuthority(), _async_boundary(d1_store)
+    )
+    disc = await engine.aadiscover_and_trigger(now=NOW)
+    assert disc.skipped_workspaces == (WORKSPACE,)
+    assert await d1_store.list_runs(WORKSPACE) == []
+
+
+# ---------------------------------------------------------------------------
+# 4. disabled / non-due rules never execute on the async path
+# ---------------------------------------------------------------------------
+
+
+async def test_disabled_only_workspace_is_never_discovered(d1_store):
+    await d1_store.save_rule(_rule(WORKSPACE, "rule_disabled", enabled=False))
+    engine = _discovery(d1_store, _authority(WORKSPACE), _async_boundary(d1_store))
+    disc = await engine.aadiscover_and_trigger(now=NOW)
+    assert disc.discovered_workspaces == ()
+    assert disc.examined_count == 0
+    assert disc.triggered_receipts == ()
+    assert await d1_store.list_runs(WORKSPACE) == []
+
+
+async def test_enabled_but_non_due_rule_claims_nothing(d1_store):
+    await d1_store.save_rule(
+        _rule(WORKSPACE, "rule_not_due", expression="30 8 * * *")
+    )
+    engine = _discovery(d1_store, _authority(WORKSPACE), _async_boundary(d1_store))
+    disc = await engine.aadiscover_and_trigger(now=NOW)
+    assert disc.authorized_workspaces == (WORKSPACE,)
+    assert disc.triggered_receipts[0].created_run_ids == ()
+    assert disc.claimed_run_ids == ()
+    assert await d1_store.list_runs(WORKSPACE) == []
+
+
+# ---------------------------------------------------------------------------
+# 5. missing D1 fails closed with no partial claim
+# ---------------------------------------------------------------------------
+
+
+class _ExplodingAsyncPageStore:
+    async def list_candidate_workspace_page(
+        self, *, page_size: int, after_workspace_id: str | None = None
+    ):
+        raise RuntimeError("d1 unavailable")
+
+
+async def test_missing_d1_fails_closed_before_any_claim(d1_store):
+    boundary = _async_boundary(d1_store)
+    engine = _discovery(
+        _ExplodingAsyncPageStore(), _authority(WORKSPACE), boundary
+    )
+    with pytest.raises(RuntimeError):
+        await engine.aadiscover_and_trigger(now=NOW)
+    assert await d1_store.list_runs(WORKSPACE) == []
+
+
+# ---------------------------------------------------------------------------
+# 6. receipts pin every side effect shut
+# ---------------------------------------------------------------------------
+
+
+async def test_receipts_pin_no_external_side_effect(d1_store):
+    await d1_store.save_rule(make_rule())
+    authority = _authority(WORKSPACE)
+    boundary = _async_boundary(d1_store)
+    engine = _discovery(d1_store, authority, boundary)
+    disc = await engine.aadiscover_and_trigger(now=NOW)
+    trigger_receipt = disc.triggered_receipts[0]
+    adapter = OutcomeAdapter()
+    bg, _, _ = await _compose(
+        _trigger_from(trigger_receipt, authority),
+        boundary=boundary,
+        store=d1_store,
+        adapter=adapter,
+        receipt=trigger_receipt,
+    )
+
+    trigger_payload = trigger_receipt.safe_dict()
+    for marker in (
+        "provider_calls",
+        "external_sends",
+        "connector_writes",
+        "canonical_dispatches",
+        "sandbox_allocations",
+        "catch_up_occurrences",
+    ):
+        assert trigger_payload[marker] == 0, marker
+    assert trigger_payload["production_scheduler"] is False
+
+    discovery_payload = disc.safe_dict()
+    for marker in (
+        "provider_calls",
+        "external_sends",
+        "production_mutation",
+        "synthetic_membership",
+        "worker_scheduled_handler",
+        "production_scheduler_activation",
+    ):
+        expected = True if marker == "worker_scheduled_handler" else (
+            False if marker in {
+                "synthetic_membership",
+                "production_scheduler_activation",
+            } else 0
+        )
+        assert discovery_payload[marker] is expected, marker
+
+    bg_payload = bg.safe_dict()
+    for marker in (
+        "provider_calls",
+        "external_sends",
+        "connector_writes",
+        "real_sandbox_allocations",
+        "second_scheduler_authority",
+        "second_run_id",
+        "second_dedup_authority",
+        "second_owner_authority",
+        "second_p01_authority",
+        "second_history_store",
+        "second_session_authority",
+        "second_task_alert_authority",
+        "production_scheduler_activation",
+        "production_mutation",
+    ):
+        assert bg_payload[marker] == 0, marker
+    assert bg_payload["trigger_receipt_precomputed"] is True
+    for marker in ("secret", "credential", "api_key"):
+        assert marker not in repr(bg_payload)
+
+
+# ---------------------------------------------------------------------------
+# 7. Worker source readiness is present but explicitly gated
+# ---------------------------------------------------------------------------
+
+
+def test_worker_handler_and_cron_source_are_present_but_not_activated():
+    worker_source = (_CHAT / "worker.py").read_text(encoding="utf-8")
+    assert "async def scheduled" in worker_source
+    assert "PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED" in worker_source
+    assert "PRODUCTION_CRON_ACTIVATION = False" in worker_source
+    assert "PRODUCTION_MUTATION = False" in worker_source
+
+    wrangler_source = (_CHAT / "wrangler.toml").read_text(encoding="utf-8")
+    assert "[triggers]" not in wrangler_source
+    assert "crons" not in wrangler_source.lower()
+    assert 'PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"' in wrangler_source
+
+    discovery_source = (
+        _CHAT / "app" / "claw_automation_due_workspace_discovery.py"
+    ).read_text(encoding="utf-8")
+    assert "WORKER_SCHEDULED_HANDLER = True" in discovery_source
+    assert "CRON_SOURCE_DECLARATION = False" in discovery_source
+    assert "BACKGROUND_SCHEDULER_SOURCE_READY = True" in discovery_source
+    assert "REAL_CLOUD_CRON_REGISTRATION = False" in discovery_source
+    assert "PRODUCTION_SCHEDULER_ACTIVATION = False" in discovery_source
