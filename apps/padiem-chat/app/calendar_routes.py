@@ -4,6 +4,7 @@ Provides bounded, owner/workspace-scoped calendar endpoints:
 - GET /api/calendar/today — today view projection for explicit timezone
 - GET /api/calendar/upcoming — upcoming appointments and deadlines
 - GET /api/calendar/items — date range projection (Day/Week/Month backend reuse)
+- GET /api/calendar/items/{calendar_item_id} — bounded item detail and trusted link-backs
 - POST /api/calendar/work-logs — record native daily work log
 - GET /api/calendar/work-logs — list native work logs
 - POST /api/calendar/appointments — record native appointment (date-only, all-day, timed)
@@ -36,6 +37,7 @@ from .calendar_contracts import (
     validate_timezone,
 )
 from .calendar_projection import (
+    build_item_detail_projection,
     build_range_projection,
     build_today_projection,
     build_upcoming_projection,
@@ -289,6 +291,58 @@ async def calendar_items(request: Request) -> JSONResponse:
 
     return JSONResponse(
         {"ok": True, "projection": projection},
+        status_code=200,
+        headers=_NO_STORE_HEADERS,
+    )
+
+
+async def calendar_item_detail(request: Request) -> JSONResponse:
+    uid = _require_owner(request)
+    if uid is None:
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+
+    tz_param = request.query_params.get("timezone")
+    if not tz_param:
+        return _error(
+            400,
+            "timezone_required",
+            "명시적 timezone 파라미터가 필요합니다. 서버 로컬 시간대 추론은 허용되지 않습니다.",
+        )
+    try:
+        validate_timezone(tz_param)
+    except CalendarContractError as exc:
+        return _error(400, exc.code, exc.message)
+
+    calendar_item_id = request.path_params.get("calendar_item_id", "")
+    store = _get_calendar_store(request)
+    if store is None:
+        return _error(503, "calendar_store_unavailable", "캘린더 저장소를 사용할 수 없습니다.")
+
+    workspace_id = await _resolve_memory_workspace(request, uid)
+    task_alert_store = getattr(request.app.state, "claw_task_alert_store", None)
+    history_store = getattr(request.app.state, "history_store", None)
+    automation_store = getattr(request.app.state, "claw_automation_store", None)
+
+    try:
+        detail = await build_item_detail_projection(
+            calendar_item_id=calendar_item_id,
+            workspace_id=workspace_id,
+            tz_name=tz_param,
+            calendar_store=store,
+            task_alert_store=task_alert_store,
+            history_store=history_store,
+            automation_store=automation_store,
+            user_id=uid,
+        )
+    except CalendarContractError as exc:
+        if exc.code == "calendar_item_not_found":
+            return _error(404, "calendar_item_not_found", "캘린더 항목을 찾을 수 없습니다.")
+        return _error(400, exc.code, exc.message)
+    except Exception:
+        return _error(500, "detail_read_failed", "캘린더 항목 상세를 불러오지 못했습니다.")
+
+    return JSONResponse(
+        {"ok": True, "detail": detail},
         status_code=200,
         headers=_NO_STORE_HEADERS,
     )
