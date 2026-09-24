@@ -13,8 +13,9 @@ except ModuleNotFoundError:  # pragma: no cover
     PdfWriter = None
     DecodedStreamObject = DictionaryObject = NameObject = None
 
+from kagent.claw_skill_registry import CAPABILITY_PDF_INSPECT, CAPABILITY_PDF_READ
 from kagent.file_intake_safety import DetectedFormat
-from kagent.pdf_inspection import inspect_pdf_document
+from kagent.pdf_inspection import PDF_CAPABILITY_IDS, inspect_pdf_document
 
 
 class PdfInspectionCompositionTests(unittest.TestCase):
@@ -60,6 +61,12 @@ class PdfInspectionCompositionTests(unittest.TestCase):
         self.assertIsNotNone(result.inspection)
         assert result.inspection is not None
         self.assertEqual(result.inspection.pages[0].page_number, 1)
+        self.assertTrue(result.native_text_available)
+        self.assertEqual(result.native_text_state, "native_text_present")
+        self.assertEqual(
+            PDF_CAPABILITY_IDS,
+            (CAPABILITY_PDF_INSPECT, CAPABILITY_PDF_READ),
+        )
         self.assertIs(result.gate.detected_format, DetectedFormat.PDF)
 
     def test_denied_pdf_never_reaches_core_reader(self) -> None:
@@ -68,4 +75,15 @@ class PdfInspectionCompositionTests(unittest.TestCase):
             result = inspect_pdf_document("spoofed.pdf", b"\x89PNG\r\n\x1a\n")
         self.assertFalse(result.safe_to_read)
         self.assertIsNone(result.inspection)
+        self.assertIsNone(result.native_text_available)
+        self.assertIsNone(result.native_text_state)
         reader.assert_not_called()
+
+    def test_textless_pdf_reports_bounded_native_text_absence(self) -> None:
+        result = inspect_pdf_document("scan.pdf", self._pdf_or_skip(""))
+        self.assertTrue(result.safe_to_read)
+        self.assertFalse(result.native_text_available)
+        self.assertEqual(
+            result.native_text_state,
+            "no_native_text_ocr_may_be_required",
+        )
