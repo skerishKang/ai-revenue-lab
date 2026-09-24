@@ -47,12 +47,13 @@ class ScheduledAutomationExecutionReceipt:
             "second_p01_authority": False,
             "second_history_store": False,
             "second_task_alert_authority": False,
-            "external_send": False,
-            "provider_calls": 0,
-            "external_write": 0,
-            "connector_write": 0,
-            "production_mutation": 0,
-            "production_d1_mutation": 0,
+            # This receipt does not observe side effects performed by the injected
+            # existing P01/store/history/projection authorities. It must therefore
+            # never assert that the composed execution had zero provider calls or
+            # zero application-state writes.
+            "downstream_side_effects_observed": False,
+            "production_config_mutation": 0,
+            "production_migration_mutation": 0,
             "workflow_dispatch": 0,
         }
 
