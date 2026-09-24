@@ -463,7 +463,7 @@ def _to_output_mode(image: Image.Image, output_format: str) -> Image.Image:
         return image.convert("RGB")
 
     # PNG and WEBP keep alpha.
-    if _has_alpha(image):
+    if _has_alpha(image) or image.mode in {"P", "PA"}:
         return image.convert("RGBA")
     if image.mode in {"RGB", "RGBA", "L"}:
         return image
@@ -643,7 +643,17 @@ def transform_image(
 
         _check_pixels(working.width, working.height, output=True)
 
+        # Mode normalization runs first because it is what resolves a palette
+        # image's per-entry transparency into a real alpha band.
         encoded_stage = _to_output_mode(working, output_format)
+
+        # ``copy``/``convert`` carry the decoder's ``info`` dict forward, and the
+        # PNG encoder in particular falls back to ``im.info["icc_profile"]`` when
+        # the caller passes no explicit profile. Dropping the dict is therefore
+        # what actually enforces the sanitation contract; the only profile that
+        # may reach an encoder is the one passed explicitly below.
+        encoded_stage.info.clear()
+
         encoded = _encode(encoded_stage, output_format, icc_profile)
         return ImageOutput(
             data=encoded,
@@ -692,8 +702,8 @@ def thumbnail_image(
             if normalize_orientation
             else None
         )
-        # The pre-transpose geometry is what a viewer would display, so the box
-        # must be fitted against it rather than against the stored pixels.
+        # The pre-transpose geometry is what a viewer displays, so fit the
+        # requested preview box against that display geometry.
         display_size = image.size[::-1] if orientation in {5, 6, 7, 8} else image.size
         target = _fit_within(display_size[0], display_size[1], size)
     finally:
