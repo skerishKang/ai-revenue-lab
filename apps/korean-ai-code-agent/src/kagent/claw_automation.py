@@ -434,11 +434,12 @@ class ClawAutomationRule:
     # may attach at rule creation; B54/KAgent never interprets its meaning, and
     # it grants no authority of any kind. Absent on legacy rules (None).
     owner_ref: str | None = None
-    # #2833 S2F1: execution_intent was the pre-existing final positional
-    # field. Keep that positional slot stable; the new authority provenance is
-    # keyword-only so legacy positional construction cannot be rebound.
-    execution_intent: ClawAutomationExecutionIntent | None = None
+    # #2833 S2F1: execution_intent remains the final dataclass field and
+    # keeps its pre-existing positional slot. The new authority provenance is
+    # declared before it but keyword-only, so it cannot rebind legacy positional
+    # construction and does not disturb the pinned field-order contract.
     canonical_subject_id: str | None = field(default=None, kw_only=True)
+    execution_intent: ClawAutomationExecutionIntent | None = None
 
 
 
