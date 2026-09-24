@@ -106,6 +106,10 @@ jobs:
       # Pillow is intentionally absent from KAgent base dependencies. The exact
       # verified wheel above is the only image runtime admitted into this lane;
       # later dependency installation must not re-resolve or widen that runtime.
+      # KAgent itself is exercised from ``src`` below rather than installed as an
+      # editable distribution. An editable .pth would make the reviewed parser
+      # child importable even when a test deliberately empties PYTHONPATH, so the
+      # real import-failure contract would be invalidated.
       - name: Install monorepo conformance dependencies
         working-directory: apps/korean-ai-code-agent
         shell: bash
@@ -113,7 +117,6 @@ jobs:
           set -euo pipefail
           python -m pip install --disable-pip-version-check \
             -e "../../packages/padiem-ai-core[tools,documents]"
-          python -m pip install --disable-pip-version-check -e .
           python -m pip install --disable-pip-version-check \
             -e "../../packages/padiem-control-plane"
           python -m pip install --disable-pip-version-check \
