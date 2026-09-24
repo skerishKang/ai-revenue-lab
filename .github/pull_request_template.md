@@ -10,6 +10,20 @@
 
 State the smallest product/business question this change is intended to answer.
 
+## Technology adoption / build decision
+
+For substantial new commodity capability work:
+
+- Landscape scan required? yes/no + reason:
+- Parent adoption decision:
+- Internal/OSS/commercial candidates reviewed:
+- Selected approach:
+- Adoption mode:
+- Upstream version/commit:
+- License/model-artifact/commercial posture:
+- `SECOND_PRODUCT_AUTHORITY=0`:
+- `BUILD_FROM_SCRATCH_JUSTIFIED=YES/NO/N/A`:
+
 ## Scope
 
 - Allowed paths:
@@ -87,6 +101,7 @@ For Git-connected projects, an authorized merge to the configured Production bra
 
 - [ ] Current remote main/head/diff were re-read before final review.
 - [ ] Acceptance criteria are demonstrated for the exact reviewed revision.
+- [ ] Required technology-landscape/adoption evidence exists, or the parent decision makes it N/A.
 - [ ] No unrelated files are included.
 - [ ] Failed/skipped/unexecuted checks are reported truthfully.
 - [ ] No secrets, tokens, credentials, personal data, or private evidence were committed.
