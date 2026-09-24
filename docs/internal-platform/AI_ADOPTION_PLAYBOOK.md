@@ -207,7 +207,31 @@ LoveTree save semantics = PRODUCT_ADAPTER
 
 LoveBud therefore does not duplicate Core Web Runtime, provider routing, or another product's Engine credential.
 
-## 7. Platform discoverability
+## 7. Replaceable implementation slots
+
+For commodity technology, prefer one Padiem-facing contract with replaceable implementations.
+
+Examples:
+
+```text
+OCRRuntime
+  -> current deterministic implementation
+  -> candidate DeepSeek/Paddle/Hunyuan/etc adapter
+
+PDFRenderer
+  -> current embedded-image subset
+  -> candidate renderer/toolkit adapter
+
+SandboxProvider
+  -> current fake/pre-live adapter
+  -> candidate managed provider adapter
+```
+
+A better technology may replace the primary implementation even after custom code has already landed. Do not remove the old implementation until contract parity, benchmark evidence and rollback are established unless a security/license issue requires immediate retirement.
+
+Use shared conformance tests so implementations are interchangeable rather than deeply entangled with product code.
+
+## 8. Platform discoverability
 
 Use the Portfolio Console `Internal Platform` view or `INTERNAL_PLATFORM_REGISTRY.md` to locate the component before starting a new architecture lane.
 
