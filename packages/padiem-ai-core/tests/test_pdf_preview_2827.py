@@ -7,20 +7,19 @@ from io import BytesIO
 from pathlib import Path
 
 import pytest
-from PIL import Image
 from pypdf import PdfWriter
 
 from padiem_ai_core.document_normalization import DocumentNormalizationError
-from padiem_ai_core.image_helpers import image_to_pdf
-from padiem_ai_core.pdf_preview import (
-    MAX_PDF_PREVIEW_EDGE,
-    PDF_PREVIEW_PAGE_STATUS_EMBEDDED,
-    PDF_PREVIEW_PAGE_STATUS_NONE,
-    PDF_PREVIEW_SCOPE,
-    render_pdf_embedded_image_previews,
-)
 
+Image = pytest.importorskip("PIL.Image")
 pdf_preview = import_module("padiem_ai_core.pdf_preview")
+image_helpers = import_module("padiem_ai_core.image_helpers")
+image_to_pdf = image_helpers.image_to_pdf
+MAX_PDF_PREVIEW_EDGE = pdf_preview.MAX_PDF_PREVIEW_EDGE
+PDF_PREVIEW_PAGE_STATUS_EMBEDDED = pdf_preview.PDF_PREVIEW_PAGE_STATUS_EMBEDDED
+PDF_PREVIEW_PAGE_STATUS_NONE = pdf_preview.PDF_PREVIEW_PAGE_STATUS_NONE
+PDF_PREVIEW_SCOPE = pdf_preview.PDF_PREVIEW_SCOPE
+render_pdf_embedded_image_previews = pdf_preview.render_pdf_embedded_image_previews
 
 
 def _image_bytes(
