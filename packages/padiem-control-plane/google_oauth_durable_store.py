@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
 import json
 import re
-from typing import Any, Callable, TypeVar
+from collections.abc import Callable
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+from enum import Enum
+from typing import Any, TypeVar
 
 from padiem_control_plane.contracts import ControlPlaneContractError
 
@@ -263,6 +265,84 @@ class DurableGoogleOAuthCredential:
             "raw_refresh_token": False,
             "raw_access_token": False,
             "raw_client_secret": False,
+        }
+
+
+class GoogleOAuthBindingSelectionStatus(str, Enum):
+    NOT_CONNECTED = "not_connected"
+    RESOLVED = "resolved"
+
+
+@dataclass(frozen=True, slots=True)
+class GoogleOAuthBindingSelection:
+    """Private identity selection result; never a public workspace projection."""
+
+    status: GoogleOAuthBindingSelectionStatus
+    connector_id: str
+    workspace_ref: str
+    binding_ref: str | None = None
+    actor_ref: str | None = None
+    account_ref: str | None = None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.status, GoogleOAuthBindingSelectionStatus):
+            try:
+                object.__setattr__(self, "status", GoogleOAuthBindingSelectionStatus(self.status))
+            except (TypeError, ValueError) as exc:
+                raise ControlPlaneContractError(
+                    "invalid_google_oauth_binding_selection",
+                    "selection status must be not_connected or resolved",
+                ) from exc
+        object.__setattr__(self, "connector_id", _safe_ref(self.connector_id, "connector_id"))
+        object.__setattr__(self, "workspace_ref", _safe_ref(self.workspace_ref, "workspace_ref"))
+        if self.connector_id != "google-calendar":
+            raise ControlPlaneContractError(
+                "invalid_google_oauth_binding_selection",
+                "binding selection is restricted to google-calendar",
+            )
+        if self.status is GoogleOAuthBindingSelectionStatus.RESOLVED:
+            for name in ("binding_ref", "actor_ref", "account_ref"):
+                object.__setattr__(self, name, _safe_ref(getattr(self, name), name))
+        elif any(value is not None for value in (self.binding_ref, self.actor_ref, self.account_ref)):
+            raise ControlPlaneContractError(
+                "invalid_google_oauth_binding_selection",
+                "not_connected selection cannot carry identity",
+            )
+
+    @property
+    def resolved(self) -> bool:
+        return self.status is GoogleOAuthBindingSelectionStatus.RESOLVED
+
+    def to_private_dict(self) -> dict[str, Any]:
+        """Return the minimum identity for a trusted private caller only."""
+
+        result: dict[str, Any] = {
+            "status": self.status.value,
+            "connector_id": self.connector_id,
+            "workspace_ref": self.workspace_ref,
+        }
+        if self.resolved:
+            result.update(
+                {
+                    "binding_ref": self.binding_ref,
+                    "actor_ref": self.actor_ref,
+                    "account_ref": self.account_ref,
+                }
+            )
+        return result
+
+    def to_bounded_dict(self) -> dict[str, Any]:
+        """Return a public-safe status projection without identity fields."""
+
+        return {
+            "status": self.status.value,
+            "connector_id": self.connector_id,
+            "usable": self.resolved,
+            "identity_projection": False,
+            "raw_refresh_token": False,
+            "sealed_refresh_token": False,
+            "access_token": False,
+            "provider_payload": False,
         }
 
 
@@ -597,6 +677,96 @@ class CloudflareDurableGoogleOAuthStore:
             )
         return record
 
+    def select_active_calendar_binding(
+        self,
+        *,
+        workspace_ref: str,
+        now: datetime,
+    ) -> GoogleOAuthBindingSelection:
+        """Select one private Calendar identity from a trusted workspace context.
+
+        This is a private Control Plane primitive, not a public route. The
+        workspace must be supplied by a server-derived authority; the method
+        never accepts a caller-selected workspace as an authority signal. It
+        reads only identity and validity metadata, never the sealed refresh
+        token, and never picks a winner from duplicate usable rows.
+        """
+
+        workspace_ref = _safe_ref(workspace_ref, "workspace_ref")
+        now = _utc(now, "now")
+        rows = _rows(
+            self._sql.exec(
+                "SELECT binding_ref, connector_id, actor_ref, account_ref, workspace_ref, "
+                "scopes_json, expires_at, revoked_at "
+                "FROM google_oauth_refresh_credential "
+                "WHERE workspace_ref = ? AND connector_id = ?",
+                workspace_ref,
+                CALENDAR_OAUTH_REVIEWED_CONNECTOR,
+            )
+        )
+        usable: list[dict[str, Any]] = []
+        for row in rows:
+            row_connector = _row_value(row, "connector_id")
+            row_workspace = _row_value(row, "workspace_ref")
+            if row_connector != CALENDAR_OAUTH_REVIEWED_CONNECTOR:
+                raise ControlPlaneContractError(
+                    "google_oauth_connector_mismatch",
+                    "Calendar binding selector returned a different connector",
+                )
+            if row_workspace != workspace_ref:
+                raise ControlPlaneContractError(
+                    "google_oauth_workspace_mismatch",
+                    "Calendar binding selector returned a different workspace",
+                )
+            revoked_text = _row_value(row, "revoked_at")
+            if revoked_text is not None:
+                continue
+            expires_text = _row_value(row, "expires_at")
+            if expires_text is not None and now >= _parse_iso(expires_text, "expires_at"):
+                continue
+            try:
+                scopes = json.loads(_row_value(row, "scopes_json"))
+            except (TypeError, json.JSONDecodeError) as exc:
+                raise ControlPlaneContractError(
+                    "google_oauth_scope_mismatch",
+                    "Calendar binding scope metadata is invalid",
+                ) from exc
+            if not isinstance(scopes, list) or scopes != [GOOGLE_CALENDAR_READONLY_SCOPE]:
+                raise ControlPlaneContractError(
+                    "google_oauth_scope_mismatch",
+                    "Calendar binding must have exactly the reviewed readonly scope",
+                )
+            usable.append(
+                {
+                    "binding_ref": _row_value(row, "binding_ref"),
+                    "connector_id": row_connector,
+                    "actor_ref": _row_value(row, "actor_ref"),
+                    "account_ref": _row_value(row, "account_ref"),
+                    "workspace_ref": row_workspace,
+                }
+            )
+
+        if len(usable) > 1:
+            raise ControlPlaneContractError(
+                "ambiguous_google_oauth_binding",
+                "multiple usable Calendar bindings exist for the trusted workspace",
+            )
+        if not usable:
+            return GoogleOAuthBindingSelection(
+                status=GoogleOAuthBindingSelectionStatus.NOT_CONNECTED,
+                connector_id=CALENDAR_OAUTH_REVIEWED_CONNECTOR,
+                workspace_ref=workspace_ref,
+            )
+        selected = usable[0]
+        return GoogleOAuthBindingSelection(
+            status=GoogleOAuthBindingSelectionStatus.RESOLVED,
+            connector_id=selected["connector_id"],
+            workspace_ref=selected["workspace_ref"],
+            binding_ref=selected["binding_ref"],
+            actor_ref=selected["actor_ref"],
+            account_ref=selected["account_ref"],
+        )
+
     def revoke_credential(self, *, binding_ref: str, revoked_at: datetime) -> None:
         binding_ref = _safe_ref(binding_ref, "binding_ref")
         revoked_at = _utc(revoked_at, "revoked_at")
@@ -744,6 +914,10 @@ class CloudflareDurableGoogleOAuthStore:
             "raw_refresh_token_persisted": False,
             "raw_pkce_verifier_persisted": False,
             "raw_connect_ticket_persisted": False,
+            "calendar_binding_selection_private_only": CALENDAR_BINDING_SELECTION_PRIVATE_ONLY,
+            "calendar_binding_selection_public_route": CALENDAR_BINDING_SELECTION_PUBLIC_ROUTE,
+            "calendar_binding_selection_identity_projection": False,
+            "calendar_binding_selection_raw_credential_output": False,
             "cryptography_implemented_here": False,
             "webcrypto_sealer_required": True,
             "production_deployment": False,
@@ -766,6 +940,13 @@ WORKSPACE_READ_REQUIRES_EXACT_WORKSPACE_REF = True
 WORKSPACE_READ_CONNECTOR_SCOPE = ("gmail", "google-drive")
 # #2830_WORKSPACE_STATUS_SURFACE_WIDENED=NO
 CALENDAR_OAUTH_REVIEWED_CONNECTOR = "google-calendar"
+CALENDAR_BINDING_SELECTION_PRIVATE_ONLY = True
+CALENDAR_BINDING_SELECTION_REQUIRES_TRUSTED_WORKSPACE = True
+CALENDAR_BINDING_SELECTION_PUBLIC_ROUTE = False
+CALENDAR_BINDING_SELECTION_SECOND_AUTHORITY = 0
+CALENDAR_BINDING_SELECTION_RAW_CREDENTIAL_OUTPUT = False
+PUBLIC_WORKSPACE_STATUS_IDENTITY_WIDENING = False
+WORKSPACE_READ_CONNECTOR_SCOPE_DEFAULT_WIDENING = False
 OAUTH_REVIEWED_CONNECTORS_INCLUDE_CALENDAR = "google-calendar" in OAUTH_REVIEWED_CONNECTORS
 WORKSPACE_READ_TOKEN_UNSEAL = False
 WORKSPACE_READ_ACCESS_LEASE_ISSUE = False
