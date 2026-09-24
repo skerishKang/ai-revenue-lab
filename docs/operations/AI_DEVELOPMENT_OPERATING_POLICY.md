@@ -122,6 +122,8 @@ Preserve Padiem product authorities, but do not reject an adopted project solely
 
 Canonical details: `TECHNOLOGY_ADOPTION_POLICY.md`.
 
+Technology scans run in parallel with already-approved in-flight implementation. Do not retroactively stop an accepted work order solely because a broader OSS/commercial scan was opened. Apply scan findings to subsequent slices or an explicit component replacement unless CENTRAL records a concrete pause reason.
+
 ## 6. Work identity before implementation
 
 Record:
