@@ -177,7 +177,7 @@ jobs:
           # primitive, and a job workspace is not shared between jobs, so the job must
           # check out the exact dispatch source read-only, before it invokes it.
           assert "actions/checkout@v4" in readonly_job
-          assert "ref: ${{ inputs.target_sha }}" in readonly_job
+          assert "ref: $" + "{{ inputs.target_sha }}" in readonly_job
           assert "persist-credentials: false" in readonly_job
           assert readonly_job.index("actions/checkout@v4") < readonly_job.index(
               "cloudflare_served_version_lineage.py"
