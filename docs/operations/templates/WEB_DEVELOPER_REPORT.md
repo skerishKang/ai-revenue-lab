@@ -22,6 +22,20 @@
 - Unrelated files present? yes/no:
 - Non-goals preserved:
 
+## Technology adoption evidence
+
+- Landscape scan required? yes/no + reason:
+- Accepted parent decision:
+- Selected technology/project:
+- Adoption mode:
+- Upstream exact pin:
+- License/model/artifact posture:
+- Commercial cost posture:
+- Existing Padiem authority reused:
+- `SECOND_PRODUCT_AUTHORITY=0`:
+- `BUILD_FROM_SCRATCH_JUSTIFIED=YES/NO/N/A`:
+- If custom build, why buy/adopt/adapt/sidecar were rejected:
+
 ## Implementation
 
 Summarize behavior/contracts changed without claiming independent validation, CTO readiness or owner approval.
