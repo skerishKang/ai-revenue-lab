@@ -2,34 +2,29 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import importlib.util
 import sqlite3
 import sys
 import types
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-import importlib.util
 import pytest
-
-from padiem_control_plane.auth_sessions import AuthSessionState
+from identity_authority_durable import (
+    CloudflareCanonicalIdentityAuthorityStore,
+    _rows,
+    decode_identity_lookup_key,
+)
 from padiem_control_plane.contracts import (
     CanonicalSubjectRef,
     ControlPlaneContractError,
     SubjectType,
 )
 from padiem_control_plane.tenants import (
-    CanonicalTenant,
     CanonicalTenantState,
-    ControlPlaneTenantError,
+    TenantMembershipRole,
     TenantMembershipState,
 )
-
-from identity_authority_durable import (
-    CloudflareCanonicalIdentityAuthorityStore,
-    decode_identity_lookup_key,
-    _rows,
-)
-
 
 NOW = datetime(2026, 9, 4, 13, 0, tzinfo=timezone.utc)
 LOOKUP_KEY_BYTES = b"I" * 32
@@ -118,6 +113,9 @@ class _FakeStub:
 
     async def resolve_active_memberships(self, payload):
         return {"ok": True, "tenant_ids": []}
+
+    async def resolve_active_tenant_membership(self, payload):
+        return {"ok": True, "membership": {}}
 
 
 class FakeCursor:
@@ -367,7 +365,53 @@ def test_migration_idempotent_or_restart_safe() -> None:
         "2",
     )
     store._apply_migrations()
-    assert store._schema_version() == 2
+    assert store._schema_version() == 3
+
+
+def test_legacy_membership_schema_adds_nullable_role_without_backfill() -> None:
+    storage = FakeStorage()
+    initial = CloudflareCanonicalIdentityAuthorityStore(
+        storage,
+        lookup_key=decode_identity_lookup_key(LOOKUP_KEY),
+        allowed_product_ids=frozenset({PRODUCT_ID}),
+    )
+    initial._sql.exec("DROP TABLE canonical_tenant_membership")
+    storage.connection.execute(
+        "CREATE TABLE canonical_tenant_membership ("
+        "tenant_id TEXT NOT NULL, canonical_subject_id TEXT NOT NULL, "
+        "state TEXT NOT NULL, created_at TEXT NOT NULL, "
+        "PRIMARY KEY(tenant_id, canonical_subject_id))"
+    )
+    storage.connection.execute(
+        "INSERT INTO canonical_tenant_membership VALUES (?, ?, ?, ?)",
+        (
+            "tenant_0123456789abcdef0123456789abcdef",
+            "sub_legacy",
+            "active",
+            NOW.isoformat().replace("+00:00", "Z"),
+        ),
+    )
+    initial._sql.exec(
+        "INSERT INTO identity_authority_schema (key, value) VALUES (?, ?) "
+        "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+        "schema_version",
+        "2",
+    )
+    migrated = CloudflareCanonicalIdentityAuthorityStore(
+        storage,
+        lookup_key=decode_identity_lookup_key(LOOKUP_KEY),
+        allowed_product_ids=frozenset({PRODUCT_ID}),
+    )
+    row = _rows(
+        migrated._sql.exec(
+            "SELECT role FROM canonical_tenant_membership "
+            "WHERE tenant_id=? AND canonical_subject_id=?",
+            "tenant_0123456789abcdef0123456789abcdef",
+            "sub_legacy",
+        )
+    )[0]
+    assert row["role"] is None
+    assert migrated._schema_version() == 3
 
 
 def test_existing_session_contract_compatibility() -> None:
@@ -397,3 +441,273 @@ def test_existing_session_contract_compatibility() -> None:
     )
     assert len(session_with_tenant.to_public_dict()) == 8
     assert session_with_tenant.to_public_dict()["tenant_id"] == tenant.tenant_id
+
+
+def test_membership_role_schema_has_no_default() -> None:
+    store = _make_store()
+    rows = _rows(store._sql.exec("PRAGMA table_info(canonical_tenant_membership)"))
+    role_column = next(row for row in rows if row["name"] == "role")
+    assert role_column["dflt_value"] is None
+
+
+def test_role_bearing_sessionless_resolver_returns_explicit_membership() -> None:
+    store = _make_store()
+    _create_subject(store)
+    tenant = store.create_tenant(now=NOW)
+    store.assign_tenant_membership(
+        tenant_id=tenant.tenant_id,
+        canonical_subject_id="sub_test_subject_001",
+        now=NOW,
+        role=TenantMembershipRole.OPERATOR,
+    )
+    membership = store.resolve_active_tenant_membership(
+        tenant_id=tenant.tenant_id,
+        canonical_subject_id="sub_test_subject_001",
+        now=NOW,
+    )
+    assert membership.tenant_id == tenant.tenant_id
+    assert membership.canonical_subject_id == "sub_test_subject_001"
+    assert membership.role is TenantMembershipRole.OPERATOR
+
+
+def test_legacy_roleless_membership_is_not_background_eligible() -> None:
+    store = _make_store()
+    _create_subject(store)
+    tenant = store.create_tenant(now=NOW)
+    store.assign_tenant_membership(
+        tenant_id=tenant.tenant_id,
+        canonical_subject_id="sub_test_subject_001",
+        now=NOW,
+    )
+    with pytest.raises(ControlPlaneContractError) as raised:
+        store.resolve_active_tenant_membership(
+            tenant_id=tenant.tenant_id,
+            canonical_subject_id="sub_test_subject_001",
+            now=NOW,
+        )
+    assert raised.value.code == "canonical_tenant_membership_role_missing"
+
+
+def test_sessionless_resolver_rejects_inactive_tenant() -> None:
+    store = _make_store()
+    _create_subject(store)
+    tenant = store.create_tenant(now=NOW)
+    store.assign_tenant_membership(
+        tenant_id=tenant.tenant_id,
+        canonical_subject_id="sub_test_subject_001",
+        now=NOW,
+        role=TenantMembershipRole.OWNER,
+    )
+    store._sql.exec(
+        "UPDATE canonical_tenant SET state=? WHERE tenant_id=?",
+        CanonicalTenantState.INACTIVE.value,
+        tenant.tenant_id,
+    )
+    with pytest.raises(ControlPlaneContractError) as raised:
+        store.resolve_active_tenant_membership(
+            tenant_id=tenant.tenant_id,
+            canonical_subject_id="sub_test_subject_001",
+            now=NOW,
+        )
+    assert raised.value.code == "canonical_tenant_inactive"
+
+
+def test_sessionless_resolver_rejects_inactive_membership() -> None:
+    store = _make_store()
+    _create_subject(store)
+    tenant = store.create_tenant(now=NOW)
+    store.assign_tenant_membership(
+        tenant_id=tenant.tenant_id,
+        canonical_subject_id="sub_test_subject_001",
+        now=NOW,
+        role=TenantMembershipRole.OWNER,
+    )
+    store.revoke_tenant_membership(
+        tenant_id=tenant.tenant_id,
+        canonical_subject_id="sub_test_subject_001",
+        now=NOW,
+    )
+    with pytest.raises(ControlPlaneContractError) as raised:
+        store.resolve_active_tenant_membership(
+            tenant_id=tenant.tenant_id,
+            canonical_subject_id="sub_test_subject_001",
+            now=NOW,
+        )
+    assert raised.value.code == "canonical_tenant_membership_inactive"
+
+
+def test_sessionless_resolver_rejects_missing_membership() -> None:
+    store = _make_store()
+    _create_subject(store)
+    tenant = store.create_tenant(now=NOW)
+    with pytest.raises(ControlPlaneContractError) as raised:
+        store.resolve_active_tenant_membership(
+            tenant_id=tenant.tenant_id,
+            canonical_subject_id="sub_test_subject_001",
+            now=NOW,
+        )
+    assert raised.value.code == "canonical_tenant_membership_not_found"
+
+
+def test_sessionless_resolver_rejects_missing_canonical_subject() -> None:
+    store = _make_store()
+    tenant = store.create_tenant(now=NOW)
+    store._sql.exec(
+        "INSERT INTO canonical_tenant_membership "
+        "(tenant_id, canonical_subject_id, state, created_at, role) VALUES (?, ?, ?, ?, ?)",
+        tenant.tenant_id,
+        "sub_missing",
+        "active",
+        NOW.isoformat().replace("+00:00", "Z"),
+        "owner",
+    )
+    with pytest.raises(ControlPlaneContractError) as raised:
+        store.resolve_active_tenant_membership(
+            tenant_id=tenant.tenant_id,
+            canonical_subject_id="sub_missing",
+            now=NOW,
+        )
+    assert raised.value.code == "canonical_subject_not_found"
+
+
+def test_sessionless_resolver_rejects_malformed_identifiers() -> None:
+    store = _make_store()
+    with pytest.raises(ControlPlaneContractError) as tenant_error:
+        store.resolve_active_tenant_membership(
+            tenant_id="tenant_bad",
+            canonical_subject_id="sub_test_subject_001",
+            now=NOW,
+        )
+    assert tenant_error.value.code == "invalid_canonical_tenant"
+    with pytest.raises(ControlPlaneContractError) as subject_error:
+        store.resolve_active_tenant_membership(
+            tenant_id="tenant_0123456789abcdef0123456789abcdef",
+            canonical_subject_id="bad subject",
+            now=NOW,
+        )
+    assert subject_error.value.code == "invalid_identity_authority"
+
+
+def test_sessionless_resolver_rejects_invalid_persisted_role() -> None:
+    store = _make_store()
+    _create_subject(store)
+    tenant = store.create_tenant(now=NOW)
+    store.assign_tenant_membership(
+        tenant_id=tenant.tenant_id,
+        canonical_subject_id="sub_test_subject_001",
+        now=NOW,
+        role=TenantMembershipRole.VIEWER,
+    )
+    store._sql.exec(
+        "UPDATE canonical_tenant_membership SET role=? WHERE tenant_id=? AND canonical_subject_id=?",
+        "administrator",
+        tenant.tenant_id,
+        "sub_test_subject_001",
+    )
+    with pytest.raises(ControlPlaneContractError) as raised:
+        store.resolve_active_tenant_membership(
+            tenant_id=tenant.tenant_id,
+            canonical_subject_id="sub_test_subject_001",
+            now=NOW,
+        )
+    assert raised.value.code == "canonical_tenant_membership_role_invalid"
+
+
+def test_sessionless_resolver_rejects_cross_tenant_membership() -> None:
+    store = _make_store()
+    _create_subject(store)
+    tenant = store.create_tenant(now=NOW)
+    other_tenant = store.create_tenant(now=NOW)
+    store.assign_tenant_membership(
+        tenant_id=tenant.tenant_id,
+        canonical_subject_id="sub_test_subject_001",
+        now=NOW,
+        role=TenantMembershipRole.OWNER,
+    )
+    with pytest.raises(ControlPlaneContractError) as raised:
+        store.resolve_active_tenant_membership(
+            tenant_id=other_tenant.tenant_id,
+            canonical_subject_id="sub_test_subject_001",
+            now=NOW,
+        )
+    assert raised.value.code == "canonical_tenant_membership_not_found"
+
+
+def test_sessionless_resolver_rejects_future_membership() -> None:
+    store = _make_store()
+    _create_subject(store)
+    tenant = store.create_tenant(now=NOW)
+    store.assign_tenant_membership(
+        tenant_id=tenant.tenant_id,
+        canonical_subject_id="sub_test_subject_001",
+        now=NOW + timedelta(minutes=5),
+        role=TenantMembershipRole.OWNER,
+    )
+    with pytest.raises(ControlPlaneContractError) as raised:
+        store.resolve_active_tenant_membership(
+            tenant_id=tenant.tenant_id,
+            canonical_subject_id="sub_test_subject_001",
+            now=NOW,
+        )
+    assert raised.value.code == "canonical_tenant_membership_not_yet_active"
+
+
+def test_worker_role_assignment_persists_explicit_role() -> None:
+    store = _make_store()
+    _create_subject(store)
+    tenant = store.create_tenant(now=NOW)
+    authority = object.__new__(_worker_mod.CanonicalIdentityDurableObject)
+    authority._store = store
+    result = asyncio.run(
+        authority.assign_tenant_membership(
+            {
+                "tenant_id": tenant.tenant_id,
+                "canonical_subject_id": "sub_test_subject_001",
+                "role": "viewer",
+            }
+        )
+    )
+    assert result["ok"] is True
+    assert result["membership"]["role"] == "viewer"
+
+
+def test_worker_sessionless_resolver_requires_exact_fields() -> None:
+    store = _make_store()
+    _create_subject(store)
+    tenant = store.create_tenant(now=NOW)
+    store.assign_tenant_membership(
+        tenant_id=tenant.tenant_id,
+        canonical_subject_id="sub_test_subject_001",
+        now=NOW,
+        role=TenantMembershipRole.APPROVER,
+    )
+    authority = object.__new__(_worker_mod.CanonicalIdentityDurableObject)
+    authority._store = store
+    result = asyncio.run(
+        authority.resolve_active_tenant_membership(
+            {
+                "tenant_id": tenant.tenant_id,
+                "canonical_subject_id": "sub_test_subject_001",
+                "now": NOW.isoformat().replace("+00:00", "Z"),
+            }
+        )
+    )
+    assert result["ok"] is True
+    assert result["membership"]["role"] == "approver"
+    base_payload = {
+        "tenant_id": tenant.tenant_id,
+        "canonical_subject_id": "sub_test_subject_001",
+        "now": NOW.isoformat().replace("+00:00", "Z"),
+    }
+    for extra in (
+        {"role": "owner"},
+        {"product_user_id": "usr_not_canonical"},
+        {"owner_ref": "owner:opaque"},
+        {"workspace_ref": "workspace_connector"},
+    ):
+        rejected = asyncio.run(
+            authority.resolve_active_tenant_membership(
+                {**base_payload, **extra}
+            )
+        )
+        assert rejected["ok"] is False
