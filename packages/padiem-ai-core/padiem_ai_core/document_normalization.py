@@ -26,6 +26,8 @@ MAX_TEXT_DOCUMENT_BYTES = 96 * 1024
 MAX_BINARY_DOCUMENT_BYTES = 2 * 1024 * 1024
 MAX_PDF_PAGES = 80
 MAX_PDF_PAGE_TEXT_CHARS = 16_000
+PDF_NATIVE_TEXT_PRESENT = "native_text_present"
+PDF_NATIVE_TEXT_ABSENT = "no_native_text_ocr_may_be_required"
 MAX_OOXML_ENTRIES = 256
 MAX_OOXML_MEMBER_NAME_CHARS = 255
 MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES = 1 * 1024 * 1024
@@ -711,6 +713,8 @@ class PdfInspection:
     byte_size: int
     page_count: int
     pages: tuple[PdfPageInspection, ...]
+    native_text_available: bool
+    native_text_state: str
 
     def safe_dict(self) -> dict[str, object]:
         return {
@@ -718,6 +722,8 @@ class PdfInspection:
             "media_type": self.media_type,
             "byte_size": self.byte_size,
             "page_count": self.page_count,
+            "native_text_available": self.native_text_available,
+            "native_text_state": self.native_text_state,
             "pages": [page.safe_dict() for page in self.pages],
         }
 
@@ -766,7 +772,19 @@ def inspect_pdf(*, name: Any, media_type: Any, payload: Any) -> PdfInspection:
             pages.append(PdfPageInspection(index, index + 1, page_count, text))
     finally:
         reader.close() if hasattr(reader, "close") else None
-    return PdfInspection(safe_name, safe_media, len(binary), page_count, tuple(pages))
+    native_text_available = any(page.text for page in pages)
+    native_text_state = (
+        PDF_NATIVE_TEXT_PRESENT if native_text_available else PDF_NATIVE_TEXT_ABSENT
+    )
+    return PdfInspection(
+        name=safe_name,
+        media_type=safe_media,
+        byte_size=len(binary),
+        page_count=page_count,
+        pages=tuple(pages),
+        native_text_available=native_text_available,
+        native_text_state=native_text_state,
+    )
 
 
 def _extract_pdf_text(payload: bytes) -> str:
