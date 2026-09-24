@@ -155,10 +155,11 @@ def test_one_wiring_path_reuses_the_existing_bounded_route() -> None:
     assert app.count("function setClawDocumentAction(") == 1
     assert app.count("setClawDocumentAction(false)") == 1
     assert app.count("setClawDocumentAction(true,") == 1
-    # The only callers of the download are the result action and the run-history
-    # re-download button, which is labelled as a download in both languages.
+    # The trusted callers are the result action, run-history re-download, and
+    # Calendar's validated artifact link-back; all reuse this one route.
     callers = re.findall(r"(?<!function )\bdownloadClawArtifact\(", app)
-    assert len(callers) == 2, callers
+    assert len(callers) == 3, callers
+    assert 'padiem:calendar-open-link' in app
     table = _locale_table()
     for language in ("ko", "en"):
         assert not OPEN_CLAIM.search(table[language]["claw-runs-download"])

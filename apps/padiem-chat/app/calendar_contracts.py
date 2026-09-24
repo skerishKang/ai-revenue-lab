@@ -43,10 +43,16 @@ MAX_CONTENT_CHARS = 4_000
 MAX_DESCRIPTION_CHARS = 4_000
 MAX_REMINDER_MINUTES = 40_320  # 4 weeks
 MAX_CALENDAR_LIST_LIMIT = 256
+MAX_CALENDAR_LINK_BACKS = 4
+
+CALENDAR_LINK_BACK_KINDS = frozenset(
+    {"claw_session", "task", "artifact", "run"}
+)
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _LOG_ID_RE = re.compile(r"^log_[0-9a-f]{16,32}$")
 _APT_ID_RE = re.compile(r"^apt_[0-9a-f]{16,32}$")
+_DOCUMENT_ID_RE = re.compile(r"^doc_[A-Za-z0-9]{32}$")
 _CONTROL_CHARS_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
 _DATE_ISO_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
@@ -475,4 +481,69 @@ class CalendarItemProjection:
             "created_at": self.created_at,
             "updated_at": self.updated_at,
             "artifact": self.artifact,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class CalendarLinkBack:
+    kind: str
+    target_id: str
+
+    def __post_init__(self) -> None:
+        if self.kind not in CALENDAR_LINK_BACK_KINDS:
+            raise CalendarContractError(
+                "invalid_link_back_kind", "Calendar link-back kind is not allowed"
+            )
+        if self.kind == "claw_session":
+            try:
+                from .history import validate_conversation_id
+
+                conversation_id = validate_conversation_id(self.target_id)
+            except (ImportError, ValueError) as exc:
+                raise CalendarContractError(
+                    "invalid_link_back_target", "Calendar link-back target is invalid"
+                ) from exc
+            if conversation_id is None or conversation_id != self.target_id:
+                raise CalendarContractError(
+                    "invalid_link_back_target", "Calendar link-back target is invalid"
+                )
+        elif self.kind == "artifact":
+            if not isinstance(self.target_id, str) or not _DOCUMENT_ID_RE.fullmatch(
+                self.target_id
+            ):
+                raise CalendarContractError(
+                    "invalid_link_back_target", "Calendar link-back target is invalid"
+                )
+        else:
+            _safe_identifier("link_back_target", self.target_id)
+
+    def safe_dict(self) -> dict[str, str]:
+        return {"kind": self.kind, "target_id": self.target_id}
+
+
+@dataclass(frozen=True, slots=True)
+class CalendarItemDetail:
+    item: CalendarItemProjection
+    link_backs: tuple[CalendarLinkBack, ...] = ()
+
+    def __post_init__(self) -> None:
+        if len(self.link_backs) > MAX_CALENDAR_LINK_BACKS:
+            raise CalendarContractError(
+                "too_many_link_backs", "Calendar detail has too many link-backs"
+            )
+        identities = [(link.kind, link.target_id) for link in self.link_backs]
+        if len(identities) != len(set(identities)):
+            raise CalendarContractError(
+                "duplicate_link_back", "Calendar detail contains a duplicate link-back"
+            )
+
+    def safe_dict(self) -> dict[str, Any]:
+        item = self.item.safe_dict()
+        item.pop("workspace_id", None)
+        item.pop("source_ref", None)
+        item.pop("artifact", None)
+        return {
+            "contract_version": CALENDAR_CONTRACT_VERSION,
+            "item": item,
+            "link_backs": [link.safe_dict() for link in self.link_backs],
         }

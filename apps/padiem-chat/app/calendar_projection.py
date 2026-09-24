@@ -18,6 +18,7 @@ Canonical calendar item projections:
 
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import date, datetime, timezone
 import inspect
 import re
@@ -30,11 +31,15 @@ from .calendar_contracts import (
     CALENDAR_CONTRACT_VERSION,
     CalendarAppointment,
     CalendarContractError,
+    CalendarItemDetail,
     CalendarItemProjection,
     CalendarItemType,
+    CalendarLinkBack,
     CalendarSourceType,
     CalendarWorkLog,
     MAX_CALENDAR_LIST_LIMIT,
+    MAX_CONTENT_CHARS,
+    MAX_TITLE_CHARS,
     _safe_identifier,
     parse_aware_datetime,
     validate_timezone,
@@ -315,6 +320,213 @@ async def _safe_call(fn: Any, *args: Any, **kwargs: Any) -> Any:
         return res
     except Exception:
         return None
+
+
+_CALENDAR_ITEM_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$")
+_LOG_CALENDAR_ITEM_ID_RE = re.compile(r"^item_log_(log_[0-9a-f]{16,32})$")
+_APPOINTMENT_CALENDAR_ITEM_ID_RE = re.compile(r"^item_apt_(apt_[0-9a-f]{16,32})$")
+_TASK_CALENDAR_ITEM_ID_RE = re.compile(
+    r"^item_task_([A-Za-z0-9][A-Za-z0-9._:-]{0,127})$"
+)
+_ALERT_CALENDAR_ITEM_ID_RE = re.compile(
+    r"^item_alert_([A-Za-z0-9][A-Za-z0-9._:-]{0,127})$"
+)
+_RUN_CALENDAR_ITEM_ID_RE = re.compile(
+    r"^item_run_([A-Za-z0-9][A-Za-z0-9._:-]{0,127})$"
+)
+_AUTOMATION_CALENDAR_ITEM_ID_RE = re.compile(
+    r"^automation_([A-Za-z0-9][A-Za-z0-9._:-]{0,127})$"
+)
+
+
+def _detail_not_found() -> CalendarContractError:
+    return CalendarContractError(
+        "calendar_item_not_found", "Calendar item was not found"
+    )
+
+
+def _bounded_detail_item(item: CalendarItemProjection) -> CalendarItemProjection:
+    title = item.title.strip()
+    if not title:
+        raise _detail_not_found()
+    summary = item.summary.strip() if isinstance(item.summary, str) else None
+    return replace(
+        item,
+        calendar_item_id=item.calendar_item_id[:256],
+        title=title[:MAX_TITLE_CHARS],
+        summary=summary[:MAX_CONTENT_CHARS] if summary else None,
+        date=item.date[:64],
+        start_at=item.start_at[:128] if item.start_at else None,
+        end_at=item.end_at[:128] if item.end_at else None,
+        timezone=item.timezone[:128] if item.timezone else None,
+        source_type=item.source_type[:64],
+        created_at=item.created_at[:128],
+        updated_at=item.updated_at[:128],
+    )
+
+
+def _run_session_link(run: dict[str, Any]) -> CalendarLinkBack | None:
+    session = run.get("session")
+    if not isinstance(session, dict):
+        return None
+    target_id = session.get("conversation_id")
+    if not isinstance(target_id, str):
+        return None
+    try:
+        return CalendarLinkBack(kind="claw_session", target_id=target_id)
+    except CalendarContractError:
+        return None
+
+
+def _run_artifact_link(item: CalendarItemProjection) -> CalendarLinkBack | None:
+    artifact = item.artifact
+    if not isinstance(artifact, dict):
+        return None
+    target_id = artifact.get("document_id")
+    if not isinstance(target_id, str):
+        return None
+    try:
+        return CalendarLinkBack(kind="artifact", target_id=target_id)
+    except CalendarContractError:
+        return None
+
+
+async def build_item_detail_projection(
+    calendar_item_id: str,
+    workspace_id: str,
+    tz_name: str,
+    *,
+    calendar_store: CalendarStore,
+    task_alert_store: Any | None = None,
+    history_store: Any | None = None,
+    automation_store: Any | None = None,
+    user_id: str | None = None,
+) -> dict[str, Any]:
+    _safe_identifier("workspace_id", workspace_id)
+    if user_id is not None:
+        _safe_identifier("user_id", user_id)
+    tz = validate_timezone(tz_name)
+    if not isinstance(calendar_item_id, str) or not _CALENDAR_ITEM_ID_RE.fullmatch(
+        calendar_item_id
+    ):
+        raise _detail_not_found()
+
+    link_backs: tuple[CalendarLinkBack, ...] = ()
+    item: CalendarItemProjection | None = None
+
+    match = _LOG_CALENDAR_ITEM_ID_RE.fullmatch(calendar_item_id)
+    if match:
+        record = await _safe_call(
+            getattr(calendar_store, "get_work_log", None), workspace_id, match.group(1)
+        )
+        if isinstance(record, CalendarWorkLog) and record.workspace_id == workspace_id:
+            item = project_work_log(record)
+
+    if item is None:
+        match = _APPOINTMENT_CALENDAR_ITEM_ID_RE.fullmatch(calendar_item_id)
+        if match:
+            record = await _safe_call(
+                getattr(calendar_store, "get_appointment", None),
+                workspace_id,
+                match.group(1),
+            )
+            if (
+                isinstance(record, CalendarAppointment)
+                and record.workspace_id == workspace_id
+            ):
+                item = project_appointment(record, tz=tz)
+
+    if item is None:
+        match = _TASK_CALENDAR_ITEM_ID_RE.fullmatch(calendar_item_id)
+        if match and task_alert_store is not None and user_id is not None:
+            task_id = match.group(1)
+            record = await _safe_call(
+                getattr(task_alert_store, "get_task", None),
+                task_id,
+                workspace_id=workspace_id,
+            )
+            if record is not None and getattr(record, "member_id", None) == user_id:
+                try:
+                    item = project_task(record, workspace_id, tz=tz)
+                    link_backs = (CalendarLinkBack(kind="task", target_id=task_id),)
+                except Exception:
+                    item = None
+
+    if item is None:
+        match = _ALERT_CALENDAR_ITEM_ID_RE.fullmatch(calendar_item_id)
+        if match and task_alert_store is not None and user_id is not None:
+            alert_id = match.group(1)
+            record = await _safe_call(
+                getattr(task_alert_store, "get_alert", None),
+                alert_id,
+                workspace_id=workspace_id,
+                member_id=user_id,
+            )
+            is_visible = getattr(record, "is_visible_to", None)
+            if record is not None and (not callable(is_visible) or is_visible(user_id)):
+                try:
+                    item = project_alert(record, workspace_id, tz=tz)
+                except Exception:
+                    item = None
+
+    if item is None:
+        match = _RUN_CALENDAR_ITEM_ID_RE.fullmatch(calendar_item_id)
+        if (
+            match
+            and history_store is not None
+            and user_id is not None
+            and workspace_id == f"owner:{user_id}"
+        ):
+            run_id = match.group(1)
+            runs = await _safe_call(
+                getattr(history_store, "list_recent_claw_runs", None),
+                user_id,
+                limit=MAX_CALENDAR_LIST_LIMIT,
+            )
+            if isinstance(runs, (list, tuple)):
+                for run in runs:
+                    if (
+                        not isinstance(run, dict)
+                        or str(run.get("run_id", "")) != run_id
+                    ):
+                        continue
+                    try:
+                        item = project_claw_run(run, workspace_id, tz=tz)
+                        links = [CalendarLinkBack(kind="run", target_id=run_id)]
+                        session_link = _run_session_link(run)
+                        if session_link is not None:
+                            links.append(session_link)
+                        artifact_link = _run_artifact_link(item)
+                        if artifact_link is not None:
+                            links.append(artifact_link)
+                        link_backs = tuple(links)
+                    except Exception:
+                        item = None
+                    break
+
+    if item is None:
+        match = _AUTOMATION_CALENDAR_ITEM_ID_RE.fullmatch(calendar_item_id)
+        if match and automation_store is not None:
+            run_id = match.group(1)
+            record = await _safe_call(
+                getattr(automation_store, "get_run", None),
+                run_id,
+                workspace_id=workspace_id,
+            )
+            if (
+                record is not None
+                and getattr(record, "workspace_id", None) == workspace_id
+            ):
+                try:
+                    item = project_automation_run(record, workspace_id, tz=tz)
+                except Exception:
+                    item = None
+
+    if item is None:
+        raise _detail_not_found()
+    return CalendarItemDetail(
+        item=_bounded_detail_item(item), link_backs=link_backs
+    ).safe_dict()
 
 
 async def build_range_projection(

@@ -1,8 +1,8 @@
 /* #2834 A4/A5/A6 — Padiem Calendar surface (Today / Day / Week / Month / Upcoming).
  *
  * Contract:
- * - Read path uses only the three existing calendar endpoints (GET today, GET upcoming,
- *   and the canonical bounded range projection for Day/Week/Month).
+ * - Read path uses only the existing calendar endpoints (GET today, GET upcoming,
+ *   GET items, and GET item detail for Day/Week/Month and bounded detail).
  * - Exactly two write paths exist, both pre-registered native authorities:
  *   POST /api/calendar/work-logs (A4) and POST /api/calendar/appointments (A5).
  *   No other endpoint is ever written, and no other write verb is ever used.
@@ -24,6 +24,21 @@
   const TODAY_ROUTE = "/api/calendar/today";
   const UPCOMING_ROUTE = "/api/calendar/upcoming";
   const ITEMS_ROUTE = "/api/calendar/items";
+  const ITEM_DETAIL_ROUTE = "/api/calendar/items";
+  const CALENDAR_ITEM_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$/;
+  const DETAIL_LINK_KINDS = Object.freeze(["claw_session", "task", "artifact", "run"]);
+  const DETAIL_LINK_TARGET_PATTERNS = Object.freeze({
+    claw_session: /^chat_[0-9a-f]{32}$/,
+    task: /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/,
+    artifact: /^doc_[A-Za-z0-9]{32}$/,
+    run: /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/,
+  });
+  const DETAIL_LINK_KEYS = Object.freeze({
+    claw_session: "calendar-detail-link-session",
+    task: "calendar-detail-link-task",
+    artifact: "calendar-detail-link-artifact",
+    run: "calendar-detail-link-run",
+  });
   const RANGE_TABS = Object.freeze(["day", "week", "month"]);
   const KNOWN_ITEM_TYPES = Object.freeze([
     "work_log",
@@ -103,6 +118,21 @@
     "calendar-appointment-invalid": "Check the appointment details.",
     "calendar-appointment-unauthorized": "Please sign in and try again.",
     "calendar-appointment-unavailable": "Could not save the appointment. Please try again shortly.",
+    "calendar-detail-open": "Details",
+    "calendar-detail-close": "Close detail",
+    "calendar-detail-loading": "Loading details…",
+    "calendar-detail-error": "Could not load details.",
+    "calendar-detail-retry": "Try again",
+    "calendar-detail-source": "Source",
+    "calendar-detail-created": "Created",
+    "calendar-detail-updated": "Updated",
+    "calendar-detail-summary": "Details",
+    "calendar-item-date": "When",
+    "calendar-detail-links": "Related items",
+    "calendar-detail-link-session": "Open Claw session",
+    "calendar-detail-link-task": "Open task",
+    "calendar-detail-link-artifact": "Download document",
+    "calendar-detail-link-run": "Open Claw run",
   });
 
   function text(key, variables) {
@@ -203,6 +233,48 @@
       && isKnownItemType(item.item_type)
       && typeof item.title === "string" && !!item.title.trim()
       && typeof item.date === "string" && !!parseCalendarDate(item.date);
+  }
+
+  function isCalendarItemId(value) {
+    return typeof value === "string" && CALENDAR_ITEM_ID_PATTERN.test(value);
+  }
+
+  function isRenderableLinkBack(link) {
+    if (!link || typeof link !== "object" || Array.isArray(link)) return false;
+    if (!DETAIL_LINK_KINDS.includes(link.kind)) return false;
+    if (typeof link.target_id !== "string") return false;
+    return DETAIL_LINK_TARGET_PATTERNS[link.kind].test(link.target_id);
+  }
+
+  function isRenderableDetail(payload, expectedItemId) {
+    if (!payload || payload.ok !== true || !payload.detail || typeof payload.detail !== "object") return false;
+    const detail = payload.detail;
+    const item = detail.item;
+    if (!isRenderableItem(item) || item.calendar_item_id !== expectedItemId) return false;
+    if (item.title.length > 200) return false;
+    if (item.summary != null && (typeof item.summary !== "string" || item.summary.length > 4000)) return false;
+    if (!Array.isArray(detail.link_backs) || detail.link_backs.length > 4) return false;
+    const identities = new Set();
+    for (const link of detail.link_backs) {
+      if (!isRenderableLinkBack(link)) return false;
+      const identity = `${link.kind}:${link.target_id}`;
+      if (identities.has(identity)) return false;
+      identities.add(identity);
+    }
+    return true;
+  }
+
+  function buildItemDetailRoute(itemId, timezone) {
+    if (!isCalendarItemId(itemId) || typeof timezone !== "string" || !timezone) return "";
+    return `${ITEM_DETAIL_ROUTE}/${encodeURIComponent(itemId)}${buildQuery(timezone)}`;
+  }
+
+  function dispatchCalendarLink(link) {
+    if (!isRenderableLinkBack(link) || typeof window === "undefined" || typeof window.CustomEvent !== "function") return false;
+    window.dispatchEvent(new window.CustomEvent("padiem:calendar-open-link", {
+      detail: { kind: link.kind, targetId: link.target_id },
+    }));
+    return true;
   }
 
   // Public bounded field only: the server source_type is shown as plain text.
@@ -491,6 +563,9 @@
     TODAY_ROUTE,
     UPCOMING_ROUTE,
     ITEMS_ROUTE,
+    ITEM_DETAIL_ROUTE,
+    DETAIL_LINK_KINDS,
+    DETAIL_LINK_KEYS,
     RANGE_TABS,
     WORK_LOG_ROUTE,
     APPOINTMENT_ROUTE,
@@ -510,6 +585,11 @@
     isKnownItemType,
     itemTypeKey,
     isRenderableItem,
+    isCalendarItemId,
+    isRenderableLinkBack,
+    isRenderableDetail,
+    buildItemDetailRoute,
+    dispatchCalendarLink,
     sourceTypeText,
     formatWhen,
     browserTimezone,
@@ -583,6 +663,10 @@
     let requestToken = 0;
     let wasActive = false;
     let lastItems = null;
+    let detailSequence = 0;
+    let detailRequestToken = 0;
+    let activeDetailButton = null;
+    let activeDetailPanel = null;
     let lastRecordStatus = null;
     let lastAppointmentStatus = null;
 
@@ -594,6 +678,131 @@
         if (status === "empty") empty.textContent = text(EMPTY_KEYS[currentTab]);
       }
       list.hidden = status !== "ready";
+    }
+
+    function setDetailToggle(button, open) {
+      if (!button) return;
+      button.textContent = text(open ? "calendar-detail-close" : "calendar-detail-open");
+      button.setAttribute("aria-expanded", String(open));
+    }
+
+    function closeDetail(button, panel) {
+      if (panel) {
+        panel.hidden = true;
+        panel.replaceChildren();
+        panel.setAttribute("aria-busy", "false");
+      }
+      setDetailToggle(button, false);
+      if (activeDetailButton === button) activeDetailButton = null;
+      if (activeDetailPanel === panel) activeDetailPanel = null;
+    }
+
+    function detailMessage(panel, key) {
+      panel.replaceChildren();
+      panel.append(el("p", "calendar-detail-message", text(key)));
+    }
+
+    function appendDetailMeta(target, label, value) {
+      if (!value) return;
+      target.append(el("dt", "calendar-detail-label", label), el("dd", "calendar-detail-value", value));
+    }
+
+    function renderDetailError(item, button, panel) {
+      panel.setAttribute("aria-busy", "false");
+      detailMessage(panel, "calendar-detail-error");
+      const retry = el("button", "calendar-detail-retry", text("calendar-detail-retry"));
+      retry.type = "button";
+      retry.addEventListener("click", () => loadItemDetail(item, button, panel, true));
+      panel.append(retry);
+    }
+
+    function renderDetail(payload, panel) {
+      const detail = payload.detail;
+      const item = detail.item;
+      panel.replaceChildren();
+      panel.setAttribute("aria-busy", "false");
+      panel.append(el("h4", "calendar-detail-heading", item.title.trim()));
+      const meta = el("dl", "calendar-detail-meta");
+      appendDetailMeta(meta, text("calendar-detail-source"), sourceTypeText(item));
+      appendDetailMeta(meta, text("calendar-all-day"), item.all_day === true ? text("calendar-all-day") : "");
+      const when = formatWhen(item);
+      appendDetailMeta(meta, text("calendar-item-date"), when);
+      appendDetailMeta(meta, text("calendar-detail-created"), item.created_at);
+      appendDetailMeta(meta, text("calendar-detail-updated"), item.updated_at);
+      panel.append(meta);
+      if (typeof item.summary === "string" && item.summary.trim()) {
+        panel.append(el("p", "calendar-detail-summary", item.summary.trim()));
+      }
+      if (detail.link_backs.length === 0) return;
+      const links = el("div", "calendar-detail-links");
+      links.setAttribute("role", "group");
+      links.setAttribute("aria-label", text("calendar-detail-links"));
+      detail.link_backs.forEach((link) => {
+        const button = el("button", "calendar-detail-link", text(DETAIL_LINK_KEYS[link.kind]));
+        button.type = "button";
+        button.dataset.calendarLinkKind = link.kind;
+        button.dataset.calendarLinkTarget = link.target_id;
+        button.addEventListener("click", () => dispatchCalendarLink(link));
+        links.append(button);
+      });
+      panel.append(links);
+    }
+
+    async function loadItemDetail(item, button, panel, retrying) {
+      const itemId = item && typeof item === "object" ? item.calendar_item_id : "";
+      if (!isCalendarItemId(itemId) || !button || !panel) return;
+      if (!retrying && button.getAttribute("aria-expanded") === "true") {
+        closeDetail(button, panel);
+        return;
+      }
+      const timezone = browserTimezone();
+      if (activeDetailButton && activeDetailButton !== button) {
+        activeDetailButton.disabled = false;
+        setDetailToggle(activeDetailButton, false);
+      }
+      if (activeDetailPanel && activeDetailPanel !== panel) {
+        activeDetailPanel.hidden = true;
+        activeDetailPanel.replaceChildren();
+      }
+      const token = ++detailRequestToken;
+      activeDetailButton = button;
+      activeDetailPanel = panel;
+      button.disabled = true;
+      panel.hidden = false;
+      panel.setAttribute("aria-busy", "true");
+      setDetailToggle(button, true);
+      detailMessage(panel, "calendar-detail-loading");
+      const route = buildItemDetailRoute(itemId, timezone);
+      if (!route) {
+        button.disabled = false;
+        if (activeDetailButton === button) activeDetailButton = null;
+        if (activeDetailPanel === panel) activeDetailPanel = null;
+        renderDetailError(item, button, panel);
+        return;
+      }
+      try {
+        const response = await fetch(route, {
+          cache: "no-store",
+          credentials: "same-origin",
+          headers: { Accept: "application/json" },
+        });
+        const data = await response.json().catch(() => null);
+        if (token !== detailRequestToken) return;
+        if (!response.ok || !isRenderableDetail(data, itemId)) {
+          renderDetailError(item, button, panel);
+          return;
+        }
+        renderDetail(data, panel);
+      } catch (_) {
+        if (token !== detailRequestToken) return;
+        renderDetailError(item, button, panel);
+      } finally {
+        if (token === detailRequestToken) {
+          button.disabled = false;
+          if (activeDetailButton === button) activeDetailButton = null;
+          if (activeDetailPanel === panel) activeDetailPanel = null;
+        }
+      }
     }
 
     function buildRow(rawItem) {
@@ -616,10 +825,31 @@
 
       const summaryText = typeof item.summary === "string" ? item.summary.trim() : "";
       if (summaryText) row.append(el("p", "calendar-item-summary", summaryText));
+
+      const itemId = item.calendar_item_id;
+      if (isCalendarItemId(itemId)) {
+        const actions = el("div", "calendar-item-actions");
+        const detailButton = el("button", "calendar-detail-button", text("calendar-detail-open"));
+        detailButton.type = "button";
+        detailButton.setAttribute("aria-expanded", "false");
+        detailButton.setAttribute("aria-controls", `calendarDetail${detailSequence + 1}`);
+        const detailPanel = el("section", "calendar-item-detail");
+        detailPanel.id = `calendarDetail${++detailSequence}`;
+        detailPanel.hidden = true;
+        detailPanel.setAttribute("aria-live", "polite");
+        detailPanel.setAttribute("aria-busy", "false");
+        detailButton.addEventListener("click", () => loadItemDetail(item, detailButton, detailPanel));
+        actions.append(detailButton);
+        row.append(actions, detailPanel);
+      }
       return row;
     }
 
     function renderItems(items) {
+      detailRequestToken += 1;
+      if (activeDetailButton) activeDetailButton.disabled = false;
+      activeDetailButton = null;
+      activeDetailPanel = null;
       list.replaceChildren();
       const boundedItems = items.filter(isRenderableItem);
       if (boundedItems.length === 0) {
@@ -667,6 +897,7 @@
       lastItems = null;
       list.replaceChildren();
       setStatus("error");
+      detailRequestToken += 1;
     }
 
     function showRecordStatus(kind) {

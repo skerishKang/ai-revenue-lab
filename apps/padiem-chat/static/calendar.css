@@ -1,4 +1,4 @@
-/* #2834 A3/A4 — Padiem Calendar surface (Today / Upcoming + work-record form).
+/* #2834 A3/A4/A5/A6/A7 — Padiem Calendar surface (Today / Upcoming + work-record form).
  *
  * State gating mirrors claw-workspace.css: the calendar view is owned by
  * .app-shell[data-state="calendar"] and is hidden everywhere else. The shared
@@ -291,6 +291,86 @@ html[data-theme="padiem-glass"] .sidebar {
   overflow-wrap: anywhere;
 }
 
+.calendar-item-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.calendar-detail-button,
+.calendar-detail-retry,
+.calendar-detail-link {
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 9px;
+  background: var(--card-bg, #fafafa);
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.calendar-detail-button:hover,
+.calendar-detail-retry:hover,
+.calendar-detail-link:hover {
+  border-color: var(--accent-strong, #2f6f99);
+}
+
+.calendar-detail-button[disabled],
+.calendar-detail-retry[disabled] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.calendar-item-detail {
+  margin-top: 10px;
+  border-top: 1px solid var(--line, #e3e3e9);
+  padding-top: 10px;
+}
+
+.calendar-detail-heading {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.calendar-detail-meta {
+  display: grid;
+  grid-template-columns: minmax(74px, auto) minmax(0, 1fr);
+  gap: 4px 10px;
+  margin: 8px 0 0;
+  font-size: 12px;
+}
+
+.calendar-detail-label {
+  opacity: 0.65;
+}
+
+.calendar-detail-value {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.calendar-detail-summary,
+.calendar-detail-message {
+  margin: 10px 0 0;
+  font-size: 13px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.calendar-detail-retry {
+  margin-top: 8px;
+}
+
+.calendar-detail-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
 /* ── Work-record form (#2834 A4 native work-log create) ──────────────── */
 
 .calendar-record {
@@ -443,5 +523,18 @@ html[data-theme="padiem-glass"] #calendarNavButton[aria-current="page"] {
   .calendar-range-label {
     min-width: 0;
     flex: 1 1 auto;
+  }
+
+  .calendar-detail-meta {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .calendar-detail-value {
+    margin-bottom: 5px;
+  }
+
+  .calendar-detail-link {
+    flex: 1 1 100%;
   }
 }

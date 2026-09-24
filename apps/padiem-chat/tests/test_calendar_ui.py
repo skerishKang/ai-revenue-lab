@@ -56,6 +56,21 @@ CALENDAR_LOCALE_KEYS = [
     "calendar-item-automation-run",
     "calendar-item-unknown",
     "calendar-item-untitled",
+    "calendar-detail-open",
+    "calendar-detail-close",
+    "calendar-detail-loading",
+    "calendar-detail-error",
+    "calendar-detail-retry",
+    "calendar-detail-source",
+    "calendar-detail-created",
+    "calendar-detail-updated",
+    "calendar-detail-summary",
+    "calendar-item-date",
+    "calendar-detail-links",
+    "calendar-detail-link-session",
+    "calendar-detail-link-task",
+    "calendar-detail-link-artifact",
+    "calendar-detail-link-run",
 ]
 
 KNOWN_ITEM_TYPES = [
@@ -144,7 +159,7 @@ def test_calendar_js_renders_six_known_item_types_fail_soft() -> None:
     assert "item_type:" not in source
 
 
-def test_calendar_js_is_text_only_and_never_creates_markup_or_links() -> None:
+def test_calendar_js_is_text_only_and_never_creates_anchors_or_html() -> None:
     source = CALENDAR_JS_PATH.read_text(encoding="utf-8")
     assert "textContent" in source
     assert "createElement" in source
@@ -156,11 +171,10 @@ def test_calendar_js_is_text_only_and_never_creates_markup_or_links() -> None:
     assert "href" not in source
 
 
-def test_calendar_js_has_no_storage_no_artifact_dependency_and_frozen_export() -> None:
+def test_calendar_js_has_no_storage_and_frozen_export() -> None:
     source = CALENDAR_JS_PATH.read_text(encoding="utf-8")
     assert "localStorage" not in source
     assert "sessionStorage" not in source
-    assert "artifact" not in source.lower()
     assert "window.PadiemCalendarUI" in source
     assert "Object.freeze" in source
     # Node environments (tests) must be able to import the pure helpers only.
@@ -186,6 +200,32 @@ def test_calendar_js_renders_source_type_as_plain_text_only() -> None:
     # No markup sink can interpret a hostile source_type value.
     for sink in ("innerHTML", "insertAdjacentHTML", "outerHTML", "DOMParser", "document.write", "eval("):
         assert sink not in source
+
+
+def test_calendar_item_detail_is_read_only_and_link_backs_are_server_validated() -> None:
+    source = CALENDAR_JS_PATH.read_text(encoding="utf-8")
+    assert 'const ITEM_DETAIL_ROUTE = "/api/calendar/items"' in source
+    assert "buildItemDetailRoute" in source
+    assert "isRenderableDetail" in source
+    assert "isRenderableLinkBack" in source
+    assert 'padiem:calendar-open-link' in source
+    assert "link_backs" in source
+    assert "target_id" in source
+    assert "dispatchCalendarLink" in source
+    detail_block = source.split("async function loadItemDetail(", 1)[1].split("function buildRow(", 1)[0]
+    assert "method:" not in detail_block
+    assert 'credentials: "same-origin"' in detail_block
+    assert 'cache: "no-store"' in detail_block
+    assert "createElement(\"a\")" not in source
+    assert "href" not in source
+    assert source.count('method: "POST"') == 2
+    for kind in ("claw_session", "task", "artifact", "run"):
+        assert f'"{kind}"' in source
+    app = APP_PATH.read_text(encoding="utf-8")
+    assert 'window.addEventListener("padiem:calendar-open-link"' in app
+    assert 'openClawInboxTarget("tasks", targetId)' in app
+    assert "openClawRunTarget(targetId)" in app
+    assert "downloadClawArtifact(targetId" in app
 
 
 def test_locale_js_defines_calendar_keys_for_ko_and_en() -> None:
@@ -224,32 +264,42 @@ def test_calendar_ui_pure_helpers_behave_as_contracted() -> None:
     require({json.dumps(str(CALENDAR_JS_PATH))});
     const ui = window.PadiemCalendarUI;
     if (!ui) throw new Error("PadiemCalendarUI missing");
-    process.stdout.write(JSON.stringify({{
-      todayRoute: ui.routeFor("today"),
-      upcomingRoute: ui.routeFor("upcoming"),
-      fallbackRoute: ui.routeFor("nope"),
-      query: ui.buildQuery("Europe/Berlin"),
-      queryEscaped: ui.buildQuery("Some Zone"),
-      knownWorkLog: ui.isKnownItemType("work_log"),
-      knownAutomation: ui.isKnownItemType("automation_run"),
-      unknownText: ui.isKnownItemType("nope"),
-      unknownNumber: ui.isKnownItemType(6),
-      typeKeyKnown: ui.itemTypeKey("claw_run"),
-      typeKeyUnknown: ui.itemTypeKey("mystery"),
-      sourceKnown: ui.sourceTypeText({{ source_type: "native_work_log" }}),
-      sourcePadded: ui.sourceTypeText({{ source_type: "  claw_run  " }}),
-      sourceMarkupShaped: ui.sourceTypeText({{ source_type: "<img src=x onerror=alert(1)>" }}),
-      sourceMissing: ui.sourceTypeText({{}}),
-      sourceNumeric: ui.sourceTypeText({{ source_type: 5 }}),
-      sourceNullItem: ui.sourceTypeText(null),
-      sourceIsFunction: typeof ui.sourceTypeText,
-      knownTypesLength: ui.KNOWN_ITEM_TYPES.length,
-      whenTimed: ui.formatWhen({{ date: "2026-09-22", start_at: "2026-09-22T01:00:00+00:00", end_at: "2026-09-22T02:00:00+00:00", timezone: "Europe/Berlin", all_day: false }}),
-      whenNoZone: ui.formatWhen({{ date: "2026-09-22", start_at: "2026-09-22T01:00:00+00:00", end_at: null, timezone: null, all_day: false }}),
-      whenAllDay: ui.formatWhen({{ date: "2026-09-22", start_at: null, end_at: null, timezone: "Europe/Berlin", all_day: true }}),
-      whenNullItem: ui.formatWhen(null),
-      whenBrokenTime: ui.formatWhen({{ date: "2026-09-22", start_at: "not-a-date", timezone: "Europe/Berlin", all_day: false }}),
-    }}));
+     const sessionId = "chat_" + "a".repeat(32);
+     const artifactId = "doc_" + "b".repeat(32);
+     const detailPayload = {{ ok: true, detail: {{ item: {{ calendar_item_id: "item_task_task_1", item_type: "task", title: "Task", date: "2026-09-20" }}, link_backs: [{{ kind: "task", target_id: "task_1" }}] }} }};
+     process.stdout.write(JSON.stringify({{
+       todayRoute: ui.routeFor("today"),
+       upcomingRoute: ui.routeFor("upcoming"),
+       fallbackRoute: ui.routeFor("nope"),
+       query: ui.buildQuery("Europe/Berlin"),
+       queryEscaped: ui.buildQuery("Some Zone"),
+       knownWorkLog: ui.isKnownItemType("work_log"),
+       knownAutomation: ui.isKnownItemType("automation_run"),
+       unknownText: ui.isKnownItemType("nope"),
+       unknownNumber: ui.isKnownItemType(6),
+       typeKeyKnown: ui.itemTypeKey("claw_run"),
+       typeKeyUnknown: ui.itemTypeKey("mystery"),
+       sourceKnown: ui.sourceTypeText({{ source_type: "native_work_log" }}),
+       sourcePadded: ui.sourceTypeText({{ source_type: "  claw_run  " }}),
+       sourceMarkupShaped: ui.sourceTypeText({{ source_type: "<img src=x onerror=alert(1)>" }}),
+       sourceMissing: ui.sourceTypeText({{}}),
+       sourceNumeric: ui.sourceTypeText({{ source_type: 5 }}),
+       sourceNullItem: ui.sourceTypeText(null),
+       sourceIsFunction: typeof ui.sourceTypeText,
+       detailRoute: ui.buildItemDetailRoute("item_task_task_1", "Asia/Seoul"),
+       detailRouteBadId: ui.buildItemDetailRoute("../secret", "Asia/Seoul"),
+       detailRouteBadZone: ui.buildItemDetailRoute("item_task_task_1", ""),
+       linkSession: ui.isRenderableLinkBack({{ kind: "claw_session", target_id: sessionId }}),
+       linkArtifact: ui.isRenderableLinkBack({{ kind: "artifact", target_id: artifactId }}),
+       linkExternal: ui.isRenderableLinkBack({{ kind: "artifact", target_id: "https://example.test/a" }}),
+       detailRenderable: ui.isRenderableDetail(detailPayload, "item_task_task_1"),
+       knownTypesLength: ui.KNOWN_ITEM_TYPES.length,
+       whenTimed: ui.formatWhen({{ date: "2026-09-22", start_at: "2026-09-22T01:00:00+00:00", end_at: "2026-09-22T02:00:00+00:00", timezone: "Europe/Berlin", all_day: false }}),
+       whenNoZone: ui.formatWhen({{ date: "2026-09-22", start_at: "2026-09-22T01:00:00+00:00", end_at: null, timezone: null, all_day: false }}),
+       whenAllDay: ui.formatWhen({{ date: "2026-09-22", start_at: null, end_at: null, timezone: "Europe/Berlin", all_day: true }}),
+       whenNullItem: ui.formatWhen(null),
+       whenBrokenTime: ui.formatWhen({{ date: "2026-09-22", start_at: "not-a-date", timezone: "Europe/Berlin", all_day: false }}),
+     }}));
     """
     completed = subprocess.run(
         ["node", "-e", script],
@@ -277,6 +327,13 @@ def test_calendar_ui_pure_helpers_behave_as_contracted() -> None:
     assert data["sourceMissing"] == ""
     assert data["sourceNumeric"] == ""
     assert data["sourceNullItem"] == ""
+    assert data["detailRoute"] == "/api/calendar/items/item_task_task_1?timezone=Asia%2FSeoul"
+    assert data["detailRouteBadId"] == ""
+    assert data["detailRouteBadZone"] == ""
+    assert data["linkSession"] is True
+    assert data["linkArtifact"] is True
+    assert data["linkExternal"] is False
+    assert data["detailRenderable"] is True
     assert data["knownTypesLength"] == 6
     # Timed items show the server date plus server-timezone clock times.
     assert data["whenTimed"].startswith("2026-09-22 ")
