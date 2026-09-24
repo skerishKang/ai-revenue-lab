@@ -47,6 +47,7 @@ class SandboxProviderCandidate(str, Enum):
     DAYTONA = "daytona"
     RUNLOOP = "runloop"
     E2B = "e2b"
+    VERCEL_SANDBOX = "vercel_sandbox"
 
 
 class ProbeMethod(str, Enum):
@@ -456,7 +457,7 @@ def build_candidate_launch_profile(
             "process_hard_limit",
             "provider_metadata_blocking",
         )
-    else:
+    elif candidate is SandboxProviderCandidate.E2B:
         settings = (
             _setting("allow_internet_access", False, "docs:e2b/python-sdk-v2.15.2"),
             _setting("timeout_action", "kill", "docs:e2b/python-sdk-v2.15.2"),
@@ -471,6 +472,31 @@ def build_candidate_launch_profile(
             "provider_metadata_blocking",
             "teardown_terminal_state",
         )
+    elif candidate is SandboxProviderCandidate.VERCEL_SANDBOX:
+        settings = (
+            _setting("networkPolicy", "deny-all", "docs:vercel/sandbox-sdk-reference"),
+            _setting("persistent", False, "docs:vercel/persistent-sandboxes"),
+            _setting("public_port_count", 0, "policy:cloud-m1/private-ports"),
+            _setting("guest_secret_count", 0, "policy:cloud-m1/no-secrets"),
+            _setting("snapshot_reuse", False, "policy:cloud-m1/no-reuse"),
+            _setting("fork_reuse", False, "policy:cloud-m1/no-reuse"),
+            _setting("getOrCreate", False, "policy:cloud-m1/no-reuse"),
+            _setting("resume", False, "policy:cloud-m1/no-reuse"),
+            _setting("teardown_sequence", "stop_then_permanent_delete", "policy:cloud-m1/teardown"),
+            _setting("exact_revision_verification", True, "policy:cloud-m1/exact-revision"),
+            _setting("padiem_wall_clock_ttl_seconds", "lease_ttl_seconds", "policy:cloud-m1/lease-ttl"),
+        )
+        unresolved = (
+            "applied_disk_and_process_hard_limits",
+            "provider_metadata_blocking",
+            "privileged_runtime_semantics",
+            "process_tree_death",
+            "exact_teardown_and_non_resurrectability",
+            "bounded_terminal_and_log_behavior",
+            "padiem_wall_clock_ttl_enforcement",
+        )
+    else:
+        raise ContractError("unhandled sandbox provider candidate")
 
     return CloudM1ProviderLaunchProfile(
         candidate=candidate,
