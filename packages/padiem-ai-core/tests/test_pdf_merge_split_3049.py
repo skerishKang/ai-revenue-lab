@@ -6,6 +6,9 @@ import sys
 from io import BytesIO
 
 import pytest
+
+pytest.importorskip("pypdf")
+
 from pypdf import PdfReader, PdfWriter
 from pypdf.generic import ArrayObject, DictionaryObject, NameObject, TextStringObject
 
