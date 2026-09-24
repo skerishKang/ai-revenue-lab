@@ -34,7 +34,20 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
