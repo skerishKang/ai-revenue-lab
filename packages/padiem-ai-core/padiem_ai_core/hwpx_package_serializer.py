@@ -32,6 +32,7 @@ from .document_normalization import (
     MAX_BINARY_DOCUMENT_BYTES,
     MAX_DOCUMENT_CHARS,
     MAX_OOXML_ENTRIES,
+    _last_hwpx_section_facts,
     parse_hwpx_sections,
     validate_ooxml_member_name,
 )
@@ -45,6 +46,11 @@ HWPX_MEDIA_TYPE = "application/hwp+zip"
 MAX_HWPX_SECTIONS = 64
 MAX_HWPX_PARAGRAPHS = MAX_DOCUMENT_SEGMENTS
 MAX_HWPX_PARAGRAPH_CHARS = 4_000
+MAX_HWPX_TABLE_ROWS = 32
+MAX_HWPX_TABLE_COLUMNS = 16
+MAX_HWPX_TABLE_CELLS = MAX_HWPX_TABLE_ROWS * MAX_HWPX_TABLE_COLUMNS
+MAX_HWPX_CELL_TEXT_CHARS = 4_000
+MAX_HWPX_PACKAGE_TABLE_CELLS = MAX_HWPX_TABLE_CELLS
 MAX_HWPX_PACKAGE_TEXT_CHARS = MAX_DOCUMENT_CHARS
 
 _SECTION_NAMESPACE = "http://www.hancom.co.kr/hwpml/2011/section"
@@ -55,10 +61,39 @@ _XML_DECLARATION = '<?xml version="1.0" encoding="UTF-8"?>'
 
 
 @dataclass(frozen=True, slots=True)
+class HwpxTableCell:
+    """One bounded cell containing canonical paragraph text."""
+
+    text: str
+
+
+@dataclass(frozen=True, slots=True)
+class HwpxTable:
+    """One Core-owned rectangular bounded table."""
+
+    rows: tuple[tuple[HwpxTableCell, ...], ...]
+
+
+@dataclass(frozen=True, slots=True)
+class HwpxSectionBlock:
+    """One ordered section block: a paragraph or a table."""
+
+    kind: str
+    text: str | None = None
+    table: HwpxTable | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class HwpxPackageSection:
-    """One bounded section of plain paragraph strings."""
+    """One bounded section with ordered paragraph/table blocks.
+
+    ``paragraphs`` remains the legacy paragraph-only projection. It is derived
+    from ``blocks`` for table-aware sections and remains unchanged for callers
+    constructing the paragraph-only subset.
+    """
 
     paragraphs: tuple[str, ...]
+    blocks: tuple[HwpxSectionBlock, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -78,7 +113,10 @@ def serialize_hwpx_package(content: HwpxPackageContent) -> bytes:
     """
 
     _validate_content(content)
-    section_payloads = [serialize_hwpx_section_part(section.paragraphs) for section in content.sections]
+    section_payloads = [
+        serialize_hwpx_section_part(section.paragraphs) if not section.blocks else serialize_hwpx_section_blocks(section.blocks)
+        for section in content.sections
+    ]
     payload = _package_bytes(section_payloads)
     if len(payload) > MAX_BINARY_DOCUMENT_BYTES:
         raise DocumentNormalizationError(
@@ -99,8 +137,9 @@ def deserialize_hwpx_package(payload: bytes) -> HwpxPackageContent:
 
     A package outside the supported subset fails closed instead of being
     projected into a model that would silently drop shape on the next write.
-    That covers tables, images, shapes and any other element anywhere in the
-    part, paragraphs that hold other paragraphs, paragraphs whose text came
+    This covers unsupported table structures, images, shapes and any other
+    element anywhere in the part, paragraphs that hold other paragraphs,
+    paragraphs whose text came
     from more than one run or from none, a section root this writer would never
     emit, repeated section numbers, and a part carrying a carriage return, whose
     text an XML parser has already rewritten into a line feed.
@@ -108,53 +147,126 @@ def deserialize_hwpx_package(payload: bytes) -> HwpxPackageContent:
 
     sections: list[HwpxPackageSection] = []
     previous_index = 0
-    for parsed in parse_hwpx_sections(payload):
+    parsed_sections = parse_hwpx_sections(payload)
+    parsed_facts = _last_hwpx_section_facts()
+    if parsed_facts is None or len(parsed_facts) != len(parsed_sections):
+        raise DocumentNormalizationError("hwpx_unsupported_structure", "HWPX facts are unavailable.")
+    for parsed, facts in zip(parsed_sections, parsed_facts, strict=True):
         if parsed.root_tag != _SECTION_ROOT_TAG:
-            raise DocumentNormalizationError(
-                "hwpx_unsupported_section_root",
-                "HWPX section part root is not the section element this decoder supports.",
-            )
+            raise DocumentNormalizationError("hwpx_unsupported_section_root", "HWPX section part root is not supported.")
         if parsed.index <= previous_index:
-            raise DocumentNormalizationError(
-                "hwpx_unsupported_section_order",
-                "HWPX section parts are repeated or not in ascending order.",
-            )
+            raise DocumentNormalizationError("hwpx_unsupported_section_order", "HWPX section parts are not ascending.")
         previous_index = parsed.index
         if parsed.has_carriage_return:
-            raise DocumentNormalizationError(
-                "hwpx_unsupported_control_character",
-                "HWPX part contains a carriage return that XML parsing cannot preserve.",
-            )
-        if parsed.unsupported_nodes:
-            raise DocumentNormalizationError(
-                "hwpx_unsupported_structure",
-                "HWPX contains a structure the editable model cannot represent.",
-            )
-        paragraphs: list[str] = []
-        for paragraph in parsed.paragraphs:
-            if paragraph.holds_nested_paragraph:
-                raise DocumentNormalizationError(
-                    "hwpx_unsupported_structure",
-                    "HWPX contains a paragraph structure the editable model cannot represent.",
+            raise DocumentNormalizationError("hwpx_unsupported_control_character", "HWPX part contains a carriage return.")
+        if facts.structured_unsupported_nodes:
+            raise DocumentNormalizationError("hwpx_unsupported_structure", "HWPX contains an unsupported structure.")
+        blocks: list[HwpxSectionBlock] = []
+        for block in facts.blocks:
+            if block.kind == "paragraph":
+                if block.paragraph is None or block.paragraph.holds_nested_paragraph:
+                    raise DocumentNormalizationError("hwpx_unsupported_structure", "HWPX paragraph shape is unsupported.")
+                if block.paragraph.text_nodes != 1:
+                    raise DocumentNormalizationError("hwpx_unsupported_run_semantics", "HWPX paragraph text does not come from exactly one run text node.")
+                if "\r" in block.paragraph.text:
+                    raise DocumentNormalizationError("hwpx_unsupported_control_character", "HWPX paragraph contains a carriage return.")
+                blocks.append(HwpxSectionBlock("paragraph", block.paragraph.text))
+            elif block.kind == "table" and block.table is not None:
+                if (
+                    not block.table.rows
+                    or block.table.unsupported
+                    or any(
+                        not row
+                        or any(
+                            cell.unsupported
+                            or any(
+                                paragraph.runs != 1
+                                or paragraph.text_nodes != 1
+                                or paragraph.text_form not in {"empty_text", "non_empty_text"}
+                                for paragraph in cell.paragraphs
+                            )
+                            for cell in row
+                        )
+                        for row in block.table.rows
+                    )
+                ):
+                    raise DocumentNormalizationError("hwpx_unsupported_structure", "HWPX table contains an unsupported structure.")
+                rows = tuple(
+                    tuple(
+                        HwpxTableCell(paragraphs[0].text)
+                        for cell in row
+                        for paragraphs in [cell.paragraphs]
+                        if len(paragraphs) == 1 and paragraphs[0].runs == 1 and paragraphs[0].text_nodes == 1
+                    )
+                    for row in block.table.rows
                 )
-            if paragraph.text_nodes != 1:
-                raise DocumentNormalizationError(
-                    "hwpx_unsupported_run_semantics",
-                    "HWPX paragraph text does not come from exactly one run text node.",
-                )
-            if "\r" in paragraph.text:
-                # A character reference can survive parsing as a carriage return
-                # where a literal one was rewritten to a line feed; neither shape
-                # can be written and read back unchanged.
-                raise DocumentNormalizationError(
-                    "hwpx_unsupported_control_character",
-                    "HWPX paragraph contains a carriage return this model cannot round-trip.",
-                )
-            paragraphs.append(paragraph.text)
-        sections.append(HwpxPackageSection(paragraphs=tuple(paragraphs)))
+                if len(rows) != len(block.table.rows) or any(len(row) != len(block.table.rows[0]) for row in rows):
+                    raise DocumentNormalizationError("hwpx_unsupported_structure", "HWPX table shape is unsupported.")
+                blocks.append(HwpxSectionBlock("table", table=HwpxTable(rows)))
+            else:
+                raise DocumentNormalizationError("hwpx_unsupported_structure", "HWPX section block is unsupported.")
+        paragraphs = tuple(block.text for block in blocks if block.kind == "paragraph")
+        sections.append(HwpxPackageSection(paragraphs=paragraphs, blocks=tuple(blocks) if any(block.kind == "table" for block in blocks) else ()))
     content = HwpxPackageContent(sections=tuple(sections))
     _validate_content(content)
     return content
+
+
+def _validate_table(table: HwpxTable) -> int:
+    if not isinstance(table, HwpxTable) or not isinstance(table.rows, tuple) or not table.rows:
+        raise DocumentNormalizationError("hwpx_serialize_table_model", "HWPX tables require non-empty row tuples.")
+    if len(table.rows) > MAX_HWPX_TABLE_ROWS:
+        raise DocumentNormalizationError("hwpx_serialize_table_row_limit", "HWPX table exceeds the row limit.")
+    widths = {len(row) for row in table.rows if isinstance(row, tuple)}
+    if not widths or len(widths) != 1 or 0 in widths or next(iter(widths)) > MAX_HWPX_TABLE_COLUMNS:
+        raise DocumentNormalizationError("hwpx_serialize_table_shape", "HWPX table rows must be rectangular and bounded.")
+    cell_count = len(table.rows) * next(iter(widths))
+    if cell_count > MAX_HWPX_TABLE_CELLS:
+        raise DocumentNormalizationError("hwpx_serialize_table_cell_limit", "HWPX table exceeds the cell limit.")
+    total = 0
+    for row in table.rows:
+        for cell in row:
+            if not isinstance(cell, HwpxTableCell):
+                raise DocumentNormalizationError("hwpx_serialize_table_model", "HWPX table cells must be HwpxTableCell values.")
+            if len(cell.text) > MAX_HWPX_CELL_TEXT_CHARS:
+                raise DocumentNormalizationError("hwpx_serialize_cell_text_limit", "HWPX table cell exceeds the text limit.")
+            validate_hwpx_paragraph_text(cell.text)
+            total += len(cell.text)
+    return total
+
+
+def _serialize_table_xml(table: HwpxTable) -> str:
+    rows: list[str] = []
+    for row in table.rows:
+        cells = "".join(
+            f"<hp:tc><hp:p><hp:runs><hp:t>{_escape_xml_text(cell.text)}</hp:t></hp:runs></hp:p></hp:tc>"
+            for cell in row
+        )
+        rows.append(f"<hp:tr>{cells}</hp:tr>")
+    return "<hp:tbl>" + "".join(rows) + "</hp:tbl>"
+
+
+def serialize_hwpx_section_blocks(blocks: tuple[HwpxSectionBlock, ...]) -> bytes:
+    """Serialize the single canonical ordered paragraph/table section shape."""
+
+    if not isinstance(blocks, tuple) or not blocks:
+        raise DocumentNormalizationError("hwpx_serialize_model", "HWPX section blocks must be a non-empty tuple.")
+    body: list[str] = []
+    for block in blocks:
+        if block.kind == "paragraph":
+            if block.table is not None or not isinstance(block.text, str):
+                raise DocumentNormalizationError("hwpx_serialize_model", "HWPX paragraph block shape is invalid.")
+            validate_hwpx_paragraph_text(block.text)
+            body.append(f"<hp:p><hp:runs><hp:t>{_escape_xml_text(block.text)}</hp:t></hp:runs></hp:p>")
+        elif block.kind == "table":
+            if block.text is not None or block.table is None:
+                raise DocumentNormalizationError("hwpx_serialize_model", "HWPX table block shape is invalid.")
+            _validate_table(block.table)
+            body.append(_serialize_table_xml(block.table))
+        else:
+            raise DocumentNormalizationError("hwpx_serialize_model", "HWPX section block kind is unsupported.")
+    document = f"{_XML_DECLARATION}<hs:sec xmlns:hs=\"{_SECTION_NAMESPACE}\" xmlns:hp=\"{_PARAGRAPH_NAMESPACE}\">" + "".join(body) + "</hs:sec>"
+    return document.encode("utf-8")
 
 
 def _validate_content(content: HwpxPackageContent) -> None:
@@ -179,6 +291,7 @@ def _validate_content(content: HwpxPackageContent) -> None:
             "HWPX serialize content exceeds the archive entry budget.",
         )
     paragraph_count = 0
+    table_cell_count = 0
     total_chars = 0
     has_readable = False
     for section in content.sections:
@@ -192,7 +305,41 @@ def _validate_content(content: HwpxPackageContent) -> None:
                 "hwpx_serialize_model",
                 "HWPX serialize paragraphs must be a tuple of strings.",
             )
-        paragraph_count += len(section.paragraphs)
+        if not isinstance(section.blocks, tuple):
+            raise DocumentNormalizationError("hwpx_serialize_model", "HWPX serialize blocks must be a tuple.")
+        if section.blocks:
+            if any(block.kind == "paragraph" and block.text not in section.paragraphs for block in section.blocks):
+                raise DocumentNormalizationError("hwpx_serialize_model", "HWPX section paragraphs must match ordered blocks.")
+            expected = tuple(block.text for block in section.blocks if block.kind == "paragraph")
+            if expected != section.paragraphs:
+                raise DocumentNormalizationError("hwpx_serialize_model", "HWPX section paragraphs must match ordered blocks.")
+            for block in section.blocks:
+                if block.kind == "paragraph":
+                    if not isinstance(block.text, str):
+                        raise DocumentNormalizationError("hwpx_serialize_model", "HWPX paragraph blocks require text.")
+                    validate_hwpx_paragraph_text(block.text)
+                    total_chars += len(block.text)
+                    if block.text.strip():
+                        has_readable = True
+                elif block.kind == "table":
+                    if block.text is not None or block.table is None:
+                        raise DocumentNormalizationError("hwpx_serialize_model", "HWPX table block shape is invalid.")
+                    total_chars += _validate_table(block.table)
+                    table_cell_count += len(block.table.rows) * len(block.table.rows[0])
+                    if table_cell_count > MAX_HWPX_PACKAGE_TABLE_CELLS:
+                        raise DocumentNormalizationError(
+                            "hwpx_serialize_table_cell_limit",
+                            "HWPX package exceeds the bounded table-cell budget.",
+                        )
+                    if any(cell.text.strip() for row in block.table.rows for cell in row):
+                        has_readable = True
+                else:
+                    raise DocumentNormalizationError("hwpx_serialize_model", "HWPX section block kind is unsupported.")
+            paragraph_count += len(section.paragraphs)
+            if any(text for text in section.paragraphs):
+                has_readable = True
+        else:
+            paragraph_count += len(section.paragraphs)
         if paragraph_count > MAX_HWPX_PARAGRAPHS:
             raise DocumentNormalizationError(
                 "hwpx_serialize_paragraph_limit",
@@ -378,9 +525,18 @@ __all__ = [
     "MAX_HWPX_PACKAGE_TEXT_CHARS",
     "MAX_HWPX_PARAGRAPH_CHARS",
     "MAX_HWPX_PARAGRAPHS",
+    "MAX_HWPX_TABLE_ROWS",
+    "MAX_HWPX_TABLE_COLUMNS",
+    "MAX_HWPX_TABLE_CELLS",
+    "MAX_HWPX_CELL_TEXT_CHARS",
+    "MAX_HWPX_PACKAGE_TABLE_CELLS",
     "MAX_HWPX_SECTIONS",
     "HwpxPackageContent",
     "HwpxPackageSection",
+    "HwpxSectionBlock",
+    "HwpxTable",
+    "HwpxTableCell",
+    "serialize_hwpx_section_blocks",
     "deserialize_hwpx_package",
     "serialize_hwpx_package",
     "serialize_hwpx_section_part",
