@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import socket
 import unittest
+from dataclasses import FrozenInstanceError
 from io import BytesIO
 from pathlib import Path
 from unittest import mock
@@ -38,9 +39,9 @@ from kagent.hwpx_skill import (
     REASON_EDIT_DUPLICATE_TARGET,
     REASON_EDIT_GATE_REJECTED,
     REASON_EDIT_INDEX_NEGATIVE,
+    REASON_EDIT_OPERATION_SHAPE,
     REASON_EDIT_OPERATIONS_INVALID,
     REASON_EDIT_OPERATIONS_LIMIT,
-    REASON_EDIT_OPERATION_SHAPE,
     REASON_EDIT_OUTPUT_COUNT_DRIFT,
     REASON_EDIT_OUTPUT_GATE_REJECTED,
     REASON_EDIT_OUTPUT_NON_TARGET_DRIFT,
@@ -116,7 +117,7 @@ def _part_bytes(body: str) -> bytes:
         '<?xml version="1.0" encoding="UTF-8"?>'
         f'<hs:sec xmlns:hs="{SECTION_NAMESPACE}" xmlns:hp="{PARAGRAPH_NAMESPACE}">'
         f"{body}</hs:sec>"
-    ).encode("utf-8")
+    ).encode()
 
 
 def _raw_package(parts: list[tuple[str, bytes]]) -> bytes:
@@ -422,11 +423,8 @@ class HwpxEditOperationRefusalTests(unittest.TestCase):
         self.assertEqual(result.receipt.reason_code, REASON_EDIT_TEXT_REJECTED)
         self.assertIsNone(result.artifact)
 
-    def test_table_source_remains_fail_closed_before_editing(self) -> None:
+    def test_noncanonical_table_source_fails_before_editing(self) -> None:
         payload = _table_source()
-        # #3019 made bounded table structure decodable by Core. This hand-built
-        # legacy fixture is still not byte-canonical for the writable edit subset,
-        # so the existing canonical-source gate must refuse it before mutation.
         self.assertEqual(
             inspect_file("t.hwpx", payload).detected_format, DetectedFormat.HWPX_CANDIDATE
         )
@@ -714,19 +712,21 @@ class HwpxEditAuthorityTests(unittest.TestCase):
             self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), value, key)
 
     def test_edit_never_claims_a_wider_capability(self) -> None:
-        # #2989 completes the bounded HWPX_TEMPLATE_FILL slice; broader templating remains
-        # unclaimed. It is still never a full capability claim, which the
-        # template-fill test module pins; every other later capability stays
-        # unclaimed from edit's point of view.
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL"), "PASS")
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL_SCOPE"), "BOUNDED_FOUNDATION")
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("TABLE_INSERT"), "PASS")
+        self.assertEqual(
+            hwpx_skill.ACCEPTANCE.get("TABLE_INSERT_SCOPE"),
+            "BOUNDED_CANONICAL_BLOCK_SUBSET",
+        )
         for key in (
             "PARAGRAPH_INSERT",
             "PARAGRAPH_DELETE",
             "SECTION_INSERT",
             "SECTION_DELETE",
-            "TABLE_INSERT",
             "TABLE_EDIT",
+            "TABLE_DELETE",
+            "ROW_COLUMN_MUTATION",
             "IMAGE_INSERT",
             "IMAGE_EDIT",
             "STYLE_EDIT",
@@ -869,7 +869,7 @@ class HwpxEditReceiptContractTests(unittest.TestCase):
         self.assertEqual(operation.section_index, 0)
         self.assertEqual(operation.paragraph_index, 0)
         self.assertEqual(operation.text, "수정")
-        with self.assertRaises(Exception):
+        with self.assertRaises(FrozenInstanceError):
             operation.section_index = 1  # type: ignore[misc]
 
 
@@ -939,9 +939,7 @@ class HwpxEditAuthorityOrderTests(unittest.TestCase):
         result = hwpx_edit("doc.hwpx", _png_bytes(), [_replace(0, 0, "수정")])
         self.assertEqual(result.receipt.reason_code, REASON_EDIT_GATE_REJECTED)
 
-    def test_table_source_gate_precedes_operation_validation(self) -> None:
-        """A decoded but non-canonical table source outranks an empty request."""
-
+    def test_table_source_canonical_gate_precedes_operation_validation(self) -> None:
         result = hwpx_edit("t.hwpx", _table_source(), ())
         self.assertEqual(result.receipt.reason_code, REASON_EDIT_SOURCE_NOT_CANONICAL)
 

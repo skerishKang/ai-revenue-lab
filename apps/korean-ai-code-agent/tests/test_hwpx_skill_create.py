@@ -594,18 +594,20 @@ class CreateAuthorityContractTests(unittest.TestCase):
         for key, value in expected.items():
             self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), value, key)
 
-    def test_edit_is_foundation_only_and_later_surfaces_stay_unclaimed(self) -> None:
-        # #2972 built the bounded paragraph-replacement edit foundation and
-        # #2989 the bounded template-fill foundation, so neither is an unclaimed
-        # capability — each is a foundation-only claim and still never a full
-        # capability claim. Every later capability stays unclaimed.
+    def test_edit_is_foundation_only_and_insert_table_is_narrowly_scoped(self) -> None:
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_EDIT_FOUNDATION"), "PASS")
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_EDIT"), "FOUNDATION_ONLY")
         self.assertNotIn(hwpx_skill.ACCEPTANCE.get("HWPX_EDIT"), {"PASS", "YES"})
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL_FOUNDATION"), "PASS")
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL"), "PASS")
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL_SCOPE"), "BOUNDED_FOUNDATION")
-        for key in ("TABLE_INSERT", "IMAGE_INSERT"):
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_INSERT_TABLE_FACADE"), "PASS")
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("TABLE_INSERT"), "PASS")
+        self.assertEqual(
+            hwpx_skill.ACCEPTANCE.get("TABLE_INSERT_SCOPE"),
+            "BOUNDED_CANONICAL_BLOCK_SUBSET",
+        )
+        for key in ("TABLE_EDIT", "IMAGE_INSERT"):
             self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), "NOT_CLAIMED", key)
 
     def test_facade_has_no_second_serializer_archive_or_xml_authority(self) -> None:

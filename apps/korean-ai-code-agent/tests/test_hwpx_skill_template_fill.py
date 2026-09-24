@@ -26,8 +26,8 @@ from padiem_ai_core.hwpx_package_mutation import (
     mutate_hwpx_package_preserving_members,
 )
 from padiem_ai_core.hwpx_package_serializer import (
-    MAX_HWPX_PARAGRAPH_CHARS,
     HWPX_MEDIA_TYPE,
+    MAX_HWPX_PARAGRAPH_CHARS,
     HwpxPackageContent,
     HwpxPackageSection,
     _assemble_hwpx_package_members,
@@ -44,8 +44,8 @@ from kagent.claw_skill_registry import (
 from kagent.document_parser_contract import is_bounded_reason_code
 from kagent.file_intake_safety import DetectedFormat, inspect_file
 from kagent.hwpx_skill import (
-    MAX_TEMPLATE_FIELDS,
     MAX_TEMPLATE_FIELD_NAME_CHARS,
+    MAX_TEMPLATE_FIELDS,
     PLACEHOLDER_CLOSE,
     PLACEHOLDER_OPEN,
     REASON_TEMPLATE_FIELD_DUPLICATE,
@@ -56,8 +56,6 @@ from kagent.hwpx_skill import (
     REASON_TEMPLATE_FIELDS_INVALID,
     REASON_TEMPLATE_FIELDS_LIMIT,
     REASON_TEMPLATE_GATE_REJECTED,
-    REASON_TEMPLATE_OUTPUT_ROUNDTRIP_MISMATCH,
-    REASON_TEMPLATE_SOURCE_DECODER_REJECTED,
     REASON_TEMPLATE_SOURCE_NOT_CANONICAL,
     REASON_TEMPLATE_UNFILLED_FIELD,
     STATUS_OK,
@@ -155,7 +153,7 @@ def _part_bytes(body: str) -> bytes:
         '<?xml version="1.0" encoding="UTF-8"?>'
         f'<hs:sec xmlns:hs="{SECTION_NAMESPACE}" xmlns:hp="{PARAGRAPH_NAMESPACE}">'
         f"{body}</hs:sec>"
-    ).encode("utf-8")
+    ).encode()
 
 
 def _table_template() -> bytes:
@@ -471,12 +469,11 @@ class HwpxTemplateFillCountBoundTests(unittest.TestCase):
 
 
 class HwpxTemplateFillUnsupportedTests(unittest.TestCase):
-    def test_table_structure_remains_refused_not_filled_around(self) -> None:
+    def test_noncanonical_table_template_is_refused_not_filled_around(self) -> None:
         result = hwpx_template_fill("tb.hwpx", _table_template(), {"이름": "강철원"})
         self.assertEqual(result.receipt.status, STATUS_REFUSED)
-        # #3019 made bounded table structure decodable by Core. This legacy
-        # hand-built template is still outside the byte-canonical fill subset.
         self.assertEqual(result.receipt.reason_code, REASON_TEMPLATE_SOURCE_NOT_CANONICAL)
+        self.assertEqual(result.receipt.note, "hwpx_mutation_target_not_canonical")
         self.assertIsNone(result.artifact)
 
     def test_non_canonical_addressed_part_is_refused(self) -> None:
@@ -725,13 +722,19 @@ class HwpxTemplateFillAuthorityTests(unittest.TestCase):
             self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), value, key)
 
     def test_template_fill_never_claims_a_wider_capability(self) -> None:
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("TABLE_INSERT"), "PASS")
+        self.assertEqual(
+            hwpx_skill.ACCEPTANCE.get("TABLE_INSERT_SCOPE"),
+            "BOUNDED_CANONICAL_BLOCK_SUBSET",
+        )
         for key in (
             "PARAGRAPH_INSERT",
             "PARAGRAPH_DELETE",
             "SECTION_INSERT",
             "SECTION_DELETE",
-            "TABLE_INSERT",
             "TABLE_EDIT",
+            "TABLE_DELETE",
+            "ROW_COLUMN_MUTATION",
             "IMAGE_INSERT",
             "IMAGE_EDIT",
             "STYLE_EDIT",
