@@ -15,6 +15,8 @@ except ModuleNotFoundError:  # pragma: no cover
 
 from padiem_ai_core.document_normalization import (
     MAX_PDF_PAGES,
+    PDF_NATIVE_TEXT_ABSENT,
+    PDF_NATIVE_TEXT_PRESENT,
     DocumentNormalizationError,
     inspect_pdf,
 )
@@ -51,6 +53,10 @@ def test_inspect_pdf_preserves_exact_page_provenance() -> None:
         (1, 2, "Page two"),
     ]
     assert all(page.text_source == "native_pypdf" for page in result.pages)
+    assert result.native_text_available is True
+    assert result.native_text_state == PDF_NATIVE_TEXT_PRESENT
+    assert result.safe_dict()["native_text_available"] is True
+    assert result.safe_dict()["native_text_state"] == PDF_NATIVE_TEXT_PRESENT
     assert result.safe_dict()["pages"][0]["page_number"] == 1
 
 
@@ -67,9 +73,11 @@ def test_pdf_inspection_rejects_wrong_media_and_page_limit() -> None:
     assert pages.value.code == "pdf_page_limit"
 
 
-def test_pdf_inspection_does_not_claim_ocr_or_render() -> None:
+def test_pdf_inspection_classifies_no_native_text_without_claiming_scan() -> None:
     result = inspect_pdf(name="scan.pdf", media_type="application/pdf", payload=_pdf(""))
     assert result.pages[0].text == ""
     assert result.pages[0].text_source == "native_pypdf"
-    assert "ocr" not in repr(result).lower()
+    assert result.native_text_available is False
+    assert result.native_text_state == PDF_NATIVE_TEXT_ABSENT
+    assert "scan" not in result.native_text_state
     assert "render" not in repr(result).lower()
