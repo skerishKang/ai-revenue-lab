@@ -413,19 +413,48 @@ _TOOL_RUNTIME_EXPORTS = frozenset(
     }
 )
 
+# Pillow is an optional dependency, so the image helper API is resolved lazily
+# too. The exported surface is deliberately minimal: the four bounded entry
+# points, their two result records, their error type, and the error-code set
+# callers branch on. Bounds and encoder constants stay on
+# ``padiem_ai_core.image_helpers`` so the root stays a surface, not a catalogue.
+_IMAGE_HELPER_EXPORTS = frozenset(
+    {
+        "IMAGE_ERROR_CODES",
+        "ImageContractError",
+        "ImageInspection",
+        "ImageOutput",
+        "inspect_image",
+        "sanitize_metadata",
+        "thumbnail_image",
+        "transform_image",
+    }
+)
+
 
 def __getattr__(name: str):
-    if name not in _TOOL_RUNTIME_EXPORTS:
+    if name in _TOOL_RUNTIME_EXPORTS:
+        try:
+            module = importlib.import_module(".tool_runtime", __name__)
+        except ModuleNotFoundError as exc:
+            if exc.name == "jsonschema":
+                raise ImportError(
+                    "Tool Runtime requires the optional 'tools' dependency: "
+                    "install padiem-ai-core[tools]."
+                ) from exc
+            raise
+    elif name in _IMAGE_HELPER_EXPORTS:
+        try:
+            module = importlib.import_module(".image_helpers", __name__)
+        except ModuleNotFoundError as exc:
+            if exc.name in {"PIL", "_imaging"}:
+                raise ImportError(
+                    "Image helpers require the separately approved Pillow runtime; "
+                    "install the exact verified platform wheel for this lane."
+                ) from exc
+            raise
+    else:
         raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-    try:
-        module = importlib.import_module(".tool_runtime", __name__)
-    except ModuleNotFoundError as exc:
-        if exc.name == "jsonschema":
-            raise ImportError(
-                "Tool Runtime requires the optional 'tools' dependency: "
-                "install padiem-ai-core[tools]."
-            ) from exc
-        raise
     value = getattr(module, name)
     globals()[name] = value
     return value
@@ -799,4 +828,12 @@ __all__ = [
     "ToolInvocation",
     "ToolRuntime",
     "ToolRuntimeError",
+    "IMAGE_ERROR_CODES",
+    "ImageContractError",
+    "ImageInspection",
+    "ImageOutput",
+    "inspect_image",
+    "sanitize_metadata",
+    "thumbnail_image",
+    "transform_image",
 ]
