@@ -1,3 +1,15 @@
+# Operations
+
+## Canonical technology adoption
+
+Before substantial commodity capability implementation, follow:
+
+- `TECHNOLOGY_ADOPTION_POLICY.md` — search internal/OSS/commercial options first; prefer buy/adopt/adapt/sidecar over custom build; preserve Padiem product authority.
+
+```text
+SEARCH → REUSE_INTERNAL → BUY / ADOPT / ADAPT → SIDECAR / LOCAL_SERVICE → BUILD
+```
+
 # AI Revenue Lab — Operations Index
 
 - Status: **CANONICAL**
