@@ -97,6 +97,7 @@ from .padiem_routing_profile_admin import (
     rollback_padiem_routing_profile,
     validate_padiem_routing_profile_stage,
 )
+from .tenants import TenantMembershipRole
 
 __all__ = [
     "AppliedAuthSessionTransition",
@@ -155,6 +156,7 @@ __all__ = [
     "RouteEvidenceStatus",
     "SignupContactBinding",
     "SubjectType",
+    "TenantMembershipRole",
     "TokenUsage",
     "TrustedB14RoutingPolicyV1",
     "UsageEvent",
