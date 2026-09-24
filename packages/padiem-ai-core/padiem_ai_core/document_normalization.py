@@ -25,6 +25,7 @@ MAX_DOCUMENT_CHARS = MAX_SEGMENT_TEXT_CHARS
 MAX_TEXT_DOCUMENT_BYTES = 96 * 1024
 MAX_BINARY_DOCUMENT_BYTES = 2 * 1024 * 1024
 MAX_PDF_PAGES = 80
+MAX_PDF_PAGE_TEXT_CHARS = 16_000
 MAX_OOXML_ENTRIES = 256
 MAX_OOXML_MEMBER_NAME_CHARS = 255
 MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES = 1 * 1024 * 1024
@@ -681,7 +682,47 @@ def read_hwpx_package_members(payload: bytes) -> tuple[HwpxPackageMember, ...]:
     return tuple(members)
 
 
-def _extract_pdf_text(payload: bytes) -> str:
+@dataclass(frozen=True, slots=True)
+class PdfPageInspection:
+    """Native page text with exact page provenance; no OCR or layout authority."""
+
+    page_index: int
+    page_number: int
+    page_count: int
+    text: str
+    text_source: str = "native_pypdf"
+
+    def safe_dict(self) -> dict[str, object]:
+        return {
+            "page_index": self.page_index,
+            "page_number": self.page_number,
+            "page_count": self.page_count,
+            "text": self.text,
+            "text_source": self.text_source,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class PdfInspection:
+    """Bounded PDF inspection result using the canonical Core pypdf authority."""
+
+    name: str
+    media_type: str
+    byte_size: int
+    page_count: int
+    pages: tuple[PdfPageInspection, ...]
+
+    def safe_dict(self) -> dict[str, object]:
+        return {
+            "name": self.name,
+            "media_type": self.media_type,
+            "byte_size": self.byte_size,
+            "page_count": self.page_count,
+            "pages": [page.safe_dict() for page in self.pages],
+        }
+
+
+def _open_pdf_reader(payload: bytes) -> Any:
     if not payload.startswith(b"%PDF-"):
         raise DocumentNormalizationError("pdf_magic_mismatch", "PDF magic does not match the declared media type.")
     try:
@@ -690,13 +731,47 @@ def _extract_pdf_text(payload: bytes) -> str:
         raise DocumentNormalizationError("document_dependency_unavailable", "PDF extraction dependency is unavailable.") from exc
     try:
         reader = PdfReader(BytesIO(payload), strict=True)
-        if reader.is_encrypted:
-            raise DocumentNormalizationError("pdf_encrypted", "Encrypted PDF documents are not supported.")
+    except Exception as exc:
+        raise DocumentNormalizationError("pdf_invalid", "PDF could not be parsed safely.") from exc
+    if reader.is_encrypted:
+        raise DocumentNormalizationError("pdf_encrypted", "Encrypted PDF documents are not supported.")
+    if len(reader.pages) < 1:
+        raise DocumentNormalizationError("pdf_no_pages", "PDF contains no readable pages.")
+    if len(reader.pages) > MAX_PDF_PAGES:
+        raise DocumentNormalizationError("pdf_page_limit", "PDF exceeds the page limit.")
+    return reader
+
+
+def inspect_pdf(*, name: Any, media_type: Any, payload: Any) -> PdfInspection:
+    """Inspect PDF metadata and native page text through the canonical pypdf reader."""
+    safe_name, safe_media = validate_document_identity(name=name, media_type=media_type, source_kind="binary")
+    if safe_media != "application/pdf":
+        raise DocumentNormalizationError("unsupported_binary_media_type", "Unsupported binary document media type.")
+    if not isinstance(payload, (bytes, bytearray)) or not payload:
+        raise DocumentNormalizationError("invalid_binary_payload", "PDF payload must be non-empty bytes.")
+    binary = bytes(payload)
+    if len(binary) > MAX_BINARY_DOCUMENT_BYTES:
+        raise DocumentNormalizationError("binary_too_large", "Binary document exceeds the byte limit.")
+    reader = _open_pdf_reader(binary)
+    try:
         page_count = len(reader.pages)
-        if page_count < 1:
-            raise DocumentNormalizationError("pdf_no_pages", "PDF contains no readable pages.")
-        if page_count > MAX_PDF_PAGES:
-            raise DocumentNormalizationError("pdf_page_limit", "PDF exceeds the page limit.")
+        pages: list[PdfPageInspection] = []
+        for index, page in enumerate(reader.pages):
+            try:
+                text = (page.extract_text() or "").strip()
+            except Exception as exc:
+                raise DocumentNormalizationError("pdf_page_text_invalid", "PDF page text could not be read safely.") from exc
+            if len(text) > MAX_PDF_PAGE_TEXT_CHARS:
+                raise DocumentNormalizationError("pdf_page_text_limit", "PDF page text exceeds the character limit.")
+            pages.append(PdfPageInspection(index, index + 1, page_count, text))
+    finally:
+        reader.close() if hasattr(reader, "close") else None
+    return PdfInspection(safe_name, safe_media, len(binary), page_count, tuple(pages))
+
+
+def _extract_pdf_text(payload: bytes) -> str:
+    reader = _open_pdf_reader(payload)
+    try:
         parts: list[str] = []
         for page in reader.pages:
             extracted = (page.extract_text() or "").strip()
@@ -710,6 +785,8 @@ def _extract_pdf_text(payload: bytes) -> str:
         raise
     except Exception as exc:
         raise DocumentNormalizationError("pdf_invalid", "PDF could not be parsed safely.") from exc
+    finally:
+        reader.close() if hasattr(reader, "close") else None
 
 
 def _cell_text(value: Any) -> str:

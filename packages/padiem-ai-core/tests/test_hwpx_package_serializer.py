@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 import hashlib
 import inspect
 import warnings
@@ -577,12 +578,26 @@ def test_core_keeps_one_gated_hwpx_walk_per_purpose() -> None:
     assert hwpx_walk.count("ZipFile(") == 1
     assert source.count("def extract_docx_text") == 1
 
-    # The second walk is the raw-member accessor, and it is the last one.
+    # The second walk is the raw-member accessor. Locate its exact top-level AST
+    # node so adjacent PDF definitions cannot widen the HWPX source span.
     assert source.count("def read_hwpx_package_members(") == 1
-    member_walk = source.split("def read_hwpx_package_members(")[1].split("def _extract_pdf_text")[0]
+    module = ast.parse(source)
+    member_functions = [
+        node
+        for node in module.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and node.name == "read_hwpx_package_members"
+    ]
+    assert len(member_functions) == 1
+    member_function = member_functions[0]
+    member_walk = ast.get_source_segment(source, member_function) or ""
     assert member_walk.count("ZipFile(") == 1
     assert member_walk.count("validate_ooxml_archive(payload)") == 1
-    assert member_walk.count("def ") == 0
+    assert not any(
+        isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        for statement in member_function.body
+        for node in ast.walk(statement)
+    )
     # It reads bytes; it never becomes a second XML parser.
     assert "ElementTree" not in member_walk
     assert "fromstring(" not in member_walk
