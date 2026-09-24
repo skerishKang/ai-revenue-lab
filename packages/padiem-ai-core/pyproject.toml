@@ -17,12 +17,14 @@ tools = [
 ]
 documents = [
   "pypdf>=6.16.2,<7",
+  "pypdfium2==5.13.0",
   "openpyxl>=3.1,<4",
 ]
 dev = [
   "pytest>=8,<10",
   "jsonschema>=4.23,<5",
   "pypdf>=6.16.2,<7",
+  "pypdfium2==5.13.0",
   "openpyxl>=3.1,<4",
 ]
 
