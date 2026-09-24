@@ -61,9 +61,18 @@ __all__ = [
     "MAX_IMAGE_PIXELS",
     "MAX_INSPECT_FRAMES",
     "MAX_OUTPUT_BYTES",
+    "MAX_PDF_IMAGES",
+    "MAX_PDF_INPUT_BYTES",
+    "MAX_PDF_OUTPUT_BYTES",
+    "MAX_PDF_TOTAL_PIXELS",
+    "PDF_BACKGROUND_RGB",
+    "PDF_DPI",
     "ImageContractError",
     "ImageInspection",
     "ImageOutput",
+    "ImagePdfOutput",
+    "PdfPageProvenance",
+    "image_to_pdf",
     "inspect_image",
     "sanitize_metadata",
     "thumbnail_image",
@@ -83,6 +92,20 @@ MAX_IMAGE_PIXELS = 40_000_000
 
 #: Largest encoded output payload, in bytes.
 MAX_OUTPUT_BYTES = 8 * 1024 * 1024
+
+#: Bounds for image -> new PDF/page artifacts. These are artifact-level caps;
+#: each image still goes through the same decoder and per-image bounds above.
+MAX_PDF_IMAGES = 32
+MAX_PDF_INPUT_BYTES = 16 * 1024 * 1024
+MAX_PDF_TOTAL_PIXELS = 40_000_000
+MAX_PDF_OUTPUT_BYTES = 8 * 1024 * 1024
+
+#: PDF pages use the normalized image pixels at a fixed 150 DPI. This keeps page
+#: dimensions deterministic without inventing a user-specific paper size.
+PDF_DPI = 150
+
+#: Transparent images are flattened to explicit white before PDF emission.
+PDF_BACKGROUND_RGB = (255, 255, 255)
 
 #: Hard bound used while counting frames during inspection. A payload with more
 #: frames than this is refused rather than counted, so inspection cannot be
@@ -136,6 +159,10 @@ IMAGE_ERROR_CODES = frozenset(
         "image_output_format_unsupported",
         "image_output_pixels_exceeded",
         "image_output_bytes_exceeded",
+        "image_pdf_count_exceeded",
+        "image_pdf_input_bytes_exceeded",
+        "image_pdf_total_pixels_exceeded",
+        "image_pdf_output_bytes_exceeded",
     }
 )
 
@@ -225,6 +252,46 @@ class ImageOutput:
             "height": self.height,
             "size_bytes": len(self.data),
             "icc_profile_preserved": self.icc_profile_preserved,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class PdfPageProvenance:
+    """Bounded source receipt for one emitted PDF page."""
+
+    page_number: int
+    source_image_index: int
+    source_format: str
+    source_dimensions: tuple[int, int]
+    normalized_orientation: bool
+
+    def safe_dict(self) -> dict[str, object]:
+        return {
+            "page_number": self.page_number,
+            "source_image_index": self.source_image_index,
+            "source_format": self.source_format,
+            "source_dimensions": list(self.source_dimensions),
+            "normalized_orientation": self.normalized_orientation,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class ImagePdfOutput:
+    """A new PDF artifact plus bounded per-page source provenance."""
+
+    data: bytes
+    page_count: int
+    pages: tuple[PdfPageProvenance, ...]
+
+    @property
+    def size_bytes(self) -> int:
+        return len(self.data)
+
+    def safe_dict(self) -> dict[str, object]:
+        return {
+            "page_count": self.page_count,
+            "size_bytes": len(self.data),
+            "pages": [page.safe_dict() for page in self.pages],
         }
 
 
@@ -716,3 +783,89 @@ def thumbnail_image(
         normalize_orientation=normalize_orientation,
         preserve_icc=preserve_icc,
     )
+
+
+def image_to_pdf(images: tuple[bytes, ...]) -> ImagePdfOutput:
+    """Emit one new PDF from one or more admitted raster images.
+
+    This is image-owned emission only: it does not parse, read, merge, split or
+    transform an existing PDF. Each page uses normalized pixels, explicit white
+    flattening for alpha, a fixed 150 DPI page-size policy, and bounded
+    provenance. The caller is responsible for running the common intake gate
+    before every payload reaches this helper.
+    """
+
+    if not images:
+        raise ImageContractError("image_bytes_invalid")
+    if len(images) > MAX_PDF_IMAGES:
+        raise ImageContractError("image_pdf_count_exceeded")
+    payloads = tuple(_validate_payload(image) for image in images)
+    if sum(len(image) for image in payloads) > MAX_PDF_INPUT_BYTES:
+        raise ImageContractError("image_pdf_input_bytes_exceeded")
+
+    opened: list[Image.Image] = []
+    normalized: list[Image.Image] = []
+    pages: list[PdfPageProvenance] = []
+    total_pixels = 0
+    try:
+        for index, payload in enumerate(payloads):
+            source = _open_first_frame(payload)
+            opened.append(source)
+            _require_single_frame(source)
+            total_pixels += source.width * source.height
+            if total_pixels > MAX_PDF_TOTAL_PIXELS:
+                raise ImageContractError("image_pdf_total_pixels_exceeded")
+
+            orientation = _read_metadata(source, payload).orientation
+            source_format = source.format or "UNKNOWN"
+            source_dimensions = (source.width, source.height)
+            page = ImageOps.exif_transpose(source)
+            if page is source:
+                page = source.copy()
+            else:
+                _close(source)
+            page.info.clear()
+            if _has_alpha(page):
+                rgba = page.convert("RGBA")
+                flattened = Image.new("RGB", rgba.size, PDF_BACKGROUND_RGB)
+                flattened.paste(rgba, mask=rgba.getchannel("A"))
+                _close(rgba)
+                page.close()
+                page = flattened
+            elif page.mode != "RGB":
+                converted = page.convert("RGB")
+                page.close()
+                page = converted
+            normalized.append(page)
+            pages.append(
+                PdfPageProvenance(
+                    page_number=index + 1,
+                    source_image_index=index,
+                    source_format=source_format,
+                    source_dimensions=source_dimensions,
+                    normalized_orientation=orientation not in (None, 1),
+                )
+            )
+
+        output = BytesIO()
+        try:
+            normalized[0].save(
+                output,
+                format="PDF",
+                save_all=True,
+                append_images=normalized[1:],
+                resolution=PDF_DPI,
+            )
+            encoded = output.getvalue()
+        except Exception as exc:
+            raise ImageContractError("image_decode_failed") from exc
+        if not encoded:
+            raise ImageContractError("image_decode_failed")
+        if len(encoded) > MAX_PDF_OUTPUT_BYTES:
+            raise ImageContractError("image_pdf_output_bytes_exceeded")
+        return ImagePdfOutput(data=encoded, page_count=len(normalized), pages=tuple(pages))
+    finally:
+        for image in normalized:
+            _close(image)
+        for image in opened:
+            _close(image)

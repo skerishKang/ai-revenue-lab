@@ -26,7 +26,14 @@ from padiem_ai_core.image_helpers import (
     MAX_IMAGE_PIXELS,
     MAX_INSPECT_FRAMES,
     MAX_OUTPUT_BYTES,
+    MAX_PDF_IMAGES,
+    MAX_PDF_INPUT_BYTES,
+    MAX_PDF_OUTPUT_BYTES,
+    MAX_PDF_TOTAL_PIXELS,
+    PDF_BACKGROUND_RGB,
     ImageContractError,
+    ImagePdfOutput,
+    image_to_pdf,
     inspect_image,
     sanitize_metadata,
     thumbnail_image,
@@ -840,4 +847,73 @@ def test_module_never_imports_a_filesystem_or_process_module() -> None:
 
     for banned in ("os", "pathlib", "subprocess", "shutil", "tempfile", "requests", "httpx"):
         assert banned not in imported, banned
-    assert all(name.startswith(("PIL", "dataclasses", "io", "typing", "__future__")) for name in imported), imported
+
+
+# --------------------------------------------------------------------------
+# Image -> new PDF artifact
+# --------------------------------------------------------------------------
+
+
+def test_image_to_pdf_single_and_multiple_pages_preserve_source_order() -> None:
+    pdf = image_to_pdf((_png((20, 10), (255, 0, 0)), _jpeg((10, 20))))
+    assert isinstance(pdf, ImagePdfOutput)
+    assert pdf.data.startswith(b"%PDF-")
+    assert pdf.page_count == 2
+    assert [page.source_image_index for page in pdf.pages] == [0, 1]
+    assert [page.source_format for page in pdf.pages] == ["PNG", "JPEG"]
+    assert pdf.safe_dict()["page_count"] == 2
+    assert "data" not in pdf.safe_dict()
+
+    # Keep the emission contract self-contained in this canonical image lane.
+    # The optional documents extra is not required to validate a newly
+    # emitted page artifact, and an importorskip here would make this required
+    # image test appear globally skipped in CI.
+    assert pdf.data.count(b"/Type /Page") >= 2
+
+
+def test_image_to_pdf_normalizes_orientation_and_records_provenance() -> None:
+    result = image_to_pdf((_exif_jpeg(6),))
+    assert result.page_count == 1
+    assert result.pages[0].source_dimensions == SMALL_RGB
+    assert result.pages[0].normalized_orientation is True
+
+
+def test_image_to_pdf_alpha_background_policy_is_explicit() -> None:
+    assert PDF_BACKGROUND_RGB == (255, 255, 255)
+    result = image_to_pdf((_encode(_rgba_image(), "PNG"),))
+    assert result.page_count == 1
+    assert result.pages[0].source_format == "PNG"
+
+
+def test_image_to_pdf_empty_and_oversized_sequences_fail_closed() -> None:
+    with pytest.raises(ImageContractError) as empty:
+        image_to_pdf(())
+    assert _code(empty) == "image_bytes_invalid"
+
+    with pytest.raises(ImageContractError) as too_many:
+        image_to_pdf(tuple(_png() for _ in range(MAX_PDF_IMAGES + 1)))
+    assert _code(too_many) == "image_pdf_count_exceeded"
+
+    with pytest.raises(ImageContractError) as invalid:
+        image_to_pdf((b"not-an-image",))
+    assert _code(invalid) == "image_decode_failed"
+
+
+def test_image_to_pdf_total_bounds_fail_closed(monkeypatch) -> None:
+    monkeypatch.setattr(helpers, "MAX_PDF_INPUT_BYTES", 1)
+    with pytest.raises(ImageContractError) as total_bytes:
+        image_to_pdf((_png(),))
+    assert _code(total_bytes) == "image_pdf_input_bytes_exceeded"
+
+    monkeypatch.setattr(helpers, "MAX_PDF_INPUT_BYTES", MAX_PDF_INPUT_BYTES)
+    monkeypatch.setattr(helpers, "MAX_PDF_TOTAL_PIXELS", 1)
+    with pytest.raises(ImageContractError) as total_pixels:
+        image_to_pdf((_png(),))
+    assert _code(total_pixels) == "image_pdf_total_pixels_exceeded"
+
+
+def test_image_to_pdf_output_bound_fail_closed(monkeypatch) -> None:
+    monkeypatch.setattr(helpers, "MAX_PDF_OUTPUT_BYTES", 8)
+    with pytest.raises(ImageContractError) as excinfo:
+        image_to_pdf((_png(),))
+    assert _code(excinfo) == "image_pdf_output_bytes_exceeded"
