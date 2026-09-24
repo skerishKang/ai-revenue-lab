@@ -20,11 +20,11 @@ Authority boundaries promoted from the reviewed B54 contract
   ``files.info``) are callable; chat.postMessage/conversations.join/
   files.upload and every other write method are NOT implemented here and no
   send path exists;
-* channel-scoped reads stay inside the server-derived channel allowlist
-  (``ENGINE_SLACK_ALLOWED_CHANNELS``); ``conversations.list`` responses are
-  filtered to that allowlist, and private channels are returned only when
-  explicitly listed in ``ENGINE_SLACK_PRIVATE_CHANNELS`` (which must be a
-  subset of the allowlist) — an empty allowlist fails closed;
+* channel-scoped reads stay inside the server-derived public/private
+  partition: ``ENGINE_SLACK_ALLOWED_CHANNELS`` explicitly names public
+  channels and ``ENGINE_SLACK_PRIVATE_CHANNELS`` explicitly names private
+  channels. The partitions are disjoint and must jointly contain at least
+  one channel; an unclassified channel fails closed before transport;
 * Events ingress and request-signature verification are out of scope for this
   port: inbound stays on the reviewed B54 product-local routes and this port
   never receives or replays events.
@@ -106,9 +106,9 @@ def parse_slack_channel_ids(value: str | None) -> frozenset[str]:
 class HttpxSlackReadPort(SlackReadPort):
     """Bounded Slack Web API POST port over httpx.
 
-    Constructed only when the bot token secret and a non-empty server-derived
-    channel allowlist are present; the composition root
-    (``worker_identity._slack_port_for_env``) refuses to build the port
+    Constructed only when the bot token secret and a non-empty, complete
+    server-derived public/private channel partition are present; the composition
+    root (``worker_identity._slack_port_for_env``) refuses to build the port
     otherwise, keeping Production fail-closed.
     """
 
@@ -132,13 +132,15 @@ class HttpxSlackReadPort(SlackReadPort):
             for item in explicitly_private_channel_ids
         ):
             raise ValueError("channel_id_invalid")
-        if not explicitly_private_channel_ids.issubset(allowed_channel_ids):
+        if allowed_channel_ids & explicitly_private_channel_ids:
             raise ValueError("channel_id_invalid")
-        if not allowed_channel_ids:
+        authorized_channel_ids = allowed_channel_ids | explicitly_private_channel_ids
+        if not authorized_channel_ids or len(authorized_channel_ids) > MAX_SLACK_CHANNELS:
             raise ValueError("channel_id_invalid")
         self._bot_token = bot_token
-        self._allowed_channel_ids = allowed_channel_ids
+        self._public_channel_ids = allowed_channel_ids
         self._explicitly_private_channel_ids = explicitly_private_channel_ids
+        self._authorized_channel_ids = authorized_channel_ids
         self._transport = transport
 
     # --- bounded provider POST -------------------------------------------
@@ -184,11 +186,13 @@ class HttpxSlackReadPort(SlackReadPort):
             if not isinstance(channel, dict):
                 continue
             channel_id = channel.get("id")
-            if not isinstance(channel_id, str) or channel_id not in self._allowed_channel_ids:
+            is_private = channel.get("is_private")
+            if not isinstance(channel_id, str) or type(is_private) is not bool:
                 continue
-            if channel.get("is_private") is True and (
-                channel_id not in self._explicitly_private_channel_ids
-            ):
+            if is_private:
+                if channel_id not in self._explicitly_private_channel_ids:
+                    continue
+            elif channel_id not in self._public_channel_ids:
                 continue
             visible.append(channel)
         filtered = dict(payload)
@@ -219,13 +223,17 @@ class HttpxSlackReadPort(SlackReadPort):
         host = base_url.split("://", 1)[-1].split("/", 1)[0]
         if host != SLACK_API_HOST:
             raise ValueError("host_not_permitted")
-        # (4) Channel gate: channel reads stay inside the server-derived
-        # allowlist; caller-supplied ids can never widen it.
+        # (4) Channel gate: direct reads must name a channel in the complete
+        # server-derived public/private partition. Caller privacy metadata is
+        # neither accepted nor needed, and unclassified ids fail before transport.
         if path in CHANNEL_GATED_SLACK_PATHS:
-            channel_id = (query or {}).get("channel")
+            query = query or {}
+            channel_id = query.get("channel")
             if not isinstance(channel_id, str) or not _CHANNEL_ID_RE.fullmatch(channel_id):
                 raise ValueError("channel_id_invalid")
-            if channel_id not in self._allowed_channel_ids:
+            if "is_private" in query:
+                raise ValueError("channel_id_invalid")
+            if channel_id not in self._authorized_channel_ids:
                 raise ValueError("channel_not_allowed")
         # (5) Token-bearing request. From here on, every error path must be a
         # safe fixed code: the bearer header carries the raw bot token.
