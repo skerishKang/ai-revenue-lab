@@ -191,9 +191,11 @@ requires-dist = [
     { name = "openpyxl", marker = "extra == 'documents'", specifier = ">=3.1,<4" },
     { name = "pypdf", marker = "extra == 'dev'", specifier = ">=6.16.2,<7" },
     { name = "pypdf", marker = "extra == 'documents'", specifier = ">=6.16.2,<7" },
+    { name = "pypdfium2", marker = "extra == 'dev'", specifier = "==5.13.0" },
+    { name = "pypdfium2", marker = "extra == 'render'", specifier = "==5.13.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8,<10" },
 ]
-provides-extras = ["tools", "documents", "dev"]
+provides-extras = ["tools", "documents", "render", "dev"]
 
 [[package]]
 name = "padiem-ai-engine-client"

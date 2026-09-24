@@ -116,7 +116,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check \
-            -e "../../packages/padiem-ai-core[tools,documents]"
+            -e "../../packages/padiem-ai-core[tools,documents,render]"
           python -m pip install --disable-pip-version-check \
             -e "../../packages/padiem-control-plane"
           python -m pip install --disable-pip-version-check \
