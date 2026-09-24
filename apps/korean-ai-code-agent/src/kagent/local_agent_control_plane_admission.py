@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Callable
+from typing import Any
 from urllib.parse import urlsplit
 
 from .contracts import ContractError
@@ -315,6 +316,8 @@ class ControlPlaneAdmittedExecutionCoordinator:
         session: DeviceSession,
         command: DeviceCommandEnvelope,
         material_request_ref: str,
+        on_execution_start: Callable[[str], None] | None = None,
+        on_execution_end: Callable[[], None] | None = None,
     ) -> ControlPlaneAdmittedExecutionReceipt:
         material_now = self._now()
         resolved = self._channel.resolve_broker_material(
@@ -343,13 +346,19 @@ class ControlPlaneAdmittedExecutionCoordinator:
             admission_client=admission_client,
         )
         execution_now = max(self._now(), conformed.evidence.accepted_at)
-        execution = bridge.execute(
-            session=session,
-            command=command,
-            request=resolved.request,
-            assembly=self._assembly,
-            now=execution_now,
-        )
+        try:
+            if on_execution_start is not None:
+                on_execution_start(resolved.request.request_id)
+            execution = bridge.execute(
+                session=session,
+                command=command,
+                request=resolved.request,
+                assembly=self._assembly,
+                now=execution_now,
+            )
+        finally:
+            if on_execution_end is not None:
+                on_execution_end()
 
         # No acknowledgement is emitted unless the existing execution bridge
         # returned a fully correlated execution receipt.
