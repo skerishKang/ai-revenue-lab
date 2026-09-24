@@ -7,11 +7,11 @@ from io import BytesIO
 from pathlib import Path
 
 import pytest
-from pypdf import PdfWriter
 
 from padiem_ai_core.document_normalization import DocumentNormalizationError
 
 Image = pytest.importorskip("PIL.Image")
+PdfWriter = pytest.importorskip("pypdf").PdfWriter
 pdf_preview = import_module("padiem_ai_core.pdf_preview")
 image_helpers = import_module("padiem_ai_core.image_helpers")
 image_to_pdf = image_helpers.image_to_pdf
