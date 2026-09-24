@@ -146,11 +146,11 @@ def test_historical_artifact_action_stays_one_bounded_download() -> None:
     assert DOWNLOAD_MEANING.search(table["en"][DOWNLOAD_KEY]), table["en"][DOWNLOAD_KEY]
     assert "다시" in table["ko"][DOWNLOAD_KEY] and "again" in table["en"][DOWNLOAD_KEY]
     assert not OPEN_CLAIM.search(table["ko"][DOWNLOAD_KEY]) and not OPEN_CLAIM.search(table["en"][DOWNLOAD_KEY])
-    # Ownership did not widen: one route string, one download owner, two callers
-    # (the active result action and this historical card).
+    # Ownership did not widen: one route string and one download owner, with the
+    # active result action, historical card, and validated Calendar link-back.
     assert app.count("/api/claw/manual-intake/artifact/") == 1
     assert app.count("function downloadClawArtifact(") == 1
-    assert len(re.findall(r"(?<!function )\bdownloadClawArtifact\(", app)) == 2
+    assert len(re.findall(r"(?<!function )\bdownloadClawArtifact\(", app)) == 3
     # The card builds exactly one button per artifact and no second control.
     card_block = app.split("claw-run-card-artifact", 1)[1].split("function fetchClawRunHistory", 1)[0]
     assert card_block.count("createElement(\"button\")") == 1

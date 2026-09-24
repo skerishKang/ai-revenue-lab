@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, timedelta, timezone
 import json
+from types import SimpleNamespace
 from typing import Any
 import pytest
 from starlette.testclient import TestClient
@@ -45,6 +46,7 @@ from app.calendar_contracts import (
     validate_timezone,
 )
 from app.calendar_projection import (
+    build_item_detail_projection,
     build_range_projection,
     build_today_projection,
     build_upcoming_projection,
@@ -110,6 +112,23 @@ class FakeTaskAlertStore:
             ]
         return raw[:limit]
 
+    async def get_task(self, task_id: str, *, workspace_id: str) -> Any | None:
+        for task in self.tasks.get(workspace_id, []):
+            if getattr(task, "task_id", None) == task_id:
+                return task
+        return None
+
+    async def get_alert(
+        self, alert_id: str, *, workspace_id: str, member_id: str | None = None
+    ) -> Any | None:
+        for alert in self.alerts.get(workspace_id, []):
+            if getattr(alert, "alert_id", None) != alert_id:
+                continue
+            if member_id is not None and not alert.is_visible_to(member_id):
+                return None
+            return alert
+        return None
+
 
 class MockTask:
     def __init__(
@@ -152,6 +171,16 @@ class MockAlert:
         if self.visible_to_all:
             return True
         return member_id in self.visible_to_members
+
+
+class FakeAutomationDetailStore:
+    def __init__(self, run: Any) -> None:
+        self.run = run
+
+    async def get_run(self, run_id: str, *, workspace_id: str) -> Any | None:
+        if self.run.run_id != run_id or self.run.workspace_id != workspace_id:
+            return None
+        return self.run
 
 
 # ==============================================================================
@@ -449,6 +478,171 @@ def test_existing_task_alert_and_claw_run_projection() -> None:
     assert AUTOMATION_PROJECTION == "READ_ONLY_DURABLE_STORE"
 
 
+@pytest.mark.asyncio
+async def test_item_detail_projection_is_bounded_and_scope_checked() -> None:
+    task_store = FakeTaskAlertStore()
+    task = MockTask(
+        "task_detail",
+        "T" * 300,
+        status="S" * 5000,
+        due_date=date(2026, 9, 22),
+        member_id="usr_detail",
+    )
+    task_store.tasks["ws_detail"] = [task]
+    detail = await build_item_detail_projection(
+        calendar_item_id="item_task_task_detail",
+        workspace_id="ws_detail",
+        tz_name="UTC",
+        calendar_store=InMemoryCalendarStore(),
+        task_alert_store=task_store,
+        user_id="usr_detail",
+    )
+    assert len(detail["item"]["title"]) == 200
+    assert len(detail["item"]["summary"]) == 4000
+    assert "workspace_id" not in detail["item"]
+    assert "source_ref" not in detail["item"]
+    assert "artifact" not in detail["item"]
+    assert detail["link_backs"] == [{"kind": "task", "target_id": "task_detail"}]
+
+    task_store.tasks["ws_detail"] = [
+        MockTask("task_foreign", "Foreign", member_id="usr_other")
+    ]
+    with pytest.raises(CalendarContractError) as exc:
+        await build_item_detail_projection(
+            calendar_item_id="item_task_task_foreign",
+            workspace_id="ws_detail",
+            tz_name="UTC",
+            calendar_store=InMemoryCalendarStore(),
+            task_alert_store=task_store,
+            user_id="usr_detail",
+        )
+    assert exc.value.code == "calendar_item_not_found"
+
+
+@pytest.mark.asyncio
+async def test_item_detail_alert_preserves_member_visibility() -> None:
+    task_store = FakeTaskAlertStore()
+    task_store.alerts["ws_detail"] = [
+        MockAlert(
+            "alert_detail",
+            "Visible alert",
+            created_at=datetime(2026, 9, 20, 10, 0, tzinfo=timezone.utc),
+            visible_to_members=("usr_detail",),
+        )
+    ]
+    detail = await build_item_detail_projection(
+        calendar_item_id="item_alert_alert_detail",
+        workspace_id="ws_detail",
+        tz_name="UTC",
+        calendar_store=InMemoryCalendarStore(),
+        task_alert_store=task_store,
+        user_id="usr_detail",
+    )
+    assert detail["item"]["item_type"] == "alert"
+    assert detail["link_backs"] == []
+
+    with pytest.raises(CalendarContractError) as exc:
+        await build_item_detail_projection(
+            calendar_item_id="item_alert_alert_detail",
+            workspace_id="ws_detail",
+            tz_name="UTC",
+            calendar_store=InMemoryCalendarStore(),
+            task_alert_store=task_store,
+            user_id="usr_other",
+        )
+    assert exc.value.code == "calendar_item_not_found"
+
+
+@pytest.mark.asyncio
+async def test_item_detail_run_link_backs_use_only_trusted_session_and_artifact() -> None:
+    history = FakeHistoryStore()
+    history.claw_runs["usr_detail"] = [
+        {
+            "run_id": "run_detail",
+            "title": "Detail run",
+            "status": "success",
+            "result_summary": "Done",
+            "created_at": "2026-09-20T08:30:00Z",
+            "updated_at": "2026-09-20T08:30:00Z",
+            "session": {"conversation_id": "chat_" + "a" * 32},
+            "artifact": {
+                "document_id": "doc_" + "b" * 32,
+                "filename": "report.docx",
+                "media_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            },
+        }
+    ]
+    detail = await build_item_detail_projection(
+        calendar_item_id="item_run_run_detail",
+        workspace_id="owner:usr_detail",
+        tz_name="UTC",
+        calendar_store=InMemoryCalendarStore(),
+        history_store=history,
+        user_id="usr_detail",
+    )
+    assert detail["link_backs"] == [
+        {"kind": "run", "target_id": "run_detail"},
+        {"kind": "claw_session", "target_id": "chat_" + "a" * 32},
+        {"kind": "artifact", "target_id": "doc_" + "b" * 32},
+    ]
+    assert "conversation_id" not in detail["item"]
+    assert "source_ref" not in detail["item"]
+
+    history.claw_runs["usr_detail"][0]["session"] = {"conversation_id": "https://evil.test"}
+    detail = await build_item_detail_projection(
+        calendar_item_id="item_run_run_detail",
+        workspace_id="owner:usr_detail",
+        tz_name="UTC",
+        calendar_store=InMemoryCalendarStore(),
+        history_store=history,
+        user_id="usr_detail",
+    )
+    assert {link["kind"] for link in detail["link_backs"]} == {"run", "artifact"}
+
+
+@pytest.mark.asyncio
+async def test_item_detail_native_sources_and_automation_are_read_only() -> None:
+    store = InMemoryCalendarStore()
+    log = await store.add_work_log(
+        CalendarWorkLog.create(
+            workspace_id="ws_detail",
+            owner_id="usr_detail",
+            date_val="2026-09-20",
+            title="Work detail",
+            content="Memo",
+        )
+    )
+    detail = await build_item_detail_projection(
+        calendar_item_id=f"item_log_{log.log_id}",
+        workspace_id="ws_detail",
+        tz_name="UTC",
+        calendar_store=store,
+        user_id="usr_detail",
+    )
+    assert detail["item"]["item_type"] == "work_log"
+    assert detail["link_backs"] == []
+
+    run = SimpleNamespace(
+        run_id="run_auto_detail",
+        workspace_id="ws_detail",
+        rule_id="rule_detail",
+        status="completed",
+        scheduled_time=datetime(2026, 9, 20, 10, 0, tzinfo=timezone.utc),
+        started_at=datetime(2026, 9, 20, 10, 0, tzinfo=timezone.utc),
+        completed_at=datetime(2026, 9, 20, 10, 1, tzinfo=timezone.utc),
+    )
+    detail = await build_item_detail_projection(
+        calendar_item_id="automation_run_auto_detail",
+        workspace_id="ws_detail",
+        tz_name="UTC",
+        calendar_store=store,
+        automation_store=FakeAutomationDetailStore(run),
+        user_id="usr_detail",
+    )
+    assert detail["item"]["item_type"] == "automation_run"
+    assert detail["link_backs"] == []
+
+
 # ==============================================================================
 # 4. Today / Upcoming deterministic backend projections (Axis D)
 # ==============================================================================
@@ -740,6 +934,11 @@ def test_http_calendar_unauthorized() -> None:
     res = anon_client.get("/api/calendar/today?timezone=Asia/Seoul")
     assert res.status_code == 401
     assert res.json()["error"]["code"] == "unauthorized"
+    detail = anon_client.get(
+        "/api/calendar/items/item_log_" + "0" * 16 + "?timezone=Asia/Seoul"
+    )
+    assert detail.status_code == 401
+    assert detail.json()["error"]["code"] == "unauthorized"
 
 
 def test_http_calendar_today_requires_timezone(
@@ -792,6 +991,58 @@ def test_http_calendar_work_logs_lifecycle(
     assert len(list_body["items"]) == 1
     assert list_body["items"][0]["title"] == "A사와 납기 협의함"
 
+    detail_res = client.get(
+        f"/api/calendar/items/{body['work_log']['calendar_item_id']}?timezone=Asia/Seoul"
+    )
+    assert detail_res.status_code == 200
+    detail = detail_res.json()["detail"]
+    assert detail["item"]["item_type"] == "work_log"
+    assert detail["link_backs"] == []
+    assert "source_ref" not in detail["item"]
+
+
+def test_http_calendar_detail_requires_timezone_and_is_non_disclosing(
+    test_app_and_client: tuple[Any, TestClient, str],
+) -> None:
+    _, client, _ = test_app_and_client
+    missing_timezone = client.get("/api/calendar/items/item_log_" + "0" * 16)
+    assert missing_timezone.status_code == 400
+    assert missing_timezone.json()["error"]["code"] == "timezone_required"
+
+    missing = client.get(
+        "/api/calendar/items/item_log_" + "0" * 16 + "?timezone=Asia/Seoul"
+    )
+    invalid = client.get(
+        "/api/calendar/items/not-a-calendar-item?timezone=Asia/Seoul"
+    )
+    assert missing.status_code == invalid.status_code == 404
+    assert missing.json() == invalid.json()
+
+
+def test_http_calendar_detail_run_returns_trusted_link_backs(
+    test_app_and_client: tuple[Any, TestClient, str],
+) -> None:
+    app, client, user_id = test_app_and_client
+    app.state.history_store.claw_runs[user_id] = [
+        {
+            "run_id": "run_http_detail",
+            "title": "HTTP detail run",
+            "status": "success",
+            "result_summary": "Done",
+            "created_at": "2026-09-20T08:30:00Z",
+            "updated_at": "2026-09-20T08:30:00Z",
+            "session": {"conversation_id": "chat_" + "c" * 32},
+        }
+    ]
+    response = client.get(
+        "/api/calendar/items/item_run_run_http_detail?timezone=UTC"
+    )
+    assert response.status_code == 200
+    assert response.json()["detail"]["link_backs"] == [
+        {"kind": "run", "target_id": "run_http_detail"},
+        {"kind": "claw_session", "target_id": "chat_" + "c" * 32},
+    ]
+
 
 def test_http_calendar_appointments_lifecycle(
     test_app_and_client: tuple[Any, TestClient, str],
@@ -818,6 +1069,11 @@ def test_http_calendar_appointments_lifecycle(
     assert apt["item_type"] == "appointment"
     assert apt["timezone"] == "Asia/Seoul"
     assert apt["all_day"] is False
+    detail_res = client.get(
+        f"/api/calendar/items/{apt['calendar_item_id']}?timezone=Asia/Seoul"
+    )
+    assert detail_res.status_code == 200
+    assert detail_res.json()["detail"]["item"]["item_type"] == "appointment"
 
     # 2. List appointments
     list_res = client.get("/api/calendar/appointments")
