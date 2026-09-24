@@ -57,7 +57,7 @@ def test_package_root_all_is_unique_and_keeps_approved_contract_families() -> No
 
 
 def test_package_root_all_names_are_direct_or_lazy_exports() -> None:
-    lazy_exports = set(core._TOOL_RUNTIME_EXPORTS)
+    lazy_exports = set(core._TOOL_RUNTIME_EXPORTS) | set(core._IMAGE_HELPER_EXPORTS)
 
     assert lazy_exports <= set(core.__all__)
     unresolved = {
