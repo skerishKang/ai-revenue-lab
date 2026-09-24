@@ -9,6 +9,18 @@ import padiem_ai_core as core
 PACKAGE_DIR = Path(__file__).resolve().parents[1] / "padiem_ai_core"
 INIT_PATH = PACKAGE_DIR / "__init__.py"
 
+EXPECTED_DIRECT_TOOL_RUNTIME_EXPORTS = {
+    "OrchestrationEvent",
+    "OrchestrationEventError",
+    "OrchestrationEventKind",
+    "OrchestrationError",
+    "OrchestrationRequest",
+    "OrchestrationResult",
+    "OrchestrationResumeRequest",
+    "OrchestrationRunner",
+    "public_orchestration_event",
+}
+
 EXPECTED_LAZY_ONLY_TOOL_RUNTIME_EXPORTS = {
     "MAX_TOOL_ARGUMENT_BYTES",
     "MAX_TOOL_OUTPUT_BYTES",
@@ -18,6 +30,23 @@ EXPECTED_LAZY_ONLY_TOOL_RUNTIME_EXPORTS = {
     "ToolInvocation",
     "ToolRuntime",
     "ToolRuntimeError",
+}
+
+EXPECTED_LAZY_IMAGE_HELPER_EXPORTS = {
+    "IMAGE_ERROR_CODES",
+    "ImageContractError",
+    "ImageInspection",
+    "ImageOutput",
+    "inspect_image",
+    "sanitize_metadata",
+    "thumbnail_image",
+    "transform_image",
+}
+
+#: Every lazy group, mapped to the submodule that owns it.
+EXPECTED_LAZY_EXPORT_OWNERS = {
+    **{name: "tool_runtime" for name in EXPECTED_LAZY_ONLY_TOOL_RUNTIME_EXPORTS},
+    **{name: "image_helpers" for name in EXPECTED_LAZY_IMAGE_HELPER_EXPORTS},
 }
 
 
@@ -39,7 +68,9 @@ def _direct_export_owners() -> dict[str, set[str]]:
 def _resolved_owner_map() -> dict[str, str]:
     direct = _direct_export_owners()
     exported = set(core.__all__)
-    lazy_declared = set(core._TOOL_RUNTIME_EXPORTS)
+    lazy_declared = set(core._TOOL_RUNTIME_EXPORTS) | set(
+        core._IMAGE_HELPER_EXPORTS
+    )
 
     ambiguous = {
         name: modules
@@ -49,7 +80,9 @@ def _resolved_owner_map() -> dict[str, str]:
     assert ambiguous == {}
 
     lazy_only = lazy_declared - set(direct)
-    assert lazy_only == EXPECTED_LAZY_ONLY_TOOL_RUNTIME_EXPORTS
+    expected_lazy_only = set(EXPECTED_LAZY_EXPORT_OWNERS)
+    assert lazy_only == expected_lazy_only
+    assert lazy_declared == expected_lazy_only | EXPECTED_DIRECT_TOOL_RUNTIME_EXPORTS
 
     owner_map: dict[str, str] = {}
     for name in exported:
@@ -57,7 +90,7 @@ def _resolved_owner_map() -> dict[str, str]:
         if modules:
             owner_map[name] = next(iter(modules))
         elif name in lazy_only:
-            owner_map[name] = "tool_runtime"
+            owner_map[name] = EXPECTED_LAZY_EXPORT_OWNERS[name]
 
     return owner_map
 
