@@ -1,6 +1,6 @@
 """#2937/#2962/#2972/#2989: bounded native HWPX Skill facade.
 
-Surfaces: inspect / read / validate / create / edit / template_fill.
+Surfaces: inspect / read / validate / create / edit / insert_table / template_fill.
 
 This module is a facade and receipt layer over authorities that already exist
 and are already accepted. It introduces no ZIP walker, no XML parser, no
@@ -41,10 +41,25 @@ package::
     -> structured equality with the intended model
     -> bounded edit receipt + in-memory artifact
 
-The edit foundation is intentionally narrow: paragraph text replacement at an
-exact zero-based section/paragraph address only. It adds no insert or delete,
-no table, image, style or layout editing, no second parser and no second byte
-producer.
+The edit foundation remains narrow: paragraph replacement uses an exact
+zero-based section/paragraph address only. Bounded table insertion is a separate
+operation over the same reserved edit capability and canonical block model; it
+adds no table edit/delete, row/column mutation, image, style or layout authority,
+no second parser and no second byte producer.
+
+``hwpx.insert_table`` (#3034) accepts only a bounded rectangular rows request and
+an exact zero-based section/block insertion position::
+
+    caller filename + HWPX bytes + section_index + block_index + rows
+    -> inspect_file()                            (common gate, HWPX_CANDIDATE)
+    -> deserialize_hwpx_package()                (single structured decoder)
+    -> canonical source byte round trip
+    -> bounded request validation
+    -> one table block inserted into the ordered Core model
+    -> serialize_hwpx_package()                  (single byte producer)
+    -> inspect_file() / hwpx_validate() / hwpx_read() on the output
+    -> deserialize_hwpx_package() and exact placement/preservation proof
+    -> bounded insert_table receipt + in-memory artifact
 
 ``hwpx.template_fill`` (#2989) is the first bounded template-fill facade. It
 reuses the single #2979 package-preserving mutation authority so a supplied
@@ -133,18 +148,20 @@ Capability mapping uses existing reserved ids — no Skill Registry edit:
 ``hwpx.inspect`` foundation is served under ``CAPABILITY_FILE_INSPECT``
 (``file.inspect``), ``hwpx.read`` under ``CAPABILITY_HWPX_READ``,
 ``hwpx.validate`` under ``CAPABILITY_HWPX_VALIDATE``, ``hwpx.create`` under
-``CAPABILITY_HWPX_CREATE``, ``hwpx.edit`` under ``CAPABILITY_HWPX_EDIT`` and
+``CAPABILITY_HWPX_CREATE``, both ``hwpx.edit`` and bounded
+``hwpx.insert_table`` under ``CAPABILITY_HWPX_EDIT``, and
 ``hwpx.template_fill`` under the already reserved
 ``CAPABILITY_HWPX_TEMPLATE_FILL``.
 
 Scope honesty (#2825 parent remains OPEN): ``hwpx.create`` is a foundation over
-bounded plain section/paragraph text only, ``hwpx.edit`` is a foundation over
-bounded paragraph text replacement at an exact zero-based address only, and
+bounded plain section/paragraph text, ``hwpx.edit`` is a foundation over
+bounded paragraph replacement, ``hwpx.insert_table`` inserts one bounded
+rectangular Core table block at an exact section/block position, and
 ``hwpx.template_fill`` is a foundation over the smallest deterministic
-placeholder grammar defined above, replacing ordinary paragraph text only.
-None of them implements paragraph/section insert or delete, table or image
-insertion, style or layout editing, or legacy HWP conversion; none produces
-style- or specification-complete HWPX; and none enables document export
+placeholder grammar defined above. None implements paragraph/section insert or
+delete, existing-table edit/delete, row/column mutation, image insertion, style
+or layout editing, or legacy HWP conversion; none produces style- or
+specification-complete HWPX; and none enables document export
 (``HWPX_FULL_SPEC_SUPPORT=NO``, ``DOCUMENT_EXPORT_HWPX_ENABLED=NO``).
 Validation scope stays package gate admission plus Core text extraction
 (``VALIDATION_SCOPE_GATE_AND_TEXT``); full HWPX specification conformance is
@@ -161,10 +178,17 @@ from padiem_ai_core.hwpx_package_mutation import (
     mutate_hwpx_package_preserving_members,
 )
 from padiem_ai_core.hwpx_package_serializer import (
+    MAX_HWPX_TABLE_CELLS,
+    MAX_HWPX_TABLE_COLUMNS,
+    MAX_HWPX_TABLE_ROWS,
     HwpxPackageContent,
     HwpxPackageSection,
+    HwpxSectionBlock,
+    HwpxTable,
+    HwpxTableCell,
     deserialize_hwpx_package,
     serialize_hwpx_package,
+    validate_hwpx_paragraph_text,
 )
 
 from .claw_skill_registry import (
@@ -191,8 +215,8 @@ __all__ = [
     "HWPX_SUFFIX",
     "MAX_CREATE_FILENAME_CHARS",
     "MAX_EDIT_OPERATIONS",
-    "MAX_TEMPLATE_FIELD_NAME_CHARS",
     "MAX_TEMPLATE_FIELDS",
+    "MAX_TEMPLATE_FIELD_NAME_CHARS",
     "PLACEHOLDER_CLOSE",
     "PLACEHOLDER_OPEN",
     "REASON_CONTENT_MISMATCH",
@@ -219,12 +243,34 @@ __all__ = [
     "REASON_EDIT_SOURCE_DECODER_REJECTED",
     "REASON_EDIT_SOURCE_NOT_CANONICAL",
     "REASON_EDIT_TEXT_REJECTED",
-    "REASON_HWpx_ROUTE_REQUIRED",
+    "REASON_INSERT_TABLE_BLOCK_INDEX_NEGATIVE",
+    "REASON_INSERT_TABLE_BLOCK_OUT_OF_RANGE",
+    "REASON_INSERT_TABLE_CELL_LIMIT",
+    "REASON_INSERT_TABLE_CELL_TEXT_REJECTED",
+    "REASON_INSERT_TABLE_COLUMN_LIMIT",
+    "REASON_INSERT_TABLE_GATE_REJECTED",
+    "REASON_INSERT_TABLE_OUTPUT_COUNT_DRIFT",
+    "REASON_INSERT_TABLE_OUTPUT_DECODER_REJECTED",
+    "REASON_INSERT_TABLE_OUTPUT_GATE_REJECTED",
+    "REASON_INSERT_TABLE_OUTPUT_NON_TARGET_DRIFT",
+    "REASON_INSERT_TABLE_OUTPUT_READBACK_REJECTED",
+    "REASON_INSERT_TABLE_OUTPUT_ROUNDTRIP_MISMATCH",
+    "REASON_INSERT_TABLE_OUTPUT_TABLE_MISMATCH",
+    "REASON_INSERT_TABLE_OUTPUT_VALIDATE_REJECTED",
+    "REASON_INSERT_TABLE_REQUEST_SHAPE",
+    "REASON_INSERT_TABLE_ROWS_EMPTY",
+    "REASON_INSERT_TABLE_ROWS_RAGGED",
+    "REASON_INSERT_TABLE_ROW_LIMIT",
+    "REASON_INSERT_TABLE_SECTION_INDEX_NEGATIVE",
+    "REASON_INSERT_TABLE_SECTION_OUT_OF_RANGE",
+    "REASON_INSERT_TABLE_SERIALIZER_REJECTED",
+    "REASON_INSERT_TABLE_SOURCE_DECODER_REJECTED",
+    "REASON_INSERT_TABLE_SOURCE_NOT_CANONICAL",
     "REASON_INTAKE_REJECTED",
-    "REASON_TEMPLATE_FIELD_DUPLICATE",
-    "REASON_TEMPLATE_FIELD_NAME_INVALID",
     "REASON_TEMPLATE_FIELDS_INVALID",
     "REASON_TEMPLATE_FIELDS_LIMIT",
+    "REASON_TEMPLATE_FIELD_DUPLICATE",
+    "REASON_TEMPLATE_FIELD_NAME_INVALID",
     "REASON_TEMPLATE_FIELD_UNUSED",
     "REASON_TEMPLATE_FIELD_VALUE_INVALID",
     "REASON_TEMPLATE_FIELD_VALUE_REJECTED",
@@ -251,6 +297,14 @@ __all__ = [
     "VALIDATION_STATUS_EDIT_SOURCE_NOT_CANONICAL",
     "VALIDATION_STATUS_EDIT_SOURCE_REFUSED",
     "VALIDATION_STATUS_GATE_REFUSED",
+    "VALIDATION_STATUS_INSERT_TABLE_NOT_RUN",
+    "VALIDATION_STATUS_INSERT_TABLE_OK",
+    "VALIDATION_STATUS_INSERT_TABLE_OUTPUT_MISMATCH",
+    "VALIDATION_STATUS_INSERT_TABLE_OUTPUT_REFUSED",
+    "VALIDATION_STATUS_INSERT_TABLE_REQUEST_REFUSED",
+    "VALIDATION_STATUS_INSERT_TABLE_SERIALIZER_REFUSED",
+    "VALIDATION_STATUS_INSERT_TABLE_SOURCE_NOT_CANONICAL",
+    "VALIDATION_STATUS_INSERT_TABLE_SOURCE_REFUSED",
     "VALIDATION_STATUS_NOT_RUN",
     "VALIDATION_STATUS_READBACK_REFUSED",
     "VALIDATION_STATUS_ROUNDTRIP_MISMATCH",
@@ -269,15 +323,21 @@ __all__ = [
     "HwpxEditReceipt",
     "HwpxEditResult",
     "HwpxGateMetadata",
+    "HwpxInsertTableArtifact",
+    "HwpxInsertTableReceipt",
+    "HwpxInsertTableResult",
     "HwpxInspectReceipt",
     "HwpxParagraphReplacement",
     "HwpxReadReceipt",
+    "HwpxTableInsertionRequest",
     "HwpxTemplateFillArtifact",
     "HwpxTemplateFillReceipt",
     "HwpxTemplateFillResult",
     "HwpxValidateReceipt",
+    "REASON_HWpx_ROUTE_REQUIRED",
     "hwpx_create",
     "hwpx_edit",
+    "hwpx_insert_table",
     "hwpx_inspect",
     "hwpx_read",
     "hwpx_template_fill",
@@ -392,6 +452,52 @@ _EDIT_VALIDATION_STATUSES = frozenset(
         VALIDATION_STATUS_EDIT_SERIALIZER_REFUSED,
         VALIDATION_STATUS_EDIT_OUTPUT_REFUSED,
         VALIDATION_STATUS_EDIT_OUTPUT_MISMATCH,
+    }
+)
+
+REASON_INSERT_TABLE_GATE_REJECTED = "insert_table_gate_rejected"
+REASON_INSERT_TABLE_SOURCE_DECODER_REJECTED = "insert_table_source_decoder_rejected"
+REASON_INSERT_TABLE_SOURCE_NOT_CANONICAL = "insert_table_source_not_canonical"
+REASON_INSERT_TABLE_REQUEST_SHAPE = "insert_table_request_shape"
+REASON_INSERT_TABLE_SECTION_INDEX_NEGATIVE = "insert_table_section_index_negative"
+REASON_INSERT_TABLE_BLOCK_INDEX_NEGATIVE = "insert_table_block_index_negative"
+REASON_INSERT_TABLE_SECTION_OUT_OF_RANGE = "insert_table_section_out_of_range"
+REASON_INSERT_TABLE_BLOCK_OUT_OF_RANGE = "insert_table_block_out_of_range"
+REASON_INSERT_TABLE_ROWS_EMPTY = "insert_table_rows_empty"
+REASON_INSERT_TABLE_ROWS_RAGGED = "insert_table_rows_ragged"
+REASON_INSERT_TABLE_ROW_LIMIT = "insert_table_row_limit"
+REASON_INSERT_TABLE_COLUMN_LIMIT = "insert_table_column_limit"
+REASON_INSERT_TABLE_CELL_LIMIT = "insert_table_cell_limit"
+REASON_INSERT_TABLE_CELL_TEXT_REJECTED = "insert_table_cell_text_rejected"
+REASON_INSERT_TABLE_SERIALIZER_REJECTED = "insert_table_serializer_rejected"
+REASON_INSERT_TABLE_OUTPUT_GATE_REJECTED = "insert_table_output_gate_rejected"
+REASON_INSERT_TABLE_OUTPUT_VALIDATE_REJECTED = "insert_table_output_validate_rejected"
+REASON_INSERT_TABLE_OUTPUT_READBACK_REJECTED = "insert_table_output_readback_rejected"
+REASON_INSERT_TABLE_OUTPUT_DECODER_REJECTED = "insert_table_output_decoder_rejected"
+REASON_INSERT_TABLE_OUTPUT_COUNT_DRIFT = "insert_table_output_count_drift"
+REASON_INSERT_TABLE_OUTPUT_TABLE_MISMATCH = "insert_table_output_table_mismatch"
+REASON_INSERT_TABLE_OUTPUT_NON_TARGET_DRIFT = "insert_table_output_non_target_drift"
+REASON_INSERT_TABLE_OUTPUT_ROUNDTRIP_MISMATCH = "insert_table_output_roundtrip_mismatch"
+
+VALIDATION_STATUS_INSERT_TABLE_OK = "insert_table_roundtrip_ok"
+VALIDATION_STATUS_INSERT_TABLE_NOT_RUN = "not_run"
+VALIDATION_STATUS_INSERT_TABLE_SOURCE_REFUSED = "source_refused"
+VALIDATION_STATUS_INSERT_TABLE_SOURCE_NOT_CANONICAL = "source_not_canonical"
+VALIDATION_STATUS_INSERT_TABLE_REQUEST_REFUSED = "request_refused"
+VALIDATION_STATUS_INSERT_TABLE_SERIALIZER_REFUSED = "serializer_refused"
+VALIDATION_STATUS_INSERT_TABLE_OUTPUT_REFUSED = "output_refused"
+VALIDATION_STATUS_INSERT_TABLE_OUTPUT_MISMATCH = "output_mismatch"
+
+_INSERT_TABLE_VALIDATION_STATUSES = frozenset(
+    {
+        VALIDATION_STATUS_INSERT_TABLE_OK,
+        VALIDATION_STATUS_INSERT_TABLE_NOT_RUN,
+        VALIDATION_STATUS_INSERT_TABLE_SOURCE_REFUSED,
+        VALIDATION_STATUS_INSERT_TABLE_SOURCE_NOT_CANONICAL,
+        VALIDATION_STATUS_INSERT_TABLE_REQUEST_REFUSED,
+        VALIDATION_STATUS_INSERT_TABLE_SERIALIZER_REFUSED,
+        VALIDATION_STATUS_INSERT_TABLE_OUTPUT_REFUSED,
+        VALIDATION_STATUS_INSERT_TABLE_OUTPUT_MISMATCH,
     }
 )
 
@@ -523,6 +629,10 @@ ACCEPTANCE: dict[str, str] = {
     "HWPX_EDIT_FOUNDATION": "PASS",
     "HWPX_EDIT": "FOUNDATION_ONLY",
     "PARAGRAPH_TEXT_REPLACE": "PASS",
+    "HWPX_INSERT_TABLE_FACADE": "PASS",
+    "TABLE_INSERT": "PASS",
+    "TABLE_INSERT_SCOPE": "BOUNDED_CANONICAL_BLOCK_SUBSET",
+    "TABLE_INSERT_UNDER_HWPX_EDIT": "YES",
     "CORE_HWPX_DECODER_REUSED": "YES",
     "CAPABILITY_HWPX_EDIT_REUSED": "YES",
     "EXISTING_HWPX_VALIDATE_REUSED": "YES",
@@ -556,8 +666,9 @@ ACCEPTANCE: dict[str, str] = {
     "PARAGRAPH_DELETE": "NOT_CLAIMED",
     "SECTION_INSERT": "NOT_CLAIMED",
     "SECTION_DELETE": "NOT_CLAIMED",
-    "TABLE_INSERT": "NOT_CLAIMED",
     "TABLE_EDIT": "NOT_CLAIMED",
+    "TABLE_DELETE": "NOT_CLAIMED",
+    "ROW_COLUMN_MUTATION": "NOT_CLAIMED",
     "IMAGE_INSERT": "NOT_CLAIMED",
     "IMAGE_EDIT": "NOT_CLAIMED",
     "STYLE_EDIT": "NOT_CLAIMED",
@@ -2252,6 +2363,456 @@ def hwpx_template_fill(
             paragraph_count=paragraph_count,
             filled_field_count=filled_field_count,
             validation_status=VALIDATION_STATUS_TEMPLATE_FILL_OK,
+        ),
+        artifact=artifact,
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class HwpxTableInsertionRequest:
+    """Bounded rows and exact zero-based insertion position for one table."""
+
+    section_index: int
+    block_index: int
+    rows: object
+
+
+@dataclass(frozen=True, slots=True)
+class HwpxInsertTableReceipt:
+    """Bounded receipt for the ``hwpx.insert_table`` facade."""
+
+    status: str
+    capability_id: str
+    reason_code: str
+    note: str | None
+    media_type: str | None
+    suggested_filename: str | None
+    byte_size: int | None
+    section_count: int | None
+    paragraph_count: int | None
+    table_count: int | None
+    inserted_row_count: int | None
+    inserted_column_count: int | None
+    validation_status: str
+
+    def __post_init__(self) -> None:
+        _require_receipt_fields(self.status, self.reason_code)
+        if self.validation_status not in _INSERT_TABLE_VALIDATION_STATUSES:
+            raise ValueError("hwpx_skill: insert_table validation_status must be bounded")
+        if self.note is not None and not is_bounded_reason_code(self.note):
+            raise ValueError("hwpx_skill: an insert_table note must be a bounded identifier")
+        if self.status == STATUS_OK:
+            if self.validation_status != VALIDATION_STATUS_INSERT_TABLE_OK:
+                raise ValueError("hwpx_skill: an ok insert_table must verify its structured readback")
+            if self.note is not None:
+                raise ValueError("hwpx_skill: an ok insert_table receipt carries no note")
+            if self.media_type != HWPX_MEDIA_TYPE:
+                raise ValueError("hwpx_skill: an ok insert_table must report the HWPX media type")
+            if not isinstance(self.suggested_filename, str) or not self.suggested_filename.endswith(
+                HWPX_SUFFIX
+            ):
+                raise ValueError("hwpx_skill: an ok insert_table name must use the canonical suffix")
+            if not isinstance(self.byte_size, int) or self.byte_size <= 0:
+                raise ValueError("hwpx_skill: an ok insert_table must report a positive byte size")
+            if not isinstance(self.section_count, int) or self.section_count <= 0:
+                raise ValueError("hwpx_skill: an ok insert_table must report its section count")
+            if not isinstance(self.paragraph_count, int) or self.paragraph_count < 0:
+                raise ValueError("hwpx_skill: an ok insert_table must report its paragraph count")
+            if not isinstance(self.table_count, int) or self.table_count <= 0:
+                raise ValueError("hwpx_skill: an ok insert_table must report its table count")
+            if not isinstance(self.inserted_row_count, int) or self.inserted_row_count <= 0:
+                raise ValueError("hwpx_skill: an ok insert_table must report its row count")
+            if not isinstance(self.inserted_column_count, int) or self.inserted_column_count <= 0:
+                raise ValueError("hwpx_skill: an ok insert_table must report its column count")
+            return
+        if self.validation_status == VALIDATION_STATUS_INSERT_TABLE_OK:
+            raise ValueError("hwpx_skill: a refused insert_table must not claim a verified readback")
+        if any(
+            value is not None
+            for value in (
+                self.media_type,
+                self.suggested_filename,
+                self.byte_size,
+                self.section_count,
+                self.paragraph_count,
+                self.table_count,
+                self.inserted_row_count,
+                self.inserted_column_count,
+            )
+        ):
+            raise ValueError("hwpx_skill: a refused insert_table receipt carries no artifact metadata")
+
+    def to_public_dict(self) -> dict[str, object]:
+        return {
+            "status": self.status,
+            "capability_id": self.capability_id,
+            "reason_code": self.reason_code,
+            "note": self.note,
+            "media_type": self.media_type,
+            "suggested_filename": self.suggested_filename,
+            "byte_size": self.byte_size,
+            "section_count": self.section_count,
+            "paragraph_count": self.paragraph_count,
+            "table_count": self.table_count,
+            "inserted_row_count": self.inserted_row_count,
+            "inserted_column_count": self.inserted_column_count,
+            "validation_status": self.validation_status,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class HwpxInsertTableArtifact:
+    """In-memory artifact for one verified table insertion."""
+
+    payload: bytes
+    media_type: str
+    suggested_filename: str
+    byte_size: int
+    section_count: int
+    paragraph_count: int
+    table_count: int
+    inserted_row_count: int
+    inserted_column_count: int
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.payload, bytes) or not self.payload:
+            raise ValueError("hwpx_skill: an insert_table artifact requires bounded bytes")
+        if self.media_type != HWPX_MEDIA_TYPE:
+            raise ValueError("hwpx_skill: an insert_table artifact must be HWPX")
+        if not isinstance(self.suggested_filename, str) or not self.suggested_filename.endswith(
+            HWPX_SUFFIX
+        ):
+            raise ValueError("hwpx_skill: an insert_table artifact name must use the canonical suffix")
+        if self.byte_size != len(self.payload):
+            raise ValueError("hwpx_skill: an insert_table artifact byte size must match its payload")
+        if self.section_count <= 0 or self.paragraph_count < 0 or self.table_count <= 0:
+            raise ValueError("hwpx_skill: an insert_table artifact must report bounded structure counts")
+        if self.inserted_row_count <= 0 or self.inserted_column_count <= 0:
+            raise ValueError("hwpx_skill: an insert_table artifact must report its table shape")
+
+
+@dataclass(frozen=True, slots=True)
+class HwpxInsertTableResult:
+    """One insert_table outcome with bytes present only on success."""
+
+    receipt: HwpxInsertTableReceipt
+    artifact: HwpxInsertTableArtifact | None = None
+
+    def __post_init__(self) -> None:
+        if self.receipt.status == STATUS_OK and self.artifact is None:
+            raise ValueError("hwpx_skill: an ok insert_table result must carry an artifact")
+        if self.receipt.status != STATUS_OK and self.artifact is not None:
+            raise ValueError("hwpx_skill: a refused insert_table result must not carry an artifact")
+
+    def to_public_dict(self) -> dict[str, object]:
+        return self.receipt.to_public_dict()
+
+
+def _insert_table_refusal(
+    reason_code: str,
+    *,
+    note: str | None,
+    validation_status: str,
+) -> HwpxInsertTableResult:
+    return HwpxInsertTableResult(
+        receipt=HwpxInsertTableReceipt(
+            status=STATUS_REFUSED,
+            capability_id=CAPABILITY_HWPX_EDIT,
+            reason_code=reason_code,
+            note=note,
+            media_type=None,
+            suggested_filename=None,
+            byte_size=None,
+            section_count=None,
+            paragraph_count=None,
+            table_count=None,
+            inserted_row_count=None,
+            inserted_column_count=None,
+            validation_status=validation_status,
+        ),
+        artifact=None,
+    )
+
+
+def _section_blocks(section: HwpxPackageSection) -> tuple[HwpxSectionBlock, ...]:
+    if section.blocks:
+        return section.blocks
+    return tuple(HwpxSectionBlock("paragraph", text=text) for text in section.paragraphs)
+
+
+def _insert_table_request_refusal(
+    request: object,
+    source: HwpxPackageContent,
+) -> str | None:
+    if not isinstance(request, HwpxTableInsertionRequest):
+        return REASON_INSERT_TABLE_REQUEST_SHAPE
+    if not isinstance(request.section_index, int) or isinstance(request.section_index, bool):
+        return REASON_INSERT_TABLE_REQUEST_SHAPE
+    if not isinstance(request.block_index, int) or isinstance(request.block_index, bool):
+        return REASON_INSERT_TABLE_REQUEST_SHAPE
+    if request.section_index < 0:
+        return REASON_INSERT_TABLE_SECTION_INDEX_NEGATIVE
+    if request.block_index < 0:
+        return REASON_INSERT_TABLE_BLOCK_INDEX_NEGATIVE
+    if request.section_index >= len(source.sections):
+        return REASON_INSERT_TABLE_SECTION_OUT_OF_RANGE
+    if not isinstance(request.rows, (tuple, list)):
+        return REASON_INSERT_TABLE_REQUEST_SHAPE
+    if not request.rows:
+        return REASON_INSERT_TABLE_ROWS_EMPTY
+    rows = tuple(request.rows)
+    if len(rows) > MAX_HWPX_TABLE_ROWS:
+        return REASON_INSERT_TABLE_ROW_LIMIT
+    for row in rows:
+        if not isinstance(row, (tuple, list)) or not row or not all(
+            isinstance(text, str) for text in row
+        ):
+            return REASON_INSERT_TABLE_REQUEST_SHAPE
+    widths = {len(row) for row in rows}
+    if len(widths) != 1 or 0 in widths:
+        return REASON_INSERT_TABLE_ROWS_RAGGED
+    column_count = next(iter(widths))
+    if column_count > MAX_HWPX_TABLE_COLUMNS:
+        return REASON_INSERT_TABLE_COLUMN_LIMIT
+    if len(rows) * column_count > MAX_HWPX_TABLE_CELLS:
+        return REASON_INSERT_TABLE_CELL_LIMIT
+    for row in rows:
+        for text in row:
+            try:
+                validate_hwpx_paragraph_text(text)
+            except DocumentNormalizationError:
+                return REASON_INSERT_TABLE_CELL_TEXT_REJECTED
+    section = source.sections[request.section_index]
+    if request.block_index > len(_section_blocks(section)):
+        return REASON_INSERT_TABLE_BLOCK_OUT_OF_RANGE
+    return None
+
+
+def _insert_table_model(
+    source: HwpxPackageContent,
+    request: HwpxTableInsertionRequest,
+) -> tuple[HwpxPackageContent, HwpxTable]:
+    rows = tuple(tuple(text for text in row) for row in request.rows)
+    table = HwpxTable(tuple(tuple(HwpxTableCell(text) for text in row) for row in rows))
+    inserted = HwpxSectionBlock("table", table=table)
+    sections: list[HwpxPackageSection] = []
+    for section_index, section in enumerate(source.sections):
+        if section_index != request.section_index:
+            sections.append(section)
+            continue
+        blocks = _section_blocks(section)
+        blocks = blocks[: request.block_index] + (inserted,) + blocks[request.block_index :]
+        sections.append(
+            HwpxPackageSection(
+                paragraphs=tuple(
+                    block.text for block in blocks if block.kind == "paragraph"
+                ),
+                blocks=blocks,
+            )
+        )
+    return HwpxPackageContent(sections=tuple(sections)), table
+
+
+def _table_count(content: HwpxPackageContent) -> int:
+    return sum(
+        block.kind == "table"
+        for section in content.sections
+        for block in _section_blocks(section)
+    )
+
+
+def hwpx_insert_table(
+    filename: str,
+    payload: bytes,
+    request: HwpxTableInsertionRequest,
+) -> HwpxInsertTableResult:
+    """Insert one bounded Core table block into a canonical HWPX package.
+
+    The common gate runs before request validation. The source is decoded and
+    required to reserialize to the exact input bytes before its section/block
+    address is used. The inserted table is then proven at the exact requested
+    position while every non-target section and block remains unchanged.
+    """
+
+    gate = inspect_file(filename, payload)
+    gate_refusal = _gate_refusal(gate)
+    if gate_refusal is not None:
+        return _insert_table_refusal(
+            REASON_INSERT_TABLE_GATE_REJECTED,
+            note=_bounded_note(gate_refusal),
+            validation_status=VALIDATION_STATUS_INSERT_TABLE_SOURCE_REFUSED,
+        )
+
+    try:
+        source = deserialize_hwpx_package(payload)
+    except DocumentNormalizationError as error:
+        return _insert_table_refusal(
+            REASON_INSERT_TABLE_SOURCE_DECODER_REJECTED,
+            note=_bounded_note(getattr(error, "code", None)),
+            validation_status=VALIDATION_STATUS_INSERT_TABLE_SOURCE_REFUSED,
+        )
+
+    try:
+        canonical_source = serialize_hwpx_package(source)
+    except DocumentNormalizationError:
+        return _insert_table_refusal(
+            REASON_INSERT_TABLE_SOURCE_NOT_CANONICAL,
+            note=None,
+            validation_status=VALIDATION_STATUS_INSERT_TABLE_SOURCE_NOT_CANONICAL,
+        )
+    if canonical_source != payload:
+        return _insert_table_refusal(
+            REASON_INSERT_TABLE_SOURCE_NOT_CANONICAL,
+            note=None,
+            validation_status=VALIDATION_STATUS_INSERT_TABLE_SOURCE_NOT_CANONICAL,
+        )
+
+    request_refusal = _insert_table_request_refusal(request, source)
+    if request_refusal is not None:
+        return _insert_table_refusal(
+            request_refusal,
+            note=None,
+            validation_status=VALIDATION_STATUS_INSERT_TABLE_REQUEST_REFUSED,
+        )
+
+    intended, inserted_table = _insert_table_model(source, request)
+    inserted_block = intended.sections[request.section_index].blocks[request.block_index]
+    try:
+        inserted_payload = serialize_hwpx_package(intended)
+    except DocumentNormalizationError as error:
+        return _insert_table_refusal(
+            REASON_INSERT_TABLE_SERIALIZER_REJECTED,
+            note=_bounded_note(getattr(error, "code", None)),
+            validation_status=VALIDATION_STATUS_INSERT_TABLE_SERIALIZER_REFUSED,
+        )
+    if not isinstance(inserted_payload, bytes) or not inserted_payload:
+        return _insert_table_refusal(
+            REASON_INSERT_TABLE_SERIALIZER_REJECTED,
+            note=None,
+            validation_status=VALIDATION_STATUS_INSERT_TABLE_SERIALIZER_REFUSED,
+        )
+
+    name = _suggested_filename(filename)
+    output_gate = inspect_file(name, inserted_payload)
+    output_gate_refusal = _gate_refusal(output_gate)
+    if output_gate_refusal is not None:
+        return _insert_table_refusal(
+            REASON_INSERT_TABLE_OUTPUT_GATE_REJECTED,
+            note=_bounded_note(output_gate_refusal),
+            validation_status=VALIDATION_STATUS_INSERT_TABLE_OUTPUT_REFUSED,
+        )
+
+    validation = hwpx_validate(name, inserted_payload)
+    if validation.status != STATUS_OK:
+        return _insert_table_refusal(
+            REASON_INSERT_TABLE_OUTPUT_VALIDATE_REJECTED,
+            note=_bounded_note(validation.reason_code),
+            validation_status=VALIDATION_STATUS_INSERT_TABLE_OUTPUT_REFUSED,
+        )
+
+    read = hwpx_read(name, inserted_payload)
+    if read.status != STATUS_OK:
+        return _insert_table_refusal(
+            REASON_INSERT_TABLE_OUTPUT_READBACK_REJECTED,
+            note=_bounded_note(read.reason_code),
+            validation_status=VALIDATION_STATUS_INSERT_TABLE_OUTPUT_REFUSED,
+        )
+
+    try:
+        decoded = deserialize_hwpx_package(inserted_payload)
+    except DocumentNormalizationError as error:
+        return _insert_table_refusal(
+            REASON_INSERT_TABLE_OUTPUT_DECODER_REJECTED,
+            note=_bounded_note(getattr(error, "code", None)),
+            validation_status=VALIDATION_STATUS_INSERT_TABLE_OUTPUT_MISMATCH,
+        )
+
+    if len(decoded.sections) != len(source.sections) or _table_count(decoded) != _table_count(
+        source
+    ) + 1:
+        return _insert_table_refusal(
+            REASON_INSERT_TABLE_OUTPUT_COUNT_DRIFT,
+            note=None,
+            validation_status=VALIDATION_STATUS_INSERT_TABLE_OUTPUT_MISMATCH,
+        )
+    if sum(len(section.paragraphs) for section in decoded.sections) != sum(
+        len(section.paragraphs) for section in source.sections
+    ):
+        return _insert_table_refusal(
+            REASON_INSERT_TABLE_OUTPUT_COUNT_DRIFT,
+            note=None,
+            validation_status=VALIDATION_STATUS_INSERT_TABLE_OUTPUT_MISMATCH,
+        )
+    for section_index, section in enumerate(decoded.sections):
+        if section_index != request.section_index and section != source.sections[section_index]:
+            return _insert_table_refusal(
+                REASON_INSERT_TABLE_OUTPUT_NON_TARGET_DRIFT,
+                note=None,
+                validation_status=VALIDATION_STATUS_INSERT_TABLE_OUTPUT_MISMATCH,
+            )
+
+    source_blocks = _section_blocks(source.sections[request.section_index])
+    decoded_blocks = _section_blocks(decoded.sections[request.section_index])
+    if len(decoded_blocks) != len(source_blocks) + 1:
+        return _insert_table_refusal(
+            REASON_INSERT_TABLE_OUTPUT_COUNT_DRIFT,
+            note=None,
+            validation_status=VALIDATION_STATUS_INSERT_TABLE_OUTPUT_MISMATCH,
+        )
+    for output_index, block in enumerate(decoded_blocks):
+        if output_index == request.block_index:
+            if block != inserted_block:
+                return _insert_table_refusal(
+                    REASON_INSERT_TABLE_OUTPUT_TABLE_MISMATCH,
+                    note=None,
+                    validation_status=VALIDATION_STATUS_INSERT_TABLE_OUTPUT_MISMATCH,
+                )
+            continue
+        source_index = output_index if output_index < request.block_index else output_index - 1
+        if source_index >= len(source_blocks) or block != source_blocks[source_index]:
+            return _insert_table_refusal(
+                REASON_INSERT_TABLE_OUTPUT_NON_TARGET_DRIFT,
+                note=None,
+                validation_status=VALIDATION_STATUS_INSERT_TABLE_OUTPUT_MISMATCH,
+            )
+    if decoded != intended:
+        return _insert_table_refusal(
+            REASON_INSERT_TABLE_OUTPUT_ROUNDTRIP_MISMATCH,
+            note=None,
+            validation_status=VALIDATION_STATUS_INSERT_TABLE_OUTPUT_MISMATCH,
+        )
+
+    section_count = len(decoded.sections)
+    paragraph_count = sum(len(section.paragraphs) for section in decoded.sections)
+    table_count = _table_count(decoded)
+    inserted_row_count = len(inserted_table.rows)
+    inserted_column_count = len(inserted_table.rows[0])
+    artifact = HwpxInsertTableArtifact(
+        payload=inserted_payload,
+        media_type=HWPX_MEDIA_TYPE,
+        suggested_filename=name,
+        byte_size=len(inserted_payload),
+        section_count=section_count,
+        paragraph_count=paragraph_count,
+        table_count=table_count,
+        inserted_row_count=inserted_row_count,
+        inserted_column_count=inserted_column_count,
+    )
+    return HwpxInsertTableResult(
+        receipt=HwpxInsertTableReceipt(
+            status=STATUS_OK,
+            capability_id=CAPABILITY_HWPX_EDIT,
+            reason_code="ok",
+            note=None,
+            media_type=HWPX_MEDIA_TYPE,
+            suggested_filename=name,
+            byte_size=len(inserted_payload),
+            section_count=section_count,
+            paragraph_count=paragraph_count,
+            table_count=table_count,
+            inserted_row_count=inserted_row_count,
+            inserted_column_count=inserted_column_count,
+            validation_status=VALIDATION_STATUS_INSERT_TABLE_OK,
         ),
         artifact=artifact,
     )
