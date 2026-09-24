@@ -1,7 +1,7 @@
 # Pillow 12.3.0 runtime wheel receipt and image foundation — Issue #3037
 
 Refs: #3037 · Predecessors: #3016 (source-only provenance gate), #2990, #2931
-Base for this work: `origin/main=4a4afc4cee0324b69e08d8a325ac5467addf2448`
+Base for this work: merge-forwarded `origin/main=ebb8029ac95b31e72fa87ebcbf1d4ab1f098c95b`
 
 This is the *runtime* receipt contract that #3016 required before Pillow could
 be accepted on any platform. It is a **separate, additive** document. #3016,
@@ -32,10 +32,11 @@ FLOATING_VERSION=NO
 FLOATING_LATEST=REJECT
 ```
 
-The machine-readable form of this document is
-`packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py`. The prose
-here and that module are two views of one contract; the module is what CI reads
-and what the tests assert, so a workflow cannot silently drift from the receipt.
+The machine-readable form of this document is the standalone stdlib file
+`packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py`. CI executes
+that file directly before installing project dependencies. It is intentionally
+not invoked with package `-m`, because doing so would import the Core package
+entrypoint and require unrelated dependencies before Pillow is installed.
 
 ## Immutable release identity
 
@@ -147,28 +148,28 @@ GH_RELEASE_ASSETS_VERIFIED=NO
 ```text
 DEPENDENCY_NAME=Pillow
 DEPENDENCY_PIN=12.3.0
-DEPENDENCY_SPEC=EXACT_EQUALS; NO RANGE; NO LOWER BOUND; NO latest/compatible
-KAGENT_DEPENDENCY_SURFACE=apps/korean-ai-code-agent/pyproject.toml
-WHEEL_ONLY_ADOPTION=YES
+DEPENDENCY_SPEC=EXACT_RECEIPT; NO RANGE; NO LOWER BOUND; NO latest/compatible
+KAGENT_BASE_DEPENDENCY=NO
+B62_WORKER_PILLOW_ADOPTION=NO
+CORE_IMAGES_EXTRA=NOT_DECLARED
+WHEEL_ONLY_ADOPTION=CANONICAL_KAGENT_IMAGE_CI_ONLY
 SOURCE_BUILD_FALLBACK=NO
 PILLOW_RESOLUTION_DURING_DEPENDENCY_INSTALL=DISABLED
 LOCAL_VERIFIED_WHEEL_INSTALLED_BEFORE_DEPENDENCY_INSTALL=YES
+CORE_IMAGE_TESTS_WITHOUT_APPROVED_RUNTIME=SKIP
+CORE_RECEIPT_TESTS_WITHOUT_APPROVED_RUNTIME=RUN
+CANONICAL_KAGENT_IMAGE_CI=FORCED_FOCUSED_RECEIPT_AND_IMAGE_HELPER_TESTS
 INSTALLED_ARTIFACT_PROOF=PIL.__version__ + platform tag + wheel filename recorded in CI output
 CI_PYTHON_VERSION=3.12
 CI_PLATFORMS=ubuntu-latest; windows-latest
 ```
 
-CI resolves nothing about Pillow at dependency-install time. It selects the one
-approved receipt for its platform, downloads exactly that URL, verifies
-filename + size + SHA-256 before any installer runs, installs the verified local
-wheel with `--no-deps --no-index`, and only then installs KAgent and the
-monorepo dependencies. A floating, ranged, or `latest`-compatible dependency is
-rejected.
-
-Pillow is declared directly in the KAgent dependency surface as
-`Pillow==12.3.0`; the exact wheel is installed and verified before that
-dependency is resolved. The base Core install does not silently acquire a
-native binary.
+CI resolves nothing about Pillow at dependency-install time. It directly executes
+the standalone receipt file, downloads exactly the approved URL, verifies
+filename + size + SHA-256 before any installer runs, and installs the verified
+local wheel with `--no-deps --no-index`. KAgent base dependencies remain empty
+for this slice, so B62 and Worker dependency graphs do not acquire Pillow.
+Later monorepo installs cannot re-resolve the native image runtime.
 
 ## Image foundation contract
 
@@ -279,7 +280,7 @@ MERGE=NO
 RUNTIME_RECEIPT_RECORDED=YES
 APPROVED_ARTIFACTS=2
 UNREVIEWED_PLATHS_APPROVED=0
-RUNTIME_ADOPTION=YES_UNDER_THIS_RECEIPT
+RUNTIME_ADOPTION=CANONICAL_KAGENT_IMAGE_CI_ONLY_UNDER_THIS_RECEIPT
 SECOND_PROVENANCE_AUTHORITY=0
 SECOND_SKILL_REGISTRY=0
 DRAFT_ONLY=YES

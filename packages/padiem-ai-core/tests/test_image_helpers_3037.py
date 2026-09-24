@@ -13,9 +13,13 @@ from io import BytesIO
 from pathlib import Path
 
 import pytest
-from PIL import Image, ImageFile
 
-from padiem_ai_core import image_helpers as helpers
+Image = pytest.importorskip("PIL.Image", reason="approved Pillow runtime is not installed")
+ImageFile = pytest.importorskip(
+    "PIL.ImageFile", reason="approved Pillow runtime is not installed"
+)
+
+import padiem_ai_core.image_helpers as helpers
 from padiem_ai_core.image_helpers import (
     IMAGE_ERROR_CODES,
     MAX_IMAGE_BYTES,

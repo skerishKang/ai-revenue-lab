@@ -418,7 +418,7 @@ def shell_export(platform: PillowPlatform) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
-    """``python -m padiem_ai_core.pillow_wheel_receipts <Linux|Windows> [wheel]``.
+    """Run this standalone file as ``python <receipt.py> <Linux|Windows> [wheel]``.
 
     With one argument, prints the shell exports. With two, verifies the
     downloaded wheel against the receipt. A non-zero exit means CI must stop.

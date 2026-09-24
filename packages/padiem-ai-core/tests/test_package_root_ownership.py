@@ -9,6 +9,18 @@ import padiem_ai_core as core
 PACKAGE_DIR = Path(__file__).resolve().parents[1] / "padiem_ai_core"
 INIT_PATH = PACKAGE_DIR / "__init__.py"
 
+EXPECTED_DIRECT_TOOL_RUNTIME_EXPORTS = {
+    "OrchestrationEvent",
+    "OrchestrationEventError",
+    "OrchestrationEventKind",
+    "OrchestrationError",
+    "OrchestrationRequest",
+    "OrchestrationResult",
+    "OrchestrationResumeRequest",
+    "OrchestrationRunner",
+    "public_orchestration_event",
+}
+
 EXPECTED_LAZY_ONLY_TOOL_RUNTIME_EXPORTS = {
     "MAX_TOOL_ARGUMENT_BYTES",
     "MAX_TOOL_OUTPUT_BYTES",
@@ -70,7 +82,7 @@ def _resolved_owner_map() -> dict[str, str]:
     lazy_only = lazy_declared - set(direct)
     expected_lazy_only = set(EXPECTED_LAZY_EXPORT_OWNERS)
     assert lazy_only == expected_lazy_only
-    assert lazy_declared == expected_lazy_only
+    assert lazy_declared == expected_lazy_only | EXPECTED_DIRECT_TOOL_RUNTIME_EXPORTS
 
     owner_map: dict[str, str] = {}
     for name in exported:

@@ -449,8 +449,8 @@ def __getattr__(name: str):
         except ModuleNotFoundError as exc:
             if exc.name in {"PIL", "_imaging"}:
                 raise ImportError(
-                    "Image helpers require the optional 'images' dependency: "
-                    "install padiem-ai-core[images]."
+                    "Image helpers require the separately approved Pillow runtime; "
+                    "install the exact verified platform wheel for this lane."
                 ) from exc
             raise
     else:

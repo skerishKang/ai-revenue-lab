@@ -9,6 +9,8 @@ on:
       # has to run this suite even when no Claw file moves.
       - 'packages/padiem-ai-core/padiem_ai_core/image_helpers.py'
       - 'packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py'
+      - 'packages/padiem-ai-core/tests/test_pillow_wheel_receipts.py'
+      - 'packages/padiem-ai-core/tests/test_image_helpers_3037.py'
       - 'packages/padiem-ai-core/pyproject.toml'
       - 'packages/padiem-control-plane/padiem_control_plane/local_agent_broker.py'
       - 'packages/padiem-control-plane/padiem_control_plane/local_agent_broker_rpc.py'
@@ -51,7 +53,7 @@ jobs:
           RUNNER_FAMILY: ${{ runner.os }}
         run: |
           set -euo pipefail
-          eval "$(python -m padiem_ai_core.pillow_wheel_receipts "$RUNNER_FAMILY")"
+          eval "$(python packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py "$RUNNER_FAMILY")"
           echo "receipt_id=${PILLOW_WHEEL_RECEIPT_ID}" >> "$GITHUB_OUTPUT"
           echo "filename=${PILLOW_WHEEL_FILENAME}" >> "$GITHUB_OUTPUT"
           echo "sha256=${PILLOW_WHEEL_SHA256}" >> "$GITHUB_OUTPUT"
@@ -65,7 +67,7 @@ jobs:
           RUNNER_FAMILY: ${{ runner.os }}
         run: |
           set -euo pipefail
-          eval "$(python -m padiem_ai_core.pillow_wheel_receipts "$RUNNER_FAMILY")"
+          eval "$(python packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py "$RUNNER_FAMILY")"
           wheel_dir="$RUNNER_TEMP/padiem-pillow-wheel"
           mkdir -p "$wheel_dir"
           curl --fail --location --silent --show-error \
@@ -81,8 +83,8 @@ jobs:
           RUNNER_FAMILY: ${{ runner.os }}
         run: |
           set -euo pipefail
-          eval "$(python -m padiem_ai_core.pillow_wheel_receipts "$RUNNER_FAMILY")"
-          python -m padiem_ai_core.pillow_wheel_receipts \
+          eval "$(python packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py "$RUNNER_FAMILY")"
+          python packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py \
             "$RUNNER_FAMILY" \
             "$RUNNER_TEMP/padiem-pillow-wheel/${PILLOW_WHEEL_FILENAME}"
           echo "verified ${PILLOW_WHEEL_FILENAME}"
@@ -96,23 +98,20 @@ jobs:
           RUNNER_FAMILY: ${{ runner.os }}
         run: |
           set -euo pipefail
-          eval "$(python -m padiem_ai_core.pillow_wheel_receipts "$RUNNER_FAMILY")"
+          eval "$(python packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py "$RUNNER_FAMILY")"
           python -m pip install --disable-pip-version-check \
             --no-index --no-deps --force-reinstall \
             "$RUNNER_TEMP/padiem-pillow-wheel/${PILLOW_WHEEL_FILENAME}"
 
-      # The constraint pins the exact version and --only-binary Pillow refuses a
-      # source build, so the already-installed verified wheel is the only thing
-      # that can satisfy the Core `images` extra.
+      # Pillow is intentionally absent from KAgent base dependencies. The exact
+      # verified wheel above is the only image runtime admitted into this lane;
+      # later dependency installation must not re-resolve or widen that runtime.
       - name: Install monorepo conformance dependencies
         working-directory: apps/korean-ai-code-agent
         shell: bash
         run: |
           set -euo pipefail
-          printf 'Pillow==12.3.0\n' > pillow-constraint.txt
-          export PIP_CONSTRAINT="$(pwd)/pillow-constraint.txt"
           python -m pip install --disable-pip-version-check \
-            --only-binary Pillow \
             -e "../../packages/padiem-ai-core[tools,documents]"
           python -m pip install --disable-pip-version-check -e .
           python -m pip install --disable-pip-version-check \
@@ -130,7 +129,7 @@ jobs:
           RUNNER_FAMILY: ${{ runner.os }}
         run: |
           set -euo pipefail
-          eval "$(python -m padiem_ai_core.pillow_wheel_receipts "$RUNNER_FAMILY")"
+          eval "$(python packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py "$RUNNER_FAMILY")"
           python - "$PILLOW_WHEEL_PLATFORM_TAG" "$PILLOW_WHEEL_FILENAME" <<'PY'
           import json
           import pathlib
@@ -163,6 +162,27 @@ jobs:
           )
           print(json.dumps(payload, indent=2, sort_keys=True))
           PY
+
+      # Receipt/provenance tests never need Pillow, while image-helper tests
+      # normally skip in unrelated Core reuse lanes. This canonical image lane
+      # has already proved and installed the exact approved wheel, so run both
+      # focused groups here and fail if the helper group is globally skipped.
+      - name: Run focused Core receipt and image-helper tests
+        shell: bash
+        env:
+          PYTHONPATH: packages/padiem-ai-core
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check "pytest>=8,<10"
+          focused_log="$RUNNER_TEMP/padiem-focused-image-tests.log"
+          python -m pytest -q \
+            packages/padiem-ai-core/tests/test_pillow_wheel_receipts.py \
+            packages/padiem-ai-core/tests/test_image_helpers_3037.py \
+            -o addopts='' | tee "$focused_log"
+          if grep -q "skipped" "$focused_log"; then
+            echo "focused image-helper tests were skipped" >&2
+            exit 1
+          fi
 
       - name: Compile source and tests
         working-directory: apps/korean-ai-code-agent
