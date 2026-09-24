@@ -5,7 +5,13 @@ import unittest
 
 from PIL import Image
 
-from kagent.image_skill import ImageSkillError, image_inspect, image_thumbnail, image_transform
+from kagent.image_skill import (
+    ImageSkillError,
+    image_inspect,
+    image_thumbnail,
+    image_to_pdf,
+    image_transform,
+)
 
 
 def image_bytes(fmt: str, *, size=(12, 8), exif_orientation: int | None = None) -> bytes:
@@ -85,6 +91,18 @@ class ImageSkillFoundationTests(unittest.TestCase):
         result = image_thumbnail(image_bytes("PNG", size=(100, 50)), filename="x.png", size=(20, 20))
         self.assertLessEqual(result.width, 20)
         self.assertLessEqual(result.height, 20)
+
+    def test_image_to_pdf_uses_intake_and_preserves_order(self):
+        result = image_to_pdf(
+            (("first.png", image_bytes("PNG", size=(20, 10))), ("second.jpg", image_bytes("JPEG", size=(10, 20))))
+        )
+        self.assertTrue(result.data.startswith(b"%PDF-"))
+        self.assertEqual(result.page_count, 2)
+        self.assertEqual([page.source_image_index for page in result.pages], [0, 1])
+
+    def test_image_to_pdf_rejects_non_tuple_sequence(self):
+        with self.assertRaises(ImageSkillError):
+            image_to_pdf([])  # type: ignore[arg-type]
 
 
 if __name__ == "__main__":

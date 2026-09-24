@@ -1,0 +1,56 @@
+#2828 IMAGE Skill progress — 2026-09-24
+CLAW3 / LOCAL3
+
+ASSIGNMENT
+ISSUE=#2828
+REPO=skerishKang/ai-revenue-lab
+PROGRAM_PARENT=#2821
+WORKTREE=E:/padiem-clawu-260924-2828
+BRANCH=feat/2828-image-skill
+OLD_3038_WORKTREE_MUTATION=0
+CURRENT_MAIN=9a1e21c9eb51b593841ffe1d473004d18b8c808a
+IMPLEMENTATION_BASE=9a1e21c9eb51b593841ffe1d473004d18b8c808a
+
+SCOPE / DECISIONS
+- Existing #3037 Pillow image authority was reconciled and reused. No second decoder, intake gate, registry, workflow engine, artifact store, or task/storage authority was added.
+- Existing #2824 file-intake gate is reused before every image-to-PDF source payload.
+- OCR remains blocked and was not coupled to image-to-PDF progress.
+  IMAGE_OCR=BLOCKED
+  OCR_SOURCE_ADVANCE_JUSTIFIED=NO
+  DEFAULT_CLOUD_OCR_AUTHORITY=UNRESOLVED
+  KOREAN_LANGUAGE_DATA_AUTHORITY=UNRESOLVED
+  PROVIDER_CALLS=0
+- No vision-model reasoning or provider fallback was added.
+- Adjacent #2827 PDF ownership was checked. This change only emits a new PDF artifact from admitted images; it does not parse, read, merge, split, or transform an existing PDF.
+
+IMPLEMENTED COHERENT SLICE
+- Core `image_to_pdf(images)` emits a new PDF artifact from one or more admitted raster images.
+- Input order is preserved and each page has bounded provenance.
+- EXIF orientation is normalized.
+- Alpha is flattened onto explicit white `(255, 255, 255)`.
+- Fixed page policy is 150 DPI.
+- Bounds cover image count, total input bytes, total pixels, and output bytes.
+- Stable fail-closed error codes cover oversized, corrupt/unsupported, and output-overflow cases.
+- KAgent `image_skill.image_to_pdf(items)` is a thin facade that runs the existing #2824 intake gate for every `(filename, bytes)` item before delegating to Core.
+- No OCR implementation was added; `image.ocr` remains reserved and unimplemented.
+
+CHANGED FILES
+- packages/padiem-ai-core/padiem_ai_core/image_helpers.py
+- packages/padiem-ai-core/tests/test_image_helpers_3037.py
+- apps/korean-ai-code-agent/src/kagent/image_skill.py
+- apps/korean-ai-code-agent/tests/test_image_skill_foundation.py
+
+VALIDATION
+- Focused Core + KAgent image tests: 107 passed, 1 skipped, 3 subtests passed.
+- Related Core/KAgent regressions: 160 passed, 36 subtests passed.
+- `compileall` passed for changed Core and KAgent packages.
+- `git diff --check` passed.
+- Open PR overlap search for #2828 returned none.
+- Issue #2828 remains OPEN; issue #2827 remains a separate OPEN PDF issue.
+- Exact-head CI: pending until commit and Draft PR are created.
+
+DELIVERY STATE
+READY=NO
+MERGE=NO
+ISSUE_CLOSE=NO
+STOP_AND_WAIT_FOR_CENTRAL=YES
