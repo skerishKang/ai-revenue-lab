@@ -54,6 +54,14 @@ For substantial new capabilities:
 - If custom build: `BUILD_FROM_SCRATCH_JUSTIFIED=YES/NO` + reason:
 - Product authority retained by Padiem:
 - Duplicate product authority introduced? must be NO:
+- Existing implementation, if any:
+- Candidate replacement/alternative:
+- Stable component contract/interface:
+- Can old implementation remain fallback?:
+- Switch/config mechanism:
+- Shared conformance tests:
+- Rollback path:
+- Retirement condition for old implementation:
 
 For a bug fix/tiny glue/already-decided slice, mark this gate `NOT_REQUIRED` with the accepted parent decision or reason.
 

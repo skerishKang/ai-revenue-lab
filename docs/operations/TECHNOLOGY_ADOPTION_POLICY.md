@@ -246,7 +246,71 @@ TECH_SCAN
 
 Issue #2996 is the cross-project technology/adoption radar and reusable intake index. Capability-specific decisions still belong on their parent issue.
 
-## 13. Operating principle
+## 13. Replaceable-component principle
+
+Technology adoption is not a one-time decision. An existing implementation is **not exempt** from future landscape review.
+
+A stable Padiem-facing contract should make commodity implementations replaceable:
+
+```text
+PADIEM_STABLE_CONTRACT
+    ├─ CURRENT_IMPLEMENTATION
+    └─ CANDIDATE_IMPLEMENTATION
+```
+
+When a newer or better technology appears, classify the decision as:
+
+```text
+RETAIN_CURRENT
+ADD_ALTERNATIVE
+REPLACE_PRIMARY_KEEP_FALLBACK
+REPLACE_AND_RETIRE
+REJECT_CANDIDATE
+```
+
+Default migration posture:
+
+- do not delete the existing implementation before the replacement proves contract parity;
+- prefer adapter/config/strategy selection over broad rewrites;
+- keep the previous implementation available as rollback/fallback when maintenance cost is reasonable;
+- a fallback may be dormant and testable rather than simultaneously active in Production;
+- use the same capability contract and conformance tests for old and new implementations;
+- benchmark quality, latency, resource cost, operating cost, security, licensing and Korean-language/product fit;
+- newest is not automatically better; replacement requires evidence;
+- security/licensing incidents may justify immediate retirement without fallback.
+
+For substantial commodity components, record:
+
+```text
+COMPONENT_SLOT=
+CURRENT_IMPLEMENTATION=
+CANDIDATE_IMPLEMENTATION=
+FALLBACK_IMPLEMENTATION=
+SWITCH_MECHANISM=
+CONFORMANCE_TESTS=
+QUALITY_BENCHMARK=
+COST_BENCHMARK=
+ROLLBACK_PATH=
+RETIREMENT_CONDITION=
+```
+
+## 14. Continuous technology review
+
+The technology radar is continuous. Re-run a bounded scan when any of these occurs:
+
+- a major upstream project/release materially changes the landscape;
+- current implementation is a delivery bottleneck;
+- accuracy/quality is insufficient;
+- licensing/commercial posture changes;
+- operating cost or resource usage becomes material;
+- a new product requirement appears;
+- a credible owner-supplied repository/product is identified.
+
+Already-implemented capability is a valid migration target. Past engineering effort is not a reason to keep an inferior implementation.
+
+The goal is to preserve Padiem contracts while allowing implementation parts to evolve.
+
+## 15. Operating principle
 
 ```text
 SEARCH_BEFORE_BUILD=YES
@@ -258,3 +322,11 @@ RESEARCH_MUST_BE_TIME_BOUNDED=YES
 ```
 
 The goal is faster delivery of a trustworthy product, not maximum custom code.
+
+```text
+REPLACEABLE_COMPONENTS=YES
+EXISTING_IMPLEMENTATION_CAN_BE_REEVALUATED=YES
+NEW_TECH_CAN_REPLACE_PRIMARY_AFTER_CONFORMANCE=YES
+PREVIOUS_IMPLEMENTATION_MAY_REMAIN_FALLBACK=YES
+IRREVERSIBLE_REWRITE_BY_DEFAULT=NO
+```
