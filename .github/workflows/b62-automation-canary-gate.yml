@@ -21,8 +21,11 @@ jobs:
     env:
       PYTHONPATH: ${{ github.workspace }}/apps/padiem-chat
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout PR exact head
+        uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
