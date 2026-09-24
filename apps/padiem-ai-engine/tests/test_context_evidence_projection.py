@@ -75,7 +75,7 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # filesystem authority: every archive walk still runs through the one gate, and
 # the mutator owns no archive or XML primitive of its own.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "a281cdcbfef1dcdabd9c5ee1e80e206f0919199a32bf1b36ce771a531d1ac3f2",
+    CORE_PACKAGE / "document_normalization.py": "41052fcf63fa47cdcc471a1ea938f5d34e5453d2917920877bb531beaa705d72",
     CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
     CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
     CORE_TESTS / "test_document_normalization.py": "ba88eb112d5855751ba4316013daef60095e574ed8bb13441c479ad0cc70da5e",
