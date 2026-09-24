@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from padiem_ai_core.document_normalization import DocumentNormalizationError
 from padiem_ai_core.pdf_preview import PdfPreviewResult as CorePdfPreviewResult
 from padiem_ai_core.pdf_preview import (
     render_pdf_embedded_image_previews as _render_core,
@@ -14,7 +13,6 @@ from .claw_skill_registry import CAPABILITY_PDF_TRANSFORM
 from .file_intake_safety import (
     DetectedFormat,
     FileIntakeResult,
-    FileIntakeSafetyError,
     inspect_file,
 )
 
@@ -71,7 +69,7 @@ def preview_pdf_pages(name: str, payload: bytes) -> PdfPreviewResult:
 
     try:
         gate = inspect_file(name, payload)
-    except (FileIntakeSafetyError, TypeError) as error:
+    except Exception as error:
         raise PdfPreviewError("pdf_preview_input_gate_rejected") from error
     if not gate.safe_to_parse or gate.detected_format is not DetectedFormat.PDF:
         raise PdfPreviewError("pdf_preview_input_gate_rejected")
@@ -81,14 +79,14 @@ def preview_pdf_pages(name: str, payload: bytes) -> PdfPreviewResult:
             media_type=PDF_MEDIA_TYPE,
             payload=payload,
         )
-    except DocumentNormalizationError as error:
+        return PdfPreviewResult(
+            capability_id=CAPABILITY_PDF_TRANSFORM,
+            source_kind=PDF_PREVIEW_SOURCE_KIND,
+            gate=gate,
+            artifact=artifact,
+        )
+    except Exception as error:
         raise PdfPreviewError("pdf_preview_render_failed") from error
-    return PdfPreviewResult(
-        capability_id=CAPABILITY_PDF_TRANSFORM,
-        source_kind=PDF_PREVIEW_SOURCE_KIND,
-        gate=gate,
-        artifact=artifact,
-    )
 
 
 __all__ = [

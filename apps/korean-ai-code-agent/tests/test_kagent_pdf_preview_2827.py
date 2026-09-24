@@ -97,6 +97,37 @@ class PdfPreviewFacadeTests(unittest.TestCase):
 
         self.assertEqual(error.exception.code, "pdf_preview_render_failed")
 
+    def test_zero_page_core_error_is_stable_at_facade_boundary(self) -> None:
+        with (
+            mock.patch.object(
+                pdf_preview,
+                "_render_core",
+                side_effect=DocumentNormalizationError(
+                    "pdf_preview_no_pages", "PDF preview has no pages."
+                ),
+            ),
+            self.assertRaises(PdfPreviewError) as error,
+        ):
+            preview_pdf_pages("empty.pdf", _blank_pdf())
+
+        self.assertEqual(error.exception.code, "pdf_preview_render_failed")
+
+    def test_raw_core_errors_cannot_escape_facade(self) -> None:
+        for raw_error in (
+            ValueError("bad value"),
+            TypeError("bad type"),
+            RuntimeError("pypdf"),
+        ):
+            with self.subTest(error_type=type(raw_error).__name__):
+                with (
+                    mock.patch.object(
+                        pdf_preview, "_render_core", side_effect=raw_error
+                    ),
+                    self.assertRaises(PdfPreviewError) as error,
+                ):
+                    preview_pdf_pages("report.pdf", _blank_pdf())
+                self.assertEqual(error.exception.code, "pdf_preview_render_failed")
+
     def test_preview_source_has_no_external_renderer_or_network_authority(self) -> None:
         source = Path(pdf_preview.__file__).read_text(encoding="utf-8")
         for token in (

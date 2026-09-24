@@ -126,6 +126,69 @@ def test_invalid_identity_and_pdf_inputs_fail_closed() -> None:
     assert locked.value.code == "pdf_encrypted"
 
 
+def test_over_limit_lazy_images_are_not_materialized(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class TrackingImages:
+        def __init__(self) -> None:
+            self.accessed: list[int] = []
+            self.length_calls = 0
+
+        def __len__(self) -> int:
+            self.length_calls += 1
+            return pdf_preview.MAX_PDF_PREVIEW_IMAGES_PER_PAGE + 1
+
+        def __getitem__(self, index: int) -> object:
+            self.accessed.append(index)
+            raise AssertionError("over-limit image was materialized")
+
+    class Page:
+        def __init__(self) -> None:
+            self.images = TrackingImages()
+
+    class Reader:
+        def __init__(self) -> None:
+            self.pages = [Page()]
+
+        def close(self) -> None:
+            return None
+
+    reader = Reader()
+    images = reader.pages[0].images
+    monkeypatch.setattr(pdf_preview, "_open_pdf_reader", lambda payload: reader)
+
+    with pytest.raises(DocumentNormalizationError) as error:
+        render_pdf_embedded_image_previews(
+            name="report.pdf",
+            media_type="application/pdf",
+            payload=_blank_pdf(),
+        )
+
+    assert error.value.code == "pdf_preview_image_count_exceeded"
+    assert images.length_calls == 1
+    assert images.accessed == []
+
+
+def test_zero_page_reader_is_normalized(monkeypatch: pytest.MonkeyPatch) -> None:
+    class Reader:
+        def __init__(self) -> None:
+            self.pages: list[object] = []
+
+        def close(self) -> None:
+            return None
+
+    monkeypatch.setattr(pdf_preview, "_open_pdf_reader", lambda payload: Reader())
+
+    with pytest.raises(DocumentNormalizationError) as error:
+        render_pdf_embedded_image_previews(
+            name="empty.pdf",
+            media_type="application/pdf",
+            payload=_blank_pdf(),
+        )
+
+    assert error.value.code == "pdf_preview_no_pages"
+
+
 def test_preview_bounds_fail_closed(monkeypatch: pytest.MonkeyPatch) -> None:
     payload = _image_backed_pdf()
 

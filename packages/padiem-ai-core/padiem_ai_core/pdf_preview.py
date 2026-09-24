@@ -187,7 +187,17 @@ def render_pdf_embedded_image_previews(
         )
     reader = _open_pdf_reader(binary)
     try:
-        page_count = len(reader.pages)
+        try:
+            page_count = len(reader.pages)
+        except Exception as error:
+            raise _preview_error(
+                "pdf_preview_page_count_failed",
+                "PDF preview page count could not be read.",
+            ) from error
+        if page_count < 1:
+            raise _preview_error(
+                "pdf_preview_no_pages", "PDF preview requires at least one page."
+            )
         if page_count > MAX_PDF_PREVIEW_PAGES:
             raise _preview_error(
                 "pdf_preview_page_limit", "PDF preview page count exceeds the limit."
@@ -198,25 +208,27 @@ def render_pdf_embedded_image_previews(
         total_output_bytes = 0
         for page_index, page in enumerate(reader.pages, start=1):
             try:
-                images = tuple(page.images)
+                image_collection = page.images
+                image_count = len(image_collection)
             except Exception as error:
                 raise _preview_error(
                     "pdf_preview_page_read_failed",
                     "PDF preview page images could not be read.",
                 ) from error
-            if len(images) > MAX_PDF_PREVIEW_IMAGES_PER_PAGE:
+            if image_count > MAX_PDF_PREVIEW_IMAGES_PER_PAGE:
                 raise _preview_error(
                     "pdf_preview_image_count_exceeded",
                     "PDF preview page image count exceeds the limit.",
                 )
-            if total_images + len(images) > MAX_PDF_PREVIEW_IMAGES:
+            if total_images + image_count > MAX_PDF_PREVIEW_IMAGES:
                 raise _preview_error(
                     "pdf_preview_image_count_exceeded",
                     "PDF preview image count exceeds the limit.",
                 )
             previews: list[PdfPreviewImage] = []
-            for image_index, image in enumerate(images, start=1):
+            for image_index in range(image_count):
                 try:
+                    image = image_collection[image_index]
                     source = bytes(image.data)
                 except Exception as error:
                     raise _preview_error(
@@ -252,7 +264,7 @@ def render_pdf_embedded_image_previews(
                 previews.append(
                     PdfPreviewImage(
                         page_number=page_index,
-                        image_index=image_index,
+                        image_index=image_index + 1,
                         data=thumbnail.data,
                         image_format=thumbnail.format,
                         width=thumbnail.width,
@@ -268,7 +280,12 @@ def render_pdf_embedded_image_previews(
             output_byte_size=total_output_bytes,
         )
     finally:
-        reader.close() if hasattr(reader, "close") else None
+        try:
+            reader.close() if hasattr(reader, "close") else None
+        except (AttributeError, OSError, RuntimeError, TypeError, ValueError) as error:
+            raise _preview_error(
+                "pdf_preview_reader_close_failed", "PDF preview reader close failed."
+            ) from error
 
 
 __all__ = [
