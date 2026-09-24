@@ -7,6 +7,7 @@ import unittest
 from pathlib import Path
 
 from kagent.claw_automation import (
+    ClawAutomationExecutionIntent,
     ClawAutomationOutputType,
     ClawAutomationRule,
     ClawAutomationRuleAuthority,
@@ -64,6 +65,27 @@ class CanonicalRuleProvenanceTests(unittest.TestCase):
     def test_invalid_canonical_subject_is_rejected(self) -> None:
         with self.assertRaises(ContractError):
             rule(canonical_subject_id="subject:legacy")
+
+    def test_new_subject_provenance_is_keyword_only_and_preserves_execution_intent_slot(self) -> None:
+        intent = ClawAutomationExecutionIntent(
+            task="Preserve the prior positional contract",
+            repository_ref="repo:padiem/ai-revenue-lab",
+            exact_revision="a" * 40,
+        )
+        positional = ClawAutomationRule(
+            "rule_positional",
+            TENANT,
+            "positional compatibility",
+            ClawScheduleExpression(ClawScheduleKind.CRON, "0 9 * * *", "UTC"),
+            ClawAutomationTarget.INBOX,
+            ClawAutomationOutputType.REPORT,
+            True,
+            (),
+            "owner:opaque",
+            intent,
+        )
+        self.assertIs(positional.execution_intent, intent)
+        self.assertIsNone(positional.canonical_subject_id)
 
     def test_inmemory_provenance_is_immutable_and_preserved(self) -> None:
         store = InMemoryClawAutomationStore()
