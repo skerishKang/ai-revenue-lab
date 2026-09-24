@@ -47,7 +47,7 @@ VALIDATION
 - `git diff --check` passed.
 - Open PR overlap search for #2828 returned none.
 - Issue #2828 remains OPEN; issue #2827 remains a separate OPEN PDF issue.
-- Exact-head CI at head `403ba38d`: KAgent ubuntu-latest and windows-latest initially failed because the newly added PDF readback test used an optional `pypdf` import and the canonical image lane treats any skip as failure. Corrected the test to assert the emitted PDF page markers directly; follow-up exact-head CI is required.
+- Exact-head CI at head `2e1d0352`: all required checks passed, including KAgent ubuntu-latest and windows-latest; no failed or pending checks.
 - Drive upload: blocked once by `403 storageQuotaExceeded`; local report preserved and no further retry performed.
 
 DELIVERY STATE
