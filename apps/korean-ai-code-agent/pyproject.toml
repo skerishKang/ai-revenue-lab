@@ -7,7 +7,9 @@ name = "korean-ai-code-agent"
 version = "0.2.0"
 description = "Business 54 Padiem Claw cloud-ready task, run, and sandbox boundary foundations"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+  "Pillow==12.3.0",
+]
 
 [project.scripts]
 kagent = "kagent.cli:main"

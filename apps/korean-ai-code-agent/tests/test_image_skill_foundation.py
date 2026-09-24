@@ -35,8 +35,8 @@ class ImageSkillFoundationTests(unittest.TestCase):
     def test_exif_orientation_is_observable_and_normalized(self):
         source = image_bytes("JPEG", exif_orientation=6)
         inspected = image_inspect(source, filename="oriented.jpg")
-        self.assertTrue(inspected.inspection.orientation_present)
-        self.assertEqual(inspected.inspection.orientation_value, 6)
+        self.assertTrue(inspected.inspection.has_exif)
+        self.assertEqual(inspected.inspection.orientation, 6)
         output = image_transform(source, filename="oriented.jpg", output_format="PNG")
         self.assertEqual(output.format, "PNG")
         self.assertEqual((output.width, output.height), (8, 12))
