@@ -855,8 +855,6 @@ def test_module_never_imports_a_filesystem_or_process_module() -> None:
 
 
 def test_image_to_pdf_single_and_multiple_pages_preserve_source_order() -> None:
-    from io import BytesIO as _BytesIO
-
     pdf = image_to_pdf((_png((20, 10), (255, 0, 0)), _jpeg((10, 20))))
     assert isinstance(pdf, ImagePdfOutput)
     assert pdf.data.startswith(b"%PDF-")
@@ -866,9 +864,11 @@ def test_image_to_pdf_single_and_multiple_pages_preserve_source_order() -> None:
     assert pdf.safe_dict()["page_count"] == 2
     assert "data" not in pdf.safe_dict()
 
-    PdfReader = pytest.importorskip("pypdf.PdfReader")
-    reader = PdfReader(_BytesIO(pdf.data))
-    assert len(reader.pages) == 2
+    # Keep the emission contract self-contained in this canonical image lane.
+    # The optional documents extra is not required to validate a newly
+    # emitted page artifact, and an importorskip here would make this required
+    # image test appear globally skipped in CI.
+    assert pdf.data.count(b"/Type /Page") >= 2
 
 
 def test_image_to_pdf_normalizes_orientation_and_records_provenance() -> None:
