@@ -30,6 +30,8 @@ A custom commodity implementation requires an explicit reason. Historical `SECON
 
 See `docs/operations/TECHNOLOGY_ADOPTION_POLICY.md`.
 
+Technology discovery does not automatically pause an already-approved active task. Continue the bounded accepted scope while scans run in parallel; use new findings for the next slice or a reviewed replacement decision unless CENTRAL explicitly pauses the work.
+
 ## Roles
 
 1. **User / Product Owner** — product goals, priorities, material UX/business decisions, merge/Production authority when the work contract requires owner authorization.
