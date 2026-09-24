@@ -471,11 +471,12 @@ class HwpxTemplateFillCountBoundTests(unittest.TestCase):
 
 
 class HwpxTemplateFillUnsupportedTests(unittest.TestCase):
-    def test_table_structure_is_refused_not_filled_around(self) -> None:
+    def test_table_structure_remains_refused_not_filled_around(self) -> None:
         result = hwpx_template_fill("tb.hwpx", _table_template(), {"이름": "강철원"})
         self.assertEqual(result.receipt.status, STATUS_REFUSED)
-        self.assertEqual(result.receipt.reason_code, REASON_TEMPLATE_SOURCE_DECODER_REJECTED)
-        self.assertEqual(result.receipt.note, "hwpx_unsupported_structure")
+        # #3019 made bounded table structure decodable by Core. This legacy
+        # hand-built template is still outside the byte-canonical fill subset.
+        self.assertEqual(result.receipt.reason_code, REASON_TEMPLATE_SOURCE_NOT_CANONICAL)
         self.assertIsNone(result.artifact)
 
     def test_non_canonical_addressed_part_is_refused(self) -> None:
