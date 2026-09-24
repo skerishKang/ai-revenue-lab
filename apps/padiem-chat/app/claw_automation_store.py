@@ -16,7 +16,8 @@ material builders (``_execution_claim_material`` / ``_projection_update_material
 therefore cannot drift into different semantics.
 
 This adapter does NOT:
-- create tables at runtime (``RUNTIME_CREATE_TABLE=NO``) — migration 018 owns the
+  - create tables at runtime (``RUNTIME_CREATE_TABLE=NO``) — migrations 018/019 own the
+
   schema and this module executes no DDL of any kind
 - accept caller SQL, a caller table name or a caller query
   (``CALLER_SUPPLIED_SQL=NO``)
@@ -132,6 +133,7 @@ _RULE_COLUMNS = (
     "notification_channels",
     "created_at",
     "updated_at",
+    "canonical_subject_id",
 )
 _RUN_COLUMNS = (
     "run_id",
@@ -162,12 +164,12 @@ _PROPOSAL_COLUMNS = (
 _SELECT_RULE = (
     "SELECT rule_id, workspace_id, name, schedule_kind, schedule_expression, "
     "schedule_timezone, target_source, output_type, enabled, notification_channels, "
-    "created_at, updated_at FROM claw_rules WHERE rule_id = ?"
+    "created_at, updated_at, canonical_subject_id FROM claw_rules WHERE rule_id = ?"
 )
 _SELECT_RULES_FOR_WORKSPACE = (
     "SELECT rule_id, workspace_id, name, schedule_kind, schedule_expression, "
     "schedule_timezone, target_source, output_type, enabled, notification_channels, "
-    "created_at, updated_at FROM claw_rules WHERE workspace_id = ?"
+    "created_at, updated_at, canonical_subject_id FROM claw_rules WHERE workspace_id = ?"
 )
 _SELECT_RUN = (
     "SELECT run_id, workspace_id, rule_id, status, scheduled_time, started_at, "
@@ -408,6 +410,8 @@ class D1ClawAutomationStore(ClawAutomationStore):
                 raise ContractError("stored automation rule is corrupt") from exc
             if existing_payload.get("owner_ref") != rule.owner_ref:
                 raise ContractError("rule owner provenance is immutable")
+            if existing[12] != rule.canonical_subject_id:
+                raise ContractError("rule canonical subject provenance is immutable")
             if existing_payload.get("execution_intent") != _execution_intent_document(
                 rule.execution_intent
             ):
@@ -415,7 +419,8 @@ class D1ClawAutomationStore(ClawAutomationStore):
         statement = self._stmt(
             "INSERT INTO claw_rules(rule_id, workspace_id, name, schedule_kind, "
             "schedule_expression, schedule_timezone, target_source, output_type, enabled, "
-            "notification_channels, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+            "notification_channels, created_at, updated_at, canonical_subject_id) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
             "ON CONFLICT(rule_id) DO UPDATE SET name = excluded.name, "
             "schedule_kind = excluded.schedule_kind, "
             "schedule_expression = excluded.schedule_expression, "
@@ -438,6 +443,7 @@ class D1ClawAutomationStore(ClawAutomationStore):
             payload,
             now,
             now,
+            rule.canonical_subject_id,
         )
         written = _row_to_dict(await self._first_row(statement))
         if written is not None:
@@ -488,6 +494,7 @@ class D1ClawAutomationStore(ClawAutomationStore):
             notification_channels=rule.notification_channels,
             owner_ref=rule.owner_ref,
             execution_intent=rule.execution_intent,
+            canonical_subject_id=rule.canonical_subject_id,
         )
         await self.save_rule(updated)
         return updated

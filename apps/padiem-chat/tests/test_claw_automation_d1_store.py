@@ -16,7 +16,6 @@ from __future__ import annotations
 import asyncio
 from datetime import datetime, timedelta, timezone
 import inspect
-import json
 import sqlite3
 from pathlib import Path
 from types import SimpleNamespace
@@ -29,7 +28,6 @@ from kagent.claw_automation import (
     ClawAutomationOutput,
     ClawAutomationOutputType,
     ClawAutomationRule,
-    ClawAutomationStore,
     ClawAutomationTarget,
     ClawNotificationChannel,
     ClawNotificationPreference,
@@ -53,15 +51,22 @@ NOW = datetime(2026, 9, 23, 9, 0, tzinfo=timezone.utc)
 DONE = NOW + timedelta(minutes=5)
 WORKSPACE = "workspace_a"
 OTHER_WORKSPACE = "workspace_b"
+CANONICAL_SUBJECT = "sub_0123456789abcdef0123456789abcdef"
 RULE_ID = "rule_claw_1"
 OTHER_RULE = "rule_claw_2"
 REVISION = "a" * 40
 SCHEDULE = ClawScheduleExpression(ClawScheduleKind.CRON, "0 9 * * *", "UTC")
 
 STORE_PATH = Path(__file__).resolve().parent.parent / "app" / "claw_automation_store.py"
-MIGRATION_PATH = (
-    Path(__file__).resolve().parent.parent / "migrations" / "018_claw_automation_durable_store.sql"
+MIGRATION_PATHS = (
+    Path(__file__).resolve().parent.parent / "migrations" / "018_claw_automation_durable_store.sql",
+    Path(__file__).resolve().parent.parent / "migrations" / "019_claw_automation_rule_provenance.sql",
 )
+
+
+def _apply_migrations(binding: SqliteD1Binding) -> None:
+    for path in MIGRATION_PATHS:
+        binding.conn.executescript(path.read_text(encoding="utf-8"))
 
 
 # ---------------------------------------------------------------------------
@@ -131,7 +136,7 @@ class SqliteD1Statement:
 @pytest.fixture
 def d1_db() -> SqliteD1Binding:
     binding = SqliteD1Binding()
-    binding.conn.executescript(MIGRATION_PATH.read_text(encoding="utf-8"))
+    _apply_migrations(binding)
     return binding
 
 
@@ -150,6 +155,7 @@ def make_rule(
     workspace_id: str = WORKSPACE,
     rule_id: str = RULE_ID,
     owner_ref: str | None = None,
+    canonical_subject_id: str | None = None,
     execution_intent: ClawAutomationExecutionIntent | None = None,
 ) -> ClawAutomationRule:
     return ClawAutomationRule(
@@ -165,6 +171,7 @@ def make_rule(
             ),
         ),
         owner_ref=owner_ref,
+        canonical_subject_id=canonical_subject_id,
         execution_intent=execution_intent
         or ClawAutomationExecutionIntent(
             task="Produce the scheduled bounded report",
@@ -316,6 +323,15 @@ def test_adapter_has_no_runtime_ddl_or_caller_sql() -> None:
         assert forbidden not in source, forbidden
 
 
+def test_rule_provenance_migration_column_is_nullable(d1_db: SqliteD1Binding) -> None:
+    columns = {
+        str(row[1]): row[4]
+        for row in d1_db.conn.execute("PRAGMA table_info(claw_rules)")
+    }
+    assert "canonical_subject_id" in columns
+    assert columns["canonical_subject_id"] is None
+
+
 # ===========================================================================
 # 2. Rule persistence + workspace isolation + immutability
 # ===========================================================================
@@ -334,6 +350,30 @@ async def test_save_and_get_rule_roundtrip(d1_store: D1ClawAutomationStore) -> N
     assert fetched.owner_ref == "owner:alice"
     assert fetched.execution_intent is not None
     assert fetched.execution_intent.exact_revision == REVISION
+
+
+@pytest.mark.asyncio
+async def test_canonical_subject_provenance_roundtrips(d1_store: D1ClawAutomationStore) -> None:
+    await d1_store.save_rule(make_rule(canonical_subject_id=CANONICAL_SUBJECT))
+    fetched = await d1_store.get_rule(RULE_ID, WORKSPACE)
+    assert fetched is not None
+    assert fetched.canonical_subject_id == CANONICAL_SUBJECT
+
+
+@pytest.mark.asyncio
+async def test_canonical_subject_provenance_is_immutable(d1_store: D1ClawAutomationStore) -> None:
+    await d1_store.save_rule(make_rule(canonical_subject_id=CANONICAL_SUBJECT))
+    with pytest.raises(ContractError):
+        await d1_store.update_rule(
+            make_rule(canonical_subject_id="sub_ffffffffffffffffffffffffffffffff")
+        )
+
+
+@pytest.mark.asyncio
+async def test_enable_toggle_preserves_canonical_subject(d1_store: D1ClawAutomationStore) -> None:
+    await d1_store.save_rule(make_rule(canonical_subject_id=CANONICAL_SUBJECT))
+    disabled = await d1_store.set_rule_enabled(WORKSPACE, RULE_ID, False)
+    assert disabled.canonical_subject_id == CANONICAL_SUBJECT
 
 
 @pytest.mark.asyncio
@@ -520,7 +560,7 @@ async def test_concurrent_record_run_same_occurrence_single_row() -> None:
             return await super().batch(statements)
 
     binding = YieldingBatchBinding()
-    binding.conn.executescript(MIGRATION_PATH.read_text(encoding="utf-8"))
+    _apply_migrations(binding)
     store = D1ClawAutomationStore(binding)
     await store.save_rule(make_rule())
     binding.batch_arrivals = 0
@@ -773,7 +813,7 @@ async def test_d1_store_parity_with_reference_store() -> None:
     canonical occurrence lifecycle, exercising the SAME kernel domain."""
 
     d1 = D1ClawAutomationStore(SqliteD1Binding())
-    d1.db.conn.executescript(MIGRATION_PATH.read_text(encoding="utf-8"))
+    _apply_migrations(d1.db)
     ref = InMemoryClawAutomationStore()
 
     rule = make_rule()

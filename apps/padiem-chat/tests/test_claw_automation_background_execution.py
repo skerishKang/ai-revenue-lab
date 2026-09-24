@@ -73,8 +73,8 @@ from app.control_plane_identity_shadow import IdentityShadowRecord
 NOW = datetime(2026, 9, 23, 9, 0, tzinfo=timezone.utc)
 EARLIER = datetime(2026, 9, 22, 9, 0, tzinfo=timezone.utc)
 FUTURE = datetime(2026, 9, 24, 9, 0, tzinfo=timezone.utc)
-WORKSPACE = "workspace_a"
-FOREIGN_WORKSPACE = "workspace_b"
+WORKSPACE = "tenant_0123456789abcdef0123456789abcdef"
+FOREIGN_WORKSPACE = "tenant_fedcba9876543210fedcba9876543210"
 RULE_ID = "rule_s2f5b_1"
 FOREIGN_RULE_ID = "rule_s2f5b_foreign"
 REVISION = "b" * 40
@@ -82,8 +82,8 @@ OWNER_REF = "owner:opaque:provenance:1"
 OWNER_USER = "usr_" + "7" * 32
 FOREIGN_USER = "usr_" + "f" * 32
 MEMBER = "member_0001"
-SUBJECT = "subject:padiem:user:123"
-FOREIGN_SUBJECT = "subject:padiem:user:999"
+SUBJECT = "sub_0123456789abcdef0123456789abcdef"
+FOREIGN_SUBJECT = "sub_fedcba9876543210fedcba9876543210"
 SESSION = "authsession:b62:123"
 AUTHORITY_REF = "authority:owner:registry"
 SCHEDULE = ClawScheduleExpression(ClawScheduleKind.CRON, "0 9 * * *", "UTC")
@@ -101,6 +101,7 @@ def make_rule(
     rule_id: str = RULE_ID,
     output_type: ClawAutomationOutputType = ClawAutomationOutputType.ALERT,
     owner_ref: str | None = OWNER_REF,
+    canonical_subject_id: str | None = SUBJECT,
     enabled: bool = True,
 ) -> ClawAutomationRule:
     return ClawAutomationRule(
@@ -112,6 +113,7 @@ def make_rule(
         output_type=output_type,
         enabled=enabled,
         owner_ref=owner_ref,
+        canonical_subject_id=canonical_subject_id,
         execution_intent=ClawAutomationExecutionIntent(
             task="Produce the scheduled bounded check",
             repository_ref="repo:padiem/ai-revenue-lab",
@@ -501,6 +503,19 @@ async def test_trusted_trigger_claims_and_executes_one_occurrence():
     assert len(harness.adapter.calls) == 1
     assert harness.adapter.calls[0].run_id == expected
     assert harness.store.get_run(expected, WORKSPACE).status is ClawScheduledRunStatus.COMPLETED
+
+
+async def test_legacy_rule_is_not_background_dispatched():
+    harness = Harness()
+    legacy = make_rule(canonical_subject_id=None)
+    harness.store.save_rule(legacy)
+
+    receipt = await harness.compose(make_trigger())
+
+    expected = run_id_for()
+    assert receipt.execution_claimed_run_ids == ()
+    assert receipt.failed_before_dispatch_run_ids == (expected,)
+    assert harness.store.get_run(expected, WORKSPACE).status is ClawScheduledRunStatus.PENDING
 
 
 async def test_execution_projects_into_existing_history_and_task_alert():
