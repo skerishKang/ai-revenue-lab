@@ -89,6 +89,7 @@ from kagent.claw_automation import (
     _derived_occurrence_id,
     _safe_id,
     classify_rule_background_authority,
+    select_automation_rule_membership,
 )
 from kagent.claw_automation_trigger import (
     ClawAutomationTrigger,
@@ -354,7 +355,10 @@ def _require_precomputed_receipt(
         raise BackgroundExecutionCompositionError(
             "precomputed trigger receipt does not match the trigger instant"
         )
-    if not trigger.membership.valid_at(trigger.observed_at):
+    if not any(
+        membership.valid_at(trigger.observed_at)
+        for membership in trigger.memberships
+    ):
         raise BackgroundExecutionCompositionError(
             "precomputed trigger receipt requires membership active at the trigger instant"
         )
@@ -413,7 +417,7 @@ async def _recoverable_pending_rows(
     store: BackgroundExecutionStore,
     workspace_id: str,
     observed_at: datetime,
-    membership: TrustedWorkspaceMembershipProjection,
+    memberships: tuple[TrustedWorkspaceMembershipProjection, ...],
     exclude: frozenset[str],
     bound: int,
 ) -> list[ClawScheduledRun]:
@@ -422,15 +426,15 @@ async def _recoverable_pending_rows(
     Reuses the existing ``list_runs(workspace_id)`` read surface and filters only
     rows that are still legitimately executable now: same workspace, not already
     claimed by this trigger, not in the future, backed by a current enabled rule
-    with the same identity, covered by the trigger's CURRENT membership projection,
-    and still carrying the existing occurrence-derived ``sched_run_<digest>``
-    identity.
+    with the same identity and matching per-rule membership projection, and still
+    carrying the existing occurrence-derived ``sched_run_<digest>`` identity.
 
-    Membership is evaluated at the observed instant only, deliberately: the
-    projection is a bounded authorization for the workspace, and a row stranded
-    longer ago than one projection lifetime would otherwise be unrecoverable by
-    construction. The row's own occurrence instant was authorized by the tick that
-    originally claimed it; this scan adds no second membership rule.
+    Membership is evaluated at the observed instant only, deliberately: each
+    projection is a bounded authorization for one canonical subject, and a row
+    stranded longer ago than one projection lifetime would otherwise be
+    unrecoverable by construction. The row's own occurrence instant was
+    authorized by the tick that originally claimed it; this scan adds no second
+    membership rule.
 
     Rows failing any filter are left exactly as they are: this scan never repairs,
     re-claims, re-schedules or terminalizes anything.
@@ -451,7 +455,8 @@ async def _recoverable_pending_rows(
             continue
         if not rule.enabled:
             continue
-        if not membership.valid_at(observed_at):
+        membership = select_automation_rule_membership(rule, memberships)
+        if membership is None or not membership.valid_at(observed_at):
             continue
         expected = _derived_occurrence_id(
             "sched_run", workspace_id, run.rule_id, run.scheduled_time
@@ -600,12 +605,14 @@ async def compose_background_execution(
 
     workspace_id = checked_trigger.workspace_id
     observed_at = checked_trigger.observed_at
-    membership = checked_trigger.membership
-    if not isinstance(membership, TrustedWorkspaceMembershipProjection):
+    memberships = checked_trigger.memberships
+    if not memberships or not all(
+        isinstance(item, TrustedWorkspaceMembershipProjection) for item in memberships
+    ):
         raise BackgroundExecutionCompositionError(
             "trigger requires a trusted workspace membership projection"
         )
-    if membership.workspace_id != workspace_id:
+    if any(item.workspace_id != workspace_id for item in memberships):
         raise BackgroundExecutionCompositionError(
             "trigger membership projection does not cover the trigger workspace"
         )
@@ -631,7 +638,7 @@ async def compose_background_execution(
         store=store,
         workspace_id=workspace_id,
         observed_at=observed_at,
-        membership=membership,
+        memberships=memberships,
         exclude=frozenset(newly_claimed),
         bound=bound,
     )
@@ -655,6 +662,10 @@ async def compose_background_execution(
             classify_rule_background_authority(rule)
             is not ClawAutomationRuleAuthority.CANONICAL_BACKGROUND_ELIGIBLE
         ):
+            failed_before_dispatch.append(run.run_id)
+            continue
+        rule_membership = select_automation_rule_membership(rule, memberships)
+        if rule_membership is None or not rule_membership.valid_at(observed_at):
             failed_before_dispatch.append(run.run_id)
             continue
         owner = await _resolve_owner_or_none(

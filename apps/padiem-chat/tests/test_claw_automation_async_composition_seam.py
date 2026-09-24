@@ -1,22 +1,22 @@
 """#2995 S2F6C — Worker-safe async trigger/execution composition seam proofs.
 
-NETWORK_FREE: no Worker handler, no cron registration, no Worker config change,
-no provider call, no external send, no connector write, no Production mutation.
+NETWORK_FREE: no provider call, no external send, no connector write, no
+Production mutation, and no live Worker cron registration.
 The chain is driven end to end against the REAL ``D1ClawAutomationStore`` on a
 D1-interface SQLite double (async statements only), the REAL discovery boundary,
 the REAL trusted trigger boundary through ``ahandle()``/``atick()`` and the REAL
 background execution composition -- proving the async seam itself, not a stub.
 
 Also pins this child's decision-gate outcome:
-``WORKER_SCHEDULED_HANDLER_SOURCE=NOT_JUSTIFIED`` -- ``worker.py`` exposes no
-``scheduled()`` handler, the Worker config declares no cron trigger, and the
-discovery module keeps ``WORKER_SCHEDULED_HANDLER = False``, because no
-existing Worker membership authority can feed #2987 discovery.
+``WORKER_SCHEDULED_HANDLER_SOURCE=READY_GATED`` -- the canonical sessionless
+membership composition feeds #2987/#2995, ``worker.py`` exposes a gated
+``scheduled()`` handler, and the live Worker config declares no Cron trigger.
 """
 
 from __future__ import annotations
 
 import sys
+from datetime import timedelta
 from pathlib import Path
 from typing import Any
 
@@ -72,6 +72,7 @@ from test_claw_automation_due_workspace_discovery import (  # noqa: E402
     ExplodingMembershipAuthority,
     SqliteD1Binding,
     StaticMembershipAuthority,
+    _membership_projection,
     _rule,
 )
 
@@ -113,7 +114,16 @@ def _async_boundary(store: Any) -> ClawAutomationTriggerBoundary:
 
 
 def _authority(*workspaces: str) -> StaticMembershipAuthority:
-    return StaticMembershipAuthority({ws: "principal:user" for ws in workspaces})
+    return StaticMembershipAuthority(
+        {
+            ws: (
+                membership(workspace_id=ws).principal_ref
+                if ws.startswith("tenant_")
+                else "principal:user"
+            )
+            for ws in workspaces
+        }
+    )
 
 
 async def _compose(trigger, *, boundary, store, adapter, receipt, **kwargs):
@@ -191,6 +201,40 @@ async def test_async_d1_end_to_end_claim_execute_and_project(d1_store):
     assert task_alert.add_task_calls + task_alert.add_alert_calls >= 1  # TASK_ALERT_OUTPUT=YES
     rows = await d1_store.list_runs(WORKSPACE)
     assert [row.status for row in rows] == [ClawScheduledRunStatus.COMPLETED]
+
+
+async def test_async_tick_isolates_subjects_and_quarantines_legacy(d1_store):
+    subject_b = "sub_ffffffffffffffffffffffffffffffff"
+    await d1_store.save_rule(make_rule(rule_id="rule_subject_a"))
+    await d1_store.save_rule(
+        make_rule(rule_id="rule_subject_b", canonical_subject_id=subject_b)
+    )
+    await d1_store.save_rule(
+        make_rule(rule_id="rule_legacy", canonical_subject_id=None)
+    )
+    trigger = ClawAutomationTrigger(
+        trigger_id="trigger_async_subjects",
+        correlation_id="corr_async_subjects",
+        workspace_id=WORKSPACE,
+        observed_at=NOW,
+        membership=None,
+        memberships=(
+            membership(workspace_id=WORKSPACE),
+            _membership_projection(
+                subject_b,
+                issued_at=NOW - timedelta(minutes=5),
+                expires_at=NOW + timedelta(hours=1),
+            ),
+        ),
+    )
+
+    receipt = await ClawAutomationTriggerBoundary(
+        ClawAutomationTickRuntime(d1_store)
+    ).ahandle(trigger)
+
+    assert len(receipt.created_run_ids) == 2
+    rows = await d1_store.list_runs(WORKSPACE)
+    assert {row.rule_id for row in rows} == {"rule_subject_a", "rule_subject_b"}
 
 
 async def test_precomputed_receipt_skips_the_synchronous_trigger(d1_store):
@@ -559,11 +603,12 @@ async def test_receipts_pin_no_external_side_effect(d1_store):
         "worker_scheduled_handler",
         "production_scheduler_activation",
     ):
-        expected = False if marker in {
-            "synthetic_membership",
-            "worker_scheduled_handler",
-            "production_scheduler_activation",
-        } else 0
+        expected = True if marker == "worker_scheduled_handler" else (
+            False if marker in {
+                "synthetic_membership",
+                "production_scheduler_activation",
+            } else 0
+        )
         assert discovery_payload[marker] is expected, marker
 
     bg_payload = bg.safe_dict()
@@ -590,20 +635,27 @@ async def test_receipts_pin_no_external_side_effect(d1_store):
 
 
 # ---------------------------------------------------------------------------
-# 7. decision gate: WORKER_SCHEDULED_HANDLER_SOURCE=NOT_JUSTIFIED is pinned
+# 7. Worker source readiness is present but explicitly gated
 # ---------------------------------------------------------------------------
 
 
-def test_worker_handler_and_cron_remain_absent_in_source():
+def test_worker_handler_and_cron_source_are_present_but_not_activated():
     worker_source = (_CHAT / "worker.py").read_text(encoding="utf-8")
-    assert "def scheduled" not in worker_source
+    assert "async def scheduled" in worker_source
+    assert "PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED" in worker_source
+    assert "PRODUCTION_CRON_ACTIVATION = False" in worker_source
+    assert "PRODUCTION_MUTATION = False" in worker_source
 
     wrangler_source = (_CHAT / "wrangler.toml").read_text(encoding="utf-8")
     assert "[triggers]" not in wrangler_source
-    assert "cron" not in wrangler_source.lower()
+    assert "crons" not in wrangler_source.lower()
+    assert 'PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"' in wrangler_source
 
     discovery_source = (
         _CHAT / "app" / "claw_automation_due_workspace_discovery.py"
     ).read_text(encoding="utf-8")
-    assert "WORKER_SCHEDULED_HANDLER = False" in discovery_source
+    assert "WORKER_SCHEDULED_HANDLER = True" in discovery_source
+    assert "CRON_SOURCE_DECLARATION = False" in discovery_source
+    assert "BACKGROUND_SCHEDULER_SOURCE_READY = True" in discovery_source
     assert "REAL_CLOUD_CRON_REGISTRATION = False" in discovery_source
+    assert "PRODUCTION_SCHEDULER_ACTIVATION = False" in discovery_source
