@@ -380,18 +380,17 @@ def test_unsupported_table_structure_fails_closed_without_lossy_projection() -> 
         + "</hp:tr></hp:tbl></hp:p>"
     )
     payload = _plain_archive([_section_xml(table)])
-    # The flat authority keeps its accepted behaviour; the editable model refuses
-    # rather than flattening a table into paragraphs it cannot write back.
     assert extract_hwpx_text(payload) == "intro\ncell-a\ncell-b"
     with pytest.raises(DocumentNormalizationError) as exc:
         deserialize_hwpx_package(payload)
     assert exc.value.code == "hwpx_unsupported_structure"
 
 
-def test_table_outside_any_paragraph_fails_closed() -> None:
-    # A cell paragraph looks perfectly canonical on its own, so judging only
-    # paragraphs would project a table into editable paragraphs and lose the
-    # table on the next write. The part-level scan is what refuses it.
+
+
+def test_table_outside_any_paragraph_is_structurally_decoded() -> None:
+    # A direct table block is part of the bounded structured model; the legacy
+    # paragraph projection and flat text remain unchanged.
     body = "<hp:tbl><hp:tr><hp:tc>" + _para("cell") + "</hp:tc></hp:tr></hp:tbl>"
     payload = _plain_archive([_section_xml(body)])
     (parsed,) = parse_hwpx_sections(payload)
@@ -400,9 +399,8 @@ def test_table_outside_any_paragraph_fails_closed() -> None:
     ]
     assert parsed.unsupported_nodes == 3
     assert extract_hwpx_text(payload) == "cell"
-    with pytest.raises(DocumentNormalizationError) as refused:
-        deserialize_hwpx_package(payload)
-    assert refused.value.code == "hwpx_unsupported_structure"
+    assert deserialize_hwpx_package(payload).sections[0].blocks[0].kind == "table"
+    assert deserialize_hwpx_package(payload).sections[0].paragraphs == ()
 
 
 def test_unsupported_image_and_shape_paragraphs_fail_closed() -> None:
