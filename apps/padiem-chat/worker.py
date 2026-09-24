@@ -7,6 +7,7 @@ Provider/model execution remains Business 14 authority.
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import json
 from typing import Any
 from urllib.parse import urlparse
@@ -17,6 +18,13 @@ from urllib.parse import urlparse
 import httpx
 from workers import Request, Response, WorkerEntrypoint
 
+from kagent.claw_automation import ClawAutomationTickRuntime
+from kagent.claw_automation_trigger import ClawAutomationTriggerBoundary
+
+from app.claw_automation_due_workspace_discovery import (
+    compose_canonical_due_workspace_discovery,
+)
+from app.claw_automation_store import D1ClawAutomationStore
 from app.claw_p01_composition import build_claw_p01_lanes_with_diagnostic
 from app.config import ConfigError
 from app.control_plane_identity_shadow import D1IdentityShadowStore
@@ -44,6 +52,43 @@ from app.worker_config import (
 from app.worker_orchestration import build_orchestration_bridge
 
 _worker_app = None
+_AUTOMATION_SCHEDULER_ENABLED_ENV = "PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED"
+BACKGROUND_SCHEDULER_SOURCE_READY = True
+CRON_SOURCE_DECLARATION = False
+PRODUCTION_CRON_ACTIVATION = False
+PRODUCTION_MUTATION = False
+
+
+def _automation_source_enabled(env: Any) -> bool:
+    value = getattr(env, _AUTOMATION_SCHEDULER_ENABLED_ENV, False)
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "on"}
+    return value is True
+
+
+async def run_scheduled_automation_source(
+    env: Any, *, now: datetime | None = None
+) -> Any:
+    if not _automation_source_enabled(env):
+        return None
+    db_binding = binding_value(env, D1_BINDING_NAME)
+    identity_binding = binding_value(env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME)
+    if db_binding is None or identity_binding is None:
+        return None
+    try:
+        store = D1ClawAutomationStore(db_binding)
+        identity_authority = CloudflareControlPlaneIdentityAuthority(identity_binding)
+        boundary = ClawAutomationTriggerBoundary(ClawAutomationTickRuntime(store))
+        discovery = compose_canonical_due_workspace_discovery(
+            automation_store=store,
+            control_plane_identity_authority=identity_authority,
+            trigger_boundary=boundary,
+        )
+        return await discovery.aadiscover_and_trigger(
+            now=now or datetime.now(timezone.utc)
+        )
+    except Exception:
+        return None
 
 
 def _apply_headers(response: Any, path: str) -> Any:
@@ -544,6 +589,10 @@ class CloudflareExternalHttpTransport(httpx.AsyncBaseTransport):
 
 
 class Default(WorkerEntrypoint):
+    async def scheduled(self, event: Any, env: Any, ctx: Any) -> None:
+        del event, ctx
+        await run_scheduled_automation_source(env)
+
     async def fetch(self, request: Any) -> Any:
         import asgi
 

@@ -157,7 +157,7 @@ def membership(
     return TrustedWorkspaceMembershipProjection(
         membership_id="membership:owner",
         workspace_id=workspace_id,
-        principal_ref="principal:user",
+        principal_ref=SUBJECT,
         role=WorkspaceRole.OWNER,
         authority_ref="control-plane:membership",
         issued_at=at + timedelta(hours=issued_offset_hours),
@@ -512,10 +512,9 @@ async def test_legacy_rule_is_not_background_dispatched():
 
     receipt = await harness.compose(make_trigger())
 
-    expected = run_id_for()
     assert receipt.execution_claimed_run_ids == ()
-    assert receipt.failed_before_dispatch_run_ids == (expected,)
-    assert harness.store.get_run(expected, WORKSPACE).status is ClawScheduledRunStatus.PENDING
+    assert receipt.failed_before_dispatch_run_ids == ()
+    assert harness.store.get_run(run_id_for(), WORKSPACE) is None
 
 
 async def test_execution_projects_into_existing_history_and_task_alert():

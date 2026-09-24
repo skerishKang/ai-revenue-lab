@@ -504,6 +504,26 @@ def classify_rule_background_authority(rule: ClawAutomationRule) -> ClawAutomati
     return ClawAutomationRuleAuthority.CANONICAL_BACKGROUND_ELIGIBLE
 
 
+def select_automation_rule_membership(
+    rule: ClawAutomationRule,
+    memberships: tuple[TrustedWorkspaceMembershipProjection, ...],
+) -> TrustedWorkspaceMembershipProjection | None:
+    if rule.canonical_subject_id is not None:
+        for membership in memberships:
+            if (
+                membership.workspace_id == rule.workspace_id
+                and membership.principal_ref == rule.canonical_subject_id
+            ):
+                return membership
+        return None
+    if any(
+        re.fullmatch(r"sub_[0-9a-f]{32}", membership.principal_ref)
+        for membership in memberships
+    ):
+        return None
+    return memberships[0] if memberships else None
+
+
 CANONICAL_BACKGROUND_ELIGIBLE = ClawAutomationRuleAuthority.CANONICAL_BACKGROUND_ELIGIBLE
 LEGACY_MISSING_SUBJECT = ClawAutomationRuleAuthority.LEGACY_MISSING_SUBJECT
 LEGACY_NONCANONICAL_WORKSPACE = ClawAutomationRuleAuthority.LEGACY_NONCANONICAL_WORKSPACE
@@ -1263,6 +1283,12 @@ class FakeClawScheduler:
         if membership is not None:
             if membership.workspace_id != rule.workspace_id:
                 raise ContractError("membership workspace does not match rule workspace")
+            if rule.canonical_subject_id is not None and membership.principal_ref != rule.canonical_subject_id:
+                raise ContractError("membership subject does not match rule subject")
+            if rule.canonical_subject_id is None and re.fullmatch(
+                r"sub_[0-9a-f]{32}", membership.principal_ref
+            ):
+                raise ContractError("legacy rule cannot use a canonical subject membership")
             if not membership.valid_at(scheduled):
                 raise ContractError("expired or not-yet-valid workspace membership")
         existing = self.store.get_run_for_occurrence(
@@ -1383,18 +1409,17 @@ class ClawAutomationTickRuntime:
         *,
         workspace_id: str,
         current_time: datetime,
-        membership: TrustedWorkspaceMembershipProjection,
+        membership: TrustedWorkspaceMembershipProjection | None = None,
+        memberships: tuple[TrustedWorkspaceMembershipProjection, ...] = (),
     ) -> ClawAutomationTickReceipt:
         """Process one trusted trigger for one workspace and return a receipt."""
 
         workspace = _safe_id(workspace_id, "workspace_id")
         observed_at = _aware_utc(current_time, "current_time")
-        self._require_membership(membership, workspace, observed_at)
-        if not membership.valid_at(observed_at):
-            # An expired or not-yet-valid projection is not an error: the
-            # tick simply has no authority to materialize anything. It
-            # still returns a bounded receipt so the caller can observe
-            # that nothing ran, and no store write is attempted at all.
+        trusted_memberships = self._require_memberships(
+            workspace, observed_at, membership, memberships
+        )
+        if not any(item.valid_at(observed_at) for item in trusted_memberships):
             return ClawAutomationTickReceipt(
                 workspace_id=workspace,
                 observed_at=observed_at,
@@ -1402,14 +1427,17 @@ class ClawAutomationTickRuntime:
                 created_run_ids=(),
                 deduplicated_count=0,
             )
-
-        due = self.scheduler.due_occurrences(workspace, observed_at, membership)
+        due = self._authorized_due(
+            workspace=workspace,
+            current_time=observed_at,
+            memberships=trusted_memberships,
+        )
         created: list[str] = []
         deduplicated = 0
-        for rule, scheduled in due:
+        for rule, scheduled, rule_membership in due:
             key = occurrence_key(rule.workspace_id, rule.rule_id, scheduled)
             already = self.store.get_run_for_occurrence(key, workspace)
-            run = self._claim_pending_occurrence(rule, scheduled, membership)
+            run = self._claim_pending_occurrence(rule, scheduled, rule_membership)
             if run.run_id in created:
                 continue
             if already is not None:
@@ -1430,7 +1458,8 @@ class ClawAutomationTickRuntime:
         *,
         workspace_id: str,
         current_time: datetime,
-        membership: TrustedWorkspaceMembershipProjection,
+        membership: TrustedWorkspaceMembershipProjection | None = None,
+        memberships: tuple[TrustedWorkspaceMembershipProjection, ...] = (),
     ) -> ClawAutomationTickReceipt:
         """Async persistence application of the SAME tick algorithm (#2995).
 
@@ -1446,10 +1475,10 @@ class ClawAutomationTickRuntime:
 
         workspace = _safe_id(workspace_id, "workspace_id")
         observed_at = _aware_utc(current_time, "current_time")
-        self._require_membership(membership, workspace, observed_at)
-        if not membership.valid_at(observed_at):
-            # Same zero-run semantics as tick(): an inactive projection is not
-            # an error, and no store write is attempted at all.
+        trusted_memberships = self._require_memberships(
+            workspace, observed_at, membership, memberships
+        )
+        if not any(item.valid_at(observed_at) for item in trusted_memberships):
             return ClawAutomationTickReceipt(
                 workspace_id=workspace,
                 observed_at=observed_at,
@@ -1457,23 +1486,29 @@ class ClawAutomationTickRuntime:
                 created_run_ids=(),
                 deduplicated_count=0,
             )
-
         rules = await _store_call(self.store.list_rules(workspace))
-        due: list[tuple[ClawAutomationRule, datetime, str]] = []
+        due: list[tuple[ClawAutomationRule, datetime, str, TrustedWorkspaceMembershipProjection]] = []
         for rule, scheduled, key in FakeClawScheduler.snapshot_due_candidates(
             rules, observed_at
         ):
+            rule_membership = self._membership_for_rule(rule, trusted_memberships)
+            if (
+                rule_membership is None
+                or not rule_membership.valid_at(observed_at)
+                or not rule_membership.valid_at(scheduled)
+            ):
+                continue
             if await _store_call(self.store.get_run_for_occurrence(key, workspace)) is None:
-                due.append((rule, scheduled, key))
+                due.append((rule, scheduled, key, rule_membership))
         created: list[str] = []
         deduplicated = 0
-        for rule, scheduled, key in due:
+        for rule, scheduled, key, rule_membership in due:
             already = await _store_call(
                 self.store.get_run_for_occurrence(key, workspace)
             )
             run = await _store_call(
                 self.store.record_run(
-                    self._build_pending_claim(rule, scheduled, membership)
+                    self._build_pending_claim(rule, scheduled, rule_membership)
                 )
             )
             if run.run_id in created:
@@ -1490,6 +1525,54 @@ class ClawAutomationTickRuntime:
             created_run_ids=tuple(sorted(created)),
             deduplicated_count=deduplicated,
         )
+
+    @staticmethod
+    def _require_memberships(
+        workspace_id: str,
+        observed_at: datetime,
+        membership: TrustedWorkspaceMembershipProjection | None,
+        memberships: tuple[TrustedWorkspaceMembershipProjection, ...],
+    ) -> tuple[TrustedWorkspaceMembershipProjection, ...]:
+        values = (membership, *memberships) if membership is not None else tuple(memberships)
+        if not values or not all(
+            isinstance(item, TrustedWorkspaceMembershipProjection) for item in values
+        ):
+            raise ContractError("tick runtime requires a TrustedWorkspaceMembershipProjection")
+        unique: list[TrustedWorkspaceMembershipProjection] = []
+        for item in values:
+            if item.workspace_id != workspace_id:
+                raise ContractError("membership workspace does not match scheduler workspace")
+            if item not in unique:
+                unique.append(item)
+        return tuple(unique)
+
+    @staticmethod
+    def _membership_for_rule(
+        rule: ClawAutomationRule,
+        memberships: tuple[TrustedWorkspaceMembershipProjection, ...],
+    ) -> TrustedWorkspaceMembershipProjection | None:
+        return select_automation_rule_membership(rule, memberships)
+
+    def _authorized_due(
+        self,
+        *,
+        workspace: str,
+        current_time: datetime,
+        memberships: tuple[TrustedWorkspaceMembershipProjection, ...],
+    ) -> list[tuple[ClawAutomationRule, datetime, TrustedWorkspaceMembershipProjection]]:
+        authorized: list[tuple[ClawAutomationRule, datetime, TrustedWorkspaceMembershipProjection]] = []
+        for rule, scheduled, key in FakeClawScheduler.snapshot_due_candidates(
+            self.store.list_rules(workspace), current_time
+        ):
+            membership = self._membership_for_rule(rule, memberships)
+            if membership is None or not membership.valid_at(current_time):
+                continue
+            if not membership.valid_at(scheduled):
+                continue
+            if self.store.get_run_for_occurrence(key, workspace) is not None:
+                continue
+            authorized.append((rule, scheduled, membership))
+        return authorized
 
     def _build_pending_claim(
         self,
@@ -1510,6 +1593,12 @@ class ClawAutomationTickRuntime:
             raise ContractError("disabled automation rule cannot execute")
         if membership.workspace_id != rule.workspace_id:
             raise ContractError("membership workspace does not match rule workspace")
+        if rule.canonical_subject_id is not None and membership.principal_ref != rule.canonical_subject_id:
+            raise ContractError("membership subject does not match rule subject")
+        if rule.canonical_subject_id is None and re.fullmatch(
+            r"sub_[0-9a-f]{32}", membership.principal_ref
+        ):
+            raise ContractError("legacy rule cannot use a canonical subject membership")
         if not membership.valid_at(scheduled):
             raise ContractError("expired or not-yet-valid workspace membership")
         return ClawScheduledRun(
@@ -1593,6 +1682,7 @@ class ClawAutomationTickRuntime:
             "requires_explicit_workspace": True,
             "requires_membership_projection": True,
             "membership_may_be_omitted": False,
+            "per_rule_subject_isolation": True,
             "provider_calls": False,
             "external_send": False,
         }
