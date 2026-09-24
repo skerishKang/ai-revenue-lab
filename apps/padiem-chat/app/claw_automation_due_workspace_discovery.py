@@ -21,8 +21,8 @@ server-side discovery pass (no caller, no workspace input)
         v  existing D1 store: ONE bounded, cursor-ordered page    (#2983 read)
            of candidate workspaces that currently own an ENABLED rule
         |
-        v  canonical membership authority is consulted per workspace
-           (injected; a workspace whose membership cannot be proven is skipped)
+        v  canonical membership authority is consulted per rule subject
+           (injected; a rule without a current subject is skipped)
         |
         v  existing ClawAutomationTriggerBoundary.handle()        (#2894)
            -> existing tick kernel -> existing occurrence claim    (#2940)
@@ -48,9 +48,8 @@ Why this is not a second scheduler, and not a caller enumeration:
 * MEMBERSHIP REVALIDATED BEFORE ANY EXECUTION. A workspace whose canonical
   membership cannot be proven current is skipped, never executed and never
   terminalized, so a stale or revoked workspace simply produces no work.
-* SOURCE-ONLY WORKER HANDLER. The Worker handler and Cron declaration are
-  present but explicitly gated; Production activation and workflow dispatch
-  remain separate gates.
+* SOURCE-ONLY WORKER HANDLER. The Worker handler is present but explicitly gated;
+  no live Cron trigger is declared in the checked-in Worker configuration.
 
 Deliberately refused here:
 
@@ -138,7 +137,7 @@ SECOND_RUN_ID_AUTHORITY = False
 SECOND_DEDUP_AUTHORITY = False
 SYNTHETIC_MEMBERSHIP = False
 WORKER_SCHEDULED_HANDLER = True
-CRON_SOURCE_DECLARATION = True
+CRON_SOURCE_DECLARATION = False
 BACKGROUND_SCHEDULER_SOURCE_READY = True
 REAL_CLOUD_CRON_REGISTRATION = False
 PRODUCTION_SCHEDULER_ACTIVATION = False
@@ -247,7 +246,7 @@ class DueWorkspaceDiscoveryReceipt:
             "tenant_wide_enumeration_exposed": False,
             "synthetic_membership": False,
             "worker_scheduled_handler": True,
-            "cron_source_declaration": True,
+            "cron_source_declaration": False,
             "background_scheduler_source_ready": True,
             "production_scheduler_activation": False,
             "provider_calls": 0,
@@ -330,79 +329,88 @@ class CanonicalAutomationMembershipAuthority:
         self._authority = control_plane_identity_authority
         self._projection_lifetime = projection_lifetime
 
-    async def resolve_workspace_membership(
+    async def resolve_workspace_memberships(
         self, *, workspace_id: str, now: datetime
-    ) -> TrustedWorkspaceMembershipProjection | None:
+    ) -> tuple[TrustedWorkspaceMembershipProjection, ...]:
         if self._authority is None:
-            return None
+            return ()
         observed_at = self._aware(now)
         workspace = self._workspace(workspace_id)
         try:
             rules = await _call(self._rule_store.list_rules(workspace))
         except Exception:
-            return None
+            return ()
         if not isinstance(rules, (list, tuple)):
-            return None
+            return ()
         subjects: set[str] = set()
         for rule in rules:
-            if not isinstance(rule, ClawAutomationRule):
-                return None
-            if not rule.enabled:
+            if not isinstance(rule, ClawAutomationRule) or not rule.enabled:
                 continue
             if rule.workspace_id != workspace:
-                return None
+                continue
             if (
                 classify_rule_background_authority(rule)
                 is not ClawAutomationRuleAuthority.CANONICAL_BACKGROUND_ELIGIBLE
             ):
-                return None
+                continue
             subject = rule.canonical_subject_id
             if not isinstance(subject, str) or not re.fullmatch(
                 _CANONICAL_SUBJECT_ID_RE, subject
             ):
-                return None
+                continue
             subjects.add(subject)
-        if len(subjects) != 1:
-            return None
-        subject = next(iter(subjects))
-        try:
-            membership = await _call(
-                self._authority.resolve_active_tenant_membership(
-                    tenant_id=workspace,
-                    canonical_subject_id=subject,
-                    now=observed_at,
+        projections: list[TrustedWorkspaceMembershipProjection] = []
+        for subject in sorted(subjects):
+            try:
+                membership = await _call(
+                    self._authority.resolve_active_tenant_membership(
+                        tenant_id=workspace,
+                        canonical_subject_id=subject,
+                        now=observed_at,
+                    )
+                )
+            except Exception:
+                continue
+            if not isinstance(membership, TenantMembership):
+                continue
+            if (
+                membership.tenant_id != workspace
+                or membership.canonical_subject_id != subject
+                or membership.state is not TenantMembershipState.ACTIVE
+                or membership.role is None
+                or membership.created_at is None
+                or membership.created_at > observed_at
+            ):
+                continue
+            try:
+                role = WorkspaceRole(membership.role.value)
+            except (TypeError, ValueError):
+                continue
+            projections.append(
+                TrustedWorkspaceMembershipProjection(
+                    membership_id=f"membership_{workspace}_{subject}",
+                    workspace_id=workspace,
+                    principal_ref=subject,
+                    role=role,
+                    authority_ref="control_plane_sessionless_membership",
+                    issued_at=observed_at,
+                    expires_at=observed_at + self._projection_lifetime,
                 )
             )
-        except Exception:
-            return None
-        if not isinstance(membership, TenantMembership):
-            return None
-        if (
-            membership.tenant_id != workspace
-            or membership.canonical_subject_id != subject
-            or membership.state is not TenantMembershipState.ACTIVE
-            or membership.role is None
-            or membership.created_at is None
-            or membership.created_at > observed_at
-        ):
-            return None
-        try:
-            role = WorkspaceRole(membership.role.value)
-        except (TypeError, ValueError):
-            return None
-        return TrustedWorkspaceMembershipProjection(
-            membership_id=f"membership_{workspace}_{subject}",
-            workspace_id=workspace,
-            principal_ref=subject,
-            role=role,
-            authority_ref="control_plane_sessionless_membership",
-            issued_at=observed_at,
-            expires_at=observed_at + self._projection_lifetime,
+        return tuple(projections)
+
+    async def resolve_workspace_membership(
+        self, *, workspace_id: str, now: datetime
+    ) -> TrustedWorkspaceMembershipProjection | None:
+        projections = await self.resolve_workspace_memberships(
+            workspace_id=workspace_id, now=now
         )
+        return projections[0] if len(projections) == 1 else None
 
     def safe_dict(self) -> dict[str, Any]:
         return {
             "canonical_membership_projection": True,
+            "per_rule_subject_isolation": True,
             "reuses_sessionless_resolver": True,
             "role_required": True,
             "default_role": False,
@@ -450,7 +458,7 @@ class ClawAutomationDueWorkspaceDiscovery:
     This class is the ONLY place in the Claw automation lane that looks across
     workspaces, and it does so on the server's own initiative: it accepts no
     caller workspace, no tenant and no owner. It pages through the bounded
-    store read, proves canonical membership per workspace through the injected
+    store read, proves canonical membership per rule subject through the injected
     authority, and delegates each authorized workspace to the EXISTING trusted
     trigger boundary.
 
@@ -556,9 +564,9 @@ class ClawAutomationDueWorkspaceDiscovery:
         later bounded pass can resume strictly after the last processed
         workspace instead of starving the deterministic tail.
 
-        A workspace whose canonical membership cannot be proven is skipped and
-        recorded in ``skipped_workspaces`` -- it is never executed and never
-        terminalized, so a revoked membership simply produces no work.
+        A workspace with no currently authorized canonical subject is skipped and
+        recorded in ``skipped_workspaces`` -- individual legacy or revoked rules
+        are never executed or terminalized.
         """
 
         if self._membership_authority is None:
@@ -604,10 +612,8 @@ class ClawAutomationDueWorkspaceDiscovery:
                     truncated = True
                     break
                 discovered.append(workspace)
-                membership = await self._resolve_membership(workspace, observed_at)
-                if membership is None:
-                    # Cannot prove membership: skip. No execution, no
-                    # terminalization, no synthetic grant.
+                memberships = await self._resolve_memberships(workspace, observed_at)
+                if not memberships:
                     skipped.append(workspace)
                     if len(discovered) >= bounded_max:
                         truncated = True
@@ -619,7 +625,8 @@ class ClawAutomationDueWorkspaceDiscovery:
                     correlation_id=self._correlation(workspace),
                     workspace_id=workspace,
                     observed_at=observed_at,
-                    membership=membership,
+                    membership=memberships[0] if len(memberships) == 1 else None,
+                    memberships=memberships,
                 )
                 if async_dispatch:
                     # #2995 async persistence seam: identical validation and
@@ -659,31 +666,42 @@ class ClawAutomationDueWorkspaceDiscovery:
 
     # --- internals ----------------------------------------------------------
 
-    async def _resolve_membership(
+    async def _resolve_memberships(
         self, workspace_id: str, now: datetime
-    ) -> TrustedWorkspaceMembershipProjection | None:
-        """Prove canonical membership, or return ``None`` (skip, never grant)."""
+    ) -> tuple[TrustedWorkspaceMembershipProjection, ...]:
+        """Prove all current per-subject memberships, or return an empty set."""
 
         try:
-            projection = await _call(
-                self._membership_authority.resolve_workspace_membership(
-                    workspace_id=workspace_id,
-                    now=now,
-                )
+            plural = getattr(
+                self._membership_authority, "resolve_workspace_memberships", None
             )
+            if callable(plural):
+                projections = await _call(
+                    plural(workspace_id=workspace_id, now=now)
+                )
+            else:
+                projection = await _call(
+                    self._membership_authority.resolve_workspace_membership(
+                        workspace_id=workspace_id,
+                        now=now,
+                    )
+                )
+                projections = (projection,) if projection is not None else ()
         except DueWorkspaceDiscoveryError:
             raise
         except Exception:
-            # An authority failure must never be read as a grant. Skip the
-            # workspace instead of inventing a membership for it.
-            return None
-        if not isinstance(projection, TrustedWorkspaceMembershipProjection):
-            return None
-        if projection.workspace_id != workspace_id:
-            return None
-        if not projection.valid_at(now):
-            return None
-        return projection
+            return ()
+        if not isinstance(projections, (list, tuple)):
+            return ()
+        valid: list[TrustedWorkspaceMembershipProjection] = []
+        for projection in projections:
+            if not isinstance(projection, TrustedWorkspaceMembershipProjection):
+                continue
+            if projection.workspace_id != workspace_id or not projection.valid_at(now):
+                continue
+            if projection not in valid:
+                valid.append(projection)
+        return tuple(valid)
 
     @staticmethod
     def _workspace(value: object) -> str:
@@ -717,7 +735,7 @@ class ClawAutomationDueWorkspaceDiscovery:
             "deterministic_order": True,
             "membership_revalidation": True,
             "worker_scheduled_handler": True,
-            "cron_source_declaration": True,
+            "cron_source_declaration": False,
             "background_scheduler_source_ready": True,
             "real_cloud_cron_registration": False,
             "production_scheduler_activation": False,

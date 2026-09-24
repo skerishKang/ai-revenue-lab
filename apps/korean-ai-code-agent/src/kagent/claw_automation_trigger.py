@@ -36,6 +36,7 @@ activation and canonical scheduled execution remain separate gates.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import re
 from datetime import datetime, timezone
 from typing import Any
 
@@ -62,6 +63,10 @@ def _iso(value: datetime) -> str:
     return value.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
+def _canonical_subject(value: object) -> bool:
+    return isinstance(value, str) and re.fullmatch(r"sub_[0-9a-f]{32}", value) is not None
+
+
 @dataclass(frozen=True, slots=True)
 class ClawAutomationTrigger:
     """A trusted scheduler trigger for exactly one workspace.
@@ -76,7 +81,8 @@ class ClawAutomationTrigger:
     correlation_id: str
     workspace_id: str
     observed_at: datetime
-    membership: TrustedWorkspaceMembershipProjection
+    membership: TrustedWorkspaceMembershipProjection | None
+    memberships: tuple[TrustedWorkspaceMembershipProjection, ...] = ()
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "trigger_id", _safe_id(self.trigger_id, "trigger_id"))
@@ -85,13 +91,22 @@ class ClawAutomationTrigger:
         )
         object.__setattr__(self, "workspace_id", _safe_id(self.workspace_id, "workspace_id"))
         object.__setattr__(self, "observed_at", _aware_utc(self.observed_at, "observed_at"))
-        # A missing or caller-minted authority is not a default and not a
-        # wildcard: it is refused before any scheduling work can happen.
-        if not isinstance(self.membership, TrustedWorkspaceMembershipProjection):
+        memberships = tuple(self.memberships)
+        if self.membership is not None:
+            if not isinstance(self.membership, TrustedWorkspaceMembershipProjection):
+                raise ContractError(
+                    "trigger requires a trusted workspace membership projection; "
+                    "caller-minted or absent membership is not permitted"
+                )
+            memberships = (self.membership, *memberships)
+        if not memberships or not all(
+            isinstance(item, TrustedWorkspaceMembershipProjection) for item in memberships
+        ):
             raise ContractError(
                 "trigger requires a trusted workspace membership projection; "
                 "caller-minted or absent membership is not permitted"
             )
+        object.__setattr__(self, "memberships", memberships)
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -100,6 +115,7 @@ class ClawAutomationTrigger:
             "workspace_id": self.workspace_id,
             "observed_at": _iso(self.observed_at),
             "membership_trusted": True,
+            "membership_count": len(self.memberships),
             "membership_client_asserted": False,
         }
 
@@ -202,7 +218,7 @@ class ClawAutomationTriggerBoundary:
 
     def _validated(
         self, trigger: object
-    ) -> TrustedWorkspaceMembershipProjection:
+    ) -> tuple[TrustedWorkspaceMembershipProjection, ...]:
         """Shared trigger/membership validation for BOTH dispatch shapes.
 
         ``handle()`` and ``ahandle()`` refuse exactly the same inputs before any
@@ -212,25 +228,28 @@ class ClawAutomationTriggerBoundary:
 
         if not isinstance(trigger, ClawAutomationTrigger):
             raise ContractError("trigger boundary accepts a ClawAutomationTrigger only")
-        membership = trigger.membership
-        if not isinstance(membership, TrustedWorkspaceMembershipProjection):
+        memberships = trigger.memberships
+        if not memberships or not all(
+            isinstance(item, TrustedWorkspaceMembershipProjection) for item in memberships
+        ):
             raise ContractError(
                 "trigger requires a trusted workspace membership projection"
             )
-        if membership.workspace_id != trigger.workspace_id:
+        if any(item.workspace_id != trigger.workspace_id for item in memberships):
             # A projection for another workspace is not a tenant-wide grant.
             raise ContractError("membership projection does not cover the trigger workspace")
-        return membership
+        return memberships
 
     def handle(self, trigger: ClawAutomationTrigger) -> ClawAutomationTriggerReceipt:
         """Process one trusted trigger for one workspace and return a receipt."""
 
-        membership = self._validated(trigger)
+        memberships = self._validated(trigger)
         # Exactly the observed instant is evaluated: no backfill, no catch-up.
         tick = self._runtime.tick(
             workspace_id=trigger.workspace_id,
             current_time=trigger.observed_at,
-            membership=membership,
+            membership=trigger.membership,
+            memberships=memberships,
         )
         return ClawAutomationTriggerReceipt.from_tick_receipt(trigger=trigger, tick=tick)
 
@@ -247,11 +266,12 @@ class ClawAutomationTriggerBoundary:
         cron trigger and activates no Production scheduler.
         """
 
-        self._validated(trigger)
+        memberships = self._validated(trigger)
         tick = await self._runtime.atick(
             workspace_id=trigger.workspace_id,
             current_time=trigger.observed_at,
             membership=trigger.membership,
+            memberships=memberships,
         )
         return ClawAutomationTriggerReceipt.from_tick_receipt(trigger=trigger, tick=tick)
 
@@ -262,6 +282,7 @@ class ClawAutomationTriggerBoundary:
             "workspace_enumeration": False,
             "requires_trusted_membership": True,
             "membership_may_be_omitted": False,
+            "per_rule_subject_isolation": True,
             "reuses_tick_runtime": True,
             "async_persistence_seam": True,
             "new_scheduler_algorithm": False,
