@@ -59,10 +59,11 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # gate stay singular; only private fact retention in the same parse changed.
 # Re-pinned for #3036 after merge-forward onto main containing #3045. The exact
 # post-merge-forward document_normalization.py bytes add bounded native PDF page
-# facts and reuse the canonical pypdf reader; no process, network, filesystem,
-# OCR, or second archive-walk authority is introduced.
+# facts plus explicit native-text availability state and reuse the canonical
+# pypdf reader; no process, network, filesystem, OCR, or second archive-walk
+# authority is introduced.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "a436daa0cf70d2fed6fd34d0a3212368a7d65aa560865f3f0883a04d42a199b8",
+    CORE_PACKAGE / "document_normalization.py": "f4615f823367778d9289d46bfbc3a18130c7d5c7da1b568d30a5b073b165b222",
     CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
     CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
     CORE_TESTS / "test_document_normalization.py": "ba88eb112d5855751ba4316013daef60095e574ed8bb13441c479ad0cc70da5e",
