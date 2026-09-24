@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import io
-from pathlib import Path
 import unittest
 import zipfile
+from pathlib import Path
 
 from kagent import hwpx_skill
 from kagent.claw_skill_registry import (
@@ -445,12 +445,7 @@ class AuthorityContractTests(unittest.TestCase):
         for key, value in expected.items():
             self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), value, key)
 
-    def test_later_2825_capabilities_are_explicitly_not_claimed(self) -> None:
-        # #2962 built the bounded create foundation, #2972 the bounded
-        # paragraph-replacement edit foundation and #2989 the bounded
-        # template-fill foundation, so none of them is an unclaimed capability
-        # — each is a foundation-only claim and still never a full capability
-        # claim. Every later capability stays unclaimed.
+    def test_bounded_capability_claims_remain_explicit(self) -> None:
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_CREATE_FOUNDATION"), "PASS")
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_CREATE"), "FOUNDATION_ONLY")
         self.assertNotIn(hwpx_skill.ACCEPTANCE.get("HWPX_CREATE"), {"PASS", "YES"})
@@ -460,25 +455,25 @@ class AuthorityContractTests(unittest.TestCase):
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL_FOUNDATION"), "PASS")
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL"), "PASS")
         self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_TEMPLATE_FILL_SCOPE"), "BOUNDED_FOUNDATION")
-        for key in (
-            "TABLE_INSERT",
-            "IMAGE_INSERT",
-        ):
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_INSERT_TABLE_FACADE"), "PASS")
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("TABLE_INSERT"), "PASS")
+        self.assertEqual(
+            hwpx_skill.ACCEPTANCE.get("TABLE_INSERT_SCOPE"),
+            "BOUNDED_CANONICAL_BLOCK_SUBSET",
+        )
+        for key in ("TABLE_EDIT", "IMAGE_INSERT"):
             self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), "NOT_CLAIMED", key)
             self.assertNotIn(hwpx_skill.ACCEPTANCE.get(key), {"PASS", "YES"})
 
-    def test_create_edit_and_template_fill_exist_and_later_surfaces_do_not(self) -> None:
-        # #2972 added the bounded hwpx_edit facade and #2989 the bounded
-        # hwpx_template_fill facade, so neither is an absent surface. Table and
-        # image insertion still are.
-        self.assertTrue(callable(getattr(hwpx_skill, "hwpx_create", None)))
-        self.assertTrue(callable(getattr(hwpx_skill, "hwpx_edit", None)))
-        self.assertTrue(callable(getattr(hwpx_skill, "hwpx_template_fill", None)))
+    def test_create_edit_insert_table_and_template_fill_exist(self) -> None:
         for attribute in (
+            "hwpx_create",
+            "hwpx_edit",
             "hwpx_insert_table",
-            "hwpx_insert_image",
+            "hwpx_template_fill",
         ):
-            self.assertFalse(hasattr(hwpx_skill, attribute), attribute)
+            self.assertTrue(callable(getattr(hwpx_skill, attribute, None)), attribute)
+        self.assertFalse(hasattr(hwpx_skill, "hwpx_insert_image"))
 
     def test_receipts_reject_unbounded_reason_codes(self) -> None:
         with self.assertRaises(ValueError):
