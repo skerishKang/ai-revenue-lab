@@ -8,6 +8,26 @@ AI Revenue Lab 내부 저장소와 외부 개발 저장소의 경계를 명확�
 
 Business가 별도 제품으로 확장·승계된 경우의 번호·제품 계보와 실제 구현 위치는 `docs/portfolio/BUSINESS_EXPANSION_LINEAGE.md`에 기록한다.
 
+## 외부 제품과 외부 기술 의존성은 다르다
+
+이 정책의 "내부 중복 구현 금지"는 **외부 제품 저장소를 AI Revenue Lab 안에 복제하지 말라**는 의미다.
+
+다음은 별도 `TECHNOLOGY_ADOPTION_POLICY.md`에 따라 적극 검토할 수 있다.
+
+- 외부 OSS 라이브러리/엔진 의존성;
+- 상용 SDK/API;
+- self-hosted commercial runtime;
+- sidecar/local service;
+- sandboxed tool/runtime.
+
+즉, 외부 제품의 source of truth를 복제하는 것은 금지하지만, 검토된 외부 기술을 Padiem 기능 구현에 사용하는 것은 허용되고 권장될 수 있다.
+
+```text
+NO_EXTERNAL_PRODUCT_DUPLICATION=YES
+REVIEWED_EXTERNAL_TECHNOLOGY_ADOPTION=ALLOWED
+SEARCH_BEFORE_CUSTOM_BUILD=YES
+```
+
 ## 핵심 규칙
 
 ### 1. 번호가 없는 프로젝트는 외부 개발 프로젝트로 취급한다

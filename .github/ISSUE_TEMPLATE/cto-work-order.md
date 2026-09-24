@@ -23,6 +23,19 @@ audited after implementation. Fill every field or write NOT_REQUIRED + reason.
 
 State the smallest user/product outcome this revision must prove.
 
+## Technology adoption gate
+
+- Landscape scan required? yes/no + reason:
+- Internal reuse checked:
+- OSS candidates:
+- Commercial/paid candidates:
+- Shortlist:
+- Selected approach / adoption mode:
+- License/model-artifact/commercial posture:
+- If building custom: why existing options were not selected:
+- `BUILD_FROM_SCRATCH_JUSTIFIED=YES/NO`:
+- `SECOND_PRODUCT_AUTHORITY=0`:
+
 ## Scope
 
 - Allowed paths:

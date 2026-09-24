@@ -35,6 +35,28 @@ When required:
 |---|---|---|---|---|---|---|
 | | | | | | | |
 
+## Technology adoption gate
+
+For substantial new capabilities:
+
+- Landscape scan required? yes/no + reason:
+- Existing Padiem/internal reuse audited:
+- OSS projects audited:
+- Commercial SDK/API/self-host options audited:
+- Candidates reviewed:
+- Shortlist (max 3):
+- Selected approach:
+- Adoption mode: BUY / ADOPT / ADAPT / EMBED / SIDECAR / LOCAL_SERVICE / MANAGED_SERVICE / BUILD:
+- Upstream pin/version:
+- Software/model/artifact license posture:
+- Commercial cost posture:
+- Why not buy/adopt/adapt/sidecar:
+- If custom build: `BUILD_FROM_SCRATCH_JUSTIFIED=YES/NO` + reason:
+- Product authority retained by Padiem:
+- Duplicate product authority introduced? must be NO:
+
+For a bug fix/tiny glue/already-decided slice, mark this gate `NOT_REQUIRED` with the accepted parent decision or reason.
+
 ## Scope
 
 - Allowed paths:
