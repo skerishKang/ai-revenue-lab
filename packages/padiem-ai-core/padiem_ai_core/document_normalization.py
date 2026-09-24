@@ -395,6 +395,53 @@ class HwpxParsedParagraph:
 
 
 @dataclass(frozen=True, slots=True)
+class HwpxParsedCellParagraph:
+    """Lossless shape facts for one paragraph inside a table cell."""
+
+    text: str
+    text_nodes: int
+    runs: int
+    text_form: str
+
+
+@dataclass(frozen=True, slots=True)
+class HwpxParsedTableCell:
+    """One table cell in source order."""
+
+    paragraphs: tuple[HwpxParsedCellParagraph, ...]
+    unsupported: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class HwpxParsedTable:
+    """One table fact with row-major order retained."""
+
+    rows: tuple[tuple[HwpxParsedTableCell, ...], ...]
+    unsupported: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class HwpxSectionBlockFact:
+    """One ordered direct section block: paragraph or table."""
+
+    kind: str
+    paragraph: HwpxParsedParagraph | None = None
+    table: HwpxParsedTable | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class HwpxSectionBlockFacts:
+    """Internal fact projection created during the one HWPX parse."""
+
+    index: int
+    root_tag: str
+    unsupported_nodes: int
+    has_carriage_return: bool
+    blocks: tuple[HwpxSectionBlockFact, ...]
+    paragraphs: tuple[HwpxParsedParagraph, ...]
+
+
+@dataclass(frozen=True, slots=True)
 class HwpxParsedSection:
     """One located section part, in numeric section order.
 
@@ -414,6 +461,83 @@ class HwpxParsedSection:
     unsupported_nodes: int
     has_carriage_return: bool
     paragraphs: tuple[HwpxParsedParagraph, ...]
+
+
+def _paragraph_fact(paragraph: ElementTree.Element) -> HwpxParsedParagraph:
+    descendants = list(paragraph.iter())
+    text_nodes = [node for node in descendants if _local_name(node) == "t"]
+    return HwpxParsedParagraph(
+        text="".join(node.text or "" for node in text_nodes),
+        text_nodes=len(text_nodes),
+        holds_nested_paragraph=any(node is not paragraph and _local_name(node) == "p" for node in descendants),
+    )
+
+
+def _cell_paragraph_fact(paragraph: ElementTree.Element) -> HwpxParsedCellParagraph:
+    fact = _paragraph_fact(paragraph)
+    runs = sum(1 for node in paragraph.iter() if _local_name(node) == "runs")
+    if fact.text_nodes == 0:
+        text_form = "no_text"
+    elif fact.text_nodes == 1 and not fact.text:
+        text_form = "empty_text"
+    elif fact.text_nodes == 1:
+        text_form = "non_empty_text"
+    else:
+        text_form = "multiple_text_nodes"
+    return HwpxParsedCellParagraph(fact.text, fact.text_nodes, runs, text_form)
+
+
+def _attribute_local_name(name: str) -> str:
+    return name.rsplit("}", 1)[-1].lower()
+
+
+def _table_fact(table: ElementTree.Element) -> HwpxParsedTable:
+    unsupported: list[str] = []
+    if any(node is not table and _local_name(node) == "tbl" for node in table.iter()):
+        unsupported.append("nested_table")
+    rows: list[tuple[HwpxParsedTableCell, ...]] = []
+    for row in table:
+        if _local_name(row) != "tr":
+            if _local_name(row) not in {"tbl", "p", "runs", "t"}:
+                unsupported.append(f"table_child:{_local_name(row)}")
+            continue
+        cells: list[HwpxParsedTableCell] = []
+        for cell in row:
+            if _local_name(cell) != "tc":
+                unsupported.append(f"row_child:{_local_name(cell)}")
+                continue
+            cell_unsupported: list[str] = []
+            attrs = {_attribute_local_name(name) for name in (*row.attrib, *cell.attrib)}
+            if attrs & {"rowspan", "colspan", "gridspan", "colindex", "rowindex"}:
+                cell_unsupported.append("merged_or_spanned")
+            paragraphs = tuple(_cell_paragraph_fact(node) for node in cell.iter() if _local_name(node) == "p")
+            for node in cell.iter():
+                local = _local_name(node)
+                if local in {"tbl", "img", "pic", "drawing", "draw", "gm", "container", "rect", "ole"}:
+                    cell_unsupported.append(local)
+            cells.append(HwpxParsedTableCell(paragraphs, tuple(dict.fromkeys(cell_unsupported))))
+        rows.append(tuple(cells))
+    return HwpxParsedTable(tuple(rows), tuple(dict.fromkeys(unsupported)))
+
+
+def _ordered_section_block_facts(*, index: int, root: ElementTree.Element, part: bytes) -> HwpxSectionBlockFacts:
+    nodes = list(root.iter())
+    legacy = tuple(_paragraph_fact(node) for node in nodes if _local_name(node) == "p")
+    blocks: list[HwpxSectionBlockFact] = []
+    for child in root:
+        local = _local_name(child)
+        if local == "p":
+            blocks.append(HwpxSectionBlockFact("paragraph", paragraph=_paragraph_fact(child)))
+        elif local == "tbl":
+            blocks.append(HwpxSectionBlockFact("table", table=_table_fact(child)))
+    return HwpxSectionBlockFacts(
+        index=index,
+        root_tag=root.tag,
+        unsupported_nodes=sum(1 for node in nodes if node is not root and _local_name(node) not in _HWPX_CANONICAL_LOCAL_NAMES),
+        has_carriage_return=13 in part,
+        blocks=tuple(blocks),
+        paragraphs=legacy,
+    )
 
 
 def parse_hwpx_sections(payload: bytes) -> tuple[HwpxParsedSection, ...]:
@@ -445,6 +569,7 @@ def parse_hwpx_sections(payload: bytes) -> tuple[HwpxParsedSection, ...]:
             for index, section_name in sorted(located):
                 part = archive.read(section_name)
                 root = _parse_xml(part)
+                facts = _ordered_section_block_facts(index=index, root=root, part=part)
                 nodes = list(root.iter())
                 paragraphs: list[HwpxParsedParagraph] = []
                 for paragraph in nodes:
@@ -471,7 +596,7 @@ def parse_hwpx_sections(payload: bytes) -> tuple[HwpxParsedSection, ...]:
                             if node is not root and _local_name(node) not in _HWPX_CANONICAL_LOCAL_NAMES
                         ),
                         has_carriage_return=13 in part,
-                        paragraphs=tuple(paragraphs),
+                        paragraphs=facts.paragraphs,
                     )
                 )
     except DocumentNormalizationError:
