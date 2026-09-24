@@ -16,7 +16,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import dataclasses
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import importlib
 import json
 from pathlib import Path
@@ -61,8 +61,8 @@ DOC_REF = "doc_e9D1Evidence000001"
 BODY = "Padiem AI Engine Q3 performance review narrative with tail marker TAILNOTINPREVIEW-998811"
 SECRET_TAIL = "TAILNOTINPREVIEW-998811"
 SCOPE = {"app_id": "b62", "subject_id": "user.101", "tenant_id": "tenant.omega"}
-NOW = datetime(2026, 9, 23, 12, 0, 0, tzinfo=timezone.utc)
-EXPIRES = datetime(2026, 9, 24, 12, 0, 0, tzinfo=timezone.utc)
+NOW = datetime.now(timezone.utc)
+EXPIRES = NOW + timedelta(days=1)
 
 
 # --- Fake D1 Infrastructure ----------------------------------------------------
