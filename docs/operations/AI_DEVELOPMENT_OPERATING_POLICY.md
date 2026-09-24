@@ -5,6 +5,7 @@
 - Design authority: `PORTFOLIO_DESIGN_OPERATING_SYSTEM.md`
 - Evidence authority: `EVIDENCE_REQUIREMENTS.md`
 - Deployment authority: `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
+- Technology adoption authority: `TECHNOLOGY_ADOPTION_POLICY.md`
 
 ## 1. Purpose
 
@@ -94,6 +95,32 @@ VERIFY
 ```
 
 Business 06 World Feed is the positive portfolio methodology reference because it established a visual baseline and explicit adopted/rejected patterns before UX expansion. Its actual look is not a portfolio template.
+
+## 5A. Technology landscape gate before substantial implementation
+
+For a net-new or substantially expanded commodity capability, the Web CTO must determine whether existing technology should be bought, adopted, adapted or isolated before authorizing custom code.
+
+Required default sequence:
+
+```text
+SEARCH
+→ REUSE_INTERNAL
+→ BUY
+→ ADOPT
+→ ADAPT
+→ SIDECAR / LOCAL_SERVICE
+→ BUILD_FROM_SCRATCH
+```
+
+The scan covers credible OSS and commercial options. A paid option is valid when it reduces total time/cost or materially improves quality, support or reliability.
+
+For broad ecosystems, review a bounded candidate set and shortlist at most three. Research must reduce implementation time rather than become an exhaustive project.
+
+Custom build requires explicit justification unless the parent decision already fixed the implementation or the change is a bug fix/tiny glue slice.
+
+Preserve Padiem product authorities, but do not reject an adopted project solely because its internals contain their own parser/decoder/model stack. The relevant invariant is `SECOND_PRODUCT_AUTHORITY=0`.
+
+Canonical details: `TECHNOLOGY_ADOPTION_POLICY.md`.
 
 ## 6. Work identity before implementation
 

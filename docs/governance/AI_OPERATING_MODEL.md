@@ -14,7 +14,9 @@ Responsibilities:
 - maintain the project thesis;
 - design system architecture;
 - write canonical project documents;
-- decompose work into small issues;
+- perform or commission a bounded internal/OSS/commercial technology landscape scan before substantial commodity implementation;
+- prefer buy/adopt/adapt/sidecar integration over custom build when it is faster and meets the product boundary;
+- decompose work into bounded parent-owned slices without routine issue sprawl;
 - define acceptance criteria and prohibited scope;
 - inspect diffs and evidence;
 - decide whether work is accepted, revised, or rejected;
@@ -73,6 +75,20 @@ This does not weaken the project's thesis. It reflects normal industrial organiz
 
 ## 4. Development workflow
 
+For substantial new capabilities, architecture begins with technology intake rather than immediate coding.
+
+```text
+User defines capability
+        ↓
+Strategic controller audits internal + OSS + commercial options
+        ↓
+Buy / adopt / adapt / sidecar decision
+        ↓
+Only if needed: custom implementation contract
+```
+
+Then the delivery workflow continues:
+
 ```text
 User defines business direction and approves major decisions
         ↓
@@ -103,7 +119,7 @@ Every implementation issue assigned to a free model should include:
 - security and privacy constraints;
 - completion report format.
 
-Large issues should be divided before implementation.
+Large issues should be bounded before implementation, but routine child-issue proliferation is not required. Prefer one major parent per worker/track unless an independent authority boundary justifies another issue.
 
 ## 6. Evidence required from an implementation worker
 

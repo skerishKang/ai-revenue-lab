@@ -11,14 +11,21 @@ For a numbered internal user-facing web Business, read in this order:
 
 1. `PORTFOLIO_DESIGN_OPERATING_SYSTEM.md` — **mandatory visual/product-design process**: reference translation → anchor → archetypes → full expansion.
 2. `AI_DEVELOPMENT_OPERATING_POLICY.md` — roles, exact-revision work, validation, review and merge boundaries.
-3. `ui-ux/UI_UX_VISUAL_DIRECTION_STANDARD.md` — visual thesis, Korean typography, reference fidelity, mobile and cross-state quality standard.
-4. `NEW_BUSINESS_UI_FIRST_PLAYBOOK.md` — practical start/rebuild playbook.
-5. `UI_UX_BACKEND_PHASE_GATES.md` — independent UI/UX/backend/runtime evidence dimensions.
-6. `CODE_STRUCTURE_AND_ASSET_VERSIONING_POLICY.md` — canonical source/style/asset structure; no cumulative visual-generation cascade.
-7. `EVIDENCE_REQUIREMENTS.md` — exact-SHA and visual/contact-sheet evidence.
-8. `WORKFLOW_STATUS_MODEL.md` — implementation, visual-gate, owner, merge and Production statuses.
-9. `LIVE_PRODUCTION_UI_REVIEW_POLICY.md` — when live owner review is allowed and when an art-direction reset must pass design gates first.
-10. `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md` — Git-connected Production and recovery.
+3. `TECHNOLOGY_ADOPTION_POLICY.md` — search internal/OSS/commercial options before substantial custom build; prefer buy/adopt/adapt/sidecar where credible; preserve Padiem product authority.
+4. `ui-ux/UI_UX_VISUAL_DIRECTION_STANDARD.md` — visual thesis, Korean typography, reference fidelity, mobile and cross-state quality standard.
+5. `NEW_BUSINESS_UI_FIRST_PLAYBOOK.md` — practical start/rebuild playbook.
+6. `UI_UX_BACKEND_PHASE_GATES.md` — independent UI/UX/backend/runtime evidence dimensions.
+7. `CODE_STRUCTURE_AND_ASSET_VERSIONING_POLICY.md` — canonical source/style/asset structure; no cumulative visual-generation cascade.
+8. `EVIDENCE_REQUIREMENTS.md` — exact-SHA and visual/contact-sheet evidence.
+9. `WORKFLOW_STATUS_MODEL.md` — implementation, visual-gate, owner, merge and Production statuses.
+10. `LIVE_PRODUCTION_UI_REVIEW_POLICY.md` — when live owner review is allowed and when an art-direction reset must pass design gates first.
+11. `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md` — Git-connected Production and recovery.
+
+Technology-adoption invariant:
+
+```text
+SEARCH → REUSE_INTERNAL → BUY / ADOPT / ADAPT → SIDECAR / LOCAL_SERVICE → BUILD
+```
 
 Backend/runtime and repository-boundary authorities remain:
 
