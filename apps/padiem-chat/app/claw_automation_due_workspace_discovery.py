@@ -88,7 +88,7 @@ Production activation comes from it.
 from __future__ import annotations
 
 import inspect
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 import re
 from typing import Any, Protocol
@@ -227,6 +227,7 @@ class DueWorkspaceDiscoveryReceipt:
     pages_read: int
     truncated: bool
     next_cursor: DueWorkspaceDiscoveryCursor | None
+    triggered_triggers: tuple[ClawAutomationTrigger, ...] = field(default=(), repr=False)
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -583,6 +584,7 @@ class ClawAutomationDueWorkspaceDiscovery:
         authorized: list[str] = []
         skipped: list[str] = []
         receipts: list[ClawAutomationTriggerReceipt] = []
+        triggers: list[ClawAutomationTrigger] = []
         claimed: list[str] = []
         seen: set[str] = set()
         cursor: str | None = (
@@ -634,6 +636,7 @@ class ClawAutomationDueWorkspaceDiscovery:
                     receipt = await self._trigger_boundary.ahandle(trigger)
                 else:
                     receipt = self._trigger_boundary.handle(trigger)
+                triggers.append(trigger)
                 receipts.append(receipt)
                 for run_id in receipt.created_run_ids:
                     if run_id not in claimed:
@@ -662,6 +665,7 @@ class ClawAutomationDueWorkspaceDiscovery:
                 if truncated and discovered
                 else None
             ),
+            triggered_triggers=tuple(triggers),
         )
 
     # --- internals ----------------------------------------------------------
