@@ -1,19 +1,25 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+import json
 import sqlite3
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
 from google_oauth_durable_store import (
+    CALENDAR_BINDING_SELECTION_PRIVATE_ONLY,
+    CALENDAR_BINDING_SELECTION_PUBLIC_ROUTE,
     GMAIL_READONLY_SCOPE,
+    GOOGLE_CALENDAR_READONLY_SCOPE,
     GOOGLE_DRIVE_READONLY_SCOPE,
+    PUBLIC_WORKSPACE_STATUS_IDENTITY_WIDENING,
+    WORKSPACE_READ_CONNECTOR_SCOPE,
     CloudflareDurableGoogleOAuthStore,
     DurableGoogleOAuthAuthorizationState,
     DurableGoogleOAuthCredential,
+    GoogleOAuthBindingSelectionStatus,
 )
 from padiem_control_plane.contracts import ControlPlaneContractError
-
 
 NOW = datetime(2026, 9, 4, 10, 30, tzinfo=timezone.utc)
 SEALED_SESSION = "sealed:v1:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
@@ -95,6 +101,7 @@ def credential(
     scopes: tuple[str, ...] = (GMAIL_READONLY_SCOPE,),
     sealed_refresh_token: str = SEALED_REFRESH,
     issued_at: datetime = NOW,
+    expires_at: datetime | None = None,
 ) -> DurableGoogleOAuthCredential:
     return DurableGoogleOAuthCredential(
         binding_ref=binding_ref,
@@ -105,6 +112,7 @@ def credential(
         scopes=scopes,
         sealed_refresh_token=sealed_refresh_token,
         issued_at=issued_at,
+        expires_at=expires_at,
     )
 
 
@@ -257,7 +265,6 @@ def test_credential_revocation_is_durable_and_predate_attempt_rolls_back():
 
 def test_connect_ticket_and_authorization_time_bounds_fail_closed():
     oauth_store, storage = store()
-    authorization_state = state()
 
     with pytest.raises(ControlPlaneContractError) as expired:
         oauth_store.begin_authorization(
@@ -292,3 +299,216 @@ def test_public_projections_never_expose_sealed_payloads_or_raw_credentials():
     assert credential_public["raw_refresh_token"] is False
     assert credential_public["raw_access_token"] is False
     assert credential_public["raw_client_secret"] is False
+
+
+def test_calendar_binding_selection_zero_usable_rows_is_not_connected():
+    oauth_store, _ = store()
+
+    selection = oauth_store.select_active_calendar_binding(
+        workspace_ref="workspace_1",
+        now=NOW,
+    )
+
+    assert selection.status is GoogleOAuthBindingSelectionStatus.NOT_CONNECTED
+    assert selection.resolved is False
+    assert selection.to_private_dict() == {
+        "status": "not_connected",
+        "connector_id": "google-calendar",
+        "workspace_ref": "workspace_1",
+    }
+    assert selection.to_bounded_dict()["identity_projection"] is False
+
+
+def test_calendar_binding_selection_one_usable_row_resolves_exact_private_identity():
+    oauth_store, _ = store()
+    oauth_store.save_credential(
+        credential(
+            binding_ref="calendar-binding-1",
+            connector_id="google-calendar",
+            scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
+        )
+    )
+
+    selection = oauth_store.select_active_calendar_binding(
+        workspace_ref="workspace_1",
+        now=NOW,
+    )
+
+    assert selection.status is GoogleOAuthBindingSelectionStatus.RESOLVED
+    assert selection.resolved is True
+    assert selection.binding_ref == "calendar-binding-1"
+    assert selection.actor_ref == "actor_1"
+    assert selection.account_ref == "account_1"
+    assert selection.connector_id == "google-calendar"
+    assert selection.workspace_ref == "workspace_1"
+    assert selection.to_bounded_dict()["sealed_refresh_token"] is False
+    assert selection.to_bounded_dict()["access_token"] is False
+    assert selection.to_bounded_dict()["provider_payload"] is False
+
+
+def test_calendar_binding_selection_two_usable_rows_is_ambiguous_fail_closed():
+    oauth_store, _ = store()
+    oauth_store.save_credential(
+        credential(
+            binding_ref="calendar-binding-1",
+            connector_id="google-calendar",
+            scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
+        )
+    )
+    oauth_store.save_credential(
+        credential(
+            binding_ref="calendar-binding-2",
+            connector_id="google-calendar",
+            scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
+        )
+    )
+
+    with pytest.raises(ControlPlaneContractError) as caught:
+        oauth_store.select_active_calendar_binding(
+            workspace_ref="workspace_1",
+            now=NOW,
+        )
+
+    assert caught.value.code == "ambiguous_google_oauth_binding"
+
+
+def test_calendar_binding_selection_ignores_revoked_and_expired_rows():
+    oauth_store, _ = store()
+    revoked = credential(
+        binding_ref="calendar-revoked",
+        connector_id="google-calendar",
+        scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
+    )
+    expired = credential(
+        binding_ref="calendar-expired",
+        connector_id="google-calendar",
+        scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
+        expires_at=NOW + timedelta(seconds=10),
+    )
+    oauth_store.save_credential(revoked)
+    oauth_store.save_credential(expired)
+    oauth_store.revoke_credential(
+        binding_ref=revoked.binding_ref,
+        revoked_at=NOW + timedelta(seconds=1),
+    )
+
+    selection = oauth_store.select_active_calendar_binding(
+        workspace_ref="workspace_1",
+        now=NOW + timedelta(seconds=20),
+    )
+
+    assert selection.status is GoogleOAuthBindingSelectionStatus.NOT_CONNECTED
+
+
+def test_calendar_binding_selection_is_workspace_scoped():
+    oauth_store, _ = store()
+    oauth_store.save_credential(
+        credential(
+            binding_ref="calendar-workspace-1",
+            connector_id="google-calendar",
+            scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
+        )
+    )
+
+    selection = oauth_store.select_active_calendar_binding(
+        workspace_ref="workspace_other",
+        now=NOW,
+    )
+
+    assert selection.status is GoogleOAuthBindingSelectionStatus.NOT_CONNECTED
+    assert selection.binding_ref is None
+    assert selection.actor_ref is None
+
+
+@pytest.mark.parametrize("connector_id", ["gmail", "google-drive"])
+def test_calendar_binding_selection_ignores_other_connectors(connector_id):
+    oauth_store, _ = store()
+    oauth_store.save_credential(
+        credential(
+            binding_ref=f"other-{connector_id}",
+            connector_id=connector_id,
+            scopes=(
+                GMAIL_READONLY_SCOPE
+                if connector_id == "gmail"
+                else GOOGLE_DRIVE_READONLY_SCOPE,
+            ),
+        )
+    )
+
+    selection = oauth_store.select_active_calendar_binding(
+        workspace_ref="workspace_1",
+        now=NOW,
+    )
+
+    assert selection.status is GoogleOAuthBindingSelectionStatus.NOT_CONNECTED
+
+
+def test_calendar_binding_selection_rejects_wrong_scope_without_exposing_payload():
+    oauth_store, storage = store()
+    storage.connection.execute(
+        "INSERT INTO google_oauth_refresh_credential "
+        "(binding_ref, connector_id, actor_ref, account_ref, workspace_ref, scopes_json, "
+        "sealed_refresh_token, issued_at, expires_at, revoked_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        (
+            "calendar-wrong-scope",
+            "google-calendar",
+            "actor_1",
+            "account_1",
+            "workspace_1",
+            json.dumps(["https://www.googleapis.com/auth/calendar"]),
+            SEALED_REFRESH,
+            NOW.isoformat(),
+            None,
+            None,
+        ),
+    )
+
+    with pytest.raises(ControlPlaneContractError) as caught:
+        oauth_store.select_active_calendar_binding(
+            workspace_ref="workspace_1",
+            now=NOW,
+        )
+
+    assert caught.value.code == "google_oauth_scope_mismatch"
+    assert "sealed_refresh_token" not in caught.value.safe_message
+
+
+def test_calendar_binding_selection_keeps_public_workspace_status_identity_free():
+    oauth_store, _ = store()
+    oauth_store.save_credential(
+        credential(
+            binding_ref="calendar-public-check",
+            connector_id="google-calendar",
+            scopes=(GOOGLE_CALENDAR_READONLY_SCOPE,),
+        )
+    )
+
+    selection = oauth_store.select_active_calendar_binding(
+        workspace_ref="workspace_1",
+        now=NOW,
+    )
+    states = oauth_store.list_workspace_connector_state(
+        workspace_ref="workspace_1",
+        now=NOW,
+    )
+
+    assert {state.connector_id for state in states} == set(WORKSPACE_READ_CONNECTOR_SCOPE)
+    assert "google-calendar" not in {state.connector_id for state in states}
+    assert "binding_ref" not in selection.to_bounded_dict()
+    assert "actor_ref" not in selection.to_bounded_dict()
+    assert "workspace_ref" not in selection.to_bounded_dict()
+    assert CALENDAR_BINDING_SELECTION_PRIVATE_ONLY is True
+    assert CALENDAR_BINDING_SELECTION_PUBLIC_ROUTE is False
+    assert PUBLIC_WORKSPACE_STATUS_IDENTITY_WIDENING is False
+
+
+def test_calendar_binding_selector_has_no_second_store_or_credential_authority():
+    oauth_store, _ = store()
+    safe = oauth_store.safe_dict()
+
+    assert safe["cloudflare_durable_object"] is True
+    assert safe["sqlite_storage"] is True
+    assert safe["raw_refresh_token_persisted"] is False
+    assert safe["raw_pkce_verifier_persisted"] is False
+    assert safe["production_deployment"] is False
+    assert safe["production_ready"] is False
