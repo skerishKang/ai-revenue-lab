@@ -11,6 +11,7 @@ Canonical operating documents:
 - `docs/operations/UI_UX_BACKEND_PHASE_GATES.md`
 - `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
 - `docs/operations/LOCAL_DOCKER_AVOIDANCE_POLICY.md`
+- `docs/operations/GITHUB_REPORT_HANDOFF_POLICY.md`
 
 ## Search / adopt before build
 
@@ -103,6 +104,24 @@ This is a responsibility/evidence flow, not a mandatory product-stage sequence. 
 - Final owner visual approval must never be inferred from a model/worker approval when the work contract explicitly reserves visual taste to the owner.
 - Deployment follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`; no alternate Preview/manual deployment path is implied by these rules.
 - Local Docker Desktop / local Docker daemon is not a default development or deployment path. Do not start or require it unless established remote build/deploy paths have been checked and the Product Owner explicitly approves a task-specific exception. Follow `LOCAL_DOCKER_AVOIDANCE_POLICY.md`.
+
+## GitHub report handoff
+
+For Padiem/CLAW work, the full local-model report is committed to the private report repository rather than pasted into the public Issue/PR or relayed through chat.
+
+```text
+REPORT_REPO=skerishKang/workdiary
+REPORT_PATH=padiem-reports/YYYY-MM-DD/<CLAW>/<task>.md
+REPORT_COMMIT=<immutable workdiary commit SHA>
+```
+
+The related `ai-revenue-lab` Issue/PR should contain only a short final result, key status fields, and those three pointers. CENTRAL reads the long report directly from GitHub.
+
+Google Drive/rclone reporting is disabled. Do not retry quota failures or perform Drive delete/trash cleanup. Prefer GitHub Actions artifacts for screenshots, Playwright traces and large logs. Never put password/secret/token/cookie/private-key/database-credential values into reports, comments or artifacts.
+
+If the private report repository cannot be written, preserve the report locally and report `REPORT_WRITE=BLOCKED`; do not fall back to a long public comment or Drive.
+
+Follow `docs/operations/GITHUB_REPORT_HANDOFF_POLICY.md`.
 
 ## Required templates
 

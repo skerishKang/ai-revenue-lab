@@ -174,6 +174,24 @@ The developer:
 - identifies legacy/cascade debt encountered;
 - does not self-assign independent validation or final CTO readiness.
 
+## 8A. GitHub report handoff
+
+Padiem/CLAW local workers use GitHub as the canonical reporting handoff. The related `ai-revenue-lab` Issue/PR contains only the compact result and immutable report pointers; the complete long-form report is committed to the private `skerishKang/workdiary` repository under `padiem-reports/YYYY-MM-DD/<CLAW>/<task>.md`.
+
+Required pointer block:
+
+```text
+REPORT_REPO=skerishKang/workdiary
+REPORT_PATH=padiem-reports/YYYY-MM-DD/<CLAW>/<task>.md
+REPORT_COMMIT=<immutable workdiary commit SHA>
+```
+
+Google Drive/rclone reporting is disabled for this workflow. Large screenshots, Playwright traces, archives and logs should use GitHub Actions artifacts when practical. Passwords, secrets, tokens, cookies, private keys and database credentials must never appear in reports, comments or artifacts.
+
+CENTRAL reads the private report directly from GitHub and independently fresh-reads current main, Issue/PR/head/diff/CI before consequential action. The Product Owner is not required to relay the long report through chat.
+
+Canonical details: `GITHUB_REPORT_HANDOFF_POLICY.md`.
+
 ## 9. Visual implementation discipline
 
 For a redesign:
@@ -317,4 +335,5 @@ In particular, a historical product direction document is now an implementation 
 - Frontend structure: `CODE_STRUCTURE_AND_ASSET_VERSIONING_POLICY.md`
 - New/rebuilt Business playbook: `NEW_BUSINESS_UI_FIRST_PLAYBOOK.md`
 - Live visual review: `LIVE_PRODUCTION_UI_REVIEW_POLICY.md`
+- GitHub report handoff: `GITHUB_REPORT_HANDOFF_POLICY.md`
 - Templates: `templates/`
