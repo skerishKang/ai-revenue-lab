@@ -42,8 +42,8 @@ def test_runtime_adoption_is_exact_and_ci_scoped():
     assert "Pillow" not in kagent
     assert "python -m padiem_ai_core.pillow_wheel_receipts" not in workflow
     assert (
-        "python packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py"
-        in workflow
+        'python "$GITHUB_WORKSPACE/packages/padiem-ai-core/padiem_ai_core/'
+        'pillow_wheel_receipts.py"' in workflow
     )
 
     completed = subprocess.run(

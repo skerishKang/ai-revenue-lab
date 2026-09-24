@@ -53,7 +53,7 @@ jobs:
           RUNNER_FAMILY: ${{ runner.os }}
         run: |
           set -euo pipefail
-          eval "$(python packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py "$RUNNER_FAMILY")"
+          eval "$(python "$GITHUB_WORKSPACE/packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py" "$RUNNER_FAMILY")"
           echo "receipt_id=${PILLOW_WHEEL_RECEIPT_ID}" >> "$GITHUB_OUTPUT"
           echo "filename=${PILLOW_WHEEL_FILENAME}" >> "$GITHUB_OUTPUT"
           echo "sha256=${PILLOW_WHEEL_SHA256}" >> "$GITHUB_OUTPUT"
@@ -67,7 +67,7 @@ jobs:
           RUNNER_FAMILY: ${{ runner.os }}
         run: |
           set -euo pipefail
-          eval "$(python packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py "$RUNNER_FAMILY")"
+          eval "$(python "$GITHUB_WORKSPACE/packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py" "$RUNNER_FAMILY")"
           wheel_dir="$RUNNER_TEMP/padiem-pillow-wheel"
           mkdir -p "$wheel_dir"
           curl --fail --location --silent --show-error \
@@ -83,8 +83,8 @@ jobs:
           RUNNER_FAMILY: ${{ runner.os }}
         run: |
           set -euo pipefail
-          eval "$(python packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py "$RUNNER_FAMILY")"
-          python packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py \
+          eval "$(python "$GITHUB_WORKSPACE/packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py" "$RUNNER_FAMILY")"
+          python "$GITHUB_WORKSPACE/packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py" \
             "$RUNNER_FAMILY" \
             "$RUNNER_TEMP/padiem-pillow-wheel/${PILLOW_WHEEL_FILENAME}"
           echo "verified ${PILLOW_WHEEL_FILENAME}"
@@ -98,7 +98,7 @@ jobs:
           RUNNER_FAMILY: ${{ runner.os }}
         run: |
           set -euo pipefail
-          eval "$(python packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py "$RUNNER_FAMILY")"
+          eval "$(python "$GITHUB_WORKSPACE/packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py" "$RUNNER_FAMILY")"
           python -m pip install --disable-pip-version-check \
             --no-index --no-deps --force-reinstall \
             "$RUNNER_TEMP/padiem-pillow-wheel/${PILLOW_WHEEL_FILENAME}"
@@ -129,7 +129,7 @@ jobs:
           RUNNER_FAMILY: ${{ runner.os }}
         run: |
           set -euo pipefail
-          eval "$(python packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py "$RUNNER_FAMILY")"
+          eval "$(python "$GITHUB_WORKSPACE/packages/padiem-ai-core/padiem_ai_core/pillow_wheel_receipts.py" "$RUNNER_FAMILY")"
           python - "$PILLOW_WHEEL_PLATFORM_TAG" "$PILLOW_WHEEL_FILENAME" <<'PY'
           import json
           import pathlib
