@@ -195,13 +195,13 @@ class CloudflareD1ConnectorGrantStore:
         return grants
 
     async def load_slack_grants(self) -> dict[str, SlackGrant]:
-        # Reuses the existing grants table and granted_capabilities_json
-        # column: no schema migration is introduced by the Slack promotion
+        # Reuses the existing grants table and canonical capability/scope
+        # columns: no schema migration is introduced by the Slack promotion
         # (#2356, SCHEMA_MIGRATION=0).
         sql = (
             f"SELECT app_id, canonical_agent_id, connector_id, binding_ref, "
-            f"actor_ref, granted_capabilities_json FROM {_TABLE_NAME} "
-            f"WHERE connector_id = ? AND active = 1"
+            f"actor_ref, granted_capabilities_json, granted_scopes_json "
+            f"FROM {_TABLE_NAME} WHERE connector_id = ? AND active = 1"
         )
         try:
             rows = await self._all(sql, SLACK_CONNECTOR_ID)
@@ -216,8 +216,11 @@ class CloudflareD1ConnectorGrantStore:
         for data in rows:
             try:
                 raw_capabilities = json.loads(data["granted_capabilities_json"])
+                raw_scopes = json.loads(data["granted_scopes_json"])
                 if raw_capabilities != [SlackCapability.READ.value]:
                     raise ValueError("Slack grants must contain exactly the promoted READ capability")
+                if raw_scopes != []:
+                    raise ValueError("Slack grants must contain exactly an empty scope list")
                 capabilities = (SlackCapability.READ,)
                 grants[data["app_id"]] = SlackGrant(
                     app_id=str(data["app_id"]),
