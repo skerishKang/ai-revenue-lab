@@ -76,6 +76,11 @@ For substantial commodity capability work:
 - Product authority remains Padiem-owned? yes/no:
 - `SECOND_PRODUCT_AUTHORITY=0`:
 - Custom build? If yes, justification sufficient? yes/no/N/A:
+- Existing implementation replaced or supplemented?:
+- Same stable capability contract preserved?:
+- Old implementation fallback/rollback retained or retirement justified?:
+- Shared conformance evidence:
+- Primary-switch evidence sufficient?:
 
 Missing required adoption evidence is a `NOT_READY` condition.
 
