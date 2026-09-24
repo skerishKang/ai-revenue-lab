@@ -18,6 +18,16 @@ SKIP_PARTS = {
 }
 
 EXPECTED_RUNTIME_ROOT_IMPORTS = {
+    "apps/korean-ai-code-agent/src/kagent/external_coding_agent.py": frozenset(
+        {
+            "AgentContinuationState",
+            "ApprovalOutcome",
+            "ApprovalPause",
+            "ApprovalRequirement",
+            "ContinuationStatus",
+            "VerifiedApprovalDecision",
+        }
+    ),
     "apps/korean-ai-code-agent/src/kagent/github_draft_pr.py": frozenset(
         {"ApprovalOutcome", "VerifiedApprovalDecision"}
     ),
