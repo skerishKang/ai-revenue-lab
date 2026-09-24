@@ -170,6 +170,20 @@ PATH = docs/architecture/PADIEM_AI_CAPABILITY_OWNERSHIP_REGISTRY_v1.md
 
 `docs/history/2026-09-01/PADIEM_AI_CAPABILITY_OWNERSHIP_REGISTRY_v1.audit.md` is the stable historical pointer to that revision. The old point-in-time status inventory does not override this canonical ownership registry.
 
+## Ownership does not pin implementation forever
+
+This registry defines **who owns the product capability and policy**, not which library/provider must implement it forever.
+
+```text
+STABLE_CAPABILITY_OWNER
+!=
+PERMANENT_IMPLEMENTATION_VENDOR
+```
+
+Commodity technology should sit behind the owning layer's stable contract so a better OSS/commercial implementation can be introduced, benchmarked, selected as primary, or rolled back without moving product authority.
+
+Replacing a PDF/OCR/sandbox/vector/browser implementation does not create a second product authority when the canonical Padiem contract remains authoritative.
+
 ## Readiness rule
 
 ```text

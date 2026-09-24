@@ -20,9 +20,9 @@ identities are reused (``image.inspect`` and ``image.transform``);
 ``image.ocr`` stays reserved and unimplemented.
 
 Non-goals, unchanged: no OCR, no vision inference, no model or provider call,
-no image-to-PDF, no HWPX, no EPS/Ghostscript, and no host filesystem read or
-write. The helper's output is bytes in memory; the facade returns them as bytes
-and never materializes a file.
+no existing-PDF parsing/merge/split, no HWPX, no EPS/Ghostscript, and no host
+filesystem read or write. The helper's output is bytes in memory; the facade
+returns them as bytes and never materializes a file.
 """
 
 from __future__ import annotations
@@ -35,6 +35,8 @@ from padiem_ai_core.image_helpers import (
     ImageContractError,
     ImageInspection,
     ImageOutput,
+    ImagePdfOutput,
+    image_to_pdf as _core_image_to_pdf,
     inspect_image,
     thumbnail_image,
     transform_image,
@@ -54,6 +56,7 @@ __all__ = [
     "ImageSkillError",
     "image_inspect",
     "image_thumbnail",
+    "image_to_pdf",
     "image_transform",
 ]
 
@@ -187,5 +190,26 @@ def image_thumbnail(
     _admit(filename, payload)
     try:
         return thumbnail_image(payload, size=size, output_format=output_format)
+    except ImageContractError as exc:
+        raise ImageSkillError(exc.code) from exc
+
+
+def image_to_pdf(items: tuple[tuple[str, bytes], ...]) -> ImagePdfOutput:
+    """Emit a new PDF from admitted images without touching PDF authority.
+
+    ``items`` is a filename/bytes sequence. The common file-intake gate runs
+    for every item before the existing image helper emits the image-owned PDF
+    artifact. This function never reads or transforms an existing PDF.
+    """
+
+    if not isinstance(items, tuple) or not items:
+        raise ImageSkillError("image_bytes_invalid")
+    for item in items:
+        if not isinstance(item, tuple) or len(item) != 2:
+            raise ImageSkillError("image_bytes_invalid")
+        filename, payload = item
+        _admit(filename, payload)
+    try:
+        return _core_image_to_pdf(tuple(payload for _, payload in items))
     except ImageContractError as exc:
         raise ImageSkillError(exc.code) from exc

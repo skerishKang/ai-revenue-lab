@@ -19,6 +19,8 @@ class OperatingPolicyConsistencyTests(unittest.TestCase):
             REPO / "README.md",
             REPO / ".github" / "pull_request_template.md",
             OPS / "AI_DEVELOPMENT_OPERATING_POLICY.md",
+            OPS / "TECHNOLOGY_ADOPTION_POLICY.md",
+            REPO / "docs" / "architecture" / "PADIEM_TECHNOLOGY_COMPONENT_REGISTRY_v1.md",
             OPS / "WORKFLOW_STATUS_MODEL.md",
             OPS / "EVIDENCE_REQUIREMENTS.md",
             OPS / "UI_UX_BACKEND_PHASE_GATES.md",
@@ -31,6 +33,32 @@ class OperatingPolicyConsistencyTests(unittest.TestCase):
         ]
         for path in required:
             self.assertTrue(path.is_file(), str(path))
+
+    def test_search_before_build_policy_is_wired_into_active_contracts(self) -> None:
+        policy = self.read(OPS / "TECHNOLOGY_ADOPTION_POLICY.md")
+        agents = self.read(REPO / "AGENTS.md")
+        dev_policy = self.read(OPS / "AI_DEVELOPMENT_OPERATING_POLICY.md")
+        work_order = self.read(OPS / "templates" / "CTO_WORK_ORDER.md")
+        pr_template = self.read(REPO / ".github" / "pull_request_template.md")
+        final_review = self.read(OPS / "templates" / "CTO_FINAL_REVIEW.md")
+
+        self.assertIn("SEARCH_BEFORE_BUILD=YES", policy)
+        self.assertIn("BUY_ADOPT_ADAPT_BEFORE_BUILD=YES", policy)
+        self.assertIn("SECOND_PRODUCT_AUTHORITY=0", policy)
+        self.assertIn("BUILD_FROM_SCRATCH", policy)
+        self.assertIn("REPLACEABLE_COMPONENTS=YES", policy)
+        self.assertIn("EXISTING_IMPLEMENTATION_CAN_BE_REEVALUATED=YES", policy)
+        registry = self.read(REPO / "docs" / "architecture" / "PADIEM_TECHNOLOGY_COMPONENT_REGISTRY_v1.md")
+        self.assertIn("REPLACEABLE_COMPONENT", registry)
+        self.assertIn("REPLACE_PRIMARY_KEEP_FALLBACK", registry)
+
+        for text in (agents, dev_policy):
+            self.assertIn("TECHNOLOGY_ADOPTION_POLICY.md", text)
+            self.assertIn("BUILD_FROM_SCRATCH", text)
+
+        self.assertIn("Technology adoption gate", work_order)
+        self.assertIn("Technology adoption / build decision", pr_template)
+        self.assertIn("Technology adoption review", final_review)
 
     def test_actor_separation_invariant_is_consistent(self) -> None:
         agents = self.read(REPO / "AGENTS.md")

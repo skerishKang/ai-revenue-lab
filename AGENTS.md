@@ -5,11 +5,30 @@ This file is the repository-wide entry point for AI-assisted work. A more specif
 Canonical operating documents:
 
 - `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md`
+- `docs/operations/TECHNOLOGY_ADOPTION_POLICY.md`
 - `docs/operations/WORKFLOW_STATUS_MODEL.md`
 - `docs/operations/EVIDENCE_REQUIREMENTS.md`
 - `docs/operations/UI_UX_BACKEND_PHASE_GATES.md`
 - `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
 - `docs/operations/LOCAL_DOCKER_AVOIDANCE_POLICY.md`
+
+## Search / adopt before build
+
+For substantial new capabilities, workers and the Web CTO follow the canonical technology-adoption gate before custom implementation:
+
+```text
+SEARCH
+→ REUSE_INTERNAL
+→ BUY / ADOPT / ADAPT
+→ SIDECAR / LOCAL_SERVICE
+→ BUILD_FROM_SCRATCH
+```
+
+Open-source and commercial technology are both valid. Paid APIs, SDKs, commercial licenses and self-hosted products may be preferable to weeks of custom development.
+
+A custom commodity implementation requires an explicit reason. Historical `SECOND_*` locks mean no competing **Padiem product authority**; they do not prohibit internal parsers/decoders/native libraries used behind one reviewed adopted-project boundary.
+
+See `docs/operations/TECHNOLOGY_ADOPTION_POLICY.md`.
 
 ## Roles
 

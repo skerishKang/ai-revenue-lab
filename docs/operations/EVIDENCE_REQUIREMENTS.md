@@ -118,6 +118,26 @@ For a substantial redesign, record the active style entrypoints/load order and i
 
 This is required when implementation-cascade debt could explain visual inconsistency.
 
+## 8A. Technology adoption evidence
+
+For a substantial new commodity capability, record before or with implementation:
+
+- whether the landscape gate was required;
+- internal reuse audit;
+- credible OSS candidates;
+- credible commercial/paid candidates where relevant;
+- bounded shortlist and selected approach;
+- adoption mode;
+- exact upstream version/commit where applicable;
+- software license;
+- model/artifact/data license and redistribution posture where applicable;
+- commercial-cost posture;
+- security/privacy/runtime constraints;
+- Padiem authority boundary;
+- custom-build justification when custom implementation is selected.
+
+Do not reject a technology solely because it has a price. Do not accept an OSS project solely because its repository license looks permissive when model/data/artifact rights are separate.
+
 ## 9. Implementation evidence
 
 The Web Developer report includes:

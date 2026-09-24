@@ -61,6 +61,29 @@ For material redesign:
 - Asset-source status:
 - Canonical-system consolidation sufficient? yes/no/condition:
 
+## Technology adoption review
+
+For substantial commodity capability work:
+
+- Landscape/adoption gate required? yes/no:
+- Evidence present on parent/PR:
+- Internal reuse considered:
+- Credible OSS considered:
+- Commercial/paid options considered:
+- Selected approach/adoption mode:
+- Exact upstream pin:
+- License/model-artifact/commercial posture:
+- Product authority remains Padiem-owned? yes/no:
+- `SECOND_PRODUCT_AUTHORITY=0`:
+- Custom build? If yes, justification sufficient? yes/no/N/A:
+- Existing implementation replaced or supplemented?:
+- Same stable capability contract preserved?:
+- Old implementation fallback/rollback retained or retirement justified?:
+- Shared conformance evidence:
+- Primary-switch evidence sufficient?:
+
+Missing required adoption evidence is a `NOT_READY` condition.
+
 ## General acceptance matrix
 
 | Criterion | Required? | Evidence | Verdict |
