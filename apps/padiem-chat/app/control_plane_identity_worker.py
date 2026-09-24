@@ -10,6 +10,7 @@ from padiem_control_plane.tenants import (
     CanonicalTenant,
     CanonicalTenantState,
     TenantMembership,
+    TenantMembershipRole,
     TenantMembershipState,
 )
 from padiem_control_plane.contracts import (
@@ -34,6 +35,9 @@ _CONNECTOR_WORKSPACE_KEYS_ABSENT = frozenset({"present"})
 _CONNECTOR_WORKSPACE_KEYS_PRESENT = frozenset({"present", "workspace_ref"})
 _TENANT_KEYS = frozenset({"tenant_id", "state", "created_at"})
 _MEMBERSHIP_KEYS = frozenset({"tenant_id", "canonical_subject_id", "state", "created_at"})
+_MEMBERSHIP_RESOLVE_KEYS = frozenset(
+    {"tenant_id", "canonical_subject_id", "state", "created_at", "role"}
+)
 _REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive"})
 
 
@@ -330,6 +334,53 @@ class CloudflareControlPlaneIdentityAuthority:
                 "Canonical tenant authority returned duplicate memberships.",
             )
         return tuple(raw)
+
+    async def resolve_active_tenant_membership(
+        self,
+        *,
+        tenant_id: str,
+        canonical_subject_id: str,
+        now: datetime,
+    ) -> TenantMembership:
+        wire = _closed(
+            await self._rpc(
+                "resolve_active_tenant_membership",
+                {
+                    "tenant_id": tenant_id,
+                    "canonical_subject_id": canonical_subject_id,
+                    "now": now.isoformat(),
+                },
+                "membership",
+            ),
+            _MEMBERSHIP_RESOLVE_KEYS,
+            "canonical tenant membership",
+        )
+        try:
+            membership = TenantMembership(
+                tenant_id=wire["tenant_id"],
+                canonical_subject_id=wire["canonical_subject_id"],
+                state=TenantMembershipState(wire["state"]),
+                created_at=_time(wire["created_at"], "membership created_at"),
+                role=TenantMembershipRole(wire["role"]),
+            )
+        except (KeyError, TypeError, ValueError) as exc:
+            raise IdentityBridgeError(
+                503,
+                "control_plane_rpc_invalid",
+                "Canonical tenant membership is invalid.",
+            ) from exc
+        if (
+            membership.tenant_id != tenant_id
+            or membership.canonical_subject_id != canonical_subject_id
+            or membership.state is not TenantMembershipState.ACTIVE
+            or membership.role is None
+        ):
+            raise IdentityBridgeError(
+                503,
+                "control_plane_rpc_invalid",
+                "Canonical tenant membership is invalid.",
+            )
+        return membership
 
     async def create_tenant(self) -> str:
         wire = _closed(

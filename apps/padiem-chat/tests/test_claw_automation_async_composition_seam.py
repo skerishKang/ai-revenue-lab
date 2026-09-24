@@ -8,10 +8,10 @@ the REAL trusted trigger boundary through ``ahandle()``/``atick()`` and the REAL
 background execution composition -- proving the async seam itself, not a stub.
 
 Also pins this child's decision-gate outcome:
-``WORKER_SCHEDULED_HANDLER_SOURCE=NOT_JUSTIFIED`` -- ``worker.py`` exposes no
-``scheduled()`` handler, the Worker config declares no cron trigger, and the
-discovery module keeps ``WORKER_SCHEDULED_HANDLER = False``, because no
-existing Worker membership authority can feed #2987 discovery.
+``WORKER_SCHEDULED_HANDLER_SOURCE=READY_GATED`` -- the canonical sessionless
+membership composition feeds #2987/#2995, ``worker.py`` exposes a gated
+``scheduled()`` handler, and the Worker config declares a Cron source without
+Production activation.
 """
 
 from __future__ import annotations
@@ -559,11 +559,12 @@ async def test_receipts_pin_no_external_side_effect(d1_store):
         "worker_scheduled_handler",
         "production_scheduler_activation",
     ):
-        expected = False if marker in {
-            "synthetic_membership",
-            "worker_scheduled_handler",
-            "production_scheduler_activation",
-        } else 0
+        expected = True if marker == "worker_scheduled_handler" else (
+            False if marker in {
+                "synthetic_membership",
+                "production_scheduler_activation",
+            } else 0
+        )
         assert discovery_payload[marker] is expected, marker
 
     bg_payload = bg.safe_dict()
@@ -590,20 +591,27 @@ async def test_receipts_pin_no_external_side_effect(d1_store):
 
 
 # ---------------------------------------------------------------------------
-# 7. decision gate: WORKER_SCHEDULED_HANDLER_SOURCE=NOT_JUSTIFIED is pinned
+# 7. Worker source readiness is present but explicitly gated
 # ---------------------------------------------------------------------------
 
 
-def test_worker_handler_and_cron_remain_absent_in_source():
+def test_worker_handler_and_cron_source_are_present_but_not_activated():
     worker_source = (_CHAT / "worker.py").read_text(encoding="utf-8")
-    assert "def scheduled" not in worker_source
+    assert "async def scheduled" in worker_source
+    assert "PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED" in worker_source
+    assert "PRODUCTION_CRON_ACTIVATION = False" in worker_source
+    assert "PRODUCTION_MUTATION = False" in worker_source
 
     wrangler_source = (_CHAT / "wrangler.toml").read_text(encoding="utf-8")
-    assert "[triggers]" not in wrangler_source
-    assert "cron" not in wrangler_source.lower()
+    assert "[triggers]" in wrangler_source
+    assert 'PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"' in wrangler_source
+    assert 'crons = ["* * * * *"]' in wrangler_source
 
     discovery_source = (
         _CHAT / "app" / "claw_automation_due_workspace_discovery.py"
     ).read_text(encoding="utf-8")
-    assert "WORKER_SCHEDULED_HANDLER = False" in discovery_source
+    assert "WORKER_SCHEDULED_HANDLER = True" in discovery_source
+    assert "CRON_SOURCE_DECLARATION = True" in discovery_source
+    assert "BACKGROUND_SCHEDULER_SOURCE_READY = True" in discovery_source
     assert "REAL_CLOUD_CRON_REGISTRATION = False" in discovery_source
+    assert "PRODUCTION_SCHEDULER_ACTIVATION = False" in discovery_source

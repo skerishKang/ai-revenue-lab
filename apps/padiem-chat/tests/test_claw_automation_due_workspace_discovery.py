@@ -21,6 +21,7 @@ Production.
 from __future__ import annotations
 
 import asyncio
+from dataclasses import replace
 import sqlite3
 import sys
 from datetime import datetime, timedelta, timezone
@@ -60,12 +61,19 @@ from kagent.workspace_visibility import (  # noqa: E402
     TrustedWorkspaceMembershipProjection,
     WorkspaceRole,
 )
+from padiem_control_plane.tenants import (  # noqa: E402
+    TenantMembership,
+    TenantMembershipRole,
+    TenantMembershipState,
+)
 
 from app import claw_automation_due_workspace_discovery as discovery_mod  # noqa: E402
 from app import claw_automation_store as store_mod  # noqa: E402
 from app.claw_automation_due_workspace_discovery import (  # noqa: E402
+    CanonicalAutomationMembershipAuthority,
     ClawAutomationDueWorkspaceDiscovery,
     DueWorkspaceDiscoveryError,
+    compose_canonical_due_workspace_discovery,
 )
 from app.claw_automation_store import D1ClawAutomationStore  # noqa: E402
 
@@ -93,6 +101,21 @@ class PageStore:
         if not self._pages:
             return []
         return self._pages.pop(0)
+
+
+class ComposedStore(PageStore):
+    def __init__(self, pages: list[list[str]], backing: Any) -> None:
+        super().__init__(pages)
+        self._backing = backing
+
+    def list_rules(self, workspace_id: str) -> list[Any]:
+        return self._backing.list_rules(workspace_id)
+
+    def get_run_for_occurrence(self, key: str, workspace_id: str) -> Any:
+        return self._backing.get_run_for_occurrence(key, workspace_id)
+
+    def record_run(self, run: Any) -> Any:
+        return self._backing.record_run(run)
 
 
 # ---------------------------------------------------------------------------
@@ -243,6 +266,28 @@ class ExpiredMembershipAuthority:
         )
 
 
+CANONICAL_TENANT = "tenant_0123456789abcdef0123456789abcdef"
+CANONICAL_SUBJECT = "sub_0123456789abcdef0123456789abcdef"
+
+
+class CanonicalSessionlessAuthority:
+    def __init__(self, membership: TenantMembership | None = None) -> None:
+        self.membership = membership
+        self.calls: list[dict[str, Any]] = []
+
+    async def resolve_active_tenant_membership(
+        self, *, tenant_id: str, canonical_subject_id: str, now: datetime
+    ) -> TenantMembership | None:
+        self.calls.append(
+            {
+                "tenant_id": tenant_id,
+                "canonical_subject_id": canonical_subject_id,
+                "now": now,
+            }
+        )
+        return self.membership
+
+
 def _run(coro: Any) -> Any:
     return asyncio.run(coro)
 
@@ -277,6 +322,21 @@ def _discovery(
         store=page_store,
         membership_authority=authority,
         trigger_boundary=trigger_boundary,
+    )
+
+
+def _canonical_membership(
+    *,
+    role: TenantMembershipRole | None = TenantMembershipRole.OPERATOR,
+    state: TenantMembershipState = TenantMembershipState.ACTIVE,
+    created_at: datetime | None = None,
+) -> TenantMembership:
+    return TenantMembership(
+        tenant_id=CANONICAL_TENANT,
+        canonical_subject_id=CANONICAL_SUBJECT,
+        state=state,
+        created_at=created_at or (NOW - timedelta(minutes=1)),
+        role=role,
     )
 
 
@@ -651,6 +711,106 @@ def test_discovery_does_not_enumerate_beyond_max_workspaces(sync_store: Any) -> 
     assert receipt.truncated is True
 
 
+def test_canonical_membership_composition_reuses_rule_subject_and_role(sync_store: Any) -> None:
+    rule = replace(
+        _rule(CANONICAL_TENANT, "r_canonical"),
+        canonical_subject_id=CANONICAL_SUBJECT,
+    )
+    sync_store.save_rule(rule)
+    authority = CanonicalSessionlessAuthority(_canonical_membership())
+    membership = CanonicalAutomationMembershipAuthority(
+        rule_store=sync_store,
+        control_plane_identity_authority=authority,
+    )
+
+    projection = _run(
+        membership.resolve_workspace_membership(
+            workspace_id=CANONICAL_TENANT, now=NOW
+        )
+    )
+
+    assert projection is not None
+    assert projection.workspace_id == CANONICAL_TENANT
+    assert projection.principal_ref == CANONICAL_SUBJECT
+    assert projection.role is WorkspaceRole.OPERATOR
+    assert authority.calls == [
+        {
+            "tenant_id": CANONICAL_TENANT,
+            "canonical_subject_id": CANONICAL_SUBJECT,
+            "now": NOW,
+        }
+    ]
+
+    composed_store = ComposedStore([[CANONICAL_TENANT], []], sync_store)
+    engine = compose_canonical_due_workspace_discovery(
+        automation_store=composed_store,
+        control_plane_identity_authority=authority,
+        trigger_boundary=_sync_boundary(composed_store),
+    )
+    receipt = _run(engine.discover_and_trigger(now=NOW))
+    assert receipt.authorized_workspaces == (CANONICAL_TENANT,)
+    assert len(receipt.claimed_run_ids) == 1
+
+
+def test_canonical_membership_composition_fails_closed_for_ambiguous_or_legacy_rules(
+    sync_store: Any,
+) -> None:
+    authority = CanonicalSessionlessAuthority(_canonical_membership())
+    membership = CanonicalAutomationMembershipAuthority(
+        rule_store=sync_store,
+        control_plane_identity_authority=authority,
+    )
+    sync_store.save_rule(_rule(CANONICAL_TENANT, "r_legacy"))
+    sync_store.save_rule(
+        replace(
+            _rule(CANONICAL_TENANT, "r_canonical"),
+            canonical_subject_id=CANONICAL_SUBJECT,
+        )
+    )
+    assert _run(
+        membership.resolve_workspace_membership(
+            workspace_id=CANONICAL_TENANT, now=NOW
+        )
+    ) is None
+
+    sync_store.save_rule(
+        replace(
+            _rule(CANONICAL_TENANT, "r_second_subject"),
+            canonical_subject_id="sub_ffffffffffffffffffffffffffffffff",
+        )
+    )
+    assert _run(
+        membership.resolve_workspace_membership(
+            workspace_id=CANONICAL_TENANT, now=NOW
+        )
+    ) is None
+
+
+def test_canonical_membership_composition_rejects_missing_role_and_inactive_state(
+    sync_store: Any,
+) -> None:
+    sync_store.save_rule(
+        replace(
+            _rule(CANONICAL_TENANT, "r_canonical"),
+            canonical_subject_id=CANONICAL_SUBJECT,
+        )
+    )
+    for membership in (
+        _canonical_membership(role=None),
+        _canonical_membership(state=TenantMembershipState.INACTIVE),
+    ):
+        authority = CanonicalSessionlessAuthority(membership)
+        projection = CanonicalAutomationMembershipAuthority(
+            rule_store=sync_store,
+            control_plane_identity_authority=authority,
+        )
+        assert _run(
+            projection.resolve_workspace_membership(
+                workspace_id=CANONICAL_TENANT, now=NOW
+            )
+        ) is None
+
+
 # ===========================================================================
 # refused surfaces and refusal flags
 # ===========================================================================
@@ -664,7 +824,9 @@ def test_module_refusal_flags_are_all_false() -> None:
     assert discovery_mod.SECOND_RUN_ID_AUTHORITY is False
     assert discovery_mod.SECOND_DEDUP_AUTHORITY is False
     assert discovery_mod.SYNTHETIC_MEMBERSHIP is False
-    assert discovery_mod.WORKER_SCHEDULED_HANDLER is False
+    assert discovery_mod.WORKER_SCHEDULED_HANDLER is True
+    assert discovery_mod.CRON_SOURCE_DECLARATION is True
+    assert discovery_mod.BACKGROUND_SCHEDULER_SOURCE_READY is True
     assert discovery_mod.REAL_CLOUD_CRON_REGISTRATION is False
     assert discovery_mod.PRODUCTION_SCHEDULER_ACTIVATION is False
     assert discovery_mod.WORKFLOW_DISPATCH is False
@@ -706,7 +868,9 @@ def test_discovery_receipt_safe_dict_pins_refusals(sync_store: Any) -> None:
     assert payload["caller_supplied_workspace"] is False
     assert payload["tenant_wide_enumeration_exposed"] is False
     assert payload["synthetic_membership"] is False
-    assert payload["worker_scheduled_handler"] is False
+    assert payload["worker_scheduled_handler"] is True
+    assert payload["cron_source_declaration"] is True
+    assert payload["background_scheduler_source_ready"] is True
     assert payload["production_scheduler_activation"] is False
     assert payload["provider_calls"] == 0
     assert payload["external_sends"] == 0
@@ -725,7 +889,9 @@ def test_discovery_engine_safe_dict_pins_refusals(sync_store: Any) -> None:
     assert payload["membership_revalidation"] is True
     assert payload["caller_list_all_workspaces"] is False
     assert payload["second_scheduler_authority"] is False
-    assert payload["worker_scheduled_handler"] is False
+    assert payload["worker_scheduled_handler"] is True
+    assert payload["cron_source_declaration"] is True
+    assert payload["background_scheduler_source_ready"] is True
 
 
 def test_boundary_refuses_a_non_trigger_boundary(sync_store: Any) -> None:
@@ -772,17 +938,21 @@ def test_empty_page_produces_an_empty_receipt(sync_store: Any) -> None:
     assert receipt.truncated is False
 
 
-def test_discovery_module_registers_no_cron_or_scheduled_handler() -> None:
-    source = (
+def test_discovery_module_registers_cron_source_and_scheduled_handler() -> None:
+    worker_source = (_CHAT / "worker.py").read_text(encoding="utf-8")
+    wrangler_source = (_CHAT / "wrangler.toml").read_text(encoding="utf-8")
+    discovery_source = (
         _CHAT / "app" / "claw_automation_due_workspace_discovery.py"
     ).read_text(encoding="utf-8")
-    # Only the refusal flags and the explanatory docstring may mention these
-    # words; no handler, no wrangler binding and no cron registration exists.
-    assert "wrangler" not in source.lower()
-    assert "[triggers]" not in source
-    assert "addEventListener(\"scheduled\"" not in source
-    assert "WORKER_SCHEDULED_HANDLER = False" in source
-    assert "REAL_CLOUD_CRON_REGISTRATION = False" in source
+    assert "async def scheduled" in worker_source
+    assert "run_scheduled_automation_source" in worker_source
+    assert "[triggers]" in wrangler_source
+    assert 'PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"' in wrangler_source
+    assert 'crons = ["* * * * *"]' in wrangler_source
+    assert "WORKER_SCHEDULED_HANDLER = True" in discovery_source
+    assert "CRON_SOURCE_DECLARATION = True" in discovery_source
+    assert "BACKGROUND_SCHEDULER_SOURCE_READY = True" in discovery_source
+    assert "REAL_CLOUD_CRON_REGISTRATION = False" in discovery_source
 
 
 def test_async_store_is_documented_as_out_of_scope_for_the_trigger_step() -> None:

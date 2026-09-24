@@ -40,6 +40,16 @@ class _Binding:
         return {"ok": True, "session": dict(self.wire)}
 
 
+class _MembershipBinding:
+    def __init__(self, wire):
+        self.wire = wire
+        self.payloads = []
+
+    async def resolve_active_tenant_membership(self, payload):
+        self.payloads.append(dict(payload))
+        return {"ok": True, "membership": dict(self.wire)}
+
+
 async def test_tenant_aware_session_is_accepted_and_preserved() -> None:
     binding = _Binding(_session_wire(tenant_id=TENANT_ID))
     authority = CloudflareControlPlaneIdentityAuthority(binding)
@@ -50,6 +60,37 @@ async def test_tenant_aware_session_is_accepted_and_preserved() -> None:
     assert session.product_id == "b62"
     assert session.subject.subject_id == "subject:padiem:user:tenant-test"
     assert binding.payloads == [{"session_id": "authsession:b62:tenant-test"}]
+
+
+async def test_sessionless_membership_projection_preserves_explicit_role() -> None:
+    subject_id = "sub_0123456789abcdef0123456789abcdef"
+    binding = _MembershipBinding(
+        {
+            "tenant_id": TENANT_ID,
+            "canonical_subject_id": subject_id,
+            "state": "active",
+            "created_at": (NOW - timedelta(minutes=1)).isoformat(),
+            "role": "operator",
+        }
+    )
+    authority = CloudflareControlPlaneIdentityAuthority(binding)
+
+    membership = await authority.resolve_active_tenant_membership(
+        tenant_id=TENANT_ID,
+        canonical_subject_id=subject_id,
+        now=NOW,
+    )
+
+    assert membership.tenant_id == TENANT_ID
+    assert membership.canonical_subject_id == subject_id
+    assert membership.role.value == "operator"
+    assert binding.payloads == [
+        {
+            "tenant_id": TENANT_ID,
+            "canonical_subject_id": subject_id,
+            "now": NOW.isoformat(),
+        }
+    ]
 
 
 @pytest.mark.parametrize("wire", [_session_wire(), _session_wire(tenant_id=None)])

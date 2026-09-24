@@ -29,8 +29,8 @@ Design boundaries pinned here:
 * No side effects: no provider call, no external send, no connector write, no
   canonical P01 dispatch and no sandbox allocation.
 
-The boundary is a source contract only. Wiring it to a real Cloud/Production
-cron trigger, and canonical scheduled task execution, are later slices.
+The boundary is source-ready for a gated Worker scheduled handler. Production
+activation and canonical scheduled execution remain separate gates.
 """
 
 from __future__ import annotations

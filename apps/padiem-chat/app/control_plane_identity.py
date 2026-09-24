@@ -22,6 +22,7 @@ from padiem_control_plane import (
     ProductIdentityLink,
     SubjectType,
 )
+from padiem_control_plane.tenants import TenantMembership
 
 PADIEM_CHAT_PRODUCT_ID = "b62"
 
@@ -103,6 +104,10 @@ class TrustedControlPlaneIdentityAuthority(Protocol):
     def resolve_active_memberships(
         self, *, canonical_subject_id: str
     ) -> tuple[str, ...]: ...
+
+    def resolve_active_tenant_membership(
+        self, *, tenant_id: str, canonical_subject_id: str, now: datetime
+    ) -> TenantMembership: ...
 
 
 @dataclass(frozen=True, slots=True)
