@@ -1117,6 +1117,9 @@ def test_discovery_module_registers_cron_source_and_scheduled_handler() -> None:
     ).read_text(encoding="utf-8")
     assert "async def scheduled" in worker_source
     assert "run_scheduled_automation_source" in worker_source
+    assert "compose_scheduled_automation_execution" in worker_source
+    assert "D1ClawTaskAlertStore" in worker_source
+    assert "ClawAutomationOwnerResolver" in worker_source
     assert "[triggers]" not in wrangler_source
     assert "crons" not in wrangler_source.lower()
     assert 'PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED = "false"' in wrangler_source

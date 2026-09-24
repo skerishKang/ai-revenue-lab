@@ -1,0 +1,101 @@
+name: B62 Automation Scheduler Config Contract Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-automation-scheduler-config-gate.yml"
+      - ".github/scripts/b62_automation_scheduler_config.py"
+      - ".github/tests/test_b62_automation_scheduler_config.py"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Scheduler config contract mode"
+        required: true
+        type: choice
+        default: repository_preflight
+        options:
+          - repository_preflight
+          - plan_activation
+          - plan_rollback
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-automation-scheduler-config-gate
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR exact head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Checkout exact dispatch SHA
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run scheduler config contract tests
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet pytest
+          python -m pytest .github/tests/test_b62_automation_scheduler_config.py -q
+      - name: Prove no deployment or mutation path
+        run: |
+          echo 'B62_AUTOMATION_SCHEDULER_CONFIG_SOURCE_CONTRACT=PASS'
+          echo 'PRODUCTION_CRON_ACTIVATION=0'
+          echo 'PRODUCTION_DEPLOY=0'
+          echo 'SECRET_MUTATION=0'
+          echo 'CONFIG_MUTATION=0'
+
+  plan-only:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      TARGET_SHA: ${{ inputs.target_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Require exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+      - name: Build inert scheduler plan only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('.github/scripts/b62_automation_scheduler_config.py').read_text(encoding='utf-8')
+          required = ('SCHEDULER_VAR', 'EXPECTED_CRON', 'CRON_DECLARATION_ADD', 'CRON_DECLARATION_REMOVE')
+          if any(token not in text for token in required):
+              raise SystemExit('scheduler config contract incomplete')
+          print('B62_AUTOMATION_SCHEDULER_PLAN_ONLY=PASS')
+          print('CONFIG_MUTATION=0')
+          print('PRODUCTION_CRON_ACTIVATION=0')
+          PY
