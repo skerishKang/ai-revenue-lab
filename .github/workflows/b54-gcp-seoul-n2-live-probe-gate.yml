@@ -1,0 +1,133 @@
+name: B54 GCP Seoul N2 Live Probe Gate
+
+# Source-only contract for a future one-shot non-Production probe.
+# This slice contains no GCP client, credential binding, resource mutation,
+# provider call, or dispatch. The future-live job is intentionally inert.
+#
+# The exact confirmation marker, exact main SHA, and target zone are required
+# before a future implementation may be substituted. CENTRAL retains all
+# dispatch authority.
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-gcp-seoul-n2-live-probe-gate.yml"
+      - ".github/tests/test_b54_gcp_seoul_n2_live_probe_gate.py"
+      - "apps/korean-ai-code-agent/src/kagent/gcp_seoul_n2_live_gate.py"
+      - "apps/korean-ai-code-agent/tests/test_gcp_seoul_n2_live_gate.py"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA for a future live gate"
+        required: true
+        type: string
+      zone:
+        description: "Exact GCP Seoul zone"
+        required: true
+        type: choice
+        options:
+          - asia-northeast3-a
+          - asia-northeast3-b
+          - asia-northeast3-c
+      central_confirmation:
+        description: "Exact CENTRAL confirmation marker"
+        required: true
+        type: string
+      ttl_seconds:
+        description: "Future Padiem wall-clock TTL; never above 900"
+        required: true
+        default: "900"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-gcp-seoul-n2-live-probe-gate
+  cancel-in-progress: false
+
+env:
+  TARGET_SHA: ${{ inputs.target_sha }}
+  ZONE: ${{ inputs.zone }}
+  CENTRAL_CONFIRMATION: ${{ inputs.central_confirmation }}
+  TTL_SECONDS: ${{ inputs.ttl_seconds }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout pull request head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch target
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main and explicit CENTRAL marker
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          test "${CENTRAL_CONFIRMATION}" = "CENTRAL_GCP_N2_LIVE_PROBE=YES"
+          case "${ZONE}" in
+            asia-northeast3-a|asia-northeast3-b|asia-northeast3-c) ;;
+            *) exit 1 ;;
+          esac
+          test "${TTL_SECONDS}" -ge 60
+          test "${TTL_SECONDS}" -le 900
+          echo 'EXACT_MAIN_GUARD=PASS'
+          echo 'CENTRAL_CONFIRMATION=PASS'
+          echo 'SEOUL_ZONE_BOUND=PASS'
+          echo 'TTL_DELETE_GUARD=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run GCP Seoul N2 source contract tests
+        run: python -m unittest apps/korean-ai-code-agent/tests/test_gcp_seoul_n2_live_gate.py
+
+      - name: Source-only evidence
+        run: |
+          echo 'GCP_N2_LIVE_PROBE_GATE_SOURCE=PASS'
+          echo 'CANONICAL_PROBE_PLAN_REUSED=YES'
+          echo 'LIVE_DISPATCH_EXECUTED=NO'
+          echo 'PROVIDER_CALLS=0'
+          echo 'WORKFLOW_DISPATCH=0'
+          echo 'CLOUD_RESOURCE_CREATE=0'
+          echo 'CREDENTIAL_BINDING=0'
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'METADATA_NEGATIVE_TEST_REQUIRED=YES'
+          echo 'PROCESS_TREE_DEATH_REQUIRED=YES'
+          echo 'NON_RESURRECTION_REQUIRED=YES'
+
+  future-live-probe:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.central_confirmation == 'CENTRAL_GCP_N2_LIVE_PROBE=YES' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    steps:
+      - name: Future live execution is not wired in source slice
+        run: |
+          echo 'LIVE_PROVIDER_CALL=BLOCKED_NOT_IMPLEMENTED'
+          echo 'GCP_VM_CREATE=0'
+          echo 'GCP_DISK_CREATE=0'
+          echo 'GCP_VPC_CREATE=0'
+          echo 'GCP_SERVICE_ACCOUNT_CREATE=0'
+          echo 'CREDENTIAL_BINDING=0'
+          echo 'PROVIDER_CALLS=0'
+          echo 'STOP_FOR_CENTRAL=YES'
