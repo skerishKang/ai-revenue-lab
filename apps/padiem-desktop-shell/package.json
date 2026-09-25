@@ -1,0 +1,24 @@
+{
+  "name": "@ai-revenue-lab/padiem-desktop-shell",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CLAW4 #3083 M1 Electron + React Windows desktop shell supervising a separate Padiem headless runner process",
+  "type": "module",
+  "main": "dist/src/main/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/build.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test dist/tests/*.test.js",
+    "package:win": "npm run build && electron-builder --win --config electron-builder.yml"
+  },
+  "devDependencies": {
+    "@types/node": "22.15.29",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "electron": "44.4.5",
+    "esbuild": "0.25.12",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "typescript": "5.9.2"
+  }
+}
