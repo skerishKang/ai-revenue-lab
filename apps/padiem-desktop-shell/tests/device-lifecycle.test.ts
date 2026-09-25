@@ -23,16 +23,24 @@ test('#3083 shell exposes exactly the five required presentation states', () => 
   assert.equal(DEVICE_LIFECYCLE.RENDERER_MAY_FORGE_ONLINE, false);
 });
 
-test('#3083 ONLINE cannot be reached from NOT_PAIRED — a renderer claim cannot skip pairing', () => {
-  assert.equal(canTransition('NOT_PAIRED', 'ONLINE'), false);
+test('#3083 ONLINE may be projected from NOT_PAIRED only by canonical server truth', () => {
+  assert.equal(canTransition('NOT_PAIRED', 'ONLINE'), true);
   const initial = initialDeviceLifecycleProjection();
   assert.equal(initial.state, 'NOT_PAIRED');
   assert.equal(initial.evidenceBacked, false);
   assert.throws(
     () => projectDeviceLifecycle(initial, 'user_pairing_request', 'ONLINE', 'renderer asked nicely'),
     (error: unknown) =>
-      error instanceof DeviceLifecycleError && /illegal device lifecycle transition/.test(error.message),
+      error instanceof DeviceLifecycleError && /canonical server_projection/.test(error.message),
   );
+  const restored = projectDeviceLifecycle(
+    initial,
+    'server_projection',
+    'ONLINE',
+    'canonical #3080 server presence',
+  );
+  assert.equal(restored.state, 'ONLINE');
+  assert.equal(restored.evidenceBacked, true);
 });
 
 test('#3083 a user-initiated ONLINE claim is refused even on a legal edge', () => {
@@ -43,13 +51,23 @@ test('#3083 a user-initiated ONLINE claim is refused even on a legal edge', () =
     'user started pairing',
   );
   assert.equal(paired.state, 'PAIRING');
-  // PAIRING -> ONLINE is a legal edge, but only a supervision/server fact may take it.
+  // PAIRING -> ONLINE is a legal edge, but only canonical server truth may take it.
   assert.throws(
     () => projectDeviceLifecycle(paired, 'user_pairing_request', 'ONLINE', 'renderer claim'),
     (error: unknown) =>
-      error instanceof DeviceLifecycleError && /renderer claims are not evidence/.test(error.message),
+      error instanceof DeviceLifecycleError && /canonical server_projection/.test(error.message),
   );
-  const evidenceBacked = projectDeviceLifecycle(paired, 'supervision', 'ONLINE', 'runner healthy');
+  assert.throws(
+    () => projectDeviceLifecycle(paired, 'supervision', 'ONLINE', 'runner healthy'),
+    (error: unknown) =>
+      error instanceof DeviceLifecycleError && /canonical server_projection/.test(error.message),
+  );
+  const evidenceBacked = projectDeviceLifecycle(
+    paired,
+    'server_projection',
+    'ONLINE',
+    'canonical #3080 server presence',
+  );
   assert.equal(evidenceBacked.state, 'ONLINE');
   assert.equal(evidenceBacked.evidenceBacked, true);
 });
@@ -74,7 +92,7 @@ test('#3083 every projection advances its revision so the renderer can detect ch
   const revisions: number[] = [projection.sinceRevision];
   projection = projectDeviceLifecycle(projection, 'user_pairing_request', 'PAIRING', 'a');
   revisions.push(projection.sinceRevision);
-  projection = projectDeviceLifecycle(projection, 'supervision', 'ONLINE', 'b');
+  projection = projectDeviceLifecycle(projection, 'server_projection', 'ONLINE', 'b');
   revisions.push(projection.sinceRevision);
   projection = projectDeviceLifecycle(projection, 'runner_unhealthy', 'OFFLINE', 'c');
   revisions.push(projection.sinceRevision);
