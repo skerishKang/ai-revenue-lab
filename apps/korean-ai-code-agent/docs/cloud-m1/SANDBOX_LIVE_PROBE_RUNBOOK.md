@@ -117,6 +117,21 @@ Required request shape:
 
 Still requires the exact resource hard-limit contract, process-limit proof, provider metadata blocking proof, and terminal teardown proof.
 
+### GCP Seoul N2
+
+Source-only candidate for the current Cloud M1 run-local ephemeral-data model:
+
+- candidate identity is `gcp_seoul_n2`, distinct from managed sandbox candidates;
+- region is restricted to `asia-northeast3` and zones `asia-northeast3-a`, `asia-northeast3-b`, or `asia-northeast3-c`;
+- machine family is `N2` on an Intel Haswell-or-newer CPU platform with nested virtualization enabled;
+- Local SSD is required for run-local ephemeral data; N4 is not a substitute for this profile because the current storage model requires Local SSD;
+- dedicated non-default VPC, explicit deny-default egress, no public IP, no public ports, and no guest secrets;
+- no MIG auto-recreation, snapshot reuse, or resume path;
+- future VM run-duration limit must be Padiem TTL or lower and terminate with `DELETE`, never `STOP`;
+- exact revision, checkout-hook suppression, artifact/log bounds, resource limits, process-tree death, teardown, and non-resurrection remain canonical probe requirements.
+
+Metadata and link-local blocking remain `UNPROVEN` until a live negative test. The profile is request shape only and does not call GCP or prove `/dev/kvm`, Local SSD plus nested virtualization, metadata blocking, process-tree death, or terminal delete state.
+
 ## Live probe coverage
 
 The live plan contains exactly one probe for every current `SandboxProviderCapabilities` control. Missing or duplicate controls are rejected before a result can be constructed.
