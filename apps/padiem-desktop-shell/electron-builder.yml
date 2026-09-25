@@ -9,10 +9,50 @@
 # No certificate, no signing secret, and no publish target is configured here.
 # `CSC_IDENTITY_AUTO_DISCOVERY=false` is set explicitly so a developer machine
 # with a stray certificate can never silently sign a build.
+#
+# CLAW4 M1 (CENTRAL comment 5840395388) — deterministic packaging pin.
+#   M1_A ELECTRON_BUILDER_EXACT_PIN=YES      (package.json devDependencies)
+#   M1_B TOOLSETS_EXPLICITLY_PINNED=YES     (this block)
+#   M1_C LOCKFILE_RESOLVES_EXACTLY=YES       (package-lock.json)
+#   M1_D PUBLISH_NULL_MAINTAINED=YES         (see `publish: null` below)
+#   PRODUCTION_SIGNING=NO
+#
+# Why these toolsets are pinned explicitly:
+#   electron-builder downloads each toolset bundle at build time. A toolset that
+#   is not named here is resolved by whatever the installed builder version
+#   defaults to. That makes "same source SHA + same builder version" insufficient
+#   to reproduce a build, which conflicts with the repository rule that evidence
+#   belongs to the exact SHA it tested.
+#
+# These are the toolsets an NSIS Windows build actually invokes, verified against
+# the `app-builder-lib@26.16.1` type definitions:
+#   winCodeSign -> win-codesign bundle (signtool / rcedit)
+#   nsis        -> NSIS compiler bundle (makensis)
+# `appimage` and `wine` are deliberately NOT pinned: this configuration targets
+# `nsis` on `win32` only, so those two bundles are never downloaded. Pinning a
+# bundle that is not used would imply a guarantee that was never verified.
+#
+# The exact allowed values for these keys are typed by
+# `app-builder-lib@26.16.1` (`ToolsetConfig`). The pinned values below are the
+# newest entries the pinned builder version accepts, so a future builder upgrade
+# cannot silently substitute a different bundle.
+#
+# electron-builder v27 changes unset `toolsets.*` to resolve to `latest`. This
+# configuration does not rely on defaults at all, so that change is neutralized
+# here. Do not remove these pins to "simplify" the file.
 
 appId: kr.padiem.desktop.shell
 productName: Padiem Desktop Shell
 copyright: Copyright (c) Padiem
+
+toolsets:
+  # win-codesign: the signing/metadata toolset. Production signing stays OFF;
+  # this pin only fixes WHICH bundle would be used once M4 enables signing.
+  # 1.1.0 is the newest key accepted by 26.16.1.
+  winCodeSign: 1.1.0
+  # nsis: the installer compiler bundle used by the `nsis` win target below.
+  # 1.2.1 is the newest key accepted by 26.16.1.
+  nsis: 1.2.1
 
 directories:
   output: dist-package
@@ -33,6 +73,11 @@ extraResources:
 
 asar: true
 
+# Signing posture is asserted by a contract test, not only by this comment.
+# CENTRAL G1 (comment 5840395388) selected Azure Artifact Signing as the
+# canonical authority, but the electron-builder Azure adapter is Beta and is
+# NOT adopted here. Production signing therefore stays OFF in M1, and no
+# certificate, PFX, signing identity or publish target exists in this config.
 win:
   target:
     - target: nsis
