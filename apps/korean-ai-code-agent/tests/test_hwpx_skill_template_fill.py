@@ -642,7 +642,9 @@ class HwpxTemplateFillAuthorityTests(unittest.TestCase):
         self.assertEqual(
             imported_core_modules,
             {
+                "padiem_ai_core.document_normalization",
                 "padiem_ai_core.document_semantics",
+                "padiem_ai_core.hwpx_image_insertion",
                 "padiem_ai_core.hwpx_package_mutation",
                 "padiem_ai_core.hwpx_package_serializer",
             },
@@ -661,10 +663,17 @@ class HwpxTemplateFillAuthorityTests(unittest.TestCase):
             "minidom",
             "escape(",
             "Contents/",
-            "read_hwpx_package_members",
-            "from padiem_ai_core.document_normalization",
+            "parse_hwpx_sections(",
+            "extract_hwpx_text(",
         ):
             self.assertNotIn(forbidden, source, forbidden)
+        # #2825's insert_image facade reads member payloads back through Core's
+        # existing accessor to prove non-target preservation. That is a read of
+        # the single Core accessor, not a second one: both reads happen inside
+        # the one preservation helper, it opens no archive of its own, and no
+        # caller-supplied member name or path reaches it.
+        self.assertEqual(source.count("read_hwpx_package_members("), 2)
+        self.assertIn("def _verify_insert_image_preservation(", source)
 
     def test_facade_reuses_the_single_mutation_authority(self) -> None:
         source = MODULE_PATH.read_text(encoding="utf-8")
@@ -727,6 +736,9 @@ class HwpxTemplateFillAuthorityTests(unittest.TestCase):
             hwpx_skill.ACCEPTANCE.get("TABLE_INSERT_SCOPE"),
             "BOUNDED_CANONICAL_BLOCK_SUBSET",
         )
+        # #2825 bounded image insertion is a separate facade over its own
+        # reserved edit capability, so template fill still claims no image work.
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("IMAGE_INSERT_UNDER_HWPX_EDIT"), "YES")
         for key in (
             "PARAGRAPH_INSERT",
             "PARAGRAPH_DELETE",
@@ -735,7 +747,6 @@ class HwpxTemplateFillAuthorityTests(unittest.TestCase):
             "TABLE_EDIT",
             "TABLE_DELETE",
             "ROW_COLUMN_MUTATION",
-            "IMAGE_INSERT",
             "IMAGE_EDIT",
             "STYLE_EDIT",
             "LAYOUT_FIDELITY",

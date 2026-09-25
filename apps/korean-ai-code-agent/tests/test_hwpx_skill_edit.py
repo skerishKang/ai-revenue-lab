@@ -654,13 +654,18 @@ class HwpxEditAuthorityTests(unittest.TestCase):
         imported_core_modules = {
             line.split()[1] for line in source.splitlines() if line.startswith("from padiem_ai_core")
         }
-        # #2989 added the accepted #2979 package-preserving mutation authority,
-        # which the template_fill facade composes. It joins the allow-list; no
-        # other Core module may.
+        # #2989 added the accepted #2979 package-preserving mutation authority
+        # and #2825 added the accepted single image insertion authority plus the
+        # two read-only document_normalization accessors it uses to prove member
+        # preservation and picture readback. All three compose accepted Core
+        # authorities and none is a parser, decoder or byte producer; no other
+        # Core module may.
         self.assertEqual(
             imported_core_modules,
             {
+                "padiem_ai_core.document_normalization",
                 "padiem_ai_core.document_semantics",
+                "padiem_ai_core.hwpx_image_insertion",
                 "padiem_ai_core.hwpx_package_mutation",
                 "padiem_ai_core.hwpx_package_serializer",
             },
@@ -719,6 +724,9 @@ class HwpxEditAuthorityTests(unittest.TestCase):
             hwpx_skill.ACCEPTANCE.get("TABLE_INSERT_SCOPE"),
             "BOUNDED_CANONICAL_BLOCK_SUBSET",
         )
+        # #2825 bounded image insertion reuses this same reserved edit
+        # capability; it does not widen what paragraph replacement claims.
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("IMAGE_INSERT_UNDER_HWPX_EDIT"), "YES")
         for key in (
             "PARAGRAPH_INSERT",
             "PARAGRAPH_DELETE",
@@ -727,7 +735,6 @@ class HwpxEditAuthorityTests(unittest.TestCase):
             "TABLE_EDIT",
             "TABLE_DELETE",
             "ROW_COLUMN_MUTATION",
-            "IMAGE_INSERT",
             "IMAGE_EDIT",
             "STYLE_EDIT",
             "LAYOUT_FIDELITY",

@@ -695,7 +695,9 @@ class HwpxInsertTableProjectionAndAuthorityTests(unittest.TestCase):
         self.assertEqual(
             imported_core_modules,
             {
+                "padiem_ai_core.document_normalization",
                 "padiem_ai_core.document_semantics",
+                "padiem_ai_core.hwpx_image_insertion",
                 "padiem_ai_core.hwpx_package_mutation",
                 "padiem_ai_core.hwpx_package_serializer",
             },

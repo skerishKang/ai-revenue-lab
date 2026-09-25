@@ -607,8 +607,16 @@ class CreateAuthorityContractTests(unittest.TestCase):
             hwpx_skill.ACCEPTANCE.get("TABLE_INSERT_SCOPE"),
             "BOUNDED_CANONICAL_BLOCK_SUBSET",
         )
-        for key in ("TABLE_EDIT", "IMAGE_INSERT"):
-            self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), "NOT_CLAIMED", key)
+        # #2825 claims bounded image insertion over the same edit capability;
+        # create itself still claims none, and the wider image authorities stay
+        # unclaimed.
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("TABLE_EDIT"), "NOT_CLAIMED")
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("IMAGE_INSERT"), "PASS")
+        self.assertEqual(
+            hwpx_skill.ACCEPTANCE.get("IMAGE_INSERT_SCOPE"),
+            "BOUNDED_PNG_CANONICAL_MANIFEST_PACKAGE",
+        )
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("IMAGE_EDIT"), "NOT_CLAIMED")
 
     def test_facade_has_no_second_serializer_archive_or_xml_authority(self) -> None:
         source = (hwpx_skill.__file__ or "")
