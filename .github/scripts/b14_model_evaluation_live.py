@@ -27,6 +27,7 @@ from b14_model_evaluation import (  # noqa: E402
 )
 
 ALL_FIVE = "all-five"
+AUTO_SELECTOR = "b14/auto"
 SELECTORS = (ALL_FIVE, *EVALUATION_CANDIDATE_IDS)
 MAX_CASES = 6
 MAX_ALL_FIVE_POSTS = len(EVALUATION_CANDIDATE_IDS) * MAX_CASES
