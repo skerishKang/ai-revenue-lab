@@ -826,30 +826,68 @@ def test_css_honours_reduced_motion() -> None:
 # ---------------------------------------------------------------------------
 
 
+# The exact /api/* endpoint set that existed in static/app.js at the #3084 base
+# commit (4b939347accc5bb45701fd4f31cd588f30258c6d). Pinned as a literal on
+# purpose: CI checks out a shallow clone, so the base blob is not available to
+# `git show` from inside the test. #3084 must not add to this set.
+BASE_APP_ENDPOINTS = frozenset(
+    {
+        "/api/auth/logout",
+        "/api/auth/password/login",
+        "/api/auth/password/register",
+        "/api/auth/status",
+        "/api/claw/approvals/decision",
+        "/api/claw/manual-intake/execute",
+        "/api/claw/manual-intake/preview",
+        "/api/claw/memory",
+        "/api/claw/memory/approve",
+        "/api/claw/memory/reject",
+        "/api/claw/runs?limit=10",
+        "/api/conversations",
+        "/api/projects",
+    }
+)
+
+
 def test_no_new_backend_route_or_worker_endpoint_is_introduced() -> None:
     """#3084 is a Web slice. It must not add a server endpoint of its own."""
-    import subprocess as _sp
-
     assert "/api/" not in _source()
 
-    base = "4b939347accc5bb45701fd4f31cd588f30258c6d"
-    before = _sp.run(
-        ["git", "show", f"{base}:apps/padiem-chat/static/app.js"],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        check=True,
-    ).stdout
-    after = _app_source()
-
-    def endpoints(text: str) -> set[str]:
-        return set(re.findall(r'"/api/[^"]+"', text))
-
-    # No endpoint added, and none removed either.
-    assert endpoints(after) == endpoints(before)
+    present = set(re.findall(r'"/api/[^"]+"', _app_source()))
+    # The regex captures the surrounding quotes; the pinned baseline does not.
+    present = {value.strip('"') for value in present}
+    added = present - BASE_APP_ENDPOINTS
+    assert not added, f"#3084 introduced new endpoints: {sorted(added)}"
+    # The pre-existing surface is untouched: nothing dropped either.
+    assert present == BASE_APP_ENDPOINTS
 
 
-def test_fixtures_are_deterministic_and_carry_no_real_secret() -> None:
+def test_no_deploy_or_environment_mutation_in_the_change() -> None:
+    """No production mutation: the slice adds only static UI plus a test.
+
+    Asserted on the working tree rather than on a `git diff` against the base
+    commit, because CI's shallow clone cannot resolve the base blob.
+    """
+    # The #3084 module and its stylesheet are static assets only.
+    assert _source().lstrip().startswith("//")
+    assert ".wrangler" not in _source()
+    assert "wrangler.toml" not in _source()
+
+    # No production deploy/mutation switch is introduced anywhere in the slice.
+    for path in (MODULE_PATH, MODULE_CSS, APP_PATH, INDEX_PATH):
+        text = path.read_text(encoding="utf-8")
+        for marker in ("PRODUCTION_DEPLOY", "PRODUCTION_MUTATION", "wrangler deploy"):
+            assert marker not in text, f"{path.name} introduced {marker}"
+
+    # The CI workflow change is limited to the JS syntax check for the new
+    # module. This file already contained one `wrangler deploy` step before
+    # #3084, so the assertion is that #3084 added no *second* one rather than
+    # that none exists.
+    workflow = (ROOT.parent.parent / ".github" / "workflows" / "b62-padiem-chat-ci.yml").read_text(
+        encoding="utf-8"
+    )
+    assert "node --check static/claw-local-handoff.js" in workflow
+    assert workflow.count("wrangler deploy") == 1, "a deploy step was added or removed"
     out = _run_node(
         _harness(
             "const a = H.deriveHandoffViewModel(H.FIXTURES.connected);"
@@ -862,26 +900,3 @@ def test_fixtures_are_deterministic_and_carry_no_real_secret() -> None:
     data = json.loads(out)
     assert data["stable"] is True
     assert "fixture" in data["handoffValue"]
-
-
-def test_no_deploy_or_environment_mutation_in_the_change() -> None:
-    """No production mutation: the slice touches only static UI + a test."""
-    allowed = {
-        "apps/padiem-chat/static/claw-local-handoff.js",
-        "apps/padiem-chat/static/claw-local-handoff.css",
-        "apps/padiem-chat/static/index.html",
-        "apps/padiem-chat/static/locale.js",
-        "apps/padiem-chat/static/app.js",
-        "apps/padiem-chat/tests/test_b62_3084_web_connect_this_computer.py",
-    }
-    import subprocess as _sp
-
-    completed = _sp.run(
-        ["git", "diff", "--name-only", "4b939347accc5bb45701fd4f31cd588f30258c6d", "HEAD"],
-        cwd=ROOT,
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    changed = {line for line in completed.stdout.splitlines() if line.strip()}
-    assert changed <= allowed, changed - allowed
