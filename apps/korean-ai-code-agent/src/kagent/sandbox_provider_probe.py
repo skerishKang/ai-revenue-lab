@@ -589,10 +589,18 @@ def validate_gcp_seoul_n2_request_shape(
         raise ContractError("GCP Seoul N2 profile requires deny-default egress")
     if public_ip_enabled is not False:
         raise ContractError("GCP Seoul N2 profile disables public IP")
-    if public_port_count != 0:
-        raise ContractError("GCP Seoul N2 profile disables public ports")
-    if guest_secret_count != 0:
-        raise ContractError("GCP Seoul N2 profile disables guest secrets")
+    if (
+        isinstance(public_port_count, bool)
+        or not isinstance(public_port_count, int)
+        or public_port_count != 0
+    ):
+        raise ContractError("GCP Seoul N2 profile requires public_port_count integer zero")
+    if (
+        isinstance(guest_secret_count, bool)
+        or not isinstance(guest_secret_count, int)
+        or guest_secret_count != 0
+    ):
+        raise ContractError("GCP Seoul N2 profile requires guest_secret_count integer zero")
     if mig_enabled is not False:
         raise ContractError("GCP Seoul N2 profile disables MIG auto-recreate")
     if snapshot_reuse is not False or resume_enabled is not False:
