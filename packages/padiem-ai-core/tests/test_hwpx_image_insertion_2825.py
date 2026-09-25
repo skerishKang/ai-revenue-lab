@@ -14,7 +14,8 @@ from io import BytesIO
 from zipfile import ZipFile
 
 import pytest
-from PIL import Image
+
+Image = pytest.importorskip("PIL.Image")
 
 import padiem_ai_core.hwpx_image_insertion as hwpx_image_insertion
 from padiem_ai_core.document_normalization import (
