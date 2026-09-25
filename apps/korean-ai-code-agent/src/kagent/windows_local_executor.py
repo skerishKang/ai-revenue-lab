@@ -14,6 +14,7 @@ from typing import Any, Protocol
 
 from .contracts import ContractError
 from .local_agent import LocalAgentDeviceProfile, LocalAgentPlatform, LocalCommandRequest, LocalCommandResult
+from .windows_job_object import JobBoundProcess, launch_job_bound_process
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,511}$")
 _SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
@@ -368,7 +369,7 @@ class WindowsSubprocessLocalAgentRuntime:
         self._profiles = executable_profiles
         self._authorization = authorization_port or UnconfiguredWindowsExecutionAuthorizationPort()
         self._worktree = worktree_state_port or DeterministicWorktreeStatePort(dirty=False)
-        self._active: dict[str, subprocess.Popen[str]] = {}
+        self._active: dict[str, JobBoundProcess] = {}
         self._cancelled: set[str] = set()
         self._lock = threading.Lock()
 
@@ -404,26 +405,27 @@ class WindowsSubprocessLocalAgentRuntime:
 
         dirty_before = self._worktree.is_dirty(cwd)
         environment = _bounded_environment()
-        process = subprocess.Popen(
+        bound = launch_job_bound_process(
             list(request.argv),
             cwd=cwd,
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            shell=False,
-            env=environment,
+            environment=environment,
             creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
         )
+        process = bound.process
+        job = bound.job
         if process.stdout is None or process.stderr is None:
+            job.terminate_tree()
             process.kill()
+            job.close()
             raise ContractError("Windows subprocess did not expose bounded output pipes")
 
         with self._lock:
             if request.request_id in self._active:
+                job.terminate_tree()
                 process.kill()
+                job.close()
                 raise ContractError("command request is already active")
-            self._active[request.request_id] = process
+            self._active[request.request_id] = bound
 
         stdout_chunks: list[str] = []
         stderr_chunks: list[str] = []
@@ -438,7 +440,7 @@ class WindowsSubprocessLocalAgentRuntime:
                 process.wait(timeout=request.timeout_seconds)
             except subprocess.TimeoutExpired:
                 timed_out = True
-                process.terminate()
+                job.terminate_tree()
                 try:
                     process.wait(timeout=2)
                 except subprocess.TimeoutExpired:
@@ -451,6 +453,10 @@ class WindowsSubprocessLocalAgentRuntime:
                 self._active.pop(request.request_id, None)
                 explicitly_cancelled = request.request_id in self._cancelled
                 self._cancelled.discard(request.request_id)
+            # Terminal cleanup: closing the kill-on-close job handle reaps any
+            # surviving descendant process so no hidden grandchild can outlive
+            # the terminal state of the request.
+            job.close()
 
         ended_at = datetime.now(timezone.utc)
         if ended_at < now:
@@ -493,11 +499,12 @@ class WindowsSubprocessLocalAgentRuntime:
     def cancel(self, request_id: str) -> None:
         request_id = _ref(request_id, "request_id")
         with self._lock:
-            process = self._active.get(request_id)
-            if process is None:
+            bound = self._active.get(request_id)
+            if bound is None:
                 raise ContractError("command request is not active")
             self._cancelled.add(request_id)
-            process.terminate()
+            # Terminate the whole descendant tree, not only the immediate child.
+            bound.job.terminate_tree()
 
     def active_request_ids(self) -> tuple[str, ...]:
         with self._lock:
@@ -511,3 +518,7 @@ UNBOUNDED_ENVIRONMENT_INHERITANCE_SUPPORTED = False
 ADMIN_ELEVATION_SUPPORTED = False
 AUTOMATIC_GIT_NETWORK_SUPPORTED = False
 PRODUCTION_REMOTE_CONTROL_CLAIMED = False
+WINDOWS_JOB_OBJECT_PROCESS_TREE_TERMINATION = True
+SECOND_PROCESS_AUTHORITY = 0
+SECOND_APPROVAL_AUTHORITY = 0
+SECOND_FILESYSTEM_AUTHORITY = 0
