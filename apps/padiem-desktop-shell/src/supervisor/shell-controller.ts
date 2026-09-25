@@ -216,15 +216,11 @@ export class ShellController {
         this.#presenceNote = 'runner healthy and device presence confirmed by the shell projection';
         return;
       }
-      if (this.#device.state === 'NOT_PAIRED') {
-        // A locally started runner is NOT proof of a paired, reachable device.
-        // #3080 owns canonical presence, so the shell keeps NOT_PAIRED and says so.
-        this.#presenceNote =
-          'headless runner is running locally, but the device is still NOT_PAIRED: canonical presence is owned by #3080';
-        return;
-      }
-      this.#transition('ONLINE', 'supervision', 'headless runner reported healthy');
-      this.#presenceNote = 'runner healthy and device presence confirmed by the shell projection';
+      // A locally healthy runner is never proof that this device is paired or
+      // reachable from Padiem Cloud. Until #3080 supplies the canonical server
+      // projection, preserve the current non-ONLINE presentation state.
+      this.#presenceNote =
+        `headless runner is running locally, but device state remains ${this.#device.state}: canonical ONLINE presence is owned by #3080`;
       return;
     }
     this.#presenceNote =
