@@ -31,6 +31,7 @@ from b14_candidate_live_smoke import (  # noqa: E402
     CANDIDATE_REGISTRY,
     CandidateSpec,
     MAX_RESPONSE_BYTES,
+    SAFE_ENGINE_ERROR_CODES,
     resolve_candidate,
 )
 
@@ -59,8 +60,11 @@ Transport = Callable[[str, str, dict[str, Any] | None], tuple[int, bytes]]
 
 @dataclass(frozen=True, slots=True)
 class CaseResult:
+    fixture_version: str
     case_id: str
     category: str
+    requested_model_id: str
+    expected_upstream_model: str
     http_status: int
     response_hash: str
     actual_model: str | None
@@ -74,8 +78,11 @@ class CaseResult:
 
     def to_dict(self) -> dict[str, Any]:
         return {
+            "fixture_version": self.fixture_version,
             "case_id": self.case_id,
             "category": self.category,
+            "requested_model_id": self.requested_model_id,
+            "expected_upstream_model": self.expected_upstream_model,
             "http_status": self.http_status,
             "response_hash": self.response_hash,
             "actual_model": self.actual_model,
@@ -95,13 +102,40 @@ def load_fixture(path: Path = FIXTURE_PATH) -> dict[str, Any]:
     value = json.loads(path.read_text(encoding="utf-8"))
     if value.get("version") != "padiem-tier-benchmark-v1":
         raise ValueError("fixture_version_unsupported")
+    if value.get("language") != "ko-KR":
+        raise ValueError("fixture_language_invalid")
+    if value.get("data_policy") != "synthetic_non_sensitive_only":
+        raise ValueError("fixture_data_policy_invalid")
     if value.get("provider_calls_authorized") is not False:
         raise ValueError("fixture_provider_calls_must_be_disabled")
     cases = value.get("cases")
     if not isinstance(cases, list) or len(cases) != MAX_EVALUATION_CASES:
         raise ValueError("fixture_case_count_invalid")
-    case_ids = [case.get("id") for case in cases if isinstance(case, dict)]
-    if len(case_ids) != len(cases) or len(set(case_ids)) != len(case_ids):
+    case_ids: list[str] = []
+    for case in cases:
+        if not isinstance(case, dict):
+            raise ValueError("fixture_case_invalid")
+        case_id = case.get("id")
+        category = case.get("category")
+        prompt = case.get("prompt")
+        rubric = case.get("rubric")
+        if not isinstance(case_id, str) or not case_id:
+            raise ValueError("fixture_case_invalid")
+        if not isinstance(category, str) or not category:
+            raise ValueError("fixture_case_invalid")
+        if not isinstance(prompt, str) or not prompt.strip():
+            raise ValueError("fixture_case_invalid")
+        if (
+            not isinstance(rubric, list)
+            or not rubric
+            or not all(isinstance(item, str) and item for item in rubric)
+        ):
+            raise ValueError("fixture_case_invalid")
+        expected = case.get("expected_answer")
+        if expected is not None and (not isinstance(expected, str) or not expected):
+            raise ValueError("fixture_expected_answer_invalid")
+        case_ids.append(case_id)
+    if len(set(case_ids)) != len(case_ids):
         raise ValueError("fixture_case_duplicate_or_invalid")
     if set(case_ids) != REQUIRED_CASE_IDS:
         raise ValueError("fixture_case_unknown_or_missing")
@@ -128,10 +162,15 @@ def _content(payload: dict[str, Any]) -> str:
 
 
 def _safe_error_code(payload: dict[str, Any]) -> str:
+    """Reuse the canonical candidate-smoke safe error-code vocabulary."""
+
     error = payload.get("error")
-    if isinstance(error, dict) and error.get("code") in {"invalid_request", "upstream_error", "no_safe_route"}:
-        return str(error["code"])
-    return "unknown"
+    if not isinstance(error, dict):
+        return "unknown"
+    code = error.get("code")
+    if not isinstance(code, str):
+        return "unknown"
+    return code if code in SAFE_ENGINE_ERROR_CODES else "unknown"
 
 
 def _hash(raw: bytes) -> str:
@@ -142,12 +181,26 @@ def _sentence_count(text: str) -> int:
     return len([part for part in re.split(r"[.!?。！？]+", text) if part.strip()])
 
 
+def _extract_choice_answer(text: str) -> str | None:
+    """Extract an explicit A/B/C answer without substring false positives."""
+
+    patterns = (
+        r"(?i)(?:정답(?:은|:)?|답(?:은|:)?)\s*([ABC])(?:\b|입니다|번)",
+        r"(?i)^\s*([ABC])(?:\b|[.)]|입니다|번)",
+    )
+    for pattern in patterns:
+        match = re.search(pattern, text)
+        if match:
+            return match.group(1).upper()
+    return None
+
+
 def _objective_checks(case: dict[str, Any], content: str) -> dict[str, bool]:
     """Only checks whose truth is mechanically decidable are scored here."""
 
     expected = case.get("expected_answer")
     if expected is not None:
-        return {"correct_answer": expected.casefold() in content.casefold()}
+        return {"correct_answer": _extract_choice_answer(content) == expected.upper()}
     if case.get("id") == "KR-INSTR-001":
         lines = [line.strip() for line in content.splitlines() if line.strip()]
         return {
@@ -159,12 +212,10 @@ def _objective_checks(case: dict[str, Any], content: str) -> dict[str, bool]:
             )
         }
     if case.get("id") == "KR-SUMMARY-001":
-        return {
-            "two_sentences": _sentence_count(content) == 2,
-            "key_facts_preserved": any(
-                term in content for term in ("토요일", "전기", "충전", "엘리베이터")
-            ),
-        }
+        # Sentence count is mechanically decidable. Semantic preservation and
+        # hallucination checks stay manual because the v1 fixture carries no
+        # machine-readable fact set that could justify a canonical scorer.
+        return {"two_sentences": _sentence_count(content) == 2}
     return {}
 
 
@@ -200,15 +251,28 @@ def evaluate_candidate(
     results: list[CaseResult] = []
     for case in corpus["cases"]:
         started = clock()
-        status, raw = transport("POST", CHAT_PATH, request_body(spec, case))
+        transport_result = transport("POST", CHAT_PATH, request_body(spec, case))
         latency_ms = max(0, int((clock() - started) * 1000))
+        if (
+            not isinstance(transport_result, tuple)
+            or len(transport_result) != 2
+            or isinstance(transport_result[0], bool)
+            or not isinstance(transport_result[0], int)
+            or not 100 <= transport_result[0] <= 599
+            or not isinstance(transport_result[1], bytes)
+        ):
+            raise ValueError("transport_result_invalid")
+        status, raw = transport_result
         response_hash = _hash(raw)
         try:
             payload = _bounded_response(raw)
         except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
             results.append(CaseResult(
+                fixture_version=corpus["version"],
                 case_id=case["id"],
                 category=case["category"],
+                requested_model_id=spec.model_id,
+                expected_upstream_model=spec.upstream_model,
                 http_status=status,
                 response_hash=response_hash,
                 actual_model=None,
@@ -234,11 +298,20 @@ def evaluate_candidate(
             contract_errors.append("actual_model_missing_or_mismatch")
         if fallback_used:
             contract_errors.append("silent_fallback")
-        if attempt_count != 1:
+        if (
+            isinstance(attempt_count, bool)
+            or not isinstance(attempt_count, int)
+            or attempt_count != 1
+        ):
             contract_errors.append("attempt_count_not_one")
+        if 200 <= status < 300 and not content.strip():
+            contract_errors.append("empty_or_missing_content")
         results.append(CaseResult(
+            fixture_version=corpus["version"],
             case_id=case["id"],
             category=case["category"],
+            requested_model_id=spec.model_id,
+            expected_upstream_model=spec.upstream_model,
             http_status=status,
             response_hash=response_hash,
             actual_model=actual_model,
@@ -261,7 +334,7 @@ def evaluate_candidate(
         "upstream_model": spec.upstream_model,
         "fixture_version": corpus["version"],
         "transport": "INJECTED_TRANSPORT",
-        "live_provider_call": False,
+        "provider_call_provenance": "CALLER_CONTROLLED_UNATTESTED",
         "case_count": len(results),
         "objective_total": objective_total,
         "objective_passed": objective_passed,
