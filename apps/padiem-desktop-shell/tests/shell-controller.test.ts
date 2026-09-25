@@ -150,7 +150,7 @@ test('#3083 starting a runner on an unpaired shell does NOT claim ONLINE', async
   assert.match(status.presenceNote, /#3080/);
 });
 
-test('#3083 after the pairing seam, a healthy runner projects ONLINE and a stop projects OFFLINE', async () => {
+test('#3083 pairing seam plus healthy runner never invents canonical ONLINE presence', async () => {
   const { controller, port } = makeController();
   await controller.dispatch('padiem:shell:pairing-deeplink-submit', {
     deepLink: 'padiem://pair?code=abc',
@@ -161,12 +161,12 @@ test('#3083 after the pairing seam, a healthy runner projects ONLINE and a stop 
   assert.equal(pairing.deviceState, 'PAIRING');
 
   await controller.dispatch('padiem:shell:runner-start', { requestedBy: 'renderer-shell' });
-  const online = (await controller.dispatch('padiem:shell:get-status', undefined)) as {
+  const stillPairing = (await controller.dispatch('padiem:shell:get-status', undefined)) as {
     deviceState: string;
     presenceNote: string;
   };
-  assert.equal(online.deviceState, 'ONLINE');
-  assert.match(online.presenceNote, /presence confirmed/);
+  assert.equal(stillPairing.deviceState, 'PAIRING');
+  assert.match(stillPairing.presenceNote, /canonical ONLINE presence is owned by #3080/);
 
   const stopped = (await controller.dispatch('padiem:shell:runner-stop', {
     requestedBy: 'renderer-shell',
@@ -175,15 +175,13 @@ test('#3083 after the pairing seam, a healthy runner projects ONLINE and a stop 
   assert.equal(stopped.state, 'STOPPED');
   assert.equal(port.handle.isAlive(), false);
 
-  const offline = (await controller.dispatch('padiem:shell:get-status', undefined)) as {
+  const afterStop = (await controller.dispatch('padiem:shell:get-status', undefined)) as {
     deviceState: string;
-    presenceNote: string;
   };
-  assert.equal(offline.deviceState, 'OFFLINE');
-  assert.match(offline.presenceNote, /no longer confirmed/);
+  assert.equal(afterStop.deviceState, 'PAIRING');
 });
 
-test('#3083 a runner crash projects OFFLINE, never a stale ONLINE', async () => {
+test('#3083 a runner crash cannot manufacture or preserve ONLINE without server truth', async () => {
   const { controller, port } = makeController();
   await controller.dispatch('padiem:shell:pairing-deeplink-submit', {
     deepLink: 'padiem://pair?code=abc',
@@ -199,7 +197,7 @@ test('#3083 a runner crash projects OFFLINE, never a stale ONLINE', async () => 
   const status = (await controller.dispatch('padiem:shell:get-status', undefined)) as {
     deviceState: string;
   };
-  assert.equal(status.deviceState, 'OFFLINE');
+  assert.equal(status.deviceState, 'PAIRING');
 });
 
 test('#3083 runner start/stop requests from a non-shell caller are rejected', async () => {
