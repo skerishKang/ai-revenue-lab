@@ -1,0 +1,255 @@
+name: B14 Comparative Model Benchmark (source gate)
+
+# Source-only gate for #2676. Pull requests run contract tests and the exact
+# 5x6 call-cap proof. A future CENTRAL-authorized workflow_dispatch can execute
+# one bounded benchmark; this workflow does not mutate routing or Production.
+
+on:
+  pull_request:
+    paths:
+      - '.github/scripts/b14_model_evaluation_live.py'
+      - '.github/tests/test_b14_model_evaluation_live.py'
+      - '.github/scripts/b14_model_evaluation.py'
+      - '.github/tests/test_b14_model_evaluation.py'
+      - 'apps/padiem-chat/tests/fixtures/padiem_tier_benchmark_v1.json'
+      - '.github/workflows/b14-model-evaluation-live.yml'
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact current main SHA authorized for this one-shot benchmark'
+        required: true
+      candidate_selector:
+        description: 'Manual-pin selector (all-five or one candidate)'
+        required: true
+        type: choice
+        options:
+          - all-five
+          - agnes
+          - motif
+          - mercury
+          - atria
+          - luna
+      expected_b14_version:
+        description: 'Exact B14 Worker version that must still be serving 100%'
+        required: true
+      confirmation:
+        description: 'Type RUN_B14_COMPARATIVE_BENCHMARK_ONCE'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b14-comparative-model-benchmark
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout source under review
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_sha || github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Exact-main dispatch preflight
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          echo 'PREFLIGHT_EXACT_MAIN=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install source-test dependency
+        shell: bash
+        run: python -m pip install --quiet pytest
+
+      - name: Run comparative benchmark source tests
+        shell: bash
+        run: python -m pytest -q .github/tests/test_b14_model_evaluation_live.py .github/tests/test_b14_model_evaluation.py
+
+      - name: Re-run shared fixture and served-version contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest -q \
+            apps/padiem-chat/tests/test_tier_benchmark_corpus.py \
+            .github/tests/test_cloudflare_served_version.py
+
+      - name: Pin source-only safety and call-cap contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=.github/scripts/b14_model_evaluation_live.py
+          wf=.github/workflows/b14-model-evaluation-live.yml
+          test -f "${script}"
+          grep -Fq 'RETRY = 0' "${script}"
+          grep -Fq 'FALLBACK = 0' "${script}"
+          grep -Fq 'MAX_ALL_FIVE_POSTS = len(EVALUATION_CANDIDATE_IDS) * MAX_CASES' "${script}"
+          grep -Fq 'LIVE_PROVIDER_CALL=0' "${script}"
+          grep -Fq 'WORKFLOW_DISPATCH=0' "${script}"
+          grep -Fq 'SECRET_VALUE_READ=0' "${script}"
+          grep -Fq 'ROUTE_ACTIVATION=0' "${script}"
+          grep -Fq 'PRODUCTION_MUTATION=0' "${script}"
+          grep -Fq 'b14/auto' "${script}"
+          grep -Fq 'expected_b14_version:' "${wf}"
+          grep -Fq 'resolve_served_version_id' "${wf}"
+          grep -Fq 'CANONICAL_SERVED_VERSION_REUSED=YES' "${wf}"
+          grep -Fq 'HISTORICAL_DEPLOYMENT_ACCEPTED=NO' "${wf}"
+          echo 'SOURCE_GATE_LIVE_PROVIDER_CALL=0'
+          echo 'SOURCE_GATE_WORKFLOW_DISPATCH=0'
+          echo 'SOURCE_GATE_SECRET_VALUE_READ=0'
+          echo 'SOURCE_GATE_ROUTE_ACTIVATION=0'
+          echo 'SOURCE_GATE_PRODUCTION_MUTATION=0'
+
+  live-comparative-benchmark:
+    needs: source-contract
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.confirmation == 'RUN_B14_COMPARATIVE_BENCHMARK_ONCE'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      TARGET_SHA: ${{ github.event.inputs.target_sha }}
+      EXPECTED_B14_VERSION: ${{ github.event.inputs.expected_b14_version }}
+      CANDIDATE_SELECTOR: ${{ github.event.inputs.candidate_selector }}
+    steps:
+      - name: Checkout exact authorized main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
+
+      - name: Re-check exact current main immediately before live gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'LIVE_EXACT_MAIN=PASS'
+
+      - name: GET-only B14 served-version guard (canonical resolver)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "${EXPECTED_B14_VERSION}" | grep -Eq '^[A-Za-z0-9._-]{1,64}        run: |
+          set -euo pipefail
+          log="${RUNNER_TEMP}/b14-comparative-benchmark.log"
+          python .github/scripts/b14_model_evaluation_live.py "${CANDIDATE_SELECTOR}" --authorized-live-run | tee "${log}"
+          grep -Eq '"retry": 0' "${log}"
+          grep -Eq '"fallback": 0' "${log}"
+          if [ "${CANDIDATE_SELECTOR}" = all-five ]; then
+            grep -Eq '"benchmark_post_count": 30' "${log}"
+            grep -Eq '"max_all_five_posts": 30' "${log}"
+          else
+            grep -Eq '"benchmark_post_count": 6' "${log}"
+          fi
+
+      - name: Record immutable execution locks
+        if: always()
+        shell: bash
+        run: |
+          echo 'B14_DEPLOY=0'
+          echo 'ENGINE_DEPLOY=0'
+          echo 'SECRET_VALUE_READ=0'
+          echo 'ROUTE_ACTIVATION=0'
+          echo 'PRODUCT_TIER_MUTATION=0'
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'PRIVATE_PAYLOAD_OUTPUT=0'
+          echo 'RAW_RESPONSE_OUTPUT=0'
+
+          deployments="${RUNNER_TEMP}/b14-deployments.json"
+          curl -fsS \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/ai-revenue-korean-ai-platform/deployments" \
+            -o "${deployments}"
+          python3 - "${deployments}" "${EXPECTED_B14_VERSION}" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          scripts_dir = Path(".github/scripts").resolve()
+          sys.path.insert(0, str(scripts_dir))
+
+          from cloudflare_served_version import (  # noqa: E402
+              ServedVersionReason,
+              ServedVersionResolutionError,
+              resolve_served_version_id,
+          )
+
+          payload_path, expected = sys.argv[1:3]
+          with open(payload_path, encoding="utf-8") as fh:
+              payload = json.load(fh)
+
+          try:
+              served = resolve_served_version_id(payload)
+          except ServedVersionResolutionError as exc:
+              print("CANONICAL_SERVED_VERSION_RESOLVED=NO")
+              print(f"CANONICAL_SERVED_VERSION_REASON={exc.reason}")
+              raise SystemExit(f"served-version guard failed closed: {exc.reason}")
+
+          if served != expected:
+              print("CANONICAL_SERVED_VERSION_RESOLVED=NO")
+              print(f"CANONICAL_SERVED_VERSION_REASON={ServedVersionReason.VERSION_ID}")
+              print("B14_SERVED_VERSION_MISMATCH=YES")
+              raise SystemExit("active served version does not match expected version")
+
+          print(f"CANONICAL_SERVED_VERSION_RESOLVED={served}")
+          print("CANONICAL_SERVED_VERSION_REUSED=YES")
+          print("HISTORICAL_DEPLOYMENT_ACCEPTED=NO")
+          print("B14_EXPECTED_VERSION_AT_100=PASS")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+      - name: Run one-shot comparative benchmark
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="${RUNNER_TEMP}/b14-comparative-benchmark-evidence.json"
+          python .github/scripts/b14_model_evaluation_live.py "${CANDIDATE_SELECTOR}" --authorized-live-run | tee "${evidence}"
+          grep -Eq '"evidence_schema": "padiem-b14-comparative-benchmark-v1"' "${evidence}"
+          grep -Eq '"retry": 0' "${evidence}"
+          grep -Eq '"fallback": 0' "${evidence}"
+          grep -Eq '"response_hash": "[0-9a-f]{64}"' "${evidence}"
+          grep -Eq '"latency_ms": [0-9]+' "${evidence}"
+          if [ "${CANDIDATE_SELECTOR}" = all-five ]; then
+            grep -Eq '"benchmark_post_count": 30' "${evidence}"
+            grep -Eq '"max_all_five_posts": 30' "${evidence}"
+          else
+            grep -Eq '"benchmark_post_count": 6' "${evidence}"
+          fi
+
+      - name: Upload bounded comparative evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b14-comparative-benchmark-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/b14-comparative-benchmark-evidence.json
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Record immutable execution locks
+        if: always()
+        shell: bash
+        run: |
+          echo 'B14_DEPLOY=0'
+          echo 'ENGINE_DEPLOY=0'
+          echo 'SECRET_VALUE_READ=0'
+          echo 'ROUTE_ACTIVATION=0'
+          echo 'PRODUCT_TIER_MUTATION=0'
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'PRIVATE_PAYLOAD_OUTPUT=0'
+          echo 'RAW_RESPONSE_OUTPUT=0'
