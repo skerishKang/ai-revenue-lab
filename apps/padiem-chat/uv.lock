@@ -196,8 +196,10 @@ requires-dist = [
     { name = "pypdfium2", marker = "extra == 'dev'", specifier = "==5.13.0" },
     { name = "pypdfium2", marker = "extra == 'render'", specifier = "==5.13.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8,<10" },
+    { name = "reportlab", marker = "extra == 'authoring'", specifier = "==5.0.1" },
+    { name = "reportlab", marker = "extra == 'dev'", specifier = "==5.0.1" },
 ]
-provides-extras = ["tools", "documents", "render", "tables", "dev"]
+provides-extras = ["tools", "documents", "render", "tables", "authoring", "dev"]
 
 [[package]]
 name = "padiem-ai-engine-client"
