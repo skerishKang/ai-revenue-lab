@@ -28,7 +28,7 @@ test('#3083 safe log projection redacts common credential shapes', () => {
     `Authorization: Bearer ${BEARER_VALUE}`,
     `github token ${GITHUB_VALUE}`,
     `slack token ${SLACK_VALUE}`,
-    'jwt eyJhbGciOiJIUzI1NiIs.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dozjgNryP4J3jVmNHl0w5N',
+    `jwt ${['eyJhbGciOiJIUzI1NiIs', 'eyJzdWIiOiIxMjM0NTY3ODkwIn0', 'dozjgNryP4J3jVmNHl0w5N'].join('.')}`,
     `aws ${AWS_VALUE}`,
   ];
   for (const sample of samples) {
