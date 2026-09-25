@@ -88,12 +88,32 @@ def test_default_cli_is_inert_and_records_source_slice_invariants(capsys) -> Non
     assert "PRODUCTION_MUTATION=0" in output
 
 
-def test_safe_summary_excludes_raw_payloads() -> None:
+def test_safe_summary_preserves_bounded_comparative_evidence_only() -> None:
     calls: list[dict] = []
     result = module.run_comparative_benchmark("agnes", _transport(calls))
+    first_case = result["reports"][0]["cases"][0]
+    expected_hash = first_case["response_hash"]
+    expected_latency = first_case["latency_ms"]
+
+    # Upstream-controlled diagnostic-like values must never be echoed even when
+    # a future provider violates the expected response contract.
+    first_case["actual_model"] = "PRIVATE-UPSTREAM-DIAGNOSTIC"
+    first_case["attempt_count"] = "PRIVATE-ATTEMPT"
+
     summary = module._safe_summary(result)
+    decoded = json.loads(summary)
+
+    assert decoded["evidence_schema"] == "padiem-b14-comparative-benchmark-v1"
+    assert decoded["execution"] == "LIVE_WORKFLOW_DISPATCH"
+    assert decoded["benchmark_post_count"] == 6
+    assert decoded["reports"][0]["cases"][0]["response_hash"] == expected_hash
+    assert decoded["reports"][0]["cases"][0]["latency_ms"] == expected_latency
+    assert "objective_checks" in decoded["reports"][0]["cases"][0]
+    assert "manual_review" in decoded["reports"][0]["cases"][0]
+    assert decoded["reports"][0]["cases"][0]["actual_model_match"] is False
+    assert decoded["reports"][0]["cases"][0]["attempt_count_one"] is False
+
     assert "messages" not in summary
-    assert "content" not in summary
-    assert "benchmark_post_count=6" not in summary
-    assert '"benchmark_post_count": 6' in summary
-    assert "PRIVATE" not in summary
+    assert '"content"' not in summary
+    assert "PRIVATE-UPSTREAM-DIAGNOSTIC" not in summary
+    assert "PRIVATE-ATTEMPT" not in summary
