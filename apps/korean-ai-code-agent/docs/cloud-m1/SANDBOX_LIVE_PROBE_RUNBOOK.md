@@ -132,6 +132,12 @@ Source-only candidate for the current Cloud M1 run-local ephemeral-data model:
 
 Metadata and link-local blocking remain `UNPROVEN` until a live negative test. The profile is request shape only and does not call GCP or prove `/dev/kvm`, Local SSD plus nested virtualization, metadata blocking, process-tree death, or terminal delete state.
 
+### GCP Seoul N2 future live-probe source gate
+
+The source gate is a pre-dispatch contract only. Before any future provider call, it requires an exact 40-hex current-main SHA, the exact marker `CENTRAL_GCP_N2_LIVE_PROBE=YES`, one bounded Seoul zone, Padiem TTL 60–900 seconds, and the canonical `gcp_seoul_n2` profile/plan correlation. It permits only one fresh resource lineage and requires cleanup and terminal verification even when a probe fails.
+
+The gate is closed in this slice: `live_dispatch_allowed=NO`, `GCP_N2_LIVE_DISPATCH_TRIGGERED=False`, and the future job reports `LIVE_PROVIDER_CALL=BLOCKED_NOT_IMPLEMENTED`. No GCP project, VM, disk, VPC, service account, credential, or provider request is created or bound. A future authorized implementation must still perform and record the live evidence for `/dev/kvm`, Local SSD plus nested KVM, metadata/link-local negative tests, deny-default egress, host/secret non-inheritance, CPU/memory/disk/process hard limits, full process-tree death after cancellation and TTL, DELETE terminal non-resurrection, exact revision/hook suppression, and bounded redacted artifacts/logs. Documentation is not runtime evidence.
+
 ## Live probe coverage
 
 The live plan contains exactly one probe for every current `SandboxProviderCapabilities` control. Missing or duplicate controls are rejected before a result can be constructed.
