@@ -201,7 +201,10 @@ The accepted PNG-canonical slice is now implemented and published as a Draft PR.
 ```text
 IMPLEMENTATION_COMMIT=835a4f1338093aa73ad6b0f8775c38169f2b0daa
 DRAFT_PR=https://github.com/skerishKang/ai-revenue-lab/pull/3079
-DRAFT_PR_HEAD=835a4f1338093aa73ad6b0f8775c38169f2b0daa
+DRAFT_PR_STATE=OPEN_DRAFT
+FINAL_IMPLEMENTATION_HEAD=76cb3362f73325600bed5c8f05ddc80a2aa85fb3
+EXACT_HEAD_CI=PASS
+EXACT_HEAD_CHECKS=13 successful, 0 failing
 CORE_FOCUSED_TESTS=83 passed, 13 subtests passed
 AFFECTED_TESTS=438 passed, 43 subtests passed
 COMPILEALL=PASS
@@ -215,5 +218,5 @@ PRODUCTION_MUTATION=0
 
 The implementation uses the existing Core image inspection/transform authority, accepts PNG and JPEG input, canonicalizes both to PNG, writes only `BinData/BIN####.png` with `image/png`, and exposes a bounded KAgent `hwpx.insert_image` facade under the existing `CAPABILITY_HWPX_EDIT`. It uses the existing HWPX member reader, serializer splice seam, package validation, text readback, and package-preserving mutation contract. It adds no second HWPX parser, image decoder, archive writer, network, provider, filesystem-write, or Production surface. Direct JPEG embedding remains deferred.
 
-The facade proves output intake, package validation, picture readback, section placement, HWPUNIT receipts, and unrelated member preservation. The exact-head GitHub checks were still pending when this addendum was prepared; the PR remains Draft and no Ready, merge, issue-close, provider, or Production action was taken.
+The facade proves output intake, package validation, picture readback, section placement, HWPUNIT receipts, and unrelated member preservation. Exact-head GitHub CI completed successfully at `76cb3362f73325600bed5c8f05ddc80a2aa85fb3`: 13 checks succeeded and none failed. The PR remains Draft and no Ready, merge, issue-close, provider, or Production action was taken.
 
