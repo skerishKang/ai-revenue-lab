@@ -1,0 +1,23 @@
+{
+  "family": "Padiem Noto Sans KR Authoring Test",
+  "license": "OFL-1.1",
+  "license_file": "OFL.txt",
+  "source_repository": "https://github.com/google/fonts",
+  "source_commit": "23e54b51ddffbc7713c583748e3bd86f62b1fa4a",
+  "source_path": "ofl/notosanskr/NotoSansKR[wght].ttf",
+  "source_size": 10414588,
+  "source_sha256": "194018e6b2b293a7964f037b25c0249ce1418bc9ab3c971060a03aa57861e252",
+  "upstream_repository": "https://github.com/notofonts/noto-cjk",
+  "upstream_commit": "523d033d6cb47f4a80c58a35753646f5c3608a78",
+  "subsetter": "fonttools==4.66.0",
+  "transformations": [
+    "instantiate variable weight to static wght=400",
+    "subset to the explicit Korean and ASCII fixture corpus",
+    "rename family and PostScript names",
+    "set deterministic head timestamps"
+  ],
+  "subset_path": "PadiemNotoSansKRAuthoringTest-Regular.ttf",
+  "subset_size": 62604,
+  "subset_sha256": "6167552e625694a57d20b2d5ba69a2c9db60a4d8b2a4488959ecace4e200678b",
+  "runtime_bundle": false
+}
