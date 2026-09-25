@@ -16,6 +16,10 @@ on:
     paths:
       - '.github/scripts/b14_candidate_live_smoke.py'
       - '.github/tests/test_b14_candidate_live_smoke.py'
+      - '.github/scripts/b14_model_evaluation.py'
+      - '.github/tests/test_b14_model_evaluation.py'
+      - 'apps/padiem-chat/tests/fixtures/padiem_tier_benchmark_v1.json'
+      - 'apps/padiem-chat/tests/test_tier_benchmark_corpus.py'
       - '.github/workflows/b14-candidate-live-smoke.yml'
   workflow_dispatch:
     inputs:
@@ -70,6 +74,14 @@ jobs:
           set -euo pipefail
           python -m pip install --quiet pytest
           python -m pytest -q .github/tests/test_b14_candidate_live_smoke.py
+
+      - name: Run model-evaluation harness and shared fixture contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest -q \
+            .github/tests/test_b14_model_evaluation.py \
+            apps/padiem-chat/tests/test_tier_benchmark_corpus.py
 
       - name: Pin the provider-neutral contract
         shell: bash
