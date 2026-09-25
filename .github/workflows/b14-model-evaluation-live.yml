@@ -76,9 +76,13 @@ jobs:
         shell: bash
         run: python -m pytest -q .github/tests/test_b14_model_evaluation_live.py .github/tests/test_b14_model_evaluation.py
 
-      - name: Re-run shared fixture contract
+      - name: Re-run shared fixture and served-version contracts
         shell: bash
-        run: python -m pytest -q apps/padiem-chat/tests/test_tier_benchmark_corpus.py
+        run: |
+          set -euo pipefail
+          python -m pytest -q \
+            apps/padiem-chat/tests/test_tier_benchmark_corpus.py \
+            .github/tests/test_cloudflare_served_version.py
 
       - name: Pin source-only safety and call-cap contract
         shell: bash
