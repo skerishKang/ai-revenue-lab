@@ -38,6 +38,7 @@ Documentation-only evidence is never sufficient for provider selection.
 | Daytona | isolated sandbox with dedicated kernel/filesystem/network stack; container and VM classes documented | strict block-all / CIDR / domain policy on applicable tiers | wall-clock TTL, allocated CPU/RAM/disk, explicit delete/ephemeral options | Strong live-probe candidate; selected sandbox class/tier and no-reuse/teardown semantics must be proven exactly |
 | Runloop | dedicated MicroVM / VM-based Devbox isolation | deny-all and hostname allowlists through Network Policies | configurable CPU/memory/storage; shutdown/suspend lifecycle | Strong live-probe candidate; M1 must force an explicit deny-all policy and prove hard wall-clock lifetime/process/teardown controls |
 | E2B | Firecracker microVM | current SDK documents `allow_internet_access=False`, equivalent to deny-out for all IPv4 | timeout with kill default, explicit kill, CPU/memory/disk metrics | Strong live-probe candidate after current SDK update; resource hard-limit, metadata, process, artifact and exact teardown controls still need proof |
+| GCP Seoul N2 | nested KVM L1 host plus L2 guest; Intel N2 in `asia-northeast3` | dedicated VPC and explicit deny-default egress are required; metadata/link-local blocking unproven | Local SSD is required for current run-local data; future max-run-duration must `DELETE`; no MIG/snapshot/resume | Source-only BYOC research profile; no provider call, resource creation, or live evidence |
 
 ## Modal
 
@@ -148,6 +149,35 @@ Cloud M1 constraints if prototyped:
 - no snapshots/persistent reuse;
 - prove exact hard CPU/memory/disk/process constraints if used for M1;
 - prove provider metadata blocking and the full teardown/artifact/output control set through current live evidence.
+
+## GCP Seoul N2 source-only profile
+
+The corrected BYOC storage decision makes GCP Seoul Intel N2 the leading research lane for the current Cloud M1 model. N4 remains a possible nested-virtualization family, but it cannot satisfy this profile while run-local data requires Local SSD.
+
+The canonical source profile pins:
+
+- `gcp_seoul_n2` candidate identity;
+- `asia-northeast3-a`, `asia-northeast3-b`, or `asia-northeast3-c`;
+- N2, Intel, Haswell-or-newer, nested virtualization enabled;
+- Local SSD enabled for run-local ephemeral data;
+- dedicated non-default VPC, deny-default egress, no public IP, no public ports, and no guest secrets;
+- no MIG auto-recreation, snapshot reuse, or resume;
+- Padiem wall-clock TTL no greater than the canonical Cloud M1 bound, with future VM run-duration action `DELETE` rather than `STOP`;
+- exact revision verification and explicit delete/terminal verification.
+
+The source validator rejects the wrong region, zone, machine family, CPU platform, storage choice, lifecycle action, network posture, or TTL. It is pure request-shape validation. It does not call GCP or infer that the profile is safe.
+
+Official sources reviewed:
+
+- https://docs.cloud.google.com/compute/docs/instances/nested-virtualization/overview
+- https://docs.cloud.google.com/compute/docs/instances/nested-virtualization/enabling
+- https://docs.cloud.google.com/compute/docs/regions-zones
+- https://docs.cloud.google.com/compute/docs/disks/local-ssd
+- https://docs.cloud.google.com/compute/docs/instances/limit-vm-runtime
+- https://docs.cloud.google.com/vpc/docs/firewalls
+- https://docs.cloud.google.com/compute/docs/metadata/overview
+
+Metadata/link-local blocking remains `UNPROVEN` until an in-sandbox negative test. `/dev/kvm`, the Local SSD plus nested-virtualization combination, pids/process-tree death, resource hard limits, delete non-resurrection, and bounded artifact/log behavior also remain live evidence requirements.
 
 ## What this review does not prove
 
