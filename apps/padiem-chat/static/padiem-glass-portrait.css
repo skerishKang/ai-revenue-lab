@@ -219,8 +219,11 @@ html[data-theme="padiem-glass"] .glass-variant-option:focus-visible {
     width: min(736px, calc(100vw - 264px - 360px - 108px));
   }
 
+  /* 56px wider than the art: the photo is right-aligned, so the extra width
+   * only pushes the box's left edge behind the conversation surface and closes
+   * the page-coloured gap that otherwise reads as an outline. */
   html[data-theme="padiem-glass"] .main-panel::before {
-    width: clamp(360px, 32vw, 560px);
+    width: calc(clamp(360px, 32vw, 560px) + 56px);
     right: max(0px, calc((100vw - 1740px) / 2));
     background-size: auto min(88vh, 900px);
     opacity: var(--glass-art-opacity);
@@ -458,7 +461,7 @@ html[data-theme="padiem-glass"] .app-shell[data-state="chat"] .composer-note {
 
   html[data-theme="padiem-glass"] .main-panel::before {
     right: 0 !important;
-    width: clamp(300px, 32vw, 380px) !important;
+    width: calc(clamp(300px, 32vw, 380px) + 56px) !important;
     background-size: auto min(78vh, 780px) !important;
     opacity: var(--glass-art-opacity) !important;
   }
