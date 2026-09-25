@@ -66,7 +66,7 @@ test('duplicate completion is idempotent and reversal preserves history', () => 
   assert.equal(duplicate.decision, 'IGNORE_IDEMPOTENT_DUPLICATE');
   assert.equal(duplicate.balanceDeltaMinor, 0);
   assert.equal(duplicate.appendImmutableAuditEvent, false);
-  assert.equal(duplicate.next, created);
+  assert.deepEqual(duplicate.next, created);
 
   const reversed = applyVerifiedCompletion([created], offer, envelope({ ...event, eventType: 'REVERSED' }), observedAt);
   assert.equal(reversed.decision, 'REVERSE_COMPLETED_ACTION');
@@ -92,7 +92,7 @@ test('duplicate REVERSED returns the existing reversed record with zero delta an
   assert.equal(secondReversal.appendImmutableAuditEvent, false);
   assert.equal(secondReversal.externalPayoutAllowed, false);
   assert.notEqual(secondReversal.next, null);
-  assert.equal(secondReversal.next, reversedRecord);
+  assert.deepEqual(secondReversal.next, reversedRecord);
   assert.equal(secondReversal.next?.state, 'REVERSED');
   // History is preserved verbatim: no second reversal, no reopened record.
   assert.equal(secondReversal.next?.firstObservedAt, reversedRecord.firstObservedAt);

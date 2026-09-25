@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { assessPointsClaim, availableClaimableMinor, claimRecordKey, DEFAULT_POINTS_CLAIM_STATE } from '../src/claim.js';
 import type { PointsClaimRequest, PointsClaimState } from '../src/claim.js';
-import type { CompletionLedgerRecord } from '../src/domain.js';
+import { MAX_IDENTIFIER_LENGTH, type CompletionLedgerRecord } from '../src/domain.js';
 
 function record(overrides: Partial<CompletionLedgerRecord> = {}): CompletionLedgerRecord {
   const base = {
@@ -272,6 +272,51 @@ test('a non-record entry can never make a claim claimable', () => {
     assert.equal(result.claimableMinor, 0);
     assert.equal(result.payoutAllowed, false);
   }
+});
+
+test('throwing scoped record accessors reject the claim instead of escaping', () => {
+  const throwing = { ...record() } as Record<string, unknown>;
+  Object.defineProperty(throwing, 'providerId', {
+    enumerable: true,
+    get() { throw new Error('hostile claim getter'); },
+  });
+
+  const assessment = assessPointsClaim([throwing as unknown as CompletionLedgerRecord], request);
+  assert.equal(assessment.decision, 'REJECT_INVALID_CLAIM');
+  assert.equal(assessment.claimAccepted, false);
+  assert.equal(assessment.claimableMinor, 0);
+  assert.equal(assessment.payoutAllowed, false);
+
+  const available = availableClaimableMinor([throwing as unknown as CompletionLedgerRecord], request);
+  assert.equal(available.availableMinor, 0);
+  assert.deepEqual(available.considered, []);
+});
+
+test('a divergent reward getter is read once and cannot replace the validated claim value', () => {
+  let reads = 0;
+  const divergent = { ...record() } as Record<string, unknown>;
+  Object.defineProperty(divergent, 'rewardAmountMinor', {
+    enumerable: true,
+    get() {
+      reads += 1;
+      return reads === 1 ? 500 : 900_000_000;
+    },
+  });
+
+  const result = assessPointsClaim([divergent as unknown as CompletionLedgerRecord], request);
+  assert.equal(result.decision, 'ASSESS_CLAIMABLE');
+  assert.equal(result.availableMinor, 500);
+  assert.equal(result.claimableMinor, 500);
+  assert.equal(result.payoutAllowed, false);
+  assert.equal(reads, 1);
+});
+
+test('an over-length identifier is rejected at the shared identifier boundary', () => {
+  const overLength = 'x'.repeat(MAX_IDENTIFIER_LENGTH + 1);
+  const result = assessPointsClaim([record({ providerTransactionId: overLength })], request);
+  assert.equal(result.decision, 'REJECT_INVALID_CLAIM');
+  assert.equal(result.claimAccepted, false);
+  assert.equal(result.payoutAllowed, false);
 });
 
 test('assessments are frozen and contain no secret, token, or raw provider payload', () => {

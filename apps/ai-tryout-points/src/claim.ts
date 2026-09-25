@@ -3,6 +3,9 @@ import {
   type ActionType,
   type CompletionLedgerRecord,
 } from './domain.js';
+import { isValidLedgerRecord, safeSumMinor, snapshotLedgerRecord } from './ledger-history.js';
+
+export { safeSumMinor } from './ledger-history.js';
 
 /** Canonical record key used by the claim gate: (providerId, offerId, providerTransactionId). */
 export function claimRecordKey(record: Pick<CompletionLedgerRecord, 'providerId' | 'offerId' | 'providerTransactionId'>): string {
@@ -121,49 +124,17 @@ function validClaimAmount(value: unknown): value is number {
   return typeof value === 'number' && Number.isFinite(value) && Number.isSafeInteger(value) && value > 0;
 }
 
-function validTimestamp(value: unknown): value is string {
-  return typeof value === 'string' && value.length > 0 && Number.isFinite(Date.parse(value));
-}
-
 /**
  * A record is claimable input only when every field it contributes to the available
- * amount is well-formed. This is the fail-closed record boundary: a record with a
- * non-finite, non-integer, zero, or negative reward, a malformed identifier, an
- * unexpected action or state, a bad currency, or an unparseable timestamp can never be
- * counted toward a claim and can never make a claim `ASSESS_CLAIMABLE`.
+ * amount is well-formed. This delegates to the one authoritative ledger-record
+ * validator so the claim path and the completion path can never disagree about what
+ * "well-formed" means: a record with a non-finite, non-integer, zero, or negative
+ * reward, a malformed identifier, an unexpected action or state, a bad currency, an
+ * unparseable or self-contradictory timestamp, or a malformed observed-nonce history
+ * can never be counted toward a claim and can never make a claim `ASSESS_CLAIMABLE`.
  */
 export function isValidClaimRecord(record: CompletionLedgerRecord): boolean {
-  if (!record || typeof record !== 'object') return false;
-  if (!isSafeIdentifier(record.providerId)) return false;
-  if (!isSafeIdentifier(record.offerId)) return false;
-  if (!isSafeIdentifier(record.providerTransactionId)) return false;
-  if (!isSafeIdentifier(record.externalUserId)) return false;
-  if (record.actionType !== 'TRYOUT_COMPLETED' && record.actionType !== 'QUALITY_CHECK_COMPLETED') return false;
-  if (record.state !== 'COMPLETED' && record.state !== 'REVERSED') return false;
-  if (typeof record.rewardAmountMinor !== 'number') return false;
-  if (!Number.isFinite(record.rewardAmountMinor)) return false;
-  if (!Number.isSafeInteger(record.rewardAmountMinor)) return false;
-  if (record.rewardAmountMinor <= 0) return false;
-  if (typeof record.rewardCurrency !== 'string' || !/^[A-Z]{3}$/.test(record.rewardCurrency)) return false;
-  if (!validTimestamp(record.providerOccurredAt)) return false;
-  if (!validTimestamp(record.firstObservedAt)) return false;
-  if (!validTimestamp(record.lastObservedAt)) return false;
-  return true;
-}
-
-/**
- * Sum minor-unit amounts with overflow and precision safety. A running total that ever
- * leaves the safe-integer range is reported as an unsafe sum so the caller can fail
- * closed instead of crediting a rounded, inexact total.
- */
-export function safeSumMinor(amounts: readonly number[]): number | null {
-  let total = 0;
-  for (const amount of amounts) {
-    if (!Number.isSafeInteger(amount) || amount < 0) return null;
-    total += amount;
-    if (!Number.isSafeInteger(total)) return null;
-  }
-  return total;
+  return isValidLedgerRecord(record);
 }
 
 function validRequestedKeys(keys: unknown): keys is readonly string[] {
@@ -201,16 +172,24 @@ interface InvalidScope {
 
 /**
  * Resolve the claim scope and independently available amount. Fails closed (`invalid`)
- * when any selected record is malformed (bad identifiers, reward, currency, state, or
- * timestamp) or when the available sum is not a safe integer. Reversed records are
+ * when any supplied record is malformed (bad identifiers, reward, currency, state,
+ * timestamp, or nonce history) or when the available sum is not a safe integer. Reversed records are
  * reported separately and never counted as available.
  */
-function resolveScope(
+function resolveScopeUnsafe(
   records: readonly CompletionLedgerRecord[],
   request: PointsClaimRequest,
 ): ResolvedScope | InvalidScope {
-  const scoped = records.filter((record) => record && typeof record === 'object'
-    && record.providerId === request.providerId
+  // Snapshot every readable record before scope selection and summation. Validation and
+  // balance calculation must consume the same immutable values; a stateful getter must
+  // not pass validation and then contribute a different amount to the claim.
+  const snapshots = records.map((record) => snapshotLedgerRecord(record));
+  // The claim input is authoritative history, just like the completion input. A bad
+  // record is not filtered out by scope before validation, and no caller-owned getter
+  // is read again for summation.
+  if (snapshots.some((record) => record === null)) return { kind: 'invalid' };
+  const validSnapshots = snapshots as CompletionLedgerRecord[];
+  const scoped = validSnapshots.filter((record) => record.providerId === request.providerId
     && record.offerId === request.offerId
     && record.externalUserId === request.externalUserId);
   const requestedKeys = request.recordKeys;
@@ -240,6 +219,20 @@ function resolveScope(
     });
 
   return { kind: 'ok', selected, availableMinor: available, considered, reversed, unknown, currencyMismatch };
+}
+
+function resolveScope(
+  records: readonly CompletionLedgerRecord[],
+  request: PointsClaimRequest,
+): ResolvedScope | InvalidScope {
+  try {
+    return resolveScopeUnsafe(records, request);
+  } catch {
+    // Claim input is not durable persistence, but a throwing getter/iterator is still
+    // not a valid scope. Keep the public claim boundary fail-closed instead of leaking
+    // an exception from source-only eligibility assessment.
+    return { kind: 'invalid' };
+  }
 }
 
 /**

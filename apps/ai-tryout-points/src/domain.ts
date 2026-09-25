@@ -122,8 +122,11 @@ export type CompletionTransitionDecisionCode =
   | 'REJECT_PER_USER_LIMIT'
   | 'REJECT_FUNDED_BUDGET_EXHAUSTED'
   | 'REJECT_PROVIDER_CLOCK_SKEW'
+  | 'REJECT_OBSERVATION_TIME_REGRESSION'
+  | 'REJECT_AMOUNT_OVERFLOW'
   | 'REJECT_NONCE_REPLAY'
-  | 'REJECT_NONCE_HISTORY_EXHAUSTED';
+  | 'REJECT_NONCE_HISTORY_EXHAUSTED'
+  | 'REJECT_INVALID_LEDGER_HISTORY';
 
 export interface CompletionTransitionDecision {
   readonly decision: CompletionTransitionDecisionCode;

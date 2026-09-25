@@ -8,14 +8,9 @@ import {
   type SignedCompletionEvent,
   type TryoutOffer,
 } from './domain.js';
+import { safeAddMinor, validateLedgerHistory } from './ledger-history.js';
 import { isVerifiedCompletionEnvelope } from './signed-completion.js';
 import type { VerifiedCompletionEnvelope } from './signed-completion.js';
-
-export interface LedgerUsage {
-  readonly completedByUser: number;
-  readonly completedCount: number;
-  readonly creditedMinor: number;
-}
 
 export interface ApplyVerifiedCompletionOptions {
   /**
@@ -56,19 +51,6 @@ export function nonceKeyOf(record: CompletionLedgerRecord): string {
  */
 export function observedNonceKeysOf(record: CompletionLedgerRecord): readonly string[] {
   return Object.freeze([...new Set(record.observedNonces.map((nonce) => completionNonceKey(record.providerId, nonce)))]);
-}
-
-function usage(records: readonly CompletionLedgerRecord[], offer: TryoutOffer, userId: string): LedgerUsage {
-  const relevant = records.filter((record) => record.providerId === offer.providerId
-    && record.offerId === offer.offerId
-    && record.rewardCurrency === offer.rewardCurrency
-    && record.state === 'COMPLETED');
-  const userCount = relevant.filter((record) => record.externalUserId === userId).length;
-  return {
-    completedByUser: userCount,
-    completedCount: relevant.length,
-    creditedMinor: relevant.reduce((sum, record) => sum + record.rewardAmountMinor, 0),
-  };
 }
 
 function result(
@@ -141,8 +123,9 @@ function createRecord(event: SignedCompletionEvent, observedAt: string): Complet
 
 /**
  * Register a newly observed provider+nonce identity on an existing record, preserving
- * append-only history. The list is bounded: an already-seen nonce is a no-op, a new
- * nonce is appended, and exceeding `MAX_OBSERVED_NONCES` fails closed rather than
+ * append-only history. The list is bounded: an already-seen nonce does not grow the
+ * list but may advance `lastObservedAt`, a new nonce is appended, and exceeding
+ * `MAX_OBSERVED_NONCES` fails closed rather than
  * dropping a nonce (which would reopen a replay hole). The canonical `nonce` field
  * and the completion evidence are never rewritten.
  */
@@ -152,7 +135,11 @@ function withObservedNonce(
   observedAt: string,
 ): CompletionLedgerRecord | null {
   const observed = record.observedNonces;
-  if (observed.includes(nonce)) return record;
+  if (observed.includes(nonce)) {
+    return observedAt === record.lastObservedAt
+      ? record
+      : Object.freeze({ ...record, lastObservedAt: observedAt });
+  }
   if (observed.length >= MAX_OBSERVED_NONCES) return null;
   return Object.freeze({
     ...record,
@@ -180,6 +167,15 @@ export function applyVerifiedCompletion(
   // Unauthenticated input is rejected before any authority, conflict, or audit decision.
   if (!isVerifiedCompletionEnvelope(envelope)) return reject('REJECT_INVALID_EVENT');
   const event = envelope.event;
+
+  // The supplied `records` array is the authoritative history, so it is validated in
+  // full before any replay lookup, usage sum, duplicate comparison, or reversal
+  // decision reads it. A malformed record fails the whole transition closed: no valid
+  // sibling may mask it, and the caller never learns a partial or rounded history.
+  const validation = validateLedgerHistory(records, offer, event.externalUserId);
+  if (!validation.ok) return reject('REJECT_INVALID_LEDGER_HISTORY');
+  const history = validation.history;
+
   if (event.actionType === 'CLICK' || event.actionType === 'VISIT') return reject('REJECT_CLICK_OR_VISIT');
   if (event.actionType !== 'TRYOUT_COMPLETED' && event.actionType !== 'QUALITY_CHECK_COMPLETED') return reject('REJECT_INVALID_EVENT');
   if (event.providerId !== offer.providerId || event.offerId !== offer.offerId) return reject('REJECT_OFFER_IDENTITY_MISMATCH');
@@ -195,15 +191,26 @@ export function applyVerifiedCompletion(
   // A record remembers every nonce ever observed for it, so a nonce first seen on a
   // duplicate completion or on a reversal is equally bound to this transaction.
   const nonceKey = completionNonceKey(event.providerId, event.nonce);
-  const nonceOwner = records.find((record) => observedNonceKeysOf(record).includes(nonceKey));
+  const nonceOwner = history.records.find((record) => observedNonceKeysOf(record).includes(nonceKey));
   if (nonceOwner && (nonceOwner.offerId !== event.offerId || nonceOwner.providerTransactionId !== event.providerTransactionId)) {
     return result('REJECT_NONCE_REPLAY', null, 0, true);
   }
 
   const recordKey = completionRecordKey(event.providerId, event.offerId, event.providerTransactionId);
-  const existing = records.find((record) => recordKeyOf(record) === recordKey);
+  const existing = history.records.find((record) => recordKeyOf(record) === recordKey);
   if (existing) {
     if (!sameIdentityAndValue(existing, event)) return reject('REJECT_IDENTITY_OR_VALUE_MISMATCH');
+    // A completed callback can never reopen a terminal reversal. This authenticated
+    // conflict remains audited even when its observation time is also backdated.
+    if (existing.state === 'REVERSED' && event.eventType === 'COMPLETED') {
+      return result('REJECT_REOPEN_AFTER_REVERSAL', null, 0, true);
+    }
+    // Observation time is server-owned and append-only. A backdated duplicate or
+    // reversal must not create `lastObservedAt < firstObservedAt` or roll history
+    // backward, and it must never be silently rewritten into a later time.
+    if (Date.parse(observedAt) < Date.parse(existing.lastObservedAt)) {
+      return reject('REJECT_OBSERVATION_TIME_REGRESSION');
+    }
     // The incoming callback observes a provider+nonce identity for this transaction,
     // even when it is a duplicate. Remember it so a later reuse for a different
     // transaction is detected. Re-observing an already-remembered nonce is a no-op.
@@ -212,14 +219,14 @@ export function applyVerifiedCompletion(
     if (existing.state === 'REVERSED') {
       // A duplicate REVERSED is idempotent: return the preserved reversed record,
       // zero delta, and no bogus audit event. It never reopens.
-      if (event.eventType === 'REVERSED') return result('IGNORE_IDEMPOTENT_DUPLICATE', registered, 0, false);
-      return result('REJECT_REOPEN_AFTER_REVERSAL', null, 0, true);
+      return result('IGNORE_IDEMPOTENT_DUPLICATE', registered, 0, false);
     }
     if (event.eventType === 'COMPLETED') return result('IGNORE_IDEMPOTENT_DUPLICATE', registered, 0, false);
     // Reversal preserves completion history: providerOccurredAt, firstObservedAt,
     // the canonical nonce, and every already-observed nonce are carried forward
-    // untouched. Only lastObservedAt advances.
-    const next = Object.freeze({ ...registered, state: 'REVERSED' as const, lastObservedAt: observedAt });
+    // untouched. `registered` already carries the validated non-regressing
+    // `lastObservedAt` for this observation.
+    const next = Object.freeze({ ...registered, state: 'REVERSED' as const });
     return result('REVERSE_COMPLETED_ACTION', next, -existing.rewardAmountMinor, true);
   }
 
@@ -229,9 +236,15 @@ export function applyVerifiedCompletion(
   }
   if (event.rewardAmountMinor !== offer.rewardAmountMinor || event.rewardCurrency !== offer.rewardCurrency) return reject('REJECT_IDENTITY_OR_VALUE_MISMATCH');
 
-  const current = usage(records, offer, event.externalUserId);
+  // Usage was already computed from fully validated history with checked addition.
+  const current = history.usage;
   if (current.completedByUser >= offer.perUserLimit) return reject('REJECT_PER_USER_LIMIT');
-  if (current.creditedMinor + event.rewardAmountMinor > offer.fundedBudgetMinor) return reject('REJECT_FUNDED_BUDGET_EXHAUSTED');
+  // A prospective total that leaves the safe-integer range is distinct from malformed
+  // historical input. The supplied history is valid; the new transition itself cannot
+  // be represented, so report a stable amount-overflow decision.
+  const prospective = safeAddMinor(current.creditedMinor, event.rewardAmountMinor);
+  if (prospective === null) return reject('REJECT_AMOUNT_OVERFLOW');
+  if (prospective > offer.fundedBudgetMinor) return reject('REJECT_FUNDED_BUDGET_EXHAUSTED');
 
   return result('CREDIT_COMPLETED_ACTION', createRecord(event, observedAt), event.rewardAmountMinor, true);
 }
