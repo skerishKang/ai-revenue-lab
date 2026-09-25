@@ -24,6 +24,11 @@ MAX_DOCUMENT_NAME_CHARS = 120
 MAX_DOCUMENT_CHARS = MAX_SEGMENT_TEXT_CHARS
 MAX_TEXT_DOCUMENT_BYTES = 96 * 1024
 MAX_BINARY_DOCUMENT_BYTES = 2 * 1024 * 1024
+#: Largest drawable extent, in HWPUNIT, this Core accepts for a picture block.
+#: One HWPUNIT is 1/7200 inch, so this is roughly 138 inches: far beyond any
+#: page, and bounded so a caller-supplied size can never inflate the section
+#: part without limit.
+MAX_HWPX_PICTURE_HWPUNIT = 1_000_000
 MAX_PDF_PAGES = 80
 MAX_PDF_PAGE_TEXT_CHARS = 16_000
 PDF_NATIVE_TEXT_PRESENT = "native_text_present"
@@ -424,13 +429,81 @@ class HwpxParsedTable:
     unsupported: tuple[str, ...]
 
 
+#: The exact ``hp:pic`` child set Core's single section producer emits, in
+#: order. The reader recognizes a picture only when this is its child sequence,
+#: so the read shape and the write shape are one contract expressed once here.
+#: A real Hancom picture carries more (``flip``, ``rotationInfo``,
+#: ``renderingInfo``, populated ``effects``); such a picture is deliberately
+#: *not* recognized, and therefore still fails the writable-subset gate.
+HWPX_PICTURE_CHILD_NAMES = (
+    "offset",
+    "orgSz",
+    "curSz",
+    "sz",
+    "pos",
+    "imgRect",
+    "imgClip",
+    "inMargin",
+    "imgDim",
+    "img",
+    "effects",
+    "outMargin",
+    "shapeComment",
+)
+
+#: Local names a recognized picture block is allowed to contain anywhere below
+#: its own paragraph. Anything else under the picture counts as unsupported.
+_HWPX_PICTURE_LOCAL_NAMES = frozenset(
+    {"pic", "runs", "run", "t", "pt0", "pt1", "pt2", "pt3"}
+).union(HWPX_PICTURE_CHILD_NAMES)
+
+#: The binary-item id grammar this reader accepts: the deterministic
+#: ``BIN####`` shape the image authority allocates. A manifest may legitimately
+#: carry other ids, so this bounds what the *writable picture subset* claims
+#: rather than what a package may contain. The length is ``BIN`` plus exactly
+#: four decimal digits, so a five-digit id is as much a different shape as a
+#: three-digit one.
+_HWPX_BINARY_ITEM_ID_MAX_CHARS = 7
+
+
+def is_hwpx_binary_item_id(value: object) -> bool:
+    """Whether a value has the deterministic ``BIN####`` id shape."""
+
+    if not isinstance(value, str) or len(value) != _HWPX_BINARY_ITEM_ID_MAX_CHARS:
+        return False
+    if not value.startswith("BIN") or not value[3:].isdigit():
+        return False
+    # ``str.isdigit`` also accepts non-ASCII digits, which are not the ASCII
+    # decimal the allocator emits and would not match a member name.
+    return all(character in "0123456789" for character in value[3:])
+
+
+@dataclass(frozen=True, slots=True)
+class HwpxParsedPicture:
+    """One recognized ``hp:pic``/``hc:img`` reference and its draw extent.
+
+    ``binary_item_id_ref`` is the ``hc:img/@binaryItemIDRef`` value, which names
+    a manifest item rather than a ZIP member: resolving it is a manifest lookup,
+    not a path authority. ``width_hwpunit``/``height_hwpunit`` are the HWPUNIT
+    draw size. ``unsupported`` lists every deviation that makes this picture
+    outside the writable subset, so a caller can refuse instead of rewriting a
+    shape the model does not own.
+    """
+
+    binary_item_id_ref: str
+    width_hwpunit: int
+    height_hwpunit: int
+    unsupported: tuple[str, ...] = ()
+
+
 @dataclass(frozen=True, slots=True)
 class HwpxSectionBlockFact:
-    """One ordered direct section block: paragraph or table."""
+    """One ordered direct section block: paragraph, table or picture."""
 
     kind: str
     paragraph: HwpxParsedParagraph | None = None
     table: HwpxParsedTable | None = None
+    picture: HwpxParsedPicture | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -457,6 +530,28 @@ def _last_hwpx_section_facts() -> tuple[HwpxSectionBlockFacts, ...] | None:
     """Return facts from the parse that produced the last public projection."""
 
     return _HWPX_SECTION_FACTS.get()
+
+
+def read_hwpx_section_facts(payload: bytes) -> tuple[HwpxSectionBlockFacts, ...]:
+    """Return the ordered structured facts of one HWPX package.
+
+    This is the public door onto the same single archive-and-XML walk that
+    produces :func:`parse_hwpx_sections`' projection: it calls that function and
+    then returns the facts the walk already computed, so a caller that needs
+    picture/table shape opens no second archive and parses no second XML. The
+    length check is the same integrity condition
+    :func:`padiem_ai_core.hwpx_package_serializer.deserialize_hwpx_package`
+    applies before trusting the side channel.
+    """
+
+    sections = parse_hwpx_sections(payload)
+    facts = _last_hwpx_section_facts()
+    if facts is None or len(facts) != len(sections):
+        raise DocumentNormalizationError(
+            "hwpx_missing_part",
+            "HWPX structured facts are unavailable.",
+        )
+    return facts
 
 
 @dataclass(frozen=True, slots=True)
@@ -538,14 +633,99 @@ def _table_fact(table: ElementTree.Element) -> HwpxParsedTable:
     return HwpxParsedTable(tuple(rows), tuple(dict.fromkeys(unsupported)))
 
 
+def _bounded_hwpunit(value: str | None) -> int | None:
+    """Read one positive decimal HWPUNIT attribute, or refuse it as absent."""
+
+    if value is None or not value.isdigit() or not all(c in "0123456789" for c in value):
+        return None
+    extent = int(value)
+    return extent if 0 < extent <= MAX_HWPX_PICTURE_HWPUNIT else None
+
+
+def _picture_fact(paragraph: ElementTree.Element) -> HwpxParsedPicture | None:
+    """Recognize Core's own bounded picture shape, or report the deviation.
+
+    A paragraph is a picture block only when it holds exactly one ``hp:pic``
+    whose child sequence, attributes and ``hc:img/@binaryItemIDRef`` are exactly
+    the ones the single section producer emits. A picture that differs in any
+    way is still reported — with every deviation named in ``unsupported`` — so
+    the writable-subset decoder refuses it instead of silently dropping a shape
+    the model does not own. ``None`` means the paragraph holds no picture at
+    all, which is an ordinary paragraph.
+    """
+
+    pictures = [node for node in paragraph.iter() if _local_name(node) == "pic"]
+    if not pictures:
+        return None
+
+    unsupported: list[str] = []
+    if len(pictures) > 1:
+        unsupported.append("multiple_pictures")
+    picture = pictures[0]
+
+    if _local_name(paragraph) != "p":  # pragma: no cover - callers pass a paragraph
+        unsupported.append("picture_outside_paragraph")
+    # A picture block owns its whole paragraph: a picture sharing a paragraph
+    # with a text run is a shape the model does not own.
+    if any(_local_name(node) == "t" for node in paragraph.iter() if node is not picture):
+        unsupported.append("picture_shares_paragraph_with_text")
+
+    child_names = tuple(_local_name(node) for node in picture)
+    if child_names != HWPX_PICTURE_CHILD_NAMES:
+        unsupported.append("picture_children:" + ",".join(child_names))
+    for node in picture.iter():
+        if node is not picture and _local_name(node) not in _HWPX_PICTURE_LOCAL_NAMES:
+            unsupported.append(f"picture_descendant:{_local_name(node)}")
+    if len(list(picture)) != len(HWPX_PICTURE_CHILD_NAMES):
+        unsupported.append("picture_child_count")
+
+    sizes: dict[str, tuple[int | None, int | None]] = {}
+    for name in ("orgSz", "curSz", "sz"):
+        holder = next((node for node in picture if _local_name(node) == name), None)
+        width = _bounded_hwpunit(None if holder is None else holder.get("width"))
+        height = _bounded_hwpunit(None if holder is None else holder.get("height"))
+        if width is None or height is None:
+            unsupported.append(f"picture_{name}_invalid")
+        sizes[name] = (width, height)
+    org_size, cur_size, draw_size = sizes["orgSz"], sizes["curSz"], sizes["sz"]
+    if None not in org_size and org_size != cur_size:
+        unsupported.append("picture_org_cur_size_mismatch")
+    if None not in cur_size and cur_size != draw_size:
+        unsupported.append("picture_cur_draw_size_mismatch")
+
+    image = next((node for node in picture if _local_name(node) == "img"), None)
+    reference = "" if image is None else (image.get("binaryItemIDRef") or "").strip()
+    if not is_hwpx_binary_item_id(reference):
+        unsupported.append("picture_binary_item_id_ref")
+
+    width, height = draw_size
+    return HwpxParsedPicture(
+        binary_item_id_ref=reference,
+        width_hwpunit=width or 0,
+        height_hwpunit=height or 0,
+        unsupported=tuple(dict.fromkeys(unsupported)),
+    )
+
+
 def _ordered_section_block_facts(*, index: int, root: ElementTree.Element, part: bytes) -> HwpxSectionBlockFacts:
     nodes = list(root.iter())
     legacy = tuple(_paragraph_fact(node) for node in nodes if _local_name(node) == "p")
     blocks: list[HwpxSectionBlockFact] = []
+    # Node identities covered by a *recognized* picture. A recognized picture is
+    # part of the writable subset, so its own nodes must not be counted as
+    # unsupported structure; an unrecognized picture contributes no ids here and
+    # is therefore still counted and refused.
+    picture_node_ids: set[int] = set()
     for child in root:
         local = _local_name(child)
         if local == "p":
-            blocks.append(HwpxSectionBlockFact("paragraph", paragraph=_paragraph_fact(child)))
+            picture = _picture_fact(child)
+            if picture is None:
+                blocks.append(HwpxSectionBlockFact("paragraph", paragraph=_paragraph_fact(child)))
+                continue
+            blocks.append(HwpxSectionBlockFact("picture", picture=picture))
+            if not picture.unsupported:
+                picture_node_ids.update(id(node) for node in child.iter())
         elif local == "tbl":
             blocks.append(HwpxSectionBlockFact("table", table=_table_fact(child)))
     return HwpxSectionBlockFacts(
@@ -558,7 +738,9 @@ def _ordered_section_block_facts(*, index: int, root: ElementTree.Element, part:
         structured_unsupported_nodes=sum(
             1
             for node in nodes
-            if node is not root and _local_name(node) not in {"p", "runs", "t", "tbl", "tr", "tc"}
+            if node is not root
+            and _local_name(node) not in {"p", "runs", "t", "tbl", "tr", "tc"}
+            and id(node) not in picture_node_ids
         ),
         legacy_unsupported_nodes=sum(
             1

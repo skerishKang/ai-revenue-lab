@@ -82,7 +82,7 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # pypdf reader; no process, network, filesystem, OCR, or second archive-walk
 # authority is introduced.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "f4615f823367778d9289d46bfbc3a18130c7d5c7da1b568d30a5b073b165b222",
+    CORE_PACKAGE / "document_normalization.py": "f47ac7d054aa219028b9d5a16836862c4016d8c03ef2906350ae1622b94455c1",
     CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
     CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
     CORE_TESTS / "test_document_normalization.py": "ba88eb112d5855751ba4316013daef60095e574ed8bb13441c479ad0cc70da5e",

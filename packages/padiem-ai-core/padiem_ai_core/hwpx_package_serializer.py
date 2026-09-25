@@ -31,8 +31,11 @@ from zipfile import ZIP_STORED, ZipFile, ZipInfo
 from .document_normalization import (
     MAX_BINARY_DOCUMENT_BYTES,
     MAX_DOCUMENT_CHARS,
+    MAX_HWPX_PICTURE_HWPUNIT,
     MAX_OOXML_ENTRIES,
+    HWPX_PICTURE_CHILD_NAMES,
     _last_hwpx_section_facts,
+    is_hwpx_binary_item_id,
     parse_hwpx_sections,
     validate_ooxml_member_name,
 )
@@ -52,9 +55,13 @@ MAX_HWPX_TABLE_CELLS = MAX_HWPX_TABLE_ROWS * MAX_HWPX_TABLE_COLUMNS
 MAX_HWPX_CELL_TEXT_CHARS = 4_000
 MAX_HWPX_PACKAGE_TABLE_CELLS = MAX_HWPX_TABLE_CELLS
 MAX_HWPX_PACKAGE_TEXT_CHARS = MAX_DOCUMENT_CHARS
+#: Largest number of picture blocks one content model may carry. Bounded so a
+#: model cannot be used to inflate a section part without limit.
+MAX_HWPX_PACKAGE_PICTURES = 32
 
 _SECTION_NAMESPACE = "http://www.hancom.co.kr/hwpml/2011/section"
 _PARAGRAPH_NAMESPACE = "http://www.hancom.co.kr/hwpml/2011/paragraph"
+_CORE_NAMESPACE = "http://www.hancom.co.kr/hwpml/2011/core"
 _SECTION_ROOT_TAG = f"{{{_SECTION_NAMESPACE}}}sec"
 _FIXED_ZIP_TIMESTAMP = (1980, 1, 1, 0, 0, 0)
 _XML_DECLARATION = '<?xml version="1.0" encoding="UTF-8"?>'
@@ -75,12 +82,27 @@ class HwpxTable:
 
 
 @dataclass(frozen=True, slots=True)
+class HwpxPicture:
+    """One bounded picture block: a ``BIN####`` reference and a draw extent.
+
+    ``binary_item_id_ref`` names a ``content.hpf`` manifest item, not a ZIP
+    member, so holding this value grants no package-path authority. The
+    dimensions are HWPUNIT (1/7200 inch).
+    """
+
+    binary_item_id_ref: str
+    width_hwpunit: int
+    height_hwpunit: int
+
+
+@dataclass(frozen=True, slots=True)
 class HwpxSectionBlock:
-    """One ordered section block: a paragraph or a table."""
+    """One ordered section block: a paragraph, a table or a picture."""
 
     kind: str
     text: str | None = None
     table: HwpxTable | None = None
+    picture: HwpxPicture | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -203,12 +225,27 @@ def deserialize_hwpx_package(payload: bytes) -> HwpxPackageContent:
                 if len(rows) != len(block.table.rows) or any(len(row) != len(block.table.rows[0]) for row in rows):
                     raise DocumentNormalizationError("hwpx_unsupported_structure", "HWPX table shape is unsupported.")
                 blocks.append(HwpxSectionBlock("table", table=HwpxTable(rows)))
+            elif block.kind == "picture" and block.picture is not None:
+                if block.picture.unsupported:
+                    raise DocumentNormalizationError("hwpx_unsupported_structure", "HWPX picture structure is unsupported.")
+                picture = HwpxPicture(
+                    binary_item_id_ref=block.picture.binary_item_id_ref,
+                    width_hwpunit=block.picture.width_hwpunit,
+                    height_hwpunit=block.picture.height_hwpunit,
+                )
+                # Re-run the block's own content rule so a decoded picture is
+                # always one this module could serialize again.
+                _validate_picture(picture)
+                blocks.append(HwpxSectionBlock("picture", picture=picture))
             else:
                 raise DocumentNormalizationError("hwpx_unsupported_structure", "HWPX section block is unsupported.")
         paragraphs = tuple(block.text for block in blocks if block.kind == "paragraph")
-        sections.append(HwpxPackageSection(paragraphs=paragraphs, blocks=tuple(blocks) if any(block.kind == "table" for block in blocks) else ()))
+        sections.append(HwpxPackageSection(paragraphs=paragraphs, blocks=tuple(blocks) if any(block.kind in {"table", "picture"} for block in blocks) else ()))
     content = HwpxPackageContent(sections=tuple(sections))
-    _validate_content(content)
+    # A decoded picture is judged against the same picture bound the section
+    # producer applies, so a picture this decoder returns is always one
+    # :func:`serialize_hwpx_picture_paragraph` could write.
+    _validate_content(content, allow_pictures=True)
     return content
 
 
@@ -246,30 +283,146 @@ def _serialize_table_xml(table: HwpxTable) -> str:
     return "<hp:tbl>" + "".join(rows) + "</hp:tbl>"
 
 
+def _validate_picture(picture: HwpxPicture) -> None:
+    """Judge one picture block against the bounded model.
+
+    Type, id grammar, draw-extent type and draw-extent bounds are decided here
+    and nowhere else, so the whole-package writer and the image-insertion
+    authority can never disagree about what a picture block may contain.
+    """
+
+    if not isinstance(picture, HwpxPicture):
+        raise DocumentNormalizationError(
+            "hwpx_serialize_picture_model",
+            "HWPX picture blocks require a HwpxPicture value.",
+        )
+    if not is_hwpx_binary_item_id(picture.binary_item_id_ref):
+        raise DocumentNormalizationError(
+            "hwpx_serialize_picture_model",
+            "HWPX picture binaryItemIDRef must use the BIN#### id shape.",
+        )
+    for value in (picture.width_hwpunit, picture.height_hwpunit):
+        if not isinstance(value, int) or isinstance(value, bool):
+            raise DocumentNormalizationError(
+                "hwpx_serialize_picture_model",
+                "HWPX picture dimensions must be integers.",
+            )
+        if not 0 < value <= MAX_HWPX_PICTURE_HWPUNIT:
+            raise DocumentNormalizationError(
+                "hwpx_serialize_picture_dimension_limit",
+                "HWPX picture dimension is out of bounds.",
+            )
+
+
+def _picture_xml(picture: HwpxPicture) -> str:
+    """Produce the one canonical ``hp:pic``/``hc:img`` block.
+
+    This is the only place Core writes a picture block, and the child sequence is
+    exactly :data:`HWPX_PICTURE_CHILD_NAMES`, which is the sequence the single
+    reader recognizes. Drawing defaults are fixed here (square wrap, no flip,
+    no rotation, no effects) rather than accepted from a caller: this slice owns
+    a shape it can both write and read, not the full HWPX picture vocabulary.
+
+    The core namespace is declared on ``hp:pic`` itself rather than on the
+    section root, so one picture paragraph is self-contained: the whole-package
+    writer can emit it inside a section it also writes, and the image-insertion
+    authority can splice the very same bytes into a section part it must not
+    otherwise touch, without either side having to own the other's root element.
+    """
+
+    width = picture.width_hwpunit
+    height = picture.height_hwpunit
+    size = f'width="{width}" height="{height}"'
+    return (
+        '<hp:p><hp:runs><hp:pic xmlns:hc="' + _CORE_NAMESPACE + '"'
+        ' textWrap="SQUARE" textFlow="BOTH_SIDES"'
+        ' reverse="0" numberingType="PICTURE" id="0" zOrder="0"'
+        ' instid="0" lock="0" dropcapstyle="None" href="" groupLevel="0">'
+        '<hp:offset x="0" y="0"/>'
+        f"<hp:orgSz {size}/>"
+        f"<hp:curSz {size}/>"
+        f'<hp:sz {size} widthRelTo="ABSOLUTE" heightRelTo="ABSOLUTE" protect="0"/>'
+        '<hp:pos relativeFrom="para" vertOffset="0" horzOffset="0"'
+        ' vertAlign="top" horzAlign="left" relativeTo="column" wrap="square"/>'
+        "<hp:imgRect>"
+        '<hp:pt0 x="0" y="0"/>'
+        f'<hp:pt1 x="{width}" y="0"/>'
+        f'<hp:pt2 x="{width}" y="{height}"/>'
+        f'<hp:pt3 x="0" y="{height}"/>'
+        "</hp:imgRect>"
+        f'<hp:imgClip left="0" right="{width}" top="0" bottom="{height}"/>'
+        '<hp:inMargin left="0" right="0" top="0" bottom="0"/>'
+        f'<hp:imgDim dimwidth="{width}" dimheight="{height}"/>'
+        f'<hc:img binaryItemIDRef="{picture.binary_item_id_ref}"'
+        ' bright="0" contrast="0" effect="REAL_PIC" alpha="0"/>'
+        "<hp:effects/>"
+        '<hp:outMargin left="0" right="0" top="0" bottom="0"/>'
+        "<hp:shapeComment/>"
+        "</hp:pic></hp:runs></hp:p>"
+    )
+
+
+def serialize_hwpx_picture_paragraph(picture: HwpxPicture) -> bytes:
+    """Produce the one canonical, self-contained picture paragraph.
+
+    This is the public seam the image-insertion authority reaches for. It is the
+    same bytes :func:`serialize_hwpx_section_blocks` places inside a section it
+    writes, so an inserted picture is byte-identical to a picture this Core
+    created from scratch, and a template's own section part is never rewritten
+    beyond the one paragraph this call appends to it.
+    """
+
+    if not isinstance(picture, HwpxPicture):
+        raise DocumentNormalizationError(
+            "hwpx_serialize_picture_model",
+            "HWPX picture paragraphs require a HwpxPicture value.",
+        )
+    _validate_picture(picture)
+    return _picture_xml(picture).encode("utf-8")
+
+
 def serialize_hwpx_section_blocks(blocks: tuple[HwpxSectionBlock, ...]) -> bytes:
-    """Serialize the single canonical ordered paragraph/table section shape."""
+    """Serialize the single canonical ordered paragraph/table/picture shape."""
 
     if not isinstance(blocks, tuple) or not blocks:
         raise DocumentNormalizationError("hwpx_serialize_model", "HWPX section blocks must be a non-empty tuple.")
     body: list[str] = []
     for block in blocks:
         if block.kind == "paragraph":
-            if block.table is not None or not isinstance(block.text, str):
+            if block.table is not None or block.picture is not None or not isinstance(block.text, str):
                 raise DocumentNormalizationError("hwpx_serialize_model", "HWPX paragraph block shape is invalid.")
             validate_hwpx_paragraph_text(block.text)
             body.append(f"<hp:p><hp:runs><hp:t>{_escape_xml_text(block.text)}</hp:t></hp:runs></hp:p>")
         elif block.kind == "table":
-            if block.text is not None or block.table is None:
+            if block.text is not None or block.table is None or block.picture is not None:
                 raise DocumentNormalizationError("hwpx_serialize_model", "HWPX table block shape is invalid.")
             _validate_table(block.table)
             body.append(_serialize_table_xml(block.table))
+        elif block.kind == "picture":
+            if block.text is not None or block.table is not None or block.picture is None:
+                raise DocumentNormalizationError("hwpx_serialize_model", "HWPX picture block shape is invalid.")
+            _validate_picture(block.picture)
+            body.append(_picture_xml(block.picture))
         else:
             raise DocumentNormalizationError("hwpx_serialize_model", "HWPX section block kind is unsupported.")
     document = f"{_XML_DECLARATION}<hs:sec xmlns:hs=\"{_SECTION_NAMESPACE}\" xmlns:hp=\"{_PARAGRAPH_NAMESPACE}\">" + "".join(body) + "</hs:sec>"
     return document.encode("utf-8")
 
 
-def _validate_content(content: HwpxPackageContent) -> None:
+def _validate_content(content: HwpxPackageContent, *, allow_pictures: bool = False) -> None:
+    """Judge one content model, and say up front which writer may carry pictures.
+
+    A picture block names a ``content.hpf`` manifest item, and a manifest item
+    names a ``BinData`` member. :func:`serialize_hwpx_package` creates a package
+    holding only ``mimetype`` and section parts — it owns no manifest and no
+    binary data — so it must refuse a picture rather than emit a section that
+    references an id nothing in the package can resolve. The section-level
+    producer and the image-insertion authority are the only writers that place a
+    picture, and they place it into a package whose manifest this Core did not
+    create. The decoder therefore asks for pictures to be allowed, and the
+    from-scratch writer does not.
+    """
+
     if not isinstance(content, HwpxPackageContent):
         raise DocumentNormalizationError(
             "hwpx_serialize_model",
@@ -292,6 +445,7 @@ def _validate_content(content: HwpxPackageContent) -> None:
         )
     paragraph_count = 0
     table_cell_count = 0
+    picture_count = 0
     total_chars = 0
     has_readable = False
     for section in content.sections:
@@ -333,6 +487,21 @@ def _validate_content(content: HwpxPackageContent) -> None:
                         )
                     if any(cell.text.strip() for row in block.table.rows for cell in row):
                         has_readable = True
+                elif block.kind == "picture":
+                    if block.text is not None or block.picture is None:
+                        raise DocumentNormalizationError("hwpx_serialize_model", "HWPX picture block shape is invalid.")
+                    if not allow_pictures:
+                        raise DocumentNormalizationError(
+                            "hwpx_serialize_picture_unsupported",
+                            "HWPX from-scratch serialization does not create a picture manifest.",
+                        )
+                    _validate_picture(block.picture)
+                    picture_count += 1
+                    if picture_count > MAX_HWPX_PACKAGE_PICTURES:
+                        raise DocumentNormalizationError(
+                            "hwpx_serialize_picture_limit",
+                            "HWPX content exceeds the picture-count limit.",
+                        )
                 else:
                     raise DocumentNormalizationError("hwpx_serialize_model", "HWPX section block kind is unsupported.")
             paragraph_count += len(section.paragraphs)
@@ -523,6 +692,7 @@ def _package_bytes(section_payloads: list[bytes]) -> bytes:
 __all__ = [
     "HWPX_MEDIA_TYPE",
     "MAX_HWPX_PACKAGE_TEXT_CHARS",
+    "MAX_HWPX_PACKAGE_PICTURES",
     "MAX_HWPX_PARAGRAPH_CHARS",
     "MAX_HWPX_PARAGRAPHS",
     "MAX_HWPX_TABLE_ROWS",
@@ -533,10 +703,12 @@ __all__ = [
     "MAX_HWPX_SECTIONS",
     "HwpxPackageContent",
     "HwpxPackageSection",
+    "HwpxPicture",
     "HwpxSectionBlock",
     "HwpxTable",
     "HwpxTableCell",
     "serialize_hwpx_section_blocks",
+    "serialize_hwpx_picture_paragraph",
     "deserialize_hwpx_package",
     "serialize_hwpx_package",
     "serialize_hwpx_section_part",
