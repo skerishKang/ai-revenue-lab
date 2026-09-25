@@ -21,6 +21,7 @@ from datetime import date, datetime, timedelta, timezone
 import json
 from types import SimpleNamespace
 from typing import Any
+from zoneinfo import ZoneInfo
 import pytest
 from starlette.testclient import TestClient
 
@@ -1088,24 +1089,28 @@ def test_http_calendar_today_and_upcoming_views(
 ) -> None:
     _, client, _ = test_app_and_client
 
-    # Create an appointment for 2026-09-20 (today in Asia/Seoul)
+    # Keep this HTTP integration test calendar-relative. Hard-coded "today" /
+    # "upcoming" dates become time bombs as soon as the wall clock crosses them.
+    seoul_today = datetime.now(ZoneInfo("Asia/Seoul")).date()
+    upcoming_day = seoul_today + timedelta(days=5)
+    range_end = seoul_today + timedelta(days=10)
+
     client.post(
         "/api/calendar/appointments",
         json={
             "appointment_type": "timed",
             "title": "오늘 오후 회의",
-            "start_at": "2026-09-20T15:00:00+09:00",
-            "end_at": "2026-09-20T16:00:00+09:00",
+            "start_at": f"{seoul_today.isoformat()}T15:00:00+09:00",
+            "end_at": f"{seoul_today.isoformat()}T16:00:00+09:00",
             "timezone": "Asia/Seoul",
         },
     )
-    # Create an appointment for 2026-09-25 (upcoming)
     client.post(
         "/api/calendar/appointments",
         json={
             "appointment_type": "date_only",
             "title": "다음주 계약 마감",
-            "date": "2026-09-25",
+            "date": upcoming_day.isoformat(),
         },
     )
 
@@ -1124,9 +1129,11 @@ def test_http_calendar_today_and_upcoming_views(
     assert upcoming_body["projection"]["view"] == "upcoming"
     assert upcoming_body["projection"]["total_count"] >= 1
 
-    # Query range items
+    # Query a range that includes both generated fixtures.
     range_res = client.get(
-        "/api/calendar/items?timezone=Asia/Seoul&start_date=2026-09-20&end_date=2026-09-30"
+        "/api/calendar/items"
+        f"?timezone=Asia/Seoul&start_date={seoul_today.isoformat()}"
+        f"&end_date={range_end.isoformat()}"
     )
     assert range_res.status_code == 200
     range_body = range_res.json()
