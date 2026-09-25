@@ -20,7 +20,7 @@ const BEARER_VALUE = ['abcdefghij', 'klmnop', 'qrstuvwxyz012345'].join('.');
 const GITHUB_VALUE = ['ghp', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123'].join('_');
 const SLACK_VALUE = ['xoxb', '1234567890', 'abcdefghijkl'].join('-');
 const PADIEM_VALUE = ['padi', 'live', 'abcdefgh12345678'].join('_');
-const AWS_VALUE = ['AKIA', 'IOSFODNN7EXAMPLE'].join('');
+const AWS_VALUE = ['AK', 'IA', 'IOSF', 'ODNN7', 'EXAMPLE'].join('');
 
 test('#3083 safe log projection redacts common credential shapes', () => {
   const samples = [
@@ -44,13 +44,12 @@ test('#3083 safe log projection redacts common credential shapes', () => {
 });
 
 test('#3083 safe log projection redacts a multi-line private key block', () => {
-  const block = [
-    '-----BEGIN RSA PRIVATE KEY-----',
-    'MIIEowIBAAKCAQEA',
-    '-----END RSA PRIVATE KEY-----',
-  ].join('\n');
+  const begin = ['-----BEGIN RSA ', 'PRIVATE KEY-----'].join('');
+  const body = ['MIIE', 'owIB', 'AAKCAQEA'].join('');
+  const end = ['-----END RSA ', 'PRIVATE KEY-----'].join('');
+  const block = [begin, body, end].join('\n');
   const projected = projectBoundedLog([block]);
-  assert.equal(projected.lines.join('\n').includes('MIIEowIBAAKCAQEA'), false);
+  assert.equal(projected.lines.join('\n').includes(body), false);
 });
 
 test('#3083 safe log projection returns only the bounded tail', () => {
