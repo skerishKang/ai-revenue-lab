@@ -218,16 +218,28 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          log="${RUNNER_TEMP}/b14-comparative-benchmark.log"
-          python .github/scripts/b14_model_evaluation_live.py "${CANDIDATE_SELECTOR}" --authorized-live-run | tee "${log}"
-          grep -Eq '"retry": 0' "${log}"
-          grep -Eq '"fallback": 0' "${log}"
+          evidence="${RUNNER_TEMP}/b14-comparative-benchmark-evidence.json"
+          python .github/scripts/b14_model_evaluation_live.py "${CANDIDATE_SELECTOR}" --authorized-live-run | tee "${evidence}"
+          grep -Eq '"evidence_schema": "padiem-b14-comparative-benchmark-v1"' "${evidence}"
+          grep -Eq '"retry": 0' "${evidence}"
+          grep -Eq '"fallback": 0' "${evidence}"
+          grep -Eq '"response_hash": "[0-9a-f]{64}"' "${evidence}"
+          grep -Eq '"latency_ms": [0-9]+' "${evidence}"
           if [ "${CANDIDATE_SELECTOR}" = all-five ]; then
-            grep -Eq '"benchmark_post_count": 30' "${log}"
-            grep -Eq '"max_all_five_posts": 30' "${log}"
+            grep -Eq '"benchmark_post_count": 30' "${evidence}"
+            grep -Eq '"max_all_five_posts": 30' "${evidence}"
           else
-            grep -Eq '"benchmark_post_count": 6' "${log}"
+            grep -Eq '"benchmark_post_count": 6' "${evidence}"
           fi
+
+      - name: Upload bounded comparative evidence
+        if: always() && hashFiles(format('{0}/b14-comparative-benchmark-evidence.json', runner.temp)) != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: b14-comparative-benchmark-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/b14-comparative-benchmark-evidence.json
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Record immutable execution locks
         if: always()
