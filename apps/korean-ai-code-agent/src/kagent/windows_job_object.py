@@ -53,11 +53,11 @@ JOB_OBJECT_UNAVAILABLE_ERROR = "windows job object containment is unavailable on
 
 _JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000
 _JOB_OBJECT_EXTENDED_LIMIT_INFORMATION_CLASS = 9
-# The x64 SDK layout of JOBOBJECT_EXTENDED_LIMIT_INFORMATION is 144 bytes even
-# though the documented field set only spans 136, because the Win32 headers pad
-# the trailing members to the 8-byte structure alignment. SetInformationJobObject
-# rejects any other length with ERROR_BAD_LENGTH (24), so the exact required
-# length is asserted here instead of being derived from ctypes.sizeof.
+# JOBOBJECT_EXTENDED_LIMIT_INFORMATION uses SIZE_T for all four trailing
+# memory fields. On x64 that makes the native SDK layout 144 bytes. Keep the
+# exact Windows ABI size explicit here because this module is importable on
+# non-Windows hosts where ctypes.wintypes does not necessarily model the Win32
+# ABI identically.
 _JOB_OBJECT_EXTENDED_LIMIT_INFORMATION_SIZE = 144
 _PROCESS_TERMINATE = 0x0001
 _PROCESS_SET_QUOTA = 0x0100
@@ -99,8 +99,8 @@ class _JobObjectExtendedLimitInformation(ctypes.Structure):
         ("IoInfo", _IoCounters),
         ("ProcessMemoryLimit", ctypes.c_size_t),
         ("JobMemoryLimit", ctypes.c_size_t),
-        ("PeakProcessMemoryUsed", wintypes.DWORD),
-        ("PeakJobMemoryUsed", wintypes.DWORD),
+        ("PeakProcessMemoryUsed", ctypes.c_size_t),
+        ("PeakJobMemoryUsed", ctypes.c_size_t),
     ]
 
 
