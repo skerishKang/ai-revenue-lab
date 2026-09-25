@@ -20,6 +20,13 @@
  * absent from electron-builder.yml because this configuration targets `nsis` on
  * `win32` only, so those bundles are never downloaded. A test that demanded
  * every key would be asserting a guarantee that was never verified.
+ *
+ * M1-B pin values, corrected by CENTRAL review of #3096 (PR comment 5840609494):
+ * the first revision pinned the newest accepted key for each toolset
+ * (`winCodeSign 1.1.0`, `nsis 1.2.1`). Upstream types those unions as
+ * Stable + Beta, and both of those values are Beta. M1 exists to produce a
+ * reproducible packaging source, not to adopt a newer Beta toolset, so the pins
+ * are the Stable `0.0.0` for both keys and a Beta denylist guards them.
  */
 
 import test from 'node:test';
@@ -194,15 +201,53 @@ test('M1-C: no runtime dependency was introduced alongside this dev-only pin', (
   );
 });
 
-test('M1-B: the two toolsets an NSIS Windows build uses are explicitly pinned', () => {
+test('M1-B: the two toolsets an NSIS Windows build uses are pinned to the stable key', () => {
   // Parsed from the raw file rather than via a YAML library on purpose: a
   // transitive dependency is not a contract. The parser below rejects anything
   // it cannot read unambiguously, so a malformed or restructured file fails
   // here rather than silently passing a loose text search.
+  //
+  // CENTRAL review of #3096 (PR comment 5840609494) required the Stable value,
+  // not the newest accepted one. `app-builder-lib@26.16.1` types each of these
+  // keys as a union that splits into Stable and Beta entries; M1 pins Stable
+  // because its purpose is a reproducible packaging source, not a Beta channel.
   const toolsets = parseToolsetsBlock(builderConfigText);
 
-  assert.equal(toolsets.winCodeSign, '1.1.0');
-  assert.equal(toolsets.nsis, '1.2.1');
+  assert.equal(
+    toolsets.winCodeSign,
+    '0.0.0',
+    'winCodeSign must be pinned to the Stable key; the Beta keys need an owner decision',
+  );
+  assert.equal(
+    toolsets.nsis,
+    '0.0.0',
+    'nsis must be pinned to the Stable key; the Beta key needs an owner decision',
+  );
+});
+
+test('M1-B: no Beta toolset is adopted without an owner decision', () => {
+  // This is the direct guard for the CENTRAL blocker. A guard that only asserts
+  // the correct value still lets a reviewer swap in a Beta value and re-run; an
+  // explicit denylist makes the Beta keys FAIL with a specific reason instead.
+  //
+  // Beta keys per `app-builder-lib@26.16.1` `ToolsetConfig`:
+  //   winCodeSign -> 1.0.0, 1.1.0
+  //   nsis        -> 1.2.1
+  const betaValues: Record<string, readonly string[]> = {
+    winCodeSign: ['1.0.0', '1.1.0'],
+    nsis: ['1.2.1'],
+  };
+  const toolsets = parseToolsetsBlock(builderConfigText);
+
+  for (const [key, betas] of Object.entries(betaValues)) {
+    const value = toolsets[key];
+    assert.ok(value !== undefined, `toolset ${key} is not declared`);
+    assert.ok(
+      !betas.includes(value),
+      `toolset ${key}=${value} is a Beta key (${betas.join(', ')}); adopting a Beta toolset ` +
+        'requires an explicit CENTRAL decision and is out of M1 scope',
+    );
+  }
 });
 
 test('M1-B: the toolset values are strings, not YAML numbers', () => {
@@ -252,10 +297,13 @@ test('M1-B: no toolset is left to a default', () => {
 });
 
 test('M1-B: the pin values are inside the union the pinned builder accepts', () => {
-  // Closed union from app-builder-lib@26.16.1 ToolsetConfig.
+  // Closed union from app-builder-lib@26.16.1 ToolsetConfig, restricted to the
+  // Stable members. Listing only Stable here means this test and the Beta denylist
+  // above cannot drift apart: if a future builder renames a Stable key, both the
+  // membership check and the Beta guard fail together.
   const allowedValues: Record<string, readonly string[]> = {
-    winCodeSign: ['0.0.0', '1.0.0', '1.1.0'],
-    nsis: ['0.0.0', '1.2.1'],
+    winCodeSign: ['0.0.0'],
+    nsis: ['0.0.0'],
   };
   const toolsets = parseToolsetsBlock(builderConfigText);
 
@@ -264,7 +312,56 @@ test('M1-B: the pin values are inside the union the pinned builder accepts', () 
     assert.ok(value !== undefined, `toolset ${key} is not declared`);
     assert.ok(
       values.includes(value),
-      `toolset ${key}=${value} is not accepted by app-builder-lib@26.16.1 (allowed: ${values.join(', ')})`,
+      `toolset ${key}=${value} is not a Stable key accepted by app-builder-lib@26.16.1 (stable: ${values.join(', ')})`,
+    );
+  }
+});
+
+test('M1-B: the stable key is a fixed checksum, not a floating default', () => {
+  // "0.0.0" is only a real pin if upstream branches on it explicitly. Read from
+  // app-builder-lib@26.16.1/out/toolsets/windows.js, the legacy path is selected
+  // by `value === "0.0.0"` and resolves to fixed, checksummed downloads:
+  //
+  //   winCodeSign-2.6.0.7z    cdaec7154dda7cc31f88d886e2489379a0625a737d610b5ae7f62a12f16743a4
+  //   nsis-3.0.4.1.7z         9877df902530f96357d13a7a31ae2b9df67f48b11ffc9a1700a7c961574ec5fa
+  //   nsis-resources-3.4.1.7z  593a9a92ef958321293ac6a2ee61e64bf1bd543142a5bd6b3d310709cc924103
+  //
+  // This test reads the installed app-builder-lib to confirm the branch still
+  // exists, so a future dependency bump that turns "0.0.0" back into a sentinel
+  // fails here instead of silently unpinning the toolset.
+  const toolsetsLib = path.join(appRoot, 'node_modules', 'app-builder-lib', 'out', 'toolsets', 'windows.js');
+
+  let source: string;
+  try {
+    source = readFileSync(toolsetsLib, 'utf8');
+  } catch {
+    // app-builder-lib is a build-time dependency. When the tree is not installed
+    // the contract cannot be inspected, so assert the pin shape that makes the
+    // guarantee meaningful rather than passing silently.
+    const toolsets = parseToolsetsBlock(builderConfigText);
+    assert.equal(toolsets.winCodeSign, '0.0.0');
+    assert.equal(toolsets.nsis, '0.0.0');
+    return;
+  }
+
+  assert.match(
+    source,
+    /winCodeSign === "0\.0\.0"/,
+    'app-builder-lib no longer branches on the winCodeSign stable key; the pin would become a sentinel',
+  );
+  assert.match(
+    source,
+    /nsis === "0\.0\.0"/,
+    'app-builder-lib no longer branches on the nsis stable key; the pin would become a sentinel',
+  );
+  for (const checksum of [
+    'cdaec7154dda7cc31f88d886e2489379a0625a737d610b5ae7f62a12f16743a4',
+    '9877df902530f96357d13a7a31ae2b9df67f48b11ffc9a1700a7c961574ec5fa',
+    '593a9a92ef958321293ac6a2ee61e64bf1bd543142a5bd6b3d310709cc924103',
+  ]) {
+    assert.ok(
+      source.includes(checksum),
+      `app-builder-lib no longer carries the stable toolset checksum ${checksum.slice(0, 12)}...`,
     );
   }
 });
