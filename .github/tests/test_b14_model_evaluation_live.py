@@ -168,4 +168,4 @@ def test_live_workflow_does_not_hide_provider_post_inside_cleanup_or_guard() -> 
     assert live.count(benchmark_command) == 1
     runner_temp_ref = "$" + "{RUNNER_TEMP}"
     assert live.count(f'deployments="{runner_temp_ref}/b14-deployments.json"') == 1
-    assert live.count("resolve_served_version_id") == 1
+    assert live.count("served = resolve_served_version_id(payload)") == 1
