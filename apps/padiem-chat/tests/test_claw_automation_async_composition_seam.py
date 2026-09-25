@@ -47,6 +47,9 @@ from app.claw_automation_background_execution import (  # noqa: E402
     BackgroundExecutionCompositionError,
     compose_background_execution,
 )
+from app.claw_automation_scheduled_execution import (  # noqa: E402
+    compose_scheduled_automation_execution,
+)
 from app.claw_automation_due_workspace_discovery import (  # noqa: E402
     ClawAutomationDueWorkspaceDiscovery,
     DueWorkspaceDiscoveryError,
@@ -201,6 +204,46 @@ async def test_async_d1_end_to_end_claim_execute_and_project(d1_store):
     assert task_alert.add_task_calls + task_alert.add_alert_calls >= 1  # TASK_ALERT_OUTPUT=YES
     rows = await d1_store.list_runs(WORKSPACE)
     assert [row.status for row in rows] == [ClawScheduledRunStatus.COMPLETED]
+
+
+async def test_scheduled_execution_composition_runs_full_existing_path(d1_store):
+    await d1_store.save_rule(make_rule())
+    authority = _authority(WORKSPACE)
+    boundary = _async_boundary(d1_store)
+    discovery = _discovery(d1_store, authority, boundary)
+    history = RecordingHistoryStore()
+    task_alert = RecordingTaskAlertStore()
+
+    receipt = await compose_scheduled_automation_execution(
+        discovery=discovery,
+        boundary=boundary,
+        store=d1_store,
+        adapter=OutcomeAdapter(),
+        owner_resolver=resolver(),
+        history_store=history,
+        task_alert_store=task_alert,
+        now=NOW,
+        completed_at=NOW,
+    )
+
+    assert len(receipt.executions) == 1
+    assert receipt.executions[0].terminal_run_ids
+    assert history.rows
+    assert task_alert.add_task_calls + task_alert.add_alert_calls >= 1
+    payload = receipt.safe_dict()
+    assert payload["downstream_side_effects_observed"] is False
+    assert payload["production_config_mutation"] == 0
+    assert payload["production_migration_mutation"] == 0
+    assert payload["workflow_dispatch"] == 0
+    for unobserved in (
+        "provider_calls",
+        "external_send",
+        "external_write",
+        "connector_write",
+        "production_mutation",
+        "production_d1_mutation",
+    ):
+        assert unobserved not in payload
 
 
 async def test_async_tick_isolates_subjects_and_quarantines_legacy(d1_store):

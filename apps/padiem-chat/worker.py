@@ -7,8 +7,8 @@ Provider/model execution remains Business 14 authority.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
 import json
+from datetime import datetime, timezone
 from typing import Any
 from urllib.parse import urlparse
 
@@ -16,20 +16,23 @@ from urllib.parse import urlparse
 # Service-Binding transport must use that same httpx Request/Response/stream
 # type family; app.httpx_compat is only for app-owned JS-fetch clients.
 import httpx
-from workers import Request, Response, WorkerEntrypoint
-
-from kagent.claw_automation import ClawAutomationTickRuntime
-from kagent.claw_automation_trigger import ClawAutomationTriggerBoundary
-
 from app.claw_automation_due_workspace_discovery import (
     compose_canonical_due_workspace_discovery,
 )
+from app.claw_automation_owner_resolution import ClawAutomationOwnerResolver
+from app.claw_automation_scheduled_execution import (
+    compose_scheduled_automation_execution,
+)
 from app.claw_automation_store import D1ClawAutomationStore
-from app.claw_p01_composition import build_claw_p01_lanes_with_diagnostic
+from app.claw_p01_composition import (
+    build_claw_p01_adapter,
+    build_claw_p01_lanes_with_diagnostic,
+)
+from app.claw_task_alert_store import D1ClawTaskAlertStore
 from app.config import ConfigError
+from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.control_plane_identity_shadow import D1IdentityShadowStore
 from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
-from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.dispatch_quota import DispatchAwareB14Client, DispatchAwareUsageCounterStore
 from app.grounding import GroundedChatService
 from app.history import D1HistoryStore
@@ -50,6 +53,9 @@ from app.worker_config import (
     settings_from_worker_bindings,
 )
 from app.worker_orchestration import build_orchestration_bridge
+from kagent.claw_automation import ClawAutomationTickRuntime
+from kagent.claw_automation_trigger import ClawAutomationTriggerBoundary
+from workers import Request, Response, WorkerEntrypoint
 
 _worker_app = None
 _AUTOMATION_SCHEDULER_ENABLED_ENV = "PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED"
@@ -67,7 +73,7 @@ def _automation_source_enabled(env: Any) -> bool:
 
 
 async def run_scheduled_automation_source(
-    env: Any, *, now: datetime | None = None
+    env: Any, *, now: datetime | None = None, execution_ports: Any | None = None
 ) -> Any:
     if not _automation_source_enabled(env):
         return None
@@ -84,8 +90,37 @@ async def run_scheduled_automation_source(
             control_plane_identity_authority=identity_authority,
             trigger_boundary=boundary,
         )
-        return await discovery.aadiscover_and_trigger(
-            now=now or datetime.now(timezone.utc)
+        if execution_ports is None:
+            adapter = build_claw_p01_adapter(env, request_factory=Request)
+            if adapter is None:
+                return None
+            shadow_store = D1IdentityShadowStore(db_binding)
+            owner_resolver = ClawAutomationOwnerResolver(
+                owner_authority=identity_authority,
+                session_authority=identity_authority,
+                shadow_store=shadow_store,
+            )
+            history_store = D1HistoryStore(db_binding)
+            task_alert_store = D1ClawTaskAlertStore(db_binding)
+        else:
+            adapter = getattr(execution_ports, "adapter", None)
+            owner_resolver = getattr(execution_ports, "owner_resolver", None)
+            history_store = getattr(execution_ports, "history_store", None)
+            task_alert_store = getattr(execution_ports, "task_alert_store", None)
+            if any(
+                value is None
+                for value in (adapter, owner_resolver, history_store, task_alert_store)
+            ):
+                return None
+        return await compose_scheduled_automation_execution(
+            discovery=discovery,
+            boundary=boundary,
+            store=store,
+            adapter=adapter,
+            owner_resolver=owner_resolver,
+            history_store=history_store,
+            task_alert_store=task_alert_store,
+            now=now or datetime.now(timezone.utc),
         )
     except Exception:
         return None

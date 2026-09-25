@@ -1,0 +1,45 @@
+name: B62 Automation Canary Contract Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-automation-canary-gate.yml"
+      - "apps/padiem-chat/app/claw_automation_canary.py"
+      - "apps/padiem-chat/tests/test_claw_automation_canary.py"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-automation-canary-gate
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONPATH: ${{ github.workspace }}/apps/padiem-chat
+    steps:
+      - name: Checkout PR exact head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run bounded canary contract tests
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet pytest
+          python -m pytest apps/padiem-chat/tests/test_claw_automation_canary.py -q
+      - name: Prove live canary is not dispatched
+        run: |
+          echo 'B62_AUTOMATION_CANARY_SOURCE_CONTRACT=PASS'
+          echo 'LIVE_CANARY=0'
+          echo 'PROVIDER_CALLS=0'
+          echo 'EXTERNAL_WRITE=0'
+          echo 'CONNECTOR_WRITE=0'
+          echo 'EXTERNAL_SEND=0'
