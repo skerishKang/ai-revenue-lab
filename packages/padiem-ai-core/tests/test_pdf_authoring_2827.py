@@ -4,32 +4,39 @@ from __future__ import annotations
 
 import hashlib
 import json
-from importlib import import_module
+from importlib import import_module, util
 from io import BytesIO
 from pathlib import Path
 
 import pytest
-from padiem_ai_core.document_normalization import DocumentNormalizationError
-from padiem_ai_core.pdf_authoring import (
-    PDF_AUTHORING_FONT_BYTES,
-    PDF_AUTHORING_FONT_SHA256,
-    PdfAuthoringDocument,
-    PdfAuthoringFont,
-    PdfAuthoringMetadata,
-    PdfHeadingBlock,
-    PdfImageBlock,
-    PdfPageBreakBlock,
-    PdfTableBlock,
-    PdfTextBlock,
-    author_structured_pdf,
-)
-from padiem_ai_core.pdf_table import extract_pdf_tables
-from PIL import Image
-from pypdf import PdfReader
 
+if any(
+    util.find_spec(name) is None for name in ("PIL", "pdfplumber", "pypdf", "reportlab")
+):
+    pytest.skip(
+        "optional PDF authoring test dependencies are unavailable",
+        allow_module_level=True,
+    )
+
+document_normalization = import_module("padiem_ai_core.document_normalization")
 pdf_authoring = import_module("padiem_ai_core.pdf_authoring")
-
-pytest.importorskip("reportlab")
+pdf_table = import_module("padiem_ai_core.pdf_table")
+pil_image = import_module("PIL.Image")
+pypdf = import_module("pypdf")
+DocumentNormalizationError = document_normalization.DocumentNormalizationError
+PDF_AUTHORING_FONT_BYTES = pdf_authoring.PDF_AUTHORING_FONT_BYTES
+PDF_AUTHORING_FONT_SHA256 = pdf_authoring.PDF_AUTHORING_FONT_SHA256
+PdfAuthoringDocument = pdf_authoring.PdfAuthoringDocument
+PdfAuthoringFont = pdf_authoring.PdfAuthoringFont
+PdfAuthoringMetadata = pdf_authoring.PdfAuthoringMetadata
+PdfHeadingBlock = pdf_authoring.PdfHeadingBlock
+PdfImageBlock = pdf_authoring.PdfImageBlock
+PdfPageBreakBlock = pdf_authoring.PdfPageBreakBlock
+PdfTableBlock = pdf_authoring.PdfTableBlock
+PdfTextBlock = pdf_authoring.PdfTextBlock
+author_structured_pdf = pdf_authoring.author_structured_pdf
+extract_pdf_tables = pdf_table.extract_pdf_tables
+PdfReader = pypdf.PdfReader
 
 FIXTURE_DIR = Path(__file__).parent / "fixtures" / "pdf_authoring"
 FONT_PATH = FIXTURE_DIR / "PadiemNotoSansKRAuthoringTest-Regular.ttf"
@@ -43,7 +50,7 @@ def _font() -> PdfAuthoringFont:
 
 def _image(image_format: str) -> bytes:
     output = BytesIO()
-    Image.new("RGB", (120, 80), "white").save(output, format=image_format)
+    pil_image.new("RGB", (120, 80), "white").save(output, format=image_format)
     return output.getvalue()
 
 
