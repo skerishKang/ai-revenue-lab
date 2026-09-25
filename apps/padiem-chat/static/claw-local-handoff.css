@@ -1,0 +1,183 @@
+/* #3084 — Claw "Connect this computer" handoff panel (Web/B62). */
+
+.claw-local {
+  margin: 12px 0 4px;
+  padding: 16px;
+  border: 1px solid var(--line, rgba(17, 24, 39, 0.12));
+  border-radius: 14px;
+  background: var(--surface, rgba(255, 255, 255, 0.72));
+}
+
+.claw-local[hidden] {
+  display: none;
+}
+
+.claw-local-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.claw-local-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.claw-local-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--muted, #4b5563);
+}
+
+.claw-local-state[data-state="CONNECTED"] {
+  color: #0f766e;
+}
+
+.claw-local-state[data-state="PAIRING"] {
+  color: #1d4ed8;
+}
+
+.claw-local-state[data-state="OFFLINE"],
+.claw-local-state[data-state="REVOKED"],
+.claw-local-state[data-state="ACTION_REQUIRED"] {
+  color: #b45309;
+}
+
+.claw-local-body {
+  margin: 0 0 12px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--text-dim, #374151);
+}
+
+.claw-local-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.claw-local-cta {
+  min-height: 40px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: var(--accent, #1d4ed8);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 120ms ease;
+}
+
+.claw-local-cta:hover:not(:disabled) {
+  filter: brightness(0.94);
+}
+
+/* Visible focus everywhere, never removed. */
+.claw-local :focus-visible {
+  outline: 3px solid var(--focus, #2563eb);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.claw-local-cta:disabled,
+.claw-local-cta[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.claw-local-note {
+  margin: 10px 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--muted, #4b5563);
+}
+
+.claw-local-identity {
+  margin: 8px 0 0;
+  font-size: 0.75rem;
+  color: var(--muted, #4b5563);
+}
+
+.claw-local-block {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line, rgba(17, 24, 39, 0.12));
+}
+
+.claw-local-block[hidden] {
+  display: none;
+}
+
+.claw-local-block-title {
+  margin: 0 0 4px;
+  font-size: 0.8125rem;
+  font-weight: 650;
+}
+
+.claw-local-block-body {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.claw-local-evidence-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Dark theme parity. */
+:root[data-theme="dark"] .claw-local,
+:root[data-theme="night"] .claw-local {
+  --line: rgba(255, 255, 255, 0.16);
+  --surface: rgba(255, 255, 255, 0.06);
+  --text-dim: #d1d5db;
+  --muted: #9ca3af;
+}
+
+/* 390px class mobile layout. */
+@media (max-width: 430px) {
+  .claw-local {
+    padding: 13px;
+    border-radius: 12px;
+  }
+
+  .claw-local-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .claw-local-cta {
+    width: 100%;
+  }
+
+  .claw-local-head {
+    gap: 6px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .claw-local *,
+  .claw-local-cta {
+    transition: none !important;
+    animation: none !important;
+  }
+}

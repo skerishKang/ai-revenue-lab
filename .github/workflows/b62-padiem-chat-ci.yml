@@ -47,7 +47,7 @@ jobs:
       - name: Compile B62 and Core
         run: uv run --locked python -m compileall -q app worker.py ../../packages/padiem-ai-core/padiem_ai_core
       - name: JavaScript syntax
-        run: node --check static/app.js
+        run: node --check static/app.js && node --check static/claw-local-handoff.js
       - name: B62 tests
         run: uv run --locked python -m pytest -q
       - name: Core tests with Tool Runtime dev dependency

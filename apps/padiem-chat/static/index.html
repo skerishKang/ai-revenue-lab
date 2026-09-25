@@ -25,6 +25,7 @@
   <link rel="stylesheet" href="./claw-manual-intake.css" />
   <link rel="stylesheet" href="./claw-workspace.css" />
   <link rel="stylesheet" href="./claw-quote-compare.css" />
+  <link rel="stylesheet" href="./claw-local-handoff.css" />
   <link rel="stylesheet" href="./padiem-chat-ui-polish.css" />
   <link rel="stylesheet" href="./calendar.css" />
   <style>[hidden] { display: none !important; }</style>
@@ -324,6 +325,35 @@
         </div>
         <div class="message-list" id="messageList" hidden></div>
         <article class="message claw-request-echo" id="clawRequestEcho" hidden><div class="message-bubble" id="clawRequestEchoText"></div></article>
+        <section class="claw-local" id="clawLocalHandoff" data-locale-aria-label="claw-local-panel-aria" aria-label="컴퓨터 연결 안내" data-claw-local-contract="b62-claw-local-handoff/1" hidden>
+          <div class="claw-local-head">
+            <h2 class="claw-local-title" id="clawLocalTitle" data-locale-key="claw-local-title">컴퓨터 연결이 필요합니다</h2>
+            <span class="claw-local-state" id="clawLocalState" data-state="OFFLINE" data-locale-key="claw-local-state-offline">컴퓨터 연결이 끊어져 있습니다.</span>
+          </div>
+          <p class="claw-local-body" id="clawLocalBody" data-locale-key="claw-local-body">이 작업을 대신하려면 지금 사용 중인 컴퓨터에 연결해야 합니다. 연결한 뒤 이 대화에서 그대로 이어서 진행합니다.</p>
+          <div class="claw-local-actions">
+            <button type="button" class="claw-local-cta" id="clawLocalCta" data-locale-key="claw-local-cta-connect" disabled aria-disabled="true">이 컴퓨터 연결</button>
+          </div>
+          <p class="claw-local-note" id="clawLocalInstallNote" data-locale-key="claw-local-install-note" hidden>Padiem 데스크톱이 설치되어 있지 않습니다. 설치 안내를 열고 다시 시도해 주세요.</p>
+          <p class="claw-local-note" id="clawLocalOpenNote" data-locale-key="claw-local-open-note">Padiem 데스크톱을 열면 연결이 이어집니다. 이 대화는 그대로 유지됩니다.</p>
+          <p class="claw-local-identity" id="clawLocalIdentity" data-locale-key="claw-local-identity-note">이 대화가 그대로 이어집니다.</p>
+          <div class="claw-local-block" id="clawLocalApproval" hidden>
+            <p class="claw-local-block-title" id="clawLocalApprovalTitle" data-locale-key="claw-local-approval-title">승인이 필요합니다</p>
+            <p class="claw-local-block-body" id="clawLocalApprovalBody" data-locale-key="claw-local-approval-pending">이 작업을 진행하려면 먼저 승인이 필요합니다.</p>
+          </div>
+          <div class="claw-local-block" id="clawLocalStatus" role="status" hidden>
+            <p class="claw-local-block-title" id="clawLocalStatusTitle" data-locale-key="claw-local-status-title">진행 상황</p>
+            <p class="claw-local-block-body" id="clawLocalStatusBody"></p>
+          </div>
+          <div class="claw-local-block" id="clawLocalResult" hidden>
+            <p class="claw-local-block-title" id="clawLocalResultTitle" data-locale-key="claw-local-result-title">결과</p>
+            <p class="claw-local-block-body" id="clawLocalResultBody"></p>
+          </div>
+          <div class="claw-local-block" id="clawLocalEvidence" hidden>
+            <p class="claw-local-block-title" id="clawLocalEvidenceTitle" data-locale-key="claw-local-evidence-title">확인 내용</p>
+            <ul class="claw-local-evidence-list" id="clawLocalEvidenceList"></ul>
+          </div>
+        </section>
         <section class="claw-result" id="clawResultArea" data-claw-state="idle">
           <p class="claw-result-empty" id="clawResultEmpty" data-locale-key="claw-preview-empty">요청 원문을 붙여넣은 뒤 초안을 만들 수 있습니다.</p>
           <p class="claw-result-hint" id="clawResultHint" data-locale-key="claw-preview-empty-hint">예: “A업체 견적 요청 — 품목 20개, 납기 9월 말”처럼 붙여넣어 보세요.</p>
@@ -571,6 +601,7 @@
   <script src="./document-binary.js"></script>
   <script src="./chat-transport.js"></script>
   <script src="./conversation-state.js"></script>
+  <script src="./claw-local-handoff.js"></script>
   <script src="./message-lifecycle.js"></script>
   <script src="./calendar.js"></script>
   <script src="./app.js"></script>
