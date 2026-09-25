@@ -1,0 +1,146 @@
+:root {
+  color-scheme: light dark;
+  --surface: #ffffff;
+  --surface-muted: #f4f5f7;
+  --border: #d8dbe0;
+  --text: #16181d;
+  --text-muted: #5c6270;
+  --accent: #2f5bea;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: #16181d;
+    --surface-muted: #1f2229;
+    --border: #333844;
+    --text: #f2f4f8;
+    --text-muted: #a3aab8;
+    --accent: #7f9bff;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.shell {
+  padding: 24px 28px 32px;
+  max-width: 960px;
+}
+
+.shell h1 {
+  font-size: 20px;
+  margin: 0 0 4px;
+}
+
+.shell .subtitle {
+  color: var(--text-muted);
+  font-size: 13px;
+  margin: 0 0 24px;
+}
+
+.panel {
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+}
+
+.panel h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 0 12px;
+}
+
+.state-badge {
+  display: inline-block;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+}
+
+.state-ONLINE {
+  color: #0f7a3d;
+  border-color: #0f7a3d;
+}
+
+.state-OFFLINE,
+.state-NOT_PAIRED {
+  color: var(--text-muted);
+}
+
+.state-PAIRING,
+.state-ACTION_REQUIRED {
+  color: #b45309;
+  border-color: #b45309;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+button {
+  font: inherit;
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+dl.facts {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 6px 16px;
+  margin: 0;
+  font-size: 13px;
+}
+
+dl.facts dt {
+  color: var(--text-muted);
+}
+
+dl.facts dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+pre.log {
+  margin: 0;
+  max-height: 220px;
+  overflow: auto;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.notice {
+  font-size: 12px;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}

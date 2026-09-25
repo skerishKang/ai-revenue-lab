@@ -1,0 +1,88 @@
+name: CLAW4 #3083 Desktop Shell CI
+
+on:
+  push:
+    branches:
+      - main
+      - claw4/3083-electron-react-desktop-shell
+    paths:
+      - 'apps/padiem-desktop-shell/**'
+      - '.github/workflows/claw4-3083-desktop-shell-ci.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/padiem-desktop-shell/**'
+      - '.github/workflows/claw4-3083-desktop-shell-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  desktop-shell-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/padiem-desktop-shell
+    env:
+      # The contracts, IPC surface, supervisor and renderer are all verified
+      # without downloading an Electron binary. No signing, no packaging.
+      ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+    steps:
+      - name: Checkout exact event head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/padiem-desktop-shell/package-lock.json
+
+      - name: Assert exact head
+        working-directory: .
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='${{ github.event.pull_request.head.sha || github.sha }}'
+          actual="$(git rev-parse HEAD)"
+          echo "expected=$expected"
+          echo "actual=$actual"
+          test "$expected" = "$actual"
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build (tsc + renderer bundle)
+        run: npm run build
+
+      - name: Assert renderer bundle was produced
+        run: |
+          set -euo pipefail
+          test -f dist/src/renderer/renderer.js
+          test -f dist/src/renderer/index.html
+          test -f dist/src/main/main.js
+          test -f dist/src/preload/preload.cjs
+          test -f dist/src/runner/headless-runner.js
+
+      - name: Test
+        run: node --test dist/tests/*.test.js
+
+      - name: Assert no production signing or installer artefacts
+        working-directory: .
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -d apps/padiem-desktop-shell/dist-package
+          echo "PRODUCTION_PACKAGE_PUBLISHED=NO"
+          echo "PRODUCTION_SIGNING=NO"
+          echo "PRODUCTION_MUTATION=0"

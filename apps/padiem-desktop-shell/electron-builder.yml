@@ -1,0 +1,57 @@
+# CLAW4 #3083 — Windows packaging SOURCE configuration.
+#
+# Scope of this slice:
+#   WINDOWS_PACKAGE_SOURCE_READY=YES
+#   PRODUCTION_SIGNING=NO
+#   AUTO_UPDATE_ROLLOUT=NO
+#   PRODUCTION_INSTALLER_PUBLISH=NO
+#
+# No certificate, no signing secret, and no publish target is configured here.
+# `CSC_IDENTITY_AUTO_DISCOVERY=false` is set explicitly so a developer machine
+# with a stray certificate can never silently sign a build.
+
+appId: kr.padiem.desktop.shell
+productName: Padiem Desktop Shell
+copyright: Copyright (c) Padiem
+
+directories:
+  output: dist-package
+  buildResources: build
+
+files:
+  - dist/src/main/**/*
+  - dist/src/preload/**/*
+  - dist/src/renderer/**/*
+  - dist/src/runner/**/*
+  - package.json
+
+extraResources:
+  - from: dist/src/runner
+    to: runner
+    filter:
+      - '**/*'
+
+asar: true
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  artifactName: ${productName}-${version}-${arch}-setup.${ext}
+  # No signing in this slice. A real certificate is a CENTRAL-owned decision.
+  signAndEditExecutable: false
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  # No auto-update feed is published from this slice.
+  differentialPackage: false
+
+publish: null
+
+# Explicitly no `electron-updater` dependency and no update feed: auto-update
+# rollout is out of scope for #3083 M1.
