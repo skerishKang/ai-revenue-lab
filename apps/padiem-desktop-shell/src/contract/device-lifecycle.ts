@@ -8,9 +8,9 @@
  *   RENDERER_MAY_FORGE_ONLINE=NO
  *
  * The renderer never constructs these values on its own. It only receives a
- * projection produced by the Electron main process, and even the main process
- * may only derive ONLINE from a runner-health / server-projection fact, never
- * from a renderer-supplied claim.
+ * projection produced by the Electron main process. ONLINE is reserved for
+ * the canonical #3080 server/device projection; local runner health alone is
+ * not proof that the device is paired and reachable.
  */
 
 export const DEVICE_LIFECYCLE_STATES = [
@@ -33,14 +33,14 @@ export const DEVICE_LIFECYCLE = Object.freeze({
 /**
  * Allowed presentation transitions.
  *
- * ONLINE may only be entered from a state that already represents a reachable
- * runner, and it may never be entered by a direct renderer request: the only
- * inbound edge to ONLINE is `supervision` (a main-process health fact).
+ * ONLINE may never be inferred from the renderer or local runner supervision.
+ * The only authority allowed to project ONLINE is the canonical #3080
+ * `server_projection` fact.
  */
 export const DEVICE_LIFECYCLE_TRANSITIONS: Readonly<
   Record<DeviceLifecycleState, readonly DeviceLifecycleState[]>
 > = Object.freeze({
-  NOT_PAIRED: ['PAIRING'],
+  NOT_PAIRED: ['PAIRING', 'ONLINE'],
   PAIRING: ['ONLINE', 'OFFLINE', 'NOT_PAIRED', 'ACTION_REQUIRED'],
   OFFLINE: ['PAIRING', 'ONLINE', 'ACTION_REQUIRED', 'NOT_PAIRED'],
   ONLINE: ['OFFLINE', 'ACTION_REQUIRED'],
@@ -98,16 +98,16 @@ export function projectDeviceLifecycle(
       `illegal device lifecycle transition: ${current.state} -> ${to}`,
     );
   }
-  if (to === 'ONLINE' && trigger !== 'supervision' && trigger !== 'server_projection') {
+  if (to === 'ONLINE' && trigger !== 'server_projection') {
     throw new DeviceLifecycleError(
-      'ONLINE requires a supervision or server_projection fact; renderer claims are not evidence',
+      'ONLINE requires the canonical server_projection; local supervision and renderer claims are not device-presence evidence',
     );
   }
   return Object.freeze({
     state: to,
     sinceRevision: current.sinceRevision + 1,
     reason,
-    evidenceBacked: trigger === 'supervision' || trigger === 'server_projection',
+    evidenceBacked: trigger === 'server_projection',
   });
 }
 
