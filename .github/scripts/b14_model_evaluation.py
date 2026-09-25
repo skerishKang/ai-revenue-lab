@@ -96,10 +96,11 @@ class CaseResult:
         }
 
 
-def load_fixture(path: Path = FIXTURE_PATH) -> dict[str, Any]:
-    """Load and validate the shared synthetic benchmark fixture."""
+def _validate_fixture(value: dict[str, Any]) -> dict[str, Any]:
+    """Validate one in-memory fixture so injected fixtures cannot bypass drift gates."""
 
-    value = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(value, dict):
+        raise ValueError("fixture_not_object")
     if value.get("version") != "padiem-tier-benchmark-v1":
         raise ValueError("fixture_version_unsupported")
     if value.get("language") != "ko-KR":
@@ -140,6 +141,13 @@ def load_fixture(path: Path = FIXTURE_PATH) -> dict[str, Any]:
     if set(case_ids) != REQUIRED_CASE_IDS:
         raise ValueError("fixture_case_unknown_or_missing")
     return value
+
+
+def load_fixture(path: Path = FIXTURE_PATH) -> dict[str, Any]:
+    """Load and validate the shared synthetic benchmark fixture."""
+
+    value = json.loads(path.read_text(encoding="utf-8"))
+    return _validate_fixture(value)
 
 
 def _bounded_response(raw: bytes) -> dict[str, Any]:
@@ -247,7 +255,7 @@ def evaluate_candidate(
     if candidate_id not in EVALUATION_CANDIDATE_IDS:
         raise ValueError("candidate_not_manual_pin")
     spec = resolve_candidate(candidate_id)
-    corpus = fixture or load_fixture()
+    corpus = load_fixture() if fixture is None else _validate_fixture(fixture)
     results: list[CaseResult] = []
     for case in corpus["cases"]:
         started = clock()
@@ -321,7 +329,7 @@ def evaluate_candidate(
             objective_checks=objective,
             manual_review=_manual_rubrics(case["rubric"], objective),
             contract_errors=tuple(contract_errors),
-            error_code=None if status == 200 else _safe_error_code(payload),
+            error_code=None if 200 <= status < 300 else _safe_error_code(payload),
         ))
     # Timing is bounded evidence; raw request/response payloads are never retained.
     objective_total = sum(len(result.objective_checks) for result in results)
