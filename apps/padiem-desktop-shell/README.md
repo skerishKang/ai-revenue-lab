@@ -53,9 +53,9 @@ preload/main/renderer sources and fails if any of those come back.
 NOT_PAIRED  PAIRING  OFFLINE  ONLINE  ACTION_REQUIRED
 ```
 
-These are **presentation** states. `ONLINE` can only be reached from a
-`supervision` or `server_projection` fact, so neither the renderer nor a locally
-running process can talk the shell into claiming a paired, reachable device.
+These are **presentation** states. `ONLINE` is reserved for the canonical
+`server_projection` owned by #3080. Local runner supervision may report runner
+health, but it cannot make the shell claim a paired, reachable device.
 
 ## Pairing deep-link seam
 
