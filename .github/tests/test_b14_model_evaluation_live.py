@@ -117,3 +117,55 @@ def test_safe_summary_preserves_bounded_comparative_evidence_only() -> None:
     assert '"content"' not in summary
     assert "PRIVATE-UPSTREAM-DIAGNOSTIC" not in summary
     assert "PRIVATE-ATTEMPT" not in summary
+
+
+WORKFLOW = ROOT / ".github" / "workflows" / "b14-model-evaluation-live.yml"
+
+
+def test_live_workflow_proves_served_version_before_the_only_benchmark_execution() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8").replace("\r\n", "\n")
+    live = workflow.split("\n  live-comparative-benchmark:\n", 1)[1]
+
+    guard_marker = "      - name: GET-only B14 served-version guard (canonical resolver)\n"
+    benchmark_marker = "      - name: Run one-shot comparative benchmark\n"
+    locks_marker = "      - name: Record immutable execution locks\n"
+
+    assert live.count(guard_marker) == 1
+    assert live.count(benchmark_marker) == 1
+    assert live.count(locks_marker) == 1
+    assert live.count("--authorized-live-run") == 1
+
+    guard_pos = live.index(guard_marker)
+    benchmark_pos = live.index(benchmark_marker)
+    locks_pos = live.index(locks_marker)
+    assert guard_pos < benchmark_pos < locks_pos
+
+    before_guard = live[:guard_pos]
+    guard = live[guard_pos:benchmark_pos]
+    benchmark = live[benchmark_pos:locks_pos]
+
+    assert "--authorized-live-run" not in before_guard
+    assert "--authorized-live-run" not in guard
+    assert "--authorized-live-run" in benchmark
+
+    expected_ref = "$" + "{EXPECTED_B14_VERSION}"
+    assert f"echo \"{expected_ref}\" | grep -Eq '^[A-Za-z0-9._-]{{1,64}}$'" in guard
+    assert "resolve_served_version_id" in guard
+    assert "HISTORICAL_DEPLOYMENT_ACCEPTED=NO" in guard
+    assert "B14_EXPECTED_VERSION_AT_100=PASS" in guard
+    assert "curl -fsS" in guard
+    assert "b14_model_evaluation_live.py" not in guard
+
+
+def test_live_workflow_does_not_hide_provider_post_inside_cleanup_or_guard() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8").replace("\r\n", "\n")
+    live = workflow.split("\n  live-comparative-benchmark:\n", 1)[1]
+    candidate_ref = "$" + "{CANDIDATE_SELECTOR}"
+    benchmark_command = (
+        'python .github/scripts/b14_model_evaluation_live.py '
+        + f'"{candidate_ref}" --authorized-live-run'
+    )
+    assert live.count(benchmark_command) == 1
+    runner_temp_ref = "$" + "{RUNNER_TEMP}"
+    assert live.count(f'deployments="{runner_temp_ref}/b14-deployments.json"') == 1
+    assert live.count("served = resolve_served_version_id(payload)") == 1

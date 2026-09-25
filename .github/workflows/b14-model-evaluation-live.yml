@@ -144,32 +144,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo "${EXPECTED_B14_VERSION}" | grep -Eq '^[A-Za-z0-9._-]{1,64}        run: |
-          set -euo pipefail
-          log="${RUNNER_TEMP}/b14-comparative-benchmark.log"
-          python .github/scripts/b14_model_evaluation_live.py "${CANDIDATE_SELECTOR}" --authorized-live-run | tee "${log}"
-          grep -Eq '"retry": 0' "${log}"
-          grep -Eq '"fallback": 0' "${log}"
-          if [ "${CANDIDATE_SELECTOR}" = all-five ]; then
-            grep -Eq '"benchmark_post_count": 30' "${log}"
-            grep -Eq '"max_all_five_posts": 30' "${log}"
-          else
-            grep -Eq '"benchmark_post_count": 6' "${log}"
-          fi
-
-      - name: Record immutable execution locks
-        if: always()
-        shell: bash
-        run: |
-          echo 'B14_DEPLOY=0'
-          echo 'ENGINE_DEPLOY=0'
-          echo 'SECRET_VALUE_READ=0'
-          echo 'ROUTE_ACTIVATION=0'
-          echo 'PRODUCT_TIER_MUTATION=0'
-          echo 'PRODUCTION_MUTATION=0'
-          echo 'PRIVATE_PAYLOAD_OUTPUT=0'
-          echo 'RAW_RESPONSE_OUTPUT=0'
-
+          echo "${EXPECTED_B14_VERSION}" | grep -Eq '^[A-Za-z0-9._-]{1,64}$'
           deployments="${RUNNER_TEMP}/b14-deployments.json"
           curl -fsS \
             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
