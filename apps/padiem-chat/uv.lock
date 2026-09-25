@@ -189,13 +189,15 @@ requires-dist = [
     { name = "jsonschema", marker = "extra == 'tools'", specifier = ">=4.23,<5" },
     { name = "openpyxl", marker = "extra == 'dev'", specifier = ">=3.1,<4" },
     { name = "openpyxl", marker = "extra == 'documents'", specifier = ">=3.1,<4" },
+    { name = "pdfplumber", marker = "extra == 'dev'", specifier = "==0.11.10" },
+    { name = "pdfplumber", marker = "extra == 'tables'", specifier = "==0.11.10" },
     { name = "pypdf", marker = "extra == 'dev'", specifier = ">=6.16.2,<7" },
     { name = "pypdf", marker = "extra == 'documents'", specifier = ">=6.16.2,<7" },
     { name = "pypdfium2", marker = "extra == 'dev'", specifier = "==5.13.0" },
     { name = "pypdfium2", marker = "extra == 'render'", specifier = "==5.13.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8,<10" },
 ]
-provides-extras = ["tools", "documents", "render", "dev"]
+provides-extras = ["tools", "documents", "render", "tables", "dev"]
 
 [[package]]
 name = "padiem-ai-engine-client"
