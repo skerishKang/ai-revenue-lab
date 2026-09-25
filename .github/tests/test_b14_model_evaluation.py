@@ -236,3 +236,14 @@ def test_attempt_count_bool_does_not_alias_integer_one() -> None:
 def test_error_code_projection_reuses_canonical_closed_vocabulary() -> None:
     assert harness._safe_error_code({"error": {"code": "no_safe_route"}}) == "no_safe_route"
     assert harness._safe_error_code({"error": {"code": "private-secret-fragment"}}) == "unknown"
+
+def test_injected_fixture_cannot_bypass_schema_validation() -> None:
+    fixture = harness.load_fixture()
+    fixture["cases"][0]["id"] = "UNKNOWN-001"
+    candidate = harness.CANDIDATE_REGISTRY["agnes"]
+    with pytest.raises(ValueError, match="fixture_case_unknown_or_missing"):
+        harness.evaluate_candidate(
+            "agnes",
+            _transport([], candidate.upstream_model),
+            fixture=fixture,
+        )
