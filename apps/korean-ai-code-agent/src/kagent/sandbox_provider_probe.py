@@ -48,6 +48,7 @@ class SandboxProviderCandidate(str, Enum):
     RUNLOOP = "runloop"
     E2B = "e2b"
     VERCEL_SANDBOX = "vercel_sandbox"
+    GCP_SEOUL_N2 = "gcp_seoul_n2"
 
 
 class ProbeMethod(str, Enum):
@@ -495,6 +496,38 @@ def build_candidate_launch_profile(
             "bounded_terminal_and_log_behavior",
             "padiem_wall_clock_ttl_enforcement",
         )
+    elif candidate is SandboxProviderCandidate.GCP_SEOUL_N2:
+        settings = (
+            _setting("region", "asia-northeast3", "docs:gcp/regions-zones"),
+            _setting("zone", "asia-northeast3-a|b|c", "docs:gcp/regions-zones"),
+            _setting("machine_family", "N2", "docs:gcp/nested-virtualization-overview"),
+            _setting("cpu_platform", "Intel", "docs:gcp/nested-virtualization-overview"),
+            _setting("cpu_minimum_generation", "Haswell-or-newer", "docs:gcp/regions-zones"),
+            _setting("nested_virtualization", True, "docs:gcp/nested-virtualization-enabling"),
+            _setting("local_ssd_run_data", True, "docs:gcp/local-ssd"),
+            _setting("vpc", "dedicated_non_default", "policy:cloud-m1/dedicated-vpc"),
+            _setting("default_egress_policy", "deny-default", "policy:cloud-m1/no-network"),
+            _setting("public_ip", False, "policy:cloud-m1/private-ports"),
+            _setting("public_port_count", 0, "policy:cloud-m1/private-ports"),
+            _setting("guest_secret_count", 0, "policy:cloud-m1/no-secrets"),
+            _setting("mig_auto_recreate", False, "policy:cloud-m1/no-resurrection"),
+            _setting("snapshot_reuse", False, "policy:cloud-m1/no-reuse"),
+            _setting("resume", False, "policy:cloud-m1/no-reuse"),
+            _setting("max_run_duration_action", "DELETE", "docs:gcp/limit-vm-runtime"),
+            _setting("padiem_wall_clock_ttl_seconds", "lease_ttl_seconds", "policy:cloud-m1/lease-ttl"),
+            _setting("exact_revision_verification", True, "policy:cloud-m1/exact-revision"),
+            _setting("teardown_sequence", "delete_and_verify_terminal", "policy:cloud-m1/teardown"),
+        )
+        unresolved = (
+            "metadata_link_local_blocking",
+            "local_ssd_nested_virtualization_combination",
+            "nested_kvm_dev_kvm_observation",
+            "provider_project_and_org_policy_evidence",
+            "pids_and_process_tree_death",
+            "cpu_memory_disk_hard_limit_evidence",
+            "delete_non_resurrection_observation",
+            "bounded_artifact_and_log_behavior",
+        )
     else:
         raise ContractError("unhandled sandbox provider candidate")
 
@@ -505,6 +538,78 @@ def build_candidate_launch_profile(
         unresolved_live_requirements=unresolved,
         max_ttl_seconds=max_ttl_seconds,
     )
+
+
+_GCP_SEOUL_N2_ZONES = frozenset({"asia-northeast3-a", "asia-northeast3-b", "asia-northeast3-c"})
+
+
+def validate_gcp_seoul_n2_request_shape(
+    *,
+    region: str,
+    zone: str,
+    machine_family: str,
+    cpu_platform: str,
+    cpu_minimum_generation: str,
+    local_ssd_enabled: bool,
+    nested_virtualization_enabled: bool,
+    vpc: str,
+    default_egress_policy: str,
+    public_ip_enabled: bool,
+    public_port_count: int,
+    guest_secret_count: int,
+    mig_enabled: bool,
+    snapshot_reuse: bool,
+    resume_enabled: bool,
+    max_run_duration_action: str,
+    max_run_duration_seconds: int,
+) -> None:
+    """Validate the source-only GCP Seoul N2 request shape.
+
+    This is a pure shape validator. It does not call GCP, inspect an account,
+    bind credentials, or claim that any control was enforced at runtime.
+    """
+
+    if region != "asia-northeast3":
+        raise ContractError("GCP Seoul N2 profile requires region asia-northeast3")
+    if zone not in _GCP_SEOUL_N2_ZONES:
+        raise ContractError("GCP Seoul N2 profile requires an asia-northeast3-a/b/c zone")
+    if machine_family != "N2":
+        raise ContractError("GCP Seoul N2 profile requires machine family N2")
+    if cpu_platform != "Intel":
+        raise ContractError("GCP Seoul N2 profile requires an Intel CPU platform")
+    if cpu_minimum_generation != "Haswell-or-newer":
+        raise ContractError("GCP Seoul N2 profile requires Haswell-or-newer CPU generation")
+    if local_ssd_enabled is not True:
+        raise ContractError("GCP Seoul N2 profile requires Local SSD run data")
+    if nested_virtualization_enabled is not True:
+        raise ContractError("GCP Seoul N2 profile requires nested virtualization")
+    if vpc != "dedicated_non_default":
+        raise ContractError("GCP Seoul N2 profile requires a dedicated non-default VPC")
+    if default_egress_policy != "deny-default":
+        raise ContractError("GCP Seoul N2 profile requires deny-default egress")
+    if public_ip_enabled is not False:
+        raise ContractError("GCP Seoul N2 profile disables public IP")
+    if (
+        isinstance(public_port_count, bool)
+        or not isinstance(public_port_count, int)
+        or public_port_count != 0
+    ):
+        raise ContractError("GCP Seoul N2 profile requires public_port_count integer zero")
+    if (
+        isinstance(guest_secret_count, bool)
+        or not isinstance(guest_secret_count, int)
+        or guest_secret_count != 0
+    ):
+        raise ContractError("GCP Seoul N2 profile requires guest_secret_count integer zero")
+    if mig_enabled is not False:
+        raise ContractError("GCP Seoul N2 profile disables MIG auto-recreate")
+    if snapshot_reuse is not False or resume_enabled is not False:
+        raise ContractError("GCP Seoul N2 profile disables snapshot and resume reuse")
+    if max_run_duration_action != "DELETE":
+        raise ContractError("GCP Seoul N2 TTL must use DELETE, never STOP")
+    if isinstance(max_run_duration_seconds, bool) or not isinstance(max_run_duration_seconds, int):
+        raise ContractError("GCP Seoul N2 max run duration must be an integer")
+    _bounded_int(max_run_duration_seconds, "max_run_duration_seconds", minimum=60, maximum=900)
 
 
 _NEGATIVE_TEST_CONTROLS = frozenset(

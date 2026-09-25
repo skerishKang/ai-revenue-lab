@@ -21,6 +21,7 @@ from kagent.sandbox_provider_probe import (
     SandboxProviderLiveProbeResult,
     build_candidate_launch_profile,
     build_live_probe_plan,
+    validate_gcp_seoul_n2_request_shape,
 )
 from kagent.sandbox_provider_review import ProviderEvidenceStatus
 
@@ -169,7 +170,101 @@ class CloudM1ProviderLaunchProfileTests(unittest.TestCase):
             ),
         )
 
-    def test_invalid_candidate_cannot_inherit_a_provider_profile(self):
+    def test_gcp_seoul_n2_profile_is_explicit_local_ssd_nested_kvm_source_shape(self):
+        self.assertIs(SandboxProviderCandidate("gcp_seoul_n2"), SandboxProviderCandidate.GCP_SEOUL_N2)
+        profile = build_candidate_launch_profile(SandboxProviderCandidate.GCP_SEOUL_N2)
+        rendered = profile.safe_dict()
+        self.assertEqual(rendered["candidate"], "gcp_seoul_n2")
+        self.assertEqual(rendered["profile_ref"], "profile:cloud-m1/gcp_seoul_n2/v1")
+        self.assertEqual(profile.setting_map["region"], "asia-northeast3")
+        self.assertEqual(profile.setting_map["zone"], "asia-northeast3-a|b|c")
+        self.assertEqual(profile.setting_map["machine_family"], "N2")
+        self.assertEqual(profile.setting_map["cpu_platform"], "Intel")
+        self.assertEqual(profile.setting_map["cpu_minimum_generation"], "Haswell-or-newer")
+        self.assertIs(profile.setting_map["nested_virtualization"], True)
+        self.assertIs(profile.setting_map["local_ssd_run_data"], True)
+        self.assertEqual(profile.setting_map["vpc"], "dedicated_non_default")
+        self.assertEqual(profile.setting_map["default_egress_policy"], "deny-default")
+        self.assertIs(profile.setting_map["public_ip"], False)
+        self.assertEqual(profile.setting_map["public_port_count"], 0)
+        self.assertEqual(profile.setting_map["guest_secret_count"], 0)
+        self.assertIs(profile.setting_map["mig_auto_recreate"], False)
+        self.assertIs(profile.setting_map["snapshot_reuse"], False)
+        self.assertIs(profile.setting_map["resume"], False)
+        self.assertEqual(profile.setting_map["max_run_duration_action"], "DELETE")
+        self.assertIn("metadata_link_local_blocking", profile.unresolved_live_requirements)
+        self.assertIn("local_ssd_nested_virtualization_combination", profile.unresolved_live_requirements)
+        self.assertFalse(rendered["provider_selected"])
+        self.assertFalse(rendered["deployment_approval"])
+        self.assertFalse(rendered["production_ready_claim"])
+        self.assertFalse(rendered["credential_fields"])
+        self.assertFalse(rendered["provider_endpoint_fields"])
+
+    def test_gcp_seoul_n2_shape_rejects_wrong_region_machine_storage_and_lifecycle(self):
+        valid = dict(
+            region="asia-northeast3",
+            zone="asia-northeast3-a",
+            machine_family="N2",
+            cpu_platform="Intel",
+            cpu_minimum_generation="Haswell-or-newer",
+            local_ssd_enabled=True,
+            nested_virtualization_enabled=True,
+            vpc="dedicated_non_default",
+            default_egress_policy="deny-default",
+            public_ip_enabled=False,
+            public_port_count=0,
+            guest_secret_count=0,
+            mig_enabled=False,
+            snapshot_reuse=False,
+            resume_enabled=False,
+            max_run_duration_action="DELETE",
+            max_run_duration_seconds=900,
+        )
+        validate_gcp_seoul_n2_request_shape(**valid)
+        for key, value in (
+            ("region", "us-central1"),
+            ("zone", "europe-west1-b"),
+            ("machine_family", "N4"),
+            ("cpu_platform", "AMD"),
+            ("cpu_minimum_generation", "Ivy-Bridge"),
+            ("local_ssd_enabled", False),
+            ("nested_virtualization_enabled", False),
+            ("vpc", "default"),
+            ("default_egress_policy", "allow-all"),
+            ("public_ip_enabled", True),
+            ("public_port_count", 1),
+            ("public_port_count", False),
+            ("public_port_count", 0.0),
+            ("guest_secret_count", 1),
+            ("guest_secret_count", False),
+            ("guest_secret_count", 0.0),
+            ("mig_enabled", True),
+            ("snapshot_reuse", True),
+            ("resume_enabled", True),
+            ("max_run_duration_action", "STOP"),
+            ("max_run_duration_seconds", 901),
+        ):
+            with self.subTest(key=key, value=value):
+                with self.assertRaises(ContractError):
+                    validate_gcp_seoul_n2_request_shape(**{**valid, key: value})
+
+    def test_gcp_seoul_n2_generated_plan_covers_every_control_exactly_once(self):
+        profile = build_candidate_launch_profile(SandboxProviderCandidate.GCP_SEOUL_N2)
+        plan = build_live_probe_plan(profile)
+        controls = tuple(item.control for item in plan.probes)
+        self.assertEqual(set(controls), set(capability_control_names()))
+        self.assertEqual(len(controls), len(set(controls)))
+        self.assertEqual(plan.plan_ref, "plan:cloud-m1/gcp_seoul_n2/live-probe-v1")
+        self.assertTrue(all(probe.probe_id.startswith("probe:gcp_seoul_n2/") for probe in plan.probes))
+        plan.validate_profile(profile)
+        rendered = plan.safe_dict()
+        self.assertTrue(rendered["complete_control_coverage"])
+        self.assertFalse(rendered["real_provider_call_executed"])
+        self.assertFalse(rendered["provider_selected"])
+        self.assertFalse(rendered["security_certification"])
+        self.assertFalse(rendered["deployment_approval"])
+        self.assertFalse(rendered["production_ready_claim"])
+
         with self.assertRaises(ContractError):
             build_candidate_launch_profile("vercel")
         with self.assertRaises(ContractError):
