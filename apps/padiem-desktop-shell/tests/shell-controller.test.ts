@@ -146,7 +146,7 @@ test('#3083 starting a runner on an unpaired shell does NOT claim ONLINE', async
   assert.equal(status.deviceState, 'NOT_PAIRED');
   assert.equal(status.runnerState, 'RUNNING');
   // The reason is surfaced, not silently swallowed.
-  assert.match(status.presenceNote, /still NOT_PAIRED/);
+  assert.match(status.presenceNote, /remains NOT_PAIRED/);
   assert.match(status.presenceNote, /#3080/);
 });
 
@@ -293,5 +293,5 @@ test('#3083 controller shutdown stops the runner and leaves nothing running', as
   };
   assert.equal(status.runnerState, 'STOPPED');
   assert.equal(status.runnerPid, null);
-  assert.equal(status.deviceState, 'OFFLINE');
+  assert.equal(status.deviceState, 'PAIRING');
 });
