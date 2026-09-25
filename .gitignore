@@ -1,3 +1,11 @@
 # Repository-wide generated Python artifacts
 __pycache__/
 *.py[cod]
+
+# Local OCR model provisioning evidence (#2828). Model weights and the
+# provisioning notes that reference them are local evidence, never source.
+.ocr-provisioning/
+
+# A hard-killed OCR child may leave a derived canonical PNG behind. Keep that
+# local residue out of source control even if the child cannot unlink it.
+kagent-ocr-*.png
