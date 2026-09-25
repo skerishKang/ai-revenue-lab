@@ -95,11 +95,55 @@ def run_comparative_benchmark(
     }
 
 
+def _safe_case_evidence(case: dict[str, Any]) -> dict[str, Any]:
+    """Project one case without echoing provider-controlled diagnostic strings."""
+
+    return {
+        "fixture_version": case["fixture_version"],
+        "case_id": case["case_id"],
+        "category": case["category"],
+        "requested_model_id": case["requested_model_id"],
+        "expected_upstream_model": case["expected_upstream_model"],
+        "actual_model_match": case["actual_model"] == case["expected_upstream_model"],
+        "http_status": case["http_status"],
+        "response_hash": case["response_hash"],
+        "fallback_used": case["fallback_used"] is True,
+        "attempt_count_one": case["attempt_count"] == 1
+        and not isinstance(case["attempt_count"], bool),
+        "latency_ms": case["latency_ms"],
+        "objective_checks": case["objective_checks"],
+        "manual_review": case["manual_review"],
+        "contract_errors": case["contract_errors"],
+        "error_code": case["error_code"],
+    }
+
+
+def _safe_report_evidence(report: dict[str, Any]) -> dict[str, Any]:
+    """Project bounded comparative evidence for one allowlisted candidate."""
+
+    return {
+        "candidate_id": report["candidate_id"],
+        "tier": report["tier"],
+        "provider_id": report["provider_id"],
+        "model_id": report["model_id"],
+        "upstream_model": report["upstream_model"],
+        "fixture_version": report["fixture_version"],
+        "case_count": report["case_count"],
+        "objective_total": report["objective_total"],
+        "objective_passed": report["objective_passed"],
+        "manual_review_required": report["manual_review_required"],
+        "status": report["status"],
+        "cases": [_safe_case_evidence(case) for case in report["cases"]],
+    }
+
+
 def _safe_summary(result: dict[str, Any]) -> str:
-    """Project only bounded evidence; never serialize prompts or responses."""
+    """Project bounded benchmark evidence; never serialize prompts/responses."""
 
     return json.dumps(
         {
+            "evidence_schema": "padiem-b14-comparative-benchmark-v1",
+            "execution": "LIVE_WORKFLOW_DISPATCH",
             "selector": result["selector"],
             "candidate_count": result["candidate_count"],
             "case_count_per_candidate": result["case_count_per_candidate"],
@@ -108,10 +152,7 @@ def _safe_summary(result: dict[str, Any]) -> str:
             "retry": result["retry"],
             "fallback": result["fallback"],
             "fixture_version": result["fixture_version"],
-            "candidate_statuses": [
-                {"candidate_id": report["candidate_id"], "status": report["status"]}
-                for report in result["reports"]
-            ],
+            "reports": [_safe_report_evidence(report) for report in result["reports"]],
         },
         ensure_ascii=False,
         sort_keys=True,
