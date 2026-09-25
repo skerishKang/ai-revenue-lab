@@ -12,9 +12,25 @@ B65 is a distinct side-income product for rewards earned after a provider-verifi
 ## Current implementation
 
 - typed tryout offer and immutable reward value contracts;
-- HMAC-SHA256 completion callback verification with constant-time comparison and timestamp freshness;
-- completion, duplicate, reversal, identity/value mismatch, stale, and budget fail-closed rules;
-- a product-local points ledger contract;
+- HMAC-SHA256 completion callback verification with constant-time comparison, separate maximum age and maximum future-skew bounds, and fail-closed rejection of unknown algorithm or version;
+- completion, duplicate, duplicate-reversal, replay, reversal, identity/value mismatch, stale, clock-skew, and budget fail-closed rules;
+- explicit record key `(providerId, offerId, providerTransactionId)` and a separate provider+nonce replay key, with a bounded `observedNonces` list per record so a nonce first seen on a duplicate completion or a reversal is still bound to that transaction, and reuse for another transaction is rejected;
+- server-owned `firstObservedAt`/`lastObservedAt` timestamps, with the provider's `occurredAt` stored separately under a documented 24h maximum clock skew; an explicit `maxProviderClockSkewMs` may only narrow that window, and an over-large bound fails closed;
+- an explicit append-only audit flag that is set only for authenticated, meaningful transitions and conflicts;
+- identifier validation that rejects whitespace-padded values rather than normalizing them, and rejects all ASCII/Unicode control characters so composite keys cannot collide;
+- a fail-closed, source-only `assessPointsClaim` gate that rejects malformed input records and unsafe sums, computes independently available non-reversed amount, and always refuses payout with a truthful `SOURCE_ONLY_PAYOUT_DISABLED` block reason;
+- allowlisted safe projections that cannot carry a secret, signature, raw provider payload, or internal nonce;
 - Node.js built-in test suite with no runtime dependency.
+
+## Durable caller obligation
+
+The ledger and claim functions are pure source with no persistence. Two caller obligations are load-bearing for the guarantees they claim:
+
+- **Pass complete authoritative append-only history.** Replay detection, budget and per-user limits, and the claim's available amount all read the `records` array passed in. A partial, filtered, paginated, or reconstructed history silently weakens every guarantee.
+- **Enforce one reward per completion with durable unique keys inside a transaction.** The duplicate and replay checks are pure functions over an in-memory array, not a uniqueness constraint. Exactly-once crediting requires the caller to enforce unique `(providerId, offerId, providerTransactionId)` and unique `(providerId, nonce)` in a database transaction, so two concurrent callbacks cannot both observe an absent record and both credit.
+
+## Remaining gates
+
+This is a source-only foundation with no runtime dependency beyond the Node.js standard library. `payoutAllowed` is hard-wired to `false` and the default claim state is non-live. Still required before real points or payouts exist: durable storage for the ledger, nonce history, and audit log; an approved provider integration with key management and reconciliation; a payment rail; balance custody; and operational, compliance, and owner-authorization review. See `PRODUCT_CONTRACT.md` for the exact semantics and the full gate list.
 
 The current state is technical foundation only. It does not expose real offers or claim real income.
