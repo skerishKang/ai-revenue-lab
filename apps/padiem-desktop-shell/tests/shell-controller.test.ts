@@ -262,9 +262,10 @@ test('#3083 a malformed deep link is rejected and no state is minted', async () 
 });
 
 test('#3083 bounded log goes through redaction and never returns raw runner output', async () => {
+  const githubValue = ['ghp', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123'].join('_');
   const { controller } = makeController([
     'padiem-headless-runner ready',
-    'token ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123',
+    `token ${githubValue}`,
   ]);
   const log = (await controller.dispatch('padiem:shell:get-bounded-log', { maxLines: 5 })) as {
     lines: string[];
@@ -272,7 +273,7 @@ test('#3083 bounded log goes through redaction and never returns raw runner outp
   };
   assert.equal(log.redactionApplied, true);
   assert.equal(log.lines.length, 2);
-  assert.equal(log.lines[1]!.includes('ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123'), false);
+  assert.equal(log.lines[1]!.includes(githubValue), false);
   await assert.rejects(
     () => controller.dispatch('padiem:shell:get-bounded-log', { maxLines: -3 }),
     /maxLines must be a positive integer/,
