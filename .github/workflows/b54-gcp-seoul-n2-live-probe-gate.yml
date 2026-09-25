@@ -99,6 +99,8 @@ jobs:
           python-version: "3.12"
 
       - name: Run GCP Seoul N2 source contract tests
+        env:
+          PYTHONPATH: apps/korean-ai-code-agent/src
         run: python -m unittest apps/korean-ai-code-agent/tests/test_gcp_seoul_n2_live_gate.py
 
       - name: Source-only evidence
