@@ -139,6 +139,7 @@ class ControlPlaneHttpsOperation(str, Enum):
     POLL = "poll"
     MATERIAL = "material"
     ACKNOWLEDGE = "acknowledge"
+    RECONCILE = "reconcile"
 
 
 class PinnedHttpsJsonRequestPort(Protocol):
@@ -548,6 +549,119 @@ class ControlPlaneHttpsLongPollTransport:
         if not (envelope.issued_at <= admitted_at <= acknowledged_at < envelope.expires_at):
             raise ContractError("broker acknowledgement timestamps are outside command lifecycle")
         del self._polled[command_id]
+
+    def acknowledge_recovered(
+        self,
+        *,
+        config: OutboundTransportConfig,
+        binding: DeviceBinding,
+        session: DeviceSession,
+        command_id: str,
+        admission_ref: str,
+        evidence_ref: str,
+        revision_ref: str,
+        request_id: str,
+        termination: str,
+        exit_code: int | None,
+        now: datetime,
+    ) -> None:
+        """#3128 — re-send one exact acknowledgement from a durable record.
+
+        A restarted runner no longer holds the in-process polled-command memory
+        that `acknowledge` requires, so recovery replays the same canonical
+        acknowledgement from the correlation it persisted instead. This grants no
+        execution or replay authority: it re-presents already-issued server refs
+        and re-reads the same terminal outcome.
+        """
+
+        now = _aware(now, "now")
+        _binding_session_exact(binding, session, now=now)
+        command_id = _ref(command_id, "command_id")
+        admission_ref = _ref(admission_ref, "admission_ref")
+        evidence_ref = _ref(evidence_ref, "evidence_ref")
+        revision_ref = _ref(revision_ref, "revision_ref")
+        request_id = _ref(request_id, "request_id")
+        if termination not in {item.value for item in WindowsExecutionTermination}:
+            raise ContractError("recovered acknowledgement termination must be a bounded execution termination")
+        if exit_code is not None and (isinstance(exit_code, bool) or not isinstance(exit_code, int)):
+            raise ContractError("recovered acknowledgement exit_code must be a bounded process exit status or null")
+        response = self._post(
+            config=config,
+            operation=ControlPlaneHttpsOperation.ACKNOWLEDGE,
+            payload={
+                "session_id": session.session_id,
+                "binding_ref": binding.binding_ref,
+                "credential_b64": self._credential_b64(binding, now=now),
+                "command_id": command_id,
+                "admission_ref": admission_ref,
+                "evidence_ref": evidence_ref,
+                "revision_ref": revision_ref,
+                "termination": termination,
+                "request_id": request_id,
+                "exit_code": exit_code,
+                "now": _iso(now),
+            },
+            timeout_seconds=min(config.poll_timeout_seconds, 30),
+        )
+        payload = _closed_mapping(self._success(response, "command"), _ACK_KEYS, "recovered broker acknowledgement")
+        for field_name, expected in (
+            ("command_id", command_id),
+            ("admission_ref", admission_ref),
+            ("evidence_ref", evidence_ref),
+            ("revision_ref", revision_ref),
+            ("request_id", request_id),
+        ):
+            if _ref(payload[field_name], field_name) != expected:
+                raise ContractError(f"recovered broker acknowledgement {field_name} mismatch")
+        if payload["state"] != "acknowledged":
+            raise ContractError("recovered broker acknowledgement state must be acknowledged")
+        if payload["termination"] != termination or payload["exit_code"] != exit_code:
+            raise ContractError("recovered broker acknowledgement outcome mismatch")
+
+    def reconcile_recovered(
+        self,
+        *,
+        config: OutboundTransportConfig,
+        binding: DeviceBinding,
+        session: DeviceSession,
+        command_id: str,
+        admission_ref: str,
+        evidence_ref: str,
+        revision_ref: str,
+        request_id: str,
+        request_fingerprint: str,
+        termination: str | None,
+        exit_code: int | None,
+        now: datetime,
+    ) -> None:
+        """#3128 — carry one durable record's admitted correlation to #3121."""
+
+        now = _aware(now, "now")
+        _binding_session_exact(binding, session, now=now)
+        response = self._post(
+            config=config,
+            operation=ControlPlaneHttpsOperation.RECONCILE,
+            payload={
+                "session_id": session.session_id,
+                "binding_ref": binding.binding_ref,
+                "credential_b64": self._credential_b64(binding, now=now),
+                "command_id": _ref(command_id, "command_id"),
+                "admission_ref": _ref(admission_ref, "admission_ref"),
+                "evidence_ref": _ref(evidence_ref, "evidence_ref"),
+                "revision_ref": _ref(revision_ref, "revision_ref"),
+                "request_id": _ref(request_id, "request_id"),
+                "request_fingerprint": _digest(request_fingerprint, "request_fingerprint"),
+                "termination": termination,
+                "exit_code": exit_code,
+                "now": _iso(now),
+            },
+            timeout_seconds=min(config.poll_timeout_seconds, 30),
+        )
+        payload = _closed_mapping(self._success(response, "command"), _ACK_KEYS, "reconciled broker command")
+        if payload["state"] not in {"acknowledged", "expired"}:
+            raise ContractError("reconciled broker command must be terminal")
+        if _ref(payload["evidence_ref"], "evidence_ref") != _ref(evidence_ref, "evidence_ref"):
+            raise ContractError("reconciled broker command evidence correlation mismatch")
 
     def safe_dict(self) -> dict[str, Any]:
         return {

@@ -22,6 +22,7 @@ from kagent.local_agent_broker_pairing_client import (
     pairing_proof_ref,
 )
 from kagent.local_agent_command_material import build_command_material_wire_projection
+from kagent.local_agent_durable_run_store import DurableRunStore
 from kagent.local_agent_control_plane_admission import (
     ControlPlanePhysicalAdmissionChannel,
     ControlPlanePhysicalAdmissionTransport,
@@ -649,6 +650,7 @@ class OutboundOnlyPairingDispatchEndToEndTests(unittest.TestCase):
             assembly=assembly,
             channel=channel,
             credential_store=store,
+            durable_store=DurableRunStore(":memory:"),
             clock=client_clock,
             session_id_factory=lambda: "session.e2e.host",
             heartbeat_interval_seconds=30,

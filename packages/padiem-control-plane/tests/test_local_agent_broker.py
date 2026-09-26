@@ -521,7 +521,6 @@ def test_acknowledge_conflicting_retry_fails_closed_on_every_canonical_field():
         ({"revision_ref": "rev.00000000000000000000000000000000"}, "broker_ack_revision_mismatch"),
         ({"admission_ref": "admission.other"}, "broker_ack_correlation_mismatch"),
         ({"evidence_ref": "evidence.other"}, "broker_ack_correlation_mismatch"),
-        ({"session_id": "session.2"}, "broker_ack_correlation_mismatch"),
         ({"request_id": "request.other"}, "broker_ack_request_id_mismatch"),
         ({"termination": "cancelled"}, "broker_ack_conflict"),
         ({"exit_code": 1}, "broker_ack_conflict"),
@@ -537,6 +536,38 @@ def test_acknowledge_conflicting_retry_fails_closed_on_every_canonical_field():
     persisted = service.acknowledge(**_ack_request(command.revision_ref), now=NOW + timedelta(seconds=6))
     assert persisted == acked
     assert persisted.acknowledged_at == NOW + timedelta(seconds=4)
+
+    # #3128: a restarted device necessarily retries from a different session. The
+    # terminal retry stays bound to the admitting binding plus the exact canonical
+    # correlation, so the fresh session is served the same persisted record.
+    request = _ack_request(command.revision_ref)
+    request["session_id"] = "session.2"
+    assert service.acknowledge(**request, now=NOW + timedelta(seconds=7)) == acked
+    request["evidence_ref"] = "evidence.other"
+    with pytest.raises(ControlPlaneContractError) as fresh_session_conflict:
+        service.acknowledge(**request, now=NOW + timedelta(seconds=8))
+    assert error_code(fresh_session_conflict) == "broker_ack_correlation_mismatch"
+
+
+def test_admitted_acknowledgement_still_requires_the_admitting_session():
+    """#3128 relaxes the terminal retry only: the ADMITTED ack path is unchanged."""
+
+    service = authority()
+    register(service)
+    open_session(service)
+    open_session(service, session_id="session.2")
+    command = enqueue(service)
+    admit(service)
+
+    with pytest.raises(ControlPlaneContractError) as wrong_session:
+        service.acknowledge(
+            **_ack_request(command.revision_ref, session_id="session.2"),
+            now=NOW + timedelta(seconds=4),
+        )
+    assert error_code(wrong_session) == "broker_ack_correlation_mismatch"
+
+    acked = service.acknowledge(**_ack_request(command.revision_ref), now=NOW + timedelta(seconds=4))
+    assert acked.state is BrokerCommandState.ACKNOWLEDGED
 
 
 def test_rotation_invalidates_old_sessions_credentials_and_queued_generation():
