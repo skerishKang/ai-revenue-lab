@@ -27,6 +27,18 @@ MAX_SESSION_TTL_SECONDS = 3_600
 MAX_COMMAND_TTL_SECONDS = 900
 MAX_POLL_BATCH = 32
 
+# #3123 - bounded terminal-history retention. A terminal command
+# (ACKNOWLEDGED or EXPIRED) is retained in full for this long after its
+# terminal event so a lost #3118/#3121 response can still be recovered
+# from the canonical record. Past the horizon the record is removed by
+# `compact_terminal_history`; the exact used-command-id ledger held by
+# the persistence layer keeps the id rejected forever after, so removal
+# costs correlation-serve-ability, never identity. Retention is an
+# authority policy, not a caller knob, and legitimately outlives the
+# command TTL because a recovery retry can arrive long after expiry.
+TERMINAL_RETENTION_SECONDS = 3_600
+MAX_TERMINAL_RETENTION_SECONDS = 86_400
+
 
 def _ref(name: str, value: str) -> str:
     if not isinstance(value, str) or not _SAFE_REF_RE.fullmatch(value):
@@ -887,6 +899,77 @@ class InMemoryLocalAgentBrokerAuthority:
             raise ControlPlaneContractError("broker_ack_conflict", "acknowledgement retry does not match the persisted acknowledged command")
         return command
 
+    def compact_terminal_history(
+        self,
+        *,
+        now: datetime,
+        retention_seconds: int = TERMINAL_RETENTION_SECONDS,
+    ) -> int:
+        """Remove terminal commands past retention to bound state growth (#3123).
+
+        Without this, every enqueued command persists forever and a long-lived
+        binding eventually crosses the wire/state collection bound, where every
+        mutation fails to encode and the authority wedges permanently.
+
+        What it removes, and the exact reason each removal is safe:
+
+        * **ACKNOWLEDGED** commands whose ``acknowledged_at`` is past the
+          retention horizon. The execution result was recorded and served;
+          the #3118 exact-retry recovery window has closed, and a later
+          retry gets an explicit ``broker_command_history_compacted``
+          refusal rather than a second execution under a used id.
+        * **EXPIRED** commands whose hard deadline is past the horizon. The
+          #3121 reconciliation outcome was recorded; execution facts were
+          already absent by contract.
+        * **Sessions** whose ``expires_at`` has passed the same horizon. An
+          expired session is already refused by ``_session``; removing it
+          cannot resurrect anything, and session records otherwise
+          accumulate at the same rate as commands.
+
+        What it never removes: **QUEUED** commands (active work),
+        **ADMITTED** commands (unresolved reconciliation evidence, however
+        long overdue - only the #3121 reconciliation exit may move them),
+        and bindings. Retention never touches
+        ``_last_sequence_by_binding``: monotonicity is a watermark
+        property, not a persisted-history property.
+
+        Command-id identity outlives this removal: the persistence layer
+        records every minted or removed id in the exact used-command-id
+        ledger, so a compacted command_id is rejected forever without
+        keeping the record in bounded snapshot state.
+
+        Returns the number of command records removed.
+        """
+        now = _aware("now", now)
+        if isinstance(retention_seconds, bool) or not isinstance(retention_seconds, int):
+            raise ControlPlaneContractError("invalid_local_agent_broker_ttl", "retention_seconds must be an integer")
+        if not 1 <= retention_seconds <= MAX_TERMINAL_RETENTION_SECONDS:
+            raise ControlPlaneContractError(
+                "invalid_local_agent_broker_ttl",
+                f"retention_seconds must be between 1 and {MAX_TERMINAL_RETENTION_SECONDS}",
+            )
+        horizon = timedelta(seconds=retention_seconds)
+        removed = 0
+        for command_id in [
+            command.command_id
+            for command in self._commands.values()
+            if command.state is not BrokerCommandState.QUEUED
+            and command.state is not BrokerCommandState.ADMITTED
+            and (
+                (command.state is BrokerCommandState.ACKNOWLEDGED and command.acknowledged_at is not None and now >= command.acknowledged_at + horizon)
+                or (command.state is BrokerCommandState.EXPIRED and now >= command.expires_at + horizon)
+            )
+        ]:
+            del self._commands[command_id]
+            removed += 1
+        for session_id in [
+            session_id
+            for session_id, session in self._sessions.items()
+            if now >= session.expires_at + horizon
+        ]:
+            del self._sessions[session_id]
+        return removed
+
 
 SERVER_SIDE_LOCAL_AGENT_BROKER_AUTHORITY = True
 KEYED_DEVICE_CREDENTIAL_DIGEST_ONLY = True
@@ -944,3 +1027,22 @@ RECONCILIATION_ALLOWABLE_STATES = frozenset({BrokerCommandState.ADMITTED})
 RECONCILIATION_TERMINAL_STATES = frozenset({BrokerCommandState.ACKNOWLEDGED, BrokerCommandState.EXPIRED})
 RAW_CREDENTIAL_LOG = False
 MAX_BOUNDED_EXIT_CODE = MAX_BOUNDED_EXIT_CODE
+
+# --- issue #3123: bounded terminal history without losing identity --------
+TERMINAL_HISTORY_COMPACTION_PATH = True
+ACTIVE_COMMAND_EVICTION = False
+ADMITTED_COMMAND_EVICTION = False
+UNRESOLVED_RECONCILIATION_EVICTION = False
+LIVE_SESSION_EVICTION = False
+LAST_SEQUENCE_MONOTONIC = True
+SEQUENCE_REUSE = False
+COMPACTION_ADVANCES_WATERMARK = False
+COMPACTION_REOPEN_TERMINAL = False
+COMPACTION_FABRICATES_EXECUTION_FACT = False
+BROKER_STATE_PERMANENT_WEDGE = False
+STATE_PRESSURE_FAILS_CLOSED = True
+USED_COMMAND_ID_LEDGER = True
+USED_COMMAND_ID_LEDGER_EXACT = True
+USED_COMMAND_ID_LEDGER_PROBABILISTIC = False
+COMPACTION_FORGETS_USED_COMMAND_IDS = False
+SECOND_CAPABILITY_FOR_USED_COMMAND_ID = False
