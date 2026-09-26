@@ -965,28 +965,25 @@ class DurableRunStore:
         collected: list[str] = []
         self._db.execute("BEGIN IMMEDIATE")
         try:
-            rows = self._db.execute(
-                f"SELECT command_id, state, server_acknowledged_at, terminated_at FROM {_TABLE}"
-            ).fetchall()
+            rows = self._db.execute(f"SELECT * FROM {_TABLE}").fetchall()
             for row in rows:
-                if row["state"] != DurableRunState.TERMINAL.value:
+                # GC is a destructive path, so it must be at least as strict as
+                # ordinary reads/recovery. A semantically corrupt row is evidence
+                # to preserve and a store condition to surface, never a row that
+                # GC may partially inspect and then delete.
+                record = self._from_row(row)
+                if not record.terminal:
                     continue
-                if row["server_acknowledged_at"] is None:
+                if not record.acknowledged:
                     continue
-                if row["terminated_at"] is None:
+                if record.terminated_at is None:
                     continue
-                try:
-                    terminated_at = _parse_ts(row["terminated_at"], "terminated_at")
-                except DurableRunStoreError:
-                    # Unparseable retention metadata is a corruption signal, not
-                    # a licence to delete.
-                    continue
-                if (moment - terminated_at) < max_age:
+                if (moment - record.terminated_at) < max_age:
                     continue
                 self._db.execute(
-                    f"DELETE FROM {_TABLE} WHERE command_id = ?", (row["command_id"],)
+                    f"DELETE FROM {_TABLE} WHERE command_id = ?", (record.command_id,)
                 )
-                collected.append(row["command_id"])
+                collected.append(record.command_id)
             self._db.execute("COMMIT")
         except Exception:
             self._db.execute("ROLLBACK")
