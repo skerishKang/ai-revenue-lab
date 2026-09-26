@@ -155,11 +155,14 @@ class DurableRunState(str, Enum):
     TERMINAL = "terminal"
 
 
-#: States from which no automatic continuation is ever permitted (R8). Every one
-#: of these is a fail-closed state: recovery may only report, never re-execute.
-NON_REPLAYABLE_STATES = frozenset(
-    {DurableRunState.TERMINAL, DurableRunState.RECONCILIATION_REQUIRED}
-)
+#: A durable row is never replay authority, in any lifecycle state.
+#:
+#: ADMITTED/EXECUTING describe local facts about an already-admitted command;
+#: they do not authorize a second execution after restart. Initial execution
+#: authority stays exclusively in the canonical admission + P01 path, while
+#: recovery only reports/reconciles. Keeping every durable state non-replayable
+#: prevents this record contract from becoming a competing replay authority.
+NON_REPLAYABLE_STATES = frozenset(DurableRunState)
 
 
 class DurableRunTermination(str, Enum):
