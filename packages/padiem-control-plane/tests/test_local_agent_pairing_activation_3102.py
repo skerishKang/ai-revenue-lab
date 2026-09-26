@@ -444,8 +444,6 @@ class IssuanceScopeKeyAndLifecycle3102Tests(unittest.TestCase):
 
     def test_counter_cardinality_stays_bounded_under_many_scopes(self) -> None:
         authority = _authority(issuance_rate_limit=1)
-        # Roll the window forward periodically so pending challenges are pruned
-        # and the run can exceed both caps; only the counter map is under test.
         total = MAX_TRACKED_PAIRING_ISSUANCE_SCOPES + 500
         per_window = 500
         for batch in range(0, total, per_window):
@@ -488,6 +486,98 @@ class IssuanceScopeKeyAndLifecycle3102Tests(unittest.TestCase):
         self.assertEqual(state["scope"], f"{ACCOUNT}/{WORKSPACE}")
         self.assertEqual(state["issued_in_window"], 1)
         self.assertEqual(state["tracked_scopes"], 1)
+
+
+class NoActiveEviction3102Tests(unittest.TestCase):
+    """CENTRAL second blocker: a live counter must never be evicted for a new scope.
+
+    Evicting an unexpired counter forgets that scope's consumed budget, so a flood
+    of new scopes would *reset* existing rate limits. The cap therefore fails
+    closed, and every tracked scope keeps enforcing its budget until its window
+    actually expires.
+    """
+
+    @staticmethod
+    def _fill_to_cap(authority):
+        for index in range(MAX_TRACKED_PAIRING_ISSUANCE_SCOPES):
+            _issue(authority, account=f"scope-{index}", now=BASE)
+        assert authority.tracked_issuance_scope_count == MAX_TRACKED_PAIRING_ISSUANCE_SCOPES
+        return authority
+
+    def test_the_tracked_scope_cap_fails_closed_for_a_new_scope(self) -> None:
+        authority = self._fill_to_cap(_authority(issuance_rate_limit=1))
+        # Challenge TTL has rolled over, so pending state is prunable, but the
+        # 600s issuance window has not: every counter here is still live.
+        during = BASE + timedelta(seconds=31)
+        with self.assertRaises(ControlPlaneContractError) as exhausted:
+            authority._enforce_issuance_rate_limit(
+                account_ref="brand-new-scope",
+                workspace_ref=WORKSPACE,
+                now=during,
+            )
+        self.assertEqual(
+            exhausted.exception.code, "pairing_issuance_scope_capacity_exhausted"
+        )
+
+    def test_original_scope_budget_survives_a_scope_flood(self) -> None:
+        authority = self._fill_to_cap(_authority(issuance_rate_limit=1))
+        during = BASE + timedelta(seconds=31)
+        for index in range(50):
+            with self.assertRaises(ControlPlaneContractError):
+                authority._enforce_issuance_rate_limit(
+                    account_ref=f"flood-{index}",
+                    workspace_ref=WORKSPACE,
+                    now=during,
+                )
+        state = authority.issuance_rate_state(
+            account_ref="scope-0", workspace_ref=WORKSPACE
+        )
+        self.assertEqual(state["issued_in_window"], 1)
+        with self.assertRaises(ControlPlaneContractError) as limited:
+            authority._enforce_issuance_rate_limit(
+                account_ref="scope-0", workspace_ref=WORKSPACE, now=during
+            )
+        self.assertEqual(limited.exception.code, "pairing_issuance_rate_limited")
+
+    def test_a_tracked_scope_is_still_served_at_capacity(self) -> None:
+        authority = self._fill_to_cap(_authority(issuance_rate_limit=2))
+        # Filling consumed 1 of 2. A tracked scope with budget left must still be
+        # served while the map is full; the cap refuses only unknown scopes.
+        during = BASE + timedelta(seconds=31)
+        authority._enforce_issuance_rate_limit(
+            account_ref="scope-0", workspace_ref=WORKSPACE, now=during
+        )
+        state = authority.issuance_rate_state(
+            account_ref="scope-0", workspace_ref=WORKSPACE
+        )
+        self.assertEqual(state["issued_in_window"], 2)
+
+    def test_stale_scope_pruning_still_works(self) -> None:
+        authority = self._fill_to_cap(_authority(issuance_rate_limit=1))
+        after_window = BASE + timedelta(seconds=PAIRING_ISSUANCE_WINDOW_SECONDS + 1)
+        # Expired counters are pruned, so the previously refused scope is admitted
+        # and the map collapses back to just that one entry.
+        authority._enforce_issuance_rate_limit(
+            account_ref="brand-new-scope", workspace_ref=WORKSPACE, now=after_window
+        )
+        self.assertEqual(authority.tracked_issuance_scope_count, 1)
+
+    def test_no_active_counter_eviction_helper_remains(self) -> None:
+        authority = _authority(issuance_rate_limit=1)
+        with self.assertRaises(NotImplementedError):
+            authority._evict_issuance_scope_if_needed()
+        safe = authority.safe_dict()
+        self.assertEqual(safe["active_issuance_counter_eviction"], False)
+        self.assertTrue(safe["issuance_scope_cap_fails_closed"])
+
+    def test_global_pending_capacity_still_precedes_the_scope_cap(self) -> None:
+        # Through the public path the global pending guard still reports first.
+        authority = _authority(issuance_rate_limit=MAX_PAIRING_ISSUANCE_RATE_LIMIT)
+        for index in range(MAX_PENDING_PAIRING_CHALLENGES):
+            _issue(authority, account=f"cap-{index}")
+        with self.assertRaises(ControlPlaneContractError) as exhausted:
+            _issue(authority, account="cap-overflow")
+        self.assertEqual(exhausted.exception.code, "pairing_capacity_exhausted")
 
 
 if __name__ == "__main__":  # pragma: no cover
