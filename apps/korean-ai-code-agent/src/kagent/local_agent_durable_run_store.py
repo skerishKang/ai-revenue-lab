@@ -801,11 +801,17 @@ class DurableRunStore:
 
         try:
             key = _ref(command_id, "command_id")
-            stamp = _iso(acknowledged_at)
         except ContractError as exc:
             raise DurableRunStoreError(
                 "durable_store_invalid_ref",
-                "command acknowledgement is not a safe reference",
+                "command_id is not a safe acknowledgement reference",
+            ) from exc
+        try:
+            stamp = _iso(acknowledged_at)
+        except ContractError as exc:
+            raise DurableRunStoreError(
+                "durable_store_invalid_timestamp",
+                "server acknowledgement timestamp is invalid",
             ) from exc
         self._db.execute("BEGIN IMMEDIATE")
         try:
