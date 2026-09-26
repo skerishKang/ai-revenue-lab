@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any, Callable, TypeVar
 
+from padiem_control_plane.contracts import ControlPlaneContractError
+from padiem_control_plane.local_agent_broker import MAX_POLL_BATCH, BrokerCommandState
 from padiem_control_plane.local_agent_broker_http import LocalAgentMaterialResolutionRequest
 from padiem_control_plane.local_agent_broker_rpc import LocalAgentBrokerRpcFacade
 from padiem_control_plane.local_agent_broker_state import StateBackedLocalAgentBrokerAuthority
@@ -16,6 +18,11 @@ from local_agent_broker_sql_state import (
 )
 
 _T = TypeVar("_T")
+#: How many canonical pages one poll may step through while looking for
+#: deliverable commands. A page of 1 next to a long run of unresolvable
+#: commands is the case this exists for; the bound keeps a pathological store
+#: from turning one poll into an unbounded walk.
+_MAX_POLL_PAGES = 64
 _MATERIAL_RESOLVE_RPC_KEYS = frozenset(
     {
         "request_ref",
@@ -84,10 +91,95 @@ class LocalAgentBrokerDurableRuntime:
         return self.facade().open_session(payload)
 
     def enqueue_command(self, payload: dict) -> dict:
+        """Enqueue a command *without* binding material in the same transaction.
+
+        Retained for callers that have no material to bind yet. It cannot reach
+        a terminal state: `admit_command` and `acknowledge` refuse a command
+        whose material is absent, so a command enqueued this way can never be
+        executed or acknowledged. New callers should use
+        `enqueue_command_with_material`, which is the atomic product path.
+        """
         return self.facade().enqueue_command(payload)
+
+    def enqueue_command_with_material(self, payload: dict, material: dict) -> dict:
+        """#3127 — commit the canonical command and its material atomically.
+
+        Both writes live in this Durable Object's SQLite storage, so one
+        `transactionSync` is the whole boundary. Before this existed the two
+        writes were two independent operations and a crash between them left a
+        durable command with no material: undispatchable, unadmittable and,
+        because the #3121 reconciliation exit only serves ADMITTED commands,
+        without any terminal path at all.
+
+        The caller supplies the material *body* only. The command id, binding,
+        sequence, request fingerprint and revision are the canonical path's to
+        decide, and they are decided inside this transaction: the wire is
+        assembled from the command the canonical enqueue just persisted, not
+        from anything the caller predicted. A caller that guessed a sequence or
+        a revision would be guessing a server-owned value, so the atomic API
+        does not accept one.
+
+        An exact retry is the #3118/#3120 behaviour applied to both writes at
+        once: the canonical command is re-served unchanged and an identical
+        material row is reused. A retry whose material body differs from the
+        stored one fails closed.
+        """
+
+        def operation() -> dict:
+            result = self.facade().enqueue_command(payload)
+            if result.get("ok") is not True:
+                # A canonical refusal (duplicate, scope, ttl) wrote nothing, so
+                # there is nothing to bind and nothing to roll back.
+                return result
+            command = result["command"]
+            wire = {
+                "contract_version": "claw-local-command-material.v2",
+                "command_id": command["command_id"],
+                "binding_ref": command["binding_ref"],
+                "sequence": command["sequence"],
+                "request_fingerprint": command["request_fingerprint"],
+                "revision_ref": command["revision_ref"],
+                "material": material,
+            }
+            stored = self.material_store.store(wire)
+            return {"ok": True, "command": command, "material": stored}
+        return self.transaction(operation)
 
     def store_command_material(self, wire: dict) -> dict:
         return self.transaction(lambda: self.material_store.store(wire))
+
+    def _persisted_command_state(self, command_id: str) -> Any:
+        """The canonical lifecycle state of a command, or `None` if unknown.
+
+        Read from the same persisted snapshot the authority works from, so this
+        is a guard condition, never a second authority over the command.
+        """
+
+        stored = self.state_port.load(authority_ref=self.authority_ref())
+        for command in stored.snapshot.commands:
+            if command.command_id == command_id:
+                return command.state
+        return None
+
+    def _require_material_for_transition(self, command_id: Any, state_name: str, field_name: str) -> None:
+        """Fail closed when a *live* transition would run without material.
+
+        The guard is scoped to the one state in which the transition still
+        creates a fact. A command that is already terminal is not blocked: its
+        material is purged by that very transition, so refusing on presence
+        would break the #3118 exact-retry recovery of a lost acknowledgement
+        response. Every other state is left to the canonical authority, whose
+        refusal is the more precise answer.
+        """
+
+        safe = safe_ref(command_id, "command_id")
+        if self._persisted_command_state(safe) is not state_name:
+            return
+        if not self.material_store.has_persisted_material(safe):
+            raise ControlPlaneContractError(
+                "broker_command_material_missing",
+                f"{field_name} requires the command's durable material to be persisted",
+            )
 
     def resolve_command_material(self, payload: dict) -> dict:
         payload = closed_mapping(payload, _MATERIAL_RESOLVE_RPC_KEYS, "material resolution RPC")
@@ -102,13 +194,66 @@ class LocalAgentBrokerDurableRuntime:
         return {"ok": True, "material": self.material_store.resolve(request)}
 
     def poll(self, payload: dict) -> dict:
-        return self.facade().poll(payload)
+        """Deliver only commands the device can actually run, without hiding
+        the runnable work behind one it cannot.
+
+        #3127 — a command whose material was never persisted is not
+        material-resolvable, so handing it to a device advertises work that
+        cannot start: the device would poll it, try to admit it, be refused, and
+        learn nothing.
+
+        The canonical authority still decides *which* commands are pollable.
+        This withholds only the ones the device could not execute, and it does so
+        by **stepping the poll cursor past them** rather than by dropping them
+        from the page. Dropping them would let a single orphan occupy a
+        one-command page and hide every runnable command behind it until the
+        orphan's own hard deadline passed — the same defect one layer up. The
+        scan is bounded by `_MAX_POLL_PAGES`, and it only ever *omits*
+        unresolvable commands, so a pathological store costs bounded work
+        rather than correctness.
+        """
+
+        def operation() -> dict:
+            limit = payload.get("limit", MAX_POLL_BATCH)
+            cursor = payload.get("after_sequence", 0)
+            deliverable: list[dict] = []
+            response: dict = {}
+            for _ in range(_MAX_POLL_PAGES):
+                page = self.facade().poll({**payload, "after_sequence": cursor, "limit": limit})
+                if page.get("ok") is not True:
+                    return page
+                response = page
+                commands = page["commands"]
+                if not commands:
+                    break
+                for command in commands:
+                    cursor = command["sequence"]
+                    if self.material_store.has_persisted_material(command["command_id"]):
+                        deliverable.append(command)
+                        if len(deliverable) == limit:
+                            break
+                if len(deliverable) == limit:
+                    break
+            return {**response, "ok": True, "commands": deliverable}
+        return self.transaction(operation)
 
     def admit_command(self, payload: dict) -> dict:
-        return self.facade().admit_command(payload)
+        def operation() -> dict:
+            self._require_material_for_transition(
+                payload.get("command_id"), BrokerCommandState.QUEUED, "admission"
+            )
+            return self.facade().admit_command(payload)
+        return self.transaction(operation)
 
     def acknowledge(self, payload: dict) -> dict:
         def operation() -> dict:
+            # Scoped to ADMITTED: a command that is already acknowledged has had
+            # its material purged by that acknowledgement, and the #3118 exact
+            # retry of a lost response must still reach the canonical idempotent
+            # branch instead of being refused for a row that no longer exists.
+            self._require_material_for_transition(
+                payload.get("command_id"), BrokerCommandState.ADMITTED, "acknowledgement"
+            )
             result = self.facade().acknowledge(payload)
             if result.get("ok") is True:
                 self.material_store.purge_command(result["command"]["command_id"])
@@ -138,6 +283,11 @@ class LocalAgentBrokerDurableRuntime:
             "fingerprint_authority_changed": False,
             "p01_authority_changed": False,
             "wire_contract_changed": False,
+            "enqueue_material_atomic": True,
+            "material_reused_on_exact_retry": True,
+            "material_less_admission_refused": True,
+            "material_less_acknowledgement_refused": True,
+            "missing_material_pollable": False,
             "production_mutation": False,
             "production_ready": False,
         }
@@ -151,3 +301,10 @@ FINGERPRINT_AUTHORITY_CHANGED = False
 P01_AUTHORITY_CHANGED = False
 WIRE_CONTRACT_CHANGED = False
 CLOUD_PLATFORM_IMPORT_REQUIRED = False
+ENQUEUE_MATERIAL_ATOMIC = True
+MATERIAL_WRITTEN_IN_SEPARATE_TRANSACTION = False
+MATERIAL_LESS_COMMAND_ADMITTABLE = False
+MATERIAL_LESS_COMMAND_ACKNOWLEDGABLE = False
+SECOND_MATERIAL_SEQUENCE_MINT = False
+SECOND_MATERIAL_REVISION_MINT = False
+MISSING_MATERIAL_POLLABLE = False

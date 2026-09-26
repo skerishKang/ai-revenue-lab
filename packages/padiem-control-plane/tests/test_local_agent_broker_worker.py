@@ -63,6 +63,40 @@ def _encoded(value: bytes) -> str:
     return base64.b64encode(value).decode("ascii")
 
 
+def _material_wire(command: dict) -> dict:
+    """The exact durable material wire for a freshly enqueued command.
+
+    #3127: a command may only be admitted once its material is durable, so a
+    test that walks a command to a terminal fact binds the material first. The
+    wire is derived from the canonical command the enqueue returned — exactly
+    the correlation the material store validates against.
+    """
+
+    return {
+        "contract_version": "claw-local-command-material.v2",
+        "command_id": command["command_id"],
+        "binding_ref": command["binding_ref"],
+        "sequence": command["sequence"],
+        "request_fingerprint": command["request_fingerprint"],
+        "revision_ref": command["revision_ref"],
+        "material": {
+            "request_id": f"request.{command['command_id']}",
+            "run_id": command["run_id"],
+            "device_id": "device.do.1",
+            "root_ref": "root.do.1",
+            "argv": ["python", "-V"],
+            "cwd_relative": ".",
+            "requested_at": (BASE + timedelta(seconds=1)).isoformat().replace("+00:00", "Z"),
+            "timeout_seconds": 30,
+            "shell_authority": False,
+            "admin_elevation": False,
+            "environment_payload": None,
+            "provider_authority": None,
+            "p01_approval_payload": None,
+        },
+    }
+
+
 class _Cursor:
     def __init__(self, rows: list[dict], rows_written: int) -> None:
         self._rows = rows
@@ -278,6 +312,10 @@ def test_canonical_broker_authority_survives_durable_object_recreation() -> None
     )
     assert queued["ok"] is True
     assert queued["command"]["sequence"] == 1
+    # #3127: admission requires the command's material to be durable, so bind it
+    # before the command is walked to a terminal fact.
+    material = asyncio.run(first.store_command_material(_material_wire(queued["command"])))
+    assert material["stored"] is True
 
     admitted = asyncio.run(
         first.admit_command(
