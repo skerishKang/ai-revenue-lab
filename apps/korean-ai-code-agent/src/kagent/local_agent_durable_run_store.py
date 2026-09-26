@@ -705,8 +705,6 @@ class DurableRunStore:
 
         if not isinstance(record, DurableRunRecord):
             raise ContractError("record must be DurableRunRecord")
-        if record.state is not DurableRunState.ADMITTED:
-            raise ContractError("put requires an ADMITTED durable run record")
         if record.server_acknowledged_at is not None:
             raise DurableRunStoreError(
                 "durable_store_ack_without_admission_correlation",
