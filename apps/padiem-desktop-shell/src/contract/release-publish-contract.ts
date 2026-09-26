@@ -129,6 +129,12 @@ export interface ReleaseArtifact {
   /** Populated only when a real signature exists. Absent in this source-only slice. */
   readonly signatureEvidence?: ReleaseSignatureEvidence | null;
   readonly withdrawn?: boolean;
+  /**
+   * Provenance of the withdrawal, present only once `withdrawn` is true.
+   * Recorded so the reason survives on the artifact rather than in a log line
+   * that could be lost.
+   */
+  readonly withdrawal?: WithdrawalProvenance | null;
 }
 
 /**
@@ -344,51 +350,202 @@ export function verifyReleaseForInstall(
   return { accepted: true, releaseId: offered.releaseId };
 }
 
-export type WithdrawalReason =
-  | 'signature_invalid'
-  | 'provenance_unverifiable'
-  | 'defect_confirmed'
-  | 'superseded_by_emergency_release';
+export const WITHDRAWAL_REASONS = [
+  'signature_invalid',
+  'provenance_unverifiable',
+  'defect_confirmed',
+  'superseded_by_emergency_release',
+] as const;
+
+export type WithdrawalReason = (typeof WITHDRAWAL_REASONS)[number];
+
+/**
+ * Runtime-checkable reason set.
+ *
+ * The `WithdrawalReason` TypeScript union is erased at runtime, so a value
+ * arriving from JSON, a CLI flag or a feed file can carry any string. A
+ * validator that trusted the type would accept `made_up_reason` and record a
+ * withdrawal whose reason nobody can audit. Membership is checked explicitly.
+ */
+function isWithdrawalReason(value: unknown): value is WithdrawalReason {
+  return typeof value === 'string' && (WITHDRAWAL_REASONS as readonly string[]).includes(value);
+}
 
 export interface WithdrawalRecord {
   readonly releaseId: string;
-  readonly reason: WithdrawalReason;
-  /** Withdrawn artifacts keep their identity; the feed entry is marked, not deleted. */
+  /**
+   * Declared as the canonical union, but validated at runtime against
+   * `WITHDRAWAL_REASONS` because types are erased.
+   */
+  readonly reason: WithdrawalReason | string;
+  /**
+   * Digest of the artifact the operator believes they are withdrawing.
+   * It must match the published artifact exactly, so a withdrawal cannot be
+   * filed against the wrong build.
+   */
   readonly artifactSha256: string;
   readonly replacementReleaseId: string | null;
 }
 
+/** Provenance of the withdrawal, recorded on the withdrawn artifact. */
+export interface WithdrawalProvenance {
+  readonly reason: WithdrawalReason;
+  readonly replacementReleaseId: string | null;
+  readonly withdrawnArtifactSha256: string;
+}
+
 /**
- * Bad-release withdrawal.
+ * A release that has been withdrawn, returned as new state.
  *
- * Withdrawal is a state transition on an existing feed entry, never a delete.
- * The bytes and identity are retained so the audit trail survives, and the
- * entry can never be re-published (see `admitPublish`).
+ * Withdrawal is a PURE transition: the input feed is never mutated. The caller
+ * receives the withdrawn artifact and must persist it. This is deliberate — a
+ * function that reports success without producing state is exactly the defect
+ * this shape exists to prevent, so the success path is only reachable together
+ * with the state that proves it.
+ */
+export type WithdrawalOutcome =
+  | {
+      readonly accepted: true;
+      readonly releaseId: string;
+      /** The artifact with `withdrawn: true`. Identity and bytes are preserved. */
+      readonly withdrawnRelease: ReleaseArtifact;
+      /** The feed with that one entry replaced. The input feed is untouched. */
+      readonly updatedFeed: Readonly<Record<string, ReleaseArtifact>>;
+    }
+  | {
+      readonly accepted: false;
+      readonly rejection: WithdrawalRejection;
+      readonly detail: string;
+    };
+
+export type WithdrawalRejection =
+  | 'REJECT_WITHDRAWAL_NOT_PUBLISHED'
+  | 'REJECT_WITHDRAWAL_ALREADY_WITHDRAWN'
+  | 'REJECT_MALFORMED_RELEASE_ID'
+  | 'REJECT_MALFORMED_WITHDRAWAL_REASON'
+  | 'REJECT_WITHDRAWAL_ARTIFACT_MISMATCH'
+  | 'REJECT_MALFORMED_REPLACEMENT_REF'
+  | 'REJECT_REPLACEMENT_IS_SELF'
+  | 'REJECT_MISSING_PROVENANCE';
+
+export const ALLOWED_WITHDRAWAL_REJECTIONS: readonly WithdrawalRejection[] = Object.freeze([
+  'REJECT_WITHDRAWAL_NOT_PUBLISHED',
+  'REJECT_WITHDRAWAL_ALREADY_WITHDRAWN',
+  'REJECT_MALFORMED_RELEASE_ID',
+  'REJECT_MALFORMED_WITHDRAWAL_REASON',
+  'REJECT_WITHDRAWAL_ARTIFACT_MISMATCH',
+  'REJECT_MALFORMED_REPLACEMENT_REF',
+  'REJECT_REPLACEMENT_IS_SELF',
+  'REJECT_MISSING_PROVENANCE',
+]);
+
+function failWithdrawal(rejection: WithdrawalRejection, detail: string): WithdrawalOutcome {
+  return { accepted: false, rejection, detail };
+}
+
+/**
+ * Bad-release withdrawal: a validated, pure state transition.
+ *
+ * Unlike a mutating operation, this NEVER edits the feed it is given. On
+ * success it returns the withdrawn artifact and the updated feed, so the
+ * `withdrawn: true` fact is produced by this function rather than asserted in
+ * a comment. A caller that ignores the return value has not withdrawn anything,
+ * which is visible rather than silent.
+ *
+ * Every withdrawal input is validated before any state is produced:
+ *
+ *   - the release must already be published (you cannot withdraw a phantom);
+ *   - it must not already be withdrawn (withdrawal is not idempotent-success);
+ *   - `artifactSha256` must equal the published digest, so a withdrawal cannot
+ *     be filed against the wrong build;
+ *   - `reason` must be a canonical runtime value, since the TypeScript union is
+ *     erased;
+ *   - `replacementReleaseId`, when present, must be well formed and must not
+ *     name the release being withdrawn.
  */
 export function withdrawRelease(
   feed: Readonly<Record<string, ReleaseArtifact>>,
   withdrawal: WithdrawalRecord,
-): PublishOutcome {
+): WithdrawalOutcome {
   if (withdrawal === null || typeof withdrawal !== 'object') {
-    return fail('REJECT_MISSING_PROVENANCE', 'withdrawal must be an object');
+    return failWithdrawal('REJECT_MISSING_PROVENANCE', 'withdrawal must be an object');
   }
   if (typeof withdrawal.releaseId !== 'string' || !RELEASE_ID_RE.test(withdrawal.releaseId)) {
-    return fail('REJECT_MALFORMED_RELEASE_ID', 'withdrawal releaseId is malformed');
+    return failWithdrawal('REJECT_MALFORMED_RELEASE_ID', 'withdrawal releaseId is malformed');
   }
+
   const existing = feed?.[withdrawal.releaseId];
   if (existing === undefined) {
-    return fail(
-      'REJECT_MALFORMED_RELEASE_ID',
+    return failWithdrawal(
+      'REJECT_WITHDRAWAL_NOT_PUBLISHED',
       'cannot withdraw a release identity that was never published',
     );
   }
   if (existing.withdrawn === true) {
-    return fail(
-      'REJECT_WITHDRAWN_RELEASE',
-      'release is already withdrawn; withdrawal is idempotent-by-refusal',
+    return failWithdrawal(
+      'REJECT_WITHDRAWAL_ALREADY_WITHDRAWN',
+      'release is already withdrawn; withdrawal is refused rather than repeated',
     );
   }
-  return { accepted: true, releaseId: withdrawal.releaseId };
+
+  // The operator must be withdrawing the artifact that is actually published.
+  const claimed = String(withdrawal.artifactSha256 ?? '')
+    .trim()
+    .toLowerCase();
+  if (!SHA256_RE.test(claimed)) {
+    return failWithdrawal(
+      'REJECT_WITHDRAWAL_ARTIFACT_MISMATCH',
+      'withdrawal artifact digest is malformed',
+    );
+  }
+  if (claimed !== existing.artifactSha256.trim().toLowerCase()) {
+    return failWithdrawal(
+      'REJECT_WITHDRAWAL_ARTIFACT_MISMATCH',
+      'withdrawal artifact digest does not match the published artifact',
+    );
+  }
+
+  if (!isWithdrawalReason(withdrawal.reason)) {
+    return failWithdrawal(
+      'REJECT_MALFORMED_WITHDRAWAL_REASON',
+      'withdrawal reason is not a canonical value',
+    );
+  }
+
+  const replacement = withdrawal.replacementReleaseId;
+  if (replacement !== null && replacement !== undefined) {
+    if (typeof replacement !== 'string' || !RELEASE_ID_RE.test(replacement)) {
+      return failWithdrawal(
+        'REJECT_MALFORMED_REPLACEMENT_REF',
+        'replacementReleaseId is malformed',
+      );
+    }
+    if (replacement === withdrawal.releaseId) {
+      return failWithdrawal(
+        'REJECT_REPLACEMENT_IS_SELF',
+        'a release cannot be its own replacement',
+      );
+    }
+  }
+
+  // Only now is state produced. Identity, provenance and bytes are preserved;
+  // exactly one field changes.
+  const withdrawnRelease: ReleaseArtifact = {
+    ...existing,
+    withdrawn: true,
+    withdrawal: {
+      reason: withdrawal.reason,
+      replacementReleaseId: replacement ?? null,
+      withdrawnArtifactSha256: claimed,
+    } satisfies WithdrawalProvenance,
+  };
+
+  return {
+    accepted: true,
+    releaseId: withdrawal.releaseId,
+    withdrawnRelease,
+    updatedFeed: { ...feed, [withdrawal.releaseId]: withdrawnRelease },
+  };
 }
 
 export const RELEASE_PUBLISH_CONTRACT = Object.freeze({

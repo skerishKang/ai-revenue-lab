@@ -73,16 +73,31 @@ too.
 
 ## 3. Withdrawal procedure
 
+`withdrawRelease()` is a **pure** transition: it never mutates the feed you pass
+in. It returns the withdrawn artifact and an updated feed, and the success path
+is only reachable together with that state. A caller that discards the return
+value has not withdrawn anything — which is visible rather than silent.
+
 ```text
 1. Identify the exact releaseId and its artifactSha256.
 2. Record the reason from the decision tree above.
-3. Mark the feed entry withdrawn=true.
+3. Call withdrawRelease(feed, withdrawal). Every input is validated BEFORE any
+   state is produced; any mismatch is a refusal and nothing changes:
+     - the release must already be published
+     - it must not already be withdrawn
+     - artifactSha256 must equal the published digest
+     - reason must be a canonical runtime value
+     - replacementReleaseId, if present, must be well formed and not self
+4. Persist outcome.updatedFeed (or outcome.withdrawnRelease).
    - Withdrawal PRESERVES the identity and the bytes.
    - Never delete the entry: the audit trail is the point.
-4. Record replacementReleaseId when a corrected build exists.
+   - The withdrawal reason is recorded on the artifact itself
+     (withdrawal.reason), not only in a log line.
 5. Verify the withdrawal took effect:
-   verifyReleaseForInstall(...) must now return REJECT_WITHDRAWN_RELEASE
-   even when observed bytes and source SHA still match.
+   verifyReleaseForInstall(outcome.withdrawnRelease, ...) must now return
+   REJECT_WITHDRAWN_RELEASE even when observed bytes and source SHA still match.
+   Step 5 matters: a withdrawal that does not change install-time behaviour has
+   not actually protected anyone.
 6. Publish the replacement under a NEW releaseId.
    - Never re-publish the withdrawn id. admitPublish refuses it, and that
      refusal is intentional.
@@ -91,9 +106,6 @@ too.
    - Rollback changes app bytes only. It does not touch durable run truth and
      does not make any terminal local command replayable.
 ```
-
-Step 5 matters: a withdrawal that does not change install-time behaviour has not
-actually protected anyone.
 
 ## 4. Rollback procedure (app bytes only)
 

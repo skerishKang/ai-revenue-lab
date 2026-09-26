@@ -10,9 +10,11 @@ import assert from 'node:assert/strict';
 
 import {
   ALLOWED_RELEASE_REJECTIONS,
+  ALLOWED_WITHDRAWAL_REJECTIONS,
   CHANNEL_RE,
   RELEASE_CHANNELS,
   RELEASE_PUBLISH_CONTRACT,
+  WITHDRAWAL_REASONS,
   admitPublish,
   verifyReleaseForInstall,
   withdrawRelease,
@@ -270,7 +272,11 @@ test('complete signing evidence satisfies a required signature', () => {
   assert.equal(outcome.accepted, true);
 });
 
-test('withdrawal marks a published release and preserves its identity', () => {
+test('withdrawal PRODUCES withdrawn state and preserves identity and bytes', () => {
+  // CENTRAL #3101 blocker: the previous implementation returned
+  // `{accepted: true}` without producing any withdrawn state, and its test only
+  // asserted the feed entry still existed. A success that changes nothing is
+  // not a withdrawal.
   const published = release();
   const feed = { [published.releaseId]: published };
   const outcome = withdrawRelease(feed, {
@@ -279,12 +285,267 @@ test('withdrawal marks a published release and preserves its identity', () => {
     artifactSha256: ARTIFACT_SHA,
     replacementReleaseId: 'padiem-0.2.1-x64',
   });
+
   assert.equal(outcome.accepted, true);
-  // Withdrawal is a state change, never a delete: the feed entry is retained.
-  const retained = feed[published.releaseId];
-  assert.ok(retained, 'withdrawal must retain the feed entry');
-  assert.equal(retained.releaseId, published.releaseId);
-  assert.equal(retained.artifactSha256, ARTIFACT_SHA);
+  if (!outcome.accepted) return;
+
+  // 1. The state is actually produced.
+  assert.equal(outcome.withdrawnRelease.withdrawn, true);
+
+  // 2. Identity and bytes are preserved.
+  assert.equal(outcome.withdrawnRelease.releaseId, published.releaseId);
+  assert.equal(outcome.withdrawnRelease.artifactSha256, ARTIFACT_SHA);
+  assert.equal(outcome.withdrawnRelease.sourceSha, published.sourceSha);
+  assert.equal(outcome.withdrawnRelease.appVersion, published.appVersion);
+
+  // 3. Withdrawal provenance is recorded.
+  assert.equal(outcome.withdrawnRelease.withdrawal?.reason, 'defect_confirmed');
+  assert.equal(
+    outcome.withdrawnRelease.withdrawal?.replacementReleaseId,
+    'padiem-0.2.1-x64',
+  );
+
+  // 4. The updated feed carries the withdrawn state, and the input feed is
+  //    untouched (the transition is pure).
+  const updated = outcome.updatedFeed[published.releaseId];
+  assert.ok(updated, 'updated feed must contain the withdrawn release');
+  assert.equal(updated.withdrawn, true);
+  const original = feed[published.releaseId];
+  assert.ok(original, 'input feed entry must still exist');
+  assert.equal(original.withdrawn, undefined);
+});
+
+test('a WITHDRAWN result is refused by verifyReleaseForInstall', () => {
+  // The runbook requires that a withdrawal actually changes install behaviour.
+  // Driving the produced state through the verifier is the only way to prove the
+  // withdrawal protects anyone.
+  const published = release();
+  const feed = { [published.releaseId]: published };
+  const outcome = withdrawRelease(feed, {
+    releaseId: published.releaseId,
+    reason: 'signature_invalid',
+    artifactSha256: ARTIFACT_SHA,
+    replacementReleaseId: null,
+  });
+  assert.equal(outcome.accepted, true);
+  if (!outcome.accepted) return;
+
+  const verdict = verifyReleaseForInstall({
+    offered: outcome.withdrawnRelease,
+    observedArtifactSha256: ARTIFACT_SHA,
+    expectedSourceSha: SOURCE_SHA,
+    requireSigned: false,
+  });
+  assert.equal(verdict.accepted, false);
+  if (!verdict.accepted) {
+    assert.equal(verdict.rejection, 'REJECT_WITHDRAWN_RELEASE');
+  }
+});
+
+test('a withdrawal for the wrong artifact digest is rejected', () => {
+  const published = release();
+  const feed = { [published.releaseId]: published };
+  const outcome = withdrawRelease(feed, {
+    releaseId: published.releaseId,
+    reason: 'defect_confirmed',
+    artifactSha256: OTHER_ARTIFACT_SHA,
+    replacementReleaseId: null,
+  });
+  assert.equal(outcome.accepted, false);
+  if (!outcome.accepted) {
+    assert.equal(outcome.rejection, 'REJECT_WITHDRAWAL_ARTIFACT_MISMATCH');
+  }
+});
+
+test('a malformed withdrawal artifact digest is rejected', () => {
+  const published = release();
+  const feed = { [published.releaseId]: published };
+  for (const bad of ['', 'not-a-digest', 'z'.repeat(64), null]) {
+    const outcome = withdrawRelease(feed, {
+      releaseId: published.releaseId,
+      reason: 'defect_confirmed',
+      artifactSha256: bad as never,
+      replacementReleaseId: null,
+    });
+    assert.equal(outcome.accepted, false, String(bad));
+    if (!outcome.accepted) {
+      assert.equal(outcome.rejection, 'REJECT_WITHDRAWAL_ARTIFACT_MISMATCH');
+    }
+  }
+});
+
+test('an unknown withdrawal reason is rejected at runtime', () => {
+  // The TypeScript union is erased, so a value from JSON or a CLI flag can be
+  // anything. Recording `made_up_reason` would produce a withdrawal nobody can
+  // audit.
+  const published = release();
+  const feed = { [published.releaseId]: published };
+  for (const bad of ['made_up_reason', 'DEFECT_CONFIRMED', '', 'defect confirmed']) {
+    const outcome = withdrawRelease(feed, {
+      releaseId: published.releaseId,
+      reason: bad,
+      artifactSha256: ARTIFACT_SHA,
+      replacementReleaseId: null,
+    });
+    assert.equal(outcome.accepted, false, bad);
+    if (!outcome.accepted) {
+      assert.equal(outcome.rejection, 'REJECT_MALFORMED_WITHDRAWAL_REASON');
+    }
+  }
+});
+
+test('every canonical withdrawal reason is accepted', () => {
+  const published = release();
+  for (const reason of WITHDRAWAL_REASONS) {
+    const feed = { [published.releaseId]: published };
+    const outcome = withdrawRelease(feed, {
+      releaseId: published.releaseId,
+      reason,
+      artifactSha256: ARTIFACT_SHA,
+      replacementReleaseId: null,
+    });
+    assert.equal(outcome.accepted, true, reason);
+  }
+});
+
+test('a malformed replacement reference is rejected', () => {
+  const published = release();
+  const feed = { [published.releaseId]: published };
+  for (const bad of ['!!bad id!!', '', 'x'.repeat(200), 42]) {
+    const outcome = withdrawRelease(feed, {
+      releaseId: published.releaseId,
+      reason: 'defect_confirmed',
+      artifactSha256: ARTIFACT_SHA,
+      replacementReleaseId: bad as never,
+    });
+    assert.equal(outcome.accepted, false, String(bad));
+    if (!outcome.accepted) {
+      assert.equal(outcome.rejection, 'REJECT_MALFORMED_REPLACEMENT_REF');
+    }
+  }
+});
+
+test('a release cannot be its own replacement', () => {
+  const published = release();
+  const feed = { [published.releaseId]: published };
+  const outcome = withdrawRelease(feed, {
+    releaseId: published.releaseId,
+    reason: 'superseded_by_emergency_release',
+    artifactSha256: ARTIFACT_SHA,
+    replacementReleaseId: published.releaseId,
+  });
+  assert.equal(outcome.accepted, false);
+  if (!outcome.accepted) {
+    assert.equal(outcome.rejection, 'REJECT_REPLACEMENT_IS_SELF');
+  }
+});
+
+test('a null replacement is accepted and recorded as null', () => {
+  const published = release();
+  const feed = { [published.releaseId]: published };
+  const outcome = withdrawRelease(feed, {
+    releaseId: published.releaseId,
+    reason: 'provenance_unverifiable',
+    artifactSha256: ARTIFACT_SHA,
+    replacementReleaseId: null,
+  });
+  assert.equal(outcome.accepted, true);
+  if (outcome.accepted) {
+    assert.equal(outcome.withdrawnRelease.withdrawal?.replacementReleaseId, null);
+  }
+});
+
+test('withdrawing an unpublished identity is rejected', () => {
+  const outcome = withdrawRelease({}, {
+    releaseId: 'never-published',
+    reason: 'defect_confirmed',
+    artifactSha256: ARTIFACT_SHA,
+    replacementReleaseId: null,
+  });
+  assert.equal(outcome.accepted, false);
+  if (!outcome.accepted) {
+    assert.equal(outcome.rejection, 'REJECT_WITHDRAWAL_NOT_PUBLISHED');
+  }
+});
+
+test('withdrawing an already-withdrawn release is refused, not repeated', () => {
+  const published = release();
+  const feed = { [published.releaseId]: published };
+  const first = withdrawRelease(feed, {
+    releaseId: published.releaseId,
+    reason: 'defect_confirmed',
+    artifactSha256: ARTIFACT_SHA,
+    replacementReleaseId: null,
+  });
+  assert.equal(first.accepted, true);
+  if (!first.accepted) return;
+
+  const second = withdrawRelease(first.updatedFeed, {
+    releaseId: published.releaseId,
+    reason: 'defect_confirmed',
+    artifactSha256: ARTIFACT_SHA,
+    replacementReleaseId: null,
+  });
+  assert.equal(second.accepted, false);
+  if (!second.accepted) {
+    assert.equal(second.rejection, 'REJECT_WITHDRAWAL_ALREADY_WITHDRAWN');
+  }
+});
+
+test('a non-object withdrawal is rejected', () => {
+  for (const bad of [null, undefined, 'withdraw', 7]) {
+    const outcome = withdrawRelease({}, bad as never);
+    assert.equal(outcome.accepted, false, String(bad));
+    if (!outcome.accepted) {
+      assert.equal(outcome.rejection, 'REJECT_MISSING_PROVENANCE');
+    }
+  }
+});
+
+test('every withdrawal rejection is inside the closed contract set', () => {
+  const published = release();
+  const feed = { [published.releaseId]: published };
+  const outcomes = [
+    withdrawRelease(feed, {
+      releaseId: published.releaseId,
+      reason: 'made_up',
+      artifactSha256: ARTIFACT_SHA,
+      replacementReleaseId: null,
+    }),
+    withdrawRelease(feed, {
+      releaseId: published.releaseId,
+      reason: 'defect_confirmed',
+      artifactSha256: OTHER_ARTIFACT_SHA,
+      replacementReleaseId: null,
+    }),
+    withdrawRelease(feed, {
+      releaseId: published.releaseId,
+      reason: 'defect_confirmed',
+      artifactSha256: ARTIFACT_SHA,
+      replacementReleaseId: '!!bad!!',
+    }),
+    withdrawRelease(feed, {
+      releaseId: published.releaseId,
+      reason: 'defect_confirmed',
+      artifactSha256: ARTIFACT_SHA,
+      replacementReleaseId: published.releaseId,
+    }),
+    withdrawRelease({}, {
+      releaseId: 'nope',
+      reason: 'defect_confirmed',
+      artifactSha256: ARTIFACT_SHA,
+      replacementReleaseId: null,
+    }),
+    withdrawRelease(feed, null as never),
+  ];
+  for (const outcome of outcomes) {
+    if (outcome.accepted === false && outcome.rejection !== undefined) {
+      assert.ok(
+        ALLOWED_WITHDRAWAL_REJECTIONS.includes(outcome.rejection),
+        `withdrawal rejection leaked outside the contract: ${outcome.rejection}`,
+      );
+    }
+  }
 });
 
 test('a withdrawn identity can never be re-published, even with identical bytes', () => {
@@ -295,16 +556,6 @@ test('a withdrawn identity can never be re-published, even with identical bytes'
     assert.equal(outcome.rejection, 'REJECT_IDENTITY_ALREADY_PUBLISHED');
     assert.match(outcome.detail, /withdrawn/);
   }
-});
-
-test('withdrawing an unpublished identity is refused', () => {
-  const outcome = withdrawRelease({}, {
-    releaseId: 'never-published',
-    reason: 'defect_confirmed',
-    artifactSha256: ARTIFACT_SHA,
-    replacementReleaseId: null,
-  });
-  assert.equal(outcome.accepted, false);
 });
 
 test('every rejection is inside the closed contract set', () => {
@@ -319,7 +570,6 @@ test('every rejection is inside the closed contract set', () => {
       expectedSourceSha: SOURCE_SHA,
       requireSigned: false,
     }),
-    withdrawRelease({}, { releaseId: 'x', reason: 'defect_confirmed', artifactSha256: ARTIFACT_SHA, replacementReleaseId: null }),
   ];
   for (const outcome of outcomes) {
     if (outcome.accepted === false && outcome.rejection !== undefined) {
