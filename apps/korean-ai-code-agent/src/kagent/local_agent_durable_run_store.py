@@ -846,11 +846,12 @@ class DurableRunStore:
                     "durable_store_invalid_timestamp",
                     "server acknowledgement cannot predate admitted_at",
                 )
-            if acknowledged >= _parse_ts(existing[4], "command_expires_at"):
-                raise DurableRunStoreError(
-                    "durable_store_invalid_timestamp",
-                    "server acknowledgement cannot be at or after the command hard deadline",
-                )
+            # A server acknowledgement at or after the command hard deadline is
+            # the #3121 late terminal reconciliation fact: the canonical broker
+            # records it exactly once for an expired ADMITTED command whose
+            # outcome the device proved. It is mirrored here as an orthogonal
+            # server fact only — it never reopens the record and never grants
+            # replay or execution authority.
             if existing[5] is not None:
                 prior = _parse_ts(existing[5], "server_acknowledged_at")
                 if prior != acknowledged:
