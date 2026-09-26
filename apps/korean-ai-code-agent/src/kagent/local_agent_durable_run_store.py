@@ -587,7 +587,11 @@ class DurableRunStore:
                 "durable_store_terminal_without_termination",
                 "a stored terminal row has no termination reason",
             )
-
+        if row["server_acknowledged_at"] is not None and state is not DurableRunState.TERMINAL:
+            raise DurableRunStoreError(
+                "durable_store_ack_without_admission_correlation",
+                "a stored server acknowledgement requires a locally terminal row",
+            )
 
         try:
             return DurableRunRecord(
