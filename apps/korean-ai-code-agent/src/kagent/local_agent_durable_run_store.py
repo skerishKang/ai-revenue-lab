@@ -705,6 +705,13 @@ class DurableRunStore:
 
         if not isinstance(record, DurableRunRecord):
             raise ContractError("record must be DurableRunRecord")
+        if record.state is not DurableRunState.ADMITTED:
+            raise ContractError("put requires an ADMITTED durable run record")
+        if record.server_acknowledged_at is not None:
+            raise DurableRunStoreError(
+                "durable_store_ack_without_admission_correlation",
+                "put cannot prewrite the orthogonal server acknowledgement",
+            )
         row = self._to_row(record)
         columns = ", ".join(_COLUMN_ORDER)
         placeholders = ", ".join(f":{name}" for name in _COLUMN_ORDER)
@@ -805,8 +812,8 @@ class DurableRunStore:
         self._db.execute("BEGIN IMMEDIATE")
         try:
             existing = self._db.execute(
-                f"SELECT state, admission_ref, terminated_at, admitted_at, command_expires_at "
-                f"FROM {_TABLE} WHERE command_id = ?",
+                f"SELECT state, admission_ref, terminated_at, admitted_at, command_expires_at, "
+                f"server_acknowledged_at FROM {_TABLE} WHERE command_id = ?",
                 (key,),
             ).fetchone()
             if existing is None:
@@ -824,6 +831,12 @@ class DurableRunStore:
                     "a server acknowledgement requires admission and termination correlation",
                 )
             acknowledged = _parse_ts(stamp, "server_acknowledged_at")
+            terminated = _parse_ts(existing[2], "terminated_at")
+            if acknowledged < terminated:
+                raise DurableRunStoreError(
+                    "durable_store_invalid_timestamp",
+                    "server acknowledgement cannot predate local termination",
+                )
             if acknowledged < _parse_ts(existing[3], "admitted_at"):
                 raise DurableRunStoreError(
                     "durable_store_invalid_timestamp",
@@ -834,6 +847,15 @@ class DurableRunStore:
                     "durable_store_invalid_timestamp",
                     "server acknowledgement cannot be at or after the command hard deadline",
                 )
+            if existing[5] is not None:
+                prior = _parse_ts(existing[5], "server_acknowledged_at")
+                if prior != acknowledged:
+                    raise DurableRunStoreError(
+                        "durable_store_correlation_mismatch",
+                        "server acknowledgement is already durable with a different timestamp",
+                    )
+                self._db.execute("COMMIT")
+                return
             self._db.execute(
                 f"UPDATE {_TABLE} SET server_acknowledged_at = ? WHERE command_id = ?",
                 (stamp, key),
