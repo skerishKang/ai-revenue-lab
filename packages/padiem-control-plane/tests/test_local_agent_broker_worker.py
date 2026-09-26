@@ -289,6 +289,7 @@ def test_canonical_broker_authority_survives_durable_object_recreation() -> None
                 "credential_b64": _encoded(CREDENTIAL_1),
                 "command_id": "command.do.1",
                 "request_fingerprint": FINGERPRINT_1,
+                "request_id": "request.do.1",
                 "now": (BASE + timedelta(seconds=3)).isoformat(),
             }
         )
@@ -304,6 +305,10 @@ def test_canonical_broker_authority_survives_durable_object_recreation() -> None
                 "command_id": "command.do.1",
                 "admission_ref": "admission.do.1",
                 "evidence_ref": "evidence.do.1",
+                "revision_ref": queued["command"]["revision_ref"],
+                "termination": "exited",
+                "request_id": "request.do.1",
+                "exit_code": 0,
                 "now": (BASE + timedelta(seconds=4)).isoformat(),
             }
         )

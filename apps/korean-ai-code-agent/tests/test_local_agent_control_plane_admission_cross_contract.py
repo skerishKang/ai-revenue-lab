@@ -20,14 +20,27 @@ from kagent.local_agent import (
     LocalCommandResult,
     LocalRoot,
 )
-from kagent.local_agent_command_material import build_command_material_wire_projection
+from kagent.local_agent_command_material import (
+    LOCAL_MATERIAL_REVISION_MINT,
+    LOCAL_MATERIAL_REVISION_PARSE,
+    REVISION_CORRELATION_THROUGH_MATERIAL as MATERIAL_REVISION_CORRELATION,
+    build_command_material_wire_projection,
+)
 from kagent.local_agent_control_plane_admission import (
+    ACK_BOUNDED_EXIT_CODE_RETURNED,
+    ACK_BOUNDED_TERMINATION_RETURNED,
     ACK_EXACT_ADMISSION_EVIDENCE,
     ACK_ON_EXECUTION_FAILURE,
+    ACK_RAW_STDERR_RETURNED,
+    ACK_RAW_STDOUT_RETURNED,
+    ACK_REQUEST_ID_RETURNED,
+    ACK_REVISION_REF_OPAQUE_CORRELATION,
     ADMITTED_EXECUTION_BRIDGE_REUSED,
+    CAPABILITY_AUTHORITY_DUPLICATED,
     CLIENT_ADMISSION_AUTHORITY,
     CONTROL_PLANE_ADMISSION_CONFORMANCE_REUSED,
     EVIDENCE_REF_END_TO_END,
+    EXIT_CODE_BOUNDED_RETURN,
     LIVE_BROKER_CONFIGURED,
     LIVE_WINDOWS_ACCEPTANCE,
     PHYSICAL_ADMISSION_EVIDENCE_SOURCE,
@@ -35,9 +48,17 @@ from kagent.local_agent_control_plane_admission import (
     PRODUCTION_MUTATION,
     PRODUCTION_READY,
     P01_AUTHORITY_DUPLICATED,
+    RAW_DEVICE_SECRET_RETURNED,
+    RAW_STDOUT_STDERR_RETURNED,
+    REPLAY_AUTHORITY_DUPLICATED,
+    REQUEST_ID_RETURNED_AND_EXACT,
+    RESULT_RETURN_IS_BOUNDED,
+    REVISION_CORRELATION,
+    REVISION_CORRELATION_THROUGH_MATERIAL,
     SECOND_FINGERPRINT_AUTHORITY,
     SECOND_REPLAY_SEQUENCE_AUTHORITY,
     SERVER_OWNED_ADMISSION_REFS,
+    TASK_ADMISSION_AUTHORITY_DUPLICATED,
     WINDOWS_AUTHORIZATION_REUSED,
     ControlPlaneAdmittedExecutionCoordinator,
     ControlPlanePhysicalAdmissionChannel,
@@ -258,6 +279,7 @@ def _fixture(*, fail_runtime: bool = False):
         sequence=cp_command.sequence,
         issued_at=cp_command.issued_at,
         expires_at=cp_command.expires_at,
+        revision_ref=cp_command.revision_ref,
     )
     resolver = _MaterialResolver(
         build_command_material_wire_projection(
@@ -363,6 +385,8 @@ class PhysicalAdmissionExecutionCrossContractTests(unittest.TestCase):
         self.assertEqual(receipt.execution.authorization_ref, "windows_p01_grant_cross_1")
         self.assertEqual(request_port.calls[-1][1]["admission_ref"], ADMISSION_REF)
         self.assertEqual(request_port.calls[-1][1]["evidence_ref"], EVIDENCE_REF)
+        self.assertEqual(request_port.calls[-1][1]["revision_ref"], command.revision_ref)
+        self.assertEqual(request_port.calls[-1][1]["termination"], "exited")
 
         stored = authority._commands[command.command_id]
         self.assertEqual(stored.state.value, "acknowledged")
@@ -370,10 +394,19 @@ class PhysicalAdmissionExecutionCrossContractTests(unittest.TestCase):
         self.assertEqual(stored.evidence_ref, EVIDENCE_REF)
         self.assertEqual(stored.admitted_at, BASE + timedelta(seconds=41))
         self.assertEqual(stored.acknowledged_at, BASE + timedelta(seconds=52))
+        self.assertEqual(stored.revision_ref, command.revision_ref)
+        self.assertEqual(stored.termination, "exited")
 
         safe = receipt.safe_dict()
         self.assertIs(safe["material_before_admission"], True)
         self.assertIs(safe["ack_exact_admission_evidence"], True)
+        self.assertEqual(safe["revision_ref"], command.revision_ref)
+        self.assertEqual(safe["termination"], "exited")
+        self.assertEqual(safe["exit_code"], 0)
+        self.assertIs(safe["ack_revision_ref_opaque_correlation"], True)
+        self.assertIs(safe["ack_bounded_termination_returned"], True)
+        self.assertIs(safe["ack_raw_stdout_returned"], False)
+        self.assertIs(safe["ack_raw_stderr_returned"], False)
         self.assertIs(safe["raw_argv"], False)
         self.assertIs(safe["stdout"], False)
         self.assertIs(safe["stderr"], False)
@@ -456,6 +489,55 @@ class PhysicalAdmissionExecutionCrossContractTests(unittest.TestCase):
         self.assertIs(LIVE_WINDOWS_ACCEPTANCE, False)
         self.assertIs(PRODUCTION_MUTATION, False)
         self.assertIs(PRODUCTION_READY, False)
+
+    def test_3080_completion_regression_flags(self) -> None:
+        # Device/coordinator side of the CENTRAL #3080 completion contract.
+        self.assertIs(REVISION_CORRELATION, True)
+        self.assertIs(REVISION_CORRELATION_THROUGH_MATERIAL, True)
+        self.assertIs(MATERIAL_REVISION_CORRELATION, True)
+        self.assertIs(LOCAL_MATERIAL_REVISION_MINT, False)
+        self.assertIs(LOCAL_MATERIAL_REVISION_PARSE, False)
+        self.assertIs(ACK_REVISION_REF_OPAQUE_CORRELATION, True)
+        self.assertIs(ACK_BOUNDED_TERMINATION_RETURNED, True)
+        self.assertIs(ACK_REQUEST_ID_RETURNED, True)
+        self.assertIs(ACK_BOUNDED_EXIT_CODE_RETURNED, True)
+        self.assertIs(REQUEST_ID_RETURNED_AND_EXACT, True)
+        self.assertIs(EXIT_CODE_BOUNDED_RETURN, True)
+        self.assertIs(RESULT_RETURN_IS_BOUNDED, True)
+        self.assertIs(ACK_RAW_STDOUT_RETURNED, False)
+        self.assertIs(ACK_RAW_STDERR_RETURNED, False)
+        self.assertIs(RAW_STDOUT_STDERR_RETURNED, False)
+        self.assertIs(RAW_DEVICE_SECRET_RETURNED, False)
+        self.assertIs(CAPABILITY_AUTHORITY_DUPLICATED, False)
+        self.assertIs(TASK_ADMISSION_AUTHORITY_DUPLICATED, False)
+        self.assertIs(REPLAY_AUTHORITY_DUPLICATED, False)
+        self.assertIs(SECOND_REPLAY_SEQUENCE_AUTHORITY, False)
+        self.assertIs(SECOND_FINGERPRINT_AUTHORITY, False)
+        self.assertIs(CLIENT_ADMISSION_AUTHORITY, False)
+        self.assertIs(PRODUCTION_MUTATION, False)
+
+    def test_3080_broker_authority_completion_flags(self) -> None:
+        from padiem_control_plane import local_agent_broker as broker
+
+        self.assertIs(broker.REVISION_CORRELATION, True)
+        self.assertIs(broker.REVISION_CORRELATION_THROUGH_MATERIAL, True)
+        self.assertIs(broker.REVISION_REF_SERVER_OWNED_OPAQUE_CORRELATION, True)
+        self.assertIs(broker.STATUS_RESULT_EVIDENCE_RETURN, True)
+        self.assertIs(broker.REQUEST_ID_RETURNED_AND_EXACT, True)
+        self.assertIs(broker.EXIT_CODE_BOUNDED_RETURN, True)
+        self.assertIs(broker.RESULT_RETURN_IS_BOUNDED, True)
+        self.assertIs(broker.REVISION_REF_SEQUENCE_DERIVED, False)
+        self.assertIs(broker.REVISION_REF_SCHEDULING_AUTHORITY, False)
+        self.assertIs(broker.RAW_STDOUT_IN_BROKER_COMMAND, False)
+        self.assertIs(broker.RAW_STDERR_IN_BROKER_COMMAND, False)
+        self.assertIs(broker.RAW_STDOUT_STDERR_RETURNED, False)
+        self.assertIs(broker.RAW_DEVICE_SECRET_RETURNED, False)
+        self.assertIs(broker.SECOND_CAPABILITY_REPLAY_AUTHORITY, False)
+        self.assertIs(broker.CAPABILITY_AUTHORITY_DUPLICATED, False)
+        self.assertIs(broker.TASK_ADMISSION_AUTHORITY_DUPLICATED, False)
+        self.assertIs(broker.REPLAY_AUTHORITY_DUPLICATED, False)
+        self.assertIs(broker.PRODUCTION_DEPLOYMENT, False)
+        self.assertEqual(broker.EXECUTION_TERMINATIONS, frozenset({"exited", "cancelled", "timed_out"}))
 
 
 if __name__ == "__main__":

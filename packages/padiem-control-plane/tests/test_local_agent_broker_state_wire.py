@@ -192,6 +192,7 @@ def test_rotation_revocation_admission_and_ack_states_roundtrip() -> None:
         credential=CREDENTIAL_1,
         command_id=command.command_id,
         request_fingerprint=FINGERPRINT_1,
+        request_id="request.wire.1",
         now=BASE + timedelta(seconds=3),
     )
     authority.acknowledge(
@@ -201,6 +202,10 @@ def test_rotation_revocation_admission_and_ack_states_roundtrip() -> None:
         command_id=command.command_id,
         admission_ref=admission.admission_ref,
         evidence_ref=admission.evidence_ref,
+        revision_ref=command.revision_ref,
+        termination="exited",
+        request_id="request.wire.1",
+        exit_code=0,
         now=BASE + timedelta(seconds=4),
     )
 
@@ -209,6 +214,10 @@ def test_rotation_revocation_admission_and_ack_states_roundtrip() -> None:
     assert stored.commands[0].state.value == "acknowledged"
     assert stored.commands[0].admission_ref == admission.admission_ref
     assert stored.commands[0].evidence_ref == admission.evidence_ref
+    assert stored.commands[0].revision_ref == command.revision_ref
+    assert stored.commands[0].termination == "exited"
+    assert stored.commands[0].request_id == "request.wire.1"
+    assert stored.commands[0].exit_code == 0
 
     rotated = after_ack.rotate_credential(
         "binding.wire.1",
@@ -258,7 +267,7 @@ def test_raw_credential_is_never_serialized_but_digest_is_internal_only() -> Non
 def test_duplicate_json_key_and_unknown_fields_fail_closed() -> None:
     codec = LocalAgentBrokerStateJsonCodec()
     duplicate = (
-        b'{"wire_version":"padiem.local-agent-broker-state-wire.v1",'
+        b'{"wire_version":"padiem.local-agent-broker-state-wire.v2",'
         b'"wire_version":"duplicate"}'
     )
     with pytest.raises(ControlPlaneContractError) as duplicate_error:

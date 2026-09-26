@@ -377,7 +377,7 @@ class AuthorityContractTests(unittest.TestCase):
             "xml.etree",
             "extract_hwpx_text(",
             "extract_binary_document",
-            "from padiem_ai_core.document_normalization",
+            "parse_hwpx_sections(",
             "subprocess",
             "import socket",
             "urllib",
@@ -391,26 +391,32 @@ class AuthorityContractTests(unittest.TestCase):
         self.assertIn("intake_document", source)
 
     def test_facade_reaches_core_only_through_the_canonical_serializer(self) -> None:
-        """#2962: the facade's whole Core surface is an allow-list, not a ban.
+        """#2962/#2825: the facade's whole Core surface is an allow-list, not a ban.
 
         ``serialize_hwpx_package`` is the accepted single HWPX byte authority
         and ``DocumentNormalizationError`` is its bounded failure type. Any
-        other Core import — in particular the parser-layer normalizer that
-        holds ``extract_hwpx_text`` — fails this test, so create cannot grow a
-        second byte, XML or parser authority by accident.
+        other Core import — in particular the parser-layer text extractor — fails
+        this test, so create cannot grow a second byte, XML or parser authority
+        by accident.
+
+        #2989 added the single package-preserving mutation authority and #2825
+        added the single image insertion authority plus the two read-only
+        ``document_normalization`` accessors it needs to prove preservation and
+        picture readback. Both compose accepted Core authorities and neither is a
+        parser, decoder or byte producer, so they join the allow-list; no other
+        Core module may.
         """
 
         source = MODULE_PATH.read_text(encoding="utf-8")
         imported_core_modules = {
             line.split()[1] for line in source.splitlines() if line.startswith("from padiem_ai_core")
         }
-        # #2989 added the single package-preserving mutation authority, which
-        # the template_fill facade composes. It is the accepted #2979 Core
-        # mutator, so it joins the allow-list; no other Core module may.
         self.assertEqual(
             imported_core_modules,
             {
+                "padiem_ai_core.document_normalization",
                 "padiem_ai_core.document_semantics",
+                "padiem_ai_core.hwpx_image_insertion",
                 "padiem_ai_core.hwpx_package_mutation",
                 "padiem_ai_core.hwpx_package_serializer",
             },
@@ -461,19 +467,35 @@ class AuthorityContractTests(unittest.TestCase):
             hwpx_skill.ACCEPTANCE.get("TABLE_INSERT_SCOPE"),
             "BOUNDED_CANONICAL_BLOCK_SUBSET",
         )
-        for key in ("TABLE_EDIT", "IMAGE_INSERT"):
+        # #2825 bounded image insertion over the same reserved edit capability.
+        # It is claimed only to the extent of IMAGE_INSERT_SCOPE, and the wider
+        # image, table and layout authorities stay unclaimed.
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("HWPX_INSERT_IMAGE_FACADE"), "PASS")
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("IMAGE_INSERT"), "PASS")
+        self.assertEqual(
+            hwpx_skill.ACCEPTANCE.get("IMAGE_INSERT_SCOPE"),
+            "BOUNDED_PNG_CANONICAL_MANIFEST_PACKAGE",
+        )
+        self.assertEqual(hwpx_skill.ACCEPTANCE.get("IMAGE_INSERT_UNDER_HWPX_EDIT"), "YES")
+        for key in ("TABLE_EDIT", "IMAGE_EDIT", "DIRECT_JPEG_EMBEDDING"):
             self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), "NOT_CLAIMED", key)
             self.assertNotIn(hwpx_skill.ACCEPTANCE.get(key), {"PASS", "YES"})
+        for key in (
+            "SECOND_HWPX_IMAGE_AUTHORITY",
+            "SECOND_IMAGE_DECODER_AUTHORITY",
+            "CALLER_MEMBER_OR_RELATIONSHIP_INPUT",
+        ):
+            self.assertEqual(hwpx_skill.ACCEPTANCE.get(key), "0", key)
 
-    def test_create_edit_insert_table_and_template_fill_exist(self) -> None:
+    def test_create_edit_insert_table_template_fill_and_insert_image_exist(self) -> None:
         for attribute in (
             "hwpx_create",
             "hwpx_edit",
+            "hwpx_insert_image",
             "hwpx_insert_table",
             "hwpx_template_fill",
         ):
             self.assertTrue(callable(getattr(hwpx_skill, attribute, None)), attribute)
-        self.assertFalse(hasattr(hwpx_skill, "hwpx_insert_image"))
 
     def test_receipts_reject_unbounded_reason_codes(self) -> None:
         with self.assertRaises(ValueError):

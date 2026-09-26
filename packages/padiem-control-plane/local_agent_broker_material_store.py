@@ -10,7 +10,7 @@ from local_agent_broker_sql_state import iso, parse_iso, positive_int, row_value
 
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 MAX_DURABLE_COMMAND_MATERIAL_BYTES = 196_608
-_MATERIAL_WIRE_KEYS = frozenset({"contract_version", "command_id", "binding_ref", "sequence", "request_fingerprint", "material"})
+_MATERIAL_WIRE_KEYS = frozenset({"contract_version", "command_id", "binding_ref", "sequence", "request_fingerprint", "revision_ref", "material"})
 _MATERIAL_KEYS = frozenset({"request_id", "run_id", "device_id", "root_ref", "argv", "cwd_relative", "requested_at", "timeout_seconds", "shell_authority", "admin_elevation", "environment_payload", "provider_authority", "p01_approval_payload"})
 _COMMAND_MATERIAL_SCHEMA = """
 CREATE TABLE IF NOT EXISTS local_agent_command_material (
@@ -75,14 +75,17 @@ class CloudflareDurableObjectCommandMaterialStore:
 
     def _validate_wire(self, wire: Any, *, command: Any) -> tuple[dict[str, Any], str]:
         wire = closed_mapping(wire, _MATERIAL_WIRE_KEYS, "command material wire")
-        if wire["contract_version"] != "claw-local-command-material.v1":
+        if wire["contract_version"] != "claw-local-command-material.v2":
             raise ValueError("unsupported Local Agent command material contract version")
         command_id = safe_ref(wire["command_id"], "command_id")
         binding_ref = safe_ref(wire["binding_ref"], "binding_ref")
         sequence = positive_int(wire["sequence"], "sequence")
         fingerprint = digest(wire["request_fingerprint"], "request_fingerprint")
+        revision_ref = safe_ref(wire["revision_ref"], "revision_ref")
         if command_id != command.command_id or binding_ref != command.binding_ref or sequence != command.sequence or fingerprint != command.request_fingerprint:
             raise ValueError("command material wire does not match canonical broker command")
+        if revision_ref != command.revision_ref:
+            raise ValueError("command material wire does not match the canonical broker revision_ref")
         if command.state.value != "queued":
             raise ValueError("new command material requires a queued canonical broker command")
         material = closed_mapping(wire["material"], _MATERIAL_KEYS, "command material")
