@@ -335,6 +335,7 @@ class LocalAgentBrokerHttpHandler:
         state: DurableLocalAgentBrokerStatePort,
         material_resolver: LocalAgentCommandMaterialResolverPort,
         clock: Callable[[], datetime],
+        session_open_transaction: Callable[[Callable[[], dict[str, Any]]], dict[str, Any]] | None = None,
     ) -> None:
         if not isinstance(rpc, LocalAgentBrokerRpcFacade):
             raise ValueError("rpc must be LocalAgentBrokerRpcFacade")
@@ -347,10 +348,13 @@ class LocalAgentBrokerHttpHandler:
             raise ValueError("material_resolver must implement resolve")
         if not callable(clock):
             raise ValueError("clock must be callable")
+        if session_open_transaction is not None and not callable(session_open_transaction):
+            raise ValueError("session_open_transaction must be callable")
         self._rpc = rpc
         self._state = state
         self._material_resolver = material_resolver
         self._clock = clock
+        self._session_open_transaction = session_open_transaction
 
     def _error(self, status: int, code: str, message: str) -> LocalAgentBrokerHttpResponse:
         return LocalAgentBrokerHttpResponse(
@@ -449,6 +453,32 @@ class LocalAgentBrokerHttpHandler:
         }
         return self._rpc_result(self._rpc.poll(probe), "commands")
 
+    def _open_and_persist_session(
+        self,
+        auth: TrustedLocalAgentHttpAuthContext,
+        payload: dict[str, Any],
+        *,
+        server_now: datetime,
+    ) -> dict[str, Any]:
+        """Run the session-open write pair; the caller supplies the atomicity.
+
+        The canonical broker session CAS and the durable HTTP session row are
+        one logical write (#3129): when a transaction port is wired, this pair
+        runs inside it so a crash or failure between the two writes rolls back
+        to both-or-neither. Failure results short-circuit without writing the
+        HTTP row; scope validation failures propagate exactly as before.
+        """
+        result = self._rpc_result(self._rpc.open_session(self._server_rpc_payload(payload, server_now)), "session")
+        if result["ok"] is False:
+            return result
+        record = self._session_record(result["session"])
+        if record.account_ref != auth.account_ref or record.workspace_ref != auth.workspace_ref:
+            raise PermissionError("broker session escaped authenticated account/workspace scope")
+        if record.binding_ref != _ref(payload["binding_ref"], "binding_ref"):
+            raise ValueError("broker session binding mismatch")
+        self._state.save_session(record)
+        return result
+
     def _handle_session(
         self,
         auth: TrustedLocalAgentHttpAuthContext,
@@ -462,15 +492,12 @@ class LocalAgentBrokerHttpHandler:
         if _ref(payload["workspace_ref"], "workspace_ref") != auth.workspace_ref:
             raise PermissionError("session workspace does not match authenticated workspace")
         _positive_int(payload["ttl_seconds"], "ttl_seconds", minimum=60, maximum=3600)
-        result = self._rpc_result(self._rpc.open_session(self._server_rpc_payload(payload, server_now)), "session")
-        if result["ok"] is False:
-            return LocalAgentBrokerHttpResponse(200, result)
-        record = self._session_record(result["session"])
-        if record.account_ref != auth.account_ref or record.workspace_ref != auth.workspace_ref:
-            raise PermissionError("broker session escaped authenticated account/workspace scope")
-        if record.binding_ref != _ref(payload["binding_ref"], "binding_ref"):
-            raise ValueError("broker session binding mismatch")
-        self._state.save_session(record)
+        if self._session_open_transaction is not None:
+            result = self._session_open_transaction(
+                lambda: self._open_and_persist_session(auth, payload, server_now=server_now)
+            )
+        else:
+            result = self._open_and_persist_session(auth, payload, server_now=server_now)
         return LocalAgentBrokerHttpResponse(200, result)
 
     def _handle_poll(
@@ -753,6 +780,12 @@ RECONCILE_EXECUTION_AUTHORITY = False
 RECONCILE_REPLAY_AUTHORITY = False
 DURABLE_STORE_PORT_DEFINED = True
 IN_MEMORY_COUNTS_AS_DURABLE = False
+# --- issue #3129: atomic session open ---------------------------------------
+SESSION_OPEN_WRITE_PAIR_ATOMIC = True
+SESSION_OPEN_TRANSACTION_PORT = True
+SESSION_DOUBLE_WRITE_PRESENT = False
+SESSION_OPEN_BROKER_CAS_AND_HTTP_ROW = True
+SECOND_SESSION_AUTHORITY = False
 RAW_DEVICE_CREDENTIAL_LOGGED = False
 CLIENT_TIME_AUTHORITY = False
 PRODUCTION_ENDPOINT_CONFIGURED = False
