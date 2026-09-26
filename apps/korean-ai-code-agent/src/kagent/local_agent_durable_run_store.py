@@ -112,6 +112,7 @@ STORE_ERROR_CODES = (
     "durable_store_revision_mismatch",
     "durable_store_invalid_exit_code",
     "durable_store_duplicate_identity",
+    "durable_store_correlation_mismatch",
     "durable_store_terminal_without_termination",
     "durable_store_ack_without_admission_correlation",
 )
@@ -205,6 +206,47 @@ _COLUMN_ORDER = (
 )
 
 _CREATE_RUN_INDEX = f"CREATE INDEX IF NOT EXISTS {_TABLE}_run_id ON {_TABLE}(run_id)"
+
+# Fields copied from the canonical admission/broker path and immutable for the
+# lifetime of one command_id. A terminal write records an outcome; it is never
+# allowed to rewrite the identity/correlation that was admitted.
+_IMMUTABLE_TERMINAL_CORRELATION_FIELDS = (
+    "run_id",
+    "tool_request_ref",
+    "request_id",
+    "revision_ref",
+    "device_id",
+    "binding_ref",
+    "session_id",
+    "account_ref",
+    "workspace_ref",
+    "sequence",
+    "credential_generation",
+    "request_fingerprint",
+    "fingerprint_source",
+    "command_issued_at",
+    "command_expires_at",
+    "admitted_at",
+    "admission_ref",
+)
+
+# Only local outcome facts may change in record_terminal(). In particular,
+# server_acknowledged_at is excluded so acknowledge() remains the single writer
+# of the orthogonal server fact.
+_TERMINAL_MUTABLE_COLUMNS = (
+    "started_at",
+    "terminated_at",
+    "state",
+    "termination",
+    "exit_code",
+    "offline_state",
+    "evidence_diff_ref",
+    "evidence_test_ref",
+    "evidence_artifact_ref",
+    "evidence_evidence_ref",
+    "evidence_item_count",
+    "evidence_summary",
+)
 
 
 def _parse_ts(value: Any, field_name: str) -> datetime:
@@ -695,25 +737,44 @@ class DurableRunStore:
             raise ContractError("record must be DurableRunRecord")
         if not record.terminal:
             raise ContractError("record_terminal requires a locally terminal record")
+        if record.server_acknowledged_at is not None:
+            raise DurableRunStoreError(
+                "durable_store_ack_without_admission_correlation",
+                "record_terminal cannot persist the orthogonal server acknowledgement",
+            )
         row = self._to_row(record)
         assignments = ", ".join(
-            f"{name}=:{name}" for name in _COLUMN_ORDER if name != "command_id"
+            f"{name}=:{name}" for name in _TERMINAL_MUTABLE_COLUMNS
         )
         self._db.execute("BEGIN IMMEDIATE")
         try:
-            existing = self._db.execute(
-                f"SELECT state FROM {_TABLE} WHERE command_id = ?", (record.command_id,)
+            existing_row = self._db.execute(
+                f"SELECT * FROM {_TABLE} WHERE command_id = ?", (record.command_id,)
             ).fetchone()
-            if existing is None:
+            if existing_row is None:
                 raise DurableRunStoreError(
                     "durable_store_duplicate_identity",
                     "no admitted record exists for this command_id",
                 )
-            if existing[0] == DurableRunState.TERMINAL.value:
+            existing = self._from_row(existing_row)
+            if existing.terminal:
                 # A recorded local outcome is never overwritten: that would let
                 # a later writer erase the R8 terminal fact.
                 raise ContractError(
                     "a terminal run outcome is already durable and is never overwritten"
+                )
+            mismatched = tuple(
+                name
+                for name in _IMMUTABLE_TERMINAL_CORRELATION_FIELDS
+                if getattr(existing, name) != getattr(record, name)
+            )
+            if existing.started_at is not None and existing.started_at != record.started_at:
+                mismatched += ("started_at",)
+            if mismatched:
+                raise DurableRunStoreError(
+                    "durable_store_correlation_mismatch",
+                    "terminal outcome does not match admitted correlation: "
+                    + ", ".join(mismatched),
                 )
             self._db.execute(
                 f"UPDATE {_TABLE} SET {assignments} WHERE command_id = :command_id", row
