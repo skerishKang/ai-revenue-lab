@@ -887,6 +887,66 @@ _NEGATIVE_FLAGS = (
 
 
 
+class DurableStoreGarbageCollectionTests(StoreTestCase):
+    """GC is destructive, so it must validate complete durable records first."""
+
+    def test_gc_collects_only_old_acknowledged_terminal_records(self) -> None:
+        store = self.open_store()
+        store.put(admitted())
+        store.record_terminal(exited())
+        store.acknowledge(
+            command_id="command.1",
+            acknowledged_at=NOW - timedelta(seconds=4),
+        )
+        collected = store.collect_garbage(
+            now=NOW + timedelta(hours=2),
+            max_age=timedelta(hours=1),
+        )
+        self.assertEqual(collected, ("command.1",))
+        self.assertIsNone(store.get(command_id="command.1"))
+
+    def test_gc_keeps_nonterminal_and_terminal_without_ack(self) -> None:
+        store = self.open_store()
+        store.put(admitted(command_id="command.open"))
+        store.put(admitted(command_id="command.unacked"))
+        store.record_terminal(exited(command_id="command.unacked"))
+        collected = store.collect_garbage(
+            now=NOW + timedelta(hours=2),
+            max_age=timedelta(hours=1),
+        )
+        self.assertEqual(collected, ())
+        self.assertIsNotNone(store.get(command_id="command.open"))
+        self.assertIsNotNone(store.get(command_id="command.unacked"))
+
+    def test_gc_refuses_semantically_corrupt_row_without_deleting_it(self) -> None:
+        store = self.open_store()
+        store.put(admitted())
+        store.record_terminal(exited())
+        store.acknowledge(
+            command_id="command.1",
+            acknowledged_at=NOW - timedelta(seconds=4),
+        )
+        self.rewrite(
+            f"UPDATE {_TABLE} SET request_fingerprint = ? WHERE command_id = ?",
+            ("not-a-canonical-digest", "command.1"),
+        )
+        with self.assertRaises(DurableRunStoreError) as caught:
+            store.collect_garbage(
+                now=NOW + timedelta(hours=2),
+                max_age=timedelta(hours=1),
+            )
+        self.assertEqual(caught.exception.code, "durable_store_fingerprint_mismatch")
+        db = sqlite3.connect(self.path)
+        try:
+            remaining = db.execute(
+                f"SELECT COUNT(*) FROM {_TABLE} WHERE command_id = ?",
+                ("command.1",),
+            ).fetchone()[0]
+        finally:
+            db.close()
+        self.assertEqual(remaining, 1)
+
+
 class DurableStoreForbiddenCapabilityTests(unittest.TestCase):
     """Q21–Q23 — no process authority and no retry authority anywhere."""
 
