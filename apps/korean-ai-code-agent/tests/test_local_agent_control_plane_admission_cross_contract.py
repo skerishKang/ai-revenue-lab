@@ -26,6 +26,7 @@ from kagent.local_agent_command_material import (
     REVISION_CORRELATION_THROUGH_MATERIAL as MATERIAL_REVISION_CORRELATION,
     build_command_material_wire_projection,
 )
+from kagent.local_agent_durable_run_store import DurableRunStore
 from kagent.local_agent_control_plane_admission import (
     ACK_BOUNDED_EXIT_CODE_RETURNED,
     ACK_BOUNDED_TERMINATION_RETURNED,
@@ -355,11 +356,13 @@ class PhysicalAdmissionExecutionCrossContractTests(unittest.TestCase):
         coordinator = ControlPlaneAdmittedExecutionCoordinator(
             channel=channel,
             assembly=assembly,
+            durable_store=DurableRunStore(":memory:"),
             clock=_SequenceClock(
                 [
                     BASE + timedelta(seconds=35),
                     BASE + timedelta(seconds=40),
                     BASE + timedelta(seconds=42),
+                    BASE + timedelta(seconds=46),
                     BASE + timedelta(seconds=50),
                 ]
             ),
@@ -421,6 +424,7 @@ class PhysicalAdmissionExecutionCrossContractTests(unittest.TestCase):
         coordinator = ControlPlaneAdmittedExecutionCoordinator(
             channel=channel,
             assembly=assembly,
+            durable_store=DurableRunStore(":memory:"),
             clock=_SequenceClock(
                 [
                     BASE + timedelta(seconds=35),

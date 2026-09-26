@@ -14,7 +14,14 @@ from padiem_control_plane.local_agent_broker_http import (
     TrustedLocalAgentHttpAuthContext,
 )
 
-_DEVICE_HTTP_ROUTES = frozenset({"/session", "/poll", "/material", "/heartbeat", "/acknowledge"})
+#: The single canonical device route surface. The private-service bridge derives
+#: its external reachability from this same exported constant, so a route added
+#: here is reachable end to end and one that is absent fails closed at the outer
+#: edge. #3128 — `/reconcile` carries one restarted runner's durable admitted
+#: correlation to the #3121 broker exit and grants no execution authority.
+_DEVICE_HTTP_ROUTES = frozenset(
+    {"/session", "/poll", "/material", "/heartbeat", "/acknowledge", "/reconcile"}
+)
 _ENVELOPE_KEYS = frozenset({"method", "route", "content_type", "body_b64", "tls_verified"})
 _MAX_BODY_B64_CHARS = ((MAX_LOCAL_AGENT_HTTP_BODY_BYTES + 2) // 3) * 4
 

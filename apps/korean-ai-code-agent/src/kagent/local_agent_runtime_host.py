@@ -11,6 +11,8 @@ from typing import Any, ClassVar
 from urllib.parse import urlsplit
 
 from .contracts import ContractError
+from .local_agent_durable_run_store import DurableRunStore
+from .local_agent_restart_recovery import LocalAgentRestartRecoveryDriver
 from .local_agent_control_plane_admission import (
     ControlPlaneAdmittedExecutionCoordinator,
     ControlPlanePhysicalAdmissionChannel,
@@ -216,6 +218,7 @@ class LocalAgentResidentRuntimeHost:
         assembly: BoundLocalAgentRuntimeAssembly,
         channel: ControlPlanePhysicalAdmissionChannel,
         credential_store: DeviceCredentialStore,
+        durable_store: DurableRunStore,
         coordinator: ControlPlaneAdmittedExecutionCoordinator | None = None,
         clock: Callable[[], datetime] | None = None,
         instance_lock: SingleInstanceLockPort | None = None,
@@ -233,6 +236,11 @@ class LocalAgentResidentRuntimeHost:
             raise ContractError("channel must be ControlPlanePhysicalAdmissionChannel")
         if not hasattr(credential_store, "load"):
             raise ContractError("credential_store must implement load")
+        # #3128: the durable run store is mandatory. It is what makes a
+        # terminal result survive a crash between execution and the broker
+        # acknowledgement, and it is what restart reconciliation reads.
+        if not isinstance(durable_store, DurableRunStore):
+            raise ContractError("durable_store must be DurableRunStore")
 
         # Trusted configuration verification
         authority = channel.authority
@@ -269,6 +277,13 @@ class LocalAgentResidentRuntimeHost:
             channel=channel,
             assembly=assembly,
             clock=self._clock,
+            durable_store=durable_store,
+        )
+        self._durable_store = durable_store
+        self._recovery = LocalAgentRestartRecoveryDriver(
+            store=durable_store,
+            channel=channel,
+            binding=assembly._binding,
         )
         self._instance_lock = instance_lock or InMemorySingleInstanceLock()
         self._session_id_factory = session_id_factory or _default_session_id_factory
@@ -562,6 +577,11 @@ class LocalAgentResidentRuntimeHost:
                 except Exception as exc:
                     self._handle_transport_error(exc)
                     return 0
+
+            # #3128: reconcile anything a previous process left unacknowledged
+            # before dispatching new work. This never executes anything; it
+            # only re-presents correlation the durable store already holds.
+            self._recovery.recover_once(session=session, now=tick_now)
 
             # Poll for commands
             poll_request = OutboundPollRequest(

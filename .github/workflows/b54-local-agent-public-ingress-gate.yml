@@ -121,7 +121,16 @@ jobs:
                   assert len(call.args) == 1 and isinstance(call.args[0], ast.Set)
                   routes = {elt.value for elt in call.args[0].elts if isinstance(elt, ast.Constant) and isinstance(elt.value, str)}
                   break
-          assert routes == {"/session", "/poll", "/material", "/heartbeat", "/acknowledge"}
+          # #3128 adds exactly one correlation-only recovery route. The set stays
+          # closed and exactly pinned: no other route may ever appear here.
+          assert routes == {
+              "/session",
+              "/poll",
+              "/material",
+              "/heartbeat",
+              "/acknowledge",
+              "/reconcile",
+          }
 
           edge_source = (root / "local_agent_broker_edge_worker.py").read_text(encoding="utf-8")
           assert "ADMIN_BROKER_RPC_PUBLIC = False" in edge_source

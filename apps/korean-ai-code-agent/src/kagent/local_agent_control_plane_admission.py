@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any
+from typing import Any, Protocol
 from urllib.parse import urlsplit
 
 from .contracts import ContractError
@@ -13,12 +13,18 @@ from .control_plane_broker_conformance import (
     ConformedControlPlaneBrokerCommand,
     parse_control_plane_broker_admission,
 )
+from .local_agent import LocalCommandRequest
 from .local_agent_command_admission import (
     AdmittedLocalAgentExecutionBridge,
     AdmittedLocalCommandExecutionReceipt,
     DeterministicTrustedDeviceCommandAdmissionClient,
 )
 from .local_agent_command_material import ResolvedLocalCommandMaterial
+from .local_agent_durable_run import (
+    DurableRunRecord,
+    DurableRunState,
+    DurableRunTermination,
+)
 from .local_agent_control_plane_https import (
     ControlPlaneHttpsOperation,
     PinnedHttpsJsonRequestPort,
@@ -297,6 +303,24 @@ class ControlPlaneAdmittedExecutionReceipt:
         }
 
 
+class LocalAgentDurableRunRecoveryPort(Protocol):
+    """The durable run store surface the execution order depends on.
+
+    #3128 owns the order, not a second store: admit, persist the admitted
+    correlation, execute, persist the terminal result, acknowledge, and only
+    then record the server fact. Every method is the existing DurableRunStore API.
+    """
+
+    def put(self, record: DurableRunRecord) -> None:
+        ...
+
+    def record_terminal(self, record: DurableRunRecord) -> None:
+        ...
+
+    def acknowledge(self, *, command_id: str, acknowledged_at: datetime) -> None:
+        ...
+
+
 class ControlPlaneAdmittedExecutionCoordinator:
     """Close the physical material -> admission -> Windows execution -> ack seam.
 
@@ -310,6 +334,7 @@ class ControlPlaneAdmittedExecutionCoordinator:
         channel: ControlPlanePhysicalAdmissionChannel,
         assembly: BoundLocalAgentRuntimeAssembly,
         clock: Callable[[], datetime],
+        durable_store: LocalAgentDurableRunRecoveryPort,
     ) -> None:
         if not isinstance(channel, ControlPlanePhysicalAdmissionChannel):
             raise ContractError("channel must be ControlPlanePhysicalAdmissionChannel")
@@ -317,9 +342,16 @@ class ControlPlaneAdmittedExecutionCoordinator:
             raise ContractError("assembly must be BoundLocalAgentRuntimeAssembly")
         if not callable(clock):
             raise ContractError("clock must be callable")
+        for method_name in ("put", "record_terminal", "acknowledge"):
+            if not callable(getattr(durable_store, method_name, None)):
+                raise ContractError("durable_store must implement the durable run store writes")
         self._channel = channel
         self._assembly = assembly
         self._clock = clock
+        # #3128: mandatory, not optional. Without a durable store the runner
+        # cannot persist a terminal result before acknowledging, so there is
+        # deliberately no construction path that executes without one.
+        self._durable_store = durable_store
 
     def _now(self) -> datetime:
         return _aware(self._clock(), "runtime_clock")
@@ -352,6 +384,17 @@ class ControlPlaneAdmittedExecutionCoordinator:
             now=admission_now,
         )
 
+        # #3128: the admitted correlation is durable before anything executes, so a
+        # crash after this point still leaves a record recovery can act on.
+        admitted_record = self._durable_record(
+            command=command,
+            session=session,
+            binding=binding,
+            conformed=conformed,
+            request=resolved.request,
+        )
+        self._durable_store.put(admitted_record)
+
         # The existing admitted-execution bridge remains the execution gate.
         # Feed it the freshly conformed trusted evidence through its existing
         # client port rather than introducing a second validation path.
@@ -361,6 +404,7 @@ class ControlPlaneAdmittedExecutionCoordinator:
             admission_client=admission_client,
         )
         execution_now = max(self._now(), conformed.evidence.accepted_at)
+        started_at = execution_now
         try:
             if on_execution_start is not None:
                 on_execution_start(resolved.request.request_id)
@@ -375,9 +419,26 @@ class ControlPlaneAdmittedExecutionCoordinator:
             if on_execution_end is not None:
                 on_execution_end()
 
+        # #3128: the terminal result is durable BEFORE the acknowledgement is
+        # emitted. If this write fails the exception propagates and no
+        # acknowledgement is sent, so the broker is never told about an execution
+        # whose result the device could not durably keep.
+        terminated_at = max(self._now(), started_at)
+        self._durable_store.record_terminal(
+            replace(
+                admitted_record,
+                state=DurableRunState.TERMINAL,
+                termination=DurableRunTermination(execution.termination.value),
+                started_at=started_at,
+                terminated_at=terminated_at,
+                exit_code=execution.exit_code,
+            )
+        )
+
         # No acknowledgement is emitted unless the existing execution bridge
-        # returned a fully correlated execution receipt.
-        ack_now = self._now()
+        # returned a fully correlated execution receipt. The acknowledgement time
+        # never precedes the durable termination it reports.
+        ack_now = max(self._now(), terminated_at)
         if execution.revision_ref != command.revision_ref:
             raise ContractError("execution revision_ref does not match the polled command envelope")
         if execution.request_id != resolved.request.request_id:
@@ -394,10 +455,47 @@ class ControlPlaneAdmittedExecutionCoordinator:
             exit_code=execution.exit_code,
             now=ack_now,
         )
+        # #3128: the orthogonal server fact is recorded only once the canonical
+        # broker accepted the acknowledgement, and it never reopens the record.
+        self._durable_store.acknowledge(command_id=command.command_id, acknowledged_at=ack_now)
         return ControlPlaneAdmittedExecutionReceipt(
             execution=execution,
             evidence_ref=conformed.evidence_ref,
             acknowledged_at=ack_now,
+        )
+
+    def _durable_record(
+        self,
+        *,
+        command: DeviceCommandEnvelope,
+        session: DeviceSession,
+        binding: DeviceBinding,
+        conformed: Any,
+        request: LocalCommandRequest,
+    ) -> DurableRunRecord:
+        """Copy the admitted correlation verbatim into one durable record."""
+
+        evidence = conformed.evidence
+        return DurableRunRecord(
+            command_id=command.command_id,
+            run_id=command.run_id,
+            tool_request_ref=command.tool_request_ref,
+            request_id=request.request_id,
+            revision_ref=command.revision_ref,
+            device_id=session.device_id,
+            binding_ref=command.binding_ref,
+            session_id=session.session_id,
+            account_ref=session.account_ref,
+            workspace_ref=session.workspace_ref,
+            sequence=command.sequence,
+            credential_generation=binding.credential_generation,
+            request_fingerprint=evidence.request_fingerprint,
+            fingerprint_source="broker",
+            command_issued_at=command.issued_at,
+            command_expires_at=command.expires_at,
+            admitted_at=evidence.accepted_at,
+            admission_ref=evidence.admission_ref,
+            admission_evidence_ref=conformed.evidence_ref,
         )
 
     def safe_dict(self) -> dict[str, Any]:
@@ -422,6 +520,9 @@ class ControlPlaneAdmittedExecutionCoordinator:
             "live_broker_configured": False,
             "live_windows_acceptance": False,
             "production_ready": False,
+            "durable_terminal_before_ack": True,
+            "durable_admitted_before_execution": True,
+            "durable_server_ack_after_broker_ack": True,
         }
 
 

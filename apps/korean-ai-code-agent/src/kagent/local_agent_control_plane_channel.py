@@ -149,6 +149,74 @@ class ControlPlanePinnedHttpsChannel(PinnedOutboundLocalAgentChannel):
         )
         self._polled_commands.pop(command_id, None)
 
+    def acknowledge_recovered_run(
+        self,
+        *,
+        binding: DeviceBinding,
+        session: DeviceSession,
+        command_id: str,
+        admission_ref: str,
+        evidence_ref: str,
+        revision_ref: str,
+        request_id: str,
+        termination: str,
+        exit_code: int | None,
+        now: datetime,
+    ) -> None:
+        """#3128 — replay one exact acknowledgement held in a durable record."""
+
+        now = _aware(now, "now")
+        self.authority.require_current_binding(binding, now=now)
+        self.authority.require_session(session, now=now)
+        self._control_plane_transport.acknowledge_recovered(
+            config=self.authority.config,
+            binding=binding,
+            session=session,
+            command_id=command_id,
+            admission_ref=admission_ref,
+            evidence_ref=evidence_ref,
+            revision_ref=revision_ref,
+            request_id=request_id,
+            termination=termination,
+            exit_code=exit_code,
+            now=now,
+        )
+
+    def reconcile_recovered_run(
+        self,
+        *,
+        binding: DeviceBinding,
+        session: DeviceSession,
+        command_id: str,
+        admission_ref: str,
+        evidence_ref: str,
+        revision_ref: str,
+        request_id: str,
+        request_fingerprint: str,
+        termination: str | None,
+        exit_code: int | None,
+        now: datetime,
+    ) -> None:
+        """#3128 — hand one durable record's admitted correlation to #3121."""
+
+        now = _aware(now, "now")
+        self.authority.require_current_binding(binding, now=now)
+        self.authority.require_session(session, now=now)
+        self._control_plane_transport.reconcile_recovered(
+            config=self.authority.config,
+            binding=binding,
+            session=session,
+            command_id=command_id,
+            admission_ref=admission_ref,
+            evidence_ref=evidence_ref,
+            revision_ref=revision_ref,
+            request_id=request_id,
+            request_fingerprint=request_fingerprint,
+            termination=termination,
+            exit_code=exit_code,
+            now=now,
+        )
+
     def safe_dict(self) -> dict[str, Any]:
         base = super().safe_dict()
         return {
@@ -164,6 +232,9 @@ class ControlPlanePinnedHttpsChannel(PinnedOutboundLocalAgentChannel):
             "public_inbound_port": False,
             "production_broker_configured": False,
             "real_remote_execution": False,
+            "durable_recovery_ack_surface": True,
+            "durable_recovery_reconcile_surface": True,
+            "recovery_grants_execution_authority": False,
         }
 
 
