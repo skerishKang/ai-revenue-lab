@@ -490,7 +490,14 @@ class InMemoryLocalAgentBrokerAuthority:
         binding = self._binding(binding_ref, now=now)
         command_id = _ref("command_id", command_id)
         if command_id in self._commands:
-            raise ControlPlaneContractError("duplicate_broker_command", "command_id has already been used")
+            return self._idempotent_enqueue_retry(
+                existing=self._commands[command_id],
+                binding_ref=binding.binding_ref,
+                run_id=run_id,
+                tool_request_ref=tool_request_ref,
+                request_fingerprint=request_fingerprint,
+                ttl_seconds=ttl_seconds,
+            )
         ttl = _ttl("ttl_seconds", ttl_seconds, minimum=1, maximum=MAX_COMMAND_TTL_SECONDS)
         sequence = self._last_sequence_by_binding.get(binding.binding_ref, 0) + 1
         revision_ref = self._revision_ref(binding_ref=binding.binding_ref, command_id=command_id)
@@ -509,6 +516,44 @@ class InMemoryLocalAgentBrokerAuthority:
         self._commands[command_id] = command
         self._last_sequence_by_binding[binding.binding_ref] = sequence
         return command
+
+    def _idempotent_enqueue_retry(
+        self,
+        *,
+        existing: BrokerCommandRecord,
+        binding_ref: str,
+        run_id: str,
+        tool_request_ref: str,
+        request_fingerprint: str,
+        ttl_seconds: int,
+    ) -> BrokerCommandRecord:
+        """Return the canonical command for an exact enqueue retry; fail closed otherwise.
+
+        Recovery for a lost enqueue response: a retry is exact only when every
+        caller-owned immutable request field matches the persisted command. The
+        server-owned projection (sequence, revision_ref, request_fingerprint,
+        lifetime) is returned untouched — never re-minted and never overwritten.
+        """
+        retried = (
+            binding_ref,
+            _ref("run_id", run_id),
+            _ref("tool_request_ref", tool_request_ref),
+            _digest("request_fingerprint", request_fingerprint),
+            _ttl("ttl_seconds", ttl_seconds, minimum=1, maximum=MAX_COMMAND_TTL_SECONDS),
+        )
+        persisted = (
+            existing.binding_ref,
+            existing.run_id,
+            existing.tool_request_ref,
+            existing.request_fingerprint,
+            int((existing.expires_at - existing.issued_at).total_seconds()),
+        )
+        if retried != persisted:
+            raise ControlPlaneContractError(
+                "duplicate_broker_command",
+                "command_id has already been used with a different immutable request",
+            )
+        return existing
 
     def poll(
         self,
@@ -629,6 +674,18 @@ class InMemoryLocalAgentBrokerAuthority:
             raise ControlPlaneContractError("broker_command_not_found", "command was not found") from exc
         if command.credential_generation != binding.credential_generation:
             raise ControlPlaneContractError("stale_broker_command_generation", "command belongs to a stale credential generation")
+        if command.state is BrokerCommandState.ACKNOWLEDGED:
+            return self._idempotent_acknowledge_retry(
+                command=command,
+                binding=binding,
+                session=session,
+                admission_ref=admission_ref,
+                evidence_ref=evidence_ref,
+                revision_ref=revision_ref,
+                termination=termination,
+                request_id=request_id,
+                exit_code=exit_code,
+            )
         if command.state is not BrokerCommandState.ADMITTED:
             raise ControlPlaneContractError("broker_ack_without_admission", "command must be admitted exactly once before acknowledgement")
         echoed_revision_ref = _ref("revision_ref", revision_ref)
@@ -663,6 +720,49 @@ class InMemoryLocalAgentBrokerAuthority:
         return acknowledged
 
 
+    def _idempotent_acknowledge_retry(
+        self,
+        *,
+        command: BrokerCommandRecord,
+        binding: BrokerDeviceBinding,
+        session: BrokerDeviceSession,
+        admission_ref: str,
+        evidence_ref: str,
+        revision_ref: str,
+        termination: str,
+        request_id: str,
+        exit_code: int | None,
+    ) -> BrokerCommandRecord:
+        """Re-serve the persisted acknowledged command for an exact acknowledgement retry.
+
+        Recovery for a lost acknowledgement response only: every canonical ack field
+        is re-validated against the persisted acknowledged command and any difference
+        fails closed. No admission is re-created, terminal state is never reopened,
+        and the persisted record is returned untouched.
+        """
+        echoed_revision_ref = _ref("revision_ref", revision_ref)
+        if echoed_revision_ref != command.revision_ref:
+            raise ControlPlaneContractError("broker_ack_revision_mismatch", "acknowledgement revision_ref does not echo the server-owned command revision")
+        if not isinstance(termination, str) or termination not in _EXECUTION_TERMINATIONS:
+            raise ControlPlaneContractError("broker_ack_invalid_termination", "acknowledgement must carry a bounded execution termination")
+        echoed_request_id = _ref("request_id", request_id)
+        if echoed_request_id != command.request_id:
+            raise ControlPlaneContractError("broker_ack_request_id_mismatch", "acknowledgement request_id does not match the admitted material request")
+        bounded_exit_code = _bounded_exit_code("exit_code", exit_code)
+        expected = (
+            binding.binding_ref,
+            session.session_id,
+            _ref("admission_ref", admission_ref),
+            _ref("evidence_ref", evidence_ref),
+        )
+        actual = (command.binding_ref, command.admitted_session_id, command.admission_ref, command.evidence_ref)
+        if actual != expected:
+            raise ControlPlaneContractError("broker_ack_correlation_mismatch", "acknowledgement does not match admitted command evidence")
+        if termination != command.termination or bounded_exit_code != command.exit_code:
+            raise ControlPlaneContractError("broker_ack_conflict", "acknowledgement retry does not match the persisted acknowledged command")
+        return command
+
+
 SERVER_SIDE_LOCAL_AGENT_BROKER_AUTHORITY = True
 KEYED_DEVICE_CREDENTIAL_DIGEST_ONLY = True
 BOUND_BROKER_SESSION = True
@@ -688,6 +788,13 @@ RAW_STDOUT_IN_BROKER_COMMAND = False
 RAW_STDERR_IN_BROKER_COMMAND = False
 REVISION_CORRELATION = True
 REVISION_CORRELATION_THROUGH_MATERIAL = True
+ENQUEUE_EXACT_RETRY_IDEMPOTENT = True
+ENQUEUE_RETRY_REVISION_REF_STABLE = True
+ENQUEUE_RETRY_SEQUENCE_STABLE = True
+ACK_EXACT_RETRY_IDEMPOTENT = True
+ACK_RETRY_DOES_NOT_REOPEN = True
+EXECUTION_REPLAY_AUTHORITY = False
+TERMINAL_REOPEN = False
 REQUEST_ID_RETURNED_AND_EXACT = True
 EXIT_CODE_BOUNDED_RETURN = True
 RESULT_RETURN_IS_BOUNDED = True

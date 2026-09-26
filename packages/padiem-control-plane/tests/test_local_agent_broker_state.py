@@ -296,7 +296,24 @@ def test_admission_and_ack_replay_state_survives_restart() -> None:
     assert acknowledged.state.value == "acknowledged"
 
     restarted_again = _authority(port)
-    with pytest.raises(ControlPlaneContractError) as ack_replay:
+    ack_retry = restarted_again.acknowledge(
+        session_id=session.session_id,
+        binding_ref="binding.state.1",
+        credential=CREDENTIAL_1,
+        command_id=command.command_id,
+        admission_ref=admission.admission_ref,
+        evidence_ref=admission.evidence_ref,
+        revision_ref=command.revision_ref,
+        termination="exited",
+        request_id="request.state.1",
+        exit_code=0,
+        now=BASE + timedelta(seconds=6),
+    )
+    assert ack_retry == acknowledged
+    assert ack_retry.acknowledged_at == acknowledged.acknowledged_at
+    assert ack_retry.state.value == "acknowledged"
+
+    with pytest.raises(ControlPlaneContractError) as conflicting_retry:
         restarted_again.acknowledge(
             session_id=session.session_id,
             binding_ref="binding.state.1",
@@ -307,10 +324,95 @@ def test_admission_and_ack_replay_state_survives_restart() -> None:
             revision_ref=command.revision_ref,
             termination="exited",
             request_id="request.state.1",
-            exit_code=0,
-            now=BASE + timedelta(seconds=6),
+            exit_code=1,
+            now=BASE + timedelta(seconds=7),
         )
-    assert ack_replay.value.code == "broker_ack_without_admission"
+    assert conflicting_retry.value.code == "broker_ack_conflict"
+    persisted = port.load(authority_ref=AUTHORITY_REF).snapshot.commands[0]
+    assert persisted == acknowledged
+    assert persisted.acknowledged_at == acknowledged.acknowledged_at
+
+
+def test_exact_enqueue_and_ack_retries_survive_restart_without_minting() -> None:
+    port = InMemoryLocalAgentBrokerStatePort()
+    first_process = _authority(port)
+    _register(first_process)
+    session = _session(first_process)
+    command = first_process.enqueue_command(
+        command_id="command.state.1",
+        binding_ref="binding.state.1",
+        run_id="run.state.1",
+        tool_request_ref="tool-request.state.1",
+        request_fingerprint=FINGERPRINT_1,
+        now=BASE + timedelta(seconds=2),
+    )
+    assert command.sequence == 1
+
+    restarted = _authority(port)
+    retried = restarted.enqueue_command(
+        command_id="command.state.1",
+        binding_ref="binding.state.1",
+        run_id="run.state.1",
+        tool_request_ref="tool-request.state.1",
+        request_fingerprint=FINGERPRINT_1,
+        now=BASE + timedelta(seconds=30),
+    )
+    assert retried == command
+    assert retried.sequence == command.sequence == 1
+    assert retried.revision_ref == command.revision_ref
+    assert retried.issued_at == command.issued_at
+
+    fresh_after_retry = restarted.enqueue_command(
+        command_id="command.state.2",
+        binding_ref="binding.state.1",
+        run_id="run.state.2",
+        tool_request_ref="tool-request.state.2",
+        request_fingerprint=FINGERPRINT_2,
+        now=BASE + timedelta(seconds=31),
+    )
+    assert fresh_after_retry.sequence == 2
+
+    admission = restarted.admit_command(
+        admission_ref="admission.state.1",
+        evidence_ref="evidence.state.1",
+        session_id=session.session_id,
+        binding_ref="binding.state.1",
+        credential=CREDENTIAL_1,
+        command_id=command.command_id,
+        request_fingerprint=FINGERPRINT_1,
+        request_id="request.state.1",
+        now=BASE + timedelta(seconds=32),
+    )
+    acknowledged = restarted.acknowledge(
+        session_id=session.session_id,
+        binding_ref="binding.state.1",
+        credential=CREDENTIAL_1,
+        command_id=command.command_id,
+        admission_ref=admission.admission_ref,
+        evidence_ref=admission.evidence_ref,
+        revision_ref=command.revision_ref,
+        termination="exited",
+        request_id="request.state.1",
+        exit_code=0,
+        now=BASE + timedelta(seconds=33),
+    )
+
+    third_process = _authority(port)
+    ack_retry = third_process.acknowledge(
+        session_id=session.session_id,
+        binding_ref="binding.state.1",
+        credential=CREDENTIAL_1,
+        command_id=command.command_id,
+        admission_ref=admission.admission_ref,
+        evidence_ref=admission.evidence_ref,
+        revision_ref=command.revision_ref,
+        termination="exited",
+        request_id="request.state.1",
+        exit_code=0,
+        now=BASE + timedelta(seconds=34),
+    )
+    assert ack_retry == acknowledged
+    assert ack_retry.acknowledged_at == acknowledged.acknowledged_at
 
 
 def test_two_stale_writers_cannot_both_persist_same_next_sequence() -> None:

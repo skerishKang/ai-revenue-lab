@@ -159,6 +159,88 @@ def test_rpc_wrong_credential_returns_safe_core_error():
     }
 
 
+def test_rpc_enqueue_and_ack_exact_retries_recover_lost_responses():
+    rpc = facade()
+    assert rpc.register_binding(register_payload())["ok"] is True
+    assert rpc.open_session({
+        "session_id": "session.1",
+        "binding_ref": "binding.1",
+        "credential_b64": encoded(),
+        "account_ref": "account.1",
+        "workspace_ref": "workspace.1",
+        "now": (NOW + timedelta(seconds=1)).isoformat(),
+    })["ok"] is True
+
+    enqueue_payload = {
+        "command_id": "command.1",
+        "binding_ref": "binding.1",
+        "run_id": "run.1",
+        "tool_request_ref": "tool-request.1",
+        "request_fingerprint": FINGERPRINT,
+        "now": (NOW + timedelta(seconds=2)).isoformat(),
+    }
+    queued = rpc.enqueue_command(enqueue_payload)
+    assert queued["ok"] is True
+
+    retried = rpc.enqueue_command(dict(enqueue_payload, now=(NOW + timedelta(seconds=30)).isoformat()))
+    assert retried == queued
+    assert retried["command"]["sequence"] == 1
+    assert retried["command"]["revision_ref"] == queued["command"]["revision_ref"]
+    assert retried["command"]["issued_at"] == queued["command"]["issued_at"]
+
+    conflicting = rpc.enqueue_command(dict(enqueue_payload, run_id="run.other", now=(NOW + timedelta(seconds=31)).isoformat()))
+    assert conflicting["ok"] is False
+    assert conflicting["error"]["code"] == "duplicate_broker_command"
+
+    next_command = rpc.enqueue_command({
+        "command_id": "command.2",
+        "binding_ref": "binding.1",
+        "run_id": "run.2",
+        "tool_request_ref": "tool-request.2",
+        "request_fingerprint": FINGERPRINT,
+        "now": (NOW + timedelta(seconds=32)).isoformat(),
+    })
+    assert next_command["ok"] is True
+    assert next_command["command"]["sequence"] == 2
+
+    admitted = rpc.admit_command({
+        "admission_ref": "admission.1",
+        "evidence_ref": "evidence.1",
+        "session_id": "session.1",
+        "binding_ref": "binding.1",
+        "credential_b64": encoded(),
+        "command_id": "command.1",
+        "request_fingerprint": FINGERPRINT,
+        "request_id": "request.1",
+        "now": (NOW + timedelta(seconds=33)).isoformat(),
+    })
+    assert admitted["ok"] is True
+
+    ack_payload = {
+        "session_id": "session.1",
+        "binding_ref": "binding.1",
+        "credential_b64": encoded(),
+        "command_id": "command.1",
+        "admission_ref": "admission.1",
+        "evidence_ref": "evidence.1",
+        "revision_ref": queued["command"]["revision_ref"],
+        "termination": "exited",
+        "request_id": "request.1",
+        "exit_code": 0,
+        "now": (NOW + timedelta(seconds=34)).isoformat(),
+    }
+    acknowledged = rpc.acknowledge(ack_payload)
+    assert acknowledged["ok"] is True
+
+    ack_retry = rpc.acknowledge(dict(ack_payload, now=(NOW + timedelta(seconds=35)).isoformat()))
+    assert ack_retry == acknowledged
+    assert ack_retry["command"]["acknowledged_at"] == acknowledged["command"]["acknowledged_at"]
+
+    conflicting_ack = rpc.acknowledge(dict(ack_payload, exit_code=1, now=(NOW + timedelta(seconds=36)).isoformat()))
+    assert conflicting_ack["ok"] is False
+    assert conflicting_ack["error"]["code"] == "broker_ack_conflict"
+
+
 def test_rpc_rotation_invalidates_old_generation_delivery():
     rpc = facade()
     assert rpc.register_binding(register_payload())["ok"] is True

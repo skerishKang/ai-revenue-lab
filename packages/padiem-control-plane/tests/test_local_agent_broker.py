@@ -7,8 +7,11 @@ import pytest
 from padiem_control_plane.contracts import ControlPlaneContractError
 from padiem_control_plane.local_agent_broker import (
     ADMISSION_BEFORE_ACK,
+    ACK_EXACT_RETRY_IDEMPOTENT,
     BOUND_BROKER_SESSION,
     COMMAND_CREDENTIAL_GENERATION_BOUND,
+    ENQUEUE_EXACT_RETRY_IDEMPOTENT,
+    EXECUTION_REPLAY_AUTHORITY,
     EXACT_REQUEST_FINGERPRINT,
     KEYED_DEVICE_CREDENTIAL_DIGEST_ONLY,
     MONOTONIC_COMMAND_SEQUENCE,
@@ -19,6 +22,7 @@ from padiem_control_plane.local_agent_broker import (
     RAW_ARGV_IN_BROKER_COMMAND,
     RAW_DEVICE_CREDENTIAL_PERSISTED,
     SERVER_SIDE_LOCAL_AGENT_BROKER_AUTHORITY,
+    TERMINAL_REOPEN,
     BrokerBindingState,
     BrokerCommandState,
     InMemoryLocalAgentBrokerAuthority,
@@ -351,7 +355,23 @@ def test_ack_requires_exact_admission_evidence_and_is_single_use():
     assert "stdout" not in returned
     assert "stderr" not in returned
 
-    with pytest.raises(ControlPlaneContractError) as replay_ack:
+    exact_ack_retry = service.acknowledge(
+        session_id="session.1",
+        binding_ref="binding.1",
+        credential=CREDENTIAL_1,
+        command_id="command.1",
+        admission_ref="admission.command.1",
+        evidence_ref="evidence.command.1",
+        revision_ref=command.revision_ref,
+        termination="exited",
+        request_id="request.command.1",
+        exit_code=0,
+        now=NOW + timedelta(seconds=5),
+    )
+    assert exact_ack_retry == acked
+    assert exact_ack_retry.acknowledged_at == acked.acknowledged_at == NOW + timedelta(seconds=4)
+
+    with pytest.raises(ControlPlaneContractError) as conflicting_ack:
         service.acknowledge(
             session_id="session.1",
             binding_ref="binding.1",
@@ -362,10 +382,161 @@ def test_ack_requires_exact_admission_evidence_and_is_single_use():
             revision_ref=command.revision_ref,
             termination="exited",
             request_id="request.command.1",
-            exit_code=0,
+            exit_code=1,
             now=NOW + timedelta(seconds=5),
         )
-    assert error_code(replay_ack) == "broker_ack_without_admission"
+    assert error_code(conflicting_ack) == "broker_ack_conflict"
+
+
+def test_enqueue_exact_retry_is_idempotent_and_mints_nothing_new():
+    service = authority()
+    register(service)
+    open_session(service)
+    first = enqueue(service, command_id="command.1", fingerprint=FINGERPRINT_1, now=NOW + timedelta(seconds=2))
+    retried = enqueue(service, command_id="command.1", fingerprint=FINGERPRINT_1, now=NOW + timedelta(seconds=30))
+
+    assert retried == first
+    assert retried.sequence == first.sequence == 1
+    assert retried.revision_ref == first.revision_ref
+    assert retried.request_fingerprint == first.request_fingerprint == FINGERPRINT_1
+    assert retried.issued_at == first.issued_at == NOW + timedelta(seconds=2)
+    assert retried.expires_at == first.expires_at == NOW + timedelta(seconds=302)
+
+    fresh_after_retry = enqueue(service, command_id="command.2", fingerprint=FINGERPRINT_2, now=NOW + timedelta(seconds=31))
+    assert fresh_after_retry.sequence == 2
+
+
+def test_enqueue_conflicting_retry_fails_closed_and_keeps_canonical_record():
+    service = authority()
+    register(service)
+    open_session(service)
+    canonical = enqueue(service, command_id="command.1", fingerprint=FINGERPRINT_1, now=NOW + timedelta(seconds=2))
+
+    def retry(**overrides):
+        request = {
+            "command_id": "command.1",
+            "binding_ref": "binding.1",
+            "run_id": "run.1",
+            "tool_request_ref": "tool-request.command.1",
+            "request_fingerprint": FINGERPRINT_1,
+            "ttl_seconds": 300,
+        }
+        request.update(overrides)
+        return service.enqueue_command(now=NOW + timedelta(seconds=30), **request)
+
+    with pytest.raises(ControlPlaneContractError) as wrong_run:
+        retry(run_id="run.other")
+    assert error_code(wrong_run) == "duplicate_broker_command"
+    with pytest.raises(ControlPlaneContractError) as wrong_tool_request:
+        retry(tool_request_ref="tool-request.other")
+    assert error_code(wrong_tool_request) == "duplicate_broker_command"
+    with pytest.raises(ControlPlaneContractError) as wrong_fingerprint:
+        retry(request_fingerprint=FINGERPRINT_2)
+    assert error_code(wrong_fingerprint) == "duplicate_broker_command"
+    with pytest.raises(ControlPlaneContractError) as wrong_ttl:
+        retry(ttl_seconds=299)
+    assert error_code(wrong_ttl) == "duplicate_broker_command"
+
+    assert service.enqueue_command(
+        command_id="command.1",
+        binding_ref="binding.1",
+        run_id="run.1",
+        tool_request_ref="tool-request.command.1",
+        request_fingerprint=FINGERPRINT_1,
+        now=NOW + timedelta(seconds=31),
+    ) == canonical
+
+    session = open_session(service, session_id="session.2", now=NOW + timedelta(seconds=1))
+    assert [item.command_id for item in service.poll(
+        session_id=session.session_id,
+        binding_ref="binding.1",
+        credential=CREDENTIAL_1,
+        after_sequence=0,
+        now=NOW + timedelta(seconds=32),
+    )] == ["command.1"]
+
+    fresh_after_conflicts = enqueue(service, command_id="command.2", fingerprint=FINGERPRINT_2, now=NOW + timedelta(seconds=33))
+    assert fresh_after_conflicts.sequence == 2
+
+
+def _ack_request(revision_ref, **overrides):
+    request = {
+        "session_id": "session.1",
+        "binding_ref": "binding.1",
+        "credential": CREDENTIAL_1,
+        "command_id": "command.1",
+        "admission_ref": "admission.command.1",
+        "evidence_ref": "evidence.command.1",
+        "revision_ref": revision_ref,
+        "termination": "exited",
+        "request_id": "request.command.1",
+        "exit_code": 0,
+    }
+    request.update(overrides)
+    return request
+
+
+def test_acknowledge_exact_retry_returns_persisted_command_without_reopening():
+    service = authority()
+    register(service)
+    session = open_session(service)
+    command = enqueue(service)
+    admit(service)
+    acked = service.acknowledge(**_ack_request(command.revision_ref), now=NOW + timedelta(seconds=4))
+
+    retried = service.acknowledge(**_ack_request(command.revision_ref), now=NOW + timedelta(seconds=30))
+    assert retried == acked
+    assert retried.state is BrokerCommandState.ACKNOWLEDGED
+    assert retried.acknowledged_at == acked.acknowledged_at == NOW + timedelta(seconds=4)
+    assert retried.revision_ref == acked.revision_ref == command.revision_ref
+    assert retried.termination == acked.termination == "exited"
+    assert retried.request_id == acked.request_id == "request.command.1"
+    assert retried.exit_code == acked.exit_code == 0
+
+    assert service.poll(
+        session_id=session.session_id,
+        binding_ref="binding.1",
+        credential=CREDENTIAL_1,
+        after_sequence=0,
+        now=NOW + timedelta(seconds=31),
+    ) == ()
+    with pytest.raises(ControlPlaneContractError) as readmit:
+        admit(service, now=NOW + timedelta(seconds=32))
+    assert error_code(readmit) == "broker_command_replay"
+
+    still_persisted = service.acknowledge(**_ack_request(command.revision_ref), now=NOW + timedelta(seconds=33))
+    assert still_persisted == acked
+
+
+def test_acknowledge_conflicting_retry_fails_closed_on_every_canonical_field():
+    service = authority()
+    register(service)
+    open_session(service)
+    open_session(service, session_id="session.2")
+    command = enqueue(service)
+    admit(service)
+    acked = service.acknowledge(**_ack_request(command.revision_ref), now=NOW + timedelta(seconds=4))
+
+    conflicting = [
+        ({"revision_ref": "rev.00000000000000000000000000000000"}, "broker_ack_revision_mismatch"),
+        ({"admission_ref": "admission.other"}, "broker_ack_correlation_mismatch"),
+        ({"evidence_ref": "evidence.other"}, "broker_ack_correlation_mismatch"),
+        ({"session_id": "session.2"}, "broker_ack_correlation_mismatch"),
+        ({"request_id": "request.other"}, "broker_ack_request_id_mismatch"),
+        ({"termination": "cancelled"}, "broker_ack_conflict"),
+        ({"exit_code": 1}, "broker_ack_conflict"),
+        ({"exit_code": None}, "broker_ack_conflict"),
+    ]
+    for overrides, expected in conflicting:
+        request = _ack_request(command.revision_ref)
+        request.update(overrides)
+        with pytest.raises(ControlPlaneContractError) as caught:
+            service.acknowledge(**request, now=NOW + timedelta(seconds=5))
+        assert error_code(caught) == expected, overrides
+
+    persisted = service.acknowledge(**_ack_request(command.revision_ref), now=NOW + timedelta(seconds=6))
+    assert persisted == acked
+    assert persisted.acknowledged_at == NOW + timedelta(seconds=4)
 
 
 def test_rotation_invalidates_old_sessions_credentials_and_queued_generation():
@@ -518,3 +689,7 @@ def test_source_truth_constants_preserve_non_live_boundaries():
     assert PUBLIC_HTTP_ENDPOINT is False
     assert PRODUCTION_DEPLOYMENT is False
     assert PRODUCTION_READY is False
+    assert ENQUEUE_EXACT_RETRY_IDEMPOTENT is True
+    assert ACK_EXACT_RETRY_IDEMPOTENT is True
+    assert EXECUTION_REPLAY_AUTHORITY is False
+    assert TERMINAL_REOPEN is False
