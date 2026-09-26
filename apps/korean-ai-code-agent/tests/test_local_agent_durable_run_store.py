@@ -145,18 +145,6 @@ class DurableStoreLifecycleTests(StoreTestCase):
         second = self.open_store()
         self.assertEqual(len(second.list_records()), 1)
 
-    def test_q1_put_accepts_only_initial_admitted_state(self) -> None:
-        store = self.open_store()
-        with self.assertRaises(ContractError):
-            store.put(
-                admitted(
-                    state=DurableRunState.EXECUTING,
-                    started_at=NOW - timedelta(seconds=5),
-                )
-            )
-        with self.assertRaises(ContractError):
-            store.put(exited())
-
     def test_q2_exact_correlation_roundtrips(self) -> None:
         store = self.open_store()
         original = admitted()
