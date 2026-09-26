@@ -341,6 +341,14 @@ class DurableStoreTerminalPersistenceTests(StoreTestCase):
             caught.exception.code, "durable_store_ack_without_admission_correlation"
         )
 
+    def test_q11_ack_at_hard_deadline_is_refused(self) -> None:
+        store = self.open_store()
+        store.put(admitted())
+        store.record_terminal(exited())
+        with self.assertRaises(DurableRunStoreError) as caught:
+            store.acknowledge(command_id="command.1", acknowledged_at=EXPIRES)
+        self.assertEqual(caught.exception.code, "durable_store_invalid_timestamp")
+
     def test_q6_a_terminal_outcome_is_never_overwritten(self) -> None:
         store = self.open_store()
         store.put(admitted())
