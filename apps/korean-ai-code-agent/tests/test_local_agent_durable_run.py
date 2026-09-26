@@ -379,6 +379,10 @@ class DurableRunTerminalityTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             record(server_acknowledged_at=NOW)
 
+    def test_r8_server_ack_cannot_predate_local_termination(self) -> None:
+        with self.assertRaises(ContractError):
+            terminal(server_acknowledged_at=NOW - timedelta(seconds=6))
+
     def test_r8_server_ack_cannot_preadmit_or_reach_the_hard_deadline(self) -> None:
         with self.assertRaises(ContractError):
             terminal(server_acknowledged_at=NOW - timedelta(seconds=60))
