@@ -60,68 +60,82 @@ for (const required of [
 
 const tmp = mkdtempSync(path.join(os.tmpdir(), 'claw2-3093-'));
 
-/** The harness app: uses the REAL shell modules, no BrowserWindow. */
+/**
+ * The harness app: uses the REAL shell modules, no BrowserWindow.
+ *
+ * The generated main is CommonJS on purpose. Electron 44's ESM entry does not
+ * expose named exports for `electron`, so a generated
+ * `import { app } from 'electron'` fails at load with a SyntaxError before any
+ * evidence runs. The shape that actually produces 12/12 is:
+ *
+ *   - `harness-main.cjs` calling `require('electron')`;
+ *   - the shell's own ESM build output pulled in with `await import(...)`.
+ *
+ * Both parts are required: `require('electron')` is the only form Electron's
+ * CJS entry provides, and dynamic `import()` is the only way to reach the
+ * shell's ESM modules from a CJS main. No evidence semantics change here, only
+ * the module system of the generated launcher.
+ */
 function writeHarnessApp() {
   const dir = path.join(tmp, 'harness-app');
   mkdirSync(dir, { recursive: true });
   const rel = (target) => path.join(distSrc, target).replaceAll('\\', '/');
   writeFileSync(
     path.join(dir, 'package.json'),
-    JSON.stringify({ name: 'claw2-3093-harness', version: '0.0.0', type: 'module', main: 'harness-main.mjs' }, null, 2),
+    JSON.stringify({ name: 'claw2-3093-harness', version: '0.0.0', main: 'harness-main.cjs' }, null, 2),
   );
   const mainSource = [
-    "import { app } from 'electron';",
-    "import { appendFileSync } from 'node:fs';",
-    `import { acquireSingleInstanceOwnership } from 'file:///${rel('main/single-instance.js')}';`,
-    `import { registerWindowsProtocolClient } from 'file:///${rel('main/protocol-registration.js')}';`,
-    `import { resolveRunnerHostMode } from 'file:///${rel('main/runner-host-mode.js')}';`,
-    `import { NodeRunnerProcessPort } from 'file:///${rel('supervisor/production-runner-process-port.js')}';`,
-    `import { HeadlessRunnerSupervisor } from 'file:///${rel('supervisor/runner-supervisor.js')}';`,
+    "const { app } = require('electron');",
+    "const { appendFileSync } = require('node:fs');",
     `const runnerEntry = ${JSON.stringify(rel('runner/headless-runner.js'))};`,
     'const OUT = process.env.HARNESS_OUT;',
     'const emit = (obj) => appendFileSync(OUT, JSON.stringify(obj) + "\\n");',
     'app.disableHardwareAcceleration();',
     '',
-    '// 1) protocol registration through the real #3093 decision module',
-    'const reg = registerWindowsProtocolClient(app, {',
-    '  platform: process.platform,',
-    '  packaged: false,',
-    '  defaultApp: Boolean(process.defaultApp),',
-    '  execPath: process.execPath,',
-    '  appPath: app.getAppPath(),',
-    '});',
-    "emit({ kind: 'protocol', registered: reg.registered, action: reg.plan.action });",
-    '',
-    '// 2) single-instance ownership through the real #3093 module',
-    'const runnerMode = resolveRunnerHostMode({',
-    '  execPath: process.execPath,',
-    '  electronVersion: process.versions.electron,',
-    '  runnerExecutableOverride: undefined,',
-    '  platform: process.platform,',
-    '});',
-    "emit({ kind: 'hostmode', mode: runnerMode.mode, env: runnerMode.env });",
-    'let port = null;',
-    'let supervisor = null;',
-    'const outcome = acquireSingleInstanceOwnership({',
-    '  app,',
-    '  forwardDeepLink: (link) => emit({ kind: \'forwarded\', link }),',
-    '  onNotOwner: () => app.quit(),',
-    '  onSecondInstance: () => emit({ kind: \'woke\' }),',
-    '});',
-    "emit({ kind: 'ownership', owner: outcome.owner });",
-    'if (!outcome.owner) {',
-    '  process.exit(0);',
-    '}',
-    '',
-    '// 3) closed-app delivery: first-launch argv scan (same shape as main.ts)',
-    "for (const argv of process.argv.slice(1)) {",
-    "  if (argv.toLowerCase().startsWith('padiem://')) emit({ kind: 'firstlaunch', link: argv });",
-    '}',
-    '',
     '(async () => {',
-    '  if (process.env.HARNESS_RUNNER !== \'1\') return;',
-    '  port = new NodeRunnerProcessPort();',
-    '  supervisor = new HeadlessRunnerSupervisor({',
+    `  const { acquireSingleInstanceOwnership } = await import('file:///${rel('main/single-instance.js')}');`,
+    `  const { registerWindowsProtocolClient } = await import('file:///${rel('main/protocol-registration.js')}');`,
+    `  const { resolveRunnerHostMode } = await import('file:///${rel('main/runner-host-mode.js')}');`,
+    `  const { NodeRunnerProcessPort } = await import('file:///${rel('supervisor/production-runner-process-port.js')}');`,
+    `  const { HeadlessRunnerSupervisor } = await import('file:///${rel('supervisor/runner-supervisor.js')}');`,
+    '',
+    '  // 1) protocol registration through the real #3093 decision module',
+    '  const reg = registerWindowsProtocolClient(app, {',
+    '    platform: process.platform,',
+    '    packaged: false,',
+    '    defaultApp: Boolean(process.defaultApp),',
+    '    execPath: process.execPath,',
+    '    appPath: app.getAppPath(),',
+    '  });',
+    "  emit({ kind: 'protocol', registered: reg.registered, action: reg.plan.action });",
+    '',
+    '  // 2) single-instance ownership through the real #3093 module',
+    '  const runnerMode = resolveRunnerHostMode({',
+    '    execPath: process.execPath,',
+    '    electronVersion: process.versions.electron,',
+    '    runnerExecutableOverride: undefined,',
+    '    platform: process.platform,',
+    '  });',
+    "  emit({ kind: 'hostmode', mode: runnerMode.mode, env: runnerMode.env });",
+    '  const port = new NodeRunnerProcessPort();',
+    '  const outcome = acquireSingleInstanceOwnership({',
+    '    app,',
+    '    forwardDeepLink: (link) => emit({ kind: \'forwarded\', link }),',
+    '    onNotOwner: () => app.quit(),',
+    '    onSecondInstance: () => emit({ kind: \'woke\' }),',
+    '  });',
+    "  emit({ kind: 'ownership', owner: outcome.owner });",
+    '  if (!outcome.owner) {',
+    '    process.exit(0);',
+    '  }',
+    '',
+    '  // 3) closed-app delivery: first-launch argv scan (same shape as main.ts)',
+    '  for (const argv of process.argv.slice(1)) {',
+    "    if (argv.toLowerCase().startsWith('padiem://')) emit({ kind: 'firstlaunch', link: argv });",
+    '  }',
+    '',
+    "  if (process.env.HARNESS_RUNNER !== '1') return;",
+    '  const supervisor = new HeadlessRunnerSupervisor({',
     '    port,',
     '    spec: {',
     '      executablePath: runnerMode.executablePath,',
@@ -134,26 +148,28 @@ function writeHarnessApp() {
     '    shutdownGraceMs: 6000,',
     '  });',
     '  const started = await supervisor.start();',
-    '  emit({ kind: \'runner\', phase: \'started\', state: started.state, pid: started.pid });',
+    "  emit({ kind: 'runner', phase: 'started', state: started.state, pid: started.pid });",
     '  // the ready line crosses a pipe; give the drain a bounded moment',
     '  let lines = [];',
     '  for (let i = 0; i < 60; i += 1) {',
     '    lines = port.boundedActiveOutput().lines;',
-    '    if (lines.some((l) => l.includes(\'padiem-headless-runner ready\'))) break;',
+    "    if (lines.some((l) => l.includes('padiem-headless-runner ready'))) break;",
     '    await new Promise((r) => setTimeout(r, 100));',
     '  }',
-    '  emit({ kind: \'runner\', phase: \'log\', sawReady: lines.some((l) => l.includes(\'padiem-headless-runner ready\')), captured: lines.length });',
+    "  emit({ kind: 'runner', phase: 'log', sawReady: lines.some((l) => l.includes('padiem-headless-runner ready')), captured: lines.length });",
     '  const stopped = await supervisor.stop();',
-    '  emit({ kind: \'runner\', phase: \'stopped\', state: stopped.state });',
-    '  const pid = started.pid;',
-    '  emit({ kind: \'runner\', phase: \'exitcode\', code: stopped.lastExitCode, signal: stopped.lastExitSignal, pid });',
+    "  emit({ kind: 'runner', phase: 'stopped', state: stopped.state });",
+    "  emit({ kind: 'runner', phase: 'exitcode', code: stopped.lastExitCode, signal: stopped.lastExitSignal, pid: started.pid });",
     '  app.quit();',
-    '})();',
+    '})().catch((error) => {',
+    "  emit({ kind: 'error', message: String(error && error.stack ? error.stack : error) });",
+    '  process.exit(1);',
+    '});',
     '',
     "app.on('window-all-closed', () => app.quit());",
     '',
   ].join('\n');
-  writeFileSync(path.join(dir, 'harness-main.mjs'), mainSource);
+  writeFileSync(path.join(dir, 'harness-main.cjs'), mainSource);
   return dir;
 }
 
