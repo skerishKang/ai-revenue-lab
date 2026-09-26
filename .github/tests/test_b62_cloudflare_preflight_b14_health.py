@@ -151,6 +151,126 @@ class B14HealthCheckErrorTests(unittest.TestCase):
                 self.assertEqual(state["b14_health"], preflight.B14_HEALTH_CHECK_ERROR)
                 self.assertEqual(state["b14_reason"], preflight.B14_REASON_MALFORMED_RESPONSE)
 
+
+class _FakeResponse:
+    """A urlopen-shaped response over a fixed byte body."""
+
+    def __init__(self, raw: bytes, status: int = 200) -> None:
+        self._raw = raw
+        self.status = status
+
+    def read(self, _limit: int) -> bytes:
+        return self._raw
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_exc) -> bool:
+        return False
+
+
+class B14RealParseFailureTests(unittest.TestCase):
+    """Real parse failures, driven through the actual get_json() path.
+
+    CENTRAL #3109 review blocker
+    ``MALFORMED_BODY_REASON_NOT_REACHED_FOR_REAL_PARSE_FAILURE``: an earlier
+    revision of this suite stubbed ``get_json``, so the genuine
+    ``json.loads(raw.decode("utf-8"))`` path was never exercised. A truncated
+    body or invalid UTF-8 therefore reached only ``except Exception`` and was
+    reported as ``unexpected_error`` instead of the contracted
+    ``malformed_response``.
+
+    These tests patch ``urlopen`` instead, so the real ``get_json`` decodes and
+    parses for real.
+    """
+
+    def _drive(self, raw: bytes):
+        testcase = self
+
+        def fake_urlopen(request, timeout=20):
+            return _FakeResponse(raw)
+
+        testcase.addCleanup(setattr, preflight, "urlopen", preflight.urlopen)
+        preflight.urlopen = fake_urlopen
+        return preflight.read_b14_health()
+
+    def test_truncated_json_body_is_malformed_response(self) -> None:
+        state = self._drive(b'{"status": "ok", "business14": {')
+        self.assertEqual(state["b14_health"], preflight.B14_HEALTH_CHECK_ERROR)
+        self.assertEqual(state["b14_reason"], preflight.B14_REASON_MALFORMED_RESPONSE)
+
+    def test_non_json_body_is_malformed_response(self) -> None:
+        for raw in (b"not json at all", b"<html>gateway timeout</html>", b"\x00\x01\x02"):
+            with self.subTest(raw=raw):
+                state = self._drive(raw)
+                self.assertEqual(state["b14_health"], preflight.B14_HEALTH_CHECK_ERROR)
+                self.assertEqual(
+                    state["b14_reason"], preflight.B14_REASON_MALFORMED_RESPONSE
+                )
+
+    def test_invalid_utf8_body_is_malformed_response(self) -> None:
+        # UnicodeDecodeError, not JSONDecodeError: a distinct real class.
+        state = self._drive(b"\xff\xfe\x00\x01 not valid utf-8")
+        self.assertEqual(state["b14_health"], preflight.B14_HEALTH_CHECK_ERROR)
+        self.assertEqual(state["b14_reason"], preflight.B14_REASON_MALFORMED_RESPONSE)
+
+    def test_both_parse_classes_reach_malformed_response_not_unexpected(self) -> None:
+        # The specific regression: neither may fall through to
+        # `unexpected_error`, which is reserved for genuinely unanticipated
+        # conditions.
+        for raw in (b"{", b"\xff\xfe"):
+            with self.subTest(raw=raw):
+                self.assertNotEqual(
+                    self._drive(raw)["b14_reason"], preflight.B14_REASON_UNEXPECTED_ERROR
+                )
+
+    def test_valid_body_through_the_real_path_is_still_ok(self) -> None:
+        # Guards against over-broad catching: the fix must not misclassify a
+        # genuinely healthy response.
+        state = self._drive(
+            b'{"status": "ok", "business14": '
+            b'{"provider_mode": "live", "has_key": true, "catalog_models": "3"}}'
+        )
+        self.assertEqual(state["b14_health"], preflight.B14_HEALTH_OK)
+        self.assertEqual(state["b14_reason"], preflight.B14_REASON_OK)
+        self.assertEqual(state["b14_provider_mode"], "live")
+        self.assertEqual(state["b14_has_key"], "true")
+
+    def test_valid_json_non_object_is_also_malformed_response(self) -> None:
+        # The already-parsed non-dict case must agree with the unparseable one.
+        state = self._drive(b"[1, 2, 3]")
+        self.assertEqual(state["b14_reason"], preflight.B14_REASON_MALFORMED_RESPONSE)
+
+    def test_non_200_through_the_real_path_is_unavailable_expected(self) -> None:
+        # A body that cannot be parsed on a non-200 must not become a
+        # malformed_response either: get_json() already degrades that body, and
+        # the safe fact is the HTTP status.
+        testcase = self
+
+        def fake_urlopen(request, timeout=20):
+            raise preflight.HTTPError(
+                "https://example.invalid", 503, "Service Unavailable", {}, None
+            )
+
+        testcase.addCleanup(setattr, preflight, "urlopen", preflight.urlopen)
+        preflight.urlopen = fake_urlopen
+        state = preflight.read_b14_health()
+        self.assertEqual(state["b14_health"], preflight.B14_HEALTH_UNAVAILABLE_EXPECTED)
+        self.assertEqual(state["b14_reason"], preflight.B14_REASON_HTTP_STATUS)
+
+    def test_parse_failure_does_not_expose_the_body(self) -> None:
+        secret = b'sk-live-DO-NOT-LEAK-{"broken'
+        state = self._drive(secret)
+        surface = json.dumps(state, sort_keys=True) + "\n".join(
+            preflight.b14_summary_rows(state)
+        )
+        self.assertNotIn("sk-live", surface)
+        self.assertNotIn("DO-NOT-LEAK", surface)
+        self.assertNotIn("broken", surface)
+        # json's own message quotes the offending document, so it must be
+        # discarded entirely rather than surfaced.
+        self.assertEqual(state["b14_reason"], preflight.B14_REASON_MALFORMED_RESPONSE)
+
     def test_unexpected_exception_is_explicitly_classified(self) -> None:
         _patch_get_json(self, status=0, raises=ValueError("boom"))
         state = preflight.read_b14_health()
@@ -289,6 +409,25 @@ class B14StateContractTests(unittest.TestCase):
         self.assertIn("B14_REASON_HTTP_STATUS", body)
         self.assertIn("B14_REASON_SERVICE_UNAVAILABLE", body)
         self.assertIn("B14_REASON_OK", body)
+
+    def test_parse_exceptions_are_caught_before_the_generic_handler(self) -> None:
+        # Load-bearing ordering assertion for CENTRAL's #3109 blocker. Both
+        # parse exceptions are ValueError subclasses, so if this explicit
+        # handler is ever moved below `except Exception` it becomes dead code
+        # and every unparseable body silently degrades to `unexpected_error`
+        # again -- which is exactly the defect that was reported.
+        source = SCRIPT.read_text(encoding="utf-8")
+        body = source.split("def read_b14_health", 1)[1].split("def emit_b14", 1)[0]
+        self.assertIn("except (json.JSONDecodeError, UnicodeDecodeError):", body)
+        parse_at = body.index("except (json.JSONDecodeError, UnicodeDecodeError):")
+        generic_at = body.index("except Exception:")
+        self.assertLess(
+            parse_at,
+            generic_at,
+            "the malformed-response handler must precede `except Exception`",
+        )
+        # And the generic handler must still exist, so nothing became silent.
+        self.assertIn("B14_REASON_UNEXPECTED_ERROR", body)
 
 
 class B14GateSemanticsTests(unittest.TestCase):

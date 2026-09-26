@@ -31,6 +31,16 @@ Neither field ever carries exception text, a response body, a header, a token
 or any other secret: an unexpected exception is reported by *category only*,
 never by ``str(exc)``.
 
+``malformed_response`` covers every unparseable-body case, not just an
+already-parsed non-object payload. ``get_json()`` runs
+``json.loads(raw.decode("utf-8"))``, so a truncated or non-JSON HTTP-200 body
+raises :class:`json.JSONDecodeError` and an invalid-UTF-8 body raises
+:class:`UnicodeDecodeError`. Both are caught explicitly and reported as
+``malformed_response``; neither may fall through to ``unexpected_error``, which
+is reserved for genuinely unanticipated conditions. This matters because the two
+parse exceptions are ``ValueError`` subclasses, so the ordering against
+``except Exception`` is load-bearing rather than cosmetic.
+
 Cloudflare gate semantics — decision and rationale
 ---------------------------------------------------
 ``FAIL_OPEN_OR_DEGRADE_DECISION = DEGRADE_RECORDED_NOT_GATING`` (#3109)
@@ -266,6 +276,25 @@ def read_b14_health() -> dict[str, str]:
         # get_json() reports a transport failure as RuntimeError; it is still a
         # network class failure, never a silent default.
         return b14_state(http="0", health=B14_HEALTH_CHECK_ERROR, reason=B14_REASON_NETWORK_ERROR)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        # A body that arrived but could not be parsed. get_json() does
+        # `json.loads(raw.decode("utf-8"))`, so an HTTP 200 carrying invalid
+        # JSON raises JSONDecodeError and invalid UTF-8 raises
+        # UnicodeDecodeError. Both are a malformed response, not an unexpected
+        # programming error, and the contract says so explicitly.
+        #
+        # This must be caught before `except Exception`, otherwise a genuinely
+        # unparseable body would be reported as `unexpected_error` and the
+        # documented `malformed_response` reason would be reachable only for an
+        # already-parsed non-dict payload.
+        #
+        # Both are ValueError subclasses, so ordering is load-bearing. Neither
+        # the raw body nor the exception text is used: json's message can quote
+        # the offending document, and the decode error can quote the offending
+        # bytes.
+        return b14_state(
+            http="0", health=B14_HEALTH_CHECK_ERROR, reason=B14_REASON_MALFORMED_RESPONSE
+        )
     except Exception:
         # Deliberately not bare `pass`. An unexpected exception is still an
         # explicit, categorised outcome, and its text is discarded.
