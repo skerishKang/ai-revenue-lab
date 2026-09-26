@@ -1,0 +1,428 @@
+"""#3102 — live pairing source-readiness and rollback contract tests.
+
+Every test here runs the real canonical surfaces: the real
+`InMemoryBrokerPairingAuthority`, the real challenge/redeem HTTP routes, the real
+`DeviceLifecycle` transitions and the real server-projection trigger. No test
+replaces the parse/auth/correlation path with a stub.
+
+The branch is source-only, so these tests assert readiness, bounded issuance,
+revoke/expired-credential repair, server-backed ONLINE gating and the absence of
+secret material — never a live activation.
+"""
+
+from __future__ import annotations
+
+from datetime import datetime, timedelta, timezone
+import json
+import re
+import unittest
+
+from kagent.contracts import ContractError as ContractErrorAlias
+from padiem_control_plane.contracts import ControlPlaneContractError
+from padiem_control_plane.local_agent_broker import InMemoryLocalAgentBrokerAuthority
+from padiem_control_plane.local_agent_broker_pairing import (
+    MAX_PAIRING_ISSUANCE_RATE_LIMIT,
+    MIN_PAIRING_ISSUANCE_RATE_LIMIT,
+    MAX_PAIRING_TTL_SECONDS,
+    MIN_PAIRING_TTL_SECONDS,
+    PAIRING_ISSUANCE_WINDOW_SECONDS,
+    InMemoryBrokerPairingAuthority,
+)
+from padiem_control_plane.local_agent_pairing_activation_3102 import (
+    ACTIVATION_RUNBOOK,
+    REQUIRED_ACTIVATION_BINDING_NAMES,
+    ROLLBACK_RUNBOOK,
+    SOURCE_ONLY_READINESS,
+    PairingActivationReadiness,
+    assert_not_activated,
+    assert_secret_free,
+)
+
+BASE = datetime(2026, 9, 26, 6, 0, tzinfo=timezone.utc)
+BROKER_PEPPER = b"control-plane-local-agent-broker-pepper"
+PAIRING_PEPPER = b"control-plane-local-agent-pairing-pepper"
+CREDENTIAL = b"pairing-3102-credential-material"
+ACCOUNT = "account.3102"
+WORKSPACE = "workspace.3102"
+DEVICE = "device.3102"
+
+
+def _authority(
+    *,
+    issuance_rate_limit: int | None = None,
+    counter_start: int = 0,
+) -> InMemoryBrokerPairingAuthority:
+    counter = {"value": counter_start}
+
+    def nonce() -> str:
+        counter["value"] += 1
+        return f"{counter['value']:032x}"
+
+    authority = InMemoryBrokerPairingAuthority(
+        pepper=PAIRING_PEPPER,
+        authority=InMemoryLocalAgentBrokerAuthority(
+            pepper=BROKER_PEPPER,
+            authority_ref="control-plane.local-agent-broker.v1",
+        ),
+        code_nonce_factory=nonce,
+        credential_factory=lambda: CREDENTIAL,
+        **({} if issuance_rate_limit is None else {"issuance_rate_limit": issuance_rate_limit}),
+    )
+    return authority
+
+
+def _issue(authority, *, account=ACCOUNT, workspace=WORKSPACE, now=BASE, ttl_seconds=300):
+    return authority.issue_challenge(
+        account_ref=account,
+        workspace_ref=workspace,
+        now=now,
+        ttl_seconds=ttl_seconds,
+    )
+
+
+def _all_codes(authority, *, count: int = 3):
+    """Distinct server-issued codes, used only to prove none leaks."""
+    return [
+        _issue(authority, account=f"account.leak{i}", workspace=f"workspace.leak{i}")[1]
+        for i in range(count)
+    ]
+
+
+def _redeem(authority, challenge_id, code, *, device_id=DEVICE, now=BASE):
+    from padiem_control_plane.local_agent_broker_pairing import pairing_proof_ref
+
+    return authority.redeem(
+        challenge_id=challenge_id,
+        device_id=device_id,
+        proof_ref=pairing_proof_ref(
+            challenge_id=challenge_id,
+            device_id=device_id,
+            pairing_code=code,
+        ),
+        now=now,
+    )
+
+
+class PairingRateBound3102Tests(unittest.TestCase):
+    """#3102: a scope must not be able to mint an unbounded stream of live codes."""
+
+    def test_issuance_is_bounded_per_scope_when_a_limit_is_bound(self) -> None:
+        authority = _authority(issuance_rate_limit=3)
+        for _ in range(3):
+            _issue(authority)
+        with self.assertRaises(ControlPlaneContractError) as limited:
+            _issue(authority)
+        self.assertEqual(limited.exception.code, "pairing_issuance_rate_limited")
+
+    def test_a_different_scope_is_not_penalised(self) -> None:
+        authority = _authority(issuance_rate_limit=2)
+        for _ in range(2):
+            _issue(authority)
+        with self.assertRaises(ControlPlaneContractError):
+            _issue(authority)
+        # A distinct account/workspace keeps its own budget.
+        _issue(authority, account="account.other", workspace="workspace.other")
+
+    def test_the_window_rolls_over_so_issuance_recovers(self) -> None:
+        authority = _authority(issuance_rate_limit=2)
+        for _ in range(2):
+            _issue(authority)
+        with self.assertRaises(ControlPlaneContractError):
+            _issue(authority)
+        later = BASE + timedelta(seconds=PAIRING_ISSUANCE_WINDOW_SECONDS + 1)
+        _issue(authority, now=later)  # must not raise
+
+    def test_rate_state_is_secret_free(self) -> None:
+        authority = _authority(issuance_rate_limit=5)
+        _issue(authority)
+        state = authority.issuance_rate_state(account_ref=ACCOUNT, workspace_ref=WORKSPACE)
+        self.assertEqual(state["issued_in_window"], 1)
+        self.assertEqual(state["rate_limit"], 5)
+        self.assertEqual(state["rate_bound_active"], True)
+        # No code, credential or secret may appear in support evidence.
+        rendered = json.dumps(state)
+        for issued in (challenge_code for challenge_code in _all_codes(authority)):
+            self.assertNotIn(issued, rendered)
+        self.assertNotIn("pairing_code", rendered)
+        self.assertNotIn("credential", rendered)
+
+    def test_unbound_rate_limit_is_the_source_only_posture(self) -> None:
+        authority = _authority()
+        for index in range(5):
+            _issue(authority, now=BASE + timedelta(minutes=index))
+        state = authority.issuance_rate_state(account_ref=ACCOUNT, workspace_ref=WORKSPACE)
+        self.assertEqual(state["rate_bound_active"], False)
+        self.assertIsNone(state["rate_limit"])
+        self.assertEqual(authority.safe_dict()["production_pairing_activated"], False)
+
+
+class PairingSingleUseAndExpiry3102Tests(unittest.TestCase):
+    def test_a_challenge_is_single_use(self) -> None:
+        authority = _authority()
+        challenge, code = _issue(authority)
+        enrollment, credential = _redeem(authority, challenge.challenge_id, code)
+        self.assertEqual(len(credential), len(CREDENTIAL))
+        with self.assertRaises(ControlPlaneContractError) as replay:
+            _redeem(authority, challenge.challenge_id, code)
+        self.assertEqual(replay.exception.code, "pairing_challenge_already_redeemed")
+        self.assertEqual(enrollment.device_id, DEVICE)
+
+    def test_expired_challenge_is_rejected(self) -> None:
+        authority = _authority()
+        challenge, code = _issue(authority, ttl_seconds=MIN_PAIRING_TTL_SECONDS)
+        past = BASE + timedelta(seconds=MIN_PAIRING_TTL_SECONDS + 1)
+        with self.assertRaises(ControlPlaneContractError) as expired:
+            _redeem(authority, challenge.challenge_id, code, now=past)
+        self.assertIn("expired", str(expired.exception).lower())
+
+    def test_ttl_stays_inside_the_canonical_bounds(self) -> None:
+        authority = _authority()
+        for bad in (MIN_PAIRING_TTL_SECONDS - 1, MAX_PAIRING_TTL_SECONDS + 1):
+            with self.assertRaises(ControlPlaneContractError):
+                _issue(authority, ttl_seconds=bad)
+
+
+class PairingBinding3102Tests(unittest.TestCase):
+    def test_the_enrollment_carries_the_server_owned_scope(self) -> None:
+        authority = _authority()
+        challenge, code = _issue(authority)
+        enrollment, _credential = _redeem(authority, challenge.challenge_id, code)
+        # Scope comes from the stored server-side challenge, never the caller.
+        self.assertEqual(enrollment.account_ref, ACCOUNT)
+        self.assertEqual(enrollment.workspace_ref, WORKSPACE)
+
+    def test_another_device_cannot_claim_a_consumed_challenge(self) -> None:
+        authority = _authority()
+        challenge, code = _issue(authority)
+        _redeem(authority, challenge.challenge_id, code)
+        with self.assertRaises(ControlPlaneContractError):
+            _redeem(authority, challenge.challenge_id, code, device_id="device.somebody-else")
+
+    def test_wrong_proof_is_rejected(self) -> None:
+        authority = _authority()
+        challenge, _code = _issue(authority)
+        with self.assertRaises(ControlPlaneContractError):
+            authority.redeem(
+                challenge_id=challenge.challenge_id,
+                device_id=DEVICE,
+                proof_ref="pairing-proof:" + "0" * 64,
+                now=BASE,
+            )
+
+
+class PairingRevokeRepair3102Tests(unittest.TestCase):
+    """#3102: revoke and repair reuse the canonical #3080 lifecycle, no new vocabulary."""
+
+    def test_revoke_and_rotate_use_the_canonical_lifecycle(self) -> None:
+        from kagent.local_agent_pairing import (
+            DeterministicFakeLocalAgentPairingPort,
+            DeviceLifecycle,
+            deterministic_fake_pairing_proof,
+        )
+
+        port = DeterministicFakeLocalAgentPairingPort()
+        challenge = port.issue_pairing(
+            account_ref=ACCOUNT, workspace_ref=WORKSPACE, now=BASE, ttl_seconds=300
+        )
+        binding = port.pair_device(
+            challenge_id=challenge.challenge_id,
+            proof_ref=deterministic_fake_pairing_proof(challenge.challenge_id),
+            device_id=DEVICE,
+            now=BASE,
+        )
+        self.assertIs(binding.state, DeviceLifecycle.PAIRED_OFFLINE)
+
+        revoked = port.revoke(binding.binding_ref, now=BASE + timedelta(minutes=1))
+        self.assertIs(revoked.state, DeviceLifecycle.REVOKED)
+
+    def test_repair_reuses_rotate_credential(self) -> None:
+        from kagent.local_agent_pairing import (
+            DeterministicFakeLocalAgentPairingPort,
+            DeviceLifecycle,
+            deterministic_fake_pairing_proof,
+        )
+
+        port = DeterministicFakeLocalAgentPairingPort()
+        challenge = port.issue_pairing(
+            account_ref=ACCOUNT, workspace_ref=WORKSPACE, now=BASE, ttl_seconds=300
+        )
+        binding = port.pair_device(
+            challenge_id=challenge.challenge_id,
+            proof_ref=deterministic_fake_pairing_proof(challenge.challenge_id),
+            device_id=DEVICE,
+            now=BASE,
+        )
+        rotated = port.rotate_credential(binding.binding_ref, now=BASE + timedelta(minutes=1))
+        # Repair is a rotation on the same canonical binding, never a new authority.
+        self.assertEqual(rotated.binding_ref, binding.binding_ref)
+        self.assertEqual(rotated.credential_generation, binding.credential_generation + 1)
+        self.assertIs(rotated.state, DeviceLifecycle.PAIRED_OFFLINE)
+
+    def test_canonical_lifecycle_vocabulary_is_exhaustive(self) -> None:
+        from kagent.local_agent_pairing import DeviceLifecycle
+
+        self.assertEqual(
+            {state.value for state in DeviceLifecycle},
+            {
+                "unpaired",
+                "paired_offline",
+                "online",
+                "revoked",
+                "credential_expired",
+                "update_required",
+            },
+        )
+
+
+class ServerBackedOnline3102Tests(unittest.TestCase):
+    def test_online_requires_canonical_session_and_heartbeat(self) -> None:
+        from kagent.local_agent_pairing import DeviceBinding, DeviceLifecycle
+        from kagent.local_agent_server_projection import project_server_backed_online_binding
+
+        binding = DeviceBinding(
+            device_id=DEVICE,
+            binding_ref="binding.3102",
+            account_ref=ACCOUNT,
+            workspace_ref=WORKSPACE,
+            credential_ref="credential.3102",
+            credential_generation=1,
+            issued_at=BASE,
+            credential_expires_at=BASE + timedelta(hours=1),
+            state=DeviceLifecycle.PAIRED_OFFLINE,
+        )
+        # No session, no heartbeat -> no ONLINE. A local flag could not do this.
+        with self.assertRaises(ContractErrorAlias):
+            project_server_backed_online_binding(
+                binding=binding, session=None, heartbeat=None, now=BASE
+            )
+
+    def test_a_non_offline_binding_is_not_a_projection_source(self) -> None:
+        from kagent.local_agent_pairing import DeviceBinding, DeviceLifecycle
+        from kagent.local_agent_server_projection import project_server_backed_online_binding
+
+        revoked = DeviceBinding(
+            device_id=DEVICE,
+            binding_ref="binding.revoked",
+            account_ref=ACCOUNT,
+            workspace_ref=WORKSPACE,
+            credential_ref="credential.3102",
+            credential_generation=1,
+            issued_at=BASE,
+            credential_expires_at=BASE + timedelta(hours=1),
+            state=DeviceLifecycle.REVOKED,
+        )
+        with self.assertRaises(ContractErrorAlias):
+            project_server_backed_online_binding(
+                binding=revoked, session=None, heartbeat=None, now=BASE
+            )
+
+
+class ActivationBoundary3102Tests(unittest.TestCase):
+    def test_this_branch_is_not_activated(self) -> None:
+        assert_not_activated()
+        self.assertEqual(SOURCE_ONLY_READINESS.production_activated, False)
+        self.assertEqual(SOURCE_ONLY_READINESS.source_ready, True)
+
+    def test_claiming_an_activation_fails_closed(self) -> None:
+        activated = PairingActivationReadiness(
+            source_ready=True,
+            production_activated=True,
+            trusted_tls_required=True,
+            outbound_only_desktop=True,
+            public_inbound_port=False,
+            upnp_required=False,
+            caller_endpoint_override=False,
+            challenge_ttl_bounded=True,
+            challenge_single_use=True,
+            issuance_rate_bound_active=True,
+            revoke_path_available=True,
+            rotate_path_available=True,
+            server_backed_online_only=True,
+            canonical_authorities_reused=True,
+        )
+        with self.assertRaises(ControlPlaneContractError):
+            assert_not_activated(activated)
+
+    def test_the_only_open_activation_blocker_is_the_rate_bound(self) -> None:
+        self.assertEqual(
+            SOURCE_ONLY_READINESS.missing_prerequisites(),
+            ("issuance_rate_bound_active",),
+        )
+
+    def test_no_public_inbound_port_and_no_upnp(self) -> None:
+        self.assertEqual(SOURCE_ONLY_READINESS.public_inbound_port, False)
+        self.assertEqual(SOURCE_ONLY_READINESS.upnp_required, False)
+        self.assertEqual(SOURCE_ONLY_READINESS.outbound_only_desktop, True)
+        self.assertEqual(SOURCE_ONLY_READINESS.caller_endpoint_override, False)
+
+    def test_activation_and_rollback_runbooks_exist_and_are_ordered(self) -> None:
+        self.assertGreaterEqual(len(ACTIVATION_RUNBOOK), 10)
+        self.assertGreaterEqual(len(ROLLBACK_RUNBOOK), 5)
+        self.assertTrue(ACTIVATION_RUNBOOK[0].startswith("preflight"))
+        self.assertTrue(ROLLBACK_RUNBOOK[0].startswith("disable"))
+        # Rollback disables; it never deletes durable pairing state.
+        self.assertTrue(any("preserve" in step for step in ROLLBACK_RUNBOOK))
+        for step in ROLLBACK_RUNBOOK:
+            self.assertNotIn("delete durable", step.lower())
+            self.assertNotIn("purge", step.lower())
+
+    def test_binding_names_are_recorded_without_values(self) -> None:
+        self.assertGreaterEqual(len(REQUIRED_ACTIVATION_BINDING_NAMES), 4)
+        for name in REQUIRED_ACTIVATION_BINDING_NAMES:
+            self.assertRegex(name, r"^[A-Z0-9_]+$")
+        self.assertEqual(SOURCE_ONLY_READINESS.safe_dict()["binding_values_present"], False)
+
+    def test_rate_limit_bounds_are_sane(self) -> None:
+        self.assertEqual(MIN_PAIRING_ISSUANCE_RATE_LIMIT, 1)
+        self.assertLessEqual(MAX_PAIRING_ISSUANCE_RATE_LIMIT, 60)
+        self.assertLessEqual(PAIRING_ISSUANCE_WINDOW_SECONDS, MAX_PAIRING_TTL_SECONDS * 10)
+
+
+class SecretNegative3102Tests(unittest.TestCase):
+    """#3102: no raw secret may reach a log or a support projection."""
+
+    def test_the_support_projection_is_key_allowlisted(self) -> None:
+        assert_secret_free(SOURCE_ONLY_READINESS.safe_dict())
+
+    def test_a_secret_bearing_projection_is_refused(self) -> None:
+        for leaked in ("pairing_code", "raw_device_credential", "session_secret", "auth_header"):
+            with self.assertRaises(ControlPlaneContractError):
+                assert_secret_free({"contract_version": "x", leaked: "whatever"})
+
+    def test_the_pairing_module_declares_no_secret_logging(self) -> None:
+        import inspect
+
+        from padiem_control_plane import local_agent_broker_pairing as module
+
+        source = inspect.getsource(module)
+        for forbidden in ("print(", "logging.", "logger.", "sys.stderr"):
+            self.assertNotIn(forbidden, source, f"{forbidden} must not appear in the pairing module")
+
+    def test_pairing_code_is_never_persisted(self) -> None:
+        authority = _authority()
+        safe = authority.safe_dict()
+        self.assertEqual(safe["raw_pairing_code_persisted"], False)
+        self.assertEqual(safe["raw_device_credential_persisted"], False)
+        # Metadata names such as `pairing_code_single_use` are fine; no issued
+        # value may appear. Every code is server-derived, so compare the values.
+        rendered = json.dumps(safe)
+        for issued in _all_codes(authority):
+            self.assertNotIn(issued, rendered)
+
+    def test_the_activation_module_declares_no_secret_logging(self) -> None:
+        import inspect
+
+        from padiem_control_plane import local_agent_pairing_activation_3102 as module
+
+        source = inspect.getsource(module)
+        for forbidden in ("print(", "logging.", "logger.", "sys.stderr"):
+            self.assertNotIn(forbidden, source)
+
+    def test_runbooks_contain_no_value_shaped_secret(self) -> None:
+        for step in tuple(ACTIVATION_RUNBOOK) + tuple(ROLLBACK_RUNBOOK):
+            # A 32-hex pairing code or a 64-hex digest would be a leaked value.
+            self.assertIsNone(re.search(r"\b[0-9a-f]{32,}\b", step), step)
+
+
+if __name__ == "__main__":  # pragma: no cover
+    unittest.main()

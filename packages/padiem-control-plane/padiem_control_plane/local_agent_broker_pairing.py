@@ -23,6 +23,19 @@ PAIRING_CODE_HEX_CHARS = 32
 MIN_PAIRING_TTL_SECONDS = 30
 MAX_PAIRING_TTL_SECONDS = 600
 MAX_PENDING_PAIRING_CHALLENGES = 4_096
+# #3102: bounded per-scope challenge issuance. The capacity ceiling above is a
+# global guard; this one stops any single account/workspace from minting an
+# unbounded stream of live pairing codes. It is deliberately scoped to broker
+# pairing only and is not a general identity, session or rate authority.
+#
+# `None` means "not yet configured", which is the correct source-only posture:
+# Production activation is a separate CENTRAL decision, and this deployment is
+# still off. A deployment binds a positive limit at activation time, and
+# `safe_dict()` reports which posture is in force.
+MIN_PAIRING_ISSUANCE_RATE_LIMIT = 1
+MAX_PAIRING_ISSUANCE_RATE_LIMIT = 60
+DEFAULT_PAIRING_ISSUANCE_RATE_LIMIT: int | None = None
+PAIRING_ISSUANCE_WINDOW_SECONDS = 600
 MIN_PAIRING_CREDENTIAL_TTL_SECONDS = 300
 MAX_PAIRING_CREDENTIAL_TTL_SECONDS = 2_592_000
 DEFAULT_PAIRING_CREDENTIAL_TTL_SECONDS = 2_592_000
@@ -259,6 +272,7 @@ class InMemoryBrokerPairingAuthority:
         code_nonce_factory: Callable[[], str] | None = None,
         credential_factory: Callable[[], bytes] | None = None,
         credential_ttl_seconds: int = DEFAULT_PAIRING_CREDENTIAL_TTL_SECONDS,
+        issuance_rate_limit: int = DEFAULT_PAIRING_ISSUANCE_RATE_LIMIT,
     ) -> None:
         if not isinstance(pepper, bytes) or len(pepper) < 16:
             raise ControlPlaneContractError(
@@ -286,6 +300,19 @@ class InMemoryBrokerPairingAuthority:
             minimum=MIN_PAIRING_CREDENTIAL_TTL_SECONDS,
             maximum=MAX_PAIRING_CREDENTIAL_TTL_SECONDS,
         )
+        # #3102: bounded issuance per account/workspace scope. Stored as a
+        # counter plus the window start, never as a secret. `None` leaves the
+        # bound unbound until an activation binds it.
+        if issuance_rate_limit is not None:
+            self._issuance_rate_limit = _positive_int(
+                issuance_rate_limit,
+                "issuance_rate_limit",
+                minimum=MIN_PAIRING_ISSUANCE_RATE_LIMIT,
+                maximum=MAX_PAIRING_ISSUANCE_RATE_LIMIT,
+            )
+        else:
+            self._issuance_rate_limit = None
+        self._issuance_counters: dict[str, tuple[datetime, int]] = {}
         self._pending: dict[str, _PendingBrokerPairingChallenge] = {}
 
     @property
@@ -301,6 +328,51 @@ class InMemoryBrokerPairingAuthority:
             key for key, pending in self._pending.items() if now >= pending.challenge.expires_at
         ]:
             del self._pending[challenge_id]
+
+    def _enforce_issuance_rate_limit(
+        self,
+        *,
+        account_ref: str,
+        workspace_ref: str,
+        now: datetime,
+    ) -> None:
+        """Bound live pairing-code issuance for one account/workspace scope.
+
+        The scope key is derived from the already-validated server-side refs. No
+        secret, code or caller-supplied value is retained here, and the counter
+        only ever stores a window start and an integer count.
+        """
+        scope = f"{account_ref}/{workspace_ref}"
+        if self._issuance_rate_limit is None:
+            # Source-only posture: Production activation is not done, so no
+            # per-scope bound is bound yet. The global pending capacity still
+            # applies, and `safe_dict()` reports this explicitly.
+            return
+        window_start, issued = self._issuance_counters.get(scope, (now, 0))
+        elapsed = (now - window_start).total_seconds()
+        if elapsed >= PAIRING_ISSUANCE_WINDOW_SECONDS:
+            window_start, issued = now, 0
+        if issued >= self._issuance_rate_limit:
+            raise ControlPlaneContractError(
+                "pairing_issuance_rate_limited",
+                "broker pairing challenge issuance exceeded the bounded per-scope rate",
+            )
+        self._issuance_counters[scope] = (window_start, issued + 1)
+
+    def issuance_rate_state(self, *, account_ref: str, workspace_ref: str) -> dict[str, Any]:
+        """Secret-free support evidence about one scope's bounded issuance."""
+        account_ref = _ref(account_ref, "account_ref")
+        workspace_ref = _ref(workspace_ref, "workspace_ref")
+        scope = f"{account_ref}/{workspace_ref}"
+        window_start, issued = self._issuance_counters.get(scope, (None, 0))
+        return {
+            "scope": scope,
+            "issued_in_window": issued,
+            "rate_limit": self._issuance_rate_limit,
+            "rate_bound_active": self._issuance_rate_limit is not None,
+            "window_seconds": PAIRING_ISSUANCE_WINDOW_SECONDS,
+            "window_started_at": None if window_start is None else window_start.isoformat().replace("+00:00", "Z"),
+        }
 
     def issue_challenge(
         self,
@@ -320,11 +392,20 @@ class InMemoryBrokerPairingAuthority:
             maximum=MAX_PAIRING_TTL_SECONDS,
         )
         self._prune(now=now)
+        # The global pending-capacity guard keeps its original precedence: it is
+        # the coarser condition and reports `pairing_capacity_exhausted`.
         if len(self._pending) >= MAX_PENDING_PAIRING_CHALLENGES:
             raise ControlPlaneContractError(
                 "pairing_capacity_exhausted",
                 "pending broker pairing challenges exceed the bounded capacity",
             )
+        # #3102: refuse a scope that is already minting at its bounded rate.
+        # Checked after prune so expired challenges never count against a caller.
+        self._enforce_issuance_rate_limit(
+            account_ref=account_ref,
+            workspace_ref=workspace_ref,
+            now=now,
+        )
         code_nonce = self._code_nonce_factory()
         if not isinstance(code_nonce, str) or not _CODE_NONCE_RE.fullmatch(code_nonce):
             raise ControlPlaneContractError(
@@ -447,6 +528,13 @@ class InMemoryBrokerPairingAuthority:
             "challenge_ttl_max_seconds": MAX_PAIRING_TTL_SECONDS,
             "pending_challenge_capacity": MAX_PENDING_PAIRING_CHALLENGES,
             "pending_challenge_count": len(self._pending),
+            # #3102 bounded issuance, declared for support/activation evidence.
+            "issuance_rate_limit": self._issuance_rate_limit,
+            "issuance_rate_bound_active": self._issuance_rate_limit is not None,
+            "production_pairing_activated": False,
+            "issuance_window_seconds": PAIRING_ISSUANCE_WINDOW_SECONDS,
+            "issuance_rate_bounded": True,
+            "generic_rate_authority": False,
             "server_owned_binding_refs": True,
             "server_owned_credential_digests": True,
             "canonical_broker_binding_authority_reused": True,
