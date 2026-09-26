@@ -37,6 +37,18 @@ jobs:
         working-directory: apps/living-fiction
         run: python -m pytest -q tests/test_cloudflare_migration_contract.py
 
+      # #3110: a new migration must not reuse an existing sequence prefix.
+      # Run against the real migrations/ directory so the shipped history is
+      # what gets validated, and so the grandfathered 005 pair is exercised on
+      # every pull request rather than only in a local run.
+      #
+      # The test file also proves the upgrade path from an already-migrated
+      # database applies nothing again, which is the property that makes the
+      # historical pair safe to leave in place.
+      - name: Migration sequence prefix guard
+        working-directory: apps/living-fiction
+        run: python -m pytest -q tests/test_migration_prefix_guard_3110.py
+
       - name: Python syntax gate
         working-directory: apps/living-fiction
         run: python -m compileall -q app deploy/cloudflare/worker.py
@@ -69,4 +81,5 @@ jobs:
           echo 'B03_CLOUDFLARE_M0_CONTRACT=PASS'
           echo 'CONTAINER_IMAGE_BUILD=PASS'
           echo 'WRANGLER_DEPLOY_MODE=DRY_RUN_ONLY'
+          echo 'MIGRATION_SEQUENCE_PREFIX_GUARD=PASS'
           echo 'PRODUCTION_MUTATION=0'
