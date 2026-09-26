@@ -338,6 +338,7 @@ def _harness(
         sequence=cp_command.sequence,
         issued_at=cp_command.issued_at,
         expires_at=cp_command.expires_at,
+        revision_ref=cp_command.revision_ref,
     )
 
     wire = build_command_material_wire_projection(

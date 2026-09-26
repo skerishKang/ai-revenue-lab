@@ -117,6 +117,8 @@ class ControlPlanePinnedHttpsChannel(PinnedOutboundLocalAgentChannel):
         command_id: str,
         admission_ref: str,
         evidence_ref: str,
+        revision_ref: str,
+        termination: str,
         now: datetime,
     ) -> None:
         now = _aware(now, "now")
@@ -126,6 +128,8 @@ class ControlPlanePinnedHttpsChannel(PinnedOutboundLocalAgentChannel):
         observed = self._polled_commands.get(command_id)
         if observed is None or observed[0] != session.session_id:
             raise ContractError("acknowledgement requires exact command previously polled by this channel/session")
+        if observed[1].revision_ref != revision_ref:
+            raise ContractError("acknowledgement revision_ref does not match exact polled command")
         self._control_plane_transport.acknowledge(
             config=self.authority.config,
             binding=binding,
@@ -133,6 +137,8 @@ class ControlPlanePinnedHttpsChannel(PinnedOutboundLocalAgentChannel):
             command_id=command_id,
             admission_ref=admission_ref,
             evidence_ref=evidence_ref,
+            revision_ref=revision_ref,
+            termination=termination,
             now=now,
         )
         self._polled_commands.pop(command_id, None)
@@ -145,6 +151,8 @@ class ControlPlanePinnedHttpsChannel(PinnedOutboundLocalAgentChannel):
             "material_fingerprint_caller_supplied": False,
             "ack_admission_ref_required": True,
             "ack_evidence_ref_required": True,
+            "ack_revision_ref_required": True,
+            "ack_bounded_termination_required": True,
             "public_inbound_port": False,
             "production_broker_configured": False,
             "real_remote_execution": False,
@@ -155,6 +163,8 @@ PINNED_CONTROL_PLANE_HTTPS_CHANNEL = True
 MATERIAL_FINGERPRINT_CALLER_SUPPLIED = False
 ACK_ADMISSION_REF_REQUIRED = True
 ACK_EVIDENCE_REF_REQUIRED = True
+ACK_REVISION_REF_REQUIRED = True
+ACK_BOUNDED_TERMINATION_REQUIRED = True
 PUBLIC_INBOUND_PORT = False
 PRODUCTION_BROKER_CONFIGURED = False
 PRODUCTION_READY = False

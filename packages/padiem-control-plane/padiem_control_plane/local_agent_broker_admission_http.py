@@ -29,6 +29,7 @@ _ADMISSION_KEYS = frozenset(
         "sequence",
         "request_fingerprint",
         "evidence_ref",
+        "revision_ref",
         "accepted_at",
         "expires_at",
         "raw_argv",
@@ -168,6 +169,7 @@ class AdmissionEnabledLocalAgentBrokerHttpHandler(LocalAgentBrokerHttpHandler):
         _ref(admission["authority_ref"], "authority_ref")
         _ref(admission["run_id"], "run_id")
         _ref(admission["tool_request_ref"], "tool_request_ref")
+        _ref(admission["revision_ref"], "revision_ref")
         sequence = admission["sequence"]
         if isinstance(sequence, bool) or not isinstance(sequence, int) or sequence < 1:
             raise ValueError("broker admission sequence must be a positive integer")

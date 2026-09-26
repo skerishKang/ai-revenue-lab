@@ -272,8 +272,16 @@ class ControlPlaneAdmittedExecutionReceipt:
             "execution": self.execution.safe_dict(),
             "evidence_ref": self.evidence_ref,
             "acknowledged_at": self.acknowledged_at.isoformat().replace("+00:00", "Z"),
+            "revision_ref": self.execution.revision_ref,
+            "termination": self.execution.termination.value,
+            "exit_code": self.execution.exit_code,
+            "revision_semantics": "opaque_correlation_only",
             "material_before_admission": True,
             "ack_exact_admission_evidence": True,
+            "ack_revision_ref_opaque_correlation": True,
+            "ack_bounded_termination_returned": True,
+            "ack_raw_stdout_returned": False,
+            "ack_raw_stderr_returned": False,
             "raw_argv": False,
             "stdout": False,
             "stderr": False,
@@ -363,12 +371,16 @@ class ControlPlaneAdmittedExecutionCoordinator:
         # No acknowledgement is emitted unless the existing execution bridge
         # returned a fully correlated execution receipt.
         ack_now = self._now()
+        if execution.revision_ref != command.revision_ref:
+            raise ContractError("execution revision_ref does not match the polled command envelope")
         self._channel.acknowledge_admitted(
             binding=binding,
             session=session,
             command_id=command.command_id,
             admission_ref=conformed.evidence.admission_ref,
             evidence_ref=conformed.evidence_ref,
+            revision_ref=execution.revision_ref,
+            termination=execution.termination.value,
             now=ack_now,
         )
         return ControlPlaneAdmittedExecutionReceipt(
@@ -386,6 +398,10 @@ class ControlPlaneAdmittedExecutionCoordinator:
             "windows_authorization_reused": True,
             "ack_exact_admission_evidence": True,
             "ack_on_execution_failure": False,
+            "ack_revision_ref_opaque_correlation": True,
+            "ack_bounded_termination_returned": True,
+            "ack_raw_stdout_returned": False,
+            "ack_raw_stderr_returned": False,
             "second_replay_sequence_authority": False,
             "second_fingerprint_authority": False,
             "p01_authority_duplicated": False,
@@ -406,6 +422,10 @@ ADMITTED_EXECUTION_BRIDGE_REUSED = True
 WINDOWS_AUTHORIZATION_REUSED = True
 ACK_EXACT_ADMISSION_EVIDENCE = True
 ACK_ON_EXECUTION_FAILURE = False
+ACK_REVISION_REF_OPAQUE_CORRELATION = True
+ACK_BOUNDED_TERMINATION_RETURNED = True
+ACK_RAW_STDOUT_RETURNED = False
+ACK_RAW_STDERR_RETURNED = False
 SECOND_REPLAY_SEQUENCE_AUTHORITY = False
 SECOND_FINGERPRINT_AUTHORITY = False
 P01_AUTHORITY_DUPLICATED = False

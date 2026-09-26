@@ -302,9 +302,11 @@ def test_canonical_broker_authority_survives_durable_object_recreation() -> None
                 "binding_ref": "binding.do.1",
                 "credential_b64": _encoded(CREDENTIAL_1),
                 "command_id": "command.do.1",
-                "admission_ref": "admission.do.1",
-                "evidence_ref": "evidence.do.1",
-                "now": (BASE + timedelta(seconds=4)).isoformat(),
+                    "admission_ref": "admission.do.1",
+                    "evidence_ref": "evidence.do.1",
+                    "revision_ref": queued["command"]["revision_ref"],
+                    "termination": "exited",
+                    "now": (BASE + timedelta(seconds=4)).isoformat(),
             }
         )
     )

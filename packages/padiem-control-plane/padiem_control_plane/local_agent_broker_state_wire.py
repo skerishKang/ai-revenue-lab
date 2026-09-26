@@ -19,7 +19,7 @@ from .local_agent_broker_state import (
     VersionedLocalAgentBrokerState,
 )
 
-BROKER_STATE_WIRE_VERSION = "padiem.local-agent-broker-state-wire.v1"
+BROKER_STATE_WIRE_VERSION = "padiem.local-agent-broker-state-wire.v2"
 MAX_BROKER_STATE_WIRE_BYTES = 8 * 1024 * 1024
 MAX_BROKER_STATE_COLLECTION_ITEMS = 10_000
 
@@ -76,6 +76,8 @@ _COMMAND_KEYS = frozenset(
         "admitted_session_id",
         "admitted_at",
         "acknowledged_at",
+        "revision_ref",
+        "termination",
     }
 )
 _SEQUENCE_KEYS = frozenset({"binding_ref", "sequence"})
@@ -195,6 +197,8 @@ def _command_wire(value: BrokerCommandRecord) -> dict[str, Any]:
         "admitted_session_id": value.admitted_session_id,
         "admitted_at": _iso(value.admitted_at) if value.admitted_at is not None else None,
         "acknowledged_at": _iso(value.acknowledged_at) if value.acknowledged_at is not None else None,
+        "revision_ref": value.revision_ref,
+        "termination": value.termination,
     }
 
 
@@ -314,6 +318,8 @@ class LocalAgentBrokerStateJsonCodec:
                     admitted_session_id=_optional_text(item["admitted_session_id"], "admitted_session_id"),
                     admitted_at=_optional_utc(item["admitted_at"], "admitted_at"),
                     acknowledged_at=_optional_utc(item["acknowledged_at"], "acknowledged_at"),
+                    revision_ref=_text(item["revision_ref"], "revision_ref"),
+                    termination=_optional_text(item["termination"], "termination"),
                 )
             )
 

@@ -30,6 +30,8 @@ _COMMAND_KEYS = frozenset(
         "admitted_session_id",
         "admitted_at",
         "acknowledged_at",
+        "revision_ref",
+        "termination",
         "raw_argv",
         "raw_file_content",
         "raw_device_credential",
@@ -49,6 +51,7 @@ _ADMISSION_KEYS = frozenset(
         "sequence",
         "request_fingerprint",
         "evidence_ref",
+        "revision_ref",
         "accepted_at",
         "expires_at",
         "raw_argv",
@@ -193,7 +196,7 @@ def parse_control_plane_broker_command(
         raise ContractError("broker command must be queued before B54 admission")
     for field_name in ("raw_argv", "raw_file_content", "raw_device_credential", "p01_approval_payload"):
         _require_false(payload, field_name)
-    for field_name in ("admission_ref", "evidence_ref", "admitted_session_id", "admitted_at", "acknowledged_at"):
+    for field_name in ("admission_ref", "evidence_ref", "admitted_session_id", "admitted_at", "acknowledged_at", "termination"):
         _require_none(payload, field_name)
 
     binding_ref = _ref(payload["binding_ref"], "binding_ref")
@@ -218,6 +221,7 @@ def parse_control_plane_broker_command(
         sequence=sequence,
         issued_at=issued_at,
         expires_at=expires_at,
+        revision_ref=_ref(payload["revision_ref"], "revision_ref"),
     )
     return ConformedControlPlaneBrokerCommand(
         envelope=envelope,
@@ -267,6 +271,8 @@ def parse_control_plane_broker_admission(
     sequence = _positive_int(payload["sequence"], "sequence")
     if sequence != envelope.sequence:
         raise ContractError("broker admission sequence mismatch")
+    if _ref(payload["revision_ref"], "revision_ref") != envelope.revision_ref:
+        raise ContractError("broker admission revision_ref mismatch")
     fingerprint = _digest(payload["request_fingerprint"], "request_fingerprint")
     if fingerprint != command.request_fingerprint:
         raise ContractError("broker admission request_fingerprint mismatch")
@@ -294,6 +300,7 @@ def parse_control_plane_broker_admission(
         request_fingerprint=fingerprint,
         accepted_at=accepted_at,
         expires_at=expires_at,
+        revision_ref=envelope.revision_ref,
     )
     return ConformedControlPlaneBrokerAdmission(
         evidence=evidence,

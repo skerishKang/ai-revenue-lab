@@ -107,6 +107,8 @@ def test_rpc_full_broker_lifecycle_never_returns_raw_credential():
         "command_id": "command.1",
         "admission_ref": "admission.1",
         "evidence_ref": "evidence.1",
+        "revision_ref": queued["command"]["revision_ref"],
+        "termination": "exited",
         "now": (NOW + timedelta(seconds=5)).isoformat(),
     })
     assert acknowledged["ok"] is True

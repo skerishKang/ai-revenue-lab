@@ -436,6 +436,8 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
         command_id: str,
         admission_ref: str,
         evidence_ref: str,
+        revision_ref: str,
+        termination: str,
         now: datetime,
     ) -> BrokerCommandRecord:
         return self._mutate(
@@ -446,6 +448,8 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
                 command_id=command_id,
                 admission_ref=admission_ref,
                 evidence_ref=evidence_ref,
+                revision_ref=revision_ref,
+                termination=termination,
                 now=now,
             )
         )

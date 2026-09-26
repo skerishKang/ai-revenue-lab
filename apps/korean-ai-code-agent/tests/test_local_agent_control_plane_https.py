@@ -152,6 +152,7 @@ def _fixture():
         sequence=cp_command.sequence,
         issued_at=cp_command.issued_at,
         expires_at=cp_command.expires_at,
+        revision_ref=cp_command.revision_ref,
     )
     material_wire = build_command_material_wire_projection(
         command=envelope,
@@ -216,6 +217,8 @@ class ControlPlanePhysicalCompositionTests(unittest.TestCase):
             command_id=command.command_id,
             admission_ref=admission.admission_ref,
             evidence_ref="evidence_https_1",
+            revision_ref=command.revision_ref,
+            termination="exited",
             now=BASE + timedelta(seconds=50),
         )
         operations = [item[0] for item in request_port.calls]
@@ -235,6 +238,8 @@ class ControlPlanePhysicalCompositionTests(unittest.TestCase):
                 command_id=command.command_id,
                 admission_ref=admission.admission_ref,
                 evidence_ref="evidence_https_1",
+                revision_ref=command.revision_ref,
+                termination="exited",
                 now=BASE + timedelta(seconds=55),
             )
 
@@ -299,6 +304,8 @@ class ControlPlanePhysicalCompositionTests(unittest.TestCase):
                 command_id=command.command_id,
                 admission_ref=admission.admission_ref,
                 evidence_ref="evidence_wrong",
+                revision_ref=command.revision_ref,
+                termination="exited",
                 now=BASE + timedelta(seconds=50),
             )
         channel.acknowledge_admitted(
@@ -307,8 +314,78 @@ class ControlPlanePhysicalCompositionTests(unittest.TestCase):
             command_id=command.command_id,
             admission_ref=admission.admission_ref,
             evidence_ref="evidence_https_3",
+            revision_ref=command.revision_ref,
+            termination="exited",
             now=BASE + timedelta(seconds=55),
         )
+
+    def test_ack_revision_ref_and_bounded_termination_are_required(self) -> None:
+        authority, binding, _, fingerprint, _, channel = _fixture()
+        session = channel.open_session(
+            binding=binding,
+            session_id="session_https_4",
+            now=BASE + timedelta(seconds=25),
+        )
+        command = channel.poll(
+            binding=binding,
+            request=OutboundPollRequest(
+                request_ref="poll_https_4",
+                session=session,
+                after_sequence=0,
+                requested_at=BASE + timedelta(seconds=30),
+            ),
+        )[0]
+        admission = authority.admit_command(
+            admission_ref="admission_https_4",
+            evidence_ref="evidence_https_4",
+            session_id=session.session_id,
+            binding_ref=binding.binding_ref,
+            credential=CREDENTIAL,
+            command_id=command.command_id,
+            request_fingerprint=fingerprint,
+            now=BASE + timedelta(seconds=40),
+        )
+        with self.assertRaisesRegex(ContractError, "revision_ref does not match"):
+            channel.acknowledge_admitted(
+                binding=binding,
+                session=session,
+                command_id=command.command_id,
+                admission_ref=admission.admission_ref,
+                evidence_ref="evidence_https_4",
+                revision_ref="revision_wrong",
+                termination="exited",
+                now=BASE + timedelta(seconds=50),
+            )
+        with self.assertRaisesRegex(ContractError, "bounded execution termination"):
+            channel.acknowledge_admitted(
+                binding=binding,
+                session=session,
+                command_id=command.command_id,
+                admission_ref=admission.admission_ref,
+                evidence_ref="evidence_https_4",
+                revision_ref=command.revision_ref,
+                termination="not-a-termination",
+                now=BASE + timedelta(seconds=50),
+            )
+        stored = authority._commands[command.command_id]
+        self.assertEqual(stored.state.value, "admitted")
+        self.assertIsNone(stored.acknowledged_at)
+        self.assertIsNone(stored.termination)
+
+        channel.acknowledge_admitted(
+            binding=binding,
+            session=session,
+            command_id=command.command_id,
+            admission_ref=admission.admission_ref,
+            evidence_ref="evidence_https_4",
+            revision_ref=command.revision_ref,
+            termination="timed_out",
+            now=BASE + timedelta(seconds=55),
+        )
+        stored = authority._commands[command.command_id]
+        self.assertEqual(stored.state.value, "acknowledged")
+        self.assertEqual(stored.revision_ref, command.revision_ref)
+        self.assertEqual(stored.termination, "timed_out")
 
 
 class _FakeHttpResponse:

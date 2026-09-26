@@ -162,6 +162,7 @@ def test_physical_b54_client_composes_with_authenticated_http_handler_and_server
         sequence=cp_command.sequence,
         issued_at=cp_command.issued_at,
         expires_at=cp_command.expires_at,
+        revision_ref=cp_command.revision_ref,
     )
     resolver = _MaterialResolver(
         build_command_material_wire_projection(
@@ -247,6 +248,8 @@ def test_physical_b54_client_composes_with_authenticated_http_handler_and_server
         command_id=command.command_id,
         admission_ref=admission.admission_ref,
         evidence_ref="evidence_cross_1",
+        revision_ref=command.revision_ref,
+        termination="exited",
         now=BASE + timedelta(seconds=50),
     )
 

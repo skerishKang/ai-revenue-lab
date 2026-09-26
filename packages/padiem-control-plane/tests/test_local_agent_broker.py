@@ -226,7 +226,7 @@ def test_ack_requires_exact_admission_evidence_and_is_single_use():
     service = authority()
     register(service)
     open_session(service)
-    enqueue(service)
+    command = enqueue(service)
 
     with pytest.raises(ControlPlaneContractError) as before_admission:
         service.acknowledge(
@@ -236,6 +236,8 @@ def test_ack_requires_exact_admission_evidence_and_is_single_use():
             command_id="command.1",
             admission_ref="admission.command.1",
             evidence_ref="evidence.command.1",
+            revision_ref=command.revision_ref,
+            termination="exited",
             now=NOW + timedelta(seconds=3),
         )
     assert error_code(before_admission) == "broker_ack_without_admission"
@@ -249,9 +251,39 @@ def test_ack_requires_exact_admission_evidence_and_is_single_use():
             command_id="command.1",
             admission_ref="admission.command.1",
             evidence_ref="evidence.wrong",
+            revision_ref=command.revision_ref,
+            termination="exited",
             now=NOW + timedelta(seconds=4),
         )
     assert error_code(wrong_evidence) == "broker_ack_correlation_mismatch"
+
+    with pytest.raises(ControlPlaneContractError) as wrong_revision:
+        service.acknowledge(
+            session_id="session.1",
+            binding_ref="binding.1",
+            credential=CREDENTIAL_1,
+            command_id="command.1",
+            admission_ref="admission.command.1",
+            evidence_ref="evidence.command.1",
+            revision_ref="rev.00000000000000000000000000000000",
+            termination="exited",
+            now=NOW + timedelta(seconds=4),
+        )
+    assert error_code(wrong_revision) == "broker_ack_revision_mismatch"
+
+    with pytest.raises(ControlPlaneContractError) as bad_termination:
+        service.acknowledge(
+            session_id="session.1",
+            binding_ref="binding.1",
+            credential=CREDENTIAL_1,
+            command_id="command.1",
+            admission_ref="admission.command.1",
+            evidence_ref="evidence.command.1",
+            revision_ref=command.revision_ref,
+            termination="raw_stdout_passthrough",
+            now=NOW + timedelta(seconds=4),
+        )
+    assert error_code(bad_termination) == "broker_ack_invalid_termination"
 
     acked = service.acknowledge(
         session_id="session.1",
@@ -260,9 +292,14 @@ def test_ack_requires_exact_admission_evidence_and_is_single_use():
         command_id="command.1",
         admission_ref="admission.command.1",
         evidence_ref="evidence.command.1",
+        revision_ref=command.revision_ref,
+        termination="exited",
         now=NOW + timedelta(seconds=4),
     )
     assert acked.state is BrokerCommandState.ACKNOWLEDGED
+    assert acked.revision_ref == command.revision_ref
+    assert acked.termination == "exited"
+    assert acked.safe_dict()["raw_argv"] is False
 
     with pytest.raises(ControlPlaneContractError) as replay_ack:
         service.acknowledge(
@@ -272,6 +309,8 @@ def test_ack_requires_exact_admission_evidence_and_is_single_use():
             command_id="command.1",
             admission_ref="admission.command.1",
             evidence_ref="evidence.command.1",
+            revision_ref=command.revision_ref,
+            termination="exited",
             now=NOW + timedelta(seconds=5),
         )
     assert error_code(replay_ack) == "broker_ack_without_admission"

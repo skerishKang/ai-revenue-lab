@@ -214,6 +214,8 @@ def test_material_store_and_lifecycle_runtime_run_without_platform_module() -> N
             "command_id": command["command_id"],
             "admission_ref": "admission.refactor.1",
             "evidence_ref": "evidence.refactor.1",
+            "revision_ref": command["revision_ref"],
+            "termination": "exited",
             "now": (BASE + timedelta(seconds=5)).isoformat(),
         }
     )

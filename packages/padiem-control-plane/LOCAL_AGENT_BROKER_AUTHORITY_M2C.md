@@ -138,9 +138,20 @@ sequence
 request_fingerprint
 issued_at
 expires_at
+revision_ref
 state
 admission/evidence correlation after admission
+bounded termination after acknowledgement
 ```
+
+`revision_ref` is **server-minted** at enqueue time and is an **opaque
+correlation identifier only**. It is not derived from `sequence`, it is not a
+scheduler, retry, replay or version authority, and clients never mint, parse or
+reinterpret it. The ordering/replay axis remains `sequence`.
+
+`termination` is recorded only on acknowledgement and is bounded to the device
+execution vocabulary `exited`, `cancelled`, `timed_out`. Raw `stdout`/`stderr`
+and credentials are never stored or returned.
 
 It does **not** store:
 
@@ -151,6 +162,7 @@ file contents
 raw device credential
 P01 approval payload
 model prompt/response
+raw stdout/stderr
 ```
 
 The broker command queue therefore does not itself define the future Local Agent command wire serializer.
@@ -201,10 +213,17 @@ run_id
 tool_request_ref
 sequence
 request_fingerprint
+revision_ref
 evidence_ref
 accepted_at
 expires_at
 ```
+
+The same bounded `revision_ref` must survive without reinterpretation across the
+device chain: poll command envelope, admission projection, execution receipt and
+acknowledgement. The command material projection stays correlated by exact
+`command_id`/`binding_ref`/`sequence`/`request_fingerprint`, which are validated
+against the same broker record.
 
 No argv is required in this admission evidence.
 
@@ -217,9 +236,23 @@ Acknowledgement is allowed only after exact admission and requires the same:
 - credential generation;
 - command;
 - admission ref;
-- evidence ref.
+- evidence ref;
+- exact echoed `revision_ref` (must equal the server-minted enqueue value);
+- bounded `termination` (`exited`, `cancelled`, `timed_out`).
+
+A device-echoed `revision_ref` that does not match the enqueue-time value fails
+closed with `broker_ack_revision_mismatch`; an out-of-vocabulary termination
+fails closed with `broker_ack_invalid_termination`.
 
 Thus an arbitrary client boolean such as `done=true` cannot acknowledge a command without the server-side admission correlation.
+
+## State wire contract version
+
+The broker state wire contract version is
+`padiem.local-agent-broker-state-wire.v2`. Version `v2` added the
+`revision_ref` and `termination` command fields. Version `v1` payloads fail the
+closed schema/version check and are rejected fail-closed; there is no silent
+down-conversion and no client-side minting of missing `revision_ref` values.
 
 ## RPC facade
 

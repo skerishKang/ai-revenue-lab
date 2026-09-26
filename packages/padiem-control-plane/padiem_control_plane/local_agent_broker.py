@@ -20,6 +20,8 @@ from .contracts import ControlPlaneContractError
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+-]{0,255}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+_EXECUTION_TERMINATIONS = frozenset({"exited", "cancelled", "timed_out"})
+EXECUTION_TERMINATIONS = _EXECUTION_TERMINATIONS
 MAX_DEVICE_CREDENTIAL_BYTES = 16_384
 MAX_SESSION_TTL_SECONDS = 3_600
 MAX_COMMAND_TTL_SECONDS = 900
@@ -161,16 +163,19 @@ class BrokerCommandRecord:
     request_fingerprint: str
     issued_at: datetime
     expires_at: datetime
+    revision_ref: str
     state: BrokerCommandState = BrokerCommandState.QUEUED
     admission_ref: str | None = None
     evidence_ref: str | None = None
     admitted_session_id: str | None = None
     admitted_at: datetime | None = None
     acknowledged_at: datetime | None = None
+    termination: str | None = None
 
     def __post_init__(self) -> None:
         for name in ("command_id", "run_id", "tool_request_ref", "binding_ref"):
             object.__setattr__(self, name, _ref(name, getattr(self, name)))
+        object.__setattr__(self, "revision_ref", _ref("revision_ref", self.revision_ref))
         object.__setattr__(self, "credential_generation", _generation("credential_generation", self.credential_generation))
         if isinstance(self.sequence, bool) or not isinstance(self.sequence, int) or self.sequence < 1:
             raise ControlPlaneContractError("invalid_broker_command", "sequence must be positive")
@@ -187,12 +192,14 @@ class BrokerCommandRecord:
             value = getattr(self, name)
             if value is not None:
                 object.__setattr__(self, name, _ref(name, value))
+        if self.termination is not None and self.termination not in _EXECUTION_TERMINATIONS:
+            raise ControlPlaneContractError("invalid_broker_command", "termination must be a bounded execution termination")
         if self.admitted_at is not None:
             object.__setattr__(self, "admitted_at", _aware("admitted_at", self.admitted_at))
         if self.acknowledged_at is not None:
             object.__setattr__(self, "acknowledged_at", _aware("acknowledged_at", self.acknowledged_at))
         if self.state is BrokerCommandState.QUEUED and any(
-            value is not None for value in (self.admission_ref, self.evidence_ref, self.admitted_session_id, self.admitted_at, self.acknowledged_at)
+            value is not None for value in (self.admission_ref, self.evidence_ref, self.admitted_session_id, self.admitted_at, self.acknowledged_at, self.termination)
         ):
             raise ControlPlaneContractError("invalid_broker_command", "queued command cannot contain admission state")
         if self.state is not BrokerCommandState.QUEUED and any(
@@ -201,6 +208,8 @@ class BrokerCommandRecord:
             raise ControlPlaneContractError("invalid_broker_command", "admitted command requires complete admission correlation")
         if self.state is BrokerCommandState.ACKNOWLEDGED and self.acknowledged_at is None:
             raise ControlPlaneContractError("invalid_broker_command", "acknowledged command requires acknowledged_at")
+        if self.state is BrokerCommandState.ACKNOWLEDGED and self.termination is None:
+            raise ControlPlaneContractError("invalid_broker_command", "acknowledged command requires bounded termination")
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -213,12 +222,14 @@ class BrokerCommandRecord:
             "request_fingerprint": self.request_fingerprint,
             "issued_at": self.issued_at.isoformat(),
             "expires_at": self.expires_at.isoformat(),
+            "revision_ref": self.revision_ref,
             "state": self.state.value,
             "admission_ref": self.admission_ref,
             "evidence_ref": self.evidence_ref,
             "admitted_session_id": self.admitted_session_id,
             "admitted_at": self.admitted_at.isoformat() if self.admitted_at else None,
             "acknowledged_at": self.acknowledged_at.isoformat() if self.acknowledged_at else None,
+            "termination": self.termination,
             "raw_argv": False,
             "raw_file_content": False,
             "raw_device_credential": False,
@@ -240,9 +251,10 @@ class BrokerCommandAdmission:
     evidence_ref: str
     accepted_at: datetime
     expires_at: datetime
+    revision_ref: str
 
     def __post_init__(self) -> None:
-        for name in ("admission_ref", "authority_ref", "command_id", "session_id", "binding_ref", "run_id", "tool_request_ref", "evidence_ref"):
+        for name in ("admission_ref", "authority_ref", "command_id", "session_id", "binding_ref", "run_id", "tool_request_ref", "evidence_ref", "revision_ref"):
             object.__setattr__(self, name, _ref(name, getattr(self, name)))
         object.__setattr__(self, "request_fingerprint", _digest("request_fingerprint", self.request_fingerprint))
         if isinstance(self.sequence, bool) or not isinstance(self.sequence, int) or self.sequence < 1:
@@ -266,6 +278,7 @@ class BrokerCommandAdmission:
             "sequence": self.sequence,
             "request_fingerprint": self.request_fingerprint,
             "evidence_ref": self.evidence_ref,
+            "revision_ref": self.revision_ref,
             "accepted_at": self.accepted_at.isoformat(),
             "expires_at": self.expires_at.isoformat(),
             "raw_argv": False,
@@ -288,6 +301,17 @@ class InMemoryLocalAgentBrokerAuthority:
 
     def _credential_digest(self, credential: bytes) -> str:
         return hmac.new(self._pepper, _credential(credential), hashlib.sha256).hexdigest()
+
+    def _revision_ref(self, *, binding_ref: str, command_id: str) -> str:
+        """Mint a server-owned opaque correlation token for one enqueued command.
+
+        `revision_ref` is correlation-only: it is derived from stable server-owned
+        identity (authority, binding, command id) plus the broker pepper. It is not
+        sequence-derived and carries no scheduling, retry or version authority.
+        """
+        material = f"revision-ref.v1:{self.authority_ref}:{binding_ref}:{command_id}".encode("utf-8")
+        digest = hmac.new(self._pepper, material, hashlib.sha256).hexdigest()[:32]
+        return f"rev.{digest}"
 
     def register_binding(
         self,
@@ -444,6 +468,7 @@ class InMemoryLocalAgentBrokerAuthority:
             raise ControlPlaneContractError("duplicate_broker_command", "command_id has already been used")
         ttl = _ttl("ttl_seconds", ttl_seconds, minimum=1, maximum=MAX_COMMAND_TTL_SECONDS)
         sequence = self._last_sequence_by_binding.get(binding.binding_ref, 0) + 1
+        revision_ref = self._revision_ref(binding_ref=binding.binding_ref, command_id=command_id)
         command = BrokerCommandRecord(
             command_id=command_id,
             run_id=run_id,
@@ -454,6 +479,7 @@ class InMemoryLocalAgentBrokerAuthority:
             request_fingerprint=request_fingerprint,
             issued_at=now,
             expires_at=now + timedelta(seconds=ttl),
+            revision_ref=revision_ref,
         )
         self._commands[command_id] = command
         self._last_sequence_by_binding[binding.binding_ref] = sequence
@@ -546,6 +572,7 @@ class InMemoryLocalAgentBrokerAuthority:
             evidence_ref=evidence_ref,
             accepted_at=now,
             expires_at=command.expires_at,
+            revision_ref=command.revision_ref,
         )
 
     def acknowledge(
@@ -557,6 +584,8 @@ class InMemoryLocalAgentBrokerAuthority:
         command_id: str,
         admission_ref: str,
         evidence_ref: str,
+        revision_ref: str,
+        termination: str,
         now: datetime,
     ) -> BrokerCommandRecord:
         now = _aware("now", now)
@@ -571,6 +600,11 @@ class InMemoryLocalAgentBrokerAuthority:
             raise ControlPlaneContractError("stale_broker_command_generation", "command belongs to a stale credential generation")
         if command.state is not BrokerCommandState.ADMITTED:
             raise ControlPlaneContractError("broker_ack_without_admission", "command must be admitted exactly once before acknowledgement")
+        echoed_revision_ref = _ref("revision_ref", revision_ref)
+        if echoed_revision_ref != command.revision_ref:
+            raise ControlPlaneContractError("broker_ack_revision_mismatch", "acknowledgement revision_ref does not echo the server-owned command revision")
+        if not isinstance(termination, str) or termination not in _EXECUTION_TERMINATIONS:
+            raise ControlPlaneContractError("broker_ack_invalid_termination", "acknowledgement must carry a bounded execution termination")
         expected = (
             binding.binding_ref,
             session.session_id,
@@ -582,7 +616,7 @@ class InMemoryLocalAgentBrokerAuthority:
             raise ControlPlaneContractError("broker_ack_correlation_mismatch", "acknowledgement does not match admitted command evidence")
         if now >= command.expires_at:
             raise ControlPlaneContractError("broker_command_expired", "expired command cannot be acknowledged")
-        acknowledged = replace(command, state=BrokerCommandState.ACKNOWLEDGED, acknowledged_at=now)
+        acknowledged = replace(command, state=BrokerCommandState.ACKNOWLEDGED, acknowledged_at=now, termination=termination)
         self._commands[command.command_id] = acknowledged
         return acknowledged
 
@@ -600,3 +634,13 @@ P01_AUTHORITY_DUPLICATED = False
 PUBLIC_HTTP_ENDPOINT = False
 PRODUCTION_DEPLOYMENT = False
 PRODUCTION_READY = False
+REVISION_REF_SERVER_OWNED_OPAQUE_CORRELATION = True
+SECOND_CAPABILITY_REPLAY_AUTHORITY = False
+REQUEST_FINGERPRINT_CORRELATION_PRESERVED = True
+EVIDENCE_REF_BOUNDED = True
+TERMINATION_CORRELATION_MAINTAINED = True
+REVISION_REF_SEQUENCE_DERIVED = False
+REVISION_REF_SCHEDULING_AUTHORITY = False
+STATUS_RESULT_EVIDENCE_RETURN = True
+RAW_STDOUT_IN_BROKER_COMMAND = False
+RAW_STDERR_IN_BROKER_COMMAND = False

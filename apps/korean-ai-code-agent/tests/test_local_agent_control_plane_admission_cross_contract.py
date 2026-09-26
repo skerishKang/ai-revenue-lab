@@ -258,6 +258,7 @@ def _fixture(*, fail_runtime: bool = False):
         sequence=cp_command.sequence,
         issued_at=cp_command.issued_at,
         expires_at=cp_command.expires_at,
+        revision_ref=cp_command.revision_ref,
     )
     resolver = _MaterialResolver(
         build_command_material_wire_projection(
@@ -363,6 +364,8 @@ class PhysicalAdmissionExecutionCrossContractTests(unittest.TestCase):
         self.assertEqual(receipt.execution.authorization_ref, "windows_p01_grant_cross_1")
         self.assertEqual(request_port.calls[-1][1]["admission_ref"], ADMISSION_REF)
         self.assertEqual(request_port.calls[-1][1]["evidence_ref"], EVIDENCE_REF)
+        self.assertEqual(request_port.calls[-1][1]["revision_ref"], command.revision_ref)
+        self.assertEqual(request_port.calls[-1][1]["termination"], "exited")
 
         stored = authority._commands[command.command_id]
         self.assertEqual(stored.state.value, "acknowledged")
@@ -370,10 +373,19 @@ class PhysicalAdmissionExecutionCrossContractTests(unittest.TestCase):
         self.assertEqual(stored.evidence_ref, EVIDENCE_REF)
         self.assertEqual(stored.admitted_at, BASE + timedelta(seconds=41))
         self.assertEqual(stored.acknowledged_at, BASE + timedelta(seconds=52))
+        self.assertEqual(stored.revision_ref, command.revision_ref)
+        self.assertEqual(stored.termination, "exited")
 
         safe = receipt.safe_dict()
         self.assertIs(safe["material_before_admission"], True)
         self.assertIs(safe["ack_exact_admission_evidence"], True)
+        self.assertEqual(safe["revision_ref"], command.revision_ref)
+        self.assertEqual(safe["termination"], "exited")
+        self.assertEqual(safe["exit_code"], 0)
+        self.assertIs(safe["ack_revision_ref_opaque_correlation"], True)
+        self.assertIs(safe["ack_bounded_termination_returned"], True)
+        self.assertIs(safe["ack_raw_stdout_returned"], False)
+        self.assertIs(safe["ack_raw_stderr_returned"], False)
         self.assertIs(safe["raw_argv"], False)
         self.assertIs(safe["stdout"], False)
         self.assertIs(safe["stderr"], False)

@@ -93,6 +93,7 @@ def command() -> DeviceCommandEnvelope:
         sequence=1,
         issued_at=NOW - timedelta(seconds=10),
         expires_at=NOW + timedelta(minutes=5),
+        revision_ref="revision_1",
     )
 
 

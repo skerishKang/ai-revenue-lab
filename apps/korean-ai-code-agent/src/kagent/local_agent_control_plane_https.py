@@ -23,6 +23,7 @@ from .local_agent_secure_transport import (
     OutboundTransportConfig,
     OutboundTransportMode,
 )
+from .windows_local_executor import WindowsExecutionTermination
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+\-]{0,511}$")
 _SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
@@ -47,6 +48,8 @@ _ACK_KEYS = frozenset(
         "admitted_session_id",
         "admitted_at",
         "acknowledged_at",
+        "revision_ref",
+        "termination",
         "raw_argv",
         "raw_file_content",
         "raw_device_credential",
@@ -463,6 +466,8 @@ class ControlPlaneHttpsLongPollTransport:
         command_id: str,
         admission_ref: str,
         evidence_ref: str,
+        revision_ref: str,
+        termination: str,
         now: datetime,
     ) -> None:
         now = _aware(now, "now")
@@ -470,6 +475,9 @@ class ControlPlaneHttpsLongPollTransport:
         command_id = _ref(command_id, "command_id")
         admission_ref = _ref(admission_ref, "admission_ref")
         evidence_ref = _ref(evidence_ref, "evidence_ref")
+        revision_ref = _ref(revision_ref, "revision_ref")
+        if termination not in {item.value for item in WindowsExecutionTermination}:
+            raise ContractError("broker acknowledgement termination must be a bounded execution termination")
         self._prune(now=now)
         try:
             observed_session_id, observed = self._polled[command_id]
@@ -477,6 +485,8 @@ class ControlPlaneHttpsLongPollTransport:
             raise ContractError("acknowledgement requires exact previously-polled broker metadata") from exc
         if observed_session_id != session.session_id:
             raise ContractError("acknowledgement session does not match polled broker metadata")
+        if observed.envelope.revision_ref != revision_ref:
+            raise ContractError("acknowledgement revision_ref does not match polled broker metadata")
         response = self._post(
             config=config,
             operation=ControlPlaneHttpsOperation.ACKNOWLEDGE,
@@ -487,6 +497,8 @@ class ControlPlaneHttpsLongPollTransport:
                 "command_id": command_id,
                 "admission_ref": admission_ref,
                 "evidence_ref": evidence_ref,
+                "revision_ref": revision_ref,
+                "termination": termination,
                 "now": _iso(now),
             },
             timeout_seconds=min(config.poll_timeout_seconds, 30),
@@ -504,10 +516,13 @@ class ControlPlaneHttpsLongPollTransport:
             "admission_ref": admission_ref,
             "evidence_ref": evidence_ref,
             "admitted_session_id": session.session_id,
+            "revision_ref": envelope.revision_ref,
         }
         for field_name, expected in expected_refs.items():
             if _ref(payload[field_name], field_name) != expected:
                 raise ContractError(f"broker acknowledgement {field_name} mismatch")
+        if payload["termination"] != termination:
+            raise ContractError("broker acknowledgement termination mismatch")
         if payload["state"] != "acknowledged":
             raise ContractError("broker acknowledgement state must be acknowledged")
         if _positive_int(payload["credential_generation"], "credential_generation") != binding.credential_generation:

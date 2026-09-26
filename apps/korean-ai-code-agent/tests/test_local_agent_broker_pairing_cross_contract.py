@@ -625,6 +625,7 @@ class OutboundOnlyPairingDispatchEndToEndTests(unittest.TestCase):
                 sequence=queued.sequence,
                 issued_at=queued.issued_at,
                 expires_at=queued.expires_at,
+                revision_ref=queued.revision_ref,
             ),
             request=local_request,
             request_fingerprint=fingerprint,

@@ -339,6 +339,8 @@ def test_new_material_requires_command_to_remain_queued() -> None:
                 "command_id": command["command_id"],
                 "admission_ref": f"admission.{command['command_id']}",
                 "evidence_ref": f"evidence.{command['command_id']}",
+                "revision_ref": command["revision_ref"],
+                "termination": "exited",
                 "now": (BASE + timedelta(seconds=4)).isoformat(),
             }
         )
@@ -375,6 +377,8 @@ def test_acknowledgement_purges_material_in_same_lifecycle() -> None:
                 "command_id": command["command_id"],
                 "admission_ref": f"admission.{command['command_id']}",
                 "evidence_ref": f"evidence.{command['command_id']}",
+                "revision_ref": command["revision_ref"],
+                "termination": "exited",
                 "now": (BASE + timedelta(seconds=4)).isoformat(),
             }
         )

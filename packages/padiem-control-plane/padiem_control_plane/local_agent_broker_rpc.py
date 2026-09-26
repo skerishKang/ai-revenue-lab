@@ -162,6 +162,8 @@ class LocalAgentBrokerRpcFacade:
                 command_id=payload["command_id"],
                 admission_ref=payload["admission_ref"],
                 evidence_ref=payload["evidence_ref"],
+                revision_ref=payload["revision_ref"],
+                termination=payload["termination"],
                 now=_dt(payload["now"]),
             )
             return {"ok": True, "command": command.safe_dict()}

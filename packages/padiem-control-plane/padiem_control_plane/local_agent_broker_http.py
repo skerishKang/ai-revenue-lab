@@ -6,6 +6,7 @@ import json
 import re
 from typing import Any, Callable, Protocol
 
+from .local_agent_broker import EXECUTION_TERMINATIONS as _EXECUTION_TERMINATIONS
 from .local_agent_broker_rpc import LocalAgentBrokerRpcFacade
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
@@ -31,7 +32,7 @@ _MATERIAL_REQUEST_KEYS = frozenset(
 )
 _HEARTBEAT_REQUEST_KEYS = frozenset({"session_id", "binding_ref", "credential_b64", "now"})
 _ACK_REQUEST_KEYS = frozenset(
-    {"session_id", "binding_ref", "credential_b64", "command_id", "admission_ref", "evidence_ref", "now"}
+    {"session_id", "binding_ref", "credential_b64", "command_id", "admission_ref", "evidence_ref", "revision_ref", "termination", "now"}
 )
 _SESSION_KEYS = frozenset(
     {
@@ -63,6 +64,8 @@ _COMMAND_KEYS = frozenset(
         "admitted_session_id",
         "admitted_at",
         "acknowledged_at",
+        "revision_ref",
+        "termination",
         "raw_argv",
         "raw_file_content",
         "raw_device_credential",
@@ -595,6 +598,9 @@ class LocalAgentBrokerHttpHandler:
         self._load_scoped_session(auth=auth, payload=payload, server_now=server_now)
         _ref(payload["admission_ref"], "admission_ref")
         _ref(payload["evidence_ref"], "evidence_ref")
+        _ref(payload["revision_ref"], "revision_ref")
+        if payload["termination"] not in _EXECUTION_TERMINATIONS:
+            raise ValueError("acknowledge termination must be a bounded execution termination")
         result = self._rpc_result(self._rpc.acknowledge(self._server_rpc_payload(payload, server_now)), "command")
         if result["ok"] is True:
             command = _closed_mapping(result["command"], _COMMAND_KEYS, "acknowledged broker command")
@@ -602,6 +608,10 @@ class LocalAgentBrokerHttpHandler:
                 raise ValueError("broker acknowledgement did not reach acknowledged state")
             if command["admission_ref"] != payload["admission_ref"] or command["evidence_ref"] != payload["evidence_ref"]:
                 raise ValueError("broker acknowledgement admission/evidence correlation mismatch")
+            if command["revision_ref"] != payload["revision_ref"]:
+                raise ValueError("broker acknowledgement did not preserve server-owned revision_ref correlation")
+            if command["termination"] != payload["termination"]:
+                raise ValueError("broker acknowledgement did not preserve bounded termination correlation")
             if command["raw_device_credential"] is not False:
                 raise ValueError("broker acknowledgement exposed device credential material")
         return LocalAgentBrokerHttpResponse(200, result)

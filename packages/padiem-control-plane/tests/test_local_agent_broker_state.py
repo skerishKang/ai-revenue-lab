@@ -285,6 +285,8 @@ def test_admission_and_ack_replay_state_survives_restart() -> None:
         command_id=command.command_id,
         admission_ref=admission.admission_ref,
         evidence_ref=admission.evidence_ref,
+        revision_ref=command.revision_ref,
+        termination="exited",
         now=BASE + timedelta(seconds=5),
     )
     assert acknowledged.state.value == "acknowledged"
@@ -298,6 +300,8 @@ def test_admission_and_ack_replay_state_survives_restart() -> None:
             command_id=command.command_id,
             admission_ref=admission.admission_ref,
             evidence_ref=admission.evidence_ref,
+            revision_ref=command.revision_ref,
+            termination="exited",
             now=BASE + timedelta(seconds=6),
         )
     assert ack_replay.value.code == "broker_ack_without_admission"

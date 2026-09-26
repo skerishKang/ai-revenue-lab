@@ -285,6 +285,8 @@ def test_server_clock_owns_session_heartbeat_and_ack_timestamps() -> None:
             "command_id": "command.http.1",
             "admission_ref": "admission.http.1",
             "evidence_ref": "evidence.http.1",
+            "revision_ref": queued["command"]["revision_ref"],
+            "termination": "exited",
             "now": (BASE + timedelta(days=5)).isoformat(),
         },
         auth=auth,

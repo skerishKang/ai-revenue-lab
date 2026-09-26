@@ -55,6 +55,7 @@ class TrustedDeviceCommandAdmissionEvidence:
     request_fingerprint: str
     accepted_at: datetime
     expires_at: datetime
+    revision_ref: str
 
     def __post_init__(self) -> None:
         for field_name in (
@@ -65,6 +66,7 @@ class TrustedDeviceCommandAdmissionEvidence:
             "binding_ref",
             "run_id",
             "tool_request_ref",
+            "revision_ref",
         ):
             object.__setattr__(self, field_name, _ref(getattr(self, field_name), field_name))
         object.__setattr__(
@@ -97,6 +99,8 @@ class TrustedDeviceCommandAdmissionEvidence:
             "request_fingerprint": self.request_fingerprint,
             "accepted_at": self.accepted_at.isoformat().replace("+00:00", "Z"),
             "expires_at": self.expires_at.isoformat().replace("+00:00", "Z"),
+            "revision_ref": self.revision_ref,
+            "revision_semantics": "opaque_correlation_only",
             "raw_argv": False,
             "raw_file_content": False,
             "raw_device_credential": False,
@@ -185,6 +189,8 @@ class AdmittedLocalCommandExecutionReceipt:
     assembly_ref: str
     authorization_ref: str
     termination: WindowsExecutionTermination
+    revision_ref: str
+    exit_code: int | None = None
 
     def __post_init__(self) -> None:
         for field_name in (
@@ -197,6 +203,7 @@ class AdmittedLocalCommandExecutionReceipt:
             "run_id",
             "assembly_ref",
             "authorization_ref",
+            "revision_ref",
         ):
             object.__setattr__(self, field_name, _ref(getattr(self, field_name), field_name))
         object.__setattr__(
@@ -206,6 +213,8 @@ class AdmittedLocalCommandExecutionReceipt:
         )
         if isinstance(self.sequence, bool) or not isinstance(self.sequence, int) or self.sequence < 1:
             raise ContractError("sequence must be a positive integer")
+        if self.exit_code is not None and (isinstance(self.exit_code, bool) or not isinstance(self.exit_code, int)):
+            raise ContractError("exit_code must be an integer or null")
         if not isinstance(self.termination, WindowsExecutionTermination):
             try:
                 object.__setattr__(self, "termination", WindowsExecutionTermination(self.termination))
@@ -227,6 +236,9 @@ class AdmittedLocalCommandExecutionReceipt:
             "assembly_ref": self.assembly_ref,
             "authorization_ref": self.authorization_ref,
             "termination": self.termination.value,
+            "revision_ref": self.revision_ref,
+            "exit_code": self.exit_code,
+            "revision_semantics": "opaque_correlation_only",
             "raw_argv": False,
             "stdout": False,
             "stderr": False,
@@ -309,6 +321,8 @@ class AdmittedLocalAgentExecutionBridge:
             raise ContractError("trusted admission tool_request_ref mismatch")
         if evidence.sequence != command.sequence:
             raise ContractError("trusted admission sequence mismatch")
+        if evidence.revision_ref != command.revision_ref:
+            raise ContractError("trusted admission revision_ref mismatch")
         if evidence.request_fingerprint != fingerprint:
             raise ContractError("trusted admission request fingerprint mismatch")
         if evidence.accepted_at < command.issued_at:
@@ -347,6 +361,8 @@ class AdmittedLocalAgentExecutionBridge:
             assembly_ref=assembly_receipt.assembly_ref,
             authorization_ref=assembly_receipt.authorization_ref,
             termination=assembly_receipt.termination,
+            revision_ref=command.revision_ref,
+            exit_code=assembly_receipt.exit_code,
         )
 
 
