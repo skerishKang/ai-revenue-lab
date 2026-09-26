@@ -97,9 +97,18 @@ Missing required adoption evidence is a `NOT_READY` condition.
 - Independent Local Validation required? yes/no:
 - Independent validator different from implementation actor? yes/no/N/A:
 - Exact-head match:
+- Independent validation PR record/comment:
+- Immutable validation report/artifact pointer:
+- If validation NOT_REQUIRED, recorded reason:
 - Visual/browser evidence:
 - Runtime/provider evidence:
 - Security/privacy evidence:
+- External security/compliance signals + disposition/waiver:
+- Any unresolved red signal? yes/no:
+- Runtime trust-boundary audit needed? yes/no:
+- If yes, parser/builder/projector/serializer/export/write coverage:
+- Explicit null vs undefined vs missing semantics verified where applicable? yes/no/N/A:
+- Load-bearing mutation/differential proof required? yes/no + evidence:
 - Production evidence:
 
 ## Objective defects / blockers
@@ -144,6 +153,8 @@ Reason:
 - Merge authorized? yes/no/pending authority:
 - Applicable design gate satisfied? yes/no/N/A:
 - Expected head required for merge:
+- Exact-head independent-validation record present or NOT_REQUIRED reason present? yes/no:
+- External red security/compliance signals resolved or explicitly authorized/waived? yes/no/N/A:
 - Deployment rule:
 - Production acceptance required after merge? yes/no:
 - Recovery/fix/revert path:
