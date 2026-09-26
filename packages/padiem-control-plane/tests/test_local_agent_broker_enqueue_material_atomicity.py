@@ -20,11 +20,15 @@ Two properties of the API are load-bearing and are pinned here:
 
 from __future__ import annotations
 
+import asyncio
 import base64
 from datetime import datetime, timedelta, timezone
+import inspect
 import json
 from pathlib import Path
 import sqlite3
+import sys
+import types
 
 import pytest
 
@@ -91,6 +95,79 @@ class _Crash(RuntimeError):
     """Stands in for the Durable Object process dying mid-operation."""
 
 
+class _FakeResponse:
+    def __init__(self, body: str = "", *, status: int = 200, headers=None) -> None:
+        self.body = body
+        self.status = status
+        self.headers = headers or {}
+
+
+class _FakeWorkerEntrypoint:
+    def __init__(self, env=None) -> None:
+        self.env = env
+
+
+class _FakeDurableObject:
+    def __init__(self, ctx, env) -> None:
+        self.ctx = ctx
+        self.env = env
+
+
+# The platform entrypoint module imports the Cloudflare runtime. The structural
+# gateway proof below is about *which methods the entrypoint exposes*, so the
+# platform object is replaced rather than the behaviour under test.
+_workers = types.ModuleType("workers")
+_workers.Response = _FakeResponse
+_workers.WorkerEntrypoint = _FakeWorkerEntrypoint
+_workers.DurableObject = _FakeDurableObject
+sys.modules.setdefault("workers", _workers)
+
+
+class _Context:
+    """The Durable Object context: the storage and nothing else."""
+
+    def __init__(self, storage: "_Storage") -> None:
+        self.storage = storage
+
+
+class _GatewayStub:
+    """A service-binding stub whose calls land on the real Durable Object."""
+
+    def __init__(self, durable_object) -> None:
+        self._durable_object = durable_object
+
+    def __getattr__(self, name):
+        target = getattr(self._durable_object, name)
+
+        async def call(*args, **kwargs):
+            return await target(*args, **kwargs)
+
+        return call
+
+
+class _GatewayNamespace:
+    def __init__(self, stub: _GatewayStub) -> None:
+        self.stub = stub
+        self.names: list[str] = []
+        self.ids: list[str] = []
+
+    def idFromName(self, name: str) -> str:  # noqa: N802 — platform surface
+        self.names.append(name)
+        return f"do::{name}"
+
+    def get(self, object_id: str) -> _GatewayStub:
+        self.ids.append(object_id)
+        return self.stub
+
+
+class _GatewayEnv:
+    LOCAL_AGENT_BROKER_AUTHORITY_REF = AUTHORITY_REF
+    LOCAL_AGENT_BROKER_PEPPER = PEPPER
+
+    def __init__(self, namespace) -> None:
+        self.LOCAL_AGENT_BROKER_STATE = namespace
+
+
 def _encoded(value: bytes) -> str:
     return base64.b64encode(value).decode("ascii")
 
@@ -100,7 +177,24 @@ def _runtime(path: Path) -> LocalAgentBrokerDurableRuntime:
 
 
 def _register_and_open(runtime: LocalAgentBrokerDurableRuntime) -> None:
-    registered = runtime.register_binding(
+    asyncio.run(_register_and_open_async(runtime))
+
+
+async def _register_and_open_async(entrypoint) -> None:
+    """Register a binding and open a session on a runtime or a Durable Object.
+
+    The Durable Object entrypoints are async while the runtime composition is
+    not, so the setup is written once against either.
+    """
+
+    async def call(method_name: str, payload: dict) -> dict:
+        result = getattr(entrypoint, method_name)(payload)
+        if inspect.isawaitable(result):
+            result = await result
+        return result
+
+    registered = await call(
+        "register_binding",
         {
             "binding_ref": "binding.atomic.1",
             "device_id": "device.atomic.1",
@@ -108,10 +202,11 @@ def _register_and_open(runtime: LocalAgentBrokerDurableRuntime) -> None:
             "workspace_ref": "workspace.atomic.1",
             "credential_b64": _encoded(CREDENTIAL),
             "now": BASE.isoformat(),
-        }
+        },
     )
     assert registered["ok"] is True
-    opened = runtime.open_session(
+    opened = await call(
+        "open_session",
         {
             "session_id": "session.atomic.1",
             "binding_ref": "binding.atomic.1",
@@ -119,7 +214,7 @@ def _register_and_open(runtime: LocalAgentBrokerDurableRuntime) -> None:
             "account_ref": "account.atomic.1",
             "workspace_ref": "workspace.atomic.1",
             "now": (BASE + timedelta(seconds=1)).isoformat(),
-        }
+        },
     )
     assert opened["ok"] is True
 
@@ -512,6 +607,88 @@ def test_atomic_path_declares_no_second_authority(tmp_path: Path) -> None:
     assert MATERIAL_LESS_COMMAND_ACKNOWLEDGABLE is False
     assert SECOND_MATERIAL_SEQUENCE_MINT is False
     assert SECOND_MATERIAL_REVISION_MINT is False
+
+
+# --- 9. the product gateway cannot create a command by the split pair -------
+def test_product_gateway_exposes_no_split_write_surface() -> None:
+    """The canonical server gateway must not offer the split pair at all.
+
+    #3127 removes `enqueue_command` and `store_command_material` from the
+    `Default` service-binding entrypoint, so a product caller has exactly one
+    way to create a command: the atomic one. The Durable Object keeps both as
+    internal composition, which is where the tests and the runtime itself live.
+    """
+
+    from local_agent_broker_worker import Default, LocalAgentBrokerDurableObject
+
+    assert hasattr(Default, "enqueue_command_with_material")
+    assert not hasattr(Default, "enqueue_command")
+    assert not hasattr(Default, "store_command_material")
+
+    # Present on the object, so the absence on the gateway is a boundary and
+    # not a capability that was never implemented.
+    assert hasattr(LocalAgentBrokerDurableObject, "enqueue_command")
+    assert hasattr(LocalAgentBrokerDurableObject, "store_command_material")
+
+    source = (Path(__file__).parents[1] / "local_agent_broker_worker.py").read_text(encoding="utf-8")
+    gateway_source = source.split("class Default(WorkerEntrypoint)", 1)[1]
+    for forbidden in ("async def enqueue_command(", "async def store_command_material("):
+        assert forbidden not in gateway_source
+
+
+def test_gateway_cannot_produce_an_executable_command_without_the_atomic_path(tmp_path: Path) -> None:
+    """A command written the split way reaches no executable state.
+
+    Even where the internal split methods still exist — on the Durable Object —
+    a command with no material cannot be admitted, resolved or acknowledged.
+    That is the structural proof behind removing the pair from the gateway: the
+    split path cannot manufacture a runnable command even if it is reached.
+    """
+
+    from local_agent_broker_worker import Default, LocalAgentBrokerDurableObject
+
+    path = tmp_path / "do.sqlite3"
+    storage = _Storage(path)
+    env = _Env()
+    durable_object = LocalAgentBrokerDurableObject(_Context(storage), env)
+    asyncio.run(_register_and_open_async(durable_object))
+
+    # The internal split write: durable command, no material.
+    queued = asyncio.run(
+        durable_object.enqueue_command(_enqueue_payload("command.split.1", now=BASE + timedelta(seconds=2)))
+    )
+    assert queued["ok"] is True
+    command = queued["command"]
+    assert _material_rows(path) == []
+
+    with pytest.raises(ControlPlaneContractError) as refused:
+        asyncio.run(durable_object.admit_command(_admit_payload(command, at=BASE + timedelta(seconds=3))))
+    assert refused.value.code == "broker_command_material_missing"
+    refused_ack = asyncio.run(
+        durable_object.acknowledge(_ack_payload(command, at=BASE + timedelta(seconds=4)))
+    )
+    assert refused_ack["ok"] is False
+    with pytest.raises(RuntimeError):
+        durable_object.material_store.resolve(_request(command, at=BASE + timedelta(seconds=5)))
+
+    # And the gateway that product callers actually hold routes to the same
+    # object, offers no split method to try, and its one command path is the
+    # atomic one: the command it produces carries its material.
+    gateway = Default(_GatewayEnv(_GatewayNamespace(_GatewayStub(durable_object))))
+    for name in ("enqueue_command", "store_command_material"):
+        assert getattr(gateway, name, None) is None
+    through_gateway = asyncio.run(
+        gateway.enqueue_command_with_material(
+            _enqueue_payload("command.gateway.1", now=BASE + timedelta(seconds=6)),
+            _material_body("command.gateway.1"),
+        )
+    )
+    assert through_gateway["ok"] is True
+    assert through_gateway["material"]["stored"] is True
+    assert [row["command_id"] for row in _material_rows(path)] == ["command.gateway.1"]
+    assert durable_object.material_store.resolve(
+        _request(through_gateway["command"], at=BASE + timedelta(seconds=7))
+    )["command_id"] == "command.gateway.1"
 
 
 def test_atomic_api_does_not_accept_server_owned_correlation(tmp_path: Path) -> None:
