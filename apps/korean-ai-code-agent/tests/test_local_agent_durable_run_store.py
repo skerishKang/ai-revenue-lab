@@ -20,6 +20,10 @@ from kagent.contracts import ContractError
 from kagent.local_agent_durable_run import (
     MAX_BOUNDED_EXIT_CODE,
     MIN_BOUNDED_EXIT_CODE,
+    LOCAL_REVISION_INCREMENT,
+    LOCAL_REVISION_ORDERING,
+    SECOND_FINGERPRINT_AUTHORITY,
+    SECOND_REVISION_AUTHORITY,
     BoundedEvidenceProjection,
     DurableRunOfflineState,
     DurableRunRecord,
@@ -27,6 +31,7 @@ from kagent.local_agent_durable_run import (
     DurableRunTermination,
 )
 from kagent.local_agent_durable_run_store import (
+    _COLUMN_ORDER,
     _TABLE,
     DURABLE_RUN_STORE_SCHEMA_VERSION,
     EXPIRED_COMMAND_REPLAY_SUPPORTED,
@@ -35,6 +40,7 @@ from kagent.local_agent_durable_run_store import (
     STORE_GRANTS_EXECUTION_AUTHORITY,
     STORE_MINTS_FINGERPRINT,
     STORE_MINTS_REVISION,
+    STORE_PARSE_REVISION,
     STORE_RECOMPUTES_FINGERPRINT,
     TERMINAL_REPLAY_SUPPORTED,
     UNKNOWN_PROCESS_REATTACHMENT_SUPPORTED,
@@ -42,6 +48,10 @@ from kagent.local_agent_durable_run_store import (
     DurableRunRecoveryReport,
     DurableRunStore,
     DurableRunStoreError,
+)
+from kagent.windows_local_executor import (
+    LocalCommandRequest,
+    command_request_fingerprint,
 )
 
 NOW = datetime(2026, 9, 26, 8, 0, tzinfo=timezone.utc)
@@ -848,3 +858,51 @@ class DurableStoreForbiddenCapabilityTests(unittest.TestCase):
         report = DurableRunRecoveryReport()
         self.assertEqual(report.replay_candidates, ())
         self.assertIs(report.execution_authority_granted, False)
+    def test_q23_recovery_never_returns_a_replay_candidate(self) -> None:
+        report = DurableRunRecoveryReport()
+        self.assertEqual(report.replay_candidates, ())
+        self.assertIs(report.execution_authority_granted, False)
+
+    def test_q24_no_second_fingerprint_authority_in_the_store(self) -> None:
+        # The canonical fingerprint authority is `BrokerCommandRecord.request_fingerprint`
+        # / `command_request_fingerprint`. This store has none of its own.
+        self.assertIs(SECOND_FINGERPRINT_AUTHORITY, 0)
+        self.assertFalse(STORE_RECOMPUTES_FINGERPRINT)
+        self.assertFalse(STORE_MINTS_FINGERPRINT)
+        for name in _store_code_identifiers():
+            for token in ("fingerprint_algorithm", "recompute_fingerprint", "mint_fingerprint"):
+                with self.subTest(name=name, token=token):
+                    self.assertNotIn(token, name.lower())
+        # Storing is verbatim: an arbitrary canonical digest survives untouched.
+        store = DurableRunStore(":memory:")
+        self.addCleanup(store.close)
+        canonical = command_request_fingerprint(
+            LocalCommandRequest(
+                request_id="request.1",
+                run_id="run.1",
+                device_id="device.1",
+                root_ref="root.1",
+                argv=("git.exe", "status"),
+                cwd_relative="repo",
+                requested_at=ISSUED,
+            )
+        )
+        store.put(admitted(request_fingerprint=canonical))
+        loaded = store.get(command_id="command.1")
+        assert loaded is not None
+        self.assertEqual(loaded.request_fingerprint, canonical)
+
+    def test_q24_no_second_revision_authority_in_the_store(self) -> None:
+        self.assertIs(SECOND_REVISION_AUTHORITY, 0)
+        self.assertFalse(STORE_MINTS_REVISION)
+        self.assertFalse(STORE_PARSE_REVISION)
+        for name in _store_code_identifiers():
+            for token in ("bump_revision", "next_revision", "revision_counter", "order_by_revision"):
+                with self.subTest(name=name, token=token):
+                    self.assertNotIn(token, name.lower())
+        # Broker ordering authority is `sequence`; the store never sorts by a
+        # revision and never treats one as a monotonic local counter.
+        self.assertIn("sequence", _COLUMN_ORDER)
+        self.assertIn("revision_ref", _COLUMN_ORDER)
+        self.assertFalse(LOCAL_REVISION_INCREMENT)
+        self.assertFalse(LOCAL_REVISION_ORDERING)
