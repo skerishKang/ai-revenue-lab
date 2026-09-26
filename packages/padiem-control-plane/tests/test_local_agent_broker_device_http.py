@@ -226,7 +226,14 @@ def test_device_service_rejects_transport_shape_before_credential_auth() -> None
 
 
 def test_device_service_boundary_truth() -> None:
-    assert DEVICE_HTTP_ROUTES == ("/acknowledge", "/heartbeat", "/material", "/poll", "/session")
+    assert DEVICE_HTTP_ROUTES == (
+        "/acknowledge",
+        "/heartbeat",
+        "/material",
+        "/poll",
+        "/reconcile",
+        "/session",
+    )
     assert PRIVATE_SERVICE_BOUNDARY is True
     assert CANONICAL_BINDING_AUTH_REUSED is True
     assert M2E_HANDLER_REUSED is True
