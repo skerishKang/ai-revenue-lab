@@ -612,5 +612,8 @@
   <script src="./outputs.js"></script>
   <script src="./conversation-export.js"></script>
   <script src="./claw-quote-compare.js"></script>
+  <!-- #3094: the guarded handoff adapter. Loaded last so the #3084 projection
+       seam installed by app.js already exists when it resolves its source. -->
+  <script src="./claw-local-adapter.js"></script>
 </body>
 </html>

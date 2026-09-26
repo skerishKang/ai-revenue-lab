@@ -3113,5 +3113,9 @@
     project: projectLocalHandoff,
     getViewModel: () => localHandoffViewModel,
     fixtures: localHandoff?.FIXTURES || null,
+    // #3094: the live conversation id, so the guarded adapter correlates the
+    // projection it fetches with the conversation the user is actually in.
+    // Read-only: this exposes no pairing, session or transport authority.
+    getConversationId: () => window.PadiemChatConversationState?.getConversationId?.() || null,
   });
 })();
