@@ -10,6 +10,8 @@ import assert from 'node:assert/strict';
 
 import {
   ALLOWED_RELEASE_REJECTIONS,
+  CHANNEL_RE,
+  RELEASE_CHANNELS,
   RELEASE_PUBLISH_CONTRACT,
   admitPublish,
   verifyReleaseForInstall,
@@ -108,6 +110,72 @@ test('an unknown channel is refused', () => {
   const outcome = admitPublish({ release: release({ channel: 'nightly' as never }), existing: {} });
   assert.equal(outcome.accepted, false);
   if (!outcome.accepted) assert.equal(outcome.rejection, 'REJECT_MALFORMED_CHANNEL');
+});
+
+// CENTRAL #3101 blocker: the channel validator was `/^internal|beta|stable$/`.
+// Alternation has the lowest precedence, so that parsed as
+// `(^internal)|(beta)|(stable$)` and accepted anything starting with
+// "internal", containing "beta", or ending with "stable".
+test('a channel with trailing junk is refused', () => {
+  for (const bad of ['internal-junk', 'internal ', 'internal\n', 'internalx']) {
+    const outcome = admitPublish({ release: release({ channel: bad as never }), existing: {} });
+    assert.equal(outcome.accepted, false, bad);
+    if (!outcome.accepted) assert.equal(outcome.rejection, 'REJECT_MALFORMED_CHANNEL', bad);
+  }
+});
+
+test('a channel with embedded text is refused', () => {
+  for (const bad of ['xbetay', 'junk-beta', 'beta-internal', 'a beta b', 'prebeta']) {
+    const outcome = admitPublish({ release: release({ channel: bad as never }), existing: {} });
+    assert.equal(outcome.accepted, false, bad);
+    if (!outcome.accepted) assert.equal(outcome.rejection, 'REJECT_MALFORMED_CHANNEL', bad);
+  }
+});
+
+test('a channel with leading junk is refused', () => {
+  for (const bad of ['junk-stable', 'xstable', 'stable-junk', ' stable']) {
+    const outcome = admitPublish({ release: release({ channel: bad as never }), existing: {} });
+    assert.equal(outcome.accepted, false, bad);
+    if (!outcome.accepted) assert.equal(outcome.rejection, 'REJECT_MALFORMED_CHANNEL', bad);
+  }
+});
+
+test('channel membership is case-sensitive and exact', () => {
+  for (const bad of ['INTERNAL', 'Beta', 'STABLE', 'Internal', '']) {
+    const outcome = admitPublish({ release: release({ channel: bad as never }), existing: {} });
+    assert.equal(outcome.accepted, false, JSON.stringify(bad));
+    if (!outcome.accepted) assert.equal(outcome.rejection, 'REJECT_MALFORMED_CHANNEL');
+  }
+});
+
+test('the three canonical channels are still accepted', () => {
+  for (const good of ['internal', 'beta', 'stable']) {
+    const outcome = admitPublish({ release: release({ channel: good as never }), existing: {} });
+    assert.equal(outcome.accepted, true, good);
+  }
+});
+
+test('the channel pattern agrees with the RELEASE_CHANNELS vocabulary', () => {
+  // The validator is membership against RELEASE_CHANNELS; the exported pattern
+  // is an independent cross-check. This asserts they cannot disagree, which is
+  // what stops the two channel definitions from drifting apart.
+  const corpus = [
+    ...RELEASE_CHANNELS,
+    'internal-junk',
+    'xbetay',
+    'junk-stable',
+    'beta-internal',
+    'INTERNAL',
+    '',
+    'nightly',
+  ];
+  for (const value of corpus) {
+    assert.equal(
+      CHANNEL_RE.test(value),
+      (RELEASE_CHANNELS as readonly string[]).includes(value),
+      `pattern and vocabulary disagree on ${JSON.stringify(value)}`,
+    );
+  }
 });
 
 test('a release missing appVersion is refused as incomplete provenance', () => {

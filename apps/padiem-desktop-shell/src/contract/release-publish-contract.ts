@@ -47,7 +47,35 @@ const TOOLCHAIN_RE = /^[A-Za-z0-9@._+\-]{1,64}$/;
 function isToolchainToken(value: unknown): value is string {
   return typeof value === 'string' && TOOLCHAIN_RE.test(value.trim());
 }
-const CHANNEL_RE = /^internal|beta|stable$/;
+
+/**
+ * Release channel membership.
+ *
+ * The previous expression was `/^internal|beta|stable$/`. Alternation has the
+ * LOWEST precedence in a regular expression, so that pattern actually parsed as
+ * `(^internal)|(beta)|(stable$)` and accepted any string starting with
+ * "internal", containing "beta" anywhere, or ending with "stable" —
+ * `internal-junk`, `xbetay` and `junk-stable` all passed. A fail-open channel
+ * validator on a release feed means a release can be published to a channel the
+ * feed does not have.
+ *
+ * Validation is membership against the single `RELEASE_CHANNELS` vocabulary
+ * rather than a second hand-written pattern, so the channel set is declared
+ * exactly once and a pattern can never drift away from it.
+ *
+ * The grouped pattern is exported as an independent cross-check: a test asserts
+ * it agrees with `RELEASE_CHANNELS` on a corpus of valid and near-miss values, so
+ * the two cannot disagree unnoticed.
+ */
+export const CHANNEL_RE = /^(?:internal|beta|stable)$/;
+
+function isReleaseChannel(value: unknown): value is ReleaseChannel {
+  return (
+    typeof value === 'string' &&
+    (RELEASE_CHANNELS as readonly string[]).includes(value)
+  );
+}
+
 const RELEASE_ID_RE = /^[A-Za-z0-9][A-Za-z0-9._\-]{0,127}$/;
 
 export type ReleaseRejection =
@@ -142,7 +170,7 @@ function validateShape(release: unknown): PublishOutcome | null {
   if (typeof candidate.releaseId !== 'string' || !RELEASE_ID_RE.test(candidate.releaseId)) {
     return fail('REJECT_MALFORMED_RELEASE_ID', 'releaseId is missing or malformed');
   }
-  if (typeof candidate.channel !== 'string' || !CHANNEL_RE.test(candidate.channel)) {
+  if (!isReleaseChannel(candidate.channel)) {
     return fail('REJECT_MALFORMED_CHANNEL', 'channel is missing or unknown');
   }
   if (
