@@ -433,13 +433,75 @@ function requireStatus(candidate: unknown, fieldName: string): DiagnosticHealthS
   return candidate;
 }
 
-const ISO_8601_UTC = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
+const ISO_8601_UTC = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?Z$/;
 
+/**
+ * Requires a real ISO-8601 UTC instant, not merely one that matches the shape.
+ *
+ * The shape alone is not enough: `/^\d{4}-\d{2}-\d{2}.../` happily accepts
+ * `2026-13-45T99:99:99Z`, which is not a timestamp at all. A support bundle is
+ * read by a human trying to reconstruct what a device did, so a value that
+ * *looks* like a time but cannot be one is worse than a rejected value: it
+ * invites a confident but wrong conclusion. Every component is therefore
+ * range-checked and the whole date is confirmed to exist on the calendar.
+ */
 function requireIsoTimestamp(candidate: unknown, fieldName: string): string {
-  if (typeof candidate !== 'string' || !ISO_8601_UTC.test(candidate)) {
-    throw new SupportBundleError(`${fieldName} must be an ISO-8601 UTC timestamp or null`);
+  if (typeof candidate !== 'string') {
+    throw new SupportBundleError(`${fieldName} must be an ISO-8601 UTC timestamp`);
+  }
+  const match = candidate.match(ISO_8601_UTC);
+  if (match === null) {
+    throw new SupportBundleError(`${fieldName} must be an ISO-8601 UTC timestamp`);
+  }
+  const [, year, month, day, hour, minute, second] = match;
+  const yearNumber = Number(year);
+  const monthNumber = Number(month);
+  const dayNumber = Number(day);
+  const hourNumber = Number(hour);
+  const minuteNumber = Number(minute);
+  const secondNumber = Number(second);
+  const monthInRange = monthNumber >= 1 && monthNumber <= 12;
+  const hourInRange = hourNumber <= 23 && minuteNumber <= 59 && secondNumber <= 59;
+  if (!monthInRange || !hourInRange) {
+    throw new SupportBundleError(`${fieldName} must be a real ISO-8601 UTC instant`);
+  }
+  // Day 0, and day 31 in a 30-day month, are shape-valid but do not exist.
+  // Round-tripping through Date is the cheapest exact check: JS normalises an
+  // impossible date, so a mismatched day means the input was never a real date.
+  const roundTrip = new Date(Date.UTC(yearNumber, monthNumber - 1, dayNumber));
+  const dayExists =
+    roundTrip.getUTCFullYear() === yearNumber &&
+    roundTrip.getUTCMonth() === monthNumber - 1 &&
+    roundTrip.getUTCDate() === dayNumber;
+  if (!dayExists) {
+    throw new SupportBundleError(`${fieldName} must be a real ISO-8601 UTC instant`);
   }
   return candidate;
+}
+
+/**
+ * Validates an *optional* ISO-8601 UTC timestamp, preserving "never happened yet".
+ *
+ * This is deliberately separate from `requireIsoTimestamp`. The two session
+ * facts (`lastSuccessfulSessionAt`, `lastSuccessfulHeartbeatAt`) are typed
+ * `string | null` and are `null` on a first run — that is the normal, healthy
+ * state for a brand-new install, not a defect. Routing them through the
+ * strict validator made the bundle fail to build for exactly the user who most
+ * needs it: an assisted alpha user on a first-run Desktop with no successful
+ * session and no heartbeat yet.
+ *
+ * The `null` is a *fact about the device*, and it is preserved rather than
+ * invented: an absent session is reported as absent, never as a placeholder
+ * time, never as the current time, and never dropped from the output. A
+ * non-null value must still be a real UTC timestamp, so a malformed string is
+ * rejected rather than normalised — "we have no session" and "the session time
+ * is garbage" are different conditions and must not collapse into one.
+ */
+function requireOptionalIsoTimestamp(candidate: unknown, fieldName: string): string | null {
+  if (candidate === null || candidate === undefined) {
+    return null;
+  }
+  return requireIsoTimestamp(candidate, fieldName);
 }
 
 /**
@@ -504,11 +566,13 @@ export function buildSupportBundle(input: SupportBundleInput): SupportBundle {
       credentialGeneration: input.credentialGeneration,
     }),
     projectSection(BUNDLE_SECTIONS.SESSION_ACTIVITY, {
-      lastSuccessfulSessionAt: requireIsoTimestamp(
+      // Nullable on purpose: a first run legitimately has no session and no
+      // heartbeat yet, and the bundle must build in that state.
+      lastSuccessfulSessionAt: requireOptionalIsoTimestamp(
         input.lastSuccessfulSessionAt,
         'lastSuccessfulSessionAt',
       ),
-      lastSuccessfulHeartbeatAt: requireIsoTimestamp(
+      lastSuccessfulHeartbeatAt: requireOptionalIsoTimestamp(
         input.lastSuccessfulHeartbeatAt,
         'lastSuccessfulHeartbeatAt',
       ),
@@ -682,4 +746,3 @@ export const SUPPORT_BUNDLE_CONTRACT = Object.freeze({
   NETWORK_CALLS_MADE: 0,
   NEW_ARTIFACT_FRAMEWORK: false,
 } as const);
-

@@ -169,6 +169,108 @@ function probeInput(overrides: Partial<DiagnosticsProbeInput> = {}): Diagnostics
 
 
 // ---------------------------------------------------------------------------
+// First-run session activity: a first run legitimately has no session yet
+// ---------------------------------------------------------------------------
+//
+// These are the regression tests for the blocker CENTRAL raised on #3117. A
+// brand-new assisted alpha install has no successful session and no heartbeat
+// yet, and the bundle is the thing that user needs most in exactly that state.
+// `buildSupportBundle` used to route both nullable fields through the strict
+// `requireIsoTimestamp`, so the first-run export threw
+// `lastSuccessfulSessionAt must be an ISO-8601 UTC timestamp or null` — an
+// error message that even documented the contract the code was violating.
+
+test('a first run with no session and no heartbeat still builds a bundle', () => {
+  const bundle = buildSupportBundle(
+    bundleInput({ lastSuccessfulSessionAt: null, lastSuccessfulHeartbeatAt: null }),
+  );
+  const session = bundle.sections.find((section) => section.id === 'session_activity');
+  assert.ok(session, 'session_activity section must be present');
+  assert.equal(session.values.lastSuccessfulSessionAt, null);
+  assert.equal(session.values.lastSuccessfulHeartbeatAt, null);
+});
+
+test('no session yet is preserved as null rather than dropped or invented', () => {
+  // A missing session is a *fact about the device*. It must not be replaced by
+  // the export time, a placeholder, or an absent key: all three would tell
+  // support something false about what the device has actually done.
+  const bundle = buildSupportBundle(
+    bundleInput({ lastSuccessfulSessionAt: null, lastSuccessfulHeartbeatAt: GENERATED_AT }),
+  );
+  const session = bundle.sections.find((section) => section.id === 'session_activity');
+  assert.ok(session);
+  assert.equal(session.values.lastSuccessfulSessionAt, null);
+  assert.ok(
+    'lastSuccessfulSessionAt' in session.values,
+    'a null session must stay an explicit key, not disappear from the projection',
+  );
+  assert.notEqual(session.values.lastSuccessfulSessionAt, GENERATED_AT);
+  assert.equal(session.values.lastSuccessfulHeartbeatAt, GENERATED_AT);
+});
+
+test('no heartbeat yet is preserved as null too', () => {
+  const bundle = buildSupportBundle(
+    bundleInput({ lastSuccessfulSessionAt: GENERATED_AT, lastSuccessfulHeartbeatAt: null }),
+  );
+  const session = bundle.sections.find((section) => section.id === 'session_activity');
+  assert.ok(session);
+  assert.equal(session.values.lastSuccessfulHeartbeatAt, null);
+  assert.equal(session.values.lastSuccessfulSessionAt, GENERATED_AT);
+});
+
+test('a malformed non-null timestamp is still refused, not normalised', () => {
+  // "we have no session" and "the session time is garbage" are different
+  // conditions. Making the field nullable must not have turned the strict
+  // validator into an accept-anything pass-through.
+  for (const bad of [
+    '2026-09-26 12:00:00Z', // space instead of T
+    '2026-09-26T12:00:00', // no zone designator
+    '2026-09-26T12:00:00+09:00', // non-UTC offset
+    'yesterday',
+    '2026-13-45T99:99:99Z', // not a real instant
+    '',
+  ]) {
+    assert.throws(
+      () =>
+        buildSupportBundle(
+          bundleInput({ lastSuccessfulSessionAt: bad, lastSuccessfulHeartbeatAt: null }),
+        ),
+      SupportBundleError,
+      `a malformed session timestamp must be refused: ${JSON.stringify(bad)}`,
+    );
+  }
+  // The same holds for the heartbeat field, independently.
+  assert.throws(
+    () =>
+      buildSupportBundle(
+        bundleInput({ lastSuccessfulSessionAt: null, lastSuccessfulHeartbeatAt: 'nope' }),
+      ),
+    SupportBundleError,
+  );
+});
+
+test('the real product export path succeeds on a first run with both timestamps null', async () => {
+  // This is the end-to-end case CENTRAL asked for: not the contract function in
+  // isolation, but the actual exporter a user triggers. Before the fix this
+  // threw for the one user who most needs a support bundle — a brand-new
+  // install with no session and no heartbeat yet.
+  const directory = mkdtempSync(join(tmpdir(), 'padiem-first-run-'));
+  try {
+    const exported = await buildAndExportSupportBundle(
+      probeInput({ lastSuccessfulSessionAt: null, lastSuccessfulHeartbeatAt: null }),
+      directory,
+    );
+    const written = JSON.parse(readFileSync(join(directory, exported.fileName), 'utf8'));
+    const session = written.sections.find((section: { id: string }) => section.id === 'session_activity');
+    assert.ok(session, 'session_activity must be present in the exported file');
+    assert.equal(session.values.lastSuccessfulSessionAt, null);
+    assert.equal(session.values.lastSuccessfulHeartbeatAt, null);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+// ---------------------------------------------------------------------------
 // Bundle shape and required diagnostic coverage
 // ---------------------------------------------------------------------------
 
@@ -511,4 +613,3 @@ test('no #3103 source writes to a secret, credential or env store', () => {
   const writes = exporter.match(/writeFileSync\(/g) ?? [];
   assert.equal(writes.length, 1, 'the exporter must have exactly one write, the bundle file');
 });
-
