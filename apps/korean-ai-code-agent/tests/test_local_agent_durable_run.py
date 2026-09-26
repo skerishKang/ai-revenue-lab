@@ -537,6 +537,17 @@ class DurableRunRecoveryGuardTests(unittest.TestCase):
         self.assertFalse(UNKNOWN_PROCESS_REATTACHMENT_SUPPORTED)
         self.assertFalse(SIDE_EFFECT_REPLAY_SUPPORTED)
 
+    def test_no_durable_state_is_itself_replay_authority(self) -> None:
+        self.assertFalse(record().replayable)
+        self.assertFalse(executing().replayable)
+        self.assertFalse(
+            record(
+                state=DurableRunState.RECONCILIATION_REQUIRED,
+                started_at=NOW - timedelta(seconds=10),
+            ).replayable
+        )
+        self.assertFalse(terminal().replayable)
+
     def test_record_persists_no_pid_field(self) -> None:
         fields = set(DurableRunRecord.__dataclass_fields__)
         self.assertNotIn("pid", fields)
