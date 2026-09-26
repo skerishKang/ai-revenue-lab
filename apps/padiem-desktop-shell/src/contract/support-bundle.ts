@@ -485,8 +485,8 @@ function requireIsoTimestamp(candidate: unknown, fieldName: string): string {
  * This is deliberately separate from `requireIsoTimestamp`. The two session
  * facts (`lastSuccessfulSessionAt`, `lastSuccessfulHeartbeatAt`) are typed
  * `string | null` and are `null` on a first run — that is the normal, healthy
- * state for a brand-new install, not a defect. Routing them through the
- * strict validator made the bundle fail to build for exactly the user who most
+ * state for a brand-new install, not a defect. Routing them through the strict
+ * validator made the bundle fail to build for exactly the user who most
  * needs it: an assisted alpha user on a first-run Desktop with no successful
  * session and no heartbeat yet.
  *
@@ -496,10 +496,37 @@ function requireIsoTimestamp(candidate: unknown, fieldName: string): string {
  * non-null value must still be a real UTC timestamp, so a malformed string is
  * rejected rather than normalised — "we have no session" and "the session time
  * is garbage" are different conditions and must not collapse into one.
+ *
+ * ## `undefined` is not `null`
+ *
+ * Exactly one of the two "no timestamp" encodings is accepted. `null` is a
+ * deliberate device fact. `undefined` is the *absence of a fact*: the caller
+ * either omitted the key or explicitly passed nothing, which in JavaScript is
+ * also what an IPC payload, a spread of a partial object, or a missing
+ * structured-clone field collapses to.
+ *
+ * Coercing `undefined` into `null` therefore turns a caller bug into a healthy-
+ * looking diagnostic. A main process that failed to read the session store, an
+ * IPC payload that lost the field in transit, and a Desktop that genuinely has
+ * never run a session all produce the same exported `null` — so the one signal
+ * support would use to tell "broken instrumentation" from "brand new install"
+ * is destroyed at the boundary, and it is destroyed silently, on a file the
+ * user is about to hand to a support engineer as evidence.
+ *
+ * So this fails closed: an absent value is refused as a caller error, and the
+ * refusal names the field. A missing property and an explicit `undefined` are
+ * refused identically, because they are the same defect — the caller did not
+ * supply required diagnostic state — and neither is the same defect as `null`.
  */
 function requireOptionalIsoTimestamp(candidate: unknown, fieldName: string): string | null {
-  if (candidate === null || candidate === undefined) {
+  if (candidate === null) {
     return null;
+  }
+  if (candidate === undefined) {
+    throw new SupportBundleError(
+      `${fieldName} is required and must be an ISO-8601 UTC timestamp or null; ` +
+        'an absent value is not the same as null',
+    );
   }
   return requireIsoTimestamp(candidate, fieldName);
 }

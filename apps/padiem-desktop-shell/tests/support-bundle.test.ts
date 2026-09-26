@@ -271,6 +271,180 @@ test('the real product export path succeeds on a first run with both timestamps 
 });
 
 // ---------------------------------------------------------------------------
+// `undefined` is not `null` — the fail-closed half of the same contract
+// ---------------------------------------------------------------------------
+//
+// The first-run fix above made both session timestamps nullable. The second
+// review found the fix went one step too far in the other direction:
+//
+//     if (candidate === null || candidate === undefined) return null;
+//
+// That treats "the caller did not supply this field" as "this device has never
+// had a session". Those are different states, and only one of them is true, so
+// the coercion destroys the signal that separates broken instrumentation from a
+// brand-new install — silently, in the file the user hands to support as
+// evidence. `SupportBundleInput` types the fields `string | null`, so TypeScript
+// never catches it; only the runtime validator can, which is why the cases below
+// construct objects that genuinely lack the property.
+
+/**
+ * Removes a property from a copy, for real, at runtime.
+ *
+ * The whole point is that the result genuinely has no such key — so the
+ * builder reads `undefined` from a property lookup that misses, which is the
+ * exact shape a real caller produces. A `Partial<SupportBundleInput>` spread
+ * would also work but reads as a compile-time concern, and the compile-time
+ * type is the thing that is *not* being tested here.
+ */
+function withoutProperty(source: object, property: string): Record<string, unknown> {
+  const clone: Record<string, unknown> = { ...(source as Record<string, unknown>) };
+  delete clone[property];
+  return clone;
+}
+
+/** The same omission, reached through a wire round-trip instead of a spread. */
+function withoutPropertyOverTheWire(source: object, property: string): Record<string, unknown> {
+  const wire = JSON.parse(JSON.stringify(source)) as Record<string, unknown>;
+  delete wire[property];
+  return wire;
+}
+
+test('an explicitly passed undefined session timestamp is refused, not read as null', () => {
+  // The property exists and its value is `undefined`. A `Partial` override is
+  // the everyday way this reaches production: a caller merges defaults and
+  // forgets the key, and the merge produces `undefined` rather than an absence.
+  assert.throws(
+    () =>
+      buildSupportBundle(
+        bundleInput({
+          lastSuccessfulSessionAt: undefined as unknown as string | null,
+        }),
+      ),
+    (error: unknown) => {
+      assert.ok(error instanceof SupportBundleError, 'must fail as a SupportBundleError');
+      assert.match(error.message, /lastSuccessfulSessionAt/);
+      return true;
+    },
+    'an explicit undefined must be refused, not coerced to null',
+  );
+});
+
+test('an explicitly passed undefined heartbeat timestamp is refused too', () => {
+  assert.throws(
+    () =>
+      buildSupportBundle(
+        bundleInput({
+          lastSuccessfulHeartbeatAt: undefined as unknown as string | null,
+        }),
+      ),
+    (error: unknown) => {
+      assert.ok(error instanceof SupportBundleError);
+      assert.match(error.message, /lastSuccessfulHeartbeatAt/);
+      return true;
+    },
+  );
+});
+
+test('a missing session property is refused at the runtime boundary', () => {
+  // Built by actually deleting the key, so the builder performs a property
+  // lookup that misses. A compile-time error test cannot prove this: the
+  // property is absent at runtime and present in the declared type, and the
+  // declared type is exactly what a JavaScript caller does not consult.
+  const missing = withoutProperty(bundleInput(), 'lastSuccessfulSessionAt');
+  assert.equal(
+    'lastSuccessfulSessionAt' in missing,
+    false,
+    'the fixture must genuinely lack the property, not carry an undefined value',
+  );
+  assert.throws(() => buildSupportBundle(missing as unknown as SupportBundleInput), (error: unknown) => {
+    assert.ok(error instanceof SupportBundleError);
+    assert.match(error.message, /lastSuccessfulSessionAt/);
+    return true;
+  });
+});
+
+test('a missing heartbeat property is refused, over a wire round-trip', () => {
+  // A second, independent construction: JSON serialisation is what a real
+  // renderer→main IPC payload goes through, and it silently drops an
+  // `undefined`-valued key on the way. So the omission this test proves is
+  // reachable in production without a single TypeScript violation.
+  const missing = withoutPropertyOverTheWire(bundleInput(), 'lastSuccessfulHeartbeatAt');
+  assert.equal('lastSuccessfulHeartbeatAt' in missing, false);
+  assert.throws(() => buildSupportBundle(missing as unknown as SupportBundleInput), (error: unknown) => {
+    assert.ok(error instanceof SupportBundleError);
+    assert.match(error.message, /lastSuccessfulHeartbeatAt/);
+    return true;
+  });
+});
+
+test('a missing timestamp is not silently substituted by the export time', () => {
+  // The specific harm: if the refusal is ever downgraded back into a coercion,
+  // the invented value is almost always *plausible*, so nobody downstream can
+  // tell. Asserted as a negative so a future "helpfully fill it in" change has
+  // something to trip over.
+  const missing = withoutProperty(bundleInput(), 'lastSuccessfulSessionAt');
+  let serialised: string | null = null;
+  try {
+    serialised = exportSupportBundleText(missing as unknown as SupportBundleInput);
+  } catch {
+    // Expected: the builder refuses before anything reaches the serialiser.
+  }
+  assert.equal(serialised, null, 'a missing session must never produce bundle text');
+});
+
+test('the product export path fails closed when the probe omits a timestamp', async () => {
+  // The same omission, one layer up, at the exporter a user actually triggers.
+  // A `DiagnosticsProbeInput` built by merging partials in the main process is
+  // the realistic origin, and the user must get a refusal rather than a file
+  // claiming their Desktop has never run a session.
+  const directory = mkdtempSync(join(tmpdir(), 'padiem-missing-session-'));
+  try {
+    const omitted = withoutProperty(probeInput(), 'lastSuccessfulSessionAt');
+    await assert.rejects(
+      buildAndExportSupportBundle(omitted as unknown as DiagnosticsProbeInput, directory),
+      (error: unknown) => {
+        assert.ok(error instanceof SupportBundleError);
+        assert.match(error.message, /lastSuccessfulSessionAt/);
+        return true;
+      },
+    );
+    assert.deepEqual(
+      readdirSync(directory),
+      [],
+      'a refused export must leave no file on the user\'s disk',
+    );
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('a wrong-typed timestamp is refused rather than coerced', () => {
+  // `null` is the only non-string accepted. A number, boolean or object is a
+  // caller error of the same family and must not become a string either.
+  for (const wrongType of [1_789_000_000_000, true, {}, []] as unknown[]) {
+    assert.throws(
+      () =>
+        buildSupportBundle(
+          bundleInput({ lastSuccessfulSessionAt: wrongType as unknown as string | null }),
+        ),
+      SupportBundleError,
+      `a ${typeof wrongType} session timestamp must be refused`,
+    );
+  }
+});
+
+test('a valid timestamp is preserved exactly, not reformatted', () => {
+  // The other end of the contract: rejecting `undefined` must not have made
+  // the validator lossy for a genuine instant. The exact input string is what
+  // reaches the exported file, so support reads the timestamp the device
+  // actually recorded.
+  const bundle = buildSupportBundle(bundleInput({ lastSuccessfulSessionAt: GENERATED_AT }));
+  const session = bundle.sections.find((section) => section.id === 'session_activity');
+  assert.equal(session?.values.lastSuccessfulSessionAt, GENERATED_AT);
+  assert.ok(serializeSupportBundle(bundle).includes(GENERATED_AT));
+});
+
+// ---------------------------------------------------------------------------
 // Bundle shape and required diagnostic coverage
 // ---------------------------------------------------------------------------
 
