@@ -241,4 +241,11 @@ def test_worker_file_is_thin_and_storage_schemas_live_outside_entrypoint() -> No
     assert "from workers import" in source
     # Issue #3121 adds one canonical RPC passthrough (reconcile_expired_command)
     # per entrypoint class; the entrypoint must stay otherwise thin.
-    assert len(source.splitlines()) < 200
+    #
+    # Issue #3127 adds the atomic enqueue+material passthrough on BOTH the
+    # Durable Object and the `Default` service-binding gateway. Exposing it only
+    # on the object would leave the split `enqueue` → `store_command_material`
+    # pair as the only surface a real caller can reach, which is the defect
+    # #3127 exists to close. The bound moves by exactly that pass-through and no
+    # further: the entrypoint still contains no storage, schema or authority.
+    assert len(source.splitlines()) < 205

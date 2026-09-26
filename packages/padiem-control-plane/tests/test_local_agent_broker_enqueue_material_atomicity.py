@@ -7,19 +7,22 @@ rebuilt over the same file. Nothing about the transaction or crash path is
 stubbed — only the Cloudflare storage object is adapted, which is the same
 adaptation the platform does.
 
-The contract under test:
+Two properties of the API are load-bearing and are pinned here:
 
-* both records are committed together or not at all,
-* an exact retry after a lost response reuses both, minting nothing twice,
-* a command with no material can never be admitted or acknowledged.
+* the caller supplies the material *body* only. The command id, binding,
+  sequence, request fingerprint and revision are the canonical path's to decide,
+  and the test never predicts them — a caller that guessed a sequence or a
+  revision would be guessing a server-owned value.
+* the fail-closed material guard is scoped to the state in which a transition
+  still creates a fact, so a lost-response acknowledgement retry is not refused
+  for a material row that the acknowledgement itself purged.
 """
 
 from __future__ import annotations
 
 import base64
 from datetime import datetime, timedelta, timezone
-import hashlib
-import hmac
+import json
 from pathlib import Path
 import sqlite3
 
@@ -133,49 +136,24 @@ def _enqueue_payload(command_id: str, *, now: datetime) -> dict:
     }
 
 
-def _canonical_revision_ref(command_id: str, *, sequence: int) -> str:
-    """The revision the server will mint for this command.
+def _material_body(command_id: str, *, argv: list[str] | None = None) -> dict:
+    """The caller-supplied material body: no server-owned correlation."""
 
-    The pepper is the value this test configures in the environment, so the test
-    can compute the correlation the canonical path will derive. That lets a
-    crash test drive a *fresh* command — the interesting case, because nothing
-    about the command is persisted before the transaction under test runs.
-    """
-
-    material = f"revision-ref.v1:{AUTHORITY_REF}:binding.atomic.1:{command_id}".encode("utf-8")
-    return f"rev.{hmac.new(PEPPER.encode('utf-8'), material, hashlib.sha256).hexdigest()[:32]}"
-
-
-def _wire_for(command_id: str, *, sequence: int, argv: list[str] | None = None) -> dict:
     return {
-        "contract_version": "claw-local-command-material.v2",
-        "command_id": command_id,
-        "binding_ref": "binding.atomic.1",
-        "sequence": sequence,
-        "request_fingerprint": FINGERPRINT,
-        "revision_ref": _canonical_revision_ref(command_id, sequence=sequence),
-        "material": {
-            "request_id": f"request.{command_id}",
-            "run_id": f"run.{command_id}",
-            "device_id": "device.atomic.1",
-            "root_ref": "root.atomic.1",
-            "argv": argv if argv is not None else ["python", "-V"],
-            "cwd_relative": ".",
-            "requested_at": (BASE + timedelta(seconds=1)).isoformat().replace("+00:00", "Z"),
-            "timeout_seconds": 30,
-            "shell_authority": False,
-            "admin_elevation": False,
-            "environment_payload": None,
-            "provider_authority": None,
-            "p01_approval_payload": None,
-        },
+        "request_id": f"request.{command_id}",
+        "run_id": f"run.{command_id}",
+        "device_id": "device.atomic.1",
+        "root_ref": "root.atomic.1",
+        "argv": argv if argv is not None else ["python", "-V"],
+        "cwd_relative": ".",
+        "requested_at": (BASE + timedelta(seconds=1)).isoformat().replace("+00:00", "Z"),
+        "timeout_seconds": 30,
+        "shell_authority": False,
+        "admin_elevation": False,
+        "environment_payload": None,
+        "provider_authority": None,
+        "p01_approval_payload": None,
     }
-
-
-def _wire(command: dict, *, argv: list[str] | None = None) -> dict:
-    return _wire_for(
-        command["command_id"], sequence=command["sequence"], argv=argv
-    )
 
 
 def _material_rows(path: Path) -> list[dict]:
@@ -195,12 +173,9 @@ def _persisted_commands(path: Path) -> list[str]:
         return []
     finally:
         connection.close()
-    import json
-
     found: list[str] = []
     for (payload_text,) in rows:
-        payload = json.loads(payload_text)
-        found.extend(item["command_id"] for item in payload["commands"])
+        found.extend(item["command_id"] for item in json.loads(payload_text)["commands"])
     return found
 
 
@@ -229,7 +204,7 @@ def _admit_payload(command: dict, *, at: datetime) -> dict:
     }
 
 
-def _ack_payload(command: dict, *, at: datetime) -> dict:
+def _ack_payload(command: dict, *, at: datetime, exit_code: int = 0) -> dict:
     return {
         "session_id": "session.atomic.1",
         "binding_ref": command["binding_ref"],
@@ -240,46 +215,56 @@ def _ack_payload(command: dict, *, at: datetime) -> dict:
         "revision_ref": command["revision_ref"],
         "termination": "exited",
         "request_id": f"request.{command['command_id']}",
-        "exit_code": 0,
+        "exit_code": exit_code,
         "now": at.isoformat(),
     }
 
 
-# --- 1. a crash after the broker write and before the material write --------
-def test_crash_between_broker_write_and_material_write_rolls_back_everything(tmp_path: Path) -> None:
+# --- 1. the legacy split path still leaves a command with no material -------
+def test_legacy_split_enqueue_still_leaves_a_command_without_material(tmp_path: Path) -> None:
+    """The residual risk the atomic path exists to remove.
+
+    This is *not* a rollback test: the legacy enqueue commits on its own, so the
+    command survives with no material. That is precisely why the atomic path is
+    the product path and why the material-less guards below exist.
+    """
+
     path = tmp_path / "do.sqlite3"
     runtime = _runtime(path)
     _register_and_open(runtime)
-    # A command that exists only because the legacy enqueue path wrote it.
-    queued = runtime.enqueue_command(_enqueue_payload("command.crash.1", now=BASE + timedelta(seconds=2)))
+    queued = runtime.enqueue_command(_enqueue_payload("command.legacy.1", now=BASE + timedelta(seconds=2)))
     assert queued["ok"] is True
-    assert _persisted_commands(path) == ["command.crash.1"]
     del runtime
 
     restarted = _runtime(path)
-    assert _persisted_commands(path) == ["command.crash.1"]
+    assert _persisted_commands(path) == ["command.legacy.1"]
     assert _material_rows(path) == []
+    assert restarted.material_store.has_persisted_material("command.legacy.1") is False
 
 
-def test_crash_after_material_write_before_transaction_return_rolls_back_both(tmp_path: Path) -> None:
+# --- 2. crash inside the atomic transaction rolls both writes back ---------
+def test_crash_between_broker_write_and_material_write_rolls_back_everything(tmp_path: Path) -> None:
+    """Crash after the broker write, before the material write lands.
+
+    Nothing is committed, so neither the command nor the material exists after
+    the restart — the exact window the audit found, closed.
+    """
+
     path = tmp_path / "do.sqlite3"
     runtime = _runtime(path)
     _register_and_open(runtime)
-    storage = runtime._storage  # noqa: SLF001 — the storage under test
+    original_store = runtime.material_store.store
 
-    def die_before_commit(callback):
-        """Model the object dying after both writes, before the commit lands."""
+    def store_then_die(wire: dict) -> dict:
+        raise _Crash("the object died after the broker write, before the material write")
 
-        storage.connection.execute("BEGIN IMMEDIATE")
-        callback()
-        raise _Crash("the object died after writing both records, before commit")
-
-    runtime.transaction = lambda operation: die_before_commit(operation)  # type: ignore[method-assign]
+    runtime.material_store.store = store_then_die  # type: ignore[method-assign]
     with pytest.raises(_Crash):
         runtime.enqueue_command_with_material(
-            _enqueue_payload("command.crash.2", now=BASE + timedelta(seconds=2)),
-            _wire_for("command.crash.2", sequence=1),
+            _enqueue_payload("command.crash.1", now=BASE + timedelta(seconds=2)),
+            _material_body("command.crash.1"),
         )
+    runtime.material_store.store = original_store  # type: ignore[method-assign]
     del runtime
 
     restarted = _runtime(path)
@@ -287,7 +272,41 @@ def test_crash_after_material_write_before_transaction_return_rolls_back_both(tm
     assert _material_rows(path) == []
 
 
-# --- 2. success commits both, and both survive a restart -------------------
+def test_crash_after_both_writes_before_commit_rolls_back_everything(tmp_path: Path) -> None:
+    path = tmp_path / "do.sqlite3"
+    runtime = _runtime(path)
+    _register_and_open(runtime)
+    storage = runtime._storage  # noqa: SLF001 — the storage under test
+    original_transaction = runtime.transaction
+    observed: dict[str, int] = {}
+
+    def die_before_commit(callback):
+        """Run the real transaction body, then die instead of committing."""
+
+        storage.connection.execute("BEGIN IMMEDIATE")
+        callback()
+        observed["material_rows"] = len(
+            storage.connection.execute("SELECT command_id FROM local_agent_command_material").fetchall()
+        )
+        raise _Crash("the object died after writing both records, before commit")
+
+    runtime.transaction = die_before_commit  # type: ignore[method-assign]
+    with pytest.raises(_Crash):
+        runtime.enqueue_command_with_material(
+            _enqueue_payload("command.crash.2", now=BASE + timedelta(seconds=2)),
+            _material_body("command.crash.2"),
+        )
+    runtime.transaction = original_transaction  # type: ignore[method-assign]
+    # Both writes really did reach the database before the crash...
+    assert observed["material_rows"] == 1
+    # ...and the uncommitted transaction left nothing behind.
+    del runtime
+    restarted = _runtime(path)
+    assert _persisted_commands(path) == []
+    assert _material_rows(path) == []
+
+
+# --- 3. success commits both, and both survive a restart -------------------
 def test_atomic_enqueue_commits_command_and_material_and_survives_restart(tmp_path: Path) -> None:
     path = tmp_path / "do.sqlite3"
     runtime = _runtime(path)
@@ -295,64 +314,65 @@ def test_atomic_enqueue_commits_command_and_material_and_survives_restart(tmp_pa
 
     result = runtime.enqueue_command_with_material(
         _enqueue_payload("command.ok.1", now=BASE + timedelta(seconds=2)),
-        _wire_for("command.ok.1", sequence=1),
+        _material_body("command.ok.1"),
     )
     assert result["ok"] is True
-    assert result["command"]["command_id"] == "command.ok.1"
-    assert result["command"]["sequence"] == 1
-    assert result["command"]["revision_ref"] == _canonical_revision_ref("command.ok.1", sequence=1)
-    assert result["material"]["stored"] is True
+    command = result["command"]
+    assert command["command_id"] == "command.ok.1"
+    # The caller never supplied these: the canonical path decided them inside
+    # the transaction, and the material row was assembled to match.
+    assert command["sequence"] == 1
+    assert command["revision_ref"].startswith("rev.")
     del runtime
 
     restarted = _runtime(path)
     assert _persisted_commands(path) == ["command.ok.1"]
-    assert [row["command_id"] for row in _material_rows(path)] == ["command.ok.1"]
-    resolved = restarted.material_store.resolve(
-        _request(result["command"], at=BASE + timedelta(seconds=3))
-    )
+    assert _material_rows(path) == [{"command_id": "command.ok.1", "sequence": 1}]
+    resolved = restarted.material_store.resolve(_request(command, at=BASE + timedelta(seconds=3)))
     assert resolved["command_id"] == "command.ok.1"
+    assert resolved["sequence"] == command["sequence"]
+    assert resolved["revision_ref"] == command["revision_ref"]
     assert resolved["material"]["argv"] == ["python", "-V"]
 
 
-# --- 3. a lost response re-serves the same command and reuses the material --
+# --- 4. a lost response re-serves the same command and reuses the material --
 def test_lost_response_exact_retry_reuses_command_and_material(tmp_path: Path) -> None:
     path = tmp_path / "do.sqlite3"
     runtime = _runtime(path)
     _register_and_open(runtime)
     payload = _enqueue_payload("command.retry.1", now=BASE + timedelta(seconds=2))
-    wire = _wire_for("command.retry.1", sequence=1)
+    body = _material_body("command.retry.1")
 
-    first = runtime.enqueue_command_with_material(payload, wire)
+    first = runtime.enqueue_command_with_material(payload, body)
     assert first["ok"] is True
     # The caller never saw the response and retries the identical request.
-    retry = runtime.enqueue_command_with_material(payload, wire)
+    retry = runtime.enqueue_command_with_material(payload, body)
     assert retry["ok"] is True
-    assert retry["command"]["command_id"] == "command.retry.1"
+    assert retry["command"]["command_id"] == first["command"]["command_id"]
     assert retry["command"]["revision_ref"] == first["command"]["revision_ref"]
     assert retry["command"]["sequence"] == first["command"]["sequence"]
     assert retry["material"]["stored"] is True
     assert retry["material"].get("reused") is True
     # Nothing was minted a second time: one material row, and the next command
-    # continues the same monotonic sequence rather than restarting it.
+    # continues the monotonic sequence rather than restarting it.
     assert _material_rows(path) == [{"command_id": "command.retry.1", "sequence": 1}]
     after = runtime.enqueue_command(_enqueue_payload("command.retry.2", now=BASE + timedelta(seconds=5)))
     assert after["ok"] is True
     assert after["command"]["sequence"] == 2
 
 
-# --- 4. a retry that disagrees fails closed --------------------------------
+# --- 5. a retry that disagrees fails closed --------------------------------
 def test_conflicting_retry_is_refused_and_writes_nothing(tmp_path: Path) -> None:
     path = tmp_path / "do.sqlite3"
     runtime = _runtime(path)
     _register_and_open(runtime)
     payload = _enqueue_payload("command.conflict.1", now=BASE + timedelta(seconds=2))
-    wire = _wire_for("command.conflict.1", sequence=1)
-    stored = runtime.enqueue_command_with_material(payload, wire)
+    stored = runtime.enqueue_command_with_material(payload, _material_body("command.conflict.1"))
     assert stored["ok"] is True
 
     with pytest.raises(ValueError):
         runtime.enqueue_command_with_material(
-            payload, _wire_for("command.conflict.1", sequence=1, argv=["python", "-c", "different"])
+            payload, _material_body("command.conflict.1", argv=["python", "-c", "different"])
         )
     assert _material_rows(path) == [{"command_id": "command.conflict.1", "sequence": 1}]
     # The originally stored material is untouched by the refused retry.
@@ -361,29 +381,31 @@ def test_conflicting_retry_is_refused_and_writes_nothing(tmp_path: Path) -> None
     )["material"]["argv"] == ["python", "-V"]
 
 
-def test_atomic_enqueue_refuses_material_that_does_not_match_the_command(tmp_path: Path) -> None:
+def test_atomic_enqueue_refuses_a_material_body_that_violates_the_wire_contract(tmp_path: Path) -> None:
     path = tmp_path / "do.sqlite3"
     runtime = _runtime(path)
     _register_and_open(runtime)
 
-    with pytest.raises(ValueError):
-        runtime.enqueue_command_with_material(
-            _enqueue_payload("command.mismatch.1", now=BASE + timedelta(seconds=2)),
-            {**_wire_for("command.mismatch.1", sequence=1), "revision_ref": "rev.forged"},
-        )
-    # The canonical enqueue was rolled back with the material, so a command the
-    # canonical path would have written is not left behind half-committed.
-    assert _material_rows(path) == []
-    assert _persisted_commands(path) == []
+    for broken in (
+        {**_material_body("command.mismatch.1"), "shell_authority": True},
+        {**_material_body("command.mismatch.1"), "environment_payload": {"A": "1"}},
+        {**_material_body("command.mismatch.1"), "argv": "not-a-list"},
+    ):
+        with pytest.raises(ValueError):
+            runtime.enqueue_command_with_material(
+                _enqueue_payload("command.mismatch.1", now=BASE + timedelta(seconds=2)), broken
+            )
+        # The canonical enqueue was rolled back with the material, so no
+        # half-committed command is left behind.
+        assert _material_rows(path) == []
+        assert _persisted_commands(path) == []
 
 
-# --- 5. a command with no material can reach no terminal fact --------------
+# --- 6. a command with no material can reach no terminal fact --------------
 def test_command_without_material_cannot_be_admitted_or_acknowledged(tmp_path: Path) -> None:
     path = tmp_path / "do.sqlite3"
     runtime = _runtime(path)
     _register_and_open(runtime)
-    # A synthetic command-only state: persisted by the legacy enqueue path with
-    # no material ever written.
     queued = runtime.enqueue_command(_enqueue_payload("command.bare.1", now=BASE + timedelta(seconds=2)))
     command = queued["command"]
     assert _material_rows(path) == []
@@ -391,23 +413,22 @@ def test_command_without_material_cannot_be_admitted_or_acknowledged(tmp_path: P
     with pytest.raises(ControlPlaneContractError) as refused:
         runtime.admit_command(_admit_payload(command, at=BASE + timedelta(seconds=3)))
     assert refused.value.code == "broker_command_material_missing"
-    with pytest.raises(ControlPlaneContractError) as refused_ack:
-        runtime.acknowledge(_ack_payload(command, at=BASE + timedelta(seconds=4)))
-    assert refused_ack.value.code == "broker_command_material_missing"
-
-    # And it still cannot be run: material resolution was never satisfied.
+    # Acknowledgement is refused by the canonical authority here: the command
+    # is still QUEUED, so there is no admission to acknowledge. The guard is
+    # scoped to ADMITTED, which is where acknowledging would create a fact.
+    refused_ack = runtime.acknowledge(_ack_payload(command, at=BASE + timedelta(seconds=4)))
+    assert refused_ack["ok"] is False
+    assert refused_ack["error"]["code"] == "broker_ack_without_admission"
     assert _persisted_commands(path) == ["command.bare.1"]
-    assert runtime.material_store.has_persisted_material("command.bare.1") is False
 
 
 def test_material_bearing_command_admits_and_acknowledges_normally(tmp_path: Path) -> None:
     path = tmp_path / "do.sqlite3"
     runtime = _runtime(path)
     _register_and_open(runtime)
-    provisional = runtime.enqueue_command(_enqueue_payload("command.happy.1", now=BASE + timedelta(seconds=2)))
-    command = provisional["command"]
     result = runtime.enqueue_command_with_material(
-        _enqueue_payload("command.happy.1", now=BASE + timedelta(seconds=2)), _wire(command)
+        _enqueue_payload("command.happy.1", now=BASE + timedelta(seconds=2)),
+        _material_body("command.happy.1"),
     )
     assert result["ok"] is True
     admitted = runtime.admit_command(_admit_payload(result["command"], at=BASE + timedelta(seconds=5)))
@@ -419,7 +440,53 @@ def test_material_bearing_command_admits_and_acknowledges_normally(tmp_path: Pat
     assert _material_rows(path) == []
 
 
-# --- 6. the atomic path mints nothing a second time ------------------------
+# --- 7. the #3118 lost-response acknowledgement retry still works ----------
+def test_ack_exact_retry_after_material_purge_is_still_idempotent(tmp_path: Path) -> None:
+    """The acknowledgement itself purges the material.
+
+    An exact retry of a *lost* acknowledgement response therefore arrives when
+    the material row is already gone. Refusing that retry for a missing material
+    row would break the recovery #3118 added, so the guard is scoped to the
+    state where a transition still creates a fact.
+    """
+
+    path = tmp_path / "do.sqlite3"
+    runtime = _runtime(path)
+    _register_and_open(runtime)
+    result = runtime.enqueue_command_with_material(
+        _enqueue_payload("command.ackretry.1", now=BASE + timedelta(seconds=2)),
+        _material_body("command.ackretry.1"),
+    )
+    command = result["command"]
+    assert runtime.admit_command(_admit_payload(command, at=BASE + timedelta(seconds=4)))["ok"] is True
+
+    first = runtime.acknowledge(_ack_payload(command, at=BASE + timedelta(seconds=5)))
+    assert first["ok"] is True
+    assert _material_rows(path) == []
+
+    # The response was lost; the caller retries the identical acknowledgement.
+    retry = runtime.acknowledge(_ack_payload(command, at=BASE + timedelta(seconds=6)))
+    assert retry["ok"] is True
+    assert retry["command"]["state"] == "acknowledged"
+    assert retry["command"]["acknowledged_at"] == first["command"]["acknowledged_at"]
+    assert retry["command"]["exit_code"] == first["command"]["exit_code"]
+
+    # A retry that *disagrees* still fails closed, and the terminal record is
+    # not reopened or rewritten.
+    conflict = runtime.acknowledge(_ack_payload(command, at=BASE + timedelta(seconds=7), exit_code=9))
+    assert conflict["ok"] is False
+    assert conflict["error"]["code"] == "broker_ack_conflict"
+
+    # The same must hold across a restart: a retry after the object came back
+    # is still served, not refused for the purged material.
+    del runtime
+    restarted = _runtime(path)
+    after_restart = restarted.acknowledge(_ack_payload(command, at=BASE + timedelta(seconds=8)))
+    assert after_restart["ok"] is True
+    assert after_restart["command"]["acknowledged_at"] == first["command"]["acknowledged_at"]
+
+
+# --- 8. the atomic path mints nothing a second time ------------------------
 def test_atomic_path_declares_no_second_authority(tmp_path: Path) -> None:
     path = tmp_path / "do.sqlite3"
     runtime = _runtime(path)
@@ -445,3 +512,21 @@ def test_atomic_path_declares_no_second_authority(tmp_path: Path) -> None:
     assert MATERIAL_LESS_COMMAND_ACKNOWLEDGABLE is False
     assert SECOND_MATERIAL_SEQUENCE_MINT is False
     assert SECOND_MATERIAL_REVISION_MINT is False
+
+
+def test_atomic_api_does_not_accept_server_owned_correlation(tmp_path: Path) -> None:
+    """The atomic call takes a material body, not a pre-assembled wire.
+
+    A caller that supplied the wire would have to predict the canonical
+    sequence and revision, which are the server's to decide.
+    """
+
+    import inspect
+
+    signature = inspect.signature(LocalAgentBrokerDurableRuntime.enqueue_command_with_material)
+    assert list(signature.parameters) == ["self", "payload", "material"]
+    source = inspect.getsource(LocalAgentBrokerDurableRuntime.enqueue_command_with_material)
+    assert '"contract_version": "claw-local-command-material.v2"' in source
+    # The wire is built from the enqueue result, not from the caller's values.
+    assert 'command["sequence"]' in source
+    assert 'command["revision_ref"]' in source

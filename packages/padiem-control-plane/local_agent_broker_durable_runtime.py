@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Callable, TypeVar
 
 from padiem_control_plane.contracts import ControlPlaneContractError
+from padiem_control_plane.local_agent_broker import BrokerCommandState
 from padiem_control_plane.local_agent_broker_http import LocalAgentMaterialResolutionRequest
 from padiem_control_plane.local_agent_broker_rpc import LocalAgentBrokerRpcFacade
 from padiem_control_plane.local_agent_broker_state import StateBackedLocalAgentBrokerAuthority
@@ -95,7 +96,7 @@ class LocalAgentBrokerDurableRuntime:
         """
         return self.facade().enqueue_command(payload)
 
-    def enqueue_command_with_material(self, payload: dict, wire: dict) -> dict:
+    def enqueue_command_with_material(self, payload: dict, material: dict) -> dict:
         """#3127 — commit the canonical command and its material atomically.
 
         Both writes live in this Durable Object's SQLite storage, so one
@@ -105,15 +106,18 @@ class LocalAgentBrokerDurableRuntime:
         because the #3121 reconciliation exit only serves ADMITTED commands,
         without any terminal path at all.
 
-        The canonical enqueue keeps its own authority. Nothing here mints a
-        sequence, a revision or a fingerprint: the material wire is validated
-        against the command the canonical path just persisted, so a mismatch
-        fails the whole transaction closed.
+        The caller supplies the material *body* only. The command id, binding,
+        sequence, request fingerprint and revision are the canonical path's to
+        decide, and they are decided inside this transaction: the wire is
+        assembled from the command the canonical enqueue just persisted, not
+        from anything the caller predicted. A caller that guessed a sequence or
+        a revision would be guessing a server-owned value, so the atomic API
+        does not accept one.
 
         An exact retry is the #3118/#3120 behaviour applied to both writes at
-        once: the canonical command is re-served unchanged and the identical
-        material row is reused. A retry whose material differs from the stored
-        one fails closed.
+        once: the canonical command is re-served unchanged and an identical
+        material row is reused. A retry whose material body differs from the
+        stored one fails closed.
         """
 
         def operation() -> dict:
@@ -122,23 +126,50 @@ class LocalAgentBrokerDurableRuntime:
                 # A canonical refusal (duplicate, scope, ttl) wrote nothing, so
                 # there is nothing to bind and nothing to roll back.
                 return result
-            material = self.material_store.store(wire)
-            return {"ok": True, "command": result["command"], "material": material}
+            command = result["command"]
+            wire = {
+                "contract_version": "claw-local-command-material.v2",
+                "command_id": command["command_id"],
+                "binding_ref": command["binding_ref"],
+                "sequence": command["sequence"],
+                "request_fingerprint": command["request_fingerprint"],
+                "revision_ref": command["revision_ref"],
+                "material": material,
+            }
+            stored = self.material_store.store(wire)
+            return {"ok": True, "command": command, "material": stored}
         return self.transaction(operation)
 
     def store_command_material(self, wire: dict) -> dict:
         return self.transaction(lambda: self.material_store.store(wire))
 
-    def _require_persisted_material(self, command_id: Any, field_name: str) -> None:
-        """Fail closed when a command has no durable material.
+    def _persisted_command_state(self, command_id: str) -> Any:
+        """The canonical lifecycle state of a command, or `None` if unknown.
 
-        A command with no material cannot be run, so admitting it would create a
-        terminal fact for work that never happened, and acknowledging it would
-        record a fabricated execution result. Both are refused at the Durable
-        Object boundary, before the canonical authority is consulted.
+        Read from the same persisted snapshot the authority works from, so this
+        is a guard condition, never a second authority over the command.
+        """
+
+        stored = self.state_port.load(authority_ref=self.authority_ref())
+        for command in stored.snapshot.commands:
+            if command.command_id == command_id:
+                return command.state
+        return None
+
+    def _require_material_for_transition(self, command_id: Any, state_name: str, field_name: str) -> None:
+        """Fail closed when a *live* transition would run without material.
+
+        The guard is scoped to the one state in which the transition still
+        creates a fact. A command that is already terminal is not blocked: its
+        material is purged by that very transition, so refusing on presence
+        would break the #3118 exact-retry recovery of a lost acknowledgement
+        response. Every other state is left to the canonical authority, whose
+        refusal is the more precise answer.
         """
 
         safe = safe_ref(command_id, "command_id")
+        if self._persisted_command_state(safe) is not state_name:
+            return
         if not self.material_store.has_persisted_material(safe):
             raise ControlPlaneContractError(
                 "broker_command_material_missing",
@@ -162,13 +193,21 @@ class LocalAgentBrokerDurableRuntime:
 
     def admit_command(self, payload: dict) -> dict:
         def operation() -> dict:
-            self._require_persisted_material(payload.get("command_id"), "admission")
+            self._require_material_for_transition(
+                payload.get("command_id"), BrokerCommandState.QUEUED, "admission"
+            )
             return self.facade().admit_command(payload)
         return self.transaction(operation)
 
     def acknowledge(self, payload: dict) -> dict:
         def operation() -> dict:
-            self._require_persisted_material(payload.get("command_id"), "acknowledgement")
+            # Scoped to ADMITTED: a command that is already acknowledged has had
+            # its material purged by that acknowledgement, and the #3118 exact
+            # retry of a lost response must still reach the canonical idempotent
+            # branch instead of being refused for a row that no longer exists.
+            self._require_material_for_transition(
+                payload.get("command_id"), BrokerCommandState.ADMITTED, "acknowledgement"
+            )
             result = self.facade().acknowledge(payload)
             if result.get("ok") is True:
                 self.material_store.purge_command(result["command"]["command_id"])
