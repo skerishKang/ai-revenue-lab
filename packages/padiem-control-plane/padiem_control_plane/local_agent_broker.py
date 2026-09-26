@@ -691,7 +691,6 @@ class InMemoryLocalAgentBrokerAuthority:
             return self._idempotent_acknowledge_retry(
                 command=command,
                 binding=binding,
-                session=session,
                 admission_ref=admission_ref,
                 evidence_ref=evidence_ref,
                 revision_ref=revision_ref,
@@ -850,7 +849,6 @@ class InMemoryLocalAgentBrokerAuthority:
         *,
         command: BrokerCommandRecord,
         binding: BrokerDeviceBinding,
-        session: BrokerDeviceSession,
         admission_ref: str,
         evidence_ref: str,
         revision_ref: str,
@@ -864,6 +862,14 @@ class InMemoryLocalAgentBrokerAuthority:
         is re-validated against the persisted acknowledged command and any difference
         fails closed. No admission is re-created, terminal state is never reopened,
         and the persisted record is returned untouched.
+
+        #3128: a restarted device necessarily holds a *new* session, so requiring
+        the admitting session here made this retry unreachable exactly when it was
+        needed. The retry is therefore correlated on the admitting binding plus the
+        exact admission/evidence/revision/request/termination/exit-code tuple. The
+        caller's credential, session-scope and credential-generation checks still
+        apply unchanged. This relaxation covers the already-terminal retry only: the
+        ADMITTED acknowledgement path above still requires the admitting session.
         """
         echoed_revision_ref = _ref("revision_ref", revision_ref)
         if echoed_revision_ref != command.revision_ref:
@@ -876,11 +882,10 @@ class InMemoryLocalAgentBrokerAuthority:
         bounded_exit_code = _bounded_exit_code("exit_code", exit_code)
         expected = (
             binding.binding_ref,
-            session.session_id,
             _ref("admission_ref", admission_ref),
             _ref("evidence_ref", evidence_ref),
         )
-        actual = (command.binding_ref, command.admitted_session_id, command.admission_ref, command.evidence_ref)
+        actual = (command.binding_ref, command.admission_ref, command.evidence_ref)
         if actual != expected:
             raise ControlPlaneContractError("broker_ack_correlation_mismatch", "acknowledgement does not match admitted command evidence")
         if termination != command.termination or bounded_exit_code != command.exit_code:

@@ -335,6 +335,12 @@ class DurableRunRecord:
     #: `BrokerCommandRecord.admission_ref` / `BrokerCommandAdmission.admission_ref`
     #: and never minted here. ``None`` before admission is durably recorded.
     admission_ref: str | None = None
+    #: #3128 — the server-issued admission *evidence* reference for this run (the
+    #: `evidence_ref` the canonical broker acknowledgement echoes). Copied verbatim
+    #: from the admission response and never minted here. Without it a restart
+    #: cannot reconstruct the exact canonical acknowledgement, so it is admission
+    #: correlation rather than part of the bounded evidence projection below.
+    admission_evidence_ref: str | None = None
     #: Bounded result metadata, matching `BrokerCommandResult.exit_code`. This is
     #: the whole of the exit-status fact: no stdout, stderr, argv or file content
     #: is representable anywhere in this record.
@@ -359,6 +365,10 @@ class DurableRunRecord:
             object.__setattr__(self, name, _ref(getattr(self, name), name))
         if self.admission_ref is not None:
             object.__setattr__(self, "admission_ref", _ref(self.admission_ref, "admission_ref"))
+        if self.admission_evidence_ref is not None:
+            object.__setattr__(
+                self, "admission_evidence_ref", _ref(self.admission_evidence_ref, "admission_evidence_ref")
+            )
         object.__setattr__(self, "exit_code", _bounded_exit_code(self.exit_code))
         object.__setattr__(self, "sequence", _sequence(self.sequence))
         object.__setattr__(self, "credential_generation", _generation(self.credential_generation))
@@ -512,6 +522,7 @@ class DurableRunRecord:
                 _iso(self.server_acknowledged_at) if self.server_acknowledged_at else None
             ),
             "admission_ref": self.admission_ref,
+            "admission_evidence_ref": self.admission_evidence_ref,
             "exit_code": self.exit_code,
             "offline_state": self.offline_state.value,
             "evidence": self.evidence.safe_dict(),

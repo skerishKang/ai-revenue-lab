@@ -19,7 +19,8 @@ _ROUTE_POLL = "/poll"
 _ROUTE_MATERIAL = "/material"
 _ROUTE_HEARTBEAT = "/heartbeat"
 _ROUTE_ACKNOWLEDGE = "/acknowledge"
-_ROUTES = frozenset({_ROUTE_SESSION, _ROUTE_POLL, _ROUTE_MATERIAL, _ROUTE_HEARTBEAT, _ROUTE_ACKNOWLEDGE})
+_ROUTE_RECONCILE = "/reconcile"
+_ROUTES = frozenset({_ROUTE_SESSION, _ROUTE_POLL, _ROUTE_MATERIAL, _ROUTE_HEARTBEAT, _ROUTE_ACKNOWLEDGE, _ROUTE_RECONCILE})
 
 _SESSION_REQUEST_KEYS = frozenset(
     {"session_id", "binding_ref", "credential_b64", "account_ref", "workspace_ref", "now", "ttl_seconds"}
@@ -33,6 +34,12 @@ _MATERIAL_REQUEST_KEYS = frozenset(
 _HEARTBEAT_REQUEST_KEYS = frozenset({"session_id", "binding_ref", "credential_b64", "now"})
 _ACK_REQUEST_KEYS = frozenset(
     {"session_id", "binding_ref", "credential_b64", "command_id", "admission_ref", "evidence_ref", "revision_ref", "termination", "request_id", "exit_code", "now"}
+)
+#: #3128 — the device recovery surface. It carries the exact admitted correlation a
+#: restarted runner already holds durably and nothing else: no argv, no approval
+#: payload, no execution authority.
+_RECONCILE_REQUEST_KEYS = frozenset(
+    {"session_id", "binding_ref", "credential_b64", "command_id", "admission_ref", "evidence_ref", "revision_ref", "request_id", "request_fingerprint", "termination", "exit_code", "now"}
 )
 _SESSION_KEYS = frozenset(
     {
@@ -654,6 +661,43 @@ class LocalAgentBrokerHttpHandler:
                 raise ValueError("broker acknowledgement exposed device credential material")
         return LocalAgentBrokerHttpResponse(200, result)
 
+    def _handle_reconcile(
+        self,
+        auth: TrustedLocalAgentHttpAuthContext,
+        payload: dict[str, Any],
+        *,
+        server_now: datetime,
+    ) -> LocalAgentBrokerHttpResponse:
+        """#3128 — carry one restarted runner's durable admitted correlation to #3121."""
+
+        payload = _closed_mapping(payload, _RECONCILE_REQUEST_KEYS, "reconcile request")
+        self._load_scoped_session(auth=auth, payload=payload, server_now=server_now)
+        for field_name in ("admission_ref", "evidence_ref", "revision_ref", "request_id"):
+            _ref(payload[field_name], field_name)
+        _digest(payload["request_fingerprint"], "request_fingerprint")
+        if payload["termination"] is not None and payload["termination"] not in _EXECUTION_TERMINATIONS:
+            raise ValueError("reconcile termination must be a bounded execution termination or null")
+        if payload["exit_code"] is not None and type(payload["exit_code"]) is not int:
+            raise ValueError("reconcile exit_code must be a bounded process exit status or null")
+        rpc_payload = {key: value for key, value in payload.items() if key != "evidence_ref"}
+        result = self._rpc_result(
+            self._rpc.reconcile_expired_command(self._server_rpc_payload(rpc_payload, server_now)),
+            "command",
+        )
+        if result["ok"] is True:
+            command = _closed_mapping(result["command"], _COMMAND_KEYS, "reconciled broker command")
+            if command["state"] not in {"acknowledged", "expired"}:
+                raise ValueError("broker reconciliation did not reach a terminal state")
+            if command["command_id"] != payload["command_id"] or command["admission_ref"] != payload["admission_ref"]:
+                raise ValueError("broker reconciliation admission correlation mismatch")
+            if command["evidence_ref"] != payload["evidence_ref"]:
+                raise ValueError("broker reconciliation did not preserve the admitted evidence correlation")
+            if command["revision_ref"] != payload["revision_ref"] or command["request_id"] != payload["request_id"]:
+                raise ValueError("broker reconciliation revision/request correlation mismatch")
+            if command["raw_device_credential"] is not False:
+                raise ValueError("broker reconciliation exposed device credential material")
+        return LocalAgentBrokerHttpResponse(200, result)
+
     def handle(
         self,
         *,
@@ -690,6 +734,8 @@ class LocalAgentBrokerHttpHandler:
                 return self._handle_material(auth, payload, server_now=server_now)
             if route == _ROUTE_HEARTBEAT:
                 return self._handle_heartbeat(auth, payload, server_now=server_now)
+            if route == _ROUTE_RECONCILE:
+                return self._handle_reconcile(auth, payload, server_now=server_now)
             return self._handle_acknowledge(auth, payload, server_now=server_now)
         except PermissionError:
             return self._error(403, "local_agent_http_scope_mismatch", "authenticated Local Agent scope does not match request")
@@ -728,6 +774,10 @@ HEARTBEAT_SERVER_LAST_SEEN = True
 POLL_REQUEST_FINGERPRINT_PRESERVED = True
 MATERIAL_FINGERPRINT_EXACT = True
 ACK_ADMISSION_EVIDENCE_EXACT = True
+#: #3128 — the only device recovery surface, and it carries correlation only.
+DEVICE_RECONCILIATION_SURFACE = True
+RECONCILE_EXECUTION_AUTHORITY = False
+RECONCILE_REPLAY_AUTHORITY = False
 DURABLE_STORE_PORT_DEFINED = True
 IN_MEMORY_COUNTS_AS_DURABLE = False
 # --- issue #3129: atomic session open ---------------------------------------
