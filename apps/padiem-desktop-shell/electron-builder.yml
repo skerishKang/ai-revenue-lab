@@ -92,6 +92,17 @@ extraResources:
 
 asar: true
 
+# #3093 — Windows `padiem://` protocol declaration. The NSIS installer writes
+# the HKCU protocol handler for this scheme, so a fresh install is reachable
+# from a browser handoff before the app has ever run. Runtime re-registration
+# for the current launch shape (packaged vs dev `process.defaultApp`) is owned
+# by src/main/protocol-registration.ts; this block is the install-time half of
+# the same contract. Scheme name must stay byte-identical to PAIRING_SEAM.SCHEME.
+protocols:
+  - name: Padiem Pairing Handoff
+    schemes:
+      - padiem
+
 # Signing posture is asserted by a contract test, not only by this comment.
 # CENTRAL G1 (comment 5840395388) selected Azure Artifact Signing as the
 # canonical authority, but the electron-builder Azure adapter is Beta and is
