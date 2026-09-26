@@ -47,6 +47,27 @@ IP-CONTROL = identity / tenant / entitlement / usage / audit where integrated
 
 `P01` is a legacy identifier for the shared Core concept. Current documentation uses **IP-CORE**. Historical documents may retain `P01` only as dated evidence.
 
+## Running the tests locally
+
+```bash
+python scripts/kagent_local_test.py
+```
+
+Run this from the repository root. It is the only supported local entry point.
+
+The obvious alternative — `python -m unittest discover -s apps/korean-ai-code-agent/tests`
+— is not trustworthy on a developer machine. It resolves `kagent` from whatever
+the interpreter finds first, which on a machine carrying editable installs is
+frequently a *different checkout*. The suite then passes, and the pass proves
+nothing about the code in your directory.
+
+The canonical command builds an isolated environment from this checkout and
+refuses to run the suite if `kagent`, `padiem_ai_core`, `padiem_control_plane` or
+`padiem_ai_engine_client` resolved from anywhere else.
+
+See `docs/LOCAL_TEST_ENVIRONMENT_3108.md` for the full contract, the
+verifier, and what to do if your machine is contaminated.
+
 ## B54 owns
 
 - task identity and product-visible task intent;
