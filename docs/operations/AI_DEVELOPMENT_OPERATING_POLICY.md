@@ -154,6 +154,8 @@ The Web CTO:
 - defines data/security/deployment/non-goal boundaries;
 - inspects actual diff and current exact head;
 - checks CI and validation sufficiency;
+- when a contract defect is found at one runtime trust boundary, traces the same field/meaning through downstream parser, builder/projector, serializer, export and write boundaries before declaring the class closed;
+- distinguishes explicit `null`, `undefined`, and missing required properties unless a canonical contract explicitly equates them;
 - reviews rendered visual evidence rather than treating CI as taste evidence;
 - rejects stale-head evidence unless applicability is documented;
 - prevents legacy visual debt from being mislabeled as a new design system;
@@ -220,6 +222,8 @@ When independent validation is required, the validator records:
 
 If the validator changes product source, the modified run is not independent validation of that new revision.
 
+A completed independent validation is not considered auditable until the related PR contains a discoverable exact-head record naming the validator, result and immutable report/artifact pointer (or a recorded `NOT_REQUIRED` reason). The evidence may live in the private report repository, but the PR must point to it.
+
 ## 11. CI and automated checks
 
 CI is required when configured/relevant but is never universal completion evidence.
@@ -229,8 +233,9 @@ CI is required when configured/relevant but is never universal completion eviden
 - screenshots of Entry do not prove a whole site;
 - mock/provider tests do not prove live provider behavior;
 - HTTP 200 does not prove reviewed Production revision.
+- unrelated green jobs do not neutralize a red external security/compliance check.
 
-Use the evidence type that matches the claim.
+Use the evidence type that matches the claim. A red external security/compliance signal must be resolved or carry an explicit authorized disposition/waiver with reason before merge; silence on a later squash/main commit is not evidence that the original signal disappeared.
 
 ## 12. Revision invalidation
 
@@ -257,6 +262,7 @@ Use expected-head protection where available.
 - no hidden failure/skip/warning;
 - no secrets, credentials, private evidence or personal data in public source/logs/artifacts;
 - no hidden validator source edits;
+- no `git worktree remove --force` on Windows while the worktree contains junctions/symlinks/reparse points into shared dependency directories; unlink the reparse point first and verify the target remains intact;
 - no wrong-project Preview/deployment as product evidence;
 - no unverified live-revision claim.
 
@@ -303,6 +309,8 @@ After authorized merge, verify the configured Git-connected Production against t
 ### Verdict record requirement
 
 Before merge, the Web CTO (CENTRAL) must post the filled `CTO_FINAL_REVIEW` checklist as a PR review or PR comment containing the exact head SHA and per-item checklist results (precedent: PR #1900 procedure, work order 2026-09-05). Prose-only assertions of a final-review verdict are not an auditable record.
+
+For P0/P1 or otherwise critical PRs, the final review also records the exact-head independent-validator record (or `NOT_REQUIRED` reason), any load-bearing mutation/differential proof requested by the work contract, and the disposition of every external red security/compliance signal.
 
 ### Terminal states for "independent gate pending"
 
