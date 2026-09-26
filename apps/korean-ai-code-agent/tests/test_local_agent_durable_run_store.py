@@ -263,6 +263,7 @@ class DurableStoreTerminalPersistenceTests(StoreTestCase):
         self.assertIsNone(loaded.exit_code)
 
     def test_q6_terminal_write_cannot_rewrite_admitted_correlation(self) -> None:
+        store = self.open_store()
         critical_overrides = (
             {"run_id": "run.other"},
             {"request_id": "request.other"},
@@ -271,18 +272,16 @@ class DurableStoreTerminalPersistenceTests(StoreTestCase):
             {"sequence": 8},
             {"admission_ref": "admission.other"},
         )
-        for overrides in critical_overrides:
+        for index, overrides in enumerate(critical_overrides, start=1):
+            command_id = f"command.correlation.{index}"
             with self.subTest(overrides=overrides):
-                store = self.open_store()
-                store.put(admitted())
+                store.put(admitted(command_id=command_id))
                 with self.assertRaises(DurableRunStoreError) as caught:
-                    store.record_terminal(exited(**overrides))
+                    store.record_terminal(exited(command_id=command_id, **overrides))
                 self.assertEqual(caught.exception.code, "durable_store_correlation_mismatch")
-                loaded = store.get(command_id="command.1")
+                loaded = store.get(command_id=command_id)
                 assert loaded is not None
                 self.assertFalse(loaded.terminal)
-                store.close()
-                Path(self.path).unlink(missing_ok=True)
 
     def test_q6_terminal_write_cannot_prewrite_server_ack(self) -> None:
         store = self.open_store()
