@@ -18,6 +18,27 @@
 
 If product source was modified, stop and return the new revision to implementation. Do not label the modified run independent `PASSED` evidence.
 
+## Discoverable validation record
+
+- Related PR:
+- PR review/comment URL or comment/review ID containing this validation record:
+- Immutable private report pointer:
+- Artifact/run pointer(s):
+- Validator identity recorded on PR? yes/no:
+- Exact tested head recorded on PR? yes/no:
+- Result recorded on PR? yes/no:
+
+Minimum compact PR record:
+
+```text
+INDEPENDENT_VALIDATOR=
+VALIDATED_HEAD=
+RESULT=PASSED/FAILED/BLOCKED
+REPORT_POINTER=
+```
+
+The long report may live privately, but validation is not merge-auditable until the PR points to it.
+
 ## Environment
 
 - OS:
@@ -99,6 +120,11 @@ Do not prescribe a new art direction merely because a later surface failed; repo
 - Secret leakage:
 - Private data leakage:
 - Sanitization notes:
+- External security/compliance checks observed:
+- Any red signal:
+- Disposition/waiver recorded by authorized actor? yes/no/N/A:
+
+A validator does not silently waive a red security signal. Record it and leave disposition to the authorized review/owner boundary.
 
 ## Validation disposition
 

@@ -131,6 +131,15 @@ export interface PairingDeepLinkResponse {
   readonly pairingAuthorityOwnedBy: '#3080';
   readonly credentialStored: false;
   readonly sessionMinted: false;
+  /**
+   * #3095. Whether a bounded pairing code crossed the seam to the trusted
+   * runner boundary. This is a boolean *fact*, never the value itself: the
+   * renderer must never see the pairing code, so the response surface gains no
+   * secret field.
+   */
+  readonly pairingCodeTransferred: boolean;
+  readonly pairingCodePersisted: false;
+  readonly pairingCodeRendererDiagnostic: false;
 }
 
 export interface BoundedLogRequest {

@@ -9,3 +9,20 @@ __pycache__/
 # A hard-killed OCR child may leave a derived canonical PNG behind. Keep that
 # local residue out of source control even if the child cannot unlink it.
 kagent-ocr-*.png
+
+# #3108: the isolated local KAgent test environment is a build artifact of
+# scripts/kagent_local_test.py, created inside the checkout on purpose so its
+# import origins can be proved against this repository. It is never source.
+.kagent-local-test-env/
+
+# #3108: the sibling distributions are installed with `pip install -e`, which
+# still writes a setuptools build tree and egg-info next to each package even
+# though the import resolves to the source. Scoped to the exact three
+# distributions the launcher installs -- a repository-wide `build/` would hide
+# unrelated future build directories across the monorepo.
+packages/padiem-ai-core/build/
+packages/padiem-ai-core/*.egg-info/
+packages/padiem-control-plane/build/
+packages/padiem-control-plane/*.egg-info/
+apps/padiem-ai-engine/clients/python/build/
+apps/padiem-ai-engine/clients/python/*.egg-info/

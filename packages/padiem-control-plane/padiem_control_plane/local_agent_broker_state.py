@@ -460,6 +460,37 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
             )
         )
 
+    def reconcile_expired_command(
+        self,
+        *,
+        session_id: str,
+        binding_ref: str,
+        credential: bytes,
+        command_id: str,
+        admission_ref: str,
+        revision_ref: str,
+        request_id: str,
+        request_fingerprint: str,
+        termination: str | None,
+        exit_code: int | None,
+        now: datetime,
+    ) -> BrokerCommandRecord:
+        return self._mutate(
+            lambda authority: authority.reconcile_expired_command(
+                session_id=session_id,
+                binding_ref=binding_ref,
+                credential=credential,
+                command_id=command_id,
+                admission_ref=admission_ref,
+                revision_ref=revision_ref,
+                request_id=request_id,
+                request_fingerprint=request_fingerprint,
+                termination=termination,
+                exit_code=exit_code,
+                now=now,
+            )
+        )
+
     def safe_dict(self) -> dict[str, Any]:
         return {
             "state_backed_authority": True,

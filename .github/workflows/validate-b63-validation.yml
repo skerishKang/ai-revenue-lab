@@ -1,0 +1,37 @@
+name: Validate B63 Validation Gate
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/b63-validation-gate.mjs'
+      - 'scripts/b63-validation-gate.test.mjs'
+      - 'docs/experiments/B63_VALIDATION_CONTRACT.md'
+      - 'docs/experiments/b63/validation-gates.json'
+      - '.github/workflows/validate-b63-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out reviewed revision
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate source syntax
+        run: |
+          node --check scripts/b63-validation-gate.mjs
+          node --check scripts/b63-validation-gate.test.mjs
+
+      - name: Run B63 validation contract tests
+        run: node --test scripts/b63-validation-gate.test.mjs

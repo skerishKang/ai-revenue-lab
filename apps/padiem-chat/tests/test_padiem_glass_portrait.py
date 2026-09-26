@@ -57,7 +57,8 @@ def test_glass_reserves_right_portrait_zone_and_opaque_chat_surface() -> None:
     assert 'backdrop-filter: blur(32px)' in PORTRAIT_CSS
     assert '@media (min-width: 1280px)' in PORTRAIT_CSS
     assert 'margin-left: clamp(36px, 4vw, 72px)' in PORTRAIT_CSS
-    assert 'width: clamp(360px, 32vw, 560px)' in PORTRAIT_CSS
+    assert 'width: calc(clamp(360px, 32vw, 560px) + 56px)' in PORTRAIT_CSS
+    assert 'width: calc(clamp(300px, 32vw, 380px) + 56px)' in PORTRAIT_CSS
 
 
 def test_glass_mask_is_dynamic_not_fixed() -> None:

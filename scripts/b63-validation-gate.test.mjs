@@ -24,6 +24,14 @@ function interview(id, organizationType = 'hospital', overrides = {}) {
   };
 }
 
+function customer(interviews) {
+  return {
+    schema_version: 'b63.customer-discovery.v1',
+    business: { number: 63, status: 'proposed' },
+    interviews,
+  };
+}
+
 function strongCustomer() {
   return customer([
     interview('h1'),
@@ -32,14 +40,6 @@ function strongCustomer() {
     interview('v1', 'his_vendor'),
     interview('v2', 'his_vendor'),
   ]);
-}
-
-function customer(interviews) {
-  return {
-    schema_version: 'b63.customer-discovery.v1',
-    business: { number: 63, status: 'proposed' },
-    interviews,
-  };
 }
 
 function r0(overrides = {}) {
@@ -97,109 +97,151 @@ function r0(overrides = {}) {
   };
 }
 
-test('PASS_CANDIDATE requires customer gate pltÈ\™[™Y[™\[™[Œ]šY[˜ÙIË
+test('PASS_CANDIDATE requires both customer and hardened R0 gates to pass', () => {
+  const result = evaluateB63Validation(strongCustomer(), r0(), config);
+  assert.equal(result.decision, 'PASS_CANDIDATE');
+  assert.equal(result.customer_gate.status, 'PASS');
+  assert.equal(result.r0_gate.status, 'PASS');
+  assert.equal(result.full_build_authorized, false);
+});
 
-HOˆÂˆÛÛœÝ™\Ý[H]˜[X]PŒÕ˜[Y][ÛŠÝ›Û™ÐÝ\ÝÛY\Š
-KŒ
+test('small customer sample stays INCOMPLETE instead of FAIL', () => {
+  const result = evaluateB63Validation(
+    customer([interview('h1'), interview('h2')]),
+    r0(),
+    config,
+  );
+  assert.equal(result.customer_gate.status, 'INCOMPLETE');
+  assert.equal(result.decision, 'INCOMPLETE');
+});
 
-KÛÛ™šYÊNÂˆ\ÜÙ\™\]X[
-™\Ý[˜Ý\ÝÛY\—ÙØ]KœÝ]\Ë	ÔTÔÉÊNÂˆ\ÜÙ\™\]X[
-™\Ý[œŒÙØ]KœÝ]\Ë	ÔTÔÉÊNÂˆ\ÜÙ\™\]X[
-™\Ý[™XÚ\Ú[Û‹	ÔTÔ×ÐÐS‘QUIÊNÂˆ\ÜÙ\™\]X[
-™\Ý[™[ØZ[Ø]]Üš^™Y˜[ÙJNÂŸJNÂ‚\Ý
-	Ú[œÝY™šXÚY[[\šY]ÈØ[\HÝ^\ÈSÓÓTUH[œÝXYÙˆ™Z[™ÈØÛÜ™Y]Ø^IË
+test('complete but weak customer evidence narrows the product', () => {
+  const weak = customer([
+    interview('h1', 'hospital', { problem_severity: 0, clinical_domain_gap: 0, poc_path: 'none' }),
+    interview('h2', 'hospital', { problem_severity: 0, clinical_domain_gap: 0, poc_path: 'none' }),
+    interview('h3', 'hospital', { problem_severity: 1, clinical_domain_gap: 1, poc_path: 'none' }),
+    interview('v1', 'his_vendor', { problem_severity: 1, clinical_domain_gap: 1, poc_path: 'none' }),
+    interview('v2', 'his_vendor', { problem_severity: 1, clinical_domain_gap: 1, poc_path: 'none' }),
+  ]);
+  const result = evaluateB63Validation(weak, r0(), config);
+  assert.equal(result.customer_gate.status, 'FAIL');
+  assert.equal(result.decision, 'NARROW');
+});
 
-HOˆÂˆÛÛœÝ™\Ý[H]˜[X]PŒÕ˜[Y][ÛŠÝ\ÝÛY\ŠÚ[\šY]Ê	ÚIÊK[\šY]Ê	Ú‰ÊWJKŒ
+test('explicit R0 NARROW decision is preserved', () => {
+  const result = evaluateB63Validation(
+    strongCustomer(),
+    r0({ result: { r0_decision: 'NARROW' } }),
+    config,
+  );
+  assert.equal(result.r0_gate.status, 'NARROW');
+  assert.equal(result.decision, 'NARROW');
+});
 
-KÛÛ™šYÊNÂˆ\ÜÙ\™\]X[
-™\Ý[˜Ý\ÝÛY\—ÙØ]KœÝ]\Ë	ÒSÓÓTUIÊNÂˆ\ÜÙ\™\]X[
-™\Ý[™XÚ\Ú[Û‹	ÒSÓÓTUIÊNÂŸJNÂ‚\Ý
-	ØÛÛ\]Y]ÙXZÈÝ\ÝÛY\ˆ]šY[˜ÙH˜\œ›ÝÜÈH›ÙXÝ	Ë
+test('real patient data forces STOP_OR_REFRAME', () => {
+  const result = evaluateB63Validation(
+    strongCustomer(),
+    r0({ dataset: { real_patient_data_used: true, synthetic_public_only: false } }),
+    config,
+  );
+  assert.equal(result.r0_gate.boundary_violation, true);
+  assert.equal(result.r0_gate.status, 'STOP_OR_REFRAME');
+  assert.equal(result.decision, 'STOP_OR_REFRAME');
+  assert.equal(result.full_build_authorized, false);
+});
 
-HOˆÂˆÛÛœÝÙXZÈHÂˆ[\šY]Ê	ÚIË	ÚÜÜ][	ËÈ›Ø›[WÜÙ]™\š]NˆÛ[šXØ[ÙÛXZ[—ÙØ\ˆØ×Ü]ˆ	Û›Û™IÈJKˆ[\šY]Ê	Ú‰Ë	ÚÜÜ][	ËÈ›Ø›[WÜÙ]™\š]NˆÛ[šXØ[ÙÛXZ[—ÙØ\ˆØ×Ü]ˆ	Û›Û™IÈJKˆ[\šY]Ê	ÚÉË	ÚÜÜ][	ËÈ›Ø›[WÜÙ]™\š]NˆKÛ[šXØ[ÙÛXZ[—ÙØ\ˆKØ×Ü]ˆ	Û›Û™IÈJKˆ[\šY]Ê	ÝŒIË	Ú\×Ý™[™Ü‰ËÈ›Ø›[WÜÙ]™\š]NˆKÛ[šXØ[ÙÛXZ[—ÙØ\ˆKØ×Ü]ˆ	Û›Û™IÈJKˆ[\šY]Ê	ÝŒ‰Ë	Ú\×Ý™[™Ü‰ËÈ›Ø›[WÜÙ]™\š]NˆKÛ[šXØ[ÙÛXZ[—ÙØ\ˆKØ×Ü]ˆ	Û›Û™IÈJKˆNÂˆÛÛœÝ™\Ý[H]˜[X]PŒÕ˜[Y][ÛŠÝ\ÝÛY\ŠÙXZÊKŒ
+test('malformed interview score is rejected', () => {
+  const malformed = strongCustomer();
+  malformed.interviews[0].problem_severity = 9;
+  assert.throws(
+    () => evaluateB63Validation(malformed, r0(), config),
+    /problem_severity must be between 0 and 2/,
+  );
+});
 
-KÛÛ™šYÊNÂˆ\ÜÙ\™\]X[
-™\Ý[˜Ý\ÝÛY\—ÙØ]KœÝ]\Ë	ÑRS	ÊNÂˆ\ÜÙ\™\]X[
-™\Ý[™XÚ\Ú[Û‹	ÓT”“ÕÉÊNÂŸJNÂ‚\Ý
-	Ù^XÚ]Œ˜\œ›ÝÈXÚ\Ú[Ûˆ\È™\Ù\™Y	Ë
+test('duplicate interview ids are rejected', () => {
+  assert.throws(
+    () =>
+      evaluateB63Validation(
+        customer([interview('dup'), interview('dup')]),
+        r0(),
+        config,
+      ),
+    /duplicate interview id/,
+  );
+});
 
-HOˆÂˆÛÛœÝ™\Ý[H]˜[X]PŒÕ˜[Y][ÛŠˆÝ›Û™ÐÝ\ÝÛY\Š
-KˆŒ
-È™\Ý[ˆÈŒÙXÚ\Ú[ÛŽˆ	ÓT”“ÕÉËYX\Ý\˜X›WØY˜[YÙNˆ	ÒSÓÓÓTÒU‘IÈHJKˆÛÛ™šYËˆ
-NÂˆ\ÜÙ\™\]X[
-™\Ý[œŒÙØ]KœÝ]\Ë	ÓT”“ÕÉÊNÂˆ\ÜÙ\™\]X[
-™\Ý[™XÚ\Ú[Û‹	ÓT”“ÕÉÊNÂŸJNÂ‚\Ý
-	Ü™X[]Y[]H›YÈšYÙÙ\œÈÕÔÓÔ—Ô‘Q”SQH›Ý[™\žHš[Û][Û‰Ë
+test('missing required R0 system keeps result INCOMPLETE', () => {
+  const result = evaluateB63Validation(
+    strongCustomer(),
+    r0({ systems: { s3_b63_hybrid_r0: false } }),
+    config,
+  );
+  assert.equal(result.r0_gate.status, 'INCOMPLETE');
+  assert.equal(result.decision, 'INCOMPLETE');
+});
 
-HOˆÂˆÛÛœÝ™\Ý[H]˜[X]PŒÕ˜[Y][ÛŠˆÝ›Û™ÐÝ\ÝÛY\Š
-KˆŒ
-È]\Ù]ˆÈ™X[Ü]Y[Ù]WÝ\ÙYˆYKÞ[]X×ÜX›X×ÛÛ›Nˆ˜[ÙHHJKˆÛÛ™šYËˆ
-NÂˆ\ÜÙ\™\]X[
-™\Ý[œŒÙØ]KœÝ]\Ë	ÔÕÔÓÔ—Ô‘Q”SQIÊNÂˆ\ÜÙ\™\]X[
-™\Ý[œŒÙØ]K˜›Ý[™\žWÝš[Û][Û‹YJNÂˆ\ÜÙ\™\]X[
-™\Ý[™XÚ\Ú[Û‹	ÔÕÔÓÔ—Ô‘Q”SQIÊNÂŸJNÂ‚\Ý
-	ÛX[›Ü›YY[\šY]È]šY[˜ÙH\È™Z™XÝY	Ë
+test('co-designed corpus without independent holdout cannot pass', () => {
+  const result = evaluateB63Validation(
+    strongCustomer(),
+    r0({ evaluation_design: { holdout_independent: false } }),
+    config,
+  );
+  assert.equal(result.r0_gate.status, 'INCOMPLETE');
+  assert.equal(result.decision, 'INCOMPLETE');
+});
 
-HOˆÂˆÛÛœÝX[›Ü›YYHÝ\ÝÛY\ŠÚ[\šY]Ê	ÚIÊWJNÂˆX[›Ü›YYš[\šY]ÜÖÌKœ›Ø›[WÜÙ]™\š]HHNÂˆ\ÜÙ\›ÝÜÊ
+test('synthetic identifier collision safety is required', () => {
+  const result = evaluateB63Validation(
+    strongCustomer(),
+    r0({ dataset: { synthetic_identifier_collision_safe: false } }),
+    config,
+  );
+  assert.equal(result.r0_gate.status, 'INCOMPLETE');
+  assert.equal(result.decision, 'INCOMPLETE');
+});
 
-HOˆ]˜[X]PŒÕ˜[Y][ÛŠX[›Ü›YYŒ
+test('changed-file secret scan is required', () => {
+  const result = evaluateB63Validation(
+    strongCustomer(),
+    r0({ tests: { changed_file_secret_scan_passed: false } }),
+    config,
+  );
+  assert.equal(result.r0_gate.status, 'INCOMPLETE');
+  assert.equal(result.decision, 'INCOMPLETE');
+});
 
-KÛÛ™šYÊKÜ›Ø›[WÜÙ]™\š]KÊNÂŸJNÂ‚\Ý
-	Ù\XØ]H[\šY]ÈYÈ\™H™Z™XÝY	Ë
+test('clean exact-head benchmark evidence is required', () => {
+  for (const reproducibility of [
+    { git_dirty: true },
+    { exact_head_benchmark_evidence: false },
+  ]) {
+    const result = evaluateB63Validation(
+      strongCustomer(),
+      r0({ reproducibility }),
+      config,
+    );
+    assert.equal(result.r0_gate.status, 'INCOMPLETE');
+    assert.equal(result.decision, 'INCOMPLETE');
+  }
+});
 
-HOˆÂˆ\ÜÙ\›ÝÜÊˆ
+test('negative holdout evidence cannot be promoted to PASS', () => {
+  const result = evaluateB63Validation(
+    strongCustomer(),
+    r0({ result: { holdout_measurable_advantage: 'NO' } }),
+    config,
+  );
+  assert.equal(result.r0_gate.status, 'STOP_OR_REFRAME');
+  assert.equal(result.decision, 'STOP_OR_REFRAME');
+});
 
-HOˆ]˜[X]PŒÕ˜[Y][ÛŠÝ\ÝÛY\ŠÚ[\šY]Ê	Ù\	ÊK[\šY]Ê	Ù\	ÊWJKŒ
-
-KÛÛ™šYÊKˆÙ\XØ]H[\šY]ÈYËˆ
-NÂŸJNÂ‚\Ý
-	ÛZ\ÜÚ[™È™\]Z\™YŒÞ\Ý[HÙY\È™\Ý[[˜ÛÛ\]IË
-
-HOˆÂˆÛÛœÝ™\Ý[H]˜[X]PŒÕ˜[Y][ÛŠˆÝ›Û™ÐÝ\ÝÛY\Š
-KˆŒ
-ÈÞ\Ý[\ÎˆÈÌWÙÙ[™\šX×ÜZWØ˜\Ù[[™Nˆ˜[ÙHHJKˆÛÛ™šYËˆ
-NÂˆ\ÜÙ\™\]X[
-™\Ý[œŒÙØ]KœÝ]\Ë	ÒSÓÓTUIÊNÂˆ\ÜÙ\™\]X[
-™\Ý[™XÚ\Ú[Û‹	ÒSÓÓTUIÊNÂŸJNÂ‚\Ý
-	ØÛËY\ÚYÛ™YÛÜœ\ÈÚ]Ý][™\[™[ÛÝ]Ø[››Ý\ÜÉË
-
-HOˆÂˆÛÛœÝ™\Ý[H]˜[X]PŒÕ˜[Y][ÛŠˆÝ›Û™ÐÝ\ÝÛY\Š
-KˆŒ
-Âˆ]˜[X][Û—Ù\ÚYÛŽˆÂˆÛÝ]Ú[™\[™[ˆ˜[ÙKˆÛÝ]Ø˜\ÙWØØ\Ù\Îˆˆ[œÙY[—ÚÛÝ]Ý[\]\Îˆ˜[ÙKˆ[œÙY[—ÚÛÝ]Û^XÛÛŽˆ˜[ÙKˆÌ×Ùœ›Þ™[—Ø™Y›Ü™WÚÛÝ]Ù]˜[X][ÛŽˆ˜[ÙKˆKˆ™\Ý[ˆÈÛÝ]ÛYX\Ý\˜X›WØY˜[YÙNˆ	ÒSÓÓÓTÒU‘IÈKˆJKˆÛÛ™šYËˆ
-NÂˆ\ÜÙ\™\]X[
-™\Ý[œŒÙØ]KœÝ]\Ë	ÒSÓÓTUIÊNÂˆ\ÜÙ\™\]X[
-™\Ý[œŒÙØ]K˜ÚXÚÜËš[™\[™[ÚÛÝ]˜[ÙJNÂˆ\ÜÙ\™\]X[
-™\Ý[™XÚ\Ú[Û‹	ÒSÓÓTUIÊNÂŸJNÂ‚\Ý
-	ÜÞ[]XÈY[YšY\ˆÛÛ\Ú[Û‹\ØY™]H˜Z[\™HØ[››Ý\ÜÉË
-
-HOˆÂˆÛÛœÝ™\Ý[H]˜[X]PŒÕ˜[Y][ÛŠˆÝ›Û™ÐÝ\ÝÛY\Š
-KˆŒ
-Âˆ]\Ù]ˆÈÞ[]X×ÚY[YšY\—ØÛÛ\Ú[Û—ÜØY™Nˆ˜[ÙHKˆ\ÝÎˆÈÞ[]X×ÚY[YšY\—ÜØY™]WÜ\ÜÙYˆ˜[ÙHKˆJKˆÛÛ™šYËˆ
-NÂˆ\ÜÙ\™\]X[
-™\Ý[œŒÙØ]KœÝ]\Ë	ÒSÓÓTUIÊNÂˆ\ÜÙ\™\]X[
-™\Ý[œŒÙØ]K˜ÚXÚÜËœÞ[]X×ÚY[YšY\—ØÛÛ\Ú[Û—ÜØY™K˜[ÙJNÂŸJNÂ‚\Ý
-	ÛZ\ÜÚ[™ÈÚ[™ÙYYš[HÙXÜ™]ØØ[ˆØ[››Ý\ÜÉË
-
-HOˆÂˆÛÛœÝ™\Ý[H]˜[X]PŒÕ˜[Y][ÛŠˆÝ›Û™ÐÝ\ÝÛY\Š
-KˆŒ
-È\ÝÎˆÈÚ[™ÙYÙš[WÜÙXÜ™]ÜØØ[—Ü\ÜÙYˆ˜[ÙHHJKˆÛÛ™šYËˆ
-NÂˆ\ÜÙ\™\]X[
-™\Ý[œŒÙØ]KœÝ]\Ë	ÒSÓÓTUIÊNÂˆ\ÜÙ\™\]X[
-™\Ý[œŒÙØ]K˜ÚXÚÜË˜Ú[™ÙYÙš[WÜÙXÜ™]ÜØØ[—Ü\ÜÙY˜[ÙJNÂŸJNÂ‚\Ý
-	Ù\HÜˆ›Û‹Y^XÝZXY™[˜ÚX\šÈ]šY[˜ÙHØ[››Ý\ÜÉË
-
-HOˆÂˆÛÛœÝ™\Ý[H]˜[X]PŒÕ˜[Y][ÛŠˆÝ›Û™ÐÝ\ÝÛY\Š
-KˆŒ
-È™\›ÙXÚXš[]NˆÈÚ]Ù\NˆYK^XÝÚXYØ™[˜ÚX\š×Ù]šY[˜ÙNˆ˜[ÙHHJKˆÛÛ™šYËˆ
-NÂˆ\ÜÙ\™\]X[
-™\Ý[œŒÙØ]KœÝ]\Ë	ÒSÓÓTUIÊNÂˆ\ÜÙ\™\]X[
-™\Ý[œŒÙØ]K˜ÚXÚÜË˜ÛX[—ÙÚ]Ù]˜[X][Û‹˜[ÙJNÂˆ\ÜÙ\™\]X[
-™\Ý[œŒÙØ]K˜ÚXÚÜË™^XÝÚXYØ™[˜ÚX\š×Ù]šY[˜ÙK˜[ÙJNÂŸJNÂ‚\Ý
-	ØÛÛ\]YÛÝ]Ú]›ÈYX\Ý\˜X›HY˜[YÙHÝÜÈÜˆ™Yœ˜[Y\ÉË
-
-HOˆÂˆÛÛœÝ™\Ý[H]˜[X]PŒÕ˜[Y][ÛŠˆÝ›Û™ÐÝ\ÝÛY\Š
-KˆŒ
-Âˆ™\Ý[ˆÂˆYX\Ý\˜X›WØY˜[YÙNˆ	ÖQTÉËˆÛÝ]ÛYX\Ý\˜X›WØY˜[YÙNˆ	Ó“ÉËˆŒÙXÚ\Ú[ÛŽˆ	ÔTÔ×ÐÐS‘QUIËˆKˆJKˆÛÛ™šYËˆ
-NÂˆ\ÜÙ\™\]X[
-™\Ý[œŒÙØ]KœÝ]\Ë	ÔÕÔÓÔ—Ô‘Q”SQIÊNÂˆ\ÜÙ\™\]X[
-™\Ý[™XÚ\Ú[Û‹	ÔÕÔÓÔ—Ô‘Q”SQIÊNÂŸJNÂ
+test('catastrophic recall collapse narrows an otherwise complete candidate', () => {
+  const result = evaluateB63Validation(
+    strongCustomer(),
+    r0({ result: { catastrophic_recall_collapse: true } }),
+    config,
+  );
+  assert.equal(result.r0_gate.status, 'NARROW');
+  assert.equal(result.decision, 'NARROW');
+});

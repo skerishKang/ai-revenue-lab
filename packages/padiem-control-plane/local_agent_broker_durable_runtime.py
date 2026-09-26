@@ -115,6 +115,20 @@ class LocalAgentBrokerDurableRuntime:
             return result
         return self.transaction(operation)
 
+    def reconcile_expired_command(self, payload: dict) -> dict:
+        """#3121 — reconcile one expired ADMITTED command without replay.
+
+        Like a canonical acknowledgement, a successful reconciliation is
+        terminal, so the stored command material is purged in the same
+        transaction and can never resolve again.
+        """
+        def operation() -> dict:
+            result = self.facade().reconcile_expired_command(payload)
+            if result.get("ok") is True:
+                self.material_store.purge_command(result["command"]["command_id"])
+            return result
+        return self.transaction(operation)
+
     def safe_dict(self) -> dict[str, Any]:
         return {
             "durable_runtime_composition": True,

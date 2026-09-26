@@ -89,6 +89,12 @@ class BrokerCommandState(str, Enum):
     QUEUED = "queued"
     ADMITTED = "admitted"
     ACKNOWLEDGED = "acknowledged"
+    #: #3121 — explicit terminal reconciliation outcome for an admitted command
+    #: whose hard deadline passed without a provable execution result. It is a
+    #: fail-closed terminal state: never pollable, never re-admittable, never
+    #: acknowledgeable, never re-reconcilable, and it fabricates no execution
+    #: fact (no termination, no exit code, no acknowledgement timestamp).
+    EXPIRED = "expired"
 
 
 @dataclass(frozen=True, slots=True)
@@ -231,6 +237,13 @@ class BrokerCommandRecord:
             raise ControlPlaneContractError("invalid_broker_command", "acknowledged command requires acknowledged_at")
         if self.state is BrokerCommandState.ACKNOWLEDGED and self.termination is None:
             raise ControlPlaneContractError("invalid_broker_command", "acknowledged command requires bounded termination")
+        if self.state is BrokerCommandState.EXPIRED and any(
+            value is not None for value in (self.acknowledged_at, self.termination, self.exit_code)
+        ):
+            raise ControlPlaneContractError(
+                "invalid_broker_command",
+                "expired reconciliation is terminal and cannot fabricate an execution outcome",
+            )
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -490,7 +503,14 @@ class InMemoryLocalAgentBrokerAuthority:
         binding = self._binding(binding_ref, now=now)
         command_id = _ref("command_id", command_id)
         if command_id in self._commands:
-            raise ControlPlaneContractError("duplicate_broker_command", "command_id has already been used")
+            return self._idempotent_enqueue_retry(
+                existing=self._commands[command_id],
+                binding_ref=binding.binding_ref,
+                run_id=run_id,
+                tool_request_ref=tool_request_ref,
+                request_fingerprint=request_fingerprint,
+                ttl_seconds=ttl_seconds,
+            )
         ttl = _ttl("ttl_seconds", ttl_seconds, minimum=1, maximum=MAX_COMMAND_TTL_SECONDS)
         sequence = self._last_sequence_by_binding.get(binding.binding_ref, 0) + 1
         revision_ref = self._revision_ref(binding_ref=binding.binding_ref, command_id=command_id)
@@ -509,6 +529,44 @@ class InMemoryLocalAgentBrokerAuthority:
         self._commands[command_id] = command
         self._last_sequence_by_binding[binding.binding_ref] = sequence
         return command
+
+    def _idempotent_enqueue_retry(
+        self,
+        *,
+        existing: BrokerCommandRecord,
+        binding_ref: str,
+        run_id: str,
+        tool_request_ref: str,
+        request_fingerprint: str,
+        ttl_seconds: int,
+    ) -> BrokerCommandRecord:
+        """Return the canonical command for an exact enqueue retry; fail closed otherwise.
+
+        Recovery for a lost enqueue response: a retry is exact only when every
+        caller-owned immutable request field matches the persisted command. The
+        server-owned projection (sequence, revision_ref, request_fingerprint,
+        lifetime) is returned untouched — never re-minted and never overwritten.
+        """
+        retried = (
+            binding_ref,
+            _ref("run_id", run_id),
+            _ref("tool_request_ref", tool_request_ref),
+            _digest("request_fingerprint", request_fingerprint),
+            _ttl("ttl_seconds", ttl_seconds, minimum=1, maximum=MAX_COMMAND_TTL_SECONDS),
+        )
+        persisted = (
+            existing.binding_ref,
+            existing.run_id,
+            existing.tool_request_ref,
+            existing.request_fingerprint,
+            int((existing.expires_at - existing.issued_at).total_seconds()),
+        )
+        if retried != persisted:
+            raise ControlPlaneContractError(
+                "duplicate_broker_command",
+                "command_id has already been used with a different immutable request",
+            )
+        return existing
 
     def poll(
         self,
@@ -629,6 +687,17 @@ class InMemoryLocalAgentBrokerAuthority:
             raise ControlPlaneContractError("broker_command_not_found", "command was not found") from exc
         if command.credential_generation != binding.credential_generation:
             raise ControlPlaneContractError("stale_broker_command_generation", "command belongs to a stale credential generation")
+        if command.state is BrokerCommandState.ACKNOWLEDGED:
+            return self._idempotent_acknowledge_retry(
+                command=command,
+                binding=binding,
+                admission_ref=admission_ref,
+                evidence_ref=evidence_ref,
+                revision_ref=revision_ref,
+                termination=termination,
+                request_id=request_id,
+                exit_code=exit_code,
+            )
         if command.state is not BrokerCommandState.ADMITTED:
             raise ControlPlaneContractError("broker_ack_without_admission", "command must be admitted exactly once before acknowledgement")
         echoed_revision_ref = _ref("revision_ref", revision_ref)
@@ -662,6 +731,167 @@ class InMemoryLocalAgentBrokerAuthority:
         self._commands[command.command_id] = acknowledged
         return acknowledged
 
+    def reconcile_expired_command(
+        self,
+        *,
+        session_id: str,
+        binding_ref: str,
+        credential: bytes,
+        command_id: str,
+        admission_ref: str,
+        revision_ref: str,
+        request_id: str,
+        request_fingerprint: str,
+        termination: str | None,
+        exit_code: int | None,
+        now: datetime,
+    ) -> BrokerCommandRecord:
+        """Reconcile one expired ADMITTED command without replay (#3121).
+
+        The canonical paths cannot move an admitted command once its hard
+        deadline has passed: `poll` returns queued commands only, re-admission
+        is a rejected replay, and `acknowledge` refuses an expired command —
+        which left such commands permanently stuck. This operation is the
+        single fail-closed reconciliation exit for that state, and nothing
+        else:
+
+        * it is admission-correlated, not session-correlated: the echoing
+          device must present the exact admitted `admission_ref`, server-owned
+          `revision_ref`, `request_id` and `request_fingerprint` under the
+          binding and credential generation that admitted the command, so a
+          restarted device on a fresh session can reconcile but nothing else
+          can;
+        * it never re-queues, re-admits, re-executes or mints a second
+          sequence/revision/fingerprint — every correlation on the record is
+          preserved verbatim and only the terminal state advances;
+        * with a bounded execution termination it records the late terminal
+          result exactly once (ADMITTED -> ACKNOWLEDGED);
+        * without one it records an explicit terminal EXPIRED outcome and
+          fails closed rather than inventing an execution fact;
+        * it is terminal: repeated reconciliation, later acknowledgement and
+          later re-admission are refused, so a terminal command never reopens.
+        """
+        now = _aware("now", now)
+        binding = self._authenticate(binding_ref, credential, now=now)
+        self._session(session_id, binding=binding, now=now)
+        command_id = _ref("command_id", command_id)
+        try:
+            command = self._commands[command_id]
+        except KeyError as exc:
+            raise ControlPlaneContractError("broker_command_not_found", "command was not found") from exc
+        if command.binding_ref != binding.binding_ref:
+            raise ControlPlaneContractError("broker_command_scope_mismatch", "command does not belong to this device binding")
+        if command.credential_generation != binding.credential_generation:
+            raise ControlPlaneContractError("stale_broker_command_generation", "command belongs to a stale credential generation")
+        if command.state is not BrokerCommandState.ADMITTED:
+            raise ControlPlaneContractError(
+                "broker_command_not_reconcilable",
+                "only an admitted command can be reconciled and a reconciled command never reopens",
+            )
+        if now < command.expires_at:
+            raise ControlPlaneContractError(
+                "broker_command_not_expired",
+                "canonical acknowledgement remains the only terminal path before the hard deadline",
+            )
+        echoed_revision_ref = _ref("revision_ref", revision_ref)
+        if echoed_revision_ref != command.revision_ref:
+            raise ControlPlaneContractError(
+                "broker_reconcile_revision_mismatch",
+                "reconciliation revision_ref does not echo the server-owned command revision",
+            )
+        echoed_request_id = _ref("request_id", request_id)
+        if echoed_request_id != command.request_id:
+            raise ControlPlaneContractError(
+                "broker_reconcile_request_id_mismatch",
+                "reconciliation request_id does not match the admitted material request",
+            )
+        echoed_fingerprint = _digest("request_fingerprint", request_fingerprint)
+        if echoed_fingerprint != command.request_fingerprint:
+            raise ControlPlaneContractError(
+                "broker_reconcile_fingerprint_mismatch",
+                "reconciliation request_fingerprint does not match the admitted command",
+            )
+        echoed_admission_ref = _ref("admission_ref", admission_ref)
+        if echoed_admission_ref != command.admission_ref:
+            raise ControlPlaneContractError(
+                "broker_reconcile_correlation_mismatch",
+                "reconciliation does not match the admitted command evidence",
+            )
+        bounded_exit_code = _bounded_exit_code("exit_code", exit_code)
+        if termination is None:
+            # Explicit unknown-execution reconciliation: fail closed to a
+            # terminal EXPIRED outcome instead of inventing an execution fact.
+            if bounded_exit_code is not None:
+                raise ControlPlaneContractError(
+                    "broker_reconcile_invalid_termination",
+                    "an unknown-execution reconciliation cannot carry an exit code",
+                )
+            reconciled = replace(command, state=BrokerCommandState.EXPIRED)
+        else:
+            if not isinstance(termination, str) or termination not in _EXECUTION_TERMINATIONS:
+                raise ControlPlaneContractError(
+                    "broker_reconcile_invalid_termination",
+                    "reconciliation must carry a bounded execution termination or none at all",
+                )
+            reconciled = replace(
+                command,
+                state=BrokerCommandState.ACKNOWLEDGED,
+                acknowledged_at=now,
+                termination=termination,
+                exit_code=bounded_exit_code,
+            )
+        self._commands[command.command_id] = reconciled
+        return reconciled
+
+
+    def _idempotent_acknowledge_retry(
+        self,
+        *,
+        command: BrokerCommandRecord,
+        binding: BrokerDeviceBinding,
+        admission_ref: str,
+        evidence_ref: str,
+        revision_ref: str,
+        termination: str,
+        request_id: str,
+        exit_code: int | None,
+    ) -> BrokerCommandRecord:
+        """Re-serve the persisted acknowledged command for an exact acknowledgement retry.
+
+        Recovery for a lost acknowledgement response only: every canonical ack field
+        is re-validated against the persisted acknowledged command and any difference
+        fails closed. No admission is re-created, terminal state is never reopened,
+        and the persisted record is returned untouched.
+
+        #3128: a restarted device necessarily holds a *new* session, so requiring
+        the admitting session here made this retry unreachable exactly when it was
+        needed. The retry is therefore correlated on the admitting binding plus the
+        exact admission/evidence/revision/request/termination/exit-code tuple. The
+        caller's credential, session-scope and credential-generation checks still
+        apply unchanged. This relaxation covers the already-terminal retry only: the
+        ADMITTED acknowledgement path above still requires the admitting session.
+        """
+        echoed_revision_ref = _ref("revision_ref", revision_ref)
+        if echoed_revision_ref != command.revision_ref:
+            raise ControlPlaneContractError("broker_ack_revision_mismatch", "acknowledgement revision_ref does not echo the server-owned command revision")
+        if not isinstance(termination, str) or termination not in _EXECUTION_TERMINATIONS:
+            raise ControlPlaneContractError("broker_ack_invalid_termination", "acknowledgement must carry a bounded execution termination")
+        echoed_request_id = _ref("request_id", request_id)
+        if echoed_request_id != command.request_id:
+            raise ControlPlaneContractError("broker_ack_request_id_mismatch", "acknowledgement request_id does not match the admitted material request")
+        bounded_exit_code = _bounded_exit_code("exit_code", exit_code)
+        expected = (
+            binding.binding_ref,
+            _ref("admission_ref", admission_ref),
+            _ref("evidence_ref", evidence_ref),
+        )
+        actual = (command.binding_ref, command.admission_ref, command.evidence_ref)
+        if actual != expected:
+            raise ControlPlaneContractError("broker_ack_correlation_mismatch", "acknowledgement does not match admitted command evidence")
+        if termination != command.termination or bounded_exit_code != command.exit_code:
+            raise ControlPlaneContractError("broker_ack_conflict", "acknowledgement retry does not match the persisted acknowledged command")
+        return command
+
 
 SERVER_SIDE_LOCAL_AGENT_BROKER_AUTHORITY = True
 KEYED_DEVICE_CREDENTIAL_DIGEST_ONLY = True
@@ -688,6 +918,13 @@ RAW_STDOUT_IN_BROKER_COMMAND = False
 RAW_STDERR_IN_BROKER_COMMAND = False
 REVISION_CORRELATION = True
 REVISION_CORRELATION_THROUGH_MATERIAL = True
+ENQUEUE_EXACT_RETRY_IDEMPOTENT = True
+ENQUEUE_RETRY_REVISION_REF_STABLE = True
+ENQUEUE_RETRY_SEQUENCE_STABLE = True
+ACK_EXACT_RETRY_IDEMPOTENT = True
+ACK_RETRY_DOES_NOT_REOPEN = True
+EXECUTION_REPLAY_AUTHORITY = False
+TERMINAL_REOPEN = False
 REQUEST_ID_RETURNED_AND_EXACT = True
 EXIT_CODE_BOUNDED_RETURN = True
 RESULT_RETURN_IS_BOUNDED = True
@@ -696,4 +933,19 @@ RAW_DEVICE_SECRET_RETURNED = False
 CAPABILITY_AUTHORITY_DUPLICATED = False
 TASK_ADMISSION_AUTHORITY_DUPLICATED = False
 REPLAY_AUTHORITY_DUPLICATED = False
+
+# --- issue #3121: expired-ADMITTED reconciliation without replay ------------
+EXPIRED_ADMITTED_PERMANENT_STUCK = False
+EXPIRED_ADMITTED_RECONCILIATION_PATH = True
+LATE_TERMINAL_RESULT_RECONCILIATION = True
+UNKNOWN_EXECUTION_OUTCOME_FAILS_CLOSED = True
+AUTOMATIC_COMMAND_REPLAY = False
+AUTOMATIC_REEXECUTION = False
+SECOND_SEQUENCE_MINT = False
+SECOND_REVISION_MINT = False
+SECOND_FINGERPRINT_AUTHORITY = False
+RECONCILIATION_MINTS_CORRELATION = False
+RECONCILIATION_ALLOWABLE_STATES = frozenset({BrokerCommandState.ADMITTED})
+RECONCILIATION_TERMINAL_STATES = frozenset({BrokerCommandState.ACKNOWLEDGED, BrokerCommandState.EXPIRED})
+RAW_CREDENTIAL_LOG = False
 MAX_BOUNDED_EXIT_CODE = MAX_BOUNDED_EXIT_CODE

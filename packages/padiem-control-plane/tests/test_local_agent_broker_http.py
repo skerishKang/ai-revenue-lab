@@ -302,6 +302,67 @@ def test_server_clock_owns_session_heartbeat_and_ack_timestamps() -> None:
     assert _parsed_timestamp(acknowledged.body["command"]["acknowledged_at"]) == BASE + timedelta(seconds=7)
 
 
+def test_acknowledge_lost_response_retry_returns_persisted_acknowledged_command() -> None:
+    authority, rpc, clock, _, _, handler, auth = _fixture()
+    opened = _request(handler, route="/session", payload=_session_payload(client_now=BASE + timedelta(days=2)), auth=auth)
+    assert opened.status == 200 and opened.body["ok"] is True
+
+    queued = rpc.enqueue_command(
+        {
+            "command_id": "command.http.1",
+            "binding_ref": "binding.http.1",
+            "run_id": "run.http.1",
+            "tool_request_ref": "tool-request.http.1",
+            "request_fingerprint": FINGERPRINT,
+            "now": (BASE + timedelta(seconds=2)).isoformat(),
+        }
+    )
+    assert queued["ok"] is True
+
+    admitted = authority.admit_command(
+        admission_ref="admission.http.1",
+        evidence_ref="evidence.http.1",
+        session_id="session.http.1",
+        binding_ref="binding.http.1",
+        credential=CREDENTIAL,
+        command_id="command.http.1",
+        request_fingerprint=FINGERPRINT,
+        request_id="request.http.1",
+        now=BASE + timedelta(seconds=5),
+    )
+    assert admitted.admission_ref == "admission.http.1"
+
+    ack_payload = {
+        "session_id": "session.http.1",
+        "binding_ref": "binding.http.1",
+        "credential_b64": _encoded(),
+        "command_id": "command.http.1",
+        "admission_ref": "admission.http.1",
+        "evidence_ref": "evidence.http.1",
+        "revision_ref": queued["command"]["revision_ref"],
+        "termination": "exited",
+        "request_id": "request.http.1",
+        "exit_code": 0,
+        "now": (BASE + timedelta(days=5)).isoformat(),
+    }
+    clock.now = BASE + timedelta(seconds=7)
+    acknowledged = _request(handler, route="/acknowledge", payload=ack_payload, auth=auth)
+    assert acknowledged.status == 200 and acknowledged.body["ok"] is True
+    assert acknowledged.body["command"]["state"] == "acknowledged"
+
+    clock.now = BASE + timedelta(seconds=8)
+    retried = _request(handler, route="/acknowledge", payload=ack_payload, auth=auth)
+    assert retried.status == 200 and retried.body["ok"] is True
+    assert retried.body["command"] == acknowledged.body["command"]
+    assert retried.body["command"]["acknowledged_at"] == acknowledged.body["command"]["acknowledged_at"]
+
+    clock.now = BASE + timedelta(seconds=9)
+    conflicting = _request(handler, route="/acknowledge", payload=dict(ack_payload, exit_code=1), auth=auth)
+    assert conflicting.status == 200
+    assert conflicting.body["ok"] is False
+    assert conflicting.body["error"]["code"] == "broker_ack_conflict"
+
+
 def test_material_resolution_is_bound_to_exact_canonical_fingerprint_and_sequence() -> None:
     for resolver, expected_code in (
         (_MaterialResolver(sequence=1, fingerprint="b" * 64), "local_agent_http_invalid_request"),

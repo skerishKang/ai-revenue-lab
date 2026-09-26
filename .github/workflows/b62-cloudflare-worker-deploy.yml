@@ -29,6 +29,13 @@ jobs:
       worker_state: ${{ steps.preflight.outputs.worker_state }}
       subdomain: ${{ steps.preflight.outputs.subdomain }}
       b14_http: ${{ steps.preflight.outputs.b14_http }}
+      # #3109: B14 health is recorded, not gating. These two outputs make the
+      # outcome explicit and auditable: `ok`, `unavailable_expected` (a degraded
+      # service that answered) or `check_error` (the probe itself could not
+      # complete). Neither value blocks the deploy; the Cloudflare facts
+      # (`worker_state`, `subdomain`) are the gate.
+      b14_health: ${{ steps.preflight.outputs.b14_health }}
+      b14_reason: ${{ steps.preflight.outputs.b14_reason }}
       b14_status: ${{ steps.preflight.outputs.b14_status }}
       b14_provider_mode: ${{ steps.preflight.outputs.b14_provider_mode }}
       b14_has_key: ${{ steps.preflight.outputs.b14_has_key }}
