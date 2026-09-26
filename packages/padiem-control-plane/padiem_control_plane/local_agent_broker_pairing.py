@@ -36,6 +36,11 @@ MIN_PAIRING_ISSUANCE_RATE_LIMIT = 1
 MAX_PAIRING_ISSUANCE_RATE_LIMIT = 60
 DEFAULT_PAIRING_ISSUANCE_RATE_LIMIT: int | None = None
 PAIRING_ISSUANCE_WINDOW_SECONDS = 600
+# #3102: the issuance counter map is itself an abuse surface, so it is bounded
+# independently of the pending-challenge capacity. Scopes that have been idle
+# for a full window are pruned, and the map is additionally capped so a burst of
+# brand-new scopes cannot grow it without limit.
+MAX_TRACKED_PAIRING_ISSUANCE_SCOPES = 4_096
 MIN_PAIRING_CREDENTIAL_TTL_SECONDS = 300
 MAX_PAIRING_CREDENTIAL_TTL_SECONDS = 2_592_000
 DEFAULT_PAIRING_CREDENTIAL_TTL_SECONDS = 2_592_000
@@ -312,7 +317,7 @@ class InMemoryBrokerPairingAuthority:
             )
         else:
             self._issuance_rate_limit = None
-        self._issuance_counters: dict[str, tuple[datetime, int]] = {}
+        self._issuance_counters: dict[tuple[str, str], tuple[datetime, int]] = {}
         self._pending: dict[str, _PendingBrokerPairingChallenge] = {}
 
     @property
@@ -338,16 +343,18 @@ class InMemoryBrokerPairingAuthority:
     ) -> None:
         """Bound live pairing-code issuance for one account/workspace scope.
 
-        The scope key is derived from the already-validated server-side refs. No
-        secret, code or caller-supplied value is retained here, and the counter
-        only ever stores a window start and an integer count.
+        The scope is keyed by the **pair itself**, never by a joined string, so
+        two distinct (account, workspace) pairs can never collapse into one rate
+        bucket regardless of which separator characters a future reference format
+        admits. Nothing but a window start and an integer count is retained.
         """
-        scope = f"{account_ref}/{workspace_ref}"
         if self._issuance_rate_limit is None:
             # Source-only posture: Production activation is not done, so no
             # per-scope bound is bound yet. The global pending capacity still
             # applies, and `safe_dict()` reports this explicitly.
             return
+        self._prune_issuance_counters(now=now)
+        scope = (account_ref, workspace_ref)
         window_start, issued = self._issuance_counters.get(scope, (now, 0))
         elapsed = (now - window_start).total_seconds()
         if elapsed >= PAIRING_ISSUANCE_WINDOW_SECONDS:
@@ -357,21 +364,51 @@ class InMemoryBrokerPairingAuthority:
                 "pairing_issuance_rate_limited",
                 "broker pairing challenge issuance exceeded the bounded per-scope rate",
             )
+        if scope not in self._issuance_counters:
+            self._evict_issuance_scope_if_needed()
         self._issuance_counters[scope] = (window_start, issued + 1)
+
+    def _prune_issuance_counters(self, *, now: datetime) -> None:
+        """Drop scopes that have been idle for at least one full window.
+
+        An inactive scope can no longer refuse an issuance, so keeping it would
+        only grow the map. This is what stops the abuse guard from becoming an
+        unbounded-memory surface of its own.
+        """
+        stale = [
+            scope
+            for scope, (window_start, _issued) in self._issuance_counters.items()
+            if (now - window_start).total_seconds() >= PAIRING_ISSUANCE_WINDOW_SECONDS
+        ]
+        for scope in stale:
+            del self._issuance_counters[scope]
+
+    def _evict_issuance_scope_if_needed(self) -> None:
+        """Cap the tracked-scope count, oldest window first."""
+        if len(self._issuance_counters) < MAX_TRACKED_PAIRING_ISSUANCE_SCOPES:
+            return
+        oldest = min(self._issuance_counters, key=lambda s: self._issuance_counters[s][0])
+        del self._issuance_counters[oldest]
+
+    @property
+    def tracked_issuance_scope_count(self) -> int:
+        return len(self._issuance_counters)
 
     def issuance_rate_state(self, *, account_ref: str, workspace_ref: str) -> dict[str, Any]:
         """Secret-free support evidence about one scope's bounded issuance."""
         account_ref = _ref(account_ref, "account_ref")
         workspace_ref = _ref(workspace_ref, "workspace_ref")
-        scope = f"{account_ref}/{workspace_ref}"
+        scope = (account_ref, workspace_ref)
         window_start, issued = self._issuance_counters.get(scope, (None, 0))
         return {
-            "scope": scope,
+            "scope": f"{account_ref}/{workspace_ref}",
             "issued_in_window": issued,
             "rate_limit": self._issuance_rate_limit,
             "rate_bound_active": self._issuance_rate_limit is not None,
             "window_seconds": PAIRING_ISSUANCE_WINDOW_SECONDS,
             "window_started_at": None if window_start is None else window_start.isoformat().replace("+00:00", "Z"),
+            "tracked_scopes": len(self._issuance_counters),
+            "max_tracked_scopes": MAX_TRACKED_PAIRING_ISSUANCE_SCOPES,
         }
 
     def issue_challenge(
@@ -534,6 +571,10 @@ class InMemoryBrokerPairingAuthority:
             "production_pairing_activated": False,
             "issuance_window_seconds": PAIRING_ISSUANCE_WINDOW_SECONDS,
             "issuance_rate_bounded": True,
+            "issuance_scope_keyed_by_pair": True,
+            "tracked_issuance_scopes": len(self._issuance_counters),
+            "max_tracked_issuance_scopes": MAX_TRACKED_PAIRING_ISSUANCE_SCOPES,
+            "issuance_scopes_pruned": True,
             "generic_rate_authority": False,
             "server_owned_binding_refs": True,
             "server_owned_credential_digests": True,

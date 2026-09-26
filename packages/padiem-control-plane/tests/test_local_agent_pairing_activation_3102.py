@@ -21,9 +21,11 @@ from padiem_control_plane.contracts import ControlPlaneContractError
 from padiem_control_plane.local_agent_broker import InMemoryLocalAgentBrokerAuthority
 from padiem_control_plane.local_agent_broker_pairing import (
     MAX_PAIRING_ISSUANCE_RATE_LIMIT,
+    MAX_PENDING_PAIRING_CHALLENGES,
     MIN_PAIRING_ISSUANCE_RATE_LIMIT,
     MAX_PAIRING_TTL_SECONDS,
     MIN_PAIRING_TTL_SECONDS,
+    MAX_TRACKED_PAIRING_ISSUANCE_SCOPES,
     PAIRING_ISSUANCE_WINDOW_SECONDS,
     InMemoryBrokerPairingAuthority,
 )
@@ -392,6 +394,100 @@ class SecretNegative3102Tests(unittest.TestCase):
         for step in tuple(ACTIVATION_RUNBOOK) + tuple(ROLLBACK_RUNBOOK):
             # A 32-hex pairing code or a 64-hex digest would be a leaked value.
             self.assertIsNone(re.search(r"\b[0-9a-f]{32,}\b", step), step)
+
+
+class IssuanceScopeKeyAndLifecycle3102Tests(unittest.TestCase):
+    """CENTRAL 5844646100: scope-key injectivity and bounded counter lifetime."""
+
+    def test_delimiter_ambiguous_scopes_stay_independent(self) -> None:
+        # Canonical refs admit '.', ':', '@', '+', '-' and '_'. A joined string
+        # key would let a future separator collapse distinct pairs; the pair key
+        # must not, and the support rendering must stay readable.
+        authority = _authority(issuance_rate_limit=1)
+        pairs = [
+            ("a.b", "c"),
+            ("a", "b.c"),
+            ("a-b", "c"),
+            ("a", "b-c"),
+            ("a:b", "c"),
+            ("a", "b:c"),
+            ("a_b", "c"),
+            ("a", "b_c"),
+        ]
+        for account, workspace in pairs:
+            with self.subTest(pair=(account, workspace)):
+                # Every pair gets its own budget: none may be refused because a
+                # different pair exhausted a shared string key.
+                _issue(authority, account=account, workspace=workspace)
+        self.assertEqual(authority.tracked_issuance_scope_count, len(pairs))
+
+    def test_a_pair_cannot_be_confused_with_its_concatenation(self) -> None:
+        authority = _authority(issuance_rate_limit=1)
+        _issue(authority, account="x", workspace="y")
+        # Same bucket, so the limit must hold for the identical pair.
+        with self.assertRaises(ControlPlaneContractError) as limited:
+            _issue(authority, account="x", workspace="y")
+        self.assertEqual(limited.exception.code, "pairing_issuance_rate_limited")
+
+    def test_inactive_scopes_are_actually_removed(self) -> None:
+        authority = _authority(issuance_rate_limit=2)
+        for index in range(5):
+            _issue(authority, account=f"acct-{index}")
+        self.assertEqual(authority.tracked_issuance_scope_count, 5)
+        # A full window later, every scope is idle and must have been pruned.
+        _issue(
+            authority,
+            account="acct-fresh",
+            now=BASE + timedelta(seconds=PAIRING_ISSUANCE_WINDOW_SECONDS + 1),
+        )
+        self.assertEqual(authority.tracked_issuance_scope_count, 1)
+
+    def test_counter_cardinality_stays_bounded_under_many_scopes(self) -> None:
+        authority = _authority(issuance_rate_limit=1)
+        # Roll the window forward periodically so pending challenges are pruned
+        # and the run can exceed both caps; only the counter map is under test.
+        total = MAX_TRACKED_PAIRING_ISSUANCE_SCOPES + 500
+        per_window = 500
+        for batch in range(0, total, per_window):
+            now = BASE + timedelta(
+                seconds=PAIRING_ISSUANCE_WINDOW_SECONDS * (batch // per_window)
+            )
+            for offset in range(min(per_window, total - batch)):
+                _issue(authority, account=f"bulk-{batch + offset}", now=now)
+        self.assertLessEqual(
+            authority.tracked_issuance_scope_count,
+            MAX_TRACKED_PAIRING_ISSUANCE_SCOPES,
+        )
+        safe = authority.safe_dict()
+        self.assertEqual(safe["max_tracked_issuance_scopes"], MAX_TRACKED_PAIRING_ISSUANCE_SCOPES)
+        self.assertTrue(safe["issuance_scopes_pruned"])
+        self.assertTrue(safe["issuance_scope_keyed_by_pair"])
+
+    def test_capacity_error_precedence_is_preserved(self) -> None:
+        # The global pending guard must still win over the per-scope rate guard,
+        # even when the rate limit is generous enough that it would not fire.
+        authority = _authority(issuance_rate_limit=MAX_PAIRING_ISSUANCE_RATE_LIMIT)
+        for index in range(MAX_PENDING_PAIRING_CHALLENGES):
+            _issue(authority, account=f"cap-{index}")
+        with self.assertRaises(ControlPlaneContractError) as exhausted:
+            _issue(authority, account="cap-overflow")
+        self.assertEqual(exhausted.exception.code, "pairing_capacity_exhausted")
+
+    def test_rate_window_rollover_still_works_after_pruning(self) -> None:
+        authority = _authority(issuance_rate_limit=2)
+        for _ in range(2):
+            _issue(authority)
+        with self.assertRaises(ControlPlaneContractError):
+            _issue(authority)
+        _issue(authority, now=BASE + timedelta(seconds=PAIRING_ISSUANCE_WINDOW_SECONDS + 1))
+
+    def test_support_rendering_keeps_the_readable_scope(self) -> None:
+        authority = _authority(issuance_rate_limit=4)
+        _issue(authority)
+        state = authority.issuance_rate_state(account_ref=ACCOUNT, workspace_ref=WORKSPACE)
+        self.assertEqual(state["scope"], f"{ACCOUNT}/{WORKSPACE}")
+        self.assertEqual(state["issued_in_window"], 1)
+        self.assertEqual(state["tracked_scopes"], 1)
 
 
 if __name__ == "__main__":  # pragma: no cover
