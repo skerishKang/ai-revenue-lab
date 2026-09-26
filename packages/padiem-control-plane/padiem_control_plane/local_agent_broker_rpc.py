@@ -147,6 +147,7 @@ class LocalAgentBrokerRpcFacade:
                 credential=_credential(payload["credential_b64"]),
                 command_id=payload["command_id"],
                 request_fingerprint=payload["request_fingerprint"],
+                request_id=payload["request_id"],
                 now=_dt(payload["now"]),
             )
             return {"ok": True, "admission": admission.to_public_dict()}
@@ -162,6 +163,10 @@ class LocalAgentBrokerRpcFacade:
                 command_id=payload["command_id"],
                 admission_ref=payload["admission_ref"],
                 evidence_ref=payload["evidence_ref"],
+                revision_ref=payload["revision_ref"],
+                termination=payload["termination"],
+                request_id=payload["request_id"],
+                exit_code=payload["exit_code"],
                 now=_dt(payload["now"]),
             )
             return {"ok": True, "command": command.safe_dict()}
