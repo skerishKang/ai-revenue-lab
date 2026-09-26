@@ -372,6 +372,12 @@ class InMemoryBrokerPairingAuthority:
             # that scope's consumed budget and hand it a fresh one, turning the
             # abuse guard into a way to *escape* it. Refusing here bounds memory
             # without ever weakening a live per-scope bound.
+            #
+            # There is deliberately no eviction helper in this module. An earlier
+            # revision dropped the oldest tracked scope to admit a new one; because
+            # a budget lives for the full issuance window, that discarded counters
+            # whose window had not expired, and a flood of new scopes could reset
+            # existing rate limits. Memory is bounded by pruning only.
             raise ControlPlaneContractError(
                 "pairing_issuance_scope_capacity_exhausted",
                 "tracked broker pairing issuance scopes exceed the bounded capacity",
@@ -392,26 +398,6 @@ class InMemoryBrokerPairingAuthority:
         ]
         for scope in stale:
             del self._issuance_counters[scope]
-
-    def _evict_issuance_scope_if_needed(self) -> None:
-        """Removed: evicting a live counter is a fail-open path.
-
-        An earlier revision dropped the oldest tracked scope to admit a new one.
-        Because a scope's budget lives for the full `PAIRING_ISSUANCE_WINDOW_SECONDS`,
-        that eviction could discard a counter whose window had not expired, giving
-        that scope a fresh budget and letting it issue again inside its own window.
-        A flood of new scopes could therefore *reset* existing rate limits, which
-        inverts the guard's purpose.
-
-        The cap now fails closed in `_enforce_issuance_rate_limit` instead: an
-        unknown scope is refused with `pairing_issuance_scope_capacity_exhausted`
-        while every tracked scope keeps enforcing its own consumed budget until its
-        window actually expires. Memory is bounded by pruning, not by forgetting
-        live state.
-        """
-        raise NotImplementedError(
-            "active issuance counters must never be evicted; see pairing_issuance_scope_capacity_exhausted"
-        )
 
     @property
     def tracked_issuance_scope_count(self) -> int:

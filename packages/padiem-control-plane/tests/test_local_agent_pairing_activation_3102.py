@@ -26,6 +26,7 @@ from padiem_control_plane.local_agent_broker_pairing import (
     MAX_PAIRING_TTL_SECONDS,
     MIN_PAIRING_TTL_SECONDS,
     MAX_TRACKED_PAIRING_ISSUANCE_SCOPES,
+    MIN_PAIRING_TTL_SECONDS,
     PAIRING_ISSUANCE_WINDOW_SECONDS,
     InMemoryBrokerPairingAuthority,
 )
@@ -455,6 +456,7 @@ class IssuanceScopeKeyAndLifecycle3102Tests(unittest.TestCase):
         self.assertLessEqual(
             authority.tracked_issuance_scope_count,
             MAX_TRACKED_PAIRING_ISSUANCE_SCOPES,
+    MIN_PAIRING_TTL_SECONDS,
         )
         safe = authority.safe_dict()
         self.assertEqual(safe["max_tracked_issuance_scopes"], MAX_TRACKED_PAIRING_ISSUANCE_SCOPES)
@@ -489,89 +491,114 @@ class IssuanceScopeKeyAndLifecycle3102Tests(unittest.TestCase):
 
 
 class NoActiveEviction3102Tests(unittest.TestCase):
-    """CENTRAL second blocker: a live counter must never be evicted for a new scope.
+    """CENTRAL: a live counter must never be evicted for a new scope.
 
-    Evicting an unexpired counter forgets that scope's consumed budget, so a flood
-    of new scopes would *reset* existing rate limits. The cap therefore fails
-    closed, and every tracked scope keeps enforcing its budget until its window
-    actually expires.
+    Everything here goes through the public `issue_challenge()` entry point, not
+    the private limiter. The scope cap is reachable in production precisely
+    because the challenge TTL can be as short as `MIN_PAIRING_TTL_SECONDS` (30s)
+    while the issuance window is 600s: once the pending challenges expire they are
+    pruned, but every rate counter is still live, so the scope cap is what a new
+    scope meets.
     """
 
-    @staticmethod
-    def _fill_to_cap(authority):
+    #: Short enough that pending challenges expire inside the issuance window.
+    SHORT_TTL_SECONDS = MIN_PAIRING_TTL_SECONDS
+
+    @classmethod
+    def _fill_to_cap(cls, authority):
         for index in range(MAX_TRACKED_PAIRING_ISSUANCE_SCOPES):
-            _issue(authority, account=f"scope-{index}", now=BASE)
+            _issue(
+                authority,
+                account=f"scope-{index}",
+                now=BASE,
+                ttl_seconds=cls.SHORT_TTL_SECONDS,
+            )
         assert authority.tracked_issuance_scope_count == MAX_TRACKED_PAIRING_ISSUANCE_SCOPES
         return authority
 
-    def test_the_tracked_scope_cap_fails_closed_for_a_new_scope(self) -> None:
+    def test_public_path_scope_cap_fails_closed(self) -> None:
         authority = self._fill_to_cap(_authority(issuance_rate_limit=1))
-        # Challenge TTL has rolled over, so pending state is prunable, but the
-        # 600s issuance window has not: every counter here is still live.
-        during = BASE + timedelta(seconds=31)
+        # Past the challenge TTL but well inside the 600s issuance window, so
+        # pending state is prunable while all 4096 counters stay live.
+        during = BASE + timedelta(seconds=self.SHORT_TTL_SECONDS + 1)
         with self.assertRaises(ControlPlaneContractError) as exhausted:
-            authority._enforce_issuance_rate_limit(
-                account_ref="brand-new-scope",
-                workspace_ref=WORKSPACE,
+            _issue(
+                authority,
+                account="brand-new-scope",
                 now=during,
+                ttl_seconds=self.SHORT_TTL_SECONDS,
             )
         self.assertEqual(
             exhausted.exception.code, "pairing_issuance_scope_capacity_exhausted"
         )
 
-    def test_original_scope_budget_survives_a_scope_flood(self) -> None:
+    def test_public_path_original_scope_budget_is_preserved(self) -> None:
         authority = self._fill_to_cap(_authority(issuance_rate_limit=1))
-        during = BASE + timedelta(seconds=31)
-        for index in range(50):
+        during = BASE + timedelta(seconds=self.SHORT_TTL_SECONDS + 1)
+        # A flood of unknown scopes must not be admitted, and must not be able to
+        # reset an existing scope's consumed budget.
+        for index in range(25):
             with self.assertRaises(ControlPlaneContractError):
-                authority._enforce_issuance_rate_limit(
-                    account_ref=f"flood-{index}",
-                    workspace_ref=WORKSPACE,
+                _issue(
+                    authority,
+                    account=f"flood-{index}",
                     now=during,
+                    ttl_seconds=self.SHORT_TTL_SECONDS,
                 )
         state = authority.issuance_rate_state(
             account_ref="scope-0", workspace_ref=WORKSPACE
         )
         self.assertEqual(state["issued_in_window"], 1)
         with self.assertRaises(ControlPlaneContractError) as limited:
-            authority._enforce_issuance_rate_limit(
-                account_ref="scope-0", workspace_ref=WORKSPACE, now=during
+            _issue(
+                authority,
+                account="scope-0",
+                now=during,
+                ttl_seconds=self.SHORT_TTL_SECONDS,
             )
         self.assertEqual(limited.exception.code, "pairing_issuance_rate_limited")
 
-    def test_a_tracked_scope_is_still_served_at_capacity(self) -> None:
+    def test_public_path_tracked_scope_with_budget_is_served_at_capacity(self) -> None:
         authority = self._fill_to_cap(_authority(issuance_rate_limit=2))
-        # Filling consumed 1 of 2. A tracked scope with budget left must still be
-        # served while the map is full; the cap refuses only unknown scopes.
-        during = BASE + timedelta(seconds=31)
-        authority._enforce_issuance_rate_limit(
-            account_ref="scope-0", workspace_ref=WORKSPACE, now=during
-        )
+        during = BASE + timedelta(seconds=self.SHORT_TTL_SECONDS + 1)
+        # Filling consumed 1 of 2 for scope-0, so it still has budget even though
+        # the map is full. The cap refuses unknown scopes only.
+        _issue(authority, account="scope-0", now=during, ttl_seconds=self.SHORT_TTL_SECONDS)
         state = authority.issuance_rate_state(
             account_ref="scope-0", workspace_ref=WORKSPACE
         )
         self.assertEqual(state["issued_in_window"], 2)
 
-    def test_stale_scope_pruning_still_works(self) -> None:
+    def test_public_path_stale_scope_pruning_still_frees_capacity(self) -> None:
         authority = self._fill_to_cap(_authority(issuance_rate_limit=1))
+        # Past the full issuance window every counter has expired and is pruned,
+        # so a previously refused scope is admitted.
         after_window = BASE + timedelta(seconds=PAIRING_ISSUANCE_WINDOW_SECONDS + 1)
-        # Expired counters are pruned, so the previously refused scope is admitted
-        # and the map collapses back to just that one entry.
-        authority._enforce_issuance_rate_limit(
-            account_ref="brand-new-scope", workspace_ref=WORKSPACE, now=after_window
+        _issue(
+            authority,
+            account="brand-new-scope",
+            now=after_window,
+            ttl_seconds=self.SHORT_TTL_SECONDS,
         )
         self.assertEqual(authority.tracked_issuance_scope_count, 1)
 
-    def test_no_active_counter_eviction_helper_remains(self) -> None:
+    def test_no_active_eviction_helper_exists(self) -> None:
         authority = _authority(issuance_rate_limit=1)
-        with self.assertRaises(NotImplementedError):
-            authority._evict_issuance_scope_if_needed()
+        # The eviction helper is gone entirely, so the fail-open path cannot be
+        # reintroduced by calling it.
+        self.assertFalse(hasattr(authority, "_evict_issuance_scope_if_needed"))
+        self.assertFalse(
+            any(
+                "evict_issuance_scope" in name for name in dir(type(authority))
+            )
+        )
         safe = authority.safe_dict()
         self.assertEqual(safe["active_issuance_counter_eviction"], False)
         self.assertTrue(safe["issuance_scope_cap_fails_closed"])
 
-    def test_global_pending_capacity_still_precedes_the_scope_cap(self) -> None:
-        # Through the public path the global pending guard still reports first.
+    def test_global_pending_capacity_precedence_is_preserved(self) -> None:
+        # With a long challenge TTL the pending map fills first, so the global
+        # guard must still be what an overflow reports, exactly as before.
         authority = _authority(issuance_rate_limit=MAX_PAIRING_ISSUANCE_RATE_LIMIT)
         for index in range(MAX_PENDING_PAIRING_CHALLENGES):
             _issue(authority, account=f"cap-{index}")
