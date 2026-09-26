@@ -189,7 +189,34 @@ class LocalAgentBrokerDurableRuntime:
         return {"ok": True, "material": self.material_store.resolve(request)}
 
     def poll(self, payload: dict) -> dict:
-        return self.facade().poll(payload)
+        """Deliver only commands the device can actually run.
+
+        #3127 — a command whose material was never persisted is not
+        material-resolvable, so handing it to a device advertises work that
+        cannot start: the device would poll it, try to admit it, be refused,
+        and learn nothing. The canonical authority still decides *which*
+        commands are pollable; this only withholds the ones the device could
+        not execute, which is a fail-closed projection of the same Durable
+        Object's storage rather than a second queue.
+
+        The withholding is bounded, not permanent: a material-less command
+        ages out of the canonical poll window when its hard deadline passes, so
+        a later command becomes deliverable without any reconciliation step. In
+        the product path this cannot arise at all, because the only way to
+        create a command through the gateway is the atomic one.
+        """
+
+        def operation() -> dict:
+            result = self.facade().poll(payload)
+            if result.get("ok") is not True:
+                return result
+            deliverable = [
+                command
+                for command in result["commands"]
+                if self.material_store.has_persisted_material(command["command_id"])
+            ]
+            return {**result, "commands": deliverable}
+        return self.transaction(operation)
 
     def admit_command(self, payload: dict) -> dict:
         def operation() -> dict:
@@ -241,6 +268,7 @@ class LocalAgentBrokerDurableRuntime:
             "material_reused_on_exact_retry": True,
             "material_less_admission_refused": True,
             "material_less_acknowledgement_refused": True,
+            "missing_material_pollable": False,
             "production_mutation": False,
             "production_ready": False,
         }
@@ -260,3 +288,4 @@ MATERIAL_LESS_COMMAND_ADMITTABLE = False
 MATERIAL_LESS_COMMAND_ACKNOWLEDGABLE = False
 SECOND_MATERIAL_SEQUENCE_MINT = False
 SECOND_MATERIAL_REVISION_MINT = False
+MISSING_MATERIAL_POLLABLE = False

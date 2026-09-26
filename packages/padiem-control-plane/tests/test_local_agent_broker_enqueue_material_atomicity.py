@@ -285,6 +285,17 @@ def _request(command: dict, *, at: datetime) -> LocalAgentMaterialResolutionRequ
     )
 
 
+def _poll_payload(*, at: datetime, limit: int = 32, after_sequence: int = 0) -> dict:
+    return {
+        "session_id": "session.atomic.1",
+        "binding_ref": "binding.atomic.1",
+        "credential_b64": _encoded(CREDENTIAL),
+        "after_sequence": after_sequence,
+        "now": at.isoformat(),
+        "limit": limit,
+    }
+
+
 def _admit_payload(command: dict, *, at: datetime) -> dict:
     return {
         "admission_ref": f"admission.{command['command_id']}",
@@ -609,7 +620,71 @@ def test_atomic_path_declares_no_second_authority(tmp_path: Path) -> None:
     assert SECOND_MATERIAL_REVISION_MINT is False
 
 
-# --- 9. the product gateway cannot create a command by the split pair -------
+# --- 9. a command with no material is not delivered to a device ------------
+def test_command_without_material_is_not_pollable(tmp_path: Path) -> None:
+    """A device must never be handed work it cannot start.
+
+    `admit` and `resolve` already refuse such a command, but handing it over
+    would still advertise it: the device would poll it, fail to admit it, and
+    learn nothing. Poll withholds it too.
+    """
+
+    path = tmp_path / "do.sqlite3"
+    runtime = _runtime(path)
+    _register_and_open(runtime)
+
+    # Internal split write: durable, queued, no material.
+    runtime.enqueue_command(_enqueue_payload("command.nopol.1", now=BASE + timedelta(seconds=2)))
+    # Atomic write: same shape, but the material is bound in the same commit.
+    bound = runtime.enqueue_command_with_material(
+        _enqueue_payload("command.nopol.2", now=BASE + timedelta(seconds=2)),
+        _material_body("command.nopol.2"),
+    )
+    assert bound["ok"] is True
+
+    polled = runtime.poll(_poll_payload(at=BASE + timedelta(seconds=3)))
+    assert polled["ok"] is True
+    delivered = [command["command_id"] for command in polled["commands"]]
+    assert delivered == ["command.nopol.2"]
+    # The withheld command is still durable: it was not deleted or mutated.
+    assert _persisted_commands(path) == ["command.nopol.1", "command.nopol.2"]
+    assert runtime.material_store.has_persisted_material("command.nopol.1") is False
+
+
+def test_poll_withholding_ages_out_at_the_hard_deadline(tmp_path: Path) -> None:
+    """The withholding is bounded: it ends when the command's own TTL ends.
+
+    On a one-command page a material-less command occupies the page until its
+    hard deadline passes and then ages out of the canonical window, so a later
+    command becomes deliverable with no reconciliation step. What never happens
+    is a device being handed a command it cannot resolve.
+    """
+
+    path = tmp_path / "do.sqlite3"
+    runtime = _runtime(path)
+    _register_and_open(runtime)
+    # A short-lived material-less command in front of a longer-lived one, so the
+    # page is blocked for exactly the shorter command's own lifetime.
+    runtime.enqueue_command(
+        {
+            **_enqueue_payload("command.starve.1", now=BASE + timedelta(seconds=2)),
+            "ttl_seconds": 5,
+        }
+    )
+    bound = runtime.enqueue_command_with_material(
+        _enqueue_payload("command.starve.2", now=BASE + timedelta(seconds=2)),
+        _material_body("command.starve.2"),
+    )
+    assert bound["ok"] is True
+
+    blocked = runtime.poll(_poll_payload(at=BASE + timedelta(seconds=3), limit=1))
+    assert [command["command_id"] for command in blocked["commands"]] == []
+
+    after_deadline = runtime.poll(_poll_payload(at=BASE + timedelta(seconds=9), limit=1))
+    assert [command["command_id"] for command in after_deadline["commands"]] == ["command.starve.2"]
+
+
+# --- 10. the product gateway cannot create a command by the split pair ------
 def test_product_gateway_exposes_no_split_write_surface() -> None:
     """The canonical server gateway must not offer the split pair at all.
 
