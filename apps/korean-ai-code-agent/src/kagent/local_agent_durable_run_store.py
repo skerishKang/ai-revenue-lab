@@ -764,10 +764,10 @@ class DurableRunStore:
                     "durable_store_invalid_timestamp",
                     "server acknowledgement cannot predate admitted_at",
                 )
-            if acknowledged > _parse_ts(existing[4], "command_expires_at"):
+            if acknowledged >= _parse_ts(existing[4], "command_expires_at"):
                 raise DurableRunStoreError(
                     "durable_store_invalid_timestamp",
-                    "server acknowledgement cannot follow the command hard deadline",
+                    "server acknowledgement cannot be at or after the command hard deadline",
                 )
             self._db.execute(
                 f"UPDATE {_TABLE} SET server_acknowledged_at = ? WHERE command_id = ?",
