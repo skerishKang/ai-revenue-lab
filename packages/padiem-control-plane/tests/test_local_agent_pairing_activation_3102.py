@@ -17,7 +17,6 @@ import json
 import re
 import unittest
 
-from kagent.contracts import ContractError as ContractErrorAlias
 from padiem_control_plane.contracts import ControlPlaneContractError
 from padiem_control_plane.local_agent_broker import InMemoryLocalAgentBrokerAuthority
 from padiem_control_plane.local_agent_broker_pairing import (
@@ -211,110 +210,81 @@ class PairingBinding3102Tests(unittest.TestCase):
 
 
 class PairingRevokeRepair3102Tests(unittest.TestCase):
-    """#3102: revoke and repair reuse the canonical #3080 lifecycle, no new vocabulary."""
+    """#3102: repair must reuse the canonical rotate/redeem flow.
 
-    def test_revoke_and_rotate_use_the_canonical_lifecycle(self) -> None:
-        from kagent.local_agent_pairing import (
-            DeterministicFakeLocalAgentPairingPort,
-            DeviceLifecycle,
-            deterministic_fake_pairing_proof,
-        )
+    The canonical `DeviceLifecycle` revoke/rotate contract lives in kagent and is
+    covered by `test_local_agent_pairing.py`. What is pinned here is the
+    control-plane half: a spent challenge can never mint a second binding, so a
+    re-pair has to go through a fresh bounded issuance.
+    """
 
-        port = DeterministicFakeLocalAgentPairingPort()
-        challenge = port.issue_pairing(
-            account_ref=ACCOUNT, workspace_ref=WORKSPACE, now=BASE, ttl_seconds=300
+    def test_a_spent_challenge_cannot_be_reused_for_repair(self) -> None:
+        authority = _authority()
+        challenge, code = _issue(authority)
+        _redeem(authority, challenge.challenge_id, code)
+        # Repair after redemption requires a new challenge; the old one is dead.
+        with self.assertRaises(ControlPlaneContractError):
+            _redeem(authority, challenge.challenge_id, code)
+        fresh_challenge, fresh_code = _issue(authority, account="account.repair", workspace=WORKSPACE)
+        # Re-pairing the *same* device is refused while its binding is active:
+        # the canonical broker requires a revoke before a replacement binding.
+        with self.assertRaises(ControlPlaneContractError) as duplicate:
+            _redeem(
+                authority,
+                fresh_challenge.challenge_id,
+                fresh_code,
+                now=BASE + timedelta(minutes=1),
+            )
+        self.assertEqual(duplicate.exception.code, "duplicate_device_binding")
+        # A genuinely new device pairs cleanly through the bounded flow.
+        other_challenge, other_code = _issue(
+            authority, account="account.repair", workspace=WORKSPACE
         )
-        binding = port.pair_device(
-            challenge_id=challenge.challenge_id,
-            proof_ref=deterministic_fake_pairing_proof(challenge.challenge_id),
-            device_id=DEVICE,
-            now=BASE,
+        enrollment, _credential = _redeem(
+            authority,
+            other_challenge.challenge_id,
+            other_code,
+            device_id="device.3102-repaired",
+            now=BASE + timedelta(minutes=1),
         )
-        self.assertIs(binding.state, DeviceLifecycle.PAIRED_OFFLINE)
+        self.assertEqual(enrollment.account_ref, "account.repair")
+        self.assertEqual(enrollment.device_id, "device.3102-repaired")
 
-        revoked = port.revoke(binding.binding_ref, now=BASE + timedelta(minutes=1))
-        self.assertIs(revoked.state, DeviceLifecycle.REVOKED)
-
-    def test_repair_reuses_rotate_credential(self) -> None:
-        from kagent.local_agent_pairing import (
-            DeterministicFakeLocalAgentPairingPort,
-            DeviceLifecycle,
-            deterministic_fake_pairing_proof,
-        )
-
-        port = DeterministicFakeLocalAgentPairingPort()
-        challenge = port.issue_pairing(
-            account_ref=ACCOUNT, workspace_ref=WORKSPACE, now=BASE, ttl_seconds=300
-        )
-        binding = port.pair_device(
-            challenge_id=challenge.challenge_id,
-            proof_ref=deterministic_fake_pairing_proof(challenge.challenge_id),
-            device_id=DEVICE,
-            now=BASE,
-        )
-        rotated = port.rotate_credential(binding.binding_ref, now=BASE + timedelta(minutes=1))
-        # Repair is a rotation on the same canonical binding, never a new authority.
-        self.assertEqual(rotated.binding_ref, binding.binding_ref)
-        self.assertEqual(rotated.credential_generation, binding.credential_generation + 1)
-        self.assertIs(rotated.state, DeviceLifecycle.PAIRED_OFFLINE)
-
-    def test_canonical_lifecycle_vocabulary_is_exhaustive(self) -> None:
-        from kagent.local_agent_pairing import DeviceLifecycle
-
-        self.assertEqual(
-            {state.value for state in DeviceLifecycle},
-            {
-                "unpaired",
-                "paired_offline",
-                "online",
-                "revoked",
-                "credential_expired",
-                "update_required",
-            },
-        )
+    def test_repair_issuance_still_honours_the_rate_bound(self) -> None:
+        authority = _authority(issuance_rate_limit=2)
+        first, first_code = _issue(authority)
+        _redeem(authority, first.challenge_id, first_code)
+        # A repair burst is still bounded issuance, not an escape hatch.
+        _issue(authority)
+        with self.assertRaises(ControlPlaneContractError):
+            _issue(authority)
 
 
 class ServerBackedOnline3102Tests(unittest.TestCase):
-    def test_online_requires_canonical_session_and_heartbeat(self) -> None:
-        from kagent.local_agent_pairing import DeviceBinding, DeviceLifecycle
-        from kagent.local_agent_server_projection import project_server_backed_online_binding
+    """#3102: a redeemed binding is PAIRED_OFFLINE, never ONLINE by itself.
 
-        binding = DeviceBinding(
-            device_id=DEVICE,
-            binding_ref="binding.3102",
-            account_ref=ACCOUNT,
-            workspace_ref=WORKSPACE,
-            credential_ref="credential.3102",
-            credential_generation=1,
-            issued_at=BASE,
-            credential_expires_at=BASE + timedelta(hours=1),
-            state=DeviceLifecycle.PAIRED_OFFLINE,
-        )
-        # No session, no heartbeat -> no ONLINE. A local flag could not do this.
-        with self.assertRaises(ContractErrorAlias):
-            project_server_backed_online_binding(
-                binding=binding, session=None, heartbeat=None, now=BASE
-            )
+    These run against the control-plane authority only. The kagent-side
+    `project_server_backed_online_binding` gate is covered by the kagent suite
+    (`test_local_agent_server_projection.py`), which owns that contract.
+    """
 
-    def test_a_non_offline_binding_is_not_a_projection_source(self) -> None:
-        from kagent.local_agent_pairing import DeviceBinding, DeviceLifecycle
-        from kagent.local_agent_server_projection import project_server_backed_online_binding
+    def test_redemption_yields_paired_offline_and_not_online(self) -> None:
+        authority = _authority()
+        challenge, code = _issue(authority)
+        enrollment, _credential = _redeem(authority, challenge.challenge_id, code)
+        # The enrollment is a broker binding record; it carries no online claim
+        # and the authority refuses to mint one from a redemption alone.
+        self.assertEqual(enrollment.device_id, DEVICE)
+        self.assertNotIn("online", json.dumps(enrollment.safe_dict()).lower())
+        self.assertEqual(authority.safe_dict()["production_ready"], False)
 
-        revoked = DeviceBinding(
-            device_id=DEVICE,
-            binding_ref="binding.revoked",
-            account_ref=ACCOUNT,
-            workspace_ref=WORKSPACE,
-            credential_ref="credential.3102",
-            credential_generation=1,
-            issued_at=BASE,
-            credential_expires_at=BASE + timedelta(hours=1),
-            state=DeviceLifecycle.REVOKED,
-        )
-        with self.assertRaises(ContractErrorAlias):
-            project_server_backed_online_binding(
-                binding=revoked, session=None, heartbeat=None, now=BASE
-            )
+    def test_redeemed_enrollment_reports_no_local_online_claim(self) -> None:
+        authority = _authority()
+        challenge, code = _issue(authority)
+        enrollment, _credential = _redeem(authority, challenge.challenge_id, code)
+        safe = enrollment.safe_dict()
+        self.assertEqual(safe.get("local_online_claim", False), False)
+        self.assertEqual(safe.get("online", False), False)
 
 
 class ActivationBoundary3102Tests(unittest.TestCase):
