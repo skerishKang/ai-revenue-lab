@@ -9,3 +9,14 @@ __pycache__/
 # A hard-killed OCR child may leave a derived canonical PNG behind. Keep that
 # local residue out of source control even if the child cannot unlink it.
 kagent-ocr-*.png
+
+# #3108: the isolated local KAgent test environment is a build artifact of
+# scripts/kagent_local_test.py, created inside the checkout on purpose so its
+# import origins can be proved against this repository. It is never source.
+.kagent-local-test-env/
+
+# #3108: installing the sibling distributions for the isolated local KAgent
+# test environment builds these in-tree. They are packaging output of a local
+# run, never source, and must not show up as untracked noise in every status.
+build/
+*.egg-info/
