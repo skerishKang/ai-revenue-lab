@@ -428,10 +428,11 @@ class DurableRunRecord:
         if self.server_acknowledged_at is not None:
             if self.server_acknowledged_at < self.admitted_at:
                 raise ContractError("server acknowledgement cannot predate admitted_at")
-            if self.server_acknowledged_at > self.command_expires_at:
-                # A server ack after the hard deadline would be extending the
-                # command's life through a second dimension (R6/R8 violation).
-                raise ContractError("server acknowledgement cannot follow the command hard deadline")
+            if self.server_acknowledged_at >= self.command_expires_at:
+                # The canonical broker rejects an ack at or after the hard
+                # deadline. Accepting equality here would locally widen R6 by
+                # one boundary instant and disagree with broker authority.
+                raise ContractError("server acknowledgement cannot be at or after the command hard deadline")
 
         # `exit_code` is a *result* fact, so it may only appear once the run is
         # locally terminal. Recording an exit status on a still-running record
