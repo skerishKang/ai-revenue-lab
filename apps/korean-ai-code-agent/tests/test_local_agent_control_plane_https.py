@@ -209,6 +209,7 @@ class ControlPlanePhysicalCompositionTests(unittest.TestCase):
             credential=CREDENTIAL,
             command_id=command.command_id,
             request_fingerprint=fingerprint,
+            request_id="request_https_1",
             now=BASE + timedelta(seconds=40),
         )
         channel.acknowledge_admitted(
@@ -219,6 +220,8 @@ class ControlPlanePhysicalCompositionTests(unittest.TestCase):
             evidence_ref="evidence_https_1",
             revision_ref=command.revision_ref,
             termination="exited",
+            request_id="request_https_1",
+            exit_code=0,
             now=BASE + timedelta(seconds=50),
         )
         operations = [item[0] for item in request_port.calls]
@@ -240,6 +243,8 @@ class ControlPlanePhysicalCompositionTests(unittest.TestCase):
                 evidence_ref="evidence_https_1",
                 revision_ref=command.revision_ref,
                 termination="exited",
+                request_id="request_https_1",
+                exit_code=0,
                 now=BASE + timedelta(seconds=55),
             )
 
@@ -295,6 +300,7 @@ class ControlPlanePhysicalCompositionTests(unittest.TestCase):
             credential=CREDENTIAL,
             command_id=command.command_id,
             request_fingerprint=fingerprint,
+            request_id="request_https_1",
             now=BASE + timedelta(seconds=40),
         )
         with self.assertRaisesRegex(ContractError, "broker_ack_correlation_mismatch"):
@@ -306,6 +312,8 @@ class ControlPlanePhysicalCompositionTests(unittest.TestCase):
                 evidence_ref="evidence_wrong",
                 revision_ref=command.revision_ref,
                 termination="exited",
+                request_id="request_https_1",
+                exit_code=0,
                 now=BASE + timedelta(seconds=50),
             )
         channel.acknowledge_admitted(
@@ -316,6 +324,8 @@ class ControlPlanePhysicalCompositionTests(unittest.TestCase):
             evidence_ref="evidence_https_3",
             revision_ref=command.revision_ref,
             termination="exited",
+            request_id="request_https_1",
+            exit_code=0,
             now=BASE + timedelta(seconds=55),
         )
 
@@ -343,6 +353,7 @@ class ControlPlanePhysicalCompositionTests(unittest.TestCase):
             credential=CREDENTIAL,
             command_id=command.command_id,
             request_fingerprint=fingerprint,
+            request_id="request_https_1",
             now=BASE + timedelta(seconds=40),
         )
         with self.assertRaisesRegex(ContractError, "revision_ref does not match"):
@@ -354,6 +365,8 @@ class ControlPlanePhysicalCompositionTests(unittest.TestCase):
                 evidence_ref="evidence_https_4",
                 revision_ref="revision_wrong",
                 termination="exited",
+                request_id="request_https_1",
+                exit_code=0,
                 now=BASE + timedelta(seconds=50),
             )
         with self.assertRaisesRegex(ContractError, "bounded execution termination"):
@@ -365,12 +378,28 @@ class ControlPlanePhysicalCompositionTests(unittest.TestCase):
                 evidence_ref="evidence_https_4",
                 revision_ref=command.revision_ref,
                 termination="not-a-termination",
+                request_id="request_https_1",
+                exit_code=0,
+                now=BASE + timedelta(seconds=50),
+            )
+        with self.assertRaisesRegex(ContractError, "broker_ack_request_id_mismatch"):
+            channel.acknowledge_admitted(
+                binding=binding,
+                session=session,
+                command_id=command.command_id,
+                admission_ref=admission.admission_ref,
+                evidence_ref="evidence_https_4",
+                revision_ref=command.revision_ref,
+                termination="exited",
+                request_id="request_unrelated",
+                exit_code=0,
                 now=BASE + timedelta(seconds=50),
             )
         stored = authority._commands[command.command_id]
         self.assertEqual(stored.state.value, "admitted")
         self.assertIsNone(stored.acknowledged_at)
         self.assertIsNone(stored.termination)
+        self.assertIsNone(stored.exit_code)
 
         channel.acknowledge_admitted(
             binding=binding,
@@ -380,6 +409,8 @@ class ControlPlanePhysicalCompositionTests(unittest.TestCase):
             evidence_ref="evidence_https_4",
             revision_ref=command.revision_ref,
             termination="timed_out",
+            request_id="request_https_1",
+            exit_code=0,
             now=BASE + timedelta(seconds=55),
         )
         stored = authority._commands[command.command_id]

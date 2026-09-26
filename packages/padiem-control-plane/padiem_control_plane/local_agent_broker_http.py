@@ -32,7 +32,7 @@ _MATERIAL_REQUEST_KEYS = frozenset(
 )
 _HEARTBEAT_REQUEST_KEYS = frozenset({"session_id", "binding_ref", "credential_b64", "now"})
 _ACK_REQUEST_KEYS = frozenset(
-    {"session_id", "binding_ref", "credential_b64", "command_id", "admission_ref", "evidence_ref", "revision_ref", "termination", "now"}
+    {"session_id", "binding_ref", "credential_b64", "command_id", "admission_ref", "evidence_ref", "revision_ref", "termination", "request_id", "exit_code", "now"}
 )
 _SESSION_KEYS = frozenset(
     {
@@ -66,6 +66,8 @@ _COMMAND_KEYS = frozenset(
         "acknowledged_at",
         "revision_ref",
         "termination",
+        "request_id",
+        "exit_code",
         "raw_argv",
         "raw_file_content",
         "raw_device_credential",
@@ -73,7 +75,7 @@ _COMMAND_KEYS = frozenset(
     }
 )
 _MATERIAL_WIRE_KEYS = frozenset(
-    {"contract_version", "command_id", "binding_ref", "sequence", "request_fingerprint", "material"}
+    {"contract_version", "command_id", "binding_ref", "sequence", "request_fingerprint", "revision_ref", "material"}
 )
 _HEARTBEAT_KEYS = frozenset(
     {
@@ -525,7 +527,7 @@ class LocalAgentBrokerHttpHandler:
         request: LocalAgentMaterialResolutionRequest,
     ) -> tuple[dict[str, Any], int]:
         wire = _closed_mapping(wire, _MATERIAL_WIRE_KEYS, "command material wire projection")
-        if wire["contract_version"] != "claw-local-command-material.v1":
+        if wire["contract_version"] != "claw-local-command-material.v2":
             raise ValueError("unsupported Local Agent command material contract version")
         if _ref(wire["command_id"], "command_id") != request.command_id:
             raise ValueError("command material command_id mismatch")
@@ -533,6 +535,7 @@ class LocalAgentBrokerHttpHandler:
             raise ValueError("command material binding_ref mismatch")
         if _digest(wire["request_fingerprint"], "request_fingerprint") != request.request_fingerprint:
             raise ValueError("command material request_fingerprint mismatch")
+        _ref(wire["revision_ref"], "revision_ref")
         sequence = _positive_int(wire["sequence"], "sequence")
         if type(wire["material"]) is not dict:
             raise ValueError("command material payload must be a plain mapping")
@@ -582,6 +585,7 @@ class LocalAgentBrokerHttpHandler:
             or _ref(command["binding_ref"], "binding_ref") != request.binding_ref
             or _positive_int(command["sequence"], "sequence") != sequence
             or _digest(command["request_fingerprint"], "request_fingerprint") != request.request_fingerprint
+            or _ref(command["revision_ref"], "revision_ref") != _ref(wire["revision_ref"], "revision_ref")
             or command["state"] != "queued"
         ):
             return self._error(409, "local_agent_material_command_mismatch", "command material does not match canonical queued command")
@@ -599,8 +603,11 @@ class LocalAgentBrokerHttpHandler:
         _ref(payload["admission_ref"], "admission_ref")
         _ref(payload["evidence_ref"], "evidence_ref")
         _ref(payload["revision_ref"], "revision_ref")
+        _ref(payload["request_id"], "request_id")
         if payload["termination"] not in _EXECUTION_TERMINATIONS:
             raise ValueError("acknowledge termination must be a bounded execution termination")
+        if payload["exit_code"] is not None and type(payload["exit_code"]) is not int:
+            raise ValueError("acknowledge exit_code must be a bounded process exit status or null")
         result = self._rpc_result(self._rpc.acknowledge(self._server_rpc_payload(payload, server_now)), "command")
         if result["ok"] is True:
             command = _closed_mapping(result["command"], _COMMAND_KEYS, "acknowledged broker command")
@@ -612,6 +619,10 @@ class LocalAgentBrokerHttpHandler:
                 raise ValueError("broker acknowledgement did not preserve server-owned revision_ref correlation")
             if command["termination"] != payload["termination"]:
                 raise ValueError("broker acknowledgement did not preserve bounded termination correlation")
+            if command["request_id"] != payload["request_id"]:
+                raise ValueError("broker acknowledgement did not preserve the exact material request_id correlation")
+            if command["exit_code"] != payload["exit_code"]:
+                raise ValueError("broker acknowledgement did not preserve the bounded exit_code result")
             if command["raw_device_credential"] is not False:
                 raise ValueError("broker acknowledgement exposed device credential material")
         return LocalAgentBrokerHttpResponse(200, result)

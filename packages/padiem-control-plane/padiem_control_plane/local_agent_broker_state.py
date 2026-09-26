@@ -412,6 +412,7 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
         credential: bytes,
         command_id: str,
         request_fingerprint: str,
+        request_id: str,
         now: datetime,
     ) -> BrokerCommandAdmission:
         return self._mutate(
@@ -423,6 +424,7 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
                 credential=credential,
                 command_id=command_id,
                 request_fingerprint=request_fingerprint,
+                request_id=request_id,
                 now=now,
             )
         )
@@ -438,6 +440,8 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
         evidence_ref: str,
         revision_ref: str,
         termination: str,
+        request_id: str,
+        exit_code: int | None,
         now: datetime,
     ) -> BrokerCommandRecord:
         return self._mutate(
@@ -450,6 +454,8 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
                 evidence_ref=evidence_ref,
                 revision_ref=revision_ref,
                 termination=termination,
+                request_id=request_id,
+                exit_code=exit_code,
                 now=now,
             )
         )

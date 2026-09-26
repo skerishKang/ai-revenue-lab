@@ -119,6 +119,8 @@ class ControlPlanePinnedHttpsChannel(PinnedOutboundLocalAgentChannel):
         evidence_ref: str,
         revision_ref: str,
         termination: str,
+        request_id: str,
+        exit_code: int | None,
         now: datetime,
     ) -> None:
         now = _aware(now, "now")
@@ -130,6 +132,8 @@ class ControlPlanePinnedHttpsChannel(PinnedOutboundLocalAgentChannel):
             raise ContractError("acknowledgement requires exact command previously polled by this channel/session")
         if observed[1].revision_ref != revision_ref:
             raise ContractError("acknowledgement revision_ref does not match exact polled command")
+        if exit_code is not None and (isinstance(exit_code, bool) or not isinstance(exit_code, int)):
+            raise ContractError("acknowledgement exit_code must be a bounded process exit status or null")
         self._control_plane_transport.acknowledge(
             config=self.authority.config,
             binding=binding,
@@ -139,6 +143,8 @@ class ControlPlanePinnedHttpsChannel(PinnedOutboundLocalAgentChannel):
             evidence_ref=evidence_ref,
             revision_ref=revision_ref,
             termination=termination,
+            request_id=request_id,
+            exit_code=exit_code,
             now=now,
         )
         self._polled_commands.pop(command_id, None)
@@ -153,6 +159,8 @@ class ControlPlanePinnedHttpsChannel(PinnedOutboundLocalAgentChannel):
             "ack_evidence_ref_required": True,
             "ack_revision_ref_required": True,
             "ack_bounded_termination_required": True,
+            "ack_request_id_required": True,
+            "ack_bounded_exit_code_required": True,
             "public_inbound_port": False,
             "production_broker_configured": False,
             "real_remote_execution": False,
@@ -165,6 +173,8 @@ ACK_ADMISSION_REF_REQUIRED = True
 ACK_EVIDENCE_REF_REQUIRED = True
 ACK_REVISION_REF_REQUIRED = True
 ACK_BOUNDED_TERMINATION_REQUIRED = True
+ACK_REQUEST_ID_REQUIRED = True
+ACK_BOUNDED_EXIT_CODE_REQUIRED = True
 PUBLIC_INBOUND_PORT = False
 PRODUCTION_BROKER_CONFIGURED = False
 PRODUCTION_READY = False

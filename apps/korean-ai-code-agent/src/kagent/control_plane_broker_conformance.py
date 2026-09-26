@@ -32,6 +32,8 @@ _COMMAND_KEYS = frozenset(
         "acknowledged_at",
         "revision_ref",
         "termination",
+        "request_id",
+        "exit_code",
         "raw_argv",
         "raw_file_content",
         "raw_device_credential",
@@ -52,6 +54,7 @@ _ADMISSION_KEYS = frozenset(
         "request_fingerprint",
         "evidence_ref",
         "revision_ref",
+        "request_id",
         "accepted_at",
         "expires_at",
         "raw_argv",
@@ -196,7 +199,7 @@ def parse_control_plane_broker_command(
         raise ContractError("broker command must be queued before B54 admission")
     for field_name in ("raw_argv", "raw_file_content", "raw_device_credential", "p01_approval_payload"):
         _require_false(payload, field_name)
-    for field_name in ("admission_ref", "evidence_ref", "admitted_session_id", "admitted_at", "acknowledged_at", "termination"):
+    for field_name in ("admission_ref", "evidence_ref", "admitted_session_id", "admitted_at", "acknowledged_at", "termination", "request_id", "exit_code"):
         _require_none(payload, field_name)
 
     binding_ref = _ref(payload["binding_ref"], "binding_ref")
@@ -236,6 +239,7 @@ def parse_control_plane_broker_admission(
     command: ConformedControlPlaneBrokerCommand,
     expected_authority_ref: str,
     expected_session_id: str,
+    expected_request_id: str,
     now: datetime,
 ) -> ConformedControlPlaneBrokerAdmission:
     """Fail-closed parser for `BrokerCommandAdmission.to_public_dict()` projections."""
@@ -245,6 +249,7 @@ def parse_control_plane_broker_admission(
         raise ContractError("command must be ConformedControlPlaneBrokerCommand")
     expected_authority_ref = _ref(expected_authority_ref, "expected_authority_ref")
     expected_session_id = _ref(expected_session_id, "expected_session_id")
+    expected_request_id = _ref(expected_request_id, "expected_request_id")
     now = _aware(now, "now")
 
     _require_false(payload, "raw_argv")
@@ -273,6 +278,8 @@ def parse_control_plane_broker_admission(
         raise ContractError("broker admission sequence mismatch")
     if _ref(payload["revision_ref"], "revision_ref") != envelope.revision_ref:
         raise ContractError("broker admission revision_ref mismatch")
+    if _ref(payload["request_id"], "request_id") != expected_request_id:
+        raise ContractError("broker admission request_id mismatch")
     fingerprint = _digest(payload["request_fingerprint"], "request_fingerprint")
     if fingerprint != command.request_fingerprint:
         raise ContractError("broker admission request_fingerprint mismatch")

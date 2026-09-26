@@ -78,6 +78,8 @@ _COMMAND_KEYS = frozenset(
         "acknowledged_at",
         "revision_ref",
         "termination",
+        "request_id",
+        "exit_code",
     }
 )
 _SEQUENCE_KEYS = frozenset({"binding_ref", "sequence"})
@@ -127,6 +129,14 @@ def _optional_utc(value: Any, label: str) -> datetime | None:
     if value is None:
         return None
     return _utc(value, label)
+
+
+def _optional_int(value: Any, label: str) -> int | None:
+    if value is None:
+        return None
+    if type(value) is not int:
+        raise _wire_error("invalid_local_agent_broker_state_wire", f"{label} must be an integer without coercion")
+    return value
 
 
 def _iso(value: datetime) -> str:
@@ -199,6 +209,8 @@ def _command_wire(value: BrokerCommandRecord) -> dict[str, Any]:
         "acknowledged_at": _iso(value.acknowledged_at) if value.acknowledged_at is not None else None,
         "revision_ref": value.revision_ref,
         "termination": value.termination,
+        "request_id": value.request_id,
+        "exit_code": value.exit_code,
     }
 
 
@@ -320,6 +332,8 @@ class LocalAgentBrokerStateJsonCodec:
                     acknowledged_at=_optional_utc(item["acknowledged_at"], "acknowledged_at"),
                     revision_ref=_text(item["revision_ref"], "revision_ref"),
                     termination=_optional_text(item["termination"], "termination"),
+                    request_id=_optional_text(item["request_id"], "request_id"),
+                    exit_code=_optional_int(item["exit_code"], "exit_code"),
                 )
             )
 

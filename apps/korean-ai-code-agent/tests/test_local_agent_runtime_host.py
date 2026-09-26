@@ -419,6 +419,7 @@ def _harness(
         clock=clock,
         session_id_factory=lambda: "session_host_cross_1",
     )
+    request_port.broker_authority = authority
     return host, runtime, request_port, clock
 
 
@@ -495,6 +496,59 @@ class LocalAgentResidentRuntimeHostTests(unittest.TestCase):
         host.stop()
         self.assertEqual(host.state, ResidentHostState.STOPPED)
         self.assertFalse(host._lock_acquired)
+
+    def test_run_once_returns_exact_bounded_correlation_at_the_broker_record(self) -> None:
+        host, runtime, port, clock = _harness()
+        authority = port.broker_authority
+
+        host.start()
+        self.assertEqual(host.state, ResidentHostState.ONLINE)
+        clock.advance(5)
+        self.assertEqual(host.run_once(now=clock.now), 1)
+        self.assertEqual(runtime.executed, ["req_host_1"])
+
+        # #3080: the resident host exposes no separate local result API. The
+        # coordinator's admission-bound acknowledgement is the complete bounded
+        # return projection, so the final broker record must already carry the
+        # exact command/material/execution correlation.
+        stored = authority._commands["cmd_host_1"]
+        self.assertEqual(stored.state.value, "acknowledged")
+        self.assertEqual(stored.run_id, "run_host_1")
+        self.assertEqual(stored.tool_request_ref, "tool_req_host_1")
+        self.assertEqual(stored.request_id, "req_host_1")
+        self.assertTrue(stored.revision_ref.startswith("rev."))
+        self.assertEqual(stored.evidence_ref, EVIDENCE_REF)
+        self.assertEqual(stored.admission_ref, ADMISSION_REF)
+        self.assertEqual(stored.termination, "exited")
+        self.assertEqual(stored.exit_code, 0)
+        self.assertIsNotNone(stored.acknowledged_at)
+
+        material_wire = [call[1] for call in port.calls if call[0] == "material"][-1]
+        self.assertEqual(material_wire["command_id"], "cmd_host_1")
+        self.assertEqual(stored.request_fingerprint, material_wire["request_fingerprint"])
+
+        returned = stored.safe_dict()
+        self.assertEqual(returned["request_id"], "req_host_1")
+        self.assertEqual(returned["exit_code"], 0)
+        self.assertEqual(returned["termination"], "exited")
+        self.assertFalse(returned["raw_argv"])
+        self.assertFalse(returned["raw_file_content"])
+        self.assertFalse(returned["raw_device_credential"])
+        self.assertNotIn("stdout", returned)
+        self.assertNotIn("stderr", returned)
+        self.assertNotIn("argv", returned)
+
+        # The same bounded values must have travelled over the physical ack wire.
+        ack_payload = [call[1] for call in port.calls if call[0] == "acknowledge"][-1]
+        self.assertEqual(ack_payload["request_id"], "req_host_1")
+        self.assertEqual(ack_payload["exit_code"], 0)
+        self.assertEqual(ack_payload["revision_ref"], stored.revision_ref)
+        self.assertEqual(ack_payload["termination"], "exited")
+        self.assertEqual(ack_payload["evidence_ref"], EVIDENCE_REF)
+        admission_payload = [call[1] for call in port.calls if call[0] == "admission"][-1]
+        self.assertEqual(admission_payload["request_id"], "req_host_1")
+
+        host.stop()
 
     def test_single_instance_duplicate_start_fails_closed(self) -> None:
         host1, _, _, _ = _harness()

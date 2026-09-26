@@ -192,6 +192,7 @@ def test_rotation_revocation_admission_and_ack_states_roundtrip() -> None:
         credential=CREDENTIAL_1,
         command_id=command.command_id,
         request_fingerprint=FINGERPRINT_1,
+        request_id="request.wire.1",
         now=BASE + timedelta(seconds=3),
     )
     authority.acknowledge(
@@ -203,6 +204,8 @@ def test_rotation_revocation_admission_and_ack_states_roundtrip() -> None:
         evidence_ref=admission.evidence_ref,
         revision_ref=command.revision_ref,
         termination="exited",
+        request_id="request.wire.1",
+        exit_code=0,
         now=BASE + timedelta(seconds=4),
     )
 
@@ -213,6 +216,8 @@ def test_rotation_revocation_admission_and_ack_states_roundtrip() -> None:
     assert stored.commands[0].evidence_ref == admission.evidence_ref
     assert stored.commands[0].revision_ref == command.revision_ref
     assert stored.commands[0].termination == "exited"
+    assert stored.commands[0].request_id == "request.wire.1"
+    assert stored.commands[0].exit_code == 0
 
     rotated = after_ack.rotate_credential(
         "binding.wire.1",

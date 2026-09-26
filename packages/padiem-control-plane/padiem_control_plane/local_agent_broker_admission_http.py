@@ -15,7 +15,7 @@ _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _ROUTE_ADMISSION = "/admission"
 _ADMISSION_REQUEST_KEYS = frozenset(
-    {"session_id", "binding_ref", "credential_b64", "command_id", "request_fingerprint", "now"}
+    {"session_id", "binding_ref", "credential_b64", "command_id", "request_fingerprint", "request_id", "now"}
 )
 _ADMISSION_KEYS = frozenset(
     {
@@ -30,6 +30,7 @@ _ADMISSION_KEYS = frozenset(
         "request_fingerprint",
         "evidence_ref",
         "revision_ref",
+        "request_id",
         "accepted_at",
         "expires_at",
         "raw_argv",
@@ -122,6 +123,7 @@ class AdmissionEnabledLocalAgentBrokerHttpHandler(LocalAgentBrokerHttpHandler):
         command_id = _ref(payload["command_id"], "command_id")
         binding_ref = _ref(payload["binding_ref"], "binding_ref")
         fingerprint = _digest(payload["request_fingerprint"], "request_fingerprint")
+        request_id = _ref(payload["request_id"], "request_id")
         self._load_scoped_session(auth=auth, payload=payload, server_now=server_now)
         auth_result = self._authenticate_session_via_rpc(payload, server_now=server_now)
         if auth_result["ok"] is False:
@@ -138,6 +140,7 @@ class AdmissionEnabledLocalAgentBrokerHttpHandler(LocalAgentBrokerHttpHandler):
                     "credential_b64": payload["credential_b64"],
                     "command_id": command_id,
                     "request_fingerprint": fingerprint,
+                    "request_id": request_id,
                     "now": _iso(server_now),
                 }
             ),
@@ -159,6 +162,8 @@ class AdmissionEnabledLocalAgentBrokerHttpHandler(LocalAgentBrokerHttpHandler):
             raise ValueError("broker admission command mismatch")
         if _digest(admission["request_fingerprint"], "request_fingerprint") != fingerprint:
             raise ValueError("broker admission fingerprint mismatch")
+        if _ref(admission["request_id"], "request_id") != request_id:
+            raise ValueError("broker admission request_id mismatch")
         if admission["raw_argv"] is not False or admission["raw_device_credential"] is not False:
             raise ValueError("broker admission attempted raw authority expansion")
         if _timestamp(admission["accepted_at"], "accepted_at") != server_now:

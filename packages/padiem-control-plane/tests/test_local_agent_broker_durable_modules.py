@@ -119,11 +119,12 @@ def _prepare(runtime: LocalAgentBrokerDurableRuntime) -> tuple[dict, dict]:
 
 def _wire(command: dict) -> dict:
     return {
-        "contract_version": "claw-local-command-material.v1",
+        "contract_version": "claw-local-command-material.v2",
         "command_id": command["command_id"],
         "binding_ref": command["binding_ref"],
         "sequence": command["sequence"],
         "request_fingerprint": command["request_fingerprint"],
+        "revision_ref": command["revision_ref"],
         "material": {
             "request_id": "request.refactor.1",
             "run_id": command["run_id"],
@@ -202,6 +203,7 @@ def test_material_store_and_lifecycle_runtime_run_without_platform_module() -> N
             "credential_b64": _encoded(CREDENTIAL),
             "command_id": command["command_id"],
             "request_fingerprint": command["request_fingerprint"],
+            "request_id": "request.refactor.1",
             "now": (BASE + timedelta(seconds=4)).isoformat(),
         }
     )
@@ -216,6 +218,8 @@ def test_material_store_and_lifecycle_runtime_run_without_platform_module() -> N
             "evidence_ref": "evidence.refactor.1",
             "revision_ref": command["revision_ref"],
             "termination": "exited",
+            "request_id": "request.refactor.1",
+            "exit_code": 0,
             "now": (BASE + timedelta(seconds=5)).isoformat(),
         }
     )

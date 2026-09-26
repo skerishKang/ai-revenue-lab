@@ -50,6 +50,8 @@ _ACK_KEYS = frozenset(
         "acknowledged_at",
         "revision_ref",
         "termination",
+        "request_id",
+        "exit_code",
         "raw_argv",
         "raw_file_content",
         "raw_device_credential",
@@ -468,6 +470,8 @@ class ControlPlaneHttpsLongPollTransport:
         evidence_ref: str,
         revision_ref: str,
         termination: str,
+        request_id: str,
+        exit_code: int | None,
         now: datetime,
     ) -> None:
         now = _aware(now, "now")
@@ -476,8 +480,11 @@ class ControlPlaneHttpsLongPollTransport:
         admission_ref = _ref(admission_ref, "admission_ref")
         evidence_ref = _ref(evidence_ref, "evidence_ref")
         revision_ref = _ref(revision_ref, "revision_ref")
+        request_id = _ref(request_id, "request_id")
         if termination not in {item.value for item in WindowsExecutionTermination}:
             raise ContractError("broker acknowledgement termination must be a bounded execution termination")
+        if exit_code is not None and (isinstance(exit_code, bool) or not isinstance(exit_code, int)):
+            raise ContractError("broker acknowledgement exit_code must be a bounded process exit status or null")
         self._prune(now=now)
         try:
             observed_session_id, observed = self._polled[command_id]
@@ -499,6 +506,8 @@ class ControlPlaneHttpsLongPollTransport:
                 "evidence_ref": evidence_ref,
                 "revision_ref": revision_ref,
                 "termination": termination,
+                "request_id": request_id,
+                "exit_code": exit_code,
                 "now": _iso(now),
             },
             timeout_seconds=min(config.poll_timeout_seconds, 30),
@@ -517,12 +526,15 @@ class ControlPlaneHttpsLongPollTransport:
             "evidence_ref": evidence_ref,
             "admitted_session_id": session.session_id,
             "revision_ref": envelope.revision_ref,
+            "request_id": request_id,
         }
         for field_name, expected in expected_refs.items():
             if _ref(payload[field_name], field_name) != expected:
                 raise ContractError(f"broker acknowledgement {field_name} mismatch")
         if payload["termination"] != termination:
             raise ContractError("broker acknowledgement termination mismatch")
+        if payload["exit_code"] != exit_code:
+            raise ContractError("broker acknowledgement exit_code mismatch")
         if payload["state"] != "acknowledged":
             raise ContractError("broker acknowledgement state must be acknowledged")
         if _positive_int(payload["credential_generation"], "credential_generation") != binding.credential_generation:

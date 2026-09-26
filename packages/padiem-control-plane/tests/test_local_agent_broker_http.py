@@ -73,19 +73,21 @@ class _DurableState:
 
 
 class _MaterialResolver:
-    def __init__(self, *, sequence: int = 1, fingerprint: str = FINGERPRINT) -> None:
+    def __init__(self, *, sequence: int = 1, fingerprint: str = FINGERPRINT, revision_ref: str = "rev.http-1") -> None:
         self.sequence = sequence
         self.fingerprint = fingerprint
+        self.revision_ref = revision_ref
         self.requests = []
 
     def resolve(self, request):
         self.requests.append(request)
         return {
-            "contract_version": "claw-local-command-material.v1",
+            "contract_version": "claw-local-command-material.v2",
             "command_id": request.command_id,
             "binding_ref": request.binding_ref,
             "sequence": self.sequence,
             "request_fingerprint": self.fingerprint,
+            "revision_ref": self.revision_ref,
             "material": {"kind": "deterministic-test-material"},
         }
 
@@ -270,6 +272,7 @@ def test_server_clock_owns_session_heartbeat_and_ack_timestamps() -> None:
         credential=CREDENTIAL,
         command_id="command.http.1",
         request_fingerprint=FINGERPRINT,
+        request_id="request.http.1",
         now=BASE + timedelta(seconds=5),
     )
     assert admitted.admission_ref == "admission.http.1"
@@ -287,11 +290,15 @@ def test_server_clock_owns_session_heartbeat_and_ack_timestamps() -> None:
             "evidence_ref": "evidence.http.1",
             "revision_ref": queued["command"]["revision_ref"],
             "termination": "exited",
+            "request_id": "request.http.1",
+            "exit_code": 0,
             "now": (BASE + timedelta(days=5)).isoformat(),
         },
         auth=auth,
     )
     assert acknowledged.status == 200 and acknowledged.body["ok"] is True
+    assert acknowledged.body["command"]["request_id"] == "request.http.1"
+    assert acknowledged.body["command"]["exit_code"] == 0
     assert _parsed_timestamp(acknowledged.body["command"]["acknowledged_at"]) == BASE + timedelta(seconds=7)
 
 
@@ -314,6 +321,7 @@ def test_material_resolution_is_bound_to_exact_canonical_fingerprint_and_sequenc
             }
         )
         assert queued["ok"] is True
+        resolver.revision_ref = queued["command"]["revision_ref"]
         clock.now = BASE + timedelta(seconds=3)
         result = _request(
             handler,
@@ -330,6 +338,59 @@ def test_material_resolution_is_bound_to_exact_canonical_fingerprint_and_sequenc
             auth=auth,
         )
         assert result.body["error"]["code"] == expected_code
+
+
+def test_material_revision_must_match_the_canonical_broker_revision() -> None:
+    resolver = _MaterialResolver()
+    _, rpc, clock, _, _, handler, auth = _fixture(resolver=resolver)
+    opened = _request(handler, route="/session", payload=_session_payload(), auth=auth)
+    assert opened.body["ok"] is True
+    queued = rpc.enqueue_command(
+        {
+            "command_id": "command.http.1",
+            "binding_ref": "binding.http.1",
+            "run_id": "run.http.1",
+            "tool_request_ref": "tool-request.http.1",
+            "request_fingerprint": FINGERPRINT,
+            "now": (BASE + timedelta(seconds=2)).isoformat(),
+        }
+    )
+    assert queued["ok"] is True
+    resolver.revision_ref = "rev.00000000000000000000000000000000"
+    clock.now = BASE + timedelta(seconds=3)
+    result = _request(
+        handler,
+        route="/material",
+        payload={
+            "request_ref": "material.http.1",
+            "session_id": "session.http.1",
+            "binding_ref": "binding.http.1",
+            "credential_b64": _encoded(),
+            "command_id": "command.http.1",
+            "request_fingerprint": FINGERPRINT,
+            "now": (BASE + timedelta(hours=3)).isoformat(),
+        },
+        auth=auth,
+    )
+    assert result.body["error"]["code"] == "local_agent_material_command_mismatch"
+
+    resolver.revision_ref = queued["command"]["revision_ref"]
+    accepted = _request(
+        handler,
+        route="/material",
+        payload={
+            "request_ref": "material.http.2",
+            "session_id": "session.http.1",
+            "binding_ref": "binding.http.1",
+            "credential_b64": _encoded(),
+            "command_id": "command.http.1",
+            "request_fingerprint": FINGERPRINT,
+            "now": (BASE + timedelta(hours=3)).isoformat(),
+        },
+        auth=auth,
+    )
+    assert accepted.body["ok"] is True
+    assert accepted.body["material"]["revision_ref"] == queued["command"]["revision_ref"]
 
 
 def test_http_boundary_source_truth_keeps_production_unclaimed() -> None:

@@ -60,7 +60,23 @@ def _ttl(name: str, value: int, *, minimum: int, maximum: int) -> int:
 
 def _generation(name: str, value: int) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value < 1:
-        raise ControlPlaneContractError("invalid_device_credential_generation", f"{name} must be a positive integer")
+        raise ControlPlaneContractError("invalid_broker_binding", f"{name} must be positive")
+    return value
+
+
+MAX_BOUNDED_EXIT_CODE = 2_147_483_647
+MIN_BOUNDED_EXIT_CODE = -2_147_483_647
+
+
+def _bounded_exit_code(name: str, value: int | None) -> int | None:
+    """Accept only a bounded process exit status, or the explicit null result."""
+
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ControlPlaneContractError("invalid_broker_command", f"{name} must be an integer or null")
+    if not MIN_BOUNDED_EXIT_CODE <= value <= MAX_BOUNDED_EXIT_CODE:
+        raise ControlPlaneContractError("invalid_broker_command", f"{name} must be a bounded process exit status")
     return value
 
 
@@ -171,6 +187,8 @@ class BrokerCommandRecord:
     admitted_at: datetime | None = None
     acknowledged_at: datetime | None = None
     termination: str | None = None
+    request_id: str | None = None
+    exit_code: int | None = None
 
     def __post_init__(self) -> None:
         for name in ("command_id", "run_id", "tool_request_ref", "binding_ref"):
@@ -194,16 +212,19 @@ class BrokerCommandRecord:
                 object.__setattr__(self, name, _ref(name, value))
         if self.termination is not None and self.termination not in _EXECUTION_TERMINATIONS:
             raise ControlPlaneContractError("invalid_broker_command", "termination must be a bounded execution termination")
+        if self.request_id is not None:
+            object.__setattr__(self, "request_id", _ref("request_id", self.request_id))
+        object.__setattr__(self, "exit_code", _bounded_exit_code("exit_code", self.exit_code))
         if self.admitted_at is not None:
             object.__setattr__(self, "admitted_at", _aware("admitted_at", self.admitted_at))
         if self.acknowledged_at is not None:
             object.__setattr__(self, "acknowledged_at", _aware("acknowledged_at", self.acknowledged_at))
         if self.state is BrokerCommandState.QUEUED and any(
-            value is not None for value in (self.admission_ref, self.evidence_ref, self.admitted_session_id, self.admitted_at, self.acknowledged_at, self.termination)
+            value is not None for value in (self.admission_ref, self.evidence_ref, self.admitted_session_id, self.admitted_at, self.acknowledged_at, self.termination, self.request_id, self.exit_code)
         ):
             raise ControlPlaneContractError("invalid_broker_command", "queued command cannot contain admission state")
         if self.state is not BrokerCommandState.QUEUED and any(
-            value is None for value in (self.admission_ref, self.evidence_ref, self.admitted_session_id, self.admitted_at)
+            value is None for value in (self.admission_ref, self.evidence_ref, self.admitted_session_id, self.admitted_at, self.request_id)
         ):
             raise ControlPlaneContractError("invalid_broker_command", "admitted command requires complete admission correlation")
         if self.state is BrokerCommandState.ACKNOWLEDGED and self.acknowledged_at is None:
@@ -230,6 +251,8 @@ class BrokerCommandRecord:
             "admitted_at": self.admitted_at.isoformat() if self.admitted_at else None,
             "acknowledged_at": self.acknowledged_at.isoformat() if self.acknowledged_at else None,
             "termination": self.termination,
+            "request_id": self.request_id,
+            "exit_code": self.exit_code,
             "raw_argv": False,
             "raw_file_content": False,
             "raw_device_credential": False,
@@ -252,9 +275,10 @@ class BrokerCommandAdmission:
     accepted_at: datetime
     expires_at: datetime
     revision_ref: str
+    request_id: str
 
     def __post_init__(self) -> None:
-        for name in ("admission_ref", "authority_ref", "command_id", "session_id", "binding_ref", "run_id", "tool_request_ref", "evidence_ref", "revision_ref"):
+        for name in ("admission_ref", "authority_ref", "command_id", "session_id", "binding_ref", "run_id", "tool_request_ref", "evidence_ref", "revision_ref", "request_id"):
             object.__setattr__(self, name, _ref(name, getattr(self, name)))
         object.__setattr__(self, "request_fingerprint", _digest("request_fingerprint", self.request_fingerprint))
         if isinstance(self.sequence, bool) or not isinstance(self.sequence, int) or self.sequence < 1:
@@ -279,6 +303,7 @@ class BrokerCommandAdmission:
             "request_fingerprint": self.request_fingerprint,
             "evidence_ref": self.evidence_ref,
             "revision_ref": self.revision_ref,
+            "request_id": self.request_id,
             "accepted_at": self.accepted_at.isoformat(),
             "expires_at": self.expires_at.isoformat(),
             "raw_argv": False,
@@ -523,6 +548,7 @@ class InMemoryLocalAgentBrokerAuthority:
         credential: bytes,
         command_id: str,
         request_fingerprint: str,
+        request_id: str,
         now: datetime,
     ) -> BrokerCommandAdmission:
         now = _aware("now", now)
@@ -544,6 +570,7 @@ class InMemoryLocalAgentBrokerAuthority:
         fingerprint = _digest("request_fingerprint", request_fingerprint)
         if fingerprint != command.request_fingerprint:
             raise ControlPlaneContractError("broker_command_fingerprint_mismatch", "materialized request fingerprint does not match queued command")
+        admitted_request_id = _ref("request_id", request_id)
         admission_ref = _ref("admission_ref", admission_ref)
         evidence_ref = _ref("evidence_ref", evidence_ref)
         if any(item.admission_ref == admission_ref for item in self._commands.values() if item.admission_ref is not None):
@@ -557,6 +584,7 @@ class InMemoryLocalAgentBrokerAuthority:
             evidence_ref=evidence_ref,
             admitted_session_id=session.session_id,
             admitted_at=now,
+            request_id=admitted_request_id,
         )
         self._commands[command.command_id] = admitted
         return BrokerCommandAdmission(
@@ -573,6 +601,7 @@ class InMemoryLocalAgentBrokerAuthority:
             accepted_at=now,
             expires_at=command.expires_at,
             revision_ref=command.revision_ref,
+            request_id=admitted_request_id,
         )
 
     def acknowledge(
@@ -586,6 +615,8 @@ class InMemoryLocalAgentBrokerAuthority:
         evidence_ref: str,
         revision_ref: str,
         termination: str,
+        request_id: str,
+        exit_code: int | None,
         now: datetime,
     ) -> BrokerCommandRecord:
         now = _aware("now", now)
@@ -605,6 +636,10 @@ class InMemoryLocalAgentBrokerAuthority:
             raise ControlPlaneContractError("broker_ack_revision_mismatch", "acknowledgement revision_ref does not echo the server-owned command revision")
         if not isinstance(termination, str) or termination not in _EXECUTION_TERMINATIONS:
             raise ControlPlaneContractError("broker_ack_invalid_termination", "acknowledgement must carry a bounded execution termination")
+        echoed_request_id = _ref("request_id", request_id)
+        if echoed_request_id != command.request_id:
+            raise ControlPlaneContractError("broker_ack_request_id_mismatch", "acknowledgement request_id does not match the admitted material request")
+        bounded_exit_code = _bounded_exit_code("exit_code", exit_code)
         expected = (
             binding.binding_ref,
             session.session_id,
@@ -616,7 +651,14 @@ class InMemoryLocalAgentBrokerAuthority:
             raise ControlPlaneContractError("broker_ack_correlation_mismatch", "acknowledgement does not match admitted command evidence")
         if now >= command.expires_at:
             raise ControlPlaneContractError("broker_command_expired", "expired command cannot be acknowledged")
-        acknowledged = replace(command, state=BrokerCommandState.ACKNOWLEDGED, acknowledged_at=now, termination=termination)
+        acknowledged = replace(
+            command,
+            state=BrokerCommandState.ACKNOWLEDGED,
+            acknowledged_at=now,
+            termination=termination,
+            request_id=echoed_request_id,
+            exit_code=bounded_exit_code,
+        )
         self._commands[command.command_id] = acknowledged
         return acknowledged
 
@@ -644,3 +686,14 @@ REVISION_REF_SCHEDULING_AUTHORITY = False
 STATUS_RESULT_EVIDENCE_RETURN = True
 RAW_STDOUT_IN_BROKER_COMMAND = False
 RAW_STDERR_IN_BROKER_COMMAND = False
+REVISION_CORRELATION = True
+REVISION_CORRELATION_THROUGH_MATERIAL = True
+REQUEST_ID_RETURNED_AND_EXACT = True
+EXIT_CODE_BOUNDED_RETURN = True
+RESULT_RETURN_IS_BOUNDED = True
+RAW_STDOUT_STDERR_RETURNED = False
+RAW_DEVICE_SECRET_RETURNED = False
+CAPABILITY_AUTHORITY_DUPLICATED = False
+TASK_ADMISSION_AUTHORITY_DUPLICATED = False
+REPLAY_AUTHORITY_DUPLICATED = False
+MAX_BOUNDED_EXIT_CODE = MAX_BOUNDED_EXIT_CODE

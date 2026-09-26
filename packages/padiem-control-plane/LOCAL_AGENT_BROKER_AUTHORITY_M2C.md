@@ -141,7 +141,8 @@ expires_at
 revision_ref
 state
 admission/evidence correlation after admission
-bounded termination after acknowledgement
+request_id after admission
+bounded termination + bounded exit_code after acknowledgement
 ```
 
 `revision_ref` is **server-minted** at enqueue time and is an **opaque
@@ -149,9 +150,12 @@ correlation identifier only**. It is not derived from `sequence`, it is not a
 scheduler, retry, replay or version authority, and clients never mint, parse or
 reinterpret it. The ordering/replay axis remains `sequence`.
 
-`termination` is recorded only on acknowledgement and is bounded to the device
-execution vocabulary `exited`, `cancelled`, `timed_out`. Raw `stdout`/`stderr`
-and credentials are never stored or returned.
+`request_id` is frozen at admission from the exact resolved material the device
+holds, and the acknowledgement must echo that same value. `termination` is
+recorded only on acknowledgement and is bounded to the device execution
+vocabulary `exited`, `cancelled`, `timed_out`. `exit_code` is a bounded process
+exit status or the explicit null result. Raw `stdout`/`stderr` and credentials
+are never stored or returned.
 
 It does **not** store:
 
@@ -214,16 +218,18 @@ tool_request_ref
 sequence
 request_fingerprint
 revision_ref
+request_id
 evidence_ref
 accepted_at
 expires_at
 ```
 
 The same bounded `revision_ref` must survive without reinterpretation across the
-device chain: poll command envelope, admission projection, execution receipt and
-acknowledgement. The command material projection stays correlated by exact
-`command_id`/`binding_ref`/`sequence`/`request_fingerprint`, which are validated
-against the same broker record.
+device chain: poll command envelope, command material projection, admission
+projection, execution receipt and acknowledgement.
+
+The admission projection returns the frozen `request_id` so the device can prove
+the broker bound the exact material it holds.
 
 No argv is required in this admission evidence.
 
@@ -238,11 +244,15 @@ Acknowledgement is allowed only after exact admission and requires the same:
 - admission ref;
 - evidence ref;
 - exact echoed `revision_ref` (must equal the server-minted enqueue value);
-- bounded `termination` (`exited`, `cancelled`, `timed_out`).
+- exact echoed `request_id` (must equal the admission-frozen material request);
+- bounded `termination` (`exited`, `cancelled`, `timed_out`);
+- bounded `exit_code` (integer or null).
 
 A device-echoed `revision_ref` that does not match the enqueue-time value fails
-closed with `broker_ack_revision_mismatch`; an out-of-vocabulary termination
-fails closed with `broker_ack_invalid_termination`.
+closed with `broker_ack_revision_mismatch`; an echoed `request_id` that does not
+match the admitted material request fails closed with
+`broker_ack_request_id_mismatch`; an out-of-vocabulary termination fails closed
+with `broker_ack_invalid_termination`.
 
 Thus an arbitrary client boolean such as `done=true` cannot acknowledge a command without the server-side admission correlation.
 
@@ -250,9 +260,19 @@ Thus an arbitrary client boolean such as `done=true` cannot acknowledge a comman
 
 The broker state wire contract version is
 `padiem.local-agent-broker-state-wire.v2`. Version `v2` added the
-`revision_ref` and `termination` command fields. Version `v1` payloads fail the
-closed schema/version check and are rejected fail-closed; there is no silent
-down-conversion and no client-side minting of missing `revision_ref` values.
+`revision_ref`, `termination`, `request_id` and `exit_code` command fields.
+Version `v1` payloads fail the closed schema/version check and are rejected
+fail-closed; there is no silent down-conversion and no client-side minting of
+missing `revision_ref` values.
+
+## Command material wire contract version
+
+The command material wire contract version is
+`claw-local-command-material.v2`. Version `v2` added the server-minted
+`revision_ref` next to `command_id`/`binding_ref`/`sequence`/
+`request_fingerprint`, so the material projection cannot be served for a
+different revision of the same command. Version `v1` payloads fail the closed
+schema check and are rejected fail-closed.
 
 ## RPC facade
 

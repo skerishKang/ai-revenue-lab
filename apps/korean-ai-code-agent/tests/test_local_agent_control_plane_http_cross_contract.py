@@ -236,6 +236,7 @@ def test_physical_b54_client_composes_with_authenticated_http_handler_and_server
         credential=CREDENTIAL,
         command_id=command.command_id,
         request_fingerprint=fingerprint,
+        request_id=local_request.request_id,
         now=BASE + timedelta(seconds=40),
     )
 
@@ -250,6 +251,8 @@ def test_physical_b54_client_composes_with_authenticated_http_handler_and_server
         evidence_ref="evidence_cross_1",
         revision_ref=command.revision_ref,
         termination="exited",
+        request_id=local_request.request_id,
+        exit_code=0,
         now=BASE + timedelta(seconds=50),
     )
 

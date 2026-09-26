@@ -101,6 +101,7 @@ def admit(
         credential=credential,
         command_id=command_id,
         request_fingerprint=fingerprint,
+        request_id=f"request.{command_id}",
         now=now,
     )
 
@@ -238,6 +239,8 @@ def test_ack_requires_exact_admission_evidence_and_is_single_use():
             evidence_ref="evidence.command.1",
             revision_ref=command.revision_ref,
             termination="exited",
+            request_id="request.command.1",
+            exit_code=0,
             now=NOW + timedelta(seconds=3),
         )
     assert error_code(before_admission) == "broker_ack_without_admission"
@@ -253,6 +256,8 @@ def test_ack_requires_exact_admission_evidence_and_is_single_use():
             evidence_ref="evidence.wrong",
             revision_ref=command.revision_ref,
             termination="exited",
+            request_id="request.command.1",
+            exit_code=0,
             now=NOW + timedelta(seconds=4),
         )
     assert error_code(wrong_evidence) == "broker_ack_correlation_mismatch"
@@ -267,6 +272,8 @@ def test_ack_requires_exact_admission_evidence_and_is_single_use():
             evidence_ref="evidence.command.1",
             revision_ref="rev.00000000000000000000000000000000",
             termination="exited",
+            request_id="request.command.1",
+            exit_code=0,
             now=NOW + timedelta(seconds=4),
         )
     assert error_code(wrong_revision) == "broker_ack_revision_mismatch"
@@ -281,9 +288,43 @@ def test_ack_requires_exact_admission_evidence_and_is_single_use():
             evidence_ref="evidence.command.1",
             revision_ref=command.revision_ref,
             termination="raw_stdout_passthrough",
+            request_id="request.command.1",
+            exit_code=0,
             now=NOW + timedelta(seconds=4),
         )
     assert error_code(bad_termination) == "broker_ack_invalid_termination"
+
+    with pytest.raises(ControlPlaneContractError) as wrong_request_id:
+        service.acknowledge(
+            session_id="session.1",
+            binding_ref="binding.1",
+            credential=CREDENTIAL_1,
+            command_id="command.1",
+            admission_ref="admission.command.1",
+            evidence_ref="evidence.command.1",
+            revision_ref=command.revision_ref,
+            termination="exited",
+            request_id="request.unrelated",
+            exit_code=0,
+            now=NOW + timedelta(seconds=4),
+        )
+    assert error_code(wrong_request_id) == "broker_ack_request_id_mismatch"
+
+    with pytest.raises(ControlPlaneContractError) as unbounded_exit_code:
+        service.acknowledge(
+            session_id="session.1",
+            binding_ref="binding.1",
+            credential=CREDENTIAL_1,
+            command_id="command.1",
+            admission_ref="admission.command.1",
+            evidence_ref="evidence.command.1",
+            revision_ref=command.revision_ref,
+            termination="exited",
+            request_id="request.command.1",
+            exit_code="0",
+            now=NOW + timedelta(seconds=4),
+        )
+    assert error_code(unbounded_exit_code) == "invalid_broker_command"
 
     acked = service.acknowledge(
         session_id="session.1",
@@ -294,12 +335,21 @@ def test_ack_requires_exact_admission_evidence_and_is_single_use():
         evidence_ref="evidence.command.1",
         revision_ref=command.revision_ref,
         termination="exited",
+        request_id="request.command.1",
+        exit_code=0,
         now=NOW + timedelta(seconds=4),
     )
     assert acked.state is BrokerCommandState.ACKNOWLEDGED
     assert acked.revision_ref == command.revision_ref
     assert acked.termination == "exited"
-    assert acked.safe_dict()["raw_argv"] is False
+    assert acked.request_id == "request.command.1"
+    assert acked.exit_code == 0
+    returned = acked.safe_dict()
+    assert returned["raw_argv"] is False
+    assert returned["request_id"] == "request.command.1"
+    assert returned["exit_code"] == 0
+    assert "stdout" not in returned
+    assert "stderr" not in returned
 
     with pytest.raises(ControlPlaneContractError) as replay_ack:
         service.acknowledge(
@@ -311,6 +361,8 @@ def test_ack_requires_exact_admission_evidence_and_is_single_use():
             evidence_ref="evidence.command.1",
             revision_ref=command.revision_ref,
             termination="exited",
+            request_id="request.command.1",
+            exit_code=0,
             now=NOW + timedelta(seconds=5),
         )
     assert error_code(replay_ack) == "broker_ack_without_admission"
@@ -375,6 +427,7 @@ def test_rotation_invalidates_old_sessions_credentials_and_queued_generation():
             credential=CREDENTIAL_2,
             command_id="command.1",
             request_fingerprint=FINGERPRINT_1,
+            request_id="request.command.1",
             now=NOW + timedelta(seconds=13),
         )
     assert error_code(stale_command) == "stale_broker_command_generation"
