@@ -218,26 +218,32 @@ class CloudflareDurableObjectSerializedStateBackend:
             # The ledger only ever holds minted ids, which are valid refs.
             safe_ref(command_id, "new_command_id")
 
-        # The ledger write and the blob swap are one storage transaction owned
-        # by this backend: a crash between them rolls both back, so a used
-        # command_id can never be recorded for a mutation that did not commit
-        # (#3123). Callers must not wrap this method in an outer
-        # transactionSync - Durable Object transactions do not nest.
-        def operation():
-            # Ledger rows carry the blob version this mutation produces, so a
-            # row stays provable exactly up to that version and
-            # `_repair_ledger_phantoms` can clean up any row whose mutation
-            # never committed. An id removed from the blob by compaction was
-            # already recorded when it was minted, so INSERT OR IGNORE is a
-            # no-op for it and the backfill cannot lower a committed_version.
+        # Ledger first, blob second, both written inside whatever storage
+        # transaction the caller owns: every mutating authority operation in
+        # the durable runtime runs wrapped in exactly one transactionSync, so
+        # the pair commits or rolls back together (#3123). When this method is
+        # driven bare (tests, tooling, a caller outside the runtime), a
+        # refused blob CAS explicitly removes the rows it just added, so a
+        # refused CAS never marks an id as used. A *crash* between the two
+        # writes leaves a row whose committed_version is beyond the stored
+        # blob version - the one shape explicit rollback cannot reach - and
+        # `_repair_ledger_phantoms` deletes it on the next backend contact.
+        # Rows recorded here are only ever fresh mints: an id removed from the
+        # blob by compaction was already recorded when it was minted, so
+        # INSERT OR IGNORE is a no-op for it and neither the rollback nor the
+        # repair can erase prior history.
+        recorded: list[str] = []
+        try:
             for command_id in new_command_ids:
-                self._sql.exec(
+                cursor = self._sql.exec(
                     "INSERT OR IGNORE INTO local_agent_broker_used_command_id "
                     "(authority_ref, command_id, committed_version) VALUES (?, ?, ?)",
                     authority_ref,
                     command_id,
                     expected_version + 1,
                 )
+                if rows_written(cursor) == 1:
+                    recorded.append(command_id)
             if expected_version == 0:
                 cursor = self._sql.exec(
                     "INSERT OR IGNORE INTO local_agent_broker_state "
@@ -262,19 +268,23 @@ class CloudflareDurableObjectSerializedStateBackend:
                         "Durable Object broker state authority mismatch",
                     )
                 raise stale_state_error()
-
-            stored = self.load(authority_ref=authority_ref)
-            if stored is None or stored.version != expected_version + 1 or stored.payload != payload:
-                raise ControlPlaneContractError(
-                    "invalid_local_agent_broker_state_wire",
-                    "Durable Object backend violated the exact broker CAS contract",
+        except Exception:
+            for command_id in recorded:
+                self._sql.exec(
+                    "DELETE FROM local_agent_broker_used_command_id "
+                    "WHERE authority_ref = ? AND command_id = ?",
+                    authority_ref,
+                    command_id,
                 )
-            return stored
+            raise
 
-        transaction_sync = getattr(self._storage, "transactionSync", None)
-        if not callable(transaction_sync):
-            raise RuntimeError("SQLite-backed Durable Object transactionSync is required")
-        return transaction_sync(operation)
+        stored = self.load(authority_ref=authority_ref)
+        if stored is None or stored.version != expected_version + 1 or stored.payload != payload:
+            raise ControlPlaneContractError(
+                "invalid_local_agent_broker_state_wire",
+                "Durable Object backend violated the exact broker CAS contract",
+            )
+        return stored
 
     def has_used_command_id(self, *, authority_ref: str, command_id: str) -> bool:
         authority_ref = safe_ref(authority_ref, "authority_ref")

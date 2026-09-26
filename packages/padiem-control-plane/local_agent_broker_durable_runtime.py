@@ -62,7 +62,7 @@ class LocalAgentBrokerDurableRuntime:
         return transaction_sync(operation)
 
     def register_binding(self, payload: dict) -> dict:
-        return self.facade().register_binding(payload)
+        return self.transaction(lambda: self.facade().register_binding(payload))
 
     # The serialized-state CAS commits atomically inside its own storage
     # transaction (used-command-id ledger and blob together, #3123), and
@@ -86,10 +86,10 @@ class LocalAgentBrokerDurableRuntime:
         return result
 
     def open_session(self, payload: dict) -> dict:
-        return self.facade().open_session(payload)
+        return self.transaction(lambda: self.facade().open_session(payload))
 
     def enqueue_command(self, payload: dict) -> dict:
-        return self.facade().enqueue_command(payload)
+        return self.transaction(lambda: self.facade().enqueue_command(payload))
 
     def store_command_material(self, wire: dict) -> dict:
         return self.transaction(lambda: self.material_store.store(wire))
@@ -110,7 +110,7 @@ class LocalAgentBrokerDurableRuntime:
         return self.facade().poll(payload)
 
     def admit_command(self, payload: dict) -> dict:
-        return self.facade().admit_command(payload)
+        return self.transaction(lambda: self.facade().admit_command(payload))
 
     def acknowledge(self, payload: dict) -> dict:
         result = self.facade().acknowledge(payload)
