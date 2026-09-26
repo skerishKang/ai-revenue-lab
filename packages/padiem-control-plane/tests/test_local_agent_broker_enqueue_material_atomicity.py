@@ -685,18 +685,52 @@ def test_poll_does_not_starve_runnable_work_behind_a_withheld_command(tmp_path: 
     assert runtime.material_store.has_persisted_material("command.starve.1") is False
 
 
-def test_poll_returns_nothing_when_every_remaining_command_is_withheld(tmp_path: Path) -> None:
-    """All-orphan pages end, and they end empty.
+def test_poll_delivers_a_valid_command_behind_more_than_one_canonical_page(tmp_path: Path) -> None:
+    """More than one full canonical page of orphans must not hide live work.
 
-    The cursor walk is bounded by the page count *and* by the canonical window
-    running out, so a store full of unresolvable commands costs a bounded walk
-    rather than an endless one.
+    CENTRAL's case: 65 material-less commands in front of a runnable one, with
+    the caller asking for one command at a time. Any walk that stops at a page
+    count hides the runnable command behind that count instead, so the walk has
+    to continue until the queue is actually exhausted.
     """
 
     path = tmp_path / "do.sqlite3"
     runtime = _runtime(path)
     _register_and_open(runtime)
-    for index in range(1, 4):
+    orphans = 65
+    for index in range(orphans):
+        runtime.enqueue_command(
+            _enqueue_payload(f"command.deep.{index}", now=BASE + timedelta(seconds=2))
+        )
+    valid = runtime.enqueue_command_with_material(
+        _enqueue_payload("command.deep.valid", now=BASE + timedelta(seconds=2)),
+        _material_body("command.deep.valid"),
+    )
+    assert valid["ok"] is True
+    assert valid["command"]["sequence"] == orphans + 1
+
+    polled = runtime.poll(_poll_payload(at=BASE + timedelta(seconds=3), limit=1))
+    assert [command["command_id"] for command in polled["commands"]] == ["command.deep.valid"]
+
+    # Nothing in front of it was delivered, and nothing was deleted to achieve it.
+    delivered_ids = {command["command_id"] for command in polled["commands"]}
+    assert delivered_ids.isdisjoint({f"command.deep.{index}" for index in range(orphans)})
+    assert len(_persisted_commands(path)) == orphans + 1
+
+
+def test_poll_returns_nothing_when_every_remaining_command_is_withheld(tmp_path: Path) -> None:
+    """A queue of nothing but orphans ends, and it ends empty.
+
+    The walk ends on the queue being exhausted rather than on a counter, so this
+    covers more than one full page of orphans to prove the walk actually drains
+    instead of stopping early.
+    """
+
+    path = tmp_path / "do.sqlite3"
+    runtime = _runtime(path)
+    _register_and_open(runtime)
+    orphans = 70
+    for index in range(orphans):
         runtime.enqueue_command(
             _enqueue_payload(f"command.only.{index}", now=BASE + timedelta(seconds=2))
         )
@@ -704,7 +738,7 @@ def test_poll_returns_nothing_when_every_remaining_command_is_withheld(tmp_path:
     polled = runtime.poll(_poll_payload(at=BASE + timedelta(seconds=3), limit=1))
     assert polled["ok"] is True
     assert polled["commands"] == []
-    assert _persisted_commands(path) == ["command.only.1", "command.only.2", "command.only.3"]
+    assert len(_persisted_commands(path)) == orphans
 
 
 # --- 10. the product gateway cannot create a command by the split pair ------

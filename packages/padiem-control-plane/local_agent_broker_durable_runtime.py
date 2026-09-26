@@ -18,11 +18,6 @@ from local_agent_broker_sql_state import (
 )
 
 _T = TypeVar("_T")
-#: How many canonical pages one poll may step through while looking for
-#: deliverable commands. A page of 1 next to a long run of unresolvable
-#: commands is the case this exists for; the bound keeps a pathological store
-#: from turning one poll into an unbounded walk.
-_MAX_POLL_PAGES = 64
 _MATERIAL_RESOLVE_RPC_KEYS = frozenset(
     {
         "request_ref",
@@ -195,7 +190,7 @@ class LocalAgentBrokerDurableRuntime:
 
     def poll(self, payload: dict) -> dict:
         """Deliver only commands the device can actually run, without hiding
-        the runnable work behind one it cannot.
+        the runnable work behind any number of ones it cannot.
 
         #3127 — a command whose material was never persisted is not
         material-resolvable, so handing it to a device advertises work that
@@ -204,37 +199,57 @@ class LocalAgentBrokerDurableRuntime:
 
         The canonical authority still decides *which* commands are pollable.
         This withholds only the ones the device could not execute, and it does so
-        by **stepping the poll cursor past them** rather than by dropping them
-        from the page. Dropping them would let a single orphan occupy a
-        one-command page and hide every runnable command behind it until the
-        orphan's own hard deadline passed — the same defect one layer up. The
-        scan is bounded by `_MAX_POLL_PAGES`, and it only ever *omits*
-        unresolvable commands, so a pathological store costs bounded work
-        rather than correctness.
+        by **walking the canonical window** rather than by truncating it. Both
+        earlier shapes were wrong in the same way: dropping the withheld command
+        from the page let a single orphan occupy a one-command page, and capping
+        the walk merely moved that threshold to the cap, so 65 orphans hid the
+        66th command. A cap is not a fix; the walk has to end on the queue
+        being exhausted, not on a counter.
+
+        So the walk runs in `MAX_POLL_BATCH` pages until it has filled the
+        caller's page or the canonical eligible queue is genuinely empty. The
+        caller's `limit` still bounds what it receives, and the first page is
+        requested with that same limit so the canonical authority — not a second
+        copy of its rule — validates the caller's limit and cursor.
+
+        Termination is structural rather than numeric: every page strictly
+        advances the cursor past what it returned, and the queue is bounded by
+        the snapshot's own collection cap, so the walk ends when the queue does.
+        The only guard is against an authority that would fail to advance, which
+        would spin without making progress.
         """
 
         def operation() -> dict:
             limit = payload.get("limit", MAX_POLL_BATCH)
             cursor = payload.get("after_sequence", 0)
+            # The first page asks for the caller's own limit, so an invalid
+            # limit or cursor is refused by the canonical authority exactly as
+            # it would be without this layer.
+            page = self.facade().poll({**payload, "after_sequence": cursor, "limit": limit})
+            if page.get("ok") is not True:
+                return page
             deliverable: list[dict] = []
-            response: dict = {}
-            for _ in range(_MAX_POLL_PAGES):
-                page = self.facade().poll({**payload, "after_sequence": cursor, "limit": limit})
-                if page.get("ok") is not True:
-                    return page
-                response = page
+            while True:
                 commands = page["commands"]
                 if not commands:
-                    break
+                    return {**page, "ok": True, "commands": deliverable}
+                advanced = cursor
                 for command in commands:
-                    cursor = command["sequence"]
+                    advanced = command["sequence"]
                     if self.material_store.has_persisted_material(command["command_id"]):
                         deliverable.append(command)
                         if len(deliverable) == limit:
-                            break
-                if len(deliverable) == limit:
-                    break
-            return {**response, "ok": True, "commands": deliverable}
+                            return {**page, "commands": deliverable}
+                if advanced <= cursor:
+                    # An authority that does not advance the cursor would spin
+                    # here forever without reaching later commands.
+                    return {**page, "ok": True, "commands": deliverable}
+                cursor = advanced
+                page = self.facade().poll(
+                    {**payload, "after_sequence": cursor, "limit": MAX_POLL_BATCH}
+                )
+                if page.get("ok") is not True:
+                    return page
         return self.transaction(operation)
 
     def admit_command(self, payload: dict) -> dict:
