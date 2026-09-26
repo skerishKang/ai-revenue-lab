@@ -1,17 +1,26 @@
-"""#3123 — bounded terminal history without losing sequence authority.
+"""#3123 - bounded terminal history without losing sequence *or* identity.
 
 Every test here drives the real state path: `StateBackedLocalAgentBrokerAuthority`
-over `SerializedLocalAgentBrokerStatePort`, so compaction, tombstones, the
-watermark and the wire bounds are exercised through the same encode → CAS →
-decode round trip a durable object performs. The only patched values are the
+over the real serialized CAS port, so compaction, the sequence watermark and
+the exact used-command-id ledger are exercised through the same encode -> CAS
+-> decode round trip a durable object performs. The only patched values are
 module-level trigger thresholds, so small-scale tests can reach the same code
 paths the 10,000-record pressure test reaches at full scale.
+
+The CENTRAL blocker on the first cut of this change was that folded/evicted
+tombstones let a used command_id become fresh again. That cannot happen any
+more: command-id identity lives in an exact, durable, append-only
+used-command-id ledger in the same canonical broker storage, which is a
+superset of every id the bounded snapshot has ever carried.
 """
 
 from __future__ import annotations
 
-import json
+import importlib.util
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
+import sqlite3
+import sys
 
 import pytest
 
@@ -19,10 +28,9 @@ from padiem_control_plane import local_agent_broker as broker_module
 from padiem_control_plane import local_agent_broker_state as state_module
 from padiem_control_plane.contracts import ControlPlaneContractError
 from padiem_control_plane.local_agent_broker import (
-    MAX_COMPACTION_TOMBSTONES,
+    TERMINAL_RETENTION_SECONDS,
     BrokerCommandRecord,
     BrokerCommandState,
-    TERMINAL_RETENTION_SECONDS,
     InMemoryLocalAgentBrokerAuthority,
 )
 from padiem_control_plane.local_agent_broker_state import (
@@ -30,13 +38,51 @@ from padiem_control_plane.local_agent_broker_state import (
     StateBackedLocalAgentBrokerAuthority,
 )
 from padiem_control_plane.local_agent_broker_state_wire import (
-    BROKER_STATE_WIRE_VERSION,
     MAX_BROKER_STATE_COLLECTION_ITEMS,
     InMemorySerializedLocalAgentBrokerStateBackend,
     LocalAgentBrokerStateJsonCodec,
     SerializedLocalAgentBrokerStatePort,
-    SerializedLocalAgentBrokerStateRecord,
 )
+
+# The durable-object serialized backend lives one level above the package
+# because it is the Cloudflare-side wiring module; load it the same way the
+# worker tests do.
+_SQL_STATE_PATH = Path(__file__).parents[1] / "local_agent_broker_sql_state.py"
+_sql_state_spec = importlib.util.spec_from_file_location(
+    "padiem_local_agent_broker_sql_state_compaction_test", _SQL_STATE_PATH
+)
+assert _sql_state_spec is not None and _sql_state_spec.loader is not None
+sql_state = importlib.util.module_from_spec(_sql_state_spec)
+sys.modules[_sql_state_spec.name] = sql_state
+_sql_state_spec.loader.exec_module(sql_state)
+
+
+class _SqlCursor:
+    def __init__(self, rows: list[dict], rows_written: int) -> None:
+        self._rows = rows
+        self.rowsWritten = rows_written
+
+    def toArray(self) -> list[dict]:
+        return self._rows
+
+
+class _Sql:
+    def __init__(self, connection: sqlite3.Connection) -> None:
+        self.connection = connection
+
+    def exec(self, query: str, *bindings):
+        cursor = self.connection.execute(query, bindings)
+        rows: list[dict] = []
+        if cursor.description is not None:
+            names = [item[0] for item in cursor.description]
+            rows = [dict(zip(names, row, strict=True)) for row in cursor.fetchall()]
+        return _SqlCursor(rows, cursor.rowcount if cursor.rowcount >= 0 else 0)
+
+
+class _Storage:
+    def __init__(self, connection: sqlite3.Connection | None = None) -> None:
+        self.connection = connection or sqlite3.connect(":memory:", isolation_level=None)
+        self.sql = _Sql(self.connection)
 
 BASE = datetime(2026, 9, 26, 1, 0, tzinfo=timezone.utc)
 PEPPER = b"compaction-test-pepper-0123456789abcdef"
@@ -45,6 +91,7 @@ FINGERPRINT = "d" * 64
 FINGERPRINT_2 = "e" * 64
 AUTHORITY_REF = "control-plane.local-agent-broker.compaction-test.v1"
 BINDING = "binding.compaction.1"
+RETRY_HORIZON = timedelta(seconds=TERMINAL_RETENTION_SECONDS)
 
 
 def _port() -> SerializedLocalAgentBrokerStatePort:
@@ -59,6 +106,10 @@ def _authority(port: SerializedLocalAgentBrokerStatePort) -> StateBackedLocalAge
         authority_ref=AUTHORITY_REF,
         state_port=port,
     )
+
+
+def _backend(port: SerializedLocalAgentBrokerStatePort) -> InMemorySerializedLocalAgentBrokerStateBackend:
+    return port._backend  # the durable storage under test
 
 
 def _register(authority: StateBackedLocalAgentBrokerAuthority, *, now: datetime = BASE):
@@ -155,7 +206,7 @@ def _live_state(port: SerializedLocalAgentBrokerStatePort) -> LocalAgentBrokerSt
 
 
 # ---------------------------------------------------------------------------
-# Retention: terminal records compact to tombstones, nothing else ever does
+# Retention: terminal records compact, live and unresolved records never do
 # ---------------------------------------------------------------------------
 
 
@@ -170,20 +221,26 @@ def test_acknowledged_command_compacts_after_retention_keeping_watermark(monkeyp
     _ack(authority, command, index="c.1", session_id=session.session_id, now=BASE + timedelta(seconds=10))
 
     # One second inside the horizon: still retained in full.
-    retained = _enqueue(authority, "command.c.keep", now=BASE + timedelta(seconds=10) + timedelta(seconds=TERMINAL_RETENTION_SECONDS - 1))
+    retained = _enqueue(
+        authority,
+        "command.c.keep",
+        now=BASE + timedelta(seconds=10) + RETRY_HORIZON - timedelta(seconds=1),
+    )
     state = _live_state(port)
     assert state.commands[0].command_id == "command.c.1"
     assert state.commands[0].state is BrokerCommandState.ACKNOWLEDGED
-    assert state.compacted_commands == ()
 
     # Past the horizon, the next mutation compacts the terminal record.
-    _enqueue(authority, "command.c.2", now=BASE + timedelta(seconds=10) + timedelta(seconds=TERMINAL_RETENTION_SECONDS + 1))
+    _enqueue(
+        authority,
+        "command.c.2",
+        now=BASE + timedelta(seconds=10) + RETRY_HORIZON + timedelta(seconds=1),
+    )
     state = _live_state(port)
     assert [item.command_id for item in state.commands] == ["command.c.keep", "command.c.2"]
-    # The tombstone keeps the id rejected; the sequence stays visible.
-    assert [tombstone.command_id for tombstone in state.compacted_commands] == ["command.c.1"]
-    assert state.compacted_through_by_binding == ()
-    # The watermark never moves down and the new command never reuses a sequence.
+    # The id stays consumed in the exact ledger even though the record is gone.
+    assert _backend(port).has_used_command_id(authority_ref=AUTHORITY_REF, command_id="command.c.1") is True
+    # The watermark never moves down and no sequence is ever reused.
     assert dict(state.last_sequence_by_binding)[BINDING] == 3
     assert retained.sequence == 2
     assert [item.sequence for item in state.commands] == [2, 3]
@@ -207,12 +264,11 @@ def test_queued_and_admitted_commands_are_never_evicted(monkeypatch):
 
     state = _live_state(port)
     by_id = {item.command_id: item for item in state.commands}
-    # Active work survives 30 days of pressure; only the terminal record goes.
+    # Active work survives days of pressure; only the terminal record goes.
     assert by_id["command.c.2"].state is BrokerCommandState.ADMITTED
     assert by_id["command.c.3"].state is BrokerCommandState.QUEUED
     assert by_id["command.c.4"].state is BrokerCommandState.QUEUED
     assert "command.c.1" not in by_id
-    assert [tombstone.command_id for tombstone in state.compacted_commands] == ["command.c.1"]
     assert queued.sequence == 3 and admitted.sequence == 2
 
 
@@ -225,16 +281,19 @@ def test_expired_admitted_is_unresolved_until_reconciled_then_compactable(monkey
     command = _enqueue(authority, "command.c.1", now=BASE + timedelta(seconds=2))
     _admit(authority, command, index="c.1", session_id=session.session_id, now=BASE + timedelta(seconds=5))
     # The #3121 reconciliation contract: an admitted command past its deadline
-    # stays ADMITTED — unresolved evidence — until the device reconciles it.
+    # stays ADMITTED - unresolved evidence - until the device reconciles it.
     far_future = BASE + timedelta(days=2)
     _enqueue(authority, "command.c.2", now=far_future)
     state = _live_state(port)
     assert state.commands[0].state is BrokerCommandState.ADMITTED
-    assert state.compacted_commands == ()
 
-    # A restarted device reconciles on a fresh session; the deleted expired
+    # A restarted device reconciles on a fresh session; the removed expired
     # one is exactly the state the compaction is allowed to reclaim.
-    fresh_session = _session(authority, session_id="session.compaction.2", now=far_future + timedelta(seconds=1))
+    fresh_session = _session(
+        authority,
+        session_id="session.compaction.2",
+        now=far_future + timedelta(seconds=1),
+    )
     reconciled = authority.reconcile_expired_command(
         session_id=fresh_session.session_id,
         binding_ref=BINDING,
@@ -250,16 +309,20 @@ def test_expired_admitted_is_unresolved_until_reconciled_then_compactable(monkey
     )
     assert reconciled.state is BrokerCommandState.EXPIRED
 
-    _enqueue(authority, "command.c.3", now=far_future + timedelta(seconds=1) + timedelta(seconds=TERMINAL_RETENTION_SECONDS + 1))
+    _enqueue(
+        authority,
+        "command.c.3",
+        now=far_future + timedelta(seconds=1) + RETRY_HORIZON + timedelta(seconds=1),
+    )
     state = _live_state(port)
-    # The reconciled EXPIRED record is terminal evidence whose retention window
-    # has passed: compacted to a tombstone, correlation kept, nothing fabricated.
+    # The reconciled EXPIRED record is terminal evidence whose retention
+    # window has passed: removed from the snapshot, id still consumed.
     assert [item.command_id for item in state.commands] == ["command.c.2", "command.c.3"]
-    assert [tombstone.command_id for tombstone in state.compacted_commands] == ["command.c.1"]
+    assert _backend(port).has_used_command_id(authority_ref=AUTHORITY_REF, command_id="command.c.1") is True
 
 
 # ---------------------------------------------------------------------------
-# Duplicate rejection across compaction
+# Duplicate rejection across compaction - exact, durable, not probabilistic
 # ---------------------------------------------------------------------------
 
 
@@ -272,22 +335,43 @@ def test_compacted_command_id_is_rejected_and_sequence_is_never_reused(monkeypat
     command = _enqueue(authority, "command.c.1", now=BASE + timedelta(seconds=2))
     _admit(authority, command, index="c.1", session_id=session.session_id, now=BASE + timedelta(seconds=5))
     _ack(authority, command, index="c.1", session_id=session.session_id, now=BASE + timedelta(seconds=10))
-    _enqueue(authority, "command.c.trigger", now=BASE + timedelta(seconds=10) + timedelta(seconds=TERMINAL_RETENTION_SECONDS + 1))
-    assert [tombstone.command_id for tombstone in _live_state(port).compacted_commands] == ["command.c.1"]
+    _enqueue(
+        authority,
+        "command.c.trigger",
+        now=BASE + timedelta(seconds=10) + RETRY_HORIZON + timedelta(seconds=1),
+    )
+    assert "command.c.1" not in {item.command_id for item in _live_state(port).commands}
 
     # An exact retry of the compacted id cannot be served from the record
     # anymore, and it must not silently become a fresh command either.
     with pytest.raises(ControlPlaneContractError) as exact:
-        _enqueue(authority, "command.c.1", now=BASE + timedelta(seconds=10) + timedelta(seconds=TERMINAL_RETENTION_SECONDS + 2))
+        _enqueue(
+            authority,
+            "command.c.1",
+            now=BASE + timedelta(seconds=10) + RETRY_HORIZON + timedelta(seconds=2),
+        )
     assert exact.value.code == "broker_command_history_compacted"
     with pytest.raises(ControlPlaneContractError) as conflicting:
-        _enqueue(authority, "command.c.1", now=BASE + timedelta(seconds=10) + timedelta(seconds=TERMINAL_RETENTION_SECONDS + 2), fingerprint=FINGERPRINT_2)
+        _enqueue(
+            authority,
+            "command.c.1",
+            now=BASE + timedelta(seconds=10) + RETRY_HORIZON + timedelta(seconds=2),
+            fingerprint=FINGERPRINT_2,
+        )
     assert conflicting.value.code == "broker_command_history_compacted"
 
     # The live #3118 contract is untouched for records that still exist.
-    live = _enqueue(authority, "command.c.trigger", now=BASE + timedelta(seconds=10) + timedelta(seconds=TERMINAL_RETENTION_SECONDS + 2))
+    live = _enqueue(
+        authority,
+        "command.c.trigger",
+        now=BASE + timedelta(seconds=10) + RETRY_HORIZON + timedelta(seconds=2),
+    )
     assert live.state is BrokerCommandState.QUEUED
-    fresh = _enqueue(authority, "command.c.9", now=BASE + timedelta(seconds=10) + timedelta(seconds=TERMINAL_RETENTION_SECONDS + 3))
+    fresh = _enqueue(
+        authority,
+        "command.c.9",
+        now=BASE + timedelta(seconds=10) + RETRY_HORIZON + timedelta(seconds=3),
+    )
     assert fresh.sequence == live.sequence + 1
 
 
@@ -300,8 +384,16 @@ def test_ack_of_compacted_command_refuses_explicitly(monkeypatch):
     command = _enqueue(authority, "command.c.1", now=BASE + timedelta(seconds=2))
     _admit(authority, command, index="c.1", session_id=session.session_id, now=BASE + timedelta(seconds=5))
     _ack(authority, command, index="c.1", session_id=session.session_id, now=BASE + timedelta(seconds=10))
-    _enqueue(authority, "command.c.trigger", now=BASE + timedelta(seconds=10) + timedelta(seconds=TERMINAL_RETENTION_SECONDS + 1))
-    late_session = _session(authority, session_id="session.compaction.2", now=BASE + timedelta(seconds=10) + timedelta(seconds=TERMINAL_RETENTION_SECONDS + 1))
+    _enqueue(
+        authority,
+        "command.c.trigger",
+        now=BASE + timedelta(seconds=10) + RETRY_HORIZON + timedelta(seconds=1),
+    )
+    late_session = _session(
+        authority,
+        session_id="session.compaction.2",
+        now=BASE + timedelta(seconds=10) + RETRY_HORIZON + timedelta(seconds=1),
+    )
     with pytest.raises(ControlPlaneContractError) as retry:
         authority.acknowledge(
             session_id=late_session.session_id,
@@ -314,105 +406,17 @@ def test_ack_of_compacted_command_refuses_explicitly(monkeypatch):
             termination="exited",
             request_id="request.c.1",
             exit_code=0,
-            now=BASE + timedelta(seconds=10) + timedelta(seconds=TERMINAL_RETENTION_SECONDS + 2),
+            now=BASE + timedelta(seconds=10) + RETRY_HORIZON + timedelta(seconds=2),
         )
     assert retry.value.code == "broker_command_history_compacted"
 
 
 # ---------------------------------------------------------------------------
-# Folding: contiguous terminal prefixes become watermark state
+# Restart recovery: the ledger and the watermark are durable
 # ---------------------------------------------------------------------------
 
 
-def test_contiguous_prefix_folds_under_tombstone_budget_pressure(monkeypatch):
-    # Folding is budget relief, not routine cleanup: with a one-slot budget,
-    # the next compaction must fold the contiguous prefix to make room, which
-    # is exactly the pressure path the 10k test exercises at full scale.
-    monkeypatch.setattr(state_module, "COMPACTION_PROACTIVE_TRIGGER_COMMANDS", 1)
-    monkeypatch.setattr(broker_module, "MAX_COMPACTION_TOMBSTONES", 1)
-    port = _port()
-    authority = _authority(port)
-    _register(authority)
-    session = _session(authority)
-    first = _enqueue(authority, "command.c.1", now=BASE + timedelta(seconds=2))
-    _admit(authority, first, index="c.1", session_id=session.session_id, now=BASE + timedelta(seconds=5))
-    _ack(authority, first, index="c.1", session_id=session.session_id, now=BASE + timedelta(seconds=10))
-    _enqueue(authority, "command.c.trigger", now=BASE + timedelta(seconds=10) + timedelta(seconds=TERMINAL_RETENTION_SECONDS + 1))
-
-    # Room existed (empty budget), so the tombstone persisted without folding.
-    retained = _live_state(port)
-    assert [tombstone.command_id for tombstone in retained.compacted_commands] == ["command.c.1"]
-    assert retained.compacted_through_by_binding == ()
-    assert dict(retained.last_sequence_by_binding)[BINDING] == 2
-
-    # The next terminal record fills the budget: the contiguous prefix folds
-    # through both consumed sequences and the window slides forward. Both
-    # records are acknowledged inside the first hour; the late mutation is
-    # what drives the retention pass.
-    second = _enqueue(authority, "command.c.2", now=BASE + timedelta(seconds=11))
-    _admit(authority, second, index="c.2", session_id=session.session_id, now=BASE + timedelta(seconds=12))
-    _ack(authority, second, index="c.2", session_id=session.session_id, now=BASE + timedelta(seconds=13))
-    _enqueue(authority, "command.c.trigger2", now=BASE + timedelta(seconds=10) + timedelta(seconds=TERMINAL_RETENTION_SECONDS + 5))
-    state = _live_state(port)
-    # The fold fired when the budget was full — before the new tombstone was
-    # placed — so the prefix reached sequence 1 and the newest tombstone stayed.
-    assert dict(state.compacted_through_by_binding)[BINDING] == 1
-    assert [tombstone.command_id for tombstone in state.compacted_commands] == ["command.c.2"]
-    assert dict(state.last_sequence_by_binding)[BINDING] == 4
-
-    # Sustained pressure must not overreach: sequence 2 belongs to the still
-    # live `trigger` command, so the fold stays at 1 no matter how often it
-    # runs. The prefix only ever claims fully terminal, fully compacted runs.
-    _enqueue(authority, "command.c.trigger3", now=BASE + timedelta(seconds=10) + timedelta(seconds=TERMINAL_RETENTION_SECONDS + 6))
-    drained = _live_state(port)
-    assert dict(drained.compacted_through_by_binding)[BINDING] == 1
-    assert [tombstone.sequence for tombstone in drained.compacted_commands] == [3]
-    assert dict(drained.last_sequence_by_binding)[BINDING] == 5
-
-
-def test_fold_stops_at_a_live_command_and_tombstone_window_survives(monkeypatch):
-    monkeypatch.setattr(state_module, "COMPACTION_PROACTIVE_TRIGGER_COMMANDS", 1)
-    monkeypatch.setattr(broker_module, "MAX_COMPACTION_TOMBSTONES", 2)
-    port = _port()
-    authority = _authority(port)
-    _register(authority)
-    session = _session(authority)
-    first = _enqueue(authority, "command.c.1", now=BASE + timedelta(seconds=2))
-    _admit(authority, first, index="c.1", session_id=session.session_id, now=BASE + timedelta(seconds=5))
-    _ack(authority, first, index="c.1", session_id=session.session_id, now=BASE + timedelta(seconds=10))
-    # sequence 2 stays QUEUED forever: the prefix can never fold past it.
-    _enqueue(authority, "command.c.2", now=BASE + timedelta(seconds=11))
-
-    third = _enqueue(authority, "command.c.3", now=BASE + timedelta(seconds=12))
-    _admit(authority, third, index="c.3", session_id=session.session_id, now=BASE + timedelta(seconds=13))
-    _ack(authority, third, index="c.3", session_id=session.session_id, now=BASE + timedelta(seconds=14))
-    fourth = _enqueue(authority, "command.c.4", now=BASE + timedelta(seconds=15))
-    _admit(authority, fourth, index="c.4", session_id=session.session_id, now=BASE + timedelta(seconds=16))
-    _ack(authority, fourth, index="c.4", session_id=session.session_id, now=BASE + timedelta(seconds=17))
-    later = BASE + timedelta(seconds=30) + timedelta(seconds=TERMINAL_RETENTION_SECONDS + 1)
-    _enqueue(authority, "command.c.5", now=later)
-
-    state = _live_state(port)
-    tombstone_ids = [tombstone.command_id for tombstone in state.compacted_commands]
-    # The prefix folded through sequence 1 and stopped at the live sequence 2.
-    assert dict(state.compacted_through_by_binding)[BINDING] == 1
-    # The budget forced the deepest tombstone out only after the fold freed
-    # what the contiguous prefix could; the recent window survived.
-    assert tombstone_ids == ["command.c.3", "command.c.4"]
-    assert dict(state.last_sequence_by_binding)[BINDING] == 5
-    with pytest.raises(ControlPlaneContractError) as rejected:
-        _enqueue(authority, "command.c.4", now=later + timedelta(seconds=7))
-    assert rejected.value.code == "broker_command_history_compacted"
-    fresh = _enqueue(authority, "command.c.6", now=later + timedelta(seconds=7))
-    assert fresh.sequence == 6
-
-
-# ---------------------------------------------------------------------------
-# Restart recovery over the real serialized wire
-# ---------------------------------------------------------------------------
-
-
-def test_tombstones_and_prefix_survive_restart_and_keep_rejecting(monkeypatch):
+def test_ledger_and_watermark_survive_restart_and_keep_rejecting(monkeypatch):
     monkeypatch.setattr(state_module, "COMPACTION_PROACTIVE_TRIGGER_COMMANDS", 1)
     port = _port()
     first = _authority(port)
@@ -421,74 +425,72 @@ def test_tombstones_and_prefix_survive_restart_and_keep_rejecting(monkeypatch):
     command = _enqueue(first, "command.c.1", now=BASE + timedelta(seconds=2))
     _admit(first, command, index="c.1", session_id=session.session_id, now=BASE + timedelta(seconds=5))
     _ack(first, command, index="c.1", session_id=session.session_id, now=BASE + timedelta(seconds=10))
-    _enqueue(first, "command.c.trigger", now=BASE + timedelta(seconds=10) + timedelta(seconds=TERMINAL_RETENTION_SECONDS + 1))
+    _enqueue(
+        first,
+        "command.c.trigger",
+        now=BASE + timedelta(seconds=10) + RETRY_HORIZON + timedelta(seconds=1),
+    )
     before = _live_state(port)
-    assert [tombstone.command_id for tombstone in before.compacted_commands] == ["command.c.1"]
-    assert before.compacted_through_by_binding == ()
 
-    # A fresh process over the same durable backend: everything the watermark
-    # and the tombstone state prove survives the restart.
+    # A fresh process over the same durable storage: identity and watermark
+    # survive the restart, because they live in the same durable storage.
     restarted = _authority(port)
+    assert _backend(port).has_used_command_id(authority_ref=AUTHORITY_REF, command_id="command.c.1") is True
     fresh = restarted.enqueue_command(
         command_id="command.c.9",
         binding_ref=BINDING,
         run_id="run.command.c.9",
         tool_request_ref="tool-request.command.c.9",
         request_fingerprint=FINGERPRINT,
-        now=BASE + timedelta(seconds=10) + timedelta(seconds=TERMINAL_RETENTION_SECONDS + 2),
+        now=BASE + timedelta(seconds=10) + RETRY_HORIZON + timedelta(seconds=2),
     )
     assert fresh.sequence == dict(before.last_sequence_by_binding)[BINDING] + 1
-    after = _live_state(port)
-    assert after.compacted_through_by_binding == before.compacted_through_by_binding
-    assert after.compacted_commands == before.compacted_commands
-    assert dict(after.last_sequence_by_binding)[BINDING] == fresh.sequence
+    assert dict(_live_state(port).last_sequence_by_binding)[BINDING] == fresh.sequence
     with pytest.raises(ControlPlaneContractError) as rejected:
-        _enqueue(restarted, "command.c.1", now=BASE + timedelta(seconds=10) + timedelta(seconds=TERMINAL_RETENTION_SECONDS + 3))
+        _enqueue(restarted, "command.c.1", now=BASE + timedelta(seconds=10) + RETRY_HORIZON + timedelta(seconds=3))
     assert rejected.value.code == "broker_command_history_compacted"
 
 
-def test_legacy_v2_state_survives_restart_and_upgrades_on_next_write():
+def test_refused_cas_records_no_ledger_id():
+    # A stale CAS must not mark the attempted id as used: the caller's
+    # legitimate retry against the winning state must still be able to mint.
     port = _port()
     authority = _authority(port)
     _register(authority)
     _session(authority)
-    _enqueue(authority, "command.c.1", now=BASE + timedelta(seconds=2))
-    v3_payload = json.loads(LocalAgentBrokerStateJsonCodec().encode(_live_state(port)).decode("utf-8"))
-    assert v3_payload["wire_version"] == BROKER_STATE_WIRE_VERSION
+    other = _enqueue(authority, "command.c.other", now=BASE + timedelta(seconds=2))
 
-    # A durable object written before #3123 holds exactly this shape.
-    legacy = {key: value for key, value in v3_payload.items() if key not in {"compacted_commands", "compacted_through_by_binding"}}
-    legacy["wire_version"] = "padiem.local-agent-broker-state-wire.v2"
-    legacy_payload = json.dumps(legacy, ensure_ascii=True, sort_keys=True, separators=(",", ":")).encode("utf-8")
-    decoded = LocalAgentBrokerStateJsonCodec().decode(legacy_payload)
-    assert decoded.compacted_commands == ()
-    assert decoded.compacted_through_by_binding == ()
-    assert decoded == _live_state(port)
-
-    backend = InMemorySerializedLocalAgentBrokerStateBackend()
-    backend._rows[AUTHORITY_REF] = SerializedLocalAgentBrokerStateRecord(version=1, payload=legacy_payload)
-    restarted = _authority(SerializedLocalAgentBrokerStatePort(backend=backend))
-    upgraded = restarted.enqueue_command(
-        command_id="command.c.2",
+    backend = _backend(port)
+    seed = InMemoryLocalAgentBrokerAuthority(pepper=PEPPER, authority_ref=AUTHORITY_REF)
+    seed.register_binding(
         binding_ref=BINDING,
-        run_id="run.command.c.2",
-        tool_request_ref="tool-request.command.c.2",
-        request_fingerprint=FINGERPRINT,
-        now=BASE + timedelta(seconds=3),
+        device_id="device.compaction.1",
+        account_ref="account.compaction.1",
+        workspace_ref="workspace.compaction.1",
+        credential=CREDENTIAL_1,
+        now=BASE,
     )
-    assert upgraded.sequence == 2
-    stored = backend._rows[AUTHORITY_REF]
-    assert json.loads(stored.payload.decode("utf-8"))["wire_version"] == BROKER_STATE_WIRE_VERSION
+    stale_snapshot = LocalAgentBrokerStateSnapshot.capture(seed)
+    with pytest.raises(ControlPlaneContractError):
+        port.compare_and_swap(
+            authority_ref=AUTHORITY_REF,
+            expected_version=0,
+            snapshot=stale_snapshot,
+            new_command_ids=("command.c.stale",),
+        )
+    assert backend.has_used_command_id(authority_ref=AUTHORITY_REF, command_id="command.c.stale") is False
+    assert other.sequence == 1
 
 
 # ---------------------------------------------------------------------------
-# The real 10,000-record pressure path
+# The real 10,000-record pressure path - and CENTRAL's required regression:
+# after far more compaction pressure than any forgetting budget had, the
+# OLDEST used command_id must still be rejected, with no second mint.
 # ---------------------------------------------------------------------------
 
 
 def _persist_bulk_acked_state(
     port: SerializedLocalAgentBrokerStatePort,
-    backend: InMemorySerializedLocalAgentBrokerStateBackend,
     record_count: int,
 ) -> None:
     """Persist a fully-acknowledged bulk history through the real serialized CAS.
@@ -530,14 +532,17 @@ def _persist_bulk_acked_state(
             exit_code=0,
         )
     seed._last_sequence_by_binding[BINDING] = record_count
-    port.compare_and_swap(authority_ref=AUTHORITY_REF, expected_version=0, snapshot=LocalAgentBrokerStateSnapshot.capture(seed))
+    port.compare_and_swap(
+        authority_ref=AUTHORITY_REF,
+        expected_version=0,
+        snapshot=LocalAgentBrokerStateSnapshot.capture(seed),
+    )
 
 
 def test_pressure_over_the_real_wire_bound_compacts_and_keeps_authority():
-    backend = InMemorySerializedLocalAgentBrokerStateBackend()
-    port = SerializedLocalAgentBrokerStatePort(backend=backend)
+    port = SerializedLocalAgentBrokerStatePort(backend=InMemorySerializedLocalAgentBrokerStateBackend())
     record_count = MAX_BROKER_STATE_COLLECTION_ITEMS
-    _persist_bulk_acked_state(port, backend, record_count)
+    _persist_bulk_acked_state(port, record_count)
     now = BASE + timedelta(days=2)
 
     # One more enqueue: the captured state has 10,001 commands, the real codec
@@ -557,31 +562,48 @@ def test_pressure_over_the_real_wire_bound_compacts_and_keeps_authority():
 
     state = _live_state(port)
     assert dict(state.last_sequence_by_binding)[BINDING] == record_count + 1
-    # Every compacted record was terminal; the fresh queued command survived.
     assert result.state is BrokerCommandState.QUEUED
     assert "command.bulk.new" in {item.command_id for item in state.commands}
-    # The contiguous terminal prefix folded into the watermark, and the
-    # retained tombstone window covers the rest: between them they prove every
-    # sequence 1..10,000 was consumed and terminal, in bounded state.
-    folded_through = dict(state.compacted_through_by_binding)[BINDING]
-    assert folded_through >= record_count - MAX_COMPACTION_TOMBSTONES
-    assert len(state.compacted_commands) <= MAX_COMPACTION_TOMBSTONES
-    assert all(tombstone.sequence > folded_through for tombstone in state.compacted_commands)
-    assert all(item.sequence > dict(state.compacted_through_by_binding)[BINDING] for item in state.commands)
-    encoded = LocalAgentBrokerStateJsonCodec().encode(state)
-    assert len(encoded) <= 8 * 1024 * 1024
     assert len(state.commands) < MAX_BROKER_STATE_COLLECTION_ITEMS
 
-    # The authority keeps working after compaction: a live record's #3118
-    # exact retry is still idempotent, and the next mint continues the
-    # watermark without reuse.
+    # CENTRAL's required regression, at the largest pressure the bound allows:
+    # every one of the 10,000 compacted ids - including the oldest, which the
+    # first cut's forgetting budgets would have dropped - stays exactly
+    # rejected, and the refusals mint nothing at all.
+    oldest = "command.bulk.1"
+    assert _backend(port).has_used_command_id(authority_ref=AUTHORITY_REF, command_id=oldest) is True
+    with pytest.raises(ControlPlaneContractError) as reused:
+        authority.enqueue_command(
+            command_id=oldest,
+            binding_ref=BINDING,
+            run_id=f"run.{oldest}",
+            tool_request_ref=f"tool-request.{oldest}",
+            request_fingerprint=FINGERPRINT,
+            now=now + timedelta(seconds=1),
+        )
+    assert reused.value.code == "broker_command_history_compacted"
+    with pytest.raises(ControlPlaneContractError) as reused_conflict:
+        authority.enqueue_command(
+            command_id=oldest,
+            binding_ref=BINDING,
+            run_id="run.conflict",
+            tool_request_ref="tool-request.conflict",
+            request_fingerprint=FINGERPRINT_2,
+            now=now + timedelta(seconds=1),
+        )
+    assert reused_conflict.value.code == "broker_command_history_compacted"
+    # The refusals minted nothing: the watermark is untouched by them.
+    assert dict(_live_state(port).last_sequence_by_binding)[BINDING] == record_count + 1
+
+    # A live record's #3118 exact retry is still idempotent, and the next mint
+    # continues the watermark without reuse.
     retried = authority.enqueue_command(
         command_id="command.bulk.new",
         binding_ref=BINDING,
         run_id="run.bulk.new",
         tool_request_ref="tool-request.bulk.new",
         request_fingerprint=FINGERPRINT,
-        now=now + timedelta(seconds=1),
+        now=now + timedelta(seconds=2),
     )
     assert retried == result
     follow_up = authority.enqueue_command(
@@ -590,32 +612,9 @@ def test_pressure_over_the_real_wire_bound_compacts_and_keeps_authority():
         run_id="run.bulk.new2",
         tool_request_ref="tool-request.bulk.new2",
         request_fingerprint=FINGERPRINT,
-        now=now + timedelta(seconds=2),
+        now=now + timedelta(seconds=3),
     )
     assert follow_up.sequence == result.sequence + 1
-
-
-def test_pressure_that_retention_cannot_relieve_fails_closed(monkeypatch):
-    monkeypatch.setattr(broker_module, "MAX_COMPACTION_TOMBSTONES", 0)
-    backend = InMemorySerializedLocalAgentBrokerStateBackend()
-    port = SerializedLocalAgentBrokerStatePort(backend=backend)
-    record_count = MAX_BROKER_STATE_COLLECTION_ITEMS
-    _persist_bulk_acked_state(port, backend, record_count)
-
-    authority = _authority(port)
-    with pytest.raises(ControlPlaneContractError) as refused:
-        authority.enqueue_command(
-            command_id="command.bulk.new",
-            binding_ref=BINDING,
-            run_id="run.bulk.new",
-            tool_request_ref="tool-request.bulk.new",
-            request_fingerprint=FINGERPRINT,
-            now=BASE + timedelta(days=2),
-        )
-    # Pressure that retention cannot relieve fails closed with the wire code —
-    # it does not corrupt state, drop records silently, or loop forever.
-    assert refused.value.code == "local_agent_broker_state_wire_too_large"
-    assert len(_live_state(port).commands) == record_count
 
 
 def test_pressure_recovers_through_the_reactive_path_when_proactive_misses(monkeypatch):
@@ -624,11 +623,14 @@ def test_pressure_recovers_through_the_reactive_path_when_proactive_misses(monke
     # bound, a threshold tuned for a different shape). When that happens the
     # reactive escape - real wire failure, one real compaction, one retry - is
     # the only thing standing between the mutation and a permanent wedge.
-    monkeypatch.setattr(state_module, "COMPACTION_PROACTIVE_TRIGGER_COMMANDS", MAX_BROKER_STATE_COLLECTION_ITEMS * 2)
-    backend = InMemorySerializedLocalAgentBrokerStateBackend()
-    port = SerializedLocalAgentBrokerStatePort(backend=backend)
+    monkeypatch.setattr(
+        state_module,
+        "COMPACTION_PROACTIVE_TRIGGER_COMMANDS",
+        MAX_BROKER_STATE_COLLECTION_ITEMS * 2,
+    )
+    port = SerializedLocalAgentBrokerStatePort(backend=InMemorySerializedLocalAgentBrokerStateBackend())
     record_count = MAX_BROKER_STATE_COLLECTION_ITEMS
-    _persist_bulk_acked_state(port, backend, record_count)
+    _persist_bulk_acked_state(port, record_count)
 
     authority = _authority(port)
     result = authority.enqueue_command(
@@ -644,4 +646,66 @@ def test_pressure_recovers_through_the_reactive_path_when_proactive_misses(monke
     assert result.state is BrokerCommandState.QUEUED
     assert "command.bulk.new" in {item.command_id for item in state.commands}
     assert len(state.commands) < MAX_BROKER_STATE_COLLECTION_ITEMS
-    assert len(LocalAgentBrokerStateJsonCodec().encode(state)) <= 8 * 1024 * 1024
+    # The reactive path records the compaction-removed ids in the ledger too.
+    assert _backend(port).has_used_command_id(authority_ref=AUTHORITY_REF, command_id="command.bulk.1") is True
+
+
+def test_pressure_that_retention_cannot_relieve_fails_closed(monkeypatch):
+    # Freshly acknowledged records are inside their retention window: with no
+    # eligible record, pressure that retention cannot relieve fails closed
+    # with the wire code - it does not corrupt state, drop records silently,
+    # or loop forever.
+    port = SerializedLocalAgentBrokerStatePort(backend=InMemorySerializedLocalAgentBrokerStateBackend())
+    record_count = MAX_BROKER_STATE_COLLECTION_ITEMS
+    _persist_bulk_acked_state(port, record_count)
+
+    authority = _authority(port)
+    with pytest.raises(ControlPlaneContractError) as refused:
+        authority.enqueue_command(
+            command_id="command.bulk.new",
+            binding_ref=BINDING,
+            run_id="run.bulk.new",
+            tool_request_ref="tool-request.bulk.new",
+            request_fingerprint=FINGERPRINT,
+            now=BASE + timedelta(seconds=20),
+        )
+    # The bulk records are acknowledged 10 seconds in: retention cannot touch
+    # them yet, so the wire bound failure must surface explicitly.
+    assert refused.value.code == "local_agent_broker_state_wire_too_large"
+    assert len(_live_state(port).commands) == record_count
+
+
+def test_durable_object_ledger_records_mints_and_rolls_back_refused_cas():
+    # The exact used-command-id ledger is implemented in the real durable
+    # backend over the same attached SQLite storage as the state blob. A
+    # committed CAS must record its minted ids; a refused CAS must record
+    # nothing, or the caller's legitimate retry would be refused afterwards.
+    storage = _Storage()
+    backend = sql_state.CloudflareDurableObjectSerializedStateBackend(storage)
+    codec = LocalAgentBrokerStateJsonCodec()
+    payload = codec.encode(LocalAgentBrokerStateSnapshot.empty(authority_ref=AUTHORITY_REF))
+
+    backend.compare_and_swap(
+        authority_ref=AUTHORITY_REF, expected_version=0, payload=payload
+    )
+    backend.compare_and_swap(
+        authority_ref=AUTHORITY_REF,
+        expected_version=1,
+        payload=payload,
+        new_command_ids=("command.do.1", "command.do.2"),
+    )
+    assert backend.has_used_command_id(authority_ref=AUTHORITY_REF, command_id="command.do.1") is True
+    assert backend.has_used_command_id(authority_ref=AUTHORITY_REF, command_id="command.do.2") is True
+
+    with pytest.raises(ControlPlaneContractError):
+        backend.compare_and_swap(
+            authority_ref=AUTHORITY_REF,
+            expected_version=99,
+            payload=payload,
+            new_command_ids=("command.do.stale",),
+        )
+    assert backend.has_used_command_id(authority_ref=AUTHORITY_REF, command_id="command.do.stale") is False
+
+    # And a committed id keeps surviving a backend re-open (restart).
+    reopened = sql_state.CloudflareDurableObjectSerializedStateBackend(_Storage(storage.connection))
+    assert reopened.has_used_command_id(authority_ref=AUTHORITY_REF, command_id="command.do.1") is True

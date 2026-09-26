@@ -22,6 +22,21 @@ CREATE TABLE IF NOT EXISTS local_agent_broker_state (
 )
 """
 
+# #3123 - the exact used-command-id ledger. Every command_id the broker
+# authority has ever minted is recorded here and never removed, in the
+# same canonical broker storage as the serialized state blob. Rows are
+# tiny and append-only, so command-id identity stays exact and durable
+# without re-growing the bounded snapshot blob that compaction keeps
+# small. A probabilistic structure would be a false-negative-free but
+# false-positive-prone rejection surface; this is exact.
+_BROKER_USED_COMMAND_ID_SCHEMA = """
+CREATE TABLE IF NOT EXISTS local_agent_broker_used_command_id (
+    authority_ref TEXT NOT NULL,
+    command_id TEXT NOT NULL,
+    PRIMARY KEY (authority_ref, command_id)
+)
+"""
+
 _HTTP_SESSION_SCHEMA = """
 CREATE TABLE IF NOT EXISTS local_agent_http_session (
     session_id TEXT PRIMARY KEY,
@@ -112,6 +127,7 @@ class CloudflareDurableObjectSerializedStateBackend:
         self._storage = storage
         self._sql = sql
         self._sql.exec(_BROKER_STATE_SCHEMA)
+        self._sql.exec(_BROKER_USED_COMMAND_ID_SCHEMA)
 
     def _singleton_row(self) -> Any | None:
         found = rows(
@@ -161,6 +177,7 @@ class CloudflareDurableObjectSerializedStateBackend:
         authority_ref: str,
         expected_version: int,
         payload: bytes,
+        new_command_ids: tuple[str, ...] = (),
     ) -> SerializedLocalAgentBrokerStateRecord:
         authority_ref = safe_ref(authority_ref, "authority_ref")
         expected_version = non_negative_int(expected_version, "expected_version")
@@ -172,31 +189,63 @@ class CloudflareDurableObjectSerializedStateBackend:
             raise ValueError("serialized broker state payload must be UTF-8") from exc
         if payload_text.encode("utf-8") != payload:
             raise ValueError("serialized broker state payload must roundtrip exact UTF-8 bytes")
+        for command_id in new_command_ids:
+            # The ledger only ever holds minted ids, which are valid refs.
+            safe_ref(command_id, "new_command_id")
 
-        if expected_version == 0:
-            cursor = self._sql.exec(
-                "INSERT OR IGNORE INTO local_agent_broker_state "
-                "(singleton, authority_ref, version, payload_text) VALUES (1, ?, 1, ?)",
-                authority_ref,
-                payload_text,
-            )
-        else:
-            cursor = self._sql.exec(
-                "UPDATE local_agent_broker_state "
-                "SET version = version + 1, payload_text = ? "
-                "WHERE singleton = 1 AND authority_ref = ? AND version = ?",
-                payload_text,
-                authority_ref,
-                expected_version,
-            )
-        if rows_written(cursor) != 1:
-            row = self._singleton_row()
-            if row is not None and row_value(row, "authority_ref") != authority_ref:
-                raise ControlPlaneContractError(
-                    "invalid_local_agent_broker_state_wire",
-                    "Durable Object broker state authority mismatch",
+        # Ledger first, blob second. The durable runtime already runs each
+        # authority operation inside one storage transaction, so the pair is
+        # atomic in production; when this backend is driven bare (tests,
+        # tooling), a refused blob CAS explicitly removes exactly the rows it
+        # just added, so a refused CAS never marks an id as used - the
+        # caller's legitimate retry must stay mintable. Rows recorded here are
+        # only ever fresh mints: an id removed from the blob by compaction was
+        # already recorded when it was minted, so INSERT OR IGNORE is a no-op
+        # for it and the rollback below cannot erase prior history.
+        recorded: list[str] = []
+        try:
+            for command_id in new_command_ids:
+                cursor = self._sql.exec(
+                    "INSERT OR IGNORE INTO local_agent_broker_used_command_id "
+                    "(authority_ref, command_id) VALUES (?, ?)",
+                    authority_ref,
+                    command_id,
                 )
-            raise stale_state_error()
+                if rows_written(cursor) == 1:
+                    recorded.append(command_id)
+            if expected_version == 0:
+                cursor = self._sql.exec(
+                    "INSERT OR IGNORE INTO local_agent_broker_state "
+                    "(singleton, authority_ref, version, payload_text) VALUES (1, ?, 1, ?)",
+                    authority_ref,
+                    payload_text,
+                )
+            else:
+                cursor = self._sql.exec(
+                    "UPDATE local_agent_broker_state "
+                    "SET version = version + 1, payload_text = ? "
+                    "WHERE singleton = 1 AND authority_ref = ? AND version = ?",
+                    payload_text,
+                    authority_ref,
+                    expected_version,
+                )
+            if rows_written(cursor) != 1:
+                row = self._singleton_row()
+                if row is not None and row_value(row, "authority_ref") != authority_ref:
+                    raise ControlPlaneContractError(
+                        "invalid_local_agent_broker_state_wire",
+                        "Durable Object broker state authority mismatch",
+                    )
+                raise stale_state_error()
+        except Exception:
+            for command_id in recorded:
+                self._sql.exec(
+                    "DELETE FROM local_agent_broker_used_command_id "
+                    "WHERE authority_ref = ? AND command_id = ?",
+                    authority_ref,
+                    command_id,
+                )
+            raise
 
         stored = self.load(authority_ref=authority_ref)
         if stored is None or stored.version != expected_version + 1 or stored.payload != payload:
@@ -206,6 +255,27 @@ class CloudflareDurableObjectSerializedStateBackend:
             )
         return stored
 
+    def has_used_command_id(self, *, authority_ref: str, command_id: str) -> bool:
+        authority_ref = safe_ref(authority_ref, "authority_ref")
+        # An id that fails the reference shape can never have been minted,
+        # so it is simply not a member; the canonical ref validation still
+        # reports it properly at the core boundary.
+        if not isinstance(command_id, str):
+            return False
+        try:
+            command_id = safe_ref(command_id, "command_id")
+        except ValueError:
+            return False
+        found = rows(
+            self._sql.exec(
+                "SELECT command_id FROM local_agent_broker_used_command_id "
+                "WHERE authority_ref = ? AND command_id = ? LIMIT 1",
+                authority_ref,
+                command_id,
+            )
+        )
+        return bool(found)
+
     def safe_dict(self) -> dict[str, Any]:
         return {
             "cloudflare_durable_object": True,
@@ -213,6 +283,8 @@ class CloudflareDurableObjectSerializedStateBackend:
             "serialized_backend": True,
             "atomic_compare_and_swap": True,
             "durable": True,
+            "used_command_id_ledger_exact": True,
+            "used_command_id_ledger_same_storage": True,
             "raw_device_credential_persisted": False,
             "production_deployment": False,
             "production_ready": False,
