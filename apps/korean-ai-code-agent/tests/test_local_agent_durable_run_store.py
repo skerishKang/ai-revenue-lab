@@ -481,8 +481,9 @@ class DurableRunRecoveryClassificationTests(StoreTestCase):
 
     def test_q12_a_terminal_row_outranks_a_passed_deadline(self) -> None:
         store = self.open_store()
-        store.put(admitted(command_expires_at=NOW + timedelta(seconds=1)))
-        store.record_terminal(exited())
+        expires_at = NOW + timedelta(seconds=1)
+        store.put(admitted(command_expires_at=expires_at))
+        store.record_terminal(exited(command_expires_at=expires_at))
         report = store.recover(now=NOW + timedelta(seconds=99999))
         self.assertEqual(report.classifications, {"terminal_but_server_unacked": 1})
 
