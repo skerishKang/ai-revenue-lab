@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Callable, TypeVar
 
 from padiem_control_plane.contracts import ControlPlaneContractError
-from padiem_control_plane.local_agent_broker import BrokerCommandState
+from padiem_control_plane.local_agent_broker import MAX_POLL_BATCH, BrokerCommandState
 from padiem_control_plane.local_agent_broker_http import LocalAgentMaterialResolutionRequest
 from padiem_control_plane.local_agent_broker_rpc import LocalAgentBrokerRpcFacade
 from padiem_control_plane.local_agent_broker_state import StateBackedLocalAgentBrokerAuthority
@@ -18,6 +18,11 @@ from local_agent_broker_sql_state import (
 )
 
 _T = TypeVar("_T")
+#: How many canonical pages one poll may step through while looking for
+#: deliverable commands. A page of 1 next to a long run of unresolvable
+#: commands is the case this exists for; the bound keeps a pathological store
+#: from turning one poll into an unbounded walk.
+_MAX_POLL_PAGES = 64
 _MATERIAL_RESOLVE_RPC_KEYS = frozenset(
     {
         "request_ref",
@@ -189,33 +194,47 @@ class LocalAgentBrokerDurableRuntime:
         return {"ok": True, "material": self.material_store.resolve(request)}
 
     def poll(self, payload: dict) -> dict:
-        """Deliver only commands the device can actually run.
+        """Deliver only commands the device can actually run, without hiding
+        the runnable work behind one it cannot.
 
         #3127 — a command whose material was never persisted is not
         material-resolvable, so handing it to a device advertises work that
-        cannot start: the device would poll it, try to admit it, be refused,
-        and learn nothing. The canonical authority still decides *which*
-        commands are pollable; this only withholds the ones the device could
-        not execute, which is a fail-closed projection of the same Durable
-        Object's storage rather than a second queue.
+        cannot start: the device would poll it, try to admit it, be refused, and
+        learn nothing.
 
-        The withholding is bounded, not permanent: a material-less command
-        ages out of the canonical poll window when its hard deadline passes, so
-        a later command becomes deliverable without any reconciliation step. In
-        the product path this cannot arise at all, because the only way to
-        create a command through the gateway is the atomic one.
+        The canonical authority still decides *which* commands are pollable.
+        This withholds only the ones the device could not execute, and it does so
+        by **stepping the poll cursor past them** rather than by dropping them
+        from the page. Dropping them would let a single orphan occupy a
+        one-command page and hide every runnable command behind it until the
+        orphan's own hard deadline passed — the same defect one layer up. The
+        scan is bounded by `_MAX_POLL_PAGES`, and it only ever *omits*
+        unresolvable commands, so a pathological store costs bounded work
+        rather than correctness.
         """
 
         def operation() -> dict:
-            result = self.facade().poll(payload)
-            if result.get("ok") is not True:
-                return result
-            deliverable = [
-                command
-                for command in result["commands"]
-                if self.material_store.has_persisted_material(command["command_id"])
-            ]
-            return {**result, "commands": deliverable}
+            limit = payload.get("limit", MAX_POLL_BATCH)
+            cursor = payload.get("after_sequence", 0)
+            deliverable: list[dict] = []
+            response: dict = {}
+            for _ in range(_MAX_POLL_PAGES):
+                page = self.facade().poll({**payload, "after_sequence": cursor, "limit": limit})
+                if page.get("ok") is not True:
+                    return page
+                response = page
+                commands = page["commands"]
+                if not commands:
+                    break
+                for command in commands:
+                    cursor = command["sequence"]
+                    if self.material_store.has_persisted_material(command["command_id"]):
+                        deliverable.append(command)
+                        if len(deliverable) == limit:
+                            break
+                if len(deliverable) == limit:
+                    break
+            return {**response, "ok": True, "commands": deliverable}
         return self.transaction(operation)
 
     def admit_command(self, payload: dict) -> dict:

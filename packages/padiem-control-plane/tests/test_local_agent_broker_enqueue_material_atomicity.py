@@ -651,37 +651,60 @@ def test_command_without_material_is_not_pollable(tmp_path: Path) -> None:
     assert runtime.material_store.has_persisted_material("command.nopol.1") is False
 
 
-def test_poll_withholding_ages_out_at_the_hard_deadline(tmp_path: Path) -> None:
-    """The withholding is bounded: it ends when the command's own TTL ends.
+def test_poll_does_not_starve_runnable_work_behind_a_withheld_command(tmp_path: Path) -> None:
+    """A withheld command must not occupy the page.
 
-    On a one-command page a material-less command occupies the page until its
-    hard deadline passes and then ages out of the canonical window, so a later
-    command becomes deliverable with no reconciliation step. What never happens
-    is a device being handed a command it cannot resolve.
+    On a one-command page, dropping a material-less command from the page would
+    hide the runnable command behind it until the orphan's own hard deadline
+    passed. Poll therefore steps its cursor past the withheld command and keeps
+    filling the page, so the runnable work is delivered immediately while the
+    unresolvable one is still never delivered.
     """
 
     path = tmp_path / "do.sqlite3"
     runtime = _runtime(path)
     _register_and_open(runtime)
-    # A short-lived material-less command in front of a longer-lived one, so the
-    # page is blocked for exactly the shorter command's own lifetime.
-    runtime.enqueue_command(
-        {
-            **_enqueue_payload("command.starve.1", now=BASE + timedelta(seconds=2)),
-            "ttl_seconds": 5,
-        }
-    )
+    # seq 1: durable, queued, no material. seq 2: the same, bound atomically.
+    runtime.enqueue_command(_enqueue_payload("command.starve.1", now=BASE + timedelta(seconds=2)))
     bound = runtime.enqueue_command_with_material(
         _enqueue_payload("command.starve.2", now=BASE + timedelta(seconds=2)),
         _material_body("command.starve.2"),
     )
     assert bound["ok"] is True
 
-    blocked = runtime.poll(_poll_payload(at=BASE + timedelta(seconds=3), limit=1))
-    assert [command["command_id"] for command in blocked["commands"]] == []
+    # The starvation case CENTRAL named: limit=1 behind a material-less command.
+    delivered = runtime.poll(_poll_payload(at=BASE + timedelta(seconds=3), limit=1))
+    assert [command["command_id"] for command in delivered["commands"]] == ["command.starve.2"]
 
-    after_deadline = runtime.poll(_poll_payload(at=BASE + timedelta(seconds=9), limit=1))
-    assert [command["command_id"] for command in after_deadline["commands"]] == ["command.starve.2"]
+    # A wider page still returns only what is deliverable, in sequence order.
+    wide = runtime.poll(_poll_payload(at=BASE + timedelta(seconds=3), limit=32, after_sequence=0))
+    assert [command["command_id"] for command in wide["commands"]] == ["command.starve.2"]
+
+    # And the withheld command is still durable, unmutated, and never delivered.
+    assert _persisted_commands(path) == ["command.starve.1", "command.starve.2"]
+    assert runtime.material_store.has_persisted_material("command.starve.1") is False
+
+
+def test_poll_returns_nothing_when_every_remaining_command_is_withheld(tmp_path: Path) -> None:
+    """All-orphan pages end, and they end empty.
+
+    The cursor walk is bounded by the page count *and* by the canonical window
+    running out, so a store full of unresolvable commands costs a bounded walk
+    rather than an endless one.
+    """
+
+    path = tmp_path / "do.sqlite3"
+    runtime = _runtime(path)
+    _register_and_open(runtime)
+    for index in range(1, 4):
+        runtime.enqueue_command(
+            _enqueue_payload(f"command.only.{index}", now=BASE + timedelta(seconds=2))
+        )
+
+    polled = runtime.poll(_poll_payload(at=BASE + timedelta(seconds=3), limit=1))
+    assert polled["ok"] is True
+    assert polled["commands"] == []
+    assert _persisted_commands(path) == ["command.only.1", "command.only.2", "command.only.3"]
 
 
 # --- 10. the product gateway cannot create a command by the split pair ------
