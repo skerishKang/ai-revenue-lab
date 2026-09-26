@@ -761,12 +761,33 @@ export function serializeSupportBundle(bundle: SupportBundle): string {
         throw new SupportBundleError(`support bundle is missing the required section: ${id}`);
       }
       const allowed = ALLOWED_SECTION_KEYS[id];
+      const optional = OPTIONAL_SECTION_KEYS[id];
       const values: Record<string, SupportBundleScalar> = {};
+      // The same required-vs-optional contract `projectSection` enforces, applied
+      // here rather than trusted from it. `serializeSupportBundle` accepts any
+      // object shaped like a bundle, and `exportSupportBundle` hands it a bundle
+      // straight from a caller, so this loop is the last boundary before the
+      // user's disk. Silently skipping a `undefined` here would let a hand-built
+      // or runtime-tampered bundle drop a required row from the exported
+      // evidence — exactly the fail-open the builder was closed against, one
+      // boundary later where nobody re-checks it.
       for (const key of allowed) {
         const value = section.values[key];
-        if (value !== undefined) {
-          values[key] = value;
+        if (value === undefined) {
+          // Absent and explicitly `undefined` read the same off a `Record`, and
+          // for a required value they are the same defect: the value is not
+          // there. Only a key recorded as optional may be genuinely absent.
+          if (optional.includes(key)) {
+            continue;
+          }
+          throw new SupportBundleError(
+            `support bundle is missing the required section value: ${id}.${key}`,
+          );
         }
+        // Re-run through the builder's own scalar validator. A value the builder
+        // produced already passed it, so well-formed bundles are byte-identical;
+        // a hand-built one carrying a non-scalar no longer reaches the file.
+        values[key] = boundedScalar(value, `${id}.${key}`, DIAGNOSTIC_BOUNDS.MAX_SUMMARY_LENGTH);
       }
       return { id: section.id, category: section.category, values };
     }),

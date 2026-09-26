@@ -22,7 +22,9 @@ import {
   redactSupportBundleText,
   serializeSupportBundle,
   supportBundleFileName,
+  type SupportBundle,
   type SupportBundleInput,
+  type SupportBundleScalar,
 } from '../src/contract/support-bundle.js';
 import { DIAGNOSTIC_BOUNDS } from '../src/contract/diagnostic-codes.js';
 import {
@@ -586,6 +588,157 @@ test('an optional app-section key stays legitimately absent', () => {
   assert.equal('bundleAppVersion' in app.values, false);
   assert.equal('runnerAppVersion' in app.values, false);
   assert.equal('appVersion' in app.values, true);
+});
+
+// ---------------------------------------------------------------------------
+// The serializer is the same runtime trust boundary — the fourth review
+// ---------------------------------------------------------------------------
+//
+// `serializeSupportBundle` is exported, is called directly by
+// `exportSupportBundle`, and accepts any object shaped like a bundle. It already
+// re-validated refs and the first-run report for exactly that reason. But its
+// section loop was:
+//
+//     if (value !== undefined) values[key] = value;
+//
+// so a hand-built or runtime-tampered bundle could delete a required section
+// value and the serializer quietly omitted the row — the same fail-open the
+// builder had just been closed against, one boundary later, on the bytes that
+// actually reach the user's disk. The required-vs-optional contract now applies
+// on both sides of the boundary.
+
+/**
+ * Returns a copy of a bundle with one section's values edited in place, the way
+ * a runtime tamper would. The real sections are frozen, so a genuine tamper has
+ * to rebuild them; this helper does exactly that and hands back an untyped
+ * object the way a JavaScript caller would.
+ */
+function withTamperedSectionValues(
+  bundle: SupportBundle,
+  sectionId: string,
+  mutate: (values: Record<string, SupportBundleScalar>) => void,
+): SupportBundle {
+  const sections = bundle.sections.map((section) => {
+    if (section.id !== sectionId) {
+      return section;
+    }
+    const values = { ...section.values } as Record<string, SupportBundleScalar>;
+    mutate(values);
+    return { ...section, values };
+  });
+  return { ...bundle, sections } as unknown as SupportBundle;
+}
+
+test('the serializer refuses a bundle whose required section value was removed', () => {
+  // The key is genuinely deleted from the section's values, so the serializer
+  // performs a property lookup that misses — the hand-built shape, not a
+  // compile-time fiction.
+  const bundle = buildSupportBundle(bundleInput());
+  const tampered = withTamperedSectionValues(bundle, 'app', (values) => {
+    delete values.appVersion;
+  });
+  assert.throws(
+    () => serializeSupportBundle(tampered),
+    (error: unknown) => {
+      assert.ok(error instanceof SupportBundleError);
+      assert.match(error.message, /app\.appVersion/);
+      return true;
+    },
+    'a missing required section value must be refused, not omitted',
+  );
+});
+
+test('the serializer refuses an explicitly undefined required section value', () => {
+  const bundle = buildSupportBundle(bundleInput());
+  const tampered = withTamperedSectionValues(bundle, 'app', (values) => {
+    values.buildId = undefined as unknown as string;
+  });
+  assert.throws(
+    () => serializeSupportBundle(tampered),
+    (error: unknown) => {
+      assert.ok(error instanceof SupportBundleError);
+      assert.match(error.message, /app\.buildId/);
+      return true;
+    },
+  );
+});
+
+test('the serializer refuses a tampered non-scalar value outright', () => {
+  // The re-validation is the builder's own validator, so a hand-built bundle
+  // cannot smuggle an unbounded tree into a scalar slot either. Tampered at the
+  // projected key (`summary`), not the builder-input name (`runnerSummary`):
+  // only allowlisted keys are read, which is itself the projection guarantee.
+  const bundle = buildSupportBundle(bundleInput());
+  const tampered = withTamperedSectionValues(bundle, 'runner_health', (values) => {
+    values.summary = { nested: 'unbounded' } as unknown as string;
+  });
+  assert.throws(
+    () => serializeSupportBundle(tampered),
+    (error: unknown) => {
+      assert.ok(error instanceof SupportBundleError);
+      assert.match(error.message, /runner_health\.summary/);
+      return true;
+    },
+  );
+});
+
+test('the serializer still allows genuinely optional app values to be absent', () => {
+  // The tightening is about required values, not about the two app-section
+  // keys that depend on what is installed. Absent optional keys stay absent,
+  // and a hand-built bundle may still legitimately carry one.
+  const bundle = buildSupportBundle(bundleInput());
+  const text = serializeSupportBundle(bundle);
+  assert.ok(!text.includes('"bundleAppVersion"'));
+  assert.ok(!text.includes('"runnerAppVersion"'));
+  const withBundleVersion = withTamperedSectionValues(bundle, 'app', (values) => {
+    values.bundleAppVersion = '0.1.0';
+  });
+  assert.ok(serializeSupportBundle(withBundleVersion).includes('"bundleAppVersion": "0.1.0"'));
+});
+
+test('the serializer preserves legitimate nulls in required section values', () => {
+  // The first-run nulls and the unwired-store count are device facts, and they
+  // must survive the serializer as `null` — not as an omitted key, which would
+  // read as missing evidence rather than as "none".
+  const bundle = buildSupportBundle(
+    bundleInput({
+      lastSuccessfulSessionAt: null,
+      lastSuccessfulHeartbeatAt: null,
+      durableStoreHealth: unimplementedDurableStoreHealth(),
+    }),
+  );
+  const text = serializeSupportBundle(bundle);
+  assert.ok(text.includes('"lastSuccessfulSessionAt": null'));
+  assert.ok(text.includes('"lastSuccessfulHeartbeatAt": null'));
+  assert.ok(text.includes('"reconciliationCount": null'));
+});
+
+test('exportSupportBundle writes no file when a required section value was tampered away', () => {
+  // The whole point of closing this at the serializer: `exportSupportBundle`
+  // hands a caller-supplied bundle straight to it, so a tampered bundle must be
+  // refused before `mkdirSync`, and must leave nothing on the user's disk.
+  const directory = mkdtempSync(join(tmpdir(), 'padiem-tampered-export-'));
+  try {
+    const bundle = buildSupportBundle(bundleInput());
+    const tampered = withTamperedSectionValues(bundle, 'app', (values) => {
+      delete values.buildId;
+    });
+    assert.throws(
+      () => exportSupportBundle(tampered, directory),
+      (error: unknown) => {
+        assert.ok(error instanceof SupportBundleError);
+        assert.match(error.message, /app\.buildId/);
+        return true;
+      },
+    );
+    assert.deepEqual(
+      readdirSync(directory),
+      [],
+      'a refused tampered export must leave no file on the user\'s disk',
+    );
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 // ---------------------------------------------------------------------------
