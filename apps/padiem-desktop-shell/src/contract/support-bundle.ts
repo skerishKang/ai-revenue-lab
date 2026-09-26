@@ -372,12 +372,53 @@ export interface SupportBundleInput {
   readonly firstRun: FirstRunHealthReport;
 }
 
+/**
+ * The keys a section may omit entirely.
+ *
+ * Every allowlisted key is required by default; only these may be absent from
+ * the caller's projection, and only because the app section carries two
+ * version fields that genuinely depend on what is installed
+ * (`bundleAppVersion`, `runnerAppVersion`). Everything else in
+ * `ALLOWED_SECTION_KEYS` describes diagnostic state the builder always has —
+ * a caller that does not supply it has failed to build the projection, and
+ * that must surface as a refusal, not as a silently-missing row in the file a
+ * support engineer is about to read as complete evidence.
+ *
+ * The list is keyed by section so the requirement stays local to the section
+ * that owns it: a future section that adds a genuinely optional key edits this
+ * list as a deliberate, reviewable act, exactly like `ALLOWED_SECTION_KEYS`.
+ */
+const OPTIONAL_SECTION_KEYS: Readonly<Record<BundleSectionId, readonly string[]>> = Object.freeze({
+  [BUNDLE_SECTIONS.APP]: ['bundleAppVersion', 'runnerAppVersion'],
+  [BUNDLE_SECTIONS.RUNTIME_PLATFORM]: [],
+  [BUNDLE_SECTIONS.DEVICE_LIFECYCLE]: [],
+  [BUNDLE_SECTIONS.SESSION_ACTIVITY]: [],
+  [BUNDLE_SECTIONS.PAIRING]: [],
+  [BUNDLE_SECTIONS.UPDATE]: [],
+  [BUNDLE_SECTIONS.RUNNER_HEALTH]: [],
+  [BUNDLE_SECTIONS.DURABLE_STORE]: [],
+  [BUNDLE_SECTIONS.VERSION_COMPATIBILITY]: [],
+});
+
 function boundedScalar(
   value: unknown,
   fieldName: string,
   maxLength: number,
 ): string | number | boolean | null {
-  if (value === null || value === undefined) {
+  // `undefined` is not `null`, for the same reason `requireOptionalIsoTimestamp`
+  // refuses it. `null` is a deliberate device fact — a count that does not
+  // exist yet, a timestamp that has never happened. `undefined` is the absence
+  // of a fact: an IPC payload that lost the field, a partial merge that forgot
+  // the key. Coercing the second into the first makes broken instrumentation
+  // indistinguishable from an honest "none" in the exported evidence, and it
+  // does so silently. So `undefined` is refused here too, naming the field.
+  if (value === undefined) {
+    throw new SupportBundleError(
+      `${fieldName} is required and must be a bounded scalar or null; ` +
+        'an absent value is not the same as null',
+    );
+  }
+  if (value === null) {
     return null;
   }
   if (typeof value === 'number') {
@@ -410,12 +451,22 @@ function projectSection(
   values: Readonly<Record<string, unknown>>,
 ): SupportBundleSection {
   const allowed = ALLOWED_SECTION_KEYS[id];
+  const optional = OPTIONAL_SECTION_KEYS[id];
   const projected: Record<string, SupportBundleScalar> = {};
   // Iterate the allowlist, not the input, so an unexpected extra key is dropped
-  // rather than accidentally exported.
+  // rather than accidentally exported. A key that is allowlisted but neither
+  // supplied nor explicitly optional is the opposite case: the caller failed to
+  // build the projection it is asking to export, and dropping it would hand
+  // support a file that looks complete but is not. So it is refused, with the
+  // section and key named.
   for (const key of allowed) {
     if (!(key in values)) {
-      continue;
+      if (optional.includes(key)) {
+        continue;
+      }
+      throw new SupportBundleError(
+        `support bundle input is missing the required projected field: ${id}.${key}`,
+      );
     }
     projected[key] = boundedScalar(values[key], `${id}.${key}`, DIAGNOSTIC_BOUNDS.MAX_SUMMARY_LENGTH);
   }

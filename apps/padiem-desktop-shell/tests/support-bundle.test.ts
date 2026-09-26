@@ -445,6 +445,150 @@ test('a valid timestamp is preserved exactly, not reformatted', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Every projected scalar fails closed the same way — the third review
+// ---------------------------------------------------------------------------
+//
+// The timestamp fix above left the same coercion in `boundedScalar`, which
+// projects every other section value:
+//
+//     if (value === null || value === undefined) return null;
+//
+// Identical defect, larger blast radius. `null` on a projected field is a
+// device fact (a reconciliation count for a store that is not wired yet); an
+// `undefined` is a caller that failed to build the projection it is asking to
+// export. Coercing the second into the first silently removes a row from the
+// file support reads as complete evidence — and does so for every section at
+// once. So the same rule applies here: `null` is preserved, `undefined` and a
+// missing required field are refused, and a wrong type is refused.
+
+test('an explicitly undefined app version is refused, not read as null', () => {
+  // Present with the value `undefined` — the shape a partial merge produces.
+  assert.throws(
+    () => buildSupportBundle(bundleInput({ appVersion: undefined as unknown as string })),
+    (error: unknown) => {
+      assert.ok(error instanceof SupportBundleError);
+      assert.match(error.message, /app\.appVersion/);
+      return true;
+    },
+    'an undefined app version must be refused, not coerced to null',
+  );
+});
+
+test('a missing build id is refused at the runtime boundary', () => {
+  // The key is genuinely deleted, so the builder performs a property lookup
+  // that misses. TypeScript cannot catch this: the property is absent at
+  // runtime and required in the declared type, and the declared type is what a
+  // JavaScript caller does not consult.
+  const missing = withoutProperty(bundleInput(), 'buildId');
+  assert.equal('buildId' in missing, false);
+  assert.throws(() => buildSupportBundle(missing as unknown as SupportBundleInput), (error: unknown) => {
+    assert.ok(error instanceof SupportBundleError);
+    assert.match(error.message, /buildId/);
+    return true;
+  });
+});
+
+test('an explicitly undefined required summary is refused too', () => {
+  // A summary is the one field a support engineer actually reads as prose.
+  // Dropping it silently would be the least visible omission of all.
+  assert.throws(
+    () => buildSupportBundle(bundleInput({ deviceSummary: undefined as unknown as string })),
+    (error: unknown) => {
+      assert.ok(error instanceof SupportBundleError);
+      assert.match(error.message, /device_lifecycle\.summary/);
+      return true;
+    },
+  );
+});
+
+test('a missing runner summary is refused over a wire round-trip', () => {
+  // JSON is what a renderer→main payload crosses, and it drops an
+  // `undefined`-valued key on the way. So this omission is reachable in
+  // production without a single TypeScript violation, and the builder has to
+  // catch it at the boundary.
+  const missing = withoutPropertyOverTheWire(bundleInput(), 'runnerSummary');
+  assert.equal('runnerSummary' in missing, false);
+  assert.throws(() => buildSupportBundle(missing as unknown as SupportBundleInput), (error: unknown) => {
+    assert.ok(error instanceof SupportBundleError);
+    assert.match(error.message, /runner_health\.summary/);
+    return true;
+  });
+});
+
+test('the product export path refuses a missing build id and writes nothing', async () => {
+  // One layer up, at the exporter a user actually triggers, with the same
+  // refusal and the same absence of an artifact.
+  const directory = mkdtempSync(join(tmpdir(), 'padiem-missing-buildid-'));
+  try {
+    const omitted = withoutProperty(probeInput(), 'buildId');
+    await assert.rejects(
+      buildAndExportSupportBundle(omitted as unknown as DiagnosticsProbeInput, directory),
+      (error: unknown) => {
+        assert.ok(error instanceof SupportBundleError);
+        assert.match(error.message, /buildId/);
+        return true;
+      },
+    );
+    assert.deepEqual(
+      readdirSync(directory),
+      [],
+      'a refused export must leave no file on the user\'s disk',
+    );
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('a wrong-typed projected value is refused rather than coerced', () => {
+  // The tightening must not have made `boundedScalar` lossy in the other
+  // direction either: an object or array offered as a scalar is an unbounded
+  // tree, and a finite-number violation is a caller error of the same family.
+  for (const wrongType of [{}, [], Number.NaN] as unknown[]) {
+    assert.throws(
+      () => buildSupportBundle(bundleInput({ appVersion: wrongType as unknown as string })),
+      SupportBundleError,
+      `a ${Array.isArray(wrongType) ? 'array' : typeof wrongType} app version must be refused`,
+    );
+  }
+});
+
+test('legitimate nulls still pass alongside the required-scalar tightening', () => {
+  // The tightening is about `undefined`, not about `null`. All three genuine
+  // nulls a first-run Desktop produces must survive: no session yet, no
+  // heartbeat yet, and a durable store that is not wired yet.
+  const bundle = buildSupportBundle(
+    bundleInput({
+      lastSuccessfulSessionAt: null,
+      lastSuccessfulHeartbeatAt: null,
+      durableStoreHealth: unimplementedDurableStoreHealth(),
+    }),
+  );
+  const session = bundle.sections.find((section) => section.id === 'session_activity');
+  const durable = bundle.sections.find((section) => section.id === 'durable_store');
+  assert.equal(session?.values.lastSuccessfulSessionAt, null);
+  assert.equal(session?.values.lastSuccessfulHeartbeatAt, null);
+  assert.equal(durable?.values.reconciliationCount, null);
+  // Asserted on the serialised text as well, so the nulls are present in the
+  // file the user exports, not merely in the in-memory object.
+  const text = serializeSupportBundle(bundle);
+  assert.ok(text.includes('"lastSuccessfulSessionAt": null'));
+  assert.ok(text.includes('"lastSuccessfulHeartbeatAt": null'));
+  assert.ok(text.includes('"reconciliationCount": null'));
+});
+
+test('an optional app-section key stays legitimately absent', () => {
+  // `bundleAppVersion` and `runnerAppVersion` are allowlisted but not supplied
+  // by the builder, because they depend on what is actually installed. The
+  // tightening must not have turned "absent because optional" into a refusal.
+  const bundle = buildSupportBundle(bundleInput());
+  const app = bundle.sections.find((section) => section.id === 'app');
+  assert.ok(app);
+  assert.equal('bundleAppVersion' in app.values, false);
+  assert.equal('runnerAppVersion' in app.values, false);
+  assert.equal('appVersion' in app.values, true);
+});
+
+// ---------------------------------------------------------------------------
 // Bundle shape and required diagnostic coverage
 // ---------------------------------------------------------------------------
 
