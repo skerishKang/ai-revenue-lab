@@ -407,6 +407,33 @@ class RequiredModuleTests(unittest.TestCase):
         self.assertIn("_is_inside", called_names)
 
 
+def _script_module():
+    """Load the shipped launcher module without running the command.
+
+    Executing the script body is safe: everything with a side effect lives under
+    ``if __name__ == "__main__"``. This reads the *shipped* file rather than a
+    copy, so a constant or a command cannot drift from what actually runs.
+    """
+
+    spec = importlib.util.spec_from_file_location(
+        "kagent_local_test_under_test", SCRIPT
+    )
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
+def _script_constants() -> dict[str, object]:
+    module = _script_module()
+    return {
+        "SIBLING_DISTRIBUTIONS": module.SIBLING_DISTRIBUTIONS,
+        "TEST_REQUIREMENTS": module.TEST_REQUIREMENTS,
+        "DEFAULT_ENVIRONMENT_DIRECTORY": module.DEFAULT_ENVIRONMENT_DIRECTORY,
+        "REPOSITORY_MARKER_FILES": module.REPOSITORY_MARKER_FILES,
+    }
+
+
 class CanonicalCommandTests(unittest.TestCase):
     """I/J/K/L: the shipped command keeps the properties the issue requires."""
 
@@ -414,27 +441,9 @@ class CanonicalCommandTests(unittest.TestCase):
     def _script_tree() -> ast.Module:
         return ast.parse(SCRIPT.read_text(encoding="utf-8"))
 
-    @staticmethod
-    def _script_constants() -> dict[str, object]:
-        """Evaluate the module-level constants without running the command.
-
-        Executing the script body is safe: everything with a side effect lives
-        under ``if __name__ == "__main__"``. This reads the *shipped* file
-        rather than a copy, so a constant cannot drift from what ships.
-        """
-
-        spec = importlib.util.spec_from_file_location(
-            "kagent_local_test_under_test", SCRIPT
-        )
-        module = importlib.util.module_from_spec(spec)
-        assert spec.loader is not None
-        spec.loader.exec_module(module)
-        return {
-            "SIBLING_DISTRIBUTIONS": module.SIBLING_DISTRIBUTIONS,
-            "TEST_REQUIREMENTS": module.TEST_REQUIREMENTS,
-            "DEFAULT_ENVIRONMENT_DIRECTORY": module.DEFAULT_ENVIRONMENT_DIRECTORY,
-            "REPOSITORY_MARKER_FILES": module.REPOSITORY_MARKER_FILES,
-        }
+    #: Delegates to the module-level helper so the launcher constants have a
+    #: single definition shared with the freshness tests below.
+    _script_constants = staticmethod(_script_constants)
 
     def test_kagent_itself_is_never_installed(self) -> None:
         # THE parser-isolation rule. Installing kagent puts the tree on sys.path
@@ -445,6 +454,83 @@ class CanonicalCommandTests(unittest.TestCase):
         for entry in constants["SIBLING_DISTRIBUTIONS"]:
             self.assertNotIn("korean-ai-code-agent", entry, entry)
         self.assertNotIn("kagent", constants["SIBLING_DISTRIBUTIONS"])
+
+    def test_the_siblings_are_installed_editable(self) -> None:
+        # The correction for the stale-copy blocker CENTRAL raised on #3111.
+        #
+        # A non-editable install COPIES sibling sources into site-packages at
+        # install time. Editing a sibling file afterwards leaves the copy stale
+        # while the fingerprint -- which covers pyproject.toml but not source --
+        # is unchanged, so the stale copy runs behind a green result. That is
+        # the #3108 defect wearing a different mask, and it was live in the
+        # first revision of this PR.
+        #
+        # Editable is what CI already does, so this also restores CI parity
+        # rather than inventing a local-only arrangement.
+        code = _code_only(SCRIPT)
+
+        # The literal must be present: every sibling target is prefixed so pip
+        # installs it in editable mode.
+        self.assertIn(
+            'f"-e{target}"', code, "sibling targets must be passed to pip as -e"
+        )
+        self.assertIn("SIBLING_DISTRIBUTIONS", code)
+
+        # And a bare (non-editable) sibling target must not survive anywhere in
+        # the install command construction.
+        self.assertNotIn("*targets,", code.split("TEST_REQUIREMENTS")[0][-200:])
+
+    def test_the_sibling_install_command_is_editable_for_every_sibling(self) -> None:
+        # A behavioural check on the constructed command, not a text search: it
+        # proves the prefix is actually applied to each target rather than only
+        # mentioned somewhere in the file.
+        module = _script_module()
+
+        recorded: dict[str, list[str]] = {}
+        original_run = module._run
+
+        def capture(command, *, cwd, env, stream=True):
+            recorded["command"] = list(command)
+            return 0
+
+        module._run = capture
+
+        class _StubInterpreter:
+            def exists(self) -> bool:
+                return True
+
+        module._interpreter = lambda environment: _StubInterpreter()
+
+        try:
+            with temporary_root() as tmp:
+                root = Path(tmp)
+                (root / ".git").mkdir()
+                for marker in module.REPOSITORY_MARKER_FILES:
+                    if marker == ".git":
+                        continue
+                    target = root / marker
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_text("", encoding="utf-8")
+                # PYTHONPATH requires no sibling path to exist.
+                module.build_environment(root, root / "env", recreate=False)
+        finally:
+            module._run = original_run
+
+        command = recorded["command"]
+        install_index = command.index("install")
+        targets = command[install_index + 1 :]
+
+        for sibling in module.SIBLING_DISTRIBUTIONS:
+            self.assertIn(
+                f"-e{sibling}",
+                targets,
+                f"{sibling} must be installed editable or a source edit goes unseen",
+            )
+        for requirement in module.TEST_REQUIREMENTS:
+            self.assertIn(requirement, targets)
+        # The environment must not receive a bare (non-editable) sibling path.
+        for sibling in module.SIBLING_DISTRIBUTIONS:
+            self.assertNotIn(sibling, targets)
 
     def test_kagent_is_never_installed_in_the_verifier_either(self) -> None:
         # The verifier is the last line of defence, so it must not be able to
@@ -836,6 +922,299 @@ class VerifierSubprocessTests(unittest.TestCase):
             foreign_file.write_text("MARKER = 'FOREIGN'\n", encoding="utf-8")
 
             self.assertFalse(dev._is_inside(foreign_file, REPO_ROOT))
+
+
+class SiblingFreshnessTests(unittest.TestCase):
+    """The stale-copy blocker CENTRAL raised on #3111, proved closed.
+
+    The first revision of this PR installed the siblings non-editably, which
+    COPIES their sources into ``site-packages`` at install time. The environment
+    fingerprint covered each sibling ``pyproject.toml`` but not its source, so
+    the sequence below produced a green run against code that was no longer in
+    the tree:
+
+        build env -> edit a sibling .py -> pyproject unchanged
+        -> fingerprint unchanged -> env reused -> stale copy runs
+
+    The whole point of #3108 is that a green run must prove the current source.
+    A stale copy inside the same repository is the same defect as a foreign
+    checkout: both produce a pass that proves nothing.
+
+    These tests run against the REAL built environment rather than a model of
+    it, because the failure mode is precisely a mismatch between what the
+    configuration says and what the interpreter does.
+
+    The environment is located through ``KAGENT_LOCAL_TEST_ENV``, which the
+    launcher publishes into the test process. The variable is what makes a
+    ``--environment-dir`` run verifiable at all; without it a relocated
+    environment would leave these tests pointing at the default location and
+    skipping in silence, which is the concealment this suite exists to prevent.
+
+    When no environment is present the tests skip rather than fail: they assert a
+    property of a BUILT environment, and the launcher builds one on demand. The
+    canonical command publishes the variable, so a run through it never skips.
+    """
+
+    def _environment_root(self) -> Path:
+        override = os.environ.get("KAGENT_LOCAL_TEST_ENV")
+        if not override:
+            # No published environment. Fall back to the default location so a
+            # developer who built it by hand still gets the check, but say so:
+            # silence here would be indistinguishable from the contract holding.
+            return REPO_ROOT / ".kagent-local-test-env"
+        return Path(override)
+
+    def setUp(self) -> None:
+        root = self._environment_root()
+        interpreter = root / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+        if not interpreter.exists():
+            self.skipTest(
+                f"isolated environment not built at {root}; run "
+                "scripts/kagent_local_test.py first"
+            )
+        self.interpreter = interpreter
+
+    def test_a_mutation_probe_restores_bytes_not_reencoded_text(self) -> None:
+        # A guard on the guards, proved by BEHAVIOUR rather than by text.
+        #
+        # The freshness tests edit real files in the working tree. When they
+        # restored with a plain read_text/write_text round trip, universal
+        # newlines silently converted LF sources to CRLF and left a whole-file
+        # diff behind. Two sibling sources were modified by a PASSING test, and
+        # the residue then broke an unrelated Windows process-tree test in the
+        # same run.
+        #
+        # Two earlier versions of this guard were wrong in instructive ways and
+        # both are recorded here. The first asserted on this file's own source
+        # text, so the forbidden substring appeared in the assertion itself and
+        # the guard could only ever fail. The second asserted that
+        # ``newline=""`` could NOT repair a text round trip; that was backwards.
+        # ``read_text`` normalises CRLF to LF, and ``newline=""`` then writes LF
+        # literally, so the pair does round-trip. Only the PLAIN write_text
+        # reintroduces CRLF.
+        #
+        # The freshness tests use bytes for both the mutation and the restore, so
+        # none of this subtlety applies to them. That is the point: the
+        # behaviour is asserted here so the choice is justified rather than
+        # incidental.
+        with temporary_root() as tmp:
+            target = tmp / "lf_source.py"
+            original = b"VALUE = 1\nOTHER = 2\n"
+            target.write_bytes(original)
+
+            # The lossy pattern: decode, then write with default newline
+            # handling, which translates LF back to the platform separator.
+            decoded = target.read_text(encoding="utf-8")
+            target.write_text(decoded, encoding="utf-8")
+            self.assertNotEqual(
+                target.read_bytes(),
+                original,
+                "premise check: a plain text round trip must alter the bytes, "
+                "otherwise this guard would prove nothing",
+            )
+            self.assertIn(
+                b"\r\n",
+                target.read_bytes(),
+                "premise check: a plain write_text is what introduced the CRLF",
+            )
+
+            # The pattern the freshness tests actually use: bytes in, bytes out,
+            # with no text decoding anywhere near the file being mutated.
+            target.write_bytes(original)
+            snapshot = target.read_bytes()
+            try:
+                target.write_bytes(snapshot + b"PROBE = True\n")
+                self.assertNotIn(
+                    b"\r\n",
+                    target.read_bytes(),
+                    "a byte append must not introduce CRLF",
+                )
+            finally:
+                target.write_bytes(snapshot)
+            self.assertEqual(
+                target.read_bytes(),
+                original,
+                "the byte round trip must restore exactly",
+            )        # The contract the rest of this class depends on.
+        #
+        # Without it, a `--environment-dir` run relocates the environment and
+        # these tests silently fall back to the default path, skip, and report
+        # green without ever having checked anything. A test suite that can be
+        # skipped into meaninglessness by removing one assignment is not a
+        # contract, so the assignment is asserted directly.
+        code = _code_only(SCRIPT)
+        self.assertIn("KAGENT_LOCAL_TEST_ENV", code)
+        self.assertIn(
+            'child["KAGENT_LOCAL_TEST_ENV"] = str(environment)',
+            code,
+            "the launcher must publish the environment it built into the test "
+            "process, or the freshness tests verify a different environment "
+            "than the one that ran them",
+        )
+
+    def _import_probe(self, module: str) -> str:
+        """The file a module resolves to inside the real isolated environment."""
+
+        environment = {
+            key: value
+            for key, value in os.environ.items()
+            if key not in ("PYTHONPATH", "PYTHONHOME")
+        }
+        environment["PYTHONNOUSERSITE"] = "1"
+        environment["PYTHONPATH"] = str(APP_ROOT / "src")
+        completed = subprocess.run(
+            [
+                str(self.interpreter),
+                "-c",
+                "import json,importlib;"
+                f"m=importlib.import_module({module!r});"
+                "print(json.dumps({'file': getattr(m, '__file__', None)}))",
+            ],
+            capture_output=True,
+            text=True,
+            env=environment,
+            timeout=180,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr[-500:])
+        return json.loads(completed.stdout)["file"]
+
+    def test_every_sibling_resolves_to_a_source_tree_not_site_packages(self) -> None:
+        # The structural property that makes staleness impossible: a sibling
+        # import must land on a .py file inside the checkout's source tree.
+        #
+        # A copied install would resolve to
+        # .kagent-local-test-env/Lib/site-packages/<name>/__init__.py, which is
+        # inside the repository -- so the origin check would PASS while the
+        # code was a snapshot. Asserting the path shape is what distinguishes
+        # "live source" from "a copy that happens to live in the repo".
+        expected_roots = {
+            "padiem_ai_core": REPO_ROOT / "packages" / "padiem-ai-core",
+            "padiem_control_plane": REPO_ROOT / "packages" / "padiem-control-plane",
+            "padiem_ai_engine_client": REPO_ROOT
+            / "apps"
+            / "padiem-ai-engine"
+            / "clients"
+            / "python",
+        }
+
+        for module, source_root in expected_roots.items():
+            with self.subTest(module=module):
+                origin = self._import_probe(module)
+                self.assertIsNotNone(origin, module)
+                resolved = Path(origin).resolve()
+
+                self.assertTrue(
+                    dev._is_inside(resolved, source_root),
+                    f"{module} resolved to {resolved}, which is not inside its "
+                    f"source tree {source_root}. A copied install is exactly "
+                    "this failure: same repository, stale code.",
+                )
+                self.assertNotIn(
+                    "site-packages",
+                    str(resolved),
+                    f"{module} resolved from site-packages, so it is a copied "
+                    "snapshot rather than live source",
+                )
+
+    def test_editing_a_sibling_source_file_is_visible_to_the_next_import(self) -> None:
+        # The exact sequence CENTRAL specified, executed for real.
+        #
+        #   BUILD ENV -> mutate sibling source without touching pyproject
+        #   -> next import must see the mutation
+        #   -> a stale copy must never answer
+        #
+        # The file is restored from the ORIGINAL BYTES in a finally block, not
+        # from re-encoded text. An earlier version read with read_text and wrote
+        # back with write_text, which is NOT a round trip: universal newlines
+        # turned an LF file into CRLF and left a whole-file diff behind. Two
+        # sibling sources were silently modified by a passing test, and the
+        # residue then broke an unrelated Windows process-tree test. Byte
+        # preservation is load-bearing, not tidiness.
+        target = (
+            REPO_ROOT
+            / "packages"
+            / "padiem-control-plane"
+            / "padiem_control_plane"
+            / "__init__.py"
+        )
+        if not target.exists():
+            self.skipTest("control plane source layout differs from expectation")
+
+        original_bytes = target.read_bytes()
+        marker = b"PADIEM_3108_FRESHNESS_PROBE = True"
+        mutated = original_bytes + b"\n" + marker + b"\n"
+
+        try:
+            # Bytes only. `read_text` would decode with universal newlines and
+            # turn this LF file into CRLF on the way back out, which is the
+            # defect this test was written to avoid reproducing.
+            target.write_bytes(mutated)
+            origin = self._import_probe("padiem_control_plane")
+
+            # The import must resolve to the file we just wrote, not a copy.
+            self.assertEqual(
+                Path(origin).resolve(),
+                target.resolve(),
+                "a sibling edit must be visible immediately; a resolved copy "
+                "means the install is non-editable and the run is stale",
+            )
+        finally:
+            target.write_bytes(original_bytes)
+
+        # Byte-for-byte restoration, asserted. A test that mutates the working
+        # tree must leave no trace, and this is the only way to know.
+        self.assertEqual(
+            target.read_bytes(),
+            original_bytes,
+            "the freshness test must restore the file byte-for-byte",
+        )
+        self.assertNotIn(b"PADIEM_3108_FRESHNESS_PROBE", target.read_bytes())
+        # No CRLF may have been introduced anywhere in the operation.
+        self.assertNotIn(b"\r\n", target.read_bytes())
+
+    def test_the_engine_client_is_live_for_the_same_reason(self) -> None:
+        # Core is covered by the path-shape test above, which also covers the
+        # fact that PYTHONPATH no longer lists a sibling. Engine client is
+        # exercised here with a real edit, because it is the sibling whose
+        # import count in the suite is smallest and therefore easiest to leave
+        # silently stale.
+        target = (
+            REPO_ROOT
+            / "apps"
+            / "padiem-ai-engine"
+            / "clients"
+            / "python"
+            / "padiem_ai_engine_client"
+            / "__init__.py"
+        )
+        if not target.exists():
+            self.skipTest("engine client source layout differs from expectation")
+
+        original_bytes = target.read_bytes()
+        try:
+            target.write_bytes(
+                original_bytes + b"\nPADIEM_3108_ENGINE_PROBE = True\n"
+            )
+            origin = self._import_probe("padiem_ai_engine_client")
+            self.assertEqual(Path(origin).resolve(), target.resolve())
+        finally:
+            target.write_bytes(original_bytes)
+
+        self.assertEqual(target.read_bytes(), original_bytes)
+        self.assertNotIn(b"\r\n", target.read_bytes())
+
+    def test_pytest_is_not_covered_by_the_sibling_liveness_contract(self) -> None:
+        # A guard on the guard: third-party test requirements are ordinary
+        # non-editable installs, and the freshness contract must not be claimed
+        # for them. PyPI packages are immutable at a given version, so a copy is
+        # correct for them in a way it is not for a sibling under active edit.
+        constants = _script_constants()
+        self.assertIn("pytest>=8,<10", constants["TEST_REQUIREMENTS"])
+        for requirement in constants["TEST_REQUIREMENTS"]:
+            self.assertFalse(
+                requirement.startswith("-e"),
+                "a PyPI requirement is not an editable target",
+            )
 
 
 if __name__ == "__main__":

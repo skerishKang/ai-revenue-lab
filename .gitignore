@@ -15,8 +15,14 @@ kagent-ocr-*.png
 # import origins can be proved against this repository. It is never source.
 .kagent-local-test-env/
 
-# #3108: installing the sibling distributions for the isolated local KAgent
-# test environment builds these in-tree. They are packaging output of a local
-# run, never source, and must not show up as untracked noise in every status.
-build/
-*.egg-info/
+# #3108: the sibling distributions are installed with `pip install -e`, which
+# still writes a setuptools build tree and egg-info next to each package even
+# though the import resolves to the source. Scoped to the exact three
+# distributions the launcher installs -- a repository-wide `build/` would hide
+# unrelated future build directories across the monorepo.
+packages/padiem-ai-core/build/
+packages/padiem-ai-core/*.egg-info/
+packages/padiem-control-plane/build/
+packages/padiem-control-plane/*.egg-info/
+apps/padiem-ai-engine/clients/python/build/
+apps/padiem-ai-engine/clients/python/*.egg-info/

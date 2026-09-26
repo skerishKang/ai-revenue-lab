@@ -19,10 +19,19 @@ What this command guarantees, in order:
    interpreter, ``PYTHONPATH`` and ``VIRTUAL_ENV`` are not inherited, so a stale
    global ``.pth`` cannot answer an import.
 
-2. **Siblings from this checkout.** ``padiem-ai-core``,
-   ``padiem-control-plane`` and ``padiem-ai-engine-client`` are installed from
-   the paths inside this checkout. Not from an index, not from a cache, not
-   from a global site directory.
+2. **Siblings from this checkout, live.** ``padiem-ai-core``,
+   ``padiem-control-plane`` and ``padiem-ai-engine-client`` are installed
+   EDITABLE from the paths inside this checkout, which is exactly what
+   ``.github/workflows/validate-b54-kagent.yml`` does. Their imports therefore
+   keep resolving to the source trees, so editing a sibling is visible to the
+   next run.
+
+   Editable is load-bearing, not a convenience. An earlier revision installed
+   them non-editable, which COPIES the sources into ``site-packages`` at install
+   time. Editing a sibling file then left the copy stale while the environment
+   fingerprint -- which covers ``pyproject.toml`` but not source -- stayed
+   unchanged, so the stale copy ran behind a green result. Same defect as above,
+   different mask.
 
 3. **KAgent is never installed.** It runs from ``src`` on ``PYTHONPATH``.
    Installing it would make the parser-isolation contract vacuous: that contract
@@ -66,6 +75,20 @@ REPOSITORY_MARKER_FILES: tuple[str, ...] = (
 #: Paths are relative to the repository root. They are deliberately spelled out
 #: rather than discovered, so that adding a package to the monorepo cannot
 #: silently widen what a local test run installs.
+#:
+#: These are installed EDITABLE (``-e``), exactly as
+#: ``.github/workflows/validate-b54-kagent.yml`` installs them. That is not a
+#: style preference. A non-editable install COPIES the sources into
+#: ``site-packages`` at install time, so editing a sibling file afterwards
+#: leaves the copy stale while the fingerprint -- which covers
+#: ``pyproject.toml`` but not source -- stays unchanged and the environment is
+#: reused. The result is a green run against code that is no longer in the tree:
+#: the same defect #3108 exists to prevent, wearing a different mask.
+#:
+#: Editable is safe for the siblings precisely because KAgent is not editable.
+#: The parser-isolation contract only requires that ``kagent`` itself be absent
+#: from ``site`` processing; a sibling ``.pth`` pointing back into this checkout
+#: is what CI already relies on.
 SIBLING_DISTRIBUTIONS: tuple[str, ...] = (
     "packages/padiem-ai-core[tools,documents,render,tables,authoring]",
     "packages/padiem-control-plane",
@@ -190,11 +213,25 @@ def _child_environment(root: Path, environment: Path) -> dict[str, str]:
     child["PYTHONIOENCODING"] = "utf-8"
     child["PYTHONUTF8"] = "1"
 
-    # The import roots for the test process. kagent comes from src and is never
-    # installed; the siblings are installed into the environment below.
-    child["PYTHONPATH"] = os.pathsep.join(
-        [str(root / "apps/korean-ai-code-agent/src"), str(root / "packages/padiem-ai-core")]
-    )
+    # Published so the freshness tests can find the same environment this
+    # command built, including when it was relocated with --environment-dir.
+    # Without it they would look only at the default location, skip, and the
+    # stale-copy contract would go unverified precisely when a developer
+    # relocated the environment.
+    child["KAGENT_LOCAL_TEST_ENV"] = str(environment)
+
+    # The only import root the test process is given.
+    #
+    # kagent comes from src and is never installed. The siblings are NOT listed
+    # here: they resolve through the editable installs, which point back at this
+    # checkout's source trees. That is the whole point of installing them
+    # editable -- an edit to a sibling file is visible to the very next run, with
+    # no rebuild and no fingerprint involvement.
+    #
+    # Naming a sibling here as well would be harmless today but is exactly the
+    # shape that hides a stale install: a path that looks authoritative while the
+    # real resolution happens somewhere else.
+    child["PYTHONPATH"] = str(root / "apps/korean-ai-code-agent/src")
 
     return child
 
@@ -233,7 +270,13 @@ def build_environment(root: Path, environment: Path, recreate: bool) -> tuple[in
 
     child = _child_environment(root, environment)
 
-    targets = [*SIBLING_DISTRIBUTIONS, *TEST_REQUIREMENTS]
+    # Siblings go in editable, mirroring the canonical CI installation. A copied
+    # install would let an edit to a sibling file leave a stale copy running
+    # behind an unchanged fingerprint.
+    targets = [
+        *(f"-e{target}" for target in SIBLING_DISTRIBUTIONS),
+        *TEST_REQUIREMENTS,
+    ]
     command = [
         str(interpreter),
         "-m",

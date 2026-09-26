@@ -64,12 +64,19 @@ environment's interpreter. The caller's `PYTHONPATH` is replaced rather than
 extended, and `PYTHONNOUSERSITE=1` skips the per-user site directory — a user
 site `.pth` is one of the ways a foreign checkout wins an import.
 
-**2. Siblings come from this checkout.** `padiem-ai-core`,
-`padiem-control-plane` and `padiem-ai-engine-client` are installed from paths
-inside the repository. Not from an index, not from a cache, not from a global
-site directory. The paths are spelled out in `SIBLING_DISTRIBUTIONS` rather
-than discovered, so adding a package to the monorepo cannot silently widen what
-a local run installs.
+**2. Siblings come from this checkout, live.** `padiem-ai-core`,
+`padiem-control-plane` and `padiem-ai-engine-client` are installed **editable**
+(`pip install -e`) from paths inside this repository, which is exactly what CI
+does. Their imports keep resolving to the source trees, so editing a sibling is
+visible to the very next run.
+
+Editable is load-bearing, not a convenience. A non-editable install *copies* the
+sources into `site-packages` at install time. Editing a sibling file then leaves
+the copy stale, the origin check still passes (the copy is inside the
+repository), and the suite runs code that is no longer in the tree — the same
+defect as a foreign checkout, wearing a different mask. The sibling paths are
+spelled out in `SIBLING_DISTRIBUTIONS` rather than discovered, so adding a
+package to the monorepo cannot silently widen what a local run installs.
 
 **3. KAgent is never installed.** It runs from `src` on `PYTHONPATH`.
 
@@ -114,6 +121,12 @@ python apps/korean-ai-code-agent/src/kagent/dev_environment.py
 ```
 
 It prints a JSON table and exits non-zero on any foreign origin.
+
+The origin table shows *where* a module came from. Because the siblings are
+installed editable, a path under the checkout's own source tree is what a live
+import looks like; a path under `.kagent-local-test-env/.../site-packages/` would
+mean a copied, potentially stale install. The freshness tests assert that shape
+directly.
 
 ## If you are still contaminated
 
