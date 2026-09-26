@@ -40,6 +40,7 @@ class LocalAgentBrokerDurableObject(DurableObject):
             rpc_factory=self._runtime.facade,
             http_state=self._runtime.http_state,
             material_resolver=self._runtime.material_store,
+            session_open_transaction=self._storage.transactionSync,
         )
 
     def _authority_ref(self) -> str:
@@ -155,6 +156,10 @@ M2E_HTTP_SESSION_STATE_DURABLE = True
 LAST_SEEN_MONOTONIC = True
 CANONICAL_BROKER_RPC_REUSED = True
 SECOND_REPLAY_SEQUENCE_AUTHORITY = False
+SESSION_OPEN_TRANSACTION_WIRED = True
+SESSION_OPEN_TRANSACTION_SOURCE = "ctx.storage.transactionSync"
+SESSION_OPEN_ATOMIC = True
+SESSION_DOUBLE_WRITE_PRESENT = False
 RAW_DEVICE_CREDENTIAL_PERSISTED = False
 PUBLIC_FETCH = False
 PRIVATE_SERVICE_BINDING_FETCH = True

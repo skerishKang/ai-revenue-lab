@@ -71,6 +71,12 @@ class _UnusedMaterialResolver:
         raise RuntimeError("material resolver is not used by this test")
 
 
+def _passthrough_transaction(operation):
+    """Behavioral tests run the write pair directly; atomicity is covered by
+    the storage-seam tests in test_local_agent_broker_session_atomicity.py."""
+    return operation()
+
+
 def _encoded(value: bytes) -> str:
     return base64.b64encode(value).decode("ascii")
 
@@ -109,6 +115,7 @@ def _service_fixture():
         rpc_factory=rpc_factory,
         http_state=http_state,
         material_resolver=_UnusedMaterialResolver(),
+        session_open_transaction=_passthrough_transaction,
         clock=lambda: BASE + timedelta(seconds=10),
     )
     return state, authority, http_state, service
