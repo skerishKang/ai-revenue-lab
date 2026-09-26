@@ -10,6 +10,7 @@ from .local_agent_broker import (
     BrokerCommandAdmission,
     BrokerCommandRecord,
     BrokerCommandState,
+    BrokerCompactedCommand,
     BrokerDeviceBinding,
     BrokerDeviceSession,
     InMemoryLocalAgentBrokerAuthority,
@@ -17,6 +18,14 @@ from .local_agent_broker import (
 
 BROKER_STATE_SCHEMA_VERSION = "padiem.local-agent-broker-state.v1"
 _T = TypeVar("_T")
+
+# #3123: proactive retention trigger, in command records. The wire layer's hard
+# bound is 10,000 items per collection (local_agent_broker_state_wire), and the
+# trigger sits deliberately below it so ordinary mutations reclaim terminal
+# history before the bound can turn into a permanent encode failure. Defined
+# here rather than imported from the wire module because the wire module
+# already imports the snapshot schema from this one.
+COMPACTION_PROACTIVE_TRIGGER_COMMANDS = 8_000
 
 
 def _state_error(code: str, message: str) -> ControlPlaneContractError:
@@ -36,6 +45,13 @@ class LocalAgentBrokerStateSnapshot:
     sessions: tuple[BrokerDeviceSession, ...] = ()
     commands: tuple[BrokerCommandRecord, ...] = ()
     last_sequence_by_binding: tuple[tuple[str, int], ...] = ()
+    # #3123 compaction state. Tombstones keep compacted terminal command ids
+    # rejected and their consumed sequences visible; the folded prefix records
+    # how far the contiguous terminal prefix has been absorbed into the
+    # watermark. Both default to empty so every pre-#3123 snapshot decodes
+    # unchanged.
+    compacted_commands: tuple[BrokerCompactedCommand, ...] = ()
+    compacted_through_by_binding: tuple[tuple[str, int], ...] = ()
     schema_version: str = BROKER_STATE_SCHEMA_VERSION
 
     def __post_init__(self) -> None:
@@ -49,6 +65,8 @@ class LocalAgentBrokerStateSnapshot:
             raise _state_error("invalid_local_agent_broker_state", "broker state sessions are invalid")
         if any(not isinstance(item, BrokerCommandRecord) for item in self.commands):
             raise _state_error("invalid_local_agent_broker_state", "broker state commands are invalid")
+        if any(not isinstance(item, BrokerCompactedCommand) for item in self.compacted_commands):
+            raise _state_error("invalid_local_agent_broker_state", "broker state compaction tombstones are invalid")
 
         bindings = {item.binding_ref: item for item in self.bindings}
         sessions = {item.session_id: item for item in self.sessions}
@@ -126,8 +144,93 @@ class LocalAgentBrokerStateSnapshot:
             if binding_ref in sequence_map:
                 raise _state_error("invalid_local_agent_broker_state", "duplicate broker sequence state entry")
             sequence_map[binding_ref] = sequence
-        if sequence_map != max_sequence:
-            raise _state_error("invalid_local_agent_broker_state", "last sequence state must exactly match persisted commands")
+        # #3123: the watermark is a monotonic high-water mark, not a mirror of
+        # the persisted history. Compaction removes terminal records without
+        # lowering it, so it may now exceed the maximum persisted sequence —
+        # but it may never fall below one, and every binding that still owns a
+        # persisted command must have its watermark recorded. This relaxation
+        # is exactly what lets terminal history be compacted without ever
+        # re-minting or reusing a sequence.
+        for binding_ref, highest in max_sequence.items():
+            if sequence_map.get(binding_ref, 0) < highest:
+                raise _state_error(
+                    "invalid_local_agent_broker_state",
+                    "broker sequence state must be at or above every persisted command sequence",
+                )
+
+        # #3123 tombstone invariants. A tombstone proves three facts: the id is
+        # consumed, the sequence is consumed, and neither can be minted again.
+        # Those facts are only provable if the tombstone collection itself is
+        # collision-free and consistent with the live records and the
+        # watermark, so the snapshot validates all three rather than trusting
+        # whoever built it.
+        compacted_ids: set[str] = set()
+        tombstone_sequences: dict[str, set[int]] = {}
+        for tombstone in self.compacted_commands:
+            if tombstone.command_id in commands:
+                raise _state_error(
+                    "invalid_local_agent_broker_state",
+                    "broker command cannot be both persisted and compacted",
+                )
+            if tombstone.command_id in compacted_ids:
+                raise _state_error("invalid_local_agent_broker_state", "duplicate compacted command_id in broker state")
+            compacted_ids.add(tombstone.command_id)
+            if tombstone.binding_ref not in bindings:
+                raise _state_error("invalid_local_agent_broker_state", "broker compaction tombstone references unknown binding")
+            if tombstone.sequence > sequence_map.get(tombstone.binding_ref, 0):
+                raise _state_error(
+                    "invalid_local_agent_broker_state",
+                    "compacted sequence cannot exceed the binding sequence watermark",
+                )
+            known = tombstone_sequences.setdefault(tombstone.binding_ref, set())
+            if tombstone.sequence in known:
+                raise _state_error(
+                    "invalid_local_agent_broker_state",
+                    "compacted sequence reuse within binding",
+                )
+            known.add(tombstone.sequence)
+        for binding_ref, sequence in ((item.binding_ref, item.sequence) for item in self.commands):
+            if sequence in tombstone_sequences.get(binding_ref, set()):
+                raise _state_error(
+                    "invalid_local_agent_broker_state",
+                    "sequence cannot be both live and compacted within a binding",
+                )
+
+        # The folded prefix: how far the contiguous terminal prefix of each
+        # binding has been absorbed into the watermark. It must stay within the
+        # watermark and must not claim any sequence that is still visible as a
+        # live command or a tombstone — otherwise the "consumed" proof it
+        # carries would be a lie.
+        folded_prefixes: set[str] = set()
+        for item in self.compacted_through_by_binding:
+            if type(item) is not tuple or len(item) != 2:
+                raise _state_error("invalid_local_agent_broker_state", "broker compaction prefix entry is invalid")
+            binding_ref, folded_through = item
+            if binding_ref not in bindings:
+                raise _state_error("invalid_local_agent_broker_state", "broker compaction prefix references unknown binding")
+            if isinstance(folded_through, bool) or not isinstance(folded_through, int) or folded_through < 0:
+                raise _state_error("invalid_local_agent_broker_state", "broker compaction prefix must be a non-negative integer")
+            if binding_ref in folded_prefixes:
+                raise _state_error("invalid_local_agent_broker_state", "duplicate broker compaction prefix entry")
+            folded_prefixes.add(binding_ref)
+            if folded_through > sequence_map.get(binding_ref, 0):
+                raise _state_error(
+                    "invalid_local_agent_broker_state",
+                    "compaction prefix cannot exceed the binding sequence watermark",
+                )
+            live_below = any(
+                command.binding_ref == binding_ref and command.sequence <= folded_through
+                for command in self.commands
+            )
+            tombstone_below = any(
+                tombstone.binding_ref == binding_ref and tombstone.sequence <= folded_through
+                for tombstone in self.compacted_commands
+            )
+            if live_below or tombstone_below:
+                raise _state_error(
+                    "invalid_local_agent_broker_state",
+                    "compaction prefix cannot claim a visible command or tombstone sequence",
+                )
 
     @classmethod
     def empty(cls, *, authority_ref: str) -> "LocalAgentBrokerStateSnapshot":
@@ -143,6 +246,10 @@ class LocalAgentBrokerStateSnapshot:
             sessions=tuple(sorted(authority._sessions.values(), key=lambda item: item.session_id)),
             commands=tuple(sorted(authority._commands.values(), key=lambda item: (item.binding_ref, item.sequence))),
             last_sequence_by_binding=tuple(sorted(authority._last_sequence_by_binding.items())),
+            compacted_commands=tuple(
+                sorted(authority._compacted_commands.values(), key=lambda item: (item.binding_ref, item.sequence, item.command_id))
+            ),
+            compacted_through_by_binding=tuple(sorted(authority._compacted_through_by_binding.items())),
         )
 
     def restore(self, *, pepper: bytes) -> InMemoryLocalAgentBrokerAuthority:
@@ -151,6 +258,8 @@ class LocalAgentBrokerStateSnapshot:
         authority._sessions = {item.session_id: item for item in self.sessions}
         authority._commands = {item.command_id: item for item in self.commands}
         authority._last_sequence_by_binding = dict(self.last_sequence_by_binding)
+        authority._compacted_commands = {item.command_id: item for item in self.compacted_commands}
+        authority._compacted_through_by_binding = dict(self.compacted_through_by_binding)
         return authority
 
     def safe_dict(self) -> dict[str, Any]:
@@ -161,6 +270,8 @@ class LocalAgentBrokerStateSnapshot:
             "session_count": len(self.sessions),
             "command_count": len(self.commands),
             "sequence_binding_count": len(self.last_sequence_by_binding),
+            "compacted_command_count": len(self.compacted_commands),
+            "compacted_prefix_binding_count": len(self.compacted_through_by_binding),
             "credential_digest_exposed": False,
             "raw_device_credential": False,
         }
@@ -275,16 +386,49 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
             raise _state_error("invalid_local_agent_broker_state", "state port returned wrong authority state")
         return stored, stored.snapshot.restore(pepper=self._pepper)
 
-    def _mutate(self, operation: Callable[[InMemoryLocalAgentBrokerAuthority], _T]) -> _T:
+    def _mutate(
+        self,
+        operation: Callable[[InMemoryLocalAgentBrokerAuthority], _T],
+        *,
+        now: datetime | None = None,
+    ) -> _T:
         stored, authority = self._loaded()
         result = operation(authority)
-        snapshot = LocalAgentBrokerStateSnapshot.capture(authority)
+        if now is not None and len(authority._commands) >= COMPACTION_PROACTIVE_TRIGGER_COMMANDS:
+            # #3123 proactive retention: with the persisted history pressing on
+            # the wire bound, reclaim terminal records before the bound turns
+            # into a permanent encode failure. This runs on the same trusted
+            # server clock as the mutation itself and never touches live or
+            # unresolved records (see `compact_terminal_history`).
+            authority.compact_terminal_history(now=now)
+        try:
+            self._compare_and_swap(authority, expected_version=stored.version)
+            return result
+        except ControlPlaneContractError as exc:
+            # #3123 reactive escape. The real wire/CAS path raised under
+            # pressure (collection or byte bound). Anything else — including a
+            # CAS race — must propagate untouched.
+            if exc.code != "local_agent_broker_state_wire_too_large" or now is None:
+                raise
+        # One real compaction pass, then exactly one retry. If the state still
+        # cannot be encoded, the failure propagates: pressure that retention
+        # cannot relieve fails closed here, it does not wedge in a retry loop
+        # and it does not invent a smaller state.
+        authority.compact_terminal_history(now=now)
+        self._compare_and_swap(authority, expected_version=stored.version)
+        return result
+
+    def _compare_and_swap(
+        self,
+        authority: InMemoryLocalAgentBrokerAuthority,
+        *,
+        expected_version: int,
+    ) -> None:
         self._state_port.compare_and_swap(
             authority_ref=self.authority_ref,
-            expected_version=stored.version,
-            snapshot=snapshot,
+            expected_version=expected_version,
+            snapshot=LocalAgentBrokerStateSnapshot.capture(authority),
         )
-        return result
 
     def _read(self, operation: Callable[[InMemoryLocalAgentBrokerAuthority], _T]) -> _T:
         _, authority = self._loaded()
@@ -310,7 +454,8 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
                 credential=credential,
                 now=now,
                 credential_ttl_seconds=credential_ttl_seconds,
-            )
+            ),
+            now=now,
         )
 
     def rotate_credential(
@@ -329,11 +474,12 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
                 new_credential=new_credential,
                 now=now,
                 credential_ttl_seconds=credential_ttl_seconds,
-            )
+            ),
+            now=now,
         )
 
     def revoke_binding(self, binding_ref: str, *, now: datetime) -> BrokerDeviceBinding:
-        return self._mutate(lambda authority: authority.revoke_binding(binding_ref, now=now))
+        return self._mutate(lambda authority: authority.revoke_binding(binding_ref, now=now), now=now)
 
     def open_session(
         self,
@@ -355,7 +501,8 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
                 workspace_ref=workspace_ref,
                 now=now,
                 ttl_seconds=ttl_seconds,
-            )
+            ),
+            now=now,
         )
 
     def enqueue_command(
@@ -378,7 +525,8 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
                 request_fingerprint=request_fingerprint,
                 now=now,
                 ttl_seconds=ttl_seconds,
-            )
+            ),
+            now=now,
         )
 
     def poll(
@@ -426,7 +574,8 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
                 request_fingerprint=request_fingerprint,
                 request_id=request_id,
                 now=now,
-            )
+            ),
+            now=now,
         )
 
     def acknowledge(
@@ -457,7 +606,8 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
                 request_id=request_id,
                 exit_code=exit_code,
                 now=now,
-            )
+            ),
+            now=now,
         )
 
     def reconcile_expired_command(
@@ -488,7 +638,8 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
                 termination=termination,
                 exit_code=exit_code,
                 now=now,
-            )
+            ),
+            now=now,
         )
 
     def safe_dict(self) -> dict[str, Any]:

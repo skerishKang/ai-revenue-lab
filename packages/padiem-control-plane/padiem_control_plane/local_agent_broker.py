@@ -27,6 +27,24 @@ MAX_SESSION_TTL_SECONDS = 3_600
 MAX_COMMAND_TTL_SECONDS = 900
 MAX_POLL_BATCH = 32
 
+# #3123 — bounded terminal-history retention. A terminal command
+# (ACKNOWLEDGED or EXPIRED) is retained in full for this long after its terminal
+# event, so a lost #3118/#3121 response can still be recovered from the canonical
+# record. Past the horizon the record is compacted to a tombstone that keeps
+# rejecting the same command_id forever within the tombstone budget, and the
+# sequence watermark keeps guaranteeing monotonicity. The horizon is a bounded
+# constant, not a caller knob: retention is an authority decision, not a
+# convenience.
+TERMINAL_RETENTION_SECONDS = 3_600
+# Retention legitimately outlives the command TTL: a #3118 recovery retry can
+# arrive long after the command itself expired. It is still a bounded policy.
+MAX_TERMINAL_RETENTION_SECONDS = 86_400
+# Tombstones are the only O(history) residue of compaction. This budget bounds
+# them; once it is exhausted compaction stops and older terminal records stay
+# persisted, so state growth degrades to the pre-#3123 behaviour instead of
+# forgetting correlation beyond the budget.
+MAX_COMPACTION_TOMBSTONES = 2_048
+
 
 def _ref(name: str, value: str) -> str:
     if not isinstance(value, str) or not _SAFE_REF_RE.fullmatch(value):
@@ -324,6 +342,36 @@ class BrokerCommandAdmission:
         }
 
 
+@dataclass(frozen=True, slots=True)
+class BrokerCompactedCommand:
+    """Tombstone for one compacted terminal command (#3123).
+
+    Compaction removes a terminal command's full record to bound state growth.
+    What must survive is exactly the correlation that cannot be re-derived:
+
+    * `command_id` — the id stays rejected, so a retry can never re-enqueue a
+      second command under a used id;
+    * `binding_ref` + `sequence` — the sequence the command consumed stays
+      visible, proving the per-binding sequence high-water mark covers it and
+      that no live command can ever be minted with that sequence again.
+
+    It deliberately carries no execution facts and no revision_ref: the
+    revision_ref was server-owned correlation for a record that no longer
+    exists, and re-deriving or re-serving one from a tombstone would fabricate
+    a record. Recovery past the retention horizon fails closed instead.
+    """
+
+    command_id: str
+    binding_ref: str
+    sequence: int
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "command_id", _ref("command_id", self.command_id))
+        object.__setattr__(self, "binding_ref", _ref("binding_ref", self.binding_ref))
+        if isinstance(self.sequence, bool) or not isinstance(self.sequence, int) or self.sequence < 1:
+            raise ControlPlaneContractError("invalid_broker_command", "compacted sequence must be positive")
+
+
 class InMemoryLocalAgentBrokerAuthority:
     """Deterministic server-side authority core; persistence/transport are injected later."""
 
@@ -336,6 +384,10 @@ class InMemoryLocalAgentBrokerAuthority:
         self._sessions: dict[str, BrokerDeviceSession] = {}
         self._commands: dict[str, BrokerCommandRecord] = {}
         self._last_sequence_by_binding: dict[str, int] = {}
+        # #3123 compaction state: terminal records removed by retention, plus the
+        # per-binding contiguous prefix of sequences folded into the watermark.
+        self._compacted_commands: dict[str, BrokerCompactedCommand] = {}
+        self._compacted_through_by_binding: dict[str, int] = {}
 
     def _credential_digest(self, credential: bytes) -> str:
         return hmac.new(self._pepper, _credential(credential), hashlib.sha256).hexdigest()
@@ -488,6 +540,23 @@ class InMemoryLocalAgentBrokerAuthority:
             raise ControlPlaneContractError("device_session_scope_mismatch", "device session does not match current binding")
         return session
 
+    def _live_command(self, command_id: str) -> BrokerCommandRecord:
+        """Look up a live command, refusing a compacted command_id explicitly (#3123).
+
+        A compacted terminal command is not "not found": its id was used and its
+        sequence is consumed. Reporting a plain not-found would invite the
+        caller to enqueue the id again as if it were fresh.
+        """
+        command = self._commands.get(command_id)
+        if command is not None:
+            return command
+        if command_id in self._compacted_commands:
+            raise ControlPlaneContractError(
+                "broker_command_history_compacted",
+                "command_id belongs to a compacted terminal command and can no longer be resolved",
+            )
+        raise ControlPlaneContractError("broker_command_not_found", "command was not found")
+
     def enqueue_command(
         self,
         *,
@@ -510,6 +579,16 @@ class InMemoryLocalAgentBrokerAuthority:
                 tool_request_ref=tool_request_ref,
                 request_fingerprint=request_fingerprint,
                 ttl_seconds=ttl_seconds,
+            )
+        if command_id in self._compacted_commands:
+            # #3123: the record was terminal and past retention, so the #3118
+            # canonical-record recovery is no longer available — but the id
+            # stays consumed. Re-enqueueing would mint a fresh sequence and a
+            # second execution under a used id, which is the exact hazard the
+            # duplicate contract exists to prevent. Fail closed, explicitly.
+            raise ControlPlaneContractError(
+                "broker_command_history_compacted",
+                "command_id belongs to a compacted terminal command and is never re-enqueueable",
             )
         ttl = _ttl("ttl_seconds", ttl_seconds, minimum=1, maximum=MAX_COMMAND_TTL_SECONDS)
         sequence = self._last_sequence_by_binding.get(binding.binding_ref, 0) + 1
@@ -613,10 +692,7 @@ class InMemoryLocalAgentBrokerAuthority:
         binding = self._authenticate(binding_ref, credential, now=now)
         session = self._session(session_id, binding=binding, now=now)
         command_id = _ref("command_id", command_id)
-        try:
-            command = self._commands[command_id]
-        except KeyError as exc:
-            raise ControlPlaneContractError("broker_command_not_found", "command was not found") from exc
+        command = self._live_command(command_id)
         if command.binding_ref != binding.binding_ref:
             raise ControlPlaneContractError("broker_command_scope_mismatch", "command does not belong to this device binding")
         if command.credential_generation != binding.credential_generation:
@@ -681,10 +757,7 @@ class InMemoryLocalAgentBrokerAuthority:
         binding = self._authenticate(binding_ref, credential, now=now)
         session = self._session(session_id, binding=binding, now=now)
         command_id = _ref("command_id", command_id)
-        try:
-            command = self._commands[command_id]
-        except KeyError as exc:
-            raise ControlPlaneContractError("broker_command_not_found", "command was not found") from exc
+        command = self._live_command(command_id)
         if command.credential_generation != binding.credential_generation:
             raise ControlPlaneContractError("stale_broker_command_generation", "command belongs to a stale credential generation")
         if command.state is BrokerCommandState.ACKNOWLEDGED:
@@ -776,10 +849,7 @@ class InMemoryLocalAgentBrokerAuthority:
         binding = self._authenticate(binding_ref, credential, now=now)
         self._session(session_id, binding=binding, now=now)
         command_id = _ref("command_id", command_id)
-        try:
-            command = self._commands[command_id]
-        except KeyError as exc:
-            raise ControlPlaneContractError("broker_command_not_found", "command was not found") from exc
+        command = self._live_command(command_id)
         if command.binding_ref != binding.binding_ref:
             raise ControlPlaneContractError("broker_command_scope_mismatch", "command does not belong to this device binding")
         if command.credential_generation != binding.credential_generation:
@@ -887,6 +957,174 @@ class InMemoryLocalAgentBrokerAuthority:
             raise ControlPlaneContractError("broker_ack_conflict", "acknowledgement retry does not match the persisted acknowledged command")
         return command
 
+    def compact_terminal_history(
+        self,
+        *,
+        now: datetime,
+        retention_seconds: int = TERMINAL_RETENTION_SECONDS,
+    ) -> int:
+        """Compact terminal commands past retention into correlation tombstones (#3123).
+
+        This is the bounded-state path the wire limit cannot provide by itself:
+        without it, every enqueued command persists forever and a long-lived
+        binding eventually hits the wire/state collection bound, where every
+        mutation fails to encode and the authority wedges permanently.
+
+        What it removes — and the exact reason each removal is safe:
+
+        * **ACKNOWLEDGED** commands whose `acknowledged_at` is past the
+          retention horizon. The execution result was recorded and served; the
+          #3118 exact-retry recovery window has closed, and a later retry now
+          gets an explicit `broker_command_history_compacted` refusal rather
+          than a second execution.
+        * **EXPIRED** commands whose hard deadline is past the horizon. The
+          #3121 reconciliation outcome was recorded; like the acknowledged
+          case, the correlation is kept as a tombstone, the execution facts
+          were already absent by contract.
+        * **Sessions** whose `expires_at` has passed the same horizon. An
+          expired session is already refused by `_session`; removing it cannot
+          resurrect anything, and session records otherwise accumulate at the
+          same rate as commands.
+
+        What it never removes: **QUEUED** commands (active work), **ADMITTED**
+        commands (unresolved reconciliation evidence, however long overdue —
+        only the #3121 reconciliation exit may move them), **REVOKED or active
+        bindings**, and the sequence watermark. Retention never touches
+        `_last_sequence_by_binding`: monotonicity is a watermark property, not a
+        persisted-history property.
+
+        Each compacted command leaves a `BrokerCompactedCommand` tombstone that
+        keeps rejecting the id. Tombstones are the retention residue and are
+        budgeted by `MAX_COMPACTION_TOMBSTONES`; when the budget fills, the
+        contiguous per-binding prefix folds into `compacted_through_by_binding`
+        and, if room is still needed, the deepest tombstones are forgotten
+        first — so the endgame state is O(active commands + recent tombstone
+        window + watermarks) instead of O(all history), and the ids a retry
+        could realistically still present stay individually rejected.
+
+        Returns the number of records compacted.
+        """
+        now = _aware("now", now)
+        if isinstance(retention_seconds, bool) or not isinstance(retention_seconds, int):
+            raise ControlPlaneContractError("invalid_local_agent_broker_ttl", "retention_seconds must be an integer")
+        if not 1 <= retention_seconds <= MAX_TERMINAL_RETENTION_SECONDS:
+            raise ControlPlaneContractError(
+                "invalid_local_agent_broker_ttl",
+                f"retention_seconds must be between 1 and {MAX_TERMINAL_RETENTION_SECONDS}",
+            )
+        horizon = timedelta(seconds=retention_seconds)
+        eligible: list[BrokerCommandRecord] = []
+        for command in self._commands.values():
+            if command.state is BrokerCommandState.QUEUED or command.state is BrokerCommandState.ADMITTED:
+                # Active work and unresolved reconciliation evidence are never
+                # evicted, whatever their age. Only the canonical paths (#3121
+                # reconciliation, acknowledgement) may move them to terminal.
+                continue
+            if command.state is BrokerCommandState.ACKNOWLEDGED:
+                terminal_at = command.acknowledged_at
+            else:  # EXPIRED — the reconciliation fact is the hard deadline itself.
+                terminal_at = command.expires_at
+            if terminal_at is not None and now >= terminal_at + horizon:
+                eligible.append(command)
+        eligible.sort(key=lambda item: (item.binding_ref, item.sequence))
+
+        # Expired sessions first: they are pure garbage and their removal is
+        # what keeps the sessions collection bounded alongside commands.
+        for session_id in [
+            session_id
+            for session_id, session in self._sessions.items()
+            if now >= session.expires_at + horizon
+        ]:
+            del self._sessions[session_id]
+
+        compacted = 0
+        for command in eligible:
+            if command.command_id in self._compacted_commands:
+                continue
+            if len(self._compacted_commands) >= MAX_COMPACTION_TOMBSTONES:
+                # Budget full: fold first, which frees the contiguous prefix in
+                # one step. If tombstones still have no room, forget the single
+                # oldest tombstone — the deepest history — so retention keeps
+                # moving and the recent id window stays intact. Without this,
+                # a stalled fold (one live command blocking the prefix) would
+                # re-grow the record collection back into the wedge.
+                self._fold_contiguous_compaction_prefix()
+            while self._compacted_commands and len(self._compacted_commands) >= MAX_COMPACTION_TOMBSTONES:
+                oldest = min(
+                    self._compacted_commands.values(),
+                    key=lambda item: (item.binding_ref, item.sequence),
+                )
+                del self._compacted_commands[oldest.command_id]
+            if len(self._compacted_commands) >= MAX_COMPACTION_TOMBSTONES:
+                # A non-positive budget leaves no tombstone room at all:
+                # compaction cannot proceed and must say so rather than
+                # forget a record without keeping any correlation.
+                break
+            self._compacted_commands[command.command_id] = BrokerCompactedCommand(
+                command_id=command.command_id,
+                binding_ref=command.binding_ref,
+                sequence=command.sequence,
+            )
+            del self._commands[command.command_id]
+            compacted += 1
+        # Deliberately no trailing fold here: folding absorbs tombstones into
+        # the prefix watermark, which is budget relief, not routine cleanup.
+        # An eager fold would erase the recent-id tombstone window on every
+        # pass and gut duplicate rejection for compacted ids. Tombstones
+        # therefore persist until the budget needs the room (see the loop
+        # above), and the fold then reclaims the contiguous prefix in one step.
+        return compacted
+
+    def _fold_contiguous_compaction_prefix(self) -> None:
+        """Fold contiguous tombstone prefixes into the per-binding watermark (#3123).
+
+        Sequences are minted contiguously per binding (`last + 1`, never
+        reused), so every sequence `1..k` of a binding was minted exactly once.
+        When tombstones cover `1..k` and no live command does, that prefix
+        carries no remaining correlation that a tombstone list is needed for:
+        the watermark already proves the sequences are consumed. Folding drops
+        those tombstones and records `compacted_through[binding] = k`, keeping
+        the tombstone collection proportional to the recent window instead of
+        all history.
+
+        The trade is explicit and deliberate: a command_id inside the folded
+        prefix is no longer individually rejected, so a re-enqueue of such an
+        id would be treated as new. Folding only happens to prefixes that are
+        entirely terminal-compacted — thousands of commands deep, all older
+        than the retention horizon — while the most recent
+        `MAX_COMPACTION_TOMBSTONES` ids stay individually rejected, which
+        covers every realistic #3118/#3121 retry horizon. What is never
+        traded away: sequence monotonicity (the watermark is untouched), no
+        sequence reuse, no reopen, and live/unresolved records never folding.
+        """
+        tombstones_by_binding: dict[str, dict[int, str]] = {}
+        for command_id, tombstone in self._compacted_commands.items():
+            tombstones_by_binding.setdefault(tombstone.binding_ref, {})[tombstone.sequence] = command_id
+        for binding_ref, sequences in tombstones_by_binding.items():
+            start = self._compacted_through_by_binding.get(binding_ref, 0)
+            folded_through = start
+            while (folded_through + 1) in sequences:
+                folded_through += 1
+            if folded_through <= start:
+                continue
+            watermark = self._last_sequence_by_binding.get(binding_ref, 0)
+            if folded_through > watermark:
+                # Unreachable by construction (tombstones are minted
+                # sequences), but the fold must never claim beyond the
+                # watermark, so it is checked rather than assumed.
+                continue
+            blocking = any(
+                command.binding_ref == binding_ref and command.sequence <= folded_through
+                for command in self._commands.values()
+            )
+            if blocking:
+                # A live record below the fold would mean a sequence was
+                # re-minted; refuse the fold rather than paper over it.
+                continue
+            for sequence in range(start + 1, folded_through + 1):
+                del self._compacted_commands[sequences[sequence]]
+            self._compacted_through_by_binding[binding_ref] = folded_through
+
 
 SERVER_SIDE_LOCAL_AGENT_BROKER_AUTHORITY = True
 KEYED_DEVICE_CREDENTIAL_DIGEST_ONLY = True
@@ -944,3 +1182,22 @@ RECONCILIATION_ALLOWABLE_STATES = frozenset({BrokerCommandState.ADMITTED})
 RECONCILIATION_TERMINAL_STATES = frozenset({BrokerCommandState.ACKNOWLEDGED, BrokerCommandState.EXPIRED})
 RAW_CREDENTIAL_LOG = False
 MAX_BOUNDED_EXIT_CODE = MAX_BOUNDED_EXIT_CODE
+
+# --- issue #3123: bounded terminal history without losing sequence authority -
+TERMINAL_HISTORY_COMPACTION_PATH = True
+ACTIVE_COMMAND_EVICTION = False
+ADMITTED_COMMAND_EVICTION = False
+UNRESOLVED_RECONCILIATION_EVICTION = False
+LIVE_SESSION_EVICTION = False
+LAST_SEQUENCE_MONOTONIC = True
+SEQUENCE_REUSE = False
+COMPACTION_ADVANCES_WATERMARK = False
+COMPACTION_DROPS_SEQUENCE_AUTHORITY = False
+COMPACTION_FORGETS_RECENT_COMMAND_IDS = False
+COMPACTION_REOPEN_TERMINAL = False
+COMPACTION_FABRICATES_EXECUTION_FACT = False
+BROKER_STATE_PERMANENT_WEDGE = False
+STATE_PRESSURE_FAILS_CLOSED = True
+COMPACTION_TOMBSTONE_BUDGETED = True
+COMPACTION_FOLD_PREFIX_ONLY = True
+MAX_COMPACTION_TOMBSTONE_BUDGET = MAX_COMPACTION_TOMBSTONES

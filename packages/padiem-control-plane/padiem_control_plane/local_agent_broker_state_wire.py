@@ -10,6 +10,7 @@ from .local_agent_broker import (
     BrokerBindingState,
     BrokerCommandRecord,
     BrokerCommandState,
+    BrokerCompactedCommand,
     BrokerDeviceBinding,
     BrokerDeviceSession,
 )
@@ -19,9 +20,14 @@ from .local_agent_broker_state import (
     VersionedLocalAgentBrokerState,
 )
 
-BROKER_STATE_WIRE_VERSION = "padiem.local-agent-broker-state-wire.v2"
+BROKER_STATE_WIRE_VERSION = "padiem.local-agent-broker-state-wire.v3"
 MAX_BROKER_STATE_WIRE_BYTES = 8 * 1024 * 1024
 MAX_BROKER_STATE_COLLECTION_ITEMS = 10_000
+
+# #3123: wire v3 adds the compaction collections. v2 state written before
+# compaction existed is still decoded — a durable object holding v2 state must
+# survive restart and upgrade on its next write — and every new write is v3.
+_LEGACY_WIRE_VERSIONS = frozenset({"padiem.local-agent-broker-state-wire.v2"})
 
 _TOP_KEYS = frozenset(
     {
@@ -32,8 +38,11 @@ _TOP_KEYS = frozenset(
         "sessions",
         "commands",
         "last_sequence_by_binding",
+        "compacted_commands",
+        "compacted_through_by_binding",
     }
 )
+_LEGACY_TOP_KEYS = _TOP_KEYS - {"compacted_commands", "compacted_through_by_binding"}
 _BINDING_KEYS = frozenset(
     {
         "binding_ref",
@@ -83,6 +92,7 @@ _COMMAND_KEYS = frozenset(
     }
 )
 _SEQUENCE_KEYS = frozenset({"binding_ref", "sequence"})
+_COMPACTION_TOMBSTONE_KEYS = frozenset({"command_id", "binding_ref", "sequence"})
 
 
 def _wire_error(code: str, message: str) -> ControlPlaneContractError:
@@ -214,6 +224,14 @@ def _command_wire(value: BrokerCommandRecord) -> dict[str, Any]:
     }
 
 
+def _compaction_tombstone_wire(value: BrokerCompactedCommand) -> dict[str, Any]:
+    return {
+        "command_id": value.command_id,
+        "binding_ref": value.binding_ref,
+        "sequence": value.sequence,
+    }
+
+
 class LocalAgentBrokerStateJsonCodec:
     """Deterministic, closed JSON wire codec for trusted broker authority state."""
 
@@ -225,6 +243,8 @@ class LocalAgentBrokerStateJsonCodec:
             ("sessions", snapshot.sessions),
             ("commands", snapshot.commands),
             ("last_sequence_by_binding", snapshot.last_sequence_by_binding),
+            ("compacted_commands", snapshot.compacted_commands),
+            ("compacted_through_by_binding", snapshot.compacted_through_by_binding),
         ):
             if len(collection) > MAX_BROKER_STATE_COLLECTION_ITEMS:
                 raise _wire_error("local_agent_broker_state_wire_too_large", f"{label} exceeds collection bound")
@@ -238,6 +258,13 @@ class LocalAgentBrokerStateJsonCodec:
             "last_sequence_by_binding": [
                 {"binding_ref": binding_ref, "sequence": sequence}
                 for binding_ref, sequence in snapshot.last_sequence_by_binding
+            ],
+            "compacted_commands": [
+                _compaction_tombstone_wire(item) for item in snapshot.compacted_commands
+            ],
+            "compacted_through_by_binding": [
+                {"binding_ref": binding_ref, "sequence": through}
+                for binding_ref, through in snapshot.compacted_through_by_binding
             ],
         }
         encoded = json.dumps(
@@ -262,8 +289,16 @@ class LocalAgentBrokerStateJsonCodec:
             raise _wire_error("invalid_local_agent_broker_state_wire", "serialized broker state must be UTF-8 JSON") from exc
         except json.JSONDecodeError as exc:
             raise _wire_error("invalid_local_agent_broker_state_wire", "serialized broker state must be valid JSON") from exc
-        top = _closed(decoded, _TOP_KEYS, "broker state wire")
-        if top["wire_version"] != BROKER_STATE_WIRE_VERSION:
+        # #3123: v3 carries the compaction collections; legacy v2 does not and
+        # decodes with them empty, so durable state written before compaction
+        # survives restart and is upgraded to v3 on its next write.
+        if decoded.get("wire_version") == BROKER_STATE_WIRE_VERSION:
+            top = _closed(decoded, _TOP_KEYS, "broker state wire")
+            has_compaction = True
+        elif decoded.get("wire_version") in _LEGACY_WIRE_VERSIONS:
+            top = _closed(decoded, _LEGACY_TOP_KEYS, "broker state wire")
+            has_compaction = False
+        else:
             raise _wire_error("unsupported_local_agent_broker_state_wire", "unsupported broker state wire version")
         if top["snapshot_schema_version"] != BROKER_STATE_SCHEMA_VERSION:
             raise _wire_error("unsupported_local_agent_broker_state", "unsupported broker snapshot schema version")
@@ -347,12 +382,35 @@ class LocalAgentBrokerStateJsonCodec:
                 )
             )
 
+        compacted_commands: list[BrokerCompactedCommand] = []
+        compacted_through: list[tuple[str, int]] = []
+        if has_compaction:
+            for raw in _array(top["compacted_commands"], "compacted_commands"):
+                item = _closed(raw, _COMPACTION_TOMBSTONE_KEYS, "broker compaction tombstone wire")
+                compacted_commands.append(
+                    BrokerCompactedCommand(
+                        command_id=_text(item["command_id"], "compacted command_id"),
+                        binding_ref=_text(item["binding_ref"], "compacted binding_ref"),
+                        sequence=_positive_int(item["sequence"], "compacted sequence"),
+                    )
+                )
+            for raw in _array(top["compacted_through_by_binding"], "compacted_through_by_binding"):
+                item = _closed(raw, _SEQUENCE_KEYS, "broker compaction prefix wire")
+                compacted_through.append(
+                    (
+                        _text(item["binding_ref"], "compaction prefix binding_ref"),
+                        _positive_int(item["sequence"], "compaction prefix sequence"),
+                    )
+                )
+
         return LocalAgentBrokerStateSnapshot(
             authority_ref=authority_ref,
             bindings=tuple(bindings),
             sessions=tuple(sessions),
             commands=tuple(commands),
             last_sequence_by_binding=tuple(sequence_entries),
+            compacted_commands=tuple(compacted_commands),
+            compacted_through_by_binding=tuple(compacted_through),
             schema_version=top["snapshot_schema_version"],
         )
 
@@ -364,6 +422,8 @@ class LocalAgentBrokerStateJsonCodec:
             "duplicate_json_key_rejected": True,
             "max_wire_bytes": MAX_BROKER_STATE_WIRE_BYTES,
             "max_collection_items": MAX_BROKER_STATE_COLLECTION_ITEMS,
+            "legacy_wire_versions_decoded": sorted(_LEGACY_WIRE_VERSIONS),
+            "compaction_collections_included": True,
             "raw_device_credential_serialized": False,
             "credential_digest_safe_projection": False,
             "pickle_or_arbitrary_object_deserialization": False,
