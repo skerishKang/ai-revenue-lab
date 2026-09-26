@@ -13,9 +13,12 @@ on:
       - 'packages/padiem-ai-core/tests/test_image_helpers_3037.py'
       - 'packages/padiem-ai-core/pyproject.toml'
       # KAgent cross-contract tests consume the Local Agent broker family, so any
-      # broker module change must run this lane. A narrow two-file allowlist missed
-      # pairing/admission/state modules and could leave byte/correlation contracts
-      # untested on PRs that changed only Control Plane source.
+      # broker module change must run this lane. The two literal entries below are
+      # required individually: `test_tier_route_consumer_coverage` asserts the
+      # exact strings, not the glob. The glob then extends the trigger to the
+      # pairing / admission / state modules that the literal pair would miss.
+      - 'packages/padiem-control-plane/padiem_control_plane/local_agent_broker.py'
+      - 'packages/padiem-control-plane/padiem_control_plane/local_agent_broker_rpc.py'
       - 'packages/padiem-control-plane/padiem_control_plane/local_agent_broker*.py'
       # Claw derives its P01 model policy from the shared product-tier declaration,
       # so a declaration change has to run this suite even when no Claw file moves.
