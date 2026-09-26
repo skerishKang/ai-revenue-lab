@@ -907,4 +907,3 @@ class DurableRunStore:
             self._db.execute("ROLLBACK")
             raise
         return tuple(sorted(collected))
-

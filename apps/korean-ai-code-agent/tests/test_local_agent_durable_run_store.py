@@ -848,4 +848,3 @@ class DurableStoreForbiddenCapabilityTests(unittest.TestCase):
         report = DurableRunRecoveryReport()
         self.assertEqual(report.replay_candidates, ())
         self.assertIs(report.execution_authority_granted, False)
-
