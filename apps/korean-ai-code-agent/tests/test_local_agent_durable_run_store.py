@@ -858,10 +858,6 @@ class DurableStoreForbiddenCapabilityTests(unittest.TestCase):
         report = DurableRunRecoveryReport()
         self.assertEqual(report.replay_candidates, ())
         self.assertIs(report.execution_authority_granted, False)
-    def test_q23_recovery_never_returns_a_replay_candidate(self) -> None:
-        report = DurableRunRecoveryReport()
-        self.assertEqual(report.replay_candidates, ())
-        self.assertIs(report.execution_authority_granted, False)
 
     def test_q24_no_second_fingerprint_authority_in_the_store(self) -> None:
         # The canonical fingerprint authority is `BrokerCommandRecord.request_fingerprint`
