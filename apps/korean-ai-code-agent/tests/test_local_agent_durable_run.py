@@ -14,6 +14,8 @@ from kagent.local_agent_durable_run import (
     JOB_OBJECT_TREE_REAPED_ON_RUNNER_DEATH,
     LOCAL_EXECUTION_TERMINALITY,
     LOCAL_LEASE_EXTENSION,
+    LOCAL_MINT_REVISION,
+    LOCAL_PARSE_REVISION,
     MAX_EVIDENCE_ITEMS,
     MAX_EVIDENCE_SUMMARY_CHARS,
     P01_EVIDENCE_AUTHORITY_DUPLICATED,
@@ -21,6 +23,12 @@ from kagent.local_agent_durable_run import (
     PROCESS_PID_AUTHORITY,
     RECONCILIATION_PROJECTED_ONTO_WIRE,
     REQUEST_FINGERPRINT_RECOMPUTED,
+    REVISION_AUTHORITY,
+    REVISION_FIELD,
+    REVISION_SEMANTICS,
+    SECOND_REVISION_AUTHORITY,
+    SEQUENCE_IS_BROKER_ORDERING_AUTHORITY,
+    SEQUENCE_USED_AS_REVISION,
     SIDE_EFFECT_REPLAY_SUPPORTED,
     STORE_REISSUES_CREDENTIAL,
     TERMINAL_WITHOUT_ACK_IS_RETAINED,
@@ -37,6 +45,9 @@ from kagent.windows_local_executor import command_request_fingerprint
 
 NOW = datetime(2026, 9, 26, 8, 0, tzinfo=timezone.utc)
 FINGERPRINT = "a" * 64
+#: A server-owned opaque revision correlation. It is copied verbatim and is never
+#: parsed for an ordering meaning locally.
+REVISION = "revision.7f3c1a9e"
 
 
 def record(**overrides) -> DurableRunRecord:
@@ -45,6 +56,7 @@ def record(**overrides) -> DurableRunRecord:
         run_id="run.1",
         tool_request_ref="tool-request.1",
         request_id="request.1",
+        revision_ref=REVISION,
         device_id="device.1",
         binding_ref="pairing-binding." + "a" * 32,
         session_id="session.1",
@@ -112,17 +124,53 @@ class DurableRunCorrelationTests(unittest.TestCase):
         self.assertEqual(stored.tool_request_ref, "tool-request.1")
         self.assertEqual(stored.request_id, "request.1")
 
-    def test_r3_sequence_is_the_only_ordering_authority(self) -> None:
+    def test_r3_sequence_remains_the_broker_ordering_authority(self) -> None:
+        # `sequence` is copied from `BrokerCommandRecord.sequence` and keeps its
+        # canonical broker ordering/replay meaning. It is a *different* dimension
+        # from `revision_ref` and is never substituted for one.
+        self.assertTrue(SEQUENCE_IS_BROKER_ORDERING_AUTHORITY)
+        self.assertFalse(SEQUENCE_USED_AS_REVISION)
         self.assertEqual(record(sequence=1).sequence, 1)
         for bad in (0, -1, True, 1.0, "1"):
             with self.subTest(bad=bad):
                 with self.assertRaises(ContractError):
                     record(sequence=bad)
 
-    def test_r3_record_exposes_no_separate_revision_field(self) -> None:
+    def test_r3_revision_ref_is_the_required_opaque_correlation(self) -> None:
+        # The final merged #3080 contract is `REVISION_FIELD=revision_ref`,
+        # `REVISION_AUTHORITY=SERVER_ONLY`, `REVISION_SEMANTICS=OPAQUE_CORRELATION_ONLY`.
+        self.assertEqual(REVISION_FIELD, "revision_ref")
+        self.assertEqual(REVISION_AUTHORITY, "server_only")
+        self.assertEqual(REVISION_SEMANTICS, "opaque_correlation_only")
+
         fields = set(DurableRunRecord.__dataclass_fields__)
-        self.assertNotIn("revision", fields)
+        self.assertIn("revision_ref", fields)
         self.assertIn("sequence", fields)
+        # A locally minted *revision* is still forbidden: `revision_ref` is the
+        # opaque server correlation and `sequence` is not a revision field.
+        self.assertNotIn("revision", fields)
+
+        # Copied verbatim, and never minted/parsed/ordered locally.
+        self.assertEqual(record().revision_ref, REVISION)
+        self.assertEqual(record(revision_ref="revision.other-9").revision_ref, "revision.other-9")
+        self.assertFalse(LOCAL_MINT_REVISION)
+        self.assertFalse(LOCAL_PARSE_REVISION)
+        self.assertEqual(SECOND_REVISION_AUTHORITY, 0)
+
+    def test_r3_revision_ref_is_required_and_bounded(self) -> None:
+        for bad in (None, "", "revision 1", "-revision", "x" * 600):
+            with self.subTest(bad=bad):
+                with self.assertRaises(ContractError):
+                    record(revision_ref=bad)
+
+    def test_r3_revision_ref_carries_no_local_ordering_semantics(self) -> None:
+        # The same revision ref may legitimately appear on two different broker
+        # sequences, and a higher sequence says nothing about a "newer" revision:
+        # that ordering stays with the server.
+        lower = record(revision_ref=REVISION, sequence=1)
+        higher = record(revision_ref=REVISION, sequence=99)
+        self.assertEqual(lower.revision_ref, higher.revision_ref)
+        self.assertNotEqual(lower.sequence, higher.sequence)
 
     def test_r9_credential_generation_must_be_positive(self) -> None:
         self.assertEqual(record(credential_generation=1).credential_generation, 1)

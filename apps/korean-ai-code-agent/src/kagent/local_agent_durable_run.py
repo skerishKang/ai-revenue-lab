@@ -1,10 +1,11 @@
-"""Desktop durable Local Runner run record — issue #3082, slice 1 (contract only).
+"""Desktop durable Local Runner run record — issue #3082, slice 1 (record contract).
 
 This module is the Desktop-side durable record contract for one admitted local
 command. It is deliberately **pure**: no SQLite, no clock reads, no process
-handling, no network. Slice 1 fixes the record shape, the state machine and the
-fail-closed invariants so that the durable store (slice 2) and the restart
-recovery planner (slice 3) have one canonical vocabulary to build on.
+handling, no network. It fixes the record shape, the state machine and the
+fail-closed invariants so that the durable store
+(`kagent.local_agent_durable_run_store`) and its restart recovery have one
+canonical vocabulary to build on.
 
 What this module is NOT (P0 guardrails, unchanged):
 
@@ -19,12 +20,30 @@ What this module is NOT (P0 guardrails, unchanged):
 
 CENTRAL decisions encoded here (issue #3082):
 
+* **R3** — the canonical #3080 revision is the **opaque `revision_ref`**, and it
+  is a *required* correlation field copied from
+  `BrokerCommandRecord.revision_ref` / `BrokerCommandResult.revision_ref`. The
+  store never mints one, never parses one, never increments one and never
+  derives ordering from it: it is correlation only. `sequence` remains the
+  broker ordering/replay authority and is a *different* dimension — the two are
+  never mixed, compared or substituted for one another, and neither is a second
+  revision authority. An earlier revision of this module wrongly claimed "#3080
+  has no revision field"; the final merged #3080 contract
+  (`REVISION_FIELD=revision_ref`, `REVISION_AUTHORITY=SERVER_ONLY`,
+  `LOCAL_MINT_REVISION=NO`) is the authority and this module now matches it.
 * **R4** — `request_fingerprint` is stored verbatim and compared. It is never
   recomputed and never generated. The local command path's fingerprint authority
   remains `command_request_fingerprint(LocalCommandRequest)`
   (`kagent.windows_local_executor`), and the broker field remains
   `BrokerCommandRecord.request_fingerprint`. This module adds no second
   fingerprint authority and no `fingerprint_algorithm` field.
+* **R12** — the bounded result metadata is the canonical #3080 return contract:
+  `command_id`, `run_id`, `tool_request_ref`, `request_id`, `revision_ref`,
+  `request_fingerprint`, `admission_ref`, `evidence_ref`, `termination`,
+  `exit_code`. `exit_code` is a bounded `int | None` using the same
+  `MIN_BOUNDED_EXIT_CODE`/`MAX_BOUNDED_EXIT_CODE` range the broker applies, and
+  it is a *result* fact: only a locally terminal `EXITED` run may carry one.
+  Raw stdout, stderr, argv, file content and credentials remain unrepresentable.
 * **R6** — `command_expires_at` is a **hard deadline**. There is no renewal,
   extension or lease method anywhere in this module, and a record whose deadline
   has passed can only ever be reconciled to `TERMINAL/EXPIRED`, never back to a
@@ -98,6 +117,25 @@ def _generation(value: Any, field_name: str = "credential_generation") -> int:
 
 def _iso(value: datetime) -> str:
     return _aware(value, "timestamp").isoformat().replace("+00:00", "Z")
+
+
+#: Same bounds the canonical #3080 `BrokerCommandRecord`/`BrokerCommandResult`
+#: apply (`MIN_BOUNDED_EXIT_CODE`/`MAX_BOUNDED_EXIT_CODE`). The store re-checks
+#: the canonical bound and never widens it; it does not define a second range.
+MAX_BOUNDED_EXIT_CODE = 2_147_483_647
+MIN_BOUNDED_EXIT_CODE = -2_147_483_647
+
+
+def _bounded_exit_code(value: Any) -> int | None:
+    """Accept only a bounded process exit status, or the explicit null result."""
+
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ContractError("exit_code must be an integer or null")
+    if not MIN_BOUNDED_EXIT_CODE <= value <= MAX_BOUNDED_EXIT_CODE:
+        raise ContractError("exit_code must be a bounded process exit status")
+    return value
 
 
 class DurableRunState(str, Enum):
@@ -249,18 +287,24 @@ class DurableRunRecord:
     payload, argv, stdout/stderr or file content is representable.
     """
 
-    # --- correlation (R1/R2): copied from the canonical #3080 contracts ---
+    # --- correlation (R1/R2/R3): copied from the canonical #3080 contracts ---
     command_id: str
     run_id: str
     tool_request_ref: str
     request_id: str
+    #: R3 — the server-owned opaque revision correlation. Required, copied
+    #: verbatim, never minted/parsed/incremented here and never used for
+    #: ordering. `sequence` below is the broker ordering/replay authority and is
+    #: deliberately a different dimension from this field.
+    revision_ref: str
     device_id: str
     binding_ref: str
     session_id: str
     account_ref: str
     workspace_ref: str
-    #: R3 — the canonical #3080 ordering authority. There is no separate
-    #: `revision` field; a second ordering authority is forbidden.
+    #: R3 — broker ordering/replay authority (copied from
+    #: `BrokerCommandRecord.sequence`). This is NOT a revision and must never be
+    #: used as one.
     sequence: int
     #: R9 — must correlate with the device binding's credential generation.
     credential_generation: int
@@ -284,6 +328,14 @@ class DurableRunRecord:
     #: R8 — the orthogonal server fact. ``None`` means "not acknowledged (yet)",
     #: which never reopens a terminal record and never enables a replay.
     server_acknowledged_at: datetime | None = None
+    #: R5 — the server-issued admission reference for this run. Copied from
+    #: `BrokerCommandRecord.admission_ref` / `BrokerCommandAdmission.admission_ref`
+    #: and never minted here. ``None`` before admission is durably recorded.
+    admission_ref: str | None = None
+    #: Bounded result metadata, matching `BrokerCommandResult.exit_code`. This is
+    #: the whole of the exit-status fact: no stdout, stderr, argv or file content
+    #: is representable anywhere in this record.
+    exit_code: int | None = None
 
     offline_state: DurableRunOfflineState = DurableRunOfflineState.IDLE
     evidence: BoundedEvidenceProjection = BoundedEvidenceProjection()
@@ -294,6 +346,7 @@ class DurableRunRecord:
             "run_id",
             "tool_request_ref",
             "request_id",
+            "revision_ref",
             "device_id",
             "binding_ref",
             "session_id",
@@ -301,6 +354,9 @@ class DurableRunRecord:
             "workspace_ref",
         ):
             object.__setattr__(self, name, _ref(getattr(self, name), name))
+        if self.admission_ref is not None:
+            object.__setattr__(self, "admission_ref", _ref(self.admission_ref, "admission_ref"))
+        object.__setattr__(self, "exit_code", _bounded_exit_code(self.exit_code))
         object.__setattr__(self, "sequence", _sequence(self.sequence))
         object.__setattr__(self, "credential_generation", _generation(self.credential_generation))
         object.__setattr__(self, "request_fingerprint", _digest(self.request_fingerprint, "request_fingerprint"))
@@ -377,6 +433,15 @@ class DurableRunRecord:
                 # command's life through a second dimension (R6/R8 violation).
                 raise ContractError("server acknowledgement cannot follow the command hard deadline")
 
+        # `exit_code` is a *result* fact, so it may only appear once the run is
+        # locally terminal. Recording an exit status on a still-running record
+        # would be a fabricated local observation.
+        if self.exit_code is not None and self.state is not DurableRunState.TERMINAL:
+            raise ContractError("a non-terminal record cannot carry exit_code")
+        if self.termination is not DurableRunTermination.EXITED and self.exit_code is not None:
+            # Only a process that actually ran to its own exit status carries one.
+            raise ContractError("only an EXITED termination can carry an exit_code")
+
     # --- derived facts -------------------------------------------------------
 
     @property
@@ -415,6 +480,7 @@ class DurableRunRecord:
             "run_id": self.run_id,
             "tool_request_ref": self.tool_request_ref,
             "request_id": self.request_id,
+            "revision_ref": self.revision_ref,
             "device_id": self.device_id,
             "binding_ref": self.binding_ref,
             "session_id": self.session_id,
@@ -434,6 +500,8 @@ class DurableRunRecord:
             "server_acknowledged_at": (
                 _iso(self.server_acknowledged_at) if self.server_acknowledged_at else None
             ),
+            "admission_ref": self.admission_ref,
+            "exit_code": self.exit_code,
             "offline_state": self.offline_state.value,
             "evidence": self.evidence.safe_dict(),
             "replayable": self.replayable,
@@ -448,6 +516,22 @@ class DurableRunRecord:
 
 
 DURABLE_RUN_CONTRACT_VERSION = "claw-desktop-durable-run.v1"
+
+#: R3 — the revision is the server-owned opaque `revision_ref` correlation, and
+#: `sequence` remains the separate broker ordering/replay authority. The store
+#: mints, parses, increments and orders on neither.
+REVISION_FIELD = "revision_ref"
+REVISION_AUTHORITY = "server_only"
+REVISION_SEMANTICS = "opaque_correlation_only"
+LOCAL_MINT_REVISION = False
+LOCAL_PARSE_REVISION = False
+LOCAL_REVISION_INCREMENT = False
+LOCAL_REVISION_ORDERING = False
+SECOND_REVISION_AUTHORITY = 0
+#: R3 — `sequence` keeps its canonical broker ordering/replay meaning; it is not
+#: a revision and must never be substituted for one.
+SEQUENCE_IS_BROKER_ORDERING_AUTHORITY = True
+SEQUENCE_USED_AS_REVISION = False
 
 #: R4 — reuse of the canonical fingerprint, never a second authority.
 FINGERPRINT_SOURCE_BROKER = "broker"
