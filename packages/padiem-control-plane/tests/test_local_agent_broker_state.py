@@ -261,6 +261,7 @@ def test_admission_and_ack_replay_state_survives_restart() -> None:
         credential=CREDENTIAL_1,
         command_id=command.command_id,
         request_fingerprint=FINGERPRINT_1,
+        request_id="request.state.1",
         now=BASE + timedelta(seconds=3),
     )
 
@@ -274,6 +275,7 @@ def test_admission_and_ack_replay_state_survives_restart() -> None:
             credential=CREDENTIAL_1,
             command_id=command.command_id,
             request_fingerprint=FINGERPRINT_1,
+            request_id="request.state.1",
             now=BASE + timedelta(seconds=4),
         )
     assert replay.value.code == "broker_command_replay"
@@ -285,6 +287,10 @@ def test_admission_and_ack_replay_state_survives_restart() -> None:
         command_id=command.command_id,
         admission_ref=admission.admission_ref,
         evidence_ref=admission.evidence_ref,
+        revision_ref=command.revision_ref,
+        termination="exited",
+        request_id="request.state.1",
+        exit_code=0,
         now=BASE + timedelta(seconds=5),
     )
     assert acknowledged.state.value == "acknowledged"
@@ -298,6 +304,10 @@ def test_admission_and_ack_replay_state_survives_restart() -> None:
             command_id=command.command_id,
             admission_ref=admission.admission_ref,
             evidence_ref=admission.evidence_ref,
+            revision_ref=command.revision_ref,
+            termination="exited",
+            request_id="request.state.1",
+            exit_code=0,
             now=BASE + timedelta(seconds=6),
         )
     assert ack_replay.value.code == "broker_ack_without_admission"

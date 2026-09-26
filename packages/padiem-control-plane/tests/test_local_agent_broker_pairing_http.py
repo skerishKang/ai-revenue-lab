@@ -383,6 +383,7 @@ def test_pairing_and_admission_routes_compose_on_one_edge_handler() -> None:
             "credential_b64": redeemed.body["credential_b64"],
             "command_id": command.command_id,
             "request_fingerprint": command.request_fingerprint,
+            "request_id": "request.pairing.composed.1",
             "now": BASE.isoformat(),
         },
         _auth(principal_ref="device.cli.1"),
@@ -391,6 +392,7 @@ def test_pairing_and_admission_routes_compose_on_one_edge_handler() -> None:
     assert admission.body["ok"] is True
     assert admission.body["admission"]["admission_ref"] == ADMISSION_REF
     assert admission.body["admission"]["evidence_ref"] == EVIDENCE_REF
+    assert admission.body["admission"]["request_id"] == "request.pairing.composed.1"
     assert authority._commands[command.command_id].state.value == "admitted"
 
     unknown = _call(handler, "/v1/broker/unknown", _challenge_payload(), _auth())

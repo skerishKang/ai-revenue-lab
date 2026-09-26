@@ -149,12 +149,14 @@ class ControlPlanePhysicalAdmissionTransport(ControlPlanePhysicalRuntimeTranspor
             command.binding_ref,
             command.sequence,
             observed.request_fingerprint,
+            command.revision_ref,
         )
         actual = (
             resolved.command_id,
             resolved.binding_ref,
             resolved.sequence,
             resolved.request_fingerprint,
+            resolved.revision_ref,
         )
         if actual != expected:
             raise ContractError("broker admission requires exact resolved command material")
@@ -170,6 +172,7 @@ class ControlPlanePhysicalAdmissionTransport(ControlPlanePhysicalRuntimeTranspor
                 "credential_b64": self._credential_b64(binding, now=now),
                 "command_id": command.command_id,
                 "request_fingerprint": observed.request_fingerprint,
+                "request_id": resolved.request.request_id,
                 "now": now.isoformat().replace("+00:00", "Z"),
             },
             timeout_seconds=min(config.poll_timeout_seconds, 30),
@@ -188,6 +191,7 @@ class ControlPlanePhysicalAdmissionTransport(ControlPlanePhysicalRuntimeTranspor
             command=observed,
             expected_authority_ref=self._expected_admission_authority_ref,
             expected_session_id=session.session_id,
+            expected_request_id=resolved.request.request_id,
             now=conformance_now,
         )
 
@@ -272,8 +276,19 @@ class ControlPlaneAdmittedExecutionReceipt:
             "execution": self.execution.safe_dict(),
             "evidence_ref": self.evidence_ref,
             "acknowledged_at": self.acknowledged_at.isoformat().replace("+00:00", "Z"),
+            "revision_ref": self.execution.revision_ref,
+            "termination": self.execution.termination.value,
+            "request_id": self.execution.request_id,
+            "exit_code": self.execution.exit_code,
+            "revision_semantics": "opaque_correlation_only",
             "material_before_admission": True,
             "ack_exact_admission_evidence": True,
+            "ack_revision_ref_opaque_correlation": True,
+            "ack_bounded_termination_returned": True,
+            "ack_request_id_returned": True,
+            "ack_bounded_exit_code_returned": True,
+            "ack_raw_stdout_returned": False,
+            "ack_raw_stderr_returned": False,
             "raw_argv": False,
             "stdout": False,
             "stderr": False,
@@ -363,12 +378,20 @@ class ControlPlaneAdmittedExecutionCoordinator:
         # No acknowledgement is emitted unless the existing execution bridge
         # returned a fully correlated execution receipt.
         ack_now = self._now()
+        if execution.revision_ref != command.revision_ref:
+            raise ContractError("execution revision_ref does not match the polled command envelope")
+        if execution.request_id != resolved.request.request_id:
+            raise ContractError("execution request_id does not match the resolved material request")
         self._channel.acknowledge_admitted(
             binding=binding,
             session=session,
             command_id=command.command_id,
             admission_ref=conformed.evidence.admission_ref,
             evidence_ref=conformed.evidence_ref,
+            revision_ref=execution.revision_ref,
+            termination=execution.termination.value,
+            request_id=execution.request_id,
+            exit_code=execution.exit_code,
             now=ack_now,
         )
         return ControlPlaneAdmittedExecutionReceipt(
@@ -386,6 +409,12 @@ class ControlPlaneAdmittedExecutionCoordinator:
             "windows_authorization_reused": True,
             "ack_exact_admission_evidence": True,
             "ack_on_execution_failure": False,
+            "ack_revision_ref_opaque_correlation": True,
+            "ack_bounded_termination_returned": True,
+            "ack_request_id_returned": True,
+            "ack_bounded_exit_code_returned": True,
+            "ack_raw_stdout_returned": False,
+            "ack_raw_stderr_returned": False,
             "second_replay_sequence_authority": False,
             "second_fingerprint_authority": False,
             "p01_authority_duplicated": False,
@@ -406,9 +435,25 @@ ADMITTED_EXECUTION_BRIDGE_REUSED = True
 WINDOWS_AUTHORIZATION_REUSED = True
 ACK_EXACT_ADMISSION_EVIDENCE = True
 ACK_ON_EXECUTION_FAILURE = False
+ACK_REVISION_REF_OPAQUE_CORRELATION = True
+ACK_BOUNDED_TERMINATION_RETURNED = True
+ACK_REQUEST_ID_RETURNED = True
+ACK_BOUNDED_EXIT_CODE_RETURNED = True
+ACK_RAW_STDOUT_RETURNED = False
+ACK_RAW_STDERR_RETURNED = False
 SECOND_REPLAY_SEQUENCE_AUTHORITY = False
 SECOND_FINGERPRINT_AUTHORITY = False
 P01_AUTHORITY_DUPLICATED = False
+REVISION_CORRELATION = True
+REVISION_CORRELATION_THROUGH_MATERIAL = True
+REQUEST_ID_RETURNED_AND_EXACT = True
+EXIT_CODE_BOUNDED_RETURN = True
+RESULT_RETURN_IS_BOUNDED = True
+RAW_STDOUT_STDERR_RETURNED = False
+RAW_DEVICE_SECRET_RETURNED = False
+CAPABILITY_AUTHORITY_DUPLICATED = False
+TASK_ADMISSION_AUTHORITY_DUPLICATED = False
+REPLAY_AUTHORITY_DUPLICATED = False
 PUBLIC_INBOUND_PORT = False
 LIVE_BROKER_CONFIGURED = False
 LIVE_WINDOWS_ACCEPTANCE = False

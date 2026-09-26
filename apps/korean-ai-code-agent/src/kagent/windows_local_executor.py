@@ -431,11 +431,23 @@ class WindowsSubprocessLocalAgentRuntime:
         stderr_chunks: list[str] = []
         stdout_thread = threading.Thread(target=_drain_bounded, args=(process.stdout, stdout_chunks), daemon=True)
         stderr_thread = threading.Thread(target=_drain_bounded, args=(process.stderr, stderr_chunks), daemon=True)
-        stdout_thread.start()
-        stderr_thread.start()
-
+        # Setup and teardown must share one cleanup region. Starting a drain
+        # thread can itself fail (thread exhaustion, resource pressure) while
+        # the Job-bound child is already live, so an exception raised by
+        # ``Thread.start()`` has to reach the same terminal cleanup that a
+        # timeout or an explicit cancel reaches. Otherwise the request would
+        # stay in ``_active`` forever, the Job handle would never be closed,
+        # and the child tree would outlive the failed setup.
+        #
+        # Only threads that actually started may be joined: joining a thread
+        # whose ``start()`` raised is an error of its own and would replace the
+        # real setup failure with a misleading one.
+        started_threads: list[threading.Thread] = []
         timed_out = False
         try:
+            for drain_thread in (stdout_thread, stderr_thread):
+                drain_thread.start()
+                started_threads.append(drain_thread)
             try:
                 process.wait(timeout=request.timeout_seconds)
             except subprocess.TimeoutExpired:
@@ -447,8 +459,8 @@ class WindowsSubprocessLocalAgentRuntime:
                     process.kill()
                     process.wait(timeout=2)
         finally:
-            stdout_thread.join(timeout=2)
-            stderr_thread.join(timeout=2)
+            for drain_thread in started_threads:
+                drain_thread.join(timeout=2)
             with self._lock:
                 self._active.pop(request.request_id, None)
                 explicitly_cancelled = request.request_id in self._cancelled

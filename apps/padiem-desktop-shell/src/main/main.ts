@@ -23,6 +23,9 @@ import { IPC_CHANNELS, type IpcChannel } from '../contract/ipc.js';
 import { ShellController } from '../supervisor/shell-controller.js';
 import { NodeRunnerProcessPort } from '../supervisor/production-runner-process-port.js';
 import { HeadlessRunnerSupervisor } from '../supervisor/runner-supervisor.js';
+import { registerWindowsProtocolClient } from './protocol-registration.js';
+import { acquireSingleInstanceOwnership } from './single-instance.js';
+import { resolveRunnerHostMode } from './runner-host-mode.js';
 
 const __dirname_ = path.dirname(fileURLToPath(import.meta.url));
 
@@ -42,6 +45,21 @@ export const WINDOW_SECURITY = Object.freeze({
 } as const);
 
 const processPort = new NodeRunnerProcessPort();
+
+/**
+ * #3093 — the runner host is chosen explicitly, never by assuming that
+ * `process.execPath` is Node. Under a packaged Electron build execPath is the
+ * Electron GUI binary, so the runner reuses it in `ELECTRON_RUN_AS_NODE=1`
+ * host mode unless the operator pins `PADIEM_RUNNER_EXECUTABLE` to a dedicated
+ * runner binary. The plain-node branch exists only for source-checkout and
+ * test hosts and is marked as such.
+ */
+export const runnerHostMode = resolveRunnerHostMode({
+  execPath: process.execPath,
+  electronVersion: process.versions.electron,
+  runnerExecutableOverride: process.env.PADIEM_RUNNER_EXECUTABLE,
+  platform: process.platform,
+});
 
 /**
  * M1 shell default: the headless runner is launched from the packaged
@@ -64,10 +82,14 @@ function runnerSpawnSpec(): {
       ? path.join(process.resourcesPath, 'runner')
       : path.join(__dirname_, '..', 'runner');
   return {
-    executablePath: process.env.PADIEM_RUNNER_EXECUTABLE ?? process.execPath,
+    executablePath: runnerHostMode.executablePath,
     args: [path.join(runnerRoot, 'headless-runner.js')],
     cwd: path.join(__dirname_, '..'),
-    env: { PADIEM_SHELL: 'padiem-desktop-shell', PADIEM_RUNNER_ROOT: runnerRoot },
+    env: {
+      PADIEM_SHELL: 'padiem-desktop-shell',
+      PADIEM_RUNNER_ROOT: runnerRoot,
+      ...runnerHostMode.env,
+    },
     shell: false,
     stdio: 'pipe',
   };
@@ -140,6 +162,54 @@ export function registerDeepLinkHandling(): void {
   }
 }
 
+/**
+ * #3093 — Windows protocol registration for the running launch shape.
+ * Packaged builds register the scheme directly; a dev launch (`electron
+ * <app-dir>`, i.e. `process.defaultApp`) must register the Electron binary
+ * together with the app directory argument. Non-Windows registers nothing.
+ */
+export function registerWindowsProtocol(): void {
+  registerWindowsProtocolClient(app, {
+    platform: process.platform,
+    packaged: !defaultAppFlag(),
+    defaultApp: defaultAppFlag(),
+    execPath: process.execPath,
+    appPath: app.getAppPath(),
+  });
+}
+
+function defaultAppFlag(): boolean {
+  return Boolean((process as { defaultApp?: boolean }).defaultApp);
+}
+
+/**
+ * #3093 — single-instance ownership. The first process to claim the lock owns
+ * the `padiem://` handoff; a later launch (which is how Windows delivers a
+ * deep link to a running app) forwards its argv's `padiem://` entry to the
+ * existing bounded intake and wakes the primary window. A non-owner quits
+ * before creating any window or runner, so the shell can never end up with
+ * two supervisors racing for one runner.
+ */
+export function acquireInstanceOwnership(): boolean {
+  const outcome = acquireSingleInstanceOwnership({
+    app,
+    forwardDeepLink: (deepLink) => {
+      void controller.pairingDeepLinkSubmit({ deepLink });
+    },
+    onNotOwner: () => {
+      app.quit();
+    },
+    onSecondInstance: () => {
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        if (mainWindow.isMinimized()) mainWindow.restore();
+        mainWindow.show();
+        mainWindow.focus();
+      }
+    },
+  });
+  return outcome.owner;
+}
+
 let shutdownComplete = false;
 
 /** Electron shutdown path — must never orphan the headless runner. */
@@ -165,12 +235,18 @@ export function installLifecycleHooks(): void {
 
 // Only run when Electron actually provides the runtime (never under `node --test`).
 if (app && typeof app.whenReady === 'function' && process.versions.electron) {
-  void app.whenReady().then(() => {
-    registerIpcHandlers();
-    registerDeepLinkHandling();
-    installLifecycleHooks();
-    createMainWindow();
-  });
+  // #3093: ownership is claimed synchronously before any window or runner can
+  // exist. A non-owner quits immediately, so exactly one shell process per
+  // user session ever supervises a headless runner.
+  if (acquireInstanceOwnership()) {
+    void app.whenReady().then(() => {
+      registerIpcHandlers();
+      registerWindowsProtocol();
+      registerDeepLinkHandling();
+      installLifecycleHooks();
+      createMainWindow();
+    });
+  }
 }
 
 export { mainWindow };

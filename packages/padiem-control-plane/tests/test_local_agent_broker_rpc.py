@@ -93,11 +93,13 @@ def test_rpc_full_broker_lifecycle_never_returns_raw_credential():
         "credential_b64": encoded(),
         "command_id": "command.1",
         "request_fingerprint": FINGERPRINT,
+        "request_id": "request.1",
         "now": (NOW + timedelta(seconds=4)).isoformat(),
     })
     assert admitted["ok"] is True
     assert admitted["admission"]["authority_ref"] == "control-plane.local-agent-broker.v1"
     assert admitted["admission"]["request_fingerprint"] == FINGERPRINT
+    assert admitted["admission"]["request_id"] == "request.1"
     assert admitted["admission"]["raw_argv"] is False
 
     acknowledged = rpc.acknowledge({
@@ -107,10 +109,16 @@ def test_rpc_full_broker_lifecycle_never_returns_raw_credential():
         "command_id": "command.1",
         "admission_ref": "admission.1",
         "evidence_ref": "evidence.1",
+        "revision_ref": queued["command"]["revision_ref"],
+        "termination": "exited",
+        "request_id": "request.1",
+        "exit_code": 0,
         "now": (NOW + timedelta(seconds=5)).isoformat(),
     })
     assert acknowledged["ok"] is True
     assert acknowledged["command"]["state"] == "acknowledged"
+    assert acknowledged["command"]["request_id"] == "request.1"
+    assert acknowledged["command"]["exit_code"] == 0
     assert CREDENTIAL.decode() not in repr(acknowledged)
 
 
@@ -207,6 +215,7 @@ def test_rpc_rotation_invalidates_old_generation_delivery():
         "credential_b64": encoded(new_credential),
         "command_id": "command.old",
         "request_fingerprint": FINGERPRINT,
+        "request_id": "request.old",
         "now": (NOW + timedelta(seconds=12)).isoformat(),
     })
     assert stale["ok"] is False

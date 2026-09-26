@@ -171,11 +171,12 @@ def _prepare_command(
 
 def _wire(command: dict, *, marker: str = "material-argv-marker") -> dict:
     return {
-        "contract_version": "claw-local-command-material.v1",
+        "contract_version": "claw-local-command-material.v2",
         "command_id": command["command_id"],
         "binding_ref": command["binding_ref"],
         "sequence": command["sequence"],
         "request_fingerprint": command["request_fingerprint"],
+        "revision_ref": command["revision_ref"],
         "material": {
             "request_id": f"request.{command['command_id']}",
             "run_id": command["run_id"],
@@ -220,6 +221,7 @@ def _admit(durable, command: dict, *, at: datetime) -> dict:
                 "credential_b64": _encoded(CREDENTIAL_1),
                 "command_id": command["command_id"],
                 "request_fingerprint": command["request_fingerprint"],
+                "request_id": f"request.{command['command_id']}",
                 "now": at.isoformat(),
             }
         )
@@ -339,6 +341,10 @@ def test_new_material_requires_command_to_remain_queued() -> None:
                 "command_id": command["command_id"],
                 "admission_ref": f"admission.{command['command_id']}",
                 "evidence_ref": f"evidence.{command['command_id']}",
+                "revision_ref": command["revision_ref"],
+                "termination": "exited",
+                "request_id": f"request.{command['command_id']}",
+                "exit_code": 0,
                 "now": (BASE + timedelta(seconds=4)).isoformat(),
             }
         )
@@ -375,6 +381,10 @@ def test_acknowledgement_purges_material_in_same_lifecycle() -> None:
                 "command_id": command["command_id"],
                 "admission_ref": f"admission.{command['command_id']}",
                 "evidence_ref": f"evidence.{command['command_id']}",
+                "revision_ref": command["revision_ref"],
+                "termination": "exited",
+                "request_id": f"request.{command['command_id']}",
+                "exit_code": 0,
                 "now": (BASE + timedelta(seconds=4)).isoformat(),
             }
         )

@@ -9,10 +9,69 @@
 # No certificate, no signing secret, and no publish target is configured here.
 # `CSC_IDENTITY_AUTO_DISCOVERY=false` is set explicitly so a developer machine
 # with a stray certificate can never silently sign a build.
+#
+# CLAW4 M1 (CENTRAL comment 5840395388) — deterministic packaging pin.
+#   M1_A ELECTRON_BUILDER_EXACT_PIN=YES      (package.json devDependencies)
+#   M1_B TOOLSETS_EXPLICITLY_PINNED=YES     (this block)
+#   M1_C LOCKFILE_RESOLVES_EXACTLY=YES       (package-lock.json)
+#   M1_D PUBLISH_NULL_MAINTAINED=YES         (see `publish: null` below)
+#   PRODUCTION_SIGNING=NO
+#
+# Why these toolsets are pinned explicitly:
+#   electron-builder downloads each toolset bundle at build time. A toolset that
+#   is not named here is resolved by whatever the installed builder version
+#   defaults to. That makes "same source SHA + same builder version" insufficient
+#   to reproduce a build, which conflicts with the repository rule that evidence
+#   belongs to the exact SHA it tested.
+#
+# These are the toolsets an NSIS Windows build actually invokes, verified against
+# the `app-builder-lib@26.16.1` type definitions:
+#   winCodeSign -> win-codesign bundle (signtool / rcedit)
+#   nsis        -> NSIS compiler bundle (makensis)
+# `appimage` and `wine` are deliberately NOT pinned: this configuration targets
+# `nsis` on `win32` only, so those two bundles are never downloaded. Pinning a
+# bundle that is not used would imply a guarantee that was never verified.
+#
+# The exact allowed values for these keys are typed by
+# `app-builder-lib@26.16.1` (`ToolsetConfig`). For BOTH keys that union splits into
+# a Stable value and a Beta value:
+#
+#   winCodeSign:  Stable "0.0.0"  |  Beta "1.0.0", "1.1.0"
+#   nsis:         Stable "0.0.0"  |  Beta "1.2.1"
+#
+# CENTRAL review of #3096 (PR comment 5840609494) ruled that M1 must pin the
+# STABLE values, so this block pins "0.0.0" for both keys. M1's purpose is a
+# reproducible packaging source; it is not a channel for adopting a newer Beta
+# toolset. Adopting a Beta requires an explicit owner decision that M1 does not
+# carry.
+#
+# "0.0.0" is NOT a floating default. It is a fixed value with a fixed checksum.
+# Read from `app-builder-lib@26.16.1/out/toolsets/windows.js`:
+#
+#   winCodeSign "0.0.0" -> winCodeSign-2.6.0.7z     cdaec7154dda7cc31f88d886e2489379a0625a737d610b5ae7f62a12f16743a4
+#   nsis        "0.0.0" -> nsis-3.0.4.1.7z          9877df902530f96357d13a7a31ae2b9df67f48b11ffc9a1700a7c961574ec5fa
+#                     -> nsis-resources-3.4.1.7z   593a9a92ef958321293ac6a2ee61e64bf1bd543142a5bd6b3d310709cc924103
+#
+# The implementation branches on `value === "0.0.0"` exactly as it branches on a
+# Beta key, so naming it explicitly is a real pin, not a restatement of a default.
+#
+# electron-builder v27 changes unset `toolsets.*` to resolve to `latest`. This
+# configuration does not rely on defaults at all, so that change is neutralized
+# here. Do not remove these pins to "simplify" the file, and do not raise them to
+# a Beta value without an owner decision.
 
 appId: kr.padiem.desktop.shell
 productName: Padiem Desktop Shell
 copyright: Copyright (c) Padiem
+
+toolsets:
+  # win-codesign: the signing/metadata toolset (signtool / rcedit). Production
+  # signing stays OFF; this pin only fixes WHICH bundle would be used once M4
+  # enables signing. "0.0.0" is the Stable key -> winCodeSign-2.6.0.7z.
+  winCodeSign: 0.0.0
+  # nsis: the installer compiler bundle used by the `nsis` win target below
+  # (makensis). "0.0.0" is the Stable key -> nsis-3.0.4.1 + resources-3.4.1.
+  nsis: 0.0.0
 
 directories:
   output: dist-package
@@ -33,6 +92,22 @@ extraResources:
 
 asar: true
 
+# #3093 — Windows `padiem://` protocol declaration. The NSIS installer writes
+# the HKCU protocol handler for this scheme, so a fresh install is reachable
+# from a browser handoff before the app has ever run. Runtime re-registration
+# for the current launch shape (packaged vs dev `process.defaultApp`) is owned
+# by src/main/protocol-registration.ts; this block is the install-time half of
+# the same contract. Scheme name must stay byte-identical to PAIRING_SEAM.SCHEME.
+protocols:
+  - name: Padiem Pairing Handoff
+    schemes:
+      - padiem
+
+# Signing posture is asserted by a contract test, not only by this comment.
+# CENTRAL G1 (comment 5840395388) selected Azure Artifact Signing as the
+# canonical authority, but the electron-builder Azure adapter is Beta and is
+# NOT adopted here. Production signing therefore stays OFF in M1, and no
+# certificate, PFX, signing identity or publish target exists in this config.
 win:
   target:
     - target: nsis
