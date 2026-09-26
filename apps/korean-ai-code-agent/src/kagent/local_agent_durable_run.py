@@ -431,6 +431,8 @@ class DurableRunRecord:
         if self.server_acknowledged_at is not None:
             if self.state is not DurableRunState.TERMINAL:
                 raise ContractError("server acknowledgement requires a locally terminal record")
+            if self.terminated_at is None or self.server_acknowledged_at < self.terminated_at:
+                raise ContractError("server acknowledgement cannot predate local termination")
             if self.server_acknowledged_at < self.admitted_at:
                 raise ContractError("server acknowledgement cannot predate admitted_at")
             if self.server_acknowledged_at >= self.command_expires_at:
