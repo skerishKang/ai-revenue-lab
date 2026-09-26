@@ -11,6 +11,21 @@
  * #3080 owns the canonical pairing/broker contract. This module produces a
  * deterministic, non-secret correlation reference so the shell can later hand
  * the payload to the #3080 contract without changing the shell's shape.
+ *
+ * #3095 (CLAW5) adds exactly ONE bounded allowlisted transfer field so the
+ * trusted runner boundary can receive the one-time pairing code:
+ *
+ *   PAIRING_CODE_TRANSFER_BOUNDED=YES
+ *   PAIRING_CODE_GENERAL_PERSISTENCE=NO
+ *   PAIRING_CODE_LOGGED=NO
+ *   PAIRING_CODE_RENDERER_DIAGNOSTIC=NO
+ *   PAIRING_AUTHORITY_IMPLEMENTED=NO   (still owned by #3080)
+ *   SECOND_DEEPLINK_PARSER=0
+ *
+ * The pairing code is single-use handoff material, not application state: it is
+ * carried in a frozen, explicitly-cleared field, is never written to the
+ * bounded log, never returned to the renderer, and never generalises into any
+ * other parameter name.
  */
 
 export const PAIRING_SEAM = Object.freeze({
@@ -23,6 +38,13 @@ export const PAIRING_SEAM = Object.freeze({
   CREDENTIAL_PERSISTENCE: false,
   BROKER_TRANSPORT_IMPLEMENTED: false,
   AUTHORITY_OWNER: '#3080',
+  // #3095: the single allowlisted transfer parameter and its exact shape.
+  PAIRING_CODE_PARAM: 'code',
+  PAIRING_CODE_HEX_CHARS: 32,
+  PAIRING_CODE_TRANSFER_BOUNDED: true,
+  PAIRING_CODE_GENERAL_PERSISTENCE: false,
+  PAIRING_CODE_LOGGED: false,
+  PAIRING_CODE_RENDERER_DIAGNOSTIC: false,
 } as const);
 
 export class PairingDeepLinkError extends Error {
@@ -39,8 +61,46 @@ export interface ParsedPairingDeepLink {
   readonly kind: 'pair';
   readonly correlationRef: string;
   readonly paramNames: readonly string[];
-  /** Names only — values are deliberately not returned to the renderer. */
+  /** Names only — every non-allowlisted value is deliberately not returned. */
   readonly valueHandling: 'names-only';
+  /**
+   * #3095 bounded transfer. Exactly one allowlisted pairing code may cross the
+   * seam to the trusted runner boundary. It is `null` whenever the deep link
+   * carries no code, and it must be cleared by the consumer after handoff.
+   */
+  readonly pairingCodeTransfer: string | null;
+  readonly pairingCodeTransferBounded: true;
+}
+
+/**
+ * #3095: bound the *transferred* value without failing the whole parse.
+ *
+ * A malformed code is not a malformed deep link: the #3083 seam must keep
+ * behaving exactly as before for every other input, and rejecting here would
+ * turn an unusable handoff into a broken shell. Instead the code only crosses
+ * the seam when it already has the exact #3080 shape, so the trusted runner
+ * boundary can never receive an out-of-shape value. Anything else yields
+ * `null` and is rejected downstream by the canonical #3080 redemption client.
+ */
+function pairingCodeOrNull(value: string): string | null {
+  if (value.length !== PAIRING_SEAM.PAIRING_CODE_HEX_CHARS) return null;
+  if (!/^[0-9a-f]+$/.test(value)) return null;
+  return value;
+}
+
+/**
+ * #3095: consume a transferred pairing code exactly once.
+ *
+ * The value is a function argument rather than object state, so the shell keeps
+ * no pairing-code field to persist, log, or reflect to the renderer. After this
+ * call the caller holds the only reference and is responsible for handing it to
+ * the #3080 redemption caller.
+ */
+export function takePairingCodeTransfer(parsed: ParsedPairingDeepLink): string | null {
+  if (!parsed || parsed.pairingCodeTransferBounded !== true) {
+    return null;
+  }
+  return parsed.pairingCodeTransfer;
 }
 
 /**
@@ -96,6 +156,10 @@ export function parsePairingDeepLink(raw: unknown): ParsedPairingDeepLink {
 
   const names: string[] = [];
   let paramCount = 0;
+  // #3095: only the single allowlisted parameter may yield a value. Every other
+  // parameter keeps the names-only behaviour it always had.
+  let pairingCodeTransfer: string | null = null;
+  let codeParamSeen = false;
   for (const [name, value] of url.searchParams.entries()) {
     paramCount += 1;
     if (paramCount > PAIRING_SEAM.MAX_PARAM_COUNT) {
@@ -114,6 +178,16 @@ export function parsePairingDeepLink(raw: unknown): ParsedPairingDeepLink {
         `parameter ${name} exceeds ${PAIRING_SEAM.MAX_PARAM_VALUE_LENGTH} characters`,
       );
     }
+    if (lower === PAIRING_SEAM.PAIRING_CODE_PARAM) {
+      if (codeParamSeen) {
+        throw new PairingDeepLinkError(
+          'PAIRING_CODE_REPEATED',
+          'deep link must not repeat the pairing code parameter',
+        );
+      }
+      codeParamSeen = true;
+      pairingCodeTransfer = pairingCodeOrNull(value);
+    }
     names.push(lower);
   }
 
@@ -128,5 +202,7 @@ export function parsePairingDeepLink(raw: unknown): ParsedPairingDeepLink {
     correlationRef: correlationRefFrom(canonical),
     paramNames: Object.freeze([...names].sort()),
     valueHandling: 'names-only' as const,
+    pairingCodeTransfer,
+    pairingCodeTransferBounded: true as const,
   });
 }

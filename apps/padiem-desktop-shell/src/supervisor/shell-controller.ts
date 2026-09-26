@@ -34,7 +34,7 @@ import {
   type RunnerStopResponse,
   type ShellStatus,
 } from '../contract/ipc.js';
-import { parsePairingDeepLink } from '../contract/pairing-deeplink.js';
+import { parsePairingDeepLink, takePairingCodeTransfer } from '../contract/pairing-deeplink.js';
 import { projectBoundedLog } from '../contract/safe-log-projection.js';
 import type { RunnerSupervisor } from './runner-supervisor.js';
 
@@ -52,6 +52,13 @@ export class ShellController {
   readonly #now: () => number;
   #device: DeviceLifecycleProjection = initialDeviceLifecycleProjection();
   #pairingSeamAccepted = false;
+  /**
+   * #3095: the single bounded pairing handoff awaiting the trusted runner.
+   *
+   * Held in the main process only, consumed exactly once, never logged, never
+   * persisted, and never projected to the renderer.
+   */
+  #lastPairingHandoff: { pairingCode: string; correlationRef: string } | null = null;
   #presenceNote = 'no headless runner observation yet';
 
   constructor(options: ShellControllerOptions) {
@@ -168,12 +175,24 @@ export class ShellController {
         pairingAuthorityOwnedBy: '#3080' as const,
         credentialStored: false as const,
         sessionMinted: false as const,
+        pairingCodeTransferred: false as const,
+        pairingCodePersisted: false as const,
+        pairingCodeRendererDiagnostic: false as const,
       });
     }
     try {
       const parsed = parsePairingDeepLink(typed.deepLink);
       this.#pairingSeamAccepted = true;
       this.#transition('PAIRING', 'pairing_seam_accepted', 'padiem:// deep link accepted by the shell seam');
+      // #3095: the bounded code is consumed here, in the main process, and is
+      // never returned to the renderer. Only the boolean fact is reported.
+      const pairingCode = takePairingCodeTransfer(parsed);
+      if (pairingCode !== null) {
+        this.#lastPairingHandoff = {
+          pairingCode,
+          correlationRef: parsed.correlationRef,
+        };
+      }
       return Object.freeze({
         accepted: true,
         kind: parsed.kind,
@@ -182,6 +201,9 @@ export class ShellController {
         pairingAuthorityOwnedBy: '#3080' as const,
         credentialStored: false as const,
         sessionMinted: false as const,
+        pairingCodeTransferred: pairingCode !== null,
+        pairingCodePersisted: false as const,
+        pairingCodeRendererDiagnostic: false as const,
       });
     } catch (error) {
       this.#transition('NOT_PAIRED', 'pairing_seam_rejected', 'padiem:// deep link rejected by the shell seam');
@@ -193,8 +215,24 @@ export class ShellController {
         pairingAuthorityOwnedBy: '#3080' as const,
         credentialStored: false as const,
         sessionMinted: false as const,
+        pairingCodeTransferred: false as const,
+        pairingCodePersisted: false as const,
+        pairingCodeRendererDiagnostic: false as const,
       });
     }
+  }
+
+  /**
+   * #3095: take the single bounded pairing handoff for the trusted runner.
+   *
+   * The handoff is consumed exactly once and the stored reference is dropped
+   * immediately, so a replayed deep link cannot reuse an already-taken code.
+   * Nothing here logs, persists, or projects the value to the renderer.
+   */
+  takePairingHandoffForRunner(): { pairingCode: string; correlationRef: string } | null {
+    const handoff = this.#lastPairingHandoff;
+    this.#lastPairingHandoff = null;
+    return handoff;
   }
 
   getBoundedLog(request: unknown): BoundedLogResponse {
