@@ -89,6 +89,12 @@ class BrokerCommandState(str, Enum):
     QUEUED = "queued"
     ADMITTED = "admitted"
     ACKNOWLEDGED = "acknowledged"
+    #: #3121 — explicit terminal reconciliation outcome for an admitted command
+    #: whose hard deadline passed without a provable execution result. It is a
+    #: fail-closed terminal state: never pollable, never re-admittable, never
+    #: acknowledgeable, never re-reconcilable, and it fabricates no execution
+    #: fact (no termination, no exit code, no acknowledgement timestamp).
+    EXPIRED = "expired"
 
 
 @dataclass(frozen=True, slots=True)
@@ -231,6 +237,13 @@ class BrokerCommandRecord:
             raise ControlPlaneContractError("invalid_broker_command", "acknowledged command requires acknowledged_at")
         if self.state is BrokerCommandState.ACKNOWLEDGED and self.termination is None:
             raise ControlPlaneContractError("invalid_broker_command", "acknowledged command requires bounded termination")
+        if self.state is BrokerCommandState.EXPIRED and any(
+            value is not None for value in (self.acknowledged_at, self.termination, self.exit_code)
+        ):
+            raise ControlPlaneContractError(
+                "invalid_broker_command",
+                "expired reconciliation is terminal and cannot fabricate an execution outcome",
+            )
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -719,6 +732,118 @@ class InMemoryLocalAgentBrokerAuthority:
         self._commands[command.command_id] = acknowledged
         return acknowledged
 
+    def reconcile_expired_command(
+        self,
+        *,
+        session_id: str,
+        binding_ref: str,
+        credential: bytes,
+        command_id: str,
+        admission_ref: str,
+        revision_ref: str,
+        request_id: str,
+        request_fingerprint: str,
+        termination: str | None,
+        exit_code: int | None,
+        now: datetime,
+    ) -> BrokerCommandRecord:
+        """Reconcile one expired ADMITTED command without replay (#3121).
+
+        The canonical paths cannot move an admitted command once its hard
+        deadline has passed: `poll` returns queued commands only, re-admission
+        is a rejected replay, and `acknowledge` refuses an expired command —
+        which left such commands permanently stuck. This operation is the
+        single fail-closed reconciliation exit for that state, and nothing
+        else:
+
+        * it is admission-correlated, not session-correlated: the echoing
+          device must present the exact admitted `admission_ref`, server-owned
+          `revision_ref`, `request_id` and `request_fingerprint` under the
+          binding and credential generation that admitted the command, so a
+          restarted device on a fresh session can reconcile but nothing else
+          can;
+        * it never re-queues, re-admits, re-executes or mints a second
+          sequence/revision/fingerprint — every correlation on the record is
+          preserved verbatim and only the terminal state advances;
+        * with a bounded execution termination it records the late terminal
+          result exactly once (ADMITTED -> ACKNOWLEDGED);
+        * without one it records an explicit terminal EXPIRED outcome and
+          fails closed rather than inventing an execution fact;
+        * it is terminal: repeated reconciliation, later acknowledgement and
+          later re-admission are refused, so a terminal command never reopens.
+        """
+        now = _aware("now", now)
+        binding = self._authenticate(binding_ref, credential, now=now)
+        self._session(session_id, binding=binding, now=now)
+        command_id = _ref("command_id", command_id)
+        try:
+            command = self._commands[command_id]
+        except KeyError as exc:
+            raise ControlPlaneContractError("broker_command_not_found", "command was not found") from exc
+        if command.binding_ref != binding.binding_ref:
+            raise ControlPlaneContractError("broker_command_scope_mismatch", "command does not belong to this device binding")
+        if command.credential_generation != binding.credential_generation:
+            raise ControlPlaneContractError("stale_broker_command_generation", "command belongs to a stale credential generation")
+        if command.state is not BrokerCommandState.ADMITTED:
+            raise ControlPlaneContractError(
+                "broker_command_not_reconcilable",
+                "only an admitted command can be reconciled and a reconciled command never reopens",
+            )
+        if now < command.expires_at:
+            raise ControlPlaneContractError(
+                "broker_command_not_expired",
+                "canonical acknowledgement remains the only terminal path before the hard deadline",
+            )
+        echoed_revision_ref = _ref("revision_ref", revision_ref)
+        if echoed_revision_ref != command.revision_ref:
+            raise ControlPlaneContractError(
+                "broker_reconcile_revision_mismatch",
+                "reconciliation revision_ref does not echo the server-owned command revision",
+            )
+        echoed_request_id = _ref("request_id", request_id)
+        if echoed_request_id != command.request_id:
+            raise ControlPlaneContractError(
+                "broker_reconcile_request_id_mismatch",
+                "reconciliation request_id does not match the admitted material request",
+            )
+        echoed_fingerprint = _digest("request_fingerprint", request_fingerprint)
+        if echoed_fingerprint != command.request_fingerprint:
+            raise ControlPlaneContractError(
+                "broker_reconcile_fingerprint_mismatch",
+                "reconciliation request_fingerprint does not match the admitted command",
+            )
+        echoed_admission_ref = _ref("admission_ref", admission_ref)
+        if echoed_admission_ref != command.admission_ref:
+            raise ControlPlaneContractError(
+                "broker_reconcile_correlation_mismatch",
+                "reconciliation does not match the admitted command evidence",
+            )
+        bounded_exit_code = _bounded_exit_code("exit_code", exit_code)
+        if termination is None:
+            # Explicit unknown-execution reconciliation: fail closed to a
+            # terminal EXPIRED outcome instead of inventing an execution fact.
+            if bounded_exit_code is not None:
+                raise ControlPlaneContractError(
+                    "broker_reconcile_invalid_termination",
+                    "an unknown-execution reconciliation cannot carry an exit code",
+                )
+            reconciled = replace(command, state=BrokerCommandState.EXPIRED)
+        else:
+            if not isinstance(termination, str) or termination not in _EXECUTION_TERMINATIONS:
+                raise ControlPlaneContractError(
+                    "broker_reconcile_invalid_termination",
+                    "reconciliation must carry a bounded execution termination or none at all",
+                )
+            reconciled = replace(
+                command,
+                state=BrokerCommandState.ACKNOWLEDGED,
+                acknowledged_at=now,
+                termination=termination,
+                exit_code=bounded_exit_code,
+            )
+        self._commands[command.command_id] = reconciled
+        return reconciled
+
 
     def _idempotent_acknowledge_retry(
         self,
@@ -803,4 +928,19 @@ RAW_DEVICE_SECRET_RETURNED = False
 CAPABILITY_AUTHORITY_DUPLICATED = False
 TASK_ADMISSION_AUTHORITY_DUPLICATED = False
 REPLAY_AUTHORITY_DUPLICATED = False
+
+# --- issue #3121: expired-ADMITTED reconciliation without replay ------------
+EXPIRED_ADMITTED_PERMANENT_STUCK = False
+EXPIRED_ADMITTED_RECONCILIATION_PATH = True
+LATE_TERMINAL_RESULT_RECONCILIATION = True
+UNKNOWN_EXECUTION_OUTCOME_FAILS_CLOSED = True
+AUTOMATIC_COMMAND_REPLAY = False
+AUTOMATIC_REEXECUTION = False
+SECOND_SEQUENCE_MINT = False
+SECOND_REVISION_MINT = False
+SECOND_FINGERPRINT_AUTHORITY = False
+RECONCILIATION_MINTS_CORRELATION = False
+RECONCILIATION_ALLOWABLE_STATES = frozenset({BrokerCommandState.ADMITTED})
+RECONCILIATION_TERMINAL_STATES = frozenset({BrokerCommandState.ACKNOWLEDGED, BrokerCommandState.EXPIRED})
+RAW_CREDENTIAL_LOG = False
 MAX_BOUNDED_EXIT_CODE = MAX_BOUNDED_EXIT_CODE

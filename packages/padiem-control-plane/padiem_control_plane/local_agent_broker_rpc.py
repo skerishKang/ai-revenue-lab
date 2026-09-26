@@ -173,6 +173,31 @@ class LocalAgentBrokerRpcFacade:
 
         return self._call(operation)
 
+    def reconcile_expired_command(self, payload: dict[str, Any]) -> dict[str, Any]:
+        """#3121 — reconcile one expired ADMITTED command without replay.
+
+        `termination` is `None` for the explicit unknown-execution variant,
+        which fails the command closed to the terminal EXPIRED outcome.
+        """
+
+        def operation() -> dict[str, Any]:
+            command = self._authority.reconcile_expired_command(
+                session_id=payload["session_id"],
+                binding_ref=payload["binding_ref"],
+                credential=_credential(payload["credential_b64"]),
+                command_id=payload["command_id"],
+                admission_ref=payload["admission_ref"],
+                revision_ref=payload["revision_ref"],
+                request_id=payload["request_id"],
+                request_fingerprint=payload["request_fingerprint"],
+                termination=payload["termination"],
+                exit_code=payload["exit_code"],
+                now=_dt(payload["now"]),
+            )
+            return {"ok": True, "command": command.safe_dict()}
+
+        return self._call(operation)
+
 
 STRUCTURED_CLONE_SAFE_LOCAL_AGENT_BROKER_RPC = True
 RPC_NUMERIC_COERCION = False

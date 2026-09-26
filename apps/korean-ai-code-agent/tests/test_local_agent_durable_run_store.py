@@ -386,13 +386,18 @@ class DurableStoreTerminalPersistenceTests(StoreTestCase):
             )
         self.assertEqual(caught.exception.code, "durable_store_invalid_timestamp")
 
-    def test_q11_ack_at_hard_deadline_is_refused(self) -> None:
+    def test_q11_ack_after_the_hard_deadline_is_the_3121_late_reconciliation_fact(self) -> None:
+        # Issue #3121: the canonical broker's late terminal reconciliation is
+        # the only source of a post-deadline server acknowledgement. The store
+        # mirrors that fact at or after the hard deadline, idempotently, while
+        # still refusing anything that predates the local truth.
         store = self.open_store()
         store.put(admitted())
         store.record_terminal(exited())
-        with self.assertRaises(DurableRunStoreError) as caught:
-            store.acknowledge(command_id="command.1", acknowledged_at=EXPIRES)
-        self.assertEqual(caught.exception.code, "durable_store_invalid_timestamp")
+        store.acknowledge(command_id="command.1", acknowledged_at=EXPIRES)
+        loaded = store.get(command_id="command.1")
+        assert loaded is not None
+        self.assertEqual(loaded.server_acknowledged_at, EXPIRES)
 
     def test_q11_ack_cannot_predate_local_termination(self) -> None:
         store = self.open_store()

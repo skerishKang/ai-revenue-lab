@@ -383,13 +383,19 @@ class DurableRunTerminalityTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             terminal(server_acknowledged_at=NOW - timedelta(seconds=6))
 
-    def test_r8_server_ack_cannot_preadmit_or_reach_the_hard_deadline(self) -> None:
+    def test_r8_server_ack_cannot_preadmit_local_termination(self) -> None:
         with self.assertRaises(ContractError):
             terminal(server_acknowledged_at=NOW - timedelta(seconds=60))
-        with self.assertRaises(ContractError):
-            terminal(server_acknowledged_at=NOW + timedelta(seconds=300))
-        with self.assertRaises(ContractError):
-            terminal(server_acknowledged_at=NOW + timedelta(seconds=600))
+
+    def test_r8_server_ack_after_the_hard_deadline_is_the_3121_late_reconciliation_fact(self) -> None:
+        # Issue #3121: the canonical broker records a late terminal
+        # reconciliation acknowledgement exactly once for an expired ADMITTED
+        # command whose outcome the device proved. The record mirrors that
+        # server fact at or after `command_expires_at`; it never reopens it.
+        at_deadline = terminal(server_acknowledged_at=NOW + timedelta(seconds=300))
+        self.assertIsNotNone(at_deadline.server_acknowledged_at)
+        after_deadline = terminal(server_acknowledged_at=NOW + timedelta(seconds=600))
+        self.assertIsNotNone(after_deadline.server_acknowledged_at)
 
     def test_r8_contract_exposes_no_single_acked_state(self) -> None:
         values = {item.value for item in DurableRunState}
@@ -438,12 +444,16 @@ class DurableRunReconciliationWireTests(unittest.TestCase):
         self.assertTrue(RECONCILIATION_PROJECTED_ONTO_WIRE is False)
         self.assertTrue(BROKER_WIRE_RECONCILIATION_STATE is False)
 
-    def test_r11_canonical_broker_command_states_remain_three(self) -> None:
+    def test_r11_broker_wire_vocabulary_has_the_3121_terminal_reconciliation_state(self) -> None:
         from padiem_control_plane.local_agent_broker import BrokerCommandState
 
+        # Issue #3121 adds exactly one wire state: the terminal EXPIRED
+        # reconciliation outcome for an expired ADMITTED command whose
+        # execution outcome could not be proven. QUEUED / ADMITTED /
+        # ACKNOWLEDGED keep their canonical meanings.
         self.assertEqual(
             {item.value for item in BrokerCommandState},
-            {"queued", "admitted", "acknowledged"},
+            {"queued", "admitted", "acknowledged", "expired"},
         )
 
     def test_r11_reconciliation_state_is_not_a_broker_state(self) -> None:
@@ -463,7 +473,14 @@ class DurableRunReconciliationWireTests(unittest.TestCase):
         # deliberately not equal, because the local record owns terminality and
         # reconciliation facts the wire has no room for.
         self.assertNotEqual(wire, local)
-        self.assertTrue(wire <= local | {"queued", "acknowledged"})
+        # Wire-only states are explicit broker lifecycle facts the runner maps
+        # through named contracts — queued (poll), acknowledged (canonical or
+        # #3121 late reconciliation result) and expired (the #3121 terminal
+        # fail-closed reconciliation outcome). None is a local lifecycle state.
+        self.assertEqual(
+            wire - local,
+            {"queued", "acknowledged", "expired"},
+        )
         # Every local-only state must be local-only by construction.
         self.assertEqual(
             local - wire,

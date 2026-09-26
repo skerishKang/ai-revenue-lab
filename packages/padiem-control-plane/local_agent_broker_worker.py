@@ -81,6 +81,9 @@ class LocalAgentBrokerDurableObject(DurableObject):
     async def acknowledge(self, payload: dict) -> dict:
         return self._runtime.acknowledge(payload)
 
+    async def reconcile_expired_command(self, payload: dict) -> dict:
+        return self._runtime.reconcile_expired_command(payload)
+
     async def handle_device_http(self, envelope: dict) -> dict:
         return self._device_http.handle(envelope)
 
@@ -130,6 +133,9 @@ class Default(WorkerEntrypoint):
 
     async def acknowledge(self, payload: dict) -> dict:
         return await self._stub().acknowledge(payload)
+
+    async def reconcile_expired_command(self, payload: dict) -> dict:
+        return await self._stub().reconcile_expired_command(payload)
 
     async def handle_device_http(self, envelope: dict) -> dict:
         return await self._stub().handle_device_http(envelope)

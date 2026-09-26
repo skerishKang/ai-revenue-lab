@@ -239,4 +239,6 @@ def test_worker_file_is_thin_and_storage_schemas_live_outside_entrypoint() -> No
     assert "class CloudflareDurableObjectCommandMaterialStore" not in source
     assert "class LocalAgentBrokerDurableRuntime" not in source
     assert "from workers import" in source
-    assert len(source.splitlines()) < 190
+    # Issue #3121 adds one canonical RPC passthrough (reconcile_expired_command)
+    # per entrypoint class; the entrypoint must stay otherwise thin.
+    assert len(source.splitlines()) < 200

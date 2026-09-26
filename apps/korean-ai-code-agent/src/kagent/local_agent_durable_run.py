@@ -435,11 +435,14 @@ class DurableRunRecord:
                 raise ContractError("server acknowledgement cannot predate local termination")
             if self.server_acknowledged_at < self.admitted_at:
                 raise ContractError("server acknowledgement cannot predate admitted_at")
-            if self.server_acknowledged_at >= self.command_expires_at:
-                # The canonical broker rejects an ack at or after the hard
-                # deadline. Accepting equality here would locally widen R6 by
-                # one boundary instant and disagree with broker authority.
-                raise ContractError("server acknowledgement cannot be at or after the command hard deadline")
+            # R6 itself is untouched: the hard deadline never moves and is
+            # never renewed. What changed with issue #3121 is that the
+            # canonical broker records a *late terminal reconciliation*
+            # acknowledgement after the deadline, exactly once, for an
+            # expired ADMITTED command whose outcome the device can prove.
+            # That server fact may therefore be mirrored locally at or after
+            # `command_expires_at`; it still never reopens the record and
+            # never grants replay or execution authority.
 
         # `exit_code` is a *result* fact, so it may only appear once the run is
         # locally terminal. Recording an exit status on a still-running record
@@ -565,6 +568,28 @@ RECONCILIATION_REQUIRED_IS_LOCAL_ONLY = True
 BROKER_WIRE_RECONCILIATION_STATE = False
 RECONCILIATION_PROJECTED_ONTO_WIRE = False
 
+#: #3121 — expired-ADMITTED reconciliation, without replay.
+#:
+#: The canonical broker exposes one explicit reconciliation exit for an
+#: admitted command whose hard deadline passed (`reconcile_expired_command`).
+#: A durable record maps onto it through its local facts only: a locally
+#: terminal record whose termination is one of the canonical execution
+#: terminations carries the late terminal result; every other record —
+#: non-terminal, locally EXPIRED or locally ABORTED — proves no execution
+#: outcome and must fail closed to the broker's terminal EXPIRED state
+#: instead of inventing one. This mapping is correlation-preserving and
+#: grants no execution, replay, revision, sequence or fingerprint authority.
+LATE_TERMINAL_RECONCILIATION_SUPPORTED = True
+SERVER_ACK_AFTER_HARD_DEADLINE_VIA_LATE_RECONCILIATION = True
+UNKNOWN_EXECUTION_OUTCOME_FAILS_CLOSED = True
+AUTOMATIC_COMMAND_REPLAY = False
+AUTOMATIC_REEXECUTION = False
+TERMINAL_REOPEN = False
+SECOND_SEQUENCE_MINT = False
+SECOND_REVISION_MINT = False
+RECONCILIATION_MINTS_CORRELATION = False
+RAW_CREDENTIAL_LOG = False
+
 #: R9/R10 — the generation is recorded, never re-issued.
 CREDENTIAL_REISSUE_AUTHORITY = False
 STORE_REISSUES_CREDENTIAL = False
@@ -607,3 +632,61 @@ BOUNDED_EVIDENCE_PROJECTION = True
 DURABLE_STORE_IO_CONFIGURED = False
 PRODUCTION_MUTATION = False
 PRODUCTION_READY = False
+
+
+#: The canonical #3080 execution terminations the broker accepts as a late
+#: terminal result (`_EXECUTION_TERMINATIONS` in
+#: `padiem_control_plane.local_agent_broker`). Copied as a *correlation
+#: vocabulary*, never as a second termination authority.
+BROKER_EXECUTION_TERMINATIONS = frozenset({"exited", "cancelled", "timed_out"})
+
+
+@dataclass(frozen=True, slots=True)
+class BrokerReconciliationOutcome:
+    """The #3121 reconciliation payload one durable record supports.
+
+    `execution_outcome_proven` is the fail-closed switch: only a locally
+    terminal record whose termination is a canonical execution termination
+    proves an outcome and may carry the late terminal result. Everything
+    else — a non-terminal record, a locally EXPIRED or ABORTED record —
+    proves nothing and reconciles to the broker's terminal EXPIRED state
+    with no termination and no exit code.
+    """
+
+    execution_outcome_proven: bool
+    termination: str | None = None
+    exit_code: int | None = None
+
+    def safe_dict(self) -> dict[str, Any]:
+        return {
+            "execution_outcome_proven": self.execution_outcome_proven,
+            "termination": self.termination,
+            "exit_code": self.exit_code,
+            "automatic_command_replay": False,
+            "automatic_reexecution": False,
+            "mints_correlation": False,
+        }
+
+
+def broker_reconciliation_outcome(record: DurableRunRecord) -> BrokerReconciliationOutcome:
+    """Map one durable record's local facts onto the #3121 broker outcome.
+
+    Deliberately free of I/O, clocks and any execution verdict of its own: it
+    only projects what is already durable. The exit code travels only with an
+    EXITED termination (the record invariant guarantees that), and no locally
+    EXPIRED or ABORTED fact is ever projected as a broker execution result.
+    """
+
+    if not isinstance(record, DurableRunRecord):
+        raise ContractError("record must be DurableRunRecord")
+    if (
+        record.state is DurableRunState.TERMINAL
+        and record.termination is not None
+        and record.termination.value in BROKER_EXECUTION_TERMINATIONS
+    ):
+        return BrokerReconciliationOutcome(
+            execution_outcome_proven=True,
+            termination=record.termination.value,
+            exit_code=record.exit_code,
+        )
+    return BrokerReconciliationOutcome(execution_outcome_proven=False, termination=None, exit_code=None)
