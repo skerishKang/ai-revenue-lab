@@ -84,6 +84,16 @@ class _Storage:
         self.connection = connection or sqlite3.connect(":memory:", isolation_level=None)
         self.sql = _Sql(self.connection)
 
+    def transactionSync(self, callback):
+        self.connection.execute("BEGIN IMMEDIATE")
+        try:
+            value = callback()
+            self.connection.execute("COMMIT")
+            return value
+        except Exception:
+            self.connection.execute("ROLLBACK")
+            raise
+
 BASE = datetime(2026, 9, 26, 1, 0, tzinfo=timezone.utc)
 PEPPER = b"compaction-test-pepper-0123456789abcdef"
 CREDENTIAL_1 = b"compaction-device-credential-1"
@@ -709,3 +719,54 @@ def test_durable_object_ledger_records_mints_and_rolls_back_refused_cas():
     # And a committed id keeps surviving a backend re-open (restart).
     reopened = sql_state.CloudflareDurableObjectSerializedStateBackend(_Storage(storage.connection))
     assert reopened.has_used_command_id(authority_ref=AUTHORITY_REF, command_id="command.do.1") is True
+
+
+def test_crash_between_ledger_insert_and_blob_commit_repairs_on_restart():
+    # CENTRAL second review, the crash gap: a ledger row written after the
+    # INSERT but before the blob CAS commits would, on restart, look exactly
+    # like a compacted id and permanently refuse a legitimate retry. Two
+    # defences make that state impossible to persist:
+    #
+    # 1. the ledger write and the blob swap run inside ONE storage transaction
+    #    owned by the backend, so the crash rolls both back; and
+    # 2. every ledger row carries the blob version it belongs to, and a fresh
+    #    backend deletes any row claiming a version beyond the stored blob -
+    #    the only shape a crash between the two writes can leave behind.
+    storage = _Storage()
+    backend = sql_state.CloudflareDurableObjectSerializedStateBackend(storage)
+    codec = LocalAgentBrokerStateJsonCodec()
+    payload = codec.encode(LocalAgentBrokerStateSnapshot.empty(authority_ref=AUTHORITY_REF))
+
+    # Blob reaches version 1; a real mint at that version is recorded.
+    backend.compare_and_swap(
+        authority_ref=AUTHORITY_REF,
+        expected_version=0,
+        payload=payload,
+        new_command_ids=("command.crash.committed",),
+    )
+    assert backend.has_used_command_id(authority_ref=AUTHORITY_REF, command_id="command.crash.committed") is True
+
+    # Simulate the crash: a ledger row for the NEXT mutation lands, then the
+    # process dies before the blob CAS commits. The row claims version 2; the
+    # blob is still at version 1 and the canonical command does not exist.
+    storage.sql.exec(
+        "INSERT INTO local_agent_broker_used_command_id "
+        "(authority_ref, command_id, committed_version) VALUES (?, ?, ?)",
+        AUTHORITY_REF,
+        "command.crash.lost",
+        2,
+    )
+    assert backend.has_used_command_id(authority_ref=AUTHORITY_REF, command_id="command.crash.lost") is True
+
+    # Restart over the same storage: the repair deletes the phantom row and
+    # keeps the genuinely committed one.
+    reopened = sql_state.CloudflareDurableObjectSerializedStateBackend(_Storage(storage.connection))
+    assert reopened.has_used_command_id(authority_ref=AUTHORITY_REF, command_id="command.crash.lost") is False
+    assert reopened.has_used_command_id(authority_ref=AUTHORITY_REF, command_id="command.crash.committed") is True
+
+    # The legitimate retry of the crash-interrupted command can now mint.
+    port = SerializedLocalAgentBrokerStatePort(backend=reopened)
+    authority = _authority(port)
+    _register(authority)
+    fresh = _enqueue(authority, "command.crash.lost", now=BASE + timedelta(seconds=2))
+    assert fresh.sequence == 1

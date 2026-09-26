@@ -64,21 +64,26 @@ class LocalAgentBrokerDurableRuntime:
     def register_binding(self, payload: dict) -> dict:
         return self.facade().register_binding(payload)
 
+    # The serialized-state CAS commits atomically inside its own storage
+    # transaction (used-command-id ledger and blob together, #3123), and
+    # Durable Object transactions do not nest - so the material purge runs in
+    # its own transaction after the authority mutation instead of sharing one
+    # with it. A purge lost to a crash in between is inert: material
+    # resolution re-validates against the canonical authority state and
+    # purges stale rows on contact, and the next rotate/revocation purges the
+    # binding again.
+
     def rotate_credential(self, payload: dict) -> dict:
-        def operation() -> dict:
-            result = self.facade().rotate_credential(payload)
-            if result.get("ok") is True:
-                self.material_store.purge_binding(result["binding"]["binding_ref"])
-            return result
-        return self.transaction(operation)
+        result = self.facade().rotate_credential(payload)
+        if result.get("ok") is True:
+            self.transaction(lambda: self.material_store.purge_binding(result["binding"]["binding_ref"]))
+        return result
 
     def revoke_binding(self, payload: dict) -> dict:
-        def operation() -> dict:
-            result = self.facade().revoke_binding(payload)
-            if result.get("ok") is True:
-                self.material_store.purge_binding(result["binding"]["binding_ref"])
-            return result
-        return self.transaction(operation)
+        result = self.facade().revoke_binding(payload)
+        if result.get("ok") is True:
+            self.transaction(lambda: self.material_store.purge_binding(result["binding"]["binding_ref"]))
+        return result
 
     def open_session(self, payload: dict) -> dict:
         return self.facade().open_session(payload)
@@ -108,26 +113,22 @@ class LocalAgentBrokerDurableRuntime:
         return self.facade().admit_command(payload)
 
     def acknowledge(self, payload: dict) -> dict:
-        def operation() -> dict:
-            result = self.facade().acknowledge(payload)
-            if result.get("ok") is True:
-                self.material_store.purge_command(result["command"]["command_id"])
-            return result
-        return self.transaction(operation)
+        result = self.facade().acknowledge(payload)
+        if result.get("ok") is True:
+            self.transaction(lambda: self.material_store.purge_command(result["command"]["command_id"]))
+        return result
 
     def reconcile_expired_command(self, payload: dict) -> dict:
         """#3121 — reconcile one expired ADMITTED command without replay.
 
         Like a canonical acknowledgement, a successful reconciliation is
-        terminal, so the stored command material is purged in the same
-        transaction and can never resolve again.
+        terminal, so the stored command material is purged after the
+        reconciliation commits and can never resolve again.
         """
-        def operation() -> dict:
-            result = self.facade().reconcile_expired_command(payload)
-            if result.get("ok") is True:
-                self.material_store.purge_command(result["command"]["command_id"])
-            return result
-        return self.transaction(operation)
+        result = self.facade().reconcile_expired_command(payload)
+        if result.get("ok") is True:
+            self.transaction(lambda: self.material_store.purge_command(result["command"]["command_id"]))
+        return result
 
     def safe_dict(self) -> dict[str, Any]:
         return {
