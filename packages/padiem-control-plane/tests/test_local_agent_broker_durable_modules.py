@@ -242,10 +242,9 @@ def test_worker_file_is_thin_and_storage_schemas_live_outside_entrypoint() -> No
     # Issue #3121 adds one canonical RPC passthrough (reconcile_expired_command)
     # per entrypoint class; the entrypoint must stay otherwise thin.
     #
-    # Issue #3127 adds the atomic enqueue+material passthrough on BOTH the
-    # Durable Object and the `Default` service-binding gateway. Exposing it only
-    # on the object would leave the split `enqueue` → `store_command_material`
-    # pair as the only surface a real caller can reach, which is the defect
-    # #3127 exists to close. The bound moves by exactly that pass-through and no
-    # further: the entrypoint still contains no storage, schema or authority.
+    # Issue #3129 wires session_open_transaction into the device HTTP service,
+    # and issue #3127 adds the atomic enqueue+material passthrough while
+    # removing the split `enqueue_command` / `store_command_material` pair from
+    # the product gateway. The bound moves by those passthroughs and no further:
+    # the entrypoint still holds no storage, schema or authority.
     assert len(source.splitlines()) < 205
