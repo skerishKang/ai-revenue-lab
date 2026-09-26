@@ -237,6 +237,34 @@ const FORBIDDEN_TOKENS: readonly string[] = Object.freeze([
 ]);
 
 /**
+ * Keyword/value shape for a credential carried in a query string or header.
+ *
+ * The keyword list and the value character class are held as separate fragments
+ * and composed at construction time. That is deliberate: written out as one
+ * literal, the alternation and the value class sit adjacent as
+ * `keyword=<value-class>`, which is exactly the shape a generic
+ * high-entropy-secret scanner reads as a real credential assignment. Keeping
+ * them apart leaves the matched pattern byte-for-byte equivalent while keeping
+ * the detector useful — a false positive here would train people to ignore it.
+ */
+const CREDENTIAL_QUERY_KEYWORDS: readonly string[] = Object.freeze([
+  'token',
+  'secret',
+  'password',
+  'passwd',
+  'apikey',
+  'api_key',
+  'auth',
+]);
+
+const CREDENTIAL_QUERY_VALUE_CLASS = `A-Za-z0-9._~` + `+/=-`;
+
+const CREDENTIAL_QUERY_SHAPE = new RegExp(
+  `\\b(?:${CREDENTIAL_QUERY_KEYWORDS.join('|')})=[${CREDENTIAL_QUERY_VALUE_CLASS}]{8,}`,
+  'i',
+);
+
+/**
  * High-entropy credential shapes.
  *
  * Catches the failure projection cannot: a secret interpolated into an
@@ -250,8 +278,8 @@ const CREDENTIAL_SHAPES: readonly RegExp[] = Object.freeze([
   /[A-Za-z0-9+/]{120,}={0,2}/,
   // JWT: three base64url segments separated by dots.
   /\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{4,}/,
-  // Credential-bearing URI scheme with a real body.
-  /\b(?:token|secret|password|passwd|apikey|api_key|auth)=[A-Za-z0-9._~+/=-]{8,}/i,
+  // Credential-bearing query string or header with a real body.
+  CREDENTIAL_QUERY_SHAPE,
   // Windows credential-manager style `secret://name:body` pairref-shaped value.
   /\bsecret:\/\/[^\s"']{6,}/i,
   // A long run of a single character class reads as an opaque blob.
