@@ -145,6 +145,18 @@ class DurableStoreLifecycleTests(StoreTestCase):
         second = self.open_store()
         self.assertEqual(len(second.list_records()), 1)
 
+    def test_q1_put_accepts_only_initial_admitted_state(self) -> None:
+        store = self.open_store()
+        with self.assertRaises(ContractError):
+            store.put(
+                admitted(
+                    state=DurableRunState.EXECUTING,
+                    started_at=NOW - timedelta(seconds=5),
+                )
+            )
+        with self.assertRaises(ContractError):
+            store.put(exited())
+
     def test_q2_exact_correlation_roundtrips(self) -> None:
         store = self.open_store()
         original = admitted()
@@ -382,6 +394,34 @@ class DurableStoreTerminalPersistenceTests(StoreTestCase):
         with self.assertRaises(DurableRunStoreError) as caught:
             store.acknowledge(command_id="command.1", acknowledged_at=EXPIRES)
         self.assertEqual(caught.exception.code, "durable_store_invalid_timestamp")
+
+    def test_q11_ack_cannot_predate_local_termination(self) -> None:
+        store = self.open_store()
+        store.put(admitted())
+        store.record_terminal(exited())
+        with self.assertRaises(DurableRunStoreError) as caught:
+            store.acknowledge(
+                command_id="command.1",
+                acknowledged_at=NOW - timedelta(seconds=6),
+            )
+        self.assertEqual(caught.exception.code, "durable_store_invalid_timestamp")
+
+    def test_q11_repeated_identical_ack_is_idempotent_but_conflict_is_refused(self) -> None:
+        store = self.open_store()
+        store.put(admitted())
+        store.record_terminal(exited())
+        stamp = NOW - timedelta(seconds=4)
+        store.acknowledge(command_id="command.1", acknowledged_at=stamp)
+        store.acknowledge(command_id="command.1", acknowledged_at=stamp)
+        with self.assertRaises(DurableRunStoreError) as caught:
+            store.acknowledge(
+                command_id="command.1",
+                acknowledged_at=NOW - timedelta(seconds=3),
+            )
+        self.assertEqual(caught.exception.code, "durable_store_correlation_mismatch")
+        loaded = store.get(command_id="command.1")
+        assert loaded is not None
+        self.assertEqual(loaded.server_acknowledged_at, stamp)
 
     def test_q6_a_terminal_outcome_is_never_overwritten(self) -> None:
         store = self.open_store()
