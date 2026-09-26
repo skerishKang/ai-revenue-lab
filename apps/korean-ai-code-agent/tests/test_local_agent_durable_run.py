@@ -375,6 +375,10 @@ class DurableRunTerminalityTests(unittest.TestCase):
         self.assertFalse(stored.replayable)
         self.assertFalse(stored.terminal)
 
+    def test_r8_server_ack_requires_local_terminality(self) -> None:
+        with self.assertRaises(ContractError):
+            record(server_acknowledged_at=NOW)
+
     def test_r8_server_ack_cannot_preadmit_or_reach_the_hard_deadline(self) -> None:
         with self.assertRaises(ContractError):
             terminal(server_acknowledged_at=NOW - timedelta(seconds=60))
