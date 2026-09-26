@@ -66,6 +66,9 @@ class LocalAgentBrokerDurableObject(DurableObject):
     async def enqueue_command(self, payload: dict) -> dict:
         return self._runtime.enqueue_command(payload)
 
+    async def enqueue_command_with_material(self, payload: dict, wire: dict) -> dict:
+        return self._runtime.enqueue_command_with_material(payload, wire)
+
     async def store_command_material(self, wire: dict) -> dict:
         return self._runtime.store_command_material(wire)
 
