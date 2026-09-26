@@ -628,6 +628,14 @@ class DurableStoreFailClosedTests(StoreTestCase):
         )
         self.assert_refused("durable_store_terminal_without_termination")
 
+    def test_m_a_nonterminal_row_with_server_ack_fails_closed(self) -> None:
+        self.seeded()
+        self.rewrite(
+            f"UPDATE {_TABLE} SET server_acknowledged_at = ? WHERE command_id = ?",
+            (NOW.isoformat().replace("+00:00", "Z"), "command.1"),
+        )
+        self.assert_refused("durable_store_ack_without_admission_correlation")
+
     def test_m_a_duplicate_identity_is_refused(self) -> None:
         store = self.open_store()
         store.put(admitted())
