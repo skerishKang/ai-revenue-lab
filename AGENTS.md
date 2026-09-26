@@ -50,6 +50,17 @@ MUST_NOT_BE_CLAIMED_BY_THE_SAME_ACTOR_FOR_THE_SAME_REVISION
 
 If environment constraints require the implementer to execute local checks too, report them as implementation self-checks/non-independent verification and leave the independent gate pending when the work contract requires it. "independent gate pending" is not a mergeable state: before merge the PR must record either a completed `LOCAL_VALIDATION_REPORT.md` instantiation for the exact head, or `NOT_REQUIRED` with an explicit reason.
 
+Independent validation must also be **discoverable from the PR itself**. A private report that cannot be found from the reviewed PR is insufficient audit trail. Before merge, the PR review/comment history must record:
+
+```text
+INDEPENDENT_VALIDATOR=<actor>
+VALIDATED_HEAD=<exact SHA>
+RESULT=PASSED/FAILED/BLOCKED
+REPORT_POINTER=<immutable report/artifact pointer or NOT_REQUIRED reason>
+```
+
+The Web CTO re-checks that this record names the exact head being merged.
+
 ## Product-evidence stages are flexible
 
 AI Revenue Lab does **not** require every Business to follow a mandatory UI → UX → backend ceremony.
@@ -95,8 +106,11 @@ This is a responsibility/evidence flow, not a mandatory product-stage sequence. 
 - Never report failed, skipped, unavailable, or unexecuted checks as passing.
 - Keep secrets, credentials, personal data, and private evidence out of source, logs, PRs, screenshots, and reports.
 - CI proves only what it actually executes; CI alone is not universal completion evidence.
+- A red external security/compliance signal is not cancelled by unrelated green CI. Before merge it must be resolved, or carry an explicit authorized disposition/waiver with reason and exact affected revision.
 - Evidence belongs to the exact SHA it tested.
 - A validator who modifies product source has created a new implementation revision; that run is not independent validation of the new revision.
+- When a runtime-data validation bug is found at one trust boundary, trace the same field/contract through downstream parser/builder/projector/serializer/export/write boundaries. Explicit `null`, `undefined`, and a missing required property are distinct states unless the canonical contract explicitly says otherwise.
+- For fail-open or bypass-prone fixes, add a load-bearing regression and use mutation/differential proof when practical so the test is shown to fail when the defect is restored.
 - Wrong-project Preview or deployment output is defect evidence, not product acceptance evidence.
 - `READY`, `CONDITIONALLY_READY`, and `NOT_READY` are Web CTO technical/review verdicts, not automatic merge commands.
 - Before merge, the Web CTO posts the filled `CTO_FINAL_REVIEW` checklist as a PR review/comment containing the exact head SHA and per-item checklist results; prose-only verdict assertions are not an auditable record.
@@ -104,6 +118,7 @@ This is a responsibility/evidence flow, not a mandatory product-stage sequence. 
 - Final owner visual approval must never be inferred from a model/worker approval when the work contract explicitly reserves visual taste to the owner.
 - Deployment follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`; no alternate Preview/manual deployment path is implied by these rules.
 - Local Docker Desktop / local Docker daemon is not a default development or deployment path. Do not start or require it unless established remote build/deploy paths have been checked and the Product Owner explicitly approves a task-specific exception. Follow `LOCAL_DOCKER_AVOIDANCE_POLICY.md`.
+- On Windows, do not run `git worktree remove --force` while the worktree contains a junction/symlink/reparse point into a shared dependency directory (for example another checkout's `node_modules`). Remove the link itself with a link-safe operation first, verify the target directory is intact, then remove the worktree.
 
 ## GitHub report handoff
 

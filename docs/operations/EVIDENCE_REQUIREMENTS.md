@@ -148,7 +148,11 @@ The Web Developer report includes:
 - automated commands, status and pass/fail/skip counts;
 - CI references when configured;
 - self-check/browser evidence clearly labelled non-independent;
+- for fail-open/bypass-prone fixes, the load-bearing regression and mutation/differential proof when practical;
+- trust-boundary coverage when the same runtime value crosses parser/builder/projector/serializer/export/write layers;
 - known defects/deferred work/environment limits.
+
+When a defect involves nullable or runtime-shaped input, evidence distinguishes explicit `null`, `undefined`, and a missing required property unless the canonical contract explicitly makes them equivalent.
 
 ## 10. Independent validation evidence
 
@@ -162,9 +166,10 @@ When required, record:
 - required journeys/results;
 - Desktop/Mobile/reduced-motion/focus evidence when relevant;
 - console/page/request/overflow/asset failures;
-- artifacts and reproducible failure evidence.
+- artifacts and reproducible failure evidence;
+- a discoverable PR review/comment record containing validator identity, exact tested head, result and immutable report/artifact pointer.
 
-If the validator changes product source, the run is not independent validation of the resulting revision.
+If the validator changes product source, the run is not independent validation of the resulting revision. A validator report that exists only off-PR without a PR pointer is evidence storage, not a complete merge audit trail.
 
 ## 11. Runtime/provider evidence
 
@@ -199,7 +204,8 @@ The final review records:
 - current visual gate;
 - anchor/archetype/contact-sheet evidence as applicable;
 - CI/independent-validation sufficiency;
-- security/privacy/regression considerations;
+- security/privacy/regression considerations, including every external red security/compliance signal and its resolved/waived disposition;
+- downstream trust-boundary review for any contract defect whose data passes through more than one validation/serialization/write boundary;
 - owner-only decisions;
 - remaining conditions;
 - final technical `READY / CONDITIONALLY_READY / NOT_READY`.
@@ -215,6 +221,8 @@ Do not rely on these as completion evidence:
 - screenshots from the wrong project/deployment;
 - a list of reference names with no translation/verification;
 - implementer self-check represented as independent validation;
+- independent validation with no discoverable exact-head PR record or immutable evidence pointer;
+- an unresolved external red security/compliance signal treated as cleared merely because later main/squash CI is silent;
 - a strong anchor represented as whole-product design-system proof;
 - hidden failed/skipped counts;
 - unverified Production claims;
