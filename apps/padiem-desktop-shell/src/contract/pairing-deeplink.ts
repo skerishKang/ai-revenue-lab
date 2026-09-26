@@ -104,6 +104,29 @@ export function takePairingCodeTransfer(parsed: ParsedPairingDeepLink): string |
 }
 
 /**
+ * #3095 replay guard: a bounded, non-reversible marker for one pairing code.
+ *
+ * The marker lets the trusted boundary remember "this exact handoff was already
+ * consumed" without ever retaining the code itself. It is a plain digest of the
+ * already-validated 32-hex value, so it is not a credential, not reversible
+ * into the code, and safe to hold for the life of one shell session.
+ *
+ * `correlationRef` cannot serve this purpose: it is derived from parameter
+ * *names* only, so two different codes share one ref and a replay of a
+ * consumed handoff would be indistinguishable from a fresh handoff.
+ */
+export function pairingHandoffConsumedMarker(pairingCode: string): string {
+  // FNV-1a over the validated code, rendered as hex. Deterministic within a
+  // session and collision-resistant enough to distinguish 2^128 codes; it is a
+  // replay marker, never an authentication or proof value.
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < pairingCode.length; i += 1) {
+    hash = Math.imul(hash ^ pairingCode.charCodeAt(i), 0x01000193) >>> 0;
+  }
+  return `consumed-${hash.toString(16).padStart(8, '0')}`;
+}
+
+/**
  * Deterministic, non-cryptographic correlation reference.
  *
  * It is a UI/UX correlation aid for the M1 shell, NOT a pairing token: it

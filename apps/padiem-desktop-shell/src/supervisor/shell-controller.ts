@@ -34,9 +34,19 @@ import {
   type RunnerStopResponse,
   type ShellStatus,
 } from '../contract/ipc.js';
-import { parsePairingDeepLink, takePairingCodeTransfer } from '../contract/pairing-deeplink.js';
+import {
+  pairingHandoffConsumedMarker,
+  parsePairingDeepLink,
+  takePairingCodeTransfer,
+} from '../contract/pairing-deeplink.js';
 import { projectBoundedLog } from '../contract/safe-log-projection.js';
 import type { RunnerSupervisor } from './runner-supervisor.js';
+
+/**
+ * #3095: how many spent-handoff markers one shell session remembers.
+ * Bounded so the replay ledger cannot become unbounded application state.
+ */
+const PAIRING_HANDOFF_LEDGER_LIMIT = 32;
 
 export interface ShellControllerOptions {
   readonly supervisor: RunnerSupervisor;
@@ -59,6 +69,17 @@ export class ShellController {
    * persisted, and never projected to the renderer.
    */
   #lastPairingHandoff: { pairingCode: string; correlationRef: string } | null = null;
+  /**
+   * #3095 replay ledger.
+   *
+   * Marks already-consumed handoffs so replaying the same deep link cannot hand
+   * the runner a pairing code twice. Only a bounded, non-reversible marker is
+   * retained — never the code — and the ledger is bounded so it cannot grow
+   * without limit. The canonical broker still rejects a reused challenge; this
+   * ledger stops the shell from re-offering a spent handoff in the first place.
+   */
+  #consumedPairingHandoffs = new Set<string>();
+
   #presenceNote = 'no headless runner observation yet';
 
   constructor(options: ShellControllerOptions) {
@@ -187,11 +208,25 @@ export class ShellController {
       // #3095: the bounded code is consumed here, in the main process, and is
       // never returned to the renderer. Only the boolean fact is reported.
       const pairingCode = takePairingCodeTransfer(parsed);
+      let pairingCodeTransferred = false;
       if (pairingCode !== null) {
-        this.#lastPairingHandoff = {
-          pairingCode,
-          correlationRef: parsed.correlationRef,
-        };
+        const marker = pairingHandoffConsumedMarker(pairingCode);
+        if (this.#consumedPairingHandoffs.has(marker)) {
+          // A spent handoff is never re-armed: replaying the deep link must not
+          // hand the runner the same one-time pairing code again. Reuses the
+          // existing rejection trigger so no new lifecycle trigger is invented.
+          this.#transition(
+            'PAIRING',
+            'pairing_seam_rejected',
+            'padiem:// pairing handoff replay rejected by the shell seam',
+          );
+        } else {
+          this.#lastPairingHandoff = {
+            pairingCode,
+            correlationRef: parsed.correlationRef,
+          };
+          pairingCodeTransferred = true;
+        }
       }
       return Object.freeze({
         accepted: true,
@@ -201,7 +236,7 @@ export class ShellController {
         pairingAuthorityOwnedBy: '#3080' as const,
         credentialStored: false as const,
         sessionMinted: false as const,
-        pairingCodeTransferred: pairingCode !== null,
+        pairingCodeTransferred,
         pairingCodePersisted: false as const,
         pairingCodeRendererDiagnostic: false as const,
       });
@@ -232,6 +267,16 @@ export class ShellController {
   takePairingHandoffForRunner(): { pairingCode: string; correlationRef: string } | null {
     const handoff = this.#lastPairingHandoff;
     this.#lastPairingHandoff = null;
+    if (handoff === null) {
+      return null;
+    }
+    // Mark the handoff spent. Only a non-reversible marker is retained, and the
+    // ledger is bounded so a long-lived session cannot grow it without limit.
+    this.#consumedPairingHandoffs.add(pairingHandoffConsumedMarker(handoff.pairingCode));
+    if (this.#consumedPairingHandoffs.size > PAIRING_HANDOFF_LEDGER_LIMIT) {
+      const oldest = this.#consumedPairingHandoffs.values().next();
+      if (!oldest.done) this.#consumedPairingHandoffs.delete(oldest.value);
+    }
     return handoff;
   }
 

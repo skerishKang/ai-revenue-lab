@@ -97,7 +97,7 @@ test('#3095 controller hands one bounded pairing code to the trusted runner', as
   assert.equal(response.pairingCodeTransferred, true);
 
   const handoff = controller.takePairingHandoffForRunner();
-  assert.ok(handoff);
+  if (handoff === null) throw new Error('expected a handoff on the first take');
   assert.equal(handoff.pairingCode, CODE);
   assert.match(handoff.correlationRef, /^pairref-[0-9a-f]{16}$/);
 });
@@ -160,4 +160,67 @@ test('#3095 controller still owns no pairing authority', async () => {
   assert.equal(/parsePairingDeepLink\s*\(/.test(mainSource), false);
   assert.equal(/parsePairingDeepLink\s*\(/.test(singleInstanceSource), false);
   assert.equal(/takePairingCodeTransfer\s*\(/.test(mainSource), false);
+});
+
+// ---------------------------------------------------------------------------
+// #3095 second-pass audit: replay containment.
+//
+// The first pass proved one-time *consumption* (`takePairingHandoffForRunner`
+// clears its reference) but not replay containment: submitting the same deep
+// link again re-armed the runner with the same one-time pairing code. The
+// canonical broker rejects the reused challenge, but the shell must not re-offer
+// a spent handoff in the first place.
+// ---------------------------------------------------------------------------
+
+test('#3095 a replayed deep link cannot re-arm a consumed handoff', async () => {
+  const { controller } = makeController();
+  const deepLink = `padiem://pair?code=${CODE}&source=shell`;
+
+  const first = await controller.pairingDeepLinkSubmit({ deepLink });
+  assert.equal(first.pairingCodeTransferred, true);
+  const handoff = controller.takePairingHandoffForRunner();
+  if (handoff === null) throw new Error('expected a handoff on the first take');
+  assert.equal(handoff.pairingCode, CODE);
+
+  // Replaying the identical deep link must not produce a second handoff.
+  const replay = await controller.pairingDeepLinkSubmit({ deepLink });
+  assert.equal(replay.pairingCodeTransferred, false);
+  assert.equal(controller.takePairingHandoffForRunner(), null);
+});
+
+test('#3095 the replay ledger never retains the pairing code itself', async () => {
+  const { controller } = makeController();
+  const deepLink = `padiem://pair?code=${CODE}`;
+  await controller.pairingDeepLinkSubmit({ deepLink });
+  controller.takePairingHandoffForRunner();
+  // The controller's own fields must not carry the code after consumption.
+  for (const value of Object.values(controller as unknown as Record<string, unknown>)) {
+    assert.notEqual(value, CODE);
+  }
+  // The ledger holds a marker, and the source stores no raw code in it.
+  const source = readFileSync(join(SRC, 'supervisor', 'shell-controller.ts'), 'utf8');
+  assert.match(source, /#consumedPairingHandoffs\.add\(pairingHandoffConsumedMarker\(/);
+});
+
+test('#3095 a different pairing code is still accepted after one is consumed', async () => {
+  const { controller } = makeController();
+  const other = 'fedcba9876543210fedcba9876543210';
+  await controller.pairingDeepLinkSubmit({ deepLink: `padiem://pair?code=${CODE}` });
+  controller.takePairingHandoffForRunner();
+  // Replay containment must not break a legitimate second handoff.
+  const next = await controller.pairingDeepLinkSubmit({ deepLink: `padiem://pair?code=${other}` });
+  assert.equal(next.pairingCodeTransferred, true);
+  const handoff = controller.takePairingHandoffForRunner();
+  if (handoff === null) throw new Error('expected a handoff for a different code');
+  assert.equal(handoff.pairingCode, other);
+});
+
+test('#3095 the consumed marker is stable and distinct per code', async () => {
+  const { pairingHandoffConsumedMarker } = await import('../src/contract/pairing-deeplink.js');
+  const a = pairingHandoffConsumedMarker(CODE);
+  assert.equal(a, pairingHandoffConsumedMarker(CODE), 'marker must be deterministic');
+  assert.notEqual(a, pairingHandoffConsumedMarker('fedcba9876543210fedcba9876543210'));
+  // The marker must not be the code, nor contain it.
+  assert.equal(a.includes(CODE), false);
+  assert.match(a, /^consumed-[0-9a-f]{8}$/);
 });

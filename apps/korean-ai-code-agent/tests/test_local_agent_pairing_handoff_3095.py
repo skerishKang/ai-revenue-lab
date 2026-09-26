@@ -192,7 +192,7 @@ def _device_auth() -> TrustedLocalAgentHttpAuthContext:
     )
 
 
-def _issue_challenge(handler) -> dict:
+def _issue_challenge(handler, *, ttl_seconds: int = 300) -> dict:
     """Authenticated browser-side challenge issuance (the signed-in session)."""
     response = handler.handle(
         method="POST",
@@ -203,7 +203,7 @@ def _issue_challenge(handler) -> dict:
                 "account_ref": "account.1",
                 "workspace_ref": "workspace.1",
                 "now": BASE.isoformat(),
-                "ttl_seconds": 300,
+                "ttl_seconds": ttl_seconds,
             }
         ).encode("utf-8"),
         auth=_browser_auth(),
@@ -494,6 +494,107 @@ class PairingHandoff3095Test(unittest.TestCase):
             credential_store=_CredentialStore(),
         )
         self.assertEqual(runner.safe_dict()["full_web_to_desktop_pairing_e2e"], False)
+
+
+class PairingHandoffNegativeProof3095Test(unittest.TestCase):
+    """#3095 second-pass audit: negative proofs for the authenticated E2E.
+
+    The first pass proved the happy path and that a redeemed challenge is
+    single-use. These pin the remaining rejections explicitly, so a future change
+    cannot quietly widen what the pinned redemption accepts.
+    """
+
+    def _client(self, handler, store):
+        from kagent.local_agent_broker_pairing_client import LocalAgentBrokerPairingClient
+
+        return LocalAgentBrokerPairingClient(
+            config=_config(),
+            credential_store=store,
+            request_port=_HandlerPairingPort(handler=handler),
+        )
+
+    def test_redeemed_challenge_cannot_be_redeemed_again(self) -> None:
+        handler, _authority, _pairing = _pairing_handler()
+        client = self._client(handler, _CredentialStore())
+        issued = _issue_challenge(handler)
+        cid = issued["challenge"]["challenge_id"]
+        code = issued["pairing_code"]
+        client.redeem(challenge_id=cid, pairing_code=code, device_id=CHALLENGE_DEVICE, now=BASE)
+        with self.assertRaises(ContractError):
+            client.redeem(
+                challenge_id=cid, pairing_code=code, device_id=CHALLENGE_DEVICE, now=BASE
+            )
+
+    def test_unknown_challenge_is_rejected(self) -> None:
+        handler, _authority, _pairing = _pairing_handler()
+        client = self._client(handler, _CredentialStore())
+        issued = _issue_challenge(handler)
+        with self.assertRaises(ContractError):
+            client.redeem(
+                challenge_id="challenge.absent",
+                pairing_code=issued["pairing_code"],
+                device_id=CHALLENGE_DEVICE,
+                now=BASE,
+            )
+
+    def test_wrong_device_is_rejected(self) -> None:
+        handler, _authority, _pairing = _pairing_handler()
+        client = self._client(handler, _CredentialStore())
+        issued = _issue_challenge(handler)
+        client.redeem(
+            challenge_id=issued["challenge"]["challenge_id"],
+            pairing_code=issued["pairing_code"],
+            device_id=CHALLENGE_DEVICE,
+            now=BASE,
+        )
+        # A different device may not claim the same one-time handoff.
+        with self.assertRaises(ContractError):
+            client.redeem(
+                challenge_id=issued["challenge"]["challenge_id"],
+                pairing_code=issued["pairing_code"],
+                device_id="device.somebody-else",
+                now=BASE,
+            )
+
+    def test_wrong_possession_proof_is_rejected(self) -> None:
+        handler, _authority, _pairing = _pairing_handler()
+        client = self._client(handler, _CredentialStore())
+        issued = _issue_challenge(handler)
+        with self.assertRaises(ContractError):
+            client.redeem(
+                challenge_id=issued["challenge"]["challenge_id"],
+                pairing_code="f" * 32,
+                device_id=CHALLENGE_DEVICE,
+                now=BASE,
+            )
+
+    def test_expired_challenge_is_rejected(self) -> None:
+        handler, _authority, _pairing = _pairing_handler()
+        client = self._client(handler, _CredentialStore())
+        issued = _issue_challenge(handler, ttl_seconds=30)
+        with self.assertRaises(ContractError):
+            client.redeem(
+                challenge_id=issued["challenge"]["challenge_id"],
+                pairing_code=issued["pairing_code"],
+                device_id=CHALLENGE_DEVICE,
+                now=BASE + timedelta(minutes=10),
+            )
+
+    def test_credential_store_failure_fails_closed(self) -> None:
+        class _FailingStore(_CredentialStore):
+            def save(self, **_: object):
+                raise ContractError("protected credential store refused the write")
+
+        handler, _authority, _pairing = _pairing_handler()
+        client = self._client(handler, _FailingStore())
+        issued = _issue_challenge(handler)
+        with self.assertRaises(ContractError):
+            client.redeem(
+                challenge_id=issued["challenge"]["challenge_id"],
+                pairing_code=issued["pairing_code"],
+                device_id=CHALLENGE_DEVICE,
+                now=BASE,
+            )
 
 
 if __name__ == "__main__":  # pragma: no cover
