@@ -118,6 +118,10 @@ win:
   signAndEditExecutable: false
 
 nsis:
+  # #3093 (reopen) - install-time padiem:// registration. The default assisted
+  # NSIS script does not write the `protocols:` entries for a per-user install
+  # (measured on exact main 6fffd5a0), so this include owns the HKCU keys.
+  include: build/installer.nsh
   oneClick: false
   perMachine: false
   allowToChangeInstallationDirectory: true

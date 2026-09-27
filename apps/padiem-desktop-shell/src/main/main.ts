@@ -76,15 +76,23 @@ function runnerSpawnSpec(): {
 } {
   // Packaged builds ship the runner under `resources/runner`; a source checkout
   // runs the compiled runner from `dist/src/runner`.
+  const packagedRunnerRoot =
+    process.resourcesPath && fsExists(path.join(process.resourcesPath, 'runner'))
+      ? path.join(process.resourcesPath, 'runner')
+      : null;
   const runnerRoot = process.env.PADIEM_RUNNER_ROOT
     ? path.resolve(process.env.PADIEM_RUNNER_ROOT)
-    : process.resourcesPath && fsExists(path.join(process.resourcesPath, 'runner'))
-      ? path.join(process.resourcesPath, 'runner')
-      : path.join(__dirname_, '..', 'runner');
+    : packagedRunnerRoot ?? path.join(__dirname_, '..', 'runner');
+  // #3093 (reopen): a packaged build must not take the runner's working
+  // directory from the asar archive — a process cannot chdir into the virtual
+  // asar file system and the spawn fails with ENOENT (measured: the packaged
+  // supervisor reported CRASHED). The resources directory is a real path in a
+  // packaged build; a source checkout keeps its real dist/src.
+  const cwd = packagedRunnerRoot ? process.resourcesPath : path.join(__dirname_, '..');
   return {
     executablePath: runnerHostMode.executablePath,
     args: [path.join(runnerRoot, 'headless-runner.js')],
-    cwd: path.join(__dirname_, '..'),
+    cwd,
     env: {
       PADIEM_SHELL: 'padiem-desktop-shell',
       PADIEM_RUNNER_ROOT: runnerRoot,
