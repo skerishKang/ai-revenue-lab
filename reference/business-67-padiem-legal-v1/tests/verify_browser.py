@@ -355,6 +355,14 @@ def main() -> int:
             check_demo_labelling(page)
             if w <= 920:
                 check_keyboard_drawer(page, name)
+                check_mobile_citation_opens_drawer(page)
+            else:
+                check_desktop_sidebar_interactive(page)
+                check_desktop_evidence_uses_panel(page)
+                check_drive_disconnected_truth(page)
+                check_state_scope_single_authority(page)
+                check_matter_consistency(page)
+                check_composer_submit_paths(page)
 
             page.screenshot(path=str(OUT / f"{name}-B-unified.png"), full_page=False)
 
@@ -419,6 +427,399 @@ def main() -> int:
     print(f"Screenshots + JSON report: {OUT}")
     return 0
 
+
+# ── CENTRAL review regressions (#3161) ──────────────────────────────────────
+# Each of these corresponds to a real defect found in review, not to a
+# hypothetical. They are interaction-level on purpose: an `inert` element is
+# skipped by the tab order, so a Tab-count check cannot detect a control that
+# is visible but unusable. Every one of these clicks the control for real.
+
+
+def check_desktop_sidebar_interactive(page) -> None:
+    """BLOCKER 1: the desktop sidebar was permanently `inert`.
+
+    `syncSidebar` derived `open` from `mobile && ...`, so on desktop
+    `sidebar.inert = !open` was always true — a visible, permanently dead
+    control column. Assert the real interaction, not the tab order.
+    """
+    inert = page.evaluate(
+        """() => ({
+            sidebar: document.getElementById('sidebar').inert,
+            main: document.getElementById('mainPanel').inert,
+        })"""
+    )
+    if inert["sidebar"]:
+        fail(f"desktop sidebar is inert ({inert}) — visible but unusable")
+    else:
+        ok("desktop sidebar is not inert")
+
+    # Prove it by actually clicking a control inside it.
+    before = page.evaluate("""() => document.getElementById('topbarTitle').textContent""")
+    try:
+        page.click("#matterList .recent-item:nth-child(2)", timeout=3000)
+    except Exception as e:
+        fail(f"desktop matter button is not clickable: {type(e).__name__}")
+        return
+    after = page.evaluate(
+        """() => ({
+            title: document.getElementById('topbarTitle').textContent,
+            current: document.querySelector('#matterList .recent-item[aria-current="true"]')?.dataset.matter,
+        })"""
+    )
+    if after["title"] == before:
+        fail(f"desktop matter click did not change the surface title (still {before!r})")
+    else:
+        ok(f"desktop matter click works and updates the title ({after['title']!r})")
+
+    # New research button.
+    try:
+        page.click("#newResearch", timeout=3000)
+        page.wait_for_timeout(200)
+        if page.evaluate("""() => document.getElementById('appShell').dataset.view""") != "home":
+            fail("desktop #newResearch click did not switch to the home view")
+        else:
+            ok("desktop #newResearch click works")
+    except Exception as e:
+        fail(f"desktop #newResearch is not clickable: {type(e).__name__}")
+
+    # Corpus document button.
+    page.click('#stateChips .claw-chip[data-value="drive"]')
+    page.wait_for_timeout(250)
+    try:
+        page.click("#corpus .corpus-doc", timeout=3000)
+        page.wait_for_timeout(150)
+        note = page.evaluate("""() => document.getElementById('runtimeNote').textContent""")
+        if "샘플 문서" not in note and "hwp" not in note:
+            fail(f"desktop corpus click produced no response (note={note!r})")
+        else:
+            ok("desktop corpus document click works")
+    except Exception as e:
+        fail(f"desktop corpus document button is not clickable: {type(e).__name__}")
+
+
+def check_desktop_evidence_uses_panel(page) -> None:
+    """BLOCKER 2: a citation click opened the mobile sheet on desktop too."""
+    page.click('#stateChips .claw-chip[data-value="unified"]')
+    page.wait_for_timeout(250)
+    page.click("#conversation .cite")
+    page.wait_for_timeout(300)
+    after = page.evaluate(
+        """() => {
+            const d = document.getElementById('evidenceDrawer');
+            const active = document.querySelector('#evidenceList .ev[data-active="true"]');
+            return {
+                drawerOpen: d.dataset.open,
+                drawerInert: d.inert,
+                drawerOnScreen: d.getBoundingClientRect().top < window.innerHeight - 1,
+                activeN: active ? active.dataset.evidenceN : null,
+                triggerHidden: document.getElementById('evidenceTriggerRow').hidden,
+            };
+        }"""
+    )
+    if after["drawerOpen"] != "false":
+        fail(f"desktop citation opened the mobile sheet (data-open={after['drawerOpen']})")
+    elif not after["drawerInert"]:
+        fail("desktop sheet is not inert while closed")
+    elif after["drawerOnScreen"]:
+        fail("desktop sheet is on screen while closed")
+    elif not after["activeN"]:
+        fail("desktop citation did not highlight a right-panel evidence card")
+    else:
+        ok(f"desktop citation highlights right-panel card [n={after['activeN']}], sheet stays closed")
+    if not after["triggerHidden"]:
+        fail("the mobile-only evidence trigger is still shown on desktop")
+    else:
+        ok("mobile-only evidence trigger is hidden on desktop")
+
+
+def check_mobile_citation_opens_drawer(page) -> None:
+    """BLOCKER 2, mobile half: the same click must open the sheet here."""
+    page.click("#conversation .cite")
+    page.wait_for_timeout(350)
+    inside = page.evaluate(
+        """() => ({
+            open: document.getElementById('evidenceDrawer').dataset.open,
+            focusInside: document.getElementById('evidenceDrawer').contains(document.activeElement),
+            activeN: document.querySelector('#drawerList .ev[data-active="true"]')?.dataset.evidenceN,
+            caller: document.activeElement ? document.activeElement.className : '',
+        })"""
+    )
+    if inside["open"] != "true":
+        fail(f"mobile citation did not open the sheet (data-open={inside['open']})")
+    elif not inside["focusInside"]:
+        fail("mobile sheet opened but focus did not move into it")
+    else:
+        ok(f"mobile citation opens the sheet, focus inside, card [n={inside['activeN']}] active")
+
+    page.keyboard.press("Escape")
+    page.wait_for_timeout(350)
+    back = page.evaluate(
+        """() => ({
+            open: document.getElementById('evidenceDrawer').dataset.open,
+            inert: document.getElementById('evidenceDrawer').inert,
+            focusClass: document.activeElement ? document.activeElement.className : '',
+        })"""
+    )
+    if back["open"] != "false" or not back["inert"]:
+        fail(f"mobile Escape did not close/inert the sheet: {back}")
+    elif "cite" not in back["focusClass"]:
+        fail(f"focus returned to {back['focusClass']!r}, expected the citation caller")
+    else:
+        ok("mobile Escape closes the sheet and returns focus to the citation")
+
+
+def check_drive_disconnected_truth(page) -> None:
+    """BLOCKER 3: Drive evidence reappeared while the UI said "disconnected".
+
+    That is the worst possible state for this product — a citation pointing at
+    a document the interface claims it cannot see.
+    """
+    page.click('#stateChips .claw-chip[data-value="disconnected"]')
+    page.wait_for_timeout(300)
+    disconnected = page.evaluate(
+        """() => ({
+            connected: window.B67DemoApp.store.get().driveConnected,
+            corpusLabel: (document.querySelector('.corpus-state')||{}).textContent,
+        })"""
+    )
+    if disconnected["connected"]:
+        fail("disconnected state did not clear driveConnected")
+
+    for target in ("drive", "unified", "provenance"):
+        page.click(f'#stateChips .claw-chip[data-value="{target}"]')
+        page.wait_for_timeout(250)
+        probe = page.evaluate(
+            """() => {
+                const s = window.B67DemoApp.store.get();
+                return {
+                    connected: s.driveConnected,
+                    driveEvidence: s.evidence.filter(e => e.source_type === 'drive').length,
+                    citedNumbers: Array.from(document.querySelectorAll('#conversation .cite'))
+                        .map(c => parseInt(c.dataset.cite, 10)),
+                    citedInDrive: Array.from(document.querySelectorAll('#conversation .cite'))
+                        .some(c => {
+                            const n = parseInt(c.dataset.cite, 10);
+                            const rec = (window.B67Demo ? null : null);
+                            return false;
+                        }),
+                    cardNums: Array.from(document.querySelectorAll('#evidenceList .ev'))
+                        .map(e => parseInt(e.dataset.evidenceN, 10)),
+                    answerRendered: !!document.querySelector('#conversation .assistant-content'),
+                };
+            }"""
+        )
+        if probe["driveEvidence"] > 0:
+            fail(f"'{target}' shows {probe['driveEvidence']} Drive evidence record(s) while disconnected")
+        # A citation may only point at a record that is actually in the panel.
+        # When it cannot, the surface must fail closed rather than render it.
+        stray = [n for n in probe["citedNumbers"] if n not in probe["cardNums"]]
+        if stray:
+            if probe["answerRendered"]:
+                fail(f"'{target}' renders an answer citing [n] {stray} that are not in the panel")
+        elif not probe["answerRendered"] and probe["cardNums"]:
+            fail(f"'{target}' fails closed although every citation resolves")
+    ok("no Drive evidence is produced by any state while Drive is disconnected")
+    ok("no citation points at a record missing from the evidence panel")
+
+    # The connection-required state must be explicit, not silently empty.
+    page.click('#stateChips .claw-chip[data-value="drive"]')
+    page.wait_for_timeout(250)
+    text = page.evaluate("""() => document.getElementById('conversation').textContent""")
+    if "Drive 자료에 접근할 수 없습니다" not in text:
+        fail("Drive-scoped query while disconnected does not explain the blocker")
+    else:
+        ok("Drive-scoped query while disconnected shows a connection-required state")
+
+    # Reconnect restores truth, explicitly.
+    page.click("#corpus .recent-item")
+    page.wait_for_timeout(300)
+    reconnected = page.evaluate(
+        """() => ({
+            connected: window.B67DemoApp.store.get().driveConnected,
+            driveEvidence: window.B67DemoApp.store.get().evidence.filter(e => e.source_type === 'drive').length,
+        })"""
+    )
+    if not reconnected["connected"] or reconnected["driveEvidence"] == 0:
+        fail(f"explicit DEMO connect did not restore Drive evidence: {reconnected}")
+    else:
+        ok(f"explicit DEMO connect restores Drive evidence ({reconnected['driveEvidence']} records)")
+
+
+def check_state_scope_single_authority(page) -> None:
+    """BLOCKER 4: title, scope chip, and evidence could disagree.
+
+    `state` is now the only routing authority; the scope chip and the title are
+    derived from it.
+    """
+    def probe(expected_state, expected_scope_label):
+        got = page.evaluate(
+            """() => {
+                const pressed = document.querySelector('#conversation .claw-chip[aria-pressed="true"]');
+                return {
+                    state: window.B67DemoApp.store.get().state,
+                    scopeForState: window.B67DemoApp.scopeForState(window.B67DemoApp.store.get().state),
+                    title: document.getElementById('topbarTitle').textContent,
+                    scopeChip: pressed
+                        ? (pressed.querySelector('span:not(.chip-icon)') || pressed).textContent.trim()
+                        : null,
+                    types: Array.from(new Set(
+                        Array.from(document.querySelectorAll('#evidenceList .ev'))
+                            .map(e => e.dataset.sourceType)
+                    )),
+                };
+            }"""
+        )
+        return got
+
+    for st, label, want_type in (
+        ("official", "공식 법률자료", "official"),
+        ("drive", "내 Drive", "drive"),
+        ("unified", "통합", None),
+    ):
+        page.click(f'#stateChips .claw-chip[data-value="{st}"]')
+        page.wait_for_timeout(250)
+        got = probe(st, label)
+        if got["scopeForState"] != st:
+            fail(f"'{st}': scopeForState returned {got['scopeForState']!r}")
+        if label not in got["title"]:
+            fail(f"'{st}': title {got['title']!r} does not name the scope {label!r}")
+        if got["scopeChip"] != label:
+            fail(f"'{st}': scope chip is {got['scopeChip']!r}, expected {label!r}")
+        if want_type and got["types"] != [want_type]:
+            fail(f"'{st}': evidence types are {got['types']}, expected only [{want_type!r}]")
+        if not want_type and any(t not in ("official", "drive", "web") for t in got["types"]):
+            fail(f"'{st}': unexpected evidence types {got['types']}")
+    ok("title, scope chip, and evidence all derive from one state authority")
+
+    # Reload must restore the same triple.
+    page.click('#stateChips .claw-chip[data-value="official"]')
+    page.wait_for_timeout(250)
+    before_matter = page.evaluate("""() => window.B67DemoApp.store.get().matter""")
+    before = page.evaluate(
+        """() => {
+            const chip = document.querySelector('#conversation .claw-chip[aria-pressed="true"]');
+            return {
+                state: window.B67DemoApp.store.get().state,
+                scopeChip: chip ? (chip.querySelector('span:not(.chip-icon)') || chip).textContent.trim() : null,
+                title: document.getElementById('topbarTitle').textContent,
+            };
+        }"""
+    )
+    page.reload()
+    page.wait_for_function(
+        "() => document.getElementById('conversation').children.length > 0", timeout=15000)
+    page.wait_for_timeout(400)
+    after_restore = page.evaluate(
+        """() => {
+            const chip = document.querySelector('#conversation .claw-chip[aria-pressed="true"]');
+            return {
+                state: window.B67DemoApp.store.get().state,
+                scopeChip: chip ? (chip.querySelector('span:not(.chip-icon)') || chip).textContent.trim() : null,
+                title: document.getElementById('topbarTitle').textContent,
+            };
+        }"""
+    )
+    if before["state"] != after_restore["state"] or before["scopeChip"] != after_restore["scopeChip"]:
+        fail(f"restore changed the routing triple: {before} -> {after_restore}")
+    elif not after_restore["title"].startswith(after_restore["scopeChip"]):
+        fail(f"restored title {after_restore['title']!r} does not lead with the scope chip label")
+    else:
+        ok(f"reload/restore reproduces state + scope chip + title scope ({after_restore['state']})")
+    matter_now = page.evaluate("""() => window.B67DemoApp.store.get().matter""")
+    if matter_now == before_matter:
+        fail("matter selection is not reset to a defined default on reload")
+    else:
+        ok("matter returns to its default on reload (documented: matter is not persisted)")
+
+
+def check_composer_submit_paths(page) -> None:
+    """Composer hardening: form submit is the canonical path, so pointer-send
+    cannot navigate the page and Enter-send goes through the same function."""
+    start_url = page.url
+    page.fill("#composerInput", "포인터 전송 확인")
+    page.wait_for_timeout(100)
+    page.click("#sendButton")
+    page.wait_for_timeout(400)
+    after_pointer = page.evaluate(
+        """() => ({
+            url: location.href,
+            value: document.getElementById('composerInput').value,
+            state: window.B67DemoApp.store.get().state,
+        })"""
+    )
+    if after_pointer["url"] != start_url:
+        fail(f"pointer send navigated the page: {start_url} -> {after_pointer['url']}")
+    else:
+        ok("pointer send does not navigate")
+    if after_pointer["value"] != "":
+        fail(f"pointer send did not clear the composer ({after_pointer['value']!r})")
+    else:
+        ok("pointer send clears the composer")
+
+    page.fill("#composerInput", "엔터 전송 확인")
+    page.wait_for_timeout(100)
+    page.press("#composerInput", "Enter")
+    page.wait_for_timeout(400)
+    after_enter = page.evaluate(
+        """() => ({url: location.href, value: document.getElementById('composerInput').value})"""
+    )
+    if after_enter["url"] != start_url:
+        fail("Enter send navigated the page")
+    else:
+        ok("Enter send does not navigate")
+    if after_enter["value"] != "":
+        fail("Enter send did not clear the composer")
+    else:
+        ok("Enter send clears the composer")
+
+    page.fill("#composerInput", "줄바꿈 유지")
+    page.wait_for_timeout(100)
+    page.press("#composerInput", "Shift+Enter")
+    page.wait_for_timeout(300)
+    shifted = page.evaluate(
+        """() => ({
+            url: location.href,
+            value: document.getElementById('composerInput').value,
+            hasNewline: document.getElementById('composerInput').value.indexOf(String.fromCharCode(10)) !== -1,
+        })"""
+    )
+    if shifted["url"] != start_url:
+        fail("Shift+Enter navigated the page")
+    elif not shifted["hasNewline"]:
+        fail("Shift+Enter did not insert a newline (it submitted instead)")
+    else:
+        ok("Shift+Enter inserts a newline without sending")
+
+    # Empty input must not submit.
+    page.fill("#composerInput", "")
+    page.wait_for_timeout(150)
+    disabled = page.evaluate("""() => document.getElementById('sendButton').disabled""")
+    if not disabled:
+        fail("send button is enabled with an empty composer")
+    else:
+        ok("send button is disabled with an empty composer")
+
+
+def check_matter_consistency(page) -> None:
+    """ADD-1: the selected matter must be reflected across the surface, and the
+    shared sample corpus must be disclosed rather than implied."""
+    page.click('#stateChips .claw-chip[data-value="unified"]')
+    page.wait_for_timeout(250)
+    titles = set()
+    for i in (1, 2, 3):
+        page.click(f"#matterList .recent-item:nth-child({i})")
+        page.wait_for_timeout(250)
+        titles.add(page.evaluate("""() => document.getElementById('topbarTitle').textContent"""))
+    if len(titles) != 3:
+        fail(f"selecting a matter does not change the title (saw {len(titles)} distinct titles)")
+    else:
+        ok(f"matter selection updates the title consistently ({len(titles)} distinct)")
+
+    corpus = page.evaluate("""() => document.getElementById('corpus').textContent""")
+    if "동일한 샘플 자료" not in corpus:
+        fail("the corpus does not disclose that all matters share the sample data")
+    else:
+        ok("corpus discloses that the sample data is shared across matters")
 
 if __name__ == "__main__":
     sys.exit(main())

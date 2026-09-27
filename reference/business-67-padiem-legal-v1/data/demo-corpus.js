@@ -151,15 +151,26 @@
       source_type: "official",
       source_id: "demo-ev-4",
       authority_class: "primary",
-      title: "민법 (법제처 국가법령정보센터 · 샘플)",
-      document_id: "statute-demo-civil",
-      page_or_section: "제581조",
+      /* FICTIONAL BY DESIGN.
+       *
+       * This must NOT use a real Korean statute identifier. Pairing a real
+       * 조문 number or a real official publisher with invented text is exactly
+       * the hallucination pattern this product exists to prevent, and doing it
+       * in the demo teaches a lawyer the wrong thing: that a confident-looking
+       * citation is cheap. "가상 법률요약집" and "가상 제17조" do not exist — and
+       * it is deliberately NOT named after a real law either, so no reader can
+       * pattern-match it onto a real article. Searching for it finds nothing,
+       * which is the correct outcome. */
+      fictional: true,
+      title: "가상 법률요약집 (존재하지 않는 자료 · DEMO)",
+      document_id: "fictional-legal-digest",
+      page_or_section: "가상 제17조",
       retrieved_at: "2026-09-27 10:13",
-      effective_date_or_version: "2025-09-01 시행",
-      url_or_drive_ref: "official://DEMO/statute/civil-581",
+      effective_date_or_version: "가상 판 · 실제 법령 아님",
+      url_or_drive_ref: "fictional://DEMO/digest/sample-17",
       quote_span: "sample-span-4",
-      quote: "당사자가 법적으로 해지권을 행사한 것인지 판단하기 위한 요건. (샘플 요지)",
-      locator_action: "조문 열기",
+      quote: "당사자가 해지권을 행사한 것인지 판단하기 위한 요건. (존재하지 않는 자료의 가상 요지)",
+      locator_action: "가상 자료 열기",
       provenance_verified: false,
       demo: true
     },

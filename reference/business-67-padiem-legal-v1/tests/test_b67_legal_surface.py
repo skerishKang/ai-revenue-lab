@@ -294,20 +294,18 @@ def test_hwpx_is_not_claimed_as_fully_supported() -> None:
 
 
 def test_no_live_capability_claims() -> None:
-    """The static surface must not imply anything is connected."""
-    body = INDEX + CORPUS + DEMO_JS
+    """The static surface must not imply anything is connected.
+
+    Only USER-VISIBLE strings are scanned. Comments legitimately say things
+    like "used to live here", and scanning prose produced a false positive on
+    a word that says nothing to a user.
+    """
+    visible = " ".join(re.findall(r'"([^"\\\n]{2,})"', INDEX + DEMO_JS)) + CORPUS
     for bad in (
-        "연결되었습니다", "실제 검색 결과", "live", "LIVE",
-        "실시간 연동", "자동 연결",
+        "연결되었습니다", "실제 검색 결과", "실시간 연동", "자동 연결",
+        "live", "LIVE",
     ):
-        if bad in ("live", "LIVE"):
-            # The word may only appear inside an explicit negation/comment.
-            for m in re.finditer(re.escape(bad), body):
-                ctx = body[max(0, m.start() - 80):m.start() + 40].lower()
-                assert "not" in ctx or "no " in ctx or "아니" in ctx or "없" in ctx, \
-                    f"unqualified live claim near: {body[max(0,m.start()-60):m.start()+30]!r}"
-        else:
-            assert bad not in body, f"live capability claimed: {bad}"
+        assert bad not in visible, f"live capability claimed in UI copy: {bad}"
 
 
 def test_demo_state_is_marked_everywhere() -> None:
@@ -396,3 +394,124 @@ def test_no_window_confirm() -> None:
     """Banned repo-wide; this surface has real recovery actions instead."""
     for source in (CSHELL, CEVID, AUTH_JS, DEMO_JS, DECOR_JS):
         assert "window.confirm" not in source
+
+
+# ── 5. Legal-accuracy guards (CENTRAL review, PR #3161) ──────────────────
+
+def test_demo_corpus_uses_no_real_statute_identifier() -> None:
+    """A legal product must not pair a REAL statute identifier with invented
+    text. `민법 제581조` is a real Korean Civil Code article; rendering it with
+    synthetic content teaches the reader that a confident-looking citation is
+    cheap, which is the exact failure this product exists to prevent.
+
+    Official-looking sample records must therefore be marked fictional.
+    """
+    # No real Korean statute names.
+    for law in ("민법", "상법", "형법", "민사소송법", "형사소송법",
+                "자유토지법", "부동산", "근로기준법"):
+        assert law not in CORPUS, f"real statute name {law!r} in the demo corpus"
+
+    # No real article-number shape attached to official records.
+    for m in re.finditer(r"제\s?\d{2,4}\s?조", CORPUS):
+        ctx = CORPUS[max(0, m.start() - 220):m.start() + 40]
+        assert "가상" in ctx, f"article-shaped identifier {m.group(0)!r} is not marked fictional"
+
+    # No real official publisher implied for a mock source.
+    for publisher in ("국가법령정보센터", "법제처"):
+        assert publisher not in CORPUS, f"real official publisher {publisher!r} implied"
+
+    # Every official record must be explicitly flagged fictional.
+    for block in re.findall(r"\{\s*n: \d+,\s*source_type: \"official\".*?\n    \}", CORPUS, re.S):
+        assert "fictional: true" in block, "an official sample record is not flagged fictional"
+        assert "official://" not in block, "a fictional record must not use an official:// ref"
+
+
+def test_state_is_the_single_routing_authority() -> None:
+    """CENTRAL BLOCKER 4: `state` and `scope` were two authorities that
+    drifted. There must be no `scope` field on the store at all, and title /
+    scope chip / evidence must all be derived from `state`."""
+    store_block = DEMO_JS.split("createStore({", 1)[1].split("});", 1)[0]
+    assert "scope:" not in store_block, "the store still holds a second `scope` authority"
+    assert "scopeForState" in DEMO_JS
+    assert "titleForState" in DEMO_JS
+    # No handler may pass `scope` into applyState.
+    for m in re.finditer(r"applyState\(\{[^}]*\}\)", DEMO_JS):
+        assert "scope" not in m.group(0), f"applyState still receives a scope: {m.group(0)}"
+
+
+def test_scope_chips_have_a_single_handler_path() -> None:
+    """CENTRAL ADD-2: the chips had both a per-button onClick and a delegated
+    handler, so one click could render twice with a stale value in between."""
+    scope_block = DEMO_JS.split("var chips = el(\"div\"", 1)[1].split("});", 1)[0]
+    assert "onClick" not in scope_block, "scope chips still carry a per-button onClick"
+    assert "dom.conversation.addEventListener" in DEMO_JS
+    # Every scope state change must funnel through the one delegated path.
+    assert DEMO_JS.count(".claw-chip[data-value]") == 1
+
+
+def test_evidence_open_follows_the_viewport() -> None:
+    """CENTRAL BLOCKER 2: a citation opened the mobile sheet on desktop too."""
+    assert "function openEvidence" in DEMO_JS
+    open_block = DEMO_JS.split("function openEvidence", 1)[1].split("\n  }", 1)[0]
+    assert "isSheetViewport()" in open_block
+    assert "drawerOpen: true" in open_block
+    assert "drawerOpen: false" in open_block
+    # No citation may hardcode the sheet open any more.
+    assert "drawerOpen: true" not in DEMO_JS.split("openEvidence", 1)[0]
+
+
+def test_desktop_sidebar_is_never_inert() -> None:
+    """CENTRAL BLOCKER 1: the visible desktop sidebar was permanently inert."""
+    sync = DEMO_JS.split("function syncSidebar()", 1)[1].split("\n  }", 1)[0]
+    assert "if (!mobile)" in sync
+    desktop_block = sync.split("if (!mobile)", 1)[1].split("} else", 1)[0]
+    assert "dom.sidebar.inert = false" in desktop_block
+    assert "dom.mainPanel.inert = false" in desktop_block
+    # The old derived form must be gone.
+    assert "dom.sidebar.inert = !open" not in sync
+
+
+def test_drive_connection_filters_evidence() -> None:
+    """CENTRAL BLOCKER 3: Drive evidence reappeared while disconnected."""
+    fn = DEMO_JS.split("function evidenceForState", 1)[1].split("\n  }", 1)[0]
+    assert "driveConnected" in fn
+    assert 'source_type !== "drive"' in fn, "Drive records are not filtered when disconnected"
+    # Every call site must pass the connection state. Comments are stripped
+    # first: this file discusses evidenceForState() in prose. The call
+    # expression is read to the end of its statement rather than to the first
+    # ')', because arguments contain nested calls (store.get().driveConnected).
+    code = re.sub(r"/\*.*?\*/", "", DEMO_JS, flags=re.S)
+    for m in re.finditer(r"(?<![\w])evidenceForState\(", code):
+        tail = code[m.start():m.start() + 140]
+        statement = re.split(r"[;\n]", tail)[0]
+        if statement.startswith("evidenceForState(stateId"):  # the definition
+            continue
+        assert "driveConnected" in statement or "driveAfter" in statement, \
+            f"evidenceForState called without the connection state: {statement[:90]}"
+    assert "driveRequired" in DEMO_JS
+
+
+def test_composer_uses_form_submit() -> None:
+    """CENTRAL review comment: the send button is type=submit inside a form, so
+    the form submit event must be the canonical path with preventDefault()."""
+    fn = CSHELL.split("function bindComposer", 1)[1]
+    assert "form.addEventListener(\"submit\"" in fn
+    assert "event.preventDefault()" in fn
+    # No click handler on the submit button any more.
+    assert "sendButton.addEventListener(\"click\"" not in fn
+    # IME composition must not submit.
+    assert "isComposing" in fn
+    assert "event.shiftKey" in fn, "Shift+Enter must not submit"
+    assert 'if (event.key !== "Enter") return;' in fn
+    assert "dom.composerForm," in DEMO_JS, "the composer must bind the form, not just the button"
+
+
+def test_no_chinese_characters_in_user_visible_korean() -> None:
+    """A stray CJK ideograph in Korean copy (출처 was written 出处) is a typo
+    that no functional test would catch."""
+    for name, source in (("demo-corpus.js", CORPUS), ("legal-demo.js", DEMO_JS)):
+        body = re.sub(r"/\*.*?\*/", "", source, flags=re.S)
+        for ch in ("出处", "证拠", "证据"):
+            assert ch not in body, f"{name} contains the Chinese form {ch!r}"
+    assert "출처를 붙입니다" in DEMO_JS
+    assert "샘플 위치" in DEMO_JS

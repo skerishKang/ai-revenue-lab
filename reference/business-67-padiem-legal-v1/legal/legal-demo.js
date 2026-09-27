@@ -14,6 +14,20 @@
  * ways by the same code, which is exactly the property that has to hold before
  * this surface is absorbed into Claw.
  *
+ * THREE INVARIANTS this file exists to keep true (each one was a real bug,
+ * each has a browser regression in tests/verify_browser.py):
+ *
+ *   1. `state` is the SINGLE source of truth. Title, scope chip, and evidence
+ *      are all DERIVED from it. There is no second `scope` field that can drift.
+ *
+ *   2. The evidence surface follows the viewport. Desktop (>920px) uses the
+ *      right-hand panel; tablet/mobile (<=920px) uses the bottom sheet. A
+ *      citation click never opens the sheet on desktop.
+ *
+ *   3. Disconnected means disconnected. While Drive is not connected, NO Drive
+ *      evidence may be produced by any state — a citation that cites a document
+ *      the UI says it cannot see is the exact failure this product forbids.
+ *
  * Everything rendered here is MOCK data from data/demo-corpus.js.
  */
 (function (global) {
@@ -36,40 +50,97 @@
     { id: "disconnected", label: "G · Drive 미연결" }
   ];
 
+  /* `state` is the only routing authority. Title, scope chip, and evidence are
+   * derived from it via scopeForState()/titleForState()/evidenceForState().
+   * A `scope` field used to live here too, and the two drifted apart. */
   var store = global.ClawShell.createStore({
     view: "conversation",
     state: "unified",
-    scope: "unified",
     matter: Demo.MATTERS[0].id,
     activeN: 2,
     evidence: [],
-    answer: null,
     driveConnected: true,
+    driveRequired: false,
     drawerOpen: false
   });
 
+  /* The desktop/mobile split that decides panel vs bottom sheet. Matches the
+   * CSS breakpoint exactly; a second number here would desynchronise them. */
+  function isSheetViewport() {
+    return window.matchMedia("(max-width: 920px)").matches;
+  }
+
   var dom = {};
   var renderer = null;
+  var composer = null;
   var traps = { drawer: null, sidebar: null };
 
-  /* ── Evidence selection per state ──────────────────────────────────────── */
-  function evidenceForState(stateId) {
+  /* ── Derived routing views ──────────────────────────────────────────────
+   * These three functions are the ONLY places that turn `state` into something
+   * the user sees. Keeping them pure and adjacent makes it obvious that there
+   * is a single authority. */
+
+  function scopeForState(stateId) {
+    if (stateId === "official" || stateId === "drive" || stateId === "unified") {
+      return stateId;
+    }
+    return "unified";
+  }
+
+  function titleForState(stateId) {
+    switch (stateId) {
+      case "home": return "새 조사";
+      case "official": return "공식 법률자료";
+      case "drive": return "내 Drive";
+      case "provenance": return "페이지 provenance";
+      case "fail-closed": return "근거 없음";
+      case "disconnected": return "Drive 미연결";
+      default: return "통합";
+    }
+  }
+
+  function titleFor(state) {
+    var matter = matterById(state.matter);
+    var base = titleForState(state.state);
+    if (state.state === "home" || !matter) return base;
+    return base + " · " + matter.title;
+  }
+
+  function matterById(id) {
+    for (var i = 0; i < Demo.MATTERS.length; i += 1) {
+      if (Demo.MATTERS[i].id === id) return Demo.MATTERS[i];
+    }
+    return Demo.MATTERS[0];
+  }
+
+  /* ── Evidence selection per state ────────────────────────────────────────
+   * `driveConnected` is a FILTER, not a label. When Drive is disconnected the
+   * Drive records are removed from every state, so no citation can ever point
+   * at a document the sidebar says it cannot see. */
+  function evidenceForState(stateId, driveConnected) {
+    var records;
     switch (stateId) {
       case "official":
-        return Demo.EVIDENCE.filter(function (r) { return r.source_type === "official"; });
+        records = Demo.EVIDENCE.filter(function (r) { return r.source_type === "official"; });
+        break;
       case "drive":
-        return Demo.EVIDENCE.filter(function (r) { return r.source_type === "drive"; });
+        records = Demo.EVIDENCE.filter(function (r) { return r.source_type === "drive"; });
+        break;
       case "provenance":
-        return Demo.EVIDENCE.filter(function (r) { return r.page_or_section; });
+        records = Demo.EVIDENCE.filter(function (r) { return r.page_or_section; });
+        break;
       case "fail-closed":
       case "disconnected":
-        return [];
       case "home":
-        return [];
+        records = [];
+        break;
       case "unified":
       default:
-        return Demo.EVIDENCE.slice();
+        records = Demo.EVIDENCE.slice();
+        break;
     }
+    if (driveConnected) return records;
+    return records.filter(function (r) { return r.source_type !== "drive"; });
   }
 
   function isFailClosedState(stateId) {
@@ -88,7 +159,7 @@
         class: "recent-item",
         "data-matter": matter.id,
         "aria-current": matter.id === state.matter ? "true" : "false",
-        onClick: function () { store.set({ matter: matter.id }); }
+        onClick: function () { applyState({ matter: matter.id }); }
       }, [
         el("span", { text: matter.title }),
         el("span", {
@@ -124,8 +195,8 @@
         type: "button",
         class: "recent-item",
         style: "justify-content:center;",
-        text: "Google Drive 연결",
-        onClick: function () { store.set({ driveConnected: true }); }
+        text: "Google Drive 연결 (DEMO)",
+        onClick: function () { applyState({ driveConnected: true }); }
       }));
     } else {
       Demo.CORPUS.forEach(function (doc) {
@@ -152,6 +223,12 @@
         class: "corpus-empty",
         text: "샘플 자료실 · 실제 Drive 폴더 연결 없음"
       }));
+      /* Say plainly that the corpus is shared demo data, so selecting another
+       * matter does not silently imply it has different documents. */
+      dom.corpus.appendChild(el("p", {
+        class: "corpus-empty",
+        text: "모든 사건에 동일한 샘플 자료를 사용합니다"
+      }));
     }
 
     /* Honest format matrix, always visible. */
@@ -175,7 +252,11 @@
     }
 
     /* Scope bar */
-    var scope = Legal.scopeById(state.state === "fail-closed" || state.state === "disconnected" ? "unified" : state.state);
+    /* The scope bar is DERIVED from state, and its clicks are handled by the
+     * single delegated listener on the conversation container. There is
+     * deliberately no per-button onClick: two paths meant one click could
+     * render twice with a stale scope in between. */
+    var scope = Legal.scopeById(scopeForState(state.state));
     var bar = el("div", { class: "scope-bar" }, [
       el("p", { class: "scope-bar-label", text: "검색 범위" })
     ]);
@@ -185,10 +266,7 @@
         type: "button",
         class: "claw-chip",
         "data-value": s.id,
-        "aria-pressed": s.id === scope.id ? "true" : "false",
-        onClick: function () {
-          store.set({ scope: s.id, state: s.id === "official" || s.id === "drive" ? s.id : "unified" });
-        }
+        "aria-pressed": s.id === scope.id ? "true" : "false"
       }, [
         el("span", { class: "chip-icon", "aria-hidden": "true", text: s.icon }),
         el("span", { text: s.label })
@@ -198,13 +276,27 @@
     bar.appendChild(el("p", { class: "scope-note", text: scope.note }));
     dom.conversation.appendChild(bar);
 
-    if (isFailClosedState(state.state)) {
+    if (isFailClosedState(state.state) || state.driveRequired) {
       dom.conversation.appendChild(renderFailClosed(state));
       return;
     }
 
     /* The user turn */
     var answer = Demo.SAMPLE_ANSWER;
+
+    /* CITATION INTEGRITY GATE.
+     *
+     * The sample answer is fixed text, but the evidence set is not. If any
+     * citation in the answer has no matching record in the panel, the answer
+     * is not groundable and must NOT be rendered — a claim pointing at a
+     * document the interface cannot show is the exact failure this product
+     * exists to prevent. Real backends guarantee this by construction; a
+     * static surface has to check it. */
+    if (!citationsResolve(answer, state.evidence)) {
+      dom.conversation.appendChild(renderFailClosed(state));
+      return;
+    }
+
     dom.conversation.appendChild(el("article", { class: "message user-message" }, [
       el("div", { class: "message-bubble", text: answer.prompt })
     ]));
@@ -234,10 +326,13 @@
             type: "button",
             class: "cite",
             "data-cite": seg.cite,
+            /* Stable id so the drawer focus trap can return focus here after
+             * the conversation is re-rendered by this very click. */
+            id: "cite-" + seg.cite,
             "aria-current": seg.cite === state.activeN ? "true" : "false",
             "aria-label": seg.cite + "번 근거로 이동",
             text: "[" + seg.cite + "]",
-            onClick: function () { applyState({ activeN: seg.cite, drawerOpen: true }); }
+            onClick: function (event) { openEvidence(seg.cite, event.currentTarget); }
           }));
         } else {
           p.appendChild(document.createTextNode(seg.t));
@@ -252,7 +347,7 @@
       el("button", {
         type: "button",
         class: "answer-action",
-        onClick: function () { store.set({ drawerOpen: true }); }
+        onClick: function (event) { openEvidence(state.activeN, event.currentTarget); }
       }, [
         el("span", { class: "action-icon", "aria-hidden": "true", text: "⌗" }),
         el("span", { text: "근거 " + state.evidence.length + "개 보기" })
@@ -261,7 +356,7 @@
         type: "button",
         class: "answer-action",
         text: "검색 범위 바꾸기",
-        onClick: function () { applyState({ state: "unified", scope: "unified" }); }
+        onClick: function () { applyState({ state: "unified" }); }
       })
     ]));
     body.appendChild(el("p", {
@@ -276,6 +371,17 @@
     ]));
   }
 
+  /* Every [n] the answer cites must resolve to a record actually rendered. */
+  function citationsResolve(answer, records) {
+    var present = {};
+    records.forEach(function (r) { present[r.n] = true; });
+    var cited = Legal.evidenceNumbers(answer);
+    for (var i = 0; i < cited.length; i += 1) {
+      if (!present[cited[i]]) return false;
+    }
+    return true;
+  }
+
   function renderEmptyState() {
     var wrap = el("div", { class: "empty-state" });
     wrap.appendChild(el("p", { class: "eyebrow", text: "PADIEM LEGAL · B67" }));
@@ -286,7 +392,7 @@
     ]));
     wrap.appendChild(el("p", {
       class: "empty-copy",
-      text: "질문하면 공식 법률자료와 내 자료에서 근거를 찾아出处를 붙입니다. 확인되지 않은 내용은 결론으로 제시하지 않습니다."
+      text: "질문하면 공식 법률자료와 내 자료에서 근거를 찾아 출처를 붙입니다. 확인되지 않은 내용은 결론으로 제시하지 않습니다."
     }));
 
     var starters = [
@@ -301,7 +407,8 @@
         class: "starter",
         onClick: function () {
           dom.composerInput.value = s.prompt;
-          store.set({ state: "unified", scope: "unified" });
+          composer.sync();
+          applyState({ state: "unified" });
           dom.composerInput.focus();
         }
       }, [
@@ -322,25 +429,54 @@
   }
 
   function renderFailClosed(state) {
-    var fc = Demo.FAIL_CLOSED;
+    /* Two different reasons to have no evidence, and they must not read the
+     * same. "We looked and found nothing" is a result. "We could not look
+     * because Drive is not connected" is a precondition failure, and offering
+     * 'widen the search' there would be a dead end. */
+    var driveBlocked = state.driveRequired === true || state.state === "disconnected";
+
+    var copy = driveBlocked
+      ? {
+          title: "Drive 자료에 접근할 수 없습니다.",
+          body: "선택한 사건의 자료가 Google Drive에 있고, 현재 이 화면에서는 Drive가 연결되어 있지 않습니다.",
+          reason: "연결되지 않은 자료실은 검색 범위에 포함할 수 없습니다. 근거 없는 답변을 만들지 않고 여기서 멈춥니다.",
+          badge: "DEMO · 연결 필요",
+          actions: [
+            { id: "widen", label: "공식 법률자료만 검색" },
+            { id: "connect", label: "Google Drive 연결 (DEMO)" }
+          ],
+          note: "연결 전에는 내 Drive 자료를 근거로 인용할 수 없습니다."
+        }
+      : {
+          title: Demo.FAIL_CLOSED.title,
+          body: Demo.FAIL_CLOSED.body,
+          reason: Demo.FAIL_CLOSED.reason,
+          badge: "DEMO · 근거 없음",
+          actions: Demo.FAIL_CLOSED.actions,
+          note: "근거가 없는 상태에서 법률 결론을 생성하지 않는 것은 이 제품의 기본 동작입니다."
+        };
+
     var wrap = el("div", { class: "empty-state" });
 
     var card = el("div", { class: "ev-empty", style: "max-width:560px;" });
-    card.appendChild(el("p", { class: "ev-empty-title", style: "font-size:16px;", text: fc.title }));
-    card.appendChild(el("p", { class: "ev-empty-body", text: fc.body }));
-    card.appendChild(el("p", { class: "ev-empty-body", text: fc.reason }));
+    card.appendChild(el("p", { class: "ev-empty-title", style: "font-size:16px;", text: copy.title }));
+    card.appendChild(el("p", { class: "ev-empty-body", text: copy.body }));
+    card.appendChild(el("p", { class: "ev-empty-body", text: copy.reason }));
 
     var actions = el("div", { class: "ev-actions" });
-    fc.actions.forEach(function (action) {
+    copy.actions.forEach(function (action) {
       actions.appendChild(el("button", {
         type: "button",
         class: "ev-action" + (action.id === "widen" ? " is-primary" : ""),
         text: action.label,
         onClick: function () {
           if (action.id === "widen") {
-            applyState({ state: "unified", scope: "unified" });
+            /* Escape hatch that does NOT need Drive: official sources only. */
+            applyState({ state: "official" });
+          } else if (action.id === "connect") {
+            applyState({ driveConnected: true, state: "drive" });
           } else {
-            applyState({ state: "drive", scope: "drive" });
+            applyState({ state: "drive" });
           }
         }
       }));
@@ -353,10 +489,10 @@
     var body = el("div", { class: "assistant-body" });
     body.appendChild(el("div", { class: "assistant-meta" }, [
       el("span", { text: "Padiem Legal" }),
-      el("span", { class: "demo-label", text: "DEMO · 근거 없음" })
+      el("span", { class: "demo-label", text: copy.badge })
     ]));
     body.appendChild(el("div", { class: "assistant-content" }, [
-      el("p", { text: fc.body })
+      el("p", { text: copy.body })
     ]));
     wrap.appendChild(el("article", { class: "message assistant-message", style: "margin-top:22px;" }, [
       el("div", { class: "assistant-avatar", "aria-hidden": "true", text: "P" }),
@@ -366,7 +502,7 @@
     wrap.appendChild(el("p", {
       class: "composer-note",
       style: "text-align:left;margin-top:18px;",
-      text: "근거가 없는 상태에서 법률 결론을 생성하지 않는 것은 이 제품의 기본 동작입니다."
+      text: copy.note
     }));
 
     return wrap;
@@ -376,9 +512,20 @@
   function renderEvidence() {
     var state = store.get();
     var records = state.evidence;
-    var emptyState = isFailClosedState(state.state)
-      ? { title: "표시할 근거가 없습니다.", body: "답변에 인용할 수 있는 근거가 확인되지 않았습니다.", reason: null }
-      : null;
+    var emptyState;
+    if (state.driveRequired) {
+      emptyState = {
+        title: "Drive 자료에 접근할 수 없습니다.",
+        body: "Drive가 연결되어 있지 않아 사건 자료실의 근거를 사용할 수 없습니다.",
+        reason: null
+      };
+    } else if (isFailClosedState(state.state)) {
+      emptyState = {
+        title: "표시할 근거가 없습니다.",
+        body: "답변에 인용할 수 있는 근거가 확인되지 않았습니다.",
+        reason: null
+      };
+    }
 
     var ctx = { activeN: state.activeN };
     renderer.render(dom.evidenceList, records, ctx, emptyState);
@@ -393,7 +540,10 @@
   }
 
   function syncDrawer() {
-    var open = store.get().drawerOpen;
+    /* Belt and braces: the sheet is a mobile-only surface, so it is closed
+     * unconditionally at desktop width even if state says otherwise. */
+    var open = isSheetViewport() && store.get().drawerOpen;
+    dom.evidenceTriggerRow.hidden = store.get().state === "home" || !isSheetViewport();
     dom.drawer.setAttribute("data-open", open ? "true" : "false");
     dom.drawerScrim.hidden = !open;
     /* Keep the sheet in the DOM so it can animate; inert it when closed so it
@@ -409,25 +559,70 @@
 
   function openLocator(record) {
     dom.runtimeNote.textContent =
-      "샘퍼 위치 '" + (record.page_or_section || "") + "' — 실제 문서 뷰어는 아직 연결되지 않았습니다.";
-    applyState({ activeN: record.n, drawerOpen: true });
+      "샘플 위치 '" + (record.page_or_section || "") + "' — 실제 문서 뷰어는 아직 연결되지 않았습니다.";
+    openEvidence(record.n);
+  }
+
+  /* ── One responsive evidence-open path ───────────────────────────────────
+   * Desktop already has a full evidence panel, so opening the bottom sheet
+   * there was a second, competing surface for the same list. Citation clicks
+   * now route here and the viewport decides: highlight + scroll the panel on
+   * desktop, open the sheet on tablet/mobile. */
+  function openEvidence(n, caller) {
+    if (isSheetViewport()) {
+      if (traps.drawer && caller) traps.drawer.setReturnFocus(caller);
+      applyState({ activeN: n, drawerOpen: true });
+      return;
+    }
+    if (traps.drawer) traps.drawer.setReturnFocus(null);
+    applyState({ activeN: n, drawerOpen: false });
+    scrollPanelToEvidence(n);
+  }
+
+  function scrollPanelToEvidence(n) {
+    if (!dom.evidencePanel) return;
+    var card = dom.evidencePanel.querySelector('.ev[data-evidence-n="' + n + '"]');
+    if (!card) return;
+    if (card.scrollIntoView) {
+      card.scrollIntoView({ block: "nearest", inline: "nearest" });
+    }
   }
 
   /* ── State switching ──────────────────────────────────────────────────── */
   /* The store is the single source of truth. Every mutation goes through
    * store.set(), and a single subscription drives all rendering — so a handler
    * that only sets state can never leave the UI out of sync with it. */
+  /* Every state change is normalised here, atomically, before it reaches the
+   * store — so title, scope chip, and evidence can never disagree. Callers
+   * pass only `state`; they never set scope or evidence directly. */
   function applyState(patch) {
     var next = Object.assign({}, patch);
-    if (next.state !== undefined) {
-      next.evidence = evidenceForState(next.state);
+    var state = store.get();
+
+    /* Evidence is recomputed whenever EITHER the state or the Drive connection
+     * changes. Keying it on `state` alone meant the explicit "connect" action —
+     * which changes only driveConnected — left the panel stale. */
+    if (next.state !== undefined || next.driveConnected !== undefined) {
       if (next.state === "disconnected") next.driveConnected = false;
       if (next.state === "home") next.drawerOpen = false;
-      if (next.state === "provenance") {
-        next.evidence = evidenceForState("provenance");
-        next.activeN = 1;
-      }
+      if (next.state === "provenance") next.activeN = 1;
+
+      /* Recompute from the state we are moving TO and the connection state we
+       * will have AFTER the move. Getting this order wrong is what let Drive
+       * evidence reappear while the sidebar said "disconnected". */
+      var driveAfter = next.driveConnected !== undefined
+        ? next.driveConnected
+        : state.driveConnected;
+      var stateAfter = next.state !== undefined ? next.state : state.state;
+      next.evidence = evidenceForState(stateAfter, driveAfter);
+      next.driveRequired = stateAfter === "drive" && !driveAfter;
     }
+
+    /* The bottom sheet is a mobile-only surface. Never leave it flagged open
+     * on desktop, whatever the caller asked for. */
+    if (!next.drawerOpen && !isSheetViewport()) next.drawerOpen = false;
+    if (next.drawerOpen === true && !isSheetViewport()) next.drawerOpen = false;
+
     store.set(next);
     persist();
   }
@@ -436,6 +631,9 @@
     try { localStorage.setItem(STORAGE_KEY, store.get().state); } catch (e) { /* private mode */ }
   }
 
+  /* Restore passes ONLY a state id, so the scope chip and title are re-derived
+   * the same way a fresh visit would derive them. Persisting scope separately
+   * was the second place the two authorities could drift. */
   function restore() {
     var saved;
     try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) { saved = null; }
@@ -445,9 +643,7 @@
   function renderAll() {
     var state = store.get();
     dom.shell.setAttribute("data-view", state.state === "home" ? "home" : "conversation");
-    dom.topbarTitle.textContent = state.state === "home"
-      ? "새 조사"
-      : (Legal.scopeById(state.scope).label + " · " + (Demo.MATTERS[0].title));
+    dom.topbarTitle.textContent = titleFor(state);
     dom.evidencePanel.hidden = state.state === "home";
     dom.evidenceTriggerRow.hidden = state.state === "home";
 
@@ -476,9 +672,25 @@
       // remove() inside a class observer deadlocks the renderer.
       if (!mobile && dom.shell.classList.contains("sidebar-open")) {
         dom.shell.classList.remove("sidebar-open");
+        open = false;
       }
-      dom.sidebar.inert = !open;
-      dom.mainPanel.inert = open;
+
+      /* Three explicit states. The previous code derived `open` from
+       * `mobile && ...` and then applied `inert = !open`, which made the
+       * permanently visible DESKTOP sidebar inert — a control the user could
+       * see and not use. `inert` here means "hidden behind a closed drawer",
+       * never "not interactive". */
+      if (!mobile) {
+        dom.sidebar.inert = false;   // desktop: always interactive
+        dom.mainPanel.inert = false;
+      } else if (open) {
+        dom.sidebar.inert = false;   // mobile open: the drawer IS the sidebar
+        dom.mainPanel.inert = true;
+      } else {
+        dom.sidebar.inert = true;    // mobile closed: off-canvas, hide from a11y
+        dom.mainPanel.inert = false;
+      }
+
       dom.menuButton.setAttribute("aria-expanded", open ? "true" : "false");
       dom.sidebarScrim.hidden = !open;
     } finally {
@@ -512,6 +724,7 @@
       drawerClose: document.getElementById("drawerClose"),
       panelClose: document.getElementById("panelClose"),
       drawerCount: document.getElementById("drawerCount"),
+      composerForm: document.getElementById("composerForm"),
       composerInput: document.getElementById("composerInput"),
       sendButton: document.getElementById("sendButton"),
       runtimeNote: document.getElementById("runtimeNote"),
@@ -527,34 +740,38 @@
       },
       onLocator: openLocator,
       onEmptyAction: function (actionId) {
-        if (actionId === "widen") applyState({ state: "unified", scope: "unified" });
-        if (actionId === "check-drive") applyState({ state: "drive", scope: "drive" });
+        if (actionId === "widen") applyState({ state: "unified" });
+        if (actionId === "check-drive") applyState({ state: "drive" });
       }
     });
 
     /* Initial evidence, set before the subscription is installed so the
      * explicit renderAll() at the end of init() owns the first paint. */
-    store.set({ evidence: evidenceForState("unified") });
+    store.set({ evidence: evidenceForState("unified", store.get().driveConnected) });
 
     /* Demo state switcher */
     global.ClawShell.bindToggleGroup(dom.stateChips, function (value) { applyState({ state: value }); });
 
-    /* Scope chips are re-rendered per conversation pass, so they are bound by
-     * delegation on the conversation container instead of a static group. */
+    /* Scope chips are re-rendered on every conversation pass, so they are bound
+     * ONCE by delegation here. This is the only scope-click path; the chips
+     * themselves carry no onClick. */
     dom.conversation.addEventListener("click", function (event) {
       var chip = event.target.closest('.claw-chip[data-value]');
       if (!chip) return;
       var value = chip.getAttribute("data-value");
-      applyState({ scope: value, state: value === "official" || value === "drive" ? value : "unified" });
+      applyState({ state: value === "official" || value === "drive" ? value : "unified" });
     });
 
-    /* Composer */
-    global.ClawShell.bindComposer(dom.composerInput, dom.sendButton, function (text) {
-      dom.composerInput.value = "";
-      dom.sendButton.disabled = true;
-      applyState({ state: "unified", scope: "unified" });
-      dom.runtimeNote.textContent = "샘플 답변을 표시했습니다. 실제 검색은 연결되지 않았습니다.";
-    });
+    /* Composer: the form submit event is the canonical send path. */
+    composer = global.ClawShell.bindComposer(
+      dom.composerForm, dom.composerInput, dom.sendButton, function () {
+        dom.composerInput.value = "";
+        composer.autosize();
+        composer.sync();
+        applyState({ state: "unified" });
+        dom.runtimeNote.textContent = "샘플 답변을 표시했습니다. 실제 검색은 연결되지 않았습니다.";
+      }
+    );
 
     /* Drawer + sidebar traps */
     traps.drawer = global.ClawShell.createFocusTrap(dom.drawer, function () {
@@ -565,12 +782,15 @@
       syncSidebar();
     });
 
-    dom.evidenceTrigger.addEventListener("click", function () { applyState({ drawerOpen: true }); });
     dom.drawerClose.addEventListener("click", function () { applyState({ drawerOpen: false }); });
     dom.drawerScrim.addEventListener("click", function () { applyState({ drawerOpen: false }); });
+    dom.evidenceTrigger.addEventListener("click", function (event) {
+      if (traps.drawer) traps.drawer.setReturnFocus(event.currentTarget);
+      applyState({ drawerOpen: true });
+    });
 
     dom.panelClose.addEventListener("click", function () {
-      applyState({ state: "home", scope: "unified" });
+      applyState({ state: "home" });
     });
 
     dom.menuButton.addEventListener("click", function () {
@@ -589,7 +809,7 @@
     });
 
     dom.newResearch.addEventListener("click", function () {
-      applyState({ state: "home", scope: "unified" });
+      applyState({ state: "home" });
       dom.composerInput.focus();
     });
 
@@ -631,5 +851,13 @@
     init();
   }
 
-  global.B67DemoApp = { store: store, STATES: STATES, applyState: applyState, evidenceForState: evidenceForState };
+  global.B67DemoApp = {
+    store: store,
+    STATES: STATES,
+    applyState: applyState,
+    evidenceForState: evidenceForState,
+    scopeForState: scopeForState,
+    titleForState: titleForState,
+    isSheetViewport: isSheetViewport
+  };
 })(window);

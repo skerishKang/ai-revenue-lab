@@ -114,7 +114,8 @@ in this static slice.
 | DOCX | **EXISTS** — same allow-list, same Worker caveat | MOCK |
 | HWPX | **TEXT EXTRACTION ONLY** — `extract_hwpx_text` + `hwpx_skill.py`; the module itself pins `HWPX_FULL_SPEC_SUPPORT = "NO"` and 10 edit operations `NOT_CLAIMED` | Shown as `텍스트 추출만` |
 | Legacy `.hwp` | **UNSUPPORTED** — deliberately excluded from the allow-list (OLE2 binary) | Shown as `미지원` |
-| Korean official legal API (법령·판례) | **NOT IMPLEMENTED** | MOCK |
+| Korean official legal API (법령·판례) | **NOT IMPLEMENTED** | MOCK — the sample official record uses a **fictional** identifier, see §5 |
+| Sample official source | **MUST BE FICTIONAL** — a real statute number paired with invented content is the hallucination pattern this product exists to stop | `가상 법률요약집 · 가상 제17조`, `fictional://` ref, flagged `fictional: true` |
 | Page/section provenance | **NOT IN THE EVIDENCE GRAPH** — `evidence_graph.py` has no `document_id`/`page`/`section`/`span` field. Locators exist only in the document-segment subsystem (`document_semantics.DocumentLocator`) | Every locator is rendered **marked `미검증`** |
 | Durable evidence storage | **DOES NOT EXIST** — `document_evidence_projection.py` states an in-memory port only | Not claimed |
 
@@ -131,6 +132,21 @@ in this static slice.
 
 ## 5. The provenance design, and why it is honest
 
+### The sample official source is fictional on purpose
+
+The first slice used `민법 제581조` — a **real** Korean Civil Code article —
+with invented content. That is precisely the hallucination pattern this product
+exists to stop, and doing it in the demo teaches a reader that a
+confident-looking citation is cheap.
+
+The sample record is now `가상 법률요약집 · 가상 제17조`: an identifier that does
+not exist, deliberately **not** named after a real law so no reader can
+pattern-match it onto a real article, referenced with a `fictional://` scheme
+rather than `official://`, and flagged `fictional: true`. Searching for it
+returns nothing, which is the correct outcome. A static test
+(`test_demo_corpus_uses_no_real_statute_identifier`) fails the build if a real
+statute name, an article-shaped identifier, or an official publisher reappears.
+
 `#3138` asked for a page/section UI that does not look model-generated. The
 source audit says something stronger: **the evidence graph cannot supply a page
 number at all.** So the UI is built around that truth:
@@ -144,6 +160,51 @@ number at all.** So the UI is built around that truth:
    unverified.
 4. The badge that says `DEMO` sits on the card itself, not only in a global
    banner, so a screenshot of a single card is still honest.
+
+---
+
+## 5b. Four invariants (each was a real defect, each has a regression)
+
+These are the properties the surface guarantees. All were broken at least once,
+and all are now asserted at the interaction level in `verify_browser.py`.
+
+### 1. `state` is the single routing authority
+
+Title, scope chip, and evidence are all **derived** from `state` by
+`scopeForState()` / `titleForState()` / `evidenceForState()`. There is no
+`scope` field on the store at all. A surface that shows `본문 = 공식 법률자료`
+under a `제목 = 통합` header teaches a lawyer to distrust the header, which is
+the one thing a citation UI cannot afford.
+
+`matter` is the one axis that is *not* persisted, so a reload returns it to the
+first sample matter. That is deliberate and is asserted as such.
+
+### 2. The evidence surface follows the viewport
+
+Desktop (> 920px) uses the right-hand panel; tablet/mobile (≤ 920px) uses the
+bottom sheet. Citation clicks route through a single `openEvidence(n, caller)`
+and the viewport decides. On desktop the composer-side trigger — the mobile
+entry point to the sheet — is not rendered, so the panel never competes with a
+second control for the same list.
+
+### 3. Disconnected means disconnected
+
+`driveConnected` is a **filter on the evidence set**, not a label. While Drive is
+disconnected, no state can produce a Drive record. A Drive-scoped query shows a
+connection-required state rather than an empty answer, and the only way back is
+an explicit, visibly labelled `DEMO` connect action.
+
+This is the sharpest edge in the product. "The interface says it cannot see my
+files, but it just cited one" is the exact failure it exists to prevent — and
+it is a state-machine bug, not a copy problem.
+
+### 4. Citation integrity (a consequence of the third)
+
+The sample answer is fixed text but the evidence set is not. Before rendering an
+answer, every `[n]` it cites is checked against the records actually in the
+panel; if any citation does not resolve, the surface **fails closed** instead of
+rendering a claim that points at evidence it cannot show. A real backend
+guarantees this by construction — a static surface has to check it explicitly.
 
 ---
 
@@ -245,12 +306,15 @@ failure.
   (920/620), 44/48px touch floors, 16px input floor, per-layer reduced-motion,
   single live region, single h1; the shared layers stay free of Legal
   vocabulary; and the honesty claims (unverified locators, HWP unsupported, no
-  second Drive/evidence/OCR implementation) cannot be quietly dropped.
+  real statute identifier, no second Drive/evidence/OCR implementation) cannot be
+  quietly dropped. **46 tests**.
 - **`verify_browser.py`** — no console errors, no horizontal overflow, all touch
   targets ≥ 44px, every keyboard tab stop shows a focus ring, the evidence
-  panel is present at desktop and *absent* at mobile (not squeezed), the drawer
-  takes focus on open and returns it to the trigger on Escape, and the
-  fail-closed state shows zero evidence cards.
+  panel is present at desktop and *absent* at mobile (not squeezed), and the
+  four invariants in §5b are each checked by **real interaction**: the desktop
+  sidebar is clicked, a citation is clicked, Drive is disconnected and
+  reconnected, state is switched and the page reloaded, and the composer is
+  driven by pointer, Enter, and Shift+Enter.
 - **`verify_visual.py`** — no clipped text, nothing trapped behind the fixed
   composer, the fixed composer never overlaps the evidence panel, the three
   desktop columns are balanced, and every measured text/background pair clears
@@ -280,7 +344,42 @@ Screenshots land in `docs/`: `desktop|tablet|mobile-B-unified.png`,
 
 ---
 
-## 12. Known gaps and follow-on work
+## 12. Defects found by verification, and fixed
+
+Recorded because the useful part of this slice is not the pixels — it is that
+none of these are visible in a screenshot.
+
+1. A `MutationObserver` on `class` calling `classList.remove()` **deadlocked the
+   renderer** — `setAttribute` fires a mutation record even when the value is
+   unchanged, so the sync re-triggered itself forever. The canonical `a11y.js`
+   pattern needs this guard.
+2. The state store had **no subscriber**, so handlers that only called
+   `store.set()` left the UI unchanged and every click silently did nothing.
+3. The fixed composer was centred on the whole main area instead of the
+   conversation column, **overlapping the evidence panel** at desktop widths.
+4. The evidence card never received its classification attribute, so **every
+   authority rail rendered identically** — the primary/secondary distinction the
+   issue asked for silently did not exist.
+5. `mainPanel` was missing from the DOM handle map, which **aborted `init()`**
+   halfway and left every event handler unbound.
+6. (CENTRAL review) The **desktop sidebar was permanently `inert`** — visible but
+   dead. A tab-count check cannot catch this, because `inert` elements are
+   skipped by the tab order, so the regression now clicks the controls for real.
+7. (CENTRAL review) A **citation opened the mobile sheet on desktop** too,
+   giving the same list two competing surfaces at the same width.
+8. (CENTRAL review) **Drive evidence reappeared while disconnected**, producing an
+   answer that cited documents the sidebar said it could not see.
+9. (CENTRAL review) **`state` and `scope` were two authorities** that drifted,
+   including across a reload.
+10. (CENTRAL review) The demo used a **real statute number with fake content**.
+11. Opening the evidence sheet **re-renders its own caller**, so focus
+    restoration silently failed: the captured node was already detached, and the
+    trap re-ran on every render, re-capturing `<body>`. The trap now takes the
+    caller explicitly at click time and re-resolves it by id.
+
+---
+
+## 13. Known gaps and follow-on work
 
 Ordered by what blocks the next slice.
 
@@ -298,7 +397,7 @@ Ordered by what blocks the next slice.
 7. **Mobile/PWA hardening** and a lawyer-authored benchmark set with gold
    sources.
 
-## 13. What was explicitly not done
+## 14. What was explicitly not done
 
 Per the slice boundary: no Production deploy, no DNS, no Cloudflare mutation, no
 OAuth scope or credential change, no DB migration, no real Drive connection, no

@@ -77,6 +77,7 @@
 
   function createFocusTrap(root, onEscape) {
     var previous = null;
+    var override = null;
     var active = false;
 
     function onKeydown(event) {
@@ -100,9 +101,31 @@
       }
     }
 
+    /* Re-resolve the element to return focus to. Opening the sheet can
+     * re-render the caller (the citation that opened it is rebuilt on every
+     * state change), which leaves the captured node detached — focusing a
+     * detached node is a silent no-op and focus falls to <body>. Re-query by a
+     * stable id so focus actually lands back on the control the user pressed. */
+    function restoreFocus() {
+      var target = override || previous;
+      if (!target) return;
+      if (!target.isConnected) {
+        var id = target.getAttribute("id");
+        if (id) target = document.getElementById(id);
+      }
+      if (target && target.isConnected && typeof target.focus === "function") {
+        target.focus();
+      }
+    }
+
     return {
       open: function () {
-        previous = document.activeElement;
+        /* Idempotent: the drawer can stay open across many re-renders, and each
+         * one re-invokes open(). Re-capturing `previous` then stored whatever
+         * happened to be focused mid-render (usually <body>) instead of the
+         * control the user actually pressed, so focus was never returned. */
+        if (active) return;
+        if (!override) previous = document.activeElement;
         active = true;
         document.addEventListener("keydown", onKeydown, true);
         var items = focusables(root);
@@ -111,9 +134,16 @@
       close: function () {
         active = false;
         document.removeEventListener("keydown", onKeydown, true);
-        if (previous && typeof previous.focus === "function") previous.focus();
+        restoreFocus();
         previous = null;
       },
+      /* Register the caller explicitly, at click time.
+       *
+       * Opening the sheet re-renders the caller itself (a citation is rebuilt
+       * on every state change), so by the time open() runs the original node
+       * is already detached and document.activeElement has fallen to <body>.
+       * Capturing later therefore always loses the target. */
+      setReturnFocus: function (element) { override = element || null; },
       isActive: function () { return active; }
     };
   }
@@ -148,9 +178,19 @@
     };
   }
 
-  /* ── Composer wiring ───────────────────────────────────────────────────── */
-  function bindComposer(input, sendButton, onSubmit) {
-    if (!input || !sendButton) return;
+  /* ── Composer wiring ─────────────────────────────────────────────────────
+   * The FORM SUBMIT event is the canonical send path. Pointer-send on a
+   * type="submit" button and keyboard-send both route through it, so there is
+   * exactly one code path and exactly one preventDefault() that stops the page
+   * from navigating. Binding a click handler to the submit button instead would
+   * leave native form submission running alongside it.
+   *
+   * Enter does not natively submit a form from a <textarea>, so Enter is
+   * mapped onto the same handler explicitly. Shift+Enter stays a newline, and
+   * composition is respected so Korean IME input is not submitted mid-composition.
+   */
+  function bindComposer(form, input, sendButton, onSubmit) {
+    if (!form || !input || !sendButton) return;
 
     function autosize() {
       input.style.height = "auto";
@@ -161,20 +201,29 @@
       sendButton.disabled = input.value.trim() === "";
     }
 
-    input.addEventListener("input", function () { autosize(); sync(); });
-    input.addEventListener("keydown", function (event) {
-      /* Enter sends, Shift+Enter newlines — the canonical chat behavior. */
-      if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
-        event.preventDefault();
-        if (!sendButton.disabled) onSubmit(input.value.trim());
-      }
+    function submit() {
+      var text = input.value.trim();
+      if (text === "") return;
+      onSubmit(text);
+    }
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      submit();
     });
-    sendButton.addEventListener("click", function () {
-      if (!sendButton.disabled) onSubmit(input.value.trim());
+
+    input.addEventListener("input", function () { autosize(); sync(); });
+
+    input.addEventListener("keydown", function (event) {
+      if (event.key !== "Enter") return;
+      if (event.shiftKey) return;              // Shift+Enter inserts a newline
+      if (event.isComposing || event.keyCode === 229) return;  // IME composition
+      event.preventDefault();
+      submit();
     });
 
     sync();
-    return { autosize: autosize, sync: sync };
+    return { autosize: autosize, sync: sync, submit: submit };
   }
 
   global.ClawShell = {

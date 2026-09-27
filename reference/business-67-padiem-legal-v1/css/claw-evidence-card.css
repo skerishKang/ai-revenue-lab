@@ -293,6 +293,13 @@
 .evidence-trigger:hover { background: var(--accent); color: var(--accent-contrast); }
 .evidence-trigger:disabled { cursor: not-allowed; border-color: var(--card-border); background: var(--card-bg); color: var(--muted); }
 
+@media (min-width: 921px) {
+  /* The composer-side evidence trigger is the mobile entry point to the sheet.
+   * On desktop the right-hand panel is always visible, so the trigger would be
+   * a second, competing control for the same list. */
+  .evidence-trigger-row { display: none !important; }
+}
+
 @media (max-width: 920px) {
   /* The 3-column desktop panel is NOT squeezed into mobile. It is removed, and
    * the same card list is served by the bottom sheet instead. */
