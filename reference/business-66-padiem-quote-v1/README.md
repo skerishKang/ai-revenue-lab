@@ -44,12 +44,14 @@ This is a Cloudflare Pages beta URL only. No custom domain or public product bra
 reference/business-66-padiem-quote-v1/
 ├─ index.html                    화면 구조만 (약 183줄)
 ├─ styles.css                    스타일 + A4 인쇄 규격 (약 134줄)
-├─ quote-core.js                 견적 도메인 로직 — DOM 없음, 브라우저/Node 겸용 (약 219줄)
-├─ app.js                        UI 레이어 — QuoteDraft 상태·렌더링·자동저장 (약 346줄)
+├─ quote-core.js                 견적 도메인 로직 — DOM 없음, 브라우저/Node 겸용
+├─ quote-extraction.js           모델 독립 추출 계약 — 검증·provenance·QuoteDraft candidate
+├─ app.js                        UI 레이어 — QuoteDraft 상태·렌더링·자동저장 + reviewed apply seam
 ├─ DEMO_GUIDE.md                 데모 운영 가이드 (시연 스크립트·PDF 저장 주의·자동 저장)
 ├─ tests/
-│  ├─ static-contract.test.cjs   정적 계약 테스트 (14개 계약)
-│  └─ quote-core.test.cjs        도메인 로직 Node 단위 테스트
+│  ├─ static-contract.test.cjs   정적/권한 경계 계약
+│  ├─ quote-core.test.cjs        도메인 로직 Node 단위 테스트
+│  └─ quote-extraction.test.cjs  추출 결과 검증·QuoteDraft 경계 테스트
 └─ README.md
 ```
 
@@ -74,8 +76,9 @@ Every file stays far below the 500-line guideline. No framework, no build step.
 ## Verification
 
 ```bash
-node tests/quote-core.test.cjs      # money parse/format, 3-mode VAT math, valid-until, draft normalization
-node tests/static-contract.test.cjs # 14 static contracts (structure, schema, save/restore, print, non-live guards)
+node tests/quote-core.test.cjs       # money parse/format, 3-mode VAT math, valid-until, draft normalization
+node tests/quote-extraction.test.cjs # model-independent extraction validation + QuoteDraft candidate mapping
+node tests/static-contract.test.cjs  # structure, authority, save/restore, print, non-live guards
 ```
 
 The static contract pins the screen structure, the QuoteDraft schema, draft save/restore,
@@ -96,17 +99,26 @@ The UI names the next steps but does not pretend they work:
 
 No file is uploaded, no email is sent, and no credential is required by this demo.
 
-## Next implementation seam
+## Extraction boundary
 
-All future input modes should converge on one normalized `QuoteDraft` domain object before rendering:
+Issue #3147 adds a provider/model-independent boundary:
 
 ```text
-manual form ────┐
-upload/OCR ─────┼→ QuoteDraft → validation/calculation → renderer → PDF
-chat input ─────┘
+provider/model output
+→ QuoteExtraction.normalizeExtraction()
+→ bounded extraction facts + separate evidence/warnings
+→ explicit reviewed apply
+→ QuoteDraft candidate
+→ QuoteCore.normalizeDraft()
+→ deterministic calculation/render/PDF
 ```
 
-AI may extract or normalize fields, but money arithmetic remains deterministic application code
-(`quote-core.js`).
+The extraction layer never owns line amount, supply, VAT, grand total, or valid-until calculations.
+Untrusted source totals are ignored. Missing extraction fields remain null at the extraction boundary;
+when an extraction is explicitly applied, missing numeric item fields become editable zero placeholders
+rather than fabricated extracted values.
 
-Refs #3136, #3144.
+The current upload/chat buttons remain non-live until a governed backend/model adapter is connected.
+No provider/model ID or secret lives in the B66 browser code.
+
+Refs #3136, #3144, #3147.
