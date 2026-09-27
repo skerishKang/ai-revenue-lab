@@ -64,6 +64,7 @@ The following entries are intentionally **not canonical**. They are recorded so 
 | Proposed No. | Stable slug | Product | Proposed workspace | Current lifecycle | Boundary | Evidence |
 |---:|---|---|---|---|---|---|
 | 60 | `ai-api` | AI API / AI API 탐색 허브 | `apps/ai-api/` — not created by registration alone | `concept`; UI exploration in progress; backend frozen | Discovery/deal intelligence owns current API/provider/model offers, source verification, expiry/eligibility and cinematic discovery. Business 14 remains the execution/routing platform. | Issue #650; `BUSINESS_60_AI_API_PROPOSAL.md` |
+| 66 | `padiem-quote` | Padiem Quote / 파디엠 견적 | `reference/business-66-padiem-quote-v1/` | `private_preview`; rapid customer quotation demo — manual input → deterministic supply/VAT/total → A4 preview → browser print-to-PDF; upload/OCR/chat/email naming is explicitly non-live | Browser-local synthetic state only: no backend, no authentication, no persistence beyond this-browser localStorage, no email sending, and no Production/Cloudflare deployment is implied by numbering. Money and date math stay deterministic application code (`quote-core.js`); AI extraction remains future work. | Issue #3136; PR #3137 (Draft) |
 
 ## 4. Reconciled numbering history for B6–B12
 
