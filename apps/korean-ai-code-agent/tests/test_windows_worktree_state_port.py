@@ -12,6 +12,8 @@ import os
 import subprocess
 import sys
 import tempfile
+import threading
+import time
 import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -37,6 +39,7 @@ from kagent.local_agent_permissions import (
     default_device_permission_profile,
 )
 from kagent.local_agent_management import compose_fail_closed_windows_runtime
+from kagent import local_agent_worktree_state as worktree_state
 from kagent.local_agent_worktree_state import (
     BOUNDED_ENV_INHERITANCE,
     BOUNDED_OUTPUT,
@@ -63,6 +66,13 @@ from kagent.windows_local_executor import (
 )
 
 NOW = datetime(2026, 9, 27, 14, 0, tzinfo=timezone.utc)
+
+
+def _restore_env(name: str, previous: str | None) -> None:
+    if previous is None:
+        os.environ.pop(name, None)
+    else:
+        os.environ[name] = previous
 
 
 def _git(*args: str, cwd: Path) -> subprocess.CompletedProcess[str]:
@@ -160,7 +170,7 @@ class RealWindowsWorktreeStatePortTests(unittest.TestCase):
     # -- fail-closed operational failures ------------------------------------
 
     def test_missing_git_fails_closed(self) -> None:
-        port = WindowsGitWorktreeStatePort(git_executable=r"C:\nonexistent-dir\git.exe")
+        port = WindowsGitWorktreeStatePort(git_executable=str(self._repo.path / "no-such-git-binary"))
         with self.assertRaises(ContractError) as refused:
             port.is_dirty(str(self._repo.path))
         self.assertTrue(str(refused.exception).startswith("git_worktree_probe_unavailable"), str(refused.exception))
@@ -178,10 +188,14 @@ class RealWindowsWorktreeStatePortTests(unittest.TestCase):
         # buffering an unbounded response.
         for index in range(80):
             self._repo.add_untracked(f"untracked_{index:03d}_" + "n" * 40)
-        port = WindowsGitWorktreeStatePort(max_output_bytes=1024)
+        port = WindowsGitWorktreeStatePort(max_output_bytes=1024, timeout_seconds=30.0)
+        started = time.monotonic()
         with self.assertRaises(ContractError) as refused:
             port.is_dirty(str(self._repo.path))
+        elapsed = time.monotonic() - started
         self.assertTrue(str(refused.exception).startswith("git_worktree_probe_output_exceeded"), str(refused.exception))
+        # Killed at the cap, not at the 30s bound: the refusal is immediate.
+        self.assertLess(elapsed, 10.0, "overflow must kill the child, not wait for the timeout")
         port = WindowsGitWorktreeStatePort()
         with self.assertRaises(ContractError) as refused:
             port.is_dirty(str(self._repo.path / "missing"))
@@ -222,6 +236,41 @@ class RealWindowsWorktreeStatePortTests(unittest.TestCase):
             str(refused.exception).startswith("git_worktree_probe_output_exceeded"), str(refused.exception)
         )
 
+    def test_a_failed_probe_read_is_a_refusal_not_a_clean_answer(self) -> None:
+        # The exact hazard the shared failure state exists for: a reader that
+        # dies leaves no output, and empty output parses as "clean".
+        self._repo.add_untracked()
+        port = WindowsGitWorktreeStatePort()
+
+        def failing_drain(stream, chunks, state, cap, *, stream_name, on_overflow):
+            # A reader whose read() raised: recorded, no chunks captured.
+            state.record_read_failure(stream_name, OSError("simulated reader failure"))
+
+        original = worktree_state._drain_bounded
+        worktree_state._drain_bounded = failing_drain
+        self.addCleanup(lambda: setattr(worktree_state, "_drain_bounded", original))
+        with self.assertRaises(ContractError) as refused:
+            port.is_dirty(str(self._repo.path))
+        self.assertTrue(str(refused.exception).startswith("git_worktree_probe_read_failed"), str(refused.exception))
+
+    def test_a_reader_that_outlives_its_join_bound_is_a_refusal(self) -> None:
+        # A truncated response is not an answer: a reader still running after the
+        # bounded join means the probe cannot claim to have read the response.
+        self._repo.add_untracked()
+        port = WindowsGitWorktreeStatePort()
+        release = threading.Event()
+
+        def hanging_drain(stream, chunks, state, cap, *, stream_name, on_overflow):
+            release.wait(timeout=30)
+
+        original = worktree_state._drain_bounded
+        worktree_state._drain_bounded = hanging_drain
+        self.addCleanup(lambda: setattr(worktree_state, "_drain_bounded", original))
+        self.addCleanup(release.set)
+        with self.assertRaises(ContractError) as refused:
+            port.is_dirty(str(self._repo.path))
+        self.assertTrue(str(refused.exception).startswith("git_worktree_probe_read_failed"), str(refused.exception))
+
     def test_invalid_cwd_fails_closed(self) -> None:
         port = WindowsGitWorktreeStatePort()
         with self.assertRaises(ContractError) as refused:
@@ -253,15 +302,53 @@ class RealWindowsWorktreeStatePortTests(unittest.TestCase):
         self.assertNotIn(canary, environment)
         self.assertEqual(environment["GIT_TERMINAL_PROMPT"], "0")
         self.assertEqual(environment["GIT_OPTIONAL_LOCKS"], "0")
+        # Host/global/system Git configuration is pinned away, and USERPROFILE
+        # (where Git looks for the host's global config) is not inherited at all.
+        self.assertEqual(environment["GIT_CONFIG_GLOBAL"], os.devnull)
+        self.assertEqual(environment["GIT_CONFIG_SYSTEM"], os.devnull)
+        self.assertEqual(environment["GIT_CONFIG_NOSYSTEM"], "1")
+        self.assertNotIn("USERPROFILE", environment)
+        self.assertNotIn("HOME", environment)
         self.assertTrue(set(environment) - {
             "GIT_TERMINAL_PROMPT",
             "GIT_OPTIONAL_LOCKS",
             "GIT_PAGER",
             "GIT_CONFIG_NOSYSTEM",
+            "GIT_CONFIG_GLOBAL",
+            "GIT_CONFIG_SYSTEM",
+            "GIT_ATTR_NOSYSTEM",
             "LC_ALL",
         } <= {
-            "PATH", "PATHEXT", "SystemRoot", "WINDIR", "SystemDrive", "TEMP", "TMP", "USERPROFILE",
+            "PATH", "PATHEXT", "SystemRoot", "WINDIR", "SystemDrive", "TEMP", "TMP",
         })
+
+    def test_host_git_configuration_cannot_launch_a_helper(self) -> None:
+        # A configured `core.fsmonitor` is an external program Git runs during
+        # `status`. This proves, with a real hostile configuration and a real
+        # marker script, that the probe neither reads the host's global config
+        # nor lets it run: the marker must never appear.
+        home = _TempDir()
+        self.addCleanup(home.close)
+        marker = home.path / "helper-ran.txt"
+        helper = home.path / "fsmonitor-helper.sh"
+        helper.write_text(f"#!/bin/sh\nprintf ran > \"{marker}\"\n", encoding="utf-8")
+        (home.path / ".gitconfig").write_text(
+            "[core]\n\tfsmonitor = " + str(helper) + "\n"
+            "[credential]\n\thelper = " + str(helper) + "\n",
+            encoding="utf-8",
+        )
+        previous_home = os.environ.get("HOME")
+        previous_profile = os.environ.get("USERPROFILE")
+        os.environ["HOME"] = str(home.path)
+        os.environ["USERPROFILE"] = str(home.path)
+        self.addCleanup(lambda: _restore_env("HOME", previous_home))
+        self.addCleanup(lambda: _restore_env("USERPROFILE", previous_profile))
+
+        port = WindowsGitWorktreeStatePort()
+        # The repo is clean, and it stays clean: the hostile configuration is
+        # inert, so it cannot add a phantom "dirty" entry either.
+        self.assertFalse(port.is_dirty(str(self._repo.path)))
+        self.assertFalse(marker.exists(), "a host-configured helper must never run")
 
     def test_probe_does_not_mutate_the_repository(self) -> None:
         before = _git("status", "--porcelain=v1", "--untracked-files=all", cwd=self._repo.path).stdout
@@ -409,10 +496,29 @@ class CanonicalRuntimeCompositionWithRealProbeTests(unittest.TestCase):
         # The approved child created an untracked file: the real probe sees it.
         self.assertTrue(port.is_dirty(str(repo.path)))
 
+    def test_a_failed_probe_read_stops_an_approved_execution_without_side_effect(self) -> None:
+        # The composition-level version of the same invariant: when the probe
+        # cannot read its answer, the approved command must not run at all.
+        repo = _TempRepo()
+        self.addCleanup(repo.close)
+        port = WindowsGitWorktreeStatePort()
+        runtime, request = self._runtime(repo.path, port)
+
+        def failing_drain(stream, chunks, state, cap, *, stream_name, on_overflow):
+            state.record_read_failure(stream_name, OSError("simulated reader failure"))
+
+        original = worktree_state._drain_bounded
+        worktree_state._drain_bounded = failing_drain
+        self.addCleanup(lambda: setattr(worktree_state, "_drain_bounded", original))
+        with self.assertRaises(ContractError) as refused:
+            runtime.execute(request, now=NOW)
+        self.assertTrue(str(refused.exception).startswith("git_worktree_probe_read_failed"), str(refused.exception))
+        self.assertFalse((repo.path / "touched.txt").exists())
+
     def test_probe_failure_stops_an_approved_execution_without_side_effect(self) -> None:
         repo = _TempRepo()
         self.addCleanup(repo.close)
-        broken = WindowsGitWorktreeStatePort(git_executable=r"C:\nonexistent-dir\git.exe")
+        broken = WindowsGitWorktreeStatePort(git_executable=str(repo.path / "no-such-git-binary"))
         runtime, request = self._runtime(repo.path, broken)
         with self.assertRaises(ContractError) as refused:
             runtime.execute(request, now=NOW)

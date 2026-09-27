@@ -39,7 +39,7 @@ from __future__ import annotations
 import os
 import subprocess
 import threading
-from typing import Any
+from typing import Any, Callable
 
 from .contracts import ContractError
 from .windows_local_executor import WorktreeStatePort
@@ -59,6 +59,9 @@ GIT_EXECUTABLE_DEFAULT = "git"
 #: executable and give it a temp directory on Windows, and nothing else. This
 #: mirrors the executor's own bounded environment (#3081) deliberately rather
 #: than sharing a private helper, so the executor module stays untouched.
+#: ``USERPROFILE`` is deliberately absent: it is how Git locates the host's
+#: global configuration, and a host ``core.fsmonitor`` is an external program
+#: Git would run during ``status``.
 _BOUNDED_ENV_NAMES = (
     "PATH",
     "PATHEXT",
@@ -67,18 +70,36 @@ _BOUNDED_ENV_NAMES = (
     "SystemDrive",
     "TEMP",
     "TMP",
-    "USERPROFILE",
 )
-#: Fixed Git settings. Not inherited: set unconditionally, so an adversarial or
-#: merely careless host environment cannot turn a read-only probe into something
-#: interactive, networked or mutating.
+#: Fixed Git settings. Not inherited: set unconditionally, so a host, global or
+#: system Git configuration cannot turn a read-only probe into something
+#: interactive, networked, mutating - or able to launch another program at all.
 _FIXED_GIT_ENV = {
     "GIT_TERMINAL_PROMPT": "0",
     "GIT_OPTIONAL_LOCKS": "0",
     "GIT_PAGER": "cat",
     "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_CONFIG_GLOBAL": os.devnull,
+    "GIT_CONFIG_SYSTEM": os.devnull,
+    "GIT_ATTR_NOSYSTEM": "1",
     "LC_ALL": "C",
 }
+#: Command-line configuration that closes the remaining routes by which `git
+#: status` could reach outside itself: the fsmonitor hook is an external
+#: program, the untracked cache touches the index, and a credential helper
+#: exists only to satisfy a remote operation this probe never performs.
+_GIT_ISOLATION_CONFIG = (
+    "-c",
+    "core.fsmonitor=false",
+    "-c",
+    "core.untrackedCache=false",
+    "-c",
+    "core.hooksPath=" + os.devnull,
+    "-c",
+    "credential.helper=",
+    "-c",
+    "diff.external=",
+)
 #: Porcelain v1 index/worktree status codes (tracked changes, and the ``?``
 #: untracked marker). Anything else in those columns is a response this probe
 #: does not understand, and an misunderstood response is a refusal.
@@ -95,7 +116,38 @@ def _environment() -> dict[str, str]:
     return environment
 
 
-def _drain_bounded(stream: Any, chunks: list[bytes], overflow: threading.Event, cap: int) -> None:
+class _ProbeState:
+    """Shared outcome of the probe's child process and its readers.
+
+    A read that fails is a probe failure, full stop: it is recorded here so the
+    caller can refuse. Swallowing it would leave the captured response partial
+    or empty, and a partial response reads as *clean* - the one answer this
+    probe must never guess.
+    """
+
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        self.read_failures: list[str] = []
+        self.overflow = threading.Event()
+
+    def record_read_failure(self, stream_name: str, exc: BaseException) -> None:
+        with self._lock:
+            self.read_failures.append(f"{stream_name}:{type(exc).__name__}")
+
+    def read_failures_snapshot(self) -> tuple[str, ...]:
+        with self._lock:
+            return tuple(self.read_failures)
+
+
+def _drain_bounded(
+    stream: Any,
+    chunks: list[bytes],
+    state: _ProbeState,
+    cap: int,
+    *,
+    stream_name: str,
+    on_overflow: Callable[[], None],
+) -> None:
     kept = 0
     try:
         while True:
@@ -104,16 +156,21 @@ def _drain_bounded(stream: Any, chunks: list[bytes], overflow: threading.Event, 
                 break
             kept += len(chunk)
             if kept > cap:
-                overflow.set()
+                # Stop the child now, not at the ordinary timeout: a probe that
+                # waits out a child it has already decided to refuse is a probe
+                # that holds a live process for no reason.
+                state.overflow.set()
+                on_overflow()
                 return
             chunks.append(chunk)
-    except (OSError, ValueError):
-        return
+    except (OSError, ValueError) as exc:
+        # Recorded, never swallowed - see _ProbeState.
+        state.record_read_failure(stream_name, exc)
     finally:
         try:
             stream.close()
-        except (OSError, ValueError):
-            pass
+        except (OSError, ValueError) as exc:  # pragma: no cover - defensive
+            state.record_read_failure(stream_name, exc)
 
 
 def dirty_from_porcelain(stdout: str) -> bool:
@@ -191,6 +248,7 @@ class WindowsGitWorktreeStatePort:
             self._git_executable,
             "--no-optional-locks",
             "--no-pager",
+            *_GIT_ISOLATION_CONFIG,
             "-C",
             directory,
             "status",
@@ -220,16 +278,28 @@ class WindowsGitWorktreeStatePort:
         process = self._spawn(directory)
         stdout_chunks: list[bytes] = []
         stderr_chunks: list[bytes] = []
-        overflow = threading.Event()
+        state = _ProbeState()
+
+        def kill_child() -> None:
+            # Called by a reader the moment the cap is exceeded (or, on a
+            # pathological child, by the timeout path below). Guarded because
+            # both the reader thread and the waiting thread may reach for it.
+            try:
+                process.kill()
+            except (OSError, ValueError):  # pragma: no cover - already reaped
+                pass
+
         readers = [
             threading.Thread(
                 target=_drain_bounded,
-                args=(process.stdout, stdout_chunks, overflow, self._max_output_bytes),
+                args=(process.stdout, stdout_chunks, state, self._max_output_bytes),
+                kwargs={"stream_name": "stdout", "on_overflow": kill_child},
                 daemon=True,
             ),
             threading.Thread(
                 target=_drain_bounded,
-                args=(process.stderr, stderr_chunks, overflow, self._max_output_bytes),
+                args=(process.stderr, stderr_chunks, state, self._max_output_bytes),
+                kwargs={"stream_name": "stderr", "on_overflow": kill_child},
                 daemon=True,
             ),
         ]
@@ -245,7 +315,7 @@ class WindowsGitWorktreeStatePort:
             # and a probe that leaves that handle behind would make the runner's
             # own cleanup fail for reasons that have nothing to do with the
             # worktree it asked about.
-            process.kill()
+            kill_child()
             process.wait()
         finally:
             # The drain threads own their streams and close them; closing here
@@ -256,9 +326,23 @@ class WindowsGitWorktreeStatePort:
             raise ContractError(
                 "git_worktree_probe_timeout: git status did not complete within the probe bound",
             )
-        if overflow.is_set():
+        if state.overflow.is_set():
             raise ContractError(
                 "git_worktree_probe_output_exceeded: git status produced more output than the probe bound",
+            )
+        read_failures = state.read_failures_snapshot()
+        if read_failures:
+            # A read that failed leaves a partial or empty response, and an
+            # empty response parses as clean. That is the failure this probe
+            # exists to prevent, so it is refused here rather than guessed.
+            raise ContractError(
+                f"git_worktree_probe_read_failed: reading the git status response failed ({read_failures[0]})",
+            )
+        if any(reader.is_alive() for reader in readers):
+            # A reader that outlived its bounded join means the response is not
+            # fully captured. Refuse rather than read a truncated answer.
+            raise ContractError(
+                "git_worktree_probe_read_failed: a probe reader did not finish within the join bound",
             )
         if process.returncode != 0:
             # Explicit and deliberately not "clean": the directory is not a
