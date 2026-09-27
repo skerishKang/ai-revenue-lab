@@ -48,29 +48,36 @@ for (const required of [
   }
 }
 
-// The web leg: ask the broker composition for the one-time code the deep link
-// will carry. #3140 review item 6: the code stays in memory. It is never
-// written to a file, never printed and never persisted anywhere.
-const python = process.env.PADIEM_PYTHON ?? 'python';
-const issue = spawn(python, ['-m', 'kagent.local_agent_pairing_main_flow', '--issue-handoff-code'], {
-  cwd: projectRoot,
-  shell: false,
-  stdio: ['ignore', 'pipe', 'pipe'],
-});
-let issuedText = '';
-await new Promise((resolve, reject) => {
-  issue.stdout.on('data', (chunk) => {
-    issuedText += String(chunk);
-  });
-  issue.once('exit', (code) => (code === 0 ? resolve() : reject(new Error(`issue leg exited ${code}`))));
-  issue.once('error', reject);
-});
-const issued = JSON.parse(issuedText.trim().split(/\r?\n/).filter(Boolean).pop());
-const pairingCode = String(issued.pairing_code ?? '');
-if (!/^[0-9a-f]{32}$/.test(pairingCode)) {
-  console.error('the web leg did not produce a canonical one-time pairing code');
-  process.exit(2);
+// #3140 review item 1: the Web leg and the resident must meet at the SAME
+// canonical broker authority. The resident never constructs one, so a real
+// Windows run needs a non-Production broker that both legs reach, published to
+// the resident through its configured entry point
+// (PADIEM_AGENT_REQUEST_PORT -> "module:factory").
+//
+// This harness does not stand one up, and it must not fake one: the previous
+// shape derived the code deterministically from the resident's own authority,
+// which proved reconstruction rather than redemption. Without a configured
+// boundary the honest outcome is a refusal, which is what this reports.
+const brokerEntry = process.env.PADIEM_AGENT_REQUEST_PORT;
+if (!brokerEntry) {
+  process.stdout.write(
+    `${JSON.stringify(
+      {
+        evidence: 'unavailable',
+        reason: 'no_configured_broker_boundary',
+        detail:
+          'the Windows run needs a non-Production broker both the Web leg and the resident reach; ' +
+          'the resident refuses without one and this harness will not invent a code',
+        pairing_code_in_output: false,
+      },
+      null,
+      2,
+    )}
+`,
+  );
+  process.exit(5);
 }
+
 const deepLink = `padiem://pair?code=${pairingCode}&ref=pairref-3140-evidence`;
 const logDir = mkdtempSync(path.join(os.tmpdir(), 'claw4-3140-electron-'));
 const marker = path.join(logDir, 'handoff-delivered.json');
@@ -78,6 +85,7 @@ const env = {
   ...process.env,
   PADIEM_AGENT_PROJECT_ROOT: projectRoot,
   PADIEM_PYTHON: python,
+  PADIEM_AGENT_REQUEST_PORT: brokerEntry,
   // The main process records that it delivered the handoff, so the evidence
   // can read the fact from the real process rather than from this harness.
   PADIEM_3140_EVIDENCE_MARKER: marker,

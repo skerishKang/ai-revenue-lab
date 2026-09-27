@@ -164,7 +164,7 @@ function residentSpec(): RunnerSpawnSpec | null {
   const python = process.env.PADIEM_PYTHON ?? 'python';
   return {
     executablePath: python,
-    args: ['-m', 'kagent.local_agent_pairing_main_flow'],
+    args: ['-m', 'kagent.local_agent_resident_process'],
     cwd: path.resolve(projectRoot),
     // Named trusted inputs only. The resident refuses to invent a broker.
     env: {
