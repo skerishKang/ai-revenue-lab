@@ -14,9 +14,7 @@ import binascii
 from pathlib import PurePath
 from typing import Any, Callable
 
-from padiem_ai_core.b14_multimodal import MAX_B14_IMAGE_BYTES
 from padiem_ai_core.document_normalization import (
-    BINARY_DOCUMENT_MEDIA,
     MAX_BINARY_DOCUMENT_BYTES,
     NormalizedDocument,
     validate_document_identity,
@@ -33,6 +31,7 @@ MODEL_DEPENDENCY = False
 PROVIDER_IDS_IN_ADAPTER = 0
 
 _REQUIRED_FIELDS = frozenset({"name", "media_type", "base64"})
+MAX_IMAGE_BYTES = 4 * 1024 * 1024
 _IMAGE_MEDIA: dict[str, frozenset[str]] = {
     "image/jpeg": frozenset({".jpg", ".jpeg"}),
     "image/png": frozenset({".png"}),
@@ -191,7 +190,7 @@ def handle_intake_payload(
         raw = _decode_payload(
             payload.get("base64"),
             max_bytes=(
-                MAX_B14_IMAGE_BYTES
+                MAX_IMAGE_BYTES
                 if category == "image"
                 else MAX_BINARY_DOCUMENT_BYTES
             ),
