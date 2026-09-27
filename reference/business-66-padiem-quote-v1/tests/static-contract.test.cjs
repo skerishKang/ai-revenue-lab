@@ -101,8 +101,14 @@ check(history.includes('HISTORY_STORAGE_KEY = "quoteBeta.history.v1"'),
   "RECENT_HISTORY_CONTRACT: dedicated storage key");
 check(history.includes("MAX_HISTORY = 20"),
   "RECENT_HISTORY_CONTRACT: bounded history");
-check(history.includes("function freshQuoteNo(") && history.includes("function copyAsNew("),
-  "RECENT_HISTORY_CONTRACT: copy-as-new receives a fresh quote number");
+check(history.includes('SEQUENCE_STORAGE_KEY = "quoteBeta.quoteNoSequence.v1"'),
+  "RECENT_HISTORY_CONTRACT: dedicated browser-local quote number sequence");
+check(history.includes("function allocateQuoteNo(") && history.includes("function copyAsNew("),
+  "RECENT_HISTORY_CONTRACT: copy/new quotes use readable daily allocation");
+check(app.includes("function createFreshDraft(") && app.includes("function copyHistoryAsNew("),
+  "RECENT_HISTORY_CONTRACT: direct and Easy flows share allocator");
+check(easy.includes('App.createFreshDraft("guided")') && easy.includes("App.copyHistoryAsNew(entry)"),
+  "RECENT_HISTORY_CONTRACT: guided/copy paths use shared allocation");
 check(history.includes("Core.computeTotals(entry.draft.items, entry.draft.tax.mode)"),
   "RECENT_HISTORY_CONTRACT: displayed totals are derived");
 check(easy.includes("window.confirm(\"이 최근 견적을 이 브라우저에서 삭제할까요?\")"),
@@ -201,6 +207,7 @@ console.log("NEUTRAL_PUBLIC_UI_CONTRACT=PASS");
 console.log("EXTRACTION_BOUNDARY_CONTRACT=PASS");
 console.log("EASY_MODE_CONTRACT=PASS");
 console.log("RECENT_HISTORY_CONTRACT=PASS");
+console.log("HUMAN_READABLE_QUOTE_NO_CONTRACT=PASS");
 console.log("KOREAN_MONEY_INPUT_CONTRACT=PASS");
 console.log("QUOTEDRAFT_SCHEMA_CONTRACT=PASS");
 console.log("DRAFT_SAVE_CONTRACT=PASS");
