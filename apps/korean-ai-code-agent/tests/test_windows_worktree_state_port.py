@@ -85,15 +85,20 @@ class _TempRepo:
         _git("init", "--initial-branch=main", cwd=self.path)
         _git("config", "user.email", "probe@example.invalid", cwd=self.path)
         _git("config", "user.name", "Probe", cwd=self.path)
-        (self.path / "tracked.txt").write_text("clean\n", encoding="utf-8")
+        # Pin line-ending behaviour and write exact bytes: a runner whose
+        # global core.autocrlf converts the checkout would otherwise report a
+        # freshly committed, untouched file as modified, and the "clean" scenario
+        # would measure the host Git configuration instead of the probe.
+        _git("config", "core.autocrlf", "false", cwd=self.path)
+        (self.path / "tracked.txt").write_bytes(b"clean\n")
         _git("add", "tracked.txt", cwd=self.path)
         _git("commit", "-m", "initial", cwd=self.path)
 
     def dirty_tracked(self) -> None:
-        (self.path / "tracked.txt").write_text("modified\n", encoding="utf-8")
+        (self.path / "tracked.txt").write_bytes(b"modified\n")
 
     def add_untracked(self, name: str = "untracked.txt", size: int = 0) -> None:
-        (self.path / name).write_text("x" * size, encoding="utf-8")
+        (self.path / name).write_bytes(b"x" * size)
 
     def close(self) -> None:
         self._temp.cleanup()
@@ -286,6 +291,7 @@ def _approved_port_permission(
     )
 
 
+@unittest.skipUnless(os.name == "nt", "canonical Windows runtime composition is Windows-only")
 class CanonicalRuntimeCompositionWithRealProbeTests(unittest.TestCase):
     """The real probe inside the canonical fail-closed P01 composition."""
 
