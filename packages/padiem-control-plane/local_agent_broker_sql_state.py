@@ -116,55 +116,17 @@ def stale_state_error() -> ControlPlaneContractError:
     )
 
 
-class ReentrantTransactionStorage:
-    """One nesting-aware transactionSync front door for DO storage (#3123).
-
-    Durable Object storage transactions cannot nest: a second
-    transactionSync inside a running one raises. Broker state is written
-    by several composed paths - the #3129 session-open double write, the
-    runtime's authority operations, the serialized CAS itself - so every
-    transaction entry goes through this single front door: the outermost
-    call opens the real storage transaction, every nested call simply
-    joins it, and the outermost commit covers the whole logical
-    operation. Crash-atomicity then holds for whichever composition is
-    running, instead of depending on which caller remembered to wrap.
-    """
-
-    def __init__(self, storage: Any) -> None:
-        transaction_sync = getattr(storage, "transactionSync", None)
-        sql = getattr(storage, "sql", None)
-        if not callable(transaction_sync):
-            raise RuntimeError("SQLite-backed Durable Object transactionSync is required")
-        if sql is None or not callable(getattr(sql, "exec", None)):
-            raise ValueError("SQLite-backed Durable Object storage is required")
-        self._storage = storage
-        self._transaction_sync = transaction_sync
-        self._depth = 0
-        self.sql = sql
-
-    def transactionSync(self, callback):
-        if self._depth > 0:
-            # Join the running transaction: the outermost commit covers
-            # this callback too, which is exactly the composition
-            # guarantee the ledger and the blob CAS both need.
-            return callback()
-        self._depth += 1
-        try:
-            return self._transaction_sync(callback)
-        finally:
-            self._depth -= 1
-
-
 class CloudflareDurableObjectSerializedStateBackend:
     """M2g serialized CAS backend over attached SQLite storage."""
 
     durable = True
 
     def __init__(self, storage: Any) -> None:
-        if not isinstance(storage, ReentrantTransactionStorage):
-            storage = ReentrantTransactionStorage(storage)
+        sql = getattr(storage, "sql", None)
+        if sql is None or not callable(getattr(sql, "exec", None)):
+            raise ValueError("SQLite-backed Durable Object storage is required")
         self._storage = storage
-        self._sql = storage.sql
+        self._sql = sql
         self._sql.exec(_BROKER_STATE_SCHEMA)
         self._sql.exec(_BROKER_USED_COMMAND_ID_SCHEMA)
         self._repaired_authority_refs: set[str] = set()
@@ -256,26 +218,32 @@ class CloudflareDurableObjectSerializedStateBackend:
             # The ledger only ever holds minted ids, which are valid refs.
             safe_ref(command_id, "new_command_id")
 
-        # The ledger write and the blob swap run inside one storage
-        # transaction, through the re-entrant front door: when the caller
-        # already owns a transaction (the runtime's authority operations,
-        # the #3129 session-open double write) this CAS joins it, and when
-        # driven bare it opens its own - so the pair commits or rolls back
-        # together on every path (#3123). A refused CAS rolls back with the
-        # transaction and records nothing, so the caller's legitimate
-        # retry stays mintable. Rows recorded here are only ever fresh
-        # mints: an id removed from the blob by compaction was already
-        # recorded when it was minted, so INSERT OR IGNORE is a no-op for
-        # it and the backfill cannot lower a committed_version.
-        def operation():
+        # Ledger first, blob second, both written inside whatever storage
+        # transaction the caller owns: every mutating authority operation in
+        # the durable runtime runs wrapped in exactly one transactionSync, so
+        # the pair commits or rolls back together (#3123). When this method is
+        # driven bare (tests, tooling, a caller outside the runtime), a
+        # refused blob CAS explicitly removes the rows it just added, so a
+        # refused CAS never marks an id as used. A *crash* between the two
+        # writes leaves a row whose committed_version is beyond the stored
+        # blob version - the one shape explicit rollback cannot reach - and
+        # `_repair_ledger_phantoms` deletes it on the next backend contact.
+        # Rows recorded here are only ever fresh mints: an id removed from the
+        # blob by compaction was already recorded when it was minted, so
+        # INSERT OR IGNORE is a no-op for it and neither the rollback nor the
+        # repair can erase prior history.
+        recorded: list[str] = []
+        try:
             for command_id in new_command_ids:
-                self._sql.exec(
+                cursor = self._sql.exec(
                     "INSERT OR IGNORE INTO local_agent_broker_used_command_id "
                     "(authority_ref, command_id, committed_version) VALUES (?, ?, ?)",
                     authority_ref,
                     command_id,
                     expected_version + 1,
                 )
+                if rows_written(cursor) == 1:
+                    recorded.append(command_id)
             if expected_version == 0:
                 cursor = self._sql.exec(
                     "INSERT OR IGNORE INTO local_agent_broker_state "
@@ -300,16 +268,23 @@ class CloudflareDurableObjectSerializedStateBackend:
                         "Durable Object broker state authority mismatch",
                     )
                 raise stale_state_error()
-
-            stored = self.load(authority_ref=authority_ref)
-            if stored is None or stored.version != expected_version + 1 or stored.payload != payload:
-                raise ControlPlaneContractError(
-                    "invalid_local_agent_broker_state_wire",
-                    "Durable Object backend violated the exact broker CAS contract",
+        except Exception:
+            for command_id in recorded:
+                self._sql.exec(
+                    "DELETE FROM local_agent_broker_used_command_id "
+                    "WHERE authority_ref = ? AND command_id = ?",
+                    authority_ref,
+                    command_id,
                 )
-            return stored
+            raise
 
-        return self._storage.transactionSync(operation)
+        stored = self.load(authority_ref=authority_ref)
+        if stored is None or stored.version != expected_version + 1 or stored.payload != payload:
+            raise ControlPlaneContractError(
+                "invalid_local_agent_broker_state_wire",
+                "Durable Object backend violated the exact broker CAS contract",
+            )
+        return stored
 
     def has_used_command_id(self, *, authority_ref: str, command_id: str) -> bool:
         authority_ref = safe_ref(authority_ref, "authority_ref")

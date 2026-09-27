@@ -28,11 +28,7 @@ class LocalAgentBrokerDurableObject(DurableObject):
     def __init__(self, ctx, env):
         super().__init__(ctx, env)
         self._runtime = LocalAgentBrokerDurableRuntime(storage=ctx.storage, env=env)
-        # The session-open seam (#3129) must enter the SAME re-entrant
-        # transaction front door as the runtime's authority operations, so a
-        # session-open double write and the state CAS it triggers join one
-        # storage transaction instead of nesting (#3123).
-        self._storage = self._runtime.storage
+        self._storage = ctx.storage
         self._backend = self._runtime.backend
         self._state_port = self._runtime.state_port
         self.http_state = self._runtime.http_state

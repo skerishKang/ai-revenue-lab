@@ -11,7 +11,6 @@ from local_agent_broker_material_store import CloudflareDurableObjectCommandMate
 from local_agent_broker_sql_state import (
     CloudflareDurableObjectHttpSessionState,
     CloudflareDurableObjectSerializedStateBackend,
-    ReentrantTransactionStorage,
     parse_iso,
     safe_ref,
 )
@@ -33,20 +32,13 @@ class LocalAgentBrokerDurableRuntime:
     """Cloud-platform-neutral composition for the durable Local Agent broker authority."""
 
     def __init__(self, *, storage: Any, env: Any) -> None:
-        # One re-entrant transaction front door shared by every storage
-        # participant: the authority operations below, the serialized CAS
-        # (which joins a running transaction instead of nesting), the HTTP
-        # session state and the command material store. Whichever composition
-        # opens the outermost transaction, its commit covers the whole logical
-        # write (#3123, with #3129's session-open seam).
-        self.storage = ReentrantTransactionStorage(storage)
-        self._storage = self.storage
+        self._storage = storage
         self._env = env
-        self.backend = CloudflareDurableObjectSerializedStateBackend(self.storage)
+        self.backend = CloudflareDurableObjectSerializedStateBackend(storage)
         self.state_port = SerializedLocalAgentBrokerStatePort(backend=self.backend)
-        self.http_state = CloudflareDurableObjectHttpSessionState(self.storage)
+        self.http_state = CloudflareDurableObjectHttpSessionState(storage)
         self.material_store = CloudflareDurableObjectCommandMaterialStore(
-            self.storage,
+            storage,
             state_port=self.state_port,
             authority_ref=self.authority_ref(),
         )
@@ -64,7 +56,10 @@ class LocalAgentBrokerDurableRuntime:
         return LocalAgentBrokerRpcFacade(authority=authority)
 
     def transaction(self, operation: Callable[[], _T]) -> _T:
-        return self.storage.transactionSync(operation)
+        transaction_sync = getattr(self._storage, "transactionSync", None)
+        if not callable(transaction_sync):
+            raise RuntimeError("SQLite-backed Durable Object transactionSync is required")
+        return transaction_sync(operation)
 
     def register_binding(self, payload: dict) -> dict:
         return self.transaction(lambda: self.facade().register_binding(payload))
