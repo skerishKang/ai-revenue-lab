@@ -77,8 +77,9 @@ check(html.includes("쉽게 만들기") && html.includes("직접 입력"),
   "EASY_MODE_CONTRACT: top-level easy/direct switch");
 check(html.includes("질문받으며 새로 만들기") && html.includes("내용을 한번에 말하기"),
   "EASY_MODE_CONTRACT: easy entry choices");
-check(easy.includes('fresh.meta.source = "guided"'),
-  "EASY_MODE_CONTRACT: deterministic guided draft source");
+check(easy.includes('App.createFreshDraft("guided")') &&
+      app.includes('fresh.meta.source = source || "manual"'),
+  "EASY_MODE_CONTRACT: deterministic guided draft uses shared fresh-draft allocator");
 check(easy.includes("function processGuidedInput("),
   "EASY_MODE_CONTRACT: guided state machine");
 check(easy.includes("Core.computeTotals(guided.draft.items, guided.draft.tax.mode)"),
