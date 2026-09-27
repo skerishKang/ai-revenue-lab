@@ -7,6 +7,7 @@ const html = read("index.html");
 const css = read("styles.css");
 const app = read("app.js");
 const core = read("quote-core.js");
+const extraction = read("quote-extraction.js");
 
 const check = (condition, label) => assert.ok(condition, `contract failed: ${label}`);
 
@@ -16,6 +17,7 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   "샘플 공급사",
   'href="styles.css"',
   'src="quote-core.js"',
+  'src="quote-extraction.js"',
   'src="app.js"',
   'id="senderPreset"',
   'id="senderCompany"',
@@ -39,6 +41,24 @@ check(!/(Padiem|파디엠|padiem)/.test(html + app + core),
 check(!html.includes("B66 DEMO"), "NEUTRAL_PUBLIC_UI_CONTRACT: no internal demo label");
 check(html.includes("BETA · 입력 내용은 이 브라우저에만 저장"),
   "NEUTRAL_PUBLIC_UI_CONTRACT: truthful browser-local persistence label");
+
+/* EXTRACTION_BOUNDARY_CONTRACT — 모델/프로바이더 비종속 추출 seam */
+check(extraction.includes("function normalizeExtraction("),
+  "EXTRACTION_BOUNDARY_CONTRACT: normalizer exists");
+check(extraction.includes("function buildDraftCandidate("),
+  "EXTRACTION_BOUNDARY_CONTRACT: draft candidate mapper exists");
+check(app.includes("review_confirmation_required"),
+  "EXTRACTION_BOUNDARY_CONTRACT: explicit confirmation required before apply");
+check(app.includes("Extraction.buildDraftCandidate(draft, raw)"),
+  "EXTRACTION_BOUNDARY_CONTRACT: app uses validated mapper");
+check(app.includes("Core.normalizeDraft(candidate.value.draft)"),
+  "EXTRACTION_BOUNDARY_CONTRACT: QuoteCore normalizes applied draft");
+check(extraction.includes('candidate.meta.source = "extraction:" + extracted.source.kind'),
+  "EXTRACTION_BOUNDARY_CONTRACT: extraction source provenance");
+check(!/(kilo\/|sensenova\/|b-ai\/|gpt-5\.6-luna|space-bunny)/i.test(extraction + app),
+  "EXTRACTION_BOUNDARY_CONTRACT: no provider/model ids in B66 seam");
+check(!extraction.includes("grand =") && !extraction.includes("vat =") && !extraction.includes("supply ="),
+  "EXTRACTION_BOUNDARY_CONTRACT: extraction layer owns no totals");
 
 /* KOREAN_MONEY_INPUT_CONTRACT — 한국식 콤마 단가 입력 계약
    (품목 행의 단가/수량 입력은 app.js 템플릿에서 생성되므로 app.js를 검사) */
@@ -124,6 +144,7 @@ check(html.includes("이메일 보내기 · 다음 단계"), "EMAIL_SEND_LIVE=NO
 
 console.log("B66_STATIC_CONTRACT=PASS");
 console.log("NEUTRAL_PUBLIC_UI_CONTRACT=PASS");
+console.log("EXTRACTION_BOUNDARY_CONTRACT=PASS");
 console.log("KOREAN_MONEY_INPUT_CONTRACT=PASS");
 console.log("QUOTEDRAFT_SCHEMA_CONTRACT=PASS");
 console.log("DRAFT_SAVE_CONTRACT=PASS");

@@ -7,10 +7,12 @@
 
   const $ = (id) => document.getElementById(id);
   const Core = window.QuoteCore;
+  const Extraction = window.QuoteExtraction || null;
 
   /* ── 상태: QuoteDraft ── */
 
   let draft = loadDraft() || Core.createDefaultDraft();
+  let lastExtractionReview = null;
   let itemSeq = draft.items.reduce((max, it) => {
     const n = parseInt(String(it.id).replace(/^item-/, ""), 10);
     return Number.isFinite(n) ? Math.max(max, n) : max;
@@ -120,6 +122,48 @@
       draft.tax.mode = e.target.value;
       render();
     });
+  }
+
+  /* ── future extraction bridge: validated facts → editable QuoteDraft ── */
+
+  function cloneJson(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function validateExtractionResult(raw) {
+    if (!Extraction || typeof Extraction.normalizeExtraction !== "function") {
+      return { ok: false, error: "extraction_contract_unavailable" };
+    }
+    return Extraction.normalizeExtraction(raw);
+  }
+
+  function applyExtractionResult(raw, options) {
+    if (!options || options.confirmed !== true) {
+      return { ok: false, error: "review_confirmation_required" };
+    }
+    if (!Extraction || typeof Extraction.buildDraftCandidate !== "function") {
+      return { ok: false, error: "extraction_contract_unavailable" };
+    }
+
+    const candidate = Extraction.buildDraftCandidate(draft, raw);
+    if (!candidate.ok) return candidate;
+
+    const nextDraft = Core.normalizeDraft(candidate.value.draft);
+    if (!nextDraft) return { ok: false, error: "draft_normalization_failed" };
+
+    draft = nextDraft;
+    lastExtractionReview = cloneJson(candidate.value.review);
+
+    renderItems();
+    fillInputsFromDraft();
+    render();
+    toast("추출한 내용을 검토 가능한 견적 초안에 반영했습니다.");
+
+    return { ok: true, draft: cloneJson(draft), review: cloneJson(lastExtractionReview) };
+  }
+
+  function getLastExtractionReview() {
+    return lastExtractionReview ? cloneJson(lastExtractionReview) : null;
   }
 
   /* ── 품목 행: 단가/수량은 text 입력(콤마 허용) + blur 시 표시 포맷 ── */
@@ -334,6 +378,12 @@
         ? "파일 업로드 → 견적서 필드 자동 추출은 다음 단계에서 AI/OCR Skill로 연결합니다. 이 데모에서는 파일을 외부로 전송하지 않습니다."
         : "자연어 채팅 → QuoteDraft 자동 입력은 다음 단계에서 연결합니다. 금액 계산은 AI가 아니라 현재와 같은 결정적 계산 코드가 담당합니다.";
     });
+  });
+
+  window.B66QuoteExtractionBridge = Object.freeze({
+    validate: validateExtractionResult,
+    apply: applyExtractionResult,
+    getLastReview: getLastExtractionReview
   });
 
   /* ── 초기화 ── */
