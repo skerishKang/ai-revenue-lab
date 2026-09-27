@@ -91,6 +91,9 @@ class LocalAgentBrokerDurableObject(DurableObject):
     async def handle_device_http(self, envelope: dict) -> dict:
         return self._device_http.handle(envelope)
 
+    async def device_truth(self, payload: dict) -> dict:
+        return self._runtime.device_truth(payload)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -145,6 +148,9 @@ class Default(WorkerEntrypoint):
     async def handle_device_http(self, envelope: dict) -> dict:
         return await self._stub().handle_device_http(envelope)
 
+    async def device_truth(self, payload: dict) -> dict:
+        return await self._stub().device_truth(payload)
+
     async def fetch(self, request):
         return await handle_private_device_fetch(request, self._stub)
 
@@ -197,6 +203,12 @@ PRIVATE_DEVICE_HTTP_SERVICE = True
 SELF_ASSERTED_ACCOUNT_WORKSPACE_AUTHORITY = False
 ADMIN_BROKER_RPC_PUBLIC = False
 PUBLIC_ENDPOINT_ADDED = False
+# #3094 narrow read-only device-fact projection (see the durable runtime for
+# the fact vocabulary; ONLINE is derived by the B62 consumer's canonical rule).
+NARROW_DEVICE_TRUTH_PROJECTION = True
+DEVICE_TRUTH_VOCABULARY_HAS_ONLINE = False
+DEVICE_TRUTH_SECOND_ONLINE_AUTHORITY = False
+DEVICE_TRUTH_MUTATION = False
 PRODUCTION_DEPLOYMENT = False
 PRODUCTION_ROUTE_CONFIGURED = False
 PRODUCTION_SECRET_BOUND = False

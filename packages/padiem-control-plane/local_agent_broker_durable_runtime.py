@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Any, Callable, TypeVar
 
 from padiem_control_plane.contracts import ControlPlaneContractError
-from padiem_control_plane.local_agent_broker import MAX_POLL_BATCH, BrokerCommandState
+from padiem_control_plane.local_agent_broker import MAX_POLL_BATCH, BrokerBindingState, BrokerCommandState
 from padiem_control_plane.local_agent_broker_http import LocalAgentMaterialResolutionRequest
 from padiem_control_plane.local_agent_broker_rpc import LocalAgentBrokerRpcFacade
 from padiem_control_plane.local_agent_broker_state import StateBackedLocalAgentBrokerAuthority
@@ -28,6 +29,14 @@ _MATERIAL_RESOLVE_RPC_KEYS = frozenset(
         "server_requested_at",
     }
 )
+
+# #3094 — the device-truth projection is owner-scoped by the server-derived
+# identity only; no conversation, device or destination ref is accepted here.
+_DEVICE_TRUTH_RPC_KEYS = frozenset({"account_ref", "workspace_ref"})
+
+
+def _iso_utc(value: datetime) -> str:
+    return value.astimezone(timezone.utc).isoformat()
 
 
 class LocalAgentBrokerDurableRuntime:
@@ -293,6 +302,116 @@ class LocalAgentBrokerDurableRuntime:
             return result
         return self.transaction(operation)
 
+    def device_truth(self, payload: dict) -> dict:
+        """#3094 — one narrow, read-only, owner-scoped canonical device-fact read.
+
+        This is the projection method the B62 "Connect this computer" panel
+        consumes through the private Service Binding gateway. It reads only the
+        canonical #3080 state this authority already owns and reports the facts
+        B62 needs; it derives nothing beyond a pure rename of its own records:
+
+        * ``revoked``   — the binding is revoked;
+        * ``credential_expired`` — the stored credential expiry has passed;
+        * ``paired_offline`` — everything else.
+
+        ``online`` is deliberately absent from this vocabulary: the canonical
+        server-backed ONLINE projection is derived by the B62 consumer through
+        the existing ``kagent.local_agent_server_projection`` rule from the
+        binding + session + heartbeat facts below. A broker that also claimed
+        ONLINE here would be a second ONLINE authority.
+
+        Read-only: no transaction, no compare-and-swap, no material or command
+        state is touched. The response is assembled from a closed allowlist and
+        never carries the credential digest, session secret or any raw device
+        credential.
+        """
+
+        try:
+            if not isinstance(payload, dict) or not set(payload) <= _DEVICE_TRUTH_RPC_KEYS:
+                raise ValueError("device truth schema mismatch")
+            account_ref = safe_ref(str(payload["account_ref"]), "account_ref")
+            workspace_ref = payload.get("workspace_ref")
+            if workspace_ref is not None:
+                workspace_ref = safe_ref(str(workspace_ref), "workspace_ref")
+        except (KeyError, TypeError, ValueError):
+            return {
+                "ok": False,
+                "error": {
+                    "code": "invalid_device_truth_request",
+                    "message": "device truth request was rejected",
+                },
+            }
+
+        stored = self.state_port.load(authority_ref=self.authority_ref())
+        snapshot = stored.snapshot
+        now = datetime.now(timezone.utc)
+
+        candidates = [
+            binding
+            for binding in snapshot.bindings
+            if binding.account_ref == account_ref
+            and (workspace_ref is None or binding.workspace_ref == workspace_ref)
+        ]
+        if not candidates:
+            return {"ok": True, "available": False, "reason": "no_device_binding"}
+        # The owner's newest binding is the device this authority considers
+        # current; older and revoked bindings never win the tie-break.
+        binding = max(candidates, key=lambda item: (item.issued_at, item.credential_generation))
+
+        session = None
+        for candidate in snapshot.sessions:
+            if candidate.binding_ref != binding.binding_ref:
+                continue
+            if session is None or candidate.issued_at > session.issued_at:
+                session = candidate
+        last_seen_at = None
+        if session is not None:
+            try:
+                record = self.http_state.load_session(session.session_id)
+            except (ValueError, KeyError, RuntimeError):
+                record = None
+            if record is not None:
+                last_seen_at = record.last_seen_at
+
+        if binding.state is BrokerBindingState.REVOKED:
+            canonical_state = "revoked"
+        elif now >= binding.credential_expires_at:
+            canonical_state = "credential_expired"
+        else:
+            canonical_state = "paired_offline"
+
+        facts: dict[str, Any] = {
+            "canonical_state": canonical_state,
+            "binding": {
+                "binding_ref": binding.binding_ref,
+                "device_id": binding.device_id,
+                "account_ref": binding.account_ref,
+                "workspace_ref": binding.workspace_ref,
+                "credential_generation": binding.credential_generation,
+                "issued_at": _iso_utc(binding.issued_at),
+                "credential_expires_at": _iso_utc(binding.credential_expires_at),
+                "credential_digest_exposed": False,
+                "raw_device_credential": False,
+            },
+            "session": None,
+            "heartbeat_last_seen_at": None,
+        }
+        if session is not None:
+            facts["session"] = {
+                "session_id": session.session_id,
+                "binding_ref": session.binding_ref,
+                "device_id": session.device_id,
+                "account_ref": session.account_ref,
+                "workspace_ref": session.workspace_ref,
+                "credential_generation": session.credential_generation,
+                "issued_at": _iso_utc(session.issued_at),
+                "expires_at": _iso_utc(session.expires_at),
+                "raw_session_secret": False,
+            }
+            if last_seen_at is not None:
+                facts["heartbeat_last_seen_at"] = _iso_utc(last_seen_at)
+        return {"ok": True, "available": True, "device_truth": facts}
+
     def safe_dict(self) -> dict[str, Any]:
         return {
             "durable_runtime_composition": True,
@@ -315,6 +434,15 @@ class LocalAgentBrokerDurableRuntime:
 DURABLE_RUNTIME_COMPOSITION_EXTRACTED = True
 LIFECYCLE_COORDINATOR_EXTRACTED = True
 CANONICAL_BROKER_AUTHORITY_CHANGED = False
+# #3094 — the device_truth projection's canonical state vocabulary is a pure
+# rename over this authority's own records (revoked / credential_expired /
+# paired_offline). It never reports "online": the server-backed ONLINE
+# projection is derived by the B62 consumer through the existing
+# kagent.local_agent_server_projection rule from the reported facts.
+DEVICE_TRUTH_VOCABULARY_HAS_ONLINE = False
+DEVICE_TRUTH_ONLINE_AUTHORITY = "kagent.local_agent_server_projection (B62 consumer)"
+DEVICE_TRUTH_SECOND_ONLINE_AUTHORITY = False
+DEVICE_TRUTH_MUTATION = False
 SECOND_REPLAY_SEQUENCE_AUTHORITY = False
 FINGERPRINT_AUTHORITY_CHANGED = False
 P01_AUTHORITY_CHANGED = False
