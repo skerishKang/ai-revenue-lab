@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Padiem Quote · 파디엠 견적</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="quote-core.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -44,6 +45,9 @@
             <label>사업자등록번호
               <input id="senderBizNo" value="000-00-00000">
             </label>
+            <label>주소
+              <input id="senderAddress" placeholder="공급자 주소">
+            </label>
             <label>연락처
               <input id="senderPhone" value="000-0000-0000">
             </label>
@@ -67,6 +71,9 @@
             </label>
             <label>이메일
               <input id="recipientEmail" value="">
+            </label>
+            <label class="span-3">고객 주소
+              <input id="recipientAddress" placeholder="공급받는 자 주소">
             </label>
             <label>견적일
               <input id="quoteDate" type="date">
@@ -92,14 +99,20 @@
           <div id="items"></div>
           <div class="button-row">
             <button class="btn" id="addItem">+ 품목 추가</button>
+            <button class="btn" id="newQuote">새 견적</button>
           </div>
-          <label class="vat-toggle">
-            <input type="checkbox" id="vatEnabled" checked>
-            부가가치세 10% 적용
-          </label>
+          <div class="tax-row">
+            <label>부가세 방식
+              <select id="taxMode">
+                <option value="EXCLUSIVE">별도 — 공급가액에 VAT 10% 추가</option>
+                <option value="INCLUSIVE">포함 — 표시 금액에 VAT 포함</option>
+                <option value="EXEMPT">면세 — 부가세 없음</option>
+              </select>
+            </label>
+          </div>
           <div class="summary">
             <div class="summary-line"><span>공급가액</span><strong id="subtotalText">0원</strong></div>
-            <div class="summary-line"><span>부가세</span><strong id="vatText">0원</strong></div>
+            <div class="summary-line"><span id="vatLabelText">부가세</span><strong id="vatText">0원</strong></div>
             <div class="summary-line total"><span>합계</span><span id="grandText">0원</span></div>
           </div>
         </div>
@@ -129,6 +142,8 @@
               <div id="pvQuoteNo"></div>
               <div id="pvDate"></div>
               <div id="pvValidity"></div>
+              <div id="pvValidUntil"></div>
+              <div id="pvTaxMode"></div>
             </div>
           </div>
           <div class="parties">
@@ -137,12 +152,14 @@
               <strong id="pvSenderCompany"></strong>
               <p id="pvSenderRep"></p>
               <p id="pvSenderBizNo"></p>
+              <p id="pvSenderAddress"></p>
               <p id="pvSenderContact"></p>
             </div>
             <div class="party">
               <div class="eyebrow">공급받는 자</div>
               <strong id="pvRecipientCompany"></strong>
               <p id="pvRecipientPerson"></p>
+              <p id="pvRecipientAddress"></p>
               <p id="pvRecipientEmail"></p>
             </div>
           </div>
@@ -152,7 +169,7 @@
           </table>
           <div class="quote-totals">
             <div><span>공급가액</span><strong id="pvSubtotal"></strong></div>
-            <div><span>부가세</span><strong id="pvVat"></strong></div>
+            <div><span id="pvVatLabel">부가세</span><strong id="pvVat"></strong></div>
             <div class="grand"><span>합계</span><span id="pvGrand"></span></div>
           </div>
           <div class="memo" id="pvMemo"></div>
@@ -162,6 +179,5 @@
     </div>
   </main>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
 </body>
 </html>

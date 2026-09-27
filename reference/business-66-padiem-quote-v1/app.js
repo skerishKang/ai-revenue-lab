@@ -1,85 +1,48 @@
-/* B66 · Padiem Quote — app.js
-   입력 → 결정론적 계산(수량×단가·공급가액·VAT 10%·총액) → 미리보기 렌더링.
-   금액 계산의 최종 authority는 이 코드이며 AI가 아님. 로직은 원본 <script> 블록에서 그대로 추출. */
+/* B66 · Padiem Quote — app.js (UI 레이어)
+   상태는 QuoteDraft 하나(quote-core.js)로 관리하고 화면은 항상 draft에서 파생.
+   draft는 localStorage에 자동 저장되며, 복원 실패 시 기본 데모 상태로 fallback. */
 
 (() => {
+  "use strict";
+
   const $ = (id) => document.getElementById(id);
-  const won = new Intl.NumberFormat("ko-KR", { style: "currency", currency: "KRW", maximumFractionDigits: 0 });
-  const fields = [
-    "senderCompany","senderRep","senderBizNo","senderPhone","senderEmail",
-    "recipientCompany","recipientPerson","recipientEmail","quoteDate","validity","quoteNo","memo"
-  ];
+  const Core = window.QuoteCore;
 
-  const demoSender = {
-    company: "주식회사 파디엠",
-    rep: "대표자명",
-    bizNo: "000-00-00000",
-    phone: "000-0000-0000",
-    email: "hello@example.com"
-  };
+  /* ── 상태: QuoteDraft ── */
 
-  function todayISO() {
-    const d = new Date();
-    return [d.getFullYear(), String(d.getMonth()+1).padStart(2,"0"), String(d.getDate()).padStart(2,"0")].join("-");
+  let draft = loadDraft() || Core.createDefaultDraft();
+  let itemSeq = draft.items.reduce((max, it) => {
+    const n = parseInt(String(it.id).replace(/^item-/, ""), 10);
+    return Number.isFinite(n) ? Math.max(max, n) : max;
+  }, 0);
+
+  function nextItemId() {
+    itemSeq += 1;
+    return "item-" + itemSeq;
   }
 
-  function defaultQuoteNo() {
-    return "PQ-" + todayISO().replaceAll("-","") + "-001";
+  function loadDraft() {
+    try {
+      return Core.normalizeDraft(JSON.parse(localStorage.getItem(Core.DRAFT_STORAGE_KEY) || "null"));
+    } catch (err) {
+      return null;
+    }
   }
 
-  function safeNumber(value) {
-    const n = Number(String(value ?? "").replaceAll(",", ""));
-    return Number.isFinite(n) && n >= 0 ? n : 0;
+  function saveDraft() {
+    try {
+      localStorage.setItem(Core.DRAFT_STORAGE_KEY, JSON.stringify(draft));
+    } catch (err) {
+      /* 저장 실패는 데모 진행을 막지 않음 */
+    }
   }
+
+  /* ── 공통 유틸 ── */
 
   function escapeHtml(value) {
     return String(value ?? "")
-      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;").replaceAll("'","&#039;");
-  }
-
-  function toast(message) {
-    $("toast").textContent = message;
-    $("toast").classList.add("show");
-    clearTimeout(toast.timer);
-    toast.timer = setTimeout(() => $("toast").classList.remove("show"), 1800);
-  }
-
-  /* ── 품목 행 ── */
-  function createItemRow(name = "", qty = 1, unitPrice = 0) {
-    const row = document.createElement("div");
-    row.className = "item-row";
-    row.innerHTML = `
-      <input class="item-name" aria-label="품목명" value="${escapeHtml(name)}" placeholder="품목명">
-      <input class="item-qty" aria-label="수량" type="number" min="0" step="1" value="${safeNumber(qty)}">
-      <input class="item-price" aria-label="단가" type="number" min="0" step="1000" value="${safeNumber(unitPrice)}">
-      <div class="amount">0원</div>
-      <button class="icon-btn remove-item" aria-label="품목 삭제" title="품목 삭제">×</button>
-    `;
-    row.querySelectorAll("input").forEach((el) => el.addEventListener("input", render));
-    row.querySelector(".remove-item").addEventListener("click", () => {
-      if ($("items").children.length === 1) {
-        row.querySelector(".item-name").value = "";
-        row.querySelector(".item-qty").value = "1";
-        row.querySelector(".item-price").value = "0";
-      } else {
-        row.remove();
-      }
-      render();
-    });
-    $("items").appendChild(row);
-    render();
-  }
-
-  function readItems() {
-    return [...document.querySelectorAll(".item-row")].map((row) => {
-      const name = row.querySelector(".item-name").value.trim();
-      const qty = safeNumber(row.querySelector(".item-qty").value);
-      const price = safeNumber(row.querySelector(".item-price").value);
-      const amount = Math.round(qty * price);
-      row.querySelector(".amount").textContent = won.format(amount);
-      return { name, qty, price, amount };
-    });
+      .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;").replaceAll("'", "&#039;");
   }
 
   function textOrDash(value) {
@@ -87,98 +50,275 @@
     return v || "-";
   }
 
-  /* ── 렌더링(입력↔미리보기 실시간 동기화) ── */
-  function render() {
-    const items = readItems();
-    const subtotal = items.reduce((sum, item) => sum + item.amount, 0);
-    const vat = $("vatEnabled").checked ? Math.round(subtotal * 0.10) : 0;
-    const grand = subtotal + vat;
-
-    $("subtotalText").textContent = won.format(subtotal);
-    $("vatText").textContent = won.format(vat);
-    $("grandText").textContent = won.format(grand);
-
-    $("pvQuoteNo").textContent = "견적번호  " + textOrDash($("quoteNo").value);
-    $("pvDate").textContent = "견적일  " + textOrDash($("quoteDate").value);
-    $("pvValidity").textContent = "유효기간  " + $("validity").value + "일";
-
-    $("pvSenderCompany").textContent = textOrDash($("senderCompany").value);
-    $("pvSenderRep").textContent = "대표자  " + textOrDash($("senderRep").value);
-    $("pvSenderBizNo").textContent = "사업자번호  " + textOrDash($("senderBizNo").value);
-    $("pvSenderContact").textContent = [ $("senderPhone").value.trim(), $("senderEmail").value.trim() ].filter(Boolean).join(" · ") || "-";
-
-    $("pvRecipientCompany").textContent = textOrDash($("recipientCompany").value);
-    $("pvRecipientPerson").textContent = "담당자  " + textOrDash($("recipientPerson").value);
-    $("pvRecipientEmail").textContent = $("recipientEmail").value.trim() || "-";
-
-    $("pvItems").innerHTML = items.map((item) => `
-      <tr>
-        <td class="${item.name ? "" : "empty"}">${escapeHtml(item.name || "품목을 입력하세요")}</td>
-        <td>${item.qty}</td>
-        <td>${won.format(item.price)}</td>
-        <td>${won.format(item.amount)}</td>
-      </tr>`
-    ).join("");
-
-    $("pvSubtotal").textContent = won.format(subtotal);
-    $("pvVat").textContent = won.format(vat);
-    $("pvGrand").textContent = won.format(grand);
-    $("pvMemo").textContent = $("memo").value.trim() || "비고 없음";
+  function toast(message, duration) {
+    $("toast").textContent = message;
+    $("toast").classList.add("show");
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(() => $("toast").classList.remove("show"), duration || 1800);
   }
 
-  /* ── 발신자 프리셋 ── */
-  function applySender(sender) {
-    $("senderCompany").value = sender.company || "";
-    $("senderRep").value = sender.rep || "";
-    $("senderBizNo").value = sender.bizNo || "";
-    $("senderPhone").value = sender.phone || "";
-    $("senderEmail").value = sender.email || "";
+  /* ── draft 필드 ↔ 입력 요소 바인딩 ── */
+
+  const FIELD_BINDINGS = [
+    ["senderCompany", "sender", "company"],
+    ["senderRep", "sender", "rep"],
+    ["senderBizNo", "sender", "bizNo"],
+    ["senderAddress", "sender", "address"],
+    ["senderPhone", "sender", "phone"],
+    ["senderEmail", "sender", "email"],
+    ["recipientCompany", "recipient", "company"],
+    ["recipientPerson", "recipient", "person"],
+    ["recipientAddress", "recipient", "address"],
+    ["recipientEmail", "recipient", "email"],
+    ["quoteNo", "meta", "quoteNo"],
+    ["memo", "memo", null]
+  ];
+
+  function setDraftValue(group, key, value) {
+    if (key === null) draft[group] = value;
+    else draft[group][key] = value;
+  }
+
+  function ensureValidityOption(days) {
+    const sel = $("validity");
+    const v = String(days);
+    if (![...sel.options].some((o) => o.value === v)) {
+      const opt = document.createElement("option");
+      opt.value = v;
+      opt.textContent = v + "일";
+      sel.appendChild(opt);
+    }
+    sel.value = v;
+  }
+
+  function fillInputsFromDraft() {
+    FIELD_BINDINGS.forEach(([id, group, key]) => {
+      $(id).value = key === null ? draft[group] : draft[group][key];
+    });
+    $("quoteDate").value = draft.meta.issueDate;
+    ensureValidityOption(draft.meta.validDays);
+    $("taxMode").value = draft.tax.mode;
+    $("senderPreset").value = draft.sender.presetId === "custom" ? "custom" : "padiem";
+  }
+
+  function bindFields() {
+    FIELD_BINDINGS.forEach(([id, group, key]) => {
+      $(id).addEventListener("input", (e) => {
+        setDraftValue(group, key, e.target.value);
+        render();
+      });
+    });
+    $("quoteDate").addEventListener("input", (e) => {
+      draft.meta.issueDate = e.target.value;
+      render();
+    });
+    $("validity").addEventListener("change", (e) => {
+      draft.meta.validDays = Core.parseMoney(e.target.value);
+      render();
+    });
+    $("taxMode").addEventListener("change", (e) => {
+      draft.tax.mode = e.target.value;
+      render();
+    });
+  }
+
+  /* ── 품목 행: 단가/수량은 text 입력(콤마 허용) + blur 시 표시 포맷 ── */
+
+  function buildItemRow(item, index) {
+    const row = document.createElement("div");
+    row.className = "item-row";
+    row.innerHTML = `
+      <input class="item-name" aria-label="품목명" value="${escapeHtml(item.name)}" placeholder="품목명">
+      <div class="item-cell qty">
+        <span class="cell-label">수량</span>
+        <input class="item-qty" aria-label="수량" type="text" inputmode="decimal" value="${escapeHtml(Core.formatInputNumber(item.qty))}">
+      </div>
+      <div class="item-cell price">
+        <span class="cell-label">단가</span>
+        <input class="item-price" aria-label="단가" type="text" inputmode="numeric" value="${escapeHtml(Core.formatInputNumber(item.unitPrice))}">
+      </div>
+      <div class="amount"><span class="amount-label">금액</span><span class="amount-value"></span></div>
+      <button class="icon-btn remove-item" aria-label="품목 삭제" title="품목 삭제">×</button>
+    `;
+    row.querySelector(".item-name").addEventListener("input", (e) => {
+      draft.items[index].name = e.target.value;
+      render();
+    });
+    row.querySelector(".item-qty").addEventListener("input", (e) => {
+      draft.items[index].qty = Core.parseMoney(e.target.value);
+      render();
+    });
+    row.querySelector(".item-qty").addEventListener("change", (e) => {
+      e.target.value = Core.formatInputNumber(Core.parseMoney(e.target.value));
+    });
+    row.querySelector(".item-price").addEventListener("input", (e) => {
+      draft.items[index].unitPrice = Core.parseMoney(e.target.value);
+      render();
+    });
+    row.querySelector(".item-price").addEventListener("change", (e) => {
+      e.target.value = Core.formatInputNumber(Core.parseMoney(e.target.value));
+    });
+    row.querySelector(".remove-item").addEventListener("click", () => removeItem(index));
+    return row;
+  }
+
+  function renderItems() {
+    const host = $("items");
+    host.innerHTML = "";
+    draft.items.forEach((item, index) => host.appendChild(buildItemRow(item, index)));
+  }
+
+  function addItem() {
+    draft.items.push({ id: nextItemId(), name: "", qty: 1, unitPrice: 0 });
+    renderItems();
+    render();
+    const rows = $("items").querySelectorAll(".item-row");
+    rows[rows.length - 1].querySelector(".item-name").focus();
+  }
+
+  function removeItem(index) {
+    if (draft.items.length === 1) {
+      draft.items[0] = { id: draft.items[0].id, name: "", qty: 1, unitPrice: 0 };
+    } else {
+      draft.items.splice(index, 1);
+    }
+    renderItems();
     render();
   }
 
-  function loadCustomSender() {
+  /* ── 렌더링: 입력 요약 + 미리보기 + 자동 저장 (금액은 매번 파생) ── */
+
+  function vatSummaryLabel(mode) {
+    if (mode === Core.TAX_MODES.INCLUSIVE) return "부가세 (포함가 분리)";
+    if (mode === Core.TAX_MODES.EXEMPT) return "부가세 (면세)";
+    return "부가세";
+  }
+
+  function render() {
+    const totals = Core.computeTotals(draft.items, draft.tax.mode);
+
+    $("subtotalText").textContent = Core.formatMoney(totals.supply);
+    $("vatText").textContent = Core.formatMoney(totals.vat);
+    $("grandText").textContent = Core.formatMoney(totals.grand);
+
+    $("pvQuoteNo").textContent = "견적번호  " + textOrDash(draft.meta.quoteNo);
+    $("pvDate").textContent = "견적일  " + textOrDash(draft.meta.issueDate);
+    $("pvValidity").textContent = "유효기간  " + draft.meta.validDays + "일";
+    const validUntil = Core.computeValidUntil(draft.meta.issueDate, draft.meta.validDays);
+    $("pvValidUntil").textContent = "유효일  " + (validUntil || "-");
+    $("pvTaxMode").textContent = "세금  " + Core.TAX_LABELS[draft.tax.mode];
+
+    $("pvSenderCompany").textContent = textOrDash(draft.sender.company);
+    $("pvSenderRep").textContent = "대표자  " + textOrDash(draft.sender.rep);
+    $("pvSenderBizNo").textContent = "사업자번호  " + textOrDash(draft.sender.bizNo);
+    $("pvSenderAddress").textContent = textOrDash(draft.sender.address);
+    $("pvSenderContact").textContent = [draft.sender.phone.trim(), draft.sender.email.trim()].filter(Boolean).join(" · ") || "-";
+
+    $("pvRecipientCompany").textContent = textOrDash(draft.recipient.company);
+    $("pvRecipientPerson").textContent = "담당자  " + textOrDash(draft.recipient.person);
+    $("pvRecipientAddress").textContent = textOrDash(draft.recipient.address);
+    $("pvRecipientEmail").textContent = draft.recipient.email.trim() || "-";
+
+    $("pvItems").innerHTML = draft.items.map((item, i) => `
+      <tr>
+        <td class="${item.name ? "" : "empty"}">${escapeHtml(item.name || "품목을 입력하세요")}</td>
+        <td>${escapeHtml(Core.formatInputNumber(item.qty))}</td>
+        <td>${Core.formatMoney(item.unitPrice)}</td>
+        <td>${Core.formatMoney(totals.amounts[i])}</td>
+      </tr>`
+    ).join("");
+
+    $("pvSubtotal").textContent = Core.formatMoney(totals.supply);
+    $("pvVatLabel").textContent = vatSummaryLabel(draft.tax.mode);
+    $("pvVat").textContent = Core.formatMoney(totals.vat);
+    $("pvGrand").textContent = Core.formatMoney(totals.grand);
+    $("pvMemo").textContent = draft.memo.trim() || "비고 없음";
+
+    document.querySelectorAll("#items .item-row").forEach((row, i) => {
+      const cell = row.querySelector(".amount-value");
+      if (cell && totals.amounts[i] !== undefined) cell.textContent = Core.formatMoney(totals.amounts[i]);
+    });
+
+    saveDraft();
+  }
+
+  /* ── 발신자 프리셋 ── */
+
+  const demoSender = {
+    company: "주식회사 파디엠",
+    rep: "대표자명",
+    bizNo: "000-00-00000",
+    address: "",
+    phone: "000-0000-0000",
+    email: "hello@example.com"
+  };
+
+  function loadSavedSender() {
     try {
-      const saved = JSON.parse(localStorage.getItem("padiemQuote.sender") || "null");
+      const saved = JSON.parse(localStorage.getItem(Core.SENDER_STORAGE_KEY) || "null");
       return saved && typeof saved === "object" ? saved : null;
-    } catch {
+    } catch (err) {
       return null;
     }
   }
 
   $("senderPreset").addEventListener("change", () => {
     if ($("senderPreset").value === "padiem") {
-      applySender(demoSender);
-      return;
+      Object.assign(draft.sender, demoSender, { presetId: "padiem" });
+    } else {
+      const saved = loadSavedSender();
+      Object.assign(draft.sender, saved || {
+        company: "", rep: "", bizNo: "", address: "", phone: "", email: ""
+      }, { presetId: "custom" });
     }
-    applySender(loadCustomSender() || { company:"", rep:"", bizNo:"", phone:"", email:"" });
+    fillInputsFromDraft();
+    render();
   });
 
   $("saveSender").addEventListener("click", () => {
+    draft.sender.presetId = "custom";
     const sender = {
-      company: $("senderCompany").value.trim(),
-      rep: $("senderRep").value.trim(),
-      bizNo: $("senderBizNo").value.trim(),
-      phone: $("senderPhone").value.trim(),
-      email: $("senderEmail").value.trim()
+      company: draft.sender.company.trim(),
+      rep: draft.sender.rep.trim(),
+      bizNo: draft.sender.bizNo.trim(),
+      address: draft.sender.address.trim(),
+      phone: draft.sender.phone.trim(),
+      email: draft.sender.email.trim()
     };
-    localStorage.setItem("padiemQuote.sender", JSON.stringify(sender));
+    try {
+      localStorage.setItem(Core.SENDER_STORAGE_KEY, JSON.stringify(sender));
+    } catch (err) {
+      /* 저장 실패 시에도 데모 진행 가능 */
+    }
     $("senderPreset").value = "custom";
+    render();
     toast("이 브라우저에 발신자를 저장했습니다.");
   });
 
-  $("addItem").addEventListener("click", () => createItemRow("", 1, 0));
-  $("vatEnabled").addEventListener("change", render);
-  fields.forEach((id) => $(id).addEventListener("input", render));
-  $("validity").addEventListener("change", render);
+  /* ── 새 견적 (사용자 확인 후 현재 draft 초기화) ── */
+
+  $("newQuote").addEventListener("click", () => {
+    if (!window.confirm("현재 입력한 견적 내용을 모두 지우고 새로 시작할까요?")) return;
+    draft = Core.createDefaultDraft();
+    renderItems();
+    fillInputsFromDraft();
+    render();
+    toast("새 견적을 시작합니다.");
+  });
+
+  /* ── 인쇄: 브라우저 머리글/바닥글은 코드로 끌 수 없어 저장 전 짧게 안내 ── */
 
   $("printPdf").addEventListener("click", () => {
     render();
-    window.print();
+    toast("PDF 저장 시 인쇄 설정에서 '머리글과 바닥글'을 해제하면 견적서만 깔끔하게 저장됩니다.", 5000);
+    setTimeout(() => window.print(), 600);
   });
 
   $("emailFuture").addEventListener("click", () => {
     toast("이메일 전송은 다음 단계에서 Gmail/메일 연동으로 붙입니다.");
   });
+
+  /* ── 모드 전환 (upload/chat은 의도된 future affordance) ── */
 
   document.querySelectorAll(".mode").forEach((button) => {
     button.addEventListener("click", () => {
@@ -197,9 +337,10 @@
   });
 
   /* ── 초기화 ── */
-  $("quoteDate").value = todayISO();
-  $("quoteNo").value = defaultQuoteNo();
-  createItemRow("서비스 구축", 1, 1000000);
-  createItemRow("운영 지원", 1, 300000);
+
+  renderItems();
+  fillInputsFromDraft();
+  bindFields();
+  $("addItem").addEventListener("click", addItem);
   render();
 })();
