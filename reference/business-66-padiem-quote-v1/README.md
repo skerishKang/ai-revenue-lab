@@ -1,4 +1,4 @@
-# B66 · Padiem Quote / 파디엠 견적
+# B66 · Quote Beta / 견적서 만들기
 
 Rapid customer-facing quotation demo for Issue #3136.
 
@@ -27,6 +27,16 @@ python -m http.server 4173
 Then open `http://127.0.0.1:4173/`.
 
 Opening `index.html` directly also works in normal browsers (plain scripts, no modules).
+
+## Beta entrypoint
+
+After the #3144 main deployment, the neutral public beta entrypoint is:
+
+```text
+https://quick-quote-kr.pages.dev/
+```
+
+This is a Cloudflare Pages beta URL only. No custom domain or public product brand is attached yet.
 
 ## Project structure
 
@@ -82,7 +92,7 @@ The UI names the next steps but does not pretend they work:
 - server-side document persistence
 - real email sending
 - authentication or tenant data
-- Production deployment
+- branded/custom-domain Production rollout
 
 No file is uploaded, no email is sent, and no credential is required by this demo.
 
@@ -99,4 +109,4 @@ chat input ─────┘
 AI may extract or normalize fields, but money arithmetic remains deterministic application code
 (`quote-core.js`).
 
-Refs #3136.
+Refs #3136, #3144.
