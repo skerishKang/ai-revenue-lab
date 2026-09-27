@@ -818,7 +818,7 @@ class D1HistoryStore:
         if not isinstance(run_id, str) or not run_id:
             raise HistoryError("run_id is required")
         return await self._first(
-            "SELECT id, run_id, status, result_summary, conversation_id, workspace_id "
+            "SELECT id, run_id, status, result_summary, conversation_id, workspace_id, updated_at "
             "FROM claw_run_history WHERE run_id=? AND user_id=?",
             run_id, user_id,
         )
@@ -877,6 +877,16 @@ class D1HistoryStore:
         bounded_summary = summary[:MAX_RUN_RESULT_SUMMARY_CHARS]
         if stored_summary is not None and stored_summary != bounded_summary:
             raise HistoryError("claw run already carries a different terminal result")
+        if stored_summary == bounded_summary:
+            # The identical terminal result is already durable. Returning here
+            # is what makes an exact retry genuinely inert: no run-row update,
+            # no message, no conversation timestamp.
+            already = await self._first(
+                "SELECT id FROM messages WHERE id=? AND conversation_id=?",
+                message_id, conversation_id,
+            )
+            if already is not None:
+                return False
         now = _now_iso()
         statements = [
             self.db.prepare(

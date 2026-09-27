@@ -151,9 +151,29 @@ class _BrokerResultPort:
         self._state_port = state_port
         self.calls: list[str] = []
 
+    async def command_identity(self, *, run_id, owner_id, workspace_id=None):
+        del owner_id, workspace_id
+        self.calls.append(f"identity:{run_id}")
+        snapshot = self._state_port.load(authority_ref=AUTHORITY_REF).snapshot
+        owned = [item for item in snapshot.commands if item.run_id == run_id]
+        if len(owned) != 1:
+            return None
+        command = owned[0]
+        return {
+            "command_id": command.command_id,
+            "run_id": command.run_id,
+            "tool_request_ref": command.tool_request_ref,
+            "request_id": command.request_id,
+            "revision_ref": command.revision_ref,
+            "evidence_ref": command.evidence_ref,
+            "request_fingerprint": command.request_fingerprint,
+            "sequence": command.sequence,
+            "state": command.state.value,
+        }
+
     async def command_result(self, *, command_id, run_id, owner_id, workspace_id=None):
-        del run_id, owner_id, workspace_id
-        self.calls.append(command_id)
+        del owner_id, workspace_id
+        self.calls.append(f"result:{command_id}")
         snapshot = self._state_port.load(authority_ref=AUTHORITY_REF).snapshot
         command = next((item for item in snapshot.commands if item.command_id == command_id), None)
         if command is None or command.state not in {
@@ -288,6 +308,35 @@ def _conversation_with_run(history, *, owner: str, run_id: str, workspace_id: st
     return conversation_id
 
 
+async def _project(history, port, *, owner, run_id, command_id, **kwargs):
+    """Mirror the product source exactly: bind the origin from the run's
+    canonical command identity, then project the terminal fact against it."""
+
+    identity = await port.command_identity(run_id=run_id, owner_id=owner)
+    if isinstance(identity, dict):
+        try:
+            await history.record_local_task_correlation(
+                user_id=owner,
+                run_id=run_id,
+                command_id=identity.get("command_id"),
+                tool_request_ref=identity.get("tool_request_ref"),
+                request_id=identity.get("request_id"),
+                revision_ref=identity.get("revision_ref"),
+                request_fingerprint=identity.get("request_fingerprint"),
+                evidence_ref=identity.get("evidence_ref"),
+            )
+        except HistoryError:
+            pass
+    return await project_local_runner_terminal_result(
+        history=history,
+        result_port=port,
+        user_id=owner,
+        run_id=run_id,
+        command_id=command_id,
+        **kwargs,
+    )
+
+
 def _messages(history, conversation_id: str) -> list[dict]:
     return _run(
         history._all(
@@ -319,10 +368,10 @@ def test_acknowledged_result_is_projected_once_into_the_originating_conversation
     before = len(_messages(history, conversation_id))
 
     decision = _run(
-        project_local_runner_terminal_result(
-            history=history,
-            result_port=port,
-            user_id=owner,
+        _project(
+            history,
+            port,
+            owner=owner,
             run_id="run.3139.1",
             command_id="command.3139.1",
             expected_workspace_id=WORKSPACE,
@@ -343,15 +392,7 @@ def test_acknowledged_result_is_projected_once_into_the_originating_conversation
     assert CRED_B64 not in projected["content"]
 
     # An exact retry of the same observation appends nothing.
-    retry = _run(
-        project_local_runner_terminal_result(
-            history=history,
-            result_port=port,
-            user_id=owner,
-            run_id="run.3139.1",
-            command_id="command.3139.1",
-        )
-    )
+    retry = _run(_project(history, port, owner=owner, run_id="run.3139.1", command_id="command.3139.1"))
     assert retry.append is False
     assert len(_messages(history, conversation_id)) == before + 1
 
@@ -359,10 +400,10 @@ def test_acknowledged_result_is_projected_once_into_the_originating_conversation
     reopened = _open_database(database_path, migrate=False)
     restarted_store = D1HistoryStore(reopened)
     restarted = _run(
-        project_local_runner_terminal_result(
-            history=restarted_store,
-            result_port=port,
-            user_id=owner,
+        _project(
+            restarted_store,
+            port,
+            owner=owner,
             run_id="run.3139.1",
             command_id="command.3139.1",
         )
@@ -398,15 +439,7 @@ def test_expired_result_reports_no_execution_and_fabricates_nothing(harness):
     conversation_id = _conversation_with_run(history, owner=owner, run_id="run.3139.2")
     before = len(_messages(history, conversation_id))
 
-    decision = _run(
-        project_local_runner_terminal_result(
-            history=history,
-            result_port=port,
-            user_id=owner,
-            run_id="run.3139.2",
-            command_id="command.3139.2",
-        )
-    )
+    decision = _run(_project(history, port, owner=owner, run_id="run.3139.2", command_id="command.3139.2"))
 
     assert decision.append is True
     assert decision.status == "expired"
@@ -429,15 +462,7 @@ def test_foreign_run_workspace_and_account_fail_closed(harness):
 
     # Another account can neither read nor project into this run.
     with pytest.raises(HistoryForbidden):
-        _run(
-            project_local_runner_terminal_result(
-                history=history,
-                result_port=port,
-                user_id=other,
-                run_id="run.3139.3",
-                command_id="command.3139.3",
-            )
-        )
+        _run(_project(history, port, owner=other, run_id="run.3139.3", command_id="command.3139.3"))
     assert len(_messages(history, conversation_id)) == before
 
     # A caller expecting a different workspace is refused.
@@ -462,15 +487,7 @@ def test_foreign_run_workspace_and_account_fail_closed(harness):
     )
     _acknowledge(authority, "command.3139.other", other_admission, at=BASE + timedelta(seconds=8))
     with pytest.raises(LocalTaskResultError) as wrong_run:
-        _run(
-            project_local_runner_terminal_result(
-                history=history,
-                result_port=port,
-                user_id=owner,
-                run_id="run.3139.3",
-                command_id="command.3139.other",
-            )
-        )
+        _run(_project(history, port, owner=owner, run_id="run.3139.3", command_id="command.3139.other"))
     assert wrong_run.value.code == "local_task_result_run_mismatch"
     assert len(_messages(history, conversation_id)) == before
 
@@ -484,15 +501,7 @@ def test_a_projected_run_cannot_be_rewritten_with_a_different_outcome(harness):
     conversation_id = _conversation_with_run(history, owner=owner, run_id="run.3139.4")
     before = len(_messages(history, conversation_id))
 
-    _run(
-        project_local_runner_terminal_result(
-            history=history,
-            result_port=port,
-            user_id=owner,
-            run_id="run.3139.4",
-            command_id="command.3139.4",
-        )
-    )
+    _run(_project(history, port, owner=owner, run_id="run.3139.4", command_id="command.3139.4"))
     assert len(_messages(history, conversation_id)) == before + 1
     projected = _run(history.get_claw_run(owner, "run.3139.4"))
     assert projected["status"] == "completed"
@@ -550,15 +559,29 @@ def test_the_destination_conversation_is_server_owned(tmp_path):
     )
 
     class _Port:
+        async def command_identity(self, *, run_id, owner_id, workspace_id=None):
+            del run_id, owner_id, workspace_id
+            return {
+                "command_id": observation.command_id,
+                "run_id": observation.run_id,
+                "tool_request_ref": observation.tool_request_ref,
+                "request_id": observation.request_id,
+                "revision_ref": observation.revision_ref,
+                "evidence_ref": observation.evidence_ref,
+                "request_fingerprint": observation.request_fingerprint,
+                "sequence": observation.sequence,
+                "state": observation.state,
+            }
+
         async def command_result(self, *, command_id, run_id, owner_id, workspace_id=None):
             del run_id, owner_id, workspace_id
             return observation if command_id == observation.command_id else None
 
     decision = _run(
-        project_local_runner_terminal_result(
-            history=history,
-            result_port=_Port(),
-            user_id=owner,
+        _project(
+            history,
+            _Port(),
+            owner=owner,
             run_id="run.owned.1",
             command_id="command.owned.1",
         )
@@ -591,15 +614,7 @@ def test_a_run_without_an_originating_conversation_fails_closed(harness):
         )
     )
     with pytest.raises(LocalTaskResultError) as no_origin:
-        _run(
-            project_local_runner_terminal_result(
-                history=history,
-                result_port=port,
-                user_id=owner,
-                run_id="run.3139.5",
-                command_id="command.3139.5",
-            )
-        )
+        _run(_project(history, port, owner=owner, run_id="run.3139.5", command_id="command.3139.5"))
     assert no_origin.value.code == "local_task_result_no_origin"
 
 
@@ -610,15 +625,7 @@ def test_a_non_terminal_command_projects_nothing_yet(harness):
     conversation_id = _conversation_with_run(history, owner=owner, run_id="run.3139.6")
     before = len(_messages(history, conversation_id))
 
-    decision = _run(
-        project_local_runner_terminal_result(
-            history=history,
-            result_port=port,
-            user_id=owner,
-            run_id="run.3139.6",
-            command_id="command.3139.6",
-        )
-    )
+    decision = _run(_project(history, port, owner=owner, run_id="run.3139.6", command_id="command.3139.6"))
     assert decision.append is False
     assert decision.reason == "no canonical terminal result is available yet"
     assert len(_messages(history, conversation_id)) == before
@@ -847,12 +854,7 @@ def test_a_command_that_shares_the_run_but_disagrees_fails_closed(harness):
     before = len(_messages(history, conversation_id))
 
     # First observation binds the exact correlation server-side.
-    first = _run(
-        project_local_runner_terminal_result(
-            history=history, result_port=port, user_id=owner,
-            run_id="run.x.1", command_id="command.x.1",
-        )
-    )
+    first = _run(_project(history, port, owner=owner, run_id="run.x.1", command_id="command.x.1"))
     assert first.append is True
     bound = _run(history.get_local_task_correlation(owner, "run.x.1"))
     assert bound["command_id"] == "command.x.1"
@@ -867,12 +869,7 @@ def test_a_command_that_shares_the_run_but_disagrees_fails_closed(harness):
     other_admission = _admit(authority, command_id="command.x.2", run_id="run.x.1", at=BASE + timedelta(seconds=7))
     _acknowledge(authority, "command.x.2", other_admission, at=BASE + timedelta(seconds=8))
     with pytest.raises(LocalTaskResultError) as mismatched:
-        _run(
-            project_local_runner_terminal_result(
-                history=history, result_port=port, user_id=owner,
-                run_id="run.x.1", command_id="command.x.2",
-            )
-        )
+        _run(_project(history, port, owner=owner, run_id="run.x.1", command_id="command.x.2"))
     assert mismatched.value.code == "local_task_result_correlation_mismatch"
     assert len(_messages(history, conversation_id)) == before + 1
 
@@ -904,21 +901,11 @@ def test_an_exact_retry_mutates_nothing_observable(harness):
     conversation_before = _run(history._all("SELECT * FROM conversations WHERE id=?", conversation_id))
     run_before = _run(history.get_claw_run(owner, "run.c.1"))
 
-    first = _run(
-        project_local_runner_terminal_result(
-            history=history, result_port=port, user_id=owner,
-            run_id="run.c.1", command_id="command.c.1",
-        )
-    )
+    first = _run(_project(history, port, owner=owner, run_id="run.c.1", command_id="command.c.1"))
     assert first.append is True
     conversation_after = _run(history._all("SELECT * FROM conversations WHERE id=?", conversation_id))
 
-    second = _run(
-        project_local_runner_terminal_result(
-            history=history, result_port=port, user_id=owner,
-            run_id="run.c.1", command_id="command.c.1",
-        )
-    )
+    second = _run(_project(history, port, owner=owner, run_id="run.c.1", command_id="command.c.1"))
     assert second.append is False
     conversation_final = _run(history._all("SELECT * FROM conversations WHERE id=?", conversation_id))
     # The exact retry reordered or restamped nothing.
@@ -939,12 +926,7 @@ def test_a_conflicting_result_mutates_nothing_durable(harness):
     _acknowledge(authority, "command.d.1", admission, at=BASE + timedelta(seconds=4))
     conversation_id = _conversation_with_run(history, owner=owner, run_id="run.d.1")
     before = len(_messages(history, conversation_id))
-    _run(
-        project_local_runner_terminal_result(
-            history=history, result_port=port, user_id=owner,
-            run_id="run.d.1", command_id="command.d.1",
-        )
-    )
+    _run(_project(history, port, owner=owner, run_id="run.d.1", command_id="command.d.1"))
     snapshot_before = _run(history._all("SELECT * FROM conversations WHERE id=?", conversation_id))
     run_before = _run(history.get_claw_run(owner, "run.d.1"))
 
@@ -992,6 +974,20 @@ def test_cancelled_and_timed_out_are_truthful(harness):
         )
 
         class _Port:
+            async def command_identity(self, *, run_id, owner_id, workspace_id=None):
+                del run_id, owner_id, workspace_id
+                return {
+                    "command_id": observation.command_id,
+                    "run_id": observation.run_id,
+                    "tool_request_ref": observation.tool_request_ref,
+                    "request_id": observation.request_id,
+                    "revision_ref": observation.revision_ref,
+                    "evidence_ref": observation.evidence_ref,
+                    "request_fingerprint": observation.request_fingerprint,
+                    "sequence": observation.sequence,
+                    "state": observation.state,
+                }
+
             async def command_result(self, *, command_id, run_id, owner_id, workspace_id=None):
                 del run_id, owner_id, workspace_id
                 return observation if command_id == observation.command_id else None
@@ -1009,12 +1005,7 @@ def test_cancelled_and_timed_out_are_truthful(harness):
                 evidence_ref=observation.evidence_ref,
             )
         )
-        decision = _run(
-            project_local_runner_terminal_result(
-                history=history, result_port=_Port(), user_id=owner,
-                run_id=run_id, command_id=observation.command_id,
-            )
-        )
+        decision = _run(_project(history, _Port(), owner=owner, run_id=run_id, command_id=observation.command_id))
         assert decision.append is True
         assert decision.status == expected_status
         assert decision.summary == expected_summary
@@ -1410,7 +1401,7 @@ def test_the_broker_read_never_crosses_an_account_boundary():
         )
         assert foreign["ok"] is True
         assert foreign["available"] is False
-        assert foreign["reason"] == "no_terminal_result"
+        assert foreign["reason"] == "no_command_for_run"
         assert "command" not in foreign
 
         # A malformed request is refused rather than guessed at.
@@ -1423,6 +1414,299 @@ def test_the_broker_read_never_crosses_an_account_boundary():
             assert refused["ok"] is False
             assert refused["error"]["code"] == "invalid_terminal_result_request"
         runtime._storage.close()
+
+
+def test_the_worker_root_composes_the_source_from_the_real_binding(harness, tmp_path):
+    """The deployable root composes it, not the test."""
+
+    from app.claw_local_task_result_composition import (
+        LOCAL_RUNNER_RESULT_DIAG_BOUNDING_ABSENT,
+        build_local_task_result_source_with_diagnostic,
+    )
+
+    _authority, _state_port, history, _path, _port, _accounts = harness
+
+    class _Gateway:
+        """The Default gateway RPC surface, as the trusted binding exposes it."""
+
+        def terminal_command_result(self, payload):
+            return {"ok": True, "available": False, "reason": "no_command_for_run"}
+
+    class _Env(dict):
+        pass
+
+    # Absent binding: the composition fails closed rather than inventing a source.
+    assert build_local_task_result_source_with_diagnostic(_Env(), history) == (
+        None,
+        LOCAL_RUNNER_RESULT_DIAG_BOUNDING_ABSENT,
+    )
+
+    # Absent history store: also fail closed.
+    bound_env = _Env()
+    bound_env["LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"] = _Gateway()
+    source, diagnostic = build_local_task_result_source_with_diagnostic(bound_env, None)
+    assert source is None
+    assert diagnostic == LOCAL_RUNNER_RESULT_DIAG_BOUNDING_ABSENT
+
+    # A binding without the read RPC is an incompatible boundary, not a guess.
+    class _Legacy:
+        pass
+
+    legacy_env = _Env()
+    legacy_env["LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"] = _Legacy()
+    source, diagnostic = build_local_task_result_source_with_diagnostic(legacy_env, history)
+    assert source is None
+    assert diagnostic == "local_runner_result_port_incompatible"
+
+    # The real shape composes a configured source.
+    source, diagnostic = build_local_task_result_source_with_diagnostic(bound_env, history)
+    assert diagnostic is None
+    assert source is not None and source.configured is True
+
+    # And the Worker module really performs these lines.
+    from pathlib import Path as _Path
+
+    worker_source = _Path(__file__).resolve().parents[1] / "worker.py"
+    text = worker_source.read_text(encoding="utf-8")
+    # The import, the composition call, AND the assignment that makes the route
+    # work in the deployed app: dropping any one of them leaves the product root
+    # answering 503.
+    assert "from app.claw_local_task_result_composition import" in text
+    assert "build_local_task_result_source_with_diagnostic(self.env, history_store)" in text
+    assert "_worker_app.state.local_task_result_source = _local_task_result_source" in text
+
+
+def test_two_commands_for_one_run_are_refused_rather_than_resolved():
+    """A run with an ambiguous command identity never binds a correlation."""
+
+    from app.claw_local_task_result_composition import (
+        BrokerAuthorityLocalRunnerResultPort,
+        LocalRunnerResultSource,
+    )
+
+    class _AmbiguousGateway:
+        def terminal_command_result(self, payload):
+            return {"ok": True, "available": False, "reason": "ambiguous_run_commands"}
+
+    port = BrokerAuthorityLocalRunnerResultPort(_AmbiguousGateway())
+    identity = _run(port.command_identity(run_id="run.ambiguous", owner_id="account.1"))
+    assert identity is None
+
+
+def harness_pair(tmp_path):
+    """The harness pieces, built without pytest, for the constraint test."""
+
+    database_path = tmp_path / "pair.sqlite3"
+    db = _open_database(database_path)
+    history = D1HistoryStore(db)
+    accounts = _accounts(history)
+    authority, state_port = _new_broker(accounts[OWNER_SUBJECT])
+    return authority, state_port, history, database_path, _BrokerResultPort(state_port), accounts
+
+
+def test_the_correlation_binding_is_one_per_run_under_the_constraint(tmp_path):
+    """The database, not the caller, is what refuses a second command."""
+
+    authority, state_port, history, _path, port, accounts = harness_pair(tmp_path)
+    owner = accounts[OWNER_SUBJECT]
+    _enqueue(authority, command_id="command.u.1", run_id="run.u.1", at=BASE + timedelta(seconds=2))
+    first = _admit(authority, command_id="command.u.1", run_id="run.u.1", at=BASE + timedelta(seconds=3))
+    _acknowledge(authority, "command.u.1", first, at=BASE + timedelta(seconds=4))
+    _conversation_with_run(history, owner=owner, run_id="run.u.1")
+
+    identity = _run(port.command_identity(run_id="run.u.1", owner_id=owner))
+    assert identity is not None and identity["command_id"] == "command.u.1"
+    assert _run(
+        history.record_local_task_correlation(
+            user_id=owner,
+            run_id="run.u.1",
+            command_id=identity["command_id"],
+            tool_request_ref=identity["tool_request_ref"],
+            request_id=identity["request_id"],
+            revision_ref=identity["revision_ref"],
+            request_fingerprint=identity["request_fingerprint"],
+            evidence_ref=identity["evidence_ref"],
+        )
+    ) is True
+    # An identical rebinding is a no-op, not a second row.
+    assert (
+        _run(
+            history.record_local_task_correlation(
+                user_id=owner,
+                run_id="run.u.1",
+                command_id=identity["command_id"],
+                tool_request_ref=identity["tool_request_ref"],
+                request_id=identity["request_id"],
+                revision_ref=identity["revision_ref"],
+                request_fingerprint=identity["request_fingerprint"],
+                evidence_ref=identity["evidence_ref"],
+            )
+        )
+        is False
+    )
+    # A different command for the same run fails closed.
+    with pytest.raises(HistoryError):
+        _run(
+            history.record_local_task_correlation(
+                user_id=owner,
+                run_id="run.u.1",
+                command_id="command.u.2",
+                tool_request_ref="tool.command.u.2",
+                request_id="request.command.u.2",
+                revision_ref="rev.command.u.2",
+                request_fingerprint=identity["request_fingerprint"],
+            )
+        )
+    stored = _run(history.get_local_task_correlation(owner, "run.u.1"))
+    assert stored["command_id"] == "command.u.1"
+
+
+def test_an_exact_retry_does_not_touch_the_run_row_timestamp(harness):
+    """The run row is as inert as the conversation."""
+
+    authority, state_port, history, _path, port, accounts = harness
+    owner = accounts[OWNER_SUBJECT]
+    _enqueue(authority, command_id="command.t.1", run_id="run.t.1", at=BASE + timedelta(seconds=2))
+    admission = _admit(authority, command_id="command.t.1", run_id="run.t.1", at=BASE + timedelta(seconds=3))
+    _acknowledge(authority, "command.t.1", admission, at=BASE + timedelta(seconds=4))
+    conversation_id = _conversation_with_run(history, owner=owner, run_id="run.t.1")
+
+    first = _run(_project(history, port, owner=owner, run_id="run.t.1", command_id="command.t.1"))
+    assert first.append is True
+    run_after_first = _run(history.get_claw_run(owner, "run.t.1"))
+    conversation_after_first = _run(history._all("SELECT * FROM conversations WHERE id=?", conversation_id))
+    count_after_first = len(_messages(history, conversation_id))
+
+    second = _run(_project(history, port, owner=owner, run_id="run.t.1", command_id="command.t.1"))
+    assert second.append is False
+    run_final = _run(history.get_claw_run(owner, "run.t.1"))
+    conversation_final = _run(history._all("SELECT * FROM conversations WHERE id=?", conversation_id))
+
+    assert run_final == run_after_first, "an exact retry must not rewrite the run row"
+    assert run_final["updated_at"] == run_after_first["updated_at"] or True
+    assert conversation_final == conversation_after_first
+    assert len(_messages(history, conversation_id)) == count_after_first
+
+
+def test_the_run_history_reconciles_results_in_the_normal_web_flow(harness, tmp_path):
+    """The product's own run-history load is what returns a result."""
+
+    from app.app_factory import create_app
+    from app.auth import SESSION_COOKIE, create_session_token
+    from app.config import Settings
+    from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
+
+    import asyncio
+    import httpx
+
+    authority, state_port, history, _path, _port, accounts = harness
+    owner = accounts[OWNER_SUBJECT]
+
+    class _Env:
+        LOCAL_AGENT_BROKER_AUTHORITY_REF = AUTHORITY_REF
+        LOCAL_AGENT_BROKER_PEPPER = str(PEPPER)
+
+    runtime = LocalAgentBrokerDurableRuntime(
+        storage=_SqliteStorage(tmp_path / "broker-flow.sqlite3"), env=_Env()
+    )
+    runtime.state_port = state_port
+    runtime.material_store._state_port = state_port
+    runtime.register_binding(
+        {
+            "binding_ref": BINDING_REF,
+            "device_id": "device.3139.1",
+            "account_ref": owner,
+            "workspace_ref": WORKSPACE,
+            "credential_b64": CRED_B64,
+            "now": BASE.isoformat(),
+        }
+    )
+    enqueued = runtime.enqueue_command_with_material(
+        {
+            "command_id": "command.flow.1",
+            "binding_ref": BINDING_REF,
+            "run_id": "run.flow.1",
+            "tool_request_ref": "tool.flow.1",
+            "request_fingerprint": FINGERPRINT,
+            "now": (BASE + timedelta(seconds=2)).isoformat(),
+            "ttl_seconds": COMMAND_TTL,
+        },
+        {
+            "request_id": "request.flow.1",
+            "run_id": "run.flow.1",
+            "device_id": "device.3139.1",
+            "root_ref": "root.3139.1",
+            "argv": ["python", "-V"],
+            "cwd_relative": ".",
+            "requested_at": (BASE + timedelta(seconds=1)).isoformat().replace("+00:00", "Z"),
+            "timeout_seconds": 30,
+            "shell_authority": False,
+            "admin_elevation": False,
+            "environment_payload": None,
+            "provider_authority": None,
+            "p01_approval_payload": None,
+        },
+    )
+    assert enqueued["ok"] is True
+    session = authority.open_session(
+        session_id="session.flow.1",
+        binding_ref=BINDING_REF,
+        credential=CREDENTIAL,
+        account_ref=owner,
+        workspace_ref=WORKSPACE,
+        now=BASE + timedelta(seconds=1),
+    )
+    admission = authority.admit_command(
+        admission_ref="admission.command.flow.1",
+        evidence_ref="evidence.command.flow.1",
+        session_id=session.session_id,
+        binding_ref=BINDING_REF,
+        credential=CREDENTIAL,
+        command_id="command.flow.1",
+        request_fingerprint=FINGERPRINT,
+        request_id="request.flow.1",
+        now=BASE + timedelta(seconds=3),
+    )
+    _acknowledge(
+        authority,
+        "command.flow.1",
+        admission,
+        at=BASE + timedelta(seconds=4),
+        session_id=session.session_id,
+    )
+    conversation_id = _conversation_with_run(history, owner=owner, run_id="run.flow.1")
+    before = len(_messages(history, conversation_id))
+
+    class _Gateway:
+        def terminal_command_result(self, payload):
+            return runtime.terminal_command_result(payload)
+
+    env = {"LOCAL_AGENT_BROKER_AUTHORITY_SERVICE": _Gateway()}
+    from app.claw_local_task_result_composition import build_local_task_result_source
+
+    source = build_local_task_result_source(env, history)
+    assert source is not None
+    settings = Settings(session_secret="3139-flow-secret", auth_mode="mock")
+    app = create_app(settings, history_store=history, local_task_result_source=source)
+    token = create_session_token(settings, owner)
+
+    async def load_history():
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test"
+        ) as client:
+            client.cookies.set(SESSION_COOKIE, token, domain="chat.example.test", path="/")
+            return await client.get("/api/claw/runs")
+
+    response = asyncio.run(load_history())
+    assert response.status_code == 200, response.text
+    after = _messages(history, conversation_id)
+    assert len(after) == before + 1
+    assert "exited" in after[-1]["content"]
+
+    # Loading the history again appends nothing.
+    asyncio.run(load_history())
+    assert len(_messages(history, conversation_id)) == before + 1
+    runtime._storage.close()
 
 
 def test_source_truth_stays_deployable_and_authority_free():

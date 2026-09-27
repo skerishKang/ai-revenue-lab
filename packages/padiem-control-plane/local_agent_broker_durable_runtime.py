@@ -461,21 +461,39 @@ class LocalAgentBrokerDurableRuntime:
         if not binding_refs:
             return {"ok": True, "available": False, "reason": "no_device_binding"}
 
-        terminal = [
+        owned = [
             command
             for command in snapshot.commands
-            if command.run_id == run_id
-            and command.binding_ref in binding_refs
-            and command.state in {BrokerCommandState.ACKNOWLEDGED, BrokerCommandState.EXPIRED}
+            if command.run_id == run_id and command.binding_ref in binding_refs
         ]
-        if not terminal:
-            return {"ok": True, "available": False, "reason": "no_terminal_result"}
-        # One run, one terminal command: the highest sequence is the canonical
-        # one the canonical authority itself would treat as current.
-        command = max(terminal, key=lambda item: item.sequence)
+        if not owned:
+            return {"ok": True, "available": False, "reason": "no_command_for_run"}
+        if len(owned) > 1:
+            # Two commands claiming one run is not a tie to break: the consumer
+            # binds an origin correlation per run, so this is refused instead of
+            # silently resolving to whichever command is newest.
+            return {"ok": True, "available": False, "reason": "ambiguous_run_commands"}
+        command = owned[0]
+        identity = {
+            "command_id": command.command_id,
+            "run_id": command.run_id,
+            "tool_request_ref": command.tool_request_ref,
+            "request_id": command.request_id,
+            "revision_ref": command.revision_ref,
+            "evidence_ref": command.evidence_ref,
+            "admission_ref": command.admission_ref,
+            "request_fingerprint": command.request_fingerprint,
+            "sequence": command.sequence,
+            "state": command.state.value,
+        }
+        if command.state not in {BrokerCommandState.ACKNOWLEDGED, BrokerCommandState.EXPIRED}:
+            # The identity is available before any outcome exists; there is
+            # simply no terminal result to report yet.
+            return {"ok": True, "available": True, "command_identity": identity, "command_result": None}
         return {
             "ok": True,
             "available": True,
+            "command_identity": identity,
             "command_result": {
                 "command_id": command.command_id,
                 "run_id": command.run_id,
@@ -514,6 +532,8 @@ class LocalAgentBrokerDurableRuntime:
             "material_less_acknowledgement_refused": True,
             "missing_material_pollable": False,
             "terminal_result_read_only": True,
+            "command_identity_precedes_terminal_fact": True,
+            "ambiguous_run_refused": True,
             "terminal_result_owner_scoped": True,
             "second_result_authority": False,
             "second_command_authority": False,

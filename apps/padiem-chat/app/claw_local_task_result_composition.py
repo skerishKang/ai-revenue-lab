@@ -18,6 +18,7 @@ from typing import Any
 
 from .claw_local_access_composition import LOCAL_AGENT_BROKER_AUTHORITY_SERVICE_BINDING_NAME
 from .worker_config import binding_value
+from .history import HistoryError
 from .claw_local_task_result_projection import (
     LocalRunnerTerminalObservation,
     LocalTaskResultError,
@@ -49,8 +50,49 @@ class BrokerAuthorityLocalRunnerResultPort:
     def __init__(self, binding: Any) -> None:
         self._binding = binding
 
+    async def command_identity(self, *, run_id: str, owner_id: str, workspace_id: str | None = None):
+        """The run's canonical command identity, independent of any outcome."""
+
+        facts = await self._read(run_id=run_id, owner_id=owner_id, workspace_id=workspace_id)
+        if facts is None:
+            return None
+        return facts.get("command_identity")
+
     async def command_result(self, *, command_id: str, run_id: str, owner_id: str, workspace_id: str | None = None):
-        del command_id  # the broker answers by run; the command is its own answer
+        """The bounded terminal fact, read only after the origin is bound.
+
+        ``command_id`` is supplied from the *stored* correlation, so this read
+        verifies the command the run was bound to rather than choosing one.
+        """
+
+        facts = await self._read(run_id=run_id, owner_id=owner_id, workspace_id=workspace_id)
+        if facts is None:
+            return None
+        terminal = facts.get("command_result")
+        if not isinstance(terminal, dict):
+            return None
+        observation = LocalRunnerTerminalObservation(
+            command_id=terminal.get("command_id"),
+            run_id=terminal.get("run_id"),
+            tool_request_ref=terminal.get("tool_request_ref"),
+            request_id=terminal.get("request_id"),
+            revision_ref=terminal.get("revision_ref"),
+            evidence_ref=terminal.get("evidence_ref"),
+            request_fingerprint=terminal.get("request_fingerprint"),
+            sequence=terminal.get("sequence"),
+            state=terminal.get("state"),
+            termination=terminal.get("termination"),
+            exit_code=terminal.get("exit_code"),
+            acknowledged_at=terminal.get("acknowledged_at"),
+        )
+        if observation.command_id != command_id:
+            raise LocalTaskResultError(
+                "local_task_result_command_mismatch",
+                "the terminal fact does not belong to the command this run is bound to",
+            )
+        return observation
+
+    async def _read(self, *, run_id: str, owner_id: str, workspace_id: str | None):
         payload: dict[str, Any] = {"account_ref": owner_id, "run_id": run_id}
         if workspace_id is not None:
             payload["workspace_ref"] = workspace_id
@@ -64,23 +106,7 @@ class BrokerAuthorityLocalRunnerResultPort:
             )
         if result.get("available") is not True:
             return None
-        facts = result.get("command_result")
-        if not isinstance(facts, dict):
-            return None
-        return LocalRunnerTerminalObservation(
-            command_id=facts.get("command_id"),
-            run_id=facts.get("run_id"),
-            tool_request_ref=facts.get("tool_request_ref"),
-            request_id=facts.get("request_id"),
-            revision_ref=facts.get("revision_ref"),
-            evidence_ref=facts.get("evidence_ref"),
-            request_fingerprint=facts.get("request_fingerprint"),
-            sequence=facts.get("sequence"),
-            state=facts.get("state"),
-            termination=facts.get("termination"),
-            exit_code=facts.get("exit_code"),
-            acknowledged_at=facts.get("acknowledged_at"),
-        )
+        return result
 
 
 class UnconfiguredLocalRunnerResultSource:
@@ -127,20 +153,37 @@ class LocalRunnerResultSource:
         if row is None:
             # Existence of another owner's run is never disclosed.
             return None
-        stored_command_id = command_id
-        if stored_command_id is None:
-            bound = await self._history.get_local_task_correlation(owner_id, run_id)
-            stored_command_id = bound.get("command_id") if bound else None
+        bound = await self._history.get_local_task_correlation(owner_id, run_id)
+        stored_command_id = bound.get("command_id") if bound else None
         if not isinstance(stored_command_id, str) or not stored_command_id:
-            # No correlation is bound yet: the first read of the canonical
-            # broker binds it, server-side, from the broker's own facts. This
-            # is the only moment a command identity enters the mapping.
-            observation = await self._result_port.command_result(
-                command_id=command_id, run_id=run_id, owner_id=owner_id, workspace_id=workspace_id
+            # No origin is bound yet. Bind it from the run's canonical command
+            # identity — the enqueue record — and never from the terminal fact
+            # that is about to be verified.
+            identity = await self._result_port.command_identity(
+                run_id=run_id, owner_id=owner_id, workspace_id=workspace_id
             )
-            if observation is None:
+            if not isinstance(identity, dict):
                 return None
-            stored_command_id = observation.command_id
+            try:
+                await self._history.record_local_task_correlation(
+                    user_id=owner_id,
+                    run_id=run_id,
+                    command_id=identity.get("command_id"),
+                    tool_request_ref=identity.get("tool_request_ref"),
+                    request_id=identity.get("request_id"),
+                    revision_ref=identity.get("revision_ref"),
+                    request_fingerprint=identity.get("request_fingerprint"),
+                    evidence_ref=identity.get("evidence_ref"),
+                )
+            except HistoryError:
+                # Another writer bound this run first; the stored binding is the
+                # one every later projection must satisfy.
+                bound = await self._history.get_local_task_correlation(owner_id, run_id)
+                stored_command_id = bound.get("command_id") if bound else None
+            else:
+                stored_command_id = identity.get("command_id")
+        if not isinstance(stored_command_id, str) or not stored_command_id:
+            return None
         decision = await project_local_runner_terminal_result(
             history=self._history,
             result_port=self._result_port,

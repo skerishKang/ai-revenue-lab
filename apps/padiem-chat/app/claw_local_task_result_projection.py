@@ -365,22 +365,14 @@ async def project_local_runner_terminal_result(
         )
     if observation.command_id != command_id:
         raise LocalTaskResultError("local_task_result_command_mismatch", "the observation is for a different command")
-    # The exact correlation is bound once, server-side, from the broker's own
-    # canonical facts. From then on every projection must echo it, so a command
-    # that merely shares the run id can never reach this conversation.
     bound = await history.get_local_task_correlation(user_id, run_id)
     if bound is None:
-        await history.record_local_task_correlation(
-            user_id=user_id,
-            run_id=run_id,
-            command_id=observation.command_id,
-            tool_request_ref=observation.tool_request_ref,
-            request_id=observation.request_id,
-            revision_ref=observation.revision_ref,
-            evidence_ref=observation.evidence_ref,
-            request_fingerprint=observation.request_fingerprint,
+        raise LocalTaskResultError(
+            "local_task_result_correlation_unbound",
+            "the run has no server-owned command correlation bound yet",
         )
-        bound = await history.get_local_task_correlation(user_id, run_id)
+    # The stored origin is the only thing a terminal fact is measured against;
+    # this module never creates one from the result it is verifying.
     origin = LocalTaskOrigin(
         user_id=origin.user_id,
         run_id=origin.run_id,
@@ -395,17 +387,6 @@ async def project_local_runner_terminal_result(
             request_fingerprint=bound["request_fingerprint"],
         ),
     )
-    if observation is None:
-        return LocalTaskResultDecision(
-            append=False,
-            message_id="",
-            content="",
-            summary="",
-            status="pending",
-            reason="no canonical terminal result is available yet",
-        )
-    if observation.command_id != command_id:
-        raise LocalTaskResultError("local_task_result_command_mismatch", "the observation is for a different command")
     decision = decide_local_task_result(origin=origin, observation=observation)
     appended = await history.append_local_task_result(
         user_id=user_id,

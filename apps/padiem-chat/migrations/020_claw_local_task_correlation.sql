@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS claw_local_task_correlation (
     evidence_ref TEXT,
     request_fingerprint TEXT NOT NULL,
     created_at TEXT NOT NULL,
-    UNIQUE (user_id, run_id, command_id)
+    UNIQUE (user_id, run_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_claw_local_task_correlation_user_run
