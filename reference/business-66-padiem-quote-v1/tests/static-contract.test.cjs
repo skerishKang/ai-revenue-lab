@@ -9,6 +9,7 @@ const app = read("app.js");
 const core = read("quote-core.js");
 const extraction = read("quote-extraction.js");
 const history = read("quote-history.js");
+const intake = read("file-intake.js");
 const easy = read("easy-mode.js");
 
 const check = (condition, label) => assert.ok(condition, `contract failed: ${label}`);
@@ -21,6 +22,7 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'src="quote-core.js"',
   'src="quote-extraction.js"',
   'src="quote-history.js"',
+  'src="file-intake.js"',
   'src="app.js"',
   'src="easy-mode.js"',
   'id="senderPreset"',
@@ -44,11 +46,13 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'id="guidedStarter"',
   'id="recentQuoteStarter"',
   'id="resumeDraftStarter"',
+  'id="easyFileInput"',
+  'id="fileStarter"',
   'id="saveHistory"'
 ].forEach((marker) => check(html.includes(marker), `B66_STATIC_CONTRACT missing in index.html: ${marker}`));
 
 /* NEUTRAL_PUBLIC_UI_CONTRACT — 외부 화면/상태에 내부 제품 브랜드를 노출하지 않음 */
-check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + easy),
+check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + intake + easy),
   "NEUTRAL_PUBLIC_UI_CONTRACT: no Padiem branding in rendered/runtime source");
 check(!html.includes("B66 DEMO"), "NEUTRAL_PUBLIC_UI_CONTRACT: no internal demo label");
 check(html.includes("BETA · 입력 내용은 이 브라우저에만 저장"),
@@ -86,16 +90,44 @@ check(easy.includes("Core.computeTotals(guided.draft.items, guided.draft.tax.mod
   "EASY_MODE_CONTRACT: summary uses QuoteCore totals");
 check(css.includes(".easy-chip {") && css.includes("min-height: 44px;"),
   "EASY_MODE_CONTRACT: quick chips meet 44px touch target");
-check(!easy.includes("fetch(") && !easy.includes("XMLHttpRequest"),
-  "EASY_MODE_CONTRACT: no network/model call in Easy Mode");
+check(!easy.includes("fetch(") && !easy.includes("XMLHttpRequest") &&
+      !intake.includes("fetch(") && !intake.includes("XMLHttpRequest"),
+  "EASY_MODE_CONTRACT: no network/model call in Easy/file intake mode");
 check(easy.includes("아직 자동 해석 모델은 연결 전"),
   "EASY_MODE_CONTRACT: free-chat truthfulness");
-check(easy.includes("지금은 파일을 선택하거나 외부로 전송하지 않습니다."),
-  "EASY_MODE_CONTRACT: file future truthfulness");
+check(easy.includes("자동 분석 서버는 아직 활성화 전") &&
+      easy.includes("이 파일은 외부로 전송되지 않습니다."),
+  "EASY_MODE_CONTRACT: selected file is truthful about non-live analysis");
 check(app.includes("window.B66QuoteAppBridge"),
   "EASY_MODE_CONTRACT: reuses existing QuoteDraft renderer");
 check(html.includes('id="directView"'),
   "EASY_MODE_CONTRACT: direct mode preserved");
+
+/* FILE_INTAKE_CONTRACT — local chooser/preflight live, upload/model still off */
+check(html.includes('id="easyFileInput"') && html.includes('type="file"'),
+  "FILE_INTAKE_CONTRACT: real browser file chooser exists");
+check(html.includes(".pdf,.docx,.pptx,.xlsx,.hwpx,.jpg,.jpeg,.png,.webp"),
+  "FILE_INTAKE_CONTRACT: bounded supported extensions");
+check(intake.includes("MAX_DOCUMENT_BYTES = 2 * 1024 * 1024") &&
+      intake.includes("MAX_IMAGE_BYTES = 4 * 1024 * 1024"),
+  "FILE_INTAKE_CONTRACT: client file size bounds");
+check(intake.includes('if (extension === ".hwp")'),
+  "FILE_INTAKE_CONTRACT: legacy HWP explicitly unsupported");
+check(easy.includes("function startFileIntake(") &&
+      easy.includes("fileInput.click()") &&
+      easy.includes("FileIntake.classifyFile(file)"),
+  "FILE_INTAKE_CONTRACT: file chooser and preflight are wired");
+check(app.includes('new CustomEvent("b66:open-file-intake")') &&
+      easy.includes('"b66:open-file-intake"'),
+  "FILE_INTAKE_CONTRACT: direct and Easy entry reuse one intake UX");
+check(!intake.includes("localStorage") && !intake.includes("sessionStorage"),
+  "FILE_INTAKE_CONTRACT: raw file preflight has no persistence");
+check(!easy.includes("FileReader") && !intake.includes("FileReader"),
+  "FILE_INTAKE_CONTRACT: browser does not materialize raw bytes yet");
+check(!easy.includes("FormData") && !intake.includes("FormData"),
+  "FILE_INTAKE_CONTRACT: browser has no upload transport");
+check(easy.includes("업로드 0건") && easy.includes("파일 내용 저장 0건"),
+  "FILE_INTAKE_CONTRACT: user-visible privacy truth");
 
 /* RECENT_HISTORY_CONTRACT — active autosave와 최근 견적 snapshot 분리 */
 check(history.includes('HISTORY_STORAGE_KEY = "quoteBeta.history.v1"'),
@@ -190,10 +222,14 @@ check(core.includes("Math.round(qty * price)"), "deterministic item amount");
 check(app.includes("window.print()"), "print action");
 check(app.includes("localStorage"), "browser-local persistence");
 
-/* UPLOAD_AI_LIVE=NO */
-check(app.includes("이 데모에서는 파일을 외부로 전송하지 않습니다."),
-  "UPLOAD_AI_LIVE=NO: upload is explicitly non-live");
-check(html.includes("파일 올리기 · 다음 단계"), "UPLOAD_AI_LIVE=NO: future label");
+/* FILE_CHOOSER_LIVE=YES / UPLOAD_AI_LIVE=NO */
+check(html.includes("파일 불러오기") && html.includes('id="easyFileInput"'),
+  "FILE_CHOOSER_LIVE=YES: file selection surface is live");
+check(easy.includes("파일 선택과 안전 검증은 완료됐습니다.") &&
+      easy.includes("업로드·OCR·AI 처리는 시작하지 않았습니다."),
+  "UPLOAD_AI_LIVE=NO: analysis remains explicitly non-live");
+check(!easy.includes("fetch(") && !intake.includes("fetch("),
+  "UPLOAD_AI_LIVE=NO: no browser upload request");
 
 /* CHAT_AI_LIVE=NO */
 check(app.includes("자연어 채팅 → QuoteDraft 자동 입력은 다음 단계에서 연결합니다."),
@@ -207,6 +243,9 @@ console.log("B66_STATIC_CONTRACT=PASS");
 console.log("NEUTRAL_PUBLIC_UI_CONTRACT=PASS");
 console.log("EXTRACTION_BOUNDARY_CONTRACT=PASS");
 console.log("EASY_MODE_CONTRACT=PASS");
+console.log("FILE_INTAKE_CONTRACT=PASS");
+console.log("FILE_CHOOSER_LIVE=YES");
+console.log("BROWSER_UPLOAD_NETWORK=0");
 console.log("RECENT_HISTORY_CONTRACT=PASS");
 console.log("HUMAN_READABLE_QUOTE_NO_CONTRACT=PASS");
 console.log("KOREAN_MONEY_INPUT_CONTRACT=PASS");
