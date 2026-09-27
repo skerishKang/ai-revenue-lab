@@ -162,11 +162,58 @@ async function ensureResidentProcess(): Promise<boolean> {
 
 let lastHandoffOutcome = 'no_pending_handoff';
 
+const HANDOFF_ACK_TIMEOUT_MS = 30_000;
+const HANDOFF_ACK_CONTRACT = 'claw-desktop-pairing-ack.v1';
+
+function handoffAckEnvelope(line: string): {
+  acknowledged: boolean;
+  handoffMarker: string | null;
+} {
+  try {
+    const parsed = JSON.parse(line) as Record<string, unknown>;
+    if (parsed.event !== 'handoff_ack' || parsed.contract_version !== HANDOFF_ACK_CONTRACT) {
+      return { acknowledged: false, handoffMarker: null };
+    }
+    const marker = parsed.handoff_marker;
+    if (typeof marker !== 'string' || marker.length === 0 || marker.length > 64) {
+      return { acknowledged: false, handoffMarker: null };
+    }
+    return { acknowledged: true, handoffMarker: marker };
+  } catch {
+    return { acknowledged: false, handoffMarker: null };
+  }
+}
+
 export const pairingHandoffConsumer = new PairingHandoffConsumer({
   source: controller,
   // The resident process is started by delivery itself, so a deep link that
   // carries no handoff never spawns anything.
-  deliver: (line: string) => supervisor.sendResidentLine(line),
+  deliver: async (line: string) => {
+    const markerBefore = handoffAckEnvelope(line).handoffMarker;
+    void markerBefore;
+    if (!supervisor.sendResidentLine(line)) {
+      return { acknowledged: false, handoffMarker: null };
+    }
+    // #3140 review A: a written line is not an acknowledgement. Wait for the
+    // resident's own bounded, secret-free ACK, and only accept one that
+    // correlates with the handoff just sent.
+    const deadline = Date.now() + HANDOFF_ACK_TIMEOUT_MS;
+    while (Date.now() < deadline) {
+      if (!supervisor.residentSnapshot().running) {
+        return { acknowledged: false, handoffMarker: null };
+      }
+      // #3140 review D: the resident's own projection, never the runner's.
+      for (const line2 of [...supervisor.boundedResidentOutput().lines].reverse()) {
+        const parsed = handoffAckEnvelope(line2);
+        if (parsed.acknowledged) return parsed;
+        if (parsed.handoffMarker === null && line2.includes('handoff_ack')) {
+          return { acknowledged: false, handoffMarker: null };
+        }
+      }
+      await new Promise((resolve) => setTimeout(resolve, 200));
+    }
+    return { acknowledged: false, handoffMarker: null };
+  },
   isRunnerLive: () => residentSpec() !== null,
 });
 
@@ -185,7 +232,7 @@ export async function deliverPendingPairingHandoff(): Promise<void> {
     recordPairingHandoffEvidence(lastHandoffOutcome);
     return;
   }
-  lastHandoffOutcome = pairingHandoffConsumer.deliverPending();
+  lastHandoffOutcome = await pairingHandoffConsumer.deliverPending();
   recordPairingHandoffEvidence(lastHandoffOutcome);
 }
 
@@ -210,9 +257,10 @@ function recordPairingHandoffEvidence(outcome: string): void {
           handoff_delivered: outcome === 'delivered',
           consumer: pairingHandoffConsumer.stats(),
           main_flow_running: flow.running,
-          // Bounded, secret-free status lines the resident process printed.
-          main_flow_lines: processPort
-            .boundedActiveOutput()
+          // #3140 review D: the resident's own bounded projection. The
+          // runner's buffer is a different process and is never read here.
+          main_flow_lines: supervisor
+            .boundedResidentOutput()
             .lines.filter((line) => !line.includes('pairing_code"')),
         },
         null,
@@ -315,8 +363,14 @@ function defaultAppFlag(): boolean {
 export function acquireInstanceOwnership(): boolean {
   const outcome = acquireSingleInstanceOwnership({
     app,
+    // #3140 review B: a deep link forwarded from a second Windows instance is
+    // accepted through the same seam, so it must also get the same delivery
+    // orchestration. Without this, `padiem://` would work when the app was
+    // closed and silently do nothing when it was already running.
     forwardDeepLink: (deepLink) => {
-      void controller.pairingDeepLinkSubmit({ deepLink });
+      void controller
+        .pairingDeepLinkSubmit({ deepLink })
+        .then(() => deliverPendingPairingHandoff());
     },
     onNotOwner: () => {
       app.quit();

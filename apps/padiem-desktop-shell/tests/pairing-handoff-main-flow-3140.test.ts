@@ -15,6 +15,7 @@ import { test } from 'node:test';
 import {
   PAIRING_HANDOFF_CONTRACT,
   PairingHandoffConsumer,
+  handoffDeliveryMarker,
 } from '../src/main/pairing-handoff-consumer.js';
 import { parsePairingDeepLink, pairingHandoffConsumedMarker } from '../src/contract/pairing-deeplink.js';
 
@@ -47,56 +48,56 @@ class FakeController {
   }
 }
 
-test('the handoff reaches the runner exactly once', () => {
+test('the handoff reaches the runner exactly once', async () => {
   const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1' });
   const sent: string[] = [];
   const consumer = new PairingHandoffConsumer({
     source: controller,
     deliver: (line: string) => {
       sent.push(line);
-      return true;
+      return Promise.resolve({ acknowledged: true, handoffMarker: handoffDeliveryMarker(CODE) });
     },
     isRunnerLive: () => true,
   });
 
-  assert.equal(consumer.deliverPending(), 'delivered');
-  assert.equal(consumer.deliverPending(), 'no_pending_handoff');
+  assert.equal(await consumer.deliverPending(), 'delivered');
+  assert.equal(await consumer.deliverPending(), 'no_pending_handoff');
   assert.equal(controller.commitCount, 1); // committed once; the second peek finds nothing
   assert.equal(sent.length, 1);
   assert.equal(consumer.stats().deliveredCount, 1);
 });
 
-test('an unavailable runner leaves the handoff armed instead of burning it', () => {
+test('an unavailable runner leaves the handoff armed instead of burning it', async () => {
   const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1' });
   let live = false;
   const consumer = new PairingHandoffConsumer({
     source: controller,
-    deliver: () => true,
+    deliver: () => Promise.resolve({ acknowledged: true, handoffMarker: handoffDeliveryMarker(CODE) }),
     isRunnerLive: () => live,
   });
 
-  assert.equal(consumer.deliverPending(), 'runner_unavailable');
+  assert.equal(await consumer.deliverPending(), 'runner_unavailable');
   assert.equal(controller.commitCount, 0, 'a missing runner must not consume the handoff');
   assert.equal(controller.peekCount, 0, 'a missing runner must not even look');
   assert.equal(consumer.stats().deliveredCount, 0);
 
   live = true;
-  assert.equal(consumer.deliverPending(), 'delivered');
+  assert.equal(await consumer.deliverPending(), 'delivered');
   assert.equal(controller.commitCount, 1);
 });
 
-test('the delivered line carries the code exactly once and only to the runner', () => {
+test('the delivered line carries the code exactly once and only to the runner', async () => {
   const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1' });
   const sent: string[] = [];
   const consumer = new PairingHandoffConsumer({
     source: controller,
     deliver: (line: string) => {
       sent.push(line);
-      return true;
+      return Promise.resolve({ acknowledged: true, handoffMarker: handoffDeliveryMarker(CODE) });
     },
     isRunnerLive: () => true,
   });
-  consumer.deliverPending();
+  await consumer.deliverPending();
 
   assert.equal(sent.length, 1);
   const line = sent[0] as string;
@@ -107,14 +108,14 @@ test('the delivered line carries the code exactly once and only to the runner', 
   assert.equal(line.split(CODE).length - 1, 1, 'the code appears exactly once');
 });
 
-test('the consumer retains no pairing code and reports a marker instead', () => {
+test('the consumer retains no pairing code and reports a marker instead', async () => {
   const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1' });
   const consumer = new PairingHandoffConsumer({
     source: controller,
-    deliver: () => true,
+    deliver: () => Promise.resolve({ acknowledged: true, handoffMarker: handoffDeliveryMarker(CODE) }),
     isRunnerLive: () => true,
   });
-  consumer.deliverPending();
+  await consumer.deliverPending();
 
   const stats = consumer.stats();
   assert.equal(stats.pairingCodeRetained, false);
@@ -122,14 +123,14 @@ test('the consumer retains no pairing code and reports a marker instead', () => 
   assert.equal(JSON.stringify(stats).includes(CODE), false, 'no pairing code in the diagnostic');
 });
 
-test('a refused delivery is reported truthfully and never retried silently', () => {
+test('a refused delivery is reported truthfully and never retried silently', async () => {
   const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1' });
   const consumer = new PairingHandoffConsumer({
     source: controller,
-    deliver: () => false,
+    deliver: () => Promise.reject(new Error('pipe closed')),
     isRunnerLive: () => true,
   });
-  assert.equal(consumer.deliverPending(), 'delivery_refused');
+  assert.equal(await consumer.deliverPending(), 'delivery_refused');
   assert.equal(consumer.stats().deliveredCount, 0);
 });
 
@@ -145,20 +146,20 @@ test('the consumer adds no pairing authority, host, execution authority or port'
   assert.equal(PAIRING_HANDOFF_CONTRACT.HANDOFF_CONSUMED_EXACTLY_ONCE, true);
 });
 
-test('a deep link armed by the main flow is what the consumer drains', () => {
+test('a deep link armed by the main flow is what the consumer drains', async () => {
   // The handoff the shell receives is the one #3095 already parses and bounds.
   const parsed = parsePairingDeepLink(`padiem://pair?code=${CODE}&ref=pairref.1`);
   assert.equal(parsed.kind, 'pair');
   const controller = new FakeController({ pairingCode: CODE, correlationRef: parsed.correlationRef });
   const consumer = new PairingHandoffConsumer({
     source: controller,
-    deliver: () => true,
+    deliver: () => Promise.resolve({ acknowledged: true, handoffMarker: handoffDeliveryMarker(CODE) }),
     isRunnerLive: () => true,
   });
-  assert.equal(consumer.deliverPending(), 'delivered');
+  assert.equal(await consumer.deliverPending(), 'delivered');
 });
 
-test('a failed delivery leaves the one-time handoff armed and retryable', () => {
+test('a failed delivery leaves the one-time handoff armed and retryable', async () => {
   const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1' });
   let accept = false;
   const sent: string[] = [];
@@ -166,20 +167,24 @@ test('a failed delivery leaves the one-time handoff armed and retryable', () => 
     source: controller,
     deliver: (line: string) => {
       sent.push(line);
-      return accept;
+      return Promise.resolve(
+        accept
+          ? { acknowledged: true, handoffMarker: handoffDeliveryMarker(CODE) }
+          : { acknowledged: false, handoffMarker: null },
+      );
     },
     isRunnerLive: () => true,
   });
 
-  // The write is refused: refused truthfully, and NOT burned.
-  assert.equal(consumer.deliverPending(), 'delivery_refused');
+  // No acknowledgement arrives: refused truthfully, and NOT burned.
+  assert.equal(await consumer.deliverPending(), 'ack_timeout');
   assert.equal(controller.commitCount, 0, 'a refused delivery must not spend the one-shot');
   assert.equal(consumer.stats().deliveredCount, 0);
   assert.equal(consumer.stats().lastDeliveredMarker, null, 'no marker for an undelivered handoff');
 
   // A later attempt delivers the same handoff, and only then is it spent.
   accept = true;
-  assert.equal(consumer.deliverPending(), 'delivered');
+  assert.equal(await consumer.deliverPending(), 'delivered');
   assert.equal(controller.commitCount, 1);
   assert.equal(sent.length, 2, 'the same handoff was offered again, not a second handoff');
   assert.equal(consumer.stats().lastDeliveredMarker, pairingHandoffConsumedMarker(CODE));
@@ -228,4 +233,25 @@ test('the resident host process is owned by the supervisor, not the main flow mo
   const mainSource = readFileSync(path.join(root, 'src', 'main', 'main.ts'), 'utf8');
   assert.match(mainSource, /startResident/);
   assert.match(mainSource, /stopResident/);
+});
+
+test('a successful write is not a delivery acknowledgement', async () => {
+  // #3140 review A: writing to the pipe proves nothing. Each of these is a
+  // distinct refusal that must leave the one-shot armed.
+  const cases: ReadonlyArray<readonly [string, { acknowledged: boolean; handoffMarker: string | null }]> = [
+    ['ack_timeout', { acknowledged: false, handoffMarker: null }],
+    ['ack_rejected', { acknowledged: true, handoffMarker: null }],
+    ['ack_mismatch', { acknowledged: true, handoffMarker: handoffDeliveryMarker('other') }],
+  ];
+  for (const [expected, acknowledgement] of cases) {
+    const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1' });
+    const consumer = new PairingHandoffConsumer({
+      source: controller,
+      deliver: () => Promise.resolve(acknowledgement),
+      isRunnerLive: () => true,
+    });
+    assert.equal(await consumer.deliverPending(), expected);
+    assert.equal(controller.commitCount, 0, `${expected} must not spend the one-shot`);
+    assert.equal(consumer.stats().deliveredCount, 0);
+  }
 });

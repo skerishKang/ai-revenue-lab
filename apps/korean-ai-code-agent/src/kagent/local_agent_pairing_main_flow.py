@@ -33,6 +33,7 @@ stdout : bounded, secret-free status lines. The pairing code is never printed.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import sys
@@ -497,6 +498,9 @@ def main(argv: list[str] | None = None) -> int:
         handoff = read_handoff(raw)
     except ContractError as exc:
         return _fail("handoff_refused", detail=str(exc))
+    # Acknowledge receipt first: the caller learns the envelope arrived before
+    # anything is attempted, and an unparsable envelope is never acknowledged.
+    _acknowledge_handoff(handoff)
     now = datetime.now(timezone.utc).replace(microsecond=0)
     with tempfile.TemporaryDirectory(prefix="claw4-3140-runner-") as base_dir:
         try:

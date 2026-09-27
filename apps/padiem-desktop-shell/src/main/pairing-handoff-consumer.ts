@@ -25,7 +25,17 @@
  * "delivered once" and "discarded once", and only the first is correct.
  */
 
+import { createHash } from 'node:crypto';
+
 import { pairingHandoffConsumedMarker } from '../contract/pairing-deeplink.js';
+
+/**
+ * The non-reversible digest an acknowledgement echoes back, so delivery can be
+ * correlated exactly without the code ever leaving the one-shot.
+ */
+export function handoffDeliveryMarker(pairingCode: string): string {
+  return createHash('sha256').update(`delivery.v1:${pairingCode}`).digest('hex').slice(0, 32);
+}
 
 
 /**
@@ -39,14 +49,28 @@ export interface PairingHandoffSource {
   commitPairingHandoffDelivery(): { pairingCode: string; correlationRef: string } | null;
 }
 
-/** The supervised channel to the runner. Returns whether the line was written. */
-export type PairingHandoffDeliverer = (line: string) => boolean;
+/**
+ * The supervised channel to the resident host.
+ *
+ * #3140 review A: a successful `write` is *not* a delivery acknowledgement.
+ * Writing to a pipe only proves the bytes were handed to the OS. The resident
+ * acknowledges receipt itself, so delivery is a two-message exchange: write, then
+ * wait for a bounded, secret-free ACK whose correlation matches the handoff
+ * that was sent. A timeout, a child exit or an unparsable ACK is a refusal, and
+ * the one-shot stays armed.
+ */
+export type PairingHandoffDeliverer = (
+  line: string,
+) => Promise<{ readonly acknowledged: boolean; readonly handoffMarker: string | null }>;
 
 export type PairingHandoffOutcome =
   | 'delivered'
   | 'no_pending_handoff'
   | 'runner_unavailable'
-  | 'delivery_refused';
+  | 'delivery_refused'
+  | 'ack_timeout'
+  | 'ack_rejected'
+  | 'ack_mismatch';
 
 export interface PairingHandoffConsumerStats {
   readonly deliveredCount: number;
@@ -98,7 +122,7 @@ export class PairingHandoffConsumer {
    * taken only when the runner can actually receive it: an unavailable runner
    * leaves the handoff armed for the next attempt instead of burning it.
    */
-  deliverPending(nowMs: number = Date.now()): PairingHandoffOutcome {
+  async deliverPending(nowMs: number = Date.now()): Promise<PairingHandoffOutcome> {
     void nowMs;
     if (!this.#canDeliver()) {
       this.#lastOutcome = 'runner_unavailable';
@@ -116,12 +140,35 @@ export class PairingHandoffConsumer {
       pairing_code: pending.pairingCode,
       correlation_ref: pending.correlationRef,
     });
-    if (line.length > MAX_HANDOFF_LINE_CHARS || !this.#deliver(line)) {
-      // Nothing was consumed, so the handoff is still pending and retryable.
+    if (line.length > MAX_HANDOFF_LINE_CHARS) {
       this.#lastOutcome = 'delivery_refused';
       return this.#lastOutcome;
     }
-    // Phase two: the destination has the envelope, so the one-shot is spent.
+    // The marker proves which handoff the ACK is about without echoing the
+    // code: a non-reversible digest, same idea as the #3095 replay ledger.
+    const marker = handoffDeliveryMarker(pending.pairingCode);
+    let acknowledgement: { readonly acknowledged: boolean; readonly handoffMarker: string | null };
+    try {
+      acknowledgement = await this.#deliver(line);
+    } catch {
+      // Nothing was consumed: the handoff is still pending and retryable.
+      this.#lastOutcome = 'delivery_refused';
+      return this.#lastOutcome;
+    }
+    if (acknowledgement.acknowledged === false) {
+      this.#lastOutcome = 'ack_timeout';
+      return this.#lastOutcome;
+    }
+    if (acknowledgement.handoffMarker === null) {
+      this.#lastOutcome = 'ack_rejected';
+      return this.#lastOutcome;
+    }
+    if (acknowledgement.handoffMarker !== marker) {
+      // An ACK for some other handoff is not an ACK for this one.
+      this.#lastOutcome = 'ack_mismatch';
+      return this.#lastOutcome;
+    }
+    // Phase two, and only now: the destination acknowledged the exact handoff.
     this.#source.commitPairingHandoffDelivery();
     this.#deliveredCount += 1;
     this.#lastDeliveredMarker = pairingHandoffConsumedMarker(pending.pairingCode);

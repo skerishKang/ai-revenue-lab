@@ -144,10 +144,25 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
   }
 }
 
+/**
+ * #3140 review D — a dedicated bounded projection for the resident host.
+ *
+ * `boundedActiveOutput()` is the *runner's* output. Using it as resident
+ * evidence would attribute one process's lines to another, so the resident
+ * keeps its own bounded buffer and evidence reads only this.
+ */
+export function boundedResidentOutput(handle: RunnerProcessHandle | null): BoundedRunnerOutput {
+  if (!handle || typeof handle.boundedOutput !== 'function') {
+    return { lines: [], maxLines: DEFAULT_MAX_LINES };
+  }
+  return handle.boundedOutput();
+}
+
 export class NodeRunnerProcessPort implements RunnerProcessPort {
   readonly #maxLines: number;
   #active: NodeRunnerProcessHandle | null = null;
   #residentActive = false;
+  #residentHandle: NodeRunnerProcessHandle | null = null;
 
   constructor(maxLines: number = DEFAULT_MAX_LINES) {
     this.#maxLines = maxLines;
@@ -167,11 +182,18 @@ export class NodeRunnerProcessPort implements RunnerProcessPort {
     this.#residentActive = true;
     let handle: NodeRunnerProcessHandle;
     try {
+      // #3140 review C: a shell host would turn this into a command-injection
+      // surface, and inheriting the whole environment would hand the resident
+      // every secret the shell holds. Both are refused outright; the resident
+      // gets exactly the bounded config projection it was given.
+      if (spec.shell !== false) {
+        throw new Error('the resident host process must never be spawned through a shell');
+      }
       handle = new NodeRunnerProcessHandle(
         spawn(spec.executablePath, spec.args, {
           cwd: spec.cwd,
-          env: { ...process.env, ...spec.env },
-          shell: spec.shell,
+          env: { ...spec.env },
+          shell: false,
           stdio: spec.stdio,
         }),
         this.#maxLines,
@@ -182,8 +204,15 @@ export class NodeRunnerProcessPort implements RunnerProcessPort {
     }
     handle.onExit(() => {
       this.#residentActive = false;
+      this.#residentHandle = null;
     });
+    this.#residentHandle = handle;
     return handle;
+  }
+
+  /** #3140 review D: the resident's own bounded output, not the runner's. */
+  boundedResidentOutput(): BoundedRunnerOutput {
+    return boundedResidentOutput(this.#residentHandle);
   }
 
   async spawnRunner(spec: RunnerSpawnSpec): Promise<RunnerProcessHandle> {

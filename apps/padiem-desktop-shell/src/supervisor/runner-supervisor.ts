@@ -35,6 +35,11 @@ export interface RunnerProcessHandle {
    * false when the child is gone or the line was refused.
    */
   sendLine?(line: string): boolean;
+  /**
+   * #3140 review D: the child's own bounded output projection. Kept on the
+   * handle so a caller can never reach another process' buffer by accident.
+   */
+  boundedOutput?(): { readonly lines: readonly string[]; readonly maxLines: number };
 }
 
 /**
@@ -222,6 +227,15 @@ export class HeadlessRunnerSupervisor implements RunnerSupervisor {
     const handle = await spawn.call(this.#port, spec);
     this.#residentHandle = handle;
     this.#residentStartedAtMs = nowMs;
+  }
+
+  /**
+   * #3140 review D: the resident host's own bounded output. Evidence and
+   * diagnostics must use this, never the runner's `boundedActiveOutput()`.
+   */
+  boundedResidentOutput(): { readonly lines: readonly string[]; readonly maxLines: number } {
+    const port = this.#port as { boundedResidentOutput?: () => { lines: readonly string[]; maxLines: number } };
+    return port.boundedResidentOutput ? port.boundedResidentOutput() : { lines: [], maxLines: 0 };
   }
 
   /** Writes one bounded line to the supervised resident host. */
