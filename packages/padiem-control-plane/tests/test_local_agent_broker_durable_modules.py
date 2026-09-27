@@ -248,4 +248,10 @@ def test_worker_file_is_thin_and_storage_schemas_live_outside_entrypoint() -> No
     # split `enqueue_command` / `store_command_material` pair from the product
     # gateway, so this bound is main's, unchanged, and the entrypoint still
     # holds no storage, schema or authority.
-    assert len(source.splitlines()) < 205
+    #
+    # Issue #3094 adds one read-only RPC passthrough per entrypoint class
+    # (`device_truth`): the narrow canonical device-fact projection the B62
+    # local-access source consumes. Still no storage, schema or authority in
+    # the entrypoint file — the fact vocabulary and markers live in the
+    # durable runtime module.
+    assert len(source.splitlines()) < 220

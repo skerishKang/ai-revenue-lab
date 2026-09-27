@@ -2,21 +2,28 @@
 
 The #3094 route exposes one typed seam (``ClawLocalAccessTruthSource``) and a
 fail-closed unconfigured default. This module supplies the concrete source that
-a trusted runtime may compose: it reads canonical #3080 device facts from an
-approved trusted boundary and lets the canonical authority decide everything.
+the worker/runtime composition builds over the **actual canonical broker
+boundary**: the ``device_truth`` RPC of the #3080 Local Agent broker Worker
+(``packages/padiem-control-plane/local_agent_broker_worker.py``), consumed
+through the trusted ``LOCAL_AGENT_BROKER_AUTHORITY_SERVICE`` binding.
 
 Authority boundary
 ------------------
-* ONLINE is never decided here. Every projection asks
+* The broker owns the facts. Its ``device_truth`` projection reports the
+  owner-scoped canonical #3080 facts (binding, newest session, server-owned
+  heartbeat last-seen) with a broker-side canonical state that can only be
+  ``paired_offline`` / ``credential_expired`` / ``revoked`` — never
+  ``online``.
+* ONLINE is decided by the existing canonical rule only:
   ``kagent.local_agent_server_projection.project_server_backed_online_binding``
-  (#3080 owns this fact) to judge binding + session + heartbeat correlation and
-  freshness. When that projection refuses, the source falls back to the
-  binding's own canonical ``DeviceLifecycle`` state — also #3080-owned truth —
-  and never upgrades it.
+  judges binding + session + heartbeat correlation and freshness. When it
+  refuses, the source falls back to the broker-reported canonical state, and a
+  fallback that would ever read ``online`` is refused outright (fail closed
+  from ONLINE on projection failure).
 * The Web vocabulary translation stays in ``app.claw_local_projection`` (G4).
   This module only reports canonical state values to the route; it never maps
   them to Web labels itself.
-* The handoff value is forwarded verbatim from the trusted boundary when the
+* The handoff value is forwarded verbatim from the broker envelope when the
   projected device is usable, and dropped whole otherwise. It is never minted,
   parsed, decoded, truncated or rewritten here.
 * Owner and workspace scope arrive only as the server-derived ``owner_id`` the
@@ -27,7 +34,7 @@ Authority boundary
 
 Contract markers
 ----------------
-``DEVICE_STATE_SOURCE = "canonical:kagent.local_agent_pairing.DeviceLifecycle"``
+``DEVICE_STATE_SOURCE = "canonical:LOCAL_AGENT_BROKER_AUTHORITY device_truth RPC"``
 ``ONLINE_DECISION_AUTHORITY = "kagent.local_agent_server_projection"``
 ``SECOND_DEVICE_LIFECYCLE_AUTHORITY = False``
 ``NEW_LIFECYCLE_STATE_CREATED = 0``
@@ -40,6 +47,7 @@ Contract markers
 from __future__ import annotations
 
 from datetime import datetime
+from types import MappingProxyType
 from typing import Any, Mapping, Protocol
 
 from kagent.contracts import ContractError
@@ -52,13 +60,25 @@ __all__ = [
     "CanonicalClawLocalAccessTruthSource",
 ]
 
+# The only broker-reported canonical states this source may consume. The
+# canonical broker cannot report "online" — a second ONLINE authority is
+# forbidden — and any other value fails closed.
+_BROKER_CANONICAL_STATES: Mapping[str, DeviceLifecycle] = MappingProxyType(
+    {
+        "paired_offline": DeviceLifecycle.PAIRED_OFFLINE,
+        "credential_expired": DeviceLifecycle.CREDENTIAL_EXPIRED,
+        "revoked": DeviceLifecycle.REVOKED,
+    }
+)
+
+_TEXT_MAX = 512
+
 
 class TrustedLocalAccessDeviceTruthPort(Protocol):
     """The one approved trusted boundary this source may read.
 
-    Implementations are the worker/runtime composition's trusted #3080
-    broker-authority port: they answer with the canonical device facts they
-    already own for the server-authenticated owner, or with nothing. The port
+    Implementations wrap the real ``device_truth`` RPC of the canonical Local
+    Agent broker Worker exposed through the trusted service binding. The port
     receives only what the route derived server-side (owner id, conversation
     id, now) — never browser-controlled account or workspace authority.
     """
@@ -73,16 +93,35 @@ class TrustedLocalAccessDeviceTruthPort(Protocol):
         ...
 
 
-def _read(source: Any, key: str) -> Any:
-    if isinstance(source, Mapping):
-        return source.get(key)
-    return getattr(source, key, None)
+def _text(value: Any) -> str | None:
+    if not isinstance(value, str):
+        return None
+    trimmed = value.strip()
+    if not trimmed or len(trimmed) > _TEXT_MAX:
+        return None
+    return trimmed
 
 
-def _exact_instance(value: Any, expected: type) -> bool:
-    # Exact type, not isinstance: a boundary-supplied subclass or stand-in is
-    # not a canonical fact this source is allowed to project.
-    return type(value) is expected
+def _int(value: Any) -> int | None:
+    if isinstance(value, bool) or not isinstance(value, int):
+        return None
+    return value
+
+
+def _parse_iso(value: Any) -> datetime | None:
+    if not isinstance(value, str):
+        return None
+    try:
+        parsed = datetime.fromisoformat(value.strip().replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return None
+    return parsed
+
+
+def _mapping(value: Any) -> Mapping[str, Any] | None:
+    return value if isinstance(value, Mapping) else None
 
 
 class CanonicalClawLocalAccessTruthSource:
@@ -108,27 +147,28 @@ class CanonicalClawLocalAccessTruthSource:
         conversation_id: str,
         now: datetime,
     ) -> dict[str, Any] | None:
-        truth = self._port.device_truth(
-            owner_id=owner_id,
-            conversation_id=conversation_id,
-            now=now,
+        envelope = _mapping(
+            await _maybe_await(
+                self._port.device_truth(
+                    owner_id=owner_id,
+                    conversation_id=conversation_id,
+                    now=now,
+                )
+            )
         )
-        if truth is None:
+        if envelope is None or envelope.get("ok") is not True:
+            return None
+        if envelope.get("available") is not True:
+            return None
+        facts = _mapping(envelope.get("device_truth"))
+        if facts is None:
             return None
 
-        binding = _read(truth, "binding")
-        if not _exact_instance(binding, DeviceBinding):
-            # No canonical device fact for this owner: assert nothing.
+        canonical_state = self._canonical_state(facts, now=now)
+        if canonical_state is None:
             return None
 
-        canonical_state = self._canonical_state(
-            binding=binding,
-            session=_read(truth, "session"),
-            heartbeat=_read(truth, "heartbeat"),
-            now=now,
-        )
-
-        handoff_value = _read(truth, "handoff_value")
+        handoff_value = facts.get("handoff_value")
         if canonical_state is not DeviceLifecycle.ONLINE:
             # A handoff produced for a device the canonical authority does not
             # consider usable is never forwarded: the value is dropped whole.
@@ -136,36 +176,86 @@ class CanonicalClawLocalAccessTruthSource:
 
         return {
             "canonical_state": canonical_state,
-            "device_name": _read(truth, "device_name"),
-            "platform": _read(truth, "platform"),
-            "run_id": _read(truth, "run_id"),
-            "task_id": _read(truth, "task_id"),
-            "requires_local_access": _read(truth, "requires_local_access") is True,
-            "required_capabilities": _read(truth, "required_capabilities"),
-            "desktop_installed": _read(truth, "desktop_installed") is True,
+            "device_name": None,
+            "platform": None,
+            "run_id": None,
+            "task_id": None,
+            "requires_local_access": True,
+            "required_capabilities": ["local_computer"],
+            # Never fabricated: the broker reports desktop installation when
+            # it knows it; absent evidence is reported as not installed, which
+            # renders as install guidance rather than an openable handoff.
+            "desktop_installed": facts.get("desktop_installed") is True,
             "handoff_value": handoff_value if isinstance(handoff_value, str) else None,
-            "handoff_conversation_id": _read(truth, "handoff_conversation_id"),
+            "handoff_conversation_id": None,
         }
 
     @staticmethod
-    def _canonical_state(
-        *,
-        binding: DeviceBinding,
-        session: Any,
-        heartbeat: Any,
-        now: datetime,
-    ) -> Any:
-        """The canonical lifecycle, decided by #3080 alone.
+    def _canonical_state(facts: Mapping[str, Any], *, now: datetime) -> DeviceLifecycle | None:
+        """The canonical lifecycle for the broker's facts, decided by #3080.
 
-        The server-backed projection is the only path to a freshly judged
-        ONLINE. If it refuses (unrelated/expired session or heartbeat, wrong
-        credential generation, ...), the binding's own canonical state stands —
-        it is #3080-owned truth, not a B62 judgement — and nothing is upgraded.
+        The broker-reported state may never be ``online``; the server-backed
+        projection is the only path to ONLINE. When it refuses, the fallback is
+        the broker-reported canonical state — and if that fallback were ever
+        ``online`` despite failed evidence, the projection is dropped outright
+        (fail closed from ONLINE on projection failure).
         """
 
-        if _exact_instance(session, DeviceSession) and _exact_instance(
-            heartbeat, ControlPlaneHeartbeatReceipt
-        ):
+        broker_state = facts.get("canonical_state")
+        fallback = _BROKER_CANONICAL_STATES.get(broker_state) if isinstance(broker_state, str) else None
+        if fallback is None:
+            # Unknown broker vocabulary: assert nothing rather than guess.
+            return None
+
+        binding_facts = _mapping(facts.get("binding"))
+        session_facts = _mapping(facts.get("session"))
+        if binding_facts is None:
+            return None
+
+        try:
+            binding = DeviceBinding(
+                device_id=_text(binding_facts.get("device_id")) or "",
+                binding_ref=_text(binding_facts.get("binding_ref")) or "",
+                account_ref=_text(binding_facts.get("account_ref")) or "",
+                workspace_ref=_text(binding_facts.get("workspace_ref")) or "",
+                credential_ref="local-access-projection-only",
+                credential_generation=_int(binding_facts.get("credential_generation")) or 0,
+                issued_at=_parse_iso(binding_facts.get("issued_at")) or now,
+                credential_expires_at=_parse_iso(binding_facts.get("credential_expires_at")) or now,
+                state=DeviceLifecycle.PAIRED_OFFLINE,
+            )
+            session = None
+            heartbeat = None
+            last_seen = _parse_iso(facts.get("heartbeat_last_seen_at"))
+            if session_facts is not None and last_seen is not None:
+                issued_at = _parse_iso(session_facts.get("issued_at"))
+                expires_at = _parse_iso(session_facts.get("expires_at"))
+                session_id = _text(session_facts.get("session_id"))
+                if issued_at is not None and expires_at is not None and session_id is not None:
+                    session = DeviceSession(
+                        session_id=session_id,
+                        binding_ref=_text(session_facts.get("binding_ref")) or "",
+                        device_id=_text(session_facts.get("device_id")) or "",
+                        account_ref=_text(session_facts.get("account_ref")) or "",
+                        workspace_ref=_text(session_facts.get("workspace_ref")) or "",
+                        issued_at=issued_at,
+                        expires_at=expires_at,
+                    )
+                    heartbeat = ControlPlaneHeartbeatReceipt(
+                        session_id=session_id,
+                        binding_ref=session.binding_ref,
+                        device_id=session.device_id,
+                        account_ref=session.account_ref,
+                        workspace_ref=session.workspace_ref,
+                        credential_generation=binding.credential_generation,
+                        last_seen_at=last_seen,
+                        session_expires_at=expires_at,
+                    )
+        except (ContractError, ValueError, TypeError):
+            # A fact set that fails canonical validation asserts nothing.
+            return None
+
+        if session is not None and heartbeat is not None:
             try:
                 projected = project_server_backed_online_binding(
                     binding=binding,
@@ -176,14 +266,25 @@ class CanonicalClawLocalAccessTruthSource:
                 return projected.state
             except ContractError:
                 pass
-        return binding.state
+        # Fail closed from ONLINE on projection failure: the broker can never
+        # report online, so this guard is structural, but if any upstream ever
+        # did, unusable evidence must not preserve a connected claim.
+        if fallback is DeviceLifecycle.ONLINE:
+            return None
+        return fallback
+
+
+async def _maybe_await(value: Any) -> Any:
+    if value is not None and hasattr(value, "__await__"):
+        return await value
+    return value
 
 
 # ---------------------------------------------------------------------------
 # Contract markers
 # ---------------------------------------------------------------------------
 
-DEVICE_STATE_SOURCE = "canonical:kagent.local_agent_pairing.DeviceLifecycle"
+DEVICE_STATE_SOURCE = "canonical:LOCAL_AGENT_BROKER_AUTHORITY device_truth RPC"
 ONLINE_DECISION_AUTHORITY = "kagent.local_agent_server_projection"
 SECOND_DEVICE_LIFECYCLE_AUTHORITY = False
 NEW_LIFECYCLE_STATE_CREATED = 0
