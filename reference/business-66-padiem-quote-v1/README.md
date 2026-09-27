@@ -83,7 +83,8 @@ Every file stays far below the 500-line guideline. No framework, no build step.
 - **three tax modes**: 별도 (EXCLUSIVE) / 포함 (INCLUSIVE) / 면세 (EXEMPT), mode shown on the quote
 - deterministic money math in `quote-core.js` — stored draft never stores totals; they are always derived
 - **whole-draft autosave to localStorage** with corrupted/old-schema fallback to the default demo state
-- **새 견적** reset button behind a confirmation dialog
+- **새 견적**: 확인 후 새 번호/오늘 날짜를 발급하고, 보내는 사람·유효기간은 유지하면서 받는 사람/품목은 빈 다음 고객 견적으로 시작
+- Easy Mode에서 부가세를 **잘 모르겠어요**로 두면 확정 합계를 표시하지 않고, 직접입력 화면의 부가세 선택을 강조해 최종 확인 요구
 - live quotation preview, responsive layout (mobile item rows restacked for full price visibility)
 - print stylesheet: A4, UI removed from print layout via `display:none` — **no blank trailing page**, table header repeats on multi-page output
 
@@ -180,4 +181,4 @@ rather than fabricated extracted values.
 The current upload/chat buttons remain non-live until a governed backend/model adapter is connected.
 No provider/model ID or secret lives in the B66 browser code.
 
-Refs #3136, #3144, #3147, #3154, #3158, #3162.
+Refs #3136, #3144, #3147, #3154, #3158, #3162, #3164.
