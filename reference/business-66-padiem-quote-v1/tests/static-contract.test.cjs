@@ -293,6 +293,18 @@ check(app.includes('data-tax-review-placeholder="true"') &&
       app.includes('placeholder.textContent = "부가세 방식을 선택해 주세요"') &&
       app.includes('select.value = ""'),
   "PRINT_READINESS_CONTRACT: unresolved VAT requires an explicit select choice");
+check(html.includes('id="subtotalLabelText"') &&
+      html.includes('id="grandLabelText"') &&
+      html.includes('id="pvSubtotalLabel"') &&
+      html.includes('id="pvGrandLabel"'),
+  "PROVISIONAL_VAT_DISPLAY_CONTRACT: summary and preview have explicit label anchors");
+check(app.includes('provisionalTax ? "품목 합계(세금 확인 전)" : "공급가액"') &&
+      app.includes('provisionalTax ? "확인 필요" : Core.formatMoney(totals.vat)') &&
+      app.includes('provisionalTax ? "확정 전" : Core.formatMoney(totals.grand)'),
+  "PROVISIONAL_VAT_DISPLAY_CONTRACT: unresolved tax-dependent totals are never presented as confirmed");
+check(app.includes('? "세금  확인 필요"') &&
+      app.includes('provisionalTax ? "최종 합계" : "합계"'),
+  "PROVISIONAL_VAT_DISPLAY_CONTRACT: preview tax and total labels expose review state");
 
 /* BETA_POLISH_CONTRACT — repeated-use/accessibility/privacy */
 check(css.includes(".workspace-mode {") && css.includes("min-height: 44px;"),
@@ -369,6 +381,8 @@ console.log("VALID_UNTIL_CONTRACT=PASS");
 console.log("ADDRESS_FIELDS_CONTRACT=PASS");
 console.log("PRINT_LAYOUT_CONTRACT=PASS");
 console.log("PRINT_READINESS_CONTRACT=PASS");
+console.log("PROVISIONAL_VAT_DISPLAY_CONTRACT=PASS");
+console.log("TEMP_EXCLUSIVE_NOT_PRESENTED_AS_CONFIRMED=YES");
 console.log("UPLOAD_AI_LIVE=NO");
 console.log("CHAT_AI_LIVE=NO");
 console.log("EMAIL_SEND_LIVE=NO");
