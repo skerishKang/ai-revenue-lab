@@ -27,6 +27,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
+from padiem_control_plane import local_agent_broker_state as state_module
 from padiem_control_plane.contracts import ControlPlaneContractError
 from padiem_control_plane.local_agent_broker_rpc import LocalAgentBrokerRpcFacade
 from padiem_control_plane.local_agent_broker_state import StateBackedLocalAgentBrokerAuthority
@@ -447,3 +448,218 @@ def test_acknowledge_runs_inside_the_session_open_transaction():
     assert acknowledged["status"] == 200 and acknowledged["body"]["ok"] is True
     assert entered, "acknowledge must execute inside the mutation transaction"
     assert acknowledged["body"]["command"]["state"] == "acknowledged"
+
+
+def test_reconcile_runs_inside_the_mutation_transaction_and_compacts_atomically(monkeypatch):
+    # #3123 fourth review: /reconcile is a direct-facade broker mutation that
+    # can also trigger terminal-history compaction (which moves
+    # used-command-id ledger rows), so it must run inside the same deployable
+    # storage transaction as session-open and acknowledge. Proven three ways:
+    # the reconcile enters the deployable seam exactly once and never nests,
+    # its blob CAS and compaction ledger backfill execute with the storage
+    # transaction open, and the #3128 expired outcome stays terminal.
+    monkeypatch.setattr(state_module, "COMPACTION_PROACTIVE_TRIGGER_COMMANDS", 1)
+    storage = TransactionCapableStorage()
+    backend = CloudflareDurableObjectSerializedStateBackend(storage)
+    state_port = SerializedLocalAgentBrokerStatePort(backend=backend)
+    NOW = BASE + timedelta(days=2)
+    binding_issued = NOW - timedelta(seconds=80_000)
+
+    bootstrap = StateBackedLocalAgentBrokerAuthority(
+        pepper=PEPPER, authority_ref=AUTHORITY_REF, state_port=state_port,
+    )
+    bootstrap.register_binding(
+        binding_ref="binding.recon.1",
+        device_id="device.recon.1",
+        account_ref="account.1",
+        workspace_ref="workspace.1",
+        credential=CREDENTIAL,
+        now=binding_issued,
+        credential_ttl_seconds=2_592_000,
+    )
+    # A terminal command old enough to be compaction-eligible at NOW: its
+    # ledger row was recorded at mint, so the compaction backfill inside the
+    # reconcile transaction is an INSERT OR IGNORE that must still run in the
+    # transaction.
+    old_command = bootstrap.enqueue_command(
+        command_id="command.recon.old",
+        binding_ref="binding.recon.1",
+        run_id="run.recon.old",
+        tool_request_ref="tool-request.recon.old",
+        request_fingerprint="a" * 64,
+        now=NOW - timedelta(seconds=4_310),
+        ttl_seconds=300,
+    )
+    bootstrap.open_session(
+        session_id="sess.recon.old",
+        binding_ref="binding.recon.1",
+        credential=CREDENTIAL,
+        account_ref="account.1",
+        workspace_ref="workspace.1",
+        now=NOW - timedelta(seconds=4_305),
+    )
+    bootstrap.admit_command(
+        admission_ref="admission.recon.old",
+        evidence_ref="evidence.recon.old",
+        session_id="sess.recon.old",
+        binding_ref="binding.recon.1",
+        credential=CREDENTIAL,
+        command_id=old_command.command_id,
+        request_fingerprint=old_command.request_fingerprint,
+        request_id="request.recon.old",
+        now=NOW - timedelta(seconds=4_302),
+    )
+    bootstrap.acknowledge(
+        session_id="sess.recon.old",
+        binding_ref="binding.recon.1",
+        credential=CREDENTIAL,
+        command_id=old_command.command_id,
+        admission_ref="admission.recon.old",
+        evidence_ref="evidence.recon.old",
+        revision_ref=old_command.revision_ref,
+        termination="exited",
+        request_id="request.recon.old",
+        exit_code=0,
+        now=NOW - timedelta(seconds=4_015),
+    )
+
+    # The reconcile target: ADMITTED with its hard deadline in the past.
+    target = bootstrap.enqueue_command(
+        command_id="command.recon.target",
+        binding_ref="binding.recon.1",
+        run_id="run.recon.target",
+        tool_request_ref="tool-request.recon.target",
+        request_fingerprint="a" * 64,
+        now=NOW - timedelta(seconds=800),
+        ttl_seconds=60,
+    )
+
+    clock = {"now": NOW}
+    seam = {"entries": 0, "depth": 0, "max_depth": 0}
+
+    def recording_mutation_transaction(callback):
+        seam["entries"] += 1
+        seam["depth"] += 1
+        seam["max_depth"] = max(seam["max_depth"], seam["depth"])
+        try:
+            return storage.transactionSync(callback)
+        finally:
+            seam["depth"] -= 1
+
+    service = LocalAgentBrokerDeviceHttpService(
+        state_port=state_port,
+        pepper=PEPPER,
+        authority_ref=AUTHORITY_REF,
+        rpc_factory=lambda: LocalAgentBrokerRpcFacade(
+            authority=StateBackedLocalAgentBrokerAuthority(
+                pepper=PEPPER,
+                authority_ref=AUTHORITY_REF,
+                state_port=state_port,
+            )
+        ),
+        http_state=CloudflareDurableObjectHttpSessionState(storage),
+        material_resolver=_UnusedMaterialResolver(),
+        session_open_transaction=recording_mutation_transaction,
+        clock=lambda: clock["now"],
+    )
+
+    def reconcile_envelope():
+        body = (
+            '{"session_id":"sess.recon","binding_ref":"binding.recon.1","credential_b64":"%s",'
+            '"command_id":"%s","admission_ref":"admission.recon.target","evidence_ref":"evidence.recon.target",'
+            '"revision_ref":"%s","request_id":"request.recon.target","request_fingerprint":"%s",'
+            '"termination":null,"exit_code":null,"now":"%s"}'
+            % (
+                _encoded(CREDENTIAL),
+                target.command_id,
+                target.revision_ref,
+                "a" * 64,
+                clock["now"].isoformat(),
+            )
+        ).encode("utf-8")
+        return {
+            "method": "POST",
+            "route": "/reconcile",
+            "content_type": "application/json",
+            "body_b64": _encoded(body),
+            "tls_verified": True,
+        }
+
+    # The device HTTP session must exist for the reconcile's session scoping.
+    session_body = (
+        '{"session_id":"sess.recon","binding_ref":"binding.recon.1","credential_b64":"%s",'
+        '"account_ref":"account.1","workspace_ref":"workspace.1","now":"%s","ttl_seconds":900}'
+        % (_encoded(CREDENTIAL), clock["now"].isoformat())
+    ).encode("utf-8")
+    clock["now"] = NOW - timedelta(seconds=800)
+    opened = service.handle({
+        "method": "POST",
+        "route": "/session",
+        "content_type": "application/json",
+        "body_b64": _encoded(session_body),
+        "tls_verified": True,
+    })
+    assert opened["status"] == 200 and opened["body"]["ok"] is True, opened["body"]
+    bootstrap.admit_command(
+        admission_ref="admission.recon.target",
+        evidence_ref="evidence.recon.target",
+        session_id="sess.recon",
+        binding_ref="binding.recon.1",
+        credential=CREDENTIAL,
+        command_id=target.command_id,
+        request_fingerprint=target.request_fingerprint,
+        request_id="request.recon.target",
+        now=NOW - timedelta(seconds=795),
+    )
+
+    seam_entries_before = seam["entries"]
+    statements_before = len(storage.executed_statements)
+    clock["now"] = NOW
+    reconciled = service.handle(reconcile_envelope())
+    assert reconciled["status"] == 200 and reconciled["body"]["ok"] is True, reconciled["body"]
+
+    # RECONCILE_MUTATION_INSIDE_TRANSACTION: the handler entered the deployable
+    # seam exactly once for this request and never nested.
+    assert seam["entries"] - seam_entries_before == 1
+    assert seam["max_depth"] == 1
+
+    _dbg_state = state_port.load(authority_ref=AUTHORITY_REF).snapshot
+    print("DEBUG commands:", [x.command_id for x in _dbg_state.commands])
+    print("DEBUG threshold:", state_module.COMPACTION_PROACTIVE_TRIGGER_COMMANDS)
+    window = storage.executed_statements[statements_before:]
+    # The reconcile's broker-state CAS ran with the storage transaction open.
+    broker_updates = [flag for flag, head in window if head.startswith("update local_agent_broker_state")]
+    assert broker_updates and all(broker_updates)
+    # The compaction this reconcile triggered moved the old terminal record and
+    # its used-command-id backfill ran inside the same open transaction.
+    ledger_writes = [
+        flag for flag, head in window
+        if head.startswith("insert or ignore into local_agent_broker_used_co")
+    ]
+    assert ledger_writes and all(ledger_writes)
+    assert storage.in_transaction is False, "the mutation transaction must commit"
+
+    # LEDGER_AND_BLOB_ATOMIC: the compaction removed the old terminal record
+    # and its used-command-id row is durable - identity outlives the record.
+    state = state_port.load(authority_ref=AUTHORITY_REF).snapshot
+    assert "command.recon.old" not in {item.command_id for item in state.commands}
+    assert backend.has_used_command_id(authority_ref=AUTHORITY_REF, command_id="command.recon.old") is True
+
+    # #3128_RECONCILIATION_RESULT_PRESERVED: the EXPIRED outcome fabricates no
+    # execution fact and keeps every correlation verbatim.
+    reconciled_command = reconciled["body"]["command"]
+    assert reconciled_command["state"] == "expired"
+    assert reconciled_command["acknowledged_at"] is None
+    assert reconciled_command["termination"] is None
+    assert reconciled_command["exit_code"] is None
+    assert reconciled_command["revision_ref"] == target.revision_ref
+    assert reconciled_command["admission_ref"] == "admission.recon.target"
+    assert reconciled_command["request_id"] == "request.recon.target"
+
+    # TERMINAL_REPLAY = 0: a second reconciliation is refused and mints nothing.
+    watermark = dict(state.last_sequence_by_binding)["binding.recon.1"]
+    replay = service.handle(reconcile_envelope())
+    assert replay["status"] == 200 and replay["body"]["ok"] is False
+    assert replay["body"]["error"]["code"] == "broker_command_not_reconcilable"
+    state_after = state_port.load(authority_ref=AUTHORITY_REF).snapshot
+    assert dict(state_after.last_sequence_by_binding)["binding.recon.1"] == watermark

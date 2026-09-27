@@ -691,10 +691,24 @@ class LocalAgentBrokerHttpHandler:
         if payload["exit_code"] is not None and type(payload["exit_code"]) is not int:
             raise ValueError("reconcile exit_code must be a bounded process exit status or null")
         rpc_payload = {key: value for key, value in payload.items() if key != "evidence_ref"}
-        result = self._rpc_result(
-            self._rpc.reconcile_expired_command(self._server_rpc_payload(rpc_payload, server_now)),
-            "command",
-        )
+        # #3123: the reconciliation state mutation (including any terminal-history
+        # compaction it triggers, which moves used-command-id ledger rows) runs
+        # inside the same deployable storage transaction as the #3129 session-open
+        # double write and the #3123 acknowledge mutation. Without it a crash
+        # between the ledger and the blob could strand identity or state
+        # mid-mutation.
+        if self._session_open_transaction is not None:
+            result = self._session_open_transaction(
+                lambda: self._rpc_result(
+                    self._rpc.reconcile_expired_command(self._server_rpc_payload(rpc_payload, server_now)),
+                    "command",
+                )
+            )
+        else:
+            result = self._rpc_result(
+                self._rpc.reconcile_expired_command(self._server_rpc_payload(rpc_payload, server_now)),
+                "command",
+            )
         if result["ok"] is True:
             command = _closed_mapping(result["command"], _COMMAND_KEYS, "reconciled broker command")
             if command["state"] not in {"acknowledged", "expired"}:
