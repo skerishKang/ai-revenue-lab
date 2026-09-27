@@ -46,11 +46,53 @@ const loaded = History.getEntry(envelope, "history-1");
 assert.ok(loaded);
 assert.equal(loaded.draft.items[0].name, "홈페이지 제작");
 
-const copied = History.copyAsNew(loaded, { now: new Date(2026, 8, 28, 2, 30, 45, 123) });
+const sequenceDate = new Date(2026, 8, 28, 2, 30, 45, 123);
+
+assert.deepEqual(
+  History.normalizeSequenceState(null),
+  { schemaVersion: 1, date: "", lastSequence: 0 },
+  "missing sequence state fails safe"
+);
+assert.deepEqual(
+  History.normalizeSequenceState({ schemaVersion: 999, date: "bad", lastSequence: -5 }),
+  { schemaVersion: 1, date: "", lastSequence: 0 },
+  "malformed sequence fields are sanitized"
+);
+
+const sameDay1 = Core.createDefaultDraft();
+sameDay1.meta.quoteNo = "PQ-20260928-001";
+sameDay1.meta.issueDate = "2026-09-28";
+const sameDay2 = Core.createDefaultDraft();
+sameDay2.meta.quoteNo = "PQ-20260928-002";
+sameDay2.meta.issueDate = "2026-09-28";
+
+const allocated3 = History.allocateQuoteNo(null, [sameDay1, sameDay2], sequenceDate);
+assert.equal(allocated3.quoteNo, "PQ-20260928-003", "allocator continues the readable daily sequence");
+assert.deepEqual(allocated3.state, {
+  schemaVersion: 1,
+  date: "2026-09-28",
+  lastSequence: 3
+});
+
+const allocated4 = History.allocateQuoteNo(allocated3.state, [sameDay1, sameDay2], sequenceDate);
+assert.equal(allocated4.quoteNo, "PQ-20260928-004", "same-day repeated allocation cannot collide");
+
+const oldTimestamp = Core.createDefaultDraft();
+oldTimestamp.meta.quoteNo = "PQ-20260928-033527353";
+const migrationSafe = History.allocateQuoteNo(null, [oldTimestamp], sequenceDate);
+assert.equal(migrationSafe.quoteNo, "PQ-20260928-001", "legacy long timestamp IDs do not create huge sequence jumps");
+
+const nextDay = History.allocateQuoteNo(allocated4.state, [], new Date(2026, 8, 29, 9, 0, 0, 0));
+assert.equal(nextDay.quoteNo, "PQ-20260929-001", "daily sequence resets on a new local date");
+
+const copied = History.copyAsNew(loaded, {
+  now: sequenceDate,
+  quoteNo: allocated3.quoteNo
+});
 assert.ok(copied);
 assert.equal(copied.meta.source, "history-copy");
 assert.equal(copied.meta.issueDate, "2026-09-28", "copy receives the current local date");
-assert.equal(copied.meta.quoteNo, "PQ-20260928-023045123", "copy receives a timestamped fresh quote number");
+assert.equal(copied.meta.quoteNo, "PQ-20260928-003", "copy receives the allocated human-readable quote number");
 assert.notEqual(copied.meta.quoteNo, loaded.draft.meta.quoteNo, "copy quote number differs from source");
 assert.equal(copied.recipient.company, "홍길동건설");
 assert.deepEqual(copied.items.map((x) => x.name), ["홈페이지 제작", "유지보수"]);
@@ -99,5 +141,7 @@ console.log("B66_HISTORY_CONTRACT=PASS");
 console.log("RECENT_HISTORY_BOUNDED=YES");
 console.log("HISTORY_TOTALS_DERIVED=YES");
 console.log("HISTORY_COPY_AS_NEW=PASS");
-console.log("HISTORY_COPY_FRESH_QUOTE_NO=YES");
+console.log("HUMAN_READABLE_QUOTE_NO=YES");
+console.log("SAME_DAY_COLLISION_TEST=PASS");
+console.log("COPY_QUOTE_NO_DIFFERS_FROM_SOURCE=YES");
 console.log("MALFORMED_HISTORY_FAILS_SAFE=YES");
