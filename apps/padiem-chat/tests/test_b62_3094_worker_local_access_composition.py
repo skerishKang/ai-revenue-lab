@@ -396,6 +396,35 @@ def test_revoked_device_fails_closed_and_forwards_no_handoff() -> None:
     assert "value" not in body["projection"]["handoff"]
 
 
+def test_credential_expired_cannot_be_resurrected_online_by_a_current_session() -> None:
+    # The lifecycle invariant: only a broker-reported paired_offline device may
+    # attempt the #3080 ONLINE projection. A credential_expired report with a
+    # still-current session and heartbeat must stay fail-closed — the old
+    # reconstruction (hard-coded PAIRED_OFFLINE) would have let the rule
+    # promote it to ONLINE / CONNECTED.
+    now = datetime.now(timezone.utc)
+    env = _owner_env(
+        per_account={
+            OWNER_A: _broker_device_truth(
+                now=now,
+                canonical_state="credential_expired",
+                with_session=True,
+            ),
+        },
+    )
+    response, *_ = _get(env=env, user_id=OWNER_A, params={"conversationId": CONVERSATION_ID})
+    body = response.json()
+    assert body["available"] is True
+    device = body["projection"]["device"]
+    assert device["canonicalState"] == DeviceLifecycle.CREDENTIAL_EXPIRED.value
+    assert device["state"] == "ACTION_REQUIRED"
+    assert device["usable"] is False
+    assert device["expired"] is True
+    # The facts were current, but ONLINE is unreachable from this state.
+    assert device["state"] != "CONNECTED"
+    assert "value" not in body["projection"]["handoff"]
+
+
 def test_absent_canonical_truth_for_the_owner_fails_closed() -> None:
     # The broker knows no device for this owner: available=false, no device.
     env = _owner_env(per_account={OWNER_A: _live_owner_facts()})

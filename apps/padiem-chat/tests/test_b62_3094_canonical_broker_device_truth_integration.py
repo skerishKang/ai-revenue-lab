@@ -42,6 +42,7 @@ import types
 from unittest.mock import MagicMock
 
 import httpx
+import pytest
 
 from app.auth import SESSION_COOKIE, create_session_token
 from app.claw_local_access_composition import build_claw_local_access_source_with_diagnostic
@@ -372,3 +373,128 @@ def test_real_broker_without_a_live_session_cannot_project_online() -> None:
     assert device["canonicalState"] == "paired_offline"
     assert device["state"] == "OFFLINE"
     assert device["usable"] is False
+
+
+def test_real_broker_credential_expiry_with_current_session_cannot_project_online(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """#3094 CENTRAL third-review regression, on the real DO path.
+
+    The overlap the review flagged: the broker's trusted clock has passed the
+    binding's credential expiry (so the real device_truth RPC reports
+    ``credential_expired``) while the canonical session and server-owned
+    heartbeat are still current from the B62 consumer's perspective. The
+    hard-coded ``PAIRED_OFFLINE`` reconstruction would have let the #3080 rule
+    promote this exact shape to ONLINE / CONNECTED; the invariant refuses the
+    ONLINE projection for any non-``paired_offline`` broker state.
+    """
+
+    import local_agent_broker_durable_runtime as broker_runtime
+
+    now = datetime.now(timezone.utc)
+    namespace = _Namespace()
+    env = _Env(namespace)
+    durable_object = broker_worker.LocalAgentBrokerDurableObject(_Context(_Storage()), env)
+    namespace.durable_object = durable_object
+
+    # Minimum credential TTL (300s) so the credential expires while the
+    # session the broker just opened is still current: binding issued at
+    # now-2min expires at now+3min; the session opened at now-1min is capped
+    # at the credential expiry (now+3min) and the heartbeat is fresh.
+    registered = asyncio.run(
+        durable_object.register_binding(
+            {
+                "binding_ref": BINDING_REF,
+                "device_id": DEVICE_ID,
+                "account_ref": OWNER_ID,
+                "workspace_ref": WORKSPACE_REF,
+                "credential_b64": base64.b64encode(CREDENTIAL).decode("ascii"),
+                "now": _iso(now - timedelta(minutes=2)),
+                "credential_ttl_seconds": 300,
+            }
+        )
+    )
+    assert registered["ok"] is True
+    opened = asyncio.run(
+        durable_object.open_session(
+            {
+                "session_id": SESSION_ID,
+                "binding_ref": BINDING_REF,
+                "credential_b64": base64.b64encode(CREDENTIAL).decode("ascii"),
+                "account_ref": OWNER_ID,
+                "workspace_ref": WORKSPACE_REF,
+                "now": _iso(now - timedelta(minutes=1)),
+                "ttl_seconds": 900,
+            }
+        )
+    )
+    assert opened["ok"] is True
+    session = opened["session"]
+    assert datetime.fromisoformat(session["expires_at"]) > now, (
+        "the fixture must keep the session current from the B62 perspective"
+    )
+    durable_object.http_state.save_session(
+        DurableLocalAgentSessionRecord(
+            session_id=session["session_id"],
+            binding_ref=session["binding_ref"],
+            device_id=session["device_id"],
+            account_ref=session["account_ref"],
+            workspace_ref=session["workspace_ref"],
+            credential_generation=session["credential_generation"],
+            issued_at=datetime.fromisoformat(session["issued_at"]),
+            expires_at=datetime.fromisoformat(session["expires_at"]),
+        )
+    )
+    durable_object.http_state.record_last_seen(
+        SESSION_ID, seen_at=now - timedelta(seconds=55)
+    )
+
+    # Advance ONLY the broker's trusted clock past the credential expiry. The
+    # B62 consumer keeps its real clock, so the session/heartbeat facts in the
+    # envelope remain current — the exact overlap CENTRAL flagged.
+    frozen_broker_now = now + timedelta(minutes=4)
+    real_datetime = broker_runtime.datetime
+
+    class _FrozenBrokerDatetime(real_datetime):
+        @classmethod
+        def now(cls, tz=None):  # type: ignore[override]
+            return frozen_broker_now if tz is None else frozen_broker_now.astimezone(tz)
+
+    monkeypatch.setattr(broker_runtime, "datetime", _FrozenBrokerDatetime, raising=True)
+
+    # The real Default gateway still answers through the actual entrypoint.
+    default_gateway = broker_worker.Default(env)
+    raw = asyncio.run(default_gateway.device_truth({"account_ref": OWNER_ID}))
+    assert raw["ok"] is True and raw["available"] is True
+    assert raw["device_truth"]["canonical_state"] == "credential_expired"
+    assert raw["device_truth"]["session"]["session_id"] == SESSION_ID
+
+    # Compose B62 exactly like worker.py and drive the authenticated route.
+    settings = Settings.from_values(
+        runtime_mode="mock",
+        auth_mode="password",
+        public_base_url=BASE_URL,
+        session_secret="claw-3094-broker-integration-session-secret-not-real",
+        session_max_age_seconds=3600,
+    )
+    app = create_app(settings, history_store=MagicMock())
+    source, diagnostic = build_claw_local_access_source_with_diagnostic(
+        {BROKER_AUTHORITY_BINDING_NAME: default_gateway}
+    )
+    assert diagnostic is None
+    app.state.claw_local_access_source = source
+
+    response = asyncio.run(
+        _authorized_get(app, settings, user_id=OWNER_ID, params={"conversationId": CONVERSATION_ID})
+    )
+    body = response.json()
+    assert body["available"] is True
+    device = body["projection"]["device"]
+    # BROKER_STATE=credential_expired -> the existing fail-closed mapping.
+    assert device["canonicalState"] == "credential_expired"
+    assert device["state"] == "ACTION_REQUIRED"
+    assert device["usable"] is False
+    assert device["expired"] is True
+    # SERVER_ONLINE_TO_WEB_CONNECTED=NO for this state; HANDOFF_OPENABLE=NO.
+    assert device["state"] != "CONNECTED"
+    assert "value" not in body["projection"]["handoff"]

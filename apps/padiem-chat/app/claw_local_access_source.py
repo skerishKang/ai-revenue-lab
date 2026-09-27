@@ -16,10 +16,14 @@ Authority boundary
   ``online``.
 * ONLINE is decided by the existing canonical rule only:
   ``kagent.local_agent_server_projection.project_server_backed_online_binding``
-  judges binding + session + heartbeat correlation and freshness. When it
-  refuses, the source falls back to the broker-reported canonical state, and a
-  fallback that would ever read ``online`` is refused outright (fail closed
-  from ONLINE on projection failure).
+  judges binding + session + heartbeat correlation and freshness — and is
+  attempted **only** for a broker-reported ``paired_offline`` device. A device
+  the broker reports as ``revoked`` or ``credential_expired`` returns that
+  exact fail-closed state without ever reaching the ONLINE rule, so an expired
+  credential cannot be resurrected by a still-current session or heartbeat.
+  When the projection refuses, the source falls back to the broker-reported
+  canonical state, and a fallback that would ever read ``online`` is refused
+  outright (fail closed from ONLINE on projection failure).
 * The Web vocabulary translation stays in ``app.claw_local_projection`` (G4).
   This module only reports canonical state values to the route; it never maps
   them to Web labels itself.
@@ -194,11 +198,12 @@ class CanonicalClawLocalAccessTruthSource:
     def _canonical_state(facts: Mapping[str, Any], *, now: datetime) -> DeviceLifecycle | None:
         """The canonical lifecycle for the broker's facts, decided by #3080.
 
-        The broker-reported state may never be ``online``; the server-backed
-        projection is the only path to ONLINE. When it refuses, the fallback is
-        the broker-reported canonical state — and if that fallback were ever
-        ``online`` despite failed evidence, the projection is dropped outright
-        (fail closed from ONLINE on projection failure).
+        The single invariant: only a broker-reported ``paired_offline`` device
+        may attempt the server-backed ONLINE projection. A device the broker
+        already reports as ``revoked`` or ``credential_expired`` — or any
+        unknown vocabulary — returns that exact fail-closed state and never
+        reaches the ONLINE rule, so an expired credential cannot be resurrected
+        into a connected claim by a still-current session or heartbeat.
         """
 
         broker_state = facts.get("canonical_state")
@@ -206,6 +211,11 @@ class CanonicalClawLocalAccessTruthSource:
         if fallback is None:
             # Unknown broker vocabulary: assert nothing rather than guess.
             return None
+        if fallback is not DeviceLifecycle.PAIRED_OFFLINE:
+            # revoked / credential_expired: fail closed as the broker reported.
+            # The #3080 rule is never invoked, so no current session or
+            # heartbeat can promote these states to ONLINE.
+            return fallback
 
         binding_facts = _mapping(facts.get("binding"))
         session_facts = _mapping(facts.get("session"))
