@@ -8,6 +8,7 @@
   const $ = (id) => document.getElementById(id);
   const Core = window.QuoteCore;
   const Extraction = window.QuoteExtraction || null;
+  const History = window.QuoteHistory || null;
 
   /* ── 상태: QuoteDraft ── */
 
@@ -37,6 +38,47 @@
     } catch (err) {
       /* 저장 실패는 데모 진행을 막지 않음 */
     }
+  }
+
+  function cloneDraft(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function replaceDraft(nextDraft, options) {
+    const normalized = Core.normalizeDraft(nextDraft);
+    if (!normalized) return { ok: false, error: "invalid_draft" };
+    draft = normalized;
+    itemSeq = draft.items.reduce((max, it) => {
+      const n = parseInt(String(it.id).replace(/^(?:item-|extracted-item-)/, ""), 10);
+      return Number.isFinite(n) ? Math.max(max, n) : max;
+    }, 0);
+    renderItems();
+    fillInputsFromDraft();
+    render();
+    if (options && options.toast) toast(options.toast);
+    return { ok: true, draft: cloneDraft(draft) };
+  }
+
+  function loadHistoryEnvelope() {
+    if (!History) return null;
+    try {
+      return History.normalizeEnvelope(JSON.parse(localStorage.getItem(History.HISTORY_STORAGE_KEY) || "null"));
+    } catch (err) {
+      return History.normalizeEnvelope(null);
+    }
+  }
+
+  function saveCurrentToHistory() {
+    if (!History) return { ok: false, error: "history_unavailable" };
+    const envelope = History.addEntry(loadHistoryEnvelope(), draft);
+    try {
+      localStorage.setItem(History.HISTORY_STORAGE_KEY, JSON.stringify(envelope));
+    } catch (err) {
+      return { ok: false, error: "history_storage_failed" };
+    }
+    toast("이 견적을 최근 견적에 저장했습니다.");
+    window.dispatchEvent(new CustomEvent("b66:history-changed"));
+    return { ok: true, envelope: cloneDraft(envelope) };
   }
 
   /* ── 공통 유틸 ── */
@@ -362,6 +404,11 @@
     toast("이메일 전송은 다음 단계에서 Gmail/메일 연동으로 붙입니다.");
   });
 
+  $("saveHistory").addEventListener("click", () => {
+    const result = saveCurrentToHistory();
+    if (!result.ok) toast("최근 견적 저장에 실패했습니다.");
+  });
+
   /* ── 모드 전환 (upload/chat은 의도된 future affordance) ── */
 
   document.querySelectorAll(".mode").forEach((button) => {
@@ -384,6 +431,17 @@
     validate: validateExtractionResult,
     apply: applyExtractionResult,
     getLastReview: getLastExtractionReview
+  });
+
+  window.B66QuoteAppBridge = Object.freeze({
+    getDraft: () => cloneDraft(draft),
+    replaceDraft,
+    saveCurrentToHistory,
+    getHistoryEnvelope: () => {
+      const envelope = loadHistoryEnvelope();
+      return envelope ? cloneDraft(envelope) : null;
+    },
+    toast
   });
 
   /* ── 초기화 ── */
