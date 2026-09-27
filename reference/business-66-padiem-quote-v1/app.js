@@ -520,17 +520,23 @@
 
   function render() {
     const totals = Core.computeTotals(draft.items, draft.tax.mode);
+    const provisionalTax = taxReviewRequired;
 
-    $("subtotalText").textContent = Core.formatMoney(totals.supply);
-    $("vatText").textContent = Core.formatMoney(totals.vat);
-    $("grandText").textContent = Core.formatMoney(totals.grand);
+    $("subtotalLabelText").textContent = provisionalTax ? "품목 합계(세금 확인 전)" : "공급가액";
+    $("subtotalText").textContent = Core.formatMoney(provisionalTax ? totals.subtotal : totals.supply);
+    $("vatLabelText").textContent = provisionalTax ? "부가세" : vatSummaryLabel(draft.tax.mode);
+    $("vatText").textContent = provisionalTax ? "확인 필요" : Core.formatMoney(totals.vat);
+    $("grandLabelText").textContent = provisionalTax ? "최종 합계" : "합계";
+    $("grandText").textContent = provisionalTax ? "확정 전" : Core.formatMoney(totals.grand);
 
     $("pvQuoteNo").textContent = "견적번호  " + textOrDash(draft.meta.quoteNo);
     $("pvDate").textContent = "견적일  " + textOrDash(draft.meta.issueDate);
     $("pvValidity").textContent = "유효기간  " + draft.meta.validDays + "일";
     const validUntil = Core.computeValidUntil(draft.meta.issueDate, draft.meta.validDays);
     $("pvValidUntil").textContent = "유효일  " + (validUntil || "-");
-    $("pvTaxMode").textContent = "세금  " + Core.TAX_LABELS[draft.tax.mode];
+    $("pvTaxMode").textContent = provisionalTax
+      ? "세금  확인 필요"
+      : "세금  " + Core.TAX_LABELS[draft.tax.mode];
 
     $("pvSenderCompany").textContent = textOrDash(draft.sender.company);
     $("pvSenderRep").textContent = "대표자  " + textOrDash(draft.sender.rep);
@@ -552,10 +558,12 @@
       </tr>`
     ).join("");
 
-    $("pvSubtotal").textContent = Core.formatMoney(totals.supply);
-    $("pvVatLabel").textContent = vatSummaryLabel(draft.tax.mode);
-    $("pvVat").textContent = Core.formatMoney(totals.vat);
-    $("pvGrand").textContent = Core.formatMoney(totals.grand);
+    $("pvSubtotalLabel").textContent = provisionalTax ? "품목 합계(세금 확인 전)" : "공급가액";
+    $("pvSubtotal").textContent = Core.formatMoney(provisionalTax ? totals.subtotal : totals.supply);
+    $("pvVatLabel").textContent = provisionalTax ? "부가세" : vatSummaryLabel(draft.tax.mode);
+    $("pvVat").textContent = provisionalTax ? "확인 필요" : Core.formatMoney(totals.vat);
+    $("pvGrandLabel").textContent = provisionalTax ? "최종 합계" : "합계";
+    $("pvGrand").textContent = provisionalTax ? "확정 전" : Core.formatMoney(totals.grand);
     $("pvMemo").textContent = draft.memo.trim() || "비고 없음";
 
     document.querySelectorAll("#items .item-row").forEach((row, i) => {
