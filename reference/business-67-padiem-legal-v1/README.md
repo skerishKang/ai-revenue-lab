@@ -328,7 +328,7 @@ python reference/business-67-padiem-legal-v1/tests/serve.py 8899
 
 ```bash
 # 1. Static contracts (Claw continuity, domain separation, honesty).
-#    34 tests, no browser required.
+#    56 tests, no browser required.
 python -m pytest reference/business-67-padiem-legal-v1/tests/test_b67_legal_surface.py -q
 
 # 2. Behaviour in a real browser at 1440x1000, 768x1024, 390x844.
