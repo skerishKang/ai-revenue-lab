@@ -135,6 +135,23 @@ class LocalRunnerTerminalObservation:
 
 
 @dataclass(frozen=True, slots=True)
+class LocalTaskCommandCorrelation:
+    """The exact command the server bound to one run, written once.
+
+    Every field is a canonical broker correlation. A terminal observation must
+    echo all of them, so a command that merely shares a run id cannot reach a
+    conversation it does not belong to.
+    """
+
+    command_id: str
+    tool_request_ref: str
+    request_id: str
+    revision_ref: str
+    evidence_ref: str | None
+    request_fingerprint: str
+
+
+@dataclass(frozen=True, slots=True)
 class LocalTaskOrigin:
     """The server-owned origin: the run row's own conversation linkage."""
 
@@ -142,6 +159,7 @@ class LocalTaskOrigin:
     run_id: str
     conversation_id: str
     workspace_id: str | None = None
+    correlation: LocalTaskCommandCorrelation | None = None
 
 
 class TrustedLocalRunnerResultPort(Protocol):
@@ -151,7 +169,14 @@ class TrustedLocalRunnerResultPort(Protocol):
     admit, acknowledge or reconcile anything.
     """
 
-    async def command_result(self, *, command_id: str) -> LocalRunnerTerminalObservation | None:
+    async def command_result(
+        self,
+        *,
+        command_id: str | None,
+        run_id: str,
+        owner_id: str,
+        workspace_id: str | None = None,
+    ) -> LocalRunnerTerminalObservation | None:
         ...
 
 
@@ -215,6 +240,31 @@ def decide_local_task_result(*, origin: LocalTaskOrigin, observation: LocalRunne
             "local_task_result_run_mismatch",
             "the terminal command belongs to a different run than the originating conversation",
         )
+    if origin.correlation is None:
+        raise LocalTaskResultError(
+            "local_task_result_correlation_unbound",
+            "no exact command correlation is bound to this run yet",
+        )
+    mismatched = [
+        name
+        for name in (
+            "command_id",
+            "tool_request_ref",
+            "request_id",
+            "revision_ref",
+            "evidence_ref",
+            "request_fingerprint",
+        )
+        if getattr(origin.correlation, name) != getattr(observation, name)
+    ]
+    if mismatched:
+        # A command that shares the run id but disagrees on any one canonical
+        # correlation must never reach this conversation.
+        raise LocalTaskResultError(
+            "local_task_result_correlation_mismatch",
+            "terminal command does not match the exact bound correlation: "
+            + ", ".join(sorted(mismatched)),
+        )
 
     message_id = result_message_id(
         conversation_id=conversation_id,
@@ -222,13 +272,23 @@ def decide_local_task_result(*, origin: LocalTaskOrigin, observation: LocalRunne
         revision_ref=observation.revision_ref,
     )
     if observation.executed:
+        # Truthful per canonical termination: the runner's own vocabulary is
+        # never collapsed into one word, because a cancelled run is not a
+        # completed one and a timed-out run is neither.
+        if observation.termination == "exited":
+            status = "completed"
+            summary = f"exited/{observation.exit_code}"
+        elif observation.termination == "cancelled":
+            status = "cancelled"
+            summary = "cancelled"
+        else:
+            status = "timed_out"
+            summary = "timed_out"
         content = (
             f"로컬 러너 작업이 종료되었습니다. "
             f"상태: {observation.termination}, 종료 코드: {observation.exit_code}, "
             f"명령: {observation.command_id}."
         )
-        summary = f"exited/{observation.exit_code}"
-        status = "completed"
     else:
         # EXPIRED proves no execution happened. The projection says exactly that
         # and reports no termination and no exit code.
@@ -288,7 +348,53 @@ async def project_local_runner_terminal_result(
         conversation_id=row.get("conversation_id"),
         workspace_id=workspace_id,
     )
-    observation = await result_port.command_result(command_id=command_id)
+    observation = await result_port.command_result(
+        command_id=command_id,
+        run_id=run_id,
+        owner_id=user_id,
+        workspace_id=workspace_id,
+    )
+    if observation is None:
+        return LocalTaskResultDecision(
+            append=False,
+            message_id="",
+            content="",
+            summary="",
+            status="pending",
+            reason="no canonical terminal result is available yet",
+        )
+    if observation.command_id != command_id:
+        raise LocalTaskResultError("local_task_result_command_mismatch", "the observation is for a different command")
+    # The exact correlation is bound once, server-side, from the broker's own
+    # canonical facts. From then on every projection must echo it, so a command
+    # that merely shares the run id can never reach this conversation.
+    bound = await history.get_local_task_correlation(user_id, run_id)
+    if bound is None:
+        await history.record_local_task_correlation(
+            user_id=user_id,
+            run_id=run_id,
+            command_id=observation.command_id,
+            tool_request_ref=observation.tool_request_ref,
+            request_id=observation.request_id,
+            revision_ref=observation.revision_ref,
+            evidence_ref=observation.evidence_ref,
+            request_fingerprint=observation.request_fingerprint,
+        )
+        bound = await history.get_local_task_correlation(user_id, run_id)
+    origin = LocalTaskOrigin(
+        user_id=origin.user_id,
+        run_id=origin.run_id,
+        conversation_id=origin.conversation_id,
+        workspace_id=origin.workspace_id,
+        correlation=LocalTaskCommandCorrelation(
+            command_id=bound["command_id"],
+            tool_request_ref=bound["tool_request_ref"],
+            request_id=bound["request_id"],
+            revision_ref=bound["revision_ref"],
+            evidence_ref=bound["evidence_ref"],
+            request_fingerprint=bound["request_fingerprint"],
+        ),
+    )
     if observation is None:
         return LocalTaskResultDecision(
             append=False,
@@ -330,7 +436,12 @@ EXPIRED_FABRICATES_EXECUTION = False
 RAW_MATERIAL_IN_PROJECTION = False
 SECOND_CONVERSATION_AUTHORITY = False
 SECOND_RESULT_AUTHORITY = False
+SECOND_COMMAND_AUTHORITY = False
 BROKER_COMMAND_AUTHORITY = False
+EXACT_COMMAND_CORRELATION_ENFORCED = True
+CORRELATION_BOUND_ONCE_SERVER_SIDE = True
+CORRELATION_WRITTEN_BY_BROWSER_OR_DEVICE = False
+TERMINATION_STATUS_TRUTHFUL = True
 BROKER_STATE_WRITTEN = False
 DEVICE_LIFECYCLE_PROJECTION_TOUCHED = False
 PRODUCTION_MUTATION = False

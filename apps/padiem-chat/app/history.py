@@ -862,9 +862,8 @@ class D1HistoryStore:
         body = _bounded_text(content, "local_task_result")
         if len(body) > MAX_HISTORY_MESSAGE_CHARS:
             raise HistoryError("local_task_result is not bounded")
-        bounded_summary = summary[:MAX_RUN_RESULT_SUMMARY_CHARS]
         owned = await self._first(
-            "SELECT id, conversation_id FROM claw_run_history WHERE run_id=? AND user_id=?",
+            "SELECT id, conversation_id, result_summary FROM claw_run_history WHERE run_id=? AND user_id=?",
             run_id, user_id,
         )
         if owned is None:
@@ -872,12 +871,18 @@ class D1HistoryStore:
         conversation_id = owned.get("conversation_id")
         if not isinstance(conversation_id, str) or not conversation_id:
             raise HistoryError("claw run has no originating conversation")
+        # A contradictory result must mutate nothing, so the refusal happens
+        # before any statement is issued rather than after the batch.
+        stored_summary = owned.get("result_summary")
+        bounded_summary = summary[:MAX_RUN_RESULT_SUMMARY_CHARS]
+        if stored_summary is not None and stored_summary != bounded_summary:
+            raise HistoryError("claw run already carries a different terminal result")
         now = _now_iso()
         statements = [
             self.db.prepare(
                 "UPDATE claw_run_history SET status=?, updated_at=?, result_summary=? "
                 "WHERE id=? AND (result_summary IS NULL OR result_summary=?)"
-            ).bind(status, now, bounded_summary, str(owned.get("id")), bounded_summary),
+            ).bind(status, now, summary[:MAX_RUN_RESULT_SUMMARY_CHARS], str(owned.get("id")), summary[:MAX_RUN_RESULT_SUMMARY_CHARS]),
             # The message insert carries the SAME guard as the run update, so a
             # second, contradictory outcome cannot append a contradicting
             # message even if a caller hands it a fresh message id.
@@ -890,17 +895,102 @@ class D1HistoryStore:
                 "WHERE c.id = ? AND c.user_id = ? "
                 "AND (r.result_summary IS NULL OR r.result_summary = ?)"
             ).bind(message_id, body, now, str(owned.get("id")), conversation_id, user_id, bounded_summary),
-            self.db.prepare(
-                "UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?"
-            ).bind(now, conversation_id, user_id),
         ]
         results = await self.db.batch(statements)
-        updated = _batch_returned_row(results, 0)
-        if updated is None:
-            # The run already carries a different terminal summary: refuse to
-            # rewrite it, and do not append a second, contradicting result.
-            raise HistoryError("claw run already carries a different terminal result")
-        return _batch_returned_row(results, 1) is not None
+        appended = _batch_returned_row(results, 1) is not None
+        if not appended:
+            # The identical result was already durable: an exact retry touches
+            # nothing at all — no message, no timestamp, no state.
+            return False
+        # The ordering touch runs only when a message actually landed, so a
+        # retry can never reorder or restamp the conversation.
+        await self._run(
+            "UPDATE conversations SET updated_at=? WHERE id=? AND user_id=?",
+            now, conversation_id, user_id,
+        )
+        return True
+
+    async def record_local_task_correlation(
+        self,
+        *,
+        user_id: str,
+        run_id: str,
+        command_id: str,
+        tool_request_ref: str,
+        request_id: str,
+        revision_ref: str,
+        request_fingerprint: str,
+        evidence_ref: str | None = None,
+    ) -> bool:
+        """#3139 — bind one run to the exact command the server obtained for it.
+
+        This is the smallest bounded server-side mapping the return leg needs:
+        the canonical correlations a terminal projection must echo are written
+        once, here, and never by a browser or a device. A second record for the
+        same owner+run+command is a no-op; a *different* one for the same
+        owner+run fails closed, because two commands claiming one run is
+        precisely the confusion this mapping exists to prevent.
+        """
+
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(run_id, str) or not run_id:
+            raise HistoryError("run_id is required")
+        for name, value in (
+            ("command_id", command_id),
+            ("tool_request_ref", tool_request_ref),
+            ("request_id", request_id),
+            ("revision_ref", revision_ref),
+            ("request_fingerprint", request_fingerprint),
+        ):
+            if not isinstance(value, str) or not value or len(value) > 512:
+                raise HistoryError(f"{name} must be a bounded reference")
+        if evidence_ref is not None and (not isinstance(evidence_ref, str) or len(evidence_ref) > 512):
+            raise HistoryError("evidence_ref must be a bounded reference or absent")
+        owned = await self._first(
+            "SELECT id FROM claw_run_history WHERE run_id=? AND user_id=?",
+            run_id, user_id,
+        )
+        if owned is None:
+            raise HistoryForbidden("claw run is not owned by current user")
+        existing = await self.get_local_task_correlation(user_id, run_id)
+        candidate = {
+            "command_id": command_id,
+            "tool_request_ref": tool_request_ref,
+            "request_id": request_id,
+            "revision_ref": revision_ref,
+            "evidence_ref": evidence_ref,
+            "request_fingerprint": request_fingerprint,
+        }
+        if existing is not None:
+            # One correlation per run. An identical rebinding is a no-op; any
+            # difference is two commands claiming one run, which is exactly the
+            # confusion this mapping prevents.
+            same = all(existing.get(name) == value for name, value in candidate.items())
+            if same:
+                return False
+            raise HistoryError("claw run is already bound to a different command correlation")
+        await self._run(
+            "INSERT INTO claw_local_task_correlation "
+            "(id, user_id, run_id, command_id, tool_request_ref, request_id, revision_ref, evidence_ref, request_fingerprint, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            _message_id(), user_id, run_id, command_id, tool_request_ref,
+            request_id, revision_ref, evidence_ref, request_fingerprint, _now_iso(),
+        )
+        return True
+
+    async def get_local_task_correlation(self, user_id: str, run_id: str) -> dict[str, Any] | None:
+        """#3139 — the exact command correlation bound to one run, if any."""
+
+        if not isinstance(user_id, str) or not user_id:
+            raise HistoryError("user_id is required")
+        if not isinstance(run_id, str) or not run_id:
+            raise HistoryError("run_id is required")
+        return await self._first(
+            "SELECT command_id, tool_request_ref, request_id, revision_ref, evidence_ref, request_fingerprint "
+            "FROM claw_local_task_correlation WHERE user_id=? AND run_id=?",
+            user_id, run_id,
+        )
 
     async def record_claw_approval_handoff(
         self,

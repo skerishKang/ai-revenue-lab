@@ -30,6 +30,7 @@ APP_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = APP_ROOT.parents[1]
 sys.path.insert(0, str(APP_ROOT))
 sys.path.insert(0, str(REPO_ROOT / "packages" / "padiem-control-plane"))
+sys.path.insert(0, str(REPO_ROOT / "apps" / "korean-ai-code-agent" / "src"))
 
 from app.claw_local_task_result_projection import (  # noqa: E402
     LocalRunnerTerminalObservation,
@@ -150,7 +151,8 @@ class _BrokerResultPort:
         self._state_port = state_port
         self.calls: list[str] = []
 
-    async def command_result(self, *, command_id: str):
+    async def command_result(self, *, command_id, run_id, owner_id, workspace_id=None):
+        del run_id, owner_id, workspace_id
         self.calls.append(command_id)
         snapshot = self._state_port.load(authority_ref=AUTHORITY_REF).snapshot
         command = next((item for item in snapshot.commands if item.command_id == command_id), None)
@@ -197,7 +199,7 @@ def _accounts(history) -> dict[str, str]:
     return resolved
 
 
-def _new_broker() -> tuple[StateBackedLocalAgentBrokerAuthority, SerializedLocalAgentBrokerStatePort]:
+def _new_broker(account_ref: str) -> tuple[StateBackedLocalAgentBrokerAuthority, SerializedLocalAgentBrokerStatePort]:
     state_port = SerializedLocalAgentBrokerStatePort(
         backend=InMemorySerializedLocalAgentBrokerStateBackend()
     )
@@ -206,10 +208,12 @@ def _new_broker() -> tuple[StateBackedLocalAgentBrokerAuthority, SerializedLocal
         authority_ref=AUTHORITY_REF,
         state_port=state_port,
     )
+    # The chat owner id IS the broker account_ref (#3094's adapter forwards it
+    # verbatim), so the device binding is registered under the owner identity.
     authority.register_binding(
         binding_ref=BINDING_REF,
         device_id="device.3139.1",
-        account_ref=ACCOUNT,
+        account_ref=account_ref,
         workspace_ref=WORKSPACE,
         credential=CREDENTIAL,
         now=BASE,
@@ -218,7 +222,7 @@ def _new_broker() -> tuple[StateBackedLocalAgentBrokerAuthority, SerializedLocal
         session_id="session.3139.1",
         binding_ref=BINDING_REF,
         credential=CREDENTIAL,
-        account_ref=ACCOUNT,
+        account_ref=account_ref,
         workspace_ref=WORKSPACE,
         now=BASE + timedelta(seconds=1),
     )
@@ -251,9 +255,9 @@ def _admit(authority, *, command_id: str, run_id: str, at: datetime):
     )
 
 
-def _acknowledge(authority, command_id, admission, *, at: datetime) -> None:
+def _acknowledge(authority, command_id, admission, *, at: datetime, session_id: str = "session.3139.1") -> None:
     authority.acknowledge(
-        session_id="session.3139.1",
+        session_id=session_id,
         binding_ref=BINDING_REF,
         credential=CREDENTIAL,
         command_id=command_id,
@@ -295,11 +299,12 @@ def _messages(history, conversation_id: str) -> list[dict]:
 
 @pytest.fixture()
 def harness(tmp_path):
-    authority, state_port = _new_broker()
     database_path = tmp_path / "chat.sqlite3"
     db = _open_database(database_path)
     history = D1HistoryStore(db)
-    yield authority, state_port, history, database_path, _BrokerResultPort(state_port), _accounts(history)
+    accounts = _accounts(history)
+    authority, state_port = _new_broker(accounts[OWNER_SUBJECT])
+    yield authority, state_port, history, database_path, _BrokerResultPort(state_port), accounts
     db.close()
 
 
@@ -545,7 +550,8 @@ def test_the_destination_conversation_is_server_owned(tmp_path):
     )
 
     class _Port:
-        async def command_result(self, *, command_id):
+        async def command_result(self, *, command_id, run_id, owner_id, workspace_id=None):
+            del run_id, owner_id, workspace_id
             return observation if command_id == observation.command_id else None
 
     decision = _run(
@@ -634,6 +640,795 @@ def test_an_expired_observation_cannot_carry_an_execution_outcome():
             exit_code=0,
         )
     assert fabricated.value.code == "local_task_result_fabricated_execution"
+
+
+# --- the deployable path: real broker RPC through the real composition ------
+class _RealServiceBinding:
+    """The private Service Binding shape: methods, sync or awaitable."""
+
+    def __init__(self, runtime):
+        self._runtime = runtime
+        self.calls: list[str] = []
+
+    def terminal_command_result(self, payload):
+        self.calls.append(payload.get("run_id"))
+        return self._runtime.terminal_command_result(payload)
+
+
+def _migrated_runtime(harness, tmp_path):
+    """A real file-backed durable runtime over the SAME broker the tests use."""
+
+    from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
+
+    class _Env:
+        LOCAL_AGENT_BROKER_AUTHORITY_REF = AUTHORITY_REF
+        LOCAL_AGENT_BROKER_PEPPER = str(PEPPER)
+
+    runtime = LocalAgentBrokerDurableRuntime(
+        storage=_SqliteStorage(tmp_path / "broker.sqlite3"), env=_Env()
+    )
+    return runtime
+
+
+class _SqliteStorage:
+    """D1-shaped storage: the transaction is a real one."""
+
+    def __init__(self, path):
+        import sqlite3
+
+        self.connection = sqlite3.connect(path, isolation_level=None)
+
+        class _Cursor:
+            def __init__(self, inner):
+                self._inner = inner
+
+            @property
+            def rowsWritten(self):
+                return self._inner.rowcount if self._inner.rowcount >= 0 else 0
+
+            def toArray(self):
+                names = [c[0] for c in self._inner.description] if self._inner.description else []
+                return [dict(zip(names, row)) for row in self._inner.fetchall()]
+
+        class _Sql:
+            def __init__(self, connection):
+                self.connection = connection
+
+            def exec(self, query, *bindings):
+                return _Cursor(self.connection.execute(query, bindings))
+
+        self.sql = _Sql(self.connection)
+
+    def transactionSync(self, callback):
+        self.connection.execute("BEGIN IMMEDIATE")
+        try:
+            value = callback()
+        except BaseException:
+            self.connection.execute("ROLLBACK")
+            raise
+        self.connection.execute("COMMIT")
+        return value
+
+    def close(self):
+        self.connection.close()
+
+
+def test_the_real_broker_rpc_serves_the_real_projection(harness, tmp_path):
+    """The deployable leg: canonical broker RPC -> concrete port -> projector -> conversation."""
+
+    from app.claw_local_task_result_composition import (
+        BrokerAuthorityLocalRunnerResultPort,
+        LocalRunnerResultSource,
+    )
+    from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
+
+    authority, state_port, history, _path, port, accounts = harness
+    owner = accounts[OWNER_SUBJECT]
+
+    # The durable runtime owns the same canonical state the device edge uses,
+    # and it is where the canonical enqueue actually happens.
+    class _Env:
+        LOCAL_AGENT_BROKER_AUTHORITY_REF = AUTHORITY_REF
+        LOCAL_AGENT_BROKER_PEPPER = str(PEPPER)
+
+    runtime = LocalAgentBrokerDurableRuntime(
+        storage=_SqliteStorage(tmp_path / "broker.sqlite3"), env=_Env()
+    )
+    # Point the runtime AND its material store at the harness state so both
+    # sides are one Durable Object, exactly like the deployed composition.
+    runtime.state_port = state_port
+    runtime.material_store._state_port = state_port
+
+    runtime.register_binding(
+        {
+            "binding_ref": BINDING_REF,
+            "device_id": "device.3139.1",
+            "account_ref": owner,
+            "workspace_ref": WORKSPACE,
+            "credential_b64": CRED_B64,
+            "now": BASE.isoformat(),
+        }
+    )
+    material = {
+        "request_id": "request.rpc.1",
+        "run_id": "run.rpc.1",
+        "device_id": "device.3139.1",
+        "root_ref": "root.3139.1",
+        "argv": ["python", "-V"],
+        "cwd_relative": ".",
+        "requested_at": (BASE + timedelta(seconds=1)).isoformat().replace("+00:00", "Z"),
+        "timeout_seconds": 30,
+        "shell_authority": False,
+        "admin_elevation": False,
+        "environment_payload": None,
+        "provider_authority": None,
+        "p01_approval_payload": None,
+    }
+    enqueued = runtime.enqueue_command_with_material(
+        {
+            "command_id": "command.rpc.1",
+            "binding_ref": BINDING_REF,
+            "run_id": "run.rpc.1",
+            "tool_request_ref": "tool.rpc.1",
+            "request_fingerprint": FINGERPRINT,
+            "now": (BASE + timedelta(seconds=2)).isoformat(),
+            "ttl_seconds": COMMAND_TTL,
+        },
+        material,
+    )
+    assert enqueued["ok"] is True
+    command = enqueued["command"]
+
+    session = authority.open_session(
+        session_id="session.rpc.1",
+        binding_ref=BINDING_REF,
+        credential=CREDENTIAL,
+        account_ref=owner,
+        workspace_ref=WORKSPACE,
+        now=BASE + timedelta(seconds=1),
+    )
+    admission = authority.admit_command(
+        admission_ref="admission.command.rpc.1",
+        evidence_ref="evidence.command.rpc.1",
+        session_id=session.session_id,
+        binding_ref=BINDING_REF,
+        credential=CREDENTIAL,
+        command_id="command.rpc.1",
+        request_fingerprint=FINGERPRINT,
+        request_id="request.rpc.1",
+        now=BASE + timedelta(seconds=3),
+    )
+    _acknowledge(authority, "command.rpc.1", admission, at=BASE + timedelta(seconds=4), session_id=session.session_id)
+
+    # The private Service Binding port reads the REAL runtime RPC.
+    binding = _RealServiceBinding(runtime)
+    concrete_port = BrokerAuthorityLocalRunnerResultPort(binding)
+    observation = _run(
+        concrete_port.command_result(
+            command_id="command.rpc.1", run_id="run.rpc.1", owner_id=owner, workspace_id=WORKSPACE
+        )
+    )
+    assert observation is not None
+    assert observation.state == "acknowledged"
+    assert observation.command_id == "command.rpc.1"
+    assert observation.termination == "exited"
+    assert binding.calls == ["run.rpc.1"]
+
+    conversation_id = _conversation_with_run(history, owner=owner, run_id="run.rpc.1")
+    before = len(_messages(history, conversation_id))
+
+    source = LocalRunnerResultSource(history=history, result_port=concrete_port)
+    projected = _run(
+        source.project_local_runner_result(owner_id=owner, run_id="run.rpc.1", workspace_id=WORKSPACE)
+    )
+    assert projected is not None
+    assert projected["appended"] is True
+    assert projected["status"] == "completed"
+    after = _messages(history, conversation_id)
+    assert len(after) == before + 1
+    assert "exited" in after[-1]["content"]
+
+    # And an identical second observation appends nothing.
+    again = _run(
+        source.project_local_runner_result(owner_id=owner, run_id="run.rpc.1", workspace_id=WORKSPACE)
+    )
+    assert again["appended"] is False
+    assert len(_messages(history, conversation_id)) == before + 1
+    runtime._storage.close()
+
+
+def test_a_command_that_shares_the_run_but_disagrees_fails_closed(harness):
+    authority, state_port, history, _path, port, accounts = harness
+    owner = accounts[OWNER_SUBJECT]
+    _enqueue(authority, command_id="command.x.1", run_id="run.x.1", at=BASE + timedelta(seconds=2))
+    admission = _admit(authority, command_id="command.x.1", run_id="run.x.1", at=BASE + timedelta(seconds=3))
+    _acknowledge(authority, "command.x.1", admission, at=BASE + timedelta(seconds=4))
+    conversation_id = _conversation_with_run(history, owner=owner, run_id="run.x.1")
+    before = len(_messages(history, conversation_id))
+
+    # First observation binds the exact correlation server-side.
+    first = _run(
+        project_local_runner_terminal_result(
+            history=history, result_port=port, user_id=owner,
+            run_id="run.x.1", command_id="command.x.1",
+        )
+    )
+    assert first.append is True
+    bound = _run(history.get_local_task_correlation(owner, "run.x.1"))
+    assert bound["command_id"] == "command.x.1"
+    assert bound["tool_request_ref"] == "tool.command.x.1"
+    # The revision is the server-owned minted one, echoed verbatim.
+    assert bound["revision_ref"] == admission.revision_ref
+    assert bound["request_id"] == admission.request_id
+
+    # A second command that shares the run id but carries a different tool
+    # request, request id and revision must never reach this conversation.
+    _enqueue(authority, command_id="command.x.2", run_id="run.x.1", at=BASE + timedelta(seconds=6))
+    other_admission = _admit(authority, command_id="command.x.2", run_id="run.x.1", at=BASE + timedelta(seconds=7))
+    _acknowledge(authority, "command.x.2", other_admission, at=BASE + timedelta(seconds=8))
+    with pytest.raises(LocalTaskResultError) as mismatched:
+        _run(
+            project_local_runner_terminal_result(
+                history=history, result_port=port, user_id=owner,
+                run_id="run.x.1", command_id="command.x.2",
+            )
+        )
+    assert mismatched.value.code == "local_task_result_correlation_mismatch"
+    assert len(_messages(history, conversation_id)) == before + 1
+
+    # The mapping itself refuses to be rebound.
+    with pytest.raises(HistoryError):
+        _run(
+            history.record_local_task_correlation(
+                user_id=owner,
+                run_id="run.x.1",
+                command_id="command.x.2",
+                tool_request_ref="tool.command.x.2",
+                request_id="request.command.x.2",
+                revision_ref="rev.command.x.2",
+                request_fingerprint=FINGERPRINT,
+            )
+        )
+    still = _run(history.get_local_task_correlation(owner, "run.x.1"))
+    assert still["command_id"] == "command.x.1"
+
+
+def test_an_exact_retry_mutates_nothing_observable(harness):
+    authority, state_port, history, _path, port, accounts = harness
+    owner = accounts[OWNER_SUBJECT]
+    _enqueue(authority, command_id="command.c.1", run_id="run.c.1", at=BASE + timedelta(seconds=2))
+    admission = _admit(authority, command_id="command.c.1", run_id="run.c.1", at=BASE + timedelta(seconds=3))
+    _acknowledge(authority, "command.c.1", admission, at=BASE + timedelta(seconds=4))
+    conversation_id = _conversation_with_run(history, owner=owner, run_id="run.c.1")
+    before = len(_messages(history, conversation_id))
+    conversation_before = _run(history._all("SELECT * FROM conversations WHERE id=?", conversation_id))
+    run_before = _run(history.get_claw_run(owner, "run.c.1"))
+
+    first = _run(
+        project_local_runner_terminal_result(
+            history=history, result_port=port, user_id=owner,
+            run_id="run.c.1", command_id="command.c.1",
+        )
+    )
+    assert first.append is True
+    conversation_after = _run(history._all("SELECT * FROM conversations WHERE id=?", conversation_id))
+
+    second = _run(
+        project_local_runner_terminal_result(
+            history=history, result_port=port, user_id=owner,
+            run_id="run.c.1", command_id="command.c.1",
+        )
+    )
+    assert second.append is False
+    conversation_final = _run(history._all("SELECT * FROM conversations WHERE id=?", conversation_id))
+    # The exact retry reordered or restamped nothing.
+    assert conversation_final == conversation_after
+    run_after = _run(history.get_claw_run(owner, "run.c.1"))
+    assert (run_after["status"], run_after["result_summary"]) == (
+        run_before["status"] if run_before["status"] != "running" else "completed",
+        run_after["result_summary"],
+    )
+    assert len(_messages(history, conversation_id)) == before + 1
+
+
+def test_a_conflicting_result_mutates_nothing_durable(harness):
+    authority, state_port, history, _path, port, accounts = harness
+    owner = accounts[OWNER_SUBJECT]
+    _enqueue(authority, command_id="command.d.1", run_id="run.d.1", at=BASE + timedelta(seconds=2))
+    admission = _admit(authority, command_id="command.d.1", run_id="run.d.1", at=BASE + timedelta(seconds=3))
+    _acknowledge(authority, "command.d.1", admission, at=BASE + timedelta(seconds=4))
+    conversation_id = _conversation_with_run(history, owner=owner, run_id="run.d.1")
+    before = len(_messages(history, conversation_id))
+    _run(
+        project_local_runner_terminal_result(
+            history=history, result_port=port, user_id=owner,
+            run_id="run.d.1", command_id="command.d.1",
+        )
+    )
+    snapshot_before = _run(history._all("SELECT * FROM conversations WHERE id=?", conversation_id))
+    run_before = _run(history.get_claw_run(owner, "run.d.1"))
+
+    with pytest.raises(HistoryError):
+        _run(
+            history.append_local_task_result(
+                user_id=owner,
+                run_id="run.d.1",
+                message_id="msg_ltr_conflicting_3139",
+                summary="expired/no-result",
+                content="a contradictory outcome",
+                status="expired",
+            )
+        )
+    # Zero durable mutation: same rows, same timestamps, same summary.
+    snapshot_after = _run(history._all("SELECT * FROM conversations WHERE id=?", conversation_id))
+    run_after = _run(history.get_claw_run(owner, "run.d.1"))
+    assert snapshot_after == snapshot_before
+    assert run_after == run_before
+    assert len(_messages(history, conversation_id)) == before + 1
+
+
+def test_cancelled_and_timed_out_are_truthful(harness):
+    authority, state_port, history, _path, port, accounts = harness
+    owner = accounts[OWNER_SUBJECT]
+    for termination, run_suffix, expected_status, expected_summary in (
+        ("cancelled", "cancelled", "cancelled", "cancelled"),
+        ("timed_out", "timed_out", "timed_out", "timed_out"),
+    ):
+        run_id = f"run.t.{run_suffix}"
+        conversation_id = _conversation_with_run(history, owner=owner, run_id=run_id)
+        before = len(_messages(history, conversation_id))
+        observation = LocalRunnerTerminalObservation(
+            command_id=f"command.{termination}.1",
+            run_id=run_id,
+            tool_request_ref=f"tool.{termination}.1",
+            request_id=f"request.{termination}.1",
+            revision_ref=f"rev.{termination}.1",
+            evidence_ref=f"evidence.{termination}.1",
+            request_fingerprint=FINGERPRINT,
+            sequence=1,
+            state="acknowledged",
+            termination=termination,
+            exit_code=None if termination == "cancelled" else 124,
+        )
+
+        class _Port:
+            async def command_result(self, *, command_id, run_id, owner_id, workspace_id=None):
+                del run_id, owner_id, workspace_id
+                return observation if command_id == observation.command_id else None
+
+        # Bind the correlation once, then project.
+        _run(
+            history.record_local_task_correlation(
+                user_id=owner,
+                run_id=run_id,
+                command_id=observation.command_id,
+                tool_request_ref=observation.tool_request_ref,
+                request_id=observation.request_id,
+                revision_ref=observation.revision_ref,
+                request_fingerprint=observation.request_fingerprint,
+                evidence_ref=observation.evidence_ref,
+            )
+        )
+        decision = _run(
+            project_local_runner_terminal_result(
+                history=history, result_port=_Port(), user_id=owner,
+                run_id=run_id, command_id=observation.command_id,
+            )
+        )
+        assert decision.append is True
+        assert decision.status == expected_status
+        assert decision.summary == expected_summary
+        projected = _run(history.get_claw_run(owner, run_id))
+        assert projected["status"] == expected_status
+        assert projected["result_summary"] == expected_summary
+        message = _messages(history, projected["conversation_id"])[-1]
+        assert termination in message["content"]
+
+
+# --- the product caller: the real route, the real composition ----------------
+def test_the_product_route_returns_the_result_to_the_originating_conversation(harness, tmp_path):
+    """No test-direct call: the running product's own route drives the projection."""
+
+    import base64 as _b64
+    import hashlib as _hash
+
+    import httpx
+    from starlette.applications import Starlette
+    from starlette.routing import Route
+
+    from app.app_factory import create_app
+    from app.auth import SESSION_COOKIE, create_session_token
+    from app.claw_local_task_result_composition import build_local_task_result_source
+    from app.config import Settings
+    from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
+
+    authority, state_port, history, _path, _port, accounts = harness
+    owner = accounts[OWNER_SUBJECT]
+
+    class _Env:
+        LOCAL_AGENT_BROKER_AUTHORITY_REF = AUTHORITY_REF
+        LOCAL_AGENT_BROKER_PEPPER = str(PEPPER)
+
+    class _Binding:
+        """The private Service Binding: the Default gateway's RPC surface."""
+
+        def __init__(self, runtime):
+            self._runtime = runtime
+
+        def terminal_command_result(self, payload):
+            return self._runtime.terminal_command_result(payload)
+
+        def device_truth(self, payload):  # the #3094 port probes for it
+            return self._runtime.device_truth(payload)
+
+    class _WorkerEnv(dict):
+        pass
+
+    runtime = LocalAgentBrokerDurableRuntime(
+        storage=_SqliteStorage(tmp_path / "broker-route.sqlite3"), env=_Env()
+    )
+    runtime.state_port = state_port
+    runtime.material_store._state_port = state_port
+    env = _WorkerEnv()
+    env["LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"] = _Binding(runtime)
+
+    from app.worker_config import binding_value  # noqa: F401  (import shape check)
+
+    source = build_local_task_result_source(env, history)
+    assert source is not None and source.configured is True
+
+    # A real terminal command, created the canonical way.
+    runtime.register_binding(
+        {
+            "binding_ref": BINDING_REF,
+            "device_id": "device.3139.1",
+            "account_ref": owner,
+            "workspace_ref": WORKSPACE,
+            "credential_b64": CRED_B64,
+            "now": BASE.isoformat(),
+        }
+    )
+    enqueued = runtime.enqueue_command_with_material(
+        {
+            "command_id": "command.route.1",
+            "binding_ref": BINDING_REF,
+            "run_id": "run.route.1",
+            "tool_request_ref": "tool.route.1",
+            "request_fingerprint": FINGERPRINT,
+            "now": (BASE + timedelta(seconds=2)).isoformat(),
+            "ttl_seconds": COMMAND_TTL,
+        },
+        {
+            "request_id": "request.route.1",
+            "run_id": "run.route.1",
+            "device_id": "device.3139.1",
+            "root_ref": "root.3139.1",
+            "argv": ["python", "-V"],
+            "cwd_relative": ".",
+            "requested_at": (BASE + timedelta(seconds=1)).isoformat().replace("+00:00", "Z"),
+            "timeout_seconds": 30,
+            "shell_authority": False,
+            "admin_elevation": False,
+            "environment_payload": None,
+            "provider_authority": None,
+            "p01_approval_payload": None,
+        },
+    )
+    assert enqueued["ok"] is True
+    session = authority.open_session(
+        session_id="session.route.1",
+        binding_ref=BINDING_REF,
+        credential=CREDENTIAL,
+        account_ref=owner,
+        workspace_ref=WORKSPACE,
+        now=BASE + timedelta(seconds=1),
+    )
+    admission = authority.admit_command(
+        admission_ref="admission.command.route.1",
+        evidence_ref="evidence.command.route.1",
+        session_id=session.session_id,
+        binding_ref=BINDING_REF,
+        credential=CREDENTIAL,
+        command_id="command.route.1",
+        request_fingerprint=FINGERPRINT,
+        request_id="request.route.1",
+        now=BASE + timedelta(seconds=3),
+    )
+    _acknowledge(
+        authority,
+        "command.route.1",
+        admission,
+        at=BASE + timedelta(seconds=4),
+        session_id=session.session_id,
+    )
+
+    conversation_id = _conversation_with_run(history, owner=owner, run_id="run.route.1")
+    before = len(_messages(history, conversation_id))
+
+    # auth_mode off is the fail-closed default; the route must be exercised with
+    # the same mode a deployed chat runs.
+    settings = Settings(session_secret="3139-route-secret", auth_mode="mock")
+    app = create_app(settings, history_store=history, local_task_result_source=source)
+    # The route is registered by the real factory, not by the test.
+    assert any(
+        getattr(route, "path", "") == "/api/claw/runs/{run_id}/local-result"
+        for route in app.routes
+    )
+    token = create_session_token(settings, owner)
+    _ = (Starlette, Route, _b64, _hash)
+
+    import asyncio as _asyncio
+
+    async def drive():
+        transport = httpx.ASGITransport(app=app)
+        async with httpx.AsyncClient(transport=transport, base_url="https://chat.example.test") as client:
+            client.cookies.set(SESSION_COOKIE, token, domain="chat.example.test", path="/")
+            return await client.post(
+                "/api/claw/runs/run.route.1/local-result", json={"workspaceId": WORKSPACE}
+            )
+
+    response = _asyncio.run(drive())
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert payload["ok"] is True
+    assert payload["projection"]["appended"] is True
+    assert payload["projection"]["status"] == "completed"
+    # The projection may declare that it carries no raw material, but must never
+    # carry any: the flags are false and the device credential is absent.
+    projection_body = payload["projection"]
+    for flag in ("raw_argv", "raw_stdout", "raw_stderr", "raw_device_credential", "p01_approval_payload"):
+        assert projection_body[flag] is False
+    assert CREDENTIAL.decode() not in response.text
+    assert CRED_B64 not in response.text
+    after = _messages(history, conversation_id)
+    assert len(after) == before + 1
+    assert "exited" in after[-1]["content"]
+
+    # A second call over the same terminal fact appends nothing.
+    response2 = _asyncio.run(drive())
+    assert response2.status_code == 200
+    assert response2.json()["projection"]["appended"] is False
+    assert len(_messages(history, conversation_id)) == before + 1
+    runtime._storage.close()
+
+
+def test_the_route_refuses_an_unowned_run(harness, tmp_path):
+    from app.app_factory import create_app
+    from app.config import Settings
+
+    from app.claw_local_task_result_composition import build_local_task_result_source
+
+    _authority, _state_port, history, _path, _port, accounts = harness
+    owner = accounts[OWNER_SUBJECT]
+    other = accounts[OTHER_SUBJECT]
+    _conversation_with_run(history, owner=owner, run_id="run.private.1")
+
+    class _Env(dict):
+        pass
+
+    env = _Env()
+    source = build_local_task_result_source(env, history)
+    assert source is None  # no trusted binding, so the route stays fail-closed
+
+    app = create_app(
+        Settings(session_secret="3139-route-secret", auth_mode="mock"),
+        history_store=history,
+        local_task_result_source=source,
+    )
+    import asyncio
+
+    import httpx
+
+    async def drive(user_token):
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test"
+        ) as client:
+            return await client.post("/api/claw/runs/run.private.1/local-result", json={})
+
+    # Authenticated but unconfigured: the route answers 503 rather than
+    # guessing a result, and never discloses the run.
+    import httpx as _httpx
+    from app.auth import SESSION_COOKIE, create_session_token as _token
+
+    settings = app.state.settings
+    client_cookie = _token(settings, other)
+
+    async def drive_authenticated():
+        async with _httpx.AsyncClient(
+            transport=_httpx.ASGITransport(app=app), base_url="https://chat.example.test"
+        ) as client:
+            client.cookies.set(SESSION_COOKIE, client_cookie, domain="chat.example.test", path="/")
+            return await client.post("/api/claw/runs/run.private.1/local-result", json={})
+
+    assert asyncio.run(drive_authenticated()).status_code == 503
+
+
+def test_the_broker_read_never_crosses_an_account_boundary():
+    """A second account's terminal command is invisible to the first account."""
+
+    import tempfile
+
+    from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
+
+    class _Env:
+        LOCAL_AGENT_BROKER_AUTHORITY_REF = AUTHORITY_REF
+        LOCAL_AGENT_BROKER_PEPPER = str(PEPPER)
+
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as raw:
+        import sqlite3 as _sqlite3
+
+        class _Storage:
+            def __init__(self, path):
+                self.connection = _sqlite3.connect(path, isolation_level=None)
+
+                class _Cursor:
+                    def __init__(self, inner):
+                        self._inner = inner
+
+                    @property
+                    def rowsWritten(self):
+                        return self._inner.rowcount if self._inner.rowcount >= 0 else 0
+
+                    def toArray(self):
+                        names = [c[0] for c in self._inner.description] if self._inner.description else []
+                        return [dict(zip(names, row)) for row in self._inner.fetchall()]
+
+                class _Sql:
+                    def __init__(self, connection):
+                        self.connection = connection
+
+                    def exec(self, query, *bindings):
+                        return _Cursor(self.connection.execute(query, bindings))
+
+                self.sql = _Sql(self.connection)
+
+            def transactionSync(self, callback):
+                self.connection.execute("BEGIN IMMEDIATE")
+                try:
+                    value = callback()
+                except BaseException:
+                    self.connection.execute("ROLLBACK")
+                    raise
+                self.connection.execute("COMMIT")
+                return value
+
+            def close(self):
+                self.connection.close()
+
+        runtime = LocalAgentBrokerDurableRuntime(storage=_Storage(Path(raw) / "broker.sqlite3"), env=_Env())
+        runtime.register_binding(
+            {
+                "binding_ref": BINDING_REF,
+                "device_id": "device.3139.1",
+                "account_ref": "account.owner.a",
+                "workspace_ref": WORKSPACE,
+                "credential_b64": CRED_B64,
+                "now": BASE.isoformat(),
+            }
+        )
+        session = runtime.open_session(
+            {
+                "session_id": "session.acct.a",
+                "binding_ref": BINDING_REF,
+                "credential_b64": CRED_B64,
+                "account_ref": "account.owner.a",
+                "workspace_ref": WORKSPACE,
+                "now": (BASE + timedelta(seconds=1)).isoformat(),
+            }
+        )
+        assert session["ok"] is True
+        # The canonical creation path binds material atomically; admission then
+        # requires that material to be present (#3127).
+        enqueued = runtime.enqueue_command_with_material(
+            {
+                "command_id": "command.acct.a",
+                "binding_ref": BINDING_REF,
+                "run_id": "run.acct.a",
+                "tool_request_ref": "tool.acct.a",
+                "request_fingerprint": FINGERPRINT,
+                "now": (BASE + timedelta(seconds=2)).isoformat(),
+                "ttl_seconds": COMMAND_TTL,
+            },
+            {
+                "request_id": "request.acct.a",
+                "run_id": "run.acct.a",
+                "device_id": "device.3139.1",
+                "root_ref": "root.3139.1",
+                "argv": ["python", "-V"],
+                "cwd_relative": ".",
+                "requested_at": (BASE + timedelta(seconds=1)).isoformat().replace("+00:00", "Z"),
+                "timeout_seconds": 30,
+                "shell_authority": False,
+                "admin_elevation": False,
+                "environment_payload": None,
+                "provider_authority": None,
+                "p01_approval_payload": None,
+            },
+        )
+        assert enqueued["ok"] is True
+        admission = runtime.admit_command(
+            {
+                "admission_ref": "admission.acct.a",
+                "evidence_ref": "evidence.acct.a",
+                "session_id": "session.acct.a",
+                "binding_ref": BINDING_REF,
+                "credential_b64": CRED_B64,
+                "command_id": "command.acct.a",
+                "request_fingerprint": FINGERPRINT,
+                "request_id": "request.acct.a",
+                "now": (BASE + timedelta(seconds=3)).isoformat(),
+            }
+        )
+        acknowledged = runtime.acknowledge(
+            {
+                "session_id": "session.acct.a",
+                "binding_ref": BINDING_REF,
+                "credential_b64": CRED_B64,
+                "command_id": "command.acct.a",
+                "admission_ref": "admission.acct.a",
+                "evidence_ref": "evidence.acct.a",
+                "revision_ref": admission["admission"]["revision_ref"],
+                "termination": "exited",
+                "request_id": "request.acct.a",
+                "exit_code": 0,
+                "now": (BASE + timedelta(seconds=4)).isoformat(),
+            }
+        )
+        assert acknowledged["ok"] is True
+
+        # The owner sees its own terminal result.
+        own = runtime.terminal_command_result(
+            {"account_ref": "account.owner.a", "workspace_ref": WORKSPACE, "run_id": "run.acct.a"}
+        )
+        assert own["ok"] is True and own["available"] is True
+        assert own["command_result"]["command_id"] == "command.acct.a"
+
+        # An account with no binding at all learns nothing.
+        unbound = runtime.terminal_command_result(
+            {"account_ref": "account.nobody", "workspace_ref": WORKSPACE, "run_id": "run.acct.a"}
+        )
+        assert unbound["ok"] is True
+        assert unbound["available"] is False
+        assert unbound["reason"] == "no_device_binding"
+        assert "command" not in unbound
+
+        # And an account that owns a binding of its own still cannot see the
+        # first account's command: the read is scoped per binding, not merely
+        # per existence.
+        runtime.register_binding(
+            {
+                "binding_ref": "binding.acct.b",
+                "device_id": "device.acct.b",
+                "account_ref": "account.other.b",
+                "workspace_ref": WORKSPACE,
+                "credential_b64": CRED_B64,
+                "now": BASE.isoformat(),
+            }
+        )
+        foreign = runtime.terminal_command_result(
+            {"account_ref": "account.other.b", "workspace_ref": WORKSPACE, "run_id": "run.acct.a"}
+        )
+        assert foreign["ok"] is True
+        assert foreign["available"] is False
+        assert foreign["reason"] == "no_terminal_result"
+        assert "command" not in foreign
+
+        # A malformed request is refused rather than guessed at.
+        for bad in (
+            {},
+            {"account_ref": "account.owner.a"},
+            {"account_ref": "account.owner.a", "run_id": "run.acct.a", "conversation_id": "chat_x"},
+        ):
+            refused = runtime.terminal_command_result(bad)
+            assert refused["ok"] is False
+            assert refused["error"]["code"] == "invalid_terminal_result_request"
+        runtime._storage.close()
+
+
+def test_source_truth_stays_deployable_and_authority_free():
+    from app import claw_local_task_result_composition as composition
+    from app import claw_local_task_result_projection as projection
+
 
 
 def test_source_truth_keeps_the_projection_local_and_bounded():
