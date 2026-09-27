@@ -82,6 +82,11 @@ PAIRING_PEPPER = b"control-plane-pairing-pepper16byte!!"
 AUTHORITY_REF = "control-plane.local-agent-broker.3140.runner.v1"
 CODE_PATTERN = re.compile(r"^[0-9a-f]{32}$")
 MAX_LINE_CHARS = 4_096
+#: The target device is Windows by contract, so the executor allowlist entry
+#: is a Windows path on every host that runs this composition. The pairing
+#: main flow proves the resident host reaches the session/poll path; it does
+#: not dispatch a command, so nothing ever resolves this profile.
+WINDOWS_PYTHON_EXECUTABLE = "C:/Python313/python.exe"
 ACCOUNT_REF = "account.1"
 WORKSPACE_REF = "workspace.1"
 
@@ -361,7 +366,7 @@ def run(
         executable_profiles=(
             WindowsExecutableProfile(
                 profile_ref="profile.3140.python",
-                executable_path=sys.executable,
+                executable_path=WINDOWS_PYTHON_EXECUTABLE,
             ),
         ),
     )
