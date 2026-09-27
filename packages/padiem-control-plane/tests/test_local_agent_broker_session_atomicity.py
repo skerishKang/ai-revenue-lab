@@ -158,7 +158,7 @@ def _build(storage: TransactionCapableStorage, *, now: datetime = BASE):
         ),
         http_state=http_state,
         material_resolver=_UnusedMaterialResolver(),
-        session_open_transaction=storage.transactionSync,
+        mutation_transaction=storage.transactionSync,
         clock=lambda: now,
     )
     return state_port, http_state, service
@@ -329,7 +329,7 @@ def test_device_http_is_unusable_for_a_session_that_never_fully_opened():
     assert _http_rows(storage) == ["sess.next"]
 
 
-def test_heartbeat_behavior_is_unchanged_by_the_session_open_transaction():
+def test_heartbeat_behavior_is_unchanged_by_the_mutation_transaction():
     storage = TransactionCapableStorage()
     _, _, service = _build(storage)
     opened = service.handle(_session_envelope("sess.hb"))
@@ -357,3 +357,93 @@ def test_heartbeat_behavior_is_unchanged_by_the_session_open_transaction():
         "SELECT last_seen_at FROM local_agent_http_session WHERE session_id = 'sess.hb'"
     ).fetchone()[0]
     assert last_seen == BASE.isoformat().replace("+00:00", "Z")
+
+
+def _acknowledge_envelope(session_id: str, command: dict) -> dict:
+    body = (
+        '{"session_id":"%s","binding_ref":"binding.atomic.1","credential_b64":"%s",'
+        '"command_id":"%s","admission_ref":"%s","evidence_ref":"%s","revision_ref":"%s",'
+        '"termination":"exited","request_id":"%s","exit_code":0,"now":"%s"}'
+        % (
+            session_id,
+            _encoded(CREDENTIAL),
+            command["command_id"],
+            command["admission_ref"],
+            command["evidence_ref"],
+            command["revision_ref"],
+            command["request_id"],
+            (BASE + timedelta(seconds=30)).isoformat(),
+        )
+    ).encode("utf-8")
+    return {
+        "method": "POST",
+        "route": "/acknowledge",
+        "content_type": "application/json",
+        "body_b64": _encoded(body),
+        "tls_verified": True,
+    }
+
+
+def test_acknowledge_runs_inside_the_mutation_transaction():
+    # #3123: the acknowledge state mutation - including any terminal-history
+    # compaction it triggers, which moves used-command-id ledger rows - must
+    # be crash-atomic with its ledger writes, so it runs inside the same
+    # deployable mutation transaction the #3129 session-open double write
+    # uses.
+    storage = TransactionCapableStorage()
+    entered = []
+    real = storage.transactionSync
+
+    def recording(callback):
+        entered.append(True)
+        return real(callback)
+
+    state_port, _, service = _build(storage)
+
+    # Open the HTTP session first: the canonical admit below correlates with it.
+    opened = service.handle(_session_envelope("sess.ack"))
+    assert opened["status"] == 200 and opened["body"]["ok"] is True
+
+    # Drive a command to ADMITTED through the canonical authority, then
+    # acknowledge it through the device HTTP surface.
+    bootstrap = StateBackedLocalAgentBrokerAuthority(
+        pepper=PEPPER,
+        authority_ref=AUTHORITY_REF,
+        state_port=state_port,
+    )
+    command = bootstrap.enqueue_command(
+        command_id="command.atomic.ack",
+        binding_ref="binding.atomic.1",
+        run_id="run.atomic.ack",
+        tool_request_ref="tool-request.atomic.ack",
+        request_fingerprint="a" * 64,
+        now=BASE + timedelta(seconds=2),
+    )
+    bootstrap.admit_command(
+        admission_ref="admission.atomic.ack",
+        evidence_ref="evidence.atomic.ack",
+        session_id="sess.ack",
+        binding_ref="binding.atomic.1",
+        credential=CREDENTIAL,
+        command_id=command.command_id,
+        request_fingerprint=command.request_fingerprint,
+        request_id="request.atomic.ack",
+        now=BASE + timedelta(seconds=6),
+    )
+
+    service._mutation_transaction = recording
+    acknowledged = service.handle(
+        _acknowledge_envelope(
+            "sess.ack",
+            {
+                "command_id": command.command_id,
+                "admission_ref": "admission.atomic.ack",
+                "evidence_ref": "evidence.atomic.ack",
+                "revision_ref": command.revision_ref,
+                "request_id": "request.atomic.ack",
+            },
+        )
+    )
+    assert acknowledged["status"] == 200 and acknowledged["body"]["ok"] is True
+    assert entered, "acknowledge must execute inside the mutation transaction"
+    assert acknowledged["body"]["command"]["state"] == "acknowledged"

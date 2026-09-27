@@ -80,11 +80,13 @@ class LocalAgentBrokerDeviceHttpService:
     verifying the raw credential with the existing broker authority, then invokes
     the already-closed M2e HTTP handler.
 
-    `session_open_transaction` is required (#3129): the canonical broker session
-    CAS and the durable HTTP session row are one logical write, so the deployable
-    composition must supply a transaction-capable callable (a Durable Object
-    `storage.transactionSync`) and the session-open write pair runs inside it —
-    both-or-neither under crash, never a partial session.
+    `mutation_transaction` is required (#3129, generalized by #3123): the
+    deployable composition must supply a transaction-capable callable (a
+    Durable Object `storage.transactionSync`), and every device-HTTP mutation
+    that writes broker state plus durable rows runs inside it — the #3129
+    session-open double write and, since #3123, the acknowledge state
+    mutation (whose compaction can also move used-command-id ledger rows).
+    Both-or-neither under crash, never a partial write.
     """
 
     def __init__(
@@ -96,13 +98,13 @@ class LocalAgentBrokerDeviceHttpService:
         rpc_factory: Callable[[], Any],
         http_state,
         material_resolver,
-        session_open_transaction: Callable[[Callable[[], Any]], Any],
+        mutation_transaction: Callable[[Callable[[], Any]], Any],
         clock: Callable[[], datetime] | None = None,
     ) -> None:
         if not callable(rpc_factory):
             raise ValueError("rpc_factory must be callable")
-        if not callable(session_open_transaction):
-            raise ValueError("session_open_transaction must be a transaction-capable callable")
+        if not callable(mutation_transaction):
+            raise ValueError("mutation_transaction must be a transaction-capable callable")
         if not callable(clock) and clock is not None:
             raise ValueError("clock must be callable")
         self._authenticator = StateBackedLocalAgentBindingAuthenticator(
@@ -113,7 +115,7 @@ class LocalAgentBrokerDeviceHttpService:
         self._rpc_factory = rpc_factory
         self._http_state = http_state
         self._material_resolver = material_resolver
-        self._session_open_transaction = session_open_transaction
+        self._mutation_transaction = mutation_transaction
         self._clock = clock or (lambda: datetime.now(timezone.utc))
 
     def _server_now(self) -> datetime:
@@ -178,7 +180,7 @@ class LocalAgentBrokerDeviceHttpService:
             state=self._http_state,
             material_resolver=self._material_resolver,
             clock=lambda: server_now,
-            session_open_transaction=self._session_open_transaction,
+            mutation_transaction=self._mutation_transaction,
         )
         response = handler.handle(
             method=envelope["method"],
