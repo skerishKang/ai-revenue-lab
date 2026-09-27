@@ -241,11 +241,11 @@
       copy.type = "button";
       copy.textContent = "복사해서 새 견적";
       copy.addEventListener("click", () => {
-        const next = History.copyAsNew(entry);
-        if (!next) return;
         const current = App.getDraft();
         if (History.isMeaningfulDraft(current) &&
             !window.confirm("현재 작성 중인 견적을 바꾸고 복사본으로 새 견적을 시작할까요?")) return;
+        const next = App.copyHistoryAsNew(entry);
+        if (!next) return;
         const result = App.replaceDraft(next, { toast: "최근 견적을 복사해 새 견적으로 열었습니다." });
         if (result.ok) setWorkspaceMode("direct");
       });
@@ -282,8 +282,7 @@
 
   function guidedDraft() {
     const current = App.getDraft();
-    const fresh = Core.createDefaultDraft();
-    fresh.meta.source = "guided";
+    const fresh = App.createFreshDraft("guided");
     fresh.sender = clone(current.sender);
     fresh.recipient = { company: "", person: "", address: "", email: "" };
     fresh.items = [];
