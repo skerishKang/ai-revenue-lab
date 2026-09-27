@@ -7,7 +7,9 @@
   <link rel="stylesheet" href="styles.css">
   <script src="quote-core.js" defer></script>
   <script src="quote-extraction.js" defer></script>
+  <script src="quote-history.js" defer></script>
   <script src="app.js" defer></script>
+  <script src="easy-mode.js" defer></script>
 </head>
 <body>
   <main class="shell">
@@ -19,6 +21,61 @@
       <div class="badge">BETA · 입력 내용은 이 브라우저에만 저장</div>
     </header>
 
+    <nav class="workspace-modebar" aria-label="견적 작성 모드">
+      <button class="workspace-mode active" id="easyModeButton" type="button" aria-pressed="true">쉽게 만들기</button>
+      <button class="workspace-mode" id="directModeButton" type="button" aria-pressed="false">직접 입력</button>
+    </nav>
+
+    <section class="easy-view" id="easyView" aria-label="쉽게 견적서 만들기">
+      <div class="easy-conversation" id="easyConversation">
+        <div class="easy-empty" id="easyEmpty">
+          <div class="easy-avatar" aria-hidden="true">견</div>
+          <p class="easy-eyebrow">EASY MODE</p>
+          <h2>편하게 시작하세요</h2>
+          <p>질문에 하나씩 답하거나, 지난 견적을 이어서 사용할 수 있어요.</p>
+          <div class="easy-starter-grid" id="easyStarterGrid">
+            <button class="easy-starter" id="resumeDraftStarter" type="button" hidden>
+              <span class="easy-starter-icon" aria-hidden="true">↩</span>
+              <span><strong>지난 견적 이어서 하기</strong><small>작성하던 내용을 그대로 이어갑니다</small></span>
+            </button>
+            <button class="easy-starter" id="recentQuoteStarter" type="button" hidden>
+              <span class="easy-starter-icon" aria-hidden="true">▤</span>
+              <span><strong>최근 견적 불러오기</strong><small>이 브라우저에 저장한 견적을 엽니다</small></span>
+            </button>
+            <button class="easy-starter" id="guidedStarter" type="button">
+              <span class="easy-starter-icon" aria-hidden="true">?</span>
+              <span><strong>질문받으며 새로 만들기</strong><small>필요한 내용만 하나씩 물어봅니다</small></span>
+            </button>
+            <button class="easy-starter" id="freeChatStarter" type="button">
+              <span class="easy-starter-icon" aria-hidden="true">✎</span>
+              <span><strong>내용을 한번에 말하기</strong><small>자유롭게 적고 질문형으로 이어갑니다</small></span>
+            </button>
+            <button class="easy-starter" id="fileStarter" type="button">
+              <span class="easy-starter-icon" aria-hidden="true">＋</span>
+              <span><strong>파일에서 불러오기</strong><small>PDF·사진·문서 자동 읽기는 다음 단계입니다</small></span>
+            </button>
+            <button class="easy-starter" id="directStarter" type="button">
+              <span class="easy-starter-icon" aria-hidden="true">▦</span>
+              <span><strong>직접 입력하기</strong><small>기존 견적서 입력 화면을 바로 엽니다</small></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="easy-message-list" id="easyMessageList" aria-live="polite"></div>
+        <div class="easy-history-panel" id="easyHistoryPanel" hidden></div>
+      </div>
+
+      <div class="easy-composer-wrap">
+        <div class="easy-chip-row" id="easyChipRow" aria-label="빠른 답변"></div>
+        <div class="easy-composer">
+          <textarea id="easyComposer" rows="1" placeholder="필요한 내용을 편하게 입력하세요" aria-label="견적서 대화 입력"></textarea>
+          <button class="easy-send" id="easySend" type="button" aria-label="보내기">↑</button>
+        </div>
+        <p class="easy-composer-note" id="easyComposerNote">질문형 만들기는 AI 없이도 동작합니다. 자유 문장 자동 해석은 모델 연결 후 제공됩니다.</p>
+      </div>
+    </section>
+
+    <section class="direct-view" id="directView" aria-label="직접 견적서 입력" hidden>
     <nav class="modebar" aria-label="견적 생성 방식">
       <button class="mode active" data-mode="manual">직접 입력</button>
       <button class="mode future" data-mode="upload">파일 올리기 · 다음 단계</button>
@@ -125,6 +182,7 @@
 세부 일정은 협의 후 확정합니다.</textarea>
           </label>
           <div class="button-row">
+            <button class="btn soft" id="saveHistory">최근 견적에 저장</button>
             <button class="btn primary" id="printPdf">PDF로 저장 / 인쇄</button>
             <button class="btn" id="emailFuture">이메일 보내기 · 다음 단계</button>
           </div>
@@ -178,6 +236,7 @@
         </article>
       </aside>
     </div>
+    </section>
   </main>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
