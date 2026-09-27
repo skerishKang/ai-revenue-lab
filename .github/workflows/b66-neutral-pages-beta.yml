@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - 'reference/business-66-padiem-quote-v1/**'
+      - 'apps/b66-quote-adapter/**'
       - '.github/workflows/b66-neutral-pages-beta.yml'
   push:
     branches: [main]
     paths:
       - 'reference/business-66-padiem-quote-v1/**'
+      - 'apps/b66-quote-adapter/**'
       - '.github/workflows/b66-neutral-pages-beta.yml'
   workflow_dispatch:
 
@@ -47,7 +49,9 @@ jobs:
           test -f "${SOURCE_DIR}/app.js"
           test -f "${SOURCE_DIR}/quote-core.js"
           test -f "${SOURCE_DIR}/quote-history.js"
+          test -f "${SOURCE_DIR}/file-intake.js"
           test -f "${SOURCE_DIR}/easy-mode.js"
+          test -f "apps/b66-quote-adapter/app/file_intake.py"
           grep -F '<title>견적서 만들기</title>' "${SOURCE_DIR}/index.html" >/dev/null
           grep -F '샘플 공급사' "${SOURCE_DIR}/index.html" >/dev/null
           ! grep -E 'Padiem|파디엠' "${SOURCE_DIR}/index.html"
@@ -59,11 +63,25 @@ jobs:
         run: |
           set -euo pipefail
           node --check app.js
+          node --check file-intake.js
           node --check easy-mode.js
           node tests/quote-core.test.cjs
           node tests/quote-extraction.test.cjs
           node tests/quote-history.test.cjs
+          node tests/file-intake.test.cjs
           node tests/static-contract.test.cjs
+
+      - name: Run B66 server intake adapter contracts
+        shell: bash
+        env:
+          PYTHONPATH: ${{ github.workspace }}/packages/padiem-ai-core:${{ github.workspace }}/apps/b66-quote-adapter
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s apps/b66-quote-adapter/tests -v
+          echo "B66_SERVER_INTAKE_CONTRACT=PASS"
+          echo "CORE_DOCUMENT_PARSER_REUSED=YES"
+          echo "SERVER_ROUTE_DEPLOYED=NO"
+          echo "MODEL_DEPENDENCY=NO"
 
       - name: Local HTTP smoke
         shell: bash
