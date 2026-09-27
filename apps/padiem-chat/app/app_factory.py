@@ -47,6 +47,11 @@ from .calendar_routes import (
 )
 from .calendar_store import CalendarStore, D1CalendarStore, InMemoryCalendarStore
 from .claw_inbox_routes import claw_inbox_list, claw_inbox_status
+from .claw_local_access_routes import (
+    CLAW_LOCAL_ACCESS_PATH,
+    UnconfiguredClawLocalAccessTruthSource,
+    claw_local_access,
+)
 from .claw_task_alert_store import D1ClawTaskAlertStore
 from .claw_automation_store import D1ClawAutomationStore
 from .config import Settings
@@ -126,6 +131,7 @@ def create_app(
     claw_automation_store=None,
     telemetry_emitter=None,
     claw_p01_continuation_client=None,
+    claw_local_access_source=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -163,6 +169,9 @@ def create_app(
         Route("/api/claw/memory/reject", claw_memory_reject, methods=["POST"]),
         Route("/api/claw/memory", claw_memory_list, methods=["GET"]),
         Route("/api/claw/memory/{memory_id}", claw_memory_detail, methods=["GET"]),
+        # #3094: the one real read-only source behind the "Connect this computer"
+        # panel. Owner-scoped; it pairs nothing and approves nothing.
+        Route(CLAW_LOCAL_ACCESS_PATH, claw_local_access, methods=["GET"]),
         Route("/api/claw/inbox/{kind}", claw_inbox_list, methods=["GET"]),
         Route("/api/claw/inbox/{kind}/{item_id}", claw_inbox_status, methods=["PATCH"]),
         Route("/api/calendar/today", calendar_today, methods=["GET"]),
@@ -224,6 +233,15 @@ def create_app(
     # only to submit a server-derived decision to the canonical resume route.
     # None keeps the decision route fail-closed before any Engine transport.
     app.state.claw_p01_continuation_client = claw_p01_continuation_client
+    # #3094 read-only device projection for the "Connect this computer" panel.
+    # The canonical pairing/broker authority (#3080) composes the real source in
+    # from trusted bindings. The default is the fail-closed source: the panel is
+    # told no projection exists rather than being shown a guessed device state.
+    app.state.claw_local_access_source = (
+        claw_local_access_source
+        if claw_local_access_source is not None
+        else UnconfiguredClawLocalAccessTruthSource()
+    )
     # Bounded non-secret composition diagnostic (#2413). Set by the Worker
     # composition root alongside a None adapter; always None on the success
     # path and validated against the closed allowlist before public projection.
