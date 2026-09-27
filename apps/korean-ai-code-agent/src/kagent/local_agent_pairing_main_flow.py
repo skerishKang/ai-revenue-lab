@@ -238,8 +238,22 @@ def read_handoff(raw: str) -> dict:
     }
 
 
-def run(handoff: dict, *, base_dir: str, device_id: str, now: datetime) -> dict:
-    """Redeem once through the #3095 runner, then drive the #3014 host."""
+def run(
+    handoff: dict,
+    *,
+    base_dir: str,
+    device_id: str,
+    now: datetime,
+    protected_data: Any | None = None,
+) -> dict:
+    """Redeem once through the #3095 runner, then drive the #3014 host.
+
+    `protected_data` is the credential-store's protection port. It defaults to
+    the real Windows DPAPI adapter — the deployed shape — and is injectable so
+    the composition itself can be exercised on a non-Windows CI host without
+    pretending DPAPI exists there. The Windows evidence run always uses the
+    real adapter.
+    """
 
     clock = _Clock(now)
     authority = InMemoryLocalAgentBrokerAuthority(pepper=BROKER_PEPPER, authority_ref=AUTHORITY_REF)
@@ -296,7 +310,7 @@ def run(handoff: dict, *, base_dir: str, device_id: str, now: datetime) -> dict:
         base_dir=base_dir,
         # The real protected store on Windows. The credential never reaches a
         # log, the renderer, or this process's own output.
-        protected_data=WindowsDpapiProtectedDataPort(),
+        protected_data=protected_data if protected_data is not None else WindowsDpapiProtectedDataPort(),
     )
     device_auth = TrustedLocalAgentHttpAuthContext(
         principal_ref=device_id,

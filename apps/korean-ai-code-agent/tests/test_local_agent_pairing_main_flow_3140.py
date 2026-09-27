@@ -9,6 +9,7 @@ session/poll path, redeems exactly once, and adds no second authority.
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+import hashlib
 import json
 import tempfile
 import unittest
@@ -21,6 +22,36 @@ from kagent.local_agent_pairing_main_flow import (
     read_handoff,
     run,
 )
+
+
+class _DeterministicProtectedDataPort:
+    """CI-only protection port so the composition runs off-Windows too.
+
+    The deployed shape is Windows DPAPI and is what the Windows evidence run
+    uses; this double is a real, reversible, deterministic round trip so the
+    *composition* — redeem once, session, heartbeat, poll, host ONLINE — is
+    proven on every OS the repo tests on. It is not a second credential store:
+    `ProtectedFileDeviceCredentialStore` still owns the file and the binding
+    entropy.
+    """
+
+    @staticmethod
+    def _keystream(entropy: bytes, length: int) -> bytes:
+        stream = b""
+        block = 0
+        while len(stream) < length:
+            stream += hashlib.sha256(entropy + block.to_bytes(4, "big")).digest()
+            block += 1
+        return stream[:length]
+
+    def protect(self, credential: bytes, *, entropy: bytes) -> bytes:
+        keystream = self._keystream(entropy, len(credential))
+        return bytes(a ^ b for a, b in zip(credential, keystream))
+
+    def unprotect(self, protected: bytes, *, entropy: bytes) -> bytes:
+        keystream = self._keystream(entropy, len(protected))
+        return bytes(a ^ b for a, b in zip(protected, keystream))
+
 
 NOW = datetime(2026, 9, 26, 12, 0, tzinfo=timezone.utc)
 
@@ -80,6 +111,7 @@ class PairingMainFlow3140Test(unittest.TestCase):
                 base_dir=base_dir,
                 device_id="device.3140.runner",
                 now=NOW,
+                protected_data=_DeterministicProtectedDataPort(),
             )
         self.assertEqual(outcome["status"], "ok")
         self.assertEqual(outcome["redemption"], "paired_offline")
@@ -101,6 +133,7 @@ class PairingMainFlow3140Test(unittest.TestCase):
                 base_dir=base_dir,
                 device_id="device.3140.runner",
                 now=NOW,
+                protected_data=_DeterministicProtectedDataPort(),
             )
         self.assertEqual(outcome["second_pairing_authority"], 0)
         self.assertEqual(outcome["second_resident_host"], 0)
