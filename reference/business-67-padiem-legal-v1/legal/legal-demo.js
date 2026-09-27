@@ -84,6 +84,22 @@
    * chip snapped back to 통합 on click — the control looked real and was not. */
   var ROUTABLE_STATES = ["unified", "official", "drive", "web"];
 
+  /* What a reload is allowed to restore INTO.
+   *
+   * This is deliberately NOT `STATES`. `STATES` is the A–G demo strip in the
+   * top bar, and it is missing `web` — which is a real scope the conversation
+   * can be in. Validating a persisted value against the demo strip therefore
+   * dropped a legitimate scope on every reload: `persist()` happily stored
+   * "web" and `restore()` refused it, so a user who chose 웹 came back to 통합
+   * after a refresh. The state space and the demo strip are different lists and
+   * must stay that way.
+   *
+   * Keep this a superset of ROUTABLE_STATES: every scope chip has to survive a
+   * reload, and the demo states are restored too. */
+  var PERSISTABLE_STATES = ROUTABLE_STATES.concat([
+    "home", "provenance", "fail-closed", "disconnected"
+  ]);
+
   function scopeForState(stateId) {
     if (ROUTABLE_STATES.indexOf(stateId) !== -1) return stateId;
     return "unified";
@@ -653,7 +669,7 @@
   function restore() {
     var saved;
     try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) { saved = null; }
-    if (saved && STATES.some(function (s) { return s.id === saved; })) applyState({ state: saved });
+    if (PERSISTABLE_STATES.indexOf(saved) !== -1) applyState({ state: saved });
   }
 
   function renderAll() {
@@ -897,6 +913,8 @@
   global.B67DemoApp = {
     store: store,
     STATES: STATES,
+    ROUTABLE_STATES: ROUTABLE_STATES,
+    PERSISTABLE_STATES: PERSISTABLE_STATES,
     applyState: applyState,
     evidenceForState: evidenceForState,
     scopeForState: scopeForState,

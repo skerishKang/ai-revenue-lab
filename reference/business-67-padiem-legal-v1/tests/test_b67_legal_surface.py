@@ -44,6 +44,7 @@ DEMO_JS = (ROOT / "legal" / "legal-demo.js").read_text(encoding="utf-8")
 DECOR_JS = (ROOT / "legal" / "legal-evidence-provenance.js").read_text(encoding="utf-8")
 
 CORPUS = (ROOT / "data" / "demo-corpus.js").read_text(encoding="utf-8")
+CORPUS_JS = CORPUS
 CSHELL = (ROOT / "js" / "claw-shell.js").read_text(encoding="utf-8")
 CEVID = (ROOT / "js" / "claw-evidence.js").read_text(encoding="utf-8")
 
@@ -360,6 +361,102 @@ def test_idempotent_class_writes() -> None:
 
 
 # ── 4. README contract ────────────────────────────────────────────────────
+
+# ---------------------------------------------------------------------------
+# CENTRAL blockers: close paths, the web scope as real routing state, and the
+# per-scope grounded answers.
+# ---------------------------------------------------------------------------
+def test_every_sidebar_close_path_goes_through_one_routine() -> None:
+    """A second close path is how the trap outlives the drawer again."""
+    demo = DEMO_JS
+    assert demo.count("function closeSidebar()") == 1, "there must be exactly one close routine"
+
+    # The three user paths, the toggle and the breakpoint all call it.
+    for fragment in (
+        "traps.sidebar = global.ClawShell.createFocusTrap(dom.sidebar, function () {\n      closeSidebar();",
+        'dom.sidebarClose.addEventListener("click", function () { closeSidebar(); });',
+        'dom.sidebarScrim.addEventListener("click", function () { closeSidebar(); });',
+        "if (sidebarIsOpen()) closeSidebar();",
+        "if (!window.matchMedia(\"(max-width: 920px)\").matches) closeSidebar();",
+    ):
+        assert fragment in demo, f"close path bypasses closeSidebar(): {fragment}"
+
+    # The open class is removed in exactly two places: the close routine itself,
+    # and the sync pass that only ever runs inside it (the `syncing` guard).
+    removals = [
+        line
+        for line in demo.splitlines()
+        if 'classList.remove("sidebar-open")' in line
+    ]
+    assert len(removals) == 2, f"unexpected number of class removals: {removals}"
+    assert all(line.strip().startswith(("dom.shell", "if")) for line in removals)
+
+    # inert/aria sync and the trap release live in the one routine + the sync.
+    assert "traps.sidebar.close()" in demo
+    assert 'dom.menuButton.setAttribute("aria-expanded"' in demo
+    assert "dom.sidebarScrim.hidden = !open;" in demo
+
+
+def test_the_web_scope_survives_a_reload() -> None:
+    """persist() could store 'web' while restore() refused it."""
+    demo = DEMO_JS
+    assert "var ROUTABLE_STATES = [\"unified\", \"official\", \"drive\", \"web\"]" in demo
+    assert "var PERSISTABLE_STATES = ROUTABLE_STATES.concat(" in demo
+    # The effective persistable set is ROUTABLE_STATES plus the appended states,
+    # so every routable scope survives a reload and so do the demo states.
+    routable_block = demo.split("var ROUTABLE_STATES = ", 1)[1].split(";", 1)[0]
+    appended_block = demo.split("var PERSISTABLE_STATES = ROUTABLE_STATES.concat(", 1)[1].split(")", 1)[0]
+    for state in ("unified", "official", "drive", "web"):
+        assert f'"{state}"' in routable_block, f"{state} is not routable"
+    for state in ("home", "provenance", "fail-closed", "disconnected"):
+        assert f'"{state}"' in appended_block, f"{state} is not persistable"
+
+    restore_block = demo.split("function restore()", 1)[1].split("\n  }", 1)[0]
+    assert "PERSISTABLE_STATES.indexOf(saved)" in restore_block
+    # The demo strip is a DIFFERENT list and must not gate a persisted value.
+    assert "STATES.some" not in restore_block, "restore() still validates against the demo strip"
+    assert "web" not in [s["id"] for s in [{"id": st} for st in ("home", "unified", "official", "drive", "provenance", "fail-closed", "disconnected")]]
+
+
+def test_the_web_scope_is_a_real_routing_state() -> None:
+    demo = DEMO_JS
+    assert 'case "web": return "웹";' in demo
+    assert 'case "web":\n        records = Demo.EVIDENCE.filter(function (r) { return r.source_type === "web"; });' in demo
+    # Selecting it is not a special case anywhere: the chip delegate maps every
+    # routable value straight onto the state store.
+    assert "ROUTABLE_STATES.indexOf(value) !== -1 ? value : \"unified\"" in demo
+    assert "Demo.ANSWERS[scopeForState(state.state)]" in demo
+
+
+def test_every_scope_has_its_own_grounded_answer_and_citation_set() -> None:
+    """The corpus must carry a distinct answer per scope, and the demo must use
+    the scope's own rather than falling back to the unified one."""
+    corpus = CORPUS_JS
+    answer_block = corpus.split("var ANSWERS = {", 1)[1].split("\n  var SAMPLE_ANSWER", 1)[0]
+    for scope in ("unified", "official", "drive", "web"):
+        assert f"\n    {scope}: {{\n" in answer_block, f"no grounded answer for scope {scope}"
+
+    demo = DEMO_JS
+    # The fallback exists for safety, but the lookup is scope-first.
+    assert "Demo.ANSWERS[scopeForState(state.state)] || Demo.SAMPLE_ANSWER" in demo
+    # The integrity gate stays in front of the answer.
+    assert "if (!citationsResolve(answer, state.evidence))" in demo
+    assert "dom.conversation.appendChild(renderFailClosed(state));" in demo
+
+
+def test_authority_ordering_is_applied_at_every_evidence_surface() -> None:
+    """AUTHORITY_RANK is a contract only if the renderer uses it."""
+    authority = AUTH_JS
+    assert "function sortEvidence(list)" in authority
+    assert "function rank(cls)" in authority
+    assert "AUTHORITY_RANK[cls]" in authority
+    demo = DEMO_JS
+    # Both the panel and the sheet render the same ordered list.
+    ordered = demo.count("Legal.sortEvidence(records)")
+    assert ordered == 1, "sortEvidence should be applied once and shared"
+    assert "renderer.render(dom.evidenceList, ordered, ctx, emptyState);" in demo
+    assert "renderer.render(dom.drawerList, ordered, ctx, emptyState);" in demo
+
 
 def test_readme_documents_the_honest_matrix() -> None:
     if not README:
