@@ -169,8 +169,8 @@ check(html.includes('id="pvSenderAddress"') && html.includes('id="pvRecipientAdd
 /* PRINT_LAYOUT_CONTRACT — 빈 페이지 없는 A4 인쇄 계약 */
 check(css.includes("@page { size: A4"), "PRINT_LAYOUT_CONTRACT: A4 page rule");
 check(css.includes("@media print"), "PRINT_LAYOUT_CONTRACT: print media");
-check(css.includes(".topbar, .modebar, .future-note, .panel, .preview-toolbar, .toast { display: none !important; }"),
-  "PRINT_LAYOUT_CONTRACT: non-print UI removed from layout");
+check(css.includes(".topbar, .workspace-modebar, .easy-view, .modebar, .future-note, .panel, .preview-toolbar, .toast { display: none !important; }"),
+  "PRINT_LAYOUT_CONTRACT: all non-print Easy/Direct UI removed from layout");
 check(css.includes(".grid { display: block; }"), "PRINT_LAYOUT_CONTRACT: paper in normal flow");
 check(!css.includes("visibility: hidden"), "PRINT_LAYOUT_CONTRACT: visibility hack removed");
 
