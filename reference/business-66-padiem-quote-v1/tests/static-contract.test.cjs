@@ -12,8 +12,8 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
 
 /* B66_STATIC_CONTRACT — 화면 구조/스크립트 계약 */
 [
-  "Padiem Quote",
-  "파디엠 견적",
+  "견적서 만들기",
+  "샘플 공급사",
   'href="styles.css"',
   'src="quote-core.js"',
   'src="app.js"',
@@ -32,6 +32,13 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'id="pvValidUntil"',
   'id="pvTaxMode"'
 ].forEach((marker) => check(html.includes(marker), `B66_STATIC_CONTRACT missing in index.html: ${marker}`));
+
+/* NEUTRAL_PUBLIC_UI_CONTRACT — 외부 화면/상태에 내부 제품 브랜드를 노출하지 않음 */
+check(!/(Padiem|파디엠|padiem)/.test(html + app + core),
+  "NEUTRAL_PUBLIC_UI_CONTRACT: no Padiem branding in rendered/runtime source");
+check(!html.includes("B66 DEMO"), "NEUTRAL_PUBLIC_UI_CONTRACT: no internal demo label");
+check(html.includes("BETA · 입력 내용은 이 브라우저에만 저장"),
+  "NEUTRAL_PUBLIC_UI_CONTRACT: truthful browser-local persistence label");
 
 /* KOREAN_MONEY_INPUT_CONTRACT — 한국식 콤마 단가 입력 계약
    (품목 행의 단가/수량 입력은 app.js 템플릿에서 생성되므로 app.js를 검사) */
@@ -116,6 +123,7 @@ check(app.includes("이메일 전송은 다음 단계에서"), "EMAIL_SEND_LIVE=
 check(html.includes("이메일 보내기 · 다음 단계"), "EMAIL_SEND_LIVE=NO: future label");
 
 console.log("B66_STATIC_CONTRACT=PASS");
+console.log("NEUTRAL_PUBLIC_UI_CONTRACT=PASS");
 console.log("KOREAN_MONEY_INPUT_CONTRACT=PASS");
 console.log("QUOTEDRAFT_SCHEMA_CONTRACT=PASS");
 console.log("DRAFT_SAVE_CONTRACT=PASS");
