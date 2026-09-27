@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Padiem Quote · 파디엠 견적</title>
+  <title>견적서 만들기</title>
   <link rel="stylesheet" href="styles.css">
   <script src="quote-core.js" defer></script>
   <script src="app.js" defer></script>
@@ -12,10 +12,10 @@
   <main class="shell">
     <header class="topbar">
       <div class="brand">
-        <h1>Padiem Quote <span style="font-weight:500;color:#667085">· 파디엠 견적</span></h1>
-        <p>B66 rapid demo · 입력부터 PDF 저장까지 한 화면에서</p>
+        <h1>견적서 만들기</h1>
+        <p>입력부터 PDF 저장까지 한 화면에서</p>
       </div>
-      <div class="badge">DEMO · 로컬 브라우저에서만 동작</div>
+      <div class="badge">BETA · 입력 내용은 이 브라우저에만 저장</div>
     </header>
 
     <nav class="modebar" aria-label="견적 생성 방식">
@@ -32,12 +32,12 @@
           <div class="fields">
             <label>저장된 발신자
               <select id="senderPreset">
-                <option value="padiem">파디엠 데모</option>
+                <option value="sample">샘플 공급사</option>
                 <option value="custom">직접 입력</option>
               </select>
             </label>
             <label>상호
-              <input id="senderCompany" value="주식회사 파디엠">
+              <input id="senderCompany" value="샘플 공급사">
             </label>
             <label>대표자
               <input id="senderRep" value="대표자명">
@@ -173,7 +173,7 @@
             <div class="grand"><span>합계</span><span id="pvGrand"></span></div>
           </div>
           <div class="memo" id="pvMemo"></div>
-          <div class="demo-mark">Padiem Quote · B66 DEMO</div>
+          <div class="demo-mark">견적서 베타</div>
         </article>
       </aside>
     </div>

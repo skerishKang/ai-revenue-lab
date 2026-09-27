@@ -1,4 +1,4 @@
-/* B66 · Padiem Quote — quote-core.js
+/* B66 · Quote Beta — quote-core.js
    견적 도메인 로직 (DOM 없음 · 브라우저/Node 양쪽에서 실행).
    금액·날짜 계산의 최종 authority는 이 코드이며 AI가 아님. */
 
@@ -12,8 +12,8 @@
   "use strict";
 
   var SCHEMA_VERSION = 1;
-  var DRAFT_STORAGE_KEY = "padiemQuote.draft.v1";
-  var SENDER_STORAGE_KEY = "padiemQuote.sender";
+  var DRAFT_STORAGE_KEY = "quoteBeta.draft.v1";
+  var SENDER_STORAGE_KEY = "quoteBeta.sender";
   var VAT_RATE = 0.10;
 
   var TAX_MODES = { EXCLUSIVE: "EXCLUSIVE", INCLUSIVE: "INCLUSIVE", EXEMPT: "EXEMPT" };
@@ -117,13 +117,13 @@
         source: "manual"
       },
       sender: {
-        company: "주식회사 파디엠",
+        company: "샘플 공급사",
         rep: "대표자명",
         bizNo: "000-00-00000",
         address: "",
         phone: "000-0000-0000",
         email: "hello@example.com",
-        presetId: "padiem"
+        presetId: "sample"
       },
       recipient: { company: "고객사", person: "담당자님", address: "", email: "" },
       items: [
