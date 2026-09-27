@@ -1,4 +1,4 @@
-/* B66 · Padiem Quote — styles.css
+/* B66 · Quote Beta — styles.css
    화면 스타일 + A4 인쇄(@page) 규격.
    인쇄는 visibility:hidden 방식이 아니라 display:none 으로 UI를 레이아웃에서
    완전히 제외해 빈 마지막 페이지가 생기지 않게 한다. */
