@@ -69,6 +69,9 @@ export type ShellStringKey =
   | 'device.revision'
   | 'device.truthOwner'
   | 'notice.signing'
+  | 'notice.started'
+  | 'notice.stopped'
+  | 'app.bridgeUnavailable'
   | 'language.ko'
   | 'language.en';
 
@@ -111,6 +114,9 @@ const KO: Record<ShellStringKey, string> = {
   'device.revision': '리비전',
   'device.truthOwner': '기준 권위',
   'notice.signing': '이 버전은 내부용으로 빌드되었습니다.',
+  'notice.started': '실행기를 시작했습니다.',
+  'notice.stopped': '실행기를 중지했습니다.',
+  'app.bridgeUnavailable': '지금 연결할 수 없습니다. 앱을 다시 시작한 뒤 시도해 주세요.',
   'language.ko': '한국어',
   'language.en': 'English',
 };
@@ -154,6 +160,9 @@ const EN: Record<ShellStringKey, string> = {
   'device.revision': 'revision',
   'device.truthOwner': 'canonical truth owner',
   'notice.signing': 'This build is internal and unsigned.',
+  'notice.started': 'The runner has been started.',
+  'notice.stopped': 'The runner has been stopped.',
+  'app.bridgeUnavailable': 'Padiem Desktop cannot connect right now. Restart the app and try again.',
   'language.ko': '한국어',
   'language.en': 'English',
 };

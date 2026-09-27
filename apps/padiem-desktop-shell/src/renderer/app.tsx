@@ -48,9 +48,14 @@ export interface ShellViewState {
   readonly pairing: PairingDeepLinkResponse | null;
   readonly log: BoundedLogResponse | null;
   readonly notice: string | null;
+  /** Which action produced `notice`. The raw reason is a diagnostic. */
+  readonly noticeAction: ShellNoticeAction | null;
   readonly error: string | null;
   readonly busy: boolean;
 }
+
+/** Start or stop. Used so Easy view can say something plain about it. */
+export type ShellNoticeAction = 'start' | 'stop';
 
 export const INITIAL_SHELL_VIEW_STATE: ShellViewState = Object.freeze({
   status: null,
@@ -58,6 +63,7 @@ export const INITIAL_SHELL_VIEW_STATE: ShellViewState = Object.freeze({
   pairing: null,
   log: null,
   notice: null,
+  noticeAction: null,
   error: null,
   busy: false,
 });
@@ -116,7 +122,7 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
     if (!api) return;
     setState((prev) => ({ ...prev, busy: true, error: null }));
     const result = await api.runnerStart();
-    setState((prev) => ({ ...prev, busy: false, notice: result.reason }));
+    setState((prev) => ({ ...prev, busy: false, notice: result.reason, noticeAction: 'start' }));
     await refresh();
   }, [api, refresh]);
 
@@ -124,7 +130,7 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
     if (!api) return;
     setState((prev) => ({ ...prev, busy: true, error: null }));
     const result = await api.runnerStop();
-    setState((prev) => ({ ...prev, busy: false, notice: result.reason }));
+    setState((prev) => ({ ...prev, busy: false, notice: result.reason, noticeAction: 'stop' }));
     await refresh();
   }, [api, refresh]);
 
@@ -395,73 +401,112 @@ export function visibilityFor(view: ShellViewMode): {
   };
 }
 
-export function App(): ReactElement {
-  const bridge = useShellBridge();
-  const { preferences, setLocale, setView } = useUiPreferences();
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const t = useCallback(
-    (key: ShellStringKey): string => translate(preferences.locale, key),
-    [preferences.locale],
-  );
-  const visibility = useMemo(
-    () => visibilityFor(preferences.view ?? DEFAULT_VIEW_MODE),
-    [preferences.view],
-  );
-
-  if ('error' in bridge) {
-    return (
-      <main className="shell">
-        <h1>{t('app.title')}</h1>
-        <p className="subtitle">{bridge.error}</p>
-      </main>
-    );
-  }
-
-  const { state, actions } = bridge;
+export function ShellErrorView(props: {
+  locale: ShellLocale;
+  advanced: boolean;
+  error: string;
+  view: ShellViewMode;
+}): ReactElement {
+  const { locale, advanced, error, view } = props;
   return (
-    <main className="shell" data-locale={preferences.locale} data-view={preferences.view}>
+    <main className="shell" data-locale={locale} data-view={view}>
+      <h1>{translate(locale, 'app.title')}</h1>
+      {/* The raw bridge error is a diagnostic: Advanced shows it, Easy does not. */}
+      <p className="subtitle">
+        {advanced ? error : translate(locale, 'app.bridgeUnavailable')}
+      </p>
+    </main>
+  );
+}
+
+export function ShellView(props: {
+  state: ShellViewState;
+  preferences: ShellUiPreferences;
+  actions: ShellActions;
+  settingsOpen: boolean;
+  onToggleSettings: () => void;
+  onLocale: (locale: ShellLocale) => void;
+  onView: (view: ShellViewMode) => void;
+  onCloseSettings: () => void;
+}): ReactElement {
+  const { state, preferences, actions, settingsOpen } = props;
+  const locale = preferences.locale;
+  const t = (key: ShellStringKey): string => translate(locale, key);
+  const visibility = visibilityFor(preferences.view);
+  return (
+    <main className="shell" data-locale={locale} data-view={preferences.view}>
       <header className="row">
         <div>
           <h1>{t('app.title')}</h1>
           <p className="subtitle">{t('app.tagline')}</p>
         </div>
-        <button className="settings-trigger" onClick={() => setSettingsOpen((open) => !open)}>
+        <button className="settings-trigger" onClick={props.onToggleSettings}>
           {t('app.settings')}
         </button>
       </header>
       {settingsOpen ? (
         <SettingsPanel
           preferences={preferences}
-          onLocale={setLocale}
-          onView={setView}
-          onClose={() => setSettingsOpen(false)}
+          onLocale={props.onLocale}
+          onView={props.onView}
+          onClose={props.onCloseSettings}
         />
       ) : null}
-      <ConnectionPanel
-        status={state.status}
-        locale={preferences.locale}
-        advanced={visibility.developerFacts}
-      />
+      <ConnectionPanel status={state.status} locale={locale} advanced={visibility.developerFacts} />
       <RunnerPanel
         status={state.status}
         health={state.health}
         busy={state.busy}
         actions={actions}
-        locale={preferences.locale}
+        locale={locale}
         advanced={visibility.developerFacts}
       />
       <PairingPanel
         pairing={state.pairing}
-        locale={preferences.locale}
+        locale={locale}
         advanced={visibility.rawPairingSeamText}
       />
-      <LogPanel
-        log={state.log}
-        locale={preferences.locale}
-        advanced={visibility.boundedLogInternals}
-      />
-      {state.notice ? <p className="notice">{state.notice}</p> : null}
+      <LogPanel log={state.log} locale={locale} advanced={visibility.boundedLogInternals} />
+      {state.notice ? (
+        <p className="notice">
+          {/* The runner reasons are raw diagnostics ("headless runner started as
+              a separate process"). Easy says the same thing plainly. */}
+          {visibility.developerFacts
+            ? state.notice
+            : t(state.noticeAction === 'start' ? 'notice.started' : 'notice.stopped')}
+        </p>
+      ) : null}
       {visibility.signingNote ? <p className="notice">{t('notice.signing')}</p> : null}
     </main>
+  );
+}
+
+export function App(): ReactElement {
+  const bridge = useShellBridge();
+  const { preferences, setLocale, setView } = useUiPreferences();
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  if ('error' in bridge) {
+    return (
+      <ShellErrorView
+        locale={preferences.locale}
+        view={preferences.view}
+        advanced={visibilityFor(preferences.view).developerFacts}
+        error={bridge.error}
+      />
+    );
+  }
+
+  return (
+    <ShellView
+      state={bridge.state}
+      preferences={preferences}
+      actions={bridge.actions}
+      settingsOpen={settingsOpen}
+      onToggleSettings={() => setSettingsOpen((open) => !open)}
+      onLocale={setLocale}
+      onView={setView}
+      onCloseSettings={() => setSettingsOpen(false)}
+    />
   );
 }

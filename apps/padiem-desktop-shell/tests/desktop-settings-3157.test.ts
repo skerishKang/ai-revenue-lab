@@ -38,12 +38,16 @@ import {
 } from '../src/renderer/preferences.js';
 import {
   ConnectionPanel,
+  INITIAL_SHELL_VIEW_STATE,
   LogPanel,
   PairingPanel,
   RunnerPanel,
   SettingsPanel,
+  ShellErrorView,
+  ShellView,
   visibilityFor,
   type ShellActions,
+  type ShellViewState,
 } from '../src/renderer/app.js';
 import type { BoundedLogResponse, RunnerHealthResponse, ShellStatus } from '../src/contract/ipc.js';
 
@@ -404,6 +408,132 @@ test('#3157 neither view nor preference code mentions credentials, pairing codes
   }
   // The preference record itself is the smallest possible surface.
   assert.deepEqual([...STORED_PREFERENCE_KEYS].sort(), ['locale', 'view']);
+});
+
+/**
+ * The vocabulary the runner stack really uses, quoted from the reasons it
+ * answers with. None of it may reach Easy view.
+ */
+const RAW_DIAGNOSTIC_TERMS = [
+  'headless',
+  'separate process',
+  'orphan',
+  'process boundary',
+  'canonical truth owner',
+  'last exit code',
+  'deep link submitted',
+] as const;
+
+function viewMarkup(state: ShellViewState, view: 'easy' | 'advanced'): string {
+  return render(
+    createElement(ShellView, {
+      state,
+      preferences: { locale: 'ko', view },
+      actions: NOOP_ACTIONS,
+      settingsOpen: false,
+      onToggleSettings: () => undefined,
+      onLocale: () => undefined,
+      onView: () => undefined,
+      onCloseSettings: () => undefined,
+    }),
+  );
+}
+
+test('#3157 Easy view exposes no raw technical notice', () => {
+  const markup = viewMarkup(
+    {
+      ...INITIAL_SHELL_VIEW_STATE,
+      status: STATUS,
+      health: HEALTH,
+      log: LOG,
+      // Exactly what the runner stack answers with today.
+      notice: 'headless runner started as a separate process',
+      noticeAction: 'start',
+    },
+    'easy',
+  );
+  for (const term of RAW_DIAGNOSTIC_TERMS) {
+    assert.doesNotMatch(markup, new RegExp(term, 'i'), `Easy view leaked: ${term}`);
+  }
+  // ...while still saying something useful.
+  assert.match(markup, /실행기를 시작했습니다/);
+});
+
+test('#3157 the stop notice is plain in Easy view too', () => {
+  const markup = viewMarkup(
+    {
+      ...INITIAL_SHELL_VIEW_STATE,
+      status: STATUS,
+      notice: 'headless runner stopped; no orphan process remains',
+      noticeAction: 'stop',
+    },
+    'easy',
+  );
+  assert.doesNotMatch(markup, /orphan/i);
+  assert.doesNotMatch(markup, /headless/i);
+  assert.match(markup, /실행기를 중지했습니다/);
+});
+
+test('#3157 Advanced view is where the bounded raw diagnostic is allowed', () => {
+  const raw = 'headless runner started as a separate process';
+  const state = {
+    ...INITIAL_SHELL_VIEW_STATE,
+    status: STATUS,
+    health: HEALTH,
+    log: LOG,
+    notice: raw,
+    noticeAction: 'start' as const,
+  };
+  const advancedKo = viewMarkup(state, 'advanced');
+  // The raw runner reason, the raw pairing-seam text, the log and the pid are
+  // all back in Advanced — in the language the user chose.
+  assert.match(advancedKo, /headless runner started as a separate process/);
+  assert.match(advancedKo, /no deep link submitted in this session/);
+  assert.match(advancedKo, /runner: started/);
+  assert.match(advancedKo, /기준 권위/);
+  assert.match(advancedKo, /프로세스 경계/);
+  assert.match(advancedKo, /4242/);
+
+  const advancedEn = render(
+    createElement(ShellView, {
+      state,
+      preferences: { locale: 'en', view: 'advanced' },
+      actions: NOOP_ACTIONS,
+      settingsOpen: false,
+      onToggleSettings: () => undefined,
+      onLocale: () => undefined,
+      onView: () => undefined,
+      onCloseSettings: () => undefined,
+    }),
+  );
+  assert.match(advancedEn, /canonical truth owner/i);
+  assert.match(advancedEn, /process boundary/i);
+});
+
+test('#3157 Easy view never renders the raw bridge error either', () => {
+  const raw = 'padiemShell preload bridge unavailable; renderer has no authority';
+  const easy = render(
+    createElement(ShellErrorView, { locale: 'ko', view: 'easy', advanced: false, error: raw }),
+  );
+  assert.doesNotMatch(easy, /padiemShell/);
+  assert.doesNotMatch(easy, /authority/i);
+  assert.match(easy, /앱을 다시 시작/);
+  const advanced = render(
+    createElement(ShellErrorView, { locale: 'ko', view: 'advanced', advanced: true, error: raw }),
+  );
+  assert.match(advanced, /padiemShell preload bridge unavailable/);
+});
+
+test('#3157 every raw value the Easy view touches is behind the visibility guard', () => {
+  // The rendered-DOM tests above are the proof; this pins the structure so a
+  // later refactor cannot quietly reintroduce a bare raw interpolation.
+  const source = readFileSync(path.join(rendererDir, 'app.tsx'), 'utf8');
+  const guarded = /visibility\.developerFacts\s*\?\s*state\.notice/.test(source);
+  assert.equal(guarded, true, 'the raw runner reason must stay behind the Advanced guard');
+  const plainNotice = /noticeAction === 'start' \? 'notice\.started' : 'notice\.stopped'/.test(source);
+  assert.equal(plainNotice, true, 'Easy must render the plain start/stop sentence');
+  const guardedError = /advanced \? error : translate\(locale, 'app\.bridgeUnavailable'\)/.test(source);
+  assert.equal(guardedError, true, 'the raw bridge error must stay behind the Advanced guard');
 });
 
 test('#3157 the Settings surface offers both languages and both views', () => {
