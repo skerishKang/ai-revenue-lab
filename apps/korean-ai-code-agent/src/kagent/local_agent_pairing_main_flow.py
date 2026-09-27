@@ -352,7 +352,9 @@ def run(
         device_id=device_id,
         workspace_ref=WORKSPACE_REF,
         platform=LocalAgentPlatform.WINDOWS,
-        roots=(LocalRoot(root_ref="root.3140", windows_path=base_dir),),
+        # The device profile describes the *target* device, which is Windows by
+        # contract; the credential store keeps its own OS-native temp directory.
+        roots=(LocalRoot(root_ref="root.3140", windows_path=r"C:ProgramDataPadiemunner"),),
     )
     runtime = WindowsSubprocessLocalAgentRuntime(
         device=device,
