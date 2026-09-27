@@ -190,7 +190,7 @@ check(html.includes('id="taxReviewNote"') && html.includes('id="taxRow"'),
 check(css.includes(".tax-row.tax-review-required"),
   "UNKNOWN_VAT_REVIEW_CONTRACT: direct review highlight exists");
 check(easy.includes('"품목 합계(세금 확인 전): "') &&
-      easy.includes('"최종 합계는 부가세 방식을 선택한 뒤 확정됩니다."'),
+      easy.includes("최종 합계는 부가세 방식을 선택한 뒤 확정됩니다."),
   "UNKNOWN_VAT_REVIEW_CONTRACT: unknown VAT summary is explicitly provisional");
 check(easy.includes("requireTaxReview: guided.taxUnknown") &&
       easy.includes("App.focusTaxReview()"),
