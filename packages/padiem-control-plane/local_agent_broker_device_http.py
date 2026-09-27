@@ -79,6 +79,12 @@ class LocalAgentBrokerDeviceHttpService:
     account/workspace identity from the canonical persisted device binding after
     verifying the raw credential with the existing broker authority, then invokes
     the already-closed M2e HTTP handler.
+
+    `session_open_transaction` is required (#3129): the canonical broker session
+    CAS and the durable HTTP session row are one logical write, so the deployable
+    composition must supply a transaction-capable callable (a Durable Object
+    `storage.transactionSync`) and the session-open write pair runs inside it —
+    both-or-neither under crash, never a partial session.
     """
 
     def __init__(
@@ -90,10 +96,13 @@ class LocalAgentBrokerDeviceHttpService:
         rpc_factory: Callable[[], Any],
         http_state,
         material_resolver,
+        session_open_transaction: Callable[[Callable[[], Any]], Any],
         clock: Callable[[], datetime] | None = None,
     ) -> None:
         if not callable(rpc_factory):
             raise ValueError("rpc_factory must be callable")
+        if not callable(session_open_transaction):
+            raise ValueError("session_open_transaction must be a transaction-capable callable")
         if not callable(clock) and clock is not None:
             raise ValueError("clock must be callable")
         self._authenticator = StateBackedLocalAgentBindingAuthenticator(
@@ -104,6 +113,7 @@ class LocalAgentBrokerDeviceHttpService:
         self._rpc_factory = rpc_factory
         self._http_state = http_state
         self._material_resolver = material_resolver
+        self._session_open_transaction = session_open_transaction
         self._clock = clock or (lambda: datetime.now(timezone.utc))
 
     def _server_now(self) -> datetime:
@@ -168,6 +178,7 @@ class LocalAgentBrokerDeviceHttpService:
             state=self._http_state,
             material_resolver=self._material_resolver,
             clock=lambda: server_now,
+            session_open_transaction=self._session_open_transaction,
         )
         response = handler.handle(
             method=envelope["method"],
@@ -205,3 +216,11 @@ RAW_DEVICE_SECRET_LOGGED = False
 PRODUCTION_ROUTE_CONFIGURED = False
 PRODUCTION_DEPLOYMENT = False
 PRODUCTION_READY = False
+
+# --- issue #3129: atomic session open ---------------------------------------
+SESSION_OPEN_ATOMIC = True
+SESSION_OPEN_TRANSACTION_REQUIRED = True
+SESSION_OPEN_TRANSACTION_STORAGE_SEAM = "storage.transactionSync"
+SESSION_DOUBLE_WRITE_PRESENT = False
+SECOND_SESSION_AUTHORITY = False
+HEARTBEAT_TRANSACTION_PATH_UNCHANGED = True

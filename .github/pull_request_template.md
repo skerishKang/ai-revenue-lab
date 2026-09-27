@@ -62,8 +62,11 @@ Do not present implementer-run local/browser checks as independent Local Validat
 - Same actor as implementation? yes/no:
 - Source modified during validation? yes/no:
 - Result / artifacts:
+- PR review/comment record for this validation:
+- Immutable report/artifact pointer:
+- If NOT_REQUIRED, explicit reason:
 
-If the same actor implemented and executed the checks, label them implementation self-check/non-independent verification.
+If the same actor implemented and executed the checks, label them implementation self-check/non-independent verification. A validation report that cannot be discovered from this PR is not a complete merge audit trail.
 
 ## Owner-only decisions
 
@@ -77,6 +80,10 @@ If the same actor implemented and executed the checks, label them implementation
 - Deferred items:
 - Environment limitations:
 - Data/secret boundary:
+- External security/compliance checks:
+- Any red signal + exact disposition/waiver authority:
+- Runtime trust-boundary review needed? yes/no + parser/builder/projector/serializer/export/write coverage:
+- Load-bearing mutation/differential proof required? yes/no + evidence:
 
 ## CTO final status
 
@@ -105,6 +112,9 @@ For Git-connected projects, an authorized merge to the configured Production bra
 - [ ] No unrelated files are included.
 - [ ] Failed/skipped/unexecuted checks are reported truthfully.
 - [ ] No secrets, tokens, credentials, personal data, or private evidence were committed.
-- [ ] Independent validation claims satisfy the actor-separation rule.
+- [ ] Independent validation claims satisfy the actor-separation rule and the exact-head validator/result/report pointer is discoverable from this PR, or NOT_REQUIRED is explicitly justified.
+- [ ] Any external red security/compliance signal is resolved or has an explicit authorized disposition/waiver; unrelated green CI is not used as a substitute.
+- [ ] Contract defects were traced through downstream trust boundaries when applicable; explicit null/undefined/missing semantics are preserved.
+- [ ] Load-bearing mutation/differential proof was recorded when required by the work contract/review.
 - [ ] Owner-only decisions are not inferred.
 - [ ] Production claims, when applicable, are tied to the actual deployed revision.

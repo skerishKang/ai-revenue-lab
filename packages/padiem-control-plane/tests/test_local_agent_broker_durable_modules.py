@@ -241,4 +241,6 @@ def test_worker_file_is_thin_and_storage_schemas_live_outside_entrypoint() -> No
     assert "from workers import" in source
     # Issue #3121 adds one canonical RPC passthrough (reconcile_expired_command)
     # per entrypoint class; the entrypoint must stay otherwise thin.
-    assert len(source.splitlines()) < 200
+    # #3121 adds one reconcile passthrough per entrypoint class; #3129 wires
+    # session_open_transaction into the device HTTP service. Still thin.
+    assert len(source.splitlines()) < 205
