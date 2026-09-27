@@ -71,9 +71,11 @@ Every file stays far below the 500-line guideline. No framework, no build step.
 - **AI 없이 동작하는 질문형 견적 만들기**: 받는 곳 → 담당자 → 품목 → 수량 → 단가 → VAT → 비고 → 발신자 → 요약
 - 작성 중인 의미 있는 active draft가 있으면 **지난 견적 이어서 하기** 노출
 - browser-local **최근 견적 최대 20개** 저장/불러오기/복사해서 새 견적/삭제 확인
+- 같은 견적번호를 다시 저장하면 최근 견적 카드가 중복되지 않고 최신 내용으로 갱신
 - 새 견적/복사본은 browser-local 일일 순번으로 짧은 번호 사용: `PQ-YYYYMMDD-001`, `-002`, `-003` …
 - 자유 문장 자동 해석은 아직 비연결 상태를 명확히 표시하며 가짜 AI 응답을 만들지 않음
 - **파일 선택은 실제 동작**: PDF/DOCX/PPTX/XLSX/HWPX(2 MiB 이하), JPG/PNG/WebP(4 MiB 이하)를 로컬 preflight
+- 브라우저가 MIME을 비우거나 `application/octet-stream`/ZIP generic MIME으로 줄 때는 지원 확장자를 기준으로 preflight하고, 서버 단계에서 다시 권위 검증
 - 파일 선택 단계에서는 네트워크 업로드·OCR·AI 호출·raw byte persistence가 모두 0
 - Korean-first quotation UI
 - sender preset, browser-local custom sender save, sender address
@@ -83,6 +85,8 @@ Every file stays far below the 500-line guideline. No framework, no build step.
 - **three tax modes**: 별도 (EXCLUSIVE) / 포함 (INCLUSIVE) / 면세 (EXEMPT), mode shown on the quote
 - deterministic money math in `quote-core.js` — stored draft never stores totals; they are always derived
 - **whole-draft autosave to localStorage** with corrupted/old-schema fallback to the default demo state
+- 상단 **저장 데이터 초기화**로 B66 소유 draft/sender/history/sequence 키만 확인 후 삭제하며 다른 origin localStorage는 건드리지 않음
+- 주요 클릭 액션은 데스크톱/모바일 모두 44px 최소 높이로 통일
 - **새 견적**: 확인 후 새 번호/오늘 날짜를 발급하고, 보내는 사람·유효기간은 유지하면서 받는 사람/품목은 빈 다음 고객 견적으로 시작
 - Easy Mode에서 부가세를 **잘 모르겠어요**로 두면 확정 합계를 표시하지 않고, 직접입력 화면의 부가세 선택을 강조해 최종 확인 요구
 - live quotation preview, responsive layout (mobile item rows restacked for full price visibility)
@@ -181,4 +185,4 @@ rather than fabricated extracted values.
 The current upload/chat buttons remain non-live until a governed backend/model adapter is connected.
 No provider/model ID or secret lives in the B66 browser code.
 
-Refs #3136, #3144, #3147, #3154, #3158, #3162, #3164.
+Refs #3136, #3144, #3147, #3154, #3158, #3162, #3164, #3167.
