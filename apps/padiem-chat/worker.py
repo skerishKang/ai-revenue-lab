@@ -39,6 +39,9 @@ from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuth
 from app.dispatch_quota import DispatchAwareB14Client, DispatchAwareUsageCounterStore
 from app.grounding import GroundedChatService
 from app.history import D1HistoryStore
+from app.claw_local_task_result_composition import (
+    build_local_task_result_source_with_diagnostic,
+)
 from app.main import create_app
 from app.orchestration_routes import install_orchestration_routes
 from app.project_files import D1ProjectFileStore
@@ -725,6 +728,15 @@ class Default(WorkerEntrypoint):
                 )
                 if claw_local_access_source is not None:
                     _worker_app.state.claw_local_access_source = claw_local_access_source
+                # #3139: compose the Local Runner return leg from the same
+                # trusted broker binding and the real D1 history store. Absent
+                # either, the composition yields None and the route keeps the
+                # fail-closed unconfigured source installed by create_app.
+                _local_task_result_source, _local_task_result_diag = (
+                    build_local_task_result_source_with_diagnostic(self.env, history_store)
+                )
+                _worker_app.state.local_task_result_source = _local_task_result_source
+                _worker_app.state.local_task_result_diagnostic = _local_task_result_diag
                 install_orchestration_routes(
                     _worker_app,
                     build_orchestration_bridge(

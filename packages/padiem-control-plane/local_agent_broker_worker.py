@@ -94,6 +94,9 @@ class LocalAgentBrokerDurableObject(DurableObject):
     async def device_truth(self, payload: dict) -> dict:
         return self._runtime.device_truth(payload)
 
+    async def terminal_command_result(self, payload: dict) -> dict:  # #3139 read-only RPC
+        return self._runtime.terminal_command_result(payload)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -150,6 +153,9 @@ class Default(WorkerEntrypoint):
 
     async def device_truth(self, payload: dict) -> dict:
         return await self._stub().device_truth(payload)
+
+    async def terminal_command_result(self, payload: dict) -> dict:
+        return await self._stub().terminal_command_result(payload)
 
     async def fetch(self, request):
         return await handle_private_device_fetch(request, self._stub)
