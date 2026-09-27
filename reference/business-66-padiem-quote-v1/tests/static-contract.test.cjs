@@ -83,6 +83,8 @@ check(easy.includes("function processGuidedInput("),
   "EASY_MODE_CONTRACT: guided state machine");
 check(easy.includes("Core.computeTotals(guided.draft.items, guided.draft.tax.mode)"),
   "EASY_MODE_CONTRACT: summary uses QuoteCore totals");
+check(css.includes(".easy-chip {") && css.includes("min-height: 44px;"),
+  "EASY_MODE_CONTRACT: quick chips meet 44px touch target");
 check(!easy.includes("fetch(") && !easy.includes("XMLHttpRequest"),
   "EASY_MODE_CONTRACT: no network/model call in Easy Mode");
 check(easy.includes("아직 자동 해석 모델은 연결 전"),
@@ -99,8 +101,8 @@ check(history.includes('HISTORY_STORAGE_KEY = "quoteBeta.history.v1"'),
   "RECENT_HISTORY_CONTRACT: dedicated storage key");
 check(history.includes("MAX_HISTORY = 20"),
   "RECENT_HISTORY_CONTRACT: bounded history");
-check(history.includes("function copyAsNew("),
-  "RECENT_HISTORY_CONTRACT: copy-as-new");
+check(history.includes("function freshQuoteNo(") && history.includes("function copyAsNew("),
+  "RECENT_HISTORY_CONTRACT: copy-as-new receives a fresh quote number");
 check(history.includes("Core.computeTotals(entry.draft.items, entry.draft.tax.mode)"),
   "RECENT_HISTORY_CONTRACT: displayed totals are derived");
 check(easy.includes("window.confirm(\"이 최근 견적을 이 브라우저에서 삭제할까요?\")"),
@@ -171,6 +173,8 @@ check(css.includes("@page { size: A4"), "PRINT_LAYOUT_CONTRACT: A4 page rule");
 check(css.includes("@media print"), "PRINT_LAYOUT_CONTRACT: print media");
 check(css.includes(".topbar, .workspace-modebar, .easy-view, .modebar, .future-note, .panel, .preview-toolbar, .toast { display: none !important; }"),
   "PRINT_LAYOUT_CONTRACT: all non-print Easy/Direct UI removed from layout");
+check(css.includes(".direct-view[hidden] { display: block !important; }"),
+  "PRINT_LAYOUT_CONTRACT: hidden Direct view is restored for printing from Easy Mode");
 check(css.includes(".grid { display: block; }"), "PRINT_LAYOUT_CONTRACT: paper in normal flow");
 check(!css.includes("visibility: hidden"), "PRINT_LAYOUT_CONTRACT: visibility hack removed");
 

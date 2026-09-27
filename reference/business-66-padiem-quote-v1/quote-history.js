@@ -110,12 +110,26 @@
     });
   }
 
-  function copyAsNew(entry) {
+  function freshQuoteNo(now) {
+    var dt = now instanceof Date ? now : new Date();
+    var date = Core.isoFormat(dt).replace(/-/g, "");
+    var time = String(dt.getHours()).padStart(2, "0") +
+      String(dt.getMinutes()).padStart(2, "0") +
+      String(dt.getSeconds()).padStart(2, "0") +
+      String(dt.getMilliseconds()).padStart(3, "0");
+    return "PQ-" + date + "-" + time;
+  }
+
+  function copyAsNew(entry, options) {
     if (!entry || typeof entry !== "object") return null;
     var source = Core.normalizeDraft(entry.draft);
     if (!source) return null;
 
+    var opts = options || {};
+    var now = opts.now instanceof Date ? opts.now : new Date();
     var fresh = Core.createDefaultDraft();
+    fresh.meta.quoteNo = freshQuoteNo(now);
+    fresh.meta.issueDate = Core.isoFormat(now);
     fresh.meta.validDays = source.meta.validDays;
     fresh.meta.source = "history-copy";
     fresh.sender = clone(source.sender);
@@ -160,6 +174,7 @@
     deleteEntry: deleteEntry,
     getEntry: getEntry,
     listMetadata: listMetadata,
+    freshQuoteNo: freshQuoteNo,
     copyAsNew: copyAsNew,
     isMeaningfulDraft: isMeaningfulDraft
   };
