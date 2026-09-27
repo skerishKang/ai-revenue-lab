@@ -58,8 +58,23 @@ textarea { min-height: 82px; resize: vertical; }
 .btn { border: 1px solid var(--line); background: white; color: var(--ink); border-radius: 11px; padding: 11px 15px; font-weight: 650; }
 .btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
 .btn.soft { background: var(--soft); }
-.tax-row { margin-top: 12px; }
+.tax-row { margin-top: 12px; padding: 0; border-radius: 12px; transition: .16s ease; }
 .tax-row label { max-width: 320px; }
+.tax-row.tax-review-required {
+  padding: 12px;
+  border: 1px solid #f59e0b;
+  background: #fffbeb;
+}
+.tax-row.tax-review-required select {
+  border-color: #d97706;
+  box-shadow: 0 0 0 3px rgba(217,119,6,.12);
+}
+.tax-review-note {
+  margin: 8px 0 0;
+  color: #92400e;
+  font-size: 12px;
+  line-height: 1.5;
+}
 .summary { margin-left: auto; width: min(100%, 360px); display: grid; gap: 7px; padding-top: 12px; }
 .summary-line { display: flex; justify-content: space-between; font-size: 13px; }
 .summary-line.total { margin-top: 4px; border-top: 1px solid var(--line); padding-top: 10px; font-size: 18px; font-weight: 800; }
