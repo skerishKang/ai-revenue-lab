@@ -69,11 +69,13 @@ Every file stays far below the 500-line guideline. No framework, no build step.
 - **Easy Mode + 직접 입력** top-level switch
 - Easy Mode: Padiem Chat interaction pattern을 참고한 중립 chat UI (메시지, 칩, 하단 composer)
 - **AI 없이 동작하는 질문형 견적 만들기**: 받는 곳 → 담당자 → 품목 → 수량 → 단가 → VAT → 비고 → 발신자 → 요약
+- Easy Mode 단가는 `1,500,000`뿐 아니라 `150만원`, `20만`, `1.5만원`, `2억원`, `3천원` 같은 단일 한국식 금액 축약도 결정론적으로 처리하며 복합 단위는 추측하지 않음
 - 작성 중인 의미 있는 active draft가 있으면 **지난 견적 이어서 하기** 노출
 - browser-local **최근 견적 최대 20개** 저장/불러오기/복사해서 새 견적/삭제 확인
 - 같은 견적번호를 다시 저장하면 최근 견적 카드가 중복되지 않고 최신 내용으로 갱신
 - 새 견적/복사본은 browser-local 일일 순번으로 짧은 번호 사용: `PQ-YYYYMMDD-001`, `-002`, `-003` …
 - 자유 문장 자동 해석은 아직 비연결 상태를 명확히 표시하며 가짜 AI 응답을 만들지 않음
+- `내용을 한번에 말하기`에서 질문형으로 이어가면 원문을 참고용 버블로 그대로 보존하지만 QuoteDraft에는 자동 반영하지 않음
 - **파일 선택은 실제 동작**: PDF/DOCX/PPTX/XLSX/HWPX(2 MiB 이하), JPG/PNG/WebP(4 MiB 이하)를 로컬 preflight
 - 브라우저가 MIME을 비우거나 `application/octet-stream`/ZIP generic MIME으로 줄 때는 지원 확장자를 기준으로 preflight하고, 서버 단계에서 다시 권위 검증
 - 파일 선택 단계에서는 네트워크 업로드·OCR·AI 호출·raw byte persistence가 모두 0
@@ -90,6 +92,8 @@ Every file stays far below the 500-line guideline. No framework, no build step.
 - **새 견적**: 확인 후 새 번호/오늘 날짜를 발급하고, 보내는 사람·유효기간은 유지하면서 받는 사람/품목은 빈 다음 고객 견적으로 시작
 - Easy Mode에서 부가세를 **잘 모르겠어요**로 두면 확정 합계를 표시하지 않고, 직접입력 화면의 부가세 선택을 강조해 최종 확인 요구
 - live quotation preview, responsive layout (mobile item rows restacked for full price visibility)
+- PDF/인쇄 전 견적번호·견적일·보내는 상호·받는 곳·품목을 확인하고, 누락 시 인쇄를 막고 첫 누락 필드로 이동
+- Easy Mode에서 부가세 미확정 상태이면 명시적 VAT 선택 전까지 PDF/인쇄를 차단
 - print stylesheet: A4, UI removed from print layout via `display:none` — **no blank trailing page**, table header repeats on multi-page output
 
 ## Verification
@@ -134,7 +138,7 @@ The Easy Mode is deliberately usable before any model is selected:
 → PDF
 ```
 
-`내용을 한번에 말하기` currently collects the user's text only inside the current page session and explicitly says that semantic AI interpretation is not connected yet.
+`내용을 한번에 말하기` keeps the user's one-shot text in the current page session. If the user chooses 질문받으며 이어가기, that original text is shown again as a reference-only message while authoritative values are still collected one-by-one. The reference is never auto-applied to QuoteDraft, and semantic AI interpretation remains unconnected.
 
 `파일에서 불러오기` now opens a real browser file chooser and performs local metadata preflight only. The selected `File` object stays in page memory; the code does not read raw bytes, write them to browser storage, or send a network request. The UI clearly states that automatic server analysis is not active yet.
 
@@ -185,4 +189,4 @@ rather than fabricated extracted values.
 The current upload/chat buttons remain non-live until a governed backend/model adapter is connected.
 No provider/model ID or secret lives in the B66 browser code.
 
-Refs #3136, #3144, #3147, #3154, #3158, #3162, #3164, #3167.
+Refs #3136, #3144, #3147, #3154, #3158, #3162, #3164, #3167, #3169.
