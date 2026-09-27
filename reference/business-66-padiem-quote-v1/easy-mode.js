@@ -722,6 +722,11 @@
   });
 
   window.addEventListener("b66:history-changed", refreshStarters);
+  window.addEventListener("b66:local-data-reset", () => {
+    fileInput.value = "";
+    setWorkspaceMode("easy");
+    showHome();
+  });
   document.addEventListener("b66:open-file-intake", () => {
     setWorkspaceMode("easy");
     startFileIntake();
