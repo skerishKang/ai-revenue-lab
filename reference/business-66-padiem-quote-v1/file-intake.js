@@ -105,6 +105,18 @@
     return (bytes / (1024 * 1024)).toFixed(1) + " MB";
   }
 
+  function isGenericMedia(extension, declared) {
+    if (!declared) return true;
+    if (declared === "application/octet-stream") return true;
+    if (
+      (declared === "application/zip" || declared === "application/x-zip-compressed") &&
+      [".docx", ".pptx", ".xlsx", ".hwpx"].indexOf(extension) >= 0
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   function classifyFile(fileLike) {
     if (!fileLike || typeof fileLike !== "object") {
       return { ok: false, error: "invalid_file" };
@@ -137,7 +149,7 @@
     var declared = typeof fileLike.type === "string"
       ? fileLike.type.trim().toLowerCase()
       : "";
-    if (declared && spec.media.indexOf(declared) < 0) {
+    if (!isGenericMedia(extension, declared) && spec.media.indexOf(declared) < 0) {
       return { ok: false, error: "media_extension_mismatch" };
     }
 
@@ -148,7 +160,7 @@
         extension: extension,
         category: spec.category,
         label: spec.label,
-        mediaType: declared || spec.media[0],
+        mediaType: isGenericMedia(extension, declared) ? spec.media[0] : declared,
         byteSize: size,
         displaySize: formatBytes(size),
         maxBytes: spec.maxBytes,
@@ -180,6 +192,7 @@
     TYPES: TYPES,
     extensionOf: extensionOf,
     formatBytes: formatBytes,
+    isGenericMedia: isGenericMedia,
     classifyFile: classifyFile,
     errorMessage: errorMessage
   };

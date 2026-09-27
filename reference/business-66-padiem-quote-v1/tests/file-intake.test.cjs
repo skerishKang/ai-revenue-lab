@@ -21,6 +21,20 @@ assert.equal(pdf.mediaType, "application/pdf");
 const pdfNoMime = ok("견적서.PDF", "", 1024);
 assert.equal(pdfNoMime.mediaType, "application/pdf", "empty browser MIME falls back to canonical media type");
 
+const pdfOctet = ok("견적서.pdf", "application/octet-stream", 1024);
+assert.equal(pdfOctet.mediaType, "application/pdf", "generic octet-stream falls back to canonical PDF media type");
+
+const docxZip = ok("quote.docx", "application/zip", 1024);
+assert.equal(
+  docxZip.mediaType,
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "generic zip DOCX falls back to canonical Office media type"
+);
+const hwpxZip = ok("quote.hwpx", "application/x-zip-compressed", 1024);
+assert.equal(hwpxZip.mediaType, "application/hwp+zip", "generic zip HWPX falls back to canonical media type");
+const pngOctet = ok("quote.png", "application/octet-stream", 1024);
+assert.equal(pngOctet.mediaType, "image/png", "generic octet-stream image falls back to canonical media type");
+
 const docx = ok(
   "quote.docx",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -76,6 +90,10 @@ assert.equal(source.includes("sessionStorage"), false, "raw file preflight must 
 
 console.log("B66_FILE_INTAKE_CLIENT_CONTRACT=PASS");
 console.log("FILE_CHOOSER_PREFLIGHT_TYPES=PASS");
+console.log("EMPTY_MIME_FALLBACK=PASS");
+console.log("OCTET_STREAM_FALLBACK=PASS");
+console.log("ZIP_MIME_OFFICE_HWPX_FALLBACK=PASS");
+console.log("SPECIFIC_MIME_MISMATCH_REJECTED=PASS");
 console.log("LEGACY_HWP=UNSUPPORTED");
 console.log("RAW_FILE_PERSISTENCE=0");
 console.log("BROWSER_UPLOAD_NETWORK=0");

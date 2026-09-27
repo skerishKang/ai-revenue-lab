@@ -15,6 +15,7 @@
   let draft = loadDraft() || Core.createDefaultDraft();
   let lastExtractionReview = null;
   let taxReviewRequired = false;
+  let suppressNextDraftSave = false;
   let itemSeq = draft.items.reduce((max, it) => {
     const n = parseInt(String(it.id).replace(/^item-/, ""), 10);
     return Number.isFinite(n) ? Math.max(max, n) : max;
@@ -34,6 +35,10 @@
   }
 
   function saveDraft() {
+    if (suppressNextDraftSave) {
+      suppressNextDraftSave = false;
+      return;
+    }
     try {
       localStorage.setItem(Core.DRAFT_STORAGE_KEY, JSON.stringify(draft));
     } catch (err) {
@@ -134,15 +139,22 @@
 
   function saveCurrentToHistory() {
     if (!History) return { ok: false, error: "history_unavailable" };
-    const envelope = History.addEntry(loadHistoryEnvelope(), draft);
+    const before = loadHistoryEnvelope();
+    const quoteNo = String(draft.meta.quoteNo || "").trim();
+    const existed = Boolean(before && before.entries.some((entry) =>
+      String(entry.draft.meta.quoteNo || "").trim() === quoteNo
+    ));
+    const envelope = History.upsertEntryByQuoteNo(before, draft);
     try {
       localStorage.setItem(History.HISTORY_STORAGE_KEY, JSON.stringify(envelope));
     } catch (err) {
       return { ok: false, error: "history_storage_failed" };
     }
-    toast("이 견적을 최근 견적에 저장했습니다.");
+    toast(existed
+      ? "같은 견적번호의 최근 견적을 최신 내용으로 업데이트했습니다."
+      : "이 견적을 최근 견적에 저장했습니다.");
     window.dispatchEvent(new CustomEvent("b66:history-changed"));
-    return { ok: true, envelope: cloneDraft(envelope) };
+    return { ok: true, updated: existed, envelope: cloneDraft(envelope) };
   }
 
   /* ── 공통 유틸 ── */
@@ -163,6 +175,41 @@
     $("toast").classList.add("show");
     clearTimeout(toast.timer);
     toast.timer = setTimeout(() => $("toast").classList.remove("show"), duration || 1800);
+  }
+
+  function resetBrowserLocalData() {
+    if (!window.confirm("이 브라우저에 저장한 견적, 발신자, 최근 견적 기록을 초기화할까요?")) {
+      return false;
+    }
+
+    const keys = [
+      Core.DRAFT_STORAGE_KEY,
+      Core.SENDER_STORAGE_KEY,
+      History && History.HISTORY_STORAGE_KEY,
+      History && History.SEQUENCE_STORAGE_KEY
+    ].filter(Boolean);
+
+    try {
+      keys.forEach((key) => localStorage.removeItem(key));
+    } catch (err) {
+      toast("브라우저 저장 데이터를 지우지 못했습니다.");
+      return false;
+    }
+
+    draft = Core.createDefaultDraft();
+    lastExtractionReview = null;
+    taxReviewRequired = false;
+    itemSeq = draft.items.length;
+    suppressNextDraftSave = true;
+
+    renderItems();
+    fillInputsFromDraft();
+    renderTaxReviewState();
+    render();
+    window.dispatchEvent(new CustomEvent("b66:local-data-reset"));
+    window.dispatchEvent(new CustomEvent("b66:history-changed"));
+    toast("이 브라우저에 저장한 견적 데이터를 초기화했습니다.", 3000);
+    return true;
   }
 
   function renderTaxReviewState() {
@@ -500,6 +547,8 @@
     if (!result.ok) toast("최근 견적 저장에 실패했습니다.");
   });
 
+  $("resetLocalData").addEventListener("click", resetBrowserLocalData);
+
   /* ── 모드 전환 (upload/chat은 의도된 future affordance) ── */
 
   document.querySelectorAll(".mode").forEach((button) => {
@@ -537,6 +586,7 @@
     createBlankNextDraft,
     copyHistoryAsNew,
     saveCurrentToHistory,
+    resetBrowserLocalData,
     getHistoryEnvelope: () => {
       const envelope = loadHistoryEnvelope();
       return envelope ? cloneDraft(envelope) : null;
