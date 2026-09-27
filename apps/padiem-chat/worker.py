@@ -737,7 +737,6 @@ class Default(WorkerEntrypoint):
                 )
                 _worker_app.state.local_task_result_source = _local_task_result_source
                 _worker_app.state.local_task_result_diagnostic = _local_task_result_diag
-                _worker_app.state.local_task_result_diagnostic = _local_task_result_diag
                 install_orchestration_routes(
                     _worker_app,
                     build_orchestration_bridge(

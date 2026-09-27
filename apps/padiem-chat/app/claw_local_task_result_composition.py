@@ -153,6 +153,24 @@ class LocalRunnerResultSource:
         if row is None:
             # Existence of another owner's run is never disclosed.
             return None
+        # The run row's own workspace is the authoritative scope. A caller may
+        # only confirm it: widening the broker read to the whole account would
+        # let a same run id in another workspace influence this run.
+        run_workspace_id = row.get("workspace_id")
+        if not isinstance(run_workspace_id, str) or not run_workspace_id:
+            # No canonical workspace for this run: refuse rather than fall back
+            # to account-wide scoping.
+            raise LocalTaskResultError(
+                "local_task_result_workspace_missing",
+                "the originating run has no canonical workspace scope",
+            )
+        if workspace_id is not None and workspace_id != run_workspace_id:
+            raise LocalTaskResultError(
+                "local_task_result_workspace_mismatch",
+                "the supplied workspace does not match the originating run",
+            )
+        effective_workspace_id = run_workspace_id
+
         bound = await self._history.get_local_task_correlation(owner_id, run_id)
         stored_command_id = bound.get("command_id") if bound else None
         if not isinstance(stored_command_id, str) or not stored_command_id:
@@ -160,7 +178,7 @@ class LocalRunnerResultSource:
             # identity — the enqueue record — and never from the terminal fact
             # that is about to be verified.
             identity = await self._result_port.command_identity(
-                run_id=run_id, owner_id=owner_id, workspace_id=workspace_id
+                run_id=run_id, owner_id=owner_id, workspace_id=effective_workspace_id
             )
             if not isinstance(identity, dict):
                 return None
@@ -190,7 +208,7 @@ class LocalRunnerResultSource:
             user_id=owner_id,
             run_id=run_id,
             command_id=stored_command_id,
-            expected_workspace_id=workspace_id,
+            expected_workspace_id=effective_workspace_id,
         )
         return {
             "runId": run_id,

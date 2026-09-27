@@ -1709,6 +1709,216 @@ def test_the_run_history_reconciles_results_in_the_normal_web_flow(harness, tmp_
     runtime._storage.close()
 
 
+def test_the_run_workspace_is_the_authoritative_scope(tmp_path):
+    """One account, two workspaces, one run id in each: the run row decides.
+
+    The broker's read only narrows by workspace when it is given one. If the
+    product caller let it fall back to account scope, a same run id in another
+    workspace could decide this run's origin.
+    """
+
+    from app.claw_local_task_result_composition import (
+        BrokerAuthorityLocalRunnerResultPort,
+        LocalRunnerResultSource,
+    )
+    from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
+
+    import tempfile
+
+    OTHER = "workspace.3139.other"
+
+    class _Env:
+        LOCAL_AGENT_BROKER_AUTHORITY_REF = AUTHORITY_REF
+        LOCAL_AGENT_BROKER_PEPPER = str(PEPPER)
+
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as raw:
+        import sqlite3 as _sqlite3
+
+        class _Storage:
+            def __init__(self, path):
+                self.connection = _sqlite3.connect(path, isolation_level=None)
+
+                class _Cursor:
+                    def __init__(self, inner):
+                        self._inner = inner
+
+                    @property
+                    def rowsWritten(self):
+                        return self._inner.rowcount if self._inner.rowcount >= 0 else 0
+
+                    def toArray(self):
+                        names = [c[0] for c in self._inner.description] if self._inner.description else []
+                        return [dict(zip(names, row)) for row in self._inner.fetchall()]
+
+                class _Sql:
+                    def __init__(self, connection):
+                        self.connection = connection
+
+                    def exec(self, query, *bindings):
+                        return _Cursor(self.connection.execute(query, bindings))
+
+                self.sql = _Sql(self.connection)
+
+            def transactionSync(self, callback):
+                self.connection.execute("BEGIN IMMEDIATE")
+                try:
+                    value = callback()
+                except BaseException:
+                    self.connection.execute("ROLLBACK")
+                    raise
+                self.connection.execute("COMMIT")
+                return value
+
+            def close(self):
+                self.connection.close()
+
+        database_path = Path(raw) / "chat.sqlite3"
+        db = _open_database(database_path)
+        history = D1HistoryStore(db)
+        accounts = _accounts(history)
+        chat_owner = accounts[OWNER_SUBJECT]
+
+        runtime = LocalAgentBrokerDurableRuntime(storage=_Storage(Path(raw) / "broker.sqlite3"), env=_Env())
+        owner = chat_owner
+        for binding_ref, workspace in (("binding.ws.a", WORKSPACE), ("binding.ws.b", OTHER)):
+            runtime.register_binding(
+                {
+                    "binding_ref": binding_ref,
+                    "device_id": f"device.{workspace}",
+                    "account_ref": owner,
+                    "workspace_ref": workspace,
+                    "credential_b64": CRED_B64,
+                    "now": BASE.isoformat(),
+                }
+            )
+        for binding_ref, workspace, suffix in (
+            ("binding.ws.a", WORKSPACE, "a"),
+            ("binding.ws.b", OTHER, "b"),
+        ):
+            runtime.open_session(
+                {
+                    "session_id": f"session.ws.{suffix}",
+                    "binding_ref": binding_ref,
+                    "credential_b64": CRED_B64,
+                    "account_ref": owner,
+                    "workspace_ref": workspace,
+                    "now": (BASE + timedelta(seconds=1)).isoformat(),
+                }
+            )
+            runtime.enqueue_command_with_material(
+                {
+                    "command_id": f"command.ws.{suffix}",
+                    "binding_ref": binding_ref,
+                    # The same run id exists in both workspaces on purpose.
+                    "run_id": "run.shared.id",
+                    "tool_request_ref": f"tool.command.ws.{suffix}",
+                    "request_fingerprint": FINGERPRINT,
+                    "now": (BASE + timedelta(seconds=2)).isoformat(),
+                    "ttl_seconds": COMMAND_TTL,
+                },
+                {
+                    "request_id": f"request.ws.{suffix}",
+                    "run_id": "run.shared.id",
+                    "device_id": f"device.{workspace}",
+                    "root_ref": "root.3139.1",
+                    "argv": ["python", "-V"],
+                    "cwd_relative": ".",
+                    "requested_at": (BASE + timedelta(seconds=1)).isoformat().replace("+00:00", "Z"),
+                    "timeout_seconds": 30,
+                    "shell_authority": False,
+                    "admin_elevation": False,
+                    "environment_payload": None,
+                    "provider_authority": None,
+                    "p01_approval_payload": None,
+                },
+            )
+            admission = runtime.admit_command(
+                {
+                    "admission_ref": f"admission.ws.{suffix}",
+                    "evidence_ref": f"evidence.ws.{suffix}",
+                    "session_id": f"session.ws.{suffix}",
+                    "binding_ref": binding_ref,
+                    "credential_b64": CRED_B64,
+                    "command_id": f"command.ws.{suffix}",
+                    "request_fingerprint": FINGERPRINT,
+                    "request_id": f"request.ws.{suffix}",
+                    "now": (BASE + timedelta(seconds=3)).isoformat(),
+                }
+            )
+            runtime.acknowledge(
+                {
+                    "session_id": f"session.ws.{suffix}",
+                    "binding_ref": binding_ref,
+                    "credential_b64": CRED_B64,
+                    "command_id": f"command.ws.{suffix}",
+                    "admission_ref": f"admission.ws.{suffix}",
+                    "evidence_ref": f"evidence.ws.{suffix}",
+                    "revision_ref": admission["admission"]["revision_ref"],
+                    "termination": "exited",
+                    "request_id": f"request.ws.{suffix}",
+                    "exit_code": 0,
+                    "now": (BASE + timedelta(seconds=4)).isoformat(),
+                }
+            )
+
+        class _Gateway:
+            def terminal_command_result(self, payload):
+                return runtime.terminal_command_result(payload)
+
+        port = BrokerAuthorityLocalRunnerResultPort(_Gateway())
+
+        _run(
+            history.record_claw_run(
+                user_id=chat_owner,
+                run_id="run.shared.id",
+                channel="web",
+                action="local_runner_task",
+                title="scoped task",
+                status="running",
+                conversation_id=_run(
+                    history.append_exchange(chat_owner, None, "실행해줘", "알겠습니다")
+                ),
+                workspace_id=WORKSPACE,
+            )
+        )
+        source = LocalRunnerResultSource(history=history, result_port=port)
+
+        # The product caller passes no workspace at all; the run row's own
+        # workspace still constrains the broker read.
+        projected = _run(source.project_local_runner_result(owner_id=chat_owner, run_id="run.shared.id"))
+        assert projected is not None and projected["commandId"] == "command.ws.a"
+        bound = _run(history.get_local_task_correlation(chat_owner, "run.shared.id"))
+        assert bound is not None and bound["command_id"] == "command.ws.a"
+        assert bound["tool_request_ref"] == "tool.command.ws.a"
+
+        # A caller claiming another workspace is refused outright.
+        with pytest.raises(LocalTaskResultError) as mismatch:
+            _run(
+                source.project_local_runner_result(
+                    owner_id=chat_owner, run_id="run.shared.id", workspace_id=OTHER
+                )
+            )
+        assert mismatch.value.code == "local_task_result_workspace_mismatch"
+
+        # And a run with no canonical workspace never widens to account scope.
+        _run(
+            history.record_claw_run(
+                user_id=chat_owner,
+                run_id="run.no.workspace",
+                channel="web",
+                action="local_runner_task",
+                title="unscoped task",
+                status="running",
+            )
+        )
+        with pytest.raises(LocalTaskResultError) as missing:
+            _run(source.project_local_runner_result(owner_id=chat_owner, run_id="run.no.workspace"))
+        assert missing.value.code == "local_task_result_workspace_missing"
+        assert _run(history.get_local_task_correlation(chat_owner, "run.no.workspace")) is None
+        db.close()
+        runtime._storage.close()
+
+
 def test_source_truth_stays_deployable_and_authority_free():
     from app import claw_local_task_result_composition as composition
     from app import claw_local_task_result_projection as projection

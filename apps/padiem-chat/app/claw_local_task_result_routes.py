@@ -21,6 +21,7 @@ from starlette.responses import JSONResponse
 from .auth_routes import auth_ready, current_user_id
 
 CLAW_LOCAL_TASK_RESULT_PATH = "/api/claw/runs/{run_id}/local-result"
+from .claw_local_task_result_projection import LocalTaskResultError
 from .history import HistoryError, HistoryForbidden
 
 _RUN_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+-]{0,511}$")
@@ -77,6 +78,12 @@ async def local_runner_result(request: Request) -> JSONResponse:
             projected = await projected
     except HistoryForbidden:
         return _error(403, _FORBIDDEN_REASON, "해당 런에 접근할 수 없습니다.")
+    except LocalTaskResultError as exc:
+        if exc.code == "local_task_result_workspace_mismatch":
+            return _error(409, "local_runner_result_workspace_mismatch", "워크스페이스가 일치하지 않습니다.")
+        if exc.code == "local_task_result_workspace_missing":
+            return _error(409, "local_runner_result_workspace_missing", "런의 워크스페이스 범위가 없습니다.")
+        return _error(409, "local_runner_result_conflict", "런 결과를 확정할 수 없습니다.")
     except HistoryError:
         return _error(409, "local_runner_result_conflict", "런 결과가 이미 다르게 기록되었습니다.")
     except Exception:
