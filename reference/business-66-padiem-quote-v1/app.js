@@ -9,12 +9,14 @@
   const Core = window.QuoteCore;
   const Extraction = window.QuoteExtraction || null;
   const History = window.QuoteHistory || null;
+  const TAX_REVIEW_STORAGE_KEY = "quoteBeta.taxReview.v1";
+  const TAX_REVIEW_SCHEMA_VERSION = 1;
 
   /* ── 상태: QuoteDraft ── */
 
   let draft = loadDraft() || Core.createDefaultDraft();
   let lastExtractionReview = null;
-  let taxReviewRequired = false;
+  let taxReviewRequired = loadTaxReviewRequired(draft);
   let suppressNextDraftSave = false;
   let itemSeq = draft.items.reduce((max, it) => {
     const n = parseInt(String(it.id).replace(/^item-/, ""), 10);
@@ -31,6 +33,51 @@
       return Core.normalizeDraft(JSON.parse(localStorage.getItem(Core.DRAFT_STORAGE_KEY) || "null"));
     } catch (err) {
       return null;
+    }
+  }
+
+  function normalizeTaxReviewState(raw) {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+    if (raw.schemaVersion !== TAX_REVIEW_SCHEMA_VERSION || raw.required !== true) return null;
+    if (typeof raw.quoteNo !== "string" || !raw.quoteNo.trim() || raw.quoteNo.length > 120) return null;
+    return {
+      schemaVersion: TAX_REVIEW_SCHEMA_VERSION,
+      quoteNo: raw.quoteNo.trim(),
+      required: true
+    };
+  }
+
+  function loadTaxReviewRequired(activeDraft) {
+    try {
+      const state = normalizeTaxReviewState(
+        JSON.parse(localStorage.getItem(TAX_REVIEW_STORAGE_KEY) || "null")
+      );
+      const quoteNo = String(activeDraft && activeDraft.meta && activeDraft.meta.quoteNo || "").trim();
+      return Boolean(state && quoteNo && state.quoteNo === quoteNo);
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function persistTaxReviewRequired(required) {
+    try {
+      if (!required) {
+        localStorage.removeItem(TAX_REVIEW_STORAGE_KEY);
+        return true;
+      }
+      const quoteNo = String(draft && draft.meta && draft.meta.quoteNo || "").trim();
+      if (!quoteNo) {
+        localStorage.removeItem(TAX_REVIEW_STORAGE_KEY);
+        return false;
+      }
+      localStorage.setItem(TAX_REVIEW_STORAGE_KEY, JSON.stringify({
+        schemaVersion: TAX_REVIEW_SCHEMA_VERSION,
+        quoteNo,
+        required: true
+      }));
+      return true;
+    } catch (err) {
+      return false;
     }
   }
 
@@ -55,6 +102,7 @@
     if (!normalized) return { ok: false, error: "invalid_draft" };
     draft = normalized;
     taxReviewRequired = Boolean(options && options.requireTaxReview);
+    persistTaxReviewRequired(taxReviewRequired);
     itemSeq = draft.items.reduce((max, it) => {
       const n = parseInt(String(it.id).replace(/^(?:item-|extracted-item-)/, ""), 10);
       return Number.isFinite(n) ? Math.max(max, n) : max;
@@ -186,7 +234,8 @@
       Core.DRAFT_STORAGE_KEY,
       Core.SENDER_STORAGE_KEY,
       History && History.HISTORY_STORAGE_KEY,
-      History && History.SEQUENCE_STORAGE_KEY
+      History && History.SEQUENCE_STORAGE_KEY,
+      TAX_REVIEW_STORAGE_KEY
     ].filter(Boolean);
 
     try {
@@ -349,6 +398,7 @@
       if (!e.target.value) return;
       draft.tax.mode = e.target.value;
       taxReviewRequired = false;
+      persistTaxReviewRequired(false);
       renderTaxReviewState();
       render();
     });
@@ -580,6 +630,7 @@
     }
     draft = next;
     taxReviewRequired = false;
+    persistTaxReviewRequired(false);
     itemSeq = 1;
     renderItems();
     fillInputsFromDraft();

@@ -219,6 +219,20 @@ check(easy.includes("requireTaxReview: guided.taxUnknown") &&
 check(app.includes("taxReviewRequired = false;") &&
       app.includes('$("taxMode").addEventListener("change"'),
   "UNKNOWN_VAT_REVIEW_CONTRACT: choosing VAT clears review state");
+check(app.includes('TAX_REVIEW_STORAGE_KEY = "quoteBeta.taxReview.v1"') &&
+      app.includes("function normalizeTaxReviewState(") &&
+      app.includes("function loadTaxReviewRequired(activeDraft)") &&
+      app.includes("state.quoteNo === quoteNo"),
+  "VAT_REVIEW_PERSISTENCE_CONTRACT: unresolved review is scoped to the active quote number");
+check(app.includes("persistTaxReviewRequired(taxReviewRequired)") &&
+      app.includes("persistTaxReviewRequired(false)"),
+  "VAT_REVIEW_PERSISTENCE_CONTRACT: unresolved review persists and explicit resolution clears it");
+check(app.includes("raw.schemaVersion !== TAX_REVIEW_SCHEMA_VERSION") &&
+      app.includes("raw.required !== true"),
+  "VAT_REVIEW_PERSISTENCE_CONTRACT: malformed/old review state fails safe");
+check(app.includes("TAX_REVIEW_STORAGE_KEY") &&
+      app.includes("localStorage.removeItem(TAX_REVIEW_STORAGE_KEY)"),
+  "VAT_REVIEW_PERSISTENCE_CONTRACT: tax review state is independently removable");
 
 /* DRAFT_SAVE_CONTRACT — draft 자동 저장 계약 */
 check(app.includes("localStorage.setItem(Core.DRAFT_STORAGE_KEY, JSON.stringify(draft))"),
@@ -293,8 +307,9 @@ check(html.includes("저장 데이터 초기화") && app.includes("function rese
 check(app.includes("Core.DRAFT_STORAGE_KEY") &&
       app.includes("Core.SENDER_STORAGE_KEY") &&
       app.includes("History.HISTORY_STORAGE_KEY") &&
-      app.includes("History.SEQUENCE_STORAGE_KEY"),
-  "BETA_POLISH_CONTRACT: reset enumerates B66-owned keys");
+      app.includes("History.SEQUENCE_STORAGE_KEY") &&
+      app.includes("TAX_REVIEW_STORAGE_KEY"),
+  "BETA_POLISH_CONTRACT: reset enumerates B66-owned keys including VAT review state");
 check(app.includes("localStorage.removeItem(key)") &&
       !app.includes("localStorage.clear("),
   "BETA_POLISH_CONTRACT: reset never clears unrelated origin storage");
@@ -343,6 +358,8 @@ console.log("FREE_TEXT_CONTINUITY_CONTRACT=PASS");
 console.log("QUOTEDRAFT_SCHEMA_CONTRACT=PASS");
 console.log("NEW_QUOTE_SAFETY_CONTRACT=PASS");
 console.log("UNKNOWN_VAT_REVIEW_CONTRACT=PASS");
+console.log("VAT_REVIEW_PERSISTENCE_CONTRACT=PASS");
+console.log("UNKNOWN_VAT_REVIEW_SURVIVES_RELOAD_SOURCE=YES");
 console.log("DRAFT_SAVE_CONTRACT=PASS");
 console.log("DRAFT_RESTORE_CONTRACT=PASS");
 console.log("VAT_EXCLUSIVE_CONTRACT=PASS");
