@@ -57,6 +57,7 @@ jobs:
         run: |
           set -euo pipefail
           node tests/quote-core.test.cjs
+          node tests/quote-extraction.test.cjs
           node tests/static-contract.test.cjs
 
       - name: Local HTTP smoke
@@ -96,13 +97,32 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          projects_json="$(npx --yes wrangler@4 pages project list --json)"
-          if jq -e --arg name "${PROJECT_NAME}" '.[] | select(.name == $name)' <<<"${projects_json}" >/dev/null; then
-            echo "PAGES_PROJECT=EXISTS"
-          else
-            npx --yes wrangler@4 pages project create "${PROJECT_NAME}" --production-branch "${PRODUCTION_BRANCH}"
-            echo "PAGES_PROJECT=CREATED"
-          fi
+          project_file="$(mktemp)"
+          trap 'rm -f "${project_file}"' EXIT
+
+          project_url="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}"
+          status="$(
+            curl --silent --show-error               --connect-timeout 15               --max-time 60               --output "${project_file}"               --write-out '%{http_code}'               --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"               --header 'Content-Type: application/json'               "${project_url}"
+          )"
+
+          case "${status}" in
+            200)
+              jq -e --arg name "${PROJECT_NAME}" --arg branch "${PRODUCTION_BRANCH}"                 '.success == true and .result.name == $name and .result.production_branch == $branch'                 "${project_file}" >/dev/null
+              echo "PAGES_PROJECT=EXISTS"
+              echo "EXISTING_PROJECT_REUSED=YES"
+              ;;
+            404)
+              jq -e '.success == false' "${project_file}" >/dev/null
+              npx --yes wrangler@4 pages project create "${PROJECT_NAME}"                 --production-branch "${PRODUCTION_BRANCH}"
+              echo "PAGES_PROJECT=CREATED"
+              echo "EXISTING_PROJECT_REUSED=NO"
+              ;;
+            *)
+              echo "Unexpected Cloudflare Pages project lookup HTTP ${status}." >&2
+              cat "${project_file}" >&2
+              exit 1
+              ;;
+          esac
 
       - name: Deploy exact B66 beta
         if: github.event_name != 'pull_request'
@@ -168,12 +188,12 @@ jobs:
           {
             echo "## B66 neutral Pages beta"
             echo
-            echo "- exact SHA: `${TARGET_SHA}`"
-            echo "- source: `${SOURCE_DIR}`"
-            echo "- project: `${PROJECT_NAME}`"
-            echo "- PR deployment mutation: `${{ github.event_name == 'pull_request' && '0' || 'main-only' }}`"
+            echo "- exact SHA: ${TARGET_SHA}"
+            echo "- source: ${SOURCE_DIR}"
+            echo "- project: ${PROJECT_NAME}"
+            echo "- PR deployment mutation: ${{ github.event_name == 'pull_request' && '0' || 'main-only' }}"
             if [ "${{ github.event_name }}" != "pull_request" ]; then
               echo "- user entrypoint: https://${PROJECT_NAME}.pages.dev/"
-              echo "- custom domain mutation: `0`"
+              echo "- custom domain mutation: 0"
             fi
           } >> "${GITHUB_STEP_SUMMARY}"
