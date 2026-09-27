@@ -1,0 +1,68 @@
+/* claw-tokens.css — SHARED-LIKE (Claw) design tokens for B67 Padiem Legal.
+ *
+ * PROVENANCE
+ * Values are transcribed from the canonical Padiem Chat / Padiem Claw token
+ * system so this surface inherits the Claw visual language rather than
+ * approximating it:
+ *   apps/padiem-chat/static/padiem-foundation.css   (fonts, radius, base ramp)
+ *   apps/padiem-chat/static/padiem-themes.css       (per-theme token blocks)
+ *
+ * ABSORPTION NOTE
+ * This file contains NO legal-domain logic. On absorption into Padiem Claw it
+ * is deleted outright and the canonical tokens are used instead. Legal-specific
+ * tokens live in legal/legal-authority.css.
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* Type + geometry — padiem-foundation.css */
+  --font-body: "SUIT Variable", "IBM Plex Sans KR", system-ui, sans-serif;
+  --font-display: "SUITE Variable", "SUIT Variable", system-ui, sans-serif;
+  --font-label: Manrope, "SUIT Variable", system-ui, sans-serif;
+  --radius-md: 16px;
+
+  /* DARK block — padiem-themes.css html[data-theme="dark"] */
+  --bg: #131417;
+  --page-bg: #131417;
+  --panel: #1a1b1f;
+  --sidebar: #101114;
+  --text: #e9eaec;
+  --muted: rgba(255, 255, 255, .56);
+  --line: rgba(255, 255, 255, .10);
+  --accent: #9fc0dd;
+  --accent-contrast: #131417;
+  --accent-soft: rgba(159, 192, 221, .08);
+  --accent-strong: #cfe0ee;
+  --gold: #c9b28a;
+  --gold-soft: rgba(201, 178, 138, .07);
+  --danger: #ff9d9d;
+  --success: #8be9a8;
+  --success-surface: rgba(34, 158, 94, 0.08);
+  --success-border: rgba(34, 158, 94, 0.18);
+  --danger-surface: rgba(220, 62, 62, 0.07);
+  --danger-border: rgba(220, 62, 62, 0.16);
+  --shadow: 0 10px 28px rgba(0, 0, 0, .28);
+  --card-bg: #181a1e;
+  --card-border: rgba(255, 255, 255, .09);
+  --composer-bg: #17181c;
+  --composer-border: rgba(255, 255, 255, .12);
+  --user-bubble-bg: #1c1e22;
+  --user-bubble-text: #f2f3f4;
+  --assistant-surface-bg: #181a1e;
+  --focus-ring: rgba(159, 192, 221, .32);
+  --topbar-bg: rgba(19, 20, 23, .92);
+  --utility-surface: #1a1b1f;
+  --utility-edge: rgba(255, 255, 255, .12);
+}
+
+/* Breakpoints transcribed from the canonical shell so responsive behavior
+ * matches Claw exactly: 920px collapses the 3-column workspace to a single
+ * conversation column with a drawer, 620px tightens the composer. */
+:root {
+  --legal-shell-collapse: 920px;
+  --legal-shell-tight: 620px;
+  --legal-sidebar-w: 264px;
+  --legal-evidence-w: 360px;
+  --legal-touch: 44px;
+}

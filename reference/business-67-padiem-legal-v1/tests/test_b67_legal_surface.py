@@ -1,0 +1,398 @@
+"""test_b67_legal_surface.py — static contract tests for the B67 Padiem Legal review surface.
+
+Written in the same style as the canonical Claw UI tests
+(apps/padiem-chat/tests/test_b62_*.py, test_claw_workspace_ui.py): they read the
+static assets and assert on their exact text, so a contract cannot be dropped
+without a test failing.
+
+Three things are protected here:
+
+1. CLAW CONTINUITY — the surface must keep using Claw's tokens, breakpoints,
+   touch floors, type scale, and single-live-region rule, because it is a Claw
+   vertical and not a fork.
+
+2. LEGAL DOMAIN SEPARATION — the generic Claw layers must contain no
+   legal-domain logic. Deleting legal/ must leave a working grounded-research
+   surface. That is the property that makes absorption into Claw cheap.
+
+3. HONESTY — the capability claims in the UI and README must not overstate what
+   the repo actually has. These assertions encode the source audit, so a future
+   edit that starts claiming live Drive, live OCR, or legacy HWP support fails.
+
+Run:  python -m pytest reference/business-67-padiem-legal-v1/tests/ -q
+"""
+
+from __future__ import annotations
+
+import re
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parent.parent
+
+INDEX = (ROOT / "index.html").read_text(encoding="utf-8")
+
+TOKENS = (ROOT / "css" / "claw-tokens.css").read_text(encoding="utf-8")
+SHELL = (ROOT / "css" / "claw-shell.css").read_text(encoding="utf-8")
+CONV = (ROOT / "css" / "claw-conversation.css").read_text(encoding="utf-8")
+EVID = (ROOT / "css" / "claw-evidence-card.css").read_text(encoding="utf-8")
+
+AUTH = (ROOT / "legal" / "legal-authority.css").read_text(encoding="utf-8")
+AUTH_JS = (ROOT / "legal" / "legal-authority.js").read_text(encoding="utf-8")
+DEMO_JS = (ROOT / "legal" / "legal-demo.js").read_text(encoding="utf-8")
+DECOR_JS = (ROOT / "legal" / "legal-evidence-provenance.js").read_text(encoding="utf-8")
+
+CORPUS = (ROOT / "data" / "demo-corpus.js").read_text(encoding="utf-8")
+CSHELL = (ROOT / "js" / "claw-shell.js").read_text(encoding="utf-8")
+CEVID = (ROOT / "js" / "claw-evidence.js").read_text(encoding="utf-8")
+
+SHARED_CSS = [TOKENS, SHELL, CONV, EVID]
+SHARED_JS = [CSHELL, CEVID]
+LEGAL_CSS = [AUTH]
+LEGAL_JS = [AUTH_JS, DEMO_JS, DECOR_JS]
+ALL_CSS = SHARED_CSS + LEGAL_CSS
+
+README = (ROOT / "README.md").read_text(encoding="utf-8") if (ROOT / "README.md").exists() else ""
+
+
+# ── 1. Claw continuity ────────────────────────────────────────────────────
+
+CLAW_TOKENS = (
+    "--text", "--muted", "--line", "--card-bg", "--accent",
+    "--accent-soft", "--accent-contrast",
+)
+
+
+@pytest.mark.parametrize("token", CLAW_TOKENS)
+def test_shared_layers_use_claw_theme_tokens(token: str) -> None:
+    """Claw components inherit shared roles; they never hardcode a palette."""
+    for source in (SHELL, CONV, EVID):
+        assert f"var({token})" in source, f"{token} missing from a shared layer"
+
+
+def test_no_legacy_token_aliases() -> None:
+    """The canonical suite bans the old aliases outright."""
+    banned = ("--ink", "--text-muted")
+    for source in ALL_CSS + LEGAL_JS:
+        for token in banned:
+            assert token not in source, f"{token} reintroduced in {source[:40]}"
+
+
+def test_no_var_fallbacks() -> None:
+    """Claw writes bare var(--token); a fallback hides a missing theme role."""
+    for source in ALL_CSS:
+        for m in re.finditer(r"var\(--[a-z0-9-]+\s*,", source):
+            fail = source[max(0, m.start() - 60):m.start() + 40]
+            assert "claude" not in fail.lower(), f"unexpected var fallback: {m.group(0)}"
+
+
+def test_token_file_transcribes_claw_values() -> None:
+    """The dark block must match the canonical Padiem Chat dark theme values,
+    so this surface inherits Claw rather than approximating it."""
+    for value in (
+        "--bg: #131417;",
+        "--text: #e9eaec;",
+        "--accent: #9fc0dd;",
+        "--accent-contrast: #131417;",
+        "--card-bg: #181a1e;",
+    ):
+        assert value in TOKENS, f"token drift: {value}"
+
+
+def test_canonical_breakpoints() -> None:
+    """920px / 620px are shared by CSS and matchMedia; a new breakpoint here
+    would desynchronise the collapse from the controller."""
+    assert "@media (max-width: 920px)" in SHELL
+    assert "@media (max-width: 620px)" in SHELL
+    assert 'matchMedia("(max-width: 920px)")' in DEMO_JS
+
+
+def test_touch_target_floors() -> None:
+    """44px standard, 48px primary — the canonical Claw floors."""
+    assert "min-height: 44px" in SHELL
+    assert "min-height: 48px" in SHELL
+    assert "min-height: 44px" in CONV
+    assert "min-height: 44px" in EVID
+    assert "min-height: 44px" in AUTH
+
+
+def test_ios_zoom_floor() -> None:
+    """Text inputs stay at 16px so mobile focus does not zoom the viewport."""
+    block = SHELL.split(".composer textarea {", 1)[1].split("}", 1)[0]
+    assert "font-size: 16px" in block
+
+
+def test_reduced_motion_per_layer() -> None:
+    """Each layer that animates ships its own suppression block."""
+    for name, source in (("shell", SHELL), ("conversation", CONV), ("evidence", EVID)):
+        assert "prefers-reduced-motion" in source, f"{name} has no reduced-motion block"
+
+
+def test_no_component_theme_overrides() -> None:
+    """A component must not carry a theme-specific palette; Claw inherits.
+
+    Comments are stripped first: this surface documents the rule in prose, and
+    scanning the prose would make the contract unpassable.
+    """
+    pattern = r'html\[data-theme=[^\]]+\][^{]*\.(?:claw|ev|prov|auth|corpus|fmt)\s*\{'
+    for name, source in (("shell", SHELL), ("conversation", CONV),
+                         ("evidence", EVID), ("authority", AUTH)):
+        code = re.sub(r"/\*.*?\*/", "", source, flags=re.S)
+        assert not re.findall(pattern, code), \
+            f"{name} CSS declares its own theme palette"
+
+
+def test_single_live_region() -> None:
+    """Exactly one polite live region, and it is not the result container."""
+    polite = re.findall(r'aria-live="([^"]+)"', INDEX)
+    assert polite.count("polite") == 1, f"expected 1 polite live region, found {polite}"
+    composer_note = INDEX.split('id="runtimeNote"', 1)[1].split(">", 1)[0]
+    assert 'aria-live="polite"' in composer_note
+    # No nested live region inside the conversation.
+    assert 'aria-live' not in INDEX.split('id="conversation"', 1)[1].split("</section>", 1)[0]
+
+
+def test_single_h1() -> None:
+    """Exactly one h1 must exist at a time.
+
+    The home state is rendered by JS, so the static markup must contain no h1
+    at all (any h1 there would become a second one in the DOM) and the renderer
+    must create exactly one. The live count is asserted by verify_browser.py.
+    """
+    assert INDEX.count("<h1") == 0, \
+        "h1 belongs to the rendered home state, not the static shell"
+    assert DEMO_JS.count('"h1"') == 1, "the renderer must create exactly one h1"
+
+
+def test_drawer_and_sidebar_dialog_semantics() -> None:
+    drawer = INDEX.split('id="evidenceDrawer"', 1)[1].split(">", 1)[0]
+    assert 'role="dialog"' in drawer
+    assert 'aria-modal="true"' in drawer
+    assert "inert" in drawer, "a closed sheet must be inert so it cannot trap focus"
+    trigger = INDEX.split('id="evidenceTrigger"', 1)[1].split(">", 1)[0]
+    assert 'aria-expanded="false"' in trigger
+    assert 'aria-controls="evidenceDrawer"' in trigger
+    menu = INDEX.split('id="mobileMenu"', 1)[1].split(">", 1)[0]
+    assert 'aria-controls="sidebar"' in menu
+    assert 'aria-expanded="false"' in menu
+
+
+def test_focus_rings_never_removed() -> None:
+    """No focus ring may be removed outright.
+
+    One relocation is legitimate and canonical: the composer textarea drops its
+    own outline and the ring is painted by `.composer:focus-within` on the
+    wrapper instead. Assert both halves of that trade, and nothing else.
+    """
+    assert ":focus-visible" in SHELL
+    assert ".composer:focus-within" in SHELL, \
+        "the composer delegates its ring to :focus-within — that rule must exist"
+    for name, source in (("shell", SHELL), ("conversation", CONV),
+                         ("evidence", EVID), ("authority", AUTH)):
+        code = re.sub(r"/\*.*?\*/", "", source, flags=re.S)
+        code = re.sub(r"\.composer textarea:focus\s*\{[^}]*\}", "", code)
+        assert "outline: none" not in code, f"{name}: a focus ring was removed outright"
+
+
+# ── 2. Legal domain separation ────────────────────────────────────────────
+
+LEGAL_VOCABULARY = (
+    "authority_class", "authority_class", "source_type", "provenance",
+    "statute", "법령", "판례", "근거", "사건", "법무",
+)
+
+
+def test_shared_layers_contain_no_legal_domain_logic() -> None:
+    """This is the property that makes Claw absorption cheap: deleting legal/
+    must leave a working, domain-free grounded-research surface."""
+    offenders: list[str] = []
+    for name, source in [
+        ("claw-shell.css", SHELL),
+        ("claw-conversation.css", CONV),
+        ("claw-evidence-card.css", EVID),
+        ("claw-shell.js", CSHELL),
+        ("claw-evidence.js", CEVID),
+    ]:
+        for word in ("authority_class", "provenance", "법령", "판례", "사건"):
+            # Comments may explain the seam; code may not carry the vocabulary.
+            code = re.sub(r"/\*.*?\*/", "", source, flags=re.S)
+            if word in code:
+                offenders.append(f"{name} contains {word!r}")
+    assert not offenders, offenders
+
+
+def test_legal_logic_lives_under_legal_directory() -> None:
+    """Authority classification, provenance, and the fail-closed predicate are
+    all in legal/, and none of them is re-implemented in the shared layers."""
+    for token in ("shouldFailClosed", "provenanceGaps", "sortEvidence", "AUTHORITY_RANK"):
+        assert token in AUTH_JS, f"{token} missing from the Legal domain module"
+    assert "shouldFailClosed" not in CSHELL
+    assert "shouldFailClosed" not in CEVID
+
+
+def test_evidence_card_has_a_decoration_seam() -> None:
+    """The shared card must be extensible without being Legal-aware."""
+    assert "setDecorator" in CEVID
+    assert "decorator" in CEVID
+    decor = DECOR_JS
+    for token in ("authorityBadge", "provenanceBlock", "createDecorator"):
+        assert token in decor
+
+
+def test_legal_decorator_supplies_authority_and_provenance() -> None:
+    assert 'data-authority' in DECOR_JS or "authorityBadge" in DECOR_JS
+    assert "provenanceBlock" in DECOR_JS
+    for field in ("document_id", "source_id", "retrieved_at",
+                  "effective_date_or_version", "quote_span"):
+        assert field in AUTH_JS or field in DECOR_JS, f"provenance field {field} not handled"
+
+
+# ── 3. Honesty ────────────────────────────────────────────────────────────
+
+def test_no_second_authority_implementation() -> None:
+    """#3138 forbids re-implementing shared capability inside B67."""
+    all_js = "\n".join(SHARED_JS + LEGAL_JS + [CORPUS])
+    for banned in (
+        "drive.search_files", "drive.read_file_content",  # Drive READ authority
+        "EvidenceGraph", "ClaimEvidenceLink", "VerificationVerdict",  # evidence graph
+        "compose_pdf_ocr_fallback", "render_pdf_pages",  # OCR engine
+        "OAuth", "client_secret",
+    ):
+        assert banned not in all_js, f"second authority implemented: {banned}"
+
+
+def test_page_locators_are_never_presented_as_verified() -> None:
+    """Verified audit finding: the evidence graph carries no page/section field.
+    Page locators exist only in the document-segment subsystem, so no record
+    here may claim a verified page link."""
+    assert 'provenance_verified: false' in CORPUS
+    assert '"data-verified": "false"' in DECOR_JS
+    assert CORPUS.count("provenance_verified: false") >= len(
+        re.findall(r"locator_action:", CORPUS)
+    ), "every record with a locator must be marked unverified"
+    assert "PROVENANCE_NOTE" in CORPUS
+
+
+def test_legacy_hwp_is_declared_unsupported() -> None:
+    """HWPX is not HWP. The UI must never imply legacy .hwp is supported."""
+    assert "LEGACY_HWP" not in CORPUS
+    assert 'support: "unsupported"' in CORPUS
+    assert "미지원" in CORPUS
+    # The demo corpus ships a .hwp entry explicitly marked unsupported.
+    hwp = re.search(r'name: "구계약_레거시\.hwp".*?support: "(\w+)"', CORPUS, re.S)
+    assert hwp, "no legacy .hwp entry in the demo corpus"
+    assert hwp.group(1) == "unsupported"
+
+
+def test_hwpx_is_not_claimed_as_fully_supported() -> None:
+    """The shared HWPX module pins HWPX_FULL_SPEC_SUPPORT = NO."""
+    for bad in ("HWPX 지원 완료", "HWP/HWPX 지원", "HWPX 완전 지원"):
+        assert bad not in CORPUS
+        assert bad not in README
+    assert "텍스트 추출만" in CORPUS, "HWPX must be scoped to text extraction"
+
+
+def test_no_live_capability_claims() -> None:
+    """The static surface must not imply anything is connected."""
+    body = INDEX + CORPUS + DEMO_JS
+    for bad in (
+        "연결되었습니다", "실제 검색 결과", "live", "LIVE",
+        "실시간 연동", "자동 연결",
+    ):
+        if bad in ("live", "LIVE"):
+            # The word may only appear inside an explicit negation/comment.
+            for m in re.finditer(re.escape(bad), body):
+                ctx = body[max(0, m.start() - 80):m.start() + 40].lower()
+                assert "not" in ctx or "no " in ctx or "아니" in ctx or "없" in ctx, \
+                    f"unqualified live claim near: {body[max(0,m.start()-60):m.start()+30]!r}"
+        else:
+            assert bad not in body, f"live capability claimed: {bad}"
+
+
+def test_demo_state_is_marked_everywhere() -> None:
+    assert 'data-b67-preview="synthetic"' in INDEX
+    assert "MOCK: true" in CORPUS
+    assert "DEMO" in INDEX
+    assert "실제 검색" in INDEX or "실제 동작하지 않습니다" in INDEX
+    assert "샘플" in CORPUS
+
+
+def test_format_matrix_matches_source_audit() -> None:
+    """PDF OCR exists in KAgent but has no production call site; the binary
+    document path fails closed on the deployed Worker without an installed
+    isolated parser. The UI must not overstate either."""
+    assert "KAgent 구현됨 · 호출 지점 없음" in CORPUS
+    assert "Worker 격리 파서 미설치" in CORPUS
+
+
+def test_fail_closed_is_implemented_not_just_documented() -> None:
+    assert "shouldFailClosed" in AUTH_JS
+    assert "fail-closed" in DEMO_JS
+    assert "검증 가능한 근거를 찾지 못했습니다" in CORPUS
+    for action in ("검색 범위 바꾸기", "내 Drive 확인"):
+        assert action in CORPUS
+
+
+def test_no_console_errors_from_bare_identifiers() -> None:
+    """Cheap guard against the class of bug that aborted init(): every
+    getElementById result used must be assigned to the dom map."""
+    init_block = DEMO_JS.split("function init()", 1)[1]
+    ids_in_markup = set(re.findall(r'id="([\w-]+)"', INDEX))
+    for found in re.findall(r'document\.getElementById\("([\w-]+)"\)', init_block):
+        assert found in ids_in_markup, f"getElementById({found!r}) has no matching element"
+
+
+def test_store_drives_rendering() -> None:
+    """A handler that only calls store.set() must still re-render, otherwise a
+    click silently does nothing."""
+    assert "store.subscribe" in DEMO_JS
+    assert "applyState" in DEMO_JS
+
+
+def test_idempotent_class_writes() -> None:
+    """DOMTokenList.remove() calls setAttribute, which fires a mutation record
+    even when the value is unchanged. An unconditional remove() inside a class
+    MutationObserver deadlocks the renderer — this surface hit exactly that."""
+    assert "classList.remove(\"sidebar-open\")" in DEMO_JS
+    guard = DEMO_JS.split('function syncSidebar()', 1)[1].split("function", 1)[0]
+    assert "classList.contains(\"sidebar-open\")" in guard, \
+        "class write must be guarded so the observer cannot re-trigger itself"
+    assert "syncing" in guard, "syncSidebar must be re-entrancy guarded"
+
+
+# ── 4. README contract ────────────────────────────────────────────────────
+
+def test_readme_documents_the_honest_matrix() -> None:
+    if not README:
+        pytest.skip("README.md not written yet")
+    for required in (
+        "3138", "Claw", "MOCK", "NOT WIRED", "UNSUPPORTED",
+        "grounding", "evidence", "Drive", "OCR", "HWPX",
+    ):
+        assert required in README, f"README does not document {required!r}"
+
+
+def test_readme_has_run_and_verify_instructions() -> None:
+    if not README:
+        pytest.skip("README.md not written yet")
+    assert "serve.py" in README
+    assert "verify_browser.py" in README
+    assert "verify_visual.py" in README
+
+
+def test_no_unsafe_dom_sinks() -> None:
+    """No innerHTML anywhere: every string here is sample or backend data, so an
+    HTML sink would be a markup-injection surface for no benefit."""
+    for name, source in (("claw-shell.js", CSHELL), ("claw-evidence.js", CEVID),
+                         ("legal-authority.js", AUTH_JS), ("legal-demo.js", DEMO_JS),
+                         ("legal-evidence-provenance.js", DECOR_JS),
+                         ("demo-corpus.js", CORPUS)):
+        code = re.sub(r"/\*.*?\*/", "", source, flags=re.S)
+        assert "innerHTML" not in code, f"{name} uses an innerHTML sink"
+
+
+def test_no_window_confirm() -> None:
+    """Banned repo-wide; this surface has real recovery actions instead."""
+    for source in (CSHELL, CEVID, AUTH_JS, DEMO_JS, DECOR_JS):
+        assert "window.confirm" not in source
