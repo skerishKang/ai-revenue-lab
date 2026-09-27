@@ -16,7 +16,7 @@
 
 import { BrowserWindow, app, ipcMain } from 'electron';
 import { fileURLToPath } from 'node:url';
-import { existsSync } from 'node:fs';
+import { existsSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { IPC_CHANNELS, type IpcChannel } from '../contract/ipc.js';
@@ -26,6 +26,11 @@ import { HeadlessRunnerSupervisor } from '../supervisor/runner-supervisor.js';
 import { registerWindowsProtocolClient } from './protocol-registration.js';
 import { acquireSingleInstanceOwnership } from './single-instance.js';
 import { resolveRunnerHostMode } from './runner-host-mode.js';
+import { PairingHandoffConsumer } from './pairing-handoff-consumer.js';
+import {
+  PairingMainFlowProcess,
+  resolvePairingMainFlowPython,
+} from './pairing-main-flow-process.js';
 
 const __dirname_ = path.dirname(fileURLToPath(import.meta.url));
 
@@ -113,6 +118,90 @@ export const controller = new ShellController({
   boundedLogLines: () => processPort.boundedActiveOutput().lines,
 });
 
+/**
+ * #3140 — the main-process consumer of the bounded pairing handoff.
+ *
+ * #3095 left the handoff armed with no main-flow caller; this is that caller.
+ * It drains the one-shot handoff into the pairing main flow — the existing
+ * #3095 runner composed with the existing #3014 resident host — and keeps no
+ * copy of the code. The pairing authority stays #3080's, the resident host
+ * stays #3014's and execution authority stays with P01: this wiring decides
+ * nothing.
+ *
+ * The main process owns the child because #3083 pins `CHILD_PROCESS_USED_ONLY_IN_MAIN`.
+ */
+let pairingMainFlow: PairingMainFlowProcess | null = null;
+
+function pairingMainFlowProcess(): PairingMainFlowProcess | null {
+  if (pairingMainFlow) return pairingMainFlow;
+  const resolved = resolvePairingMainFlowPython();
+  if (!resolved) return null;
+  pairingMainFlow = new PairingMainFlowProcess(resolved);
+  // Re-record on exit so the evidence carries the flow's *result* — the
+  // canonical session/poll path — and not only the fact of delivery.
+  pairingMainFlow.onSettled(() => recordPairingHandoffEvidence(lastHandoffOutcome));
+  return pairingMainFlow;
+}
+
+let lastHandoffOutcome = 'no_pending_handoff';
+
+export const pairingHandoffConsumer = new PairingHandoffConsumer({
+  source: controller,
+  // Starting the flow is the delivery's own business: `isRunnerLive` only
+  // reports that the destination exists, so no child is spawned for a deep
+  // link that carries no handoff.
+  deliver: (line) => pairingMainFlowProcess()?.writeHandoff(line) ?? false,
+  isRunnerLive: () => resolvePairingMainFlowPython() !== null,
+});
+
+/**
+ * Delivers a pending handoff exactly once, starting the pairing main flow if
+ * it is not already running.
+ *
+ * Called on every deep link and once more when the runner starts, so a link
+ * that arrives before the flow exists is still delivered — the handoff stays
+ * armed until it can actually be sent, and is never burned by a missing
+ * destination.
+ */
+export function deliverPendingPairingHandoff(): void {
+  lastHandoffOutcome = pairingHandoffConsumer.deliverPending();
+  recordPairingHandoffEvidence(lastHandoffOutcome);
+}
+
+/**
+ * #3140 — evidence-only marker.
+ *
+ * Off unless `PADIEM_3140_EVIDENCE_MARKER` names a file, so the product never
+ * writes this in normal operation. The payload is secret-free by construction:
+ * a delivery outcome, counts and a non-reversible marker. The pairing code is
+ * never part of it, which is what makes the file safe to hand to a test.
+ */
+function recordPairingHandoffEvidence(outcome: string): void {
+  const markerPath = process.env.PADIEM_3140_EVIDENCE_MARKER;
+  if (!markerPath) return;
+  const flow = pairingMainFlow?.status() ?? null;
+  try {
+    writeFileSync(
+      markerPath,
+      `${JSON.stringify(
+        {
+          handoff_outcome: outcome,
+          handoff_delivered: outcome === 'delivered',
+          consumer: pairingHandoffConsumer.stats(),
+          main_flow_running: flow?.running ?? false,
+          // Bounded, secret-free status lines the flow printed.
+          main_flow_lines: (flow?.lines ?? []).filter((line) => !line.includes('pairing_code"')),
+        },
+        null,
+        2,
+      )}\n`,
+      { encoding: 'utf8' },
+    );
+  } catch {
+    // Evidence capture must never disturb the product path.
+  }
+}
+
 let mainWindow: BrowserWindow | null = null;
 
 export function createMainWindow(): BrowserWindow {
@@ -144,7 +233,17 @@ export function registerIpcHandlers(target: ShellController = controller): void 
     const handler = handlers[channel as IpcChannel];
     // Static allowlist only: the channel name is a literal from the contract,
     // and the request object is validated inside the controller.
-    ipcMain.handle(channel, (_event, request: unknown) => handler(request));
+    ipcMain.handle(channel, async (_event, request: unknown) => {
+      const result = await handler(request);
+      // #3140: a deep link submitted from the renderer, or a runner that has
+      // just started, is the moment a pending handoff can actually be
+      // delivered. Wiring it here keeps `ShellController` a pure handler map
+      // and invents no new lifecycle trigger.
+      if (channel === 'padiem:shell:pairing-deeplink-submit' || channel === 'padiem:shell:runner-start') {
+        deliverPendingPairingHandoff();
+      }
+      return result;
+    });
   }
   handlersRegistered = true;
 }
@@ -153,11 +252,11 @@ export function registerIpcHandlers(target: ShellController = controller): void 
 export function registerDeepLinkHandling(): void {
   app.on('open-url', (event, url) => {
     event.preventDefault();
-    void controller.pairingDeepLinkSubmit({ deepLink: url });
+    void controller.pairingDeepLinkSubmit({ deepLink: url }).then(deliverPendingPairingHandoff);
   });
   for (const argv of process.argv.slice(1)) {
     if (argv.toLowerCase().startsWith('padiem://')) {
-      void controller.pairingDeepLinkSubmit({ deepLink: argv });
+      void controller.pairingDeepLinkSubmit({ deepLink: argv }).then(deliverPendingPairingHandoff);
     }
   }
 }
