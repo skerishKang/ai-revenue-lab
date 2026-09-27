@@ -172,6 +172,33 @@ check(app.includes("Core.parseMoney"), "KOREAN_MONEY_INPUT_CONTRACT: app uses Co
 ].forEach((key) => check(core.includes(key), `QUOTEDRAFT_SCHEMA_CONTRACT missing in quote-core.js: ${key}`));
 check(app.includes("Core.createDefaultDraft"), "QUOTEDRAFT_SCHEMA_CONTRACT: app default draft from core");
 
+/* NEW_QUOTE_SAFETY_CONTRACT — public beta 새 견적은 다음 고객용 빈 상태 */
+check(core.includes("function createBlankQuoteDraft("),
+  "NEW_QUOTE_SAFETY_CONTRACT: domain helper exists");
+check(app.includes("function createBlankNextDraft(") &&
+      app.includes("draft = next;"),
+  "NEW_QUOTE_SAFETY_CONTRACT: direct new quote uses blank-next helper");
+check(core.includes('recipient: { company: "", person: "", address: "", email: "" }') &&
+      core.includes('items: [{ id: "item-1", name: "", qty: 1, unitPrice: 0 }]'),
+  "NEW_QUOTE_SAFETY_CONTRACT: next customer fields are blank");
+check(app.includes("보내는 사람 정보는 유지하고 새 고객 견적을 시작합니다."),
+  "NEW_QUOTE_SAFETY_CONTRACT: user-visible sender preservation");
+
+/* UNKNOWN_VAT_REVIEW_CONTRACT — 미확정 세금은 확정 합계처럼 보이지 않음 */
+check(html.includes('id="taxReviewNote"') && html.includes('id="taxRow"'),
+  "UNKNOWN_VAT_REVIEW_CONTRACT: direct review surface exists");
+check(css.includes(".tax-row.tax-review-required"),
+  "UNKNOWN_VAT_REVIEW_CONTRACT: direct review highlight exists");
+check(easy.includes('"품목 합계(세금 확인 전): "') &&
+      easy.includes('"최종 합계는 부가세 방식을 선택한 뒤 확정됩니다."'),
+  "UNKNOWN_VAT_REVIEW_CONTRACT: unknown VAT summary is explicitly provisional");
+check(easy.includes("requireTaxReview: guided.taxUnknown") &&
+      easy.includes("App.focusTaxReview()"),
+  "UNKNOWN_VAT_REVIEW_CONTRACT: direct mode review is required and focused");
+check(app.includes("taxReviewRequired = false;") &&
+      app.includes('$("taxMode").addEventListener("change"'),
+  "UNKNOWN_VAT_REVIEW_CONTRACT: choosing VAT clears review state");
+
 /* DRAFT_SAVE_CONTRACT — draft 자동 저장 계약 */
 check(app.includes("localStorage.setItem(Core.DRAFT_STORAGE_KEY, JSON.stringify(draft))"),
   "DRAFT_SAVE_CONTRACT: autosave whole draft");
@@ -250,6 +277,8 @@ console.log("RECENT_HISTORY_CONTRACT=PASS");
 console.log("HUMAN_READABLE_QUOTE_NO_CONTRACT=PASS");
 console.log("KOREAN_MONEY_INPUT_CONTRACT=PASS");
 console.log("QUOTEDRAFT_SCHEMA_CONTRACT=PASS");
+console.log("NEW_QUOTE_SAFETY_CONTRACT=PASS");
+console.log("UNKNOWN_VAT_REVIEW_CONTRACT=PASS");
 console.log("DRAFT_SAVE_CONTRACT=PASS");
 console.log("DRAFT_RESTORE_CONTRACT=PASS");
 console.log("VAT_EXCLUSIVE_CONTRACT=PASS");
