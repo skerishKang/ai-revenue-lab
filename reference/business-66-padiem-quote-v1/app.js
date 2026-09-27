@@ -14,6 +14,7 @@
 
   let draft = loadDraft() || Core.createDefaultDraft();
   let lastExtractionReview = null;
+  let taxReviewRequired = false;
   let itemSeq = draft.items.reduce((max, it) => {
     const n = parseInt(String(it.id).replace(/^item-/, ""), 10);
     return Number.isFinite(n) ? Math.max(max, n) : max;
@@ -48,6 +49,7 @@
     const normalized = Core.normalizeDraft(nextDraft);
     if (!normalized) return { ok: false, error: "invalid_draft" };
     draft = normalized;
+    taxReviewRequired = Boolean(options && options.requireTaxReview);
     itemSeq = draft.items.reduce((max, it) => {
       const n = parseInt(String(it.id).replace(/^(?:item-|extracted-item-)/, ""), 10);
       return Number.isFinite(n) ? Math.max(max, n) : max;
@@ -55,6 +57,7 @@
     renderItems();
     fillInputsFromDraft();
     render();
+    renderTaxReviewState();
     if (options && options.toast) toast(options.toast);
     return { ok: true, draft: cloneDraft(draft) };
   }
@@ -111,6 +114,15 @@
     return fresh;
   }
 
+  function createBlankNextDraft(now) {
+    const dt = now instanceof Date ? now : new Date();
+    return Core.createBlankQuoteDraft(draft, {
+      quoteNo: allocateFreshQuoteNo(dt),
+      issueDate: Core.isoFormat(dt),
+      source: "manual"
+    });
+  }
+
   function copyHistoryAsNew(entry, now) {
     if (!History) return null;
     const dt = now instanceof Date ? now : new Date();
@@ -151,6 +163,23 @@
     $("toast").classList.add("show");
     clearTimeout(toast.timer);
     toast.timer = setTimeout(() => $("toast").classList.remove("show"), duration || 1800);
+  }
+
+  function renderTaxReviewState() {
+    const row = $("taxRow");
+    const note = $("taxReviewNote");
+    if (!row || !note) return;
+    row.classList.toggle("tax-review-required", taxReviewRequired);
+    note.hidden = !taxReviewRequired;
+    $("taxMode").setAttribute("aria-invalid", String(taxReviewRequired));
+  }
+
+  function focusTaxReview() {
+    if (!taxReviewRequired) return false;
+    renderTaxReviewState();
+    $("taxMode").focus({ preventScroll: true });
+    $("taxRow").scrollIntoView({ block: "center", behavior: "smooth" });
+    return true;
   }
 
   /* ── draft 필드 ↔ 입력 요소 바인딩 ── */
@@ -214,6 +243,8 @@
     });
     $("taxMode").addEventListener("change", (e) => {
       draft.tax.mode = e.target.value;
+      taxReviewRequired = false;
+      renderTaxReviewState();
       render();
     });
   }
@@ -437,11 +468,19 @@
 
   $("newQuote").addEventListener("click", () => {
     if (!window.confirm("현재 입력한 견적 내용을 모두 지우고 새로 시작할까요?")) return;
-    draft = createFreshDraft("manual");
+    const next = createBlankNextDraft();
+    if (!next) {
+      toast("새 견적을 시작하지 못했습니다.");
+      return;
+    }
+    draft = next;
+    taxReviewRequired = false;
+    itemSeq = 1;
     renderItems();
     fillInputsFromDraft();
+    renderTaxReviewState();
     render();
-    toast("새 견적을 시작합니다.");
+    toast("보내는 사람 정보는 유지하고 새 고객 견적을 시작합니다.");
   });
 
   /* ── 인쇄: 브라우저 머리글/바닥글은 코드로 끌 수 없어 저장 전 짧게 안내 ── */
@@ -495,12 +534,14 @@
     getDraft: () => cloneDraft(draft),
     replaceDraft,
     createFreshDraft,
+    createBlankNextDraft,
     copyHistoryAsNew,
     saveCurrentToHistory,
     getHistoryEnvelope: () => {
       const envelope = loadHistoryEnvelope();
       return envelope ? cloneDraft(envelope) : null;
     },
+    focusTaxReview,
     toast
   });
 
@@ -510,5 +551,6 @@
   fillInputsFromDraft();
   bindFields();
   $("addItem").addEventListener("click", addItem);
+  renderTaxReviewState();
   render();
 })();
