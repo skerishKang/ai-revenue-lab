@@ -77,8 +77,9 @@ check(html.includes("쉽게 만들기") && html.includes("직접 입력"),
   "EASY_MODE_CONTRACT: top-level easy/direct switch");
 check(html.includes("질문받으며 새로 만들기") && html.includes("내용을 한번에 말하기"),
   "EASY_MODE_CONTRACT: easy entry choices");
-check(easy.includes('fresh.meta.source = "guided"'),
-  "EASY_MODE_CONTRACT: deterministic guided draft source");
+check(easy.includes('App.createFreshDraft("guided")') &&
+      app.includes('fresh.meta.source = source || "manual"'),
+  "EASY_MODE_CONTRACT: deterministic guided draft uses shared fresh-draft allocator");
 check(easy.includes("function processGuidedInput("),
   "EASY_MODE_CONTRACT: guided state machine");
 check(easy.includes("Core.computeTotals(guided.draft.items, guided.draft.tax.mode)"),
@@ -101,8 +102,14 @@ check(history.includes('HISTORY_STORAGE_KEY = "quoteBeta.history.v1"'),
   "RECENT_HISTORY_CONTRACT: dedicated storage key");
 check(history.includes("MAX_HISTORY = 20"),
   "RECENT_HISTORY_CONTRACT: bounded history");
-check(history.includes("function freshQuoteNo(") && history.includes("function copyAsNew("),
-  "RECENT_HISTORY_CONTRACT: copy-as-new receives a fresh quote number");
+check(history.includes('SEQUENCE_STORAGE_KEY = "quoteBeta.quoteNoSequence.v1"'),
+  "RECENT_HISTORY_CONTRACT: dedicated browser-local quote number sequence");
+check(history.includes("function allocateQuoteNo(") && history.includes("function copyAsNew("),
+  "RECENT_HISTORY_CONTRACT: copy/new quotes use readable daily allocation");
+check(app.includes("function createFreshDraft(") && app.includes("function copyHistoryAsNew("),
+  "RECENT_HISTORY_CONTRACT: direct and Easy flows share allocator");
+check(easy.includes('App.createFreshDraft("guided")') && easy.includes("App.copyHistoryAsNew(entry)"),
+  "RECENT_HISTORY_CONTRACT: guided/copy paths use shared allocation");
 check(history.includes("Core.computeTotals(entry.draft.items, entry.draft.tax.mode)"),
   "RECENT_HISTORY_CONTRACT: displayed totals are derived");
 check(easy.includes("window.confirm(\"이 최근 견적을 이 브라우저에서 삭제할까요?\")"),
@@ -201,6 +208,7 @@ console.log("NEUTRAL_PUBLIC_UI_CONTRACT=PASS");
 console.log("EXTRACTION_BOUNDARY_CONTRACT=PASS");
 console.log("EASY_MODE_CONTRACT=PASS");
 console.log("RECENT_HISTORY_CONTRACT=PASS");
+console.log("HUMAN_READABLE_QUOTE_NO_CONTRACT=PASS");
 console.log("KOREAN_MONEY_INPUT_CONTRACT=PASS");
 console.log("QUOTEDRAFT_SCHEMA_CONTRACT=PASS");
 console.log("DRAFT_SAVE_CONTRACT=PASS");

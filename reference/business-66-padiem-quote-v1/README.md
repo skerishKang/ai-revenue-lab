@@ -69,6 +69,7 @@ Every file stays far below the 500-line guideline. No framework, no build step.
 - **AI 없이 동작하는 질문형 견적 만들기**: 받는 곳 → 담당자 → 품목 → 수량 → 단가 → VAT → 비고 → 발신자 → 요약
 - 작성 중인 의미 있는 active draft가 있으면 **지난 견적 이어서 하기** 노출
 - browser-local **최근 견적 최대 20개** 저장/불러오기/복사해서 새 견적/삭제 확인
+- 새 견적/복사본은 browser-local 일일 순번으로 짧은 번호 사용: `PQ-YYYYMMDD-001`, `-002`, `-003` …
 - 자유 문장 자동 해석과 파일 읽기는 아직 비연결 상태를 명확히 표시하며 가짜 AI 응답을 만들지 않음
 - Korean-first quotation UI
 - sender preset, browser-local custom sender save, sender address
@@ -124,7 +125,11 @@ The Easy Mode is deliberately usable before any model is selected:
 
 `내용을 한번에 말하기` currently collects the user's text only inside the current page session and explicitly says that semantic AI interpretation is not connected yet. `파일에서 불러오기` likewise performs no upload.
 
-Recent quotations use a separate browser-local key (`quoteBeta.history.v1`) and are capped at 20 snapshots. Snapshot metadata such as totals is derived by `QuoteCore`; trusted totals are not persisted. "복사해서 새 견적" gives the copied draft a fresh quote number/date while preserving useful sender/recipient/item content.
+Recent quotations use a separate browser-local key (`quoteBeta.history.v1`) and are capped at 20 snapshots. Snapshot metadata such as totals is derived by `QuoteCore`; trusted totals are not persisted.
+
+New/copy quote numbers use a separate browser-local sequence state (`quoteBeta.quoteNoSequence.v1`) and the human-readable format `PQ-YYYYMMDD-NNN`. The allocator checks the current meaningful draft plus recent-history snapshots before issuing the next same-day sequence, so ordinary browser-local use yields `-001`, `-002`, `-003` without relying on a server. The sequence resets for a new local date. Existing long timestamp-style numbers are left untouched.
+
+"복사해서 새 견적" preserves useful sender/recipient/item content while receiving the newly allocated number/current date.
 
 ## Extraction boundary
 
@@ -148,4 +153,4 @@ rather than fabricated extracted values.
 The current upload/chat buttons remain non-live until a governed backend/model adapter is connected.
 No provider/model ID or secret lives in the B66 browser code.
 
-Refs #3136, #3144, #3147, #3154.
+Refs #3136, #3144, #3147, #3154, #3158.
