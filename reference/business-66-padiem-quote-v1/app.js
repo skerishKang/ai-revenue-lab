@@ -472,10 +472,16 @@
         $("futureNote").textContent = "";
         return;
       }
+      if (button.dataset.mode === "upload") {
+        document.querySelectorAll(".mode").forEach((b) => b.classList.remove("active"));
+        document.querySelector('.mode[data-mode="manual"]').classList.add("active");
+        $("futureNote").className = "future-note";
+        $("futureNote").textContent = "";
+        document.dispatchEvent(new CustomEvent("b66:open-file-intake"));
+        return;
+      }
       $("futureNote").className = "future-note show";
-      $("futureNote").textContent = button.dataset.mode === "upload"
-        ? "파일 업로드 → 견적서 필드 자동 추출은 다음 단계에서 AI/OCR Skill로 연결합니다. 이 데모에서는 파일을 외부로 전송하지 않습니다."
-        : "자연어 채팅 → QuoteDraft 자동 입력은 다음 단계에서 연결합니다. 금액 계산은 AI가 아니라 현재와 같은 결정적 계산 코드가 담당합니다.";
+      $("futureNote").textContent = "자연어 채팅 → QuoteDraft 자동 입력은 다음 단계에서 연결합니다. 금액 계산은 AI가 아니라 현재와 같은 결정적 계산 코드가 담당합니다.";
     });
   });
 

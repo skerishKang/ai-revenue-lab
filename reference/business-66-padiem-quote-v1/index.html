@@ -8,6 +8,7 @@
   <script src="quote-core.js" defer></script>
   <script src="quote-extraction.js" defer></script>
   <script src="quote-history.js" defer></script>
+  <script src="file-intake.js" defer></script>
   <script src="app.js" defer></script>
   <script src="easy-mode.js" defer></script>
 </head>
@@ -52,7 +53,7 @@
             </button>
             <button class="easy-starter" id="fileStarter" type="button">
               <span class="easy-starter-icon" aria-hidden="true">＋</span>
-              <span><strong>파일에서 불러오기</strong><small>PDF·사진·문서 자동 읽기는 다음 단계입니다</small></span>
+              <span><strong>파일에서 불러오기</strong><small>PDF·사진·문서를 먼저 안전하게 선택합니다</small></span>
             </button>
             <button class="easy-starter" id="directStarter" type="button">
               <span class="easy-starter-icon" aria-hidden="true">▦</span>
@@ -63,6 +64,13 @@
 
         <div class="easy-message-list" id="easyMessageList" aria-live="polite"></div>
         <div class="easy-history-panel" id="easyHistoryPanel" hidden></div>
+        <input
+          id="easyFileInput"
+          type="file"
+          hidden
+          accept=".pdf,.docx,.pptx,.xlsx,.hwpx,.jpg,.jpeg,.png,.webp,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/hwp+zip,image/jpeg,image/png,image/webp"
+          aria-label="견적서 파일 선택"
+        >
       </div>
 
       <div class="easy-composer-wrap">
@@ -78,7 +86,7 @@
     <section class="direct-view" id="directView" aria-label="직접 견적서 입력" hidden>
     <nav class="modebar" aria-label="견적 생성 방식">
       <button class="mode active" data-mode="manual">직접 입력</button>
-      <button class="mode future" data-mode="upload">파일 올리기 · 다음 단계</button>
+      <button class="mode" data-mode="upload">파일 불러오기</button>
       <button class="mode future" data-mode="chat">채팅으로 만들기 · 다음 단계</button>
     </nav>
     <div class="future-note" id="futureNote"></div>
