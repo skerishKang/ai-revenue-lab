@@ -132,6 +132,90 @@ const scanned = ok({
 assert.deepEqual(scanned.items.map((x) => x.name), ["첫째", "둘째", "셋째"]);
 assert.deepEqual(scanned.evidence.map((x) => x.page), [2, 2, 3]);
 
+
+
+const currentDraft = {
+  schemaVersion: 1,
+  meta: {
+    quoteNo: "OLD-1",
+    issueDate: "2026-09-01",
+    validDays: 7,
+    source: "manual"
+  },
+  sender: {
+    company: "기존 공급사",
+    rep: "기존 대표",
+    bizNo: "",
+    address: "",
+    phone: "",
+    email: "",
+    presetId: "sample"
+  },
+  recipient: {
+    company: "기존 고객",
+    person: "",
+    address: "",
+    email: ""
+  },
+  items: [
+    { id: "item-1", name: "기존 품목", qty: 9, unitPrice: 999 }
+  ],
+  tax: { mode: "EXCLUSIVE", rate: 0.10 },
+  memo: "기존 메모"
+};
+
+const candidate = Extraction.buildDraftCandidate(currentDraft, {
+  source: { kind: "image", filename: "quote.png" },
+  sender: { company: "새 공급사" },
+  recipient: { company: "새 고객" },
+  quote: { quoteNo: "NEW-2" },
+  items: [
+    { name: "A", qty: "2", unitPrice: "1,500,000" },
+    { name: "B" }
+  ],
+  tax: { mode: "INCLUSIVE" },
+  memo: "새 메모",
+  evidence: [{ field: "items.0.unitPrice", page: 1, snippet: "1,500,000", confidence: 0.98 }],
+  totals: { supply: 999999999, vat: 999999999, grand: 999999999 }
+});
+assert.equal(candidate.ok, true, JSON.stringify(candidate));
+assert.equal(candidate.value.draft.meta.source, "extraction:image");
+assert.equal(candidate.value.draft.meta.quoteNo, "NEW-2");
+assert.equal(candidate.value.draft.meta.issueDate, "2026-09-01", "missing date preserves editable draft value");
+assert.equal(candidate.value.draft.sender.company, "새 공급사");
+assert.equal(candidate.value.draft.sender.rep, "기존 대표", "missing sender field is not fabricated");
+assert.equal(candidate.value.draft.sender.presetId, "custom");
+assert.equal(candidate.value.draft.recipient.company, "새 고객");
+assert.deepEqual(candidate.value.draft.items, [
+  { id: "extracted-item-1", name: "A", qty: 2, unitPrice: 1500000 },
+  { id: "extracted-item-2", name: "B", qty: 0, unitPrice: 0 }
+], "extracted item order preserved; missing numeric fields become editable zero placeholders");
+assert.equal(candidate.value.draft.tax.mode, "INCLUSIVE");
+assert.equal(candidate.value.draft.memo, "새 메모");
+assert.ok(!("totals" in candidate.value.draft), "untrusted source totals never enter QuoteDraft");
+assert.deepEqual(candidate.value.review.source, { kind: "image", filename: "quote.png" });
+assert.equal(candidate.value.review.evidence[0].confidence, 0.98);
+assert.deepEqual(candidate.value.review.warnings, []);
+
+const noItemsCandidate = Extraction.buildDraftCandidate(currentDraft, {
+  source: { kind: "text" },
+  sender: { company: "텍스트 공급사" }
+});
+assert.equal(noItemsCandidate.ok, true);
+assert.deepEqual(noItemsCandidate.value.draft.items, currentDraft.items, "missing extracted item list preserves current editable items");
+
+assert.deepEqual(currentDraft.items, [
+  { id: "item-1", name: "기존 품목", qty: 9, unitPrice: 999 }
+], "candidate mapping does not mutate current draft");
+
+assert.deepEqual(
+  Extraction.buildDraftCandidate(null, { source: { kind: "text" } }),
+  { ok: false, error: "invalid_current_draft" }
+);
+
+console.log("EXTRACTION_TO_DRAFT_BOUNDARY=PASS");
+console.log("QUOTE_CORE_REMAINS_AUTHORITY=YES");
+
 console.log("B66_EXTRACTION_CONTRACT=PASS");
 console.log("MALFORMED_OUTPUT_FAILS_SAFE=YES");
 console.log("MISSING_FIELDS_NOT_FABRICATED=YES");
