@@ -632,3 +632,61 @@ def test_legal_authority_rank_orders_all_four_classes() -> None:
     order = re.findall(r"(\w+):", rank_block)
     assert order == ["primary", "party", "internal", "secondary"], \
         f"authority ranking order changed: {order}"
+
+
+# ── 7. Persistable-state authority (CENTRAL final blocker) ───────────────
+
+def test_persistable_states_are_derived_not_hand_maintained() -> None:
+    """The persistable set must be DERIVED from the routable + review lists.
+
+    It used to be the review-switcher list, which made `web` — a real routable
+    scope with no top-bar chip — persistable but unrestorable, so it silently
+    reverted to 통합 on reload. Deriving it means a new routable scope is
+    restorable the moment it becomes routable.
+    """
+    assert "var PERSISTABLE_STATES = ROUTABLE_STATES.concat(" in DEMO_JS, \
+        "PERSISTABLE_STATES must be derived, not a hand-written literal"
+    assert "var PERSISTABLE_STATES = [" not in DEMO_JS, \
+        "PERSISTABLE_STATES is still a hand-maintained list"
+    assert "REVIEW_STATES.map" in DEMO_JS, \
+        "PERSISTABLE_STATES must also absorb the review-only states"
+
+
+def test_no_state_is_persistable_but_unrestorable() -> None:
+    """The invariant, checked structurally: every routable state and every
+    review state must be inside the persistable set, and both persist() and
+    restore() must validate through the single isPersistable() predicate."""
+    # A routable state is restorable the moment it is routable.
+    routable = DEMO_JS.split("var ROUTABLE_STATES = [", 1)[1].split("]", 1)[0]
+    routable_ids = re.findall(r'"([\w-]+)"', routable)
+    assert "web" in routable_ids, "web must be a routable state"
+
+    review_block = DEMO_JS.split("var REVIEW_STATES = [", 1)[1].split("\n  ];", 1)[0]
+    review_ids = re.findall(r'id: "([\w-]+)"', review_block)
+    assert review_ids, "the review switcher list is empty"
+
+    # The derived expression must union both, de-duplicating the shared ones.
+    derived = DEMO_JS.split("var PERSISTABLE_STATES = ", 1)[1].split("\n\n", 1)[0]
+    assert "ROUTABLE_STATES.concat(" in derived
+    assert 'ROUTABLE_STATES.indexOf(id) === -1' in derived, \
+        "the shared ids must be de-duplicated or a routable state could be missed"
+
+    # Both write and read validate through the one predicate.
+    persist = DEMO_JS.split("function persist()", 1)[1].split("\n  }", 1)[0]
+    restore = DEMO_JS.split("function restore()", 1)[1].split("\n  }", 1)[0]
+    assert "isPersistable(stateId)" in persist, "persist must not write an unrestorable state"
+    assert "isPersistable(saved)" in restore, "restore must validate via isPersistable"
+    # The old conflation must be gone.
+    assert "STATES.some(" not in restore, "restore still validates against the review list"
+    assert "REVIEW_STATES.some(" not in restore
+
+
+def test_review_switcher_is_not_the_state_authority() -> None:
+    """The top-bar switcher is a UI affordance; it must not be used to decide
+    what a valid state is. `web` legitimately has no chip."""
+    assert "var REVIEW_STATES = [" in DEMO_JS
+    assert "var PERSISTABLE_STATES" in DEMO_JS
+    # persist/restore must not reference the review list at all.
+    for fn in ("function persist()", "function restore()"):
+        block = DEMO_JS.split(fn, 1)[1].split("\n  }", 1)[0]
+        assert "REVIEW_STATES" not in block, f"{fn} still depends on the review switcher"

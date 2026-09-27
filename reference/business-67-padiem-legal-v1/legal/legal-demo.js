@@ -40,7 +40,10 @@
 
   var STORAGE_KEY = "b67-legal-demo-state";
 
-  var STATES = [
+  /* The TOP-BAR REVIEW SWITCHER — a UI affordance, NOT the set of valid
+   * states. `web` is a real routable scope that deliberately has no chip here,
+   * so this list must never be used to validate persisted state. */
+  var REVIEW_STATES = [
     { id: "home", label: "A · 새 조사" },
     { id: "unified", label: "B · 통합 검색" },
     { id: "official", label: "C · 공식 법률자료" },
@@ -80,9 +83,26 @@
    * the user sees. Keeping them pure and adjacent makes it obvious that there
    * is a single authority. */
 
-  /* Every routable state. `web` was missing here, which is why the visible 웹
+  /* Every routable scope. `web` was missing here, which is why the visible 웹
    * chip snapped back to 통합 on click — the control looked real and was not. */
   var ROUTABLE_STATES = ["unified", "official", "drive", "web"];
+
+  /* THE canonical valid-state authority: what may be persisted and restored.
+   *
+   * DERIVED, never hand-maintained. It was previously the review-switcher list,
+   * which is a different concern: the switcher is what we choose to show, while
+   * this is what the state machine can actually represent. Conflating them made
+   * `web` persistable-but-unrestorable — a real routable scope that silently
+   * reverted to 통합 on reload. Deriving it means a new routable scope is
+   * restorable the moment it is routable. */
+  var PERSISTABLE_STATES = ROUTABLE_STATES.concat(
+    REVIEW_STATES.map(function (entry) { return entry.id; })
+      .filter(function (id) { return ROUTABLE_STATES.indexOf(id) === -1; })
+  );
+
+  function isPersistable(stateId) {
+    return PERSISTABLE_STATES.indexOf(stateId) !== -1;
+  }
 
   function scopeForState(stateId) {
     if (ROUTABLE_STATES.indexOf(stateId) !== -1) return stateId;
@@ -644,7 +664,13 @@
   }
 
   function persist() {
-    try { localStorage.setItem(STORAGE_KEY, store.get().state); } catch (e) { /* private mode */ }
+    try {
+      var stateId = store.get().state;
+      /* Guard on write as well as read, so a state that is somehow not
+       * restorable can never be written in the first place. */
+      if (isPersistable(stateId)) localStorage.setItem(STORAGE_KEY, stateId);
+      else localStorage.removeItem(STORAGE_KEY);
+    } catch (e) { /* private mode */ }
   }
 
   /* Restore passes ONLY a state id, so the scope chip and title are re-derived
@@ -653,7 +679,7 @@
   function restore() {
     var saved;
     try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) { saved = null; }
-    if (saved && STATES.some(function (s) { return s.id === saved; })) applyState({ state: saved });
+    if (saved && isPersistable(saved)) applyState({ state: saved });
   }
 
   function renderAll() {
@@ -896,7 +922,10 @@
 
   global.B67DemoApp = {
     store: store,
-    STATES: STATES,
+    REVIEW_STATES: REVIEW_STATES,
+    STATES: REVIEW_STATES,
+    PERSISTABLE_STATES: PERSISTABLE_STATES,
+    isPersistable: isPersistable,
     applyState: applyState,
     evidenceForState: evidenceForState,
     scopeForState: scopeForState,
