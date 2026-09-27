@@ -48,7 +48,8 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'id="resumeDraftStarter"',
   'id="easyFileInput"',
   'id="fileStarter"',
-  'id="saveHistory"'
+  'id="saveHistory"',
+  'id="resetLocalData"'
 ].forEach((marker) => check(html.includes(marker), `B66_STATIC_CONTRACT missing in index.html: ${marker}`));
 
 /* NEUTRAL_PUBLIC_UI_CONTRACT — 외부 화면/상태에 내부 제품 브랜드를 노출하지 않음 */
@@ -128,6 +129,12 @@ check(!easy.includes("FormData") && !intake.includes("FormData"),
   "FILE_INTAKE_CONTRACT: browser has no upload transport");
 check(easy.includes("업로드 0건") && easy.includes("파일 내용 저장 0건"),
   "FILE_INTAKE_CONTRACT: user-visible privacy truth");
+check(intake.includes('declared === "application/octet-stream"') &&
+      intake.includes('declared === "application/zip"') &&
+      intake.includes('declared === "application/x-zip-compressed"'),
+  "FILE_INTAKE_CONTRACT: generic browser MIME fallbacks are explicit");
+check(intake.includes("isGenericMedia(extension, declared) ? spec.media[0] : declared"),
+  "FILE_INTAKE_CONTRACT: generic MIME canonicalizes to expected media type");
 
 /* RECENT_HISTORY_CONTRACT — active autosave와 최근 견적 snapshot 분리 */
 check(history.includes('HISTORY_STORAGE_KEY = "quoteBeta.history.v1"'),
@@ -150,6 +157,9 @@ check(easy.includes("window.confirm(\"현재 작성 중인 견적을 바꾸고 �
   "RECENT_HISTORY_CONTRACT: load overwrite confirmation");
 check(app.includes("saveCurrentToHistory"),
   "RECENT_HISTORY_CONTRACT: direct mode can save current quote");
+check(history.includes("function upsertEntryByQuoteNo(") &&
+      app.includes("History.upsertEntryByQuoteNo(before, draft)"),
+  "RECENT_HISTORY_CONTRACT: repeated save updates same quote number instead of duplicating");
 
 /* KOREAN_MONEY_INPUT_CONTRACT — 한국식 콤마 단가 입력 계약
    (품목 행의 단가/수량 입력은 app.js 템플릿에서 생성되므로 app.js를 검사) */
@@ -244,6 +254,28 @@ check(css.includes(".direct-view[hidden] { display: block !important; }"),
 check(css.includes(".grid { display: block; }"), "PRINT_LAYOUT_CONTRACT: paper in normal flow");
 check(!css.includes("visibility: hidden"), "PRINT_LAYOUT_CONTRACT: visibility hack removed");
 
+/* BETA_POLISH_CONTRACT — repeated-use/accessibility/privacy */
+check(css.includes(".workspace-mode {") && css.includes("min-height: 44px;"),
+  "BETA_POLISH_CONTRACT: workspace controls meet 44px target");
+check(css.includes(".mode { min-height: 44px;") &&
+      css.includes(".btn { min-height: 44px;") &&
+      css.includes(".icon-btn { width: 44px; height: 44px;") &&
+      css.includes(".easy-history-actions button {\n  min-height: 44px;"),
+  "BETA_POLISH_CONTRACT: visible action controls use 44px minimum");
+check(html.includes("저장 데이터 초기화") && app.includes("function resetBrowserLocalData("),
+  "BETA_POLISH_CONTRACT: first-party browser reset exists");
+check(app.includes("Core.DRAFT_STORAGE_KEY") &&
+      app.includes("Core.SENDER_STORAGE_KEY") &&
+      app.includes("History.HISTORY_STORAGE_KEY") &&
+      app.includes("History.SEQUENCE_STORAGE_KEY"),
+  "BETA_POLISH_CONTRACT: reset enumerates B66-owned keys");
+check(app.includes("localStorage.removeItem(key)") &&
+      !app.includes("localStorage.clear("),
+  "BETA_POLISH_CONTRACT: reset never clears unrelated origin storage");
+check(easy.includes('"b66:local-data-reset"') &&
+      easy.includes('fileInput.value = ""'),
+  "BETA_POLISH_CONTRACT: reset clears ephemeral selected-file state");
+
 /* 결정론적 계산 잔여 계약 (원본에서 승계) */
 check(core.includes("Math.round(qty * price)"), "deterministic item amount");
 check(app.includes("window.print()"), "print action");
@@ -274,6 +306,10 @@ console.log("FILE_INTAKE_CONTRACT=PASS");
 console.log("FILE_CHOOSER_LIVE=YES");
 console.log("BROWSER_UPLOAD_NETWORK=0");
 console.log("RECENT_HISTORY_CONTRACT=PASS");
+console.log("HISTORY_SAVE_UPSERT_CONTRACT=PASS");
+console.log("BETA_POLISH_CONTRACT=PASS");
+console.log("VISIBLE_ACTION_MIN_HEIGHT_44PX=YES");
+console.log("B66_LOCAL_RESET_CONTRACT=PASS");
 console.log("HUMAN_READABLE_QUOTE_NO_CONTRACT=PASS");
 console.log("KOREAN_MONEY_INPUT_CONTRACT=PASS");
 console.log("QUOTEDRAFT_SCHEMA_CONTRACT=PASS");
