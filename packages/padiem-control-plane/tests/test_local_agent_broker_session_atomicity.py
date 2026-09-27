@@ -623,9 +623,6 @@ def test_reconcile_runs_inside_the_mutation_transaction_and_compacts_atomically(
     assert seam["entries"] - seam_entries_before == 1
     assert seam["max_depth"] == 1
 
-    _dbg_state = state_port.load(authority_ref=AUTHORITY_REF).snapshot
-    print("DEBUG commands:", [x.command_id for x in _dbg_state.commands])
-    print("DEBUG threshold:", state_module.COMPACTION_PROACTIVE_TRIGGER_COMMANDS)
     window = storage.executed_statements[statements_before:]
     # The reconcile's broker-state CAS ran with the storage transaction open.
     broker_updates = [flag for flag, head in window if head.startswith("update local_agent_broker_state")]
