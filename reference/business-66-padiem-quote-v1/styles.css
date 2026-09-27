@@ -346,6 +346,78 @@ textarea { min-height: 82px; resize: vertical; }
   font-size: 13px;
 }
 
+.easy-file-card {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+}
+.easy-file-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: var(--soft);
+  color: #344054;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .04em;
+}
+.easy-file-info {
+  min-width: 0;
+  display: grid;
+  gap: 4px;
+}
+.easy-file-info strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+}
+.easy-file-info span {
+  color: #475467;
+  font-size: 12px;
+  font-weight: 700;
+}
+.easy-file-info p {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.easy-file-info small {
+  color: #8a9099;
+  font-size: 10px;
+  line-height: 1.45;
+}
+.easy-file-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.easy-file-actions button {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: #344054;
+  font-size: 12px;
+  font-weight: 750;
+}
+.easy-file-actions button:hover { background: var(--soft); }
+.easy-file-actions button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+
 .easy-composer-wrap {
   position: sticky;
   bottom: 0;
@@ -438,6 +510,10 @@ textarea { min-height: 82px; resize: vertical; }
   .easy-history-card { display: grid; gap: 12px; }
   .easy-history-actions { justify-content: flex-start; }
   .easy-history-actions button { min-height: 44px; }
+  .easy-file-card { grid-template-columns: 44px minmax(0, 1fr); }
+  .easy-file-icon { width: 44px; height: 44px; }
+  .easy-file-actions { grid-column: 1 / -1; justify-content: flex-start; }
+  .easy-file-actions button { flex: 1 1 130px; }
   .easy-composer-wrap { width: 100%; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
   .easy-composer { border-radius: 20px; padding: 8px 8px 7px 12px; }
   .easy-send { width: 44px; height: 44px; }
