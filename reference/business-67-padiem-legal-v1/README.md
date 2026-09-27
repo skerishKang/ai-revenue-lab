@@ -163,7 +163,7 @@ number at all.** So the UI is built around that truth:
 
 ---
 
-## 5b. Five invariants (each was a real defect, each has a regression)
+## 5b. Six invariants (each was a real defect, each has a regression)
 
 These are the properties the surface guarantees. All were broken at least once,
 and all are now asserted at the interaction level in `verify_browser.py`.
@@ -178,6 +178,14 @@ the one thing a citation UI cannot afford.
 
 `matter` is the one axis that is *not* persisted, so a reload returns it to the
 first sample matter. That is deliberate and is asserted as such.
+
+**The persistable set is derived, never hand-maintained.** `PERSISTABLE_STATES`
+is computed as `ROUTABLE_STATES` plus the review-only states, and both
+`persist()` and `restore()` validate through one `isPersistable()` predicate. It
+used to validate against the top-bar review switcher, which made `web` — a real
+routable scope that deliberately has no chip — persistable but unrestorable, so
+it silently reverted to 통합 on reload. Deriving the set means a new routable
+scope is restorable the moment it becomes routable.
 
 ### 2. The evidence surface follows the viewport
 
@@ -214,7 +222,15 @@ The web answer states its own limit in the **body**, not only in a badge:
 `2차자료이며 참고자료입니다. 법적 근거로 단독 사용하지 마십시오.` so the caveat
 survives a screenshot of the answer alone.
 
-### 5. Citation integrity (a consequence of invariants 3 and 4)
+### 5. Every routable state survives a reload
+
+Selecting a scope and reloading the page must reproduce the same surface: state,
+scope chip, title, evidence set, and the grounded answer. A regression runs
+**all four** routable states through a real browser reload rather than asserting
+on one, because the failure mode is per-state — a scope missing from the
+restore validator looks identical to a scope that is simply not selected.
+
+### 6. Citation integrity (a consequence of invariants 3 and 4)
 
 The sample answer is fixed text but the evidence set is not. Before rendering an
 answer, every `[n]` it cites is checked against the records actually in the
@@ -333,15 +349,16 @@ failure.
   single live region, single h1; the shared layers stay free of Legal
   vocabulary; and the honesty claims (unverified locators, HWP unsupported, no
   real statute identifier, no second Drive/evidence/OCR implementation) cannot be
-  quietly dropped. **53 tests**.
+  quietly dropped. **56 tests**.
 - **`verify_browser.py`** — no console errors, no horizontal overflow, all touch
   targets ≥ 44px, every keyboard tab stop shows a focus ring, the evidence
   panel is present at desktop and *absent* at mobile (not squeezed), and the
-  five invariants in §5b are each checked by **real interaction**: the desktop
+  six invariants in §5b are each checked by **real interaction**: the desktop
   sidebar is clicked, all three mobile sidebar close paths assert the trap is
   released, a citation is clicked, Drive is disconnected and reconnected, every
-  scope is switched and its grounded answer checked citation-by-citation, and
-  the composer is driven by pointer, Enter, and Shift+Enter.
+  scope is switched and its grounded answer checked citation-by-citation, all
+  four routable states are driven through a real reload, and the composer is
+  driven by pointer, Enter, and Shift+Enter.
 - **`verify_visual.py`** — no clipped text, nothing trapped behind the fixed
   composer, the fixed composer never overlaps the evidence panel, the three
   desktop columns are balanced, and every measured text/background pair clears
@@ -416,6 +433,15 @@ none of these are visible in a screenshot.
 14. (CENTRAL review) `AUTHORITY_RANK`/`sortEvidence()` were **documented as a
     contract but never applied** — the panel received raw array order. It is now
     applied, with a regression proving the `[1]..[5]` identities are unchanged.
+15. (CENTRAL review) The **웹 scope was persistable but not restorable**.
+    `restore()` validated against the top-bar review switcher, which has no `web`
+    chip, so Web silently reverted to 통합 on reload. The persistable set is now
+    derived from the routable and review lists, and both `persist()` and
+    `restore()` validate through one predicate.
+
+Findings 13 and 15 are the same shape: a control that looked real and was not.
+In both cases the surface *did* respond to a click — it just responded wrongly,
+and nothing asserted on the result.
 
 Finding 13 is the one worth remembering: the surface had a control that looked
 real and was not, and no assertion covered it because the click *did* change

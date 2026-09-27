@@ -368,10 +368,10 @@ def main() -> int:
                 check_matter_consistency(page)
                 check_composer_submit_paths(page)
                 check_web_scope_selectable(page)
-                check_web_scope_survives_reload(page)
                 check_scope_grounded_results(page)
                 check_authority_ordering(page)
                 check_disconnected_truth_all_scopes(page)
+                check_every_routable_state_survives_reload(page)
 
             page.screenshot(path=str(OUT / f"{name}-B-unified.png"), full_page=False)
 
@@ -958,57 +958,6 @@ def check_web_scope_selectable(page) -> None:
         ok("web evidence is labelled 2차자료")
 
 
-def check_web_scope_survives_reload(page) -> None:
-    """A scope the user chose must still be there after a refresh.
-
-    persist() stored "web" happily while restore() validated against the top-bar
-    demo strip, which has no `web` entry — so every reload silently dropped the
-    scope back to 통합. The reload is the real user action, so it is checked as
-    one, not simulated.
-    """
-    page.evaluate("() => window.B67DemoApp.applyState({state: 'web'})")
-    page.wait_for_timeout(250)
-    page.reload(wait_until="domcontentloaded")
-    page.wait_for_timeout(400)
-    got = page.evaluate(
-        """() => {
-            const c = document.querySelector('#conversation .claw-chip[aria-pressed="true"]');
-            const cites = Array.from(document.querySelectorAll('#conversation .cite'))
-                            .map(x => parseInt(x.dataset.cite, 10));
-            const cards = Array.from(document.querySelectorAll('#evidenceList .ev'))
-                            .map(e => parseInt(e.dataset.evidenceN, 10));
-            return {
-                state: window.B67DemoApp.store.get().state,
-                chip: c ? (c.querySelector('span:not(.chip-icon)') || c).textContent.trim() : null,
-                title: document.getElementById('topbarTitle').textContent,
-                answered: !!document.querySelector('#conversation .assistant-content'),
-                failClosed: document.getElementById('conversation').textContent
-                    .includes('검증 가능한 근거를 찾지 못했습니다'),
-                unresolved: cites.filter(n => !cards.includes(n)),
-            };
-        }"""
-    )
-    if got["state"] != "web":
-        fail(f"web scope was lost on reload: state={got['state']!r}")
-    elif got["chip"] != "웹":
-        fail(f"web chip is not selected after reload: {got['chip']!r}")
-    elif not got["title"].startswith("웹"):
-        fail(f"title after reload is {got['title']!r}, does not begin with 웹")
-    elif not got["answered"] or got["failClosed"]:
-        fail("reloaded web scope did not render its own grounded answer")
-    elif got["unresolved"]:
-        fail(f"reloaded web scope cites {got['unresolved']} with no evidence card")
-    else:
-        ok("web scope survives a real reload: chip, title and grounded answer intact")
-
-    # And the restored value must be the state space, not the demo strip.
-    persistable = page.evaluate("() => window.B67DemoApp.PERSISTABLE_STATES")
-    if "web" not in persistable:
-        fail(f"web is not in the persistable state space: {persistable}")
-    else:
-        ok(f"persistable state space includes the web scope: {persistable}")
-
-
 def check_scope_grounded_results(page) -> None:
     """BLOCKER C: official/drive/web must render a real grounded answer.
 
@@ -1128,6 +1077,124 @@ def check_disconnected_truth_all_scopes(page) -> None:
         fail("Drive scope while disconnected does not show the connection-required state")
     else:
         ok("Drive scope while disconnected shows the connection-required state")
+
+def check_every_routable_state_survives_reload(page) -> None:
+    """CENTRAL final blocker: `web` was persisted but not restorable.
+
+    `restore()` validated against the TOP-BAR REVIEW SWITCHER, which has no `web`
+    chip, so the Web scope silently reverted to 통합 on reload. The check runs
+    every routable state through a real reload and requires the full post-reload
+    triple — state, scope chip, title, evidence, and a grounded answer.
+    """
+    # Start from a clean, CONNECTED surface. The Drive connection is not part of
+    # the persisted review state, so a reload returns it to the default; running
+    # this from a disconnected precondition would compare two different corpora.
+    page.evaluate("() => window.B67DemoApp.applyState({driveConnected: true, state: 'unified'})")
+    page.wait_for_timeout(250)
+    if not page.evaluate("() => window.B67DemoApp.store.get().driveConnected"):
+        fail("reload: precondition failed - Drive is not connected")
+        return
+
+    for scope in ("unified", "official", "drive", "web"):
+        page.evaluate(f"() => window.B67DemoApp.applyState({{state: '{scope}'}})")
+        page.wait_for_timeout(250)
+        before = page.evaluate(
+            """() => {
+                const c = document.querySelector('#conversation .claw-chip[aria-pressed="true"]');
+                return {
+                    state: window.B67DemoApp.store.get().state,
+                    chip: c ? (c.querySelector('span:not(.chip-icon)') || c).textContent.trim() : null,
+                    title: document.getElementById('topbarTitle').textContent,
+                    types: Array.from(new Set(
+                        Array.from(document.querySelectorAll('#evidenceList .ev'))
+                            .map(e => e.dataset.sourceType))),
+                    answered: !!document.querySelector('#conversation .assistant-content'),
+                    cites: Array.from(document.querySelectorAll('#conversation .cite'))
+                        .map(c => parseInt(c.dataset.cite, 10)),
+                    cards: Array.from(document.querySelectorAll('#evidenceList .ev'))
+                        .map(e => parseInt(e.dataset.evidenceN, 10)),
+                };
+            }"""
+        )
+        if not before["answered"]:
+            fail(f"reload/{scope}: the scope renders no grounded answer before reload")
+            continue
+        if sorted(set(before["cites"]) - set(before["cards"])):
+            fail(f"reload/{scope}: unresolved citation before reload")
+
+        page.reload()
+        page.wait_for_function(
+            "() => document.getElementById('conversation').children.length > 0", timeout=15000)
+        page.wait_for_timeout(400)
+        after = page.evaluate(
+            """() => {
+                const c = document.querySelector('#conversation .claw-chip[aria-pressed="true"]');
+                return {
+                    state: window.B67DemoApp.store.get().state,
+                    chip: c ? (c.querySelector('span:not(.chip-icon)') || c).textContent.trim() : null,
+                    title: document.getElementById('topbarTitle').textContent,
+                    types: Array.from(new Set(
+                        Array.from(document.querySelectorAll('#evidenceList .ev'))
+                            .map(e => e.dataset.sourceType))),
+                    answered: !!document.querySelector('#conversation .assistant-content'),
+                    failClosedTitle: document.getElementById('conversation').textContent
+                        .includes('검증 가능한 근거를 찾지 못했습니다'),
+                    cites: Array.from(document.querySelectorAll('#conversation .cite'))
+                        .map(c => parseInt(c.dataset.cite, 10)),
+                    cards: Array.from(document.querySelectorAll('#evidenceList .ev'))
+                        .map(e => parseInt(e.dataset.evidenceN, 10)),
+                };
+            }"""
+        )
+        if after["state"] != scope:
+            fail(f"reload: '{scope}' came back as {after['state']!r} (state was not restored)")
+            continue
+        # The title is "<scope> · <matter>". `matter` is deliberately NOT
+        # persisted, so only the routing part of the title is comparable across a
+        # reload — the matter suffix is expected to return to its default, which
+        # check_state_scope_single_authority() asserts separately.
+        if before["chip"] != after["chip"]:
+            fail(f"reload/{scope}: scope chip changed {before['chip']!r} -> {after['chip']!r}")
+            continue
+        if not after["title"].startswith(after["chip"]):
+            fail(f"reload/{scope}: title {after['title']!r} does not lead with "
+                 f"the restored scope {after['chip']!r}")
+            continue
+        if before["types"] != after["types"]:
+            fail(f"reload/{scope}: evidence types changed {before['types']} -> {after['types']}")
+            continue
+        if not after["answered"]:
+            fail(f"reload/{scope}: grounded answer missing after reload")
+            continue
+        if after["failClosedTitle"]:
+            fail(f"reload/{scope}: fell into generic fail-closed after reload")
+            continue
+        if sorted(set(after["cites"]) - set(after["cards"])):
+            fail(f"reload/{scope}: unresolved citation after reload")
+            continue
+        ok(f"{scope} survives reload: state/chip/title/evidence/answer all identical "
+           f"(types={after['types']}, cites={sorted(set(after['cites']))})")
+
+    # The review switcher is a UI list, not the valid-state authority.
+    overlap = page.evaluate(
+        """() => {
+            const review = window.B67DemoApp.REVIEW_STATES.map(s => s.id);
+            const persistable = window.B67DemoApp.PERSISTABLE_STATES;
+            const routable = ['unified', 'official', 'drive', 'web'];
+            return {
+                routableMissing: routable.filter(r => persistable.indexOf(r) === -1),
+                reviewOnly: review.filter(r => persistable.indexOf(r) === -1),
+            };
+        }"""
+    )
+    if overlap["routableMissing"]:
+        fail(f"routable state(s) are persistable-but-unrestorable: {overlap['routableMissing']}")
+    else:
+        ok("every routable state is persistable and restorable")
+    if overlap["reviewOnly"]:
+        fail(f"review state(s) are not restorable: {overlap['reviewOnly']}")
+    else:
+        ok("every review-switcher state is restorable too")
 
 if __name__ == "__main__":
     sys.exit(main())
