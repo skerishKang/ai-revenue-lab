@@ -8,6 +8,8 @@ const css = read("styles.css");
 const app = read("app.js");
 const core = read("quote-core.js");
 const extraction = read("quote-extraction.js");
+const history = read("quote-history.js");
+const easy = read("easy-mode.js");
 
 const check = (condition, label) => assert.ok(condition, `contract failed: ${label}`);
 
@@ -18,7 +20,9 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'href="styles.css"',
   'src="quote-core.js"',
   'src="quote-extraction.js"',
+  'src="quote-history.js"',
   'src="app.js"',
+  'src="easy-mode.js"',
   'id="senderPreset"',
   'id="senderCompany"',
   'id="senderAddress"',
@@ -32,11 +36,19 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'id="quotePaper"',
   'id="printPdf"',
   'id="pvValidUntil"',
-  'id="pvTaxMode"'
+  'id="pvTaxMode"',
+  'id="easyModeButton"',
+  'id="directModeButton"',
+  'id="easyView"',
+  'id="directView"',
+  'id="guidedStarter"',
+  'id="recentQuoteStarter"',
+  'id="resumeDraftStarter"',
+  'id="saveHistory"'
 ].forEach((marker) => check(html.includes(marker), `B66_STATIC_CONTRACT missing in index.html: ${marker}`));
 
 /* NEUTRAL_PUBLIC_UI_CONTRACT — 외부 화면/상태에 내부 제품 브랜드를 노출하지 않음 */
-check(!/(Padiem|파디엠|padiem)/.test(html + app + core),
+check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + easy),
   "NEUTRAL_PUBLIC_UI_CONTRACT: no Padiem branding in rendered/runtime source");
 check(!html.includes("B66 DEMO"), "NEUTRAL_PUBLIC_UI_CONTRACT: no internal demo label");
 check(html.includes("BETA · 입력 내용은 이 브라우저에만 저장"),
@@ -59,6 +71,53 @@ check(!/(kilo\/|sensenova\/|b-ai\/|gpt-5\.6-luna|space-bunny)/i.test(extraction 
   "EXTRACTION_BOUNDARY_CONTRACT: no provider/model ids in B66 seam");
 check(!extraction.includes("grand =") && !extraction.includes("vat =") && !extraction.includes("supply ="),
   "EXTRACTION_BOUNDARY_CONTRACT: extraction layer owns no totals");
+
+/* EASY_MODE_CONTRACT — 기존 직접입력 화면 앞에 deterministic chat UX */
+check(html.includes("쉽게 만들기") && html.includes("직접 입력"),
+  "EASY_MODE_CONTRACT: top-level easy/direct switch");
+check(html.includes("질문받으며 새로 만들기") && html.includes("내용을 한번에 말하기"),
+  "EASY_MODE_CONTRACT: easy entry choices");
+check(easy.includes('App.createFreshDraft("guided")') &&
+      app.includes('fresh.meta.source = source || "manual"'),
+  "EASY_MODE_CONTRACT: deterministic guided draft uses shared fresh-draft allocator");
+check(easy.includes("function processGuidedInput("),
+  "EASY_MODE_CONTRACT: guided state machine");
+check(easy.includes("Core.computeTotals(guided.draft.items, guided.draft.tax.mode)"),
+  "EASY_MODE_CONTRACT: summary uses QuoteCore totals");
+check(css.includes(".easy-chip {") && css.includes("min-height: 44px;"),
+  "EASY_MODE_CONTRACT: quick chips meet 44px touch target");
+check(!easy.includes("fetch(") && !easy.includes("XMLHttpRequest"),
+  "EASY_MODE_CONTRACT: no network/model call in Easy Mode");
+check(easy.includes("아직 자동 해석 모델은 연결 전"),
+  "EASY_MODE_CONTRACT: free-chat truthfulness");
+check(easy.includes("지금은 파일을 선택하거나 외부로 전송하지 않습니다."),
+  "EASY_MODE_CONTRACT: file future truthfulness");
+check(app.includes("window.B66QuoteAppBridge"),
+  "EASY_MODE_CONTRACT: reuses existing QuoteDraft renderer");
+check(html.includes('id="directView"'),
+  "EASY_MODE_CONTRACT: direct mode preserved");
+
+/* RECENT_HISTORY_CONTRACT — active autosave와 최근 견적 snapshot 분리 */
+check(history.includes('HISTORY_STORAGE_KEY = "quoteBeta.history.v1"'),
+  "RECENT_HISTORY_CONTRACT: dedicated storage key");
+check(history.includes("MAX_HISTORY = 20"),
+  "RECENT_HISTORY_CONTRACT: bounded history");
+check(history.includes('SEQUENCE_STORAGE_KEY = "quoteBeta.quoteNoSequence.v1"'),
+  "RECENT_HISTORY_CONTRACT: dedicated browser-local quote number sequence");
+check(history.includes("function allocateQuoteNo(") && history.includes("function copyAsNew("),
+  "RECENT_HISTORY_CONTRACT: copy/new quotes use readable daily allocation");
+check(app.includes("function createFreshDraft(") && app.includes("function copyHistoryAsNew("),
+  "RECENT_HISTORY_CONTRACT: direct and Easy flows share allocator");
+check(easy.includes('App.createFreshDraft("guided")') && easy.includes("App.copyHistoryAsNew(entry)"),
+  "RECENT_HISTORY_CONTRACT: guided/copy paths use shared allocation");
+check(history.includes("Core.computeTotals(entry.draft.items, entry.draft.tax.mode)"),
+  "RECENT_HISTORY_CONTRACT: displayed totals are derived");
+check(easy.includes("window.confirm(\"이 최근 견적을 이 브라우저에서 삭제할까요?\")"),
+  "RECENT_HISTORY_CONTRACT: delete confirmation");
+check(easy.includes("window.confirm(\"현재 작성 중인 견적을 바꾸고 이 견적을 불러올까요?\")"),
+  "RECENT_HISTORY_CONTRACT: load overwrite confirmation");
+check(app.includes("saveCurrentToHistory"),
+  "RECENT_HISTORY_CONTRACT: direct mode can save current quote");
 
 /* KOREAN_MONEY_INPUT_CONTRACT — 한국식 콤마 단가 입력 계약
    (품목 행의 단가/수량 입력은 app.js 템플릿에서 생성되므로 app.js를 검사) */
@@ -119,8 +178,10 @@ check(html.includes('id="pvSenderAddress"') && html.includes('id="pvRecipientAdd
 /* PRINT_LAYOUT_CONTRACT — 빈 페이지 없는 A4 인쇄 계약 */
 check(css.includes("@page { size: A4"), "PRINT_LAYOUT_CONTRACT: A4 page rule");
 check(css.includes("@media print"), "PRINT_LAYOUT_CONTRACT: print media");
-check(css.includes(".topbar, .modebar, .future-note, .panel, .preview-toolbar, .toast { display: none !important; }"),
-  "PRINT_LAYOUT_CONTRACT: non-print UI removed from layout");
+check(css.includes(".topbar, .workspace-modebar, .easy-view, .modebar, .future-note, .panel, .preview-toolbar, .toast { display: none !important; }"),
+  "PRINT_LAYOUT_CONTRACT: all non-print Easy/Direct UI removed from layout");
+check(css.includes(".direct-view[hidden] { display: block !important; }"),
+  "PRINT_LAYOUT_CONTRACT: hidden Direct view is restored for printing from Easy Mode");
 check(css.includes(".grid { display: block; }"), "PRINT_LAYOUT_CONTRACT: paper in normal flow");
 check(!css.includes("visibility: hidden"), "PRINT_LAYOUT_CONTRACT: visibility hack removed");
 
@@ -145,6 +206,9 @@ check(html.includes("이메일 보내기 · 다음 단계"), "EMAIL_SEND_LIVE=NO
 console.log("B66_STATIC_CONTRACT=PASS");
 console.log("NEUTRAL_PUBLIC_UI_CONTRACT=PASS");
 console.log("EXTRACTION_BOUNDARY_CONTRACT=PASS");
+console.log("EASY_MODE_CONTRACT=PASS");
+console.log("RECENT_HISTORY_CONTRACT=PASS");
+console.log("HUMAN_READABLE_QUOTE_NO_CONTRACT=PASS");
 console.log("KOREAN_MONEY_INPUT_CONTRACT=PASS");
 console.log("QUOTEDRAFT_SCHEMA_CONTRACT=PASS");
 console.log("DRAFT_SAVE_CONTRACT=PASS");

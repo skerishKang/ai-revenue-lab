@@ -46,12 +46,15 @@ reference/business-66-padiem-quote-v1/
 ├─ styles.css                    스타일 + A4 인쇄 규격 (약 134줄)
 ├─ quote-core.js                 견적 도메인 로직 — DOM 없음, 브라우저/Node 겸용
 ├─ quote-extraction.js           모델 독립 추출 계약 — 검증·provenance·QuoteDraft candidate
+├─ quote-history.js              브라우저 로컬 최근 견적(최대 20개) + copy-as-new
 ├─ app.js                        UI 레이어 — QuoteDraft 상태·렌더링·자동저장 + reviewed apply seam
+├─ easy-mode.js                  AI 없는 질문형 Easy Mode + 최근 견적/이어하기 UX
 ├─ DEMO_GUIDE.md                 데모 운영 가이드 (시연 스크립트·PDF 저장 주의·자동 저장)
 ├─ tests/
 │  ├─ static-contract.test.cjs   정적/권한 경계 계약
 │  ├─ quote-core.test.cjs        도메인 로직 Node 단위 테스트
-│  └─ quote-extraction.test.cjs  추출 결과 검증·QuoteDraft 경계 테스트
+│  ├─ quote-extraction.test.cjs  추출 결과 검증·QuoteDraft 경계 테스트
+│  └─ quote-history.test.cjs     최근 견적 저장·불러오기·복사·상한 테스트
 └─ README.md
 ```
 
@@ -61,6 +64,13 @@ Every file stays far below the 500-line guideline. No framework, no build step.
 
 ## Demo capabilities
 
+- **Easy Mode + 직접 입력** top-level switch
+- Easy Mode: Padiem Chat interaction pattern을 참고한 중립 chat UI (메시지, 칩, 하단 composer)
+- **AI 없이 동작하는 질문형 견적 만들기**: 받는 곳 → 담당자 → 품목 → 수량 → 단가 → VAT → 비고 → 발신자 → 요약
+- 작성 중인 의미 있는 active draft가 있으면 **지난 견적 이어서 하기** 노출
+- browser-local **최근 견적 최대 20개** 저장/불러오기/복사해서 새 견적/삭제 확인
+- 새 견적/복사본은 browser-local 일일 순번으로 짧은 번호 사용: `PQ-YYYYMMDD-001`, `-002`, `-003` …
+- 자유 문장 자동 해석과 파일 읽기는 아직 비연결 상태를 명확히 표시하며 가짜 AI 응답을 만들지 않음
 - Korean-first quotation UI
 - sender preset, browser-local custom sender save, sender address
 - recipient/company/contact + recipient address
@@ -78,7 +88,8 @@ Every file stays far below the 500-line guideline. No framework, no build step.
 ```bash
 node tests/quote-core.test.cjs       # money parse/format, 3-mode VAT math, valid-until, draft normalization
 node tests/quote-extraction.test.cjs # model-independent extraction validation + QuoteDraft candidate mapping
-node tests/static-contract.test.cjs  # structure, authority, save/restore, print, non-live guards
+node tests/quote-history.test.cjs    # bounded local history, load/copy/delete metadata rules
+node tests/static-contract.test.cjs  # structure, Easy Mode, authority, save/restore, print, non-live guards
 ```
 
 The static contract pins the screen structure, the QuoteDraft schema, draft save/restore,
@@ -98,6 +109,27 @@ The UI names the next steps but does not pretend they work:
 - branded/custom-domain Production rollout
 
 No file is uploaded, no email is sent, and no credential is required by this demo.
+
+## Easy Mode and recent history
+
+The Easy Mode is deliberately usable before any model is selected:
+
+```text
+질문받으며 새로 만들기
+→ deterministic question state machine
+→ QuoteDraft
+→ 기존 직접입력/미리보기 화면
+→ 사람의 최종 수정
+→ PDF
+```
+
+`내용을 한번에 말하기` currently collects the user's text only inside the current page session and explicitly says that semantic AI interpretation is not connected yet. `파일에서 불러오기` likewise performs no upload.
+
+Recent quotations use a separate browser-local key (`quoteBeta.history.v1`) and are capped at 20 snapshots. Snapshot metadata such as totals is derived by `QuoteCore`; trusted totals are not persisted.
+
+New/copy quote numbers use a separate browser-local sequence state (`quoteBeta.quoteNoSequence.v1`) and the human-readable format `PQ-YYYYMMDD-NNN`. The allocator checks the current meaningful draft plus recent-history snapshots before issuing the next same-day sequence, so ordinary browser-local use yields `-001`, `-002`, `-003` without relying on a server. The sequence resets for a new local date. Existing long timestamp-style numbers are left untouched.
+
+"복사해서 새 견적" preserves useful sender/recipient/item content while receiving the newly allocated number/current date.
 
 ## Extraction boundary
 
@@ -121,4 +153,4 @@ rather than fabricated extracted values.
 The current upload/chat buttons remain non-live until a governed backend/model adapter is connected.
 No provider/model ID or secret lives in the B66 browser code.
 
-Refs #3136, #3144, #3147.
+Refs #3136, #3144, #3147, #3154, #3158.

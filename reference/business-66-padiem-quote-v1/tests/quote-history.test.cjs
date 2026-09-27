@@ -1,0 +1,147 @@
+const assert = require("node:assert");
+const Core = require("../quote-core.js");
+const History = require("../quote-history.js");
+
+function sampleDraft() {
+  const draft = Core.createDefaultDraft();
+  draft.meta.quoteNo = "Q-OLD-001";
+  draft.meta.issueDate = "2026-09-20";
+  draft.recipient.company = "홍길동건설";
+  draft.recipient.person = "홍길동";
+  draft.items = [
+    { id: "item-1", name: "홈페이지 제작", qty: 1, unitPrice: 1500000 },
+    { id: "item-2", name: "유지보수", qty: 2, unitPrice: 300000 }
+  ];
+  draft.tax.mode = Core.TAX_MODES.EXCLUSIVE;
+  draft.memo = "납기 협의";
+  return draft;
+}
+
+const empty = History.normalizeEnvelope(null);
+assert.deepEqual(empty, { schemaVersion: 1, entries: [] });
+
+const malformed = History.normalizeEnvelope({ schemaVersion: 999, entries: [{ bad: true }] });
+assert.deepEqual(malformed.entries, []);
+
+const draft = sampleDraft();
+let envelope = History.addEntry(null, draft, {
+  id: "history-1",
+  savedAt: "2026-09-27T10:00:00.000Z"
+});
+assert.equal(envelope.entries.length, 1);
+assert.equal(envelope.entries[0].id, "history-1");
+assert.equal(envelope.entries[0].draft.recipient.company, "홍길동건설");
+
+const meta = History.listMetadata(envelope)[0];
+assert.equal(meta.recipientCompany, "홍길동건설");
+assert.equal(meta.recipientPerson, "홍길동");
+assert.equal(meta.quoteNo, "Q-OLD-001");
+assert.equal(meta.itemCount, 2);
+assert.equal(meta.grand, 2310000, "history total is derived by QuoteCore");
+
+assert.ok(!("grand" in envelope.entries[0]), "history snapshot does not persist a trusted grand total");
+assert.ok(!("totals" in envelope.entries[0]), "history snapshot does not persist source totals");
+
+const loaded = History.getEntry(envelope, "history-1");
+assert.ok(loaded);
+assert.equal(loaded.draft.items[0].name, "홈페이지 제작");
+
+const sequenceDate = new Date(2026, 8, 28, 2, 30, 45, 123);
+
+assert.deepEqual(
+  History.normalizeSequenceState(null),
+  { schemaVersion: 1, date: "", lastSequence: 0 },
+  "missing sequence state fails safe"
+);
+assert.deepEqual(
+  History.normalizeSequenceState({ schemaVersion: 999, date: "bad", lastSequence: -5 }),
+  { schemaVersion: 1, date: "", lastSequence: 0 },
+  "malformed sequence fields are sanitized"
+);
+
+const sameDay1 = Core.createDefaultDraft();
+sameDay1.meta.quoteNo = "PQ-20260928-001";
+sameDay1.meta.issueDate = "2026-09-28";
+const sameDay2 = Core.createDefaultDraft();
+sameDay2.meta.quoteNo = "PQ-20260928-002";
+sameDay2.meta.issueDate = "2026-09-28";
+
+const allocated3 = History.allocateQuoteNo(null, [sameDay1, sameDay2], sequenceDate);
+assert.equal(allocated3.quoteNo, "PQ-20260928-003", "allocator continues the readable daily sequence");
+assert.deepEqual(allocated3.state, {
+  schemaVersion: 1,
+  date: "2026-09-28",
+  lastSequence: 3
+});
+
+const allocated4 = History.allocateQuoteNo(allocated3.state, [sameDay1, sameDay2], sequenceDate);
+assert.equal(allocated4.quoteNo, "PQ-20260928-004", "same-day repeated allocation cannot collide");
+
+const oldTimestamp = Core.createDefaultDraft();
+oldTimestamp.meta.quoteNo = "PQ-20260928-033527353";
+const migrationSafe = History.allocateQuoteNo(null, [oldTimestamp], sequenceDate);
+assert.equal(migrationSafe.quoteNo, "PQ-20260928-001", "legacy long timestamp IDs do not create huge sequence jumps");
+
+const nextDay = History.allocateQuoteNo(allocated4.state, [], new Date(2026, 8, 29, 9, 0, 0, 0));
+assert.equal(nextDay.quoteNo, "PQ-20260929-001", "daily sequence resets on a new local date");
+
+const copied = History.copyAsNew(loaded, {
+  now: sequenceDate,
+  quoteNo: allocated3.quoteNo
+});
+assert.ok(copied);
+assert.equal(copied.meta.source, "history-copy");
+assert.equal(copied.meta.issueDate, "2026-09-28", "copy receives the current local date");
+assert.equal(copied.meta.quoteNo, "PQ-20260928-003", "copy receives the allocated human-readable quote number");
+assert.notEqual(copied.meta.quoteNo, loaded.draft.meta.quoteNo, "copy quote number differs from source");
+assert.equal(copied.recipient.company, "홍길동건설");
+assert.deepEqual(copied.items.map((x) => x.name), ["홈페이지 제작", "유지보수"]);
+assert.equal(Core.computeTotals(copied.items, copied.tax.mode).grand, 2310000);
+
+const originalBefore = JSON.stringify(loaded.draft);
+copied.items[0].name = "변경됨";
+assert.equal(JSON.stringify(loaded.draft), originalBefore, "copy-as-new never mutates the history snapshot");
+
+const deleted = History.deleteEntry(envelope, "history-1");
+assert.equal(deleted.entries.length, 0);
+
+let bounded = { schemaVersion: 1, entries: [] };
+for (let i = 0; i < History.MAX_HISTORY + 5; i += 1) {
+  const d = sampleDraft();
+  d.meta.quoteNo = "Q-" + i;
+  bounded = History.addEntry(bounded, d, {
+    id: "id-" + i,
+    savedAt: "2026-09-27T10:" + String(i).padStart(2, "0") + ":00.000Z"
+  });
+}
+assert.equal(bounded.entries.length, History.MAX_HISTORY, "history is bounded");
+assert.equal(bounded.entries[0].id, "id-24", "newest snapshot is first");
+assert.equal(bounded.entries[History.MAX_HISTORY - 1].id, "id-5", "oldest overflow is dropped");
+
+const base = Core.createDefaultDraft();
+assert.equal(History.isMeaningfulDraft(base), false, "untouched default draft is not resumable");
+const changed = Core.createDefaultDraft();
+changed.recipient.company = "실제 고객";
+assert.equal(History.isMeaningfulDraft(changed), true, "edited draft is resumable");
+const extracted = Core.createDefaultDraft();
+extracted.meta.source = "extraction:image";
+assert.equal(History.isMeaningfulDraft(extracted), true, "non-manual source is resumable");
+
+const badEnvelope = {
+  schemaVersion: 1,
+  entries: [
+    { id: "", savedAt: "x", draft },
+    { id: "bad-draft", savedAt: "x", draft: { schemaVersion: 999 } },
+    { id: "good", savedAt: "2026-09-27T10:00:00Z", draft }
+  ]
+};
+assert.deepEqual(History.normalizeEnvelope(badEnvelope).entries.map((x) => x.id), ["good"]);
+
+console.log("B66_HISTORY_CONTRACT=PASS");
+console.log("RECENT_HISTORY_BOUNDED=YES");
+console.log("HISTORY_TOTALS_DERIVED=YES");
+console.log("HISTORY_COPY_AS_NEW=PASS");
+console.log("HUMAN_READABLE_QUOTE_NO=YES");
+console.log("SAME_DAY_COLLISION_TEST=PASS");
+console.log("COPY_QUOTE_NO_DIFFERS_FROM_SOURCE=YES");
+console.log("MALFORMED_HISTORY_FAILS_SAFE=YES");
