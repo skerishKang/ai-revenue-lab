@@ -88,7 +88,7 @@ from .local_agent_durable_run import (
 #: Bumped only when the on-disk layout changes. An unrecognised value is never
 #: migrated automatically: it fails closed so a newer/older runner cannot read a
 #: store whose meaning it does not know.
-DURABLE_RUN_STORE_SCHEMA_VERSION = 1
+DURABLE_RUN_STORE_SCHEMA_VERSION = 2
 
 _TABLE = "claw_durable_run_records"
 
@@ -189,6 +189,7 @@ _COLUMN_ORDER = (
     "command_issued_at",
     "command_expires_at",
     "admitted_at",
+    "admission_evidence_ref",
     "started_at",
     "terminated_at",
     "state",
@@ -227,6 +228,7 @@ _IMMUTABLE_TERMINAL_CORRELATION_FIELDS = (
     "command_issued_at",
     "command_expires_at",
     "admitted_at",
+    "admission_evidence_ref",
     "admission_ref",
 )
 
@@ -327,6 +329,7 @@ CREATE TABLE IF NOT EXISTS {_TABLE} (
     command_issued_at TEXT NOT NULL,
     command_expires_at TEXT NOT NULL,
     admitted_at TEXT NOT NULL,
+    admission_evidence_ref TEXT,
     started_at TEXT,
     terminated_at TEXT,
     state TEXT NOT NULL,
@@ -540,6 +543,7 @@ class DurableRunStore:
                 _iso(record.server_acknowledged_at) if record.server_acknowledged_at else None
             ),
             "admission_ref": record.admission_ref,
+            "admission_evidence_ref": record.admission_evidence_ref,
             "exit_code": record.exit_code,
             "offline_state": record.offline_state.value,
             "evidence_diff_ref": evidence.diff_ref,
@@ -672,6 +676,7 @@ class DurableRunStore:
                     else None
                 ),
                 admission_ref=optional_ref("admission_ref"),
+                admission_evidence_ref=optional_ref("admission_evidence_ref"),
                 exit_code=exit_code,
                 offline_state=offline_state,
                 evidence=BoundedEvidenceProjection(

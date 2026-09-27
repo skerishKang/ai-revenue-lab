@@ -16,6 +16,7 @@ from kagent.local_agent import (
     LocalRoot,
 )
 from kagent.local_agent_command_material import build_command_material_wire_projection
+from kagent.local_agent_durable_run_store import DurableRunStore
 from kagent.local_agent_control_plane_admission import (
     ControlPlanePhysicalAdmissionChannel,
     ControlPlanePhysicalAdmissionTransport,
@@ -416,6 +417,7 @@ def _harness(
         assembly=assembly,
         channel=channel,
         credential_store=credential_store,
+        durable_store=DurableRunStore(":memory:"),
         clock=clock,
         session_id_factory=lambda: "session_host_cross_1",
     )
@@ -737,6 +739,7 @@ class LocalAgentResidentRuntimeHostTests(unittest.TestCase):
                 assembly=assembly,
                 channel=mismatch_channel,
                 credential_store=credential_store,
+                durable_store=DurableRunStore(":memory:"),
             )
         self.assertIn("channel device does not match assembly device", str(ctx.exception))
 
@@ -767,6 +770,7 @@ class LocalAgentResidentRuntimeHostTests(unittest.TestCase):
                 assembly=host._assembly,
                 channel=alternate_channel,
                 credential_store=_MockCredentialStore(),
+                durable_store=DurableRunStore(":memory:"),
             )
         self.assertIn("broker configuration", str(ctx.exception))
 

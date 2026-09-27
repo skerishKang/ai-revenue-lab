@@ -275,8 +275,15 @@ def test_exact_material_survives_recreation_without_expanding_broker_metadata() 
     assert CREDENTIAL_1.decode("ascii") not in dump
     assert _encoded(CREDENTIAL_1) not in dump
 
+    # #3127: an identical re-store is the lost-response retry. It must succeed
+    # without writing a second row; only a *different* material for the same
+    # command is a conflict, and that still fails closed.
+    reused = restarted.material_store.store(wire)
+    assert reused["stored"] is True
+    assert reused["reused"] is True
+    assert _material_count(storage) == 1
     with pytest.raises(ValueError):
-        restarted.material_store.store(wire)
+        restarted.material_store.store(_wire(command, marker="a-different-material-marker"))
 
 
 @pytest.mark.parametrize(
@@ -326,11 +333,16 @@ def test_store_rejects_oversized_material() -> None:
 
 def test_new_material_requires_command_to_remain_queued() -> None:
     storage, _env, durable, command = _prepare_command()
+    # #3127: the command binds its material while it is still queued, which is
+    # the only state in which new material is accepted.
+    stored = asyncio.run(durable.store_command_material(_wire(command)))
+    assert stored["stored"] is True
     admitted = _admit(durable, command, at=BASE + timedelta(seconds=3))
     assert admitted["ok"] is True
     with pytest.raises(ValueError):
         durable.material_store.store(_wire(command))
-    assert _material_count(storage) == 0
+    # The refused store added nothing: the one row bound while queued is intact.
+    assert _material_count(storage) == 1
 
     acknowledged = asyncio.run(
         durable.acknowledge(

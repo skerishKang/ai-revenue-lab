@@ -100,7 +100,21 @@ class CloudflareDurableObjectCommandMaterialStore:
         wire_text, _ = canonical_json(wire, maximum_bytes=MAX_DURABLE_COMMAND_MATERIAL_BYTES, label="command material wire")
         return wire, wire_text
 
+    def _projection(self, command: Any) -> dict[str, Any]:
+        return {"stored": True, "command_id": command.command_id, "binding_ref": command.binding_ref, "sequence": command.sequence, "request_fingerprint": command.request_fingerprint, "expires_at": iso(command.expires_at), "raw_argv": False, "raw_device_credential": False, "execution_approval": False}
+
     def store(self, wire: dict[str, Any]) -> dict[str, Any]:
+        """Persist one command's material, reusing an identical earlier write.
+
+        #3127 — the write is idempotent for an *exact* retry and fails closed on
+        any other difference. The previous behaviour refused every repeat, which
+        turned a lost `store_command_material` response into an unrecoverable
+        state: the caller could not tell a persisted material from a failed one,
+        and the only way to "retry" was an error. Reuse returns the existing
+        projection unchanged, so a lost response is recoverable without minting a
+        second material row, a second sequence or a second revision.
+        """
+
         command_id = safe_ref(wire.get("command_id") if isinstance(wire, dict) else None, "command_id")
         command = self._command(command_id)
         wire, wire_text = self._validate_wire(wire, command=command)
@@ -108,9 +122,27 @@ class CloudflareDurableObjectCommandMaterialStore:
             "INSERT OR IGNORE INTO local_agent_command_material (command_id, binding_ref, sequence, request_fingerprint, expires_at, wire_text) VALUES (?, ?, ?, ?, ?, ?)",
             command.command_id, command.binding_ref, command.sequence, command.request_fingerprint, iso(command.expires_at), wire_text,
         )
-        if rows_written(cursor) != 1:
+        if rows_written(cursor) == 1:
+            return self._projection(command)
+        existing = self._load_row(command_id)
+        if existing is None or row_value(existing, "wire_text") != wire_text:
+            # Either a different material already occupies this command, or the
+            # binding/sequence pair is held by another command. Both are conflicts
+            # a retry must never paper over.
             raise ValueError("command material already exists or binding sequence was rebound")
-        return {"stored": True, "command_id": command.command_id, "binding_ref": command.binding_ref, "sequence": command.sequence, "request_fingerprint": command.request_fingerprint, "expires_at": iso(command.expires_at), "raw_argv": False, "raw_device_credential": False, "execution_approval": False}
+        return {**self._projection(command), "reused": True}
+
+    def has_persisted_material(self, command_id: str) -> bool:
+        """True only when this command's exact material row is durable.
+
+        Presence is deliberately lifecycle-independent: admission checks it while
+        the command is still queued and acknowledgement checks it after the
+        command is terminal, so the answer must come from the material row alone
+        and never from a lifecycle state this store does not own.
+        """
+
+        command_id = safe_ref(command_id, "command_id")
+        return self._load_row(command_id) is not None
 
     def _load_row(self, command_id: str) -> Any | None:
         found = rows(self._sql.exec("SELECT command_id, binding_ref, sequence, request_fingerprint, expires_at, wire_text FROM local_agent_command_material WHERE command_id = ?", safe_ref(command_id, "command_id")))

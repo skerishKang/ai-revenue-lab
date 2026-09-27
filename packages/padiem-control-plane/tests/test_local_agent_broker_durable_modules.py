@@ -243,4 +243,9 @@ def test_worker_file_is_thin_and_storage_schemas_live_outside_entrypoint() -> No
     # per entrypoint class; the entrypoint must stay otherwise thin.
     # #3121 adds one reconcile passthrough per entrypoint class; #3129 wires
     # mutation_transaction into the device HTTP service. Still thin.
+    #
+    # Issue #3127 adds the atomic enqueue+material passthrough and *removes* the
+    # split `enqueue_command` / `store_command_material` pair from the product
+    # gateway, so this bound is main's, unchanged, and the entrypoint still
+    # holds no storage, schema or authority.
     assert len(source.splitlines()) < 205

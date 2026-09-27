@@ -67,6 +67,9 @@ class LocalAgentBrokerDurableObject(DurableObject):
     async def enqueue_command(self, payload: dict) -> dict:
         return self._runtime.enqueue_command(payload)
 
+    async def enqueue_command_with_material(self, payload: dict, material: dict) -> dict:
+        return self._runtime.enqueue_command_with_material(payload, material)
+
     async def store_command_material(self, wire: dict) -> dict:
         return self._runtime.store_command_material(wire)
 
@@ -117,11 +120,12 @@ class Default(WorkerEntrypoint):
     async def open_session(self, payload: dict) -> dict:
         return await self._stub().open_session(payload)
 
-    async def enqueue_command(self, payload: dict) -> dict:
-        return await self._stub().enqueue_command(payload)
-
-    async def store_command_material(self, wire: dict) -> dict:
-        return await self._stub().store_command_material(wire)
+    # #3127 — the product command path is the atomic one. The split
+    # `enqueue_command` / `store_command_material` pair is deliberately absent
+    # here: it would let a caller write a durable command with no material. Both
+    # stay on the Durable Object as internal composition, unreachable from here.
+    async def enqueue_command_with_material(self, payload: dict, material: dict) -> dict:
+        return await self._stub().enqueue_command_with_material(payload, material)
 
     async def resolve_command_material(self, payload: dict) -> dict:
         return await self._stub().resolve_command_material(payload)
