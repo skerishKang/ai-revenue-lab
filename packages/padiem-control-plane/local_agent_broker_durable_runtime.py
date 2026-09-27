@@ -11,6 +11,7 @@ from local_agent_broker_material_store import CloudflareDurableObjectCommandMate
 from local_agent_broker_sql_state import (
     CloudflareDurableObjectHttpSessionState,
     CloudflareDurableObjectSerializedStateBackend,
+    ReentrantTransactionStorage,
     parse_iso,
     safe_ref,
 )
@@ -32,13 +33,20 @@ class LocalAgentBrokerDurableRuntime:
     """Cloud-platform-neutral composition for the durable Local Agent broker authority."""
 
     def __init__(self, *, storage: Any, env: Any) -> None:
-        self._storage = storage
+        # One re-entrant transaction front door shared by every storage
+        # participant: the authority operations below, the serialized CAS
+        # (which joins a running transaction instead of nesting), the HTTP
+        # session state and the command material store. Whichever composition
+        # opens the outermost transaction, its commit covers the whole logical
+        # write (#3123, with #3129's session-open seam).
+        self.storage = ReentrantTransactionStorage(storage)
+        self._storage = self.storage
         self._env = env
-        self.backend = CloudflareDurableObjectSerializedStateBackend(storage)
+        self.backend = CloudflareDurableObjectSerializedStateBackend(self.storage)
         self.state_port = SerializedLocalAgentBrokerStatePort(backend=self.backend)
-        self.http_state = CloudflareDurableObjectHttpSessionState(storage)
+        self.http_state = CloudflareDurableObjectHttpSessionState(self.storage)
         self.material_store = CloudflareDurableObjectCommandMaterialStore(
-            storage,
+            self.storage,
             state_port=self.state_port,
             authority_ref=self.authority_ref(),
         )
@@ -56,34 +64,26 @@ class LocalAgentBrokerDurableRuntime:
         return LocalAgentBrokerRpcFacade(authority=authority)
 
     def transaction(self, operation: Callable[[], _T]) -> _T:
-        transaction_sync = getattr(self._storage, "transactionSync", None)
-        if not callable(transaction_sync):
-            raise RuntimeError("SQLite-backed Durable Object transactionSync is required")
-        return transaction_sync(operation)
+        return self.storage.transactionSync(operation)
 
     def register_binding(self, payload: dict) -> dict:
         return self.transaction(lambda: self.facade().register_binding(payload))
 
-    # The serialized-state CAS commits atomically inside its own storage
-    # transaction (used-command-id ledger and blob together, #3123), and
-    # Durable Object transactions do not nest - so the material purge runs in
-    # its own transaction after the authority mutation instead of sharing one
-    # with it. A purge lost to a crash in between is inert: material
-    # resolution re-validates against the canonical authority state and
-    # purges stale rows on contact, and the next rotate/revocation purges the
-    # binding again.
-
     def rotate_credential(self, payload: dict) -> dict:
-        result = self.facade().rotate_credential(payload)
-        if result.get("ok") is True:
-            self.transaction(lambda: self.material_store.purge_binding(result["binding"]["binding_ref"]))
-        return result
+        def operation() -> dict:
+            result = self.facade().rotate_credential(payload)
+            if result.get("ok") is True:
+                self.material_store.purge_binding(result["binding"]["binding_ref"])
+            return result
+        return self.transaction(operation)
 
     def revoke_binding(self, payload: dict) -> dict:
-        result = self.facade().revoke_binding(payload)
-        if result.get("ok") is True:
-            self.transaction(lambda: self.material_store.purge_binding(result["binding"]["binding_ref"]))
-        return result
+        def operation() -> dict:
+            result = self.facade().revoke_binding(payload)
+            if result.get("ok") is True:
+                self.material_store.purge_binding(result["binding"]["binding_ref"])
+            return result
+        return self.transaction(operation)
 
     def open_session(self, payload: dict) -> dict:
         return self.transaction(lambda: self.facade().open_session(payload))
@@ -113,22 +113,26 @@ class LocalAgentBrokerDurableRuntime:
         return self.transaction(lambda: self.facade().admit_command(payload))
 
     def acknowledge(self, payload: dict) -> dict:
-        result = self.facade().acknowledge(payload)
-        if result.get("ok") is True:
-            self.transaction(lambda: self.material_store.purge_command(result["command"]["command_id"]))
-        return result
+        def operation() -> dict:
+            result = self.facade().acknowledge(payload)
+            if result.get("ok") is True:
+                self.material_store.purge_command(result["command"]["command_id"])
+            return result
+        return self.transaction(operation)
 
     def reconcile_expired_command(self, payload: dict) -> dict:
         """#3121 — reconcile one expired ADMITTED command without replay.
 
         Like a canonical acknowledgement, a successful reconciliation is
-        terminal, so the stored command material is purged after the
-        reconciliation commits and can never resolve again.
+        terminal, so the stored command material is purged in the same
+        transaction and can never resolve again.
         """
-        result = self.facade().reconcile_expired_command(payload)
-        if result.get("ok") is True:
-            self.transaction(lambda: self.material_store.purge_command(result["command"]["command_id"]))
-        return result
+        def operation() -> dict:
+            result = self.facade().reconcile_expired_command(payload)
+            if result.get("ok") is True:
+                self.material_store.purge_command(result["command"]["command_id"])
+            return result
+        return self.transaction(operation)
 
     def safe_dict(self) -> dict[str, Any]:
         return {
