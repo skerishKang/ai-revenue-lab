@@ -170,45 +170,13 @@ class RealWindowsWorktreeStatePortTests(unittest.TestCase):
     # -- fail-closed operational failures ------------------------------------
 
     def test_missing_git_fails_closed(self) -> None:
+        # One scenario per test: the missing-Git contract. Timeout, output
+        # overflow, invalid cwd, malformed porcelain and parser behaviour each
+        # have their own named test below and own their own acceptance.
         port = WindowsGitWorktreeStatePort(git_executable=str(self._repo.path / "no-such-git-binary"))
         with self.assertRaises(ContractError) as refused:
             port.is_dirty(str(self._repo.path))
         self.assertTrue(str(refused.exception).startswith("git_worktree_probe_unavailable"), str(refused.exception))
-        # Real `git`, real child process, killed by the real bound.
-        # Real `git` against real work (thousands of files), killed by the real
-        # bound: on any runner the status cannot finish inside it, so this is a
-        # genuine timeout rather than a race with a fast machine.
-        for index in range(4000):
-            (self._repo.path / f"bulk_{index:05d}.txt").write_bytes(b"x")
-        port = WindowsGitWorktreeStatePort(timeout_seconds=0.001)
-        with self.assertRaises(ContractError) as refused:
-            port.is_dirty(str(self._repo.path))
-        self.assertTrue(str(refused.exception).startswith("git_worktree_probe_timeout"), str(refused.exception))
-        # Real porcelain output above the bound: the cap refuses rather than
-        # buffering an unbounded response.
-        for index in range(80):
-            self._repo.add_untracked(f"untracked_{index:03d}_" + "n" * 40)
-        port = WindowsGitWorktreeStatePort(max_output_bytes=1024, timeout_seconds=30.0)
-        started = time.monotonic()
-        with self.assertRaises(ContractError) as refused:
-            port.is_dirty(str(self._repo.path))
-        elapsed = time.monotonic() - started
-        self.assertTrue(str(refused.exception).startswith("git_worktree_probe_output_exceeded"), str(refused.exception))
-        # Killed at the cap, not at the 30s bound: the refusal is immediate.
-        self.assertLess(elapsed, 10.0, "overflow must kill the child, not wait for the timeout")
-        port = WindowsGitWorktreeStatePort()
-        with self.assertRaises(ContractError) as refused:
-            port.is_dirty(str(self._repo.path / "missing"))
-        self.assertTrue(str(refused.exception).startswith("git_worktree_probe_invalid_cwd"), str(refused.exception))
-        for response in ("??", "nonsense line", "\x1b[31mM  file.txt\x1b[0m", "M"):
-            with self.assertRaises(ContractError) as refused:
-                dirty_from_porcelain(response)
-            self.assertTrue(str(refused.exception).startswith("git_worktree_probe_malformed_response"), str(refused.exception))
-        self.assertFalse(dirty_from_porcelain(""))
-        self.assertFalse(dirty_from_porcelain("\n\n"))
-        self.assertTrue(dirty_from_porcelain(" M tracked.txt\n"))
-        self.assertTrue(dirty_from_porcelain("?? untracked.txt\n"))
-        self.assertTrue(dirty_from_porcelain("R  old.txt -> new.txt\n"))
 
     # -- bounded environment, no inherited secrets --------------------------
 
@@ -226,15 +194,20 @@ class RealWindowsWorktreeStatePortTests(unittest.TestCase):
 
     def test_oversized_output_fails_closed(self) -> None:
         # Real porcelain output above the bound: the cap refuses rather than
-        # buffering an unbounded response.
+        # buffering an unbounded response, and kills the child at the cap rather
+        # than waiting out the bound (deliberately set to 30s, so the elapsed
+        # measurement distinguishes the two).
         for index in range(80):
             self._repo.add_untracked(f"untracked_{index:03d}_" + "n" * 40)
-        port = WindowsGitWorktreeStatePort(max_output_bytes=1024)
+        port = WindowsGitWorktreeStatePort(max_output_bytes=1024, timeout_seconds=30.0)
+        started = time.monotonic()
         with self.assertRaises(ContractError) as refused:
             port.is_dirty(str(self._repo.path))
+        elapsed = time.monotonic() - started
         self.assertTrue(
             str(refused.exception).startswith("git_worktree_probe_output_exceeded"), str(refused.exception)
         )
+        self.assertLess(elapsed, 10.0, "overflow must kill the child, not wait for the timeout")
 
     def test_a_failed_probe_read_is_a_refusal_not_a_clean_answer(self) -> None:
         # The exact hazard the shared failure state exists for: a reader that
@@ -243,8 +216,13 @@ class RealWindowsWorktreeStatePortTests(unittest.TestCase):
         port = WindowsGitWorktreeStatePort()
 
         def failing_drain(stream, chunks, state, cap, *, stream_name, on_overflow):
-            # A reader whose read() raised: recorded, no chunks captured.
-            state.record_read_failure(stream_name, OSError("simulated reader failure"))
+            # A reader whose read() raised: recorded, no chunks captured. The
+            # fake owns the stream it is handed, exactly as the real drain does,
+            # so a refused probe leaks no OS handle.
+            try:
+                state.record_read_failure(stream_name, OSError("simulated reader failure"))
+            finally:
+                stream.close()
 
         original = worktree_state._drain_bounded
         worktree_state._drain_bounded = failing_drain
@@ -260,16 +238,34 @@ class RealWindowsWorktreeStatePortTests(unittest.TestCase):
         port = WindowsGitWorktreeStatePort()
         release = threading.Event()
 
+        readers: list[threading.Thread] = []
+
         def hanging_drain(stream, chunks, state, cap, *, stream_name, on_overflow):
-            release.wait(timeout=30)
+            # A reader that never finishes on its own. The test releases it and
+            # joins it, so the handed stream is closed deterministically before
+            # the test ends - the probe's own bounded join is what refuses.
+            readers.append(threading.current_thread())
+            try:
+                release.wait(timeout=30)
+            finally:
+                stream.close()
 
         original = worktree_state._drain_bounded
         worktree_state._drain_bounded = hanging_drain
         self.addCleanup(lambda: setattr(worktree_state, "_drain_bounded", original))
-        self.addCleanup(release.set)
-        with self.assertRaises(ContractError) as refused:
-            port.is_dirty(str(self._repo.path))
-        self.assertTrue(str(refused.exception).startswith("git_worktree_probe_read_failed"), str(refused.exception))
+        try:
+            with self.assertRaises(ContractError) as refused:
+                port.is_dirty(str(self._repo.path))
+            self.assertTrue(
+                str(refused.exception).startswith("git_worktree_probe_read_failed"), str(refused.exception)
+            )
+        finally:
+            # Let the released reader finish and close its stream before the
+            # test ends, so the run reports no unclosed handle.
+            release.set()
+            for reader in readers:
+                reader.join(timeout=10)
+            self.assertEqual([reader for reader in readers if reader.is_alive()], [])
 
     def test_invalid_cwd_fails_closed(self) -> None:
         port = WindowsGitWorktreeStatePort()
@@ -505,7 +501,10 @@ class CanonicalRuntimeCompositionWithRealProbeTests(unittest.TestCase):
         runtime, request = self._runtime(repo.path, port)
 
         def failing_drain(stream, chunks, state, cap, *, stream_name, on_overflow):
-            state.record_read_failure(stream_name, OSError("simulated reader failure"))
+            try:
+                state.record_read_failure(stream_name, OSError("simulated reader failure"))
+            finally:
+                stream.close()
 
         original = worktree_state._drain_bounded
         worktree_state._drain_bounded = failing_drain
