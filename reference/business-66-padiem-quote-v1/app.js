@@ -130,46 +130,6 @@
     return JSON.parse(JSON.stringify(value));
   }
 
-  function assignExtracted(target, key, value) {
-    if (value !== null && value !== undefined) target[key] = value;
-  }
-
-  function hasExtractedPartyValue(party) {
-    return Object.values(party || {}).some((value) => value !== null && value !== undefined);
-  }
-
-  function buildDraftFromExtraction(extracted) {
-    const candidate = cloneJson(draft);
-
-    candidate.meta.source = "extraction:" + extracted.source.kind;
-    assignExtracted(candidate.meta, "quoteNo", extracted.quote.quoteNo);
-    assignExtracted(candidate.meta, "issueDate", extracted.quote.issueDate);
-    assignExtracted(candidate.meta, "validDays", extracted.quote.validDays);
-
-    ["company", "rep", "bizNo", "address", "phone", "email"].forEach((key) => {
-      assignExtracted(candidate.sender, key, extracted.sender[key]);
-    });
-    if (hasExtractedPartyValue(extracted.sender)) candidate.sender.presetId = "custom";
-
-    ["company", "person", "address", "email"].forEach((key) => {
-      assignExtracted(candidate.recipient, key, extracted.recipient[key]);
-    });
-
-    if (extracted.items.length > 0) {
-      candidate.items = extracted.items.map((item) => ({
-        id: nextItemId(),
-        name: item.name ?? "",
-        qty: item.qty ?? 0,
-        unitPrice: item.unitPrice ?? 0
-      }));
-    }
-
-    if (extracted.tax.mode !== null) candidate.tax.mode = extracted.tax.mode;
-    if (extracted.memo !== null) candidate.memo = extracted.memo;
-
-    return Core.normalizeDraft(candidate);
-  }
-
   function validateExtractionResult(raw) {
     if (!Extraction || typeof Extraction.normalizeExtraction !== "function") {
       return { ok: false, error: "extraction_contract_unavailable" };
@@ -181,19 +141,18 @@
     if (!options || options.confirmed !== true) {
       return { ok: false, error: "review_confirmation_required" };
     }
+    if (!Extraction || typeof Extraction.buildDraftCandidate !== "function") {
+      return { ok: false, error: "extraction_contract_unavailable" };
+    }
 
-    const validated = validateExtractionResult(raw);
-    if (!validated.ok) return validated;
+    const candidate = Extraction.buildDraftCandidate(draft, raw);
+    if (!candidate.ok) return candidate;
 
-    const nextDraft = buildDraftFromExtraction(validated.value);
+    const nextDraft = Core.normalizeDraft(candidate.value.draft);
     if (!nextDraft) return { ok: false, error: "draft_normalization_failed" };
 
     draft = nextDraft;
-    lastExtractionReview = {
-      source: cloneJson(validated.value.source),
-      evidence: cloneJson(validated.value.evidence),
-      warnings: cloneJson(validated.value.warnings)
-    };
+    lastExtractionReview = cloneJson(candidate.value.review);
 
     renderItems();
     fillInputsFromDraft();
