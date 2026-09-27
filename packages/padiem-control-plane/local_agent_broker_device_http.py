@@ -87,11 +87,13 @@ class LocalAgentBrokerDeviceHttpService:
     verifying the raw credential with the existing broker authority, then invokes
     the already-closed M2e HTTP handler.
 
-    `session_open_transaction` is required (#3129): the canonical broker session
-    CAS and the durable HTTP session row are one logical write, so the deployable
-    composition must supply a transaction-capable callable (a Durable Object
-    `storage.transactionSync`) and the session-open write pair runs inside it —
-    both-or-neither under crash, never a partial session.
+    `session_open_transaction` is required (#3129, generalized by #3123): the
+    deployable composition must supply a transaction-capable callable (a
+    Durable Object `storage.transactionSync`), and every device-HTTP mutation
+    that writes broker state plus durable rows runs inside it — the #3129
+    session-open double write and, since #3123, the acknowledge state
+    mutation (whose compaction can also move used-command-id ledger rows).
+    Both-or-neither under crash, never a partial write.
     """
 
     def __init__(

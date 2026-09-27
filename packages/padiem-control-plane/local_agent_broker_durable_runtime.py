@@ -73,7 +73,7 @@ class LocalAgentBrokerDurableRuntime:
         return transaction_sync(operation)
 
     def register_binding(self, payload: dict) -> dict:
-        return self.facade().register_binding(payload)
+        return self.transaction(lambda: self.facade().register_binding(payload))
 
     def rotate_credential(self, payload: dict) -> dict:
         def operation() -> dict:
@@ -92,7 +92,7 @@ class LocalAgentBrokerDurableRuntime:
         return self.transaction(operation)
 
     def open_session(self, payload: dict) -> dict:
-        return self.facade().open_session(payload)
+        return self.transaction(lambda: self.facade().open_session(payload))
 
     def enqueue_command(self, payload: dict) -> dict:
         """Enqueue a command *without* binding material in the same transaction.
@@ -102,8 +102,12 @@ class LocalAgentBrokerDurableRuntime:
         whose material is absent, so a command enqueued this way can never be
         executed or acknowledged. New callers should use
         `enqueue_command_with_material`, which is the atomic product path.
+
+        It still mints a sequence, records the used command_id and can trigger
+        terminal-history compaction, so its ledger writes and blob swap commit
+        inside the same storage transaction as every other mutator (#3123).
         """
-        return self.facade().enqueue_command(payload)
+        return self.transaction(lambda: self.facade().enqueue_command(payload))
 
     def enqueue_command_with_material(self, payload: dict, material: dict) -> dict:
         """#3127 — commit the canonical command and its material atomically.
