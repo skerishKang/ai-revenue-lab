@@ -365,7 +365,7 @@ textarea { min-height: 82px; resize: vertical; }
 }
 .easy-chip {
   flex: 0 0 auto;
-  min-height: 38px;
+  min-height: 44px;
   padding: 0 12px;
   border: 1px solid #d0d5dd;
   border-radius: 999px;
@@ -447,6 +447,7 @@ textarea { min-height: 82px; resize: vertical; }
   @page { size: A4; margin: 10mm; }
   html, body { background: white; margin: 0; padding: 0; }
   .topbar, .workspace-modebar, .easy-view, .modebar, .future-note, .panel, .preview-toolbar, .toast { display: none !important; }
+  .direct-view[hidden] { display: block !important; }
   .shell { max-width: none; margin: 0; padding: 0; }
   .grid { display: block; }
   .preview-wrap { position: static; border: 0; border-radius: 0; box-shadow: none; overflow: visible; }
