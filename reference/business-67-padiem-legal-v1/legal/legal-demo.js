@@ -80,10 +80,12 @@
    * the user sees. Keeping them pure and adjacent makes it obvious that there
    * is a single authority. */
 
+  /* Every routable state. `web` was missing here, which is why the visible 웹
+   * chip snapped back to 통합 on click — the control looked real and was not. */
+  var ROUTABLE_STATES = ["unified", "official", "drive", "web"];
+
   function scopeForState(stateId) {
-    if (stateId === "official" || stateId === "drive" || stateId === "unified") {
-      return stateId;
-    }
+    if (ROUTABLE_STATES.indexOf(stateId) !== -1) return stateId;
     return "unified";
   }
 
@@ -92,6 +94,7 @@
       case "home": return "새 조사";
       case "official": return "공식 법률자료";
       case "drive": return "내 Drive";
+      case "web": return "웹";
       case "provenance": return "페이지 provenance";
       case "fail-closed": return "근거 없음";
       case "disconnected": return "Drive 미연결";
@@ -122,6 +125,9 @@
     switch (stateId) {
       case "official":
         records = Demo.EVIDENCE.filter(function (r) { return r.source_type === "official"; });
+        break;
+      case "web":
+        records = Demo.EVIDENCE.filter(function (r) { return r.source_type === "web"; });
         break;
       case "drive":
         records = Demo.EVIDENCE.filter(function (r) { return r.source_type === "drive"; });
@@ -244,6 +250,7 @@
   /* ── Conversation column ──────────────────────────────────────────────── */
   function renderConversation() {
     var state = store.get();
+    var runSources = state.evidence.length;
     clear(dom.conversation);
 
     if (state.state === "home") {
@@ -281,8 +288,9 @@
       return;
     }
 
-    /* The user turn */
-    var answer = Demo.SAMPLE_ANSWER;
+    /* The user turn. Each scope has its own grounded answer, because each
+     * scope can only see a different subset of the corpus. */
+    var answer = Demo.ANSWERS[scopeForState(state.state)] || Demo.SAMPLE_ANSWER;
 
     /* CITATION INTEGRITY GATE.
      *
@@ -296,6 +304,8 @@
       dom.conversation.appendChild(renderFailClosed(state));
       return;
     }
+    /* The run-status line reports the scope's own numbers, not one global set. */
+    runSources = answer.run.sources;
 
     dom.conversation.appendChild(el("article", { class: "message user-message" }, [
       el("div", { class: "message-bubble", text: answer.prompt })
@@ -307,7 +317,7 @@
       "data-state": answer.run.status
     }, [
       el("span", { class: "run-dot", "aria-hidden": "true" }),
-      el("span", { text: "깊이 검색 " + answer.run.searches + "회 · 근거 " + answer.run.sources + "개 · 샘플 결과" })
+      el("span", { text: "깊이 검색 " + answer.run.searches + "회 · 근거 " + runSources + "개 · 샘플 결과" })
     ]));
 
     /* The assistant turn */
@@ -362,7 +372,7 @@
     body.appendChild(el("p", {
       class: "composer-note",
       style: "text-align:left;margin:4px 0 0;",
-      text: "이 답변은 샘플 데이터로 구성한 시연이며 실제 사건 분석이 아닙니다. 인용된 근거는 모두 가상 자료입니다."
+      text: answer.note
     }));
 
     dom.conversation.appendChild(el("article", { class: "message assistant-message" }, [
@@ -528,8 +538,14 @@
     }
 
     var ctx = { activeN: state.activeN };
-    renderer.render(dom.evidenceList, records, ctx, emptyState);
-    renderer.render(dom.drawerList, records, ctx, emptyState);
+    /* Strongest authority first. This is the contract legal-authority.js
+     * documents; it was previously never applied, so the panel showed records
+     * in raw array order and a secondary source could sit above official
+     * primary authority. Display order changes only — each record keeps its
+     * own `n`, so the [1]/[4] markers in the answer still line up. */
+    var ordered = Legal.sortEvidence(records);
+    renderer.render(dom.evidenceList, ordered, ctx, emptyState);
+    renderer.render(dom.drawerList, ordered, ctx, emptyState);
 
     dom.evidenceCount.textContent = records.length + "개";
     dom.drawerCount.textContent = records.length + "개";
@@ -657,8 +673,43 @@
     syncDrawer();
   }
 
-  /* ── Sidebar drawer (mobile) ──────────────────────────────────────────── */
+  /* ── Sidebar drawer (mobile) ────────────────────────────────────────────
+   * ONE open path and ONE close path.
+   *
+   * Previously the three close paths (Escape, ×, scrim) each removed the
+   * class and re-synced inert/aria, but none of them called
+   * traps.sidebar.close(). The drawer could therefore LOOK closed while the
+   * trap was still active and its document-level keydown listener was still
+   * installed — a hidden focus trap that would swallow the next Tab/Escape.
+   */
   var syncing = false;
+
+  function sidebarIsOpen() {
+    return dom.shell.classList.contains("sidebar-open");
+  }
+
+  function openSidebar(caller) {
+    dom.shell.classList.add("sidebar-open");
+    syncSidebar();
+    if (traps.sidebar) {
+      if (caller) traps.sidebar.setReturnFocus(caller);
+      traps.sidebar.open();
+    }
+  }
+
+  function closeSidebar() {
+    if (!sidebarIsOpen() && !syncing) {
+      /* Even if the class is already gone, the trap may still be live from a
+       * previous open. Release it unconditionally rather than by class state. */
+      if (traps.sidebar && traps.sidebar.isActive()) traps.sidebar.close();
+      return;
+    }
+    dom.shell.classList.remove("sidebar-open");
+    syncSidebar();
+    /* Close the trap AFTER the class is removed, so its focus restoration
+     * targets the still-mounted trigger rather than a node being torn down. */
+    if (traps.sidebar && traps.sidebar.isActive()) traps.sidebar.close();
+  }
 
   function syncSidebar() {
     if (syncing) return;
@@ -759,7 +810,7 @@
       var chip = event.target.closest('.claw-chip[data-value]');
       if (!chip) return;
       var value = chip.getAttribute("data-value");
-      applyState({ state: value === "official" || value === "drive" ? value : "unified" });
+      applyState({ state: ROUTABLE_STATES.indexOf(value) !== -1 ? value : "unified" });
     });
 
     /* Composer: the form submit event is the canonical send path. */
@@ -778,8 +829,7 @@
       applyState({ drawerOpen: false });
     });
     traps.sidebar = global.ClawShell.createFocusTrap(dom.sidebar, function () {
-      dom.shell.classList.remove("sidebar-open");
-      syncSidebar();
+      closeSidebar();
     });
 
     dom.drawerClose.addEventListener("click", function () { applyState({ drawerOpen: false }); });
@@ -793,20 +843,12 @@
       applyState({ state: "home" });
     });
 
-    dom.menuButton.addEventListener("click", function () {
-      dom.shell.classList.toggle("sidebar-open");
-      syncSidebar();
-      if (dom.shell.classList.contains("sidebar-open")) traps.sidebar.open();
-      else if (traps.sidebar.isActive()) traps.sidebar.close();
+    dom.menuButton.addEventListener("click", function (event) {
+      if (sidebarIsOpen()) closeSidebar();
+      else openSidebar(event.currentTarget);
     });
-    dom.sidebarClose.addEventListener("click", function () {
-      dom.shell.classList.remove("sidebar-open");
-      syncSidebar();
-    });
-    dom.sidebarScrim.addEventListener("click", function () {
-      dom.shell.classList.remove("sidebar-open");
-      syncSidebar();
-    });
+    dom.sidebarClose.addEventListener("click", function () { closeSidebar(); });
+    dom.sidebarScrim.addEventListener("click", function () { closeSidebar(); });
 
     dom.newResearch.addEventListener("click", function () {
       applyState({ state: "home" });
@@ -829,11 +871,12 @@
       new MutationObserver(syncSidebar)
         .observe(dom.shell, { attributes: true, attributeFilter: ["class"] });
     }
+    /* Crossing the breakpoint while the drawer is open must release the trap
+     * too, not just the class. */
     window.matchMedia("(max-width: 920px)")
       .addEventListener("change", function () {
         syncSidebar();
-        if (!traps.sidebar.isActive()) return;
-        if (!dom.shell.classList.contains("sidebar-open")) traps.sidebar.close();
+        if (!window.matchMedia("(max-width: 920px)").matches) closeSidebar();
       });
 
     /* Subscribe only once every handler and trap exists, so no render can be
@@ -858,6 +901,9 @@
     evidenceForState: evidenceForState,
     scopeForState: scopeForState,
     titleForState: titleForState,
-    isSheetViewport: isSheetViewport
+    isSheetViewport: isSheetViewport,
+    openSidebar: openSidebar,
+    closeSidebar: closeSidebar,
+    sidebarTrap: function () { return traps.sidebar; }
   };
 })(window);

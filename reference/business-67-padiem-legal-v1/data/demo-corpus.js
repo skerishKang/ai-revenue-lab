@@ -193,44 +193,156 @@
     }
   ];
 
-  /* ── Grounded sample answer (DEMO) ────────────────────────────────────── */
-  /* Shaped like a real grounded answer: each material assertion carries a
-   * bracketed evidence number, and the answer explicitly separates "first
-   * pleaded assertion" from "first factual assertion" because the two can
-   * differ — a distinction a fluent-but-ungrounded model would blur. */
-  var SAMPLE_ANSWER = {
-    prompt: "이 사건에서 상대방이 계약 해지를 처음 주장한 시점과 그 주장을 뒷받침하는 자료를 찾아줘.",
-    paragraphs: [
-      {
-        segments: [
-          { t: "확인되는 자료상 상대방의 최초 명시적 계약해지 주장은 2025년 11월 3일 준비서면에서 확인됩니다. " },
-          { cite: 2 }
-        ]
-      },
-      {
-        segments: [
-          { t: "다만 2025년 10월 18일 상담메모에는 유사한 취지의 표현이 있어, " },
-          { t: "‘소송상 최초 주장’과 ‘사실상 최초 주장’은 구분할 필요가 있습니다. " },
-          { cite: 3 }
-        ]
-      },
-      {
-        segments: [
-          { t: "계약서의 해지 통지 조항은 유예기간 요건을 규정하고 있으므로, 통지 시점의 요건 충족 여부는 해당 조문을 함께 확인해야 합니다. " },
-          { cite: 1 },
-          { t: " " },
-          { cite: 4 }
-        ]
-      },
-      {
-        segments: [
-          { t: "위 분류는 모두 샘플 데이터에 기반한 시연이며, 실제 사건의 결론이 아닙니다." }
-        ]
-      }
-    ],
-    evidence_nums: [1, 2, 3, 4],
-    run: { searches: 3, sources: 5, status: "complete" }
+  /* ── Grounded sample answers, per scope (DEMO) ──────────────────────────
+   *
+   * ONE ANSWER PER SCOPE, not one global answer.
+   *
+   * The citation-integrity gate in legal-demo.js refuses to render an answer
+   * whose [n] markers do not all resolve to records in the active evidence
+   * set. The evidence sets differ per scope:
+   *
+   *   unified  -> all five records           -> [1][2][3][4][5]
+   *   official -> the official record only   -> [4]
+   *   drive    -> the three matter documents -> [1][2][3]
+   *   web      -> the commentary record only  -> [5]
+   *
+   * A single global answer citing [1][2][3][4] therefore forces official and
+   * drive into fail-closed. The gate is right; the answer model was wrong.
+   * Each scope now gets an answer that can actually be grounded in the records
+   * that scope can actually see — which also makes each scope a real
+   * demonstration rather than a variation on one paragraph.
+   *
+   * The web answer states its own limit in the BODY, not only in a badge, so
+   * the caveat survives a screenshot of the answer alone.
+   */
+  var DISCLAIMER =
+    "위 내용은 모두 샘플 데이터로 구성한 시연이며 실제 사건 분석이 아닙니다.";
+
+  var ANSWERS = {
+    unified: {
+      prompt: "이 사건에서 상대방이 계약 해지를 처음 주장한 시점과 그 주장을 뒷받침하는 자료를 찾아줘.",
+      paragraphs: [
+        {
+          segments: [
+            { t: "확인되는 자료상 상대방의 최초 명시적 계약해지 주장은 2025년 11월 3일 준비서면에서 확인됩니다. " },
+            { cite: 2 }
+          ]
+        },
+        {
+          segments: [
+            { t: "다만 2025년 10월 18일 상담메모에는 유사한 취지의 표현이 있어, " },
+            { t: "'소송상 최초 주장’과 '사실상 최초 주장’은 구분할 필요가 있습니다. " },
+            { cite: 3 }
+          ]
+        },
+        {
+          segments: [
+            { t: "계약서의 해지 통지 조항은 유예기간 요건을 규정하고 있으므로, 통지 시점의 요건 충족 여부는 해당 요건을 함께 확인해야 합니다. " },
+            { cite: 1 },
+            { t: " " },
+            { cite: 4 }
+          ]
+        },
+        {
+          segments: [
+            { t: "로펌 해설 글은 위 판단의 일반적 배경으로 참고할 수 있으나, 법적 근거로 사용하지는 않습니다. " },
+            { cite: 5 }
+          ]
+        },
+        { segments: [{ t: DISCLAIMER }] }
+      ],
+      evidence_nums: [1, 2, 3, 4, 5],
+      run: { searches: 3, sources: 5, status: "complete" },
+      note: "이 답변은 샘플 데이터로 구성한 시연이며 실제 사건 분석이 아닙니다. 인용된 근거는 모두 가상 자료입니다."
+    },
+
+    /* Official: a question the OFFICIAL corpus alone can answer. */
+    official: {
+      prompt: "가상 계약 해지 요건을 공식 법률자료에서 확인해줘.",
+      paragraphs: [
+        {
+          segments: [
+            { t: "가상 법률요약집 제17조는 해지권 행사의 판단 요건을 규정합니다. " },
+            { cite: 4 },
+            { t: " 존재하지 않는 가상 자료이므로 실제 사건의 요건 해석에는 사용할 수 없습니다." }
+          ]
+        },
+        {
+          segments: [
+            { t: "공식 법률자료 범위만으로는 사건 문서의 사실관계는 확인할 수 없습니다. 사건 자료가 필요하면 검색 범위를 '내 Drive'로 바꿔 확인하십시오." }
+          ]
+        },
+        { segments: [{ t: DISCLAIMER }] }
+      ],
+      evidence_nums: [4],
+      run: { searches: 1, sources: 1, status: "complete" },
+      note: "이 답변은 존재하지 않는 가상 자료에 기반한 시연이며, 실제 법령 해석이 아닙니다."
+    },
+
+    /* Drive: the chronology question, grounded only in matter documents. */
+    drive: {
+      prompt: "상대방이 계약 해지를 처음 주장한 시점과 그 자료를 찾아줘.",
+      paragraphs: [
+        {
+          segments: [
+            { t: "확인되는 자료상 상대방의 최초 명시적 계약해지 주장은 2025년 11월 3일 준비서면에서 확인됩니다. " },
+            { cite: 2 }
+          ]
+        },
+        {
+          segments: [
+            { t: "다만 2025년 10월 18일 상담메모에는 유사한 취지의 표현이 있어, " },
+            { t: "'소송상 최초 주장’과 '사실상 최초 주장’은 구분할 필요가 있습니다. " },
+            { cite: 3 }
+          ]
+        },
+        {
+          segments: [
+            { t: "계약서에는 해지 통지 시 유예기간 요건이 규정되어 있으므로, " },
+            { t: "위 시점의 통지가 해당 요건을 충족했는지는 원문 대조를 통해 확인해야 합니다. " },
+            { cite: 1 }
+          ]
+        },
+        { segments: [{ t: DISCLAIMER }] }
+      ],
+      evidence_nums: [1, 2, 3],
+      run: { searches: 2, sources: 3, status: "complete" },
+      note: "이 답변은 샘플 자료실에 기반한 시연이며 실제 사건 분석이 아닙니다."
+    },
+
+    /* Web: secondary only. The limit is stated in the answer body itself. */
+    web: {
+      prompt: "공개 웹에서 계약 해지 관련 일반 설명을 찾아줘.",
+      paragraphs: [
+        {
+          segments: [
+            { t: "찾은 자료는 계약 해지 통지의 일반적 취지를 설명하는 해설 글입니다. " },
+            { cite: 5 }
+          ]
+        },
+        {
+          segments: [
+            { t: "이 자료는 2차자료이며 참고자료입니다. " },
+            { t: "법적 근거로 단독 사용하지 마십시오. " },
+            { t: "인용하려면 반드시 공식 1차자료로 확인해야 합니다." }
+          ]
+        },
+        {
+          segments: [
+            { t: "요건 판단이나 사건 사실 확인에는 사용할 수 없습니다. 공식 법률자료나 사건 자료가 필요하면 검색 범위를 바꿔 확인하십시오." }
+          ]
+        },
+        { segments: [{ t: DISCLAIMER }] }
+      ],
+      evidence_nums: [5],
+      run: { searches: 2, sources: 1, status: "complete" },
+      note: "이 답변은 2차자료에 기반한 시연이며 법적 근거가 아닙니다."
+    }
   };
+
+  /* Kept as an alias for callers that want the combined answer, and so the
+   * citation-integrity gate keeps one obvious default. */
+  var SAMPLE_ANSWER = ANSWERS.unified;
 
   /* ── Fail-closed record (DEMO) ───────────────────────────────────────── */
   var FAIL_CLOSED = {
@@ -266,7 +378,9 @@
     MATTERS: MATTERS,
     CORPUS: CORPUS,
     EVIDENCE: EVIDENCE,
+    ANSWERS: ANSWERS,
     SAMPLE_ANSWER: SAMPLE_ANSWER,
+    DISCLAIMER: DISCLAIMER,
     FAIL_CLOSED: FAIL_CLOSED,
     FORMAT_SUPPORT: FORMAT_SUPPORT,
     PROVENANCE_NOTE: PROVENANCE_NOTE

@@ -25,22 +25,22 @@
     "unified": {
       "label": "통합",
       "evidenceCards": 5,
-      "textLen": 498
+      "textLen": 553
     },
     "official": {
       "label": "공식",
       "evidenceCards": 1,
-      "textLen": 377
+      "textLen": 416
     },
     "drive": {
       "label": "Drive",
       "evidenceCards": 3,
-      "textLen": 388
+      "textLen": 484
     },
     "provenance": {
       "label": "페이지",
       "evidenceCards": 5,
-      "textLen": 498
+      "textLen": 553
     },
     "fail-closed": {
       "label": "근거 없음",

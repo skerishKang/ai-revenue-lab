@@ -163,7 +163,7 @@ number at all.** So the UI is built around that truth:
 
 ---
 
-## 5b. Four invariants (each was a real defect, each has a regression)
+## 5b. Five invariants (each was a real defect, each has a regression)
 
 These are the properties the surface guarantees. All were broken at least once,
 and all are now asserted at the interaction level in `verify_browser.py`.
@@ -198,13 +198,34 @@ This is the sharpest edge in the product. "The interface says it cannot see my
 files, but it just cited one" is the exact failure it exists to prevent — and
 it is a state-machine bug, not a copy problem.
 
-### 4. Citation integrity (a consequence of the third)
+### 4. Every scope is a real, separately grounded result
+
+The four search scopes are not four views of one answer — they see different
+corpora and therefore have different answers:
+
+| Scope | Evidence | Cites | Question the scope can answer |
+|---|---|---|---|
+| 통합 | all five records | `[1][2][3][4][5]` | the full chronology + requirements + commentary |
+| 공식 법률자료 | `[4]` | `[4]` | what the (fictional) statute provision says |
+| 내 Drive | `[1][2][3]` | `[1][2][3]` | when the counterparty first claimed termination |
+| 웹 | `[5]` | `[5]` | general commentary — **secondary only** |
+
+The web answer states its own limit in the **body**, not only in a badge:
+`2차자료이며 참고자료입니다. 법적 근거로 단독 사용하지 마십시오.` so the caveat
+survives a screenshot of the answer alone.
+
+### 5. Citation integrity (a consequence of invariants 3 and 4)
 
 The sample answer is fixed text but the evidence set is not. Before rendering an
 answer, every `[n]` it cites is checked against the records actually in the
 panel; if any citation does not resolve, the surface **fails closed** instead of
 rendering a claim that points at evidence it cannot show. A real backend
 guarantees this by construction — a static surface has to check it explicitly.
+
+This gate is why per-scope answers were necessary. A single global answer
+citing `[1][2][3][4]` cannot be grounded in `official` (which sees only `[4]`),
+so `official` and `drive` silently fell into fail-closed while showing evidence
+cards. The gate was right; the answer model was wrong.
 
 ---
 
@@ -219,6 +240,11 @@ A lawyer must be able to sort trust at a glance. The class is carried by
 | `party` | outlined `▤ 당사자 문서` | solid gold | evidence produced inside the matter |
 | `internal` | dashed `✎ 내부 산출물` | muted gold | firm work product — not an authority |
 | `secondary` | dashed `◇ 2차자료` | dashed muted | commentary / news / web — reference only |
+
+The panel is **sorted strongest-authority first** (`primary → party → internal
+→ secondary`), so a secondary source can never sit above official primary
+authority in the reading order. Sorting is display-only: each record keeps its
+own `n`, so the `[1]`/`[4]` markers in the answer still line up with the cards.
 
 The panel footer states the rule in one line: **1차자료만 법적 근거로 인용하십시오.**
 
@@ -307,14 +333,15 @@ failure.
   single live region, single h1; the shared layers stay free of Legal
   vocabulary; and the honesty claims (unverified locators, HWP unsupported, no
   real statute identifier, no second Drive/evidence/OCR implementation) cannot be
-  quietly dropped. **46 tests**.
+  quietly dropped. **53 tests**.
 - **`verify_browser.py`** — no console errors, no horizontal overflow, all touch
   targets ≥ 44px, every keyboard tab stop shows a focus ring, the evidence
   panel is present at desktop and *absent* at mobile (not squeezed), and the
-  four invariants in §5b are each checked by **real interaction**: the desktop
-  sidebar is clicked, a citation is clicked, Drive is disconnected and
-  reconnected, state is switched and the page reloaded, and the composer is
-  driven by pointer, Enter, and Shift+Enter.
+  five invariants in §5b are each checked by **real interaction**: the desktop
+  sidebar is clicked, all three mobile sidebar close paths assert the trap is
+  released, a citation is clicked, Drive is disconnected and reconnected, every
+  scope is switched and its grounded answer checked citation-by-citation, and
+  the composer is driven by pointer, Enter, and Shift+Enter.
 - **`verify_visual.py`** — no clipped text, nothing trapped behind the fixed
   composer, the fixed composer never overlaps the evidence panel, the three
   desktop columns are balanced, and every measured text/background pair clears
@@ -376,6 +403,23 @@ none of these are visible in a screenshot.
     restoration silently failed: the captured node was already detached, and the
     trap re-ran on every render, re-capturing `<body>`. The trap now takes the
     caller explicitly at click time and re-resolves it by id.
+12. (CENTRAL review) The **mobile sidebar trap was never released**. All three
+    close paths (Escape, ×, scrim) removed the class and re-synced inert state
+    but none called `traps.sidebar.close()`, so the drawer could look closed
+    while its document-level keydown listener stayed installed. There is now one
+    `openSidebar()` and one `closeSidebar()`, and the regression asserts
+    `trapActive === false` after each path — class state alone cannot see it.
+13. (CENTRAL review) The **웹 scope chip was a fake control**. The handler
+    mapped anything that was not `official`/`drive` to `unified`, so clicking
+    웹 selected 통합. `#3138` requires the Web scope; it is now a real routing
+    state with its own evidence set, title, and answer.
+14. (CENTRAL review) `AUTHORITY_RANK`/`sortEvidence()` were **documented as a
+    contract but never applied** — the panel received raw array order. It is now
+    applied, with a regression proving the `[1]..[5]` identities are unchanged.
+
+Finding 13 is the one worth remembering: the surface had a control that looked
+real and was not, and no assertion covered it because the click *did* change
+something — just the wrong thing.
 
 ---
 

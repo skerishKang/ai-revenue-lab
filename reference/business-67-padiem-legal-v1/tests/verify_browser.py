@@ -356,6 +356,10 @@ def main() -> int:
             if w <= 920:
                 check_keyboard_drawer(page, name)
                 check_mobile_citation_opens_drawer(page)
+                if w == 390:
+                    check_mobile_sidebar_trap_cleanup(page)
+                    page.set_viewport_size({"width": w, "height": h})
+                    page.wait_for_timeout(300)
             else:
                 check_desktop_sidebar_interactive(page)
                 check_desktop_evidence_uses_panel(page)
@@ -363,6 +367,10 @@ def main() -> int:
                 check_state_scope_single_authority(page)
                 check_matter_consistency(page)
                 check_composer_submit_paths(page)
+                check_web_scope_selectable(page)
+                check_scope_grounded_results(page)
+                check_authority_ordering(page)
+                check_disconnected_truth_all_scopes(page)
 
             page.screenshot(path=str(OUT / f"{name}-B-unified.png"), full_page=False)
 
@@ -820,6 +828,254 @@ def check_matter_consistency(page) -> None:
         fail("the corpus does not disclose that all matters share the sample data")
     else:
         ok("corpus discloses that the sample data is shared across matters")
+
+# ── CENTRAL round-2 regressions (#3161) ─────────────────────────────────────
+
+def _sidebar_probe(page):
+    return page.evaluate(
+        """() => ({
+            open: document.getElementById('appShell').classList.contains('sidebar-open'),
+            sidebarInert: document.getElementById('sidebar').inert,
+            mainInert: document.getElementById('mainPanel').inert,
+            trapActive: window.B67DemoApp.sidebarTrap().isActive(),
+            focus: document.activeElement ? (document.activeElement.id || document.activeElement.className) : '',
+        })"""
+    )
+
+
+def _check_sidebar_close_path(page, label, close_fn) -> None:
+    """Every close path must release the trap, not just the CSS class.
+
+    A drawer that looks closed while its focus trap is still live keeps a
+    document-level keydown listener installed, which silently swallows the
+    next Tab/Escape. The class state alone cannot detect this.
+    """
+    page.click("#mobileMenu")
+    page.wait_for_timeout(300)
+    opened = _sidebar_probe(page)
+    if not opened["open"] or opened["sidebarInert"] or not opened["mainInert"]:
+        fail(f"{label}: sidebar did not open correctly ({opened})")
+        return
+    if not opened["trapActive"]:
+        fail(f"{label}: sidebar opened but the focus trap is not active ({opened})")
+    else:
+        ok(f"{label}: open -> sidebar interactive, main inert, trap active")
+
+    close_fn()
+    page.wait_for_timeout(350)
+    closed = _sidebar_probe(page)
+    if closed["open"]:
+        page.evaluate("() => window.B67DemoApp.closeSidebar()")
+        page.wait_for_timeout(200)
+        fail(f"{label}: sidebar class was not removed")
+    elif not closed["sidebarInert"]:
+        fail(f"{label}: closed sidebar is not inert (off-canvas content stays reachable)")
+    elif closed["mainInert"]:
+        fail(f"{label}: main panel is still inert after close")
+    elif closed["trapActive"]:
+        fail(f"{label}: focus trap is STILL ACTIVE after close - a hidden trap remains")
+    elif closed["focus"] != "mobileMenu":
+        fail(f"{label}: focus returned to {closed['focus']!r}, expected mobileMenu")
+    else:
+        ok(f"{label}: close -> class off, sidebar inert, main live, trap released, focus on #mobileMenu")
+
+
+def check_mobile_sidebar_trap_cleanup(page) -> None:
+    """BLOCKER A: all three close paths must fully release the trap."""
+    # Reset before each path so one failure cannot cascade into the next.
+    def reset():
+        page.evaluate("() => window.B67DemoApp.closeSidebar()")
+        page.wait_for_timeout(200)
+
+    _check_sidebar_close_path(page, "escape", lambda: page.keyboard.press("Escape"))
+    reset()
+    _check_sidebar_close_path(page, "close-button", lambda: page.click("#sidebarClose"))
+    reset()
+    # The scrim spans the viewport but the open drawer (z-index 20) covers its
+    # left portion, so click the exposed strip on the right. Clicking the
+    # element's centre would land on the drawer and test nothing.
+    _check_sidebar_close_path(
+        page, "scrim",
+        lambda: page.click("#sidebarScrim", position={"x": 360, "y": 420}, force=True))
+
+    # The trap must not linger after a breakpoint collapse either.
+    page.click("#mobileMenu")
+    page.wait_for_timeout(300)
+    if not _sidebar_probe(page)["trapActive"]:
+        fail("breakpoint: sidebar did not open before the resize")
+    page.set_viewport_size({"width": 1440, "height": 1000})
+    page.wait_for_timeout(400)
+    after = _sidebar_probe(page)
+    if after["trapActive"]:
+        fail("breakpoint collapse to desktop left the sidebar trap active")
+    else:
+        ok("breakpoint collapse to desktop releases the trap")
+
+
+def check_web_scope_selectable(page) -> None:
+    """BLOCKER B: the 웹 chip looked real and collapsed to 통합 on click."""
+    chips = page.evaluate(
+        """() => Array.from(document.querySelectorAll('#conversation .claw-chip'))
+                 .map(c => c.getAttribute('data-value'))"""
+    )
+    if "web" not in chips:
+        fail(f"the source scope row has no web chip (found {chips})")
+        return
+    page.click('#conversation .claw-chip[data-value="web"]')
+    page.wait_for_timeout(300)
+    got = page.evaluate(
+        """() => {
+            const c = document.querySelector('#conversation .claw-chip[aria-pressed="true"]');
+            return {
+                state: window.B67DemoApp.store.get().state,
+                scopeForState: window.B67DemoApp.scopeForState(window.B67DemoApp.store.get().state),
+                chip: c ? (c.querySelector('span:not(.chip-icon)') || c).textContent.trim() : null,
+                title: document.getElementById('topbarTitle').textContent,
+                types: Array.from(new Set(
+                    Array.from(document.querySelectorAll('#evidenceList .ev'))
+                        .map(e => e.dataset.sourceType))),
+                badge: (document.querySelector('#evidenceList .auth-badge') || {}).textContent,
+            };
+        }"""
+    )
+    if got["state"] != "web":
+        fail(f"clicking 웹 set state to {got['state']!r}, not 'web'")
+    elif got["scopeForState"] != "web":
+        fail(f"scopeForState('web') returned {got['scopeForState']!r}")
+    elif got["chip"] != "웹":
+        fail(f"the web scope chip is not selected (chip={got['chip']!r})")
+    elif not got["title"].startswith("웹"):
+        fail(f"title is {got['title']!r}, does not begin with 웹")
+    elif got["types"] != ["web"]:
+        fail(f"web scope shows evidence types {got['types']}, expected only ['web']")
+    else:
+        ok("웹 is selectable: state, scope chip, title, and web-only evidence")
+
+    if got["badge"] != "2차자료":
+        fail(f"web evidence is not labelled secondary (badge={got['badge']!r})")
+    else:
+        ok("web evidence is labelled 2차자료")
+
+
+def check_scope_grounded_results(page) -> None:
+    """BLOCKER C: official/drive/web must render a real grounded answer.
+
+    A text-length check cannot tell a grounded answer from the fail-closed
+    card. This asserts the actual structure: an assistant answer exists, a
+    citation button exists, every cited number exists in the evidence cards,
+    and the generic fail-closed title is absent.
+    """
+    expected = {
+        "unified": {1, 2, 3, 4, 5},
+        "official": {4},
+        "drive": {1, 2, 3},
+        "web": {5},
+    }
+    for scope, want_cites in expected.items():
+        page.evaluate(f"() => window.B67DemoApp.applyState({{state: '{scope}'}})")
+        page.wait_for_timeout(300)
+        got = page.evaluate(
+            """() => ({
+                answered: !!document.querySelector('#conversation .assistant-content'),
+                hasPrompt: !!document.querySelector('#conversation .message-bubble'),
+                cites: Array.from(document.querySelectorAll('#conversation .cite'))
+                            .map(c => parseInt(c.dataset.cite, 10)),
+                cards: Array.from(document.querySelectorAll('#evidenceList .ev'))
+                            .map(e => parseInt(e.dataset.evidenceN, 10)),
+                failClosedTitle: document.getElementById('conversation').textContent
+                    .includes('검증 가능한 근거를 찾지 못했습니다'),
+            })"""
+        )
+        if not got["answered"]:
+            fail(f"{scope}: no grounded answer was rendered")
+            continue
+        if not got["hasPrompt"]:
+            fail(f"{scope}: grounded answer rendered without the user turn")
+        if got["failClosedTitle"]:
+            fail(f"{scope}: fell into generic fail-closed although records are present")
+        unresolved = sorted(set(got["cites"]) - set(got["cards"]))
+        if unresolved:
+            fail(f"{scope}: cites {unresolved} which are not in the evidence surface")
+        if set(got["cites"]) != want_cites:
+            fail(f"{scope}: citations {sorted(set(got['cites']))} != expected {sorted(want_cites)}")
+        else:
+            ok(f"{scope}: grounded answer, citations {sorted(want_cites)} all resolve")
+
+    # The web answer must carry its own limit in the body, not only in a badge.
+    page.evaluate("() => window.B67DemoApp.applyState({state: 'web'})")
+    page.wait_for_timeout(250)
+    web_text = page.evaluate("""() => document.getElementById('conversation').textContent""")
+    for phrase in ("2차자료", "참고자료"):
+        if phrase not in web_text:
+            fail(f"web answer body does not carry the secondary-source limit ({phrase!r} missing)")
+    if "단독 사용하지 마십시오" not in web_text:
+        fail("web answer does not warn against single-source legal reliance")
+    else:
+        ok("web answer states its secondary-source limit in the answer body")
+
+
+def check_authority_ordering(page) -> None:
+    """AUTHORITY_RANK must actually order the panel, not just be documented."""
+    page.evaluate("() => window.B67DemoApp.applyState({state: 'unified'})")
+    page.wait_for_timeout(300)
+    order = page.evaluate(
+        """() => Array.from(document.querySelectorAll('#evidenceList .ev'))
+                  .map(e => e.dataset.authority)"""
+    )
+    rank = {"primary": 0, "party": 1, "internal": 2, "secondary": 3}
+    ranks = [rank[a] for a in order]
+    if ranks != sorted(ranks):
+        fail(f"evidence panel is not in authority order: {order}")
+    else:
+        ok(f"evidence panel is ordered by authority: {order}")
+
+    # Display order changes; identity does not.
+    nums = page.evaluate(
+        """() => Array.from(document.querySelectorAll('#evidenceList .ev-num'))
+                  .map(n => n.textContent)"""
+    )
+    if sorted(nums) != ["[1]", "[2]", "[3]", "[4]", "[5]"]:
+        fail(f"reordering changed the visible evidence identities: {nums}")
+    else:
+        ok("reordering is display-only; [1]..[5] identities are unchanged")
+
+
+def check_disconnected_truth_all_scopes(page) -> None:
+    """The Drive-disconnected fix must survive the new web state."""
+    page.evaluate("() => window.B67DemoApp.applyState({state: 'disconnected'})")
+    page.wait_for_timeout(300)
+    for scope in ("drive", "unified", "web", "official"):
+        page.evaluate(f"() => window.B67DemoApp.applyState({{state: '{scope}'}})")
+        page.wait_for_timeout(250)
+        got = page.evaluate(
+            """() => {
+                const s = window.B67DemoApp.store.get();
+                return {
+                    connected: s.driveConnected,
+                    driveRecords: s.evidence.filter(e => e.source_type === 'drive').length,
+                    cites: Array.from(document.querySelectorAll('#conversation .cite'))
+                        .map(c => parseInt(c.dataset.cite, 10)),
+                    cards: Array.from(document.querySelectorAll('#evidenceList .ev'))
+                        .map(e => parseInt(e.dataset.evidenceN, 10)),
+                };
+            }"""
+        )
+        if got["driveRecords"] > 0:
+            fail(f"disconnected + '{scope}' still serves {got['driveRecords']} Drive record(s)")
+        stray = sorted(set(got["cites"]) - set(got["cards"]))
+        if stray:
+            fail(f"disconnected + '{scope}' cites {stray} absent from the panel")
+    ok("no scope serves Drive evidence while Drive is disconnected")
+    ok("no scope renders a citation absent from its evidence surface while disconnected")
+
+    # Drive scope must be an explicit connection-required state, not a blank.
+    page.evaluate("() => window.B67DemoApp.applyState({state: 'drive'})")
+    page.wait_for_timeout(250)
+    text = page.evaluate("""() => document.getElementById('conversation').textContent""")
+    if "Drive 자료에 접근할 수 없습니다" not in text:
+        fail("Drive scope while disconnected does not show the connection-required state")
+    else:
+        ok("Drive scope while disconnected shows the connection-required state")
 
 if __name__ == "__main__":
     sys.exit(main())

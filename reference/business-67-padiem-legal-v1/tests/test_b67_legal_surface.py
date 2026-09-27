@@ -515,3 +515,120 @@ def test_no_chinese_characters_in_user_visible_korean() -> None:
             assert ch not in body, f"{name} contains the Chinese form {ch!r}"
     assert "출처를 붙입니다" in DEMO_JS
     assert "샘플 위치" in DEMO_JS
+
+
+# ── 6. CENTRAL round-2 contracts (#3161) ─────────────────────────────────
+
+def test_sidebar_has_one_open_and_one_close_path() -> None:
+    """CENTRAL BLOCKER A: the three close paths (Escape, ×, scrim) each removed
+    the class and re-synced inert state but none closed the focus trap, so the
+    drawer could look closed while a document-level keydown listener stayed
+    installed. Every close path must route through one function."""
+    assert "function closeSidebar" in DEMO_JS
+    assert "function openSidebar" in DEMO_JS
+
+    close = DEMO_JS.split("function closeSidebar", 1)[1].split("\n  }", 1)[0]
+    assert "traps.sidebar.close()" in close, "closeSidebar must release the trap"
+    assert "classList.remove" in close
+
+    # No ad-hoc sidebar teardown may survive anywhere in the file.
+    code = re.sub(r"/\*.*?\*/", "", DEMO_JS, flags=re.S)
+    stray = [m for m in re.finditer(r'classList\.remove\("sidebar-open"\)', code)]
+    # Exactly the two allowed sites: closeSidebar() and the idempotent
+    # viewport-collapse guard inside syncSidebar().
+    assert len(stray) == 2, f"sidebar teardown happens in {len(stray)} places; route through closeSidebar()"
+
+    for handler in ("traps.sidebar = ", "dom.sidebarClose.addEventListener",
+                    "dom.sidebarScrim.addEventListener"):
+        idx = DEMO_JS.index(handler)
+        block = DEMO_JS[idx:idx + 400]
+        assert "closeSidebar()" in block, f"{handler} does not route through closeSidebar()"
+
+    # The breakpoint collapse must also release the trap.
+    assert "closeSidebar()" in DEMO_JS.split('addEventListener("change"', 1)[1][:400]
+
+
+def test_web_is_a_real_routing_state() -> None:
+    """CENTRAL BLOCKER B: the 웹 chip was visible but collapsed to 통합 on click,
+    because the handler mapped anything that was not official/drive to unified."""
+    assert "var ROUTABLE_STATES" in DEMO_JS
+    block = DEMO_JS.split("var ROUTABLE_STATES", 1)[1].split(";", 1)[0]
+    for st in ("unified", "official", "drive", "web"):
+        assert f'"{st}"' in block, f"{st} is not a routable state"
+    assert 'case "web": return "웹";' in DEMO_JS, "web has no title"
+    ev = DEMO_JS.split("function evidenceForState", 1)[1].split("\n  }", 1)[0]
+    assert 'case "web"' in ev and 'source_type === "web"' in ev, "web has no evidence set"
+    # The scope handler must not hardcode an official/drive allowlist any more.
+    handler = DEMO_JS.split("dom.conversation.addEventListener", 1)[1][:500]
+    assert "ROUTABLE_STATES" in handler, "the scope click handler still collapses web to unified"
+
+
+def test_every_scope_has_a_grounded_answer() -> None:
+    """CENTRAL BLOCKER C: one global answer citing [1][2][3][4] could not be
+    grounded in `official` ([4]) or `drive` ([1][2][3]), so both intended result
+    states silently fell into fail-closed."""
+    assert "var ANSWERS = {" in CORPUS
+    assert "SAMPLE_ANSWER = ANSWERS.unified" in CORPUS
+    for scope in ("unified", "official", "drive", "web"):
+        assert f"    {scope}: {{" in CORPUS, f"no demo answer for scope {scope}"
+    assert "Demo.ANSWERS[scopeForState(state.state)]" in DEMO_JS, \
+        "the conversation does not select the scope's answer"
+
+    # The gate itself must survive — this is the part CENTRAL told us to keep.
+    assert "function citationsResolve" in DEMO_JS
+    guard = DEMO_JS.split("if (!citationsResolve", 1)[1][:200]
+    assert "renderFailClosed" in guard, "the citation-integrity gate was weakened"
+
+
+def test_scope_answers_only_cite_their_own_evidence() -> None:
+    """Statically cross-check each answer's citations against its evidence set."""
+    by_type: dict[str, set[int]] = {}
+    # Parse the record list as n/source_type pairs.
+    records = re.findall(r"n: (\d+),\s*source_type: \"(\w+)\"", CORPUS)
+    assert records, "no evidence records parsed from the corpus"
+    for n, t in records:
+        by_type.setdefault(t, set()).add(int(n))
+    all_nums = {int(n) for n, _ in records}
+    by_type["unified"] = all_nums
+
+    for scope, expect in (("official", "official"), ("drive", "drive"), ("web", "web"),
+                          ("unified", "unified")):
+        block = CORPUS.split(f"    {scope}: {{", 1)[1]
+        block = block.split("\n    },", 1)[0]
+        cited = {int(x) for x in re.findall(r"\{ cite: (\d+) \}", block)}
+        declared = {int(x) for x in re.findall(r"evidence_nums: \[([^\]]*)\]", block)[0].split(",") if x.strip()}
+        allowed = by_type[expect]
+        if cited != declared:
+            pytest.fail(f"{scope}: paragraphs cite {sorted(cited)} but evidence_nums says {sorted(declared)}")
+        if not cited:
+            pytest.fail(f"{scope}: answer cites nothing")
+        if not cited <= allowed:
+            pytest.fail(f"{scope}: cites {sorted(cited - allowed)} outside its evidence set {sorted(allowed)}")
+
+
+def test_web_answer_states_its_secondary_limit() -> None:
+    """The web corpus is secondary-only, and the limit must be in the answer
+    body so it survives a screenshot of the answer alone."""
+    block = CORPUS.split("    web: {", 1)[1].split("\n    }", 1)[0]
+    for phrase in ("2차자료", "참고자료", "단독 사용하지 마십시오"):
+        assert phrase in block, f"web answer does not state {phrase!r}"
+
+
+def test_authority_ordering_is_actually_applied() -> None:
+    """AUTHORITY_RANK/sortEvidence was documented as a contract but the renderer
+    received raw array order, so a secondary source could sit above official
+    primary authority."""
+    assert "AUTHORITY_RANK" in AUTH_JS
+    assert "function sortEvidence" in AUTH_JS
+    assert "Legal.sortEvidence(records)" in DEMO_JS, \
+        "sortEvidence is documented but never applied in render"
+    # Ordering must not renumber records: the [n] identity must survive.
+    sort_fn = AUTH_JS.split("function sortEvidence", 1)[1].split("\n  }", 1)[0]
+    assert "a.n - b.n" in sort_fn, "the tie-break must keep the original evidence number"
+
+
+def test_legal_authority_rank_orders_all_four_classes() -> None:
+    rank_block = AUTH_JS.split("var AUTHORITY_RANK", 1)[1].split("};", 1)[0]
+    order = re.findall(r"(\w+):", rank_block)
+    assert order == ["primary", "party", "internal", "secondary"], \
+        f"authority ranking order changed: {order}"
