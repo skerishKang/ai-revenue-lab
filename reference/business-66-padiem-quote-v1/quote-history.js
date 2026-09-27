@@ -14,6 +14,8 @@
 
   var HISTORY_SCHEMA_VERSION = 1;
   var HISTORY_STORAGE_KEY = "quoteBeta.history.v1";
+  var SEQUENCE_SCHEMA_VERSION = 1;
+  var SEQUENCE_STORAGE_KEY = "quoteBeta.quoteNoSequence.v1";
   var MAX_HISTORY = 20;
 
   function clone(value) {
@@ -110,14 +112,56 @@
     });
   }
 
-  function freshQuoteNo(now) {
+  function normalizeSequenceState(raw) {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw) ||
+        raw.schemaVersion !== SEQUENCE_SCHEMA_VERSION) {
+      return { schemaVersion: SEQUENCE_SCHEMA_VERSION, date: "", lastSequence: 0 };
+    }
+    var date = typeof raw.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(raw.date)
+      ? raw.date
+      : "";
+    var last = Number(raw.lastSequence);
+    if (!Number.isInteger(last) || last < 0) last = 0;
+    return {
+      schemaVersion: SEQUENCE_SCHEMA_VERSION,
+      date: date,
+      lastSequence: last
+    };
+  }
+
+  function quoteSequenceForDate(quoteNo, date) {
+    if (typeof quoteNo !== "string" || typeof date !== "string") return 0;
+    var compactDate = date.replace(/-/g, "");
+    var match = /^PQ-(\d{8})-(\d{3,6})$/.exec(quoteNo.trim());
+    if (!match || match[1] !== compactDate) return 0;
+    var sequence = Number(match[2]);
+    return Number.isInteger(sequence) && sequence > 0 ? sequence : 0;
+  }
+
+  function allocateQuoteNo(rawSequence, candidateDrafts, now) {
     var dt = now instanceof Date ? now : new Date();
-    var date = Core.isoFormat(dt).replace(/-/g, "");
-    var time = String(dt.getHours()).padStart(2, "0") +
-      String(dt.getMinutes()).padStart(2, "0") +
-      String(dt.getSeconds()).padStart(2, "0") +
-      String(dt.getMilliseconds()).padStart(3, "0");
-    return "PQ-" + date + "-" + time;
+    var date = Core.isoFormat(dt);
+    var state = normalizeSequenceState(rawSequence);
+    var maxSequence = state.date === date ? state.lastSequence : 0;
+
+    (Array.isArray(candidateDrafts) ? candidateDrafts : []).forEach(function (candidate) {
+      var normalized = Core.normalizeDraft(candidate);
+      if (!normalized) return;
+      maxSequence = Math.max(
+        maxSequence,
+        quoteSequenceForDate(normalized.meta.quoteNo, date)
+      );
+    });
+
+    var next = maxSequence + 1;
+    return {
+      quoteNo: "PQ-" + date.replace(/-/g, "") + "-" + String(next).padStart(3, "0"),
+      state: {
+        schemaVersion: SEQUENCE_SCHEMA_VERSION,
+        date: date,
+        lastSequence: next
+      }
+    };
   }
 
   function copyAsNew(entry, options) {
@@ -127,8 +171,11 @@
 
     var opts = options || {};
     var now = opts.now instanceof Date ? opts.now : new Date();
+    var quoteNo = typeof opts.quoteNo === "string" && opts.quoteNo.trim()
+      ? opts.quoteNo.trim()
+      : allocateQuoteNo(null, [source], now).quoteNo;
     var fresh = Core.createDefaultDraft();
-    fresh.meta.quoteNo = freshQuoteNo(now);
+    fresh.meta.quoteNo = quoteNo;
     fresh.meta.issueDate = Core.isoFormat(now);
     fresh.meta.validDays = source.meta.validDays;
     fresh.meta.source = "history-copy";
@@ -167,6 +214,8 @@
   return {
     HISTORY_SCHEMA_VERSION: HISTORY_SCHEMA_VERSION,
     HISTORY_STORAGE_KEY: HISTORY_STORAGE_KEY,
+    SEQUENCE_SCHEMA_VERSION: SEQUENCE_SCHEMA_VERSION,
+    SEQUENCE_STORAGE_KEY: SEQUENCE_STORAGE_KEY,
     MAX_HISTORY: MAX_HISTORY,
     normalizeEnvelope: normalizeEnvelope,
     createEntry: createEntry,
@@ -174,7 +223,9 @@
     deleteEntry: deleteEntry,
     getEntry: getEntry,
     listMetadata: listMetadata,
-    freshQuoteNo: freshQuoteNo,
+    normalizeSequenceState: normalizeSequenceState,
+    quoteSequenceForDate: quoteSequenceForDate,
+    allocateQuoteNo: allocateQuoteNo,
     copyAsNew: copyAsNew,
     isMeaningfulDraft: isMeaningfulDraft
   };
