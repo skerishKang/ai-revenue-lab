@@ -354,7 +354,7 @@ def run(
         platform=LocalAgentPlatform.WINDOWS,
         # The device profile describes the *target* device, which is Windows by
         # contract; the credential store keeps its own OS-native temp directory.
-        roots=(LocalRoot(root_ref="root.3140", windows_path=r"C:ProgramDataPadiemunner"),),
+        roots=(LocalRoot(root_ref="root.3140", windows_path=r"C:\ProgramData\Padiem\runner"),),
     )
     runtime = WindowsSubprocessLocalAgentRuntime(
         device=device,
