@@ -1,0 +1,199 @@
+name: B66 neutral Pages beta
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'reference/business-66-padiem-quote-v1/**'
+      - '.github/workflows/b66-neutral-pages-beta.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'reference/business-66-padiem-quote-v1/**'
+      - '.github/workflows/b66-neutral-pages-beta.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b66-neutral-pages-beta
+  cancel-in-progress: false
+
+jobs:
+  validate-and-release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PROJECT_NAME: quick-quote-kr
+      SOURCE_DIR: reference/business-66-padiem-quote-v1
+      PRODUCTION_BRANCH: main
+      TARGET_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+    steps:
+      - name: Checkout exact target
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify exact B66 source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test -f "${SOURCE_DIR}/index.html"
+          test -f "${SOURCE_DIR}/app.js"
+          test -f "${SOURCE_DIR}/quote-core.js"
+          grep -F '<title>견적서 만들기</title>' "${SOURCE_DIR}/index.html" >/dev/null
+          grep -F '샘플 공급사' "${SOURCE_DIR}/index.html" >/dev/null
+          ! grep -E 'Padiem|파디엠' "${SOURCE_DIR}/index.html"
+          echo "B66_NEUTRAL_SOURCE=PASS"
+
+      - name: Run B66 contracts
+        shell: bash
+        working-directory: ${{ env.SOURCE_DIR }}
+        run: |
+          set -euo pipefail
+          node tests/quote-core.test.cjs
+          node tests/quote-extraction.test.cjs
+          node tests/static-contract.test.cjs
+
+      - name: Local HTTP smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --directory "${SOURCE_DIR}" >"${RUNNER_TEMP}/b66-http.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "${server_pid}" || true' EXIT
+          for attempt in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:4173/ -o "${RUNNER_TEMP}/b66-local.html"; then
+              break
+            fi
+            sleep 1
+          done
+          grep -F '<title>견적서 만들기</title>' "${RUNNER_TEMP}/b66-local.html" >/dev/null
+          ! grep -E 'Padiem|파디엠' "${RUNNER_TEMP}/b66-local.html"
+          echo "LOCAL_HTTP_SMOKE=PASS"
+
+      - name: Confirm Cloudflare credentials
+        if: github.event_name != 'pull_request'
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          echo "CLOUDFLARE_CREDENTIALS=PRESENT"
+
+      - name: Ensure dedicated Pages project
+        if: github.event_name != 'pull_request'
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          project_file="$(mktemp)"
+          trap 'rm -f "${project_file}"' EXIT
+
+          project_url="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/pages/projects/${PROJECT_NAME}"
+          status="$(
+            curl --silent --show-error               --connect-timeout 15               --max-time 60               --output "${project_file}"               --write-out '%{http_code}'               --header "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"               --header 'Content-Type: application/json'               "${project_url}"
+          )"
+
+          case "${status}" in
+            200)
+              jq -e --arg name "${PROJECT_NAME}" --arg branch "${PRODUCTION_BRANCH}"                 '.success == true and .result.name == $name and .result.production_branch == $branch'                 "${project_file}" >/dev/null
+              echo "PAGES_PROJECT=EXISTS"
+              echo "EXISTING_PROJECT_REUSED=YES"
+              ;;
+            404)
+              jq -e '.success == false' "${project_file}" >/dev/null
+              npx --yes wrangler@4 pages project create "${PROJECT_NAME}"                 --production-branch "${PRODUCTION_BRANCH}"
+              echo "PAGES_PROJECT=CREATED"
+              echo "EXISTING_PROJECT_REUSED=NO"
+              ;;
+            *)
+              echo "Unexpected Cloudflare Pages project lookup HTTP ${status}." >&2
+              cat "${project_file}" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Deploy exact B66 beta
+        if: github.event_name != 'pull_request'
+        id: deploy
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          output_file="$(mktemp)"
+          clean_output="$(mktemp)"
+          trap 'rm -f "${output_file}" "${clean_output}"' EXIT
+
+          npx --yes wrangler@4 pages deploy "${SOURCE_DIR}"             --project-name "${PROJECT_NAME}"             --branch "${PRODUCTION_BRANCH}"             --commit-hash "${TARGET_SHA}"             --commit-message "B66 neutral beta ${TARGET_SHA}"             --commit-dirty=false 2>&1 | tee "${output_file}"
+
+          sed -E $'s/\x1B\[[0-9;]*[A-Za-z]//g' "${output_file}" > "${clean_output}"
+          deployment_url="$({
+            grep -Eo 'https://[A-Za-z0-9.-]+\.pages\.dev' "${clean_output}" || true
+          } | grep -E "(^https://${PROJECT_NAME}\.pages\.dev$|\.${PROJECT_NAME}\.pages\.dev$)" | head -n 1 || true)"
+          test -n "${deployment_url}" || {
+            echo "Wrangler did not report a B66 deployment URL." >&2
+            exit 1
+          }
+          echo "url=${deployment_url}" >> "${GITHUB_OUTPUT}"
+          echo "DEPLOYMENT_URL=${deployment_url}"
+
+      - name: Verify exact deployment and stable user entrypoint
+        if: github.event_name != 'pull_request'
+        shell: bash
+        env:
+          DEPLOYMENT_URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          set -euo pipefail
+          expected_apex="https://${PROJECT_NAME}.pages.dev/"
+          exact_html="$(mktemp)"
+          apex_html="$(mktemp)"
+          trap 'rm -f "${exact_html}" "${apex_html}"' EXIT
+
+          verify_page() {
+            url="$1"
+            output="$2"
+            for attempt in $(seq 1 36); do
+              if curl -fsS --connect-timeout 5 --max-time 20                   -H 'Cache-Control: no-cache'                   "${url}?release=${TARGET_SHA}-${attempt}" -o "${output}"                 && grep -F '<title>견적서 만들기</title>' "${output}" >/dev/null                 && grep -F '샘플 공급사' "${output}" >/dev/null                 && ! grep -E 'Padiem|파디엠|B66 DEMO' "${output}"; then
+                return 0
+              fi
+              sleep 5
+            done
+            return 1
+          }
+
+          verify_page "${DEPLOYMENT_URL}/" "${exact_html}"
+          verify_page "${expected_apex}" "${apex_html}"
+
+          echo "PUBLIC_BYTES_VERIFIED=YES"
+          echo "PUBLIC_ENTRYPOINT=${expected_apex}"
+          echo "CUSTOM_DOMAIN_MUTATION=0"
+
+      - name: Publish summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## B66 neutral Pages beta"
+            echo
+            echo "- exact SHA: ${TARGET_SHA}"
+            echo "- source: ${SOURCE_DIR}"
+            echo "- project: ${PROJECT_NAME}"
+            echo "- PR deployment mutation: ${{ github.event_name == 'pull_request' && '0' || 'main-only' }}"
+            if [ "${{ github.event_name }}" != "pull_request" ]; then
+              echo "- user entrypoint: https://${PROJECT_NAME}.pages.dev/"
+              echo "- custom domain mutation: 0"
+            fi
+          } >> "${GITHUB_STEP_SUMMARY}"

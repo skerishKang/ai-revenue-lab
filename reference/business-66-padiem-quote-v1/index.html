@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>견적서 만들기</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="quote-core.js" defer></script>
+  <script src="quote-extraction.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <h1>견적서 만들기</h1>
+        <p>입력부터 PDF 저장까지 한 화면에서</p>
+      </div>
+      <div class="badge">BETA · 입력 내용은 이 브라우저에만 저장</div>
+    </header>
+
+    <nav class="modebar" aria-label="견적 생성 방식">
+      <button class="mode active" data-mode="manual">직접 입력</button>
+      <button class="mode future" data-mode="upload">파일 올리기 · 다음 단계</button>
+      <button class="mode future" data-mode="chat">채팅으로 만들기 · 다음 단계</button>
+    </nav>
+    <div class="future-note" id="futureNote"></div>
+
+    <div class="grid">
+      <section class="panel" aria-label="견적 입력">
+        <div class="section">
+          <h2>1. 보내는 사람</h2>
+          <div class="fields">
+            <label>저장된 발신자
+              <select id="senderPreset">
+                <option value="sample">샘플 공급사</option>
+                <option value="custom">직접 입력</option>
+              </select>
+            </label>
+            <label>상호
+              <input id="senderCompany" value="샘플 공급사">
+            </label>
+            <label>대표자
+              <input id="senderRep" value="대표자명">
+            </label>
+            <label>사업자등록번호
+              <input id="senderBizNo" value="000-00-00000">
+            </label>
+            <label>주소
+              <input id="senderAddress" placeholder="공급자 주소">
+            </label>
+            <label>연락처
+              <input id="senderPhone" value="000-0000-0000">
+            </label>
+            <label>이메일
+              <input id="senderEmail" value="hello@example.com">
+            </label>
+          </div>
+          <div class="button-row">
+            <button class="btn soft" id="saveSender">이 발신자 저장</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>2. 받는 사람과 날짜</h2>
+          <div class="fields three">
+            <label>고객 / 업체명
+              <input id="recipientCompany" value="고객사">
+            </label>
+            <label>담당자
+              <input id="recipientPerson" value="담당자님">
+            </label>
+            <label>이메일
+              <input id="recipientEmail" value="">
+            </label>
+            <label class="span-3">고객 주소
+              <input id="recipientAddress" placeholder="공급받는 자 주소">
+            </label>
+            <label>견적일
+              <input id="quoteDate" type="date">
+            </label>
+            <label>유효기간
+              <select id="validity">
+                <option value="7">7일</option>
+                <option value="14">14일</option>
+                <option value="30" selected>30일</option>
+              </select>
+            </label>
+            <label>견적번호
+              <input id="quoteNo">
+            </label>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>3. 품목과 가격</h2>
+          <div class="row-head" aria-hidden="true">
+            <span>품목</span><span>수량</span><span>단가</span><span style="text-align:right">금액</span><span></span>
+          </div>
+          <div id="items"></div>
+          <div class="button-row">
+            <button class="btn" id="addItem">+ 품목 추가</button>
+            <button class="btn" id="newQuote">새 견적</button>
+          </div>
+          <div class="tax-row">
+            <label>부가세 방식
+              <select id="taxMode">
+                <option value="EXCLUSIVE">별도 — 공급가액에 VAT 10% 추가</option>
+                <option value="INCLUSIVE">포함 — 표시 금액에 VAT 포함</option>
+                <option value="EXEMPT">면세 — 부가세 없음</option>
+              </select>
+            </label>
+          </div>
+          <div class="summary">
+            <div class="summary-line"><span>공급가액</span><strong id="subtotalText">0원</strong></div>
+            <div class="summary-line"><span id="vatLabelText">부가세</span><strong id="vatText">0원</strong></div>
+            <div class="summary-line total"><span>합계</span><span id="grandText">0원</span></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>4. 비고</h2>
+          <label>결제 / 납기 / 추가 안내
+            <textarea id="memo">견적 유효기간 내 발주 시 상기 금액을 적용합니다.
+세부 일정은 협의 후 확정합니다.</textarea>
+          </label>
+          <div class="button-row">
+            <button class="btn primary" id="printPdf">PDF로 저장 / 인쇄</button>
+            <button class="btn" id="emailFuture">이메일 보내기 · 다음 단계</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="preview-wrap" aria-label="견적서 미리보기">
+        <div class="preview-toolbar">
+          <strong>견적서 미리보기</strong>
+          <span style="font-size:11px;color:#667085">A4 PDF 출력용</span>
+        </div>
+        <article class="quote-paper" id="quotePaper">
+          <div class="quote-title">
+            <h2>견 적 서</h2>
+            <div class="meta">
+              <div id="pvQuoteNo"></div>
+              <div id="pvDate"></div>
+              <div id="pvValidity"></div>
+              <div id="pvValidUntil"></div>
+              <div id="pvTaxMode"></div>
+            </div>
+          </div>
+          <div class="parties">
+            <div class="party">
+              <div class="eyebrow">공급자</div>
+              <strong id="pvSenderCompany"></strong>
+              <p id="pvSenderRep"></p>
+              <p id="pvSenderBizNo"></p>
+              <p id="pvSenderAddress"></p>
+              <p id="pvSenderContact"></p>
+            </div>
+            <div class="party">
+              <div class="eyebrow">공급받는 자</div>
+              <strong id="pvRecipientCompany"></strong>
+              <p id="pvRecipientPerson"></p>
+              <p id="pvRecipientAddress"></p>
+              <p id="pvRecipientEmail"></p>
+            </div>
+          </div>
+          <table class="quote-table">
+            <thead><tr><th style="width:42%">품목</th><th>수량</th><th>단가</th><th>금액</th></tr></thead>
+            <tbody id="pvItems"></tbody>
+          </table>
+          <div class="quote-totals">
+            <div><span>공급가액</span><strong id="pvSubtotal"></strong></div>
+            <div><span id="pvVatLabel">부가세</span><strong id="pvVat"></strong></div>
+            <div class="grand"><span>합계</span><span id="pvGrand"></span></div>
+          </div>
+          <div class="memo" id="pvMemo"></div>
+          <div class="demo-mark">견적서 베타</div>
+        </article>
+      </aside>
+    </div>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
