@@ -240,14 +240,18 @@ class WindowsGitWorktreeStatePort:
             process.wait(timeout=self._timeout_seconds)
         except subprocess.TimeoutExpired:
             timed_out = True
+            # Reap the child unconditionally before returning. A killed Git that
+            # has not been reaped still holds its working directory on Windows,
+            # and a probe that leaves that handle behind would make the runner's
+            # own cleanup fail for reasons that have nothing to do with the
+            # worktree it asked about.
             process.kill()
-            try:
-                process.wait(timeout=2)
-            except subprocess.TimeoutExpired:
-                pass
+            process.wait()
         finally:
+            # The drain threads own their streams and close them; closing here
+            # would race a still-running reader and truncate the response.
             for reader in readers:
-                reader.join(timeout=2)
+                reader.join(timeout=5)
         if timed_out:
             raise ContractError(
                 "git_worktree_probe_timeout: git status did not complete within the probe bound",

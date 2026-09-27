@@ -101,7 +101,10 @@ class _TempRepo:
         (self.path / name).write_bytes(b"x" * size)
 
     def close(self) -> None:
-        self._temp.cleanup()
+            try:
+                self._temp.cleanup()
+            except PermissionError:  # pragma: no cover - Windows handle timing
+                pass
 
 
 class _TempDir:
@@ -110,7 +113,10 @@ class _TempDir:
         self.path = Path(self._temp.name)
 
     def close(self) -> None:
-        self._temp.cleanup()
+            try:
+                self._temp.cleanup()
+            except PermissionError:  # pragma: no cover - Windows handle timing
+                pass
 
 
 class RealWindowsWorktreeStatePortTests(unittest.TestCase):
@@ -159,6 +165,11 @@ class RealWindowsWorktreeStatePortTests(unittest.TestCase):
             port.is_dirty(str(self._repo.path))
         self.assertTrue(str(refused.exception).startswith("git_worktree_probe_unavailable"), str(refused.exception))
         # Real `git`, real child process, killed by the real bound.
+        # Real `git` against real work (thousands of files), killed by the real
+        # bound: on any runner the status cannot finish inside it, so this is a
+        # genuine timeout rather than a race with a fast machine.
+        for index in range(4000):
+            (self._repo.path / f"bulk_{index:05d}.txt").write_bytes(b"x")
         port = WindowsGitWorktreeStatePort(timeout_seconds=0.001)
         with self.assertRaises(ContractError) as refused:
             port.is_dirty(str(self._repo.path))
@@ -189,6 +200,11 @@ class RealWindowsWorktreeStatePortTests(unittest.TestCase):
 
     def test_probe_timeout_fails_closed(self) -> None:
         # Real `git`, real child process, killed by the real bound.
+        # Real `git` against real work (thousands of files), killed by the real
+        # bound: on any runner the status cannot finish inside it, so this is a
+        # genuine timeout rather than a race with a fast machine.
+        for index in range(4000):
+            (self._repo.path / f"bulk_{index:05d}.txt").write_bytes(b"x")
         port = WindowsGitWorktreeStatePort(timeout_seconds=0.001)
         with self.assertRaises(ContractError) as refused:
             port.is_dirty(str(self._repo.path))
