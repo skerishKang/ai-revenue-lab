@@ -197,6 +197,44 @@
     }
   }
 
+  function createBlankQuoteDraft(currentDraft, options) {
+    var current = normalizeDraft(currentDraft) || createDefaultDraft();
+    var defaults = createDefaultDraft();
+    var opts = options || {};
+    var issueDate = typeof opts.issueDate === "string" && parseISODate(opts.issueDate)
+      ? opts.issueDate
+      : todayISO();
+    var quoteNo = typeof opts.quoteNo === "string" && opts.quoteNo.trim()
+      ? opts.quoteNo.trim()
+      : defaults.meta.quoteNo;
+    var source = typeof opts.source === "string" && opts.source.trim()
+      ? opts.source.trim()
+      : "manual";
+
+    return normalizeDraft({
+      schemaVersion: SCHEMA_VERSION,
+      meta: {
+        quoteNo: quoteNo,
+        issueDate: issueDate,
+        validDays: current.meta.validDays > 0 ? current.meta.validDays : defaults.meta.validDays,
+        source: source
+      },
+      sender: {
+        company: current.sender.company,
+        rep: current.sender.rep,
+        bizNo: current.sender.bizNo,
+        address: current.sender.address,
+        phone: current.sender.phone,
+        email: current.sender.email,
+        presetId: current.sender.presetId
+      },
+      recipient: { company: "", person: "", address: "", email: "" },
+      items: [{ id: "item-1", name: "", qty: 1, unitPrice: 0 }],
+      tax: { mode: TAX_MODES.EXCLUSIVE, rate: VAT_RATE },
+      memo: defaults.memo
+    });
+  }
+
   return {
     SCHEMA_VERSION: SCHEMA_VERSION,
     DRAFT_STORAGE_KEY: DRAFT_STORAGE_KEY,
@@ -214,6 +252,7 @@
     todayISO: todayISO,
     computeValidUntil: computeValidUntil,
     createDefaultDraft: createDefaultDraft,
+    createBlankQuoteDraft: createBlankQuoteDraft,
     normalizeDraft: normalizeDraft
   };
 });
