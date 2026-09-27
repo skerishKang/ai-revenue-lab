@@ -68,6 +68,58 @@
     }
   }
 
+  function loadQuoteNoSequence() {
+    if (!History) return null;
+    try {
+      return History.normalizeSequenceState(
+        JSON.parse(localStorage.getItem(History.SEQUENCE_STORAGE_KEY) || "null")
+      );
+    } catch (err) {
+      return History.normalizeSequenceState(null);
+    }
+  }
+
+  function quoteNoCandidates() {
+    if (!History) return [];
+    const envelope = loadHistoryEnvelope();
+    const candidates = envelope ? envelope.entries.map((entry) => entry.draft) : [];
+    if (History.isMeaningfulDraft(draft)) candidates.push(draft);
+    return candidates;
+  }
+
+  function allocateFreshQuoteNo(now) {
+    if (!History) return Core.createDefaultDraft().meta.quoteNo;
+    const allocation = History.allocateQuoteNo(
+      loadQuoteNoSequence(),
+      quoteNoCandidates(),
+      now instanceof Date ? now : new Date()
+    );
+    try {
+      localStorage.setItem(History.SEQUENCE_STORAGE_KEY, JSON.stringify(allocation.state));
+    } catch (err) {
+      /* 번호는 history/draft와 대조해 계산되므로 sequence 저장 실패만으로 진행을 막지 않음 */
+    }
+    return allocation.quoteNo;
+  }
+
+  function createFreshDraft(source, now) {
+    const dt = now instanceof Date ? now : new Date();
+    const fresh = Core.createDefaultDraft();
+    fresh.meta.quoteNo = allocateFreshQuoteNo(dt);
+    fresh.meta.issueDate = Core.isoFormat(dt);
+    fresh.meta.source = source || "manual";
+    return fresh;
+  }
+
+  function copyHistoryAsNew(entry, now) {
+    if (!History) return null;
+    const dt = now instanceof Date ? now : new Date();
+    return History.copyAsNew(entry, {
+      now: dt,
+      quoteNo: allocateFreshQuoteNo(dt)
+    });
+  }
+
   function saveCurrentToHistory() {
     if (!History) return { ok: false, error: "history_unavailable" };
     const envelope = History.addEntry(loadHistoryEnvelope(), draft);
@@ -385,7 +437,7 @@
 
   $("newQuote").addEventListener("click", () => {
     if (!window.confirm("현재 입력한 견적 내용을 모두 지우고 새로 시작할까요?")) return;
-    draft = Core.createDefaultDraft();
+    draft = createFreshDraft("manual");
     renderItems();
     fillInputsFromDraft();
     render();
@@ -436,6 +488,8 @@
   window.B66QuoteAppBridge = Object.freeze({
     getDraft: () => cloneDraft(draft),
     replaceDraft,
+    createFreshDraft,
+    copyHistoryAsNew,
     saveCurrentToHistory,
     getHistoryEnvelope: () => {
       const envelope = loadHistoryEnvelope();
