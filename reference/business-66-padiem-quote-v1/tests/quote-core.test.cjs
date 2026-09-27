@@ -72,6 +72,8 @@ assert.equal(draft.schemaVersion, 1, "schema version");
 });
 assert.equal(draft.items.length, 2, "default items");
 assert.equal(draft.tax.mode, "EXCLUSIVE", "default tax mode");
+assert.equal(draft.sender.company, "샘플 공급사", "neutral default sender");
+assert.equal(draft.sender.presetId, "sample", "neutral sender preset");
 
 /* DRAFT_RESTORE_CONTRACT — 정상·부분·손상 입력 */
 assert.deepEqual(Core.normalizeDraft(JSON.parse(JSON.stringify(draft))), draft, "round trip");
