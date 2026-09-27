@@ -7,10 +7,12 @@
 
   const $ = (id) => document.getElementById(id);
   const Core = window.QuoteCore;
+  const Extraction = window.QuoteExtraction || null;
 
   /* ── 상태: QuoteDraft ── */
 
   let draft = loadDraft() || Core.createDefaultDraft();
+  let lastExtractionReview = null;
   let itemSeq = draft.items.reduce((max, it) => {
     const n = parseInt(String(it.id).replace(/^item-/, ""), 10);
     return Number.isFinite(n) ? Math.max(max, n) : max;
@@ -120,6 +122,89 @@
       draft.tax.mode = e.target.value;
       render();
     });
+  }
+
+  /* ── future extraction bridge: validated facts → editable QuoteDraft ── */
+
+  function cloneJson(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function assignExtracted(target, key, value) {
+    if (value !== null && value !== undefined) target[key] = value;
+  }
+
+  function hasExtractedPartyValue(party) {
+    return Object.values(party || {}).some((value) => value !== null && value !== undefined);
+  }
+
+  function buildDraftFromExtraction(extracted) {
+    const candidate = cloneJson(draft);
+
+    candidate.meta.source = "extraction:" + extracted.source.kind;
+    assignExtracted(candidate.meta, "quoteNo", extracted.quote.quoteNo);
+    assignExtracted(candidate.meta, "issueDate", extracted.quote.issueDate);
+    assignExtracted(candidate.meta, "validDays", extracted.quote.validDays);
+
+    ["company", "rep", "bizNo", "address", "phone", "email"].forEach((key) => {
+      assignExtracted(candidate.sender, key, extracted.sender[key]);
+    });
+    if (hasExtractedPartyValue(extracted.sender)) candidate.sender.presetId = "custom";
+
+    ["company", "person", "address", "email"].forEach((key) => {
+      assignExtracted(candidate.recipient, key, extracted.recipient[key]);
+    });
+
+    if (extracted.items.length > 0) {
+      candidate.items = extracted.items.map((item) => ({
+        id: nextItemId(),
+        name: item.name ?? "",
+        qty: item.qty ?? 0,
+        unitPrice: item.unitPrice ?? 0
+      }));
+    }
+
+    if (extracted.tax.mode !== null) candidate.tax.mode = extracted.tax.mode;
+    if (extracted.memo !== null) candidate.memo = extracted.memo;
+
+    return Core.normalizeDraft(candidate);
+  }
+
+  function validateExtractionResult(raw) {
+    if (!Extraction || typeof Extraction.normalizeExtraction !== "function") {
+      return { ok: false, error: "extraction_contract_unavailable" };
+    }
+    return Extraction.normalizeExtraction(raw);
+  }
+
+  function applyExtractionResult(raw, options) {
+    if (!options || options.confirmed !== true) {
+      return { ok: false, error: "review_confirmation_required" };
+    }
+
+    const validated = validateExtractionResult(raw);
+    if (!validated.ok) return validated;
+
+    const nextDraft = buildDraftFromExtraction(validated.value);
+    if (!nextDraft) return { ok: false, error: "draft_normalization_failed" };
+
+    draft = nextDraft;
+    lastExtractionReview = {
+      source: cloneJson(validated.value.source),
+      evidence: cloneJson(validated.value.evidence),
+      warnings: cloneJson(validated.value.warnings)
+    };
+
+    renderItems();
+    fillInputsFromDraft();
+    render();
+    toast("추출한 내용을 검토 가능한 견적 초안에 반영했습니다.");
+
+    return { ok: true, draft: cloneJson(draft), review: cloneJson(lastExtractionReview) };
+  }
+
+  function getLastExtractionReview() {
+    return lastExtractionReview ? cloneJson(lastExtractionReview) : null;
   }
 
   /* ── 품목 행: 단가/수량은 text 입력(콤마 허용) + blur 시 표시 포맷 ── */
@@ -334,6 +419,12 @@
         ? "파일 업로드 → 견적서 필드 자동 추출은 다음 단계에서 AI/OCR Skill로 연결합니다. 이 데모에서는 파일을 외부로 전송하지 않습니다."
         : "자연어 채팅 → QuoteDraft 자동 입력은 다음 단계에서 연결합니다. 금액 계산은 AI가 아니라 현재와 같은 결정적 계산 코드가 담당합니다.";
     });
+  });
+
+  window.B66QuoteExtractionBridge = Object.freeze({
+    validate: validateExtractionResult,
+    apply: applyExtractionResult,
+    getLastReview: getLastExtractionReview
   });
 
   /* ── 초기화 ── */
