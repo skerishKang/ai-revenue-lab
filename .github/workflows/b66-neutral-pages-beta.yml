@@ -46,6 +46,8 @@ jobs:
           test -f "${SOURCE_DIR}/index.html"
           test -f "${SOURCE_DIR}/app.js"
           test -f "${SOURCE_DIR}/quote-core.js"
+          test -f "${SOURCE_DIR}/quote-history.js"
+          test -f "${SOURCE_DIR}/easy-mode.js"
           grep -F '<title>견적서 만들기</title>' "${SOURCE_DIR}/index.html" >/dev/null
           grep -F '샘플 공급사' "${SOURCE_DIR}/index.html" >/dev/null
           ! grep -E 'Padiem|파디엠' "${SOURCE_DIR}/index.html"
@@ -56,8 +58,11 @@ jobs:
         working-directory: ${{ env.SOURCE_DIR }}
         run: |
           set -euo pipefail
+          node --check app.js
+          node --check easy-mode.js
           node tests/quote-core.test.cjs
           node tests/quote-extraction.test.cjs
+          node tests/quote-history.test.cjs
           node tests/static-contract.test.cjs
 
       - name: Local HTTP smoke
