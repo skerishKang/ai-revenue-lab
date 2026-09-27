@@ -24,6 +24,9 @@ from app.claw_automation_scheduled_execution import (
     compose_scheduled_automation_execution,
 )
 from app.claw_automation_store import D1ClawAutomationStore
+from app.claw_local_access_composition import (
+    build_claw_local_access_source_with_diagnostic,
+)
 from app.claw_p01_composition import (
     build_claw_p01_adapter,
     build_claw_p01_lanes_with_diagnostic,
@@ -712,6 +715,16 @@ class Default(WorkerEntrypoint):
                     self.env,
                     request_factory=Request,
                 )
+                # #3094: compose the concrete canonical local-access source
+                # from a trusted broker-authority binding only. When the
+                # trusted runtime is absent (today's deploy) the composition
+                # yields None and the app keeps the fail-closed unconfigured
+                # source installed by create_app.
+                claw_local_access_source, _claw_local_access_diag = (
+                    build_claw_local_access_source_with_diagnostic(self.env)
+                )
+                if claw_local_access_source is not None:
+                    _worker_app.state.claw_local_access_source = claw_local_access_source
                 install_orchestration_routes(
                     _worker_app,
                     build_orchestration_bridge(

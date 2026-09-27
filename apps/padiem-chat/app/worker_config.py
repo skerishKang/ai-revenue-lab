@@ -39,6 +39,13 @@ WORKSPACE_R2_BINDING_NAME = "PADIEM_WORKSPACE_FILES"
 # until then this resolves to None and every composition path fails closed.
 GOOGLE_OAUTH_SERVICE_BINDING_NAME = "GOOGLE_OAUTH_STATE_SERVICE"
 
+# #3094 local-access truth source boundary. Resolved from trusted Worker
+# bindings only and never from request input. No entry exists in
+# apps/padiem-chat/wrangler.toml: the #3080 broker authority runtime is not a
+# deployed service yet, so this resolves to None and the app keeps the
+# fail-closed unconfigured local-access source until a trusted boundary exists.
+LOCAL_AGENT_BROKER_AUTHORITY_SERVICE_BINDING_NAME = "LOCAL_AGENT_BROKER_AUTHORITY_SERVICE"
+
 # Worker-native P01/Engine configuration surface (#2229). Owned by B62 deployment
 # composition and read only from trusted Worker bindings — never from os.environ
 # and never from browser/request input. The Engine target is the fixed
