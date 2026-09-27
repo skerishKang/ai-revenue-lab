@@ -294,7 +294,10 @@
     return fresh;
   }
 
-  function startGuided() {
+  function startGuided(referenceText) {
+    const reference = typeof referenceText === "string"
+      ? safeText(referenceText, 8000)
+      : "";
     startConversation();
     guided = {
       step: "recipientCompany",
@@ -302,10 +305,20 @@
       currentItem: -1,
       taxUnknown: false
     };
-    addMessage("assistant", "새 견적을 같이 만들어볼게요. 누구에게 보내는 견적인가요? 업체명이나 받는 분 이름을 입력해 주세요.");
+    if (reference) {
+      addMessage("user", reference);
+      addMessage(
+        "assistant",
+        "적어주신 내용은 참고용으로 그대로 남겨둘게요. 아직 자동 해석은 하지 않으므로 필요한 값은 하나씩 확인합니다. 먼저 누구에게 보내는 견적인가요?"
+      );
+    } else {
+      addMessage("assistant", "새 견적을 같이 만들어볼게요. 누구에게 보내는 견적인가요? 업체명이나 받는 분 이름을 입력해 주세요.");
+    }
     setChips([{ label: "직접 입력으로 전환", action: () => setWorkspaceMode("direct") }]);
     setInput(processGuidedInput, "예: 홍길동건설");
-    $("easyComposerNote").textContent = "필요한 내용만 하나씩 묻습니다. 이 흐름은 AI 없이 동작합니다.";
+    $("easyComposerNote").textContent = reference
+      ? "작성한 원문은 참고용으로만 표시하며 QuoteDraft에 자동 반영하지 않습니다."
+      : "필요한 내용만 하나씩 묻습니다. 이 흐름은 AI 없이 동작합니다.";
   }
 
   function askRecipientPerson() {
@@ -336,9 +349,9 @@
 
   function askPrice() {
     guided.step = "price";
-    addMessage("assistant", "개당 단가는 얼마인가요? 콤마를 넣어도 됩니다.");
+    addMessage("assistant", "개당 단가는 얼마인가요? 1,500,000 또는 150만원처럼 입력할 수 있어요.");
     setChips([]);
-    setInput(processGuidedInput, "예: 1,500,000");
+    setInput(processGuidedInput, "예: 1,500,000 또는 150만원");
   }
 
   function askMoreItems() {
@@ -468,9 +481,9 @@
       }
 
       case "price": {
-        const price = parseNumberAnswer(text, true);
+        const price = Core.parseKoreanMoney(text);
         if (price === null) {
-          addMessage("assistant", "단가는 숫자로 입력해 주세요. 예: 1,500,000");
+          addMessage("assistant", "단가는 1,500,000 또는 150만원처럼 입력해 주세요. 복합 단위는 추측하지 않습니다.");
           askPrice();
           return;
         }
@@ -566,7 +579,7 @@
         "내용을 확인했습니다. 현재 버전에서는 이 문장을 AI가 자동 해석하지 않습니다. 질문형으로 이어가면 필요한 값을 하나씩 정확하게 받을 수 있어요."
       );
       setChips([
-        { label: "질문받으며 이어가기", action: startGuided },
+        { label: "질문받으며 이어가기", action: () => startGuided(freeChatPending) },
         { label: "직접 입력에서 작성", action: () => setWorkspaceMode("direct") },
         { label: "처음으로", action: showHome }
       ]);

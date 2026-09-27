@@ -103,6 +103,12 @@ check(app.includes("window.B66QuoteAppBridge"),
   "EASY_MODE_CONTRACT: reuses existing QuoteDraft renderer");
 check(html.includes('id="directView"'),
   "EASY_MODE_CONTRACT: direct mode preserved");
+check(easy.includes("function startGuided(referenceText)") &&
+      easy.includes("startGuided(freeChatPending)") &&
+      easy.includes("참고용으로 그대로 남겨둘게요"),
+  "FREE_TEXT_CONTINUITY_CONTRACT: one-shot text remains visible when guided flow continues");
+check(easy.includes("QuoteDraft에 자동 반영하지 않습니다."),
+  "FREE_TEXT_CONTINUITY_CONTRACT: preserved reference is explicitly non-authoritative");
 
 /* FILE_INTAKE_CONTRACT — local chooser/preflight live, upload/model still off */
 check(html.includes('id="easyFileInput"') && html.includes('type="file"'),
@@ -169,6 +175,11 @@ check(!html.includes('type="number"') && !app.includes('type="number"'), "KOREAN
 check(core.includes("function parseMoney(") && core.includes("function formatMoney(") && core.includes("function formatInputNumber("),
   "KOREAN_MONEY_INPUT_CONTRACT: parse/format separated in quote-core");
 check(app.includes("Core.parseMoney"), "KOREAN_MONEY_INPUT_CONTRACT: app uses Core.parseMoney");
+check(core.includes("function parseKoreanMoney(") &&
+      easy.includes("Core.parseKoreanMoney(text)"),
+  "KOREAN_INPUT_POLISH_CONTRACT: Easy price uses deterministic Korean money parser");
+check(easy.includes("150만원") && easy.includes("복합 단위는 추측하지 않습니다."),
+  "KOREAN_INPUT_POLISH_CONTRACT: Korean shorthand is discoverable and ambiguous forms fail safe");
 
 /* QUOTEDRAFT_SCHEMA_CONTRACT — QuoteDraft 스키마 계약 */
 [
@@ -253,6 +264,21 @@ check(css.includes(".direct-view[hidden] { display: block !important; }"),
   "PRINT_LAYOUT_CONTRACT: hidden Direct view is restored for printing from Easy Mode");
 check(css.includes(".grid { display: block; }"), "PRINT_LAYOUT_CONTRACT: paper in normal flow");
 check(!css.includes("visibility: hidden"), "PRINT_LAYOUT_CONTRACT: visibility hack removed");
+check(core.includes("function printReadiness(") &&
+      app.includes("function printReadinessFailure("),
+  "PRINT_READINESS_CONTRACT: deterministic readiness helper is wired before print");
+check(app.includes("const failure = printReadinessFailure();") &&
+      app.includes("if (failure)") &&
+      app.includes("focusReadinessTarget(failure.code)") &&
+      app.includes("return;"),
+  "PRINT_READINESS_CONTRACT: incomplete quote exits before print and focuses the first missing field");
+check(app.includes('code: "tax_review"') &&
+      app.includes("if (failure.code === \"tax_review\") focusTaxReview();"),
+  "PRINT_READINESS_CONTRACT: unresolved VAT blocks print and focuses VAT control");
+check(app.includes('data-tax-review-placeholder="true"') &&
+      app.includes('placeholder.textContent = "부가세 방식을 선택해 주세요"') &&
+      app.includes('select.value = ""'),
+  "PRINT_READINESS_CONTRACT: unresolved VAT requires an explicit select choice");
 
 /* BETA_POLISH_CONTRACT — repeated-use/accessibility/privacy */
 check(css.includes(".workspace-mode {") && css.includes("min-height: 44px;"),
@@ -312,6 +338,8 @@ console.log("VISIBLE_ACTION_MIN_HEIGHT_44PX=YES");
 console.log("B66_LOCAL_RESET_CONTRACT=PASS");
 console.log("HUMAN_READABLE_QUOTE_NO_CONTRACT=PASS");
 console.log("KOREAN_MONEY_INPUT_CONTRACT=PASS");
+console.log("KOREAN_INPUT_POLISH_CONTRACT=PASS");
+console.log("FREE_TEXT_CONTINUITY_CONTRACT=PASS");
 console.log("QUOTEDRAFT_SCHEMA_CONTRACT=PASS");
 console.log("NEW_QUOTE_SAFETY_CONTRACT=PASS");
 console.log("UNKNOWN_VAT_REVIEW_CONTRACT=PASS");
@@ -323,6 +351,7 @@ console.log("VAT_EXEMPT_CONTRACT=PASS");
 console.log("VALID_UNTIL_CONTRACT=PASS");
 console.log("ADDRESS_FIELDS_CONTRACT=PASS");
 console.log("PRINT_LAYOUT_CONTRACT=PASS");
+console.log("PRINT_READINESS_CONTRACT=PASS");
 console.log("UPLOAD_AI_LIVE=NO");
 console.log("CHAT_AI_LIVE=NO");
 console.log("EMAIL_SEND_LIVE=NO");

@@ -215,10 +215,27 @@
   function renderTaxReviewState() {
     const row = $("taxRow");
     const note = $("taxReviewNote");
-    if (!row || !note) return;
+    const select = $("taxMode");
+    if (!row || !note || !select) return;
+
+    let placeholder = select.querySelector('option[data-tax-review-placeholder="true"]');
+    if (taxReviewRequired) {
+      if (!placeholder) {
+        placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "부가세 방식을 선택해 주세요";
+        placeholder.dataset.taxReviewPlaceholder = "true";
+        select.prepend(placeholder);
+      }
+      select.value = "";
+    } else {
+      if (placeholder) placeholder.remove();
+      select.value = draft.tax.mode;
+    }
+
     row.classList.toggle("tax-review-required", taxReviewRequired);
     note.hidden = !taxReviewRequired;
-    $("taxMode").setAttribute("aria-invalid", String(taxReviewRequired));
+    select.setAttribute("aria-invalid", String(taxReviewRequired));
   }
 
   function focusTaxReview() {
@@ -227,6 +244,46 @@
     $("taxMode").focus({ preventScroll: true });
     $("taxRow").scrollIntoView({ block: "center", behavior: "smooth" });
     return true;
+  }
+
+  function focusReadinessTarget(code) {
+    let target = null;
+    if (code === "quote_no") target = $("quoteNo");
+    else if (code === "issue_date") target = $("quoteDate");
+    else if (code === "sender_company") target = $("senderCompany");
+    else if (code === "recipient") target = $("recipientCompany");
+    else if (code === "items") target = document.querySelector("#items .item-name");
+
+    if (!target) return false;
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({ block: "center", behavior: "smooth" });
+    return true;
+  }
+
+  function printReadinessFailure() {
+    if (taxReviewRequired) {
+      return {
+        code: "tax_review",
+        message: "부가세 방식을 확인한 뒤 PDF로 저장해 주세요."
+      };
+    }
+
+    const readiness = Core.printReadiness(draft);
+    if (readiness.ready) return null;
+
+    const code = readiness.missing[0];
+    const messages = {
+      invalid_draft: "견적 내용을 다시 확인해 주세요.",
+      quote_no: "견적번호를 입력한 뒤 PDF로 저장해 주세요.",
+      issue_date: "올바른 견적일을 선택한 뒤 PDF로 저장해 주세요.",
+      sender_company: "보내는 사람의 상호를 입력한 뒤 PDF로 저장해 주세요.",
+      recipient: "받는 업체명이나 담당자를 입력한 뒤 PDF로 저장해 주세요.",
+      items: "품목명과 수량을 하나 이상 입력한 뒤 PDF로 저장해 주세요."
+    };
+    return {
+      code,
+      message: messages[code] || "견적 필수 내용을 확인한 뒤 PDF로 저장해 주세요."
+    };
   }
 
   /* ── draft 필드 ↔ 입력 요소 바인딩 ── */
@@ -289,6 +346,7 @@
       render();
     });
     $("taxMode").addEventListener("change", (e) => {
+      if (!e.target.value) return;
       draft.tax.mode = e.target.value;
       taxReviewRequired = false;
       renderTaxReviewState();
@@ -533,6 +591,14 @@
   /* ── 인쇄: 브라우저 머리글/바닥글은 코드로 끌 수 없어 저장 전 짧게 안내 ── */
 
   $("printPdf").addEventListener("click", () => {
+    const failure = printReadinessFailure();
+    if (failure) {
+      toast(failure.message, 4200);
+      if (failure.code === "tax_review") focusTaxReview();
+      else focusReadinessTarget(failure.code);
+      return;
+    }
+
     render();
     toast("PDF 저장 시 인쇄 설정에서 '머리글과 바닥글'을 해제하면 견적서만 깔끔하게 저장됩니다.", 5000);
     setTimeout(() => window.print(), 600);

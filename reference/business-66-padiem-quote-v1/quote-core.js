@@ -33,6 +33,31 @@
     return Number.isFinite(n) && n >= 0 ? n : 0;
   }
 
+  function parseKoreanMoney(raw) {
+    var s = String(raw == null ? "" : raw)
+      .trim()
+      .replace(/\s+/g, "")
+      .replace(/^₩/, "")
+      .replace(/,/g, "");
+    if (s.endsWith("원")) s = s.slice(0, -1);
+    if (!s) return null;
+
+    var match = /^(\d+(?:\.\d+)?)(억|만|천)$/.exec(s);
+    if (match) {
+      var unit = match[2] === "억" ? 100000000 : match[2] === "만" ? 10000 : 1000;
+      var unitValue = Number(match[1]);
+      if (!Number.isFinite(unitValue) || unitValue < 0) return null;
+      var scaled = Math.round(unitValue * unit);
+      return Number.isSafeInteger(scaled) ? scaled : null;
+    }
+
+    if (!/^\d+(?:\.\d+)?$/.test(s)) return null;
+    var value = Number(s);
+    if (!Number.isFinite(value) || value < 0) return null;
+    var rounded = Math.round(value);
+    return Number.isSafeInteger(rounded) ? rounded : null;
+  }
+
   function formatMoney(n) {
     return new Intl.NumberFormat("ko-KR", {
       style: "currency",
@@ -197,6 +222,31 @@
     }
   }
 
+  function printReadiness(rawDraft) {
+    var normalized = normalizeDraft(rawDraft);
+    if (!normalized) {
+      return { ready: false, missing: ["invalid_draft"] };
+    }
+
+    var missing = [];
+    if (!String(normalized.meta.quoteNo || "").trim()) missing.push("quote_no");
+    if (!parseISODate(normalized.meta.issueDate)) missing.push("issue_date");
+    if (!String(normalized.sender.company || "").trim()) missing.push("sender_company");
+    if (
+      !String(normalized.recipient.company || "").trim() &&
+      !String(normalized.recipient.person || "").trim()
+    ) {
+      missing.push("recipient");
+    }
+
+    var hasNamedItem = normalized.items.some(function (item) {
+      return String(item.name || "").trim() && parseMoney(item.qty) > 0;
+    });
+    if (!hasNamedItem) missing.push("items");
+
+    return { ready: missing.length === 0, missing: missing };
+  }
+
   function createBlankQuoteDraft(currentDraft, options) {
     var current = normalizeDraft(currentDraft) || createDefaultDraft();
     var defaults = createDefaultDraft();
@@ -243,6 +293,7 @@
     TAX_MODES: TAX_MODES,
     TAX_LABELS: TAX_LABELS,
     parseMoney: parseMoney,
+    parseKoreanMoney: parseKoreanMoney,
     formatMoney: formatMoney,
     formatInputNumber: formatInputNumber,
     itemAmount: itemAmount,
@@ -251,6 +302,7 @@
     isoFormat: isoFormat,
     todayISO: todayISO,
     computeValidUntil: computeValidUntil,
+    printReadiness: printReadiness,
     createDefaultDraft: createDefaultDraft,
     createBlankQuoteDraft: createBlankQuoteDraft,
     normalizeDraft: normalizeDraft
