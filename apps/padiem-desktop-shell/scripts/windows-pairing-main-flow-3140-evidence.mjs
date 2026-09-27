@@ -18,7 +18,7 @@
  */
 
 import { spawn } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -48,12 +48,10 @@ for (const required of [
   }
 }
 
-// The web leg: ask the real broker composition for the one-time code the deep
-// link will carry. The code is written to a file only so the Electron argv can
-// carry it; it is never printed and the file is deleted immediately after.
+// The web leg: ask the broker composition for the one-time code the deep link
+// will carry. #3140 review item 6: the code stays in memory. It is never
+// written to a file, never printed and never persisted anywhere.
 const python = process.env.PADIEM_PYTHON ?? 'python';
-const codeDir = mkdtempSync(path.join(os.tmpdir(), 'claw4-3140-code-'));
-const codeFile = path.join(codeDir, 'code.txt');
 const issue = spawn(python, ['-m', 'kagent.local_agent_pairing_main_flow', '--issue-handoff-code'], {
   cwd: projectRoot,
   shell: false,
@@ -73,8 +71,6 @@ if (!/^[0-9a-f]{32}$/.test(pairingCode)) {
   console.error('the web leg did not produce a canonical one-time pairing code');
   process.exit(2);
 }
-writeFileSync(codeFile, pairingCode, { encoding: 'utf8' });
-
 const deepLink = `padiem://pair?code=${pairingCode}&ref=pairref-3140-evidence`;
 const logDir = mkdtempSync(path.join(os.tmpdir(), 'claw4-3140-electron-'));
 const marker = path.join(logDir, 'handoff-delivered.json');
@@ -126,7 +122,6 @@ await new Promise((resolve) => {
   child.once('exit', resolve);
   setTimeout(resolve, 8000);
 });
-rmSync(codeDir, { recursive: true, force: true });
 
 const summary = {
   electron_binary: path.basename(electronBinary),

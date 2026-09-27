@@ -15,6 +15,7 @@ import tempfile
 import unittest
 
 from kagent.contracts import ContractError
+from kagent.windows_local_executor import DeterministicWorktreeStatePort
 from kagent.local_agent_pairing_main_flow import (
     HANDOFF_CONTRACT_VERSION,
     issue_code,
@@ -112,6 +113,7 @@ class PairingMainFlow3140Test(unittest.TestCase):
                 device_id="device.3140.runner",
                 now=NOW,
                 protected_data=_DeterministicProtectedDataPort(),
+                worktree_state_port=DeterministicWorktreeStatePort(dirty=False),
             )
         self.assertEqual(outcome["status"], "ok")
         self.assertEqual(outcome["redemption"], "paired_offline")
@@ -134,6 +136,7 @@ class PairingMainFlow3140Test(unittest.TestCase):
                 device_id="device.3140.runner",
                 now=NOW,
                 protected_data=_DeterministicProtectedDataPort(),
+                worktree_state_port=DeterministicWorktreeStatePort(dirty=False),
             )
         self.assertEqual(outcome["second_pairing_authority"], 0)
         self.assertEqual(outcome["second_resident_host"], 0)
@@ -159,6 +162,29 @@ class PairingMainFlow3140Test(unittest.TestCase):
             sys.stdin, sys.stdout = original_stdin, original_stdout
         self.assertEqual(exit_code, 2)
         self.assertIn("handoff_refused", emitted)
+
+    def test_product_entry_fails_closed_without_the_trusted_worktree_probe(self) -> None:
+        """#3140 review item 4: the canonical P01 seam refuses an unconfigured
+        executor, and it also refuses a missing worktree-state probe. The
+        product has no real probe yet, so the composition must refuse rather
+        than manufacture an executor that would have to be trusted later.
+        """
+
+        with tempfile.TemporaryDirectory() as base_dir:
+            with self.assertRaises(ContractError) as refused:
+                run(
+                    {
+                        "contract_version": HANDOFF_CONTRACT_VERSION,
+                        "pairing_code": issue_code(now=NOW),
+                        "correlation_ref": "pairref.3140",
+                    },
+                    base_dir=base_dir,
+                    device_id="device.3140.runner",
+                    now=NOW,
+                    protected_data=_DeterministicProtectedDataPort(),
+                    worktree_state_port=None,
+                )
+        self.assertIn("worktree-state probe", str(refused.exception))
 
     def test_issued_code_has_the_canonical_shape(self) -> None:
         code = issue_code(now=NOW)

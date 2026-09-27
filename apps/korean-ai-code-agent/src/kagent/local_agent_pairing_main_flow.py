@@ -65,7 +65,15 @@ from .local_agent_secure_transport import (
     ProtectedFileDeviceCredentialStore,
     WindowsDpapiProtectedDataPort,
 )
-from .windows_local_executor import WindowsExecutableProfile, WindowsSubprocessLocalAgentRuntime
+from .local_agent_management import compose_fail_closed_windows_runtime
+from .windows_execution_authorization import (
+    P01LocalPermissionWindowsExecutionAuthorizationPort,
+)
+from .windows_local_executor import (
+    WindowsExecutableProfile,
+    WorktreeStatePort,
+    WindowsExecutionAuthorizationPort,
+)
 
 from padiem_control_plane.local_agent_broker import InMemoryLocalAgentBrokerAuthority
 from padiem_control_plane.local_agent_broker_http import TrustedLocalAgentHttpAuthContext
@@ -250,7 +258,18 @@ def run(
     device_id: str,
     now: datetime,
     protected_data: Any | None = None,
+    authorization_port: WindowsExecutionAuthorizationPort | None = None,
+    worktree_state_port: WorktreeStatePort | None = None,
 ) -> dict:
+    """Compose the pairing main flow against a configured broker boundary.
+
+    #3140 review item 4: the trusted P01 composition seam refuses an
+    unconfigured executor, and it also refuses a missing worktree-state probe.
+    The product has no real worktree probe yet, so `main()` passes none and the
+    composition fails closed here rather than manufacturing an executor that
+    would have to be trusted later. That refusal is the correct product state,
+    not a defect to be worked around.
+    """
     """Redeem once through the #3095 runner, then drive the #3014 host.
 
     `protected_data` is the credential-store's protection port. It defaults to
@@ -361,7 +380,11 @@ def run(
         # contract; the credential store keeps its own OS-native temp directory.
         roots=(LocalRoot(root_ref="root.3140", windows_path=r"C:\ProgramData\Padiem\runner"),),
     )
-    runtime = WindowsSubprocessLocalAgentRuntime(
+    # #3140 review item 4: the canonical P01 product composition seam. The
+    # unconfigured executor is refused here rather than constructed, so a
+    # missing trusted authorization fails closed instead of becoming an
+    # executor that would have to be trusted later.
+    runtime = compose_fail_closed_windows_runtime(
         device=device,
         executable_profiles=(
             WindowsExecutableProfile(
@@ -369,6 +392,12 @@ def run(
                 executable_path=WINDOWS_PYTHON_EXECUTABLE,
             ),
         ),
+        authorization_port=authorization_port
+        if authorization_port is not None
+        else P01LocalPermissionWindowsExecutionAuthorizationPort(
+            permission_profile=default_device_permission_profile(device=device)
+        ),
+        worktree_state_port=worktree_state_port,
     )
     assembly = BoundLocalAgentRuntimeAssembly(
         device=device,
