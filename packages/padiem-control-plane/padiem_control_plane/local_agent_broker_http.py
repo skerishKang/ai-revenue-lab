@@ -335,7 +335,7 @@ class LocalAgentBrokerHttpHandler:
         state: DurableLocalAgentBrokerStatePort,
         material_resolver: LocalAgentCommandMaterialResolverPort,
         clock: Callable[[], datetime],
-        mutation_transaction: Callable[[Callable[[], dict[str, Any]]], dict[str, Any]] | None = None,
+        session_open_transaction: Callable[[Callable[[], dict[str, Any]]], dict[str, Any]] | None = None,
     ) -> None:
         if not isinstance(rpc, LocalAgentBrokerRpcFacade):
             raise ValueError("rpc must be LocalAgentBrokerRpcFacade")
@@ -348,13 +348,13 @@ class LocalAgentBrokerHttpHandler:
             raise ValueError("material_resolver must implement resolve")
         if not callable(clock):
             raise ValueError("clock must be callable")
-        if mutation_transaction is not None and not callable(mutation_transaction):
-            raise ValueError("mutation_transaction must be callable")
+        if session_open_transaction is not None and not callable(session_open_transaction):
+            raise ValueError("session_open_transaction must be callable")
         self._rpc = rpc
         self._state = state
         self._material_resolver = material_resolver
         self._clock = clock
-        self._mutation_transaction = mutation_transaction
+        self._session_open_transaction = session_open_transaction
 
     def _error(self, status: int, code: str, message: str) -> LocalAgentBrokerHttpResponse:
         return LocalAgentBrokerHttpResponse(
@@ -492,8 +492,8 @@ class LocalAgentBrokerHttpHandler:
         if _ref(payload["workspace_ref"], "workspace_ref") != auth.workspace_ref:
             raise PermissionError("session workspace does not match authenticated workspace")
         _positive_int(payload["ttl_seconds"], "ttl_seconds", minimum=60, maximum=3600)
-        if self._mutation_transaction is not None:
-            result = self._mutation_transaction(
+        if self._session_open_transaction is not None:
+            result = self._session_open_transaction(
                 lambda: self._open_and_persist_session(auth, payload, server_now=server_now)
             )
         else:
@@ -644,11 +644,12 @@ class LocalAgentBrokerHttpHandler:
             raise ValueError("acknowledge exit_code must be a bounded process exit status or null")
         # #3123: the acknowledge state mutation (including any terminal-history
         # compaction it triggers, which moves used-command-id ledger rows) runs
-        # inside the deployable mutation transaction, exactly like the #3129
-        # session-open double write. Without it a crash between the ledger and
-        # the blob could strand identity or state mid-mutation.
-        if self._mutation_transaction is not None:
-            result = self._mutation_transaction(
+        # inside the same deployable storage transaction #3129 introduced for
+        # the session-open double write - the seam now covers every device-HTTP
+        # mutation that touches broker state. Without it a crash between the
+        # ledger and the blob could strand identity or state mid-mutation.
+        if self._session_open_transaction is not None:
+            result = self._session_open_transaction(
                 lambda: self._rpc_result(self._rpc.acknowledge(self._server_rpc_payload(payload, server_now)), "command")
             )
         else:

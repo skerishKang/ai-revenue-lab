@@ -242,7 +242,7 @@ def test_worker_file_is_thin_and_storage_schemas_live_outside_entrypoint() -> No
     # Issue #3121 adds one canonical RPC passthrough (reconcile_expired_command)
     # per entrypoint class; the entrypoint must stay otherwise thin.
     # #3121 adds one reconcile passthrough per entrypoint class; #3129 wires
-    # mutation_transaction into the device HTTP service. Still thin.
+    # session_open_transaction into the device HTTP service. Still thin.
     #
     # Issue #3127 adds the atomic enqueue+material passthrough and *removes* the
     # split `enqueue_command` / `store_command_material` pair from the product

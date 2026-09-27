@@ -158,7 +158,7 @@ def _build(storage: TransactionCapableStorage, *, now: datetime = BASE):
         ),
         http_state=http_state,
         material_resolver=_UnusedMaterialResolver(),
-        mutation_transaction=storage.transactionSync,
+        session_open_transaction=storage.transactionSync,
         clock=lambda: now,
     )
     return state_port, http_state, service
@@ -329,7 +329,7 @@ def test_device_http_is_unusable_for_a_session_that_never_fully_opened():
     assert _http_rows(storage) == ["sess.next"]
 
 
-def test_heartbeat_behavior_is_unchanged_by_the_mutation_transaction():
+def test_heartbeat_behavior_is_unchanged_by_the_session_open_transaction():
     storage = TransactionCapableStorage()
     _, _, service = _build(storage)
     opened = service.handle(_session_envelope("sess.hb"))
@@ -384,7 +384,7 @@ def _acknowledge_envelope(session_id: str, command: dict) -> dict:
     }
 
 
-def test_acknowledge_runs_inside_the_mutation_transaction():
+def test_acknowledge_runs_inside_the_session_open_transaction():
     # #3123: the acknowledge state mutation - including any terminal-history
     # compaction it triggers, which moves used-command-id ledger rows - must
     # be crash-atomic with its ledger writes, so it runs inside the same
@@ -431,7 +431,7 @@ def test_acknowledge_runs_inside_the_mutation_transaction():
         now=BASE + timedelta(seconds=6),
     )
 
-    service._mutation_transaction = recording
+    service._session_open_transaction = recording
     acknowledged = service.handle(
         _acknowledge_envelope(
             "sess.ack",

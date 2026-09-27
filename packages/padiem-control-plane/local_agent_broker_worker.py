@@ -40,7 +40,7 @@ class LocalAgentBrokerDurableObject(DurableObject):
             rpc_factory=self._runtime.facade,
             http_state=self._runtime.http_state,
             material_resolver=self._runtime.material_store,
-            mutation_transaction=self._storage.transactionSync,
+            session_open_transaction=self._storage.transactionSync,
         )
 
     def _authority_ref(self) -> str:
