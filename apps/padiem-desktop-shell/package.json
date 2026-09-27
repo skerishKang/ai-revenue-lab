@@ -6,8 +6,8 @@
   "type": "module",
   "main": "dist/src/main/main.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json && node scripts/build.mjs",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "tsc -p tsconfig.json && node scripts/build.mjs && node scripts/build-renderer-tests.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit && node scripts/build-renderer-tests.mjs --check",
     "test": "npm run build && node --test dist/tests/*.test.js",
     "package:win": "npm run build && electron-builder --win --config electron-builder.yml"
   },
