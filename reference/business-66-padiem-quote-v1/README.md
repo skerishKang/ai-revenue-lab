@@ -26,7 +26,35 @@ python -m http.server 4173
 
 Then open `http://127.0.0.1:4173/`.
 
-Opening `index.html` directly also works in normal browsers.
+Opening `index.html` directly also works in normal browsers (plain script, no modules).
+
+## Project structure
+
+```text
+reference/business-66-padiem-quote-v1/
+├─ index.html                    화면 구조만 (약 167줄)
+├─ styles.css                    스타일 + A4 인쇄 규격 (약 104줄)
+├─ app.js                        입력 → 결정론적 계산 → 미리보기 렌더링 (약 205줄)
+├─ DEMO_GUIDE.md                 데모 운영 가이드 (시연 스크립트·PDF 저장 주의·알려진 제한)
+├─ tests/
+│  └─ static-contract.test.cjs   정적 계약 테스트 (HTML/CSS/JS 3파일 대상)
+└─ README.md
+```
+
+File naming rule: flat standard names (`index.html` / `styles.css` / `app.js`),
+Korean section banners inside `app.js`, one self-contained folder per business.
+Every file stays far below the 500-line guideline.
+
+## Verification
+
+```bash
+node tests/static-contract.test.cjs
+# → B66_PADIEM_QUOTE_STATIC_CONTRACT=PASS
+```
+
+The contract test pins the visible screen structure, the A4 print CSS,
+the deterministic money math (`Math.round(qty * price)`, `Math.round(subtotal * 0.10)`),
+browser-local persistence, and the explicit non-live warnings.
 
 ## Demo capabilities
 
