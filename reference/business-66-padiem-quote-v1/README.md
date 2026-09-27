@@ -91,6 +91,7 @@ Every file stays far below the 500-line guideline. No framework, no build step.
 - 주요 클릭 액션은 데스크톱/모바일 모두 44px 최소 높이로 통일
 - **새 견적**: 확인 후 새 번호/오늘 날짜를 발급하고, 보내는 사람·유효기간은 유지하면서 받는 사람/품목은 빈 다음 고객 견적으로 시작
 - Easy Mode에서 부가세를 **잘 모르겠어요**로 두면 확정 합계를 표시하지 않고, 직접입력 화면의 부가세 선택을 강조해 최종 확인 요구
+- 부가세 미확정 상태의 Direct Mode 요약/견적서 미리보기도 공급가액·VAT·총액을 확정값처럼 표시하지 않고 **세금 확인 전 / 확인 필요 / 확정 전**으로 표시
 - 미확정 부가세 review 의무는 `quoteBeta.taxReview.v1`에 현재 견적번호와 함께 저장되어 새로고침 후에도 유지되며, 실제 VAT 선택/다른 견적 로드/새 견적 시작 시 해제
 - live quotation preview, responsive layout (mobile item rows restacked for full price visibility)
 - PDF/인쇄 전 견적번호·견적일·보내는 상호·받는 곳·품목을 확인하고, 누락 시 인쇄를 막고 첫 누락 필드로 이동
@@ -190,4 +191,4 @@ rather than fabricated extracted values.
 The current upload/chat buttons remain non-live until a governed backend/model adapter is connected.
 No provider/model ID or secret lives in the B66 browser code.
 
-Refs #3136, #3144, #3147, #3154, #3158, #3162, #3164, #3167, #3169, #3171.
+Refs #3136, #3144, #3147, #3154, #3158, #3162, #3164, #3167, #3169, #3171, #3174.
