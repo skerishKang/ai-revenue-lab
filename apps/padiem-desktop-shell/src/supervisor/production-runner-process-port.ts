@@ -27,6 +27,15 @@ export interface BoundedRunnerOutput {
 
 const DEFAULT_MAX_LINES = 200;
 
+/**
+ * #3140: the widest line the main process writes to a supervised child.
+ *
+ * The pairing handoff envelope is a bounded JSON object — a 32-character code,
+ * a correlation ref and a contract version — so this leaves headroom without
+ * becoming a pipe.
+ */
+export const MAX_SUPERVISED_LINE_CHARS = 4096;
+
 class NodeRunnerProcessHandle implements RunnerProcessHandle {
   readonly pid: number;
   readonly #child: ChildProcess;
@@ -106,6 +115,29 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
     return () => this.#listeners.delete(listener);
   }
 
+  /**
+   * #3140: writes one bounded line to the supervised child's stdin.
+   *
+   * Refused rather than truncated when the line is too long, contains a line
+   * break, or the child is gone: a truncated pairing envelope would be a
+   * different and wrong message. Never retried here — the caller is told
+   * whether the write happened, which is what makes the handoff two-phase.
+   */
+  sendLine(line: string): boolean {
+    if (!this.isAlive()) return false;
+    if (typeof line !== 'string' || line.length === 0) return false;
+    if (line.length > MAX_SUPERVISED_LINE_CHARS) return false;
+    if (line.indexOf('\n') >= 0 || line.indexOf('\r') >= 0) return false;
+    const stdin = this.#child.stdin;
+    if (!stdin || stdin.destroyed || !stdin.writable) return false;
+    try {
+      stdin.write(`${line}\n`);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   /** Bounded, already-truncated raw lines — redaction happens in the projection layer. */
   boundedOutput(): BoundedRunnerOutput {
     return { lines: [...this.#lines], maxLines: this.#maxLines };
@@ -115,9 +147,43 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
 export class NodeRunnerProcessPort implements RunnerProcessPort {
   readonly #maxLines: number;
   #active: NodeRunnerProcessHandle | null = null;
+  #residentActive = false;
 
   constructor(maxLines: number = DEFAULT_MAX_LINES) {
     this.#maxLines = maxLines;
+  }
+
+  /**
+   * #3140 — the resident host process, spawned through this same port.
+   *
+   * Deliberately the only spawn path in the shell: the pairing main flow is a
+   * real product process, so it is started and reaped exactly like the runner
+   * instead of through a module that bypassed the supervision invariant.
+   */
+  async spawnResident(spec: RunnerSpawnSpec): Promise<RunnerProcessHandle> {
+    if (this.#residentActive) {
+      throw new Error('a resident host is already running for this shell instance');
+    }
+    this.#residentActive = true;
+    let handle: NodeRunnerProcessHandle;
+    try {
+      handle = new NodeRunnerProcessHandle(
+        spawn(spec.executablePath, spec.args, {
+          cwd: spec.cwd,
+          env: { ...process.env, ...spec.env },
+          shell: spec.shell,
+          stdio: spec.stdio,
+        }),
+        this.#maxLines,
+      );
+    } catch (error) {
+      this.#residentActive = false;
+      throw error;
+    }
+    handle.onExit(() => {
+      this.#residentActive = false;
+    });
+    return handle;
   }
 
   async spawnRunner(spec: RunnerSpawnSpec): Promise<RunnerProcessHandle> {

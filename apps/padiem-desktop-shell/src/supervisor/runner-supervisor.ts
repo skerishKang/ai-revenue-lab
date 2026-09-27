@@ -29,6 +29,12 @@ export interface RunnerProcessHandle {
   waitForExit(timeoutMs: number): Promise<RunnerExitResult>;
   /** Registers a one-shot exit listener; returns an unsubscribe function. */
   onExit(listener: (result: RunnerExitResult) => void): () => void;
+  /**
+   * #3140: writes one bounded line to the supervised child's stdin, so the main
+   * process reaches a supervised child without a second spawn path. Returns
+   * false when the child is gone or the line was refused.
+   */
+  sendLine?(line: string): boolean;
 }
 
 /**
@@ -40,6 +46,12 @@ export interface RunnerProcessHandle {
 export interface RunnerProcessPort {
   /** Must reject when a runner is already running for this shell instance. */
   spawnRunner(spec: RunnerSpawnSpec): Promise<RunnerProcessHandle>;
+  /**
+   * #3140: starts the resident host process through the same port. Optional so
+   * a port double that does not model a resident host still type-checks; the
+   * production port implements it.
+   */
+  spawnResident?(spec: RunnerSpawnSpec): Promise<RunnerProcessHandle>;
 }
 
 export interface RunnerSpawnSpec {
@@ -104,6 +116,8 @@ export class HeadlessRunnerSupervisor implements RunnerSupervisor {
   #lastExitCode: number | null = null;
   #lastExitSignal: string | null = null;
   #startCount = 0;
+  #residentHandle: RunnerProcessHandle | null = null;
+  #residentStartedAtMs: number | null = null;
   #stopCount = 0;
   #unsubscribeExit: (() => void) | null = null;
 
@@ -184,6 +198,63 @@ export class HeadlessRunnerSupervisor implements RunnerSupervisor {
       this.#state = 'STOPPED';
     }
     return this.snapshot();
+  }
+
+  /**
+   * #3140 — owns the resident host process alongside the runner.
+   *
+   * The pairing main flow is a real product process, so it is started through
+   * the same port and supervised here rather than through a second raw spawn.
+   * That is what makes `shutdownRunner()` cover it: the shell cannot quit while
+   * a Python child is still running.
+   */
+  async startResident(
+    spec: RunnerSpawnSpec,
+    nowMs: number = this.#now(),
+  ): Promise<void> {
+    if (this.#residentHandle && this.#residentHandle.isAlive()) {
+      throw new Error('a resident host is already running for this shell instance');
+    }
+    const spawn = this.#port.spawnResident;
+    if (typeof spawn !== 'function') {
+      throw new Error('this runner process port cannot start a resident host');
+    }
+    const handle = await spawn.call(this.#port, spec);
+    this.#residentHandle = handle;
+    this.#residentStartedAtMs = nowMs;
+  }
+
+  /** Writes one bounded line to the supervised resident host. */
+  sendResidentLine(line: string): boolean {
+    const handle = this.#residentHandle;
+    if (!handle || !handle.isAlive()) return false;
+    return handle.sendLine ? handle.sendLine(line) : false;
+  }
+
+  residentSnapshot(): { pid: number | null; running: boolean; startedAtMs: number | null } {
+    const handle = this.#residentHandle;
+    return {
+      pid: handle ? handle.pid : null,
+      running: Boolean(handle && handle.isAlive()),
+      startedAtMs: this.#residentStartedAtMs,
+    };
+  }
+
+  /** Stops the resident host. Awaited by the shell's shutdown path. */
+  async stopResident(graceMs?: number): Promise<boolean> {
+    const handle = this.#residentHandle;
+    if (!handle) return true;
+    if (!handle.isAlive()) {
+      this.#residentHandle = null;
+      return true;
+    }
+    const exited = await waitForExitOrTimeout(handle, graceMs ?? this.#graceMs);
+    if (!exited) {
+      handle.kill('SIGKILL');
+      await waitForExitOrTimeout(handle, graceMs ?? this.#graceMs);
+    }
+    this.#residentHandle = null;
+    return true;
   }
 
   async stop(): Promise<RunnerSupervisorSnapshot> {

@@ -28,9 +28,15 @@
 import { pairingHandoffConsumedMarker } from '../contract/pairing-deeplink.js';
 
 
-/** The exact one-shot source #3095 built. */
+/**
+ * The two-phase handoff source.
+ *
+ * `peek` must not consume and must not mark the handoff spent; `commit` is
+ * reached only once the destination is known to have received the envelope.
+ */
 export interface PairingHandoffSource {
-  takePairingHandoffForRunner(): { pairingCode: string; correlationRef: string } | null;
+  peekPairingHandoffForRunner(): { pairingCode: string; correlationRef: string } | null;
+  commitPairingHandoffDelivery(): { pairingCode: string; correlationRef: string } | null;
 }
 
 /** The supervised channel to the runner. Returns whether the line was written. */
@@ -98,26 +104,27 @@ export class PairingHandoffConsumer {
       this.#lastOutcome = 'runner_unavailable';
       return this.#lastOutcome;
     }
-    const handoff = this.#source.takePairingHandoffForRunner();
-    if (handoff === null) {
+    // Phase one: look without consuming. A failed delivery must leave the
+    // one-time code armed so a later attempt can still deliver it.
+    const pending = this.#source.peekPairingHandoffForRunner();
+    if (pending === null) {
       this.#lastOutcome = 'no_pending_handoff';
       return this.#lastOutcome;
     }
     const line = JSON.stringify({
       contract_version: 'claw-desktop-pairing-handoff.v1',
-      pairing_code: handoff.pairingCode,
-      correlation_ref: handoff.correlationRef,
+      pairing_code: pending.pairingCode,
+      correlation_ref: pending.correlationRef,
     });
-    // The value is dropped the moment the envelope is built; the consumer keeps
-    // only a non-reversible marker, exactly like the #3095 replay ledger.
-    const marker = pairingHandoffConsumedMarker(handoff.pairingCode);
-    const delivered = line.length <= MAX_HANDOFF_LINE_CHARS && this.#deliver(line);
-    if (!delivered) {
+    if (line.length > MAX_HANDOFF_LINE_CHARS || !this.#deliver(line)) {
+      // Nothing was consumed, so the handoff is still pending and retryable.
       this.#lastOutcome = 'delivery_refused';
       return this.#lastOutcome;
     }
+    // Phase two: the destination has the envelope, so the one-shot is spent.
+    this.#source.commitPairingHandoffDelivery();
     this.#deliveredCount += 1;
-    this.#lastDeliveredMarker = marker;
+    this.#lastDeliveredMarker = pairingHandoffConsumedMarker(pending.pairingCode);
     this.#lastOutcome = 'delivered';
     return this.#lastOutcome;
   }
