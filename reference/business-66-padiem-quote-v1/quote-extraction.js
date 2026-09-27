@@ -225,6 +225,85 @@
     }
   }
 
+
+  function cloneJson(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function assignIfPresent(target, key, value) {
+    if (value !== null && value !== undefined) target[key] = value;
+  }
+
+  function hasPartyValue(party) {
+    return Object.keys(party || {}).some(function (key) {
+      return party[key] !== null && party[key] !== undefined;
+    });
+  }
+
+  function buildDraftCandidate(currentDraft, rawExtraction) {
+    var normalized = normalizeExtraction(rawExtraction);
+    if (!normalized.ok) return normalized;
+    if (!isObject(currentDraft)) return { ok: false, error: "invalid_current_draft" };
+
+    var candidate;
+    try {
+      candidate = cloneJson(currentDraft);
+    } catch (err) {
+      return { ok: false, error: "invalid_current_draft" };
+    }
+
+    if (
+      !isObject(candidate.meta) ||
+      !isObject(candidate.sender) ||
+      !isObject(candidate.recipient) ||
+      !isObject(candidate.tax) ||
+      !Array.isArray(candidate.items)
+    ) {
+      return { ok: false, error: "invalid_current_draft" };
+    }
+
+    var extracted = normalized.value;
+    candidate.meta.source = "extraction:" + extracted.source.kind;
+    assignIfPresent(candidate.meta, "quoteNo", extracted.quote.quoteNo);
+    assignIfPresent(candidate.meta, "issueDate", extracted.quote.issueDate);
+    assignIfPresent(candidate.meta, "validDays", extracted.quote.validDays);
+
+    ["company", "rep", "bizNo", "address", "phone", "email"].forEach(function (key) {
+      assignIfPresent(candidate.sender, key, extracted.sender[key]);
+    });
+    if (hasPartyValue(extracted.sender)) candidate.sender.presetId = "custom";
+
+    ["company", "person", "address", "email"].forEach(function (key) {
+      assignIfPresent(candidate.recipient, key, extracted.recipient[key]);
+    });
+
+    if (extracted.items.length > 0) {
+      candidate.items = extracted.items.map(function (item, index) {
+        return {
+          id: "extracted-item-" + (index + 1),
+          name: item.name == null ? "" : item.name,
+          qty: item.qty == null ? 0 : item.qty,
+          unitPrice: item.unitPrice == null ? 0 : item.unitPrice
+        };
+      });
+    }
+
+    if (extracted.tax.mode !== null) candidate.tax.mode = extracted.tax.mode;
+    if (extracted.memo !== null) candidate.memo = extracted.memo;
+
+    return {
+      ok: true,
+      value: {
+        draft: candidate,
+        review: {
+          source: cloneJson(extracted.source),
+          evidence: cloneJson(extracted.evidence),
+          warnings: cloneJson(extracted.warnings)
+        }
+      }
+    };
+  }
+
   return {
     MAX_ITEMS: MAX_ITEMS,
     MAX_TEXT: MAX_TEXT,
@@ -232,6 +311,7 @@
     MAX_EVIDENCE: MAX_EVIDENCE,
     SOURCE_KINDS: SOURCE_KINDS,
     TAX_MODES: TAX_MODES,
-    normalizeExtraction: normalizeExtraction
+    normalizeExtraction: normalizeExtraction,
+    buildDraftCandidate: buildDraftCandidate
   };
 });
