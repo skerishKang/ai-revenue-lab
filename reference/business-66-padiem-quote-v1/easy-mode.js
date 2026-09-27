@@ -392,6 +392,10 @@
     const taxLine = guided.taxUnknown
       ? "부가세: 확인 필요 (직접 입력 화면에서 선택해 주세요)"
       : "부가세: " + Core.TAX_LABELS[guided.draft.tax.mode];
+    const amountLine = guided.taxUnknown
+      ? "품목 합계(세금 확인 전): " + Core.formatMoney(totals.subtotal) +
+        "\n최종 합계는 부가세 방식을 선택한 뒤 확정됩니다."
+      : "합계: " + Core.formatMoney(totals.grand);
 
     addMessage(
       "assistant",
@@ -400,7 +404,7 @@
       (guided.draft.recipient.person ? " · " + guided.draft.recipient.person : "") +
       "\n\n" + itemLines +
       "\n\n" + taxLine +
-      "\n합계: " + Core.formatMoney(totals.grand) +
+      "\n" + amountLine +
       "\n\n확인 화면에서 모든 내용을 다시 수정할 수 있습니다."
     );
 
@@ -409,11 +413,17 @@
         label: "견적서 확인하기",
         action: () => {
           const result = App.replaceDraft(guided.draft, {
+            requireTaxReview: guided.taxUnknown,
             toast: guided.taxUnknown
-              ? "견적 초안을 열었습니다. 부가세 방식을 확인해 주세요."
+              ? "견적 초안을 열었습니다. 부가세 방식을 먼저 확인해 주세요."
               : "견적 초안을 열었습니다."
           });
-          if (result.ok) setWorkspaceMode("direct");
+          if (result.ok) {
+            setWorkspaceMode("direct");
+            if (guided.taxUnknown) {
+              setTimeout(() => App.focusTaxReview(), 0);
+            }
+          }
         }
       },
       { label: "처음부터 다시", action: startGuided },
