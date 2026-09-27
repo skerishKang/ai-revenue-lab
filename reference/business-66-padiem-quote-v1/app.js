@@ -1,4 +1,4 @@
-/* B66 · Padiem Quote — app.js (UI 레이어)
+/* B66 · Quote Beta — app.js (UI 레이어)
    상태는 QuoteDraft 하나(quote-core.js)로 관리하고 화면은 항상 draft에서 파생.
    draft는 localStorage에 자동 저장되며, 복원 실패 시 기본 데모 상태로 fallback. */
 
@@ -98,7 +98,7 @@
     $("quoteDate").value = draft.meta.issueDate;
     ensureValidityOption(draft.meta.validDays);
     $("taxMode").value = draft.tax.mode;
-    $("senderPreset").value = draft.sender.presetId === "custom" ? "custom" : "padiem";
+    $("senderPreset").value = draft.sender.presetId === "custom" ? "custom" : "sample";
   }
 
   function bindFields() {
@@ -244,8 +244,8 @@
 
   /* ── 발신자 프리셋 ── */
 
-  const demoSender = {
-    company: "주식회사 파디엠",
+  const sampleSender = {
+    company: "샘플 공급사",
     rep: "대표자명",
     bizNo: "000-00-00000",
     address: "",
@@ -263,8 +263,8 @@
   }
 
   $("senderPreset").addEventListener("change", () => {
-    if ($("senderPreset").value === "padiem") {
-      Object.assign(draft.sender, demoSender, { presetId: "padiem" });
+    if ($("senderPreset").value === "sample") {
+      Object.assign(draft.sender, sampleSender, { presetId: "sample" });
     } else {
       const saved = loadSavedSender();
       Object.assign(draft.sender, saved || {
