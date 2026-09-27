@@ -712,6 +712,10 @@
   });
 
   window.addEventListener("b66:history-changed", refreshStarters);
+  document.addEventListener("b66:open-file-intake", () => {
+    setWorkspaceMode("easy");
+    startFileIntake();
+  });
 
   setWorkspaceMode("easy");
   showHome();
