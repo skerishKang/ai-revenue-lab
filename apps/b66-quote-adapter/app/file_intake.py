@@ -38,7 +38,6 @@ _IMAGE_MEDIA: dict[str, frozenset[str]] = {
     "image/png": frozenset({".png"}),
     "image/webp": frozenset({".webp"}),
 }
-_MAX_ENCODED_BYTES = ((MAX_B14_IMAGE_BYTES + 2) // 3) * 4 + 4
 
 _SAFE_ERRORS = {
     "invalid_request": "파일 요청 형식이 올바르지 않습니다.",
@@ -90,17 +89,25 @@ def _safe_name(value: Any) -> str:
     return cleaned
 
 
-def _decode_payload(value: Any) -> bytes:
+def _decode_payload(
+    value: Any,
+    *,
+    max_bytes: int,
+    too_large_code: str,
+) -> bytes:
     if not isinstance(value, str) or not value:
         raise B66FileIntakeError("invalid_base64")
-    if len(value) > _MAX_ENCODED_BYTES:
-        raise B66FileIntakeError("image_too_large")
+    max_encoded = ((max_bytes + 2) // 3) * 4 + 4
+    if len(value) > max_encoded:
+        raise B66FileIntakeError(too_large_code)
     try:
         decoded = base64.b64decode(value, validate=True)
     except (binascii.Error, ValueError) as exc:
         raise B66FileIntakeError("invalid_base64") from exc
     if not decoded:
         raise B66FileIntakeError("empty_file")
+    if len(decoded) > max_bytes:
+        raise B66FileIntakeError(too_large_code)
     return decoded
 
 
@@ -181,11 +188,21 @@ def handle_intake_payload(
         name = _safe_name(payload.get("name"))
         media_type = payload.get("media_type")
         category = _category(name, media_type)
-        raw = _decode_payload(payload.get("base64"))
+        raw = _decode_payload(
+            payload.get("base64"),
+            max_bytes=(
+                MAX_B14_IMAGE_BYTES
+                if category == "image"
+                else MAX_BINARY_DOCUMENT_BYTES
+            ),
+            too_large_code=(
+                "image_too_large"
+                if category == "image"
+                else "document_too_large"
+            ),
+        )
 
         if category == "image":
-            if len(raw) > MAX_B14_IMAGE_BYTES:
-                raise B66FileIntakeError("image_too_large")
             if not _image_magic_matches(str(media_type), raw):
                 raise B66FileIntakeError("image_magic_mismatch")
             return {
@@ -199,9 +216,6 @@ def handle_intake_payload(
                     "model_called": False,
                 },
             }
-
-        if len(raw) > MAX_BINARY_DOCUMENT_BYTES:
-            raise B66FileIntakeError("document_too_large")
 
         try:
             document = _native_parser(parser=parser)(
