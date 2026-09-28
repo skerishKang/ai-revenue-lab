@@ -149,6 +149,28 @@ def test_unknown_operation_is_not_found() -> None:
     assert response["error"]["code"] == "not_found"
 
 
+def test_error_envelope_is_uniform() -> None:
+    for operation, payload in (
+        ("drive_case_folder_nope", {}),
+        ("drive_case_folder_status", {}),
+        ("drive_case_folder_status", {"workspace_ref": WORKSPACE_REF, "project_id": PROJECT_ID, "extra": 1}),
+    ):
+        response = call(operation, payload)
+        assert set(response) == {"ok", "error"}, operation
+        assert response["ok"] is False
+        error = response["error"]
+        assert set(error) == {"code", "message", "retryable", "metadata"}, operation
+        assert isinstance(error["retryable"], bool)
+        assert error["metadata"] is None
+        assert isinstance(error["message"], str) and error["message"]
+
+
+def test_missing_service_error_is_uniform() -> None:
+    response = call("drive_case_folder_status", {"workspace_ref": WORKSPACE_REF, "project_id": PROJECT_ID}, svc=None)
+    assert set(response) == {"ok", "error"}
+    assert set(response["error"]) == {"code", "message", "retryable", "metadata"}
+
+
 def test_caller_authority_fields_are_rejected() -> None:
     for field in ("binding_ref", "workspace_ref_claim", "app_id", "actor_ref", "scope"):
         payload = {"workspace_ref": WORKSPACE_REF, "project_id": PROJECT_ID, field: "x"}

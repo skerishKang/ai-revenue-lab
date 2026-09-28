@@ -176,13 +176,63 @@ def test_unknown_outcome_is_denied() -> None:
 
 
 def test_engine_error_envelope_is_mapped_without_raw_text() -> None:
-    bad = {"ok": False, "error": {"code": "drive_not_connected", "message": "internal detail: /x/y"}}
+    bad = {
+        "ok": False,
+        "error": {
+            "code": "drive_not_connected",
+            "message": "internal detail: /x/y",
+            "retryable": False,
+            "metadata": None,
+        },
+    }
     client = CloudflareDriveCaseFolderEngineClient(FakeEngineBinding({STATUS_OPERATION: bad}))
     with pytest.raises(DriveCaseFolderEngineError) as excinfo:
         run(client.status(workspace_ref=WORKSPACE_REF, project_id=PROJECT_ID))
     assert excinfo.value.status_code == 409
     assert "internal detail" not in str(excinfo.value)
     assert "internal detail" not in excinfo.value.safe_message
+
+
+def test_error_envelope_is_closed() -> None:
+    inner = {"code": "drive_not_connected", "message": "m", "retryable": False, "metadata": None}
+    variants = (
+        {"ok": False, "error": inner, "extra": 1},
+        {"ok": False, "error": {**inner, "extra": 1}},
+        {"ok": False, "error": {key: value for key, value in inner.items() if key != "retryable"}},
+        {"ok": False, "error": {**inner, "retryable": "no"}},
+        {"ok": False, "error": {**inner, "metadata": {"x": 1}}},
+        {"ok": False, "error": {**inner, "access_token": "***"}},
+        {"ok": False, "error": {**inner, "code": 123}},
+        {"ok": False, "error": {**inner, "message": ""}},
+    )
+    for bad in variants:
+        client = CloudflareDriveCaseFolderEngineClient(FakeEngineBinding({STATUS_OPERATION: bad}))
+        with pytest.raises(DriveCaseFolderEngineError) as excinfo:
+            run(client.status(workspace_ref=WORKSPACE_REF, project_id=PROJECT_ID))
+        assert excinfo.value.status_code == 502, bad
+        assert excinfo.value.code == "drive_case_folder_response_invalid", bad
+
+
+def test_unknown_engine_error_code_is_normalized() -> None:
+    bad = {
+        "ok": False,
+        "error": {"code": "totally_new_code", "message": "m", "retryable": True, "metadata": None},
+    }
+    client = CloudflareDriveCaseFolderEngineClient(FakeEngineBinding({STATUS_OPERATION: bad}))
+    with pytest.raises(DriveCaseFolderEngineError) as excinfo:
+        run(client.status(workspace_ref=WORKSPACE_REF, project_id=PROJECT_ID))
+    assert excinfo.value.code == "drive_case_folder_failed"
+    assert excinfo.value.status_code == 502
+    assert "totally_new_code" not in str(excinfo.value)
+
+
+def test_constructor_requires_every_rpc() -> None:
+    class Partial:
+        async def drive_case_folder_status(self, payload: dict) -> dict:
+            return {}
+
+    with pytest.raises(ValueError):
+        CloudflareDriveCaseFolderEngineClient(Partial())
 
 
 def test_transport_failure_is_bounded() -> None:

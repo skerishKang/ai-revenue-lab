@@ -54,6 +54,16 @@ _OPERATION_KEYS = {
 }
 
 
+def _rpc_error(code: str, message: str, *, status_code: int = 400) -> dict[str, Any]:
+    """Canonical Engine error envelope: exactly ``{ok, error}``.
+
+    The inner error always carries ``{code, message, retryable, metadata}`` so
+    every Drive case-folder RPC failure matches the service error contract.
+    """
+
+    return _service_error(code, message, status_code=status_code).body  # type: ignore[return-value]
+
+
 async def drive_case_folder_rpc(
     service: DriveCaseFolderEngineService | None,
     *,
@@ -68,22 +78,28 @@ async def drive_case_folder_rpc(
     """
 
     if operation not in OPERATION_PATHS:
-        return {"ok": False, "error": {"code": "not_found", "message": "Unknown Engine RPC operation.", "metadata": None}}
+        return _rpc_error("not_found", "Unknown Engine RPC operation.", status_code=404)
 
     if service is None:
-        return {"ok": False, "error": {"code": "drive_case_folder_unavailable", "message": "Drive case folder authority is unavailable.", "metadata": None}}
+        return _rpc_error(
+            "drive_case_folder_unavailable",
+            "Drive case folder authority is unavailable.",
+            status_code=503,
+        )
 
     if not isinstance(payload, Mapping):
-        return {"ok": False, "error": {"code": "invalid_request", "message": "Request body must be an object.", "metadata": None}}
+        return _rpc_error("invalid_request", "Request body must be an object.")
 
     body = dict(payload)
     unknown = set(body) - _OPERATION_KEYS[operation]
     if unknown:
-        return {"ok": False, "error": {"code": "invalid_request", "message": "Request contains unsupported fields.", "metadata": None}}
+        return _rpc_error("invalid_request", "Request contains unsupported fields.")
 
     encoded = json.dumps(body).encode("utf-8")
     if len(encoded) > MAX_REQUEST_BODY_BYTES:
-        return {"ok": False, "error": {"code": "request_too_large", "message": "Request body exceeds the internal limit.", "metadata": None}}
+        return _rpc_error(
+            "request_too_large", "Request body exceeds the internal limit.", status_code=413
+        )
 
     response: ServiceResponse = await service.handle(
         method="POST",

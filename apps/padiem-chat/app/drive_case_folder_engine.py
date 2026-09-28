@@ -98,8 +98,11 @@ class CloudflareDriveCaseFolderEngineClient:
     """Private Service Binding client; one closed validation per operation."""
 
     def __init__(self, binding: object | None = None) -> None:
-        if binding is None or not callable(getattr(binding, STATUS_OPERATION, None)):
-            raise ValueError("engine binding must expose the drive case-folder RPCs")
+        if binding is None or any(
+            not callable(getattr(binding, operation, None))
+            for operation in DRIVE_CASE_FOLDER_OPERATIONS
+        ):
+            raise ValueError("engine binding must expose every drive case-folder RPC")
         self._binding = binding
 
     def __repr__(self) -> str:
@@ -190,15 +193,43 @@ class CloudflareDriveCaseFolderEngineClient:
         if not isinstance(result, Mapping):
             raise self._malformed(operation)
         if result.get("ok") is False:
-            code = None
-            error = result.get("error")
-            if isinstance(error, Mapping):
-                code = error.get("code")
-            status_code, message = _ERROR_TAXONOMY.get(str(code), _DEFAULT_ERROR)
-            raise DriveCaseFolderEngineError(str(code or "drive_case_folder_failed"), message, status_code=status_code)
+            code, _engine_message = self._validated_error(result, operation)
+            if code not in _ERROR_TAXONOMY:
+                # An arbitrary upstream code is never propagated to a product.
+                raise DriveCaseFolderEngineError(
+                    "drive_case_folder_failed", _DEFAULT_ERROR[1], status_code=502
+                )
+            status_code, message = _ERROR_TAXONOMY[code]
+            raise DriveCaseFolderEngineError(code, message, status_code=status_code)
         if result.get("ok") is not True:
             raise self._malformed(operation)
         return result
+
+    @staticmethod
+    def _validated_error(result: Mapping[str, Any], operation: str) -> tuple[str, str]:
+        """Validate the canonical Engine error envelope exactly.
+
+        The Engine message is type-checked only and never used as a product
+        message (D): Chat always answers with its own static taxonomy text.
+        """
+
+        malformed = CloudflareDriveCaseFolderEngineClient._malformed(operation)
+        if set(result) != {"ok", "error"}:
+            raise malformed
+        error = result.get("error")
+        if not isinstance(error, Mapping) or set(error) != {"code", "message", "retryable", "metadata"}:
+            raise malformed
+        code = error.get("code")
+        message = error.get("message")
+        if not isinstance(code, str) or not code.strip() or len(code) > 64:
+            raise malformed
+        if not isinstance(message, str) or not message.strip():
+            raise malformed
+        if not isinstance(error.get("retryable"), bool):
+            raise malformed
+        if error.get("metadata") is not None:
+            raise malformed
+        return code.strip(), message
 
     @staticmethod
     def _require_exact_keys(result: Mapping[str, Any], keys: frozenset[str], operation: str) -> None:
