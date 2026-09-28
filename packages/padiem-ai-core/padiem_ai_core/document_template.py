@@ -29,6 +29,13 @@ _WARNING = re.compile(r"^[a-z][a-z0-9._:-]{0,63}$")
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 _MEDIA = re.compile(r"^[A-Za-z0-9][A-Za-z0-9!#$&^_.+-]{0,63}/[A-Za-z0-9][A-Za-z0-9!#$&^_.+-]{0,127}$")
 _UTC = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?Z$")
+#: Keys that carry runtime authority, approval state, routing identity or
+#: template identity. They are refused at *every* depth of template data, not
+#: only at the top level: a nested object is exactly as capable of smuggling an
+#: approval flag, a provider/model selector or a template identity as a top-level
+#: one, so one recursive policy covers structure_profile, style_profile,
+#: fixed_content and variable_slots alike. Compound names such as
+#: ``approval_box`` are not exact matches and stay legal.
 _FORBIDDEN_KEYS = frozenset({
     "authority", "authorization", "permission", "permissions",
     "permission_grant", "permission_grants", "tool_grant", "tool_grants",
@@ -38,6 +45,15 @@ _FORBIDDEN_KEYS = frozenset({
     "bearer_token", "api_key", "credential", "credentials", "secret",
     "secrets", "password", "private_key", "client_secret", "provider_id",
     "model_id", "model_policy_ref",
+    # Approval state: a template candidate is unapproved by construction and no
+    # profile may assert otherwise (#3185 B2).
+    "approve", "approved", "approval", "approved_by", "approved_by_ref",
+    # Routing identity: provider/model selection is owned outside template data.
+    "provider", "model",
+    # Tool and connector grants in their bare forms.
+    "tool", "tools", "connector", "connectors",
+    # Template identity: assigned by the product authority, never by content.
+    "template_id", "fingerprint",
 })
 _SENSITIVE_KEY_PARTS = frozenset({
     "secret", "secrets", "password", "credential", "credentials", "token", "tokens",
@@ -181,7 +197,10 @@ def _freeze(value: object, *, depth: int = 0, counter: list[int] | None = None) 
         items: list[tuple[str, FrozenTemplateValue]] = []
         for key in sorted(keys):
             if _key_is_forbidden(key):
-                _fail("template_authority_surface_forbidden", "Template data cannot carry runtime authority or credentials.")
+                _fail(
+                    "template_authority_surface_forbidden",
+                    "Template data cannot carry runtime authority, approval state, routing identity or template identity.",
+                )
             items.append((key, _freeze(value[key], depth=depth + 1, counter=counter)))
         return FrozenTemplateObject(tuple(items))
     if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
