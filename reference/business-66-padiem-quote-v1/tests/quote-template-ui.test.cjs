@@ -19,6 +19,16 @@ const APPROVED_AT = "2026-09-28T05:00:00Z";
 
 const builtinContent = () => clone(Store.defaultTemplate(Store.emptyStore()).content);
 
+function fakeStorage() {
+  const map = new Map();
+  return {
+    getItem: (key) => (map.has(key) ? map.get(key) : null),
+    setItem: (key, value) => { map.set(key, String(value)); },
+    removeItem: (key) => { map.delete(key); },
+    keys: () => Array.from(map.keys())
+  };
+}
+
 function approvedProfile(id, mutate) {
   const content = builtinContent();
   if (typeof mutate === "function") mutate(content);
@@ -281,6 +291,94 @@ eq(renderCandidate.doc.getElementById("pvGrand").textContent, renderBuiltin.doc.
 eq(renderCandidate.doc.getElementById("quotePaper").style.getPropertyValue("--quote-accent"),
   paperBuiltin.style.getPropertyValue("--quote-accent"), "the candidate cannot inject style");
 
+/* ── preview → apply 종료 계약 ── */
+const previewState = { manageOpen: true, previewTemplateId: "tpl-a", renamingTemplateId: null };
+check(Ui.isPreviewActive(previewState) === true, "preview state is active before apply");
+
+const afterApply = Ui.resolveUiStateAfterApply(previewState, true);
+eq(afterApply.previewTemplateId, null, "previewTemplateId is cleared after a successful apply");
+check(Ui.isPreviewActive(afterApply) === false, "preview is no longer active after apply");
+eq(afterApply.renamingTemplateId, null, "rename state is cleared after apply");
+eq(previewState.previewTemplateId, "tpl-a", "the reducer never mutates the input state");
+
+const afterFailure = Ui.resolveUiStateAfterApply(previewState, false);
+eq(afterFailure.previewTemplateId, "tpl-a", "a failed apply keeps the preview so it can be retried");
+
+/* 적용 후 마크업: 배너도, \"아직 적용되지 않았습니다\"도, apply 액션도 없다 */
+const postApplyMarkup = Ui.renderRowsMarkup(
+  Ui.buildRows(
+    [{ id: "tpl-a", name: "우리 회사 양식", builtin: false, approved: true, isDefault: false, fingerprint: "b".repeat(64) }],
+    { activeTemplateId: "tpl-a", previewTemplateId: afterApply.previewTemplateId, renamingTemplateId: afterApply.renamingTemplateId }
+  ),
+  { previewTemplateId: afterApply.previewTemplateId }
+);
+check(postApplyMarkup.indexOf("template-preview-banner") === -1, "the preview banner is absent after apply");
+check(postApplyMarkup.indexOf("아직 적용되지 않았습니다") === -1, "the not-yet-applied note is absent after apply");
+check(postApplyMarkup.indexOf('data-action="preview-apply"') === -1, "the apply-from-preview action is gone after apply");
+check(postApplyMarkup.indexOf('data-action="select"') !== -1, "the normal select action is available again");
+check(postApplyMarkup.indexOf('aria-current="true"') !== -1, "the applied template is the active row");
+
+/* 적용된 양식 == 선택된 양식 */
+const applyStorage = fakeStorage();
+function seedApprovedInto(storage, id, accent) {
+  const content = builtinContent();
+  content.style.accent = accent;
+  const result = Store.createTemplate(
+    Store.readStore(storage),
+    { name: id, content: content },
+    {
+      id: id,
+      approval: {
+        schemaVersion: 1,
+        status: "approved",
+        contentFingerprint: Template.templateFingerprint(content),
+        approvedBy: "central-cto",
+        approvedAt: APPROVED_AT
+      },
+      now: APPROVED_AT
+    }
+  );
+  check(result.ok === true, `seed approved ${id}`);
+  Store.writeStore(storage, result.store);
+  return result.template;
+}
+seedApprovedInto(applyStorage, "tpl-a", "#8a1f1f");
+seedApprovedInto(applyStorage, "tpl-b", "#1f4e8a");
+
+/* 미리보기 후 적용: 선택과 적용 결과가 같고, 초안 업무 내용은 그대로다 */
+const applyQuote = "PQ-20260928-777";
+const draftAfterApply = clone(draft);
+const previewEnvelope = Selection.setSelection(Selection.emptyEnvelope(), applyQuote, "tpl-a");
+const previewed = Selection.resolveActiveTemplate(Store.readStore(applyStorage), previewEnvelope, applyQuote);
+const previewedRender = renderInto(previewed);
+
+const applied = Selection.selectTemplate(applyStorage, applyQuote, "tpl-b", { now: APPROVED_AT });
+check(applied.ok === true, "preview-apply selects the previewed template");
+const appliedTemplate = Selection.resolveActiveTemplate(
+  Store.readStore(applyStorage),
+  Selection.readEnvelope(applyStorage),
+  applyQuote
+);
+eq(appliedTemplate.id, "tpl-b", "selected template == applied template");
+eq(Selection.selectionForQuote(Selection.readEnvelope(applyStorage), applyQuote), "tpl-b", "the applied selection is persisted");
+
+const appliedRender = renderInto(appliedTemplate);
+eq(clone(draft), draftAfterApply, "applying a preview never mutates the draft business content");
+check(appliedRender.doc.getElementById("quotePaper").style.getPropertyValue("--quote-accent") !==
+      previewedRender.doc.getElementById("quotePaper").style.getPropertyValue("--quote-accent"),
+  "the applied template changes the rendered style");
+eq(appliedRender.doc.getElementById("pvGrand").textContent, previewedRender.doc.getElementById("pvGrand").textContent,
+  "QUOTECORE_TOTALS_UNCHANGED_ACROSS_TEMPLATES=YES: totals do not change when the preview is applied");
+
+/* 앱 배선: 적용 성공 시 미리보기 상태를 반드시 해제한다 */
+const appSource = readSource("app.js");
+check(appSource.indexOf("TemplateUi.resolveUiStateAfterApply(templateUiState, true)") !== -1,
+  "PREVIEW_APPLY_TERMINATES=PASS: the app resolves the post-apply state");
+check(appSource.indexOf("templateUiState.previewTemplateId = nextState.previewTemplateId") !== -1,
+  "PREVIEW_APPLY_TERMINATES=PASS: the app clears previewTemplateId on success");
+check(appSource.indexOf('"preview-apply": function (id) { return TEMPLATE_ACTIONS.select(id); }') !== -1,
+  "PREVIEW_APPLY_TERMINATES=PASS: preview-apply goes through the select action");
+
 /* ── 정적 계약 ── */
 const uiSource = readSource("quote-template-ui.js");
 const selectionSource = readSource("quote-template-selection.js");
@@ -300,6 +398,7 @@ console.log("BUILTIN_TEMPLATE_FALLBACK=PASS");
 console.log("UNAPPROVED_TEMPLATE_SELECTION=0");
 console.log("UNAPPROVED_TEMPLATE_DEFAULT=0");
 console.log("TEMPLATE_SWITCH_MUTATES_QUOTEDRAFT_CONTENT=NO");
+console.log("PREVIEW_APPLY_TERMINATES=PASS");
 console.log("QUOTECORE_TOTALS_UNCHANGED_ACROSS_TEMPLATES=YES");
 console.log("BUILTIN_TEMPLATE_DELETE=DENIED");
 console.log("MODEL_NETWORK_CALLS=0");

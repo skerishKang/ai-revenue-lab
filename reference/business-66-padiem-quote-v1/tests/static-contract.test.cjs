@@ -549,9 +549,27 @@ check(templateSelection.includes("ask(target) !== true") && templateSelection.in
   "DELETE_CONFIRMATION=PASS: deletion requires confirmation");
 check(templateSelection.includes("builtin_template_immutable"),
   "BUILTIN_TEMPLATE_DELETE=DENIED: the built-in cannot be deleted");
-check(templateSelection.includes("normalizeSelection(") && templateSelection.includes("selectionForQuote(") &&
+check(templateSelection.includes("function normalizeEnvelope(") &&
+      templateSelection.includes("function normalizeSelectionEntry(") &&
+      templateSelection.includes("selectionForQuote(") &&
       templateSelection.includes("raw.schemaVersion !== SELECTION_SCHEMA_VERSION"),
   "MISSING_SELECTED_TEMPLATE_FALLBACK=PASS / CORRUPT_TEMPLATE_FALLBACK=PASS: selection is bounded and normalised");
+check(templateSelection.includes("var MAX_SELECTIONS = 20") &&
+      templateSelection.includes("function setSelection(") &&
+      templateSelection.includes("selections: rest.slice(0, MAX_SELECTIONS)"),
+  "TEMPLATE_SELECTION_BOUNDED=YES: selections are a bounded per-quote envelope");
+check(templateSelection.includes("function removeSelectionsForTemplate(") &&
+      templateSelection.includes("removeSelectionsForTemplate(readEnvelope(storage), id)"),
+  "TEMPLATE_SELECTION_PER_QUOTE=PASS: deleting a template prunes only its own selections");
+check(templateSelection.includes("if (seen[normalized.quoteNo]) return;") &&
+      templateSelection.includes("if (selections.length >= MAX_SELECTIONS) return;"),
+  "TEMPLATE_SELECTION_PER_QUOTE=PASS: a quotation keeps a single bounded selection");
+check(templateUi.includes("function resolveUiStateAfterApply(") &&
+      templateUi.includes("next.previewTemplateId = null;"),
+  "PREVIEW_APPLY_TERMINATES=PASS: the UI reducer clears the preview state");
+check(app.includes("TemplateUi.resolveUiStateAfterApply(templateUiState, true)") &&
+      app.includes("templateUiState.previewTemplateId = nextState.previewTemplateId"),
+  "PREVIEW_APPLY_TERMINATES=PASS: the app clears previewTemplateId after a successful apply");
 check(!/draft\.(sender|recipient|items|tax|memo|meta)\s*=/.test(templateSelection) &&
       !/draft\.(sender|recipient|items|tax|memo|meta)\s*=/.test(templateUi),
   "TEMPLATE_SWITCH_MUTATES_QUOTEDRAFT_CONTENT=NO: the template layer never assigns draft business content");
@@ -649,6 +667,9 @@ console.log("BUILTIN_TEMPLATE_DELETE=DENIED");
 console.log("DELETE_CONFIRMATION=PASS");
 console.log("DUPLICATE_TEMPLATE=PASS");
 console.log("RENAME_TEMPLATE=PASS");
+console.log("TEMPLATE_SELECTION_PER_QUOTE=PASS");
+console.log("TEMPLATE_SELECTION_BOUNDED=YES");
+console.log("PREVIEW_APPLY_TERMINATES=PASS");
 console.log("MOBILE_TEMPLATE_UI=PASS");
 console.log("PRINT_UI_LEAK=0");
 console.log("MODEL_NETWORK_CALLS=0");

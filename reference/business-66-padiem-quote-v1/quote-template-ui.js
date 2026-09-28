@@ -189,6 +189,20 @@
     return banner + body;
   }
 
+  /* preview → apply 가 성공하면 미리보기 상태를 반드시 종료한다(배너도 사라져야 한다). */
+  function resolveUiStateAfterApply(uiState, applyOk) {
+    var next = Object.assign({}, uiState || {});
+    if (applyOk === true) {
+      next.previewTemplateId = null;
+      next.renamingTemplateId = null;
+    }
+    return next;
+  }
+
+  function isPreviewActive(uiState) {
+    return Boolean(uiState && uiState.previewTemplateId);
+  }
+
   function buildStatusText(activeTemplate, uiState) {
     var state = uiState || {};
     if (!activeTemplate) return "사용할 양식을 찾지 못해 기본 견적서로 표시합니다.";
@@ -220,6 +234,8 @@
     renderOptionsMarkup: renderOptionsMarkup,
     buildRows: buildRows,
     renderRowsMarkup: renderRowsMarkup,
+    resolveUiStateAfterApply: resolveUiStateAfterApply,
+    isPreviewActive: isPreviewActive,
     buildStatusText: buildStatusText
   };
 });

@@ -541,7 +541,7 @@
   function currentTemplateId() {
     if (!TemplateSelection) return null;
     return TemplateSelection.selectionForQuote(
-      TemplateSelection.readSelection(templateStorage()),
+      TemplateSelection.readEnvelope(templateStorage()),
       draft.meta.quoteNo
     );
   }
@@ -553,7 +553,7 @@
     if (!TemplateSelection) return TemplateStore.defaultTemplate(store);
     return TemplateSelection.resolveActiveTemplate(
       store,
-      TemplateSelection.readSelection(templateStorage()),
+      TemplateSelection.readEnvelope(templateStorage()),
       draft.meta.quoteNo
     );
   }
@@ -618,8 +618,11 @@
       if (message) toast(message, 3200);
       return false;
     }
+    /* 성공한 적용은 미리보기를 반드시 종료한다 — 배너가 남지 않아야 한다. */
+    const nextState = TemplateUi.resolveUiStateAfterApply(templateUiState, true);
+    templateUiState.previewTemplateId = nextState.previewTemplateId;
+    templateUiState.renamingTemplateId = nextState.renamingTemplateId;
     if (successMessage) toast(successMessage);
-    templateUiState.renamingTemplateId = null;
     renderTemplateUi();
     render();
     return true;
