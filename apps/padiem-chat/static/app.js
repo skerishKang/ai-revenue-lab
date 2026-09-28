@@ -683,11 +683,24 @@
     dialogProjectFiles = [];
     renderProjectFiles();
     projectDialog.showModal();
+  // #3190: an existing project loads its Drive case-folder status; a brand new
+  // project has no project_id yet, so the Drive section stays hidden.
+  const drivePanel = document.getElementById("projectDrivePanel");
+  if (window.padiemProjectDriveFolder) {
+    window.padiemProjectDriveFolder.reset();
+    if (project && project.id) {
+      if (drivePanel) drivePanel.hidden = false;
+      window.padiemProjectDriveFolder.loadStatus(project.id);
+    } else if (drivePanel) {
+      drivePanel.hidden = true;
+    }
+  }
     if (project && authState.project_files_ready) loadProjectFilesForDialog(project.id);
     projectNameInput.focus();
   }
   function closeProjectDialog() {
-    if (projectDialog.open && typeof projectDialog.close === "function") projectDialog.close();
+    if (window.padiemProjectDriveFolder) window.padiemProjectDriveFolder.reset();
+  if (projectDialog.open && typeof projectDialog.close === "function") projectDialog.close();
     editingProjectId = null;
     dialogProjectFiles = [];
     projectFileInput.value = "";

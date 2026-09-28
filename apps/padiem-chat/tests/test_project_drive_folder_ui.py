@@ -74,8 +74,10 @@ def test_picker_states_are_distinct() -> None:
         "폴더 목록을 불러오지 못했습니다.",
     ):
         assert text in SCRIPT, text
-    # 409 drive_not_connected is handled separately from an empty list
-    assert "response.status === 409" in SCRIPT
+    # only a bounded error.code === drive_not_connected maps to the connection
+    # state; any other 409 is a generic error (status and list alike)
+    assert 'body.error.code === "drive_not_connected"' in SCRIPT
+    assert "response.status !== 409" in SCRIPT
 
 
 # --- 3. stale-response guards ---------------------------------------------
@@ -131,3 +133,22 @@ def test_css_has_44px_targets_and_mobile_rule() -> None:
     assert "min-width: 44px" in CSS
     assert "@media (max-width: 420px)" in CSS
     assert "overflow-wrap: anywhere" in CSS
+
+
+# --- 7. dialog lifecycle ---------------------------------------------------
+
+
+def test_dialog_lifecycle_is_wired_in_app_js() -> None:
+    app = (STATIC / "app.js").read_text(encoding="utf-8")
+    assert "window.padiemProjectDriveFolder.reset()" in app
+    assert "window.padiemProjectDriveFolder.loadStatus(project.id)" in app
+    assert 'document.getElementById("projectDrivePanel")' in app
+    assert "drivePanel.hidden = true" in app
+
+
+def test_reset_invalidates_tokens_and_clears_the_picker() -> None:
+    assert "function reset()" in SCRIPT
+    assert "state.statusToken += 1;" in SCRIPT
+    assert "state.searchToken += 1;" in SCRIPT
+    assert "closePicker({ restoreFocus: false })" in SCRIPT
+    assert "reset: reset," in SCRIPT

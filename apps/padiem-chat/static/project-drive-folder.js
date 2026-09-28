@@ -84,6 +84,16 @@
     }
   }
 
+  async function isDriveNotConnected(response) {
+    if (!response || response.status !== 409) return false;
+    try {
+      const body = await response.json();
+      return Boolean(body && body.error && body.error.code === "drive_not_connected");
+    } catch (error) {
+      return false;
+    }
+  }
+
   async function loadStatus(projectId) {
     if (!projectId) return;
     const state = driveState();
@@ -99,7 +109,7 @@
       return;
     }
     if (token !== state.statusToken) return; // stale project status response: ignored
-    if (response.status === 409) {
+    if (await isDriveNotConnected(response)) {
       state.configured = false;
       setStatus(STATUS_TEXT.drive_not_connected, false);
       return;
@@ -185,7 +195,7 @@
       return;
     }
     if (token !== state.searchToken) return; // stale search response: ignored
-    if (response.status === 409) {
+    if (await isDriveNotConnected(response)) {
       renderFolderRows([]);
       renderPickerState(PICKER_TEXT.drive_not_connected);
       return;
@@ -278,7 +288,8 @@
     loadFolders("");
   }
 
-  function closePicker() {
+  function closePicker(options) {
+    const restoreFocus = !options || options.restoreFocus !== false;
     const picker = pickerElement();
     const state = driveState();
     state.pickerOpen = false;
@@ -293,7 +304,27 @@
       picker.hidden = true;
     }
     const opener = state.opener;
-    if (opener && typeof opener.focus === "function") opener.focus();
+    // When the parent Project dialog is closing, the opener may be hidden; only
+    // restore focus when the opener is still focusable.
+    if (restoreFocus && opener && typeof opener.focus === "function" && !opener.hidden) opener.focus();
+  }
+
+  function reset() {
+    const state = driveState();
+    state.statusToken += 1; // invalidate any in-flight status response
+    state.searchToken += 1; // invalidate any in-flight search response
+    state.projectId = null;
+    state.folders = [];
+    state.configured = false;
+    state.opener = null;
+    closePicker({ restoreFocus: false });
+    renderFolderRows([]);
+    hidePickerState();
+    setStatus(STATUS_TEXT.unconfigured, false);
+    const clearButton = el("projectDriveClearButton");
+    if (clearButton) clearButton.hidden = true;
+    const pickButton = el("projectDrivePickButton");
+    if (pickButton) pickButton.textContent = "폴더 선택";
   }
 
   function wire() {
@@ -337,6 +368,7 @@
     closePicker: closePicker,
     selectFolder: selectFolder,
     clearFolder: clearFolder,
+    reset: reset,
     state: driveState,
   };
 
