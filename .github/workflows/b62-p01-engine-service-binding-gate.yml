@@ -189,12 +189,14 @@ jobs:
           versions="${RUNNER_TEMP}/b62-versions.json"
           subdomain="${RUNNER_TEMP}/b62-subdomain.json"
           domains="${RUNNER_TEMP}/worker-domains.json"
+          engine_settings="${RUNNER_TEMP}/engine-settings.json"
 
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" -o "${settings}"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" -o "${deployments}"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions?per_page=1&deployable=true" -o "${versions}"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/subdomain" -o "${subdomain}"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}/settings" -o "${engine_settings}"
 
           jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
           echo "B62_BINDINGS_SHAPE_OBSERVATION"
@@ -247,10 +249,12 @@ jobs:
           # Fail closed on any binding-name duplicate across the whole list.
           jq -e '[.result.bindings[] | .name] | length == (unique | length)' "${settings}" >/dev/null
 
-          # Public topology: the engine worker must not appear in the domain list
-          # until activation; the chat worker topology is preserved.
-          jq -e --arg engine "${ENGINE_WORKER}" '[.result[] | select(.service == $engine) | {hostname,service,environment,zone_id}] | length == 0' "${domains}" >/dev/null
-          jq -e '.result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+          # Read-only public topology sanity for the chat worker, plus the target
+          # engine worker existence. This gate does not replicate the identity
+          # gate's private-ingress assertions.
+          jq -e '.success == true' "${subdomain}" >/dev/null
+          jq -e '.success == true and (.result | type == "object")' "${engine_settings}" >/dev/null
+          echo "ENGINE_WORKER_EXISTS=PASS"
 
           echo "B62_BINDING_READONLY_AUDIT=PASS"
           echo "PRODUCTION_MUTATION=0"
@@ -309,7 +313,7 @@ jobs:
           jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
           jq -e '.success == true and (.result.items | length) > 0' "${versions}" >/dev/null
           jq -e --arg name "${ENGINE_BINDING}" '[.result.bindings[] | select(.name == $name)] | length == 0' "${settings}" >/dev/null
-          jq -e '.result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+          jq -e '.success == true and (.result | type == "object")' "${subdomain}" >/dev/null
 
           active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
           latest="$(jq -r '.result.items[0].id' "${versions}")"
