@@ -583,6 +583,44 @@ textarea { min-height: 82px; resize: vertical; }
   .template-picker { display: grid; grid-template-columns: 1fr; }
 }
 
+/* ── #3184 견적서 양식 본뜨기(검토·승인) ── */
+.template-cloner { margin-top: 14px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.template-cloner h3 { margin: 0 0 8px; font-size: 14px; }
+.template-cloner-status { margin: 0 0 10px; color: #475467; font-size: 12.5px; }
+.template-review { margin-top: 10px; }
+.cloner-progress { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; padding: 0; list-style: none; }
+.cloner-step { padding: 3px 10px; border: 1px solid #d0d5dd; border-radius: 999px; background: #fff; color: #8a9099; font-size: 11.5px; }
+.cloner-step.is-done { border-color: #b7d3bd; background: #f4faf5; color: #2f5d3a; }
+.review-status { margin: 0 0 12px; color: #344054; font-size: 12.5px; }
+.review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.review-block { min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fbfcfd; }
+.review-block h4 { margin: 0 0 8px; font-size: 12.5px; letter-spacing: .01em; }
+.review-name { display: grid; gap: 5px; margin-bottom: 10px; }
+.review-name span { color: #667085; font-size: 11.5px; }
+.review-name input { min-height: 44px; }
+.review-defs { display: grid; gap: 6px; margin: 0; }
+.review-def { display: grid; grid-template-columns: minmax(96px, 40%) 1fr; gap: 8px; margin: 0; }
+.review-def dt { color: #667085; font-size: 11.5px; }
+.review-def dd { margin: 0; color: #344054; font-size: 12.5px; overflow-wrap: anywhere; }
+.review-list { margin: 0; padding-left: 18px; color: #344054; font-size: 12.5px; }
+.review-list li { margin: 0 0 4px; overflow-wrap: anywhere; }
+.review-list--warning { color: #8a6a1f; }
+.review-empty { margin: 0; color: #8a9099; font-size: 12px; }
+.review-note-title { margin: 10px 0 4px; color: #667085; font-size: 11.5px; }
+.template-cloner-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.template-cloner-actions .btn { min-height: 44px; }
+
+@media (max-width: 680px) {
+  .review-grid { grid-template-columns: 1fr; }
+  .review-def { grid-template-columns: 1fr; gap: 2px; }
+  .template-cloner-actions { display: grid; grid-template-columns: 1fr; }
+  .template-cloner-actions .btn { width: 100%; }
+}
+
+@media print {
+  .template-cloner, .template-review, .cloner-progress, .review-grid, .review-block, .review-status { display: none !important; }
+}
+
 @media print {
   .template-section, .template-manage, .template-picker, .template-status { display: none !important; }
 }

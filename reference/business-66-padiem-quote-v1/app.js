@@ -251,6 +251,7 @@
     suppressNextDraftSave = true;
     templateUiState.previewTemplateId = null;
     templateUiState.renamingTemplateId = null;
+    clonerSession = null;
 
     renderItems();
     fillInputsFromDraft();
@@ -598,6 +599,7 @@
         previewTemplateId: templateUiState.previewTemplateId
       });
     }
+    renderClonerUi();
   }
 
   const TEMPLATE_RESULT_MESSAGES = {
@@ -879,7 +881,180 @@
 
   /* #3184 승인/본뜨기 흐름의 entry point — 이번 이슈에서는 진입점만 둔다. */
   $("templateClone").addEventListener("click", () => {
-    toast("견적서 양식 본뜨기와 승인 흐름은 다음 단계에서 제공합니다.", 3600);
+    templateUiState.manageOpen = true;
+    $("templateManagePanel").hidden = false;
+    $("templateManageToggle").setAttribute("aria-expanded", "true");
+    $("templateCloneFile").click();
+  });
+
+  const TEMPLATE_CLONE_MESSAGES = {
+    unsupported_candidate_field: "지원하지 않는 후보 필드가 있어 가져올 수 없습니다.",
+    invalid_candidate_content: "후보 양식 내용이 올바르지 않습니다.",
+    invalid_candidate_schema: "지원하지 않는 후보 형식입니다.",
+    invalid_candidate_review: "검토 정보가 올바르지 않습니다.",
+    invalid_candidate_confidence: "신뢰도 값이 범위를 벗어났습니다.",
+    invalid_candidate_provenance: "출처 정보가 올바르지 않습니다.",
+    invalid_candidate_name: "양식 이름을 입력해 주세요.",
+    forbidden_candidate_field: "허용되지 않는 필드가 포함되어 있습니다.",
+    candidate_changed_after_review: "검토 후 내용이 바뀌어 다시 확인해야 합니다.",
+    session_not_reviewable: "검토 중인 후보가 없습니다.",
+    session_not_editable: "지금은 후보를 수정할 수 없습니다.",
+    template_not_approved: "승인되지 않은 양식은 적용할 수 없습니다.",
+    template_limit_reached: "저장할 수 있는 양식 수를 초과했습니다.",
+    slot_rendering_not_supported: "이번 단계에서는 로고·도장 슬롯을 저장할 수 없습니다.",
+    legacy_hwp_unsupported: "구형 HWP 파일은 지원하지 않습니다. HWPX로 변환해 주세요.",
+    unsupported_file_type: "지원하지 않는 파일 형식입니다.",
+    invalid_file_size: "파일 크기가 허용 범위를 벗어났습니다.",
+    empty_file: "빈 파일은 사용할 수 없습니다.",
+    invalid_file: "파일을 확인할 수 없습니다.",
+    invalid_file_name: "파일 이름을 확인할 수 없습니다.",
+    media_extension_mismatch: "파일 형식과 확장자가 일치하지 않습니다.",
+    preflight_failed: "파일 사전 검증에 실패했습니다."
+  };
+
+  function cloneMessage(code) {
+    return TEMPLATE_CLONE_MESSAGES[code] || "본뜨기를 진행할 수 없습니다.";
+  }
+
+  function renderClonerUi() {
+    if (!TemplateUi || !TemplateCloner) return;
+    const panel = $("templateClonerPanel");
+    if (!panel) return;
+
+    const started = Boolean(clonerSession);
+    panel.hidden = !(templateUiState.manageOpen && started);
+    if (!started) return;
+
+    const statusHost = $("templateClonerStatus");
+    if (statusHost) statusHost.textContent = TemplateUi.buildClonerStatusText(TemplateCloner, clonerSession);
+
+    const reviewHost = $("templateReview");
+    const reviewModel = clonerSession.candidate && TemplateCandidate
+      ? TemplateCandidate.buildReviewModel(clonerSession.candidate)
+      : null;
+    if (reviewHost) {
+      reviewHost.hidden = !reviewModel;
+      reviewHost.innerHTML = reviewModel
+        ? TemplateUi.renderReviewMarkup(reviewModel, {
+          progress: TemplateCloner.buildProgress(clonerSession),
+          approved: clonerSession.status === TemplateCloner.STATUS_APPROVED
+        })
+        : "";
+    }
+
+    const reviewable = clonerSession.status === TemplateCloner.STATUS_REVIEWING;
+    const approveButton = $("templateApprove");
+    const cancelButton = $("templateReviewCancel");
+    if (approveButton) {
+      approveButton.hidden = !reviewable;
+      approveButton.disabled = !reviewable;
+    }
+    if (cancelButton) cancelButton.hidden = !started;
+  }
+
+  function applyClonerResult(result, successMessage) {
+    if (!result) return false;
+    clonerSession = result.session || clonerSession;
+    renderClonerUi();
+    if (!result.ok) {
+      toast(cloneMessage(result.code), 4200);
+      return false;
+    }
+    if (successMessage) toast(successMessage);
+    return true;
+  }
+
+  function startClonerFromFile(file) {
+    if (!TemplateCloner) return false;
+    const preflight = FileIntake
+      ? FileIntake.classifyFile(file)
+      : { ok: false, error: "preflight_failed" };
+    const session = clonerSession || TemplateCloner.createSession({});
+    const result = TemplateCloner.startFromFile(session, preflight);
+    applyClonerResult(result);
+    if (result.ok) {
+      toast("파일 검증을 마쳤습니다. 문서 분석기는 아직 연결되지 않았습니다.", 4200);
+    }
+    return result.ok;
+  }
+
+  function injectClonerCandidate(payload) {
+    if (!TemplateCloner) return { ok: false, code: "cloner_unavailable" };
+    const session = (clonerSession && clonerSession.status !== TemplateCloner.STATUS_APPROVED)
+      ? clonerSession
+      : TemplateCloner.createSession({});
+    const result = TemplateCloner.startFromCandidate(session, payload);
+    applyClonerResult(result);
+    return result;
+  }
+
+  function approveClonerCandidate() {
+    if (!TemplateCloner || !clonerSession) return { ok: false, code: "session_missing" };
+    const result = TemplateCloner.approveCandidate(clonerSession, templateStorage(), {});
+    if (!result.ok) {
+      applyClonerResult(result);
+      return result;
+    }
+    clonerSession = result.session;
+    templateUiState.previewTemplateId = null;
+    renderTemplateUi();
+    render();
+    toast("양식을 승인해 저장했습니다. 이제 이 견적에 적용할 수 있습니다.", 3600);
+    return result;
+  }
+
+  function cancelClonerSession() {
+    if (!TemplateCloner || !clonerSession) return { ok: false, code: "session_missing" };
+    const result = TemplateCloner.cancelSession(clonerSession);
+    clonerSession = result.session;
+    renderClonerUi();
+    toast("본뜨기를 취소했습니다. 저장된 것은 없습니다.", 3000);
+    return result;
+  }
+
+  $("templateCloneFile").addEventListener("change", (event) => {
+    const file = event.target.files && event.target.files[0];
+    event.target.value = "";
+    if (!file) return;
+    startClonerFromFile(file);
+  });
+
+  $("templateApprove").addEventListener("click", () => { approveClonerCandidate(); });
+  $("templateReviewCancel").addEventListener("click", () => { cancelClonerSession(); });
+
+  $("templateReview").addEventListener("input", (event) => {
+    const input = event.target.closest('[data-role="candidate-name"]');
+    if (!input || !TemplateCloner || !clonerSession) return;
+    const result = TemplateCloner.editCandidate(clonerSession, { name: input.value }, { storage: templateStorage() });
+    if (!result.ok) toast(cloneMessage(result.code), 3600);
+    clonerSession = result.session || clonerSession;
+    renderClonerUi();
+  });
+
+  window.B66QuoteTemplateClonerBridge = Object.freeze({
+    createSession: () => { clonerSession = TemplateCloner.createSession({}); renderClonerUi(); return clonerSession; },
+    injectCandidate: (payload) => injectClonerCandidate(payload),
+    editCandidate: (patch) => {
+      if (!clonerSession) return { ok: false, code: "session_missing" };
+      const result = TemplateCloner.editCandidate(clonerSession, patch || {}, { storage: templateStorage() });
+      clonerSession = result.session || clonerSession;
+      renderClonerUi();
+      render();
+      return result;
+    },
+    approve: () => approveClonerCandidate(),
+    cancel: () => cancelClonerSession(),
+    analyzer: () => (TemplateCandidate ? TemplateCandidate.analyzerBoundary() : null),
+    state: () => clonerSession,
+    review: () => (clonerSession && clonerSession.candidate && TemplateCandidate
+      ? TemplateCandidate.buildReviewModel(clonerSession.candidate)
+      : null),
+    startFromFile: (preflight) => {
+      const session = clonerSession || TemplateCloner.createSession({});
+      const result = TemplateCloner.startFromFile(session, preflight);
+      applyClonerResult(result);
+      return result;
+    }
   });
 
   window.B66QuoteExtractionBridge = Object.freeze({
