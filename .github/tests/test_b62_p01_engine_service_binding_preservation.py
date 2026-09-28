@@ -64,8 +64,6 @@ def test_live_p01_engine_service_binding_is_preserved_by_the_generator() -> None
     assert "[[services]]" in config
     assert 'binding = "P01_ENGINE_SERVICE"' in config
     assert 'service = "padiem-ai-engine"' in config
-    assert "B62_GENERATOR_PRESERVES_P01_SERVICE_BINDING=PASS" is not None
-    assert "VERIFY_MUTATION_ZERO=PASS" is not None
 
 
 def test_unrelated_bindings_are_preserved_alongside_p01() -> None:
