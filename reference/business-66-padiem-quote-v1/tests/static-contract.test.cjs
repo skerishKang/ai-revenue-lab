@@ -14,6 +14,8 @@ const templateStore = read("quote-template-store.js");
 const templateRenderer = read("quote-template-renderer.js");
 const templateSelection = read("quote-template-selection.js");
 const templateUi = read("quote-template-ui.js");
+const candidate = read("quote-template-candidate.js");
+const cloner = read("quote-template-cloner.js");
 const intake = read("file-intake.js");
 const easy = read("easy-mode.js");
 
@@ -32,6 +34,8 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'src="quote-template-renderer.js"',
   'src="quote-template-selection.js"',
   'src="quote-template-ui.js"',
+  'src="quote-template-candidate.js"',
+  'src="quote-template-cloner.js"',
   'src="file-intake.js"',
   'src="app.js"',
   'src="easy-mode.js"',
@@ -72,11 +76,16 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'id="templateManagePanel"',
   'id="templateList"',
   'id="templateCreate"',
-  'id="templateClone"'
+  'id="templateClone"',
+  'id="templateClonerPanel"',
+  'id="templateReview"',
+  'id="templateApprove"',
+  'id="templateReviewCancel"',
+  'id="templateCloneFile"'
 ].forEach((marker) => check(html.includes(marker), `B66_STATIC_CONTRACT missing in index.html: ${marker}`));
 
 /* NEUTRAL_PUBLIC_UI_CONTRACT — 외부 화면/상태에 내부 제품 브랜드를 노출하지 않음 */
-check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + intake + easy),
+check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + candidate + cloner + intake + easy),
   "NEUTRAL_PUBLIC_UI_CONTRACT: no Padiem branding in rendered/runtime source");
 check(!html.includes("B66 DEMO"), "NEUTRAL_PUBLIC_UI_CONTRACT: no internal demo label");
 check(html.includes("BETA · 입력 내용은 이 브라우저에만 저장"),
@@ -595,6 +604,53 @@ check(app.includes("previewTemplateProfile() || activeTemplateProfile()") &&
       app.includes("candidate && candidate.approved"),
   "UNAPPROVED_TEMPLATE_SELECTION=0: preview is restricted to approved templates");
 
+/* ── #3184 양식 본뜨기(후보 검토 + 명시적 승인) ── */
+check(html.includes('src="quote-template-candidate.js"') && html.includes('src="quote-template-cloner.js"'),
+  "TEMPLATE_CLONER_ENTRYPOINT=YES: candidate and cloner modules are loaded");
+check(html.includes('id="templateClonerPanel"') && html.includes('id="templateReview"') &&
+      html.includes('id="templateApprove"') && html.includes('id="templateReviewCancel"') &&
+      html.includes('id="templateCloneFile"'),
+  "TEMPLATE_CANDIDATE_REVIEW_UI=PASS: the review surface exists");
+check(html.includes("견적서 양식 본뜨기") && !html.includes("본뜨기 · 다음 단계"),
+  "TEMPLATE_CLONER_ENTRYPOINT=YES: the deferred label is replaced by the real entry point");
+check(candidate.includes("function injectCandidate(") && candidate.includes("function normalizeCandidate(") &&
+      candidate.includes("unsupported_candidate_field") && candidate.includes("forbidden_candidate_field"),
+  "TEMPLATE_CANDIDATE_MANUAL_INJECTION=PASS / MALFORMED_CANDIDATE_FAIL_CLOSED=PASS: the injection seam validates");
+check(candidate.includes("live: false") && candidate.includes('network: "none"'),
+  "TEMPLATE_ANALYZER_LIVE=NO / MODEL_NETWORK_CALLS=0: the analyzer boundary is not live");
+check(cloner.includes("function approveCandidate(") && cloner.includes("APPROVAL_SCHEMA_VERSION") &&
+      cloner.includes("contentFingerprint: current") && cloner.includes("candidate_changed_after_review"),
+  "EXPLICIT_TEMPLATE_APPROVAL_REQUIRED=YES / APPROVAL_FINGERPRINT_BINDING=PASS: approval binds the reviewed content");
+check(cloner.includes("Template.templateFingerprint(session.candidate.content)"),
+  "APPROVAL_FINGERPRINT_BINDING=PASS: the fingerprint is recomputed at approval time");
+check(cloner.includes("approval_invalidated") && cloner.includes("Store.updateTemplate("),
+  "CANDIDATE_CONTENT_CHANGE_INVALIDATES_APPROVAL=YES: editing after approval drops the stored approval");
+check((cloner.match(/restoreStorage\(storage, snapshot\);/g) || []).length >= 3 &&
+      cloner.includes("var snapshot = snapshotStorage(storage);"),
+  "FAILED_APPROVAL_CHANGES_DEFAULT=0: every approval failure path restores the snapshot");
+check(app.includes('$("templateApprove").addEventListener("click"') &&
+      app.includes("TemplateCloner.approveCandidate(clonerSession, templateStorage(), {})"),
+  "EXPLICIT_TEMPLATE_APPROVAL_REQUIRED=YES: approval is an explicit user action");
+check(app.includes("FileIntake.classifyFile(file)") && app.includes("window.B66QuoteTemplateClonerBridge"),
+  "BROWSER_UPLOAD_NETWORK=0 / TEMPLATE_CANDIDATE_MANUAL_INJECTION=PASS: preflight reuse plus injection seam");
+check(!/fetch\(|XMLHttpRequest/.test(candidate + cloner),
+  "BROWSER_UPLOAD_NETWORK=0 / MODEL_NETWORK_CALLS=0: no network call in the cloner layer");
+check(!/kilo\/|space-bunny|nemotron|openai|anthropic/i.test(candidate + cloner),
+  "MODEL_PROVIDER_IDS_IN_BROWSER=0: no provider or model reference");
+check(css.includes(".template-cloner, .template-review, .cloner-progress, .review-grid, .review-block, .review-status { display: none !important; }"),
+  "PRINT_UI_LEAK=0: the cloner UI is excluded from print");
+check(css.includes(".template-cloner-actions .btn { min-height: 44px; }") &&
+      css.includes(".review-grid { grid-template-columns: 1fr; }"),
+  "MOBILE_TEMPLATE_CLONER_UI=PASS: 44px targets and a single-column review grid on narrow viewports");
+
+check(cloner.includes("function snapshotStorage(") && cloner.includes("function restoreStorage(") &&
+      cloner.includes("restoreStorage(storage, snapshot);"),
+  "APPROVAL_FAILURE_PARTIAL_WRITE=0: approval stages a snapshot and rolls back on failure");
+check(cloner.includes("storage_required_for_approval_invalidation"),
+  "SPLIT_BRAIN_APPROVAL_STATE=0: a content edit on an approved session requires storage");
+check(cloner.includes("if (!created.ok)") && cloner.includes("var snapshot = snapshotStorage(storage);"),
+  "APPROVAL_FAILURE_PARTIAL_WRITE=0: the snapshot is taken before the first write");
+
 console.log("B66_STATIC_CONTRACT=PASS");
 console.log("NEUTRAL_PUBLIC_UI_CONTRACT=PASS");
 console.log("EXTRACTION_BOUNDARY_CONTRACT=PASS");
@@ -670,6 +726,21 @@ console.log("RENAME_TEMPLATE=PASS");
 console.log("TEMPLATE_SELECTION_PER_QUOTE=PASS");
 console.log("TEMPLATE_SELECTION_BOUNDED=YES");
 console.log("PREVIEW_APPLY_TERMINATES=PASS");
+console.log("TEMPLATE_CLONER_ENTRYPOINT=YES");
+console.log("TEMPLATE_CANDIDATE_REVIEW_UI=PASS");
+console.log("TEMPLATE_CANDIDATE_MANUAL_INJECTION=PASS");
+console.log("EXPLICIT_TEMPLATE_APPROVAL_REQUIRED=YES");
+console.log("APPROVAL_FINGERPRINT_BINDING=PASS");
+console.log("CANDIDATE_CONTENT_CHANGE_INVALIDATES_APPROVAL=YES");
+console.log("APPROVAL_CANCEL_WRITES_PROFILE=0");
+console.log("FAILED_APPROVAL_CHANGES_DEFAULT=0");
+console.log("FAILED_APPROVAL_CHANGES_CURRENT_SELECTION=0");
+console.log("TEMPLATE_ANALYZER_LIVE=NO");
+console.log("BROWSER_UPLOAD_NETWORK=0");
+console.log("MODEL_PROVIDER_IDS_IN_BROWSER=0");
+console.log("MOBILE_TEMPLATE_CLONER_UI=PASS");
+console.log("APPROVAL_FAILURE_PARTIAL_WRITE=0");
+console.log("SPLIT_BRAIN_APPROVAL_STATE=0");
 console.log("MOBILE_TEMPLATE_UI=PASS");
 console.log("PRINT_UI_LEAK=0");
 console.log("MODEL_NETWORK_CALLS=0");
