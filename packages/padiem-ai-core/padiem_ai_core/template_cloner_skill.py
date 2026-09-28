@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from .skill_package import ApprovalHook, ReusableSkillPackage, SkillExecutionBudget
 
-TEMPLATE_CLONER_SKILL_ID = "skill:b66:document-template-cloner@1"
+TEMPLATE_CLONER_SKILL_ID = "skill:padiem:document-template-cloner@1"
 TEMPLATE_CLONER_INPUT_CONTRACT_REF = "contract:template-cloner-analysis-input@1"
 TEMPLATE_CLONER_OUTPUT_CONTRACT_REF = "contract:document-template-candidate@1"
 TEMPLATE_CLONER_RENDERER_CONTRACT_REF = "renderer:document-template-profile@1"
@@ -66,7 +66,7 @@ def build_template_cloner_skill_package() -> ReusableSkillPackage:
     """Return the canonical, authority-free template-cloner Skill package."""
     return ReusableSkillPackage(
         skill_id=TEMPLATE_CLONER_SKILL_ID,
-        publisher_id="b66",
+        publisher_id="padiem",
         description=(
             "Propose a reusable document template candidate from a trusted "
             "document reference. Runs no approval and holds no template data."

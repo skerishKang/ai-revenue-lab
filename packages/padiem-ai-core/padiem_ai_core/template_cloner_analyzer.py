@@ -33,12 +33,15 @@ from enum import Enum
 from typing import Any, Mapping, Protocol, Sequence
 
 from .b14_multimodal import MAX_B14_IMAGE_BYTES, MAX_B14_MULTIMODAL_PARTS
+from .document_normalization import ExtractionStatus, NormalizedDocument
+from .document_parser_boundary import parse_binary_document_via_authority
 from .document_template import (
     DOCUMENT_TEMPLATE_SCHEMA_VERSION,
     DocumentTemplateCandidate,
     DocumentTemplateError,
     DocumentTemplateSourceProvenance,
 )
+from .multimodal_execution_runtime import MultimodalExecutionRequest
 from .template_cloner_skill import (
     TEMPLATE_CLONER_ANALYZER_KIND,
     TEMPLATE_CLONER_RENDERER_CONTRACT_REF,
@@ -343,6 +346,51 @@ def _is_empty_profile(value: Any) -> bool:
     return False
 
 
+_IMAGE_URL_RE = re.compile(
+    r"^data:(image/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$"
+)
+
+#: Trusted allowlist for template *text* in ``fixed_content``. A key outside this
+#: set is refused, so a faulty analyzer cannot promote source business values
+#: (customer name, amount, date, quote number) into a frozen template field.
+_ALLOWED_FIXED_CONTENT_KEYS = frozenset(
+    {
+        "title",
+        "header",
+        "footer",
+        "mark",
+        "memo_label",
+        "empty_item_text",
+        "supply_label",
+        "vat_label",
+        "grand_label",
+        "sender_heading",
+        "recipient_heading",
+    }
+)
+
+#: Value shapes that are business data, never template text.
+_MONEY_VALUE_RE = re.compile(r"(?:\d[\d,\s]{3,}|[₩$€]\s?\d|\d+\s?(?:원|만원|억))")
+_DATE_VALUE_RE = re.compile(r"(?:\d{4}[-/.]\d{1,2}[-/.]\d{1,2}|\d{4}\s?년)")
+
+
+def _assert_fixed_content_is_template_text(value: Any) -> None:
+    """Fail closed unless ``fixed_content`` is bounded template text."""
+    if not isinstance(value, Mapping):
+        return
+    for key, item in value.items():
+        if not isinstance(key, str) or key.strip() not in _ALLOWED_FIXED_CONTENT_KEYS:
+            raise TemplateClonerAnalyzerError(
+                "unsupported_fixed_content_key",
+                "fixed content carries a key outside the template-text allowlist",
+            )
+        if isinstance(item, str) and (_MONEY_VALUE_RE.search(item) or _DATE_VALUE_RE.search(item)):
+            raise TemplateClonerAnalyzerError(
+                "business_value_in_fixed_content",
+                "fixed content carries a source business value instead of template text",
+            )
+
+
 def _candidate_id(request: TemplateClonerAnalyzerRequest) -> str:
     digest = hashlib.sha256()
     digest.update(request.request_id.encode("utf-8"))
@@ -446,6 +494,8 @@ def analyze_template_candidate(
     }
 
     try:
+        _assert_fixed_content_is_template_text(profiles["fixed_content"])
+
         return DocumentTemplateCandidate(
             candidate_id=_candidate_id(request),
             schema_version=DOCUMENT_TEMPLATE_SCHEMA_VERSION,
@@ -463,26 +513,98 @@ def analyze_template_candidate(
         raise TemplateClonerAnalyzerError(exc.code, exc.safe_message) from exc
 
 
+def extract_native_document(*, name: Any, media_type: Any, payload: Any) -> NormalizedDocument:
+    """Extract one binary document through the shared Core parser authority.
+
+    This is the only binary entry point used here: no second parser is added.
+    """
+    return parse_binary_document_via_authority(name=name, media_type=media_type, payload=payload)
+
+
+def multimodal_image_descriptor(request: MultimodalExecutionRequest) -> tuple[str, int]:
+    """Read the validated image descriptor out of a canonical multimodal request.
+
+    ``MultimodalExecutionRequest`` already validated the message parts through
+    the existing B14 multimodal contract, so this only reads media type and
+    decoded size back out; it never reaches into raw bytes itself.
+    """
+    if not isinstance(request, MultimodalExecutionRequest):
+        raise TemplateClonerAnalyzerError(
+            "invalid_analyzer_evidence", "a canonical multimodal request is required"
+        )
+    found: list[tuple[str, int]] = []
+    for message in request.messages:
+        content = message.get("content")
+        if isinstance(content, (str, bytes)) or not isinstance(content, Sequence):
+            continue
+        for part in content:
+            if not isinstance(part, Mapping) or part.get("type") != "image_url":
+                continue
+            image_url = part.get("image_url")
+            if not isinstance(image_url, Mapping):
+                continue
+            url = image_url.get("url")
+            if not isinstance(url, str):
+                continue
+            match = _IMAGE_URL_RE.fullmatch(url)
+            if match is None:
+                raise TemplateClonerAnalyzerError(
+                    "invalid_analyzer_evidence", "multimodal image part is not a supported data URL"
+                )
+            padding = match.group(2)[-2:].count("=")
+            decoded = (len(match.group(2)) // 4) * 3 - padding
+            found.append((match.group(1), decoded))
+    if len(found) != 1:
+        raise TemplateClonerAnalyzerError(
+            "invalid_analyzer_evidence", "exactly one image part is required for the vision branch"
+        )
+    media_type, media_bytes = found[0]
+    if media_bytes < 1 or media_bytes > MAX_B14_IMAGE_BYTES:
+        raise TemplateClonerAnalyzerError(
+            "analyzer_evidence_budget_exceeded", "vision evidence exceeds the multimodal image bound"
+        )
+    return media_type, media_bytes
+
+
 def build_native_document_request(
     *,
     request_id: str,
-    text: str,
-    media_type: str,
+    document: NormalizedDocument,
     source_provenance: DocumentTemplateSourceProvenance,
     analysis_intent: str,
-    page_count: int | None = None,
     content_sha256: str | None = None,
     evidence_refs: tuple[str, ...] = (),
     trace_id: str | None = None,
 ) -> TemplateClonerAnalyzerRequest:
-    """Build a request for the native document branch (reuses Core extraction)."""
+    """Build a native-branch request from the canonical Core normalized document.
+
+    Arbitrary text can never enter this seam: only a ``NormalizedDocument``
+    produced by the existing normalization/parser authority is accepted, and it
+    must be a complete extraction.
+    """
+    if not isinstance(document, NormalizedDocument):
+        raise TemplateClonerAnalyzerError(
+            "invalid_analyzer_evidence", "native evidence requires a NormalizedDocument"
+        )
+    if document.status is not ExtractionStatus.COMPLETE:
+        raise TemplateClonerAnalyzerError(
+            "document_not_complete", "native evidence requires a complete extraction"
+        )
+    if source_provenance is not None and source_provenance.media_type is None:
+        source_provenance = DocumentTemplateSourceProvenance(
+            source_type=source_provenance.source_type,
+            source_ref=source_provenance.source_ref,
+            media_type=document.media_type,
+            content_sha256=source_provenance.content_sha256 or content_sha256,
+            trace_id=source_provenance.trace_id,
+        )
+
     evidence = TemplateClonerEvidence(
         kind=TemplateClonerEvidenceKind.NATIVE_DOCUMENT_TEXT,
-        media_type=media_type,
-        text=text,
-        page_count=page_count,
+        media_type=document.media_type,
+        text=document.text,
+        page_count=len(document.segments) or None,
         content_sha256=content_sha256,
-        evidence_ref=None,
     )
     return TemplateClonerAnalyzerRequest(
         request_id=request_id,
@@ -497,30 +619,26 @@ def build_native_document_request(
 def build_vision_request(
     *,
     request_id: str,
-    media_type: str,
-    media_bytes: int,
+    multimodal_request: MultimodalExecutionRequest,
     source_provenance: DocumentTemplateSourceProvenance,
     analysis_intent: str,
-    evidence_ref: str | None = None,
-    page_count: int | None = None,
     content_sha256: str | None = None,
     evidence_refs: tuple[str, ...] = (),
     trace_id: str | None = None,
 ) -> TemplateClonerAnalyzerRequest:
-    """Build a request for the vision branch.
+    """Build a vision-branch request on the canonical multimodal contract.
 
-    Only the descriptor travels here: media type, bounded size, hash and an
-    optional reference. A live executor resolves the bytes through the existing
-    multimodal/workspace storage authority, so raw bytes never reach the
-    candidate.
+    The image descriptor is read out of an existing ``MultimodalExecutionRequest``
+    (already validated by the B14 multimodal boundary). Only the descriptor
+    travels into the candidate: media type, bounded size and a hash. No provider
+    or model is selected here, and no live execution happens in phase A.
     """
+    media_type, media_bytes = multimodal_image_descriptor(multimodal_request)
     evidence = TemplateClonerEvidence(
         kind=TemplateClonerEvidenceKind.VISION_IMAGE,
         media_type=media_type,
         media_bytes=media_bytes,
-        page_count=page_count,
         content_sha256=content_sha256,
-        evidence_ref=evidence_ref,
     )
     return TemplateClonerAnalyzerRequest(
         request_id=request_id,
@@ -528,7 +646,7 @@ def build_vision_request(
         source_provenance=source_provenance,
         analysis_intent=analysis_intent,
         evidence_refs=evidence_refs,
-        trace_id=trace_id,
+        trace_id=trace_id or multimodal_request.trace_id,
     )
 
 
@@ -553,4 +671,6 @@ __all__ = [
     "analyze_template_candidate",
     "build_native_document_request",
     "build_vision_request",
+    "extract_native_document",
+    "multimodal_image_descriptor",
 ]

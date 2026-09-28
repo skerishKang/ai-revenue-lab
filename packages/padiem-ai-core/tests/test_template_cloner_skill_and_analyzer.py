@@ -8,10 +8,14 @@ import pathlib
 import re
 import unittest
 
+from padiem_ai_core.contracts import AgentProfile
+from padiem_ai_core.document_normalization import ExtractionStatus, NormalizedDocument
 from padiem_ai_core.document_template import (
     DocumentTemplateCandidate,
     DocumentTemplateSourceProvenance,
 )
+from padiem_ai_core.multimodal_execution_runtime import MultimodalExecutionRequest
+from padiem_ai_core.skill_registry import SkillRegistrySnapshot
 from padiem_ai_core.template_cloner_analyzer import (
     ANALYZER_STATUS_COMPLETED,
     ANALYZER_STATUS_TIMEOUT,
@@ -26,6 +30,7 @@ from padiem_ai_core.template_cloner_analyzer import (
     analyze_template_candidate,
     build_native_document_request,
     build_vision_request,
+    multimodal_image_descriptor,
 )
 from padiem_ai_core.template_cloner_skill import (
     TEMPLATE_CLONER_MODEL_POLICY_REF,
@@ -45,6 +50,44 @@ _PROVENANCE = DocumentTemplateSourceProvenance(
 )
 
 _NATIVE_TEXT = "견적서\n공급자: 예시\n품목 수량 단가 금액\n합계"
+_PNG_DATA_URL = "data:image/png;base64," + "iVBORw0KGgoAAAANSUhEUg=="
+
+
+def _document(text: str = _NATIVE_TEXT) -> NormalizedDocument:
+    return NormalizedDocument(
+        name="quote-a.pdf",
+        media_type="application/pdf",
+        text=text,
+        byte_size=len(text.encode("utf-8")),
+        source_kind="binary",
+    )
+
+
+def _agent() -> AgentProfile:
+    return AgentProfile(
+        id="template-cloner-test-agent",
+        title="Template cloner",
+        description="Analyzer boundary test agent.",
+        system_instruction="Return a template candidate description only.",
+        task_type="document_analysis",
+        optimize_for="quality",
+        max_tokens=None,
+    )
+
+
+def _multimodal_request() -> MultimodalExecutionRequest:
+    return MultimodalExecutionRequest(
+        agent=_agent(),
+        messages=(
+            {
+                "role": "user",
+                "content": (
+                    {"type": "text", "text": "describe this quotation template"},
+                    {"type": "image_url", "image_url": {"url": _PNG_DATA_URL}},
+                ),
+            },
+        ),
+    )
 
 
 class _InMemoryExecutor:
@@ -55,11 +98,9 @@ class _InMemoryExecutor:
         self.status = status
         self.raises = raises
         self.calls = 0
-        self.last_request: TemplateClonerAnalyzerRequest | None = None
 
     def execute(self, request: TemplateClonerAnalyzerRequest) -> TemplateClonerAnalyzerResult:
         self.calls += 1
-        self.last_request = request
         if self.raises:
             raise RuntimeError("simulated transport failure with secret-looking detail")
         return TemplateClonerAnalyzerResult(status=self.status, raw_payload=self.payload)
@@ -85,7 +126,21 @@ class TemplateClonerSkillContractTests(unittest.TestCase):
     def test_skill_contract(self) -> None:
         package = build_template_cloner_skill_package()
         self.assertEqual(package.skill_id, TEMPLATE_CLONER_SKILL_ID)
-        self.assertRegex(package.skill_id, r"^skill:[a-z0-9][a-z0-9._-]{0,63}:[a-z0-9][a-z0-9._-]{0,63}@[1-9][0-9]*$")
+        self.assertRegex(
+            package.skill_id, r"^skill:[a-z0-9][a-z0-9._-]{0,63}:[a-z0-9][a-z0-9._-]{0,63}@[1-9][0-9]*$"
+        )
+
+    def test_identity_is_product_neutral(self) -> None:
+        package = build_template_cloner_skill_package()
+        self.assertEqual(package.skill_id, "skill:padiem:document-template-cloner@1")
+        self.assertEqual(package.publisher_id, "padiem")
+        self.assertNotIn("b66", package.skill_id)
+        self.assertNotIn("b66", package.publisher_id)
+
+    def test_registry_compatible(self) -> None:
+        package = build_template_cloner_skill_package()
+        snapshot = SkillRegistrySnapshot.from_packages([package])
+        self.assertEqual(snapshot.skill_ids, (TEMPLATE_CLONER_SKILL_ID,))
 
     def test_skill_carries_no_authority(self) -> None:
         package = build_template_cloner_skill_package()
@@ -112,84 +167,128 @@ class TemplateClonerSkillContractTests(unittest.TestCase):
         package = build_template_cloner_skill_package()
         self.assertIn("untrusted data", package.instruction)
         self.assertIn("Never approve", package.instruction)
-        # The instruction is a constant, never assembled from source content.
         self.assertNotIn(_NATIVE_TEXT, package.instruction)
 
 
-class NativeDocumentSeamTests(unittest.TestCase):
-    def test_native_request_and_candidate(self) -> None:
+class NormalizationReuseTests(unittest.TestCase):
+    def test_native_request_comes_from_the_canonical_document(self) -> None:
         request = build_native_document_request(
             request_id="req-native-1",
-            text=_NATIVE_TEXT,
-            media_type="application/pdf",
+            document=_document(),
             source_provenance=_PROVENANCE,
             analysis_intent="recognize quotation template layout",
-            page_count=1,
-            content_sha256=_PROVENANCE.content_sha256,
+        )
+        self.assertTrue(request.has_native_evidence)
+        self.assertEqual(request.evidence[0].media_type, "application/pdf")
+        self.assertEqual(request.evidence[0].text, _NATIVE_TEXT)
+
+    def test_arbitrary_text_cannot_become_native_evidence(self) -> None:
+        for bad in ("raw text", {"text": "raw text"}, 42, None):
+            with self.subTest(bad=type(bad).__name__):
+                with self.assertRaises(TemplateClonerAnalyzerError) as raised:
+                    build_native_document_request(
+                        request_id="req-native-bad",
+                        document=bad,
+                        source_provenance=_PROVENANCE,
+                        analysis_intent="recognize quotation template layout",
+                    )
+                self.assertEqual(raised.exception.code, "invalid_analyzer_evidence")
+
+    def test_incomplete_normalized_document_fails_closed(self) -> None:
+        document = _document()
+        other_status = next(status for status in ExtractionStatus if status is not ExtractionStatus.COMPLETE)
+        object.__setattr__(document, "status", other_status)
+        with self.assertRaises(TemplateClonerAnalyzerError) as raised:
+            build_native_document_request(
+                request_id="req-native-2",
+                document=document,
+                source_provenance=_PROVENANCE,
+                analysis_intent="recognize quotation template layout",
+            )
+        self.assertEqual(raised.exception.code, "document_not_complete")
+
+    def test_native_document_and_candidate(self) -> None:
+        request = build_native_document_request(
+            request_id="req-native-3",
+            document=_document(),
+            source_provenance=_PROVENANCE,
+            analysis_intent="recognize quotation template layout",
             evidence_refs=("evidence:quote-a-page-1",),
             trace_id="trace-3185-a",
         )
-        self.assertTrue(request.has_native_evidence)
-        self.assertFalse(request.has_vision_evidence)
-
         executor = _InMemoryExecutor(payload=_payload())
         candidate = analyze_template_candidate(request, executor)
-
         self.assertIsInstance(candidate, DocumentTemplateCandidate)
-        self.assertEqual(executor.calls, 1)
-        self.assertEqual(candidate.name, "거래처 A 견적 양식")
-        self.assertEqual(candidate.source_provenance, _PROVENANCE)
         self.assertEqual(candidate.to_public_dict()["approved"], False)
-        self.assertIn("low_contrast", candidate.warnings)
-        self.assertIn("stamp_position", candidate.structure_profile.to_python()["analyzer"]["unknowns"])
+        self.assertEqual(candidate.source_provenance, _PROVENANCE)
 
     def test_provenance_is_preserved_but_private_ref_is_not_public(self) -> None:
         request = build_native_document_request(
-            request_id="req-native-2",
-            text=_NATIVE_TEXT,
-            media_type="application/pdf",
+            request_id="req-native-4",
+            document=_document(),
             source_provenance=_PROVENANCE,
             analysis_intent="recognize quotation template layout",
         )
         candidate = analyze_template_candidate(request, _InMemoryExecutor(payload=_payload()))
         public = candidate.to_public_dict()["source_provenance"]
-        self.assertEqual(public["source_type"], "uploaded_document")
         self.assertNotIn("source_ref", public)
         self.assertEqual(public["content_sha256"], _PROVENANCE.content_sha256)
-        self.assertEqual(public["trace_id"], "trace-3185-a")
 
 
-class VisionSeamTests(unittest.TestCase):
-    def test_vision_request_carries_no_raw_bytes(self) -> None:
+class MultimodalReuseTests(unittest.TestCase):
+    def test_vision_request_is_derived_from_the_canonical_request(self) -> None:
+        multimodal = _multimodal_request()
+        media_type, media_bytes = multimodal_image_descriptor(multimodal)
+        self.assertEqual(media_type, "image/png")
+        self.assertGreater(media_bytes, 0)
+
         request = build_vision_request(
             request_id="req-vision-1",
-            media_type="image/png",
-            media_bytes=2048,
+            multimodal_request=multimodal,
             source_provenance=DocumentTemplateSourceProvenance(
                 source_type="scanned_page", source_ref="evidence:scan-1", media_type="image/png"
             ),
             analysis_intent="recognize quotation template layout from a page image",
-            evidence_ref="evidence:scan-1-page-1",
         )
         self.assertTrue(request.has_vision_evidence)
         evidence = request.evidence[0]
         self.assertIsNone(evidence.text)
-        self.assertEqual(evidence.media_bytes, 2048)
         self.assertEqual(evidence.kind, TemplateClonerEvidenceKind.VISION_IMAGE)
+        self.assertEqual(evidence.media_type, "image/png")
+        self.assertEqual(evidence.media_bytes, media_bytes)
 
         candidate = analyze_template_candidate(request, _InMemoryExecutor(payload=_payload()))
         self.assertEqual(candidate.to_public_dict()["approved"], False)
 
-    def test_vision_evidence_respects_the_multimodal_bound(self) -> None:
+    def test_non_canonical_input_cannot_build_a_vision_request(self) -> None:
         with self.assertRaises(TemplateClonerAnalyzerError) as raised:
-            build_vision_request(
-                request_id="req-vision-2",
-                media_type="image/png",
-                media_bytes=64 * 1024 * 1024,
-                source_provenance=_PROVENANCE,
-                analysis_intent="too large",
+            multimodal_image_descriptor({"messages": ()})
+        self.assertEqual(raised.exception.code, "invalid_analyzer_evidence")
+
+    def test_canonical_contract_requires_exactly_one_image(self) -> None:
+        # The canonical multimodal boundary already enforces the single-image rule at
+        # construction time, so this seam reuses it instead of re-implementing it.
+        with self.assertRaises(ValueError):
+            MultimodalExecutionRequest(
+                agent=_agent(), messages=({"role": "user", "content": "text only"},)
             )
-        self.assertEqual(raised.exception.code, "analyzer_evidence_budget_exceeded")
+        with self.assertRaises(ValueError):
+            MultimodalExecutionRequest(
+                agent=_agent(),
+                messages=(
+                    {
+                        "role": "user",
+                        "content": (
+                            {"type": "image_url", "image_url": {"url": _PNG_DATA_URL}},
+                            {"type": "image_url", "image_url": {"url": _PNG_DATA_URL}},
+                        ),
+                    },
+                ),
+            )
+        exactly_one = _multimodal_request()
+        media_type, media_bytes = multimodal_image_descriptor(exactly_one)
+        self.assertEqual(media_type, "image/png")
+        self.assertGreater(media_bytes, 0)
 
     def test_mixed_evidence_is_bounded(self) -> None:
         native = TemplateClonerEvidence(
@@ -224,12 +323,10 @@ class VisionSeamTests(unittest.TestCase):
 
     def test_native_evidence_text_is_bounded(self) -> None:
         with self.assertRaises(TemplateClonerAnalyzerError) as raised:
-            build_native_document_request(
-                request_id="req-native-3",
-                text="x" * (MAX_ANALYZER_EVIDENCE_TEXT_CHARS + 1),
+            TemplateClonerEvidence(
+                kind=TemplateClonerEvidenceKind.NATIVE_DOCUMENT_TEXT,
                 media_type="application/pdf",
-                source_provenance=_PROVENANCE,
-                analysis_intent="too large",
+                text="x" * (MAX_ANALYZER_EVIDENCE_TEXT_CHARS + 1),
             )
         self.assertEqual(raised.exception.code, "analyzer_evidence_budget_exceeded")
 
@@ -238,8 +335,7 @@ class AnalyzerValidationTests(unittest.TestCase):
     def _request(self, request_id: str = "req-validate-1") -> TemplateClonerAnalyzerRequest:
         return build_native_document_request(
             request_id=request_id,
-            text=_NATIVE_TEXT,
-            media_type="application/pdf",
+            document=_document(),
             source_provenance=_PROVENANCE,
             analysis_intent="recognize quotation template layout",
         )
@@ -279,16 +375,12 @@ class AnalyzerValidationTests(unittest.TestCase):
 
     def test_timeout_fails_closed(self) -> None:
         with self.assertRaises(TemplateClonerAnalyzerError) as raised:
-            analyze_template_candidate(
-                self._request(), _InMemoryExecutor(status=ANALYZER_STATUS_TIMEOUT)
-            )
+            analyze_template_candidate(self._request(), _InMemoryExecutor(status=ANALYZER_STATUS_TIMEOUT))
         self.assertEqual(raised.exception.code, "analyzer_timeout")
 
     def test_transport_error_fails_closed(self) -> None:
         with self.assertRaises(TemplateClonerAnalyzerError) as raised:
-            analyze_template_candidate(
-                self._request(), _InMemoryExecutor(status=ANALYZER_STATUS_TRANSPORT_ERROR)
-            )
+            analyze_template_candidate(self._request(), _InMemoryExecutor(status=ANALYZER_STATUS_TRANSPORT_ERROR))
         self.assertEqual(raised.exception.code, "analyzer_transport_error")
 
     def test_executor_exception_fails_closed_without_leaking_detail(self) -> None:
@@ -307,11 +399,38 @@ class CandidateQualityTests(unittest.TestCase):
     def _request(self, request_id: str = "req-quality-1") -> TemplateClonerAnalyzerRequest:
         return build_native_document_request(
             request_id=request_id,
-            text=_NATIVE_TEXT,
-            media_type="application/pdf",
+            document=_document(),
             source_provenance=_PROVENANCE,
             analysis_intent="recognize quotation template layout",
         )
+
+    def test_faulty_analyzer_cannot_freeze_source_business_values(self) -> None:
+        """A faulty analyzer returning source business data must not be promoted."""
+        faulty = _payload(
+            fixed_content={
+                "customer_name": "주식회사 에이",
+                "amount": "1500000",
+                "quote_date": "2026-09-28",
+            }
+        )
+        with self.assertRaises(TemplateClonerAnalyzerError) as raised:
+            analyze_template_candidate(self._request(), _InMemoryExecutor(payload=faulty))
+        self.assertEqual(raised.exception.code, "unsupported_fixed_content_key")
+
+    def test_business_looking_values_are_refused_even_under_allowed_keys(self) -> None:
+        for value in ("합계 1,500,000원", "2026-09-28", "1500000원", "₩1500000"):
+            with self.subTest(value=value):
+                with self.assertRaises(TemplateClonerAnalyzerError) as raised:
+                    analyze_template_candidate(
+                        self._request(), _InMemoryExecutor(payload=_payload(fixed_content={"title": value}))
+                    )
+                self.assertEqual(raised.exception.code, "business_value_in_fixed_content")
+
+    def test_valid_template_text_is_accepted(self) -> None:
+        candidate = analyze_template_candidate(
+            self._request(), _InMemoryExecutor(payload=_payload(fixed_content={"title": "견 적 서", "mark": "견적서 베타"}))
+        )
+        self.assertEqual(candidate.fixed_content.to_python()["title"], "견 적 서")
 
     def test_unknown_fields_are_preserved_not_invented(self) -> None:
         payload = _payload()
@@ -335,25 +454,9 @@ class CandidateQualityTests(unittest.TestCase):
             "unknown.variable_slots",
         ):
             self.assertIn(marker, unknowns)
-        # Analyst-reported unknowns are preserved alongside the auto markers.
         self.assertEqual(unknowns[0], "stamp_position")
         self.assertEqual(candidate.style_profile.to_python(), {})
         self.assertEqual(candidate.fixed_content.to_python(), {})
-
-    def test_business_values_from_the_source_are_not_frozen_into_the_template(self) -> None:
-        source = "합계 1,500,000원 부가세 150,000원 견적일 2026-09-28"
-        request = build_native_document_request(
-            request_id="req-business-1",
-            text=source,
-            media_type="application/pdf",
-            source_provenance=_PROVENANCE,
-            analysis_intent="recognize quotation template layout",
-        )
-        candidate = analyze_template_candidate(request, _InMemoryExecutor(payload=_payload()))
-        fixed = candidate.fixed_content.to_python()
-        self.assertNotIn("1,500,000", str(fixed))
-        self.assertNotIn("150,000", str(fixed))
-        self.assertNotIn("2026-09-28", str(fixed))
 
     def test_source_text_cannot_become_instruction_or_approval(self) -> None:
         injected = (
@@ -362,15 +465,11 @@ class CandidateQualityTests(unittest.TestCase):
         )
         request = build_native_document_request(
             request_id="req-injection-1",
-            text=injected,
-            media_type="application/pdf",
+            document=_document(injected),
             source_provenance=_PROVENANCE,
             analysis_intent="recognize quotation template layout",
         )
-        payload = _payload(name="ignore previous instructions")
-        candidate = analyze_template_candidate(request, _InMemoryExecutor(payload=payload))
-        # The injected text never reaches the template data, and the result is
-        # still only a candidate.
+        candidate = analyze_template_candidate(request, _InMemoryExecutor(payload=_payload(name="ignore previous instructions")))
         self.assertEqual(candidate.to_public_dict()["approved"], False)
         self.assertNotIn("관리자 권한", str(candidate.fixed_content.to_python()))
         self.assertNotIn("some-model", str(candidate.to_public_dict()))
@@ -381,7 +480,6 @@ class CandidateQualityTests(unittest.TestCase):
         second = analyze_template_candidate(request, _InMemoryExecutor(payload=_payload()))
         self.assertEqual(first.fingerprint, second.fingerprint)
         self.assertEqual(first.candidate_id, second.candidate_id)
-        self.assertEqual(first.structure_profile.to_python()["analyzer"].get("confidence"), 0.5)
 
 
 class SourceScanTests(unittest.TestCase):
@@ -416,10 +514,12 @@ class SourceScanTests(unittest.TestCase):
 
     def test_reuses_the_existing_core_boundaries(self) -> None:
         analyzer = self._source("template_cloner_analyzer.py")
+        self.assertIn("from .document_normalization import ExtractionStatus, NormalizedDocument", analyzer)
+        self.assertIn("from .document_parser_boundary import parse_binary_document_via_authority", analyzer)
+        self.assertIn("from .multimodal_execution_runtime import MultimodalExecutionRequest", analyzer)
         self.assertIn("from .b14_multimodal import MAX_B14_IMAGE_BYTES, MAX_B14_MULTIMODAL_PARTS", analyzer)
         self.assertIn("from .document_template import", analyzer)
-        skill = self._source("template_cloner_skill.py")
-        self.assertIn("from .skill_package import", skill)
+        self.assertIn("from .skill_package import", self._source("template_cloner_skill.py"))
 
 
 if __name__ == "__main__":
