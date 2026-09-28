@@ -21,7 +21,7 @@ from padiem_ai_core.drive_case_folder_scope import (
 )
 
 import app.drive_case_folder_binding as binding_module
-from app.connector_bindings import DriveGrant
+from app.connector_bindings import DRIVE_AGENT_ID, DRIVE_REFERENCE_APP_ID, DriveGrant
 from app.drive_case_folder_binding import (
     BINDING_TABLE_NAME,
     OUTCOME_CREATED,
@@ -57,13 +57,31 @@ def run(coro):
 
 
 def drive_grant(binding_ref: str = BINDING_A, *capabilities: DriveCapability) -> DriveGrant:
+    """A grant on the canonical Drive Engine slot (not a B67-local invention)."""
+
     return DriveGrant(
-        app_id="app_legal",
-        canonical_agent_id="agent:padiem:claw_drive@1",
+        app_id=DRIVE_REFERENCE_APP_ID,
+        canonical_agent_id=DRIVE_AGENT_ID,
         binding_ref=binding_ref,
         actor_ref="actor_1",
         granted_capabilities=capabilities or (DriveCapability.READ,),
     )
+
+
+def stored_row(**overrides: object) -> dict:
+    row: dict = {
+        "workspace_ref": WORKSPACE_A,
+        "project_id": PROJECT_A,
+        "connector_id": DRIVE_CONNECTOR_ID,
+        "drive_binding_ref": BINDING_A,
+        "selected_folder_id": FOLDER_1,
+        "shared_drive_id": None,
+        "active": 1,
+        "created_at": "2026-09-28T00:00:00+00:00",
+        "updated_at": "2026-09-28T00:00:00+00:00",
+    }
+    row.update(overrides)
+    return row
 
 
 def folder_resource(
@@ -108,6 +126,18 @@ class StubBindingStore:
     async def deactivate(self, *, workspace_ref: str, project_id: str, connector_id: str) -> bool:
         self.deactivations += 1
         return False
+
+
+class CountingBindingStore(InMemoryDriveCaseFolderBindingStore):
+    """The real in-memory store with an upsert counter."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.upsert_calls = 0
+
+    async def upsert_active(self, row) -> None:  # type: ignore[override]
+        self.upsert_calls += 1
+        await super().upsert_active(row)
 
 
 # --- 1. trusted bind + server-state scope reconstruction -------------------
@@ -339,6 +369,145 @@ def test_write_grant_is_required_and_read_only() -> None:
                 selected_resource=folder_resource(),
             )
         )
+
+
+def test_canonical_drive_grant_is_accepted() -> None:
+    held = authority()
+    binding, outcome = run(
+        held.bind_selected_folder(
+            workspace_ref=WORKSPACE_A,
+            project_id=PROJECT_A,
+            drive_grant=drive_grant(),
+            selected_resource=folder_resource(),
+        )
+    )
+    assert outcome == OUTCOME_CREATED
+    assert binding.drive_binding_ref == BINDING_A
+
+
+def test_noncanonical_drive_app_id_is_denied() -> None:
+    store = CountingBindingStore()
+    held = authority(store)
+    with pytest.raises(DriveCaseFolderBindingError) as excinfo:
+        run(
+            held.bind_selected_folder(
+                workspace_ref=WORKSPACE_A,
+                project_id=PROJECT_A,
+                drive_grant=DriveGrant(
+                    app_id="app_legal",
+                    canonical_agent_id=DRIVE_AGENT_ID,
+                    binding_ref=BINDING_A,
+                    actor_ref="actor_1",
+                    granted_capabilities=(DriveCapability.READ,),
+                ),
+                selected_resource=folder_resource(),
+            )
+        )
+    assert excinfo.value.code == "noncanonical_drive_grant"
+    assert store.upsert_calls == 0
+
+
+def test_noncanonical_drive_agent_id_is_denied() -> None:
+    store = CountingBindingStore()
+    held = authority(store)
+    with pytest.raises(DriveCaseFolderBindingError) as excinfo:
+        run(
+            held.bind_selected_folder(
+                workspace_ref=WORKSPACE_A,
+                project_id=PROJECT_A,
+                drive_grant=DriveGrant(
+                    app_id=DRIVE_REFERENCE_APP_ID,
+                    canonical_agent_id="agent:padiem:claw_drive@1",
+                    binding_ref=BINDING_A,
+                    actor_ref="actor_1",
+                    granted_capabilities=(DriveCapability.READ,),
+                ),
+                selected_resource=folder_resource(),
+            )
+        )
+    assert excinfo.value.code == "noncanonical_drive_grant"
+    assert store.upsert_calls == 0
+
+
+def test_arbitrary_typed_drive_grant_has_no_self_authority() -> None:
+    """A self-consistent arbitrary grant plus a matching folder is denied."""
+
+    store = CountingBindingStore()
+    held = authority(store)
+    with pytest.raises(DriveCaseFolderBindingError):
+        run(
+            held.bind_selected_folder(
+                workspace_ref=WORKSPACE_A,
+                project_id=PROJECT_A,
+                drive_grant=DriveGrant(
+                    app_id="app_legal",
+                    canonical_agent_id="agent:legal:drive@1",
+                    binding_ref=BINDING_B,
+                    actor_ref="actor_1",
+                    granted_capabilities=(DriveCapability.READ,),
+                ),
+                selected_resource=folder_resource(binding_ref=BINDING_B),
+            )
+        )
+    assert store.upsert_calls == 0
+    assert (
+        run(
+            store.load_active(
+                workspace_ref=WORKSPACE_A, project_id=PROJECT_A, connector_id=DRIVE_CONNECTOR_ID
+            )
+        )
+        is None
+    )
+
+
+def test_non_exact_read_capability_set_is_denied() -> None:
+    store = CountingBindingStore()
+    held = authority(store)
+    for capabilities in (
+        (DriveCapability.READ, DriveCapability.MUTATION),
+        (DriveCapability.MUTATION,),
+    ):
+        with pytest.raises(DriveCaseFolderBindingError) as excinfo:
+            run(
+                held.bind_selected_folder(
+                    workspace_ref=WORKSPACE_A,
+                    project_id=PROJECT_A,
+                    drive_grant=DriveGrant(
+                        app_id=DRIVE_REFERENCE_APP_ID,
+                        canonical_agent_id=DRIVE_AGENT_ID,
+                        binding_ref=BINDING_A,
+                        actor_ref="actor_1",
+                        granted_capabilities=capabilities,
+                    ),
+                    selected_resource=folder_resource(),
+                )
+            )
+        assert excinfo.value.code == "invalid_drive_grant"
+    assert store.upsert_calls == 0
+
+
+def test_malformed_existing_row_on_bind_is_denied_without_upsert() -> None:
+    variants = (
+        stored_row(connector_id="connector:google:gmail@1"),
+        stored_row(drive_binding_ref=""),
+        stored_row(project_id="not_a_project"),
+        stored_row(selected_folder_id=""),
+        stored_row(updated_at="not-a-timestamp"),
+    )
+    for variant in variants:
+        store = StubBindingStore(variant)
+        held = authority(store)
+        with pytest.raises(DriveCaseFolderBindingError) as excinfo:
+            run(
+                held.bind_selected_folder(
+                    workspace_ref=WORKSPACE_A,
+                    project_id=PROJECT_A,
+                    drive_grant=drive_grant(),
+                    selected_resource=folder_resource(),
+                )
+            )
+        assert excinfo.value.code == "malformed_stored_binding"
+        assert store.upserts == 0
 
 
 # --- 4. cross-scope + drift + malformed rows ------------------------------

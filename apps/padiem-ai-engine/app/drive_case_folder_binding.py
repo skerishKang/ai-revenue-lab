@@ -16,9 +16,10 @@ Authority rules:
   the canonical Drive connector, so a different workspace can never read
   another workspace's binding;
 * write requires server-side typed facts: a trusted workspace ref, a validated
-  project ref, the **current** canonical ``DriveGrant`` (READ only) and a
-  canonical ``DriveCaseResource`` that is a non-trashed, non-shortcut FOLDER
-  matching that grant's binding;
+  project ref, the **current** canonical ``DriveGrant`` (the trusted
+  ``DRIVE_REFERENCE_APP_ID`` / ``DRIVE_AGENT_ID`` Engine slot carrying exactly
+  the reviewed READ capability) and a canonical ``DriveCaseResource`` that is a
+  non-trashed, non-shortcut FOLDER matching that grant's binding;
 * read requires the current canonical ``DriveGrant`` again and fails closed
   when the stored ``drive_binding_ref`` no longer equals the live grant (a
   reconnect must not silently inherit an old folder scope);
@@ -44,7 +45,7 @@ from padiem_ai_core.drive_case_folder_scope import (
     DriveCaseResourceKind,
 )
 
-from app.connector_bindings import DriveGrant
+from app.connector_bindings import DRIVE_AGENT_ID, DRIVE_REFERENCE_APP_ID, DriveGrant
 
 DRIVE_CASE_FOLDER_BINDING_VERSION = "engine-drive-case-folder-binding.v1"
 
@@ -259,20 +260,38 @@ def _parse_row(row: Mapping[str, Any], *, workspace_ref: str, project_id: str) -
 
 
 def _require_grant(drive_grant: object) -> DriveGrant:
+    """Require the canonical Drive Engine slot, not merely a typed DriveGrant.
+
+    ``DriveGrant`` itself accepts arbitrary app/agent ids, so the type alone is
+    not grant authority: the canonical slot constants and the exact reviewed
+    read-only capability set are enforced here (parity with the D1 grant
+    loader).
+    """
+
     if not isinstance(drive_grant, DriveGrant):
         raise DriveCaseFolderBindingError(
             "invalid_drive_grant", "A canonical DriveGrant is required.", status_code=503
         )
+    if drive_grant.app_id != DRIVE_REFERENCE_APP_ID:
+        raise DriveCaseFolderBindingError(
+            "noncanonical_drive_grant",
+            "Drive grant is not the canonical Drive Engine application slot.",
+            status_code=403,
+        )
+    if drive_grant.canonical_agent_id != DRIVE_AGENT_ID:
+        raise DriveCaseFolderBindingError(
+            "noncanonical_drive_grant",
+            "Drive grant is not the canonical Drive Engine agent slot.",
+            status_code=403,
+        )
+    if tuple(drive_grant.granted_capabilities) != (DriveCapability.READ,):
+        raise DriveCaseFolderBindingError(
+            "invalid_drive_grant",
+            "Drive grant must carry exactly the reviewed READ capability.",
+            status_code=403,
+        )
     if not drive_grant.binding_ref:
         raise DriveCaseFolderBindingError("invalid_drive_grant", "Drive grant binding is missing.")
-    if DriveCapability.READ not in tuple(drive_grant.granted_capabilities):
-        raise DriveCaseFolderBindingError(
-            "invalid_drive_grant", "Drive grant does not carry READ capability.", status_code=403
-        )
-    if DriveCapability.MUTATION in tuple(drive_grant.granted_capabilities):
-        raise DriveCaseFolderBindingError(
-            "invalid_drive_grant", "Drive grant carries write capability.", status_code=403
-        )
     return drive_grant
 
 
@@ -502,10 +521,9 @@ class DriveCaseFolderBindingAuthority:
         now = self._clock()
         existing = None
         if existing_row is not None:
-            try:
-                existing = _parse_row(existing_row, workspace_ref=workspace, project_id=project)
-            except DriveCaseFolderBindingError:
-                existing = None  # a broken row is replaced, never repaired in place
+            # A persisted authority that cannot be parsed is an integrity
+            # failure, not "no binding": never overwrite it with a new one.
+            existing = _parse_row(existing_row, workspace_ref=workspace, project_id=project)
 
         if (
             existing is not None
