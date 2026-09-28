@@ -67,11 +67,23 @@ def drive_grant() -> DriveGrant:
 class FakeGrantProvider:
     def __init__(self, grant: DriveGrant | None) -> None:
         self.grant = grant
-        self.calls = 0
+        self.calls: list[str] = []
 
-    async def current_drive_grant(self) -> DriveGrant | None:
-        self.calls += 1
+    async def current_drive_grant(self, *, workspace_ref: str) -> DriveGrant | None:
+        self.calls.append(workspace_ref)
         return self.grant
+
+
+class WorkspaceGrantProvider:
+    """Workspace-keyed provider: each workspace resolves its own grant."""
+
+    def __init__(self, grants: dict[str, DriveGrant | None]) -> None:
+        self.grants = grants
+        self.calls: list[str] = []
+
+    async def current_drive_grant(self, *, workspace_ref: str) -> DriveGrant | None:
+        self.calls.append(workspace_ref)
+        return self.grants.get(workspace_ref)
 
 
 class FakeDrivePort:
@@ -139,6 +151,18 @@ def error_code(response) -> str | None:
         if isinstance(error, dict):
             return error.get("code")
     return None
+
+
+def bindable_grant(binding_ref: str, actor_ref: str = "actor_1", **overrides: object) -> DriveGrant:
+    kwargs: dict = {
+        "app_id": DRIVE_REFERENCE_APP_ID,
+        "canonical_agent_id": DRIVE_AGENT_ID,
+        "binding_ref": binding_ref,
+        "actor_ref": actor_ref,
+        "granted_capabilities": (DriveCapability.READ,),
+    }
+    kwargs.update(overrides)
+    return DriveGrant(**kwargs)
 
 
 # --- 1. happy path: status -> candidates -> select -> clear ---------------
@@ -342,7 +366,6 @@ def test_request_contract_rejections() -> None:
 
 # --- 4. source posture ---------------------------------------------------
 
-
 def test_service_source_reuses_canonical_drive_handlers_only() -> None:
     import app.drive_case_folder_service as module
 
@@ -375,3 +398,66 @@ def test_snapshot_posture() -> None:
     assert snapshot["second_drive_client"] is False
     assert snapshot["second_tool_runtime"] is False
     assert snapshot["second_oauth_authority"] is False
+
+
+# --- 5. workspace-scoped grant + canonical re-validation -------------------
+
+
+def test_status_resolves_the_grant_for_the_request_workspace() -> None:
+    harness = Harness(metadata=FOLDER_METADATA)
+    harness.post(STATUS_PATH, {"workspace_ref": WORKSPACE_REF, "project_id": PROJECT_ID})
+    assert harness.grant_provider.calls == [WORKSPACE_REF]
+
+
+def test_workspace_b_never_uses_workspace_a_binding() -> None:
+    port = FakeDrivePort(metadata=FOLDER_METADATA)
+    authority = DriveCaseFolderBindingAuthority(store=CountingBindingStore())
+    provider = WorkspaceGrantProvider(
+        {
+            "ws_A": bindable_grant("bind:drive_a", "actor_a"),
+            "ws_B": bindable_grant("bind:drive_b", "actor_b"),
+        }
+    )
+    service = DriveCaseFolderEngineService(
+        grant_provider=provider, drive_port=port, binding_authority=authority
+    )
+    response = run(
+        service.handle(
+            method="POST",
+            path=FOLDERS_PATH,
+            content_type="application/json",
+            body=json.dumps({"workspace_ref": "ws_B", "project_id": PROJECT_ID}).encode(),
+        )
+    )
+    assert response.status_code == 200
+    assert provider.calls == ["ws_B"]
+    assert port.calls, "workspace B must perform its own Drive read"
+    assert all(call["binding_ref"] == "bind:drive_b" for call in port.calls)
+
+
+def test_noncanonical_grant_is_denied_before_any_provider_read() -> None:
+    bad_grants = (
+        bindable_grant(BINDING_REF, app_id="app_legal"),
+        bindable_grant(BINDING_REF, canonical_agent_id="agent:padiem:wrong@1"),
+        bindable_grant(BINDING_REF, granted_capabilities=(DriveCapability.READ, DriveCapability.MUTATION)),
+        bindable_grant(BINDING_REF, granted_capabilities=(DriveCapability.MUTATION,)),
+    )
+    for bad in bad_grants:
+        harness = Harness(metadata=FOLDER_METADATA)
+        harness.grant_provider.grant = bad
+        response = harness.post(FOLDERS_PATH, {"workspace_ref": WORKSPACE_REF, "project_id": PROJECT_ID})
+        assert response.status_code == 403, bad
+        assert error_code(response) == "noncanonical_drive_grant", bad
+        assert harness.port.calls == [], "no Drive provider read may happen"
+        assert harness.store.upsert_calls == 0
+
+
+def test_noncanonical_grant_blocks_select_durable_write() -> None:
+    harness = Harness(metadata=FOLDER_METADATA)
+    harness.grant_provider.grant = bindable_grant(BINDING_REF, app_id="app_legal")
+    response = harness.post(
+        SELECT_PATH, {"workspace_ref": WORKSPACE_REF, "project_id": PROJECT_ID, "folder_id": FOLDER_ID}
+    )
+    assert response.status_code == 403
+    assert harness.port.calls == []
+    assert harness.store.upsert_calls == 0

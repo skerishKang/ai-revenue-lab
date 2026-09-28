@@ -36,7 +36,9 @@ from padiem_ai_core.drive_capability import (
 from padiem_ai_core.drive_case_folder_scope import GOOGLE_FOLDER_MIME, DriveCaseResource
 from padiem_ai_core.tool_runtime import ToolHandlerError
 
-from app.connector_bindings import DriveGrant
+from padiem_ai_core.drive_capability import DriveCapability
+
+from app.connector_bindings import DRIVE_AGENT_ID, DRIVE_REFERENCE_APP_ID, DriveGrant
 from app.drive_case_folder_binding import (
     DriveCaseFolderBindingAuthority,
     DriveCaseFolderBindingError,
@@ -83,9 +85,13 @@ _UNSAFE_AUTHORITY_FIELDS = frozenset(
 
 
 class DriveCaseFolderGrantProvider(Protocol):
-    """Resolves the current canonical Drive grant server-side."""
+    """Resolves the current canonical Drive grant for one trusted workspace.
 
-    async def current_drive_grant(self) -> DriveGrant | None: ...
+    ``workspace_ref`` is mandatory authority input: a product request for
+    workspace A must never reuse another workspace's Drive grant.
+    """
+
+    async def current_drive_grant(self, *, workspace_ref: str) -> DriveGrant | None: ...
 
 
 class DriveCaseFolderEngineError(ValueError):
@@ -187,7 +193,7 @@ class DriveCaseFolderEngineService:
     async def _dispatch(self, path: str, payload: dict[str, Any]) -> ServiceResponse:
         if path == STATUS_PATH:
             workspace_ref, project_id = self._scope_fields(payload, _STATUS_FIELDS)
-            grant = await self._current_grant()
+            grant = await self._current_grant(workspace_ref=workspace_ref)
             authority = self._require_authority()
             status = await authority.status(
                 workspace_ref=workspace_ref, project_id=project_id, drive_grant=grant
@@ -201,7 +207,7 @@ class DriveCaseFolderEngineService:
             query = payload.get("query")
             if query is not None and _bounded_text(query, MAX_FOLDER_QUERY_CHARS) is None:
                 raise DriveCaseFolderEngineError("invalid_query", "Folder search query is invalid.")
-            grant = await self._current_grant()
+            grant = await self._current_grant(workspace_ref=workspace_ref)
             candidates = await self._folder_candidates(grant, query=query)
             return ServiceResponse(
                 status_code=200,
@@ -219,7 +225,7 @@ class DriveCaseFolderEngineService:
             folder_id = _bounded_text(payload.get("folder_id"), 200)
             if folder_id is None:
                 raise DriveCaseFolderEngineError("invalid_folder_id", "Folder selection intent is invalid.")
-            grant = await self._current_grant()
+            grant = await self._current_grant(workspace_ref=workspace_ref)
             resource = await self._authorized_folder_resource(grant, folder_id)
             authority = self._require_authority()
             binding, outcome = await authority.bind_selected_folder(
@@ -243,7 +249,7 @@ class DriveCaseFolderEngineService:
             )
 
         workspace_ref, project_id = self._scope_fields(payload, _CLEAR_FIELDS)
-        grant = await self._current_grant()
+        grant = await self._current_grant(workspace_ref=workspace_ref)
         authority = self._require_authority()
         cleared = await authority.clear(
             workspace_ref=workspace_ref, project_id=project_id, drive_grant=grant
@@ -270,15 +276,35 @@ class DriveCaseFolderEngineService:
             raise DriveCaseFolderEngineError("invalid_request", "Request fields are invalid.", status_code=400)
         return workspace_ref, project_id
 
-    async def _current_grant(self) -> DriveGrant:
+    async def _current_grant(self, *, workspace_ref: str) -> DriveGrant:
         if self._grant_provider is None:
             raise DriveCaseFolderEngineError(
                 "drive_authority_unavailable", "Drive authority is unavailable.", status_code=503
             )
-        grant = await self._grant_provider.current_drive_grant()
+        grant = await self._grant_provider.current_drive_grant(workspace_ref=workspace_ref)
         if not isinstance(grant, DriveGrant):
             raise DriveCaseFolderEngineError(
                 "drive_not_connected", "No canonical Drive grant is available for this workspace.", status_code=409
+            )
+        # Re-validate before any Drive provider read: an arbitrary injected
+        # provider must not be able to hand us a non-canonical grant.
+        if grant.app_id != DRIVE_REFERENCE_APP_ID:
+            raise DriveCaseFolderEngineError(
+                "noncanonical_drive_grant",
+                "Drive grant is not the canonical Drive Engine application slot.",
+                status_code=403,
+            )
+        if grant.canonical_agent_id != DRIVE_AGENT_ID:
+            raise DriveCaseFolderEngineError(
+                "noncanonical_drive_grant",
+                "Drive grant is not the canonical Drive Engine agent slot.",
+                status_code=403,
+            )
+        if tuple(grant.granted_capabilities) != (DriveCapability.READ,):
+            raise DriveCaseFolderEngineError(
+                "noncanonical_drive_grant",
+                "Drive grant must carry exactly the reviewed READ capability.",
+                status_code=403,
             )
         return grant
 
