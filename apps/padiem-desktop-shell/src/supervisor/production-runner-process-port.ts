@@ -252,6 +252,11 @@ export class NodeRunnerProcessPort implements RunnerProcessPort {
   #active: NodeRunnerProcessHandle | null = null;
   #residentActive = false;
   #residentHandle: NodeRunnerProcessHandle | null = null;
+  // #3140 evidence race: a resident that exits quickly must still leave its
+  // bounded output and observation readable, so the last view is captured at
+  // exit instead of being lost when the handle reference is dropped.
+  #residentSettledOutput: BoundedRunnerOutput | null = null;
+  #residentSettledObservation: RunnerProcessObservation | null = null;
 
   constructor(maxLines: number = DEFAULT_MAX_LINES) {
     this.#maxLines = maxLines;
@@ -292,6 +297,11 @@ export class NodeRunnerProcessPort implements RunnerProcessPort {
       throw error;
     }
     handle.onExit(() => {
+      // Capture before dropping the handle: the supervisor's own settle
+      // snapshot runs after this listener, and the evidence marker reads
+      // through this port.
+      this.#residentSettledOutput = boundedResidentOutput(handle);
+      this.#residentSettledObservation = residentProcessObservation(handle);
       this.#residentActive = false;
       this.#residentHandle = null;
     });
@@ -301,12 +311,14 @@ export class NodeRunnerProcessPort implements RunnerProcessPort {
 
   /** #3140 review D: the resident's own bounded output, not the runner's. */
   boundedResidentOutput(): BoundedRunnerOutput {
-    return boundedResidentOutput(this.#residentHandle);
+    if (this.#residentHandle) return boundedResidentOutput(this.#residentHandle);
+    return this.#residentSettledOutput ?? boundedResidentOutput(null);
   }
 
   /** #3140 stall diagnosis: the resident's per-stream observation, or null. */
   residentObservation(): RunnerProcessObservation | null {
-    return residentProcessObservation(this.#residentHandle);
+    if (this.#residentHandle) return residentProcessObservation(this.#residentHandle);
+    return this.#residentSettledObservation;
   }
 
   async spawnRunner(spec: RunnerSpawnSpec): Promise<RunnerProcessHandle> {

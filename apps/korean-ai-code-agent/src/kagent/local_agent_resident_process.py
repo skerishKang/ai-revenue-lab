@@ -48,6 +48,7 @@ import threading
 import time
 import traceback
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Callable
 
 from .contracts import ContractError
@@ -86,6 +87,182 @@ CHALLENGE_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+-]{0,255}$")
 #: resolved.
 WINDOWS_PYTHON_EXECUTABLE = "C:/Python313/python.exe"
 WINDOWS_ROOT = "C:/ProgramData/Padiem/runner"
+#: #3140 PHASE 3: the trusted root the shell already passes to the resident. When
+#: it is present this is the real bounded execution root; the constant above is
+#: only the non-dispatching placeholder the unit fixtures still use.
+PROJECT_ROOT_ENV = "PADIEM_AGENT_PROJECT_ROOT"
+EXECUTION_ROOT_REF = "root.3140"
+EXECUTION_PROFILE_REF = "profile.3140.python"
+#: #3140 PHASE 3: the one bounded acceptance command contract. These are the
+#: same canonical identifiers the owner lane enqueues (not a second authority).
+ACCEPTANCE_COMMAND_ID = "command.3140.p01.1"
+ACCEPTANCE_REQUEST_ID = "request.3140.p01.1"
+ACCEPTANCE_RUN_ID = "run.3140.p01.1"
+
+
+def trusted_execution_root() -> tuple[str, str]:
+    """The bounded local execution root and where it came from (fail closed)."""
+
+    candidate = os.environ.get(PROJECT_ROOT_ENV)
+    if candidate and os.path.isdir(candidate):
+        return os.path.abspath(candidate), "env"
+    return WINDOWS_ROOT, "placeholder"
+
+
+def trusted_executable_profile_path() -> str:
+    """The executable the resident itself runs on: resolved in trusted code."""
+
+    return str(Path(sys.executable).resolve())
+
+
+ACCEPTANCE_P01_AUTHORITY_REF = "p01_authority.3140.evidence"
+
+
+def _acceptance_authorization_port(
+    *,
+    device: Any,
+    root_source: str,
+    acceptance_command_id: str = "",
+    acceptance_binding_ref: str = "",
+    acceptance_request_id: str = "",
+    acceptance_request_fingerprint: str = "",
+) -> Any:
+    """The canonical P01 port, with the lane's bounded evidence client wired.
+
+    Only when a real shell-supplied root (root_source=env) and a configured
+    broker boundary exist; otherwise the default fail-closed port stands.
+    The 4 acceptance correlation facts come from the /session canonical
+    response and are passed through unchanged — no new correlation object.
+    """
+
+    broker_url = os.environ.get("PADIEM_AGENT_BROKER_URL")
+    if root_source != "env" or not broker_url:
+        return P01LocalPermissionWindowsExecutionAuthorizationPort(
+            permission_profile=default_device_permission_profile(device=device)
+        )
+
+    from .windows_execution_evidence_source import (
+        TrustedP01WindowsExecutionAuthorityEvidencePort,
+    )
+
+    return P01LocalPermissionWindowsExecutionAuthorizationPort(
+        permission_profile=default_device_permission_profile(device=device),
+        evidence_port=TrustedP01WindowsExecutionAuthorityEvidencePort(
+            expected_authority_ref=ACCEPTANCE_P01_AUTHORITY_REF,
+            client=_FetchedP01EvidenceClient(
+                broker_url,
+                command_id=acceptance_command_id,
+                binding_ref=acceptance_binding_ref,
+                request_id=acceptance_request_id,
+                request_fingerprint=acceptance_request_fingerprint,
+            ),
+        ),
+    )
+
+
+class _FetchedP01EvidenceClient:
+    """Fetch the lane's canonical P01 acceptance envelope, bounded by 4 keys.
+
+    #3140 PHASE 3: the evidence side (the owner process) builds the canonical
+    APPROVED envelope for the exact command it enqueued. This client only carries
+    it: it decides nothing, mints nothing and re-derives no digest of its own.
+    The 4 correlation facts are supplied by the /session canonical response and
+    sent back unchanged — the owner must parity all four or return 404.
+    """
+
+    def __init__(
+        self,
+        base_url: str,
+        *,
+        command_id: str = "",
+        binding_ref: str = "",
+        request_id: str = "",
+        request_fingerprint: str = "",
+    ) -> None:
+        self._base_url = base_url.rstrip("/")
+        self.command_id = command_id
+        self.binding_ref = binding_ref
+        self.request_id = request_id
+        self.request_fingerprint = request_fingerprint
+
+    def resolve(self, request_fingerprint: str) -> Any:
+        import urllib.request
+
+        from padiem_ai_core.agent_approval import (
+            ApprovalOutcome,
+            ApprovalPause,
+            ApprovalRequirement,
+            VerifiedApprovalDecision,
+        )
+
+        from .local_agent_permissions import LocalCapability, LocalPermissionRequest
+        from .windows_execution_evidence_source import (
+            TrustedP01WindowsExecutionEvidenceEnvelope,
+        )
+
+        body = json.dumps(
+            {
+                "command_id": self.command_id,
+                "binding_ref": self.binding_ref,
+                "request_fingerprint": request_fingerprint,
+                "request_id": self.request_id,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        request = urllib.request.Request(  # noqa: S310 - fixed loopback boundary
+            f"{self._base_url}/v1/broker/p01-evidence",
+            data=body,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(request, timeout=15) as response:  # noqa: S310
+            payload = json.loads(response.read().decode("utf-8"))
+        envelope = payload.get("envelope")
+        if not isinstance(envelope, dict):
+            raise ContractError("the evidence boundary returned no canonical envelope")
+        pause_payload = envelope["approval_pause"]
+        decision_payload = envelope["approval_decision"]
+        pause = ApprovalPause(
+            pause_id=pause_payload["pause_id"],
+            run_id=pause_payload["run_id"],
+            agent_runtime_id=pause_payload["agent_runtime_id"],
+            tool_id=pause_payload["tool_id"],
+            invocation_sha256=pause_payload["invocation_sha256"],
+            requirement=ApprovalRequirement(pause_payload["requirement"]),
+            step_index=int(pause_payload["step_index"]),
+            created_at=datetime.fromisoformat(pause_payload["created_at"]),
+            expires_at=datetime.fromisoformat(pause_payload["expires_at"]),
+            approval_scope=tuple(pause_payload["approval_scope"]),
+        )
+        decision = VerifiedApprovalDecision(
+            decision_id=decision_payload["decision_id"],
+            pause_id=decision_payload["pause_id"],
+            outcome=ApprovalOutcome(decision_payload["outcome"]),
+            authority_ref=decision_payload["authority_ref"],
+            evidence_ref=decision_payload["evidence_ref"],
+            decided_at=datetime.fromisoformat(decision_payload["decided_at"]),
+        )
+        permission_requests = tuple(
+            LocalPermissionRequest(
+                action_id=item["action_id"],
+                run_id=item["run_id"],
+                device_id=item["device_id"],
+                capability=LocalCapability(item["capability"]),
+                target_ref=item["target_ref"],
+                root_ref=item["root_ref"],
+            )
+            for item in envelope["permission_requests"]
+        )
+        return TrustedP01WindowsExecutionEvidenceEnvelope(
+            evidence_ref=envelope["evidence_ref"],
+            request_fingerprint=envelope["request_fingerprint"],
+            approval_pause=pause,
+            approval_decision=decision,
+            permission_requests=permission_requests,
+            local_policy_ref=envelope["local_policy_ref"],
+            expires_at=datetime.fromisoformat(envelope["expires_at"]),
+        )
 
 RESIDENT_PROCESS_CONTRACT = {
     "pairing_authority_implemented": False,
@@ -390,6 +567,10 @@ def build_resident_host(
     entry: BrokerEntry,
     authorization_port: Any | None = None,
     worktree_state_port: Any | None = None,
+    acceptance_command_id: str = "",
+    acceptance_binding_ref: str = "",
+    acceptance_request_id: str = "",
+    acceptance_request_fingerprint: str = "",
 ) -> LocalAgentResidentRuntimeHost:
     """Construct *the* resident host, once, on the redeemed binding."""
 
@@ -398,6 +579,19 @@ def build_resident_host(
     binding = redeemed["binding"]
     config = redeemed["config"]
     clock = redeemed["clock"]
+    execution_root, root_source = trusted_execution_root()
+    executable_path = trusted_executable_profile_path()
+    # #3140 PHASE 3: the two paths a real execution depends on, reported from the
+    # values actually used. The shell-supplied root is preferred; the constant is
+    # only the non-dispatching placeholder.
+    _emit(
+        event="p01_paths",
+        execution_root=execution_root,
+        root_source=root_source,
+        executable=executable_path,
+        root_ref=EXECUTION_ROOT_REF,
+        profile_ref=EXECUTION_PROFILE_REF,
+    )
     device = LocalAgentDeviceProfile(
         device_id=entry.device_id,
         # #3140 review item 3: the workspace is whatever the redeemed binding
@@ -405,7 +599,7 @@ def build_resident_host(
         # present as a device of another.
         workspace_ref=binding.workspace_ref,
         platform=LocalAgentPlatform.WINDOWS,
-        roots=(LocalRoot(root_ref="root.3140", windows_path=WINDOWS_ROOT),),
+        roots=(LocalRoot(root_ref=EXECUTION_ROOT_REF, windows_path=execution_root),),
     )
     # #3140 stall diagnosis: the composition seam is the widest silent step in
     # the resident's own path, so each bounded construction reports itself.
@@ -414,14 +608,21 @@ def build_resident_host(
         device=device,
         executable_profiles=(
             WindowsExecutableProfile(
-                profile_ref="profile.3140.python",
-                executable_path=WINDOWS_PYTHON_EXECUTABLE,
+                profile_ref=EXECUTION_PROFILE_REF,
+                executable_path=executable_path,
             ),
         ),
-        authorization_port=authorization_port
-        if authorization_port is not None
-        else P01LocalPermissionWindowsExecutionAuthorizationPort(
-            permission_profile=default_device_permission_profile(device=device)
+        authorization_port=(
+            authorization_port
+            if authorization_port is not None
+            else _acceptance_authorization_port(
+                device=device,
+                root_source=root_source,
+                acceptance_command_id=acceptance_command_id,
+                acceptance_binding_ref=acceptance_binding_ref,
+                acceptance_request_id=acceptance_request_id,
+                acceptance_request_fingerprint=acceptance_request_fingerprint,
+            )
         ),
         # #3148: the real Windows git worktree probe is what backs the trusted
         # composition now. It is a probe, not a decision: a dirty or unreadable
@@ -512,7 +713,17 @@ def main(argv: list[str] | None = None) -> int:
         )
         _emit(event="host_build_start", **_phase_stamp(), **RESIDENT_PROCESS_CONTRACT)
         try:
-            host = build_resident_host(redeemed, entry=entry)
+            host = build_resident_host(
+                redeemed,
+                entry=entry,
+                # The 4 canonical correlation facts of the one bounded acceptance
+                # command: shared contract ids plus the redeemed binding_ref. The
+                # fingerprint is computed by the canonical P01 port at resolve
+                # time. No new correlation object or authority is created.
+                acceptance_command_id=ACCEPTANCE_COMMAND_ID,
+                acceptance_binding_ref=redeemed["binding"].binding_ref,
+                acceptance_request_id=ACCEPTANCE_REQUEST_ID,
+            )
         except ContractError as exc:
             _emit(
                 status="paired_without_host",

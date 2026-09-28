@@ -160,6 +160,13 @@ function laneProcesses() {
 const laneBefore = laneProcesses();
 const orphanBefore = laneBefore.map((row) => row.pid);
 
+// #3140: the negative lane. The harness — never the product — asks the
+// evidence owner for a DENIED P01 decision; the canonical port must refuse it
+// before any process starts.
+const negativeMode = process.env.PADIEM_3140_NEGATIVE === '1';
+if (negativeMode) {
+  process.env.PADIEM_3140_P01_DENY = '1';
+}
 const brokerProcess = spawn(
   python,
   ['-m', 'kagent.local_agent_broker_pairing_handoff_entry', '--serve'],
@@ -169,20 +176,31 @@ let brokerSettled = false;
 // #3140 stall diagnosis: keep the owner's own bounded lines, so a client stall
 // can be attributed to a leg (accepted / handler entered / response written).
 const ownerLines = [];
+let ownerLineBuffer = '';
 const brokerUrl = await new Promise((resolve, reject) => {
-  let text = '';
+  let settled = false;
   brokerProcess.stdout.on('data', (chunk) => {
-    text += String(chunk);
-    for (const piece of text.split(String.fromCharCode(10))) {
-      if (piece.trim().length > 0 && ownerLines.length < 400) ownerLines.push(piece);
+    ownerLineBuffer += String(chunk);
+    const parts = ownerLineBuffer.split(String.fromCharCode(10));
+    ownerLineBuffer = parts.pop();
+    for (const piece of parts) {
+      if (piece.trim().length > 0 && ownerLines.length < 4000) ownerLines.push(piece);
     }
-    const lines = text.split(String.fromCharCode(10)).filter((line) => line.trim().length > 0);
-    if (lines.length > 0) {
-      try {
-        brokerSettled = true;
-        resolve(JSON.parse(lines[lines.length - 1]).broker_url);
-      } catch {
-        // Keep reading until the owner prints its URL.
+    if (!settled) {
+      // The owner's boot line has no trailing newline, so the URL is parsed
+      // from the pending buffer as well as from the completed lines.
+      for (const candidate of [...ownerLines, ownerLineBuffer]) {
+        try {
+          const parsed = JSON.parse(candidate);
+          if (typeof parsed.broker_url === 'string' && parsed.broker_url.length > 0) {
+            settled = true;
+            brokerSettled = true;
+            resolve(parsed.broker_url);
+            break;
+          }
+        } catch {
+          // Still arriving.
+        }
       }
     }
   });
@@ -294,11 +312,27 @@ const pidAlive = (pid) => {
   }
 };
 brokerProcess.kill();
-const settlementDeadline = Date.now() + 15000;
+// The resident lives for the life of the lane and only notices the broker
+// death on its next poll/heartbeat timeout, so the settlement window must
+// cover that. It also keeps its durable sqlite file open, so cleanup must
+// wait for it to exit.
+const settlementDeadline = Date.now() + 45000;
 while (Date.now() < settlementDeadline && ownedPids.some((pid) => pidAlive(pid))) {
   await new Promise((resolve) => setTimeout(resolve, 500));
 }
 const orphanAfterRun = ownedPids.filter((pid) => pidAlive(pid));
+// Reap anything the lane left alive before the state directory is removed.
+for (const pid of ownedPids.filter((pid) => pidAlive(pid))) {
+  try {
+    process.kill(pid);
+  } catch {
+    // already gone
+  }
+}
+const reapDeadline = Date.now() + 5000;
+while (Date.now() < reapDeadline && ownedPids.some((pid) => pidAlive(pid))) {
+  await new Promise((resolve) => setTimeout(resolve, 250));
+}
 
 const summary = {
   electron_binary: path.basename(electronBinary),
@@ -311,7 +345,11 @@ process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
 brokerProcess.kill();
 // Every child is gone before the harness-owned state is removed.
 rmSync(logDir, { recursive: true, force: true });
-rmSync(stateDir, { recursive: true, force: true });
+try {
+  rmSync(stateDir, { recursive: true, force: true });
+} catch (cleanupError) {
+  process.stderr.write(`cleanup: state dir removal deferred: ${cleanupError.message}\n`);
+}
 // #3140: a delivery acknowledgement is necessary and nowhere near sufficient.
 // A run passes only when the resident came online on a real session, heartbeat
 // and poll, with the real worktree probe and the canonical P01 path, and with
@@ -386,10 +424,52 @@ const unapprovedExecution = lines.filter((line) => /"unapproved_execution":[1-9]
 
 // #3140 stall diagnosis: what the owner itself observed, and what the lane
 // actually left behind after its own shutdown sequence.
-const ownerText = ownerLines.join(String.fromCharCode(10));
+const ownerText = [...ownerLines, ownerLineBuffer].join(String.fromCharCode(10));
 const brokerRequestReached = /"event":"broker_request_accepted"/.test(ownerText);
 const brokerHandlerReached = /"event":"broker_handler_enter"/.test(ownerText);
 const brokerResponseWritten = /"event":"broker_response_written"/.test(ownerText);
+// #3140 PHASE 3: execution/correlation/safety facts, compared across the
+// owner and the resident rather than asserted by the harness alone.
+const jsonObjects = (text, eventName) => {
+  const found = [];
+  for (const match of String(text).matchAll(/\{[^{}]*?"event":"[a-z0-9_]+"[^{}]*\}/g)) {
+    try {
+      const parsed = JSON.parse(match[0]);
+      if (parsed.event === eventName) found.push(parsed);
+    } catch {
+      // split lines are re-parsed on the next match
+    }
+  }
+  return found;
+};
+const enqueuedEvents = jsonObjects(ownerText, 'acceptance_command_enqueued');
+const acknowledgedEvents = jsonObjects(ownerText, 'acknowledged');
+const servedEvents = jsonObjects(ownerText, 'p01_evidence_served');
+const results = [];
+for (const line of lines) {
+  if (line.includes('"event":"command_result"')) {
+    try {
+      results.push(JSON.parse(line));
+    } catch {
+      // partial line
+    }
+  }
+}
+const enqueued = enqueuedEvents[0] ?? null;
+const acknowledged = acknowledgedEvents[0] ?? null;
+const result = results[0] ?? null;
+const eightKeyParity =
+  Boolean(result && enqueued && acknowledged) &&
+  result.command_id === enqueued.command_id &&
+  result.command_id === acknowledged.command_id &&
+  result.run_id === enqueued.run_id &&
+  result.request_id === enqueued.request_id &&
+  result.request_id === acknowledged.request_id &&
+  result.request_fingerprint === enqueued.request_fingerprint &&
+  result.binding_ref === enqueued.binding_ref &&
+  result.admission_ref === acknowledged.admission_ref &&
+  result.evidence_ref === acknowledged.evidence_ref &&
+  result.revision_ref === acknowledged.revision_ref;
 const checks = {
   HANDOFF_OUTCOME_DELIVERED: evidence?.handoff_delivered === true,
   ACK_AFTER_DURABLE_OWNERSHIP: acks.length === 1,
@@ -405,14 +485,47 @@ const checks = {
   // unattached pipe would make "no traceback" an unobserved claim.
   STDERR_OBSERVED: stderrObserved,
   NO_TRACEBACK: stderrObserved && faults.length === 0 && !stderrFault,
+  // #3140 PHASE 3: the actual execution facts, now required for a pass.
+  ACCEPTANCE_COMMAND_ENQUEUE_COUNT:
+    new Set(enqueuedEvents.map((event) => `${event.command_id}:${event.sequence}`)).size === 1,
+  COMMAND_RESULT_CORRELATED: eightKeyParity,
+  APPROVED_PROCESS_SPAWN_COUNT: Number(result?.approved_process_spawn_count ?? 0) === 1,
+  EXIT_CODE: Number(result?.exit_code) === 0 && Number(acknowledged?.exit_code) === 0,
+  TERMINAL_RESULT_OBSERVED: result?.terminal_result_observed === true,
+  REPLAY_ACK: acks.length === 1,
+  PAIRING_CODE_EXPOSURE: summary.pairing_code_in_output === false,
+  RESIDENT_MINTED_P01_EVIDENCE: !lines.some((line) => line.includes('p01_evidence_created')),
+  ORPHAN_CLEAN: orphanAfterRun.length === 0 && orphanBefore.length === 0,
 };
-const passed = Object.values(checks).every(Boolean);
+// #3140 negative lane: same harness, opposite expectation. The DENIED P01
+// decision must be refused by the canonical port before any process starts.
+const negativeChecks = {
+  P01_EVIDENCE_FETCHED: servedEvents.length >= 1,
+  P01_DECISION_OUTCOME_DENIED: servedEvents.some(
+    (event) => String(event.decision).toLowerCase() === 'denied',
+  ),
+  P01_GRANT_ISSUED_NO: results.length === 0,
+  UNAPPROVED_PROCESS_SPAWN_COUNT_0: results.length === 0,
+  TERMINAL_SUCCESS_FABRICATED_NO:
+    acknowledgedEvents.length === 0 &&
+    !lines.some((line) => line.includes('"terminal_result_observed":true')),
+  RESIDENT_MINTED_P01_EVIDENCE: !lines.some((line) => line.includes('p01_evidence_created')),
+  ORPHAN_CLEAN: orphanAfterRun.length === 0 && orphanBefore.length === 0,
+  EXECUTION_REFUSED_OBSERVED: lines.some((line) => line.includes('"event":"execution_refused"')),
+};
+const effectiveChecks = negativeMode ? negativeChecks : checks;
+const passed = Object.values(effectiveChecks).every(Boolean);
 
 process.stdout.write(
   `${JSON.stringify(
     {
       ...summary,
-      checks,
+      checks: effectiveChecks,
+      execution_facts: {
+        acceptance_command_enqueued: enqueued,
+        acknowledged,
+        command_result: result,
+      },
       phase_report: {
         LAST_CONFIRMED_PHASE: lastConfirmedPhase,
         FIRST_MISSING_PHASE: firstMissingPhase,
@@ -461,5 +574,9 @@ process.stdout.write(
 `,
 );
 rmSync(logDir, { recursive: true, force: true });
-rmSync(stateDir, { recursive: true, force: true });
+try {
+  rmSync(stateDir, { recursive: true, force: true });
+} catch (cleanupError) {
+  process.stderr.write(`cleanup: state dir removal deferred: ${cleanupError.message}\n`);
+}
 process.exit(passed ? 0 : 3);

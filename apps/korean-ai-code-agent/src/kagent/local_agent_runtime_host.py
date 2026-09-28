@@ -307,6 +307,9 @@ class LocalAgentResidentRuntimeHost:
         self._last_heartbeat_at: datetime | None = None
         self._last_heartbeat_monotonic: float | None = None
         self._last_seen_at: datetime | None = None
+        # #3140 PHASE 3: the last server-owned heartbeat receipt, kept so the
+        # canonical ONLINE projection can be applied from server facts alone.
+        self._last_heartbeat_receipt: ControlPlaneHeartbeatReceipt | None = None
         self._last_seen_session_id: str | None = None
         self._last_sequence = 0
         self._consecutive_failures = 0
@@ -384,6 +387,38 @@ class LocalAgentResidentRuntimeHost:
         self._last_heartbeat_monotonic = self._monotonic()
         self._last_seen_at = receipt.last_seen_at
         self._last_seen_session_id = session.session_id
+        self._last_heartbeat_receipt = receipt
+
+    def _promote_binding_online(self, *, session: DeviceSession, now: datetime) -> None:
+        """Apply the canonical server-backed ONLINE projection. Host lock held.
+
+        #3140 PHASE 3: a heartbeat is not an ONLINE claim by itself, but once
+        the broker has acknowledged one for this exact session the canonical
+        projection promotes the redeemed binding. Until then execution stays
+        refused by the assembly, which is the correct fail-closed direction.
+        """
+
+        from .local_agent_server_projection import project_server_backed_online_binding
+
+        binding = self._assembly._binding
+        if binding.state is not DeviceLifecycle.PAIRED_OFFLINE:
+            return
+        receipt = self._last_heartbeat_receipt
+        if receipt is None or receipt.session_id != session.session_id:
+            return
+        try:
+            projected = project_server_backed_online_binding(
+                binding=binding, session=session, heartbeat=receipt, now=now
+            )
+        except ContractError:
+            # Not-yet-current server facts are not an ONLINE claim.
+            return
+        self._assembly._binding = projected
+        self._record_diagnostic(
+            "network",
+            "BINDING_ONLINE",
+            "server projection promoted the redeemed binding to ONLINE",
+        )
 
     def _record_diagnostic(self, event_type: str, code: str, message: str) -> None:
         event = LocalAgentDiagnosticEvent(
@@ -637,6 +672,10 @@ class LocalAgentResidentRuntimeHost:
                 except Exception as exc:
                     self._handle_transport_error(exc)
                     return 0
+
+            # #3140 PHASE 3: server-owned ONLINE promotion, before any polled
+            # command can be dispatched.
+            self._promote_binding_online(session=session, now=tick_now)
 
             # #3128: reconcile anything a previous process left unacknowledged
             # before dispatching new work. This never executes anything; it
