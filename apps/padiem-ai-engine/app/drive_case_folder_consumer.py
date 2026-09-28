@@ -15,6 +15,26 @@ admission. On any authorization or envelope denial the canonical document
 store and the evidence store are never touched, so no ``doc_*`` reference is
 minted for content that was not authorized.
 
+Drive envelope trust boundary
+-----------------------------
+The envelope is a plain Mapping, so it is never authority. Every semantic
+claim it makes must be *derived* from the authorized resource and then match:
+
+* ``projection.mime_type`` must normalize-equal ``resource.mime_type``;
+* the expected Drive classification, operation and export mime are computed
+  from the authorized resource MIME with the canonical Core helpers
+  (``is_textual_mime``, ``export_mime_for``, ``DriveResourceClassification``)
+  — the envelope's own ``resource_classification`` / ``operation`` /
+  ``export_mime_type`` must equal that derivation exactly;
+* direct textual resources read through ``files.get.media`` with no export;
+* Google-native resources read through ``files.export`` with the canonical
+  export mime, which also decides the admitted document media;
+* binary or unsupported MIME fails closed even when the Mapping claims text.
+
+The admitted document media type is derived solely from the authorized
+resource MIME plus the canonical export MIME; there is no caller media
+override.
+
 Trust rules:
 
 * the bridge accepts only canonical server-side objects (``DriveCaseFolderScope``,
@@ -25,8 +45,6 @@ Trust rules:
   is never called directly here: authorization goes through
   ``admit_case_folder_resource()``, whose bounded projection is reused as
   provenance;
-* the Drive content envelope must be the canonical Core READ envelope and its
-  resource id must equal the authorized resource id;
 * Drive content stays untrusted input.
 
 Not in this slice: public route, product wiring, Production composition, live
@@ -43,6 +61,11 @@ from padiem_ai_core.document_normalization import (
     MAX_DOCUMENT_NAME_CHARS,
     MAX_TEXT_DOCUMENT_BYTES,
     TEXT_DOCUMENT_MEDIA,
+)
+from padiem_ai_core.drive_capability import (
+    DriveResourceClassification,
+    export_mime_for,
+    is_textual_mime,
 )
 from padiem_ai_core.drive_case_folder_scope import (
     DriveCaseFolderScope,
@@ -72,18 +95,9 @@ DRIVE_CASE_FOLDER_CONSUMER_VERSION = "engine-drive-case-folder-consumer.v1"
 DRIVE_CONTENT_PROVIDER = "google_drive"
 DRIVE_SOURCE_TYPE = "drive"
 
-# Only content the canonical Drive READ already classified as text-readable is
-# eligible in this first bridge slice.
-ELIGIBLE_DRIVE_CLASSIFICATIONS = frozenset({"text_read", "google_native_export"})
-
-# Export/provider mime -> Core text media allow-list member.
-_TEXT_MEDIA_BY_MIME: dict[str, str] = {
-    "text/plain": "text/plain",
-    "text/markdown": "text/markdown",
-    "text/csv": "text/csv",
-    "application/json": "application/json",
-}
-DEFAULT_DRIVE_TEXT_MEDIA_TYPE = "text/plain"
+# Canonical Drive READ operations for the two admissible read paths.
+DIRECT_MEDIA_OPERATION = "files.get.media"
+NATIVE_EXPORT_OPERATION = "files.export"
 
 _FALLBACK_DOCUMENT_NAME = "drive-document.txt"
 _MAX_ERROR_CODE_CHARS = 64
@@ -157,9 +171,15 @@ class _ValidatedDriveText:
     payload: bytes = field(repr=False)
     media_type: str
     name: str
+    resource_classification: str
     version_evidence: dict[str, Any] | None = field(default=None, repr=False)
     shared_drive_ref: str | None = None
-    resource_classification: str = ""
+
+
+def _normalized_mime(value: object) -> str | None:
+    if not isinstance(value, str) or not value.strip():
+        return None
+    return value.split(";", 1)[0].strip().lower()
 
 
 def _bounded_document_name(value: object) -> str:
@@ -173,34 +193,55 @@ def _bounded_document_name(value: object) -> str:
     return _FALLBACK_DOCUMENT_NAME
 
 
-def _resolve_media_type(explicit: object, envelope: Mapping[str, Any], resource: DriveCaseResource) -> str:
-    if explicit is not None:
-        if not isinstance(explicit, str) or explicit.strip().lower() not in TEXT_DOCUMENT_MEDIA:
+def _expected_drive_read_contract(resource: DriveCaseResource) -> tuple[str, str, str | None, str]:
+    """Derive (classification, operation, export_mime, document_media) from the
+    authorized resource MIME using the canonical Core Drive helpers.
+
+    The envelope's own classification/operation/export claims are never
+    authority: they must equal this derivation exactly.
+    """
+
+    mime = _normalized_mime(resource.mime_type)
+    if mime is None:
+        raise DriveCaseFolderConsumerError(
+            "unsupported_media_type",
+            "Authorized resource media type is invalid.",
+            status_code=415,
+        )
+    export_mime = export_mime_for(mime)
+    if export_mime is not None:
+        # Google-native document: the canonical export decides the document media.
+        return (
+            DriveResourceClassification.GOOGLE_NATIVE_EXPORT.value,
+            NATIVE_EXPORT_OPERATION,
+            export_mime,
+            export_mime,
+        )
+    if is_textual_mime(mime):
+        if mime not in TEXT_DOCUMENT_MEDIA:
             raise DriveCaseFolderConsumerError(
-                "unsupported_media_type",
-                "Drive content media type is not a supported text document type.",
+                "unsupported_text_media_type",
+                "Drive text media type is not a supported document media type.",
                 status_code=415,
             )
-        return explicit.strip().lower()
-    export_mime = envelope.get("export_mime_type")
-    if isinstance(export_mime, str):
-        mapped = _TEXT_MEDIA_BY_MIME.get(export_mime.strip().lower())
-        if mapped is not None:
-            return mapped
-    if resource.mime_type in TEXT_DOCUMENT_MEDIA:
-        return resource.mime_type
-    return DEFAULT_DRIVE_TEXT_MEDIA_TYPE
+        return (DriveResourceClassification.TEXT_READ.value, DIRECT_MEDIA_OPERATION, None, mime)
+    # Binary or otherwise non-text resource: not admissible in this text bridge,
+    # and the envelope cannot relabel it.
+    raise DriveCaseFolderConsumerError(
+        "ineligible_drive_content",
+        "Authorized Drive resource is not text-readable in this bridge.",
+    )
 
 
 def _validate_drive_text_envelope(
     envelope: Mapping[str, Any],
     resource: DriveCaseResource,
-    *,
-    explicit_media_type: object,
 ) -> _ValidatedDriveText:
     """Validate the canonical Drive READ content envelope, fail closed.
 
     Runs only after the case-folder gate passed, and never touches a store.
+    Every envelope claim must match the contract derived from the authorized
+    resource; the admitted document media comes only from that derivation.
     """
 
     if envelope.get("provider") != DRIVE_CONTENT_PROVIDER:
@@ -220,13 +261,6 @@ def _validate_drive_text_envelope(
         raise DriveCaseFolderConsumerError(
             "truncated_drive_content",
             "Truncated Drive content is not admitted as a complete document.",
-        )
-
-    classification = envelope.get("resource_classification")
-    if not isinstance(classification, str) or classification not in ELIGIBLE_DRIVE_CLASSIFICATIONS:
-        raise DriveCaseFolderConsumerError(
-            "ineligible_drive_content",
-            "Drive content class is not eligible for document admission.",
         )
 
     projection = envelope.get("projection")
@@ -256,6 +290,36 @@ def _validate_drive_text_envelope(
             "Drive content space identity does not match the authorized resource.",
         )
 
+    # (a) the projection MIME must be the authorized resource MIME
+    normalized_resource_mime = _normalized_mime(resource.mime_type)
+    normalized_projection_mime = _normalized_mime(projection.get("mime_type"))
+    if normalized_projection_mime is None or normalized_projection_mime != normalized_resource_mime:
+        raise DriveCaseFolderConsumerError(
+            "projection_mime_resource_mismatch",
+            "Drive content projection media type does not match the authorized resource.",
+        )
+
+    # (b) classification / operation / export mime are derived from the trusted
+    #     resource MIME, never asserted by the envelope
+    expected_classification, expected_operation, expected_export_mime, document_media = (
+        _expected_drive_read_contract(resource)
+    )
+    if envelope.get("resource_classification") != expected_classification:
+        raise DriveCaseFolderConsumerError(
+            "drive_classification_mismatch",
+            "Drive content class does not match the authorized resource.",
+        )
+    if envelope.get("operation") != expected_operation:
+        raise DriveCaseFolderConsumerError(
+            "drive_operation_mismatch",
+            "Drive content operation does not match the authorized resource.",
+        )
+    if _normalized_mime(envelope.get("export_mime_type")) != expected_export_mime:
+        raise DriveCaseFolderConsumerError(
+            "drive_export_mime_mismatch",
+            "Drive export media type does not match the authorized resource.",
+        )
+
     content = envelope.get("content")
     if not isinstance(content, str) or not content.strip():
         raise DriveCaseFolderConsumerError(
@@ -276,11 +340,11 @@ def _validate_drive_text_envelope(
     version_evidence = projection.get("version_evidence")
     return _ValidatedDriveText(
         payload=payload,
-        media_type=_resolve_media_type(explicit_media_type, envelope, resource),
+        media_type=document_media,
         name=_bounded_document_name(projection.get("name")),
+        resource_classification=expected_classification,
         version_evidence=dict(version_evidence) if isinstance(version_evidence, Mapping) else None,
         shared_drive_ref=resource.shared_drive_id,
-        resource_classification=classification,
     )
 
 
@@ -294,7 +358,6 @@ async def bridge_case_folder_drive_text(
     document_resolver: TrustedDocumentResolver,
     evidence_storage: object | None = None,
     ancestry: DriveTrustedAncestryProof | None = None,
-    media_type: str | None = None,
     context_max_text_chars: int = DEFAULT_CONTEXT_MAX_TEXT_CHARS,
     context_max_segments: int = DEFAULT_CONTEXT_MAX_SEGMENTS,
 ) -> DriveCaseFolderConsumerResult:
@@ -353,9 +416,7 @@ async def bridge_case_folder_drive_text(
     authorization = admit_case_folder_resource(scope, resource, ancestry=ancestry)
 
     # (2) Canonical Drive envelope validation. Still no store interaction.
-    validated = _validate_drive_text_envelope(
-        drive_content_result, resource, explicit_media_type=media_type
-    )
+    validated = _validate_drive_text_envelope(drive_content_result, resource)
 
     # (3) Canonical document admission mints the server-owned doc_* reference.
     record = await document_store.admit_document(
@@ -392,6 +453,7 @@ async def bridge_case_folder_drive_text(
         "case_folder_scope_ref": scope.scope_ref,
         "drive_resource_ref": resource.resource_id,
         "drive_binding_ref": scope.binding_ref,
+        "drive_resource_mime_type": _normalized_mime(resource.mime_type),
         "shared_drive_ref": validated.shared_drive_ref,
         "drive_resource_classification": validated.resource_classification,
         "drive_resource_version_evidence": validated.version_evidence,
@@ -428,6 +490,11 @@ def drive_case_folder_consumer_snapshot() -> dict[str, Any]:
         "reuses_canonical_context_projection": True,
         "reuses_canonical_evidence_storage": True,
         "gate_before_document_admission": True,
+        "projection_mime_bound_to_resource": True,
+        "classification_derived_from_canonical_mime": True,
+        "operation_bound_to_classification": True,
+        "export_mime_bound_to_resource": True,
+        "media_type_override_authority": False,
         "second_drive_runtime": False,
         "second_document_pipeline": False,
         "second_evidence_model": False,
@@ -444,8 +511,8 @@ __all__ = [
     "DRIVE_CASE_FOLDER_CONSUMER_VERSION",
     "DRIVE_CONTENT_PROVIDER",
     "DRIVE_SOURCE_TYPE",
-    "ELIGIBLE_DRIVE_CLASSIFICATIONS",
-    "DEFAULT_DRIVE_TEXT_MEDIA_TYPE",
+    "DIRECT_MEDIA_OPERATION",
+    "NATIVE_EXPORT_OPERATION",
     "ADMIT_PUBLIC_ROUTE",
     "ADMIT_PRODUCTION_COMPOSITION",
     "ADMIT_LIVE_PROVIDER_CALL",
