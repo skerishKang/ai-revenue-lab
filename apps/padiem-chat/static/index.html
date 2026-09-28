@@ -553,6 +553,30 @@
       <textarea id="projectInstructionsInput" name="instructions" maxlength="1800" rows="6" data-locale-placeholder="project-instructions-placeholder" placeholder="예: 부모님과 함께 보는 내용이라 쉬운 한국어로 설명해줘."></textarea>
       <p class="project-form-note" data-locale-key="project-instructions-note">이 지침은 이 프로젝트의 대화에만 적용됩니다.</p>
 
+      <section class="project-drive-panel" id="projectDrivePanel" aria-labelledby="projectDriveTitle" hidden>
+        <div class="project-drive-heading">
+          <strong id="projectDriveTitle">Google Drive 사건 폴더</strong>
+          <small>선택한 폴더만 이 프로젝트의 자료로 읽습니다.</small>
+        </div>
+        <p class="project-drive-status" id="projectDriveStatus">사건 폴더가 선택되지 않았습니다.</p>
+        <p class="project-drive-status-live" id="projectDriveStatusLive" role="status" aria-live="polite" aria-busy="false"></p>
+        <div class="project-drive-actions">
+          <button id="projectDrivePickButton" class="project-drive-button" type="button">폴더 선택</button>
+          <button id="projectDriveClearButton" class="project-drive-button project-drive-button-secondary" type="button" hidden>해제</button>
+        </div>
+        <dialog class="project-drive-picker" id="projectDrivePicker" aria-labelledby="projectDrivePickerTitle" hidden>
+          <div class="project-drive-picker-header">
+            <h3 id="projectDrivePickerTitle">Drive 폴더 선택</h3>
+            <button id="projectDrivePickerClose" class="project-drive-button project-drive-button-secondary" type="button" aria-label="폴더 선택 닫기">닫기</button>
+          </div>
+          <label class="project-drive-search-label" for="projectDriveSearchInput">폴더 이름 검색</label>
+          <input id="projectDriveSearchInput" class="project-drive-search" type="text" maxlength="200" autocomplete="off" placeholder="예: 2026 사건" />
+          <div class="project-drive-list" id="projectDriveFolderList"></div>
+          <p class="project-drive-picker-state" id="projectDrivePickerState" role="status" aria-live="polite"></p>
+        </dialog>
+      </section>
+      <script src="./project-drive-folder.js" defer></script>
+
       <section class="project-files-panel" id="projectFilesPanel" hidden aria-labelledby="projectFilesTitle">
         <div class="project-files-heading">
           <div><strong id="projectFilesTitle" data-locale-key="project-files">프로젝트 파일</strong><small data-locale-key="project-files-limit">TXT·Markdown·CSV·JSON·PDF·DOCX · 최대 12개</small></div>

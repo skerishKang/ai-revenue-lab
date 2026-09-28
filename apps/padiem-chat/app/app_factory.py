@@ -62,6 +62,12 @@ from .conversation_routes import api_conversation_detail, api_conversations
 from .grounding import GroundedChatService
 from .history import HistoryStore
 from .project_file_routes import project_file_detail, project_files_collection
+from .drive_case_folder_routes import (
+    drive_case_folder_delete,
+    drive_case_folder_put,
+    drive_case_folder_status,
+    drive_folders_collection,
+)
 from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
 from .request_telemetry import RequestTelemetryMiddleware
@@ -122,6 +128,7 @@ def create_app(
     usage_store: UsageCounterStore | None = None,
     control_plane_identity_authority=None,
     identity_shadow_store=None,
+    drive_case_folder_engine_client=None,
     d1_binding=None,
     r2_binding=None,
     claw_p01_adapter=None,
@@ -150,6 +157,26 @@ def create_app(
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
         Route("/api/projects/{project_id}/files/{file_id}", project_file_detail, methods=["GET", "DELETE"]),
+        Route(
+            "/api/projects/{project_id}/drive-case-folder",
+            drive_case_folder_status,
+            methods=["GET"],
+        ),
+        Route(
+            "/api/projects/{project_id}/drive-case-folder",
+            drive_case_folder_put,
+            methods=["PUT"],
+        ),
+        Route(
+            "/api/projects/{project_id}/drive-case-folder",
+            drive_case_folder_delete,
+            methods=["DELETE"],
+        ),
+        Route(
+            "/api/projects/{project_id}/drive-folders",
+            drive_folders_collection,
+            methods=["GET"],
+        ),
         Route("/api/outputs", outputs_collection, methods=["GET", "POST"]),
         Route("/api/outputs/{output_id}", output_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/conversations", api_conversations, methods=["GET"]),
@@ -204,6 +231,9 @@ def create_app(
     # a non-authoritative shadow pointer used to reach the current canonical session.
     app.state.control_plane_identity_authority = control_plane_identity_authority
     app.state.identity_shadow_store = identity_shadow_store
+    # #3190: owner-gated Project Drive case-folder routes. A missing client fails
+    # closed with 503; there is no global/network fallback.
+    app.state.drive_case_folder_engine_client = drive_case_folder_engine_client
     app.state.usage_gate = UsageGate(resolved, usage_store)
     # An explicitly injected B14 transport is the existing network-free regression seam.
     # It cannot occur through browser input or Worker bindings. Production/ordinary runtime

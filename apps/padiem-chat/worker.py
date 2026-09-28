@@ -692,6 +692,24 @@ class Default(WorkerEntrypoint):
                 )
                 _worker_app.state.control_plane_identity_authority = identity_authority
                 _worker_app.state.identity_shadow_store = identity_shadow_store
+                # #3190: reuse the existing P01_ENGINE_SERVICE binding; no second
+                # Engine binding authority. Missing/malformed binding -> None ->
+                # the Drive case-folder routes fail closed with 503.
+                try:
+                    from app.drive_case_folder_engine import (
+                        CloudflareDriveCaseFolderEngineClient,
+                    )
+                    from app.worker_config import P01_ENGINE_SERVICE_BINDING_NAME
+
+                    engine_binding = binding_value(self.env, P01_ENGINE_SERVICE_BINDING_NAME)
+                    drive_case_folder_engine_client = (
+                        CloudflareDriveCaseFolderEngineClient(engine_binding)
+                        if engine_binding is not None
+                        else None
+                    )
+                except Exception:
+                    drive_case_folder_engine_client = None
+                _worker_app.state.drive_case_folder_engine_client = drive_case_folder_engine_client
                 _worker_app.state.project_file_store = project_file_store
                 _worker_app.state.saved_output_store = saved_output_store
                 _worker_app.state.usage_gate = UsageGate(settings, usage_store)
