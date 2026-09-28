@@ -83,6 +83,40 @@
     return ("clone-" + (stamp || "0") + "-" + suffix).slice(0, MAX_SESSION_ID_CHARS);
   }
 
+  /* ── 승인은 하나의 작업이다: 일부만 저장된 상태를 남기지 않는다 ──
+     실패하면 관측 가능한 storage 를 호출 전 상태로 되돌린다. */
+
+  function approvalStorageKeys() {
+    return [Store.TEMPLATE_STORAGE_KEY, Selection.SELECTION_STORAGE_KEY];
+  }
+
+  function snapshotStorage(storage) {
+    if (!storage || typeof storage.getItem !== "function") return null;
+    var snapshot = {};
+    approvalStorageKeys().forEach(function (key) {
+      try {
+        var value = storage.getItem(key);
+        snapshot[key] = value === undefined ? null : value;
+      } catch (err) {
+        snapshot[key] = null;
+      }
+    });
+    return snapshot;
+  }
+
+  function restoreStorage(storage, snapshot) {
+    if (!storage || !snapshot) return false;
+    try {
+      Object.keys(snapshot).forEach(function (key) {
+        if (snapshot[key] === null) storage.removeItem(key);
+        else storage.setItem(key, snapshot[key]);
+      });
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
   function createSession(options) {
     var opts = options || {};
     return {
@@ -226,16 +260,27 @@
       approval: null
     });
 
-    /* 승인된 뒤 내용이 바뀌면 저장된 profile 의 승인도 무효화한다(조용한 승인 유지 금지). */
-    if (session.status === STATUS_APPROVED && session.approval && options && options.storage) {
+    /* 승인된 뒤 내용이 바뀌면 저장된 profile 의 승인도 무효화해야 한다.
+       storage 가 없으면 session 만 바꾸는 split-brain 이 되므로 실패시킨다. */
+    if (session.status === STATUS_APPROVED) {
+      if (!session.approval) return fail("invalid_session", "session is missing its approval record", session);
+      var storage = options && options.storage;
+      if (!storage) {
+        return fail(
+          "storage_required_for_approval_invalidation",
+          "저장소가 없어 기존 승인을 무효화할 수 없습니다.",
+          session
+        );
+      }
+
       var updated = Store.updateTemplate(
-        Store.readStore(options.storage),
+        Store.readStore(storage),
         session.approval.templateId,
         { content: candidate.content },
         { now: stampOf(options) }
       );
       if (!updated.ok) return fail(updated.code, updated.message, session);
-      if (!Store.writeStore(options.storage, updated.store)) {
+      if (!Store.writeStore(storage, updated.store)) {
         return fail("template_storage_failed", "양식을 저장하지 못했습니다.", session);
       }
       next.approval = null;
@@ -276,6 +321,9 @@
       approvedAt: approvedAt
     };
 
+    /* 승인 + 선택적 적용/기본 지정은 하나의 작업이다.
+       어느 단계든 실패하면 관측 가능한 storage 를 호출 전 상태로 되돌린다. */
+    var snapshot = snapshotStorage(storage);
     var store = Store.readStore(storage);
     var created = Store.createTemplate(
       store,
@@ -283,8 +331,12 @@
       { id: opts.id, approval: evidence, now: approvedAt }
     );
     /* 실패하면 아무것도 쓰지 않는다 — profile/default/selection 모두 그대로다. */
-    if (!created.ok) return fail(created.code, created.message, session);
+    if (!created.ok) {
+      restoreStorage(storage, snapshot);
+      return fail(created.code, created.message, session);
+    }
     if (!Store.writeStore(storage, created.store)) {
+      restoreStorage(storage, snapshot);
       return fail("template_storage_failed", "양식을 저장하지 못했습니다.", session);
     }
 
@@ -294,12 +346,18 @@
 
     if (opts.applyToQuoteNo) {
       var selected = Selection.selectTemplate(storage, opts.applyToQuoteNo, templateId, { now: approvedAt });
-      applied = selected.ok ? templateId : null;
-      if (!selected.ok) return fail(selected.code, selected.message, session);
+      if (!selected.ok) {
+        restoreStorage(storage, snapshot);
+        return fail(selected.code, selected.message, session);
+      }
+      applied = templateId;
     }
     if (opts.setAsDefault === true) {
       var defaultedResult = Selection.setDefaultTemplate(storage, templateId);
-      if (!defaultedResult.ok) return fail(defaultedResult.code, defaultedResult.message, session);
+      if (!defaultedResult.ok) {
+        restoreStorage(storage, snapshot);
+        return fail(defaultedResult.code, defaultedResult.message, session);
+      }
       defaulted = templateId;
     }
 
@@ -370,6 +428,9 @@
     approveCandidate: approveCandidate,
     cancelSession: cancelSession,
     statusLabel: statusLabel,
-    buildProgress: buildProgress
+    buildProgress: buildProgress,
+    snapshotStorage: snapshotStorage,
+    restoreStorage: restoreStorage,
+    approvalStorageKeys: approvalStorageKeys
   };
 });

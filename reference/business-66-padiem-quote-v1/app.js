@@ -895,6 +895,7 @@
     invalid_candidate_confidence: "신뢰도 값이 범위를 벗어났습니다.",
     invalid_candidate_provenance: "출처 정보가 올바르지 않습니다.",
     invalid_candidate_name: "양식 이름을 입력해 주세요.",
+    storage_required_for_approval_invalidation: "저장소를 사용할 수 없어 기존 승인을 무효화하지 못했습니다.",
     forbidden_candidate_field: "허용되지 않는 필드가 포함되어 있습니다.",
     candidate_changed_after_review: "검토 후 내용이 바뀌어 다시 확인해야 합니다.",
     session_not_reviewable: "검토 중인 후보가 없습니다.",

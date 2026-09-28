@@ -196,6 +196,126 @@ eq(storage3.snapshot(), before3, "APPROVAL_CANCEL_WRITES_PROFILE=0: cancelling w
 eq(Cloner.approveCandidate(cancelled.session, storage3, { now: LATER }).code, "session_not_reviewable",
   "a cancelled session cannot be approved");
 
+/* ── APPROVAL_FAILURE_PARTIAL_WRITE=0 — 승인은 하나의 작업이다 ── */
+
+function failingStorage(failKey, failOnWriteNumber) {
+  const map = new Map();
+  const counts = {};
+  return {
+    getItem: (key) => (map.has(key) ? map.get(key) : null),
+    setItem: (key, value) => {
+      counts[key] = (counts[key] || 0) + 1;
+      if (key === failKey && counts[key] === failOnWriteNumber) {
+        throw new Error("simulated storage write failure");
+      }
+      map.set(key, String(value));
+    },
+    removeItem: (key) => { map.delete(key); },
+    dump: () => JSON.stringify(Array.from(map.entries()).sort())
+  };
+}
+
+function seedApproved(storage, id, accent) {
+  const content = builtinContent();
+  content.style.accent = accent;
+  const store = Store.readStore(storage);
+  const result = Store.createTemplate(store, { name: id, content: content }, {
+    id: id,
+    approval: {
+      schemaVersion: 1,
+      status: "approved",
+      contentFingerprint: Template.templateFingerprint(content),
+      approvedBy: "central-cto",
+      approvedAt: NOW
+    },
+    now: NOW
+  });
+  check(result.ok === true, `seed ${id}`);
+  Store.writeStore(storage, result.store);
+  return result.template;
+}
+
+/* A) profile write = SUCCESS, selection write = FAIL */
+const storageA = failingStorage(Selection.SELECTION_STORAGE_KEY, 1);
+const seededA = seedApproved(storageA, "tpl-seed", "#123456");
+const readyA = Cloner.startFromCandidate(Cloner.createSession({}), payload({ candidateId: "cand-a", name: "A 양식" }));
+const beforeA = storageA.dump();
+const resultA = Cloner.approveCandidate(readyA.session, storageA, { now: LATER, applyToQuoteNo: QUOTE_A });
+check(resultA.ok === false, "A: a failing selection write fails the approval");
+eq(resultA.code, "selection_storage_failed", "A: the failure code names the selection step");
+eq(storageA.dump(), beforeA, "A: template/default/selection all match the pre-approval state");
+check(Store.serializeStore(Store.readStore(storageA)).templates.length === 1,
+  "A: the partially written profile is rolled back");
+check(Store.getTemplate(Store.readStore(storageA), "tpl-seed") !== null, "A: the pre-existing template survives");
+eq(Store.defaultTemplateId(Store.readStore(storageA)), BUILTIN, "A: the default is unchanged");
+eq(Selection.readEnvelope(storageA).selections.length, 0, "A: no selection is left behind");
+
+/* B) profile write = SUCCESS, selection write = SUCCESS, default write = FAIL */
+const storageB = failingStorage(Store.TEMPLATE_STORAGE_KEY, 2);
+const seededB = seedApproved(storageB, "tpl-seed-b", "#654321");
+const readyB = Cloner.startFromCandidate(Cloner.createSession({}), payload({ candidateId: "cand-b", name: "B 양식" }));
+const beforeB = storageB.dump();
+const resultB = Cloner.approveCandidate(readyB.session, storageB, {
+  now: LATER,
+  applyToQuoteNo: QUOTE_A,
+  setAsDefault: true
+});
+check(resultB.ok === false, "B: a failing default write fails the approval");
+eq(resultB.code, "template_storage_failed", "B: the failure code names the default step");
+eq(storageB.dump(), beforeB, "B: template/default/selection all match the pre-approval state");
+check(Store.serializeStore(Store.readStore(storageB)).templates.length === 1,
+  "B: the partially written profile is rolled back");
+eq(Store.defaultTemplateId(Store.readStore(storageB)), BUILTIN, "B: the default is unchanged");
+eq(Selection.readEnvelope(storageB).selections.length, 0, "B: no selection is left behind");
+
+/* 정상 경로는 그대로 하나의 작업으로 성공한다 */
+const storageOk = fakeStorage();
+const readyOk = Cloner.startFromCandidate(Cloner.createSession({}), payload({ candidateId: "cand-ok", name: "정상" }));
+const resultOk = Cloner.approveCandidate(readyOk.session, storageOk, {
+  now: LATER,
+  applyToQuoteNo: QUOTE_A,
+  setAsDefault: true
+});
+check(resultOk.ok === true, "approval with apply and default succeeds in one step");
+eq(resultOk.applied, resultOk.template.id, "the applied template is reported");
+eq(resultOk.defaulted, resultOk.template.id, "the defaulted template is reported");
+eq(Store.defaultTemplateId(Store.readStore(storageOk)), resultOk.template.id, "the default is the approved template");
+eq(Selection.selectionForQuote(Selection.readEnvelope(storageOk), QUOTE_A), resultOk.template.id,
+  "the current quotation uses the approved template");
+
+/* ── SPLIT_BRAIN_APPROVAL_STATE=0 — 승인 후 content 수정은 storage 가 필수다 ── */
+const storageC = fakeStorage();
+const readyC = Cloner.startFromCandidate(Cloner.createSession({}), payload({ candidateId: "cand-c", name: "C 양식" }));
+const approvedC = Cloner.approveCandidate(readyC.session, storageC, { now: LATER });
+check(approvedC.ok === true, "a baseline approval succeeds");
+
+const changedContent = builtinContent();
+changedContent.style.accent = "#0a0a0a";
+const persistedBefore = JSON.stringify(Store.serializeStore(Store.readStore(storageC)));
+
+const noStorageEdit = Cloner.editCandidate(approvedC.session, { content: changedContent }, {});
+check(noStorageEdit.ok === false, "SPLIT_BRAIN_APPROVAL_STATE=0: a content edit without storage fails");
+eq(noStorageEdit.code, "storage_required_for_approval_invalidation", "the refusal is explicit");
+eq(noStorageEdit.session.status, Cloner.STATUS_APPROVED, "the session is unchanged");
+eq(noStorageEdit.session.approval.templateId, approvedC.template.id, "the session keeps its approval record");
+eq(noStorageEdit.session.reviewedFingerprint, approvedC.session.reviewedFingerprint,
+  "the reviewed fingerprint is unchanged");
+eq(JSON.stringify(Store.serializeStore(Store.readStore(storageC))), persistedBefore,
+  "the persisted approved profile is unchanged");
+
+const withStorageEdit = Cloner.editCandidate(approvedC.session, { content: changedContent }, { storage: storageC, now: LATER });
+eq(withStorageEdit.code, "approval_invalidated", "SPLIT_BRAIN_APPROVAL_STATE=0: with storage the approval is invalidated in both places");
+eq(withStorageEdit.session.status, Cloner.STATUS_REVIEWING, "the session returns to review");
+eq(withStorageEdit.session.approval, null, "the session approval is cleared");
+eq(Store.getTemplate(Store.readStore(storageC), approvedC.template.id).approved, false,
+  "the persisted profile is no longer approved");
+
+/* name-only 변경은 승인을 유지한다(기존 의도 유지) */
+const renameOnly = Cloner.editCandidate(approvedC.session, { name: "C 양식 개명" }, { storage: storageC });
+check(renameOnly.ok === true, "a rename on an approved session still succeeds without storage");
+eq(renameOnly.session.status, Cloner.STATUS_APPROVED, "a rename keeps the approved session");
+eq(renameOnly.session.approval.templateId, approvedC.template.id, "a rename keeps the approval");
+
 /* ── 진행 단계 ── */
 const steps = Cloner.buildProgress(approved.session);
 eq(steps.length, 4, "the progress model has four steps");
@@ -276,3 +396,5 @@ console.log("MODEL_PROVIDER_IDS_IN_BROWSER=0");
 console.log("MODEL_NETWORK_CALLS=0");
 console.log("MOBILE_TEMPLATE_CLONER_UI=PASS");
 console.log("PRINT_UI_LEAK=0");
+console.log("APPROVAL_FAILURE_PARTIAL_WRITE=0");
+console.log("SPLIT_BRAIN_APPROVAL_STATE=0");

@@ -625,8 +625,9 @@ check(cloner.includes("Template.templateFingerprint(session.candidate.content)")
   "APPROVAL_FINGERPRINT_BINDING=PASS: the fingerprint is recomputed at approval time");
 check(cloner.includes("approval_invalidated") && cloner.includes("Store.updateTemplate("),
   "CANDIDATE_CONTENT_CHANGE_INVALIDATES_APPROVAL=YES: editing after approval drops the stored approval");
-check(cloner.includes("if (!created.ok) return fail(created.code, created.message, session);"),
-  "FAILED_APPROVAL_CHANGES_DEFAULT=0: a refused approval returns before any write");
+check((cloner.match(/restoreStorage\(storage, snapshot\);/g) || []).length >= 3 &&
+      cloner.includes("var snapshot = snapshotStorage(storage);"),
+  "FAILED_APPROVAL_CHANGES_DEFAULT=0: every approval failure path restores the snapshot");
 check(app.includes('$("templateApprove").addEventListener("click"') &&
       app.includes("TemplateCloner.approveCandidate(clonerSession, templateStorage(), {})"),
   "EXPLICIT_TEMPLATE_APPROVAL_REQUIRED=YES: approval is an explicit user action");
@@ -641,6 +642,14 @@ check(css.includes(".template-cloner, .template-review, .cloner-progress, .revie
 check(css.includes(".template-cloner-actions .btn { min-height: 44px; }") &&
       css.includes(".review-grid { grid-template-columns: 1fr; }"),
   "MOBILE_TEMPLATE_CLONER_UI=PASS: 44px targets and a single-column review grid on narrow viewports");
+
+check(cloner.includes("function snapshotStorage(") && cloner.includes("function restoreStorage(") &&
+      cloner.includes("restoreStorage(storage, snapshot);"),
+  "APPROVAL_FAILURE_PARTIAL_WRITE=0: approval stages a snapshot and rolls back on failure");
+check(cloner.includes("storage_required_for_approval_invalidation"),
+  "SPLIT_BRAIN_APPROVAL_STATE=0: a content edit on an approved session requires storage");
+check(cloner.includes("if (!created.ok)") && cloner.includes("var snapshot = snapshotStorage(storage);"),
+  "APPROVAL_FAILURE_PARTIAL_WRITE=0: the snapshot is taken before the first write");
 
 console.log("B66_STATIC_CONTRACT=PASS");
 console.log("NEUTRAL_PUBLIC_UI_CONTRACT=PASS");
@@ -730,6 +739,8 @@ console.log("TEMPLATE_ANALYZER_LIVE=NO");
 console.log("BROWSER_UPLOAD_NETWORK=0");
 console.log("MODEL_PROVIDER_IDS_IN_BROWSER=0");
 console.log("MOBILE_TEMPLATE_CLONER_UI=PASS");
+console.log("APPROVAL_FAILURE_PARTIAL_WRITE=0");
+console.log("SPLIT_BRAIN_APPROVAL_STATE=0");
 console.log("MOBILE_TEMPLATE_UI=PASS");
 console.log("PRINT_UI_LEAK=0");
 console.log("MODEL_NETWORK_CALLS=0");
