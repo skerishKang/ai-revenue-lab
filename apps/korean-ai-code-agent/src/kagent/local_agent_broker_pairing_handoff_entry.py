@@ -125,6 +125,15 @@ class LoopbackPairingBroker:
             authenticated=False,
             tls_verified=True,
         )
+        # After redemption the device is authenticated for session, heartbeat,
+        # poll, material, admission and acknowledgement.
+        self._authenticated_device_auth = TrustedLocalAgentHttpAuthContext(
+            principal_ref="device.3140.resident",
+            account_ref="account.1",
+            workspace_ref="workspace.1",
+            authenticated=True,
+            tls_verified=True,
+        )
 
     def request_port(self) -> "LoopbackRequestPort":
         return LoopbackRequestPort(self)
@@ -248,6 +257,10 @@ def main(argv: list[str] | None = None) -> int:
     import os
     import urllib.request
 
+    from padiem_control_plane.local_agent_broker_pairing_http import (
+        PAIRING_CHALLENGE_ROUTE,
+    )
+
     broker_url = os.environ.get("PADIEM_AGENT_BROKER_URL")
     if broker_url:
         body = json.dumps(
@@ -261,7 +274,7 @@ def main(argv: list[str] | None = None) -> int:
             separators=(",", ":"),
         ).encode("utf-8")
         request = urllib.request.Request(
-            f"{broker_url}/pairings/challenge", data=body,
+            f"{broker_url}{PAIRING_CHALLENGE_ROUTE}", data=body,
             headers={"Content-Type": "application/json"}, method="POST",
         )
         with urllib.request.urlopen(request, timeout=10) as response:
@@ -304,13 +317,15 @@ def serve(host: str = "127.0.0.1", port: int = 0) -> int:
         def do_POST(self) -> None:  # noqa: N802 — BaseHTTPRequestHandler surface
             length = int(self.headers.get("Content-Length", "0"))
             payload = json.loads(self.rfile.read(length).decode("utf-8")) if length else {}
+            # The canonical routes are the handler's own, read from the
+            # module rather than guessed: the lifecycle routes are unversioned
+            # (/session, /heartbeat, /poll) while the pairing routes are
+            # versioned (/v1/broker/pairings/...).
             path_only = urllib.parse.urlparse(self.path).path
-            # The canonical routes are versioned; accept the short form and map
-            # it onto the real one so a caller cannot address a bare path.
             if path_only.startswith("/v1/"):
                 route = path_only
             else:
-                route = f"/v1/broker/{path_only.lstrip('/')}"
+                route = f"/{path_only.lstrip('/')}"
             auth = _auth_for_route(route)
             body = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
             response = broker.handler.handle(
@@ -335,13 +350,19 @@ def serve(host: str = "127.0.0.1", port: int = 0) -> int:
             TrustedLocalAgentHttpAuthContext,
         )
 
+        # The same per-route principal rule the real broker enforces: the Web
+        # session issues as an authenticated browser, the pairing redeem presents
+        # an *unauthenticated* device principal with a possession proof, and
+        # every post-pairing route is the authenticated device.
         if "pairings/challenge" in route:
             return TrustedLocalAgentHttpAuthContext(
                 principal_ref="principal.browser.3140",
                 account_ref="account.1", workspace_ref="workspace.1",
                 authenticated=True, tls_verified=True,
             )
-        return broker._device_auth
+        if "pairings/redeem" in route:
+            return broker._device_auth
+        return broker._authenticated_device_auth
 
     server = http.server.HTTPServer((host, port), Handler)
     holder["url"] = f"http://{host}:{server.server_address[1]}"

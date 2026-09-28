@@ -19,7 +19,7 @@
 
 import { spawn } from 'node:child_process';
 import {
-  existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync,
+  existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync,
 } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -41,7 +41,6 @@ if (!existsSync(electronBinary)) {
 for (const required of [
   path.join(distSrc, 'main', 'main.js'),
   path.join(distSrc, 'main', 'pairing-handoff-consumer.js'),
-  path.join(distSrc, 'main', 'pairing-main-flow-process.js'),
 ]) {
   if (!existsSync(required)) {
     console.error(`missing compiled module ${required} — run npm run build first`);
@@ -62,13 +61,30 @@ const projectRoot = process.env.PADIEM_AGENT_PROJECT_ROOT ?? '';
   const modules = [
     'main/main.js',
     'main/pairing-handoff-consumer.js',
-    'main/pairing-main-flow-process.js',
     'supervisor/runner-supervisor.js',
     'supervisor/production-runner-process-port.js',
   ];
   const missing = modules.filter((relative) => !existsSync(path.join(distRoot, relative)));
   if (missing.length > 0) {
     console.error(`missing compiled module(s): ${missing.join(', ')} — run npm run build first`);
+    process.exit(2);
+  }
+  // The old split spawn module is gone from source; a compiled leftover would
+  // mean the tree was never cleaned, and its presence must fail the run rather
+  // than satisfy it.
+  const deletedResidue = path.join(distRoot, 'main', 'pairing-main-flow-process.js');
+  if (existsSync(deletedResidue)) {
+    console.error('stale compiled residue present: main/pairing-main-flow-process.js — clean dist first');
+    process.exit(2);
+  }
+  // Provenance: the packaged entry the run actually launches.
+  const packaged = path.join(distRoot, 'main', 'main.cjs');
+  if (!existsSync(packaged)) {
+    console.error('missing the packaged entrypoint dist/src/main/main.cjs — run npm run build first');
+    process.exit(2);
+  }
+  if (statSync(packaged).mtimeMs < statSync(path.join(srcRoot, 'main', 'main.ts')).mtimeMs) {
+    console.error('packaged main.cjs is older than src/main/main.ts — rebuild first');
     process.exit(2);
   }
   const stale = modules.filter((relative) => {
@@ -92,6 +108,16 @@ if (!projectRoot) {
   console.error('PADIEM_AGENT_PROJECT_ROOT is required');
   process.exit(2);
 }
+
+// #3140: this harness owns the state it runs against. A previous run's
+// credential or run store would change the outcome without any code change —
+// which is what made the earlier run look intermittent.
+const stateDir = mkdtempSync(path.join(os.tmpdir(), 'claw4-3140-evidence-'));
+const credentialDir = path.join(stateDir, 'credentials');
+const runStoreDir = path.join(stateDir, 'run-store');
+mkdirSync(credentialDir, { recursive: true });
+mkdirSync(runStoreDir, { recursive: true });
+delete process.env.PADIEM_AGENT_CREDENTIAL_DIR;
 
 const brokerProcess = spawn(
   python,
@@ -157,6 +183,8 @@ const env = {
   PADIEM_AGENT_PROJECT_ROOT: projectRoot,
   PADIEM_PYTHON: python,
   // The resident is configured with the boundary it must redeem at.
+  PADIEM_AGENT_CREDENTIAL_DIR: credentialDir,
+  PADIEM_AGENT_RUN_STORE_DIR: runStoreDir,
   PADIEM_AGENT_DEVICE_ID: 'device.3140.resident',
   PADIEM_AGENT_AUTHORITY_REF: 'control-plane.local-agent-broker.3140.loopback.v1',
   // The main process records that it delivered the handoff, so the evidence
@@ -213,8 +241,62 @@ const summary = {
 };
 process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
 brokerProcess.kill();
+// Every child is gone before the harness-owned state is removed.
 rmSync(logDir, { recursive: true, force: true });
-const flowReported = (evidence?.main_flow_lines ?? []).find((line) => line.includes('"status"'));
-process.stdout.write(`${JSON.stringify({ ...summary, flow_reported: flowReported ?? null }, null, 2)}
-`);
-process.exit(evidence && evidence.handoff_delivered === true && flowReported ? 0 : 3);
+rmSync(stateDir, { recursive: true, force: true });
+// #3140: a delivery acknowledgement is necessary and nowhere near sufficient.
+// A run passes only when the resident came online on a real session, heartbeat
+// and poll, with the real worktree probe and the canonical P01 path, and with
+// no unapproved execution. Anything the resident refuses, any paired-but-not-
+// online state, and any traceback or error line fails the run.
+const lines = (evidence?.main_flow_lines ?? []).map((line) => String(line));
+const acks = lines.filter((line) => line.includes('"event":"handoff_ack"'));
+const refusals = lines.filter((line) => /"status":"(refused|paired_without_host)"/.test(line));
+const faults = lines.filter(
+  (line) => /Traceback|Error:|Exception/.test(line) || line.startsWith('  File "'),
+);
+const online = lines.some((line) => /"status":"online"/.test(line));
+const sessionOpened = lines.some((line) => /"event":"session_open"/.test(line));
+const heartbeatSeen = lines.some((line) => /"event":"heartbeat"/.test(line));
+const pollReached = lines.some((line) => /"event":"poll"/.test(line));
+const worktreePort = lines.some((line) => /"worktree_state_port":"WindowsGitWorktreeStatePort"/.test(line));
+const p01Reused = lines.some((line) => /"p01_approval_reused":true/.test(line));
+const unapprovedExecution = lines.filter((line) => /"unapproved_execution":[1-9]/.test(line));
+
+const checks = {
+  HANDOFF_OUTCOME_DELIVERED: evidence?.handoff_delivered === true,
+  ACK_AFTER_DURABLE_OWNERSHIP: acks.length === 1,
+  RESIDENT_STATUS_ONLINE: online,
+  CANONICAL_SESSION_OPENED: sessionOpened,
+  HEARTBEAT: heartbeatSeen,
+  POLL_PATH_REACHED: pollReached,
+  REAL_WORKTREE_PORT: worktreePort,
+  P01_APPROVAL_REUSED: p01Reused,
+  UNAPPROVED_EXECUTION: unapprovedExecution.length === 0,
+  NO_RESIDENT_REFUSAL: refusals.length === 0,
+  NO_TRACEBACK: faults.length === 0,
+};
+const passed = Object.values(checks).every(Boolean);
+
+process.stdout.write(
+  `${JSON.stringify(
+    {
+      ...summary,
+      checks,
+      resident_refusals: refusals,
+      resident_faults: faults.slice(0, 4),
+      passed,
+      loopback_listener: true,
+      public_inbound_interface: false,
+      public_inbound_pc_port: 0,
+      pairing_code_in_output: summary.pairing_code_in_output,
+    },
+    null,
+    2,
+  )}
+`,
+);
+brokerProcess.kill();
+rmSync(logDir, { recursive: true, force: true });
+rmSync(stateDir, { recursive: true, force: true });
+process.exit(passed ? 0 : 3);

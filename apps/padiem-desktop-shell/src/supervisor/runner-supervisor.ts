@@ -125,6 +125,7 @@ export class HeadlessRunnerSupervisor implements RunnerSupervisor {
   // #3140 diagnostic: the handle is dropped on exit, so its bounded
   // output is retained here. Otherwise the evidence marker, which is read
   // after the resident is gone, would see nothing.
+  #residentSettleListeners = new Set<() => void>();
   #residentSettledOutput: { readonly lines: readonly string[]; readonly maxLines: number } | null = null;
   #residentStartedAtMs: number | null = null;
   #stopCount = 0;
@@ -235,7 +236,15 @@ export class HeadlessRunnerSupervisor implements RunnerSupervisor {
     handle.onExit(() => {
       // Snapshot before the handle is dropped, so the output survives exit.
       this.#residentSettledOutput = this.boundedResidentOutput();
+      for (const listener of [...this.#residentSettleListeners]) listener();
+      this.#residentSettleListeners.clear();
     });
+  }
+
+  /** Registers a one-shot listener for the resident settling. */
+  onResidentSettled(listener: () => void): () => void {
+    this.#residentSettleListeners.add(listener);
+    return () => this.#residentSettleListeners.delete(listener);
   }
 
   /**

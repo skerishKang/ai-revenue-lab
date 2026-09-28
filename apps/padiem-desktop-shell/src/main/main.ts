@@ -210,6 +210,13 @@ async function ensureResidentProcess(): Promise<boolean> {
   const spec = residentSpec();
   if (!spec) return false;
   await supervisor.startResident(spec);
+  supervisor.onResidentSettled(() => {
+    try {
+      recordPairingHandoffEvidence(lastHandoffOutcome);
+    } catch {
+      // Evidence capture must never disturb shutdown.
+    }
+  });
   return true;
 }
 

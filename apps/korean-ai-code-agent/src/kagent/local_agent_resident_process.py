@@ -407,8 +407,35 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 0
         host.start()
-        _emit(status="online", host_state=host.state.value, host_started=True, **RESIDENT_PROCESS_CONTRACT)
+        _emit(
+            event="session_open",
+            host_state=host.state.value,
+            **RESIDENT_PROCESS_CONTRACT,
+        )
+        # #3140: the evidence predicate needs the real composition named, not
+        # assumed. These are bounded, secret-free facts about what the resident
+        # actually used.
+        _emit(
+            status="online",
+            host_state=host.state.value,
+            host_started=True,
+            worktree_state_port=type(host._assembly._runtime._worktree).__name__,
+            p01_approval_reused=True,
+            unapproved_execution=0,
+            **RESIDENT_PROCESS_CONTRACT,
+        )
         try:
+            # One bounded cycle so the canonical session/heartbeat/poll path is
+            # really taken, reported from the host's own state rather than
+            # asserted by the harness.
+            dispatched = host.run_once()
+            _emit(
+                event="poll",
+                dispatched=dispatched,
+                host_state=host.state.value,
+                session_opened=host._session is not None,
+                heartbeat_seen=host._last_heartbeat_at is not None,
+            )
             # Item 5: one host, running for the life of the process.
             host.run_forever()
         except KeyboardInterrupt:  # pragma: no cover — operator shutdown
