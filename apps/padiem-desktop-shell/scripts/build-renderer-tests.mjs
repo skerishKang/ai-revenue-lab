@@ -1,5 +1,5 @@
 /**
- * CLAW5 #3157 — compile the renderer modules and their test for the test suite.
+ * CLAW5 #3157 · CLAW1 #3165 — compile the renderer modules and their tests for the test suite.
  *
  * The production build bundles the renderer into one file and removes the
  * per-module output, so a test that exercises the real i18n / preference / view
@@ -8,10 +8,10 @@
  * `node --test dist/tests/*.test.js` step already looks.
  *
  * Two passes, in this order on purpose: the renderer modules must exist before
- * the test can resolve its relative imports of them.
+ * a test can resolve its relative imports of them.
  *
  *   pass 1  src/renderer/*  -> dist/tests/renderer/*
- *   pass 2  tests/desktop-settings-3157.test.ts -> dist/tests/*
+ *   pass 2  tests/desktop-settings-3157.test.ts and tests/desktop-easy-mode-3165.test.ts -> dist/tests/*
  */
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
@@ -74,18 +74,29 @@ if (!checkOnly) {
   await mkdir(path.join(root, 'dist', 'tests', 'renderer'), { recursive: true });
 }
 
-const testFile = path.join(root, 'tests', 'desktop-settings-3157.test.ts');
-if (report(compile([testFile], { outDir: path.join(root, 'dist', 'tests') }))) {
-  process.exit(1);
+const testFiles = ['desktop-settings-3157.test.ts', 'desktop-easy-mode-3165.test.ts'].map((name) =>
+  path.join(root, 'tests', name),
+);
+for (const testFile of testFiles) {
+  if (report(compile([testFile], { outDir: path.join(root, 'dist', 'tests') }))) {
+    process.exit(1);
+  }
 }
 
 if (!checkOnly) {
-  // The emitted test is the same file, relocated under dist/tests. Its
+  // The emitted tests are the same files, relocated under dist/tests. Their
   // source-relative imports of the renderer therefore have to point at the
-  // modules pass 1 emitted next to it.
-  const emittedTest = path.join(root, 'dist', 'tests', 'desktop-settings-3157.test.js');
-  const source = await readFile(emittedTest, 'utf8');
-  await writeFile(emittedTest, source.replaceAll('../src/renderer/', './renderer/'));
+  // modules pass 1 emitted next to them.
+  for (const testFile of testFiles) {
+    const emittedTest = path.join(
+      root,
+      'dist',
+      'tests',
+      path.basename(testFile).replace(/\.ts$/, '.js'),
+    );
+    const source = await readFile(emittedTest, 'utf8');
+    await writeFile(emittedTest, source.replaceAll('../src/renderer/', './renderer/'));
+  }
 }
 
 process.stdout.write(

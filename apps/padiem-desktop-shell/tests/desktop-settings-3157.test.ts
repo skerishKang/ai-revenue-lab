@@ -1,5 +1,6 @@
 /**
- * CLAW5 #3157 — renderer tests for Korean/English Settings and Easy/Advanced.
+ * CLAW5 #3157 · CLAW1 #3165 — renderer tests for Korean/English Settings,
+ * Easy/Advanced views and the product-language Easy surface.
  *
  * The renderer layer is the whole of this change, so the tests exercise the
  * real modules: the locale table, the non-sensitive preference store, the
@@ -21,12 +22,13 @@ import {
   SHELL_LOCALES,
   deviceStateText,
   isShellLocale,
+  readinessStateText,
   resolveInitialLocale,
-  runnerStateText,
   translate,
   type ShellLocale,
 } from '../src/renderer/i18n.js';
 import {
+  DEFAULT_THEME_PREFERENCE,
   DEFAULT_VIEW_MODE,
   SHELL_VIEW_MODES,
   STORED_PREFERENCE_KEYS,
@@ -34,6 +36,7 @@ import {
   createLocalPreferenceStorage,
   loadUiPreferences,
   saveUiPreferences,
+  type ShellThemePreference,
   type UiPreferenceStorage,
 } from '../src/renderer/preferences.js';
 import {
@@ -55,13 +58,6 @@ import type { BoundedLogResponse, RunnerHealthResponse, ShellStatus } from '../s
 // dist/tests while the sources it inspects live under src/.
 const packageRoot = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const rendererDir = path.join(packageRoot, 'src', 'renderer');
-
-/** Source with comments removed, so a doc comment is not a secret finding. */
-function codeOnly(file: string): string {
-  return readFileSync(path.join(rendererDir, file), 'utf8')
-    .replace(/\/\*[\s\S]*?\*\//g, ' ')
-    .replace(/(^|[^:])\/\/.*$/gm, '$1');
-}
 
 // --- helpers ---------------------------------------------------------------
 class MemoryStorage implements UiPreferenceStorage {
@@ -102,24 +98,32 @@ const NOOP_ACTIONS: ShellActions = {
   submitPairingDeepLink: async () => undefined,
 };
 
-function render(element: ReactElement): string {
-  return renderToStaticMarkup(element);
+function render(element: ReactElement | null): string {
+  return element === null ? '' : renderToStaticMarkup(element);
 }
+
+const THEMES_ORDER: readonly ShellThemePreference[] = ['system', 'light', 'dark'];
 
 // --- 1. both locales exist and differ --------------------------------------
 test('#3157 Korean and English are both available and genuinely different', () => {
   assert.deepEqual([...SHELL_LOCALES].sort(), ['en', 'ko']);
-  for (const key of ['app.title', 'runner.start', 'runner.stop', 'runner.refresh', 'connection.title'] as const) {
+  for (const key of [
+    'app.title',
+    'readiness.start',
+    'readiness.pause',
+    'connection.recheck',
+    'connection.title',
+  ] as const) {
     assert.notEqual(translate('ko', key), translate('en', key), `missing translation for ${key}`);
   }
-  assert.equal(translate('ko', 'app.title'), '파디엠 데스크톱');
+  assert.equal(translate('ko', 'app.title'), 'Padiem 데스크톱');
   assert.equal(translate('en', 'app.title'), 'Padiem Desktop');
-  assert.equal(translate('ko', 'runner.start'), '실행기 시작');
-  assert.equal(translate('ko', 'runner.stop'), '실행기 중지');
-  assert.equal(translate('ko', 'runner.refresh'), '새로고침');
-  assert.equal(translate('en', 'runner.start'), 'Start runner');
-  assert.equal(translate('en', 'runner.stop'), 'Stop runner');
-  assert.equal(translate('en', 'runner.refresh'), 'Refresh');
+  assert.equal(translate('ko', 'readiness.start'), '준비하기');
+  assert.equal(translate('ko', 'readiness.pause'), '일시 정지');
+  assert.equal(translate('ko', 'connection.recheck'), '연결 다시 확인');
+  assert.equal(translate('en', 'readiness.start'), 'Get ready');
+  assert.equal(translate('en', 'readiness.pause'), 'Pause');
+  assert.equal(translate('en', 'connection.recheck'), 'Check the connection again');
 });
 
 test('#3157 the initial locale follows the host when nothing is stored', () => {
@@ -151,13 +155,11 @@ test('#3157 a language switch is visible at runtime in the rendered DOM', () => 
       advanced: false,
     }),
   );
-  assert.match(korean, /실행기 시작/);
-  assert.match(korean, /실행기 중지/);
-  assert.match(korean, /새로고침/);
-  assert.match(english, /Start runner/);
-  assert.match(english, /Stop runner/);
-  assert.match(english, /Refresh/);
-  assert.doesNotMatch(korean, /Start runner/);
+  assert.match(korean, /준비하기/);
+  assert.match(korean, /일시 정지/);
+  assert.match(english, /Get ready/);
+  assert.match(english, /Pause/);
+  assert.doesNotMatch(korean, /Get ready/);
 });
 
 test('#3157 the language labels are the languages themselves', () => {
@@ -166,24 +168,25 @@ test('#3157 the language labels are the languages themselves', () => {
 });
 
 // --- 2. the preference persists and reloads --------------------------------
-test('#3157 a language and view choice persists locally and reloads', () => {
+test('#3157 a language, theme and view choice persists locally and reloads', () => {
   const storage = new MemoryStorage();
   const first = loadUiPreferences(storage, 'en-US');
-  assert.deepEqual(first, { locale: 'en', view: 'easy' });
+  assert.deepEqual(first, { locale: 'en', theme: 'system', view: 'easy' });
 
-  saveUiPreferences(storage, { locale: 'ko', view: 'advanced' });
+  saveUiPreferences(storage, { locale: 'ko', theme: 'dark', view: 'advanced' });
   const reloaded = loadUiPreferences(
     new MemoryStorage({ [UI_PREFERENCE_STORAGE_KEY]: storage.read(UI_PREFERENCE_STORAGE_KEY) ?? '' }),
     'en-US',
   );
-  assert.deepEqual(reloaded, { locale: 'ko', view: 'advanced' });
+  assert.deepEqual(reloaded, { locale: 'ko', theme: 'dark', view: 'advanced' });
 });
 
-test('#3157 only the two non-sensitive keys are ever written', () => {
+test('#3157 only the three non-sensitive keys are ever written', () => {
   const storage = new MemoryStorage();
-  saveUiPreferences(storage, { locale: 'ko', view: 'easy' });
+  saveUiPreferences(storage, { locale: 'ko', theme: 'dark', view: 'easy' });
   const written = JSON.parse(storage.read(UI_PREFERENCE_STORAGE_KEY)!);
   assert.deepEqual(Object.keys(written).sort(), [...STORED_PREFERENCE_KEYS].sort());
+  assert.deepEqual([...STORED_PREFERENCE_KEYS].sort(), ['locale', 'theme', 'view']);
   const rendered = storage.read(UI_PREFERENCE_STORAGE_KEY)!;
   for (const forbidden of ['pairing', 'credential', 'token', 'deviceId', 'pid', 'broker']) {
     assert.doesNotMatch(rendered, new RegExp(forbidden, 'i'));
@@ -195,10 +198,16 @@ test('#3157 a hostile or unknown stored preference falls back to the defaults', 
     const storage = new MemoryStorage({ [UI_PREFERENCE_STORAGE_KEY]: raw });
     const loaded = loadUiPreferences(storage, 'ko-KR');
     assert.equal(loaded.view, 'easy', raw);
+    assert.equal(loaded.theme, DEFAULT_THEME_PREFERENCE, raw);
     assert.ok(isShellLocale(loaded.locale));
   }
   // An unknown stored locale still yields a supported one.
   assert.equal(loadUiPreferences(new MemoryStorage({ [UI_PREFERENCE_STORAGE_KEY]: '{"locale":"fr"}' }), 'en-GB').locale, 'en');
+  // An unknown stored theme still yields a supported one.
+  assert.equal(
+    loadUiPreferences(new MemoryStorage({ [UI_PREFERENCE_STORAGE_KEY]: '{"theme":"neon"}' }), 'en-GB').theme,
+    'system',
+  );
 });
 
 test('#3157 a storage that throws never breaks the app', () => {
@@ -210,8 +219,10 @@ test('#3157 a storage that throws never breaks the app', () => {
       throw new Error('blocked');
     },
   };
-  assert.deepEqual(loadUiPreferences(hostile, 'ko-KR'), { locale: 'ko', view: 'easy' });
-  assert.doesNotThrow(() => saveUiPreferences(hostile, { locale: 'ko', view: 'advanced' }));
+  assert.deepEqual(loadUiPreferences(hostile, 'ko-KR'), { locale: 'ko', theme: 'system', view: 'easy' });
+  assert.doesNotThrow(() =>
+    saveUiPreferences(hostile, { locale: 'ko', theme: 'light', view: 'advanced' }),
+  );
   const local = createLocalPreferenceStorage(undefined);
   assert.equal(local.read(UI_PREFERENCE_STORAGE_KEY), null);
 });
@@ -229,7 +240,13 @@ test('#3157 Easy mode is the default and hides every developer field', () => {
   });
 
   const connection = render(
-    createElement(ConnectionPanel, { status: STATUS, locale: 'ko', advanced: easy.developerFacts }),
+    createElement(ConnectionPanel, {
+      status: STATUS,
+      busy: false,
+      actions: NOOP_ACTIONS,
+      locale: 'ko',
+      advanced: easy.developerFacts,
+    }),
   );
   const runner = render(
     createElement(RunnerPanel, {
@@ -257,6 +274,42 @@ test('#3157 Easy mode is the default and hides every developer field', () => {
   }
 });
 
+test('#3157 Easy view never speaks in runner or process language', () => {
+  const easy = visibilityFor('easy');
+  const connection = render(
+    createElement(ConnectionPanel, {
+      status: STATUS,
+      busy: false,
+      actions: NOOP_ACTIONS,
+      locale: 'ko',
+      advanced: easy.developerFacts,
+    }),
+  );
+  const runner = render(
+    createElement(RunnerPanel, {
+      status: STATUS,
+      health: HEALTH,
+      busy: false,
+      actions: NOOP_ACTIONS,
+      locale: 'ko',
+      advanced: easy.developerFacts,
+    }),
+  );
+  for (const markup of [connection, runner]) {
+    assert.doesNotMatch(markup, /실행기/);
+    assert.doesNotMatch(markup, /Runner/);
+    assert.doesNotMatch(markup, /새로고침/);
+    assert.doesNotMatch(markup, /Refresh/);
+    assert.doesNotMatch(markup, /프로세스/);
+    assert.doesNotMatch(markup, /Process id/i);
+    assert.doesNotMatch(markup, /기록/);
+  }
+  // ...while still saying what this computer can do.
+  assert.match(runner, /작업 준비/);
+  assert.match(connection, /컴퓨터 연결/);
+  assert.match(connection, /연결 다시 확인/);
+});
+
 test('#3157 Advanced mode keeps the existing diagnostics', () => {
   const advanced = visibilityFor('advanced');
   assert.deepEqual(advanced, {
@@ -267,7 +320,13 @@ test('#3157 Advanced mode keeps the existing diagnostics', () => {
   });
 
   const connection = render(
-    createElement(ConnectionPanel, { status: STATUS, locale: 'en', advanced: advanced.developerFacts }),
+    createElement(ConnectionPanel, {
+      status: STATUS,
+      busy: false,
+      actions: NOOP_ACTIONS,
+      locale: 'en',
+      advanced: advanced.developerFacts,
+    }),
   );
   const runner = render(
     createElement(RunnerPanel, {
@@ -294,7 +353,13 @@ test('#3157 the canonical device state is the primary connection truth in both v
   for (const locale of SHELL_LOCALES) {
     for (const advanced of [false, true]) {
       const markup = render(
-        createElement(ConnectionPanel, { status: STATUS, locale, advanced }),
+        createElement(ConnectionPanel, {
+          status: STATUS,
+          busy: false,
+          actions: NOOP_ACTIONS,
+          locale,
+          advanced,
+        }),
       );
       // The wording is plain, the canonical value still travels with it.
       assert.match(markup, new RegExp(`data-canonical-state="${STATUS.deviceState}"`));
@@ -316,9 +381,10 @@ test('#3157 every canonical state has plain wording in both languages', () => {
     assert.equal(deviceStateText('en', state as never), en);
   }
   assert.equal(deviceStateText('ko', 'UNKNOWN'), '확인 중');
-  assert.equal(runnerStateText('ko', 'RUNNING'), '실행 중');
-  assert.equal(runnerStateText('en', 'STOPPED'), 'Stopped');
-  assert.equal(runnerStateText('ko', 'SOMETHING_NEW'), '확인 중');
+  assert.equal(readinessStateText('ko', 'RUNNING'), '준비됨');
+  assert.equal(readinessStateText('ko', 'STOPPED'), '일시 정지됨');
+  assert.equal(readinessStateText('en', 'STOPPED'), 'Paused');
+  assert.equal(readinessStateText('ko', 'SOMETHING_NEW'), '확인 중');
 });
 
 test('#3157 the Easy view never shows pairing-seam text as the connection state', () => {
@@ -330,13 +396,22 @@ test('#3157 the Easy view never shows pairing-seam text as the connection state'
     }),
   );
   assert.doesNotMatch(seam, /no deep link submitted/i);
+  assert.equal(seam, '');
   // And the canonical connection panel is unaffected by the seam text.
-  const connection = render(createElement(ConnectionPanel, { status: STATUS, locale: 'ko', advanced: false }));
+  const connection = render(
+    createElement(ConnectionPanel, {
+      status: STATUS,
+      busy: false,
+      actions: NOOP_ACTIONS,
+      locale: 'ko',
+      advanced: false,
+    }),
+  );
   assert.match(connection, /연결 중/);
 });
 
 // --- 5. no functional drift: the same allowlisted API calls ---------------
-test('#3157 Start/Stop/Refresh still drive the existing actions', () => {
+test('#3157 Start/Stop/Recheck still drive the existing actions', () => {
   const calls: string[] = [];
   const actions: ShellActions = {
     start: async () => {
@@ -352,7 +427,7 @@ test('#3157 Start/Stop/Refresh still drive the existing actions', () => {
       calls.push('submitPairingDeepLink');
     },
   };
-  const markup = render(
+  const runner = render(
     createElement(RunnerPanel, {
       status: STATUS,
       health: HEALTH,
@@ -362,10 +437,19 @@ test('#3157 Start/Stop/Refresh still drive the existing actions', () => {
       advanced: false,
     }),
   );
-  // The three existing controls, unchanged, in either language.
-  assert.match(markup, /Start runner/);
-  assert.match(markup, /Stop runner/);
-  assert.match(markup, /Refresh/);
+  const connection = render(
+    createElement(ConnectionPanel, {
+      status: STATUS,
+      busy: false,
+      actions,
+      locale: 'en',
+      advanced: false,
+    }),
+  );
+  // The same three controls, in product language.
+  assert.match(runner, /Get ready/);
+  assert.match(runner, /Pause/);
+  assert.match(connection, /Check the connection again/);
   void actions.start();
   void actions.stop();
   void actions.refresh();
@@ -384,11 +468,12 @@ test('#3157 the renderer still calls only the six allowlisted API methods', () =
 
 // --- 6. negative source/DOM check: no secret fields -----------------------
 test('#3157 Easy view never renders raw pairing code or credential fields', () => {
+  const fakePairingCode = 'SECRET-CODE-1234';
   const secretish = render(
     createElement(PairingPanel, {
       pairing: {
-        reason: 'padiem://pair?code=SECRET-CODE-1234',
-        deepLink: 'padiem://pair?code=SECRET-CODE-1234',
+        reason: `padiem://pair?code=${fakePairingCode}`,
+        deepLink: `padiem://pair?code=${fakePairingCode}`,
       } as never,
       locale: 'ko',
       advanced: false,
@@ -397,6 +482,8 @@ test('#3157 Easy view never renders raw pairing code or credential fields', () =
   assert.doesNotMatch(secretish, /SECRET-CODE-1234/);
   assert.doesNotMatch(secretish, /padiem:\/\/pair\?code=/);
   assert.doesNotMatch(secretish, /credential/i);
+  // #3165 — Easy view renders no diagnostics panel at all.
+  assert.equal(secretish, '');
 });
 
 test('#3157 neither view nor preference code mentions credentials, pairing codes or P01', () => {
@@ -407,7 +494,7 @@ test('#3157 neither view nor preference code mentions credentials, pairing codes
     }
   }
   // The preference record itself is the smallest possible surface.
-  assert.deepEqual([...STORED_PREFERENCE_KEYS].sort(), ['locale', 'view']);
+  assert.deepEqual([...STORED_PREFERENCE_KEYS].sort(), ['locale', 'theme', 'view']);
 });
 
 /**
@@ -428,11 +515,12 @@ function viewMarkup(state: ShellViewState, view: 'easy' | 'advanced'): string {
   return render(
     createElement(ShellView, {
       state,
-      preferences: { locale: 'ko', view },
+      preferences: { locale: 'ko', theme: 'system', view },
       actions: NOOP_ACTIONS,
       settingsOpen: false,
       onToggleSettings: () => undefined,
       onLocale: () => undefined,
+      onTheme: () => undefined,
       onView: () => undefined,
       onCloseSettings: () => undefined,
     }),
@@ -456,7 +544,7 @@ test('#3157 Easy view exposes no raw technical notice', () => {
     assert.doesNotMatch(markup, new RegExp(term, 'i'), `Easy view leaked: ${term}`);
   }
   // ...while still saying something useful.
-  assert.match(markup, /실행기를 시작했습니다/);
+  assert.match(markup, /작업 준비를 시작했습니다/);
 });
 
 test('#3157 the stop notice is plain in Easy view too', () => {
@@ -471,7 +559,7 @@ test('#3157 the stop notice is plain in Easy view too', () => {
   );
   assert.doesNotMatch(markup, /orphan/i);
   assert.doesNotMatch(markup, /headless/i);
-  assert.match(markup, /실행기를 중지했습니다/);
+  assert.match(markup, /작업을 일시 정지했습니다/);
 });
 
 test('#3157 Advanced view is where the bounded raw diagnostic is allowed', () => {
@@ -488,7 +576,7 @@ test('#3157 Advanced view is where the bounded raw diagnostic is allowed', () =>
   // The raw runner reason, the raw pairing-seam text, the log and the pid are
   // all back in Advanced — in the language the user chose.
   assert.match(advancedKo, /headless runner started as a separate process/);
-  assert.match(advancedKo, /no deep link submitted in this session/);
+  assert.match(advancedKo, /이 세션에서 제출된 딥링크가 없습니다/);
   assert.match(advancedKo, /runner: started/);
   assert.match(advancedKo, /기준 권위/);
   assert.match(advancedKo, /프로세스 경계/);
@@ -497,11 +585,12 @@ test('#3157 Advanced view is where the bounded raw diagnostic is allowed', () =>
   const advancedEn = render(
     createElement(ShellView, {
       state,
-      preferences: { locale: 'en', view: 'advanced' },
+      preferences: { locale: 'en', theme: 'system', view: 'advanced' },
       actions: NOOP_ACTIONS,
       settingsOpen: false,
       onToggleSettings: () => undefined,
       onLocale: () => undefined,
+      onTheme: () => undefined,
       onView: () => undefined,
       onCloseSettings: () => undefined,
     }),
@@ -536,11 +625,12 @@ test('#3157 every raw value the Easy view touches is behind the visibility guard
   assert.equal(guardedError, true, 'the raw bridge error must stay behind the Advanced guard');
 });
 
-test('#3157 the Settings surface offers both languages and both views', () => {
+test('#3157 the Settings surface offers both languages, the themes and both views', () => {
   const markup = render(
     createElement(SettingsPanel, {
-      preferences: { locale: 'ko', view: 'easy' },
+      preferences: { locale: 'ko', theme: 'system', view: 'easy' },
       onLocale: () => undefined,
+      onTheme: () => undefined,
       onView: () => undefined,
       onClose: () => undefined,
     }),
@@ -550,11 +640,17 @@ test('#3157 the Settings surface offers both languages and both views', () => {
   assert.match(markup, /English/);
   assert.match(markup, /쉬운 모드/);
   assert.match(markup, /고급 모드/);
+  assert.match(markup, /테마/);
+  assert.match(markup, /시스템/);
+  assert.match(markup, /라이트/);
+  assert.match(markup, /다크/);
   assert.match(markup, /value="ko"/);
   assert.match(markup, /value="en"/);
   assert.match(markup, /value="easy"/);
   assert.match(markup, /value="advanced"/);
-  assert.match(markup, /설정/);
+  for (const theme of THEMES_ORDER) {
+    assert.match(markup, new RegExp(`value="${theme}"`));
+  }
 });
 
 test('#3157 the settings hint says a preference changes nothing else', () => {
