@@ -40,6 +40,7 @@ export const PAIRING_SEAM = Object.freeze({
   AUTHORITY_OWNER: '#3080',
   // #3095: the single allowlisted transfer parameter and its exact shape.
   PAIRING_CODE_PARAM: 'code',
+  PAIRING_CHALLENGE_PARAM: 'challenge',
   PAIRING_CODE_HEX_CHARS: 32,
   PAIRING_CODE_TRANSFER_BOUNDED: true,
   PAIRING_CODE_GENERAL_PERSISTENCE: false,
@@ -60,6 +61,12 @@ export class PairingDeepLinkError extends Error {
 export interface ParsedPairingDeepLink {
   readonly kind: 'pair';
   readonly correlationRef: string;
+  /**
+   * #3140: the server-owned challenge the handoff redeems. It travels with the
+   * code so the resident redeems *that* challenge at the one configured broker
+   * instead of minting one. It is a bounded identifier, not a secret.
+   */
+  readonly challengeId: string;
   readonly paramNames: readonly string[];
   /** Names only — every non-allowlisted value is deliberately not returned. */
   readonly valueHandling: 'names-only';
@@ -183,6 +190,7 @@ export function parsePairingDeepLink(raw: unknown): ParsedPairingDeepLink {
   // parameter keeps the names-only behaviour it always had.
   let pairingCodeTransfer: string | null = null;
   let codeParamSeen = false;
+  let challengeTransfer: string | null = null;
   for (const [name, value] of url.searchParams.entries()) {
     paramCount += 1;
     if (paramCount > PAIRING_SEAM.MAX_PARAM_COUNT) {
@@ -210,6 +218,8 @@ export function parsePairingDeepLink(raw: unknown): ParsedPairingDeepLink {
       }
       codeParamSeen = true;
       pairingCodeTransfer = pairingCodeOrNull(value);
+    } else if (lower === PAIRING_SEAM.PAIRING_CHALLENGE_PARAM) {
+      challengeTransfer = challengeIdOrNull(value);
     }
     names.push(lower);
   }
@@ -222,10 +232,18 @@ export function parsePairingDeepLink(raw: unknown): ParsedPairingDeepLink {
 
   return Object.freeze({
     kind: 'pair' as const,
+    challengeId: challengeTransfer ?? '',
     correlationRef: correlationRefFrom(canonical),
     paramNames: Object.freeze([...names].sort()),
     valueHandling: 'names-only' as const,
     pairingCodeTransfer,
     pairingCodeTransferBounded: true as const,
   });
+}
+
+
+/** A challenge id is a bounded safe reference; a malformed value yields none. */
+function challengeIdOrNull(value: string): string | null {
+  if (!/^[A-Za-z0-9][A-Za-z0-9._:@+-]{0,255}$/.test(value)) return null;
+  return value;
 }

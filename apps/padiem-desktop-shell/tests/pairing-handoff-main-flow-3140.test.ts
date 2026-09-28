@@ -23,33 +23,43 @@ const CODE = '0123456789abcdef0123456789abcdef';
 
 /** Mirrors the controller's two-phase ownership: peek never consumes. */
 class FakeController {
-  #pending: { pairingCode: string; correlationRef: string } | null;
+  #pending: { pairingCode: string; correlationRef: string; challengeId: string } | null;
   peekCount = 0;
   commitCount = 0;
 
-  constructor(initial: { pairingCode: string; correlationRef: string } | null) {
+  constructor(
+    initial: { pairingCode: string; correlationRef: string; challengeId: string } | null,
+  ) {
     this.#pending = initial;
   }
 
-  peekPairingHandoffForRunner(): { pairingCode: string; correlationRef: string } | null {
+  peekPairingHandoffForRunner(): {
+    pairingCode: string;
+    correlationRef: string;
+    challengeId: string;
+  } | null {
     this.peekCount += 1;
     return this.#pending === null ? null : { ...this.#pending };
   }
 
-  commitPairingHandoffDelivery(): { pairingCode: string; correlationRef: string } | null {
+  commitPairingHandoffDelivery(): {
+    pairingCode: string;
+    correlationRef: string;
+    challengeId: string;
+  } | null {
     this.commitCount += 1;
     const handoff = this.#pending;
     this.#pending = null;
     return handoff;
   }
 
-  arm(handoff: { pairingCode: string; correlationRef: string }): void {
+  arm(handoff: { pairingCode: string; correlationRef: string; challengeId: string }): void {
     this.#pending = handoff;
   }
 }
 
 test('the handoff reaches the runner exactly once', async () => {
-  const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1' });
+  const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1', challengeId: 'challenge.1' });
   const sent: string[] = [];
   const consumer = new PairingHandoffConsumer({
     source: controller,
@@ -68,7 +78,7 @@ test('the handoff reaches the runner exactly once', async () => {
 });
 
 test('an unavailable runner leaves the handoff armed instead of burning it', async () => {
-  const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1' });
+  const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1', challengeId: 'challenge.1' });
   let live = false;
   const consumer = new PairingHandoffConsumer({
     source: controller,
@@ -87,7 +97,7 @@ test('an unavailable runner leaves the handoff armed instead of burning it', asy
 });
 
 test('the delivered line carries the code exactly once and only to the runner', async () => {
-  const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1' });
+  const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1', challengeId: 'challenge.1' });
   const sent: string[] = [];
   const consumer = new PairingHandoffConsumer({
     source: controller,
@@ -105,11 +115,12 @@ test('the delivered line carries the code exactly once and only to the runner', 
   assert.equal(payload.contract_version, 'claw-desktop-pairing-handoff.v1');
   assert.equal(payload.pairing_code, CODE);
   assert.equal(payload.correlation_ref, 'pairref.1');
+  assert.equal(payload.challenge_id, 'challenge.1');
   assert.equal(line.split(CODE).length - 1, 1, 'the code appears exactly once');
 });
 
 test('the consumer retains no pairing code and reports a marker instead', async () => {
-  const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1' });
+  const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1', challengeId: 'challenge.1' });
   const consumer = new PairingHandoffConsumer({
     source: controller,
     deliver: () => Promise.resolve({ acknowledged: true, handoffMarker: handoffDeliveryMarker(CODE) }),
@@ -124,7 +135,7 @@ test('the consumer retains no pairing code and reports a marker instead', async 
 });
 
 test('a refused delivery is reported truthfully and never retried silently', async () => {
-  const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1' });
+  const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1', challengeId: 'challenge.1' });
   const consumer = new PairingHandoffConsumer({
     source: controller,
     deliver: () => Promise.reject(new Error('pipe closed')),
@@ -148,9 +159,13 @@ test('the consumer adds no pairing authority, host, execution authority or port'
 
 test('a deep link armed by the main flow is what the consumer drains', async () => {
   // The handoff the shell receives is the one #3095 already parses and bounds.
-  const parsed = parsePairingDeepLink(`padiem://pair?code=${CODE}&ref=pairref.1`);
+  const parsed = parsePairingDeepLink(`padiem://pair?code=${CODE}&challenge=challenge.1`);
   assert.equal(parsed.kind, 'pair');
-  const controller = new FakeController({ pairingCode: CODE, correlationRef: parsed.correlationRef });
+  const controller = new FakeController({
+    pairingCode: CODE,
+    correlationRef: parsed.correlationRef,
+    challengeId: parsed.challengeId,
+  });
   const consumer = new PairingHandoffConsumer({
     source: controller,
     deliver: () => Promise.resolve({ acknowledged: true, handoffMarker: handoffDeliveryMarker(CODE) }),
@@ -160,7 +175,7 @@ test('a deep link armed by the main flow is what the consumer drains', async () 
 });
 
 test('a failed delivery leaves the one-time handoff armed and retryable', async () => {
-  const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1' });
+  const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1', challengeId: 'challenge.1' });
   let accept = false;
   const sent: string[] = [];
   const consumer = new PairingHandoffConsumer({
@@ -244,7 +259,7 @@ test('a successful write is not a delivery acknowledgement', async () => {
     ['ack_mismatch', { acknowledged: true, handoffMarker: handoffDeliveryMarker('other') }],
   ];
   for (const [expected, acknowledgement] of cases) {
-    const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1' });
+    const controller = new FakeController({ pairingCode: CODE, correlationRef: 'pairref.1', challengeId: 'challenge.1' });
     const consumer = new PairingHandoffConsumer({
       source: controller,
       deliver: () => Promise.resolve(acknowledgement),

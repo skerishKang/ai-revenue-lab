@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import hashlib
 import io
+from pathlib import Path
 import json
 import os
 import sys
@@ -229,9 +230,11 @@ class ResidentProcess3140Test(unittest.TestCase):
 
     def test_redeem_uses_the_authority_that_issued_the_challenge(self) -> None:
         broker = _SharedBroker()
+        credential_dir = tempfile.mkdtemp(prefix="claw4-3140-cred-")
         challenge_id, pairing_code = broker.web_issues()
         entry = BrokerEntry(
-            device_id=DEVICE_ID, authority_ref=AUTHORITY_REF, request_port=broker
+            device_id=DEVICE_ID, authority_ref=AUTHORITY_REF, request_port=broker,
+            credential_dir=credential_dir,
         )
         acks: list[dict] = []
         with tempfile.TemporaryDirectory() as base_dir:
@@ -254,9 +257,11 @@ class ResidentProcess3140Test(unittest.TestCase):
         main process keeps its one-shot armed."""
 
         broker = _SharedBroker()
+        credential_dir = tempfile.mkdtemp(prefix="claw4-3140-cred-")
         challenge_id, pairing_code = broker.web_issues()
         entry = BrokerEntry(
-            device_id=DEVICE_ID, authority_ref=AUTHORITY_REF, request_port=broker
+            device_id=DEVICE_ID, authority_ref=AUTHORITY_REF, request_port=broker,
+            credential_dir=credential_dir,
         )
         with tempfile.TemporaryDirectory() as base_dir:
             redeem_handoff(
@@ -274,9 +279,11 @@ class ResidentProcess3140Test(unittest.TestCase):
 
     def test_a_code_from_another_authority_cannot_be_redeemed(self) -> None:
         broker = _SharedBroker()
+        credential_dir = tempfile.mkdtemp(prefix="claw4-3140-cred-")
         _foreign_challenge, foreign_code = _SharedBroker(nonce_start=0xF0000).web_issues()
         entry = BrokerEntry(
-            device_id=DEVICE_ID, authority_ref=AUTHORITY_REF, request_port=broker
+            device_id=DEVICE_ID, authority_ref=AUTHORITY_REF, request_port=broker,
+            credential_dir=credential_dir,
         )
         with tempfile.TemporaryDirectory() as base_dir:
             with self.assertRaises(ContractError):
@@ -316,15 +323,20 @@ class ResidentProcess3140Test(unittest.TestCase):
             os.environ.pop(key, None)
         self.assertIsNone(BrokerEntry.from_environment())
         with self.assertRaises(ContractError):
-            BrokerEntry(device_id="", authority_ref=AUTHORITY_REF, request_port=object())
+            BrokerEntry(
+                device_id="", authority_ref=AUTHORITY_REF,
+                request_port=object(), credential_dir=tempfile.mkdtemp(),
+            )
 
     def test_host_composition_fails_closed_without_the_trusted_probe(self) -> None:
         """Item 6: no P01 product pass is claimed before #3148."""
 
         broker = _SharedBroker()
+        credential_dir = tempfile.mkdtemp(prefix="claw4-3140-cred-")
         challenge_id, pairing_code = broker.web_issues()
         entry = BrokerEntry(
-            device_id=DEVICE_ID, authority_ref=AUTHORITY_REF, request_port=broker
+            device_id=DEVICE_ID, authority_ref=AUTHORITY_REF, request_port=broker,
+            credential_dir=credential_dir,
         )
         with tempfile.TemporaryDirectory() as base_dir:
             redeemed = redeem_handoff(
@@ -360,6 +372,31 @@ class ResidentProcess3140Test(unittest.TestCase):
                 worktree_state_port=DeterministicWorktreeStatePort(dirty=False),
             )
         self.assertIsNotNone(host)
+
+    def test_credential_dir_is_required_and_the_run_store_is_durable(self) -> None:
+        """Review item 2: no temporary credential directory, no :memory: store."""
+
+        broker = _SharedBroker()
+        with self.assertRaises(ContractError):
+            BrokerEntry(
+                device_id=DEVICE_ID, authority_ref=AUTHORITY_REF,
+                request_port=broker, credential_dir="",
+            )
+        entry = BrokerEntry(
+            device_id=DEVICE_ID, authority_ref=AUTHORITY_REF, request_port=broker,
+            credential_dir=tempfile.mkdtemp(prefix="claw4-3140-cred-"),
+        )
+        self.assertTrue(entry.durable_store_path.endswith("durable-runs.sqlite3"))
+        self.assertNotEqual(entry.durable_store_path, ":memory:")
+
+    def test_device_workspace_comes_from_the_redeemed_binding(self) -> None:
+        """Review item 3: the workspace is the binding's, never a constant."""
+
+        source = (
+            Path(__file__).parents[1] / "src" / "kagent" / "local_agent_resident_process.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn("workspace_ref=binding.workspace_ref", source)
+        self.assertNotIn('workspace_ref="workspace.1"', source)
 
     def test_process_declares_no_authority(self) -> None:
         self.assertFalse(RESIDENT_PROCESS_CONTRACT["pairing_authority_implemented"])

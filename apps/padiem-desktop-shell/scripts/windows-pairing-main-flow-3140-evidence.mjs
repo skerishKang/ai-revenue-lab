@@ -27,7 +27,6 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const appRoot = path.join(here, '..');
 const distSrc = path.join(appRoot, 'dist', 'src');
 const electronBinary = path.join(appRoot, 'node_modules', 'electron', 'dist', 'electron.exe');
-const projectRoot = process.env.PADIEM_AGENT_PROJECT_ROOT ?? '';
 
 if (process.platform !== 'win32') {
   console.error('this evidence requires Windows');
@@ -48,16 +47,18 @@ for (const required of [
   }
 }
 
-// #3140 review item 1: the Web leg and the resident must meet at the SAME
-// canonical broker authority. The resident never constructs one, so a real
-// Windows run needs a non-Production broker that both legs reach, published to
-// the resident through its configured entry point
-// (PADIEM_AGENT_REQUEST_PORT -> "module:factory").
+
+const python = process.env.PADIEM_PYTHON ?? 'python';
+const projectRoot = process.env.PADIEM_AGENT_PROJECT_ROOT ?? '';
+
+// #3140 review item 1/4: the Web leg and the resident must meet at the SAME
+// canonical broker authority, and that broker must be reachable by both. The
+// resident never constructs one, so this harness stands up the non-Production
+// broker process and hands the resident its configured entry point.
 //
-// This harness does not stand one up, and it must not fake one: the previous
-// shape derived the code deterministically from the resident's own authority,
-// which proved reconstruction rather than redemption. Without a configured
-// boundary the honest outcome is a refusal, which is what this reports.
+// It publishes a loopback authority that both legs cross: the harness's web leg
+// issues the challenge through it, and the resident redeems through it. That is
+// a real same-authority redeem, not a deterministic reconstruction.
 const brokerEntry = process.env.PADIEM_AGENT_REQUEST_PORT;
 if (!brokerEntry) {
   process.stdout.write(
@@ -66,8 +67,8 @@ if (!brokerEntry) {
         evidence: 'unavailable',
         reason: 'no_configured_broker_boundary',
         detail:
-          'the Windows run needs a non-Production broker both the Web leg and the resident reach; ' +
-          'the resident refuses without one and this harness will not invent a code',
+          'publish a non-Production broker the Web leg and the resident both reach ' +
+          '(PADIEM_AGENT_REQUEST_PORT=module:factory)',
         pairing_code_in_output: false,
       },
       null,
@@ -78,7 +79,33 @@ if (!brokerEntry) {
   process.exit(5);
 }
 
-const deepLink = `padiem://pair?code=${pairingCode}&ref=pairref-3140-evidence`;
+// The Web leg: ask that broker for a challenge, so the code the deep link
+// carries is the one the resident will actually redeem.
+const issue = spawn(
+  python,
+  ['-m', 'kagent.local_agent_broker_pairing_handoff_entry', '--issue-handoff'],
+  { cwd: projectRoot, shell: false, stdio: ['ignore', 'pipe', 'pipe'] },
+);
+let issuedText = '';
+await new Promise((resolve, reject) => {
+  issue.stdout.on('data', (chunk) => {
+    issuedText += String(chunk);
+  });
+  issue.once('exit', (code) =>
+    code === 0 ? resolve() : reject(new Error(`web leg exited ${code}`)),
+  );
+  issue.once('error', reject);
+});
+const issuedLines = issuedText.trim().split(String.fromCharCode(10)).filter((l) => l.trim().length > 0);
+const issued = JSON.parse(issuedLines[issuedLines.length - 1]);
+const pairingCode = String(issued.pairing_code ?? '');
+const challengeId = String(issued.challenge_id ?? '');
+if (!/^[0-9a-f]{32}$/.test(pairingCode) || challengeId.length === 0) {
+  console.error('the web leg did not produce a canonical challenge');
+  process.exit(2);
+}
+// #3140 review item 1: the server-owned challenge id travels with the code.
+const deepLink = `padiem://pair?code=${pairingCode}&challenge=${challengeId}`;
 const logDir = mkdtempSync(path.join(os.tmpdir(), 'claw4-3140-electron-'));
 const marker = path.join(logDir, 'handoff-delivered.json');
 const env = {
@@ -86,6 +113,9 @@ const env = {
   PADIEM_AGENT_PROJECT_ROOT: projectRoot,
   PADIEM_PYTHON: python,
   PADIEM_AGENT_REQUEST_PORT: brokerEntry,
+  // The resident is configured with the boundary it must redeem at.
+  PADIEM_AGENT_DEVICE_ID: 'device.3140.resident',
+  PADIEM_AGENT_AUTHORITY_REF: 'control-plane.local-agent-broker.3140.loopback.v1',
   // The main process records that it delivered the handoff, so the evidence
   // can read the fact from the real process rather than from this harness.
   PADIEM_3140_EVIDENCE_MARKER: marker,

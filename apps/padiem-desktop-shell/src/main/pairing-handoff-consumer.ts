@@ -44,9 +44,16 @@ export function handoffDeliveryMarker(pairingCode: string): string {
  * `peek` must not consume and must not mark the handoff spent; `commit` is
  * reached only once the destination is known to have received the envelope.
  */
+export interface PairingHandoff {
+  readonly pairingCode: string;
+  readonly correlationRef: string;
+  /** The server-owned challenge this handoff redeems. */
+  readonly challengeId: string;
+}
+
 export interface PairingHandoffSource {
-  peekPairingHandoffForRunner(): { pairingCode: string; correlationRef: string } | null;
-  commitPairingHandoffDelivery(): { pairingCode: string; correlationRef: string } | null;
+  peekPairingHandoffForRunner(): PairingHandoff | null;
+  commitPairingHandoffDelivery(): PairingHandoff | null;
 }
 
 /**
@@ -139,6 +146,7 @@ export class PairingHandoffConsumer {
       contract_version: 'claw-desktop-pairing-handoff.v1',
       pairing_code: pending.pairingCode,
       correlation_ref: pending.correlationRef,
+      challenge_id: pending.challengeId,
     });
     if (line.length > MAX_HANDOFF_LINE_CHARS) {
       this.#lastOutcome = 'delivery_refused';

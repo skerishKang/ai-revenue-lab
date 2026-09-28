@@ -40,6 +40,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import sys
 import tempfile
@@ -184,10 +185,16 @@ class BrokerEntry:
         device_id: str,
         authority_ref: str,
         request_port: Any,
+        credential_dir: str,
         transport_config: OutboundTransportConfig | None = None,
-        durable_store_path: str | None = None,
         session_id_factory: Callable[[], str] | None = None,
     ) -> None:
+        # #3140 review item 2: the credential store is a *persistent protected*
+        # path. A temporary directory would delete the device credential the
+        # moment the process exits, which is both a durability bug and a way to
+        # lose the only copy of a secret. The path must be explicit.
+        if not isinstance(credential_dir, str) or not credential_dir.strip():
+            raise ContractError("credential_dir must be an explicit persistent path")
         if not device_id or not authority_ref:
             raise ContractError("device_id and authority_ref are required")
         if request_port is None or not hasattr(request_port, "post"):
@@ -196,7 +203,10 @@ class BrokerEntry:
         self.authority_ref = authority_ref
         self.request_port = request_port
         self.transport_config = transport_config or default_transport_config()
-        self.durable_store_path = durable_store_path
+        self.credential_dir = os.path.abspath(credential_dir)
+        # The run store is durable for the same reason, so a restart recovers
+        # the same history instead of silently starting empty.
+        self.durable_store_path = os.path.join(self.credential_dir, "durable-runs.sqlite3")
         self.session_id_factory = session_id_factory or (lambda: "session.3140.resident")
 
     @classmethod
@@ -208,6 +218,8 @@ class BrokerEntry:
         factory_path = os.environ.get("PADIEM_AGENT_REQUEST_PORT")
         if not device_id or not authority_ref or not factory_path:
             return None
+        if not os.environ.get("PADIEM_AGENT_CREDENTIAL_DIR"):
+            return None
         try:
             module_name, _, attribute = factory_path.partition(":")
             module = __import__(module_name, fromlist=[attribute or "__name__"])
@@ -218,7 +230,7 @@ class BrokerEntry:
             device_id=device_id,
             authority_ref=authority_ref,
             request_port=request_port_factory(),
-            durable_store_path=os.environ.get("PADIEM_AGENT_DURABLE_STORE"),
+            credential_dir=os.environ.get("PADIEM_AGENT_CREDENTIAL_DIR", ""),
         )
 
     def safe_dict(self) -> dict[str, Any]:
@@ -303,7 +315,10 @@ def build_resident_host(
     clock = redeemed["clock"]
     device = LocalAgentDeviceProfile(
         device_id=entry.device_id,
-        workspace_ref="workspace.1",
+        # #3140 review item 3: the workspace is whatever the redeemed binding
+        # says. A hard-coded workspace would let a device from one workspace
+        # present as a device of another.
+        workspace_ref=binding.workspace_ref,
         platform=LocalAgentPlatform.WINDOWS,
         roots=(LocalRoot(root_ref="root.3140", windows_path=WINDOWS_ROOT),),
     )
@@ -344,7 +359,7 @@ def build_resident_host(
         ),
         channel=channel,
         credential_store=redeemed["store"],
-        durable_store=DurableRunStore(entry.durable_store_path or ":memory:"),
+        durable_store=DurableRunStore(entry.durable_store_path),
         clock=clock,
         session_id_factory=entry.session_id_factory,
         heartbeat_interval_seconds=30,
@@ -365,7 +380,9 @@ def main(argv: list[str] | None = None) -> int:
         _emit(status="refused", reason="handoff_refused", detail=str(exc), **RESIDENT_PROCESS_CONTRACT)
         return 2
     now = datetime.now(timezone.utc).replace(microsecond=0)
-    with tempfile.TemporaryDirectory(prefix="claw4-3140-resident-") as base_dir:
+    os.makedirs(entry.credential_dir, exist_ok=True)
+    if True:
+        base_dir = entry.credential_dir
         try:
             # Item 4: the ACK fires from inside the redemption, after ownership.
             redeemed = redeem_handoff(

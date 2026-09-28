@@ -173,6 +173,9 @@ function residentSpec(): RunnerSpawnSpec | null {
       ...(process.env.PADIEM_AGENT_DEVICE_ID ? { PADIEM_AGENT_DEVICE_ID: process.env.PADIEM_AGENT_DEVICE_ID } : {}),
       ...(process.env.PADIEM_AGENT_AUTHORITY_REF ? { PADIEM_AGENT_AUTHORITY_REF: process.env.PADIEM_AGENT_AUTHORITY_REF } : {}),
       ...(process.env.PADIEM_AGENT_REQUEST_PORT ? { PADIEM_AGENT_REQUEST_PORT: process.env.PADIEM_AGENT_REQUEST_PORT } : {}),
+      // #3140 review item 2: the credential store is a persistent protected
+      // path, so it travels in the projection rather than being invented.
+      ...(process.env.PADIEM_AGENT_CREDENTIAL_DIR ? { PADIEM_AGENT_CREDENTIAL_DIR: process.env.PADIEM_AGENT_CREDENTIAL_DIR } : {}),
     },
     shell: false,
     stdio: 'pipe',
