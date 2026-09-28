@@ -11,6 +11,8 @@
   <script src="quote-template.js" defer></script>
   <script src="quote-template-store.js" defer></script>
   <script src="quote-template-renderer.js" defer></script>
+  <script src="quote-template-selection.js" defer></script>
+  <script src="quote-template-ui.js" defer></script>
   <script src="file-intake.js" defer></script>
   <script src="app.js" defer></script>
   <script src="easy-mode.js" defer></script>
@@ -200,6 +202,25 @@
             <button class="btn soft" id="saveHistory">최근 견적에 저장</button>
             <button class="btn primary" id="printPdf">PDF로 저장 / 인쇄</button>
             <button class="btn" id="emailFuture">이메일 보내기 · 다음 단계</button>
+          </div>
+        </div>
+
+        <div class="section template-section" id="templateSection">
+          <h2>5. 견적서 양식</h2>
+          <div class="template-picker">
+            <label for="templateSelect">이 견적에 사용할 양식
+              <select id="templateSelect" aria-describedby="templateStatus"></select>
+            </label>
+            <button class="btn soft" id="templateManageToggle" type="button" aria-expanded="false" aria-controls="templateManagePanel">양식 관리</button>
+          </div>
+          <p class="template-status" id="templateStatus" role="status" aria-live="polite"></p>
+          <div class="template-manage" id="templateManagePanel" hidden>
+            <div class="template-list" id="templateList" role="list" aria-label="저장한 견적서 양식"></div>
+            <div class="template-manage-actions">
+              <button class="btn" id="templateCreate" type="button">새 양식 만들기</button>
+              <button class="btn soft" id="templateClone" type="button">견적서 양식 본뜨기 · 다음 단계</button>
+            </div>
+            <p class="template-manage-note">새 양식은 승인을 거친 뒤에 이 견적에 적용할 수 있습니다. 승인·본뜨기 흐름은 다음 단계에서 제공합니다.</p>
           </div>
         </div>
       </section>

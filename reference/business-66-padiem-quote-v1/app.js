@@ -12,6 +12,8 @@
   const Template = window.QuoteTemplate || null;
   const TemplateStore = window.QuoteTemplateStore || null;
   const TemplateRenderer = window.QuoteTemplateRenderer || null;
+  const TemplateSelection = window.QuoteTemplateSelection || null;
+  const TemplateUi = window.QuoteTemplateUi || null;
   const TAX_REVIEW_STORAGE_KEY = "quoteBeta.taxReview.v1";
   const TAX_REVIEW_SCHEMA_VERSION = 1;
 
@@ -231,6 +233,7 @@
       History && History.HISTORY_STORAGE_KEY,
       History && History.SEQUENCE_STORAGE_KEY,
       TemplateStore && TemplateStore.TEMPLATE_STORAGE_KEY,
+      TemplateSelection && TemplateSelection.SELECTION_STORAGE_KEY,
       TAX_REVIEW_STORAGE_KEY
     ].filter(Boolean);
 
@@ -246,10 +249,13 @@
     taxReviewRequired = false;
     itemSeq = draft.items.length;
     suppressNextDraftSave = true;
+    templateUiState.previewTemplateId = null;
+    templateUiState.renamingTemplateId = null;
 
     renderItems();
     fillInputsFromDraft();
     renderTaxReviewState();
+    renderTemplateUi();
     render();
     window.dispatchEvent(new CustomEvent("b66:local-data-reset"));
     window.dispatchEvent(new CustomEvent("b66:history-changed"));
@@ -519,17 +525,173 @@
     }
   }
 
+  /* ── 견적서 양식: "이 견적의 양식" 과 "향후 기본 양식" 을 분리한다 ──
+     양식 전환은 QuoteDraft 의 업무 내용을 건드리지 않는다. ── */
+
+  const templateUiState = {
+    manageOpen: false,
+    previewTemplateId: null,
+    renamingTemplateId: null
+  };
+
+  function templateStorage() {
+    return typeof localStorage === "undefined" ? null : localStorage;
+  }
+
+  function currentTemplateId() {
+    if (!TemplateSelection) return null;
+    return TemplateSelection.selectionForQuote(
+      TemplateSelection.readSelection(templateStorage()),
+      draft.meta.quoteNo
+    );
+  }
+
   function activeTemplateProfile() {
     if (!Template) return null;
     if (!TemplateStore) return Template.builtInTemplate();
-    return TemplateStore.defaultTemplate(loadTemplateStore());
+    const store = loadTemplateStore();
+    if (!TemplateSelection) return TemplateStore.defaultTemplate(store);
+    return TemplateSelection.resolveActiveTemplate(
+      store,
+      TemplateSelection.readSelection(templateStorage()),
+      draft.meta.quoteNo
+    );
   }
 
-  /* 템플릿은 표현·배치만 소유한다. 화면에 보이는 금액·세금·유효일은 모두 QuoteCore 파생값이다. */
-  function render() {
-    const model = TemplateRenderer.buildRenderModel(draft, activeTemplateProfile(), {
-      taxReviewRequired
+  /* 미리보기는 승인된 양식만 대상으로 한다(승인 경계 우회 금지). */
+  function previewTemplateProfile() {
+    if (!TemplateStore || !templateUiState.previewTemplateId) return null;
+    const candidate = TemplateStore.getTemplate(loadTemplateStore(), templateUiState.previewTemplateId);
+    return candidate && candidate.approved ? candidate : null;
+  }
+
+  function templateRows() {
+    if (!TemplateUi || !TemplateSelection) return [];
+    return TemplateUi.buildRows(TemplateSelection.listForManagement(loadTemplateStore()), {
+      activeTemplateId: (activeTemplateProfile() || {}).id || null,
+      previewTemplateId: templateUiState.previewTemplateId,
+      renamingTemplateId: templateUiState.renamingTemplateId
     });
+  }
+
+  function renderTemplateUi() {
+    if (!TemplateUi || !TemplateStore || !TemplateSelection) return;
+    const store = loadTemplateStore();
+    const templates = TemplateSelection.listForManagement(store);
+    const active = activeTemplateProfile();
+    const select = $("templateSelect");
+    const listHost = $("templateList");
+    const statusHost = $("templateStatus");
+
+    if (select) {
+      const options = TemplateUi.buildOptions(templates, active ? active.id : null);
+      select.innerHTML = TemplateUi.renderOptionsMarkup(options);
+      select.disabled = options.filter(function (option) { return !option.disabled; }).length <= 1;
+    }
+    if (listHost) {
+      listHost.innerHTML = TemplateUi.renderRowsMarkup(templateRows(), {
+        previewTemplateId: templateUiState.previewTemplateId
+      });
+    }
+    if (statusHost) {
+      statusHost.textContent = TemplateUi.buildStatusText(active, {
+        previewTemplateId: templateUiState.previewTemplateId
+      });
+    }
+  }
+
+  const TEMPLATE_RESULT_MESSAGES = {
+    template_not_approved: "승인되지 않은 양식은 적용할 수 없습니다.",
+    builtin_template_immutable: "기본 견적서는 삭제하거나 이름을 바꿀 수 없습니다.",
+    template_limit_reached: "저장할 수 있는 양식 수를 초과했습니다.",
+    delete_cancelled: "",
+    template_not_found: "양식을 찾지 못했습니다.",
+    invalid_template_name: "양식 이름을 입력한 뒤 저장해 주세요.",
+    selection_storage_failed: "선택한 양식을 저장하지 못했습니다.",
+    template_storage_failed: "양식을 저장하지 못했습니다.",
+    slot_rendering_not_supported: "이번 단계에서는 로고·도장 슬롯을 저장할 수 없습니다."
+  };
+
+  function applyTemplateResult(result, successMessage) {
+    if (!result || !result.ok) {
+      const message = result ? TEMPLATE_RESULT_MESSAGES[result.code] : null;
+      if (message) toast(message, 3200);
+      return false;
+    }
+    if (successMessage) toast(successMessage);
+    templateUiState.renamingTemplateId = null;
+    renderTemplateUi();
+    render();
+    return true;
+  }
+
+  const TEMPLATE_ACTIONS = {
+    select: function (id) {
+      const result = TemplateSelection.selectTemplate(templateStorage(), draft.meta.quoteNo, id);
+      return applyTemplateResult(result, "이 견적에 사용할 양식을 변경했습니다.");
+    },
+    default: function (id) {
+      return applyTemplateResult(TemplateSelection.setDefaultTemplate(templateStorage(), id), "앞으로 새 견적에 쓸 기본 양식으로 설정했습니다.");
+    },
+    duplicate: function (id) {
+      return applyTemplateResult(TemplateSelection.duplicateTemplate(templateStorage(), id), "양식을 복제했습니다. 승인 후 사용할 수 있습니다.");
+    },
+    remove: function (id) {
+      const result = TemplateSelection.deleteTemplate(templateStorage(), id, {
+        confirm: function (template) {
+          return window.confirm('"' + template.name + '" 양식을 삭제할까요? 이 브라우저에서만 삭제됩니다.');
+        }
+      });
+      if (result && result.code === "delete_cancelled") return false;
+      return applyTemplateResult(result, "양식을 삭제했습니다.");
+    },
+    preview: function (id) {
+      const candidate = TemplateStore.getTemplate(loadTemplateStore(), id);
+      if (!candidate || !candidate.approved) {
+        toast("승인된 양식만 미리볼 수 있습니다.", 3200);
+        return false;
+      }
+      templateUiState.previewTemplateId = id;
+      renderTemplateUi();
+      render();
+      return true;
+    },
+    "preview-apply": function (id) { return TEMPLATE_ACTIONS.select(id); },
+    "preview-cancel": function () {
+      templateUiState.previewTemplateId = null;
+      renderTemplateUi();
+      render();
+      return true;
+    },
+    rename: function (id) {
+      templateUiState.renamingTemplateId = id;
+      renderTemplateUi();
+      const input = document.querySelector('#templateList [data-role="rename-input"]');
+      if (input) { input.focus(); input.select(); }
+      return true;
+    },
+    "rename-cancel": function () {
+      templateUiState.renamingTemplateId = null;
+      renderTemplateUi();
+      return true;
+    },
+    "rename-save": function (id) {
+      const input = document.querySelector('#templateList [data-role="rename-input"]');
+      return applyTemplateResult(
+        TemplateSelection.renameTemplate(templateStorage(), id, input ? input.value : ""),
+        "양식 이름을 변경했습니다."
+      );
+    }
+  };
+
+  /* 템플릿은 표현·배치만 소유한다. 화면에 보이는 금액·세금·유효일은 모두 QuoteCore 파생값이다.
+     입력 폼의 업무 데이터는 양식과 무관하게 그대로 유지된다. */
+  function render() {
+    const model = TemplateRenderer.buildRenderModel(
+      draft,
+      previewTemplateProfile() || activeTemplateProfile(),
+      { taxReviewRequired }
+    );
     if (model) TemplateRenderer.applyRenderModel(document, model);
 
     /* 입력 폼의 금액 셀은 견적서 render projection 과 별개로 QuoteCore 파생값을 그대로 쓴다. */
@@ -666,6 +828,57 @@
     });
   });
 
+  /* ── 양식 선택/관리 이벤트 (UI 는 얇게, 판단은 selection 계층이 담당) ── */
+
+  $("templateSelect").addEventListener("change", (event) => {
+    const id = event.target.value;
+    if (!id) return;
+    if (!TEMPLATE_ACTIONS.select(id)) renderTemplateUi();
+  });
+
+  $("templateManageToggle").addEventListener("click", () => {
+    templateUiState.manageOpen = !templateUiState.manageOpen;
+    $("templateManagePanel").hidden = !templateUiState.manageOpen;
+    $("templateManageToggle").setAttribute("aria-expanded", String(templateUiState.manageOpen));
+    renderTemplateUi();
+  });
+
+  $("templateList").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-action]");
+    if (!button || button.disabled) return;
+    const action = TEMPLATE_ACTIONS[button.dataset.action];
+    if (!action) return;
+    action(button.dataset.templateId);
+  });
+
+  $("templateList").addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+    const input = event.target.closest('[data-role="rename-input"]');
+    if (!input) return;
+    event.preventDefault();
+    TEMPLATE_ACTIONS["rename-save"](input.dataset.templateId);
+  });
+
+  $("templateCreate").addEventListener("click", () => {
+    const active = activeTemplateProfile();
+    if (!active) return;
+    templateUiState.manageOpen = true;
+    $("templateManagePanel").hidden = false;
+    $("templateManageToggle").setAttribute("aria-expanded", "true");
+    applyTemplateResult(
+      TemplateSelection.createCandidate(templateStorage(), {
+        sourceTemplateId: active.id,
+        quoteNo: draft.meta.quoteNo
+      }),
+      "새 양식을 만들었습니다. 승인 후 사용할 수 있습니다."
+    );
+  });
+
+  /* #3184 승인/본뜨기 흐름의 entry point — 이번 이슈에서는 진입점만 둔다. */
+  $("templateClone").addEventListener("click", () => {
+    toast("견적서 양식 본뜨기와 승인 흐름은 다음 단계에서 제공합니다.", 3600);
+  });
+
   window.B66QuoteExtractionBridge = Object.freeze({
     validate: validateExtractionResult,
     apply: applyExtractionResult,
@@ -688,6 +901,22 @@
     toast
   });
 
+  window.B66QuoteTemplateBridge = Object.freeze({
+    list: () => (TemplateSelection ? TemplateSelection.listForManagement(loadTemplateStore()) : []),
+    activeId: () => (activeTemplateProfile() || {}).id || null,
+    selectedId: currentTemplateId,
+    select: (id) => TemplateSelection.selectTemplate(templateStorage(), draft.meta.quoteNo, id),
+    setDefault: (id) => TemplateSelection.setDefaultTemplate(templateStorage(), id),
+    rename: (id, name) => TemplateSelection.renameTemplate(templateStorage(), id, name),
+    duplicate: (id) => TemplateSelection.duplicateTemplate(templateStorage(), id),
+    remove: (id, confirmFn) => TemplateSelection.deleteTemplate(templateStorage(), id, { confirm: confirmFn }),
+    candidate: (options) => TemplateSelection.createCandidate(templateStorage(), options || {}),
+    preview: (id) => TEMPLATE_ACTIONS.preview(id),
+    cancelPreview: () => TEMPLATE_ACTIONS["preview-cancel"](),
+    refresh: () => { renderTemplateUi(); render(); },
+    state: () => Object.assign({}, templateUiState)
+  });
+
   /* ── 초기화 ── */
 
   renderItems();
@@ -695,5 +924,6 @@
   bindFields();
   $("addItem").addEventListener("click", addItem);
   renderTaxReviewState();
+  renderTemplateUi();
   render();
 })();
