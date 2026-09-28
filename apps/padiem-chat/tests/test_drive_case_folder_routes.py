@@ -14,6 +14,7 @@ from types import SimpleNamespace
 import pytest
 
 import app.drive_case_folder_routes as routes_module
+from app.drive_case_folder_engine import DriveCaseFolderEngineError
 from app.drive_case_folder_routes import (
     drive_case_folder_delete,
     drive_case_folder_put,
@@ -275,15 +276,48 @@ def test_delete_clear_round_trip_and_body_rejection() -> None:
 def test_engine_error_is_mapped_without_raw_text() -> None:
     class FailingClient(FakeEngineClient):
         async def status(self, *, workspace_ref, project_id):
-            raise type(
-                "E",
-                (Exception,),
-                {"status_code": 409, "code": "drive_not_connected", "safe_message": "Google Drive is not connected for this workspace."},
-            )()
+            raise DriveCaseFolderEngineError(
+                "drive_not_connected",
+                "Google Drive is not connected for this workspace.",
+                status_code=409,
+            )
 
     response = run(drive_case_folder_status(FakeRequest(state=state(client=FailingClient()))))
     assert response.status_code == 409
     assert json.loads(response.body)["error"]["code"] == "drive_not_connected"
+
+
+def test_unexpected_exception_is_generic_502_without_attribute_propagation() -> None:
+    class Sneaky(FakeEngineClient):
+        async def status(self, *, workspace_ref, project_id):
+            raise type(
+                "E",
+                (Exception,),
+                {"status_code": 200, "code": "totally_injected", "safe_message": "injected text"},
+            )()
+
+    response = run(drive_case_folder_status(FakeRequest(state=state(client=Sneaky()))))
+    assert response.status_code == 502
+    rendered = response.body.decode()
+    assert json.loads(response.body)["error"]["code"] == "drive_case_folder_failed"
+    assert "totally_injected" not in rendered
+    assert "injected text" not in rendered
+
+
+def test_worker_composition_reuses_the_existing_p01_binding() -> None:
+    import pathlib
+
+    import app.drive_case_folder_engine as engine_module
+
+    engine_source = pathlib.Path(engine_module.__file__).read_text(encoding="utf-8")
+    assert "P01_ENGINE_SERVICE_BINDING_NAME" in engine_source
+    assert '"PADIEM_AI_ENGINE"' not in engine_source
+
+    worker_source = (pathlib.Path(__file__).resolve().parents[1] / "worker.py").read_text(encoding="utf-8")
+    assert "P01_ENGINE_SERVICE_BINDING_NAME" in worker_source
+    assert "CloudflareDriveCaseFolderEngineClient" in worker_source
+    assert "drive_case_folder_engine_client" in worker_source
+    assert '"PADIEM_AI_ENGINE"' not in worker_source
 
 
 def test_route_pins() -> None:

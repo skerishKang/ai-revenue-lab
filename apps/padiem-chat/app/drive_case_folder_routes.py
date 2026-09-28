@@ -30,6 +30,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
+from .drive_case_folder_engine import DriveCaseFolderEngineError
 from .history import HistoryStore, validate_project_id
 
 MAX_FOLDER_QUERY_CHARS = 200
@@ -59,15 +60,25 @@ def _invalid(code: str, message: str) -> JSONResponse:
     return _error(code, message, 400)
 
 
-def _engine_error(exc: object) -> JSONResponse:
-    """Map a bounded Engine client error onto the route taxonomy."""
+def _generic_failure() -> JSONResponse:
+    return _error(
+        "drive_case_folder_failed",
+        "Drive 사건 폴더 요청을 처리하지 못했습니다.",
+        502,
+    )
 
-    status_code = int(getattr(exc, "status_code", 502) or 502)
+
+def _engine_error(exc: DriveCaseFolderEngineError) -> JSONResponse:
+    """Map the bounded Engine client error onto the route taxonomy.
+
+    Only the reviewed error type is trusted; an unexpected exception never has
+    its attributes read, so it cannot inject a product response.
+    """
+
+    status_code = int(exc.status_code or 502)
     if status_code not in (400, 401, 403, 404, 409, 413, 415, 422, 502, 503):
         status_code = 502
-    code = str(getattr(exc, "code", "drive_case_folder_failed") or "drive_case_folder_failed")
-    message = str(getattr(exc, "safe_message", "") or "Drive 사건 폴더 요청을 처리하지 못했습니다.")
-    return _error(code, message, status_code)
+    return _error(exc.code, exc.safe_message, status_code)
 
 
 async def _resolve_context(request: Request):
@@ -131,8 +142,10 @@ async def drive_case_folder_status(request: Request) -> JSONResponse:
         return error
     try:
         body = await client.status(workspace_ref=workspace_ref, project_id=pid)
-    except Exception as exc:  # bounded by the client contract
+    except DriveCaseFolderEngineError as exc:
         return _engine_error(exc)
+    except Exception:
+        return _generic_failure()
     return JSONResponse(
         {
             "configured": bool(body.get("configured")),
@@ -161,8 +174,10 @@ async def drive_folders_collection(request: Request) -> JSONResponse:
 
     try:
         body = await client.folders(workspace_ref=workspace_ref, project_id=pid, query=query)
-    except Exception as exc:
+    except DriveCaseFolderEngineError as exc:
         return _engine_error(exc)
+    except Exception:
+        return _generic_failure()
     return JSONResponse(
         {
             "folders": [
@@ -201,8 +216,10 @@ async def drive_case_folder_put(request: Request) -> JSONResponse:
 
     try:
         result = await client.select(workspace_ref=workspace_ref, project_id=pid, folder_id=folder_id.strip())
-    except Exception as exc:
+    except DriveCaseFolderEngineError as exc:
         return _engine_error(exc)
+    except Exception:
+        return _generic_failure()
     return JSONResponse(
         {
             "configured": bool(result.get("configured")),
@@ -221,8 +238,10 @@ async def drive_case_folder_delete(request: Request) -> JSONResponse:
         return _invalid("invalid_body", "요청 본문이 허용되지 않습니다.")
     try:
         result = await client.clear(workspace_ref=workspace_ref, project_id=pid)
-    except Exception as exc:
+    except DriveCaseFolderEngineError as exc:
         return _engine_error(exc)
+    except Exception:
+        return _generic_failure()
     return JSONResponse({"configured": False, "cleared": bool(result.get("cleared"))})
 
 

@@ -128,6 +128,7 @@ def create_app(
     usage_store: UsageCounterStore | None = None,
     control_plane_identity_authority=None,
     identity_shadow_store=None,
+    drive_case_folder_engine_client=None,
     d1_binding=None,
     r2_binding=None,
     claw_p01_adapter=None,
@@ -230,6 +231,9 @@ def create_app(
     # a non-authoritative shadow pointer used to reach the current canonical session.
     app.state.control_plane_identity_authority = control_plane_identity_authority
     app.state.identity_shadow_store = identity_shadow_store
+    # #3190: owner-gated Project Drive case-folder routes. A missing client fails
+    # closed with 503; there is no global/network fallback.
+    app.state.drive_case_folder_engine_client = drive_case_folder_engine_client
     app.state.usage_gate = UsageGate(resolved, usage_store)
     # An explicitly injected B14 transport is the existing network-free regression seam.
     # It cannot occur through browser input or Worker bindings. Production/ordinary runtime

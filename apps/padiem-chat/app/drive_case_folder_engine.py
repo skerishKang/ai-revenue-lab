@@ -16,9 +16,13 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
+from .worker_config import P01_ENGINE_SERVICE_BINDING_NAME
+
 DRIVE_CASE_FOLDER_ENGINE_SEAM_VERSION = "chat-drive-case-folder-engine.v1"
 
-PADIEM_AI_ENGINE_BINDING_NAME = "PADIEM_AI_ENGINE"
+# The existing Chat -> Engine Service Binding is reused; this seam declares no
+# second Engine binding name of its own.
+PADIEM_AI_ENGINE_BINDING_NAME = P01_ENGINE_SERVICE_BINDING_NAME
 
 STATUS_OPERATION = "drive_case_folder_status"
 FOLDERS_OPERATION = "drive_case_folder_folders"
