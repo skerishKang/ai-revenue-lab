@@ -9,9 +9,9 @@ name: B54 Engine D1 Provision Gate
 # #1971 A6-S2A added 0006 so the Engine-owned durable document byte store exists
 # before any A6 document-admission production read or activation;
 # #2958 ([E9][A6-Document]) adds 0007 so the durable evidence retention store exists
+# for DocumentContextEngineService.
 # #3188 adds 0008 for the durable B67 Project -> selected Drive
 # case-folder binding authority.
-# for DocumentContextEngineService.
 
 on:
   workflow_dispatch:
