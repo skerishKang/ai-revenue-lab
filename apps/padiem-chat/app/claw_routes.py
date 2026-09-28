@@ -1199,7 +1199,42 @@ async def claw_runs_history(request: Request) -> JSONResponse:
         return _error(503, "run_history_read_failed", "실행 이력 읽기에 실패했습니다.")
     if not isinstance(runs, list):
         return _error(503, "run_history_read_failed", "실행 이력 읽기에 실패했습니다.")
+
+    # #3139: opening the run history IS the product call site for the Local
+    # Runner return leg. Each of the owner's own runs is reconciled against the
+    # canonical broker here, so a result that became terminal while the user was
+    # away lands in the conversation that started it — without the user doing
+    # anything and without any caller choosing a destination.
+    await _reconcile_local_runner_runs(request, uid, runs)
+
     return JSONResponse({"ok": True, "runs": runs}, status_code=200, headers=_NO_STORE_HEADERS)
+
+
+async def _reconcile_local_runner_runs(request: Request, uid: str, runs: list) -> None:
+    """Project terminal Local Runner results into their own conversations.
+
+    Fail-closed and side-effect-free from the caller's perspective: a missing or
+    unconfigured source, or any single refusal, leaves the run history exactly as
+    it was. The projection itself is idempotent, so this may run on every load.
+    """
+
+    source = getattr(request.app.state, "local_task_result_source", None)
+    project = getattr(source, "project_local_runner_result", None)
+    if project is None or getattr(source, "configured", True) is False:
+        return
+    for run in runs:
+        if not isinstance(run, dict):
+            continue
+        run_id = run.get("run_id")
+        if not isinstance(run_id, str) or not run_id:
+            continue
+        try:
+            projected = project(owner_id=uid, run_id=run_id)
+            if inspect.isawaitable(projected):
+                await projected
+        except Exception:
+            # A single refused reconciliation must never break the history read.
+            continue
 
 
 def _build_execute_task(action: ManualIntakeAction, content: str) -> str:

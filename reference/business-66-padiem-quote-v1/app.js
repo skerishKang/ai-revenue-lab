@@ -9,11 +9,15 @@
   const Core = window.QuoteCore;
   const Extraction = window.QuoteExtraction || null;
   const History = window.QuoteHistory || null;
+  const TAX_REVIEW_STORAGE_KEY = "quoteBeta.taxReview.v1";
+  const TAX_REVIEW_SCHEMA_VERSION = 1;
 
   /* ── 상태: QuoteDraft ── */
 
   let draft = loadDraft() || Core.createDefaultDraft();
   let lastExtractionReview = null;
+  let taxReviewRequired = loadTaxReviewRequired(draft);
+  let suppressNextDraftSave = false;
   let itemSeq = draft.items.reduce((max, it) => {
     const n = parseInt(String(it.id).replace(/^item-/, ""), 10);
     return Number.isFinite(n) ? Math.max(max, n) : max;
@@ -32,7 +36,56 @@
     }
   }
 
+  function normalizeTaxReviewState(raw) {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+    if (raw.schemaVersion !== TAX_REVIEW_SCHEMA_VERSION || raw.required !== true) return null;
+    if (typeof raw.quoteNo !== "string" || !raw.quoteNo.trim() || raw.quoteNo.length > 120) return null;
+    return {
+      schemaVersion: TAX_REVIEW_SCHEMA_VERSION,
+      quoteNo: raw.quoteNo.trim(),
+      required: true
+    };
+  }
+
+  function loadTaxReviewRequired(activeDraft) {
+    try {
+      const state = normalizeTaxReviewState(
+        JSON.parse(localStorage.getItem(TAX_REVIEW_STORAGE_KEY) || "null")
+      );
+      const quoteNo = String(activeDraft && activeDraft.meta && activeDraft.meta.quoteNo || "").trim();
+      return Boolean(state && quoteNo && state.quoteNo === quoteNo);
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function persistTaxReviewRequired(required) {
+    try {
+      if (!required) {
+        localStorage.removeItem(TAX_REVIEW_STORAGE_KEY);
+        return true;
+      }
+      const quoteNo = String(draft && draft.meta && draft.meta.quoteNo || "").trim();
+      if (!quoteNo) {
+        localStorage.removeItem(TAX_REVIEW_STORAGE_KEY);
+        return false;
+      }
+      localStorage.setItem(TAX_REVIEW_STORAGE_KEY, JSON.stringify({
+        schemaVersion: TAX_REVIEW_SCHEMA_VERSION,
+        quoteNo,
+        required: true
+      }));
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
   function saveDraft() {
+    if (suppressNextDraftSave) {
+      suppressNextDraftSave = false;
+      return;
+    }
     try {
       localStorage.setItem(Core.DRAFT_STORAGE_KEY, JSON.stringify(draft));
     } catch (err) {
@@ -48,6 +101,8 @@
     const normalized = Core.normalizeDraft(nextDraft);
     if (!normalized) return { ok: false, error: "invalid_draft" };
     draft = normalized;
+    taxReviewRequired = Boolean(options && options.requireTaxReview);
+    persistTaxReviewRequired(taxReviewRequired);
     itemSeq = draft.items.reduce((max, it) => {
       const n = parseInt(String(it.id).replace(/^(?:item-|extracted-item-)/, ""), 10);
       return Number.isFinite(n) ? Math.max(max, n) : max;
@@ -55,6 +110,7 @@
     renderItems();
     fillInputsFromDraft();
     render();
+    renderTaxReviewState();
     if (options && options.toast) toast(options.toast);
     return { ok: true, draft: cloneDraft(draft) };
   }
@@ -111,6 +167,15 @@
     return fresh;
   }
 
+  function createBlankNextDraft(now) {
+    const dt = now instanceof Date ? now : new Date();
+    return Core.createBlankQuoteDraft(draft, {
+      quoteNo: allocateFreshQuoteNo(dt),
+      issueDate: Core.isoFormat(dt),
+      source: "manual"
+    });
+  }
+
   function copyHistoryAsNew(entry, now) {
     if (!History) return null;
     const dt = now instanceof Date ? now : new Date();
@@ -122,15 +187,22 @@
 
   function saveCurrentToHistory() {
     if (!History) return { ok: false, error: "history_unavailable" };
-    const envelope = History.addEntry(loadHistoryEnvelope(), draft);
+    const before = loadHistoryEnvelope();
+    const quoteNo = String(draft.meta.quoteNo || "").trim();
+    const existed = Boolean(before && before.entries.some((entry) =>
+      String(entry.draft.meta.quoteNo || "").trim() === quoteNo
+    ));
+    const envelope = History.upsertEntryByQuoteNo(before, draft);
     try {
       localStorage.setItem(History.HISTORY_STORAGE_KEY, JSON.stringify(envelope));
     } catch (err) {
       return { ok: false, error: "history_storage_failed" };
     }
-    toast("이 견적을 최근 견적에 저장했습니다.");
+    toast(existed
+      ? "같은 견적번호의 최근 견적을 최신 내용으로 업데이트했습니다."
+      : "이 견적을 최근 견적에 저장했습니다.");
     window.dispatchEvent(new CustomEvent("b66:history-changed"));
-    return { ok: true, envelope: cloneDraft(envelope) };
+    return { ok: true, updated: existed, envelope: cloneDraft(envelope) };
   }
 
   /* ── 공통 유틸 ── */
@@ -151,6 +223,116 @@
     $("toast").classList.add("show");
     clearTimeout(toast.timer);
     toast.timer = setTimeout(() => $("toast").classList.remove("show"), duration || 1800);
+  }
+
+  function resetBrowserLocalData() {
+    if (!window.confirm("이 브라우저에 저장한 견적, 발신자, 최근 견적 기록을 초기화할까요?")) {
+      return false;
+    }
+
+    const keys = [
+      Core.DRAFT_STORAGE_KEY,
+      Core.SENDER_STORAGE_KEY,
+      History && History.HISTORY_STORAGE_KEY,
+      History && History.SEQUENCE_STORAGE_KEY,
+      TAX_REVIEW_STORAGE_KEY
+    ].filter(Boolean);
+
+    try {
+      keys.forEach((key) => localStorage.removeItem(key));
+    } catch (err) {
+      toast("브라우저 저장 데이터를 지우지 못했습니다.");
+      return false;
+    }
+
+    draft = Core.createDefaultDraft();
+    lastExtractionReview = null;
+    taxReviewRequired = false;
+    itemSeq = draft.items.length;
+    suppressNextDraftSave = true;
+
+    renderItems();
+    fillInputsFromDraft();
+    renderTaxReviewState();
+    render();
+    window.dispatchEvent(new CustomEvent("b66:local-data-reset"));
+    window.dispatchEvent(new CustomEvent("b66:history-changed"));
+    toast("이 브라우저에 저장한 견적 데이터를 초기화했습니다.", 3000);
+    return true;
+  }
+
+  function renderTaxReviewState() {
+    const row = $("taxRow");
+    const note = $("taxReviewNote");
+    const select = $("taxMode");
+    if (!row || !note || !select) return;
+
+    let placeholder = select.querySelector('option[data-tax-review-placeholder="true"]');
+    if (taxReviewRequired) {
+      if (!placeholder) {
+        placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "부가세 방식을 선택해 주세요";
+        placeholder.dataset.taxReviewPlaceholder = "true";
+        select.prepend(placeholder);
+      }
+      select.value = "";
+    } else {
+      if (placeholder) placeholder.remove();
+      select.value = draft.tax.mode;
+    }
+
+    row.classList.toggle("tax-review-required", taxReviewRequired);
+    note.hidden = !taxReviewRequired;
+    select.setAttribute("aria-invalid", String(taxReviewRequired));
+  }
+
+  function focusTaxReview() {
+    if (!taxReviewRequired) return false;
+    renderTaxReviewState();
+    $("taxMode").focus({ preventScroll: true });
+    $("taxRow").scrollIntoView({ block: "center", behavior: "smooth" });
+    return true;
+  }
+
+  function focusReadinessTarget(code) {
+    let target = null;
+    if (code === "quote_no") target = $("quoteNo");
+    else if (code === "issue_date") target = $("quoteDate");
+    else if (code === "sender_company") target = $("senderCompany");
+    else if (code === "recipient") target = $("recipientCompany");
+    else if (code === "items") target = document.querySelector("#items .item-name");
+
+    if (!target) return false;
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({ block: "center", behavior: "smooth" });
+    return true;
+  }
+
+  function printReadinessFailure() {
+    if (taxReviewRequired) {
+      return {
+        code: "tax_review",
+        message: "부가세 방식을 확인한 뒤 PDF로 저장해 주세요."
+      };
+    }
+
+    const readiness = Core.printReadiness(draft);
+    if (readiness.ready) return null;
+
+    const code = readiness.missing[0];
+    const messages = {
+      invalid_draft: "견적 내용을 다시 확인해 주세요.",
+      quote_no: "견적번호를 입력한 뒤 PDF로 저장해 주세요.",
+      issue_date: "올바른 견적일을 선택한 뒤 PDF로 저장해 주세요.",
+      sender_company: "보내는 사람의 상호를 입력한 뒤 PDF로 저장해 주세요.",
+      recipient: "받는 업체명이나 담당자를 입력한 뒤 PDF로 저장해 주세요.",
+      items: "품목명과 수량을 하나 이상 입력한 뒤 PDF로 저장해 주세요."
+    };
+    return {
+      code,
+      message: messages[code] || "견적 필수 내용을 확인한 뒤 PDF로 저장해 주세요."
+    };
   }
 
   /* ── draft 필드 ↔ 입력 요소 바인딩 ── */
@@ -213,7 +395,11 @@
       render();
     });
     $("taxMode").addEventListener("change", (e) => {
+      if (!e.target.value) return;
       draft.tax.mode = e.target.value;
+      taxReviewRequired = false;
+      persistTaxReviewRequired(false);
+      renderTaxReviewState();
       render();
     });
   }
@@ -334,17 +520,23 @@
 
   function render() {
     const totals = Core.computeTotals(draft.items, draft.tax.mode);
+    const provisionalTax = taxReviewRequired;
 
-    $("subtotalText").textContent = Core.formatMoney(totals.supply);
-    $("vatText").textContent = Core.formatMoney(totals.vat);
-    $("grandText").textContent = Core.formatMoney(totals.grand);
+    $("subtotalLabelText").textContent = provisionalTax ? "품목 합계(세금 확인 전)" : "공급가액";
+    $("subtotalText").textContent = Core.formatMoney(provisionalTax ? totals.subtotal : totals.supply);
+    $("vatLabelText").textContent = provisionalTax ? "부가세" : vatSummaryLabel(draft.tax.mode);
+    $("vatText").textContent = provisionalTax ? "확인 필요" : Core.formatMoney(totals.vat);
+    $("grandLabelText").textContent = provisionalTax ? "최종 합계" : "합계";
+    $("grandText").textContent = provisionalTax ? "확정 전" : Core.formatMoney(totals.grand);
 
     $("pvQuoteNo").textContent = "견적번호  " + textOrDash(draft.meta.quoteNo);
     $("pvDate").textContent = "견적일  " + textOrDash(draft.meta.issueDate);
     $("pvValidity").textContent = "유효기간  " + draft.meta.validDays + "일";
     const validUntil = Core.computeValidUntil(draft.meta.issueDate, draft.meta.validDays);
     $("pvValidUntil").textContent = "유효일  " + (validUntil || "-");
-    $("pvTaxMode").textContent = "세금  " + Core.TAX_LABELS[draft.tax.mode];
+    $("pvTaxMode").textContent = provisionalTax
+      ? "세금  확인 필요"
+      : "세금  " + Core.TAX_LABELS[draft.tax.mode];
 
     $("pvSenderCompany").textContent = textOrDash(draft.sender.company);
     $("pvSenderRep").textContent = "대표자  " + textOrDash(draft.sender.rep);
@@ -366,10 +558,12 @@
       </tr>`
     ).join("");
 
-    $("pvSubtotal").textContent = Core.formatMoney(totals.supply);
-    $("pvVatLabel").textContent = vatSummaryLabel(draft.tax.mode);
-    $("pvVat").textContent = Core.formatMoney(totals.vat);
-    $("pvGrand").textContent = Core.formatMoney(totals.grand);
+    $("pvSubtotalLabel").textContent = provisionalTax ? "품목 합계(세금 확인 전)" : "공급가액";
+    $("pvSubtotal").textContent = Core.formatMoney(provisionalTax ? totals.subtotal : totals.supply);
+    $("pvVatLabel").textContent = provisionalTax ? "부가세" : vatSummaryLabel(draft.tax.mode);
+    $("pvVat").textContent = provisionalTax ? "확인 필요" : Core.formatMoney(totals.vat);
+    $("pvGrandLabel").textContent = provisionalTax ? "최종 합계" : "합계";
+    $("pvGrand").textContent = provisionalTax ? "확정 전" : Core.formatMoney(totals.grand);
     $("pvMemo").textContent = draft.memo.trim() || "비고 없음";
 
     document.querySelectorAll("#items .item-row").forEach((row, i) => {
@@ -437,16 +631,33 @@
 
   $("newQuote").addEventListener("click", () => {
     if (!window.confirm("현재 입력한 견적 내용을 모두 지우고 새로 시작할까요?")) return;
-    draft = createFreshDraft("manual");
+    const next = createBlankNextDraft();
+    if (!next) {
+      toast("새 견적을 시작하지 못했습니다.");
+      return;
+    }
+    draft = next;
+    taxReviewRequired = false;
+    persistTaxReviewRequired(false);
+    itemSeq = 1;
     renderItems();
     fillInputsFromDraft();
+    renderTaxReviewState();
     render();
-    toast("새 견적을 시작합니다.");
+    toast("보내는 사람 정보는 유지하고 새 고객 견적을 시작합니다.");
   });
 
   /* ── 인쇄: 브라우저 머리글/바닥글은 코드로 끌 수 없어 저장 전 짧게 안내 ── */
 
   $("printPdf").addEventListener("click", () => {
+    const failure = printReadinessFailure();
+    if (failure) {
+      toast(failure.message, 4200);
+      if (failure.code === "tax_review") focusTaxReview();
+      else focusReadinessTarget(failure.code);
+      return;
+    }
+
     render();
     toast("PDF 저장 시 인쇄 설정에서 '머리글과 바닥글'을 해제하면 견적서만 깔끔하게 저장됩니다.", 5000);
     setTimeout(() => window.print(), 600);
@@ -461,6 +672,8 @@
     if (!result.ok) toast("최근 견적 저장에 실패했습니다.");
   });
 
+  $("resetLocalData").addEventListener("click", resetBrowserLocalData);
+
   /* ── 모드 전환 (upload/chat은 의도된 future affordance) ── */
 
   document.querySelectorAll(".mode").forEach((button) => {
@@ -472,10 +685,16 @@
         $("futureNote").textContent = "";
         return;
       }
+      if (button.dataset.mode === "upload") {
+        document.querySelectorAll(".mode").forEach((b) => b.classList.remove("active"));
+        document.querySelector('.mode[data-mode="manual"]').classList.add("active");
+        $("futureNote").className = "future-note";
+        $("futureNote").textContent = "";
+        document.dispatchEvent(new CustomEvent("b66:open-file-intake"));
+        return;
+      }
       $("futureNote").className = "future-note show";
-      $("futureNote").textContent = button.dataset.mode === "upload"
-        ? "파일 업로드 → 견적서 필드 자동 추출은 다음 단계에서 AI/OCR Skill로 연결합니다. 이 데모에서는 파일을 외부로 전송하지 않습니다."
-        : "자연어 채팅 → QuoteDraft 자동 입력은 다음 단계에서 연결합니다. 금액 계산은 AI가 아니라 현재와 같은 결정적 계산 코드가 담당합니다.";
+      $("futureNote").textContent = "자연어 채팅 → QuoteDraft 자동 입력은 다음 단계에서 연결합니다. 금액 계산은 AI가 아니라 현재와 같은 결정적 계산 코드가 담당합니다.";
     });
   });
 
@@ -489,12 +708,15 @@
     getDraft: () => cloneDraft(draft),
     replaceDraft,
     createFreshDraft,
+    createBlankNextDraft,
     copyHistoryAsNew,
     saveCurrentToHistory,
+    resetBrowserLocalData,
     getHistoryEnvelope: () => {
       const envelope = loadHistoryEnvelope();
       return envelope ? cloneDraft(envelope) : null;
     },
+    focusTaxReview,
     toast
   });
 
@@ -504,5 +726,6 @@
   fillInputsFromDraft();
   bindFields();
   $("addItem").addEventListener("click", addItem);
+  renderTaxReviewState();
   render();
 })();

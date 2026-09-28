@@ -15,6 +15,22 @@ assert.ok(Number.isFinite(Core.parseMoney("1,000,000")), "never NaN");
 assert.equal(Core.formatMoney(1430000), "₩1,430,000", "money display");
 assert.equal(Core.formatInputNumber(1500000), "1,500,000", "input display format");
 
+/* KOREAN_MONEY_SHORTHAND — Easy Mode 단가용 결정론적 한국식 금액 파서 */
+assert.equal(Core.parseKoreanMoney("1,500,000"), 1500000, "comma money");
+assert.equal(Core.parseKoreanMoney("1500000"), 1500000, "plain money");
+assert.equal(Core.parseKoreanMoney("₩1,500,000"), 1500000, "won symbol");
+assert.equal(Core.parseKoreanMoney("1,500,000원"), 1500000, "won suffix");
+assert.equal(Core.parseKoreanMoney("150만원"), 1500000, "manwon shorthand");
+assert.equal(Core.parseKoreanMoney("20만"), 200000, "man shorthand");
+assert.equal(Core.parseKoreanMoney("1.5만원"), 15000, "decimal man shorthand");
+assert.equal(Core.parseKoreanMoney("2억원"), 200000000, "eok shorthand");
+assert.equal(Core.parseKoreanMoney("3천원"), 3000, "cheon shorthand");
+assert.equal(Core.parseKoreanMoney("0원"), 0, "zero allowed");
+assert.equal(Core.parseKoreanMoney("1억5천만원"), null, "mixed unit form fails rather than guesses");
+assert.equal(Core.parseKoreanMoney("-5만"), null, "negative shorthand rejected");
+assert.equal(Core.parseKoreanMoney("백만원"), null, "non-numeric Korean numeral rejected");
+assert.equal(Core.parseKoreanMoney("abc"), null, "garbage rejected");
+
 /* VAT_EXCLUSIVE_CONTRACT — 공급가액에 10% 추가 */
 const items = [
   { id: "item-1", name: "서비스 구축", qty: 1, unitPrice: 1000000 },
@@ -75,6 +91,69 @@ assert.equal(draft.tax.mode, "EXCLUSIVE", "default tax mode");
 assert.equal(draft.sender.company, "샘플 공급사", "neutral default sender");
 assert.equal(draft.sender.presetId, "sample", "neutral sender preset");
 
+/* NEW_QUOTE_DOMAIN_CONTRACT — 새 고객 견적은 sender만 유지하고 내용은 비움 */
+const currentForNew = Core.createDefaultDraft();
+currentForNew.sender = {
+  company: "내 회사",
+  rep: "홍대표",
+  bizNo: "123-45-67890",
+  address: "광주광역시",
+  phone: "010-1234-5678",
+  email: "owner@example.com",
+  presetId: "custom"
+};
+currentForNew.meta.validDays = 14;
+currentForNew.recipient.company = "이전 고객";
+currentForNew.items = [{ id: "item-9", name: "기존 품목", qty: 3, unitPrice: 99000 }];
+currentForNew.tax.mode = "INCLUSIVE";
+currentForNew.memo = "이전 견적 메모";
+
+const blankNext = Core.createBlankQuoteDraft(currentForNew, {
+  quoteNo: "PQ-20260928-002",
+  issueDate: "2026-09-28",
+  source: "manual"
+});
+assert.ok(blankNext, "blank next quote is valid");
+assert.deepEqual(blankNext.sender, currentForNew.sender, "sender is preserved");
+assert.equal(blankNext.meta.quoteNo, "PQ-20260928-002", "fresh quote number injected");
+assert.equal(blankNext.meta.issueDate, "2026-09-28", "fresh issue date injected");
+assert.equal(blankNext.meta.validDays, 14, "validity preference preserved");
+assert.deepEqual(blankNext.recipient, { company: "", person: "", address: "", email: "" }, "recipient cleared");
+assert.deepEqual(blankNext.items, [{ id: "item-1", name: "", qty: 1, unitPrice: 0 }], "one blank item");
+assert.equal(blankNext.tax.mode, "EXCLUSIVE", "new quote tax resets to explicit default");
+assert.equal(blankNext.memo, Core.createDefaultDraft().memo, "ordinary default memo restored");
+assert.equal(currentForNew.recipient.company, "이전 고객", "source draft not mutated");
+assert.equal(currentForNew.items[0].name, "기존 품목", "source items not mutated");
+
+/* PRINT_READINESS_CONTRACT — 최소 출력 필수값 */
+const printable = Core.createDefaultDraft();
+assert.deepEqual(Core.printReadiness(printable), { ready: true, missing: [] }, "default demo is printable");
+
+const noQuoteNo = JSON.parse(JSON.stringify(printable));
+noQuoteNo.meta.quoteNo = "";
+assert.deepEqual(Core.printReadiness(noQuoteNo).missing, ["quote_no"], "quote number required");
+
+const noDate = JSON.parse(JSON.stringify(printable));
+noDate.meta.issueDate = "";
+assert.deepEqual(Core.printReadiness(noDate).missing, ["issue_date"], "valid issue date required");
+
+const noSender = JSON.parse(JSON.stringify(printable));
+noSender.sender.company = "";
+assert.deepEqual(Core.printReadiness(noSender).missing, ["sender_company"], "sender company required");
+
+const noRecipient = JSON.parse(JSON.stringify(printable));
+noRecipient.recipient.company = "";
+noRecipient.recipient.person = "";
+assert.deepEqual(Core.printReadiness(noRecipient).missing, ["recipient"], "recipient company or person required");
+
+const noNamedItem = JSON.parse(JSON.stringify(printable));
+noNamedItem.items = [{ id: "item-1", name: "", qty: 1, unitPrice: 0 }];
+assert.deepEqual(Core.printReadiness(noNamedItem).missing, ["items"], "at least one named positive-qty item required");
+
+const freeItem = JSON.parse(JSON.stringify(printable));
+freeItem.items = [{ id: "item-1", name: "무상 지원", qty: 1, unitPrice: 0 }];
+assert.equal(Core.printReadiness(freeItem).ready, true, "zero-price named item may still be printable");
+
 /* DRAFT_RESTORE_CONTRACT — 정상·부분·손상 입력 */
 assert.deepEqual(Core.normalizeDraft(JSON.parse(JSON.stringify(draft))), draft, "round trip");
 const partial = Core.normalizeDraft({
@@ -95,10 +174,14 @@ assert.equal(badItems.items[0].qty, 1, "negative qty falls back");
 assert.equal(badItems.items[0].unitPrice, 0, "garbage price falls back");
 
 console.log("KOREAN_MONEY_INPUT_CONTRACT=PASS");
+console.log("KOREAN_MONEY_SHORTHAND=PASS");
+console.log("AMBIGUOUS_MIXED_UNIT_FAILS_SAFE=YES");
 console.log("VAT_EXCLUSIVE_CONTRACT=PASS");
 console.log("VAT_INCLUSIVE_CONTRACT=PASS");
 console.log("VAT_EXEMPT_CONTRACT=PASS");
 console.log("VALID_UNTIL_CONTRACT=PASS");
 console.log("QUOTEDRAFT_SCHEMA_CONTRACT=PASS");
+console.log("NEW_QUOTE_DOMAIN_CONTRACT=PASS");
+console.log("PRINT_READINESS_CONTRACT=PASS");
 console.log("DRAFT_RESTORE_CONTRACT=PASS");
 console.log("B66_QUOTE_CORE_UNIT=PASS");

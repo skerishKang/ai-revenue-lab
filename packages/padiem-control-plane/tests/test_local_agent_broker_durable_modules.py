@@ -254,4 +254,8 @@ def test_worker_file_is_thin_and_storage_schemas_live_outside_entrypoint() -> No
     # local-access source consumes. Still no storage, schema or authority in
     # the entrypoint file — the fact vocabulary and markers live in the
     # durable runtime module.
-    assert len(source.splitlines()) < 220
+    # Issue #3139 adds the read-only terminal-result passthrough per entrypoint
+    # class, exactly like #3094's device_truth: the Claw return leg's source of
+    # truth, on the same private Service Binding surface. Still no storage,
+    # schema or authority in the entrypoint file.
+    assert len(source.splitlines()) < 223

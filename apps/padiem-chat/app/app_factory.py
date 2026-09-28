@@ -47,6 +47,7 @@ from .calendar_routes import (
 )
 from .calendar_store import CalendarStore, D1CalendarStore, InMemoryCalendarStore
 from .claw_inbox_routes import claw_inbox_list, claw_inbox_status
+from .claw_local_task_result_routes import CLAW_LOCAL_TASK_RESULT_PATH, local_runner_result
 from .claw_local_access_routes import (
     CLAW_LOCAL_ACCESS_PATH,
     UnconfiguredClawLocalAccessTruthSource,
@@ -132,6 +133,7 @@ def create_app(
     telemetry_emitter=None,
     claw_p01_continuation_client=None,
     claw_local_access_source=None,
+    local_task_result_source=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -172,6 +174,7 @@ def create_app(
         # #3094: the one real read-only source behind the "Connect this computer"
         # panel. Owner-scoped; it pairs nothing and approves nothing.
         Route(CLAW_LOCAL_ACCESS_PATH, claw_local_access, methods=["GET"]),
+        Route("/api/claw/runs/{run_id}/local-result", local_runner_result, methods=["POST"]),
         Route("/api/claw/inbox/{kind}", claw_inbox_list, methods=["GET"]),
         Route("/api/claw/inbox/{kind}/{item_id}", claw_inbox_status, methods=["PATCH"]),
         Route("/api/calendar/today", calendar_today, methods=["GET"]),
@@ -242,6 +245,10 @@ def create_app(
         if claw_local_access_source is not None
         else UnconfiguredClawLocalAccessTruthSource()
     )
+    # #3139 return leg: the server-owned consumer of a Local Runner terminal
+    # result. None keeps the route fail-closed until the Worker root composes
+    # the concrete source from the trusted broker binding.
+    app.state.local_task_result_source = local_task_result_source
     # Bounded non-secret composition diagnostic (#2413). Set by the Worker
     # composition root alongside a None adapter; always None on the success
     # path and validated against the closed allowlist before public projection.

@@ -102,6 +102,41 @@ const originalBefore = JSON.stringify(loaded.draft);
 copied.items[0].name = "변경됨";
 assert.equal(JSON.stringify(loaded.draft), originalBefore, "copy-as-new never mutates the history snapshot");
 
+const updatedDraft = sampleDraft();
+updatedDraft.recipient.company = "홍길동건설 수정본";
+updatedDraft.items[0].unitPrice = 1800000;
+const upserted = History.upsertEntryByQuoteNo(envelope, updatedDraft, {
+  savedAt: "2026-09-27T11:00:00.000Z"
+});
+assert.equal(upserted.entries.length, 1, "same quote number updates instead of duplicating");
+assert.equal(upserted.entries[0].id, "history-1", "upsert preserves stable history id");
+assert.equal(upserted.entries[0].savedAt, "2026-09-27T11:00:00.000Z", "upsert refreshes savedAt");
+assert.equal(upserted.entries[0].draft.recipient.company, "홍길동건설 수정본", "upsert stores latest content");
+assert.equal(upserted.entries[0].draft.items[0].unitPrice, 1800000, "upsert stores latest item values");
+
+const differentDraft = sampleDraft();
+differentDraft.meta.quoteNo = "Q-NEW-002";
+const withSecondQuote = History.upsertEntryByQuoteNo(upserted, differentDraft, {
+  id: "history-2",
+  savedAt: "2026-09-27T12:00:00.000Z"
+});
+assert.equal(withSecondQuote.entries.length, 2, "different quote number creates new history entry");
+assert.equal(withSecondQuote.entries[0].id, "history-2", "new quote snapshot is first");
+assert.equal(withSecondQuote.entries[1].id, "history-1", "updated prior quote remains once");
+
+const duplicateLegacyEnvelope = {
+  schemaVersion: 1,
+  entries: [
+    History.createEntry(updatedDraft, { id: "dup-new", savedAt: "2026-09-27T11:10:00Z" }),
+    History.createEntry(updatedDraft, { id: "dup-old", savedAt: "2026-09-27T10:10:00Z" })
+  ]
+};
+const collapsedLegacy = History.upsertEntryByQuoteNo(duplicateLegacyEnvelope, updatedDraft, {
+  savedAt: "2026-09-27T13:00:00Z"
+});
+assert.equal(collapsedLegacy.entries.length, 1, "saving collapses pre-existing duplicate quote-number snapshots");
+assert.equal(collapsedLegacy.entries[0].id, "dup-new", "newest matching stable id is retained");
+
 const deleted = History.deleteEntry(envelope, "history-1");
 assert.equal(deleted.entries.length, 0);
 
@@ -141,6 +176,8 @@ console.log("B66_HISTORY_CONTRACT=PASS");
 console.log("RECENT_HISTORY_BOUNDED=YES");
 console.log("HISTORY_TOTALS_DERIVED=YES");
 console.log("HISTORY_COPY_AS_NEW=PASS");
+console.log("HISTORY_SAVE_UPSERT=PASS");
+console.log("SAME_QUOTE_REPEATED_SAVE_DUPLICATES=0");
 console.log("HUMAN_READABLE_QUOTE_NO=YES");
 console.log("SAME_DAY_COLLISION_TEST=PASS");
 console.log("COPY_QUOTE_NO_DIFFERS_FROM_SOURCE=YES");

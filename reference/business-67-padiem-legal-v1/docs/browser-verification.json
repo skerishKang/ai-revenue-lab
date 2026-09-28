@@ -1,0 +1,58 @@
+{
+  "viewports": {
+    "desktop": {
+      "width": 1440,
+      "height": 1000,
+      "consoleErrors": []
+    },
+    "tablet": {
+      "width": 768,
+      "height": 1024,
+      "consoleErrors": []
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "consoleErrors": []
+    }
+  },
+  "states": {
+    "home": {
+      "label": "새 조사",
+      "evidenceCards": 0,
+      "textLen": 235
+    },
+    "unified": {
+      "label": "통합",
+      "evidenceCards": 5,
+      "textLen": 553
+    },
+    "official": {
+      "label": "공식",
+      "evidenceCards": 1,
+      "textLen": 416
+    },
+    "drive": {
+      "label": "Drive",
+      "evidenceCards": 3,
+      "textLen": 484
+    },
+    "provenance": {
+      "label": "페이지",
+      "evidenceCards": 5,
+      "textLen": 553
+    },
+    "fail-closed": {
+      "label": "근거 없음",
+      "evidenceCards": 0,
+      "textLen": 364
+    },
+    "disconnected": {
+      "label": "미연결",
+      "evidenceCards": 0,
+      "textLen": 350
+    }
+  },
+  "checks": {},
+  "failures": []
+}

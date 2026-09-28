@@ -33,6 +33,10 @@ _MATERIAL_RESOLVE_RPC_KEYS = frozenset(
 # #3094 — the device-truth projection is owner-scoped by the server-derived
 # identity only; no conversation, device or destination ref is accepted here.
 _DEVICE_TRUTH_RPC_KEYS = frozenset({"account_ref", "workspace_ref"})
+#: #3139 — the terminal-result read is scoped the same way device_truth is:
+#: the owner identity plus the run whose result is being returned. The caller
+#: never names a conversation, a command or an outcome.
+_TERMINAL_RESULT_RPC_KEYS = frozenset({"account_ref", "workspace_ref", "run_id"})
 
 
 def _iso_utc(value: datetime) -> str:
@@ -412,6 +416,107 @@ class LocalAgentBrokerDurableRuntime:
                 facts["heartbeat_last_seen_at"] = _iso_utc(last_seen_at)
         return {"ok": True, "available": True, "device_truth": facts}
 
+    def terminal_command_result(self, payload: dict) -> dict:
+        """#3139 — one narrow, read-only, owner-scoped canonical terminal-result read.
+
+        The return leg of a Local Runner task: the Claw side asks the canonical
+        broker what became of one of its own runs, and the broker answers from
+        the state it already owns. This mirrors ``device_truth`` exactly — same
+        owner scoping, same private Service Binding surface, same rule that the
+        broker renames nothing and derives no second authority.
+
+        Read-only by construction: no transaction, no compare-and-swap, no
+        material or command state is touched, and the response is assembled from a
+        closed allowlist. It returns a command only when it is terminal
+        (``acknowledged`` / ``expired``) and belongs to the owner's own device
+        binding, so no other account's run is ever observable here.
+        """
+
+        try:
+            if not isinstance(payload, dict) or not set(payload) <= _TERMINAL_RESULT_RPC_KEYS:
+                raise ValueError("terminal result schema mismatch")
+            account_ref = safe_ref(str(payload["account_ref"]), "account_ref")
+            workspace_ref = payload.get("workspace_ref")
+            if workspace_ref is not None:
+                workspace_ref = safe_ref(str(workspace_ref), "workspace_ref")
+            run_id = safe_ref(str(payload["run_id"]), "run_id")
+        except (KeyError, TypeError, ValueError):
+            return {
+                "ok": False,
+                "error": {
+                    "code": "invalid_terminal_result_request",
+                    "message": "terminal result request was rejected",
+                },
+            }
+
+        stored = self.state_port.load(authority_ref=self.authority_ref())
+        snapshot = stored.snapshot
+
+        binding_refs = {
+            binding.binding_ref
+            for binding in snapshot.bindings
+            if binding.account_ref == account_ref
+            and (workspace_ref is None or binding.workspace_ref == workspace_ref)
+        }
+        if not binding_refs:
+            return {"ok": True, "available": False, "reason": "no_device_binding"}
+
+        owned = [
+            command
+            for command in snapshot.commands
+            if command.run_id == run_id and command.binding_ref in binding_refs
+        ]
+        if not owned:
+            return {"ok": True, "available": False, "reason": "no_command_for_run"}
+        if len(owned) > 1:
+            # Two commands claiming one run is not a tie to break: the consumer
+            # binds an origin correlation per run, so this is refused instead of
+            # silently resolving to whichever command is newest.
+            return {"ok": True, "available": False, "reason": "ambiguous_run_commands"}
+        command = owned[0]
+        identity = {
+            "command_id": command.command_id,
+            "run_id": command.run_id,
+            "tool_request_ref": command.tool_request_ref,
+            "request_id": command.request_id,
+            "revision_ref": command.revision_ref,
+            "evidence_ref": command.evidence_ref,
+            "admission_ref": command.admission_ref,
+            "request_fingerprint": command.request_fingerprint,
+            "sequence": command.sequence,
+            "state": command.state.value,
+        }
+        if command.state not in {BrokerCommandState.ACKNOWLEDGED, BrokerCommandState.EXPIRED}:
+            # The identity is available before any outcome exists; there is
+            # simply no terminal result to report yet.
+            return {"ok": True, "available": True, "command_identity": identity, "command_result": None}
+        return {
+            "ok": True,
+            "available": True,
+            "command_identity": identity,
+            "command_result": {
+                "command_id": command.command_id,
+                "run_id": command.run_id,
+                "tool_request_ref": command.tool_request_ref,
+                "request_id": command.request_id,
+                "revision_ref": command.revision_ref,
+                "evidence_ref": command.evidence_ref,
+                "admission_ref": command.admission_ref,
+                "request_fingerprint": command.request_fingerprint,
+                "sequence": command.sequence,
+                "state": command.state.value,
+                "termination": command.termination,
+                "exit_code": command.exit_code,
+                "acknowledged_at": (
+                    _iso_utc(command.acknowledged_at) if command.acknowledged_at is not None else None
+                ),
+                "raw_argv": False,
+                "raw_file_content": False,
+                "raw_device_credential": False,
+                "p01_approval_payload": False,
+            },
+        }
+
     def safe_dict(self) -> dict[str, Any]:
         return {
             "durable_runtime_composition": True,
@@ -426,6 +531,12 @@ class LocalAgentBrokerDurableRuntime:
             "material_less_admission_refused": True,
             "material_less_acknowledgement_refused": True,
             "missing_material_pollable": False,
+            "terminal_result_read_only": True,
+            "command_identity_precedes_terminal_fact": True,
+            "ambiguous_run_refused": True,
+            "terminal_result_owner_scoped": True,
+            "second_result_authority": False,
+            "second_command_authority": False,
             "production_mutation": False,
             "production_ready": False,
         }

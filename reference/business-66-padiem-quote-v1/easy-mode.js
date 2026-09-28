@@ -7,9 +7,10 @@
 
   const Core = window.QuoteCore;
   const History = window.QuoteHistory;
+  const FileIntake = window.B66FileIntake;
   const App = window.B66QuoteAppBridge;
 
-  if (!Core || !History || !App) return;
+  if (!Core || !History || !FileIntake || !App) return;
 
   const $ = (id) => document.getElementById(id);
   const easyView = $("easyView");
@@ -20,10 +21,12 @@
   const chipRow = $("easyChipRow");
   const composer = $("easyComposer");
   const sendButton = $("easySend");
+  const fileInput = $("easyFileInput");
 
   let inputHandler = null;
   let guided = null;
   let freeChatPending = "";
+  let selectedFile = null;
 
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
@@ -75,6 +78,7 @@
     clearConversation();
     guided = null;
     freeChatPending = "";
+    selectedFile = null;
     easyEmpty.hidden = false;
     composer.value = "";
     composer.placeholder = "필요한 내용을 편하게 입력하세요";
@@ -290,7 +294,10 @@
     return fresh;
   }
 
-  function startGuided() {
+  function startGuided(referenceText) {
+    const reference = typeof referenceText === "string"
+      ? safeText(referenceText, 8000)
+      : "";
     startConversation();
     guided = {
       step: "recipientCompany",
@@ -298,10 +305,20 @@
       currentItem: -1,
       taxUnknown: false
     };
-    addMessage("assistant", "새 견적을 같이 만들어볼게요. 누구에게 보내는 견적인가요? 업체명이나 받는 분 이름을 입력해 주세요.");
+    if (reference) {
+      addMessage("user", reference);
+      addMessage(
+        "assistant",
+        "적어주신 내용은 참고용으로 그대로 남겨둘게요. 아직 자동 해석은 하지 않으므로 필요한 값은 하나씩 확인합니다. 먼저 누구에게 보내는 견적인가요?"
+      );
+    } else {
+      addMessage("assistant", "새 견적을 같이 만들어볼게요. 누구에게 보내는 견적인가요? 업체명이나 받는 분 이름을 입력해 주세요.");
+    }
     setChips([{ label: "직접 입력으로 전환", action: () => setWorkspaceMode("direct") }]);
     setInput(processGuidedInput, "예: 홍길동건설");
-    $("easyComposerNote").textContent = "필요한 내용만 하나씩 묻습니다. 이 흐름은 AI 없이 동작합니다.";
+    $("easyComposerNote").textContent = reference
+      ? "작성한 원문은 참고용으로만 표시하며 QuoteDraft에 자동 반영하지 않습니다."
+      : "필요한 내용만 하나씩 묻습니다. 이 흐름은 AI 없이 동작합니다.";
   }
 
   function askRecipientPerson() {
@@ -332,9 +349,9 @@
 
   function askPrice() {
     guided.step = "price";
-    addMessage("assistant", "개당 단가는 얼마인가요? 콤마를 넣어도 됩니다.");
+    addMessage("assistant", "개당 단가는 얼마인가요? 1,500,000 또는 150만원처럼 입력할 수 있어요.");
     setChips([]);
-    setInput(processGuidedInput, "예: 1,500,000");
+    setInput(processGuidedInput, "예: 1,500,000 또는 150만원");
   }
 
   function askMoreItems() {
@@ -388,6 +405,10 @@
     const taxLine = guided.taxUnknown
       ? "부가세: 확인 필요 (직접 입력 화면에서 선택해 주세요)"
       : "부가세: " + Core.TAX_LABELS[guided.draft.tax.mode];
+    const amountLine = guided.taxUnknown
+      ? "품목 합계(세금 확인 전): " + Core.formatMoney(totals.subtotal) +
+        "\n최종 합계는 부가세 방식을 선택한 뒤 확정됩니다."
+      : "합계: " + Core.formatMoney(totals.grand);
 
     addMessage(
       "assistant",
@@ -396,7 +417,7 @@
       (guided.draft.recipient.person ? " · " + guided.draft.recipient.person : "") +
       "\n\n" + itemLines +
       "\n\n" + taxLine +
-      "\n합계: " + Core.formatMoney(totals.grand) +
+      "\n" + amountLine +
       "\n\n확인 화면에서 모든 내용을 다시 수정할 수 있습니다."
     );
 
@@ -405,11 +426,17 @@
         label: "견적서 확인하기",
         action: () => {
           const result = App.replaceDraft(guided.draft, {
+            requireTaxReview: guided.taxUnknown,
             toast: guided.taxUnknown
-              ? "견적 초안을 열었습니다. 부가세 방식을 확인해 주세요."
+              ? "견적 초안을 열었습니다. 부가세 방식을 먼저 확인해 주세요."
               : "견적 초안을 열었습니다."
           });
-          if (result.ok) setWorkspaceMode("direct");
+          if (result.ok) {
+            setWorkspaceMode("direct");
+            if (guided.taxUnknown) {
+              setTimeout(() => App.focusTaxReview(), 0);
+            }
+          }
         }
       },
       { label: "처음부터 다시", action: startGuided },
@@ -454,9 +481,9 @@
       }
 
       case "price": {
-        const price = parseNumberAnswer(text, true);
+        const price = Core.parseKoreanMoney(text);
         if (price === null) {
-          addMessage("assistant", "단가는 숫자로 입력해 주세요. 예: 1,500,000");
+          addMessage("assistant", "단가는 1,500,000 또는 150만원처럼 입력해 주세요. 복합 단위는 추측하지 않습니다.");
           askPrice();
           return;
         }
@@ -552,7 +579,7 @@
         "내용을 확인했습니다. 현재 버전에서는 이 문장을 AI가 자동 해석하지 않습니다. 질문형으로 이어가면 필요한 값을 하나씩 정확하게 받을 수 있어요."
       );
       setChips([
-        { label: "질문받으며 이어가기", action: startGuided },
+        { label: "질문받으며 이어가기", action: () => startGuided(freeChatPending) },
         { label: "직접 입력에서 작성", action: () => setWorkspaceMode("direct") },
         { label: "처음으로", action: showHome }
       ]);
@@ -560,18 +587,126 @@
     }, "예: ABC상사 홈페이지 제작 150만원, 유지보수 20만원, 부가세 별도");
   }
 
-  function showFileFuture() {
+  function openFileChooser() {
+    fileInput.value = "";
+    fileInput.click();
+  }
+
+  function renderSelectedFile(file, info) {
     startConversation();
+    selectedFile = file;
+
     addMessage(
       "assistant",
-      "PDF·사진·문서에서 견적을 읽어오는 기능은 다음 단계에서 연결됩니다. 지금은 파일을 선택하거나 외부로 전송하지 않습니다."
+      "파일을 안전하게 선택했습니다. 아직 서버 자동 분석은 연결하지 않았기 때문에 이 파일은 외부로 전송되지 않습니다."
+    );
+
+    historyPanel.innerHTML = "";
+    historyPanel.hidden = false;
+
+    const card = document.createElement("article");
+    card.className = "easy-file-card";
+
+    const icon = document.createElement("div");
+    icon.className = "easy-file-icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = info.category === "image" ? "IMG" : "DOC";
+
+    const details = document.createElement("div");
+    details.className = "easy-file-info";
+
+    const name = document.createElement("strong");
+    name.textContent = info.name;
+
+    const meta = document.createElement("span");
+    meta.textContent = info.label + " · " + info.displaySize;
+
+    const route = document.createElement("p");
+    route.textContent = info.pathHint;
+
+    const privacy = document.createElement("small");
+    privacy.textContent = "현재 단계: 브라우저에서 형식·크기만 확인 · 업로드 0건 · 파일 내용 저장 0건";
+
+    details.append(name, meta, route, privacy);
+
+    const actions = document.createElement("div");
+    actions.className = "easy-file-actions";
+
+    const use = document.createElement("button");
+    use.type = "button";
+    use.className = "primary";
+    use.textContent = "이 파일로 견적 만들기";
+    use.addEventListener("click", () => {
+      addMessage(
+        "assistant",
+        "파일 선택과 안전 검증은 완료됐습니다. 자동 분석 서버는 아직 활성화 전이라 업로드·OCR·AI 처리는 시작하지 않았습니다. 모델과 서버 경로가 연결되면 이 단계에서 견적 초안을 만들게 됩니다."
+      );
+      setChips([
+        { label: "다른 파일 선택", action: openFileChooser },
+        { label: "질문받으며 만들기", action: startGuided },
+        { label: "직접 입력", action: () => setWorkspaceMode("direct") },
+        { label: "처음으로", action: showHome }
+      ]);
+      disableInput("선택한 파일은 이 페이지 메모리에만 있고 외부로 전송되지 않았습니다.");
+    });
+
+    const another = document.createElement("button");
+    another.type = "button";
+    another.textContent = "다른 파일 선택";
+    another.addEventListener("click", openFileChooser);
+
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.textContent = "취소";
+    cancel.addEventListener("click", showHome);
+
+    actions.append(use, another, cancel);
+    card.append(icon, details, actions);
+    historyPanel.appendChild(card);
+
+    setChips([
+      { label: "다른 파일 선택", action: openFileChooser },
+      { label: "직접 입력", action: () => setWorkspaceMode("direct") },
+      { label: "처음으로", action: showHome }
+    ]);
+    disableInput("지원: PDF·DOCX·PPTX·XLSX·HWPX 2 MB 이하 / JPG·PNG·WebP 4 MB 이하");
+  }
+
+  function handleFileSelection() {
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) return;
+
+    const result = FileIntake.classifyFile(file);
+    if (!result.ok) {
+      startConversation();
+      selectedFile = null;
+      addMessage("assistant", FileIntake.errorMessage(result));
+      setChips([
+        { label: "다른 파일 선택", action: openFileChooser },
+        { label: "처음으로", action: showHome }
+      ]);
+      disableInput("파일은 외부로 전송되지 않았습니다.");
+      return;
+    }
+
+    renderSelectedFile(file, result.value);
+  }
+
+  function startFileIntake() {
+    startConversation();
+    selectedFile = null;
+    addMessage(
+      "assistant",
+      "견적서 파일을 선택해 주세요. PDF·DOCX·PPTX·XLSX·HWPX는 2 MB 이하, JPG·PNG·WebP 이미지는 4 MB 이하를 지원합니다. 기존 HWP(.hwp)는 아직 지원하지 않습니다."
     );
     setChips([
+      { label: "파일 선택", action: openFileChooser },
       { label: "질문받으며 만들기", action: startGuided },
       { label: "직접 입력", action: () => setWorkspaceMode("direct") },
       { label: "처음으로", action: showHome }
     ]);
-    disableInput("파일 업로드는 아직 비활성입니다.");
+    disableInput("파일 선택 단계는 로컬 preflight만 수행하며 네트워크 업로드는 하지 않습니다.");
+    openFileChooser();
   }
 
   $("easyModeButton").addEventListener("click", () => setWorkspaceMode("easy"));
@@ -584,7 +719,8 @@
   $("recentQuoteStarter").addEventListener("click", showRecentHistory);
   $("guidedStarter").addEventListener("click", startGuided);
   $("freeChatStarter").addEventListener("click", startFreeChat);
-  $("fileStarter").addEventListener("click", showFileFuture);
+  $("fileStarter").addEventListener("click", startFileIntake);
+  fileInput.addEventListener("change", handleFileSelection);
 
   sendButton.addEventListener("click", submitComposer);
   composer.addEventListener("keydown", (event) => {
@@ -599,6 +735,15 @@
   });
 
   window.addEventListener("b66:history-changed", refreshStarters);
+  window.addEventListener("b66:local-data-reset", () => {
+    fileInput.value = "";
+    setWorkspaceMode("easy");
+    showHome();
+  });
+  document.addEventListener("b66:open-file-intake", () => {
+    setWorkspaceMode("easy");
+    startFileIntake();
+  });
 
   setWorkspaceMode("easy");
   showHome();

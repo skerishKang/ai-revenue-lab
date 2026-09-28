@@ -83,6 +83,36 @@
     return envelope;
   }
 
+  function upsertEntryByQuoteNo(rawEnvelope, draft, options) {
+    var envelope = normalizeEnvelope(rawEnvelope);
+    var normalized = Core.normalizeDraft(draft);
+    if (!normalized) return envelope;
+
+    var quoteNo = typeof normalized.meta.quoteNo === "string"
+      ? normalized.meta.quoteNo.trim()
+      : "";
+    if (!quoteNo) return addEntry(envelope, normalized, options);
+
+    var existing = envelope.entries.find(function (entry) {
+      return String(entry.draft.meta.quoteNo || "").trim() === quoteNo;
+    });
+    if (!existing) return addEntry(envelope, normalized, options);
+
+    var opts = options || {};
+    var entry = createEntry(normalized, {
+      id: existing.id,
+      savedAt: typeof opts.savedAt === "string" ? opts.savedAt : undefined
+    });
+    if (!entry) return envelope;
+
+    envelope.entries = envelope.entries.filter(function (candidate) {
+      return String(candidate.draft.meta.quoteNo || "").trim() !== quoteNo;
+    });
+    envelope.entries.unshift(entry);
+    envelope.entries = envelope.entries.slice(0, MAX_HISTORY);
+    return envelope;
+  }
+
   function deleteEntry(rawEnvelope, id) {
     var envelope = normalizeEnvelope(rawEnvelope);
     envelope.entries = envelope.entries.filter(function (entry) {
@@ -220,6 +250,7 @@
     normalizeEnvelope: normalizeEnvelope,
     createEntry: createEntry,
     addEntry: addEntry,
+    upsertEntryByQuoteNo: upsertEntryByQuoteNo,
     deleteEntry: deleteEntry,
     getEntry: getEntry,
     listMetadata: listMetadata,

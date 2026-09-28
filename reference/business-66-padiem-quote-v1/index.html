@@ -8,6 +8,7 @@
   <script src="quote-core.js" defer></script>
   <script src="quote-extraction.js" defer></script>
   <script src="quote-history.js" defer></script>
+  <script src="file-intake.js" defer></script>
   <script src="app.js" defer></script>
   <script src="easy-mode.js" defer></script>
 </head>
@@ -18,7 +19,10 @@
         <h1>견적서 만들기</h1>
         <p>입력부터 PDF 저장까지 한 화면에서</p>
       </div>
-      <div class="badge">BETA · 입력 내용은 이 브라우저에만 저장</div>
+      <div class="topbar-actions">
+        <div class="badge">BETA · 입력 내용은 이 브라우저에만 저장</div>
+        <button class="topbar-reset" id="resetLocalData" type="button">저장 데이터 초기화</button>
+      </div>
     </header>
 
     <nav class="workspace-modebar" aria-label="견적 작성 모드">
@@ -52,7 +56,7 @@
             </button>
             <button class="easy-starter" id="fileStarter" type="button">
               <span class="easy-starter-icon" aria-hidden="true">＋</span>
-              <span><strong>파일에서 불러오기</strong><small>PDF·사진·문서 자동 읽기는 다음 단계입니다</small></span>
+              <span><strong>파일에서 불러오기</strong><small>PDF·사진·문서를 먼저 안전하게 선택합니다</small></span>
             </button>
             <button class="easy-starter" id="directStarter" type="button">
               <span class="easy-starter-icon" aria-hidden="true">▦</span>
@@ -63,6 +67,13 @@
 
         <div class="easy-message-list" id="easyMessageList" aria-live="polite"></div>
         <div class="easy-history-panel" id="easyHistoryPanel" hidden></div>
+        <input
+          id="easyFileInput"
+          type="file"
+          hidden
+          accept=".pdf,.docx,.pptx,.xlsx,.hwpx,.jpg,.jpeg,.png,.webp,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/hwp+zip,image/jpeg,image/png,image/webp"
+          aria-label="견적서 파일 선택"
+        >
       </div>
 
       <div class="easy-composer-wrap">
@@ -78,7 +89,7 @@
     <section class="direct-view" id="directView" aria-label="직접 견적서 입력" hidden>
     <nav class="modebar" aria-label="견적 생성 방식">
       <button class="mode active" data-mode="manual">직접 입력</button>
-      <button class="mode future" data-mode="upload">파일 올리기 · 다음 단계</button>
+      <button class="mode" data-mode="upload">파일 불러오기</button>
       <button class="mode future" data-mode="chat">채팅으로 만들기 · 다음 단계</button>
     </nav>
     <div class="future-note" id="futureNote"></div>
@@ -159,19 +170,20 @@
             <button class="btn" id="addItem">+ 품목 추가</button>
             <button class="btn" id="newQuote">새 견적</button>
           </div>
-          <div class="tax-row">
+          <div class="tax-row" id="taxRow">
             <label>부가세 방식
-              <select id="taxMode">
+              <select id="taxMode" aria-describedby="taxReviewNote">
                 <option value="EXCLUSIVE">별도 — 공급가액에 VAT 10% 추가</option>
                 <option value="INCLUSIVE">포함 — 표시 금액에 VAT 포함</option>
                 <option value="EXEMPT">면세 — 부가세 없음</option>
               </select>
             </label>
+            <p class="tax-review-note" id="taxReviewNote" hidden>부가세 방식을 확인해 주세요. 선택하기 전의 합계는 확정 금액이 아닙니다.</p>
           </div>
           <div class="summary">
-            <div class="summary-line"><span>공급가액</span><strong id="subtotalText">0원</strong></div>
+            <div class="summary-line"><span id="subtotalLabelText">공급가액</span><strong id="subtotalText">0원</strong></div>
             <div class="summary-line"><span id="vatLabelText">부가세</span><strong id="vatText">0원</strong></div>
-            <div class="summary-line total"><span>합계</span><span id="grandText">0원</span></div>
+            <div class="summary-line total"><span id="grandLabelText">합계</span><span id="grandText">0원</span></div>
           </div>
         </div>
 
@@ -227,9 +239,9 @@
             <tbody id="pvItems"></tbody>
           </table>
           <div class="quote-totals">
-            <div><span>공급가액</span><strong id="pvSubtotal"></strong></div>
+            <div><span id="pvSubtotalLabel">공급가액</span><strong id="pvSubtotal"></strong></div>
             <div><span id="pvVatLabel">부가세</span><strong id="pvVat"></strong></div>
-            <div class="grand"><span>합계</span><span id="pvGrand"></span></div>
+            <div class="grand"><span id="pvGrandLabel">합계</span><span id="pvGrand"></span></div>
           </div>
           <div class="memo" id="pvMemo"></div>
           <div class="demo-mark">견적서 베타</div>
