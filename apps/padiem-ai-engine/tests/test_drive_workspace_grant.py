@@ -17,6 +17,8 @@ from padiem_ai_core.drive_capability import DriveCapability
 from app.connector_bindings import DRIVE_AGENT_ID, DRIVE_REFERENCE_APP_ID
 import app.drive_workspace_grant as grant_module
 from app.drive_workspace_grant import (
+    RESOLVED_KEYS,
+    ControlPlaneDriveBindingAdapter,
     DriveWorkspaceGrantError,
     WorkspaceScopedDriveGrantProvider,
     drive_workspace_grant_snapshot,
@@ -175,3 +177,102 @@ def test_snapshot_posture() -> None:
     assert snapshot["public_route"] is False
     assert snapshot["token_unseal"] is False
     assert snapshot["access_lease_issue"] is False
+
+
+# --- 5. closed wire contract (status vocabulary + exact keyset) ------------
+
+
+def test_unknown_or_malformed_status_is_denied() -> None:
+    for status in ("ambiguous", "error", "resolved_v2", None, 123, "unknown"):
+        payload = resolved_payload()
+        payload["status"] = status
+        provider = WorkspaceScopedDriveGrantProvider(client=FakeControlPlaneClient(payload))
+        with pytest.raises(DriveWorkspaceGrantError) as excinfo:
+            run(provider.current_drive_grant(workspace_ref=WORKSPACE_A))
+        assert excinfo.value.code == "drive_binding_response_invalid", status
+
+
+def test_not_connected_exact_schema_yields_no_grant() -> None:
+    provider = WorkspaceScopedDriveGrantProvider(client=FakeControlPlaneClient(not_connected_payload()))
+    assert run(provider.current_drive_grant(workspace_ref=WORKSPACE_A)) is None
+
+
+def test_resolved_extra_field_is_denied() -> None:
+    for extra in (
+        {"account_ref": "acct_1"},
+        {"scopes": ["https://www.googleapis.com/auth/drive.readonly"]},
+        {"access_token": "ya29.raw"},
+        {"refresh_token": "1//raw"},
+        {"sealed_refresh_token": "sealed:v1:abc"},
+        {"client_secret": "secret"},
+        {"anything_else": 1},
+    ):
+        payload = resolved_payload()
+        payload.update(extra)
+        provider = WorkspaceScopedDriveGrantProvider(client=FakeControlPlaneClient(payload))
+        with pytest.raises(DriveWorkspaceGrantError) as excinfo:
+            run(provider.current_drive_grant(workspace_ref=WORKSPACE_A))
+        assert excinfo.value.code == "drive_binding_response_invalid", extra
+
+
+def test_not_connected_extra_field_is_denied() -> None:
+    payload = not_connected_payload()
+    payload["binding_ref"] = BINDING_A
+    provider = WorkspaceScopedDriveGrantProvider(client=FakeControlPlaneClient(payload))
+    with pytest.raises(DriveWorkspaceGrantError) as excinfo:
+        run(provider.current_drive_grant(workspace_ref=WORKSPACE_A))
+    assert excinfo.value.code == "drive_binding_response_invalid"
+
+
+def test_resolved_missing_required_field_is_denied() -> None:
+    payload = resolved_payload()
+    del payload["actor_ref"]
+    provider = WorkspaceScopedDriveGrantProvider(client=FakeControlPlaneClient(payload))
+    with pytest.raises(DriveWorkspaceGrantError) as excinfo:
+        run(provider.current_drive_grant(workspace_ref=WORKSPACE_A))
+    assert excinfo.value.code == "drive_binding_response_invalid"
+
+
+# --- 6. Control Plane Service Binding adapter ------------------------------
+
+
+class FakeTransport:
+    def __init__(self, payload=None, *, error: Exception | None = None) -> None:
+        self.payload = payload
+        self.error = error
+        self.calls: list[str] = []
+
+    async def select_drive_binding(self, *, workspace_ref: str):
+        self.calls.append(workspace_ref)
+        if self.error is not None:
+            raise self.error
+        return self.payload
+
+
+def test_adapter_round_trip_yields_canonical_grant() -> None:
+    transport = FakeTransport(resolved_payload())
+    provider = WorkspaceScopedDriveGrantProvider(
+        client=ControlPlaneDriveBindingAdapter(transport=transport)
+    )
+    grant = run(provider.current_drive_grant(workspace_ref=WORKSPACE_A))
+    assert transport.calls == [WORKSPACE_A]
+    assert grant is not None
+    assert grant.binding_ref == BINDING_A
+    assert grant.actor_ref == "actor_a"
+
+
+def test_adapter_transport_failure_is_bounded() -> None:
+    adapter = ControlPlaneDriveBindingAdapter(transport=FakeTransport(error=RuntimeError("raw cp text")))
+    provider = WorkspaceScopedDriveGrantProvider(client=adapter)
+    with pytest.raises(DriveWorkspaceGrantError) as excinfo:
+        run(provider.current_drive_grant(workspace_ref=WORKSPACE_A))
+    assert excinfo.value.code == "drive_binding_selection_failed"
+    assert "raw cp text" not in str(excinfo.value)
+
+
+def test_adapter_missing_transport_fails_closed() -> None:
+    adapter = ControlPlaneDriveBindingAdapter(transport=None)
+    provider = WorkspaceScopedDriveGrantProvider(client=adapter)
+    with pytest.raises(DriveWorkspaceGrantError) as excinfo:
+        run(provider.current_drive_grant(workspace_ref=WORKSPACE_A))
+    assert excinfo.value.code == "drive_authority_unavailable"
