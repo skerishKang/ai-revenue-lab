@@ -426,6 +426,35 @@ class CandidateQualityTests(unittest.TestCase):
                     )
                 self.assertEqual(raised.exception.code, "business_value_in_fixed_content")
 
+    def test_nested_fixed_content_cannot_bypass_the_allowlist(self) -> None:
+        nested = _payload(
+            fixed_content={
+                "title": {
+                    "customer_name": "주식회사 에이",
+                    "amount": "1500000",
+                    "quote_date": "2026-09-28",
+                }
+            }
+        )
+        with self.assertRaises(TemplateClonerAnalyzerError) as raised:
+            analyze_template_candidate(self._request(), _InMemoryExecutor(payload=nested))
+        self.assertEqual(raised.exception.code, "invalid_fixed_content_value")
+
+    def test_sequence_fixed_content_cannot_bypass_the_allowlist(self) -> None:
+        listed = _payload(fixed_content={"title": ["견 적 서", "1,500,000원"]})
+        with self.assertRaises(TemplateClonerAnalyzerError) as raised:
+            analyze_template_candidate(self._request(), _InMemoryExecutor(payload=listed))
+        self.assertEqual(raised.exception.code, "invalid_fixed_content_value")
+
+    def test_non_string_fixed_content_values_are_refused(self) -> None:
+        for value in (1500000, 3.5, True, False, None):
+            with self.subTest(value=repr(value)):
+                with self.assertRaises(TemplateClonerAnalyzerError) as raised:
+                    analyze_template_candidate(
+                        self._request(), _InMemoryExecutor(payload=_payload(fixed_content={"title": value}))
+                    )
+                self.assertEqual(raised.exception.code, "invalid_fixed_content_value")
+
     def test_valid_template_text_is_accepted(self) -> None:
         candidate = analyze_template_candidate(
             self._request(), _InMemoryExecutor(payload=_payload(fixed_content={"title": "견 적 서", "mark": "견적서 베타"}))

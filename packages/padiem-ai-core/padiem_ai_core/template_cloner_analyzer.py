@@ -375,7 +375,12 @@ _DATE_VALUE_RE = re.compile(r"(?:\d{4}[-/.]\d{1,2}[-/.]\d{1,2}|\d{4}\s?년)")
 
 
 def _assert_fixed_content_is_template_text(value: Any) -> None:
-    """Fail closed unless ``fixed_content`` is bounded template text."""
+    """Fail closed unless ``fixed_content`` is bounded *static template text*.
+
+    Phase A contract: ``fixed_content`` maps an allowlisted template-text key to a
+    plain string. Nested mappings, sequences and non-string scalars are refused so
+    a faulty analyzer cannot hide source business values inside an allowed key.
+    """
     if not isinstance(value, Mapping):
         return
     for key, item in value.items():
@@ -384,7 +389,13 @@ def _assert_fixed_content_is_template_text(value: Any) -> None:
                 "unsupported_fixed_content_key",
                 "fixed content carries a key outside the template-text allowlist",
             )
-        if isinstance(item, str) and (_MONEY_VALUE_RE.search(item) or _DATE_VALUE_RE.search(item)):
+        # ``bool`` is an ``int`` subclass and must not pass as text either.
+        if isinstance(item, bool) or not isinstance(item, str):
+            raise TemplateClonerAnalyzerError(
+                "invalid_fixed_content_value",
+                "fixed content values must be static template text strings",
+            )
+        if _MONEY_VALUE_RE.search(item) or _DATE_VALUE_RE.search(item):
             raise TemplateClonerAnalyzerError(
                 "business_value_in_fixed_content",
                 "fixed content carries a source business value instead of template text",
