@@ -440,6 +440,27 @@ def _drive_port_for_env(env: Any) -> ControlPlaneLeaseDriveReadPort | None:
         return None
 
 
+def _drive_workspace_grant_provider_for_env(env: Any):
+    """B67 workspace-scoped Drive grant provider (#3193).
+
+    Reuses the existing ``CONTROL_PLANE_GOOGLE_OAUTH`` Service Binding; no new
+    binding is declared. A missing binding yields ``None`` (fail closed) - it
+    never falls back to the global ``ENGINE_CONNECTOR_GRANTS`` Drive grant.
+    """
+
+    from app.drive_workspace_grant import (
+        CloudflareControlPlaneDriveBindingClient,
+        WorkspaceScopedDriveGrantProvider,
+    )
+
+    binding = legacy_worker._binding_value(env, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    if binding is None or not callable(getattr(binding, "select_drive_binding", None)):
+        return None
+    return WorkspaceScopedDriveGrantProvider(
+        client=CloudflareControlPlaneDriveBindingClient(binding)
+    )
+
+
 async def _drive_grants_for_env(env: Any) -> dict[str, DriveGrant]:
     binding = legacy_worker._binding_value(env, ENGINE_CONNECTOR_GRANTS_BINDING)
     if binding is None:

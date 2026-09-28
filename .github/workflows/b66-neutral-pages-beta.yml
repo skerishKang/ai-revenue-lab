@@ -51,6 +51,11 @@ jobs:
           test -f "${SOURCE_DIR}/quote-history.js"
           test -f "${SOURCE_DIR}/file-intake.js"
           test -f "${SOURCE_DIR}/easy-mode.js"
+          test -f "${SOURCE_DIR}/quote-template.js"
+          test -f "${SOURCE_DIR}/quote-template-store.js"
+          test -f "${SOURCE_DIR}/quote-template-renderer.js"
+          test -f "${SOURCE_DIR}/quote-template-selection.js"
+          test -f "${SOURCE_DIR}/quote-template-ui.js"
           test -f "apps/b66-quote-adapter/app/file_intake.py"
           grep -F '<title>견적서 만들기</title>' "${SOURCE_DIR}/index.html" >/dev/null
           grep -F '샘플 공급사' "${SOURCE_DIR}/index.html" >/dev/null
@@ -65,11 +70,21 @@ jobs:
           node --check app.js
           node --check file-intake.js
           node --check easy-mode.js
+          node --check quote-template.js
+          node --check quote-template-store.js
+          node --check quote-template-renderer.js
+          node --check quote-template-selection.js
+          node --check quote-template-ui.js
           node tests/quote-core.test.cjs
           node tests/quote-extraction.test.cjs
           node tests/quote-history.test.cjs
           node tests/file-intake.test.cjs
           node tests/static-contract.test.cjs
+          node tests/quote-template.test.cjs
+          node tests/quote-template-store.test.cjs
+          node tests/quote-template-renderer.test.cjs
+          node tests/quote-template-selection.test.cjs
+          node tests/quote-template-ui.test.cjs
 
       - name: Run B66 server intake adapter contracts
         shell: bash

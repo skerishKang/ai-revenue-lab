@@ -8,6 +8,11 @@
   <script src="quote-core.js" defer></script>
   <script src="quote-extraction.js" defer></script>
   <script src="quote-history.js" defer></script>
+  <script src="quote-template.js" defer></script>
+  <script src="quote-template-store.js" defer></script>
+  <script src="quote-template-renderer.js" defer></script>
+  <script src="quote-template-selection.js" defer></script>
+  <script src="quote-template-ui.js" defer></script>
   <script src="file-intake.js" defer></script>
   <script src="app.js" defer></script>
   <script src="easy-mode.js" defer></script>
@@ -199,6 +204,25 @@
             <button class="btn" id="emailFuture">이메일 보내기 · 다음 단계</button>
           </div>
         </div>
+
+        <div class="section template-section" id="templateSection">
+          <h2>5. 견적서 양식</h2>
+          <div class="template-picker">
+            <label for="templateSelect">이 견적에 사용할 양식
+              <select id="templateSelect" aria-describedby="templateStatus"></select>
+            </label>
+            <button class="btn soft" id="templateManageToggle" type="button" aria-expanded="false" aria-controls="templateManagePanel">양식 관리</button>
+          </div>
+          <p class="template-status" id="templateStatus" role="status" aria-live="polite"></p>
+          <div class="template-manage" id="templateManagePanel" hidden>
+            <div class="template-list" id="templateList" role="list" aria-label="저장한 견적서 양식"></div>
+            <div class="template-manage-actions">
+              <button class="btn" id="templateCreate" type="button">새 양식 만들기</button>
+              <button class="btn soft" id="templateClone" type="button">견적서 양식 본뜨기 · 다음 단계</button>
+            </div>
+            <p class="template-manage-note">새 양식은 승인을 거친 뒤에 이 견적에 적용할 수 있습니다. 승인·본뜨기 흐름은 다음 단계에서 제공합니다.</p>
+          </div>
+        </div>
       </section>
 
       <aside class="preview-wrap" aria-label="견적서 미리보기">
@@ -208,7 +232,7 @@
         </div>
         <article class="quote-paper" id="quotePaper">
           <div class="quote-title">
-            <h2>견 적 서</h2>
+            <h2 id="pvTitle">견 적 서</h2>
             <div class="meta">
               <div id="pvQuoteNo"></div>
               <div id="pvDate"></div>
@@ -219,7 +243,7 @@
           </div>
           <div class="parties">
             <div class="party">
-              <div class="eyebrow">공급자</div>
+              <div class="eyebrow" id="pvSenderHeading">공급자</div>
               <strong id="pvSenderCompany"></strong>
               <p id="pvSenderRep"></p>
               <p id="pvSenderBizNo"></p>
@@ -227,7 +251,7 @@
               <p id="pvSenderContact"></p>
             </div>
             <div class="party">
-              <div class="eyebrow">공급받는 자</div>
+              <div class="eyebrow" id="pvRecipientHeading">공급받는 자</div>
               <strong id="pvRecipientCompany"></strong>
               <p id="pvRecipientPerson"></p>
               <p id="pvRecipientAddress"></p>
@@ -235,7 +259,7 @@
             </div>
           </div>
           <table class="quote-table">
-            <thead><tr><th style="width:42%">품목</th><th>수량</th><th>단가</th><th>금액</th></tr></thead>
+            <thead><tr id="pvItemsHead"><th style="width:42%">품목</th><th>수량</th><th>단가</th><th>금액</th></tr></thead>
             <tbody id="pvItems"></tbody>
           </table>
           <div class="quote-totals">
@@ -244,7 +268,7 @@
             <div class="grand"><span id="pvGrandLabel">합계</span><span id="pvGrand"></span></div>
           </div>
           <div class="memo" id="pvMemo"></div>
-          <div class="demo-mark">견적서 베타</div>
+          <div class="demo-mark" id="pvMark">견적서 베타</div>
         </article>
       </aside>
     </div>
