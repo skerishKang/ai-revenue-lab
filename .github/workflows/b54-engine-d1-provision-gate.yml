@@ -10,6 +10,8 @@ name: B54 Engine D1 Provision Gate
 # before any A6 document-admission production read or activation;
 # #2958 ([E9][A6-Document]) adds 0007 so the durable evidence retention store exists
 # for DocumentContextEngineService.
+# #3188 adds 0008 for the durable B67 Project -> selected Drive
+# case-folder binding authority.
 
 on:
   workflow_dispatch:
@@ -82,13 +84,13 @@ jobs:
           echo "D1_DATABASE_ID=$DB_ID"
           echo "DB_ID=$DB_ID" >> "$GITHUB_ENV"
 
-      - name: Apply migrations 0001 + 0002 + 0003 + 0004 + 0005 + 0006 + 0007 to remote
+      - name: Apply migrations 0001 + 0002 + 0003 + 0004 + 0005 + 0006 + 0007 + 0008 to remote
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          # 0001-0004 and 0006-0007 are CREATE TABLE / CREATE INDEX IF NOT EXISTS and
+          # 0001-0004 and 0006-0008 are CREATE TABLE / CREATE INDEX IF NOT EXISTS and
           # replay-safe.
           # SQLite ALTER TABLE ADD COLUMN has no portable IF NOT EXISTS form,
           # so 0005 is guarded by authoritative remote schema readback. This
@@ -120,14 +122,21 @@ jobs:
           fi
           # 0006 (#2741 / #1971 A6-S2A) is the Engine-owned durable document byte
           # store. Replay-safe IF NOT EXISTS DDL, applied before 0007 so the
-          # canonical migration order stays 0001..0007.
+          # canonical migration order stays 0001..0008.
           npx --yes wrangler@4 d1 execute padiem-engine --remote \
             --file=apps/padiem-ai-engine/migrations/0006_engine_document_bytes.sql
           # 0007 (#2954 / #2958) is the Engine-owned durable evidence retention
           # store for DocumentContextEngineService. Replay-safe IF NOT EXISTS DDL.
           npx --yes wrangler@4 d1 execute padiem-engine --remote \
             --file=apps/padiem-ai-engine/migrations/0007_engine_evidence.sql
-          echo 'D1_MIGRATIONS=0001,0002,0003,0004,0005,0006,0007'
+          # 0008 (#3188 / #3199) is the Engine-owned durable selected Drive
+          # case-folder binding store behind the project selected-folder
+          # authority. Replay-safe CREATE TABLE / CREATE INDEX IF NOT EXISTS DDL,
+          # applied last so the canonical migration order stays 0001..0008.
+          npx --yes wrangler@4 d1 execute padiem-engine --remote \
+            --file=apps/padiem-ai-engine/migrations/0008_engine_drive_case_folder_bindings.sql
+          echo 'D1_MIGRATION_0008=APPLIED_OR_REPLAY_SAFE'
+          echo 'D1_MIGRATIONS=0001,0002,0003,0004,0005,0006,0007,0008'
 
       - name: Assert schema tables and Drive capability column exist
         env:
@@ -169,6 +178,17 @@ jobs:
           ):
               assert required in names, f'missing evidence schema object: {required}'
           print('D1_EVIDENCE_TABLE_ASSERT=PASS')
+          # B67 selected Drive case-folder binding (#3188): the table plus the
+          # active-lookup index the 0008 migration declares. Schema object names
+          # only; no workspace_ref, project_id, binding ref, folder id or row
+          # content is read or emitted.
+          for required in (
+              'padiem_engine_drive_case_folder_bindings',
+              'idx_padiem_engine_drive_case_folder_bindings_active',
+          ):
+              assert required in names, f'missing drive case folder schema object: {required}'
+          print('D1_DRIVE_CASE_FOLDER_TABLE_ASSERT=PASS')
+          print('D1_DRIVE_CASE_FOLDER_INDEX_ASSERT=PASS')
           PY
           npx --yes wrangler@4 d1 execute padiem-engine --remote --json \
             --command "PRAGMA table_info(padiem_engine_connector_grants)" > /tmp/d1-grant-columns.json
@@ -185,9 +205,12 @@ jobs:
         run: |
           echo 'D1_PROVISION=PASS'
           echo "D1_DATABASE_ID=$DB_ID"
-          echo 'D1_MIGRATIONS=0001,0002,0003,0004,0005,0006,0007'
+          echo 'D1_MIGRATIONS=0001,0002,0003,0004,0005,0006,0007,0008'
           echo 'D1_DRIVE_CAPABILITY_COLUMN_ASSERT=PASS'
           echo 'D1_DOCUMENT_BYTES_TABLE_ASSERT=PASS'
           echo 'D1_EVIDENCE_TABLE_ASSERT=PASS'
+          echo 'D1_MIGRATION_0008=APPLIED_OR_REPLAY_SAFE'
+          echo 'D1_DRIVE_CASE_FOLDER_TABLE_ASSERT=PASS'
+          echo 'D1_DRIVE_CASE_FOLDER_INDEX_ASSERT=PASS'
           echo 'WORKER_DEPLOYED=0'
           echo 'WRANGLER_TOML_MODIFIED=0'
