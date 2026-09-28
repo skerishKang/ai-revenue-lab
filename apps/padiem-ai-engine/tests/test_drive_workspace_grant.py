@@ -18,7 +18,7 @@ from app.connector_bindings import DRIVE_AGENT_ID, DRIVE_REFERENCE_APP_ID
 import app.drive_workspace_grant as grant_module
 from app.drive_workspace_grant import (
     RESOLVED_KEYS,
-    ControlPlaneDriveBindingAdapter,
+    CloudflareControlPlaneDriveBindingClient,
     DriveWorkspaceGrantError,
     WorkspaceScopedDriveGrantProvider,
     drive_workspace_grant_snapshot,
@@ -233,46 +233,159 @@ def test_resolved_missing_required_field_is_denied() -> None:
     assert excinfo.value.code == "drive_binding_response_invalid"
 
 
-# --- 6. Control Plane Service Binding adapter ------------------------------
+# --- 6. Control Plane Service Binding client + outer envelope -------------
 
 
-class FakeTransport:
-    def __init__(self, payload=None, *, error: Exception | None = None) -> None:
-        self.payload = payload
+class FakeCPServiceBinding:
+    """Mirrors the real Service Binding call shape: ``binding.method({payload})``.
+
+    The Control Plane side is emulated with the documented selector semantics
+    (exact workspace + connector, usable-only, ambiguity fail-closed) so the
+    cross-package contract is exercised network-free. See the PR notes for why
+    the real CP store/RPC is not imported into this suite.
+    """
+
+    def __init__(self, rows=None, *, error: Exception | None = None) -> None:
+        self.rows = rows or []
         self.error = error
-        self.calls: list[str] = []
+        self.payloads: list[dict] = []
 
-    async def select_drive_binding(self, *, workspace_ref: str):
-        self.calls.append(workspace_ref)
+    async def select_drive_binding(self, payload: dict) -> dict:
+        self.payloads.append(dict(payload))
         if self.error is not None:
             raise self.error
-        return self.payload
+        workspace = payload.get("workspace_ref")
+        usable = [
+            row
+            for row in self.rows
+            if row["workspace_ref"] == workspace
+            and row["connector_id"] == "google-drive"
+            and row.get("revoked") is not True
+        ]
+        if len(usable) > 1:
+            # ambiguous is a bounded Control Plane error, never a status payload
+            return {"ok": False, "error": {"code": "ambiguous_google_oauth_binding", "message": "rejected"}}
+        if not usable:
+            return {
+                "ok": True,
+                "selection": {
+                    "status": "not_connected",
+                    "connector_id": "google-drive",
+                    "workspace_ref": workspace,
+                },
+            }
+        row = usable[0]
+        return {
+            "ok": True,
+            "selection": {
+                "status": "resolved",
+                "connector_id": "google-drive",
+                "workspace_ref": workspace,
+                "binding_ref": row["binding_ref"],
+                "actor_ref": row["actor_ref"],
+            },
+        }
 
 
-def test_adapter_round_trip_yields_canonical_grant() -> None:
-    transport = FakeTransport(resolved_payload())
+def row(workspace_ref: str, binding_ref: str) -> dict:
+    return {
+        "workspace_ref": workspace_ref,
+        "connector_id": "google-drive",
+        "binding_ref": binding_ref,
+        "actor_ref": f"actor.{binding_ref}",
+    }
+
+
+def test_real_binding_call_shape_round_trip() -> None:
+    binding = FakeCPServiceBinding([row(WORKSPACE_A, BINDING_A)])
     provider = WorkspaceScopedDriveGrantProvider(
-        client=ControlPlaneDriveBindingAdapter(transport=transport)
+        client=CloudflareControlPlaneDriveBindingClient(binding)
     )
     grant = run(provider.current_drive_grant(workspace_ref=WORKSPACE_A))
-    assert transport.calls == [WORKSPACE_A]
+    # the real shape is binding.method({payload}), not keyword args
+    assert binding.payloads == [{"workspace_ref": WORKSPACE_A}]
     assert grant is not None
     assert grant.binding_ref == BINDING_A
-    assert grant.actor_ref == "actor_a"
+    assert grant.actor_ref == f"actor.{BINDING_A}"
 
 
-def test_adapter_transport_failure_is_bounded() -> None:
-    adapter = ControlPlaneDriveBindingAdapter(transport=FakeTransport(error=RuntimeError("raw cp text")))
-    provider = WorkspaceScopedDriveGrantProvider(client=adapter)
+def test_client_requires_a_real_binding() -> None:
+    for bad in (None, object()):
+        with pytest.raises(ValueError):
+            CloudflareControlPlaneDriveBindingClient(bad)
+
+
+def test_client_transport_failure_is_bounded() -> None:
+    binding = FakeCPServiceBinding(error=RuntimeError("raw cp text"))
+    provider = WorkspaceScopedDriveGrantProvider(
+        client=CloudflareControlPlaneDriveBindingClient(binding)
+    )
     with pytest.raises(DriveWorkspaceGrantError) as excinfo:
         run(provider.current_drive_grant(workspace_ref=WORKSPACE_A))
     assert excinfo.value.code == "drive_binding_selection_failed"
     assert "raw cp text" not in str(excinfo.value)
 
 
-def test_adapter_missing_transport_fails_closed() -> None:
-    adapter = ControlPlaneDriveBindingAdapter(transport=None)
-    provider = WorkspaceScopedDriveGrantProvider(client=adapter)
+def test_outer_envelope_is_closed() -> None:
+    for bad in (
+        {"ok": False, "error": {"code": "ambiguous_google_oauth_binding"}},
+        {"ok": True},
+        {"ok": "true", "selection": resolved_payload()},
+        {"ok": True, "selection": resolved_payload(), "extra": 1},
+        {"selection": resolved_payload()},
+        {"ok": False},
+        {"ok": True, "selection": "not-an-object"},
+    ):
+        provider = WorkspaceScopedDriveGrantProvider(
+            client=CloudflareControlPlaneDriveBindingClient(FakeCPServiceBinding([], error=None))
+        )
+        # emulate the binding returning the bad envelope directly
+        async def select_drive_binding(_payload, _bad=bad):
+            return _bad
+
+        binding = FakeCPServiceBinding([row(WORKSPACE_A, BINDING_A)])
+        binding.select_drive_binding = select_drive_binding  # type: ignore[assignment]
+        provider = WorkspaceScopedDriveGrantProvider(
+            client=CloudflareControlPlaneDriveBindingClient(binding)
+        )
+        with pytest.raises(DriveWorkspaceGrantError) as excinfo:
+            run(provider.current_drive_grant(workspace_ref=WORKSPACE_A))
+        assert excinfo.value.code == "drive_binding_response_invalid", bad
+
+
+# --- 7. network-free CP -> Engine end-to-end -------------------------------
+
+
+def test_end_to_end_workspace_a_resolves_its_own_grant() -> None:
+    binding = FakeCPServiceBinding(
+        [row(WORKSPACE_A, BINDING_A), row(WORKSPACE_B, BINDING_B)]
+    )
+    provider = WorkspaceScopedDriveGrantProvider(
+        client=CloudflareControlPlaneDriveBindingClient(binding)
+    )
+    grant_a = run(provider.current_drive_grant(workspace_ref=WORKSPACE_A))
+    grant_b = run(provider.current_drive_grant(workspace_ref=WORKSPACE_B))
+    assert grant_a is not None and grant_a.binding_ref == BINDING_A
+    assert grant_b is not None and grant_b.binding_ref == BINDING_B
+
+
+def test_end_to_end_workspace_b_never_receives_binding_a() -> None:
+    binding = FakeCPServiceBinding([row(WORKSPACE_A, BINDING_A)])
+    provider = WorkspaceScopedDriveGrantProvider(
+        client=CloudflareControlPlaneDriveBindingClient(binding)
+    )
+    lease_b = run(provider.current_drive_grant(workspace_ref=WORKSPACE_B))
+    assert lease_b is None, "workspace B must not receive workspace A's binding"
+
+
+def test_end_to_end_ambiguous_workspace_fails_closed() -> None:
+    binding = FakeCPServiceBinding(
+        [row(WORKSPACE_A, BINDING_A), row(WORKSPACE_A, "binding.a.drive.2")]
+    )
+    provider = WorkspaceScopedDriveGrantProvider(
+        client=CloudflareControlPlaneDriveBindingClient(binding)
+    )
     with pytest.raises(DriveWorkspaceGrantError) as excinfo:
         run(provider.current_drive_grant(workspace_ref=WORKSPACE_A))
-    assert excinfo.value.code == "drive_authority_unavailable"
+    assert excinfo.value.code == "drive_binding_response_invalid"
+    assert "ambiguous" not in str(excinfo.value)

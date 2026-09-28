@@ -187,21 +187,24 @@ class WorkspaceScopedDriveGrantProvider:
         )
 
 
-class ControlPlaneDriveBindingAdapter:
-    """Engine adapter over the existing ``CONTROL_PLANE_GOOGLE_OAUTH`` binding.
+class CloudflareControlPlaneDriveBindingClient:
+    """Real Cloudflare Service Binding client for the private Drive selector.
 
-    The transport is injected (the Worker composition supplies the real service
-    binding); this adapter only enforces the closed private request/response
-    contract and maps Control Plane failures to bounded Engine errors. It never
-    unseals a credential, issues an access lease or falls back to a global
-    grant.
+    Uses the repository's actual Service Binding call shape
+    (``binding.method({payload})``) over the existing
+    ``CONTROL_PLANE_GOOGLE_OAUTH`` binding, and validates the outer envelope
+    closed: exactly ``{ok, selection}`` with ``ok is True``. ``ok=false`` (a
+    bounded Control Plane error, including an ambiguous Drive binding) is never
+    treated as a selection, and raw Control Plane text never reaches a product.
     """
 
-    def __init__(self, *, transport: object | None = None) -> None:
-        self._transport = transport
+    def __init__(self, binding: object | None = None) -> None:
+        if binding is None or not callable(getattr(binding, "select_drive_binding", None)):
+            raise ValueError("binding must expose select_drive_binding")
+        self._binding = binding
 
     def __repr__(self) -> str:
-        return "ControlPlaneDriveBindingAdapter(configured)"
+        return "CloudflareControlPlaneDriveBindingClient(configured)"
 
     async def select_drive_binding(self, *, workspace_ref: str) -> Mapping[str, Any]:
         workspace = _bounded_ref(workspace_ref)
@@ -209,31 +212,36 @@ class ControlPlaneDriveBindingAdapter:
             raise DriveWorkspaceGrantError(
                 "invalid_workspace", "A trusted workspace reference is required."
             )
-        if self._transport is None or not callable(getattr(self._transport, "select_drive_binding", None)):
-            raise DriveWorkspaceGrantError(
-                "drive_authority_unavailable",
-                "Control Plane Drive authority is unavailable.",
-                status_code=503,
-            )
         try:
-            payload = await self._transport.select_drive_binding(workspace_ref=workspace)
+            result = await self._binding.select_drive_binding({"workspace_ref": workspace})
         except DriveWorkspaceGrantError:
             raise
         except Exception:
-            # Control Plane ambiguity/failure stays fail closed and never leaks
-            # raw transport text to a product.
             raise DriveWorkspaceGrantError(
                 "drive_binding_selection_failed",
                 "Drive binding selection failed.",
                 status_code=502,
             ) from None
-        if not isinstance(payload, Mapping):
+        if (
+            not isinstance(result, Mapping)
+            or set(result) != {"ok", "selection"}
+            or result.get("ok") is not True
+        ):
+            # ok=false (Control Plane error / ambiguous) and any malformed outer
+            # envelope fail closed; the inner selection is never trusted then.
             raise DriveWorkspaceGrantError(
                 "drive_binding_response_invalid",
                 "Drive binding selection response is invalid.",
                 status_code=502,
             )
-        return payload
+        selection = result.get("selection")
+        if not isinstance(selection, Mapping):
+            raise DriveWorkspaceGrantError(
+                "drive_binding_response_invalid",
+                "Drive binding selection response is invalid.",
+                status_code=502,
+            )
+        return selection
 
 
 def drive_workspace_grant_snapshot() -> dict[str, Any]:
@@ -268,7 +276,7 @@ __all__ = [
     "GLOBAL_GRANT_FALLBACK_FOR_B67",
     "DriveWorkspaceGrantError",
     "ControlPlaneDriveBindingClient",
-    "ControlPlaneDriveBindingAdapter",
+    "CloudflareControlPlaneDriveBindingClient",
     "WorkspaceScopedDriveGrantProvider",
     "drive_workspace_grant_snapshot",
 ]

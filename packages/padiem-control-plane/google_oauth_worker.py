@@ -32,6 +32,10 @@ _WORKSPACE_CONNECTOR_STATE_KEYS = frozenset({"workspace_ref"})
 # payload. The connector itself is fixed in code, never supplied by the caller.
 _WORKSPACE_CALENDAR_CONNECTOR_STATE_KEYS = frozenset({"workspace_ref"})
 WORKSPACE_CALENDAR_CONNECTOR_ID = "google-calendar"
+# #3193: private Drive binding-selection RPC. Same closed payload; the
+# connector is fixed in code to the reviewed Drive OAuth authority.
+_WORKSPACE_DRIVE_BINDING_KEYS = frozenset({"workspace_ref"})
+WORKSPACE_DRIVE_CONNECTOR_ID = "google-drive"
 
 
 def _closed_payload(payload: Any, keys: frozenset[str], field_name: str) -> dict[str, Any]:
@@ -195,6 +199,33 @@ class GoogleOAuthDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_rpc_error(exc)
 
+    async def select_drive_binding(self, payload: dict) -> dict:
+        """Private Drive binding-selection RPC (#3193).
+
+        The payload is closed to exactly ``workspace_ref``; the connector is
+        fixed in code to ``google-drive``, so a caller can never select a
+        connector, binding_ref, actor_ref, account_ref, scope or token. The
+        response carries only the minimum private identity (status /
+        connector_id / workspace_ref, plus binding_ref / actor_ref when
+        resolved). More than one usable Drive credential for the workspace is
+        ambiguous and returns a bounded error, never a status payload. No refresh
+        credential is unsealed, no access lease is issued and this is not a
+        public route.
+        """
+        try:
+            payload = _closed_payload(
+                payload,
+                _WORKSPACE_DRIVE_BINDING_KEYS,
+                "Google OAuth Drive binding-selection RPC",
+            )
+            selection = self._store.select_active_drive_binding(
+                workspace_ref=payload["workspace_ref"],
+                now=datetime.now(timezone.utc),
+            )
+            return {"ok": True, "selection": selection.to_private_dict()}
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -228,6 +259,9 @@ class Default(WorkerEntrypoint):
 
     async def workspace_calendar_connector_state(self, payload: dict) -> dict:
         return await self._stub().workspace_calendar_connector_state(payload)
+
+    async def select_drive_binding(self, payload: dict) -> dict:
+        return await self._stub().select_drive_binding(payload)
 
     async def fetch(self, request):
         del request
