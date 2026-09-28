@@ -163,7 +163,8 @@ def test_nested_and_encoded_data_are_bounded() -> None:
     "key",
     ["authorization", "permissions", "tool_grants", "allowed-tool-ids",
      "connector_requirement_ids", "entitlement_ref", "access_token", "api.key",
-     "credentials", "secret", "provider_id", "model-policy-ref"],
+     "credentials", "secret", "client_secret", "oauth_token", "database_password",
+     "provider_id", "model-policy-ref"],
 )
 def test_nested_authority_and_secret_fields_are_rejected(key) -> None:
     with pytest.raises(DocumentTemplateError) as exc:
@@ -176,6 +177,24 @@ def test_preconstructed_wrapper_cannot_bypass_authority_validation() -> None:
     with pytest.raises(DocumentTemplateError) as exc:
         candidate(style_profile=malicious)
     assert exc.value.code == "template_authority_surface_forbidden"
+
+
+def test_malformed_wrapper_and_numeric_extremes_fail_closed() -> None:
+    with pytest.raises(DocumentTemplateError) as duplicate:
+        FrozenTemplateObject((("same", 1), ("same", 2)))
+    assert duplicate.value.code == "invalid_document_template_data"
+
+    with pytest.raises(DocumentTemplateError) as malformed:
+        FrozenTemplateObject((("key", 1, 2),))  # type: ignore[arg-type]
+    assert malformed.value.code == "invalid_document_template_data"
+
+    with pytest.raises(DocumentTemplateError) as huge_integer:
+        candidate(style_profile={"size": 2**64})
+    assert huge_integer.value.code == "template_data_budget_exceeded"
+
+    with pytest.raises(DocumentTemplateError) as non_finite:
+        candidate(style_profile={"scale": float("nan")})
+    assert non_finite.value.code == "invalid_document_template_data"
 
 
 def test_contract_has_no_authorization_or_product_business_fields() -> None:
