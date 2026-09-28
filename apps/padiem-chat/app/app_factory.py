@@ -62,6 +62,12 @@ from .conversation_routes import api_conversation_detail, api_conversations
 from .grounding import GroundedChatService
 from .history import HistoryStore
 from .project_file_routes import project_file_detail, project_files_collection
+from .drive_case_folder_routes import (
+    drive_case_folder_delete,
+    drive_case_folder_put,
+    drive_case_folder_status,
+    drive_folders_collection,
+)
 from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
 from .request_telemetry import RequestTelemetryMiddleware
@@ -150,6 +156,26 @@ def create_app(
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/projects/{project_id}/files", project_files_collection, methods=["GET", "POST"]),
         Route("/api/projects/{project_id}/files/{file_id}", project_file_detail, methods=["GET", "DELETE"]),
+        Route(
+            "/api/projects/{project_id}/drive-case-folder",
+            drive_case_folder_status,
+            methods=["GET"],
+        ),
+        Route(
+            "/api/projects/{project_id}/drive-case-folder",
+            drive_case_folder_put,
+            methods=["PUT"],
+        ),
+        Route(
+            "/api/projects/{project_id}/drive-case-folder",
+            drive_case_folder_delete,
+            methods=["DELETE"],
+        ),
+        Route(
+            "/api/projects/{project_id}/drive-folders",
+            drive_folders_collection,
+            methods=["GET"],
+        ),
         Route("/api/outputs", outputs_collection, methods=["GET", "POST"]),
         Route("/api/outputs/{output_id}", output_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/conversations", api_conversations, methods=["GET"]),
