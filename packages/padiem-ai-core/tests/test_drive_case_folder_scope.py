@@ -376,6 +376,29 @@ def test_source_registers_no_write_surface() -> None:
         assert forbidden not in source, f"unexpected writable/credential surface: {forbidden}"
 
 
+def test_reuses_canonical_read_authority_and_adds_no_second_runtime() -> None:
+    import padiem_ai_core.drive_case_folder_scope as module
+    from padiem_ai_core.drive_capability import DRIVE_READ_TOOL_IDS
+
+    # The scope reuses the promoted READ tool ids instead of declaring its own.
+    snapshot = drive_case_folder_scope_snapshot()
+    assert snapshot["reused_read_tool_ids"] == list(DRIVE_READ_TOOL_IDS)
+
+    source = pathlib.Path(module.__file__).read_text(encoding="utf-8")
+    # No second tool runtime (no runtime import/construction) and no second
+    # OAuth/provider authority in this module.
+    for forbidden in (
+        "import tool_runtime",
+        "tool_runtime import",
+        "ToolRuntime(",
+        "ToolSpec(",
+        "googleapis.com",
+        "oauth2",
+        "auth/drive",
+    ):
+        assert forbidden not in source, f"second-authority surface present: {forbidden}"
+
+
 # --- 8. mutation checks (prove the guards are load-bearing) ----------------
 
 

@@ -168,5 +168,11 @@ def test_engine_seam_source_has_no_network_or_credentials() -> None:
         "refresh_token",
         "client_secret",
         "access_token",
+        "ToolRuntime(",
+        "ToolSpec(",
+        "import tool_runtime",
+        "tool_runtime import",
+        "googleapis.com",
+        "oauth2",
     ):
         assert forbidden not in source, f"engine seam contains forbidden token: {forbidden}"
