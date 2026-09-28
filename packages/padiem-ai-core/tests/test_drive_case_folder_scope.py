@@ -264,6 +264,32 @@ def test_shortcut_alone_never_returns_allow() -> None:
     )
 
 
+def test_non_shortcut_as_shortcut_with_outside_target_is_denied() -> None:
+    """An ordinary in-scope file must not relay an out-of-scope target."""
+
+    scope = my_drive_scope(allowed_file_ids=(INSIDE_FILE,))
+    ordinary = resource(INSIDE_FILE)  # ordinary FILE, in scope
+    outside_target = resource(OUTSIDE_FILE)  # out of scope
+    assert ordinary.kind is DriveCaseResourceKind.FILE
+
+    decision = authorize_case_folder_shortcut(scope, ordinary, outside_target)
+    assert decision is DriveCaseFolderDecision.NOT_A_SHORTCUT
+    assert decision is not DriveCaseFolderDecision.ALLOW
+
+
+def test_non_shortcut_as_shortcut_with_allowed_target_is_denied() -> None:
+    """A non-shortcut first argument is denied even with an in-scope target."""
+
+    scope = my_drive_scope(allowed_file_ids=(INSIDE_FILE,))
+    ordinary = resource(CASE_FOLDER, mime_type="application/vnd.google-apps.folder")
+    allowed_target = resource(INSIDE_FILE)
+    assert ordinary.kind is DriveCaseResourceKind.FOLDER
+
+    decision = authorize_case_folder_shortcut(scope, ordinary, allowed_target)
+    assert decision is DriveCaseFolderDecision.NOT_A_SHORTCUT
+    assert decision is not DriveCaseFolderDecision.ALLOW
+
+
 # --- 6. search/list scoping ------------------------------------------------
 
 
@@ -487,3 +513,47 @@ def test_mutation_trust_shortcut_location_is_load_bearing() -> None:
         return location
 
     assert mutant_shortcut(scope) is DriveCaseFolderDecision.ALLOW
+
+
+def _prefix_buggy_shortcut(
+    scope: DriveCaseFolderScope,
+    arg1: DriveCaseResource,
+    arg2: DriveCaseResource,
+    *,
+    ancestry: DriveTrustedAncestryProof | None = None,
+    target_ancestry: DriveTrustedAncestryProof | None = None,
+) -> tuple[DriveCaseFolderDecision, DriveCaseResource]:
+    """Replica of the pre-fix contract that could launder an out-of-scope target.
+
+    It assumes the first argument is a shortcut and returns the location ALLOW
+    directly, so the second argument is surfaced without ever being authorized.
+    Kept only to prove the added shortcut-type check is load-bearing.
+    """
+
+    location = authorize_case_folder_resource(scope, arg1, ancestry)
+    if location is not DriveCaseFolderDecision.SHORTCUT_TARGET_REQUIRED:
+        return location, arg2
+    if arg1.shortcut_target_id is None:
+        return DriveCaseFolderDecision.SHORTCUT_TARGET_REQUIRED, arg2
+    if arg2.resource_id != arg1.shortcut_target_id:
+        return DriveCaseFolderDecision.SHORTCUT_TARGET_MISMATCH, arg2
+    return authorize_case_folder_resource(scope, arg2, target_ancestry), arg2
+
+
+def test_mutation_shortcut_type_check_is_load_bearing() -> None:
+    """Reproduce the reported laundering, then prove the fix denies it."""
+
+    scope = my_drive_scope(allowed_file_ids=(INSIDE_FILE,))
+    ordinary = resource(INSIDE_FILE)  # ordinary in-scope FILE
+    outside_target = resource(OUTSIDE_FILE)  # never authorized
+
+    # Pre-fix: the in-scope ordinary file yields ALLOW, which is then applied to
+    # the unauthorized out-of-scope target (the CENTRAL-reported bypass).
+    buggy_decision, buggy_resource = _prefix_buggy_shortcut(scope, ordinary, outside_target)
+    assert buggy_decision is DriveCaseFolderDecision.ALLOW
+    assert buggy_resource.resource_id == OUTSIDE_FILE
+
+    # Fixed contract: fail closed before any target authorization/projection.
+    fixed = authorize_case_folder_shortcut(scope, ordinary, outside_target)
+    assert fixed is DriveCaseFolderDecision.NOT_A_SHORTCUT
+    assert fixed is not DriveCaseFolderDecision.ALLOW

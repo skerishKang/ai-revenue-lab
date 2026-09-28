@@ -147,6 +147,21 @@ def test_admit_shortcut_requires_target_reauthorization() -> None:
     assert projection["resource_ref"] == INSIDE_FILE
 
 
+def test_admit_shortcut_rejects_normal_in_scope_resource_and_never_allows_target() -> None:
+    """An ordinary in-scope resource cannot launder an out-of-scope target."""
+
+    scope_obj = scope()
+    ordinary = resource(CASE_FOLDER, mime_type="application/vnd.google-apps.folder")
+
+    with pytest.raises(EngineDriveCaseFolderScopeError) as outside:
+        admit_case_folder_shortcut(scope_obj, ordinary, resource(OUTSIDE_FILE))
+    assert "not_a_shortcut" in str(outside.value)
+
+    # Even with an in-scope target, nothing is projected.
+    with pytest.raises(EngineDriveCaseFolderScopeError):
+        admit_case_folder_shortcut(scope_obj, ordinary, resource(INSIDE_FILE))
+
+
 def test_provider_params_keep_the_folder_boundary() -> None:
     params = case_folder_provider_params(scope())
     assert f"'{CASE_FOLDER}' in parents" in params["q"]

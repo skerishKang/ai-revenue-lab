@@ -21,7 +21,8 @@ Security invariants (all fail closed)
   :class:`DriveTrustedAncestryProof`, produced by a trusted server-side
   resolver, can prove descendant ancestry;
 * a shortcut's *location* never grants its *target* authority: the target is
-  re-authorized independently from its own proof;
+  re-authorized independently from its own proof, and a non-shortcut resource
+  can never relay a target through the shortcut admission path;
 * the Shared Drive identity must equal the exact scope drive identity; there is
   no implicit ``allDrives`` widening;
 * this module performs zero provider calls and holds zero credentials.
@@ -127,6 +128,7 @@ class DriveCaseFolderDecision(str, Enum):
     OUT_OF_SCOPE = "out_of_scope"
     TRASHED = "trashed"
     SHARED_DRIVE_MISMATCH = "shared_drive_mismatch"
+    NOT_A_SHORTCUT = "not_a_shortcut"
     SHORTCUT_TARGET_REQUIRED = "shortcut_target_required"
     SHORTCUT_TARGET_MISMATCH = "shortcut_target_mismatch"
 
@@ -371,10 +373,19 @@ def authorize_case_folder_shortcut(
     shortcut_ancestry: DriveTrustedAncestryProof | None = None,
     target_ancestry: DriveTrustedAncestryProof | None = None,
 ) -> DriveCaseFolderDecision:
-    """Authorize a shortcut only by independently authorizing its target."""
+    """Authorize a shortcut only by independently authorizing its target.
+
+    Fail closed unless ``shortcut`` is unambiguously a shortcut. An ordinary
+    in-scope file or folder must never be able to relay an out-of-scope
+    ``target`` into an ``ALLOW`` (target laundering).
+    """
 
     if not isinstance(shortcut, DriveCaseResource) or not isinstance(target, DriveCaseResource):
         raise DriveContractError("shortcut/target must be DriveCaseResource")
+    # A non-shortcut first argument is not shortcut authorization for the target:
+    # do not propagate a plain ALLOW from the location resource.
+    if shortcut.kind is not DriveCaseResourceKind.SHORTCUT:
+        return DriveCaseFolderDecision.NOT_A_SHORTCUT
     location_decision = authorize_case_folder_resource(scope, shortcut, shortcut_ancestry)
     if location_decision is not DriveCaseFolderDecision.SHORTCUT_TARGET_REQUIRED:
         return location_decision
