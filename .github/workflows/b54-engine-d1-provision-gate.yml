@@ -9,7 +9,8 @@ name: B54 Engine D1 Provision Gate
 # #1971 A6-S2A added 0006 so the Engine-owned durable document byte store exists
 # before any A6 document-admission production read or activation;
 # #2958 ([E9][A6-Document]) adds 0007 so the durable evidence retention store exists
-# #3188 adds 0008 so the durable selected Drive case-folder binding store exists
+# #3188 adds 0008 for the durable B67 Project -> selected Drive
+# case-folder binding authority.
 # for DocumentContextEngineService.
 
 on:
@@ -121,7 +122,7 @@ jobs:
           fi
           # 0006 (#2741 / #1971 A6-S2A) is the Engine-owned durable document byte
           # store. Replay-safe IF NOT EXISTS DDL, applied before 0007 so the
-          # canonical migration order stays 0001..0007.
+          # canonical migration order stays 0001..0008.
           npx --yes wrangler@4 d1 execute padiem-engine --remote \
             --file=apps/padiem-ai-engine/migrations/0006_engine_document_bytes.sql
           # 0007 (#2954 / #2958) is the Engine-owned durable evidence retention
