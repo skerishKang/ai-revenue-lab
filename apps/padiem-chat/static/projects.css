@@ -254,3 +254,30 @@
     padding: 18px;
   }
 }
+
+/* #3190 ? Project Google Drive case-folder section */
+.project-drive-panel { display: flex; flex-direction: column; gap: 10px; margin: 18px 0; padding: 14px; border: 1px solid var(--line, #e2e5ea); border-radius: 12px; }
+.project-drive-heading { display: flex; flex-direction: column; gap: 4px; }
+.project-drive-heading small { color: var(--muted, #667085); }
+.project-drive-status { margin: 0; font-weight: 600; }
+.project-drive-status-live { margin: 0; min-height: 1px; }
+.project-drive-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.project-drive-button { min-height: 44px; min-width: 44px; padding: 10px 16px; border-radius: 10px; border: 1px solid var(--line, #e2e5ea); background: var(--surface, #fff); cursor: pointer; }
+.project-drive-button:disabled { opacity: 0.6; cursor: progress; }
+.project-drive-button-secondary { background: transparent; }
+.project-drive-picker { border: 0; border-radius: 14px; padding: 18px; width: min(520px, 92vw); max-height: 80vh; overflow: auto; }
+.project-drive-picker-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.project-drive-search-label { display: block; margin: 12px 0 6px; font-weight: 600; }
+.project-drive-search { width: 100%; min-height: 44px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line, #e2e5ea); }
+.project-drive-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.project-drive-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line, #eef1f5); flex-wrap: wrap; }
+.project-drive-row-name { flex: 1 1 160px; min-width: 0; overflow-wrap: anywhere; }
+.project-drive-row-space { color: var(--muted, #667085); font-size: 0.9em; }
+.project-drive-select { min-height: 44px; min-width: 44px; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--line, #e2e5ea); background: var(--surface, #fff); cursor: pointer; }
+.project-drive-picker-state { margin: 12px 0 0; color: var(--muted, #667085); }
+@media (max-width: 420px) {
+  .project-drive-panel { padding: 12px; }
+  .project-drive-picker { width: 100%; padding: 14px; }
+  .project-drive-row { gap: 8px; }
+  .project-drive-button, .project-drive-select { flex: 1 1 auto; }
+}
