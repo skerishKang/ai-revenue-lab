@@ -6,10 +6,9 @@ on:
       - ".github/workflows/b62-p01-engine-service-binding-gate.yml"
       - ".github/scripts/cloudflare_served_version.py"
       - ".github/tests/test_cloudflare_served_version.py"
-      - "apps/padiem-ai-engine/worker.py"
-      - "apps/padiem-ai-engine/worker_identity.py"
+      - "apps/padiem-chat/app/worker_config.py"
+      - "apps/padiem-chat/wrangler.toml"
       - "apps/padiem-ai-engine/wrangler.toml"
-      - "apps/padiem-ai-engine/app/drive_workspace_grant.py"
   workflow_dispatch:
     inputs:
       mode:
@@ -87,10 +86,9 @@ jobs:
           from pathlib import Path
 
           gate = Path(".github/workflows/b62-p01-engine-service-binding-gate.yml").read_text(encoding="utf-8")
-          worker = Path("apps/padiem-ai-engine/worker.py").read_text(encoding="utf-8")
-          config = Path("apps/padiem-ai-engine/wrangler.toml").read_text(encoding="utf-8")
-          identity = Path("apps/padiem-ai-engine/worker_identity.py").read_text(encoding="utf-8")
-          grant = Path("apps/padiem-ai-engine/app/drive_workspace_grant.py").read_text(encoding="utf-8")
+          worker_config = Path("apps/padiem-chat/app/worker_config.py").read_text(encoding="utf-8")
+          chat_config = Path("apps/padiem-chat/wrangler.toml").read_text(encoding="utf-8")
+          engine_config = Path("apps/padiem-ai-engine/wrangler.toml").read_text(encoding="utf-8")
 
           # Provenance: this gate carries the same safety contract markers as
           # the identity binding gate, adapted for the P01 Engine service.
@@ -128,16 +126,15 @@ jobs:
           assert "ENGINE_BINDING: P01_ENGINE_SERVICE" in gate
           assert "P01_ENGINE_SERVICE_BINDING_NAME" in gate
 
-          # Source-only: the worker composes the engine service from the
-          # existing PADIEM_AI_ENGINE binding name; the gate itself does not
-          # introduce a new binding name or a second deploy path.
-          assert "PADIEM_AI_ENGINE_BINDING_NAME" in worker
-          assert "P01_ENGINE_SERVICE" in identity
-          assert "P01_ENGINE_SERVICE" in grant
+          # Fixed authority contracts: the binding name is a reviewed constant
+          # in the chat worker config, and the target worker name is declared in
+          # the engine's own wrangler config.
+          assert 'P01_ENGINE_SERVICE_BINDING_NAME = "P01_ENGINE_SERVICE"' in worker_config
+          assert 'name = "padiem-ai-engine"' in engine_config
 
-          # The repository must not pre-declare the P01 binding in wrangler;
+          # The chat worker must not pre-declare the P01 binding in wrangler;
           # it is added only through this gate's settings patch.
-          assert "P01_ENGINE_SERVICE" not in config
+          assert "P01_ENGINE_SERVICE" not in chat_config
 
           print("P01_ENGINE_BINDING_GATE_SOURCE=PASS")
           print("PATCH_ERROR_BODY_CAPTURE=YES")

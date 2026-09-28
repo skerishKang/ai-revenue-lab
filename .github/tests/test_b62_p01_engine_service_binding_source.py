@@ -15,6 +15,8 @@ ROOT = Path(__file__).resolve().parents[2]
 GATE = ROOT / ".github/workflows/b62-p01-engine-service-binding-gate.yml"
 SCRIPT = ROOT / ".github" / "scripts" / "cloudflare_served_version.py"
 ENGINE_WANGLER = ROOT / "apps/padiem-ai-engine/wrangler.toml"
+CHAT_WANGLER = ROOT / "apps/padiem-chat/wrangler.toml"
+CHAT_WORKER_CONFIG = ROOT / "apps/padiem-chat/app/worker_config.py"
 
 spec = importlib.util.spec_from_file_location("cloudflare_served_version", SCRIPT)
 mod = importlib.util.module_from_spec(spec)
@@ -22,6 +24,8 @@ spec.loader.exec_module(mod)
 
 GATE_TEXT = GATE.read_text(encoding="utf-8")
 ENGINE_CONFIG = ENGINE_WANGLER.read_text(encoding="utf-8")
+CHAT_CONFIG = CHAT_WANGLER.read_text(encoding="utf-8")
+WORKER_CONFIG = CHAT_WORKER_CONFIG.read_text(encoding="utf-8")
 
 
 def classify(bindings):
@@ -168,6 +172,8 @@ def test_no_second_production_config_generator() -> None:
     print("SECOND_PRODUCTION_CONFIG_GENERATOR=0")
 
 
-def test_engine_wrangler_does_not_pre_declare_p01() -> None:
-    assert "P01_ENGINE_SERVICE" not in ENGINE_CONFIG
+def test_chat_wrangler_does_not_pre_declare_p01() -> None:
+    assert "P01_ENGINE_SERVICE" not in CHAT_CONFIG
+    assert 'P01_ENGINE_SERVICE_BINDING_NAME = "P01_ENGINE_SERVICE"' in WORKER_CONFIG
+    assert 'name = "padiem-ai-engine"' in ENGINE_CONFIG
     print("P01_ENGINE_BINDING_GATE_SOURCE=PASS")
