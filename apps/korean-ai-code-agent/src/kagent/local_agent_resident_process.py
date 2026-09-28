@@ -101,17 +101,32 @@ ACCEPTANCE_RUN_ID = "run.3140.p01.1"
 
 
 def trusted_execution_root() -> tuple[str, str]:
-    """The bounded local execution root and where it came from (fail closed)."""
+    """The bounded local execution root and where it came from (fail closed).
+
+    Windows-only composition: only a Windows host can run the Windows command,
+    so only a Windows host resolves the shell-supplied root. A non-Windows host
+    (for example the Ubuntu test/composition job) keeps the non-dispatching
+    Windows placeholder so a POSIX path can never be composed into the
+    Windows-only device profile.
+    """
 
     candidate = os.environ.get(PROJECT_ROOT_ENV)
-    if candidate and os.path.isdir(candidate):
+    if sys.platform == "win32" and candidate and os.path.isdir(candidate):
         return os.path.abspath(candidate), "env"
     return WINDOWS_ROOT, "placeholder"
 
 
 def trusted_executable_profile_path() -> str:
-    """The executable the resident itself runs on: resolved in trusted code."""
+    """The executable the resident itself runs on: resolved in trusted code.
 
+    Windows-only composition: the interpreter path is only meaningful for a
+    Windows execution host. A non-Windows host keeps the non-dispatching
+    Windows placeholder instead of feeding a POSIX interpreter path into a
+    Windows executable profile, whose own validation is unchanged.
+    """
+
+    if sys.platform != "win32":
+        return WINDOWS_PYTHON_EXECUTABLE
     return str(Path(sys.executable).resolve())
 
 
