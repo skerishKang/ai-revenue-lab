@@ -9,6 +9,9 @@
   const Core = window.QuoteCore;
   const Extraction = window.QuoteExtraction || null;
   const History = window.QuoteHistory || null;
+  const Template = window.QuoteTemplate || null;
+  const TemplateStore = window.QuoteTemplateStore || null;
+  const TemplateRenderer = window.QuoteTemplateRenderer || null;
   const TAX_REVIEW_STORAGE_KEY = "quoteBeta.taxReview.v1";
   const TAX_REVIEW_SCHEMA_VERSION = 1;
 
@@ -207,16 +210,8 @@
 
   /* ── 공통 유틸 ── */
 
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;").replaceAll("'", "&#039;");
-  }
-
-  function textOrDash(value) {
-    const v = String(value ?? "").trim();
-    return v || "-";
-  }
+  /* 이스케이프는 렌더러와 같은 단일 구현을 쓴다. */
+  const escapeHtml = (value) => TemplateRenderer.escapeHtml(value);
 
   function toast(message, duration) {
     $("toast").textContent = message;
@@ -235,6 +230,7 @@
       Core.SENDER_STORAGE_KEY,
       History && History.HISTORY_STORAGE_KEY,
       History && History.SEQUENCE_STORAGE_KEY,
+      TemplateStore && TemplateStore.TEMPLATE_STORAGE_KEY,
       TAX_REVIEW_STORAGE_KEY
     ].filter(Boolean);
 
@@ -510,62 +506,34 @@
     render();
   }
 
-  /* ── 렌더링: 입력 요약 + 미리보기 + 자동 저장 (금액은 매번 파생) ── */
+  /* ── 렌더링: 승인된 템플릿 + QuoteCore 파생값 → 결정적 render projection ── */
 
-  function vatSummaryLabel(mode) {
-    if (mode === Core.TAX_MODES.INCLUSIVE) return "부가세 (포함가 분리)";
-    if (mode === Core.TAX_MODES.EXEMPT) return "부가세 (면세)";
-    return "부가세";
+  function loadTemplateStore() {
+    if (!TemplateStore) return null;
+    try {
+      return TemplateStore.normalizeStore(
+        JSON.parse(localStorage.getItem(TemplateStore.TEMPLATE_STORAGE_KEY) || "null")
+      );
+    } catch (err) {
+      return TemplateStore.normalizeStore(null);
+    }
   }
 
+  function activeTemplateProfile() {
+    if (!Template) return null;
+    if (!TemplateStore) return Template.builtInTemplate();
+    return TemplateStore.defaultTemplate(loadTemplateStore());
+  }
+
+  /* 템플릿은 표현·배치만 소유한다. 화면에 보이는 금액·세금·유효일은 모두 QuoteCore 파생값이다. */
   function render() {
+    const model = TemplateRenderer.buildRenderModel(draft, activeTemplateProfile(), {
+      taxReviewRequired
+    });
+    if (model) TemplateRenderer.applyRenderModel(document, model);
+
+    /* 입력 폼의 금액 셀은 견적서 render projection 과 별개로 QuoteCore 파생값을 그대로 쓴다. */
     const totals = Core.computeTotals(draft.items, draft.tax.mode);
-    const provisionalTax = taxReviewRequired;
-
-    $("subtotalLabelText").textContent = provisionalTax ? "품목 합계(세금 확인 전)" : "공급가액";
-    $("subtotalText").textContent = Core.formatMoney(provisionalTax ? totals.subtotal : totals.supply);
-    $("vatLabelText").textContent = provisionalTax ? "부가세" : vatSummaryLabel(draft.tax.mode);
-    $("vatText").textContent = provisionalTax ? "확인 필요" : Core.formatMoney(totals.vat);
-    $("grandLabelText").textContent = provisionalTax ? "최종 합계" : "합계";
-    $("grandText").textContent = provisionalTax ? "확정 전" : Core.formatMoney(totals.grand);
-
-    $("pvQuoteNo").textContent = "견적번호  " + textOrDash(draft.meta.quoteNo);
-    $("pvDate").textContent = "견적일  " + textOrDash(draft.meta.issueDate);
-    $("pvValidity").textContent = "유효기간  " + draft.meta.validDays + "일";
-    const validUntil = Core.computeValidUntil(draft.meta.issueDate, draft.meta.validDays);
-    $("pvValidUntil").textContent = "유효일  " + (validUntil || "-");
-    $("pvTaxMode").textContent = provisionalTax
-      ? "세금  확인 필요"
-      : "세금  " + Core.TAX_LABELS[draft.tax.mode];
-
-    $("pvSenderCompany").textContent = textOrDash(draft.sender.company);
-    $("pvSenderRep").textContent = "대표자  " + textOrDash(draft.sender.rep);
-    $("pvSenderBizNo").textContent = "사업자번호  " + textOrDash(draft.sender.bizNo);
-    $("pvSenderAddress").textContent = textOrDash(draft.sender.address);
-    $("pvSenderContact").textContent = [draft.sender.phone.trim(), draft.sender.email.trim()].filter(Boolean).join(" · ") || "-";
-
-    $("pvRecipientCompany").textContent = textOrDash(draft.recipient.company);
-    $("pvRecipientPerson").textContent = "담당자  " + textOrDash(draft.recipient.person);
-    $("pvRecipientAddress").textContent = textOrDash(draft.recipient.address);
-    $("pvRecipientEmail").textContent = draft.recipient.email.trim() || "-";
-
-    $("pvItems").innerHTML = draft.items.map((item, i) => `
-      <tr>
-        <td class="${item.name ? "" : "empty"}">${escapeHtml(item.name || "품목을 입력하세요")}</td>
-        <td>${escapeHtml(Core.formatInputNumber(item.qty))}</td>
-        <td>${Core.formatMoney(item.unitPrice)}</td>
-        <td>${Core.formatMoney(totals.amounts[i])}</td>
-      </tr>`
-    ).join("");
-
-    $("pvSubtotalLabel").textContent = provisionalTax ? "품목 합계(세금 확인 전)" : "공급가액";
-    $("pvSubtotal").textContent = Core.formatMoney(provisionalTax ? totals.subtotal : totals.supply);
-    $("pvVatLabel").textContent = provisionalTax ? "부가세" : vatSummaryLabel(draft.tax.mode);
-    $("pvVat").textContent = provisionalTax ? "확인 필요" : Core.formatMoney(totals.vat);
-    $("pvGrandLabel").textContent = provisionalTax ? "최종 합계" : "합계";
-    $("pvGrand").textContent = provisionalTax ? "확정 전" : Core.formatMoney(totals.grand);
-    $("pvMemo").textContent = draft.memo.trim() || "비고 없음";
-
     document.querySelectorAll("#items .item-row").forEach((row, i) => {
       const cell = row.querySelector(".amount-value");
       if (cell && totals.amounts[i] !== undefined) cell.textContent = Core.formatMoney(totals.amounts[i]);

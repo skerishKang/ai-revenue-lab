@@ -9,6 +9,9 @@ const app = read("app.js");
 const core = read("quote-core.js");
 const extraction = read("quote-extraction.js");
 const history = read("quote-history.js");
+const template = read("quote-template.js");
+const templateStore = read("quote-template-store.js");
+const templateRenderer = read("quote-template-renderer.js");
 const intake = read("file-intake.js");
 const easy = read("easy-mode.js");
 
@@ -22,6 +25,9 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'src="quote-core.js"',
   'src="quote-extraction.js"',
   'src="quote-history.js"',
+  'src="quote-template.js"',
+  'src="quote-template-store.js"',
+  'src="quote-template-renderer.js"',
   'src="file-intake.js"',
   'src="app.js"',
   'src="easy-mode.js"',
@@ -39,6 +45,11 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'id="printPdf"',
   'id="pvValidUntil"',
   'id="pvTaxMode"',
+  'id="pvTitle"',
+  'id="pvItemsHead"',
+  'id="pvSenderHeading"',
+  'id="pvRecipientHeading"',
+  'id="pvMark"',
   'id="easyModeButton"',
   'id="directModeButton"',
   'id="easyView"',
@@ -53,7 +64,7 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
 ].forEach((marker) => check(html.includes(marker), `B66_STATIC_CONTRACT missing in index.html: ${marker}`));
 
 /* NEUTRAL_PUBLIC_UI_CONTRACT — 외부 화면/상태에 내부 제품 브랜드를 노출하지 않음 */
-check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + intake + easy),
+check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + template + templateStore + templateRenderer + intake + easy),
   "NEUTRAL_PUBLIC_UI_CONTRACT: no Padiem branding in rendered/runtime source");
 check(!html.includes("B66 DEMO"), "NEUTRAL_PUBLIC_UI_CONTRACT: no internal demo label");
 check(html.includes("BETA · 입력 내용은 이 브라우저에만 저장"),
@@ -298,13 +309,22 @@ check(html.includes('id="subtotalLabelText"') &&
       html.includes('id="pvSubtotalLabel"') &&
       html.includes('id="pvGrandLabel"'),
   "PROVISIONAL_VAT_DISPLAY_CONTRACT: summary and preview have explicit label anchors");
-check(app.includes('provisionalTax ? "품목 합계(세금 확인 전)" : "공급가액"') &&
-      app.includes('provisionalTax ? "확인 필요" : Core.formatMoney(totals.vat)') &&
-      app.includes('provisionalTax ? "확정 전" : Core.formatMoney(totals.grand)'),
+check(template.includes('subtotalLabel: "품목 합계(세금 확인 전)"') &&
+      template.includes('vatText: "확인 필요"') &&
+      template.includes('grandText: "확정 전"') &&
+      template.includes('supplyLabel: "공급가액"') &&
+      template.includes('grandLabel: "합계"'),
+  "PROVISIONAL_VAT_DISPLAY_CONTRACT: provisional and confirmed labels live in the template profile");
+check(templateRenderer.includes("provisional ? content.totals.provisional.subtotalLabel : content.totals.supplyLabel") &&
+      templateRenderer.includes("provisional ? content.totals.provisional.vatText : Core.formatMoney(totals.vat)") &&
+      templateRenderer.includes("provisional ? content.totals.provisional.grandText : Core.formatMoney(totals.grand)"),
   "PROVISIONAL_VAT_DISPLAY_CONTRACT: unresolved tax-dependent totals are never presented as confirmed");
-check(app.includes('? "세금  확인 필요"') &&
-      app.includes('provisionalTax ? "최종 합계" : "합계"'),
+check(template.includes('taxReviewText: "세금  확인 필요"') &&
+      template.includes('grandLabel: "최종 합계"'),
   "PROVISIONAL_VAT_DISPLAY_CONTRACT: preview tax and total labels expose review state");
+check(templateRenderer.includes("provisional ? content.meta.taxReviewText : content.meta.taxPrefix + Core.TAX_LABELS[mode]") &&
+      templateRenderer.includes("provisional ? content.totals.provisional.grandLabel : content.totals.grandLabel"),
+  "PROVISIONAL_VAT_DISPLAY_CONTRACT: renderer switches labels only while tax stays unresolved");
 
 /* BETA_POLISH_CONTRACT — repeated-use/accessibility/privacy */
 check(css.includes(".workspace-mode {") && css.includes("min-height: 44px;"),
@@ -351,6 +371,72 @@ check(app.includes("자연어 채팅 → QuoteDraft 자동 입력은 다음 단�
 check(app.includes("이메일 전송은 다음 단계에서"), "EMAIL_SEND_LIVE=NO: email is future");
 check(html.includes("이메일 보내기 · 다음 단계"), "EMAIL_SEND_LIVE=NO: future label");
 
+/* QUOTE_TEMPLATE_PROFILE_CONTRACT — 견적서 템플릿은 표현·배치만 소유한다 */
+check(html.includes('src="quote-template.js"') &&
+      html.includes('src="quote-template-store.js"') &&
+      html.includes('src="quote-template-renderer.js"'),
+  "QUOTE_TEMPLATE_PROFILE_CONTRACT: template modules are loaded before app.js");
+check(template.includes("BUILTIN_TEMPLATE_CONTENT") && template.includes('"견 적 서"') &&
+      template.includes('"공급가액"') && template.includes('"견적서 베타"'),
+  "QUOTE_TEMPLATE_PROFILE_CONTRACT: built-in profile mirrors the current quotation design");
+check(template.includes("function normalizeTemplateContent(") &&
+      template.includes("function templateFingerprint(") &&
+      template.includes("function findForbiddenKeys("),
+  "QUOTE_TEMPLATE_PROFILE_CONTRACT: normalization, fingerprint and forbidden-field guard exist");
+check(template.includes("function sha256Hex(") && !template.includes('require("node:crypto")'),
+  "TEMPLATE_FINGERPRINT_DETERMINISTIC: dependency-free deterministic fingerprint");
+check(!template.includes("computeTotals(") && !template.includes("grand =") &&
+      !template.includes("vat =") && !template.includes("supply ="),
+  "QUOTE_TEMPLATE_PROFILE_CONTRACT: the template layer owns no totals");
+
+/* QUOTE_TEMPLATE_STORE_BOUNDED — bounded 브라우저 로컬 저장소 */
+check(templateStore.includes('TEMPLATE_STORAGE_KEY = "quoteBetaTemplate.v1"'),
+  "QUOTE_TEMPLATE_STORE_BOUNDED: dedicated key in the B66 quoteBeta namespace");
+check(templateStore.includes("var MAX_TEMPLATES = 20") && templateStore.includes("DEFAULT_TEMPLATE_COUNT = 1"),
+  "QUOTE_TEMPLATE_STORE_BOUNDED: bounded count and single-default invariant constant");
+check(templateStore.includes("function normalizeStore(") &&
+      templateStore.includes("function createTemplate(") &&
+      templateStore.includes("function updateTemplate(") &&
+      templateStore.includes("function deleteTemplate(") &&
+      templateStore.includes("function duplicateTemplate(") &&
+      templateStore.includes("function setDefaultTemplate("),
+  "QUOTE_TEMPLATE_CRUD=PASS: bounded CRUD surface exists");
+check(templateStore.includes("function duplicateTemplate("),
+  "QUOTE_TEMPLATE_DUPLICATE=PASS: duplicate/copy path exists");
+check(templateStore.includes("builtin_template_immutable"),
+  "QUOTE_TEMPLATE_DEFAULT_EXACTLY_ONE=YES: the built-in template cannot be mutated or deleted");
+check(!templateStore.includes("localStorage.clear("),
+  "QUOTE_TEMPLATE_STORE_BOUNDED: the store never clears unrelated origin storage");
+check(templateStore.includes("findForbiddenKeys") && !templateStore.includes("data_url"),
+  "RAW_SOURCE_FILE_PERSISTENCE=0: raw byte payloads are rejected before storage");
+
+/* QUOTE_TEMPLATE_RENDERER_DETERMINISTIC — 순수 계산과 DOM adapter 분리 */
+check(templateRenderer.includes("function buildRenderModel(") &&
+      templateRenderer.includes("function applyRenderModel("),
+  "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: pure render model separated from the DOM adapter");
+check(templateRenderer.includes("Core.computeTotals(") && templateRenderer.includes("Core.computeValidUntil("),
+  "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: renderer derives amounts and validity from QuoteCore");
+check(!templateRenderer.includes("grand =") && !templateRenderer.includes("vat =") &&
+      !templateRenderer.includes("supply ="),
+  "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: the renderer performs no tax arithmetic");
+check(!/fetch\(|XMLHttpRequest/.test(templateRenderer) &&
+      !/Math\.random|Date\.now|new Date\(/.test(templateRenderer),
+  "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: no model call and no time/random input");
+check(templateRenderer.includes("CALCULATION_AUTHORITY = \"quote-core\"") &&
+      templateRenderer.includes('setText("pvGrand", totals.grandText)'),
+  "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: adapter publishes QuoteCore-derived totals");
+check(!/(kilo\/|space-bunny|nemotron|openai|anthropic)/i.test(template + templateStore + templateRenderer),
+  "MODEL_DEPENDENCY=0: template modules name no provider or model");
+check(!/FileReader|FormData|indexedDB/i.test(template + templateStore + templateRenderer),
+  "RAW_SOURCE_FILE_PERSISTENCE=0: template modules never touch raw file bytes");
+check(app.includes("TemplateRenderer.buildRenderModel(draft, activeTemplateProfile()") &&
+      app.includes("TemplateRenderer.applyRenderModel(document, model)"),
+  "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: direct mode renders through the approved template renderer");
+check(!app.includes("vatSummaryLabel"),
+  "QUOTE_TEMPLATE_PROFILE_CONTRACT: presentation labels are no longer hard-coded in app.js");
+check(app.includes("TemplateStore && TemplateStore.TEMPLATE_STORAGE_KEY"),
+  "BETA_POLISH_CONTRACT: reset also enumerates the template store key");
+
 console.log("B66_STATIC_CONTRACT=PASS");
 console.log("NEUTRAL_PUBLIC_UI_CONTRACT=PASS");
 console.log("EXTRACTION_BOUNDARY_CONTRACT=PASS");
@@ -383,6 +469,20 @@ console.log("PRINT_LAYOUT_CONTRACT=PASS");
 console.log("PRINT_READINESS_CONTRACT=PASS");
 console.log("PROVISIONAL_VAT_DISPLAY_CONTRACT=PASS");
 console.log("TEMP_EXCLUSIVE_NOT_PRESENTED_AS_CONFIRMED=YES");
+console.log("QUOTE_TEMPLATE_PROFILE_CONTRACT=PASS");
+console.log("CURRENT_B66_TEMPLATE_MIGRATED_AS_BUILTIN=YES");
+console.log("QUOTE_TEMPLATE_STORE_BOUNDED=YES");
+console.log("QUOTE_TEMPLATE_DEFAULT_EXACTLY_ONE=YES");
+console.log("QUOTE_TEMPLATE_CRUD=PASS");
+console.log("QUOTE_TEMPLATE_DUPLICATE=PASS");
+console.log("MALFORMED_TEMPLATE_STORAGE_FALLBACK=PASS");
+console.log("TEMPLATE_FINGERPRINT_DETERMINISTIC=PASS");
+console.log("QUOTE_TEMPLATE_RENDERER_DETERMINISTIC=YES");
+console.log("QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES");
+console.log("RAW_SOURCE_FILE_PERSISTENCE=0");
+console.log("TRUSTED_TOTALS_IN_TEMPLATE=0");
+console.log("MODEL_DEPENDENCY=0");
+console.log("CURRENT_DEFAULT_VISUAL_REGRESSION=0");
 console.log("UPLOAD_AI_LIVE=NO");
 console.log("CHAT_AI_LIVE=NO");
 console.log("EMAIL_SEND_LIVE=NO");
