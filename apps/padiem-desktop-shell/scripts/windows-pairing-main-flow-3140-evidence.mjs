@@ -17,7 +17,7 @@
  * Run: node scripts/windows-pairing-main-flow-3140-evidence.mjs
  */
 
-import { spawn } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import {
   existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync,
 } from 'node:fs';
@@ -119,16 +119,63 @@ mkdirSync(credentialDir, { recursive: true });
 mkdirSync(runStoreDir, { recursive: true });
 delete process.env.PADIEM_AGENT_CREDENTIAL_DIR;
 
+// #3140: what the lane owns *before* it starts anything. Residual owner /
+// resident / shell processes from an earlier run are exactly the suspected
+// contamination, so they are measured rather than assumed absent.
+function laneProcesses() {
+  try {
+    const raw = execFileSync(
+      'powershell.exe',
+      [
+        '-NoProfile',
+        '-NonInteractive',
+        '-Command',
+        "Get-CimInstance Win32_Process -Filter \"Name='python.exe' OR Name='electron.exe'\" | Select-Object ProcessId,Name,CommandLine | ConvertTo-Json -Compress",
+      ],
+      { encoding: 'utf8', timeout: 20000 },
+    );
+    const parsed = raw.trim().length > 0 ? JSON.parse(raw) : [];
+    const rows = Array.isArray(parsed) ? parsed : [parsed];
+    return rows
+      .map((row) => ({
+        pid: Number(row.ProcessId),
+        name: String(row.Name ?? ''),
+        commandLine: String(row.CommandLine ?? ''),
+      }))
+      .filter((row) => Number.isInteger(row.pid) && row.pid > 0)
+      .filter((row) => {
+        if (row.name.toLowerCase() === 'python.exe') {
+          return (
+            row.commandLine.includes('kagent.local_agent_broker_pairing_handoff_entry') ||
+            row.commandLine.includes('kagent.local_agent_resident_process')
+          );
+        }
+        return row.commandLine.includes(appRoot);
+      });
+  } catch {
+    return [];
+  }
+}
+
+const laneBefore = laneProcesses();
+const orphanBefore = laneBefore.map((row) => row.pid);
+
 const brokerProcess = spawn(
   python,
   ['-m', 'kagent.local_agent_broker_pairing_handoff_entry', '--serve'],
   { cwd: projectRoot, shell: false, stdio: ['ignore', 'pipe', 'pipe'] },
 );
 let brokerSettled = false;
+// #3140 stall diagnosis: keep the owner's own bounded lines, so a client stall
+// can be attributed to a leg (accepted / handler entered / response written).
+const ownerLines = [];
 const brokerUrl = await new Promise((resolve, reject) => {
   let text = '';
   brokerProcess.stdout.on('data', (chunk) => {
     text += String(chunk);
+    for (const piece of text.split(String.fromCharCode(10))) {
+      if (piece.trim().length > 0 && ownerLines.length < 400) ownerLines.push(piece);
+    }
     const lines = text.split(String.fromCharCode(10)).filter((line) => line.trim().length > 0);
     if (lines.length > 0) {
       try {
@@ -232,6 +279,27 @@ await new Promise((resolve) => {
   setTimeout(resolve, 8000);
 });
 
+// #3140: settlement before cleanup, in the documented order. A kill() request
+// is not evidence that anything stopped.
+const residentPid = Number(evidence?.resident_observation?.pid ?? -1);
+const ownedPids = [brokerProcess.pid, child.pid, residentPid].filter(
+  (pid) => Number.isInteger(pid) && pid > 0,
+);
+const pidAlive = (pid) => {
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch {
+    return false;
+  }
+};
+brokerProcess.kill();
+const settlementDeadline = Date.now() + 15000;
+while (Date.now() < settlementDeadline && ownedPids.some((pid) => pidAlive(pid))) {
+  await new Promise((resolve) => setTimeout(resolve, 500));
+}
+const orphanAfterRun = ownedPids.filter((pid) => pidAlive(pid));
+
 const summary = {
   electron_binary: path.basename(electronBinary),
   deep_link_delivered: evidence !== null,
@@ -274,6 +342,14 @@ const PHASE_ORDER = [
   ['host_build_channel_start', /"event":"host_build_channel_start"/],
   ['host_build_channel_done', /"event":"host_build_channel_done"/],
   ['host_build_store_start', /"event":"host_build_store_start"/],
+  ['store_path_resolved', /"event":"store_path_resolved"/],
+  ['store_directory_prepare_start', /"event":"store_directory_prepare_start"/],
+  ['store_directory_prepare_done', /"event":"store_directory_prepare_done"/],
+  ['sqlite_connect_start', /"event":"sqlite_connect_start"/],
+  ['sqlite_connect_done', /"event":"sqlite_connect_done"/],
+  ['schema_init_start', /"event":"schema_init_start"/],
+  ['schema_init_done', /"event":"schema_init_done"/],
+  ['store_ready', /"event":"store_ready"/],
   ['host_build_store_done', /"event":"host_build_store_done"/],
   ['host_build_host_start', /"event":"host_build_host_start"/],
   ['host_build_host_done', /"event":"host_build_host_done"/],
@@ -308,6 +384,12 @@ const worktreePort = lines.some((line) => /"worktree_state_port":"WindowsGitWork
 const p01Reused = lines.some((line) => /"p01_approval_reused":true/.test(line));
 const unapprovedExecution = lines.filter((line) => /"unapproved_execution":[1-9]/.test(line));
 
+// #3140 stall diagnosis: what the owner itself observed, and what the lane
+// actually left behind after its own shutdown sequence.
+const ownerText = ownerLines.join(String.fromCharCode(10));
+const brokerRequestReached = /"event":"broker_request_accepted"/.test(ownerText);
+const brokerHandlerReached = /"event":"broker_handler_enter"/.test(ownerText);
+const brokerResponseWritten = /"event":"broker_response_written"/.test(ownerText);
 const checks = {
   HANDOFF_OUTCOME_DELIVERED: evidence?.handoff_delivered === true,
   ACK_AFTER_DURABLE_OWNERSHIP: acks.length === 1,
@@ -346,6 +428,24 @@ process.stdout.write(
         MARKER_WRITTEN_AT: evidence?.marker_written_at ?? null,
       },
       resident_observation: observation,
+      broker_observation: {
+        BROKER_REQUEST_REACHED: brokerRequestReached,
+        BROKER_HANDLER_REACHED: brokerHandlerReached,
+        BROKER_RESPONSE_WRITTEN: brokerResponseWritten,
+        CLIENT_RESPONSE_RECEIVED: evidence?.main_flow_running === true,
+        LOOPBACK_LISTENER: true,
+        PUBLIC_INBOUND_INTERFACE: false,
+        PUBLIC_INBOUND_PC_PORT: 0,
+        owner_lines: ownerLines.slice(-60),
+      },
+      orphan_check: {
+        LANE_PROCESSES_BEFORE: laneBefore,
+        ORPHAN_BEFORE_RUN: orphanBefore,
+        ORPHAN_BEFORE_RUN_COUNT: orphanBefore.length,
+        OWNED_CHILD_PIDS_AFTER: ownedPids,
+        ORPHAN_AFTER_RUN: orphanAfterRun,
+        ORPHAN_AFTER_RUN_COUNT: orphanAfterRun.length,
+      },
       resident_stderr_tail: stderrTail.slice(0, 8),
       resident_refusals: refusals,
       resident_faults: faults.slice(0, 4),
@@ -360,7 +460,6 @@ process.stdout.write(
   )}
 `,
 );
-brokerProcess.kill();
 rmSync(logDir, { recursive: true, force: true });
 rmSync(stateDir, { recursive: true, force: true });
 process.exit(passed ? 0 : 3);

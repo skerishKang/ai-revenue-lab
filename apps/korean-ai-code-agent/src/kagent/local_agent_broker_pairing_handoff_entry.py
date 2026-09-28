@@ -23,10 +23,27 @@ from __future__ import annotations
 
 import json
 import sys
+import threading
+import time
 from datetime import datetime, timezone
 from typing import Any
 
 from .contracts import ContractError
+
+#: #3140 stall diagnosis: the owner process reports its own bounded, secret-free
+#: request boundaries, so a client-side stall can be attributed to a leg.
+_OWNER_EMIT_LOCK = threading.Lock()
+_OWNER_STARTED_MONOTONIC = time.monotonic()
+
+
+def _owner_emit(**fields: Any) -> None:
+    """One bounded owner-process line: route names and timing only."""
+
+    fields.setdefault("owner_elapsed_ms", int((time.monotonic() - _OWNER_STARTED_MONOTONIC) * 1000))
+    line = json.dumps(fields, sort_keys=True, separators=(",", ":")) + "\n"
+    with _OWNER_EMIT_LOCK:
+        sys.stdout.write(line)
+        sys.stdout.flush()
 
 BROKER_PEPPER = b"control-plane-broker-pepper-16bytes!!"
 PAIRING_PEPPER = b"control-plane-pairing-pepper16byte!!"
@@ -326,8 +343,12 @@ def serve(host: str = "127.0.0.1", port: int = 0) -> int:
                 route = path_only
             else:
                 route = f"/{path_only.lstrip('/')}"
+            # #3140 stall diagnosis: request accepted, handler entered, response
+            # written. Route names only -- never a body, a code or a credential.
+            _owner_emit(event="broker_request_accepted", route=route)
             auth = _auth_for_route(route)
             body = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            _owner_emit(event="broker_handler_enter", route=route)
             response = broker.handler.handle(
                 method="POST",
                 route=route,
@@ -341,6 +362,7 @@ def serve(host: str = "127.0.0.1", port: int = 0) -> int:
             self.send_header("Content-Length", str(len(out)))
             self.end_headers()
             self.wfile.write(out)
+            _owner_emit(event="broker_response_written", route=route, status=response.status)
 
         def log_message(self, *args: Any) -> None:
             return

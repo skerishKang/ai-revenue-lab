@@ -34,6 +34,7 @@ export interface BoundedRunnerOutput {
  * bounded stderr tail that the projection layer redacts.
  */
 export interface RunnerProcessObservation {
+  readonly pid: number;
   readonly spawn_at: string;
   readonly stdout_lines: number;
   readonly stderr_lines: number;
@@ -200,6 +201,7 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
   /** #3140 stall diagnosis: bounded per-stream timing for this child. */
   observation(): RunnerProcessObservation {
     return {
+      pid: this.pid,
       spawn_at: new Date(this.#spawnAtMs).toISOString(),
       stdout_lines: this.#stdoutLines,
       stderr_lines: this.#stderrLines,

@@ -443,8 +443,20 @@ def build_resident_host(
     )
     _observe_phase("host_build_channel_done")
     _observe_phase("host_build_store_start")
-    durable_store = DurableRunStore(entry.durable_store_path)
+    durable_store = DurableRunStore(entry.durable_store_path, observer=_observe_phase)
     _observe_phase("host_build_store_done")
+    # #3140 stall diagnosis: the facts a stalled SQLite open would have produced,
+    # reported only once the store is actually ready. No path, no handle.
+    try:
+        _emit(
+            event="store_facts",
+            journal_mode=str(durable_store._db.execute("PRAGMA journal_mode").fetchone()[0]),
+            busy_timeout_ms=int(durable_store._db.execute("PRAGMA busy_timeout").fetchone()[0]),
+            **_phase_stamp(),
+            **RESIDENT_PROCESS_CONTRACT,
+        )
+    except Exception:  # pragma: no cover - evidence only
+        pass
     _observe_phase("host_build_host_start")
     host = LocalAgentResidentRuntimeHost(
         assembly=BoundLocalAgentRuntimeAssembly(
