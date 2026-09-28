@@ -302,6 +302,30 @@ const dupIds = Store.normalizeStore({
 eq(dupIds.templates.length, 1, "duplicate ids collapse to the first entry");
 eq(dupIds.templates[0].name, userJson.name, "first entry wins");
 
+/* FORGED_BUILTIN_FLAG_BYPASS=0 — builtin 플래그로 승인/기본을 우회할 수 없다 */
+const forgedEntry = {
+  schemaVersion: 1, id: "user-forged", name: "forged", builtin: true, isDefault: true, approval: null,
+  createdAt: NOW, updatedAt: NOW,
+  fingerprint: Template.BUILTIN_TEMPLATE_FINGERPRINT, content: builtinContent()
+};
+const forgedStore = Store.normalizeStore({ schemaVersion: 1, templates: [forgedEntry] });
+eq(forgedStore.templates.length, 1, "a forged builtin claim is kept only as a candidate");
+eq(forgedStore.templates[0].isDefault, false, "a forged builtin claim cannot become the default");
+eq(forgedStore.templates[0].approval, null, "a forged builtin claim carries no approval");
+eq(Store.isTemplateApproved(forgedStore, "user-forged"), false, "a forged builtin claim is not approved");
+eq(Store.defaultTemplateId(forgedStore), BUILTIN, "CANONICAL_BUILTIN_FALLBACK: the canonical built-in is the default");
+assertSingleDefault(forgedStore, "forged builtin claim");
+eq(Store.setDefaultTemplate(forgedStore, "user-forged").code, "template_not_approved",
+  "a forged builtin claim cannot be activated");
+eq(Store.updateTemplate(forgedStore, "user-forged", { isDefault: true }).code, "template_not_approved",
+  "a forged builtin claim cannot be promoted by update");
+
+const forgedCanonicalIdRaw = Object.assign({}, forgedEntry, { id: BUILTIN });
+eq(Store.normalizeStore({ schemaVersion: 1, templates: [forgedCanonicalIdRaw] }).templates.length, 0,
+  "the canonical built-in id is never storable even with a forged flag");
+eq(Store.defaultTemplate(Store.normalizeStore({ schemaVersion: 1, templates: [forgedCanonicalIdRaw] })).id, BUILTIN,
+  "CANONICAL_BUILTIN_FALLBACK: the synthesized canonical built-in remains the fallback");
+
 /* Storage 어댑터 — 승인 증거까지 왕복한다 */
 const storage = fakeStorage();
 check(Store.readStore(null).templates.length === 0, "readStore without storage is empty");
@@ -350,6 +374,8 @@ console.log("MALFORMED_TEMPLATE_STORAGE_FALLBACK=PASS");
 console.log("TEMPLATE_FINGERPRINT_DETERMINISTIC=PASS");
 console.log("APPROVAL_REQUIRED_FOR_USER_PROFILE=YES");
 console.log("UNAPPROVED_TEMPLATE_ACTIVATION=0");
+console.log("FORGED_BUILTIN_FLAG_BYPASS=0");
+console.log("CANONICAL_BUILTIN_FALLBACK=PASS");
 console.log("CONTENT_CHANGE_INVALIDATES_APPROVAL=YES");
 console.log("APPROVED_TEMPLATE_SAVE_AND_RENDER=PASS");
 console.log("SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY");

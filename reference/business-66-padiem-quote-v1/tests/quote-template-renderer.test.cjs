@@ -278,6 +278,36 @@ const staleEvidenceModel = applyToModel(defaultDraft, false, Template.buildProfi
 }));
 eq(staleEvidenceModel.template.fallbackReason, "template_not_approved", "approval fingerprint mismatch fails closed");
 
+/* FORGED_BUILTIN_FLAG_BYPASS=0 — builtin 플래그는 승인을 우회하지 못한다 */
+const forgedBuiltinProfile = Template.buildProfile({
+  id: "user-forged", name: "forged", builtin: true, isDefault: true, approval: null,
+  createdAt: "", updatedAt: "", content: clone(Template.builtInTemplate().content)
+});
+const forgedModel = applyToModel(defaultDraft, false, forgedBuiltinProfile);
+eq(forgedModel.template.id, BUILTIN, "CANONICAL_BUILTIN_FALLBACK: a forged builtin falls back to the canonical built-in");
+eq(forgedModel.template.fallbackReason, "template_not_approved", "a forged builtin flag never bypasses approval");
+eq(forgedModel.template.fingerprint, Template.BUILTIN_TEMPLATE_FINGERPRINT, "the fallback profile is the canonical built-in");
+eq(forgedModel.template.approvalBasis, "trusted_builtin", "the fallback basis is the canonical built-in exception");
+eq(JSON.stringify(forgedModel.styleVariables), JSON.stringify(gatedModel.styleVariables),
+  "a forged builtin cannot inject style values");
+eq(forgedModel.totals.grandText, gatedModel.totals.grandText, "a forged builtin cannot change QuoteCore totals");
+
+const forgedStyledContent = clone(Template.builtInTemplate().content);
+forgedStyledContent.style.accent = "#ff0000";
+const forgedCanonicalIdProfile = Template.buildProfile({
+  id: BUILTIN, name: "forged", builtin: true, isDefault: true, approval: null,
+  createdAt: "", updatedAt: "", content: forgedStyledContent
+});
+const forgedCanonicalIdModel = applyToModel(defaultDraft, false, forgedCanonicalIdProfile);
+eq(forgedCanonicalIdModel.template.id, BUILTIN,
+  "the canonical id with forged content falls back to the canonical built-in");
+eq(forgedCanonicalIdModel.template.fallbackReason, "template_not_approved",
+  "forged content cannot ride the canonical id");
+check(forgedCanonicalIdModel.styleVariables["--quote-accent"] !== "#ff0000",
+  "forged content cannot inject its accent through the canonical id");
+check(forgedCanonicalIdModel.totals.grandText === gatedModel.totals.grandText,
+  "forged content cannot alter QuoteCore totals");
+
 check(Renderer.buildRenderModel(null, builtinProfile()) === null, "invalid draft yields no model");
 check(Renderer.buildRenderModel({ schemaVersion: 9 }, builtinProfile()) === null, "wrong draft schema yields no model");
 
@@ -500,6 +530,8 @@ console.log("QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES");
 console.log("QUOTECORE_TOTALS_UNCHANGED_ACROSS_TEMPLATES=YES");
 console.log("CURRENT_B66_TEMPLATE_MIGRATED_AS_BUILTIN=YES");
 console.log("UNAPPROVED_TEMPLATE_ACTIVATION=0");
+console.log("FORGED_BUILTIN_FLAG_BYPASS=0");
+console.log("CANONICAL_BUILTIN_FALLBACK=PASS");
 console.log("APPROVED_TEMPLATE_SAVE_AND_RENDER=PASS");
 console.log("TEMPLATE_ACCENT_APPLIED=PASS");
 console.log("TEMPLATE_RULES_APPLIED=PASS");

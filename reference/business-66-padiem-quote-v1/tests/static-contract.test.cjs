@@ -496,6 +496,20 @@ check(css.includes("@page { size: A4; margin: 10mm; }"),
 check(!/(expression\(|javascript:|<\/style)/i.test(css + templateRenderer),
   "TEMPLATE_STYLE_APPLIED: no arbitrary CSS execution surface");
 
+/* FORGED_BUILTIN_FLAG_BYPASS=0 — builtin 플래그만으로는 신뢰되지 않는다 */
+check(template.includes("function isCanonicalBuiltIn(") &&
+      template.includes("function isCanonicalBuiltInContent(") &&
+      template.includes("BUILTIN_TEMPLATE_CANONICAL") &&
+      template.includes("candidate.id !== BUILTIN_TEMPLATE_ID") &&
+      template.includes("candidate.builtin !== true"),
+  "FORGED_BUILTIN_FLAG_BYPASS=0: rule requires the canonical id and canonical content");
+check(/function isBuiltInException\(profile\) \{\s*return isCanonicalBuiltIn\(profile\);\s*\}/.test(template),
+  "FORGED_BUILTIN_FLAG_BYPASS=0: the built-in exception delegates to the canonical check");
+check(template.includes("var builtin = isCanonicalBuiltIn({"),
+  "FORGED_BUILTIN_FLAG_BYPASS=0: buildProfile derives trust from the canonical check");
+check(template.includes("BUILTIN_TEMPLATE_FINGERPRINT: BUILTIN_TEMPLATE_FINGERPRINT"),
+  "CANONICAL_BUILTIN_FALLBACK=PASS: the canonical built-in fingerprint is published");
+
 console.log("B66_STATIC_CONTRACT=PASS");
 console.log("NEUTRAL_PUBLIC_UI_CONTRACT=PASS");
 console.log("EXTRACTION_BOUNDARY_CONTRACT=PASS");
@@ -544,6 +558,8 @@ console.log("MODEL_DEPENDENCY=0");
 console.log("CURRENT_DEFAULT_VISUAL_REGRESSION=0");
 console.log("APPROVAL_REQUIRED_FOR_USER_PROFILE=YES");
 console.log("UNAPPROVED_TEMPLATE_ACTIVATION=0");
+console.log("FORGED_BUILTIN_FLAG_BYPASS=0");
+console.log("CANONICAL_BUILTIN_FALLBACK=PASS");
 console.log("CONTENT_CHANGE_INVALIDATES_APPROVAL=YES");
 console.log("APPROVED_TEMPLATE_SAVE_AND_RENDER=PASS");
 console.log("TEMPLATE_ACCENT_APPLIED=PASS");

@@ -537,6 +537,29 @@
     }
   }
 
+  /* trusted built-in 은 (1) canonical BUILTIN_TEMPLATE_ID 와
+     (2) canonical built-in content/fingerprint 를 모두 만족할 때만 성립한다.
+     builtin:true 플래그만 붙인 외부/사용자 profile 은 승인을 우회할 수 없다. */
+  var BUILTIN_TEMPLATE_FINGERPRINT = templateFingerprint(BUILTIN_TEMPLATE_CONTENT);
+  var BUILTIN_TEMPLATE_CANONICAL = canonicalJson(BUILTIN_TEMPLATE_CONTENT);
+
+  function isCanonicalBuiltInContent(content) {
+    if (!isPlainObject(content)) return false;
+    try {
+      return canonicalJson(content) === BUILTIN_TEMPLATE_CANONICAL;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function isCanonicalBuiltIn(candidate) {
+    if (!isPlainObject(candidate)) return false;
+    if (candidate.id !== BUILTIN_TEMPLATE_ID) return false;
+    if (candidate.builtin !== true) return false;
+    if (!isCanonicalBuiltInContent(candidate.content)) return false;
+    return templateFingerprint(candidate.content) === BUILTIN_TEMPLATE_FINGERPRINT;
+  }
+
   /* ── 승인 증거: 지문이 일치하는 explicit approval 만 유효하다 ── */
 
   function normalizeApproval(raw, contentFingerprint) {
@@ -571,9 +594,9 @@
   }
 
   /* 내장 기본은 별도의 trusted built-in 예외다 — 코드와 테스트에 명시한다.
-     id 만으로 신뢰하지 않고 명시적 builtin 플래그만 예외로 인정한다. */
+     id 만이나 builtin 플래그 만으로는 신뢰하지 않는다(canonical 일치까지 요구). */
   function isBuiltInException(profile) {
-    return Boolean(profile) && profile.builtin === true;
+    return isCanonicalBuiltIn(profile);
   }
 
   function isApprovedProfile(profile) {
@@ -585,7 +608,8 @@
   function buildProfile(source) {
     var content = cloneJson(source.content);
     var fingerprint = templateFingerprint(content);
-    var builtin = source.builtin === true;
+    /* builtin 플래그는 주장일 뿐이다. canonical id + canonical content 일치까지 확인한다. */
+    var builtin = isCanonicalBuiltIn({ id: source.id, builtin: source.builtin, content: content });
     var approval = builtin ? null : normalizeApproval(source.approval, fingerprint);
     return {
       schemaVersion: TEMPLATE_SCHEMA_VERSION,
@@ -593,7 +617,7 @@
       name: source.name,
       builtin: builtin,
       isDefault: source.isDefault === true,
-      approved: builtin ? true : approval !== null,
+      approved: builtin || approval !== null,
       approvalBasis: builtin ? "trusted_builtin" : (approval ? "explicit_approval" : "unapproved"),
       approval: approval,
       createdAt: typeof source.createdAt === "string" ? source.createdAt : "",
@@ -681,6 +705,9 @@
     APPROVAL_SCHEMA_VERSION: APPROVAL_SCHEMA_VERSION,
     MAX_APPROVER_REF_CHARS: MAX_APPROVER_REF_CHARS,
     SLOT_SUPPORT: SLOT_SUPPORT,
+    BUILTIN_TEMPLATE_FINGERPRINT: BUILTIN_TEMPLATE_FINGERPRINT,
+    isCanonicalBuiltIn: isCanonicalBuiltIn,
+    isCanonicalBuiltInContent: isCanonicalBuiltInContent,
     normalizeApproval: normalizeApproval,
     approvalIsValid: approvalIsValid,
     isBuiltInException: isBuiltInException,
