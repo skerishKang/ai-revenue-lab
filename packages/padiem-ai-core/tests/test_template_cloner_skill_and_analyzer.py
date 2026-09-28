@@ -12,6 +12,7 @@ from padiem_ai_core.contracts import AgentProfile
 from padiem_ai_core.document_normalization import ExtractionStatus, NormalizedDocument
 from padiem_ai_core.document_template import (
     DocumentTemplateCandidate,
+    DocumentTemplateError,
     DocumentTemplateSourceProvenance,
 )
 from padiem_ai_core.multimodal_execution_runtime import MultimodalExecutionRequest
@@ -34,7 +35,9 @@ from padiem_ai_core.template_cloner_analyzer import (
 )
 from padiem_ai_core.template_cloner_skill import (
     TEMPLATE_CLONER_MODEL_POLICY_REF,
+    TEMPLATE_CLONER_RENDERER_CONTRACT_REF,
     TEMPLATE_CLONER_SKILL_ID,
+    TEMPLATE_CLONER_TEMPLATE_KIND,
     build_template_cloner_skill_package,
     template_cloner_skill_authority_note,
 )
@@ -107,11 +110,12 @@ class _InMemoryExecutor:
 
 
 def _payload(**overrides):
+    # ``fixed_content`` is deliberately absent: the analyzer output schema has no
+    # way to freeze template text (#3185 B5).
     payload = {
         "name": "거래처 A 견적 양식",
         "structure_profile": {"sections": ["title", "items"]},
         "style_profile": {"accent": "#111111"},
-        "fixed_content": {"title": "견 적 서"},
         "variable_slots": [{"key": "quote_no", "label": "견적번호"}],
         "warnings": ["low_contrast"],
         "unknowns": ["stamp_position"],
@@ -120,6 +124,24 @@ def _payload(**overrides):
     }
     payload.update(overrides)
     return payload
+
+
+def _candidate(**overrides) -> DocumentTemplateCandidate:
+    """Build a valid candidate directly at the canonical boundary."""
+    values = {
+        "candidate_id": "candidate-nested-1",
+        "schema_version": 1,
+        "template_kind": "quotation_template",
+        "name": "nested profile check",
+        "source_provenance": _PROVENANCE,
+        "structure_profile": {},
+        "style_profile": {},
+        "fixed_content": {},
+        "variable_slots": [],
+        "renderer_contract_ref": "renderer:document-template-profile@1",
+    }
+    values.update(overrides)
+    return DocumentTemplateCandidate(**values)
 
 
 class TemplateClonerSkillContractTests(unittest.TestCase):
@@ -366,7 +388,6 @@ class AnalyzerValidationTests(unittest.TestCase):
             "bad_warnings": _payload(warnings="nope"),
             "invalid_warning_code": _payload(warnings=["Not A Code"]),
             "bad_evidence_item": _payload(evidence=[{"label": "x", "extra": 1}]),
-            "bad_renderer_ref": _payload(renderer_contract_ref="??? no"),
         }
         for label, payload in cases.items():
             with self.subTest(case=label):
@@ -404,62 +425,66 @@ class CandidateQualityTests(unittest.TestCase):
             analysis_intent="recognize quotation template layout",
         )
 
-    def test_faulty_analyzer_cannot_freeze_source_business_values(self) -> None:
-        """A faulty analyzer returning source business data must not be promoted."""
-        faulty = _payload(
-            fixed_content={
-                "customer_name": "주식회사 에이",
-                "amount": "1500000",
-                "quote_date": "2026-09-28",
-            }
-        )
-        with self.assertRaises(TemplateClonerAnalyzerError) as raised:
-            analyze_template_candidate(self._request(), _InMemoryExecutor(payload=faulty))
-        self.assertEqual(raised.exception.code, "unsupported_fixed_content_key")
+    def test_analyzer_cannot_freeze_source_business_values(self) -> None:
+        """#3185 B5: a faulty analyzer must not promote source business data.
 
-    def test_business_looking_values_are_refused_even_under_allowed_keys(self) -> None:
-        for value in ("합계 1,500,000원", "2026-09-28", "1500000원", "₩1500000"):
+        Counterfactual: removing the emptiness guard accepts this payload and the
+        values land in ``fixed_content``, so every subtest below fails.
+        """
+        for label, value in (
+            ("customer_name", "주식회사 에이"),
+            ("quote_no", "Q-001"),
+            ("amount", "1500000"),
+            ("quote_date", "2026-09-28"),
+            ("sender", "주식회사 대한물산"),
+        ):
+            with self.subTest(field=label):
+                with self.assertRaises(TemplateClonerAnalyzerError) as raised:
+                    analyze_template_candidate(
+                        self._request(),
+                        _InMemoryExecutor(payload=_payload(fixed_content={label: value})),
+                    )
+                self.assertEqual(raised.exception.code, "analyzer_fixed_content_forbidden")
+
+    def test_even_template_looking_text_cannot_be_frozen(self) -> None:
+        """Shape heuristics cannot prove 'template text', so nothing is frozen."""
+        for value in ("견 적 서", "합계", "1,500,000원", "Q-001", "결재"):
             with self.subTest(value=value):
                 with self.assertRaises(TemplateClonerAnalyzerError) as raised:
                     analyze_template_candidate(
-                        self._request(), _InMemoryExecutor(payload=_payload(fixed_content={"title": value}))
+                        self._request(),
+                        _InMemoryExecutor(payload=_payload(fixed_content={"title": value})),
                     )
-                self.assertEqual(raised.exception.code, "business_value_in_fixed_content")
+                self.assertEqual(raised.exception.code, "analyzer_fixed_content_forbidden")
 
-    def test_nested_fixed_content_cannot_bypass_the_allowlist(self) -> None:
-        nested = _payload(
-            fixed_content={
-                "title": {
-                    "customer_name": "주식회사 에이",
-                    "amount": "1500000",
-                    "quote_date": "2026-09-28",
-                }
-            }
-        )
-        with self.assertRaises(TemplateClonerAnalyzerError) as raised:
-            analyze_template_candidate(self._request(), _InMemoryExecutor(payload=nested))
-        self.assertEqual(raised.exception.code, "invalid_fixed_content_value")
-
-    def test_sequence_fixed_content_cannot_bypass_the_allowlist(self) -> None:
-        listed = _payload(fixed_content={"title": ["견 적 서", "1,500,000원"]})
-        with self.assertRaises(TemplateClonerAnalyzerError) as raised:
-            analyze_template_candidate(self._request(), _InMemoryExecutor(payload=listed))
-        self.assertEqual(raised.exception.code, "invalid_fixed_content_value")
-
-    def test_non_string_fixed_content_values_are_refused(self) -> None:
-        for value in (1500000, 3.5, True, False, None):
-            with self.subTest(value=repr(value)):
+    def test_nested_and_sequence_fixed_content_are_refused_too(self) -> None:
+        cases = {
+            "nested_mapping": {"title": {"customer_name": "주식회사 에이"}},
+            "nested_sequence": {"title": ["견 적 서", "1,500,000원"]},
+            "non_string_scalar": {"title": 1500000},
+            "bool_scalar": {"title": True},
+        }
+        for label, fixed in cases.items():
+            with self.subTest(case=label):
                 with self.assertRaises(TemplateClonerAnalyzerError) as raised:
                     analyze_template_candidate(
-                        self._request(), _InMemoryExecutor(payload=_payload(fixed_content={"title": value}))
+                        self._request(), _InMemoryExecutor(payload=_payload(fixed_content=fixed))
                     )
-                self.assertEqual(raised.exception.code, "invalid_fixed_content_value")
+                self.assertEqual(raised.exception.code, "analyzer_fixed_content_forbidden")
 
-    def test_valid_template_text_is_accepted(self) -> None:
-        candidate = analyze_template_candidate(
-            self._request(), _InMemoryExecutor(payload=_payload(fixed_content={"title": "견 적 서", "mark": "견적서 베타"}))
-        )
-        self.assertEqual(candidate.fixed_content.to_python()["title"], "견 적 서")
+    def test_fixed_content_stays_empty_and_unclassified(self) -> None:
+        candidate = analyze_template_candidate(self._request(), _InMemoryExecutor(payload=_payload()))
+        self.assertEqual(candidate.fixed_content.to_python(), {})
+        report = candidate.structure_profile.to_python()["analyzer"]
+        self.assertIn("unknown.fixed_content", report["unknowns"])
+
+    def test_empty_fixed_content_forms_are_accepted_as_absent(self) -> None:
+        for empty in ({}, None):
+            with self.subTest(empty=repr(empty)):
+                candidate = analyze_template_candidate(
+                    self._request(), _InMemoryExecutor(payload=_payload(fixed_content=empty))
+                )
+                self.assertEqual(candidate.fixed_content.to_python(), {})
 
     def test_unknown_fields_are_preserved_not_invented(self) -> None:
         payload = _payload()
@@ -509,6 +534,180 @@ class CandidateQualityTests(unittest.TestCase):
         second = analyze_template_candidate(request, _InMemoryExecutor(payload=_payload()))
         self.assertEqual(first.fingerprint, second.fingerprint)
         self.assertEqual(first.candidate_id, second.candidate_id)
+
+
+class ProfileShapeTests(unittest.TestCase):
+    """#3185 B1: profile values are never coerced into template data."""
+
+    def _request(self, request_id: str = "req-profile-1") -> TemplateClonerAnalyzerRequest:
+        return build_native_document_request(
+            request_id=request_id,
+            document=_document(),
+            source_provenance=_PROVENANCE,
+            analysis_intent="recognize quotation template layout",
+        )
+
+    def test_non_mapping_structure_profile_is_refused(self) -> None:
+        # Counterfactual: without the shape guard, "hello"/123/[1, 2] escape as a
+        # raw ValueError/TypeError and [["a", "b"]] is silently coerced into
+        # {"a": "b"}, so each subtest fails.
+        for bad in ("hello", 123, [1, 2], [["a", "b"]]):
+            with self.subTest(bad=repr(bad)):
+                with self.assertRaises(TemplateClonerAnalyzerError) as raised:
+                    analyze_template_candidate(
+                        self._request(), _InMemoryExecutor(payload=_payload(structure_profile=bad))
+                    )
+                self.assertEqual(raised.exception.code, "invalid_analyzer_profile")
+
+    def test_raw_value_and_type_errors_never_escape(self) -> None:
+        for bad in ("hello", 123, [1, 2], [["a", "b"]], 3.5, True, b"bytes"):
+            with self.subTest(bad=repr(bad)):
+                try:
+                    analyze_template_candidate(
+                        self._request(), _InMemoryExecutor(payload=_payload(structure_profile=bad))
+                    )
+                except TemplateClonerAnalyzerError:
+                    continue
+                except (TypeError, ValueError) as exc:
+                    self.fail(f"raw {type(exc).__name__} escaped the boundary: {exc}")
+                self.fail(f"malformed structure_profile was accepted: {bad!r}")
+
+    def test_each_profile_field_keeps_its_shape_contract(self) -> None:
+        cases = {
+            "structure_profile": "hello",
+            "style_profile": 123,
+            "fixed_content": ["a"],
+        }
+        for field, bad in cases.items():
+            with self.subTest(field=field):
+                with self.assertRaises(TemplateClonerAnalyzerError) as raised:
+                    analyze_template_candidate(
+                        self._request(), _InMemoryExecutor(payload=_payload(**{field: bad}))
+                    )
+                self.assertEqual(raised.exception.code, "invalid_analyzer_profile")
+
+    def test_variable_slots_must_be_an_array(self) -> None:
+        for bad in ("nope", 123, {"key": "quote_no"}):
+            with self.subTest(bad=repr(bad)):
+                with self.assertRaises(TemplateClonerAnalyzerError) as raised:
+                    analyze_template_candidate(
+                        self._request(), _InMemoryExecutor(payload=_payload(variable_slots=bad))
+                    )
+                self.assertEqual(raised.exception.code, "invalid_analyzer_profile")
+
+    def test_a_mapping_structure_profile_is_still_accepted(self) -> None:
+        candidate = analyze_template_candidate(
+            self._request(),
+            _InMemoryExecutor(payload=_payload(structure_profile={"sections": ["title"]})),
+        )
+        self.assertEqual(candidate.structure_profile.to_python()["sections"], ["title"])
+
+
+class NestedAuthorityKeyTests(unittest.TestCase):
+    """#3185 B2: one recursive policy protects every profile field at any depth."""
+
+    FORBIDDEN = (
+        "approved",
+        "approval",
+        "approved_by",
+        "approved_by_ref",
+        "provider",
+        "model",
+        "tool",
+        "tools",
+        "connector",
+        "connectors",
+        "template_id",
+        "fingerprint",
+    )
+
+    def _request(self, request_id: str = "req-nested-1") -> TemplateClonerAnalyzerRequest:
+        return build_native_document_request(
+            request_id=request_id,
+            document=_document(),
+            source_provenance=_PROVENANCE,
+            analysis_intent="recognize quotation template layout",
+        )
+
+    def test_canonical_layer_rejects_nested_authority_keys(self) -> None:
+        # Counterfactual: with the pre-fix key set every nested profile below is
+        # accepted by the canonical boundary, so this test fails.
+        for key in self.FORBIDDEN:
+            with self.subTest(key=key):
+                with self.assertRaises(DocumentTemplateError) as raised:
+                    _candidate(structure_profile={"outer": {"inner": {key: "x"}}})
+                self.assertEqual(raised.exception.code, "template_authority_surface_forbidden")
+
+    def test_every_profile_field_is_protected_at_depth(self) -> None:
+        cases = {
+            "structure_profile": {"a": {"b": [{"tools": ["x"]}]}},
+            "style_profile": {"theme": {"provider": "x"}},
+            "fixed_content": {"block": {"approval": True}},
+            "variable_slots": [{"slot": {"fingerprint": "x"}}],
+        }
+        for field, value in cases.items():
+            with self.subTest(field=field):
+                with self.assertRaises(DocumentTemplateError) as raised:
+                    _candidate(**{field: value})
+                self.assertEqual(raised.exception.code, "template_authority_surface_forbidden")
+
+    def test_analyzer_boundary_surfaces_the_same_refusal(self) -> None:
+        with self.assertRaises(TemplateClonerAnalyzerError) as raised:
+            analyze_template_candidate(
+                self._request(),
+                _InMemoryExecutor(payload=_payload(structure_profile={"layout": {"approved": True}})),
+            )
+        self.assertEqual(raised.exception.code, "template_authority_surface_forbidden")
+
+    def test_credential_and_token_guards_are_kept(self) -> None:
+        for key in ("api_key", "access_token", "client_secret", "password", "bearer_token"):
+            with self.subTest(key=key):
+                with self.assertRaises(DocumentTemplateError) as raised:
+                    _candidate(style_profile={"theme": {key: "x"}})
+                self.assertEqual(raised.exception.code, "template_authority_surface_forbidden")
+
+    def test_compound_names_are_still_legal(self) -> None:
+        candidate = analyze_template_candidate(
+            self._request(),
+            _InMemoryExecutor(payload=_payload(structure_profile={"approval_box": {"label": "결재"}})),
+        )
+        self.assertIn("approval_box", candidate.structure_profile.to_python())
+
+
+class TrustedFieldOwnershipTests(unittest.TestCase):
+    """#3185 B3: template kind and renderer contract belong to trusted code."""
+
+    def _request(self, request_id: str = "req-trusted-1") -> TemplateClonerAnalyzerRequest:
+        return build_native_document_request(
+            request_id=request_id,
+            document=_document(),
+            source_provenance=_PROVENANCE,
+            analysis_intent="recognize quotation template layout",
+        )
+
+    def test_template_kind_cannot_be_selected_by_analyzer_output(self) -> None:
+        # Counterfactual: while template_kind was an allowed output field this
+        # payload was accepted and the raw value reached the candidate.
+        with self.assertRaises(TemplateClonerAnalyzerError) as raised:
+            analyze_template_candidate(
+                self._request(),
+                _InMemoryExecutor(payload=_payload(template_kind="customer_contract")),
+            )
+        self.assertEqual(raised.exception.code, "unsupported_analyzer_output_field")
+
+    def test_renderer_contract_cannot_be_selected_by_analyzer_output(self) -> None:
+        with self.assertRaises(TemplateClonerAnalyzerError) as raised:
+            analyze_template_candidate(
+                self._request(),
+                _InMemoryExecutor(payload=_payload(renderer_contract_ref="renderer:attacker@9")),
+            )
+        self.assertEqual(raised.exception.code, "unsupported_analyzer_output_field")
+
+    def test_candidate_carries_the_trusted_constants(self) -> None:
+        candidate = analyze_template_candidate(self._request(), _InMemoryExecutor(payload=_payload()))
+        self.assertEqual(candidate.template_kind, TEMPLATE_CLONER_TEMPLATE_KIND)
+        self.assertEqual(candidate.renderer_contract_ref, TEMPLATE_CLONER_RENDERER_CONTRACT_REF)
+        self.assertNotEqual(candidate.template_kind, "customer_contract")
 
 
 class SourceScanTests(unittest.TestCase):

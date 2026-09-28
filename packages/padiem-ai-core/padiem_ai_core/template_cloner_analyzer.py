@@ -19,6 +19,15 @@ Hard boundaries:
   candidate is where analysis stops; the product review flow owns approval.
 * Source text and images are untrusted data. The adapter never interprets them
   as instructions and never lets them select a model, a tool or an approval.
+* Template kind and renderer contract are owned by trusted code, not by analyzer
+  output: a raw analyzer cannot select either of them.
+* Every profile field must already be a mapping (or an array, for slots). No
+  string, number or pair-sequence is coerced into template data, and no raw
+  ``TypeError``/``ValueError`` escapes the boundary.
+* The raw analyzer cannot populate ``fixed_content`` at all. Denylist heuristics
+  cannot prove that contract, so fixed content stays empty until a trusted
+  product review classifies it; the analyzer may still report proposals through
+  warnings, unknowns and evidence.
 * Evidence carries no raw bytes: vision evidence is described by media type,
   bounded size, hash and reference only, reusing the existing b14 multimodal
   bounds.
@@ -75,10 +84,14 @@ _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 _PROFILE_FIELDS = ("structure_profile", "style_profile", "fixed_content", "variable_slots")
 
+#: Fields the raw analyzer output schema allows. ``template_kind`` and
+#: ``renderer_contract_ref`` are deliberately absent (#3185 B3): trusted code owns
+#: them, so supplying either is an unsupported field and is refused rather than
+#: accepted. ``fixed_content`` remains in the schema only so the analyzer can
+#: report "no static template text"; it must be empty (#3185 B5).
 _ALLOWED_OUTPUT_KEYS = frozenset(
     {
         "name",
-        "template_kind",
         "structure_profile",
         "style_profile",
         "fixed_content",
@@ -87,7 +100,6 @@ _ALLOWED_OUTPUT_KEYS = frozenset(
         "unknowns",
         "confidence",
         "evidence",
-        "renderer_contract_ref",
     }
 )
 
@@ -349,59 +361,6 @@ def _is_empty_profile(value: Any) -> bool:
 _IMAGE_URL_RE = re.compile(
     r"^data:(image/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$"
 )
-
-#: Trusted allowlist for template *text* in ``fixed_content``. A key outside this
-#: set is refused, so a faulty analyzer cannot promote source business values
-#: (customer name, amount, date, quote number) into a frozen template field.
-_ALLOWED_FIXED_CONTENT_KEYS = frozenset(
-    {
-        "title",
-        "header",
-        "footer",
-        "mark",
-        "memo_label",
-        "empty_item_text",
-        "supply_label",
-        "vat_label",
-        "grand_label",
-        "sender_heading",
-        "recipient_heading",
-    }
-)
-
-#: Value shapes that are business data, never template text.
-_MONEY_VALUE_RE = re.compile(r"(?:\d[\d,\s]{3,}|[₩$€]\s?\d|\d+\s?(?:원|만원|억))")
-_DATE_VALUE_RE = re.compile(r"(?:\d{4}[-/.]\d{1,2}[-/.]\d{1,2}|\d{4}\s?년)")
-
-
-def _assert_fixed_content_is_template_text(value: Any) -> None:
-    """Fail closed unless ``fixed_content`` is bounded *static template text*.
-
-    Phase A contract: ``fixed_content`` maps an allowlisted template-text key to a
-    plain string. Nested mappings, sequences and non-string scalars are refused so
-    a faulty analyzer cannot hide source business values inside an allowed key.
-    """
-    if not isinstance(value, Mapping):
-        return
-    for key, item in value.items():
-        if not isinstance(key, str) or key.strip() not in _ALLOWED_FIXED_CONTENT_KEYS:
-            raise TemplateClonerAnalyzerError(
-                "unsupported_fixed_content_key",
-                "fixed content carries a key outside the template-text allowlist",
-            )
-        # ``bool`` is an ``int`` subclass and must not pass as text either.
-        if isinstance(item, bool) or not isinstance(item, str):
-            raise TemplateClonerAnalyzerError(
-                "invalid_fixed_content_value",
-                "fixed content values must be static template text strings",
-            )
-        if _MONEY_VALUE_RE.search(item) or _DATE_VALUE_RE.search(item):
-            raise TemplateClonerAnalyzerError(
-                "business_value_in_fixed_content",
-                "fixed content carries a source business value instead of template text",
-            )
-
-
 def _candidate_id(request: TemplateClonerAnalyzerRequest) -> str:
     digest = hashlib.sha256()
     digest.update(request.request_id.encode("utf-8"))
@@ -463,24 +422,36 @@ def analyze_template_candidate(
         )
 
     name = _text(payload.get("name"), "name", maximum=160)
-    template_kind = payload.get("template_kind") or TEMPLATE_CLONER_TEMPLATE_KIND
-    if not isinstance(template_kind, str) or not _ID_RE.fullmatch(template_kind):
-        raise TemplateClonerAnalyzerError("malformed_analyzer_output", "template kind is invalid")
+
+    # #3185 B3: template kind and renderer contract are trusted-code-owned. They
+    # are not part of the analyzer output schema, so they are never read out of
+    # raw payload and a faulty or hostile analyzer cannot select them.
+    template_kind = TEMPLATE_CLONER_TEMPLATE_KIND
+    renderer_ref = TEMPLATE_CLONER_RENDERER_CONTRACT_REF
 
     warnings = _codes(payload.get("warnings"), "warnings", maximum=MAX_ANALYZER_WARNINGS)
     unknowns = list(_codes(payload.get("unknowns"), "unknowns", maximum=MAX_ANALYZER_UNKNOWNS))
     confidence = _confidence(payload.get("confidence"))
     evidence = _evidence_report(payload.get("evidence"))
 
-    renderer_ref = payload.get("renderer_contract_ref") or TEMPLATE_CLONER_RENDERER_CONTRACT_REF
-    if not isinstance(renderer_ref, str) or not _REF_RE.fullmatch(renderer_ref):
-        raise TemplateClonerAnalyzerError("malformed_analyzer_output", "renderer contract reference is invalid")
-
     profiles: dict[str, Any] = {}
     for field in _PROFILE_FIELDS:
         value = payload.get(field)
         if value is None:
             value = [] if field == "variable_slots" else {}
+        # #3185 B1: a profile must ALREADY be a mapping. Passing a string, a
+        # number or a sequence of pairs through ``dict()`` would both shape
+        # trusted template data from arbitrary input and escape as a raw
+        # ``TypeError``/``ValueError``, so every non-mapping shape is refused.
+        if field == "variable_slots":
+            if isinstance(value, (str, bytes, bytearray)) or not isinstance(value, Sequence):
+                raise TemplateClonerAnalyzerError(
+                    "invalid_analyzer_profile", "variable slots must be an array of slots"
+                )
+        elif not isinstance(value, Mapping):
+            raise TemplateClonerAnalyzerError(
+                "invalid_analyzer_profile", f"{field} must be a mapping"
+            )
         # Nothing recognised is not a fact: record it as unknown instead of
         # inventing a layout, and never fabricate a missing field.
         if _is_empty_profile(value):
@@ -492,20 +463,32 @@ def analyze_template_candidate(
     if len(unknowns) > MAX_ANALYZER_UNKNOWNS:
         raise TemplateClonerAnalyzerError("analyzer_output_budget_exceeded", "unknowns exceed their bound")
 
-    structure_profile = dict(profiles["structure_profile"])
-    structure_profile["analyzer"] = {
-        "kind": TEMPLATE_CLONER_ANALYZER_KIND,
-        "schema_version": TEMPLATE_CLONER_ANALYZER_SCHEMA_VERSION,
-        "unknowns": list(unknowns),
-        "confidence": confidence,
-        "evidence": [{"label": label, "value": value} for label, value in evidence],
-        "evidence_refs": list(request.evidence_refs),
-        "evidence_kinds": list(request.evidence_kinds),
-        "source_media_types": sorted({item.media_type for item in request.evidence}),
-    }
+    # #3185 B5: a raw analyzer must never freeze business content. Regex
+    # denylists cannot prove that contract (a customer name, a short quote id, a
+    # date or arbitrary company text is not distinguishable from template text by
+    # shape), so Phase A takes the stronger option: the analyzer cannot populate
+    # ``fixed_content`` at all. It may still report proposals through warnings,
+    # unknowns and evidence, and fixed content stays empty until a trusted
+    # product review classifies it. Core invents no approval authority here.
+    if not _is_empty_profile(profiles["fixed_content"]):
+        raise TemplateClonerAnalyzerError(
+            "analyzer_fixed_content_forbidden",
+            "raw analyzer output cannot populate fixed content; trusted review owns template text",
+        )
+    fixed_content: dict[str, Any] = {}
 
     try:
-        _assert_fixed_content_is_template_text(profiles["fixed_content"])
+        structure_profile = dict(profiles["structure_profile"])
+        structure_profile["analyzer"] = {
+            "kind": TEMPLATE_CLONER_ANALYZER_KIND,
+            "schema_version": TEMPLATE_CLONER_ANALYZER_SCHEMA_VERSION,
+            "unknowns": list(unknowns),
+            "confidence": confidence,
+            "evidence": [{"label": label, "value": value} for label, value in evidence],
+            "evidence_refs": list(request.evidence_refs),
+            "evidence_kinds": list(request.evidence_kinds),
+            "source_media_types": sorted({item.media_type for item in request.evidence}),
+        }
 
         return DocumentTemplateCandidate(
             candidate_id=_candidate_id(request),
@@ -515,13 +498,20 @@ def analyze_template_candidate(
             source_provenance=request.source_provenance,
             structure_profile=structure_profile,
             style_profile=profiles["style_profile"],
-            fixed_content=profiles["fixed_content"],
+            fixed_content=fixed_content,
             variable_slots=profiles["variable_slots"],
             renderer_contract_ref=renderer_ref,
             warnings=warnings,
         )
+    except TemplateClonerAnalyzerError:
+        raise
     except DocumentTemplateError as exc:
         raise TemplateClonerAnalyzerError(exc.code, exc.safe_message) from exc
+    except (TypeError, ValueError) as exc:
+        # A malformed nested shape must never escape as a raw exception type.
+        raise TemplateClonerAnalyzerError(
+            "invalid_analyzer_profile", "analyzer profile data could not be interpreted"
+        ) from exc
 
 
 def extract_native_document(*, name: Any, media_type: Any, payload: Any) -> NormalizedDocument:
