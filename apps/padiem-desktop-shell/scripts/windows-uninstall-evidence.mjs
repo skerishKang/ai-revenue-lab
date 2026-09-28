@@ -16,17 +16,30 @@
  * parses the flag and switches itself to silent mode, so the silent variant
  * below is the same supported path in a non-interactive form.
  *
+ * Path is load-bearing for this defect: the change manipulates `$INSTDIR` and
+ * self-removal / current-directory behaviour, so the ACCEPTANCE-OWNER run
+ * launches the installed uninstaller directly, at the path the install itself
+ * registered, and lets the generated uninstaller perform any internal
+ * self-copy behaviour itself. A byte-identical TEMP copy is recorded only as
+ * SUPPLEMENTAL comparison evidence; it is never the acceptance owner.
+ *
  * The install directory is discovered, never assumed: the authoritative
  * answer is the path the installer itself wrote into the per-user `padiem://`
  * handler. Hardcoding a directory name would measure this harness's assumption
  * instead of the product.
+ *
+ * Ownership evidence is tri-state. Without elevation the HKLM decoy cannot be
+ * created, and that case is reported as NOT_MEASURED - never PASS. The static
+ * contract that the uninstall macro contains no HKLM operation lives in
+ * `tests/packaging-uninstall-cleanup-3152.test.ts`.
  *
  * The script leaves no residue: everything it creates is either the install it
  * measures or a decoy it removes itself.
  */
 
 import { spawn, spawnSync } from 'node:child_process';
-import { copyFileSync, existsSync, readdirSync, rmSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { copyFileSync, existsSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -52,12 +65,28 @@ const uninstallKeyRoot = 'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Un
 // install + uninstall, the cleanup has overreached.
 const decoyMachineKey = 'HKLM\\Software\\PadiemUninstallDecoy3152';
 const decoyUserClass = 'HKCU\\Software\\Classes\\unrelateddecoy3152';
+// A machine-wide registration this install would only ever *read*. Captured
+// read-only before/after; never written, never required to exist.
+const machinePadiemKey = 'HKLM\\Software\\Classes\\padiem';
 
 const results = [];
 
+/**
+ * Record a result. `state` is one of PASS, FAIL, NOT_MEASURED - three distinct
+ * values, because "we could not measure this" is not the same claim as "this
+ * held". NOT_MEASURED must never be reported as PASS.
+ */
+function record(name, state, detail = '') {
+  results.push({ name, state, detail });
+  process.stdout.write(`${state}  ${name}${detail ? `  [${detail}]` : ''}\n`);
+}
+
 function check(name, condition, detail = '') {
-  results.push({ name, ok: Boolean(condition), detail });
-  process.stdout.write(`${condition ? 'PASS' : 'FAIL'}  ${name}${detail && !condition ? `  [${detail}]` : ''}\n`);
+  record(name, condition ? 'PASS' : 'FAIL', condition ? '' : detail);
+}
+
+function checkNotMeasured(name, detail = '') {
+  record(name, 'NOT_MEASURED', detail);
 }
 
 function reg(args) {
@@ -76,6 +105,10 @@ function regValue(key) {
 
 function executableFromCommand(command) {
   return command.replace(/"%1"\s*$/, '').replace(/^"|"$/g, '');
+}
+
+function fileHash(file) {
+  return createHash('sha256').update(readFileSync(file)).digest('hex');
 }
 
 /** The directory this install registered for the current user. */
@@ -166,18 +199,19 @@ let uninstallEntry = '';
 try {
   check('BUILT_INSTALLER_PRESENT', existsSync(setup), setup);
 
-  // A fresh install means no previous install.
-  if (existsSync(schemeKey)) {
+  // A fresh install means no previous install. This is a registry key, so it
+  // must be probed with `regQuery` - `existsSync` on a registry path is always
+  // false and would silently skip the baseline cleanup.
+  if (regQuery(schemeKey)) {
     const stale = regValue(`${schemeKey}\\shell\\open\\command`);
     if (stale) {
       const dir = path.dirname(executableFromCommand(stale));
       const exe = path.join(dir, `Uninstall ${productName}.exe`);
       if (existsSync(exe)) {
         process.stdout.write(`removing a pre-existing install at ${dir} before measuring a fresh one\n`);
-        const baselineCopy = path.join(os.tmpdir(), 'padiem-uninstall-baseline.exe');
-        copyFileSync(exe, baselineCopy);
-        await runCommand(baselineCopy, ['/S']);
-        rmSync(baselineCopy, { force: true });
+        // Same supported path as the measured uninstall: the installed
+        // uninstaller, launched directly at its installed location.
+        await runCommand(exe, ['/S']);
         await waitFor(() => !existsSync(dir), 120_000, 'pre-existing uninstall');
       }
     }
@@ -189,8 +223,13 @@ try {
   const machineDecoyCreated = regAdd(decoyMachineKey, 'Owner', 'machine-wide, not this installer').status === 0;
   regAdd(decoyUserClass, '', 'unrelated scheme, not this installer');
   if (!machineDecoyCreated) {
-    process.stdout.write('note: HKLM decoy needs elevation and was not created; the machine-wide boundary is covered by the source contract instead' + String.fromCharCode(10));
+    process.stdout.write('note: HKLM decoy needs elevation and was not created; that machine-wide decoy is reported NOT_MEASURED, and the machine-wide boundary is additionally covered by the source contract' + String.fromCharCode(10));
   }
+
+  // Additional machine-wide evidence that needs no elevation: the presence of
+  // any pre-existing HKLM `padiem` registration, captured read-only. If the
+  // uninstall touched the machine hive, before and after would disagree.
+  const machinePadiemBefore = regQuery(machinePadiemKey);
 
   // ---- supported per-user install -------------------------------------
   const customDir = process.env.PADIEM_EVIDENCE_INSTALL_DIR || '';
@@ -231,15 +270,28 @@ try {
   check('INSTALL_WRITES_UNINSTALL_ENTRY', regQuery(uninstallEntry));
 
   // ---- supported per-user uninstall -----------------------------------
-  // The uninstaller removes itself, so it is launched from a copy outside the
-  // directory it is about to delete. The copy is the supported uninstaller
-  // binary, byte-for-byte.
-  const copy = path.join(os.tmpdir(), 'padiem-uninstall-evidence.exe');
-  rmSync(copy, { force: true });
-  copyFileSync(uninstaller, copy);
-  const uninstall = await runCommand(copy, ['/S']);
+  // Supplemental comparison only: prove the binary the supported path runs is
+  // byte-identical to the installed file. Recorded before the run, because the
+  // uninstaller removes itself. This is NOT the acceptance owner.
+  const supplementalCopy = path.join(os.tmpdir(), 'padiem-uninstall-evidence.exe');
+  rmSync(supplementalCopy, { force: true });
+  let copyByteIdentical = false;
+  try {
+    copyFileSync(uninstaller, supplementalCopy);
+    copyByteIdentical = fileHash(uninstaller) === fileHash(supplementalCopy);
+  } catch {
+    copyByteIdentical = false;
+  }
+  check('TEMP_COPY_BYTE_IDENTICAL_SUPPLEMENTAL', copyByteIdentical, supplementalCopy);
+  rmSync(supplementalCopy, { force: true });
+
+  // ACCEPTANCE OWNER: launch the INSTALLED uninstaller directly, at the path
+  // the install itself registered, and let it perform its own internal
+  // self-copy. Location is load-bearing for this defect, so this - not a
+  // relocated copy - is what the four cleanup facts are measured against.
+  process.stdout.write(`launching installed uninstaller directly: ${uninstaller}\n`);
+  const uninstall = await runCommand(uninstaller, ['/S']);
   check('UNINSTALL_SUPPORTED_PATH', uninstall.code === 0, `exit=${uninstall.code}`);
-  rmSync(copy, { force: true });
 
   check(
     'INSTALLED_PAYLOAD_AFTER_UNINSTALL=0',
@@ -253,10 +305,23 @@ try {
   check('HKCU_UNINSTALL_ENTRY_AFTER_UNINSTALL=0', !regQuery(uninstallEntry));
 
   // ---- ownership boundary --------------------------------------------
+  // Tri-state: a created HKLM decoy is measured; without elevation the decoy
+  // could not be created, so that specific comparison is NOT_MEASURED - never
+  // reported as PASS.
+  if (machineDecoyCreated) {
+    check('UNRELATED_HKLM_REGISTRATION_TOUCHED=0', regQuery(decoyMachineKey));
+  } else {
+    checkNotMeasured(
+      'UNRELATED_HKLM_REGISTRATION_TOUCHED',
+      'HKLM decoy not created without elevation; static no-HKLM contract asserted in tests/packaging-uninstall-cleanup-3152.test.ts',
+    );
+  }
+  // Read-only machine-wide sentinel comparison (no elevation, no mutation).
+  const machinePadiemAfter = regQuery(machinePadiemKey);
   check(
-    'UNRELATED_HKLM_REGISTRATION_TOUCHED=0',
-    machineDecoyCreated ? regQuery(decoyMachineKey) : true,
-    machineDecoyCreated ? '' : 'not measurable without elevation',
+    'MACHINE_WIDE_PADIEM_SENTINEL_UNCHANGED=1',
+    machinePadiemBefore === machinePadiemAfter,
+    `before=${machinePadiemBefore} after=${machinePadiemAfter}`,
   );
   check('UNRELATED_DEV_HOST_REGISTRATION_TOUCHED=0', regQuery(decoyUserClass));
 } finally {
@@ -264,6 +329,13 @@ try {
   regDelete(decoyUserClass);
 }
 
-const failures = results.filter((entry) => !entry.ok);
-process.stdout.write(`\nTOTAL=${results.length} PASS=${results.length - failures.length} FAIL=${failures.length}\n`);
-process.exit(failures.length === 0 ? 0 : 1);
+const passes = results.filter((entry) => entry.state === 'PASS').length;
+const failures = results.filter((entry) => entry.state === 'FAIL').length;
+const notMeasured = results.filter((entry) => entry.state === 'NOT_MEASURED').length;
+process.stdout.write(
+  '\nSUMMARY total=' + String(results.length) +
+  ' ok=' + String(passes) +
+  ' fail=' + String(failures) +
+  ' not_measured=' + String(notMeasured) + '\n',
+);
+process.exit(failures === 0 ? 0 : 1);
