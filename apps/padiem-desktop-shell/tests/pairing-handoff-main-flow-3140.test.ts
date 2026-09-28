@@ -298,7 +298,7 @@ test('the resident env is an explicit allowlist, and a missing broker URL fails 
   }
   assert.deepEqual(
     named.filter((name: string) => !name.startsWith('PADIEM_AGENT_')),
-    ['PADIEM_PYTHON', 'PADIEM_3140_EVIDENCE_MARKER'],
+    ['PADIEM_PYTHON', 'PADIEM_3140_PHASE_DUMP_AFTER_SECONDS', 'PADIEM_3140_EVIDENCE_MARKER'],
     'only the harness and the interpreter may be read outside the agent allowlist',
   );
 });

@@ -25,6 +25,32 @@ export interface BoundedRunnerOutput {
   readonly maxLines: number;
 }
 
+/**
+ * #3140 stall diagnosis: bounded per-stream observation of a supervised child.
+ *
+ * Timing is what makes a silent stall visible: if the child is alive, the pipes
+ * are attached, and no line ever arrives, the last observed moment says where
+ * the gap is. Nothing secret can appear here: only counts, timestamps and a
+ * bounded stderr tail that the projection layer redacts.
+ */
+export interface RunnerProcessObservation {
+  readonly spawn_at: string;
+  readonly stdout_lines: number;
+  readonly stderr_lines: number;
+  readonly first_stdout_at: string | null;
+  readonly first_stderr_at: string | null;
+  readonly last_line_at: string | null;
+  readonly exited_at: string | null;
+  readonly exit_code: number | null;
+  readonly exit_signal: string | null;
+  readonly stdout_capture_attached: boolean;
+  readonly stderr_capture_attached: boolean;
+  readonly stderr_tail: readonly string[];
+}
+
+const MAX_STDERR_TAIL = 60;
+const MAX_STDERR_LINE_CHARS = 400;
+
 const DEFAULT_MAX_LINES = 200;
 
 /**
@@ -44,6 +70,16 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
   #result: RunnerExitResult | null = null;
   readonly #lines: string[] = [];
   readonly #maxLines: number;
+  readonly #spawnAtMs = Date.now();
+  readonly #stderrTail: string[] = [];
+  #stdoutLines = 0;
+  #stderrLines = 0;
+  #firstStdoutAtMs: number | null = null;
+  #firstStderrAtMs: number | null = null;
+  #lastLineAtMs: number | null = null;
+  #exitedAtMs: number | null = null;
+  #stdoutAttached = false;
+  #stderrAttached = false;
 
   constructor(child: ChildProcess, maxLines: number) {
     this.#child = child;
@@ -57,20 +93,38 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
         this.#settle({ code: null, signal: null });
       });
     });
-    const capture = (chunk: unknown) => {
+    const capture = (stream: 'stdout' | 'stderr') => (chunk: unknown) => {
+      const atMs = Date.now();
       const text = String(chunk);
       for (const line of text.split(/\r?\n/)) {
         if (line.length === 0) continue;
         this.#lines.push(line);
         if (this.#lines.length > this.#maxLines) this.#lines.shift();
+        this.#lastLineAtMs = atMs;
+        if (stream === 'stdout') {
+          this.#stdoutLines += 1;
+          if (this.#firstStdoutAtMs === null) this.#firstStdoutAtMs = atMs;
+        } else {
+          this.#stderrLines += 1;
+          if (this.#firstStderrAtMs === null) this.#firstStderrAtMs = atMs;
+          this.#stderrTail.push(line.slice(0, MAX_STDERR_LINE_CHARS));
+          if (this.#stderrTail.length > MAX_STDERR_TAIL) this.#stderrTail.shift();
+        }
       }
     };
-    child.stdout?.on('data', capture);
-    child.stderr?.on('data', capture);
+    if (child.stdout) {
+      this.#stdoutAttached = true;
+      child.stdout.on('data', capture('stdout'));
+    }
+    if (child.stderr) {
+      this.#stderrAttached = true;
+      child.stderr.on('data', capture('stderr'));
+    }
   }
 
   #settle(result: RunnerExitResult): void {
     if (this.#result) return;
+    this.#exitedAtMs = Date.now();
     this.#result = result;
     for (const listener of [...this.#listeners]) {
       listener(result);
@@ -142,6 +196,26 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
   boundedOutput(): BoundedRunnerOutput {
     return { lines: [...this.#lines], maxLines: this.#maxLines };
   }
+
+  /** #3140 stall diagnosis: bounded per-stream timing for this child. */
+  observation(): RunnerProcessObservation {
+    return {
+      spawn_at: new Date(this.#spawnAtMs).toISOString(),
+      stdout_lines: this.#stdoutLines,
+      stderr_lines: this.#stderrLines,
+      first_stdout_at:
+        this.#firstStdoutAtMs === null ? null : new Date(this.#firstStdoutAtMs).toISOString(),
+      first_stderr_at:
+        this.#firstStderrAtMs === null ? null : new Date(this.#firstStderrAtMs).toISOString(),
+      last_line_at: this.#lastLineAtMs === null ? null : new Date(this.#lastLineAtMs).toISOString(),
+      exited_at: this.#exitedAtMs === null ? null : new Date(this.#exitedAtMs).toISOString(),
+      exit_code: this.#result?.code ?? null,
+      exit_signal: this.#result?.signal ?? null,
+      stdout_capture_attached: this.#stdoutAttached,
+      stderr_capture_attached: this.#stderrAttached,
+      stderr_tail: [...this.#stderrTail],
+    };
+  }
 }
 
 /**
@@ -156,6 +230,19 @@ export function boundedResidentOutput(handle: RunnerProcessHandle | null): Bound
     return { lines: [], maxLines: DEFAULT_MAX_LINES };
   }
   return handle.boundedOutput();
+}
+
+/** #3140 stall diagnosis: the resident's per-stream observation, or null. */
+export function residentProcessObservation(
+  handle: RunnerProcessHandle | null,
+): RunnerProcessObservation | null {
+  const candidate = handle as { observation?: () => RunnerProcessObservation } | null;
+  if (!candidate || typeof candidate.observation !== 'function') return null;
+  try {
+    return candidate.observation();
+  } catch {
+    return null;
+  }
 }
 
 export class NodeRunnerProcessPort implements RunnerProcessPort {
@@ -213,6 +300,11 @@ export class NodeRunnerProcessPort implements RunnerProcessPort {
   /** #3140 review D: the resident's own bounded output, not the runner's. */
   boundedResidentOutput(): BoundedRunnerOutput {
     return boundedResidentOutput(this.#residentHandle);
+  }
+
+  /** #3140 stall diagnosis: the resident's per-stream observation, or null. */
+  residentObservation(): RunnerProcessObservation | null {
+    return residentProcessObservation(this.#residentHandle);
   }
 
   async spawnRunner(spec: RunnerSpawnSpec): Promise<RunnerProcessHandle> {

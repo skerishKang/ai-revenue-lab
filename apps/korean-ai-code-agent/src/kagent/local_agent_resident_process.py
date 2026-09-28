@@ -44,6 +44,9 @@ import os
 import re
 import sys
 import tempfile
+import threading
+import time
+import traceback
 from datetime import datetime, timezone
 from typing import Any, Callable
 
@@ -96,11 +99,92 @@ RESIDENT_PROCESS_CONTRACT = {
 }
 
 
+#: #3140 stall diagnosis: phase evidence is stamped against this process's own
+#: monotonic origin, so a gap between two phases is measurable instead of
+#: inferred from wall clock readings.
+_PROCESS_STARTED_MONOTONIC = time.monotonic()
+_EMIT_LOCK = threading.Lock()
+
+
+def _phase_stamp() -> dict[str, Any]:
+    """Bounded, secret-free phase timing for one emitted line."""
+
+    return {
+        "phase_at": datetime.now(timezone.utc)
+        .replace(microsecond=0)
+        .isoformat()
+        .replace("+00:00", "Z"),
+        "phase_elapsed_ms": int((time.monotonic() - _PROCESS_STARTED_MONOTONIC) * 1000),
+    }
+
+
+def _observe_phase(event: str) -> None:
+    """Phase marker emitted from the real worktree probe boundary (#3148)."""
+
+    _emit(event=event, **_phase_stamp(), **RESIDENT_PROCESS_CONTRACT)
+
+
+#: #3140 stall diagnosis: when this many seconds pass without a completed
+#: phase, the resident reports every live thread's stack on stderr, so a stall
+#: is attributed to a frame in one failing run instead of guessed at. Off
+#: unless the evidence run explicitly asks for it.
+_PHASE_DUMP_AFTER_ENV = "PADIEM_3140_PHASE_DUMP_AFTER_SECONDS"
+_last_emit_monotonic = time.monotonic()
+_STACK_FRAMES = 8
+
+
 def _emit(**fields: Any) -> None:
     """One bounded, secret-free status line. Never a pairing code."""
 
-    sys.stdout.write(json.dumps(fields, sort_keys=True, separators=(",", ":")) + "\n")
-    sys.stdout.flush()
+    global _last_emit_monotonic
+
+    line = json.dumps(fields, sort_keys=True, separators=(",", ":")) + "\n"
+    # Lines are written whole: a phase marker emitted from the probe's own
+    # thread must never interleave with another line.
+    with _EMIT_LOCK:
+        sys.stdout.write(line)
+        sys.stdout.flush()
+        _last_emit_monotonic = time.monotonic()
+
+
+def _stall_stack_report() -> str:
+    """Compact, secret-free stacks for every live thread (bounded frame count)."""
+
+    report: list[str] = []
+    for thread_id, frame in list(sys._current_frames().items()):
+        report.append(f"[stall] thread {thread_id}")
+        for entry in traceback.extract_stack(frame)[-_STACK_FRAMES:]:
+            report.append(f"    {entry.filename}:{entry.lineno} in {entry.name}")
+    return "\n".join(report)
+
+
+def _start_stall_watchdog() -> None:
+    """Report stacks while no phase completes, at most twice per process."""
+
+    raw = os.environ.get(_PHASE_DUMP_AFTER_ENV)
+    if not raw:
+        return
+    try:
+        threshold = float(raw)
+    except ValueError:
+        return
+    if threshold <= 0:
+        return
+
+    def watch() -> None:
+        dumps = 0
+        while dumps < 2:
+            time.sleep(1.0)
+            if (time.monotonic() - _last_emit_monotonic) < threshold:
+                continue
+            sys.stderr.write(
+                f"[stall] no completed phase for {threshold:.0f}s\n" + _stall_stack_report() + "\n"
+            )
+            sys.stderr.flush()
+            dumps += 1
+            time.sleep(threshold)
+
+    threading.Thread(target=watch, name="claw4-stall-watchdog", daemon=True).start()
 
 
 def handoff_delivery_marker(pairing_code: str) -> str:
@@ -323,6 +407,9 @@ def build_resident_host(
         platform=LocalAgentPlatform.WINDOWS,
         roots=(LocalRoot(root_ref="root.3140", windows_path=WINDOWS_ROOT),),
     )
+    # #3140 stall diagnosis: the composition seam is the widest silent step in
+    # the resident's own path, so each bounded construction reports itself.
+    _observe_phase("host_build_runtime_start")
     runtime = compose_fail_closed_windows_runtime(
         device=device,
         executable_profiles=(
@@ -341,8 +428,10 @@ def build_resident_host(
         # worktree stops the approved child and is reported, never hidden.
         worktree_state_port=worktree_state_port
         if worktree_state_port is not None
-        else WindowsGitWorktreeStatePort(),
+        else WindowsGitWorktreeStatePort(observer=_observe_phase),
     )
+    _observe_phase("host_build_runtime_done")
+    _observe_phase("host_build_channel_start")
     broker_binding = PinnedOutboundBrokerBinding.from_binding(binding=binding, config=config)
     channel = ControlPlanePhysicalAdmissionChannel(
         authority=broker_binding,
@@ -352,7 +441,12 @@ def build_resident_host(
             request_port=redeemed["port"],
         ),
     )
-    return LocalAgentResidentRuntimeHost(
+    _observe_phase("host_build_channel_done")
+    _observe_phase("host_build_store_start")
+    durable_store = DurableRunStore(entry.durable_store_path)
+    _observe_phase("host_build_store_done")
+    _observe_phase("host_build_host_start")
+    host = LocalAgentResidentRuntimeHost(
         assembly=BoundLocalAgentRuntimeAssembly(
             device=device,
             binding=binding,
@@ -362,12 +456,14 @@ def build_resident_host(
         ),
         channel=channel,
         credential_store=redeemed["store"],
-        durable_store=DurableRunStore(entry.durable_store_path),
+        durable_store=durable_store,
         clock=clock,
         session_id_factory=entry.session_id_factory,
         heartbeat_interval_seconds=30,
         session_ttl_seconds=900,
     )
+    _observe_phase("host_build_host_done")
+    return host
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -376,6 +472,7 @@ def main(argv: list[str] | None = None) -> int:
     if entry is None:
         _emit(status="refused", reason="no_configured_broker_boundary", **RESIDENT_PROCESS_CONTRACT)
         return 2
+    _start_stall_watchdog()
     raw = sys.stdin.readline()
     try:
         handoff = read_handoff(raw)
@@ -395,6 +492,13 @@ def main(argv: list[str] | None = None) -> int:
             # No acknowledgement, so the caller keeps the handoff armed.
             _emit(status="refused", reason="redemption_refused", detail=str(exc), **RESIDENT_PROCESS_CONTRACT)
             return 2
+        _emit(
+            event="handoff_redeemed",
+            redemption="paired_offline",
+            **_phase_stamp(),
+            **RESIDENT_PROCESS_CONTRACT,
+        )
+        _emit(event="host_build_start", **_phase_stamp(), **RESIDENT_PROCESS_CONTRACT)
         try:
             host = build_resident_host(redeemed, entry=entry)
         except ContractError as exc:
@@ -406,10 +510,30 @@ def main(argv: list[str] | None = None) -> int:
                 **RESIDENT_PROCESS_CONTRACT,
             )
             return 0
+        _emit(event="host_built", **_phase_stamp(), **RESIDENT_PROCESS_CONTRACT)
+        _emit(event="connect_start", **_phase_stamp(), **RESIDENT_PROCESS_CONTRACT)
         host.start()
         _emit(
             event="session_open",
             host_state=host.state.value,
+            **_phase_stamp(),
+            **RESIDENT_PROCESS_CONTRACT,
+        )
+        # #3140 item 2: report the heartbeat the host actually took, from the
+        # host's own server-owned acknowledgement, instead of leaving the
+        # harness to infer it from a later poll line.
+        _emit(
+            event="heartbeat",
+            host_state=host.state.value,
+            session_opened=host._session is not None,
+            heartbeat_acknowledged=host._last_seen_at is not None,
+            heartbeat_freshness_seconds=host.heartbeat_freshness_seconds(),
+            last_seen_at=(
+                host._last_seen_at.isoformat().replace("+00:00", "Z")
+                if host._last_seen_at is not None
+                else None
+            ),
+            **_phase_stamp(),
             **RESIDENT_PROCESS_CONTRACT,
         )
         # #3140: the evidence predicate needs the real composition named, not
@@ -435,6 +559,7 @@ def main(argv: list[str] | None = None) -> int:
                 host_state=host.state.value,
                 session_opened=host._session is not None,
                 heartbeat_seen=host._last_heartbeat_at is not None,
+                **_phase_stamp(),
             )
             # Item 5: one host, running for the life of the process.
             host.run_forever()

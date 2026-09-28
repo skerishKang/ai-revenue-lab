@@ -209,6 +209,7 @@ class WindowsGitWorktreeStatePort:
         git_executable: str = GIT_EXECUTABLE_DEFAULT,
         timeout_seconds: float = GIT_STATUS_TIMEOUT_SECONDS,
         max_output_bytes: int = GIT_STATUS_MAX_OUTPUT_BYTES,
+        observer: Callable[[str], None] | None = None,
     ) -> None:
         if not isinstance(git_executable, str) or not git_executable.strip():
             raise ValueError("git_executable must be a non-empty reference")
@@ -227,7 +228,20 @@ class WindowsGitWorktreeStatePort:
         self._git_executable = git_executable.strip()
         self._timeout_seconds = float(timeout_seconds)
         self._max_output_bytes = max_output_bytes
+        # #3140 stall diagnosis: the probe is a child-process boundary, so its
+        # start and completion are reported separately instead of being one
+        # silent gap. The observer is a bounded phase marker callback; it can
+        # never change what the probe decides.
+        self._observer = observer
         self._probe_count = 0
+
+    def _observe(self, event: str) -> None:
+        if self._observer is None:
+            return
+        try:
+            self._observer(event)
+        except Exception:  # pragma: no cover - observation never breaks the probe
+            pass
 
     @property
     def probe_count(self) -> int:
@@ -275,6 +289,13 @@ class WindowsGitWorktreeStatePort:
     def is_dirty(self, cwd: str) -> bool:
         directory = self._directory(cwd)
         self._probe_count += 1
+        self._observe("worktree_probe_start")
+        try:
+            return self._probe(directory)
+        finally:
+            self._observe("worktree_probe_done")
+
+    def _probe(self, directory: str) -> bool:
         process = self._spawn(directory)
         stdout_chunks: list[bytes] = []
         stderr_chunks: list[bytes] = []

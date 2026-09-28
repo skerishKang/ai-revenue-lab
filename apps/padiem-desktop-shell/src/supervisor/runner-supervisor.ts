@@ -127,6 +127,7 @@ export class HeadlessRunnerSupervisor implements RunnerSupervisor {
   // after the resident is gone, would see nothing.
   #residentSettleListeners = new Set<() => void>();
   #residentSettledOutput: { readonly lines: readonly string[]; readonly maxLines: number } | null = null;
+  #residentSettledObservation: Record<string, unknown> | null = null;
   #residentStartedAtMs: number | null = null;
   #stopCount = 0;
   #unsubscribeExit: (() => void) | null = null;
@@ -233,9 +234,11 @@ export class HeadlessRunnerSupervisor implements RunnerSupervisor {
     this.#residentHandle = handle;
     this.#residentStartedAtMs = nowMs;
     this.#residentSettledOutput = null;
+    this.#residentSettledObservation = null;
     handle.onExit(() => {
       // Snapshot before the handle is dropped, so the output survives exit.
       this.#residentSettledOutput = this.boundedResidentOutput();
+      this.#residentSettledObservation = this.residentObservation();
       for (const listener of [...this.#residentSettleListeners]) listener();
       this.#residentSettleListeners.clear();
     });
@@ -258,6 +261,22 @@ export class HeadlessRunnerSupervisor implements RunnerSupervisor {
     // shows what it said.
     if (this.#residentHandle && this.#residentHandle.isAlive()) return live;
     return this.#residentSettledOutput ?? live;
+  }
+
+  /**
+   * #3140 stall diagnosis: bounded per-stream timing for the resident host.
+   *
+   * Read through the port so the shell never reaches into a handle directly,
+   * and keep the last reading after exit so a settled resident still explains
+   * where it stopped.
+   */
+  residentObservation(): Record<string, unknown> | null {
+    const port = this.#port as {
+      residentObservation?: () => Record<string, unknown> | null;
+    };
+    const live = port.residentObservation ? port.residentObservation() : null;
+    if (this.#residentHandle && this.#residentHandle.isAlive()) return live;
+    return this.#residentSettledObservation ?? live;
   }
 
   /** Writes one bounded line to the supervised resident host. */

@@ -250,11 +250,56 @@ rmSync(stateDir, { recursive: true, force: true });
 // no unapproved execution. Anything the resident refuses, any paired-but-not-
 // online state, and any traceback or error line fails the run.
 const lines = (evidence?.main_flow_lines ?? []).map((line) => String(line));
+// #3140 stall diagnosis: the observation is the shell's bounded per-stream view of
+// the resident child (timestamps and counts, plus a bounded stderr tail).
+const observation = evidence?.resident_observation ?? null;
+const stderrTail = Array.isArray(observation?.stderr_tail)
+  ? observation.stderr_tail.map((line) => String(line))
+  : [];
+const stderrObserved = observation?.stderr_capture_attached === true;
+const stderrFault = stderrTail.some((line) => /Traceback|Error:|Exception/.test(line));
 const acks = lines.filter((line) => line.includes('"event":"handoff_ack"'));
 const refusals = lines.filter((line) => /"status":"(refused|paired_without_host)"/.test(line));
-const faults = lines.filter(
+const faults = [...lines, ...stderrTail].filter(
   (line) => /Traceback|Error:|Exception/.test(line) || line.startsWith('  File "'),
 );
+// The order the resident is expected to report. A stall then has a last confirmed
+// phase and a first missing phase instead of one "not online" verdict.
+const PHASE_ORDER = [
+  ['handoff_ack', /"event":"handoff_ack"/],
+  ['handoff_redeemed', /"event":"handoff_redeemed"/],
+  ['host_build_start', /"event":"host_build_start"/],
+  ['host_build_runtime_start', /"event":"host_build_runtime_start"/],
+  ['host_build_runtime_done', /"event":"host_build_runtime_done"/],
+  ['host_build_channel_start', /"event":"host_build_channel_start"/],
+  ['host_build_channel_done', /"event":"host_build_channel_done"/],
+  ['host_build_store_start', /"event":"host_build_store_start"/],
+  ['host_build_store_done', /"event":"host_build_store_done"/],
+  ['host_build_host_start', /"event":"host_build_host_start"/],
+  ['host_build_host_done', /"event":"host_build_host_done"/],
+  ['host_built', /"event":"host_built"/],
+  ['connect_start', /"event":"connect_start"/],
+  ['session_open', /"event":"session_open"/],
+  ['heartbeat', /"event":"heartbeat"/],
+  ['online', /"status":"online"/],
+  ['poll', /"event":"poll"/],
+];
+// The worktree probe runs only when a command is actually executed. This flow
+// dispatches nothing, so the probe is observed separately, never required.
+const PROBE_PHASES = [
+  ['worktree_probe_start', /"event":"worktree_probe_start"/],
+  ['worktree_probe_done', /"event":"worktree_probe_done"/],
+];
+const ALL_PHASES = [...PHASE_ORDER, ...PROBE_PHASES];
+const confirmedPhases = ALL_PHASES.filter(([, pattern]) => lines.some((line) => pattern.test(line))).map(
+  ([name]) => name,
+);
+const lastConfirmedPhase = confirmedPhases.length > 0 ? confirmedPhases[confirmedPhases.length - 1] : null;
+// Only the flow phases can be "missing" here: the probe belongs to execution.
+const firstMissingPhase = PHASE_ORDER.find(([name]) => !confirmedPhases.includes(name))?.[0] ?? null;
+const probeStarted = lines.some((line) => /"event":"worktree_probe_start"/.test(line));
+const probeDone = lines.some((line) => /"event":"worktree_probe_done"/.test(line));
+const buildPhase = [...confirmedPhases].reverse().find((name) => name.startsWith('host_build'));
 const online = lines.some((line) => /"status":"online"/.test(line));
 const sessionOpened = lines.some((line) => /"event":"session_open"/.test(line));
 const heartbeatSeen = lines.some((line) => /"event":"heartbeat"/.test(line));
@@ -274,7 +319,10 @@ const checks = {
   P01_APPROVAL_REUSED: p01Reused,
   UNAPPROVED_EXECUTION: unapprovedExecution.length === 0,
   NO_RESIDENT_REFUSAL: refusals.length === 0,
-  NO_TRACEBACK: faults.length === 0,
+  // Truthful only when the shell actually captured the child's stderr: an
+  // unattached pipe would make "no traceback" an unobserved claim.
+  STDERR_OBSERVED: stderrObserved,
+  NO_TRACEBACK: stderrObserved && faults.length === 0 && !stderrFault,
 };
 const passed = Object.values(checks).every(Boolean);
 
@@ -283,6 +331,22 @@ process.stdout.write(
     {
       ...summary,
       checks,
+      phase_report: {
+        LAST_CONFIRMED_PHASE: lastConfirmedPhase,
+        FIRST_MISSING_PHASE: firstMissingPhase,
+        LAST_BUILD_STEP: buildPhase ?? null,
+        RESIDENT_PROCESS_ALIVE: evidence?.main_flow_running === true,
+        STDOUT_PIPE_ALIVE: observation?.stdout_capture_attached === true,
+        STDERR_PIPE_ALIVE: observation?.stderr_capture_attached === true,
+        CHILD_EXITED:
+          observation !== null && observation?.exited_at !== null && observation?.exited_at !== undefined,
+        WORKTREE_PROBE_STARTED: probeStarted,
+        WORKTREE_PROBE_SETTLED: probeStarted ? probeDone : null,
+        STDERR_LINES: Number(observation?.stderr_lines ?? 0),
+        MARKER_WRITTEN_AT: evidence?.marker_written_at ?? null,
+      },
+      resident_observation: observation,
+      resident_stderr_tail: stderrTail.slice(0, 8),
       resident_refusals: refusals,
       resident_faults: faults.slice(0, 4),
       passed,

@@ -162,6 +162,9 @@ function residentSpec(): RunnerSpawnSpec | null {
   const projectRoot = process.env.PADIEM_AGENT_PROJECT_ROOT;
   if (!projectRoot) return null;
   const python = process.env.PADIEM_PYTHON ?? 'python';
+  // #3140 stall diagnosis: read once, so the resident env stays a named list
+  // with each variable referenced exactly once.
+  const phaseDumpAfterSeconds = process.env.PADIEM_3140_PHASE_DUMP_AFTER_SECONDS;
   return {
     executablePath: python,
     args: ['-m', 'kagent.local_agent_resident_process'],
@@ -180,6 +183,11 @@ function residentSpec(): RunnerSpawnSpec | null {
       // #3140 review item 2: the credential store is a persistent protected
       // path, so it travels in the projection rather than being invented.
       ...(process.env.PADIEM_AGENT_CREDENTIAL_DIR ? { PADIEM_AGENT_CREDENTIAL_DIR: process.env.PADIEM_AGENT_CREDENTIAL_DIR } : {}),
+      // #3140 stall diagnosis: opt-in, bounded stack reporting while no phase
+      // completes. Absent by default, so a normal run is unchanged.
+      ...(phaseDumpAfterSeconds
+        ? { PADIEM_3140_PHASE_DUMP_AFTER_SECONDS: phaseDumpAfterSeconds }
+        : {}),
     },
     shell: false,
     stdio: 'pipe',
@@ -247,18 +255,63 @@ export const pairingHandoffConsumer = new PairingHandoffConsumer({
   isRunnerLive: () => residentSpec() !== null,
 });
 
+let evidenceFlushTimer: NodeJS.Timeout | null = null;
+
+/**
+ * #3140 stall diagnosis: keep the evidence marker current while the flow runs.
+ *
+ * The marker is otherwise written only when the handoff settles, so a stall
+ * after the last write (including a stall stack reported on the child's stderr)
+ * would never reach the evidence file. Bounded to a one-second cadence and only
+ * active when an evidence marker was asked for.
+ */
+/** The one place the evidence marker path is read from the environment. */
+function evidenceMarkerPath(): string | undefined {
+  return process.env.PADIEM_3140_EVIDENCE_MARKER;
+}
+
+function startEvidenceFlush(): void {
+  if (!evidenceMarkerPath()) return;
+  if (evidenceFlushTimer) return;
+  evidenceFlushTimer = setInterval(() => {
+    if (!lastHandoffOutcome) return;
+    recordPairingHandoffEvidence(lastHandoffOutcome);
+  }, 1000);
+  evidenceFlushTimer.unref?.();
+}
+
 export async function deliverPendingPairingHandoff(): Promise<void> {
   if (!(await ensureResidentProcess())) {
     lastHandoffOutcome = 'runner_unavailable';
     recordPairingHandoffEvidence(lastHandoffOutcome);
     return;
   }
+  startEvidenceFlush();
   lastHandoffOutcome = await pairingHandoffConsumer.deliverPending();
   recordPairingHandoffEvidence(lastHandoffOutcome);
 }
 
+/**
+ * #3140 stall diagnosis: bounded, secret-free observation projection.
+ *
+ * Every 32-hex-character token is masked wherever it appears, so a pairing code
+ * can never travel into evidence even if a child prints one by mistake. The
+ * observation itself is counts and timestamps only, plus a bounded stderr tail.
+ */
+function redactObservation(
+  observation: Record<string, unknown> | null,
+): Record<string, unknown> | null {
+  if (!observation) return null;
+  const mask = (value: string): string => value.replace(/[0-9a-f]{32}/g, '[redacted]');
+  const tail = Array.isArray(observation.stderr_tail) ? observation.stderr_tail : [];
+  return {
+    ...observation,
+    stderr_tail: tail.map((line) => mask(String(line))),
+  };
+}
+
 function recordPairingHandoffEvidence(outcome: string): void {
-  const markerPath = process.env.PADIEM_3140_EVIDENCE_MARKER;
+  const markerPath = evidenceMarkerPath();
   if (!markerPath) return;
   try {
     writeFileSync(
@@ -272,6 +325,10 @@ function recordPairingHandoffEvidence(outcome: string): void {
           main_flow_lines: supervisor
             .boundedResidentOutput()
             .lines.filter((line) => !line.includes('pairing_code"')),
+          // #3140 stall diagnosis: per-stream timing for the resident child, so a
+          // silent stall can be located instead of guessed at.
+          resident_observation: redactObservation(supervisor.residentObservation()),
+          marker_written_at: new Date().toISOString(),
         },
         null,
         2,
