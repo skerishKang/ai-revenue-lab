@@ -17,6 +17,7 @@ import {
   PairingHandoffConsumer,
   handoffDeliveryMarker,
 } from '../src/main/pairing-handoff-consumer.js';
+import { HeadlessRunnerSupervisor } from '../src/supervisor/runner-supervisor.js';
 import { parsePairingDeepLink, pairingHandoffConsumedMarker } from '../src/contract/pairing-deeplink.js';
 
 const CODE = '0123456789abcdef0123456789abcdef';
@@ -269,4 +270,81 @@ test('a successful write is not a delivery acknowledgement', async () => {
     assert.equal(controller.commitCount, 0, `${expected} must not spend the one-shot`);
     assert.equal(consumer.stats().deliveredCount, 0);
   }
+});
+
+test('the resident env is an explicit allowlist, and a missing broker URL fails closed', () => {
+  const here = path.dirname(fileURLToPath(import.meta.url));
+  let root = here;
+  for (let index = 0; index < 6; index += 1) {
+    if (existsSync(path.join(root, 'src', 'main', 'main.ts'))) break;
+    root = path.dirname(root);
+  }
+  const mainSource = readFileSync(path.join(root, 'src', 'main', 'main.ts'), 'utf8');
+
+  // Every variable the resident may see is named explicitly; the shell's whole
+  // environment is never handed over.
+  assert.equal(/env:\s*\{\s*\.\.\.process\.env/.test(mainSource), false);
+  const projection = mainSource.slice(mainSource.indexOf('function residentSpec'));
+  const named = [...projection.matchAll(/process\.env\.([A-Z0-9_]+)/g)].map((m) => m[1] ?? '');
+  for (const required of [
+    'PADIEM_AGENT_PROJECT_ROOT',
+    'PADIEM_AGENT_DEVICE_ID',
+    'PADIEM_AGENT_AUTHORITY_REF',
+    'PADIEM_AGENT_REQUEST_PORT',
+    'PADIEM_AGENT_CREDENTIAL_DIR',
+    'PADIEM_AGENT_BROKER_URL',
+  ]) {
+    assert.ok(named.includes(required), `resident projection must name ${required}`);
+  }
+  assert.deepEqual(
+    named.filter((name: string) => !name.startsWith('PADIEM_AGENT_')),
+    ['PADIEM_PYTHON', 'PADIEM_3140_EVIDENCE_MARKER'],
+    'only the harness and the interpreter may be read outside the agent allowlist',
+  );
+});
+
+test('a settled resident keeps its bounded output for later inspection', () => {
+  const here = path.dirname(fileURLToPath(import.meta.url));
+  let root = here;
+  for (let index = 0; index < 6; index += 1) {
+    if (existsSync(path.join(root, 'src', 'supervisor', 'runner-supervisor.ts'))) break;
+    root = path.dirname(root);
+  }
+  const settled = { lines: ['{"status":"refused"}'], maxLines: 50 };
+  const handle = {
+    pid: 4242,
+    isAlive: () => false,
+    kill: () => undefined,
+    waitForExit: async () => ({ code: 0, signal: null }),
+    onExit: () => () => undefined,
+    sendLine: () => false,
+    boundedOutput: () => settled,
+  };
+  const port = {
+    spawnRunner: async () => handle,
+    spawnResident: async () => handle,
+    boundedResidentOutput: () => settled,
+  };
+  const supervisor = new HeadlessRunnerSupervisor({
+    port: port as never,
+    spec: { executablePath: 'python', args: [], cwd: '.', env: {}, shell: false, stdio: 'pipe' },
+    shutdownGraceMs: 1,
+  });
+  // The projection is answerable at any time, and a settled resident is read
+  // from the retained snapshot rather than from a dropped handle.
+  assert.ok(Array.isArray(supervisor.boundedResidentOutput().lines));
+  const empty = new HeadlessRunnerSupervisor({
+    port: { spawnRunner: async () => handle } as never,
+    spec: { executablePath: 'python', args: [], cwd: '.', env: {}, shell: false, stdio: 'pipe' },
+    shutdownGraceMs: 1,
+  });
+  assert.deepEqual(empty.boundedResidentOutput().lines, []);
+  const source = readFileSync(
+    path.join(root, 'src', 'supervisor', 'runner-supervisor.ts'),
+    'utf8',
+  );
+  assert.ok(
+    source.includes('#residentSettledOutput'),
+    'a settled resident must keep its bounded output for the evidence marker',
+  );
 });

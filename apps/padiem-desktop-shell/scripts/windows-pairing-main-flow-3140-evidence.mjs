@@ -18,7 +18,9 @@
  */
 
 import { spawn } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import {
+  existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync,
+} from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -50,6 +52,37 @@ for (const required of [
 
 const python = process.env.PADIEM_PYTHON ?? 'python';
 const projectRoot = process.env.PADIEM_AGENT_PROJECT_ROOT ?? '';
+
+// #3140: refuse to run against a stale dist. A quiet stale build is exactly how
+// a green-looking run lies, so each compiled module is compared against *its own*
+// source rather than against the newest file in the tree.
+{
+  const srcRoot = path.join(appRoot, 'src');
+  const distRoot = path.join(appRoot, 'dist', 'src');
+  const modules = [
+    'main/main.js',
+    'main/pairing-handoff-consumer.js',
+    'main/pairing-main-flow-process.js',
+    'supervisor/runner-supervisor.js',
+    'supervisor/production-runner-process-port.js',
+  ];
+  const missing = modules.filter((relative) => !existsSync(path.join(distRoot, relative)));
+  if (missing.length > 0) {
+    console.error(`missing compiled module(s): ${missing.join(', ')} — run npm run build first`);
+    process.exit(2);
+  }
+  const stale = modules.filter((relative) => {
+    const source = path.join(srcRoot, relative.replace(/\.js$/, '.ts'));
+    if (!existsSync(source)) return false;
+    return statSync(path.join(distRoot, relative)).mtimeMs < statSync(source).mtimeMs;
+  });
+  if (stale.length > 0) {
+    console.error(
+      `dist is older than src for: ${stale.join(', ')} — the evidence would run stale code; rebuild first`,
+    );
+    process.exit(2);
+  }
+}
 
 // #3140: ONE non-Production broker authority, owned by a separate process.
 // Both legs cross it: the web leg below issues the challenge through it, and

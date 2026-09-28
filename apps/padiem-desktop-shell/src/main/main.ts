@@ -166,13 +166,17 @@ function residentSpec(): RunnerSpawnSpec | null {
     executablePath: python,
     args: ['-m', 'kagent.local_agent_resident_process'],
     cwd: path.resolve(projectRoot),
-    // Named trusted inputs only. The resident refuses to invent a broker.
+    // Named trusted inputs only — never `...process.env`. The resident refuses
+    // to invent a broker, so everything it is allowed to know is listed here.
     env: {
       PYTHONUNBUFFERED: '1',
       PADIEM_AGENT_PROJECT_ROOT: path.resolve(projectRoot),
       ...(process.env.PADIEM_AGENT_DEVICE_ID ? { PADIEM_AGENT_DEVICE_ID: process.env.PADIEM_AGENT_DEVICE_ID } : {}),
       ...(process.env.PADIEM_AGENT_AUTHORITY_REF ? { PADIEM_AGENT_AUTHORITY_REF: process.env.PADIEM_AGENT_AUTHORITY_REF } : {}),
       ...(process.env.PADIEM_AGENT_REQUEST_PORT ? { PADIEM_AGENT_REQUEST_PORT: process.env.PADIEM_AGENT_REQUEST_PORT } : {}),
+      // The client port connects to the shared broker owner; the resident is
+      // given the URL as a named trusted input, never as inherited environment.
+      ...(process.env.PADIEM_AGENT_BROKER_URL ? { PADIEM_AGENT_BROKER_URL: process.env.PADIEM_AGENT_BROKER_URL } : {}),
       // #3140 review item 2: the credential store is a persistent protected
       // path, so it travels in the projection rather than being invented.
       ...(process.env.PADIEM_AGENT_CREDENTIAL_DIR ? { PADIEM_AGENT_CREDENTIAL_DIR: process.env.PADIEM_AGENT_CREDENTIAL_DIR } : {}),

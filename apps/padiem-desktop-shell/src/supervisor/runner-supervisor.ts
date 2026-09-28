@@ -122,6 +122,10 @@ export class HeadlessRunnerSupervisor implements RunnerSupervisor {
   #lastExitSignal: string | null = null;
   #startCount = 0;
   #residentHandle: RunnerProcessHandle | null = null;
+  // #3140 diagnostic: the handle is dropped on exit, so its bounded
+  // output is retained here. Otherwise the evidence marker, which is read
+  // after the resident is gone, would see nothing.
+  #residentSettledOutput: { readonly lines: readonly string[]; readonly maxLines: number } | null = null;
   #residentStartedAtMs: number | null = null;
   #stopCount = 0;
   #unsubscribeExit: (() => void) | null = null;
@@ -227,6 +231,11 @@ export class HeadlessRunnerSupervisor implements RunnerSupervisor {
     const handle = await spawn.call(this.#port, spec);
     this.#residentHandle = handle;
     this.#residentStartedAtMs = nowMs;
+    this.#residentSettledOutput = null;
+    handle.onExit(() => {
+      // Snapshot before the handle is dropped, so the output survives exit.
+      this.#residentSettledOutput = this.boundedResidentOutput();
+    });
   }
 
   /**
@@ -235,7 +244,11 @@ export class HeadlessRunnerSupervisor implements RunnerSupervisor {
    */
   boundedResidentOutput(): { readonly lines: readonly string[]; readonly maxLines: number } {
     const port = this.#port as { boundedResidentOutput?: () => { lines: readonly string[]; maxLines: number } };
-    return port.boundedResidentOutput ? port.boundedResidentOutput() : { lines: [], maxLines: 0 };
+    const live = port.boundedResidentOutput ? port.boundedResidentOutput() : { lines: [], maxLines: 0 };
+    // A settled resident keeps its bounded output, so a read after exit still
+    // shows what it said.
+    if (this.#residentHandle && this.#residentHandle.isAlive()) return live;
+    return this.#residentSettledOutput ?? live;
   }
 
   /** Writes one bounded line to the supervised resident host. */
