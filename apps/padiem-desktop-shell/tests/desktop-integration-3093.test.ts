@@ -50,7 +50,10 @@ test('#3093 a non-owner quits via onNotOwner and never reaches window creation',
 });
 
 test('#3093 second-instance forwarding reuses the existing pairingDeepLinkSubmit intake only', () => {
-  assert.match(mainCode, /forwardDeepLink: \(deepLink\) => \{[\s\S]*?controller\.pairingDeepLinkSubmit\(\{ deepLink \}\)/);
+  // #3140 review B: a forwarded deep link is still accepted by the one
+  // existing intake, and now also gets the same delivery orchestration as an
+  // open-url / argv link. The parser authority is still only the controller.
+  assert.match(mainCode, /forwardDeepLink: \(deepLink\) => \{[\s\S]*?controller[\s\S]*?\.pairingDeepLinkSubmit\(\{ deepLink \}\)[\s\S]*?deliverPendingPairingHandoff\(\)/);
   // SECOND_DEEPLINK_PARSER_AUTHORITY=0: no parsePairingDeepLink call may appear
   // in main or in the single-instance module — interpretation stays in the
   // controller seam.

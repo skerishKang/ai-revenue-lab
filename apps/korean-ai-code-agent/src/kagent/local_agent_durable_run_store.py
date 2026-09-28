@@ -67,7 +67,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Self
+from typing import Any, Callable, Self
 
 from .contracts import ContractError
 from .local_agent_durable_run import (
@@ -373,23 +373,47 @@ class DurableRunStore:
       crash can never leave a half-terminal row that recovery would misread.
     """
 
-    def __init__(self, database_path: str | Path) -> None:
+    def __init__(
+        self,
+        database_path: str | Path,
+        observer: Callable[[str], None] | None = None,
+    ) -> None:
+        # #3140 stall diagnosis: an optional bounded phase observer. It reports
+        # only phase names -- never the path, the handle or any row -- and can
+        # never change what the store does.
+        self._observer = observer
         if isinstance(database_path, Path):
             database_path = str(database_path)
         if not isinstance(database_path, str) or not database_path.strip():
             raise ContractError("database_path must be non-empty")
         self._database_path = database_path.strip()
+        self._observe("store_path_resolved")
         if self._database_path != ":memory:":
+            self._observe("store_directory_prepare_start")
             Path(self._database_path).parent.mkdir(parents=True, exist_ok=True)
+            self._observe("store_directory_prepare_done")
+        self._observe("sqlite_connect_start")
         self._db = self._connect()
+        self._observe("sqlite_connect_done")
         try:
+            self._observe("schema_init_start")
             self._verify_or_create_schema()
+            self._observe("schema_init_done")
         except Exception:
             # Do not leak the handle on a refused open: on Windows an open
             # connection would keep the file locked and the caller could not
             # even inspect or move the very file it was told is corrupt.
             self._db.close()
             raise
+        self._observe("store_ready")
+
+    def _observe(self, event: str) -> None:
+        if self._observer is None:
+            return
+        try:
+            self._observer(event)
+        except Exception:  # pragma: no cover - observation never breaks the store
+            pass
 
     def __enter__(self) -> Self:
         return self

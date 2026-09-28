@@ -5,7 +5,7 @@ import threading
 import unittest
 from copy import deepcopy
 from datetime import datetime, timedelta, timezone
-from typing import Any, ClassVar
+from typing import Any, Callable, ClassVar
 
 from kagent.contracts import ContractError
 from kagent.local_agent import (
@@ -100,6 +100,19 @@ class _SimulatedClock:
         self.now += timedelta(seconds=seconds)
 
 
+class _SimulatedMonotonic:
+    """Deterministic stand-in for time.monotonic (#3140 local freshness)."""
+
+    def __init__(self, start: float = 0.0) -> None:
+        self.now = start
+
+    def __call__(self) -> float:
+        return self.now
+
+    def advance(self, seconds: float) -> None:
+        self.now += seconds
+
+
 class _DurableState:
     durable = True
 
@@ -181,14 +194,10 @@ class _HandlerBackedRequestPort:
         if self.fail_network:
             raise ConnectionError("simulated broker connection failure")
         name = operation.value
-        if name == "heartbeat" and isinstance(payload, dict) and "now" in payload:
-            # The heartbeat contract requires last_seen_at == client_now.
-            # Honour that by setting the server clock to exactly what the client sent.
-            from datetime import datetime as _dt
-            self.clock.now = _dt.fromisoformat(payload["now"].replace("Z", "+00:00"))
-        else:
-            offset = self.SERVER_OFFSET.get(name, timedelta(seconds=0))
-            self.clock.now = BASE + offset
+        # #3140: the broker owns `last_seen_at` and never echoes the client's `now`,
+        # so this port keeps the server clock authoritative for every route.
+        offset = self.SERVER_OFFSET.get(name, timedelta(seconds=0))
+        self.clock.now = BASE + offset
         self.calls.append((name, deepcopy(payload)))
         response = self.handler.handle(
             method="POST",
@@ -282,6 +291,7 @@ def _harness(
     credential_missing: bool = False,
     blocking_runtime: bool = False,
     transport_failure_runtime: bool = False,
+    monotonic: Callable[[], float] | None = None,
 ) -> tuple[LocalAgentResidentRuntimeHost, _ReceiptRuntime, _HandlerBackedRequestPort, _SimulatedClock]:
     server_clock = _ServerClock()
     authority = InMemoryLocalAgentBrokerAuthority(
@@ -419,6 +429,7 @@ def _harness(
         credential_store=credential_store,
         durable_store=DurableRunStore(":memory:"),
         clock=clock,
+        monotonic=monotonic,
         session_id_factory=lambda: "session_host_cross_1",
     )
     request_port.broker_authority = authority
@@ -498,6 +509,42 @@ class LocalAgentResidentRuntimeHostTests(unittest.TestCase):
         host.stop()
         self.assertEqual(host.state, ResidentHostState.STOPPED)
         self.assertFalse(host._lock_acquired)
+
+    def test_local_freshness_is_monotonic_not_a_wall_clock_comparison(self) -> None:
+        """#3140: freshness is elapsed monotonic time since the last acknowledgement.
+
+        The server owns the shared last-seen; this machine's wall clock is never
+        compared against it, and a wall-clock jump must not fake freshness in
+        either direction.
+        """
+        monotonic = _SimulatedMonotonic()
+        host, _, port, clock = _harness(monotonic=monotonic)
+
+        def heartbeats() -> int:
+            return [name for name, _ in port.calls].count("heartbeat")
+
+        host.start()
+        self.assertEqual(host.state, ResidentHostState.ONLINE)
+        self.assertEqual(host.heartbeat_freshness_seconds(), 0.0)
+        self.assertTrue(host.heartbeat_is_fresh())
+        self.assertEqual(heartbeats(), 1)
+
+        # A wall-clock jump past the cadence is not elapsed local time, so no
+        # heartbeat is sent (the old wall-clock rule would have sent one).
+        clock.advance(30)
+        host.run_once(now=clock.now)
+        self.assertEqual(heartbeats(), 1)
+        self.assertEqual(host.heartbeat_freshness_seconds(), 0.0)
+
+        # Elapsed monotonic time is what ages the acknowledgement; the next cycle
+        # re-acknowledges and resets it.
+        monotonic.advance(31)
+        self.assertFalse(host.heartbeat_is_fresh())
+        host.run_once(now=clock.now)
+        self.assertEqual(heartbeats(), 2)
+        self.assertEqual(host.heartbeat_freshness_seconds(), 0.0)
+        self.assertTrue(host.heartbeat_is_fresh())
+        host.stop()
 
     def test_run_once_returns_exact_bounded_correlation_at_the_broker_record(self) -> None:
         host, runtime, port, clock = _harness()

@@ -408,16 +408,61 @@ class ControlPlaneAdmittedExecutionCoordinator:
         try:
             if on_execution_start is not None:
                 on_execution_start(resolved.request.request_id)
-            execution = bridge.execute(
-                session=session,
-                command=command,
-                request=resolved.request,
-                assembly=self._assembly,
-                now=execution_now,
-            )
+            try:
+                execution = bridge.execute(
+                    session=session,
+                    command=command,
+                    request=resolved.request,
+                    assembly=self._assembly,
+                    now=execution_now,
+                )
+            except Exception as exc:
+                # #3140: a refused execution is evidence too. The canonical P01
+                # port refuses a DENIED envelope before any process starts, so
+                # this records the refusal and re-raises: no acknowledgement,
+                # no terminal record, never a fabricated success.
+                try:
+                    from .local_agent_resident_process import _emit as _resident_emit
+
+                    _resident_emit(
+                        event="execution_refused",
+                        command_id=command.command_id,
+                        request_id=resolved.request.request_id,
+                        reason=type(exc).__name__,
+                        detail=str(exc)[:160],
+                        approved_process_spawn_count=0,
+                    )
+                except Exception:  # noqa: BLE001 - evidence never breaks refusal
+                    pass
+                raise
         finally:
             if on_execution_end is not None:
                 on_execution_end()
+
+        # #3140 PHASE 3: the execution result the resident itself observed, in
+        # one bounded evidence line. Secret-free: ids, refs, digests, codes.
+        # The same 8 keys the final correlation predicate compares.
+        try:
+            from .local_agent_command_material import command_request_fingerprint
+            from .local_agent_resident_process import _emit as _resident_emit
+
+            _resident_emit(
+                event="command_result",
+                command_id=command.command_id,
+                run_id=command.run_id,
+                request_id=execution.request_id,
+                request_fingerprint=command_request_fingerprint(resolved.request),
+                binding_ref=binding.binding_ref,
+                admission_ref=conformed.evidence.admission_ref,
+                evidence_ref=conformed.evidence_ref,
+                revision_ref=execution.revision_ref,
+                exit_code=execution.exit_code,
+                termination=execution.termination.value,
+                approved_process_spawn_count=1 if execution.exit_code is not None else 0,
+                terminal_result_observed=execution.exit_code is not None,
+            )
+        except Exception:  # noqa: BLE001 - evidence never breaks execution
+            pass
 
         # #3128: the terminal result is durable BEFORE the acknowledgement is
         # emitted. If this write fails the exception propagates and no

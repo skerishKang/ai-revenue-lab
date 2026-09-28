@@ -68,7 +68,11 @@ export class ShellController {
    * Held in the main process only, consumed exactly once, never logged, never
    * persisted, and never projected to the renderer.
    */
-  #lastPairingHandoff: { pairingCode: string; correlationRef: string } | null = null;
+  #lastPairingHandoff: {
+    pairingCode: string;
+    correlationRef: string;
+    challengeId: string;
+  } | null = null;
   /**
    * #3095 replay ledger.
    *
@@ -224,6 +228,9 @@ export class ShellController {
           this.#lastPairingHandoff = {
             pairingCode,
             correlationRef: parsed.correlationRef,
+            // #3140: the server-owned challenge travels with the code so the
+            // resident redeems that challenge at the one configured broker.
+            challengeId: parsed.challengeId,
           };
           pairingCodeTransferred = true;
         }
@@ -264,7 +271,11 @@ export class ShellController {
    * immediately, so a replayed deep link cannot reuse an already-taken code.
    * Nothing here logs, persists, or projects the value to the renderer.
    */
-  takePairingHandoffForRunner(): { pairingCode: string; correlationRef: string } | null {
+  takePairingHandoffForRunner(): {
+    pairingCode: string;
+    correlationRef: string;
+    challengeId: string;
+  } | null {
     const handoff = this.#lastPairingHandoff;
     this.#lastPairingHandoff = null;
     if (handoff === null) {
@@ -278,6 +289,48 @@ export class ShellController {
       if (!oldest.done) this.#consumedPairingHandoffs.delete(oldest.value);
     }
     return handoff;
+  }
+
+  /**
+   * #3140 — the first phase of a two-phase handoff.
+   *
+   * Returns the pending handoff WITHOUT consuming it and WITHOUT marking it
+   * spent, so a delivery that fails leaves the one-time code still armed. The
+   * previous single-shot `takePairingHandoffForRunner()` burned the handoff
+   * before the write was known to have succeeded, which made a transient
+   * failure unrecoverable: the one-time code was gone and never re-offered.
+   *
+   * #3080's canonical broker single-use remains the ultimate replay authority.
+   * This ledger only stops the shell from re-offering a handoff it already
+   * handed over, and it is still bounded and marker-only.
+   */
+  peekPairingHandoffForRunner(): {
+    pairingCode: string;
+    correlationRef: string;
+    challengeId: string;
+  } | null {
+    const handoff = this.#lastPairingHandoff;
+    if (handoff === null) {
+      return null;
+    }
+    return {
+      pairingCode: handoff.pairingCode,
+      correlationRef: handoff.correlationRef,
+      challengeId: handoff.challengeId,
+    };
+  }
+
+  /**
+   * #3140 — the second phase: commit a delivery that is known to have
+   * succeeded. This is the existing one-shot behaviour, now reached only
+   * after the destination acknowledged the envelope.
+   */
+  commitPairingHandoffDelivery(): {
+    pairingCode: string;
+    correlationRef: string;
+    challengeId: string;
+  } | null {
+    return this.takePairingHandoffForRunner();
   }
 
   getBoundedLog(request: unknown): BoundedLogResponse {

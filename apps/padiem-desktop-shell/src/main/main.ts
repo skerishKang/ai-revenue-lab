@@ -16,15 +16,19 @@
 
 import { BrowserWindow, app, ipcMain } from 'electron';
 import { fileURLToPath } from 'node:url';
-import { existsSync } from 'node:fs';
+import {existsSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { IPC_CHANNELS, type IpcChannel } from '../contract/ipc.js';
 import { ShellController } from '../supervisor/shell-controller.js';
 import { NodeRunnerProcessPort } from '../supervisor/production-runner-process-port.js';
-import { HeadlessRunnerSupervisor } from '../supervisor/runner-supervisor.js';
+import {
+  HeadlessRunnerSupervisor,
+  type RunnerSpawnSpec,
+} from '../supervisor/runner-supervisor.js';
 import { registerWindowsProtocolClient } from './protocol-registration.js';
 import { acquireSingleInstanceOwnership } from './single-instance.js';
+import { PairingHandoffConsumer } from './pairing-handoff-consumer.js';
 import { resolveRunnerHostMode } from './runner-host-mode.js';
 
 const __dirname_ = path.dirname(fileURLToPath(import.meta.url));
@@ -145,6 +149,198 @@ export function createMainWindow(): BrowserWindow {
 
 let handlersRegistered = false;
 
+
+/**
+ * #3140 — the resident host process, spawned and reaped by the supervisor.
+ *
+ * It is a real product process, so it goes through the same `RunnerProcessPort`
+ * as the runner and the same `shutdownRunner()` path; nothing in the shell
+ * spawns a child outside that port. The environment is the bounded config
+ * projection only, never the shell's whole environment.
+ */
+function residentSpec(): RunnerSpawnSpec | null {
+  const projectRoot = process.env.PADIEM_AGENT_PROJECT_ROOT;
+  if (!projectRoot) return null;
+  const python = process.env.PADIEM_PYTHON ?? 'python';
+  // #3140 stall diagnosis: read once, so the resident env stays a named list
+  // with each variable referenced exactly once.
+  const phaseDumpAfterSeconds = process.env.PADIEM_3140_PHASE_DUMP_AFTER_SECONDS;
+  return {
+    executablePath: python,
+    args: ['-m', 'kagent.local_agent_resident_process'],
+    cwd: path.resolve(projectRoot),
+    // Named trusted inputs only — never `...process.env`. The resident refuses
+    // to invent a broker, so everything it is allowed to know is listed here.
+    env: {
+      PYTHONUNBUFFERED: '1',
+      PADIEM_AGENT_PROJECT_ROOT: path.resolve(projectRoot),
+      ...(process.env.PADIEM_AGENT_DEVICE_ID ? { PADIEM_AGENT_DEVICE_ID: process.env.PADIEM_AGENT_DEVICE_ID } : {}),
+      ...(process.env.PADIEM_AGENT_AUTHORITY_REF ? { PADIEM_AGENT_AUTHORITY_REF: process.env.PADIEM_AGENT_AUTHORITY_REF } : {}),
+      ...(process.env.PADIEM_AGENT_REQUEST_PORT ? { PADIEM_AGENT_REQUEST_PORT: process.env.PADIEM_AGENT_REQUEST_PORT } : {}),
+      // The client port connects to the shared broker owner; the resident is
+      // given the URL as a named trusted input, never as inherited environment.
+      ...(process.env.PADIEM_AGENT_BROKER_URL ? { PADIEM_AGENT_BROKER_URL: process.env.PADIEM_AGENT_BROKER_URL } : {}),
+      // #3140 review item 2: the credential store is a persistent protected
+      // path, so it travels in the projection rather than being invented.
+      ...(process.env.PADIEM_AGENT_CREDENTIAL_DIR ? { PADIEM_AGENT_CREDENTIAL_DIR: process.env.PADIEM_AGENT_CREDENTIAL_DIR } : {}),
+      // #3140 stall diagnosis: opt-in, bounded stack reporting while no phase
+      // completes. Absent by default, so a normal run is unchanged.
+      ...(phaseDumpAfterSeconds
+        ? { PADIEM_3140_PHASE_DUMP_AFTER_SECONDS: phaseDumpAfterSeconds }
+        : {}),
+    },
+    shell: false,
+    stdio: 'pipe',
+  };
+}
+
+const HANDOFF_ACK_TIMEOUT_MS = 30_000;
+const HANDOFF_ACK_CONTRACT = 'claw-desktop-pairing-ack.v1';
+
+function parseHandoffAck(line: string): { acknowledged: boolean; handoffMarker: string | null } {
+  try {
+    const parsed = JSON.parse(line) as Record<string, unknown>;
+    if (parsed.event !== 'handoff_ack' || parsed.contract_version !== HANDOFF_ACK_CONTRACT) {
+      return { acknowledged: false, handoffMarker: null };
+    }
+    const marker = parsed.handoff_marker;
+    if (typeof marker !== 'string' || marker.length === 0 || marker.length > 64) {
+      return { acknowledged: false, handoffMarker: null };
+    }
+    return { acknowledged: true, handoffMarker: marker };
+  } catch {
+    return { acknowledged: false, handoffMarker: null };
+  }
+}
+
+async function ensureResidentProcess(): Promise<boolean> {
+  if (supervisor.residentSnapshot().running) return true;
+  const spec = residentSpec();
+  if (!spec) return false;
+  await supervisor.startResident(spec);
+  supervisor.onResidentSettled(() => {
+    try {
+      recordPairingHandoffEvidence(lastHandoffOutcome);
+    } catch {
+      // Evidence capture must never disturb shutdown.
+    }
+  });
+  return true;
+}
+
+let lastHandoffOutcome = 'no_pending_handoff';
+
+export const pairingHandoffConsumer = new PairingHandoffConsumer({
+  source: controller,
+  deliver: async (line: string) => {
+    if (!supervisor.sendResidentLine(line)) {
+      return { acknowledged: false, handoffMarker: null };
+    }
+    // #3140 review A: a written line is not an acknowledgement. Wait for the
+    // resident's own bounded, secret-free ACK and accept only a matching one.
+    const deadline = Date.now() + HANDOFF_ACK_TIMEOUT_MS;
+    while (Date.now() < deadline) {
+      if (!supervisor.residentSnapshot().running) {
+        return { acknowledged: false, handoffMarker: null };
+      }
+      // #3140 review D: the resident's own projection, never the runner's.
+      for (const line2 of [...supervisor.boundedResidentOutput().lines].reverse()) {
+        if (!line2.includes('handoff_ack')) continue;
+        return parseHandoffAck(line2);
+      }
+      await new Promise((resolve) => setTimeout(resolve, 200));
+    }
+    return { acknowledged: false, handoffMarker: null };
+  },
+  isRunnerLive: () => residentSpec() !== null,
+});
+
+let evidenceFlushTimer: NodeJS.Timeout | null = null;
+
+/**
+ * #3140 stall diagnosis: keep the evidence marker current while the flow runs.
+ *
+ * The marker is otherwise written only when the handoff settles, so a stall
+ * after the last write (including a stall stack reported on the child's stderr)
+ * would never reach the evidence file. Bounded to a one-second cadence and only
+ * active when an evidence marker was asked for.
+ */
+/** The one place the evidence marker path is read from the environment. */
+function evidenceMarkerPath(): string | undefined {
+  return process.env.PADIEM_3140_EVIDENCE_MARKER;
+}
+
+function startEvidenceFlush(): void {
+  if (!evidenceMarkerPath()) return;
+  if (evidenceFlushTimer) return;
+  evidenceFlushTimer = setInterval(() => {
+    if (!lastHandoffOutcome) return;
+    recordPairingHandoffEvidence(lastHandoffOutcome);
+  }, 1000);
+  evidenceFlushTimer.unref?.();
+}
+
+export async function deliverPendingPairingHandoff(): Promise<void> {
+  if (!(await ensureResidentProcess())) {
+    lastHandoffOutcome = 'runner_unavailable';
+    recordPairingHandoffEvidence(lastHandoffOutcome);
+    return;
+  }
+  startEvidenceFlush();
+  lastHandoffOutcome = await pairingHandoffConsumer.deliverPending();
+  recordPairingHandoffEvidence(lastHandoffOutcome);
+}
+
+/**
+ * #3140 stall diagnosis: bounded, secret-free observation projection.
+ *
+ * Every 32-hex-character token is masked wherever it appears, so a pairing code
+ * can never travel into evidence even if a child prints one by mistake. The
+ * observation itself is counts and timestamps only, plus a bounded stderr tail.
+ */
+function redactObservation(
+  observation: Record<string, unknown> | null,
+): Record<string, unknown> | null {
+  if (!observation) return null;
+  const mask = (value: string): string => value.replace(/[0-9a-f]{32}/g, '[redacted]');
+  const tail = Array.isArray(observation.stderr_tail) ? observation.stderr_tail : [];
+  return {
+    ...observation,
+    stderr_tail: tail.map((line) => mask(String(line))),
+  };
+}
+
+function recordPairingHandoffEvidence(outcome: string): void {
+  const markerPath = evidenceMarkerPath();
+  if (!markerPath) return;
+  try {
+    writeFileSync(
+      markerPath,
+      `${JSON.stringify(
+        {
+          handoff_outcome: outcome,
+          handoff_delivered: outcome === 'delivered',
+          consumer: pairingHandoffConsumer.stats(),
+          main_flow_running: supervisor.residentSnapshot().running,
+          main_flow_lines: supervisor
+            .boundedResidentOutput()
+            .lines.filter((line) => !line.includes('pairing_code"')),
+          // #3140 stall diagnosis: per-stream timing for the resident child, so a
+          // silent stall can be located instead of guessed at.
+          resident_observation: redactObservation(supervisor.residentObservation()),
+          marker_written_at: new Date().toISOString(),
+        },
+        null,
+        2,
+      )}
+`,
+      { encoding: 'utf8' },
+    );
+  } catch {
+    // Evidence capture must never disturb the product path.
+  }
+}
+
 export function registerIpcHandlers(target: ShellController = controller): void {
   if (handlersRegistered) return;
   const handlers = target.handlers();
@@ -161,11 +357,11 @@ export function registerIpcHandlers(target: ShellController = controller): void 
 export function registerDeepLinkHandling(): void {
   app.on('open-url', (event, url) => {
     event.preventDefault();
-    void controller.pairingDeepLinkSubmit({ deepLink: url });
+    void controller.pairingDeepLinkSubmit({ deepLink: url }).then(() => deliverPendingPairingHandoff());
   });
   for (const argv of process.argv.slice(1)) {
     if (argv.toLowerCase().startsWith('padiem://')) {
-      void controller.pairingDeepLinkSubmit({ deepLink: argv });
+      void controller.pairingDeepLinkSubmit({ deepLink: argv }).then(() => deliverPendingPairingHandoff());
     }
   }
 }
@@ -201,8 +397,12 @@ function defaultAppFlag(): boolean {
 export function acquireInstanceOwnership(): boolean {
   const outcome = acquireSingleInstanceOwnership({
     app,
+    // #3140 review B: a forwarded deep link is accepted by the same seam and
+    // then gets the same delivery orchestration as an open-url / argv link.
     forwardDeepLink: (deepLink) => {
-      void controller.pairingDeepLinkSubmit({ deepLink });
+      void controller
+        .pairingDeepLinkSubmit({ deepLink })
+        .then(() => deliverPendingPairingHandoff());
     },
     onNotOwner: () => {
       app.quit();
@@ -225,6 +425,7 @@ export async function shutdownRunner(): Promise<void> {
   if (shutdownComplete) return;
   shutdownComplete = true;
   await controller.shutdown();
+  await supervisor.stopResident();
 }
 
 export function installLifecycleHooks(): void {

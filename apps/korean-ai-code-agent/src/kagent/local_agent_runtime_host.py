@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 import threading
+import time
 from collections import deque
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -221,6 +222,7 @@ class LocalAgentResidentRuntimeHost:
         durable_store: DurableRunStore,
         coordinator: ControlPlaneAdmittedExecutionCoordinator | None = None,
         clock: Callable[[], datetime] | None = None,
+        monotonic: Callable[[], float] | None = None,
         instance_lock: SingleInstanceLockPort | None = None,
         session_id_factory: Callable[[], str] | None = None,
         heartbeat_interval_seconds: int = 30,
@@ -273,6 +275,10 @@ class LocalAgentResidentRuntimeHost:
         self._channel = channel
         self._credential_store = credential_store
         self._clock = clock or (lambda: datetime.now(timezone.utc))
+        # #3140: client-side freshness is measured on a monotonic source. The server
+        # owns `last_seen_at`; this machine's wall clock never participates in the
+        # heartbeat contract, and a clock jump must not fake freshness either way.
+        self._monotonic = monotonic or time.monotonic
         self._coordinator = coordinator or ControlPlaneAdmittedExecutionCoordinator(
             channel=channel,
             assembly=assembly,
@@ -299,7 +305,12 @@ class LocalAgentResidentRuntimeHost:
         self._state = ResidentHostState.STOPPED
         self._session: DeviceSession | None = None
         self._last_heartbeat_at: datetime | None = None
+        self._last_heartbeat_monotonic: float | None = None
         self._last_seen_at: datetime | None = None
+        # #3140 PHASE 3: the last server-owned heartbeat receipt, kept so the
+        # canonical ONLINE projection can be applied from server facts alone.
+        self._last_heartbeat_receipt: ControlPlaneHeartbeatReceipt | None = None
+        self._last_seen_session_id: str | None = None
         self._last_sequence = 0
         self._consecutive_failures = 0
         self._reconnect_attempts = 0
@@ -334,6 +345,80 @@ class LocalAgentResidentRuntimeHost:
 
     def _now(self) -> datetime:
         return _aware(self._clock(), "clock")
+
+    def heartbeat_freshness_seconds(self) -> float | None:
+        """Client-local freshness of the last acknowledged heartbeat (#3140).
+
+        This is elapsed monotonic time since the last successful heartbeat
+        response. It is deliberately not a comparison between the server clock
+        and this machine's wall clock.
+        """
+        with self._host_lock:
+            if self._last_heartbeat_monotonic is None:
+                return None
+            return max(0.0, self._monotonic() - self._last_heartbeat_monotonic)
+
+    def heartbeat_is_fresh(self, *, grace_seconds: float = 0.0) -> bool:
+        """True while the acknowledged heartbeat is inside the cadence (+ grace)."""
+        freshness = self.heartbeat_freshness_seconds()
+        if freshness is None:
+            return False
+        return freshness <= self._heartbeat_interval_seconds + max(0.0, grace_seconds)
+
+    def _previous_last_seen_for(self, session: DeviceSession | None) -> datetime | None:
+        """The acknowledged last-seen to compare against, or None for a new session.
+
+        Call under the host lock. Non-regression only means anything inside one
+        session, so a refreshed session starts a new comparison.
+        """
+        if session is None or self._last_seen_session_id != session.session_id:
+            return None
+        return self._last_seen_at
+
+    def _promote_heartbeat(
+        self,
+        *,
+        session: DeviceSession,
+        receipt: ControlPlaneHeartbeatReceipt,
+        at: datetime,
+    ) -> None:
+        """Record one acknowledged heartbeat. Call under the host lock."""
+        self._last_heartbeat_at = at
+        self._last_heartbeat_monotonic = self._monotonic()
+        self._last_seen_at = receipt.last_seen_at
+        self._last_seen_session_id = session.session_id
+        self._last_heartbeat_receipt = receipt
+
+    def _promote_binding_online(self, *, session: DeviceSession, now: datetime) -> None:
+        """Apply the canonical server-backed ONLINE projection. Host lock held.
+
+        #3140 PHASE 3: a heartbeat is not an ONLINE claim by itself, but once
+        the broker has acknowledged one for this exact session the canonical
+        projection promotes the redeemed binding. Until then execution stays
+        refused by the assembly, which is the correct fail-closed direction.
+        """
+
+        from .local_agent_server_projection import project_server_backed_online_binding
+
+        binding = self._assembly._binding
+        if binding.state is not DeviceLifecycle.PAIRED_OFFLINE:
+            return
+        receipt = self._last_heartbeat_receipt
+        if receipt is None or receipt.session_id != session.session_id:
+            return
+        try:
+            projected = project_server_backed_online_binding(
+                binding=binding, session=session, heartbeat=receipt, now=now
+            )
+        except ContractError:
+            # Not-yet-current server facts are not an ONLINE claim.
+            return
+        self._assembly._binding = projected
+        self._record_diagnostic(
+            "network",
+            "BINDING_ONLINE",
+            "server projection promoted the redeemed binding to ONLINE",
+        )
 
     def _record_diagnostic(self, event_type: str, code: str, message: str) -> None:
         event = LocalAgentDiagnosticEvent(
@@ -412,7 +497,9 @@ class LocalAgentResidentRuntimeHost:
             self._stop_event.clear()
             self._session = None
             self._last_heartbeat_at = None
+            self._last_heartbeat_monotonic = None
             self._last_seen_at = None
+            self._last_seen_session_id = None
             self._active_command_id = None
             self._active_request_id = None
             self._active_session = None
@@ -472,9 +559,9 @@ class LocalAgentResidentRuntimeHost:
                     binding=binding,
                     session=session,
                     now=now,
+                    previous_last_seen_at=self._previous_last_seen_for(session),
                 )
-                self._last_heartbeat_at = now
-                self._last_seen_at = hb_receipt.last_seen_at
+                self._promote_heartbeat(session=session, receipt=hb_receipt, at=now)
                 self._state = ResidentHostState.ONLINE
                 self._consecutive_failures = 0
                 self._reconnect_attempts = 0
@@ -524,7 +611,9 @@ class LocalAgentResidentRuntimeHost:
             self._state = ResidentHostState.STOPPED
             self._session = None
             self._last_heartbeat_at = None
+            self._last_heartbeat_monotonic = None
             self._last_seen_at = None
+            self._last_seen_session_id = None
             self._active_command_id = None
             self._clear_active_request()
             self._record_diagnostic("lifecycle", "STOPPED", "Resident host stopped cleanly")
@@ -565,18 +654,28 @@ class LocalAgentResidentRuntimeHost:
                     self._handle_transport_error(exc)
                     return 0
 
-            # Send heartbeat if interval elapsed
+            # Send heartbeat if the monotonic interval elapsed (#3140): elapsed
+            # monotonic time, not a wall-clock difference, so a clock jump cannot
+            # fake freshness in either direction.
             if (
-                self._last_heartbeat_at is None
-                or (tick_now - self._last_heartbeat_at).total_seconds() >= self._heartbeat_interval_seconds
+                self._last_heartbeat_monotonic is None
+                or (self._monotonic() - self._last_heartbeat_monotonic) >= self._heartbeat_interval_seconds
             ):
                 try:
-                    hb = self._channel.heartbeat(binding=binding, session=session, now=tick_now)
-                    self._last_heartbeat_at = tick_now
-                    self._last_seen_at = hb.last_seen_at
+                    hb = self._channel.heartbeat(
+                        binding=binding,
+                        session=session,
+                        now=tick_now,
+                        previous_last_seen_at=self._previous_last_seen_for(session),
+                    )
+                    self._promote_heartbeat(session=session, receipt=hb, at=tick_now)
                 except Exception as exc:
                     self._handle_transport_error(exc)
                     return 0
+
+            # #3140 PHASE 3: server-owned ONLINE promotion, before any polled
+            # command can be dispatched.
+            self._promote_binding_online(session=session, now=tick_now)
 
             # #3128: reconcile anything a previous process left unacknowledged
             # before dispatching new work. This never executes anything; it
@@ -662,9 +761,13 @@ class LocalAgentResidentRuntimeHost:
                 ttl_seconds=self._session_ttl_seconds,
             )
             self._session = session
-            hb = self._channel.heartbeat(binding=binding, session=session, now=tick_now)
-            self._last_heartbeat_at = tick_now
-            self._last_seen_at = hb.last_seen_at
+            hb = self._channel.heartbeat(
+                binding=binding,
+                session=session,
+                now=tick_now,
+                previous_last_seen_at=self._previous_last_seen_for(session),
+            )
+            self._promote_heartbeat(session=session, receipt=hb, at=tick_now)
             self._state = ResidentHostState.ONLINE
             self._consecutive_failures = 0
             self._current_backoff = self._initial_backoff_seconds
