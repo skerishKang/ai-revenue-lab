@@ -189,10 +189,46 @@ class LoopbackRequestPort:
         return json.loads(json.dumps(response.body))
 
 
-def make_request_port() -> LoopbackRequestPort:
-    """Factory used by the resident's configured broker entry."""
+class BrokerClientPort:
+    """A client port that *connects* to the one shared broker.
 
-    return LoopbackPairingBroker().request_port()
+    #3140: the resident must never stand up an authority of its own. This port
+    reaches the broker owned by the separate broker process over the loopback
+    service, so the Web leg and the resident redeem leg cross the same canonical
+    authority rather than two deterministic reconstructions of one.
+    """
+
+    def __init__(self, base_url: str) -> None:
+        self._base_url = base_url.rstrip("/")
+
+    def post(self, *, config: Any, operation: Any, payload: dict, timeout_seconds: int) -> dict:
+        import urllib.request
+
+        body = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        request = urllib.request.Request(
+            f"{self._base_url}/{operation.value}",
+            data=body,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(request, timeout=timeout_seconds or 10) as response:
+            return json.loads(response.read().decode("utf-8"))
+
+
+def make_request_port() -> BrokerClientPort:
+    """Client factory for the resident's configured broker entry.
+
+    It connects to the broker owner process. It does not create an authority:
+    a process that minted its own broker could redeem a code that no Web
+    session ever received.
+    """
+
+    import os
+
+    base_url = os.environ.get("PADIEM_AGENT_BROKER_URL")
+    if not base_url:
+        raise ContractError("PADIEM_AGENT_BROKER_URL must name the shared broker service")
+    return BrokerClientPort(base_url)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -203,12 +239,38 @@ def main(argv: list[str] | None = None) -> int:
     """
 
     arguments = list(sys.argv[1:] if argv is None else argv)
-    if arguments[:1] != ["--issue-handoff"]:
+    if arguments[:1] not in (["--issue-handoff"], ["--web-issue"]):
         sys.stderr.write("usage: python -m kagent.local_agent_broker_pairing_handoff_entry --issue-handoff\n")
         return 2
-    broker = LoopbackPairingBroker()
-    now = datetime.now(timezone.utc).replace(microsecond=0)
-    issued = broker.web_issue_challenge(now=now)
+    # #3140: the web leg issues through the running owner when one is
+    # configured, so the challenge belongs to the authority the resident will
+    # redeem at. A private instance is only the single-process fallback.
+    import os
+    import urllib.request
+
+    broker_url = os.environ.get("PADIEM_AGENT_BROKER_URL")
+    if broker_url:
+        body = json.dumps(
+            {
+                "account_ref": "account.1",
+                "workspace_ref": "workspace.1",
+                "now": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+                "ttl_seconds": 300,
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        request = urllib.request.Request(
+            f"{broker_url}/pairings/challenge", data=body,
+            headers={"Content-Type": "application/json"}, method="POST",
+        )
+        with urllib.request.urlopen(request, timeout=10) as response:
+            issued = json.loads(response.read().decode("utf-8"))
+    else:
+        broker = LoopbackPairingBroker()
+        issued = broker.web_issue_challenge(
+            now=datetime.now(timezone.utc).replace(microsecond=0)
+        )
     sys.stdout.write(
         json.dumps(
             {
@@ -224,5 +286,84 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
+def serve(host: str = "127.0.0.1", port: int = 0) -> int:
+    """Own the one non-Production broker authority and serve it.
+
+    This process is the owner: it holds the single broker and pairing authority
+    both legs reach. It binds loopback only and is never a public ingress.
+    """
+
+    import http.server
+    import threading
+    import urllib.parse
+
+    broker = LoopbackPairingBroker()
+    holder = {"url": ""}
+
+    class Handler(http.server.BaseHTTPRequestHandler):
+        def do_POST(self) -> None:  # noqa: N802 — BaseHTTPRequestHandler surface
+            length = int(self.headers.get("Content-Length", "0"))
+            payload = json.loads(self.rfile.read(length).decode("utf-8")) if length else {}
+            path_only = urllib.parse.urlparse(self.path).path
+            # The canonical routes are versioned; accept the short form and map
+            # it onto the real one so a caller cannot address a bare path.
+            if path_only.startswith("/v1/"):
+                route = path_only
+            else:
+                route = f"/v1/broker/{path_only.lstrip('/')}"
+            auth = _auth_for_route(route)
+            body = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            response = broker.handler.handle(
+                method="POST",
+                route=route,
+                content_type="application/json",
+                body=body,
+                auth=auth,
+            )
+            out = json.dumps(response.body, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            self.send_response(response.status)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(out)))
+            self.end_headers()
+            self.wfile.write(out)
+
+        def log_message(self, *args: Any) -> None:
+            return
+
+    def _auth_for_route(route: str):
+        from padiem_control_plane.local_agent_broker_http import (
+            TrustedLocalAgentHttpAuthContext,
+        )
+
+        if "pairings/challenge" in route:
+            return TrustedLocalAgentHttpAuthContext(
+                principal_ref="principal.browser.3140",
+                account_ref="account.1", workspace_ref="workspace.1",
+                authenticated=True, tls_verified=True,
+            )
+        return broker._device_auth
+
+    server = http.server.HTTPServer((host, port), Handler)
+    holder["url"] = f"http://{host}:{server.server_address[1]}"
+    sys.stdout.write(
+        json.dumps(
+            {"broker_url": holder["url"], "owner_process": True,
+             "public_inbound_port": 0},
+            sort_keys=True, separators=(",", ":"),
+        )
+    )
+    sys.stdout.flush()
+    try:
+        # The owner holds the one authority for the life of this process.
+        server.serve_forever()
+    except KeyboardInterrupt:  # pragma: no cover — operator shutdown
+        pass
+    finally:
+        server.server_close()
+    return 0
+
+
 if __name__ == "__main__":
+    if "--serve" in sys.argv[1:]:
+        raise SystemExit(serve())
     raise SystemExit(main())

@@ -328,8 +328,10 @@ class ResidentProcess3140Test(unittest.TestCase):
                 request_port=object(), credential_dir=tempfile.mkdtemp(),
             )
 
-    def test_host_composition_fails_closed_without_the_trusted_probe(self) -> None:
-        """Item 6: no P01 product pass is claimed before #3148."""
+    def test_host_composition_uses_the_real_3148_worktree_probe(self) -> None:
+        """#3148: the product composition is now backed by the real probe."""
+
+        from kagent.local_agent_worktree_state import WindowsGitWorktreeStatePort
 
         broker = _SharedBroker()
         credential_dir = tempfile.mkdtemp(prefix="claw4-3140-cred-")
@@ -343,35 +345,11 @@ class ResidentProcess3140Test(unittest.TestCase):
                 _handoff(challenge_id, pairing_code), entry=entry, base_dir=base_dir,
                 now=BASE + timedelta(seconds=1), protected_data=_ProtectedDataPort(),
             )
-            with self.assertRaises(ContractError) as refused:
-                build_resident_host(redeemed, entry=entry)
-        self.assertIn("worktree-state probe", str(refused.exception))
-
-        # With the trusted ports injected the same composition succeeds, which is
-        # what proves the refusal above is the seam's rule and not a dead end.
-        from kagent.local_agent_permissions import default_device_permission_profile
-        from kagent.local_agent import (
-            LocalAgentDeviceProfile,
-            LocalAgentPlatform,
-            LocalRoot,
-        )
-
-        device = LocalAgentDeviceProfile(
-            device_id=DEVICE_ID,
-            workspace_ref="workspace.1",
-            platform=LocalAgentPlatform.WINDOWS,
-            roots=(LocalRoot(root_ref="root.3140", windows_path="C:/ProgramData/Padiem/runner"),),
-        )
-        with tempfile.TemporaryDirectory() as base_dir:
-            host = build_resident_host(
-                redeemed,
-                entry=entry,
-                authorization_port=P01LocalPermissionWindowsExecutionAuthorizationPort(
-                    permission_profile=default_device_permission_profile(device=device)
-                ),
-                worktree_state_port=DeterministicWorktreeStatePort(dirty=False),
-            )
+            # No explicit probe: the real #3148 one is the default, so the
+            # canonical P01 seam composes instead of refusing.
+            host = build_resident_host(redeemed, entry=entry)
         self.assertIsNotNone(host)
+        self.assertTrue(hasattr(WindowsGitWorktreeStatePort(), "is_dirty"))
 
     def test_credential_dir_is_required_and_the_run_store_is_durable(self) -> None:
         """Review item 2: no temporary credential directory, no :memory: store."""

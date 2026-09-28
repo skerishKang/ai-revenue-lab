@@ -51,39 +51,50 @@ for (const required of [
 const python = process.env.PADIEM_PYTHON ?? 'python';
 const projectRoot = process.env.PADIEM_AGENT_PROJECT_ROOT ?? '';
 
-// #3140 review item 1/4: the Web leg and the resident must meet at the SAME
-// canonical broker authority, and that broker must be reachable by both. The
-// resident never constructs one, so this harness stands up the non-Production
-// broker process and hands the resident its configured entry point.
-//
-// It publishes a loopback authority that both legs cross: the harness's web leg
-// issues the challenge through it, and the resident redeems through it. That is
-// a real same-authority redeem, not a deterministic reconstruction.
-const brokerEntry = process.env.PADIEM_AGENT_REQUEST_PORT;
-if (!brokerEntry) {
-  process.stdout.write(
-    `${JSON.stringify(
-      {
-        evidence: 'unavailable',
-        reason: 'no_configured_broker_boundary',
-        detail:
-          'publish a non-Production broker the Web leg and the resident both reach ' +
-          '(PADIEM_AGENT_REQUEST_PORT=module:factory)',
-        pairing_code_in_output: false,
-      },
-      null,
-      2,
-    )}
-`,
-  );
-  process.exit(5);
+// #3140: ONE non-Production broker authority, owned by a separate process.
+// Both legs cross it: the web leg below issues the challenge through it, and
+// the resident is configured with a *client* port that connects to it. Neither
+// side mints an authority, so the redeem is a real same-authority one.
+if (!projectRoot) {
+  console.error('PADIEM_AGENT_PROJECT_ROOT is required');
+  process.exit(2);
 }
+
+const brokerProcess = spawn(
+  python,
+  ['-m', 'kagent.local_agent_broker_pairing_handoff_entry', '--serve'],
+  { cwd: projectRoot, shell: false, stdio: ['ignore', 'pipe', 'pipe'] },
+);
+let brokerSettled = false;
+const brokerUrl = await new Promise((resolve, reject) => {
+  let text = '';
+  brokerProcess.stdout.on('data', (chunk) => {
+    text += String(chunk);
+    const lines = text.split(String.fromCharCode(10)).filter((line) => line.trim().length > 0);
+    if (lines.length > 0) {
+      try {
+        brokerSettled = true;
+        resolve(JSON.parse(lines[lines.length - 1]).broker_url);
+      } catch {
+        // Keep reading until the owner prints its URL.
+      }
+    }
+  });
+  brokerProcess.once('exit', (code) => {
+    if (!brokerSettled) reject(new Error(`broker owner exited ${code}`));
+  });
+  brokerProcess.once('error', reject);
+});
+// The resident connects to the owner; it does not create one.
+process.env.PADIEM_AGENT_REQUEST_PORT =
+  'kagent.local_agent_broker_pairing_handoff_entry:make_request_port';
+process.env.PADIEM_AGENT_BROKER_URL = brokerUrl;
 
 // The Web leg: ask that broker for a challenge, so the code the deep link
 // carries is the one the resident will actually redeem.
 const issue = spawn(
   python,
-  ['-m', 'kagent.local_agent_broker_pairing_handoff_entry', '--issue-handoff'],
+  ['-m', 'kagent.local_agent_broker_pairing_handoff_entry', '--web-issue'],
   { cwd: projectRoot, shell: false, stdio: ['ignore', 'pipe', 'pipe'] },
 );
 let issuedText = '';
@@ -112,7 +123,6 @@ const env = {
   ...process.env,
   PADIEM_AGENT_PROJECT_ROOT: projectRoot,
   PADIEM_PYTHON: python,
-  PADIEM_AGENT_REQUEST_PORT: brokerEntry,
   // The resident is configured with the boundary it must redeem at.
   PADIEM_AGENT_DEVICE_ID: 'device.3140.resident',
   PADIEM_AGENT_AUTHORITY_REF: 'control-plane.local-agent-broker.3140.loopback.v1',
@@ -169,6 +179,7 @@ const summary = {
   pairing_code_in_output: output.includes(pairingCode),
 };
 process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`);
+brokerProcess.kill();
 rmSync(logDir, { recursive: true, force: true });
 const flowReported = (evidence?.main_flow_lines ?? []).find((line) => line.includes('"status"'));
 process.stdout.write(`${JSON.stringify({ ...summary, flow_reported: flowReported ?? null }, null, 2)}

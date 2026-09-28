@@ -67,6 +67,7 @@ from .local_agent_secure_transport import (
     ProtectedFileDeviceCredentialStore,
     WindowsDpapiProtectedDataPort,
 )
+from .local_agent_worktree_state import WindowsGitWorktreeStatePort
 from .windows_execution_authorization import (
     P01LocalPermissionWindowsExecutionAuthorizationPort,
 )
@@ -330,15 +331,17 @@ def build_resident_host(
                 executable_path=WINDOWS_PYTHON_EXECUTABLE,
             ),
         ),
-        # #3148/CLAW2 owns the real worktree probe. Until it lands this seam
-        # refuses, so the host is never started with an executor that would have
-        # to be trusted afterwards.
         authorization_port=authorization_port
         if authorization_port is not None
         else P01LocalPermissionWindowsExecutionAuthorizationPort(
             permission_profile=default_device_permission_profile(device=device)
         ),
-        worktree_state_port=worktree_state_port,
+        # #3148: the real Windows git worktree probe is what backs the trusted
+        # composition now. It is a probe, not a decision: a dirty or unreadable
+        # worktree stops the approved child and is reported, never hidden.
+        worktree_state_port=worktree_state_port
+        if worktree_state_port is not None
+        else WindowsGitWorktreeStatePort(),
     )
     broker_binding = PinnedOutboundBrokerBinding.from_binding(binding=binding, config=config)
     channel = ControlPlanePhysicalAdmissionChannel(
