@@ -461,6 +461,36 @@ def _drive_workspace_grant_provider_for_env(env: Any):
     )
 
 
+def _drive_case_folder_service_for_env(env: Any):
+    """B67 private Drive case-folder Engine service (#3190).
+
+    Reuses the existing ``CONTROL_PLANE_GOOGLE_OAUTH`` binding for the
+    workspace-scoped grant and the trusted Drive port, and the existing Engine
+    D1 binding (the one that owns migration 0008) for the durable selected-folder
+    store. No new binding is declared. Any missing dependency yields ``None`` so
+    the RPC fails closed instead of falling back to the global Drive grant.
+    """
+
+    from app.drive_case_folder_binding import (
+        CloudflareD1DriveCaseFolderBindingStore,
+        DriveCaseFolderBindingAuthority,
+    )
+    from app.drive_case_folder_service import DriveCaseFolderEngineService
+
+    binding = legacy_worker._binding_value(env, DOCUMENT_STORE_BINDING_NAME)
+    if binding is None:
+        return None
+    try:
+        store = CloudflareD1DriveCaseFolderBindingStore(binding)
+    except (RuntimeError, TypeError, ValueError):
+        return None
+    return DriveCaseFolderEngineService(
+        grant_provider=_drive_workspace_grant_provider_for_env(env),
+        drive_port=_drive_port_for_env(env),
+        binding_authority=DriveCaseFolderBindingAuthority(store=store),
+    )
+
+
 async def _drive_grants_for_env(env: Any) -> dict[str, DriveGrant]:
     binding = legacy_worker._binding_value(env, ENGINE_CONNECTOR_GRANTS_BINDING)
     if binding is None:

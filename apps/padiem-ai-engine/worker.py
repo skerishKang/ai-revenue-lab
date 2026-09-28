@@ -428,8 +428,38 @@ def _ndjson_response(
     )
 
 
+async def _drive_case_folder_rpc_for_env(env: Any, operation: str, payload: Any) -> dict:
+    """Run one private Drive case-folder RPC with the composed Engine service.
+
+    Composition failures degrade to ``service = None`` so the RPC layer returns
+    a bounded unavailable error instead of leaking infrastructure detail. These
+    are Service Binding RPC methods, never public fetch() routes.
+    """
+
+    from app.drive_case_folder_rpc import drive_case_folder_rpc
+    from worker_identity import _drive_case_folder_service_for_env
+
+    try:
+        service = _drive_case_folder_service_for_env(env)
+    except Exception:
+        service = None
+    return await drive_case_folder_rpc(service, operation=operation, payload=payload)
+
+
 class Default(WorkerEntrypoint):
     engine_services_factory = staticmethod(_engine_services_for_env)
+
+    async def drive_case_folder_status(self, payload: Any) -> Any:
+        return await _drive_case_folder_rpc_for_env(self.env, "drive_case_folder_status", payload)
+
+    async def drive_case_folder_folders(self, payload: Any) -> Any:
+        return await _drive_case_folder_rpc_for_env(self.env, "drive_case_folder_folders", payload)
+
+    async def drive_case_folder_select(self, payload: Any) -> Any:
+        return await _drive_case_folder_rpc_for_env(self.env, "drive_case_folder_select", payload)
+
+    async def drive_case_folder_clear(self, payload: Any) -> Any:
+        return await _drive_case_folder_rpc_for_env(self.env, "drive_case_folder_clear", payload)
 
     async def fetch(self, request: Any) -> Any:
         path = urlparse(str(request.url)).path
