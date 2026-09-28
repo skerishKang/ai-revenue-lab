@@ -204,7 +204,7 @@ const sloppy = Template.normalizeTemplateContent({
   page: { size: "A4", margin: "10mm" }
 });
 check(sloppy !== null, "sloppy content normalizes against defaults");
-check(sloppy.style.accent === "#111827", "invalid accent colour falls back to the built-in token");
+check(sloppy.style.accent === "#17202a", "invalid accent colour falls back to the built-in token");
 check(sloppy.style.titleRule === "2px solid #111827", "invalid border token falls back");
 check(sloppy.style.headerAlignment === "space-between", "invalid alignment falls back");
 check(sloppy.totals.supplyLabel === "공급가액", "missing label falls back to built-in");
@@ -225,6 +225,119 @@ check(
 check(Template.normalizeTemplateContent({ items: { columns: [] } }) === null, "missing sections fail closed");
 check(Template.normalizeTemplateContent(builtinContent()) !== null, "valid content normalizes");
 
+/* APPROVAL_REQUIRED_FOR_USER_PROFILE — #3181 Candidate → explicit Approval → Profile 경계 */
+check(Template.APPROVAL_SCHEMA_VERSION === 1, "approval schema version");
+check(Template.SLOT_SUPPORT === "non_live", "slot support is declared non-live");
+check(Template.ALLOWED_ALIGNMENTS.indexOf("right") !== -1, "alignment enum is exported");
+check(Template.isBuiltInException(profile) === true, "built-in is the trusted exception");
+check(profile.approved === true && profile.approvalBasis === "trusted_builtin", "built-in is approved by exception");
+check(profile.approval === null, "built-in carries no approval evidence");
+
+const candidate = Template.buildProfile({
+  id: "u1", name: "u1", builtin: false, isDefault: false, approval: null,
+  createdAt: "", updatedAt: "", content: builtinContent()
+});
+check(candidate.approved === false, "a profile without approval evidence is not approved");
+check(candidate.approvalBasis === "unapproved", "unapproved basis is recorded");
+check(Template.isApprovedProfile(candidate) === false, "unapproved profile is not an active profile");
+check(Template.isBuiltInException(candidate) === false, "a user profile is not the built-in exception");
+
+const goodEvidence = {
+  schemaVersion: 1,
+  status: "approved",
+  contentFingerprint: candidate.fingerprint,
+  approvedBy: "central-cto",
+  approvedAt: "2026-09-28T05:00:00Z"
+};
+const approvedCandidate = Template.buildProfile({
+  id: "u1", name: "u1", builtin: false, isDefault: false, approval: goodEvidence,
+  createdAt: "", updatedAt: "", content: builtinContent()
+});
+check(approvedCandidate.approved === true, "matching approval evidence activates the profile");
+check(approvedCandidate.approvalBasis === "explicit_approval", "explicit approval basis is recorded");
+check(approvedCandidate.fingerprint === candidate.fingerprint, "approval does not change the content fingerprint");
+
+/* negative: 결함 있는 승인 증거는 전부 거부된다 */
+[
+  null, {}, "approved",
+  Object.assign({}, goodEvidence, { schemaVersion: 9 }),
+  Object.assign({}, goodEvidence, { status: "candidate" }),
+  Object.assign({}, goodEvidence, { contentFingerprint: "f".repeat(64) }),
+  Object.assign({}, goodEvidence, { contentFingerprint: "not-a-hash" }),
+  Object.assign({}, goodEvidence, { approvedBy: "" }),
+  Object.assign({}, goodEvidence, { approvedBy: "a" }),
+  Object.assign({}, goodEvidence, { approvedBy: "<script>" }),
+  Object.assign({}, goodEvidence, { approvedAt: "2026-09-28 05:00:00" }),
+  Object.assign({}, goodEvidence, { approvedAt: "" }),
+  Object.assign({}, goodEvidence, { approvalRef: "<bad>" })
+].forEach((evidence, index) => {
+  check(Template.normalizeApproval(evidence, candidate.fingerprint) === null, `invalid approval rejected #${index}`);
+});
+check(Template.normalizeApproval(goodEvidence, candidate.fingerprint) !== null, "valid approval accepted");
+check(Template.approvalIsValid(goodEvidence, candidate.fingerprint) === true, "approvalIsValid confirms a match");
+
+/* CONTENT_CHANGE_INVALIDATES_APPROVAL — 지문이 바뀌면 승인은 무효다 */
+const changedContent = builtinContent();
+changedContent.style.accent = "#8a1f1f";
+check(Template.templateFingerprint(changedContent) !== candidate.fingerprint, "content change moves the fingerprint");
+check(Template.approvalIsValid(goodEvidence, Template.templateFingerprint(changedContent)) === false,
+  "content change invalidates the approval");
+
+/* 지문 필드가 내용과 어긋나는 기록은 fail closed 다 */
+const mismatchedEntry = Template.serializeTemplate(approvedCandidate);
+mismatchedEntry.fingerprint = "0".repeat(64);
+check(Template.normalizeTemplate(mismatchedEntry) === null, "fingerprint mismatch fails closed");
+
+/* 내용이 바뀐 저장 항목은 후보로 남되 승인을 보존하지 않는다 */
+const staleEntry = Template.serializeTemplate(approvedCandidate);
+staleEntry.content = changedContent;
+staleEntry.fingerprint = Template.templateFingerprint(changedContent);
+const staleNormalized = Template.normalizeTemplate(staleEntry);
+check(staleNormalized !== null, "a template with stale approval is still readable as a candidate");
+check(staleNormalized.approved === false, "stale approval does not keep the profile approved");
+check(staleNormalized.approval === null, "stale approval is dropped, never silently preserved");
+
+/* metadata(이름) 변경은 지문을 바꾸지 않으므로 재승인이 필요 없다 */
+const renamedApproved = Template.buildProfile({
+  id: "u1", name: "다른 이름", builtin: false, isDefault: false, approval: goodEvidence,
+  createdAt: "", updatedAt: "", content: builtinContent()
+});
+check(renamedApproved.fingerprint === approvedCandidate.fingerprint, "rename keeps the content fingerprint");
+check(renamedApproved.approved === true, "rename does not require re-approval");
+
+/* PAGE/ALIGNMENT/SLOT — bounded enum·정규식만 통과한다 */
+const pageAlt = Template.normalizeTemplateContent(Object.assign(builtinContent(), {
+  page: { size: "A5", margin: "8mm", orientation: "landscape" },
+  style: Object.assign({}, builtinContent().style, {
+    headerAlignment: "flex-end", metaAlignment: "center", numericAlignment: "left",
+    textAlignment: "center", totalsWidth: "420px"
+  })
+}));
+check(pageAlt.page.size === "A5" && pageAlt.page.orientation === "landscape" && pageAlt.page.margin === "8mm",
+  "valid page override accepted");
+check(pageAlt.style.headerAlignment === "flex-end" && pageAlt.style.metaAlignment === "center",
+  "valid alignment override accepted");
+check(pageAlt.style.totalsWidth === "420px", "valid totals width accepted");
+
+const pageSloppy = Template.normalizeTemplateContent(Object.assign(builtinContent(), {
+  page: { size: "A4} </style><script>alert(1)</script>", margin: "10mm; } body{display:none}", orientation: "diagonal" },
+  style: Object.assign({}, builtinContent().style, { headerAlignment: "middle", metaAlignment: "justify" })
+}));
+check(pageSloppy.page.size === "A4", "invalid page size falls back");
+check(pageSloppy.page.margin === "10mm", "invalid page margin falls back");
+check(pageSloppy.page.orientation === "portrait", "invalid orientation falls back");
+check(pageSloppy.style.headerAlignment === "space-between", "invalid justify falls back");
+check(pageSloppy.style.metaAlignment === "right", "invalid alignment falls back");
+
+const slotBad = Template.normalizeTemplateContent(Object.assign(builtinContent(), {
+  slots: { logo: "</style><img src=x>", stamp: "" }
+}));
+check(slotBad.slots.logo === "", "invalid slot reference falls back to empty");
+const slotOk = Template.normalizeTemplateContent(Object.assign(builtinContent(), {
+  slots: { logo: "brand-2026", stamp: "" }
+}));
+check(slotOk.slots.logo === "brand-2026", "bounded slot reference is preserved in the non-live contract");
+
 /* HTML 이스케이프 단일 구현 */
 check(Template.escapeHtml('<b>"x"&\'') === "&lt;b&gt;&quot;x&quot;&amp;&#039;", "escapeHtml escapes markup");
 check(Template.isBuiltInTemplate(profile) === true, "isBuiltInTemplate true for built-in");
@@ -237,6 +350,10 @@ check(
 );
 
 console.log("QUOTE_TEMPLATE_PROFILE_CONTRACT=PASS");
+console.log("APPROVAL_REQUIRED_FOR_USER_PROFILE=YES");
+console.log("CONTENT_CHANGE_INVALIDATES_APPROVAL=YES");
+console.log("UNAPPROVED_TEMPLATE_ACTIVATION=0");
+console.log("SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY");
 console.log("TEMPLATE_FINGERPRINT_DETERMINISTIC=PASS");
 console.log("TEMPLATE_CANONICAL_JSON=PASS");
 console.log("TEMPLATE_FORBIDDEN_FIELD_REJECTION=PASS");

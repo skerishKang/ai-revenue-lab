@@ -24,15 +24,30 @@
   var MAX_TEMPLATE_NODES = 512;
   var MAX_TEMPLATE_CONTENT_BYTES = 64 * 1024;
 
+  /* 승인 증거(#3181 semantics). candidate 는 승인 없이 활성 profile 이 될 수 없다. */
+  var APPROVAL_SCHEMA_VERSION = 1;
+  var MAX_APPROVER_REF_CHARS = 128;
+
+  /* logo/stamp slot 은 이번 MVP 에서 non-live 다. 값이 선언되면 명시적으로 거부한다. */
+  var SLOT_SUPPORT = "non_live";
+
   var ALLOWED_SECTIONS = ["title", "meta", "parties", "items", "totals", "memo", "mark"];
   var ALLOWED_COLUMN_KEYS = ["name", "qty", "unitPrice", "amount"];
   var ALLOWED_ALIGNMENTS = ["left", "right", "center"];
+  var ALLOWED_JUSTIFY = ["flex-start", "center", "flex-end", "space-between", "space-around"];
+  var ALLOWED_PAGE_SIZES = ["A4", "A5", "Legal", "Letter"];
+  var ALLOWED_ORIENTATIONS = ["portrait", "landscape"];
   var ALLOWED_TAX_MODES = ["EXCLUSIVE", "INCLUSIVE", "EXEMPT"];
 
   var ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$/;
   var HEX_COLOR_PATTERN = /^#[0-9a-fA-F]{3,8}$/;
   var CSS_TOKEN_PATTERN = /^[0-9A-Za-z#.,%()\- ]{1,64}$/;
   var MEASURE_PATTERN = /^[0-9A-Za-z.%]{1,16}$/;
+  var PAGE_MARGIN_PATTERN = /^\d{1,2}(?:\.\d{1,2})?(?:mm|cm|in)$/;
+  var SLOT_REF_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:/@-]{0,127}$/;
+  var APPROVER_REF_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:@/-]{2,127}$/;
+  var ISO_UTC_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?Z$/;
+  var SHA256_HEX_PATTERN = /^[0-9a-f]{64}$/;
 
   /* 계산 authority 침범 / 자격증명 / 원본 파일 바이트를 템플릿에 저장하는 키.
      정규화는 허용 키 화이트리스트로 동작하므로 이런 키는 애초에 보존되지 않지만,
@@ -114,7 +129,7 @@
     mark: { text: "견적서 베타" },
     slots: { logo: "", stamp: "" },
     style: {
-      accent: "#111827",
+      accent: "#17202a",
       titleRule: "2px solid #111827",
       tableHeaderRule: "1px solid #111827",
       tableRowRule: "1px solid #e4e7ec",
@@ -156,6 +171,27 @@
 
   function cleanAlignment(value, fallback) {
     return ALLOWED_ALIGNMENTS.indexOf(value) === -1 ? fallback : value;
+  }
+
+  function cleanEnum(value, allowed, fallback) {
+    return allowed.indexOf(value) === -1 ? fallback : value;
+  }
+
+  function cleanJustify(value, fallback) {
+    return ALLOWED_JUSTIFY.indexOf(value) === -1 ? fallback : value;
+  }
+
+  function cleanPageMargin(value, fallback) {
+    if (typeof value !== "string" || !PAGE_MARGIN_PATTERN.test(value)) return fallback;
+    return value;
+  }
+
+  function cleanSlotRef(value, fallback) {
+    if (typeof value !== "string") return fallback;
+    var trimmed = value.trim();
+    if (!trimmed) return fallback;
+    if (!SLOT_REF_PATTERN.test(trimmed)) return fallback;
+    return trimmed.slice(0, MAX_TEMPLATE_STRING_CHARS);
   }
 
   function normalizeTemplateId(value) {
@@ -392,7 +428,7 @@
       tableRowRule: cleanToken(source.tableRowRule, fallback.tableRowRule),
       partyRule: cleanToken(source.partyRule, fallback.partyRule),
       memoRule: cleanToken(source.memoRule, fallback.memoRule),
-      headerAlignment: cleanAlignment(source.headerAlignment, fallback.headerAlignment),
+      headerAlignment: cleanJustify(source.headerAlignment, fallback.headerAlignment),
       metaAlignment: cleanAlignment(source.metaAlignment, fallback.metaAlignment),
       numericAlignment: cleanAlignment(source.numericAlignment, fallback.numericAlignment),
       textAlignment: cleanAlignment(source.textAlignment, fallback.textAlignment),
@@ -425,9 +461,9 @@
         ? raw.layoutVersion
         : defaults.layoutVersion,
       page: {
-        size: cleanMeasure(page.size, defaults.page.size),
-        margin: cleanMeasure(page.margin, defaults.page.margin),
-        orientation: page.orientation === "landscape" ? "landscape" : defaults.page.orientation
+        size: cleanEnum(page.size, ALLOWED_PAGE_SIZES, defaults.page.size),
+        margin: cleanPageMargin(page.margin, defaults.page.margin),
+        orientation: cleanEnum(page.orientation, ALLOWED_ORIENTATIONS, defaults.page.orientation)
       },
       sections: sections,
       title: { text: boundString(title.text, defaults.title.text) },
@@ -472,8 +508,8 @@
       memo: { emptyText: boundString(memo.emptyText, defaults.memo.emptyText) },
       mark: { text: boundString(mark.text, defaults.mark.text) },
       slots: {
-        logo: boundString(slots.logo, defaults.slots.logo),
-        stamp: boundString(slots.stamp, defaults.slots.stamp)
+        logo: cleanSlotRef(slots.logo, defaults.slots.logo),
+        stamp: cleanSlotRef(slots.stamp, defaults.slots.stamp)
       },
       style: normalizeStyle(raw.style),
       fallbackText: boundString(raw.fallbackText, defaults.fallbackText)
@@ -501,17 +537,68 @@
     }
   }
 
+  /* ── 승인 증거: 지문이 일치하는 explicit approval 만 유효하다 ── */
+
+  function normalizeApproval(raw, contentFingerprint) {
+    if (!isPlainObject(raw)) return null;
+    if (raw.schemaVersion !== APPROVAL_SCHEMA_VERSION) return null;
+    if (raw.status !== "approved") return null;
+    if (typeof contentFingerprint !== "string" || !SHA256_HEX_PATTERN.test(contentFingerprint)) return null;
+    /* 승인 이후 내용이 바뀌면 여기서 무효가 된다(조용한 보존 금지). */
+    if (raw.contentFingerprint !== contentFingerprint) return null;
+
+    var approvedBy = typeof raw.approvedBy === "string" ? raw.approvedBy.trim() : "";
+    if (!APPROVER_REF_PATTERN.test(approvedBy)) return null;
+
+    var approvedAt = typeof raw.approvedAt === "string" ? raw.approvedAt.trim() : "";
+    if (!ISO_UTC_PATTERN.test(approvedAt)) return null;
+
+    var approvalRef = typeof raw.approvalRef === "string" ? raw.approvalRef.trim() : "";
+    if (approvalRef && !APPROVER_REF_PATTERN.test(approvalRef)) return null;
+
+    return {
+      schemaVersion: APPROVAL_SCHEMA_VERSION,
+      status: "approved",
+      contentFingerprint: contentFingerprint,
+      approvedBy: approvedBy.slice(0, MAX_APPROVER_REF_CHARS),
+      approvedAt: approvedAt,
+      approvalRef: approvalRef.slice(0, MAX_APPROVER_REF_CHARS)
+    };
+  }
+
+  function approvalIsValid(approval, contentFingerprint) {
+    return normalizeApproval(approval, contentFingerprint) !== null;
+  }
+
+  /* 내장 기본은 별도의 trusted built-in 예외다 — 코드와 테스트에 명시한다.
+     id 만으로 신뢰하지 않고 명시적 builtin 플래그만 예외로 인정한다. */
+  function isBuiltInException(profile) {
+    return Boolean(profile) && profile.builtin === true;
+  }
+
+  function isApprovedProfile(profile) {
+    if (!profile) return false;
+    if (isBuiltInException(profile)) return true;
+    return approvalIsValid(profile.approval, profile.fingerprint);
+  }
+
   function buildProfile(source) {
     var content = cloneJson(source.content);
+    var fingerprint = templateFingerprint(content);
+    var builtin = source.builtin === true;
+    var approval = builtin ? null : normalizeApproval(source.approval, fingerprint);
     return {
       schemaVersion: TEMPLATE_SCHEMA_VERSION,
       id: source.id,
       name: source.name,
-      builtin: source.builtin === true,
+      builtin: builtin,
       isDefault: source.isDefault === true,
+      approved: builtin ? true : approval !== null,
+      approvalBasis: builtin ? "trusted_builtin" : (approval ? "explicit_approval" : "unapproved"),
+      approval: approval,
       createdAt: typeof source.createdAt === "string" ? source.createdAt : "",
       updatedAt: typeof source.updatedAt === "string" ? source.updatedAt : "",
-      fingerprint: templateFingerprint(content),
+      fingerprint: fingerprint,
       content: content
     };
   }
@@ -548,6 +635,7 @@
       name: normalizeTemplateName(raw.name, id),
       builtin: raw.builtin === true,
       isDefault: raw.isDefault === true,
+      approval: raw.approval,
       createdAt: typeof raw.createdAt === "string" ? raw.createdAt.slice(0, 40) : "",
       updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt.slice(0, 40) : "",
       content: content
@@ -565,6 +653,7 @@
       name: profile.name,
       builtin: profile.builtin === true,
       isDefault: profile.isDefault === true,
+      approval: profile.approval ? cloneJson(profile.approval) : null,
       createdAt: profile.createdAt,
       updatedAt: profile.updatedAt,
       fingerprint: profile.fingerprint,
@@ -584,7 +673,18 @@
     MAX_TEMPLATE_CONTENT_BYTES: MAX_TEMPLATE_CONTENT_BYTES,
     ALLOWED_SECTIONS: ALLOWED_SECTIONS,
     ALLOWED_COLUMN_KEYS: ALLOWED_COLUMN_KEYS,
+    ALLOWED_ALIGNMENTS: ALLOWED_ALIGNMENTS,
     ALLOWED_TAX_MODES: ALLOWED_TAX_MODES,
+    ALLOWED_JUSTIFY: ALLOWED_JUSTIFY,
+    ALLOWED_PAGE_SIZES: ALLOWED_PAGE_SIZES,
+    ALLOWED_ORIENTATIONS: ALLOWED_ORIENTATIONS,
+    APPROVAL_SCHEMA_VERSION: APPROVAL_SCHEMA_VERSION,
+    MAX_APPROVER_REF_CHARS: MAX_APPROVER_REF_CHARS,
+    SLOT_SUPPORT: SLOT_SUPPORT,
+    normalizeApproval: normalizeApproval,
+    approvalIsValid: approvalIsValid,
+    isBuiltInException: isBuiltInException,
+    isApprovedProfile: isApprovedProfile,
     FORBIDDEN_TEMPLATE_KEYS: FORBIDDEN_TEMPLATE_KEYS,
     findForbiddenKeys: findForbiddenKeys,
     canonicalJson: canonicalJson,

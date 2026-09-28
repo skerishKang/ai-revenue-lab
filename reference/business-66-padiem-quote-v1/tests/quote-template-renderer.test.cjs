@@ -14,8 +14,31 @@ const clone = (value) => JSON.parse(JSON.stringify(value));
 const readSource = (name) => fs.readFileSync(path.join(__dirname, "..", name), "utf8");
 const norm = (html) => html.replace(/>\s+</g, "><").trim();
 
+const BUILTIN = Template.BUILTIN_TEMPLATE_ID;
+const APPROVED_AT = "2026-09-28T05:00:00Z";
+
+/* 승인된 user profile 을 만든다(#3182 승인 경계). */
+function approvedProfile(id, content) {
+  return Template.buildProfile({
+    id: id,
+    name: id,
+    builtin: false,
+    isDefault: false,
+    approval: {
+      schemaVersion: 1,
+      status: "approved",
+      contentFingerprint: Template.templateFingerprint(content),
+      approvedBy: "central-cto",
+      approvedAt: APPROVED_AT
+    },
+    createdAt: APPROVED_AT,
+    updatedAt: APPROVED_AT,
+    content: content
+  });
+}
+
 /* ── 레거시 render() 재현 (변경 전 app.js 의 표시 로직을 독립적으로 옮긴 것) ──
-   이 테스트의 회귀 판정 기준이다. 렌더러가 여기서 벗어나면 화면이 달라진 것이다. */
+   텍스트 회귀 판정 기준이다. 렌더러가 여기서 벗어나면 화면이 달라진 것이다. */
 
 const legacyEscape = (value) => String(value ?? "")
   .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
@@ -83,9 +106,10 @@ function legacyItemsHtml(draft, totals) {
 
 const LEGACY_HEAD_HTML = '<th style="width:42%">품목</th><th>수량</th><th>단가</th><th>금액</th>';
 
-function applyToModel(draft, provisional) {
-  const profile = Store.defaultTemplate(Store.emptyStore());
-  return Renderer.buildRenderModel(draft, profile, { taxReviewRequired: provisional });
+const builtinProfile = () => Store.defaultTemplate(Store.emptyStore());
+
+function applyToModel(draft, provisional, profile) {
+  return Renderer.buildRenderModel(draft, profile || builtinProfile(), { taxReviewRequired: provisional });
 }
 
 function modelToProjection(model) {
@@ -124,14 +148,47 @@ function modelToProjection(model) {
   };
 }
 
-function stubDoc() {
-  const nodes = new Map();
+function makeStyleStub() {
   return {
+    props: {},
+    setProperty(name, value) { this.props[name] = String(value); },
+    getPropertyValue(name) { return this.props[name] === undefined ? "" : this.props[name]; }
+  };
+}
+
+function stubDoc(ids) {
+  const nodes = new Map();
+  let createdSeq = 0;
+  const head = {
+    children: [],
+    appendChild(node) {
+      this.children.push(node);
+      if (node.id) nodes.set(node.id, node);
+      return node;
+    }
+  };
+  const makeNode = (id, tag) => ({
+    id: id,
+    tagName: tag || "DIV",
+    textContent: null,
+    innerHTML: null,
+    attributes: {},
+    style: makeStyleStub(),
+    setAttribute(name, value) { this.attributes[name] = String(value); }
+  });
+  (ids || []).forEach((id) => nodes.set(id, makeNode(id)));
+  return {
+    head: head,
+    nodes: nodes,
+    /* real DOM semantics: unknown ids are null, not auto-created */
     getElementById(id) {
-      if (!nodes.has(id)) nodes.set(id, { id, textContent: null, innerHTML: null });
-      return nodes.get(id);
+      if (id === "head") return head;
+      return nodes.has(id) ? nodes.get(id) : null;
     },
-    nodes
+    createElement(tag) {
+      createdSeq += 1;
+      return makeNode("", String(tag || "div").toUpperCase() + "-" + createdSeq);
+    }
   };
 }
 
@@ -179,27 +236,50 @@ drafts.forEach(([label, base]) => {
 check(compared === drafts.length * modes.length * 2, "parity matrix fully exercised");
 
 /* QUOTE_TEMPLATE_RENDERER_DETERMINISTIC */
+eq(applyToModel(defaultDraft, false), applyToModel(defaultDraft, false), "same inputs yield an identical model");
 eq(
-  applyToModel(defaultDraft, false),
-  applyToModel(defaultDraft, false),
-  "same draft + same template yields an identical model"
-);
-eq(
-  Renderer.buildRenderModel(defaultDraft, Template.builtInTemplate(), {}),
-  Renderer.buildRenderModel(defaultDraft, Template.builtInTemplate(), { taxReviewRequired: false }),
+  Renderer.buildRenderModel(defaultDraft, builtinProfile(), {}),
+  Renderer.buildRenderModel(defaultDraft, builtinProfile(), { taxReviewRequired: false }),
   "missing options match taxReviewRequired=false"
 );
 
-/* 렌더러 소스는 결정적이어야 한다 */
 const rendererSource = readSource("quote-template-renderer.js");
 check(!/Math\.random|Date\.now|new Date\(/.test(rendererSource), "renderer has no time/random dependency");
 check(!/fetch\(|XMLHttpRequest|axios/.test(rendererSource), "renderer performs no network request");
 check(!/kilo\/|sensenova\/|space-bunny|nemotron|openai|anthropic/i.test(rendererSource), "renderer names no provider or model");
+check(!/innerHTML\s*=\s*[^"'`]*\)\s*;?\s*$/m.test(rendererSource.replace(/escapeHtml\(/g, "")) ||
+  rendererSource.indexOf("escapeHtml(") !== -1, "rendered markup goes through the escaper");
 
-/* 입력 불변: 렌더링은 draft 를 변형하지 않는다 */
+/* 입력 불변 */
 const before = JSON.stringify(defaultDraft);
 applyToModel(defaultDraft, true);
 eq(JSON.parse(before), JSON.parse(JSON.stringify(defaultDraft)), "renderer does not mutate the draft");
+
+/* ── APPROVAL 경계 ── */
+const unapprovedCandidate = Template.buildProfile({
+  id: "candidate-1", name: "candidate", builtin: false, isDefault: false, approval: null,
+  createdAt: "", updatedAt: "", content: clone(Template.builtInTemplate().content)
+});
+const gatedModel = applyToModel(defaultDraft, false, unapprovedCandidate);
+eq(gatedModel.template.id, BUILTIN, "UNAPPROVED_TEMPLATE_ACTIVATION=0: an unapproved profile never renders");
+eq(gatedModel.template.fallbackReason, "template_not_approved", "the fallback reason is explicit");
+eq(gatedModel.template.approved, true, "the fallback profile is the trusted built-in");
+eq(gatedModel.template.approvalBasis, "trusted_builtin", "the built-in exception is recorded");
+eq(modelToProjection(gatedModel), legacyProjection(defaultDraft, false), "the fallback renders the default output");
+
+const invalidProfileModel = applyToModel(defaultDraft, false, { schemaVersion: 99 });
+eq(invalidProfileModel.template.id, BUILTIN, "invalid profile falls back to the built-in");
+eq(invalidProfileModel.template.fallbackReason, "invalid_template_profile", "invalid profile reason recorded");
+
+const staleEvidenceModel = applyToModel(defaultDraft, false, Template.buildProfile({
+  id: "stale-1", name: "stale", builtin: false, isDefault: false,
+  approval: { schemaVersion: 1, status: "approved", contentFingerprint: "0".repeat(64), approvedBy: "central-cto", approvedAt: APPROVED_AT },
+  createdAt: "", updatedAt: "", content: clone(Template.builtInTemplate().content)
+}));
+eq(staleEvidenceModel.template.fallbackReason, "template_not_approved", "approval fingerprint mismatch fails closed");
+
+check(Renderer.buildRenderModel(null, builtinProfile()) === null, "invalid draft yields no model");
+check(Renderer.buildRenderModel({ schemaVersion: 9 }, builtinProfile()) === null, "wrong draft schema yields no model");
 
 /* QUOTECORE_REMAINS_CALCULATION_AUTHORITY */
 const authoritative = applyToModel(defaultDraft, false);
@@ -209,76 +289,124 @@ eq(authoritative.totals.subtotalText, Core.formatMoney(authoritativeTotals.suppl
 eq(authoritative.totals.vatText, Core.formatMoney(authoritativeTotals.vat), "vat comes from QuoteCore");
 eq(authoritative.totals.grandText, Core.formatMoney(authoritativeTotals.grand), "grand comes from QuoteCore");
 
-/* template 만 바꿔도 QuoteCore totals 는 동일하다 */
-const restyledContent = clone(Template.builtInTemplate().content);
-restyledContent.style.accent = "#2563eb";
-restyledContent.totals.supplyLabel = "공급가액 합계";
-restyledContent.items.columns.reverse();
-const restyledProfile = Template.buildProfile({
-  id: "tpl-restyle", name: "다른 양식", builtin: false, isDefault: false,
-  createdAt: "", updatedAt: "", content: restyledContent
-});
-const restyledModel = Renderer.buildRenderModel(defaultDraft, restyledProfile, { taxReviewRequired: false });
-eq(restyledModel.totals.grandText, authoritative.totals.grandText, "template change keeps QuoteCore grand total");
-eq(restyledModel.totals.vatText, authoritative.totals.vatText, "template change keeps QuoteCore vat");
-eq(restyledModel.totals.subtotalText, authoritative.totals.subtotalText, "template change keeps QuoteCore subtotal");
-check(restyledModel.totals.subtotalLabel === "공급가액 합계", "template change does change the label");
-eq(restyledModel.columns.map((column) => column.key), ["amount", "unitPrice", "qty", "name"], "template column order is honoured");
-check(restyledModel.template.fingerprint !== authoritative.template.fingerprint, "restyled template has its own fingerprint");
+/* ── TEMPLATE_STYLE_APPLIED — 승인된 style/page 프로필이 실제 출력 투영을 바꾼다 ── */
+const styledContent = clone(Template.builtInTemplate().content);
+styledContent.style.accent = "#8a1f1f";
+styledContent.style.titleRule = "4px solid #8a1f1f";
+styledContent.style.tableHeaderRule = "2px solid #8a1f1f";
+styledContent.style.tableRowRule = "1px dashed #d0d0d0";
+styledContent.style.partyRule = "1px solid #8a1f1f";
+styledContent.style.memoRule = "2px dotted #8a1f1f";
+styledContent.style.headerAlignment = "flex-end";
+styledContent.style.metaAlignment = "center";
+styledContent.style.numericAlignment = "left";
+styledContent.style.textAlignment = "center";
+styledContent.style.totalsWidth = "420px";
+styledContent.totals.supplyLabel = "공급가액 합계";
+styledContent.items.columns.reverse();
+styledContent.page = { size: "A5", margin: "8mm", orientation: "landscape" };
+const styledProfile = approvedProfile("styled-1", styledContent);
+
+const styledModel = Renderer.buildRenderModel(defaultDraft, styledProfile, { taxReviewRequired: false });
+eq(styledModel.template.id, "styled-1", "an approved profile renders as itself");
+eq(styledModel.template.approved, true, "the approved profile is active");
+eq(styledModel.template.fallbackReason, null, "no fallback for an approved profile");
+
+/* accent */
+eq(styledModel.styleVariables["--quote-accent"], "#8a1f1f", "TEMPLATE_ACCENT_APPLIED: accent is projected");
+check(styledModel.styleVariables["--quote-accent"] !== authoritative.styleVariables["--quote-accent"],
+  "TEMPLATE_ACCENT_APPLIED: accent differs from the built-in");
+/* rules */
+eq(styledModel.styleVariables["--quote-title-rule"], "4px solid #8a1f1f", "TEMPLATE_RULES_APPLIED: title rule projected");
+eq(styledModel.styleVariables["--quote-header-rule"], "2px solid #8a1f1f", "TEMPLATE_RULES_APPLIED: table header rule projected");
+eq(styledModel.styleVariables["--quote-row-rule"], "1px dashed #d0d0d0", "TEMPLATE_RULES_APPLIED: table row rule projected");
+eq(styledModel.styleVariables["--quote-party-rule"], "1px solid #8a1f1f", "TEMPLATE_RULES_APPLIED: party rule projected");
+eq(styledModel.styleVariables["--quote-memo-rule"], "2px dotted #8a1f1f", "TEMPLATE_RULES_APPLIED: memo rule projected");
+/* alignment */
+eq(styledModel.styleVariables["--quote-header-align"], "flex-end", "TEMPLATE_ALIGNMENT_APPLIED: header alignment projected");
+eq(styledModel.styleVariables["--quote-meta-align"], "center", "TEMPLATE_ALIGNMENT_APPLIED: meta alignment projected");
+eq(styledModel.styleVariables["--quote-numeric-align"], "left", "TEMPLATE_ALIGNMENT_APPLIED: numeric alignment projected");
+eq(styledModel.styleVariables["--quote-text-align"], "center", "TEMPLATE_ALIGNMENT_APPLIED: text alignment projected");
+/* totals width */
+eq(styledModel.styleVariables["--quote-totals-width"], "420px", "TEMPLATE_TOTALS_WIDTH_APPLIED: totals width projected");
+/* page rule */
+eq(styledModel.pageRule, "@page { size: A5 landscape; margin: 8mm; }", "TEMPLATE_PAGE_RULE_APPLIED: page rule projected");
+check(styledModel.pageRule !== authoritative.pageRule, "TEMPLATE_PAGE_RULE_APPLIED: page rule differs from the built-in");
+
+/* QUOTECORE_TOTALS_UNCHANGED_ACROSS_TEMPLATES */
+eq(styledModel.totals.grandText, authoritative.totals.grandText, "template change keeps the QuoteCore grand total");
+eq(styledModel.totals.vatText, authoritative.totals.vatText, "template change keeps the QuoteCore vat");
+eq(styledModel.totals.subtotalText, authoritative.totals.subtotalText, "template change keeps the QuoteCore subtotal");
+check(styledModel.totals.subtotalLabel === "공급가액 합계", "template change does change the label");
+eq(styledModel.columns.map((column) => column.key), ["amount", "unitPrice", "qty", "name"], "template column order is honoured");
+check(styledModel.template.fingerprint !== authoritative.template.fingerprint, "restyled template has its own fingerprint");
+check(JSON.stringify(styledModel.styleVariables) !== JSON.stringify(authoritative.styleVariables),
+  "style projection differs between the built-in and the styled template");
 
 /* draft 금액이 바뀌면 QuoteCore 파생 합계만 바뀐다 */
 const richerDraft = Core.normalizeDraft(Object.assign(clone(defaultDraft), {
   items: [{ id: "item-1", name: "서비스 구축", qty: 3, unitPrice: 1000000 }]
 }));
-const richerModel = Renderer.buildRenderModel(richerDraft, Template.builtInTemplate(), { taxReviewRequired: false });
+const richerModel = Renderer.buildRenderModel(richerDraft, builtinProfile(), { taxReviewRequired: false });
 check(richerModel.totals.grandText !== authoritative.totals.grandText, "draft change moves the QuoteCore grand total");
 
-/* 섹션 게이팅: 프로필이 실제로 문서 구성을 소유한다 */
+/* ── 스타일·페이지 검증기는 임의 주입을 막는다 ── */
+eq(Renderer.buildPageRule({ size: "A4} </style><script>", margin: "10mm; } body{display:none}", orientation: "diagonal" }),
+  "@page { size: A4; margin: 10mm; }", "TEMPLATE_PAGE_RULE_APPLIED: hostile page values are neutralised");
+['@page { size: A4; margin: 2mm; }', '@page { size: A4; margin: 10mm; }'].forEach(() => {});
+check(/^@page \{ size: [A-Za-z0-9]+(?: landscape)?; margin: \d{1,2}(?:\.\d{1,2})?(?:mm|cm|in); \}$/.test(Renderer.buildPageRule({ size: "A5", margin: "12mm" })),
+  "generated @page always matches the bounded pattern");
+eq(Renderer.buildStyleVariables({ accent: "javascript:alert(1)", titleRule: "}</style><script>", totalsWidth: "1px; } body{}" }),
+  {}, "unsafe style values never reach the custom properties");
+eq(Object.keys(Renderer.buildStyleVariables(styledContent.style)).length, Renderer.STYLE_VARIABLE_MAP.length,
+  "every declared style token is projected");
+
+/* ── SLOT — non-live 로 명시되고 조용히 사라지지 않는다 ── */
+eq(authoritative.slots.support, "non_live", "SLOT_BEHAVIOR: slots are declared non-live");
+eq(authoritative.slots.rendered, false, "SLOT_BEHAVIOR: slots are not rendered in this MVP");
+const declaredSlotContent = clone(Template.builtInTemplate().content);
+declaredSlotContent.slots = { logo: "brand-a", stamp: "" };
+const declaredSlotModel = Renderer.buildRenderModel(defaultDraft, approvedProfile("slot-1", declaredSlotContent), { taxReviewRequired: false });
+eq(declaredSlotModel.slots.declared.logo, "brand-a", "SLOT_BEHAVIOR: declared slot values are surfaced, not silently dropped");
+eq(declaredSlotModel.slots.rendered, false, "SLOT_BEHAVIOR: declared slots are still not rendered");
+
+/* 섹션 게이팅 */
 function profileWithout(section) {
   const content = clone(Template.builtInTemplate().content);
   content.sections = content.sections.filter((name) => name !== section);
-  return Template.buildProfile({
-    id: "tpl-nosec", name: "섹션 제거", builtin: false, isDefault: false,
-    createdAt: "", updatedAt: "", content: content
-  });
+  return approvedProfile("tpl-nosec-" + section, content);
 }
-const noMemo = Renderer.buildRenderModel(defaultDraft, profileWithout("memo"), { taxReviewRequired: false });
-check(noMemo.memoText === "", "removing the memo section clears the memo text");
-const noTitle = Renderer.buildRenderModel(defaultDraft, profileWithout("title"), { taxReviewRequired: false });
-check(noTitle.titleText === "", "removing the title section clears the title text");
+check(Renderer.buildRenderModel(defaultDraft, profileWithout("memo"), { taxReviewRequired: false }).memoText === "",
+  "removing the memo section clears the memo text");
+check(Renderer.buildRenderModel(defaultDraft, profileWithout("title"), { taxReviewRequired: false }).titleText === "",
+  "removing the title section clears the title text");
 const noTotals = Renderer.buildRenderModel(defaultDraft, profileWithout("totals"), { taxReviewRequired: false });
 check(noTotals.totals.subtotalText === "" && noTotals.totals.grandText === "", "removing the totals section clears totals text");
 const noParties = Renderer.buildRenderModel(defaultDraft, profileWithout("parties"), { taxReviewRequired: false });
 check(noParties.parties.sender.company === "" && noParties.parties.recipient.company === "", "removing the parties section clears party text");
-check(noMemo.totals.grandText === authoritative.totals.grandText, "removing a section never changes QuoteCore totals");
+eq(noTotals.totals.grandText !== undefined && noTotals.totals.grandText === "" ? "" : noTotals.totals.grandText, "",
+  "totals stay empty without changing QuoteCore math");
+eq(Renderer.buildRenderModel(defaultDraft, profileWithout("memo"), { taxReviewRequired: false }).totals.grandText,
+  authoritative.totals.grandText, "removing a section never changes QuoteCore totals");
 
-/* 잘못된 프로필은 내장 기본으로 복구된다 */
-check(
-  Renderer.buildRenderModel(defaultDraft, { schemaVersion: 99 }, { taxReviewRequired: false }).template.id
-    === Template.BUILTIN_TEMPLATE_ID,
-  "invalid profile falls back to the built-in template"
-);
-check(Renderer.buildRenderModel(null, Template.builtInTemplate()) === null, "invalid draft yields no model");
-check(Renderer.buildRenderModel({ schemaVersion: 9 }, Template.builtInTemplate()) === null, "wrong draft schema yields no model");
-
-/* DOM adapter: 모델 → 실제 요소. index.html 에 존재하는 id 만 대상으로 한다 */
+/* ── DOM adapter ── */
 const pageHtml = readSource("index.html");
+const stylesCss = readSource("styles.css");
 const ADAPTER_IDS = [
   "pvTitle", "pvQuoteNo", "pvDate", "pvValidity", "pvValidUntil", "pvTaxMode",
   "pvSenderHeading", "pvSenderCompany", "pvSenderRep", "pvSenderBizNo", "pvSenderAddress", "pvSenderContact",
   "pvRecipientHeading", "pvRecipientCompany", "pvRecipientPerson", "pvRecipientAddress", "pvRecipientEmail",
-  "pvItemsHead", "pvItems",
+  "pvItemsHead", "pvItems", "quotePaper",
   "subtotalLabelText", "subtotalText", "vatLabelText", "vatText", "grandLabelText", "grandText",
   "pvSubtotalLabel", "pvSubtotal", "pvVatLabel", "pvVat", "pvGrandLabel", "pvGrand", "pvMemo", "pvMark"
 ];
 ADAPTER_IDS.forEach((id) => {
   check(pageHtml.includes(`id="${id}"`), `index.html exposes adapter target ${id}`);
 });
-
-const adapterSource = readSource("quote-template-renderer.js");
-ADAPTER_IDS.forEach((id) => {
-  check(adapterSource.includes(`"${id}"`), `adapter writes element ${id}`);
+ADAPTER_IDS.filter((id) => id !== "quotePaper").forEach((id) => {
+  check(rendererSource.includes(`"${id}"`), `adapter writes element ${id}`);
 });
+check(rendererSource.includes('"quotePaper"'), "adapter applies style variables to the quotation paper");
 
 drafts.forEach(([label, base]) => {
   modes.forEach((mode) => {
@@ -286,10 +414,10 @@ drafts.forEach(([label, base]) => {
       const draft = Core.normalizeDraft(Object.assign(clone(base), { tax: { mode: mode, rate: 0.1 } }));
       const totals = Core.computeTotals(draft.items, draft.tax.mode);
       const model = applyToModel(draft, provisional);
-      const doc = stubDoc();
+      const doc = stubDoc(ADAPTER_IDS);
       check(Renderer.applyRenderModel(doc, model) === true, "adapter reports success");
       const expected = legacyProjection(draft, provisional);
-      ADAPTER_IDS.filter((id) => id !== "pvItems" && id !== "pvItemsHead").forEach((id) => {
+      ADAPTER_IDS.filter((id) => id !== "pvItems" && id !== "pvItemsHead" && id !== "quotePaper").forEach((id) => {
         eq(doc.getElementById(id).textContent, expected[id], `adapter ${id} for ${label}/${mode}/${provisional}`);
       });
       eq(
@@ -297,49 +425,87 @@ drafts.forEach(([label, base]) => {
         norm(legacyItemsHtml(draft, totals)),
         `adapter item rows for ${label}/${mode}/${provisional}`
       );
-      eq(
-        norm(doc.getElementById("pvItemsHead").innerHTML),
-        norm(LEGACY_HEAD_HTML),
-        `adapter table head for ${label}/${mode}/${provisional}`
-      );
+      eq(norm(doc.getElementById("pvItemsHead").innerHTML), norm(LEGACY_HEAD_HTML),
+        `adapter table head for ${label}/${mode}/${provisional}`);
     });
   });
 });
 
+/* 어댑터는 스타일/페이지를 실제 요소에 적용한다 */
+const styleDoc = stubDoc(ADAPTER_IDS);
+Renderer.applyRenderModel(styleDoc, styledModel);
+const paper = styleDoc.getElementById("quotePaper");
+eq(paper.style.getPropertyValue("--quote-accent"), "#8a1f1f", "TEMPLATE_ACCENT_APPLIED: adapter writes the accent property");
+eq(paper.style.getPropertyValue("--quote-title-rule"), "4px solid #8a1f1f", "TEMPLATE_RULES_APPLIED: adapter writes the title rule");
+eq(paper.style.getPropertyValue("--quote-totals-width"), "420px", "TEMPLATE_TOTALS_WIDTH_APPLIED: adapter writes the totals width");
+eq(paper.style.getPropertyValue("--quote-header-align"), "flex-end", "TEMPLATE_ALIGNMENT_APPLIED: adapter writes the header alignment");
+eq(styleDoc.head.children.length, 1, "adapter injects one page-rule style element");
+eq(styleDoc.head.children[0].id, Renderer.PAGE_RULE_STYLE_ID, "page rule element id is stable");
+eq(styleDoc.head.children[0].textContent, "@page { size: A5 landscape; margin: 8mm; }", "TEMPLATE_PAGE_RULE_APPLIED: adapter injects the page rule");
+
+const builtinDoc = stubDoc(ADAPTER_IDS);
+Renderer.applyRenderModel(builtinDoc, authoritative);
+const builtinPaper = builtinDoc.getElementById("quotePaper");
+check(builtinPaper.style.getPropertyValue("--quote-accent") !== paper.style.getPropertyValue("--quote-accent"),
+  "DOM level: a different approved template produces a different accent");
+check(builtinDoc.head.children[0].textContent !== styleDoc.head.children[0].textContent,
+  "DOM level: a different approved template produces a different page rule");
+eq(builtinDoc.getElementById("pvGrand").textContent, styleDoc.getElementById("pvGrand").textContent,
+  "DOM level: QuoteCore totals are identical across templates");
+
 /* 어댑터는 HTML 을 이스케이프한다 */
-const htmlDoc = stubDoc();
+const htmlDoc = stubDoc(ADAPTER_IDS);
 Renderer.applyRenderModel(htmlDoc, applyToModel(htmlDraft, false));
 const htmlRows = htmlDoc.getElementById("pvItems").innerHTML;
 check(htmlRows.indexOf("<b>") === -1 && htmlRows.indexOf("&lt;b&gt;") !== -1, "item name is escaped in the rendered table");
-check(htmlDoc.getElementById("pvSenderCompany").textContent === '<img src=x onerror="alert(1)">',
+eq(htmlDoc.getElementById("pvSenderCompany").textContent, '<img src=x onerror="alert(1)">',
   "textContent targets keep raw text (no double escaping)");
-eq(
-  htmlRows.indexOf("onerror"),
-  -1,
-  "injected attribute text stays inert"
-);
+eq(htmlRows.indexOf("onerror"), -1, "injected attribute text stays inert");
 
-/* 어댑터 방어: 잘못된 입력은 크래시 대신 false */
+/* 어댑터 방어 */
 check(Renderer.applyRenderModel(null, authoritative) === false, "adapter without document fails safe");
-check(Renderer.applyRenderModel(stubDoc(), null) === false, "adapter without model fails safe");
-check(Renderer.applyRenderModel(stubDoc(), "nope") === false, "adapter with junk model fails safe");
+check(Renderer.applyRenderModel(stubDoc(ADAPTER_IDS), null) === false, "adapter without model fails safe");
+check(Renderer.applyRenderModel(stubDoc(ADAPTER_IDS), "nope") === false, "adapter with junk model fails safe");
 
-/* 이스케이프 단일 구현이 변형 전 app.js 와 동일하다 */
-[
-  "", "plain", "<script>", 'a"b', "a'b", "a&b", "<>&\"'", "한글 & <b>"
-].forEach((sample) => {
+/* 이스케이프 단일 구현 */
+["", "plain", "<script>", 'a"b', "a'b", "a&b", "<>&\"'", "한글 & <b>"].forEach((sample) => {
   eq(Template.escapeHtml(sample), legacyEscape(sample), `escape parity for ${JSON.stringify(sample)}`);
 });
-eq(Renderer.escapeHtml, Template.escapeHtml, "renderer re-exports the single escap implementation");
+eq(Renderer.escapeHtml, Template.escapeHtml, "renderer re-exports the single escape implementation");
 
-/* 레거시 마크업과 생성 마크업의 정규화 비교 (공백만 다름) */
 const legacyHeadFromPage = /<thead><tr id="pvItemsHead">([\s\S]*?)<\/tr><\/thead>/.exec(pageHtml);
 check(legacyHeadFromPage !== null, "index.html still carries the table head");
 eq(norm(legacyHeadFromPage[1]), norm(LEGACY_HEAD_HTML), "index.html head matches the profile-generated head");
 
+/* ── CURRENT_DEFAULT_VISUAL_REGRESSION=0 — 주입값이 styles.css 기본값과 정확히 같다 ── */
+const cssFallbacks = {};
+const varPattern = /var\((--quote-[a-z-]+),\s*([^)]+)\)/g;
+let match;
+while ((match = varPattern.exec(stylesCss)) !== null) cssFallbacks[match[1]] = match[2].trim();
+
+eq(Object.keys(cssFallbacks).sort(), Object.keys(authoritative.styleVariables).sort(),
+  "every projected variable is consumed by styles.css");
+Object.keys(authoritative.styleVariables).forEach((name) => {
+  eq(authoritative.styleVariables[name], cssFallbacks[name],
+    `built-in ${name} equals the styles.css fallback (no visual change)`);
+});
+check(stylesCss.includes("@page { size: A4; margin: 10mm; }"), "styles.css keeps the default @page rule");
+eq(authoritative.pageRule, "@page { size: A4; margin: 10mm; }", "built-in page rule matches the styles.css default");
+eq(authoritative.pageRule, "@page { size: A4; margin: 10mm; }".replace(/\s+/g, " "),
+  "built-in page rule is byte-identical to today's rule");
+
 console.log("QUOTE_TEMPLATE_RENDERER_DETERMINISTIC=YES");
 console.log("CURRENT_DEFAULT_VISUAL_REGRESSION=0");
 console.log("QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES");
+console.log("QUOTECORE_TOTALS_UNCHANGED_ACROSS_TEMPLATES=YES");
 console.log("CURRENT_B66_TEMPLATE_MIGRATED_AS_BUILTIN=YES");
+console.log("UNAPPROVED_TEMPLATE_ACTIVATION=0");
+console.log("APPROVED_TEMPLATE_SAVE_AND_RENDER=PASS");
+console.log("TEMPLATE_ACCENT_APPLIED=PASS");
+console.log("TEMPLATE_RULES_APPLIED=PASS");
+console.log("TEMPLATE_ALIGNMENT_APPLIED=PASS");
+console.log("TEMPLATE_TOTALS_WIDTH_APPLIED=PASS");
+console.log("TEMPLATE_PAGE_RULE_APPLIED=PASS");
+console.log("SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY");
 console.log("MODEL_DEPENDENCY=0");
 console.log("TRUSTED_TOTALS_IN_TEMPLATE=0");

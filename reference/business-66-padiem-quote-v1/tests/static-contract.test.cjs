@@ -437,6 +437,65 @@ check(!app.includes("vatSummaryLabel"),
 check(app.includes("TemplateStore && TemplateStore.TEMPLATE_STORAGE_KEY"),
   "BETA_POLISH_CONTRACT: reset also enumerates the template store key");
 
+/* APPROVAL_REQUIRED_FOR_USER_PROFILE — 후보는 승인 없이 활성화될 수 없다 */
+check(template.includes("function normalizeApproval(") &&
+      template.includes("function isApprovedProfile(") &&
+      template.includes("function isBuiltInException("),
+  "APPROVAL_REQUIRED_FOR_USER_PROFILE=YES: approval evidence contract exists");
+check(template.includes('raw.status !== "approved"') &&
+      template.includes("raw.contentFingerprint !== contentFingerprint"),
+  "CONTENT_CHANGE_INVALIDATES_APPROVAL=YES: mismatched fingerprint invalidates the approval");
+check(template.includes("trusted_builtin") && template.includes("explicit_approval") &&
+      template.includes("unapproved"),
+  "APPROVAL_REQUIRED_FOR_USER_PROFILE=YES: approval basis is explicit");
+check(template.includes('SLOT_SUPPORT = "non_live"'),
+  "SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY: slot support is declared non-live");
+check(templateStore.includes("function approveTemplate(") &&
+      templateStore.includes('fail("template_not_approved"'),
+  "UNAPPROVED_TEMPLATE_ACTIVATION=0: activation requires explicit approval");
+check(templateStore.includes("approval = null;") &&
+      templateStore.includes("var keepDefault = !contentChanged && current.isDefault"),
+  "CONTENT_CHANGE_INVALIDATES_APPROVAL=YES: content update drops approval and default status");
+check(templateStore.includes("function rejectionForContent(") &&
+      templateStore.includes("slot_rendering_not_supported"),
+  "SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY: declared non-live slots are refused, not ignored");
+check(templateRenderer.includes("template_not_approved") &&
+      templateRenderer.includes("fallbackReason"),
+  "UNAPPROVED_TEMPLATE_ACTIVATION=0: the renderer falls back with an explicit reason");
+
+/* TEMPLATE_STYLE_APPLIED — bounded 값만 custom property / @page 로 적용된다 */
+check(templateRenderer.includes("function buildStyleVariables(") &&
+      templateRenderer.includes("function buildPageRule(") &&
+      templateRenderer.includes("function ensurePageRule(") &&
+      templateRenderer.includes("applyStyleVariables(doc, model)"),
+  "TEMPLATE_STYLE_APPLIED: bounded style/page adapter exists");
+check(templateRenderer.includes("STYLE_VARIABLE_MAP") &&
+      templateRenderer.includes('"--quote-accent"') &&
+      templateRenderer.includes('"--quote-totals-width"'),
+  "TEMPLATE_ACCENT_APPLIED / TEMPLATE_TOTALS_WIDTH_APPLIED: tokens map to custom properties");
+check(templateRenderer.includes('"@page { size: "') && templateRenderer.includes('"; margin: "'),
+  "TEMPLATE_PAGE_RULE_APPLIED: the page rule is assembled from validated tokens only");
+check(template.includes("ALLOWED_PAGE_SIZES") && template.includes("PAGE_MARGIN_PATTERN") &&
+      template.includes("ALLOWED_JUSTIFY"),
+  "TEMPLATE_PAGE_RULE_APPLIED: page and alignment values are enum/regex bounded");
+check(css.includes("var(--quote-accent, #17202a)") &&
+      css.includes("var(--quote-title-rule, 2px solid #111827)") &&
+      css.includes("var(--quote-header-rule, 1px solid #111827)") &&
+      css.includes("var(--quote-row-rule, 1px solid #e4e7ec)") &&
+      css.includes("var(--quote-party-rule, 1px solid #cfd5dd)") &&
+      css.includes("var(--quote-memo-rule, 1px solid #d0d5dd)"),
+  "TEMPLATE_RULES_APPLIED: styles.css consumes the injected rules");
+check(css.includes("var(--quote-header-align, space-between)") &&
+      css.includes("var(--quote-meta-align, right)") &&
+      css.includes("var(--quote-numeric-align, right)") &&
+      css.includes("var(--quote-text-align, left)") &&
+      css.includes("var(--quote-totals-width, 310px)"),
+  "TEMPLATE_ALIGNMENT_APPLIED / TEMPLATE_TOTALS_WIDTH_APPLIED: styles.css consumes alignment and width");
+check(css.includes("@page { size: A4; margin: 10mm; }"),
+  "TEMPLATE_PAGE_RULE_APPLIED: the default print page rule is preserved");
+check(!/(expression\(|javascript:|<\/style)/i.test(css + templateRenderer),
+  "TEMPLATE_STYLE_APPLIED: no arbitrary CSS execution surface");
+
 console.log("B66_STATIC_CONTRACT=PASS");
 console.log("NEUTRAL_PUBLIC_UI_CONTRACT=PASS");
 console.log("EXTRACTION_BOUNDARY_CONTRACT=PASS");
@@ -483,6 +542,17 @@ console.log("RAW_SOURCE_FILE_PERSISTENCE=0");
 console.log("TRUSTED_TOTALS_IN_TEMPLATE=0");
 console.log("MODEL_DEPENDENCY=0");
 console.log("CURRENT_DEFAULT_VISUAL_REGRESSION=0");
+console.log("APPROVAL_REQUIRED_FOR_USER_PROFILE=YES");
+console.log("UNAPPROVED_TEMPLATE_ACTIVATION=0");
+console.log("CONTENT_CHANGE_INVALIDATES_APPROVAL=YES");
+console.log("APPROVED_TEMPLATE_SAVE_AND_RENDER=PASS");
+console.log("TEMPLATE_ACCENT_APPLIED=PASS");
+console.log("TEMPLATE_RULES_APPLIED=PASS");
+console.log("TEMPLATE_ALIGNMENT_APPLIED=PASS");
+console.log("TEMPLATE_TOTALS_WIDTH_APPLIED=PASS");
+console.log("TEMPLATE_PAGE_RULE_APPLIED=PASS");
+console.log("SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY");
+console.log("QUOTECORE_TOTALS_UNCHANGED_ACROSS_TEMPLATES=YES");
 console.log("UPLOAD_AI_LIVE=NO");
 console.log("CHAT_AI_LIVE=NO");
 console.log("EMAIL_SEND_LIVE=NO");

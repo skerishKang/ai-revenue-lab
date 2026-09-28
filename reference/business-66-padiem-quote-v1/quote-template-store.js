@@ -1,7 +1,13 @@
 /* B66 · Quote Beta — quote-template-store.js
    브라우저 로컬(quoteBeta.*) bounded 템플릿 저장소.
    저장하는 것은 "표현과 배치"인 QuoteTemplateProfile 뿐이다.
-   신뢰되는 합계·원본 파일 바이트·자격증명·모델/도구 authority 는 저장하지 않는다.
+
+   승인 경계(#3181 semantics):
+     candidate  →  explicit approval  →  approved profile  →  활성/렌더 가능
+   승인되지 않은 candidate 는 저장될 수 있지만 기본이 될 수도, 렌더에 쓰일 수도 없다.
+   내장 기본 템플릿만 trusted built-in 예외다(코드·테스트에 명시).
+
+   저장 금지: 신뢰되는 합계·원본 파일 바이트·자격증명·모델/도구 authority.
    (DOM 없음 · 브라우저/Node 양쪽에서 실행) */
 
 (function (root, factory) {
@@ -33,7 +39,53 @@
     return { schemaVersion: TEMPLATE_STORE_SCHEMA_VERSION, templates: [] };
   }
 
-  /* ── 저장소 정규화: 손상/구버전/금지 키/중복 id 는 조용히 버린다 ── */
+  function fail(code, message) {
+    return { ok: false, code: code, message: message, store: null, template: null };
+  }
+
+  function isEntryApproved(entry) {
+    return Boolean(entry) && Template.approvalIsValid(entry.approval, entry.fingerprint);
+  }
+
+  /* logo/stamp slot 은 non-live 로 선언되어 있다. 값을 선언해 놓고 조용히 무시하지 않도록
+     저장·승인 시점에 명시적으로 거부한다. */
+  function rejectionForContent(content) {
+    if (!isPlainObject(content)) return "invalid_template_content";
+    var slots = isPlainObject(content.slots) ? content.slots : {};
+    if (String(slots.logo || "") || String(slots.stamp || "")) return "slot_rendering_not_supported";
+    return null;
+  }
+
+  function toEntry(profile, options) {
+    var opts = options || {};
+    return {
+      schemaVersion: Template.TEMPLATE_SCHEMA_VERSION,
+      id: profile.id,
+      name: profile.name.slice(0, MAX_STORED_NAME_CHARS),
+      builtin: false,
+      isDefault: Boolean(opts.isDefault),
+      approval: profile.approval ? cloneJson(profile.approval) : null,
+      createdAt: profile.createdAt,
+      updatedAt: profile.updatedAt,
+      fingerprint: profile.fingerprint,
+      content: cloneJson(profile.content)
+    };
+  }
+
+  function toProfile(entry, isDefault) {
+    return Template.buildProfile({
+      id: entry.id,
+      name: entry.name,
+      builtin: false,
+      isDefault: isDefault === true,
+      approval: entry.approval,
+      createdAt: entry.createdAt,
+      updatedAt: entry.updatedAt,
+      content: entry.content
+    });
+  }
+
+  /* ── 저장소 정규화: 손상/구버전/금지 키/중복 id/무효 승인은 조용히 버린다 ── */
 
   function normalizeStore(raw) {
     if (!isPlainObject(raw)) return emptyStore();
@@ -51,7 +103,8 @@
       if (seen[profile.id]) return;
       seen[profile.id] = true;
 
-      var isDefault = profile.isDefault && !defaultTaken;
+      /* 승인되지 않은 candidate 는 기본이 될 수 없다. */
+      var isDefault = profile.isDefault && profile.approved && !defaultTaken;
       if (isDefault) defaultTaken = true;
 
       templates.push({
@@ -60,6 +113,8 @@
         name: profile.name.slice(0, MAX_STORED_NAME_CHARS),
         builtin: false,
         isDefault: isDefault,
+        /* 지문이 어긋난 승인은 normalizeTemplate 단계에서 이미 버려졌다. */
+        approval: profile.approval ? cloneJson(profile.approval) : null,
         createdAt: profile.createdAt,
         updatedAt: profile.updatedAt,
         fingerprint: profile.fingerprint,
@@ -78,10 +133,12 @@
     };
   }
 
-  /* ── 조회: 내장 기본은 항상 존재하며, 정확히 하나만 default 다 ── */
+  /* ── 조회: 내장 기본은 항상 존재하며, 활성 기본은 정확히 하나 ── */
 
   function userDefaultId(store) {
-    var found = store.templates.filter(function (entry) { return entry.isDefault; });
+    var found = store.templates.filter(function (entry) {
+      return entry.isDefault && isEntryApproved(entry);
+    });
     return found.length === 1 ? found[0].id : null;
   }
 
@@ -92,15 +149,7 @@
     builtin.isDefault = activeDefaultId === null;
 
     return [builtin].concat(store.templates.map(function (entry) {
-      return Template.buildProfile({
-        id: entry.id,
-        name: entry.name,
-        builtin: false,
-        isDefault: entry.id === activeDefaultId,
-        createdAt: entry.createdAt,
-        updatedAt: entry.updatedAt,
-        content: entry.content
-      });
+      return toProfile(entry, entry.id === activeDefaultId);
     }));
   }
 
@@ -114,9 +163,15 @@
     return match.length === 1 ? match[0] : null;
   }
 
+  function isTemplateApproved(rawStore, id) {
+    var template = getTemplate(rawStore, id);
+    return Boolean(template) && template.approved === true;
+  }
+
   function defaultTemplate(rawStore) {
-    var list = listTemplates(rawStore);
-    var found = list.filter(function (entry) { return entry.isDefault; });
+    var found = listTemplates(rawStore).filter(function (entry) {
+      return entry.isDefault && entry.approved;
+    });
     return found.length === 1 ? found[0] : Template.builtInTemplate();
   }
 
@@ -125,10 +180,6 @@
   }
 
   /* ── 변경 연산: 모두 새 store 를 반환하고 원본을 변형하지 않는다 ── */
-
-  function fail(code, message) {
-    return { ok: false, code: code, message: message, store: null, template: null };
-  }
 
   function makeTemplateId(options) {
     var opts = options || {};
@@ -145,14 +196,15 @@
       : new Date().toISOString();
   }
 
-  function demoteDefaults(templates) {
-    return templates.map(function (entry) {
-      return entry.isDefault ? Object.assign({}, entry, { isDefault: false }) : entry;
-    });
+  function reservedId(id, store) {
+    if (id === Template.BUILTIN_TEMPLATE_ID) return true;
+    return store.templates.some(function (entry) { return entry.id === id; });
   }
 
+  /* candidate 생성. 승인 증거가 함께 주어지지 않으면 unapproved 로 저장된다. */
   function createTemplate(rawStore, input, options) {
     var store = normalizeStore(rawStore);
+    var opts = options || {};
     if (!isPlainObject(input)) return fail("invalid_template_content", "template input must be an object");
 
     var forbidden = Template.findForbiddenKeys(input);
@@ -167,32 +219,69 @@
     var content = Template.normalizeTemplateContent(input.content);
     if (!content) return fail("invalid_template_content", "template content is not a valid profile");
 
-    var id = makeTemplateId(options);
-    if (id === Template.BUILTIN_TEMPLATE_ID) {
-      return fail("duplicate_template_id", "built-in template id is reserved");
-    }
-    if (store.templates.some(function (entry) { return entry.id === id; })) {
-      return fail("duplicate_template_id", "template id already exists");
+    var contentIssue = rejectionForContent(content);
+    if (contentIssue) return fail(contentIssue, "declared template field is not renderable in this MVP");
+
+    var id = makeTemplateId(opts);
+    if (reservedId(id, store)) return fail("duplicate_template_id", "template id already exists");
+
+    var fingerprint = Template.templateFingerprint(content);
+    var approval = null;
+    if (opts.approval !== undefined && opts.approval !== null) {
+      approval = Template.normalizeApproval(opts.approval, fingerprint);
+      if (!approval) return fail("invalid_approval_evidence", "approval evidence does not match the template content");
     }
 
-    var stamp = stampOf(options);
-    var isDefault = Boolean(options && options.isDefault);
-    var templates = isDefault ? demoteDefaults(store.templates) : store.templates.slice();
+    var wantsDefault = opts.isDefault === true;
+    if (wantsDefault && !approval) {
+      return fail("template_not_approved", "an unapproved template cannot become the active default");
+    }
 
-    templates.push({
-      schemaVersion: Template.TEMPLATE_SCHEMA_VERSION,
+    var stamp = stampOf(opts);
+    var profile = Template.buildProfile({
       id: id,
-      name: Template.normalizeTemplateName(input.name, id).slice(0, MAX_STORED_NAME_CHARS),
+      name: Template.normalizeTemplateName(input.name, id),
       builtin: false,
-      isDefault: isDefault,
+      isDefault: wantsDefault,
+      approval: approval,
       createdAt: stamp,
       updatedAt: stamp,
-      fingerprint: Template.templateFingerprint(content),
       content: content
     });
 
+    var templates = store.templates.map(function (entry) {
+      return wantsDefault ? Object.assign({}, entry, { isDefault: false }) : entry;
+    });
+    templates.push(toEntry(profile, { isDefault: wantsDefault }));
+
     var next = { schemaVersion: TEMPLATE_STORE_SCHEMA_VERSION, templates: templates };
     return { ok: true, code: "created", message: null, store: next, template: getTemplate(next, id) };
+  }
+
+  /* explicit approval 부여. 증거는 현재 content 지문과 일치해야 한다. */
+  function approveTemplate(rawStore, id, evidence, options) {
+    var store = normalizeStore(rawStore);
+    if (Template.isBuiltInTemplate({ id: id })) {
+      return fail("builtin_template_trusted", "the built-in template is already trusted and needs no approval");
+    }
+    var index = store.templates.findIndex(function (entry) { return entry.id === id; });
+    if (index === -1) return fail("template_not_found", "template not found");
+
+    var current = store.templates[index];
+    var approval = Template.normalizeApproval(evidence, current.fingerprint);
+    if (!approval) {
+      return fail("invalid_approval_evidence", "approval evidence does not match the template content");
+    }
+
+    var updated = Object.assign({}, current, {
+      approval: approval,
+      updatedAt: stampOf(options)
+    });
+
+    var templates = store.templates.slice();
+    templates[index] = updated;
+    var next = { schemaVersion: TEMPLATE_STORE_SCHEMA_VERSION, templates: templates };
+    return { ok: true, code: "approved", message: null, store: next, template: getTemplate(next, id) };
   }
 
   function updateTemplate(rawStore, id, patch, options) {
@@ -210,31 +299,47 @@
     }
 
     var current = store.templates[index];
+    var contentChanged = Object.prototype.hasOwnProperty.call(patch, "content");
     var content = current.content;
-    if (Object.prototype.hasOwnProperty.call(patch, "content")) {
+    var approval = current.approval;
+
+    if (contentChanged) {
       content = Template.normalizeTemplateContent(patch.content);
       if (!content) return fail("invalid_template_content", "template content is not a valid profile");
+      var contentIssue = rejectionForContent(content);
+      if (contentIssue) return fail(contentIssue, "declared template field is not renderable in this MVP");
+      /* 내용이 바뀌면 기존 승인은 즉시 무효다 — 조용히 보존하지 않는다. */
+      approval = null;
     }
 
-    var updated = {
-      schemaVersion: Template.TEMPLATE_SCHEMA_VERSION,
+    var wantsDefault = Object.prototype.hasOwnProperty.call(patch, "isDefault")
+      ? Boolean(patch.isDefault)
+      : false;
+    /* 내용이 바뀌어 승인이 사라졌다면 기본 지위도 유지될 수 없다. */
+    var keepDefault = !contentChanged && current.isDefault;
+    var nextIsDefault = wantsDefault || keepDefault;
+
+    var candidate = Template.buildProfile({
       id: current.id,
       name: Object.prototype.hasOwnProperty.call(patch, "name")
-        ? Template.normalizeTemplateName(patch.name, current.name).slice(0, MAX_STORED_NAME_CHARS)
+        ? Template.normalizeTemplateName(patch.name, current.name)
         : current.name,
       builtin: false,
-      isDefault: Object.prototype.hasOwnProperty.call(patch, "isDefault")
-        ? Boolean(patch.isDefault)
-        : current.isDefault,
+      isDefault: nextIsDefault,
+      approval: approval,
       createdAt: current.createdAt,
       updatedAt: stampOf(options),
-      fingerprint: Template.templateFingerprint(content),
       content: content
-    };
+    });
 
+    if (nextIsDefault && !candidate.approved) {
+      return fail("template_not_approved", "an unapproved template cannot become the active default");
+    }
+
+    var updated = toEntry(candidate, { isDefault: nextIsDefault });
     var templates = store.templates.map(function (entry) {
       if (entry.id === updated.id) return updated;
-      return updated.isDefault ? Object.assign({}, entry, { isDefault: false }) : entry;
+      return nextIsDefault ? Object.assign({}, entry, { isDefault: false }) : entry;
     });
 
     var next = { schemaVersion: TEMPLATE_STORE_SCHEMA_VERSION, templates: templates };
@@ -254,6 +359,7 @@
     return { ok: true, code: "deleted", message: null, store: next, template: null };
   }
 
+  /* 복제본은 새 candidate 다 — 승인은 복사하지 않는다(다시 승인받아야 활성화된다). */
   function duplicateTemplate(rawStore, id, options) {
     var store = normalizeStore(rawStore);
     var source = getTemplate(store, id);
@@ -264,27 +370,26 @@
 
     var opts = options || {};
     var newId = makeTemplateId(opts);
-    if (newId === Template.BUILTIN_TEMPLATE_ID || store.templates.some(function (entry) { return entry.id === newId; })) {
-      return fail("duplicate_template_id", "template id already exists");
-    }
+    if (reservedId(newId, store)) return fail("duplicate_template_id", "template id already exists");
 
     var stamp = stampOf(opts);
     var name = typeof opts.name === "string" && opts.name.trim()
       ? opts.name.trim()
       : source.name + " 사본";
 
-    var templates = store.templates.slice();
-    templates.push({
-      schemaVersion: Template.TEMPLATE_SCHEMA_VERSION,
+    var profile = Template.buildProfile({
       id: newId,
-      name: name.slice(0, MAX_STORED_NAME_CHARS),
+      name: name,
       builtin: false,
       isDefault: false,
+      approval: null,
       createdAt: stamp,
       updatedAt: stamp,
-      fingerprint: source.fingerprint,
       content: cloneJson(source.content)
     });
+
+    var templates = store.templates.slice();
+    templates.push(toEntry(profile, { isDefault: false }));
 
     var next = { schemaVersion: TEMPLATE_STORE_SCHEMA_VERSION, templates: templates };
     return { ok: true, code: "duplicated", message: null, store: next, template: getTemplate(next, newId) };
@@ -296,8 +401,17 @@
     if (!target) return fail("template_not_found", "template not found");
 
     if (target.builtin) {
-      var cleared = { schemaVersion: TEMPLATE_STORE_SCHEMA_VERSION, templates: demoteDefaults(store.templates) };
+      var cleared = {
+        schemaVersion: TEMPLATE_STORE_SCHEMA_VERSION,
+        templates: store.templates.map(function (entry) {
+          return entry.isDefault ? Object.assign({}, entry, { isDefault: false }) : entry;
+        })
+      };
       return { ok: true, code: "default_builtin", message: null, store: cleared, template: Template.builtInTemplate() };
+    }
+
+    if (!target.approved) {
+      return fail("template_not_approved", "an unapproved template cannot become the active default");
     }
 
     var templates = store.templates.map(function (entry) {
@@ -349,9 +463,12 @@
     listTemplates: listTemplates,
     countDefaults: countDefaults,
     getTemplate: getTemplate,
+    isTemplateApproved: isTemplateApproved,
+    isEntryApproved: isEntryApproved,
     defaultTemplate: defaultTemplate,
     defaultTemplateId: defaultTemplateId,
     createTemplate: createTemplate,
+    approveTemplate: approveTemplate,
     updateTemplate: updateTemplate,
     deleteTemplate: deleteTemplate,
     duplicateTemplate: duplicateTemplate,
