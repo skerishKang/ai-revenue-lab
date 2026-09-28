@@ -108,8 +108,9 @@
       if (token === state.statusToken) setStatus(STATUS_TEXT.error, false);
       return;
     }
+    const disconnected = await isDriveNotConnected(response);
     if (token !== state.statusToken) return; // stale project status response: ignored
-    if (await isDriveNotConnected(response)) {
+    if (disconnected) {
       state.configured = false;
       setStatus(STATUS_TEXT.drive_not_connected, false);
       return;
@@ -194,8 +195,9 @@
       if (token === state.searchToken) renderPickerState(PICKER_TEXT.error);
       return;
     }
+    const disconnected = await isDriveNotConnected(response);
     if (token !== state.searchToken) return; // stale search response: ignored
-    if (await isDriveNotConnected(response)) {
+    if (disconnected) {
       renderFolderRows([]);
       renderPickerState(PICKER_TEXT.drive_not_connected);
       return;

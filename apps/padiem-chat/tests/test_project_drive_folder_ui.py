@@ -31,6 +31,23 @@ def test_project_drive_section_is_present_and_labelled() -> None:
     assert 'id="projectDriveStatus"' in INDEX
 
 
+def test_project_drive_panel_is_hidden_by_default() -> None:
+    # fail closed: a module load failure must not expose the picker in a new-project dialog
+    marker = 'id="projectDrivePanel"'
+    start = INDEX.index(marker)
+    section_tag = INDEX[INDEX.rindex("<section", 0, start): INDEX.index(">", start)]
+    assert "hidden" in section_tag
+
+
+def test_error_body_await_rechecks_the_sequence_token() -> None:
+    # the error-body read is awaited, so the token must be re-checked afterwards
+    assert SCRIPT.count("const disconnected = await isDriveNotConnected(response);") == 2
+    status_tail = SCRIPT.split("const disconnected = await isDriveNotConnected(response);")[1]
+    assert "if (token !== state.statusToken) return;" in status_tail[:200]
+    search_tail = SCRIPT.split("const disconnected = await isDriveNotConnected(response);")[2]
+    assert "if (token !== state.searchToken) return;" in search_tail[:200]
+
+
 def test_status_region_is_aria_live() -> None:
     assert 'id="projectDriveStatusLive"' in INDEX
     assert 'aria-live="polite"' in INDEX
