@@ -20,6 +20,7 @@ MAX_TEMPLATE_NESTING_DEPTH = 8
 MAX_TEMPLATE_NODES = 4096
 MAX_TEMPLATE_DATA_BYTES = 128 * 1024
 MAX_TEMPLATE_WARNINGS = 32
+MAX_TEMPLATE_INTEGER_ABS = 2**63 - 1
 
 _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 _REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@-]{0,255}$")
@@ -35,7 +36,11 @@ _FORBIDDEN_KEYS = frozenset({
     "connector_requirement_ids", "entitlement", "entitlements",
     "entitlement_ref", "access_token", "refresh_token", "auth_token",
     "bearer_token", "api_key", "credential", "credentials", "secret",
-    "secrets", "password", "provider_id", "model_id", "model_policy_ref",
+    "secrets", "password", "private_key", "client_secret", "provider_id",
+    "model_id", "model_policy_ref",
+})
+_SENSITIVE_KEY_PARTS = frozenset({
+    "secret", "secrets", "password", "credential", "credentials", "token", "tokens",
 })
 
 
@@ -52,6 +57,32 @@ class DocumentTemplateError(ValueError):
 class FrozenTemplateObject:
     items: tuple[tuple[str, "FrozenTemplateValue"], ...]
 
+    def __post_init__(self) -> None:
+        if not isinstance(self.items, tuple) or len(self.items) > MAX_TEMPLATE_COLLECTION_ITEMS:
+            raise DocumentTemplateError(
+                "invalid_document_template_data",
+                "Frozen template object entries must be a bounded tuple.",
+            )
+        keys: list[str] = []
+        for item in self.items:
+            if not isinstance(item, tuple) or len(item) != 2:
+                raise DocumentTemplateError(
+                    "invalid_document_template_data",
+                    "Frozen template object entries must be key/value pairs.",
+                )
+            key = item[0]
+            if not isinstance(key, str) or not _KEY.fullmatch(key):
+                raise DocumentTemplateError(
+                    "invalid_document_template_data",
+                    "Frozen template object keys must be bounded safe identifiers.",
+                )
+            keys.append(key)
+        if len(keys) != len(set(keys)):
+            raise DocumentTemplateError(
+                "invalid_document_template_data",
+                "Frozen template object keys must not contain duplicates.",
+            )
+
     def to_python(self) -> dict[str, object]:
         return {key: _thaw(value) for key, value in self.items}
 
@@ -59,6 +90,13 @@ class FrozenTemplateObject:
 @dataclass(frozen=True, slots=True)
 class FrozenTemplateArray:
     items: tuple["FrozenTemplateValue", ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.items, tuple) or len(self.items) > MAX_TEMPLATE_COLLECTION_ITEMS:
+            raise DocumentTemplateError(
+                "invalid_document_template_data",
+                "Frozen template array items must be a bounded tuple.",
+            )
 
     def to_python(self) -> list[object]:
         return [_thaw(value) for value in self.items]
@@ -106,13 +144,25 @@ def _normalize_key(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", "_", value.lower()).strip("_")
 
 
+def _key_is_forbidden(value: str) -> bool:
+    normalized = _normalize_key(value)
+    if normalized in _FORBIDDEN_KEYS:
+        return True
+    parts = frozenset(part for part in normalized.split("_") if part)
+    return bool(parts & _SENSITIVE_KEY_PARTS)
+
+
 def _freeze(value: object, *, depth: int = 0, counter: list[int] | None = None) -> FrozenTemplateValue:
     counter = [0] if counter is None else counter
     counter[0] += 1
     if counter[0] > MAX_TEMPLATE_NODES or depth > MAX_TEMPLATE_NESTING_DEPTH:
         _fail("template_data_budget_exceeded", "Template data exceeds bounded complexity.")
 
-    if value is None or isinstance(value, (bool, int)):
+    if value is None or isinstance(value, bool):
+        return value
+    if isinstance(value, int):
+        if abs(value) > MAX_TEMPLATE_INTEGER_ABS:
+            _fail("template_data_budget_exceeded", "Template integer is outside the bounded range.")
         return value
     if isinstance(value, float):
         if not math.isfinite(value):
@@ -130,7 +180,7 @@ def _freeze(value: object, *, depth: int = 0, counter: list[int] | None = None) 
             _fail("invalid_document_template_data", "Template keys must be bounded safe identifiers.")
         items: list[tuple[str, FrozenTemplateValue]] = []
         for key in sorted(keys):
-            if _normalize_key(key) in _FORBIDDEN_KEYS:
+            if _key_is_forbidden(key):
                 _fail("template_authority_surface_forbidden", "Template data cannot carry runtime authority or credentials.")
             items.append((key, _freeze(value[key], depth=depth + 1, counter=counter)))
         return FrozenTemplateObject(tuple(items))
@@ -419,6 +469,7 @@ __all__ = [
     "MAX_TEMPLATE_NESTING_DEPTH",
     "MAX_TEMPLATE_NODES",
     "MAX_TEMPLATE_STRING_CHARS",
+    "MAX_TEMPLATE_INTEGER_ABS",
     "DocumentTemplateApproval",
     "DocumentTemplateCandidate",
     "DocumentTemplateError",
