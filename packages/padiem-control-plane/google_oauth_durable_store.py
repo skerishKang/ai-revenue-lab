@@ -295,14 +295,16 @@ class GoogleOAuthBindingSelection:
                 ) from exc
         object.__setattr__(self, "connector_id", _safe_ref(self.connector_id, "connector_id"))
         object.__setattr__(self, "workspace_ref", _safe_ref(self.workspace_ref, "workspace_ref"))
-        if self.connector_id != "google-calendar":
+        if self.connector_id not in REVIEWED_BINDING_SELECTION_CONNECTORS:
             raise ControlPlaneContractError(
                 "invalid_google_oauth_binding_selection",
-                "binding selection is restricted to google-calendar",
+                "binding selection is restricted to reviewed Google connectors",
             )
         if self.status is GoogleOAuthBindingSelectionStatus.RESOLVED:
-            for name in ("binding_ref", "actor_ref", "account_ref"):
+            for name in ("binding_ref", "actor_ref"):
                 object.__setattr__(self, name, _safe_ref(getattr(self, name), name))
+            if self.account_ref is not None:
+                object.__setattr__(self, "account_ref", _safe_ref(self.account_ref, "account_ref"))
         elif any(value is not None for value in (self.binding_ref, self.actor_ref, self.account_ref)):
             raise ControlPlaneContractError(
                 "invalid_google_oauth_binding_selection",
@@ -326,9 +328,10 @@ class GoogleOAuthBindingSelection:
                 {
                     "binding_ref": self.binding_ref,
                     "actor_ref": self.actor_ref,
-                    "account_ref": self.account_ref,
                 }
             )
+            if self.account_ref is not None:
+                result["account_ref"] = self.account_ref
         return result
 
     def to_bounded_dict(self) -> dict[str, Any]:
@@ -767,6 +770,94 @@ class CloudflareDurableGoogleOAuthStore:
             account_ref=selected["account_ref"],
         )
 
+    def select_active_drive_binding(
+        self,
+        *,
+        workspace_ref: str,
+        now: datetime,
+    ) -> GoogleOAuthBindingSelection:
+        """Select one private Drive identity from a trusted workspace context.
+
+        Private Control Plane primitive, not a public route (#3193). Reads only
+        identity/validity metadata, never the sealed refresh token, and never
+        picks a winner from duplicate usable rows: more than one usable Drive
+        credential for the workspace is ambiguous and fails closed.
+        """
+
+        workspace_ref = _safe_ref(workspace_ref, "workspace_ref")
+        now = _utc(now, "now")
+        rows = _rows(
+            self._sql.exec(
+                "SELECT binding_ref, connector_id, actor_ref, workspace_ref, "
+                "scopes_json, expires_at, revoked_at "
+                "FROM google_oauth_refresh_credential "
+                "WHERE workspace_ref = ? AND connector_id = ?",
+                workspace_ref,
+                DRIVE_OAUTH_REVIEWED_CONNECTOR,
+            )
+        )
+        usable: list[dict[str, Any]] = []
+        for row in rows:
+            row_connector = _row_value(row, "connector_id")
+            row_workspace = _row_value(row, "workspace_ref")
+            if row_connector != DRIVE_OAUTH_REVIEWED_CONNECTOR:
+                raise ControlPlaneContractError(
+                    "google_oauth_connector_mismatch",
+                    "Drive binding selector returned a different connector",
+                )
+            if row_workspace != workspace_ref:
+                raise ControlPlaneContractError(
+                    "google_oauth_workspace_mismatch",
+                    "Drive binding selector returned a different workspace",
+                )
+            revoked_text = _row_value(row, "revoked_at")
+            if revoked_text is not None:
+                continue
+            expires_text = _row_value(row, "expires_at")
+            if expires_text is not None and now >= _parse_iso(expires_text, "expires_at"):
+                continue
+            try:
+                scopes = json.loads(_row_value(row, "scopes_json"))
+            except (TypeError, json.JSONDecodeError) as exc:
+                raise ControlPlaneContractError(
+                    "google_oauth_scope_mismatch",
+                    "Drive binding scope metadata is invalid",
+                ) from exc
+            if not isinstance(scopes, list) or scopes != [GOOGLE_DRIVE_READONLY_SCOPE]:
+                raise ControlPlaneContractError(
+                    "google_oauth_scope_mismatch",
+                    "Drive binding must have exactly the reviewed readonly scope",
+                )
+            usable.append(
+                {
+                    "binding_ref": _row_value(row, "binding_ref"),
+                    "connector_id": row_connector,
+                    "actor_ref": _row_value(row, "actor_ref"),
+                    "workspace_ref": row_workspace,
+                }
+            )
+
+        if len(usable) > 1:
+            raise ControlPlaneContractError(
+                "ambiguous_google_oauth_binding",
+                "multiple usable Drive bindings exist for the trusted workspace",
+            )
+        if not usable:
+            return GoogleOAuthBindingSelection(
+                status=GoogleOAuthBindingSelectionStatus.NOT_CONNECTED,
+                connector_id=DRIVE_OAUTH_REVIEWED_CONNECTOR,
+                workspace_ref=workspace_ref,
+            )
+        selected = usable[0]
+        return GoogleOAuthBindingSelection(
+            status=GoogleOAuthBindingSelectionStatus.RESOLVED,
+            connector_id=selected["connector_id"],
+            workspace_ref=selected["workspace_ref"],
+            binding_ref=selected["binding_ref"],
+            actor_ref=selected["actor_ref"],
+            account_ref=None,
+        )
+
     def revoke_credential(self, *, binding_ref: str, revoked_at: datetime) -> None:
         binding_ref = _safe_ref(binding_ref, "binding_ref")
         revoked_at = _utc(revoked_at, "revoked_at")
@@ -940,6 +1031,12 @@ WORKSPACE_READ_REQUIRES_EXACT_WORKSPACE_REF = True
 WORKSPACE_READ_CONNECTOR_SCOPE = ("gmail", "google-drive")
 # #2830_WORKSPACE_STATUS_SURFACE_WIDENED=NO
 CALENDAR_OAUTH_REVIEWED_CONNECTOR = "google-calendar"
+DRIVE_OAUTH_REVIEWED_CONNECTOR = "google-drive"
+# Reviewed connector set for the shared private binding-selection model. Kept
+# deliberately narrow: no Gmail (or other) connector may use it.
+REVIEWED_BINDING_SELECTION_CONNECTORS = frozenset(
+    {CALENDAR_OAUTH_REVIEWED_CONNECTOR, DRIVE_OAUTH_REVIEWED_CONNECTOR}
+)
 CALENDAR_BINDING_SELECTION_PRIVATE_ONLY = True
 CALENDAR_BINDING_SELECTION_REQUIRES_TRUSTED_WORKSPACE = True
 CALENDAR_BINDING_SELECTION_PUBLIC_ROUTE = False
