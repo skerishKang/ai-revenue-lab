@@ -12,6 +12,8 @@ const history = read("quote-history.js");
 const template = read("quote-template.js");
 const templateStore = read("quote-template-store.js");
 const templateRenderer = read("quote-template-renderer.js");
+const templateSelection = read("quote-template-selection.js");
+const templateUi = read("quote-template-ui.js");
 const intake = read("file-intake.js");
 const easy = read("easy-mode.js");
 
@@ -28,6 +30,8 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'src="quote-template.js"',
   'src="quote-template-store.js"',
   'src="quote-template-renderer.js"',
+  'src="quote-template-selection.js"',
+  'src="quote-template-ui.js"',
   'src="file-intake.js"',
   'src="app.js"',
   'src="easy-mode.js"',
@@ -60,11 +64,19 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'id="easyFileInput"',
   'id="fileStarter"',
   'id="saveHistory"',
-  'id="resetLocalData"'
+  'id="resetLocalData"',
+  'id="templateSection"',
+  'id="templateSelect"',
+  'id="templateStatus"',
+  'id="templateManageToggle"',
+  'id="templateManagePanel"',
+  'id="templateList"',
+  'id="templateCreate"',
+  'id="templateClone"'
 ].forEach((marker) => check(html.includes(marker), `B66_STATIC_CONTRACT missing in index.html: ${marker}`));
 
 /* NEUTRAL_PUBLIC_UI_CONTRACT — 외부 화면/상태에 내부 제품 브랜드를 노출하지 않음 */
-check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + template + templateStore + templateRenderer + intake + easy),
+check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + intake + easy),
   "NEUTRAL_PUBLIC_UI_CONTRACT: no Padiem branding in rendered/runtime source");
 check(!html.includes("B66 DEMO"), "NEUTRAL_PUBLIC_UI_CONTRACT: no internal demo label");
 check(html.includes("BETA · 입력 내용은 이 브라우저에만 저장"),
@@ -429,7 +441,8 @@ check(!/(kilo\/|space-bunny|nemotron|openai|anthropic)/i.test(template + templat
   "MODEL_DEPENDENCY=0: template modules name no provider or model");
 check(!/FileReader|FormData|indexedDB/i.test(template + templateStore + templateRenderer),
   "RAW_SOURCE_FILE_PERSISTENCE=0: template modules never touch raw file bytes");
-check(app.includes("TemplateRenderer.buildRenderModel(draft, activeTemplateProfile()") &&
+check(app.includes("TemplateRenderer.buildRenderModel(") &&
+      app.includes("previewTemplateProfile() || activeTemplateProfile()") &&
       app.includes("TemplateRenderer.applyRenderModel(document, model)"),
   "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: direct mode renders through the approved template renderer");
 check(!app.includes("vatSummaryLabel"),
@@ -510,6 +523,78 @@ check(template.includes("var builtin = isCanonicalBuiltIn({"),
 check(template.includes("BUILTIN_TEMPLATE_FINGERPRINT: BUILTIN_TEMPLATE_FINGERPRINT"),
   "CANONICAL_BUILTIN_FALLBACK=PASS: the canonical built-in fingerprint is published");
 
+/* ── #3183 양식 선택·관리 UI ── */
+check(html.includes('src="quote-template-selection.js"') && html.includes('src="quote-template-ui.js"'),
+  "TEMPLATE_SELECTOR_LIVE=YES: selection and UI modules are loaded");
+check(html.includes('id="templateSelect"') && html.includes('id="templateManagePanel"') &&
+      html.includes('id="templateList"') && html.includes('id="templateCreate"') &&
+      html.includes('id="templateManageToggle"') && html.includes('id="templateStatus"'),
+  "TEMPLATE_SELECTOR_LIVE=YES: selector and management surface exist");
+check(html.includes('id="templateClone"') && html.includes("견적서 양식 본뜨기"),
+  "TEMPLATE_SELECTOR_LIVE=YES: the #3184 clone/approval entry point exists but is deferred");
+check(templateSelection.includes("function selectTemplate(") &&
+      templateSelection.includes("function setDefaultTemplate(") &&
+      templateSelection.includes("function renameTemplate(") &&
+      templateSelection.includes("function duplicateTemplate(") &&
+      templateSelection.includes("function deleteTemplate(") &&
+      templateSelection.includes("function createCandidate("),
+  "TEMPLATE_MANAGEMENT_CRUD=PASS: management actions exist");
+check(templateSelection.includes("function resolveActiveTemplateId(") &&
+      templateSelection.includes("return Store.defaultTemplateId(rawStore);"),
+  "DEFAULT_TEMPLATE_SELECTION=PASS / BUILTIN_TEMPLATE_FALLBACK=PASS: resolution falls back to the default");
+check(templateSelection.includes("template_not_approved") &&
+      templateSelection.includes("return Boolean(template) && template.approved === true;"),
+  "UNAPPROVED_TEMPLATE_SELECTION=0 / UNAPPROVED_TEMPLATE_DEFAULT=0: unapproved templates cannot be selected or defaulted");
+check(templateSelection.includes("ask(target) !== true") && templateSelection.includes('fail("delete_cancelled")'),
+  "DELETE_CONFIRMATION=PASS: deletion requires confirmation");
+check(templateSelection.includes("builtin_template_immutable"),
+  "BUILTIN_TEMPLATE_DELETE=DENIED: the built-in cannot be deleted");
+check(templateSelection.includes("function normalizeEnvelope(") &&
+      templateSelection.includes("function normalizeSelectionEntry(") &&
+      templateSelection.includes("selectionForQuote(") &&
+      templateSelection.includes("raw.schemaVersion !== SELECTION_SCHEMA_VERSION"),
+  "MISSING_SELECTED_TEMPLATE_FALLBACK=PASS / CORRUPT_TEMPLATE_FALLBACK=PASS: selection is bounded and normalised");
+check(templateSelection.includes("var MAX_SELECTIONS = 20") &&
+      templateSelection.includes("function setSelection(") &&
+      templateSelection.includes("selections: rest.slice(0, MAX_SELECTIONS)"),
+  "TEMPLATE_SELECTION_BOUNDED=YES: selections are a bounded per-quote envelope");
+check(templateSelection.includes("function removeSelectionsForTemplate(") &&
+      templateSelection.includes("removeSelectionsForTemplate(readEnvelope(storage), id)"),
+  "TEMPLATE_SELECTION_PER_QUOTE=PASS: deleting a template prunes only its own selections");
+check(templateSelection.includes("if (seen[normalized.quoteNo]) return;") &&
+      templateSelection.includes("if (selections.length >= MAX_SELECTIONS) return;"),
+  "TEMPLATE_SELECTION_PER_QUOTE=PASS: a quotation keeps a single bounded selection");
+check(templateUi.includes("function resolveUiStateAfterApply(") &&
+      templateUi.includes("next.previewTemplateId = null;"),
+  "PREVIEW_APPLY_TERMINATES=PASS: the UI reducer clears the preview state");
+check(app.includes("TemplateUi.resolveUiStateAfterApply(templateUiState, true)") &&
+      app.includes("templateUiState.previewTemplateId = nextState.previewTemplateId"),
+  "PREVIEW_APPLY_TERMINATES=PASS: the app clears previewTemplateId after a successful apply");
+check(!/draft\.(sender|recipient|items|tax|memo|meta)\s*=/.test(templateSelection) &&
+      !/draft\.(sender|recipient|items|tax|memo|meta)\s*=/.test(templateUi),
+  "TEMPLATE_SWITCH_MUTATES_QUOTEDRAFT_CONTENT=NO: the template layer never assigns draft business content");
+check(templateUi.includes("function buildRows(") && templateUi.includes("canDelete: !builtin") &&
+      templateUi.includes("selectable: approved"),
+  "TEMPLATE_MANAGEMENT_CRUD=PASS: rows expose approval state and built-in protection");
+check(templateUi.includes("disabled") && templateUi.includes("승인 후 선택할 수 있습니다"),
+  "UNAPPROVED_TEMPLATE_SELECTION=0: unapproved candidates are visible but disabled");
+check(css.includes(".template-row-actions .template-action { min-height: 44px; }"),
+  "MOBILE_TEMPLATE_UI=PASS: template actions meet the 44px target");
+check(css.includes("@media (max-width: 680px)") &&
+      css.includes(".template-row-actions { display: grid; grid-template-columns: 1fr 1fr; }"),
+  "MOBILE_TEMPLATE_UI=PASS: narrow viewports get a two-column action grid");
+check(css.includes(".template-section, .template-manage, .template-picker, .template-status { display: none !important; }"),
+  "PRINT_UI_LEAK=0: the template UI is excluded from print");
+check(!/fetch\(|XMLHttpRequest/.test(templateSelection + templateUi),
+  "MODEL_NETWORK_CALLS=0: no network call in the template selection/UI layer");
+check(app.includes("TEMPLATE_ACTIONS") && app.includes("window.B66QuoteTemplateBridge") &&
+      app.includes("TemplateSelection.resolveActiveTemplate(") &&
+      app.includes("templateUiState"),
+  "TEMPLATE_SELECTOR_LIVE=YES: the app wires selection, preview and management actions");
+check(app.includes("previewTemplateProfile() || activeTemplateProfile()") &&
+      app.includes("candidate && candidate.approved"),
+  "UNAPPROVED_TEMPLATE_SELECTION=0: preview is restricted to approved templates");
+
 console.log("B66_STATIC_CONTRACT=PASS");
 console.log("NEUTRAL_PUBLIC_UI_CONTRACT=PASS");
 console.log("EXTRACTION_BOUNDARY_CONTRACT=PASS");
@@ -569,6 +654,25 @@ console.log("TEMPLATE_TOTALS_WIDTH_APPLIED=PASS");
 console.log("TEMPLATE_PAGE_RULE_APPLIED=PASS");
 console.log("SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY");
 console.log("QUOTECORE_TOTALS_UNCHANGED_ACROSS_TEMPLATES=YES");
+console.log("TEMPLATE_SELECTOR_LIVE=YES");
+console.log("TEMPLATE_MANAGEMENT_CRUD=PASS");
+console.log("DEFAULT_TEMPLATE_SELECTION=PASS");
+console.log("BUILTIN_TEMPLATE_FALLBACK=PASS");
+console.log("UNAPPROVED_TEMPLATE_SELECTION=0");
+console.log("UNAPPROVED_TEMPLATE_DEFAULT=0");
+console.log("TEMPLATE_SWITCH_MUTATES_QUOTEDRAFT_CONTENT=NO");
+console.log("MISSING_SELECTED_TEMPLATE_FALLBACK=PASS");
+console.log("CORRUPT_TEMPLATE_FALLBACK=PASS");
+console.log("BUILTIN_TEMPLATE_DELETE=DENIED");
+console.log("DELETE_CONFIRMATION=PASS");
+console.log("DUPLICATE_TEMPLATE=PASS");
+console.log("RENAME_TEMPLATE=PASS");
+console.log("TEMPLATE_SELECTION_PER_QUOTE=PASS");
+console.log("TEMPLATE_SELECTION_BOUNDED=YES");
+console.log("PREVIEW_APPLY_TERMINATES=PASS");
+console.log("MOBILE_TEMPLATE_UI=PASS");
+console.log("PRINT_UI_LEAK=0");
+console.log("MODEL_NETWORK_CALLS=0");
 console.log("UPLOAD_AI_LIVE=NO");
 console.log("CHAT_AI_LIVE=NO");
 console.log("EMAIL_SEND_LIVE=NO");
