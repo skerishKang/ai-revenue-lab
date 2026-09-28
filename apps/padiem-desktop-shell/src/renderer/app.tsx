@@ -1,36 +1,43 @@
 /**
  * CLAW4 #3083 — React renderer for the Padiem Desktop shell.
  * CLAW5 #3157 — Korean/English Settings, Easy view by default.
+ * CLAW1 #3165 — Easy mode speaks in product language: computer connection,
+ * work readiness, next action. Runner/process/log vocabulary is Advanced-only.
  *
  * PRESENTATION ONLY. The renderer:
  *   - cannot declare a device ONLINE
  *   - cannot approve anything (P01 stays in the runner stack)
  *   - cannot spawn a process, read a file, or reach the network
  *   - only calls the six allowlisted preload methods
- *   - stores only a display language and a view mode, both non-sensitive
+ *   - stores only a display language, a theme and a view mode, all non-sensitive
  *
- * #3157 changes what the user reads, never what the shell does: Start, Stop and
- * Refresh still call exactly the same allowlisted API methods, and the canonical
- * device state is still the connection truth the renderer reports.
+ * #3165 changes what the user reads and where controls sit, never what the shell
+ * does: the same allowlisted API methods are called, and the canonical device
+ * state is still the connection truth the renderer reports.
  */
 
-import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react';
+import { useCallback, useEffect, useState, type ReactElement } from 'react';
 
 import { requireShellApi, RendererAuthorityError, type PadiemShellApi } from './api.js';
 import {
   SHELL_LOCALES,
+  connectionNextActionText,
   deviceStateText,
-  runnerStateText,
+  readinessBodyText,
+  readinessStateText,
   translate,
   type ShellLocale,
   type ShellStringKey,
 } from './i18n.js';
 import {
   DEFAULT_VIEW_MODE,
+  SHELL_THEME_PREFERENCES,
   SHELL_VIEW_MODES,
   createLocalPreferenceStorage,
   loadUiPreferences,
+  resolveTheme,
   saveUiPreferences,
+  type ShellThemePreference,
   type ShellUiPreferences,
   type ShellViewMode,
 } from './preferences.js';
@@ -160,11 +167,12 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
 export interface UiPreferencesController {
   readonly preferences: ShellUiPreferences;
   readonly setLocale: (locale: ShellLocale) => void;
+  readonly setTheme: (theme: ShellThemePreference) => void;
   readonly setView: (view: ShellViewMode) => void;
 }
 
 /**
- * The whole of #3157's persisted state: a language and a view mode.
+ * The whole of #3157/#3165's persisted state: a language, a theme and a view.
  *
  * Reads the host locale once on mount when nothing is stored yet, then keeps
  * every later change in the local preference store. No authority is involved.
@@ -182,13 +190,19 @@ export function useUiPreferences(storage = createLocalPreferenceStorage(defaultB
     },
     [storage],
   );
+  const setTheme = useCallback(
+    (theme: ShellThemePreference) => {
+      setPreferences((prev) => saveUiPreferences(storage, { ...prev, theme }));
+    },
+    [storage],
+  );
   const setView = useCallback(
     (view: ShellViewMode) => {
       setPreferences((prev) => saveUiPreferences(storage, { ...prev, view }));
     },
     [storage],
   );
-  return { preferences, setLocale, setView };
+  return { preferences, setLocale, setTheme, setView };
 }
 
 function defaultBacking():
@@ -205,6 +219,28 @@ function hostLocale(): string | undefined {
   return typeof candidate === 'string' ? candidate : undefined;
 }
 
+/**
+ * The minimal document surface the shell touches for presentation.
+ *
+ * Structural on purpose so a test can pass a tiny fake instead of a real DOM;
+ * it only ever sets the theme attribute and the language tag.
+ */
+export interface AppearanceTarget {
+  readonly documentElement: {
+    readonly dataset: { [key: string]: string | undefined };
+    lang: string;
+  };
+}
+
+export function applyDocumentAppearance(
+  target: AppearanceTarget,
+  theme: 'light' | 'dark',
+  locale: ShellLocale,
+): void {
+  target.documentElement.dataset['theme'] = theme;
+  target.documentElement.lang = locale;
+}
+
 export function DeviceStateBadge(props: {
   state: DeviceLifecycleState | 'UNKNOWN';
   locale: ShellLocale;
@@ -219,17 +255,26 @@ export function DeviceStateBadge(props: {
 
 export function ConnectionPanel(props: {
   status: ShellStatus | null;
+  busy: boolean;
+  actions: ShellActions;
   locale: ShellLocale;
   advanced: boolean;
 }): ReactElement {
-  const { status, locale, advanced } = props;
+  const { status, busy, actions, locale, advanced } = props;
   const t = (key: ShellStringKey): string => translate(locale, key);
+  const state: DeviceLifecycleState | 'UNKNOWN' = status ? status.deviceState : 'UNKNOWN';
   return (
     <section className="panel">
       <h2>{t('connection.title')}</h2>
+      <p className="subtitle">{t('connection.explainer')}</p>
       <div className="row">
-        <DeviceStateBadge state={status ? status.deviceState : 'UNKNOWN'} locale={locale} />
-        <span className="subtitle">{t('connection.explainer')}</span>
+        <DeviceStateBadge state={state} locale={locale} />
+      </div>
+      <p className="guidance">{connectionNextActionText(locale, state)}</p>
+      <div className="row">
+        <button disabled={busy} onClick={() => void actions.refresh()}>
+          {t('connection.recheck')}
+        </button>
       </div>
       {advanced ? (
         <dl className="facts" data-advanced="true">
@@ -256,77 +301,80 @@ export function RunnerPanel(props: {
   const state = health ? health.state : status ? status.runnerState : 'UNKNOWN';
   return (
     <section className="panel">
-      <h2>{t('runner.title')}</h2>
-      <p className="subtitle">{t('runner.explainer')}</p>
+      <h2>{t('readiness.title')}</h2>
+      <p className="subtitle">{t('readiness.explainer')}</p>
       <div className="row" style={{ marginBottom: 10 }}>
         <button
           className="primary"
           disabled={busy || state === 'RUNNING' || state === 'STARTING'}
           onClick={() => void actions.start()}
         >
-          {t('runner.start')}
+          {t('readiness.start')}
         </button>
         <button disabled={busy || state === 'STOPPED'} onClick={() => void actions.stop()}>
-          {t('runner.stop')}
+          {t('readiness.pause')}
         </button>
-        <button onClick={() => void actions.refresh()}>{t('runner.refresh')}</button>
       </div>
-      <dl className="facts">
-        <dt>{t('runner.state')}</dt>
-        <dd data-canonical-state={String(state)}>{runnerStateText(locale, state)}</dd>
-        {advanced ? (
-          <>
-            <dt>{t('runner.pid')}</dt>
-            <dd>{String(health?.pid ?? status?.runnerPid ?? '—')}</dd>
-            <dt>{t('runner.processBoundary')}</dt>
-            <dd>separate headless process (renderer is not the execution authority)</dd>
-            <dt>{t('runner.lastExitCode')}</dt>
-            <dd>{String(health?.lastExitCode ?? '—')}</dd>
-          </>
-        ) : null}
-      </dl>
-    </section>
-  );
-}
-
-export function PairingPanel(props: {
-  pairing: PairingDeepLinkResponse | null;
-  locale: ShellLocale;
-  advanced: boolean;
-}): ReactElement {
-  const { pairing, locale, advanced } = props;
-  const t = (key: ShellStringKey): string => translate(locale, key);
-  return (
-    <section className="panel">
-      <h2>{t('pairing.title')}</h2>
-      <p className="subtitle">{t('pairing.body')}</p>
+      <div className="row">
+        <span className="state-badge state-readiness" data-canonical-state={String(state)}>
+          {readinessStateText(locale, state)}
+        </span>
+      </div>
+      <p className="guidance">{readinessBodyText(locale, state)}</p>
       {advanced ? (
-        <p data-advanced="true">
-          {pairing ? pairing.reason : 'no deep link submitted in this session'}
-        </p>
+        <dl className="facts" data-advanced="true">
+          <dt>{t('readiness.pid')}</dt>
+          <dd>{String(health?.pid ?? status?.runnerPid ?? '-')}</dd>
+          <dt>{t('readiness.processBoundary')}</dt>
+          <dd>{t('readiness.processBoundaryValue')}</dd>
+          <dt>{t('readiness.lastExitCode')}</dt>
+          <dd>{String(health?.lastExitCode ?? '-')}</dd>
+        </dl>
       ) : null}
     </section>
   );
 }
 
+/**
+ * Advanced-only pairing diagnostics.
+ *
+ * Easy view renders no version of this panel, so the raw seam text can never
+ * leak into the normal-user surface (see #3165).
+ */
+export function PairingPanel(props: {
+  pairing: PairingDeepLinkResponse | null;
+  locale: ShellLocale;
+  advanced: boolean;
+}): ReactElement | null {
+  const { pairing, locale, advanced } = props;
+  if (!advanced) return null;
+  const t = (key: ShellStringKey): string => translate(locale, key);
+  return (
+    <section className="panel" data-advanced="true">
+      <h2>{t('diagnostics.title')}</h2>
+      <p className="subtitle">{t('diagnostics.body')}</p>
+      <p>{pairing ? pairing.reason : t('diagnostics.seamIdle')}</p>
+    </section>
+  );
+}
+
+/**
+ * Advanced-only runner log.
+ *
+ * #3165 removed the Easy placeholder: Easy view does not mention the log at
+ * all, it simply renders no log panel.
+ */
 export function LogPanel(props: {
   log: BoundedLogResponse | null;
   locale: ShellLocale;
   advanced: boolean;
-}): ReactElement {
+}): ReactElement | null {
   const { log, locale, advanced } = props;
+  if (!advanced) return null;
   const t = (key: ShellStringKey): string => translate(locale, key);
   const lines = log ? log.lines : [];
-  if (!advanced) {
-    return (
-      <section className="panel">
-        <h2>{t('log.title')}</h2>
-        <p className="subtitle">{t('log.advancedOnly')}</p>
-      </section>
-    );
-  }
   return (
-    <section className="panel">
+    <section className="panel" data-advanced="true">
       <h2>{t('log.title')}</h2>
       <pre className="log">{lines.length === 0 ? t('log.empty') : lines.join('\n')}</pre>
     </section>
@@ -336,10 +384,11 @@ export function LogPanel(props: {
 export function SettingsPanel(props: {
   preferences: ShellUiPreferences;
   onLocale: (locale: ShellLocale) => void;
+  onTheme: (theme: ShellThemePreference) => void;
   onView: (view: ShellViewMode) => void;
   onClose: () => void;
 }): ReactElement {
-  const { preferences, onLocale, onView, onClose } = props;
+  const { preferences, onLocale, onTheme, onView, onClose } = props;
   const t = (key: ShellStringKey): string => translate(preferences.locale, key);
   return (
     <section className="panel settings" data-view={preferences.view}>
@@ -357,6 +406,25 @@ export function SettingsPanel(props: {
               onChange={() => onLocale(locale)}
             />
             {locale === 'ko' ? t('language.ko') : t('language.en')}
+          </label>
+        ))}
+      </fieldset>
+      <fieldset>
+        <legend>{t('settings.theme')}</legend>
+        {SHELL_THEME_PREFERENCES.map((theme) => (
+          <label key={theme}>
+            <input
+              type="radio"
+              name="padiem-theme"
+              value={theme}
+              checked={preferences.theme === theme}
+              onChange={() => onTheme(theme)}
+            />
+            {theme === 'system'
+              ? t('settings.themeSystem')
+              : theme === 'light'
+                ? t('settings.themeLight')
+                : t('settings.themeDark')}
           </label>
         ))}
       </fieldset>
@@ -426,15 +494,21 @@ export function ShellView(props: {
   settingsOpen: boolean;
   onToggleSettings: () => void;
   onLocale: (locale: ShellLocale) => void;
+  onTheme: (theme: ShellThemePreference) => void;
   onView: (view: ShellViewMode) => void;
   onCloseSettings: () => void;
 }): ReactElement {
-  const { state, preferences, actions, settingsOpen } = props;
+  const { state, preferences, actions } = props;
   const locale = preferences.locale;
   const t = (key: ShellStringKey): string => translate(locale, key);
   const visibility = visibilityFor(preferences.view);
   return (
-    <main className="shell" data-locale={locale} data-view={preferences.view}>
+    <main
+      className="shell"
+      data-locale={locale}
+      data-view={preferences.view}
+      data-theme-preference={preferences.theme}
+    >
       <header className="row">
         <div>
           <h1>{t('app.title')}</h1>
@@ -444,15 +518,22 @@ export function ShellView(props: {
           {t('app.settings')}
         </button>
       </header>
-      {settingsOpen ? (
+      {props.settingsOpen ? (
         <SettingsPanel
           preferences={preferences}
           onLocale={props.onLocale}
+          onTheme={props.onTheme}
           onView={props.onView}
           onClose={props.onCloseSettings}
         />
       ) : null}
-      <ConnectionPanel status={state.status} locale={locale} advanced={visibility.developerFacts} />
+      <ConnectionPanel
+        status={state.status}
+        busy={state.busy}
+        actions={actions}
+        locale={locale}
+        advanced={visibility.developerFacts}
+      />
       <RunnerPanel
         status={state.status}
         health={state.health}
@@ -483,8 +564,30 @@ export function ShellView(props: {
 
 export function App(): ReactElement {
   const bridge = useShellBridge();
-  const { preferences, setLocale, setView } = useUiPreferences();
+  const { preferences, setLocale, setTheme, setView } = useUiPreferences();
   const [settingsOpen, setSettingsOpen] = useState(false);
+
+  // #3165 — apply the resolved theme and the language tag to the document.
+  // Presentation only: no IPC, no authority, and System mode follows the OS.
+  useEffect(() => {
+    const media =
+      typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-color-scheme: dark)')
+        : null;
+    const apply = (): void => {
+      applyDocumentAppearance(
+        document,
+        resolveTheme(preferences.theme, media !== null && media.matches),
+        preferences.locale,
+      );
+    };
+    apply();
+    if (preferences.theme !== 'system' || media === null || typeof media.addEventListener !== 'function') {
+      return undefined;
+    }
+    media.addEventListener('change', apply);
+    return () => media.removeEventListener('change', apply);
+  }, [preferences.theme, preferences.locale]);
 
   if ('error' in bridge) {
     return (
@@ -505,6 +608,7 @@ export function App(): ReactElement {
       settingsOpen={settingsOpen}
       onToggleSettings={() => setSettingsOpen((open) => !open)}
       onLocale={setLocale}
+      onTheme={setTheme}
       onView={setView}
       onCloseSettings={() => setSettingsOpen(false)}
     />

@@ -1,75 +1,101 @@
-:root {
-  color-scheme: light dark;
+/*
+ * CLAW4 #3083 — Padiem Desktop shell surface.
+ * CLAW1 #3165 — tokens aligned to the Padiem Chat light/dark families and
+ * three theme modes (System / Light / Dark). The renderer resolves the
+ * preference and sets `data-theme`; CSS only defines the two resolved themes.
+ * Pre-hydration (no data-theme yet) falls back to the light tokens.
+ */
+
+:root,
+html:not([data-theme]),
+html[data-theme='light'] {
+  color-scheme: light;
   --surface: #ffffff;
-  --surface-muted: #f4f5f7;
-  --border: #d8dbe0;
-  --text: #16181d;
-  --text-muted: #5c6270;
-  --accent: #2f5bea;
+  --surface-muted: #f4f4f7;
+  --border: #e3e3e9;
+  --text: #19191d;
+  --text-muted: #6f7079;
+  --accent: #6557e8;
+  --accent-ink: #ffffff;
+  --focus-ring: rgba(101, 87, 232, 0.45);
+  --state-online: #0f766e;
+  --state-pending: #1d4ed8;
+  --state-attention: #b45309;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --surface: #16181d;
-    --surface-muted: #1f2229;
-    --border: #333844;
-    --text: #f2f4f8;
-    --text-muted: #a3aab8;
-    --accent: #7f9bff;
-  }
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --surface: #06080d;
+  --surface-muted: #101318;
+  --border: rgba(255, 255, 255, 0.14);
+  --text: #f7f7f6;
+  --text-muted: rgba(255, 255, 255, 0.68);
+  --accent: #88c9ff;
+  --accent-ink: #0b0c0e;
+  --focus-ring: rgba(136, 201, 255, 0.55);
+  --state-online: #5eead4;
+  --state-pending: #93c5fd;
+  --state-attention: #fbbf24;
 }
 
 body {
   margin: 0;
-  font-family: "Segoe UI", system-ui, sans-serif;
+  font-family: "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  letter-spacing: -0.01em;
   background: var(--surface);
   color: var(--text);
 }
 
 .shell {
-  padding: 24px 28px 32px;
+  padding: 28px 32px 36px;
   max-width: 960px;
 }
 
 .shell h1 {
   font-size: 20px;
+  line-height: 1.3;
   margin: 0 0 4px;
 }
 
 .shell .subtitle {
   color: var(--text-muted);
   font-size: 13px;
-  margin: 0 0 24px;
+  line-height: 1.6;
+  margin: 0 0 14px;
 }
 
 .panel {
   border: 1px solid var(--border);
   background: var(--surface-muted);
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 16px 18px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .panel h2 {
-  font-size: 13px;
+  font-size: 12.5px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
   color: var(--text-muted);
-  margin: 0 0 12px;
+  margin: 0 0 10px;
 }
 
 .state-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   font-weight: 600;
-  font-size: 14px;
-  padding: 6px 12px;
+  font-size: 13px;
+  padding: 4px 11px;
   border-radius: 999px;
-  border: 1px solid var(--border);
+  border: 1px solid currentColor;
 }
 
 .state-ONLINE {
-  color: #0f7a3d;
-  border-color: #0f7a3d;
+  color: var(--state-online);
+}
+
+.state-PAIRING {
+  color: var(--state-pending);
 }
 
 .state-OFFLINE,
@@ -77,10 +103,19 @@ body {
   color: var(--text-muted);
 }
 
-.state-PAIRING,
 .state-ACTION_REQUIRED {
-  color: #b45309;
-  border-color: #b45309;
+  color: var(--state-attention);
+}
+
+.state-readiness {
+  color: var(--text);
+}
+
+.guidance {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+  margin: 8px 0 12px;
 }
 
 .row {
@@ -92,18 +127,35 @@ body {
 
 button {
   font: inherit;
-  padding: 7px 14px;
-  border-radius: 8px;
+  min-height: 34px;
+  padding: 8px 14px;
+  border-radius: 10px;
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text);
   cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }
 
 button.primary {
+  min-height: 36px;
   background: var(--accent);
   border-color: var(--accent);
-  color: #ffffff;
+  color: var(--accent-ink);
+  font-weight: 600;
 }
 
 button:disabled {
@@ -113,7 +165,7 @@ button:disabled {
 
 dl.facts {
   display: grid;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: 180px 1fr;
   gap: 6px 16px;
   margin: 0;
   font-size: 13px;
@@ -136,11 +188,21 @@ pre.log {
   line-height: 1.5;
   white-space: pre-wrap;
   word-break: break-all;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 12px;
 }
 
 .notice {
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--text-muted);
   border-top: 1px solid var(--border);
   padding-top: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button {
+    transition: none;
+  }
 }
