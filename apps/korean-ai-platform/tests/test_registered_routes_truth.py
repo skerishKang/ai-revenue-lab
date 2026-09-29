@@ -65,8 +65,9 @@ def test_only_public_catalog_lane_is_auto_eligible(client):
     assert public[0]["provider_id"] == "kilo"
     assert public[0]["auto_eligible"] is True
     # #2097: minimax + hy3 retirement unregistered two explicit-only lanes.
-    # #2133 plus B14 confirmed candidates add six manual-pin lanes (9 total).
-    assert len(explicit) == 9
+    # #2133 plus B14 confirmed candidates add six manual-pin lanes, and #3143
+    # adds the B66 quotation text-primary lane (10 total).
+    assert len(explicit) == 10
     assert all(not r["auto_eligible"] for r in explicit)
 
 
@@ -76,7 +77,9 @@ def test_all_kilo_routes_are_free_and_only_public_is_auto_eligible(client):
     ]
 
     # #2097: two of the four original Kilo free lanes are retired/unregistered.
-    assert len(kilo_routes) == 2
+    # #3143 adds the B66 quotation text-primary lane, so three kilo free lanes
+    # are registered; only the public catalog lane stays auto eligible.
+    assert len(kilo_routes) == 3
     assert all(r["free"] is True for r in kilo_routes)
     assert sum(r["auto_eligible"] for r in kilo_routes) == 1
 
