@@ -123,9 +123,6 @@ def _request_headers(spec: PlatformProviderSpec) -> dict[str, str]:
     if spec.credential_source == CredentialSource.PLATFORM_SECRET:
         secret = resolve_secret(spec)
         if not secret:
-            if spec.provider_id == "kilo":
-                # Kilo Gateway free tier supports anonymous requests when KILO_API_KEY is unset
-                return headers
             raise PilotNotConfigured(
                 f"Provider '{spec.provider_id}' secret is not configured "
                 f"(binding {spec.credential_binding_name})."
