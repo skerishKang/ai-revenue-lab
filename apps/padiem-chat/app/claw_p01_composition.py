@@ -72,6 +72,20 @@ def _claw_engine_client(
         return None, P01_DIAG_COMPOSITION_UNAVAILABLE
 
 
+def build_claw_engine_client_with_diagnostic(
+    env: Any,
+    *,
+    request_factory: Any,
+) -> tuple[PadiemAiEngineClient | None, str | None]:
+    """Public accessor of the one fail-closed Engine client of every B54 lane (#3210).
+
+    The A6 image-attachment canary seam composes this same client (same Worker
+    bindings, Service Binding transport, caller identity, and app identity), so
+    an attachment lane can never become a second Engine protocol.
+    """
+    return _claw_engine_client(env, request_factory=request_factory)
+
+
 def build_claw_p01_adapter(
     env: Any,
     *,
@@ -148,6 +162,7 @@ def build_claw_p01_continuation_client_with_diagnostic(
 
 
 __all__ = [
+    "build_claw_engine_client_with_diagnostic",
     "build_claw_p01_adapter",
     "build_claw_p01_adapter_with_diagnostic",
     "build_claw_p01_continuation_client_with_diagnostic",

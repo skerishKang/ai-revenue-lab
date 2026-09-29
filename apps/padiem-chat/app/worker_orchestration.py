@@ -9,12 +9,14 @@ from urllib.parse import urlparse
 from padiem_ai_engine_client import (
     ENGINE_HEALTH_PATH,
     ENGINE_INTERNAL_ORIGIN,
+    ENGINE_MULTIMODAL_ATTACHMENTS_PATH,
     ENGINE_ORCHESTRATE_CANCEL_PATH,
     ENGINE_ORCHESTRATE_PATH,
     ENGINE_ORCHESTRATE_RESUME_PATH,
     EngineTransportResponse,
     PadiemAiEngineClient,
 )
+from padiem_ai_core.b14_multimodal import MAX_B14_IMAGE_BYTES
 
 from .canonical_orchestration_bridge import CanonicalSubjectB62EngineOrchestrationBridge
 from .orchestration_bridge import B62EngineOrchestrationBridge, D1OrchestrationStateStore
@@ -25,12 +27,19 @@ ORCHESTRATION_ENABLED_ENV = "PADIEM_CHAT_ORCHESTRATION_ENABLED"
 ENGINE_CALLER_ID_ENV = "PADIEM_CHAT_ENGINE_CALLER_ID"
 ENGINE_CALLER_SECRET_ENV = "PADIEM_CHAT_ENGINE_CALLER_SECRET"
 _MAX_ENGINE_RESPONSE_BYTES = 1_048_576
+# Text/reference routes keep the original 256 KiB request bound. The canonical
+# multimodal admission route (#3210) carries one bounded base64 image, so it
+# gets its own bound derived from the same core constant the Engine store uses.
+_MAX_ENGINE_REQUEST_BYTES = 256 * 1024
+_MAX_ATTACHMENT_BASE64_CHARS = ((MAX_B14_IMAGE_BYTES + 2) // 3) * 4 + 4
+_MAX_ATTACHMENT_REQUEST_BYTES = _MAX_ATTACHMENT_BASE64_CHARS + (8 * 1024)
 _ALLOWED_ENGINE_PATHS = frozenset(
     {
         ENGINE_HEALTH_PATH,
         ENGINE_ORCHESTRATE_PATH,
         ENGINE_ORCHESTRATE_RESUME_PATH,
         ENGINE_ORCHESTRATE_CANCEL_PATH,
+        ENGINE_MULTIMODAL_ATTACHMENTS_PATH,
     }
 )
 
@@ -71,8 +80,14 @@ class CloudflareEngineServiceTransport:
             or (parsed.path != ENGINE_HEALTH_PATH and normalized_method != "POST")
         ):
             raise ValueError("Engine client requested an unsupported internal target")
-        if body is not None and len(body) > 256 * 1024:
-            raise ValueError("Engine request exceeded the B62 transport safety limit")
+        if body is not None:
+            body_limit = (
+                _MAX_ATTACHMENT_REQUEST_BYTES
+                if parsed.path == ENGINE_MULTIMODAL_ATTACHMENTS_PATH
+                else _MAX_ENGINE_REQUEST_BYTES
+            )
+            if len(body) > body_limit:
+                raise ValueError("Engine request exceeded the B62 transport safety limit")
         body_text = None
         if body is not None:
             try:

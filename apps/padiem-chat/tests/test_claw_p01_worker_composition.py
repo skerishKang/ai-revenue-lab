@@ -366,7 +366,11 @@ def test_config_repr_and_error_paths_never_carry_the_credential() -> None:
 
 def test_composition_modules_never_read_os_environ() -> None:
     root = Path(__file__).resolve().parents[1]
-    for name in ("app/claw_p01_composition.py", "app/worker_config.py"):
+    for name in (
+        "app/claw_p01_composition.py",
+        "app/worker_config.py",
+        "app/claw_attachment_canary_composition.py",
+    ):
         source = (root / name).read_text(encoding="utf-8")
         assert "import os" not in source
         assert "os.environ[" not in source
