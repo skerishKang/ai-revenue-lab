@@ -400,11 +400,17 @@
     historyEmpty.hidden = true;
   }
   // #3232: the Web Claw sidebar Files entry reuses the existing project-scoped
-  // Files authority. It mirrors the Projects button readiness (authenticated +
-  // projectsReady) and never introduces its own storage, routes, or parsers.
+  // Files authority. It mirrors the Projects readiness (authenticated +
+  // projectsReady) AND the existing project-files flag consumed by
+  // fetchProjectFiles/loadProjectFilesForDialog/addProjectFile/deleteProjectFile
+  // and the projectFilesPanel visibility, and never introduces its own
+  // storage, routes, or parsers.
+  function filesNavAvailable() {
+    return Boolean(authState.authenticated && projectsReady && authState.project_files_ready);
+  }
   function syncFilesNav() {
     if (!filesNavButton) return;
-    const enabled = Boolean(authState.authenticated && projectsReady);
+    const enabled = filesNavAvailable();
     filesNavButton.disabled = !enabled;
     filesNavButton.setAttribute("aria-disabled", enabled ? "false" : "true");
   }
@@ -1377,7 +1383,7 @@
   // when projects exist). No global file store is introduced: the handler stays
   // fail-closed unless the project authority is ready.
   if (filesNavButton) filesNavButton.addEventListener("click", () => {
-    if (!projectsReady || !authState.authenticated) return;
+    if (!filesNavAvailable()) return;
     if (activeProject) openProjectDialog(activeProject);
     else if (projects.length === 0) openProjectDialog();
     else projectsSection.scrollIntoView({ block: "nearest", behavior: "smooth" });

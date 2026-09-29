@@ -64,11 +64,15 @@ def test_files_nav_reference_and_click_handler_present() -> None:
 
 def test_files_nav_reuses_existing_project_readiness_authority() -> None:
     source = APP_JS.read_text(encoding="utf-8")
-    match = re.search(r"function syncFilesNav\(\) \{([^}]*)\}", source)
+    match = re.search(r"function filesNavAvailable\(\) \{([^}]*)\}", source)
     assert match is not None
     body = match.group(1)
     assert "authState.authenticated" in body
     assert "projectsReady" in body
+    assert "authState.project_files_ready" in body
+    # syncFilesNav and the click guard both consume that single authority.
+    assert "filesNavAvailable()" in source.split("function syncFilesNav()")[1].split("function clearProjectsUI")[0]
+    assert "if (!filesNavAvailable()) return;" in source
     # No new readiness authority may be invented for the Files entry.
     assert re.search(r"\bfilesReady\b", source) is None
     assert "filesNavReady" not in source
@@ -77,7 +81,7 @@ def test_files_nav_reuses_existing_project_readiness_authority() -> None:
 
 def test_files_click_handler_is_fail_closed_and_reuses_project_ui() -> None:
     source = APP_JS.read_text(encoding="utf-8")
-    assert "if (!projectsReady || !authState.authenticated) return;" in source
+    assert "if (!filesNavAvailable()) return;" in source
     assert "openProjectDialog(activeProject)" in source
     # Empty-project and existing-project branches reuse the Projects flow.
     handler = source.split("filesNavButton.addEventListener")[1].split("projectCreateButton")[0]
@@ -244,6 +248,7 @@ function firstProjectRowButton() {
     dialogTitle: byId.projectDialogTitle.textContent,
     filesPanelHidden: byId.projectFilesPanel.hidden === true,
     scrolledToProjects: byId.projectsSection._scrolled === true,
+    projectsNavDisabled: byId.projectsNavButton.disabled,
     projectApiCalls: projectRequests().length,
     fileApiCalls: fileRequests().length,
   });
@@ -286,6 +291,17 @@ function firstProjectRowButton() {
     if (after.dialogTitle !== "project-edit-title") fail("ACTIVE_PROJECT_MUST_REUSE_EXISTING_DIALOG:" + after.dialogTitle);
     if (after.filesPanelHidden) fail("ACTIVE_PROJECT_MUST_SHOW_EXISTING_FILES_PANEL");
     if (after.fileApiCalls < 1) fail("ACTIVE_PROJECT_MUST_LOAD_EXISTING_FILE_LIST");
+  } else if (mode === "project_files_unavailable") {
+    const before = snapshot();
+    if (before.disabled !== true) fail("FILES_UNAVAILABLE_MUST_DISABLE");
+    if (before.ariaDisabled !== "true") fail("FILES_UNAVAILABLE_ARIA_DISABLED");
+    if (before.projectsNavDisabled !== false) fail("PROJECTS_NAV_SEMANTICS_CHANGED");
+    clickFilesNav();
+    await tick(30);
+    const after = snapshot();
+    if (after.dialogOpen) fail("FILES_UNAVAILABLE_MUST_NOT_OPEN_DIALOG");
+    if (after.scrolledToProjects) fail("FILES_UNAVAILABLE_MUST_NOT_ROUTE_TO_PROJECTS");
+    if (after.fileApiCalls !== 0) fail("FILES_UNAVAILABLE_MUST_ISSUE_NO_FILE_REQUESTS");
   } else {
     fail("UNKNOWN_MODE");
   }
@@ -350,3 +366,9 @@ def test_signed_in_without_projects_opens_create_flow_without_global_store() -> 
 
 def test_signed_in_routes_via_existing_project_flow() -> None:
     _run_harness("signed_in_projects", _SIGNED_IN_AUTH, [_P1], {"p1": [_P1_FILE]})
+
+
+def test_project_files_unavailable_keeps_files_entry_fail_closed() -> None:
+    unavailable_auth = dict(_SIGNED_IN_AUTH)
+    unavailable_auth["project_files_ready"] = False
+    _run_harness("project_files_unavailable", unavailable_auth, [_P1], {"p1": [_P1_FILE]})
