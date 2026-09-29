@@ -50,14 +50,6 @@ _TINY_PNG_URL = (
 )
 
 
-@pytest.fixture(autouse=True)
-def _space_bunny_kilo_secret(monkeypatch):
-    monkeypatch.setenv(
-        KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
-        "kilo_live_abcdefghijklmnopqrstuvwxyz1234",
-    )
-
-
 def test_space_bunny_matches_canonical_text_and_vision_primary() -> None:
     text = CANONICAL_PATH.read_text(encoding="utf-8")
     assert 'TEXT_PRIMARY_MODEL_ID = "kilo/stealth-space-bunny-alpha"' in text
@@ -114,10 +106,14 @@ def test_other_provider_registrations_are_preserved_but_not_secondary() -> None:
 
 
 @pytest.mark.asyncio
-async def test_space_bunny_image_payload_reaches_kilo_adapter_with_model_scoped_secret(
+async def test_space_bunny_image_payload_reaches_kilo_adapter_with_optional_secret(
     monkeypatch,
 ) -> None:
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
+    monkeypatch.setenv(
+        KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
+        "kilo_live_abcdefghijklmnopqrstuvwxyz1234",
+    )
     captured: dict[str, object] = {}
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -175,3 +171,9 @@ async def test_space_bunny_image_payload_reaches_kilo_adapter_with_model_scoped_
     assert "Authorization" not in plat._request_headers(spec)
     headers = plat._request_headers(spec, model_id=KILO_SPACE_BUNNY_MODEL_ID)
     assert headers["Authorization"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
+
+    monkeypatch.delenv(KILO_SPACE_BUNNY_CREDENTIAL_BINDING, raising=False)
+    anonymous_headers = plat._request_headers(
+        spec, model_id=KILO_SPACE_BUNNY_MODEL_ID
+    )
+    assert anonymous_headers == {"Content-Type": "application/json"}
