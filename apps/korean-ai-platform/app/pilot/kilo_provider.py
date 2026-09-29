@@ -3,9 +3,9 @@
 This module keeps a bounded set of explicit current free routes rather than
 ``kilo-auto/free``. Kilo's official Gateway documentation checked on
 2026-09-02 lists the exact upstream IDs below as free and preserves their existing
-anonymous/keyless execution contract. Space Bunny is the one exception:
-Production execution for that model reuses the owner-managed ``PADIEM_KILO_API_KEY``
-already stored in Cloudflare Secrets Store.
+anonymous/keyless execution contract. Space Bunny may additionally reuse the
+owner-managed ``PADIEM_KILO_API_KEY`` runtime binding when it is present; the
+binding maps to the existing account Secrets Store item and is optional.
 
 Free availability is volatile. These registrations are dated snapshots, remain
 explicit/manual-only, and are never inserted into ``b14/auto``. The fixed Kilo
@@ -22,9 +22,9 @@ as retirement metadata for contract tests and operator documentation.
 Owner decision (#3143) pins ``stealth/space-bunny-alpha`` as the Business 66
 quotation text primary. It is registered here as one additional explicit
 free lane under the same ``kilo`` Provider spec. Owner correction #3209
-keeps the shared Provider boundary keyless for the historical free lanes while
-Space Bunny alone reuses the existing Cloudflare Secrets Store credential
-``PADIEM_KILO_API_KEY``; no new provider adapter or secret value is introduced. Like the lanes above it is never appended to ``CATALOG_MODELS``
+keeps the shared Provider boundary keyless for all free lanes while Space Bunny
+may reuse the existing ``PADIEM_KILO_API_KEY`` runtime binding when available;
+no new provider adapter or secret value is introduced. Like the lanes above it is never appended to ``CATALOG_MODELS``
 or to ``b14/auto``; the global auto chain and its fallback set are unchanged.
 Owner decision (#3209) additionally names the same lane the canonical vision
 primary for the existing single-image product contract (``chat``/``coding``/
@@ -67,9 +67,9 @@ KILO_LAGUNA_UPSTREAM_MODEL = "poolside/laguna-s-2.1:free"
 KILO_SPACE_BUNNY_MODEL_ID = "kilo/stealth-space-bunny-alpha"
 KILO_SPACE_BUNNY_UPSTREAM_MODEL = "stealth/space-bunny-alpha"
 # Date of the owner/CENTRAL evidence that re-confirmed this lane callable on
-# the Kilo free route (#3143 refresh). Space Bunny authentication now comes from
-# the existing owner-managed PADIEM_KILO_API_KEY runtime binding (#3209); this remains a dated
-# availability snapshot, not a guarantee.
+# the Kilo free route (#3143 refresh). Space Bunny may use the existing
+# owner-managed PADIEM_KILO_API_KEY runtime binding (#3209), but the binding is
+# not required for route eligibility; this remains a dated availability snapshot.
 KILO_SPACE_BUNNY_SOURCE_CHECKED_AT = "2026-09-28"
 
 # Retired lane identifiers kept as retirement metadata only. They are never
@@ -147,11 +147,11 @@ KILO_FREE_ROUTES = (
 def register_kilo_provider() -> None:
     """Idempotently register the explicit Kilo free routes.
 
-    The shared Kilo Provider spec remains keyless so the historical free lanes
-    preserve their existing contract. Space Bunny is authenticated separately
-    by the model-scoped ``KILO_SPACE_BUNNY_CREDENTIAL_BINDING`` boundary in the
-    platform adapter/router. Missing Space Bunny credential material fails
-    closed before its upstream call.
+    The shared Kilo Provider spec remains keyless so all free lanes preserve
+    their existing contract. Space Bunny has one optional model-scoped
+    ``KILO_SPACE_BUNNY_CREDENTIAL_BINDING`` in the platform adapter: when the
+    binding resolves, B14 sends Bearer auth; when it does not, B14 sends the same
+    anonymous request shape as the existing free lanes.
     """
 
     if get_platform_provider(KILO_PROVIDER_ID) is None:
