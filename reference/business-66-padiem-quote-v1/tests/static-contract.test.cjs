@@ -19,6 +19,7 @@ const cloner = read("quote-template-cloner.js");
 const skill = read("quote-skill.js");
 const skillStore = read("quote-skill-store.js");
 const skillCandidate = read("quote-skill-candidate.js");
+const skillRegistration = read("quote-skill-registration.js");
 const intake = read("file-intake.js");
 const easy = read("easy-mode.js");
 
@@ -42,6 +43,7 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'src="quote-skill.js"',
   'src="quote-skill-store.js"',
   'src="quote-skill-candidate.js"',
+  'src="quote-skill-registration.js"',
   'src="file-intake.js"',
   'src="app.js"',
   'src="easy-mode.js"',
@@ -91,7 +93,7 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
 ].forEach((marker) => check(html.includes(marker), `B66_STATIC_CONTRACT missing in index.html: ${marker}`));
 
 /* NEUTRAL_PUBLIC_UI_CONTRACT — 외부 화면/상태에 내부 제품 브랜드를 노출하지 않음 */
-check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + candidate + cloner + skill + skillStore + skillCandidate + intake + easy),
+check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + candidate + cloner + skill + skillStore + skillCandidate + skillRegistration + intake + easy),
   "NEUTRAL_PUBLIC_UI_CONTRACT: no Padiem branding in rendered/runtime source");
 check(!html.includes("B66 DEMO"), "NEUTRAL_PUBLIC_UI_CONTRACT: no internal demo label");
 check(html.includes("BETA · 입력 내용은 이 브라우저에만 저장"),
@@ -699,10 +701,14 @@ check(skillStore.includes('STORAGE_KEY = "quoteBetaSavedSkill.v1"') && !skillSto
   "SAVED_QUOTE_SKILL_STORE_BOUNDED=YES");
 check(skillCandidate.includes('CALCULATED_FIELDS = ["lineAmounts", "supplyTotal", "vatAmount", "grandTotal", "validUntil"]'),
   "SAVED_QUOTE_SKILL_CALCULATED_FIELDS_LOCKED_TO_QUOTECORE=YES");
-check(!/(kilo\/|space-bunny|sensenova|openai|anthropic)/i.test(skill + skillStore + skillCandidate),
+check(!/(kilo\/|space-bunny|sensenova|openai|anthropic)/i.test(skill + skillStore + skillCandidate + skillRegistration),
   "SAVED_QUOTE_SKILL_BROWSER_PROVIDER_MODEL_ID=0");
-check(!/FileReader|FormData|indexedDB/i.test(skill + skillStore + skillCandidate),
+check(!/FileReader|FormData|indexedDB/i.test(skill + skillStore + skillCandidate + skillRegistration),
   "SAVED_QUOTE_SKILL_RAW_SOURCE_FILE_BROWSER_PERSISTENCE=0");
+check(skillRegistration.includes("buildRegistrationCandidate") &&
+      skillRegistration.includes("unsupported_template_decision") &&
+      skillRegistration.includes("sender_company_requires_correction"),
+  "SAVED_QUOTE_SKILL_REGISTRATION_SEAM: extraction-to-candidate seam is wired with honest fail-closed gaps");
 
 console.log("VALID_UNTIL_CONTRACT=PASS");
 console.log("ADDRESS_FIELDS_CONTRACT=PASS");
