@@ -5,7 +5,7 @@ Proves, without any live provider call:
 - native text -> governed text request (manual, fallback off);
 - image -> canonical B14 multimodal request (manual, fallback off);
 - scanned PDF -> Core PDF rendering authority -> per-page multimodal;
-- model output stays untrusted (missing facts UNKNOWN, no fabrication);
+- model output stays untrusted (missing facts null; UNKNOWN is display-only);
 - QuoteCore stays the only calculation authority;
 - #3205 Korean synthetic corpus fixtures drive the routing proof.
 """
@@ -66,6 +66,28 @@ def parser_with_text(text: str):
         )
 
     return _parser
+
+
+def normalize_from_model(raw):
+    """Legacy-shaped test helper with trusted source supplied out-of-band.
+
+    Existing test payloads predate #3212's server-owned provenance boundary
+    and often include an exact source object. The production normalizer now
+    receives the authoritative source from intake/render metadata; this helper
+    derives the same trusted fixture facts while leaving the model payload
+    unchanged so exact-match compatibility is also exercised.
+    """
+    source = raw.get("source") if isinstance(raw, dict) else None
+    source = source if isinstance(source, dict) else {}
+    kind = source.get("kind") or "image"
+    default_name = {
+        "text": "fixture.txt",
+        "native_document": "fixture.pdf",
+        "image": "fixture.png",
+        "scanned_pdf": "fixture.pdf",
+    }.get(kind, "fixture.bin")
+    filename = source.get("filename") or default_name
+    return normalize_model_output(raw, source_kind=kind, filename=filename)
 
 
 class B66GovernedRouteTests(unittest.TestCase):
@@ -248,8 +270,92 @@ class B66GovernedRouteTests(unittest.TestCase):
         self.assertEqual(len(page_requests), 2)
         self.assertGreater(len(multipage), 0)
 
+    def test_extraction_prompt_requires_json_null_and_server_owned_source(self) -> None:
+        text_request = build_text_extraction_request(
+            "견적번호 Q-2026-3001", filename="quote.pdf"
+        )
+        image_request = build_image_extraction_request(
+            PNG, media_type="image/png", filename="quote.png"
+        )
+        prompts = [
+            text_request["messages"][0]["content"],
+            image_request["messages"][0]["content"][0]["text"],
+        ]
+        for prompt in prompts:
+            self.assertIn("JSON 객체 하나만", prompt)
+            self.assertIn("JSON null", prompt)
+            self.assertIn("source는 서버가 소유", prompt)
+            self.assertIn("마크다운/설명 문장을 덧붙이지", prompt)
+            self.assertNotIn("없는 값은 UNKNOWN", prompt)
+
+    def test_literal_unknown_is_rejected_as_model_fact(self) -> None:
+        result = normalize_model_output(
+            {
+                "sender": {"company": "UNKNOWN"},
+                "recipient": {},
+                "quote": {},
+                "items": [],
+                "tax": {},
+                "memo": None,
+                "evidence": [],
+                "warnings": [],
+            },
+            source_kind="image",
+            filename="trusted.png",
+        )
+        self.assertFalse(result["ok"], result)
+        self.assertEqual(result["code"], "reserved_unknown_sentinel")
+
+    def test_server_owned_source_provenance_cannot_be_overridden(self) -> None:
+        payload = {
+            "sender": {},
+            "recipient": {},
+            "quote": {},
+            "items": [],
+            "tax": {},
+            "memo": None,
+            "evidence": [],
+            "warnings": [],
+        }
+        normalized = normalize_model_output(
+            payload, source_kind="image", filename="trusted.png"
+        )
+        self.assertTrue(normalized["ok"], normalized)
+        self.assertEqual(
+            normalized["extraction"]["source"],
+            {"kind": "image", "filename": "trusted.png"},
+        )
+
+        wrong_name = dict(payload)
+        wrong_name["source"] = {"kind": "image", "filename": "model-changed.png"}
+        result = normalize_model_output(
+            wrong_name, source_kind="image", filename="trusted.png"
+        )
+        self.assertFalse(result["ok"], result)
+        self.assertEqual(result["code"], "source_provenance_mismatch")
+
+        wrong_kind = dict(payload)
+        wrong_kind["source"] = {"kind": "native_document", "filename": "trusted.png"}
+        result = normalize_model_output(
+            wrong_kind, source_kind="image", filename="trusted.png"
+        )
+        self.assertFalse(result["ok"], result)
+        self.assertEqual(result["code"], "source_provenance_mismatch")
+
+    def test_legacy_quote_draft_projection_does_not_own_saved_skill_approval(self) -> None:
+        doc = project_to_quote_draft_candidate.__doc__ or ""
+        self.assertIn("legacy #3147 QuoteDraft seam", doc)
+        self.assertIn("not the Saved Quote Skill approval path", doc)
+        source = (
+            Path(__file__).resolve().parents[1]
+            / "app"
+            / "extraction_routing.py"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("quote-template-store", source)
+        self.assertNotIn("SavedQuoteSkill", source)
+
     def test_model_output_validation_and_unknown_stays_unknown(self) -> None:
-        valid = normalize_model_output(
+        valid = normalize_from_model(
             {
                 "source": {"kind": "image", "filename": "f02.png"},
                 "sender": {"company": "주식회사 테스트상사"},
@@ -286,7 +392,7 @@ class B66GovernedRouteTests(unittest.TestCase):
         self.assertEqual(extraction["evidence"][0]["field"], "quote.quoteNo")
 
         # F09 hallucination trap: absent facts stay None, never fabricated.
-        missing = normalize_model_output(
+        missing = normalize_from_model(
             {
                 "source": {"kind": "native_document"},
                 "sender": {"company": "주식회사 테스트상사"},
@@ -324,7 +430,7 @@ class B66GovernedRouteTests(unittest.TestCase):
         def check(overrides: dict, code: str) -> None:
             payload = dict(base)
             payload.update(overrides)
-            result = normalize_model_output(payload)
+            result = normalize_from_model(payload)
             self.assertFalse(result["ok"], (overrides, result))
             self.assertEqual(result["code"], code, (overrides, result))
 
@@ -359,12 +465,12 @@ class B66GovernedRouteTests(unittest.TestCase):
 
         for bad in ["2026-13-01", "2026-02-30", "2026-3-3", "03/03/2026",
                     "2026-03-03T00:00:00", "어제", 20260303]:
-            result = normalize_model_output(quote_with(bad))
+            result = normalize_from_model(quote_with(bad))
             self.assertFalse(result["ok"], bad)
             self.assertEqual(result["code"], "invalid_issue_date", bad)
 
         for good in ["2026-03-03", "2024-02-29"]:
-            result = normalize_model_output(quote_with(good))
+            result = normalize_from_model(quote_with(good))
             self.assertTrue(result["ok"], good)
             self.assertEqual(result["extraction"]["quote"]["issueDate"], good)
 
@@ -382,20 +488,20 @@ class B66GovernedRouteTests(unittest.TestCase):
                 "warnings": [],
             }
 
-        result = normalize_model_output(quote_with(30))
+        result = normalize_from_model(quote_with(30))
         self.assertTrue(result["ok"], result)
         self.assertEqual(result["extraction"]["quote"]["validDays"], 30)
 
         # JS parity: surrounding whitespace is trimmed before validation.
         for padded, expected in [("30 ", 30), (" 2", 2), ("\t7\n", 7)]:
-            result = normalize_model_output(quote_with(padded))
+            result = normalize_from_model(quote_with(padded))
             self.assertTrue(result["ok"], repr(padded))
             self.assertEqual(
                 result["extraction"]["quote"]["validDays"], expected, repr(padded)
             )
 
         for bad in [0, -3, 1.5, "abc", "   ", True, 3.5]:
-            result = normalize_model_output(quote_with(bad))
+            result = normalize_from_model(quote_with(bad))
             self.assertFalse(result["ok"], repr(bad))
             self.assertEqual(result["code"], "invalid_valid_days", repr(bad))
 
@@ -415,7 +521,7 @@ class B66GovernedRouteTests(unittest.TestCase):
                 "warnings": [],
             }
             base.update(overrides)
-            return normalize_model_output(base)
+            return normalize_from_model(base)
 
         # No raw ValueError may escape; each boundary reports its own code.
         self.assertEqual(
@@ -435,7 +541,7 @@ class B66GovernedRouteTests(unittest.TestCase):
         )
 
     def test_evidence_page_trims_whitespace_like_js(self) -> None:
-        result = normalize_model_output(
+        result = normalize_from_model(
             {
                 "source": {"kind": "image"},
                 "sender": {},
@@ -469,12 +575,12 @@ class B66GovernedRouteTests(unittest.TestCase):
             [{"field": "quote.quoteNo", "page": 2,
               "snippet": "Q-2026-3002", "confidence": 1}]
         )
-        result = normalize_model_output(good)
+        result = normalize_from_model(good)
         self.assertTrue(result["ok"], result)
         self.assertEqual(result["extraction"]["evidence"], good["evidence"])
 
         minimal = with_evidence([{"field": "memo"}])
-        result = normalize_model_output(minimal)
+        result = normalize_from_model(minimal)
         self.assertTrue(result["ok"], result)
         self.assertEqual(
             result["extraction"]["evidence"],
@@ -482,7 +588,7 @@ class B66GovernedRouteTests(unittest.TestCase):
         )
 
         too_many = with_evidence([{"field": f"f{i}"} for i in range(201)])
-        result = normalize_model_output(too_many)
+        result = normalize_from_model(too_many)
         self.assertFalse(result["ok"])
         self.assertEqual(result["code"], "too_much_evidence")
 
@@ -493,7 +599,7 @@ class B66GovernedRouteTests(unittest.TestCase):
             ([{"field": "x", "page": 0}], "invalid_evidence_page"),
             ([{"field": "x", "detail": "y"}], "unsupported_evidence_field"),
         ]:
-            result = normalize_model_output(with_evidence(evidence_value))
+            result = normalize_from_model(with_evidence(evidence_value))
             self.assertFalse(result["ok"], (evidence_value, result))
             self.assertEqual(result["code"], code, (evidence_value, result))
 
@@ -511,26 +617,26 @@ class B66GovernedRouteTests(unittest.TestCase):
                 "warnings": warnings_value,
             }
 
-        result = normalize_model_output(with_warnings(["낮은 해상도", "회전됨"]))
+        result = normalize_from_model(with_warnings(["낮은 해상도", "회전됨"]))
         self.assertTrue(result["ok"], result)
         self.assertEqual(
             result["extraction"]["warnings"], ["낮은 해상도", "회전됨"]
         )
 
-        result = normalize_model_output(with_warnings(["w"] * 51))
+        result = normalize_from_model(with_warnings(["w"] * 51))
         self.assertFalse(result["ok"])
         self.assertEqual(result["code"], "too_many_warnings")
 
         # Unknown tax modes degrade to a review warning, mirroring the JS.
         taxed = with_warnings([])
         taxed["tax"] = {"mode": "WEIRD"}
-        result = normalize_model_output(taxed)
+        result = normalize_from_model(taxed)
         self.assertTrue(result["ok"], result)
         self.assertIsNone(result["extraction"]["tax"]["mode"])
         self.assertEqual(result["extraction"]["warnings"], ["unknown_tax_mode"])
 
     def test_candidate_preserves_evidence_warnings_and_unknowns(self) -> None:
-        normalized = normalize_model_output(
+        normalized = normalize_from_model(
             {
                 "source": {"kind": "image", "filename": "f02.png"},
                 "sender": {"company": "주식회사 테스트상사"},
@@ -567,7 +673,7 @@ class B66GovernedRouteTests(unittest.TestCase):
         self.assertNotIn("totals", candidate)
 
     def test_quotecore_calculation_authority(self) -> None:
-        forged = normalize_model_output(
+        forged = normalize_from_model(
             {
                 "source": {"kind": "image"},
                 "sender": {"company": "x"},
@@ -584,7 +690,7 @@ class B66GovernedRouteTests(unittest.TestCase):
         self.assertFalse(forged["ok"])
         self.assertEqual(forged["code"], "computed_totals_forbidden")
 
-        normalized = normalize_model_output(
+        normalized = normalize_from_model(
             {
                 "source": {"kind": "image"},
                 "sender": {"company": "x"},
