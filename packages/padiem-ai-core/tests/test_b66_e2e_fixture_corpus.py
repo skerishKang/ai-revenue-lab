@@ -317,6 +317,24 @@ def test_generator_source_declares_no_network_or_model_dependency() -> None:
         assert forbidden not in source, f"generator references {forbidden}"
 
 
+def _regeneration_comparable(manifest: dict) -> dict:
+    """Drop the fields that are declared platform-dependent for rasters.
+
+    A ``normalized`` fixture's exact bytes depend on the pinned rasterizer
+    build, so its byte size and digest legitimately differ when the corpus is
+    regenerated on another platform. Integrity of the committed bytes is
+    asserted separately in this module; for the manifest comparison the
+    declared normalized fingerprint stands in for those two fields.
+    """
+
+    comparable = json.loads(json.dumps(manifest))
+    for record in comparable["fixtures"]:
+        if record["determinism"] == "normalized":
+            record.pop("byte_size", None)
+            record.pop("sha256", None)
+    return comparable
+
+
 @pytest.mark.skipif(not GENERATOR_READY, reason=GENERATOR_SKIP_REASON)
 def test_generation_is_deterministic(fixtures: list[dict]) -> None:
     module = _load_generator()
@@ -344,6 +362,10 @@ def test_generation_is_deterministic(fixtures: list[dict]) -> None:
                     == record["normalized_fingerprint"]
                 ), name
 
-        # The manifests must agree with each other and with the committed one.
+        # The manifests must agree with each other exactly, and with the
+        # committed one apart from the fields declared platform-dependent.
         committed_manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
-        assert first_manifest == second_manifest == committed_manifest
+        assert first_manifest == second_manifest
+        assert _regeneration_comparable(first_manifest) == _regeneration_comparable(
+            committed_manifest
+        )
