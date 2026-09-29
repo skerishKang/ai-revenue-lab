@@ -210,10 +210,11 @@ def test_existing_read_only_projection_is_the_only_connector_request() -> None:
     assert 'cache: "no-store"' in block
 
     # No connect ticket, OAuth handoff, provider call, mutation, or invented URL.
+    # Match executable URL syntax rather than prose comments such as
+    # "connector/OAuth authority".
     lowered = block.lower()
     for forbidden in (
         "connect-ticket",
-        "/oauth",
         "authorization_url",
         "access_token",
         "refresh_token",
@@ -223,6 +224,7 @@ def test_existing_read_only_projection_is_the_only_connector_request() -> None:
         'method: "delete"',
     ):
         assert forbidden not in lowered, forbidden
+    assert not re.search(r'''fetch\(\s*["']/+(?:api/)?oauth(?:/|["'])''', lowered)
 
 
 def test_response_guards_preserve_server_owned_truth_boundaries() -> None:
