@@ -2108,18 +2108,132 @@
     }
   });
 
-  // Connectors informational surface (#2779). This dialog reports what Padiem
-  // supports at the shared platform layer; it never reads, infers or claims this
-  // workspace's connection state, and it issues no request of any kind.
+  // #3222 Web Claw connector truth. The browser consumes the existing
+  // read-only #2830 projection; it never becomes a connector/OAuth authority.
   const connectorsNavButton = document.getElementById("connectorsNavButton");
   const connectorsDialog = document.getElementById("connectorsDialog");
   const connectorsDialogClose = document.getElementById("connectorsDialogClose");
+  const connectorsLoading = document.getElementById("connectorsLoading");
+  const connectorsError = document.getElementById("connectorsError");
+  const connectorsRetry = document.getElementById("connectorsRetry");
+  const CONNECTOR_STATUS_IDS = new Set([
+    "connector:google:drive@1",
+    "connector:google:gmail@1",
+    "connector:telegram:bot@1",
+    "connector:slack:workspace@1",
+    "connector:google:calendar@1",
+  ]);
+  let connectorStatusInFlight = false;
+
+  function setConnectorCopy(element, key) {
+    if (!element) return;
+    element.dataset.localeKey = key;
+    element.textContent = uiT(key);
+  }
+
+  function connectorSupportKey(value) {
+    if (value === "complete") return "connectors-support-complete";
+    if (value === "source_ready") return "connectors-support-source-ready";
+    if (value === "deferred") return "connectors-support-deferred";
+    return "connectors-status-unavailable";
+  }
+
+  function connectorWorkspaceKey(value) {
+    if (value === "connected") return "connectors-workspace-connected";
+    if (value === "not_connected") return "connectors-workspace-not-connected";
+    if (value === "ambiguous") return "connectors-workspace-ambiguous";
+    if (value === "unverified") {
+      return authState.authenticated
+        ? "connectors-workspace-unverified"
+        : "connectors-workspace-sign-in";
+    }
+    return "connectors-workspace-unverified";
+  }
+
+  function liveConnectorCards() {
+    if (!connectorsDialog) return [];
+    return Array.from(connectorsDialog.querySelectorAll("[data-connector-id]"));
+  }
+
+  function setConnectorCardsLoading() {
+    liveConnectorCards().forEach((card) => {
+      card.dataset.connectorStatus = "loading";
+      setConnectorCopy(card.querySelector("[data-connector-support]"), "connectors-status-loading");
+      setConnectorCopy(card.querySelector("[data-connector-workspace]"), "connectors-workspace-loading");
+    });
+  }
+
+  function setConnectorCardsUnavailable() {
+    liveConnectorCards().forEach((card) => {
+      card.dataset.connectorStatus = "unavailable";
+      setConnectorCopy(card.querySelector("[data-connector-support]"), "connectors-status-unavailable");
+      setConnectorCopy(card.querySelector("[data-connector-workspace]"), "connectors-workspace-unavailable");
+    });
+  }
+
+  function renderConnectorStatus(document) {
+    if (!document || document.static_support_vs_workspace_state_separated !== true ||
+        document.send_write_authorized !== false || !Array.isArray(document.connectors)) {
+      throw new Error("connector status unavailable");
+    }
+    const rows = new Map();
+    document.connectors.forEach((row) => {
+      if (!row || typeof row.connector_id !== "string" || !CONNECTOR_STATUS_IDS.has(row.connector_id)) return;
+      rows.set(row.connector_id, row);
+    });
+    liveConnectorCards().forEach((card) => {
+      const connectorId = card.dataset.connectorId;
+      const row = rows.get(connectorId);
+      if (!row) {
+        card.dataset.connectorStatus = "unavailable";
+        setConnectorCopy(card.querySelector("[data-connector-support]"), "connectors-status-unavailable");
+        setConnectorCopy(card.querySelector("[data-connector-workspace]"), "connectors-workspace-unavailable");
+        return;
+      }
+      const supportKey = connectorSupportKey(row.read_availability);
+      const workspaceKey = connectorWorkspaceKey(row.workspace_state);
+      card.dataset.connectorStatus = String(row.workspace_state || "unverified");
+      setConnectorCopy(card.querySelector("[data-connector-support]"), supportKey);
+      setConnectorCopy(card.querySelector("[data-connector-workspace]"), workspaceKey);
+    });
+  }
+
+  async function loadConnectorStatus() {
+    if (!connectorsDialog || connectorStatusInFlight) return;
+    connectorStatusInFlight = true;
+    if (connectorsLoading) connectorsLoading.hidden = false;
+    if (connectorsError) connectorsError.hidden = true;
+    if (connectorsRetry) {
+      connectorsRetry.hidden = true;
+      connectorsRetry.disabled = true;
+    }
+    setConnectorCardsLoading();
+    try {
+      const response = await fetch("/api/connectors/status", {
+        headers: { "Accept": "application/json" },
+        cache: "no-store",
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error("connector status unavailable");
+      renderConnectorStatus(data);
+    } catch (_) {
+      setConnectorCardsUnavailable();
+      if (connectorsError) connectorsError.hidden = false;
+      if (connectorsRetry) connectorsRetry.hidden = false;
+    } finally {
+      connectorStatusInFlight = false;
+      if (connectorsLoading) connectorsLoading.hidden = true;
+      if (connectorsRetry) connectorsRetry.disabled = false;
+    }
+  }
+
   function openConnectorsDialog() {
     if (!connectorsDialog) return;
     if (typeof connectorsDialog.showModal === "function") connectorsDialog.showModal();
     else connectorsDialog.setAttribute("open", "");
     if (connectorsNavButton) connectorsNavButton.setAttribute("aria-expanded", "true");
     closeSidebar();
+    void loadConnectorStatus();
   }
   function closeConnectorsDialog() {
     if (!connectorsDialog) return;
@@ -2127,12 +2241,13 @@
     else connectorsDialog.removeAttribute("open");
     if (connectorsNavButton) {
       connectorsNavButton.setAttribute("aria-expanded", "false");
-      // Return focus to the sidebar entry that opened the dialog.
+      // Return focus to the sidebar entry that opened it.
       if (typeof connectorsNavButton.focus === "function") connectorsNavButton.focus();
     }
   }
   if (connectorsNavButton) connectorsNavButton.addEventListener("click", openConnectorsDialog);
   if (connectorsDialogClose) connectorsDialogClose.addEventListener("click", closeConnectorsDialog);
+  if (connectorsRetry) connectorsRetry.addEventListener("click", () => void loadConnectorStatus());
   if (connectorsDialog) {
     connectorsDialog.addEventListener("cancel", (event) => {
       event.preventDefault();

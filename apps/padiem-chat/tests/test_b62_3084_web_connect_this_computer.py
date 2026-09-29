@@ -829,7 +829,7 @@ def test_css_honours_reduced_motion() -> None:
 # The exact /api/* endpoint set that existed in static/app.js at the #3084 base
 # commit (4b939347accc5bb45701fd4f31cd588f30258c6d). Pinned as a literal on
 # purpose: CI checks out a shallow clone, so the base blob is not available to
-# `git show` from inside the test. #3084 must not add to this set.
+# `git show` from inside the test.
 BASE_APP_ENDPOINTS = frozenset(
     {
         "/api/auth/logout",
@@ -848,6 +848,12 @@ BASE_APP_ENDPOINTS = frozenset(
     }
 )
 
+# #3222 surfaces an already-existing canonical read-only backend endpoint in
+# static/app.js. It does not create a #3084 backend route, so keep the historical
+# #3084 baseline intact and explicitly reconcile this independently reviewed
+# cross-feature endpoint.
+ALLOWED_APP_ENDPOINTS = BASE_APP_ENDPOINTS | frozenset({"/api/connectors/status"})
+
 
 def test_no_new_backend_route_or_worker_endpoint_is_introduced() -> None:
     """#3084 is a Web slice. It must not add a server endpoint of its own."""
@@ -856,10 +862,12 @@ def test_no_new_backend_route_or_worker_endpoint_is_introduced() -> None:
     present = set(re.findall(r'"/api/[^"]+"', _app_source()))
     # The regex captures the surrounding quotes; the pinned baseline does not.
     present = {value.strip('"') for value in present}
-    added = present - BASE_APP_ENDPOINTS
+    added = present - ALLOWED_APP_ENDPOINTS
     assert not added, f"#3084 introduced new endpoints: {sorted(added)}"
-    # The pre-existing surface is untouched: nothing dropped either.
-    assert present == BASE_APP_ENDPOINTS
+    # No historical endpoint disappeared, and the only later reconciled
+    # endpoint is the existing #2830/#3222 read-only connector projection.
+    assert BASE_APP_ENDPOINTS <= present
+    assert present == ALLOWED_APP_ENDPOINTS
 
 
 def test_no_deploy_or_environment_mutation_in_the_change() -> None:
