@@ -115,14 +115,50 @@ def _provider_mode() -> str:
     return runtime_config.provider_mode
 
 
-def _request_headers(spec: PlatformProviderSpec) -> dict[str, str]:
-    """Build the fixed Provider auth boundary without credential widening."""
+def _request_headers(
+    spec: PlatformProviderSpec,
+    *,
+    model_id: str = "",
+) -> dict[str, str]:
+    """Build the fixed Provider auth boundary without credential widening.
+
+    Kilo's historical free lanes keep the shared keyless Provider spec. The
+    owner-selected Space Bunny lane alone reuses the existing KILO_API_KEY
+    binding; callers cannot supply or override that credential.
+    """
     headers = {"Content-Type": "application/json"}
+
+    if spec.provider_id == "kilo":
+        from app.pilot.kilo_provider import (
+            KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
+            KILO_SPACE_BUNNY_MODEL_ID,
+        )
+
+        if model_id == KILO_SPACE_BUNNY_MODEL_ID:
+            scoped_spec = PlatformProviderSpec(
+                provider_id=spec.provider_id,
+                credential_source=CredentialSource.PLATFORM_SECRET,
+                credential_binding_name=KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
+                base_origin=spec.base_origin,
+                allowed_hosts=spec.allowed_hosts,
+                enabled=spec.enabled,
+            )
+            secret = resolve_secret(scoped_spec)
+            if not secret:
+                raise PilotNotConfigured(
+                    "Space Bunny Kilo credential is not configured "
+                    f"(binding {KILO_SPACE_BUNNY_CREDENTIAL_BINDING})."
+                )
+            headers["Authorization"] = f"Bearer {secret}"
+            return headers
+
     if spec.credential_source == CredentialSource.NONE:
         return headers
     if spec.credential_source == CredentialSource.PLATFORM_SECRET:
         secret = resolve_secret(spec)
         if not secret:
+            if spec.provider_id == "kilo":
+                return headers
             raise PilotNotConfigured(
                 f"Provider '{spec.provider_id}' secret is not configured "
                 f"(binding {spec.credential_binding_name})."
@@ -189,7 +225,7 @@ async def call_platform_chat_completions(
         )
         return _mock_response(model_id, upstream_model, provider)
 
-    headers = _request_headers(spec)
+    headers = _request_headers(spec, model_id=model_id)
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
     body: dict[str, Any] = {
         "model": upstream_model,
@@ -321,7 +357,7 @@ async def stream_platform_chat_completions(
             yield event
         return
 
-    headers = _request_headers(spec)
+    headers = _request_headers(spec, model_id=model_id)
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
     body: dict[str, Any] = {
         "model": upstream_model,
