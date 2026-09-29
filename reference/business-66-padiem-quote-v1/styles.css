@@ -617,6 +617,28 @@ textarea { min-height: 82px; resize: vertical; }
   .template-cloner-actions .btn { width: 100%; }
 }
 
+/* ── #3218 내 견적서(Saved Quote Skill) 등록 wizard · 관리 ── */
+.skill-section h2 { margin-bottom: 4px; }
+.skill-wizard { margin-top: 14px; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.skill-wizard h3 { margin: 0 0 8px; font-size: 14px; }
+.skill-wizard-body { display: grid; gap: 12px; }
+.skill-wizard-body h4 { margin: 0; font-size: 12.5px; color: #344054; }
+.skill-wizard-body dl.review-block { display: grid; grid-template-columns: minmax(96px, 40%) 1fr; gap: 2px 8px; margin: 0; }
+.skill-wizard-body dl.review-block dt { color: #667085; font-size: 11.5px; }
+.skill-wizard-body dl.review-block dd { margin: 0; color: #344054; font-size: 12.5px; overflow-wrap: anywhere; }
+.skill-wizard-body input,
+.skill-wizard-body select,
+.skill-wizard-body textarea { min-height: 44px; }
+.skill-wizard-body .btn { min-height: 44px; }
+.advanced-template { margin-top: 16px; padding: 10px 12px; border: 1px dashed #d0d5dd; border-radius: 10px; background: #fbfcfd; }
+.advanced-template > summary { cursor: pointer; color: #475467; font-size: 12px; font-weight: 650; min-height: 44px; display: flex; align-items: center; }
+
+@media (max-width: 680px) {
+  .skill-wizard-body dl.review-block { grid-template-columns: 1fr; gap: 2px; }
+  .skill-wizard .button-row { display: grid; grid-template-columns: 1fr; }
+  .skill-wizard .button-row .btn { width: 100%; }
+}
+
 @media print {
   .template-cloner, .template-review, .cloner-progress, .review-grid, .review-block, .review-status { display: none !important; }
 }

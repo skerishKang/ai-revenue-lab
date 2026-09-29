@@ -15,6 +15,20 @@ sender preset
 → browser Print / Save as PDF (single page when content fits)
 ```
 
+And the primary product story for repeat customers:
+
+```text
+existing quotation registration
+→ review/correction
+→ save as "내 견적서" (Saved Quote Skill)
+→ next quotations reuse company defaults + approved layout
+→ only recipient/items/qty/unit price change per quote
+```
+
+The user-facing primary concept is the Saved Quote Skill ("내 견적서"),
+not template picking. `QuoteTemplateProfile` remains the internal
+renderer data underneath an approved Skill.
+
 ## Run
 
 No build step and no credentials are required.
@@ -49,6 +63,13 @@ reference/business-66-padiem-quote-v1/
 ├─ quote-history.js              브라우저 로컬 최근 견적(최대 20개) + copy-as-new
 ├─ file-intake.js                로컬 파일 선택 preflight — 형식/크기만 검사, 업로드 없음
 ├─ app.js                        UI 레이어 — QuoteDraft 상태·렌더링·자동저장 + reviewed apply seam
+├─ quote-skill.js                Saved Quote Skill("내 견적서") — 승인된 회사 기본값 + 내부 승인 profile 컴파일 재사용
+├─ quote-skill-store.js          승인 Skill 전용 browser-local store (원본 바이트 저장 없음)
+├─ quote-skill-candidate.js      Skill 후보/검토/명시 승인 (지문 binding)
+├─ quote-skill-registration.js   기존 견적서 추출값 → Skill 후보 seam (fixed/variable 분리)
+├─ quote-template-registration.js  업로드 견적서 → layout 후보/보정/preview/승인 (자동 분석 없음, 수동 보정)
+├─ quote-registration-session.js   6단계 등록 wizard 세션 + template/skill atomic commit
+├─ quote-skill-ui.js             "내 견적서" 메인 UI + 등록 wizard + 관리 (DOM API 렌더, innerHTML 없음)
 ├─ easy-mode.js                  AI 없는 질문형 Easy Mode + 최근 견적/이어하기/파일 선택 UX
 ├─ DEMO_GUIDE.md                 데모 운영 가이드 (시연 스크립트·PDF 저장 주의·자동 저장)
 ├─ tests/
@@ -106,7 +127,28 @@ node tests/quote-extraction.test.cjs # model-independent extraction validation +
 node tests/quote-history.test.cjs    # bounded local history, load/copy/delete metadata rules
 node tests/file-intake.test.cjs      # supported file classification + zero-upload preflight
 node tests/static-contract.test.cjs  # structure, Easy Mode, authority, save/restore, print, intake guards
+node tests/quote-skill-ui.test.cjs   # "내 견적서" primary UI + registration wizard DOM E2E (stub DOM)
 ```
+
+## Saved Quote Skill ("내 견적서")
+
+Repeat customers register the quotation they already use instead of picking templates:
+
+```text
+[내가 쓰던 견적서 등록]
+1. 견적서 선택 (파일명/형식/크기만 확인, 원본 바이트 저장 없음)
+2. 회사정보/업무값 확인 (항상 쓰는 값 vs 매번 바뀌는 값 vs 자동 계산)
+3. 견적서 모양 확인 (기본 초안 + "자동으로 분석하지 않으므로 비교해 수정" 안내)
+4. 필요한 부분 수정 + 미리보기 (저장 없음)
+5. 최종 확인 → [이 모양 사용] → [내 견적서로 저장] (두 명시 승인 분리)
+6. 저장 완료 → [이 견적서로 작성]
+```
+
+Repeat generation reuses the approved Skill/profile deterministically:
+new recipient/items/qty/unit price → QuoteDraft → QuoteCore → existing
+renderer. No source re-analysis, no model calls, same input same render.
+The old template picker remains under "고급: 기존 양식 직접 관리" without
+breaking existing approved-profile users.
 
 The static contract pins the screen structure, the QuoteDraft schema, draft save/restore,
 the three VAT formulas (`Math.round(subtotal * 0.10)`, `Math.round(grand / 1.10)`, exempt = 0),

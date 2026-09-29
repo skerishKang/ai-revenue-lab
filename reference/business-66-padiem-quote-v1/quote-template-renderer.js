@@ -94,8 +94,15 @@
       template = Template.builtInTemplate();
       fallbackReason = "invalid_template_profile";
     } else if (!stored.approved) {
-      template = Template.builtInTemplate();
-      fallbackReason = "template_not_approved";
+      /* 승인 전 preview 전용 분기: 동일 파이프라인으로 candidate 내용을 렌더하되
+         미승인 preview 임을 모델에 명시한다. 저장/활성화 경로가 아니다. */
+      if (isPlainObject(options) && options.previewUnapprovedCandidate === true) {
+        template = stored;
+        fallbackReason = "preview_unapproved_candidate";
+      } else {
+        template = Template.builtInTemplate();
+        fallbackReason = "template_not_approved";
+      }
     } else {
       template = stored;
     }

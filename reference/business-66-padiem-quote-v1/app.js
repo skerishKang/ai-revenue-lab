@@ -14,6 +14,12 @@
   const TemplateRenderer = window.QuoteTemplateRenderer || null;
   const TemplateSelection = window.QuoteTemplateSelection || null;
   const TemplateUi = window.QuoteTemplateUi || null;
+  const TemplateCandidate = window.QuoteTemplateCandidate || null;
+  const TemplateCloner = window.QuoteTemplateCloner || null;
+  const FileIntake = window.B66FileIntake || null;
+  const SavedSkill = window.SavedQuoteSkill || null;
+  const SkillStore = window.SavedQuoteSkillStore || null;
+  const SkillUi = window.SavedQuoteSkillUi || null;
   const TAX_REVIEW_STORAGE_KEY = "quoteBeta.taxReview.v1";
   const TAX_REVIEW_SCHEMA_VERSION = 1;
 
@@ -23,6 +29,7 @@
   let lastExtractionReview = null;
   let taxReviewRequired = loadTaxReviewRequired(draft);
   let suppressNextDraftSave = false;
+  let clonerSession = null;
   let itemSeq = draft.items.reduce((max, it) => {
     const n = parseInt(String(it.id).replace(/^item-/, ""), 10);
     return Number.isFinite(n) ? Math.max(max, n) : max;
@@ -234,6 +241,7 @@
       History && History.SEQUENCE_STORAGE_KEY,
       TemplateStore && TemplateStore.TEMPLATE_STORAGE_KEY,
       TemplateSelection && TemplateSelection.SELECTION_STORAGE_KEY,
+      SkillStore && SkillStore.STORAGE_KEY,
       TAX_REVIEW_STORAGE_KEY
     ].filter(Boolean);
 
@@ -251,6 +259,7 @@
     suppressNextDraftSave = true;
     templateUiState.previewTemplateId = null;
     templateUiState.renamingTemplateId = null;
+    skillUiState.activeSkillId = null;
     clonerSession = null;
 
     renderItems();
@@ -547,6 +556,56 @@
     );
   }
 
+  /* ── 내 견적서: 선택된 승인 Skill 의 내부 profile 이 미리보기 layout authority.
+     template store/selection 을 건드리지 않으며, 실패 시 내장으로 fallback. ── */
+
+  const skillUiState = { activeSkillId: null };
+  let skillUiApi = null;
+
+  function activeSkillProfile() {
+    if (!SavedSkill || !SkillStore || !Template || !skillUiState.activeSkillId) return null;
+    if (typeof localStorage === "undefined") return null;
+    try {
+      const skill = SkillStore.getSkill(SkillStore.readStore(localStorage), skillUiState.activeSkillId);
+      if (!skill || skill.approved !== true) return null;
+      const profile = Template.normalizeTemplate(skill.internalTemplate);
+      return profile && Template.isApprovedProfile(profile) ? profile : null;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function applySkillToForm(skill) {
+    if (!skill || !SkillUi) {
+      skillUiState.activeSkillId = null;
+      toast("기본 견적서로 작성합니다.");
+      render();
+      return true;
+    }
+    const values = SkillUi.formValuesFromSkill(skill);
+    if (!values) return false;
+    skillUiState.activeSkillId = skill.id;
+    /* 회사 기본값만 적용한다. 거래처/번호/날짜/품목은 건별 입력으로 남긴다. */
+    draft.sender = Object.assign({}, draft.sender, values.sender, { presetId: "custom" });
+    draft.meta.validDays = values.validDays;
+    draft.tax.mode = values.taxMode;
+    draft.memo = values.memo;
+    saveDraft();
+    fillInputsFromDraft();
+    renderItems();
+    render();
+    toast("내 견적서 기본값을 적용했습니다. 거래처와 품목은 새로 입력하세요.");
+    return true;
+  }
+
+  function renderPreviewModel(model) {
+    if (!model || !TemplateRenderer) return false;
+    TemplateRenderer.applyRenderModel(document, model);
+    const banner = $("skillPreviewBanner");
+    if (banner) banner.hidden = false;
+    return true;
+  }
+
   function activeTemplateProfile() {
     if (!Template) return null;
     if (!TemplateStore) return Template.builtInTemplate();
@@ -557,6 +616,13 @@
       TemplateSelection.readEnvelope(templateStorage()),
       draft.meta.quoteNo
     );
+  }
+
+  /* 미리보기 authority: 선택된 내 견적서의 승인 profile 이 있으면 그것을 쓴다.
+     없으면 기존 template selection 으로 fallback. advanced template-management UI 는
+     activeTemplateProfile 을 그대로 쓰므로 이 override 에 영향받지 않는다. */
+  function renderTemplateAuthority() {
+    return activeSkillProfile() || activeTemplateProfile();
   }
 
   /* 미리보기는 승인된 양식만 대상으로 한다(승인 경계 우회 금지). */
@@ -692,9 +758,11 @@
   /* 템플릿은 표현·배치만 소유한다. 화면에 보이는 금액·세금·유효일은 모두 QuoteCore 파생값이다.
      입력 폼의 업무 데이터는 양식과 무관하게 그대로 유지된다. */
   function render() {
+    const banner = $("skillPreviewBanner");
+    if (banner) banner.hidden = true;
     const model = TemplateRenderer.buildRenderModel(
       draft,
-      previewTemplateProfile() || activeTemplateProfile(),
+      previewTemplateProfile() || renderTemplateAuthority(),
       { taxReviewRequired }
     );
     if (model) TemplateRenderer.applyRenderModel(document, model);
@@ -1104,5 +1172,28 @@
   $("addItem").addEventListener("click", addItem);
   renderTaxReviewState();
   renderTemplateUi();
+  if (SkillUi && typeof SkillUi.bindSkillSection === "function" && typeof localStorage !== "undefined") {
+    skillUiApi = SkillUi.bindSkillSection(document, {
+      storage: localStorage,
+      getDraftSnapshot: () => cloneDraft(draft),
+      applySkillToForm,
+      renderMain: render,
+      renderPreviewModel,
+      toast,
+      confirm: (message) => window.confirm(message),
+      focusMain: () => {
+        const node = $("recipientCompany");
+        if (node) node.focus();
+      }
+    });
+  }
+  window.B66QuoteSkillBridge = Object.freeze({
+    activeSkillId: () => skillUiState.activeSkillId,
+    applySkill: applySkillToForm,
+    refresh: () => {
+      if (skillUiApi) skillUiApi.refresh();
+      render();
+    }
+  });
   render();
 })();

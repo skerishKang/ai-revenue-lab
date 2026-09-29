@@ -16,6 +16,13 @@ const templateSelection = read("quote-template-selection.js");
 const templateUi = read("quote-template-ui.js");
 const candidate = read("quote-template-candidate.js");
 const cloner = read("quote-template-cloner.js");
+const skill = read("quote-skill.js");
+const skillStore = read("quote-skill-store.js");
+const skillCandidate = read("quote-skill-candidate.js");
+const skillRegistration = read("quote-skill-registration.js");
+const templateRegistration = read("quote-template-registration.js");
+const registrationSession = read("quote-registration-session.js");
+const skillUi = read("quote-skill-ui.js");
 const intake = read("file-intake.js");
 const easy = read("easy-mode.js");
 
@@ -36,6 +43,13 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'src="quote-template-ui.js"',
   'src="quote-template-candidate.js"',
   'src="quote-template-cloner.js"',
+  'src="quote-skill.js"',
+  'src="quote-skill-store.js"',
+  'src="quote-skill-candidate.js"',
+  'src="quote-skill-registration.js"',
+  'src="quote-template-registration.js"',
+  'src="quote-registration-session.js"',
+  'src="quote-skill-ui.js"',
   'src="file-intake.js"',
   'src="app.js"',
   'src="easy-mode.js"',
@@ -69,7 +83,7 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'id="fileStarter"',
   'id="saveHistory"',
   'id="resetLocalData"',
-  'id="templateSection"',
+  'id="skillSection"',
   'id="templateSelect"',
   'id="templateStatus"',
   'id="templateManageToggle"',
@@ -85,7 +99,7 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
 ].forEach((marker) => check(html.includes(marker), `B66_STATIC_CONTRACT missing in index.html: ${marker}`));
 
 /* NEUTRAL_PUBLIC_UI_CONTRACT — 외부 화면/상태에 내부 제품 브랜드를 노출하지 않음 */
-check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + candidate + cloner + intake + easy),
+check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + candidate + cloner + skill + skillStore + skillCandidate + skillRegistration + skillUi + intake + easy),
   "NEUTRAL_PUBLIC_UI_CONTRACT: no Padiem branding in rendered/runtime source");
 check(!html.includes("B66 DEMO"), "NEUTRAL_PUBLIC_UI_CONTRACT: no internal demo label");
 check(html.includes("BETA · 입력 내용은 이 브라우저에만 저장"),
@@ -451,9 +465,10 @@ check(!/(kilo\/|space-bunny|nemotron|openai|anthropic)/i.test(template + templat
 check(!/FileReader|FormData|indexedDB/i.test(template + templateStore + templateRenderer),
   "RAW_SOURCE_FILE_PERSISTENCE=0: template modules never touch raw file bytes");
 check(app.includes("TemplateRenderer.buildRenderModel(") &&
-      app.includes("previewTemplateProfile() || activeTemplateProfile()") &&
-      app.includes("TemplateRenderer.applyRenderModel(document, model)"),
-  "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: direct mode renders through the approved template renderer");
+      app.includes("previewTemplateProfile() || renderTemplateAuthority()") &&
+      app.includes("function renderTemplateAuthority()") &&
+      app.includes("return activeSkillProfile() || activeTemplateProfile();"),
+  "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: direct mode renders through the approved template/skill renderer");
 check(!app.includes("vatSummaryLabel"),
   "QUOTE_TEMPLATE_PROFILE_CONTRACT: presentation labels are no longer hard-coded in app.js");
 check(app.includes("TemplateStore && TemplateStore.TEMPLATE_STORAGE_KEY"),
@@ -600,9 +615,11 @@ check(app.includes("TEMPLATE_ACTIONS") && app.includes("window.B66QuoteTemplateB
       app.includes("TemplateSelection.resolveActiveTemplate(") &&
       app.includes("templateUiState"),
   "TEMPLATE_SELECTOR_LIVE=YES: the app wires selection, preview and management actions");
-check(app.includes("previewTemplateProfile() || activeTemplateProfile()") &&
+check(app.includes("previewTemplateProfile() || renderTemplateAuthority()") &&
+      app.includes("return activeSkillProfile() || activeTemplateProfile();") &&
+      app.includes("return profile && Template.isApprovedProfile(profile) ? profile : null;") &&
       app.includes("candidate && candidate.approved"),
-  "UNAPPROVED_TEMPLATE_SELECTION=0: preview is restricted to approved templates");
+  "UNAPPROVED_TEMPLATE_SELECTION=0: preview/skill render paths are restricted to approved profiles");
 
 /* ── #3184 양식 본뜨기(후보 검토 + 명시적 승인) ── */
 check(html.includes('src="quote-template-candidate.js"') && html.includes('src="quote-template-cloner.js"'),
@@ -677,6 +694,59 @@ console.log("DRAFT_RESTORE_CONTRACT=PASS");
 console.log("VAT_EXCLUSIVE_CONTRACT=PASS");
 console.log("VAT_INCLUSIVE_CONTRACT=PASS");
 console.log("VAT_EXEMPT_CONTRACT=PASS");
+/* SAVED_QUOTE_SKILL_COMPILED_REUSE — user-facing Skill wraps the existing deterministic template stack */
+check(skill.includes('CALCULATION_AUTHORITY = "quote-core"') &&
+      skill.includes('RENDERER_CONTRACT = "quote-template-renderer.v1"'),
+  "SAVED_QUOTE_SKILL_AUTHORITY: QuoteCore + existing renderer stay authoritative");
+check(skill.includes("structuredRepeatGenerationModelCalls: 0") &&
+      skill.includes("sourceDocumentReanalysisPerRepeat: 0") &&
+      skill.includes("fullDocumentAiRegenerationPerRepeat: 0") &&
+      skill.includes("quoteCoreRecalculationModelCalls: 0") &&
+      skill.includes("rendererModelCalls: 0"),
+  "SAVED_QUOTE_SKILL_REPEAT_MODEL_CALLS=0");
+check(skill.includes('REQUIRED_VARIABLE_KEYS = ["recipient", "quoteNo", "issueDate", "items"]'),
+  "SAVED_QUOTE_SKILL_SOURCE_CASE_VALUES_NOT_FROZEN: core per-quote fields remain variable");
+check(skillStore.includes('STORAGE_KEY = "quoteBetaSavedSkill.v1"') && !skillStore.includes("localStorage.clear("),
+  "SAVED_QUOTE_SKILL_STORE_BOUNDED=YES");
+check(skillCandidate.includes('CALCULATED_FIELDS = ["lineAmounts", "supplyTotal", "vatAmount", "grandTotal", "validUntil"]'),
+  "SAVED_QUOTE_SKILL_CALCULATED_FIELDS_LOCKED_TO_QUOTECORE=YES");
+check(!/(kilo\/|space-bunny|sensenova|openai|anthropic)/i.test(skill + skillStore + skillCandidate + skillRegistration),
+  "SAVED_QUOTE_SKILL_BROWSER_PROVIDER_MODEL_ID=0");
+check(!/FileReader|FormData|indexedDB/i.test(skill + skillStore + skillCandidate + skillRegistration),
+  "SAVED_QUOTE_SKILL_RAW_SOURCE_FILE_BROWSER_PERSISTENCE=0");
+check(skillRegistration.includes("buildRegistrationCandidate") &&
+      skillRegistration.includes("unsupported_template_decision") &&
+      skillRegistration.includes("sender_company_requires_correction"),
+  "SAVED_QUOTE_SKILL_REGISTRATION_SEAM: extraction-to-candidate seam is wired with honest fail-closed gaps");
+check(templateRegistration.includes("buildTemplateCandidateFromSource") &&
+      templateRegistration.includes("previewTemplateCandidate") &&
+      templateRegistration.includes("approveTemplateCandidate") &&
+      templateRegistration.includes("manual_layout_review_required"),
+  "TEMPLATE_REGISTRATION_SEAM: source-to-approved-profile path is wired with manual review");
+check(registrationSession.includes("STEP_LABELS") &&
+      registrationSession.includes("registration_committed") &&
+      registrationSession.includes("rolledBack") &&
+      registrationSession.includes("template_not_approved_for_skill"),
+  "REGISTRATION_SINGLE_USER_FLOW: template+skill approvals stay separate with atomic commit");
+check(!/완전히 학습했습니다|완벽하게 학습|학습이 완료되었습니다|AI가 배웠습니다/
+  .test(templateRegistration + registrationSession),
+  "NO_OVERCLAIMED_LAYOUT_LEARNING: honest copy only");
+/* MY_QUOTATION_UI — skill UI binds the real session/state machine without new authorities */
+check(skillUi.includes("bindSkillSection") &&
+      skillUi.includes("Session.start") &&
+      skillUi.includes("Session.commit") &&
+      skillUi.includes("formValuesFromSkill"),
+  "MY_QUOTATION_UI: skill section binds session commit and form application");
+check(!/\.innerHTML\s*=/.test(skillUi),
+  "MY_QUOTATION_UI: wizard renders via DOM API, no markup injection surface");
+check(!/(space-bunny|sensenova|openai|anthropic|kilo\/)/i.test(skillUi) &&
+      !/fetch\(|XMLHttpRequest|WebSocket/.test(skillUi) &&
+      !/localStorage|sessionStorage|indexedDB/.test(skillUi),
+  "MY_QUOTATION_UI: no provider identity, no network, storage only through env");
+check(app.includes("B66QuoteSkillBridge") && app.includes("applySkillToForm") &&
+      app.includes("skillUiState"),
+  "MY_QUOTATION_UI: app hosts the skill bridge with form application and builtin fallback");
+
 console.log("VALID_UNTIL_CONTRACT=PASS");
 console.log("ADDRESS_FIELDS_CONTRACT=PASS");
 console.log("PRINT_LAYOUT_CONTRACT=PASS");
