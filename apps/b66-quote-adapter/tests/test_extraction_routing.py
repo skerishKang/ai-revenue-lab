@@ -12,7 +12,9 @@ Proves, without any live provider call:
 
 from __future__ import annotations
 
+import ast
 import base64
+import importlib.util
 import json
 import unittest
 from pathlib import Path
@@ -615,6 +617,143 @@ class B66GovernedRouteTests(unittest.TestCase):
             "password",
         ):
             self.assertNotIn(token, text)
+
+
+class B66CanonicalIntegrationTests(unittest.TestCase):
+    """Minimal B66-specific integration: built requests plug into the shared lane.
+
+    The platform-level route/capability/payload contract lives on main (#3214)
+    and is not re-proven here. This class only pins that the B66 server-side
+    adapter cannot drift from the canonical authorities:
+
+    - ``padiem_ai_core.model_primary`` (canonical text+vision primary IDs);
+    - the registered B14 ``kilo_provider`` Space Bunny lane (route IDs plus
+      the canonical ``image`` capability tag, read via AST so this suite never
+      imports the platform runtime);
+    - the canonical B14 multimodal shape (text + exactly one base64 data-URL
+      image, manual, fallback off).
+    """
+
+    @staticmethod
+    def _repo_root() -> Path:
+        return Path(__file__).resolve().parents[3]
+
+    @staticmethod
+    def _load_model_primary():
+        path = (
+            B66CanonicalIntegrationTests._repo_root()
+            / "packages"
+            / "padiem-ai-core"
+            / "padiem_ai_core"
+            / "model_primary.py"
+        )
+        # Side-effect-free load: model_primary is stdlib-only by contract.
+        spec = importlib.util.spec_from_file_location(
+            "b66_model_primary_probe", path
+        )
+        assert spec is not None and spec.loader is not None
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    @staticmethod
+    def _space_bunny_lane_facts() -> tuple[str, str, frozenset]:
+        path = (
+            B66CanonicalIntegrationTests._repo_root()
+            / "apps"
+            / "korean-ai-platform"
+            / "app"
+            / "pilot"
+            / "kilo_provider.py"
+        )
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        model_id = upstream = None
+        capabilities: frozenset = frozenset()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Assign) and len(node.targets) == 1:
+                target = node.targets[0]
+                if (
+                    isinstance(target, ast.Name)
+                    and target.id == "KILO_SPACE_BUNNY_MODEL_ID"
+                    and isinstance(node.value, ast.Constant)
+                ):
+                    model_id = node.value.value
+                if (
+                    isinstance(target, ast.Name)
+                    and target.id == "KILO_SPACE_BUNNY_UPSTREAM_MODEL"
+                    and isinstance(node.value, ast.Constant)
+                ):
+                    upstream = node.value.value
+            if (
+                isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name)
+                and node.func.id == "_KiloFreeRoute"
+            ):
+                keywords = {k.arg: k.value for k in node.keywords if k.arg}
+                route_ref = keywords.get("model_id")
+                if (
+                    isinstance(route_ref, ast.Name)
+                    and route_ref.id == "KILO_SPACE_BUNNY_MODEL_ID"
+                ):
+                    caps = keywords.get("capabilities")
+                    if (
+                        isinstance(caps, ast.Call)
+                        and len(caps.args) == 1
+                        and isinstance(caps.args[0], (ast.Set, ast.List, ast.Tuple))
+                    ):
+                        capabilities = frozenset(
+                            elt.value
+                            for elt in caps.args[0].elts
+                            if isinstance(elt, ast.Constant)
+                        )
+        assert model_id is not None and upstream is not None
+        assert capabilities, "space bunny lane capabilities not found"
+        return model_id, upstream, capabilities
+
+    def test_governed_lane_matches_canonical_primary(self) -> None:
+        primary = self._load_model_primary()
+        self.assertEqual(B66_GOVERNED_ROUTE, primary.TEXT_PRIMARY_MODEL_ID)
+        self.assertEqual(B66_GOVERNED_ROUTE, primary.VISION_PRIMARY_MODEL_ID)
+        self.assertEqual(B66_GOVERNED_UPSTREAM, primary.TEXT_PRIMARY_UPSTREAM_MODEL)
+        self.assertEqual(B66_GOVERNED_UPSTREAM, primary.VISION_PRIMARY_UPSTREAM_MODEL)
+        self.assertEqual(B66_GOVERNED_PROVIDER, primary.TEXT_PRIMARY_PROVIDER_ID)
+        self.assertIsNone(primary.TEXT_SECONDARY_MODEL_ID)
+        self.assertFalse(primary.TEXT_FALLBACK_ENABLED)
+
+    def test_governed_lane_matches_registered_b14_lane(self) -> None:
+        model_id, upstream, capabilities = self._space_bunny_lane_facts()
+        self.assertEqual(B66_GOVERNED_ROUTE, model_id)
+        self.assertEqual(B66_GOVERNED_UPSTREAM, upstream)
+        self.assertIn("image", capabilities)
+        self.assertTrue({"chat", "coding", "free"}.issubset(capabilities))
+        self.assertEqual(
+            capabilities & {"vision", "video", "multimodal", "audio"}, frozenset()
+        )
+
+    def test_builtin_requests_target_the_governed_lane_without_fallback(self) -> None:
+        text_request = build_text_extraction_request(
+            "견적번호 Q-2026-3001", filename="quote.pdf"
+        )
+        image_request = build_image_extraction_request(
+            (CORPUS_DIR / "f02-scanned-quotation.png").read_bytes(),
+            media_type="image/png",
+            filename="f02-scanned-quotation.png",
+        )
+        for request in (text_request, image_request):
+            self.assertEqual(request["model"], B66_GOVERNED_ROUTE)
+            self.assertFalse(request["business14"]["allow_external_fallback"])
+            self.assertFalse(request["b66"]["fallback_allowed"])
+            self.assertEqual(request["b66"]["route_mode"], "manual")
+            self.assertFalse(request["b66"]["stream"])
+        content = image_request["messages"][0]["content"]
+        self.assertEqual(len(content), 2)
+        self.assertEqual(content[1]["type"], "image_url")
+        self.assertTrue(
+            content[1]["image_url"]["url"].startswith("data:image/png;base64,")
+        )
+        self.assertEqual(
+            image_request["business14"]["required_capabilities"], ["image"]
+        )
 
 
 def _fake_two_page_renderer():

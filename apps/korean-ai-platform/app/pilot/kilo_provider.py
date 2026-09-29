@@ -17,19 +17,17 @@ registered in the catalog: explicit manual/auto resolution fails closed with
 ``unsupported_model``. The IDs and upstream models below are retained purely
 as retirement metadata for contract tests and operator documentation.
 
-Owner decision (#3143, CLOSED) pins ``stealth/space-bunny-alpha`` as the
-Business 66 quotation text primary, and the #3212 CENTRAL comment records the
-final owner vision decision (``B66_VISION_PRIMARY=stealth/space-bunny-alpha``,
-``VISION_FALLBACK=NOT_REQUIRED_FOR_MVP``). The lane is registered here as one
-additional explicit free lane under the same ``kilo`` Provider spec (keyless
+Owner decision (#3143) pins ``stealth/space-bunny-alpha`` as the Business 66
+quotation text primary. It is registered here as one additional explicit
+free lane under the same ``kilo`` Provider spec (keyless
 ``CredentialSource.NONE``): no new provider adapter and no new secret are
 introduced. Like the lanes above it is never appended to ``CATALOG_MODELS``
 or to ``b14/auto``; the global auto chain and its fallback set are unchanged.
-The lane declares ``chat``/``coding``/``free`` plus the canonical B14
-multimodal capability ``image`` (#3212): ``image`` is the exact legacy tag the
-manual multimodal gate (``multimodal_contract.py``) and the canonical
-capability map (``capability_evidence.py``: ``image`` -> ``VISION``) require.
-No ``vision``/``video``/``multimodal``/``audio`` tag is declared.
+Owner decision (#3209) additionally names the same lane the canonical vision
+primary for the existing single-image product contract (``chat``/``coding``/
+``free`` plus ``image``): Product image requests reuse the existing B14
+multimodal path. No ``video``/``audio``/generic-multimodal capability is
+declared and no video product activation follows from upstream metadata.
 """
 
 from __future__ import annotations
