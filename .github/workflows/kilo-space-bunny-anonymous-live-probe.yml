@@ -1,0 +1,94 @@
+name: Kilo Space Bunny Anonymous Live Probe
+
+on:
+  pull_request:
+    paths:
+      - ".github/scripts/kilo_space_bunny_anonymous_probe.py"
+      - ".github/tests/test_kilo_space_bunny_anonymous_probe.py"
+      - ".github/workflows/kilo-space-bunny-anonymous-live-probe.yml"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA authorized for this one-shot anonymous probe"
+        required: true
+      modality:
+        description: "text|image"
+        required: true
+      confirmation:
+        description: "Type RUN_KILO_SPACE_BUNNY_ANON_ONCE"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install source-test dependency
+        run: python -m pip install --disable-pip-version-check --quiet "pytest>=8,<10"
+      - name: Run source-only probe tests
+        run: python -m pytest -q .github/tests/test_kilo_space_bunny_anonymous_probe.py
+      - name: Record source locks
+        run: |
+          echo 'LIVE_KILO_CALL=0'
+          echo 'SECRET_VALUE_READ=0'
+          echo 'SECRET_MUTATION=0'
+
+  live-anonymous:
+    needs: source-contract
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.confirmation == 'RUN_KILO_SPACE_BUNNY_ANON_ONCE'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+      - name: Re-check exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          case "${{ github.event.inputs.modality }}" in
+            text|image) ;;
+            *) echo 'INVALID_MODALITY=1'; exit 1 ;;
+          esac
+          echo 'LIVE_EXACT_MAIN=PASS'
+      - name: Execute exactly one anonymous Kilo POST
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="${RUNNER_TEMP}/kilo-anon.log"
+          python .github/scripts/kilo_space_bunny_anonymous_probe.py \
+            --authorized-live-run \
+            --modality="${{ github.event.inputs.modality }}" | tee "${log}"
+          grep -qx 'REQUEST_AUTH_MODE=ANONYMOUS' "${log}"
+          grep -qx 'KILO_POST_COUNT=1' "${log}"
+          grep -qx 'NETWORK_RETRY_COUNT=0' "${log}"
+          grep -qx 'FALLBACK=0' "${log}"
+          grep -qx 'RAW_RESPONSE_OUTPUT=0' "${log}"
+          grep -qx 'RAW_IMAGE_OUTPUT=0' "${log}"
+          grep -qx 'SECRET_VALUE_OUTPUT=0' "${log}"
+      - name: Record immutable locks
+        if: always()
+        run: |
+          echo 'AUTHORIZATION_HEADER=ABSENT'
+          echo 'KILO_POST_MAX=1'
+          echo 'RETRY=0'
+          echo 'FALLBACK=0'
+          echo 'SECRET_VALUE_READ=0'
+          echo 'SECRET_MUTATION=0'
+          echo 'PRODUCTION_MUTATION=0'
