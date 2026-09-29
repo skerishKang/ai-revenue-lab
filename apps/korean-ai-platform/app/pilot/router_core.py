@@ -131,15 +131,37 @@ def _new_request_id() -> str:
 def _credential_status_for(cm) -> tuple[bool, str, str, str]:
     """Resolve credential availability/status for a catalog model.
 
-    Returns ``(available, status, source, platform_provider_id)``.
-    Every routable model is a platform route (``platform_secret`` marker with
-    its own Provider binding); any other credential source is a retired
-    configuration and fails closed (D14 #2044: the OpenRouter adapter is gone).
+    Space Bunny has a model-scoped Kilo credential while the shared Kilo
+    Provider spec remains keyless for the historical free lanes.
     """
     if cm.credential_source == "platform_secret":
         from app.pilot import platform_secrets as ps
 
         spec = ps.get_platform_provider(cm.platform_provider_id)
+
+        if cm.platform_provider_id == "kilo":
+            from app.pilot.kilo_provider import (
+                KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
+                KILO_SPACE_BUNNY_MODEL_ID,
+            )
+
+            if cm.model_id == KILO_SPACE_BUNNY_MODEL_ID and spec is not None:
+                scoped_spec = ps.PlatformProviderSpec(
+                    provider_id=spec.provider_id,
+                    credential_source=ps.CredentialSource.PLATFORM_SECRET,
+                    credential_binding_name=KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
+                    base_origin=spec.base_origin,
+                    allowed_hosts=spec.allowed_hosts,
+                    enabled=spec.enabled,
+                )
+                present = ps.is_secret_present(scoped_spec)
+                return (
+                    present,
+                    "key_available" if present else "no_key_set",
+                    "platform_secret",
+                    cm.platform_provider_id or "",
+                )
+
         present = ps.is_secret_present(spec) if spec else False
         return (
             present,
@@ -157,12 +179,30 @@ def _credential_status_for(cm) -> tuple[bool, str, str, str]:
 
 
 def _platform_secret_present(cm) -> bool:
-    """True if a platform_secret model's secret is present; non-secret models always True."""
+    """True when the credential boundary for this catalog model is ready."""
     from app.pilot import platform_secrets as ps
 
     if cm.credential_source != "platform_secret":
         return True
+
     spec = ps.get_platform_provider(cm.platform_provider_id)
+    if cm.platform_provider_id == "kilo":
+        from app.pilot.kilo_provider import (
+            KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
+            KILO_SPACE_BUNNY_MODEL_ID,
+        )
+
+        if cm.model_id == KILO_SPACE_BUNNY_MODEL_ID and spec is not None:
+            scoped_spec = ps.PlatformProviderSpec(
+                provider_id=spec.provider_id,
+                credential_source=ps.CredentialSource.PLATFORM_SECRET,
+                credential_binding_name=KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
+                base_origin=spec.base_origin,
+                allowed_hosts=spec.allowed_hosts,
+                enabled=spec.enabled,
+            )
+            return ps.is_secret_present(scoped_spec)
+
     return ps.is_secret_present(spec) if spec else False
 
 
