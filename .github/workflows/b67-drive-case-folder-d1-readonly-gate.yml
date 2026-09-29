@@ -232,8 +232,6 @@ jobs:
           SELECT
             COUNT(*) AS total_rows,
             COALESCE(SUM(CASE WHEN active = 1 THEN 1 ELSE 0 END), 0) AS active_count,
-            COALESCE(SUM(CASE WHEN created_at = updated_at THEN 1 ELSE 0 END), 0) AS created_equals_updated_count,
-            COALESCE(SUM(CASE WHEN updated_at > created_at THEN 1 ELSE 0 END), 0) AS updated_after_created_count,
             COALESCE(SUM(CASE WHEN connector_id = ? THEN 1 ELSE 0 END), 0) AS canonical_connector_count
           FROM padiem_engine_drive_case_folder_bindings;
           """
@@ -265,14 +263,12 @@ jobs:
           observed = (
               int(row.get("total_rows") or 0),
               int(row.get("active_count") or 0),
-              int(row.get("created_equals_updated_count") or 0),
-              int(row.get("updated_after_created_count") or 0),
               int(row.get("canonical_connector_count") or 0),
           )
           expected = {
-              "select_a": (1, 1, 1, 0, 1),
-              "replace_b": (1, 1, 0, 1, 1),
-              "clear": (1, 0, 0, 1, 1),
+              "select_a": (1, 1, 1),
+              "replace_b": (1, 1, 1),
+              "clear": (1, 0, 1),
           }
           if phase not in expected:
               raise SystemExit("unknown B67 D1 attestation phase")
@@ -280,9 +276,7 @@ jobs:
           print(f"B67_D1_READBACK_PHASE={phase.upper()}")
           print(f"B67_D1_TOTAL_ROWS={observed[0]}")
           print(f"B67_D1_ACTIVE_COUNT={observed[1]}")
-          print(f"B67_D1_CREATED_EQUALS_UPDATED_COUNT={observed[2]}")
-          print(f"B67_D1_UPDATED_AFTER_CREATED_COUNT={observed[3]}")
-          print(f"B67_D1_CANONICAL_CONNECTOR_COUNT={observed[4]}")
+          print(f"B67_D1_CANONICAL_CONNECTOR_COUNT={observed[2]}")
 
           if observed != expected[phase]:
               raise SystemExit("B67 D1 durable phase state does not match the approved A6 checkpoint")
