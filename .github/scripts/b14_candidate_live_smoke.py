@@ -83,7 +83,7 @@ class CandidateSpec:
     ``credential_binding`` is the **name** of the expected platform secret
     binding. Its value is never read, printed, or transmitted by this module.
     Space Bunny reuses the owner-managed Kilo credential as
-    ``KILO_API_KEY``; callers never supply or override that value.
+    ``PADIEM_KILO_API_KEY``; callers never supply or override that value.
     """
 
     candidate_id: str
@@ -105,7 +105,7 @@ class CandidateSpec:
 #
 # Space Bunny (#3209, decision source #3143) is the Padiem Plus text+vision
 # primary on the authenticated Kilo Gateway free lane, reusing the existing
-# owner-managed ``KILO_API_KEY`` binding
+# owner-managed ``PADIEM_KILO_API_KEY`` binding
 # (``kilo/stealth-space-bunny-alpha``, upstream ``stealth/space-bunny-alpha``,
 # provider display ``Kilo Gateway / Stealth`` per the B14 registry). It is the
 # only candidate permitted in image modality; every other candidate stays
@@ -190,8 +190,8 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         provider_name="Kilo Gateway / Stealth",
         model_id="kilo/stealth-space-bunny-alpha",
         upstream_model="stealth/space-bunny-alpha",
-        credential_binding="KILO_API_KEY",
-        expected_binding="KILO_API_KEY",
+        credential_binding="PADIEM_KILO_API_KEY",
+        expected_binding="PADIEM_KILO_API_KEY",
     ),
 )
 
