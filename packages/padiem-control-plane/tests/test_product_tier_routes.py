@@ -281,6 +281,8 @@ def test_selected_routes_match_registered_provider_constants() -> None:
     )
     kilo_bunny_upstream = re.search(
         r'^KILO_SPACE_BUNNY_UPSTREAM_MODEL = "([^"]+)"
+    assert agnes_model and bai_model and agnes_binding and bai_binding
+    assert kilo_bunny and kilo_bunny_upstream and kilo_binding
     # #3209: the active Plus route is the Kilo Space Bunny lane.
     assert kilo_bunny.group(1) == executables[ProductTierLabel.PLUS].model_id
     assert kilo_bunny_upstream.group(1) == executables[ProductTierLabel.PLUS].upstream_model
@@ -368,6 +370,8 @@ def test_contract_module_is_stdlib_only_and_side_effect_free() -> None:
     )
     kilo_binding = re.search(
         r'^KILO_CREDENTIAL_BINDING = "([^"]+)"
+    assert agnes_model and bai_model and agnes_binding and bai_binding
+    assert kilo_bunny and kilo_bunny_upstream
     # #3209: the active Plus route is the Kilo Space Bunny lane.
     assert kilo_bunny.group(1) == executables[ProductTierLabel.PLUS].model_id
     assert kilo_bunny_upstream.group(1) == executables[ProductTierLabel.PLUS].upstream_model
@@ -453,7 +457,7 @@ def test_contract_module_is_stdlib_only_and_side_effect_free() -> None:
     )
 
     assert agnes_model and bai_model and agnes_binding and bai_binding
-    assert kilo_bunny and kilo_bunny_upstream and kilo_binding
+    assert kilo_bunny and kilo_bunny_upstream
     # #3209: the active Plus route is the Kilo Space Bunny lane.
     assert kilo_bunny.group(1) == executables[ProductTierLabel.PLUS].model_id
     assert kilo_bunny_upstream.group(1) == executables[ProductTierLabel.PLUS].upstream_model
