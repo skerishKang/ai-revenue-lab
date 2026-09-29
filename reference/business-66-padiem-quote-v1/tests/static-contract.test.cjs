@@ -20,6 +20,8 @@ const skill = read("quote-skill.js");
 const skillStore = read("quote-skill-store.js");
 const skillCandidate = read("quote-skill-candidate.js");
 const skillRegistration = read("quote-skill-registration.js");
+const templateRegistration = read("quote-template-registration.js");
+const registrationSession = read("quote-registration-session.js");
 const intake = read("file-intake.js");
 const easy = read("easy-mode.js");
 
@@ -44,6 +46,8 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'src="quote-skill-store.js"',
   'src="quote-skill-candidate.js"',
   'src="quote-skill-registration.js"',
+  'src="quote-template-registration.js"',
+  'src="quote-registration-session.js"',
   'src="file-intake.js"',
   'src="app.js"',
   'src="easy-mode.js"',
@@ -709,6 +713,19 @@ check(skillRegistration.includes("buildRegistrationCandidate") &&
       skillRegistration.includes("unsupported_template_decision") &&
       skillRegistration.includes("sender_company_requires_correction"),
   "SAVED_QUOTE_SKILL_REGISTRATION_SEAM: extraction-to-candidate seam is wired with honest fail-closed gaps");
+check(templateRegistration.includes("buildTemplateCandidateFromSource") &&
+      templateRegistration.includes("previewTemplateCandidate") &&
+      templateRegistration.includes("approveTemplateCandidate") &&
+      templateRegistration.includes("manual_layout_review_required"),
+  "TEMPLATE_REGISTRATION_SEAM: source-to-approved-profile path is wired with manual review");
+check(registrationSession.includes("STEP_LABELS") &&
+      registrationSession.includes("registration_committed") &&
+      registrationSession.includes("rolledBack") &&
+      registrationSession.includes("template_not_approved_for_skill"),
+  "REGISTRATION_SINGLE_USER_FLOW: template+skill approvals stay separate with atomic commit");
+check(!/완전히 학습했습니다|완벽하게 학습|학습이 완료되었습니다|AI가 배웠습니다/
+  .test(templateRegistration + registrationSession),
+  "NO_OVERCLAIMED_LAYOUT_LEARNING: honest copy only");
 
 console.log("VALID_UNTIL_CONTRACT=PASS");
 console.log("ADDRESS_FIELDS_CONTRACT=PASS");

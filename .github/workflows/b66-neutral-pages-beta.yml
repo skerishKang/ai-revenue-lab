@@ -62,6 +62,8 @@ jobs:
           test -f "${SOURCE_DIR}/quote-skill-store.js"
           test -f "${SOURCE_DIR}/quote-skill-candidate.js"
           test -f "${SOURCE_DIR}/quote-skill-registration.js"
+          test -f "${SOURCE_DIR}/quote-template-registration.js"
+          test -f "${SOURCE_DIR}/quote-registration-session.js"
           test -f "apps/b66-quote-adapter/app/file_intake.py"
           grep -F '<title>견적서 만들기</title>' "${SOURCE_DIR}/index.html" >/dev/null
           grep -F '샘플 공급사' "${SOURCE_DIR}/index.html" >/dev/null
@@ -87,6 +89,8 @@ jobs:
           node --check quote-skill-store.js
           node --check quote-skill-candidate.js
           node --check quote-skill-registration.js
+          node --check quote-template-registration.js
+          node --check quote-registration-session.js
           node tests/quote-core.test.cjs
           node tests/quote-extraction.test.cjs
           node tests/quote-history.test.cjs
@@ -103,6 +107,8 @@ jobs:
           node tests/quote-skill-store.test.cjs
           node tests/quote-skill-candidate.test.cjs
           node tests/quote-skill-registration.test.cjs
+          node tests/quote-template-registration.test.cjs
+          node tests/quote-registration-session.test.cjs
 
       - name: Run B66 server intake adapter contracts
         shell: bash
