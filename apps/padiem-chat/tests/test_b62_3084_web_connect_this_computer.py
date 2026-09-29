@@ -852,7 +852,17 @@ BASE_APP_ENDPOINTS = frozenset(
 # static/app.js. It does not create a #3084 backend route, so keep the historical
 # #3084 baseline intact and explicitly reconcile this independently reviewed
 # cross-feature endpoint.
-ALLOWED_APP_ENDPOINTS = BASE_APP_ENDPOINTS | frozenset({"/api/connectors/status"})
+#
+# #3237 does the same for the canonical automation rule catalogue
+# (`GET /api/claw/automation/rules`): a read-only listing of the existing
+# `claw_automation_store.list_rules(tenant_id)` authority, scoped to a
+# server-resolved canonical tenant. It is likewise a cross-feature endpoint that
+# is not part of the #3084 slice, so it is reconciled here explicitly rather
+# than by weakening the historical baseline.
+ALLOWED_APP_ENDPOINTS = BASE_APP_ENDPOINTS | frozenset({
+    "/api/connectors/status",
+    "/api/claw/automation/rules",
+})
 
 
 def test_no_new_backend_route_or_worker_endpoint_is_introduced() -> None:
@@ -865,7 +875,8 @@ def test_no_new_backend_route_or_worker_endpoint_is_introduced() -> None:
     added = present - ALLOWED_APP_ENDPOINTS
     assert not added, f"#3084 introduced new endpoints: {sorted(added)}"
     # No historical endpoint disappeared, and the only later reconciled
-    # endpoint is the existing #2830/#3222 read-only connector projection.
+    # endpoints are the existing #2830/#3222 read-only connector projection
+    # and the #3237 read-only canonical automation rule catalogue.
     assert BASE_APP_ENDPOINTS <= present
     assert present == ALLOWED_APP_ENDPOINTS
 
