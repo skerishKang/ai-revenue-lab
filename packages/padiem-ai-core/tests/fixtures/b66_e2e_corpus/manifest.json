@@ -1,0 +1,1209 @@
+{
+  "corpus_id": "b66-quotation-e2e-v1",
+  "issue": "#3205",
+  "parent_issue": "#3186",
+  "related_issues": [
+    "#3180",
+    "#3143"
+  ],
+  "generator": "tests/fixtures/b66_e2e_corpus/generate_b66_e2e_fixtures.py",
+  "generator_version": "2",
+  "synthetic": true,
+  "non_sensitive": true,
+  "synthetic_marker": "SYNTHETIC TEST DATA / 실사용 금지",
+  "frozen_at": "before-any-model-call",
+  "model_calls": 0,
+  "network_calls": 0,
+  "quote_core_calculation_authority": true,
+  "fixture_totals_are_expected_source_facts_only": true,
+  "korean_fidelity": {
+    "native_pdf_labels": [
+      "견적번호",
+      "견적서",
+      "견적일자",
+      "공급가액",
+      "공급받는 자",
+      "공급자",
+      "금액",
+      "단가",
+      "메모",
+      "부가세",
+      "사업자번호",
+      "수량",
+      "전화",
+      "주소",
+      "총액",
+      "품목"
+    ],
+    "font": "HYSMyeongJo-Medium",
+    "font_source": "reportlab_builtin_adobe_korea1_cid",
+    "download_required": false,
+    "raster_sources": "each raster fixture commits the Korean quotation PDF it was rendered from"
+  },
+  "determinism_contract": {
+    "byte_identical": [
+      "every PDF, DOCX and XLSX fixture is written by a pure-Python writer and is expected to reproduce byte-for-byte on any platform with the same pinned dependency set"
+    ],
+    "normalized": [
+      "every PNG fixture's pixels depend on which CJK font the pinned pypdfium2/pdfium and Pillow builds can resolve on the running platform, so exact bytes are recorded for committed integrity while reproducibility is asserted within the generating environment through normalized_fingerprint (8x8 quantized luminance grid)"
+    ]
+  },
+  "synthetic_identity": {
+    "supplier_name": "주식회사 테스트상사",
+    "supplier_business_number": "000-00-00000",
+    "supplier_address": "광주광역시 테스트구 견적로 123",
+    "supplier_phone": "062-000-0000",
+    "synthetic_marker": "SYNTHETIC TEST DATA / 실사용 금지"
+  },
+  "fixtures": [
+    {
+      "fixture_id": "F01",
+      "relative_path": "f01-native-quotation.pdf",
+      "media_type": "application/pdf",
+      "byte_size": 3544,
+      "sha256": "f99d18fe105c9b0257b93c723bbf12a196cb65389ecd0c1523b02724e577e53c",
+      "source_kind": "native_document",
+      "determinism": "byte_identical",
+      "expected_structural_facts": [
+        "single page A4 portrait",
+        "native extractable Korean text layer (no rasterization)",
+        "title, supplier identity, item table, totals, memo"
+      ],
+      "expected_business_facts": {
+        "quote_number": "Q-2026-3001",
+        "quote_date": "2026-03-02",
+        "sender": "주식회사 테스트상사",
+        "recipient": "주식회사 예시테크",
+        "items": [
+          {
+            "description": "스테인리스 배관 40x40",
+            "quantity": "12",
+            "unit": "m",
+            "unit_price": "9,800",
+            "amount": "117,600"
+          },
+          {
+            "description": "알루미늄 브래킷",
+            "quantity": "24",
+            "unit": "개",
+            "unit_price": "2,200",
+            "amount": "52,800"
+          }
+        ],
+        "supply_amount": "170,400",
+        "vat_amount": "17,040",
+        "total_amount": "187,440",
+        "vat_wording": "부가세 별도",
+        "memo": "납기 협의",
+        "intentionally_missing_facts": []
+      },
+      "template_only_facts": [
+        "item column order: 품목 | 수량 | 단가 | 금액",
+        "table header row is repeated on every page",
+        "grid borders and left alignment for item rows",
+        "fixed memo/default terms block placement",
+        "vat presentation style line beneath the item table"
+      ],
+      "variable_content_facts": [
+        "recipient",
+        "quotation number",
+        "quotation date",
+        "item descriptions",
+        "item quantities",
+        "item unit prices",
+        "supply amount",
+        "vat amount",
+        "total amount",
+        "memo text"
+      ],
+      "vat_mode": "separate",
+      "page_count_or_sheet_count": 1,
+      "column_order": [
+        "품목",
+        "수량",
+        "단가",
+        "금액"
+      ],
+      "synthetic": true,
+      "notes": "clean native Korean PDF control case"
+    },
+    {
+      "fixture_id": "F02",
+      "relative_path": "f02-scanned-quotation.png",
+      "media_type": "image/png",
+      "byte_size": 34221,
+      "sha256": "af9f48578b79dc9d712e695079e4b0fd44a02916f12007c14429593173432ba4",
+      "source_kind": "raster_image",
+      "determinism": "normalized",
+      "expected_structural_facts": [
+        "raster page preview with no text layer",
+        "rendered from the committed Korean quotation source document",
+        "same layout family as F01 with a different quotation number"
+      ],
+      "expected_business_facts": {
+        "quote_number": "Q-2026-3002",
+        "quote_date": "2026-03-03",
+        "sender": "주식회사 테스트상사",
+        "recipient": "주식회사 샘플산업",
+        "items": [
+          {
+            "description": "스테인리스 배관 40x40",
+            "quantity": "12",
+            "unit": "m",
+            "unit_price": "9,800",
+            "amount": "117,600"
+          },
+          {
+            "description": "알루미늄 브래킷",
+            "quantity": "24",
+            "unit": "개",
+            "unit_price": "2,200",
+            "amount": "52,800"
+          }
+        ],
+        "supply_amount": "170,400",
+        "vat_amount": "17,040",
+        "total_amount": "187,440",
+        "vat_wording": "부가세 별도",
+        "memo": "납기 협의",
+        "intentionally_missing_facts": []
+      },
+      "template_only_facts": [
+        "item column order: 품목 | 수량 | 단가 | 금액",
+        "table header row is repeated on every page",
+        "grid borders and left alignment for item rows",
+        "fixed memo/default terms block placement",
+        "vat presentation style line beneath the item table"
+      ],
+      "variable_content_facts": [
+        "recipient",
+        "quotation number",
+        "quotation date",
+        "item descriptions",
+        "item quantities",
+        "item unit prices",
+        "supply amount",
+        "vat amount",
+        "total amount",
+        "memo text"
+      ],
+      "vat_mode": "separate",
+      "page_count_or_sheet_count": 1,
+      "column_order": [
+        "품목",
+        "수량",
+        "단가",
+        "금액"
+      ],
+      "synthetic": true,
+      "normalized_fingerprint": "b15b2f683aabdebd39a6497cbfd417a45701f72fc1bb1c4abf46cae3d7ec8683",
+      "notes": "byte-level reproducibility is declared normalized: raster pixels depend on the CJK font the rasterizer resolves; see determinism contract",
+      "raster_source_path": "f02-scanned-quotation.source.pdf",
+      "raster_source_sha256": "d2a1e1926e68eca5e006d62ef54d1f8db057a85304782a50170dd626ec690aa6",
+      "raster_source_korean_labels": [
+        "견적서",
+        "공급자",
+        "공급가액",
+        "공급받는 자",
+        "품목",
+        "수량",
+        "금액",
+        "견적번호",
+        "부가세",
+        "총액"
+      ],
+      "pixel_width": 596,
+      "pixel_height": 842
+    },
+    {
+      "fixture_id": "F03",
+      "relative_path": "f03-quotation.docx",
+      "media_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "byte_size": 1427,
+      "sha256": "164826d77e6373316fb051cbbe208865b5417c3ce8709c05ca3d59dfaf7128a5",
+      "source_kind": "native_document",
+      "determinism": "byte_identical",
+      "expected_structural_facts": [
+        "OOXML wordprocessing document built from fixed-metadata parts",
+        "single w:tbl item table with a border set",
+        "Korean paragraph text is extractable without a rasterizer"
+      ],
+      "expected_business_facts": {
+        "quote_number": "Q-2026-3003",
+        "quote_date": "2026-03-04",
+        "sender": "주식회사 테스트상사",
+        "recipient": "주식회사 견본물산",
+        "items": [
+          {
+            "description": "스테인리스 배관 40x40",
+            "quantity": "12",
+            "unit": "m",
+            "unit_price": "9,800",
+            "amount": "117,600"
+          },
+          {
+            "description": "알루미늄 브래킷",
+            "quantity": "24",
+            "unit": "개",
+            "unit_price": "2,200",
+            "amount": "52,800"
+          }
+        ],
+        "supply_amount": "170,400",
+        "vat_amount": "17,040",
+        "total_amount": "187,440",
+        "vat_wording": "부가세 별도",
+        "memo": "결제조건 협의",
+        "intentionally_missing_facts": []
+      },
+      "template_only_facts": [
+        "item column order: 품목 | 수량 | 단가 | 금액",
+        "table header row is repeated on every page",
+        "grid borders and left alignment for item rows",
+        "fixed memo/default terms block placement",
+        "vat presentation style line beneath the item table"
+      ],
+      "variable_content_facts": [
+        "recipient",
+        "quotation number",
+        "quotation date",
+        "item descriptions",
+        "item quantities",
+        "item unit prices",
+        "supply amount",
+        "vat amount",
+        "total amount",
+        "memo text"
+      ],
+      "vat_mode": "separate",
+      "page_count_or_sheet_count": 1,
+      "column_order": [
+        "품목",
+        "수량",
+        "단가",
+        "금액"
+      ],
+      "synthetic": true
+    },
+    {
+      "fixture_id": "F04",
+      "relative_path": "f04-quotation.xlsx",
+      "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "byte_size": 2132,
+      "sha256": "1a2ab94bf5a4ebcf6ad07f096220d4e292c75579692e56f0a9df184ff76ea913",
+      "source_kind": "native_document",
+      "determinism": "byte_identical",
+      "expected_structural_facts": [
+        "single worksheet with 15 populated rows",
+        "real cell/row/column structure with numeric quantity, unit price and amount cells",
+        "header row carries the Korean item column order"
+      ],
+      "expected_business_facts": {
+        "quote_number": "Q-2026-3004",
+        "quote_date": "2026-03-05",
+        "sender": "주식회사 테스트상사",
+        "recipient": "주식회사 예시테크",
+        "items": [
+          {
+            "description": "스테인리스 배관 40x40",
+            "quantity": "12",
+            "unit": "m",
+            "unit_price": "9,800",
+            "amount": "117,600"
+          },
+          {
+            "description": "알루미늄 브래킷",
+            "quantity": "24",
+            "unit": "개",
+            "unit_price": "2,200",
+            "amount": "52,800"
+          }
+        ],
+        "supply_amount": "170,400",
+        "vat_amount": "17,040",
+        "total_amount": "187,440",
+        "vat_wording": "부가세 별도",
+        "memo": null,
+        "intentionally_missing_facts": [
+          "memo"
+        ]
+      },
+      "template_only_facts": [
+        "item column order: 품목 | 수량 | 단가 | 금액",
+        "table header row is repeated on every page",
+        "grid borders and left alignment for item rows",
+        "fixed memo/default terms block placement",
+        "vat presentation style line beneath the item table"
+      ],
+      "variable_content_facts": [
+        "recipient",
+        "quotation number",
+        "quotation date",
+        "item descriptions",
+        "item quantities",
+        "item unit prices",
+        "supply amount",
+        "vat amount",
+        "total amount",
+        "memo text (absent by design)"
+      ],
+      "vat_mode": "separate",
+      "page_count_or_sheet_count": 1,
+      "column_order": [
+        "품목",
+        "수량",
+        "단가",
+        "금액"
+      ],
+      "synthetic": true
+    },
+    {
+      "fixture_id": "F05",
+      "relative_path": "f05-column-order-variant.pdf",
+      "media_type": "application/pdf",
+      "byte_size": 3546,
+      "sha256": "feed723271cfee245eb3d2ab104c8d5fa137d96ded6e92196b44a689f81cdde2",
+      "source_kind": "native_document",
+      "determinism": "byte_identical",
+      "expected_structural_facts": [
+        "item table uses the variant column order",
+        "content is identical to the default-order family; only the presentation order changes"
+      ],
+      "expected_business_facts": {
+        "quote_number": "Q-2026-3005",
+        "quote_date": "2026-03-06",
+        "sender": "주식회사 테스트상사",
+        "recipient": "주식회사 샘플산업",
+        "items": [
+          {
+            "description": "스테인리스 배관 40x40",
+            "quantity": "12",
+            "unit": "m",
+            "unit_price": "9,800",
+            "amount": "117,600"
+          },
+          {
+            "description": "알루미늄 브래킷",
+            "quantity": "24",
+            "unit": "개",
+            "unit_price": "2,200",
+            "amount": "52,800"
+          }
+        ],
+        "supply_amount": "170,400",
+        "vat_amount": "17,040",
+        "total_amount": "187,440",
+        "vat_wording": "부가세 별도",
+        "memo": "납기 협의",
+        "intentionally_missing_facts": []
+      },
+      "template_only_facts": [
+        "item column order: 수량 | 품목 | 금액 | 단가",
+        "table header row is repeated on every page",
+        "grid borders and left alignment for item rows",
+        "fixed memo/default terms block placement",
+        "vat presentation style line beneath the item table"
+      ],
+      "variable_content_facts": [
+        "recipient",
+        "quotation number",
+        "quotation date",
+        "item descriptions",
+        "item quantities",
+        "item unit prices",
+        "supply amount",
+        "vat amount",
+        "total amount",
+        "memo text"
+      ],
+      "vat_mode": "separate",
+      "page_count_or_sheet_count": 1,
+      "column_order": [
+        "수량",
+        "품목",
+        "금액",
+        "단가"
+      ],
+      "synthetic": true,
+      "notes": "separates template structure from per-quote content",
+      "column_order_variant": true
+    },
+    {
+      "fixture_id": "F06",
+      "relative_path": "f06-vat-separate.pdf",
+      "media_type": "application/pdf",
+      "byte_size": 3536,
+      "sha256": "aa167eb09fe13695033a2c049d151e5c877b3ee79266490f9f222e39d164af79",
+      "source_kind": "native_document",
+      "determinism": "byte_identical",
+      "expected_structural_facts": [
+        "supply amount and VAT are presented on separate lines"
+      ],
+      "expected_business_facts": {
+        "quote_number": "Q-2026-3006",
+        "quote_date": "2026-03-09",
+        "sender": "주식회사 테스트상사",
+        "recipient": "주식회사 견본물산",
+        "items": [
+          {
+            "description": "스테인리스 배관 40x40",
+            "quantity": "12",
+            "unit": "m",
+            "unit_price": "9,800",
+            "amount": "117,600"
+          },
+          {
+            "description": "알루미늄 브래킷",
+            "quantity": "24",
+            "unit": "개",
+            "unit_price": "2,200",
+            "amount": "52,800"
+          }
+        ],
+        "supply_amount": "170,400",
+        "vat_amount": "17,040",
+        "total_amount": "187,440",
+        "vat_wording": "부가세 별도",
+        "memo": "부가세 별도 기준",
+        "intentionally_missing_facts": []
+      },
+      "template_only_facts": [
+        "item column order: 품목 | 수량 | 단가 | 금액",
+        "table header row is repeated on every page",
+        "grid borders and left alignment for item rows",
+        "fixed memo/default terms block placement",
+        "vat presentation style line beneath the item table"
+      ],
+      "variable_content_facts": [
+        "recipient",
+        "quotation number",
+        "quotation date",
+        "item descriptions",
+        "item quantities",
+        "item unit prices",
+        "supply amount",
+        "vat amount",
+        "total amount",
+        "memo text"
+      ],
+      "vat_mode": "separate",
+      "page_count_or_sheet_count": 1,
+      "column_order": [
+        "품목",
+        "수량",
+        "단가",
+        "금액"
+      ],
+      "synthetic": true,
+      "vat_variant": "separate"
+    },
+    {
+      "fixture_id": "F07",
+      "relative_path": "f07-vat-inclusive.pdf",
+      "media_type": "application/pdf",
+      "byte_size": 3521,
+      "sha256": "9e5beaf2dff1a0a9962e0ed827818a142c5a90c0dd5a2055acc2d027d94a74b2",
+      "source_kind": "native_document",
+      "determinism": "byte_identical",
+      "expected_structural_facts": [
+        "VAT-inclusive presentation: no separate VAT figure is printed"
+      ],
+      "expected_business_facts": {
+        "quote_number": "Q-2026-3007",
+        "quote_date": "2026-03-10",
+        "sender": "주식회사 테스트상사",
+        "recipient": "주식회사 예시테크",
+        "items": [
+          {
+            "description": "스테인리스 배관 40x40",
+            "quantity": "12",
+            "unit": "m",
+            "unit_price": "9,800",
+            "amount": "117,600"
+          },
+          {
+            "description": "알루미늄 브래킷",
+            "quantity": "24",
+            "unit": "개",
+            "unit_price": "2,200",
+            "amount": "52,800"
+          }
+        ],
+        "supply_amount": "170,400",
+        "vat_amount": "0",
+        "total_amount": "170,400",
+        "vat_wording": "부가세 포함",
+        "memo": "부가세 포함 금액입니다",
+        "intentionally_missing_facts": []
+      },
+      "template_only_facts": [
+        "item column order: 품목 | 수량 | 단가 | 금액",
+        "table header row is repeated on every page",
+        "grid borders and left alignment for item rows",
+        "fixed memo/default terms block placement",
+        "vat presentation style line beneath the item table"
+      ],
+      "variable_content_facts": [
+        "recipient",
+        "quotation number",
+        "quotation date",
+        "item descriptions",
+        "item quantities",
+        "item unit prices",
+        "supply amount",
+        "vat amount",
+        "total amount",
+        "memo text"
+      ],
+      "vat_mode": "inclusive",
+      "page_count_or_sheet_count": 1,
+      "column_order": [
+        "품목",
+        "수량",
+        "단가",
+        "금액"
+      ],
+      "synthetic": true,
+      "vat_variant": "inclusive"
+    },
+    {
+      "fixture_id": "F08",
+      "relative_path": "f08-vat-exempt.pdf",
+      "media_type": "application/pdf",
+      "byte_size": 3522,
+      "sha256": "8d5e21a4498f7129e8397f2f92011163478d7720012a2af61f7c4df38a515edf",
+      "source_kind": "native_document",
+      "determinism": "byte_identical",
+      "expected_structural_facts": [
+        "tax-exempt presentation: VAT line is absent and 면세 wording is used"
+      ],
+      "expected_business_facts": {
+        "quote_number": "Q-2026-3008",
+        "quote_date": "2026-03-11",
+        "sender": "주식회사 테스트상사",
+        "recipient": "주식회사 샘플산업",
+        "items": [
+          {
+            "description": "스테인리스 배관 40x40",
+            "quantity": "12",
+            "unit": "m",
+            "unit_price": "9,800",
+            "amount": "117,600"
+          },
+          {
+            "description": "알루미늄 브래킷",
+            "quantity": "24",
+            "unit": "개",
+            "unit_price": "2,200",
+            "amount": "52,800"
+          }
+        ],
+        "supply_amount": "170,400",
+        "vat_amount": "0",
+        "total_amount": "170,400",
+        "vat_wording": "면세",
+        "memo": "면세 항목입니다",
+        "intentionally_missing_facts": []
+      },
+      "template_only_facts": [
+        "item column order: 품목 | 수량 | 단가 | 금액",
+        "table header row is repeated on every page",
+        "grid borders and left alignment for item rows",
+        "fixed memo/default terms block placement",
+        "vat presentation style line beneath the item table"
+      ],
+      "variable_content_facts": [
+        "recipient",
+        "quotation number",
+        "quotation date",
+        "item descriptions",
+        "item quantities",
+        "item unit prices",
+        "supply amount",
+        "vat amount",
+        "total amount",
+        "memo text"
+      ],
+      "vat_mode": "exempt",
+      "page_count_or_sheet_count": 1,
+      "column_order": [
+        "품목",
+        "수량",
+        "단가",
+        "금액"
+      ],
+      "synthetic": true,
+      "vat_variant": "exempt"
+    },
+    {
+      "fixture_id": "F09",
+      "relative_path": "f09-missing-fields.pdf",
+      "media_type": "application/pdf",
+      "byte_size": 3257,
+      "sha256": "d8fa2d7400cdd99f0727e849317b7032f1a2c1bbae285c9d04252d0bfa9ca5d8",
+      "source_kind": "native_document",
+      "determinism": "byte_identical",
+      "expected_structural_facts": [
+        "quotation number, date, VAT wording and memo are absent by design",
+        "ground truth keeps those facts unknown instead of inventing values"
+      ],
+      "expected_business_facts": {
+        "quote_number": null,
+        "quote_date": null,
+        "sender": "주식회사 테스트상사",
+        "recipient": "주식회사 견본물산",
+        "items": [
+          {
+            "description": "청결 볼트 M10",
+            "quantity": "30",
+            "unit": "개",
+            "unit_price": "900",
+            "amount": "27,000"
+          }
+        ],
+        "supply_amount": "27,000",
+        "vat_amount": null,
+        "total_amount": null,
+        "vat_wording": null,
+        "memo": null,
+        "intentionally_missing_facts": [
+          "quote_number",
+          "quote_date",
+          "vat_wording",
+          "memo"
+        ]
+      },
+      "template_only_facts": [
+        "item column order: 품목 | 수량 | 단가 | 금액",
+        "table header row is repeated on every page",
+        "grid borders and left alignment for item rows",
+        "fixed memo/default terms block placement",
+        "vat presentation style line beneath the item table"
+      ],
+      "variable_content_facts": [
+        "recipient",
+        "quotation number (absent by design)",
+        "quotation date (absent by design)",
+        "item descriptions",
+        "item quantities",
+        "item unit prices",
+        "supply amount",
+        "vat amount",
+        "total amount",
+        "memo text (absent by design)"
+      ],
+      "vat_mode": "unknown",
+      "page_count_or_sheet_count": 1,
+      "column_order": [
+        "품목",
+        "수량",
+        "단가",
+        "금액"
+      ],
+      "synthetic": true,
+      "notes": "hallucination trap: absent facts must not be fabricated",
+      "unknown_stays_unknown": true
+    },
+    {
+      "fixture_id": "F10",
+      "relative_path": "f10-fixed-memo-terms.pdf",
+      "media_type": "application/pdf",
+      "byte_size": 3640,
+      "sha256": "f5289aa6c26d3c69a958e5b0d0efa7ffcb525f7a9e78075e1324d6f666398f57",
+      "source_kind": "native_document",
+      "determinism": "byte_identical",
+      "expected_structural_facts": [
+        "default terms block is printed beneath the item table",
+        "terms text is template-fixed, not per-quote content"
+      ],
+      "expected_business_facts": {
+        "quote_number": "Q-2026-3010",
+        "quote_date": "2026-03-13",
+        "sender": "주식회사 테스트상사",
+        "recipient": "주식회사 예시테크",
+        "items": [
+          {
+            "description": "스테인리스 배관 40x40",
+            "quantity": "12",
+            "unit": "m",
+            "unit_price": "9,800",
+            "amount": "117,600"
+          },
+          {
+            "description": "알루미늄 브래킷",
+            "quantity": "24",
+            "unit": "개",
+            "unit_price": "2,200",
+            "amount": "52,800"
+          }
+        ],
+        "supply_amount": "170,400",
+        "vat_amount": "17,040",
+        "total_amount": "187,440",
+        "vat_wording": "부가세 별도",
+        "memo": null,
+        "intentionally_missing_facts": [
+          "memo"
+        ]
+      },
+      "template_only_facts": [
+        "item column order: 품목 | 수량 | 단가 | 금액",
+        "table header row is repeated on every page",
+        "grid borders and left alignment for item rows",
+        "fixed memo/default terms block placement",
+        "vat presentation style line beneath the item table"
+      ],
+      "variable_content_facts": [
+        "recipient",
+        "quotation number",
+        "quotation date",
+        "item descriptions",
+        "item quantities",
+        "item unit prices",
+        "supply amount",
+        "vat amount",
+        "total amount",
+        "memo text (absent by design)"
+      ],
+      "vat_mode": "separate",
+      "page_count_or_sheet_count": 1,
+      "column_order": [
+        "품목",
+        "수량",
+        "단가",
+        "금액"
+      ],
+      "synthetic": true,
+      "notes": "terms are declared template-only facts for the cloner",
+      "fixed_terms": {
+        "납기": "발주 후 7일",
+        "결제조건": "협의",
+        "유효기간": "견적일로부터 30일"
+      },
+      "template_fixed_terms": [
+        "납기",
+        "결제조건",
+        "유효기간"
+      ]
+    },
+    {
+      "fixture_id": "F11",
+      "relative_path": "f11-simple-logo.png",
+      "media_type": "image/png",
+      "byte_size": 13511,
+      "sha256": "9920b8c1dde26c23b12c2267b706372d39eabde55f787b3f8cc6a3d6583c7935",
+      "source_kind": "raster_image",
+      "determinism": "normalized",
+      "expected_structural_facts": [
+        "raster logo card 596x842",
+        "no real corporate mark: synthetic placeholder only",
+        "usable as a template-only logo asset"
+      ],
+      "expected_business_facts": {
+        "synthetic_marker": "SYNTHETIC TEST DATA / 실사용 금지",
+        "logo_text": "PADIEM TEST / SYNTHETIC QUOTE"
+      },
+      "template_only_facts": [
+        "logo placement is a template-only fact",
+        "logo pixels carry no per-quote business value"
+      ],
+      "variable_content_facts": [],
+      "vat_mode": "not_applicable",
+      "page_count_or_sheet_count": 1,
+      "column_order": [],
+      "synthetic": true,
+      "normalized_fingerprint": "8934b11f4ae904a2617b27e21907c115870be14cce0551293410a59de52bdd5e",
+      "notes": "byte-level reproducibility is declared normalized: raster pixels depend on the CJK font the rasterizer resolves; see determinism contract",
+      "pixel_width": 596,
+      "pixel_height": 842
+    },
+    {
+      "fixture_id": "F12",
+      "relative_path": "f12-multipage-quotation.pdf",
+      "media_type": "application/pdf",
+      "byte_size": 5822,
+      "sha256": "69f47be5a29daebc35d8e6ba94b03bebec10ca140d7df4e562d98d68ff3831e0",
+      "source_kind": "native_document",
+      "determinism": "byte_identical",
+      "expected_structural_facts": [
+        "item table spans more than one page",
+        "the header row repeats on each page"
+      ],
+      "expected_business_facts": {
+        "quote_number": "Q-2026-3012",
+        "quote_date": "2026-03-16",
+        "sender": "주식회사 테스트상사",
+        "recipient": "주식회사 샘플산업",
+        "items": [
+          {
+            "description": "스테인리스 배관 규격 10mm",
+            "quantity": "2",
+            "unit": "개",
+            "unit_price": "1,500",
+            "amount": "3,000"
+          },
+          {
+            "description": "알루미늄 밸브 규격 20mm",
+            "quantity": "3",
+            "unit": "개",
+            "unit_price": "1,750",
+            "amount": "5,250"
+          },
+          {
+            "description": "황동 플랜지 규격 30mm",
+            "quantity": "4",
+            "unit": "개",
+            "unit_price": "2,000",
+            "amount": "8,000"
+          },
+          {
+            "description": "주철 가스켓 규격 40mm",
+            "quantity": "5",
+            "unit": "개",
+            "unit_price": "2,250",
+            "amount": "11,250"
+          },
+          {
+            "description": "스테인리스 볼트 규격 50mm",
+            "quantity": "6",
+            "unit": "개",
+            "unit_price": "2,500",
+            "amount": "15,000"
+          },
+          {
+            "description": "알루미늄 너트 규격 60mm",
+            "quantity": "7",
+            "unit": "개",
+            "unit_price": "2,750",
+            "amount": "19,250"
+          },
+          {
+            "description": "황동 와셔 규격 70mm",
+            "quantity": "8",
+            "unit": "개",
+            "unit_price": "3,000",
+            "amount": "24,000"
+          },
+          {
+            "description": "주철 호스 규격 80mm",
+            "quantity": "9",
+            "unit": "개",
+            "unit_price": "3,250",
+            "amount": "29,250"
+          },
+          {
+            "description": "스테인리스 배관 규격 90mm",
+            "quantity": "10",
+            "unit": "개",
+            "unit_price": "3,500",
+            "amount": "35,000"
+          },
+          {
+            "description": "알루미늄 밸브 규격 100mm",
+            "quantity": "11",
+            "unit": "개",
+            "unit_price": "3,750",
+            "amount": "41,250"
+          },
+          {
+            "description": "황동 플랜지 규격 110mm",
+            "quantity": "12",
+            "unit": "개",
+            "unit_price": "4,000",
+            "amount": "48,000"
+          },
+          {
+            "description": "주철 가스켓 규격 120mm",
+            "quantity": "13",
+            "unit": "개",
+            "unit_price": "4,250",
+            "amount": "55,250"
+          },
+          {
+            "description": "스테인리스 볼트 규격 130mm",
+            "quantity": "14",
+            "unit": "개",
+            "unit_price": "4,500",
+            "amount": "63,000"
+          },
+          {
+            "description": "알루미늄 너트 규격 140mm",
+            "quantity": "15",
+            "unit": "개",
+            "unit_price": "4,750",
+            "amount": "71,250"
+          },
+          {
+            "description": "황동 와셔 규격 150mm",
+            "quantity": "16",
+            "unit": "개",
+            "unit_price": "5,000",
+            "amount": "80,000"
+          },
+          {
+            "description": "주철 호스 규격 160mm",
+            "quantity": "17",
+            "unit": "개",
+            "unit_price": "5,250",
+            "amount": "89,250"
+          },
+          {
+            "description": "스테인리스 배관 규격 170mm",
+            "quantity": "18",
+            "unit": "개",
+            "unit_price": "5,500",
+            "amount": "99,000"
+          },
+          {
+            "description": "알루미늄 밸브 규격 180mm",
+            "quantity": "19",
+            "unit": "개",
+            "unit_price": "5,750",
+            "amount": "109,250"
+          },
+          {
+            "description": "황동 플랜지 규격 190mm",
+            "quantity": "20",
+            "unit": "개",
+            "unit_price": "6,000",
+            "amount": "120,000"
+          },
+          {
+            "description": "주철 가스켓 규격 200mm",
+            "quantity": "21",
+            "unit": "개",
+            "unit_price": "6,250",
+            "amount": "131,250"
+          },
+          {
+            "description": "스테인리스 볼트 규격 210mm",
+            "quantity": "22",
+            "unit": "개",
+            "unit_price": "6,500",
+            "amount": "143,000"
+          },
+          {
+            "description": "알루미늄 너트 규격 220mm",
+            "quantity": "23",
+            "unit": "개",
+            "unit_price": "6,750",
+            "amount": "155,250"
+          },
+          {
+            "description": "황동 와셔 규격 230mm",
+            "quantity": "24",
+            "unit": "개",
+            "unit_price": "7,000",
+            "amount": "168,000"
+          },
+          {
+            "description": "주철 호스 규격 240mm",
+            "quantity": "25",
+            "unit": "개",
+            "unit_price": "7,250",
+            "amount": "181,250"
+          },
+          {
+            "description": "스테인리스 배관 규격 250mm",
+            "quantity": "26",
+            "unit": "개",
+            "unit_price": "7,500",
+            "amount": "195,000"
+          },
+          {
+            "description": "알루미늄 밸브 규격 260mm",
+            "quantity": "27",
+            "unit": "개",
+            "unit_price": "7,750",
+            "amount": "209,250"
+          },
+          {
+            "description": "황동 플랜지 규격 270mm",
+            "quantity": "28",
+            "unit": "개",
+            "unit_price": "8,000",
+            "amount": "224,000"
+          },
+          {
+            "description": "주철 가스켓 규격 280mm",
+            "quantity": "29",
+            "unit": "개",
+            "unit_price": "8,250",
+            "amount": "239,250"
+          }
+        ],
+        "supply_amount": "2,572,500",
+        "vat_amount": "257,250",
+        "total_amount": "2,829,750",
+        "vat_wording": "부가세 별도",
+        "memo": "납기 협의",
+        "intentionally_missing_facts": []
+      },
+      "template_only_facts": [
+        "item column order: 품목 | 수량 | 단가 | 금액",
+        "table header row is repeated on every page",
+        "grid borders and left alignment for item rows",
+        "fixed memo/default terms block placement",
+        "vat presentation style line beneath the item table"
+      ],
+      "variable_content_facts": [
+        "recipient",
+        "quotation number",
+        "quotation date",
+        "item descriptions",
+        "item quantities",
+        "item unit prices",
+        "supply amount",
+        "vat amount",
+        "total amount",
+        "memo text"
+      ],
+      "vat_mode": "separate",
+      "page_count_or_sheet_count": 2,
+      "column_order": [
+        "품목",
+        "수량",
+        "단가",
+        "금액"
+      ],
+      "synthetic": true,
+      "notes": "page count is asserted to be at least two",
+      "multipage": true
+    },
+    {
+      "fixture_id": "F13",
+      "relative_path": "f13-degraded-scan.png",
+      "media_type": "image/png",
+      "byte_size": 24055,
+      "sha256": "0c98fc08c6bf26fc1a15d81853706232e1d2cce82028ca322d0d8a5ee731e82a",
+      "source_kind": "raster_image",
+      "determinism": "normalized",
+      "expected_structural_facts": [
+        "downscaled, low-quality re-upscaled and slightly rotated page",
+        "rendered from the committed Korean quotation source document",
+        "degradation is fixed and reproducible, not random noise"
+      ],
+      "expected_business_facts": {
+        "quote_number": "Q-2026-3013",
+        "quote_date": "2026-03-17",
+        "sender": "주식회사 테스트상사",
+        "recipient": "주식회사 견본물산",
+        "items": [
+          {
+            "description": "스테인리스 배관 40x40",
+            "quantity": "12",
+            "unit": "m",
+            "unit_price": "9,800",
+            "amount": "117,600"
+          },
+          {
+            "description": "알루미늄 브래킷",
+            "quantity": "24",
+            "unit": "개",
+            "unit_price": "2,200",
+            "amount": "52,800"
+          }
+        ],
+        "supply_amount": "170,400",
+        "vat_amount": "17,040",
+        "total_amount": "187,440",
+        "vat_wording": "부가세 별도",
+        "memo": "납기 협의",
+        "intentionally_missing_facts": []
+      },
+      "template_only_facts": [
+        "item column order: 품목 | 수량 | 단가 | 금액",
+        "table header row is repeated on every page",
+        "grid borders and left alignment for item rows",
+        "fixed memo/default terms block placement",
+        "vat presentation style line beneath the item table"
+      ],
+      "variable_content_facts": [
+        "recipient",
+        "quotation number",
+        "quotation date",
+        "item descriptions",
+        "item quantities",
+        "item unit prices",
+        "supply amount",
+        "vat amount",
+        "total amount",
+        "memo text"
+      ],
+      "vat_mode": "separate",
+      "page_count_or_sheet_count": 1,
+      "column_order": [
+        "품목",
+        "수량",
+        "단가",
+        "금액"
+      ],
+      "synthetic": true,
+      "normalized_fingerprint": "4cbaba9f15c153f167b22b386cbc17ef58e3ba50a50bd79e2417f20666edd38a",
+      "notes": "vision robustness fixture; raster pixels depend on the CJK font the rasterizer resolves; no model is called by this generator",
+      "raster_source_path": "f13-degraded-scan.source.pdf",
+      "raster_source_sha256": "959a8b4215934eb56ce736ec24ad6123000c0150a22f8cf79b12ebb5eb614e8f",
+      "raster_source_korean_labels": [
+        "견적서",
+        "공급자",
+        "공급가액",
+        "공급받는 자",
+        "품목",
+        "수량",
+        "금액",
+        "견적번호",
+        "부가세",
+        "총액"
+      ],
+      "pixel_width": 596,
+      "pixel_height": 842,
+      "degradation": "downscale_x4+rotate_1.8deg"
+    }
+  ],
+  "raster_sources": [
+    {
+      "fixture_id": "F02",
+      "relative_path": "f02-scanned-quotation.source.pdf",
+      "media_type": "application/pdf",
+      "byte_size": 3546,
+      "sha256": "d2a1e1926e68eca5e006d62ef54d1f8db057a85304782a50170dd626ec690aa6",
+      "korean_labels_verified": [
+        "견적서",
+        "공급자",
+        "공급가액",
+        "공급받는 자",
+        "품목",
+        "수량",
+        "금액",
+        "견적번호",
+        "부가세",
+        "총액"
+      ],
+      "generated_by": "author_korean_pdf via ReportLab CID font",
+      "cjk_font": "HYSMyeongJo-Medium",
+      "cjk_font_source": "reportlab_builtin_adobe_korea1_cid"
+    },
+    {
+      "fixture_id": "F13",
+      "relative_path": "f13-degraded-scan.source.pdf",
+      "media_type": "application/pdf",
+      "byte_size": 3546,
+      "sha256": "959a8b4215934eb56ce736ec24ad6123000c0150a22f8cf79b12ebb5eb614e8f",
+      "korean_labels_verified": [
+        "견적서",
+        "공급자",
+        "공급가액",
+        "공급받는 자",
+        "품목",
+        "수량",
+        "금액",
+        "견적번호",
+        "부가세",
+        "총액"
+      ],
+      "generated_by": "author_korean_pdf via ReportLab CID font",
+      "cjk_font": "HYSMyeongJo-Medium",
+      "cjk_font_source": "reportlab_builtin_adobe_korea1_cid"
+    }
+  ]
+}
