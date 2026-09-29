@@ -82,8 +82,10 @@ class CandidateSpec:
 
     ``credential_binding`` is the **name** of the expected platform secret
     binding. Its value is never read, printed, or transmitted by this module.
-    Space Bunny reuses the owner-managed Kilo credential as
-    ``PADIEM_KILO_API_KEY``; callers never supply or override that value.
+    Space Bunny may reuse the owner-managed Kilo credential
+    ``PADIEM_KILO_API_KEY`` when present, but its candidate contract remains
+    runnable when B14 reports no key so the documented anonymous free-model path
+    can be measured. Callers never supply or override the credential.
     """
 
     candidate_id: str
@@ -94,6 +96,7 @@ class CandidateSpec:
     upstream_model: str
     credential_binding: str
     expected_binding: str
+    credential_mode: str = "platform_secret"
 
 
 # --------------------------------------------------------------------------
@@ -104,8 +107,8 @@ class CandidateSpec:
 # EXCLUDED: B.AI Qwen3.8 (deliberately absent — see _EXCLUDED_* below)
 #
 # Space Bunny (#3209, decision source #3143) is the Padiem Plus text+vision
-# primary on the authenticated Kilo Gateway free lane, reusing the existing
-# owner-managed ``PADIEM_KILO_API_KEY`` binding
+# primary on the Kilo Gateway free lane. The existing owner-managed
+# ``PADIEM_KILO_API_KEY`` binding is optional: B14 may use it when present
 # (``kilo/stealth-space-bunny-alpha``, upstream ``stealth/space-bunny-alpha``,
 # provider display ``Kilo Gateway / Stealth`` per the B14 registry). It is the
 # only candidate permitted in image modality; every other candidate stays
@@ -192,6 +195,7 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         upstream_model="stealth/space-bunny-alpha",
         credential_binding="PADIEM_KILO_API_KEY",
         expected_binding="PADIEM_KILO_API_KEY",
+        credential_mode="optional_platform_secret",
     ),
 )
 
@@ -577,13 +581,21 @@ def run(
         _emit_result(cid, "FAIL_PROVIDER_NOT_REGISTERED")
         _locks(provider_posts, network_retries)
         return 1
-    if provider_entry.get("has_key") is not True:
-        _emit_result(cid, "FAIL_CREDENTIAL_NOT_READY")
-        _locks(provider_posts, network_retries)
-        return 1
-    _emit(cid, "PROVIDER_REGISTERED", "YES")
-    _emit(cid, "CREDENTIAL_READY", "YES")
-    _emit(cid, "EXPECTED_BINDING", spec.expected_binding)
+    has_key = provider_entry.get("has_key") is True
+    if spec.credential_mode == "optional_platform_secret":
+        _emit(cid, "PROVIDER_REGISTERED", "YES")
+        _emit(cid, "CREDENTIAL_READY", "YES")
+        _emit(cid, "CREDENTIAL_MODE", "OPTIONAL_PLATFORM_SECRET")
+        _emit(cid, "CREDENTIAL_PRESENT", "YES" if has_key else "NO")
+        _emit(cid, "EXPECTED_BINDING", spec.expected_binding)
+    else:
+        if not has_key:
+            _emit_result(cid, "FAIL_CREDENTIAL_NOT_READY")
+            _locks(provider_posts, network_retries)
+            return 1
+        _emit(cid, "PROVIDER_REGISTERED", "YES")
+        _emit(cid, "CREDENTIAL_READY", "YES")
+        _emit(cid, "EXPECTED_BINDING", spec.expected_binding)
 
     models_status, models_raw = transport("GET", MODELS_PATH, None)
     if models_status != 200:
