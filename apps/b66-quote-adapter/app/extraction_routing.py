@@ -23,9 +23,11 @@ Reuse (no second authority):
   (``text`` + exactly one ``image_url`` data URL, JPEG/PNG/WebP, decoded
   image <= 4 MiB, remote URL forbidden). This module emits that shape and
   the gateway revalidates it; no second image schema is defined here.
-- extraction validation: mirrors the model-independent
+- extraction validation: behavioral parity with the model-independent
   ``reference/business-66-padiem-quote-v1/quote-extraction.js`` contract
-  (untrusted input, bounded facts, no totals math).
+  (untrusted input, strict nested types, ISO/calendar dates, validDays,
+  bounded evidence/warnings, no totals math; missing facts stay ``None``
+  and surface as ``UNKNOWN`` at the candidate projection).
 
 Manual fallback is always off for the MVP (``allow_external_fallback`` is
 ``False`` on every request this module builds).
@@ -35,6 +37,9 @@ from __future__ import annotations
 
 import base64
 import binascii
+import math
+import re
+from datetime import date
 from pathlib import PurePath
 from typing import Any, Callable
 
@@ -60,10 +65,25 @@ UNKNOWN = "UNKNOWN"
 # <= 4 MiB; native text bounded for the gateway text cap).
 MAX_IMAGE_BYTES = 4 * 1024 * 1024
 MAX_EXTRACTION_TEXT_CHARS = 32000
+# Validation bounds below mirror the deployed browser contract
+# ``reference/business-66-padiem-quote-v1/quote-extraction.js`` exactly.
 MAX_ITEMS = 100
 MAX_TEXT_CHARS = 2000
 MAX_MEMO_CHARS = 8000
-MAX_EVIDENCE_ITEMS = 8
+MAX_FILENAME_CHARS = 255
+MAX_SOURCE_KIND_CHARS = 64
+MAX_EVIDENCE = 200
+MAX_EVIDENCE_SNIPPET_CHARS = 1000
+MAX_WARNINGS = 50
+
+SENDER_FIELDS = ("company", "rep", "bizNo", "address", "phone", "email")
+RECIPIENT_FIELDS = ("company", "person", "address", "email")
+TAX_MODES = frozenset({"EXCLUSIVE", "INCLUSIVE", "EXEMPT"})
+_ALLOWED_SOURCE_KEYS = frozenset({"kind", "filename"})
+_ALLOWED_QUOTE_KEYS = frozenset({"quoteNo", "issueDate", "validDays"})
+_ALLOWED_TAX_KEYS = frozenset({"mode"})
+_ALLOWED_ITEM_KEYS = frozenset({"name", "qty", "unitPrice"})
+_ALLOWED_EVIDENCE_KEYS = frozenset({"field", "page", "snippet", "confidence"})
 
 _IMAGE_MEDIA: dict[str, frozenset[str]] = {
     "image/jpeg": frozenset({".jpg", ".jpeg"}),
@@ -344,151 +364,313 @@ def _contains_forbidden_key(value: Any) -> bool:
     return False
 
 
-def _optional_text(value: Any, *, max_chars: int) -> str:
+def _fail(code: str) -> None:
+    raise B66ExtractionRoutingError(code)
+
+
+def _reject_unknown_keys(mapping: dict[str, Any], allowed: frozenset[str], code: str) -> None:
+    unknown = set(mapping) - set(allowed)
+    if unknown:
+        raise B66ExtractionRoutingError(code)
+
+
+def _optional_text(value: Any, *, max_chars: int, code: str = "invalid_text") -> str | None:
+    """Mirror JS ``optionalText``: missing/blank stays ``None``, never fabricated."""
     if value is None:
-        return UNKNOWN
+        return None
     if not isinstance(value, str):
-        raise B66ExtractionRoutingError("invalid_text")
+        _fail(code)
     text = value.strip()
     if not text:
-        return UNKNOWN
+        return None
     if len(text) > max_chars:
-        raise B66ExtractionRoutingError("text_too_long")
+        _fail(code)
     return text
 
 
-def _optional_money_source(value: Any) -> str:
-    if value is None:
-        return UNKNOWN
+def _optional_money(value: Any, *, code: str = "invalid_money") -> int | float | None:
+    """Mirror JS ``optionalMoney``: bounded non-negative amounts as numbers."""
+    if value is None or value == "":
+        return None
+    if isinstance(value, bool):
+        _fail(code)
     if isinstance(value, (int, float)):
-        if not isinstance(value, bool) and value >= 0:
-            return str(value)
-        raise B66ExtractionRoutingError("invalid_money")
+        if not math.isfinite(value) or value < 0:
+            _fail(code)
+        return value
     if not isinstance(value, str):
-        raise B66ExtractionRoutingError("invalid_money")
-    text = value.strip().replace(",", "").replace(" ", "")
-    if not text:
-        return UNKNOWN
-    if text == UNKNOWN:
-        return UNKNOWN
-    compact = text.replace(".", "", 1)
-    if not compact.isdigit():
-        raise B66ExtractionRoutingError("invalid_money")
-    return value.strip()
+        _fail(code)
+    compact = "".join(char for char in value if not char.isspace()).replace(",", "")
+    if not re.fullmatch(r"\d+(\.\d+)?", compact):
+        _fail(code)
+    number: int | float = float(compact) if "." in compact else int(compact)
+    if not math.isfinite(number) or number < 0:
+        _fail(code)
+    return number
+
+
+def _optional_positive_integer(value: Any, *, code: str) -> int | None:
+    """Mirror JS ``optionalPositiveInteger``: bounded positive integers only."""
+    if value is None or value == "":
+        return None
+    if isinstance(value, str):
+        if not re.fullmatch(r"\d+", value):
+            _fail(code)
+        number = int(value)
+    elif isinstance(value, bool):
+        _fail(code)
+    elif isinstance(value, int):
+        number = value
+    elif isinstance(value, float) and value.is_integer():
+        number = int(value)
+    else:
+        _fail(code)
+    if number <= 0:
+        _fail(code)
+    return number
+
+
+def _optional_iso_date(value: Any) -> str | None:
+    """Mirror JS ``optionalISODate``: ``YYYY-MM-DD`` plus a real calendar date."""
+    text = _optional_text(value, max_chars=10, code="invalid_issue_date")
+    if text is None:
+        return None
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", text):
+        _fail("invalid_issue_date")
+    year, month, day = int(text[0:4]), int(text[5:7]), int(text[8:10])
+    try:
+        date(year, month, day)
+    except ValueError:
+        _fail("invalid_issue_date")
+    return text
+
+
+def _normalize_party(raw: Any, fields: tuple[str, ...], section: str) -> dict[str, str | None]:
+    if raw is None:
+        raw = {}
+    if not isinstance(raw, dict):
+        _fail(f"invalid_{section}")
+    _reject_unknown_keys(raw, frozenset(fields), f"unsupported_{section}_field")
+    return {
+        field: _optional_text(
+            raw.get(field),
+            max_chars=MAX_TEXT_CHARS,
+            code=f"invalid_{section}_{field}",
+        )
+        for field in fields
+    }
+
+
+def _normalize_items(raw: Any) -> list[dict[str, Any]]:
+    if raw is None:
+        return []
+    if not isinstance(raw, list):
+        _fail("invalid_items")
+    if len(raw) > MAX_ITEMS:
+        _fail("too_many_items")
+    items: list[dict[str, Any]] = []
+    for index, entry in enumerate(raw):
+        if not isinstance(entry, dict):
+            _fail(f"invalid_item_{index}")
+        _reject_unknown_keys(entry, _ALLOWED_ITEM_KEYS, "unsupported_item_field")
+        items.append(
+            {
+                "name": _optional_text(
+                    entry.get("name"),
+                    max_chars=MAX_TEXT_CHARS,
+                    code="invalid_item_name",
+                ),
+                "qty": _optional_money(entry.get("qty"), code="invalid_item_qty"),
+                "unitPrice": _optional_money(
+                    entry.get("unitPrice"), code="invalid_item_unit_price"
+                ),
+            }
+        )
+    return items
+
+
+def _normalize_evidence(raw: Any) -> list[dict[str, Any]]:
+    if raw is None:
+        return []
+    if not isinstance(raw, list):
+        _fail("invalid_evidence")
+    if len(raw) > MAX_EVIDENCE:
+        _fail("too_much_evidence")
+    entries: list[dict[str, Any]] = []
+    for index, entry in enumerate(raw):
+        if not isinstance(entry, dict):
+            _fail(f"invalid_evidence_{index}")
+        _reject_unknown_keys(entry, _ALLOWED_EVIDENCE_KEYS, "unsupported_evidence_field")
+        field = _optional_text(
+            entry.get("field"),
+            max_chars=MAX_TEXT_CHARS,
+            code="invalid_evidence_field",
+        )
+        if not field:
+            _fail("invalid_evidence_field")
+        page_raw = entry.get("page")
+        page = (
+            None
+            if page_raw is None
+            else _optional_positive_integer(page_raw, code="invalid_evidence_page")
+        )
+        snippet = _optional_text(
+            entry.get("snippet"),
+            max_chars=MAX_EVIDENCE_SNIPPET_CHARS,
+            code="invalid_evidence_snippet",
+        )
+        confidence_raw = entry.get("confidence")
+        confidence: int | float | None = None
+        if confidence_raw is not None:
+            if (
+                isinstance(confidence_raw, bool)
+                or not isinstance(confidence_raw, (int, float))
+                or not math.isfinite(confidence_raw)
+                or confidence_raw < 0
+                or confidence_raw > 1
+            ):
+                _fail("invalid_evidence_confidence")
+            confidence = confidence_raw
+        entries.append(
+            {"field": field, "page": page, "snippet": snippet, "confidence": confidence}
+        )
+    return entries
+
+
+def _normalize_warnings(raw: Any) -> list[str]:
+    if raw is None:
+        return []
+    if not isinstance(raw, list):
+        _fail("invalid_warnings")
+    if len(raw) > MAX_WARNINGS:
+        _fail("too_many_warnings")
+    normalized: list[str] = []
+    for entry in raw:
+        text = _optional_text(entry, max_chars=MAX_TEXT_CHARS, code="invalid_warning")
+        if not text:
+            _fail("invalid_warning")
+        normalized.append(text)
+    return normalized
 
 
 def normalize_model_output(raw: Any) -> dict[str, Any]:
     """Validate untrusted model output as extraction evidence only.
 
-    Mirrors the model-independent ``quote-extraction.js`` boundary: bounded
+    Behavioral parity with the model-independent browser boundary
+    ``reference/business-66-padiem-quote-v1/quote-extraction.js``: bounded
     layout facts (extract/normalize/infer) with missing values kept as
-    ``UNKNOWN``. Computed totals/tax/validity projections are rejected so
-    QuoteCore stays the calculation authority. Never raises for reviewable
-    input; returns a bounded ``ok`` envelope instead.
+    ``None`` (JS ``null``), never fabricated. One deliberate hardening over
+    the JS: unknown keys fail closed here instead of being silently ignored.
+    Computed totals/tax/validity projections are rejected so QuoteCore stays
+    the calculation authority. Never raises for reviewable input; returns a
+    bounded ``ok`` envelope instead. The B66 ``UNKNOWN`` sentinel is applied
+    at the review/candidate projection, not inside this JS-shaped result.
     """
     try:
         if not isinstance(raw, dict):
             raise B66ExtractionRoutingError("invalid_extraction")
         if _contains_forbidden_key(raw):
             raise B66ExtractionRoutingError("computed_totals_forbidden")
-        unknown_top = set(raw) - _ALLOWED_TOP_KEYS
-        if unknown_top:
-            raise B66ExtractionRoutingError("unsupported_extraction_field")
+        _reject_unknown_keys(raw, _ALLOWED_TOP_KEYS, "unsupported_extraction_field")
 
-        source = raw.get("source") if isinstance(raw.get("source"), dict) else {}
-        kind = source.get("kind")
-        if kind not in _SOURCE_KINDS:
-            raise B66ExtractionRoutingError("unsupported_source_kind")
-
-        sender = raw.get("sender") if isinstance(raw.get("sender"), dict) else {}
-        recipient = (
-            raw.get("recipient") if isinstance(raw.get("recipient"), dict) else {}
+        source_raw = raw.get("source")
+        if not isinstance(source_raw, dict):
+            raise B66ExtractionRoutingError("invalid_source")
+        _reject_unknown_keys(source_raw, _ALLOWED_SOURCE_KEYS, "unsupported_source_field")
+        kind = _optional_text(
+            source_raw.get("kind"),
+            max_chars=MAX_SOURCE_KIND_CHARS,
+            code="invalid_source_kind",
         )
-        quote = raw.get("quote") if isinstance(raw.get("quote"), dict) else {}
-        tax = raw.get("tax") if isinstance(raw.get("tax"), dict) else {}
+        if not kind or kind not in _SOURCE_KINDS:
+            raise B66ExtractionRoutingError("unsupported_source_kind")
+        filename = _optional_text(
+            source_raw.get("filename"),
+            max_chars=MAX_FILENAME_CHARS,
+            code="invalid_source_filename",
+        )
 
-        items_raw = raw.get("items", [])
-        if items_raw is None:
-            items_raw = []
-        if not isinstance(items_raw, list) or len(items_raw) > MAX_ITEMS:
-            raise B66ExtractionRoutingError("invalid_items")
+        sender = _normalize_party(raw.get("sender"), SENDER_FIELDS, "sender")
+        recipient = _normalize_party(raw.get("recipient"), RECIPIENT_FIELDS, "recipient")
 
-        items: list[dict[str, str]] = []
-        for entry in items_raw:
-            if not isinstance(entry, dict):
-                raise B66ExtractionRoutingError("invalid_items")
-            unknown_item = set(entry) - {"description", "name", "quantity", "qty",
-                                         "unit_price", "unitPrice", "amount",
-                                         "amount_source"}
-            if unknown_item:
-                raise B66ExtractionRoutingError("unsupported_extraction_field")
-            description = entry.get("description", entry.get("name"))
-            quantity = entry.get("quantity", entry.get("qty"))
-            unit_price = entry.get("unit_price", entry.get("unitPrice"))
-            amount_source = entry.get("amount", entry.get("amount_source"))
-            items.append(
-                {
-                    "description": _optional_text(
-                        description, max_chars=MAX_TEXT_CHARS
-                    ),
-                    "quantity": _optional_money_source(quantity),
-                    "unit_price": _optional_money_source(unit_price),
-                    "amount_source": _optional_money_source(amount_source),
-                }
-            )
-
-        tax_mode = tax.get("mode")
-        if tax_mode is None or (isinstance(tax_mode, str) and not tax_mode.strip()):
-            tax_mode = UNKNOWN
-        elif tax_mode not in ("EXCLUSIVE", "INCLUSIVE", "EXEMPT"):
-            raise B66ExtractionRoutingError("invalid_tax_mode")
-
-        extraction = {
-            "source_kind": kind,
-            "quote_number": _optional_text(
-                quote.get("quote_number", quote.get("quoteNo")),
+        quote_raw = raw.get("quote")
+        if quote_raw is None:
+            quote_raw = {}
+        if not isinstance(quote_raw, dict):
+            raise B66ExtractionRoutingError("invalid_quote")
+        _reject_unknown_keys(quote_raw, _ALLOWED_QUOTE_KEYS, "unsupported_quote_field")
+        quote = {
+            "quoteNo": _optional_text(
+                quote_raw.get("quoteNo"),
                 max_chars=MAX_TEXT_CHARS,
+                code="invalid_quote_number",
             ),
-            "quote_date": _optional_text(
-                quote.get("quote_date", quote.get("issueDate")),
-                max_chars=10,
+            "issueDate": _optional_iso_date(quote_raw.get("issueDate")),
+            "validDays": _optional_positive_integer(
+                quote_raw.get("validDays"), code="invalid_valid_days"
             ),
-            "sender_company": _optional_text(
-                sender.get("company", sender.get("sender")),
-                max_chars=MAX_TEXT_CHARS,
-            ),
-            "recipient_company": _optional_text(
-                recipient.get("company", recipient.get("recipient")),
-                max_chars=MAX_TEXT_CHARS,
-            ),
-            "items": items,
-            "supply_amount_source": _optional_money_source(
-                raw.get("supply_amount_source", quote.get("supply_amount_source"))
-                if isinstance(raw.get("supply_amount_source"), str)
-                or isinstance(raw.get("supply_amount_source"), (int, float))
-                or raw.get("supply_amount_source") is None
-                else "##invalid##"
-            ),
-            "tax_mode": tax_mode,
-            "memo": _optional_text(raw.get("memo"), max_chars=MAX_MEMO_CHARS),
         }
 
-        unknowns = sorted(
-            key for key, value in extraction.items()
-            if value == UNKNOWN
-        )
-        if all(item["description"] == UNKNOWN for item in items) and items:
+        warnings = _normalize_warnings(raw.get("warnings"))
+
+        tax_raw = raw.get("tax")
+        tax_mode: str | None = None
+        if tax_raw is not None:
+            if not isinstance(tax_raw, dict):
+                raise B66ExtractionRoutingError("invalid_tax")
+            _reject_unknown_keys(tax_raw, _ALLOWED_TAX_KEYS, "unsupported_tax_field")
+            mode = tax_raw.get("mode")
+            if mode is not None and mode != "":
+                if not isinstance(mode, str):
+                    raise B66ExtractionRoutingError("invalid_tax_mode")
+                if mode in TAX_MODES:
+                    tax_mode = mode
+                else:
+                    warnings = [*warnings, "unknown_tax_mode"]
+
+        extraction = {
+            "source": {"kind": kind, "filename": filename},
+            "sender": sender,
+            "recipient": recipient,
+            "quote": quote,
+            "items": _normalize_items(raw.get("items")),
+            "tax": {"mode": tax_mode},
+            "memo": _optional_text(
+                raw.get("memo"), max_chars=MAX_MEMO_CHARS, code="invalid_memo"
+            ),
+            "evidence": _normalize_evidence(raw.get("evidence")),
+            "warnings": warnings,
+        }
+
+        unknowns: list[str] = []
+        for field_name, value in sender.items():
+            if value is None:
+                unknowns.append(f"sender.{field_name}")
+        for field_name, value in recipient.items():
+            if value is None:
+                unknowns.append(f"recipient.{field_name}")
+        for field_name, value in quote.items():
+            if value is None:
+                unknowns.append(f"quote.{field_name}")
+        if tax_mode is None:
+            unknowns.append("tax.mode")
+        if extraction["memo"] is None:
+            unknowns.append("memo")
+        if not extraction["items"]:
             unknowns.append("items")
 
         return {
             "ok": True,
             "extraction": extraction,
-            "unknowns": unknowns,
-            "warnings": [],
+            "unknowns": sorted(unknowns),
             "quotecore_authority": QUOTECORE_CALCULATION_AUTHORITY,
         }
     except B66ExtractionRoutingError as exc:
         return {"ok": False, "code": exc.code}
+
+
+def _unknown_or(value: Any) -> Any:
+    return UNKNOWN if value is None else value
 
 
 def project_to_quote_draft_candidate(
@@ -496,8 +678,11 @@ def project_to_quote_draft_candidate(
 ) -> dict[str, Any]:
     """Project validated extraction to a QuoteDraft candidate boundary.
 
-    The candidate carries source evidence only. Totals/VAT/validity math is
-    never derived here; downstream QuoteCore owns every computed amount.
+    Missing (``None``) display facts become the explicit ``UNKNOWN`` sentinel
+    so absent values stay visible instead of being fabricated. Provenance and
+    review material (evidence/warnings) pass through untouched for the
+    approval UI. The candidate carries source evidence only: totals/VAT math
+    is never derived here; downstream QuoteCore owns every computed amount.
     """
     if not isinstance(normalized, dict) or not normalized.get("ok"):
         raise B66ExtractionRoutingError("invalid_extraction")
@@ -506,20 +691,30 @@ def project_to_quote_draft_candidate(
         raise B66ExtractionRoutingError("invalid_extraction")
     if _contains_forbidden_key(extraction):
         raise B66ExtractionRoutingError("computed_totals_forbidden")
+    source = extraction.get("source") or {}
+    quote = extraction.get("quote") or {}
+    sender = extraction.get("sender") or {}
+    recipient = extraction.get("recipient") or {}
+    tax = extraction.get("tax") or {}
     candidate = {
-        "source_kind": extraction.get("source_kind", UNKNOWN),
-        "quote_number": extraction.get("quote_number", UNKNOWN),
-        "quote_date": extraction.get("quote_date", UNKNOWN),
-        "sender_company": extraction.get("sender_company", UNKNOWN),
-        "recipient_company": extraction.get("recipient_company", UNKNOWN),
-        "items": extraction.get("items", []),
-        "memo": extraction.get("memo", UNKNOWN),
+        "source_kind": source.get("kind", UNKNOWN),
+        "filename": _unknown_or(source.get("filename")),
+        "quote_number": _unknown_or(quote.get("quoteNo")),
+        "quote_date": _unknown_or(quote.get("issueDate")),
+        "valid_days": _unknown_or(quote.get("validDays")),
+        "sender": {key: _unknown_or(value) for key, value in sender.items()},
+        "recipient": {key: _unknown_or(value) for key, value in recipient.items()},
+        "items": [dict(item) for item in (extraction.get("items") or [])],
+        "tax_mode": _unknown_or(tax.get("mode")),
+        "memo": _unknown_or(extraction.get("memo")),
         "unknowns": list(normalized.get("unknowns", [])),
+        "review": {
+            "evidence": [dict(entry) for entry in (extraction.get("evidence") or [])],
+            "warnings": list(extraction.get("warnings") or []),
+        },
         "derived_by": "quote-core-pending",
     }
-    if "totals" in candidate or "vat" in candidate and isinstance(
-        candidate.get("vat"), (int, float)
-    ):
+    if "totals" in candidate:
         raise B66ExtractionRoutingError("computed_totals_forbidden")
     return candidate
 

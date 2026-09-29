@@ -249,23 +249,41 @@ class B66GovernedRouteTests(unittest.TestCase):
     def test_model_output_validation_and_unknown_stays_unknown(self) -> None:
         valid = normalize_model_output(
             {
-                "source": {"kind": "image"},
+                "source": {"kind": "image", "filename": "f02.png"},
                 "sender": {"company": "주식회사 테스트상사"},
                 "recipient": {"company": "주식회사 예시테크"},
-                "quote": {"quoteNo": "Q-2026-3002", "issueDate": "2026-03-03"},
+                "quote": {
+                    "quoteNo": "Q-2026-3002",
+                    "issueDate": "2026-03-03",
+                    "validDays": 30,
+                },
                 "items": [
                     {"name": "스테인리스 배관 40x40", "qty": "12", "unitPrice": "9,800"}
                 ],
                 "tax": {"mode": "EXCLUSIVE"},
                 "memo": "납기 협의",
-                "evidence": [],
+                "evidence": [
+                    {
+                        "field": "quote.quoteNo",
+                        "page": 1,
+                        "snippet": "Q-2026-3002",
+                        "confidence": 0.9,
+                    }
+                ],
                 "warnings": [],
             }
         )
-        self.assertTrue(valid["ok"])
-        self.assertEqual(valid["extraction"]["quote_number"], "Q-2026-3002")
+        self.assertTrue(valid["ok"], valid)
+        extraction = valid["extraction"]
+        self.assertEqual(extraction["quote"]["quoteNo"], "Q-2026-3002")
+        self.assertEqual(extraction["quote"]["issueDate"], "2026-03-03")
+        self.assertEqual(extraction["quote"]["validDays"], 30)
+        self.assertEqual(extraction["items"][0]["qty"], 12)
+        self.assertEqual(extraction["items"][0]["unitPrice"], 9800)
+        self.assertEqual(len(extraction["evidence"]), 1)
+        self.assertEqual(extraction["evidence"][0]["field"], "quote.quoteNo")
 
-        # F09 hallucination trap: absent facts must not be fabricated.
+        # F09 hallucination trap: absent facts stay None, never fabricated.
         missing = normalize_model_output(
             {
                 "source": {"kind": "native_document"},
@@ -279,11 +297,212 @@ class B66GovernedRouteTests(unittest.TestCase):
                 "warnings": [],
             }
         )
-        self.assertTrue(missing["ok"])
-        self.assertEqual(missing["extraction"]["quote_number"], UNKNOWN)
-        self.assertEqual(missing["extraction"]["quote_date"], UNKNOWN)
-        self.assertEqual(missing["extraction"]["memo"], UNKNOWN)
-        self.assertIn("quote_number", missing["unknowns"])
+        self.assertTrue(missing["ok"], missing)
+        self.assertIsNone(missing["extraction"]["quote"]["quoteNo"])
+        self.assertIsNone(missing["extraction"]["quote"]["issueDate"])
+        self.assertIsNone(missing["extraction"]["memo"])
+        self.assertIn("quote.quoteNo", missing["unknowns"])
+        self.assertIn("quote.issueDate", missing["unknowns"])
+        self.assertIn("memo", missing["unknowns"])
+        self.assertIn("items", missing["unknowns"])
+
+    def test_malformed_nested_objects_fail_closed(self) -> None:
+        base = {
+            "source": {"kind": "image"},
+            "sender": {"company": "x"},
+            "recipient": {"company": "y"},
+            "quote": {"quoteNo": "Q-1"},
+            "items": [],
+            "tax": {"mode": "EXCLUSIVE"},
+            "memo": None,
+            "evidence": [],
+            "warnings": [],
+        }
+
+        def check(overrides: dict, code: str) -> None:
+            payload = dict(base)
+            payload.update(overrides)
+            result = normalize_model_output(payload)
+            self.assertFalse(result["ok"], (overrides, result))
+            self.assertEqual(result["code"], code, (overrides, result))
+
+        check({"sender": "주식회사 테스트상사"}, "invalid_sender")
+        check({"recipient": ["y"]}, "invalid_recipient")
+        check({"quote": [1]}, "invalid_quote")
+        check({"tax": "EXCLUSIVE"}, "invalid_tax")
+        check({"items": {"name": "x"}}, "invalid_items")
+        check({"items": ["x"]}, "invalid_item_0")
+        check({"items": [{"name": "x", "qty": "12", "unitPrice": "100", "extra": 1}]},
+              "unsupported_item_field")
+        check({"evidence": ["x"]}, "invalid_evidence_0")
+        check({"warnings": "납기 협의"}, "invalid_warnings")
+        check({"warnings": ["ok", 7]}, "invalid_warning")
+        check({"sender": {"company": "x", "ceo": "y"}}, "unsupported_sender_field")
+        check({"quote": {"quoteNo": "Q-1", "total": "9"}}, "unsupported_quote_field")
+        check({"mystery": 1}, "unsupported_extraction_field")
+
+    def test_issue_dates_require_iso_and_real_calendar_dates(self) -> None:
+        def quote_with(date_value):
+            return {
+                "source": {"kind": "image"},
+                "sender": {},
+                "recipient": {},
+                "quote": {"issueDate": date_value},
+                "items": [],
+                "tax": {},
+                "memo": None,
+                "evidence": [],
+                "warnings": [],
+            }
+
+        for bad in ["2026-13-01", "2026-02-30", "2026-3-3", "03/03/2026",
+                    "2026-03-03T00:00:00", "어제", 20260303]:
+            result = normalize_model_output(quote_with(bad))
+            self.assertFalse(result["ok"], bad)
+            self.assertEqual(result["code"], "invalid_issue_date", bad)
+
+        for good in ["2026-03-03", "2024-02-29"]:
+            result = normalize_model_output(quote_with(good))
+            self.assertTrue(result["ok"], good)
+            self.assertEqual(result["extraction"]["quote"]["issueDate"], good)
+
+    def test_valid_days_bounded_positive_integers(self) -> None:
+        def quote_with(days_value):
+            return {
+                "source": {"kind": "image"},
+                "sender": {},
+                "recipient": {},
+                "quote": {"validDays": days_value},
+                "items": [],
+                "tax": {},
+                "memo": None,
+                "evidence": [],
+                "warnings": [],
+            }
+
+        result = normalize_model_output(quote_with(30))
+        self.assertTrue(result["ok"], result)
+        self.assertEqual(result["extraction"]["quote"]["validDays"], 30)
+
+        for bad in [0, -3, 1.5, "abc", "30 ", True]:
+            result = normalize_model_output(quote_with(bad))
+            self.assertFalse(result["ok"], repr(bad))
+            self.assertEqual(result["code"], "invalid_valid_days", repr(bad))
+
+    def test_evidence_validated_and_preserved(self) -> None:
+        def with_evidence(evidence_value):
+            return {
+                "source": {"kind": "image"},
+                "sender": {},
+                "recipient": {},
+                "quote": {},
+                "items": [],
+                "tax": {},
+                "memo": None,
+                "evidence": evidence_value,
+                "warnings": [],
+            }
+
+        good = with_evidence(
+            [{"field": "quote.quoteNo", "page": 2,
+              "snippet": "Q-2026-3002", "confidence": 1}]
+        )
+        result = normalize_model_output(good)
+        self.assertTrue(result["ok"], result)
+        self.assertEqual(result["extraction"]["evidence"], good["evidence"])
+
+        minimal = with_evidence([{"field": "memo"}])
+        result = normalize_model_output(minimal)
+        self.assertTrue(result["ok"], result)
+        self.assertEqual(
+            result["extraction"]["evidence"],
+            [{"field": "memo", "page": None, "snippet": None, "confidence": None}],
+        )
+
+        too_many = with_evidence([{"field": f"f{i}"} for i in range(201)])
+        result = normalize_model_output(too_many)
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["code"], "too_much_evidence")
+
+        for evidence_value, code in [
+            ([{"page": 1}], "invalid_evidence_field"),
+            ([{"field": "x", "confidence": 1.5}], "invalid_evidence_confidence"),
+            ([{"field": "x", "confidence": -0.1}], "invalid_evidence_confidence"),
+            ([{"field": "x", "page": 0}], "invalid_evidence_page"),
+            ([{"field": "x", "detail": "y"}], "unsupported_evidence_field"),
+        ]:
+            result = normalize_model_output(with_evidence(evidence_value))
+            self.assertFalse(result["ok"], (evidence_value, result))
+            self.assertEqual(result["code"], code, (evidence_value, result))
+
+    def test_warnings_validated_and_preserved(self) -> None:
+        def with_warnings(warnings_value):
+            return {
+                "source": {"kind": "image"},
+                "sender": {},
+                "recipient": {},
+                "quote": {},
+                "items": [],
+                "tax": {},
+                "memo": None,
+                "evidence": [],
+                "warnings": warnings_value,
+            }
+
+        result = normalize_model_output(with_warnings(["낮은 해상도", "회전됨"]))
+        self.assertTrue(result["ok"], result)
+        self.assertEqual(
+            result["extraction"]["warnings"], ["낮은 해상도", "회전됨"]
+        )
+
+        result = normalize_model_output(with_warnings(["w"] * 51))
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["code"], "too_many_warnings")
+
+        # Unknown tax modes degrade to a review warning, mirroring the JS.
+        taxed = with_warnings([])
+        taxed["tax"] = {"mode": "WEIRD"}
+        result = normalize_model_output(taxed)
+        self.assertTrue(result["ok"], result)
+        self.assertIsNone(result["extraction"]["tax"]["mode"])
+        self.assertEqual(result["extraction"]["warnings"], ["unknown_tax_mode"])
+
+    def test_candidate_preserves_evidence_warnings_and_unknowns(self) -> None:
+        normalized = normalize_model_output(
+            {
+                "source": {"kind": "image", "filename": "f02.png"},
+                "sender": {"company": "주식회사 테스트상사"},
+                "recipient": {},
+                "quote": {"quoteNo": "Q-2026-3002", "validDays": 30},
+                "items": [{"name": "품목", "qty": 2, "unitPrice": 1000}],
+                "tax": {"mode": "EXCLUSIVE"},
+                "memo": None,
+                "evidence": [{"field": "quote.quoteNo", "snippet": "Q-2026-3002"}],
+                "warnings": ["낮은 해상도"],
+            }
+        )
+        self.assertTrue(normalized["ok"], normalized)
+        candidate = project_to_quote_draft_candidate(normalized)
+        self.assertEqual(candidate["quote_number"], "Q-2026-3002")
+        self.assertEqual(candidate["quote_date"], UNKNOWN)
+        self.assertEqual(candidate["valid_days"], 30)
+        self.assertEqual(candidate["sender"]["company"], "주식회사 테스트상사")
+        self.assertEqual(candidate["recipient"]["company"], UNKNOWN)
+        self.assertEqual(
+            candidate["review"]["evidence"],
+            [
+                {
+                    "field": "quote.quoteNo",
+                    "page": None,
+                    "snippet": "Q-2026-3002",
+                    "confidence": None,
+                }
+            ],
+        )
+        self.assertEqual(candidate["review"]["warnings"], ["낮은 해상도"])
+        self.assertIn("quote.issueDate", candidate["unknowns"])
+        self.assertIn("memo", candidate["unknowns"])
+        self.assertNotIn("totals", candidate)
 
     def test_quotecore_calculation_authority(self) -> None:
         forged = normalize_model_output(
