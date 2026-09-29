@@ -15,13 +15,14 @@
   <script src="quote-skill-store.js" defer></script>
   <script src="quote-skill-candidate.js" defer></script>
   <script src="quote-skill-registration.js" defer></script>
-  <script src="quote-template-registration.js" defer></script>
-  <script src="quote-registration-session.js" defer></script>
   <script src="quote-template-selection.js" defer></script>
   <script src="quote-template-ui.js" defer></script>
   <script src="quote-template-candidate.js" defer></script>
   <script src="quote-template-cloner.js" defer></script>
+  <script src="quote-template-registration.js" defer></script>
+  <script src="quote-registration-session.js" defer></script>
   <script src="file-intake.js" defer></script>
+  <script src="quote-skill-ui.js" defer></script>
   <script src="app.js" defer></script>
   <script src="easy-mode.js" defer></script>
 </head>
@@ -213,40 +214,73 @@
           </div>
         </div>
 
-        <div class="section template-section" id="templateSection">
-          <h2>5. 견적서 양식</h2>
+        <div class="section skill-section" id="skillSection">
+          <h2>5. 내 견적서</h2>
           <div class="template-picker">
-            <label for="templateSelect">이 견적에 사용할 양식
-              <select id="templateSelect" aria-describedby="templateStatus"></select>
+            <label for="skillSelect">현재 사용 중인 내 견적서
+              <select id="skillSelect" aria-describedby="skillStatus"></select>
             </label>
-            <button class="btn soft" id="templateManageToggle" type="button" aria-expanded="false" aria-controls="templateManagePanel">양식 관리</button>
           </div>
-          <p class="template-status" id="templateStatus" role="status" aria-live="polite"></p>
-          <div class="template-manage" id="templateManagePanel" hidden>
-            <div class="template-list" id="templateList" role="list" aria-label="저장한 견적서 양식"></div>
-            <div class="template-manage-actions">
-              <button class="btn" id="templateCreate" type="button">새 양식 만들기</button>
-              <button class="btn soft" id="templateClone" type="button">견적서 양식 본뜨기</button>
-            </div>
-            <p class="template-manage-note">새 양식은 승인을 거친 뒤에 이 견적에 적용할 수 있습니다.</p>
-            <input
-              id="templateCloneFile"
-              type="file"
-              hidden
-              accept=".pdf,.docx,.pptx,.xlsx,.hwpx,.jpg,.jpeg,.png,.webp,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/hwp+zip,image/jpeg,image/png,image/webp"
-              aria-label="본뜰 견적서 파일 선택"
-            >
+          <p class="template-status" id="skillStatus" role="status" aria-live="polite"></p>
+          <p class="template-manage-note" id="skillEmptyState" hidden>아직 등록한 내 견적서가 없습니다. 기본 견적서로 바로 작성하거나, 기존에 사용하던 견적서를 등록할 수 있습니다.</p>
+          <div class="button-row">
+            <button class="btn primary" id="skillRegister" type="button">내가 쓰던 견적서 등록</button>
+            <button class="btn" id="skillWrite" type="button">이 견적서로 작성</button>
+            <button class="btn soft" id="skillManageToggle" type="button" aria-expanded="false" aria-controls="skillManagePanel">내 견적서 관리</button>
           </div>
-          <div class="template-cloner" id="templateClonerPanel" hidden>
-            <h3>견적서 양식 본뜨기</h3>
-            <p class="template-cloner-status" id="templateClonerStatus" role="status" aria-live="polite"></p>
-            <div class="template-review" id="templateReview" hidden></div>
+          <div class="template-manage" id="skillManagePanel" hidden>
+            <div class="template-list" id="skillList" role="list" aria-label="저장한 내 견적서"></div>
+          </div>
+          <div class="skill-wizard" id="skillWizardPanel" hidden>
+            <h3 id="skillWizardTitle" tabindex="-1">내가 쓰던 견적서 등록</h3>
+            <p class="template-cloner-status" id="skillWizardStatus" role="status" aria-live="polite"></p>
+            <div class="skill-wizard-body" id="skillWizardBody"></div>
             <div class="template-cloner-actions">
-              <button class="btn primary" id="templateApprove" type="button" hidden>승인하고 저장</button>
-              <button class="btn soft" id="templateReviewCancel" type="button" hidden>본뜨기 취소</button>
+              <button class="btn soft" id="skillWizardCancel" type="button">등록 취소</button>
             </div>
-            <p class="template-manage-note">파일 선택과 사전 검증은 이 브라우저 안에서 끝납니다. 업로드·AI 분석은 아직 연결되지 않았습니다.</p>
           </div>
+          <input
+            id="skillRegisterFile"
+            type="file"
+            hidden
+            accept=".pdf,.docx,.pptx,.xlsx,.hwpx,.jpg,.jpeg,.png,.webp,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/hwp+zip,image/jpeg,image/png,image/webp"
+            aria-label="등록할 견적서 파일 선택"
+          >
+          <details class="advanced-template">
+            <summary>고급: 기존 양식 직접 관리</summary>
+            <div class="template-picker">
+              <label for="templateSelect">이 견적에 사용할 양식
+                <select id="templateSelect" aria-describedby="templateStatus"></select>
+              </label>
+              <button class="btn soft" id="templateManageToggle" type="button" aria-expanded="false" aria-controls="templateManagePanel">양식 관리</button>
+            </div>
+            <p class="template-status" id="templateStatus" role="status" aria-live="polite"></p>
+            <div class="template-manage" id="templateManagePanel" hidden>
+              <div class="template-list" id="templateList" role="list" aria-label="저장한 견적서 양식"></div>
+              <div class="template-manage-actions">
+                <button class="btn" id="templateCreate" type="button">새 양식 만들기</button>
+                <button class="btn soft" id="templateClone" type="button">견적서 양식 본뜨기</button>
+              </div>
+              <p class="template-manage-note">새 양식은 승인을 거친 뒤에 이 견적에 적용할 수 있습니다.</p>
+              <input
+                id="templateCloneFile"
+                type="file"
+                hidden
+                accept=".pdf,.docx,.pptx,.xlsx,.hwpx,.jpg,.jpeg,.png,.webp,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/hwp+zip,image/jpeg,image/png,image/webp"
+                aria-label="본뜰 견적서 파일 선택"
+              >
+            </div>
+            <div class="template-cloner" id="templateClonerPanel" hidden>
+              <h3>견적서 양식 본뜨기</h3>
+              <p class="template-cloner-status" id="templateClonerStatus" role="status" aria-live="polite"></p>
+              <div class="template-review" id="templateReview" hidden></div>
+              <div class="template-cloner-actions">
+                <button class="btn primary" id="templateApprove" type="button" hidden>승인하고 저장</button>
+                <button class="btn soft" id="templateReviewCancel" type="button" hidden>본뜨기 취소</button>
+              </div>
+              <p class="template-manage-note">파일 선택과 사전 검증은 이 브라우저 안에서 끝납니다. 업로드·AI 분석은 아직 연결되지 않았습니다.</p>
+            </div>
+          </details>
         </div>
       </section>
 
@@ -254,6 +288,7 @@
         <div class="preview-toolbar">
           <strong>견적서 미리보기</strong>
           <span style="font-size:11px;color:#667085">A4 PDF 출력용</span>
+          <span id="skillPreviewBanner" hidden style="font-size:11px;color:#b54708">미리보기: 승인 전 모양 (저장되지 않음)</span>
         </div>
         <article class="quote-paper" id="quotePaper">
           <div class="quote-title">
