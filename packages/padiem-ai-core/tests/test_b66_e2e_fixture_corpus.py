@@ -36,6 +36,21 @@ GENERATOR_READY = all(
     importlib.util.find_spec(name) is not None for name in GENERATOR_DEPENDENCIES
 )
 
+# Parsing the committed corpus needs only the document readers. Both workflows
+# that run this suite install different dependency sets, so the parse and
+# generation checks skip explicitly instead of failing where a reader is
+# absent (the manifest-only checks always run).
+PARSE_DEPENDENCIES = ("pypdf", "openpyxl")
+PARSE_READY = all(
+    importlib.util.find_spec(name) is not None for name in PARSE_DEPENDENCIES
+)
+PARSE_SKIP_REASON = "document reader dependencies are unavailable: " + ", ".join(
+    PARSE_DEPENDENCIES
+)
+GENERATOR_SKIP_REASON = "generator dependencies are unavailable: " + ", ".join(
+    GENERATOR_DEPENDENCIES
+)
+
 REQUIRED_FIXTURE_IDS = {
     "F01",
     "F02",
@@ -68,12 +83,7 @@ FAKE_PHONE_NUMBER = "062-000-0000"
 
 
 def _load_generator():
-    if not GENERATOR_READY:
-        pytest.skip(
-            "generator dependencies are unavailable: "
-            + ", ".join(GENERATOR_DEPENDENCIES),
-            allow_module_level=True,
-        )
+    assert GENERATOR_READY, GENERATOR_SKIP_REASON
     spec = importlib.util.spec_from_file_location(
         "b66_e2e_fixture_generator", GENERATOR_PATH
     )
@@ -231,6 +241,7 @@ def test_missing_field_case_keeps_absent_facts_unknown(fixtures: list[dict]) -> 
     }
 
 
+@pytest.mark.skipif(not PARSE_READY, reason=PARSE_SKIP_REASON)
 def test_pdf_fixtures_carry_a_native_text_layer(fixtures: list[dict]) -> None:
     document_normalization = importlib.import_module(
         "padiem_ai_core.document_normalization"
@@ -259,6 +270,7 @@ def test_pdf_fixtures_carry_a_native_text_layer(fixtures: list[dict]) -> None:
                 assert re.search(r"Q-\d{4}-\d{4}", text) is None
 
 
+@pytest.mark.skipif(not PARSE_READY, reason=PARSE_SKIP_REASON)
 def test_docx_and_xlsx_parse_through_the_core_authority(
     fixtures: list[dict],
 ) -> None:
@@ -305,6 +317,7 @@ def test_generator_source_declares_no_network_or_model_dependency() -> None:
         assert forbidden not in source, f"generator references {forbidden}"
 
 
+@pytest.mark.skipif(not GENERATOR_READY, reason=GENERATOR_SKIP_REASON)
 def test_generation_is_deterministic(fixtures: list[dict]) -> None:
     module = _load_generator()
     with tempfile.TemporaryDirectory() as first, tempfile.TemporaryDirectory() as second:
