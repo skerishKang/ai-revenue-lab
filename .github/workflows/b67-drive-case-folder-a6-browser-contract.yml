@@ -35,6 +35,10 @@ jobs:
           grep -Fq 'ALLOWED_CDP_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})' "${script}"
           grep -Fq 'DEFAULT_LIVE_EXECUTION=BLOCKED' "${script}"
           grep -Fq 'D1_READBACK=NOT_PERFORMED_BY_BROWSER_RUNNER' "${script}"
+          grep -Fq -- '--pause-for-d1-readback' "${script}"
+          grep -Fq 'A6_D1_CHECKPOINT=' "${script}"
+          grep -Fq 'A6_D1_READBACK_READY=YES' "${script}"
+          echo 'D1_CHECKPOINTS=OPTIONAL_LOCAL_ONLY'
           echo 'LIVE_BROWSER_SESSION=0'
           echo 'COOKIE_EXPORT=0'
           echo 'TOKEN_EXPORT=0'
