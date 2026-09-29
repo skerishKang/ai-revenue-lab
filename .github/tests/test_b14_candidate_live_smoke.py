@@ -802,14 +802,14 @@ def test_space_bunny_candidate_reuses_kilo_platform_secret() -> None:
     assert spec_obj.provider_name == "Kilo Gateway / Stealth"
     assert spec_obj.model_id == "kilo/stealth-space-bunny-alpha"
     assert spec_obj.upstream_model == "stealth/space-bunny-alpha"
-    assert spec_obj.credential_binding == "KILO_API_KEY"
-    assert spec_obj.expected_binding == "KILO_API_KEY"
+    assert spec_obj.credential_binding == "PADIEM_KILO_API_KEY"
+    assert spec_obj.expected_binding == "PADIEM_KILO_API_KEY"
 
 
 def test_space_bunny_uses_same_secret_backed_contract_as_other_candidates() -> None:
     spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
-    assert spec_obj.credential_binding == "KILO_API_KEY"
-    assert spec_obj.expected_binding == "KILO_API_KEY"
+    assert spec_obj.credential_binding == "PADIEM_KILO_API_KEY"
+    assert spec_obj.expected_binding == "PADIEM_KILO_API_KEY"
     for cid, candidate in smoke.CANDIDATE_REGISTRY.items():
         assert candidate.credential_binding
         assert candidate.expected_binding
