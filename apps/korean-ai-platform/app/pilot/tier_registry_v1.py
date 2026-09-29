@@ -160,18 +160,34 @@ TIER_REGISTRY: tuple[TierDefinition, ...] = (
         label=TierLabel.PLUS,
         routes=(
             TierRoute(
-                route_id="plus.agnes-3.0-flash.v1",
+                route_id="plus.space-bunny-alpha.v1",
                 status=RouteStatus.EXECUTABLE,
+                model_family="space-bunny-alpha",
+                provider_id="kilo",
+                model_id="kilo/stealth-space-bunny-alpha",
+                upstream_model="stealth/space-bunny-alpha",
+                credential_mode=CredentialMode.ANONYMOUS,
+                evidence=(
+                    "Owner decision #3209 (decision source #3143): Padiem Plus text "
+                    "and image primary is Space Bunny Alpha on the keyless Kilo "
+                    "free lane; app/pilot/kilo_provider.py registration."
+                ),
+            ),
+            TierRoute(
+                route_id="plus.agnes-3.0-flash.v1",
+                status=RouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="agnes-3.0-flash",
                 provider_id="agnes-ai",
                 model_id="agnes-ai/agnes-3.0-flash",
                 upstream_model="agnes-3.0-flash",
                 credential_mode=CredentialMode.PLATFORM_SECRET_BINDING,
                 credential_binding="PADIEM_AGNES_API_KEY",
-                evidence=(
-                    "Owner Plus swap handoff; app/pilot/agnes_provider.py registration; "
-                    "exact 3.0 live measurement is separately blocked by the work order."
+                hold_reason=(
+                    "Superseded as the active Padiem Plus route by owner decision "
+                    "#3209 (Space Bunny Alpha). Retained as historical data only; "
+                    "the Agnes provider registration itself is preserved."
                 ),
+                evidence="Historical Plus route; app/pilot/agnes_provider.py (#2133).",
             ),
             TierRoute(
                 route_id="plus.kilo-laguna-s-2.1-free.v1",

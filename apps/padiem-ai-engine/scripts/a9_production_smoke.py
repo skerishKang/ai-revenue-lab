@@ -47,12 +47,19 @@ import urllib.error
 import urllib.request
 from typing import Any
 
+# #3209: the orchestrate leg pins the canonical platform text primary
+# (single-source declaration in ``padiem_ai_core.model_primary``); the pin
+# stays a module constant — a silent fallback would change what the smoke
+# proves. SenseNova is not the text primary; its provider registration and
+# its own provider tests remain separate.
+from padiem_ai_core.model_primary import TEXT_PRIMARY_MODEL_ID
+
 ENGINE_BASE_URL = os.environ.get("ENGINE_BASE_URL", "https://engine.padiem.net").rstrip("/")
 CALLER_ID = os.environ.get("CALLER_ID", "")
 CALLER_SECRET = os.environ.get("CALLER_SECRET", "")
 GITHUB_RUN_ID = os.environ.get("GITHUB_RUN_ID", "local")
 
-PINNED_MODEL = "sensenova/sensenova-6.8-flash-lite"
+PINNED_MODEL = TEXT_PRIMARY_MODEL_ID
 HEALTH_PATH = "/internal/v1/health"
 ORCHESTRATE_PATH = "/internal/v1/orchestrate"
 REPLAY_PATH = "/internal/v1/idempotency/completed/replay"

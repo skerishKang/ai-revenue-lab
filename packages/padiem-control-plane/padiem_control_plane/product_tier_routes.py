@@ -200,17 +200,37 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
         label=ProductTierLabel.PLUS,
         routes=(
             ProductTierRoute(
-                route_id="plus.agnes-3.0-flash.v1",
+                route_id="plus.space-bunny-alpha.v1",
                 status=ProductRouteStatus.EXECUTABLE,
+                model_family="space-bunny-alpha",
+                provider_id="kilo",
+                model_id="kilo/stealth-space-bunny-alpha",
+                upstream_model="stealth/space-bunny-alpha",
+                credential_mode=ProductCredentialMode.ANONYMOUS,
+                evidence=(
+                    "Owner decision #3209 (decision source #3143): Padiem Plus text "
+                    "and image primary is Space Bunny Alpha on the keyless Kilo "
+                    "free lane; B14 kilo_provider.py registration."
+                ),
+            ),
+            ProductTierRoute(
+                route_id="plus.agnes-3.0-flash.v1",
+                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="agnes-3.0-flash",
                 provider_id="agnes-ai",
                 model_id="agnes-ai/agnes-3.0-flash",
                 upstream_model="agnes-3.0-flash",
                 credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
                 credential_binding="PADIEM_AGNES_API_KEY",
+                hold_reason=(
+                    "Superseded as the active Padiem Plus route by owner decision "
+                    "#3209 (Space Bunny Alpha). Retained as historical data only; "
+                    "the Agnes provider registration itself is preserved and never "
+                    "a silent fallback."
+                ),
                 evidence=(
-                    "Owner Plus swap handoff; B14 Agnes provider registration; exact 3.0 "
-                    "live measurement remains blocked as documented in the work order."
+                    "Historical Plus route; B14 app/pilot/agnes_provider.py "
+                    "registration (#2133) preserved."
                 ),
             ),
             ProductTierRoute(

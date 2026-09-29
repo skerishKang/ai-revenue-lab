@@ -69,7 +69,7 @@ packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py
 Current product mapping on the verified source revision:
 
 ```text
-Padiem Plus = agnes-ai/agnes-3.0-flash        (the only executable product route)
+Padiem Plus = kilo/stealth-space-bunny-alpha  (the only executable product route)
 Padiem Pro  = HOLD / padiem-profile/pro-hold  (owner decision #2601)
 Padiem Max  = HOLD / padiem-profile/max-hold
 

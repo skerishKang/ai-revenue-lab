@@ -75,8 +75,14 @@ S4 D1 row-state mismatch                -> FAIL
 
 ## 5. Provider dependency and outage disposition
 
-The pinned provider for the stream leg is `sensenova/sensenova-6.8-flash-lite` (a module constant, not an
-environment value). It is intentionally **pinned**: a silent fallback would change what the smoke proves.
+The pinned model for the stream leg is the **canonical platform text primary**
+route, declared once in `padiem_ai_core.model_primary` (owner decision #3209:
+Space Bunny Alpha on the Kilo Gateway free lane — `kilo/stealth-space-bunny-alpha`,
+upstream `stealth/space-bunny-alpha`). The smoke reads the pin from that
+module constant, not from an environment value. It is intentionally **pinned**:
+a silent fallback would change what the smoke proves. SenseNova is not the
+text primary; its provider registration and its own provider tests remain
+separate.
 
 ```text
 Provider unavailable  -> A12 records SKIPPED_UPSTREAM

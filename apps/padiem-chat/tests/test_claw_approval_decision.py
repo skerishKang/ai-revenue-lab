@@ -67,7 +67,7 @@ FUTURE_EXPIRES_AT = datetime(2099, 1, 1, tzinfo=timezone.utc)
 FUTURE_EXPIRES = FUTURE_EXPIRES_AT.isoformat()
 AGENT_ID = "b54-padiem-claw"
 APP_ID = "b54-padiem-claw"
-MODEL_ID = "agnes-ai/agnes-3.0-flash"
+MODEL_ID = "kilo/stealth-space-bunny-alpha"
 
 # Every field a caller might try to promote into authority. §3/§8 forbid each one.
 BROWSER_AUTHORITY_FIELDS = (
