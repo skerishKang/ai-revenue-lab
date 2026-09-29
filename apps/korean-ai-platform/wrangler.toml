@@ -15,10 +15,10 @@ binding = "ASSETS"
 B14_PROVIDER_MODE = "live"
 
 # Owner correction #3209: reuse the existing Kilo credential already held in
-# Cloudflare Secrets Store. Only binding metadata is committed; the value never
+# the account Secrets Store. Only binding metadata is committed; the value never
 # enters source, logs, browser responses, Chat, Claw, or Legal.
 [[secrets_store_secrets]]
-binding = "KILO_API_KEY"
+binding = "PADIEM_KILO_API_KEY"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "KILO_API_KEY"
 
