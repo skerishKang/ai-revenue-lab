@@ -7,7 +7,10 @@ from padiem_control_plane.contracts import ControlPlaneContractError
 from padiem_control_plane.local_agent_broker import MAX_POLL_BATCH, BrokerBindingState, BrokerCommandState
 from padiem_control_plane.local_agent_broker_http import LocalAgentMaterialResolutionRequest
 from padiem_control_plane.local_agent_broker_rpc import LocalAgentBrokerRpcFacade
-from padiem_control_plane.local_agent_broker_state import (\n    StateBackedLocalAgentBrokerAuthority,\n    terminal_command_result_from_snapshot,\n)
+from padiem_control_plane.local_agent_broker_state import (
+    StateBackedLocalAgentBrokerAuthority,
+    terminal_command_result_from_snapshot,
+)
 from padiem_control_plane.local_agent_broker_state_wire import SerializedLocalAgentBrokerStatePort
 
 from local_agent_broker_material_store import CloudflareDurableObjectCommandMaterialStore, closed_mapping
