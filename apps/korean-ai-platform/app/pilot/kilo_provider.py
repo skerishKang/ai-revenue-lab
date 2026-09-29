@@ -67,8 +67,9 @@ KILO_LAGUNA_UPSTREAM_MODEL = "poolside/laguna-s-2.1:free"
 KILO_SPACE_BUNNY_MODEL_ID = "kilo/stealth-space-bunny-alpha"
 KILO_SPACE_BUNNY_UPSTREAM_MODEL = "stealth/space-bunny-alpha"
 # Date of the owner/CENTRAL evidence that re-confirmed this lane callable on
-# the Kilo keyless free route (#3143 refresh). It is a dated snapshot, not a
-# guarantee of availability.
+# the Kilo free route (#3143 refresh). Authentication now comes from the existing
+# owner-managed KILO_API_KEY binding (#3209); this remains a dated availability
+# snapshot, not a guarantee.
 KILO_SPACE_BUNNY_SOURCE_CHECKED_AT = "2026-09-28"
 
 # Retired lane identifiers kept as retirement metadata only. They are never
