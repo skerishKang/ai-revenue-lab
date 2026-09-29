@@ -16,6 +16,9 @@ const templateSelection = read("quote-template-selection.js");
 const templateUi = read("quote-template-ui.js");
 const candidate = read("quote-template-candidate.js");
 const cloner = read("quote-template-cloner.js");
+const skill = read("quote-skill.js");
+const skillStore = read("quote-skill-store.js");
+const skillCandidate = read("quote-skill-candidate.js");
 const intake = read("file-intake.js");
 const easy = read("easy-mode.js");
 
@@ -36,6 +39,9 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'src="quote-template-ui.js"',
   'src="quote-template-candidate.js"',
   'src="quote-template-cloner.js"',
+  'src="quote-skill.js"',
+  'src="quote-skill-store.js"',
+  'src="quote-skill-candidate.js"',
   'src="file-intake.js"',
   'src="app.js"',
   'src="easy-mode.js"',
@@ -85,7 +91,7 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
 ].forEach((marker) => check(html.includes(marker), `B66_STATIC_CONTRACT missing in index.html: ${marker}`));
 
 /* NEUTRAL_PUBLIC_UI_CONTRACT — 외부 화면/상태에 내부 제품 브랜드를 노출하지 않음 */
-check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + candidate + cloner + intake + easy),
+check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + candidate + cloner + skill + skillStore + skillCandidate + intake + easy),
   "NEUTRAL_PUBLIC_UI_CONTRACT: no Padiem branding in rendered/runtime source");
 check(!html.includes("B66 DEMO"), "NEUTRAL_PUBLIC_UI_CONTRACT: no internal demo label");
 check(html.includes("BETA · 입력 내용은 이 브라우저에만 저장"),
@@ -677,6 +683,27 @@ console.log("DRAFT_RESTORE_CONTRACT=PASS");
 console.log("VAT_EXCLUSIVE_CONTRACT=PASS");
 console.log("VAT_INCLUSIVE_CONTRACT=PASS");
 console.log("VAT_EXEMPT_CONTRACT=PASS");
+/* SAVED_QUOTE_SKILL_COMPILED_REUSE — user-facing Skill wraps the existing deterministic template stack */
+check(skill.includes('CALCULATION_AUTHORITY = "quote-core"') &&
+      skill.includes('RENDERER_CONTRACT = "quote-template-renderer.v1"'),
+  "SAVED_QUOTE_SKILL_AUTHORITY: QuoteCore + existing renderer stay authoritative");
+check(skill.includes("structuredRepeatGenerationModelCalls: 0") &&
+      skill.includes("sourceDocumentReanalysisPerRepeat: 0") &&
+      skill.includes("fullDocumentAiRegenerationPerRepeat: 0") &&
+      skill.includes("quoteCoreRecalculationModelCalls: 0") &&
+      skill.includes("rendererModelCalls: 0"),
+  "SAVED_QUOTE_SKILL_REPEAT_MODEL_CALLS=0");
+check(skill.includes('REQUIRED_VARIABLE_KEYS = ["recipient", "quoteNo", "issueDate", "items"]'),
+  "SAVED_QUOTE_SKILL_SOURCE_CASE_VALUES_NOT_FROZEN: core per-quote fields remain variable");
+check(skillStore.includes('STORAGE_KEY = "quoteBetaSavedSkill.v1"') && !skillStore.includes("localStorage.clear("),
+  "SAVED_QUOTE_SKILL_STORE_BOUNDED=YES");
+check(skillCandidate.includes('CALCULATED_FIELDS = ["lineAmounts", "supplyTotal", "vatAmount", "grandTotal", "validUntil"]'),
+  "SAVED_QUOTE_SKILL_CALCULATED_FIELDS_LOCKED_TO_QUOTECORE=YES");
+check(!/(kilo\/|space-bunny|sensenova|openai|anthropic)/i.test(skill + skillStore + skillCandidate),
+  "SAVED_QUOTE_SKILL_BROWSER_PROVIDER_MODEL_ID=0");
+check(!/FileReader|FormData|indexedDB/i.test(skill + skillStore + skillCandidate),
+  "SAVED_QUOTE_SKILL_RAW_SOURCE_FILE_BROWSER_PERSISTENCE=0");
+
 console.log("VALID_UNTIL_CONTRACT=PASS");
 console.log("ADDRESS_FIELDS_CONTRACT=PASS");
 console.log("PRINT_LAYOUT_CONTRACT=PASS");
