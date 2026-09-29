@@ -92,7 +92,7 @@ def test_executable_routes_are_explicit_secret_bound_and_unretired() -> None:
         assert route.model_id not in RETIRED_PRODUCT_MODEL_IDS
         assert route.evidence
         if tier is ProductTierLabel.PLUS:
-            # #3209: Plus is Space Bunny Alpha on the keyless Kilo free lane.
+            # #3209: Plus is Space Bunny Alpha on the authenticated Kilo free lane.
             assert route.provider_id == "kilo"
             assert route.model_id == "kilo/stealth-space-bunny-alpha"
             assert route.credential_mode is ProductCredentialMode.PLATFORM_SECRET_BINDING
