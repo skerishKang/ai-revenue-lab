@@ -3,20 +3,27 @@
 
 Purpose
 -------
-Produce the synthetic, non-sensitive document corpus that the Business 66
-template-cloner acceptance run (#3186) needs, without any model call, network
-call, or production mutation.
+Produce the synthetic, non-sensitive Korean quotation corpus that the Business
+66 template-cloner acceptance run (#3186) needs, without any model call,
+network call, or production mutation.
 
 Design
 ------
 * Every fixture is produced by this generator; no hand-edited binaries and no
   ``%TEMP%`` benchmark leftovers are used as a source.
-* Korean text is rendered with the repository's own OFL-licensed authoring
-  font (``tests/fixtures/pdf_authoring/``), which the Core pins by SHA-256.
-* PDF authoring goes through ``padiem_ai_core.pdf_authoring`` (ReportLab
-  ``invariant=1``), raster previews through ``padiem_ai_core.pdf_render``
-  (pypdfium2). DOCX/XLSX are written by this module as fixed-metadata OOXML
-  ZIP archives.
+* The native PDF family is authored with ReportLab's built-in Korean CID font
+  (``UnicodeCIDFont("HYSMyeongJo-Medium")``). The repository's embedded OFL
+  authoring font is a deliberate 106-character subset that cannot carry a real
+  Korean quotation, and no font may be downloaded, so the fixture path uses the
+  CID route instead.
+* Raster fixtures are rendered from *those same Korean quotation documents*
+  through ``padiem_ai_core.pdf_render`` (pypdfium2). Each raster fixture has its
+  Korean source PDF committed alongside it, so the "scan came from the Korean
+  source" claim is directly checkable.
+* DOCX/XLSX are written by this module as fixed-metadata OOXML ZIP archives.
+
+Scope note: this generator is fixture tooling. It does not change, and does not
+widen, any product PDF-authoring authority.
 
 Determinism contract
 --------------------
@@ -24,11 +31,12 @@ Each fixture declares ``determinism``:
 
 * ``byte_identical`` — the writer is pure Python and the bytes are expected to
   reproduce exactly on any platform that has the same pinned dependency set.
-* ``normalized`` — the bytes depend on a native rasterizer build, so exact
-  bytes are recorded for integrity but cross-platform reproducibility is
-  asserted through ``normalized_fingerprint`` instead. Nothing here silently
-  allows a drifting SHA-256: the class is explicit, and the fingerprint is
-  defined and tested.
+* ``normalized`` — the raster pixels depend on which CJK font the rasterizer can
+  resolve on the running platform, so exact bytes are recorded for committed
+  integrity and reproducibility is asserted within the generating environment
+  through ``normalized_fingerprint`` (8x8 quantized luminance grid). Nothing
+  here silently allows a drifting SHA-256: the class is explicit, and the
+  fingerprint is defined and tested.
 """
 
 from __future__ import annotations
@@ -41,29 +49,22 @@ from dataclasses import dataclass, field
 from importlib import import_module
 from io import BytesIO
 from pathlib import Path
+from xml.sax.saxutils import escape
 
 CORPUS_ID = "b66-quotation-e2e-v1"
-GENERATOR_VERSION = "1"
+GENERATOR_VERSION = "2"
 MANIFEST_NAME = "manifest.json"
 
 # Fixed ZIP member metadata keeps the OOXML archives byte-identical between
 # runs; the DOS epoch is the value ``zipfile`` itself uses for "no date".
 FIXED_ZIP_DATE = (1980, 1, 1, 0, 0, 0)
 
-# The repository's OFL authoring font is a 106-character subset (see
-# ``tests/fixtures/pdf_authoring/FONT_SOURCE.json``). PDF and raster fixtures
-# therefore use ASCII field labels plus the Korean syllables that subset
-# actually carries. DOCX/XLSX carry unrestricted UTF-8 Korean text.
-SYNTHETIC_MARKER = "SYNTHETIC TEST DATA"
-SYNTHETIC_MARKER_KOREAN = "SYNTHETIC TEST DATA / 실사용 금지"
+SYNTHETIC_MARKER = "SYNTHETIC TEST DATA / 실사용 금지"
 
 SUPPLIER_NAME = "주식회사 테스트상사"
 SUPPLIER_BIZ = "000-00-00000"
 SUPPLIER_ADDRESS = "광주광역시 테스트구 견적로 123"
 SUPPLIER_PHONE = "062-000-0000"
-
-SUPPLIER_NAME_ASCII = "TEST SUPPLIER CO"
-SUPPLIER_ADDRESS_ASCII = "123 TEST STREET, TEST CITY"
 
 RECIPIENTS = (
     "주식회사 예시테크",
@@ -71,33 +72,10 @@ RECIPIENTS = (
     "주식회사 견본물산",
 )
 
-RECIPIENTS_ASCII = (
-    "SAMPLE TECH CO",
-    "SAMPLE INDUSTRY CO",
-    "SAMPLE TRADING CO",
-)
-
-# Field labels used by the PDF/raster fixtures. Every label is composed from
-# the subset's ASCII range so the pinned font can render it.
-PDF_LABELS = {
-    "quote_number": "QUOTE NO",
-    "quote_date": "DATE",
-    "supplier": "SUPPLIER",
-    "recipient": "RECIPIENT",
-    "item": "ITEM",
-    "quantity": "QTY",
-    "unit_price": "PRICE",
-    "amount": "AMOUNT",
-    "supply": "SUPPLY",
-    "vat": "VAT",
-    "total": "TOTAL",
-    "memo": "MEMO",
-    "page": "PAGE",
-    "terms": "TERMS",
-}
-
-# Korean labels used by the DOCX/XLSX fixtures (unrestricted UTF-8).
+# Field labels. The fixture family carries real Korean labels in every format;
+# the manifest asserts these tokens against the extracted document text.
 KOREAN_LABELS = {
+    "title": "견적서",
     "quote_number": "견적번호",
     "quote_date": "견적일자",
     "supplier": "공급자",
@@ -110,10 +88,18 @@ KOREAN_LABELS = {
     "vat": "부가세",
     "total": "총액",
     "memo": "메모",
+    "address": "주소",
+    "business_number": "사업자번호",
+    "phone": "전화",
 }
 
+# ReportLab ships the Adobe-Korea1 CID font *metrics* as pure Python data: the
+# PDF references the font by name and nothing is fetched at build time. This is
+# the documented built-in Korean route, verified in this repository's CI.
+CID_FONT_NAME = "HYSMyeongJo-Medium"
+CID_FONT_SOURCE = "reportlab_builtin_adobe_korea1_cid"
+
 CORPUS_DIR = Path(__file__).resolve().parent
-FONT_PATH = CORPUS_DIR.parent / "pdf_authoring" / "PadiemNotoSansKRAuthoringTest-Regular.ttf"
 
 DEFAULT_COLUMN_ORDER = ("품목", "수량", "단가", "금액")
 VARIANT_COLUMN_ORDER = ("수량", "품목", "금액", "단가")
@@ -134,11 +120,6 @@ class LineItem:
     @property
     def amount(self) -> int:
         return self.quantity * self.unit_price
-
-    def ascii_description(self) -> str:
-        """A description the pinned PDF authoring font can actually render."""
-
-        return _ASCII_ITEM_NAMES.get(self.description, f"ITEM {self.quantity}x{self.unit_price}")
 
 
 @dataclass(frozen=True, slots=True)
@@ -185,31 +166,22 @@ def _default_items() -> tuple[LineItem, ...]:
     )
 
 
-# PDF fixtures render through the pinned 106-character subset font, so their
-# item names need an ASCII-safe twin. The numbers stay identical across
-# formats; only the label language differs.
-_ASCII_ITEM_NAMES = {
-    "스테인리스 배관 40x40": "STAINLESS PIPE 40X40",
-    "알루미늄 브래킷": "ALUMINUM BRACKET",
-    "청결 볼트 M10": "CLEAN BOLT M10",
-}
-
-_ASCII_KINDS = ("PIPE", "VALVE", "FLANGE", "GASKET", "BOLT", "NUT", "WASHER", "HOSE")
-_ASCII_MATERIALS = ("STAINLESS", "ALUMINUM", "BRASS", "CAST IRON")
+_WIDE_KINDS = ("배관", "밸브", "플랜지", "가스켓", "볼트", "너트", "와셔", "호스")
+_WIDE_MATERIALS = ("스테인리스", "알루미늄", "황동", "주철")
 
 
 def _wide_items() -> tuple[LineItem, ...]:
-    """F12 is PDF-only, so its item names are authored ASCII-safe directly."""
+    """F12 needs enough rows to span more than one page."""
 
     items = []
     for index in range(28):
-        kind = _ASCII_KINDS[index % len(_ASCII_KINDS)]
-        material = _ASCII_MATERIALS[index % len(_ASCII_MATERIALS)]
+        kind = _WIDE_KINDS[index % len(_WIDE_KINDS)]
+        material = _WIDE_MATERIALS[index % len(_WIDE_MATERIALS)]
         items.append(
             LineItem(
-                f"{material} {kind} SPEC {index + 1}0MM",
+                f"{material} {kind} 규격 {index + 1}0mm",
                 index + 2,
-                "EA",
+                "개",
                 1_500 + index * 250,
             )
         )
@@ -228,6 +200,7 @@ def _quotations() -> dict[str, Quotation]:
         "F08": Quotation("Q-2026-3008", "2026-03-11", RECIPIENTS[1], _default_items(), "exempt", "면세 항목입니다"),
         "F09": Quotation(None, None, RECIPIENTS[2], (LineItem("청결 볼트 M10", 30, "개", 900),), "unknown", None),
         "F10": Quotation("Q-2026-3010", "2026-03-13", RECIPIENTS[0], _default_items(), "separate", None),
+        "F11": Quotation(None, None, None, (), "unknown", None),
         "F12": Quotation("Q-2026-3012", "2026-03-16", RECIPIENTS[1], _wide_items(), "separate", "납기 협의"),
         "F13": Quotation("Q-2026-3013", "2026-03-17", RECIPIENTS[2], _default_items(), "separate", "납기 협의"),
     }
@@ -239,9 +212,11 @@ FIXED_TERMS = {
     "유효기간": "견적일로부터 30일",
 }
 
+LOGO_TEXT = "PADIEM TEST / SYNTHETIC QUOTE"
+
 
 # --------------------------------------------------------------------------
-# constants shared with every fixture
+# shared fact projections
 # --------------------------------------------------------------------------
 
 
@@ -255,20 +230,9 @@ def synthetic_identity() -> dict[str, str]:
     }
 
 
-def template_only_facts(
-    *, column_order: tuple[str, ...], with_logo: bool, ascii_labels: bool = False
-) -> list[str]:
-    rendered = tuple(
-        {
-            "품목": PDF_LABELS["item"],
-            "수량": PDF_LABELS["quantity"],
-            "단가": PDF_LABELS["unit_price"],
-            "금액": PDF_LABELS["amount"],
-        }.get(column, column)
-        for column in column_order
-    ) if ascii_labels else column_order
+def template_only_facts(*, column_order: tuple[str, ...], with_logo: bool) -> list[str]:
     facts = [
-        "item column order: " + " | ".join(rendered),
+        "item column order: " + " | ".join(column_order),
         "table header row is repeated on every page",
         "grid borders and left alignment for item rows",
         "fixed memo/default terms block placement",
@@ -294,65 +258,149 @@ def variable_content_facts(quotation: Quotation) -> list[str]:
     ]
 
 
-def _load_font_bytes() -> bytes:
-    return FONT_PATH.read_bytes()
-
-
-_FONT_COVERAGE: frozenset[str] | None = None
-
-
-def font_covered_characters() -> frozenset[str]:
-    """Characters the pinned OFL authoring font subset can actually render.
-
-    The font is a deliberate 106-character subset, so PDF/raster authoring must
-    fail loudly instead of silently dropping or substituting glyphs.
-    """
-
-    global _FONT_COVERAGE
-    if _FONT_COVERAGE is None:
-        ttfonts = import_module("reportlab.pdfbase.ttfonts")
-        font = ttfonts.TTFont("b66-coverage-probe", BytesIO(_load_font_bytes()))
-        _FONT_COVERAGE = frozenset(
-            chr(code)
-            for code, glyph in font.face.charToGlyph.items()
-            if glyph
-        )
-    return _FONT_COVERAGE
-
-
-def assert_font_safe(text: str) -> None:
-    """Refuse to author text the pinned font cannot render."""
-
-    missing = sorted(char for char in set(text) if char not in font_covered_characters())
-    if missing:
-        raise ValueError(
-            "PDF authoring text uses characters outside the pinned font subset: "
-            + " ".join(f"U+{ord(char):04X}" for char in missing)
-        )
-
-
 # --------------------------------------------------------------------------
-# PDF authoring
+# Korean PDF authoring (fixture-local, ReportLab CID route)
 # --------------------------------------------------------------------------
 
+_CID_REGISTERED = False
 
-def _table_rows(quotation: Quotation, *, ascii_labels: bool = False) -> tuple[tuple[str, ...], ...]:
-    if ascii_labels:
-        header = tuple(
-            {
-                "품목": PDF_LABELS["item"],
-                "수량": PDF_LABELS["quantity"],
-                "단가": PDF_LABELS["unit_price"],
-                "금액": PDF_LABELS["amount"],
-            }[column]
-            for column in quotation.column_order
+
+def _reportlab() -> dict[str, object]:
+    from reportlab.lib import colors
+    from reportlab.lib.enums import TA_LEFT
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.styles import ParagraphStyle
+    from reportlab.lib.units import mm
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.cidfonts import UnicodeCIDFont
+    from reportlab.platypus import (
+        Paragraph,
+        SimpleDocTemplate,
+        Spacer,
+        Table,
+        TableStyle,
+    )
+
+    return {
+        "A4": A4,
+        "Paragraph": Paragraph,
+        "ParagraphStyle": ParagraphStyle,
+        "SimpleDocTemplate": SimpleDocTemplate,
+        "Spacer": Spacer,
+        "TA_LEFT": TA_LEFT,
+        "Table": Table,
+        "TableStyle": TableStyle,
+        "UnicodeCIDFont": UnicodeCIDFont,
+        "colors": colors,
+        "mm": mm,
+        "pdfmetrics": pdfmetrics,
+    }
+
+
+def _cid_font(reportlab: dict[str, object]) -> str:
+    global _CID_REGISTERED
+    if not _CID_REGISTERED:
+        reportlab["pdfmetrics"].registerFont(reportlab["UnicodeCIDFont"](CID_FONT_NAME))
+        _CID_REGISTERED = True
+    return CID_FONT_NAME
+
+
+def author_korean_pdf(
+    *,
+    heading: str,
+    lines: list[str],
+    rows: tuple[tuple[str, ...], ...] = (),
+    title: str,
+    subject: str,
+    keywords: tuple[str, ...],
+) -> bytes:
+    """Author one deterministic Korean PDF through the ReportLab CID route."""
+
+    reportlab = _reportlab()
+    font = _cid_font(reportlab)
+    heading_style = reportlab["ParagraphStyle"](
+        "B66AuthoringHeading",
+        fontName=font,
+        fontSize=18,
+        leading=24,
+        spaceAfter=8,
+        alignment=reportlab["TA_LEFT"],
+    )
+    body_style = reportlab["ParagraphStyle"](
+        "B66AuthoringBody",
+        fontName=font,
+        fontSize=10,
+        leading=15,
+        spaceAfter=6,
+        alignment=reportlab["TA_LEFT"],
+    )
+    cell_style = reportlab["ParagraphStyle"](
+        "B66AuthoringCell", parent=body_style, fontSize=9, leading=12
+    )
+
+    story: list[object] = [reportlab["Paragraph"](escape(heading), heading_style)]
+    for line in lines:
+        story.append(reportlab["Paragraph"](escape(line), body_style))
+    if rows:
+        column_count = len(rows[0])
+        total_width = 170 * reportlab["mm"]
+        column_width = total_width / column_count
+        table = reportlab["Table"](
+            [
+                [reportlab["Paragraph"](escape(cell), cell_style) for cell in row]
+                for row in rows
+            ],
+            colWidths=(column_width,) * column_count,
+            repeatRows=1,
         )
-    else:
-        header = tuple(quotation.column_order)
-    rows = [header]
+        table.setStyle(
+            reportlab["TableStyle"](
+                [
+                    ("FONTNAME", (0, 0), (-1, -1), font),
+                    ("GRID", (0, 0), (-1, -1), 0.5, reportlab["colors"].black),
+                    (
+                        "BACKGROUND",
+                        (0, 0),
+                        (-1, 0),
+                        reportlab["colors"].HexColor("#eeeeee"),
+                    ),
+                    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                    ("LEFTPADDING", (0, 0), (-1, -1), 4),
+                    ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+                    ("TOPPADDING", (0, 0), (-1, -1), 4),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+                ]
+            )
+        )
+        story.extend((table, reportlab["Spacer"](1, 8)))
+
+    output = BytesIO()
+    document = reportlab["SimpleDocTemplate"](
+        output,
+        pagesize=reportlab["A4"],
+        leftMargin=18 * reportlab["mm"],
+        rightMargin=18 * reportlab["mm"],
+        topMargin=18 * reportlab["mm"],
+        bottomMargin=18 * reportlab["mm"],
+        # ``invariant=1`` pins document identifiers and timestamps, which is what
+        # makes the authored bytes reproducible.
+        invariant=1,
+        title=title,
+        author="Padiem B66 fixture generator",
+        subject=subject,
+        creator="Padiem B66 fixture generator",
+        producer="ReportLab",
+        keywords=" ".join(keywords),
+    )
+    document.build(story)
+    return output.getvalue()
+
+
+def _table_rows(quotation: Quotation) -> tuple[tuple[str, ...], ...]:
+    rows = [tuple(quotation.column_order)]
     for item in quotation.items:
         values = {
-            "품목": item.ascii_description() if ascii_labels else item.description,
+            "품목": item.description,
             "수량": f"{item.quantity}",
             "단가": f"{item.unit_price:,}",
             "금액": f"{item.amount:,}",
@@ -361,123 +409,61 @@ def _table_rows(quotation: Quotation, *, ascii_labels: bool = False) -> tuple[tu
     return tuple(rows)
 
 
-_LOGO_TEXT_BLOCKS = ("PADIEM TEST", "SYNTHETIC QUOTE")
-_LOGO_METADATA = {
-    "title": "B66 synthetic logo fixture",
-    "author": "Padiem B66 fixture generator",
-    "subject": "synthetic placeholder logo",
-    "keywords": ("b66", "synthetic", "logo", "fixture", "3205"),
-}
-
-
-def author_logo_pdf():
-    """Author the synthetic logo card used by fixture F11."""
-
-    pdf_authoring = import_module("padiem_ai_core.pdf_authoring")
-    # Validate the exact literals that go into the document, not copies of them.
-    for value in (
-        *_LOGO_TEXT_BLOCKS,
-        SYNTHETIC_MARKER,
-        _LOGO_METADATA["title"],
-        _LOGO_METADATA["author"],
-        _LOGO_METADATA["subject"],
-        *_LOGO_METADATA["keywords"],
-    ):
-        assert_font_safe(value)
-    document = pdf_authoring.PdfAuthoringDocument(
-        metadata=pdf_authoring.PdfAuthoringMetadata(
-            title=_LOGO_METADATA["title"],
-            author=_LOGO_METADATA["author"],
-            subject=_LOGO_METADATA["subject"],
-            keywords=_LOGO_METADATA["keywords"],
-        ),
-        font=pdf_authoring.PdfAuthoringFont(data=_load_font_bytes()),
-        blocks=(
-            pdf_authoring.PdfHeadingBlock(_LOGO_TEXT_BLOCKS[0]),
-            pdf_authoring.PdfTextBlock(_LOGO_TEXT_BLOCKS[1]),
-            pdf_authoring.PdfTextBlock(SYNTHETIC_MARKER),
-        ),
+def _pdf_lines(quotation: Quotation, *, with_terms: bool = False) -> list[str]:
+    lines: list[str] = [SYNTHETIC_MARKER]
+    lines.append(
+        f"{KOREAN_LABELS['supplier']}: {SUPPLIER_NAME} / "
+        f"{KOREAN_LABELS['business_number']}: {SUPPLIER_BIZ}"
     )
-    return pdf_authoring.author_structured_pdf(document)
-
-
-
-_ASCII_MEMOS = {
-    "납기 협의": "DELIVERY TBD",
-    "결제조건 협의": "PAYMENT TERMS TBD",
-    "부가세 별도 기준": "VAT SEPARATE BASIS",
-    "부가세 포함 금액입니다": "VAT INCLUDED AMOUNT",
-    "면세 항목입니다": "EXEMPT ITEM",
-}
-
-
-def _ascii_memo(value: str | None) -> str | None:
-    if value is None:
-        return None
-    return _ASCII_MEMOS.get(value, value)
-
-
-def _pdf_lines(quotation: Quotation) -> list[str]:
-    """Render one quotation as PDF-safe text lines."""
-
-    lines: list[str] = ["QUOTATION", SYNTHETIC_MARKER]
-    lines.append(f"{PDF_LABELS['supplier']}: {SUPPLIER_NAME_ASCII} / {SUPPLIER_BIZ}")
-    lines.append(f"ADDRESS: {SUPPLIER_ADDRESS_ASCII} / TEL: {SUPPLIER_PHONE}")
-    recipient = quotation.recipient
-    if recipient:
-        index = RECIPIENTS.index(recipient)
-        lines.append(f"{PDF_LABELS['recipient']}: {RECIPIENTS_ASCII[index]}")
+    lines.append(
+        f"{KOREAN_LABELS['address']}: {SUPPLIER_ADDRESS} / "
+        f"{KOREAN_LABELS['phone']}: {SUPPLIER_PHONE}"
+    )
+    if quotation.recipient:
+        lines.append(f"{KOREAN_LABELS['recipient']}: {quotation.recipient}")
     if quotation.quote_number:
-        lines.append(f"{PDF_LABELS['quote_number']}: {quotation.quote_number}")
+        lines.append(f"{KOREAN_LABELS['quote_number']}: {quotation.quote_number}")
     if quotation.quote_date:
-        lines.append(f"{PDF_LABELS['quote_date']}: {quotation.quote_date}")
-    lines.append(f"{PDF_LABELS['supply']}: {quotation.supply_amount:,}")
+        lines.append(f"{KOREAN_LABELS['quote_date']}: {quotation.quote_date}")
+    lines.append(f"{KOREAN_LABELS['supply']}: {quotation.supply_amount:,}")
     if quotation.vat_mode == "separate":
-        lines.append(f"{PDF_LABELS['vat']}: {quotation.vat_amount:,} (SEPARATE)")
-    elif quotation.vat_mode == "inclusive":
-        lines.append(f"{PDF_LABELS['vat']}: INCLUDED")
-    elif quotation.vat_mode == "exempt":
-        lines.append(f"{PDF_LABELS['vat']}: EXEMPT")
+        lines.append(
+            f"{KOREAN_LABELS['vat']}: {quotation.vat_amount:,} ({quotation.vat_label})"
+        )
+    elif quotation.vat_mode in {"inclusive", "exempt"}:
+        lines.append(f"{KOREAN_LABELS['vat']}: {quotation.vat_label}")
     if quotation.vat_mode != "unknown":
-        lines.append(f"{PDF_LABELS['total']}: {quotation.total_amount:,}")
+        lines.append(f"{KOREAN_LABELS['total']}: {quotation.total_amount:,}")
     if quotation.memo:
-        lines.append(f"{PDF_LABELS['memo']}: {_ascii_memo(quotation.memo)}")
+        lines.append(f"{KOREAN_LABELS['memo']}: {quotation.memo}")
+    if with_terms:
+        lines.append("기본 조건")
+        for term, value in FIXED_TERMS.items():
+            lines.append(f"{term}: {value}")
     return lines
 
 
-def author_quotation_pdf(quotation: Quotation, *, with_logo: bool = False, logo_png: bytes | None = None):
-    pdf_authoring = import_module("padiem_ai_core.pdf_authoring")
-    heading = pdf_authoring.PdfHeadingBlock
-    text = pdf_authoring.PdfTextBlock
-    table = pdf_authoring.PdfTableBlock
-
-    blocks: list[object] = []
-    if with_logo and logo_png:
-        blocks.append(pdf_authoring.PdfImageBlock(filename="f11-simple-logo.png", data=logo_png))
-    blocks.append(heading("QUOTATION"))
-    for line in _pdf_lines(quotation)[1:]:
-        assert_font_safe(line)
-        blocks.append(text(line))
-    for row in _table_rows(quotation, ascii_labels=True):
-        for cell in row:
-            assert_font_safe(cell)
-    blocks.append(table(_table_rows(quotation, ascii_labels=True)))
-    assert_font_safe("B66 synthetic quotation fixture")
-    assert_font_safe("Padiem B66 fixture generator")
-    for keyword in ("b66", "synthetic", "fixture", "quotation", "3205"):
-        assert_font_safe(keyword)
-
-    document = pdf_authoring.PdfAuthoringDocument(
-        metadata=pdf_authoring.PdfAuthoringMetadata(
-            title="B66 synthetic quotation fixture",
-            author="Padiem B66 fixture generator",
-            subject=f"synthetic quotation {quotation.quote_number or 'NO-NUMBER'}",
-            keywords=("b66", "synthetic", "fixture", "quotation", "3205"),
-        ),
-        font=pdf_authoring.PdfAuthoringFont(data=_load_font_bytes()),
-        blocks=tuple(blocks),
+def author_quotation_pdf(quotation: Quotation, *, with_terms: bool = False) -> bytes:
+    return author_korean_pdf(
+        heading=KOREAN_LABELS["title"],
+        lines=_pdf_lines(quotation, with_terms=with_terms),
+        rows=_table_rows(quotation) if quotation.items else (),
+        title="B66 synthetic quotation fixture",
+        subject=f"합성 견적서 {quotation.quote_number or '번호 없음'}",
+        keywords=("b66", "synthetic", "fixture", "quotation", "3205"),
     )
-    return pdf_authoring.author_structured_pdf(document)
+
+
+def author_logo_pdf() -> bytes:
+    """Author the synthetic logo card used by fixture F11."""
+
+    return author_korean_pdf(
+        heading=LOGO_TEXT,
+        lines=[SYNTHETIC_MARKER, "로고 위치는 템플릿 고정 요소입니다"],
+        title="B66 synthetic logo fixture",
+        subject="합성 로고",
+        keywords=("b66", "synthetic", "logo", "fixture", "3205"),
+    )
 
 
 # --------------------------------------------------------------------------
@@ -513,23 +499,28 @@ def build_ooxml_archive(parts: list[tuple[zipfile.ZipInfo, bytes]]) -> bytes:
 
 
 def _document_xml(quotation: Quotation) -> str:
-    from xml.sax.saxutils import escape
-
     body: list[str] = []
 
     def paragraph(value: str) -> str:
         return f"<w:p><w:r><w:t>{escape(value)}</w:t></w:r></w:p>"
 
-    body.append(paragraph("견적서"))
-    body.append(paragraph(SYNTHETIC_MARKER_KOREAN))
-    body.append(paragraph(f"공급자: {SUPPLIER_NAME} | 사업자번호: {SUPPLIER_BIZ}"))
-    body.append(paragraph(f"주소: {SUPPLIER_ADDRESS} | 전화: {SUPPLIER_PHONE}"))
+    body.append(paragraph(KOREAN_LABELS["title"]))
+    body.append(paragraph(SYNTHETIC_MARKER))
+    body.append(
+        paragraph(
+            f"{KOREAN_LABELS['supplier']}: {SUPPLIER_NAME} / "
+            f"{KOREAN_LABELS['business_number']}: {SUPPLIER_BIZ}"
+        )
+    )
+    body.append(
+        paragraph(f"{KOREAN_LABELS['address']}: {SUPPLIER_ADDRESS} / {KOREAN_LABELS['phone']}: {SUPPLIER_PHONE}")
+    )
     if quotation.recipient:
-        body.append(paragraph(f"공급받는 자: {quotation.recipient}"))
+        body.append(paragraph(f"{KOREAN_LABELS['recipient']}: {quotation.recipient}"))
     if quotation.quote_number:
-        body.append(paragraph(f"견적번호: {quotation.quote_number}"))
+        body.append(paragraph(f"{KOREAN_LABELS['quote_number']}: {quotation.quote_number}"))
     if quotation.quote_date:
-        body.append(paragraph(f"견적일자: {quotation.quote_date}"))
+        body.append(paragraph(f"{KOREAN_LABELS['quote_date']}: {quotation.quote_date}"))
 
     rows = []
     for row in _table_rows(quotation):
@@ -547,12 +538,19 @@ def _document_xml(quotation: Quotation) -> str:
         + "</w:tbl>"
     )
     if quotation.vat_mode == "separate":
-        body.append(paragraph(f"공급가액: {quotation.supply_amount:,} | 부가세: {quotation.vat_amount:,}"))
-        body.append(paragraph(f"총액: {quotation.total_amount:,}"))
+        body.append(
+            paragraph(
+                f"{KOREAN_LABELS['supply']}: {quotation.supply_amount:,} / "
+                f"{KOREAN_LABELS['vat']}: {quotation.vat_amount:,}"
+            )
+        )
+        body.append(paragraph(f"{KOREAN_LABELS['total']}: {quotation.total_amount:,}"))
     elif quotation.vat_mode in {"inclusive", "exempt"}:
-        body.append(paragraph(f"총액: {quotation.total_amount:,} ({quotation.vat_label})"))
+        body.append(
+            paragraph(f"{KOREAN_LABELS['total']}: {quotation.total_amount:,} ({quotation.vat_label})")
+        )
     if quotation.memo:
-        body.append(paragraph(f"메모: {quotation.memo}"))
+        body.append(paragraph(f"{KOREAN_LABELS['memo']}: {quotation.memo}"))
     body.append("<w:sectPr/>")
     return (
         _xml_header()
@@ -642,15 +640,15 @@ def _column_letter(index: int) -> str:
 
 
 def _sheet_rows(quotation: Quotation) -> list[list[str | int]]:
-    rows: list[list[str | int]] = [["견적서"], [SYNTHETIC_MARKER_KOREAN]]
-    rows.append(["공급자", SUPPLIER_NAME, "사업자번호", SUPPLIER_BIZ])
-    rows.append(["주소", SUPPLIER_ADDRESS, "전화", SUPPLIER_PHONE])
+    rows: list[list[str | int]] = [[KOREAN_LABELS["title"]], [SYNTHETIC_MARKER]]
+    rows.append([KOREAN_LABELS["supplier"], SUPPLIER_NAME, KOREAN_LABELS["business_number"], SUPPLIER_BIZ])
+    rows.append([KOREAN_LABELS["address"], SUPPLIER_ADDRESS, KOREAN_LABELS["phone"], SUPPLIER_PHONE])
     if quotation.recipient:
-        rows.append(["공급받는 자", quotation.recipient])
+        rows.append([KOREAN_LABELS["recipient"], quotation.recipient])
     if quotation.quote_number:
-        rows.append(["견적번호", quotation.quote_number])
+        rows.append([KOREAN_LABELS["quote_number"], quotation.quote_number])
     if quotation.quote_date:
-        rows.append(["견적일자", quotation.quote_date])
+        rows.append([KOREAN_LABELS["quote_date"], quotation.quote_date])
     rows.append([])
     rows.append(list(quotation.column_order))
     for item in quotation.items:
@@ -662,18 +660,16 @@ def _sheet_rows(quotation: Quotation) -> list[list[str | int]]:
         }
         rows.append([values[column] for column in quotation.column_order])
     rows.append([])
-    rows.append(["공급가액", quotation.supply_amount])
+    rows.append([KOREAN_LABELS["supply"], quotation.supply_amount])
     if quotation.vat_mode != "unknown":
-        rows.append(["부가세", quotation.vat_amount, quotation.vat_label])
-    rows.append(["총액", quotation.total_amount])
+        rows.append([KOREAN_LABELS["vat"], quotation.vat_amount, quotation.vat_label])
+    rows.append([KOREAN_LABELS["total"], quotation.total_amount])
     if quotation.memo:
-        rows.append(["메모", quotation.memo])
+        rows.append([KOREAN_LABELS["memo"], quotation.memo])
     return rows
 
 
 def _sheet_xml(quotation: Quotation) -> str:
-    from xml.sax.saxutils import escape
-
     source_rows = _sheet_rows(quotation)
     sheet_rows: list[str] = []
     for row_index, row in enumerate(source_rows, start=1):
@@ -750,9 +746,9 @@ def degrade_png(png_bytes: bytes) -> bytes:
 def normalized_image_fingerprint(png_bytes: bytes, grid: int = 8, levels: int = 16) -> str:
     """Canonical, rasterizer-tolerant fingerprint of a PNG fixture.
 
-    The exact bytes of a raster depend on the native rasterizer and Pillow
-    build, so cross-platform reproducibility is asserted through a coarse
-    luminance grid instead: the image is reduced to ``grid`` x ``grid`` cells,
+    The exact bytes of a raster depend on which CJK font the rasterizer can
+    resolve and on the Pillow build, so reproducibility is asserted through a
+    coarse luminance grid: the image is reduced to ``grid`` x ``grid`` cells,
     each cell averaged and quantized into ``levels`` buckets.
     """
 
@@ -781,6 +777,26 @@ def normalized_image_fingerprint(png_bytes: bytes, grid: int = 8, levels: int = 
         sort_keys=True,
     ).encode("utf-8")
     return hashlib.sha256(payload).hexdigest()
+
+
+def extracted_pdf_text(pdf_bytes: bytes) -> str:
+    """Native text of every page, through the canonical pypdf reader."""
+
+    pypdf = import_module("pypdf")
+    reader = pypdf.PdfReader(BytesIO(pdf_bytes))
+    return "\n".join((page.extract_text() or "") for page in reader.pages)
+
+
+def assert_korean_labels(pdf_bytes: bytes, *, required: tuple[str, ...]) -> list[str]:
+    """Fail generation when a Korean source document lost its field labels."""
+
+    text = extracted_pdf_text(pdf_bytes)
+    missing = [label for label in required if label not in text]
+    if missing:
+        raise ValueError(
+            "Korean quotation source is missing field labels: " + ", ".join(missing)
+        )
+    return list(required)
 
 
 # --------------------------------------------------------------------------
@@ -832,29 +848,15 @@ class Fixture:
         return record
 
 
-def _business_facts(quotation: Quotation, *, language: str = "korean") -> dict[str, object]:
-    """Describe the facts a reader of the fixture can actually see.
-
-    ``language`` selects the label language the fixture was authored in: the
-    PDF/raster fixtures are ASCII-labelled, the DOCX/XLSX fixtures are Korean.
-    """
-
-    assert language in {"ascii", "korean"}
-    ascii_labels = language == "ascii"
-    if quotation.recipient is None:
-        recipient = None
-    elif ascii_labels:
-        recipient = RECIPIENTS_ASCII[RECIPIENTS.index(quotation.recipient)]
-    else:
-        recipient = quotation.recipient
+def _business_facts(quotation: Quotation) -> dict[str, object]:
     return {
         "quote_number": quotation.quote_number,
         "quote_date": quotation.quote_date,
-        "sender": SUPPLIER_NAME_ASCII if ascii_labels else SUPPLIER_NAME,
-        "recipient": recipient,
+        "sender": SUPPLIER_NAME,
+        "recipient": quotation.recipient,
         "items": [
             {
-                "description": item.ascii_description() if ascii_labels else item.description,
+                "description": item.description,
                 "quantity": str(item.quantity),
                 "unit": item.unit,
                 "unit_price": f"{item.unit_price:,}",
@@ -868,7 +870,7 @@ def _business_facts(quotation: Quotation, *, language: str = "korean") -> dict[s
         if quotation.vat_mode != "unknown"
         else None,
         "vat_wording": quotation.vat_label or None,
-        "memo": _ascii_memo(quotation.memo) if ascii_labels else quotation.memo,
+        "memo": quotation.memo,
         "intentionally_missing_facts": [
             name
             for name, value in (
@@ -882,9 +884,37 @@ def _business_facts(quotation: Quotation, *, language: str = "korean") -> dict[s
     }
 
 
-def build_fixtures() -> list[Fixture]:
+# Labels every Korean quotation document must carry once its fields are present.
+REQUIRED_LABELS_ALWAYS = (
+    KOREAN_LABELS["title"],
+    KOREAN_LABELS["supplier"],
+    KOREAN_LABELS["supply"],
+)
+
+
+def _quotation_source(
+    fixture_id: str, filename: str, quotation: Quotation, *, with_terms: bool = False
+) -> tuple[bytes, list[str]]:
+    """Author one Korean quotation PDF and prove its labels survived."""
+
+    required = REQUIRED_LABELS_ALWAYS + (
+        KOREAN_LABELS["recipient"],
+        KOREAN_LABELS["item"],
+        KOREAN_LABELS["quantity"],
+        KOREAN_LABELS["amount"],
+    )
+    if quotation.quote_number:
+        required = required + (KOREAN_LABELS["quote_number"],)
+    if quotation.vat_mode != "unknown":
+        required = required + (KOREAN_LABELS["vat"], KOREAN_LABELS["total"])
+    pdf_bytes = author_quotation_pdf(quotation, with_terms=with_terms)
+    return pdf_bytes, assert_korean_labels(pdf_bytes, required=required)
+
+
+def build_fixtures() -> tuple[list[Fixture], list[dict[str, object]]]:
     quotations = _quotations()
     fixtures: list[Fixture] = []
+    raster_sources: list[dict[str, object]] = []
 
     def pdf_fixture(
         fixture_id: str,
@@ -894,28 +924,85 @@ def build_fixtures() -> list[Fixture]:
         structural: list[str],
         notes: str = "",
         extra: dict[str, object] | None = None,
-        with_logo: bool = False,
-        logo_png: bytes | None = None,
+        with_terms: bool = False,
     ) -> Fixture:
-        artifact = author_quotation_pdf(quotation, with_logo=with_logo, logo_png=logo_png)
+        pdf_bytes, _labels = _quotation_source(
+            fixture_id, filename, quotation, with_terms=with_terms
+        )
+        page_count = len(import_module("pypdf").PdfReader(BytesIO(pdf_bytes)).pages)
         return Fixture(
             fixture_id=fixture_id,
             filename=filename,
             media_type="application/pdf",
             source_kind="native_document",
             determinism="byte_identical",
-            data=artifact.data,
+            data=pdf_bytes,
             structural_facts=structural,
-            business_facts=_business_facts(quotation, language="ascii"),
+            business_facts=_business_facts(quotation),
             template_facts=template_only_facts(
-                column_order=quotation.column_order, with_logo=with_logo, ascii_labels=True
+                column_order=quotation.column_order, with_logo=False
             ),
             variable_facts=variable_content_facts(quotation),
             vat_mode=quotation.vat_mode,
-            page_or_sheet_count=artifact.page_count,
+            page_or_sheet_count=page_count,
             column_order=quotation.column_order,
             notes=notes,
             extra=extra or {},
+        )
+
+    def raster_fixture(
+        fixture_id: str,
+        filename: str,
+        source_filename: str,
+        quotation: Quotation,
+        *,
+        structural: list[str],
+        degrade: bool,
+        notes: str = "",
+        extra: dict[str, object] | None = None,
+    ) -> Fixture:
+        source_pdf, labels = _quotation_source(fixture_id, source_filename, quotation)
+        png_bytes, width, height = render_png(source_pdf)
+        raster_sources.append(
+            {
+                "fixture_id": fixture_id,
+                "relative_path": source_filename,
+                "media_type": "application/pdf",
+                "byte_size": len(source_pdf),
+                "sha256": hashlib.sha256(source_pdf).hexdigest(),
+                "korean_labels_verified": labels,
+                "generated_by": "author_korean_pdf via ReportLab CID font",
+                "cjk_font": CID_FONT_NAME,
+                "cjk_font_source": CID_FONT_SOURCE,
+            }
+        )
+        if degrade:
+            png_bytes = degrade_png(png_bytes)
+        return Fixture(
+            fixture_id=fixture_id,
+            filename=filename,
+            media_type="image/png",
+            source_kind="raster_image",
+            determinism="normalized",
+            data=png_bytes,
+            structural_facts=structural,
+            business_facts=_business_facts(quotation),
+            template_facts=template_only_facts(
+                column_order=quotation.column_order, with_logo=False
+            ),
+            variable_facts=variable_content_facts(quotation),
+            vat_mode=quotation.vat_mode,
+            page_or_sheet_count=1,
+            column_order=quotation.column_order,
+            notes=notes,
+            extra={
+                "raster_source_path": source_filename,
+                "raster_source_sha256": hashlib.sha256(source_pdf).hexdigest(),
+                "raster_source_korean_labels": labels,
+                "pixel_width": width,
+                "pixel_height": height,
+                **(extra or {}),
+            },
         )
 
     fixtures.append(
@@ -925,43 +1012,32 @@ def build_fixtures() -> list[Fixture]:
             quotations["F01"],
             structural=[
                 "single page A4 portrait",
-                "native extractable text layer (no rasterization)",
+                "native extractable Korean text layer (no rasterization)",
                 "title, supplier identity, item table, totals, memo",
             ],
-            notes="clean native PDF control case",
+            notes="clean native Korean PDF control case",
         )
     )
 
-    # F02 — scanned/image quotation (raster, no text layer)
-    source_pdf = author_quotation_pdf(quotations["F02"]).data
-    scanned_png, width, height = render_png(source_pdf)
     fixtures.append(
-        Fixture(
-            fixture_id="F02",
-            filename="f02-scanned-quotation.png",
-            media_type="image/png",
-            source_kind="raster_image",
-            determinism="normalized",
-            data=scanned_png,
-            structural_facts=[
-                f"raster page preview {width}x{height}",
-                "no text layer: image-only quotation",
+        raster_fixture(
+            "F02",
+            "f02-scanned-quotation.png",
+            "f02-scanned-quotation.source.pdf",
+            quotations["F02"],
+            structural=[
+                "raster page preview with no text layer",
+                "rendered from the committed Korean quotation source document",
                 "same layout family as F01 with a different quotation number",
             ],
-            business_facts=_business_facts(quotations["F02"], language="ascii"),
-            template_facts=template_only_facts(
-                column_order=quotations["F02"].column_order, with_logo=False, ascii_labels=True
+            degrade=False,
+            notes=(
+                "byte-level reproducibility is declared normalized: raster pixels "
+                "depend on the CJK font the rasterizer resolves; see determinism contract"
             ),
-            variable_facts=variable_content_facts(quotations["F02"]),
-            vat_mode="separate",
-            page_or_sheet_count=1,
-            column_order=quotations["F02"].column_order,
-            notes="byte-level reproducibility is declared normalized: see determinism contract",
-            extra={"pixel_width": width, "pixel_height": height},
         )
     )
 
-    # F03 — DOCX
     fixtures.append(
         Fixture(
             fixture_id="F03",
@@ -973,7 +1049,7 @@ def build_fixtures() -> list[Fixture]:
             structural_facts=[
                 "OOXML wordprocessing document built from fixed-metadata parts",
                 "single w:tbl item table with a border set",
-                "paragraph text is extractable without a rasterizer",
+                "Korean paragraph text is extractable without a rasterizer",
             ],
             business_facts=_business_facts(quotations["F03"]),
             template_facts=template_only_facts(
@@ -986,7 +1062,6 @@ def build_fixtures() -> list[Fixture]:
         )
     )
 
-    # F04 — XLSX
     xlsx_rows = _sheet_rows(quotations["F04"])
     fixtures.append(
         Fixture(
@@ -999,7 +1074,7 @@ def build_fixtures() -> list[Fixture]:
             structural_facts=[
                 f"single worksheet with {len(xlsx_rows)} populated rows",
                 "real cell/row/column structure with numeric quantity, unit price and amount cells",
-                "header row carries the item column order",
+                "header row carries the Korean item column order",
             ],
             business_facts=_business_facts(quotations["F04"]),
             template_facts=template_only_facts(
@@ -1012,7 +1087,6 @@ def build_fixtures() -> list[Fixture]:
         )
     )
 
-    # F05 — column-order variant
     fixtures.append(
         pdf_fixture(
             "F05",
@@ -1026,8 +1100,6 @@ def build_fixtures() -> list[Fixture]:
             notes="separates template structure from per-quote content",
         )
     )
-
-    # F06/F07/F08 — VAT presentation modes
     fixtures.append(
         pdf_fixture(
             "F06",
@@ -1055,8 +1127,6 @@ def build_fixtures() -> list[Fixture]:
             extra={"vat_variant": "exempt"},
         )
     )
-
-    # F09 — missing fields
     fixtures.append(
         pdf_fixture(
             "F09",
@@ -1070,8 +1140,6 @@ def build_fixtures() -> list[Fixture]:
             notes="hallucination trap: absent facts must not be fabricated",
         )
     )
-
-    # F10 — fixed memo / default terms
     fixtures.append(
         pdf_fixture(
             "F10",
@@ -1085,12 +1153,12 @@ def build_fixtures() -> list[Fixture]:
                 "fixed_terms": FIXED_TERMS,
                 "template_fixed_terms": list(FIXED_TERMS.keys()),
             },
+            with_terms=True,
             notes="terms are declared template-only facts for the cloner",
         )
     )
 
-    # F11 — synthetic logo card (no real corporate mark)
-    logo_png, logo_width, logo_height = render_png(author_logo_pdf().data)
+    logo_png, logo_width, logo_height = render_png(author_logo_pdf())
     fixtures.append(
         Fixture(
             fixture_id="F11",
@@ -1106,7 +1174,7 @@ def build_fixtures() -> list[Fixture]:
             ],
             business_facts={
                 "synthetic_marker": SYNTHETIC_MARKER,
-                "logo_text": "PADIEM TEST / SYNTHETIC QUOTE",
+                "logo_text": LOGO_TEXT,
             },
             template_facts=[
                 "logo placement is a template-only fact",
@@ -1116,12 +1184,14 @@ def build_fixtures() -> list[Fixture]:
             vat_mode="not_applicable",
             page_or_sheet_count=1,
             column_order=(),
-            notes="byte-level reproducibility is declared normalized: see determinism contract",
+            notes=(
+                "byte-level reproducibility is declared normalized: raster pixels "
+                "depend on the CJK font the rasterizer resolves; see determinism contract"
+            ),
             extra={"pixel_width": logo_width, "pixel_height": logo_height},
         )
     )
 
-    # F12 — multi-page
     fixtures.append(
         pdf_fixture(
             "F12",
@@ -1136,37 +1206,32 @@ def build_fixtures() -> list[Fixture]:
         )
     )
 
-    # F13 — degraded/skewed scan
-    degraded = degrade_png(scanned_png)
     fixtures.append(
-        Fixture(
-            fixture_id="F13",
-            filename="f13-degraded-scan.png",
-            media_type="image/png",
-            source_kind="raster_image",
-            determinism="normalized",
-            data=degraded,
-            structural_facts=[
+        raster_fixture(
+            "F13",
+            "f13-degraded-scan.png",
+            "f13-degraded-scan.source.pdf",
+            quotations["F13"],
+            structural=[
                 "downscaled, low-quality re-upscaled and slightly rotated page",
+                "rendered from the committed Korean quotation source document",
                 "degradation is fixed and reproducible, not random noise",
             ],
-            business_facts=_business_facts(quotations["F13"], language="ascii"),
-            template_facts=template_only_facts(
-                column_order=quotations["F13"].column_order, with_logo=False, ascii_labels=True
-            ),
-            variable_facts=variable_content_facts(quotations["F13"]),
-            vat_mode="separate",
-            page_or_sheet_count=1,
-            column_order=quotations["F13"].column_order,
-            notes="vision robustness fixture; no model is called by this generator",
+            degrade=True,
             extra={"degradation": "downscale_x4+rotate_1.8deg"},
+            notes=(
+                "vision robustness fixture; raster pixels depend on the CJK font the "
+                "rasterizer resolves; no model is called by this generator"
+            ),
         )
     )
 
-    return fixtures
+    return fixtures, raster_sources
 
 
-def build_manifest(fixtures: list[Fixture]) -> dict[str, object]:
+def build_manifest(
+    fixtures: list[Fixture], raster_sources: list[dict[str, object]]
+) -> dict[str, object]:
     return {
         "corpus_id": CORPUS_ID,
         "issue": "#3205",
@@ -1182,6 +1247,13 @@ def build_manifest(fixtures: list[Fixture]) -> dict[str, object]:
         "network_calls": 0,
         "quote_core_calculation_authority": True,
         "fixture_totals_are_expected_source_facts_only": True,
+        "korean_fidelity": {
+            "native_pdf_labels": sorted(KOREAN_LABELS.values()),
+            "font": CID_FONT_NAME,
+            "font_source": CID_FONT_SOURCE,
+            "download_required": False,
+            "raster_sources": "each raster fixture commits the Korean quotation PDF it was rendered from",
+        },
         "determinism_contract": {
             "byte_identical": [
                 "every PDF, DOCX and XLSX fixture is written by a pure-Python writer "
@@ -1189,23 +1261,32 @@ def build_manifest(fixtures: list[Fixture]) -> dict[str, object]:
                 "same pinned dependency set"
             ],
             "normalized": [
-                "every PNG fixture depends on the pinned pypdfium2/pdfium and Pillow "
-                "builds, so exact bytes are recorded for integrity while "
-                "cross-platform reproducibility is asserted through "
+                "every PNG fixture's pixels depend on which CJK font the pinned "
+                "pypdfium2/pdfium and Pillow builds can resolve on the running "
+                "platform, so exact bytes are recorded for committed integrity while "
+                "reproducibility is asserted within the generating environment through "
                 "normalized_fingerprint (8x8 quantized luminance grid)"
             ],
         },
         "synthetic_identity": synthetic_identity(),
         "fixtures": [fixture.to_manifest() for fixture in fixtures],
+        "raster_sources": raster_sources,
     }
 
 
 def generate(output_dir: Path) -> dict[str, object]:
     output_dir.mkdir(parents=True, exist_ok=True)
-    fixtures = build_fixtures()
+    fixtures, raster_sources = build_fixtures()
     for fixture in fixtures:
         (output_dir / fixture.filename).write_bytes(fixture.data)
-    manifest = build_manifest(fixtures)
+    for source in raster_sources:
+        # The source PDFs are written by the raster fixture builder; re-authoring
+        # them here keeps the manifest and the files in step.
+        quotation = _quotations()[source["fixture_id"]]
+        (output_dir / source["relative_path"]).write_bytes(
+            author_quotation_pdf(quotation)
+        )
+    manifest = build_manifest(fixtures, raster_sources)
     (output_dir / MANIFEST_NAME).write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=False) + "\n",
         encoding="utf-8",
@@ -1224,7 +1305,9 @@ def main() -> int:
     arguments = parser.parse_args()
     manifest = generate(arguments.output)
     print(f"B66_E2E_FIXTURE_COUNT={len(manifest['fixtures'])}")
+    print(f"B66_E2E_RASTER_SOURCE_COUNT={len(manifest['raster_sources'])}")
     print(f"B66_E2E_FIXTURE_ROOT={arguments.output}")
+    print(f"KOREAN_PDF_FONT={manifest['korean_fidelity']['font']}")
     print("MODEL_CALLS=0")
     print("NETWORK_CALLS=0")
     return 0

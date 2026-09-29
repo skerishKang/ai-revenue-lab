@@ -1,13 +1,16 @@
-"""#3205 B66 synthetic quotation E2E fixture corpus tests.
+"""#3205 B66 synthetic Korean quotation E2E fixture corpus tests.
 
 Two independent concerns are checked here:
 
-1. The committed corpus is internally consistent — every manifest path exists,
-   every byte size and SHA-256 matches, every required case is present, and the
-   template-only / variable-content fact split is explicit for every fixture.
+1. The committed corpus is internally consistent and genuinely Korean — every
+   manifest path exists, every byte size and SHA-256 matches, every required
+   case is present, the native PDFs really carry Korean field labels in their
+   extractable text layer, the raster fixtures really come from committed
+   Korean source documents, and the template-only / variable-content fact split
+   is explicit for every fixture.
 2. The corpus is *generated*, not hand-edited: re-running the committed
    generator reproduces the committed bytes (or, for raster fixtures, the
-   committed normalized fingerprint), with zero model calls and zero network
+   recorded normalized fingerprint) with zero model calls and zero network
    calls.
 
 Fixtures are synthetic and non-sensitive by construction; the tests also prove
@@ -76,6 +79,10 @@ REQUIRED_MEDIA_TYPES = {
 
 SYNTHETIC_MARKER = "SYNTHETIC TEST DATA"
 
+# Representative Korean field labels the corpus must actually carry in the
+# native PDF family (#3186 fidelity blocker).
+KOREAN_LABELS_EXPECTED = ("견적서", "공급자", "공급가액", "공급받는 자", "품목", "수량", "금액")
+
 # Deliberately synthetic identifiers: a real business registration number can
 # never look like this, and the phone number is the all-zero form.
 FAKE_BUSINESS_NUMBER = "000-00-00000"
@@ -114,6 +121,24 @@ def _by_id(fixtures: list[dict], fixture_id: str) -> dict:
     raise AssertionError(f"fixture {fixture_id} is missing from the manifest")
 
 
+def _regeneration_comparable(manifest: dict) -> dict:
+    """Drop the fields that are declared platform-dependent for rasters.
+
+    A ``normalized`` fixture's exact bytes depend on the CJK font the
+    rasterizer can resolve, so its byte size and digest legitimately differ when
+    the corpus is regenerated on another platform. Integrity of the committed
+    bytes is asserted separately in this module; for the manifest comparison the
+    declared normalized fingerprint stands in for those two fields.
+    """
+
+    comparable = json.loads(json.dumps(manifest))
+    for record in comparable["fixtures"]:
+        if record["determinism"] == "normalized":
+            record.pop("byte_size", None)
+            record.pop("sha256", None)
+    return comparable
+
+
 def test_manifest_declares_the_corpus_contract(manifest: dict) -> None:
     assert manifest["issue"] == "#3205"
     assert manifest["parent_issue"] == "#3186"
@@ -127,31 +152,45 @@ def test_manifest_declares_the_corpus_contract(manifest: dict) -> None:
     assert set(manifest["determinism_contract"]) == {"byte_identical", "normalized"}
 
 
+def test_manifest_declares_korean_fidelity_without_download(manifest: dict) -> None:
+    fidelity = manifest["korean_fidelity"]
+    assert fidelity["font"] == "HYSMyeongJo-Medium"
+    assert fidelity["font_source"] == "reportlab_builtin_adobe_korea1_cid"
+    assert fidelity["download_required"] is False
+    for label in KOREAN_LABELS_EXPECTED:
+        assert label in fidelity["native_pdf_labels"]
+
+
 def test_all_manifest_paths_exist_and_are_non_empty(
     manifest: dict, fixtures: list[dict]
 ) -> None:
     assert len(fixtures) == len(REQUIRED_FIXTURE_IDS)
-    for record in fixtures:
+    records = fixtures + list(manifest["raster_sources"])
+    for record in records:
         path = CORPUS_DIR / record["relative_path"]
         assert path.is_file(), f"missing fixture file {record['relative_path']}"
         assert path.stat().st_size > 0
-        assert record["byte_size"] > 0
-        # No fixture may be resolved outside the corpus directory.
+        assert record["byte_size"] == path.stat().st_size
+        # Nothing may resolve outside the corpus directory.
         assert path.resolve().parent == CORPUS_DIR.resolve()
 
 
-def test_fixture_ids_and_paths_are_unique(fixtures: list[dict]) -> None:
+def test_fixture_ids_and_paths_are_unique(
+    manifest: dict, fixtures: list[dict]
+) -> None:
     ids = [record["fixture_id"] for record in fixtures]
-    paths = [record["relative_path"] for record in fixtures]
+    paths = [record["relative_path"] for record in fixtures] + [
+        record["relative_path"] for record in manifest["raster_sources"]
+    ]
     assert len(ids) == len(set(ids))
     assert len(paths) == len(set(paths))
     assert set(ids) == REQUIRED_FIXTURE_IDS
 
 
 def test_fixture_byte_size_and_sha256_match_the_committed_files(
-    fixtures: list[dict],
+    manifest: dict, fixtures: list[dict]
 ) -> None:
-    for record in fixtures:
+    for record in fixtures + list(manifest["raster_sources"]):
         payload = (CORPUS_DIR / record["relative_path"]).read_bytes()
         assert len(payload) == record["byte_size"], record["relative_path"]
         assert hashlib.sha256(payload).hexdigest() == record["sha256"], record[
@@ -212,11 +251,9 @@ def test_fixture_totals_are_self_consistent_but_not_an_authority(
 ) -> None:
     for record in fixtures:
         facts = record["expected_business_facts"]
-        if record["fixture_id"] in {"F11"}:
+        if record["fixture_id"] == "F11":
             continue
-        amounts = [
-            int(item["amount"].replace(",", "")) for item in facts["items"]
-        ]
+        amounts = [int(item["amount"].replace(",", "")) for item in facts["items"]]
         supply = int(facts["supply_amount"].replace(",", ""))
         assert sum(amounts) == supply, record["fixture_id"]
         if record["vat_mode"] == "separate":
@@ -242,7 +279,9 @@ def test_missing_field_case_keeps_absent_facts_unknown(fixtures: list[dict]) -> 
 
 
 @pytest.mark.skipif(not PARSE_READY, reason=PARSE_SKIP_REASON)
-def test_pdf_fixtures_carry_a_native_text_layer(fixtures: list[dict]) -> None:
+def test_native_pdf_text_carries_korean_field_labels(fixtures: list[dict]) -> None:
+    """The blocker requirement: real Korean labels in the PDF text layer."""
+
     document_normalization = importlib.import_module(
         "padiem_ai_core.document_normalization"
     )
@@ -258,16 +297,54 @@ def test_pdf_fixtures_carry_a_native_text_layer(fixtures: list[dict]) -> None:
         assert inspection.native_text_available is True, record["fixture_id"]
         assert inspection.page_count == record["page_count_or_sheet_count"]
         text = "\n".join(page.text for page in inspection.pages)
+        for label in KOREAN_LABELS_EXPECTED:
+            assert label in text, f"{record['fixture_id']} lost Korean label {label}"
         assert SYNTHETIC_MARKER in text, record["fixture_id"]
+        assert "실사용 금지" in text, record["fixture_id"]
+
         facts = record["expected_business_facts"]
         if facts["quote_number"]:
             assert facts["quote_number"] in text
-        if facts["supply_amount"]:
-            assert facts["supply_amount"] in text
+        assert facts["supply_amount"] in text
         # Absent facts must really be absent from the rendered document.
-        for missing in facts["intentionally_missing_facts"]:
-            if missing == "quote_number":
-                assert re.search(r"Q-\d{4}-\d{4}", text) is None
+        if "quote_number" in facts["intentionally_missing_facts"]:
+            assert re.search(r"Q-\d{4}-\d{4}", text) is None
+
+
+@pytest.mark.skipif(not PARSE_READY, reason=PARSE_SKIP_REASON)
+def test_raster_fixtures_come_from_committed_korean_sources(
+    manifest: dict, fixtures: list[dict]
+) -> None:
+    """F02/F13 must be rendered from a committed Korean quotation document."""
+
+    document_normalization = importlib.import_module(
+        "padiem_ai_core.document_normalization"
+    )
+    sources = {record["fixture_id"]: record for record in manifest["raster_sources"]}
+    assert set(sources) == {"F02", "F13"}
+
+    for fixture_id in ("F02", "F13"):
+        fixture = _by_id(fixtures, fixture_id)
+        source = sources[fixture_id]
+        assert fixture["raster_source_path"] == source["relative_path"]
+        assert fixture["raster_source_sha256"] == source["sha256"]
+
+        payload = (CORPUS_DIR / source["relative_path"]).read_bytes()
+        inspection = document_normalization.inspect_pdf(
+            name=source["relative_path"],
+            media_type="application/pdf",
+            payload=payload,
+        )
+        text = "\n".join(page.text for page in inspection.pages)
+        for label in KOREAN_LABELS_EXPECTED:
+            assert label in text, f"{fixture_id} source lost Korean label {label}"
+        assert fixture["expected_business_facts"]["quote_number"] in text
+        # The recorded verification must match the labels actually present.
+        for label in source["korean_labels_verified"]:
+            assert label in text, f"{fixture_id} source missing {label}"
+        # And the raster fixture itself must have no text layer of its own.
+        png = (CORPUS_DIR / fixture["relative_path"]).read_bytes()
+        assert png.startswith(b"\x89PNG\r\n\x1a\n")
 
 
 @pytest.mark.skipif(not PARSE_READY, reason=PARSE_SKIP_REASON)
@@ -296,11 +373,11 @@ def test_synthetic_identifiers_only(fixtures: list[dict]) -> None:
         facts = record["expected_business_facts"]
         sender = facts.get("sender")
         if sender is not None:
-            assert sender.upper() == "TEST SUPPLIER CO" or sender == "주식회사 테스트상사"
+            assert sender == "주식회사 테스트상사"
         assert FAKE_BUSINESS_NUMBER not in json.dumps(facts)
         assert FAKE_PHONE_NUMBER not in json.dumps(facts)
         for item in facts.get("items", []):
-            assert not re.search(r"\d{6}-\d{2}-\d{5}", item["description"])
+            assert not re.search(r"\d{3}-\d{2}-\d{5}", item["description"])
 
 
 def test_generator_source_declares_no_network_or_model_dependency() -> None:
@@ -315,24 +392,9 @@ def test_generator_source_declares_no_network_or_model_dependency() -> None:
         "openrouter.ai",
     ):
         assert forbidden not in source, f"generator references {forbidden}"
-
-
-def _regeneration_comparable(manifest: dict) -> dict:
-    """Drop the fields that are declared platform-dependent for rasters.
-
-    A ``normalized`` fixture's exact bytes depend on the pinned rasterizer
-    build, so its byte size and digest legitimately differ when the corpus is
-    regenerated on another platform. Integrity of the committed bytes is
-    asserted separately in this module; for the manifest comparison the
-    declared normalized fingerprint stands in for those two fields.
-    """
-
-    comparable = json.loads(json.dumps(manifest))
-    for record in comparable["fixtures"]:
-        if record["determinism"] == "normalized":
-            record.pop("byte_size", None)
-            record.pop("sha256", None)
-    return comparable
+    # The Korean route must be the built-in CID font, not a downloaded file.
+    assert "UnicodeCIDFont" in source
+    assert "HYSMyeongJo-Medium" in source
 
 
 @pytest.mark.skipif(not GENERATOR_READY, reason=GENERATOR_SKIP_REASON)
@@ -357,10 +419,25 @@ def test_generation_is_deterministic(fixtures: list[dict]) -> None:
                 )
             else:
                 assert record["determinism"] == "normalized"
+                # The committed artifact stays exactly as recorded, and its
+                # fingerprint is recomputable from the committed bytes alone.
+                committed = (CORPUS_DIR / name).read_bytes()
                 assert (
-                    module.normalized_image_fingerprint(first_bytes)
+                    module.normalized_image_fingerprint(committed)
                     == record["normalized_fingerprint"]
                 ), name
+                assert module.normalized_image_fingerprint(
+                    first_bytes
+                ) == module.normalized_image_fingerprint(second_bytes), name
+
+        for source in first_manifest["raster_sources"]:
+            name = source["relative_path"]
+            assert (Path(first) / name).read_bytes() == (
+                Path(second) / name
+            ).read_bytes(), name
+            assert (Path(first) / name).read_bytes() == (
+                CORPUS_DIR / name
+            ).read_bytes(), name
 
         # The manifests must agree with each other exactly, and with the
         # committed one apart from the fields declared platform-dependent.
