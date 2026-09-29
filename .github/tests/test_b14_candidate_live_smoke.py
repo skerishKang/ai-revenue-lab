@@ -7,6 +7,7 @@ in-process fake, matching the Agnes gate's testing posture.
 from __future__ import annotations
 
 import contextlib
+import hashlib
 import importlib.util
 import io
 import json
@@ -1031,6 +1032,169 @@ def test_image_fixture_is_the_reused_synthetic_corpus_png() -> None:
     url = smoke._load_space_bunny_image_data_url()
     assert url.startswith("data:image/png;base64,")
     assert len(url) > len("data:image/png;base64,")
+
+
+def test_b66_f02_image_body_matches_b66_gateway_posture() -> None:
+    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+    data_url = smoke._load_b66_f02_image_data_url()
+    body = smoke.canonical_image_body(
+        spec_obj,
+        data_url,
+        image_case=smoke.IMAGE_CASE_B66_F02,
+    )
+    assert body["model"] == "kilo/stealth-space-bunny-alpha"
+    assert body["stream"] is False
+    assert body["temperature"] == 0
+    assert body["max_tokens"] == smoke.B66_F02_IMAGE_MAX_TOKENS
+    assert body["business14"] == {
+        "required_capabilities": ["image"],
+        "allow_external_fallback": False,
+        "max_attempts": 1,
+    }
+    text_part, image_part = body["messages"][0]["content"]
+    assert text_part["type"] == "text"
+    assert "JSON 객체 하나만" in text_part["text"]
+    assert "JSON null" in text_part["text"]
+    assert "합계나 부가세를 계산하지" in text_part["text"]
+    assert image_part["type"] == "image_url"
+    assert image_part["image_url"]["url"].startswith("data:image/png;base64,")
+
+
+def test_b66_f02_fixture_is_exact_committed_synthetic_quotation() -> None:
+    assert smoke.B66_F02_IMAGE_FIXTURE.is_file()
+    raw = smoke.B66_F02_IMAGE_FIXTURE.read_bytes()
+    assert hashlib.sha256(raw).hexdigest() == smoke.B66_F02_IMAGE_SHA256
+    assert smoke.B66_F02_IMAGE_SHA256 == (
+        "af9f48578b79dc9d712e695079e4b0fd44a02916f12007c14429593173432ba4"
+    )
+    assert raw.startswith(b"\x89PNG\r\n\x1a\n")
+    url = smoke._load_b66_f02_image_data_url()
+    assert url.startswith("data:image/png;base64,")
+
+
+def test_b66_f02_visual_facts_success_uses_shared_canary_authority() -> None:
+    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+    calls: list = []
+    answer = json.dumps(
+        {
+            "quote_number": "Q-2026-3002",
+            "recipient": "주식회사 샘플산업",
+            "first_item": "스테인리스 배관 40x40",
+            "first_quantity": 12,
+            "first_unit_price": "9,800",
+        },
+        ensure_ascii=False,
+    )
+
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        rc = smoke.run(
+            "space-bunny",
+            transport=_s1_image_transport(spec_obj, calls, answer=answer),
+            modality="image",
+            image_case=smoke.IMAGE_CASE_B66_F02,
+        )
+
+    assert rc == 0
+    assert [(m, p) for m, p, _ in calls] == [
+        ("GET", smoke.HEALTH_PATH),
+        ("GET", smoke.MODELS_PATH),
+        ("POST", smoke.CHAT_PATH),
+    ]
+    posted = calls[2][2]
+    assert posted["business14"]["required_capabilities"] == ["image"]
+    assert posted["business14"]["allow_external_fallback"] is False
+    assert posted["business14"]["max_attempts"] == 1
+    output = stdout.getvalue()
+    assert "B66_F02_VISUAL_FACTS=PASS" in output
+    assert "B66_F02_FIXTURE_SHA256=PASS" in output
+    assert "SPACE_BUNNY_ATTEMPT_COUNT=1" in output
+    assert "B14_CHAT_POST_COUNT=1" in output
+    assert answer not in output
+
+
+@pytest.mark.parametrize(
+    "field,bad_value",
+    [
+        ("quote_number", "Q-WRONG"),
+        ("recipient", "다른회사"),
+        ("first_item", "다른품목"),
+        ("first_quantity", 99),
+        ("first_unit_price", "123"),
+    ],
+)
+def test_b66_f02_wrong_visual_fact_fails_closed_without_raw_answer(
+    field: str, bad_value,
+) -> None:
+    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+    calls: list = []
+    facts = dict(smoke.B66_F02_EXPECTED_FACTS)
+    facts[field] = bad_value
+    answer = json.dumps(facts, ensure_ascii=False)
+
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        rc = smoke.run(
+            "space-bunny",
+            transport=_s1_image_transport(spec_obj, calls, answer=answer),
+            modality="image",
+            image_case=smoke.IMAGE_CASE_B66_F02,
+        )
+
+    assert rc == 1
+    output = stdout.getvalue()
+    assert "FAIL_b66_f02_visual_facts_mismatch" in output
+    assert "B14_CHAT_POST_COUNT=1" in output
+    assert answer not in output
+
+
+def test_b66_f02_non_json_answer_fails_closed_without_raw_answer() -> None:
+    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+    answer = "PRIVATE_B66_F02_NON_JSON"
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        rc = smoke.run(
+            "space-bunny",
+            transport=_s1_image_transport(spec_obj, [], answer=answer),
+            modality="image",
+            image_case=smoke.IMAGE_CASE_B66_F02,
+        )
+    assert rc == 1
+    output = stdout.getvalue()
+    assert "FAIL_b66_f02_answer_not_json" in output
+    assert answer not in output
+
+
+def test_b66_image_case_requires_image_modality_and_known_case() -> None:
+    calls: list = []
+
+    def transport(*args, **kwargs):
+        calls.append((args, kwargs))
+        raise AssertionError("network must not run")
+
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        rc = smoke.run(
+            "space-bunny",
+            transport=transport,
+            modality="text",
+            image_case=smoke.IMAGE_CASE_B66_F02,
+        )
+    assert rc == 1
+    assert calls == []
+    assert "FAIL_IMAGE_CASE_REQUIRES_IMAGE_MODALITY" in stdout.getvalue()
+
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        rc = smoke.run(
+            "space-bunny",
+            transport=transport,
+            modality="image",
+            image_case="unknown-case",
+        )
+    assert rc == 1
+    assert calls == []
+    assert "FAIL_UNKNOWN_IMAGE_CASE" in stdout.getvalue()
 
 
 def test_cli_bogus_modality_fails_closed_without_network() -> None:

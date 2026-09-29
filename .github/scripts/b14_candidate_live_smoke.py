@@ -31,6 +31,7 @@ Authority boundaries (see #2676):
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 import time
@@ -320,19 +321,43 @@ MODALITY_TEXT = "text"
 MODALITY_IMAGE = "image"
 IMAGE_ONLY_CANDIDATE_ID = "space-bunny"
 
+IMAGE_CASE_GENERIC = "generic"
+IMAGE_CASE_B66_F02 = "b66-f02"
+
 SPACE_BUNNY_IMAGE_INSTRUCTION = "이 이미지에 보이는 내용을 짧게 설명해 주세요."
 SPACE_BUNNY_IMAGE_MAX_TOKENS = 32
 SPACE_BUNNY_IMAGE_TEMPERATURE = 0
 
-SPACE_BUNNY_IMAGE_FIXTURE = (
+_FIXTURE_ROOT = (
     Path(__file__).resolve().parents[2]
     / "packages"
     / "padiem-ai-core"
     / "tests"
     / "fixtures"
     / "b66_e2e_corpus"
-    / "f11-simple-logo.png"
 )
+SPACE_BUNNY_IMAGE_FIXTURE = _FIXTURE_ROOT / "f11-simple-logo.png"
+
+# B66 Saved Quote Skill extraction proof: unlike the generic image smoke,
+# this case validates actual Korean quotation facts from the committed F02
+# fixture. It remains synthetic/non-sensitive and is never printed.
+B66_F02_IMAGE_FIXTURE = _FIXTURE_ROOT / "f02-scanned-quotation.png"
+B66_F02_IMAGE_SHA256 = "af9f48578b79dc9d712e695079e4b0fd44a02916f12007c14429593173432ba4"
+B66_F02_IMAGE_INSTRUCTION = (
+    "이 합성 한국어 견적서 이미지에서 실제로 보이는 값만 읽으세요. "
+    "반드시 JSON 객체 하나만 반환하고 마크다운이나 설명을 붙이지 마세요. "
+    "키는 quote_number, recipient, first_item, first_quantity, first_unit_price만 사용하세요. "
+    "읽을 수 없는 값은 JSON null로 두세요. 합계나 부가세를 계산하지 마세요."
+)
+B66_F02_IMAGE_MAX_TOKENS = 160
+B66_F02_EXPECTED_FACTS = {
+    "quote_number": "Q-2026-3002",
+    "recipient": "주식회사 샘플산업",
+    "first_item": "스테인리스 배관 40x40",
+    "first_quantity": "12",
+    "first_unit_price": "9800",
+}
+
 MAX_IMAGE_FIXTURE_BYTES = 4 * 1024 * 1024
 
 
@@ -346,26 +371,48 @@ def _image_media_type(raw: bytes) -> str:
     raise ValueError("image_fixture_unavailable")
 
 
-def _load_space_bunny_image_data_url() -> str:
-    """Return the bounded synthetic fixture as a data URL, or fail closed.
-
-    The fixture bytes are never printed; only the constructed POST body
-    carries them, and the body itself is never logged.
-    """
+def _load_image_data_url(
+    fixture: Path,
+    *,
+    expected_sha256: str | None = None,
+) -> str:
+    """Return one bounded synthetic fixture as a private data URL."""
 
     import base64
 
     try:
-        raw = SPACE_BUNNY_IMAGE_FIXTURE.read_bytes()
+        raw = fixture.read_bytes()
     except OSError as exc:
         raise ValueError("image_fixture_unavailable") from exc
     if not raw or len(raw) > MAX_IMAGE_FIXTURE_BYTES:
         raise ValueError("image_fixture_unavailable")
+    if expected_sha256 is not None and hashlib.sha256(raw).hexdigest() != expected_sha256:
+        raise ValueError("image_fixture_hash_mismatch")
     media_type = _image_media_type(raw)
     return f"data:{media_type};base64," + base64.b64encode(raw).decode("ascii")
 
 
-def canonical_image_body(spec: CandidateSpec, image_data_url: str) -> dict[str, Any]:
+def _load_space_bunny_image_data_url() -> str:
+    """Return the existing generic Space Bunny fixture unchanged."""
+
+    return _load_image_data_url(SPACE_BUNNY_IMAGE_FIXTURE)
+
+
+def _load_b66_f02_image_data_url() -> str:
+    """Return exact committed F02 bytes for the B66 visual-facts proof."""
+
+    return _load_image_data_url(
+        B66_F02_IMAGE_FIXTURE,
+        expected_sha256=B66_F02_IMAGE_SHA256,
+    )
+
+
+def canonical_image_body(
+    spec: CandidateSpec,
+    image_data_url: str,
+    *,
+    image_case: str = IMAGE_CASE_GENERIC,
+) -> dict[str, Any]:
     """Pin one exact manual image route for the Space Bunny candidate only."""
 
     if spec.candidate_id != IMAGE_ONLY_CANDIDATE_ID:
@@ -376,13 +423,23 @@ def canonical_image_body(spec: CandidateSpec, image_data_url: str) -> dict[str, 
         or ";base64," not in image_data_url
     ):
         raise ValueError("image_fixture_unavailable")
-    return {
+
+    if image_case == IMAGE_CASE_GENERIC:
+        instruction = SPACE_BUNNY_IMAGE_INSTRUCTION
+        max_tokens = SPACE_BUNNY_IMAGE_MAX_TOKENS
+    elif image_case == IMAGE_CASE_B66_F02:
+        instruction = B66_F02_IMAGE_INSTRUCTION
+        max_tokens = B66_F02_IMAGE_MAX_TOKENS
+    else:
+        raise ValueError("unknown_image_case")
+
+    body: dict[str, Any] = {
         "model": spec.model_id,
         "messages": [
             {
                 "role": "user",
                 "content": [
-                    {"type": "text", "text": SPACE_BUNNY_IMAGE_INSTRUCTION},
+                    {"type": "text", "text": instruction},
                     {
                         "type": "image_url",
                         "image_url": {"url": image_data_url},
@@ -391,8 +448,50 @@ def canonical_image_body(spec: CandidateSpec, image_data_url: str) -> dict[str, 
             }
         ],
         "temperature": SPACE_BUNNY_IMAGE_TEMPERATURE,
-        "max_tokens": SPACE_BUNNY_IMAGE_MAX_TOKENS,
+        "max_tokens": max_tokens,
     }
+    if image_case == IMAGE_CASE_B66_F02:
+        # Match the actual B66 extraction request posture while staying inside
+        # the canonical gateway schema.
+        body["stream"] = False
+        body["business14"] = {
+            "required_capabilities": ["image"],
+            "allow_external_fallback": False,
+            "max_attempts": 1,
+        }
+    return body
+
+
+def _compact_unsigned_number(value: Any) -> str | None:
+    if isinstance(value, bool) or value is None:
+        return None
+    if isinstance(value, (int, float)):
+        if isinstance(value, float) and not value.is_integer():
+            return None
+        return str(int(value))
+    if not isinstance(value, str):
+        return None
+    compact = value.replace(",", "").replace(" ", "").strip()
+    return compact if compact.isdigit() else None
+
+
+def _validate_b66_f02_answer(content: str) -> None:
+    """Validate F02 visual facts without ever printing model content."""
+
+    try:
+        result = json.loads(content)
+    except json.JSONDecodeError as exc:
+        raise ValueError("b66_f02_answer_not_json") from exc
+    if not isinstance(result, dict) or set(result) != set(B66_F02_EXPECTED_FACTS):
+        raise ValueError("b66_f02_answer_shape")
+    for key in ("quote_number", "recipient", "first_item"):
+        value = result.get(key)
+        if not isinstance(value, str) or value.strip() != B66_F02_EXPECTED_FACTS[key]:
+            raise ValueError("b66_f02_visual_facts_mismatch")
+    if _compact_unsigned_number(result.get("first_quantity")) != B66_F02_EXPECTED_FACTS["first_quantity"]:
+        raise ValueError("b66_f02_visual_facts_mismatch")
+    if _compact_unsigned_number(result.get("first_unit_price")) != B66_F02_EXPECTED_FACTS["first_unit_price"]:
+        raise ValueError("b66_f02_visual_facts_mismatch")
 
 
 # --------------------------------------------------------------------------
@@ -493,6 +592,7 @@ def run(
     candidate_id: str,
     transport: HttpTransport | None = None,
     modality: str = MODALITY_TEXT,
+    image_case: str = IMAGE_CASE_GENERIC,
 ) -> int:
     """Run exactly one bounded live acceptance for one allowlisted candidate.
 
@@ -520,6 +620,16 @@ def run(
         print("B14_CHAT_POST_COUNT=0")
         print("NETWORK_RETRY_COUNT=0")
         return 1
+    if image_case not in (IMAGE_CASE_GENERIC, IMAGE_CASE_B66_F02):
+        _emit_result(cid, "FAIL_UNKNOWN_IMAGE_CASE")
+        print("B14_CHAT_POST_COUNT=0")
+        print("NETWORK_RETRY_COUNT=0")
+        return 1
+    if modality != MODALITY_IMAGE and image_case != IMAGE_CASE_GENERIC:
+        _emit_result(cid, "FAIL_IMAGE_CASE_REQUIRES_IMAGE_MODALITY")
+        print("B14_CHAT_POST_COUNT=0")
+        print("NETWORK_RETRY_COUNT=0")
+        return 1
 
     if transport is None:
         _emit_result(cid, "FAIL_TRANSPORT_NOT_AUTHORIZED")
@@ -536,7 +646,11 @@ def run(
             print("NETWORK_RETRY_COUNT=0")
             return 1
         try:
-            image_data_url = _load_space_bunny_image_data_url()
+            image_data_url = (
+                _load_b66_f02_image_data_url()
+                if image_case == IMAGE_CASE_B66_F02
+                else _load_space_bunny_image_data_url()
+            )
         except ValueError as exc:
             _emit_result(cid, f"FAIL_{exc}")
             print("B14_CHAT_POST_COUNT=0")
@@ -641,7 +755,11 @@ def run(
     if modality == MODALITY_IMAGE:
         try:
             assert image_data_url is not None
-            chat_body = canonical_image_body(spec, image_data_url)
+            chat_body = canonical_image_body(
+                spec,
+                image_data_url,
+                image_case=image_case,
+            )
         except ValueError as exc:
             _emit_result(cid, f"FAIL_{exc}")
             _locks(provider_posts, network_retries)
@@ -710,6 +828,15 @@ def run(
         _locks(provider_posts, network_retries)
         return 1
 
+    answer_content = choices[0]["message"]["content"].strip()
+    if modality == MODALITY_IMAGE and image_case == IMAGE_CASE_B66_F02:
+        try:
+            _validate_b66_f02_answer(answer_content)
+        except ValueError as exc:
+            _emit_result(cid, f"FAIL_{exc}")
+            _locks(provider_posts, network_retries)
+            return 1
+
     _emit_result(cid, "PASS")
     _emit(cid, "TIER", spec.tier)
     _emit(cid, "MODEL_ROUTE", spec.model_id)
@@ -730,6 +857,9 @@ def run(
         print("SPACE_BUNNY_PROVIDER_MATCH=YES")
         print("SPACE_BUNNY_FALLBACK_USED=NO")
         print("SPACE_BUNNY_ATTEMPT_COUNT=1")
+        if image_case == IMAGE_CASE_B66_F02:
+            print("B66_F02_VISUAL_FACTS=PASS")
+            print("B66_F02_FIXTURE_SHA256=PASS")
     _locks(provider_posts, network_retries)
     return 0
 
@@ -795,10 +925,18 @@ def main(argv: list[str] | None = None) -> int:
         print("DEFAULT_LIVE_EXECUTION=BLOCKED")
         return 1
     modality = MODALITY_TEXT
+    image_case = IMAGE_CASE_GENERIC
     for token in args[1:]:
         if token.startswith("--modality="):
             modality = token.split("=", 1)[1]
-    return run(candidate_id, transport=_request, modality=modality)
+        if token.startswith("--image-case="):
+            image_case = token.split("=", 1)[1]
+    return run(
+        candidate_id,
+        transport=_request,
+        modality=modality,
+        image_case=image_case,
+    )
 
 
 if __name__ == "__main__":

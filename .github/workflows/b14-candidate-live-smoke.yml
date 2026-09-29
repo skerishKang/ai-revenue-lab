@@ -33,6 +33,10 @@ on:
         description: 'Request modality (text|image). Image is only permitted for space-bunny.'
         required: false
         default: 'text'
+      image_case:
+        description: 'Image proof case (generic|b66-f02). b66-f02 requires space-bunny + image.'
+        required: false
+        default: 'generic'
       expected_b14_version:
         description: 'Exact B14 Worker version that must still be serving 100%'
         required: true
@@ -266,6 +270,9 @@ jobs:
           grep -Fq 'credential_mode="optional_platform_secret"' "${script}"
           grep -Fq 'def canonical_image_body' "${script}"
           grep -Fq 'SPACE_BUNNY_PRODUCTION_IMAGE_SMOKE=PASS' "${script}"
+          grep -Fq 'IMAGE_CASE_B66_F02 = "b66-f02"' "${script}"
+          grep -Fq 'B66_F02_VISUAL_FACTS=PASS' "${script}"
+          grep -Fq 'B66_F02_IMAGE_SHA256' "${script}"
           grep -Fq 'IMAGE_MODE_NON_SPACE_BUNNY=REJECTED_BEFORE_PROVIDER_CALL' "${wf}"
           grep -Fq 'SPACE_BUNNY_PRODUCTION_IMAGE_SMOKE=PASS' "${wf}"
           grep -Fq 'RAW_IMAGE_PAYLOAD_OUTPUT=0' "${script}"
@@ -292,6 +299,7 @@ jobs:
       EXPECTED_B14_VERSION: ${{ github.event.inputs.expected_b14_version }}
       CANDIDATE_ID: ${{ github.event.inputs.candidate_id }}
       MODALITY: ${{ github.event.inputs.modality }}
+      IMAGE_CASE: ${{ github.event.inputs.image_case }}
     steps:
       - name: Checkout exact authorized main
         uses: actions/checkout@v4
@@ -328,7 +336,18 @@ jobs:
               ;;
             *) echo 'UNKNOWN_MODALITY=1'; exit 1 ;;
           esac
+          case "${IMAGE_CASE:-generic}" in
+            generic) ;;
+            b66-f02)
+              if [ "${CANDIDATE_ID}" != "space-bunny" ] || [ "${MODALITY:-text}" != "image" ]; then
+                echo 'B66_F02_CASE_REQUIRES_SPACE_BUNNY_IMAGE=1'
+                exit 1
+              fi
+              ;;
+            *) echo 'UNKNOWN_IMAGE_CASE=1'; exit 1 ;;
+          esac
           echo "MODALITY=${MODALITY:-text}"
+          echo "IMAGE_CASE=${IMAGE_CASE:-generic}"
 
       - name: GET-only B14 served-version guard (canonical resolver)
         shell: bash
@@ -388,7 +407,7 @@ jobs:
           set -euo pipefail
           log="${RUNNER_TEMP}/candidate-live-smoke.log"
           upper="$(echo "${CANDIDATE_ID}" | tr '[:lower:]-' '[:upper:]_')"
-          python .github/scripts/b14_candidate_live_smoke.py "${CANDIDATE_ID}" --authorized-live-run --modality="${MODALITY:-text}" | tee "${log}"
+          python .github/scripts/b14_candidate_live_smoke.py "${CANDIDATE_ID}" --authorized-live-run --modality="${MODALITY:-text}" --image-case="${IMAGE_CASE:-generic}" | tee "${log}"
           grep -qx "${upper}_PRODUCTION_SMOKE=PASS" "${log}"
           grep -qx "${upper}_PROVIDER_REGISTERED=YES" "${log}"
           grep -qx "${upper}_CREDENTIAL_READY=YES" "${log}"
@@ -418,6 +437,10 @@ jobs:
             grep -qx 'SPACE_BUNNY_PROVIDER_MATCH=YES' "${log}"
             grep -qx 'SPACE_BUNNY_FALLBACK_USED=NO' "${log}"
             grep -qx 'SPACE_BUNNY_ATTEMPT_COUNT=1' "${log}"
+            if [ "${IMAGE_CASE:-generic}" = "b66-f02" ]; then
+              grep -qx 'B66_F02_VISUAL_FACTS=PASS' "${log}"
+              grep -qx 'B66_F02_FIXTURE_SHA256=PASS' "${log}"
+            fi
           fi
 
       - name: Record immutable execution locks
