@@ -804,13 +804,18 @@ def test_space_bunny_candidate_reuses_kilo_platform_secret() -> None:
     assert spec_obj.upstream_model == "stealth/space-bunny-alpha"
     assert spec_obj.credential_binding == "PADIEM_KILO_API_KEY"
     assert spec_obj.expected_binding == "PADIEM_KILO_API_KEY"
+    assert spec_obj.credential_mode == "optional_platform_secret"
 
 
-def test_space_bunny_uses_same_secret_backed_contract_as_other_candidates() -> None:
+def test_space_bunny_auth_is_optional_but_other_candidates_remain_secret_required() -> None:
     spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+    assert spec_obj.credential_mode == "optional_platform_secret"
     assert spec_obj.credential_binding == "PADIEM_KILO_API_KEY"
     assert spec_obj.expected_binding == "PADIEM_KILO_API_KEY"
     for cid, candidate in smoke.CANDIDATE_REGISTRY.items():
+        if cid == "space-bunny":
+            continue
+        assert candidate.credential_mode == "platform_secret"
         assert candidate.credential_binding
         assert candidate.expected_binding
 
@@ -886,7 +891,7 @@ def test_space_bunny_image_success_posts_once_with_image_evidence() -> None:
     assert "S1_IMAGE_ANSWER_SENTINEL" not in output
 
 
-def test_space_bunny_health_without_kilo_secret_fails_closed_before_post() -> None:
+def test_space_bunny_health_without_kilo_secret_still_runs_anonymous() -> None:
     spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
     calls: list = []
 
@@ -894,17 +899,27 @@ def test_space_bunny_health_without_kilo_secret_fails_closed_before_post() -> No
         calls.append((method, path, body))
         if path == smoke.HEALTH_PATH:
             return 200, _health(spec_obj, has_key=False)
-        raise AssertionError("must fail before models/chat after missing credential")
+        if path == smoke.MODELS_PATH:
+            return 200, _models(spec_obj)
+        if path == smoke.CHAT_PATH:
+            return 200, _chat(spec_obj)
+        raise AssertionError(path)
 
     stdout = io.StringIO()
     with contextlib.redirect_stdout(stdout):
         rc = smoke.run("space-bunny", transport=transport)
 
-    assert rc == 1
-    assert [(m, p) for m, p, _ in calls] == [("GET", smoke.HEALTH_PATH)]
+    assert rc == 0
+    assert [(m, p) for m, p, _ in calls] == [
+        ("GET", smoke.HEALTH_PATH),
+        ("GET", smoke.MODELS_PATH),
+        ("POST", smoke.CHAT_PATH),
+    ]
     output = stdout.getvalue()
-    assert "SPACE_BUNNY_PRODUCTION_SMOKE=FAIL_CREDENTIAL_NOT_READY" in output
-    assert "B14_CHAT_POST_COUNT=0" in output
+    assert "SPACE_BUNNY_PRODUCTION_SMOKE=PASS" in output
+    assert "SPACE_BUNNY_CREDENTIAL_MODE=OPTIONAL_PLATFORM_SECRET" in output
+    assert "SPACE_BUNNY_CREDENTIAL_PRESENT=NO" in output
+    assert "B14_CHAT_POST_COUNT=1" in output
 
 
 def test_space_bunny_image_failure_posts_at_most_once() -> None:
