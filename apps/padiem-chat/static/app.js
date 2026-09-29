@@ -823,6 +823,10 @@
     const inboxNavButtons = [
       document.getElementById("tasksNavButton"),
       document.getElementById("alertsNavButton"),
+      // #3237: Automation reuses the same signed-in gate. The server still
+      // owns the canonical tenant, so an enabled button never implies the
+      // caller may read any particular workspace.
+      document.getElementById("automationNavButton"),
     ].filter(Boolean);
     inboxNavButtons.forEach((button) => {
       button.disabled = !authenticated;
@@ -831,12 +835,17 @@
     if (!authenticated) {
       const inbox = document.getElementById("clawInbox");
       const inboxList = document.getElementById("clawInboxList");
+      const automation = document.getElementById("clawAutomation");
+      const automationList = document.getElementById("clawAutomationList");
       const workspace = document.getElementById("clawWorkspace");
       const runHistory = document.getElementById("clawRunHistory");
       const runHistoryList = document.getElementById("clawRunHistoryList");
       const runHistoryError = document.getElementById("clawRunHistoryError");
       if (inbox) inbox.hidden = true;
       if (inboxList) inboxList.replaceChildren();
+      // #3237: an Automation view never outlives the session that loaded it.
+      if (automation) automation.hidden = true;
+      if (automationList) automationList.replaceChildren();
       if (runHistory) runHistory.hidden = true;
       if (runHistoryList) runHistoryList.replaceChildren();
       if (runHistoryError) {
@@ -847,6 +856,7 @@
       if (workspace) {
         delete workspace.dataset.inboxKind;
         if (workspace.dataset.view === "inbox") workspace.dataset.view = "manual";
+        if (workspace.dataset.view === "automation") workspace.dataset.view = "manual";
       }
       // Auth loss tears down any pending execute recovery: no timer outlives the session.
       clearClawRecovery({ syncControls: true });
@@ -1471,6 +1481,16 @@
   const clawInboxEmpty = document.getElementById("clawInboxEmpty");
   const clawInboxList = document.getElementById("clawInboxList");
   const clawInboxRetry = document.getElementById("clawInboxRetry");
+  // #3237: read-only canonical automation rule catalogue. The browser is a
+  // viewer of the server-projected rows; it never creates, edits, toggles or
+  // runs a rule, and it never resolves a tenant of its own.
+  const automationNavButton = document.getElementById("automationNavButton");
+  const clawAutomation = document.getElementById("clawAutomation");
+  const clawAutomationLoading = document.getElementById("clawAutomationLoading");
+  const clawAutomationError = document.getElementById("clawAutomationError");
+  const clawAutomationEmpty = document.getElementById("clawAutomationEmpty");
+  const clawAutomationList = document.getElementById("clawAutomationList");
+  const clawAutomationRetry = document.getElementById("clawAutomationRetry");
   const clawManualForm = document.getElementById("clawManualForm");
   const clawChannel = document.getElementById("clawChannel");
   const clawAction = document.getElementById("clawAction");
@@ -2072,6 +2092,7 @@
     clawWorkspace.dataset.view = "inbox";
     clawWorkspace.dataset.inboxKind = kind;
     clawInbox.hidden = false;
+    if (clawAutomation) clawAutomation.hidden = true;
     if (clawManualForm) clawManualForm.hidden = true;
     if (clawResultArea) clawResultArea.hidden = true;
     // Inbox navigation leaves the manual form: drop the pending recovery timer/state.
@@ -2095,12 +2116,108 @@
     openClawInbox(kind);
   }
 
+  // --- #3237 read-only automation rule catalogue -----------------------------
+  function resetClawAutomationState() {
+    if (clawAutomationLoading) clawAutomationLoading.hidden = true;
+    if (clawAutomationError) clawAutomationError.hidden = true;
+    if (clawAutomationEmpty) clawAutomationEmpty.hidden = true;
+  }
+
+  function setClawAutomationLoading() {
+    resetClawAutomationState();
+    if (clawAutomationList) clawAutomationList.replaceChildren();
+    if (clawAutomationLoading) {
+      clawAutomationLoading.hidden = false;
+      clawAutomationLoading.textContent = uiT("claw-automation-loading");
+    }
+  }
+
+  function setClawAutomationError() {
+    resetClawAutomationState();
+    if (clawAutomationList) clawAutomationList.replaceChildren();
+    if (clawAutomationError) {
+      clawAutomationError.hidden = false;
+      clawAutomationError.textContent = uiT("claw-automation-error");
+    }
+  }
+
+  function renderClawAutomationRules(rules) {
+    if (!clawAutomationList) return;
+    clawAutomationList.replaceChildren();
+    if (!rules.length) {
+      if (clawAutomationEmpty) {
+        clawAutomationEmpty.hidden = false;
+        clawAutomationEmpty.textContent = uiT("claw-automation-empty");
+      }
+      return;
+    }
+    rules.forEach((rule) => {
+      const row = document.createElement("div");
+      row.className = "claw-inbox-card";
+      row.dataset.ruleId = rule.rule_id;
+      const title = document.createElement("strong");
+      // Server-projected metadata goes through a text sink only.
+      title.textContent = rule.name;
+      const meta = document.createElement("small");
+      const schedule = `${rule.schedule_expression} (${rule.schedule_timezone})`;
+      meta.textContent = [
+        rule.enabled ? uiT("automation-rule-enabled") : uiT("automation-rule-disabled"),
+        schedule,
+        rule.target_source,
+        rule.output_type,
+      ].join(" · ");
+      row.append(title, meta);
+      clawAutomationList.appendChild(row);
+    });
+  }
+
+  async function loadClawAutomationRules() {
+    if (!clawAutomation || !authState.authenticated) return;
+    setClawAutomationLoading();
+    try {
+      const response = await fetch("/api/claw/automation/rules", {
+        headers: { "Accept": "application/json" },
+        cache: "no-store",
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || data.ok !== true || !Array.isArray(data.rules)) {
+        throw new Error("automation rules unavailable");
+      }
+      resetClawAutomationState();
+      renderClawAutomationRules(data.rules);
+    } catch (_) {
+      setClawAutomationError();
+    }
+  }
+
+  function openClawAutomation() {
+    if (!clawWorkspace || !clawAutomation || !authState.authenticated) return;
+    shell.dataset.state = "claw";
+    clawWorkspace.dataset.view = "automation";
+    delete clawWorkspace.dataset.inboxKind;
+    clawAutomation.hidden = false;
+    if (clawInbox) clawInbox.hidden = true;
+    if (clawManualForm) clawManualForm.hidden = true;
+    if (clawResultArea) clawResultArea.hidden = true;
+    clearClawRecovery({ syncControls: true });
+    clearClawWait();
+    setNavActive();
+    closeSidebar();
+    syncApprovedMemoryVisibility();
+    syncClawRunHistoryVisibility();
+    loadClawAutomationRules();
+  }
+
+  if (automationNavButton) automationNavButton.addEventListener("click", openClawAutomation);
+  if (clawAutomationRetry) clawAutomationRetry.addEventListener("click", () => void loadClawAutomationRules());
+
   function openClawWorkspace() {
     if (!clawWorkspace) return;
     shell.dataset.state = "claw";
     clawWorkspace.dataset.view = "manual";
     delete clawWorkspace.dataset.inboxKind;
     if (clawInbox) clawInbox.hidden = true;
+    if (clawAutomation) clawAutomation.hidden = true;
     if (clawManualForm) clawManualForm.hidden = false;
     if (clawResultArea) clawResultArea.hidden = false;
     setNavActive();
