@@ -14,6 +14,14 @@ binding = "ASSETS"
 # credentials are resolved through named Worker bindings.
 B14_PROVIDER_MODE = "live"
 
+# Owner correction #3209: reuse the existing Kilo credential already held in
+# the account Secrets Store. Only binding metadata is committed; the value never
+# enters source, logs, browser responses, Chat, Claw, or Legal.
+[[secrets_store_secrets]]
+binding = "PADIEM_KILO_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "KILO_API_KEY"
+
 # #2571 owner-approved B.AI account secret projection. The Secrets Store value
 # remains account-managed; only the binding metadata is committed here.
 [[secrets_store_secrets]]
