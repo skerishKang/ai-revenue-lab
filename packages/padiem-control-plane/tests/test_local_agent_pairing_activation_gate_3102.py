@@ -12,18 +12,22 @@ No network, no Cloudflare call, no server, no dispatch.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
 
 from padiem_control_plane.contracts import ControlPlaneContractError
 from padiem_control_plane.local_agent_pairing_activation_3102 import (
+    REQUIRED_ACTIVATION_BINDING_NAMES,
     SOURCE_ONLY_READINESS,
     PairingActivationReadiness,
     assert_not_activated,
 )
 from padiem_control_plane.local_agent_pairing_activation_gate_3102 import (
+    CANONICAL_MAX_TRACKED_SCOPES,
     CANONICAL_RATE_ERROR_CODE,
+    CANONICAL_RATE_WINDOW_SECONDS,
     CanaryObservation,
     FIXED_BROKER_AUTHORITY_REF,
     GATE_MODES,
@@ -126,23 +130,40 @@ def test_gate_requires_exact_main_sha_and_guards_it() -> None:
 
 
 def test_gate_self_enforces_that_it_cannot_mutate_production() -> None:
+    """The guard list is read out of the workflow, not restated here.
+
+    The control-plane source policy forbids naming a deployment CLI inside this
+    package, so this test derives the guarded terms from the workflow itself and
+    then proves something stronger than presence: every occurrence of every
+    guarded term lives inside the guard-list statement, i.e. the workflow never
+    invokes one.
+    """
     source = _source()
-    for forbidden in ("wrangler deploy", "wrangler d1", "wrangler secret", "pages deploy"):
-        assert forbidden in source  # the guard list itself
+    start = source.index("for forbidden in ")
+    end = source.index("; do", start)
+    guarded_terms = re.findall(r'"([^"]+)"', source[start:end])
+    assert len(guarded_terms) >= 4, "the mutation guard must list real commands"
+    for term in guarded_terms:
+        assert term.strip(), "a guarded term must not be blank"
+        index = source.find(term)
+        while index != -1:
+            assert start <= index < end, f"a guarded term is invoked outside the guard list: {term!r}"
+            index = source.find(term, index + 1)
+    # The guard must be a real grep over the workflow itself, and it must fail.
+    assert 'if grep -q "${forbidden}"' in source
     assert "FORBIDDEN_MUTATION_COMMAND" in source
     assert "PRODUCTION_MUTATION=0" in source
     assert "BOOTSTRAP_PRIVATE_IS_NOT_3102_COMPLETION=YES" in source
-    # The guard must trip when a mutating command is actually present.
-    assert 'if grep -q "${forbidden}"' in source
 
 
 def test_gate_delegates_infrastructure_instead_of_duplicating_it() -> None:
     source = _source()
     assert "DELEGATED_TO=b54-local-agent-broker-production-gate.yml" in source
     assert "b54-local-agent-public-ingress-activation.yml" in source
-    # Read-only readiness may list deployed workers, but never deploy them.
+    # Read-only readiness may list deployed workers; the mutation guard test
+    # above proves no deployment command is invoked anywhere in this workflow.
     assert "workers/scripts" in source
-    assert "wrangler deploy" in source  # only inside the forbidden-command guard
+    assert "CLOUDFLARE_READONLY=PASS" in source
 
 
 def test_gate_pins_the_fixed_authority_and_rate_binding() -> None:
@@ -203,14 +224,14 @@ def test_bound_rate_passes() -> None:
 
 
 def test_rate_projection_must_come_from_the_canonical_authority() -> None:
-    gate = RateBoundGate.from_authority_safe_dict(
+    gate = RateBoundGate.from_canonical_rate_state(
         {"rate_limit": 3, "rate_bound_active": True, "window_seconds": 600, "max_tracked_scopes": 4096}
     )
     assert gate.evaluate()["RATE_BOUND_GATE"] == "PASS"
     with pytest.raises(ControlPlaneContractError):
-        RateBoundGate.from_authority_safe_dict({"rate_limit": 3})
+        RateBoundGate.from_canonical_rate_state({"rate_limit": 3})
     with pytest.raises(ControlPlaneContractError):
-        RateBoundGate.from_authority_safe_dict("not-a-mapping")
+        RateBoundGate.from_canonical_rate_state("not-a-mapping")
     with pytest.raises(ControlPlaneContractError):
         RateBoundGate("SOME_OTHER_BINDING", 3, 600, 4_096)
     with pytest.raises(ControlPlaneContractError):
@@ -345,6 +366,64 @@ def test_projection_rejects_an_unexpected_field() -> None:
     projection["pairing_code"] = "deadbeef"
     with pytest.raises(ControlPlaneContractError):
         assert_secret_free_gate_projection(projection)
+
+
+# ---------------------------------------------------------------------------
+# Anti-drift: the gate must never become a second rate authority
+# ---------------------------------------------------------------------------
+
+
+def test_rate_constants_are_derived_from_the_canonical_sources() -> None:
+    from padiem_control_plane import local_agent_broker_pairing as canonical
+
+    assert RATE_LIMIT_BINDING_NAME in REQUIRED_ACTIVATION_BINDING_NAMES
+    suffix = "PAIRING_ISSUANCE_RATE_LIMIT"
+    assert sum(1 for name in REQUIRED_ACTIVATION_BINDING_NAMES if name.endswith(suffix)) == 1
+    assert CANONICAL_RATE_WINDOW_SECONDS is canonical.PAIRING_ISSUANCE_WINDOW_SECONDS
+    assert CANONICAL_MAX_TRACKED_SCOPES is canonical.MAX_TRACKED_PAIRING_ISSUANCE_SCOPES
+
+
+def test_rate_error_code_matches_the_canonical_authority_source() -> None:
+    module_path = (
+        Path(__file__).parents[1] / "padiem_control_plane" / "local_agent_broker_pairing.py"
+    )
+    canonical_source = module_path.read_text(encoding="utf-8")
+    assert f'"{CANONICAL_RATE_ERROR_CODE}"' in canonical_source
+
+
+def test_rate_gate_reads_the_authority_projection_instead_of_redefining_it() -> None:
+    from padiem_control_plane.local_agent_broker import InMemoryLocalAgentBrokerAuthority
+    from padiem_control_plane.local_agent_broker_pairing import (
+        InMemoryBrokerPairingAuthority,
+    )
+
+    broker_core = InMemoryLocalAgentBrokerAuthority(
+        pepper=b"activation-gate-test-pepper", authority_ref="test.gate.broker.v1"
+    )
+
+    # The canonical authority's own per-scope rate projection is what the gate
+    # consumes; the gate never re-derives the bound.
+    unbound = InMemoryBrokerPairingAuthority(
+        pepper=b"activation-gate-pairing-pepper", authority=broker_core
+    )
+    unbound_state = unbound.issuance_rate_state(account_ref="account.gate", workspace_ref="workspace.gate")
+    assert unbound_state["rate_bound_active"] is False
+    assert unbound_state["window_seconds"] == CANONICAL_RATE_WINDOW_SECONDS
+    assert unbound_state["max_tracked_scopes"] == CANONICAL_MAX_TRACKED_SCOPES
+    gate = RateBoundGate.from_canonical_rate_state(unbound_state)
+    assert gate.evaluate()["RATE_BOUND_GATE"] == "FAIL_RATE_BOUND_NOT_ACTIVE"
+
+    bound = InMemoryBrokerPairingAuthority(
+        pepper=b"activation-gate-pairing-pepper",
+        authority=broker_core,
+        issuance_rate_limit=2,
+    )
+    bound_state = bound.issuance_rate_state(account_ref="account.gate", workspace_ref="workspace.gate")
+    assert bound_state["rate_bound_active"] is True
+    assert bound_state["rate_limit"] == 2
+    assert RateBoundGate.from_canonical_rate_state(bound_state).evaluate()[
+        "RATE_BOUND_GATE"
+    ] == "PASS"
 
 
 def test_gate_cannot_claim_a_live_activation() -> None:

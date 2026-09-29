@@ -44,6 +44,10 @@ from dataclasses import dataclass
 from typing import Any, Mapping
 
 from .contracts import ControlPlaneContractError
+from .local_agent_broker_pairing import (
+    MAX_TRACKED_PAIRING_ISSUANCE_SCOPES,
+    PAIRING_ISSUANCE_WINDOW_SECONDS,
+)
 from .local_agent_pairing_activation_3102 import (
     ACTIVATION_RUNBOOK,
     REQUIRED_ACTIVATION_BINDING_NAMES,
@@ -53,16 +57,38 @@ from .local_agent_pairing_activation_3102 import (
     assert_not_activated,
 )
 
-#: The rate binding the deployment must supply. It is one of the canonical
-#: activation binding names — re-exported, never re-declared, so the name cannot
-#: drift between the contract and the gate.
-RATE_LIMIT_BINDING_NAME = "PAIREM_PAIRING_ISSUANCE_RATE_LIMIT"
+#: Matcher for the canonical issuance-rate binding *name*. The name itself is
+#: derived from the canonical activation contract below — never declared here —
+#: so the deployment vocabulary stays single-sourced.
+_RATE_BINDING_SUFFIX = "PAIRING_ISSUANCE_RATE_LIMIT"
 
-#: The canonical issuance enforcement this gate reasons about, read from the
-#: contract module rather than restated here.
+
+def _derive_rate_binding_name() -> str:
+    """The one canonical activation binding name that is the issuance rate binding."""
+    matches = tuple(
+        name for name in REQUIRED_ACTIVATION_BINDING_NAMES if name.endswith(_RATE_BINDING_SUFFIX)
+    )
+    if len(matches) != 1:
+        raise ControlPlaneContractError(
+            "rate_binding_name_not_unique",
+            "the canonical activation contract must name exactly one issuance rate binding",
+        )
+    return matches[0]
+
+
+#: Derived from the canonical activation contract: exactly one of its required
+#: binding names is the issuance rate binding, and that one is used here.
+RATE_LIMIT_BINDING_NAME = _derive_rate_binding_name()
+
+#: Derived from the canonical broker authority, so the gate cannot drift from the
+#: enforcement it reasons about.
+CANONICAL_RATE_WINDOW_SECONDS = PAIRING_ISSUANCE_WINDOW_SECONDS
+CANONICAL_MAX_TRACKED_SCOPES = MAX_TRACKED_PAIRING_ISSUANCE_SCOPES
+
+#: The canonical refusal this gate reasons about. The authority exports no
+#: constant for it, so it is stated here and pinned by a drift test that reads
+#: the canonical module's own source.
 CANONICAL_RATE_ERROR_CODE = "pairing_issuance_rate_limited"
-CANONICAL_RATE_WINDOW_SECONDS = 600
-CANONICAL_MAX_TRACKED_SCOPES = 4_096
 
 #: The canonical authority the live gate runs against. Fixed, never an input:
 #: #3102 forbids a caller-selected broker destination.
@@ -151,14 +177,20 @@ class RateBoundGate:
         return self.rate_limit is not None
 
     @classmethod
-    def from_authority_safe_dict(cls, projection: Mapping[str, Any]) -> "RateBoundGate":
-        """Build from the canonical authority's own secret-free projection."""
+    def from_canonical_rate_state(cls, projection: Mapping[str, Any]) -> "RateBoundGate":
+        """Build from the canonical authority's own secret-free rate projection.
+
+        The source of truth is
+        :meth:`padiem_control_plane.local_agent_broker_pairing.InMemoryBrokerPairingAuthority.issuance_rate_state`,
+        the canonical support evidence for one scope's bounded issuance. The gate
+        consumes that projection instead of re-deriving the bound.
+        """
         if not isinstance(projection, Mapping):
             _fail("rate_projection_must_be_mapping", "the rate projection must be a mapping")
         if "rate_bound_active" not in projection or "rate_limit" not in projection:
             _fail(
                 "rate_projection_missing_canonical_fields",
-                "the rate projection must come from the canonical authority's safe_dict()",
+                "the rate projection must come from the canonical issuance_rate_state projection",
             )
         try:
             window = _require_int(
@@ -493,7 +525,7 @@ def _main(argv: list[str] | None = None) -> int:
             if "rollback_disable" in payload:
                 rollback_disable = RollbackDisableObservation(**payload["rollback_disable"])
             if "rate" in payload:
-                rate = RateBoundGate.from_authority_safe_dict(payload["rate"])
+                rate = RateBoundGate.from_canonical_rate_state(payload["rate"])
         except ControlPlaneContractError as exc:
             raise SystemExit(f"observation_refused:{exc.code}")
         except TypeError:
