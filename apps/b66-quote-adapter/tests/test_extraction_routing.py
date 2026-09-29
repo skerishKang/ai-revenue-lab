@@ -120,9 +120,9 @@ class B66GovernedRouteTests(unittest.TestCase):
         self.assertIsInstance(request["messages"][0]["content"], str)
         self.assertIn("견적번호", request["messages"][0]["content"])
         self.assertFalse(request["business14"]["allow_external_fallback"])
-        self.assertFalse(request["b66"]["fallback_allowed"])
-        self.assertEqual(request["b66"]["route_mode"], "manual")
-        self.assertFalse(request["b66"]["stream"])
+        self.assertEqual(request["business14"]["max_attempts"], 1)
+        self.assertFalse(request["stream"])
+        self.assertNotIn("b66", request)
 
     def test_image_to_multimodal_route_png_jpeg_webp(self) -> None:
         cases = [
@@ -144,9 +144,12 @@ class B66GovernedRouteTests(unittest.TestCase):
                 url = content[1]["image_url"]["url"]
                 self.assertTrue(url.startswith(f"data:{media_type};base64,"))
                 self.assertFalse(request["business14"]["allow_external_fallback"])
+                self.assertEqual(request["business14"]["max_attempts"], 1)
                 self.assertEqual(
                     request["business14"]["required_capabilities"], ["image"]
                 )
+                self.assertFalse(request["stream"])
+                self.assertNotIn("b66", request)
 
     def test_remote_url_forbidden_oversized_rejected_magic_rejected(self) -> None:
         # Remote URLs are never a valid input to the byte-level builder.
@@ -195,7 +198,9 @@ class B66GovernedRouteTests(unittest.TestCase):
                 content[1]["image_url"]["url"].startswith("data:image/png;base64,")
             )
             self.assertFalse(request["business14"]["allow_external_fallback"])
-            self.assertEqual(request["b66"]["source_kind"], "scanned_pdf")
+            self.assertEqual(request["business14"]["max_attempts"], 1)
+            self.assertFalse(request["stream"])
+            self.assertNotIn("b66", request)
 
     def test_scanned_pdf_uses_render_pages_not_custom_decoding(self) -> None:
         source_path = (
@@ -836,6 +841,59 @@ class B66CanonicalIntegrationTests(unittest.TestCase):
             capabilities & {"vision", "video", "multimodal", "audio"}, frozenset()
         )
 
+    @staticmethod
+    def _gateway_allowed_request_fields() -> tuple[frozenset[str], frozenset[str]]:
+        path = (
+            B66CanonicalIntegrationTests._repo_root()
+            / "apps"
+            / "korean-ai-platform"
+            / "app"
+            / "pilot"
+            / "gateway.py"
+        )
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        found: dict[str, frozenset[str]] = {}
+        for node in tree.body:
+            if not isinstance(node, ast.Assign) or len(node.targets) != 1:
+                continue
+            target = node.targets[0]
+            if not isinstance(target, ast.Name):
+                continue
+            if target.id not in {"_ALLOWED_CHAT_FIELDS", "_ALLOWED_B14_FIELDS"}:
+                continue
+            call = node.value
+            if (
+                isinstance(call, ast.Call)
+                and isinstance(call.func, ast.Name)
+                and call.func.id == "frozenset"
+                and len(call.args) == 1
+                and isinstance(call.args[0], (ast.Set, ast.List, ast.Tuple))
+            ):
+                found[target.id] = frozenset(
+                    elt.value
+                    for elt in call.args[0].elts
+                    if isinstance(elt, ast.Constant) and isinstance(elt.value, str)
+                )
+        assert set(found) == {"_ALLOWED_CHAT_FIELDS", "_ALLOWED_B14_FIELDS"}
+        return found["_ALLOWED_CHAT_FIELDS"], found["_ALLOWED_B14_FIELDS"]
+
+    def test_built_requests_are_gateway_valid_top_level_shapes(self) -> None:
+        allowed_chat, allowed_b14 = self._gateway_allowed_request_fields()
+        text_request = build_text_extraction_request(
+            "견적번호 Q-2026-3001", filename="quote.pdf"
+        )
+        image_request = build_image_extraction_request(
+            (CORPUS_DIR / "f02-scanned-quotation.png").read_bytes(),
+            media_type="image/png",
+            filename="f02-scanned-quotation.png",
+        )
+        for request in (text_request, image_request):
+            self.assertLessEqual(set(request), allowed_chat)
+            self.assertLessEqual(set(request["business14"]), allowed_b14)
+            self.assertNotIn("b66", request)
+            self.assertFalse(request["stream"])
+            self.assertEqual(request["business14"]["max_attempts"], 1)
+
     def test_builtin_requests_target_the_governed_lane_without_fallback(self) -> None:
         text_request = build_text_extraction_request(
             "견적번호 Q-2026-3001", filename="quote.pdf"
@@ -848,9 +906,9 @@ class B66CanonicalIntegrationTests(unittest.TestCase):
         for request in (text_request, image_request):
             self.assertEqual(request["model"], B66_GOVERNED_ROUTE)
             self.assertFalse(request["business14"]["allow_external_fallback"])
-            self.assertFalse(request["b66"]["fallback_allowed"])
-            self.assertEqual(request["b66"]["route_mode"], "manual")
-            self.assertFalse(request["b66"]["stream"])
+            self.assertEqual(request["business14"]["max_attempts"], 1)
+            self.assertFalse(request["stream"])
+            self.assertNotIn("b66", request)
         content = image_request["messages"][0]["content"]
         self.assertEqual(len(content), 2)
         self.assertEqual(content[1]["type"], "image_url")
