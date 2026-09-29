@@ -81,4 +81,9 @@ const tampered = Object.assign({}, edited.candidate, { skillFingerprint: "0".rep
 eq(Candidate.approveCandidate(tampered, { id: "skill-tampered", approvedBy: "central-cto", now: NOW }).code,
   "candidate_changed_after_review", "approval is fingerprint-bound to reviewed behavior");
 
+const provenanceTampered = JSON.parse(JSON.stringify(edited.candidate));
+provenanceTampered.provenance.evidence[0].value = "변조된 출처 증거";
+eq(Candidate.approveCandidate(provenanceTampered, { id: "skill-provenance-tampered", approvedBy: "central-cto", now: NOW }).code,
+  "candidate_changed_after_review", "approval is fingerprint-bound to reviewed provenance");
+
 console.log("quote-skill-candidate contracts: PASS");
