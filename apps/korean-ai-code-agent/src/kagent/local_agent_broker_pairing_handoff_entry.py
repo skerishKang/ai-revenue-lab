@@ -101,6 +101,11 @@ ACCEPTANCE_LOCAL_POLICY_REF = "local_policy.3140.p01"
 ACCEPTANCE_PROFILE_REF = "profile.3140.python"
 P01_AUTHORITY_REF = "p01_authority.3140.evidence"
 P01_EVIDENCE_ROUTE = "/v1/broker/p01-evidence"
+# #3217 — loopback-only emulation of the broker Worker Service Binding read.
+TERMINAL_RESULT_SERVICE_ROUTE = "/__private/terminal-command-result"
+MAX_PRIVATE_RESULT_REQUEST_BYTES = 4 * 1024
+MAX_PRIVATE_RESULT_RESPONSE_BYTES = 16 * 1024
+_LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
 ACCEPTANCE_AGENT_RUNTIME_ID = "agent_runtime.3140"
 
 
@@ -515,6 +520,16 @@ class LoopbackPairingBroker:
             "request_fingerprint": fingerprint,
         }
 
+    def terminal_command_result(self, payload: dict) -> dict:
+        """Read #3139 facts from this exact canonical broker authority."""
+
+        from padiem_control_plane.local_agent_broker_state import (
+            LocalAgentBrokerStateSnapshot,
+            terminal_command_result_from_snapshot,
+        )
+
+        snapshot = LocalAgentBrokerStateSnapshot.capture(self.authority)
+        return terminal_command_result_from_snapshot(snapshot, payload)
     def request_port(self) -> "LoopbackRequestPort":
         return LoopbackRequestPort(self)
 
@@ -652,6 +667,84 @@ class BrokerClientPort:
         return decoded
 
 
+class LoopbackBrokerAuthorityServiceBinding:
+    """Read-only #3217 Service Binding shape over the shared loopback owner."""
+
+    def __init__(self, base_url: str) -> None:
+        import urllib.parse
+
+        parsed = urllib.parse.urlparse(base_url)
+        if parsed.scheme != "http" or parsed.hostname not in _LOOPBACK_HOSTS or not parsed.port:
+            raise ContractError("terminal-result binding requires a loopback broker URL")
+        if parsed.path not in ("", "/") or parsed.query or parsed.fragment or parsed.username:
+            raise ContractError("terminal-result binding broker URL must be an origin")
+        self._base_url = base_url.rstrip("/")
+
+    @staticmethod
+    def _unavailable() -> dict:
+        return {
+            "ok": False,
+            "error": {
+                "code": "local_runner_result_binding_unavailable",
+                "message": "the private broker result binding is unavailable",
+            },
+        }
+
+    def terminal_command_result(self, payload: dict) -> dict:
+        import http.client
+        import urllib.error
+        import urllib.request
+
+        if type(payload) is not dict:
+            return {
+                "ok": False,
+                "error": {
+                    "code": "invalid_terminal_result_request",
+                    "message": "terminal result request was rejected",
+                },
+            }
+        body = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        if len(body) > MAX_PRIVATE_RESULT_REQUEST_BYTES:
+            return {
+                "ok": False,
+                "error": {
+                    "code": "invalid_terminal_result_request",
+                    "message": "terminal result request was rejected",
+                },
+            }
+        request = urllib.request.Request(
+            f"{self._base_url}{TERMINAL_RESULT_SERVICE_ROUTE}",
+            data=body,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=10) as response:
+                raw = response.read(MAX_PRIVATE_RESULT_RESPONSE_BYTES + 1)
+        except urllib.error.HTTPError as exc:
+            try:
+                raw = exc.read(MAX_PRIVATE_RESULT_RESPONSE_BYTES + 1)
+            except OSError:
+                raw = b""
+            finally:
+                exc.close()
+            if len(raw) > MAX_PRIVATE_RESULT_RESPONSE_BYTES:
+                return self._unavailable()
+            try:
+                decoded = json.loads(raw.decode("utf-8"))
+            except (UnicodeDecodeError, json.JSONDecodeError):
+                return self._unavailable()
+            return decoded if type(decoded) is dict else self._unavailable()
+        except (OSError, http.client.HTTPException):
+            return self._unavailable()
+        if len(raw) > MAX_PRIVATE_RESULT_RESPONSE_BYTES:
+            return self._unavailable()
+        try:
+            decoded = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            return self._unavailable()
+        return decoded if type(decoded) is dict else self._unavailable()
+
 def make_request_port() -> BrokerClientPort:
     """Client factory for the resident's configured broker entry.
 
@@ -738,25 +831,54 @@ def serve(host: str = "127.0.0.1", port: int = 0) -> int:
     import threading
     import urllib.parse
 
+    if host not in _LOOPBACK_HOSTS:
+        raise ValueError("non-Production broker owner must bind to loopback")
+
     broker = LoopbackPairingBroker()
     holder = {"url": ""}
 
     class Handler(http.server.BaseHTTPRequestHandler):
         def do_POST(self) -> None:  # noqa: N802 — BaseHTTPRequestHandler surface
             length = int(self.headers.get("Content-Length", "0"))
-            payload = json.loads(self.rfile.read(length).decode("utf-8")) if length else {}
-            # The canonical routes are the handler's own, read from the
-            # module rather than guessed: the lifecycle routes are unversioned
-            # (/session, /heartbeat, /poll) while the pairing routes are
-            # versioned (/v1/broker/pairings/...).
             path_only = urllib.parse.urlparse(self.path).path
             if path_only.startswith("/v1/"):
                 route = path_only
             else:
                 route = f"/{path_only.lstrip('/')}"
+            if route == TERMINAL_RESULT_SERVICE_ROUTE and length > MAX_PRIVATE_RESULT_REQUEST_BYTES:
+                out_body = {
+                    "ok": False,
+                    "error": {
+                        "code": "invalid_terminal_result_request",
+                        "message": "terminal result request was rejected",
+                    },
+                }
+                raw = json.dumps(out_body, sort_keys=True, separators=(",", ":")).encode("utf-8")
+                self.send_response(413)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("Content-Length", str(len(raw)))
+                self.end_headers()
+                self.wfile.write(raw)
+                return
+            payload = json.loads(self.rfile.read(length).decode("utf-8")) if length else {}
             # #3140 stall diagnosis: request accepted, handler entered, response
             # written. Route names only -- never a body, a code or a credential.
             _owner_emit(event="broker_request_accepted", route=route)
+            if route == TERMINAL_RESULT_SERVICE_ROUTE:
+                out_body = broker.terminal_command_result(payload)
+                raw = json.dumps(out_body, sort_keys=True, separators=(",", ":")).encode("utf-8")
+                if len(raw) > MAX_PRIVATE_RESULT_RESPONSE_BYTES:
+                    out_body = LoopbackBrokerAuthorityServiceBinding._unavailable()
+                    raw = json.dumps(out_body, sort_keys=True, separators=(",", ":")).encode("utf-8")
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("Content-Length", str(len(raw)))
+                self.end_headers()
+                self.wfile.write(raw)
+                _owner_emit(event="broker_response_written", route=route, status=200)
+                return
             if route == P01_EVIDENCE_ROUTE:
                 # The bounded evidence fetch the resident performs; served before
                 # the product routes, and only for the exact fingerprint.
