@@ -82,6 +82,10 @@ class CandidateSpec:
 
     ``credential_binding`` is the **name** of the expected platform secret
     binding. Its value is never read, printed, or transmitted by this module.
+    Space Bunny may reuse the owner-managed Kilo credential
+    ``PADIEM_KILO_API_KEY`` when present, but its candidate contract remains
+    runnable when B14 reports no key so the documented anonymous free-model path
+    can be measured. Callers never supply or override the credential.
     """
 
     candidate_id: str
@@ -92,14 +96,23 @@ class CandidateSpec:
     upstream_model: str
     credential_binding: str
     expected_binding: str
+    credential_mode: str = "platform_secret"
 
 
 # --------------------------------------------------------------------------
 # Explicit candidate allowlist (#2798 authority correction).
 #
-# PLUS  : Agnes, SenseNova, Poolside, Motif, Mercury, Atria
+# PLUS  : Agnes, SenseNova, Poolside, Motif, Mercury, Atria, Space Bunny
 # PRO   : GPT-5.6 Luna
 # EXCLUDED: B.AI Qwen3.8 (deliberately absent — see _EXCLUDED_* below)
+#
+# Space Bunny (#3209, decision source #3143) is the Padiem Plus text+vision
+# primary on the Kilo Gateway free lane. The existing owner-managed
+# ``PADIEM_KILO_API_KEY`` binding is optional: B14 may use it when present
+# (``kilo/stealth-space-bunny-alpha``, upstream ``stealth/space-bunny-alpha``,
+# provider display ``Kilo Gateway / Stealth`` per the B14 registry). It is the
+# only candidate permitted in image modality; every other candidate stays
+# text-only.
 # --------------------------------------------------------------------------
 
 _CANDIDATES: tuple[CandidateSpec, ...] = (
@@ -172,6 +185,17 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         upstream_model="gpt-5.6-luna",
         credential_binding="PADIEM_EXLAB_API_KEY",
         expected_binding="PADIEM_EXLAB_API_KEY",
+    ),
+    CandidateSpec(
+        candidate_id="space-bunny",
+        tier="plus",
+        provider_id="kilo",
+        provider_name="Kilo Gateway / Stealth",
+        model_id="kilo/stealth-space-bunny-alpha",
+        upstream_model="stealth/space-bunny-alpha",
+        credential_binding="PADIEM_KILO_API_KEY",
+        expected_binding="PADIEM_KILO_API_KEY",
+        credential_mode="optional_platform_secret",
     ),
 )
 
@@ -284,6 +308,94 @@ def canonical_chat_body(spec: CandidateSpec) -> dict[str, Any]:
 
 
 # --------------------------------------------------------------------------
+# Bounded image modality (#3209 S1).
+#
+# Only the Space Bunny candidate may run in image modality, reusing the
+# existing single-image product contract (one PNG/JPEG/WebP data URL plus one
+# text part, bounded fixture, no raw payload output). Every other
+# candidate/modality combination fails closed before any provider POST.
+# --------------------------------------------------------------------------
+
+MODALITY_TEXT = "text"
+MODALITY_IMAGE = "image"
+IMAGE_ONLY_CANDIDATE_ID = "space-bunny"
+
+SPACE_BUNNY_IMAGE_INSTRUCTION = "이 이미지에 보이는 내용을 짧게 설명해 주세요."
+SPACE_BUNNY_IMAGE_MAX_TOKENS = 32
+SPACE_BUNNY_IMAGE_TEMPERATURE = 0
+
+SPACE_BUNNY_IMAGE_FIXTURE = (
+    Path(__file__).resolve().parents[2]
+    / "packages"
+    / "padiem-ai-core"
+    / "tests"
+    / "fixtures"
+    / "b66_e2e_corpus"
+    / "f11-simple-logo.png"
+)
+MAX_IMAGE_FIXTURE_BYTES = 4 * 1024 * 1024
+
+
+def _image_media_type(raw: bytes) -> str:
+    if raw.startswith(b"\xff\xd8\xff"):
+        return "image/jpeg"
+    if raw.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "image/png"
+    if len(raw) >= 12 and raw.startswith(b"RIFF") and raw[8:12] == b"WEBP":
+        return "image/webp"
+    raise ValueError("image_fixture_unavailable")
+
+
+def _load_space_bunny_image_data_url() -> str:
+    """Return the bounded synthetic fixture as a data URL, or fail closed.
+
+    The fixture bytes are never printed; only the constructed POST body
+    carries them, and the body itself is never logged.
+    """
+
+    import base64
+
+    try:
+        raw = SPACE_BUNNY_IMAGE_FIXTURE.read_bytes()
+    except OSError as exc:
+        raise ValueError("image_fixture_unavailable") from exc
+    if not raw or len(raw) > MAX_IMAGE_FIXTURE_BYTES:
+        raise ValueError("image_fixture_unavailable")
+    media_type = _image_media_type(raw)
+    return f"data:{media_type};base64," + base64.b64encode(raw).decode("ascii")
+
+
+def canonical_image_body(spec: CandidateSpec, image_data_url: str) -> dict[str, Any]:
+    """Pin one exact manual image route for the Space Bunny candidate only."""
+
+    if spec.candidate_id != IMAGE_ONLY_CANDIDATE_ID:
+        raise ValueError("image_modality_not_permitted")
+    if (
+        not isinstance(image_data_url, str)
+        or not image_data_url.startswith("data:image/")
+        or ";base64," not in image_data_url
+    ):
+        raise ValueError("image_fixture_unavailable")
+    return {
+        "model": spec.model_id,
+        "messages": [
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": SPACE_BUNNY_IMAGE_INSTRUCTION},
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": image_data_url},
+                    },
+                ],
+            }
+        ],
+        "temperature": SPACE_BUNNY_IMAGE_TEMPERATURE,
+        "max_tokens": SPACE_BUNNY_IMAGE_MAX_TOKENS,
+    }
+
+
+# --------------------------------------------------------------------------
 # Closed safe error-code vocabulary (BLOCKER 2).
 #
 # Only these local, gate-owned codes may ever be projected to stdout. An
@@ -351,17 +463,18 @@ def _classify_latency(latency_ms: int) -> str:
 def _emit(candidate_id: str, key: str, value: str) -> None:
     """Emit one bounded evidence line for the given candidate."""
 
-    print(f"{candidate_id.upper()}_{key}={value}")
+    print(f"{candidate_id.upper().replace('-', '_')}_{key}={value}")
 
 
 def _emit_result(candidate_id: str, result: str) -> None:
-    print(f"{candidate_id.upper()}_PRODUCTION_SMOKE={result}")
+    print(f"{candidate_id.upper().replace('-', '_')}_PRODUCTION_SMOKE={result}")
 
 
 def _locks(provider_posts: int, retries: int) -> None:
     print(f"B14_CHAT_POST_COUNT={provider_posts}")
     print(f"NETWORK_RETRY_COUNT={retries}")
     print("RAW_RESPONSE_CONTENT_OUTPUT=0")
+    print("RAW_IMAGE_PAYLOAD_OUTPUT=0")
     print("PRIVATE_PAYLOAD_OUTPUT=0")
     print("SECRET_VALUE_OUTPUT=0")
     print(f"MAX_PROVIDER_CALLS={MAX_PROVIDER_CALLS}")
@@ -379,12 +492,17 @@ def _locks(provider_posts: int, retries: int) -> None:
 def run(
     candidate_id: str,
     transport: HttpTransport | None = None,
+    modality: str = MODALITY_TEXT,
 ) -> int:
     """Run exactly one bounded live acceptance for one allowlisted candidate.
 
     ``transport`` is required. When it is ``None`` the call fails closed
     **before any request is constructed**, which is what makes a default
     invocation unable to reach Production.
+
+    ``modality`` is ``"text"`` (default, every candidate) or ``"image"``
+    (Space Bunny only). Any other candidate/modality combination fails closed
+    before any provider POST.
     """
 
     try:
@@ -397,12 +515,33 @@ def run(
 
     cid = spec.candidate_id
 
+    if modality not in (MODALITY_TEXT, MODALITY_IMAGE):
+        _emit_result(cid, "FAIL_UNKNOWN_MODALITY")
+        print("B14_CHAT_POST_COUNT=0")
+        print("NETWORK_RETRY_COUNT=0")
+        return 1
+
     if transport is None:
         _emit_result(cid, "FAIL_TRANSPORT_NOT_AUTHORIZED")
         print("DEFAULT_LIVE_EXECUTION=BLOCKED")
         print("B14_CHAT_POST_COUNT=0")
         print("NETWORK_RETRY_COUNT=0")
         return 1
+
+    image_data_url: str | None = None
+    if modality == MODALITY_IMAGE:
+        if cid != IMAGE_ONLY_CANDIDATE_ID:
+            _emit_result(cid, "FAIL_IMAGE_MODALITY_NOT_PERMITTED")
+            print("B14_CHAT_POST_COUNT=0")
+            print("NETWORK_RETRY_COUNT=0")
+            return 1
+        try:
+            image_data_url = _load_space_bunny_image_data_url()
+        except ValueError as exc:
+            _emit_result(cid, f"FAIL_{exc}")
+            print("B14_CHAT_POST_COUNT=0")
+            print("NETWORK_RETRY_COUNT=0")
+            return 1
 
     provider_posts = 0
     network_retries = 0
@@ -442,13 +581,21 @@ def run(
         _emit_result(cid, "FAIL_PROVIDER_NOT_REGISTERED")
         _locks(provider_posts, network_retries)
         return 1
-    if provider_entry.get("has_key") is not True:
-        _emit_result(cid, "FAIL_CREDENTIAL_NOT_READY")
-        _locks(provider_posts, network_retries)
-        return 1
-    _emit(cid, "PROVIDER_REGISTERED", "YES")
-    _emit(cid, "CREDENTIAL_READY", "YES")
-    _emit(cid, "EXPECTED_BINDING", spec.expected_binding)
+    has_key = provider_entry.get("has_key") is True
+    if spec.credential_mode == "optional_platform_secret":
+        _emit(cid, "PROVIDER_REGISTERED", "YES")
+        _emit(cid, "CREDENTIAL_READY", "YES")
+        _emit(cid, "CREDENTIAL_MODE", "OPTIONAL_PLATFORM_SECRET")
+        _emit(cid, "CREDENTIAL_PRESENT", "YES" if has_key else "NO")
+        _emit(cid, "EXPECTED_BINDING", spec.expected_binding)
+    else:
+        if not has_key:
+            _emit_result(cid, "FAIL_CREDENTIAL_NOT_READY")
+            _locks(provider_posts, network_retries)
+            return 1
+        _emit(cid, "PROVIDER_REGISTERED", "YES")
+        _emit(cid, "CREDENTIAL_READY", "YES")
+        _emit(cid, "EXPECTED_BINDING", spec.expected_binding)
 
     models_status, models_raw = transport("GET", MODELS_PATH, None)
     if models_status != 200:
@@ -491,7 +638,17 @@ def run(
 
     provider_posts += 1
     started = time.monotonic()
-    chat_status, chat_raw = transport("POST", CHAT_PATH, canonical_chat_body(spec))
+    if modality == MODALITY_IMAGE:
+        try:
+            assert image_data_url is not None
+            chat_body = canonical_image_body(spec, image_data_url)
+        except ValueError as exc:
+            _emit_result(cid, f"FAIL_{exc}")
+            _locks(provider_posts, network_retries)
+            return 1
+    else:
+        chat_body = canonical_chat_body(spec)
+    chat_status, chat_raw = transport("POST", CHAT_PATH, chat_body)
     latency_ms = max(0, int((time.monotonic() - started) * 1000))
 
     if chat_status != 200:
@@ -563,6 +720,16 @@ def run(
     _emit(cid, "ATTEMPT_COUNT", "1")
     _emit(cid, "LATENCY_MS", str(latency_ms))
     _emit(cid, "LATENCY_CLASS", _classify_latency(latency_ms))
+    if modality == MODALITY_IMAGE:
+        print("SPACE_BUNNY_PRODUCTION_IMAGE_SMOKE=PASS")
+        print("SPACE_BUNNY_PROVIDER_REGISTERED=YES")
+        print("SPACE_BUNNY_ROUTE_REGISTERED=YES")
+        print("SPACE_BUNNY_EXACT_MODEL_IDENTITY=PASS")
+        print("SPACE_BUNNY_INPUT_MODALITY=IMAGE")
+        print("SPACE_BUNNY_ACTUAL_RESPONSE_MODEL_EVIDENCE=PASS")
+        print("SPACE_BUNNY_PROVIDER_MATCH=YES")
+        print("SPACE_BUNNY_FALLBACK_USED=NO")
+        print("SPACE_BUNNY_ATTEMPT_COUNT=1")
     _locks(provider_posts, network_retries)
     return 0
 
@@ -612,7 +779,9 @@ def main(argv: list[str] | None = None) -> int:
 
     Requires an explicit candidate id and an explicit authorization marker.
     Without both, this exits non-zero and never constructs a transport, so a
-    bare default invocation cannot reach Production.
+    bare default invocation cannot reach Production. An optional
+    ``--modality=text|image`` flag (default ``text``) selects the bounded
+    image canary, which only the Space Bunny candidate permits.
     """
 
     args = list(sys.argv[1:] if argv is None else argv)
@@ -625,7 +794,11 @@ def main(argv: list[str] | None = None) -> int:
         print("B14_CANDIDATE_LIVE_SMOKE=FAIL_AUTHORIZATION_REQUIRED")
         print("DEFAULT_LIVE_EXECUTION=BLOCKED")
         return 1
-    return run(candidate_id, transport=_request)
+    modality = MODALITY_TEXT
+    for token in args[1:]:
+        if token.startswith("--modality="):
+            modality = token.split("=", 1)[1]
+    return run(candidate_id, transport=_request, modality=modality)
 
 
 if __name__ == "__main__":
