@@ -124,11 +124,12 @@ def _by_id(fixtures: list[dict], fixture_id: str) -> dict:
 def _regeneration_comparable(manifest: dict) -> dict:
     """Drop the fields that are declared platform-dependent for rasters.
 
-    A ``normalized`` fixture's exact bytes depend on the CJK font the
-    rasterizer can resolve, so its byte size and digest legitimately differ when
-    the corpus is regenerated on another platform. Integrity of the committed
-    bytes is asserted separately in this module; for the manifest comparison the
-    declared normalized fingerprint stands in for those two fields.
+    A ``normalized`` fixture's pixels depend on the CJK font the rasterizer can
+    resolve, so its byte size, digest and normalized fingerprint legitimately
+    differ when the corpus is regenerated on another platform. Integrity of the
+    committed bytes and the recomputability of the committed fingerprint are
+    asserted separately in this module; the raster class itself stays covered by
+    the two in-environment regenerations below.
     """
 
     comparable = json.loads(json.dumps(manifest))
@@ -136,6 +137,7 @@ def _regeneration_comparable(manifest: dict) -> dict:
         if record["determinism"] == "normalized":
             record.pop("byte_size", None)
             record.pop("sha256", None)
+            record.pop("normalized_fingerprint", None)
     return comparable
 
 
