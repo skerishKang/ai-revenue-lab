@@ -530,6 +530,7 @@ class LoopbackPairingBroker:
 
         snapshot = LocalAgentBrokerStateSnapshot.capture(self.authority)
         return terminal_command_result_from_snapshot(snapshot, payload)
+
     def request_port(self) -> "LoopbackRequestPort":
         return LoopbackRequestPort(self)
 
