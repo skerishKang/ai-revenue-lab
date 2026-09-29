@@ -263,6 +263,7 @@ jobs:
           grep -Fq 'candidate_id="space-bunny"' "${script}"
           grep -Fq 'credential_binding="PADIEM_KILO_API_KEY"' "${script}"
           grep -Fq 'expected_binding="PADIEM_KILO_API_KEY"' "${script}"
+          grep -Fq 'credential_mode="optional_platform_secret"' "${script}"
           grep -Fq 'def canonical_image_body' "${script}"
           grep -Fq 'SPACE_BUNNY_PRODUCTION_IMAGE_SMOKE=PASS' "${script}"
           grep -Fq 'IMAGE_MODE_NON_SPACE_BUNNY=REJECTED_BEFORE_PROVIDER_CALL' "${wf}"
