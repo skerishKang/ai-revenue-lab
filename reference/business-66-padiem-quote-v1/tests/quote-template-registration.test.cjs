@@ -39,8 +39,10 @@ eq(seeded.code, "template_candidate_ready", "template registration reports its o
 check(seeded.candidate.status === "candidate", "seeded output is review-only");
 check(seeded.review.sections.length > 0, "review exposes sections");
 check(seeded.draftNote === TemplateRegistration.DRAFT_NOTE, "honest draft note accompanies the seed");
-check(TemplateRegistration.DRAFT_NOTE.includes("확인") && !/완전히 학습|AI가/.test(TemplateRegistration.DRAFT_NOTE),
-  "no overclaimed AI-learning copy");
+check(TemplateRegistration.DRAFT_NOTE.includes("자동으로 분석하지 않") &&
+      TemplateRegistration.DRAFT_NOTE.includes("비교") &&
+      !/완전히 학습|AI가/.test(TemplateRegistration.DRAFT_NOTE),
+  "honest copy: default draft + no auto-analysis + compare-and-correct");
 eq(seeded.candidate.provenance.sourceName, "synthetic-company-quotation.pdf", "source filename is provenance only");
 check(!JSON.stringify(seeded.candidate).includes("base64"), "no source bytes enter the candidate");
 eq(seeded.candidate.review.warnings.map((w) => w.code), ["manual_layout_review_required"], "manual review is required, not assumed");

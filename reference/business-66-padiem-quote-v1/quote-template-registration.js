@@ -43,7 +43,7 @@
   var MAX_FILENAME_CHARS = 255;
 
   /* 등록 화면에 내보내는 정직한 문구. 자동 학습 완료 취지의 과장 표현을 금지한다. */
-  var DRAFT_NOTE = "견적서에서 확인한 내용을 바탕으로 초안을 만들었습니다. 모양과 기본값을 확인하고 필요한 부분을 수정해 주세요.";
+  var DRAFT_NOTE = "기본 견적서 초안을 준비했습니다. 현재는 원본 견적서의 모양을 자동으로 분석하지 않으므로, 실제 사용 중인 견적서와 비교해 필요한 부분을 수정해 주세요.";
   var SEED_WARNING = "manual_layout_review_required";
   var SEED_UNKNOWN = "layout";
 
