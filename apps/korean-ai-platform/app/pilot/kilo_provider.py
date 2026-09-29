@@ -2,13 +2,15 @@
 
 This module keeps a bounded set of explicit current free routes rather than
 ``kilo-auto/free``. Kilo's official Gateway documentation checked on
-2026-09-02 lists the exact upstream IDs below as free and allows anonymous
-requests to free models, subject to the Gateway's current IP rate limit.
+2026-09-02 lists the exact upstream IDs below as free. Production execution uses the
+owner-managed Kilo API credential already stored in Cloudflare Secrets Store;
+the credential value is never committed, logged, returned, or exposed to
+callers.
 
 Free availability is volatile. These registrations are dated snapshots, remain
-explicit/manual-only, and are never inserted into ``b14/auto``. No API key is
-stored or required for these routes. The fixed Kilo Gateway origin and upstream
-model IDs are server-owned metadata; callers cannot replace either value.
+explicit/manual-only, and are never inserted into ``b14/auto``. The fixed Kilo
+Gateway origin, credential binding name, and upstream model IDs are server-owned
+metadata; callers cannot replace any of them.
 
 Re-check on 2026-09-08 against the public Gateway model list (#2094):
 ``minimax/minimax-m3:free`` and ``tencent/hy3:free`` are no longer offered.
@@ -19,8 +21,9 @@ as retirement metadata for contract tests and operator documentation.
 
 Owner decision (#3143) pins ``stealth/space-bunny-alpha`` as the Business 66
 quotation text primary. It is registered here as one additional explicit
-free lane under the same ``kilo`` Provider spec (keyless
-``CredentialSource.NONE``): no new provider adapter and no new secret are
+free lane under the same ``kilo`` Provider spec. Owner correction #3209
+reuses the existing Cloudflare Secrets Store credential through
+``CredentialSource.PLATFORM_SECRET``; no new provider adapter or secret value is
 introduced. Like the lanes above it is never appended to ``CATALOG_MODELS``
 or to ``b14/auto``; the global auto chain and its fallback set are unchanged.
 Owner decision (#3209) additionally names the same lane the canonical vision
@@ -49,6 +52,7 @@ from app.pilot.platform_secrets import (
 KILO_PROVIDER_ID = "kilo"
 KILO_BASE_ORIGIN = "https://api.kilo.ai/api/gateway"
 KILO_ALLOWED_HOST = "api.kilo.ai"
+KILO_CREDENTIAL_BINDING = "KILO_API_KEY"
 
 KILO_NEMOTRON_MODEL_ID = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 KILO_NEMOTRON_UPSTREAM_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
@@ -140,21 +144,20 @@ KILO_FREE_ROUTES = (
 
 
 def register_kilo_provider() -> None:
-    """Idempotently register the explicit anonymous Kilo free routes.
+    """Idempotently register the explicit authenticated Kilo free routes.
 
-    ``CatalogModel.credential_source`` remains ``platform_secret`` as the
-    current Router Core's compatibility marker for the generic platform
-    execution adapter. The authoritative Provider spec is ``NONE`` and the
-    adapter therefore sends no Authorization header. A later Router contract
-    cleanup can expose ``none`` directly without changing public model IDs.
+    ``CatalogModel.credential_source`` remains ``platform_secret`` and the
+    authoritative Provider spec now matches it: B14 resolves only the existing
+    ``KILO_API_KEY`` Worker binding and sends it as a Bearer credential. Missing
+    credential material fails closed; callers can never supply or override it.
     """
 
     if get_platform_provider(KILO_PROVIDER_ID) is None:
         register_platform_provider(
             PlatformProviderSpec(
                 provider_id=KILO_PROVIDER_ID,
-                credential_source=CredentialSource.NONE,
-                credential_binding_name="",
+                credential_source=CredentialSource.PLATFORM_SECRET,
+                credential_binding_name=KILO_CREDENTIAL_BINDING,
                 base_origin=KILO_BASE_ORIGIN,
                 allowed_hosts=(KILO_ALLOWED_HOST,),
                 enabled=True,
