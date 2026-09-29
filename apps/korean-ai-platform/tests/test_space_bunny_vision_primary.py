@@ -4,13 +4,13 @@ Proves against the real B14 registry/router/adapter (no string-presence
 checks):
 
 - Space Bunny is the canonical text+vision primary lane on the existing Kilo
-  authenticated Kilo provider (repo id + upstream preserved, context_window 0 unchanged).
+  Kilo provider with model-scoped Space Bunny auth (repo id + upstream preserved, context_window 0 unchanged).
 - The lane declares image alongside chat/coding/free; video/audio/wildcard
   stay undeclared (VIDEO_ACTIVATION=0).
 - SenseNova/Agnes/Poolside provider registrations stay intact, but none is
   an active product secondary/fallback.
 - The multimodal image_url payload shape reaches the Kilo adapter unchanged
-  over a mock transport with the existing platform-owned Authorization header.
+  over a mock transport with the existing owner-managed Kilo credential.
 """
 
 from __future__ import annotations
@@ -26,8 +26,8 @@ from app.pilot import platform as plat
 from app.pilot import platform_secrets as ps
 from app.pilot.catalog import get_catalog_by_id
 from app.pilot.kilo_provider import (
-    KILO_CREDENTIAL_BINDING,
     KILO_PROVIDER_ID,
+    KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
     KILO_SPACE_BUNNY_MODEL_ID,
     KILO_SPACE_BUNNY_UPSTREAM_MODEL,
 )
@@ -51,8 +51,11 @@ _TINY_PNG_URL = (
 
 
 @pytest.fixture(autouse=True)
-def _kilo_platform_secret(monkeypatch):
-    monkeypatch.setenv(KILO_CREDENTIAL_BINDING, "kilo_live_abcdefghijklmnopqrstuvwxyz1234")
+def _space_bunny_kilo_secret(monkeypatch):
+    monkeypatch.setenv(
+        KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
+        "kilo_live_abcdefghijklmnopqrstuvwxyz1234",
+    )
 
 
 def test_space_bunny_matches_canonical_text_and_vision_primary() -> None:
@@ -111,7 +114,7 @@ def test_other_provider_registrations_are_preserved_but_not_secondary() -> None:
 
 
 @pytest.mark.asyncio
-async def test_space_bunny_image_payload_reaches_kilo_adapter_with_platform_secret(
+async def test_space_bunny_image_payload_reaches_kilo_adapter_with_model_scoped_secret(
     monkeypatch,
 ) -> None:
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
@@ -168,7 +171,7 @@ async def test_space_bunny_image_payload_reaches_kilo_adapter_with_platform_secr
 
     spec = ps.get_platform_provider(KILO_PROVIDER_ID)
     assert spec is not None
-    assert spec.credential_source == ps.CredentialSource.PLATFORM_SECRET
-    assert spec.credential_binding_name == KILO_CREDENTIAL_BINDING
-    headers = plat._request_headers(spec)
+    assert spec.credential_source == ps.CredentialSource.NONE
+    assert "Authorization" not in plat._request_headers(spec)
+    headers = plat._request_headers(spec, model_id=KILO_SPACE_BUNNY_MODEL_ID)
     assert headers["Authorization"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
