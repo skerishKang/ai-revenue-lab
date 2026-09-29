@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import importlib.util
+import inspect
 import io
 import sys
 from pathlib import Path
@@ -93,7 +94,7 @@ def test_target_and_privacy_contract_are_fixed() -> None:
 
 
 def test_a6_sequence_is_pinned_without_project_or_oauth_creation() -> None:
-    source = SCRIPT.read_text(encoding="utf-8")
+    source = inspect.getsource(canary.run_live)
     markers = [
         "_open_existing_project(page)",
         "_open_picker_and_wait_recent(page)",
@@ -113,7 +114,7 @@ def test_a6_sequence_is_pinned_without_project_or_oauth_creation() -> None:
 
 
 def test_existing_configured_baseline_fails_closed() -> None:
-    source = SCRIPT.read_text(encoding="utf-8")
+    source = inspect.getsource(canary.run_live)
     assert 'raise CanaryFailure("baseline_already_configured")' in source
     # The runner never clears first just to manufacture a clean baseline.
     baseline_pos = source.index('baseline = _wait_status')
