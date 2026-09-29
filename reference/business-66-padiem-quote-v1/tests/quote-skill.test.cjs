@@ -150,6 +150,10 @@ const tampered = clone(skill);
 tampered.fixedDefaults.sender.company = "변조 회사";
 eq(Skill.normalizeSkill(tampered), null, "content change invalidates skill approval by fingerprint binding");
 
+const provenanceTampered = clone(skill);
+provenanceTampered.provenance.evidence[0].value = "변조된 출처 증거";
+eq(Skill.normalizeSkill(provenanceTampered), null, "reviewed provenance change invalidates skill approval");
+
 const invalidInput = Skill.buildRenderModel(skill, {
   quoteNo: "Q-X",
   issueDate: "2026-09-29",
