@@ -95,8 +95,8 @@ def test_executable_routes_are_explicit_secret_bound_and_unretired() -> None:
             # #3209: Plus is Space Bunny Alpha on the keyless Kilo free lane.
             assert route.provider_id == "kilo"
             assert route.model_id == "kilo/stealth-space-bunny-alpha"
-            assert route.credential_mode is ProductCredentialMode.ANONYMOUS
-            assert route.credential_binding is None
+            assert route.credential_mode is ProductCredentialMode.PLATFORM_SECRET_BINDING
+            assert route.credential_binding == "KILO_API_KEY"
         else:  # pragma: no cover - only Plus is executable in current truth
             assert route.credential_mode is ProductCredentialMode.PLATFORM_SECRET_BINDING
 
@@ -280,11 +280,180 @@ def test_selected_routes_match_registered_provider_constants() -> None:
         r'^KILO_SPACE_BUNNY_MODEL_ID = "([^"]+)"$', kilo_source, re.MULTILINE
     )
     kilo_bunny_upstream = re.search(
-        r'^KILO_SPACE_BUNNY_UPSTREAM_MODEL = "([^"]+)"$', kilo_source, re.MULTILINE
+        r'^KILO_SPACE_BUNNY_UPSTREAM_MODEL = "([^"]+)"
+    # #3209: the active Plus route is the Kilo Space Bunny lane.
+    assert kilo_bunny.group(1) == executables[ProductTierLabel.PLUS].model_id
+    assert kilo_bunny_upstream.group(1) == executables[ProductTierLabel.PLUS].upstream_model
+    assert executables[ProductTierLabel.PLUS].provider_id == "kilo"
+    assert executables[ProductTierLabel.PLUS].credential_binding == kilo_binding.group(1)
+    assert kilo_binding.group(1) == "KILO_API_KEY"
+    # Agnes provider registration is preserved as historical Plus data-only.
+    plus_routes = get_tier(ProductTierLabel.PLUS).routes
+    agnes_hold = next(r for r in plus_routes if r.model_id == agnes_model.group(1))
+    assert agnes_hold.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
+    assert agnes_binding.group(1) == agnes_hold.credential_binding
+    pro_routes = get_tier(ProductTierLabel.PRO).routes
+    held_bai = next(r for r in pro_routes if r.provider_id == "b-ai")
+    assert held_bai.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
+    assert bai_model.group(1) == held_bai.model_id
+    assert bai_binding.group(1) == held_bai.credential_binding
+
+
+def test_kilo_routes_are_historical_only_and_retirement_stays_pinned() -> None:
+    source = KILO_PROVIDER_PATH.read_text(encoding="utf-8")
+
+    for tier in (ProductTierLabel.PRO,):
+        kilo_routes = [route for route in get_tier(tier).routes if route.provider_id == "kilo"]
+        assert kilo_routes
+        assert all(route.status is not ProductRouteStatus.EXECUTABLE for route in kilo_routes)
+
+    retired_block = re.search(
+        r"RETIRED_KILO_FREE_MODEL_IDS = frozenset\(\s*\{(.*?)\}", source, re.DOTALL
+    )
+    assert retired_block, "B14 retirement block not found"
+    assert "KILO_MINIMAX_M3_MODEL_ID" in retired_block.group(1)
+    assert "KILO_HY3_MODEL_ID" in retired_block.group(1)
+
+    for name, model_id in (
+        ("KILO_MINIMAX_M3_MODEL_ID", "kilo/minimax-minimax-m3-free"),
+        ("KILO_HY3_MODEL_ID", "kilo/tencent-hy3-free"),
+    ):
+        constant = re.search(rf'^{name} = "([^"]+)"$', source, re.MULTILINE)
+        assert constant and constant.group(1) == model_id
+        assert model_id in RETIRED_PRODUCT_MODEL_IDS
+
+
+def test_contract_module_is_stdlib_only_and_side_effect_free() -> None:
+    source = CONTRACT_PATH.read_text(encoding="utf-8")
+    # Tokens are split by concatenation so this scanner never self-matches the
+    # package-wide CI side-effect guard (which scans every *.py in the package).
+    _i = "import "
+    forbidden = (
+        _i + "httpx",
+        _i + "requests",
+        _i + "socket",
+        "urllib",
+        "from app",
+        _i + "app",
+        "os.environ",
+        "open(",
+        "register_platform_provider",
+        "sqlite",
+        "asyncio",
+        "subprocess",
+        "threading",
+    )
+    for token in forbidden:
+        assert token not in source, f"contract module must not contain {token!r}"
+
+    tree = ast.parse(source)
+    imported: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            imported.update(alias.name for alias in node.names)
+        elif isinstance(node, ast.ImportFrom):
+            assert node.level == 0, "contract must not use relative package imports"
+            if node.module:
+                imported.add(node.module)
+    assert imported <= {"__future__", "dataclasses", "enum", "re"}, (
+        f"contract imports exceed the stdlib allow-list: {imported}"
+    )
+
+    # Import already happened at this point (module-level fixtures above); if
+    # importing performed file/socket/env side effects the guard scans and the
+    # package-wide CI side-effect assertion cover, tests would fail loudly.
+    import padiem_control_plane.product_tier_routes as contract_module
+    assert contract_module.PRODUCT_TIER_POLICY_VERSION == PRODUCT_TIER_POLICY_VERSION
+, kilo_source, re.MULTILINE
+    )
+    kilo_binding = re.search(
+        r'^KILO_CREDENTIAL_BINDING = "([^"]+)"
+    # #3209: the active Plus route is the Kilo Space Bunny lane.
+    assert kilo_bunny.group(1) == executables[ProductTierLabel.PLUS].model_id
+    assert kilo_bunny_upstream.group(1) == executables[ProductTierLabel.PLUS].upstream_model
+    assert executables[ProductTierLabel.PLUS].provider_id == "kilo"
+    # Agnes provider registration is preserved as historical Plus data-only.
+    plus_routes = get_tier(ProductTierLabel.PLUS).routes
+    agnes_hold = next(r for r in plus_routes if r.model_id == agnes_model.group(1))
+    assert agnes_hold.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
+    assert agnes_binding.group(1) == agnes_hold.credential_binding
+    pro_routes = get_tier(ProductTierLabel.PRO).routes
+    held_bai = next(r for r in pro_routes if r.provider_id == "b-ai")
+    assert held_bai.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
+    assert bai_model.group(1) == held_bai.model_id
+    assert bai_binding.group(1) == held_bai.credential_binding
+
+
+def test_kilo_routes_are_historical_only_and_retirement_stays_pinned() -> None:
+    source = KILO_PROVIDER_PATH.read_text(encoding="utf-8")
+
+    for tier in (ProductTierLabel.PRO,):
+        kilo_routes = [route for route in get_tier(tier).routes if route.provider_id == "kilo"]
+        assert kilo_routes
+        assert all(route.status is not ProductRouteStatus.EXECUTABLE for route in kilo_routes)
+
+    retired_block = re.search(
+        r"RETIRED_KILO_FREE_MODEL_IDS = frozenset\(\s*\{(.*?)\}", source, re.DOTALL
+    )
+    assert retired_block, "B14 retirement block not found"
+    assert "KILO_MINIMAX_M3_MODEL_ID" in retired_block.group(1)
+    assert "KILO_HY3_MODEL_ID" in retired_block.group(1)
+
+    for name, model_id in (
+        ("KILO_MINIMAX_M3_MODEL_ID", "kilo/minimax-minimax-m3-free"),
+        ("KILO_HY3_MODEL_ID", "kilo/tencent-hy3-free"),
+    ):
+        constant = re.search(rf'^{name} = "([^"]+)"$', source, re.MULTILINE)
+        assert constant and constant.group(1) == model_id
+        assert model_id in RETIRED_PRODUCT_MODEL_IDS
+
+
+def test_contract_module_is_stdlib_only_and_side_effect_free() -> None:
+    source = CONTRACT_PATH.read_text(encoding="utf-8")
+    # Tokens are split by concatenation so this scanner never self-matches the
+    # package-wide CI side-effect guard (which scans every *.py in the package).
+    _i = "import "
+    forbidden = (
+        _i + "httpx",
+        _i + "requests",
+        _i + "socket",
+        "urllib",
+        "from app",
+        _i + "app",
+        "os.environ",
+        "open(",
+        "register_platform_provider",
+        "sqlite",
+        "asyncio",
+        "subprocess",
+        "threading",
+    )
+    for token in forbidden:
+        assert token not in source, f"contract module must not contain {token!r}"
+
+    tree = ast.parse(source)
+    imported: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            imported.update(alias.name for alias in node.names)
+        elif isinstance(node, ast.ImportFrom):
+            assert node.level == 0, "contract must not use relative package imports"
+            if node.module:
+                imported.add(node.module)
+    assert imported <= {"__future__", "dataclasses", "enum", "re"}, (
+        f"contract imports exceed the stdlib allow-list: {imported}"
+    )
+
+    # Import already happened at this point (module-level fixtures above); if
+    # importing performed file/socket/env side effects the guard scans and the
+    # package-wide CI side-effect assertion cover, tests would fail loudly.
+    import padiem_control_plane.product_tier_routes as contract_module
+    assert contract_module.PRODUCT_TIER_POLICY_VERSION == PRODUCT_TIER_POLICY_VERSION
+, kilo_source, re.MULTILINE
     )
 
     assert agnes_model and bai_model and agnes_binding and bai_binding
-    assert kilo_bunny and kilo_bunny_upstream
+    assert kilo_bunny and kilo_bunny_upstream and kilo_binding
     # #3209: the active Plus route is the Kilo Space Bunny lane.
     assert kilo_bunny.group(1) == executables[ProductTierLabel.PLUS].model_id
     assert kilo_bunny_upstream.group(1) == executables[ProductTierLabel.PLUS].upstream_model
