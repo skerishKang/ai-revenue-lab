@@ -86,8 +86,8 @@ class TestWranglerConfig:
         # secret_name) with no secret values committed here.
         assert "[[unsafe.bindings]]" not in content
         assert 'type = "secrets_store_secret"' not in content
-        assert content.count("[[secrets_store_secrets]]") == 7
-        assert content.count('store_id = "f0b09ca04a7b43248154c773704a5616"') == 7
+        assert content.count("[[secrets_store_secrets]]") == 8
+        assert content.count('store_id = "f0b09ca04a7b43248154c773704a5616"') == 8
         assert 'binding = "PADIEM_AGNES_API_KEY"' in content
         assert 'secret_name = "PADIEM_AGNES_API_KEY"' in content
         assert 'binding = "PADIEM_POOLSIDE_API_KEY"' in content
@@ -159,3 +159,12 @@ class TestEnvBridge:
         """The _env_applied flag pattern exists in worker.py."""
         src = WORKER_SRC.read_text()
         assert "_env_applied" in src
+
+
+def test_kilo_secret_store_binding_is_metadata_only_and_env_bridged():
+    content = WRANGLER_TOML.read_text()
+    worker = WORKER_SRC.read_text()
+    assert 'binding = "KILO_API_KEY"' in content
+    assert 'secret_name = "KILO_API_KEY"' in content
+    assert "KILO_API_KEY =" not in content
+    assert '"KILO_API_KEY"' in worker
