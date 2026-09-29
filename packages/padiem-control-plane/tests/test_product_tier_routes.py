@@ -95,8 +95,8 @@ def test_executable_routes_are_explicit_secret_bound_and_unretired() -> None:
             # #3209: Plus is Space Bunny Alpha on the keyless Kilo free lane.
             assert route.provider_id == "kilo"
             assert route.model_id == "kilo/stealth-space-bunny-alpha"
-            assert route.credential_mode is ProductCredentialMode.PLATFORM_SECRET_BINDING
-            assert route.credential_binding == "PADIEM_KILO_API_KEY"
+            assert route.credential_mode is ProductCredentialMode.ANONYMOUS
+            assert route.credential_binding is None
         else:  # pragma: no cover - only Plus is executable in current truth
             assert route.credential_mode is ProductCredentialMode.PLATFORM_SECRET_BINDING
 
@@ -282,18 +282,13 @@ def test_selected_routes_match_registered_provider_constants() -> None:
     kilo_bunny_upstream = re.search(
         r'^KILO_SPACE_BUNNY_UPSTREAM_MODEL = "([^"]+)"$', kilo_source, re.MULTILINE
     )
-    kilo_binding = re.search(
-        r'^KILO_SPACE_BUNNY_CREDENTIAL_BINDING = "([^"]+)"$', kilo_source, re.MULTILINE
-    )
 
     assert agnes_model and bai_model and agnes_binding and bai_binding
-    assert kilo_bunny and kilo_bunny_upstream and kilo_binding
+    assert kilo_bunny and kilo_bunny_upstream
     # #3209: the active Plus route is the Kilo Space Bunny lane.
     assert kilo_bunny.group(1) == executables[ProductTierLabel.PLUS].model_id
     assert kilo_bunny_upstream.group(1) == executables[ProductTierLabel.PLUS].upstream_model
     assert executables[ProductTierLabel.PLUS].provider_id == "kilo"
-    assert executables[ProductTierLabel.PLUS].credential_binding == kilo_binding.group(1)
-    assert kilo_binding.group(1) == "PADIEM_KILO_API_KEY"
     # Agnes provider registration is preserved as historical Plus data-only.
     plus_routes = get_tier(ProductTierLabel.PLUS).routes
     agnes_hold = next(r for r in plus_routes if r.model_id == agnes_model.group(1))
