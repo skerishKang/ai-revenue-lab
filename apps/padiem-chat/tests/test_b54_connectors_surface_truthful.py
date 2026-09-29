@@ -128,7 +128,7 @@ def _pure_mapping_block() -> str:
     start = "  function connectorSupportKey(value) {"
     end = "  function liveConnectorCards() {"
     assert start in app and end in app
-    return app.split(start, 1)[1].split(end, 1)[0]
+    return start.lstrip() + app.split(start, 1)[1].split(end, 1)[0]
 
 
 def test_connectors_nav_is_enabled_and_bound_to_existing_dialog() -> None:
@@ -276,8 +276,7 @@ def test_actual_mapping_functions_execute_with_closed_state_vocabulary() -> None
     functions = _pure_mapping_block()
     script = f"""
 const authState = {{ authenticated: true }};
-function connectorSupportKey(value) {{{functions.split('function connectorWorkspaceKey', 1)[0].split('{', 1)[1]}}
-function connectorWorkspaceKey(value) {{{functions.split('function connectorWorkspaceKey(value) {', 1)[1]}}
+{functions}
 const signedIn = {{
   support: ["complete", "source_ready", "deferred", "bogus"].map(connectorSupportKey),
   workspace: ["connected", "not_connected", "unverified", "ambiguous", "bogus"].map(connectorWorkspaceKey),
