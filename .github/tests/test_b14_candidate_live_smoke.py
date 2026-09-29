@@ -794,7 +794,7 @@ def _s1_image_transport(spec, calls: list | None = None, answer: str = "S1_IMAGE
     return transport
 
 
-def test_space_bunny_candidate_is_allowlisted_keyless() -> None:
+def test_space_bunny_candidate_reuses_kilo_platform_secret() -> None:
     spec_obj = smoke.resolve_candidate("space-bunny")
     assert spec_obj.candidate_id == "space-bunny"
     assert spec_obj.tier == "plus"
@@ -802,25 +802,17 @@ def test_space_bunny_candidate_is_allowlisted_keyless() -> None:
     assert spec_obj.provider_name == "Kilo Gateway / Stealth"
     assert spec_obj.model_id == "kilo/stealth-space-bunny-alpha"
     assert spec_obj.upstream_model == "stealth/space-bunny-alpha"
-    assert spec_obj.credential_mode == "keyless"
-    # Keyless authority: no fabricated secret binding name.
-    assert spec_obj.credential_binding == "NONE"
-    assert spec_obj.expected_binding == "NONE"
-    for value in (spec_obj.credential_binding, spec_obj.expected_binding):
-        assert "PADIEM" not in value
+    assert spec_obj.credential_binding == "KILO_API_KEY"
+    assert spec_obj.expected_binding == "KILO_API_KEY"
 
 
-def test_space_bunny_is_the_only_keyless_candidate() -> None:
-    keyless = [
-        cid
-        for cid, spec_obj in smoke.CANDIDATE_REGISTRY.items()
-        if spec_obj.credential_mode == "keyless"
-    ]
-    assert keyless == ["space-bunny"]
-    for cid, spec_obj in smoke.CANDIDATE_REGISTRY.items():
-        if cid != "space-bunny":
-            assert spec_obj.credential_mode == "platform_secret"
-            assert spec_obj.credential_binding.startswith("PADIEM_")
+def test_space_bunny_uses_same_secret_backed_contract_as_other_candidates() -> None:
+    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+    assert spec_obj.credential_binding == "KILO_API_KEY"
+    assert spec_obj.expected_binding == "KILO_API_KEY"
+    for cid, candidate in smoke.CANDIDATE_REGISTRY.items():
+        assert candidate.credential_binding
+        assert candidate.expected_binding
 
 
 def test_canonical_image_body_pins_exact_model_and_parts() -> None:
@@ -894,26 +886,25 @@ def test_space_bunny_image_success_posts_once_with_image_evidence() -> None:
     assert "S1_IMAGE_ANSWER_SENTINEL" not in output
 
 
-def test_space_bunny_keyless_health_without_key_still_passes() -> None:
-    """B14 reports has_key False for the keyless Kilo lane; image text run passes."""
-
+def test_space_bunny_health_without_kilo_secret_fails_closed_before_post() -> None:
     spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+    calls: list = []
 
     def transport(method: str, path: str, body: dict | None):
+        calls.append((method, path, body))
         if path == smoke.HEALTH_PATH:
             return 200, _health(spec_obj, has_key=False)
-        if path == smoke.MODELS_PATH:
-            return 200, _models(spec_obj)
-        if path == smoke.CHAT_PATH:
-            return 200, _chat(spec_obj)
-        raise AssertionError(path)
+        raise AssertionError("must fail before models/chat after missing credential")
 
     stdout = io.StringIO()
     with contextlib.redirect_stdout(stdout):
         rc = smoke.run("space-bunny", transport=transport)
 
-    assert rc == 0
-    assert "SPACE_BUNNY_PRODUCTION_SMOKE=PASS" in stdout.getvalue()
+    assert rc == 1
+    assert [(m, p) for m, p, _ in calls] == [("GET", smoke.HEALTH_PATH)]
+    output = stdout.getvalue()
+    assert "SPACE_BUNNY_PRODUCTION_SMOKE=FAIL_CREDENTIAL_NOT_READY" in output
+    assert "B14_CHAT_POST_COUNT=0" in output
 
 
 def test_space_bunny_image_failure_posts_at_most_once() -> None:
