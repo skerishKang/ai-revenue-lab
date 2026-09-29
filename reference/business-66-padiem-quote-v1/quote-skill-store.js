@@ -70,9 +70,7 @@
   function listSkills(raw) {
     var store = normalizeStore(raw);
     return store.skills.map(function (entry) {
-      var skill = Skill.normalizeSkill(entry);
-      skill.isDefault = skill.id === store.defaultSkillId;
-      return skill;
+      return Skill.normalizeSkill(entry);
     });
   }
 
