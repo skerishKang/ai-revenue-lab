@@ -16,6 +16,16 @@ Both lanes are retired (see RETIRED_KILO_FREE_MODEL_IDS) and are NOT
 registered in the catalog: explicit manual/auto resolution fails closed with
 ``unsupported_model``. The IDs and upstream models below are retained purely
 as retirement metadata for contract tests and operator documentation.
+
+Owner decision (#3143) pins ``stealth/space-bunny-alpha`` as the Business 66
+quotation text primary. It is registered here as one additional explicit
+free lane under the same ``kilo`` Provider spec (keyless
+``CredentialSource.NONE``): no new provider adapter and no new secret are
+introduced. Like the lanes above it is never appended to ``CATALOG_MODELS``
+or to ``b14/auto``; the global auto chain and its fallback set are unchanged.
+The lane declares text roles only (``chat``/``coding``/``free``): Business 66
+vision routing is still an open owner decision, so no ``vision``/``image``
+capability is declared even though the upstream model may accept images.
 """
 
 from __future__ import annotations
@@ -42,6 +52,18 @@ KILO_NEMOTRON_MODEL_ID = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 KILO_NEMOTRON_UPSTREAM_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
 KILO_LAGUNA_MODEL_ID = "kilo/poolside-laguna-s-2.1-free"
 KILO_LAGUNA_UPSTREAM_MODEL = "poolside/laguna-s-2.1:free"
+
+# Business 66 quotation text-primary lane (#3143). The upstream id carries no
+# ``:free`` suffix, so the repo-facing id applies the same transformation used
+# for the lanes above (``/`` -> ``-``, ``:`` -> ``-``) and therefore keeps no
+# ``-free`` marker: ``stealth/space-bunny-alpha`` ->
+# ``kilo/stealth-space-bunny-alpha``.
+KILO_SPACE_BUNNY_MODEL_ID = "kilo/stealth-space-bunny-alpha"
+KILO_SPACE_BUNNY_UPSTREAM_MODEL = "stealth/space-bunny-alpha"
+# Date of the owner/CENTRAL evidence that re-confirmed this lane callable on
+# the Kilo keyless free route (#3143 refresh). It is a dated snapshot, not a
+# guarantee of availability.
+KILO_SPACE_BUNNY_SOURCE_CHECKED_AT = "2026-09-28"
 
 # Retired lane identifiers kept as retirement metadata only. They are never
 # registered in the catalog; #2097 removed them from KILO_FREE_ROUTES and from
@@ -74,6 +96,10 @@ class _KiloFreeRoute:
     provider: str
     context_window: int
     sort_order: int
+    # Defaults keep the original free lanes byte-for-byte identical: they were
+    # registered with ``chat``/``free`` only and a 2026-09-02 snapshot date.
+    capabilities: frozenset[str] = frozenset({"chat", "free"})
+    source_checked_at: str = "2026-09-02"
 
 
 KILO_FREE_ROUTES = (
@@ -92,6 +118,19 @@ KILO_FREE_ROUTES = (
         provider="Kilo Gateway / Poolside",
         context_window=262_144,
         sort_order=91,
+    ),
+    _KiloFreeRoute(
+        model_id=KILO_SPACE_BUNNY_MODEL_ID,
+        upstream_model=KILO_SPACE_BUNNY_UPSTREAM_MODEL,
+        display_name="Kilo: Stealth Space Bunny Alpha (free)",
+        provider="Kilo Gateway / Stealth",
+        # No context-window figure exists in the owner/issue evidence for this
+        # lane. 0 keeps it explicitly undeclared instead of inventing a value;
+        # routing does not enforce context length on explicit manual routes.
+        context_window=0,
+        sort_order=92,
+        capabilities=frozenset({"chat", "coding", "free"}),
+        source_checked_at=KILO_SPACE_BUNNY_SOURCE_CHECKED_AT,
     ),
 )
 
@@ -134,13 +173,13 @@ def register_kilo_provider() -> None:
             context_window=route.context_window,
             korean_score=0,
             latency_ms=0,
-            capabilities=frozenset({"chat", "free"}),
+            capabilities=route.capabilities,
             region="외부",
             sort_order=route.sort_order,
             credential_source="platform_secret",
             platform_provider_id=KILO_PROVIDER_ID,
             source="kilo_official_gateway_models",
-            source_checked_at="2026-09-02",
+            source_checked_at=route.source_checked_at,
             snapshot_state="configured_snapshot",
         )
         ensure_free_tag_requires_known_zero_price(model)
