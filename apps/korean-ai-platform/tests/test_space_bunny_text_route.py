@@ -6,10 +6,10 @@ primary and the canonical vision primary (decision source #3143, revised
 spec, and the real router resolvers — no string-presence checks — so the
 evidence is the actual registry result, not a keyword match.
 
-Scope is the existing single-image product contract: the lane declares
-``image`` alongside ``chat``/``coding``/``free`` and reuses the existing B14
-multimodal path. No ``video``/``audio``/generic-multimodal capability is
-declared and the global ``b14/auto`` chain stays unchanged.
+Scope: text-primary registry shape. Vision capability (canonical ``image``
+tag, #3212) is covered by ``test_space_bunny_vision_route.py``; this module
+pins the shared registry facts and the global ``b14/auto`` non-interference
+so the two slices cannot drift apart.
 """
 
 from __future__ import annotations
@@ -94,9 +94,11 @@ def test_space_bunny_requires_no_new_secret_and_sends_no_authorization() -> None
 def test_space_bunny_declares_text_and_image_capabilities_only() -> None:
     model = get_catalog_by_id(KILO_SPACE_BUNNY_MODEL_ID)
     assert model is not None
+    # #3212 vision decision: the canonical B14 multimodal tag is ``image``
+    # (never ``vision``/``video``/``multimodal``/``audio``). Kept here so the
+    # text-primary registry shape and the vision slice share one pinned fact.
     assert {"chat", "coding", "free", "image"}.issubset(model.capabilities)
-    # Video product activation stays off (#3209): upstream metadata may list
-    # video input, but no video/audio/wildcard capability is declared.
+    assert model.capabilities == frozenset({"chat", "coding", "free", "image"})
     unsupported = {"vision", "video", "multimodal", "audio"}
     assert model.capabilities & unsupported == frozenset()
 
