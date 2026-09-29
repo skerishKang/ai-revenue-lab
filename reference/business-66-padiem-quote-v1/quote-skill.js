@@ -130,6 +130,7 @@
     var sender = normalizeSender(raw.sender);
     if (!sender) return null;
 
+    if (raw.validDays === null || raw.validDays === undefined || raw.validDays === "") return null;
     var validDays = Number(raw.validDays);
     if (!Number.isFinite(validDays) || validDays < 0 || validDays > 3650) return null;
     validDays = Math.round(validDays);
@@ -388,7 +389,7 @@
     var issueDate = typeof input.issueDate === "string" ? input.issueDate.trim() : "";
     var recipient = normalizeRecipient(input.recipient);
     var items = normalizeItems(input.items);
-    if (!quoteNo || quoteNo.length > 120 || !ISO_DATE_PATTERN.test(issueDate) || !recipient || !items) {
+    if (!quoteNo || quoteNo.length > 120 || !ISO_DATE_PATTERN.test(issueDate) || !Core.parseISODate(issueDate) || !recipient || !items) {
       return { ok: false, code: "invalid_structured_input", draft: null };
     }
 
