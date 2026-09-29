@@ -54,14 +54,6 @@ FORBIDDEN_BROWSER_TOKENS = (
 )
 
 
-@pytest.fixture(autouse=True)
-def _space_bunny_kilo_secret(monkeypatch):
-    monkeypatch.setenv(
-        KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
-        "kilo_live_abcdefghijklmnopqrstuvwxyz1234",
-    )
-
-
 def _browser_sources() -> list[Path]:
     return sorted(
         path
@@ -86,20 +78,27 @@ def test_space_bunny_route_is_registered_on_the_existing_kilo_provider() -> None
     assert model.context_window == 0
 
 
-def test_space_bunny_reuses_model_scoped_kilo_secret() -> None:
+def test_space_bunny_uses_optional_model_scoped_kilo_secret(monkeypatch) -> None:
     spec = ps.get_platform_provider(KILO_PROVIDER_ID)
     assert spec is not None
 
-    # Shared historical Kilo provider remains keyless.
+    # Shared Kilo provider stays keyless.
     assert spec.credential_source == ps.CredentialSource.NONE
     assert spec.credential_binding_name == ""
-    assert ps.is_secret_present(spec) is True
     assert "Authorization" not in plat._request_headers(spec)
 
-    # Space Bunny alone consumes the existing owner-managed credential.
-    headers = plat._request_headers(spec, model_id=KILO_SPACE_BUNNY_MODEL_ID)
-    assert headers["Authorization"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
-    assert headers["Content-Type"] == "application/json"
+    # Existing owner-managed key is used when present.
+    monkeypatch.setenv(
+        KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
+        "kilo_live_abcdefghijklmnopqrstuvwxyz1234",
+    )
+    authenticated = plat._request_headers(spec, model_id=KILO_SPACE_BUNNY_MODEL_ID)
+    assert authenticated["Authorization"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
+
+    # Missing optional key falls back to the anonymous request shape.
+    monkeypatch.delenv(KILO_SPACE_BUNNY_CREDENTIAL_BINDING, raising=False)
+    anonymous = plat._request_headers(spec, model_id=KILO_SPACE_BUNNY_MODEL_ID)
+    assert anonymous == {"Content-Type": "application/json"}
 
 
 def test_space_bunny_declares_text_and_image_capabilities_only() -> None:
@@ -206,10 +205,3 @@ def test_business_66_browser_sources_carry_no_model_or_provider_identity() -> No
         text = path.read_text(encoding="utf-8")
         for token in FORBIDDEN_BROWSER_TOKENS:
             assert token not in text, f"{token!r} leaked into {path.name}"
-
-
-def test_space_bunny_missing_model_scoped_secret_fails_closed(monkeypatch) -> None:
-    monkeypatch.delenv(KILO_SPACE_BUNNY_CREDENTIAL_BINDING, raising=False)
-    with pytest.raises(Exception) as exc_info:
-        resolve_manual_route(KILO_SPACE_BUNNY_MODEL_ID)
-    assert "비밀키" in str(exc_info.value) or "secret" in str(exc_info.value).lower()
