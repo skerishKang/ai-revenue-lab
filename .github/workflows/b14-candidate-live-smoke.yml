@@ -27,8 +27,12 @@ on:
         description: 'Exact current main SHA authorized for this one-shot candidate live smoke'
         required: true
       candidate_id:
-        description: 'Allowlisted candidate id (agnes|sensenova|poolside|motif|mercury|atria|luna)'
+        description: 'Allowlisted candidate id (agnes|sensenova|poolside|motif|mercury|atria|luna|space-bunny)'
         required: true
+      modality:
+        description: 'Request modality (text|image). Image is only permitted for space-bunny.'
+        required: false
+        default: 'text'
       expected_b14_version:
         description: 'Exact B14 Worker version that must still be serving 100%'
         required: true
@@ -250,6 +254,22 @@ jobs:
           set -euo pipefail
           python -m pytest -q .github/tests/test_b14_agnes_production_smoke.py
 
+      - name: Pin the Space Bunny image canary source extension
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=.github/scripts/b14_candidate_live_smoke.py
+          wf=.github/workflows/b14-candidate-live-smoke.yml
+          grep -Fq 'candidate_id="space-bunny"' "${script}"
+          grep -Fq 'credential_mode="keyless"' "${script}"
+          grep -Fq 'def canonical_image_body' "${script}"
+          grep -Fq 'SPACE_BUNNY_PRODUCTION_IMAGE_SMOKE=PASS' "${script}"
+          grep -Fq 'IMAGE_MODE_NON_SPACE_BUNNY=REJECTED_BEFORE_PROVIDER_CALL' "${wf}"
+          grep -Fq 'SPACE_BUNNY_PRODUCTION_IMAGE_SMOKE=PASS' "${wf}"
+          grep -Fq 'RAW_IMAGE_PAYLOAD_OUTPUT=0' "${script}"
+          grep -Fq "modality" "${wf}"
+          echo 'SPACE_BUNNY_IMAGE_SOURCE_EXTENSION=PASS'
+
       - name: Pin the canonical served-version resolver is unbroken
         shell: bash
         run: |
@@ -269,6 +289,7 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       EXPECTED_B14_VERSION: ${{ github.event.inputs.expected_b14_version }}
       CANDIDATE_ID: ${{ github.event.inputs.candidate_id }}
+      MODALITY: ${{ github.event.inputs.modality }}
     steps:
       - name: Checkout exact authorized main
         uses: actions/checkout@v4
@@ -291,10 +312,21 @@ jobs:
           set -euo pipefail
           echo "${CANDIDATE_ID}" | grep -Eq '^[a-z0-9.-]{1,32}$'
           case "${CANDIDATE_ID}" in
-            agnes|sensenova|poolside|motif|mercury|atria|luna) ;;
+            agnes|sensenova|poolside|motif|mercury|atria|luna|space-bunny) ;;
             *) echo 'CANDIDATE_NOT_ALLOWLISTED=1'; exit 1 ;;
           esac
           echo "CANDIDATE_ID_ALLOWLISTED=${CANDIDATE_ID}"
+          case "${MODALITY:-text}" in
+            text) ;;
+            image)
+              if [ "${CANDIDATE_ID}" != "space-bunny" ]; then
+                echo 'IMAGE_MODE_NON_SPACE_BUNNY=REJECTED_BEFORE_PROVIDER_CALL'
+                exit 1
+              fi
+              ;;
+            *) echo 'UNKNOWN_MODALITY=1'; exit 1 ;;
+          esac
+          echo "MODALITY=${MODALITY:-text}"
 
       - name: GET-only B14 served-version guard (canonical resolver)
         shell: bash
@@ -354,7 +386,7 @@ jobs:
           set -euo pipefail
           log="${RUNNER_TEMP}/candidate-live-smoke.log"
           upper="$(echo "${CANDIDATE_ID}" | tr '[:lower:]-' '[:upper:]_')"
-          python .github/scripts/b14_candidate_live_smoke.py "${CANDIDATE_ID}" --authorized-live-run | tee "${log}"
+          python .github/scripts/b14_candidate_live_smoke.py "${CANDIDATE_ID}" --authorized-live-run --modality="${MODALITY:-text}" | tee "${log}"
           grep -qx "${upper}_PRODUCTION_SMOKE=PASS" "${log}"
           grep -qx "${upper}_PROVIDER_REGISTERED=YES" "${log}"
           grep -qx "${upper}_CREDENTIAL_READY=YES" "${log}"
@@ -371,8 +403,20 @@ jobs:
           grep -qx 'FALLBACK=0' "${log}"
           grep -qx 'AUTO_ROUTE_USED=0' "${log}"
           grep -qx 'RAW_RESPONSE_CONTENT_OUTPUT=0' "${log}"
+          grep -qx 'RAW_IMAGE_PAYLOAD_OUTPUT=0' "${log}"
           grep -qx 'PRIVATE_PAYLOAD_OUTPUT=0' "${log}"
           grep -qx 'SECRET_VALUE_OUTPUT=0' "${log}"
+          if [ "${MODALITY:-text}" = "image" ]; then
+            grep -qx 'SPACE_BUNNY_PRODUCTION_IMAGE_SMOKE=PASS' "${log}"
+            grep -qx 'SPACE_BUNNY_PROVIDER_REGISTERED=YES' "${log}"
+            grep -qx 'SPACE_BUNNY_ROUTE_REGISTERED=YES' "${log}"
+            grep -qx 'SPACE_BUNNY_EXACT_MODEL_IDENTITY=PASS' "${log}"
+            grep -qx 'SPACE_BUNNY_INPUT_MODALITY=IMAGE' "${log}"
+            grep -qx 'SPACE_BUNNY_ACTUAL_RESPONSE_MODEL_EVIDENCE=PASS' "${log}"
+            grep -qx 'SPACE_BUNNY_PROVIDER_MATCH=YES' "${log}"
+            grep -qx 'SPACE_BUNNY_FALLBACK_USED=NO' "${log}"
+            grep -qx 'SPACE_BUNNY_ATTEMPT_COUNT=1' "${log}"
+          fi
 
       - name: Record immutable execution locks
         if: always()

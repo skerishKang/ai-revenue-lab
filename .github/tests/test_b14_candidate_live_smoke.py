@@ -122,6 +122,7 @@ def test_allowlist_matches_2798_authority_correction() -> None:
         "motif",
         "mercury",
         "atria",
+        "space-bunny",
     )
     assert smoke.PRO_CANDIDATE_IDS == ("luna",)
     assert set(smoke.candidate_ids()) == {
@@ -132,6 +133,7 @@ def test_allowlist_matches_2798_authority_correction() -> None:
         "mercury",
         "atria",
         "luna",
+        "space-bunny",
     }
 
 
@@ -193,7 +195,7 @@ def test_success_uses_two_gets_and_exactly_one_chat_post(candidate_id: str) -> N
         ("POST", smoke.CHAT_PATH),
     ]
     output = stdout.getvalue()
-    assert f"{candidate_id.upper()}_PRODUCTION_SMOKE=PASS" in output
+    assert f"{candidate_id.upper().replace('-', '_')}_PRODUCTION_SMOKE=PASS" in output
     assert "B14_CHAT_POST_COUNT=1" in output
     assert "NETWORK_RETRY_COUNT=0" in output
     assert "MAX_PROVIDER_CALLS=1" in output
@@ -720,3 +722,328 @@ def test_source_contract_forbids_raw_error_code_echo() -> None:
     )
     assert legacy not in source
     assert 'return code if code in SAFE_ENGINE_ERROR_CODES else "unknown"' in source
+
+
+# --------------------------------------------------------------------------
+# S1 — bounded Space Bunny image live-canary source extension (#3209).
+#
+# Source-only: every transport here is a synthetic in-process fake. No live
+# provider call is made by these tests.
+# --------------------------------------------------------------------------
+
+import base64
+
+_S1_TINY_PNG = b"\x89PNG\r\n\x1a\ns1-canary"
+_S1_TINY_PNG_URL = "data:image/png;base64," + base64.b64encode(_S1_TINY_PNG).decode("ascii")
+
+_S1_IMAGE_FIXTURE = (
+    ROOT
+    / "packages"
+    / "padiem-ai-core"
+    / "tests"
+    / "fixtures"
+    / "b66_e2e_corpus"
+    / "f11-simple-logo.png"
+)
+
+
+def _s1_image_chat(sentinel_answer: str = "S1_IMAGE_ANSWER_SENTINEL") -> bytes:
+    return _json(
+        {
+            "id": "synthetic-image",
+            "object": "chat.completion",
+            "model": "stealth/space-bunny-alpha",
+            "choices": [
+                {
+                    "index": 0,
+                    "message": {"role": "assistant", "content": sentinel_answer},
+                    "finish_reason": "stop",
+                }
+            ],
+            "business14": {
+                "mode": "live",
+                "provider_mode": "live",
+                "provider": "Kilo Gateway / Stealth",
+                "selected_provider": "Kilo Gateway / Stealth",
+                "model_route": "kilo/stealth-space-bunny-alpha",
+                "selected_model": "kilo/stealth-space-bunny-alpha",
+                "upstream_model": "stealth/space-bunny-alpha",
+                "selected_upstream_model": "stealth/space-bunny-alpha",
+                "actual_response_model": "stealth/space-bunny-alpha",
+                "route_mode": "manual",
+                "fallback_used": False,
+                "attempt_count": 1,
+                "route_evidence_status": "live_verified",
+            },
+        }
+    )
+
+
+def _s1_image_transport(spec, calls: list | None = None, answer: str = "S1_IMAGE_ANSWER_SENTINEL"):
+    def transport(method: str, path: str, body: dict | None):
+        if calls is not None:
+            calls.append((method, path, body))
+        if path == smoke.HEALTH_PATH:
+            return 200, _health(spec)
+        if path == smoke.MODELS_PATH:
+            return 200, _models(spec)
+        if path == smoke.CHAT_PATH:
+            return 200, _s1_image_chat(answer)
+        raise AssertionError(path)
+
+    return transport
+
+
+def test_space_bunny_candidate_is_allowlisted_keyless() -> None:
+    spec_obj = smoke.resolve_candidate("space-bunny")
+    assert spec_obj.candidate_id == "space-bunny"
+    assert spec_obj.tier == "plus"
+    assert spec_obj.provider_id == "kilo"
+    assert spec_obj.provider_name == "Kilo Gateway / Stealth"
+    assert spec_obj.model_id == "kilo/stealth-space-bunny-alpha"
+    assert spec_obj.upstream_model == "stealth/space-bunny-alpha"
+    assert spec_obj.credential_mode == "keyless"
+    # Keyless authority: no fabricated secret binding name.
+    assert spec_obj.credential_binding == "NONE"
+    assert spec_obj.expected_binding == "NONE"
+    for value in (spec_obj.credential_binding, spec_obj.expected_binding):
+        assert "PADIEM" not in value
+
+
+def test_space_bunny_is_the_only_keyless_candidate() -> None:
+    keyless = [
+        cid
+        for cid, spec_obj in smoke.CANDIDATE_REGISTRY.items()
+        if spec_obj.credential_mode == "keyless"
+    ]
+    assert keyless == ["space-bunny"]
+    for cid, spec_obj in smoke.CANDIDATE_REGISTRY.items():
+        if cid != "space-bunny":
+            assert spec_obj.credential_mode == "platform_secret"
+            assert spec_obj.credential_binding.startswith("PADIEM_")
+
+
+def test_canonical_image_body_pins_exact_model_and_parts() -> None:
+    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+    body = smoke.canonical_image_body(spec_obj, _S1_TINY_PNG_URL)
+    assert body["model"] == "kilo/stealth-space-bunny-alpha"
+    assert body["temperature"] == 0
+    assert body["max_tokens"] == 32
+    (message,) = body["messages"]
+    assert message["role"] == "user"
+    text_part, image_part = message["content"]
+    assert text_part["type"] == "text" and text_part["text"].strip()
+    assert image_part == {
+        "type": "image_url",
+        "image_url": {"url": _S1_TINY_PNG_URL},
+    }
+
+
+def test_canonical_image_body_is_fail_closed_for_other_candidates() -> None:
+    for cid in ("agnes", "sensenova", "poolside", "motif", "mercury", "atria", "luna"):
+        with pytest.raises(ValueError, match="image_modality_not_permitted"):
+            smoke.canonical_image_body(smoke.CANDIDATE_REGISTRY[cid], _S1_TINY_PNG_URL)
+
+
+def test_space_bunny_image_success_posts_once_with_image_evidence() -> None:
+    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+    calls: list = []
+
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        rc = smoke.run(
+            "space-bunny",
+            transport=_s1_image_transport(spec_obj, calls),
+            modality="image",
+        )
+
+    assert rc == 0
+    assert [(m, p) for m, p, _ in calls] == [
+        ("GET", smoke.HEALTH_PATH),
+        ("GET", smoke.MODELS_PATH),
+        ("POST", smoke.CHAT_PATH),
+    ]
+    posted = calls[2][2]
+    assert posted["model"] == "kilo/stealth-space-bunny-alpha"
+    content = posted["messages"][0]["content"]
+    assert content[0]["type"] == "text"
+    assert content[1]["type"] == "image_url"
+    assert content[1]["image_url"]["url"].startswith("data:image/png;base64,")
+
+    output = stdout.getvalue()
+    assert "SPACE_BUNNY_PRODUCTION_IMAGE_SMOKE=PASS" in output
+    assert "SPACE_BUNNY_PROVIDER_REGISTERED=YES" in output
+    assert "SPACE_BUNNY_ROUTE_REGISTERED=YES" in output
+    assert "SPACE_BUNNY_EXACT_MODEL_IDENTITY=PASS" in output
+    assert "SPACE_BUNNY_INPUT_MODALITY=IMAGE" in output
+    assert "SPACE_BUNNY_ACTUAL_RESPONSE_MODEL_EVIDENCE=PASS" in output
+    assert "SPACE_BUNNY_PROVIDER_MATCH=YES" in output
+    assert "SPACE_BUNNY_FALLBACK_USED=NO" in output
+    assert "SPACE_BUNNY_ATTEMPT_COUNT=1" in output
+    assert "B14_CHAT_POST_COUNT=1" in output
+    assert "NETWORK_RETRY_COUNT=0" in output
+    assert "MAX_PROVIDER_CALLS=1" in output
+    assert "RETRY=0" in output
+    assert "FALLBACK=0" in output
+    assert "AUTO_ROUTE_USED=0" in output
+    assert "RAW_IMAGE_PAYLOAD_OUTPUT=0" in output
+    assert "RAW_RESPONSE_CONTENT_OUTPUT=0" in output
+    assert "PRIVATE_PAYLOAD_OUTPUT=0" in output
+    assert "SECRET_VALUE_OUTPUT=0" in output
+    assert "PRODUCTION_MUTATION=0" in output
+    assert "S1_IMAGE_ANSWER_SENTINEL" not in output
+
+
+def test_space_bunny_keyless_health_without_key_still_passes() -> None:
+    """B14 reports has_key False for the keyless Kilo lane; image text run passes."""
+
+    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+
+    def transport(method: str, path: str, body: dict | None):
+        if path == smoke.HEALTH_PATH:
+            return 200, _health(spec_obj, has_key=False)
+        if path == smoke.MODELS_PATH:
+            return 200, _models(spec_obj)
+        if path == smoke.CHAT_PATH:
+            return 200, _chat(spec_obj)
+        raise AssertionError(path)
+
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        rc = smoke.run("space-bunny", transport=transport)
+
+    assert rc == 0
+    assert "SPACE_BUNNY_PRODUCTION_SMOKE=PASS" in stdout.getvalue()
+
+
+def test_space_bunny_image_failure_posts_at_most_once() -> None:
+    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+    posts = 0
+
+    def transport(method: str, path: str, body: dict | None):
+        nonlocal posts
+        if path == smoke.HEALTH_PATH:
+            return 200, _health(spec_obj)
+        if path == smoke.MODELS_PATH:
+            return 200, _models(spec_obj)
+        posts += 1
+        return 503, _json({"error": {"code": "overloaded_error", "message": "busy"}})
+
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        rc = smoke.run("space-bunny", transport=transport, modality="image")
+
+    assert rc == 1
+    assert posts <= 1
+    assert "FAIL_CHAT_HTTP_503" in stdout.getvalue()
+
+
+@pytest.mark.parametrize("candidate_id", ["agnes", "sensenova", "poolside", "motif", "mercury", "atria", "luna"])
+def test_image_modality_for_non_space_bunny_is_rejected_before_provider_call(
+    candidate_id: str,
+) -> None:
+    spec_obj = smoke.CANDIDATE_REGISTRY[candidate_id]
+    calls: list = []
+
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        rc = smoke.run(
+            candidate_id,
+            transport=_happy_transport(spec_obj, calls),
+            modality="image",
+        )
+
+    assert rc == 1
+    assert calls == []
+    output = stdout.getvalue()
+    assert "FAIL_IMAGE_MODALITY_NOT_PERMITTED" in output
+    assert "B14_CHAT_POST_COUNT=0" in output
+
+
+@pytest.mark.parametrize("modality", ["video", "audio", "IMAGE", "", "text ", "auto"])
+def test_unknown_modality_is_rejected_before_provider_call(modality: str) -> None:
+    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+    calls: list = []
+
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        rc = smoke.run(
+            "space-bunny",
+            transport=_happy_transport(spec_obj, calls),
+            modality=modality,
+        )
+
+    assert rc == 1
+    assert calls == []
+    assert "FAIL_UNKNOWN_MODALITY" in stdout.getvalue()
+    assert "B14_CHAT_POST_COUNT=0" in stdout.getvalue()
+
+
+def test_unknown_candidate_with_image_modality_is_rejected() -> None:
+    with pytest.raises(ValueError, match="candidate_not_allowlisted"):
+        smoke.resolve_candidate("does-not-exist")
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        rc = smoke.run("does-not-exist", transport=_happy_transport, modality="image")
+    assert rc == 1
+    assert "B14_CHAT_POST_COUNT=0" in stdout.getvalue()
+
+
+def test_image_payload_and_answer_never_reach_stdout() -> None:
+    sentinel_url = "data:image/png;base64,S1_IMAGE_SENTINEL_PAYLOAD"
+    answer_sentinel = "S1_ANSWER_SENTINEL_PRIVATE"
+    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+    calls: list = []
+
+    real_loader = smoke._load_space_bunny_image_data_url
+    smoke._load_space_bunny_image_data_url = lambda: sentinel_url  # type: ignore[assignment]
+    try:
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            rc = smoke.run(
+                "space-bunny",
+                transport=_s1_image_transport(spec_obj, calls, answer=answer_sentinel),
+                modality="image",
+            )
+    finally:
+        smoke._load_space_bunny_image_data_url = real_loader
+
+    assert rc == 0
+    assert calls[2][2]["messages"][0]["content"][1]["image_url"]["url"] == sentinel_url
+    output = stdout.getvalue()
+    assert sentinel_url not in output
+    assert "S1_IMAGE_SENTINEL_PAYLOAD" not in output
+    assert answer_sentinel not in output
+
+
+def test_image_fixture_is_the_reused_synthetic_corpus_png() -> None:
+    assert smoke.SPACE_BUNNY_IMAGE_FIXTURE == _S1_IMAGE_FIXTURE
+    assert _S1_IMAGE_FIXTURE.is_file()
+    raw = _S1_IMAGE_FIXTURE.read_bytes()
+    assert 0 < len(raw) <= 4 * 1024 * 1024
+    assert raw.startswith(b"\x89PNG\r\n\x1a\n")
+    url = smoke._load_space_bunny_image_data_url()
+    assert url.startswith("data:image/png;base64,")
+    assert len(url) > len("data:image/png;base64,")
+
+
+def test_cli_bogus_modality_fails_closed_without_network() -> None:
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        rc = smoke.main(["space-bunny", "--authorized-live-run", "--modality=bogus"])
+
+    assert rc == 1
+    assert "FAIL_UNKNOWN_MODALITY" in stdout.getvalue()
+
+
+def test_text_default_behavior_is_unchanged_for_all_candidates() -> None:
+    for cid in sorted(smoke.CANDIDATE_REGISTRY):
+        spec_obj = smoke.CANDIDATE_REGISTRY[cid]
+        body = smoke.canonical_chat_body(spec_obj)
+        assert set(body) == {"model", "messages", "temperature", "max_tokens"}
+        assert body["messages"] == [
+            {
+                "role": "user",
+                "content": "Production route smoke. Reply with the single word OK.",
+            }
+        ]
