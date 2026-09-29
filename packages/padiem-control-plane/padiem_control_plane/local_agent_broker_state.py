@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 import re
 from typing import Any, Callable, Protocol, TypeVar
 
@@ -187,6 +187,115 @@ class LocalAgentBrokerStateSnapshot:
             "credential_digest_exposed": False,
             "raw_device_credential": False,
         }
+
+
+_TERMINAL_RESULT_RPC_KEYS = frozenset({"account_ref", "workspace_ref", "run_id"})
+
+
+def terminal_command_result_from_snapshot(
+    snapshot: LocalAgentBrokerStateSnapshot,
+    payload: dict[str, Any],
+) -> dict[str, Any]:
+    """Project one owner-scoped terminal command fact from canonical broker state.
+
+    This is the shared read-only projection used by both the durable Production
+    runtime and the non-Production #3098 loopback evidence binding.  It never
+    mutates the snapshot and never accepts a conversation, command id or result
+    from the caller; those remain server-owned broker facts.
+    """
+
+    if not isinstance(snapshot, LocalAgentBrokerStateSnapshot):
+        raise ValueError("snapshot must be LocalAgentBrokerStateSnapshot")
+    try:
+        if not isinstance(payload, dict) or not set(payload) <= _TERMINAL_RESULT_RPC_KEYS:
+            raise ValueError("terminal result schema mismatch")
+        account_ref = str(payload["account_ref"])
+        if not _LEDGER_ID_RE.fullmatch(account_ref):
+            raise ValueError("account_ref must be a bounded safe reference")
+        workspace_ref = payload.get("workspace_ref")
+        if workspace_ref is not None:
+            workspace_ref = str(workspace_ref)
+            if not _LEDGER_ID_RE.fullmatch(workspace_ref):
+                raise ValueError("workspace_ref must be a bounded safe reference")
+        run_id = str(payload["run_id"])
+        if not _LEDGER_ID_RE.fullmatch(run_id):
+            raise ValueError("run_id must be a bounded safe reference")
+    except (KeyError, TypeError, ValueError):
+        return {
+            "ok": False,
+            "error": {
+                "code": "invalid_terminal_result_request",
+                "message": "terminal result request was rejected",
+            },
+        }
+
+    binding_refs = {
+        binding.binding_ref
+        for binding in snapshot.bindings
+        if binding.account_ref == account_ref
+        and (workspace_ref is None or binding.workspace_ref == workspace_ref)
+    }
+    if not binding_refs:
+        return {"ok": True, "available": False, "reason": "no_device_binding"}
+
+    owned = [
+        command
+        for command in snapshot.commands
+        if command.run_id == run_id and command.binding_ref in binding_refs
+    ]
+    if not owned:
+        return {"ok": True, "available": False, "reason": "no_command_for_run"}
+    if len(owned) > 1:
+        return {"ok": True, "available": False, "reason": "ambiguous_run_commands"}
+
+    command = owned[0]
+    identity = {
+        "command_id": command.command_id,
+        "run_id": command.run_id,
+        "tool_request_ref": command.tool_request_ref,
+        "request_id": command.request_id,
+        "revision_ref": command.revision_ref,
+        "evidence_ref": command.evidence_ref,
+        "admission_ref": command.admission_ref,
+        "request_fingerprint": command.request_fingerprint,
+        "sequence": command.sequence,
+        "state": command.state.value,
+    }
+    if command.state not in {BrokerCommandState.ACKNOWLEDGED, BrokerCommandState.EXPIRED}:
+        return {
+            "ok": True,
+            "available": True,
+            "command_identity": identity,
+            "command_result": None,
+        }
+    return {
+        "ok": True,
+        "available": True,
+        "command_identity": identity,
+        "command_result": {
+            "command_id": command.command_id,
+            "run_id": command.run_id,
+            "tool_request_ref": command.tool_request_ref,
+            "request_id": command.request_id,
+            "revision_ref": command.revision_ref,
+            "evidence_ref": command.evidence_ref,
+            "admission_ref": command.admission_ref,
+            "request_fingerprint": command.request_fingerprint,
+            "sequence": command.sequence,
+            "state": command.state.value,
+            "termination": command.termination,
+            "exit_code": command.exit_code,
+            "acknowledged_at": (
+                command.acknowledged_at.astimezone(timezone.utc).isoformat()
+                if command.acknowledged_at is not None
+                else None
+            ),
+            "raw_argv": False,
+            "raw_file_content": False,
+            "raw_device_credential": False,
+            "p01_approval_payload": False,
+        },
+    }
 
 
 @dataclass(frozen=True, slots=True)
