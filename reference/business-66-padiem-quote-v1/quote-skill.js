@@ -222,6 +222,7 @@
       fixedDefaults: source.fixedDefaults,
       variableSchema: source.variableSchema,
       internalTemplateFingerprint: source.internalTemplate.fingerprint,
+      provenance: source.provenance,
       rendererContract: RENDERER_CONTRACT,
       calculationAuthority: CALCULATION_AUTHORITY
     };
@@ -269,7 +270,8 @@
     var basis = {
       fixedDefaults: fixedDefaults,
       variableSchema: variableSchema,
-      internalTemplate: internalTemplate
+      internalTemplate: internalTemplate,
+      provenance: provenance
     };
     var fingerprint = skillFingerprint(basis);
     if (!fingerprint) return null;
