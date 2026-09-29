@@ -22,6 +22,7 @@ from app.pilot import platform as plat
 from app.pilot import platform_secrets as ps
 from app.pilot.catalog import CATALOG_MODELS, get_catalog_by_id
 from app.pilot.kilo_provider import (
+    KILO_CREDENTIAL_BINDING,
     KILO_FREE_ROUTES,
     KILO_HY3_MODEL_ID,
     KILO_LAGUNA_MODEL_ID,
@@ -53,6 +54,11 @@ FORBIDDEN_BROWSER_TOKENS = (
 )
 
 
+@pytest.fixture(autouse=True)
+def _kilo_platform_secret(monkeypatch):
+    monkeypatch.setenv(KILO_CREDENTIAL_BINDING, "kilo_live_abcdefghijklmnopqrstuvwxyz1234")
+
+
 def _browser_sources() -> list[Path]:
     return sorted(
         path
@@ -77,18 +83,16 @@ def test_space_bunny_route_is_registered_on_the_existing_kilo_provider() -> None
     assert model.context_window == 0
 
 
-def test_space_bunny_requires_no_new_secret_and_sends_no_authorization() -> None:
+def test_space_bunny_reuses_existing_secret_and_sends_authorization() -> None:
     spec = ps.get_platform_provider(KILO_PROVIDER_ID)
     assert spec is not None
-    # The lane reuses the canonical Kilo keyless semantics.
-    assert spec.credential_source == ps.CredentialSource.NONE
-    assert spec.credential_binding_name == ""
+    assert spec.credential_source == ps.CredentialSource.PLATFORM_SECRET
+    assert spec.credential_binding_name == KILO_CREDENTIAL_BINDING
     assert ps.is_secret_present(spec) is True
 
-    # The real adapter header builder must not attach a credential.
     headers = plat._request_headers(spec)
-    assert "Authorization" not in headers
-    assert headers == {"Content-Type": "application/json"}
+    assert headers["Authorization"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
+    assert headers["Content-Type"] == "application/json"
 
 
 def test_space_bunny_declares_text_and_image_capabilities_only() -> None:
