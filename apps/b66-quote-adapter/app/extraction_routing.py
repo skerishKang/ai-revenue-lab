@@ -218,10 +218,12 @@ def build_text_extraction_request(
     filename: Any,
     source_kind: Any = "native_document",
 ) -> dict[str, Any]:
-    """Build a bounded text extraction request for the governed lane.
+    """Build a gateway-valid text extraction request for the governed lane.
 
     Native path: PDF native text / DOCX / XLSX / other normalized native
-    document text produced through the Core document authority.
+    document text produced through the Core document authority. The returned
+    object contains only canonical B14 gateway fields; source provenance stays
+    server-owned outside the provider request.
     """
     if source_kind not in ("text", "native_document"):
         raise B66ExtractionRoutingError("unsupported_source_kind")
@@ -235,13 +237,10 @@ def build_text_extraction_request(
                 "content": f"{_TEXT_PROMPT}\n\n[출처: {name}]\n{text}",
             }
         ],
-        "business14": {"allow_external_fallback": MANUAL_FALLBACK_ALLOWED},
-        "b66": {
-            "source_kind": source_kind,
-            "filename": name,
-            "route_mode": "manual",
-            "fallback_allowed": MANUAL_FALLBACK_ALLOWED,
-            "stream": B66_USE_STREAMING,
+        "stream": B66_USE_STREAMING,
+        "business14": {
+            "allow_external_fallback": MANUAL_FALLBACK_ALLOWED,
+            "max_attempts": 1,
         },
     }
 
@@ -253,12 +252,13 @@ def build_image_extraction_request(
     filename: Any,
     source_kind: Any = "image",
 ) -> dict[str, Any]:
-    """Build one canonical B14 multimodal request for the governed lane.
+    """Build one gateway-valid canonical B14 multimodal request.
 
     Emits the canonical ``text`` + exactly one ``image_url`` data-URL shape
     (JPEG/PNG/WebP, base64 data URL only, decoded image <= 4 MiB). The B14
-    gateway revalidates this shape with ``multimodal_contract``; nothing
-    here redefines that contract.
+    gateway revalidates this shape with ``multimodal_contract``. Only
+    canonical gateway fields are returned; source provenance remains in the
+    trusted B66 server boundary and is never sent as provider-request metadata.
     """
     if source_kind not in ("image", "scanned_pdf"):
         raise B66ExtractionRoutingError("unsupported_source_kind")
@@ -281,18 +281,11 @@ def build_image_extraction_request(
                 ],
             }
         ],
+        "stream": B66_USE_STREAMING,
         "business14": {
             "allow_external_fallback": MANUAL_FALLBACK_ALLOWED,
             "required_capabilities": ["image"],
-        },
-        "b66": {
-            "source_kind": source_kind,
-            "filename": name,
-            "media_type": safe_media,
-            "byte_size": len(raw),
-            "route_mode": "manual",
-            "fallback_allowed": MANUAL_FALLBACK_ALLOWED,
-            "stream": B66_USE_STREAMING,
+            "max_attempts": 1,
         },
     }
 
