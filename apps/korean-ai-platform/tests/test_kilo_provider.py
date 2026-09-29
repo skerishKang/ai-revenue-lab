@@ -12,10 +12,9 @@ from app.factory import create_app
 from app.pilot import platform as plat
 from app.pilot import platform_secrets as ps
 from app.pilot.catalog import get_catalog_by_id
-from app.pilot.errors import KiloFreeRateLimited, PilotNotConfigured, UpstreamRateLimited
+from app.pilot.errors import KiloFreeRateLimited, UpstreamRateLimited
 from app.pilot.kilo_provider import (
     KILO_BASE_ORIGIN,
-    KILO_CREDENTIAL_BINDING,
     KILO_FREE_ROUTES,
     KILO_HY3_MODEL_ID,
     KILO_LAGUNA_MODEL_ID,
@@ -44,12 +43,11 @@ class _Chunk(httpx.AsyncByteStream):
 @pytest.fixture(autouse=True)
 def _provider_mode(monkeypatch):
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
-    monkeypatch.setenv(KILO_CREDENTIAL_BINDING, "kilo_live_abcdefghijklmnopqrstuvwxyz1234")
     yield
     monkeypatch.delenv("B14_PROVIDER_MODE", raising=False)
 
 
-def test_kilo_explicit_free_models_reuse_platform_secret() -> None:
+def test_kilo_explicit_free_models_are_registered_keyless() -> None:
     expected = {
         KILO_NEMOTRON_MODEL_ID: (KILO_NEMOTRON_UPSTREAM_MODEL, "Kilo Gateway / NVIDIA", 1_000_000),
         KILO_LAGUNA_MODEL_ID: (KILO_LAGUNA_UPSTREAM_MODEL, "Kilo Gateway / Poolside", 262_144),
@@ -75,8 +73,8 @@ def test_kilo_explicit_free_models_reuse_platform_secret() -> None:
 
     spec = ps.get_platform_provider("kilo")
     assert spec is not None
-    assert spec.credential_source == ps.CredentialSource.PLATFORM_SECRET
-    assert spec.credential_binding_name == KILO_CREDENTIAL_BINDING
+    assert spec.credential_source == ps.CredentialSource.NONE
+    assert spec.credential_binding_name == ""
     assert spec.base_origin == KILO_BASE_ORIGIN
     assert spec.allowed_hosts == ("api.kilo.ai",)
     assert ps.is_secret_present(spec) is True
@@ -116,14 +114,14 @@ def test_kilo_routes_are_manual_explicit_only() -> None:
         (KILO_LAGUNA_MODEL_ID, KILO_LAGUNA_UPSTREAM_MODEL, "Kilo Gateway / Poolside"),
     ],
 )
-async def test_kilo_completed_calls_send_platform_authorization_header(
+async def test_kilo_completed_calls_send_no_authorization_header(
     monkeypatch,
     model_id: str,
     upstream_model: str,
     provider: str,
 ) -> None:
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
-    monkeypatch.setenv(KILO_CREDENTIAL_BINDING, "kilo_live_abcdefghijklmnopqrstuvwxyz1234")
+    monkeypatch.setenv("AGNES_API_KEY", "ags_live_abcdefghijklmnopqrstuvwxyz1234")
     captured: dict[str, object] = {}
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -156,14 +154,14 @@ async def test_kilo_completed_calls_send_platform_authorization_header(
     )
 
     assert captured["url"] == f"{KILO_BASE_ORIGIN}/chat/completions"
-    assert captured["auth"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
+    assert captured["auth"] is None
     assert captured["body"]["model"] == upstream_model
     assert "max_tokens" not in captured["body"]
     assert response["choices"][0]["message"]["content"] == "테스트 응답"
 
 
 @pytest.mark.asyncio
-async def test_kilo_stream_sends_platform_authorization_and_requires_done(monkeypatch) -> None:
+async def test_kilo_stream_sends_no_authorization_and_requires_done(monkeypatch) -> None:
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     captured: dict[str, object] = {}
     payload = (
@@ -192,7 +190,7 @@ async def test_kilo_stream_sends_platform_authorization_and_requires_done(monkey
     ]
 
     assert captured["url"] == f"{KILO_BASE_ORIGIN}/chat/completions"
-    assert captured["auth"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
+    assert captured["auth"] is None
     assert captured["body"]["stream"] is True
     assert "max_tokens" not in captured["body"]
     assert "".join(event.delta_content or "" for event in events) == "ab"
@@ -227,7 +225,7 @@ async def test_kilo_rate_limit_maps_to_bounded_provider_error(monkeypatch) -> No
         (KILO_LAGUNA_MODEL_ID, "Kilo Gateway / Poolside"),
     ],
 )
-def test_kilo_gateway_dispatches_without_caller_supplied_provider_key(
+def test_kilo_gateway_dispatches_without_caller_provider_key(
     monkeypatch,
     model_id: str,
     provider: str,
@@ -267,26 +265,3 @@ def test_retired_kilo_lanes_fail_closed_as_unsupported(
     )
     assert response.status_code == 400
     assert response.json()["error"]["code"] == "unsupported_model"
-
-
-@pytest.mark.asyncio
-async def test_kilo_missing_platform_secret_fails_closed_before_upstream(monkeypatch) -> None:
-    monkeypatch.setenv("B14_PROVIDER_MODE", "live")
-    monkeypatch.delenv(KILO_CREDENTIAL_BINDING, raising=False)
-    calls = 0
-
-    def handler(request: httpx.Request) -> httpx.Response:
-        nonlocal calls
-        calls += 1
-        return httpx.Response(200, json={})
-
-    with pytest.raises(PilotNotConfigured):
-        await plat.call_platform_chat_completions(
-            model_id=KILO_NEMOTRON_MODEL_ID,
-            upstream_model=KILO_NEMOTRON_UPSTREAM_MODEL,
-            provider="Kilo Gateway / NVIDIA",
-            platform_provider_id="kilo",
-            messages=[{"role": "user", "content": "hi"}],
-            transport=httpx.MockTransport(handler),
-        )
-    assert calls == 0
