@@ -585,12 +585,37 @@ class BrokerClientPort:
     reaches the broker owned by the separate broker process over the loopback
     service, so the Web leg and the resident redeem leg cross the same canonical
     authority rather than two deterministic reconstructions of one.
+
+    #3206: it honors the bounded request-port contract the canonical Production
+    adapter already keeps. A 4xx carrying a valid bounded broker JSON error
+    body (``{"ok": false, "error": {"code", "message"}}``) is returned to the
+    caller, so the canonical pairing client raises its own ``ContractError``
+    and the resident emits ``redemption_refused``. Malformed, oversized or
+    unreadable transports are bounded ``ContractError`` here. A raw
+    ``urllib.error.HTTPError`` must never escape into the resident, whose
+    refusal path is written against ``ContractError``.
     """
+
+    #: A refusal is a small canonical JSON error, never a stream: the owner's
+    #: bodies are byte-sized, so anything larger cannot be one.
+    MAX_RESPONSE_BODY_BYTES = 16 * 1024
 
     def __init__(self, base_url: str) -> None:
         self._base_url = base_url.rstrip("/")
 
+    def _bounded_json(self, raw: bytes) -> Any:
+        """Decode one bounded broker body, or fail closed with ContractError."""
+
+        if len(raw) > self.MAX_RESPONSE_BODY_BYTES:
+            raise ContractError("shared broker response exceeds the bounded size")
+        try:
+            return json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise ContractError("shared broker response is not bounded JSON") from exc
+
     def post(self, *, config: Any, operation: Any, payload: dict, timeout_seconds: int) -> dict:
+        import http.client
+        import urllib.error
         import urllib.request
 
         body = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
@@ -600,8 +625,31 @@ class BrokerClientPort:
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with urllib.request.urlopen(request, timeout=timeout_seconds or 10) as response:
-            return json.loads(response.read().decode("utf-8"))
+        try:
+            with urllib.request.urlopen(request, timeout=timeout_seconds or 10) as response:
+                raw = response.read(self.MAX_RESPONSE_BODY_BYTES + 1)
+        except urllib.error.HTTPError as exc:
+            # The owner answers a refusal with a bounded canonical JSON error.
+            # Handing that body to the canonical pairing client turns the
+            # refusal into its own ContractError instead of a raw urllib
+            # traceback escaping the resident's `except ContractError` path.
+            try:
+                raw = exc.read(self.MAX_RESPONSE_BODY_BYTES + 1)
+            except OSError as read_exc:
+                raise ContractError("shared broker refusal body is unreadable") from read_exc
+            finally:
+                exc.close()
+            if 400 <= exc.code < 500:
+                decoded = self._bounded_json(raw)
+                if type(decoded) is dict:
+                    return decoded
+            raise ContractError(f"shared broker returned HTTP status {exc.code}") from exc
+        except (OSError, http.client.HTTPException) as exc:
+            raise ContractError("Local Agent outbound broker is unavailable") from exc
+        decoded = self._bounded_json(raw)
+        if type(decoded) is not dict:
+            raise ContractError("shared broker response must be a JSON object")
+        return decoded
 
 
 def make_request_port() -> BrokerClientPort:
