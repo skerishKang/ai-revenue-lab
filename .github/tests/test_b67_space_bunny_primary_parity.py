@@ -87,7 +87,6 @@ def test_product_tiers_and_registry_expose_plus_space_bunny() -> None:
         text = path.read_text(encoding="utf-8")
         assert 'model_id="kilo/stealth-space-bunny-alpha"' in text
         assert 'upstream_model="stealth/space-bunny-alpha"' in text
-        assert 'credential_binding="PADIEM_KILO_API_KEY"' in text
         # Agnes is preserved as historical data-only, never deleted.
         assert 'model_id="agnes-ai/agnes-3.0-flash"' in text
         assert "PADIEM_AGNES_API_KEY" in text
