@@ -125,3 +125,56 @@ def test_existing_configured_baseline_fails_closed() -> None:
 def test_browser_runner_explicitly_leaves_d1_readback_for_separate_gate() -> None:
     source = SCRIPT.read_text(encoding="utf-8")
     assert 'print("D1_READBACK=NOT_PERFORMED_BY_BROWSER_RUNNER")' in source
+
+
+def test_d1_readback_checkpoints_are_opt_in_closed_and_privacy_bounded(monkeypatch) -> None:
+    calls: list[str] = []
+
+    def fail_input(prompt: str) -> str:
+        calls.append(prompt)
+        raise AssertionError("checkpoint input must not run when disabled")
+
+    monkeypatch.setattr("builtins.input", fail_input)
+    out = io.StringIO()
+    with contextlib.redirect_stdout(out):
+        canary._checkpoint("SELECT_A", enabled=False)
+    assert calls == []
+    assert out.getvalue() == ""
+
+    monkeypatch.setattr(
+        "builtins.input",
+        lambda prompt: calls.append(prompt) or "",
+    )
+    out = io.StringIO()
+    with contextlib.redirect_stdout(out):
+        canary._checkpoint("SELECT_A", enabled=True)
+    output = out.getvalue()
+    assert output.splitlines() == [
+        "A6_D1_CHECKPOINT=SELECT_A",
+        "A6_D1_READBACK_READY=YES",
+    ]
+    assert len(calls) == 1
+    assert "project" not in output.lower()
+    assert "folder" not in output.lower()
+    assert "user" not in output.lower()
+    assert "token" not in output.lower()
+
+    with pytest.raises(canary.CanaryFailure) as exc:
+        canary._checkpoint("NOT_A_PHASE", enabled=True)
+    assert exc.value.code == "invalid_d1_checkpoint"
+
+
+def test_d1_checkpoint_sequence_and_cli_flag_are_pinned() -> None:
+    run_source = inspect.getsource(canary.run_live)
+    main_source = inspect.getsource(canary.main)
+    markers = [
+        '_checkpoint("SELECT_A", enabled=pause_for_d1_readback)',
+        '_checkpoint("REPLACE_B", enabled=pause_for_d1_readback)',
+        '_checkpoint("CLEAR", enabled=pause_for_d1_readback)',
+    ]
+    positions = [run_source.index(marker) for marker in markers]
+    assert positions == sorted(positions)
+    assert run_source.index('_clear_folder(page)') < positions[2]
+    assert '--pause-for-d1-readback' in main_source
+    assert "pause_for_d1_readback=args.pause_for_d1_readback" in main_source
+    assert canary.D1_CHECKPOINT_LABELS == frozenset({"SELECT_A", "REPLACE_B", "CLEAR"})

@@ -224,7 +224,30 @@ def _choose_target_page(browser):
     return context.new_page(), True
 
 
-def run_live(cdp_url: str) -> int:
+D1_CHECKPOINT_LABELS = frozenset({"SELECT_A", "REPLACE_B", "CLEAR"})
+
+
+def _checkpoint(label: str, *, enabled: bool) -> None:
+    """Pause only for an explicitly requested external read-only D1 attestation.
+
+    Checkpoint labels are closed constants so no Project/folder/user value can
+    ever be reflected to stdout. The browser runner itself still performs no D1
+    read or write.
+    """
+
+    if not enabled:
+        return
+    if label not in D1_CHECKPOINT_LABELS:
+        raise CanaryFailure("invalid_d1_checkpoint")
+    print(f"A6_D1_CHECKPOINT={label}")
+    print("A6_D1_READBACK_READY=YES")
+    try:
+        input("Press Enter after the external read-only D1 attestation completes: ")
+    except EOFError as exc:
+        raise CanaryFailure("d1_checkpoint_stdin_unavailable") from exc
+
+
+def run_live(cdp_url: str, *, pause_for_d1_readback: bool = False) -> int:
     validate_cdp_url(cdp_url)
     direct_google_requests = 0
     put_count = 0
@@ -279,17 +302,20 @@ def run_live(cdp_url: str) -> int:
             page.reload(wait_until="domcontentloaded", timeout=30000)
             _open_existing_project(page, project_id)
             _wait_status(page, expected={"connected"})
+            _checkpoint("SELECT_A", enabled=pause_for_d1_readback)
 
             recent_after_reload = _open_picker_and_wait_recent(page)
             # Folder B was captured from the initial recent result. It must
             # remain selectable after reload; no ID/name is ever printed.
             _find_folder_button(page, folder_b.folder_id)
             _select_folder(page, folder_b.folder_id)
+            _checkpoint("REPLACE_B", enabled=pause_for_d1_readback)
 
             _clear_folder(page)
             page.reload(wait_until="domcontentloaded", timeout=30000)
             _open_existing_project(page, project_id)
             _wait_status(page, expected={"unconfigured"})
+            _checkpoint("CLEAR", enabled=pause_for_d1_readback)
 
             if put_count != 2 or delete_count != 1:
                 raise CanaryFailure("browser_mutation_count_mismatch")
@@ -332,6 +358,7 @@ def run_live(cdp_url: str) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(add_help=True)
     parser.add_argument("--authorized-live-run", action="store_true")
+    parser.add_argument("--pause-for-d1-readback", action="store_true")
     parser.add_argument("--cdp-url", default=DEFAULT_CDP_URL)
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
 
@@ -341,7 +368,10 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     try:
-        return run_live(args.cdp_url)
+        return run_live(
+            args.cdp_url,
+            pause_for_d1_readback=args.pause_for_d1_readback,
+        )
     except CanaryFailure as exc:
         print("B67_A6_BROWSER_FLOW=FAIL")
         print(f"SAFE_ERROR_CODE={exc.code}")
