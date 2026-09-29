@@ -1,0 +1,41 @@
+name: B67 Drive Case Folder A6 Browser Canary Contract
+
+on:
+  pull_request:
+    paths:
+      - ".github/scripts/b67_drive_case_folder_browser_canary.py"
+      - ".github/tests/test_b67_drive_case_folder_browser_canary.py"
+      - ".github/workflows/b67-drive-case-folder-a6-browser-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install source-test dependency
+        run: python -m pip install --disable-pip-version-check --quiet "pytest>=8,<10"
+      - name: Run A6 browser canary source contract
+        run: python -m pytest -q .github/tests/test_b67_drive_case_folder_browser_canary.py
+      - name: Pin local-session-only execution boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=.github/scripts/b67_drive_case_folder_browser_canary.py
+          grep -Fq 'TARGET_URL = "https://chat.padiem.net/"' "${script}"
+          grep -Fq 'ALLOWED_CDP_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})' "${script}"
+          grep -Fq 'DEFAULT_LIVE_EXECUTION=BLOCKED' "${script}"
+          grep -Fq 'D1_READBACK=NOT_PERFORMED_BY_BROWSER_RUNNER' "${script}"
+          echo 'LIVE_BROWSER_SESSION=0'
+          echo 'COOKIE_EXPORT=0'
+          echo 'TOKEN_EXPORT=0'
+          echo 'PRODUCTION_MUTATION=0'
