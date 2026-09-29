@@ -48,6 +48,7 @@
   const historyList = document.getElementById("historyList");
   const historyEmpty = document.getElementById("historyEmpty");
   const projectsNavButton = document.getElementById("projectsNavButton");
+  const filesNavButton = document.getElementById("filesNavButton");
   const projectsBadge = document.getElementById("projectsBadge");
   const projectsSection = document.getElementById("projectsSection");
   const projectsList = document.getElementById("projectsList");
@@ -398,6 +399,21 @@
     historySection.hidden = true;
     historyEmpty.hidden = true;
   }
+  // #3232: the Web Claw sidebar Files entry reuses the existing project-scoped
+  // Files authority. It mirrors the Projects readiness (authenticated +
+  // projectsReady) AND the existing project-files flag consumed by
+  // fetchProjectFiles/loadProjectFilesForDialog/addProjectFile/deleteProjectFile
+  // and the projectFilesPanel visibility, and never introduces its own
+  // storage, routes, or parsers.
+  function filesNavAvailable() {
+    return Boolean(authState.authenticated && projectsReady && authState.project_files_ready);
+  }
+  function syncFilesNav() {
+    if (!filesNavButton) return;
+    const enabled = filesNavAvailable();
+    filesNavButton.disabled = !enabled;
+    filesNavButton.setAttribute("aria-disabled", enabled ? "false" : "true");
+  }
   function clearProjectsUI() {
     projects = [];
     projectsReady = false;
@@ -408,6 +424,7 @@
     projectsEmpty.hidden = true;
     projectsNavButton.disabled = true;
     projectsNavButton.setAttribute("aria-disabled", "true");
+    syncFilesNav();
     projectsBadge.textContent = authState.authenticated ? uiT("setup-needed") : uiT("login-after");
     renderProjectState();
   }
@@ -462,6 +479,7 @@
       projectsReady = true;
       projectsNavButton.disabled = false;
       projectsNavButton.setAttribute("aria-disabled", "false");
+      syncFilesNav();
       if (activeProject) activeProject = projects.find((item) => item.id === activeProject.id) || activeProject;
       renderProjects();
       return true;
@@ -1357,6 +1375,17 @@
   projectsNavButton.addEventListener("click", () => {
     if (!projectsReady) return;
     if (projects.length === 0) openProjectDialog();
+    else projectsSection.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  });
+  // #3232: Files routes into the existing Project UI. With an active project it
+  // reopens that project's dialog (with its existing files panel); otherwise it
+  // reuses the existing Projects flow (create dialog when empty, section scroll
+  // when projects exist). No global file store is introduced: the handler stays
+  // fail-closed unless the project authority is ready.
+  if (filesNavButton) filesNavButton.addEventListener("click", () => {
+    if (!filesNavAvailable()) return;
+    if (activeProject) openProjectDialog(activeProject);
+    else if (projects.length === 0) openProjectDialog();
     else projectsSection.scrollIntoView({ block: "nearest", behavior: "smooth" });
   });
   projectCreateButton.addEventListener("click", () => openProjectDialog());
