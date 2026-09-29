@@ -60,6 +60,9 @@ def test_kilo_catalog_registers_the_exact_canonical_route() -> None:
 
     assert _string_constant(kilo_text, "KILO_SPACE_BUNNY_MODEL_ID") == "kilo/stealth-space-bunny-alpha"
     assert _string_constant(kilo_text, "KILO_SPACE_BUNNY_UPSTREAM_MODEL") == "stealth/space-bunny-alpha"
+    assert _string_constant(kilo_text, "KILO_CREDENTIAL_BINDING") == "KILO_API_KEY"
+    assert "credential_source=CredentialSource.PLATFORM_SECRET" in kilo_text
+    assert "credential_binding_name=KILO_CREDENTIAL_BINDING" in kilo_text
 
     assert _string_constant(canonical_text, "TEXT_PRIMARY_MODEL_ID") == _string_constant(
         kilo_text, "KILO_SPACE_BUNNY_MODEL_ID"
@@ -85,6 +88,7 @@ def test_product_tiers_and_registry_expose_plus_space_bunny() -> None:
         text = path.read_text(encoding="utf-8")
         assert 'model_id="kilo/stealth-space-bunny-alpha"' in text
         assert 'upstream_model="stealth/space-bunny-alpha"' in text
+        assert 'credential_binding="KILO_API_KEY"' in text
         # Agnes is preserved as historical data-only, never deleted.
         assert 'model_id="agnes-ai/agnes-3.0-flash"' in text
         assert "PADIEM_AGNES_API_KEY" in text
