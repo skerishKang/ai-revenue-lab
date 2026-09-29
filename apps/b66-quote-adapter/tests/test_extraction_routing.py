@@ -384,10 +384,70 @@ class B66GovernedRouteTests(unittest.TestCase):
         self.assertTrue(result["ok"], result)
         self.assertEqual(result["extraction"]["quote"]["validDays"], 30)
 
-        for bad in [0, -3, 1.5, "abc", "30 ", True]:
+        # JS parity: surrounding whitespace is trimmed before validation.
+        for padded, expected in [("30 ", 30), (" 2", 2), ("\t7\n", 7)]:
+            result = normalize_model_output(quote_with(padded))
+            self.assertTrue(result["ok"], repr(padded))
+            self.assertEqual(
+                result["extraction"]["quote"]["validDays"], expected, repr(padded)
+            )
+
+        for bad in [0, -3, 1.5, "abc", "   ", True, 3.5]:
             result = normalize_model_output(quote_with(bad))
             self.assertFalse(result["ok"], repr(bad))
             self.assertEqual(result["code"], "invalid_valid_days", repr(bad))
+
+    def test_oversized_digit_strings_fail_closed_with_contract_codes(self) -> None:
+        huge = "9" * 5000
+
+        def envelope_with(**overrides):
+            base = {
+                "source": {"kind": "image"},
+                "sender": {},
+                "recipient": {},
+                "quote": {},
+                "items": [],
+                "tax": {},
+                "memo": None,
+                "evidence": [],
+                "warnings": [],
+            }
+            base.update(overrides)
+            return normalize_model_output(base)
+
+        # No raw ValueError may escape; each boundary reports its own code.
+        self.assertEqual(
+            envelope_with(quote={"validDays": huge})["code"], "invalid_valid_days"
+        )
+        self.assertEqual(
+            envelope_with(evidence=[{"field": "f", "page": huge}])["code"],
+            "invalid_evidence_page",
+        )
+        self.assertEqual(
+            envelope_with(items=[{"name": "n", "qty": huge}])["code"],
+            "invalid_item_qty",
+        )
+        self.assertEqual(
+            envelope_with(items=[{"name": "n", "unitPrice": huge}])["code"],
+            "invalid_item_unit_price",
+        )
+
+    def test_evidence_page_trims_whitespace_like_js(self) -> None:
+        result = normalize_model_output(
+            {
+                "source": {"kind": "image"},
+                "sender": {},
+                "recipient": {},
+                "quote": {},
+                "items": [],
+                "tax": {},
+                "memo": None,
+                "evidence": [{"field": "f", "page": " 2 "}],
+                "warnings": [],
+            }
+        )
+        self.assertTrue(result["ok"], result)
+        self.assertEqual(result["extraction"]["evidence"][0]["page"], 2)
 
     def test_evidence_validated_and_preserved(self) -> None:
         def with_evidence(evidence_value):

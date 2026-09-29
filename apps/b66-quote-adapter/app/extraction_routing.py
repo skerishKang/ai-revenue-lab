@@ -403,20 +403,37 @@ def _optional_money(value: Any, *, code: str = "invalid_money") -> int | float |
     compact = "".join(char for char in value if not char.isspace()).replace(",", "")
     if not re.fullmatch(r"\d+(\.\d+)?", compact):
         _fail(code)
-    number: int | float = float(compact) if "." in compact else int(compact)
+    try:
+        number: int | float = float(compact) if "." in compact else int(compact)
+    except (ValueError, OverflowError):
+        # Untrusted oversized digit strings (e.g. beyond the interpreter's
+        # integer-string limit) fail closed with the contract code, never as
+        # a raw conversion exception escaping normalize_model_output().
+        _fail(code)
     if not math.isfinite(number) or number < 0:
         _fail(code)
     return number
 
 
 def _optional_positive_integer(value: Any, *, code: str) -> int | None:
-    """Mirror JS ``optionalPositiveInteger``: bounded positive integers only."""
+    """Mirror JS ``optionalPositiveInteger``: bounded positive integers only.
+
+    Like the JS (``/^\\d+$/.test(value.trim())`` → ``Number(value.trim())``),
+    surrounding whitespace is trimmed before validation, so ``"30 "`` is 30
+    while blank-only strings still fail closed.
+    """
     if value is None or value == "":
         return None
     if isinstance(value, str):
-        if not re.fullmatch(r"\d+", value):
+        trimmed = value.strip()
+        if not re.fullmatch(r"\d+", trimmed):
             _fail(code)
-        number = int(value)
+        try:
+            number = int(trimmed)
+        except (ValueError, OverflowError):
+            # See _optional_money: oversized untrusted digit strings fail
+            # closed with the contract code, never as a raw exception.
+            _fail(code)
     elif isinstance(value, bool):
         _fail(code)
     elif isinstance(value, int):
