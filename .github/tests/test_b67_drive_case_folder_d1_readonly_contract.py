@@ -61,17 +61,17 @@ def test_live_query_region_is_select_only_and_identifier_blind() -> None:
 
     assert "COUNT(*) AS total_rows" in live_region
     assert "active_count" in live_region
-    assert "created_equals_updated_count" in live_region
-    assert "updated_after_created_count" in live_region
     assert "canonical_connector_count" in live_region
+    assert "created_equals_updated_count" not in live_region
+    assert "updated_after_created_count" not in live_region
 
 
 def test_phase_expectations_and_privacy_markers_are_pinned() -> None:
     workflow = WORKFLOW.read_text(encoding="utf-8")
     required = (
-        '"select_a": (1, 1, 1, 0, 1)',
-        '"replace_b": (1, 1, 0, 1, 1)',
-        '"clear": (1, 0, 0, 1, 1)',
+        '"select_a": (1, 1, 1)',
+        '"replace_b": (1, 1, 1)',
+        '"clear": (1, 0, 1)',
         "D1_QUERY_MODE=READ_ONLY",
         "D1_MUTATION=0",
         "PRODUCTION_MUTATION=0",
