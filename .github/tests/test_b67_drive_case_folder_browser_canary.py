@@ -10,7 +10,8 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPT = ROOT / ".github" / "scripts" / "b67_drive_case_folder_browser_canary.py"\nWORKFLOW = ROOT / ".github" / "workflows" / "b67-drive-case-folder-a6-browser-contract.yml"
+SCRIPT = ROOT / ".github" / "scripts" / "b67_drive_case_folder_browser_canary.py"
+WORKFLOW = ROOT / ".github" / "workflows" / "b67-drive-case-folder-a6-browser-contract.yml"
 
 spec = importlib.util.spec_from_file_location("b67_drive_case_folder_browser_canary", SCRIPT)
 assert spec is not None and spec.loader is not None
