@@ -22,6 +22,12 @@ on:
       - ".github/scripts/cloudflare_mutation_evidence.py"
       - "apps/padiem-ai-engine/scripts/a9_production_smoke.py"
       - "apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py"
+      - "apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py"
+      - ".github/tests/test_b54_text_primary_route_parity.py"
+      - "packages/padiem-ai-core/padiem_ai_core/text_primary.py"
+      - "apps/korean-ai-platform/app/pilot/kilo_provider.py"
+      - "apps/korean-ai-platform/app/pilot/sensenova_provider.py"
+      - "docs/operations/A12_STREAM_REPLAY_GATE_DEPENDENCIES.md"
   workflow_dispatch:
 
 permissions:
@@ -42,10 +48,13 @@ jobs:
           python-version: "3.12"
 
       - name: Install test dependencies
-        run: python -m pip install --quiet pyyaml pytest
+        # The A9/A12 smoke scripts import the canonical text-primary
+        # declaration from packages/padiem-ai-core, exactly like the two
+        # production gates provision it before running the smokes.
+        run: python -m pip install --quiet pyyaml pytest -e packages/padiem-ai-core
 
       - name: Run gate contract tests
-        run: python -m pytest -q .github/tests/test_b54_engine_deploy_gate_smoke.py .github/tests/test_b54_engine_served_version_guard.py .github/tests/test_cloudflare_served_version.py .github/tests/test_cloudflare_mutation_evidence.py
+        run: python -m pytest -q .github/tests/test_b54_engine_deploy_gate_smoke.py .github/tests/test_b54_engine_served_version_guard.py .github/tests/test_cloudflare_served_version.py .github/tests/test_cloudflare_mutation_evidence.py .github/tests/test_b54_text_primary_route_parity.py
 
       - name: Record no deploy performed
         run: |

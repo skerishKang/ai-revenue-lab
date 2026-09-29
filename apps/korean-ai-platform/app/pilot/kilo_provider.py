@@ -16,6 +16,14 @@ Both lanes are retired (see RETIRED_KILO_FREE_MODEL_IDS) and are NOT
 registered in the catalog: explicit manual/auto resolution fails closed with
 ``unsupported_model``. The IDs and upstream models below are retained purely
 as retirement metadata for contract tests and operator documentation.
+
+#3199 follow-up (owner decision 2026-09-29): ``stealth/space-bunny-alpha`` is
+the canonical platform text-primary route. It was re-checked against the live
+public Gateway model list on 2026-09-29 (listed, ``isFree`` true, $0 in/out,
+1M context, keyless callable per the #3143 live evidence). The registration
+below is TEXT ROLE ONLY: the route advertises image/video input upstream, but
+this catalog entry declares no vision capability and no multimodal/product
+routing is changed here — the owner vision primary remains undecided.
 """
 
 from __future__ import annotations
@@ -42,6 +50,12 @@ KILO_NEMOTRON_MODEL_ID = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 KILO_NEMOTRON_UPSTREAM_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
 KILO_LAGUNA_MODEL_ID = "kilo/poolside-laguna-s-2.1-free"
 KILO_LAGUNA_UPSTREAM_MODEL = "poolside/laguna-s-2.1:free"
+# #3199 follow-up: canonical platform text-primary route (owner decision
+# 2026-09-29). The gateway id carries no ``:free`` suffix, so the repo-facing
+# id keeps the plain transliteration; the route is still a zero-price free
+# lane and is registered with the ``free`` capability.
+KILO_SPACE_BUNNY_MODEL_ID = "kilo/stealth-space-bunny-alpha"
+KILO_SPACE_BUNNY_UPSTREAM_MODEL = "stealth/space-bunny-alpha"
 
 # Retired lane identifiers kept as retirement metadata only. They are never
 # registered in the catalog; #2097 removed them from KILO_FREE_ROUTES and from
@@ -74,6 +88,8 @@ class _KiloFreeRoute:
     provider: str
     context_window: int
     sort_order: int
+    capabilities: frozenset[str] = frozenset({"chat", "free"})
+    source_checked_at: str = "2026-09-02"
 
 
 KILO_FREE_ROUTES = (
@@ -92,6 +108,20 @@ KILO_FREE_ROUTES = (
         provider="Kilo Gateway / Poolside",
         context_window=262_144,
         sort_order=91,
+    ),
+    _KiloFreeRoute(
+        # #3199 follow-up: the canonical platform text-primary route. Its
+        # coding capability is declared alongside chat/free; no vision
+        # capability is declared and the b14/auto chain membership is
+        # unchanged (this lane stays explicit-only like its siblings).
+        model_id=KILO_SPACE_BUNNY_MODEL_ID,
+        upstream_model=KILO_SPACE_BUNNY_UPSTREAM_MODEL,
+        display_name="Kilo: Space Bunny Alpha (free)",
+        provider="Kilo Gateway / Stealth",
+        context_window=1_000_000,
+        sort_order=92,
+        capabilities=frozenset({"chat", "coding", "free"}),
+        source_checked_at="2026-09-29",
     ),
 )
 
@@ -134,13 +164,13 @@ def register_kilo_provider() -> None:
             context_window=route.context_window,
             korean_score=0,
             latency_ms=0,
-            capabilities=frozenset({"chat", "free"}),
+            capabilities=route.capabilities,
             region="외부",
             sort_order=route.sort_order,
             credential_source="platform_secret",
             platform_provider_id=KILO_PROVIDER_ID,
             source="kilo_official_gateway_models",
-            source_checked_at="2026-09-02",
+            source_checked_at=route.source_checked_at,
             snapshot_state="configured_snapshot",
         )
         ensure_free_tag_requires_known_zero_price(model)

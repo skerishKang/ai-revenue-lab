@@ -23,6 +23,8 @@ from app.pilot.kilo_provider import (
     KILO_MODEL_ID,
     KILO_NEMOTRON_MODEL_ID,
     KILO_NEMOTRON_UPSTREAM_MODEL,
+    KILO_SPACE_BUNNY_MODEL_ID,
+    KILO_SPACE_BUNNY_UPSTREAM_MODEL,
     KILO_UPSTREAM_MODEL,
 )
 from app.pilot.router_core import resolve_auto_route, resolve_manual_route
@@ -51,10 +53,12 @@ def test_kilo_explicit_free_models_are_registered_keyless() -> None:
     expected = {
         KILO_NEMOTRON_MODEL_ID: (KILO_NEMOTRON_UPSTREAM_MODEL, "Kilo Gateway / NVIDIA", 1_000_000),
         KILO_LAGUNA_MODEL_ID: (KILO_LAGUNA_UPSTREAM_MODEL, "Kilo Gateway / Poolside", 262_144),
+        KILO_SPACE_BUNNY_MODEL_ID: (KILO_SPACE_BUNNY_UPSTREAM_MODEL, "Kilo Gateway / Stealth", 1_000_000),
     }
-    # #2097: minimax + hy3 free lanes are retired/unregistered; only two live
-    # explicit free routes remain.
-    assert len(KILO_FREE_ROUTES) == 2
+    # #2097: minimax + hy3 free lanes are retired/unregistered. #3199
+    # follow-up: space-bunny-alpha is the canonical text-primary route, so
+    # three live explicit free routes remain.
+    assert len(KILO_FREE_ROUTES) == 3
     assert KILO_MODEL_ID == KILO_NEMOTRON_MODEL_ID
     assert KILO_UPSTREAM_MODEL == KILO_NEMOTRON_UPSTREAM_MODEL
 
@@ -68,7 +72,11 @@ def test_kilo_explicit_free_models_are_registered_keyless() -> None:
         assert "chat" in model.capabilities
         assert "free" in model.capabilities
         assert model.context_window == context_window
-        assert model.source_checked_at in ("2026-09-02", "2026-09-06")
+        assert model.source_checked_at in ("2026-09-02", "2026-09-06", "2026-09-29")
+
+    space_bunny = get_catalog_by_id(KILO_SPACE_BUNNY_MODEL_ID)
+    assert space_bunny is not None
+    assert space_bunny.capabilities == frozenset({"chat", "coding", "free"})
 
     spec = ps.get_platform_provider("kilo")
     assert spec is not None
@@ -83,6 +91,7 @@ def test_kilo_routes_are_manual_explicit_only() -> None:
     expected = {
         KILO_NEMOTRON_MODEL_ID: (KILO_NEMOTRON_UPSTREAM_MODEL, "Kilo Gateway / NVIDIA"),
         KILO_LAGUNA_MODEL_ID: (KILO_LAGUNA_UPSTREAM_MODEL, "Kilo Gateway / Poolside"),
+        KILO_SPACE_BUNNY_MODEL_ID: (KILO_SPACE_BUNNY_UPSTREAM_MODEL, "Kilo Gateway / Stealth"),
     }
     for model_id, (upstream_model, provider) in expected.items():
         decision = resolve_manual_route(model_id)
@@ -111,6 +120,7 @@ def test_kilo_routes_are_manual_explicit_only() -> None:
     [
         (KILO_NEMOTRON_MODEL_ID, KILO_NEMOTRON_UPSTREAM_MODEL, "Kilo Gateway / NVIDIA"),
         (KILO_LAGUNA_MODEL_ID, KILO_LAGUNA_UPSTREAM_MODEL, "Kilo Gateway / Poolside"),
+        (KILO_SPACE_BUNNY_MODEL_ID, KILO_SPACE_BUNNY_UPSTREAM_MODEL, "Kilo Gateway / Stealth"),
     ],
 )
 async def test_kilo_completed_calls_send_no_authorization_header(
@@ -222,6 +232,7 @@ async def test_kilo_rate_limit_maps_to_bounded_provider_error(monkeypatch) -> No
     [
         (KILO_NEMOTRON_MODEL_ID, "Kilo Gateway / NVIDIA"),
         (KILO_LAGUNA_MODEL_ID, "Kilo Gateway / Poolside"),
+        (KILO_SPACE_BUNNY_MODEL_ID, "Kilo Gateway / Stealth"),
     ],
 )
 def test_kilo_gateway_dispatches_without_caller_provider_key(

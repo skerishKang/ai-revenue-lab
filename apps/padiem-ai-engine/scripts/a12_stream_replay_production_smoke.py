@@ -2,12 +2,15 @@
 
 Runs against the PRODUCTION Engine (default https://engine.padiem.net) with the
 product-owned smoke caller credential (PADIEM_ENGINE_SMOKE_CALLER_ID/_SECRET or
-CALLER_ID/CALLER_SECRET, allowed_app_ids=["b54-padiem-claw"]). Standard library only.
+CALLER_ID/CALLER_SECRET, allowed_app_ids=["b54-padiem-claw"]). Standard library
+plus the canonical ``padiem_ai_core`` text-primary declaration (the gate
+installs ``packages/padiem-ai-core`` before this smoke runs).
 
 Steps:
   S0  GET  /internal/v1/health -> 200, STREAM_PATH advertised, capabilities
       provider_streaming_run == "available".
-  S1  POST /internal/v1/stream (pinned model, idempotency key a12-smoke-<RUN_ID>-1)
+  S1  POST /internal/v1/stream (canonical text-primary model, idempotency key
+      a12-smoke-<RUN_ID>-1)
       -> 200 NDJSON stream, first execution produces incremental stream events
       ending with done=True and replayed=False.
   S2  POST /internal/v1/stream (same payload, same key)
@@ -43,12 +46,17 @@ import urllib.error
 import urllib.request
 from typing import Any
 
+# #3199 follow-up: the stream leg pins the canonical platform text-primary
+# (single-source declaration in ``padiem_ai_core.text_primary``); the pin stays
+# a module constant — a silent fallback would change what the smoke proves.
+from padiem_ai_core.text_primary import TEXT_PRIMARY_MODEL_ID
+
 ENGINE_BASE_URL = os.environ.get("ENGINE_BASE_URL", "https://engine.padiem.net").rstrip("/")
 CALLER_ID = os.environ.get("PADIEM_ENGINE_SMOKE_CALLER_ID") or os.environ.get("CALLER_ID", "")
 CALLER_SECRET = os.environ.get("PADIEM_ENGINE_SMOKE_CALLER_SECRET") or os.environ.get("CALLER_SECRET", "")
 GITHUB_RUN_ID = os.environ.get("GITHUB_RUN_ID", "local")
 
-PINNED_MODEL = "sensenova/sensenova-6.8-flash-lite"
+PINNED_MODEL = TEXT_PRIMARY_MODEL_ID
 HEALTH_PATH = "/internal/v1/health"
 STREAM_PATH = "/internal/v1/stream"
 IDEMPOTENCY_KEY = f"a12-smoke-{GITHUB_RUN_ID}-1"

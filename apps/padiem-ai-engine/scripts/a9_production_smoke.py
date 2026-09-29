@@ -2,7 +2,9 @@
 
 Runs against the PRODUCTION Engine (default https://engine.padiem.net) with the
 product-owned smoke caller credential (PADIEM_ENGINE_SMOKE_CALLER_ID/_SECRET,
-allowed_app_ids=["b54-padiem-claw"]). Standard library only.
+allowed_app_ids=["b54-padiem-claw"]). Standard library plus the canonical
+``padiem_ai_core`` text-primary declaration (the gate installs
+``packages/padiem-ai-core`` before this smoke runs).
 
 Steps:
   S0  GET  /internal/v1/health                    -> 200, endpoints is a list,
@@ -12,8 +14,8 @@ Steps:
       (activated by WO-8 PR-C). A9 is an idempotency/orchestration smoke, so it
       checks only these contract-relevant facts and NOT the total endpoint
       count (the manifest cardinality is free to grow with unrelated routes).
-  S1  POST /internal/v1/orchestrate (pinned model, max_steps=1, idempotency
-      key a9-smoke-<RUN_ID>-1)                    -> 200, ONE real provider call.
+  S1  POST /internal/v1/orchestrate (canonical text-primary model, max_steps=1,
+      idempotency key a9-smoke-<RUN_ID>-1)        -> 200, ONE real provider call.
   S2  Same payload, same key                      -> 200 served from durable
       replay: execution identity equals S1's and the run_completed event
       carries the replay marker. Measured replay path: the idempotency begin
@@ -47,12 +49,17 @@ import urllib.error
 import urllib.request
 from typing import Any
 
+# #3199 follow-up: the orchestrate leg pins the canonical platform text-primary
+# (single-source declaration in ``padiem_ai_core.text_primary``); the pin stays
+# a module constant — a silent fallback would change what the smoke proves.
+from padiem_ai_core.text_primary import TEXT_PRIMARY_MODEL_ID
+
 ENGINE_BASE_URL = os.environ.get("ENGINE_BASE_URL", "https://engine.padiem.net").rstrip("/")
 CALLER_ID = os.environ.get("CALLER_ID", "")
 CALLER_SECRET = os.environ.get("CALLER_SECRET", "")
 GITHUB_RUN_ID = os.environ.get("GITHUB_RUN_ID", "local")
 
-PINNED_MODEL = "sensenova/sensenova-6.8-flash-lite"
+PINNED_MODEL = TEXT_PRIMARY_MODEL_ID
 HEALTH_PATH = "/internal/v1/health"
 ORCHESTRATE_PATH = "/internal/v1/orchestrate"
 REPLAY_PATH = "/internal/v1/idempotency/completed/replay"
