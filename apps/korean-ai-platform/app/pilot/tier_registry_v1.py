@@ -170,8 +170,9 @@ TIER_REGISTRY: tuple[TierDefinition, ...] = (
                 credential_binding="KILO_API_KEY",
                 evidence=(
                     "Owner decision #3209 (decision source #3143): Padiem Plus text "
-                    "and image primary is Space Bunny Alpha on the keyless Kilo "
-                    "free lane; app/pilot/kilo_provider.py registration."
+                    "and image primary is Space Bunny Alpha on the authenticated Kilo "
+                    "free lane using the owner-managed platform secret; "
+                    "app/pilot/kilo_provider.py registration."
                 ),
             ),
             TierRoute(
