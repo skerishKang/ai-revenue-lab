@@ -1,0 +1,320 @@
+name: B67 Drive Case Folder D1 Read-only Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b67-drive-case-folder-d1-readonly-gate.yml"
+      - ".github/tests/test_b67_drive_case_folder_d1_readonly_contract.py"
+      - "apps/padiem-ai-engine/app/drive_case_folder_binding.py"
+      - "apps/padiem-ai-engine/app/document_reference.py"
+      - "apps/padiem-ai-engine/migrations/0008_engine_drive_case_folder_bindings.sql"
+      - "apps/padiem-ai-engine/wrangler.toml"
+  workflow_dispatch:
+    inputs:
+      expected_main_sha:
+        description: Exact current main SHA approved for this read-only attestation
+        required: true
+        type: string
+      phase:
+        description: A6 checkpoint whose durable D1 state is being attested
+        required: true
+        type: choice
+        options:
+          - select_a
+          - replace_b
+          - clear
+      confirm:
+        description: Type RUN_B67_D1_READONLY_ONCE
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b67-drive-case-folder-d1-readonly-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ENGINE_WORKER: padiem-ai-engine
+  D1_BINDING: ENGINE_DOCUMENT_STORE
+  DRIVE_CONNECTOR_ID: connector:google:drive@1
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install source-test dependency
+        run: python -m pip install --disable-pip-version-check --quiet "pytest>=8,<10"
+
+      - name: Validate B67 D1 read-only phase contract
+        run: python -m pytest -q .github/tests/test_b67_drive_case_folder_d1_readonly_contract.py
+
+  production-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.confirm == 'RUN_B67_D1_READONLY_ONCE' }}
+    environment: production
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      EXPECTED_MAIN_SHA: ${{ inputs.expected_main_sha }}
+      PHASE: ${{ inputs.phase }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact approved main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.expected_main_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Require exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "${EXPECTED_MAIN_SHA}" in
+            [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]) ;;
+            *) echo "EXPECTED_MAIN_SHA_INVALID=YES"; exit 1 ;;
+          esac
+          test "$(git rev-parse HEAD)" = "${EXPECTED_MAIN_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${EXPECTED_MAIN_SHA}"
+          echo "READONLY_EXACT_MAIN_SHA=PASS"
+
+      - name: Resolve live Engine D1 binding without emitting identifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          settings="${RUNNER_TEMP}/b67-engine-settings-readonly.json"
+          curl -fsS "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}/settings" \
+            -o "${settings}"
+
+          DB_ID="$(python - "${settings}" "apps/padiem-ai-engine/wrangler.toml" "${D1_BINDING}" <<'PY'
+          import json
+          import re
+          import sys
+          import tomllib
+
+          settings_path, wrangler_path, binding_name = sys.argv[1:4]
+          with open(wrangler_path, "rb") as handle:
+              config = tomllib.load(handle)
+          declared = [
+              item for item in config.get("d1_databases", [])
+              if item.get("binding") == binding_name
+          ]
+          if len(declared) != 1:
+              raise SystemExit("expected exactly one repo-owned Engine D1 binding")
+          expected_id = declared[0].get("database_id")
+
+          payload = json.load(open(settings_path, encoding="utf-8"))
+          bindings = payload.get("result", {}).get("bindings", []) if payload.get("success") is True else []
+          hits = [item for item in bindings if item.get("type") == "d1" and item.get("name") == binding_name]
+          if len(hits) != 1:
+              raise SystemExit("expected exactly one live Engine D1 binding")
+          database_id = hits[0].get("id")
+          if not isinstance(database_id, str) or not re.fullmatch(r"[0-9a-fA-F-]{32,36}", database_id):
+              raise SystemExit("live Engine D1 binding identifier is malformed")
+          if not isinstance(expected_id, str) or database_id.lower() != expected_id.lower():
+              raise SystemExit("live Engine D1 binding identity drifted")
+          print(database_id)
+          PY
+          )"
+          test -n "${DB_ID}"
+          echo "::add-mask::${DB_ID}"
+          echo "DB_ID=${DB_ID}" >> "${GITHUB_ENV}"
+          echo "LIVE_ENGINE_D1_DERIVED=PASS"
+          echo "D1_IDENTIFIER_OUTPUT=0"
+          echo "SECRET_VALUE_OUTPUT=0"
+
+      - name: Verify case-folder D1 schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          payload_path="${RUNNER_TEMP}/b67-case-folder-schema-query.json"
+          python - "${payload_path}" <<'PY'
+          import json
+          import sys
+
+          sql = """
+          SELECT
+            EXISTS(
+              SELECT 1 FROM sqlite_master
+              WHERE type = 'table' AND name = 'padiem_engine_drive_case_folder_bindings'
+            ) AS table_exists,
+            (
+              SELECT COUNT(*) FROM pragma_table_info('padiem_engine_drive_case_folder_bindings')
+            ) AS column_count,
+            (
+              SELECT COUNT(*) FROM pragma_table_info('padiem_engine_drive_case_folder_bindings')
+              WHERE name IN (
+                'workspace_ref','project_id','connector_id','drive_binding_ref',
+                'selected_folder_id','shared_drive_id','active','created_at','updated_at'
+              )
+            ) AS expected_column_count,
+            EXISTS(
+              SELECT 1 FROM sqlite_master
+              WHERE type = 'index'
+                AND name = 'idx_padiem_engine_drive_case_folder_bindings_active'
+            ) AS active_index_exists;
+          """
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump({"sql": sql}, handle)
+          PY
+
+          response="${RUNNER_TEMP}/b67-case-folder-schema-response.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${payload_path}" -o "${response}"
+
+          python - "${response}" <<'PY'
+          import json
+          import sys
+
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          if payload.get("success") is not True:
+              raise SystemExit("B67 D1 schema read failed")
+          result = payload.get("result")
+          if not isinstance(result, list) or len(result) != 1 or result[0].get("success") is not True:
+              raise SystemExit("B67 D1 schema result envelope invalid")
+          rows = result[0].get("results")
+          if not isinstance(rows, list) or len(rows) != 1:
+              raise SystemExit("B67 D1 schema aggregate row invalid")
+          row = rows[0]
+          observed = (
+              int(row.get("table_exists") or 0),
+              int(row.get("column_count") or 0),
+              int(row.get("expected_column_count") or 0),
+              int(row.get("active_index_exists") or 0),
+          )
+          if observed != (1, 9, 9, 1):
+              raise SystemExit("B67 Drive case-folder D1 schema is missing or drifted")
+          print("B67_D1_SCHEMA=EXACT")
+          PY
+
+      - name: Read bounded case-folder D1 phase state
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "${PHASE}" in
+            select_a|replace_b|clear) ;;
+            *) echo "B67_D1_PHASE_INVALID=YES"; exit 1 ;;
+          esac
+
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          payload_path="${RUNNER_TEMP}/b67-case-folder-phase-query.json"
+          python - "${payload_path}" "${DRIVE_CONNECTOR_ID}" <<'PY'
+          import json
+          import sys
+
+          sql = """
+          SELECT
+            COUNT(*) AS total_rows,
+            COALESCE(SUM(CASE WHEN active = 1 THEN 1 ELSE 0 END), 0) AS active_count,
+            COALESCE(SUM(CASE WHEN created_at = updated_at THEN 1 ELSE 0 END), 0) AS created_equals_updated_count,
+            COALESCE(SUM(CASE WHEN updated_at > created_at THEN 1 ELSE 0 END), 0) AS updated_after_created_count,
+            COALESCE(SUM(CASE WHEN connector_id = ? THEN 1 ELSE 0 END), 0) AS canonical_connector_count
+          FROM padiem_engine_drive_case_folder_bindings;
+          """
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump({"sql": sql, "params": [sys.argv[2]]}, handle)
+          PY
+
+          response="${RUNNER_TEMP}/b67-case-folder-phase-response.json"
+          curl -fsS -X POST "${auth[@]}" \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+            --data-binary "@${payload_path}" -o "${response}"
+
+          python - "${response}" "${PHASE}" <<'PY'
+          import json
+          import sys
+
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          phase = sys.argv[2]
+          if payload.get("success") is not True:
+              raise SystemExit("B67 D1 read-only phase query failed")
+          result = payload.get("result")
+          if not isinstance(result, list) or len(result) != 1 or result[0].get("success") is not True:
+              raise SystemExit("B67 D1 read-only phase result envelope invalid")
+          rows = result[0].get("results")
+          if not isinstance(rows, list) or len(rows) != 1:
+              raise SystemExit("B67 D1 read-only aggregate row invalid")
+
+          row = rows[0]
+          observed = (
+              int(row.get("total_rows") or 0),
+              int(row.get("active_count") or 0),
+              int(row.get("created_equals_updated_count") or 0),
+              int(row.get("updated_after_created_count") or 0),
+              int(row.get("canonical_connector_count") or 0),
+          )
+          expected = {
+              "select_a": (1, 1, 1, 0, 1),
+              "replace_b": (1, 1, 0, 1, 1),
+              "clear": (1, 0, 0, 1, 1),
+          }
+          if phase not in expected:
+              raise SystemExit("unknown B67 D1 attestation phase")
+
+          print(f"B67_D1_READBACK_PHASE={phase.upper()}")
+          print(f"B67_D1_TOTAL_ROWS={observed[0]}")
+          print(f"B67_D1_ACTIVE_COUNT={observed[1]}")
+          print(f"B67_D1_CREATED_EQUALS_UPDATED_COUNT={observed[2]}")
+          print(f"B67_D1_UPDATED_AFTER_CREATED_COUNT={observed[3]}")
+          print(f"B67_D1_CANONICAL_CONNECTOR_COUNT={observed[4]}")
+
+          if observed != expected[phase]:
+              raise SystemExit("B67 D1 durable phase state does not match the approved A6 checkpoint")
+          print("B67_D1_PHASE_STATE=PASS")
+          PY
+
+          echo "RAW_PROJECT_ID_OUTPUT=0"
+          echo "RAW_FOLDER_ID_OUTPUT=0"
+          echo "RAW_FOLDER_NAME_OUTPUT=0"
+          echo "RAW_WORKSPACE_REF_OUTPUT=0"
+          echo "RAW_DRIVE_BINDING_REF_OUTPUT=0"
+          echo "D1_IDENTIFIER_OUTPUT=0"
+          echo "SECRET_VALUE_OUTPUT=0"
+          echo "ROW_VALUE_OUTPUT=AGGREGATES_ONLY"
+          echo "D1_QUERY_MODE=READ_ONLY"
+          echo "D1_MUTATION=0"
+          echo "GOOGLE_PROVIDER_CALLS=0"
+          echo "PRODUCTION_MUTATION=0"
+          echo "PRODUCTION_DEPLOY=0"
+
+      - name: Publish bounded read-only evidence
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## B67 Drive case-folder D1 read-only gate"
+            echo
+            echo "- exact current main required: yes"
+            echo "- phase: \`${PHASE}\`"
+            echo "- D1 SQL mode: SELECT-only"
+            echo "- row output: aggregate counts only"
+            echo "- raw Project/folder/workspace/binding identifiers emitted: no"
+            echo "- Google provider calls: 0"
+            echo "- Production mutation/deploy: 0"
+          } >> "${GITHUB_STEP_SUMMARY}"
