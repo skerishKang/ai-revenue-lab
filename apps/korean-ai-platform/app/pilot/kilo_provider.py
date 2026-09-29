@@ -4,7 +4,7 @@ This module keeps a bounded set of explicit current free routes rather than
 ``kilo-auto/free``. Kilo's official Gateway documentation checked on
 2026-09-02 lists the exact upstream IDs below as free and preserves their existing
 anonymous/keyless execution contract. Space Bunny is the one exception:
-Production execution for that model reuses the owner-managed ``KILO_API_KEY``
+Production execution for that model reuses the owner-managed ``PADIEM_KILO_API_KEY``
 already stored in Cloudflare Secrets Store.
 
 Free availability is volatile. These registrations are dated snapshots, remain
@@ -24,7 +24,7 @@ quotation text primary. It is registered here as one additional explicit
 free lane under the same ``kilo`` Provider spec. Owner correction #3209
 keeps the shared Provider boundary keyless for the historical free lanes while
 Space Bunny alone reuses the existing Cloudflare Secrets Store credential
-``KILO_API_KEY``; no new provider adapter or secret value is introduced. Like the lanes above it is never appended to ``CATALOG_MODELS``
+``PADIEM_KILO_API_KEY``; no new provider adapter or secret value is introduced. Like the lanes above it is never appended to ``CATALOG_MODELS``
 or to ``b14/auto``; the global auto chain and its fallback set are unchanged.
 Owner decision (#3209) additionally names the same lane the canonical vision
 primary for the existing single-image product contract (``chat``/``coding``/
@@ -52,7 +52,7 @@ from app.pilot.platform_secrets import (
 KILO_PROVIDER_ID = "kilo"
 KILO_BASE_ORIGIN = "https://api.kilo.ai/api/gateway"
 KILO_ALLOWED_HOST = "api.kilo.ai"
-KILO_SPACE_BUNNY_CREDENTIAL_BINDING = "KILO_API_KEY"
+KILO_SPACE_BUNNY_CREDENTIAL_BINDING = "PADIEM_KILO_API_KEY"
 
 KILO_NEMOTRON_MODEL_ID = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 KILO_NEMOTRON_UPSTREAM_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
@@ -68,7 +68,7 @@ KILO_SPACE_BUNNY_MODEL_ID = "kilo/stealth-space-bunny-alpha"
 KILO_SPACE_BUNNY_UPSTREAM_MODEL = "stealth/space-bunny-alpha"
 # Date of the owner/CENTRAL evidence that re-confirmed this lane callable on
 # the Kilo free route (#3143 refresh). Space Bunny authentication now comes from
-# the existing owner-managed KILO_API_KEY binding (#3209); this remains a dated
+# the existing owner-managed PADIEM_KILO_API_KEY runtime binding (#3209); this remains a dated
 # availability snapshot, not a guarantee.
 KILO_SPACE_BUNNY_SOURCE_CHECKED_AT = "2026-09-28"
 
