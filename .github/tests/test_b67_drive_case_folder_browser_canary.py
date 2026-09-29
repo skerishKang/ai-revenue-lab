@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import importlib.util
 import io
+import sys
 from pathlib import Path
 
 import pytest
@@ -13,6 +14,7 @@ SCRIPT = ROOT / ".github" / "scripts" / "b67_drive_case_folder_browser_canary.py
 spec = importlib.util.spec_from_file_location("b67_drive_case_folder_browser_canary", SCRIPT)
 assert spec is not None and spec.loader is not None
 canary = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = canary
 spec.loader.exec_module(canary)
 
 
