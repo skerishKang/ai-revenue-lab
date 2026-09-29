@@ -492,6 +492,13 @@ def _xml_header() -> str:
 def _zip_part(name: str, data: str | bytes) -> tuple[zipfile.ZipInfo, bytes]:
     info = zipfile.ZipInfo(filename=name, date_time=FIXED_ZIP_DATE)
     info.compress_type = zipfile.ZIP_DEFLATED
+    # ``zipfile`` derives the archive's creator platform from the running
+    # interpreter (FAT on Windows, Unix elsewhere), which changes the
+    # "version made by" field and therefore the whole archive digest. Pin it so
+    # the OOXML fixtures are byte-identical on every platform.
+    info.create_system = 0
+    info.create_version = 20
+    info.extract_version = 20
     info.external_attr = 0o600 << 16
     payload = data.encode("utf-8") if isinstance(data, str) else data
     return info, payload
