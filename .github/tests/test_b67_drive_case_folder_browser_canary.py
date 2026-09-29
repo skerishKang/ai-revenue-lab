@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-SCRIPT = ROOT / ".github" / "scripts" / "b67_drive_case_folder_browser_canary.py"
+SCRIPT = ROOT / ".github" / "scripts" / "b67_drive_case_folder_browser_canary.py"\nWORKFLOW = ROOT / ".github" / "workflows" / "b67-drive-case-folder-a6-browser-contract.yml"
 
 spec = importlib.util.spec_from_file_location("b67_drive_case_folder_browser_canary", SCRIPT)
 assert spec is not None and spec.loader is not None
@@ -178,3 +178,11 @@ def test_d1_checkpoint_sequence_and_cli_flag_are_pinned() -> None:
     assert '--pause-for-d1-readback' in main_source
     assert "pause_for_d1_readback=args.pause_for_d1_readback" in main_source
     assert canary.D1_CHECKPOINT_LABELS == frozenset({"SELECT_A", "REPLACE_B", "CLEAR"})
+
+
+def test_a6_source_contract_runs_on_every_main_push() -> None:
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    assert "\n  push:\n    branches:\n      - main\n" in workflow
+    assert "workflow_dispatch:" in workflow
+    assert "LIVE_BROWSER_SESSION=0" in workflow
+    assert "PRODUCTION_MUTATION=0" in workflow
