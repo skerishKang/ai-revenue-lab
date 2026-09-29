@@ -23,9 +23,11 @@ free lane under the same ``kilo`` Provider spec (keyless
 ``CredentialSource.NONE``): no new provider adapter and no new secret are
 introduced. Like the lanes above it is never appended to ``CATALOG_MODELS``
 or to ``b14/auto``; the global auto chain and its fallback set are unchanged.
-The lane declares text roles only (``chat``/``coding``/``free``): Business 66
-vision routing is still an open owner decision, so no ``vision``/``image``
-capability is declared even though the upstream model may accept images.
+Owner decision (#3209) additionally names the same lane the canonical vision
+primary for the existing single-image product contract (``chat``/``coding``/
+``free`` plus ``image``): Product image requests reuse the existing B14
+multimodal path. No ``video``/``audio``/generic-multimodal capability is
+declared and no video product activation follows from upstream metadata.
 """
 
 from __future__ import annotations
@@ -127,9 +129,11 @@ KILO_FREE_ROUTES = (
         # No context-window figure exists in the owner/issue evidence for this
         # lane. 0 keeps it explicitly undeclared instead of inventing a value;
         # routing does not enforce context length on explicit manual routes.
+        # Authority: unchanged from main (#3209 preserves the 0 sentinel and
+        # does not resurrect stale #3202 metadata).
         context_window=0,
         sort_order=92,
-        capabilities=frozenset({"chat", "coding", "free"}),
+        capabilities=frozenset({"chat", "coding", "free", "image"}),
         source_checked_at=KILO_SPACE_BUNNY_SOURCE_CHECKED_AT,
     ),
 )

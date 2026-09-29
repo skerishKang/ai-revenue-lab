@@ -96,13 +96,15 @@ PRODUCT_TIER_NAMES: dict[str, str] = {
 }
 EXECUTABLE_B14_MODEL_IDS = frozenset({LOW_B14_MODEL_ID})
 
-# Current source posture after owner decision #2601:
+# Current source posture after owner decision #3209:
 #
-#   Padiem Plus -> direct Agnes 3.0 Flash (only executable tier)
+#   Padiem Plus -> Space Bunny Alpha on the keyless Kilo free lane
+#     (only executable tier; text + single-image via the existing
+#     MultimodalExecutionRuntime)
 #   Padiem Pro  -> HOLD
 #   Padiem Max  -> HOLD
 #
-# The historical Kilo lanes are not product fallbacks. `b14/auto` and
+# The historical Agnes lane is not a product fallback. `b14/auto` and
 # provider-side auto/fallback behavior remain disabled for product routing.
 DEFAULT_B14_MODEL_ID = PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
 
@@ -125,9 +127,10 @@ MODEL_ALIASES: dict[str, str] = {
 # Product capability claims remain conservative. Free/promotional status is not
 # encoded as a durable B62 capability because upstream zero-cost availability
 # can change independently of the Padiem product tier. HOLD has no executable
-# capabilities.
+# capabilities. Plus carries image because the active Space Bunny route
+# declares it and Chat reuses the existing single-image multimodal path.
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
-    LOW_B14_MODEL_ID: frozenset({"chat", "coding", "long_context"}),
+    LOW_B14_MODEL_ID: frozenset({"chat", "coding", "long_context", "image"}),
     MEDIUM_B14_MODEL_ID: frozenset(),
     HIGH_B14_MODEL_ID: frozenset(),
     AUTO_B14_MODEL_ID: frozenset(),

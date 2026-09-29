@@ -83,14 +83,19 @@ async def test_no_attachment_keeps_text_chat_contract_on_explicit_agnes():
         ("image/webp", WEBP, "photo.webp"),
     ],
 )
-async def test_valid_live_image_attachment_fails_closed_before_b14_until_model_capability_is_proven(
+async def test_valid_live_image_attachment_uses_existing_multimodal_runtime(
     media_type, data, name
 ):
+    # #3209: Padiem Plus (Space Bunny Alpha) declares image, so a valid single
+    # image reuses the existing MultimodalExecutionRuntime path instead of
+    # failing closed with image_model_unavailable.
     calls = 0
+    seen: dict = {}
 
     async def handler(request):
         nonlocal calls
         calls += 1
+        seen["body"] = json.loads(request.content)
         return httpx.Response(200, json=b14_success())
 
     app = create_app(
@@ -112,10 +117,19 @@ async def test_valid_live_image_attachment_fails_closed_before_b14_until_model_c
             },
         )
 
-    assert response.status_code == 503
-    assert response.json()["error"]["code"] == "image_model_unavailable"
-    assert calls == 0
-    assert encoded(data) not in response.text
+    assert response.status_code == 200
+    assert calls == 1
+    payload = response.json()
+    assert "attachments" in payload
+    assert seen["body"]["model"] == DEFAULT_B14_MODEL_ID == "kilo/stealth-space-bunny-alpha"
+    last_message = seen["body"]["messages"][-1]
+    assert last_message["role"] == "user"
+    assert isinstance(last_message["content"], list)
+    assert last_message["content"][0]["type"] == "text"
+    assert last_message["content"][1]["type"] == "image_url"
+    assert last_message["content"][1]["image_url"]["url"].startswith(
+        f"data:{media_type};base64,"
+    )
 
 
 @pytest.mark.asyncio

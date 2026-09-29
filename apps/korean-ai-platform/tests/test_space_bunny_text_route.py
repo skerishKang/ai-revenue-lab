@@ -1,13 +1,15 @@
-"""Route execution contract for the B66 quotation text-primary lane (#3143).
+"""Route execution contract for the Space Bunny text+vision primary lane (#3209).
 
-Owner decision: ``stealth/space-bunny-alpha`` is the Business 66 quotation
-text primary. Everything here runs against the real registry, the real
-provider spec, and the real router resolvers — no string-presence checks —
-so the evidence is the actual registry result, not a keyword match.
+Owner decision: ``stealth/space-bunny-alpha`` is both the canonical text
+primary and the canonical vision primary (decision source #3143, revised
+#3209). Everything here runs against the real registry, the real provider
+spec, and the real router resolvers — no string-presence checks — so the
+evidence is the actual registry result, not a keyword match.
 
-Scope is deliberately text-only: Business 66 vision routing is still an open
-owner decision, so this lane must not declare image/vision capability and
-must not touch the global ``b14/auto`` chain.
+Scope is the existing single-image product contract: the lane declares
+``image`` alongside ``chat``/``coding``/``free`` and reuses the existing B14
+multimodal path. No ``video``/``audio``/generic-multimodal capability is
+declared and the global ``b14/auto`` chain stays unchanged.
 """
 
 from __future__ import annotations
@@ -70,6 +72,9 @@ def test_space_bunny_route_is_registered_on_the_existing_kilo_provider() -> None
     assert model.input_price_usd_per_1m == 0.0
     assert model.output_price_usd_per_1m == 0.0
     assert model.source_checked_at == KILO_SPACE_BUNNY_SOURCE_CHECKED_AT
+    # Context-window authority stays exactly as current main (#3209): the lane
+    # keeps the explicit 0 sentinel instead of inventing a value.
+    assert model.context_window == 0
 
 
 def test_space_bunny_requires_no_new_secret_and_sends_no_authorization() -> None:
@@ -86,12 +91,13 @@ def test_space_bunny_requires_no_new_secret_and_sends_no_authorization() -> None
     assert headers == {"Content-Type": "application/json"}
 
 
-def test_space_bunny_declares_text_capabilities_only() -> None:
+def test_space_bunny_declares_text_and_image_capabilities_only() -> None:
     model = get_catalog_by_id(KILO_SPACE_BUNNY_MODEL_ID)
     assert model is not None
-    assert {"chat", "coding", "free"}.issubset(model.capabilities)
-    # Vision selection is still an open owner decision (#3143).
-    unsupported = {"vision", "image", "video", "multimodal", "audio"}
+    assert {"chat", "coding", "free", "image"}.issubset(model.capabilities)
+    # Video product activation stays off (#3209): upstream metadata may list
+    # video input, but no video/audio/wildcard capability is declared.
+    unsupported = {"vision", "video", "multimodal", "audio"}
     assert model.capabilities & unsupported == frozenset()
 
 

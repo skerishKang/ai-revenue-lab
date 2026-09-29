@@ -206,13 +206,16 @@ def test_explicit_alias_without_prompt_fails_closed_before_tier_availability_che
 
 
 def test_tier_capabilities_are_conservative_and_hold_claims_none():
-    assert MODEL_CAPABILITIES[LOW_B14_MODEL_ID] == frozenset({"chat", "coding", "long_context"})
+    assert MODEL_CAPABILITIES[LOW_B14_MODEL_ID] == frozenset({"chat", "coding", "long_context", "image"})
     assert MODEL_CAPABILITIES[MEDIUM_B14_MODEL_ID] == frozenset()
     assert MODEL_CAPABILITIES[HIGH_B14_MODEL_ID] == frozenset()
 
     assert model_supports(LOW_B14_MODEL_ID, "chat") is True
     assert model_supports(LOW_B14_MODEL_ID, "free") is False
-    assert model_supports(LOW_B14_MODEL_ID, "image") is False
+    # #3209: Plus (Space Bunny) declares image via the existing single-image
+    # multimodal path; video stays undeclared.
+    assert model_supports(LOW_B14_MODEL_ID, "image") is True
+    assert model_supports(LOW_B14_MODEL_ID, "video") is False
 
     for model_id in (MEDIUM_B14_MODEL_ID, HIGH_B14_MODEL_ID, AUTO_B14_MODEL_ID, UNASSIGNED_B14_MODEL_ID):
         assert model_supports(model_id, "chat") is False

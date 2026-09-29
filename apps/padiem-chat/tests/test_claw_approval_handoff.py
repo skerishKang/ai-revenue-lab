@@ -59,7 +59,7 @@ PAUSE_ID = "pause_fake001"
 def _trusted(**overrides: Any) -> dict[str, Any]:
     payload = {
         "app_id": "b54-padiem-claw",
-        "agent": {"id": "b54-padiem-claw", "model_policy": {"model": "agnes-ai/agnes-3.0-flash"}},
+        "agent": {"id": "b54-padiem-claw", "model_policy": {"model": "kilo/stealth-space-bunny-alpha"}},
         "messages": [{"role": "user", "content": "테스트 견적 요청."}],
         "session_id": "run_test123",
         "additional_system_context": None,
