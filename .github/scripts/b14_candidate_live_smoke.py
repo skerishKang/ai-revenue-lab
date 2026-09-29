@@ -82,13 +82,8 @@ class CandidateSpec:
 
     ``credential_binding`` is the **name** of the expected platform secret
     binding. Its value is never read, printed, or transmitted by this module.
-
-    ``credential_mode`` distinguishes secret-backed lanes
-    (``"platform_secret"``) from keyless lanes (``"keyless"``) such as the
-    Kilo Gateway free lane, whose Provider authority is
-    ``CredentialSource.NONE``. Keyless candidates carry no ``PADIEM_*`` secret
-    binding: both binding fields hold the ``"NONE"`` marker instead of a
-    fabricated key name.
+    Space Bunny reuses the owner-managed Kilo credential as
+    ``KILO_API_KEY``; callers never supply or override that value.
     """
 
     candidate_id: str
@@ -99,7 +94,6 @@ class CandidateSpec:
     upstream_model: str
     credential_binding: str
     expected_binding: str
-    credential_mode: str = "platform_secret"
 
 
 # --------------------------------------------------------------------------
@@ -110,7 +104,8 @@ class CandidateSpec:
 # EXCLUDED: B.AI Qwen3.8 (deliberately absent — see _EXCLUDED_* below)
 #
 # Space Bunny (#3209, decision source #3143) is the Padiem Plus text+vision
-# primary on the keyless Kilo Gateway free lane
+# primary on the authenticated Kilo Gateway free lane, reusing the existing
+# owner-managed ``KILO_API_KEY`` binding
 # (``kilo/stealth-space-bunny-alpha``, upstream ``stealth/space-bunny-alpha``,
 # provider display ``Kilo Gateway / Stealth`` per the B14 registry). It is the
 # only candidate permitted in image modality; every other candidate stays
@@ -195,9 +190,8 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         provider_name="Kilo Gateway / Stealth",
         model_id="kilo/stealth-space-bunny-alpha",
         upstream_model="stealth/space-bunny-alpha",
-        credential_binding="NONE",
-        expected_binding="NONE",
-        credential_mode="keyless",
+        credential_binding="KILO_API_KEY",
+        expected_binding="KILO_API_KEY",
     ),
 )
 
@@ -583,22 +577,13 @@ def run(
         _emit_result(cid, "FAIL_PROVIDER_NOT_REGISTERED")
         _locks(provider_posts, network_retries)
         return 1
-    if spec.credential_mode == "keyless":
-        # Keyless lanes (Kilo Gateway ``CredentialSource.NONE``) carry no
-        # secret by authority: readiness is provider registration alone, and
-        # no fabricated binding name is ever expected. NEW_SECRET=0.
-        _emit(cid, "PROVIDER_REGISTERED", "YES")
-        _emit(cid, "CREDENTIAL_READY", "YES")
-        _emit(cid, "CREDENTIAL_MODE", "KEYLESS")
-        _emit(cid, "EXPECTED_BINDING", spec.expected_binding)
-    else:
-        if provider_entry.get("has_key") is not True:
-            _emit_result(cid, "FAIL_CREDENTIAL_NOT_READY")
-            _locks(provider_posts, network_retries)
-            return 1
-        _emit(cid, "PROVIDER_REGISTERED", "YES")
-        _emit(cid, "CREDENTIAL_READY", "YES")
-        _emit(cid, "EXPECTED_BINDING", spec.expected_binding)
+    if provider_entry.get("has_key") is not True:
+        _emit_result(cid, "FAIL_CREDENTIAL_NOT_READY")
+        _locks(provider_posts, network_retries)
+        return 1
+    _emit(cid, "PROVIDER_REGISTERED", "YES")
+    _emit(cid, "CREDENTIAL_READY", "YES")
+    _emit(cid, "EXPECTED_BINDING", spec.expected_binding)
 
     models_status, models_raw = transport("GET", MODELS_PATH, None)
     if models_status != 200:
