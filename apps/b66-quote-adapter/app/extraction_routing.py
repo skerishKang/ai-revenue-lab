@@ -125,15 +125,23 @@ _ALLOWED_TOP_KEYS = frozenset(
     }
 )
 
+_EXTRACTION_JSON_CONTRACT = (
+    "반드시 JSON 객체 하나만 반환하십시오. 마크다운/설명 문장을 덧붙이지 마십시오. "
+    "최상위 키는 sender, recipient, quote, items, tax, memo, evidence, warnings만 사용하십시오. "
+    "source는 서버가 소유하므로 반환하지 마십시오. "
+    "sender는 company/rep/bizNo/address/phone/email, recipient는 company/person/address/email, "
+    "quote는 quoteNo/issueDate/validDays, items는 name/qty/unitPrice, tax는 mode만 사용하십시오. "
+    "evidence 항목은 field/page/snippet/confidence만 사용하십시오. "
+    "없는 값은 문자열 UNKNOWN이 아니라 JSON null로 반환하십시오. "
+    "금액 합계·부가세 금액·총액·유효일은 계산하거나 만들어내지 마십시오."
+)
 _TEXT_PROMPT = (
-    "다음 견적서 텍스트에서 견적 추출 사실만 한국어로 추출하십시오. "
-    "금액 합계·부가세 계산·유효일 계산은 하지 마십시오. "
-    "없는 값은 UNKNOWN으로 유지하고 값을 지어내지 마십시오."
+    "다음 견적서 텍스트에서 원문에 있는 사실만 추출하십시오. "
+    + _EXTRACTION_JSON_CONTRACT
 )
 _IMAGE_PROMPT = (
-    "다음 견적서 이미지에서 견적 추출 사실만 한국어로 추출하십시오. "
-    "금액 합계·부가세 계산·유효일 계산은 하지 마십시오. "
-    "없는 값은 UNKNOWN으로 유지하고 값을 지어내지 마십시오."
+    "다음 견적서 이미지에서 실제로 보이는 사실만 추출하십시오. "
+    + _EXTRACTION_JSON_CONTRACT
 )
 
 
@@ -383,6 +391,10 @@ def _optional_text(value: Any, *, max_chars: int, code: str = "invalid_text") ->
     text = value.strip()
     if not text:
         return None
+    # UNKNOWN is a UI/candidate display sentinel, never a valid model fact.
+    # Model prompts require JSON null for missing values.
+    if text == UNKNOWN:
+        _fail("reserved_unknown_sentinel")
     if len(text) > max_chars:
         _fail(code)
     return text
@@ -570,20 +582,32 @@ def _normalize_warnings(raw: Any) -> list[str]:
     return normalized
 
 
-def normalize_model_output(raw: Any) -> dict[str, Any]:
+def normalize_model_output(
+    raw: Any,
+    *,
+    source_kind: Any,
+    filename: Any,
+) -> dict[str, Any]:
     """Validate untrusted model output as extraction evidence only.
+
+    Source identity is server-owned: ``source_kind`` and ``filename`` come
+    from the trusted B66 intake/render boundary, never from the model. For
+    compatibility, a model payload may include ``source`` only when it exactly
+    matches the trusted values; a mismatch fails closed.
 
     Behavioral parity with the model-independent browser boundary
     ``reference/business-66-padiem-quote-v1/quote-extraction.js``: bounded
-    layout facts (extract/normalize/infer) with missing values kept as
-    ``None`` (JS ``null``), never fabricated. One deliberate hardening over
-    the JS: unknown keys fail closed here instead of being silently ignored.
-    Computed totals/tax/validity projections are rejected so QuoteCore stays
-    the calculation authority. Never raises for reviewable input; returns a
-    bounded ``ok`` envelope instead. The B66 ``UNKNOWN`` sentinel is applied
-    at the review/candidate projection, not inside this JS-shaped result.
+    extraction facts with missing values kept as ``None`` (JS ``null``),
+    never fabricated. The literal ``"UNKNOWN"`` is reserved for later
+    candidate/UI display and is rejected as a model fact. Unknown keys fail
+    closed here instead of being silently ignored. Computed totals/tax/validity
+    projections are rejected so QuoteCore stays the calculation authority.
     """
     try:
+        if source_kind not in _SOURCE_KINDS:
+            raise B66ExtractionRoutingError("unsupported_source_kind")
+        trusted_filename = _safe_filename(filename)
+
         if not isinstance(raw, dict):
             raise B66ExtractionRoutingError("invalid_extraction")
         if _contains_forbidden_key(raw):
@@ -591,21 +615,21 @@ def normalize_model_output(raw: Any) -> dict[str, Any]:
         _reject_unknown_keys(raw, _ALLOWED_TOP_KEYS, "unsupported_extraction_field")
 
         source_raw = raw.get("source")
-        if not isinstance(source_raw, dict):
-            raise B66ExtractionRoutingError("invalid_source")
-        _reject_unknown_keys(source_raw, _ALLOWED_SOURCE_KEYS, "unsupported_source_field")
-        kind = _optional_text(
-            source_raw.get("kind"),
-            max_chars=MAX_SOURCE_KIND_CHARS,
-            code="invalid_source_kind",
-        )
-        if not kind or kind not in _SOURCE_KINDS:
-            raise B66ExtractionRoutingError("unsupported_source_kind")
-        filename = _optional_text(
-            source_raw.get("filename"),
-            max_chars=MAX_FILENAME_CHARS,
-            code="invalid_source_filename",
-        )
+        if source_raw is not None:
+            if not isinstance(source_raw, dict):
+                raise B66ExtractionRoutingError("invalid_source")
+            _reject_unknown_keys(
+                source_raw, _ALLOWED_SOURCE_KEYS, "unsupported_source_field"
+            )
+            model_kind = source_raw.get("kind")
+            model_filename = source_raw.get("filename")
+            if model_kind is not None and model_kind != source_kind:
+                raise B66ExtractionRoutingError("source_provenance_mismatch")
+            if model_filename is not None and model_filename != trusted_filename:
+                raise B66ExtractionRoutingError("source_provenance_mismatch")
+
+        kind = source_kind
+        filename = trusted_filename
 
         sender = _normalize_party(raw.get("sender"), SENDER_FIELDS, "sender")
         recipient = _normalize_party(raw.get("recipient"), RECIPIENT_FIELDS, "recipient")
@@ -693,12 +717,13 @@ def _unknown_or(value: Any) -> Any:
 def project_to_quote_draft_candidate(
     normalized: dict[str, Any],
 ) -> dict[str, Any]:
-    """Project validated extraction to a QuoteDraft candidate boundary.
+    """Project validated extraction to the legacy #3147 QuoteDraft seam.
 
+    This compatibility projection is not the Saved Quote Skill approval path
+    introduced by #3218 and must not bypass its fixed/default/variable review.
     Missing (``None``) display facts become the explicit ``UNKNOWN`` sentinel
     so absent values stay visible instead of being fabricated. Provenance and
-    review material (evidence/warnings) pass through untouched for the
-    approval UI. The candidate carries source evidence only: totals/VAT math
+    review material (evidence/warnings) pass through untouched. Totals/VAT math
     is never derived here; downstream QuoteCore owns every computed amount.
     """
     if not isinstance(normalized, dict) or not normalized.get("ok"):
