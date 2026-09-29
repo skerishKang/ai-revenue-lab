@@ -12,7 +12,8 @@ def test_d1_readonly_gate_is_manual_for_live_and_source_only_on_pr() -> None:
     workflow = WORKFLOW.read_text(encoding="utf-8")
     assert "pull_request:" in workflow
     assert "workflow_dispatch:" in workflow
-    assert "\n  push:" not in workflow
+    assert "\n  push:\n    branches:\n      - main\n" in workflow
+    assert "github.event_name == 'workflow_dispatch'" in workflow
     assert "RUN_B67_D1_READONLY_ONCE" in workflow
     assert "environment: production" in workflow
     assert "expected_main_sha" in workflow

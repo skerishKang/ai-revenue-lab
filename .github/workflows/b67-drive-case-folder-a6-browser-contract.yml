@@ -6,6 +6,9 @@ on:
       - ".github/scripts/b67_drive_case_folder_browser_canary.py"
       - ".github/tests/test_b67_drive_case_folder_browser_canary.py"
       - ".github/workflows/b67-drive-case-folder-a6-browser-contract.yml"
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:

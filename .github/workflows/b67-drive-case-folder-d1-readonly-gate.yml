@@ -9,6 +9,9 @@ on:
       - "apps/padiem-ai-engine/app/document_reference.py"
       - "apps/padiem-ai-engine/migrations/0008_engine_drive_case_folder_bindings.sql"
       - "apps/padiem-ai-engine/wrangler.toml"
+  push:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       expected_main_sha:
