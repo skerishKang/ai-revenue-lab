@@ -4,13 +4,13 @@ Proves against the real B14 registry/router/adapter (no string-presence
 checks):
 
 - Space Bunny is the canonical text+vision primary lane on the existing Kilo
-  keyless provider (repo id + upstream preserved, context_window 0 unchanged).
+  Kilo provider with model-scoped Space Bunny auth (repo id + upstream preserved, context_window 0 unchanged).
 - The lane declares image alongside chat/coding/free; video/audio/wildcard
   stay undeclared (VIDEO_ACTIVATION=0).
 - SenseNova/Agnes/Poolside provider registrations stay intact, but none is
   an active product secondary/fallback.
 - The multimodal image_url payload shape reaches the Kilo adapter unchanged
-  over a mock transport with no Authorization header (keyless semantics).
+  over a mock transport with the existing owner-managed Kilo credential.
 """
 
 from __future__ import annotations
@@ -27,6 +27,7 @@ from app.pilot import platform_secrets as ps
 from app.pilot.catalog import get_catalog_by_id
 from app.pilot.kilo_provider import (
     KILO_PROVIDER_ID,
+    KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
     KILO_SPACE_BUNNY_MODEL_ID,
     KILO_SPACE_BUNNY_UPSTREAM_MODEL,
 )
@@ -105,10 +106,14 @@ def test_other_provider_registrations_are_preserved_but_not_secondary() -> None:
 
 
 @pytest.mark.asyncio
-async def test_space_bunny_image_payload_reaches_kilo_adapter_keyless(
+async def test_space_bunny_image_payload_reaches_kilo_adapter_with_optional_secret(
     monkeypatch,
 ) -> None:
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
+    monkeypatch.setenv(
+        KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
+        "kilo_live_abcdefghijklmnopqrstuvwxyz1234",
+    )
     captured: dict[str, object] = {}
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -157,10 +162,18 @@ async def test_space_bunny_image_payload_reaches_kilo_adapter_keyless(
         {"type": "text", "text": "이 영수증 금액을 읽어줘"},
         {"type": "image_url", "image_url": {"url": _TINY_PNG_URL}},
     ]
-    assert captured["auth"] is None
+    assert captured["auth"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
     assert response["choices"][0]["message"]["content"] == "이미지 확인됨"
 
     spec = ps.get_platform_provider(KILO_PROVIDER_ID)
     assert spec is not None
-    headers = plat._request_headers(spec)
-    assert "Authorization" not in headers
+    assert spec.credential_source == ps.CredentialSource.NONE
+    assert "Authorization" not in plat._request_headers(spec)
+    headers = plat._request_headers(spec, model_id=KILO_SPACE_BUNNY_MODEL_ID)
+    assert headers["Authorization"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
+
+    monkeypatch.delenv(KILO_SPACE_BUNNY_CREDENTIAL_BINDING, raising=False)
+    anonymous_headers = plat._request_headers(
+        spec, model_id=KILO_SPACE_BUNNY_MODEL_ID
+    )
+    assert anonymous_headers == {"Content-Type": "application/json"}

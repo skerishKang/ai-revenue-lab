@@ -60,6 +60,8 @@ def test_kilo_catalog_registers_the_exact_canonical_route() -> None:
 
     assert _string_constant(kilo_text, "KILO_SPACE_BUNNY_MODEL_ID") == "kilo/stealth-space-bunny-alpha"
     assert _string_constant(kilo_text, "KILO_SPACE_BUNNY_UPSTREAM_MODEL") == "stealth/space-bunny-alpha"
+    assert _string_constant(kilo_text, "KILO_SPACE_BUNNY_CREDENTIAL_BINDING") == "PADIEM_KILO_API_KEY"
+    assert "credential_source=CredentialSource.NONE" in kilo_text
 
     assert _string_constant(canonical_text, "TEXT_PRIMARY_MODEL_ID") == _string_constant(
         kilo_text, "KILO_SPACE_BUNNY_MODEL_ID"
