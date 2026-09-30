@@ -54,6 +54,10 @@ jobs:
               "password_credentials",
               "TEST_USER_EXISTS=",
               "TEST_USER_SHADOW_EXISTS=",
+              "B67_PROJECT_TEST_USER_RELATION=",
+              "TEST_USER_SHADOW_SHAPE_VALID=",
+              "TEST_USER_SHADOW_STATE_ACTIVE=",
+              "TEST_USER_SHADOW_NOT_EXPIRED=",
               "ROW_VALUE_OUTPUT=0",
               "SESSION_VALUE_OUTPUT=0",
               "PRODUCTION_MUTATION=0",
@@ -237,14 +241,104 @@ jobs:
             case "${test_user_shadow_exists}" in 0|1) ;; *) exit 1;; esac
             [ "${test_user_exists}" = "1" ] && echo "TEST_USER_EXISTS=YES" || echo "TEST_USER_EXISTS=NO"
             [ "${test_user_shadow_exists}" = "1" ] && echo "TEST_USER_SHADOW_EXISTS=YES" || echo "TEST_USER_SHADOW_EXISTS=NO"
+
+            # B67 follow-up: bounded booleans only. Prove whether the fixed test
+            # account owns the uniquely named B67 project and whether its shadow
+            # pointer is structurally valid, ACTIVE, and unexpired. No identifier,
+            # timestamp, project id, subject id, or session id is selected.
+            shadow_health_payload="${RUNNER_TEMP}/shadow-health-query.json"
+            python - "${shadow_health_payload}" <<'PY'
+          import json, sys
+          sql = """
+          SELECT
+            (
+              SELECT COUNT(*)
+              FROM projects
+              WHERE name='B67 법률 테스트'
+            ) AS b67_project_name_count,
+            EXISTS(
+              SELECT 1
+              FROM projects p
+              JOIN password_credentials pc ON pc.user_id=p.user_id
+              WHERE p.name='B67 법률 테스트'
+                AND pc.username='skerish1' COLLATE NOCASE
+            ) AS b67_project_owned_by_test_user,
+            EXISTS(
+              SELECT 1
+              FROM password_credentials pc
+              JOIN control_plane_identity_shadow s ON s.product_user_id=pc.user_id
+              WHERE pc.username='skerish1' COLLATE NOCASE
+                AND length(trim(s.canonical_subject_id)) > 0
+                AND length(trim(s.auth_session_id)) > 0
+                AND s.session_revision >= 1
+                AND s.session_state IN ('active','revoked','expired')
+                AND julianday(s.session_expires_at) IS NOT NULL
+                AND julianday(s.observed_at) IS NOT NULL
+            ) AS shadow_shape_valid,
+            EXISTS(
+              SELECT 1
+              FROM password_credentials pc
+              JOIN control_plane_identity_shadow s ON s.product_user_id=pc.user_id
+              WHERE pc.username='skerish1' COLLATE NOCASE
+                AND s.session_state='active'
+            ) AS shadow_state_active,
+            EXISTS(
+              SELECT 1
+              FROM password_credentials pc
+              JOIN control_plane_identity_shadow s ON s.product_user_id=pc.user_id
+              WHERE pc.username='skerish1' COLLATE NOCASE
+                AND julianday(s.session_expires_at) > julianday('now')
+            ) AS shadow_not_expired;
+          """
+          with open(sys.argv[1], "w", encoding="utf-8") as handle:
+              json.dump({"sql": sql}, handle)
+          PY
+
+            shadow_health_response="${RUNNER_TEMP}/shadow-health-response.json"
+            curl -fsS -X POST "${auth[@]}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/d1/database/${DB_ID}/query" \
+              --data-binary "@${shadow_health_payload}" -o "${shadow_health_response}"
+            jq -e '.success == true and (.result | length) == 1 and .result[0].success == true and (.result[0].results | length) == 1' "${shadow_health_response}" >/dev/null
+
+            project_count="$(jq -r '.result[0].results[0].b67_project_name_count' "${shadow_health_response}")"
+            project_owned="$(jq -r '.result[0].results[0].b67_project_owned_by_test_user' "${shadow_health_response}")"
+            shadow_shape_valid="$(jq -r '.result[0].results[0].shadow_shape_valid' "${shadow_health_response}")"
+            shadow_state_active="$(jq -r '.result[0].results[0].shadow_state_active' "${shadow_health_response}")"
+            shadow_not_expired="$(jq -r '.result[0].results[0].shadow_not_expired' "${shadow_health_response}")"
+
+            case "${project_count}" in
+              0) project_count_class="NONE" ;;
+              1) project_count_class="ONE" ;;
+              *) project_count_class="MANY" ;;
+            esac
+            for value in "${project_owned}" "${shadow_shape_valid}" "${shadow_state_active}" "${shadow_not_expired}"; do
+              case "${value}" in 0|1) ;; *) exit 1;; esac
+            done
+
+            if [ "${project_count_class}" = "ONE" ] && [ "${project_owned}" = "1" ]; then
+              echo "B67_PROJECT_TEST_USER_RELATION=PROVEN"
+            else
+              echo "B67_PROJECT_TEST_USER_RELATION=NOT_PROVEN"
+            fi
+            [ "${shadow_shape_valid}" = "1" ] && echo "TEST_USER_SHADOW_SHAPE_VALID=YES" || echo "TEST_USER_SHADOW_SHAPE_VALID=NO"
+            [ "${shadow_state_active}" = "1" ] && echo "TEST_USER_SHADOW_STATE_ACTIVE=YES" || echo "TEST_USER_SHADOW_STATE_ACTIVE=NO"
+            [ "${shadow_not_expired}" = "1" ] && echo "TEST_USER_SHADOW_NOT_EXPIRED=YES" || echo "TEST_USER_SHADOW_NOT_EXPIRED=NO"
           elif [ "${table_exists}" = "0" ]; then
             echo "B62_D1_MIGRATION_007_SCHEMA=MISSING"
             echo "TEST_USER_EXISTS=NOT_QUERIED"
             echo "TEST_USER_SHADOW_EXISTS=IMPOSSIBLE_TABLE_MISSING"
+            echo "B67_PROJECT_TEST_USER_RELATION=NOT_QUERIED"
+            echo "TEST_USER_SHADOW_SHAPE_VALID=NOT_QUERIED"
+            echo "TEST_USER_SHADOW_STATE_ACTIVE=NOT_QUERIED"
+            echo "TEST_USER_SHADOW_NOT_EXPIRED=NOT_QUERIED"
           else
             echo "B62_D1_MIGRATION_007_SCHEMA=DRIFT"
             echo "TEST_USER_EXISTS=NOT_QUERIED"
             echo "TEST_USER_SHADOW_EXISTS=UNKNOWN_SCHEMA_DRIFT"
+            echo "B67_PROJECT_TEST_USER_RELATION=NOT_QUERIED"
+            echo "TEST_USER_SHADOW_SHAPE_VALID=NOT_QUERIED"
+            echo "TEST_USER_SHADOW_STATE_ACTIVE=NOT_QUERIED"
+            echo "TEST_USER_SHADOW_NOT_EXPIRED=NOT_QUERIED"
           fi
 
           echo "ROW_VALUE_OUTPUT=0"
