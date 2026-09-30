@@ -1,9 +1,14 @@
-"""B66 live image-extraction endpoint hosted inside the existing B14 Worker.
+"""B66 quotation-extraction endpoints hosted inside the existing B14 Worker.
 
-The browser never chooses a provider/model.  This route accepts one bounded
-quotation image, delegates request construction + model-output validation to
-the canonical #3212 B66 extraction authority staged by deploy.sh, and executes
+The browser never chooses a provider/model.  These routes accept one bounded
+quotation source, delegate document admission/request construction/model-output
+validation to the canonical B66 authorities staged by deploy.sh, and execute
 through the already-installed B14 gateway.
+
+Native binary documents additionally pass through Core's single parser-authority
+boundary.  On a Production Worker with no reviewed isolated parser composition,
+that boundary fails closed before any model call; the browser may then continue
+with the existing manual-review registration path.
 """
 
 from __future__ import annotations
@@ -24,6 +29,7 @@ from app.pilot import gateway as pilot_gateway
 router = Router()
 
 EXTRACT_IMAGE_PATH = "/v1/quote/extract-image"
+EXTRACT_DOCUMENT_PATH = "/v1/quote/extract-document"
 MAX_IMAGE_BYTES = 4 * 1024 * 1024
 MAX_REQUEST_BYTES = 6 * 1024 * 1024
 _REQUIRED_FIELDS = frozenset({"name", "media_type", "base64"})
@@ -31,15 +37,15 @@ _IMAGE_MEDIA = frozenset({"image/jpeg", "image/png", "image/webp"})
 
 
 def _authority():
-    """Load the staged canonical #3212 authority.
-
-    deploy.sh copies the reviewed source file into the Worker app package as
-    app/b66_extraction_routing.py before pywrangler bundles the Worker. Keeping
-    the import lazy makes ordinary source/unit tests able to inject the same
-    authority without creating a second committed implementation.
-    """
+    """Load the staged canonical #3212 extraction authority."""
 
     return importlib.import_module("app.b66_extraction_routing")
+
+
+def _intake_authority():
+    """Load the staged canonical B66 file-intake authority."""
+
+    return importlib.import_module("app.b66_file_intake")
 
 
 def _error(code: str, *, status: int = 422) -> JSONResponse:
@@ -96,37 +102,26 @@ def _response_payload(response: JSONResponse) -> dict[str, Any] | None:
     return payload if isinstance(payload, dict) else None
 
 
-@router.route(EXTRACT_IMAGE_PATH, methods=["POST"])
-async def extract_image(request: Request) -> JSONResponse:
-    payload = await _bounded_json(request)
-    if payload is None:
-        return _error("invalid_request")
-    if set(payload) != _REQUIRED_FIELDS:
-        return _error("unsupported_fields")
+def _safe_error_code(exc: Exception, fallback: str = "invalid_request") -> str:
+    code = getattr(exc, "code", None) or (str(exc) if str(exc) else fallback)
+    return code if isinstance(code, str) and len(code) <= 80 else fallback
 
-    name = payload.get("name")
-    media_type = payload.get("media_type")
-    if not isinstance(name, str) or not name.strip() or len(name.strip()) > 255:
-        return _error("invalid_file_name")
-    if not isinstance(media_type, str) or media_type not in _IMAGE_MEDIA:
-        return _error("image_only_mvp")
+
+async def _execute_extraction(
+    *,
+    authority: Any,
+    chat_body: dict[str, Any],
+    source_kind: str,
+    filename: str,
+    media_type: str,
+    byte_size: int,
+) -> JSONResponse:
+    """Execute one canonical B66 extraction request and validate its response."""
 
     try:
-        image_bytes = _decode_image(payload.get("base64"))
-        authority = _authority()
-        chat_body = authority.build_image_extraction_request(
-            image_bytes,
-            media_type=media_type,
-            filename=name.strip(),
-            source_kind="image",
-        )
-        # Reuse the installed canonical gateway validator, including the
-        # multimodal wrapper.  No second request schema lives here.
         validated_body = pilot_gateway._validate_body(chat_body)
     except ValueError as exc:
-        code = getattr(exc, "code", None) or (str(exc) if str(exc) else "invalid_request")
-        safe_code = code if isinstance(code, str) and len(code) <= 80 else "invalid_request"
-        return _error(safe_code)
+        return _error(_safe_error_code(exc))
     except Exception:
         return _error("extraction_authority_unavailable", status=503)
 
@@ -151,17 +146,16 @@ async def extract_image(request: Request) -> JSONResponse:
     ):
         return _error("invalid_model_response", status=502)
 
-    content = choices[0]["message"]["content"]
     try:
-        raw_model = json.loads(content)
+        raw_model = json.loads(choices[0]["message"]["content"])
     except json.JSONDecodeError:
         return _error("invalid_model_json", status=502)
 
     try:
         normalized = authority.normalize_model_output(
             raw_model,
-            source_kind="image",
-            filename=name.strip(),
+            source_kind=source_kind,
+            filename=filename,
         )
     except Exception:
         return _error("model_output_validation_failed", status=502)
@@ -188,12 +182,119 @@ async def extract_image(request: Request) -> JSONResponse:
                 "unknowns": unknowns,
                 "quotecore_authority": normalized.get("quotecore_authority") is True,
                 "source": {
-                    "kind": "image",
-                    "filename": name.strip(),
+                    "kind": source_kind,
+                    "filename": filename,
                     "media_type": media_type,
-                    "byte_size": len(image_bytes),
+                    "byte_size": byte_size,
                 },
             },
         },
         headers={"Cache-Control": "no-store"},
+    )
+
+
+@router.route(EXTRACT_IMAGE_PATH, methods=["POST"])
+async def extract_image(request: Request) -> JSONResponse:
+    payload = await _bounded_json(request)
+    if payload is None:
+        return _error("invalid_request")
+    if set(payload) != _REQUIRED_FIELDS:
+        return _error("unsupported_fields")
+
+    name = payload.get("name")
+    media_type = payload.get("media_type")
+    if not isinstance(name, str) or not name.strip() or len(name.strip()) > 255:
+        return _error("invalid_file_name")
+    if not isinstance(media_type, str) or media_type not in _IMAGE_MEDIA:
+        return _error("image_only_mvp")
+
+    try:
+        image_bytes = _decode_image(payload.get("base64"))
+        authority = _authority()
+        chat_body = authority.build_image_extraction_request(
+            image_bytes,
+            media_type=media_type,
+            filename=name.strip(),
+            source_kind="image",
+        )
+    except ValueError as exc:
+        return _error(_safe_error_code(exc))
+    except Exception:
+        return _error("extraction_authority_unavailable", status=503)
+
+    return await _execute_extraction(
+        authority=authority,
+        chat_body=chat_body,
+        source_kind="image",
+        filename=name.strip(),
+        media_type=media_type,
+        byte_size=len(image_bytes),
+    )
+
+
+@router.route(EXTRACT_DOCUMENT_PATH, methods=["POST"])
+async def extract_document(request: Request) -> JSONResponse:
+    payload = await _bounded_json(request)
+    if payload is None:
+        return _error("invalid_request")
+    if set(payload) != _REQUIRED_FIELDS:
+        return _error("unsupported_fields")
+
+    try:
+        intake = _intake_authority()
+        admitted = intake.handle_intake_payload(payload)
+    except Exception:
+        return _error("file_intake_authority_unavailable", status=503)
+
+    if not isinstance(admitted, dict) or admitted.get("ok") is not True:
+        error = admitted.get("error") if isinstance(admitted, dict) else None
+        code = error.get("code") if isinstance(error, dict) else None
+        safe_code = code if isinstance(code, str) and 0 < len(code) <= 80 else "document_intake_failed"
+        status = 503 if safe_code == "parser_authority_unavailable" else 422
+        return _error(safe_code, status=status)
+
+    result = admitted.get("result")
+    if not isinstance(result, dict):
+        return _error("document_intake_failed", status=503)
+
+    kind = result.get("kind")
+    if kind == "scanned_pdf_candidate":
+        return _error("scanned_pdf_manual_review_required")
+    if kind != "native_document":
+        return _error("native_document_only")
+
+    name = result.get("name")
+    media_type = result.get("media_type")
+    text = result.get("text")
+    byte_size = result.get("byte_size")
+    if (
+        not isinstance(name, str)
+        or not isinstance(media_type, str)
+        or not isinstance(text, str)
+        or not text.strip()
+        or isinstance(byte_size, bool)
+        or not isinstance(byte_size, int)
+        or byte_size <= 0
+    ):
+        return _error("document_intake_failed", status=503)
+
+    try:
+        authority = _authority()
+        chat_body = authority.build_text_extraction_request(
+            text,
+            filename=name,
+            source_kind="native_document",
+        )
+    except ValueError as exc:
+        return _error(_safe_error_code(exc))
+    except Exception:
+        return _error("extraction_authority_unavailable", status=503)
+
+    return await _execute_extraction(
+        authority=authority,
+        chat_body=chat_body,
+        source_kind="native_document",
+        filename=name,
+        media_type=media_type,
+        byte_size=byte_size,
     )
