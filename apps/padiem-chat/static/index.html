@@ -218,8 +218,82 @@
             </div>
             <button class="claw-inbox-retry" id="clawAutomationRetry" type="button" data-locale-key="retry">다시 시도</button>
           </div>
-          <p class="claw-inbox-help" id="clawAutomationHelp" data-locale-key="claw-automation-help">현재 워크스페이스의 자동화 규칙을 읽기 전용으로 표시합니다. 여기서는 규칙을 만들거나 수정하지 않습니다.</p>
+          <p class="claw-inbox-help" id="clawAutomationHelp" data-locale-key="claw-automation-help">현재 워크스페이스의 자동화 규칙을 표시합니다. 생성은 워크스페이스 소유자만 할 수 있고 수정·삭제는 아직 지원하지 않습니다.</p>
           <p class="claw-inbox-help" id="clawAutomationSchedulerNote" data-locale-key="claw-automation-scheduler-note">‘규칙 설정’은 규칙에 저장된 설정값이며, 자동 실행이 이미 활성화되어 있다는 뜻이 아닙니다.</p>
+          <details class="calendar-record claw-automation-create" id="clawAutomationCreate">
+            <summary class="calendar-record-summary" id="clawAutomationCreateToggle" data-locale-key="claw-automation-create-summary">+ 자동화 만들기</summary>
+            <p class="calendar-record-hint" data-locale-key="claw-automation-create-hint">자동화 규칙을 만듭니다. 실행 대상(저장소·버전)은 서버가 지정하며 사용자가 지정할 수 없습니다.</p>
+            <form class="calendar-record-form" id="clawAutomationCreateForm" novalidate>
+              <label class="calendar-record-field" for="clawAutomationCreateName">
+                <span data-locale-key="claw-automation-create-name-label">이름</span>
+                <input type="text" id="clawAutomationCreateName" name="name" maxlength="256" autocomplete="off" required data-locale-placeholder="claw-automation-create-name-placeholder" placeholder="예) 매일 아침 알림 요약" />
+              </label>
+              <label class="calendar-record-field" for="clawAutomationCreateTask">
+                <span data-locale-key="claw-automation-create-task-label">할 일</span>
+                <textarea id="clawAutomationCreateTask" name="task" rows="3" maxlength="12000" required data-locale-placeholder="claw-automation-create-task-placeholder" placeholder="자동화가 할 일을 구체적으로 적어 주세요."></textarea>
+              </label>
+              <label class="calendar-record-field" for="clawAutomationCreateKind">
+                <span data-locale-key="claw-automation-create-kind-label">주기 종류</span>
+                <select id="clawAutomationCreateKind" name="schedule_kind">
+                  <option value="daypart" data-locale-key="claw-automation-create-kind-daypart">하루 시간대</option>
+                  <option value="interval" data-locale-key="claw-automation-create-kind-interval">반복 간격</option>
+                  <option value="cron" data-locale-key="claw-automation-create-kind-cron">고급 (cron)</option>
+                </select>
+              </label>
+              <label class="calendar-record-field" for="clawAutomationCreateDaypart" id="clawAutomationCreateDaypartField">
+                <span data-locale-key="claw-automation-create-daypart-label">시간대 선택</span>
+                <select id="clawAutomationCreateDaypart" name="daypart">
+                  <option value="morning" data-locale-key="claw-automation-create-daypart-morning">아침</option>
+                  <option value="midday" data-locale-key="claw-automation-create-daypart-midday">정오</option>
+                  <option value="evening" data-locale-key="claw-automation-create-daypart-evening">저녁</option>
+                  <option value="close_of_business" data-locale-key="claw-automation-create-daypart-cob">업무 종료</option>
+                </select>
+              </label>
+              <label class="calendar-record-field" for="clawAutomationCreateInterval" id="clawAutomationCreateIntervalField" hidden>
+                <span data-locale-key="claw-automation-create-interval-label">반복 간격</span>
+                <input type="text" id="clawAutomationCreateInterval" name="interval" list="clawAutomationIntervalExamples" autocomplete="off" spellcheck="false" placeholder="15m" />
+                <datalist id="clawAutomationIntervalExamples">
+                  <option value="15m"></option>
+                  <option value="1h"></option>
+                  <option value="6h"></option>
+                  <option value="1d"></option>
+                </datalist>
+              </label>
+              <label class="calendar-record-field" for="clawAutomationCreateCron" id="clawAutomationCreateCronField" hidden>
+                <span data-locale-key="claw-automation-create-cron-label">cron 표현식</span>
+                <input type="text" id="clawAutomationCreateCron" name="cron" autocomplete="off" spellcheck="false" placeholder="0 9 * * *" />
+                <small class="claw-automation-create-cron-help" data-locale-key="claw-automation-create-cron-help">고급 입력입니다. 표준 5필드 cron(분 시 일 월 요일)을 그대로 입력합니다.</small>
+              </label>
+              <label class="calendar-record-field" for="clawAutomationCreateTimezone">
+                <span data-locale-key="claw-automation-create-timezone-label">시간대 (IANA, 예: Asia/Seoul)</span>
+                <input type="text" id="clawAutomationCreateTimezone" name="schedule_timezone" autocomplete="off" spellcheck="false" />
+              </label>
+              <label class="calendar-record-field" for="clawAutomationCreateTarget">
+                <span data-locale-key="claw-automation-create-target-label">대상</span>
+                <select id="clawAutomationCreateTarget" name="target_source">
+                  <option value="memory" data-locale-key="claw-automation-create-target-memory">기억</option>
+                  <option value="tasks" data-locale-key="claw-automation-create-target-tasks">작업</option>
+                  <option value="connectors" data-locale-key="claw-automation-create-target-connectors">커넥터</option>
+                  <option value="inbox" data-locale-key="claw-automation-create-target-inbox">수신함</option>
+                </select>
+              </label>
+              <label class="calendar-record-field" for="clawAutomationCreateOutput">
+                <span data-locale-key="claw-automation-create-output-label">결과</span>
+                <select id="clawAutomationCreateOutput" name="output_type">
+                  <option value="alert" data-locale-key="claw-automation-create-output-alert">알림</option>
+                  <option value="draft" data-locale-key="claw-automation-create-output-draft">초안</option>
+                  <option value="report" data-locale-key="claw-automation-create-output-report">보고서</option>
+                  <option value="task_proposal" data-locale-key="claw-automation-create-output-task-proposal">작업 제안</option>
+                </select>
+              </label>
+              <p class="claw-inbox-help" data-locale-key="claw-automation-create-notification-note">결과는 웹 알림 수신함(web_alert_inbox)으로만 전달됩니다.</p>
+              <div class="calendar-record-actions">
+                <button type="button" class="calendar-record-cancel" id="clawAutomationCreateCancel" data-locale-key="claw-automation-create-cancel">취소</button>
+                <button type="submit" class="calendar-record-submit" id="clawAutomationCreateSubmit" data-locale-key="claw-automation-create-submit">자동화 만들기</button>
+              </div>
+            </form>
+            <p class="calendar-record-status" id="clawAutomationCreateStatus" role="status" aria-live="polite" hidden></p>
+          </details>
           <div class="claw-inbox-status" id="clawAutomationStatus" aria-live="polite" aria-atomic="true">
             <p id="clawAutomationLoading" data-locale-key="claw-automation-loading" hidden>자동화 규칙을 불러오는 중…</p>
             <p id="clawAutomationError" data-locale-key="claw-automation-error" hidden>자동화 규칙을 불러오지 못했습니다.</p>

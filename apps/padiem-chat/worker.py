@@ -696,6 +696,15 @@ class Default(WorkerEntrypoint):
                 )
                 _worker_app.state.control_plane_identity_authority = identity_authority
                 _worker_app.state.identity_shadow_store = identity_shadow_store
+                # #3257: the Worker's real runtime env is the execution-target
+                # authority. The Create route resolves the served revision from
+                # this injected env only — never from a request value or the
+                # global process environment. With the live version-metadata
+                # binding not yet activated, resolution fails closed (503) and
+                # no rule is saved. NOTE: this scope only has ``self.env``
+                # (bindings are read from it above); a bare ``env`` name here
+                # would crash the Worker on first initialization.
+                _worker_app.state.claw_automation_execution_target_authority = self.env
                 # #3190: reuse the existing P01_ENGINE_SERVICE binding; no second
                 # Engine binding authority. Missing/malformed binding -> None ->
                 # the Drive case-folder routes fail closed with 503.

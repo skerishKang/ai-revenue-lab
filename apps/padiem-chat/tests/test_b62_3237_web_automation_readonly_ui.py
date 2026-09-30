@@ -89,6 +89,11 @@ def test_no_rule_mutation_control_exists_in_the_ui() -> None:
     source = APP_JS.read_text(encoding="utf-8")
     block = source.split("--- #3237 read-only automation rule catalogue")[1]
     block = block.split("if (clawAutomationRetry)")[0]
+    # #3257 added the Create surface in this file, after the read-only
+    # catalogue block. Its single POST is governed by the dedicated create
+    # route tests and the create UI harness; the read-only catalogue block
+    # itself must still declare no mutation verb of any kind.
+    block = block.split("#3257 Web Automation Create")[0]
     for forbidden in (
         "POST",
         "PUT",
