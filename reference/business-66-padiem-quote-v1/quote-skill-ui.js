@@ -197,8 +197,87 @@
     }
   }
 
+  var LIVE_INTAKE_ENDPOINT = "/api/v1/quote/intake";
+
   function extractionKindForCategory(category) {
     return category === "image" ? "image" : "native_document";
+  }
+
+  function bytesToBase64(buffer) {
+    var bytes = new Uint8Array(buffer);
+    var chunk = 0x8000;
+    var binary = "";
+    for (var offset = 0; offset < bytes.length; offset += chunk) {
+      var slice = bytes.subarray(offset, Math.min(offset + chunk, bytes.length));
+      binary += String.fromCharCode.apply(null, Array.from(slice));
+    }
+    if (typeof btoa === "function") return btoa(binary);
+    if (typeof Buffer !== "undefined") return Buffer.from(bytes).toString("base64");
+    throw new Error("base64_unavailable");
+  }
+
+  async function analyzeImageFile(file, fileMeta, fetchFn) {
+    if (!fileMeta || fileMeta.category !== "image") return { ok: false, code: "manual_only" };
+    if (!file || typeof file.arrayBuffer !== "function") return { ok: false, code: "file_read_unavailable" };
+    if (typeof fetchFn !== "function") return { ok: false, code: "analysis_service_unavailable" };
+
+    try {
+      var bytes = await file.arrayBuffer();
+      if (!bytes || bytes.byteLength !== fileMeta.byteSize) {
+        return { ok: false, code: "file_size_changed" };
+      }
+      var response = await fetchFn(LIVE_INTAKE_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          name: fileMeta.name,
+          media_type: fileMeta.mediaType,
+          base64: bytesToBase64(bytes)
+        })
+      });
+      var payload = await response.json();
+      if (!response.ok || !payload || payload.ok !== true || !payload.result ||
+          !payload.result.extraction || typeof payload.result.extraction !== "object") {
+        var code = payload && payload.error && typeof payload.error.code === "string"
+          ? payload.error.code
+          : "analysis_failed";
+        return { ok: false, code: code };
+      }
+      return {
+        ok: true,
+        extraction: payload.result.extraction,
+        unknowns: Array.isArray(payload.result.unknowns) ? payload.result.unknowns.slice() : []
+      };
+    } catch (err) {
+      return { ok: false, code: "analysis_service_unavailable" };
+    }
+  }
+
+  function factsFromExtraction(extraction) {
+    if (!extraction || typeof extraction !== "object") return null;
+    var sender = extraction.sender && typeof extraction.sender === "object" ? extraction.sender : {};
+    var quote = extraction.quote && typeof extraction.quote === "object" ? extraction.quote : {};
+    var tax = extraction.tax && typeof extraction.tax === "object" ? extraction.tax : {};
+    var company = sender.company || "";
+    return {
+      sender: {
+        company: sender.company || "",
+        rep: sender.rep || "",
+        bizNo: sender.bizNo || "",
+        address: sender.address || "",
+        phone: sender.phone || "",
+        email: sender.email || ""
+      },
+      validDays: quote.validDays || "",
+      taxMode: tax.mode || "",
+      memo: extraction.memo || "",
+      skillName: company ? company + " 견적서" : "우리회사 일반 견적서"
+    };
+  }
+
+  function registrationModelOutput(extraction, kind, filename) {
+    if (extraction && typeof extraction === "object") return JSON.parse(JSON.stringify(extraction));
+    return skeletonModelOutput(kind, filename);
   }
 
   /* ── 바인딩 ── */
@@ -218,6 +297,10 @@
       step: 1,
       fileMeta: null,
       facts: null,
+      extraction: null,
+      analysisStatus: "idle",
+      analysisError: null,
+      analysisToken: 0,
       trigger: null,
       renamingSkillId: null,
       activeSkillId: null
@@ -301,12 +384,18 @@
       ui.session = null;
       ui.fileMeta = null;
       ui.facts = null;
+      ui.extraction = null;
+      ui.analysisStatus = "idle";
+      ui.analysisError = null;
+      ui.analysisToken += 1;
       root.wizard.hidden = false;
       renderStep1();
     }
 
     function closeWizard(message) {
+      ui.analysisToken += 1;
       ui.session = null;
+      ui.extraction = null;
       root.wizard.hidden = true;
       clear(root.wizardBody);
       env.renderMain();
@@ -406,18 +495,31 @@
       setStep(1);
       clear(root.wizardBody);
       var body = root.wizardBody;
-      body.appendChild(h(doc, "p", { text: "기존에 사용하던 견적서 파일을 선택하세요. 파일은 이 브라우저에서만 확인하고, 원본 바이트는 저장하지 않습니다." }, []));
+      body.appendChild(h(doc, "p", { text: "기존에 사용하던 견적서 파일을 선택하세요. 원본 바이트는 저장하지 않습니다." }, []));
       if (ui.fileMeta) {
         body.appendChild(dl(doc, [
           ["파일명", ui.fileMeta.name],
           ["파일 형식", ui.fileMeta.label],
           ["크기", ui.fileMeta.displaySize]
         ]));
-        body.appendChild(actionButton(doc, "wiz-step2", "다음: 회사정보 확인", "primary"));
+        if (ui.fileMeta.category === "image") {
+          if (ui.analysisStatus === "loading") {
+            body.appendChild(h(doc, "p", { class: "template-manage-note", text: "이미지에서 견적 내용을 분석하고 있습니다…" }, []));
+          } else if (ui.analysisStatus === "ready") {
+            body.appendChild(h(doc, "p", { class: "template-manage-note", text: "이미지 내용 분석이 끝났습니다. 다음 단계에서 회사 기본값을 확인·수정하세요." }, []));
+            body.appendChild(actionButton(doc, "wiz-step2", "다음: 회사정보 확인", "primary"));
+          } else if (ui.analysisStatus === "error") {
+            body.appendChild(h(doc, "p", { class: "template-manage-note", text: "자동 분석을 완료하지 못했습니다. 직접 확인하며 등록을 계속할 수 있습니다." }, []));
+            body.appendChild(actionButton(doc, "wiz-step2", "수동으로 계속", "primary"));
+          }
+        } else {
+          body.appendChild(h(doc, "p", { class: "template-manage-note", text: "문서 파일은 현재 자동 내용 분석 전 단계입니다. 회사정보와 모양을 직접 확인해 등록합니다." }, []));
+          body.appendChild(actionButton(doc, "wiz-step2", "다음: 회사정보 확인", "primary"));
+        }
       } else {
         body.appendChild(actionButton(doc, "wiz-pick-file", "파일 선택", "primary"));
       }
-      body.appendChild(h(doc, "p", { class: "template-manage-note", text: "PDF·DOCX·PPTX·XLSX·HWPX(2MB 이하), JPG·PNG·WebP(4MB 이하). 업로드·AI 분석은 연결되지 않았습니다." }, []));
+      body.appendChild(h(doc, "p", { class: "template-manage-note", text: "JPG·PNG·WebP(4MB 이하)는 자동 내용 분석을 지원합니다. PDF·DOCX·PPTX·XLSX·HWPX(2MB 이하)는 현재 수동 확인 방식입니다." }, []));
     }
 
     function renderStep2() {
@@ -819,21 +921,11 @@
         skillName: ui.facts.skillName
       };
       var built = Session.buildSkillCandidate(ui.session, {
-        modelOutput: {
-          source: { kind: kind, filename: ui.fileMeta.name },
-          sender: { company: null, rep: null, bizNo: null, address: null, phone: null, email: null },
-          recipient: { company: null, person: null, address: null, email: null },
-          quote: { quoteNo: null, issueDate: null, validDays: null },
-          items: [],
-          tax: { mode: null },
-          memo: null,
-          evidence: [],
-          warnings: []
-        },
+        modelOutput: registrationModelOutput(ui.extraction, kind, ui.fileMeta.name),
         sourceMeta: {
           sourceKind: "file",
           filename: ui.fileMeta.name,
-          sourceRef: "media:" + ui.fileMeta.mediaType,
+          sourceRef: ui.extraction ? "server:image-analysis" : "media:" + ui.fileMeta.mediaType,
           capturedAt: isoNow()
         },
         corrections: corrections
@@ -937,9 +1029,42 @@
         announce(FileIntake.errorMessage(classified));
         return;
       }
+
+      ui.analysisToken += 1;
+      var token = ui.analysisToken;
       ui.fileMeta = classified.value;
+      ui.extraction = null;
+      ui.analysisError = null;
+
+      if (classified.value.category !== "image") {
+        ui.analysisStatus = "manual";
+        renderStep1();
+        announce("선택한 문서는 현재 수동 확인 방식으로 등록합니다: " + classified.value.name);
+        return;
+      }
+
+      ui.analysisStatus = "loading";
       renderStep1();
-      announce("선택한 파일을 확인했습니다: " + classified.value.name);
+      announce("선택한 이미지에서 견적 내용을 분석하고 있습니다.");
+
+      var fetchFn = env.fetch || (typeof fetch === "function" ? fetch.bind(globalThis) : null);
+      analyzeImageFile(file, classified.value, fetchFn).then(function (result) {
+        if (token !== ui.analysisToken) return;
+        if (result.ok) {
+          ui.extraction = result.extraction;
+          ui.facts = factsFromExtraction(result.extraction);
+          ui.analysisStatus = "ready";
+          ui.analysisError = null;
+          renderStep1();
+          announce("이미지 내용 분석이 끝났습니다. 추출값을 확인해 주세요.");
+          return;
+        }
+        ui.extraction = null;
+        ui.analysisStatus = "error";
+        ui.analysisError = result.code || "analysis_failed";
+        renderStep1();
+        announce("자동 분석을 완료하지 못했습니다. 직접 확인하며 등록할 수 있습니다.");
+      });
     }
 
     if (root.wizardBody) {
@@ -997,6 +1122,10 @@
     formValuesFromSkill: formValuesFromSkill,
     wizardStepForSession: wizardStepForSession,
     extractionKindForCategory: extractionKindForCategory,
+    analyzeImageFile: analyzeImageFile,
+    factsFromExtraction: factsFromExtraction,
+    registrationModelOutput: registrationModelOutput,
+    LIVE_INTAKE_ENDPOINT: LIVE_INTAKE_ENDPOINT,
     bindSkillSection: bindSkillSection
   };
 });
