@@ -22,6 +22,8 @@ KILO_CHAT_URL = "https://api.kilo.ai/api/gateway/chat/completions"
 UPSTREAM_MODEL = "stealth/space-bunny-alpha"
 MODALITY_TEXT = "text"
 MODALITY_IMAGE = "image"
+TEXT_MAX_TOKENS = 32
+IMAGE_MAX_TOKENS = 1024
 REQUEST_TIMEOUT_SECONDS = 60
 MAX_RESPONSE_BYTES = 1024 * 1024
 MAX_IMAGE_BYTES = 4 * 1024 * 1024
@@ -79,7 +81,7 @@ def canonical_body(modality: str) -> dict[str, Any]:
         "model": UPSTREAM_MODEL,
         "messages": [{"role": "user", "content": content}],
         "temperature": 0,
-        "max_tokens": 32,
+        "max_tokens": IMAGE_MAX_TOKENS if modality == MODALITY_IMAGE else TEXT_MAX_TOKENS,
     }
 
 

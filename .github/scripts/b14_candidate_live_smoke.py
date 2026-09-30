@@ -325,7 +325,7 @@ IMAGE_CASE_GENERIC = "generic"
 IMAGE_CASE_B66_F02 = "b66-f02"
 
 SPACE_BUNNY_IMAGE_INSTRUCTION = "이 이미지에 보이는 내용을 짧게 설명해 주세요."
-SPACE_BUNNY_IMAGE_MAX_TOKENS = 32
+SPACE_BUNNY_IMAGE_MAX_TOKENS = 1024
 SPACE_BUNNY_IMAGE_TEMPERATURE = 0
 
 _FIXTURE_ROOT = (
@@ -349,7 +349,7 @@ B66_F02_IMAGE_INSTRUCTION = (
     "키는 quote_number, recipient, first_item, first_quantity, first_unit_price만 사용하세요. "
     "읽을 수 없는 값은 JSON null로 두세요. 합계나 부가세를 계산하지 마세요."
 )
-B66_F02_IMAGE_MAX_TOKENS = 160
+B66_F02_IMAGE_MAX_TOKENS = 3500
 B66_F02_EXPECTED_FACTS = {
     "quote_number": "Q-2026-3002",
     "recipient": "주식회사 샘플산업",
