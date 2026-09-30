@@ -35,8 +35,11 @@ from app.config import Settings
 from app.connector_status_projection import (
     PROJECTION_VERSION,
     WORKSPACE_REASON_AMBIGUOUS,
+    WORKSPACE_REASON_CONNECTOR_CONTEXT_INVALID,
+    WORKSPACE_REASON_CONNECTOR_CONTEXT_PRODUCT_MISMATCH,
     WORKSPACE_REASON_CONNECTOR_CONTEXT_STORAGE_UNAVAILABLE,
     WORKSPACE_REASON_IDENTITY_NOT_LINKED,
+    WORKSPACE_REASON_IDENTITY_UNCLASSIFIED_FAILURE,
     WORKSPACE_REASON_IDENTITY_RPC_INVALID,
     WORKSPACE_REASON_IDENTITY_SERVICE_UNAVAILABLE,
     WORKSPACE_REASON_IDENTITY_STORAGE_UNAVAILABLE,
@@ -528,10 +531,16 @@ async def test_13_malformed_private_composition_fails_closed():
         ("invalid_identity_authority", WORKSPACE_REASON_SESSION_REFERENCE_INVALID),
         ("control_plane_identity_unavailable", WORKSPACE_REASON_IDENTITY_SERVICE_UNAVAILABLE),
         ("control_plane_rpc_invalid", WORKSPACE_REASON_IDENTITY_RPC_INVALID),
+        ("invalid_identity_authority_rpc", WORKSPACE_REASON_IDENTITY_RPC_INVALID),
         ("identity_authority_storage_error", WORKSPACE_REASON_IDENTITY_STORAGE_UNAVAILABLE),
         (
             "connector_context_storage_error",
             WORKSPACE_REASON_CONNECTOR_CONTEXT_STORAGE_UNAVAILABLE,
+        ),
+        ("invalid_connector_context", WORKSPACE_REASON_CONNECTOR_CONTEXT_INVALID),
+        (
+            "connector_context_product_mismatch",
+            WORKSPACE_REASON_CONNECTOR_CONTEXT_PRODUCT_MISMATCH,
         ),
     ],
 )
@@ -560,7 +569,7 @@ async def test_13a_reviewed_identity_failure_is_bounded_without_message_leak(
     _assert_no_leak(document)
 
 
-async def test_13aa_unknown_identity_error_stays_generic():
+async def test_13aa_unknown_identity_error_keeps_identity_provenance():
     settings, app = _app(
         identity_binding=_IdentityErrorBinding("future_unreviewed_identity_error"),
         oauth_binding=_OAuthBinding(),
@@ -573,7 +582,7 @@ async def test_13aa_unknown_identity_error_stays_generic():
     for connector_id in (GMAIL_ID, DRIVE_ID):
         row = _rows(document)[connector_id]
         assert row["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
-        assert row["workspace_reason"] == WORKSPACE_REASON_TRUTH_UNAVAILABLE
+        assert row["workspace_reason"] == WORKSPACE_REASON_IDENTITY_UNCLASSIFIED_FAILURE
     assert "future_unreviewed_identity_error" not in response.text
 
 
