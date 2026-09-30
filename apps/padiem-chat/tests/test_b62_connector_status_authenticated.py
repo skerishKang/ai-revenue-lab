@@ -577,6 +577,31 @@ async def test_13aa_unknown_identity_error_stays_generic():
     assert "future_unreviewed_identity_error" not in response.text
 
 
+@pytest.mark.parametrize(
+    "provider_code",
+    [
+        "canonical_auth_session_not_found",
+        "inactive_auth_session",
+        "connector_context_storage_error",
+        "control_plane_rpc_invalid",
+    ],
+)
+async def test_13ab_oauth_code_collision_stays_generic(provider_code):
+    settings, app, *_ = _wired(
+        error={"code": provider_code, "message": "provider internal detail"}
+    )
+    async with _client(settings, app) as client:
+        response = await client.get(STATUS_PATH)
+
+    document = response.json()
+    for connector_id in (GMAIL_ID, DRIVE_ID):
+        row = _rows(document)[connector_id]
+        assert row["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
+        assert row["workspace_reason"] == WORKSPACE_REASON_TRUTH_UNAVAILABLE
+    assert provider_code not in response.text
+    assert "provider internal detail" not in response.text
+
+
 async def test_13b_shadow_store_fault_fails_closed():
     settings, app = _app(
         identity_binding=_IdentityBinding(),
