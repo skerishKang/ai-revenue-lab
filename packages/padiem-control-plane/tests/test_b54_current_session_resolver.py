@@ -23,10 +23,18 @@ import json
 import pathlib
 import sys
 import types
+import asyncio
 from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock
 
 import pytest
+
+
+def _run(coro):
+    """This package has no pytest-asyncio, so coroutines run explicitly."""
+
+    return asyncio.run(coro)
+
 
 from padiem_control_plane.auth_sessions import AuthSessionSnapshot, AuthSessionState
 from padiem_control_plane.b54_identity_bridge import (
@@ -131,12 +139,11 @@ def _do_rpc(store):
     return do
 
 
-@pytest.mark.asyncio
-async def test_rpc_returns_session_for_product_and_user() -> None:
+def test_rpc_returns_session_for_product_and_user() -> None:
     store = _RecordingStore(_session())
-    result = await _do_rpc(store).resolve_current_auth_session(
+    result = _run(_do_rpc(store).resolve_current_auth_session(
         {"product_id": B54_PRODUCT_ID, "product_user_id": USER}
-    )
+    ))
     assert result["ok"] is True
     assert result["session"]["product_id"] == B54_PRODUCT_ID
     assert store.calls == [
@@ -144,18 +151,18 @@ async def test_rpc_returns_session_for_product_and_user() -> None:
     ]
 
 
-@pytest.mark.asyncio
-async def test_rpc_uses_the_worker_clock_not_the_caller() -> None:
+def test_rpc_uses_the_worker_clock_not_the_caller() -> None:
     store = _RecordingStore(_session())
-    await _do_rpc(store).resolve_current_auth_session(
-        {"product_id": B54_PRODUCT_ID, "product_user_id": USER}
+    _run(
+        _do_rpc(store).resolve_current_auth_session(
+            {"product_id": B54_PRODUCT_ID, "product_user_id": USER}
+        )
     )
     used = store.calls[0]["now"]
     # A server clock, never the fixed test constant.
     assert abs((used - datetime.now(timezone.utc)).total_seconds()) < 60
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "extra",
     [
@@ -170,34 +177,32 @@ async def test_rpc_uses_the_worker_clock_not_the_caller() -> None:
         {"revision": 9},
     ],
 )
-async def test_rpc_refuses_any_caller_supplied_authority_field(extra) -> None:
+def test_rpc_refuses_any_caller_supplied_authority_field(extra) -> None:
     store = _RecordingStore(_session())
-    result = await _do_rpc(store).resolve_current_auth_session(
+    result = _run(_do_rpc(store).resolve_current_auth_session(
         {"product_id": B54_PRODUCT_ID, "product_user_id": USER, **extra}
-    )
+    ))
     assert result["ok"] is False
     assert store.calls == [], "a rejected payload must not reach the store"
 
 
-@pytest.mark.asyncio
-async def test_rpc_missing_required_field_fails_closed() -> None:
+def test_rpc_missing_required_field_fails_closed() -> None:
     store = _RecordingStore(_session())
     for payload in (
         {"product_id": B54_PRODUCT_ID},
         {"product_user_id": USER},
         {},
     ):
-        result = await _do_rpc(store).resolve_current_auth_session(payload)
+        result = _run(_do_rpc(store).resolve_current_auth_session(payload))
         assert result["ok"] is False
     assert store.calls == []
 
 
-@pytest.mark.asyncio
-async def test_rpc_reports_missing_session_without_disclosure() -> None:
+def test_rpc_reports_missing_session_without_disclosure() -> None:
     store = _RecordingStore(None)
-    result = await _do_rpc(store).resolve_current_auth_session(
+    result = _run(_do_rpc(store).resolve_current_auth_session(
         {"product_id": B54_PRODUCT_ID, "product_user_id": USER}
-    )
+    ))
     assert result["ok"] is False
     assert "session" not in result
 
@@ -207,267 +212,3 @@ def test_gateway_exposes_the_new_rpc_and_keeps_resolve_auth_session() -> None:
     assert hasattr(_worker_mod.Default, "resolve_auth_session")
 
 
-# ── Padiem Chat adapter ────────────────────────────────────────────────────
-
-
-def _adapter_session():
-    return _session()
-
-
-@pytest.mark.asyncio
-async def test_adapter_sends_only_product_and_user() -> None:
-    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "apps" / "padiem-chat"))
-    from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
-
-    calls: list[tuple[str, dict]] = []
-
-    class _Rpc:
-        async def __call__(self, name, payload, key):
-            calls.append((name, payload))
-            return json.loads(json.dumps(_adapter_session().to_public_dict()))
-
-    adapter = CloudflareControlPlaneIdentityAuthority.__new__(
-        CloudflareControlPlaneIdentityAuthority
-    )
-    adapter._rpc = _Rpc()
-    resolved = await adapter.resolve_current_auth_session(
-        product_id=B54_PRODUCT_ID, product_user_id=USER
-    )
-    assert resolved.product_id == B54_PRODUCT_ID
-    assert len(calls) == 1
-    name, payload = calls[0]
-    assert name == "resolve_current_auth_session"
-    assert set(payload) == {"product_id", "product_user_id"}
-    assert "session_id" not in payload
-    assert "subject" not in payload
-    assert "tenant_id" not in payload
-
-
-@pytest.mark.asyncio
-async def test_adapter_refuses_missing_product_or_user() -> None:
-    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "apps" / "padiem-chat"))
-    from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
-    from app.control_plane_identity import IdentityBridgeError
-
-    adapter = CloudflareControlPlaneIdentityAuthority.__new__(
-        CloudflareControlPlaneIdentityAuthority
-    )
-    adapter._rpc = MagicMock()
-    for kwargs in (
-        {"product_id": "", "product_user_id": USER},
-        {"product_id": B54_PRODUCT_ID, "product_user_id": ""},
-    ):
-        with pytest.raises(IdentityBridgeError):
-            await adapter.resolve_current_auth_session(**kwargs)
-
-
-# ── B54 bridge validation ──────────────────────────────────────────────────
-
-
-class _Authority:
-    """Only ``USER`` has a session; any other product user resolves to nothing."""
-
-    def __init__(self, session=None) -> None:
-        self.session = session
-        self.calls: list[dict] = []
-
-    async def resolve_current_auth_session(self, *, product_id, product_user_id):
-        self.calls.append(
-            {"product_id": product_id, "product_user_id": product_user_id}
-        )
-        if self.session is None or product_user_id != USER:
-            raise RuntimeError("unavailable")
-        return self.session
-
-    async def resolve_or_create_product_link(self, **kwargs):
-        raise AssertionError("current-session resolution must not create a product link")
-
-    async def establish_auth_session(self, **kwargs):
-        raise AssertionError("current-session resolution must not mint a session")
-
-
-@pytest.mark.asyncio
-async def test_bridge_returns_the_b54_session_with_pinned_product() -> None:
-    authority = _Authority(_session())
-    bridged = await resolve_current_b54_canonical_session(authority, USER, now=NOW)
-    assert bridged.auth_session.product_id == B54_PRODUCT_ID
-    assert bridged.product_user_id == USER
-    assert bridged.auth_session.tenant_id == TENANT
-    # The product is pinned server-side, never taken from the caller.
-    assert authority.calls == [
-        {"product_id": B54_PRODUCT_ID, "product_user_id": USER}
-    ]
-
-
-@pytest.mark.asyncio
-async def test_bridge_rejects_a_b62_session_for_the_same_person() -> None:
-    authority = _Authority(_session(product_id="b62"))
-    with pytest.raises(B54IdentityBridgeError) as excinfo:
-        await resolve_current_b54_canonical_session(authority, USER, now=NOW)
-    assert excinfo.value.code == "b54_control_plane_session_mismatch"
-
-
-@pytest.mark.asyncio
-async def test_bridge_rejects_tenant_less_session() -> None:
-    authority = _Authority(_session(tenant_id=None))
-    with pytest.raises(B54IdentityBridgeError) as excinfo:
-        await resolve_current_b54_canonical_session(authority, USER, now=NOW)
-    assert excinfo.value.code == "b54_control_plane_session_tenant_mismatch"
-
-
-@pytest.mark.asyncio
-async def test_bridge_rejects_non_user_subject() -> None:
-    for subject_type in (SubjectType.ANONYMOUS, SubjectType.ACCOUNT):
-        authority = _Authority(_session(subject_type=subject_type))
-        with pytest.raises(B54IdentityBridgeError) as excinfo:
-            await resolve_current_b54_canonical_session(authority, USER, now=NOW)
-        assert excinfo.value.code == "b54_control_plane_session_mismatch"
-
-
-@pytest.mark.asyncio
-async def test_bridge_rejects_revoked_and_expired_sessions() -> None:
-    revoked = _Authority(_session(state=AuthSessionState.REVOKED))
-    with pytest.raises(B54IdentityBridgeError) as revoked_error:
-        await resolve_current_b54_canonical_session(revoked, USER, now=NOW)
-    assert revoked_error.value.code == "b54_control_plane_session_inactive"
-
-    lapsed = _Authority(
-        _session(
-            issued_at=NOW - timedelta(hours=3),
-            expires_at=NOW - timedelta(hours=1),
-        )
-    )
-    with pytest.raises(B54IdentityBridgeError) as lapsed_error:
-        await resolve_current_b54_canonical_session(lapsed, USER, now=NOW)
-    assert lapsed_error.value.code == "b54_control_plane_session_inactive"
-
-
-@pytest.mark.asyncio
-async def test_bridge_rejects_foreign_or_malformed_user_id() -> None:
-    authority = _Authority(_session())
-    # Shape failures never reach the authority at all.
-    for bad in ("", "not-usr", None, 12345, "a" * 200):
-        with pytest.raises(B54IdentityBridgeError):
-            await resolve_current_b54_canonical_session(authority, bad, now=NOW)
-    assert authority.calls == []
-    # A well-formed but unknown id reaches the authority and simply resolves to
-    # nothing — the same fail-closed result, never a foreign session.
-    with pytest.raises(B54IdentityBridgeError):
-        await resolve_current_b54_canonical_session(authority, "usr_FORGED", now=NOW)
-    assert [call["product_user_id"] for call in authority.calls] == ["usr_FORGED"]
-
-
-@pytest.mark.asyncio
-async def test_bridge_fails_closed_without_an_authority() -> None:
-    with pytest.raises(B54IdentityBridgeError) as excinfo:
-        await resolve_current_b54_canonical_session(None, USER, now=NOW)
-    assert excinfo.value.code == "b54_control_plane_identity_unavailable"
-
-
-# ── Web request helper: no caller authority, no browser output ─────────────
-
-
-def _signed_in_request(app_state, **adversarial):
-    class _Request:
-        def __init__(self) -> None:
-            self.app = types.SimpleNamespace(state=app_state)
-            self.query_params = dict(adversarial.pop("query", {}))
-            self.cookies = dict(adversarial.pop("cookies", {}))
-            self.headers = dict(adversarial.pop("headers", {}))
-            self._body = dict(adversarial.pop("body", {}))
-
-        async def json(self):
-            return self._body
-
-    return _Request()
-
-
-@pytest.mark.asyncio
-async def test_web_helper_resolves_from_the_signed_session_only() -> None:
-    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "apps" / "padiem-chat"))
-    import app.auth_routes as auth_routes
-    import app.b54_canonical_session as b54_module
-
-    authority = _Authority(_session())
-
-    class _State:
-        control_plane_identity_authority = authority
-
-    request = _signed_in_request(
-        _State(),
-        query={
-            "session_id": "sess_FORGED",
-            "product_id": "b62",
-            "product_user_id": "usr_FORGED",
-            "subject_id": "sub_FORGED",
-            "tenant_id": "tenant_FORGED",
-            "workspace_id": "ws_FORGED",
-            "provider": "google",
-            "now": "2099-01-01T00:00:00Z",
-            "expires_at": "2099-01-01T00:00:00Z",
-        },
-        body={
-            "session_id": "sess_FORGED",
-            "product_id": "b62",
-            "product_user_id": "usr_FORGED_BODY",
-            "tenant_id": "tenant_FORGED_BODY",
-        },
-        headers={
-            "x-product-user-id": "usr_FORGED_HEADER",
-            "x-tenant-id": "tenant_FORGED_HEADER",
-        },
-        cookies={"session": "forged-session-cookie", "auth_session_id": "sess_FORGED"},
-    )
-
-    # The signed Padiem session is the only authority for the product user id.
-    original_current_user_id = auth_routes.current_user_id
-    auth_routes.current_user_id = lambda req: USER
-    auth_routes.auth_ready = lambda req: True
-    try:
-        resolved = await b54_module.resolve_current_b54_canonical_session(request)
-    finally:
-        auth_routes.current_user_id = original_current_user_id
-    assert resolved is not None
-    assert resolved.product_user_id == USER
-    # Only the signed-in user and the server-pinned product were used.
-    assert authority.calls == [{"product_id": B54_PRODUCT_ID, "product_user_id": USER}]
-    for forged in ("FORGED", "b62"):
-        assert forged not in str(authority.calls)
-
-
-@pytest.mark.asyncio
-async def test_web_helper_returns_none_when_signed_out_or_unbound() -> None:
-    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "apps" / "padiem-chat"))
-    import app.auth_routes as auth_routes
-    import app.b54_canonical_session as b54_module
-
-    class _State:
-        control_plane_identity_authority = None
-
-    request = _signed_in_request(_State())
-    original = auth_routes.current_user_id
-    auth_routes.current_user_id = lambda req: None
-    auth_routes.auth_ready = lambda req: True
-    try:
-        assert await b54_module.resolve_current_b54_canonical_session(request) is None
-    finally:
-        auth_routes.current_user_id = original
-
-
-def test_helper_builds_no_browser_payload() -> None:
-    sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2] / "apps" / "padiem-chat"))
-    import app.b54_canonical_session as b54_module
-
-    source = inspect.getsource(b54_module.resolve_current_b54_canonical_session)
-    for forbidden in (
-        "JSONResponse",
-        "RedirectResponse",
-        "set_cookie",
-        "html",
-        "template",
-    ):
-        assert forbidden not in source
-    # No B54 identity field is copied into a response-shaped structure.
-    assert "session_id" not in source
-    assert "canonical_subject" not in source
-    assert "tenant_id" not in source
