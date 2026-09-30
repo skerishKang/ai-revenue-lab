@@ -674,7 +674,7 @@ console.log("EXTRACTION_BOUNDARY_CONTRACT=PASS");
 console.log("EASY_MODE_CONTRACT=PASS");
 console.log("FILE_INTAKE_CONTRACT=PASS");
 console.log("FILE_CHOOSER_LIVE=YES");
-console.log("BROWSER_UPLOAD_NETWORK=0");
+console.log("TEMPLATE_CLONER_BROWSER_UPLOAD_NETWORK=0");
 console.log("RECENT_HISTORY_CONTRACT=PASS");
 console.log("HISTORY_SAVE_UPSERT_CONTRACT=PASS");
 console.log("BETA_POLISH_CONTRACT=PASS");
@@ -740,12 +740,18 @@ check(skillUi.includes("bindSkillSection") &&
 check(!/\.innerHTML\s*=/.test(skillUi),
   "MY_QUOTATION_UI: wizard renders via DOM API, no markup injection surface");
 check(!/(space-bunny|sensenova|openai|anthropic|kilo\/)/i.test(skillUi) &&
-      !/fetch\(|XMLHttpRequest|WebSocket/.test(skillUi) &&
+      skillUi.includes('LIVE_INTAKE_ENDPOINT = "/api/v1/quote/intake"') &&
+      !/https?:\/\//i.test(skillUi) &&
+      !/XMLHttpRequest|WebSocket|EventSource/.test(skillUi) &&
       !/localStorage|sessionStorage|indexedDB/.test(skillUi),
-  "MY_QUOTATION_UI: no provider identity, no network, storage only through env");
+  "MY_QUOTATION_UI: same-origin intake only, no provider identity/external network, storage only through env");
 check(app.includes("B66QuoteSkillBridge") && app.includes("applySkillToForm") &&
       app.includes("skillUiState"),
   "MY_QUOTATION_UI: app hosts the skill bridge with form application and builtin fallback");
+check(skillUi.includes("analyzeImageFile") &&
+      skillUi.includes("factsFromExtraction") &&
+      skillUi.includes("registrationModelOutput"),
+  "MY_QUOTATION_LIVE_IMAGE_INTAKE=YES: validated extraction feeds review/registration");
 
 console.log("VALID_UNTIL_CONTRACT=PASS");
 console.log("ADDRESS_FIELDS_CONTRACT=PASS");
@@ -813,7 +819,8 @@ console.log("APPROVAL_FAILURE_PARTIAL_WRITE=0");
 console.log("SPLIT_BRAIN_APPROVAL_STATE=0");
 console.log("MOBILE_TEMPLATE_UI=PASS");
 console.log("PRINT_UI_LEAK=0");
-console.log("MODEL_NETWORK_CALLS=0");
-console.log("UPLOAD_AI_LIVE=NO");
+console.log("BROWSER_PROVIDER_MODEL_NETWORK_CALLS=0");
+console.log("SAVED_QUOTE_IMAGE_INTAKE_SOURCE_WIRED=YES");
+console.log("NATIVE_DOCUMENT_AUTO_ANALYSIS_SOURCE_WIRED=NO");
 console.log("CHAT_AI_LIVE=NO");
 console.log("EMAIL_SEND_LIVE=NO");

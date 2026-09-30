@@ -21,6 +21,18 @@ cd "$(dirname "$0")"
 echo "==> uv sync --frozen"
 uv sync --frozen
 
+# Stage the single reviewed #3212 B66 extraction authority into this Worker
+# project so pywrangler can bundle it without committing a duplicate copy.
+B66_AUTHORITY_SOURCE="../b66-quote-adapter/app/extraction_routing.py"
+B66_STAGED_MODULE="app/b66_extraction_routing.py"
+cleanup_b66_stage() {
+    rm -f "${B66_STAGED_MODULE}"
+}
+trap cleanup_b66_stage EXIT
+test -f "${B66_AUTHORITY_SOURCE}"
+cp "${B66_AUTHORITY_SOURCE}" "${B66_STAGED_MODULE}"
+echo "B66_EXTRACTION_AUTHORITY_STAGED=YES"
+
 echo "==> pywrangler sync"
 uv run pywrangler sync --force
 
