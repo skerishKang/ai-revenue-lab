@@ -854,6 +854,41 @@ class CloudflareCanonicalIdentityAuthorityStore:
         )
         return snapshot
 
+    @staticmethod
+    def _session_from_row(row: dict[str, Any]) -> AuthSessionSnapshot:
+        """Decode one canonical_auth_session row under the canonical contract.
+
+        Every stored field is validated here — session id, product, subject type
+        and id, both timestamps, state, revision and tenant — so a malformed row
+        can never be quietly reinterpreted as "no session". Any invalid shape
+        raises ``identity_authority_storage_error``; the caller decides whether
+        that means "this row cannot be a candidate" or "fail the whole read".
+        """
+
+        try:
+            raw_tenant = row.get("tenant_id", None)
+            return AuthSessionSnapshot(
+                session_id=str(row["session_id"]),
+                product_id=str(row["product_id"]),
+                subject=CanonicalSubjectRef(
+                    subject_type=SubjectType(str(row["subject_type"])),
+                    subject_id=str(row["subject_id"]),
+                ),
+                issued_at=_parse_iso(row["issued_at"], "issued_at"),
+                expires_at=_parse_iso(row["expires_at"], "expires_at"),
+                state=AuthSessionState(str(row["state"])),
+                revision=int(row["revision"]),
+                tenant_id=str(raw_tenant) if raw_tenant is not None else None,
+            )
+        except (KeyError, TypeError, ValueError) as exc:
+            # ControlPlaneContractError subclasses ValueError, so this also
+            # normalizes the field-level contract errors into the one canonical
+            # corruption code.
+            raise ControlPlaneContractError(
+                "identity_authority_storage_error",
+                "canonical auth session row is invalid",
+            ) from exc
+
     def resolve_auth_session(self, *, session_id: str) -> AuthSessionSnapshot:
         if not isinstance(session_id, str) or not _SAFE_ID_RE.fullmatch(session_id):
             raise ControlPlaneContractError(
@@ -878,26 +913,123 @@ class CloudflareCanonicalIdentityAuthorityStore:
                 "canonical auth session is ambiguous",
             )
         row = rows[0]
-        try:
-            raw_tenant = row.get("tenant_id", None)
-            return AuthSessionSnapshot(
-                session_id=str(row["session_id"]),
-                product_id=str(row["product_id"]),
-                subject=CanonicalSubjectRef(
-                    subject_type=SubjectType(str(row["subject_type"])),
-                    subject_id=str(row["subject_id"]),
-                ),
-                issued_at=_parse_iso(row["issued_at"], "issued_at"),
-                expires_at=_parse_iso(row["expires_at"], "expires_at"),
-                state=AuthSessionState(str(row["state"])),
-                revision=int(row["revision"]),
-                tenant_id=str(raw_tenant) if raw_tenant is not None else None,
+        return self._session_from_row(row)
+
+    def resolve_current_auth_session_for_product_user(
+        self,
+        *,
+        product_id: str,
+        product_user_id: str,
+        now: datetime,
+    ) -> AuthSessionSnapshot:
+        """Resolve the CURRENT active canonical session for one product user (#3243).
+
+        A read-only companion to :meth:`resolve_auth_session`. That one is
+        keyed by a caller-held ``session_id``; this one is server-derived and
+        takes no session reference at all, so a subsequent server-side request
+        can re-resolve the same canonical session without any product-local
+        shadow of it.
+
+        Flow, entirely inside this private Durable Object:
+
+        1. ``product_id`` passes the allowlist and ``product_user_id`` the
+           existing bounded-identifier check — the caller cannot widen either;
+        2. the ACTIVE ``canonical_product_identity_link`` row for that exact
+           ``(product_id, product_user_id)`` yields the canonical subject id;
+        3. ``canonical_auth_session`` is read for that ``(product_id,
+           subject_id)`` pair, served by the existing index;
+        4. only sessions that are ACTIVE **and** not past ``now`` survive;
+        5. the newest survivor wins, ordered by ``issued_at``, then
+           ``revision``, then ``session_id``.
+
+        Repeated logins can leave more than one ACTIVE session, so multiple
+        active rows are not an error: the newest is selected deterministically.
+        An expired or revoked row is never a fallback, and when nothing is
+        active this fails closed.
+
+        ``resolve_auth_session(session_id)`` is unchanged; this is a separate
+        lookup and neither creates, extends, revokes nor writes any row.
+        """
+
+        product = self._require_product(product_id)
+        user_id = _product_user_id(product_user_id)
+        observed_at = _utc(now, "now")
+
+        link_rows = _rows(
+            self._sql.exec(
+                "SELECT canonical_subject_id, state FROM canonical_product_identity_link "
+                "WHERE product_id=? AND product_user_id=?",
+                product,
+                user_id,
             )
-        except (KeyError, TypeError, ValueError) as exc:
+        )
+        if len(link_rows) > 1:
             raise ControlPlaneContractError(
                 "identity_authority_storage_error",
-                "canonical auth session row is invalid",
+                "canonical product identity link is ambiguous",
+            )
+        if not link_rows:
+            raise ControlPlaneContractError(
+                "canonical_product_identity_link_not_found",
+                "canonical product identity link was not found",
+            )
+        link_state = str(link_rows[0]["state"])
+        try:
+            parsed_link_state = IdentityLinkState(link_state)
+        except ValueError as exc:
+            # ControlPlaneContractError subclasses ValueError, so an unparsable
+            # state is converted here and nothing below is swallowed.
+            raise ControlPlaneContractError(
+                "identity_authority_storage_error",
+                "canonical product identity link state is invalid",
             ) from exc
+        if parsed_link_state is not IdentityLinkState.ACTIVE:
+            raise ControlPlaneContractError(
+                "canonical_product_identity_link_not_active",
+                "canonical product identity link is not active",
+            )
+        canonical_subject_id = str(link_rows[0]["canonical_subject_id"])
+
+        session_rows = _rows(
+            self._sql.exec(
+                "SELECT session_id, product_id, subject_type, subject_id, issued_at, "
+                "expires_at, state, revision, tenant_id FROM canonical_auth_session "
+                "WHERE product_id=? AND subject_id=?",
+                product,
+                canonical_subject_id,
+            )
+        )
+        active: list[tuple[datetime, int, str, AuthSessionSnapshot]] = []
+        for row in session_rows:
+            # #3243 integrity: a malformed canonical row is storage corruption,
+            # not an absent session. It is validated under the canonical contract
+            # and fails the whole read, so a corrupt newest row can never be
+            # skipped in favour of an older active one (and vice versa).
+            snapshot = self._session_from_row(row)
+            if snapshot.product_id != product or snapshot.subject.subject_id != canonical_subject_id:
+                # The query is scoped to exactly this product and subject; a row
+                # that disagrees is corruption too.
+                raise ControlPlaneContractError(
+                    "identity_authority_storage_error",
+                    "canonical auth session row is out of scope",
+                )
+            if snapshot.state is not AuthSessionState.ACTIVE:
+                # A valid REVOKED / explicitly EXPIRED row is a non-candidate.
+                continue
+            if snapshot.expires_at <= observed_at:
+                # Valid ACTIVE but already lapsed at this instant: not effective.
+                continue
+            active.append(
+                (snapshot.issued_at, snapshot.revision, snapshot.session_id, snapshot)
+            )
+        if not active:
+            raise ControlPlaneContractError(
+                "canonical_auth_session_not_found",
+                "no active canonical auth session exists for this product user",
+            )
+        # Newest issued wins; revision then session id break ties deterministically.
+        active.sort(key=lambda item: (item[0], item[1], item[2]))
+        return active[-1][3]
 
     def safe_dict(self) -> dict[str, Any]:
         return {

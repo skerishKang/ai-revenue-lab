@@ -42,6 +42,7 @@ from padiem_control_plane.b54_identity_bridge import (
     TrustedB54ControlPlaneIdentityAuthority,
     TrustedB54ServerAuthEvidence,
     bridge_trusted_b54_server_auth,
+    resolve_current_b54_canonical_session as resolve_current_b54_canonical_session_from_authority,
 )
 
 from .history import PasswordCredential
@@ -51,6 +52,7 @@ __all__ = [
     "B54ServerAuthenticatedOwner",
     "B54_SERVER_AUTH_PROVIDERS",
     "b54_canonical_session_producer",
+    "resolve_current_b54_canonical_session",
 ]
 
 # The reviewed B54 server auth providers (#3240). ``password`` is the original
@@ -205,3 +207,42 @@ def b54_canonical_session_producer(
         authority=authority,
         session_max_age_seconds=session_max_age_seconds,
     )
+
+
+async def resolve_current_b54_canonical_session(
+    request: Any,
+) -> B54BridgedIdentitySession | None:
+    """Resolve the current active B54 session for the signed-in user (#3243).
+
+    The Web-request entry point for B54 session authority. Exactly one value
+    comes from the request — the product user id, read from the signed Padiem
+    session cookie by :func:`current_user_id` — and the product is pinned to
+    ``b54-padiem-claw`` here on the server.
+
+    Nothing else is read from the request. Every other identity field is
+    resolved inside the Control Plane, so query, body, and header values cannot
+    select a session, a user, or a product.
+
+    Returns ``None`` when the caller is signed out, when no private Control Plane
+    binding is present, or when no B54 session is currently active. The resolved
+    session is returned to server code only and is never projected to the
+    browser.
+    """
+
+    authority = getattr(request.app.state, "control_plane_identity_authority", None)
+    if authority is None:
+        return None
+    # Imported here: auth_routes imports this module, so a module-level import
+    # would be circular. The helper pair is the same server-side auth boundary
+    # the password and Google B54 chains already use.
+    from .auth_routes import auth_ready, current_user_id
+
+    uid = current_user_id(request) if auth_ready(request) else None
+    if not uid:
+        return None
+    try:
+        return await resolve_current_b54_canonical_session_from_authority(
+            authority, uid
+        )
+    except Exception:
+        return None

@@ -249,6 +249,34 @@ class CloudflareControlPlaneIdentityAuthority:
         )
         return self._session_from_wire(wire)
 
+    async def resolve_current_auth_session(
+        self, *, product_id: str, product_user_id: str
+    ) -> AuthSessionSnapshot:
+        """#3243 read-only current ACTIVE session for one product user.
+
+        Server-derived: the RPC names only the product and the product user, so
+        the caller can never supply a ``session_id``, ``subject_id``,
+        ``tenant_id``, ``provider`` or a clock. The private authority resolves
+        the canonical subject and the newest effective session itself.
+        """
+
+        if not isinstance(product_id, str) or not product_id:
+            raise IdentityBridgeError(
+                503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data."
+            )
+        if not isinstance(product_user_id, str) or not product_user_id:
+            raise IdentityBridgeError(
+                401, "canonical_auth_session_not_found", "Canonical session is unavailable."
+            )
+        wire = _closed_session(
+            await self._rpc(
+                "resolve_current_auth_session",
+                {"product_id": product_id, "product_user_id": product_user_id},
+                "session",
+            )
+        )
+        return self._session_from_wire(wire)
+
     async def resolve_connector_workspace(self, *, session_id: str) -> str | None:
         """#2830 B-1A read: canonical workspace_ref for one existing session.
 
