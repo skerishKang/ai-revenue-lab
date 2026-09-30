@@ -50,6 +50,111 @@ from .contracts import (
 
 B54_PRODUCT_ID = "b54-padiem-claw"
 
+async def resolve_current_b54_canonical_session(
+    authority: TrustedB54ControlPlaneIdentityAuthority | None,
+    product_user_id: str,
+    *,
+    now: datetime | None = None,
+) -> B54BridgedIdentitySession:
+    """Resolve the CURRENT active B54 canonical session for a server-known user (#3243).
+
+    The read-only counterpart of :func:`bridge_trusted_b54_server_auth`. That
+    function mints a session right after a login; this one re-resolves the
+    already-established session for a later server-side request, so the browser
+    never has to hold a B54 session id and no product-local B54 shadow is needed.
+
+    The only input is the server-derived product user id. The product is pinned
+    to ``B54_PRODUCT_ID`` inside this function, the clock comes from the server,
+    and the subject, tenant and session id all come from the Control Plane — a
+    caller can supply none of them.
+
+    The returned snapshot is re-validated here rather than trusted: it must be a
+    B54 session, for a USER subject, effective ACTIVE at ``now``, and carrying a
+    canonical tenant. Anything else fails closed, so a cross-product or
+    cross-user session can never be consumed as B54 authority.
+    """
+
+    if authority is None:
+        raise _bridge_error(
+            "b54_control_plane_identity_unavailable",
+            "B54 canonical identity resolution is unavailable.",
+        )
+    if (
+        not isinstance(product_user_id, str)
+        or not product_user_id.startswith("usr_")
+        or len(product_user_id) > 80
+    ):
+        raise _bridge_error(
+            "b54_control_plane_identity_invalid",
+            "B54 canonical identity resolution is unavailable.",
+            500,
+        )
+    effective_now = now if now is not None else datetime.now(timezone.utc)
+    if effective_now.tzinfo is None or effective_now.utcoffset() is None:
+        raise ValueError("now must be timezone-aware")
+
+    try:
+        session = await _maybe_await(
+            authority.resolve_current_auth_session(
+                product_id=B54_PRODUCT_ID,
+                product_user_id=product_user_id,
+            )
+        )
+    except Exception as exc:
+        raise _bridge_error(
+            "b54_control_plane_session_unavailable",
+            "B54 canonical auth session is unavailable.",
+        ) from exc
+
+    if not isinstance(session, AuthSessionSnapshot):
+        raise _bridge_error(
+            "b54_control_plane_session_invalid",
+            "Canonical auth authority returned an invalid B54 session.",
+        )
+    if session.product_id != B54_PRODUCT_ID:
+        # A B62 session for the same person is never B54 authority.
+        raise _bridge_error(
+            "b54_control_plane_session_mismatch",
+            "B54 canonical auth session does not match the authenticated identity.",
+            403,
+        )
+    if session.subject.subject_type is not SubjectType.USER:
+        raise _bridge_error(
+            "b54_control_plane_session_mismatch",
+            "B54 canonical auth session does not match the authenticated identity.",
+            403,
+        )
+    if not session.tenant_id:
+        raise _bridge_error(
+            "b54_control_plane_session_tenant_mismatch",
+            "B54 canonical auth session does not carry the resolved canonical tenant.",
+            403,
+        )
+    if not session.is_active(now=effective_now):
+        raise _bridge_error(
+            "b54_control_plane_session_inactive",
+            "B54 canonical auth session is expired or revoked.",
+            401,
+        )
+
+    # The product link is projected from the session the authority just returned
+    # rather than re-queried with a create-capable call: `resolve_current_auth_
+    # session` already resolved the link row, so asking for it again could mint a
+    # new link from a fabricated provider subject. Nothing here writes.
+    identity_link = ProductIdentityLink(
+        product_id=B54_PRODUCT_ID,
+        product_user_id=product_user_id,
+        canonical_subject_id=session.subject.subject_id,
+        state=IdentityLinkState.ACTIVE,
+    )
+
+    return B54BridgedIdentitySession(
+        product_user_id=product_user_id,
+        identity_link=identity_link,
+        auth_session=session,
+    )
+
+
 __all__ = [
     "B54_PRODUCT_ID",
     "B54_SERVER_AUTH_PROVIDER_GOOGLE",
@@ -61,6 +166,7 @@ __all__ = [
     "TrustedB54ServerAuthEvidence",
     "bridge_trusted_b54_server_auth",
     "require_active_b54_canonical_session",
+    "resolve_current_b54_canonical_session",
 ]
 
 

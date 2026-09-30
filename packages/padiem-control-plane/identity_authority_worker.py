@@ -24,6 +24,11 @@ _ALLOWED_PRODUCTS: frozenset[str] = frozenset({"b62", "b54-padiem-claw"})
 _LINK_KEYS = frozenset({"product_id", "product_user_id", "auth_provider", "provider_subject"})
 _SESSION_KEYS = frozenset({"product_id", "subject", "authenticated_at", "not_after"})
 _RESOLVE_KEYS = frozenset({"session_id"})
+# #3243: the current-session lookup names the product and the product user and
+# nothing else. It deliberately accepts no session_id, subject_id, tenant_id,
+# workspace_id, provider, now or expiry, so a caller can neither pick a session
+# nor move the clock the selection is made at.
+_CURRENT_SESSION_KEYS = frozenset({"product_id", "product_user_id"})
 _CONNECT_KEYS = frozenset({"session_id", "connector_id"})
 _CONNECTOR_WORKSPACE_KEYS = frozenset({"session_id"})
 _SUBJECT_KEYS = frozenset({"subject_type", "subject_id"})
@@ -179,6 +184,30 @@ class CanonicalIdentityDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_error(exc)
 
+    async def resolve_current_auth_session(self, payload: dict) -> dict:
+        """Read-only current-active-session lookup for one product user (#3243).
+
+        The request is closed to ``product_id`` + ``product_user_id``. The
+        Durable Object resolves the canonical subject through the product link,
+        selects the newest effective ACTIVE session, and returns it. The
+        caller's own clock is never used: ``now`` comes from this private
+        authority, so a caller cannot widen a session window or backdate the
+        selection. No row is written, extended or revoked.
+        """
+
+        try:
+            wire = _closed(
+                payload, _CURRENT_SESSION_KEYS, "current-auth-session resolve RPC"
+            )
+            session = self._store.resolve_current_auth_session_for_product_user(
+                product_id=wire["product_id"],
+                product_user_id=wire["product_user_id"],
+                now=datetime.now().astimezone(),
+            )
+            return {"ok": True, "session": session.to_public_dict()}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
     async def issue_google_connect_ticket(self, payload: dict) -> dict:
         """Mint one short-lived ticket after authoritative session re-read.
 
@@ -320,6 +349,9 @@ class Default(WorkerEntrypoint):
 
     async def resolve_auth_session(self, payload: dict) -> dict:
         return await self._stub().resolve_auth_session(payload)
+
+    async def resolve_current_auth_session(self, payload: dict) -> dict:
+        return await self._stub().resolve_current_auth_session(payload)
 
     async def issue_google_connect_ticket(self, payload: dict) -> dict:
         return await self._stub().issue_google_connect_ticket(payload)
