@@ -359,6 +359,7 @@ B66_F02_EXPECTED_FACTS = {
     "first_quantity": "12",
     "first_unit_price": "9800",
 }
+B66_F02_EXPECTED_SENDER = "주식회사 테스트상사"
 
 MAX_IMAGE_FIXTURE_BYTES = 4 * 1024 * 1024
 
@@ -508,6 +509,7 @@ RECIPIENT_MISMATCH_CLASSES: frozenset[str] = frozenset(
         "non_string",
         "spacing_punctuation",
         "corporate_designator",
+        "sender_confusion",
         "core_name_overlap",
         "semantic",
     }
@@ -559,6 +561,10 @@ def _recipient_mismatch_class(value: Any) -> str:
     if actual_core and actual_core == expected_core:
         return "corporate_designator"
 
+    sender_core = _recipient_core(B66_F02_EXPECTED_SENDER)
+    if actual_core and sender_core and actual_core == sender_core:
+        return "sender_confusion"
+
     if (
         actual_core
         and expected_core
@@ -569,6 +575,14 @@ def _recipient_mismatch_class(value: Any) -> str:
     return "semantic"
 
 
+@dataclass(frozen=True)
+class B66F02Diagnostics:
+    """Bounded, payload-free diagnostics for one parsed F02 model answer."""
+
+    mismatches: tuple[str, ...]
+    recipient_diagnostic: str | None = None
+
+
 def _b66_f02_visual_mismatch(field: str, detail: str | None = None) -> ValueError:
     """Return a bounded diagnostic code; never include model content."""
 
@@ -576,8 +590,8 @@ def _b66_f02_visual_mismatch(field: str, detail: str | None = None) -> ValueErro
     return ValueError(f"b66_f02_visual_fact_mismatch_{field}{suffix}")
 
 
-def _validate_b66_f02_answer(content: str) -> None:
-    """Validate F02 visual facts without ever printing model content."""
+def _inspect_b66_f02_answer(content: str) -> B66F02Diagnostics:
+    """Inspect every F02 fact in one pass without emitting model content."""
 
     try:
         result = json.loads(content)
@@ -585,19 +599,63 @@ def _validate_b66_f02_answer(content: str) -> None:
         raise ValueError("b66_f02_answer_not_json") from exc
     if not isinstance(result, dict) or set(result) != set(B66_F02_EXPECTED_FACTS):
         raise ValueError("b66_f02_answer_shape")
-    for key in ("quote_number", "recipient", "first_item"):
-        value = result.get(key)
-        if not isinstance(value, str) or value.strip() != B66_F02_EXPECTED_FACTS[key]:
-            if key == "recipient":
-                raise _b66_f02_visual_mismatch(
-                    key,
-                    _recipient_mismatch_class(value),
-                )
-            raise _b66_f02_visual_mismatch(key)
-    if _compact_unsigned_number(result.get("first_quantity")) != B66_F02_EXPECTED_FACTS["first_quantity"]:
-        raise _b66_f02_visual_mismatch("first_quantity")
-    if _compact_unsigned_number(result.get("first_unit_price")) != B66_F02_EXPECTED_FACTS["first_unit_price"]:
-        raise _b66_f02_visual_mismatch("first_unit_price")
+
+    mismatches: list[str] = []
+    recipient_diagnostic: str | None = None
+
+    quote_number = result.get("quote_number")
+    if (
+        not isinstance(quote_number, str)
+        or quote_number.strip() != B66_F02_EXPECTED_FACTS["quote_number"]
+    ):
+        mismatches.append("quote_number")
+
+    recipient = result.get("recipient")
+    if (
+        not isinstance(recipient, str)
+        or recipient.strip() != B66_F02_EXPECTED_FACTS["recipient"]
+    ):
+        mismatches.append("recipient")
+        recipient_diagnostic = _recipient_mismatch_class(recipient)
+
+    first_item = result.get("first_item")
+    if (
+        not isinstance(first_item, str)
+        or first_item.strip() != B66_F02_EXPECTED_FACTS["first_item"]
+    ):
+        mismatches.append("first_item")
+
+    if (
+        _compact_unsigned_number(result.get("first_quantity"))
+        != B66_F02_EXPECTED_FACTS["first_quantity"]
+    ):
+        mismatches.append("first_quantity")
+
+    if (
+        _compact_unsigned_number(result.get("first_unit_price"))
+        != B66_F02_EXPECTED_FACTS["first_unit_price"]
+    ):
+        mismatches.append("first_unit_price")
+
+    return B66F02Diagnostics(
+        mismatches=tuple(mismatches),
+        recipient_diagnostic=recipient_diagnostic,
+    )
+
+
+def _validate_b66_f02_answer(content: str) -> None:
+    """Backward-compatible strict validator backed by full diagnostics."""
+
+    diagnostics = _inspect_b66_f02_answer(content)
+    if not diagnostics.mismatches:
+        return
+    first = diagnostics.mismatches[0]
+    detail = (
+        diagnostics.recipient_diagnostic
+        if first == "recipient"
+        else None
+    )
+    raise _b66_f02_visual_mismatch(first, detail)
 
 
 # --------------------------------------------------------------------------
@@ -621,6 +679,9 @@ SAFE_ENGINE_ERROR_CODES: frozenset[str] = frozenset(
         "api_error",
         "timeout_error",
         "upstream_error",
+        "upstream_timeout",
+        "upstream_server_error",
+        "upstream_rate_limited_busy",
         "no_safe_route",
         "provider_error",
         "unavailable",
@@ -937,9 +998,20 @@ def run(
     answer_content = choices[0]["message"]["content"].strip()
     if modality == MODALITY_IMAGE and image_case == IMAGE_CASE_B66_F02:
         try:
-            _validate_b66_f02_answer(answer_content)
+            diagnostics = _inspect_b66_f02_answer(answer_content)
         except ValueError as exc:
             _emit_result(cid, f"FAIL_{exc}")
+            _locks(provider_posts, network_retries)
+            return 1
+        if diagnostics.mismatches:
+            _emit_result(cid, "FAIL_b66_f02_visual_facts_mismatch")
+            print("B66_F02_VISUAL_FACTS=FAIL")
+            print("B66_F02_MISMATCH_FIELDS=" + ",".join(diagnostics.mismatches))
+            if diagnostics.recipient_diagnostic is not None:
+                print(
+                    "B66_F02_RECIPIENT_DIAGNOSTIC="
+                    + diagnostics.recipient_diagnostic
+                )
             _locks(provider_posts, network_retries)
             return 1
 

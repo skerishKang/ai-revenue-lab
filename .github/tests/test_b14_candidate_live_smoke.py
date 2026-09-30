@@ -664,6 +664,40 @@ def test_canonical_safe_error_code_is_projected() -> None:
     assert PRIVATE_SENTINEL not in output
 
 
+def test_b14_normalized_upstream_timeout_is_projected_without_message() -> None:
+    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+
+    def transport(method: str, path: str, body: dict | None):
+        if path == smoke.HEALTH_PATH:
+            return 200, _health(spec_obj)
+        if path == smoke.MODELS_PATH:
+            return 200, _models(spec_obj)
+        return 504, _json(
+            {
+                "error": {
+                    "code": "upstream_timeout",
+                    "message": PRIVATE_SENTINEL,
+                }
+            }
+        )
+
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        rc = smoke.run(
+            "space-bunny",
+            transport=transport,
+            modality="image",
+        )
+
+    output = stdout.getvalue()
+    assert rc == 1
+    assert "SPACE_BUNNY_PRODUCTION_SMOKE=FAIL_CHAT_HTTP_504" in output
+    assert "ENGINE_ERROR_CODE=upstream_timeout" in output
+    assert PRIVATE_SENTINEL not in output
+    assert "B14_CHAT_POST_COUNT=1" in output
+    assert "NETWORK_RETRY_COUNT=0" in output
+
+
 def test_unparseable_body_is_locally_classified() -> None:
     spec_obj = smoke.CANDIDATE_REGISTRY["agnes"]
 
@@ -688,6 +722,12 @@ def test_unparseable_body_is_locally_classified() -> None:
     [
         ({"error": {"code": SECRET_SENTINEL}}, "unknown"),
         ({"error": {"code": "rate_limit_error"}}, "rate_limit_error"),
+        ({"error": {"code": "upstream_timeout"}}, "upstream_timeout"),
+        ({"error": {"code": "upstream_server_error"}}, "upstream_server_error"),
+        (
+            {"error": {"code": "upstream_rate_limited_busy"}},
+            "upstream_rate_limited_busy",
+        ),
         ({"error": {"code": "totally_made_up"}}, "unknown"),
         ({"error": {"code": 42}}, "unknown"),
         ({"error": {"code": None}}, "unknown"),
@@ -707,6 +747,9 @@ def test_safe_error_code_projection_is_closed(payload: dict, expected: str) -> N
 def test_error_code_vocabulary_is_closed_and_bounded() -> None:
     assert "unknown" in smoke.SAFE_ENGINE_ERROR_CODES
     assert "unparseable" in smoke.SAFE_ENGINE_ERROR_CODES
+    assert "upstream_timeout" in smoke.SAFE_ENGINE_ERROR_CODES
+    assert "upstream_server_error" in smoke.SAFE_ENGINE_ERROR_CODES
+    assert "upstream_rate_limited_busy" in smoke.SAFE_ENGINE_ERROR_CODES
     for code in smoke.SAFE_ENGINE_ERROR_CODES:
         assert code == code.strip().lower()
         assert " " not in code
@@ -1154,6 +1197,8 @@ def test_compact_unsigned_number_grouping_is_bounded(value, expected) -> None:
         ("㈜ 샘플산업", "corporate_designator"),
         ("샘플산업", "corporate_designator"),
         ("샘플산업 주식회사", "corporate_designator"),
+        ("주식회사 테스트상사", "sender_confusion"),
+        ("(주) 테스트상사", "sender_confusion"),
         ("주식회사 샘플산업 귀중", "core_name_overlap"),
         ("샘플산업 본사", "core_name_overlap"),
         ("다른회사", "semantic"),
@@ -1171,6 +1216,7 @@ def test_recipient_mismatch_class_vocabulary_is_fixed() -> None:
         "non_string",
         "spacing_punctuation",
         "corporate_designator",
+        "sender_confusion",
         "core_name_overlap",
         "semantic",
     }
@@ -1206,23 +1252,31 @@ def test_b66_f02_wrong_visual_fact_fails_closed_without_raw_answer(
 
     assert rc == 1
     output = stdout.getvalue()
-    assert f"FAIL_{expected_code}" in output
+    assert "SPACE_BUNNY_PRODUCTION_SMOKE=FAIL_b66_f02_visual_facts_mismatch" in output
+    assert f"B66_F02_MISMATCH_FIELDS={field}" in output
+    if field == "recipient":
+        assert "B66_F02_RECIPIENT_DIAGNOSTIC=semantic" in output
+    else:
+        assert "B66_F02_RECIPIENT_DIAGNOSTIC=" not in output
     assert "B14_CHAT_POST_COUNT=1" in output
     assert answer not in output
     assert str(bad_value) not in output
+    with pytest.raises(ValueError, match=expected_code):
+        smoke._validate_b66_f02_answer(answer)
 
 
 @pytest.mark.parametrize(
-    "recipient,expected_code",
+    "recipient,expected_class",
     [
-        ("주식회사샘플산업", "b66_f02_visual_fact_mismatch_recipient_spacing_punctuation"),
-        ("(주) 샘플산업", "b66_f02_visual_fact_mismatch_recipient_corporate_designator"),
-        ("주식회사 샘플산업 귀중", "b66_f02_visual_fact_mismatch_recipient_core_name_overlap"),
-        (None, "b66_f02_visual_fact_mismatch_recipient_non_string"),
+        ("주식회사샘플산업", "spacing_punctuation"),
+        ("(주) 샘플산업", "corporate_designator"),
+        ("주식회사 테스트상사", "sender_confusion"),
+        ("주식회사 샘플산업 귀중", "core_name_overlap"),
+        (None, "non_string"),
     ],
 )
 def test_b66_f02_recipient_diagnostic_never_emits_raw_value(
-    recipient, expected_code: str,
+    recipient, expected_class: str,
 ) -> None:
     spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
     facts = dict(smoke.B66_F02_EXPECTED_FACTS)
@@ -1240,10 +1294,50 @@ def test_b66_f02_recipient_diagnostic_never_emits_raw_value(
 
     assert rc == 1
     output = stdout.getvalue()
-    assert f"FAIL_{expected_code}" in output
+    assert "SPACE_BUNNY_PRODUCTION_SMOKE=FAIL_b66_f02_visual_facts_mismatch" in output
+    assert "B66_F02_VISUAL_FACTS=FAIL" in output
+    assert "B66_F02_MISMATCH_FIELDS=recipient" in output
+    assert f"B66_F02_RECIPIENT_DIAGNOSTIC={expected_class}" in output
     assert answer not in output
     if isinstance(recipient, str):
         assert recipient not in output
+
+
+def test_b66_f02_batch_diagnostics_cover_all_facts_in_one_response() -> None:
+    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+    facts = dict(smoke.B66_F02_EXPECTED_FACTS)
+    facts.update(
+        {
+            "recipient": smoke.B66_F02_EXPECTED_SENDER,
+            "first_item": "다른품목",
+            "first_quantity": 99,
+            "first_unit_price": "123",
+        }
+    )
+    answer = json.dumps(facts, ensure_ascii=False)
+
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        rc = smoke.run(
+            "space-bunny",
+            transport=_s1_image_transport(spec_obj, [], answer=answer),
+            modality="image",
+            image_case=smoke.IMAGE_CASE_B66_F02,
+        )
+
+    assert rc == 1
+    output = stdout.getvalue()
+    assert "SPACE_BUNNY_PRODUCTION_SMOKE=FAIL_b66_f02_visual_facts_mismatch" in output
+    assert "B66_F02_VISUAL_FACTS=FAIL" in output
+    assert (
+        "B66_F02_MISMATCH_FIELDS="
+        "recipient,first_item,first_quantity,first_unit_price"
+    ) in output
+    assert "B66_F02_RECIPIENT_DIAGNOSTIC=sender_confusion" in output
+    assert "B14_CHAT_POST_COUNT=1" in output
+    assert answer not in output
+    assert smoke.B66_F02_EXPECTED_SENDER not in output
+    assert "다른품목" not in output
 
 
 def test_b66_f02_non_json_answer_fails_closed_without_raw_answer() -> None:
