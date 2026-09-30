@@ -1135,3 +1135,27 @@
   .claw-automation-create .calendar-record-actions { flex-direction: column; }
   .claw-automation-create .calendar-record-actions button { width: 100%; }
 }
+
+/* #3262 — owner-gated enable/disable control on canonical rule rows */
+.claw-automation-rule-toggle {
+  min-height: 44px;
+  min-width: 44px;
+  margin-top: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--border, rgba(15, 23, 42, 0.18));
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.claw-automation-rule-toggle[disabled] {
+  cursor: default;
+}
+.claw-automation-rule-toggle:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+@media (max-width: 920px) {
+  .claw-automation-rule-toggle { width: 100%; }
+}

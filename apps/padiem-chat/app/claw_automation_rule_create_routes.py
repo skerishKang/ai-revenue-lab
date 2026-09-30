@@ -71,6 +71,9 @@ from .claw_automation_execution_target import (
     compose_canonical_automation_execution_intent,
     resolve_automation_execution_revision,
 )
+from .claw_automation_mutation_authority import (
+    resolve_automation_owner_mutation_context,
+)
 from .claw_automation_rules_routes import (
     _NO_STORE_HEADERS,
     _error,
@@ -191,64 +194,32 @@ async def _read_bounded_json(request: Request) -> tuple[dict[str, Any] | None, J
 def _require_owner_membership(
     membership: Any, *, tenant_id: str, canonical_subject_id: str
 ) -> bool:
-    """Exactly this tenant+subject, ACTIVE, and role == OWNER."""
+    """Delegated to the shared OWNER mutation authority (#3262)."""
 
-    return (
-        isinstance(membership, TenantMembership)
-        and membership.tenant_id == tenant_id
-        and membership.canonical_subject_id == canonical_subject_id
-        and membership.state is TenantMembershipState.ACTIVE
-        and membership.role is TenantMembershipRole.OWNER
+    from .claw_automation_mutation_authority import require_owner_membership
+
+    return require_owner_membership(
+        membership, tenant_id=tenant_id, canonical_subject_id=canonical_subject_id
     )
 
 
 async def claw_automation_rule_create(request: Request) -> JSONResponse:
-    uid = _require_owner(request)
-    if uid is None:
-        return _error(401, "unauthorized", "인증이 필요합니다.")
-
-    bridged = await _current_b54_session(request)
-    if bridged is None:
-        # Signed in but no current active B54 session (or a non-B54 product):
-        # fail closed without disclosing which case it was.
-        return _error(
-            403,
-            "current_b54_session_unavailable",
-            "자동화 생성을 위한 세션을 확인할 수 없습니다.",
-        )
-    auth_session = bridged.auth_session
-    tenant_id = auth_session.tenant_id
-    canonical_subject_id = auth_session.subject.subject_id
-    if not isinstance(tenant_id, str) or not tenant_id or not canonical_subject_id:
-        return _error(
-            403,
-            "current_b54_session_unavailable",
-            "자동화 생성을 위한 세션을 확인할 수 없습니다.",
-        )
+    # #3262: Create and Toggle share ONE owner mutation authority
+    # (``resolve_automation_owner_mutation_context``); only the denial copy is
+    # action-specific here.
+    context, authority_error = await resolve_automation_owner_mutation_context(
+        request, denied_message="자동화 생성은 워크스페이스 소유자만 할 수 있습니다."
+    )
+    if authority_error is not None:
+        return authority_error
+    assert context is not None  # narrowed by the guard above
+    tenant_id = context.tenant_id
+    canonical_subject_id = context.canonical_subject_id
+    auth_session = context.auth_session
 
     body, body_error = await _read_bounded_json(request)
     if body_error is not None:
         return body_error
-
-    authority = getattr(request.app.state, "control_plane_identity_authority", None)
-    if authority is None or not callable(
-        getattr(authority, "resolve_active_tenant_membership", None)
-    ):
-        return _error(
-            503, "canonical_membership_unavailable", "워크스페이스 권한을 확인할 수 없습니다."
-        )
-    try:
-        membership = await authority.resolve_active_tenant_membership(
-            tenant_id=tenant_id,
-            canonical_subject_id=canonical_subject_id,
-            now=_server_utc(),
-        )
-    except Exception:
-        return _error(403, "owner_role_required", "자동화 생성은 워크스페이스 소유자만 할 수 있습니다.")
-    if not _require_owner_membership(
-        membership, tenant_id=tenant_id, canonical_subject_id=canonical_subject_id
-    ):
-        return _error(403, "owner_role_required", "자동화 생성은 워크스페이스 소유자만 할 수 있습니다.")
 
     target_authority = getattr(
         request.app.state, "claw_automation_execution_target_authority", None
