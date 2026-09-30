@@ -181,10 +181,12 @@ def test_exactly_one_explicit_dispatch_path_starts_the_wait() -> None:
 
 def test_wait_timer_lifecycle_is_closed() -> None:
     app = _app_source()
-    # Definition plus exactly five teardown call sites: dispatch, success/failure
-    # finally, home reset, auth loss, inbox navigation.
+    # Definition plus exactly six teardown call sites: dispatch, success/failure
+    # finally, home reset, auth loss, inbox navigation, and #3237 automation
+    # navigation. Every Claw view switch must drop the timer so a late
+    # completion can never resurrect a cleared wait.
     assert app.count("function clearClawWait()") == 1
-    assert app.count("clearClawWait();") == 5
+    assert app.count("clearClawWait();") == 6
     finally_block = app[app.index("    } finally {\n      // The owning request always tears its wait timer down"):]
     finally_block = finally_block[: finally_block.index("setClawButtonsBusy(false);")]
     assert "clearClawWait();" in finally_block
@@ -197,6 +199,11 @@ def test_wait_timer_lifecycle_is_closed() -> None:
     inbox = app[app.index("function openClawInbox(kind)"):]
     inbox = inbox[: inbox.index("function openClawWorkspace(")]
     assert "clearClawWait();" in inbox
+    # #3237: the read-only automation view is a Claw view too, so leaving it
+    # must also tear the wait timer down.
+    automation = app[app.index("function openClawAutomation()"):]
+    automation = automation[: automation.index("if (automationNavButton)")]
+    assert "clearClawWait();" in automation
     # Teardown only ever stops: it cannot start a timer, so a late completion
     # cannot resurrect a cleared wait.
     teardown = app[app.index("function clearClawWait()"):]
