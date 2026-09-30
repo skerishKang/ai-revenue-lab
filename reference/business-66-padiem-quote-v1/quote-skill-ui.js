@@ -491,7 +491,7 @@
       setStep(1);
       clear(root.wizardBody);
       var body = root.wizardBody;
-      body.appendChild(h(doc, "p", { text: "기존에 사용하던 견적서 파일을 선택하세요. 원본 바이트는 저장하지 않습니다." }, []));
+      body.appendChild(h(doc, "p", { text: "기존에 사용하던 견적서 파일을 선택하세요. 이미지는 분석을 위해 서버로 일시 전송되며 원본 바이트는 저장하지 않습니다." }, []));
       if (ui.fileMeta) {
         body.appendChild(dl(doc, [
           ["파일명", ui.fileMeta.name],
