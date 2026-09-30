@@ -56,6 +56,21 @@ _GOOGLE_OAUTH_INVALID = "connector_workspace_truth_invalid"
 _NO_CANONICAL_WORKSPACE = "canonical_connector_workspace_not_resolved"
 _INVALID_SESSION = "canonical_connector_session_invalid"
 
+# Identity failures cross this private composition boundary only after being
+# reclassified into provenance-tagged internal codes. This prevents a Google
+# OAuth/provider error that happens to reuse the same upstream code string from
+# being mistaken for an identity-authority failure by the public projection.
+_IDENTITY_ERROR_TO_COMPOSITION_CODE = {
+    "canonical_auth_session_not_found": "identity_workspace_session_not_found",
+    "inactive_auth_session": "identity_workspace_session_inactive",
+    "connector_context_session_mismatch": "identity_workspace_session_mismatch",
+    "invalid_identity_authority": "identity_workspace_session_reference_invalid",
+    "control_plane_identity_unavailable": "identity_workspace_service_unavailable",
+    "control_plane_rpc_invalid": "identity_workspace_rpc_invalid",
+    "identity_authority_storage_error": "identity_workspace_storage_unavailable",
+    "connector_context_storage_error": "identity_workspace_context_storage_unavailable",
+}
+
 _UNAVAILABLE_MESSAGE = "Connector workspace truth is unavailable."
 _INVALID_MESSAGE = "Connector workspace truth returned invalid data."
 
@@ -83,6 +98,16 @@ def _as_dict(value: Any) -> dict[str, Any] | None:
 
 def _unavailable(code: str = _GOOGLE_OAUTH_UNAVAILABLE) -> IdentityBridgeError:
     return IdentityBridgeError(503, code, _UNAVAILABLE_MESSAGE)
+
+
+def _identity_failure(exc: IdentityBridgeError) -> IdentityBridgeError:
+    return IdentityBridgeError(
+        exc.status_code,
+        _IDENTITY_ERROR_TO_COMPOSITION_CODE.get(
+            exc.code, _GOOGLE_OAUTH_UNAVAILABLE
+        ),
+        _UNAVAILABLE_MESSAGE,
+    )
 
 
 def _invalid() -> IdentityBridgeError:
@@ -261,8 +286,8 @@ async def compose_workspace_connector_truth(
         raise _unavailable()
     try:
         workspace_ref = await _maybe_await(resolver(session_id=session_id))
-    except IdentityBridgeError:
-        raise
+    except IdentityBridgeError as exc:
+        raise _identity_failure(exc) from exc
     except Exception as exc:  # noqa: BLE001 - never leak a driver error
         raise _unavailable() from exc
 

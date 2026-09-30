@@ -93,8 +93,31 @@ WORKSPACE_REASON_NO_TRUSTED_AUTHORITY = "no_trusted_b62_workspace_state_projecti
 WORKSPACE_REASON_IDENTITY_NOT_LINKED = "canonical_identity_not_linked"
 WORKSPACE_REASON_NO_CANONICAL_WORKSPACE = "canonical_connector_workspace_not_resolved"
 WORKSPACE_REASON_TRUTH_UNAVAILABLE = "canonical_workspace_truth_unavailable"
+WORKSPACE_REASON_SESSION_NOT_FOUND = "canonical_workspace_session_not_found"
+WORKSPACE_REASON_SESSION_INACTIVE = "canonical_workspace_session_inactive"
+WORKSPACE_REASON_SESSION_MISMATCH = "canonical_workspace_session_mismatch"
+WORKSPACE_REASON_SESSION_REFERENCE_INVALID = "canonical_workspace_session_reference_invalid"
+WORKSPACE_REASON_IDENTITY_SERVICE_UNAVAILABLE = "canonical_identity_service_unavailable"
+WORKSPACE_REASON_IDENTITY_RPC_INVALID = "canonical_identity_rpc_invalid"
+WORKSPACE_REASON_IDENTITY_STORAGE_UNAVAILABLE = "canonical_identity_storage_unavailable"
+WORKSPACE_REASON_CONNECTOR_CONTEXT_STORAGE_UNAVAILABLE = "canonical_connector_context_storage_unavailable"
 WORKSPACE_REASON_CONNECTOR_NOT_REPORTED = "canonical_workspace_connector_not_reported"
 WORKSPACE_REASON_AMBIGUOUS = "canonical_workspace_connector_ambiguous"
+
+# Reviewed Control Plane identity failures that are safe to project as a bounded
+# classification. The public API never echoes the upstream code/message and
+# never projects any session/workspace/reference value. Unknown errors, and all
+# Google OAuth/provider failures, remain the existing generic unavailable reason.
+_IDENTITY_ERROR_TO_WORKSPACE_REASON = {
+    "identity_workspace_session_not_found": WORKSPACE_REASON_SESSION_NOT_FOUND,
+    "identity_workspace_session_inactive": WORKSPACE_REASON_SESSION_INACTIVE,
+    "identity_workspace_session_mismatch": WORKSPACE_REASON_SESSION_MISMATCH,
+    "identity_workspace_session_reference_invalid": WORKSPACE_REASON_SESSION_REFERENCE_INVALID,
+    "identity_workspace_service_unavailable": WORKSPACE_REASON_IDENTITY_SERVICE_UNAVAILABLE,
+    "identity_workspace_rpc_invalid": WORKSPACE_REASON_IDENTITY_RPC_INVALID,
+    "identity_workspace_storage_unavailable": WORKSPACE_REASON_IDENTITY_STORAGE_UNAVAILABLE,
+    "identity_workspace_context_storage_unavailable": WORKSPACE_REASON_CONNECTOR_CONTEXT_STORAGE_UNAVAILABLE,
+}
 
 # Explicit closed mapping. Reviewed B-1B internal connector id ->
 # (projection row name, public canonical connector id). This is a table, never a
@@ -351,8 +374,14 @@ async def _reviewed_workspace_truth(
             google_oauth_authority=google_oauth_authority,
             session_id=session_id,
         )
-    except IdentityBridgeError:
-        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False
+    except IdentityBridgeError as exc:
+        return (
+            {},
+            _IDENTITY_ERROR_TO_WORKSPACE_REASON.get(
+                exc.code, WORKSPACE_REASON_TRUTH_UNAVAILABLE
+            ),
+            False,
+        )
     except Exception:  # noqa: BLE001 - never leak a driver error into a state
         return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False
 

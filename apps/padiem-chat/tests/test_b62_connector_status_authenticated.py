@@ -35,9 +35,17 @@ from app.config import Settings
 from app.connector_status_projection import (
     PROJECTION_VERSION,
     WORKSPACE_REASON_AMBIGUOUS,
+    WORKSPACE_REASON_CONNECTOR_CONTEXT_STORAGE_UNAVAILABLE,
     WORKSPACE_REASON_IDENTITY_NOT_LINKED,
+    WORKSPACE_REASON_IDENTITY_RPC_INVALID,
+    WORKSPACE_REASON_IDENTITY_SERVICE_UNAVAILABLE,
+    WORKSPACE_REASON_IDENTITY_STORAGE_UNAVAILABLE,
     WORKSPACE_REASON_NO_CANONICAL_WORKSPACE,
     WORKSPACE_REASON_NO_TRUSTED_AUTHORITY,
+    WORKSPACE_REASON_SESSION_INACTIVE,
+    WORKSPACE_REASON_SESSION_MISMATCH,
+    WORKSPACE_REASON_SESSION_NOT_FOUND,
+    WORKSPACE_REASON_SESSION_REFERENCE_INVALID,
     WORKSPACE_REASON_TRUTH_UNAVAILABLE,
     WORKSPACE_STATE_AMBIGUOUS,
     WORKSPACE_STATE_CONNECTED,
@@ -144,6 +152,19 @@ class _IdentityBinding:
             "ok": True,
             "workspace": {"present": True, "workspace_ref": self.workspace_ref},
         }
+
+
+class _IdentityErrorBinding:
+    """Identity binding that returns one reviewed safe error envelope."""
+
+    def __init__(self, code: str, message: str = "internal detail") -> None:
+        self.code = code
+        self.message = message
+        self.calls: list[dict[str, Any]] = []
+
+    async def resolve_connector_workspace(self, payload: dict[str, Any]) -> dict[str, Any]:
+        self.calls.append(dict(payload))
+        return {"ok": False, "error": {"code": self.code, "message": self.message}}
 
 
 class _OAuthBinding:
@@ -496,6 +517,89 @@ async def test_13_malformed_private_composition_fails_closed():
         assert row["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
         assert row["workspace_reason"] == WORKSPACE_REASON_TRUTH_UNAVAILABLE
     assert "internal detail" not in response.text
+
+
+@pytest.mark.parametrize(
+    ("upstream_code", "expected_reason"),
+    [
+        ("canonical_auth_session_not_found", WORKSPACE_REASON_SESSION_NOT_FOUND),
+        ("inactive_auth_session", WORKSPACE_REASON_SESSION_INACTIVE),
+        ("connector_context_session_mismatch", WORKSPACE_REASON_SESSION_MISMATCH),
+        ("invalid_identity_authority", WORKSPACE_REASON_SESSION_REFERENCE_INVALID),
+        ("control_plane_identity_unavailable", WORKSPACE_REASON_IDENTITY_SERVICE_UNAVAILABLE),
+        ("control_plane_rpc_invalid", WORKSPACE_REASON_IDENTITY_RPC_INVALID),
+        ("identity_authority_storage_error", WORKSPACE_REASON_IDENTITY_STORAGE_UNAVAILABLE),
+        (
+            "connector_context_storage_error",
+            WORKSPACE_REASON_CONNECTOR_CONTEXT_STORAGE_UNAVAILABLE,
+        ),
+    ],
+)
+async def test_13a_reviewed_identity_failure_is_bounded_without_message_leak(
+    upstream_code, expected_reason
+):
+    settings, app = _app(
+        identity_binding=_IdentityErrorBinding(upstream_code),
+        oauth_binding=_OAuthBinding(),
+        shadow_store=_ShadowStore(),
+    )
+    async with _client(settings, app) as client:
+        response = await client.get(STATUS_PATH)
+
+    assert response.status_code == 200
+    document = response.json()
+    assert document["workspace_state_authority"] is False
+    for connector_id in (GMAIL_ID, DRIVE_ID):
+        row = _rows(document)[connector_id]
+        assert row["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
+        assert row["workspace_reason"] == expected_reason
+        assert row["workspace_state"] != WORKSPACE_STATE_NOT_CONNECTED
+
+    assert upstream_code not in response.text
+    assert "internal detail" not in response.text
+    _assert_no_leak(document)
+
+
+async def test_13aa_unknown_identity_error_stays_generic():
+    settings, app = _app(
+        identity_binding=_IdentityErrorBinding("future_unreviewed_identity_error"),
+        oauth_binding=_OAuthBinding(),
+        shadow_store=_ShadowStore(),
+    )
+    async with _client(settings, app) as client:
+        response = await client.get(STATUS_PATH)
+
+    document = response.json()
+    for connector_id in (GMAIL_ID, DRIVE_ID):
+        row = _rows(document)[connector_id]
+        assert row["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
+        assert row["workspace_reason"] == WORKSPACE_REASON_TRUTH_UNAVAILABLE
+    assert "future_unreviewed_identity_error" not in response.text
+
+
+@pytest.mark.parametrize(
+    "provider_code",
+    [
+        "canonical_auth_session_not_found",
+        "inactive_auth_session",
+        "connector_context_storage_error",
+        "control_plane_rpc_invalid",
+    ],
+)
+async def test_13ab_oauth_code_collision_stays_generic(provider_code):
+    settings, app, *_ = _wired(
+        error={"code": provider_code, "message": "provider internal detail"}
+    )
+    async with _client(settings, app) as client:
+        response = await client.get(STATUS_PATH)
+
+    document = response.json()
+    for connector_id in (GMAIL_ID, DRIVE_ID):
+        row = _rows(document)[connector_id]
+        assert row["workspace_state"] == WORKSPACE_STATE_UNVERIFIED
+        assert row["workspace_reason"] == WORKSPACE_REASON_TRUTH_UNAVAILABLE
+    assert provider_code not in response.text
+    assert "provider internal detail" not in response.text
 
 
 async def test_13b_shadow_store_fault_fails_closed():
