@@ -48,9 +48,12 @@ from app.claw_automation_rules_routes import (
     RULE_ENABLE_DISABLE,
     RULE_UPDATE,
     RUN_NOW,
+    WEB_RULE_AUTHORITY_CANONICAL,
+    WEB_RULE_AUTHORITY_LEGACY_QUARANTINED,
     WEB_RULE_KEYS,
     AutomationRuleProjectionError,
     project_web_rule_row,
+    web_rule_authority,
 )
 from app.config import Settings
 from app.control_plane_identity import PADIEM_CHAT_PRODUCT_ID
@@ -66,8 +69,13 @@ LIST_PATH = "/api/claw/automation/rules"
 
 SIGNED_IN_USER_ID = "usr_" + "7" * 32
 OTHER_USER_ID = "usr_" + "f" * 32
-TENANT_ID = "tenant_test"
-OTHER_TENANT_ID = "tenant_other"
+# #3043 classifies against canonical id shapes: a tenant must be
+# ``tenant_<32 hex>`` and a canonical subject ``sub_<32 hex>``. A non-canonical
+# workspace is itself a legacy class, so a canonical rule can only be built on a
+# canonical tenant.
+TENANT_ID = "tenant_" + "a" * 32
+OTHER_TENANT_ID = "tenant_" + "b" * 32
+CANONICAL_SUBJECT_ID = "sub_" + "c" * 32
 
 
 def _settings(**overrides) -> Settings:
@@ -125,7 +133,13 @@ def _authority(snapshot=None) -> MagicMock:
     return authority
 
 
-def _rule(workspace_id: str, rule_id: str, name: str) -> ClawAutomationRule:
+def _rule(
+    workspace_id: str,
+    rule_id: str,
+    name: str,
+    *,
+    canonical_subject_id: str | None = CANONICAL_SUBJECT_ID,
+) -> ClawAutomationRule:
     return ClawAutomationRule(
         rule_id=rule_id,
         workspace_id=workspace_id,
@@ -140,6 +154,7 @@ def _rule(workspace_id: str, rule_id: str, name: str) -> ClawAutomationRule:
             ClawNotificationPreference(channel=ClawNotificationChannel.WEB_ALERT_INBOX),
         ),
         owner_ref="opaque_delivery_owner_abc",
+        canonical_subject_id=canonical_subject_id,
         execution_intent=ClawAutomationExecutionIntent(
             task="Summarize overnight inbox",
             repository_ref="https://example.test/private/repo",
@@ -396,6 +411,72 @@ def test_empty_catalogue_is_an_empty_list_not_an_error() -> None:
     assert body["ok"] is True
     assert body["rules"] == []
     assert body["truncated"] is False
+
+
+# --- #3043 legacy authority classification ----------------------------------
+
+
+def test_canonical_rule_is_reported_background_eligible() -> None:
+    row = project_web_rule_row(_rule(TENANT_ID, "rule_1", "아침 메모"))
+    assert row["authority_status"] == WEB_RULE_AUTHORITY_CANONICAL
+    assert row["background_eligible"] is True
+
+
+def test_legacy_rule_without_canonical_subject_is_quarantined() -> None:
+    """#3043 LEGACY_MISSING_SUBJECT: not eligible for background execution."""
+
+    legacy = _rule(TENANT_ID, "rule_legacy", "옛날 메모", canonical_subject_id=None)
+    status, eligible = web_rule_authority(legacy)
+    assert status == WEB_RULE_AUTHORITY_LEGACY_QUARANTINED
+    assert eligible is False
+    row = project_web_rule_row(legacy)
+    assert row["authority_status"] == WEB_RULE_AUTHORITY_LEGACY_QUARANTINED
+    assert row["background_eligible"] is False
+
+
+def test_legacy_noncanonical_workspace_is_quarantined() -> None:
+    legacy = _rule("ws_legacy", "rule_ws", "옛 워크스페이스", canonical_subject_id=None)
+    row = project_web_rule_row(legacy)
+    assert row["authority_status"] == WEB_RULE_AUTHORITY_LEGACY_QUARANTINED
+    assert row["background_eligible"] is False
+
+
+def test_same_tenant_legacy_row_is_disclosed_but_flagged_not_hidden() -> None:
+    """A legacy row in the caller's own tenant is returned, but never as live."""
+
+    store = _RecordingRuleStore(
+        {
+            TENANT_ID: [
+                _rule(TENANT_ID, "rule_canonical", "현재 규칙"),
+                _rule(TENANT_ID, "rule_legacy", "과거 규칙", canonical_subject_id=None),
+            ]
+        }
+    )
+    body = _client(store).get(LIST_PATH).json()
+    by_id = {r["rule_id"]: r for r in body["rules"]}
+    assert by_id["rule_canonical"]["authority_status"] == "canonical"
+    assert by_id["rule_canonical"]["background_eligible"] is True
+    assert by_id["rule_legacy"]["authority_status"] == "legacy_quarantined"
+    assert by_id["rule_legacy"]["background_eligible"] is False
+    # The classification exposes no subject identifier.
+    serialized = str(body)
+    assert "canonical_subject_id" not in serialized
+    assert CANONICAL_SUBJECT_ID not in serialized
+
+
+def test_legacy_classification_does_not_break_other_projection_fields() -> None:
+    legacy = _rule(TENANT_ID, "rule_legacy", "과거 규칙", canonical_subject_id=None)
+    row = project_web_rule_row(legacy)
+    assert set(row) == set(WEB_RULE_KEYS)
+    assert row["name"] == "과거 규칙"
+    assert row["enabled"] is True
+
+
+def test_authority_status_only_advertises_the_two_documented_values() -> None:
+    assert {WEB_RULE_AUTHORITY_CANONICAL, WEB_RULE_AUTHORITY_LEGACY_QUARANTINED} == {
+        "canonical",
+        "legacy_quarantined",
+    }
 
 
 def test_projection_refuses_non_rule_values() -> None:

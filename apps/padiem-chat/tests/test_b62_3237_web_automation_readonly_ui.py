@@ -47,6 +47,35 @@ def test_sidebar_entry_and_section_exist() -> None:
     assert 'aria-live="polite"' in html
 
 
+def test_scheduler_live_disclaimer_is_present_and_persistent() -> None:
+    """#2833 is HOLD for Production scheduler: 'On' must not imply it is live."""
+
+    html = INDEX_HTML.read_text(encoding="utf-8")
+    assert 'id="clawAutomationSchedulerNote"' in html
+    assert 'data-locale-key="claw-automation-scheduler-note"' in html
+    # It is static content, not something a failed load can remove.
+    assert 'id="clawAutomationLoading"' in html
+    locale = LOCALE_JS.read_text(encoding="utf-8")
+    # Both languages carry the disclaimer and the two vocabulary keys.
+    assert locale.count('"claw-automation-scheduler-note"') == 2
+    assert locale.count('"automation-rule-setting"') == 2
+    assert locale.count('"automation-rule-quarantined"') == 2
+    # The bare on/off keys are gone: the setting is always labelled.
+    assert '"automation-rule-enabled"' not in locale
+    assert '"automation-rule-disabled"' not in locale
+
+
+def test_quarantined_legacy_rule_is_rendered_as_not_runnable() -> None:
+    source = APP_JS.read_text(encoding="utf-8")
+    block = source.split("--- #3237 read-only automation rule catalogue")[1]
+    block = block.split("if (clawAutomationRetry)")[0]
+    # A legacy row is marked, not silently rendered like a live rule.
+    assert 'rule.background_eligible !== true' in block
+    assert 'rule.authority_status !== "canonical"' in block
+    assert 'row.dataset.ruleAuthority = "legacy_quarantined";' in block
+    assert 'notice.dataset.localeKey = "automation-rule-quarantined";' in block
+
+
 def test_ui_reads_only_the_read_only_endpoint() -> None:
     source = APP_JS.read_text(encoding="utf-8")
     assert f'fetch("{RULES_PATH}"' in source
@@ -95,8 +124,11 @@ def test_locale_keys_exist_in_both_languages() -> None:
         "claw-automation-loading",
         "claw-automation-error",
         "claw-automation-empty",
-        "automation-rule-enabled",
-        "automation-rule-disabled",
+        "claw-automation-scheduler-note",
+        "automation-rule-setting",
+        "automation-rule-on",
+        "automation-rule-off",
+        "automation-rule-quarantined",
     ):
         assert f'"{key}"' in locale, key
     # Korean and English tables each define the Automation copy.
@@ -286,6 +318,22 @@ function clickAutomationNav() {
       for (const rule of FIXTURE.rules) {
         if (!text.includes(rule.name)) fail("RULE_NAME_MISSING:" + rule.name);
       }
+      // #2833 truthfulness: the setting is always labelled, never a bare
+      // "On"/"Off" that could read as "automatic execution is live".
+      if (text.indexOf("automation-rule-setting") < 0) fail("SETTING_LABEL_MISSING");
+      for (const rule of FIXTURE.rules) {
+        const row = byId.clawAutomationList.children.find((r) => r.dataset.ruleId === rule.rule_id);
+        const rowText = collectText(row);
+        const expectedKey = rule.enabled ? "automation-rule-on" : "automation-rule-off";
+        if (rowText.indexOf(expectedKey) < 0) fail("RULE_SETTING_VALUE_MISSING:" + rule.rule_id);
+        // Legacy rows must be visibly quarantined.
+        if (rule.background_eligible !== true || rule.authority_status !== "canonical") {
+          if (row.dataset.ruleAuthority !== "legacy_quarantined") fail("LEGACY_NOT_MARKED:" + rule.rule_id);
+          if (rowText.indexOf("automation-rule-quarantined") < 0) fail("LEGACY_NOTICE_MISSING:" + rule.rule_id);
+        } else if (row.dataset.ruleAuthority === "legacy_quarantined") {
+          fail("CANONICAL_MARKED_LEGACY:" + rule.rule_id);
+        }
+      }
       // A row must be a non-interactive container: no BUTTON inside.
       for (const row of byId.clawAutomationList.children) {
         if (row.tagName === "BUTTON") fail("ROW_IS_A_BUTTON");
@@ -360,6 +408,8 @@ _RULES = [
         "rule_id": "rule_morning",
         "name": "아침 메모 정리",
         "enabled": True,
+        "authority_status": "canonical",
+        "background_eligible": True,
         "schedule_kind": "daypart",
         "schedule_expression": "morning",
         "schedule_timezone": "Asia/Seoul",
@@ -371,11 +421,31 @@ _RULES = [
         "rule_id": "rule_evening",
         "name": "저녁 보고",
         "enabled": False,
+        "authority_status": "canonical",
+        "background_eligible": True,
         "schedule_kind": "daypart",
         "schedule_expression": "evening",
         "schedule_timezone": "UTC",
         "target_source": "inbox",
         "output_type": "report",
+        "notification_channels": ["web_alert_inbox"],
+    },
+]
+
+# #3043: a same-tenant legacy row must be visibly quarantined, never presented
+# as eligible for background execution.
+_LEGACY_RULES = _RULES + [
+    {
+        "rule_id": "rule_legacy",
+        "name": "과거 메모 규칙",
+        "enabled": True,
+        "authority_status": "legacy_quarantined",
+        "background_eligible": False,
+        "schedule_kind": "daypart",
+        "schedule_expression": "morning",
+        "schedule_timezone": "Asia/Seoul",
+        "target_source": "memory",
+        "output_type": "alert",
         "notification_channels": ["web_alert_inbox"],
     },
 ]
@@ -396,3 +466,10 @@ def test_error_state_then_explicit_retry() -> None:
 
 def test_signed_out_entry_stays_disabled() -> None:
     _run("signed_out", auth=_SIGNED_OUT, rules=_RULES)
+
+
+def test_same_tenant_legacy_rule_is_rendered_as_quarantined() -> None:
+    """#3043: a legacy row must be visibly marked as not background-eligible."""
+
+    payload = _run("legacy_mixed", auth=_SIGNED_IN, rules=_LEGACY_RULES)
+    assert payload["rows"] == 3

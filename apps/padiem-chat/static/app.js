@@ -2160,13 +2160,26 @@
       title.textContent = rule.name;
       const meta = document.createElement("small");
       const schedule = `${rule.schedule_expression} (${rule.schedule_timezone})`;
+      // "Rule setting" wording, never a bare on/off that could be read as
+      // "automatic execution is live" — #2833 is still HOLD for Production
+      // scheduler activation.
       meta.textContent = [
-        rule.enabled ? uiT("automation-rule-enabled") : uiT("automation-rule-disabled"),
+        `${uiT("automation-rule-setting")}: ${rule.enabled ? uiT("automation-rule-on") : uiT("automation-rule-off")}`,
         schedule,
         rule.target_source,
         rule.output_type,
       ].join(" · ");
       row.append(title, meta);
+      // #3043: a legacy rule is quarantined — it can never run in the
+      // background — so the row must say so rather than look like a live rule.
+      if (rule.background_eligible !== true || rule.authority_status !== "canonical") {
+        row.dataset.ruleAuthority = "legacy_quarantined";
+        const notice = document.createElement("small");
+        notice.className = "claw-automation-quarantine";
+        notice.dataset.localeKey = "automation-rule-quarantined";
+        notice.textContent = uiT("automation-rule-quarantined");
+        row.appendChild(notice);
+      }
       clawAutomationList.appendChild(row);
     });
   }

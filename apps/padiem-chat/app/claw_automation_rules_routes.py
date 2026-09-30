@@ -37,8 +37,16 @@ impossible rather than filtered after the fact.
 Projection
 ----------
 Deliberately smaller than the stored rule. Display and status only:
-``rule_id``, ``name``, ``enabled``, schedule kind/expression/timezone, target
-source, output type and notification channels.
+``rule_id``, ``name``, ``enabled``, the #3043 ``authority_status`` /
+``background_eligible`` pair, schedule kind/expression/timezone, target source,
+output type and notification channels.
+
+A rule that the canonical authority does not classify as background-eligible
+(a legacy row with no canonical subject, or one bound to a non-canonical
+workspace) is projected as ``legacy_quarantined`` with
+``background_eligible=false`` so the browser can say so plainly. The
+classification is reused from ``classify_rule_background_authority``; the
+identifiers behind the decision are never projected.
 
 Never projected: ``workspace_id`` (tenant identity), ``owner_ref`` (opaque
 delivery provenance), ``canonical_subject_id`` (authority provenance) and
@@ -58,7 +66,11 @@ from typing import Any, Mapping
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-from kagent.claw_automation import ClawAutomationRule
+from kagent.claw_automation import (
+    ClawAutomationRule,
+    ClawAutomationRuleAuthority,
+    classify_rule_background_authority,
+)
 
 # The read-only surface of this slice. Kept as constants so no code path can
 # drift into claiming a write, schedule or execution capability.
@@ -90,6 +102,8 @@ WEB_RULE_KEYS = frozenset({
     "rule_id",
     "name",
     "enabled",
+    "authority_status",
+    "background_eligible",
     "schedule_kind",
     "schedule_expression",
     "schedule_timezone",
@@ -97,6 +111,29 @@ WEB_RULE_KEYS = frozenset({
     "output_type",
     "notification_channels",
 })
+
+# #3043: only a rule the existing canonical authority classifies as
+# CANONICAL_BACKGROUND_ELIGIBLE may run in the background. Both legacy classes
+# (a missing canonical subject, or a non-canonical workspace) are quarantined.
+# The classifier itself is the B54 authority — this slice reuses it and does not
+# re-derive the rule.
+WEB_RULE_AUTHORITY_CANONICAL = "canonical"
+WEB_RULE_AUTHORITY_LEGACY_QUARANTINED = "legacy_quarantined"
+
+_WEB_AUTHORITY_BY_RULE_AUTHORITY = {
+    ClawAutomationRuleAuthority.CANONICAL_BACKGROUND_ELIGIBLE: (
+        WEB_RULE_AUTHORITY_CANONICAL,
+        True,
+    ),
+    ClawAutomationRuleAuthority.LEGACY_MISSING_SUBJECT: (
+        WEB_RULE_AUTHORITY_LEGACY_QUARANTINED,
+        False,
+    ),
+    ClawAutomationRuleAuthority.LEGACY_NONCANONICAL_WORKSPACE: (
+        WEB_RULE_AUTHORITY_LEGACY_QUARANTINED,
+        False,
+    ),
+}
 
 
 class AutomationRuleProjectionError(Exception):
@@ -160,17 +197,41 @@ def _bounded_enum(value: Any, enum_cls) -> str:
         raise AutomationRuleProjectionError("enum value out of bounds") from exc
 
 
+def web_rule_authority(rule: ClawAutomationRule) -> tuple[str, bool]:
+    """Map the existing #3043 authority classification to a safe Web status.
+
+    Returns ``(authority_status, background_eligible)``. Only the enum VALUE's
+    coarse bucket is exposed — the canonical subject id and workspace id behind
+    the decision are never returned, so the browser can say "quarantined"
+    without learning which subject or workspace the rule belonged to.
+    """
+
+    if not isinstance(rule, ClawAutomationRule):
+        raise AutomationRuleProjectionError("rule must be a ClawAutomationRule")
+    try:
+        authority = classify_rule_background_authority(rule)
+    except Exception as exc:  # pragma: no cover - classifier is total
+        raise AutomationRuleProjectionError("rule authority could not be classified") from exc
+    resolved = _WEB_AUTHORITY_BY_RULE_AUTHORITY.get(authority)
+    if resolved is None:
+        raise AutomationRuleProjectionError("unknown rule authority classification")
+    return resolved
+
+
 def project_web_rule_row(rule: ClawAutomationRule) -> dict[str, Any]:
     """Project one stored rule to the minimal, browser-safe shape.
 
     Only display/status fields survive. The tenant id, the delivery owner
     provenance, the canonical subject provenance and the execution intent
     (task / repository ref / exact revision) are dropped here and never leave
-    the server.
+    the server. The rule's background authority is reduced to a coarse
+    ``canonical`` / ``legacy_quarantined`` status so a legacy rule is never
+    presented as eligible for background execution.
     """
 
     if not isinstance(rule, ClawAutomationRule):
         raise AutomationRuleProjectionError("rule must be a ClawAutomationRule")
+    authority_status, background_eligible = web_rule_authority(rule)
     schedule = rule.schedule
     kind = _bounded_enum(getattr(schedule, "kind", None), _schedule_kind_enum())
     expression = _bounded_text(getattr(schedule, "expression", None), 128)
@@ -184,6 +245,8 @@ def project_web_rule_row(rule: ClawAutomationRule) -> dict[str, Any]:
         "rule_id": _bounded_text(rule.rule_id, 128),
         "name": _bounded_text(rule.name, 256),
         "enabled": rule.enabled is True,
+        "authority_status": authority_status,
+        "background_eligible": background_eligible,
         "schedule_kind": kind,
         "schedule_expression": expression,
         "schedule_timezone": timezone,
@@ -269,8 +332,11 @@ async def claw_automation_rules(request: Request) -> JSONResponse:
 
 __all__ = [
     "MAX_RULES_PER_RESPONSE",
+    "WEB_RULE_AUTHORITY_CANONICAL",
+    "WEB_RULE_AUTHORITY_LEGACY_QUARANTINED",
     "WEB_RULE_KEYS",
     "AutomationRuleProjectionError",
     "claw_automation_rules",
     "project_web_rule_row",
+    "web_rule_authority",
 ]
