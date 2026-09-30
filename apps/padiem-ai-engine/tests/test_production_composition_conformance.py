@@ -589,6 +589,46 @@ def test_worker_identity_seam_wires_resolver_and_stays_unbound() -> None:
     assert "GMAIL_PORT_BOUND_IN_PRODUCTION" not in source
 
 
+def test_production_entrypoint_has_one_composition_implementation() -> None:
+    """Pin the canonical Engine entrypoint and keep ``worker.py`` delegate-only.
+
+    ``worker.py`` remains the shared HTTP/core base inherited by
+    ``worker_identity.Default``. Its historical composition name is retained
+    only as a compatibility seam and must never grow a second deployment-shaped
+    implementation again.
+    """
+    from pathlib import Path
+
+    engine_root = Path(__file__).resolve().parents[1]
+    repo_root = Path(__file__).resolve().parents[3]
+
+    wrangler = (engine_root / "wrangler.toml").read_text(encoding="utf-8")
+    assert 'main = "worker_identity.py"' in wrangler
+
+    legacy_source = (engine_root / "worker.py").read_text(encoding="utf-8")
+    start = legacy_source.index("async def _engine_services_for_env")
+    end = legacy_source.index("\ndef _ndjson_response(", start)
+    delegate = legacy_source[start:end]
+    assert "from worker_identity import _engine_services_for_env as canonical_factory" in delegate
+    assert "return await canonical_factory(env)" in delegate
+    for forbidden in (
+        "EngineServices(",
+        "CloudflareB14ServiceBindingTransport(",
+        "B14ExecutionClient(",
+        "ToolExecutionEngineService(",
+    ):
+        assert forbidden not in delegate
+
+    canonical_source = (engine_root / "worker_identity.py").read_text(encoding="utf-8")
+    assert "async def _engine_services_for_env(env: Any) -> EngineServices:" in canonical_source
+    assert "class Default(legacy_worker.Default):" in canonical_source
+    assert "engine_services_factory = staticmethod(_engine_services_for_env)" in canonical_source
+
+    readme = (repo_root / "docs/internal-platform/engine/README.md").read_text(encoding="utf-8")
+    assert "Production Worker entry: `apps/padiem-ai-engine/worker_identity.py`" in readme
+    assert "Production composition authority: `worker_identity._engine_services_for_env`" in readme
+
+
 @pytest.mark.asyncio
 async def test_drive_runtime_reports_missing_port_before_grant_or_provider() -> None:
     from app.tool_projection import TOOL_EXECUTE_PATH
