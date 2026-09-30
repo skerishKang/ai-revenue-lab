@@ -25,6 +25,9 @@ from .control_plane_identity import IdentityBridgeError
 
 _MAX_RPC_TICKET_CHARS = 24_576
 _LINK_KEYS = frozenset({"product_id", "product_user_id", "canonical_subject_id", "state"})
+# #3247: the reverse product-user lookup returns exactly the linked product user
+# id and nothing else — no subject, no state, no provider material.
+_PRODUCT_USER_RESOLVE_KEYS = frozenset({"product_user_id"})
 _SESSION_KEYS_LEGACY = frozenset(
     {"session_id", "product_id", "subject", "issued_at", "expires_at", "state", "revision"}
 )
@@ -105,7 +108,12 @@ def _time(value: Any, field_name: str) -> datetime:
 
 
 def _status_for_code(code: str) -> int:
-    if code in {"inactive_auth_session", "canonical_auth_session_not_found"}:
+    if code in {
+        "inactive_auth_session",
+        "canonical_auth_session_not_found",
+        "canonical_product_identity_link_not_found",
+        "canonical_product_identity_link_not_active",
+    }:
         return 401
     if code in {
         "connector_context_session_mismatch",
@@ -276,6 +284,42 @@ class CloudflareControlPlaneIdentityAuthority:
             )
         )
         return self._session_from_wire(wire)
+
+    async def resolve_product_user_for_subject(
+        self, *, product_id: str, canonical_subject_id: str
+    ) -> str:
+        """#3247 read-only reverse lookup: canonical subject -> B62 product user.
+
+        Server-derived: the RPC names only the product and the canonical
+        subject, so the caller can never supply a ``product_user_id``, a
+        provider, a provider subject or an ``owner_ref``. The private
+        authority requires exactly one ACTIVE link for the exact
+        ``(product_id, canonical_subject_id)`` pair and fails closed on a
+        missing, inactive, ambiguous or corrupt one. No link is ever created
+        here.
+        """
+
+        if not isinstance(product_id, str) or not product_id:
+            raise IdentityBridgeError(
+                503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data."
+            )
+        if not isinstance(canonical_subject_id, str) or not canonical_subject_id:
+            raise IdentityBridgeError(
+                503, "control_plane_rpc_invalid", "Canonical identity service returned invalid data."
+            )
+        wire = _closed(
+            await self._rpc(
+                "resolve_product_user_for_subject",
+                {"product_id": product_id, "canonical_subject_id": canonical_subject_id},
+                "product_user",
+            ),
+            _PRODUCT_USER_RESOLVE_KEYS,
+            "reverse product-user resolve",
+        )
+        product_user_id = wire.get("product_user_id")
+        if not isinstance(product_user_id, str) or not product_user_id:
+            raise IdentityBridgeError(503, "control_plane_rpc_invalid", "Canonical identity link is invalid.")
+        return product_user_id
 
     async def resolve_connector_workspace(self, *, session_id: str) -> str | None:
         """#2830 B-1A read: canonical workspace_ref for one existing session.

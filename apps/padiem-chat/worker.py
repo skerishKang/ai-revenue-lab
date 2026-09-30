@@ -105,6 +105,10 @@ async def run_scheduled_automation_source(
                 owner_authority=identity_authority,
                 session_authority=identity_authority,
                 shadow_store=shadow_store,
+                # #3247: the production owner identity source. Background rules
+                # carry a canonical subject, so resolution derives identity from
+                # Control Plane canonical facts through this authority.
+                canonical_owner_authority=identity_authority,
             )
             history_store = D1HistoryStore(db_binding)
             task_alert_store = D1ClawTaskAlertStore(db_binding)

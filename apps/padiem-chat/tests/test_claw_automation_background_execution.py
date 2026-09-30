@@ -58,17 +58,19 @@ from padiem_control_plane import (
     CanonicalSubjectRef,
     SubjectType,
 )
+from padiem_control_plane.tenants import (
+    TenantMembership,
+    TenantMembershipRole,
+    TenantMembershipState,
+)
 
 from app import claw_automation_terminal_outcome_bridge as terminal_bridge_module
 from app.claw_automation_background_execution import (
     BackgroundExecutionCompositionError,
     compose_background_execution,
 )
-from app.claw_automation_owner_resolution import (
-    ClawAutomationOwnerResolver,
-    TrustedAutomationOwnerProjection,
-)
-from app.control_plane_identity_shadow import IdentityShadowRecord
+from app.claw_automation_owner_resolution import ClawAutomationOwnerResolver
+from app.control_plane_identity import IdentityBridgeError
 
 NOW = datetime(2026, 9, 23, 9, 0, tzinfo=timezone.utc)
 EARLIER = datetime(2026, 9, 22, 9, 0, tzinfo=timezone.utc)
@@ -81,11 +83,9 @@ REVISION = "b" * 40
 OWNER_REF = "owner:opaque:provenance:1"
 OWNER_USER = "usr_" + "7" * 32
 FOREIGN_USER = "usr_" + "f" * 32
-MEMBER = "member_0001"
 SUBJECT = "sub_0123456789abcdef0123456789abcdef"
 FOREIGN_SUBJECT = "sub_fedcba9876543210fedcba9876543210"
-SESSION = "authsession:b62:123"
-AUTHORITY_REF = "authority:owner:registry"
+SESSION = "authsession:b54:123"
 SCHEDULE = ClawScheduleExpression(ClawScheduleKind.CRON, "0 9 * * *", "UTC")
 MODULE_PATH = (
     Path(__file__).resolve().parents[1] / "app" / "claw_automation_background_execution.py"
@@ -182,102 +182,132 @@ def make_trigger(
     )
 
 
-class _OwnerAuthority:
-    def __init__(self, projection=None) -> None:
-        self.projection = projection
-        self.calls: list[tuple[str, str]] = []
+class _CanonicalOwnerAuthority:
+    """Fake of the private Control Plane adapter's canonical owner surface (#3247).
 
-    def resolve_automation_owner(self, *, owner_ref, workspace_id, now):
-        self.calls.append((owner_ref, workspace_id))
-        return self.projection
+    Covers the three server-owned facts the canonical resolver consumes: the
+    exact role-bearing tenant membership, the B62 product-user reverse link and
+    the current B54 canonical session. Every fact is bound to one
+    (tenant, subject, product user) tuple and refuses anything else.
+    """
+
+    def __init__(
+        self,
+        *,
+        tenant_id: str = WORKSPACE,
+        subject: str = SUBJECT,
+        product_user_id: str = OWNER_USER,
+        membership: object = ...,
+        link_user: object = ...,
+        session: object = ...,
+    ) -> None:
+        self.tenant_id = tenant_id
+        self.subject = subject
+        self.product_user_id = product_user_id
+        self._membership = membership
+        self._link_user = link_user
+        self._session = session
+        self.membership_calls: list[tuple[str, str]] = []
+        self.link_calls: list[tuple[str, str]] = []
+        self.session_calls: list[tuple[str, str]] = []
+
+    async def resolve_active_tenant_membership(
+        self, *, tenant_id, canonical_subject_id, now
+    ):
+        self.membership_calls.append((tenant_id, canonical_subject_id))
+        if (
+            self._membership is None
+            or tenant_id != self.tenant_id
+            or canonical_subject_id != self.subject
+        ):
+            raise IdentityBridgeError(
+                403, "canonical_tenant_membership_not_found", "no such membership"
+            )
+        return self._membership
+
+    async def resolve_product_user_for_subject(self, *, product_id, canonical_subject_id):
+        self.link_calls.append((product_id, canonical_subject_id))
+        if (
+            self._link_user is None
+            or product_id != "b62"
+            or canonical_subject_id != self.subject
+        ):
+            raise IdentityBridgeError(
+                401, "canonical_product_identity_link_not_found", "no such link"
+            )
+        return self._link_user
+
+    async def resolve_current_auth_session(self, *, product_id, product_user_id):
+        self.session_calls.append((product_id, product_user_id))
+        if (
+            self._session is None
+            or product_id != "b54-padiem-claw"
+            or product_user_id != self.product_user_id
+        ):
+            raise IdentityBridgeError(
+                401, "canonical_auth_session_not_found", "no such session"
+            )
+        return self._session
 
 
-class _SessionAuthority:
-    def __init__(self, session=None) -> None:
-        self.session = session
-        self.calls: list[str] = []
-
-    def resolve_auth_session(self, *, session_id):
-        self.calls.append(session_id)
-        return self.session
-
-
-class _ShadowStore:
-    def __init__(self, record=None) -> None:
-        self.record = record
-
-    async def save_projection(self, value):  # pragma: no cover - never called
-        raise AssertionError("owner resolution must never write the shadow store")
-
-    async def load_projection(self, product_user_id):
-        if self.record is not None and self.record.product_user_id == product_user_id:
-            return self.record
-        return None
-
-
-def _session(*, subject: str = SUBJECT) -> AuthSessionSnapshot:
+def _b54_session(
+    *,
+    subject: str = SUBJECT,
+    tenant_id: str = WORKSPACE,
+) -> AuthSessionSnapshot:
     return AuthSessionSnapshot(
         session_id=SESSION,
-        product_id="b62",
+        product_id="b54-padiem-claw",
         subject=CanonicalSubjectRef(subject_type=SubjectType.USER, subject_id=subject),
         issued_at=NOW - timedelta(hours=1),
         expires_at=NOW + timedelta(hours=2),
         state=AuthSessionState.ACTIVE,
         revision=1,
+        tenant_id=tenant_id,
     )
 
 
-def _shadow(*, subject: str = SUBJECT) -> IdentityShadowRecord:
-    return IdentityShadowRecord(
-        product_user_id=OWNER_USER,
-        canonical_subject_id=subject,
-        auth_session_id=SESSION,
-        session_revision=1,
-        session_state="active",
-        session_expires_at=NOW + timedelta(hours=2),
-        observed_at=NOW - timedelta(minutes=5),
-    )
-
-
-def _owner_projection(
+def _canonical_owner_authority(
     *,
-    workspace_id: str = WORKSPACE,
-    product_user_id: str = OWNER_USER,
-    subject: str = SUBJECT,
-) -> TrustedAutomationOwnerProjection:
-    return TrustedAutomationOwnerProjection(
-        owner_ref=OWNER_REF,
-        workspace_id=workspace_id,
-        product_user_id=product_user_id,
-        member_id=MEMBER,
-        canonical_subject_id=subject,
-        authority_ref=AUTHORITY_REF,
-        issued_at=NOW - timedelta(minutes=5),
-        expires_at=NOW + timedelta(hours=1),
+    tenant_id: str = WORKSPACE,
+    session_subject: str | None = None,
+) -> _CanonicalOwnerAuthority:
+    return _CanonicalOwnerAuthority(
+        tenant_id=tenant_id,
+        subject=SUBJECT,
+        product_user_id=OWNER_USER,
+        membership=TenantMembership(
+            tenant_id=tenant_id,
+            canonical_subject_id=SUBJECT,
+            state=TenantMembershipState.ACTIVE,
+            role=TenantMembershipRole.OWNER,
+        ),
+        link_user=OWNER_USER,
+        session=_b54_session(subject=session_subject or SUBJECT),
     )
 
 
 def resolver(
     *,
     workspace_id: str = WORKSPACE,
-    product_user_id: str = OWNER_USER,
-    subject: str = SUBJECT,
-    projection: object = ...,
+    session_subject: str | None = None,
 ) -> ClawAutomationOwnerResolver:
-    if projection is ...:
-        projection = _owner_projection(
-            workspace_id=workspace_id, product_user_id=product_user_id, subject=subject
-        )
     return ClawAutomationOwnerResolver(
-        owner_authority=_OwnerAuthority(projection),
-        session_authority=_SessionAuthority(_session(subject=subject)),
-        shadow_store=_ShadowStore(_shadow(subject=subject)),
+        owner_authority=None,
+        session_authority=None,
+        shadow_store=None,
+        canonical_owner_authority=_canonical_owner_authority(
+            tenant_id=workspace_id, session_subject=session_subject
+        ),
     )
 
 
 def unavailable_resolver() -> ClawAutomationOwnerResolver:
     return ClawAutomationOwnerResolver(
-        owner_authority=None, session_authority=None, shadow_store=None
+        owner_authority=None,
+        session_authority=None,
+        shadow_store=None,
+        canonical_owner_authority=None,
     )
 
 
@@ -727,9 +757,7 @@ async def test_foreign_owner_projection_fails_before_p01():
 
 
 async def test_mismatched_owner_subject_fails_before_p01():
-    harness = Harness(
-        owner_resolver=resolver(projection=_owner_projection(subject=FOREIGN_SUBJECT))
-    )
+    harness = Harness(owner_resolver=resolver(session_subject=FOREIGN_SUBJECT))
     harness.store.save_rule(make_rule())
 
     receipt = await harness.compose(make_trigger())
