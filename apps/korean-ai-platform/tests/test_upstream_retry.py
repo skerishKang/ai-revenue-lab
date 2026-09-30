@@ -86,10 +86,13 @@ def _install_seq(monkeypatch, behaviors):
     return calls
 
 
-def _post(client):
+def _post(client, *, business14=None):
+    body = {"model": KILO_MODEL, "messages": [{"role": "user", "content": "hi"}]}
+    if business14 is not None:
+        body["business14"] = business14
     return client.post(
         "/api/pilot/v1/chat/completions",
-        json={"model": KILO_MODEL, "messages": [{"role": "user", "content": "hi"}]},
+        json=body,
     )
 
 
@@ -125,6 +128,61 @@ def test_502_server_error_retries_then_succeeds(client, monkeypatch, no_sleep):
     assert len(calls) == 2
     biz14 = resp.json()["business14"]
     assert "upstream_retry:1" in biz14["reason_codes"]
+
+
+def test_request_max_retries_zero_disables_same_route_retry(client, monkeypatch, no_sleep):
+    """A bounded capability proof can force exactly one upstream attempt.
+
+    The production default remains #1982's retry policy; this opt-down is
+    request-scoped and cannot increase the global retry ceiling.
+    """
+    calls = _install_seq(monkeypatch, [UpstreamTimeout(), _ok_response])
+
+    resp = _post(client, business14={"max_retries": 0})
+
+    assert resp.status_code == 504
+    assert len(calls) == 1
+    error = resp.json()["error"]
+    assert error["attempt_count"] == 1
+    assert not any(
+        str(code).startswith("upstream_retry:") for code in error["reason_codes"]
+    )
+    assert error["attempt_evidence"] == [
+        {
+            "attempt": 1,
+            "model_id": KILO_MODEL,
+            "upstream_model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+            "provider": "Kilo Gateway / NVIDIA",
+            "route_id": f"platform:{KILO_MODEL}",
+            "outcome": "error",
+            "error_code": "upstream_timeout",
+            "retry_index": 0,
+            "actual_response_model": None,
+        }
+    ]
+
+
+def test_request_max_retries_cannot_exceed_global_ceiling(client, monkeypatch):
+    calls = _install_seq(monkeypatch, [_ok_response])
+
+    resp = _post(
+        client,
+        business14={"max_retries": gw._UPSTREAM_RETRY_MAX_RETRIES + 1},
+    )
+
+    assert resp.status_code == 422
+    assert calls == []
+    assert resp.json()["error"]["code"] == "invalid_body"
+
+
+def test_request_max_retries_rejects_boolean(client, monkeypatch):
+    calls = _install_seq(monkeypatch, [_ok_response])
+
+    resp = _post(client, business14={"max_retries": False})
+
+    assert resp.status_code == 422
+    assert calls == []
+    assert resp.json()["error"]["code"] == "invalid_body"
 
 
 def test_retry_exhausted_returns_last_error(client, monkeypatch, no_sleep):
