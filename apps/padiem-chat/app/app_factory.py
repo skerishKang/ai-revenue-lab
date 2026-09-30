@@ -57,6 +57,7 @@ from .claw_task_alert_store import D1ClawTaskAlertStore
 from .claw_automation_store import D1ClawAutomationStore
 from .claw_automation_rules_routes import claw_automation_rules
 from .claw_automation_rule_create_routes import claw_automation_rule_create
+from .claw_automation_rule_enabled_routes import claw_automation_rule_set_enabled
 from .config import Settings
 from .connector_status_projection import connectors_status
 from .connector_ticket_routes import google_connector_ticket
@@ -208,6 +209,14 @@ def create_app(
         # server-minted identifiers, server-owned execution intent; read-only
         # semantics of the GET route above are unchanged.
         Route("/api/claw/automation/rules", claw_automation_rule_create, methods=["POST"]),
+        # #3262: OWNER-gated enable/disable of one canonical rule — the stored
+        # rule setting only. Legacy/quarantined rows stay immutable; no Edit,
+        # Delete, Run-now, schedule edit or scheduler activation.
+        Route(
+            "/api/claw/automation/rules/{rule_id}/enabled",
+            claw_automation_rule_set_enabled,
+            methods=["PATCH"],
+        ),
         # #3094: the one real read-only source behind the "Connect this computer"
         # panel. Owner-scoped; it pairs nothing and approves nothing.
         Route(CLAW_LOCAL_ACCESS_PATH, claw_local_access, methods=["GET"]),

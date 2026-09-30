@@ -1511,6 +1511,9 @@
   const clawAutomationCreateStatus = document.getElementById("clawAutomationCreateStatus");
   const clawAutomationCreateSubmit = document.getElementById("clawAutomationCreateSubmit");
   const clawAutomationCreateCancel = document.getElementById("clawAutomationCreateCancel");
+  // #3262: enable/disable toggle state for one canonical rule.
+  const clawAutomationToggleStatus = document.getElementById("clawAutomationToggleStatus");
+  const clawAutomationInFlightRules = new Set();
   const clawManualForm = document.getElementById("clawManualForm");
   const clawChannel = document.getElementById("clawChannel");
   const clawAction = document.getElementById("clawAction");
@@ -2199,6 +2202,20 @@
         notice.dataset.localeKey = "automation-rule-quarantined";
         notice.textContent = uiT("automation-rule-quarantined");
         row.appendChild(notice);
+      } else {
+        // #3262: only canonical, background-eligible rows carry the toggle.
+        // The action reflects the STORED setting only — turning a rule on is
+        // not automatic execution going live (#2833 scheduler HOLD).
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "claw-automation-rule-toggle";
+        toggle.dataset.ruleToggleRuleId = rule.rule_id;
+        toggle.dataset.localeKey = rule.enabled === true ? "claw-automation-rule-turn-off" : "claw-automation-rule-turn-on";
+        toggle.textContent = uiT(toggle.dataset.localeKey);
+        toggle.addEventListener("click", () => {
+          void toggleClawAutomationRule(rule.rule_id, rule.enabled !== true, toggle);
+        });
+        row.appendChild(toggle);
       }
       clawAutomationList.appendChild(row);
     });
@@ -2220,6 +2237,83 @@
       renderClawAutomationRules(data.rules);
     } catch (_) {
       setClawAutomationError();
+    }
+  }
+
+  // --- #3262 owner-gated enable/disable -------------------------------------
+  // The stored rule setting only: turning a rule on is NOT automatic execution
+  // going live. No optimistic flip — the row is never changed locally; the
+  // canonical list is reloaded after the server answers 200.
+  function setClawAutomationToggleStatus(messageKey) {
+    if (!clawAutomationToggleStatus) return;
+    if (!messageKey) {
+      clawAutomationToggleStatus.hidden = true;
+      clawAutomationToggleStatus.textContent = "";
+      return;
+    }
+    clawAutomationToggleStatus.hidden = false;
+    clawAutomationToggleStatus.textContent = uiT(messageKey);
+  }
+
+  function findRuleToggleButton(ruleId) {
+    if (!clawAutomationList) return null;
+    for (const row of clawAutomationList.children) {
+      for (const node of row.children || []) {
+        if (node.dataset && node.dataset.ruleToggleRuleId === ruleId) return node;
+      }
+    }
+    return null;
+  }
+
+  function focusRuleToggleAfterReload(ruleId) {
+    const button = findRuleToggleButton(ruleId);
+    if (button) {
+      button.focus();
+      return;
+    }
+    if (clawAutomation) clawAutomation.focus();
+  }
+
+  async function toggleClawAutomationRule(ruleId, nextEnabled, button) {
+    if (!ruleId || clawAutomationInFlightRules.has(ruleId)) return;
+    clawAutomationInFlightRules.add(ruleId);
+    if (button) button.disabled = true;
+    try {
+      const response = await fetch(
+        `/api/claw/automation/rules/${encodeURIComponent(ruleId)}/enabled`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          // The exact two-part payload: the boolean setting, nothing else.
+          body: JSON.stringify({ enabled: nextEnabled }),
+        },
+      );
+      const data = await response.json().catch(() => null);
+      if (response.status === 200 && data && data.ok === true) {
+        setClawAutomationToggleStatus("claw-automation-toggle-saved");
+        await loadClawAutomationRules();
+        focusRuleToggleAfterReload(ruleId);
+        return;
+      }
+      const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
+      if (response.status === 403 || code === "owner_role_required") {
+        setClawAutomationToggleStatus("claw-automation-toggle-forbidden");
+      } else if (response.status === 404 || code === "automation_rule_not_found") {
+        setClawAutomationToggleStatus("claw-automation-toggle-not-found");
+      } else if (code === "automation_rule_not_mutable") {
+        setClawAutomationToggleStatus("claw-automation-toggle-not-mutable");
+      } else if (code === "automation_rule_not_execution_ready") {
+        setClawAutomationToggleStatus("claw-automation-toggle-not-ready");
+      } else if (response.status === 400 || response.status === 413) {
+        setClawAutomationToggleStatus("claw-automation-toggle-invalid");
+      } else {
+        setClawAutomationToggleStatus("claw-automation-toggle-failed");
+      }
+    } catch (_) {
+      setClawAutomationToggleStatus("claw-automation-toggle-failed");
+    } finally {
+      clawAutomationInFlightRules.delete(ruleId);
+      if (button) button.disabled = false;
     }
   }
 
