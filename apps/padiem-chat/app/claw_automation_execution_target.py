@@ -21,9 +21,10 @@ Deliberately refused here:
   the composer signature carries no such parameter;
 * a mutable ref or GitHub API lookup — the served tag is the only revision
   source, and a malformed or missing one fails closed;
-* a second commit-SHA grammar — the tag regex only captures the served
-  provenance; the resulting revision is validated by the existing
-  ``exact_commit_revision()`` predicate inside the intent contract;
+* a second commit-SHA grammar — only the literal ``git-`` provenance prefix is
+  parsed here; the SHA material is validated by the existing
+  ``exact_commit_revision()`` predicate and must round-trip byte-exactly into
+  the original tag;
 * any write: no rule mutation, no scheduler activation, no deploy, no P01 or
   provider call. This slice composes authority; a later Create slice owns the
   HTTP surface and must reject caller attempts to smuggle target fields.
@@ -31,14 +32,14 @@ Deliberately refused here:
 
 from __future__ import annotations
 
-import re
 from typing import Any
 
 from kagent.claw_automation import ClawAutomationExecutionIntent
-from kagent.contracts import ContractError
+from kagent.contracts import ContractError, exact_commit_revision
 
 __all__ = [
     "AUTOMATION_REPOSITORY_REF",
+    "SERVED_TAG_PREFIX",
     "compose_canonical_automation_execution_intent",
     "resolve_automation_execution_revision",
 ]
@@ -47,11 +48,17 @@ __all__ = [
 # slug/path: the manual Web execution precedent is the authority for this value.
 AUTOMATION_REPOSITORY_REF = "padiem-chat"
 
+# The deploy uploads the Worker with ``--tag "git-${TARGET_SHA}"``. This module
+# owns only the literal provenance prefix; the SHA material itself is validated
+# by the ONE existing revision predicate (``exact_commit_revision()``) — no
+# second revision grammar may exist (contracts.py). A byte-exact round-trip
+# then proves the served tag is already canonical: ``exact_commit_revision``
+# normalizes case and whitespace, so a tag that only survives after
+# normalization (uppercase, padded) was not produced by the reviewed deploy
+# path and is refused. No fallback revision exists.
+SERVED_TAG_PREFIX = "git-"
+
 _VERSION_METADATA_BINDING = "CF_VERSION_METADATA"
-# The deploy uploads the Worker with ``--tag "git-${TARGET_SHA}"``; only that
-# exact shape is server truth. Uppercase, short SHAs, branch names and any
-# prefix/suffix garbage are refused — no fallback revision exists.
-_SERVED_TAG_RE = re.compile(r"^git-([0-9a-f]{40})$")
 
 
 def _version_metadata_binding(env: Any) -> Any:
@@ -88,13 +95,20 @@ def _metadata_tag(metadata: Any) -> Any:
 
 
 def resolve_automation_execution_revision(env: Any) -> str:
-    """Return the exact served git revision, or fail closed (#3252).
+    """Return the exact served git revision, or fail closed (#3252/#3254 review).
 
     The only input is the server runtime env itself: no request value, no
     query/body/header, no branch ref, no network lookup and no fallback
     (``main``/``HEAD``/short SHA/wall clock/version id are all non-truth).
-    The binding must exist, carry a ``tag`` of exactly ``git-<40 lowercase
-    hex>``, and nothing else is accepted. The returned value is the captured
+
+    The served tag must carry the literal ``git-`` provenance prefix; the
+    remainder is validated by the ONE existing revision predicate,
+    :func:`kagent.contracts.exact_commit_revision` — this module defines no
+    revision regex of its own. Because that predicate normalizes case and
+    surrounding whitespace, the validated revision must then round-trip back
+    to the byte-exact original tag; a tag that only survives normalization
+    (uppercase, padded) was not produced by the reviewed ``git-${TARGET_SHA}``
+    deploy path and is refused. The returned value is the canonical
     40-character SHA; the tag text itself is provenance only.
     """
 
@@ -104,10 +118,16 @@ def resolve_automation_execution_revision(env: Any) -> str:
     tag = _metadata_tag(metadata)
     if not isinstance(tag, str) or not tag:
         raise ContractError("served version metadata carries no tag")
-    match = _SERVED_TAG_RE.fullmatch(tag)
-    if match is None:
-        raise ContractError("served version tag is not an exact git-<40hex> revision")
-    return match.group(1)
+    if not tag.startswith(SERVED_TAG_PREFIX):
+        raise ContractError("served version tag is not git-<exact revision> provenance")
+    revision = exact_commit_revision(
+        tag[len(SERVED_TAG_PREFIX):], "served version revision"
+    )
+    if tag != f"{SERVED_TAG_PREFIX}{revision}":
+        raise ContractError(
+            "served version tag is not in canonical git-<exact revision> form"
+        )
+    return revision
 
 
 def compose_canonical_automation_execution_intent(

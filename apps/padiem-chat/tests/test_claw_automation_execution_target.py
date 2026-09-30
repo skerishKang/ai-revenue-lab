@@ -101,23 +101,50 @@ def test_missing_tag_fails_closed():
 
 
 @pytest.mark.parametrize(
-    "bad_tag",
+    ["bad_tag", "expected_match"],
     [
-        "main",
-        "HEAD",
-        "git-" + "a" * 7,
-        "git-" + "A" * 40,
-        "git-" + REVISION + "x",
-        "xgit-" + REVISION,
-        "git-" + REVISION + "\n",
-        "refs/heads/main",
-        "git-",
-        f"git-{REVISION} git-{OTHER_REVISION}",
+        # Not the literal git- provenance prefix at all.
+        ("main", "provenance"),
+        ("HEAD", "provenance"),
+        ("refs/heads/main", "provenance"),
+        ("xgit-" + REVISION, "provenance"),
+        # Prefix ok, but the remainder fails the single revision grammar.
+        ("git-", "exact 40-hex"),
+        ("git-" + "a" * 7, "exact 40-hex"),
+        ("git-" + "a" * 41, "exact 40-hex"),
+        ("git-" + REVISION + "x", "exact 40-hex"),
+        ("git-" + REVISION + " git-" + OTHER_REVISION, "exact 40-hex"),
+        # The grammar alone would normalize these; the byte-exact round-trip
+        # refuses them because the served tag was not canonical deploy output.
+        ("git-" + "A" * 40, "canonical"),
+        ("git-" + REVISION + "\n", "canonical"),
+        ("git-" + REVISION + " ", "canonical"),
     ],
 )
-def test_non_served_tags_fail_closed(bad_tag):
-    with pytest.raises(ContractError, match="git-<40hex>"):
+def test_non_served_tags_fail_closed(bad_tag, expected_match):
+    with pytest.raises(ContractError, match=expected_match):
         resolve_automation_execution_revision(served_env(tag=bad_tag))
+
+
+def test_uppercase_tag_is_refused_even_though_the_grammar_would_normalize_it():
+    # Documents why the round-trip exists: the single grammar normalizes case,
+    # so only the byte-exact tag comparison keeps the served-provenance
+    # contract (a deploy never emits an uppercase tag).
+    assert exact_commit_revision("A" * 40) == "a" * 40
+    with pytest.raises(ContractError, match="canonical"):
+        resolve_automation_execution_revision(served_env(tag="git-" + "A" * 40))
+
+
+def test_module_source_defines_no_second_revision_regex():
+    import inspect
+
+    source = inspect.getsource(execution_target_module)
+    # The single revision grammar lives in kagent.contracts; this module may
+    # parse only the literal provenance prefix.
+    assert "re.compile" not in source
+    assert "[0-9a-f]" not in source and "[0-9A-Fa-f]" not in source
+    assert not hasattr(execution_target_module, "_SERVED_TAG_RE")
+    assert execution_target_module.SERVED_TAG_PREFIX == "git-"
 
 
 # ── task is content, not target authority ───────────────────────────────────
