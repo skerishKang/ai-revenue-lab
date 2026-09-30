@@ -4,8 +4,10 @@
    원칙:
    - DOM API(createElement/textContent)로만 렌더한다. innerHTML 을 쓰지 않아
      주입된 문자열이 마크업으로 실행될 수 없고, Node 스텁 DOM로 전부 테스트된다.
-   - 이 모듈은 network/model 호출을 하지 않는다. 저장은 env.storage 를 통해서만
-     Session.commit 경로로 일어나고, preview/correction 단계는 저장소를 건드리지 않는다.
+   - 이미지 등록 분석은 same-origin /api/v1/quote/intake 경로만 사용한다.
+     provider/model/credential 선택은 서버 authority에 남고 브라우저에는 노출하지 않는다.
+   - 저장은 env.storage 를 통해서만 Session.commit 경로로 일어나고,
+     preview/correction 단계는 저장소를 건드리지 않는다.
    - 과장 문구를 쓰지 않는다. 자동 layout 분석은 없다고 명시한다.
 
    (브라우저/Node 양쪽에서 실행. Node 에서는 doc 스텁을 주입한다) */
