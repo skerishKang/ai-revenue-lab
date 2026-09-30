@@ -198,6 +198,7 @@ def test_upstream_error_is_collapsed_to_product_safe_code(monkeypatch):
 
     assert response.status_code == 502
     assert response.json()["error"]["code"] == "b14_upstream_unavailable"
+    assert response.headers["cache-control"] == "no-store"
     assert sentinel not in response.text
 
 
