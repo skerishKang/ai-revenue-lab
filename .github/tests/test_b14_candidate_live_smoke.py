@@ -1141,17 +1141,50 @@ def test_compact_unsigned_number_grouping_is_bounded(value, expected) -> None:
 
 
 @pytest.mark.parametrize(
-    "field,bad_value",
+    "value,expected_class",
     [
-        ("quote_number", "Q-WRONG"),
-        ("recipient", "다른회사"),
-        ("first_item", "다른품목"),
-        ("first_quantity", 99),
-        ("first_unit_price", "123"),
+        (None, "non_string"),
+        (123, "non_string"),
+        ("주식회사샘플산업", "spacing_punctuation"),
+        ("주식회사·샘플산업", "spacing_punctuation"),
+        ("(주) 샘플산업", "corporate_designator"),
+        ("㈜ 샘플산업", "corporate_designator"),
+        ("샘플산업", "corporate_designator"),
+        ("샘플산업 주식회사", "corporate_designator"),
+        ("주식회사 샘플산업 귀중", "core_name_overlap"),
+        ("샘플산업 본사", "core_name_overlap"),
+        ("다른회사", "semantic"),
+    ],
+)
+def test_recipient_mismatch_classification_is_closed_and_payload_free(
+    value, expected_class,
+) -> None:
+    assert smoke._recipient_mismatch_class(value) == expected_class
+    assert expected_class in smoke.RECIPIENT_MISMATCH_CLASSES
+
+
+def test_recipient_mismatch_class_vocabulary_is_fixed() -> None:
+    assert smoke.RECIPIENT_MISMATCH_CLASSES == {
+        "non_string",
+        "spacing_punctuation",
+        "corporate_designator",
+        "core_name_overlap",
+        "semantic",
+    }
+
+
+@pytest.mark.parametrize(
+    "field,bad_value,expected_code",
+    [
+        ("quote_number", "Q-WRONG", "b66_f02_visual_fact_mismatch_quote_number"),
+        ("recipient", "다른회사", "b66_f02_visual_fact_mismatch_recipient_semantic"),
+        ("first_item", "다른품목", "b66_f02_visual_fact_mismatch_first_item"),
+        ("first_quantity", 99, "b66_f02_visual_fact_mismatch_first_quantity"),
+        ("first_unit_price", "123", "b66_f02_visual_fact_mismatch_first_unit_price"),
     ],
 )
 def test_b66_f02_wrong_visual_fact_fails_closed_without_raw_answer(
-    field: str, bad_value,
+    field: str, bad_value, expected_code: str,
 ) -> None:
     spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
     calls: list = []
@@ -1170,10 +1203,44 @@ def test_b66_f02_wrong_visual_fact_fails_closed_without_raw_answer(
 
     assert rc == 1
     output = stdout.getvalue()
-    assert f"FAIL_b66_f02_visual_fact_mismatch_{field}" in output
+    assert f"FAIL_{expected_code}" in output
     assert "B14_CHAT_POST_COUNT=1" in output
     assert answer not in output
     assert str(bad_value) not in output
+
+
+@pytest.mark.parametrize(
+    "recipient,expected_code",
+    [
+        ("주식회사샘플산업", "b66_f02_visual_fact_mismatch_recipient_spacing_punctuation"),
+        ("(주) 샘플산업", "b66_f02_visual_fact_mismatch_recipient_corporate_designator"),
+        ("주식회사 샘플산업 귀중", "b66_f02_visual_fact_mismatch_recipient_core_name_overlap"),
+        (None, "b66_f02_visual_fact_mismatch_recipient_non_string"),
+    ],
+)
+def test_b66_f02_recipient_diagnostic_never_emits_raw_value(
+    recipient, expected_code: str,
+) -> None:
+    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+    facts = dict(smoke.B66_F02_EXPECTED_FACTS)
+    facts["recipient"] = recipient
+    answer = json.dumps(facts, ensure_ascii=False)
+
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        rc = smoke.run(
+            "space-bunny",
+            transport=_s1_image_transport(spec_obj, [], answer=answer),
+            modality="image",
+            image_case=smoke.IMAGE_CASE_B66_F02,
+        )
+
+    assert rc == 1
+    output = stdout.getvalue()
+    assert f"FAIL_{expected_code}" in output
+    assert answer not in output
+    if isinstance(recipient, str):
+        assert recipient not in output
 
 
 def test_b66_f02_non_json_answer_fails_closed_without_raw_answer() -> None:
