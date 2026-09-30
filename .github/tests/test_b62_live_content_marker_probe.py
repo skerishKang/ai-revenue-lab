@@ -1,4 +1,4 @@
-"""B62 live-content #2124 and #2544 marker probe contract tests (#2548, #2553, SOURCE-ONLY)."""
+"""B62 live-content #2124/#2544 + B67 marker probe contract tests (SOURCE-ONLY)."""
 from __future__ import annotations
 
 import importlib.util
@@ -58,9 +58,30 @@ COMPLETED_MARKER_BYTES = (
     MARKER_STREAMING_USES_DEFAULT_CONFIG,
 )
 
+# #3199 B67 Drive marker family (raw bytes, mirror of the probe).
+MARKER_B67_DRIVE_SEAM_VERSION = b"chat-drive-case-folder-engine.v1"
+MARKER_B67_IDENTITY_WORKSPACE_ERROR = b"identity_workspace_unavailable"
+MARKER_B67_PROJECT_DRIVE_ROUTE = b"/api/projects/{project_id}/drive-case-folder"
+
+B67_MARKER_KEYS = (
+    "MARKER_B67_DRIVE_SEAM_VERSION",
+    "MARKER_B67_IDENTITY_WORKSPACE_ERROR",
+    "MARKER_B67_PROJECT_DRIVE_ROUTE",
+)
+B67_MARKER_BYTES = (
+    MARKER_B67_DRIVE_SEAM_VERSION,
+    MARKER_B67_IDENTITY_WORKSPACE_ERROR,
+    MARKER_B67_PROJECT_DRIVE_ROUTE,
+)
+
 
 def _completed_content(exclude: bytes | None = None) -> bytes:
     parts = [m for m in COMPLETED_MARKER_BYTES if m is not exclude]
+    return b"\n".join(parts) + b"\n"
+
+
+def _b67_content(exclude: bytes | None = None) -> bytes:
+    parts = [m for m in B67_MARKER_BYTES if m is not exclude]
     return b"\n".join(parts) + b"\n"
 
 
@@ -103,6 +124,7 @@ def _full_content():
         + MARKER_UNSUPPORTED
         + b"\n"
         + _completed_content()
+        + _b67_content()
     )
 
 
@@ -163,6 +185,10 @@ def test_all_markers_present_yields_pass_with_exact_vocabulary(tmp_path):
         "MARKER_STREAMING_CLIENT_PRESENT=PRESENT",
         "MARKER_STREAMING_USES_DEFAULT_CONFIG=PRESENT",
         "COMPLETED_TIMEOUT_LIVE_MARKERS=PASS",
+        "MARKER_B67_DRIVE_SEAM_VERSION=PRESENT",
+        "MARKER_B67_IDENTITY_WORKSPACE_ERROR=PRESENT",
+        "MARKER_B67_PROJECT_DRIVE_ROUTE=PRESENT",
+        "B67_DRIVE_CASE_FOLDER_LIVE_MARKERS=PASS",
         "VERSION_METADATA_SOURCE=wrangler",
         "SCRIPT_LAST_DEPLOYED_FROM=wrangler-4",
         "RAW_SCRIPT_CONTENT_OUTPUT=0",
@@ -174,6 +200,8 @@ def test_all_markers_present_yields_pass_with_exact_vocabulary(tmp_path):
     assert SECRET_ETAG not in combined
     assert b"unsupported stream chunk" not in combined.encode("utf-8")
     assert b"completed_timeout_seconds" not in combined.encode("utf-8")
+    assert b"identity_workspace_unavailable" not in combined.encode("utf-8")
+    assert b"chat-drive-case-folder-engine.v1" not in combined.encode("utf-8")
 
 
 def test_any_marker_absent_is_inconclusive_not_failure():
@@ -187,6 +215,56 @@ def test_any_marker_absent_is_inconclusive_not_failure():
     assert verdict["MARKER_BYTES_VALUE"] == "PRESENT"
     assert verdict["PR2124_LIVE_MARKERS"] == "INCONCLUSIVE"
     assert verdict["PR2124_LIVE_MARKERS"] != "FAIL"
+
+
+def test_b67_drive_markers_present_yield_independent_pass():
+    helper = _load_helper()
+    verdict = _probe(helper)
+    for key in B67_MARKER_KEYS:
+        assert verdict[key] == "PRESENT"
+    assert verdict["B67_DRIVE_CASE_FOLDER_LIVE_MARKERS"] == "PASS"
+
+
+def test_b67_marker_family_declared_and_matches_merged_source():
+    helper = _load_helper()
+    assert tuple(helper.B67_DRIVE_CASE_FOLDER_MARKERS) == B67_MARKER_KEYS
+    assert len(helper.B67_DRIVE_CASE_FOLDER_MARKERS) == 3
+    src = b"".join(
+        (ROOT / "apps" / "padiem-chat" / "app" / name).read_bytes()
+        for name in (
+            "app_factory.py",
+            "drive_case_folder_routes.py",
+            "drive_case_folder_engine.py",
+        )
+    )
+    for name, needle in helper.B67_DRIVE_CASE_FOLDER_MARKERS.items():
+        assert needle in src, name
+    verdict = _probe(helper)
+    assert all(
+        verdict[name] == "PRESENT"
+        for name in helper.B67_DRIVE_CASE_FOLDER_MARKERS
+    )
+
+
+@pytest.mark.parametrize("excluded", B67_MARKER_BYTES)
+def test_each_b67_marker_absent_is_inconclusive(excluded):
+    helper = _load_helper()
+    base = (
+        b"# worker\n"
+        + MARKER_MEMORYVIEW
+        + b"\n"
+        + MARKER_BYTES_VALUE
+        + b"\n"
+        + MARKER_UNSUPPORTED
+        + b"\n"
+        + _completed_content()
+    )
+    verdict = _probe(helper, content_bytes=base + _b67_content(exclude=excluded))
+    assert verdict["B67_DRIVE_CASE_FOLDER_LIVE_MARKERS"] == "INCONCLUSIVE"
+    absent = [k for k in B67_MARKER_KEYS if verdict[k] == "ABSENT"]
+    assert absent == [B67_MARKER_KEYS[B67_MARKER_BYTES.index(excluded)]]
+    assert verdict["PR2124_LIVE_MARKERS"] == "PASS"
+    assert verdict["COMPLETED_TIMEOUT_LIVE_MARKERS"] == "PASS"
 
 
 def test_completed_timeout_all_present_yields_pass():
