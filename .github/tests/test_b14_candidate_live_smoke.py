@@ -1050,6 +1050,7 @@ def test_b66_f02_image_body_matches_b66_gateway_posture() -> None:
         "required_capabilities": ["image"],
         "allow_external_fallback": False,
         "max_attempts": 1,
+        "max_retries": 0,
     }
     text_part, image_part = body["messages"][0]["content"]
     assert text_part["type"] == "text"
