@@ -501,10 +501,77 @@ def _compact_unsigned_number(value: Any) -> str | None:
     return None
 
 
-def _b66_f02_visual_mismatch(field: str) -> ValueError:
-    """Return a bounded field-only diagnostic; never include model content."""
+RECIPIENT_MISMATCH_CLASSES: frozenset[str] = frozenset(
+    {
+        "non_string",
+        "spacing_punctuation",
+        "corporate_designator",
+        "core_name_overlap",
+        "semantic",
+    }
+)
 
-    return ValueError(f"b66_f02_visual_fact_mismatch_{field}")
+_RECIPIENT_COMPANY_DESIGNATORS: tuple[str, ...] = ("주식회사", "(주)", "㈜")
+_RECIPIENT_DIAGNOSTIC_PUNCTUATION = frozenset("()[]{}<>·ㆍ.,:-_/\\|")
+
+
+def _fold_recipient_text(value: str) -> str:
+    """Fold presentation-only spacing/punctuation for private diagnostics."""
+
+    return "".join(
+        ch
+        for ch in value.strip()
+        if not ch.isspace() and ch not in _RECIPIENT_DIAGNOSTIC_PUNCTUATION
+    )
+
+
+def _recipient_core(value: str) -> str:
+    """Return a comparison-only company core; never emit the returned text."""
+
+    stripped = value.strip()
+    for marker in _RECIPIENT_COMPANY_DESIGNATORS:
+        stripped = stripped.replace(marker, "")
+    return _fold_recipient_text(stripped)
+
+
+def _recipient_mismatch_class(value: Any) -> str:
+    """Classify a recipient mismatch without exposing model-produced content.
+
+    This is diagnostic-only.  It does not relax the exact-match acceptance
+    rule for B66 F02; it only projects a mismatch onto a closed local
+    vocabulary so a future one-shot run can distinguish formatting variance
+    from a substantive visual-reading error.
+    """
+
+    if not isinstance(value, str):
+        return "non_string"
+
+    expected = B66_F02_EXPECTED_FACTS["recipient"]
+    actual = value.strip()
+
+    if _fold_recipient_text(actual) == _fold_recipient_text(expected):
+        return "spacing_punctuation"
+
+    actual_core = _recipient_core(actual)
+    expected_core = _recipient_core(expected)
+    if actual_core and actual_core == expected_core:
+        return "corporate_designator"
+
+    if (
+        actual_core
+        and expected_core
+        and (actual_core in expected_core or expected_core in actual_core)
+    ):
+        return "core_name_overlap"
+
+    return "semantic"
+
+
+def _b66_f02_visual_mismatch(field: str, detail: str | None = None) -> ValueError:
+    """Return a bounded diagnostic code; never include model content."""
+
+    suffix = f"_{detail}" if detail else ""
+    return ValueError(f"b66_f02_visual_fact_mismatch_{field}{suffix}")
 
 
 def _validate_b66_f02_answer(content: str) -> None:
@@ -519,6 +586,11 @@ def _validate_b66_f02_answer(content: str) -> None:
     for key in ("quote_number", "recipient", "first_item"):
         value = result.get(key)
         if not isinstance(value, str) or value.strip() != B66_F02_EXPECTED_FACTS[key]:
+            if key == "recipient":
+                raise _b66_f02_visual_mismatch(
+                    key,
+                    _recipient_mismatch_class(value),
+                )
             raise _b66_f02_visual_mismatch(key)
     if _compact_unsigned_number(result.get("first_quantity")) != B66_F02_EXPECTED_FACTS["first_quantity"]:
         raise _b66_f02_visual_mismatch("first_quantity")
