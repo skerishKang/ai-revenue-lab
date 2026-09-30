@@ -238,6 +238,26 @@ eq(SkillUi.wizardStepForSession({ status: Session.STATUS_COMMITTED }), 6, "commi
 eq(SkillUi.extractionKindForCategory("image"), "image", "images map to image extraction");
 eq(SkillUi.extractionKindForCategory("document"), "native_document", "documents map to native extraction");
 
+const liveExtraction = {
+  source: { kind: "image", filename: "f02.png" },
+  sender: { company: "테스트상사", rep: "최대표", bizNo: null, address: "광주", phone: null, email: null },
+  recipient: { company: "원본거래처", person: null, address: null, email: null },
+  quote: { quoteNo: "Q-SOURCE", issueDate: "2026-09-30", validDays: 30 },
+  items: [{ name: "원본품목", qty: 12, unitPrice: 9800 }],
+  tax: { mode: "EXCLUSIVE" },
+  memo: "기본 메모",
+  evidence: [{ field: "sender.company", snippet: "테스트상사" }],
+  warnings: []
+};
+const extractedFacts = SkillUi.factsFromExtraction(liveExtraction);
+eq(extractedFacts.sender.company, "테스트상사", "live extraction prefills company defaults");
+eq(extractedFacts.validDays, 30, "live extraction prefills validDays");
+check(!("recipient" in extractedFacts) && !("items" in extractedFacts),
+  "source customer/item facts never become fixed/default form facts");
+const registrationOutput = SkillUi.registrationModelOutput(liveExtraction, "image", "f02.png");
+eq(registrationOutput.recipient.company, "원본거래처", "live extraction reaches registration review");
+check(registrationOutput !== liveExtraction, "registration receives a clone, not mutable response authority");
+
 /* ── index.html: 내 견적서가 primary, template는 고급으로 ── */
 
 const html = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
@@ -398,7 +418,9 @@ check(doc.getElementById(SkillUi.IDS.select).getAttribute("aria-describedby") ==
 
 const uiSource = fs.readFileSync(path.join(__dirname, "..", "quote-skill-ui.js"), "utf8");
 check(!/\.innerHTML\s*=/.test(uiSource), "wizard renders via DOM API only, never innerHTML");
-check(!/fetch\(|XMLHttpRequest|WebSocket|EventSource/.test(uiSource), "skill UI performs no network/model call");
+check(uiSource.includes('"/api/v1/quote/intake"'), "skill UI uses only the same-origin intake path");
+check(!/https?:\/\//i.test(uiSource), "skill UI contains no external service URL");
+check(!/XMLHttpRequest|WebSocket|EventSource/.test(uiSource), "skill UI has no alternate network channel");
 check(!/(space-bunny|sensenova|openai|anthropic|kilo\/)/i.test(uiSource), "skill UI owns no provider/model identity");
 check(!/secret|apiKey|api_key|password/i.test(uiSource), "skill UI carries no credential material");
 check(!/localStorage|sessionStorage|indexedDB/.test(uiSource), "skill UI touches storage only through env");
