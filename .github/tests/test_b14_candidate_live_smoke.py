@@ -1057,6 +1057,9 @@ def test_b66_f02_image_body_matches_b66_gateway_posture() -> None:
     assert "JSON 객체 하나만" in text_part["text"]
     assert "JSON null" in text_part["text"]
     assert "합계나 부가세를 계산하지" in text_part["text"]
+    assert "공급받는 자:" in text_part["text"]
+    assert "공급자:" in text_part["text"]
+    assert "recipient가 아니므로 사용하지" in text_part["text"]
     assert image_part["type"] == "image_url"
     assert image_part["image_url"]["url"].startswith("data:image/png;base64,")
 

@@ -291,6 +291,9 @@ class B66GovernedRouteTests(unittest.TestCase):
             self.assertIn("JSON null", prompt)
             self.assertIn("source는 서버가 소유", prompt)
             self.assertIn("마크다운/설명 문장을 덧붙이지", prompt)
+            self.assertIn("공급자", prompt)
+            self.assertIn("공급받는 자", prompt)
+            self.assertIn("sender 값을 recipient에 복사", prompt)
             self.assertNotIn("없는 값은 UNKNOWN", prompt)
 
     def test_literal_unknown_is_rejected_as_model_fact(self) -> None:

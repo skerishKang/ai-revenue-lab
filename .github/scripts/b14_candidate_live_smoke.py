@@ -347,6 +347,8 @@ B66_F02_IMAGE_INSTRUCTION = (
     "이 합성 한국어 견적서 이미지에서 실제로 보이는 값만 읽으세요. "
     "반드시 JSON 객체 하나만 반환하고 마크다운이나 설명을 붙이지 마세요. "
     "키는 quote_number, recipient, first_item, first_quantity, first_unit_price만 사용하세요. "
+    "recipient는 반드시 '공급받는 자:' 라벨 뒤의 회사명입니다. "
+    "'공급자:' 라벨 뒤 회사명은 recipient가 아니므로 사용하지 마세요. "
     "읽을 수 없는 값은 JSON null로 두세요. 합계나 부가세를 계산하지 마세요."
 )
 B66_F02_IMAGE_MAX_TOKENS = 3500
