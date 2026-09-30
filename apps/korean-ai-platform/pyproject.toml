@@ -12,6 +12,7 @@ dependencies = [
     "jinja2>=3.1,<4",
     "python-multipart>=0.0.9,<1",
     "httpx>=0.28,<1",
+    "padiem-ai-core @ file://${PROJECT_ROOT}/../../packages/padiem-ai-core",
 ]
 
 [dependency-groups]
