@@ -109,14 +109,14 @@ WORKSPACE_REASON_AMBIGUOUS = "canonical_workspace_connector_ambiguous"
 # never projects any session/workspace/reference value. Unknown errors, and all
 # Google OAuth/provider failures, remain the existing generic unavailable reason.
 _IDENTITY_ERROR_TO_WORKSPACE_REASON = {
-    "canonical_auth_session_not_found": WORKSPACE_REASON_SESSION_NOT_FOUND,
-    "inactive_auth_session": WORKSPACE_REASON_SESSION_INACTIVE,
-    "connector_context_session_mismatch": WORKSPACE_REASON_SESSION_MISMATCH,
-    "invalid_identity_authority": WORKSPACE_REASON_SESSION_REFERENCE_INVALID,
-    "control_plane_identity_unavailable": WORKSPACE_REASON_IDENTITY_SERVICE_UNAVAILABLE,
-    "control_plane_rpc_invalid": WORKSPACE_REASON_IDENTITY_RPC_INVALID,
-    "identity_authority_storage_error": WORKSPACE_REASON_IDENTITY_STORAGE_UNAVAILABLE,
-    "connector_context_storage_error": WORKSPACE_REASON_CONNECTOR_CONTEXT_STORAGE_UNAVAILABLE,
+    "identity_workspace_session_not_found": WORKSPACE_REASON_SESSION_NOT_FOUND,
+    "identity_workspace_session_inactive": WORKSPACE_REASON_SESSION_INACTIVE,
+    "identity_workspace_session_mismatch": WORKSPACE_REASON_SESSION_MISMATCH,
+    "identity_workspace_session_reference_invalid": WORKSPACE_REASON_SESSION_REFERENCE_INVALID,
+    "identity_workspace_service_unavailable": WORKSPACE_REASON_IDENTITY_SERVICE_UNAVAILABLE,
+    "identity_workspace_rpc_invalid": WORKSPACE_REASON_IDENTITY_RPC_INVALID,
+    "identity_workspace_storage_unavailable": WORKSPACE_REASON_IDENTITY_STORAGE_UNAVAILABLE,
+    "identity_workspace_context_storage_unavailable": WORKSPACE_REASON_CONNECTOR_CONTEXT_STORAGE_UNAVAILABLE,
 }
 
 # Explicit closed mapping. Reviewed B-1B internal connector id ->
