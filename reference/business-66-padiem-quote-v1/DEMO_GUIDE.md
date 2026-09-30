@@ -60,7 +60,7 @@ python -m http.server 4173
 
 ## 5. 이 데모가 하지 않는 것
 
-- 파일 **선택/preflight**는 동작함(PDF·Office/HWPX·JPG/PNG/WebP). 다만 파일 업로드/외부 전송은 아직 없음
+- 파일 **선택/preflight**는 동작함(PDF·Office/HWPX·JPG/PNG/WebP). 내 견적서 등록에서 JPG/PNG/WebP는 same-origin 서버 분석까지 연결되며, PDF·Office/HWPX는 현재 수동 확인 방식
 - AI/OCR 추출 없음, 채팅 자동 생성 없음. `내용을 한번에 말하기` 원문은 질문형으로 이어갈 때 참고용으로 남지만 견적 필드에 자동 입력되지 않음
 - 이메일 발송 없음
 - 서버 저장·인증·테넌트 데이터 없음 (모든 데이터는 이 브라우저의 localStorage에만 존재)
