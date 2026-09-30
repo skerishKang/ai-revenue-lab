@@ -8,6 +8,13 @@ workers_dev = true
 directory = "static"
 binding = "ASSETS"
 
+# #3252 source declaration: the served Worker exposes its own version provenance
+# so a server-side lane can read the exact deployed git revision. This is a
+# runtime provenance binding, not a cron trigger, and it is NOT live Production
+# activation — live settings remain the production authority.
+[version_metadata]
+binding = "CF_VERSION_METADATA"
+
 [[services]]
 binding = "B14_SERVICE"
 service = "ai-revenue-korean-ai-platform"

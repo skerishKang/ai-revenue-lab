@@ -12,14 +12,19 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import tomllib
 from pathlib import Path
 
 EXPECTED_WORKER = "padiem-chat"
-SUPPORTED_BINDING_TYPES = {"assets", "service", "d1", "r2_bucket", "plain_text", "secret_text"}
+SUPPORTED_BINDING_TYPES = {"assets", "service", "d1", "r2_bucket", "plain_text", "secret_text", "version_metadata"}
 REQUIRED_VARS = ("PADIEM_CHAT_RUNTIME_MODE", "PADIEM_CHAT_LIVE_ENABLED")
 PUBLIC_BASE_URL_VAR = "PADIEM_CHAT_PUBLIC_BASE_URL"
+# #3252: a live version_metadata binding is runtime provenance. Exactly one may
+# exist, its name must be a bounded identifier, and it is preserved verbatim —
+# never invented and never dropped.
+_BINDING_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,63}$")
 
 
 class ProductionConfigError(RuntimeError):
@@ -47,6 +52,7 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
     r2: list[dict] = []
     plain_vars: dict[str, str] = {}
     secret_names: list[str] = []
+    version_metadata: list[dict] = []
     for raw in bindings:
         if not isinstance(raw, dict):
             raise ProductionConfigError("binding entry is not an object")
@@ -78,10 +84,18 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
             if not isinstance(text, str):
                 raise ProductionConfigError(f"plain_text binding {name!r} has no text value")
             plain_vars[name] = text
+        elif kind == "version_metadata":
+            if not _BINDING_NAME_RE.fullmatch(name):
+                raise ProductionConfigError(
+                    f"version_metadata binding name {name!r} is not a bounded identifier"
+                )
+            version_metadata.append(raw)
         else:
             secret_names.append(name)
     if len(names) != len(set(names)):
         raise ProductionConfigError("duplicate binding names in live settings")
+    if len(version_metadata) > 1:
+        raise ProductionConfigError("duplicate version_metadata bindings in live settings")
     return {
         "assets": assets,
         "services": services,
@@ -89,6 +103,7 @@ def parse_live_bindings(settings_payload: object) -> dict[str, object]:
         "r2": r2,
         "vars": plain_vars,
         "secret_names": secret_names,
+        "version_metadata": version_metadata[0] if version_metadata else None,
     }
 
 
@@ -139,6 +154,26 @@ def build_production_config(
     lines.append(f"directory = {_toml_string(assets_dir)}")
     lines.append(f"binding = {_toml_string(assets_binding)}")
     lines.append("")
+
+    # #3252: the repository config may declare the expected version_metadata
+    # source binding name, but the LIVE settings remain the production
+    # authority. The binding is preserved verbatim when live has one and is
+    # never invented when live does not.
+    repo_version_metadata = repo.get("version_metadata") or {}
+    repo_version_binding = (
+        repo_version_metadata.get("binding") if isinstance(repo_version_metadata, dict) else None
+    )
+    live_version_metadata = live["version_metadata"]
+    if live_version_metadata is not None:
+        live_name = live_version_metadata.get("name")
+        if repo_version_binding is not None and repo_version_binding != live_name:
+            raise ProductionConfigError(
+                "repository version_metadata binding "
+                f"{repo_version_binding!r} drifts from live binding {live_name!r}"
+            )
+        lines.append("[version_metadata]")
+        lines.append(f"binding = {_toml_string(str(live_name))}")
+        lines.append("")
 
     for service in live["services"]:
         target = service.get("service")
@@ -273,6 +308,7 @@ def main(argv: list[str] | None = None) -> int:
     print("SECRET_VALUES_EMITTED=0")
     print("PADIEM_CHAT_PUBLIC_BASE_URL_PRESTATE=EXPECTED")
     print("DEPLOY_CONFIG_MUTATION_ZERO=PASS")
+    print(f"VERSION_METADATA_PRESERVED={1 if live['version_metadata'] is not None else 0}")
     return 0
 
 

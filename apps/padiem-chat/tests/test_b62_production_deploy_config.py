@@ -301,3 +301,130 @@ def test_generator_cli_refuses_absent_public_base_url(tmp_path, capsys):
     assert not output_path.exists()
     err = capsys.readouterr().err
     assert "deploy does not inject" in err
+
+
+# ── #3252: version_metadata — source declaration and live preservation ─────
+
+
+def _read_repo_wrangler_text() -> str:
+    repo_root = Path(__file__).resolve().parents[3]
+    return (repo_root / "apps/padiem-chat/wrangler.toml").read_text(encoding="utf-8")
+
+
+def _write_repo_config_with_version_metadata(tmp_path: Path) -> Path:
+    path = _write_repo_config(tmp_path)
+    path.write_text(
+        path.read_text(encoding="utf-8") + '\n[version_metadata]\nbinding = "CF_VERSION_METADATA"\n',
+        encoding="utf-8",
+    )
+    return path
+
+
+def _bindings_with_version_metadata() -> list[dict]:
+    return _production_bindings() + [
+        {"type": "version_metadata", "name": "CF_VERSION_METADATA"}
+    ]
+
+
+def test_source_wrangler_declares_exactly_one_version_metadata_binding():
+    import tomllib
+
+    text = _read_repo_wrangler_text()
+    repo = tomllib.loads(text)
+    assert repo["version_metadata"]["binding"] == "CF_VERSION_METADATA"
+    assert text.count("[version_metadata]") == 1
+
+
+def test_live_version_metadata_binding_is_accepted_and_preserved(tmp_path):
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_bindings_with_version_metadata()))
+    config = module.build_production_config(
+        live, _write_repo_config_with_version_metadata(tmp_path), PUBLIC_URL
+    )
+    assert "[version_metadata]" in config
+    assert 'binding = "CF_VERSION_METADATA"' in config
+    module.verify_mutation_zero(config, live)
+
+
+def test_live_version_metadata_preserved_without_repo_declaration(tmp_path):
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_bindings_with_version_metadata()))
+    config = module.build_production_config(live, _write_repo_config(tmp_path), PUBLIC_URL)
+    assert "[version_metadata]" in config
+    assert 'binding = "CF_VERSION_METADATA"' in config
+
+
+def test_generator_does_not_invent_version_metadata(tmp_path):
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+    config = module.build_production_config(
+        live, _write_repo_config_with_version_metadata(tmp_path), PUBLIC_URL
+    )
+    assert "[version_metadata]" not in config
+    assert "CF_VERSION_METADATA" not in config
+
+
+def test_duplicate_version_metadata_bindings_fail_closed():
+    module = _load_module()
+    bindings = _bindings_with_version_metadata() + [
+        {"type": "version_metadata", "name": "OTHER_METADATA"}
+    ]
+    with pytest.raises(module.ProductionConfigError, match="duplicate version_metadata"):
+        module.parse_live_bindings(_settings_payload(bindings))
+
+
+def test_malformed_version_metadata_name_fails_closed():
+    module = _load_module()
+    bindings = _production_bindings() + [
+        {"type": "version_metadata", "name": "CF METADATA WITH SPACES"}
+    ]
+    with pytest.raises(module.ProductionConfigError, match="bounded identifier"):
+        module.parse_live_bindings(_settings_payload(bindings))
+
+
+def test_repository_version_metadata_name_drift_fails_closed(tmp_path):
+    module = _load_module()
+    repo_config = _write_repo_config(tmp_path)
+    repo_config.write_text(
+        repo_config.read_text(encoding="utf-8") + '\n[version_metadata]\nbinding = "OTHER_NAME"\n',
+        encoding="utf-8",
+    )
+    live = module.parse_live_bindings(_settings_payload(_bindings_with_version_metadata()))
+    with pytest.raises(module.ProductionConfigError, match="drifts"):
+        module.build_production_config(live, repo_config, PUBLIC_URL)
+
+
+def test_version_metadata_preservation_leaves_existing_bindings_untouched(tmp_path):
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_bindings_with_version_metadata()))
+    config = module.build_production_config(
+        live, _write_repo_config_with_version_metadata(tmp_path), PUBLIC_URL
+    )
+    assert 'service = "padiem-control-plane-identity"' in config
+    assert 'service = "ai-revenue-korean-ai-platform"' in config
+    assert 'database_id = "702bb62b-36f5-41a0-973f-c4f663ee01e6"' in config
+    assert 'PADIEM_CHAT_RUNTIME_MODE = "b14"' in config
+    assert "PADIEM_CHAT_QUOTA_SALT" not in config
+    module.verify_mutation_zero(config, live)
+
+
+def test_main_cli_reports_version_metadata_preservation(tmp_path, capsys):
+    module = _load_module()
+    for bindings, expected in (
+        (_bindings_with_version_metadata(), "VERSION_METADATA_PRESERVED=1"),
+        (_production_bindings(), "VERSION_METADATA_PRESERVED=0"),
+    ):
+        settings_path = tmp_path / "settings.json"
+        settings_path.write_text(json.dumps(_settings_payload(bindings)), encoding="utf-8")
+        output_path = tmp_path / "wrangler.production.generated.toml"
+        rc = module.main(
+            [
+                "--settings", str(settings_path),
+                "--repo-config", str(_write_repo_config(tmp_path)),
+                "--public-base-url", PUBLIC_URL,
+                "--output", str(output_path),
+            ]
+        )
+        assert rc == 0
+        assert expected in capsys.readouterr().out
+        output_path.unlink()
