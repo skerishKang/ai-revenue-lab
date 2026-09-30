@@ -33,8 +33,8 @@ _IMAGE_MEDIA = frozenset({"image/jpeg", "image/png", "image/webp"})
 def _authority():
     """Load the staged canonical #3212 authority.
 
-    deploy.sh copies the reviewed source file into the Worker project root as
-    b66_extraction_routing.py before pywrangler bundles the Worker.  Keeping
+    deploy.sh copies the reviewed source file into the Worker app package as
+    app/b66_extraction_routing.py before pywrangler bundles the Worker. Keeping
     the import lazy makes ordinary source/unit tests able to inject the same
     authority without creating a second committed implementation.
     """
