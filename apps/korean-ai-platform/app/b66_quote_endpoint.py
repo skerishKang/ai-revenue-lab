@@ -43,7 +43,11 @@ def _authority():
 
 
 def _error(code: str, *, status: int = 422) -> JSONResponse:
-    return JSONResponse({"ok": False, "error": {"code": code}}, status_code=status)
+    return JSONResponse(
+        {"ok": False, "error": {"code": code}},
+        status_code=status,
+        headers={"Cache-Control": "no-store"},
+    )
 
 
 async def _bounded_json(request: Request) -> dict[str, Any] | None:
