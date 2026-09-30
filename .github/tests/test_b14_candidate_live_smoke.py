@@ -664,6 +664,40 @@ def test_canonical_safe_error_code_is_projected() -> None:
     assert PRIVATE_SENTINEL not in output
 
 
+def test_b14_normalized_upstream_timeout_is_projected_without_message() -> None:
+    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+
+    def transport(method: str, path: str, body: dict | None):
+        if path == smoke.HEALTH_PATH:
+            return 200, _health(spec_obj)
+        if path == smoke.MODELS_PATH:
+            return 200, _models(spec_obj)
+        return 504, _json(
+            {
+                "error": {
+                    "code": "upstream_timeout",
+                    "message": PRIVATE_SENTINEL,
+                }
+            }
+        )
+
+    stdout = io.StringIO()
+    with contextlib.redirect_stdout(stdout):
+        rc = smoke.run(
+            "space-bunny",
+            transport=transport,
+            modality="image",
+        )
+
+    output = stdout.getvalue()
+    assert rc == 1
+    assert "SPACE_BUNNY_PRODUCTION_SMOKE=FAIL_CHAT_HTTP_504" in output
+    assert "ENGINE_ERROR_CODE=upstream_timeout" in output
+    assert PRIVATE_SENTINEL not in output
+    assert "B14_CHAT_POST_COUNT=1" in output
+    assert "NETWORK_RETRY_COUNT=0" in output
+
+
 def test_unparseable_body_is_locally_classified() -> None:
     spec_obj = smoke.CANDIDATE_REGISTRY["agnes"]
 
@@ -688,6 +722,12 @@ def test_unparseable_body_is_locally_classified() -> None:
     [
         ({"error": {"code": SECRET_SENTINEL}}, "unknown"),
         ({"error": {"code": "rate_limit_error"}}, "rate_limit_error"),
+        ({"error": {"code": "upstream_timeout"}}, "upstream_timeout"),
+        ({"error": {"code": "upstream_server_error"}}, "upstream_server_error"),
+        (
+            {"error": {"code": "upstream_rate_limited_busy"}},
+            "upstream_rate_limited_busy",
+        ),
         ({"error": {"code": "totally_made_up"}}, "unknown"),
         ({"error": {"code": 42}}, "unknown"),
         ({"error": {"code": None}}, "unknown"),
@@ -707,6 +747,9 @@ def test_safe_error_code_projection_is_closed(payload: dict, expected: str) -> N
 def test_error_code_vocabulary_is_closed_and_bounded() -> None:
     assert "unknown" in smoke.SAFE_ENGINE_ERROR_CODES
     assert "unparseable" in smoke.SAFE_ENGINE_ERROR_CODES
+    assert "upstream_timeout" in smoke.SAFE_ENGINE_ERROR_CODES
+    assert "upstream_server_error" in smoke.SAFE_ENGINE_ERROR_CODES
+    assert "upstream_rate_limited_busy" in smoke.SAFE_ENGINE_ERROR_CODES
     for code in smoke.SAFE_ENGINE_ERROR_CODES:
         assert code == code.strip().lower()
         assert " " not in code
