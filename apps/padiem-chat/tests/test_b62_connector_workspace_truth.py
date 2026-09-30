@@ -440,6 +440,52 @@ async def test_oauth_rpc_unknown_extra_key_fails_closed():
         )
 
 
+@pytest.mark.parametrize(
+    ("raw_code", "composition_code"),
+    [
+        ("canonical_auth_session_not_found", "identity_workspace_session_not_found"),
+        ("inactive_auth_session", "identity_workspace_session_inactive"),
+        ("connector_context_session_mismatch", "identity_workspace_session_mismatch"),
+        ("invalid_identity_authority", "identity_workspace_session_reference_invalid"),
+        ("control_plane_identity_unavailable", "identity_workspace_service_unavailable"),
+        ("control_plane_rpc_invalid", "identity_workspace_rpc_invalid"),
+        ("identity_authority_storage_error", "identity_workspace_storage_unavailable"),
+        (
+            "connector_context_storage_error",
+            "identity_workspace_context_storage_unavailable",
+        ),
+    ],
+)
+async def test_identity_errors_gain_private_provenance(raw_code, composition_code):
+    class _IdentityAuthorityError:
+        async def resolve_connector_workspace(self, *, session_id: str):
+            raise IdentityBridgeError(503, raw_code, "identity internal detail")
+
+    with pytest.raises(IdentityBridgeError) as excinfo:
+        await compose_workspace_connector_truth(
+            identity_authority=_IdentityAuthorityError(),
+            google_oauth_authority=_oauth(),
+            session_id=SESSION_ID,
+        )
+
+    assert excinfo.value.code == composition_code
+    assert "identity internal detail" not in str(excinfo.value)
+
+
+async def test_unknown_identity_error_becomes_generic_unavailable():
+    class _IdentityAuthorityError:
+        async def resolve_connector_workspace(self, *, session_id: str):
+            raise IdentityBridgeError(503, "future_identity_error", "hidden")
+
+    with pytest.raises(IdentityBridgeError) as excinfo:
+        await compose_workspace_connector_truth(
+            identity_authority=_IdentityAuthorityError(),
+            google_oauth_authority=_oauth(),
+            session_id=SESSION_ID,
+        )
+    assert excinfo.value.code == "connector_workspace_truth_unavailable"
+
+
 async def test_oauth_error_envelope_is_not_echoed():
     failing = CloudflareGoogleOAuthWorkspaceTruth(
         _OAuthBinding(error={"code": "google_oauth_unavailable", "message": "internal detail"})
