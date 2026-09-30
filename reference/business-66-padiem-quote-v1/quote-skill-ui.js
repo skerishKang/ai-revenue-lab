@@ -277,7 +277,17 @@
 
   function registrationModelOutput(extraction, kind, filename) {
     if (extraction && typeof extraction === "object") return JSON.parse(JSON.stringify(extraction));
-    return skeletonModelOutput(kind, filename);
+    return {
+      source: { kind: kind, filename: filename },
+      sender: { company: null, rep: null, bizNo: null, address: null, phone: null, email: null },
+      recipient: { company: null, person: null, address: null, email: null },
+      quote: { quoteNo: null, issueDate: null, validDays: null },
+      items: [],
+      tax: { mode: null },
+      memo: null,
+      evidence: [],
+      warnings: []
+    };
   }
 
   /* ── 바인딩 ── */
