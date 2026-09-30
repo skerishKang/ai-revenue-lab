@@ -29,12 +29,15 @@ session store.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from padiem_control_plane.b54_identity_bridge import (
+    B54_SERVER_AUTH_PROVIDER_GOOGLE,
+    B54_SERVER_AUTH_PROVIDER_PASSWORD,
+    TRUSTED_B54_SERVER_AUTH_PROVIDERS,
     B54BridgedIdentitySession,
     TrustedB54ControlPlaneIdentityAuthority,
     TrustedB54ServerAuthEvidence,
@@ -46,12 +49,15 @@ from .history import PasswordCredential
 __all__ = [
     "B54CanonicalSessionProducer",
     "B54ServerAuthenticatedOwner",
+    "B54_SERVER_AUTH_PROVIDERS",
     "b54_canonical_session_producer",
 ]
 
-# The only reviewed B54 server auth provider. OAuth is B62-only, and
-# TrustedB54ServerAuthEvidence rejects any other value.
-B54_SERVER_AUTH_PROVIDER = "password"
+# The reviewed B54 server auth providers (#3240). ``password`` is the original
+# path; ``google`` is the verified-OAuth path. Both come from the Control Plane
+# bridge's closed allowlist, so neither can be widened by a caller.
+B54_SERVER_AUTH_PROVIDER = B54_SERVER_AUTH_PROVIDER_PASSWORD
+B54_SERVER_AUTH_PROVIDERS = TRUSTED_B54_SERVER_AUTH_PROVIDERS
 
 
 def _server_clock() -> datetime:
@@ -60,15 +66,21 @@ def _server_clock() -> datetime:
 
 @dataclass(frozen=True, slots=True)
 class B54ServerAuthenticatedOwner:
-    """A B54 owner proven by the server's own authentication rows.
+    """A B54 owner proven by the server's own authentication.
 
-    There is no public constructor path from request content: instances are built
-    by :meth:`from_password_credential` from the ``users`` / ``password_credentials``
-    rows the server read to verify the login.
+    There is no public constructor path from request content. Instances are built
+    by one of the two trusted constructors, each of which accepts only values the
+    server itself verified:
+
+    * :meth:`from_password_credential` — the ``users`` / ``password_credentials``
+      rows the server read to verify a password login;
+    * :meth:`from_verified_google_identity` — the server-side OAuth code exchange
+      result, whose userinfo response already refused any unverified email.
     """
 
     product_user_id: str
     provider_subject: str
+    provider: str = B54_SERVER_AUTH_PROVIDER_PASSWORD
 
     @classmethod
     def from_password_credential(
@@ -79,6 +91,37 @@ class B54ServerAuthenticatedOwner:
         return cls(
             product_user_id=credential.user.id,
             provider_subject=credential.username,
+            provider=B54_SERVER_AUTH_PROVIDER_PASSWORD,
+        )
+
+    @classmethod
+    def from_verified_google_identity(
+        cls,
+        *,
+        product_user_id: str,
+        google_identity: Mapping[str, str],
+    ) -> "B54ServerAuthenticatedOwner":
+        """Build a B54 owner from a server-verified Google login (#3240).
+
+        ``google_identity`` is the dict returned by
+        ``GoogleOAuthClient.fetch_userinfo``, which raises
+        ``auth_identity_unverified`` unless the response carried
+        ``verified_email is true`` together with a subject and an email. Its
+        ``subject`` is therefore already the server-verified Google subject.
+
+        Only ``subject`` is carried forward: the email, name, picture and the raw
+        access token are deliberately not part of this owner, and neither the
+        token nor any browser-supplied value can reach the B54 bridge.
+        """
+        if not isinstance(google_identity, Mapping):
+            raise ValueError("a server-verified Google identity is required")
+        subject = google_identity.get("subject")
+        if not isinstance(subject, str) or not subject.strip() or len(subject) > 255:
+            raise ValueError("a server-verified Google subject is required")
+        return cls(
+            product_user_id=product_user_id,
+            provider_subject=subject,
+            provider=B54_SERVER_AUTH_PROVIDER_GOOGLE,
         )
 
     def __post_init__(self) -> None:
@@ -94,6 +137,8 @@ class B54ServerAuthenticatedOwner:
             or len(self.provider_subject) > 255
         ):
             raise ValueError("provider_subject must be a bounded server-stored subject")
+        if self.provider not in B54_SERVER_AUTH_PROVIDERS:
+            raise ValueError("provider must be a reviewed B54 server auth provider")
 
 
 class B54CanonicalSessionProducer:
@@ -120,13 +165,17 @@ class B54CanonicalSessionProducer:
         The authentication window is derived here from the server clock and the
         reviewed session lifetime, so no caller can widen or backdate the scope of
         the canonical session it asks the Control Plane to establish.
+
+        The provider comes from the already server-verified owner, never from the
+        request. ``product_id`` stays pinned to ``B54_PRODUCT_ID`` inside the
+        bridge, so a Google login can never reuse a B62 session.
         """
         if not isinstance(owner, B54ServerAuthenticatedOwner):
             raise ValueError("a server-authenticated B54 owner is required")
         authenticated_at = self._clock()
         evidence = TrustedB54ServerAuthEvidence(
             product_user_id=owner.product_user_id,
-            provider=B54_SERVER_AUTH_PROVIDER,
+            provider=owner.provider,
             provider_subject=owner.provider_subject,
             authenticated_at=authenticated_at,
             expires_at=authenticated_at + self._max_age,

@@ -9,6 +9,7 @@ import pytest
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.control_plane_identity import IdentityBridgeError
+from padiem_control_plane.b54_identity_bridge import B54_PRODUCT_ID
 from app.control_plane_identity_shadow import IdentityShadowRecord
 from app.control_plane_identity_worker import (
     CloudflareControlPlaneIdentityAuthority,
@@ -375,7 +376,13 @@ async def test_login_bridge_with_service_binding_adapter_saves_authority_issued_
     assert shadow_store.record.product_user_id == history.profile.id
     assert shadow_store.record.canonical_subject_id == "sub_test"
     assert shadow_store.record.auth_session_id == "sess_test"
-    assert [call[0] for call in binding.calls] == ["link", "establish"]
+    # #3240: the B62 login bridge still issues exactly link + establish, in that
+    # order. The additional trailing "link" is the separate B54 canonical-session
+    # attempt, which is additive, uses the same binding, and cannot alter the B62
+    # shadow that was just saved.
+    assert [call[0] for call in binding.calls] == ["link", "establish", "link"]
+    b62_calls = [call for call in binding.calls if call[1].get("product_id") != B54_PRODUCT_ID]
+    assert [call[0] for call in b62_calls] == ["link", "establish"]
     assert binding.calls[0][1]["provider_subject"] == "provider-subject-private"
     serialized = callback.text + json.dumps(dict(callback.headers), ensure_ascii=False)
     assert access_token not in serialized

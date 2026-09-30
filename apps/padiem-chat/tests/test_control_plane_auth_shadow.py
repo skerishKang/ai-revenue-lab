@@ -4,6 +4,7 @@ import httpx
 import pytest
 
 from padiem_control_plane import AuthSessionSnapshot, CanonicalSubjectRef, ProductIdentityLink, SubjectType
+from padiem_control_plane.b54_identity_bridge import B54_PRODUCT_ID
 
 from app.auth import GOOGLE_TOKEN_URL, GOOGLE_USERINFO_URL, SESSION_COOKIE
 from app.config import Settings
@@ -166,7 +167,11 @@ async def test_shadow_authority_failure_does_not_break_compatibility_login() -> 
     assert callback.status_code == 302
     assert status.json()["authenticated"] is True
     assert shadow.saved == []
-    assert len(authority.link_calls) == 1
+    # #3240: the B62 shadow attempt still fails exactly as before (one B62-scoped
+    # link call, nothing saved). The additional B54 canonical-session attempt is a
+    # separate product scope that also fails closed here; neither breaks the login.
+    assert len([c for c in authority.link_calls if c.get("product_id") != B54_PRODUCT_ID]) == 1
+    assert shadow.saved == []
 
 
 @pytest.mark.asyncio
@@ -185,5 +190,13 @@ async def test_absent_shadow_store_does_not_call_control_plane_or_change_login()
 
     assert callback.status_code == 302
     assert status.json()["authenticated"] is True
-    assert authority.link_calls == []
-    assert authority.session_calls == []
+    # #3240: the B62 identity-shadow write stays disabled, so there is no B62
+    # product-link/session call. The B54 canonical session (#3240) is a separate,
+    # additive step that is not gated on the B62 shadow store, so it may still
+    # resolve a B54 product link.
+    assert [
+        call for call in authority.link_calls if call.get("product_id") != B54_PRODUCT_ID
+    ] == []
+    assert [
+        call for call in authority.session_calls if call.get("product_id") != B54_PRODUCT_ID
+    ] == []
