@@ -1082,7 +1082,7 @@ def test_b66_f02_visual_facts_success_uses_shared_canary_authority() -> None:
             "recipient": "주식회사 샘플산업",
             "first_item": "스테인리스 배관 40x40",
             "first_quantity": 12,
-            "first_unit_price": "9,800",
+            "first_unit_price": "9.800",
         },
         ensure_ascii=False,
     )
@@ -1115,6 +1115,32 @@ def test_b66_f02_visual_facts_success_uses_shared_canary_authority() -> None:
 
 
 @pytest.mark.parametrize(
+    "value,expected",
+    [
+        ("9800", "9800"),
+        (9800, "9800"),
+        (9800.0, "9800"),
+        ("9,800", "9800"),
+        ("9.800", "9800"),
+        ("1,234,567", "1234567"),
+        ("1.234.567", "1234567"),
+        (" 9 800 ", "9800"),
+        ("9.8", None),
+        ("9.80", None),
+        ("9,80", None),
+        ("9,800.00", None),
+        ("9.800,00", None),
+        (-9800, None),
+        (9.8, None),
+        (None, None),
+        (True, None),
+    ],
+)
+def test_compact_unsigned_number_grouping_is_bounded(value, expected) -> None:
+    assert smoke._compact_unsigned_number(value) == expected
+
+
+@pytest.mark.parametrize(
     "field,bad_value",
     [
         ("quote_number", "Q-WRONG"),
@@ -1144,9 +1170,10 @@ def test_b66_f02_wrong_visual_fact_fails_closed_without_raw_answer(
 
     assert rc == 1
     output = stdout.getvalue()
-    assert "FAIL_b66_f02_visual_facts_mismatch" in output
+    assert f"FAIL_b66_f02_visual_fact_mismatch_{field}" in output
     assert "B14_CHAT_POST_COUNT=1" in output
     assert answer not in output
+    assert str(bad_value) not in output
 
 
 def test_b66_f02_non_json_answer_fails_closed_without_raw_answer() -> None:
