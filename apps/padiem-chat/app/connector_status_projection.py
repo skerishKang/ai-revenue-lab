@@ -101,6 +101,9 @@ WORKSPACE_REASON_IDENTITY_SERVICE_UNAVAILABLE = "canonical_identity_service_unav
 WORKSPACE_REASON_IDENTITY_RPC_INVALID = "canonical_identity_rpc_invalid"
 WORKSPACE_REASON_IDENTITY_STORAGE_UNAVAILABLE = "canonical_identity_storage_unavailable"
 WORKSPACE_REASON_CONNECTOR_CONTEXT_STORAGE_UNAVAILABLE = "canonical_connector_context_storage_unavailable"
+WORKSPACE_REASON_CONNECTOR_CONTEXT_INVALID = "canonical_connector_context_invalid"
+WORKSPACE_REASON_CONNECTOR_CONTEXT_PRODUCT_MISMATCH = "canonical_connector_context_wrong_product"
+WORKSPACE_REASON_IDENTITY_UNCLASSIFIED_FAILURE = "canonical_identity_unclassified_failure"
 WORKSPACE_REASON_CONNECTOR_NOT_REPORTED = "canonical_workspace_connector_not_reported"
 WORKSPACE_REASON_AMBIGUOUS = "canonical_workspace_connector_ambiguous"
 
@@ -117,6 +120,9 @@ _IDENTITY_ERROR_TO_WORKSPACE_REASON = {
     "identity_workspace_rpc_invalid": WORKSPACE_REASON_IDENTITY_RPC_INVALID,
     "identity_workspace_storage_unavailable": WORKSPACE_REASON_IDENTITY_STORAGE_UNAVAILABLE,
     "identity_workspace_context_storage_unavailable": WORKSPACE_REASON_CONNECTOR_CONTEXT_STORAGE_UNAVAILABLE,
+    "identity_workspace_context_invalid": WORKSPACE_REASON_CONNECTOR_CONTEXT_INVALID,
+    "identity_workspace_context_product_mismatch": WORKSPACE_REASON_CONNECTOR_CONTEXT_PRODUCT_MISMATCH,
+    "identity_workspace_unclassified": WORKSPACE_REASON_IDENTITY_UNCLASSIFIED_FAILURE,
 }
 
 # Explicit closed mapping. Reviewed B-1B internal connector id ->

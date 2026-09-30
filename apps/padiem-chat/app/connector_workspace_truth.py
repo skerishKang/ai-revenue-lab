@@ -67,8 +67,11 @@ _IDENTITY_ERROR_TO_COMPOSITION_CODE = {
     "invalid_identity_authority": "identity_workspace_session_reference_invalid",
     "control_plane_identity_unavailable": "identity_workspace_service_unavailable",
     "control_plane_rpc_invalid": "identity_workspace_rpc_invalid",
+    "invalid_identity_authority_rpc": "identity_workspace_rpc_invalid",
     "identity_authority_storage_error": "identity_workspace_storage_unavailable",
     "connector_context_storage_error": "identity_workspace_context_storage_unavailable",
+    "invalid_connector_context": "identity_workspace_context_invalid",
+    "connector_context_product_mismatch": "identity_workspace_context_product_mismatch",
 }
 
 _UNAVAILABLE_MESSAGE = "Connector workspace truth is unavailable."
@@ -104,7 +107,7 @@ def _identity_failure(exc: IdentityBridgeError) -> IdentityBridgeError:
     return IdentityBridgeError(
         exc.status_code,
         _IDENTITY_ERROR_TO_COMPOSITION_CODE.get(
-            exc.code, _GOOGLE_OAUTH_UNAVAILABLE
+            exc.code, "identity_workspace_unclassified"
         ),
         _UNAVAILABLE_MESSAGE,
     )
@@ -289,7 +292,11 @@ async def compose_workspace_connector_truth(
     except IdentityBridgeError as exc:
         raise _identity_failure(exc) from exc
     except Exception as exc:  # noqa: BLE001 - never leak a driver error
-        raise _unavailable() from exc
+        raise IdentityBridgeError(
+            503,
+            "identity_workspace_service_unavailable",
+            _UNAVAILABLE_MESSAGE,
+        ) from exc
 
     if workspace_ref is None:
         return _no_workspace_result()

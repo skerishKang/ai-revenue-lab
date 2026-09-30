@@ -449,10 +449,16 @@ async def test_oauth_rpc_unknown_extra_key_fails_closed():
         ("invalid_identity_authority", "identity_workspace_session_reference_invalid"),
         ("control_plane_identity_unavailable", "identity_workspace_service_unavailable"),
         ("control_plane_rpc_invalid", "identity_workspace_rpc_invalid"),
+        ("invalid_identity_authority_rpc", "identity_workspace_rpc_invalid"),
         ("identity_authority_storage_error", "identity_workspace_storage_unavailable"),
         (
             "connector_context_storage_error",
             "identity_workspace_context_storage_unavailable",
+        ),
+        ("invalid_connector_context", "identity_workspace_context_invalid"),
+        (
+            "connector_context_product_mismatch",
+            "identity_workspace_context_product_mismatch",
         ),
     ],
 )
@@ -472,7 +478,7 @@ async def test_identity_errors_gain_private_provenance(raw_code, composition_cod
     assert "identity internal detail" not in str(excinfo.value)
 
 
-async def test_unknown_identity_error_becomes_generic_unavailable():
+async def test_unknown_identity_error_keeps_private_identity_provenance():
     class _IdentityAuthorityError:
         async def resolve_connector_workspace(self, *, session_id: str):
             raise IdentityBridgeError(503, "future_identity_error", "hidden")
@@ -483,7 +489,22 @@ async def test_unknown_identity_error_becomes_generic_unavailable():
             google_oauth_authority=_oauth(),
             session_id=SESSION_ID,
         )
-    assert excinfo.value.code == "connector_workspace_truth_unavailable"
+    assert excinfo.value.code == "identity_workspace_unclassified"
+
+
+async def test_unexpected_identity_resolver_exception_is_identity_service_unavailable():
+    class _IdentityAuthorityBoom:
+        async def resolve_connector_workspace(self, *, session_id: str):
+            raise RuntimeError("hidden identity transport detail")
+
+    with pytest.raises(IdentityBridgeError) as excinfo:
+        await compose_workspace_connector_truth(
+            identity_authority=_IdentityAuthorityBoom(),
+            google_oauth_authority=_oauth(),
+            session_id=SESSION_ID,
+        )
+    assert excinfo.value.code == "identity_workspace_service_unavailable"
+    assert "hidden identity transport detail" not in str(excinfo.value)
 
 
 async def test_oauth_error_envelope_is_not_echoed():
