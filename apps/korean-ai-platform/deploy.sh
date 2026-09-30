@@ -21,17 +21,22 @@ cd "$(dirname "$0")"
 echo "==> uv sync --frozen"
 uv sync --frozen
 
-# Stage the single reviewed #3212 B66 extraction authority into this Worker
-# project so pywrangler can bundle it without committing a duplicate copy.
-B66_AUTHORITY_SOURCE="../b66-quote-adapter/app/extraction_routing.py"
-B66_STAGED_MODULE="app/b66_extraction_routing.py"
+# Stage the reviewed B66 authorities into this Worker project so
+# pywrangler can bundle them without committing duplicate implementations.
+B66_EXTRACTION_SOURCE="../b66-quote-adapter/app/extraction_routing.py"
+B66_EXTRACTION_STAGED="app/b66_extraction_routing.py"
+B66_INTAKE_SOURCE="../b66-quote-adapter/app/file_intake.py"
+B66_INTAKE_STAGED="app/b66_file_intake.py"
 cleanup_b66_stage() {
-    rm -f "${B66_STAGED_MODULE}"
+    rm -f "${B66_EXTRACTION_STAGED}" "${B66_INTAKE_STAGED}"
 }
 trap cleanup_b66_stage EXIT
-test -f "${B66_AUTHORITY_SOURCE}"
-cp "${B66_AUTHORITY_SOURCE}" "${B66_STAGED_MODULE}"
+test -f "${B66_EXTRACTION_SOURCE}"
+test -f "${B66_INTAKE_SOURCE}"
+cp "${B66_EXTRACTION_SOURCE}" "${B66_EXTRACTION_STAGED}"
+cp "${B66_INTAKE_SOURCE}" "${B66_INTAKE_STAGED}"
 echo "B66_EXTRACTION_AUTHORITY_STAGED=YES"
+echo "B66_FILE_INTAKE_AUTHORITY_STAGED=YES"
 
 echo "==> pywrangler sync"
 uv run pywrangler sync --force
