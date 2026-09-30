@@ -30,7 +30,11 @@ from padiem_control_plane.contracts import CanonicalSubjectRef, SubjectType
 from app.control_plane_identity import IdentityBridgeError
 from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
 
-NOW = datetime(2026, 9, 30, 12, 0, tzinfo=timezone.utc)
+# The Web helper re-reads the CURRENT session against the server clock, so this
+# fixture window must follow the wall clock. A fixed calendar instant made the
+# fixture silently expire once that instant passed (time bomb: reproduced on
+# clean main), failing an unrelated branch's suite.
+NOW = datetime.now(timezone.utc)
 USER = "usr_" + "3" * 32
 SUBJECT = "sub_" + "4" * 32
 TENANT = "tenant_" + "5" * 32
