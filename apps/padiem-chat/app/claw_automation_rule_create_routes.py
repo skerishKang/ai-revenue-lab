@@ -289,15 +289,26 @@ async def claw_automation_rule_create(request: Request) -> JSONResponse:
 
     try:
         # The existing domain contract is the authority for schedule validity:
-        # kind vocabulary, per-kind expression grammar and the timezone
-        # identifier shape. No second parser exists here. Runtime zone
-        # resolvability stays with the existing execution-time predicate
-        # (``resolve_timezone``), which already fails closed per run.
+        # kind vocabulary and the per-kind expression grammar. No second parser
+        # exists here.
         schedule = ClawScheduleExpression(
             kind=body["schedule_kind"],
             expression=body["schedule_expression"],
             timezone=body["schedule_timezone"],
         )
+        # The reviewed Calendar timezone contract is the resolvability
+        # authority (#3260 review): an identifier the timezone database does
+        # not know (e.g. Mars/Olympus) must be refused at create time, not
+        # stored as a rule that fails on every future run. Reused, not
+        # reimplemented.
+        from .calendar_contracts import CalendarContractError, validate_timezone
+
+        try:
+            validate_timezone(body["schedule_timezone"])
+        except CalendarContractError:
+            return _error(
+                400, "invalid_timezone", "시간대를 확인해 주세요. IANA 시간대가 필요합니다."
+            )
         target_source = ClawAutomationTarget(body["target_source"])
         output_type = ClawAutomationOutputType(body["output_type"])
     except (ContractError, TypeError, ValueError):

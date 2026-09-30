@@ -151,7 +151,9 @@ def _valid_body() -> dict:
         "task": "매일 아침 어제의 알림을 요약해서 알려줘.",
         "schedule_kind": "daypart",
         "schedule_expression": "morning",
-        "schedule_timezone": "Asia/Seoul",
+        # UTC resolves on every runtime; region zones are proven separately
+        # (see test_region_timezone_follows_runtime_timezone_database).
+        "schedule_timezone": "UTC",
         "target_source": "memory",
         "output_type": "alert",
     }
@@ -478,15 +480,53 @@ def test_cron_valid_and_malformed() -> None:
 
 @pytest.mark.parametrize(
     "bad_timezone",
-    ["Asia Seoul", ".Asia/Seoul", "-Asia/Seoul", "Asia/Seoul; drop", "Mars/Olympus 2050", ""],
+    [
+        # Shape-invalid identifiers (existing domain shape check).
+        "Asia Seoul",
+        ".Asia/Seoul",
+        "-Asia/Seoul",
+        "Asia/Seoul; drop",
+        "",
+        # Shape-valid but NOT in the timezone database: must be refused at
+        # create time, not stored as a rule that fails on every future run.
+        "Mars/Olympus",
+    ],
 )
-def test_invalid_timezone_is_400(bad_timezone: str) -> None:
+def test_invalid_timezone_is_400_and_never_saves(bad_timezone: str) -> None:
     store = _RecordingStore()
     body = _valid_body()
     body["schedule_timezone"] = bad_timezone
     resp = _post(_client(store), body=body)
     assert resp.status_code == 400
     assert store.save_calls == 0
+
+
+def test_region_timezone_follows_runtime_timezone_database() -> None:
+    """Asia/Seoul passes exactly when the runtime can resolve it (#3260 review).
+
+    The create gate uses the reviewed Calendar timezone contract (real
+    ``zoneinfo`` resolution), so a runtime without timezone data fail-closes
+    with 400 — the same contract execution will apply per run.
+    """
+
+    import zoneinfo
+
+    try:
+        zoneinfo.ZoneInfo("Asia/Seoul")
+        resolvable = True
+    except Exception:
+        resolvable = False
+
+    store = _RecordingStore()
+    body = _valid_body()
+    body["schedule_timezone"] = "Asia/Seoul"
+    resp = _post(_client(store), body=body)
+    if resolvable:
+        assert resp.status_code == 201
+        assert store.save_calls == 1
+    else:
+        assert resp.status_code == 400
+        assert store.save_calls == 0
 
 
 def test_invalid_target_and_output_are_400() -> None:
