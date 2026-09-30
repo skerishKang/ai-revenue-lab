@@ -1175,6 +1175,7 @@
   if (SkillUi && typeof SkillUi.bindSkillSection === "function" && typeof localStorage !== "undefined") {
     skillUiApi = SkillUi.bindSkillSection(document, {
       storage: localStorage,
+      fetch: (url, options) => window.fetch(url, options),
       getDraftSnapshot: () => cloneDraft(draft),
       applySkillToForm,
       renderMain: render,
