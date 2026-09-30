@@ -740,12 +740,18 @@ check(skillUi.includes("bindSkillSection") &&
 check(!/\.innerHTML\s*=/.test(skillUi),
   "MY_QUOTATION_UI: wizard renders via DOM API, no markup injection surface");
 check(!/(space-bunny|sensenova|openai|anthropic|kilo\/)/i.test(skillUi) &&
-      !/fetch\(|XMLHttpRequest|WebSocket/.test(skillUi) &&
+      skillUi.includes('LIVE_INTAKE_ENDPOINT = "/api/v1/quote/intake"') &&
+      !/https?:\/\//i.test(skillUi) &&
+      !/XMLHttpRequest|WebSocket|EventSource/.test(skillUi) &&
       !/localStorage|sessionStorage|indexedDB/.test(skillUi),
-  "MY_QUOTATION_UI: no provider identity, no network, storage only through env");
+  "MY_QUOTATION_UI: same-origin intake only, no provider identity/external network, storage only through env");
 check(app.includes("B66QuoteSkillBridge") && app.includes("applySkillToForm") &&
       app.includes("skillUiState"),
   "MY_QUOTATION_UI: app hosts the skill bridge with form application and builtin fallback");
+check(skillUi.includes("analyzeImageFile") &&
+      skillUi.includes("factsFromExtraction") &&
+      skillUi.includes("registrationModelOutput"),
+  "MY_QUOTATION_LIVE_IMAGE_INTAKE=YES: validated extraction feeds review/registration");
 
 console.log("VALID_UNTIL_CONTRACT=PASS");
 console.log("ADDRESS_FIELDS_CONTRACT=PASS");
