@@ -68,6 +68,7 @@ def test_text_probe_posts_once_and_emits_bounded_evidence() -> None:
     assert len(calls) == 1
     body, headers = calls[0]
     assert body["model"] == "stealth/space-bunny-alpha"
+    assert body["max_tokens"] == probe.TEXT_MAX_TOKENS == 32
     assert body["messages"][0]["content"] == "Reply with the single word OK."
     assert all(key.lower() != "authorization" for key in headers)
     output = out.getvalue()
@@ -93,6 +94,7 @@ def test_image_probe_reuses_synthetic_fixture_and_posts_once() -> None:
     assert probe.IMAGE_FIXTURE.is_file()
     assert len(probe.IMAGE_FIXTURE.read_bytes()) <= probe.MAX_IMAGE_BYTES
     body = calls[0][0]
+    assert body["max_tokens"] == probe.IMAGE_MAX_TOKENS == 1024
     parts = body["messages"][0]["content"]
     assert parts[1]["type"] == "image_url"
     assert parts[1]["image_url"]["url"].startswith("data:image/png;base64,")
