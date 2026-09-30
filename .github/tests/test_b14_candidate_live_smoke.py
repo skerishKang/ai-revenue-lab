@@ -826,7 +826,7 @@ def test_canonical_image_body_pins_exact_model_and_parts() -> None:
     body = smoke.canonical_image_body(spec_obj, _S1_TINY_PNG_URL)
     assert body["model"] == "kilo/stealth-space-bunny-alpha"
     assert body["temperature"] == 0
-    assert body["max_tokens"] == 32
+    assert body["max_tokens"] == smoke.SPACE_BUNNY_IMAGE_MAX_TOKENS == 1024
     (message,) = body["messages"]
     assert message["role"] == "user"
     text_part, image_part = message["content"]
@@ -1045,7 +1045,7 @@ def test_b66_f02_image_body_matches_b66_gateway_posture() -> None:
     assert body["model"] == "kilo/stealth-space-bunny-alpha"
     assert body["stream"] is False
     assert body["temperature"] == 0
-    assert body["max_tokens"] == smoke.B66_F02_IMAGE_MAX_TOKENS
+    assert body["max_tokens"] == smoke.B66_F02_IMAGE_MAX_TOKENS == 3500
     assert body["business14"] == {
         "required_capabilities": ["image"],
         "allow_external_fallback": False,
