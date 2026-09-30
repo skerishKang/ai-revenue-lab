@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from datetime import datetime, timedelta, timezone
 import json
 
@@ -213,6 +214,46 @@ async def establish_b54_canonical_session_after_login(
         return None
 
 
+async def establish_b54_canonical_session_after_google_login(
+    request: Request, profile_id: str, google_identity: Mapping[str, str]
+) -> B54BridgedIdentitySession | None:
+    """Establish the canonical B54 session behind a verified Google login (#3240).
+
+    Called only after the whole server-side Google chain has already succeeded:
+    OAuth state verified, code exchanged, userinfo fetched with
+    ``verified_email is true``, and the server UserProfile upserted. The
+    ``profile_id`` is that server row's id and ``google_identity`` is the
+    already-verified userinfo result — the raw access token is not passed here and
+    never reaches the B54 bridge.
+
+    No request content names a user, provider, provider subject, tenant, product
+    or session, so a forged query/body field cannot influence the canonical
+    session.
+
+    Like the password path, this is additive: it is attempted only when the
+    private Control Plane identity binding is present, and a B54 failure never
+    turns a completed B62 Google login into an error.
+    """
+
+    if getattr(request.app.state, "control_plane_identity_authority", None) is None:
+        return None
+    producer = b54_canonical_session_producer(
+        app_state=request.app.state,
+        session_max_age_seconds=request.app.state.settings.session_max_age_seconds,
+    )
+    try:
+        owner = B54ServerAuthenticatedOwner.from_verified_google_identity(
+            product_user_id=profile_id,
+            google_identity=google_identity,
+        )
+    except Exception:
+        return None
+    try:
+        return await producer.establish(owner)
+    except Exception:
+        return None
+
+
 async def google_callback(request: Request) -> Response:
     if not google_auth_ready(request):
         return _unavailable()
@@ -257,6 +298,13 @@ async def google_callback(request: Request) -> Response:
         provider_subject=identity["subject"],
         authenticated_at=authenticated_at,
         expires_at=expires_at,
+    )
+
+    # #3240: the B62 Google login above is already complete and unchanged. The
+    # canonical B54 session is additive and best-effort — a B54 failure returns
+    # None here and any B54-scoped operation fails closed on its own later.
+    await establish_b54_canonical_session_after_google_login(
+        request, profile.id, identity
     )
 
     response = RedirectResponse("/", status_code=302)

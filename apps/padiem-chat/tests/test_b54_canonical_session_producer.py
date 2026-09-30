@@ -43,6 +43,7 @@ from padiem_control_plane import (
 )
 from padiem_control_plane.b54_identity_bridge import (
     B54_PRODUCT_ID,
+    TRUSTED_B54_SERVER_AUTH_PROVIDERS,
     B54IdentityBridgeError,
     TrustedB54ServerAuthEvidence,
     bridge_trusted_b54_server_auth,
@@ -445,12 +446,44 @@ async def test_b54_authority_failure_does_not_break_the_b62_login():
 # ---------------------------------------------------------------------------
 
 
-def test_google_provider_is_not_accepted_as_b54_server_evidence():
-    """Google is a B62 provider only, so the Google login cannot feed a B54 session."""
+def test_b54_server_evidence_providers_are_exactly_password_and_google():
+    """#3240: the allowlist is closed at {password, google} and no wider."""
+
+    assert set(TRUSTED_B54_SERVER_AUTH_PROVIDERS) == {"password", "google"}
+
+    now = NOW
+    for provider in ("password", "google"):
+        evidence = TrustedB54ServerAuthEvidence(
+            product_user_id="usr_google_owner",
+            provider=provider,
+            provider_subject="google-subject",
+            authenticated_at=now,
+            expires_at=now + timedelta(hours=1),
+        )
+        assert evidence.provider == provider
+
+
+@pytest.mark.parametrize(
+    "provider",
+    [
+        "google ",
+        "GOOGLE",
+        "oauth",
+        "kakao",
+        "apple",
+        "",
+        "password2",
+        "b62",
+        "b54",
+    ],
+)
+def test_unreviewed_provider_is_refused_as_b54_server_evidence(provider):
+    """UNKNOWN_B54_PROVIDER_REJECTED=YES: the allowlist is not a passthrough."""
+
     with pytest.raises(ValueError):
         TrustedB54ServerAuthEvidence(
             product_user_id="usr_google_owner",
-            provider="google",
+            provider=provider,
             provider_subject="google-subject",
             authenticated_at=NOW,
             expires_at=NOW + timedelta(hours=1),

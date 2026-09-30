@@ -52,8 +52,11 @@ B54_PRODUCT_ID = "b54-padiem-claw"
 
 __all__ = [
     "B54_PRODUCT_ID",
+    "B54_SERVER_AUTH_PROVIDER_GOOGLE",
+    "B54_SERVER_AUTH_PROVIDER_PASSWORD",
     "B54BridgedIdentitySession",
     "B54IdentityBridgeError",
+    "TRUSTED_B54_SERVER_AUTH_PROVIDERS",
     "TrustedB54ControlPlaneIdentityAuthority",
     "TrustedB54ServerAuthEvidence",
     "bridge_trusted_b54_server_auth",
@@ -71,14 +74,34 @@ class B54IdentityBridgeError(RuntimeError):
         return self.safe_message
 
 
+# The closed set of reviewed B54 server auth providers (#3240).  ``password`` is
+# the original provider; ``google`` was added for a server-verified Google login
+# whose B62 session already exists.  This is an allowlist, not a free-form
+# passthrough: any other value is refused, and no browser field can name one.
+B54_SERVER_AUTH_PROVIDER_PASSWORD = "password"
+B54_SERVER_AUTH_PROVIDER_GOOGLE = "google"
+TRUSTED_B54_SERVER_AUTH_PROVIDERS = frozenset(
+    {B54_SERVER_AUTH_PROVIDER_PASSWORD, B54_SERVER_AUTH_PROVIDER_GOOGLE}
+)
+
+
 @dataclass(frozen=True, slots=True)
 class TrustedB54ServerAuthEvidence:
     """Bounded server-side evidence produced after B54 server authentication succeeds.
 
     Only server-trusted code may construct this dataclass.  The ``product_user_id``
     must be a bounded server-assigned identifier — never a browser-supplied value.
-    The ``provider`` must be ``"password"`` (the only reviewed B54 auth provider;
-    OAuth is B62-only).
+    The ``provider`` must be one of the reviewed B54 server auth providers:
+
+    ``password``
+        server-verified password credential rows;
+    ``google``
+        a server-side OAuth code exchange whose userinfo response carried
+        ``verified_email is true`` and a subject.
+
+    The set is closed and additive.  It is NOT "any provider the caller names":
+    an unreviewed provider is still refused, so a caller can never widen the
+    B54 auth surface by supplying a different string.
     """
 
     product_user_id: str
@@ -94,9 +117,10 @@ class TrustedB54ServerAuthEvidence:
             or len(self.product_user_id) > 80
         ):
             raise ValueError("product_user_id must be a bounded B54 server-assigned identifier")
-        if self.provider not in {"password"}:
+        if self.provider not in TRUSTED_B54_SERVER_AUTH_PROVIDERS:
             raise ValueError(
-                "provider must be 'password' — the only reviewed B54 server auth provider"
+                "provider must be one of the reviewed B54 server auth providers: "
+                f"{sorted(TRUSTED_B54_SERVER_AUTH_PROVIDERS)}"
             )
         if (
             not isinstance(self.provider_subject, str)

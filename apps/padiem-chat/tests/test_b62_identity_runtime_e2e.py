@@ -278,9 +278,19 @@ async def test_runtime_e2e_login_then_authority_minted_ticket_verifies_with_shar
     assert second.status_code == 200
     assert second.json()["ticket"]["connect_ticket"] != ticket
 
+    # #3240: a verified Google login additionally ATTEMPTS the canonical B54
+    # session, through the SAME authority — no second identity authority and no
+    # second session store. This recording binding only implements the product
+    # link / session / connector RPCs, so the B54 bridge reaches the product-link
+    # resolution and then fails closed on tenant resolution ("B54 canonical tenant
+    # resolution is unavailable"). That failure is additive and tolerated: the B62
+    # Google login above still redirected, the shadow was still written, and the
+    # connector tickets below are unaffected. A B54-scoped operation fails closed
+    # on its own later, exactly like the password path.
     assert runtime.calls == [
-        "resolve_or_create_product_link",
-        "establish_auth_session",
+        "resolve_or_create_product_link",   # B62 identity shadow
+        "establish_auth_session",           # B62 session
+        "resolve_or_create_product_link",   # #3240 B54 attempt
         "issue_google_connect_ticket",
         "issue_google_connect_ticket",
     ]
