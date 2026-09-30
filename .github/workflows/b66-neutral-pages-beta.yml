@@ -46,6 +46,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
           test -f "${SOURCE_DIR}/index.html"
+          test -f "${SOURCE_DIR}/_worker.js"
           test -f "${SOURCE_DIR}/app.js"
           test -f "${SOURCE_DIR}/quote-core.js"
           test -f "${SOURCE_DIR}/quote-history.js"
@@ -76,6 +77,7 @@ jobs:
         working-directory: ${{ env.SOURCE_DIR }}
         run: |
           set -euo pipefail
+          node --check _worker.js
           node --check app.js
           node --check file-intake.js
           node --check easy-mode.js
@@ -112,6 +114,8 @@ jobs:
           node tests/quote-template-registration.test.cjs
           node tests/quote-registration-session.test.cjs
           node tests/quote-skill-ui.test.cjs
+          node tests/quote-skill-live-analysis.test.cjs
+          node tests/pages-live-intake.test.mjs
 
       - name: Run B66 server intake adapter contracts
         shell: bash
@@ -123,8 +127,8 @@ jobs:
           python -m unittest discover -s apps/b66-quote-adapter/tests -v
           echo "B66_SERVER_INTAKE_CONTRACT=PASS"
           echo "CORE_DOCUMENT_PARSER_REUSED=YES"
-          echo "SERVER_ROUTE_DEPLOYED=NO"
-          echo "MODEL_DEPENDENCY=NO"
+          echo "B66_EXTRACTION_AUTHORITY_SOURCE=PASS"
+          echo "MODEL_DEPENDENCY=SERVER_ONLY"
 
       - name: Local HTTP smoke
         shell: bash
