@@ -226,11 +226,17 @@ def _anonymous_client(store) -> TestClient:
 def test_route_is_registered_as_get_only() -> None:
     app = create_app(Settings.from_values(runtime_mode="mock", live_enabled="false", auth_mode="off"))
     routes = [r for r in app.routes if getattr(r, "path", None) == LIST_PATH]
-    assert len(routes) == 1
-    # Starlette adds HEAD alongside GET; the point is that no write verb exists.
-    methods = getattr(routes[0], "methods", set())
-    assert methods == {"GET", "HEAD"}
-    assert not methods & {"POST", "PUT", "PATCH", "DELETE"}
+    # #3257 added the POST Create route on the same resource; the read-only GET
+    # route itself is unchanged, and no PUT/PATCH/DELETE exists.
+    assert len(routes) == 2
+    get_routes = [r for r in routes if "GET" in getattr(r, "methods", set())]
+    post_routes = [r for r in routes if "POST" in getattr(r, "methods", set())]
+    assert len(get_routes) == 1
+    assert getattr(get_routes[0], "methods", set()) == {"GET", "HEAD"}
+    assert len(post_routes) == 1
+    assert getattr(post_routes[0], "methods", set()) == {"POST"}
+    for route in routes:
+        assert not getattr(route, "methods", set()) & {"PUT", "PATCH", "DELETE"}
 
 
 def test_slice_declares_itself_read_only() -> None:

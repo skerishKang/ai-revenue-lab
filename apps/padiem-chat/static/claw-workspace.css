@@ -1113,3 +1113,25 @@
   .claw-run-card-artifact { align-items: stretch; flex-direction: column; }
   .claw-run-card-download { width: 100%; justify-content: center; }
 }
+
+/* #3257 — Web Automation Create form (reuses the calendar-record form system) */
+.claw-automation-create { margin-top: 12px; }
+.calendar-record-cancel {
+  border: 1px solid var(--border, rgba(15, 23, 42, 0.18));
+  background: transparent;
+  color: inherit;
+  border-radius: 10px;
+  padding: 10px 16px;
+  min-height: 44px;
+  font: inherit;
+  cursor: pointer;
+}
+.claw-automation-create-cron-help {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+}
+@media (max-width: 920px) {
+  .claw-automation-create .calendar-record-actions { flex-direction: column; }
+  .claw-automation-create .calendar-record-actions button { width: 100%; }
+}
