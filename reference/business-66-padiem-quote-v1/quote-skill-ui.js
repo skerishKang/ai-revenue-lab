@@ -435,20 +435,6 @@
       };
     }
 
-    function skeletonModelOutput(kind, filename) {
-      return {
-        source: { kind: kind, filename: filename },
-        sender: { company: null, rep: null, bizNo: null, address: null, phone: null, email: null },
-        recipient: { company: null, person: null, address: null, email: null },
-        quote: { quoteNo: null, issueDate: null, validDays: null },
-        items: [],
-        tax: { mode: null },
-        memo: null,
-        evidence: [],
-        warnings: []
-      };
-    }
-
     function readLayoutForm() {
       var get = function (id) {
         var node = doc.getElementById(id);
