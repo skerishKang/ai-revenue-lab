@@ -1,13 +1,13 @@
 # B66 Quote Server Adapter
 
 ```text
-STATUS = SOURCE_READY_NOT_DEPLOYED
-ISSUE = #3162
-MODEL_DEPENDENCY = NO
-SERVER_ROUTE_DEPLOYED = NO
+CANONICAL_ADAPTER_SOURCE = YES
+IMAGE_EXTRACTION_SOURCE_WIRED_TO_B14 = YES (#3249)
+NATIVE_DOCUMENT_INTAKE_ROUTE_SOURCE_ONLY = YES
+BROWSER_MODEL_PROVIDER_IDENTITY = 0
 ```
 
-This package is the product-owned server boundary for future B66 quotation file intake.
+This package is the product-owned server authority for B66 quotation intake/extraction. Runtime deployment state is tracked separately by the B14/Pages deployment gates; this document describes source ownership.
 
 ## Ownership
 
@@ -35,17 +35,19 @@ B66 does **not** own:
 - OCR implementation;
 - generic multimodal execution semantics.
 
-## Source-ready intake contract
+## Browser-visible intake contract
 
-Future same-origin path reserved by source contract:
+The B66 browser uses one same-origin product path:
 
 ```text
 POST /api/v1/quote/intake
 ```
 
-No route is installed or deployed by #3162.
+For the image-registration MVP, Pages `_worker.js` proxies this bounded request to the existing B14 Worker. The B14 endpoint stages and reuses `app/extraction_routing.py` as the canonical #3212 request-builder/model-output validator.
 
-Exact request body:
+The separate `file_intake.py` native-document parser boundary remains source-only for now; PDF/DOCX/PPTX/XLSX/HWPX automatic content analysis is not claimed by #3249.
+
+Exact browser request body for the image MVP:
 
 ```json
 {
@@ -110,15 +112,20 @@ If the reviewed parser authority is unavailable in the runtime, intake fails clo
 
 ## Image boundary
 
-Image intake validates bounded media/extension/size/magic and returns:
+`file_intake.py` still provides a model-free image classification seam for generic server composition.
+
+The live image-registration source path introduced by #3249 instead reuses `extraction_routing.py` directly:
 
 ```text
-kind = image_candidate
-next = vision_model_pending
-model_called = false
+bounded image bytes
+-> build_image_extraction_request()
+-> canonical B14 multimodal/manual route
+-> normalize_model_output()
+-> server-owned provenance + bounded extraction facts
+-> Saved Quote Skill review
 ```
 
-This is only a product intake classification. Future execution must still pass through the trusted attachment / IP-CORE multimodal path, which revalidates media bytes.
+The browser cannot supply a model/provider/route/credential. Untrusted model output is validated server-side before any extraction facts are returned to the product.
 
 ## Verification
 
@@ -129,4 +136,4 @@ PYTHONPATH=packages/padiem-ai-core:apps/b66-quote-adapter \
 python -m unittest discover -s apps/b66-quote-adapter/tests
 ```
 
-Refs #3143, #3147, #3162.
+Refs #3143, #3147, #3162, #3212, #3249.
