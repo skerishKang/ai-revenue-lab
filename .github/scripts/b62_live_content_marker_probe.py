@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""B62 live-content #2124 and #2544 marker probe (B62/B14 #2548, #2553).
+"""B62 live-content #2124/#2544 + B67 Drive marker probe (#2548, #2553, #3199).
 
 READ-ONLY. Inspects the CURRENT served padiem-chat script content, fetched
 GET-only by the dispatcher workflow into runner temp, and reports whether
@@ -37,6 +37,10 @@ Closed output vocabulary (version UUIDs are non-secret operational ids):
     MARKER_STREAMING_CLIENT_PRESENT=PRESENT|ABSENT
     MARKER_STREAMING_USES_DEFAULT_CONFIG=PRESENT|ABSENT
     COMPLETED_TIMEOUT_LIVE_MARKERS=PASS|INCONCLUSIVE
+    MARKER_B67_DRIVE_SEAM_VERSION=PRESENT|ABSENT
+    MARKER_B67_IDENTITY_WORKSPACE_ERROR=PRESENT|ABSENT
+    MARKER_B67_PROJECT_DRIVE_ROUTE=PRESENT|ABSENT
+    B67_DRIVE_CASE_FOLDER_LIVE_MARKERS=PASS|INCONCLUSIVE
     VERSION_METADATA_SOURCE=<closed Cloudflare VersionGetResponse enum or UNKNOWN>
     SCRIPT_LAST_DEPLOYED_FROM=<bounded token or UNKNOWN>
     RAW_SCRIPT_CONTENT_OUTPUT=0
@@ -128,6 +132,19 @@ COMPLETED_TIMEOUT_MARKERS: dict[str, bytes] = {
 }
 
 COMPLETED_TIMEOUT_MARKER_KEYS = tuple(COMPLETED_TIMEOUT_MARKERS)
+
+# #3199 B67 Project -> Google Drive case-folder marker family. These exact
+# source tokens jointly prove that the currently served Chat script contains
+# the reviewed B67 product route, the bounded identity-workspace failure
+# taxonomy, and the private Chat -> Engine seam version. Presence is evidence;
+# absence stays INCONCLUSIVE because packaging/minification can transform text.
+B67_DRIVE_CASE_FOLDER_MARKERS: dict[str, bytes] = {
+    "MARKER_B67_DRIVE_SEAM_VERSION": b"chat-drive-case-folder-engine.v1",
+    "MARKER_B67_IDENTITY_WORKSPACE_ERROR": b"identity_workspace_unavailable",
+    "MARKER_B67_PROJECT_DRIVE_ROUTE": b"/api/projects/{project_id}/drive-case-folder",
+}
+
+B67_DRIVE_CASE_FOLDER_MARKER_KEYS = tuple(B67_DRIVE_CASE_FOLDER_MARKERS)
 
 
 class LiveContentError(RuntimeError):
@@ -285,6 +302,18 @@ def probe_live_content(
     verdict["COMPLETED_TIMEOUT_LIVE_MARKERS"] = (
         "PASS" if completed_all_present else "INCONCLUSIVE"
     )
+    for key in B67_DRIVE_CASE_FOLDER_MARKER_KEYS:
+        verdict[key] = (
+            "PRESENT"
+            if B67_DRIVE_CASE_FOLDER_MARKERS[key] in content_bytes
+            else "ABSENT"
+        )
+    b67_all_present = all(
+        verdict[key] == "PRESENT" for key in B67_DRIVE_CASE_FOLDER_MARKER_KEYS
+    )
+    verdict["B67_DRIVE_CASE_FOLDER_LIVE_MARKERS"] = (
+        "PASS" if b67_all_present else "INCONCLUSIVE"
+    )
     verdict["VERSION_METADATA_SOURCE"] = extract_version_metadata_source(version_result)
     verdict["SCRIPT_LAST_DEPLOYED_FROM"] = extract_last_deployed_from(version_result)
     return verdict
@@ -324,6 +353,10 @@ OUTPUT_ORDER = (
     "MARKER_STREAMING_CLIENT_PRESENT",
     "MARKER_STREAMING_USES_DEFAULT_CONFIG",
     "COMPLETED_TIMEOUT_LIVE_MARKERS",
+    "MARKER_B67_DRIVE_SEAM_VERSION",
+    "MARKER_B67_IDENTITY_WORKSPACE_ERROR",
+    "MARKER_B67_PROJECT_DRIVE_ROUTE",
+    "B67_DRIVE_CASE_FOLDER_LIVE_MARKERS",
     "VERSION_METADATA_SOURCE",
     "SCRIPT_LAST_DEPLOYED_FROM",
 )
