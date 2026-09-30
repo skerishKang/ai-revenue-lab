@@ -39,7 +39,7 @@ def _authority():
     authority without creating a second committed implementation.
     """
 
-    return importlib.import_module("b66_extraction_routing")
+    return importlib.import_module("app.b66_extraction_routing")
 
 
 def _error(code: str, *, status: int = 422) -> JSONResponse:
