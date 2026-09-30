@@ -55,6 +55,11 @@ jobs:
               "TEST_USER_EXISTS=",
               "TEST_USER_SHADOW_EXISTS=",
               "B67_PROJECT_TEST_USER_RELATION=",
+              "B67_PROJECT_NAME_CARDINALITY=",
+              "B67_OWNER_SHADOW_EXISTS=",
+              "B67_OWNER_SHADOW_SHAPE_VALID=",
+              "B67_OWNER_SHADOW_STATE_ACTIVE=",
+              "B67_OWNER_SHADOW_NOT_EXPIRED=",
               "TEST_USER_SHADOW_SHAPE_VALID=",
               "TEST_USER_SHADOW_STATE_ACTIVE=",
               "TEST_USER_SHADOW_NOT_EXPIRED=",
@@ -288,7 +293,51 @@ jobs:
               JOIN control_plane_identity_shadow s ON s.product_user_id=pc.user_id
               WHERE pc.username='skerish1' COLLATE NOCASE
                 AND julianday(s.session_expires_at) > julianday('now')
-            ) AS shadow_not_expired;
+            ) AS shadow_not_expired,
+            EXISTS(
+              SELECT 1
+              FROM projects p
+              JOIN control_plane_identity_shadow s ON s.product_user_id=p.user_id
+              WHERE p.name='B67 법률 테스트'
+                AND (
+                  SELECT COUNT(*) FROM projects WHERE name='B67 법률 테스트'
+                ) = 1
+            ) AS b67_owner_shadow_exists,
+            EXISTS(
+              SELECT 1
+              FROM projects p
+              JOIN control_plane_identity_shadow s ON s.product_user_id=p.user_id
+              WHERE p.name='B67 법률 테스트'
+                AND (
+                  SELECT COUNT(*) FROM projects WHERE name='B67 법률 테스트'
+                ) = 1
+                AND length(trim(s.canonical_subject_id)) > 0
+                AND length(trim(s.auth_session_id)) > 0
+                AND s.session_revision >= 1
+                AND s.session_state IN ('active','revoked','expired')
+                AND julianday(s.session_expires_at) IS NOT NULL
+                AND julianday(s.observed_at) IS NOT NULL
+            ) AS b67_owner_shadow_shape_valid,
+            EXISTS(
+              SELECT 1
+              FROM projects p
+              JOIN control_plane_identity_shadow s ON s.product_user_id=p.user_id
+              WHERE p.name='B67 법률 테스트'
+                AND (
+                  SELECT COUNT(*) FROM projects WHERE name='B67 법률 테스트'
+                ) = 1
+                AND s.session_state='active'
+            ) AS b67_owner_shadow_state_active,
+            EXISTS(
+              SELECT 1
+              FROM projects p
+              JOIN control_plane_identity_shadow s ON s.product_user_id=p.user_id
+              WHERE p.name='B67 법률 테스트'
+                AND (
+                  SELECT COUNT(*) FROM projects WHERE name='B67 법률 테스트'
+                ) = 1
+                AND julianday(s.session_expires_at) > julianday('now')
+            ) AS b67_owner_shadow_not_expired;
           """
           with open(sys.argv[1], "w", encoding="utf-8") as handle:
               json.dump({"sql": sql}, handle)
@@ -305,21 +354,30 @@ jobs:
             shadow_shape_valid="$(jq -r '.result[0].results[0].shadow_shape_valid' "${shadow_health_response}")"
             shadow_state_active="$(jq -r '.result[0].results[0].shadow_state_active' "${shadow_health_response}")"
             shadow_not_expired="$(jq -r '.result[0].results[0].shadow_not_expired' "${shadow_health_response}")"
+            b67_owner_shadow_exists="$(jq -r '.result[0].results[0].b67_owner_shadow_exists' "${shadow_health_response}")"
+            b67_owner_shadow_shape_valid="$(jq -r '.result[0].results[0].b67_owner_shadow_shape_valid' "${shadow_health_response}")"
+            b67_owner_shadow_state_active="$(jq -r '.result[0].results[0].b67_owner_shadow_state_active' "${shadow_health_response}")"
+            b67_owner_shadow_not_expired="$(jq -r '.result[0].results[0].b67_owner_shadow_not_expired' "${shadow_health_response}")"
 
             case "${project_count}" in
               0) project_count_class="NONE" ;;
               1) project_count_class="ONE" ;;
               *) project_count_class="MANY" ;;
             esac
-            for value in "${project_owned}" "${shadow_shape_valid}" "${shadow_state_active}" "${shadow_not_expired}"; do
+            for value in "${project_owned}" "${shadow_shape_valid}" "${shadow_state_active}" "${shadow_not_expired}" "${b67_owner_shadow_exists}" "${b67_owner_shadow_shape_valid}" "${b67_owner_shadow_state_active}" "${b67_owner_shadow_not_expired}"; do
               case "${value}" in 0|1) ;; *) exit 1;; esac
             done
 
+            echo "B67_PROJECT_NAME_CARDINALITY=${project_count_class}"
             if [ "${project_count_class}" = "ONE" ] && [ "${project_owned}" = "1" ]; then
               echo "B67_PROJECT_TEST_USER_RELATION=PROVEN"
             else
               echo "B67_PROJECT_TEST_USER_RELATION=NOT_PROVEN"
             fi
+            [ "${b67_owner_shadow_exists}" = "1" ] && echo "B67_OWNER_SHADOW_EXISTS=YES" || echo "B67_OWNER_SHADOW_EXISTS=NO"
+            [ "${b67_owner_shadow_shape_valid}" = "1" ] && echo "B67_OWNER_SHADOW_SHAPE_VALID=YES" || echo "B67_OWNER_SHADOW_SHAPE_VALID=NO"
+            [ "${b67_owner_shadow_state_active}" = "1" ] && echo "B67_OWNER_SHADOW_STATE_ACTIVE=YES" || echo "B67_OWNER_SHADOW_STATE_ACTIVE=NO"
+            [ "${b67_owner_shadow_not_expired}" = "1" ] && echo "B67_OWNER_SHADOW_NOT_EXPIRED=YES" || echo "B67_OWNER_SHADOW_NOT_EXPIRED=NO"
             [ "${shadow_shape_valid}" = "1" ] && echo "TEST_USER_SHADOW_SHAPE_VALID=YES" || echo "TEST_USER_SHADOW_SHAPE_VALID=NO"
             [ "${shadow_state_active}" = "1" ] && echo "TEST_USER_SHADOW_STATE_ACTIVE=YES" || echo "TEST_USER_SHADOW_STATE_ACTIVE=NO"
             [ "${shadow_not_expired}" = "1" ] && echo "TEST_USER_SHADOW_NOT_EXPIRED=YES" || echo "TEST_USER_SHADOW_NOT_EXPIRED=NO"
@@ -328,6 +386,11 @@ jobs:
             echo "TEST_USER_EXISTS=NOT_QUERIED"
             echo "TEST_USER_SHADOW_EXISTS=IMPOSSIBLE_TABLE_MISSING"
             echo "B67_PROJECT_TEST_USER_RELATION=NOT_QUERIED"
+            echo "B67_PROJECT_NAME_CARDINALITY=NOT_QUERIED"
+            echo "B67_OWNER_SHADOW_EXISTS=NOT_QUERIED"
+            echo "B67_OWNER_SHADOW_SHAPE_VALID=NOT_QUERIED"
+            echo "B67_OWNER_SHADOW_STATE_ACTIVE=NOT_QUERIED"
+            echo "B67_OWNER_SHADOW_NOT_EXPIRED=NOT_QUERIED"
             echo "TEST_USER_SHADOW_SHAPE_VALID=NOT_QUERIED"
             echo "TEST_USER_SHADOW_STATE_ACTIVE=NOT_QUERIED"
             echo "TEST_USER_SHADOW_NOT_EXPIRED=NOT_QUERIED"
@@ -336,6 +399,11 @@ jobs:
             echo "TEST_USER_EXISTS=NOT_QUERIED"
             echo "TEST_USER_SHADOW_EXISTS=UNKNOWN_SCHEMA_DRIFT"
             echo "B67_PROJECT_TEST_USER_RELATION=NOT_QUERIED"
+            echo "B67_PROJECT_NAME_CARDINALITY=NOT_QUERIED"
+            echo "B67_OWNER_SHADOW_EXISTS=NOT_QUERIED"
+            echo "B67_OWNER_SHADOW_SHAPE_VALID=NOT_QUERIED"
+            echo "B67_OWNER_SHADOW_STATE_ACTIVE=NOT_QUERIED"
+            echo "B67_OWNER_SHADOW_NOT_EXPIRED=NOT_QUERIED"
             echo "TEST_USER_SHADOW_SHAPE_VALID=NOT_QUERIED"
             echo "TEST_USER_SHADOW_STATE_ACTIVE=NOT_QUERIED"
             echo "TEST_USER_SHADOW_NOT_EXPIRED=NOT_QUERIED"
