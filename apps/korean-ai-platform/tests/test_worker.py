@@ -165,6 +165,8 @@ def test_kilo_secret_store_binding_is_metadata_only_and_env_bridged():
     content = WRANGLER_TOML.read_text()
     worker = WORKER_SRC.read_text()
     assert 'binding = "PADIEM_KILO_API_KEY"' in content
-    assert 'secret_name = "KILO_API_KEY"' in content
+    assert 'store_id = "f0b09ca04a7b43248154c773704a5616"' in content
+    assert 'secret_name = "PADIEM_KILO_API_KEY"' in content
+    assert 'secret_name = "KILO_API_KEY"' not in content
     assert "PADIEM_KILO_API_KEY =" not in content
     assert '"PADIEM_KILO_API_KEY"' in worker
