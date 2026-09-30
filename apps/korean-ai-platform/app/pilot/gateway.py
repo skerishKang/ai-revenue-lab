@@ -130,7 +130,7 @@ _ALLOWED_MESSAGE_FIELDS = frozenset({"role", "content"})
 _ALLOWED_B14_FIELDS = frozenset({
     "task_type", "required_capabilities", "optimize_for",
     "allow_external_fallback", "provider_order", "max_attempts",
-    "allow_paid",
+    "max_retries", "allow_paid",
 })
 _B14_OPTIMIZE_FOR = frozenset({"balanced", "cost", "latency", "korean"})
 _B14_TASK_TYPES = frozenset({"general", "korean", "coding", "document", "batch"})
@@ -322,6 +322,20 @@ def _validate_b14_options(raw: Any) -> dict:
         if isinstance(ma, bool) or not isinstance(ma, int) or ma < 1 or ma > 5:
             raise _InvalidBody("business14.max_attempts must be an integer between 1 and 5")
         opts["max_attempts"] = ma
+
+    mr = raw.get("max_retries")
+    if mr is not None:
+        if (
+            isinstance(mr, bool)
+            or not isinstance(mr, int)
+            or mr < 0
+            or mr > _UPSTREAM_RETRY_MAX_RETRIES
+        ):
+            raise _InvalidBody(
+                "business14.max_retries must be an integer between 0 and "
+                f"{_UPSTREAM_RETRY_MAX_RETRIES}"
+            )
+        opts["max_retries"] = mr
 
     ap = raw.get("allow_paid")
     if ap is not None:
@@ -737,6 +751,13 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
     ] if decision.fallback_allowed else []
 
     max_attempts = decision.max_attempts
+    # #3221/#3212 capability-proof control: preserve the normal #1982
+    # same-route retry default, but allow a bounded caller to explicitly lower
+    # the retry ceiling (including zero). This does not widen the maximum and
+    # does not affect auto-chain fallback semantics.
+    same_route_retry_limit = b14_opts.get(
+        "max_retries", _UPSTREAM_RETRY_MAX_RETRIES
+    )
 
     start_time = time.monotonic()
     deadline = start_time + _UPSTREAM_RETRY_BUDGET_SECONDS
@@ -878,7 +899,7 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 decision.route_mode != "auto"
                 and
                 error.code in _SAME_ROUTE_RETRYABLE_CODES
-                and retry_index < _UPSTREAM_RETRY_MAX_RETRIES
+                and retry_index < same_route_retry_limit
             ):
                 backoff = _UPSTREAM_RETRY_BACKOFF_SECONDS[
                     min(retry_index, len(_UPSTREAM_RETRY_BACKOFF_SECONDS) - 1)

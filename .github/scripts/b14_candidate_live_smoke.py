@@ -458,6 +458,7 @@ def canonical_image_body(
             "required_capabilities": ["image"],
             "allow_external_fallback": False,
             "max_attempts": 1,
+            "max_retries": 0,
         }
     return body
 
