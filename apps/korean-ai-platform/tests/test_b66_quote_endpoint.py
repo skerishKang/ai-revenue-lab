@@ -210,3 +210,16 @@ def test_route_source_owns_no_browser_provider_or_secret_surface():
     assert "normalize_model_output" in source
     assert "pilot_gateway._validate_body" in source
     assert "pilot_gateway._handle_alpha_chat" in source
+
+def test_deploy_pipeline_stages_the_single_canonical_authority_inside_app_package():
+    deploy = (
+        ROOT / "apps" / "korean-ai-platform" / "deploy.sh"
+    ).read_text(encoding="utf-8")
+    assert 'B66_AUTHORITY_SOURCE="../b66-quote-adapter/app/extraction_routing.py"' in deploy
+    assert 'B66_STAGED_MODULE="app/b66_extraction_routing.py"' in deploy
+    assert 'cp "${B66_AUTHORITY_SOURCE}" "${B66_STAGED_MODULE}"' in deploy
+    assert "B66_EXTRACTION_AUTHORITY_STAGED=YES" in deploy
+
+    endpoint_source = Path(endpoint.__file__).read_text(encoding="utf-8")
+    assert 'import_module("app.b66_extraction_routing")' in endpoint_source
+
