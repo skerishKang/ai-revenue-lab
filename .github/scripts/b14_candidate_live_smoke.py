@@ -464,16 +464,47 @@ def canonical_image_body(
 
 
 def _compact_unsigned_number(value: Any) -> str | None:
+    """Normalize a visibly grouped unsigned integer without guessing decimals.
+
+    Accept plain digits and conventional thousands grouping with comma or dot
+    separators (for example 9,800 / 9.800). Reject ambiguous decimal-looking
+    values such as 9.8 or 9.80 instead of silently changing their magnitude.
+    Whitespace remains presentation-only.
+    """
+
     if isinstance(value, bool) or value is None:
         return None
     if isinstance(value, (int, float)):
         if isinstance(value, float) and not value.is_integer():
             return None
-        return str(int(value))
+        integer = int(value)
+        return str(integer) if integer >= 0 else None
     if not isinstance(value, str):
         return None
-    compact = value.replace(",", "").replace(" ", "").strip()
-    return compact if compact.isdigit() else None
+
+    compact = "".join(value.strip().split())
+    if compact.isdigit():
+        return compact
+
+    for separator in (",", "."):
+        other = "." if separator == "," else ","
+        if separator not in compact or other in compact:
+            continue
+        groups = compact.split(separator)
+        if (
+            len(groups) >= 2
+            and groups[0].isdigit()
+            and 1 <= len(groups[0]) <= 3
+            and all(group.isdigit() and len(group) == 3 for group in groups[1:])
+        ):
+            return "".join(groups)
+    return None
+
+
+def _b66_f02_visual_mismatch(field: str) -> ValueError:
+    """Return a bounded field-only diagnostic; never include model content."""
+
+    return ValueError(f"b66_f02_visual_fact_mismatch_{field}")
 
 
 def _validate_b66_f02_answer(content: str) -> None:
@@ -488,11 +519,11 @@ def _validate_b66_f02_answer(content: str) -> None:
     for key in ("quote_number", "recipient", "first_item"):
         value = result.get(key)
         if not isinstance(value, str) or value.strip() != B66_F02_EXPECTED_FACTS[key]:
-            raise ValueError("b66_f02_visual_facts_mismatch")
+            raise _b66_f02_visual_mismatch(key)
     if _compact_unsigned_number(result.get("first_quantity")) != B66_F02_EXPECTED_FACTS["first_quantity"]:
-        raise ValueError("b66_f02_visual_facts_mismatch")
+        raise _b66_f02_visual_mismatch("first_quantity")
     if _compact_unsigned_number(result.get("first_unit_price")) != B66_F02_EXPECTED_FACTS["first_unit_price"]:
-        raise ValueError("b66_f02_visual_facts_mismatch")
+        raise _b66_f02_visual_mismatch("first_unit_price")
 
 
 # --------------------------------------------------------------------------
