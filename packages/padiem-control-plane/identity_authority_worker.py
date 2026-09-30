@@ -29,6 +29,11 @@ _RESOLVE_KEYS = frozenset({"session_id"})
 # workspace_id, provider, now or expiry, so a caller can neither pick a session
 # nor move the clock the selection is made at.
 _CURRENT_SESSION_KEYS = frozenset({"product_id", "product_user_id"})
+# #3247: the reverse product-user lookup names the product and the canonical
+# subject and nothing else. It deliberately accepts no product_user_id,
+# provider, provider_subject, owner_ref or clock, so a caller can neither pick
+# a link nor smuggle identity material through this read-only path.
+_REVERSE_PRODUCT_USER_KEYS = frozenset({"product_id", "canonical_subject_id"})
 _CONNECT_KEYS = frozenset({"session_id", "connector_id"})
 _CONNECTOR_WORKSPACE_KEYS = frozenset({"session_id"})
 _SUBJECT_KEYS = frozenset({"subject_type", "subject_id"})
@@ -208,6 +213,29 @@ class CanonicalIdentityDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_error(exc)
 
+    async def resolve_product_user_for_subject(self, payload: dict) -> dict:
+        """Read-only reverse product-link lookup for one canonical subject (#3247).
+
+        The request is closed to ``product_id`` + ``canonical_subject_id``.
+        The Durable Object reads the existing ``canonical_product_identity_link``
+        row for that exact pair and requires exactly one ACTIVE link; missing,
+        inactive, ambiguous or corrupt state fails closed. This RPC is strictly
+        read-only: it never creates a link, never touches a session, and never
+        accepts ``auth_provider`` / ``provider_subject`` / ``owner_ref``.
+        """
+
+        try:
+            wire = _closed(
+                payload, _REVERSE_PRODUCT_USER_KEYS, "reverse product-user resolve RPC"
+            )
+            product_user_id = self._store.resolve_product_user_for_subject(
+                product_id=wire["product_id"],
+                canonical_subject_id=wire["canonical_subject_id"],
+            )
+            return {"ok": True, "product_user_id": product_user_id}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
     async def issue_google_connect_ticket(self, payload: dict) -> dict:
         """Mint one short-lived ticket after authoritative session re-read.
 
@@ -353,6 +381,9 @@ class Default(WorkerEntrypoint):
     async def resolve_current_auth_session(self, payload: dict) -> dict:
         return await self._stub().resolve_current_auth_session(payload)
 
+    async def resolve_product_user_for_subject(self, payload: dict) -> dict:
+        return await self._stub().resolve_product_user_for_subject(payload)
+
     async def issue_google_connect_ticket(self, payload: dict) -> dict:
         return await self._stub().issue_google_connect_ticket(payload)
 
@@ -394,6 +425,10 @@ READ_ONLY_WORKSPACE_RPC_CREATES_CONTEXT = False
 SESSIONLESS_MEMBERSHIP_RESOLVER = True
 MEMBERSHIP_ROLE_AUTHORITY = True
 DEFAULT_MEMBERSHIP_ROLE = False
+READ_ONLY_REVERSE_PRODUCT_LINK_RESOLVER = True
+REVERSE_PRODUCT_LINK_CREATES_LINK = False
+REVERSE_PRODUCT_LINK_ACCEPTS_PROVIDER_SUBJECT = False
+REVERSE_PRODUCT_LINK_ACCEPTS_OWNER_REF = False
 RAW_CONNECT_TICKET_PUBLIC = False
 GOOGLE_WRITE_SCOPE = False
 PUBLIC_FETCH = False

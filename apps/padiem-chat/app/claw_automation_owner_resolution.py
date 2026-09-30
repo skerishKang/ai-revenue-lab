@@ -38,7 +38,14 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Protocol
 
-from .control_plane_identity import IdentityBridgeError
+from padiem_control_plane.auth_sessions import AuthSessionSnapshot
+from padiem_control_plane.b54_identity_bridge import (
+    B54IdentityBridgeError,
+    resolve_current_b54_canonical_session,
+)
+from padiem_control_plane.tenants import TenantMembership, TenantMembershipState
+
+from .control_plane_identity import PADIEM_CHAT_PRODUCT_ID, IdentityBridgeError
 from .control_plane_identity_shadow import (
     CurrentCanonicalSessionAuthority,
     IdentityShadowStore,
@@ -48,6 +55,8 @@ from .workspace_storage import _safe_identifier
 
 __all__ = [
     "AutomationOwnerAuthority",
+    "CANONICAL_AUTOMATION_OWNER_PRODUCT_ID",
+    "CanonicalAutomationOwnerAuthority",
     "ClawAutomationOwnerResolver",
     "ResolvedAutomationOwner",
     "TrustedAutomationOwnerProjection",
@@ -57,6 +66,15 @@ _MAX_PRODUCT_USER_ID = 80
 _MAX_OPAQUE_TOKEN = 256
 _MAX_AUTHORITY_LIFETIME = timedelta(hours=24)
 _CONTROL_RE = re.compile(r"[\x00-\x1f\x7f]")
+# #3247: the canonical shapes a background rule must already carry. They mirror
+# the Control Plane's own minted reference grammar (tenant_/sub_ + 32 hex) and
+# are re-checked here so the resolver never accepts a looser shape than the
+# rule-authority gate did.
+_CANONICAL_TENANT_ID_RE = re.compile(r"^tenant_[0-9a-f]{32}$")
+_CANONICAL_SUBJECT_ID_RE = re.compile(r"^sub_[0-9a-f]{32}$")
+# The Task/Alert Web inbox contract is keyed by the signed B62 product user id.
+# This module pins the product server-side; a caller cannot choose it.
+CANONICAL_AUTOMATION_OWNER_PRODUCT_ID = PADIEM_CHAT_PRODUCT_ID
 
 
 def _opaque_token(name: str, value: object) -> str:
@@ -164,6 +182,37 @@ class AutomationOwnerAuthority(Protocol):
     ) -> TrustedAutomationOwnerProjection | None: ...
 
 
+class CanonicalAutomationOwnerAuthority(Protocol):
+    """Server-owned canonical facts authority for background owner identity (#3247).
+
+    One production identity authority: the private Control Plane. Every method
+    is a read-only re-validation of server-persisted facts; none of them
+    accepts identity material from the caller, and none of them writes.
+    """
+
+    async def resolve_active_tenant_membership(
+        self,
+        *,
+        tenant_id: str,
+        canonical_subject_id: str,
+        now: datetime,
+    ) -> TenantMembership: ...
+
+    async def resolve_product_user_for_subject(
+        self,
+        *,
+        product_id: str,
+        canonical_subject_id: str,
+    ) -> str: ...
+
+    async def resolve_current_auth_session(
+        self,
+        *,
+        product_id: str,
+        product_user_id: str,
+    ) -> AuthSessionSnapshot: ...
+
+
 @dataclass(frozen=True, slots=True)
 class ResolvedAutomationOwner:
     """Bounded owner context for later projections. Mints no authority."""
@@ -203,7 +252,21 @@ class ResolvedAutomationOwner:
 
 
 class ClawAutomationOwnerResolver:
-    """Resolve an opaque ``owner_ref`` into a trusted owner context, or fail closed."""
+    """Resolve an opaque ``owner_ref`` into a trusted owner context, or fail closed.
+
+    Two modes, one production path:
+
+    * **canonical** (``canonical_subject_id`` supplied) — #3247. The owner is
+      derived exclusively from server-persisted canonical rule facts and the
+      private Control Plane: exact active role-bearing tenant membership, the
+      B62 product-user reverse link, and the current B54 canonical session.
+      ``owner_ref`` is validated as bounded opaque text and carried as
+      provenance only; its content never selects an identity.
+    * **legacy** (no canonical subject) — the pre-#3247 injected-projection
+      chain. Kept only for legacy/test compatibility; it is never the
+      production identity source, and background execution gates it out via
+      ``classify_rule_background_authority()``.
+    """
 
     def __init__(
         self,
@@ -211,16 +274,19 @@ class ClawAutomationOwnerResolver:
         owner_authority: AutomationOwnerAuthority | None,
         session_authority: CurrentCanonicalSessionAuthority | None,
         shadow_store: IdentityShadowStore | None,
+        canonical_owner_authority: CanonicalAutomationOwnerAuthority | None = None,
     ) -> None:
         self._owner_authority = owner_authority
         self._session_authority = session_authority
         self._shadow_store = shadow_store
+        self._canonical_owner_authority = canonical_owner_authority
 
     async def resolve_owner(
         self,
         *,
         owner_ref: str,
         workspace_id: str,
+        canonical_subject_id: str | None = None,
         now: datetime | None = None,
     ) -> ResolvedAutomationOwner:
         owner = _opaque_token("owner_ref", owner_ref)
@@ -228,6 +294,14 @@ class ClawAutomationOwnerResolver:
         effective_now = _aware(
             now if now is not None else datetime.now(timezone.utc), "now"
         )
+
+        if canonical_subject_id is not None:
+            return await self._resolve_owner_from_canonical_facts(
+                owner_ref=owner,
+                workspace_id=workspace,
+                canonical_subject_id=canonical_subject_id,
+                now=effective_now,
+            )
 
         if self._owner_authority is None or self._session_authority is None or self._shadow_store is None:
             raise IdentityBridgeError(
@@ -302,4 +376,147 @@ class ClawAutomationOwnerResolver:
             product_user_id=projection.product_user_id,
             member_id=projection.member_id,
             canonical_subject_id=projection.canonical_subject_id,
+        )
+
+    async def _resolve_owner_from_canonical_facts(
+        self,
+        *,
+        owner_ref: str,
+        workspace_id: str,
+        canonical_subject_id: str,
+        now: datetime,
+    ) -> ResolvedAutomationOwner:
+        """Derive the owner from canonical rule facts and the Control Plane only.
+
+        Fail-closed chain, and no step is optional:
+
+        ```text
+        bounded opaque owner_ref                       (provenance only)
+        canonical tenant-shaped workspace_id           (rule.server-persisted)
+        canonical subject-shaped canonical_subject_id  (rule.server-persisted)
+          -> exact ACTIVE role-bearing tenant membership revalidation
+          -> B62 product-user reverse link (exactly one ACTIVE)
+          -> current B54 canonical session re-read (#3243)
+          -> B54 session subject == rule subject
+          -> B54 session tenant  == rule workspace
+        -> ResolvedAutomationOwner(member_id = B62 product_user_id)
+        ```
+
+        ``owner_ref`` never enters the chain: changing it cannot change the
+        resolved identity, and no identity can be recovered from it.
+        """
+
+        authority = self._canonical_owner_authority
+        if authority is None:
+            raise IdentityBridgeError(
+                503,
+                "automation_owner_authority_unavailable",
+                "Canonical automation owner authority is unavailable.",
+            )
+        if not _CANONICAL_TENANT_ID_RE.fullmatch(workspace_id):
+            raise IdentityBridgeError(
+                403,
+                "automation_owner_workspace_invalid",
+                "Automation owner requires a canonical tenant workspace.",
+            )
+        subject = canonical_subject_id
+        if not isinstance(subject, str) or not _CANONICAL_SUBJECT_ID_RE.fullmatch(subject):
+            raise IdentityBridgeError(
+                403,
+                "automation_owner_subject_invalid",
+                "Automation owner requires a canonical rule subject.",
+            )
+
+        try:
+            membership = await _maybe_await(
+                authority.resolve_active_tenant_membership(
+                    tenant_id=workspace_id,
+                    canonical_subject_id=subject,
+                    now=now,
+                )
+            )
+        except IdentityBridgeError:
+            raise
+        except Exception as exc:
+            raise IdentityBridgeError(
+                503,
+                "automation_owner_authority_unavailable",
+                "Canonical tenant membership is unavailable.",
+            ) from exc
+        if (
+            not isinstance(membership, TenantMembership)
+            or membership.tenant_id != workspace_id
+            or membership.canonical_subject_id != subject
+            or membership.state is not TenantMembershipState.ACTIVE
+            or membership.role is None
+        ):
+            raise IdentityBridgeError(
+                403,
+                "automation_owner_membership_invalid",
+                "Canonical tenant membership is not active for this owner.",
+            )
+
+        try:
+            product_user = await _maybe_await(
+                authority.resolve_product_user_for_subject(
+                    product_id=CANONICAL_AUTOMATION_OWNER_PRODUCT_ID,
+                    canonical_subject_id=subject,
+                )
+            )
+        except IdentityBridgeError:
+            raise
+        except Exception as exc:
+            raise IdentityBridgeError(
+                503,
+                "automation_owner_authority_unavailable",
+                "Canonical product link resolution is unavailable.",
+            ) from exc
+        if (
+            not isinstance(product_user, str)
+            or not product_user.startswith("usr_")
+            or len(product_user) > _MAX_PRODUCT_USER_ID
+        ):
+            raise IdentityBridgeError(
+                503,
+                "automation_owner_product_user_invalid",
+                "Canonical product link did not yield a bounded B62 product user.",
+            )
+
+        # #3243 reuse: the current B54 session is re-read for the server-derived
+        # product user; the bridge pins the product to b54-padiem-claw, rejects a
+        # non-USER subject, a tenant-less session and an inactive one.
+        try:
+            current = await resolve_current_b54_canonical_session(
+                authority, product_user, now=now
+            )
+        except B54IdentityBridgeError as exc:
+            raise IdentityBridgeError(exc.status_code, exc.code, exc.safe_message) from exc
+        except Exception as exc:
+            raise IdentityBridgeError(
+                503,
+                "automation_owner_authority_unavailable",
+                "Current canonical B54 session is unavailable.",
+            ) from exc
+        session = current.auth_session
+        if session.subject.subject_id != subject:
+            raise IdentityBridgeError(
+                403,
+                "automation_owner_subject_mismatch",
+                "Current B54 canonical subject does not match the rule owner.",
+            )
+        if session.tenant_id != workspace_id:
+            raise IdentityBridgeError(
+                403,
+                "automation_owner_workspace_mismatch",
+                "Current B54 canonical tenant does not match the rule workspace.",
+            )
+
+        # member_id = product_user_id is the existing claw_inbox_routes ownership
+        # contract, not a new identity inference.
+        return ResolvedAutomationOwner(
+            workspace_id=workspace_id,
+            owner_ref=owner_ref,
+            product_user_id=product_user,
+            member_id=product_user,
+            canonical_subject_id=subject,
         )

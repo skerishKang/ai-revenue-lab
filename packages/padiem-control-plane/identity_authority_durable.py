@@ -1031,6 +1031,81 @@ class CloudflareCanonicalIdentityAuthorityStore:
         active.sort(key=lambda item: (item[0], item[1], item[2]))
         return active[-1][3]
 
+    def resolve_product_user_for_subject(
+        self,
+        *,
+        product_id: str,
+        canonical_subject_id: str,
+    ) -> str:
+        """Read-only reverse lookup: canonical subject -> product user id (#3247).
+
+        The forward direction (``resolve_or_create_product_link``) is the only
+        writer of ``canonical_product_identity_link``; this resolver never
+        creates, extends, revokes or rebinds a row. It answers exactly one
+        question for a server-owned background lane — "which product user is
+        linked to this canonical subject for this product" — and fails closed
+        on every other outcome:
+
+        1. ``product_id`` passes the allowlist and ``canonical_subject_id`` the
+           exact bounded-subject check, so neither can be widened;
+        2. rows are read for the exact ``(product_id, canonical_subject_id)``
+           pair served by ``idx_canonical_product_link_subject``;
+        3. no row at all is ``canonical_product_identity_link_not_found``;
+        4. an unparsable or malformed row is storage corruption, never an
+           absent link;
+        5. exactly one ACTIVE link must remain; zero ACTIVE rows are
+           ``canonical_product_identity_link_not_active`` and more than one is
+           an ambiguous-storage error.
+
+        No provider, provider_subject, product-user assertion or clock is
+        accepted from the caller: the link state is the only authority.
+        """
+
+        product = self._require_product(product_id)
+        subject_ref = self._require_subject_id(canonical_subject_id)
+        rows = _rows(
+            self._sql.exec(
+                "SELECT product_user_id, state FROM canonical_product_identity_link "
+                "WHERE product_id=? AND canonical_subject_id=?",
+                product,
+                subject_ref,
+            )
+        )
+        if not rows:
+            raise ControlPlaneContractError(
+                "canonical_product_identity_link_not_found",
+                "canonical product identity link was not found",
+            )
+        active_users: list[str] = []
+        for row in rows:
+            try:
+                state = IdentityLinkState(str(row["state"]))
+            except (KeyError, TypeError, ValueError) as exc:
+                raise ControlPlaneContractError(
+                    "identity_authority_storage_error",
+                    "canonical product identity link state is invalid",
+                ) from exc
+            try:
+                user_id = _product_user_id(row.get("product_user_id"))
+            except ControlPlaneContractError as exc:
+                raise ControlPlaneContractError(
+                    "identity_authority_storage_error",
+                    "canonical product identity link row is invalid",
+                ) from exc
+            if state is IdentityLinkState.ACTIVE:
+                active_users.append(user_id)
+        if len(active_users) > 1:
+            raise ControlPlaneContractError(
+                "identity_authority_storage_error",
+                "canonical product identity link is ambiguous",
+            )
+        if not active_users:
+            raise ControlPlaneContractError(
+                "canonical_product_identity_link_not_active",
+                "canonical product identity link is not active",
+            )
+        return active_users[0]
+
     def safe_dict(self) -> dict[str, Any]:
         return {
             "canonical_identity_authority": True,

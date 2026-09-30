@@ -493,13 +493,18 @@ async def _resolve_owner_or_none(
     workspace_id: str,
     observed_at: datetime,
 ) -> ResolvedAutomationOwner | None:
-    """Resolve the rule's opaque owner provenance, or fail closed.
+    """Resolve the rule's owner from canonical facts, or fail closed.
 
-    ``owner_ref`` grants no execution authority by itself: it is resolved through
-    the existing owner authority and the current canonical session. A missing,
-    foreign, expired or mismatched owner/session -- and an unavailable authority --
-    all collapse into one non-disclosing refusal, so this path never becomes an
-    oracle for another tenant's owner state.
+    ``owner_ref`` grants no execution authority by itself. Since #3247 the
+    composition supplies the rule's server-persisted ``canonical_subject_id``
+    alongside the workspace, so the resolver derives identity exclusively from
+    canonical rule facts and the private Control Plane: exact active
+    role-bearing tenant membership, the B62 product-user reverse link and the
+    current B54 canonical session. A missing owner_ref, subject or session --
+    and an unavailable authority -- all collapse into one non-disclosing
+    refusal, so this path never becomes an oracle for another tenant's owner
+    state. Legacy rules (no canonical subject) never reach this call: the
+    ``classify_rule_background_authority()`` gate above refuses them first.
     """
 
     if not callable(getattr(resolver, "resolve_owner", None)):
@@ -513,6 +518,7 @@ async def _resolve_owner_or_none(
         owner = await resolver.resolve_owner(
             owner_ref=rule.owner_ref,
             workspace_id=workspace_id,
+            canonical_subject_id=rule.canonical_subject_id,
             now=observed_at,
         )
     except Exception:
