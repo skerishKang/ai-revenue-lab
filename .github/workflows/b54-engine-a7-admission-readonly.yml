@@ -132,8 +132,8 @@ jobs:
           PY
           python -m pytest -q \
             .github/tests/test_b54_engine_a7_admission_readonly.py \
-            .github/tests/test_b54_engine_served_version_guard.py \
-            apps/padiem-ai-engine/tests/test_worker_identity_admission_composition.py
+            .github/tests/test_b54_engine_served_version_guard.py
+          echo "A7_BEHAVIORAL_COMPOSITION_TEST_OWNER=PADIEM_AI_ENGINE_CI"
           echo "A7_NETWORK_FREE_TESTS=PASS"
           echo "PRODUCTION_MUTATION=0"
 
