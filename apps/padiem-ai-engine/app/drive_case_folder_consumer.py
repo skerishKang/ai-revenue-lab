@@ -47,6 +47,16 @@ Trust rules:
   provenance;
 * Drive content stays untrusted input.
 
+#3330 Drive-authoritative reconciliation
+----------------------------------------
+Google Drive remains the durable authority for B67 case files.  The canonical
+document-byte store used by this legacy per-request bridge has bounded expiry
+(default 24h) and is a processing bridge/cache only: it must not be treated as
+the Legal case workspace, a full-folder mirror, or the durable search corpus.
+Persistent Legal search/index projections must instead remain derived data tied
+to canonical Drive file/version evidence and be refreshed when that evidence
+changes.
+
 Not in this slice: public route, product wiring, Production composition, live
 Google call, live ancestry resolver (``ADMIT_PUBLIC_ROUTE = False``).
 """
@@ -489,6 +499,11 @@ def drive_case_folder_consumer_snapshot() -> dict[str, Any]:
         "reuses_canonical_normalization": True,
         "reuses_canonical_context_projection": True,
         "reuses_canonical_evidence_storage": True,
+        "drive_is_durable_document_authority": True,
+        "document_store_is_case_workspace": False,
+        "document_store_role": "bounded_processing_bridge",
+        "full_case_folder_copy_required": False,
+        "persistent_index_requires_drive_version_linkage": True,
         "gate_before_document_admission": True,
         "projection_mime_bound_to_resource": True,
         "classification_derived_from_canonical_mime": True,
