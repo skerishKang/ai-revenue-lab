@@ -35,6 +35,10 @@ def test_index_loads_hidden_quote_bridge_before_capability_projection() -> None:
     assert './b66-quote-runtime.css' in index
     assert './b66-quote-runtime.js' in index
     assert index.index('./b66-quote-runtime.js') < index.index('./product-capabilities.js')
+    # Manual merge-forward must preserve real HTML newlines. A literal "\\n"
+    # becomes visible body text and can shift visual layout by one line.
+    assert '</script>\\n' not in index
+    assert '/>\\n  <link' not in index
 
 
 def test_quote_ui_bridge_does_not_duplicate_quote_authorities_or_persist_skill() -> None:
