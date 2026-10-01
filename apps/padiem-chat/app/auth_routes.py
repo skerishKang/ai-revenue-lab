@@ -125,12 +125,21 @@ async def auth_status(request: Request) -> JSONResponse:
     return JSONResponse(payload)
 
 
+def _bridge_origin(request: Request) -> str | None:
+    """Read the B66 bridge origin header; tolerate headerless test doubles."""
+
+    headers = getattr(request, "headers", None)
+    if headers is None:
+        return None
+    return headers.get("x-b66-origin")
+
+
 async def google_start(request: Request) -> Response:
     if not google_auth_ready(request):
         return _unavailable()
     settings: Settings = request.app.state.settings
     oauth: GoogleOAuthClient = request.app.state.google_oauth
-    bridge_origin = request.headers.get("x-b66-origin")
+    bridge_origin = _bridge_origin(request)
     try:
         state, signed = create_oauth_state(settings)
         location = oauth.authorization_url(state, bridge_origin=bridge_origin)
@@ -274,7 +283,7 @@ async def google_callback(request: Request) -> Response:
         )
     oauth: GoogleOAuthClient = request.app.state.google_oauth
     store: HistoryStore = request.app.state.history_store
-    bridge_origin = request.headers.get("x-b66-origin")
+    bridge_origin = _bridge_origin(request)
     try:
         access_token = await oauth.exchange_code(code.strip(), bridge_origin=bridge_origin)
         identity = await oauth.fetch_userinfo(access_token)
