@@ -6,6 +6,8 @@ from types import MappingProxyType
 from typing import Any, Mapping
 import re
 
+from .document_semantics import DocumentLocator
+
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$")
 
 
@@ -107,6 +109,10 @@ class Evidence:
     provider: str
     source_type: str
     url: str | None = None
+    # Internal provenance fields are not caller-settable.  They are populated
+    # only by canonical retrieval/evidence projection code.
+    source_ref: str | None = field(default=None, init=False, repr=False)
+    document_locator: DocumentLocator | None = field(default=None, init=False, repr=False)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "id", _identifier("evidence id", self.id))
@@ -116,6 +122,10 @@ class Evidence:
         object.__setattr__(self, "source_type", _identifier("source_type", self.source_type))
         if self.url is not None and not isinstance(self.url, str):
             raise ValueError("url must be a string or None")
+        if self.source_ref is not None and not isinstance(self.source_ref, str):
+            raise ValueError("source_ref must be a string or None")
+        if self.document_locator is not None and not isinstance(self.document_locator, DocumentLocator):
+            raise ValueError("document_locator must be a DocumentLocator or None")
 
     def to_public_dict(self) -> dict[str, Any]:
         return {
@@ -126,6 +136,11 @@ class Evidence:
             "retrieved_at": self.retrieved_at,
             "provider": self.provider,
             "source_type": self.source_type,
+            "document_locator": (
+                self.document_locator.to_public_dict()
+                if self.document_locator is not None
+                else None
+            ),
         }
 
 
