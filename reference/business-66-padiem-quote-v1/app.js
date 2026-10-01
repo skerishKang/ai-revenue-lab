@@ -559,14 +559,21 @@
   /* ── 내 견적서: 선택된 승인 Skill 의 내부 profile 이 미리보기 layout authority.
      template store/selection 을 건드리지 않으며, 실패 시 내장으로 fallback. ── */
 
-  const skillUiState = { activeSkillId: null };
+  const skillUiState = { activeSkillId: null, serverSkill: null };
   let skillUiApi = null;
 
   function activeSkillProfile() {
-    if (!SavedSkill || !SkillStore || !Template || !skillUiState.activeSkillId) return null;
-    if (typeof localStorage === "undefined") return null;
+    if (!SavedSkill || !Template || !skillUiState.activeSkillId) return null;
     try {
-      const skill = SkillStore.getSkill(SkillStore.readStore(localStorage), skillUiState.activeSkillId);
+      let skill = null;
+      if (
+        skillUiState.serverSkill &&
+        skillUiState.serverSkill.id === skillUiState.activeSkillId
+      ) {
+        skill = SavedSkill.normalizeSkill(skillUiState.serverSkill);
+      } else if (SkillStore && typeof localStorage !== "undefined") {
+        skill = SkillStore.getSkill(SkillStore.readStore(localStorage), skillUiState.activeSkillId);
+      }
       if (!skill || skill.approved !== true) return null;
       const profile = Template.normalizeTemplate(skill.internalTemplate);
       return profile && Template.isApprovedProfile(profile) ? profile : null;
@@ -576,6 +583,7 @@
   }
 
   function applySkillToForm(skill) {
+    skillUiState.serverSkill = null;
     if (!skill || !SkillUi) {
       skillUiState.activeSkillId = null;
       toast("기본 견적서로 작성합니다.");
@@ -595,6 +603,29 @@
     renderItems();
     render();
     toast("내 견적서 기본값을 적용했습니다. 거래처와 품목은 새로 입력하세요.");
+    return true;
+  }
+
+  function setServerSkill(skill) {
+    if (!SavedSkill || !Template) return false;
+    const normalized = SavedSkill.normalizeSkill(skill);
+    if (!normalized || normalized.approved !== true) return false;
+    const profile = Template.normalizeTemplate(normalized.internalTemplate);
+    if (!profile || !Template.isApprovedProfile(profile)) return false;
+    skillUiState.serverSkill = normalized;
+    skillUiState.activeSkillId = normalized.id;
+    render();
+    return true;
+  }
+
+  function clearServerSkill() {
+    const activeWasServer = Boolean(
+      skillUiState.serverSkill &&
+      skillUiState.serverSkill.id === skillUiState.activeSkillId
+    );
+    skillUiState.serverSkill = null;
+    if (activeWasServer) skillUiState.activeSkillId = null;
+    render();
     return true;
   }
 
@@ -1190,7 +1221,10 @@
   }
   window.B66QuoteSkillBridge = Object.freeze({
     activeSkillId: () => skillUiState.activeSkillId,
+    serverSkillId: () => (skillUiState.serverSkill ? skillUiState.serverSkill.id : null),
     applySkill: applySkillToForm,
+    setServerSkill,
+    clearServerSkill,
     refresh: () => {
       if (skillUiApi) skillUiApi.refresh();
       render();
