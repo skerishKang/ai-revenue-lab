@@ -33,9 +33,23 @@ def build_terminal_usage_receipt(
         raise ValueError("typed original usage reservation evidence is required")
     reservation = original.usage_reservation
     material = "|".join(
-        ("engine-usage-event-v1", reservation.reservation_ref, reservation.idempotency_key, reservation.request_fingerprint)
+        (
+            "engine-usage-event-v2",
+            reservation.reservation_ref,
+            reservation.idempotency_key,
+            reservation.request_fingerprint,
+            outcome,
+        )
     )
     digest = hashlib.sha256(material.encode("utf-8")).hexdigest()
+    execution_digest = hashlib.sha256(
+        (
+            "engine-execution-v1|"
+            + reservation.reservation_ref
+            + "|"
+            + reservation.idempotency_key
+        ).encode("utf-8")
+    ).hexdigest()
 
     input_tokens = output_tokens = total_tokens = None
     if result is not None:
@@ -57,7 +71,7 @@ def build_terminal_usage_receipt(
         billing_semantic_id=reservation.billing_semantic_id,
         product_id=reservation.product_id,
         subject={"subject_type": reservation.subject_type, "subject_id": reservation.subject_id},
-        execution_id=f"eng-exec-{reservation.request_fingerprint[:32]}",
+        execution_id=f"eng-exec-{execution_digest[:32]}",
         outcome=outcome,
         billing_disposition=disposition,
         # Stable across receipt retry after a lost acknowledgement.
