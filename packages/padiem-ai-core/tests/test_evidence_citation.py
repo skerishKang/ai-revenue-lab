@@ -1,6 +1,12 @@
 import pytest
 
 from padiem_ai_core.contracts import Evidence
+from padiem_ai_core.document_semantics import (
+    DocumentLocator,
+    DocumentSegment,
+    LocatorKind,
+    LocatorPrecision,
+)
 from padiem_ai_core.evidence_citation import (
     EvidenceCitationError,
     project_grounded_citations,
@@ -12,6 +18,7 @@ from padiem_ai_core.evidence_graph import (
     EvidenceClaim,
     evidence_graph,
 )
+from padiem_ai_core.retrieval import RetrievedItem, evidence_from_retrieved_item
 from padiem_ai_core.evidence_verification import (
     TrustedVerificationPolicy,
     VerificationDisposition,
@@ -204,3 +211,61 @@ def test_claim_without_evidence_links_has_no_grounded_citations() -> None:
     with pytest.raises(EvidenceCitationError) as exc_info:
         project_grounded_citations(ungrounded, "claim_1")
     assert exc_info.value.code == "no_grounded_citations"
+
+
+def test_document_page_locator_survives_retrieval_evidence_graph_and_citation() -> None:
+    locator = DocumentLocator(
+        kind=LocatorKind.PAGE,
+        value="7",
+        precision=LocatorPrecision.EXACT,
+    )
+    segment = DocumentSegment(
+        text="This page contains the termination argument.",
+        order=6,
+        locator=locator,
+    )
+    retrieved = RetrievedItem.from_document_segment(
+        id="chunk_page_7",
+        namespace="project.legal",
+        source_type="drive_file",
+        provider="padiem_index",
+        source_ref="drive:file_brief",
+        segment=segment,
+        title="brief.pdf",
+    )
+    evidence = evidence_from_retrieved_item(
+        retrieved,
+        evidence_id="src_page_7",
+        retrieved_at="2026-10-01T00:00:00Z",
+    )
+    located_graph = evidence_graph(
+        sources=[evidence],
+        claims=[
+            EvidenceClaim(
+                id="claim_located",
+                text="The brief contains a termination argument.",
+                derivation=ClaimDerivation.OBSERVED,
+            )
+        ],
+        links=[
+            ClaimEvidenceLink(
+                claim_id="claim_located",
+                evidence_id="src_page_7",
+                relation=ClaimEvidenceRelation.SUPPORTS,
+            )
+        ],
+    )
+
+    citation = project_grounded_citations(located_graph, "claim_located").citations[0]
+    assert citation.source_ref == "drive:file_brief"
+    assert citation.document_locator is locator
+    assert citation.to_public_dict()["document_locator"] == {
+        "kind": "page",
+        "value": "7",
+        "precision": "exact",
+    }
+    assert located_graph.to_public_dict()["sources"][0]["document_locator"] == {
+        "kind": "page",
+        "value": "7",
+        "precision": "exact",
+    }
