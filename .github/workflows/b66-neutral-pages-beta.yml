@@ -66,6 +66,10 @@ jobs:
           test -f "${SOURCE_DIR}/quote-template-registration.js"
           test -f "${SOURCE_DIR}/quote-registration-session.js"
           test -f "${SOURCE_DIR}/quote-skill-ui.js"
+          test -f "${SOURCE_DIR}/embed.html"
+          test -f "${SOURCE_DIR}/quote-embed-bridge.js"
+          test -f "${SOURCE_DIR}/quote-embed-browser.js"
+          test -f "${SOURCE_DIR}/quote-embed.css"
           test -f "apps/b66-quote-adapter/app/file_intake.py"
           grep -F '<title>견적서 만들기</title>' "${SOURCE_DIR}/index.html" >/dev/null
           grep -F '샘플 공급사' "${SOURCE_DIR}/index.html" >/dev/null
@@ -95,6 +99,8 @@ jobs:
           node --check quote-template-registration.js
           node --check quote-registration-session.js
           node --check quote-skill-ui.js
+          node --check quote-embed-bridge.js
+          node --check quote-embed-browser.js
           node tests/quote-core.test.cjs
           node tests/quote-extraction.test.cjs
           node tests/quote-history.test.cjs
@@ -114,6 +120,7 @@ jobs:
           node tests/quote-template-registration.test.cjs
           node tests/quote-registration-session.test.cjs
           node tests/quote-skill-ui.test.cjs
+          node tests/quote-embed-bridge.test.cjs
           node tests/quote-skill-live-analysis.test.cjs
           node tests/pages-live-intake.test.mjs
 
@@ -145,6 +152,12 @@ jobs:
           done
           grep -F '<title>견적서 만들기</title>' "${RUNNER_TEMP}/b66-local.html" >/dev/null
           ! grep -E 'Padiem|파디엠' "${RUNNER_TEMP}/b66-local.html"
+          curl -fsS http://127.0.0.1:4173/embed.html -o "${RUNNER_TEMP}/b66-embed.html"
+          grep -F '<title>견적서 미리보기</title>' "${RUNNER_TEMP}/b66-embed.html" >/dev/null
+          grep -F "connect-src 'none'" "${RUNNER_TEMP}/b66-embed.html" >/dev/null
+          ! grep -F 'app.js' "${RUNNER_TEMP}/b66-embed.html"
+          ! grep -F 'file-intake.js' "${RUNNER_TEMP}/b66-embed.html"
+          echo "B66_EMBED_HTTP_SMOKE=PASS"
           echo "LOCAL_HTTP_SMOKE=PASS"
 
       - name: Confirm Cloudflare credentials
