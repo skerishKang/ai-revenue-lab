@@ -1,7 +1,9 @@
 """Worker-native client for the private Control Plane E7 binding.
 
-Source-only: canonical Production composition deliberately does not construct
-this client until the E7 activation gate is separately reviewed.
+The canonical Worker composition now constructs this adapter when the reviewed
+private binding exists. Live Production availability remains separately gated:
+missing or malformed authority must fail closed and the capability manifest
+stays DEFERRED until post-deploy runtime evidence is accepted.
 """
 
 from __future__ import annotations
@@ -169,4 +171,5 @@ def control_plane_trust_client_for_env(
 
 
 CONTROL_PLANE_LIVE_ADAPTER_SOURCE_READY = True
-PRODUCTION_COMPOSITION_WIRED = False
+CANONICAL_WORKER_COMPOSITION_SOURCE_WIRED = True
+PRODUCTION_LIVE_PROVEN = False
