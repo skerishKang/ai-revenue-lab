@@ -24,8 +24,7 @@
   <link rel="stylesheet" href="./capability-nav.css" />
   <link rel="stylesheet" href="./claw-manual-intake.css" />
   <link rel="stylesheet" href="./claw-workspace.css" />
-  <link rel="stylesheet" href="./claw-quote-compare.css" />
-  <link rel="stylesheet" href="./b66-quote-runtime.css" />
+  <link rel="stylesheet" href="./claw-quote-compare.css" />\n  <link rel="stylesheet" href="./b66-quote-runtime.css" />
   <link rel="stylesheet" href="./claw-local-handoff.css" />
   <link rel="stylesheet" href="./padiem-chat-ui-polish.css" />
   <link rel="stylesheet" href="./calendar.css" />
@@ -650,7 +649,7 @@
       <label for="projectNameInput" data-locale-key="project-name">프로젝트 이름</label>
       <input id="projectNameInput" name="name" maxlength="80" autocomplete="off" required data-locale-placeholder="project-name-placeholder" placeholder="예: 제주 가족여행" />
       <label for="projectInstructionsInput"><span data-project-instructions-label data-locale-key="project-instructions">프로젝트 지침</span> <span data-project-instructions-optional data-locale-key="optional">선택</span></label>
-      <textarea id="projectInstructionsInput" name="instructions" maxlength="1800" rows="6" data-locale-placeholder="project-instructions-placeholder" placeholder="예: 부모님과 함께 보는 내용이라 쉬운 한국어로 설명해줘."></textarea>
+      <textarea id="projectInstructionsInput" name="instructions" maxlength="1800" rows="6" data-locale-placeholder="project-instructions-placeholder" placeholder="예: 판례 요약문을 5줄로 압축하고 쟁점을 먼저 제시해줘.&#10;예: 표준계약서 검토 시 위험 조항을 체크리스트로 정리해줘."></textarea>
       <p class="project-form-note" data-locale-key="project-instructions-note">이 지침은 이 프로젝트의 대화에만 적용됩니다.</p>
 
       <section class="project-drive-panel" id="projectDrivePanel" aria-labelledby="projectDriveTitle" hidden>
@@ -679,14 +678,14 @@
 
       <section class="project-files-panel" id="projectFilesPanel" hidden aria-labelledby="projectFilesTitle">
         <div class="project-files-heading">
-          <div><strong id="projectFilesTitle" data-locale-key="project-files">프로젝트 파일</strong><small data-locale-key="project-files-limit">TXT·Markdown·CSV·JSON·PDF·DOCX · 최대 12개</small></div>
+          <div><strong id="projectFilesTitle" data-locale-key="project-files">프로젝트 파일</strong><small data-locale-key="project-files-limit">TXT·Markdown·CSV·JSON·PDF·DOCX</small><small class="project-files-usage" id="projectFilesUsage" hidden></small></div>
           <label class="project-file-add" for="projectFileInput" data-locale-key="project-file-add">＋ 파일 추가</label>
           <input id="projectFileInput" type="file" accept="text/plain,text/markdown,text/csv,application/json,.txt,.md,.markdown,.csv,.json,application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx" hidden />
         </div>
         <div class="project-files-list" id="projectFilesList"></div>
         <p class="project-files-empty" id="projectFilesEmpty" data-locale-key="project-files-empty" hidden>저장된 프로젝트 파일이 없습니다.</p>
         <p class="project-files-status" id="projectFileStatus" role="status" aria-live="polite" hidden></p>
-        <p class="project-files-note" data-locale-key="project-files-note">프로젝트 파일은 TXT·Markdown·CSV·JSON과 PDF·DOCX를 지원합니다. PDF·DOCX는 텍스트만 안전하게 추출해 저장하며 원본 파일은 저장하지 않습니다. PPTX·XLSX는 지원하지 않습니다.</p>
+        <p class="project-files-note" data-locale-key="project-files-note">PDF·DOCX는 텍스트만 추출해 저장하며 원본은 저장하지 않습니다. PPTX·XLSX는 미지원.</p>
       </section>
 
       <p class="project-form-error" id="projectFormError" role="alert" hidden></p>
@@ -728,8 +727,7 @@
   <script src="./claw-local-handoff.js"></script>
   <script src="./message-lifecycle.js"></script>
   <script src="./calendar.js"></script>
-  <script src="./app.js"></script>
-  <script src="./b66-quote-runtime.js"></script>
+  <script src="./app.js"></script>\n  <script src="./b66-quote-runtime.js"></script>
   <script src="./product-capabilities.js"></script>
   <script src="./a11y.js"></script>
   <script src="./search-sources.js"></script>
