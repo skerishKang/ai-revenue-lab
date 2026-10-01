@@ -13,7 +13,9 @@ adapter is injected via Worker composition (CONTROL_PLANE_LIVE_ADAPTER = NOT_DON
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import inspect
+import secrets
 from collections.abc import Mapping
 from contextvars import ContextVar, Token
 from typing import Any
@@ -84,6 +86,22 @@ _ACTIVE_TERMINAL_RESULT: ContextVar[Any | None] = ContextVar(
 )
 
 
+def _usage_reservation_identity(*, app_id: str, idempotency_key: str | None) -> str:
+    """Return one server-owned usage occurrence identity.
+
+    A validated Engine idempotency key keeps the usage reservation stable across
+    replay. Without one, each request occurrence must reserve independently even
+    when the material execution fingerprint is identical.
+    """
+
+    if idempotency_key is None:
+        return f"occ-{secrets.token_hex(24)}"
+    digest = hashlib.sha256(
+        f"engine-usage-occurrence-v1|{app_id}|{idempotency_key}".encode("utf-8")
+    ).hexdigest()
+    return f"idem-{digest}"
+
+
 def _run_admission_request(payload: Any) -> ExecutionAdmissionRequest | None:
     """Build a server-owned admission query only for an otherwise parseable run.
 
@@ -103,11 +121,31 @@ def _run_admission_request(payload: Any) -> ExecutionAdmissionRequest | None:
         app_id = payload.get("app_id")
         if not isinstance(app_id, str) or not app_id.strip():
             return None
+        _, exec_req, ctx = build_execution_request(
+            {
+                k: payload[k]
+                for k in (
+                    "app_id",
+                    "agent",
+                    "messages",
+                    "session_id",
+                    "additional_system_context",
+                    "trace_id",
+                    "execution_context",
+                )
+                if k in payload
+            }
+        )
         return ExecutionAdmissionRequest(
             app_id=app_id,
             subject_id=subject_id,
             capability=ORCHESTRATION_RUN_CAPABILITY,
+            trace_id=exec_req.trace_id,
             request_fingerprint=fingerprint,
+            usage_reservation_identity=_usage_reservation_identity(
+                app_id=app_id,
+                idempotency_key=ctx.idempotency_key if ctx is not None else None,
+            ),
         )
     except (ServiceContractError, ExecutionAdmissionError, TypeError, ValueError):
         return None
