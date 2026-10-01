@@ -254,6 +254,11 @@ def _usage_event_from_engine_wire(payload: Any) -> UsageEvent:
             "invalid_engine_usage_event",
             "usage outcome/disposition is invalid",
         ) from exc
+    if disposition is not BillingDisposition.NON_BILLABLE:
+        raise _error(
+            "invalid_engine_usage_event",
+            "Engine admission receipts cannot activate billable accounting",
+        )
     return UsageEvent(
         event_id=wire["event_id"],
         idempotency_key=wire["idempotency_key"],
@@ -538,22 +543,23 @@ class CloudflareEngineAdmissionAuthorityStore:
                 "usage reservation timestamp is outside the accepted clock window",
             )
 
+        # Replay identity excludes transport-observation fields. A retried
+        # idempotent execution may arrive with a new trace/timestamp, but it must
+        # still match the same product/subject/billing/fingerprint/units bytes.
         canonical_request = {
             "idempotency_key": idempotency_key,
             "billing_semantic_id": billing_semantic_id,
             "product_id": product,
             "subject": subject.to_public_dict(),
             "request_fingerprint": request_fingerprint,
-            "trace_id": wire["trace_id"],
             "estimated_units": estimated_units,
-            "occurred_at": _iso(occurred_at),
         }
         request_json = _canonical_json(canonical_request)
 
         def operation() -> dict[str, Any]:
             existing = _rows(
                 self._sql.exec(
-                    "SELECT reservation_ref, request_json, admitted, expires_at "
+                    "SELECT reservation_ref, request_json, admitted, expires_at, created_at "
                     "FROM engine_usage_reservation WHERE idempotency_key=?",
                     idempotency_key,
                 )
@@ -572,6 +578,7 @@ class CloudflareEngineAdmissionAuthorityStore:
                     "reservation_ref": str(existing[0]["reservation_ref"]),
                     "admitted": bool(existing[0]["admitted"]),
                     "expires_at": str(existing[0]["expires_at"]),
+                    "reserved_at": str(existing[0]["created_at"]),
                 }
 
             try:
@@ -636,6 +643,7 @@ class CloudflareEngineAdmissionAuthorityStore:
                 "reservation_ref": reservation_ref,
                 "admitted": admitted,
                 "expires_at": _iso(expires_at),
+                "reserved_at": _iso(observed_at),
             }
 
         return self._storage.transactionSync(operation)

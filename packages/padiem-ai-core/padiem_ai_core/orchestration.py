@@ -63,6 +63,7 @@ from .evidence_verification import (
     VerificationVerdict,
     accept_verification_verdict,
 )
+from .dispatch_evidence import mark_execution_dispatch_started
 from .execution_context import (
     ExecutionContext,
     IdempotencyAdapter,
@@ -1100,6 +1101,7 @@ class OrchestrationRunner:
                     trace_id=trace_id,
                 )
 
+                mark_execution_dispatch_started()
                 result = await asyncio.wait_for(
                     self._runtime.run(exec_req),
                     timeout=request.context.timeout_seconds,
@@ -1537,6 +1539,7 @@ class OrchestrationRunner:
         else:
             # Fallback simple runtime execution
             try:
+                mark_execution_dispatch_started()
                 result = await asyncio.wait_for(
                     self._runtime.run(request.execution_request),
                     timeout=request.context.timeout_seconds,

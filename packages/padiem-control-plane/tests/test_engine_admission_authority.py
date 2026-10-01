@@ -160,7 +160,7 @@ def usage_event(**overrides):
         "subject": SUBJECT.to_public_dict(),
         "execution_id": "run-e7-1",
         "outcome": "succeeded",
-        "billing_disposition": "billable",
+        "billing_disposition": "non_billable",
         "occurred_at": NOW.isoformat(),
         "tokens": {
             "input_tokens": 10,
@@ -292,12 +292,17 @@ def test_usage_reservation_is_entitlement_bound_and_idempotent():
         now=NOW,
     )
     second = store.reserve_usage(
-        reservation(),
-        now=NOW,
+        reservation(
+            trace_id="trace-2",
+            occurred_at=(NOW + timedelta(seconds=1)).isoformat(),
+        ),
+        now=NOW + timedelta(seconds=1),
     )
 
     assert first == second
     assert first["admitted"] is True
+    assert first["reserved_at"] == NOW.isoformat().replace("+00:00", "Z")
+    assert second["reserved_at"] == first["reserved_at"]
     assert first["reservation_ref"].startswith(
         "cp_res_"
     )
@@ -428,6 +433,27 @@ def test_usage_event_identities_are_immutable():
     assert storage.count(
         "engine_usage_event"
     ) == 1
+
+
+def test_engine_receipt_cannot_activate_billable_accounting():
+    store, storage = store_fixture()
+
+    with pytest.raises(
+        ControlPlaneContractError
+    ) as exc:
+        store.record_usage(
+            usage_event(
+                billing_disposition="billable"
+            ),
+            now=NOW,
+        )
+    assert (
+        exc.value.code
+        == "invalid_engine_usage_event"
+    )
+    assert storage.count(
+        "engine_usage_event"
+    ) == 0
 
 
 def test_engine_receipt_cannot_assert_provider_route_or_cost_authority():

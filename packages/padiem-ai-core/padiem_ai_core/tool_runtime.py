@@ -18,6 +18,7 @@ from .contracts import (
     ToolEvent,
     ToolSpec,
 )
+from .dispatch_evidence import mark_execution_dispatch_started
 
 MAX_TOOL_ARGUMENT_BYTES = 65_536
 MAX_TOOL_OUTPUT_BYTES = 262_144
@@ -572,6 +573,7 @@ class ToolRuntime:
 
         started = time.monotonic()
         try:
+            mark_execution_dispatch_started()
             raw_output = await asyncio.wait_for(
                 registered.handler(arguments),
                 timeout=float(spec.timeout_seconds),

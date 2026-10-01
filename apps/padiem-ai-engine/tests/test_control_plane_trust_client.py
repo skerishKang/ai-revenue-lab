@@ -47,6 +47,9 @@ class FakeBinding:
                 "expires_at": (
                     "2026-10-01T00:05:00+00:00"
                 ),
+                "reserved_at": (
+                    "2026-10-01T00:00:00+00:00"
+                ),
             },
         }
         self.record_result = {
