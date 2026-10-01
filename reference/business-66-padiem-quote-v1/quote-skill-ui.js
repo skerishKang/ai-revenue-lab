@@ -218,8 +218,10 @@
     throw new Error("base64_unavailable");
   }
 
-  async function analyzeImageFile(file, fileMeta, fetchFn) {
-    if (!fileMeta || fileMeta.category !== "image") return { ok: false, code: "manual_only" };
+  async function analyzeFile(file, fileMeta, fetchFn) {
+    if (!fileMeta || ["image", "native_document"].indexOf(fileMeta.category) === -1) {
+      return { ok: false, code: "manual_only" };
+    }
     if (!file || typeof file.arrayBuffer !== "function") return { ok: false, code: "file_read_unavailable" };
     if (typeof fetchFn !== "function") return { ok: false, code: "analysis_service_unavailable" };
 
@@ -253,6 +255,11 @@
     } catch (err) {
       return { ok: false, code: "analysis_service_unavailable" };
     }
+  }
+
+  async function analyzeImageFile(file, fileMeta, fetchFn) {
+    if (!fileMeta || fileMeta.category !== "image") return { ok: false, code: "manual_only" };
+    return analyzeFile(file, fileMeta, fetchFn);
   }
 
   function factsFromExtraction(extraction) {
@@ -493,31 +500,31 @@
       setStep(1);
       clear(root.wizardBody);
       var body = root.wizardBody;
-      body.appendChild(h(doc, "p", { text: "기존에 사용하던 견적서 파일을 선택하세요. 이미지는 분석을 위해 서버로 일시 전송되며 원본 바이트는 저장하지 않습니다." }, []));
+      body.appendChild(h(doc, "p", { text: "기존에 사용하던 견적서 파일을 선택하세요. 지원 파일은 분석을 위해 서버로 일시 전송되며 원본 바이트는 저장하지 않습니다." }, []));
       if (ui.fileMeta) {
         body.appendChild(dl(doc, [
           ["파일명", ui.fileMeta.name],
           ["파일 형식", ui.fileMeta.label],
           ["크기", ui.fileMeta.displaySize]
         ]));
-        if (ui.fileMeta.category === "image") {
-          if (ui.analysisStatus === "loading") {
-            body.appendChild(h(doc, "p", { class: "template-manage-note", text: "이미지에서 견적 내용을 분석하고 있습니다…" }, []));
-          } else if (ui.analysisStatus === "ready") {
-            body.appendChild(h(doc, "p", { class: "template-manage-note", text: "이미지 내용 분석이 끝났습니다. 다음 단계에서 회사 기본값을 확인·수정하세요." }, []));
-            body.appendChild(actionButton(doc, "wiz-step2", "다음: 회사정보 확인", "primary"));
-          } else if (ui.analysisStatus === "error") {
-            body.appendChild(h(doc, "p", { class: "template-manage-note", text: "자동 분석을 완료하지 못했습니다. 직접 확인하며 등록을 계속할 수 있습니다." }, []));
-            body.appendChild(actionButton(doc, "wiz-step2", "수동으로 계속", "primary"));
-          }
-        } else {
-          body.appendChild(h(doc, "p", { class: "template-manage-note", text: "문서 파일은 현재 자동 내용 분석 전 단계입니다. 회사정보와 모양을 직접 확인해 등록합니다." }, []));
+        var sourceLabel = ui.fileMeta.category === "image" ? "이미지" : "문서";
+        if (ui.analysisStatus === "loading") {
+          body.appendChild(h(doc, "p", { class: "template-manage-note", text: sourceLabel + "에서 견적 내용을 분석하고 있습니다…" }, []));
+          body.appendChild(actionButton(doc, "wiz-step2", "기다리지 않고 수동으로 계속", "soft"));
+        } else if (ui.analysisStatus === "ready") {
+          body.appendChild(h(doc, "p", { class: "template-manage-note", text: sourceLabel + " 내용 분석이 끝났습니다. 다음 단계에서 회사 기본값을 확인·수정하세요." }, []));
+          body.appendChild(actionButton(doc, "wiz-step2", "다음: 회사정보 확인", "primary"));
+        } else if (ui.analysisStatus === "error") {
+          body.appendChild(h(doc, "p", { class: "template-manage-note", text: "자동 분석을 완료하지 못했습니다. 원본과 비교해 직접 확인하며 등록을 계속할 수 있습니다." }, []));
+          body.appendChild(actionButton(doc, "wiz-step2", "수동으로 계속", "primary"));
+        } else if (ui.analysisStatus === "manual") {
+          body.appendChild(h(doc, "p", { class: "template-manage-note", text: "이 파일은 직접 확인 방식으로 등록합니다." }, []));
           body.appendChild(actionButton(doc, "wiz-step2", "다음: 회사정보 확인", "primary"));
         }
       } else {
         body.appendChild(actionButton(doc, "wiz-pick-file", "파일 선택", "primary"));
       }
-      body.appendChild(h(doc, "p", { class: "template-manage-note", text: "JPG·PNG·WebP(4MB 이하)는 자동 내용 분석을 지원합니다. PDF·DOCX·PPTX·XLSX·HWPX(2MB 이하)는 현재 수동 확인 방식입니다." }, []));
+      body.appendChild(h(doc, "p", { class: "template-manage-note", text: "JPG·PNG·WebP(4MB 이하)와 PDF·DOCX·PPTX·XLSX·HWPX(2MB 이하)는 자동 분석을 시도합니다. 문서 파서가 준비되지 않은 환경이나 분석 실패 시 수동 확인으로 계속할 수 있습니다." }, []));
     }
 
     function renderStep2() {
@@ -774,6 +781,13 @@
         return;
       }
       if (base === "wiz-step2") {
+        if (ui.analysisStatus === "loading") {
+          ui.analysisToken += 1;
+          ui.analysisStatus = "manual";
+          ui.analysisError = null;
+          ui.extraction = null;
+          ui.facts = null;
+        }
         renderStep2();
         return;
       }
@@ -923,7 +937,7 @@
         sourceMeta: {
           sourceKind: "file",
           filename: ui.fileMeta.name,
-          sourceRef: ui.extraction ? "server:image-analysis" : "media:" + ui.fileMeta.mediaType,
+          sourceRef: ui.extraction ? ("server:" + extractionKindForCategory(ui.fileMeta.category) + "-analysis") : "media:" + ui.fileMeta.mediaType,
           capturedAt: isoNow()
         },
         corrections: corrections
@@ -1032,21 +1046,15 @@
       var token = ui.analysisToken;
       ui.fileMeta = classified.value;
       ui.extraction = null;
+      ui.facts = null;
       ui.analysisError = null;
-
-      if (classified.value.category !== "image") {
-        ui.analysisStatus = "manual";
-        renderStep1();
-        announce("선택한 문서는 현재 수동 확인 방식으로 등록합니다: " + classified.value.name);
-        return;
-      }
 
       ui.analysisStatus = "loading";
       renderStep1();
-      announce("선택한 이미지에서 견적 내용을 분석하고 있습니다.");
+      announce((classified.value.category === "image" ? "선택한 이미지" : "선택한 문서") + "에서 견적 내용을 분석하고 있습니다.");
 
       var fetchFn = env.fetch || (typeof fetch === "function" ? fetch.bind(globalThis) : null);
-      analyzeImageFile(file, classified.value, fetchFn).then(function (result) {
+      analyzeFile(file, classified.value, fetchFn).then(function (result) {
         if (token !== ui.analysisToken) return;
         if (result.ok) {
           ui.extraction = result.extraction;
@@ -1054,14 +1062,15 @@
           ui.analysisStatus = "ready";
           ui.analysisError = null;
           renderStep1();
-          announce("이미지 내용 분석이 끝났습니다. 추출값을 확인해 주세요.");
+          announce((classified.value.category === "image" ? "이미지" : "문서") + " 내용 분석이 끝났습니다. 추출값을 확인해 주세요.");
           return;
         }
         ui.extraction = null;
+        ui.facts = null;
         ui.analysisStatus = "error";
         ui.analysisError = result.code || "analysis_failed";
         renderStep1();
-        announce("자동 분석을 완료하지 못했습니다. 직접 확인하며 등록할 수 있습니다.");
+        announce("자동 분석을 완료하지 못했습니다. 원본과 비교해 직접 확인하며 등록할 수 있습니다.");
       });
     }
 
@@ -1120,6 +1129,7 @@
     formValuesFromSkill: formValuesFromSkill,
     wizardStepForSession: wizardStepForSession,
     extractionKindForCategory: extractionKindForCategory,
+    analyzeFile: analyzeFile,
     analyzeImageFile: analyzeImageFile,
     factsFromExtraction: factsFromExtraction,
     registrationModelOutput: registrationModelOutput,

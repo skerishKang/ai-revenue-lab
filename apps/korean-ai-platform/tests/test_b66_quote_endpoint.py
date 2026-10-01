@@ -6,6 +6,7 @@ import base64
 import importlib.util
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 from starlette.responses import JSONResponse
 from starlette.testclient import TestClient
@@ -16,6 +17,7 @@ from app.pilot import gateway as pilot_gateway
 
 ROOT = Path(__file__).resolve().parents[3]
 AUTHORITY_PATH = ROOT / "apps" / "b66-quote-adapter" / "app" / "extraction_routing.py"
+INTAKE_PATH = ROOT / "apps" / "b66-quote-adapter" / "app" / "file_intake.py"
 
 spec = importlib.util.spec_from_file_location("b66_extraction_routing_test", AUTHORITY_PATH)
 assert spec is not None and spec.loader is not None
@@ -24,6 +26,8 @@ spec.loader.exec_module(AUTHORITY)
 
 TINY_PNG = b"\x89PNG\r\n\x1a\n" + b"synthetic-b66"
 TINY_B64 = base64.b64encode(TINY_PNG).decode("ascii")
+TINY_PDF = b"%PDF-1.7\nsynthetic-b66-native"
+TINY_PDF_B64 = base64.b64encode(TINY_PDF).decode("ascii")
 
 
 def _payload(**overrides):
@@ -202,25 +206,190 @@ def test_upstream_error_is_collapsed_to_product_safe_code(monkeypatch):
     assert sentinel not in response.text
 
 
+def _intake_module(result):
+    return SimpleNamespace(handle_intake_payload=lambda payload: result)
+
+
+def test_native_document_route_reuses_text_extraction_after_canonical_intake(monkeypatch):
+    monkeypatch.setattr(endpoint, "_authority", lambda: AUTHORITY)
+    monkeypatch.setattr(
+        endpoint,
+        "_intake_authority",
+        lambda: _intake_module(
+            {
+                "ok": True,
+                "result": {
+                    "kind": "native_document",
+                    "name": "quotation.pdf",
+                    "media_type": "application/pdf",
+                    "byte_size": len(TINY_PDF),
+                    "text": "견적번호 Q-2026-3002\n스테인리스 배관 40x40 12 9800",
+                    "text_chars": 38,
+                    "source_kind": "binary",
+                    "next": "text_extraction_model_pending",
+                    "model_called": False,
+                },
+            }
+        ),
+    )
+    captured = {}
+
+    async def fake_handle(request_id, body):
+        captured["request_id"] = request_id
+        captured["body"] = body
+        return _ok_upstream(json.dumps(_model_answer(), ensure_ascii=False))
+
+    monkeypatch.setattr(pilot_gateway, "_handle_alpha_chat", fake_handle)
+
+    with TestClient(create_app()) as client:
+        response = client.post(
+            "/api/b66/v1/quote/extract-document",
+            json={
+                "name": "quotation.pdf",
+                "media_type": "application/pdf",
+                "base64": TINY_PDF_B64,
+            },
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["ok"] is True
+    assert body["result"]["source"] == {
+        "kind": "native_document",
+        "filename": "quotation.pdf",
+        "media_type": "application/pdf",
+        "byte_size": len(TINY_PDF),
+    }
+    assert body["result"]["extraction"]["source"] == {
+        "kind": "native_document",
+        "filename": "quotation.pdf",
+    }
+    assert body["result"]["extraction"]["quote"]["quoteNo"] == "Q-2026-3002"
+    request_body = captured["body"]
+    assert request_body["model"] == AUTHORITY.B66_GOVERNED_ROUTE
+    assert request_body["business14"]["allow_external_fallback"] is False
+    assert request_body["business14"]["max_attempts"] == 1
+    assert isinstance(request_body["messages"][0]["content"], str)
+    assert "견적번호 Q-2026-3002" in request_body["messages"][0]["content"]
+
+
+def test_native_document_route_fails_closed_before_model_without_parser_authority(monkeypatch):
+    monkeypatch.setattr(endpoint, "_authority", lambda: AUTHORITY)
+    monkeypatch.setattr(
+        endpoint,
+        "_intake_authority",
+        lambda: _intake_module(
+            {
+                "ok": False,
+                "error": {
+                    "code": "parser_authority_unavailable",
+                    "message": "safe",
+                },
+            }
+        ),
+    )
+    upstream_calls = []
+
+    async def fake_handle(request_id, body):
+        upstream_calls.append(body)
+        raise AssertionError("model must not run without parser authority")
+
+    monkeypatch.setattr(pilot_gateway, "_handle_alpha_chat", fake_handle)
+
+    with TestClient(create_app()) as client:
+        response = client.post(
+            "/api/b66/v1/quote/extract-document",
+            json={
+                "name": "quotation.pdf",
+                "media_type": "application/pdf",
+                "base64": TINY_PDF_B64,
+            },
+        )
+
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "parser_authority_unavailable"
+    assert response.headers["cache-control"] == "no-store"
+    assert upstream_calls == []
+
+
+def test_scanned_pdf_stays_manual_when_native_text_is_absent(monkeypatch):
+    monkeypatch.setattr(endpoint, "_authority", lambda: AUTHORITY)
+    monkeypatch.setattr(
+        endpoint,
+        "_intake_authority",
+        lambda: _intake_module(
+            {
+                "ok": True,
+                "result": {
+                    "kind": "scanned_pdf_candidate",
+                    "name": "quotation.pdf",
+                    "media_type": "application/pdf",
+                    "byte_size": len(TINY_PDF),
+                    "next": "scanned_pdf_vision_pending",
+                    "model_called": False,
+                },
+            }
+        ),
+    )
+    upstream_calls = []
+
+    async def fake_handle(request_id, body):
+        upstream_calls.append(body)
+        raise AssertionError("scanned PDF must not enter text model route")
+
+    monkeypatch.setattr(pilot_gateway, "_handle_alpha_chat", fake_handle)
+
+    with TestClient(create_app()) as client:
+        response = client.post(
+            "/api/b66/v1/quote/extract-document",
+            json={
+                "name": "quotation.pdf",
+                "media_type": "application/pdf",
+                "base64": TINY_PDF_B64,
+            },
+        )
+
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "scanned_pdf_manual_review_required"
+    assert upstream_calls == []
+
+
 def test_route_source_owns_no_browser_provider_or_secret_surface():
     source = Path(endpoint.__file__).read_text(encoding="utf-8")
     assert "PADIEM_KILO_API_KEY" not in source
     assert "Authorization" not in source
     assert "api_key" not in source.lower()
     assert "build_image_extraction_request" in source
+    assert "build_text_extraction_request" in source
     assert "normalize_model_output" in source
     assert "pilot_gateway._validate_body" in source
     assert "pilot_gateway._handle_alpha_chat" in source
 
-def test_deploy_pipeline_stages_the_single_canonical_authority_inside_app_package():
+def test_deploy_pipeline_stages_canonical_b66_authorities_inside_app_package():
     deploy = (
         ROOT / "apps" / "korean-ai-platform" / "deploy.sh"
     ).read_text(encoding="utf-8")
-    assert 'B66_AUTHORITY_SOURCE="../b66-quote-adapter/app/extraction_routing.py"' in deploy
-    assert 'B66_STAGED_MODULE="app/b66_extraction_routing.py"' in deploy
-    assert 'cp "${B66_AUTHORITY_SOURCE}" "${B66_STAGED_MODULE}"' in deploy
+    assert 'B66_EXTRACTION_SOURCE="../b66-quote-adapter/app/extraction_routing.py"' in deploy
+    assert 'B66_EXTRACTION_STAGED="app/b66_extraction_routing.py"' in deploy
+    assert 'B66_INTAKE_SOURCE="../b66-quote-adapter/app/file_intake.py"' in deploy
+    assert 'B66_INTAKE_STAGED="app/b66_file_intake.py"' in deploy
+    assert 'cp "${B66_EXTRACTION_SOURCE}" "${B66_EXTRACTION_STAGED}"' in deploy
+    assert 'cp "${B66_INTAKE_SOURCE}" "${B66_INTAKE_STAGED}"' in deploy
     assert "B66_EXTRACTION_AUTHORITY_STAGED=YES" in deploy
+    assert "B66_FILE_INTAKE_AUTHORITY_STAGED=YES" in deploy
+    assert "B66_CORE_PARSER_BOUNDARY_STAGED=YES" in deploy
+    assert 'CORE_SOURCE="../../packages/padiem-ai-core/padiem_ai_core"' in deploy
+    assert "document_parser_boundary.py" in deploy
+    assert "document_normalization.py" in deploy
+    assert "document_semantics.py" in deploy
+    assert 'Deployment-staged package shell for canonical Core parser modules.' in deploy
+    assert 'cp "${CORE_SOURCE}/__init__.py"' not in deploy
+
+    intake_source = INTAKE_PATH.read_text(encoding="utf-8")
+    assert "parse_binary_document_via_authority" in intake_source
+    assert "extract_binary_document(" not in intake_source
 
     endpoint_source = Path(endpoint.__file__).read_text(encoding="utf-8")
     assert 'import_module("app.b66_extraction_routing")' in endpoint_source
+    assert 'import_module("app.b66_file_intake")' in endpoint_source
 

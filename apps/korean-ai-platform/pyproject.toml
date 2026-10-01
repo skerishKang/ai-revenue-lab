@@ -29,7 +29,7 @@ allow-build = true
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["app*"]
+include = ["app*", "padiem_ai_core*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

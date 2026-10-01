@@ -5,12 +5,16 @@ const originalFetch = globalThis.fetch;
 const calls = [];
 globalThis.fetch = async (url, options) => {
   calls.push({ url: String(url), options });
+  const isDocument = String(url).endsWith("/api/b66/v1/quote/extract-document");
   return new Response(
     JSON.stringify({
       ok: true,
       result: {
         extraction: {
-          source: { kind: "image", filename: "q.png" },
+          source: {
+            kind: isDocument ? "native_document" : "image",
+            filename: isDocument ? "q.pdf" : "q.png"
+          },
           sender: {}, recipient: {}, quote: {}, items: [], tax: { mode: null },
           memo: null, evidence: [], warnings: []
         },
@@ -22,11 +26,6 @@ globalThis.fetch = async (url, options) => {
 };
 
 try {
-  const request = new Request("https://quick-quote-kr.pages.dev/api/v1/quote/intake", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name: "q.png", media_type: "image/png", base64: "AA==" })
-  });
   const env = {
     ASSETS: {
       fetch() {
@@ -34,13 +33,47 @@ try {
       }
     }
   };
-  const response = await worker.fetch(request, env);
-  assert.equal(response.status, 200);
+
+  const imageRequest = new Request("https://quick-quote-kr.pages.dev/api/v1/quote/intake", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name: "q.png", media_type: "image/png", base64: "AA==" })
+  });
+  const imageResponse = await worker.fetch(imageRequest, env);
+  assert.equal(imageResponse.status, 200);
   assert.equal(calls.length, 1);
   assert.match(calls[0].url, /\/api\/b66\/v1\/quote\/extract-image$/);
   assert.equal(calls[0].options.method, "POST");
   assert.equal(calls[0].options.headers["Content-Type"], "application/json");
-  assert.equal(response.headers.get("Cache-Control"), "no-store");
+  assert.equal(imageResponse.headers.get("Cache-Control"), "no-store");
+
+  const documentRequest = new Request("https://quick-quote-kr.pages.dev/api/v1/quote/intake", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: "q.pdf",
+      media_type: "application/pdf",
+      base64: "JVBERi0="
+    })
+  });
+  const documentResponse = await worker.fetch(documentRequest, env);
+  assert.equal(documentResponse.status, 200);
+  assert.equal(calls.length, 2);
+  assert.match(calls[1].url, /\/api\/b66\/v1\/quote\/extract-document$/);
+  assert.equal(calls[1].options.method, "POST");
+  assert.equal(calls[1].options.headers["Content-Type"], "application/json");
+  assert.equal(documentResponse.headers.get("Cache-Control"), "no-store");
+
+  const malformed = await worker.fetch(
+    new Request("https://quick-quote-kr.pages.dev/api/v1/quote/intake", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{"
+    }),
+    env
+  );
+  assert.equal(malformed.status, 422);
+  assert.equal(calls.length, 2);
 
   const assetResponse = new Response("asset", { status: 200 });
   let assetCalls = 0;
@@ -54,7 +87,7 @@ try {
   );
   assert.ok(!/space-bunny|sensenova|openai|anthropic|kilo\//i.test(source));
   assert.ok(!/api[_-]?key|password|secret/i.test(source));
-  console.log("b66 Pages live-intake proxy contracts: PASS");
+  console.log("b66 Pages image/native live-intake proxy contracts: PASS");
 } finally {
   globalThis.fetch = originalFetch;
 }
