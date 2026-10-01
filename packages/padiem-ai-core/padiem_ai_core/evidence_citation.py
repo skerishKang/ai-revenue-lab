@@ -97,7 +97,7 @@ class GroundedCitation:
             )
 
     def to_public_dict(self) -> dict[str, object]:
-        return {
+        public: dict[str, object] = {
             "citation_id": self.citation_id,
             "claim_id": self.claim_id,
             "evidence_id": self.evidence_id,
@@ -107,12 +107,10 @@ class GroundedCitation:
             "source_type": self.source_type,
             "relation": self.relation.value,
             "checked_by_validator": self.checked_by_validator,
-            "document_locator": (
-                self.document_locator.to_public_dict()
-                if self.document_locator is not None
-                else None
-            ),
         }
+        if self.document_locator is not None:
+            public["document_locator"] = self.document_locator.to_public_dict()
+        return public
 
 
 @dataclass(frozen=True, slots=True)
