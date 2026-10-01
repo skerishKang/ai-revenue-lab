@@ -5,6 +5,7 @@ on:
     paths:
       - ".github/workflows/b62-b66-quote-url-activation-gate.yml"
       - ".github/scripts/b62_b66_quote_url_activation.py"
+      - ".github/scripts/b62_cloudflare_production_deploy_config.py"
       - ".github/tests/test_b62_b66_quote_url_activation.py"
       - "apps/padiem-chat/app/config.py"
       - "apps/padiem-chat/app/worker_config.py"
@@ -202,6 +203,7 @@ jobs:
           jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
           active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
           test -n "${active}"
+          printf '%s\n' "${active}" > "${RUNNER_TEMP}/b62-b66-quote-url-premutation-version.txt"
           evidence="$(python .github/scripts/b62_b66_quote_url_activation.py classify             --settings "${settings}" --expected-origin "${EXPECTED_ORIGIN}")"
           echo "${evidence}"
           state="$(printf '%s
@@ -216,7 +218,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: b62-b66-quote-url-premutation-settings
-          path: ${{ runner.temp }}/b62-b66-quote-url-premutation-settings.json
+          path: |
+            ${{ runner.temp }}/b62-b66-quote-url-premutation-settings.json
+            ${{ runner.temp }}/b62-b66-quote-url-premutation-version.txt
           if-no-files-found: error
           retention-days: 90
 
