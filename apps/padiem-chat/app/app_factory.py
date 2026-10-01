@@ -9,6 +9,16 @@ from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
 from .auth import GoogleOAuthClient
+from .b66_quote_conversation import B66QuoteConversationInterpreter
+from .b66_quote_routes import (
+    b66_quote_interpret,
+    b66_saved_skill_detail,
+    b66_saved_skills,
+)
+from .b66_saved_quote_skill_store import (
+    D1SavedQuoteSkillStore,
+    SavedQuoteSkillStore,
+)
 from .auth_routes import (
     auth_status,
     google_callback,
@@ -137,6 +147,8 @@ def create_app(
     claw_p01_adapter=None,
     claw_telegram_authority=None,
     approved_memory_store: ApprovedMemoryStore | None = None,
+    b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
+    b66_quote_interpreter=None,
     claw_task_alert_store=None,
     calendar_store: CalendarStore | None = None,
     claw_automation_store=None,
@@ -186,6 +198,13 @@ def create_app(
         Route("/api/conversations/{conversation_id}", api_conversation_detail, methods=["GET", "DELETE"]),
         Route("/api/chat/stream", api_chat_stream, methods=["POST"]),
         Route("/api/chat", api_chat, methods=["POST"]),
+        Route("/api/b66/saved-skills", b66_saved_skills, methods=["GET"]),
+        Route(
+            "/api/b66/saved-skills/{saved_skill_id}",
+            b66_saved_skill_detail,
+            methods=["GET"],
+        ),
+        Route("/api/b66/quote/interpret", b66_quote_interpret, methods=["POST"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
         Route(
@@ -261,6 +280,11 @@ def create_app(
     app.state.usage_gate_enforced = not (transport is not None and usage_store is None)
     app.state.google_oauth = GoogleOAuthClient(resolved, transport=auth_transport)
     app.state.b14_client = PadiemTierB14Client(resolved, transport=transport)
+    app.state.b66_quote_interpreter = (
+        b66_quote_interpreter
+        if b66_quote_interpreter is not None
+        else B66QuoteConversationInterpreter(app.state.b14_client)
+    )
     app.state.web_provider = create_web_provider(resolved, transport=web_transport)
     app.state.grounded_chat = GroundedChatService(app.state.b14_client, app.state.web_provider)
     app.state.auto_grounding = AutoGroundingService(app.state.web_provider)
@@ -316,6 +340,16 @@ def create_app(
         except Exception:
             _approved_memory_store = None
     app.state.approved_memory_store = _approved_memory_store
+
+    # B66 #3301/#3303: account-bound approved Saved Quote Skills reuse the
+    # existing PADIEM_CHAT_DB D1. Browser/local storage is not account authority.
+    _b66_saved_quote_skill_store = b66_saved_quote_skill_store
+    if _b66_saved_quote_skill_store is None and d1_binding is not None:
+        try:
+            _b66_saved_quote_skill_store = D1SavedQuoteSkillStore(d1_binding)
+        except Exception:
+            _b66_saved_quote_skill_store = None
+    app.state.b66_saved_quote_skill_store = _b66_saved_quote_skill_store
 
     # #2341 Task/Alert inbox: consume the existing migration-010 D1 authority.
     # No schema creation or alternate DB authority is introduced here.
