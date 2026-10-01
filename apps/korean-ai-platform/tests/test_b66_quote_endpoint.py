@@ -6,10 +6,8 @@ import base64
 import importlib.util
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
-from padiem_ai_core.document_normalization import NormalizedDocument
-from padiem_ai_core.document_parser_boundary import DocumentParserAuthorityUnavailable
-from padiem_ai_core.document_semantics import DocumentNormalizationError
 from starlette.responses import JSONResponse
 from starlette.testclient import TestClient
 
@@ -25,11 +23,6 @@ spec = importlib.util.spec_from_file_location("b66_extraction_routing_test", AUT
 assert spec is not None and spec.loader is not None
 AUTHORITY = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(AUTHORITY)
-
-intake_spec = importlib.util.spec_from_file_location("b66_file_intake_test", INTAKE_PATH)
-assert intake_spec is not None and intake_spec.loader is not None
-FILE_INTAKE = importlib.util.module_from_spec(intake_spec)
-intake_spec.loader.exec_module(FILE_INTAKE)
 
 TINY_PNG = b"\x89PNG\r\n\x1a\n" + b"synthetic-b66"
 TINY_B64 = base64.b64encode(TINY_PNG).decode("ascii")
@@ -213,28 +206,39 @@ def test_upstream_error_is_collapsed_to_product_safe_code(monkeypatch):
     assert sentinel not in response.text
 
 
-def test_native_document_route_reuses_intake_parser_and_text_extraction(monkeypatch):
-    monkeypatch.setattr(endpoint, "_authority", lambda: AUTHORITY)
-    monkeypatch.setattr(endpoint, "_intake_authority", lambda: FILE_INTAKE)
-    parser_calls = []
-    captured = {}
+def _intake_module(result):
+    return SimpleNamespace(handle_intake_payload=lambda payload: result)
 
-    def fake_parser(*, name, media_type, payload):
-        parser_calls.append((name, media_type, payload))
-        return NormalizedDocument(
-            name=name,
-            media_type=media_type,
-            text="견적번호 Q-2026-3002\n스테인리스 배관 40x40 12 9800",
-            byte_size=len(payload),
-            source_kind="binary",
-        )
+
+def test_native_document_route_reuses_text_extraction_after_canonical_intake(monkeypatch):
+    monkeypatch.setattr(endpoint, "_authority", lambda: AUTHORITY)
+    monkeypatch.setattr(
+        endpoint,
+        "_intake_authority",
+        lambda: _intake_module(
+            {
+                "ok": True,
+                "result": {
+                    "kind": "native_document",
+                    "name": "quotation.pdf",
+                    "media_type": "application/pdf",
+                    "byte_size": len(TINY_PDF),
+                    "text": "견적번호 Q-2026-3002\n스테인리스 배관 40x40 12 9800",
+                    "text_chars": 38,
+                    "source_kind": "binary",
+                    "next": "text_extraction_model_pending",
+                    "model_called": False,
+                },
+            }
+        ),
+    )
+    captured = {}
 
     async def fake_handle(request_id, body):
         captured["request_id"] = request_id
         captured["body"] = body
         return _ok_upstream(json.dumps(_model_answer(), ensure_ascii=False))
 
-    monkeypatch.setattr(FILE_INTAKE, "parse_binary_document_via_authority", fake_parser)
     monkeypatch.setattr(pilot_gateway, "_handle_alpha_chat", fake_handle)
 
     with TestClient(create_app()) as client:
@@ -250,7 +254,6 @@ def test_native_document_route_reuses_intake_parser_and_text_extraction(monkeypa
     assert response.status_code == 200
     body = response.json()
     assert body["ok"] is True
-    assert parser_calls == [("quotation.pdf", "application/pdf", TINY_PDF)]
     assert body["result"]["source"] == {
         "kind": "native_document",
         "filename": "quotation.pdf",
@@ -272,17 +275,25 @@ def test_native_document_route_reuses_intake_parser_and_text_extraction(monkeypa
 
 def test_native_document_route_fails_closed_before_model_without_parser_authority(monkeypatch):
     monkeypatch.setattr(endpoint, "_authority", lambda: AUTHORITY)
-    monkeypatch.setattr(endpoint, "_intake_authority", lambda: FILE_INTAKE)
+    monkeypatch.setattr(
+        endpoint,
+        "_intake_authority",
+        lambda: _intake_module(
+            {
+                "ok": False,
+                "error": {
+                    "code": "parser_authority_unavailable",
+                    "message": "safe",
+                },
+            }
+        ),
+    )
     upstream_calls = []
-
-    def unavailable_parser(**kwargs):
-        raise DocumentParserAuthorityUnavailable()
 
     async def fake_handle(request_id, body):
         upstream_calls.append(body)
         raise AssertionError("model must not run without parser authority")
 
-    monkeypatch.setattr(FILE_INTAKE, "parse_binary_document_via_authority", unavailable_parser)
     monkeypatch.setattr(pilot_gateway, "_handle_alpha_chat", fake_handle)
 
     with TestClient(create_app()) as client:
@@ -303,20 +314,29 @@ def test_native_document_route_fails_closed_before_model_without_parser_authorit
 
 def test_scanned_pdf_stays_manual_when_native_text_is_absent(monkeypatch):
     monkeypatch.setattr(endpoint, "_authority", lambda: AUTHORITY)
-    monkeypatch.setattr(endpoint, "_intake_authority", lambda: FILE_INTAKE)
+    monkeypatch.setattr(
+        endpoint,
+        "_intake_authority",
+        lambda: _intake_module(
+            {
+                "ok": True,
+                "result": {
+                    "kind": "scanned_pdf_candidate",
+                    "name": "quotation.pdf",
+                    "media_type": "application/pdf",
+                    "byte_size": len(TINY_PDF),
+                    "next": "scanned_pdf_vision_pending",
+                    "model_called": False,
+                },
+            }
+        ),
+    )
     upstream_calls = []
-
-    def scanned_parser(**kwargs):
-        raise DocumentNormalizationError(
-            "pdf_empty_text",
-            "PDF contains no extractable text; OCR is not enabled.",
-        )
 
     async def fake_handle(request_id, body):
         upstream_calls.append(body)
         raise AssertionError("scanned PDF must not enter text model route")
 
-    monkeypatch.setattr(FILE_INTAKE, "parse_binary_document_via_authority", scanned_parser)
     monkeypatch.setattr(pilot_gateway, "_handle_alpha_chat", fake_handle)
 
     with TestClient(create_app()) as client:
@@ -357,6 +377,13 @@ def test_deploy_pipeline_stages_canonical_b66_authorities_inside_app_package():
     assert 'cp "${B66_INTAKE_SOURCE}" "${B66_INTAKE_STAGED}"' in deploy
     assert "B66_EXTRACTION_AUTHORITY_STAGED=YES" in deploy
     assert "B66_FILE_INTAKE_AUTHORITY_STAGED=YES" in deploy
+    assert "B66_CORE_PARSER_BOUNDARY_STAGED=YES" in deploy
+    assert 'CORE_SOURCE="../../packages/padiem-ai-core/padiem_ai_core"' in deploy
+    assert "document_parser_boundary.py" in deploy
+
+    intake_source = INTAKE_PATH.read_text(encoding="utf-8")
+    assert "parse_binary_document_via_authority" in intake_source
+    assert "extract_binary_document(" not in intake_source
 
     endpoint_source = Path(endpoint.__file__).read_text(encoding="utf-8")
     assert 'import_module("app.b66_extraction_routing")' in endpoint_source
