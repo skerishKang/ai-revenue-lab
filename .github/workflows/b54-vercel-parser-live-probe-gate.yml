@@ -100,6 +100,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Install canonical Core runtime dependencies
+        run: python -m pip install --disable-pip-version-check --no-input -e packages/padiem-ai-core
+
       - name: Run Vercel parser source-contract tests
         env:
           PYTHONPATH: apps/korean-ai-code-agent/src:packages/padiem-ai-core
@@ -168,8 +171,10 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install pinned Vercel Sandbox SDK
-        run: python -m pip install --disable-pip-version-check --no-input "vercel-sandbox==0.7.0"
+      - name: Install canonical Core and pinned Vercel Sandbox SDK
+        run: |
+          python -m pip install --disable-pip-version-check --no-input -e packages/padiem-ai-core
+          python -m pip install --disable-pip-version-check --no-input "vercel-sandbox==0.7.0"
 
       - name: Require host-side Vercel bindings without exposing values
         env:
