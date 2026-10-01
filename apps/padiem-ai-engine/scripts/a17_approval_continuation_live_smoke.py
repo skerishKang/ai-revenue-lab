@@ -9,7 +9,7 @@ credentials, continuation refs, pause ids or trace ids.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime
 import hashlib
 import json
 import os
@@ -185,7 +185,7 @@ def _safe_error_code(payload: Any) -> str:
     return code
 
 
-def _classify_pause(payload: Any, *, expected_trace_id: str) -> tuple[str, str]:
+def _classify_pause(payload: Any, *, expected_trace_id: str) -> tuple[str, str, str]:
     if not isinstance(payload, Mapping) or payload.get("ok") is not True:
         raise ValueError("noncanonical pause envelope")
     orch = payload.get("orchestration")
@@ -228,11 +228,21 @@ def _classify_pause(payload: Any, *, expected_trace_id: str) -> tuple[str, str]:
     if pause.get("trace_id") != expected_trace_id:
         raise ValueError("pause trace identity drift")
 
+    created_at = pause.get("created_at")
+    if not isinstance(created_at, str):
+        raise ValueError("missing pause creation timestamp")
+    try:
+        parsed_created_at = datetime.fromisoformat(created_at)
+    except ValueError:
+        raise ValueError("invalid pause creation timestamp") from None
+    if parsed_created_at.tzinfo is None or parsed_created_at.utcoffset() is None:
+        raise ValueError("pause creation timestamp is not timezone-aware")
+
     state = orch.get("continuation_state")
     if not isinstance(state, Mapping) or state.get("status") != "waiting_approval":
         raise ValueError("unexpected continuation state")
 
-    return continuation_ref, pause_id
+    return continuation_ref, pause_id, created_at
 
 
 def _classify_resume(payload: Any, *, expected_trace_id: str) -> None:
@@ -288,7 +298,6 @@ def run(
     credential: str,
     *,
     transport: Transport = _http_post_once,
-    now: Callable[[], datetime] = lambda: datetime.now(timezone.utc),
     token_hex: Callable[[int], str] = secrets.token_hex,
 ) -> int:
     orchestrate_posts = 0
@@ -326,7 +335,7 @@ def run(
         return 1
 
     try:
-        continuation_ref, pause_id = _classify_pause(
+        continuation_ref, pause_id, pause_created_at = _classify_pause(
             payload,
             expected_trace_id=trace_id,
         )
@@ -338,7 +347,10 @@ def run(
         print("NETWORK_RETRY_COUNT=0")
         return 1
 
-    decided_at = now().astimezone(timezone.utc).isoformat()
+    # Bind the synthetic decision timestamp to the server-issued pause rather
+    # than trusting the CI runner clock. The first-party verifier independently
+    # rechecks that this timestamp belongs to the pause window.
+    decided_at = pause_created_at
     resume_body = canonical_resume_body(
         initial,
         continuation_ref=continuation_ref,
