@@ -384,10 +384,8 @@
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
       ensureUi();
-      refresh();
     }, { once: true });
   } else {
     ensureUi();
-    refresh();
   }
 })();
