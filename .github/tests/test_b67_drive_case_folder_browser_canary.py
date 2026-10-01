@@ -71,6 +71,8 @@ def test_cdp_url_rejects_remote_or_authority_bearing_values(value: str) -> None:
         ("", "empty"),
     ],
 )
+def test_status_classifier_is_closed(text: str, expected: str) -> None:
+    assert canary.classify_status(text) == expected
 
 
 @pytest.mark.parametrize(
@@ -87,10 +89,6 @@ def test_cdp_url_rejects_remote_or_authority_bearing_values(value: str) -> None:
 )
 def test_direct_google_provider_classifier_ignores_static_fonts(url: str, expected: bool) -> None:
     assert canary.is_direct_google_provider_request(url) is expected
-
-
-def test_status_classifier_is_closed(text: str, expected: str) -> None:
-    assert canary.classify_status(text) == expected
 
 
 def test_target_and_privacy_contract_are_fixed() -> None:
