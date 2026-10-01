@@ -52,6 +52,10 @@ class OriginalAdmissionBinding:
             raise ExecutionAdmissionError("invalid_admission", "Original usage reservation scope is invalid.")
         if reservation.request_fingerprint != self.request_fingerprint:
             raise ExecutionAdmissionError("invalid_admission", "Original usage reservation request identity is invalid.")
+        expected_subject_type = "user" if self.subject_id is not None else "account"
+        expected_subject_id = self.subject_id if self.subject_id is not None else self.app_id
+        if reservation.subject_type != expected_subject_type or reservation.subject_id != expected_subject_id:
+            raise ExecutionAdmissionError("invalid_admission", "Original usage reservation subject is invalid.")
 
     @classmethod
     def from_run_admission(cls, admission: TrustedExecutionAdmission) -> "OriginalAdmissionBinding":
