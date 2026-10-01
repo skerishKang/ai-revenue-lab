@@ -33,7 +33,7 @@ class Evidence(CoreEvidence):
             url=url,
         )
 
-    def public_dict(self) -> dict[str, str]:
+    def public_dict(self) -> dict[str, object]:
         return {
             "id": self.id,
             "title": self.title,
@@ -42,4 +42,9 @@ class Evidence(CoreEvidence):
             "retrieved_at": self.retrieved_at,
             "provider": self.provider,
             "source_type": self.source_type,
+            "document_locator": (
+                self.document_locator.to_public_dict()
+                if self.document_locator is not None
+                else None
+            ),
         }
