@@ -51,6 +51,8 @@ jobs:
           test -f "${SOURCE_DIR}/quote-core.js"
           test -f "${SOURCE_DIR}/quote-history.js"
           test -f "${SOURCE_DIR}/file-intake.js"
+          test -f "${SOURCE_DIR}/browser-document-parser.js"
+          test -f "${SOURCE_DIR}/browser-document-parser-worker.js"
           test -f "${SOURCE_DIR}/easy-mode.js"
           test -f "${SOURCE_DIR}/quote-template.js"
           test -f "${SOURCE_DIR}/quote-template-store.js"
@@ -80,6 +82,8 @@ jobs:
           node --check _worker.js
           node --check app.js
           node --check file-intake.js
+          node --check browser-document-parser.js
+          node --check browser-document-parser-worker.js
           node --check easy-mode.js
           node --check quote-template.js
           node --check quote-template-store.js
@@ -99,6 +103,7 @@ jobs:
           node tests/quote-extraction.test.cjs
           node tests/quote-history.test.cjs
           node tests/file-intake.test.cjs
+          node tests/browser-document-parser.test.cjs
           node tests/static-contract.test.cjs
           node tests/quote-template.test.cjs
           node tests/quote-template-store.test.cjs
