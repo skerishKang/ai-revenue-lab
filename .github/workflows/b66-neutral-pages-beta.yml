@@ -77,7 +77,7 @@ jobs:
           grep -F '<title>견적서 만들기</title>' "${SOURCE_DIR}/index.html" >/dev/null
           grep -F '샘플 공급사' "${SOURCE_DIR}/index.html" >/dev/null
           grep -F 'id="padiemAccountButton"' "${SOURCE_DIR}/index.html" >/dev/null
-          grep -F 'Padiem 로그인' "${SOURCE_DIR}/index.html" >/dev/null
+          grep -F '>로그인</button>' "${SOURCE_DIR}/index.html" >/dev/null
           ! grep -F 'B66 DEMO' "${SOURCE_DIR}/index.html" >/dev/null
           echo "B66_PRODUCT_SOURCE=PASS"
           echo "PADIEM_ACCOUNT_ENTRY=PASS"
@@ -160,7 +160,7 @@ jobs:
           done
           grep -F '<title>견적서 만들기</title>' "${RUNNER_TEMP}/b66-local.html" >/dev/null
           grep -F 'id="padiemAccountButton"' "${RUNNER_TEMP}/b66-local.html" >/dev/null
-          grep -F 'Padiem 로그인' "${RUNNER_TEMP}/b66-local.html" >/dev/null
+          grep -F '>로그인</button>' "${RUNNER_TEMP}/b66-local.html" >/dev/null
           ! grep -F 'B66 DEMO' "${RUNNER_TEMP}/b66-local.html" >/dev/null
           curl -fsS http://127.0.0.1:4173/embed.html -o "${RUNNER_TEMP}/b66-embed.html"
           grep -F '<title>견적서 미리보기</title>' "${RUNNER_TEMP}/b66-embed.html" >/dev/null
@@ -259,7 +259,7 @@ jobs:
             url="$1"
             output="$2"
             for attempt in $(seq 1 36); do
-              if curl -fsS --connect-timeout 5 --max-time 20                   -H 'Cache-Control: no-cache'                   "${url}?release=${TARGET_SHA}-${attempt}" -o "${output}"                 && grep -F '<title>견적서 만들기</title>' "${output}" >/dev/null                 && grep -F '샘플 공급사' "${output}" >/dev/null                 && grep -F 'id="padiemAccountButton"' "${output}" >/dev/null                 && grep -F 'Padiem 로그인' "${output}" >/dev/null                 && ! grep -F 'B66 DEMO' "${output}" >/dev/null; then
+              if curl -fsS --connect-timeout 5 --max-time 20                   -H 'Cache-Control: no-cache'                   "${url}?release=${TARGET_SHA}-${attempt}" -o "${output}"                 && grep -F '<title>견적서 만들기</title>' "${output}" >/dev/null                 && grep -F '샘플 공급사' "${output}" >/dev/null                 && grep -F 'id="padiemAccountButton"' "${output}" >/dev/null                 && grep -F '>로그인</button>' "${output}" >/dev/null                 && ! grep -F 'B66 DEMO' "${output}" >/dev/null; then
                 return 0
               fi
               sleep 5
