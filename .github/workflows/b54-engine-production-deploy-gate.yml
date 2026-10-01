@@ -90,6 +90,39 @@ jobs:
           } >> "${GITHUB_ENV}"
           echo 'PREMUTATION_SERVED_VERSION_GUARD=PASS'
 
+      - name: Pre-deploy A7 Control Plane admission readiness
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-control-plane-engine-admission"
+          settings="${RUNNER_TEMP}/a7-cp-admission-predeploy-settings.json"
+          subdomain="${RUNNER_TEMP}/a7-cp-admission-predeploy-subdomain.json"
+          deployments="${RUNNER_TEMP}/a7-cp-admission-predeploy-deployments.json"
+
+          curl -fsS "${auth[@]}" "${base}/settings" -o "${settings}"
+          curl -fsS "${auth[@]}" "${base}/subdomain" -o "${subdomain}"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
+
+          jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
+          jq -e '.result.bindings | any(.name == "CONTROL_PLANE_IDENTITY" and .type == "service" and .service == "padiem-control-plane-identity")' "${settings}" >/dev/null
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+          jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+          active_version="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
+          test -n "${active_version}"
+
+          echo 'PREDEPLOY_CP_ADMISSION_READINESS=PASS'
+          echo 'PRIVATE_INGRESS=PASS'
+          echo 'CP_MUTATION=0'
+          echo 'ENGINE_MUTATION_BEFORE_GUARD=0'
+          echo 'PROVIDER_CALLS=0'
+          echo 'REAL_USER_DATA=0'
+
       - name: Deploy engine to production
         working-directory: apps/padiem-ai-engine
         env:
