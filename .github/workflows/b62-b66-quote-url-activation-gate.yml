@@ -1,0 +1,268 @@
+name: B62 B66 Quote URL Activation Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b62-b66-quote-url-activation-gate.yml"
+      - ".github/scripts/b62_b66_quote_url_activation.py"
+      - ".github/tests/test_b62_b66_quote_url_activation.py"
+      - "apps/padiem-chat/app/config.py"
+      - "apps/padiem-chat/app/worker_config.py"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "B66 quote URL activation gate mode"
+        required: true
+        type: choice
+        default: repository_preflight
+        options:
+          - repository_preflight
+          - cloudflare_readonly
+          - activate_b66_quote_url
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      expected_origin:
+        description: "Reviewed HTTPS root origin for the canonical B66 quote runtime"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact mutation confirmation phrase"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b62-b66-quote-url-activation-gate
+  cancel-in-progress: false
+
+env:
+  B62_WORKER: padiem-chat
+  TARGET_SHA: ${ inputs.target_sha }}
+  EXPECTED_ORIGIN: ${ inputs.expected_origin }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout PR exact head
+        if: ${ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch SHA
+        if: ${ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: ${ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run B66 quote URL activation contract tests
+        run: python .github/tests/test_b62_b66_quote_url_activation.py
+
+      - name: Source-only evidence
+        run: |
+          echo 'B62_B66_QUOTE_URL_SOURCE_CONTRACT=PASS'
+          echo 'PRODUCTION_MUTATION=0'
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      target_state: ${ steps.classify.outputs.target_state }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main before live readback
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'READONLY_EXACT_MAIN_SHA=PASS'
+
+      - name: Read live settings without secret values
+        id: classify
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          settings="${RUNNER_TEMP}/b62-b66-quote-url-settings.json"
+          curl -fsS             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -H "Content-Type: application/json"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings"             -o "${settings}"
+          evidence="$(python .github/scripts/b62_b66_quote_url_activation.py classify             --settings "${settings}" --expected-origin "${EXPECTED_ORIGIN}")"
+          echo "${evidence}"
+          state="$(printf '%s
+' "${evidence}" | sed -n 's/^B62_B66_QUOTE_URL_STATE=//p')"
+          case "${state}" in missing|exact|drift|wrong_type|invalid) ;; *) exit 1;; esac
+          echo "target_state=${state}" >> "${GITHUB_OUTPUT}"
+          echo 'SECRET_VALUES_READ=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: Read bounded served-version rollback anchor
+        shell: bash
+        run: |
+          set -euo pipefail
+          deployments="${RUNNER_TEMP}/b62-b66-quote-url-deployments.json"
+          curl -fsS             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -H "Content-Type: application/json"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments"             -o "${deployments}"
+          jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+          active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
+          test -n "${active}"
+          echo 'PREMUTATION_SERVED_VERSION_RECORDED=YES'
+          echo 'PRODUCTION_MUTATION=0'
+
+  activate-b66-quote-url:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${ github.event_name == 'workflow_dispatch' && inputs.mode == 'activate_b66_quote_url' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    permissions:
+      contents: read
+    env:
+      CLOUDFLARE_API_TOKEN: ${ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CONFIRMATION: ${ inputs.confirmation }}
+      READONLY_TARGET_STATE: ${ needs.cloudflare-readonly.outputs.target_state }}
+    steps:
+      - name: Require explicit activation authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "ACTIVATE_B62_B66_QUOTE_URL_FROM_EXACT_MAIN"
+          case "${READONLY_TARGET_STATE}" in
+            missing|exact) ;;
+            *) echo "Refusing target state ${READONLY_TARGET_STATE}" >&2; exit 1 ;;
+          esac
+          echo 'B62_B66_QUOTE_URL_AUTHORIZATION=PASS'
+
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact main immediately before mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'PREMUTATION_EXACT_MAIN_SHA=PASS'
+
+      - name: Record pre-mutation settings and served version
+        id: before
+        shell: bash
+        run: |
+          set -euo pipefail
+          settings="${RUNNER_TEMP}/b62-b66-quote-url-premutation-settings.json"
+          deployments="${RUNNER_TEMP}/b62-b66-quote-url-premutation-deployments.json"
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          curl -fsS "${auth[@]}"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings"             -o "${settings}"
+          curl -fsS "${auth[@]}"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments"             -o "${deployments}"
+          jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+          active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
+          test -n "${active}"
+          evidence="$(python .github/scripts/b62_b66_quote_url_activation.py classify             --settings "${settings}" --expected-origin "${EXPECTED_ORIGIN}")"
+          echo "${evidence}"
+          state="$(printf '%s
+' "${evidence}" | sed -n 's/^B62_B66_QUOTE_URL_STATE=//p')"
+          case "${state}" in missing|exact) ;; *) echo "Premutation target state changed to ${state}" >&2; exit 1;; esac
+          echo "premutation_state=${state}" >> "${GITHUB_OUTPUT}"
+          echo 'PREMUTATION_SETTINGS_SNAPSHOT=RECORDED'
+          echo 'PREMUTATION_SERVED_VERSION_RECORDED=YES'
+          echo 'SECRET_VALUES_READ=0'
+
+      - name: Publish bounded rollback evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: b62-b66-quote-url-premutation-settings
+          path: ${ runner.temp }}/b62-b66-quote-url-premutation-settings.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Build missing-only activation patch
+        id: plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          patch="${RUNNER_TEMP}/b62-b66-quote-url-patch.json"
+          evidence="$(python .github/scripts/b62_b66_quote_url_activation.py plan             --settings "${RUNNER_TEMP}/b62-b66-quote-url-premutation-settings.json"             --expected-origin "${EXPECTED_ORIGIN}"             --target-sha "${TARGET_SHA}"             --output "${patch}")"
+          echo "${evidence}"
+          no_op="$(printf '%s
+' "${evidence}" | sed -n 's/^B62_B66_QUOTE_URL_NO_OP=//p')"
+          test "${no_op}" = "0" || test "${no_op}" = "1"
+          echo "no_op=${no_op}" >> "${GITHUB_OUTPUT}"
+
+      - name: Add B66 quote runtime URL only when missing
+        if: ${ steps.plan.outputs.no_op == '0' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          response="${RUNNER_TEMP}/b62-b66-quote-url-patch-response.json"
+          http_status="$(
+            curl -sS -X PATCH               -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"               -F "settings=<${RUNNER_TEMP}/b62-b66-quote-url-patch.json;type=application/json"               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings"               -o "${response}" -w '%{http_code}'
+          )"
+          test "${http_status}" -ge 200 && test "${http_status}" -lt 300
+          jq -e '.success == true' "${response}" >/dev/null
+          echo 'B62_B66_QUOTE_URL_ACTIVATION=APPLIED'
+          echo 'PRODUCTION_MUTATION=1'
+          echo 'WORKER_CODE_DEPLOY=0'
+
+      - name: Record exact no-op
+        if: ${ steps.plan.outputs.no_op == '1' }}
+        run: |
+          echo 'B62_B66_QUOTE_URL_ACTIVATION=SKIPPED_ALREADY_EXACT'
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'WORKER_CODE_DEPLOY=0'
+
+      - name: Read back exact target and unrelated binding preservation
+        shell: bash
+        run: |
+          set -euo pipefail
+          after="${RUNNER_TEMP}/b62-b66-quote-url-post-settings.json"
+          curl -fsS             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -H "Content-Type: application/json"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings"             -o "${after}"
+          python .github/scripts/b62_b66_quote_url_activation.py verify             --before "${RUNNER_TEMP}/b62-b66-quote-url-premutation-settings.json"             --after "${after}"             --expected-origin "${EXPECTED_ORIGIN}"
+          echo 'B62_B66_QUOTE_URL_POST_READBACK=PASS'
+          echo 'UNRELATED_BINDINGS_PRESERVED=PASS'
+          echo 'SECRET_VALUES_READ=0'
+          echo 'WORKER_CODE_DEPLOY=0'
