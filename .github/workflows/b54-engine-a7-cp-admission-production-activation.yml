@@ -1,0 +1,438 @@
+name: B54 Engine A7 Control Plane Admission Production Activation
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-engine-a7-cp-admission-production-activation.yml"
+      - ".github/tests/test_b54_engine_a7_cp_admission_activation.py"
+      - "packages/padiem-control-plane/wrangler.engine-admission-authority.jsonc"
+      - "packages/padiem-control-plane/engine_admission_authority_worker.py"
+      - "packages/padiem-control-plane/padiem_control_plane/engine_admission_authority.py"
+      - "packages/padiem-control-plane/padiem_control_plane/engine_entitlement_producer.py"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "A7 Control Plane admission activation mode"
+        required: true
+        type: choice
+        default: repository_preflight
+        options:
+          - repository_preflight
+          - cloudflare_readonly
+          - activate_cp_engine_admission_worker
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact Production mutation confirmation phrase"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-engine-a7-cp-admission-production-activation
+  cancel-in-progress: false
+
+env:
+  TARGET_SHA: ${{ inputs.target_sha }}
+  CP_ADMISSION_WORKER: padiem-control-plane-engine-admission
+  CP_ADMISSION_CONFIG: wrangler.engine-admission-authority.jsonc
+  IDENTITY_WORKER: padiem-control-plane-identity
+  ENGINE_WORKER: padiem-ai-engine
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate private first-activation contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          config = json.loads(
+              Path("packages/padiem-control-plane/wrangler.engine-admission-authority.jsonc")
+              .read_text(encoding="utf-8")
+          )
+          if config.get("name") != "padiem-control-plane-engine-admission":
+              raise SystemExit("CP admission worker name drift")
+          if config.get("workers_dev") is not False or config.get("preview_urls") is not False:
+              raise SystemExit("CP admission worker public ingress drift")
+          for key in ("routes", "custom_domain", "custom_domains"):
+              if key in config:
+                  raise SystemExit(f"CP admission worker declares {key}")
+
+          services = config.get("services")
+          expected_services = [{
+              "binding": "CONTROL_PLANE_IDENTITY",
+              "service": "padiem-control-plane-identity",
+          }]
+          if services != expected_services:
+              raise SystemExit("CP admission identity service binding drift")
+
+          durable = config.get("durable_objects", {}).get("bindings")
+          expected_durable = [{
+              "name": "CONTROL_PLANE_ENGINE_ADMISSION",
+              "class_name": "CanonicalEngineAdmissionDurableObject",
+          }]
+          if durable != expected_durable:
+              raise SystemExit("CP admission Durable Object binding drift")
+
+          export = config.get("exports", {}).get("CanonicalEngineAdmissionDurableObject")
+          if export != {"type": "durable-object", "storage": "sqlite"}:
+              raise SystemExit("CP admission Durable Object export drift")
+
+          worker = Path(
+              "packages/padiem-control-plane/engine_admission_authority_worker.py"
+          ).read_text(encoding="utf-8")
+          for token in (
+              "PUBLIC_ROUTE_CONFIGURED = False",
+              "ENGINE_GATEWAY_CAN_INSTALL_ENTITLEMENTS = False",
+              "CONTROL_PLANE_IDENTITY_REQUIRED_FOR_ENTITLEMENT = True",
+          ):
+              if token not in worker:
+                  raise SystemExit(f"CP admission worker contract missing: {token}")
+
+          producer = Path(
+              "packages/padiem-control-plane/padiem_control_plane/engine_entitlement_producer.py"
+          ).read_text(encoding="utf-8")
+          for token in (
+              'ENGINE_ORCHESTRATION_GRANT = "orchestration.run"',
+              'SUPPORTED_ENGINE_PRODUCTS = frozenset({"b62", "b54-padiem-claw"})',
+              "SubjectType.USER",
+          ):
+              if token not in producer:
+                  raise SystemExit(f"canonical entitlement producer drift: {token}")
+
+          print("A7_CP_ADMISSION_SOURCE_CONTRACT=PASS")
+          print("PRIVATE_INGRESS=PASS")
+          print("PRODUCTION_MUTATION=0")
+          PY
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: "0.12.5"
+
+      - name: Dry-run package exact CP admission Worker
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        run: |
+          set -euo pipefail
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${temp_config}"' EXIT
+          cp "${CP_ADMISSION_CONFIG}" "${temp_config}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy             --dry-run             --outdir "${RUNNER_TEMP}/a7-cp-admission-dry-run"
+          rm -f "${temp_config}"
+          echo "A7_CP_ADMISSION_PACKAGE_DRY_RUN=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+  cloudflare-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      cp_state: ${{ steps.audit.outputs.cp_state }}
+      engine_binding_state: ${{ steps.audit.outputs.engine_binding_state }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Exact-main and bounded Production read-only audit
+        id: audit
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+
+          cp_base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${CP_ADMISSION_WORKER}"
+          settings="${RUNNER_TEMP}/a7-cp-settings.json"
+          status="$(curl -sS -o "${settings}" -w '%{http_code}' "${auth[@]}" "${cp_base}/settings")"
+          if [ "${status}" = "404" ]; then
+            cp_state="absent"
+            echo "CP_ENGINE_ADMISSION_WORKER=ABSENT"
+            echo "CP_ENGINE_ADMISSION_ACTIVE_VERSION=NONE"
+          elif [ "${status}" = "200" ]; then
+            jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
+            jq -e --arg identity "${IDENTITY_WORKER}"               '.result.bindings | any(.name == "CONTROL_PLANE_IDENTITY" and .type == "service" and .service == $identity)'               "${settings}" >/dev/null
+            subdomain="${RUNNER_TEMP}/a7-cp-subdomain.json"
+            deployments="${RUNNER_TEMP}/a7-cp-deployments.json"
+            curl -fsS "${auth[@]}" "${cp_base}/subdomain" -o "${subdomain}"
+            curl -fsS "${auth[@]}" "${cp_base}/deployments" -o "${deployments}"
+            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+            jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+            active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
+            test -n "${active}"
+            cp_state="present"
+            echo "CP_ENGINE_ADMISSION_WORKER=PRESENT"
+            echo "CP_ENGINE_ADMISSION_ACTIVE_VERSION=${active}"
+          else
+            echo "CP_ENGINE_ADMISSION_WORKER=UNREADABLE" >&2
+            echo "CP_SETTINGS_HTTP_STATUS=${status}" >&2
+            exit 1
+          fi
+
+          engine_base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
+          engine_deployments="${RUNNER_TEMP}/a7-engine-deployments.json"
+          curl -fsS "${auth[@]}" "${engine_base}/deployments" -o "${engine_deployments}"
+          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${engine_deployments}")"
+          active_engine="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${active_engine}"
+          engine_version="${RUNNER_TEMP}/a7-engine-version.json"
+          curl -fsS "${auth[@]}" "${engine_base}/versions/${active_engine}" -o "${engine_version}"
+          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify             --version-settings "${engine_version}"             --active-version "${active_engine}"             --inspect-engine-admission-binding)"
+          printf '%s\n' "${verify_out}" | grep -E '^CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING=(ABSENT|PRESENT:service)$'
+          engine_state="$(printf '%s\n' "${verify_out}" | sed -n 's/^CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING=//p')"
+          test -n "${engine_state}"
+
+          echo "cp_state=${cp_state}" >> "${GITHUB_OUTPUT}"
+          echo "engine_binding_state=${engine_state}" >> "${GITHUB_OUTPUT}"
+          echo "A7_CP_ADMISSION_READONLY=PASS"
+          echo "SECRET_VALUES_READ=0"
+          echo "PROVIDER_CALLS=0"
+          echo "REAL_USER_DATA=0"
+          echo "PRODUCTION_MUTATION=0"
+
+  activate-cp-engine-admission-worker:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'activate_cp_engine_admission_worker' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment: production
+    env:
+      CP_STATE: ${{ needs.cloudflare-readonly.outputs.cp_state }}
+      ENGINE_BINDING_STATE: ${{ needs.cloudflare-readonly.outputs.engine_binding_state }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+    steps:
+      - name: Checkout exact approved main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact main and explicit first-activation authorization
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "ACTIVATE_PADIEM_CONTROL_PLANE_ENGINE_ADMISSION_FROM_EXACT_MAIN"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          case "${CP_STATE}" in absent|present) ;; *) exit 1;; esac
+          if [ "${CP_STATE}" = "absent" ]; then
+            test "${ENGINE_BINDING_STATE}" = "ABSENT"
+          fi
+          echo "A7_CP_ADMISSION_AUTHORIZATION=PASS"
+          echo "INITIAL_READONLY_SEQUENCE_PRECONDITION=PASS"
+
+      - name: Install uv
+        if: ${{ env.CP_STATE == 'absent' }}
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: "0.12.5"
+
+      - name: Reconfirm exact main and live sequence state immediately before the only mutation
+        id: premutation
+        if: ${{ env.CP_STATE == 'absent' }}
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+
+          # Re-read the exact served Engine immediately before mutation.  The
+          # earlier read-only job is evidence, not a lock: if another actor has
+          # attached A7 in the meantime this first-activation lane must STOP.
+          engine_base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
+          engine_deployments="${RUNNER_TEMP}/a7-engine-premutation-deployments.json"
+          curl -fsS "${auth[@]}" "${engine_base}/deployments" -o "${engine_deployments}"
+          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${engine_deployments}")"
+          active_engine="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${active_engine}"
+          engine_version="${RUNNER_TEMP}/a7-engine-premutation-version.json"
+          curl -fsS "${auth[@]}" "${engine_base}/versions/${active_engine}" -o "${engine_version}"
+          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify \
+            --version-settings "${engine_version}" \
+            --active-version "${active_engine}" \
+            --inspect-engine-admission-binding)"
+          printf '%s\n' "${verify_out}" | grep -q '^CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING=ABSENT
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${temp_config}"' EXIT
+          cp "${CP_ADMISSION_CONFIG}" "${temp_config}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy             --strict             --tag "git-${TARGET_SHA}"             --message "A7 CP Engine admission first activation ${TARGET_SHA}"
+          rm -f "${temp_config}"
+          echo "CP_ENGINE_ADMISSION_DEPLOY=SUCCESS"
+          echo "PRODUCTION_MUTATION=1"
+
+      - name: Record exact-present no-op
+        if: ${{ env.CP_STATE == 'present' || steps.premutation.outputs.deploy_required == 'NO' }}
+        run: |
+          echo "CP_ENGINE_ADMISSION_DEPLOY=SKIPPED_ALREADY_PRESENT"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Post-activation private Worker readback
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${CP_ADMISSION_WORKER}"
+          settings="${RUNNER_TEMP}/a7-cp-post-settings.json"
+          subdomain="${RUNNER_TEMP}/a7-cp-post-subdomain.json"
+          deployments="${RUNNER_TEMP}/a7-cp-post-deployments.json"
+          curl -fsS "${auth[@]}" "${base}/settings" -o "${settings}"
+          curl -fsS "${auth[@]}" "${base}/subdomain" -o "${subdomain}"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
+          jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
+          jq -e --arg identity "${IDENTITY_WORKER}"             '.result.bindings | any(.name == "CONTROL_PLANE_IDENTITY" and .type == "service" and .service == $identity)'             "${settings}" >/dev/null
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+          jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+          active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
+          test -n "${active}"
+          echo "CP_ENGINE_ADMISSION_WORKER=PRESENT"
+          echo "CP_ENGINE_ADMISSION_ACTIVE_VERSION=${active}"
+          echo "PRIVATE_INGRESS=PASS"
+          echo "ENGINE_MUTATION=0"
+          echo "ENGINE_BINDING_MUTATION=0"
+          echo "PROVIDER_CALLS=0"
+          echo "REAL_USER_DATA=0"
+          echo "MANIFEST_FLIP=0"
+          echo "ROLLBACK_POSTURE=ENGINE_STILL_DETACHED_CP_WORKER_MAY_REMAIN_INERT"
+
+          echo "PREMUTATION_ENGINE_ADMISSION_BINDING=ABSENT"
+
+          # Re-read the CP Worker immediately before mutation.  If another
+          # authorized actor created the exact private Worker after preflight,
+          # converge to a validated no-op instead of overwriting it.
+          cp_base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${CP_ADMISSION_WORKER}"
+          settings="${RUNNER_TEMP}/a7-cp-premutation-settings.json"
+          status="$(curl -sS -o "${settings}" -w '%{http_code}' "${auth[@]}" "${cp_base}/settings")"
+          if [ "${status}" = "404" ]; then
+            echo "PREMUTATION_CP_ENGINE_ADMISSION_WORKER=ABSENT"
+            echo "deploy_required=YES" >> "${GITHUB_OUTPUT}"
+          elif [ "${status}" = "200" ]; then
+            jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
+            jq -e --arg identity "${IDENTITY_WORKER}" \
+              '.result.bindings | any(.name == "CONTROL_PLANE_IDENTITY" and .type == "service" and .service == $identity)' \
+              "${settings}" >/dev/null
+            subdomain="${RUNNER_TEMP}/a7-cp-premutation-subdomain.json"
+            deployments="${RUNNER_TEMP}/a7-cp-premutation-deployments.json"
+            curl -fsS "${auth[@]}" "${cp_base}/subdomain" -o "${subdomain}"
+            curl -fsS "${auth[@]}" "${cp_base}/deployments" -o "${deployments}"
+            jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+            jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+            echo "PREMUTATION_CP_ENGINE_ADMISSION_WORKER=PRESENT_EXACT_PRIVATE"
+            echo "deploy_required=NO" >> "${GITHUB_OUTPUT}"
+          else
+            echo "PREMUTATION_CP_ENGINE_ADMISSION_WORKER=UNREADABLE" >&2
+            echo "CP_SETTINGS_HTTP_STATUS=${status}" >&2
+            exit 1
+          fi
+
+          echo "PREMUTATION_EXACT_MAIN_SHA=PASS"
+          echo "ENGINE_REMAINS_DETACHED_DURING_CP_ACTIVATION=YES"
+          echo "SECRET_VALUES_READ=0"
+          echo "PROVIDER_CALLS=0"
+          echo "REAL_USER_DATA=0"
+
+      - name: Deploy only the private CP Engine-admission Worker when absent
+        if: ${{ env.CP_STATE == 'absent' && steps.premutation.outputs.deploy_required == 'YES' }}
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${temp_config}"' EXIT
+          cp "${CP_ADMISSION_CONFIG}" "${temp_config}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy             --strict             --tag "git-${TARGET_SHA}"             --message "A7 CP Engine admission first activation ${TARGET_SHA}"
+          rm -f "${temp_config}"
+          echo "CP_ENGINE_ADMISSION_DEPLOY=SUCCESS"
+          echo "PRODUCTION_MUTATION=1"
+
+      - name: Record exact-present no-op
+        if: ${{ env.CP_STATE == 'present' }}
+        run: |
+          echo "CP_ENGINE_ADMISSION_DEPLOY=SKIPPED_ALREADY_PRESENT"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Post-activation private Worker readback
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${CP_ADMISSION_WORKER}"
+          settings="${RUNNER_TEMP}/a7-cp-post-settings.json"
+          subdomain="${RUNNER_TEMP}/a7-cp-post-subdomain.json"
+          deployments="${RUNNER_TEMP}/a7-cp-post-deployments.json"
+          curl -fsS "${auth[@]}" "${base}/settings" -o "${settings}"
+          curl -fsS "${auth[@]}" "${base}/subdomain" -o "${subdomain}"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
+          jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
+          jq -e --arg identity "${IDENTITY_WORKER}"             '.result.bindings | any(.name == "CONTROL_PLANE_IDENTITY" and .type == "service" and .service == $identity)'             "${settings}" >/dev/null
+          jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
+          jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+          active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
+          test -n "${active}"
+          echo "CP_ENGINE_ADMISSION_WORKER=PRESENT"
+          echo "CP_ENGINE_ADMISSION_ACTIVE_VERSION=${active}"
+          echo "PRIVATE_INGRESS=PASS"
+          echo "ENGINE_MUTATION=0"
+          echo "ENGINE_BINDING_MUTATION=0"
+          echo "PROVIDER_CALLS=0"
+          echo "REAL_USER_DATA=0"
+          echo "MANIFEST_FLIP=0"
+          echo "ROLLBACK_POSTURE=ENGINE_STILL_DETACHED_CP_WORKER_MAY_REMAIN_INERT"
