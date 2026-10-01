@@ -286,11 +286,15 @@ def test_binding_drift_denies_before_provider_read() -> None:
 
 
 def test_content_size_and_signature_integrity_fail_closed() -> None:
-    for payload, expected in (
-        (PDF_BYTES + b"x", "pdf_integrity_mismatch"),
-        (b"NOTPDF" + PDF_BYTES[6:], "pdf_signature_mismatch"),
-    ):
-        metadata = {**PDF_METADATA, "size": len(payload)}
+    cases = (
+        (PDF_BYTES + b"x", {**PDF_METADATA, "size": len(PDF_BYTES)}, "pdf_integrity_mismatch"),
+        (
+            b"NOTPDF" + PDF_BYTES[6:],
+            {**PDF_METADATA, "size": len(b"NOTPDF" + PDF_BYTES[6:])},
+            "pdf_signature_mismatch",
+        ),
+    )
+    for payload, metadata, expected in cases:
         port = FakeDrivePort(metadata=metadata, content=payload)
         service, _, _, _ = run(make_service(port=port))
         with pytest.raises(Exception) as caught:
