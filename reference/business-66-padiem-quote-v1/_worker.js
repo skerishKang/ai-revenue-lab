@@ -2,6 +2,8 @@ const B14_IMAGE_EXTRACTION_URL =
   "https://ai-revenue-korean-ai-platform.charliekant.workers.dev/api/b66/v1/quote/extract-image";
 const B14_DOCUMENT_EXTRACTION_URL =
   "https://ai-revenue-korean-ai-platform.charliekant.workers.dev/api/b66/v1/quote/extract-document";
+const B14_LOCAL_TEXT_EXTRACTION_URL =
+  "https://ai-revenue-korean-ai-platform.charliekant.workers.dev/api/b66/v1/quote/extract-local-text";
 const INTAKE_PATH = "/api/v1/quote/intake";
 const MAX_REQUEST_BYTES = 6 * 1024 * 1024;
 const MAX_RESPONSE_BYTES = 1024 * 1024;
@@ -25,9 +27,15 @@ function upstreamForBody(body) {
     return null;
   }
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) return null;
-  return IMAGE_MEDIA.has(payload.media_type)
-    ? B14_IMAGE_EXTRACTION_URL
-    : B14_DOCUMENT_EXTRACTION_URL;
+  if (IMAGE_MEDIA.has(payload.media_type)) return B14_IMAGE_EXTRACTION_URL;
+  if (
+    typeof payload.local_text === "string" &&
+    Number.isInteger(payload.byte_size) &&
+    payload.byte_size > 0
+  ) {
+    return B14_LOCAL_TEXT_EXTRACTION_URL;
+  }
+  return B14_DOCUMENT_EXTRACTION_URL;
 }
 
 async function handleIntake(request) {
