@@ -86,6 +86,8 @@ function padiemTarget(url, method) {
     ["/api/padiem/auth/status", ["GET", "/api/auth/status"]],
     ["/api/padiem/auth/password/login", ["POST", "/api/auth/password/login"]],
     ["/api/padiem/auth/password/register", ["POST", "/api/auth/password/register"]],
+    ["/api/padiem/auth/google/start", ["GET", "/api/auth/google/start"]],
+    ["/api/padiem/auth/google/callback", ["GET", "/api/auth/google/callback"]],
     ["/api/padiem/auth/logout", ["POST", "/api/auth/logout"]],
     ["/api/padiem/b66/quote/interpret", ["POST", "/api/b66/quote/interpret"]]
   ]);
@@ -174,6 +176,10 @@ async function handlePadiemBridge(request, url, env) {
   const upstreamType = upstream.headers.get("content-type");
   if (upstreamType) responseHeaders.set("Content-Type", upstreamType);
   relaySetCookies(upstream.headers, responseHeaders);
+  const location = upstream.headers.get("location");
+  if (location && upstream.status >= 300 && upstream.status < 400) {
+    responseHeaders.set("Location", location);
+  }
 
   return new Response(upstream.body, {
     status: upstream.status,

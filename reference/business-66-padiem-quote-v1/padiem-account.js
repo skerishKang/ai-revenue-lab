@@ -17,11 +17,11 @@
   }
 
   function accountName(user) {
-    if (!user || typeof user !== "object") return "Padiem 계정";
+    if (!user || typeof user !== "object") return "내 계정";
     for (const key of ["name", "display_name", "email", "username"]) {
       if (typeof user[key] === "string" && user[key].trim()) return user[key].trim();
     }
-    return "Padiem 계정";
+    return "내 계정";
   }
 
   async function api(path, options) {
@@ -199,66 +199,22 @@
     await loadSkills();
   }
 
-  async function login(event) {
-    event.preventDefault();
-    const identifier = byId("padiemLoginIdentifier");
-    const password = byId("padiemLoginPassword");
-    const submit = byId("padiemLoginSubmit");
-    if (!identifier || !password) return;
+  async function startGoogleSignIn() {
+    const button = byId("googleSigninButton");
+    if (button) button.disabled = true;
     setAuthError("");
-    if (submit) submit.disabled = true;
     try {
-      const result = await api("/auth/password/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({ identifier: identifier.value, password: password.value })
-      });
-      if (!result.response.ok || !result.data || result.data.ok !== true) {
-        setAuthError(safeMessage(result.data, "로그인하지 못했습니다."));
+      const result = await api("/auth/status");
+      const methods = result.data && result.data.methods;
+      if (result.response.ok && methods && methods.google === true) {
+        window.location.assign("/api/padiem/auth/google/start");
         return;
       }
-      password.value = "";
-      closeAuthDialog();
-      await refreshAuth();
+      setAuthError("구글 로그인이 아직 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.");
     } catch (_) {
       setAuthError("로그인 연결을 확인해 주세요.");
     } finally {
-      if (submit) submit.disabled = false;
-    }
-  }
-
-  async function register(event) {
-    event.preventDefault();
-    const username = byId("padiemRegisterUsername");
-    const email = byId("padiemRegisterEmail");
-    const name = byId("padiemRegisterName");
-    const password = byId("padiemRegisterPassword");
-    const submit = byId("padiemRegisterSubmit");
-    if (!username || !email || !name || !password) return;
-    setAuthError("");
-    if (submit) submit.disabled = true;
-    try {
-      const result = await api("/auth/password/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({
-          username: username.value,
-          email: email.value,
-          name: name.value,
-          password: password.value
-        })
-      });
-      if (!result.response.ok || !result.data || result.data.ok !== true) {
-        setAuthError(safeMessage(result.data, "계정을 만들지 못했습니다."));
-        return;
-      }
-      password.value = "";
-      closeAuthDialog();
-      await refreshAuth();
-    } catch (_) {
-      setAuthError("회원가입 연결을 확인해 주세요.");
-    } finally {
-      if (submit) submit.disabled = false;
+      if (button) button.disabled = false;
     }
   }
 
@@ -353,8 +309,7 @@
   function bind() {
     const accountButton = byId("padiemAccountButton");
     const close = byId("padiemAuthClose");
-    const loginForm = byId("padiemLoginForm");
-    const registerForm = byId("padiemRegisterForm");
+    const googleButton = byId("googleSigninButton");
     const logoutButton = byId("padiemLogout");
     const select = byId("padiemSavedSkillSelect");
     const generateButton = byId("padiemQuoteGenerate");
@@ -368,8 +323,7 @@
       }
     });
     if (close) close.addEventListener("click", closeAuthDialog);
-    if (loginForm) loginForm.addEventListener("submit", login);
-    if (registerForm) registerForm.addEventListener("submit", register);
+    if (googleButton) googleButton.addEventListener("click", startGoogleSignIn);
     if (logoutButton) logoutButton.addEventListener("click", logout);
     if (select) select.addEventListener("change", changeSkill);
     if (generateButton) generateButton.addEventListener("click", generate);
