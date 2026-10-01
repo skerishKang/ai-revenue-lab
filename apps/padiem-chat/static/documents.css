@@ -60,6 +60,13 @@
   line-height: 1.45;
 }
 
+.project-files-usage {
+  display: block;
+  margin-top: 3px;
+  font-weight: 600;
+  color: #a9adb4;
+}
+
 .project-file-add {
   flex: 0 0 auto;
   min-height: 36px;
