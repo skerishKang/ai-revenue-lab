@@ -389,7 +389,18 @@ class DriveCasePdfService:
                 status_code=415,
             )
 
-        version = resource.evidence.version_evidence() if resource.evidence is not None else {}
+        source = resource.evidence
+        version = (
+            {
+                "version": source.version,
+                "modified_time": source.modified_time,
+                "md5_checksum": source.md5_checksum,
+                "sha256_checksum": source.sha256_checksum,
+                "head_revision_id": source.head_revision_id,
+            }
+            if source is not None
+            else {}
+        )
         return {
             "ok": True,
             "file": projected,
