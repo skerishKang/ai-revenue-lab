@@ -14,9 +14,10 @@
 
   var MAX_INPUT_BYTES = 2 * 1024 * 1024;
   var MAX_ZIP_ENTRIES = 256;
-  var MAX_TOTAL_UNCOMPRESSED_BYTES = 32 * 1024 * 1024;
-  var MAX_ENTRY_BYTES = 8 * 1024 * 1024;
+  var MAX_TOTAL_UNCOMPRESSED_BYTES = 8 * 1024 * 1024;
+  var MAX_ENTRY_BYTES = 1 * 1024 * 1024;
   var MAX_EXPANSION_RATIO = 100;
+  var MAX_ZIP_MEMBER_NAME_CHARS = 255;
   var MAX_TEXT_CHARS = 32000;
   var DEFAULT_TIMEOUT_MS = 5000;
   var WORKER_URL = "browser-document-parser-worker.js";
@@ -119,7 +120,7 @@
   }
 
   function safeZipName(name) {
-    if (!name) fail("zip_invalid_name");
+    if (!name || name.length > MAX_ZIP_MEMBER_NAME_CHARS) fail("zip_invalid_name");
     var normalized = name.replace(/\\/g, "/");
     if (normalized.charAt(0) === "/" || /^[A-Za-z]:/.test(normalized)) {
       fail("zip_path_traversal");
@@ -327,7 +328,9 @@
     var result = [];
     for (var i = 0; i < selected.length; i += 1) {
       var raw = await entryBytes(archive, selected[i]);
-      result.push({ name: selected[i].name, xml: decodeUtf8(raw) });
+      var xml = decodeUtf8(raw);
+      if (/<!doctype/i.test(xml)) fail("xml_dtd_rejected");
+      result.push({ name: selected[i].name, xml: xml });
     }
     return result;
   }
@@ -597,6 +600,7 @@
     MAX_TOTAL_UNCOMPRESSED_BYTES: MAX_TOTAL_UNCOMPRESSED_BYTES,
     MAX_ENTRY_BYTES: MAX_ENTRY_BYTES,
     MAX_EXPANSION_RATIO: MAX_EXPANSION_RATIO,
+    MAX_ZIP_MEMBER_NAME_CHARS: MAX_ZIP_MEMBER_NAME_CHARS,
     MAX_TEXT_CHARS: MAX_TEXT_CHARS,
     DEFAULT_TIMEOUT_MS: DEFAULT_TIMEOUT_MS,
     WORKER_URL: WORKER_URL,
