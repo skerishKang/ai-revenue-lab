@@ -44,6 +44,7 @@ def test_b62_public_dict_and_core_public_dict_remain_equivalent():
         "retrieved_at": "2026-08-26T00:00:00Z",
         "provider": "mock",
         "source_type": "fetch",
+        "document_locator": None,
     }
 
     assert item.public_dict() == expected
