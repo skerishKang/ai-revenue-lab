@@ -132,6 +132,7 @@ async function handlePadiemBridge(request, url, env) {
   if (!upstreamPath) return jsonError("padiem_route_not_allowed", 404);
 
   const headers = new Headers({ "Accept": "application/json" });
+  headers.set("X-B66-Origin", url.origin);
   const cookie = request.headers.get("cookie");
   if (cookie) headers.set("Cookie", cookie);
   const contentType = request.headers.get("content-type");

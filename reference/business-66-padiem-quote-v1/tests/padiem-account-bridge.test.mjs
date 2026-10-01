@@ -86,6 +86,7 @@ try {
   assert.equal(calls[1].url, "https://chat.padiem.net/api/auth/status");
   assert.equal(calls[1].headers.get("cookie"), "padiem_session=opaque-test-token");
   assert.equal(calls[1].headers.get("authorization"), null);
+  assert.equal(calls[1].headers.get("x-b66-origin"), "https://quick-quote-kr.pages.dev");
 
   const list = await worker.fetch(
     new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/saved-skills?limit=20", {
