@@ -40,6 +40,7 @@ from app.execution_admission import (
     ExecutionAdmissionError,
     ExecutionAdmissionRequest,
     TrustedExecutionAdmission,
+    TrustedUsageReservation,
 )
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
@@ -360,8 +361,12 @@ class ControlPlaneTenantAdmissionAdapter:
         grant = snapshot.grants.get(request.capability)
         allowed = bool(grant is not None and grant["allowed"])
         authority_ref = f"control-plane:entitlement:{snapshot.snapshot_id}"
+        usage_reservation: TrustedUsageReservation | None = None
 
-        if allowed and self._require_usage_reservation:
+        # Resume revalidates entitlement but continues the original run's
+        # reservation; a second reservation would split one logical execution.
+        should_reserve = request.capability != "orchestration.resume"
+        if allowed and self._require_usage_reservation and should_reserve:
             reservation = self._build_reservation(request, tenant, snapshot, now)
             decision = parse_usage_reservation(
                 await _maybe_await(self._client.reserve_usage(reservation=reservation.to_public_dict())),
@@ -372,6 +377,19 @@ class ControlPlaneTenantAdmissionAdapter:
                 allowed = False
             else:
                 authority_ref = f"{authority_ref}@{decision['reservation_ref']}"
+                if reservation.request_fingerprint is None:
+                    raise ExecutionAdmissionError("entitlement_request_mismatch", "Usage reservation must bind the execution request.", status_code=403)
+                usage_reservation = TrustedUsageReservation(
+                    reservation_ref=decision["reservation_ref"],
+                    idempotency_key=reservation.idempotency_key,
+                    billing_semantic_id=reservation.billing_semantic_id,
+                    product_id=reservation.product_id,
+                    subject_type=tenant.subject_type,
+                    subject_id=tenant.subject_id,
+                    request_fingerprint=reservation.request_fingerprint,
+                    reserved_at=reservation.occurred_at,
+                    expires_at=decision["expires_at"],
+                )
 
         expires_at = min(snapshot.expires_at, now + self._max_admission_ttl)
         if expires_at <= now:
@@ -390,6 +408,7 @@ class ControlPlaneTenantAdmissionAdapter:
             issued_at=now,
             expires_at=expires_at,
             request_fingerprint=request.request_fingerprint,
+            usage_reservation=usage_reservation,
         )
 
     async def record_usage_receipt(self, receipt: UsageReceipt) -> dict[str, Any]:
@@ -414,6 +433,8 @@ class ControlPlaneTenantAdmissionAdapter:
         accepted = ack["accepted"]
         if not isinstance(accepted, bool):
             raise _unavailable("usage receipt acknowledgement accepted must be a boolean.")
+        if not accepted:
+            raise ExecutionAdmissionError("usage_receipt_rejected", "Control Plane did not accept the usage receipt.", status_code=503)
         event_id = _identifier(ack["event_id"], "event_id")
         if event_id != receipt.event_id:
             raise ExecutionAdmissionError(
@@ -472,6 +493,7 @@ def parse_usage_reservation(payload: Any, *, reservation: UsageReservation, now:
         "reservation_ref": reservation_ref,
         "admitted": admitted,
         "idempotency_key": reservation.idempotency_key,
+        "expires_at": expires_at,
     }
 
 
