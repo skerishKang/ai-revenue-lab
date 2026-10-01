@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from contextlib import redirect_stdout
-from datetime import datetime, timezone
 import importlib.util
 import io
 import json
@@ -43,6 +42,7 @@ def _paused(module, trace_id: str):
                 "tool_id": module.RUNTIME_TOOL_ID,
                 "requirement": "user_confirmation",
                 "trace_id": trace_id,
+                "created_at": "2026-10-01T05:59:00+00:00",
             },
             "continuation_state": {"status": "waiting_approval"},
         },
@@ -93,6 +93,7 @@ def test_success_is_exactly_two_posts_no_retry_and_leaks_no_ids_or_secret() -> N
         assert body["continuation_ref"] == "cont_private_ref_123456"
         assert body["decision"]["pause_id"] == "pause_private_id_123"
         assert body["decision"]["outcome"] == "approved"
+        assert body["decision"]["decided_at"] == "2026-10-01T05:59:00+00:00"
         return 200, json.dumps(_completed(module, trace)).encode()
 
     out = io.StringIO()
@@ -102,7 +103,6 @@ def test_success_is_exactly_two_posts_no_retry_and_leaks_no_ids_or_secret() -> N
             credential,
             transport=transport,
             token_hex=lambda _n: token,
-            now=lambda: datetime(2026, 10, 1, 5, 59, tzinfo=timezone.utc),
         )
 
     rendered = out.getvalue()
