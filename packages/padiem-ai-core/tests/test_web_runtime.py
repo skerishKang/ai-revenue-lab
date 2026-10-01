@@ -30,6 +30,7 @@ def test_web_config_defaults_off_and_redacts_server_key() -> None:
     default = WebRuntimeConfig()
     assert default.provider == "off"
     assert default.firecrawl_api_key is None
+    assert default.tinyfish_api_key is None
     assert default.daum_rest_api_key is None
     assert default.web_timeout_seconds == 15.0
 
@@ -49,6 +50,7 @@ def test_web_config_defaults_off_and_redacts_server_key() -> None:
         "provider": "firecrawl",
         "web_timeout_seconds": 9.0,
         "firecrawl_configured": True,
+        "tinyfish_configured": False,
         "daum_configured": False,
         "daum_search_sort": "accuracy",
     }
@@ -389,5 +391,5 @@ def test_firecrawl_rejects_unapproved_internal_path_before_network() -> None:
 def test_public_serialization_contains_no_secret_fields() -> None:
     config = WebRuntimeConfig(provider="firecrawl", firecrawl_api_key="fc-secret")
     public = config.to_public_dict()
-    assert not ({"api_key", "firecrawl_api_key", "daum_rest_api_key", "secret", "credential", "token"} & set(public))
+    assert not ({"api_key", "firecrawl_api_key", "tinyfish_api_key", "daum_rest_api_key", "secret", "credential", "token"} & set(public))
     assert "fc-secret" not in json.dumps(public)
