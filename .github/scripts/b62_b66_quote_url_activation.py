@@ -204,7 +204,7 @@ def main(argv: list[str] | None = None) -> int:
         print("UNRELATED_BINDINGS_PRESERVED=PASS")
         print("SECRET_VALUES_READ=0")
         return 0
-    except ActivationError as exc:
+    except (ActivationError, _deploy_config.ProductionConfigError) as exc:
         print(f"B62_B66_QUOTE_URL_{args.command.upper()}=FAIL", file=sys.stderr)
         print(f"REASON={exc}", file=sys.stderr)
         return 1
