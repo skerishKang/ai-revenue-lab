@@ -265,6 +265,8 @@
 .project-drive-button { min-height: 44px; min-width: 44px; padding: 10px 16px; border-radius: 10px; border: 1px solid var(--line, #e2e5ea); background: var(--surface, #fff); cursor: pointer; }
 .project-drive-button:disabled { opacity: 0.6; cursor: progress; }
 .project-drive-button-secondary { background: transparent; }
+.project-drive-button:not(.project-drive-button-secondary),
+.project-drive-select { color: #101828; }
 .project-drive-picker { border: 0; border-radius: 14px; padding: 18px; width: min(520px, 92vw); max-height: 80vh; overflow: auto; }
 .project-drive-picker-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .project-drive-search-label { display: block; margin: 12px 0 6px; font-weight: 600; }
