@@ -117,8 +117,16 @@ check(!html.includes("B66 DEMO"), "PADIEM_ACCOUNT_BRIDGE_CONTRACT: no internal d
 check(html.includes('id="settingsPanel"') &&
       html.includes("작성 중 견적은 이 브라우저에 저장"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: truthful local draft persistence lives in personal settings");
-check(html.includes("Padiem 계정") && html.includes(">로그인</button>"),
-  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: account relationship is explicit");
+check(html.includes(">로그인</button>") && html.includes('id="googleSigninButton"') &&
+      html.includes("Google로 로그인") &&
+      !html.includes("Padiem") && !html.includes("파디엠") &&
+      !account.includes("Padiem 계정") && !account.includes("Padiem 로그인"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: standalone google-first surface with neutral login");
+check(account.includes("/api/padiem/auth/google/start") &&
+      worker.includes('"/api/padiem/auth/google/start"') &&
+      worker.includes('"/api/padiem/auth/google/callback"') &&
+      worker.includes('upstream.headers.get("location")'),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: google oauth is proxied through the B66 worker");
 check(!html.includes('class="badge"') && !html.includes("Padiem 로그인") &&
       !account.includes("Padiem 로그인") && account.includes('button.textContent = "로그인"'),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: topbar carries no stale badge or vendor-branded login label");
