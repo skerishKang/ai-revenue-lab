@@ -71,6 +71,17 @@ def test_classify_missing_exact_drift_wrong_type_invalid() -> None:
     )[0] == "invalid"
 
 
+def test_classify_reuses_canonical_live_settings_fail_closed_parser() -> None:
+    helper = _load()
+    bad = _settings(_baseline() + [_binding("MYSTERY", "kv_namespace", id="x")])
+    try:
+        helper.classify(bad, "https://quote.example.test")
+    except helper._deploy_config.ProductionConfigError:
+        pass
+    else:
+        raise AssertionError("unsupported live binding type must fail closed")
+
+
 def test_plan_adds_only_missing_target_and_inherits_everything_else() -> None:
     helper = _load()
     plan = helper.build_plan(_settings(_baseline()), "https://quote.example.test/", "f" * 40)
@@ -130,6 +141,8 @@ def test_workflow_is_exact_main_bounded_and_no_code_deploy() -> None:
     assert "environment: production" in workflow
     assert "b62-b66-quote-url-premutation-settings" in workflow
     assert "PREMUTATION_SERVED_VERSION_RECORDED=YES" in workflow
+    assert "b62-b66-quote-url-premutation-version.txt" in workflow
+    assert "b62_cloudflare_production_deploy_config.py" in workflow
     assert "B62_B66_QUOTE_URL_POST_READBACK=PASS" in workflow
     assert "UNRELATED_BINDINGS_PRESERVED=PASS" in workflow
     assert "SECRET_VALUES_READ=0" in workflow
@@ -143,6 +156,7 @@ def test_workflow_is_exact_main_bounded_and_no_code_deploy() -> None:
 if __name__ == "__main__":
     test_expected_origin_is_https_root_and_normalized()
     test_classify_missing_exact_drift_wrong_type_invalid()
+    test_classify_reuses_canonical_live_settings_fail_closed_parser()
     test_plan_adds_only_missing_target_and_inherits_everything_else()
     test_plan_exact_is_noop_and_refuses_drift_or_wrong_type()
     test_verify_readback_requires_target_and_preserves_unrelated_bindings()
