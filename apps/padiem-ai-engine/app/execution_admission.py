@@ -43,6 +43,7 @@ class ExecutionAdmissionRequest:
     capability: str
     trace_id: str | None = None
     request_fingerprint: str | None = None
+    usage_reservation_identity: str | None = None
 
     def __post_init__(self) -> None:
         _require_safe_id(self.app_id, "app_id")
@@ -53,6 +54,8 @@ class ExecutionAdmissionRequest:
             _require_safe_id(self.trace_id, "trace_id")
         if self.request_fingerprint is not None:
             _require_safe_id(self.request_fingerprint, "request_fingerprint")
+        if self.usage_reservation_identity is not None:
+            _require_safe_id(self.usage_reservation_identity, "usage_reservation_identity")
 
 
 @dataclass(frozen=True, slots=True)
