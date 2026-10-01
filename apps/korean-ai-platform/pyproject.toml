@@ -12,7 +12,6 @@ dependencies = [
     "jinja2>=3.1,<4",
     "python-multipart>=0.0.9,<1",
     "httpx>=0.28,<1",
-    "padiem-ai-core @ file://${PROJECT_ROOT}/../../packages/padiem-ai-core",
 ]
 
 [dependency-groups]
@@ -30,7 +29,7 @@ allow-build = true
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["app*"]
+include = ["app*", "padiem_ai_core*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
