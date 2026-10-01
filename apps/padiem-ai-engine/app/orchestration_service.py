@@ -190,6 +190,66 @@ class ApprovalDecisionVerifier(Protocol):
 
 _DEFAULT_CONTINUATION_STORE = InMemoryContinuationStore()
 
+
+def bind_verified_approval_to_tool_authorization(
+    authorization: ToolAuthorizationContext,
+    *,
+    pause: ApprovalPause,
+    decision: VerifiedApprovalDecision,
+) -> ToolAuthorizationContext:
+    """Apply only the exact verified pause delta to server-owned Tool authority.
+
+    Core intentionally resolves continuation lifecycle without minting Tool
+    authorization.  The Engine is the trusted boundary that already owns the
+    base ToolAuthorizationContext, so it may narrow-copy that context after a
+    verified APPROVED decision.  Caller JSON never contributes any authority
+    list or scope here.
+    """
+    if not isinstance(authorization, ToolAuthorizationContext):
+        raise ServiceContractError(
+            "invalid_verified_decision",
+            "Trusted tool authorization is invalid.",
+            status_code=422,
+        )
+    if not isinstance(pause, ApprovalPause) or not isinstance(
+        decision, VerifiedApprovalDecision
+    ):
+        raise ServiceContractError(
+            "invalid_verified_decision",
+            "Verified approval context is invalid.",
+            status_code=422,
+        )
+    if decision.pause_id != pause.pause_id:
+        raise ServiceContractError(
+            "approval_decision_mismatch",
+            "Verified approval decision does not match the paused continuation.",
+            status_code=409,
+        )
+    if decision.outcome is not ApprovalOutcome.APPROVED:
+        return authorization
+
+    confirmed = authorization.user_confirmed_tools
+    external = authorization.externally_authorized_tools
+    if pause.requirement is ApprovalRequirement.USER_CONFIRMATION:
+        confirmed = tuple(dict.fromkeys((*confirmed, pause.tool_id)))
+    elif pause.requirement is ApprovalRequirement.EXTERNAL_AUTHORIZATION:
+        external = tuple(dict.fromkeys((*external, pause.tool_id)))
+    else:
+        raise ServiceContractError(
+            "invalid_verified_decision",
+            "Approval pause requirement is unsupported.",
+            status_code=422,
+        )
+
+    return ToolAuthorizationContext(
+        app_id=authorization.app_id,
+        agent_id=authorization.agent_id,
+        granted_auth_scopes=authorization.granted_auth_scopes,
+        user_confirmed_tools=confirmed,
+        externally_authorized_tools=external,
+    )
+
+
 # ---------------------------------------------------------------------------
 # Orchestration NDJSON stream (#1962)
 # ---------------------------------------------------------------------------
@@ -898,6 +958,15 @@ class OrchestrationEngineService:
                 raw_tool_arguments=payload.get("tool_arguments"),
                 resume=True,
             )
+            base_tool_authorization = tool_kwargs.get("tool_authorization")
+            if base_tool_authorization is not None:
+                tool_kwargs["tool_authorization"] = (
+                    bind_verified_approval_to_tool_authorization(
+                        base_tool_authorization,
+                        pause=record.pause,
+                        decision=decision,
+                    )
+                )
             if (
                 plan is not None
                 and "tool_runtime" in tool_kwargs
