@@ -83,10 +83,23 @@ def _request(
 
 
 def _payload() -> dict[str, Any]:
+    """Contract-valid orchestration request with subject_id deliberately absent.
+
+    The agent id must satisfy the Padiem AI Core ``AgentProfile`` identifier
+    contract (``agent:<owner>:<name>``). The earlier ``@1`` version suffix
+    belongs to the AgentDefinition / agent_plan grammar, NOT to AgentProfile,
+    so the probe failed ordinary request validation with ``400
+    invalid_request`` *before* the A7 admission seam was ever consulted —
+    which meant the smoke proved nothing about admission. With a
+    contract-valid agent id and ``subject_id`` still intentionally omitted,
+    the request reaches A7 admission unscoped and must be rejected there,
+    before any Core/provider dispatch.
+    """
+
     return {
         "app_id": "b54-padiem-claw",
         "agent": {
-            "id": "agent:padiem:a7_unscoped_probe@1",
+            "id": "agent:padiem:a7_unscoped_probe",
             "title": "A7 unscoped admission probe",
             "description": "Must stop at authenticated-user entitlement gate",
             "system_instruction": "This instruction must never reach a provider.",
