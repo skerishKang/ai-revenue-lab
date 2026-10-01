@@ -262,8 +262,8 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
 
     Production is deployed from ``worker_identity.py``. This deliberately
     narrower bundle remains for legacy/base-entrypoint compatibility and tests:
-    it must not silently inherit identity-only multimodal, document, connector,
-    or canonical-idempotency authorities. ``worker_identity.Default`` subclasses
+    it must not silently inherit identity-only widened runtime authorities.
+    ``worker_identity.Default`` subclasses
     this module's HTTP/core base and overrides ``engine_services_factory`` with
     the canonical Production composition.
     """
