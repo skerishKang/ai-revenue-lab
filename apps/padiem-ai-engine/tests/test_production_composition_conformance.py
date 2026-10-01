@@ -477,6 +477,36 @@ async def test_web_research_composition_tracks_manifest_state() -> None:
 
 
 @pytest.mark.asyncio
+async def test_tenant_entitlement_usage_admission_stays_deferred_without_cp_trust_authority() -> None:
+    """E7 must not become Production-active before its canonical CP authority exists.
+
+    Engine already owns the bounded admission/usage contracts, but the current
+    private Control Plane Service Binding has no reviewed entitlement snapshot,
+    usage-reservation, or usage-recording authority for this adapter. Until that
+    dependency is supplied, the manifest stays DEFERRED and canonical Production
+    orchestration must remain the non-admission-bound service.
+    """
+    from app.capability_manifest import CapabilityState, current_capability_manifest
+    from app.execution_admission_service import AdmissionBoundOrchestrationEngineService
+
+    declaration = next(
+        item
+        for item in current_capability_manifest().capabilities
+        if item.id == "tenant_entitlement_usage_admission"
+    )
+    assert declaration.state is CapabilityState.DEFERRED
+    assert declaration.routes == ()
+
+    compose = _load_composition()
+    services = await compose(_ProductionShapedEnv())
+    assert services.orchestration is not None
+    assert not isinstance(services.orchestration, AdmissionBoundOrchestrationEngineService), (
+        "tenant_entitlement_usage_admission is DEFERRED but Production composition "
+        "already installed the admission-bound orchestration service"
+    )
+
+
+@pytest.mark.asyncio
 async def test_memory_rag_composition_fails_closed() -> None:
     compose = _load_composition()
     services = await compose(_StubEnv())
