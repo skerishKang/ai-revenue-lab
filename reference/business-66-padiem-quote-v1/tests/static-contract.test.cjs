@@ -24,6 +24,8 @@ const templateRegistration = read("quote-template-registration.js");
 const registrationSession = read("quote-registration-session.js");
 const skillUi = read("quote-skill-ui.js");
 const intake = read("file-intake.js");
+const browserParser = read("browser-document-parser.js");
+const browserParserWorker = read("browser-document-parser-worker.js");
 const easy = read("easy-mode.js");
 
 const check = (condition, label) => assert.ok(condition, `contract failed: ${label}`);
@@ -51,6 +53,7 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'src="quote-registration-session.js"',
   'src="quote-skill-ui.js"',
   'src="file-intake.js"',
+  'src="browser-document-parser.js"',
   'src="app.js"',
   'src="easy-mode.js"',
   'id="senderPreset"',
@@ -99,7 +102,7 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
 ].forEach((marker) => check(html.includes(marker), `B66_STATIC_CONTRACT missing in index.html: ${marker}`));
 
 /* NEUTRAL_PUBLIC_UI_CONTRACT — 외부 화면/상태에 내부 제품 브랜드를 노출하지 않음 */
-check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + candidate + cloner + skill + skillStore + skillCandidate + skillRegistration + skillUi + intake + easy),
+check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + candidate + cloner + skill + skillStore + skillCandidate + skillRegistration + skillUi + intake + browserParser + browserParserWorker + easy),
   "NEUTRAL_PUBLIC_UI_CONTRACT: no Padiem branding in rendered/runtime source");
 check(!html.includes("B66 DEMO"), "NEUTRAL_PUBLIC_UI_CONTRACT: no internal demo label");
 check(html.includes("BETA · 입력 내용은 이 브라우저에만 저장"),
@@ -751,9 +754,21 @@ check(app.includes("B66QuoteSkillBridge") && app.includes("applySkillToForm") &&
 check(skillUi.includes("analyzeImageFile") &&
       skillUi.includes("analyzeFile") &&
       skillUi.includes('"native_document"') &&
+      skillUi.includes("local_text") &&
       skillUi.includes("factsFromExtraction") &&
       skillUi.includes("registrationModelOutput"),
   "MY_QUOTATION_LIVE_FILE_INTAKE=YES: image/native validated extraction feeds review/registration");
+check(browserParser.includes("parseDocumentFile") &&
+      browserParser.includes("MAX_ZIP_ENTRIES") &&
+      browserParser.includes("zip_path_traversal") &&
+      browserParser.includes("pdf_browser_parser_dependency_missing") &&
+      browserParserWorker.includes("importScripts") &&
+      browserParserWorker.includes("parseArrayBuffer"),
+  "B66_BROWSER_FIRST_PARSER_SOURCE=YES: bounded local parser + dedicated Worker are wired");
+check(skillUi.includes("byte_size: fileMeta.byteSize") &&
+      skillUi.includes("local_text: parsed.text") &&
+      !/local_text[\s\S]{0,300}base64/.test(skillUi),
+  "B66_NATIVE_BROWSER_SUCCESS_RAW_UPLOAD=0: native local-text success path posts no base64 document");
 
 console.log("VALID_UNTIL_CONTRACT=PASS");
 console.log("ADDRESS_FIELDS_CONTRACT=PASS");
@@ -824,6 +839,8 @@ console.log("PRINT_UI_LEAK=0");
 console.log("BROWSER_PROVIDER_MODEL_NETWORK_CALLS=0");
 console.log("SAVED_QUOTE_IMAGE_INTAKE_SOURCE_WIRED=YES");
 console.log("NATIVE_DOCUMENT_AUTO_ANALYSIS_SOURCE_WIRED=YES");
-console.log("NATIVE_DOCUMENT_PARSER_AUTHORITY_LIVE=SEPARATE_GATE");
+console.log("B66_BROWSER_FIRST_PARSER_SOURCE=YES");
+console.log("B66_NATIVE_BROWSER_SUCCESS_RAW_UPLOAD=0");
+console.log("PDF_BROWSER_PATH=RESIDUAL_LOCAL_PDF_PARSER_REQUIRED");
 console.log("CHAT_AI_LIVE=NO");
 console.log("EMAIL_SEND_LIVE=NO");
