@@ -1,0 +1,82 @@
+.padiem-account-button {
+  min-height: 40px;
+  padding: 0 13px;
+  border: 1px solid #cfd5dd;
+  border-radius: 10px;
+  background: #fff;
+  color: #344054;
+  font-weight: 750;
+}
+.padiem-account-panel {
+  margin: 14px 0 18px;
+  padding: 14px;
+  border: 1px solid #d0d5dd;
+  border-radius: 14px;
+  background: #fff;
+}
+.padiem-account-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.padiem-account-head strong { font-size: 14px; }
+.padiem-account-head button {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid #d0d5dd;
+  border-radius: 10px;
+  background: #fff;
+}
+.padiem-quote-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 260px) minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+}
+.padiem-quote-grid label { display: grid; gap: 6px; font-size: 12px; color: #475467; }
+.padiem-quote-grid textarea { min-height: 74px; resize: vertical; }
+.padiem-quote-grid button {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  background: #111827;
+  color: #fff;
+  font-weight: 800;
+}
+.padiem-quote-status { margin: 9px 0 0; color: #667085; font-size: 12px; }
+.padiem-quote-status[data-state="error"] { color: #b42318; }
+.padiem-quote-status[data-state="ready"] { color: #2f5d3a; }
+.padiem-auth-dialog {
+  width: min(520px, calc(100vw - 28px));
+  border: 0;
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 24px 80px rgba(17,24,39,.24);
+}
+.padiem-auth-dialog::backdrop { background: rgba(17,24,39,.42); }
+.padiem-auth-card { padding: 20px; }
+.padiem-auth-head { display: flex; justify-content: space-between; gap: 14px; align-items: start; }
+.padiem-auth-head h2 { margin: 0; font-size: 20px; }
+.padiem-auth-head p { margin: 6px 0 0; color: #667085; font-size: 12px; }
+.padiem-auth-close {
+  width: 40px; height: 40px; border: 1px solid #d0d5dd; border-radius: 10px; background: #fff;
+}
+.padiem-auth-form { display: grid; gap: 10px; margin-top: 18px; }
+.padiem-auth-form label { display: grid; gap: 5px; color: #475467; font-size: 12px; }
+.padiem-auth-form input { min-height: 44px; }
+.padiem-auth-form button {
+  min-height: 44px; border: 0; border-radius: 10px; background: #111827; color: #fff; font-weight: 800;
+}
+.padiem-auth-register { margin-top: 14px; border-top: 1px solid #eef2f7; padding-top: 12px; }
+.padiem-auth-register summary { min-height: 40px; display: flex; align-items: center; cursor: pointer; font-weight: 750; }
+.padiem-auth-error { min-height: 18px; margin: 10px 0 0; color: #b42318; font-size: 12px; }
+@media (max-width: 780px) {
+  .padiem-quote-grid { grid-template-columns: 1fr; }
+  .padiem-quote-grid button { width: 100%; }
+}
+@media print {
+  .padiem-account-panel, .padiem-auth-dialog, .padiem-account-button { display: none !important; }
+}

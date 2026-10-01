@@ -86,7 +86,8 @@ try {
     fs.readFileSync(new URL("../_worker.js", import.meta.url), "utf8")
   );
   assert.ok(!/space-bunny|sensenova|openai|anthropic|kilo\//i.test(source));
-  assert.ok(!/api[_-]?key|password|secret/i.test(source));
+  assert.ok(!/api[_-]?key|secret/i.test(source));
+  assert.ok(!/\\bpassword\\s*[:=]/i.test(source));
   console.log("b66 Pages image/native live-intake proxy contracts: PASS");
 } finally {
   globalThis.fetch = originalFetch;

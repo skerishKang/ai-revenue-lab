@@ -66,6 +66,9 @@ jobs:
           test -f "${SOURCE_DIR}/quote-template-registration.js"
           test -f "${SOURCE_DIR}/quote-registration-session.js"
           test -f "${SOURCE_DIR}/quote-skill-ui.js"
+          test -f "${SOURCE_DIR}/padiem-account.js"
+          test -f "${SOURCE_DIR}/padiem-account.css"
+          test -f "${SOURCE_DIR}/tests/padiem-account-bridge.test.mjs"
           test -f "${SOURCE_DIR}/embed.html"
           test -f "${SOURCE_DIR}/quote-embed-bridge.js"
           test -f "${SOURCE_DIR}/quote-embed-browser.js"
@@ -73,8 +76,11 @@ jobs:
           test -f "apps/b66-quote-adapter/app/file_intake.py"
           grep -F '<title>견적서 만들기</title>' "${SOURCE_DIR}/index.html" >/dev/null
           grep -F '샘플 공급사' "${SOURCE_DIR}/index.html" >/dev/null
-          ! grep -E 'Padiem|파디엠' "${SOURCE_DIR}/index.html"
-          echo "B66_NEUTRAL_SOURCE=PASS"
+          grep -F 'id="padiemAccountButton"' "${SOURCE_DIR}/index.html" >/dev/null
+          grep -F 'Padiem 로그인' "${SOURCE_DIR}/index.html" >/dev/null
+          ! grep -F 'B66 DEMO' "${SOURCE_DIR}/index.html" >/dev/null
+          echo "B66_PRODUCT_SOURCE=PASS"
+          echo "PADIEM_ACCOUNT_ENTRY=PASS"
 
       - name: Run B66 contracts
         shell: bash
@@ -99,6 +105,7 @@ jobs:
           node --check quote-template-registration.js
           node --check quote-registration-session.js
           node --check quote-skill-ui.js
+          node --check padiem-account.js
           node --check quote-embed-bridge.js
           node --check quote-embed-browser.js
           node tests/quote-core.test.cjs
@@ -123,6 +130,7 @@ jobs:
           node tests/quote-embed-bridge.test.cjs
           node tests/quote-skill-live-analysis.test.cjs
           node tests/pages-live-intake.test.mjs
+          node tests/padiem-account-bridge.test.mjs
 
       - name: Run B66 server intake adapter contracts
         shell: bash
@@ -151,7 +159,9 @@ jobs:
             sleep 1
           done
           grep -F '<title>견적서 만들기</title>' "${RUNNER_TEMP}/b66-local.html" >/dev/null
-          ! grep -E 'Padiem|파디엠' "${RUNNER_TEMP}/b66-local.html"
+          grep -F 'id="padiemAccountButton"' "${RUNNER_TEMP}/b66-local.html" >/dev/null
+          grep -F 'Padiem 로그인' "${RUNNER_TEMP}/b66-local.html" >/dev/null
+          ! grep -F 'B66 DEMO' "${RUNNER_TEMP}/b66-local.html" >/dev/null
           curl -fsS http://127.0.0.1:4173/embed.html -o "${RUNNER_TEMP}/b66-embed.html"
           grep -F '<title>견적서 미리보기</title>' "${RUNNER_TEMP}/b66-embed.html" >/dev/null
           grep -F "connect-src 'none'" "${RUNNER_TEMP}/b66-embed.html" >/dev/null
@@ -249,7 +259,7 @@ jobs:
             url="$1"
             output="$2"
             for attempt in $(seq 1 36); do
-              if curl -fsS --connect-timeout 5 --max-time 20                   -H 'Cache-Control: no-cache'                   "${url}?release=${TARGET_SHA}-${attempt}" -o "${output}"                 && grep -F '<title>견적서 만들기</title>' "${output}" >/dev/null                 && grep -F '샘플 공급사' "${output}" >/dev/null                 && ! grep -E 'Padiem|파디엠|B66 DEMO' "${output}"; then
+              if curl -fsS --connect-timeout 5 --max-time 20                   -H 'Cache-Control: no-cache'                   "${url}?release=${TARGET_SHA}-${attempt}" -o "${output}"                 && grep -F '<title>견적서 만들기</title>' "${output}" >/dev/null                 && grep -F '샘플 공급사' "${output}" >/dev/null                 && grep -F 'id="padiemAccountButton"' "${output}" >/dev/null                 && grep -F 'Padiem 로그인' "${output}" >/dev/null                 && ! grep -F 'B66 DEMO' "${output}" >/dev/null; then
                 return 0
               fi
               sleep 5
