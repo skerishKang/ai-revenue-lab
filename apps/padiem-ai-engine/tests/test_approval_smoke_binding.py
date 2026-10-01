@@ -82,6 +82,18 @@ def _run_payload(binding) -> dict:
     }
 
 
+def _resume_payload(payload: dict, continuation_ref: str, decision: dict) -> dict:
+    """Project the initial run onto the canonical resume wire surface."""
+    resumed = {
+        key: value
+        for key, value in payload.items()
+        if key not in {"require_evidence", "require_verification"}
+    }
+    resumed["continuation_ref"] = continuation_ref
+    resumed["decision"] = decision
+    return resumed
+
+
 def _decision(pause, outcome: str = "approved") -> dict:
     # The actual first-party verifier enforces the pause time window.
     decided_at = max(
@@ -170,9 +182,11 @@ async def test_real_toolruntime_pause_to_verified_resume_completes_without_provi
     assert record.pause.tool_id == APPROVAL_SMOKE_RUNTIME_TOOL_ID
     assert record.pause.requirement.value == "user_confirmation"
 
-    resume_payload = dict(payload)
-    resume_payload["continuation_ref"] = continuation_ref
-    resume_payload["decision"] = _decision(record.pause)
+    resume_payload = _resume_payload(
+        payload,
+        continuation_ref,
+        _decision(record.pause),
+    )
 
     resumed = await service.resume_payload(resume_payload)
     assert resumed.status_code == 200
@@ -207,9 +221,11 @@ async def test_denied_real_pause_is_consumed_without_tool_execution() -> None:
         continuation_ref=continuation_ref,
     )
 
-    resume_payload = dict(payload)
-    resume_payload["continuation_ref"] = continuation_ref
-    resume_payload["decision"] = _decision(record.pause, outcome="denied")
+    resume_payload = _resume_payload(
+        payload,
+        continuation_ref,
+        _decision(record.pause, outcome="denied"),
+    )
 
     denied = await service.resume_payload(resume_payload)
     assert denied.status_code == 409
