@@ -43,16 +43,7 @@ from padiem_ai_core.evidence_citation import EvidenceCitationError
 # conformance tests re-derive these sets from live Core serialization so any
 # Core-side schema drift fails loudly instead of silently widening the wire.
 ENGINE_EVIDENCE_SOURCE_FIELDS = frozenset(
-    {
-        "id",
-        "title",
-        "url",
-        "snippet",
-        "retrieved_at",
-        "provider",
-        "source_type",
-        "document_locator",
-    }
+    {"id", "title", "url", "snippet", "retrieved_at", "provider", "source_type"}
 )
 ENGINE_EVIDENCE_CITATION_FIELDS = frozenset(
     {
@@ -65,7 +56,6 @@ ENGINE_EVIDENCE_CITATION_FIELDS = frozenset(
         "source_type",
         "relation",
         "checked_by_validator",
-        "document_locator",
     }
 )
 
