@@ -43,13 +43,14 @@ class DriveIndexedSegment:
 
     The segment owns the document locator. No page/section locator field is
     accepted here, so callers cannot relabel index text with a new exact page.
-    Retrieval identity fields are passed through the existing RetrievedItem
-    validator when the freshness gate succeeds.
+    Item/namespace fields are passed through the existing RetrievedItem
+    validator when the freshness gate succeeds. The internal source_ref is
+    derived from the Drive source snapshot so file identity cannot split from
+    the freshness authority.
     """
 
     item_id: str
     namespace: str
-    source_ref: str
     source_snapshot: DriveIndexSourceSnapshot
     segment: DocumentSegment
 
@@ -107,7 +108,7 @@ def retrieve_current_drive_index_segment(
         namespace=indexed.namespace,
         source_type=DRIVE_INDEX_RETRIEVAL_SOURCE_TYPE,
         provider=DRIVE_INDEX_RETRIEVAL_PROVIDER,
-        source_ref=indexed.source_ref,
+        source_ref=f"drive:{indexed.source_snapshot.file_id}",
         segment=indexed.segment,
         title=current_source.name,
         content=content,
@@ -125,6 +126,7 @@ def drive_index_retrieval_snapshot() -> dict[str, object]:
         "stale_index_retrievable": False,
         "unverifiable_index_retrievable": False,
         "locator_source": "canonical_document_segment",
+        "source_ref_source": "drive_source_snapshot",
         "index_is_primary_truth": False,
         "drive_io": False,
         "model_call": False,
