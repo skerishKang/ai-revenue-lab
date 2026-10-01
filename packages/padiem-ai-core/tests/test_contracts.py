@@ -35,6 +35,7 @@ def test_evidence_supports_non_web_sources_without_inventing_url() -> None:
         "retrieved_at": "2026-08-26T00:00:00Z",
         "provider": "ai-book",
         "source_type": "document",
+        "document_locator": None,
     }
 
 
