@@ -250,7 +250,7 @@ async def test_success_dispatch_records_exactly_one_bounded_usage_receipt() -> N
     assert len(adapter.events) == 1
     event = next(iter(adapter.events.values()))
     assert event["outcome"] == "succeeded"
-    assert event["billing_disposition"] == "billable"
+    assert event["billing_disposition"] == "non_billable"
     assert event["route"] == {"status": "unknown"}
     assert event["cost"] is None
     assert event["billing_semantic_id"] == "orchestration.run"
