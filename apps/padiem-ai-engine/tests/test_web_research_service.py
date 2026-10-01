@@ -326,10 +326,8 @@ def test_public_evidence_projection_excludes_provider_private_runtime_bytes() ->
         "retrieved_at",
         "provider",
         "source_type",
-        "document_locator",
     }
     serialized = json.dumps(result.body, ensure_ascii=False)
-    assert result.body["sources"][0]["document_locator"] is None
     assert SecretBearingProvider.private_runtime_secret not in serialized
     assert "route" not in result.body
     assert "metadata" not in result.body
