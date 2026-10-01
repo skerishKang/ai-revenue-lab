@@ -125,7 +125,8 @@ check(html.includes(">로그인</button>") && html.includes('id="googleSigninBut
 check(account.includes("/api/padiem/auth/google/start") &&
       worker.includes('"/api/padiem/auth/google/start"') &&
       worker.includes('"/api/padiem/auth/google/callback"') &&
-      worker.includes('upstream.headers.get("location")'),
+      worker.includes('upstream.headers.get("location")') &&
+      worker.includes('headers.set("X-B66-Origin", url.origin)'),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: google oauth is proxied through the B66 worker");
 check(!html.includes('class="badge"') && !html.includes("Padiem 로그인") &&
       !account.includes("Padiem 로그인") && account.includes('button.textContent = "로그인"'),

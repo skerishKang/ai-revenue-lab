@@ -130,9 +130,10 @@ async def google_start(request: Request) -> Response:
         return _unavailable()
     settings: Settings = request.app.state.settings
     oauth: GoogleOAuthClient = request.app.state.google_oauth
+    bridge_origin = request.headers.get("x-b66-origin")
     try:
         state, signed = create_oauth_state(settings)
-        location = oauth.authorization_url(state)
+        location = oauth.authorization_url(state, bridge_origin=bridge_origin)
     except AuthError as exc:
         return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
     response = RedirectResponse(location, status_code=302)
@@ -273,8 +274,9 @@ async def google_callback(request: Request) -> Response:
         )
     oauth: GoogleOAuthClient = request.app.state.google_oauth
     store: HistoryStore = request.app.state.history_store
+    bridge_origin = request.headers.get("x-b66-origin")
     try:
-        access_token = await oauth.exchange_code(code.strip())
+        access_token = await oauth.exchange_code(code.strip(), bridge_origin=bridge_origin)
         identity = await oauth.fetch_userinfo(access_token)
         profile = await store.upsert_google_user(
             identity["subject"], identity["email"], identity["name"], identity["picture"]

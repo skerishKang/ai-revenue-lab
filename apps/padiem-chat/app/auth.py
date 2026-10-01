@@ -144,12 +144,25 @@ class GoogleOAuthClient:
             raise AuthError(503, "auth_unavailable", "로그인을 현재 사용할 수 없습니다.")
         return self.settings.public_base_url.rstrip("/") + "/auth/google/callback"
 
-    def authorization_url(self, state: str) -> str:
+    def redirect_uri_for_bridge(self, bridge_origin: str | None) -> str:
+        """Resolve the redirect URI for a request that arrived through the B66 bridge.
+
+        The B66 Pages worker stamps its own origin in X-B66-Origin. That value is
+        honored only when it exactly equals the configured B66 base URL; anything
+        else keeps the canonical redirect URI.
+        """
+        candidate = (bridge_origin or "").strip().rstrip("/")
+        b66_base = (self.settings.b66_quote_base_url or "").strip().rstrip("/")
+        if candidate and b66_base and candidate == b66_base:
+            return b66_base + "/api/padiem/auth/google/callback"
+        return self.redirect_uri
+
+    def authorization_url(self, state: str, bridge_origin: str | None = None) -> str:
         if not self.settings.google_client_id:
             raise AuthError(503, "auth_unavailable", "로그인을 현재 사용할 수 없습니다.")
         params = {
             "client_id": self.settings.google_client_id,
-            "redirect_uri": self.redirect_uri,
+            "redirect_uri": self.redirect_uri_for_bridge(bridge_origin),
             "response_type": "code",
             "scope": "openid email profile",
             "state": state,
@@ -173,9 +186,10 @@ class GoogleOAuthClient:
             raise AuthError(502, "auth_provider_error", "Google 로그인 응답을 확인하지 못했습니다.")
         return data
 
-    async def exchange_code(self, code: str) -> str:
+    async def exchange_code(self, code: str, bridge_origin: str | None = None) -> str:
         if not self.settings.google_client_id or not self.settings.google_client_secret:
             raise AuthError(503, "auth_unavailable", "로그인을 현재 사용할 수 없습니다.")
+        redirect_uri = self.redirect_uri_for_bridge(bridge_origin)
         timeout = httpx.Timeout(15.0, connect=8.0)
         try:
             async with httpx.AsyncClient(transport=self.transport, timeout=timeout, follow_redirects=False) as client:
@@ -187,7 +201,7 @@ class GoogleOAuthClient:
                         "client_secret": self.settings.google_client_secret,
                         "code": code,
                         "grant_type": "authorization_code",
-                        "redirect_uri": self.redirect_uri,
+                        "redirect_uri": redirect_uri,
                     },
                 ) as response:
                     data = await self._bounded_json(response)
