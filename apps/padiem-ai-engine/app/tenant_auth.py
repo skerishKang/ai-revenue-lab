@@ -359,7 +359,14 @@ class ControlPlaneTenantAdmissionAdapter:
         )
 
         grant = snapshot.grants.get(request.capability)
-        allowed = bool(grant is not None and grant["allowed"])
+        allowed = bool(
+            grant is not None
+            and grant["allowed"]
+            and (
+                grant["limit"] is None
+                or self._estimated_units <= grant["limit"]
+            )
+        )
         authority_ref = f"control-plane:entitlement:{snapshot.snapshot_id}"
         usage_reservation: TrustedUsageReservation | None = None
 
@@ -367,7 +374,13 @@ class ControlPlaneTenantAdmissionAdapter:
         # reservation; a second reservation would split one logical execution.
         should_reserve = request.capability != "orchestration.resume"
         if allowed and self._require_usage_reservation and should_reserve:
-            reservation = self._build_reservation(request, tenant, snapshot, now)
+            if request.usage_reservation_identity is None:
+                raise ExecutionAdmissionError(
+                    "entitlement_unavailable",
+                    "Server-owned usage reservation identity is unavailable.",
+                    status_code=503,
+                )
+            reservation = self._build_reservation(request, tenant, now)
             decision = parse_usage_reservation(
                 await _maybe_await(self._client.reserve_usage(reservation=reservation.to_public_dict())),
                 reservation=reservation,
@@ -448,16 +461,15 @@ class ControlPlaneTenantAdmissionAdapter:
         self,
         request: ExecutionAdmissionRequest,
         tenant: TenantIdentity,
-        snapshot: EntitlementSnapshotView,
         now: datetime,
     ) -> UsageReservation:
+        assert request.usage_reservation_identity is not None
         identity = "|".join(
             (
-                "reserve",
+                "reserve-v2",
                 request.app_id,
                 request.capability,
-                request.request_fingerprint or "unbound",
-                snapshot.revision,
+                request.usage_reservation_identity,
             )
         )
         digest = hashlib.sha256(identity.encode("utf-8")).hexdigest()
