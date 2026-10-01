@@ -292,7 +292,10 @@ def test_usage_reservation_is_entitlement_bound_and_idempotent():
         now=NOW,
     )
     second = store.reserve_usage(
-        reservation(),
+        reservation(
+            trace_id="trace-2",
+            occurred_at=(NOW + timedelta(seconds=1)).isoformat(),
+        ),
         now=NOW + timedelta(seconds=1),
     )
 
