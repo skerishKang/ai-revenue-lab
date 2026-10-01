@@ -1,8 +1,11 @@
 const B14_IMAGE_EXTRACTION_URL =
   "https://ai-revenue-korean-ai-platform.charliekant.workers.dev/api/b66/v1/quote/extract-image";
+const B14_DOCUMENT_EXTRACTION_URL =
+  "https://ai-revenue-korean-ai-platform.charliekant.workers.dev/api/b66/v1/quote/extract-document";
 const INTAKE_PATH = "/api/v1/quote/intake";
 const MAX_REQUEST_BYTES = 6 * 1024 * 1024;
 const MAX_RESPONSE_BYTES = 1024 * 1024;
+const IMAGE_MEDIA = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 function jsonError(code, status) {
   return new Response(JSON.stringify({ ok: false, error: { code } }), {
@@ -12,6 +15,19 @@ function jsonError(code, status) {
       "Cache-Control": "no-store"
     }
   });
+}
+
+function upstreamForBody(body) {
+  let payload;
+  try {
+    payload = JSON.parse(new TextDecoder().decode(body));
+  } catch (_) {
+    return null;
+  }
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) return null;
+  return IMAGE_MEDIA.has(payload.media_type)
+    ? B14_IMAGE_EXTRACTION_URL
+    : B14_DOCUMENT_EXTRACTION_URL;
 }
 
 async function handleIntake(request) {
@@ -29,9 +45,12 @@ async function handleIntake(request) {
     return jsonError("request_too_large", 413);
   }
 
+  const upstreamUrl = upstreamForBody(body);
+  if (!upstreamUrl) return jsonError("invalid_request", 422);
+
   let upstream;
   try {
-    upstream = await fetch(B14_IMAGE_EXTRACTION_URL, {
+    upstream = await fetch(upstreamUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

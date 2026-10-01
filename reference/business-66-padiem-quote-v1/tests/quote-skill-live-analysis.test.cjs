@@ -2,18 +2,21 @@ const assert = require("node:assert/strict");
 const SkillUi = require("../quote-skill-ui.js");
 
 async function main() {
-  const bytes = Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10, 1, 2, 3, 4]);
-  const file = {
-    arrayBuffer: async () => bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
+  const imageBytes = Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10, 1, 2, 3, 4]);
+  const imageFile = {
+    arrayBuffer: async () => imageBytes.buffer.slice(
+      imageBytes.byteOffset,
+      imageBytes.byteOffset + imageBytes.byteLength
+    )
   };
-  const meta = {
+  const imageMeta = {
     name: "quotation.png",
     mediaType: "image/png",
-    byteSize: bytes.byteLength,
+    byteSize: imageBytes.byteLength,
     category: "image"
   };
-  const calls = [];
-  const extraction = {
+  const imageCalls = [];
+  const imageExtraction = {
     source: { kind: "image", filename: "quotation.png" },
     sender: { company: "테스트상사" },
     recipient: { company: "원본거래처" },
@@ -25,42 +28,97 @@ async function main() {
     warnings: []
   };
 
-  const result = await SkillUi.analyzeImageFile(file, meta, async (url, options) => {
-    calls.push({ url, options });
+  const imageResult = await SkillUi.analyzeImageFile(imageFile, imageMeta, async (url, options) => {
+    imageCalls.push({ url, options });
     return {
       ok: true,
-      json: async () => ({ ok: true, result: { extraction, unknowns: ["memo"] } })
+      json: async () => ({ ok: true, result: { extraction: imageExtraction, unknowns: ["memo"] } })
     };
   });
 
-  assert.equal(result.ok, true);
-  assert.deepEqual(result.extraction, extraction);
-  assert.deepEqual(result.unknowns, ["memo"]);
-  assert.equal(calls.length, 1);
-  assert.equal(calls[0].url, "/api/v1/quote/intake");
-  assert.equal(calls[0].options.method, "POST");
-  assert.equal(calls[0].options.headers["Content-Type"], "application/json");
+  assert.equal(imageResult.ok, true);
+  assert.deepEqual(imageResult.extraction, imageExtraction);
+  assert.deepEqual(imageResult.unknowns, ["memo"]);
+  assert.equal(imageCalls.length, 1);
+  assert.equal(imageCalls[0].url, "/api/v1/quote/intake");
+  assert.equal(imageCalls[0].options.method, "POST");
+  assert.equal(imageCalls[0].options.headers["Content-Type"], "application/json");
 
-  const posted = JSON.parse(calls[0].options.body);
-  assert.equal(posted.name, "quotation.png");
-  assert.equal(posted.media_type, "image/png");
-  assert.equal(Buffer.from(posted.base64, "base64").length, bytes.byteLength);
-  assert.ok(!("model" in posted) && !("provider" in posted) && !("secret" in posted));
+  const imagePosted = JSON.parse(imageCalls[0].options.body);
+  assert.equal(imagePosted.name, "quotation.png");
+  assert.equal(imagePosted.media_type, "image/png");
+  assert.equal(Buffer.from(imagePosted.base64, "base64").length, imageBytes.byteLength);
+  assert.ok(!("model" in imagePosted) && !("provider" in imagePosted) && !("secret" in imagePosted));
 
-  const failed = await SkillUi.analyzeImageFile(file, meta, async () => ({
+  const imageFailed = await SkillUi.analyzeImageFile(imageFile, imageMeta, async () => ({
     ok: false,
     json: async () => ({ ok: false, error: { code: "b14_upstream_unavailable" } })
   }));
-  assert.deepEqual(failed, { ok: false, code: "b14_upstream_unavailable" });
+  assert.deepEqual(imageFailed, { ok: false, code: "b14_upstream_unavailable" });
 
+  /* Backward-compatible image-only helper still refuses native documents. */
   const manual = await SkillUi.analyzeImageFile(
-    file,
-    { ...meta, category: "native_document" },
+    imageFile,
+    { ...imageMeta, category: "native_document" },
     async () => { throw new Error("must not call"); }
   );
   assert.deepEqual(manual, { ok: false, code: "manual_only" });
 
-  console.log("quote-skill live image analysis contracts: PASS");
+  /* New generic analysis helper sends native documents through the same-origin route. */
+  const pdfBytes = Uint8Array.from([37, 80, 68, 70, 45, 49, 46, 55, 10, 37, 37, 69, 79, 70]);
+  const pdfFile = {
+    arrayBuffer: async () => pdfBytes.buffer.slice(
+      pdfBytes.byteOffset,
+      pdfBytes.byteOffset + pdfBytes.byteLength
+    )
+  };
+  const pdfMeta = {
+    name: "quotation.pdf",
+    mediaType: "application/pdf",
+    byteSize: pdfBytes.byteLength,
+    category: "native_document"
+  };
+  const documentCalls = [];
+  const documentExtraction = {
+    source: { kind: "native_document", filename: "quotation.pdf" },
+    sender: { company: "문서 테스트상사" },
+    recipient: { company: "문서 거래처" },
+    quote: { quoteNo: "PDF-Q-1" },
+    items: [{ name: "문서 품목", qty: 2, unitPrice: 5000 }],
+    tax: { mode: "EXCLUSIVE" },
+    memo: null,
+    evidence: [],
+    warnings: []
+  };
+
+  const documentResult = await SkillUi.analyzeFile(pdfFile, pdfMeta, async (url, options) => {
+    documentCalls.push({ url, options });
+    return {
+      ok: true,
+      json: async () => ({
+        ok: true,
+        result: { extraction: documentExtraction, unknowns: ["quote.issueDate"] }
+      })
+    };
+  });
+  assert.equal(documentResult.ok, true);
+  assert.deepEqual(documentResult.extraction, documentExtraction);
+  assert.deepEqual(documentResult.unknowns, ["quote.issueDate"]);
+  assert.equal(documentCalls.length, 1);
+  assert.equal(documentCalls[0].url, "/api/v1/quote/intake");
+  const documentPosted = JSON.parse(documentCalls[0].options.body);
+  assert.equal(documentPosted.name, "quotation.pdf");
+  assert.equal(documentPosted.media_type, "application/pdf");
+  assert.equal(Buffer.from(documentPosted.base64, "base64").length, pdfBytes.byteLength);
+  assert.ok(!("model" in documentPosted) && !("provider" in documentPosted) && !("secret" in documentPosted));
+
+  const parserUnavailable = await SkillUi.analyzeFile(pdfFile, pdfMeta, async () => ({
+    ok: false,
+    json: async () => ({ ok: false, error: { code: "parser_authority_unavailable" } })
+  }));
+  assert.deepEqual(parserUnavailable, { ok: false, code: "parser_authority_unavailable" });
+
+  console.log("quote-skill live image/native analysis contracts: PASS");
 }
 
 main().catch((error) => {

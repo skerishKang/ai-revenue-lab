@@ -101,7 +101,7 @@ Every file stays far below the 500-line guideline. No framework, no build step.
 - JPG/PNG/WebP는 preflight 후 same-origin `POST /api/v1/quote/intake`로 일시 전송되어 서버에서 재검증되고, B14의 canonical image route를 통해 견적 사실을 분석합니다.
 - 브라우저가 MIME을 비우거나 `application/octet-stream`/ZIP generic MIME으로 줄 때는 지원 확장자를 기준으로 preflight하고, 서버 단계에서 다시 권위 검증
 - 이미지 원본 바이트는 브라우저 저장소에 보관하지 않고 요청 중에만 사용하며, 서버 응답은 검증된 extraction facts/provenance만 반환합니다.
-- PDF/DOCX/PPTX/XLSX/HWPX는 현재 자동 내용 분석 전 단계이며 수동 확인·보정 방식으로 등록합니다.
+- PDF/DOCX/PPTX/XLSX/HWPX도 same-origin 서버 분석을 시도합니다. Production Worker에 reviewed isolated parser authority가 아직 없으면 서버가 fail-closed하고 기존 수동 확인·보정 방식으로 그대로 계속합니다.
 - Korean-first quotation UI
 - sender preset, browser-local custom sender save, sender address
 - recipient/company/contact + recipient address
@@ -140,7 +140,7 @@ Repeat customers register the quotation they already use instead of picking temp
 
 ```text
 [내가 쓰던 견적서 등록]
-1. 견적서 선택 (이미지는 서버 분석, 문서 파일은 현재 수동 확인; 원본 바이트 브라우저 저장 없음)
+1. 견적서 선택 (이미지와 지원 문서는 서버 분석을 시도하며, parser authority 미가용/분석 실패 시 수동 확인; 원본 바이트 브라우저 저장 없음)
 2. 회사정보/업무값 확인 (이미지 extraction 결과를 기본 초안으로 사용하고 사람이 수정 가능)
 3. 견적서 모양 확인 (기본 초안 + "자동으로 분석하지 않으므로 비교해 수정" 안내)
 4. 필요한 부분 수정 + 미리보기 (저장 없음)
@@ -169,7 +169,7 @@ Live for the Saved Quote Skill registration MVP:
 
 Still not live:
 
-- automatic content analysis for PDF/DOCX/PPTX/XLSX/HWPX (manual review/correction remains available);
+- Production isolated-parser activation for PDF/DOCX/PPTX/XLSX/HWPX; source/UI routing is wired, but manual review/correction remains the fail-closed fallback until that authority is live;
 - chat-to-QuoteDraft semantic generation;
 - server-side source-document persistence;
 - real email sending;
@@ -193,7 +193,7 @@ The Easy Mode is deliberately usable before any model is selected:
 
 `내용을 한번에 말하기` keeps the user's one-shot text in the current page session. If the user chooses 질문받으며 이어가기, that original text is shown again as a reference-only message while authoritative values are still collected one-by-one. The reference is never auto-applied to QuoteDraft, and semantic AI interpretation remains unconnected.
 
-`파일에서 불러오기` opens a real browser file chooser and performs local metadata preflight. In the Saved Quote Skill registration wizard, JPG/JPEG/PNG/WebP bytes are then read transiently and sent only to the same-origin intake route for server-side extraction; they are not written to browser storage. Native PDF/DOCX/PPTX/XLSX/HWPX remain manual-review registration inputs for this MVP.
+`파일에서 불러오기` opens a real browser file chooser and performs local metadata preflight. In the Saved Quote Skill registration wizard, JPG/JPEG/PNG/WebP and supported native PDF/DOCX/PPTX/XLSX/HWPX bytes are read transiently and sent only to the same-origin intake route; they are not written to browser storage. Native documents reuse the canonical server parser/text-extraction authorities when available and fall back truthfully to manual review when the Production isolated-parser authority is unavailable.
 
 Recent quotations use a separate browser-local key (`quoteBeta.history.v1`) and are capped at 20 snapshots. Snapshot metadata such as totals is derived by `QuoteCore`; trusted totals are not persisted.
 
@@ -209,7 +209,7 @@ Issue #3162 provides the canonical product adapter source at:
 apps/b66-quote-adapter/
 ```
 
-For the image-registration MVP, the browser-visible contract is now the same-origin `POST /api/v1/quote/intake`. Pages `_worker.js` proxies that request to the B14 Worker, which stages and reuses the canonical #3212 `extraction_routing.py` authority rather than committing a second extraction implementation.
+The browser-visible contract is the same-origin `POST /api/v1/quote/intake`. Pages `_worker.js` routes images to the existing B14 image endpoint and native documents to the B14 document endpoint. The Worker stages and reuses canonical `file_intake.py` plus #3212 `extraction_routing.py` rather than committing second intake/parser/extraction implementations.
 
 For native documents, the adapter reuses IP-CORE's reviewed authorities:
 
@@ -239,7 +239,7 @@ Untrusted source totals are ignored. Missing extraction fields remain null at th
 when an extraction is explicitly applied, missing numeric item fields become editable zero placeholders
 rather than fabricated extracted values.
 
-Saved Quote Skill **image** registration now uses the governed server extraction path. Native document automatic analysis and chat-to-QuoteDraft remain non-live.
+Saved Quote Skill **image and native-document source wiring** now use the governed same-origin/server extraction path. Native-document Production auto-analysis remains gated by the reviewed isolated-parser authority; when that gate is unavailable the registration flow remains manual-first. Chat-to-QuoteDraft remains non-live.
 No provider/model ID or secret lives in the B66 browser code.
 
 Refs #3136, #3144, #3147, #3154, #3158, #3162, #3164, #3167, #3169, #3171, #3174.
