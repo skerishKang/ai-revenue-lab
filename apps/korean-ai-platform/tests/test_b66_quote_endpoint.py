@@ -278,7 +278,12 @@ def test_browser_local_text_route_bypasses_binary_parser_and_reuses_text_authori
     monkeypatch.setattr(
         endpoint,
         "_document_identity_authority",
-        lambda: SimpleNamespace(validate_document_identity=lambda **kwargs: None),
+        lambda: SimpleNamespace(
+            validate_document_identity=lambda **kwargs: (
+                kwargs["name"], kwargs["media_type"]
+            ),
+            normalize_document_text=lambda value: value.strip(),
+        ),
     )
 
     def forbidden_intake():
@@ -343,7 +348,12 @@ def test_browser_local_text_route_rejects_unbounded_or_spoofed_payloads_before_m
     monkeypatch.setattr(
         endpoint,
         "_document_identity_authority",
-        lambda: SimpleNamespace(validate_document_identity=lambda **kwargs: None),
+        lambda: SimpleNamespace(
+            validate_document_identity=lambda **kwargs: (
+                kwargs["name"], kwargs["media_type"]
+            ),
+            normalize_document_text=lambda value: value.strip(),
+        ),
     )
 
     base = {
