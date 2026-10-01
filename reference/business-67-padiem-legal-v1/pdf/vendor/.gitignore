@@ -1,0 +1,4 @@
+# Exact pdfjs-dist assets are copied here only for local/CI browser verification.
+# Do not commit third-party distribution bundles in this review surface.
+pdf.mjs
+pdf.worker.mjs
