@@ -328,7 +328,7 @@ class _FakeB14:
                     "items": [{"name": "배관", "qty": 20, "unitPrice": 30000}],
                     "memo": None,
                     "taxMode": None,
-                    "missing": ["quoteNo", "issueDate"],
+                    "missing": [],
                 },
                 ensure_ascii=False,
             )
@@ -355,6 +355,21 @@ async def test_interpreter_calls_model_once_for_fields_only_and_hides_template_c
     assert "template-private" not in context
     assert "테스트상사" not in context
     assert call["attachments"] == ()
+
+
+def test_normalizer_rejects_impossible_calendar_date():
+    with pytest.raises(B66QuoteConversationError, match="invalid_issue_date"):
+        normalize_conversation_output(
+            {
+                "recipient": {"company": "ABC건설"},
+                "quoteNo": "Q-1",
+                "issueDate": "2026-02-30",
+                "items": [{"name": "배관", "qty": 1, "unitPrice": 1000}],
+                "memo": None,
+                "taxMode": None,
+                "missing": [],
+            }
+        )
 
 
 @pytest.mark.asyncio
