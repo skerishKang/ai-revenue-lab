@@ -71,6 +71,7 @@
     if (settingsButton) settingsButton.hidden = true;
     const settingsPanelOut = byId("settingsPanel");
     if (settingsPanelOut) settingsPanelOut.hidden = true;
+    document.dispatchEvent(new CustomEvent("b66:auth-changed", { detail: { authenticated: false } }));
   }
 
   function renderSignedIn() {
@@ -82,6 +83,7 @@
     if (panel) panel.hidden = false;
     const settingsButton = byId("settingsButton");
     if (settingsButton) settingsButton.hidden = false;
+    document.dispatchEvent(new CustomEvent("b66:auth-changed", { detail: { authenticated: true } }));
   }
 
   function openAuthDialog() {
