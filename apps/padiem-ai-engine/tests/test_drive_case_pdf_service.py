@@ -52,6 +52,7 @@ PDF_METADATA = {
     "trashed": False,
     "version": 7,
     "modifiedTime": "2026-10-01T00:00:00Z",
+    "resourceKey": "resource_key_must_not_leave_engine",
     "size": len(PDF_BYTES),
 }
 
@@ -176,6 +177,8 @@ def test_read_refetches_metadata_then_returns_exact_bounded_pdf_bytes() -> None:
     assert base64.b64decode(body["content_base64"]) == PDF_BYTES
     assert body["byte_size"] == len(PDF_BYTES)
     assert body["authorization"]["direct_parent_proof"] is True
+    assert "resource_key" not in body["version_evidence"]
+    assert "resource_key_must_not_leave_engine" not in json.dumps(body)
     assert [kind for kind, _ in port.calls] == ["json", "bytes"]
     assert port.calls[0][1]["path"].endswith("/files/" + FILE_ID)
     assert port.calls[1][1]["query"] == {"alt": "media", "supportsAllDrives": "true"}
