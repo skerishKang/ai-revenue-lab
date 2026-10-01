@@ -117,13 +117,15 @@ class UsageAwareAdapter:
 
     def _reservation(self, request) -> TrustedUsageReservation:
         assert request.request_fingerprint is not None
+        assert request.usage_reservation_identity is not None
+        occurrence = request.usage_reservation_identity
         reserved_at = self._reserved_at.setdefault(
-            request.request_fingerprint,
+            occurrence,
             datetime.now(timezone.utc),
         )
         return TrustedUsageReservation(
-            reservation_ref=f"cp_res_{request.request_fingerprint[:16]}",
-            idempotency_key=f"res-{request.request_fingerprint}",
+            reservation_ref=f"cp_res_{occurrence}",
+            idempotency_key=f"res-{occurrence}",
             billing_semantic_id="orchestration.run",
             product_id=request.app_id,
             subject_type="user" if request.subject_id is not None else "account",
@@ -296,6 +298,49 @@ async def test_pre_dispatch_rejection_creates_no_false_usage_event() -> None:
     assert runtime.call_count == 0
     assert adapter.receipt_calls == []
     assert adapter.events == {}
+
+
+async def test_identical_non_idempotent_requests_are_distinct_usage_occurrences() -> None:
+    adapter = UsageAwareAdapter()
+    service, runtime = _service(adapter)
+    payload = _payload()
+
+    first = await service.orchestrate_payload(payload)
+    second = await service.orchestrate_payload(deepcopy(payload))
+
+    assert first.status_code == 200
+    assert second.status_code == 200
+    assert runtime.call_count == 2
+    assert len(adapter.receipt_calls) == 2
+    assert adapter.receipt_calls[0].event_id != adapter.receipt_calls[1].event_id
+    assert adapter.receipt_calls[0].execution_id != adapter.receipt_calls[1].execution_id
+    assert len(adapter.events) == 2
+
+
+async def test_failed_idempotent_attempt_can_retry_to_success_without_event_conflict() -> None:
+    adapter = UsageAwareAdapter()
+    runtime = Runtime("fail")
+    service, _ = _service(
+        adapter,
+        runtime=runtime,
+        idempotency_adapter=ReplayAdapter(),
+    )
+    payload = _payload(with_idempotency=True)
+
+    first = await service.orchestrate_payload(payload)
+    runtime.mode = "success"
+    second = await service.orchestrate_payload(deepcopy(payload))
+
+    assert first.status_code >= 400
+    assert second.status_code == 200
+    assert runtime.call_count == 2
+    assert len(adapter.events) == 2
+    assert {event["outcome"] for event in adapter.events.values()} == {
+        "failed",
+        "succeeded",
+    }
+    assert adapter.receipt_calls[0].event_id != adapter.receipt_calls[1].event_id
+    assert adapter.receipt_calls[0].execution_id == adapter.receipt_calls[1].execution_id
 
 
 async def test_idempotent_replay_does_not_create_second_usage_event() -> None:
