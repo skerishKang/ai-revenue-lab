@@ -169,6 +169,34 @@ class HttpxDriveReadPort(DriveReadPort):
             raise ValueError("provider_response_invalid")
         return payload
 
+    async def _stream_get_bytes(
+        self,
+        *,
+        token: str,
+        url: str,
+        params: dict[str, str] | None,
+        max_response_bytes: int,
+        timeout_seconds: int,
+    ) -> bytes:
+        async with httpx.AsyncClient(
+            transport=self._transport, timeout=timeout_seconds, follow_redirects=False
+        ) as client:
+            async with client.stream(
+                "GET",
+                url,
+                params=params or None,
+                headers={"Authorization": f"Bearer {token}"},
+            ) as response:
+                status = response.status_code
+                if status < 200 or status >= 300:
+                    raise ValueError(f"provider_http_{status}")
+                chunks = bytearray()
+                async for chunk in response.aiter_bytes():
+                    chunks.extend(chunk)
+                    if len(chunks) > max_response_bytes:
+                        raise ValueError("response_too_large")
+                return bytes(chunks)
+
     async def _stream_get_text(
         self,
         *,
@@ -232,6 +260,45 @@ class HttpxDriveReadPort(DriveReadPort):
         for attempt in range(2):
             try:
                 return await self._stream_get(
+                    token=token,
+                    url=url,
+                    params=params,
+                    max_response_bytes=max_response_bytes,
+                    timeout_seconds=timeout_seconds,
+                )
+            except ValueError as exc:
+                if str(exc) == "provider_http_401" and attempt == 0:
+                    self._access_token = None
+                    token = await self._access_token_for()
+                    continue
+                raise
+        raise ValueError("provider_http_401")
+
+    async def get_bytes(
+        self,
+        *,
+        binding_ref: str,
+        actor_ref: str,
+        required_scopes: tuple[str, ...],
+        base_url: str,
+        path: str,
+        query: dict[str, str],
+        timeout_seconds: int,
+        max_response_bytes: int,
+    ) -> bytes:
+        """Engine-only bounded binary READ; not a generic Core Drive tool."""
+
+        if not set(required_scopes) <= {DRIVE_READONLY_SCOPE}:
+            raise ValueError("scope_not_permitted")
+        host = base_url.split("://", 1)[-1].split("/", 1)[0]
+        if host != DRIVE_API_HOST:
+            raise ValueError("host_not_permitted")
+        url = f"{base_url.rstrip('/')}{path}"
+        params = {key: value for key, value in query.items()}
+        token = await self._access_token_for()
+        for attempt in range(2):
+            try:
+                return await self._stream_get_bytes(
                     token=token,
                     url=url,
                     params=params,
