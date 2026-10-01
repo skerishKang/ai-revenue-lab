@@ -9,11 +9,12 @@ import sys
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+import b62_cloudflare_production_deploy_config as _deploy_config
+
 TARGET = "PADIEM_CHAT_B66_QUOTE_BASE_URL"
-SUPPORTED_TYPES = {
-    "assets", "service", "d1", "r2_bucket", "plain_text",
-    "secret_text", "version_metadata",
-}
 
 
 class ActivationError(RuntimeError):
@@ -37,30 +38,14 @@ def normalize_expected_origin(value: object) -> str:
 
 
 def _bindings(payload: object) -> list[dict]:
-    if not isinstance(payload, dict) or payload.get("success") is not True:
-        raise ActivationError("settings payload is not a successful Cloudflare response")
-    result = payload.get("result")
-    if not isinstance(result, dict):
-        raise ActivationError("settings payload has no result object")
-    bindings = result.get("bindings")
-    if not isinstance(bindings, list) or not bindings:
+    # Reuse the canonical Production live-settings parser so unsupported types,
+    # malformed structural bindings and duplicate names fail closed here too.
+    _deploy_config.parse_live_bindings(payload)
+    result = payload.get("result") if isinstance(payload, dict) else None
+    bindings = result.get("bindings") if isinstance(result, dict) else None
+    if not isinstance(bindings, list):
         raise ActivationError("settings payload has no bindings array")
-    output: list[dict] = []
-    names: list[str] = []
-    for raw in bindings:
-        if not isinstance(raw, dict):
-            raise ActivationError("binding entry is not an object")
-        name = raw.get("name")
-        kind = raw.get("type")
-        if not isinstance(name, str) or not name:
-            raise ActivationError("binding name is invalid")
-        if kind not in SUPPORTED_TYPES:
-            raise ActivationError(f"unsupported binding type {kind!r}")
-        names.append(name)
-        output.append(raw)
-    if len(names) != len(set(names)):
-        raise ActivationError("duplicate binding names")
-    return output
+    return [dict(binding) for binding in bindings]
 
 
 def classify(settings_payload: object, expected_origin: object) -> tuple[str, str]:
