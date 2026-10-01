@@ -36,13 +36,14 @@ cleanup_b66_stage() {
 trap cleanup_b66_stage EXIT
 test -f "${B66_EXTRACTION_SOURCE}"
 test -f "${B66_INTAKE_SOURCE}"
-for module in __init__.py document_semantics.py document_normalization.py document_parser_boundary.py; do
+for module in document_semantics.py document_normalization.py document_parser_boundary.py; do
     test -f "${CORE_SOURCE}/${module}"
 done
 cp "${B66_EXTRACTION_SOURCE}" "${B66_EXTRACTION_STAGED}"
 cp "${B66_INTAKE_SOURCE}" "${B66_INTAKE_STAGED}"
 mkdir -p "${CORE_STAGED}"
-for module in __init__.py document_semantics.py document_normalization.py document_parser_boundary.py; do
+printf '%s\n' '"""Deployment-staged package shell for canonical Core parser modules."""' > "${CORE_STAGED}/__init__.py"
+for module in document_semantics.py document_normalization.py document_parser_boundary.py; do
     cp "${CORE_SOURCE}/${module}" "${CORE_STAGED}/${module}"
 done
 echo "B66_EXTRACTION_AUTHORITY_STAGED=YES"
