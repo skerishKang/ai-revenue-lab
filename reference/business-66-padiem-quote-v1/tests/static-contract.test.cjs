@@ -749,9 +749,11 @@ check(app.includes("B66QuoteSkillBridge") && app.includes("applySkillToForm") &&
       app.includes("skillUiState"),
   "MY_QUOTATION_UI: app hosts the skill bridge with form application and builtin fallback");
 check(skillUi.includes("analyzeImageFile") &&
+      skillUi.includes("analyzeFile") &&
+      skillUi.includes('"native_document"') &&
       skillUi.includes("factsFromExtraction") &&
       skillUi.includes("registrationModelOutput"),
-  "MY_QUOTATION_LIVE_IMAGE_INTAKE=YES: validated extraction feeds review/registration");
+  "MY_QUOTATION_LIVE_FILE_INTAKE=YES: image/native validated extraction feeds review/registration");
 
 console.log("VALID_UNTIL_CONTRACT=PASS");
 console.log("ADDRESS_FIELDS_CONTRACT=PASS");
@@ -821,6 +823,7 @@ console.log("MOBILE_TEMPLATE_UI=PASS");
 console.log("PRINT_UI_LEAK=0");
 console.log("BROWSER_PROVIDER_MODEL_NETWORK_CALLS=0");
 console.log("SAVED_QUOTE_IMAGE_INTAKE_SOURCE_WIRED=YES");
-console.log("NATIVE_DOCUMENT_AUTO_ANALYSIS_SOURCE_WIRED=NO");
+console.log("NATIVE_DOCUMENT_AUTO_ANALYSIS_SOURCE_WIRED=YES");
+console.log("NATIVE_DOCUMENT_PARSER_AUTHORITY_LIVE=SEPARATE_GATE");
 console.log("CHAT_AI_LIVE=NO");
 console.log("EMAIL_SEND_LIVE=NO");
