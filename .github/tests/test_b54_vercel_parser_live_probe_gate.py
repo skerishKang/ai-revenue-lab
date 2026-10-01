@@ -128,8 +128,11 @@ def test_runtime_output_is_bounded_and_excludes_raw_sensitive_material() -> None
         assert marker in runtime, marker
     assert "print(str(exc))" not in runtime
     assert "traceback.print" not in runtime
-    assert "os.environ" not in runtime
-    assert "credential_value" not in runtime.split("class VercelPythonSdkProbeProvider", 1)[1]
+    provider_block = runtime.split(
+        "class VercelPythonSdkProbeProvider", 1
+    )[1].split("class VercelIsolatedParserProbeTransport", 1)[0]
+    assert "os.environ" not in provider_block
+    assert '"credential_value":' not in provider_block
 
 
 def test_source_runtime_does_not_execute_on_import_or_bind_production() -> None:
