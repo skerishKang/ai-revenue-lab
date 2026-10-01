@@ -45,9 +45,17 @@ def test_source_contract_dry_runs_exact_private_worker() -> None:
     assert "PRODUCTION_MUTATION=0" in text
 
 
-def test_first_activation_requires_engine_to_stay_detached() -> None:
+def test_first_activation_requires_fresh_engine_detachment_immediately_before_mutation() -> None:
     text = _text()
     assert 'test "${ENGINE_BINDING_STATE}" = "ABSENT"' in text
+    assert "id: premutation" in text
+    assert "PREMUTATION_ENGINE_ADMISSION_BINDING=ABSENT" in text
+    assert "PREMUTATION_CP_ENGINE_ADMISSION_WORKER=ABSENT" in text
+    assert "PREMUTATION_CP_ENGINE_ADMISSION_WORKER=PRESENT_EXACT_PRIVATE" in text
+    assert 'deploy_required=YES' in text
+    assert 'deploy_required=NO' in text
+    assert "steps.premutation.outputs.deploy_required == 'YES'" in text
+    assert "steps.premutation.outputs.deploy_required == 'NO'" in text
     assert "ENGINE_REMAINS_DETACHED_DURING_CP_ACTIVATION=YES" in text
     assert "ENGINE_BINDING_MUTATION=0" in text
     assert "ENGINE_MUTATION=0" in text
