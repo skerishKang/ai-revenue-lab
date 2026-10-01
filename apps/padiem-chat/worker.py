@@ -136,8 +136,16 @@ async def run_scheduled_automation_source(
         return None
 
 
-def _apply_headers(response: Any, path: str) -> Any:
-    for name, value in response_headers_for_path(path).items():
+def _apply_headers(
+    response: Any,
+    path: str,
+    *,
+    b66_quote_base_url: str | None = None,
+) -> Any:
+    for name, value in response_headers_for_path(
+        path,
+        b66_quote_base_url=b66_quote_base_url,
+    ).items():
         response.headers[name] = value
     return response
 
@@ -786,4 +794,8 @@ class Default(WorkerEntrypoint):
                 return _apply_headers(response, path)
 
         response = await asgi.fetch(_worker_app, request.js_object, self.env)
-        return _apply_headers(response, path)
+        return _apply_headers(
+            response,
+            path,
+            b66_quote_base_url=getattr(_worker_app.state, "b66_quote_base_url", None),
+        )
