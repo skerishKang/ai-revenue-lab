@@ -79,7 +79,6 @@ class Settings:
         cls,
         runtime_mode: object = "mock",
         b14_base_url: object = None,
-        b66_quote_base_url: object = None,
         timeout_seconds: object = 20.0,
         completed_timeout_seconds: object = 50.0,
         live_enabled: object = False,
@@ -99,6 +98,7 @@ class Settings:
         user_burst_limit: object = 8,
         user_daily_limit: object = 100,
         global_daily_limit: object = 1000,
+        b66_quote_base_url: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
