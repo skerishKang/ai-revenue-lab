@@ -273,6 +273,112 @@ def test_native_document_route_reuses_text_extraction_after_canonical_intake(mon
     assert "견적번호 Q-2026-3002" in request_body["messages"][0]["content"]
 
 
+def test_browser_local_text_route_bypasses_binary_parser_and_reuses_text_authority(monkeypatch):
+    monkeypatch.setattr(endpoint, "_authority", lambda: AUTHORITY)
+    monkeypatch.setattr(
+        endpoint,
+        "_document_identity_authority",
+        lambda: SimpleNamespace(validate_document_identity=lambda **kwargs: None),
+    )
+
+    def forbidden_intake():
+        raise AssertionError("browser-local text must not invoke binary parser intake")
+
+    monkeypatch.setattr(endpoint, "_intake_authority", forbidden_intake)
+    captured = {}
+
+    async def fake_handle(request_id, body):
+        captured["request_id"] = request_id
+        captured["body"] = body
+        return _ok_upstream(json.dumps(_model_answer(), ensure_ascii=False))
+
+    monkeypatch.setattr(pilot_gateway, "_handle_alpha_chat", fake_handle)
+
+    with TestClient(create_app()) as client:
+        response = client.post(
+            "/api/b66/v1/quote/extract-local-text",
+            json={
+                "name": "quotation.docx",
+                "media_type": (
+                    "application/vnd.openxmlformats-officedocument."
+                    "wordprocessingml.document"
+                ),
+                "byte_size": 1234,
+                "local_text": "견적번호 Q-2026-3002\n스테인리스 배관 40x40 12 9800",
+            },
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["ok"] is True
+    assert body["result"]["source"] == {
+        "kind": "native_document",
+        "filename": "quotation.docx",
+        "media_type": (
+            "application/vnd.openxmlformats-officedocument."
+            "wordprocessingml.document"
+        ),
+        "byte_size": 1234,
+    }
+    assert body["result"]["extraction"]["source"] == {
+        "kind": "native_document",
+        "filename": "quotation.docx",
+    }
+
+    request_body = captured["body"]
+    assert request_body["model"] == AUTHORITY.B66_GOVERNED_ROUTE
+    assert isinstance(request_body["messages"][0]["content"], str)
+    assert "견적번호 Q-2026-3002" in request_body["messages"][0]["content"]
+
+
+def test_browser_local_text_route_rejects_unbounded_or_spoofed_payloads_before_model(monkeypatch):
+    calls = []
+
+    async def fake_handle(request_id, body):
+        calls.append(body)
+        raise AssertionError("invalid local text must fail before model execution")
+
+    monkeypatch.setattr(pilot_gateway, "_handle_alpha_chat", fake_handle)
+    monkeypatch.setattr(endpoint, "_authority", lambda: AUTHORITY)
+    monkeypatch.setattr(
+        endpoint,
+        "_document_identity_authority",
+        lambda: SimpleNamespace(validate_document_identity=lambda **kwargs: None),
+    )
+
+    base = {
+        "name": "quotation.docx",
+        "media_type": (
+            "application/vnd.openxmlformats-officedocument."
+            "wordprocessingml.document"
+        ),
+        "byte_size": 1234,
+        "local_text": "bounded quotation text",
+    }
+
+    with TestClient(create_app()) as client:
+        too_large_text = client.post(
+            "/api/b66/v1/quote/extract-local-text",
+            json={**base, "local_text": "x" * (endpoint.MAX_LOCAL_TEXT_CHARS + 1)},
+        )
+        too_large_file = client.post(
+            "/api/b66/v1/quote/extract-local-text",
+            json={**base, "byte_size": endpoint.MAX_DOCUMENT_BYTES + 1},
+        )
+        extra_field = client.post(
+            "/api/b66/v1/quote/extract-local-text",
+            json={**base, "base64": "forbidden"},
+        )
+
+    assert too_large_text.status_code == 422
+    assert too_large_text.json()["error"]["code"] == "text_too_large"
+    assert too_large_file.status_code == 422
+    assert too_large_file.json()["error"]["code"] == "invalid_file_size"
+    assert extra_field.status_code == 422
+    assert extra_field.json()["error"]["code"] == "unsupported_fields"
+    assert calls == []
+
+
 def test_native_document_route_fails_closed_before_model_without_parser_authority(monkeypatch):
     monkeypatch.setattr(endpoint, "_authority", lambda: AUTHORITY)
     monkeypatch.setattr(
