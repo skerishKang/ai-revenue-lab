@@ -10,8 +10,6 @@ It is not a second approval protocol and has no provider/network adapter.
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
-
 from padiem_ai_core import (
     AgentExecutionBudget,
     ApprovalPolicy,
@@ -39,17 +37,8 @@ APPROVAL_SMOKE_RUNTIME_TOOL_ID = "approval_smoke.confirm"
 APPROVAL_SMOKE_AUTH_SCOPE = "approval.smoke"
 
 
-@dataclass(slots=True)
-class _DispatchCounter:
-    count: int = 0
-
-
-_DISPATCH_COUNTER = _DispatchCounter()
-
-
 async def _confirmed_handler(arguments: dict) -> dict:
     """Zero-side-effect handler reached only after canonical confirmation."""
-    _DISPATCH_COUNTER.count += 1
     return {
         "confirmed": True,
         "nonce": arguments["nonce"],
@@ -181,14 +170,6 @@ def with_approval_smoke_binding(
         setattr(resolver, "subject_for_app", subject_for_app)
     return resolver
 
-
-def approval_smoke_dispatch_count() -> int:
-    """Network-free test evidence only; not used for request authority."""
-    return _DISPATCH_COUNTER.count
-
-
-def reset_approval_smoke_dispatch_count() -> None:
-    _DISPATCH_COUNTER.count = 0
 
 
 APPROVAL_SMOKE_PROVIDER_CALLS = 0
