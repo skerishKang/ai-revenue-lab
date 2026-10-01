@@ -414,6 +414,7 @@ async def test_resume_uses_original_run_reservation_without_duplicate_accounting
     assert isinstance(fingerprint, str) and len(fingerprint) == 64
     original_request = type("Request", (), {
         "request_fingerprint": fingerprint,
+        "usage_reservation_identity": "resume-original-occurrence",
         "app_id": "b62",
         "subject_id": "subject:owner",
     })()
