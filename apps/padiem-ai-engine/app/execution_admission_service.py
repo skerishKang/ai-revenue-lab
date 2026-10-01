@@ -13,6 +13,7 @@ adapter is injected via Worker composition (CONTROL_PLANE_LIVE_ADAPTER = NOT_DON
 from __future__ import annotations
 
 import asyncio
+import inspect
 from collections.abc import Mapping
 from contextvars import ContextVar, Token
 from typing import Any
@@ -23,6 +24,11 @@ from padiem_ai_core import (
     OrchestrationRequest,
     OrchestrationResumeRequest,
     OrchestrationRunner,
+)
+from padiem_ai_core.dispatch_evidence import (
+    ExecutionDispatchEvidence,
+    activate_execution_dispatch_evidence,
+    reset_execution_dispatch_evidence,
 )
 
 from app.continuation_binding import IdentityBoundContinuationRecord
@@ -62,6 +68,7 @@ from app.service import (
     _service_error,
     build_execution_request,
 )
+from app.usage_lifecycle import build_terminal_usage_receipt, is_idempotency_replay
 
 
 ORCHESTRATION_RUN_CAPABILITY = "orchestration.run"
@@ -69,6 +76,10 @@ ORCHESTRATION_RUN_CAPABILITY = "orchestration.run"
 
 _ACTIVE_ORIGINAL_ADMISSION: ContextVar[OriginalAdmissionBinding | None] = ContextVar(
     "padiem_engine_active_original_admission",
+    default=None,
+)
+_ACTIVE_TERMINAL_RESULT: ContextVar[Any | None] = ContextVar(
+    "padiem_engine_active_terminal_result",
     default=None,
 )
 
@@ -180,6 +191,36 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
         super().__init__(*args, **kwargs)
         self._admission_adapter = admission_adapter
 
+    async def _record_terminal_usage(
+        self,
+        original: OriginalAdmissionBinding,
+        *,
+        outcome: str,
+        result: Any | None = None,
+    ) -> None:
+        if original.usage_reservation is None:
+            return
+        recorder = getattr(self._admission_adapter, "record_usage_receipt", None)
+        if not callable(recorder):
+            raise ExecutionAdmissionError(
+                "entitlement_unavailable",
+                "Control Plane usage receipt authority is unavailable.",
+                status_code=503,
+            )
+        receipt = build_terminal_usage_receipt(original, outcome=outcome, result=result)
+        pending = recorder(receipt)
+        if inspect.isawaitable(pending):
+            await pending
+
+    @staticmethod
+    def _receipt_error(exc: ExecutionAdmissionError):
+        return _service_error(
+            exc.code,
+            exc.safe_message,
+            status_code=exc.status_code,
+            retryable=exc.status_code >= 500,
+        )
+
     async def _identity_orchestration_body(
         self,
         result: Any,
@@ -189,6 +230,7 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
         body = result.to_public_dict()
         pause = result.approval_pause
         if pause is None:
+            _ACTIVE_TERMINAL_RESULT.set(result)
             return body
         if self._approval_decision_verifier is None or not self._continuation_store_is_explicit:
             await self._abort_idempotency(
@@ -303,11 +345,47 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
                 retryable=exc.status_code >= 500,
             )
 
-        token: Token[OriginalAdmissionBinding | None] = _ACTIVE_ORIGINAL_ADMISSION.set(binding)
+        original_token: Token[OriginalAdmissionBinding | None] = _ACTIVE_ORIGINAL_ADMISSION.set(binding)
+        result_token = _ACTIVE_TERMINAL_RESULT.set(None)
+        dispatch_evidence = ExecutionDispatchEvidence()
+        dispatch_token = activate_execution_dispatch_evidence(dispatch_evidence)
         try:
-            return await super().orchestrate_payload(payload)
+            try:
+                response = await super().orchestrate_payload(payload)
+            except asyncio.CancelledError:
+                if dispatch_evidence.dispatched:
+                    try:
+                        await self._record_terminal_usage(binding, outcome="cancelled")
+                    except ExecutionAdmissionError as exc:
+                        return self._receipt_error(exc)
+                raise
+            except Exception:
+                if dispatch_evidence.dispatched:
+                    await self._record_terminal_usage(binding, outcome="failed")
+                raise
+
+            terminal_result = _ACTIVE_TERMINAL_RESULT.get()
+            if terminal_result is not None and (
+                dispatch_evidence.dispatched or is_idempotency_replay(terminal_result)
+            ):
+                try:
+                    await self._record_terminal_usage(
+                        binding,
+                        outcome="succeeded",
+                        result=terminal_result,
+                    )
+                except ExecutionAdmissionError as exc:
+                    return self._receipt_error(exc)
+            elif response.status_code != 200 and dispatch_evidence.dispatched:
+                try:
+                    await self._record_terminal_usage(binding, outcome="failed")
+                except ExecutionAdmissionError as exc:
+                    return self._receipt_error(exc)
+            return response
         finally:
-            _ACTIVE_ORIGINAL_ADMISSION.reset(token)
+            reset_execution_dispatch_evidence(dispatch_token)
+            _ACTIVE_TERMINAL_RESULT.reset(result_token)
+            _ACTIVE_ORIGINAL_ADMISSION.reset(original_token)
 
     async def resume_payload(self, payload: Any):  # noqa: C901 - lifecycle gate must stay linear
         """Resume only with fresh non-widening trusted admission before claim."""
@@ -504,6 +582,8 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
             claim_token = record.claim_token
             assert claim_token is not None
             original_token = _ACTIVE_ORIGINAL_ADMISSION.set(original)
+            dispatch_evidence = ExecutionDispatchEvidence()
+            dispatch_token = activate_execution_dispatch_evidence(dispatch_evidence)
             try:
                 try:
                     resume_req = OrchestrationResumeRequest(
@@ -523,6 +603,17 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
                     runner = OrchestrationRunner(runtime=runtime, idempotency=self._idempotency_adapter)
                     result = await runner.resume(resume_req)
                 except OrchestrationError as exc:
+                    if dispatch_evidence.dispatched:
+                        try:
+                            await self._record_terminal_usage(original, outcome="failed")
+                        except ExecutionAdmissionError as receipt_exc:
+                            try:
+                                await self._continuation_call(
+                                    "release", app_id=app_id, continuation_ref=record.continuation_ref, claim_token=claim_token
+                                )
+                            except ServiceContractError:
+                                pass
+                            return self._receipt_error(receipt_exc)
                     method = "commit" if exc.code == "approval_denied" else "release"
                     try:
                         await self._continuation_call(
@@ -540,6 +631,12 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
                     } else 422
                     return _service_error(exc.code, exc.safe_message, status_code=status_code)
                 except asyncio.CancelledError:
+                    receipt_error: ExecutionAdmissionError | None = None
+                    if dispatch_evidence.dispatched:
+                        try:
+                            await self._record_terminal_usage(original, outcome="cancelled")
+                        except ExecutionAdmissionError as exc:
+                            receipt_error = exc
                     try:
                         await self._continuation_call(
                             "release",
@@ -549,8 +646,21 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
                         )
                     except ServiceContractError:
                         pass
+                    if receipt_error is not None:
+                        return self._receipt_error(receipt_error)
                     raise
                 except Exception:
+                    if dispatch_evidence.dispatched:
+                        try:
+                            await self._record_terminal_usage(original, outcome="failed")
+                        except ExecutionAdmissionError as receipt_exc:
+                            try:
+                                await self._continuation_call(
+                                    "release", app_id=app_id, continuation_ref=record.continuation_ref, claim_token=claim_token
+                                )
+                            except ServiceContractError:
+                                pass
+                            return self._receipt_error(receipt_exc)
                     try:
                         await self._continuation_call(
                             "release",
@@ -565,6 +675,20 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
                     return _service_error(
                         "engine_internal_error", "Orchestration resumption failed.", status_code=500
                     )
+
+                if result.approval_pause is None and (
+                    dispatch_evidence.dispatched or is_idempotency_replay(result)
+                ):
+                    try:
+                        await self._record_terminal_usage(original, outcome="succeeded", result=result)
+                    except ExecutionAdmissionError as receipt_exc:
+                        try:
+                            await self._continuation_call(
+                                "release", app_id=app_id, continuation_ref=record.continuation_ref, claim_token=claim_token
+                            )
+                        except ServiceContractError:
+                            pass
+                        return self._receipt_error(receipt_exc)
 
                 try:
                     await self._continuation_call(
@@ -599,6 +723,7 @@ class AdmissionBoundOrchestrationEngineService(CanonicalIdempotencyOrchestration
                     status_code=200, body={"ok": True, "orchestration": orchestration_body}
                 )
             finally:
+                reset_execution_dispatch_evidence(dispatch_token)
                 _ACTIVE_ORIGINAL_ADMISSION.reset(original_token)
         finally:
             if fingerprint_token is not None:
