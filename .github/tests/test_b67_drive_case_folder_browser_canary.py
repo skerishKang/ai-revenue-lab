@@ -75,6 +75,22 @@ def test_status_classifier_is_closed(text: str, expected: str) -> None:
     assert canary.classify_status(text) == expected
 
 
+@pytest.mark.parametrize(
+    ("url", "expected"),
+    [
+        ("https://fonts.googleapis.com/css2?family=Manrope", False),
+        ("https://fonts.gstatic.com/s/manrope/v1/font.woff2", False),
+        ("https://www.googleapis.com/drive/v3/files", True),
+        ("https://oauth2.googleapis.com/token", True),
+        ("https://drive.google.com/drive/folders/example", True),
+        ("https://accounts.google.com/o/oauth2/v2/auth", True),
+        ("https://chat.padiem.net/api/projects", False),
+    ],
+)
+def test_direct_google_provider_classifier_ignores_static_fonts(url: str, expected: bool) -> None:
+    assert canary.is_direct_google_provider_request(url) is expected
+
+
 def test_target_and_privacy_contract_are_fixed() -> None:
     source = SCRIPT.read_text(encoding="utf-8")
     assert canary.TARGET_URL == "https://chat.padiem.net/"
