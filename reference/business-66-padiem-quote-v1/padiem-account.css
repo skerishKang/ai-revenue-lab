@@ -1,3 +1,22 @@
+.google-signin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid #747775;
+  border-radius: 8px;
+  background: #fff;
+  color: #1f1f1f;
+  font-family: "Pretendard", "Roboto", Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+}
+.google-signin:hover { background: #f8f9fa; }
+.google-signin:disabled { opacity: 0.6; }
+.google-signin-logo { flex: 0 0 auto; }
 .padiem-account-button {
   min-height: 40px;
   padding: 0 13px;
@@ -50,17 +69,45 @@
 .padiem-quote-status[data-state="error"] { color: #b42318; }
 .padiem-quote-status[data-state="ready"] { color: #2f5d3a; }
 .padiem-auth-dialog {
-  width: min(520px, calc(100vw - 28px));
+  width: min(380px, calc(100vw - 28px));
   border: 0;
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 0;
-  box-shadow: 0 24px 80px rgba(17,24,39,.24);
+  box-shadow: 0 24px 80px rgba(17,24,39,.28);
 }
-.padiem-auth-dialog::backdrop { background: rgba(17,24,39,.42); }
-.padiem-auth-card { padding: 20px; }
-.padiem-auth-head { display: flex; justify-content: space-between; gap: 14px; align-items: start; }
-.padiem-auth-head h2 { margin: 0; font-size: 20px; }
-.padiem-auth-head p { margin: 6px 0 0; color: #667085; font-size: 12px; }
+.padiem-auth-dialog::backdrop { background: rgba(17,24,39,.45); backdrop-filter: blur(2px); }
+.padiem-auth-card { position: relative; padding: 34px 28px 28px; text-align: center; }
+.padiem-auth-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #98a2b3;
+  font-size: 20px;
+  line-height: 1;
+}
+.padiem-auth-close:hover { background: #f2f4f7; color: #475467; }
+.padiem-auth-brand {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 18px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #111827, #374151);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 800;
+  box-shadow: 0 10px 24px rgba(17,24,39,.22);
+}
+.padiem-auth-card h2 { margin: 0 0 10px; font-size: 21px; letter-spacing: -0.2px; }
+.padiem-auth-lead { margin: 0 0 26px; color: #667085; font-size: 14px; line-height: 1.65; }
+.padiem-auth-note { margin: 14px 0 0; color: #98a2b3; font-size: 12px; }
 .padiem-auth-close {
   width: 40px; height: 40px; border: 1px solid #d0d5dd; border-radius: 10px; background: #fff;
 }

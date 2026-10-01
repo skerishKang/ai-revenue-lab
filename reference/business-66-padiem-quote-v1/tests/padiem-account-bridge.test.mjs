@@ -36,6 +36,15 @@ globalThis.fetch = async (target, init = {}) => {
   if (url.endsWith("/api/b66/saved-skills?limit=20")) {
     return json({ ok: true, skills: [] });
   }
+  if (url.endsWith("/api/auth/google/start")) {
+    return new Response(null, {
+      status: 302,
+      headers: { "Location": "https://accounts.google.com/o/oauth2/auth?provider=google" }
+    });
+  }
+  if (url.endsWith("/api/auth/google/callback")) {
+    return new Response(null, { status: 302, headers: { "Location": "/" } });
+  }
   throw new Error("unexpected upstream: " + url);
 };
 
@@ -90,7 +99,6 @@ try {
 
   const countBeforeDeny = calls.length;
   for (const request of [
-    new Request("https://quick-quote-kr.pages.dev/api/padiem/auth/google/start"),
     new Request("https://quick-quote-kr.pages.dev/api/padiem/admin/anything"),
     new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/saved-skills/not-an-id"),
     new Request("https://quick-quote-kr.pages.dev/api/padiem/auth/status", { method: "POST" })
@@ -99,6 +107,20 @@ try {
     assert.equal(denied.status, 404);
   }
   assert.equal(calls.length, countBeforeDeny);
+
+  const googleStart = await worker.fetch(
+    new Request("https://quick-quote-kr.pages.dev/api/padiem/auth/google/start"),
+    env
+  );
+  assert.equal(googleStart.status, 302);
+  assert.equal(googleStart.headers.get("location"), "https://accounts.google.com/o/oauth2/auth?provider=google");
+
+  const googleCallback = await worker.fetch(
+    new Request("https://quick-quote-kr.pages.dev/api/padiem/auth/google/callback?code=x&state=y"),
+    env
+  );
+  assert.equal(googleCallback.status, 302);
+  assert.equal(googleCallback.headers.get("location"), "/");
 
   let serviceCalls = 0;
   const serviceEnv = {
