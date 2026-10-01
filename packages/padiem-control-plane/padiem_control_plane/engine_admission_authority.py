@@ -199,6 +199,39 @@ def _subject_from_wire(payload: Any) -> CanonicalSubjectRef:
     )
 
 
+def canonical_subject_from_wire(
+    payload: Any,
+) -> CanonicalSubjectRef:
+    """Public closed-shape parser for the canonical subject contract."""
+    return _subject_from_wire(payload)
+
+
+def reservation_scope_from_wire(
+    payload: Any,
+) -> tuple[str, CanonicalSubjectRef]:
+    """Validate the closed reservation shape and return its authority scope.
+
+    This helper performs no persistence. It exists so the Control Plane Worker
+    can revalidate current login truth before the store evaluates reservation
+    semantics.
+    """
+
+    wire = _closed(
+        payload,
+        _RESERVATION_KEYS,
+        "usage reservation",
+    )
+    return (
+        _safe_id(
+            wire["product_id"],
+            "product_id",
+        ),
+        _subject_from_wire(
+            wire["subject"]
+        ),
+    )
+
+
 def snapshot_from_wire(payload: Any) -> EntitlementSnapshot:
     """Parse the existing EntitlementSnapshot policy projection."""
 
