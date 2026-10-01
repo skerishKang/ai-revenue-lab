@@ -13,10 +13,15 @@ on:
       - ".github/scripts/b54_engine_served_version_guard.py"
       - ".github/tests/test_b54_engine_a7_admission_readonly.py"
       - "apps/padiem-ai-engine/app/control_plane_trust_client.py"
+      - "apps/padiem-ai-engine/app/tenant_auth.py"
+      - "apps/padiem-ai-engine/app/execution_admission_service.py"
       - "apps/padiem-ai-engine/app/capability_manifest.py"
       - "apps/padiem-ai-engine/worker_identity.py"
       - "apps/padiem-ai-engine/wrangler.toml"
+      - "apps/padiem-ai-engine/tests/test_worker_identity_admission_composition.py"
       - "packages/padiem-control-plane/engine_admission_authority_worker.py"
+      - "packages/padiem-control-plane/padiem_control_plane/engine_admission_authority.py"
+      - "packages/padiem-control-plane/padiem_control_plane/engine_entitlement_producer.py"
       - "packages/padiem-control-plane/wrangler.engine-admission-authority.jsonc"
   push:
     branches:
@@ -26,10 +31,15 @@ on:
       - ".github/scripts/b54_engine_served_version_guard.py"
       - ".github/tests/test_b54_engine_a7_admission_readonly.py"
       - "apps/padiem-ai-engine/app/control_plane_trust_client.py"
+      - "apps/padiem-ai-engine/app/tenant_auth.py"
+      - "apps/padiem-ai-engine/app/execution_admission_service.py"
       - "apps/padiem-ai-engine/app/capability_manifest.py"
       - "apps/padiem-ai-engine/worker_identity.py"
       - "apps/padiem-ai-engine/wrangler.toml"
+      - "apps/padiem-ai-engine/tests/test_worker_identity_admission_composition.py"
       - "packages/padiem-control-plane/engine_admission_authority_worker.py"
+      - "packages/padiem-control-plane/padiem_control_plane/engine_admission_authority.py"
+      - "packages/padiem-control-plane/padiem_control_plane/engine_entitlement_producer.py"
       - "packages/padiem-control-plane/wrangler.engine-admission-authority.jsonc"
 
 permissions:
@@ -77,6 +87,33 @@ jobs:
           if '"workers_dev": false' not in cp_config or '"preview_urls": false' not in cp_config:
               raise SystemExit("private Control Plane admission Worker exposure drift")
 
+          engine_config = Path(
+              "apps/padiem-ai-engine/wrangler.toml"
+          ).read_text(encoding="utf-8")
+          if 'binding = "CONTROL_PLANE_ENGINE_ADMISSION"' not in engine_config:
+              raise SystemExit("canonical Engine admission binding source is missing")
+          if 'service = "padiem-control-plane-engine-admission"' not in engine_config:
+              raise SystemExit("canonical Engine admission binding target drift")
+
+          composition = Path(
+              "apps/padiem-ai-engine/worker_identity.py"
+          ).read_text(encoding="utf-8")
+          if "AdmissionBoundOrchestrationEngineService" not in composition:
+              raise SystemExit("canonical admission-bound orchestration composition missing")
+          if "admission_adapter=admission_adapter" not in composition:
+              raise SystemExit("canonical admission adapter injection missing")
+
+          producer = Path(
+              "packages/padiem-control-plane/padiem_control_plane/engine_entitlement_producer.py"
+          ).read_text(encoding="utf-8")
+          for required in (
+              'ENGINE_ORCHESTRATION_GRANT = "orchestration.run"',
+              'SUPPORTED_ENGINE_PRODUCTS = frozenset({"b62", "b54-padiem-claw"})',
+              "SubjectType.USER",
+          ):
+              if required not in producer:
+                  raise SystemExit("canonical authenticated-user entitlement policy drift")
+
           manifest = Path(
               "apps/padiem-ai-engine/app/capability_manifest.py"
           ).read_text(encoding="utf-8")
@@ -85,6 +122,8 @@ jobs:
               raise SystemExit("A7 manifest must remain DEFERRED during read-only attestation")
 
           print("A7_SOURCE_AUTHORITY_CONTRACT=PASS")
+          print("A7_CANONICAL_WORKER_COMPOSITION=ADMISSION_BOUND")
+          print("A7_CANONICAL_ENTITLEMENT_PRODUCER=AUTHENTICATED_USER")
           print("MANIFEST_E7=DEFERRED")
           print("LIVE_CLOUDFLARE_GET=0")
           print("PROVIDER_CALLS=0")
@@ -93,7 +132,8 @@ jobs:
           PY
           python -m pytest -q \
             .github/tests/test_b54_engine_a7_admission_readonly.py \
-            .github/tests/test_b54_engine_served_version_guard.py
+            .github/tests/test_b54_engine_served_version_guard.py \
+            apps/padiem-ai-engine/tests/test_worker_identity_admission_composition.py
           echo "A7_NETWORK_FREE_TESTS=PASS"
           echo "PRODUCTION_MUTATION=0"
 
@@ -110,10 +150,15 @@ jobs:
             ".github/scripts/b54_engine_served_version_guard.py"
             ".github/tests/test_b54_engine_a7_admission_readonly.py"
             "apps/padiem-ai-engine/app/control_plane_trust_client.py"
+            "apps/padiem-ai-engine/app/tenant_auth.py"
+            "apps/padiem-ai-engine/app/execution_admission_service.py"
             "apps/padiem-ai-engine/app/capability_manifest.py"
             "apps/padiem-ai-engine/worker_identity.py"
             "apps/padiem-ai-engine/wrangler.toml"
+            "apps/padiem-ai-engine/tests/test_worker_identity_admission_composition.py"
             "packages/padiem-control-plane/engine_admission_authority_worker.py"
+            "packages/padiem-control-plane/padiem_control_plane/engine_admission_authority.py"
+            "packages/padiem-control-plane/padiem_control_plane/engine_entitlement_producer.py"
             "packages/padiem-control-plane/wrangler.engine-admission-authority.jsonc"
           )
           git diff --quiet "${GITHUB_SHA}" origin/main -- "${relevant[@]}"
@@ -148,10 +193,15 @@ jobs:
             ".github/scripts/b54_engine_served_version_guard.py"
             ".github/tests/test_b54_engine_a7_admission_readonly.py"
             "apps/padiem-ai-engine/app/control_plane_trust_client.py"
+            "apps/padiem-ai-engine/app/tenant_auth.py"
+            "apps/padiem-ai-engine/app/execution_admission_service.py"
             "apps/padiem-ai-engine/app/capability_manifest.py"
             "apps/padiem-ai-engine/worker_identity.py"
             "apps/padiem-ai-engine/wrangler.toml"
+            "apps/padiem-ai-engine/tests/test_worker_identity_admission_composition.py"
             "packages/padiem-control-plane/engine_admission_authority_worker.py"
+            "packages/padiem-control-plane/padiem_control_plane/engine_admission_authority.py"
+            "packages/padiem-control-plane/padiem_control_plane/engine_entitlement_producer.py"
             "packages/padiem-control-plane/wrangler.engine-admission-authority.jsonc"
           )
           git diff --quiet "${GITHUB_SHA}" origin/main -- "${relevant[@]}"
