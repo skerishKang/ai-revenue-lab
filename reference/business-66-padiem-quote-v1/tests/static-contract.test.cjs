@@ -153,6 +153,9 @@ check(easy.includes("function startGuided(referenceText)") &&
       easy.includes("startGuided(freeChatPending)") &&
       easy.includes("참고용으로 그대로 남겨둘게요"),
   "FREE_TEXT_CONTINUITY_CONTRACT: one-shot text remains visible when guided flow continues");
+check(easy.includes("inputHandler = (text) => startGuided(text);") &&
+      easy.includes("바로 입력해도 질문형이 시작됩니다"),
+  "EASY_MODE_CONTRACT: home composer submit starts guided chat");
 check(easy.includes("QuoteDraft에 자동 반영하지 않습니다."),
   "FREE_TEXT_CONTINUITY_CONTRACT: preserved reference is explicitly non-authoritative");
 

@@ -83,7 +83,8 @@
     composer.value = "";
     composer.placeholder = "필요한 내용을 편하게 입력하세요";
     $("easyComposerNote").textContent =
-      "질문형 만들기는 AI 없이도 동작합니다. 자유 문장 자동 해석은 모델 연결 후 제공됩니다.";
+      "바로 입력해도 질문형이 시작됩니다. 자유 문장 자동 해석은 모델 연결 후 제공됩니다.";
+    inputHandler = (text) => startGuided(text);
     refreshStarters();
   }
 
