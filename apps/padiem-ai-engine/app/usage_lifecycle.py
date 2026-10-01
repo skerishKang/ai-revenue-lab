@@ -47,8 +47,10 @@ def build_terminal_usage_receipt(
             output_tokens = getattr(usage, "output_tokens", None)
             total_tokens = getattr(usage, "total_tokens", None)
 
-    # Bounded terminal classification only; pricing/route/cost stay outside Engine.
-    disposition = "billable" if outcome == "succeeded" else "non_billable"
+    # E7 source activation is shadow usage only. Commercial chargeability remains
+    # Control Plane/product policy and live billing is still explicitly disabled,
+    # so Engine receipts must never activate a billable disposition.
+    disposition = "non_billable"
     return UsageReceipt(
         event_id=f"eng-use-{digest[:32]}",
         idempotency_key=f"use-{digest}",
