@@ -487,3 +487,60 @@ def test_unreviewed_product_fails_closed_before_authority_write():
     assert storage.count(
         "engine_usage_reservation"
     ) == 0
+
+def test_engine_private_gateway_cannot_install_entitlement_truth():
+    from pathlib import Path
+    import ast
+
+    root = Path(__file__).resolve().parents[1]
+    worker_path = root / "engine_admission_authority_worker.py"
+    tree = ast.parse(
+        worker_path.read_text(encoding="utf-8")
+    )
+    classes = {
+        node.name: node
+        for node in tree.body
+        if isinstance(node, ast.ClassDef)
+    }
+
+    default_methods = {
+        node.name
+        for node in classes["Default"].body
+        if isinstance(
+            node,
+            (ast.FunctionDef, ast.AsyncFunctionDef),
+        )
+    }
+    durable_methods = {
+        node.name
+        for node in classes[
+            "CanonicalEngineAdmissionDurableObject"
+        ].body
+        if isinstance(
+            node,
+            (ast.FunctionDef, ast.AsyncFunctionDef),
+        )
+    }
+
+    assert {
+        "fetch_entitlement_snapshot",
+        "reserve_usage",
+        "record_usage",
+    } <= default_methods
+    assert (
+        "install_entitlement_snapshot"
+        not in default_methods
+    )
+    assert (
+        "install_entitlement_snapshot"
+        in durable_methods
+    )
+
+    config = (
+        root
+        / "wrangler.engine-admission-authority.jsonc"
+    ).read_text(encoding="utf-8")
+    assert '"workers_dev": false' in config
+    assert '"preview_urls": false' in config
+    assert '"routes"' not in config
+
