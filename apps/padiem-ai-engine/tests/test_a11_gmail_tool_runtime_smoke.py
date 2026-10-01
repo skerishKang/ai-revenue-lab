@@ -588,8 +588,11 @@ def test_deploy_gate_workflow_runs_a11_between_a10_and_a12() -> None:
         for line in content.splitlines()
         if line.strip().startswith("- name: Run A")
     ]
+    # #3340: once A7 authenticated-user admission is activated, the legacy
+    # account-level A9 success probe is intentionally invalid. The post-deploy
+    # sequence starts with the provider-free A7 fail-closed probe instead.
     assert names == [
-        "- name: Run A9 production idempotency smoke",
+        "- name: Run A7 unscoped admission fail-closed smoke",
         "- name: Run A10 continuation fail-closed smoke",
         "- name: Run A11 Gmail tool_runtime smoke",
         "- name: Run A12 streaming idempotency replay smoke",
