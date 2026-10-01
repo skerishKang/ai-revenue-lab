@@ -178,11 +178,34 @@ def test_workflow_reconciles_only_reviewed_a7_paths_when_main_advances() -> None
         ".github/scripts/b54_engine_served_version_guard.py",
         ".github/tests/test_b54_engine_a7_admission_readonly.py",
         "apps/padiem-ai-engine/app/control_plane_trust_client.py",
+        "apps/padiem-ai-engine/app/tenant_auth.py",
+        "apps/padiem-ai-engine/app/execution_admission_service.py",
         "apps/padiem-ai-engine/app/capability_manifest.py",
         "apps/padiem-ai-engine/worker_identity.py",
         "apps/padiem-ai-engine/wrangler.toml",
+        "apps/padiem-ai-engine/tests/test_worker_identity_admission_composition.py",
         "packages/padiem-control-plane/engine_admission_authority_worker.py",
+        "packages/padiem-control-plane/padiem_control_plane/engine_admission_authority.py",
+        "packages/padiem-control-plane/padiem_control_plane/engine_entitlement_producer.py",
         "packages/padiem-control-plane/wrangler.engine-admission-authority.jsonc",
     ):
         assert text.count(f'"{path}"') >= 2
     assert "A7_READONLY_EXACT_MAIN_SHA=PASS" not in text
+
+
+def test_source_contract_locks_admission_bound_composition_and_authenticated_user_producer() -> None:
+    text = WORKFLOW.read_text(encoding="utf-8")
+    required = (
+        'binding = "CONTROL_PLANE_ENGINE_ADMISSION"',
+        'service = "padiem-control-plane-engine-admission"',
+        "AdmissionBoundOrchestrationEngineService",
+        "admission_adapter=admission_adapter",
+        "engine_entitlement_producer.py",
+        'ENGINE_ORCHESTRATION_GRANT = "orchestration.run"',
+        'SUPPORTED_ENGINE_PRODUCTS = frozenset({"b62", "b54-padiem-claw"})',
+        "A7_CANONICAL_WORKER_COMPOSITION=ADMISSION_BOUND",
+        "A7_CANONICAL_ENTITLEMENT_PRODUCER=AUTHENTICATED_USER",
+    )
+    for value in required:
+        assert value in text
+

@@ -6,8 +6,10 @@ persisting the validated run admission into any approval continuation issued by
 that admitted execution and enforcing fresh non-widening resume admission before
 any continuation claim or Core resume.
 
-It is intentionally not wired into the active Worker until a trusted server
-adapter is injected via Worker composition (CONTROL_PLANE_LIVE_ADAPTER = NOT_DONE).
+The canonical Worker source now wires this service through the reviewed
+Control Plane private binding. Live Production availability is still a
+separate activation gate: a missing/malformed adapter fails closed before Core
+dispatch and the capability manifest remains DEFERRED until live evidence.
 """
 
 from __future__ import annotations

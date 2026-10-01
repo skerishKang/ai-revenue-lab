@@ -109,6 +109,18 @@ from app.multimodal_attachment_service import (
 from app.orchestration_idempotency_service import (
     CanonicalIdempotencyOrchestrationEngineService,
 )
+from app.execution_admission import ExecutionAdmissionError
+from app.execution_admission_service import (
+    AdmissionBoundOrchestrationEngineService,
+)
+from app.control_plane_trust_client import (
+    ControlPlaneTrustClientError,
+    control_plane_trust_client_for_env,
+)
+from app.tenant_auth import (
+    ControlPlaneTenantAdmissionAdapter,
+    build_control_plane_admission_adapter,
+)
 from app.service import EngineService, ServiceContractError, ServiceResponse
 from app.streaming_service import StreamingEngineService
 from app.tool_execution_service import ToolExecutionEngineService
@@ -136,6 +148,9 @@ ENGINE_IMAGE_STORE_BINDING = "ENGINE_IMAGE_STORE"
 ENGINE_EVIDENCE_STORE_BINDING = "ENGINE_EVIDENCE_STORE"
 CONTROL_PLANE_IDENTITY_BINDING_NAME = "CONTROL_PLANE_IDENTITY"
 CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME = "CONTROL_PLANE_GOOGLE_OAUTH"
+CONTROL_PLANE_ENGINE_ADMISSION_BINDING_NAME = (
+    "CONTROL_PLANE_ENGINE_ADMISSION"
+)
 # Telegram promotion (#2353): the bot token is a Worker secret; the paired-chat
 # allowlist is server-derived configuration. Neither value is ever logged and
 # no caller-provided chat id can widen the allowlist.
@@ -668,6 +683,33 @@ def _scope_authority_for_env(env: Any) -> AuthSessionScopeAuthority | None:
         return None
 
 
+def _admission_adapter_for_env(
+    env: Any,
+) -> ControlPlaneTenantAdmissionAdapter | None:
+    """Compose canonical E7 admission authority or fail closed.
+
+    Missing or malformed private Control Plane authority never falls back to
+    unguarded orchestration. The caller composes AdmissionBound orchestration
+    whenever B14 execution is available; a None adapter then produces the
+    reviewed entitlement_unavailable response before Core dispatch.
+    """
+
+    try:
+        client = control_plane_trust_client_for_env(
+            env
+        )
+        return build_control_plane_admission_adapter(
+            client
+        )
+    except (
+        ControlPlaneTrustClientError,
+        ExecutionAdmissionError,
+        TypeError,
+        ValueError,
+    ):
+        return None
+
+
 def _agent_skill_service_for_env(
     env: Any,
     *,
@@ -783,6 +825,9 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
     b14_stream_client = B14StreamingClient(config, transport=transport)
     continuation_store = _continuation_store_for_env(env)
     idempotency_adapter = legacy_worker._idempotency_adapter_for_env(env)
+    admission_adapter = _admission_adapter_for_env(
+        env
+    )
 
     def runtime_factory(app_id: str) -> ExecutionRuntime:
         return ExecutionRuntime(app_id=app_id, b14_client=b14_client)
@@ -821,13 +866,14 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             b14_service_bound=True,
             idempotency_adapter=idempotency_adapter,
         ),
-        orchestration=CanonicalIdempotencyOrchestrationEngineService(
+        orchestration=AdmissionBoundOrchestrationEngineService(
             runtime_factory=runtime_factory,
             b14_service_bound=True,
             idempotency_adapter=idempotency_adapter,
             continuation_store=continuation_store,
             approval_decision_verifier=AuthenticatedFirstPartyApprovalDecisionVerifier(),
             tool_binding_resolver=tool_binding_resolver,
+            admission_adapter=admission_adapter,
         ),
         research=_research_service_for_env(
             env,

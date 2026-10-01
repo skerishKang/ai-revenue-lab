@@ -12,6 +12,10 @@ service = "ai-revenue-korean-ai-platform"
 binding = "CONTROL_PLANE_IDENTITY"
 service = "padiem-control-plane-identity"
 
+[[services]]
+binding = "CONTROL_PLANE_ENGINE_ADMISSION"
+service = "padiem-control-plane-engine-admission"
+
 # #2216: canonical Google OAuth credential authority remains Control Plane.
 # Engine receives only short-lived access leases over this private Service
 # Binding; long-lived refresh credentials never enter Engine composition.

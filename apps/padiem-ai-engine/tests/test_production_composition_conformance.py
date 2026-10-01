@@ -477,14 +477,17 @@ async def test_web_research_composition_tracks_manifest_state() -> None:
 
 
 @pytest.mark.asyncio
-async def test_tenant_entitlement_usage_admission_stays_deferred_without_cp_trust_authority() -> None:
-    """E7 must not become Production-active before its canonical CP authority exists.
+async def test_tenant_entitlement_usage_admission_stays_deferred_without_live_cp_trust_authority() -> None:
+    """E7 source composition may be wired while live Production stays DEFERRED.
 
-    Engine already owns the bounded admission/usage contracts, but the current
-    private Control Plane Service Binding has no reviewed entitlement snapshot,
-    usage-reservation, or usage-recording authority for this adapter. Until that
-    dependency is supplied, the manifest stays DEFERRED and canonical Production
-    orchestration must remain the non-admission-bound service.
+    #3300 established the canonical authenticated-user entitlement producer and
+    #3298 wires the Engine admission service in source. The current Production-
+    shaped test env intentionally has no CONTROL_PLANE_ENGINE_ADMISSION binding.
+    Therefore orchestration must remain admission-bound but carry no adapter:
+    it can only fail closed and can never fall back to unguarded Core execution.
+
+    The capability manifest remains DEFERRED until separate Production deploy,
+    binding readback, and bounded runtime evidence are accepted.
     """
     from app.capability_manifest import CapabilityState, current_capability_manifest
     from app.execution_admission_service import AdmissionBoundOrchestrationEngineService
@@ -499,11 +502,11 @@ async def test_tenant_entitlement_usage_admission_stays_deferred_without_cp_trus
 
     compose = _load_composition()
     services = await compose(_ProductionShapedEnv())
-    assert services.orchestration is not None
-    assert not isinstance(services.orchestration, AdmissionBoundOrchestrationEngineService), (
-        "tenant_entitlement_usage_admission is DEFERRED but Production composition "
-        "already installed the admission-bound orchestration service"
+    assert isinstance(
+        services.orchestration,
+        AdmissionBoundOrchestrationEngineService,
     )
+    assert services.orchestration._admission_adapter is None
 
 
 @pytest.mark.asyncio
