@@ -83,7 +83,7 @@ try {
   assert.equal(calls[2].options.method, "POST");
   assert.equal(calls[2].options.headers["Content-Type"], "application/json");
   assert.equal(localTextResponse.headers.get("Cache-Control"), "no-store");
-  const forwardedLocal = JSON.parse(calls[2].options.body);
+  const forwardedLocal = JSON.parse(new TextDecoder().decode(calls[2].options.body));
   assert.equal(forwardedLocal.local_text, "견적번호 Q-LOCAL-1\n품목 테스트 2 3000");
   assert.ok(!("base64" in forwardedLocal));
 
