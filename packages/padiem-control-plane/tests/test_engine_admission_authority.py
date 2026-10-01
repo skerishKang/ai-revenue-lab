@@ -293,11 +293,13 @@ def test_usage_reservation_is_entitlement_bound_and_idempotent():
     )
     second = store.reserve_usage(
         reservation(),
-        now=NOW,
+        now=NOW + timedelta(seconds=1),
     )
 
     assert first == second
     assert first["admitted"] is True
+    assert first["reserved_at"] == NOW.isoformat()
+    assert second["reserved_at"] == first["reserved_at"]
     assert first["reservation_ref"].startswith(
         "cp_res_"
     )

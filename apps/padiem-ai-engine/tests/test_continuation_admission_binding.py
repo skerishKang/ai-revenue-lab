@@ -16,7 +16,7 @@ from app.continuation_d1 import (
     _original_admission_from_identity_json,
 )
 from app.continuation_identity import ContinuationExecutionIdentity
-from app.execution_admission import TrustedExecutionAdmission
+from app.execution_admission import TrustedExecutionAdmission, TrustedUsageReservation
 from app.execution_admission_resume import OriginalAdmissionBinding
 
 
@@ -64,6 +64,17 @@ def _binding() -> OriginalAdmissionBinding:
         issued_at=now - timedelta(minutes=1),
         expires_at=now + timedelta(minutes=5),
         request_fingerprint=FINGERPRINT,
+        usage_reservation=TrustedUsageReservation(
+            reservation_ref="cp_res_bound_1",
+            idempotency_key="res-" + "1" * 64,
+            billing_semantic_id="orchestration.run",
+            product_id="b62",
+            subject_type="user",
+            subject_id="subject:owner",
+            request_fingerprint=FINGERPRINT,
+            reserved_at=now - timedelta(seconds=30),
+            expires_at=now + timedelta(minutes=5),
+        ),
     )
     return OriginalAdmissionBinding.from_run_admission(admission)
 
@@ -107,6 +118,9 @@ def test_d1_identity_envelope_round_trips_bounded_original_admission() -> None:
     assert _original_admission_from_identity_json(encoded) == binding
     payload = json.loads(encoded)
     assert payload["original_admission_binding"]["decision_id"] == "adm_run_bound_1"
+    reservation = payload["original_admission_binding"]["usage_reservation"]
+    assert reservation["reservation_ref"] == "cp_res_bound_1"
+    assert reservation["billing_semantic_id"] == "orchestration.run"
 
 
 def test_legacy_d1_identity_json_without_admission_stays_backward_compatible() -> None:
