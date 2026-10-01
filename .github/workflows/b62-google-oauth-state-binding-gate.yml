@@ -110,7 +110,9 @@ jobs:
           gate = Path(".github/workflows/b62-google-oauth-state-binding-gate.yml").read_text(encoding="utf-8")
           assert 'type: "inherit"' in gate
           assert 'type: "service"' in gate
-          assert 'service: "padiem-google-oauth-state"' in gate
+          assert "OAUTH_STATE_WORKER: padiem-google-oauth-state" in gate
+          assert '{"name": binding_name, "type": "service", "service": service}' in gate
+          assert '--arg service "${OAUTH_STATE_WORKER}"' in gate
           assert "/workers/scripts/${B62_WORKER}/settings" in gate
           assert "LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS" in gate
           assert "SOURCE_ETAG_UNCHANGED=PASS" in gate
