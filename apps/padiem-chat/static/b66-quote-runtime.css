@@ -1,0 +1,106 @@
+.b66-quote-dialog {
+  width: min(960px, calc(100vw - 28px));
+  max-height: calc(100vh - 28px);
+  padding: 0;
+  border: 1px solid var(--border, rgba(127, 127, 127, 0.28));
+  border-radius: 18px;
+  background: var(--panel, #11151d);
+  color: inherit;
+}
+.b66-quote-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+}
+.b66-quote-panel {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+.b66-quote-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.b66-quote-header h2,
+.b66-quote-header p {
+  margin: 0;
+}
+.b66-quote-header p {
+  margin-top: 6px;
+  opacity: 0.72;
+}
+.b66-quote-close {
+  min-width: 40px;
+  min-height: 40px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 24px;
+  cursor: pointer;
+}
+.b66-quote-form {
+  display: grid;
+  gap: 12px;
+}
+.b66-quote-field {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+.b66-quote-field select,
+.b66-quote-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--border, rgba(127, 127, 127, 0.28));
+  border-radius: 10px;
+  background: var(--surface, rgba(255, 255, 255, 0.05));
+  color: inherit;
+  padding: 10px 12px;
+  font: inherit;
+}
+.b66-quote-generate {
+  justify-self: start;
+  min-height: 40px;
+  padding: 9px 16px;
+  border: 0;
+  border-radius: 10px;
+  background: currentColor;
+  color: var(--panel, #11151d);
+  font: inherit;
+  cursor: pointer;
+}
+.b66-quote-generate:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.b66-quote-status {
+  min-height: 20px;
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.8;
+}
+.b66-quote-status[data-state="error"],
+.b66-quote-status[data-state="missing"] {
+  opacity: 1;
+}
+.b66-quote-frame {
+  width: 100%;
+  min-height: min(720px, 68vh);
+  border: 1px solid var(--border, rgba(127, 127, 127, 0.28));
+  border-radius: 12px;
+  background: white;
+}
+@media (max-width: 640px) {
+  .b66-quote-dialog {
+    width: calc(100vw - 12px);
+    max-height: calc(100vh - 12px);
+  }
+  .b66-quote-panel {
+    padding: 12px;
+  }
+  .b66-quote-frame {
+    min-height: 60vh;
+  }
+}
