@@ -22,6 +22,7 @@ TARGET_URL = "https://chat.padiem.net/"
 TARGET_HOST = "chat.padiem.net"
 DEFAULT_CDP_URL = "http://127.0.0.1:9222"
 ALLOWED_CDP_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
+STATIC_GOOGLE_RESOURCE_HOSTS = frozenset({"fonts.googleapis.com", "fonts.gstatic.com"})
 
 STATUS_LOADING = "불러오는 중…"
 STATUS_UNCONFIGURED = "사건 폴더가 선택되지 않았습니다."
@@ -56,6 +57,14 @@ def validate_cdp_url(raw: str) -> str:
     if parsed.path not in ("", "/"):
         raise CanaryFailure("cdp_url_contains_path")
     return raw
+
+
+def is_direct_google_provider_request(url: str) -> bool:
+    parsed = urlparse(url)
+    host = (parsed.hostname or "").lower()
+    if host in STATIC_GOOGLE_RESOURCE_HOSTS:
+        return False
+    return host.endswith("googleapis.com") or host == "drive.google.com" or host == "accounts.google.com"
 
 
 def classify_status(text: str) -> str:
@@ -270,8 +279,7 @@ def run_live(cdp_url: str, *, pause_for_d1_readback: bool = False) -> int:
         def observe_request(request) -> None:
             nonlocal direct_google_requests, put_count, delete_count
             parsed = urlparse(request.url)
-            host = (parsed.hostname or "").lower()
-            if host.endswith("googleapis.com") or host == "drive.google.com":
+            if is_direct_google_provider_request(request.url):
                 direct_google_requests += 1
             if "/drive-case-folder" in parsed.path and request.method == "PUT":
                 put_count += 1
