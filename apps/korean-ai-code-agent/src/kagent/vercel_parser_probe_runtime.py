@@ -27,11 +27,12 @@ import time
 from dataclasses import dataclass
 from typing import Any, Mapping, Protocol
 
-from .contracts import ContractError, exact_commit_revision
+from .contracts import ContractError
 from .sandbox_conformance import SandboxAppliedLimits, SandboxSecurityPolicy
 from .vercel_parser_live_gate import (
     PARSER_HARD_DEADLINE_SECONDS,
     VERCEL_PARSER_CENTRAL_CONFIRMATION,
+    build_vercel_parser_live_probe_gate,
 )
 
 VERCEL_PARSER_PROBE_RUNTIME_VERSION = "claw-vercel-parser-runtime-probe.v1"
@@ -221,32 +222,27 @@ class VercelParserProbeAuthorization:
     max_logical_provider_operations: int = VERCEL_PARSER_MAX_LOGICAL_PROVIDER_OPERATIONS
 
     def __post_init__(self) -> None:
-        object.__setattr__(
-            self, "exact_main_sha", exact_commit_revision(self.exact_main_sha, "exact_main_sha")
+        # Reuse the already-reviewed #3283 source gate for exact SHA, CENTRAL
+        # marker, deadline, TTL, launch profile and probe-plan policy. This
+        # authorization layer adds only the owner decision and one-shot budget.
+        gate = build_vercel_parser_live_probe_gate(
+            exact_main_sha=self.exact_main_sha,
+            central_confirmation=self.central_confirmation,
+            parser_deadline_seconds=self.parser_deadline_seconds,
+            sandbox_ttl_seconds=self.sandbox_ttl_seconds,
         )
-        if self.central_confirmation != VERCEL_PARSER_CENTRAL_CONFIRMATION:
-            raise ContractError("CENTRAL Vercel parser confirmation marker is required")
-        object.__setattr__(
-            self, "owner_approval_ref", _safe_ref(self.owner_approval_ref, "owner_approval_ref")
-        )
+        object.__setattr__(self, "exact_main_sha", gate.exact_main_sha)
         if self.owner_authorized is not True:
             raise ContractError("owner authorization is required for a live Vercel parser probe")
-        if self.target_environment != VERCEL_PARSER_TARGET_ENVIRONMENT:
-            raise ContractError("Vercel parser probe is restricted to non_production")
-        if self.parser_deadline_seconds != PARSER_HARD_DEADLINE_SECONDS:
-            raise ContractError("parser hard deadline must be exactly 30 seconds")
-        if (
-            isinstance(self.sandbox_ttl_seconds, bool)
-            or not isinstance(self.sandbox_ttl_seconds, int)
-            or not 60 <= self.sandbox_ttl_seconds <= 300
-            or self.sandbox_ttl_seconds <= self.parser_deadline_seconds
-        ):
-            raise ContractError("sandbox TTL must be 60-300 seconds and exceed parser deadline")
+        if self.target_environment != gate.target_environment:
+            raise ContractError("Vercel parser probe is restricted to canonical non_production")
         if self.max_sandbox_allocations != 1:
             raise ContractError("probe authorization permits exactly one sandbox allocation")
         if self.max_logical_provider_operations != VERCEL_PARSER_MAX_LOGICAL_PROVIDER_OPERATIONS:
             raise ContractError("probe authorization operation ceiling is fixed by source")
-
+        object.__setattr__(
+            self, "owner_approval_ref", _safe_ref(self.owner_approval_ref, "owner_approval_ref")
+        )
     def safe_dict(self) -> dict[str, object]:
         return {
             "contract_version": VERCEL_PARSER_PROBE_RUNTIME_VERSION,
