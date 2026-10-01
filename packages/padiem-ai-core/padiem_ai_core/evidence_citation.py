@@ -9,7 +9,7 @@ source separately records whether that validator actually checked it.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import re
 
 from .evidence_graph import (
@@ -17,6 +17,7 @@ from .evidence_graph import (
     EvidenceGraph,
     EvidenceGraphError,
 )
+from .document_semantics import DocumentLocator
 from .evidence_verification import AcceptedVerification
 
 
@@ -57,6 +58,8 @@ class GroundedCitation:
     source_type: str
     relation: ClaimEvidenceRelation
     checked_by_validator: bool = False
+    source_ref: str | None = field(default=None, init=False, repr=False)
+    document_locator: DocumentLocator | None = field(default=None, init=False, repr=False)
 
     def __post_init__(self) -> None:
         for name in ("citation_id", "claim_id", "evidence_id", "provider", "source_type"):
@@ -82,6 +85,16 @@ class GroundedCitation:
                 "invalid_citation_contract",
                 "checked_by_validator must be boolean",
             )
+        if self.source_ref is not None and not isinstance(self.source_ref, str):
+            raise EvidenceCitationError(
+                "invalid_citation_contract",
+                "citation source_ref must be a string or None",
+            )
+        if self.document_locator is not None and not isinstance(self.document_locator, DocumentLocator):
+            raise EvidenceCitationError(
+                "invalid_citation_contract",
+                "citation document_locator must be a DocumentLocator or None",
+            )
 
     def to_public_dict(self) -> dict[str, object]:
         return {
@@ -94,6 +107,11 @@ class GroundedCitation:
             "source_type": self.source_type,
             "relation": self.relation.value,
             "checked_by_validator": self.checked_by_validator,
+            "document_locator": (
+                self.document_locator.to_public_dict()
+                if self.document_locator is not None
+                else None
+            ),
         }
 
 
@@ -239,19 +257,21 @@ def project_grounded_citations(
     for index, link in enumerate(links, start=1):
         source = graph.source(link.evidence_id)
         citation_id = f"citation:{index}"
-        citations.append(
-            GroundedCitation(
-                citation_id=citation_id,
-                claim_id=claim_id,
-                evidence_id=source.id,
-                title=source.title,
-                url=source.url,
-                provider=source.provider,
-                source_type=source.source_type,
-                relation=link.relation,
-                checked_by_validator=source.id in checked_ids,
-            )
+        citation = GroundedCitation(
+            citation_id=citation_id,
+            claim_id=claim_id,
+            evidence_id=source.id,
+            title=source.title,
+            url=source.url,
+            provider=source.provider,
+            source_type=source.source_type,
+            relation=link.relation,
+            checked_by_validator=source.id in checked_ids,
         )
+        # Citation projection never invents or rewrites document provenance.
+        object.__setattr__(citation, "source_ref", source.source_ref)
+        object.__setattr__(citation, "document_locator", source.document_locator)
+        citations.append(citation)
 
     return GroundedCitationBundle(
         claim_id=claim_id,
