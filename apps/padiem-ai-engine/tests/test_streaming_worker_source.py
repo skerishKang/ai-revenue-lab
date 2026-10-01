@@ -67,6 +67,10 @@ def test_wrangler_remains_internal_service_binding_only() -> None:
             "service": "padiem-control-plane-identity",
         },
         {
+            "binding": "CONTROL_PLANE_ENGINE_ADMISSION",
+            "service": "padiem-control-plane-engine-admission",
+        },
+        {
             "binding": "CONTROL_PLANE_GOOGLE_OAUTH",
             "service": "padiem-google-oauth-state",
         },
