@@ -58,6 +58,13 @@ CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME = "CONTROL_PLANE_GOOGLE_OAUTH"
 CONTROL_PLANE_GOOGLE_OAUTH_BINDING_TYPE = "service"
 CONTROL_PLANE_GOOGLE_OAUTH_SERVICE = "padiem-google-oauth-state"
 
+# A7 (#3308): private Control Plane Engine-admission Service Binding.  The
+# read-only attestation may report ABSENT while A7 remains deferred, but any
+# PRESENT state must be the exact reviewed service target.
+CONTROL_PLANE_ENGINE_ADMISSION_BINDING_NAME = "CONTROL_PLANE_ENGINE_ADMISSION"
+CONTROL_PLANE_ENGINE_ADMISSION_BINDING_TYPE = "service"
+CONTROL_PLANE_ENGINE_ADMISSION_SERVICE = "padiem-control-plane-engine-admission"
+
 # A6 (#1971 A6-S2B): the two durable byte stores the multimodal and document
 # routes compose. Every reviewed Engine D1 binding resolves to the single
 # provisioned `padiem-engine` database, so this is the same canonical id the
@@ -270,12 +277,41 @@ def _verify_a6_runtime_bindings(bindings: list[dict]) -> dict[str, str]:
     return states
 
 
+def _inspect_engine_admission_binding(bindings: list[dict]) -> dict[str, str]:
+    """Report the A7 admission binding without turning absence into activation failure.
+
+    ABSENT is a valid read-only observation while A7 is DEFERRED.  If the
+    binding exists, however, its type and reviewed service target must be exact
+    or the attestation fails closed.
+    """
+    state = _classify(bindings, CONTROL_PLANE_ENGINE_ADMISSION_BINDING_NAME)
+    if state == "ABSENT":
+        return {
+            "CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING": "ABSENT",
+            "ENGINE_ADMISSION_BINDING_TARGET_VALIDATED": "NOT_APPLICABLE",
+        }
+    if state != f"PRESENT:{CONTROL_PLANE_ENGINE_ADMISSION_BINDING_TYPE}":
+        raise ServedVersionGuardError(
+            "served Control Plane Engine admission binding type drift"
+        )
+    binding = _single_binding(bindings, CONTROL_PLANE_ENGINE_ADMISSION_BINDING_NAME)
+    if binding.get("service") != CONTROL_PLANE_ENGINE_ADMISSION_SERVICE:
+        raise ServedVersionGuardError(
+            "served Control Plane Engine admission service target drift"
+        )
+    return {
+        "CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING": "PRESENT:service",
+        "ENGINE_ADMISSION_BINDING_TARGET_VALIDATED": "YES",
+    }
+
+
 def verify_served(
     payload: object,
     active_version: str,
     expect_overlay: bool,
     require_drive_runtime_bindings: bool = False,
     require_a6_runtime_bindings: bool = False,
+    inspect_engine_admission_binding: bool = False,
 ) -> dict[str, str]:
     """Return NAME -> state for the registry and overlay secrets on the version.
 
@@ -312,6 +348,8 @@ def verify_served(
     if require_a6_runtime_bindings:
         states.update(_verify_a6_runtime_bindings(bindings))
         states["A6_STORAGE_BINDINGS_VALIDATED"] = "YES"
+    if inspect_engine_admission_binding:
+        states.update(_inspect_engine_admission_binding(bindings))
     return states
 
 
@@ -333,6 +371,7 @@ def _run_verify(args: argparse.Namespace) -> int:
         args.expect_overlay,
         args.require_drive_runtime_bindings,
         args.require_a6_runtime_bindings,
+        args.inspect_engine_admission_binding,
     )
     print("B54_ENGINE_SERVED_VERSION_GUARD=PASS")
     print(f"ENGINE_SERVED_VERSION_ID={args.active_version}")
@@ -346,6 +385,8 @@ def _run_verify(args: argparse.Namespace) -> int:
         "ENGINE_IMAGE_STORE_SERVED_BINDING",
         "ENGINE_DOCUMENT_STORE_SERVED_BINDING",
         "A6_STORAGE_BINDINGS_VALIDATED",
+        "CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING",
+        "ENGINE_ADMISSION_BINDING_TARGET_VALIDATED",
     ):
         if key not in states:
             continue
@@ -408,6 +449,14 @@ def main(argv: list[str] | None = None) -> int:
         "--require-a6-runtime-bindings",
         action="store_true",
         help="require the reviewed A6 image and document D1 store bindings",
+    )
+    verify.add_argument(
+        "--inspect-engine-admission-binding",
+        action="store_true",
+        help=(
+            "report the reviewed A7 Control Plane Engine-admission binding; "
+            "absence is reported, while type/target drift fails closed"
+        ),
     )
     verify.set_defaults(handler=_run_verify)
 

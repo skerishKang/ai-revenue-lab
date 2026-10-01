@@ -1,0 +1,218 @@
+name: B54 Engine A7 Admission Runtime Read-only Attestation
+
+# #3308 — mutation-free Production read for A7 activation readiness.
+# Pull requests run only network-free source contracts. Merged-main pushes that
+# change this attestation surface may perform Cloudflare GETs against the
+# Production Engine / private Control Plane worker. No provider call, row read,
+# entitlement install, deploy, binding mutation, or manifest flip is allowed.
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-engine-a7-admission-readonly.yml"
+      - ".github/scripts/b54_engine_served_version_guard.py"
+      - ".github/tests/test_b54_engine-a7-admission-readonly.py"
+      - ".github/tests/test_b54_engine_a7_admission_readonly.py"
+      - "apps/padiem-ai-engine/app/control_plane_trust_client.py"
+      - "apps/padiem-ai-engine/app/capability_manifest.py"
+      - "apps/padiem-ai-engine/worker_identity.py"
+      - "apps/padiem-ai-engine/wrangler.toml"
+      - "packages/padiem-control-plane/engine_admission_authority_worker.py"
+      - "packages/padiem-control-plane/wrangler.engine-admission-authority.jsonc"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/b54-engine-a7-admission-readonly.yml"
+      - ".github/scripts/b54_engine_served_version_guard.py"
+      - ".github/tests/test_b54_engine_a7_admission_readonly.py"
+      - "apps/padiem-ai-engine/app/control_plane_trust_client.py"
+      - "apps/padiem-ai-engine/app/capability_manifest.py"
+      - "apps/padiem-ai-engine/worker_identity.py"
+      - "apps/padiem-ai-engine/wrangler.toml"
+      - "packages/padiem-control-plane/engine_admission_authority_worker.py"
+      - "packages/padiem-control-plane/wrangler.engine-admission-authority.jsonc"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-engine-a7-admission-readonly-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ENGINE_WORKER: padiem-ai-engine
+  CP_ADMISSION_WORKER: padiem-control-plane-engine-admission
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact event revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install source-contract dependencies
+        run: python -m pip install --quiet pyyaml pytest
+
+      - name: Validate A7 source authority and run network-free tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          cp_config = Path(
+              "packages/padiem-control-plane/wrangler.engine-admission-authority.jsonc"
+          ).read_text(encoding="utf-8")
+          if '"name": "padiem-control-plane-engine-admission"' not in cp_config:
+              raise SystemExit("reviewed Control Plane admission Worker name drift")
+          if '"workers_dev": false' not in cp_config or '"preview_urls": false' not in cp_config:
+              raise SystemExit("private Control Plane admission Worker exposure drift")
+
+          manifest = Path(
+              "apps/padiem-ai-engine/app/capability_manifest.py"
+          ).read_text(encoding="utf-8")
+          marker = 'id="tenant_entitlement_usage_admission"'
+          if marker not in manifest or 'state=CapabilityState.DEFERRED' not in manifest:
+              raise SystemExit("A7 manifest must remain DEFERRED during read-only attestation")
+
+          print("A7_SOURCE_AUTHORITY_CONTRACT=PASS")
+          print("MANIFEST_E7=DEFERRED")
+          print("LIVE_CLOUDFLARE_GET=0")
+          print("PROVIDER_CALLS=0")
+          print("REAL_USER_DATA=0")
+          print("PRODUCTION_MUTATION=0")
+          PY
+          python -m pytest -q \
+            .github/tests/test_b54_engine_a7_admission_readonly.py \
+            .github/tests/test_b54_engine_served_version_guard.py
+          echo "A7_NETWORK_FREE_TESTS=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Require exact current main on push
+        if: ${{ github.event_name == 'push' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
+          echo "A7_READONLY_EXACT_MAIN_SHA=PASS"
+
+  served-a7-readonly:
+    needs: source-contract
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact merged main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Reconfirm exact current main before live GETs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
+          echo "A7_READONLY_EXACT_MAIN_SHA=PASS"
+
+      - name: Resolve served Engine version and inspect A7 binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${ENGINE_WORKER}"
+
+          deployments="${RUNNER_TEMP}/engine-deployments.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
+          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
+          active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${active_version}"
+
+          version_detail="${RUNNER_TEMP}/engine-version-detail.json"
+          curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
+          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify \
+            --version-settings "${version_detail}" \
+            --active-version "${active_version}" \
+            --inspect-engine-admission-binding)"
+          printf '%s\n' "${verify_out}" | grep -E '^CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING=(ABSENT|PRESENT:service)$'
+          printf '%s\n' "${verify_out}" | grep -E '^ENGINE_ADMISSION_BINDING_TARGET_VALIDATED=(NOT_APPLICABLE|YES)$'
+
+          echo "ENGINE_SERVED_VERSION=${active_version}"
+          echo "ENGINE_ROLLBACK_ANCHOR=${active_version}"
+          echo "ROLLBACK_ANCHOR_SOURCE=FRESH_SERVED_VERSION"
+          echo "RAW_VERSION_DETAIL_OUTPUT=0"
+          echo "SECRET_VALUE_OUTPUT=0"
+          echo "ACCOUNT_ID_OUTPUT=0"
+          echo "DATABASE_ID_OUTPUT=0"
+          echo "TENANT_USER_IDENTIFIER_OUTPUT=0"
+          echo "PROVIDER_CALLS=0"
+          echo "REAL_USER_DATA=0"
+          echo "PRODUCTION_MUTATION=0"
+
+      - name: Inspect private Control Plane admission Worker by GET only
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${CP_ADMISSION_WORKER}"
+
+          settings="${RUNNER_TEMP}/cp-admission-settings.json"
+          status="$(curl -sS -o "${settings}" -w '%{http_code}' "${auth[@]}" "${base}/settings")"
+
+          if [ "${status}" = "404" ]; then
+            echo "CP_ENGINE_ADMISSION_WORKER=ABSENT"
+            echo "CP_ENGINE_ADMISSION_ACTIVE_VERSION=NONE"
+            echo "CP_ROLLBACK_ANCHOR=NONE"
+          elif [ "${status}" = "200" ]; then
+            jq -e '.success == true and (.result | type == "object")' "${settings}" >/dev/null
+            deployments="${RUNNER_TEMP}/cp-admission-deployments.json"
+            curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
+            resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
+            active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+            test -n "${active_version}"
+            echo "CP_ENGINE_ADMISSION_WORKER=PRESENT"
+            echo "CP_ENGINE_ADMISSION_ACTIVE_VERSION=${active_version}"
+            echo "CP_ROLLBACK_ANCHOR=${active_version}"
+          else
+            echo "CP_ENGINE_ADMISSION_WORKER=UNREADABLE" >&2
+            echo "CP_SETTINGS_HTTP_STATUS=${status}" >&2
+            exit 1
+          fi
+
+          echo "MANIFEST_E7=DEFERRED"
+          echo "RAW_SETTINGS_OUTPUT=0"
+          echo "RAW_VERSION_DETAIL_OUTPUT=0"
+          echo "SECRET_VALUE_OUTPUT=0"
+          echo "ACCOUNT_ID_OUTPUT=0"
+          echo "DATABASE_ID_OUTPUT=0"
+          echo "TENANT_USER_IDENTIFIER_OUTPUT=0"
+          echo "ENTITLEMENT_SNAPSHOT_INSTALL=0"
+          echo "PROVIDER_CALLS=0"
+          echo "REAL_USER_DATA=0"
+          echo "ENGINE_DEPLOY=0"
+          echo "CP_DEPLOY=0"
+          echo "BINDING_MUTATION=0"
+          echo "MANIFEST_FLIP=0"
+          echo "PRODUCTION_MUTATION=0"
