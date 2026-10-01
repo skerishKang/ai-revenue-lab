@@ -73,6 +73,27 @@ async def _json(request: Request) -> dict[str, Any] | JSONResponse:
     return data
 
 
+async def b66_runtime_config(request: Request) -> JSONResponse:
+    uid = _owner(request)
+    if uid is None:
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+    base = getattr(request.app.state, "b66_quote_base_url", None)
+    if not isinstance(base, str) or not base:
+        return JSONResponse(
+            {"ok": True, "enabled": False, "embed_url": None, "origin": None},
+            headers=_NO_STORE,
+        )
+    return JSONResponse(
+        {
+            "ok": True,
+            "enabled": True,
+            "embed_url": base.rstrip("/") + "/embed.html",
+            "origin": base.rstrip("/"),
+        },
+        headers=_NO_STORE,
+    )
+
+
 async def b66_saved_skills(request: Request) -> JSONResponse:
     uid = _owner(request)
     if uid is None:
