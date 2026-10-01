@@ -150,7 +150,19 @@
             }
             used = true;
             var parseOpts = parseOptions || {};
-            var buffer = asArrayBuffer(input);
+            var buffer;
+            var parseTimeoutMs;
+            try {
+              buffer = asArrayBuffer(input);
+              parseTimeoutMs = boundedTimeout(
+                parseOpts.timeoutMs,
+                LIMITS.parseTimeoutMs,
+                LIMITS.parseTimeoutMs
+              );
+            } catch (error) {
+              terminate();
+              throw error;
+            }
             if (buffer.byteLength < 5) {
               terminate();
               return Promise.resolve(resultError("pdf_too_small"));
@@ -159,11 +171,6 @@
               terminate();
               return Promise.resolve(resultError("pdf_too_large"));
             }
-            var parseTimeoutMs = boundedTimeout(
-              parseOpts.timeoutMs,
-              LIMITS.parseTimeoutMs,
-              LIMITS.parseTimeoutMs
-            );
             var signal = parseOpts.signal || null;
 
             return new Promise(function (finish) {
@@ -214,18 +221,31 @@
             });
           },
           parseFile: function (file, parseOptions) {
+            if (used || terminated) {
+              return Promise.resolve(resultError("pdf_parser_session_closed"));
+            }
             if (!file || typeof file.arrayBuffer !== "function") {
+              used = true;
+              terminate();
               return Promise.resolve(resultError("pdf_file_required"));
             }
             if (!Number.isInteger(file.size) || file.size < 5) {
+              used = true;
+              terminate();
               return Promise.resolve(resultError("pdf_too_small"));
             }
             if (file.size > LIMITS.maxBytes) {
+              used = true;
+              terminate();
               return Promise.resolve(resultError("pdf_too_large"));
             }
             return file.arrayBuffer().then(function (buffer) {
               return this.parseArrayBuffer(buffer, parseOptions);
-            }.bind(this));
+            }.bind(this), function () {
+              used = true;
+              terminate();
+              return resultError("pdf_file_read_failed");
+            });
           },
           close: function () {
             used = true;
