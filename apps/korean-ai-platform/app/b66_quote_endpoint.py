@@ -279,11 +279,12 @@ async def extract_local_text(request: Request) -> JSONResponse:
 
     try:
         identity = _document_identity_authority()
-        identity.validate_document_identity(
+        safe_name, safe_media_type = identity.validate_document_identity(
             name=name.strip(),
             media_type=media_type,
             source_kind="binary",
         )
+        text = identity.normalize_document_text(text)
     except Exception as exc:
         return _error(_safe_error_code(exc, "unsupported_file_type"))
 
@@ -291,7 +292,7 @@ async def extract_local_text(request: Request) -> JSONResponse:
         authority = _authority()
         chat_body = authority.build_text_extraction_request(
             text,
-            filename=name.strip(),
+            filename=safe_name,
             source_kind="native_document",
         )
     except ValueError as exc:
@@ -303,8 +304,8 @@ async def extract_local_text(request: Request) -> JSONResponse:
         authority=authority,
         chat_body=chat_body,
         source_kind="native_document",
-        filename=name.strip(),
-        media_type=str(media_type),
+        filename=safe_name,
+        media_type=safe_media_type,
         byte_size=byte_size,
     )
 
