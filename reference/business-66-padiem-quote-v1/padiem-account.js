@@ -64,7 +64,7 @@
     const button = byId("padiemAccountButton");
     const panel = byId("padiemAccountPanel");
     const select = byId("padiemSavedSkillSelect");
-    if (button) button.textContent = "Padiem 로그인";
+    if (button) button.textContent = "로그인";
     if (panel) panel.hidden = true;
     if (select) select.replaceChildren();
   }

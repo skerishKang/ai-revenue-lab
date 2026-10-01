@@ -908,6 +908,14 @@
 
   $("resetLocalData").addEventListener("click", resetBrowserLocalData);
 
+  const settingsPanel = $("settingsPanel");
+  $("settingsButton").addEventListener("click", () => {
+    if (settingsPanel) settingsPanel.hidden = !settingsPanel.hidden;
+  });
+  $("settingsClose").addEventListener("click", () => {
+    if (settingsPanel) settingsPanel.hidden = true;
+  });
+
   /* ── 모드 전환 (upload/chat은 의도된 future affordance) ── */
 
   document.querySelectorAll(".mode").forEach((button) => {

@@ -39,6 +39,24 @@ button { cursor: pointer; }
 .brand h1 { margin: 0; font-size: 27px; letter-spacing: -0.04em; }
 .brand p { margin: 5px 0 0; color: var(--muted); font-size: 14px; }
 .badge { border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 8px 12px; font-size: 12px; color: var(--muted); }
+
+.settings-panel {
+  margin: 14px 0 18px;
+  padding: 14px;
+  border: 1px solid #d0d5dd;
+  border-radius: 14px;
+  background: #fff;
+}
+.settings-note { margin: 0 0 12px; font-size: 13px; color: #6B7280; }
+.settings-reset {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid #d0d5dd;
+  border-radius: 10px;
+  background: #fff;
+  color: #17202A;
+  font-weight: 700;
+}
 .modebar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
 .mode { min-height: 44px; border: 1px solid var(--line); background: var(--paper); padding: 0 14px; border-radius: 12px; }
 .mode.active { background: var(--accent); color: white; border-color: var(--accent); }
@@ -657,4 +675,8 @@ textarea { min-height: 82px; resize: vertical; }
   .preview-wrap { position: static; border: 0; border-radius: 0; box-shadow: none; overflow: visible; }
   .quote-paper { min-height: 0; padding: 0; }
   .demo-mark { display: none; }
+}
+
+@media print {
+  .settings-panel { display: none !important; }
 }
