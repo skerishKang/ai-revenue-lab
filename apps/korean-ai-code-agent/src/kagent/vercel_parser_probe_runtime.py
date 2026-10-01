@@ -121,7 +121,7 @@ evidence = {
         "/var/run/docker.sock", "/run/docker.sock",
         "/run/containerd/containerd.sock", "/var/run/containerd/containerd.sock"
     )),
-    "privileged_runtime_disabled": not sudo_allowed,
+    "privileged_runtime_disabled": os.geteuid() != 0 and not sudo_allowed,
     "cpu_cores": max(1, int(os.cpu_count() or 1)),
     "memory_mb": mem_mb(),
     "disk_mb": max(1, int(shutil.disk_usage("/").total // (1024 * 1024))),
