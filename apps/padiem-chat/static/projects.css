@@ -260,7 +260,7 @@
 .project-drive-heading { display: flex; flex-direction: column; gap: 4px; }
 .project-drive-heading small { color: var(--muted, #667085); }
 .project-drive-status { margin: 0; font-weight: 600; }
-.project-drive-status-live { margin: 0; min-height: 1px; }
+.project-drive-status-live { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .project-drive-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 .project-drive-button { min-height: 44px; min-width: 44px; padding: 10px 16px; border-radius: 10px; border: 1px solid var(--line, #e2e5ea); background: var(--surface, #fff); cursor: pointer; }
 .project-drive-button:disabled { opacity: 0.6; cursor: progress; }
