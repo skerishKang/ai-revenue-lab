@@ -74,101 +74,10 @@ jobs:
           test -f "${SOURCE_DIR}/quote-embed-browser.js"
           test -f "${SOURCE_DIR}/quote-embed.css"
           test -f "apps/b66-quote-adapter/app/file_intake.py"
-          grep -F '<title>견적서 만들기</title>' "${SOURCE_DIR}/index.html" >/dev/null
-          grep -F '샘플 공급사' "${SOURCE_DIR}/index.html" >/dev/null
-          grep -F 'id="padiemAccountButton"' "${SOURCE_DIR}/index.html" >/dev/null
-          grep -F '>로그인</button>' "${SOURCE_DIR}/index.html" >/dev/null
-          ! grep -F 'B66 DEMO' "${SOURCE_DIR}/index.html" >/dev/null
-          echo "B66_PRODUCT_SOURCE=PASS"
-          echo "PADIEM_ACCOUNT_ENTRY=PASS"
-
-      - name: Run B66 contracts
-        shell: bash
-        working-directory: ${{ env.SOURCE_DIR }}
-        run: |
-          set -euo pipefail
-          node --check _worker.js
-          node --check app.js
-          node --check file-intake.js
-          node --check easy-mode.js
-          node --check quote-template.js
-          node --check quote-template-store.js
-          node --check quote-template-renderer.js
-          node --check quote-template-selection.js
-          node --check quote-template-ui.js
-          node --check quote-template-candidate.js
-          node --check quote-template-cloner.js
-          node --check quote-skill.js
-          node --check quote-skill-store.js
-          node --check quote-skill-candidate.js
-          node --check quote-skill-registration.js
-          node --check quote-template-registration.js
-          node --check quote-registration-session.js
-          node --check quote-skill-ui.js
-          node --check padiem-account.js
-          node --check quote-embed-bridge.js
-          node --check quote-embed-browser.js
-          node tests/quote-core.test.cjs
-          node tests/quote-extraction.test.cjs
-          node tests/quote-history.test.cjs
-          node tests/file-intake.test.cjs
-          node tests/static-contract.test.cjs
-          node tests/quote-template.test.cjs
-          node tests/quote-template-store.test.cjs
-          node tests/quote-template-renderer.test.cjs
-          node tests/quote-template-selection.test.cjs
-          node tests/quote-template-ui.test.cjs
-          node tests/quote-template-candidate.test.cjs
-          node tests/quote-template-cloner.test.cjs
-          node tests/quote-skill.test.cjs
-          node tests/quote-skill-store.test.cjs
-          node tests/quote-skill-candidate.test.cjs
-          node tests/quote-skill-registration.test.cjs
-          node tests/quote-template-registration.test.cjs
-          node tests/quote-registration-session.test.cjs
-          node tests/quote-skill-ui.test.cjs
-          node tests/quote-embed-bridge.test.cjs
-          node tests/quote-skill-live-analysis.test.cjs
-          node tests/pages-live-intake.test.mjs
-          node tests/padiem-account-bridge.test.mjs
-
-      - name: Run B66 server intake adapter contracts
-        shell: bash
-        env:
-          PYTHONPATH: ${{ github.workspace }}/packages/padiem-ai-core:${{ github.workspace }}/apps/b66-quote-adapter
-        run: |
-          set -euo pipefail
-          python -m pip install --disable-pip-version-check --quiet 'httpx>=0.27,<1'
-          python -m unittest discover -s apps/b66-quote-adapter/tests -v
-          echo "B66_SERVER_INTAKE_CONTRACT=PASS"
-          echo "CORE_DOCUMENT_PARSER_REUSED=YES"
-          echo "B66_EXTRACTION_AUTHORITY_SOURCE=PASS"
-          echo "MODEL_DEPENDENCY=SERVER_ONLY"
-
-      - name: Local HTTP smoke
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 -m http.server 4173 --directory "${SOURCE_DIR}" >"${RUNNER_TEMP}/b66-http.log" 2>&1 &
-          server_pid=$!
-          trap 'kill "${server_pid}" || true' EXIT
-          for attempt in $(seq 1 20); do
-            if curl -fsS http://127.0.0.1:4173/ -o "${RUNNER_TEMP}/b66-local.html"; then
-              break
-            fi
-            sleep 1
+          for js_file in _worker.js app.js file-intake.js easy-mode.js quote-template.js quote-template-store.js quote-template-renderer.js quote-template-selection.js quote-template-ui.js quote-template-candidate.js quote-template-cloner.js quote-skill.js quote-skill-store.js quote-skill-candidate.js quote-skill-registration.js quote-template-registration.js quote-registration-session.js quote-skill-ui.js padiem-account.js quote-embed-bridge.js quote-embed-browser.js; do
+            node --check "${SOURCE_DIR}/${js_file}"
           done
-          grep -F '<title>견적서 만들기</title>' "${RUNNER_TEMP}/b66-local.html" >/dev/null
-          grep -F 'id="padiemAccountButton"' "${RUNNER_TEMP}/b66-local.html" >/dev/null
-          grep -F '>로그인</button>' "${RUNNER_TEMP}/b66-local.html" >/dev/null
-          ! grep -F 'B66 DEMO' "${RUNNER_TEMP}/b66-local.html" >/dev/null
-          curl -fsS http://127.0.0.1:4173/embed.html -o "${RUNNER_TEMP}/b66-embed.html"
-          grep -F '<title>견적서 미리보기</title>' "${RUNNER_TEMP}/b66-embed.html" >/dev/null
-          grep -F "connect-src 'none'" "${RUNNER_TEMP}/b66-embed.html" >/dev/null
-          ! grep -F 'app.js' "${RUNNER_TEMP}/b66-embed.html"
-          ! grep -F 'file-intake.js' "${RUNNER_TEMP}/b66-embed.html"
-          echo "B66_EMBED_HTTP_SMOKE=PASS"
-          echo "LOCAL_HTTP_SMOKE=PASS"
+          echo "B66_SHIP_GUARD=PASS"
 
       - name: Confirm Cloudflare credentials
         if: github.event_name != 'pull_request'
@@ -290,3 +199,119 @@ jobs:
               echo "- custom domain mutation: 0"
             fi
           } >> "${GITHUB_STEP_SUMMARY}"
+
+  post-deploy-contracts:
+    needs: [validate-and-release]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      SOURCE_DIR: reference/business-66-padiem-quote-v1
+      TARGET_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout exact target
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Deferred source label assertions
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -F '<title>견적서 만들기</title>' "${SOURCE_DIR}/index.html" >/dev/null
+          grep -F '샘플 공급사' "${SOURCE_DIR}/index.html" >/dev/null
+          grep -F 'id="padiemAccountButton"' "${SOURCE_DIR}/index.html" >/dev/null
+          grep -F '>로그인</button>' "${SOURCE_DIR}/index.html" >/dev/null
+          ! grep -F 'B66 DEMO' "${SOURCE_DIR}/index.html" >/dev/null
+          echo "B66_PRODUCT_SOURCE=PASS"
+          echo "PADIEM_ACCOUNT_ENTRY=PASS"
+
+      - name: Run B66 contracts
+        shell: bash
+        working-directory: ${{ env.SOURCE_DIR }}
+        run: |
+          set -euo pipefail
+          node --check _worker.js
+          node --check app.js
+          node --check file-intake.js
+          node --check easy-mode.js
+          node --check quote-template.js
+          node --check quote-template-store.js
+          node --check quote-template-renderer.js
+          node --check quote-template-selection.js
+          node --check quote-template-ui.js
+          node --check quote-template-candidate.js
+          node --check quote-template-cloner.js
+          node --check quote-skill.js
+          node --check quote-skill-store.js
+          node --check quote-skill-candidate.js
+          node --check quote-skill-registration.js
+          node --check quote-template-registration.js
+          node --check quote-registration-session.js
+          node --check quote-skill-ui.js
+          node --check padiem-account.js
+          node --check quote-embed-bridge.js
+          node --check quote-embed-browser.js
+          node tests/quote-core.test.cjs
+          node tests/quote-extraction.test.cjs
+          node tests/quote-history.test.cjs
+          node tests/file-intake.test.cjs
+          node tests/static-contract.test.cjs
+          node tests/quote-template.test.cjs
+          node tests/quote-template-store.test.cjs
+          node tests/quote-template-renderer.test.cjs
+          node tests/quote-template-selection.test.cjs
+          node tests/quote-template-ui.test.cjs
+          node tests/quote-template-candidate.test.cjs
+          node tests/quote-template-cloner.test.cjs
+          node tests/quote-skill.test.cjs
+          node tests/quote-skill-store.test.cjs
+          node tests/quote-skill-candidate.test.cjs
+          node tests/quote-skill-registration.test.cjs
+          node tests/quote-template-registration.test.cjs
+          node tests/quote-registration-session.test.cjs
+          node tests/quote-skill-ui.test.cjs
+          node tests/quote-embed-bridge.test.cjs
+          node tests/quote-skill-live-analysis.test.cjs
+          node tests/pages-live-intake.test.mjs
+          node tests/padiem-account-bridge.test.mjs
+
+      - name: Run B66 server intake adapter contracts
+        shell: bash
+        env:
+          PYTHONPATH: ${{ github.workspace }}/packages/padiem-ai-core:${{ github.workspace }}/apps/b66-quote-adapter
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet 'httpx>=0.27,<1'
+          python -m unittest discover -s apps/b66-quote-adapter/tests -v
+          echo "B66_SERVER_INTAKE_CONTRACT=PASS"
+          echo "CORE_DOCUMENT_PARSER_REUSED=YES"
+          echo "B66_EXTRACTION_AUTHORITY_SOURCE=PASS"
+          echo "MODEL_DEPENDENCY=SERVER_ONLY"
+
+      - name: Local HTTP smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 4173 --directory "${SOURCE_DIR}" >"${RUNNER_TEMP}/b66-http.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "${server_pid}" || true' EXIT
+          for attempt in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:4173/ -o "${RUNNER_TEMP}/b66-local.html"; then
+              break
+            fi
+            sleep 1
+          done
+          grep -F '<title>견적서 만들기</title>' "${RUNNER_TEMP}/b66-local.html" >/dev/null
+          grep -F 'id="padiemAccountButton"' "${RUNNER_TEMP}/b66-local.html" >/dev/null
+          grep -F '>로그인</button>' "${RUNNER_TEMP}/b66-local.html" >/dev/null
+          ! grep -F 'B66 DEMO' "${RUNNER_TEMP}/b66-local.html" >/dev/null
+          curl -fsS http://127.0.0.1:4173/embed.html -o "${RUNNER_TEMP}/b66-embed.html"
+          grep -F '<title>견적서 미리보기</title>' "${RUNNER_TEMP}/b66-embed.html" >/dev/null
+          grep -F "connect-src 'none'" "${RUNNER_TEMP}/b66-embed.html" >/dev/null
+          ! grep -F 'app.js' "${RUNNER_TEMP}/b66-embed.html"
+          ! grep -F 'file-intake.js' "${RUNNER_TEMP}/b66-embed.html"
+          echo "B66_EMBED_HTTP_SMOKE=PASS"
+          echo "LOCAL_HTTP_SMOKE=PASS"
+
