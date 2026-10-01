@@ -199,6 +199,31 @@ def _subject_from_wire(payload: Any) -> CanonicalSubjectRef:
     )
 
 
+def canonical_subject_from_wire(payload: Any) -> CanonicalSubjectRef:
+    """Public closed-shape parser for the existing canonical subject contract."""
+    return _subject_from_wire(payload)
+
+
+def reservation_scope_from_wire(
+    payload: Any,
+) -> tuple[str, CanonicalSubjectRef]:
+    """Read only the product/subject scope from the canonical reservation wire.
+
+    The full closed reservation shape is validated here before any identity
+    lookup or entitlement production occurs. The store still performs its
+    complete semantic validation before reservation persistence.
+    """
+    wire = _closed(
+        payload,
+        _RESERVATION_KEYS,
+        "usage reservation",
+    )
+    return (
+        _safe_id(wire["product_id"], "product_id"),
+        _subject_from_wire(wire["subject"]),
+    )
+
+
 def snapshot_from_wire(payload: Any) -> EntitlementSnapshot:
     """Parse the existing EntitlementSnapshot policy projection."""
 
