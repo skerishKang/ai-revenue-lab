@@ -128,7 +128,7 @@ class Evidence:
             raise ValueError("document_locator must be a DocumentLocator or None")
 
     def to_public_dict(self) -> dict[str, Any]:
-        return {
+        public = {
             "id": self.id,
             "title": self.title,
             "url": self.url,
@@ -136,12 +136,10 @@ class Evidence:
             "retrieved_at": self.retrieved_at,
             "provider": self.provider,
             "source_type": self.source_type,
-            "document_locator": (
-                self.document_locator.to_public_dict()
-                if self.document_locator is not None
-                else None
-            ),
         }
+        if self.document_locator is not None:
+            public["document_locator"] = self.document_locator.to_public_dict()
+        return public
 
 
 @dataclass(frozen=True, slots=True)
