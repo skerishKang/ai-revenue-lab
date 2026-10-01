@@ -27,16 +27,27 @@ B66_EXTRACTION_SOURCE="../b66-quote-adapter/app/extraction_routing.py"
 B66_EXTRACTION_STAGED="app/b66_extraction_routing.py"
 B66_INTAKE_SOURCE="../b66-quote-adapter/app/file_intake.py"
 B66_INTAKE_STAGED="app/b66_file_intake.py"
+CORE_SOURCE="../../packages/padiem-ai-core/padiem_ai_core"
+CORE_STAGED="padiem_ai_core"
 cleanup_b66_stage() {
     rm -f "${B66_EXTRACTION_STAGED}" "${B66_INTAKE_STAGED}"
+    rm -rf "${CORE_STAGED}"
 }
 trap cleanup_b66_stage EXIT
 test -f "${B66_EXTRACTION_SOURCE}"
 test -f "${B66_INTAKE_SOURCE}"
+for module in __init__.py document_semantics.py document_normalization.py document_parser_boundary.py; do
+    test -f "${CORE_SOURCE}/${module}"
+done
 cp "${B66_EXTRACTION_SOURCE}" "${B66_EXTRACTION_STAGED}"
 cp "${B66_INTAKE_SOURCE}" "${B66_INTAKE_STAGED}"
+mkdir -p "${CORE_STAGED}"
+for module in __init__.py document_semantics.py document_normalization.py document_parser_boundary.py; do
+    cp "${CORE_SOURCE}/${module}" "${CORE_STAGED}/${module}"
+done
 echo "B66_EXTRACTION_AUTHORITY_STAGED=YES"
 echo "B66_FILE_INTAKE_AUTHORITY_STAGED=YES"
+echo "B66_CORE_PARSER_BOUNDARY_STAGED=YES"
 
 echo "==> pywrangler sync"
 uv run pywrangler sync --force
