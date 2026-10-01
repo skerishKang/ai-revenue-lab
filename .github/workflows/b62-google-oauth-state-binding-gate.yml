@@ -520,11 +520,19 @@ jobs:
           echo "LATEST_VERSION_PROPAGATION_RETRY=OK"
 
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" -o "${settings}"
+          echo "POSTREADBACK_SETTINGS_FETCH=PASS"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/subdomain" -o "${subdomain}"
+          echo "POSTREADBACK_TOPOLOGY_FETCH=PASS"
           detail="${RUNNER_TEMP}/version-after.json"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions/${active}" -o "${detail}"
-          jq -e --arg etag "${BEFORE_ETAG}" '.success == true and .result.resources.script.etag == $etag' "${detail}" >/dev/null
+          echo "POSTREADBACK_VERSION_FETCH=PASS"
+          if jq -e --arg etag "${BEFORE_ETAG}" '.success == true and .result.resources.script.etag == $etag' "${detail}" >/dev/null; then
+            echo "SOURCE_ETAG_UNCHANGED=PASS"
+          else
+            echo "SOURCE_ETAG_UNCHANGED=FAIL"
+            exit 1
+          fi
 
           python - "${RUNNER_TEMP}/b62-bindings-before-private.json" "${settings}" "${GOOGLE_OAUTH_BINDING}" "${OAUTH_STATE_WORKER}" <<'PY'
           import json
@@ -546,15 +554,18 @@ jobs:
               if not (inherit_path or concrete_path):
                   raise SystemExit("Existing Worker binding neither inherit/latest nor identical to pre-patch state")
           PY
+          echo "POSTREADBACK_BINDINGS_EXACT=PASS"
 
           jq --arg worker "${B62_WORKER}" '[.result[] | select(.service == $worker) | {hostname,service,environment,zone_id}] | sort_by(.hostname)' "${domains}" > "${RUNNER_TEMP}/b62-domains-after-safe.json"
           jq '{enabled:.result.enabled,previews_enabled:.result.previews_enabled}' "${subdomain}" > "${RUNNER_TEMP}/b62-subdomain-after-safe.json"
           cmp -s "${RUNNER_TEMP}/b62-domains-before-safe.json" "${RUNNER_TEMP}/b62-domains-after-safe.json"
           cmp -s "${RUNNER_TEMP}/b62-subdomain-before-safe.json" "${RUNNER_TEMP}/b62-subdomain-after-safe.json"
+          echo "POSTREADBACK_PUBLIC_TOPOLOGY_EXACT=PASS"
 
           git fetch --no-tags --depth=1 origin main
           test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
           test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "POSTREADBACK_EXACT_MAIN=PASS"
 
           echo "SOURCE_ETAG_UNCHANGED=PASS"
           echo "EXISTING_BINDINGS_UNCHANGED=PASS"
@@ -737,9 +748,12 @@ jobs:
           subdomain="${RUNNER_TEMP}/rollback-subdomain-after.json"
           detail="${RUNNER_TEMP}/rollback-version-after.json"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings" -o "${settings}"
+          echo "ROLLBACK_POSTREADBACK_SETTINGS_FETCH=PASS"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/subdomain" -o "${subdomain}"
+          echo "ROLLBACK_POSTREADBACK_TOPOLOGY_FETCH=PASS"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions/${active}" -o "${detail}"
+          echo "ROLLBACK_POSTREADBACK_VERSION_FETCH=PASS"
 
           latest=""
           for _ in $(seq 1 4); do
@@ -752,7 +766,12 @@ jobs:
           done
           test "${latest}" = "${active}"
           echo "LATEST_VERSION_PROPAGATION_RETRY=OK"
-          jq -e --arg etag "${BEFORE_ETAG}" '.result.resources.script.etag == $etag' "${detail}" >/dev/null
+          if jq -e --arg etag "${BEFORE_ETAG}" '.result.resources.script.etag == $etag' "${detail}" >/dev/null; then
+            echo "ROLLBACK_SOURCE_ETAG_UNCHANGED=PASS"
+          else
+            echo "ROLLBACK_SOURCE_ETAG_UNCHANGED=FAIL"
+            exit 1
+          fi
           jq -e --arg name "${GOOGLE_OAUTH_BINDING}" '[.result.bindings[] | select(.name == $name)] | length == 0' "${settings}" >/dev/null
 
           python - "${RUNNER_TEMP}/rollback-bindings-before-private.json" "${settings}" "${GOOGLE_OAUTH_BINDING}" <<'PY'
@@ -772,15 +791,18 @@ jobs:
               if not (inherit_path or concrete_path):
                   raise SystemExit("Rollback existing binding neither inherit/latest nor identical to pre-rollback state")
           PY
+          echo "ROLLBACK_POSTREADBACK_BINDINGS_EXACT=PASS"
 
           jq --arg worker "${B62_WORKER}" '[.result[] | select(.service == $worker) | {hostname,service,environment,zone_id}] | sort_by(.hostname)' "${domains}" > "${RUNNER_TEMP}/rollback-domains-after-safe.json"
           jq '{enabled:.result.enabled,previews_enabled:.result.previews_enabled}' "${subdomain}" > "${RUNNER_TEMP}/rollback-subdomain-after-safe.json"
           cmp -s "${RUNNER_TEMP}/rollback-domains-before-safe.json" "${RUNNER_TEMP}/rollback-domains-after-safe.json"
           cmp -s "${RUNNER_TEMP}/rollback-subdomain-before-safe.json" "${RUNNER_TEMP}/rollback-subdomain-after-safe.json"
+          echo "ROLLBACK_POSTREADBACK_PUBLIC_TOPOLOGY_EXACT=PASS"
 
           git fetch --no-tags --depth=1 origin main
           test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
           test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "ROLLBACK_POSTREADBACK_EXACT_MAIN=PASS"
 
           echo "SOURCE_ETAG_UNCHANGED=PASS"
           echo "EXISTING_BINDINGS_UNCHANGED=PASS"
