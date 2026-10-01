@@ -114,10 +114,14 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
 check(!/(Padiem|파디엠|padiem)/.test(app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + candidate + cloner + skill + skillStore + skillCandidate + skillRegistration + skillUi + intake + easy),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: quote domain logic stays product-neutral");
 check(!html.includes("B66 DEMO"), "PADIEM_ACCOUNT_BRIDGE_CONTRACT: no internal demo label");
-check(html.includes("BETA · 작성 중 견적은 이 브라우저에 저장"),
-  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: truthful local draft persistence label");
-check(html.includes("Padiem 계정") && html.includes("Padiem 로그인"),
+check(html.includes('id="settingsPanel"') &&
+      html.includes("작성 중 견적은 이 브라우저에 저장"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: truthful local draft persistence lives in personal settings");
+check(html.includes("Padiem 계정") && html.includes(">로그인</button>"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: account relationship is explicit");
+check(!html.includes('class="badge"') && !html.includes("Padiem 로그인") &&
+      !account.includes("Padiem 로그인") && account.includes('button.textContent = "로그인"'),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: topbar carries no stale badge or vendor-branded login label");
 check(worker.includes('PADIEM_CHAT_ORIGIN = "https://chat.padiem.net"'),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: canonical Padiem upstream fixed");
 [
@@ -417,6 +421,11 @@ check(css.includes(".mode { min-height: 44px;") &&
   "BETA_POLISH_CONTRACT: visible action controls use 44px minimum");
 check(html.includes("저장 데이터 초기화") && app.includes("function resetBrowserLocalData("),
   "BETA_POLISH_CONTRACT: first-party browser reset exists");
+check(html.includes('id="settingsButton"') && html.includes('id="settingsClose"') &&
+      html.includes('class="settings-reset" id="resetLocalData"') &&
+      app.includes('$("settingsButton")') && app.includes('$("settingsClose")') &&
+      css.includes(".settings-panel {"),
+  "BETA_POLISH_CONTRACT: personal settings owns the destructive reset");
 check(app.includes("Core.DRAFT_STORAGE_KEY") &&
       app.includes("Core.SENDER_STORAGE_KEY") &&
       app.includes("History.HISTORY_STORAGE_KEY") &&

@@ -36,9 +36,8 @@
         <p>입력부터 PDF 저장까지 한 화면에서</p>
       </div>
       <div class="topbar-actions">
-        <div class="badge">BETA · 작성 중 견적은 이 브라우저에 저장</div>
-        <button class="padiem-account-button" id="padiemAccountButton" type="button">Padiem 로그인</button>
-        <button class="topbar-reset" id="resetLocalData" type="button">저장 데이터 초기화</button>
+        <button class="padiem-account-button" id="padiemAccountButton" type="button">로그인</button>
+        <button class="topbar-reset" id="settingsButton" type="button">설정</button>
       </div>
     </header>
 
@@ -57,6 +56,15 @@
         <button id="padiemQuoteGenerate" type="button">견적 만들기</button>
       </div>
       <p class="padiem-quote-status" id="padiemQuoteStatus" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="settings-panel" id="settingsPanel" aria-label="개인 설정" hidden>
+      <div class="padiem-account-head">
+        <strong>개인 설정</strong>
+        <button id="settingsClose" type="button">닫기</button>
+      </div>
+      <p class="settings-note">작성 중 견적은 이 브라우저에 저장됩니다. 기기를 바꾸거나 브라우저 데이터를 지우면 사라집니다.</p>
+      <button class="settings-reset" id="resetLocalData" type="button">저장 데이터 초기화</button>
     </section>
 
     <nav class="workspace-modebar" aria-label="견적 작성 모드">
