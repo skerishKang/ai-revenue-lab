@@ -26,6 +26,7 @@
   let inputHandler = null;
   let guided = null;
   let freeChatPending = "";
+  let accountSignedIn = false;
   let selectedFile = null;
 
   function clone(value) {
@@ -168,17 +169,26 @@
     $("recentQuoteStarter").hidden = readHistory().entries.length === 0;
 
     let hint = document.getElementById("easyResumeHint");
-    if (History.isMeaningfulDraft(activeDraft)) {
+    if (accountSignedIn) {
+      if (History.isMeaningfulDraft(activeDraft)) {
+        if (!hint) {
+          hint = document.createElement("div");
+          hint.id = "easyResumeHint";
+          hint.className = "easy-resume-hint";
+          $("easyStarterGrid").before(hint);
+        }
+        hint.textContent = "이전에 작성하던 견적이 있습니다. 이어서 진행할 수 있어요.";
+      } else if (hint) {
+        hint.remove();
+      }
+    } else {
       if (!hint) {
         hint = document.createElement("div");
         hint.id = "easyResumeHint";
         hint.className = "easy-resume-hint";
         $("easyStarterGrid").before(hint);
       }
-      const company = safeText(activeDraft.recipient.company) || "받는 사람 미정";
-      hint.textContent = "중단했던 " + company + " 견적을 이어서 진행할 수 있어요.";
-    } else if (hint) {
-      hint.remove();
+      hint.textContent = "로그인하면 견적을 이어서 진행할 수 있습니다.";
     }
   }
 
@@ -735,6 +745,10 @@
     composer.style.height = Math.min(composer.scrollHeight, 160) + "px";
   });
 
+  document.addEventListener("b66:auth-changed", (event) => {
+    accountSignedIn = Boolean(event.detail && event.detail.authenticated);
+    refreshStarters();
+  });
   window.addEventListener("b66:history-changed", refreshStarters);
   window.addEventListener("b66:local-data-reset", () => {
     fileInput.value = "";
