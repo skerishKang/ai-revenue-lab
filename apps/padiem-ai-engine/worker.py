@@ -258,6 +258,15 @@ def _agent_skill_service_for_env(
 
 
 async def _engine_services_for_env(env: Any) -> EngineServices:
+    """Legacy compatibility composition; never the Production authority.
+
+    Production is deployed from ``worker_identity.py``. This deliberately
+    narrower bundle remains for legacy/base-entrypoint compatibility and tests:
+    it must not silently inherit identity-only widened runtime authorities.
+    ``worker_identity.Default`` subclasses
+    this module's HTTP/core base and overrides ``engine_services_factory`` with
+    the canonical Production composition.
+    """
     # Preview-lane posture only. Every other isolate clears the override, so the
     # declared manifest truth is untouched outside an explicitly marked pilot.
     set_posture_overrides(preview_capability_overrides(env))
