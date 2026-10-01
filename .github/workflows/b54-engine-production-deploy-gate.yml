@@ -175,11 +175,2461 @@ jobs:
           if [ "${B54_ENGINE_OVERLAY_EXPECTED}" = 'YES' ]; then
             overlay_args+=( --expect-overlay )
           fi
-          python3 .github/scripts/b54_engine_served_version_guard.py verify \
+          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify \
             --version-settings "${version_detail}" \
             --active-version "${active_version}" \
             --require-drive-runtime-bindings \
-            "${overlay_args[@]}"
+            --inspect-engine-admission-binding \
+            "${overlay_args[@]}")"
+          printf '%s\n' "${verify_out}"
+          printf '%s\n' "${verify_out}" | grep -q '^CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING=PRESENT:service          # Final deploy PASS only after served-version evidence above: the
+          # deploy command's exit 0 alone never proves a healthy production
+          # deployment (f88). Liveness is still proven separately by the
+          # health smoke that follows.
+          echo 'B54_ENGINE_PRODUCTION_DEPLOY=PASS'
+
+      - name: Post-deploy smoke
+        run: |
+          set -euo pipefail
+          sleep 15
+          # Bounded non-secret diagnostic: always emit the numeric HTTP status
+          # (curl transport failure normalizes to 000 via the case guard), never
+          # dump the response body, and still fail closed on non-200.
+          CODE=$(curl -s -o /tmp/health.json -w '%{http_code}' --max-time 20 'https://engine.padiem.net/internal/v1/health' || true)
+          case "${CODE}" in ''|*[!0-9]*) CODE=000 ;; esac
+          echo "HEALTH_HTTP_STATUS=${CODE}"
+          if [ "${CODE}" != '200' ]; then
+            echo 'B54_ENGINE_PRODUCTION_SMOKE=FAIL'
+            exit 1
+          fi
+          grep -q '"status":"ok"' /tmp/health.json
+          grep -q '"b14_service_bound":true' /tmp/health.json
+          grep -q 'orchestration_run' /tmp/health.json
+          echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
+
+  smoke-idempotency:
+    # A7 activation reconciliation (#3340): authenticated-user entitlement is now
+    # mandatory for orchestration, so the legacy A9 account-level success probe
+    # is no longer a valid post-deploy expectation. This job first proves the
+    # unscoped request is rejected before provider dispatch, then keeps A10/A11
+    # and A12 as their existing bounded runtime evidence. Authenticated-user
+    # orchestration is proven separately by the owner-gated A7 live canary.
+    needs: deploy-production-engine
+    if: github.event.inputs.confirmation == 'DEPLOY_B54_ENGINE_FROM_EXACT_MAIN'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      # ISSUE #2484 Goal A: the smoke evidence path is bound to the single
+      # canonical B62 -> Engine authority. CALLER_ID is the fixed non-secret
+      # identifier of the dedicated overlay-only Claw caller (#2520:
+      # b54-p01-overlay-20260914-a1, replacing the legacy shared Claw id)
+      # and the credential is the SAME secret the B62
+      # worker uses (B62_P01_ENGINE_CREDENTIAL). The former independent
+      # PADIEM_ENGINE_SMOKE_CALLER_ID/_SECRET secrets are removed so the smoke
+      # authority can no longer drift from the runtime authority. A10 reads only
+      # the legacy env NAMES, so those names are re-pointed at the same canonical
+      # source; no independent smoke credential secret remains.
+      CALLER_ID: b54-p01-overlay-20260914-a1
+      CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      PADIEM_ENGINE_SMOKE_CALLER_ID: b54-p01-overlay-20260914-a1
+      PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ENGINE_BASE_URL: https://engine.padiem.net
+      GITHUB_RUN_ID: ${{ github.run_id }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install padiem-ai-core
+        run: python -m pip install --quiet -e packages/padiem-ai-core
+
+      - name: Fail honestly when smoke secrets are missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${CALLER_ID:-}" ] || [ -z "${CALLER_SECRET:-}" ]; then
+            echo 'SMOKE=SKIPPED_MISSING_SECRET'
+            exit 1
+          fi
+          echo 'SMOKE_SECRETS_PRESENT=1'
+
+      - name: Run A7 unscoped admission fail-closed smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a7_unscoped_admission_production_smoke.py | tee /tmp/a7_unscoped_smoke.log
+          grep -q '^A7_UNSCOPED_ADMISSION_SMOKE=PASS      - name: Run A10 continuation fail-closed smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py | tee /tmp/a10_smoke.log
+          grep -q 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log
+          grep 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log | tail -1
+
+      # WO-10 ACT-1/ACT-2 (#2010): A11 proves the Gmail tool_runtime route
+      # state honestly. It NEVER fakes a PASS. Since the ACT-2 route
+      # activation the Tool routes are admitted in Engine source, so the
+      # former DEFERRED REASON=ROUTE_NOT_WIRED tolerance is removed: a 404
+      # now FAILs as a stale-deploy contradiction. Accepted non-blocking
+      # verdicts: A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS (tool contract live:
+      # route wired, runtime bound, Agent authorized, Gmail tool registered,
+      # provider never called) or DEFERRED REASON=TOOL_RUNTIME_UNAVAILABLE /
+      # TOOL_NOT_ALLOWED (route admitted, credential/authorization gate D43
+      # still pending). A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL means
+      # contradictory/unexpected production behaviour and fails the gate.
+      - name: Run A11 Gmail tool_runtime smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py | tee /tmp/a11_smoke.log
+          grep -qE 'A11_GMAIL_TOOL_RUNTIME_SMOKE=(PASS|DEFERRED)' /tmp/a11_smoke.log
+          if grep -q 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' /tmp/a11_smoke.log; then
+            echo 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          grep 'A11_GMAIL_TOOL_RUNTIME_SMOKE=' /tmp/a11_smoke.log | tail -1
+
+      - name: Run A12 streaming idempotency replay smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log
+          # An external provider 5xx is recorded as SKIPPED_UPSTREAM, never as a
+          # pass: the mandatory Engine-side stages (S0 manifest, S3 conflict)
+          # still had to hold for that verdict. FAIL stays a hard gate failure.
+          grep -qE 'A12_STREAM_REPLAY_SMOKE=(PASS|SKIPPED_UPSTREAM)' /tmp/a12_smoke.log
+          if grep -q 'A12_STREAM_REPLAY_SMOKE=FAIL' /tmp/a12_smoke.log; then
+            echo 'A12_STREAM_REPLAY_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          A12_REPLAY_EVIDENCE="$(grep 'A12_STREAM_REPLAY_SMOKE=' /tmp/a12_smoke.log | tail -1 | cut -d= -f2-)"
+          echo "A12_REPLAY_EVIDENCE=${A12_REPLAY_EVIDENCE}"
+
+  rollback-production-engine:
+    if: github.event.inputs.confirmation == 'ROLLBACK_B54_ENGINE_TO_PREVIOUS_VERSION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Rollback engine worker to previous version
+        working-directory: apps/padiem-ai-engine
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ROLLBACK_TARGET: ${{ github.event.inputs.rollback_version_id }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          # #2748: rollback names its own target. #2752: what that target proves
+          # is decided by the shared mutation-class evidence primitive, not by
+          # shell string comparison. A code deploy must prove the served version
+          # CHANGED; a rollback must prove it EQUALS the named target.
+          if [ -z "${ROLLBACK_TARGET:-}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=rollback_version_id is required; implicit previous-version selection is refused' >&2
+            echo 'ROLLBACK_TARGET_EXPLICIT=NO' >&2
+            exit 1
+          fi
+          # Canonical safe-version-id contract (same charset rule the resolver
+          # uses) so an owner typo or a hostile string never reaches the CLI.
+          python3 .github/scripts/b54_engine_served_version_guard.py \
+            validate-version-id --version-id "${ROLLBACK_TARGET}"
+          echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}"
+          echo 'ROLLBACK_TARGET_EXPLICIT=YES'
+          echo 'IMPLICIT_PREVIOUS_VERSION_SELECTION=NO'
+          # Baseline the served version BEFORE mutating, so the evidence has a
+          # pre-state and a rollback is never attempted blind.
+          pre_deployments="${RUNNER_TEMP}/deployments-rollback-baseline.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${pre_deployments}"
+          pre_resolve="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${pre_deployments}")"
+          pre_version="$(printf '%s\n' "${pre_resolve}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          if [ -z "${pre_version}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=canonical resolver returned no pre-rollback served version' >&2
+            exit 1
+          fi
+          echo "PRE_ROLLBACK_SERVED_VERSION_ID=${pre_version}"
+          cd apps/padiem-ai-engine
+          npx wrangler@4 rollback "${ROLLBACK_TARGET}" \
+            --message "B54 engine production rollback to explicit target (owner-authorized gate)"
+          echo 'B54_ENGINE_ROLLBACK_COMMAND=EXIT_ZERO'
+          cd "$GITHUB_WORKSPACE"
+          # Bounded readback. Each attempt resolves through the canonical
+          # resolver and is recorded as one observation; a rejected read is
+          # recorded too and never finalizes anything either way (#2453
+          # provenance). No envelope rule is evaluated in this shell.
+          observations="${RUNNER_TEMP}/rollback-observations.txt"
+          : > "${observations}"
+          rollback_reads=0
+          for attempt in $(seq 1 30); do
+            rollback_reads="${attempt}"
+            deployments="${RUNNER_TEMP}/deployments-rollback-${attempt}.json"
+            if curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}" \
+              && resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"; then
+              candidate="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+              if [ -n "${candidate}" ]; then
+                printf 'ok %s\n' "${candidate}" >> "${observations}"
+              else
+                printf 'reject -\n' >> "${observations}"
+              fi
+            else
+              printf 'reject -\n' >> "${observations}"
+            fi
+            if evidence_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+              --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+              --observations "${observations}" --window-open)"; then
+              evidence_rc=0
+            else
+              evidence_rc=$?
+            fi
+            # 3 means "not final yet, the window is still open"; anything else
+            # stops polling and the closed-window decision below settles it.
+            if [ "${evidence_rc}" -ne 3 ]; then
+              break
+            fi
+            sleep 2
+          done
+          echo "POST_ROLLBACK_CONVERGENCE_READS=${rollback_reads}"
+          # Re-decide with the window CLOSED: the verdict that ends this step
+          # must be one the primitive itself considers final.
+          if ! final_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+            --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+            --observations "${observations}")"; then
+            echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=FAIL' >&2
+            printf '%s\n' "${final_out}" >&2
+            echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}" >&2
+            exit 1
+          fi
+          printf '%s\n' "${final_out}"
+          served_version="$(printf '%s\n' "${final_out}" | sed -n 's/^POST_MUTATION_SERVED_VERSION_ID=//p')"
+          echo "POST_ROLLBACK_SERVED_VERSION_ID=${served_version}"
+          echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS'
+          echo 'ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO'
+          echo 'B54_ENGINE_PRODUCTION_ROLLBACK=PASS'
+
+          printf '%s\n' "${verify_out}" | grep -q '^ENGINE_ADMISSION_BINDING_TARGET_VALIDATED=YES          # Final deploy PASS only after served-version evidence above: the
+          # deploy command's exit 0 alone never proves a healthy production
+          # deployment (f88). Liveness is still proven separately by the
+          # health smoke that follows.
+          echo 'B54_ENGINE_PRODUCTION_DEPLOY=PASS'
+
+      - name: Post-deploy smoke
+        run: |
+          set -euo pipefail
+          sleep 15
+          # Bounded non-secret diagnostic: always emit the numeric HTTP status
+          # (curl transport failure normalizes to 000 via the case guard), never
+          # dump the response body, and still fail closed on non-200.
+          CODE=$(curl -s -o /tmp/health.json -w '%{http_code}' --max-time 20 'https://engine.padiem.net/internal/v1/health' || true)
+          case "${CODE}" in ''|*[!0-9]*) CODE=000 ;; esac
+          echo "HEALTH_HTTP_STATUS=${CODE}"
+          if [ "${CODE}" != '200' ]; then
+            echo 'B54_ENGINE_PRODUCTION_SMOKE=FAIL'
+            exit 1
+          fi
+          grep -q '"status":"ok"' /tmp/health.json
+          grep -q '"b14_service_bound":true' /tmp/health.json
+          grep -q 'orchestration_run' /tmp/health.json
+          echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
+
+  smoke-idempotency:
+    # WO-8 PR-B: A9 production idempotency smoke (BLOCKER_4/5/6/7 evidence).
+    # Runs ONLY after a confirmed production deploy, against the exact deployed
+    # SHA. Missing smoke secrets fail the job honestly (SKIPPED_MISSING_SECRET).
+    needs: deploy-production-engine
+    if: github.event.inputs.confirmation == 'DEPLOY_B54_ENGINE_FROM_EXACT_MAIN'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      # ISSUE #2484 Goal A: the smoke evidence path is bound to the single
+      # canonical B62 -> Engine authority. CALLER_ID is the fixed non-secret
+      # identifier of the dedicated overlay-only Claw caller (#2520:
+      # b54-p01-overlay-20260914-a1, replacing the legacy shared Claw id)
+      # and the credential is the SAME secret the B62
+      # worker uses (B62_P01_ENGINE_CREDENTIAL). The former independent
+      # PADIEM_ENGINE_SMOKE_CALLER_ID/_SECRET secrets are removed so the smoke
+      # authority can no longer drift from the runtime authority. A10 reads only
+      # the legacy env NAMES, so those names are re-pointed at the same canonical
+      # source; no independent smoke credential secret remains.
+      CALLER_ID: b54-p01-overlay-20260914-a1
+      CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      PADIEM_ENGINE_SMOKE_CALLER_ID: b54-p01-overlay-20260914-a1
+      PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ENGINE_BASE_URL: https://engine.padiem.net
+      GITHUB_RUN_ID: ${{ github.run_id }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install padiem-ai-core
+        run: python -m pip install --quiet -e packages/padiem-ai-core
+
+      - name: Fail honestly when smoke secrets are missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${CALLER_ID:-}" ] || [ -z "${CALLER_SECRET:-}" ]; then
+            echo 'SMOKE=SKIPPED_MISSING_SECRET'
+            exit 1
+          fi
+          echo 'SMOKE_SECRETS_PRESENT=1'
+
+      - name: Run A9 production idempotency smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a9_production_smoke.py | tee /tmp/a9_smoke.log
+          grep -q 'A9_SMOKE=PASS' /tmp/a9_smoke.log
+          grep 'A9_SMOKE=PASS' /tmp/a9_smoke.log | tail -1
+
+      - name: Run A10 continuation fail-closed smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py | tee /tmp/a10_smoke.log
+          grep -q 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log
+          grep 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log | tail -1
+
+      # WO-10 ACT-1/ACT-2 (#2010): A11 proves the Gmail tool_runtime route
+      # state honestly. It NEVER fakes a PASS. Since the ACT-2 route
+      # activation the Tool routes are admitted in Engine source, so the
+      # former DEFERRED REASON=ROUTE_NOT_WIRED tolerance is removed: a 404
+      # now FAILs as a stale-deploy contradiction. Accepted non-blocking
+      # verdicts: A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS (tool contract live:
+      # route wired, runtime bound, Agent authorized, Gmail tool registered,
+      # provider never called) or DEFERRED REASON=TOOL_RUNTIME_UNAVAILABLE /
+      # TOOL_NOT_ALLOWED (route admitted, credential/authorization gate D43
+      # still pending). A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL means
+      # contradictory/unexpected production behaviour and fails the gate.
+      - name: Run A11 Gmail tool_runtime smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py | tee /tmp/a11_smoke.log
+          grep -qE 'A11_GMAIL_TOOL_RUNTIME_SMOKE=(PASS|DEFERRED)' /tmp/a11_smoke.log
+          if grep -q 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' /tmp/a11_smoke.log; then
+            echo 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          grep 'A11_GMAIL_TOOL_RUNTIME_SMOKE=' /tmp/a11_smoke.log | tail -1
+
+      - name: Run A12 streaming idempotency replay smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log
+          # An external provider 5xx is recorded as SKIPPED_UPSTREAM, never as a
+          # pass: the mandatory Engine-side stages (S0 manifest, S3 conflict)
+          # still had to hold for that verdict. FAIL stays a hard gate failure.
+          grep -qE 'A12_STREAM_REPLAY_SMOKE=(PASS|SKIPPED_UPSTREAM)' /tmp/a12_smoke.log
+          if grep -q 'A12_STREAM_REPLAY_SMOKE=FAIL' /tmp/a12_smoke.log; then
+            echo 'A12_STREAM_REPLAY_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          A12_REPLAY_EVIDENCE="$(grep 'A12_STREAM_REPLAY_SMOKE=' /tmp/a12_smoke.log | tail -1 | cut -d= -f2-)"
+          echo "A12_REPLAY_EVIDENCE=${A12_REPLAY_EVIDENCE}"
+
+  rollback-production-engine:
+    if: github.event.inputs.confirmation == 'ROLLBACK_B54_ENGINE_TO_PREVIOUS_VERSION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Rollback engine worker to previous version
+        working-directory: apps/padiem-ai-engine
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ROLLBACK_TARGET: ${{ github.event.inputs.rollback_version_id }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          # #2748: rollback names its own target. #2752: what that target proves
+          # is decided by the shared mutation-class evidence primitive, not by
+          # shell string comparison. A code deploy must prove the served version
+          # CHANGED; a rollback must prove it EQUALS the named target.
+          if [ -z "${ROLLBACK_TARGET:-}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=rollback_version_id is required; implicit previous-version selection is refused' >&2
+            echo 'ROLLBACK_TARGET_EXPLICIT=NO' >&2
+            exit 1
+          fi
+          # Canonical safe-version-id contract (same charset rule the resolver
+          # uses) so an owner typo or a hostile string never reaches the CLI.
+          python3 .github/scripts/b54_engine_served_version_guard.py \
+            validate-version-id --version-id "${ROLLBACK_TARGET}"
+          echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}"
+          echo 'ROLLBACK_TARGET_EXPLICIT=YES'
+          echo 'IMPLICIT_PREVIOUS_VERSION_SELECTION=NO'
+          # Baseline the served version BEFORE mutating, so the evidence has a
+          # pre-state and a rollback is never attempted blind.
+          pre_deployments="${RUNNER_TEMP}/deployments-rollback-baseline.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${pre_deployments}"
+          pre_resolve="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${pre_deployments}")"
+          pre_version="$(printf '%s\n' "${pre_resolve}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          if [ -z "${pre_version}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=canonical resolver returned no pre-rollback served version' >&2
+            exit 1
+          fi
+          echo "PRE_ROLLBACK_SERVED_VERSION_ID=${pre_version}"
+          cd apps/padiem-ai-engine
+          npx wrangler@4 rollback "${ROLLBACK_TARGET}" \
+            --message "B54 engine production rollback to explicit target (owner-authorized gate)"
+          echo 'B54_ENGINE_ROLLBACK_COMMAND=EXIT_ZERO'
+          cd "$GITHUB_WORKSPACE"
+          # Bounded readback. Each attempt resolves through the canonical
+          # resolver and is recorded as one observation; a rejected read is
+          # recorded too and never finalizes anything either way (#2453
+          # provenance). No envelope rule is evaluated in this shell.
+          observations="${RUNNER_TEMP}/rollback-observations.txt"
+          : > "${observations}"
+          rollback_reads=0
+          for attempt in $(seq 1 30); do
+            rollback_reads="${attempt}"
+            deployments="${RUNNER_TEMP}/deployments-rollback-${attempt}.json"
+            if curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}" \
+              && resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"; then
+              candidate="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+              if [ -n "${candidate}" ]; then
+                printf 'ok %s\n' "${candidate}" >> "${observations}"
+              else
+                printf 'reject -\n' >> "${observations}"
+              fi
+            else
+              printf 'reject -\n' >> "${observations}"
+            fi
+            if evidence_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+              --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+              --observations "${observations}" --window-open)"; then
+              evidence_rc=0
+            else
+              evidence_rc=$?
+            fi
+            # 3 means "not final yet, the window is still open"; anything else
+            # stops polling and the closed-window decision below settles it.
+            if [ "${evidence_rc}" -ne 3 ]; then
+              break
+            fi
+            sleep 2
+          done
+          echo "POST_ROLLBACK_CONVERGENCE_READS=${rollback_reads}"
+          # Re-decide with the window CLOSED: the verdict that ends this step
+          # must be one the primitive itself considers final.
+          if ! final_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+            --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+            --observations "${observations}")"; then
+            echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=FAIL' >&2
+            printf '%s\n' "${final_out}" >&2
+            echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}" >&2
+            exit 1
+          fi
+          printf '%s\n' "${final_out}"
+          served_version="$(printf '%s\n' "${final_out}" | sed -n 's/^POST_MUTATION_SERVED_VERSION_ID=//p')"
+          echo "POST_ROLLBACK_SERVED_VERSION_ID=${served_version}"
+          echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS'
+          echo 'ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO'
+          echo 'B54_ENGINE_PRODUCTION_ROLLBACK=PASS'
+
+          echo 'POST_DEPLOY_A7_ADMISSION_BINDING=PASS'
+          echo 'POST_DEPLOY_SERVED_VERSION_GUARD=PASS'
+          # Final deploy PASS only after served-version evidence above: the
+          # deploy command's exit 0 alone never proves a healthy production
+          # deployment (f88). Liveness is still proven separately by the
+          # health smoke that follows.
+          echo 'B54_ENGINE_PRODUCTION_DEPLOY=PASS'
+
+      - name: Post-deploy smoke
+        run: |
+          set -euo pipefail
+          sleep 15
+          # Bounded non-secret diagnostic: always emit the numeric HTTP status
+          # (curl transport failure normalizes to 000 via the case guard), never
+          # dump the response body, and still fail closed on non-200.
+          CODE=$(curl -s -o /tmp/health.json -w '%{http_code}' --max-time 20 'https://engine.padiem.net/internal/v1/health' || true)
+          case "${CODE}" in ''|*[!0-9]*) CODE=000 ;; esac
+          echo "HEALTH_HTTP_STATUS=${CODE}"
+          if [ "${CODE}" != '200' ]; then
+            echo 'B54_ENGINE_PRODUCTION_SMOKE=FAIL'
+            exit 1
+          fi
+          grep -q '"status":"ok"' /tmp/health.json
+          grep -q '"b14_service_bound":true' /tmp/health.json
+          grep -q 'orchestration_run' /tmp/health.json
+          echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
+
+  smoke-idempotency:
+    # WO-8 PR-B: A9 production idempotency smoke (BLOCKER_4/5/6/7 evidence).
+    # Runs ONLY after a confirmed production deploy, against the exact deployed
+    # SHA. Missing smoke secrets fail the job honestly (SKIPPED_MISSING_SECRET).
+    needs: deploy-production-engine
+    if: github.event.inputs.confirmation == 'DEPLOY_B54_ENGINE_FROM_EXACT_MAIN'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      # ISSUE #2484 Goal A: the smoke evidence path is bound to the single
+      # canonical B62 -> Engine authority. CALLER_ID is the fixed non-secret
+      # identifier of the dedicated overlay-only Claw caller (#2520:
+      # b54-p01-overlay-20260914-a1, replacing the legacy shared Claw id)
+      # and the credential is the SAME secret the B62
+      # worker uses (B62_P01_ENGINE_CREDENTIAL). The former independent
+      # PADIEM_ENGINE_SMOKE_CALLER_ID/_SECRET secrets are removed so the smoke
+      # authority can no longer drift from the runtime authority. A10 reads only
+      # the legacy env NAMES, so those names are re-pointed at the same canonical
+      # source; no independent smoke credential secret remains.
+      CALLER_ID: b54-p01-overlay-20260914-a1
+      CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      PADIEM_ENGINE_SMOKE_CALLER_ID: b54-p01-overlay-20260914-a1
+      PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ENGINE_BASE_URL: https://engine.padiem.net
+      GITHUB_RUN_ID: ${{ github.run_id }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install padiem-ai-core
+        run: python -m pip install --quiet -e packages/padiem-ai-core
+
+      - name: Fail honestly when smoke secrets are missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${CALLER_ID:-}" ] || [ -z "${CALLER_SECRET:-}" ]; then
+            echo 'SMOKE=SKIPPED_MISSING_SECRET'
+            exit 1
+          fi
+          echo 'SMOKE_SECRETS_PRESENT=1'
+
+      - name: Run A9 production idempotency smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a9_production_smoke.py | tee /tmp/a9_smoke.log
+          grep -q 'A9_SMOKE=PASS' /tmp/a9_smoke.log
+          grep 'A9_SMOKE=PASS' /tmp/a9_smoke.log | tail -1
+
+      - name: Run A10 continuation fail-closed smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py | tee /tmp/a10_smoke.log
+          grep -q 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log
+          grep 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log | tail -1
+
+      # WO-10 ACT-1/ACT-2 (#2010): A11 proves the Gmail tool_runtime route
+      # state honestly. It NEVER fakes a PASS. Since the ACT-2 route
+      # activation the Tool routes are admitted in Engine source, so the
+      # former DEFERRED REASON=ROUTE_NOT_WIRED tolerance is removed: a 404
+      # now FAILs as a stale-deploy contradiction. Accepted non-blocking
+      # verdicts: A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS (tool contract live:
+      # route wired, runtime bound, Agent authorized, Gmail tool registered,
+      # provider never called) or DEFERRED REASON=TOOL_RUNTIME_UNAVAILABLE /
+      # TOOL_NOT_ALLOWED (route admitted, credential/authorization gate D43
+      # still pending). A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL means
+      # contradictory/unexpected production behaviour and fails the gate.
+      - name: Run A11 Gmail tool_runtime smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py | tee /tmp/a11_smoke.log
+          grep -qE 'A11_GMAIL_TOOL_RUNTIME_SMOKE=(PASS|DEFERRED)' /tmp/a11_smoke.log
+          if grep -q 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' /tmp/a11_smoke.log; then
+            echo 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          grep 'A11_GMAIL_TOOL_RUNTIME_SMOKE=' /tmp/a11_smoke.log | tail -1
+
+      - name: Run A12 streaming idempotency replay smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log
+          # An external provider 5xx is recorded as SKIPPED_UPSTREAM, never as a
+          # pass: the mandatory Engine-side stages (S0 manifest, S3 conflict)
+          # still had to hold for that verdict. FAIL stays a hard gate failure.
+          grep -qE 'A12_STREAM_REPLAY_SMOKE=(PASS|SKIPPED_UPSTREAM)' /tmp/a12_smoke.log
+          if grep -q 'A12_STREAM_REPLAY_SMOKE=FAIL' /tmp/a12_smoke.log; then
+            echo 'A12_STREAM_REPLAY_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          A12_REPLAY_EVIDENCE="$(grep 'A12_STREAM_REPLAY_SMOKE=' /tmp/a12_smoke.log | tail -1 | cut -d= -f2-)"
+          echo "A12_REPLAY_EVIDENCE=${A12_REPLAY_EVIDENCE}"
+
+  rollback-production-engine:
+    if: github.event.inputs.confirmation == 'ROLLBACK_B54_ENGINE_TO_PREVIOUS_VERSION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Rollback engine worker to previous version
+        working-directory: apps/padiem-ai-engine
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ROLLBACK_TARGET: ${{ github.event.inputs.rollback_version_id }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          # #2748: rollback names its own target. #2752: what that target proves
+          # is decided by the shared mutation-class evidence primitive, not by
+          # shell string comparison. A code deploy must prove the served version
+          # CHANGED; a rollback must prove it EQUALS the named target.
+          if [ -z "${ROLLBACK_TARGET:-}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=rollback_version_id is required; implicit previous-version selection is refused' >&2
+            echo 'ROLLBACK_TARGET_EXPLICIT=NO' >&2
+            exit 1
+          fi
+          # Canonical safe-version-id contract (same charset rule the resolver
+          # uses) so an owner typo or a hostile string never reaches the CLI.
+          python3 .github/scripts/b54_engine_served_version_guard.py \
+            validate-version-id --version-id "${ROLLBACK_TARGET}"
+          echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}"
+          echo 'ROLLBACK_TARGET_EXPLICIT=YES'
+          echo 'IMPLICIT_PREVIOUS_VERSION_SELECTION=NO'
+          # Baseline the served version BEFORE mutating, so the evidence has a
+          # pre-state and a rollback is never attempted blind.
+          pre_deployments="${RUNNER_TEMP}/deployments-rollback-baseline.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${pre_deployments}"
+          pre_resolve="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${pre_deployments}")"
+          pre_version="$(printf '%s\n' "${pre_resolve}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          if [ -z "${pre_version}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=canonical resolver returned no pre-rollback served version' >&2
+            exit 1
+          fi
+          echo "PRE_ROLLBACK_SERVED_VERSION_ID=${pre_version}"
+          cd apps/padiem-ai-engine
+          npx wrangler@4 rollback "${ROLLBACK_TARGET}" \
+            --message "B54 engine production rollback to explicit target (owner-authorized gate)"
+          echo 'B54_ENGINE_ROLLBACK_COMMAND=EXIT_ZERO'
+          cd "$GITHUB_WORKSPACE"
+          # Bounded readback. Each attempt resolves through the canonical
+          # resolver and is recorded as one observation; a rejected read is
+          # recorded too and never finalizes anything either way (#2453
+          # provenance). No envelope rule is evaluated in this shell.
+          observations="${RUNNER_TEMP}/rollback-observations.txt"
+          : > "${observations}"
+          rollback_reads=0
+          for attempt in $(seq 1 30); do
+            rollback_reads="${attempt}"
+            deployments="${RUNNER_TEMP}/deployments-rollback-${attempt}.json"
+            if curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}" \
+              && resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"; then
+              candidate="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+              if [ -n "${candidate}" ]; then
+                printf 'ok %s\n' "${candidate}" >> "${observations}"
+              else
+                printf 'reject -\n' >> "${observations}"
+              fi
+            else
+              printf 'reject -\n' >> "${observations}"
+            fi
+            if evidence_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+              --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+              --observations "${observations}" --window-open)"; then
+              evidence_rc=0
+            else
+              evidence_rc=$?
+            fi
+            # 3 means "not final yet, the window is still open"; anything else
+            # stops polling and the closed-window decision below settles it.
+            if [ "${evidence_rc}" -ne 3 ]; then
+              break
+            fi
+            sleep 2
+          done
+          echo "POST_ROLLBACK_CONVERGENCE_READS=${rollback_reads}"
+          # Re-decide with the window CLOSED: the verdict that ends this step
+          # must be one the primitive itself considers final.
+          if ! final_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+            --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+            --observations "${observations}")"; then
+            echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=FAIL' >&2
+            printf '%s\n' "${final_out}" >&2
+            echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}" >&2
+            exit 1
+          fi
+          printf '%s\n' "${final_out}"
+          served_version="$(printf '%s\n' "${final_out}" | sed -n 's/^POST_MUTATION_SERVED_VERSION_ID=//p')"
+          echo "POST_ROLLBACK_SERVED_VERSION_ID=${served_version}"
+          echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS'
+          echo 'ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO'
+          echo 'B54_ENGINE_PRODUCTION_ROLLBACK=PASS'
+ /tmp/a7_unscoped_smoke.log
+          grep -q '^REAL_PROVIDER_CALLS=0      - name: Run A10 continuation fail-closed smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py | tee /tmp/a10_smoke.log
+          grep -q 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log
+          grep 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log | tail -1
+
+      # WO-10 ACT-1/ACT-2 (#2010): A11 proves the Gmail tool_runtime route
+      # state honestly. It NEVER fakes a PASS. Since the ACT-2 route
+      # activation the Tool routes are admitted in Engine source, so the
+      # former DEFERRED REASON=ROUTE_NOT_WIRED tolerance is removed: a 404
+      # now FAILs as a stale-deploy contradiction. Accepted non-blocking
+      # verdicts: A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS (tool contract live:
+      # route wired, runtime bound, Agent authorized, Gmail tool registered,
+      # provider never called) or DEFERRED REASON=TOOL_RUNTIME_UNAVAILABLE /
+      # TOOL_NOT_ALLOWED (route admitted, credential/authorization gate D43
+      # still pending). A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL means
+      # contradictory/unexpected production behaviour and fails the gate.
+      - name: Run A11 Gmail tool_runtime smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py | tee /tmp/a11_smoke.log
+          grep -qE 'A11_GMAIL_TOOL_RUNTIME_SMOKE=(PASS|DEFERRED)' /tmp/a11_smoke.log
+          if grep -q 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' /tmp/a11_smoke.log; then
+            echo 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          grep 'A11_GMAIL_TOOL_RUNTIME_SMOKE=' /tmp/a11_smoke.log | tail -1
+
+      - name: Run A12 streaming idempotency replay smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log
+          # An external provider 5xx is recorded as SKIPPED_UPSTREAM, never as a
+          # pass: the mandatory Engine-side stages (S0 manifest, S3 conflict)
+          # still had to hold for that verdict. FAIL stays a hard gate failure.
+          grep -qE 'A12_STREAM_REPLAY_SMOKE=(PASS|SKIPPED_UPSTREAM)' /tmp/a12_smoke.log
+          if grep -q 'A12_STREAM_REPLAY_SMOKE=FAIL' /tmp/a12_smoke.log; then
+            echo 'A12_STREAM_REPLAY_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          A12_REPLAY_EVIDENCE="$(grep 'A12_STREAM_REPLAY_SMOKE=' /tmp/a12_smoke.log | tail -1 | cut -d= -f2-)"
+          echo "A12_REPLAY_EVIDENCE=${A12_REPLAY_EVIDENCE}"
+
+  rollback-production-engine:
+    if: github.event.inputs.confirmation == 'ROLLBACK_B54_ENGINE_TO_PREVIOUS_VERSION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Rollback engine worker to previous version
+        working-directory: apps/padiem-ai-engine
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ROLLBACK_TARGET: ${{ github.event.inputs.rollback_version_id }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          # #2748: rollback names its own target. #2752: what that target proves
+          # is decided by the shared mutation-class evidence primitive, not by
+          # shell string comparison. A code deploy must prove the served version
+          # CHANGED; a rollback must prove it EQUALS the named target.
+          if [ -z "${ROLLBACK_TARGET:-}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=rollback_version_id is required; implicit previous-version selection is refused' >&2
+            echo 'ROLLBACK_TARGET_EXPLICIT=NO' >&2
+            exit 1
+          fi
+          # Canonical safe-version-id contract (same charset rule the resolver
+          # uses) so an owner typo or a hostile string never reaches the CLI.
+          python3 .github/scripts/b54_engine_served_version_guard.py \
+            validate-version-id --version-id "${ROLLBACK_TARGET}"
+          echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}"
+          echo 'ROLLBACK_TARGET_EXPLICIT=YES'
+          echo 'IMPLICIT_PREVIOUS_VERSION_SELECTION=NO'
+          # Baseline the served version BEFORE mutating, so the evidence has a
+          # pre-state and a rollback is never attempted blind.
+          pre_deployments="${RUNNER_TEMP}/deployments-rollback-baseline.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${pre_deployments}"
+          pre_resolve="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${pre_deployments}")"
+          pre_version="$(printf '%s\n' "${pre_resolve}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          if [ -z "${pre_version}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=canonical resolver returned no pre-rollback served version' >&2
+            exit 1
+          fi
+          echo "PRE_ROLLBACK_SERVED_VERSION_ID=${pre_version}"
+          cd apps/padiem-ai-engine
+          npx wrangler@4 rollback "${ROLLBACK_TARGET}" \
+            --message "B54 engine production rollback to explicit target (owner-authorized gate)"
+          echo 'B54_ENGINE_ROLLBACK_COMMAND=EXIT_ZERO'
+          cd "$GITHUB_WORKSPACE"
+          # Bounded readback. Each attempt resolves through the canonical
+          # resolver and is recorded as one observation; a rejected read is
+          # recorded too and never finalizes anything either way (#2453
+          # provenance). No envelope rule is evaluated in this shell.
+          observations="${RUNNER_TEMP}/rollback-observations.txt"
+          : > "${observations}"
+          rollback_reads=0
+          for attempt in $(seq 1 30); do
+            rollback_reads="${attempt}"
+            deployments="${RUNNER_TEMP}/deployments-rollback-${attempt}.json"
+            if curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}" \
+              && resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"; then
+              candidate="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+              if [ -n "${candidate}" ]; then
+                printf 'ok %s\n' "${candidate}" >> "${observations}"
+              else
+                printf 'reject -\n' >> "${observations}"
+              fi
+            else
+              printf 'reject -\n' >> "${observations}"
+            fi
+            if evidence_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+              --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+              --observations "${observations}" --window-open)"; then
+              evidence_rc=0
+            else
+              evidence_rc=$?
+            fi
+            # 3 means "not final yet, the window is still open"; anything else
+            # stops polling and the closed-window decision below settles it.
+            if [ "${evidence_rc}" -ne 3 ]; then
+              break
+            fi
+            sleep 2
+          done
+          echo "POST_ROLLBACK_CONVERGENCE_READS=${rollback_reads}"
+          # Re-decide with the window CLOSED: the verdict that ends this step
+          # must be one the primitive itself considers final.
+          if ! final_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+            --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+            --observations "${observations}")"; then
+            echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=FAIL' >&2
+            printf '%s\n' "${final_out}" >&2
+            echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}" >&2
+            exit 1
+          fi
+          printf '%s\n' "${final_out}"
+          served_version="$(printf '%s\n' "${final_out}" | sed -n 's/^POST_MUTATION_SERVED_VERSION_ID=//p')"
+          echo "POST_ROLLBACK_SERVED_VERSION_ID=${served_version}"
+          echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS'
+          echo 'ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO'
+          echo 'B54_ENGINE_PRODUCTION_ROLLBACK=PASS'
+
+          printf '%s\n' "${verify_out}" | grep -q '^ENGINE_ADMISSION_BINDING_TARGET_VALIDATED=YES          # Final deploy PASS only after served-version evidence above: the
+          # deploy command's exit 0 alone never proves a healthy production
+          # deployment (f88). Liveness is still proven separately by the
+          # health smoke that follows.
+          echo 'B54_ENGINE_PRODUCTION_DEPLOY=PASS'
+
+      - name: Post-deploy smoke
+        run: |
+          set -euo pipefail
+          sleep 15
+          # Bounded non-secret diagnostic: always emit the numeric HTTP status
+          # (curl transport failure normalizes to 000 via the case guard), never
+          # dump the response body, and still fail closed on non-200.
+          CODE=$(curl -s -o /tmp/health.json -w '%{http_code}' --max-time 20 'https://engine.padiem.net/internal/v1/health' || true)
+          case "${CODE}" in ''|*[!0-9]*) CODE=000 ;; esac
+          echo "HEALTH_HTTP_STATUS=${CODE}"
+          if [ "${CODE}" != '200' ]; then
+            echo 'B54_ENGINE_PRODUCTION_SMOKE=FAIL'
+            exit 1
+          fi
+          grep -q '"status":"ok"' /tmp/health.json
+          grep -q '"b14_service_bound":true' /tmp/health.json
+          grep -q 'orchestration_run' /tmp/health.json
+          echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
+
+  smoke-idempotency:
+    # WO-8 PR-B: A9 production idempotency smoke (BLOCKER_4/5/6/7 evidence).
+    # Runs ONLY after a confirmed production deploy, against the exact deployed
+    # SHA. Missing smoke secrets fail the job honestly (SKIPPED_MISSING_SECRET).
+    needs: deploy-production-engine
+    if: github.event.inputs.confirmation == 'DEPLOY_B54_ENGINE_FROM_EXACT_MAIN'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      # ISSUE #2484 Goal A: the smoke evidence path is bound to the single
+      # canonical B62 -> Engine authority. CALLER_ID is the fixed non-secret
+      # identifier of the dedicated overlay-only Claw caller (#2520:
+      # b54-p01-overlay-20260914-a1, replacing the legacy shared Claw id)
+      # and the credential is the SAME secret the B62
+      # worker uses (B62_P01_ENGINE_CREDENTIAL). The former independent
+      # PADIEM_ENGINE_SMOKE_CALLER_ID/_SECRET secrets are removed so the smoke
+      # authority can no longer drift from the runtime authority. A10 reads only
+      # the legacy env NAMES, so those names are re-pointed at the same canonical
+      # source; no independent smoke credential secret remains.
+      CALLER_ID: b54-p01-overlay-20260914-a1
+      CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      PADIEM_ENGINE_SMOKE_CALLER_ID: b54-p01-overlay-20260914-a1
+      PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ENGINE_BASE_URL: https://engine.padiem.net
+      GITHUB_RUN_ID: ${{ github.run_id }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install padiem-ai-core
+        run: python -m pip install --quiet -e packages/padiem-ai-core
+
+      - name: Fail honestly when smoke secrets are missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${CALLER_ID:-}" ] || [ -z "${CALLER_SECRET:-}" ]; then
+            echo 'SMOKE=SKIPPED_MISSING_SECRET'
+            exit 1
+          fi
+          echo 'SMOKE_SECRETS_PRESENT=1'
+
+      - name: Run A9 production idempotency smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a9_production_smoke.py | tee /tmp/a9_smoke.log
+          grep -q 'A9_SMOKE=PASS' /tmp/a9_smoke.log
+          grep 'A9_SMOKE=PASS' /tmp/a9_smoke.log | tail -1
+
+      - name: Run A10 continuation fail-closed smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py | tee /tmp/a10_smoke.log
+          grep -q 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log
+          grep 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log | tail -1
+
+      # WO-10 ACT-1/ACT-2 (#2010): A11 proves the Gmail tool_runtime route
+      # state honestly. It NEVER fakes a PASS. Since the ACT-2 route
+      # activation the Tool routes are admitted in Engine source, so the
+      # former DEFERRED REASON=ROUTE_NOT_WIRED tolerance is removed: a 404
+      # now FAILs as a stale-deploy contradiction. Accepted non-blocking
+      # verdicts: A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS (tool contract live:
+      # route wired, runtime bound, Agent authorized, Gmail tool registered,
+      # provider never called) or DEFERRED REASON=TOOL_RUNTIME_UNAVAILABLE /
+      # TOOL_NOT_ALLOWED (route admitted, credential/authorization gate D43
+      # still pending). A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL means
+      # contradictory/unexpected production behaviour and fails the gate.
+      - name: Run A11 Gmail tool_runtime smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py | tee /tmp/a11_smoke.log
+          grep -qE 'A11_GMAIL_TOOL_RUNTIME_SMOKE=(PASS|DEFERRED)' /tmp/a11_smoke.log
+          if grep -q 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' /tmp/a11_smoke.log; then
+            echo 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          grep 'A11_GMAIL_TOOL_RUNTIME_SMOKE=' /tmp/a11_smoke.log | tail -1
+
+      - name: Run A12 streaming idempotency replay smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log
+          # An external provider 5xx is recorded as SKIPPED_UPSTREAM, never as a
+          # pass: the mandatory Engine-side stages (S0 manifest, S3 conflict)
+          # still had to hold for that verdict. FAIL stays a hard gate failure.
+          grep -qE 'A12_STREAM_REPLAY_SMOKE=(PASS|SKIPPED_UPSTREAM)' /tmp/a12_smoke.log
+          if grep -q 'A12_STREAM_REPLAY_SMOKE=FAIL' /tmp/a12_smoke.log; then
+            echo 'A12_STREAM_REPLAY_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          A12_REPLAY_EVIDENCE="$(grep 'A12_STREAM_REPLAY_SMOKE=' /tmp/a12_smoke.log | tail -1 | cut -d= -f2-)"
+          echo "A12_REPLAY_EVIDENCE=${A12_REPLAY_EVIDENCE}"
+
+  rollback-production-engine:
+    if: github.event.inputs.confirmation == 'ROLLBACK_B54_ENGINE_TO_PREVIOUS_VERSION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Rollback engine worker to previous version
+        working-directory: apps/padiem-ai-engine
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ROLLBACK_TARGET: ${{ github.event.inputs.rollback_version_id }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          # #2748: rollback names its own target. #2752: what that target proves
+          # is decided by the shared mutation-class evidence primitive, not by
+          # shell string comparison. A code deploy must prove the served version
+          # CHANGED; a rollback must prove it EQUALS the named target.
+          if [ -z "${ROLLBACK_TARGET:-}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=rollback_version_id is required; implicit previous-version selection is refused' >&2
+            echo 'ROLLBACK_TARGET_EXPLICIT=NO' >&2
+            exit 1
+          fi
+          # Canonical safe-version-id contract (same charset rule the resolver
+          # uses) so an owner typo or a hostile string never reaches the CLI.
+          python3 .github/scripts/b54_engine_served_version_guard.py \
+            validate-version-id --version-id "${ROLLBACK_TARGET}"
+          echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}"
+          echo 'ROLLBACK_TARGET_EXPLICIT=YES'
+          echo 'IMPLICIT_PREVIOUS_VERSION_SELECTION=NO'
+          # Baseline the served version BEFORE mutating, so the evidence has a
+          # pre-state and a rollback is never attempted blind.
+          pre_deployments="${RUNNER_TEMP}/deployments-rollback-baseline.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${pre_deployments}"
+          pre_resolve="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${pre_deployments}")"
+          pre_version="$(printf '%s\n' "${pre_resolve}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          if [ -z "${pre_version}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=canonical resolver returned no pre-rollback served version' >&2
+            exit 1
+          fi
+          echo "PRE_ROLLBACK_SERVED_VERSION_ID=${pre_version}"
+          cd apps/padiem-ai-engine
+          npx wrangler@4 rollback "${ROLLBACK_TARGET}" \
+            --message "B54 engine production rollback to explicit target (owner-authorized gate)"
+          echo 'B54_ENGINE_ROLLBACK_COMMAND=EXIT_ZERO'
+          cd "$GITHUB_WORKSPACE"
+          # Bounded readback. Each attempt resolves through the canonical
+          # resolver and is recorded as one observation; a rejected read is
+          # recorded too and never finalizes anything either way (#2453
+          # provenance). No envelope rule is evaluated in this shell.
+          observations="${RUNNER_TEMP}/rollback-observations.txt"
+          : > "${observations}"
+          rollback_reads=0
+          for attempt in $(seq 1 30); do
+            rollback_reads="${attempt}"
+            deployments="${RUNNER_TEMP}/deployments-rollback-${attempt}.json"
+            if curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}" \
+              && resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"; then
+              candidate="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+              if [ -n "${candidate}" ]; then
+                printf 'ok %s\n' "${candidate}" >> "${observations}"
+              else
+                printf 'reject -\n' >> "${observations}"
+              fi
+            else
+              printf 'reject -\n' >> "${observations}"
+            fi
+            if evidence_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+              --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+              --observations "${observations}" --window-open)"; then
+              evidence_rc=0
+            else
+              evidence_rc=$?
+            fi
+            # 3 means "not final yet, the window is still open"; anything else
+            # stops polling and the closed-window decision below settles it.
+            if [ "${evidence_rc}" -ne 3 ]; then
+              break
+            fi
+            sleep 2
+          done
+          echo "POST_ROLLBACK_CONVERGENCE_READS=${rollback_reads}"
+          # Re-decide with the window CLOSED: the verdict that ends this step
+          # must be one the primitive itself considers final.
+          if ! final_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+            --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+            --observations "${observations}")"; then
+            echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=FAIL' >&2
+            printf '%s\n' "${final_out}" >&2
+            echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}" >&2
+            exit 1
+          fi
+          printf '%s\n' "${final_out}"
+          served_version="$(printf '%s\n' "${final_out}" | sed -n 's/^POST_MUTATION_SERVED_VERSION_ID=//p')"
+          echo "POST_ROLLBACK_SERVED_VERSION_ID=${served_version}"
+          echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS'
+          echo 'ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO'
+          echo 'B54_ENGINE_PRODUCTION_ROLLBACK=PASS'
+
+          echo 'POST_DEPLOY_A7_ADMISSION_BINDING=PASS'
+          echo 'POST_DEPLOY_SERVED_VERSION_GUARD=PASS'
+          # Final deploy PASS only after served-version evidence above: the
+          # deploy command's exit 0 alone never proves a healthy production
+          # deployment (f88). Liveness is still proven separately by the
+          # health smoke that follows.
+          echo 'B54_ENGINE_PRODUCTION_DEPLOY=PASS'
+
+      - name: Post-deploy smoke
+        run: |
+          set -euo pipefail
+          sleep 15
+          # Bounded non-secret diagnostic: always emit the numeric HTTP status
+          # (curl transport failure normalizes to 000 via the case guard), never
+          # dump the response body, and still fail closed on non-200.
+          CODE=$(curl -s -o /tmp/health.json -w '%{http_code}' --max-time 20 'https://engine.padiem.net/internal/v1/health' || true)
+          case "${CODE}" in ''|*[!0-9]*) CODE=000 ;; esac
+          echo "HEALTH_HTTP_STATUS=${CODE}"
+          if [ "${CODE}" != '200' ]; then
+            echo 'B54_ENGINE_PRODUCTION_SMOKE=FAIL'
+            exit 1
+          fi
+          grep -q '"status":"ok"' /tmp/health.json
+          grep -q '"b14_service_bound":true' /tmp/health.json
+          grep -q 'orchestration_run' /tmp/health.json
+          echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
+
+  smoke-idempotency:
+    # WO-8 PR-B: A9 production idempotency smoke (BLOCKER_4/5/6/7 evidence).
+    # Runs ONLY after a confirmed production deploy, against the exact deployed
+    # SHA. Missing smoke secrets fail the job honestly (SKIPPED_MISSING_SECRET).
+    needs: deploy-production-engine
+    if: github.event.inputs.confirmation == 'DEPLOY_B54_ENGINE_FROM_EXACT_MAIN'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      # ISSUE #2484 Goal A: the smoke evidence path is bound to the single
+      # canonical B62 -> Engine authority. CALLER_ID is the fixed non-secret
+      # identifier of the dedicated overlay-only Claw caller (#2520:
+      # b54-p01-overlay-20260914-a1, replacing the legacy shared Claw id)
+      # and the credential is the SAME secret the B62
+      # worker uses (B62_P01_ENGINE_CREDENTIAL). The former independent
+      # PADIEM_ENGINE_SMOKE_CALLER_ID/_SECRET secrets are removed so the smoke
+      # authority can no longer drift from the runtime authority. A10 reads only
+      # the legacy env NAMES, so those names are re-pointed at the same canonical
+      # source; no independent smoke credential secret remains.
+      CALLER_ID: b54-p01-overlay-20260914-a1
+      CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      PADIEM_ENGINE_SMOKE_CALLER_ID: b54-p01-overlay-20260914-a1
+      PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ENGINE_BASE_URL: https://engine.padiem.net
+      GITHUB_RUN_ID: ${{ github.run_id }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install padiem-ai-core
+        run: python -m pip install --quiet -e packages/padiem-ai-core
+
+      - name: Fail honestly when smoke secrets are missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${CALLER_ID:-}" ] || [ -z "${CALLER_SECRET:-}" ]; then
+            echo 'SMOKE=SKIPPED_MISSING_SECRET'
+            exit 1
+          fi
+          echo 'SMOKE_SECRETS_PRESENT=1'
+
+      - name: Run A9 production idempotency smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a9_production_smoke.py | tee /tmp/a9_smoke.log
+          grep -q 'A9_SMOKE=PASS' /tmp/a9_smoke.log
+          grep 'A9_SMOKE=PASS' /tmp/a9_smoke.log | tail -1
+
+      - name: Run A10 continuation fail-closed smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py | tee /tmp/a10_smoke.log
+          grep -q 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log
+          grep 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log | tail -1
+
+      # WO-10 ACT-1/ACT-2 (#2010): A11 proves the Gmail tool_runtime route
+      # state honestly. It NEVER fakes a PASS. Since the ACT-2 route
+      # activation the Tool routes are admitted in Engine source, so the
+      # former DEFERRED REASON=ROUTE_NOT_WIRED tolerance is removed: a 404
+      # now FAILs as a stale-deploy contradiction. Accepted non-blocking
+      # verdicts: A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS (tool contract live:
+      # route wired, runtime bound, Agent authorized, Gmail tool registered,
+      # provider never called) or DEFERRED REASON=TOOL_RUNTIME_UNAVAILABLE /
+      # TOOL_NOT_ALLOWED (route admitted, credential/authorization gate D43
+      # still pending). A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL means
+      # contradictory/unexpected production behaviour and fails the gate.
+      - name: Run A11 Gmail tool_runtime smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py | tee /tmp/a11_smoke.log
+          grep -qE 'A11_GMAIL_TOOL_RUNTIME_SMOKE=(PASS|DEFERRED)' /tmp/a11_smoke.log
+          if grep -q 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' /tmp/a11_smoke.log; then
+            echo 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          grep 'A11_GMAIL_TOOL_RUNTIME_SMOKE=' /tmp/a11_smoke.log | tail -1
+
+      - name: Run A12 streaming idempotency replay smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log
+          # An external provider 5xx is recorded as SKIPPED_UPSTREAM, never as a
+          # pass: the mandatory Engine-side stages (S0 manifest, S3 conflict)
+          # still had to hold for that verdict. FAIL stays a hard gate failure.
+          grep -qE 'A12_STREAM_REPLAY_SMOKE=(PASS|SKIPPED_UPSTREAM)' /tmp/a12_smoke.log
+          if grep -q 'A12_STREAM_REPLAY_SMOKE=FAIL' /tmp/a12_smoke.log; then
+            echo 'A12_STREAM_REPLAY_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          A12_REPLAY_EVIDENCE="$(grep 'A12_STREAM_REPLAY_SMOKE=' /tmp/a12_smoke.log | tail -1 | cut -d= -f2-)"
+          echo "A12_REPLAY_EVIDENCE=${A12_REPLAY_EVIDENCE}"
+
+  rollback-production-engine:
+    if: github.event.inputs.confirmation == 'ROLLBACK_B54_ENGINE_TO_PREVIOUS_VERSION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Rollback engine worker to previous version
+        working-directory: apps/padiem-ai-engine
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ROLLBACK_TARGET: ${{ github.event.inputs.rollback_version_id }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          # #2748: rollback names its own target. #2752: what that target proves
+          # is decided by the shared mutation-class evidence primitive, not by
+          # shell string comparison. A code deploy must prove the served version
+          # CHANGED; a rollback must prove it EQUALS the named target.
+          if [ -z "${ROLLBACK_TARGET:-}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=rollback_version_id is required; implicit previous-version selection is refused' >&2
+            echo 'ROLLBACK_TARGET_EXPLICIT=NO' >&2
+            exit 1
+          fi
+          # Canonical safe-version-id contract (same charset rule the resolver
+          # uses) so an owner typo or a hostile string never reaches the CLI.
+          python3 .github/scripts/b54_engine_served_version_guard.py \
+            validate-version-id --version-id "${ROLLBACK_TARGET}"
+          echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}"
+          echo 'ROLLBACK_TARGET_EXPLICIT=YES'
+          echo 'IMPLICIT_PREVIOUS_VERSION_SELECTION=NO'
+          # Baseline the served version BEFORE mutating, so the evidence has a
+          # pre-state and a rollback is never attempted blind.
+          pre_deployments="${RUNNER_TEMP}/deployments-rollback-baseline.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${pre_deployments}"
+          pre_resolve="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${pre_deployments}")"
+          pre_version="$(printf '%s\n' "${pre_resolve}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          if [ -z "${pre_version}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=canonical resolver returned no pre-rollback served version' >&2
+            exit 1
+          fi
+          echo "PRE_ROLLBACK_SERVED_VERSION_ID=${pre_version}"
+          cd apps/padiem-ai-engine
+          npx wrangler@4 rollback "${ROLLBACK_TARGET}" \
+            --message "B54 engine production rollback to explicit target (owner-authorized gate)"
+          echo 'B54_ENGINE_ROLLBACK_COMMAND=EXIT_ZERO'
+          cd "$GITHUB_WORKSPACE"
+          # Bounded readback. Each attempt resolves through the canonical
+          # resolver and is recorded as one observation; a rejected read is
+          # recorded too and never finalizes anything either way (#2453
+          # provenance). No envelope rule is evaluated in this shell.
+          observations="${RUNNER_TEMP}/rollback-observations.txt"
+          : > "${observations}"
+          rollback_reads=0
+          for attempt in $(seq 1 30); do
+            rollback_reads="${attempt}"
+            deployments="${RUNNER_TEMP}/deployments-rollback-${attempt}.json"
+            if curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}" \
+              && resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"; then
+              candidate="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+              if [ -n "${candidate}" ]; then
+                printf 'ok %s\n' "${candidate}" >> "${observations}"
+              else
+                printf 'reject -\n' >> "${observations}"
+              fi
+            else
+              printf 'reject -\n' >> "${observations}"
+            fi
+            if evidence_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+              --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+              --observations "${observations}" --window-open)"; then
+              evidence_rc=0
+            else
+              evidence_rc=$?
+            fi
+            # 3 means "not final yet, the window is still open"; anything else
+            # stops polling and the closed-window decision below settles it.
+            if [ "${evidence_rc}" -ne 3 ]; then
+              break
+            fi
+            sleep 2
+          done
+          echo "POST_ROLLBACK_CONVERGENCE_READS=${rollback_reads}"
+          # Re-decide with the window CLOSED: the verdict that ends this step
+          # must be one the primitive itself considers final.
+          if ! final_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+            --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+            --observations "${observations}")"; then
+            echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=FAIL' >&2
+            printf '%s\n' "${final_out}" >&2
+            echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}" >&2
+            exit 1
+          fi
+          printf '%s\n' "${final_out}"
+          served_version="$(printf '%s\n' "${final_out}" | sed -n 's/^POST_MUTATION_SERVED_VERSION_ID=//p')"
+          echo "POST_ROLLBACK_SERVED_VERSION_ID=${served_version}"
+          echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS'
+          echo 'ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO'
+          echo 'B54_ENGINE_PRODUCTION_ROLLBACK=PASS'
+ /tmp/a7_unscoped_smoke.log
+          grep -q '^AUTHENTICATED_USER_LIVE_PROOF=NOT_CLAIMED      - name: Run A10 continuation fail-closed smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py | tee /tmp/a10_smoke.log
+          grep -q 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log
+          grep 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log | tail -1
+
+      # WO-10 ACT-1/ACT-2 (#2010): A11 proves the Gmail tool_runtime route
+      # state honestly. It NEVER fakes a PASS. Since the ACT-2 route
+      # activation the Tool routes are admitted in Engine source, so the
+      # former DEFERRED REASON=ROUTE_NOT_WIRED tolerance is removed: a 404
+      # now FAILs as a stale-deploy contradiction. Accepted non-blocking
+      # verdicts: A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS (tool contract live:
+      # route wired, runtime bound, Agent authorized, Gmail tool registered,
+      # provider never called) or DEFERRED REASON=TOOL_RUNTIME_UNAVAILABLE /
+      # TOOL_NOT_ALLOWED (route admitted, credential/authorization gate D43
+      # still pending). A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL means
+      # contradictory/unexpected production behaviour and fails the gate.
+      - name: Run A11 Gmail tool_runtime smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py | tee /tmp/a11_smoke.log
+          grep -qE 'A11_GMAIL_TOOL_RUNTIME_SMOKE=(PASS|DEFERRED)' /tmp/a11_smoke.log
+          if grep -q 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' /tmp/a11_smoke.log; then
+            echo 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          grep 'A11_GMAIL_TOOL_RUNTIME_SMOKE=' /tmp/a11_smoke.log | tail -1
+
+      - name: Run A12 streaming idempotency replay smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log
+          # An external provider 5xx is recorded as SKIPPED_UPSTREAM, never as a
+          # pass: the mandatory Engine-side stages (S0 manifest, S3 conflict)
+          # still had to hold for that verdict. FAIL stays a hard gate failure.
+          grep -qE 'A12_STREAM_REPLAY_SMOKE=(PASS|SKIPPED_UPSTREAM)' /tmp/a12_smoke.log
+          if grep -q 'A12_STREAM_REPLAY_SMOKE=FAIL' /tmp/a12_smoke.log; then
+            echo 'A12_STREAM_REPLAY_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          A12_REPLAY_EVIDENCE="$(grep 'A12_STREAM_REPLAY_SMOKE=' /tmp/a12_smoke.log | tail -1 | cut -d= -f2-)"
+          echo "A12_REPLAY_EVIDENCE=${A12_REPLAY_EVIDENCE}"
+
+  rollback-production-engine:
+    if: github.event.inputs.confirmation == 'ROLLBACK_B54_ENGINE_TO_PREVIOUS_VERSION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Rollback engine worker to previous version
+        working-directory: apps/padiem-ai-engine
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ROLLBACK_TARGET: ${{ github.event.inputs.rollback_version_id }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          # #2748: rollback names its own target. #2752: what that target proves
+          # is decided by the shared mutation-class evidence primitive, not by
+          # shell string comparison. A code deploy must prove the served version
+          # CHANGED; a rollback must prove it EQUALS the named target.
+          if [ -z "${ROLLBACK_TARGET:-}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=rollback_version_id is required; implicit previous-version selection is refused' >&2
+            echo 'ROLLBACK_TARGET_EXPLICIT=NO' >&2
+            exit 1
+          fi
+          # Canonical safe-version-id contract (same charset rule the resolver
+          # uses) so an owner typo or a hostile string never reaches the CLI.
+          python3 .github/scripts/b54_engine_served_version_guard.py \
+            validate-version-id --version-id "${ROLLBACK_TARGET}"
+          echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}"
+          echo 'ROLLBACK_TARGET_EXPLICIT=YES'
+          echo 'IMPLICIT_PREVIOUS_VERSION_SELECTION=NO'
+          # Baseline the served version BEFORE mutating, so the evidence has a
+          # pre-state and a rollback is never attempted blind.
+          pre_deployments="${RUNNER_TEMP}/deployments-rollback-baseline.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${pre_deployments}"
+          pre_resolve="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${pre_deployments}")"
+          pre_version="$(printf '%s\n' "${pre_resolve}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          if [ -z "${pre_version}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=canonical resolver returned no pre-rollback served version' >&2
+            exit 1
+          fi
+          echo "PRE_ROLLBACK_SERVED_VERSION_ID=${pre_version}"
+          cd apps/padiem-ai-engine
+          npx wrangler@4 rollback "${ROLLBACK_TARGET}" \
+            --message "B54 engine production rollback to explicit target (owner-authorized gate)"
+          echo 'B54_ENGINE_ROLLBACK_COMMAND=EXIT_ZERO'
+          cd "$GITHUB_WORKSPACE"
+          # Bounded readback. Each attempt resolves through the canonical
+          # resolver and is recorded as one observation; a rejected read is
+          # recorded too and never finalizes anything either way (#2453
+          # provenance). No envelope rule is evaluated in this shell.
+          observations="${RUNNER_TEMP}/rollback-observations.txt"
+          : > "${observations}"
+          rollback_reads=0
+          for attempt in $(seq 1 30); do
+            rollback_reads="${attempt}"
+            deployments="${RUNNER_TEMP}/deployments-rollback-${attempt}.json"
+            if curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}" \
+              && resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"; then
+              candidate="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+              if [ -n "${candidate}" ]; then
+                printf 'ok %s\n' "${candidate}" >> "${observations}"
+              else
+                printf 'reject -\n' >> "${observations}"
+              fi
+            else
+              printf 'reject -\n' >> "${observations}"
+            fi
+            if evidence_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+              --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+              --observations "${observations}" --window-open)"; then
+              evidence_rc=0
+            else
+              evidence_rc=$?
+            fi
+            # 3 means "not final yet, the window is still open"; anything else
+            # stops polling and the closed-window decision below settles it.
+            if [ "${evidence_rc}" -ne 3 ]; then
+              break
+            fi
+            sleep 2
+          done
+          echo "POST_ROLLBACK_CONVERGENCE_READS=${rollback_reads}"
+          # Re-decide with the window CLOSED: the verdict that ends this step
+          # must be one the primitive itself considers final.
+          if ! final_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+            --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+            --observations "${observations}")"; then
+            echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=FAIL' >&2
+            printf '%s\n' "${final_out}" >&2
+            echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}" >&2
+            exit 1
+          fi
+          printf '%s\n' "${final_out}"
+          served_version="$(printf '%s\n' "${final_out}" | sed -n 's/^POST_MUTATION_SERVED_VERSION_ID=//p')"
+          echo "POST_ROLLBACK_SERVED_VERSION_ID=${served_version}"
+          echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS'
+          echo 'ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO'
+          echo 'B54_ENGINE_PRODUCTION_ROLLBACK=PASS'
+
+          printf '%s\n' "${verify_out}" | grep -q '^ENGINE_ADMISSION_BINDING_TARGET_VALIDATED=YES          # Final deploy PASS only after served-version evidence above: the
+          # deploy command's exit 0 alone never proves a healthy production
+          # deployment (f88). Liveness is still proven separately by the
+          # health smoke that follows.
+          echo 'B54_ENGINE_PRODUCTION_DEPLOY=PASS'
+
+      - name: Post-deploy smoke
+        run: |
+          set -euo pipefail
+          sleep 15
+          # Bounded non-secret diagnostic: always emit the numeric HTTP status
+          # (curl transport failure normalizes to 000 via the case guard), never
+          # dump the response body, and still fail closed on non-200.
+          CODE=$(curl -s -o /tmp/health.json -w '%{http_code}' --max-time 20 'https://engine.padiem.net/internal/v1/health' || true)
+          case "${CODE}" in ''|*[!0-9]*) CODE=000 ;; esac
+          echo "HEALTH_HTTP_STATUS=${CODE}"
+          if [ "${CODE}" != '200' ]; then
+            echo 'B54_ENGINE_PRODUCTION_SMOKE=FAIL'
+            exit 1
+          fi
+          grep -q '"status":"ok"' /tmp/health.json
+          grep -q '"b14_service_bound":true' /tmp/health.json
+          grep -q 'orchestration_run' /tmp/health.json
+          echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
+
+  smoke-idempotency:
+    # WO-8 PR-B: A9 production idempotency smoke (BLOCKER_4/5/6/7 evidence).
+    # Runs ONLY after a confirmed production deploy, against the exact deployed
+    # SHA. Missing smoke secrets fail the job honestly (SKIPPED_MISSING_SECRET).
+    needs: deploy-production-engine
+    if: github.event.inputs.confirmation == 'DEPLOY_B54_ENGINE_FROM_EXACT_MAIN'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      # ISSUE #2484 Goal A: the smoke evidence path is bound to the single
+      # canonical B62 -> Engine authority. CALLER_ID is the fixed non-secret
+      # identifier of the dedicated overlay-only Claw caller (#2520:
+      # b54-p01-overlay-20260914-a1, replacing the legacy shared Claw id)
+      # and the credential is the SAME secret the B62
+      # worker uses (B62_P01_ENGINE_CREDENTIAL). The former independent
+      # PADIEM_ENGINE_SMOKE_CALLER_ID/_SECRET secrets are removed so the smoke
+      # authority can no longer drift from the runtime authority. A10 reads only
+      # the legacy env NAMES, so those names are re-pointed at the same canonical
+      # source; no independent smoke credential secret remains.
+      CALLER_ID: b54-p01-overlay-20260914-a1
+      CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      PADIEM_ENGINE_SMOKE_CALLER_ID: b54-p01-overlay-20260914-a1
+      PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ENGINE_BASE_URL: https://engine.padiem.net
+      GITHUB_RUN_ID: ${{ github.run_id }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install padiem-ai-core
+        run: python -m pip install --quiet -e packages/padiem-ai-core
+
+      - name: Fail honestly when smoke secrets are missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${CALLER_ID:-}" ] || [ -z "${CALLER_SECRET:-}" ]; then
+            echo 'SMOKE=SKIPPED_MISSING_SECRET'
+            exit 1
+          fi
+          echo 'SMOKE_SECRETS_PRESENT=1'
+
+      - name: Run A9 production idempotency smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a9_production_smoke.py | tee /tmp/a9_smoke.log
+          grep -q 'A9_SMOKE=PASS' /tmp/a9_smoke.log
+          grep 'A9_SMOKE=PASS' /tmp/a9_smoke.log | tail -1
+
+      - name: Run A10 continuation fail-closed smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py | tee /tmp/a10_smoke.log
+          grep -q 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log
+          grep 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log | tail -1
+
+      # WO-10 ACT-1/ACT-2 (#2010): A11 proves the Gmail tool_runtime route
+      # state honestly. It NEVER fakes a PASS. Since the ACT-2 route
+      # activation the Tool routes are admitted in Engine source, so the
+      # former DEFERRED REASON=ROUTE_NOT_WIRED tolerance is removed: a 404
+      # now FAILs as a stale-deploy contradiction. Accepted non-blocking
+      # verdicts: A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS (tool contract live:
+      # route wired, runtime bound, Agent authorized, Gmail tool registered,
+      # provider never called) or DEFERRED REASON=TOOL_RUNTIME_UNAVAILABLE /
+      # TOOL_NOT_ALLOWED (route admitted, credential/authorization gate D43
+      # still pending). A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL means
+      # contradictory/unexpected production behaviour and fails the gate.
+      - name: Run A11 Gmail tool_runtime smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py | tee /tmp/a11_smoke.log
+          grep -qE 'A11_GMAIL_TOOL_RUNTIME_SMOKE=(PASS|DEFERRED)' /tmp/a11_smoke.log
+          if grep -q 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' /tmp/a11_smoke.log; then
+            echo 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          grep 'A11_GMAIL_TOOL_RUNTIME_SMOKE=' /tmp/a11_smoke.log | tail -1
+
+      - name: Run A12 streaming idempotency replay smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log
+          # An external provider 5xx is recorded as SKIPPED_UPSTREAM, never as a
+          # pass: the mandatory Engine-side stages (S0 manifest, S3 conflict)
+          # still had to hold for that verdict. FAIL stays a hard gate failure.
+          grep -qE 'A12_STREAM_REPLAY_SMOKE=(PASS|SKIPPED_UPSTREAM)' /tmp/a12_smoke.log
+          if grep -q 'A12_STREAM_REPLAY_SMOKE=FAIL' /tmp/a12_smoke.log; then
+            echo 'A12_STREAM_REPLAY_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          A12_REPLAY_EVIDENCE="$(grep 'A12_STREAM_REPLAY_SMOKE=' /tmp/a12_smoke.log | tail -1 | cut -d= -f2-)"
+          echo "A12_REPLAY_EVIDENCE=${A12_REPLAY_EVIDENCE}"
+
+  rollback-production-engine:
+    if: github.event.inputs.confirmation == 'ROLLBACK_B54_ENGINE_TO_PREVIOUS_VERSION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Rollback engine worker to previous version
+        working-directory: apps/padiem-ai-engine
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ROLLBACK_TARGET: ${{ github.event.inputs.rollback_version_id }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          # #2748: rollback names its own target. #2752: what that target proves
+          # is decided by the shared mutation-class evidence primitive, not by
+          # shell string comparison. A code deploy must prove the served version
+          # CHANGED; a rollback must prove it EQUALS the named target.
+          if [ -z "${ROLLBACK_TARGET:-}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=rollback_version_id is required; implicit previous-version selection is refused' >&2
+            echo 'ROLLBACK_TARGET_EXPLICIT=NO' >&2
+            exit 1
+          fi
+          # Canonical safe-version-id contract (same charset rule the resolver
+          # uses) so an owner typo or a hostile string never reaches the CLI.
+          python3 .github/scripts/b54_engine_served_version_guard.py \
+            validate-version-id --version-id "${ROLLBACK_TARGET}"
+          echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}"
+          echo 'ROLLBACK_TARGET_EXPLICIT=YES'
+          echo 'IMPLICIT_PREVIOUS_VERSION_SELECTION=NO'
+          # Baseline the served version BEFORE mutating, so the evidence has a
+          # pre-state and a rollback is never attempted blind.
+          pre_deployments="${RUNNER_TEMP}/deployments-rollback-baseline.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${pre_deployments}"
+          pre_resolve="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${pre_deployments}")"
+          pre_version="$(printf '%s\n' "${pre_resolve}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          if [ -z "${pre_version}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=canonical resolver returned no pre-rollback served version' >&2
+            exit 1
+          fi
+          echo "PRE_ROLLBACK_SERVED_VERSION_ID=${pre_version}"
+          cd apps/padiem-ai-engine
+          npx wrangler@4 rollback "${ROLLBACK_TARGET}" \
+            --message "B54 engine production rollback to explicit target (owner-authorized gate)"
+          echo 'B54_ENGINE_ROLLBACK_COMMAND=EXIT_ZERO'
+          cd "$GITHUB_WORKSPACE"
+          # Bounded readback. Each attempt resolves through the canonical
+          # resolver and is recorded as one observation; a rejected read is
+          # recorded too and never finalizes anything either way (#2453
+          # provenance). No envelope rule is evaluated in this shell.
+          observations="${RUNNER_TEMP}/rollback-observations.txt"
+          : > "${observations}"
+          rollback_reads=0
+          for attempt in $(seq 1 30); do
+            rollback_reads="${attempt}"
+            deployments="${RUNNER_TEMP}/deployments-rollback-${attempt}.json"
+            if curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}" \
+              && resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"; then
+              candidate="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+              if [ -n "${candidate}" ]; then
+                printf 'ok %s\n' "${candidate}" >> "${observations}"
+              else
+                printf 'reject -\n' >> "${observations}"
+              fi
+            else
+              printf 'reject -\n' >> "${observations}"
+            fi
+            if evidence_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+              --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+              --observations "${observations}" --window-open)"; then
+              evidence_rc=0
+            else
+              evidence_rc=$?
+            fi
+            # 3 means "not final yet, the window is still open"; anything else
+            # stops polling and the closed-window decision below settles it.
+            if [ "${evidence_rc}" -ne 3 ]; then
+              break
+            fi
+            sleep 2
+          done
+          echo "POST_ROLLBACK_CONVERGENCE_READS=${rollback_reads}"
+          # Re-decide with the window CLOSED: the verdict that ends this step
+          # must be one the primitive itself considers final.
+          if ! final_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+            --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+            --observations "${observations}")"; then
+            echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=FAIL' >&2
+            printf '%s\n' "${final_out}" >&2
+            echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}" >&2
+            exit 1
+          fi
+          printf '%s\n' "${final_out}"
+          served_version="$(printf '%s\n' "${final_out}" | sed -n 's/^POST_MUTATION_SERVED_VERSION_ID=//p')"
+          echo "POST_ROLLBACK_SERVED_VERSION_ID=${served_version}"
+          echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS'
+          echo 'ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO'
+          echo 'B54_ENGINE_PRODUCTION_ROLLBACK=PASS'
+
+          echo 'POST_DEPLOY_A7_ADMISSION_BINDING=PASS'
+          echo 'POST_DEPLOY_SERVED_VERSION_GUARD=PASS'
+          # Final deploy PASS only after served-version evidence above: the
+          # deploy command's exit 0 alone never proves a healthy production
+          # deployment (f88). Liveness is still proven separately by the
+          # health smoke that follows.
+          echo 'B54_ENGINE_PRODUCTION_DEPLOY=PASS'
+
+      - name: Post-deploy smoke
+        run: |
+          set -euo pipefail
+          sleep 15
+          # Bounded non-secret diagnostic: always emit the numeric HTTP status
+          # (curl transport failure normalizes to 000 via the case guard), never
+          # dump the response body, and still fail closed on non-200.
+          CODE=$(curl -s -o /tmp/health.json -w '%{http_code}' --max-time 20 'https://engine.padiem.net/internal/v1/health' || true)
+          case "${CODE}" in ''|*[!0-9]*) CODE=000 ;; esac
+          echo "HEALTH_HTTP_STATUS=${CODE}"
+          if [ "${CODE}" != '200' ]; then
+            echo 'B54_ENGINE_PRODUCTION_SMOKE=FAIL'
+            exit 1
+          fi
+          grep -q '"status":"ok"' /tmp/health.json
+          grep -q '"b14_service_bound":true' /tmp/health.json
+          grep -q 'orchestration_run' /tmp/health.json
+          echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
+
+  smoke-idempotency:
+    # WO-8 PR-B: A9 production idempotency smoke (BLOCKER_4/5/6/7 evidence).
+    # Runs ONLY after a confirmed production deploy, against the exact deployed
+    # SHA. Missing smoke secrets fail the job honestly (SKIPPED_MISSING_SECRET).
+    needs: deploy-production-engine
+    if: github.event.inputs.confirmation == 'DEPLOY_B54_ENGINE_FROM_EXACT_MAIN'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      # ISSUE #2484 Goal A: the smoke evidence path is bound to the single
+      # canonical B62 -> Engine authority. CALLER_ID is the fixed non-secret
+      # identifier of the dedicated overlay-only Claw caller (#2520:
+      # b54-p01-overlay-20260914-a1, replacing the legacy shared Claw id)
+      # and the credential is the SAME secret the B62
+      # worker uses (B62_P01_ENGINE_CREDENTIAL). The former independent
+      # PADIEM_ENGINE_SMOKE_CALLER_ID/_SECRET secrets are removed so the smoke
+      # authority can no longer drift from the runtime authority. A10 reads only
+      # the legacy env NAMES, so those names are re-pointed at the same canonical
+      # source; no independent smoke credential secret remains.
+      CALLER_ID: b54-p01-overlay-20260914-a1
+      CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      PADIEM_ENGINE_SMOKE_CALLER_ID: b54-p01-overlay-20260914-a1
+      PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ENGINE_BASE_URL: https://engine.padiem.net
+      GITHUB_RUN_ID: ${{ github.run_id }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install padiem-ai-core
+        run: python -m pip install --quiet -e packages/padiem-ai-core
+
+      - name: Fail honestly when smoke secrets are missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${CALLER_ID:-}" ] || [ -z "${CALLER_SECRET:-}" ]; then
+            echo 'SMOKE=SKIPPED_MISSING_SECRET'
+            exit 1
+          fi
+          echo 'SMOKE_SECRETS_PRESENT=1'
+
+      - name: Run A9 production idempotency smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a9_production_smoke.py | tee /tmp/a9_smoke.log
+          grep -q 'A9_SMOKE=PASS' /tmp/a9_smoke.log
+          grep 'A9_SMOKE=PASS' /tmp/a9_smoke.log | tail -1
+
+      - name: Run A10 continuation fail-closed smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py | tee /tmp/a10_smoke.log
+          grep -q 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log
+          grep 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log | tail -1
+
+      # WO-10 ACT-1/ACT-2 (#2010): A11 proves the Gmail tool_runtime route
+      # state honestly. It NEVER fakes a PASS. Since the ACT-2 route
+      # activation the Tool routes are admitted in Engine source, so the
+      # former DEFERRED REASON=ROUTE_NOT_WIRED tolerance is removed: a 404
+      # now FAILs as a stale-deploy contradiction. Accepted non-blocking
+      # verdicts: A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS (tool contract live:
+      # route wired, runtime bound, Agent authorized, Gmail tool registered,
+      # provider never called) or DEFERRED REASON=TOOL_RUNTIME_UNAVAILABLE /
+      # TOOL_NOT_ALLOWED (route admitted, credential/authorization gate D43
+      # still pending). A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL means
+      # contradictory/unexpected production behaviour and fails the gate.
+      - name: Run A11 Gmail tool_runtime smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py | tee /tmp/a11_smoke.log
+          grep -qE 'A11_GMAIL_TOOL_RUNTIME_SMOKE=(PASS|DEFERRED)' /tmp/a11_smoke.log
+          if grep -q 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' /tmp/a11_smoke.log; then
+            echo 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          grep 'A11_GMAIL_TOOL_RUNTIME_SMOKE=' /tmp/a11_smoke.log | tail -1
+
+      - name: Run A12 streaming idempotency replay smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log
+          # An external provider 5xx is recorded as SKIPPED_UPSTREAM, never as a
+          # pass: the mandatory Engine-side stages (S0 manifest, S3 conflict)
+          # still had to hold for that verdict. FAIL stays a hard gate failure.
+          grep -qE 'A12_STREAM_REPLAY_SMOKE=(PASS|SKIPPED_UPSTREAM)' /tmp/a12_smoke.log
+          if grep -q 'A12_STREAM_REPLAY_SMOKE=FAIL' /tmp/a12_smoke.log; then
+            echo 'A12_STREAM_REPLAY_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          A12_REPLAY_EVIDENCE="$(grep 'A12_STREAM_REPLAY_SMOKE=' /tmp/a12_smoke.log | tail -1 | cut -d= -f2-)"
+          echo "A12_REPLAY_EVIDENCE=${A12_REPLAY_EVIDENCE}"
+
+  rollback-production-engine:
+    if: github.event.inputs.confirmation == 'ROLLBACK_B54_ENGINE_TO_PREVIOUS_VERSION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Rollback engine worker to previous version
+        working-directory: apps/padiem-ai-engine
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ROLLBACK_TARGET: ${{ github.event.inputs.rollback_version_id }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          # #2748: rollback names its own target. #2752: what that target proves
+          # is decided by the shared mutation-class evidence primitive, not by
+          # shell string comparison. A code deploy must prove the served version
+          # CHANGED; a rollback must prove it EQUALS the named target.
+          if [ -z "${ROLLBACK_TARGET:-}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=rollback_version_id is required; implicit previous-version selection is refused' >&2
+            echo 'ROLLBACK_TARGET_EXPLICIT=NO' >&2
+            exit 1
+          fi
+          # Canonical safe-version-id contract (same charset rule the resolver
+          # uses) so an owner typo or a hostile string never reaches the CLI.
+          python3 .github/scripts/b54_engine_served_version_guard.py \
+            validate-version-id --version-id "${ROLLBACK_TARGET}"
+          echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}"
+          echo 'ROLLBACK_TARGET_EXPLICIT=YES'
+          echo 'IMPLICIT_PREVIOUS_VERSION_SELECTION=NO'
+          # Baseline the served version BEFORE mutating, so the evidence has a
+          # pre-state and a rollback is never attempted blind.
+          pre_deployments="${RUNNER_TEMP}/deployments-rollback-baseline.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${pre_deployments}"
+          pre_resolve="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${pre_deployments}")"
+          pre_version="$(printf '%s\n' "${pre_resolve}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          if [ -z "${pre_version}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=canonical resolver returned no pre-rollback served version' >&2
+            exit 1
+          fi
+          echo "PRE_ROLLBACK_SERVED_VERSION_ID=${pre_version}"
+          cd apps/padiem-ai-engine
+          npx wrangler@4 rollback "${ROLLBACK_TARGET}" \
+            --message "B54 engine production rollback to explicit target (owner-authorized gate)"
+          echo 'B54_ENGINE_ROLLBACK_COMMAND=EXIT_ZERO'
+          cd "$GITHUB_WORKSPACE"
+          # Bounded readback. Each attempt resolves through the canonical
+          # resolver and is recorded as one observation; a rejected read is
+          # recorded too and never finalizes anything either way (#2453
+          # provenance). No envelope rule is evaluated in this shell.
+          observations="${RUNNER_TEMP}/rollback-observations.txt"
+          : > "${observations}"
+          rollback_reads=0
+          for attempt in $(seq 1 30); do
+            rollback_reads="${attempt}"
+            deployments="${RUNNER_TEMP}/deployments-rollback-${attempt}.json"
+            if curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}" \
+              && resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"; then
+              candidate="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+              if [ -n "${candidate}" ]; then
+                printf 'ok %s\n' "${candidate}" >> "${observations}"
+              else
+                printf 'reject -\n' >> "${observations}"
+              fi
+            else
+              printf 'reject -\n' >> "${observations}"
+            fi
+            if evidence_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+              --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+              --observations "${observations}" --window-open)"; then
+              evidence_rc=0
+            else
+              evidence_rc=$?
+            fi
+            # 3 means "not final yet, the window is still open"; anything else
+            # stops polling and the closed-window decision below settles it.
+            if [ "${evidence_rc}" -ne 3 ]; then
+              break
+            fi
+            sleep 2
+          done
+          echo "POST_ROLLBACK_CONVERGENCE_READS=${rollback_reads}"
+          # Re-decide with the window CLOSED: the verdict that ends this step
+          # must be one the primitive itself considers final.
+          if ! final_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+            --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+            --observations "${observations}")"; then
+            echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=FAIL' >&2
+            printf '%s\n' "${final_out}" >&2
+            echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}" >&2
+            exit 1
+          fi
+          printf '%s\n' "${final_out}"
+          served_version="$(printf '%s\n' "${final_out}" | sed -n 's/^POST_MUTATION_SERVED_VERSION_ID=//p')"
+          echo "POST_ROLLBACK_SERVED_VERSION_ID=${served_version}"
+          echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS'
+          echo 'ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO'
+          echo 'B54_ENGINE_PRODUCTION_ROLLBACK=PASS'
+ /tmp/a7_unscoped_smoke.log
+
+      - name: Run A10 continuation fail-closed smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py | tee /tmp/a10_smoke.log
+          grep -q 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log
+          grep 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log | tail -1
+
+      # WO-10 ACT-1/ACT-2 (#2010): A11 proves the Gmail tool_runtime route
+      # state honestly. It NEVER fakes a PASS. Since the ACT-2 route
+      # activation the Tool routes are admitted in Engine source, so the
+      # former DEFERRED REASON=ROUTE_NOT_WIRED tolerance is removed: a 404
+      # now FAILs as a stale-deploy contradiction. Accepted non-blocking
+      # verdicts: A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS (tool contract live:
+      # route wired, runtime bound, Agent authorized, Gmail tool registered,
+      # provider never called) or DEFERRED REASON=TOOL_RUNTIME_UNAVAILABLE /
+      # TOOL_NOT_ALLOWED (route admitted, credential/authorization gate D43
+      # still pending). A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL means
+      # contradictory/unexpected production behaviour and fails the gate.
+      - name: Run A11 Gmail tool_runtime smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py | tee /tmp/a11_smoke.log
+          grep -qE 'A11_GMAIL_TOOL_RUNTIME_SMOKE=(PASS|DEFERRED)' /tmp/a11_smoke.log
+          if grep -q 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' /tmp/a11_smoke.log; then
+            echo 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          grep 'A11_GMAIL_TOOL_RUNTIME_SMOKE=' /tmp/a11_smoke.log | tail -1
+
+      - name: Run A12 streaming idempotency replay smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log
+          # An external provider 5xx is recorded as SKIPPED_UPSTREAM, never as a
+          # pass: the mandatory Engine-side stages (S0 manifest, S3 conflict)
+          # still had to hold for that verdict. FAIL stays a hard gate failure.
+          grep -qE 'A12_STREAM_REPLAY_SMOKE=(PASS|SKIPPED_UPSTREAM)' /tmp/a12_smoke.log
+          if grep -q 'A12_STREAM_REPLAY_SMOKE=FAIL' /tmp/a12_smoke.log; then
+            echo 'A12_STREAM_REPLAY_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          A12_REPLAY_EVIDENCE="$(grep 'A12_STREAM_REPLAY_SMOKE=' /tmp/a12_smoke.log | tail -1 | cut -d= -f2-)"
+          echo "A12_REPLAY_EVIDENCE=${A12_REPLAY_EVIDENCE}"
+
+  rollback-production-engine:
+    if: github.event.inputs.confirmation == 'ROLLBACK_B54_ENGINE_TO_PREVIOUS_VERSION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Rollback engine worker to previous version
+        working-directory: apps/padiem-ai-engine
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ROLLBACK_TARGET: ${{ github.event.inputs.rollback_version_id }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          # #2748: rollback names its own target. #2752: what that target proves
+          # is decided by the shared mutation-class evidence primitive, not by
+          # shell string comparison. A code deploy must prove the served version
+          # CHANGED; a rollback must prove it EQUALS the named target.
+          if [ -z "${ROLLBACK_TARGET:-}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=rollback_version_id is required; implicit previous-version selection is refused' >&2
+            echo 'ROLLBACK_TARGET_EXPLICIT=NO' >&2
+            exit 1
+          fi
+          # Canonical safe-version-id contract (same charset rule the resolver
+          # uses) so an owner typo or a hostile string never reaches the CLI.
+          python3 .github/scripts/b54_engine_served_version_guard.py \
+            validate-version-id --version-id "${ROLLBACK_TARGET}"
+          echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}"
+          echo 'ROLLBACK_TARGET_EXPLICIT=YES'
+          echo 'IMPLICIT_PREVIOUS_VERSION_SELECTION=NO'
+          # Baseline the served version BEFORE mutating, so the evidence has a
+          # pre-state and a rollback is never attempted blind.
+          pre_deployments="${RUNNER_TEMP}/deployments-rollback-baseline.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${pre_deployments}"
+          pre_resolve="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${pre_deployments}")"
+          pre_version="$(printf '%s\n' "${pre_resolve}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          if [ -z "${pre_version}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=canonical resolver returned no pre-rollback served version' >&2
+            exit 1
+          fi
+          echo "PRE_ROLLBACK_SERVED_VERSION_ID=${pre_version}"
+          cd apps/padiem-ai-engine
+          npx wrangler@4 rollback "${ROLLBACK_TARGET}" \
+            --message "B54 engine production rollback to explicit target (owner-authorized gate)"
+          echo 'B54_ENGINE_ROLLBACK_COMMAND=EXIT_ZERO'
+          cd "$GITHUB_WORKSPACE"
+          # Bounded readback. Each attempt resolves through the canonical
+          # resolver and is recorded as one observation; a rejected read is
+          # recorded too and never finalizes anything either way (#2453
+          # provenance). No envelope rule is evaluated in this shell.
+          observations="${RUNNER_TEMP}/rollback-observations.txt"
+          : > "${observations}"
+          rollback_reads=0
+          for attempt in $(seq 1 30); do
+            rollback_reads="${attempt}"
+            deployments="${RUNNER_TEMP}/deployments-rollback-${attempt}.json"
+            if curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}" \
+              && resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"; then
+              candidate="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+              if [ -n "${candidate}" ]; then
+                printf 'ok %s\n' "${candidate}" >> "${observations}"
+              else
+                printf 'reject -\n' >> "${observations}"
+              fi
+            else
+              printf 'reject -\n' >> "${observations}"
+            fi
+            if evidence_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+              --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+              --observations "${observations}" --window-open)"; then
+              evidence_rc=0
+            else
+              evidence_rc=$?
+            fi
+            # 3 means "not final yet, the window is still open"; anything else
+            # stops polling and the closed-window decision below settles it.
+            if [ "${evidence_rc}" -ne 3 ]; then
+              break
+            fi
+            sleep 2
+          done
+          echo "POST_ROLLBACK_CONVERGENCE_READS=${rollback_reads}"
+          # Re-decide with the window CLOSED: the verdict that ends this step
+          # must be one the primitive itself considers final.
+          if ! final_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+            --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+            --observations "${observations}")"; then
+            echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=FAIL' >&2
+            printf '%s\n' "${final_out}" >&2
+            echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}" >&2
+            exit 1
+          fi
+          printf '%s\n' "${final_out}"
+          served_version="$(printf '%s\n' "${final_out}" | sed -n 's/^POST_MUTATION_SERVED_VERSION_ID=//p')"
+          echo "POST_ROLLBACK_SERVED_VERSION_ID=${served_version}"
+          echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS'
+          echo 'ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO'
+          echo 'B54_ENGINE_PRODUCTION_ROLLBACK=PASS'
+
+          printf '%s\n' "${verify_out}" | grep -q '^ENGINE_ADMISSION_BINDING_TARGET_VALIDATED=YES          # Final deploy PASS only after served-version evidence above: the
+          # deploy command's exit 0 alone never proves a healthy production
+          # deployment (f88). Liveness is still proven separately by the
+          # health smoke that follows.
+          echo 'B54_ENGINE_PRODUCTION_DEPLOY=PASS'
+
+      - name: Post-deploy smoke
+        run: |
+          set -euo pipefail
+          sleep 15
+          # Bounded non-secret diagnostic: always emit the numeric HTTP status
+          # (curl transport failure normalizes to 000 via the case guard), never
+          # dump the response body, and still fail closed on non-200.
+          CODE=$(curl -s -o /tmp/health.json -w '%{http_code}' --max-time 20 'https://engine.padiem.net/internal/v1/health' || true)
+          case "${CODE}" in ''|*[!0-9]*) CODE=000 ;; esac
+          echo "HEALTH_HTTP_STATUS=${CODE}"
+          if [ "${CODE}" != '200' ]; then
+            echo 'B54_ENGINE_PRODUCTION_SMOKE=FAIL'
+            exit 1
+          fi
+          grep -q '"status":"ok"' /tmp/health.json
+          grep -q '"b14_service_bound":true' /tmp/health.json
+          grep -q 'orchestration_run' /tmp/health.json
+          echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
+
+  smoke-idempotency:
+    # WO-8 PR-B: A9 production idempotency smoke (BLOCKER_4/5/6/7 evidence).
+    # Runs ONLY after a confirmed production deploy, against the exact deployed
+    # SHA. Missing smoke secrets fail the job honestly (SKIPPED_MISSING_SECRET).
+    needs: deploy-production-engine
+    if: github.event.inputs.confirmation == 'DEPLOY_B54_ENGINE_FROM_EXACT_MAIN'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    env:
+      # ISSUE #2484 Goal A: the smoke evidence path is bound to the single
+      # canonical B62 -> Engine authority. CALLER_ID is the fixed non-secret
+      # identifier of the dedicated overlay-only Claw caller (#2520:
+      # b54-p01-overlay-20260914-a1, replacing the legacy shared Claw id)
+      # and the credential is the SAME secret the B62
+      # worker uses (B62_P01_ENGINE_CREDENTIAL). The former independent
+      # PADIEM_ENGINE_SMOKE_CALLER_ID/_SECRET secrets are removed so the smoke
+      # authority can no longer drift from the runtime authority. A10 reads only
+      # the legacy env NAMES, so those names are re-pointed at the same canonical
+      # source; no independent smoke credential secret remains.
+      CALLER_ID: b54-p01-overlay-20260914-a1
+      CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      PADIEM_ENGINE_SMOKE_CALLER_ID: b54-p01-overlay-20260914-a1
+      PADIEM_ENGINE_SMOKE_CALLER_SECRET: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      ENGINE_BASE_URL: https://engine.padiem.net
+      GITHUB_RUN_ID: ${{ github.run_id }}
+    steps:
+      - name: Checkout exact target SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install padiem-ai-core
+        run: python -m pip install --quiet -e packages/padiem-ai-core
+
+      - name: Fail honestly when smoke secrets are missing
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -z "${CALLER_ID:-}" ] || [ -z "${CALLER_SECRET:-}" ]; then
+            echo 'SMOKE=SKIPPED_MISSING_SECRET'
+            exit 1
+          fi
+          echo 'SMOKE_SECRETS_PRESENT=1'
+
+      - name: Run A9 production idempotency smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a9_production_smoke.py | tee /tmp/a9_smoke.log
+          grep -q 'A9_SMOKE=PASS' /tmp/a9_smoke.log
+          grep 'A9_SMOKE=PASS' /tmp/a9_smoke.log | tail -1
+
+      - name: Run A10 continuation fail-closed smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py | tee /tmp/a10_smoke.log
+          grep -q 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log
+          grep 'A10_CONTINUATION_SMOKE=PASS' /tmp/a10_smoke.log | tail -1
+
+      # WO-10 ACT-1/ACT-2 (#2010): A11 proves the Gmail tool_runtime route
+      # state honestly. It NEVER fakes a PASS. Since the ACT-2 route
+      # activation the Tool routes are admitted in Engine source, so the
+      # former DEFERRED REASON=ROUTE_NOT_WIRED tolerance is removed: a 404
+      # now FAILs as a stale-deploy contradiction. Accepted non-blocking
+      # verdicts: A11_GMAIL_TOOL_RUNTIME_SMOKE=PASS (tool contract live:
+      # route wired, runtime bound, Agent authorized, Gmail tool registered,
+      # provider never called) or DEFERRED REASON=TOOL_RUNTIME_UNAVAILABLE /
+      # TOOL_NOT_ALLOWED (route admitted, credential/authorization gate D43
+      # still pending). A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL means
+      # contradictory/unexpected production behaviour and fails the gate.
+      - name: Run A11 Gmail tool_runtime smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a11_gmail_tool_runtime_smoke.py | tee /tmp/a11_smoke.log
+          grep -qE 'A11_GMAIL_TOOL_RUNTIME_SMOKE=(PASS|DEFERRED)' /tmp/a11_smoke.log
+          if grep -q 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' /tmp/a11_smoke.log; then
+            echo 'A11_GMAIL_TOOL_RUNTIME_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          grep 'A11_GMAIL_TOOL_RUNTIME_SMOKE=' /tmp/a11_smoke.log | tail -1
+
+      - name: Run A12 streaming idempotency replay smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log
+          # An external provider 5xx is recorded as SKIPPED_UPSTREAM, never as a
+          # pass: the mandatory Engine-side stages (S0 manifest, S3 conflict)
+          # still had to hold for that verdict. FAIL stays a hard gate failure.
+          grep -qE 'A12_STREAM_REPLAY_SMOKE=(PASS|SKIPPED_UPSTREAM)' /tmp/a12_smoke.log
+          if grep -q 'A12_STREAM_REPLAY_SMOKE=FAIL' /tmp/a12_smoke.log; then
+            echo 'A12_STREAM_REPLAY_SMOKE=FAIL' >&2
+            exit 1
+          fi
+          A12_REPLAY_EVIDENCE="$(grep 'A12_STREAM_REPLAY_SMOKE=' /tmp/a12_smoke.log | tail -1 | cut -d= -f2-)"
+          echo "A12_REPLAY_EVIDENCE=${A12_REPLAY_EVIDENCE}"
+
+  rollback-production-engine:
+    if: github.event.inputs.confirmation == 'ROLLBACK_B54_ENGINE_TO_PREVIOUS_VERSION'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.5'
+
+      - name: Rollback engine worker to previous version
+        working-directory: apps/padiem-ai-engine
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ROLLBACK_TARGET: ${{ github.event.inputs.rollback_version_id }}
+        run: |
+          set -euo pipefail
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          # #2748: rollback names its own target. #2752: what that target proves
+          # is decided by the shared mutation-class evidence primitive, not by
+          # shell string comparison. A code deploy must prove the served version
+          # CHANGED; a rollback must prove it EQUALS the named target.
+          if [ -z "${ROLLBACK_TARGET:-}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=rollback_version_id is required; implicit previous-version selection is refused' >&2
+            echo 'ROLLBACK_TARGET_EXPLICIT=NO' >&2
+            exit 1
+          fi
+          # Canonical safe-version-id contract (same charset rule the resolver
+          # uses) so an owner typo or a hostile string never reaches the CLI.
+          python3 .github/scripts/b54_engine_served_version_guard.py \
+            validate-version-id --version-id "${ROLLBACK_TARGET}"
+          echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}"
+          echo 'ROLLBACK_TARGET_EXPLICIT=YES'
+          echo 'IMPLICIT_PREVIOUS_VERSION_SELECTION=NO'
+          # Baseline the served version BEFORE mutating, so the evidence has a
+          # pre-state and a rollback is never attempted blind.
+          pre_deployments="${RUNNER_TEMP}/deployments-rollback-baseline.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${pre_deployments}"
+          pre_resolve="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${pre_deployments}")"
+          pre_version="$(printf '%s\n' "${pre_resolve}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          if [ -z "${pre_version}" ]; then
+            echo 'B54_ENGINE_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=canonical resolver returned no pre-rollback served version' >&2
+            exit 1
+          fi
+          echo "PRE_ROLLBACK_SERVED_VERSION_ID=${pre_version}"
+          cd apps/padiem-ai-engine
+          npx wrangler@4 rollback "${ROLLBACK_TARGET}" \
+            --message "B54 engine production rollback to explicit target (owner-authorized gate)"
+          echo 'B54_ENGINE_ROLLBACK_COMMAND=EXIT_ZERO'
+          cd "$GITHUB_WORKSPACE"
+          # Bounded readback. Each attempt resolves through the canonical
+          # resolver and is recorded as one observation; a rejected read is
+          # recorded too and never finalizes anything either way (#2453
+          # provenance). No envelope rule is evaluated in this shell.
+          observations="${RUNNER_TEMP}/rollback-observations.txt"
+          : > "${observations}"
+          rollback_reads=0
+          for attempt in $(seq 1 30); do
+            rollback_reads="${attempt}"
+            deployments="${RUNNER_TEMP}/deployments-rollback-${attempt}.json"
+            if curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}" \
+              && resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"; then
+              candidate="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+              if [ -n "${candidate}" ]; then
+                printf 'ok %s\n' "${candidate}" >> "${observations}"
+              else
+                printf 'reject -\n' >> "${observations}"
+              fi
+            else
+              printf 'reject -\n' >> "${observations}"
+            fi
+            if evidence_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+              --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+              --observations "${observations}" --window-open)"; then
+              evidence_rc=0
+            else
+              evidence_rc=$?
+            fi
+            # 3 means "not final yet, the window is still open"; anything else
+            # stops polling and the closed-window decision below settles it.
+            if [ "${evidence_rc}" -ne 3 ]; then
+              break
+            fi
+            sleep 2
+          done
+          echo "POST_ROLLBACK_CONVERGENCE_READS=${rollback_reads}"
+          # Re-decide with the window CLOSED: the verdict that ends this step
+          # must be one the primitive itself considers final.
+          if ! final_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
+            --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+            --observations "${observations}")"; then
+            echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=FAIL' >&2
+            printf '%s\n' "${final_out}" >&2
+            echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}" >&2
+            exit 1
+          fi
+          printf '%s\n' "${final_out}"
+          served_version="$(printf '%s\n' "${final_out}" | sed -n 's/^POST_MUTATION_SERVED_VERSION_ID=//p')"
+          echo "POST_ROLLBACK_SERVED_VERSION_ID=${served_version}"
+          echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS'
+          echo 'ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO'
+          echo 'B54_ENGINE_PRODUCTION_ROLLBACK=PASS'
+
+          echo 'POST_DEPLOY_A7_ADMISSION_BINDING=PASS'
           echo 'POST_DEPLOY_SERVED_VERSION_GUARD=PASS'
           # Final deploy PASS only after served-version evidence above: the
           # deploy command's exit 0 alone never proves a healthy production
