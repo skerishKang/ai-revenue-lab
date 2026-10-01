@@ -211,7 +211,6 @@ source = { editable = "." }
 dependencies = [
     { name = "httpx" },
     { name = "jinja2" },
-    { name = "padiem-ai-core" },
     { name = "python-multipart" },
     { name = "starlette" },
 ]
@@ -230,7 +229,6 @@ dev = [
 requires-dist = [
     { name = "httpx", specifier = ">=0.28,<1" },
     { name = "jinja2", specifier = ">=3.1,<4" },
-    { name = "padiem-ai-core", directory = "../../packages/padiem-ai-core" },
     { name = "python-multipart", specifier = ">=0.0.9,<1" },
     { name = "starlette", specifier = ">=0.45,<1" },
 ]
@@ -348,39 +346,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/d7/f1/e7a6dd94a8d4a5626
 wheels = [
     { url = "https://files.pythonhosted.org/packages/df/b2/87e62e8c3e2f4b32e5fe99e0b86d576da1312593b39f47d8ceef365e95ed/packaging-26.2-py3-none-any.whl", hash = "sha256:5fc45236b9446107ff2415ce77c807cee2862cb6fac22b8a73826d0693b0980e", size = 100195, upload-time = "2026-04-24T20:15:22.081Z" },
 ]
-
-[[package]]
-name = "padiem-ai-core"
-version = "0.6.0"
-source = { directory = "../../packages/padiem-ai-core" }
-dependencies = [
-    { name = "httpx" },
-]
-
-[package.optional-dependencies]
-documents = [
-    { name = "openpyxl" },
-    { name = "pypdf" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "httpx", specifier = ">=0.27,<1" },
-    { name = "jsonschema", marker = "extra == 'dev'", specifier = ">=4.23,<5" },
-    { name = "jsonschema", marker = "extra == 'tools'", specifier = ">=4.23,<5" },
-    { name = "openpyxl", marker = "extra == 'dev'", specifier = ">=3.1,<4" },
-    { name = "openpyxl", marker = "extra == 'documents'", specifier = ">=3.1,<4" },
-    { name = "pdfplumber", marker = "extra == 'dev'", specifier = "==0.11.10" },
-    { name = "pdfplumber", marker = "extra == 'tables'", specifier = "==0.11.10" },
-    { name = "pypdf", marker = "extra == 'dev'", specifier = ">=6.16.2,<7" },
-    { name = "pypdf", marker = "extra == 'documents'", specifier = ">=6.16.2,<7" },
-    { name = "pypdfium2", marker = "extra == 'dev'", specifier = "==5.13.0" },
-    { name = "pypdfium2", marker = "extra == 'render'", specifier = "==5.13.0" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8,<10" },
-    { name = "reportlab", marker = "extra == 'authoring'", specifier = "==5.0.1" },
-    { name = "reportlab", marker = "extra == 'dev'", specifier = "==5.0.1" },
-]
-provides-extras = ["tools", "documents", "render", "tables", "authoring", "dev"]
 
 [[package]]
 name = "playwright"
