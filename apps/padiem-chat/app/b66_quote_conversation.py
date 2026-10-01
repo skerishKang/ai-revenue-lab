@@ -11,7 +11,8 @@ from __future__ import annotations
 import json
 import math
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from datetime import date
 from typing import Any, Protocol
 
 MAX_CONVERSATION_CHARS = 4_000
@@ -155,8 +156,13 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
 
     quote_no = _optional_text(raw.get("quoteNo"), limit=120)
     issue_date = _optional_text(raw.get("issueDate"), limit=10)
-    if issue_date is not None and not _ISO_DATE_RE.fullmatch(issue_date):
-        raise B66QuoteConversationError("invalid_issue_date")
+    if issue_date is not None:
+        if not _ISO_DATE_RE.fullmatch(issue_date):
+            raise B66QuoteConversationError("invalid_issue_date")
+        try:
+            date.fromisoformat(issue_date)
+        except ValueError as exc:
+            raise B66QuoteConversationError("invalid_issue_date") from exc
 
     items_raw = raw.get("items")
     if items_raw is None:
@@ -243,6 +249,29 @@ def _conversation_prompt(skill: dict[str, Any]) -> str:
     )
 
 
+def _server_missing_fields(
+    projection: B66QuoteConversationProjection,
+    skill: dict[str, Any],
+) -> tuple[str, ...]:
+    """Derive required missing fields from normalized facts, never model claims."""
+
+    schema = skill.get("variableSchema")
+    if not isinstance(schema, dict):
+        raise B66QuoteConversationError("invalid_saved_skill")
+    missing: list[str] = []
+    if schema.get("recipient") is True and not (
+        projection.recipient.get("company") or projection.recipient.get("person")
+    ):
+        missing.append("recipient")
+    if schema.get("quoteNo") is True and projection.quote_no is None:
+        missing.append("quoteNo")
+    if schema.get("issueDate") is True and projection.issue_date is None:
+        missing.append("issueDate")
+    if schema.get("items") is True and not projection.items:
+        missing.append("items")
+    return tuple(missing)
+
+
 class B66QuoteConversationInterpreter:
     """One bounded model call for variable extraction only."""
 
@@ -273,4 +302,8 @@ class B66QuoteConversationInterpreter:
         answer = result.get("answer")
         if not isinstance(answer, str):
             raise B66QuoteConversationError("invalid_model_output")
-        return normalize_conversation_output(answer)
+        projection = normalize_conversation_output(answer)
+        return replace(
+            projection,
+            missing=_server_missing_fields(projection, skill),
+        )
