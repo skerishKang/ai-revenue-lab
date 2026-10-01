@@ -1,6 +1,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const assert = require("node:assert");
+const vm = require("node:vm");
 
 const read = (name) => fs.readFileSync(path.join(__dirname, "..", name), "utf8");
 const html = read("index.html");
@@ -25,6 +26,9 @@ const registrationSession = read("quote-registration-session.js");
 const skillUi = read("quote-skill-ui.js");
 const intake = read("file-intake.js");
 const easy = read("easy-mode.js");
+const worker = read("_worker.js");
+const account = read("padiem-account.js");
+const accountCss = read("padiem-account.css");
 
 const check = (condition, label) => assert.ok(condition, `contract failed: ${label}`);
 
@@ -53,6 +57,14 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'src="file-intake.js"',
   'src="app.js"',
   'src="easy-mode.js"',
+  'src="padiem-account.js"',
+  'href="padiem-account.css"',
+  'id="padiemAccountButton"',
+  'id="padiemAccountPanel"',
+  'id="padiemSavedSkillSelect"',
+  'id="padiemQuoteRequest"',
+  'id="padiemQuoteGenerate"',
+  'id="padiemAuthDialog"',
   'id="senderPreset"',
   'id="senderCompany"',
   'id="senderAddress"',
@@ -98,12 +110,42 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'id="templateCloneFile"'
 ].forEach((marker) => check(html.includes(marker), `B66_STATIC_CONTRACT missing in index.html: ${marker}`));
 
-/* NEUTRAL_PUBLIC_UI_CONTRACT — 외부 화면/상태에 내부 제품 브랜드를 노출하지 않음 */
-check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + candidate + cloner + skill + skillStore + skillCandidate + skillRegistration + skillUi + intake + easy),
-  "NEUTRAL_PUBLIC_UI_CONTRACT: no Padiem branding in rendered/runtime source");
-check(!html.includes("B66 DEMO"), "NEUTRAL_PUBLIC_UI_CONTRACT: no internal demo label");
-check(html.includes("BETA · 입력 내용은 이 브라우저에만 저장"),
-  "NEUTRAL_PUBLIC_UI_CONTRACT: truthful browser-local persistence label");
+/* PADIEM_ACCOUNT_BRIDGE_CONTRACT — 공개 견적 UI는 유지하되 계정 authority만 Padiem을 재사용 */
+check(!/(Padiem|파디엠|padiem)/.test(app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + candidate + cloner + skill + skillStore + skillCandidate + skillRegistration + skillUi + intake + easy),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: quote domain logic stays product-neutral");
+check(!html.includes("B66 DEMO"), "PADIEM_ACCOUNT_BRIDGE_CONTRACT: no internal demo label");
+check(html.includes("BETA · 작성 중 견적은 이 브라우저에 저장"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: truthful local draft persistence label");
+check(html.includes("Padiem 계정") && html.includes("Padiem 로그인"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: account relationship is explicit");
+check(worker.includes('PADIEM_CHAT_ORIGIN = "https://chat.padiem.net"'),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: canonical Padiem upstream fixed");
+[
+  "/api/padiem/auth/status",
+  "/api/padiem/auth/password/login",
+  "/api/padiem/auth/password/register",
+  "/api/padiem/auth/logout",
+  "/api/padiem/b66/quote/interpret",
+  "/api/padiem/b66/saved-skills"
+].forEach((route) => check(worker.includes(route),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: bounded route " + route));
+check(worker.includes("padiem_route_not_allowed") && worker.includes("SAVED_SKILL_ROW"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: arbitrary upstream path denied");
+check(worker.includes('request.headers.get("cookie")') &&
+      !worker.includes('request.headers.get("authorization")'),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: opaque session forwarded without browser Authorization authority");
+check(worker.includes("PADIEM_CHAT_SERVICE") && worker.includes("else {\n      upstream = await fetch(target, init);"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: optional same-account service binding with HTTPS fallback");
+check(!account.includes("localStorage") && !account.includes("sessionStorage"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: server-assigned skill is memory-only cache");
+check(account.includes('semantic.buildDraft(state.loadedSkill.skill, input)') &&
+      account.includes('bridge.setServerSkill(state.loadedSkill.skill)'),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: server skill feeds canonical browser QuoteCore/renderer path");
+check(app.includes("function setServerSkill(skill)") && app.includes("function clearServerSkill()"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: app exposes non-persistent server skill seam");
+check(accountCss.includes(".padiem-account-panel") && accountCss.includes("@media print"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: account UI has bounded screen/print styling");
+new vm.Script(account, { filename: "padiem-account.js" });
 
 /* EXTRACTION_BOUNDARY_CONTRACT — 모델/프로바이더 비종속 추출 seam */
 check(extraction.includes("function normalizeExtraction("),
