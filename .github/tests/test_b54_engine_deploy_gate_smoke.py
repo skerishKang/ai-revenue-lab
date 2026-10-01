@@ -635,6 +635,46 @@ def test_post_deploy_served_version_guard_requires_a7_admission_binding() -> Non
     assert "POST_DEPLOY_A7_ADMISSION_BINDING=PASS" in run
 
 
+
+
+def test_predeploy_cp_admission_readiness_guard_is_before_engine_mutation() -> None:
+    names = _deploy_step_names()
+    cp_guard = names.index("Pre-deploy A7 Control Plane admission readiness")
+    deploy = names.index("Deploy engine to production")
+    assert cp_guard < deploy
+
+
+def test_predeploy_cp_admission_readiness_guard_is_get_only_and_fail_closed() -> None:
+    run = _deploy_step_run("Pre-deploy A7 Control Plane admission readiness")
+    assert "padiem-control-plane-engine-admission" in run
+    assert "/settings" in run
+    assert "/subdomain" in run
+    assert "/deployments" in run
+    assert 'CONTROL_PLANE_IDENTITY' in run
+    assert 'padiem-control-plane-identity' in run
+    assert '.result.enabled == false' in run
+    assert '.result.previews_enabled == false' in run
+    assert '.result.deployments[0].versions[0].percentage == 100' in run
+    assert "PREDEPLOY_CP_ADMISSION_READINESS=PASS" in run
+    assert "PRIVATE_INGRESS=PASS" in run
+    assert "CP_MUTATION=0" in run
+    assert "ENGINE_MUTATION_BEFORE_GUARD=0" in run
+    assert "PROVIDER_CALLS=0" in run
+    assert "REAL_USER_DATA=0" in run
+    for forbidden in (
+        " -X POST",
+        " -X PUT",
+        " -X DELETE",
+        "--data",
+        "pywrangler deploy",
+        "wrangler deploy",
+        "wrangler secret",
+        "d1 ",
+        "migrations ",
+    ):
+        assert forbidden not in run, f"mutation surface in CP readiness guard: {forbidden}"
+
+
 def test_smoke_first_order_fails_the_same_checker() -> None:
     names = _deploy_step_names()
     guard = names.index("Post-deploy served-version secret guard")
