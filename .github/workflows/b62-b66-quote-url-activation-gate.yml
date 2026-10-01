@@ -130,8 +130,7 @@ jobs:
           curl -fsS             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -H "Content-Type: application/json"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/settings"             -o "${settings}"
           evidence="$(python .github/scripts/b62_b66_quote_url_activation.py classify             --settings "${settings}" --expected-origin "${EXPECTED_ORIGIN}")"
           echo "${evidence}"
-          state="$(printf '%s
-' "${evidence}" | sed -n 's/^B62_B66_QUOTE_URL_STATE=//p')"
+          state="$(printf '%s\n' "${evidence}" | sed -n 's/^B62_B66_QUOTE_URL_STATE=//p')"
           case "${state}" in missing|exact|drift|wrong_type|invalid) ;; *) exit 1;; esac
           echo "target_state=${state}" >> "${GITHUB_OUTPUT}"
           echo 'SECRET_VALUES_READ=0'
@@ -206,8 +205,7 @@ jobs:
           printf '%s\n' "${active}" > "${RUNNER_TEMP}/b62-b66-quote-url-premutation-version.txt"
           evidence="$(python .github/scripts/b62_b66_quote_url_activation.py classify             --settings "${settings}" --expected-origin "${EXPECTED_ORIGIN}")"
           echo "${evidence}"
-          state="$(printf '%s
-' "${evidence}" | sed -n 's/^B62_B66_QUOTE_URL_STATE=//p')"
+          state="$(printf '%s\n' "${evidence}" | sed -n 's/^B62_B66_QUOTE_URL_STATE=//p')"
           case "${state}" in missing|exact) ;; *) echo "Premutation target state changed to ${state}" >&2; exit 1;; esac
           echo "premutation_state=${state}" >> "${GITHUB_OUTPUT}"
           echo 'PREMUTATION_SETTINGS_SNAPSHOT=RECORDED'
@@ -232,8 +230,7 @@ jobs:
           patch="${RUNNER_TEMP}/b62-b66-quote-url-patch.json"
           evidence="$(python .github/scripts/b62_b66_quote_url_activation.py plan             --settings "${RUNNER_TEMP}/b62-b66-quote-url-premutation-settings.json"             --expected-origin "${EXPECTED_ORIGIN}"             --target-sha "${TARGET_SHA}"             --output "${patch}")"
           echo "${evidence}"
-          no_op="$(printf '%s
-' "${evidence}" | sed -n 's/^B62_B66_QUOTE_URL_NO_OP=//p')"
+          no_op="$(printf '%s\n' "${evidence}" | sed -n 's/^B62_B66_QUOTE_URL_NO_OP=//p')"
           test "${no_op}" = "0" || test "${no_op}" = "1"
           echo "no_op=${no_op}" >> "${GITHUB_OUTPUT}"
 
