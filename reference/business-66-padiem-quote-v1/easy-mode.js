@@ -83,7 +83,7 @@
     composer.value = "";
     composer.placeholder = "필요한 내용을 편하게 입력하세요";
     $("easyComposerNote").textContent =
-      "바로 입력해도 질문형이 시작됩니다. 자유 문장 자동 해석은 모델 연결 후 제공됩니다.";
+      "바로 입력해도 질문이 시작됩니다. 문장을 알아듣는 기능은 준비 중이라, 필요한 값은 하나씩 여쭤봅니다.";
     inputHandler = (text) => startGuided(text);
     refreshStarters();
   }
@@ -176,7 +176,7 @@
         $("easyStarterGrid").before(hint);
       }
       const company = safeText(activeDraft.recipient.company) || "받는 사람 미정";
-      hint.textContent = "지난번 작성하던 견적이 있어요. " + company + " 견적을 이어서 만들 수 있습니다.";
+      hint.textContent = "중단했던 " + company + " 견적을 이어서 진행할 수 있어요.";
     } else if (hint) {
       hint.remove();
     }
@@ -714,7 +714,7 @@
   $("directModeButton").addEventListener("click", () => setWorkspaceMode("direct"));
   $("directStarter").addEventListener("click", () => setWorkspaceMode("direct"));
   $("resumeDraftStarter").addEventListener("click", () => {
-    App.toast("지난번 작성하던 견적을 이어서 엽니다.");
+    App.toast("중단했던 견적을 이어서 엽니다.");
     setWorkspaceMode("direct");
   });
   $("recentQuoteStarter").addEventListener("click", showRecentHistory);
