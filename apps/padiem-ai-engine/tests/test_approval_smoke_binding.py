@@ -100,10 +100,15 @@ def _decision(pause, outcome: str = "approved") -> dict:
     }
 
 
+class _ProviderBombRuntime:
+    async def run(self, _request):
+        raise AssertionError("provider/fallback runtime must not run in approval smoke")
+
+
 def _service(binding):
     store = InMemoryContinuationStore()
     service = OrchestrationEngineService(
-        runtime_factory=lambda _app_id: object(),
+        runtime_factory=lambda _app_id: _ProviderBombRuntime(),
         b14_service_bound=True,
         continuation_store=store,
         approval_decision_verifier=(
