@@ -317,10 +317,10 @@ class EvidenceGraph:
                     "retrieved_at": source.retrieved_at,
                     "provider": source.provider,
                     "source_type": source.source_type,
-                    "document_locator": (
-                        source.document_locator.to_public_dict()
+                    **(
+                        {"document_locator": source.document_locator.to_public_dict()}
                         if source.document_locator is not None
-                        else None
+                        else {}
                     ),
                 }
                 for source in self.sources
