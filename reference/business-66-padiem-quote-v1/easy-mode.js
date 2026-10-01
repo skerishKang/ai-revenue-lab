@@ -746,6 +746,10 @@
     startFileIntake();
   });
 
+  document.addEventListener("b66:open-easy-chat", () => {
+    setWorkspaceMode("easy");
+  });
+
   setWorkspaceMode("easy");
   showHome();
 })();

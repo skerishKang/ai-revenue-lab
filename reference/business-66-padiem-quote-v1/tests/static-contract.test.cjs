@@ -124,8 +124,9 @@ check(!extraction.includes("grand =") && !extraction.includes("vat =") && !extra
   "EXTRACTION_BOUNDARY_CONTRACT: extraction layer owns no totals");
 
 /* EASY_MODE_CONTRACT — 기존 직접입력 화면 앞에 deterministic chat UX */
-check(html.includes("쉽게 만들기") && html.includes("직접 입력"),
-  "EASY_MODE_CONTRACT: top-level easy/direct switch");
+check(html.includes('id="easyModeButton"') && html.includes('id="directModeButton"') &&
+      html.includes(">채팅</button>") && html.includes("직접 입력"),
+  "EASY_MODE_CONTRACT: top-level chat/direct switch");
 check(html.includes("질문받으며 새로 만들기") && html.includes("내용을 한번에 말하기"),
   "EASY_MODE_CONTRACT: easy entry choices");
 check(easy.includes('App.createFreshDraft("guided")') &&
@@ -402,8 +403,13 @@ check(!easy.includes("fetch(") && !intake.includes("fetch("),
   "UPLOAD_AI_LIVE=NO: no browser upload request");
 
 /* CHAT_AI_LIVE=NO */
-check(app.includes("자연어 채팅 → QuoteDraft 자동 입력은 다음 단계에서 연결합니다."),
-  "CHAT_AI_LIVE=NO: chat is explicitly future");
+check(easy.includes("자유 문장 자동 해석은 모델 연결 후 제공됩니다.") &&
+      easy.includes("아직 자동 해석 모델은 연결 전"),
+  "CHAT_AI_LIVE=NO: easy chat never claims AI interpretation");
+check(easy.includes('addEventListener("b66:open-easy-chat"') &&
+      app.includes('new CustomEvent("b66:open-easy-chat")') &&
+      html.includes('data-mode="chat"'),
+  "EASY_MODE_CONTRACT: direct-modebar chat button opens the easy workspace");
 
 /* EMAIL_SEND_LIVE=NO */
 check(app.includes("이메일 전송은 다음 단계에서"), "EMAIL_SEND_LIVE=NO: email is future");
