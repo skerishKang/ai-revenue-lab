@@ -30,9 +30,13 @@ router = Router()
 
 EXTRACT_IMAGE_PATH = "/v1/quote/extract-image"
 EXTRACT_DOCUMENT_PATH = "/v1/quote/extract-document"
+EXTRACT_LOCAL_TEXT_PATH = "/v1/quote/extract-local-text"
 MAX_IMAGE_BYTES = 4 * 1024 * 1024
+MAX_DOCUMENT_BYTES = 2 * 1024 * 1024
+MAX_LOCAL_TEXT_CHARS = 32000
 MAX_REQUEST_BYTES = 6 * 1024 * 1024
 _REQUIRED_FIELDS = frozenset({"name", "media_type", "base64"})
+_LOCAL_TEXT_FIELDS = frozenset({"name", "media_type", "byte_size", "local_text"})
 _IMAGE_MEDIA = frozenset({"image/jpeg", "image/png", "image/webp"})
 
 
@@ -46,6 +50,12 @@ def _intake_authority():
     """Load the staged canonical B66 file-intake authority."""
 
     return importlib.import_module("app.b66_file_intake")
+
+
+def _document_identity_authority():
+    """Load Core's canonical document identity authority without parsing bytes."""
+
+    return importlib.import_module("padiem_ai_core.document_normalization")
 
 
 def _error(code: str, *, status: int = 422) -> JSONResponse:
@@ -229,6 +239,73 @@ async def extract_image(request: Request) -> JSONResponse:
         filename=name.strip(),
         media_type=media_type,
         byte_size=len(image_bytes),
+    )
+
+
+@router.route(EXTRACT_LOCAL_TEXT_PATH, methods=["POST"])
+async def extract_local_text(request: Request) -> JSONResponse:
+    """Extract quotation facts from browser-local document text.
+
+    The browser owns only bounded binary-to-text extraction. The text remains
+    untrusted and is revalidated here before entering the existing governed
+    B66 text extraction/model-output validation path.
+    """
+
+    payload = await _bounded_json(request)
+    if payload is None:
+        return _error("invalid_request")
+    if set(payload) != _LOCAL_TEXT_FIELDS:
+        return _error("unsupported_fields")
+
+    name = payload.get("name")
+    media_type = payload.get("media_type")
+    byte_size = payload.get("byte_size")
+    local_text = payload.get("local_text")
+
+    if not isinstance(name, str) or not name.strip() or len(name.strip()) > 255:
+        return _error("invalid_file_name")
+    if (
+        isinstance(byte_size, bool)
+        or not isinstance(byte_size, int)
+        or byte_size <= 0
+        or byte_size > MAX_DOCUMENT_BYTES
+    ):
+        return _error("invalid_file_size")
+    if not isinstance(local_text, str) or not local_text.strip():
+        return _error("empty_text")
+    text = local_text.strip()
+    if len(text) > MAX_LOCAL_TEXT_CHARS:
+        return _error("text_too_large")
+
+    try:
+        identity = _document_identity_authority()
+        identity.validate_document_identity(
+            name=name.strip(),
+            media_type=media_type,
+            source_kind="binary",
+        )
+    except Exception as exc:
+        return _error(_safe_error_code(exc, "unsupported_file_type"))
+
+    try:
+        authority = _authority()
+        chat_body = authority.build_text_extraction_request(
+            text,
+            filename=name.strip(),
+            source_kind="native_document",
+        )
+    except ValueError as exc:
+        return _error(_safe_error_code(exc))
+    except Exception:
+        return _error("extraction_authority_unavailable", status=503)
+
+    return await _execute_extraction(
+        authority=authority,
+        chat_body=chat_body,
+        source_kind="native_document",
+        filename=name.strip(),
+        media_type=str(media_type),
+        byte_size=byte_size,
     )
 
 
