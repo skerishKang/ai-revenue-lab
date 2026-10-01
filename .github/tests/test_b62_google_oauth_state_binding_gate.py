@@ -18,7 +18,9 @@ def test_gate_targets_exact_reviewed_binding_and_worker() -> None:
     text = source()
     assert "GOOGLE_OAUTH_BINDING: GOOGLE_OAUTH_STATE_SERVICE" in text
     assert "OAUTH_STATE_WORKER: padiem-google-oauth-state" in text
-    assert 'service: "padiem-google-oauth-state"' in text
+    assert "OAUTH_STATE_WORKER: padiem-google-oauth-state" in text
+    assert '{"name": binding_name, "type": "service", "service": service}' in text
+    assert '--arg service "${OAUTH_STATE_WORKER}"' in text
     assert 'GOOGLE_OAUTH_SERVICE_BINDING_NAME = "GOOGLE_OAUTH_STATE_SERVICE"' in text
 
 
