@@ -19,7 +19,8 @@
       require("./quote-skill-store.js"),
       require("./quote-registration-session.js"),
       require("./quote-template-store.js"),
-      require("./file-intake.js")
+      require("./file-intake.js"),
+      require("./browser-document-parser.js")
     );
   } else {
     root.SavedQuoteSkillUi = factory(
@@ -27,10 +28,11 @@
       root.SavedQuoteSkillStore,
       root.QuoteRegistrationSession,
       root.QuoteTemplateStore,
-      root.B66FileIntake
+      root.B66FileIntake,
+      root.B66BrowserDocumentParser
     );
   }
-})(typeof self !== "undefined" ? self : this, function (Skill, SkillStore, Session, TemplateStore, FileIntake) {
+})(typeof self !== "undefined" ? self : this, function (Skill, SkillStore, Session, TemplateStore, FileIntake, BrowserDocumentParser) {
   "use strict";
 
   if (!Skill) throw new Error("SavedQuoteSkill is required");
@@ -38,6 +40,7 @@
   if (!Session) throw new Error("QuoteRegistrationSession is required");
   if (!TemplateStore) throw new Error("QuoteTemplateStore is required");
   if (!FileIntake) throw new Error("B66FileIntake is required");
+  if (!BrowserDocumentParser) throw new Error("B66BrowserDocumentParser is required");
 
   var IDS = {
     section: "skillSection",
@@ -218,26 +221,12 @@
     throw new Error("base64_unavailable");
   }
 
-  async function analyzeFile(file, fileMeta, fetchFn) {
-    if (!fileMeta || ["image", "native_document"].indexOf(fileMeta.category) === -1) {
-      return { ok: false, code: "manual_only" };
-    }
-    if (!file || typeof file.arrayBuffer !== "function") return { ok: false, code: "file_read_unavailable" };
-    if (typeof fetchFn !== "function") return { ok: false, code: "analysis_service_unavailable" };
-
+  async function postAnalysisPayload(payloadBody, fetchFn) {
     try {
-      var bytes = await file.arrayBuffer();
-      if (!bytes || bytes.byteLength !== fileMeta.byteSize) {
-        return { ok: false, code: "file_size_changed" };
-      }
       var response = await fetchFn(LIVE_INTAKE_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({
-          name: fileMeta.name,
-          media_type: fileMeta.mediaType,
-          base64: bytesToBase64(bytes)
-        })
+        body: JSON.stringify(payloadBody)
       });
       var payload = await response.json();
       if (!response.ok || !payload || payload.ok !== true || !payload.result ||
@@ -254,6 +243,66 @@
       };
     } catch (err) {
       return { ok: false, code: "analysis_service_unavailable" };
+    }
+  }
+
+  async function analyzeFile(file, fileMeta, fetchFn, localParserFn) {
+    if (!fileMeta || ["image", "native_document"].indexOf(fileMeta.category) === -1) {
+      return { ok: false, code: "manual_only" };
+    }
+    if (!file || typeof file.arrayBuffer !== "function") {
+      return { ok: false, code: "file_read_unavailable" };
+    }
+    if (typeof fetchFn !== "function") {
+      return { ok: false, code: "analysis_service_unavailable" };
+    }
+
+    if (fileMeta.category === "native_document") {
+      var parseFn = typeof localParserFn === "function"
+        ? localParserFn
+        : BrowserDocumentParser.parseDocumentFile;
+      if (typeof parseFn !== "function") {
+        return { ok: false, code: "browser_parser_unavailable" };
+      }
+
+      var parsed;
+      try {
+        parsed = await parseFn(file, fileMeta);
+      } catch (_) {
+        return { ok: false, code: "browser_document_parse_failed" };
+      }
+      if (!parsed || parsed.ok !== true || parsed.kind !== "local_text" ||
+          typeof parsed.text !== "string" || !parsed.text.trim()) {
+        return {
+          ok: false,
+          code: parsed && typeof parsed.code === "string"
+            ? parsed.code
+            : "browser_document_parse_failed"
+        };
+      }
+      if (parsed.text.length > 32000) {
+        return { ok: false, code: "local_text_too_large" };
+      }
+      return postAnalysisPayload({
+        name: fileMeta.name,
+        media_type: fileMeta.mediaType,
+        byte_size: fileMeta.byteSize,
+        local_text: parsed.text
+      }, fetchFn);
+    }
+
+    try {
+      var bytes = await file.arrayBuffer();
+      if (!bytes || bytes.byteLength !== fileMeta.byteSize) {
+        return { ok: false, code: "file_size_changed" };
+      }
+      return postAnalysisPayload({
+        name: fileMeta.name,
+        media_type: fileMeta.mediaType,
+        base64: bytesToBase64(bytes)
+      }, fetchFn);
+    } catch (err) {
+      return { ok: false, code: "file_read_unavailable" };
     }
   }
 
