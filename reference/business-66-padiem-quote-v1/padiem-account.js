@@ -291,7 +291,7 @@
         setQuoteStatus("배정된 양식을 적용하지 못했습니다.", "error");
         return;
       }
-      const replaced = app.replaceDraft(built.draft, { toast: "Padiem 내 견적서로 작성했습니다." });
+      const replaced = app.replaceDraft(built.draft, { toast: "내 견적서로 작성했습니다." });
       if (!replaced || replaced.ok !== true) {
         setQuoteStatus("견적 화면에 반영하지 못했습니다.", "error");
         return;
