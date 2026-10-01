@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'none'; img-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>견적서 미리보기</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="quote-embed.css">
+  <script src="quote-core.js" defer></script>
+  <script src="quote-template.js" defer></script>
+  <script src="quote-template-renderer.js" defer></script>
+  <script src="quote-skill.js" defer></script>
+  <script src="quote-embed-bridge.js" defer></script>
+  <script src="quote-embed-browser.js" defer></script>
+</head>
+<body>
+  <main class="embed-shell">
+    <div class="embed-toolbar">
+      <p class="embed-status" id="embedStatus" role="status" aria-live="polite">견적 내용을 기다리고 있습니다.</p>
+      <button class="embed-print" id="embedPrint" type="button">PDF로 저장 / 인쇄</button>
+    </div>
+    <article class="quote-paper" id="quotePaper" aria-label="견적서 미리보기">
+      <div class="quote-title">
+        <h2 id="pvTitle">견 적 서</h2>
+        <div class="meta">
+          <div id="pvQuoteNo"></div>
+          <div id="pvDate"></div>
+          <div id="pvValidity"></div>
+          <div id="pvValidUntil"></div>
+          <div id="pvTaxMode"></div>
+        </div>
+      </div>
+      <div class="parties">
+        <div class="party">
+          <div class="eyebrow" id="pvSenderHeading"></div>
+          <strong id="pvSenderCompany"></strong>
+          <p id="pvSenderRep"></p>
+          <p id="pvSenderBizNo"></p>
+          <p id="pvSenderAddress"></p>
+          <p id="pvSenderContact"></p>
+        </div>
+        <div class="party">
+          <div class="eyebrow" id="pvRecipientHeading"></div>
+          <strong id="pvRecipientCompany"></strong>
+          <p id="pvRecipientPerson"></p>
+          <p id="pvRecipientAddress"></p>
+          <p id="pvRecipientEmail"></p>
+        </div>
+      </div>
+      <table class="quote-table">
+        <thead><tr id="pvItemsHead"></tr></thead>
+        <tbody id="pvItems"></tbody>
+      </table>
+      <div class="quote-totals">
+        <div><span id="pvSubtotalLabel"></span><strong id="pvSubtotal"></strong></div>
+        <div><span id="pvVatLabel"></span><strong id="pvVat"></strong></div>
+        <div class="grand"><span id="pvGrandLabel"></span><span id="pvGrand"></span></div>
+      </div>
+      <div class="memo" id="pvMemo"></div>
+      <div class="demo-mark" id="pvMark"></div>
+    </article>
+  </main>
+</body>
+</html>
