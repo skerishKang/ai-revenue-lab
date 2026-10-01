@@ -36,13 +36,13 @@ globalThis.fetch = async (target, init = {}) => {
   if (url.endsWith("/api/b66/saved-skills?limit=20")) {
     return json({ ok: true, skills: [] });
   }
-  if (url.endsWith("/api/auth/google/start")) {
+  if (url.endsWith("/auth/google/start")) {
     return new Response(null, {
       status: 302,
       headers: { "Location": "https://accounts.google.com/o/oauth2/auth?provider=google" }
     });
   }
-  if (url.endsWith("/api/auth/google/callback")) {
+  if (url.endsWith("/auth/google/callback")) {
     return new Response(null, { status: 302, headers: { "Location": "/" } });
   }
   throw new Error("unexpected upstream: " + url);

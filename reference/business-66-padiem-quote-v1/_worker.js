@@ -86,8 +86,8 @@ function padiemTarget(url, method) {
     ["/api/padiem/auth/status", ["GET", "/api/auth/status"]],
     ["/api/padiem/auth/password/login", ["POST", "/api/auth/password/login"]],
     ["/api/padiem/auth/password/register", ["POST", "/api/auth/password/register"]],
-    ["/api/padiem/auth/google/start", ["GET", "/api/auth/google/start"]],
-    ["/api/padiem/auth/google/callback", ["GET", "/api/auth/google/callback"]],
+    ["/api/padiem/auth/google/start", ["GET", "/auth/google/start"]],
+    ["/api/padiem/auth/google/callback", ["GET", "/auth/google/callback"]],
     ["/api/padiem/auth/logout", ["POST", "/api/auth/logout"]],
     ["/api/padiem/b66/quote/interpret", ["POST", "/api/b66/quote/interpret"]]
   ]);
