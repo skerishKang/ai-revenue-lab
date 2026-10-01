@@ -201,7 +201,8 @@ check(easy.includes("function startGuided(referenceText)") &&
       easy.includes("참고용으로 그대로 남겨둘게요"),
   "FREE_TEXT_CONTINUITY_CONTRACT: one-shot text remains visible when guided flow continues");
 check(easy.includes("inputHandler = (text) => startGuided(text);") &&
-      easy.includes("바로 입력해도 질문형이 시작됩니다"),
+      easy.includes("바로 입력해도 질문이 시작됩니다") &&
+      easy.includes("문장을 알아듣는 기능은 준비 중이라"),
   "EASY_MODE_CONTRACT: home composer submit starts guided chat");
 check(easy.includes("QuoteDraft에 자동 반영하지 않습니다."),
   "FREE_TEXT_CONTINUITY_CONTRACT: preserved reference is explicitly non-authoritative");
@@ -435,6 +436,9 @@ check(app.includes("Core.DRAFT_STORAGE_KEY") &&
 check(app.includes("localStorage.removeItem(key)") &&
       !app.includes("localStorage.clear("),
   "BETA_POLISH_CONTRACT: reset never clears unrelated origin storage");
+check(account.includes("settingsButton.hidden = true") &&
+      account.includes("settingsButton.hidden = false"),
+  "BETA_POLISH_CONTRACT: personal settings appears only after sign-in");
 check(easy.includes('"b66:local-data-reset"') &&
       easy.includes('fileInput.value = ""'),
   "BETA_POLISH_CONTRACT: reset clears ephemeral selected-file state");
@@ -454,7 +458,7 @@ check(!easy.includes("fetch(") && !intake.includes("fetch("),
   "UPLOAD_AI_LIVE=NO: no browser upload request");
 
 /* CHAT_AI_LIVE=NO */
-check(easy.includes("자유 문장 자동 해석은 모델 연결 후 제공됩니다.") &&
+check(easy.includes("문장을 알아듣는 기능은 준비 중이라") &&
       easy.includes("아직 자동 해석 모델은 연결 전"),
   "CHAT_AI_LIVE=NO: easy chat never claims AI interpretation");
 check(easy.includes('addEventListener("b66:open-easy-chat"') &&

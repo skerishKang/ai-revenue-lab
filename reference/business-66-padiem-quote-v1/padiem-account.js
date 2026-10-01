@@ -67,6 +67,10 @@
     if (button) button.textContent = "로그인";
     if (panel) panel.hidden = true;
     if (select) select.replaceChildren();
+    const settingsButton = byId("settingsButton");
+    if (settingsButton) settingsButton.hidden = true;
+    const settingsPanelOut = byId("settingsPanel");
+    if (settingsPanelOut) settingsPanelOut.hidden = true;
   }
 
   function renderSignedIn() {
@@ -76,6 +80,8 @@
     if (button) button.textContent = accountName(state.user);
     if (label) label.textContent = accountName(state.user) + " · 내 견적서";
     if (panel) panel.hidden = false;
+    const settingsButton = byId("settingsButton");
+    if (settingsButton) settingsButton.hidden = false;
   }
 
   function openAuthDialog() {
