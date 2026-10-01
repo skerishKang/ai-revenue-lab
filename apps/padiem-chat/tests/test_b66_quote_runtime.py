@@ -119,7 +119,7 @@ class _Interpreter:
             items=({"name": "배관", "qty": 20, "unitPrice": 30000},),
             memo=None,
             tax_mode=None,
-            missing=("quoteNo", "issueDate"),
+            missing=(),
         )
 
 
@@ -217,7 +217,7 @@ def test_conversation_interpretation_returns_variable_candidate_only():
     assert body["candidate"]["items"] == [
         {"name": "배관", "qty": 20, "unitPrice": 30000}
     ]
-    assert body["candidate"]["missing"] == ["quoteNo", "issueDate"]
+    assert body["candidate"]["missing"] == []
     assert "subtotal" not in json.dumps(body, ensure_ascii=False)
     assert "grandTotal" not in json.dumps(body, ensure_ascii=False)
     assert body["execution"] == {
