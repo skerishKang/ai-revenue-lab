@@ -5,15 +5,17 @@ const originalFetch = globalThis.fetch;
 const calls = [];
 globalThis.fetch = async (url, options) => {
   calls.push({ url: String(url), options });
-  const isDocument = String(url).endsWith("/api/b66/v1/quote/extract-document");
+  const target = String(url);
+  const isDocument = target.endsWith("/api/b66/v1/quote/extract-document");
+  const isLocalText = target.endsWith("/api/b66/v1/quote/extract-local-text");
   return new Response(
     JSON.stringify({
       ok: true,
       result: {
         extraction: {
           source: {
-            kind: isDocument ? "native_document" : "image",
-            filename: isDocument ? "q.pdf" : "q.png"
+            kind: (isDocument || isLocalText) ? "native_document" : "image",
+            filename: isLocalText ? "q.docx" : (isDocument ? "q.pdf" : "q.png")
           },
           sender: {}, recipient: {}, quote: {}, items: [], tax: { mode: null },
           memo: null, evidence: [], warnings: []
@@ -64,6 +66,27 @@ try {
   assert.equal(calls[1].options.headers["Content-Type"], "application/json");
   assert.equal(documentResponse.headers.get("Cache-Control"), "no-store");
 
+  const localTextRequest = new Request("https://quick-quote-kr.pages.dev/api/v1/quote/intake", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: "q.docx",
+      media_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      byte_size: 1234,
+      local_text: "견적번호 Q-LOCAL-1\n품목 테스트 2 3000"
+    })
+  });
+  const localTextResponse = await worker.fetch(localTextRequest, env);
+  assert.equal(localTextResponse.status, 200);
+  assert.equal(calls.length, 3);
+  assert.match(calls[2].url, /\/api\/b66\/v1\/quote\/extract-local-text$/);
+  assert.equal(calls[2].options.method, "POST");
+  assert.equal(calls[2].options.headers["Content-Type"], "application/json");
+  assert.equal(localTextResponse.headers.get("Cache-Control"), "no-store");
+  const forwardedLocal = JSON.parse(calls[2].options.body);
+  assert.equal(forwardedLocal.local_text, "견적번호 Q-LOCAL-1\n품목 테스트 2 3000");
+  assert.ok(!("base64" in forwardedLocal));
+
   const malformed = await worker.fetch(
     new Request("https://quick-quote-kr.pages.dev/api/v1/quote/intake", {
       method: "POST",
@@ -73,7 +96,7 @@ try {
     env
   );
   assert.equal(malformed.status, 422);
-  assert.equal(calls.length, 2);
+  assert.equal(calls.length, 3);
 
   const assetResponse = new Response("asset", { status: 200 });
   let assetCalls = 0;
@@ -87,7 +110,7 @@ try {
   );
   assert.ok(!/space-bunny|sensenova|openai|anthropic|kilo\//i.test(source));
   assert.ok(!/api[_-]?key|password|secret/i.test(source));
-  console.log("b66 Pages image/native live-intake proxy contracts: PASS");
+  console.log("b66 Pages image/binary/local-text intake proxy contracts: PASS");
 } finally {
   globalThis.fetch = originalFetch;
 }
