@@ -347,17 +347,39 @@ class VercelParserRuntimeEvidence:
 
 
 class VercelPythonSdkProbeProvider:
-    """Lazy official Python SDK adapter. Construction itself is inert."""
+    """Lazy official Python SDK adapter with explicit client ownership.
 
-    def create(self, *, ttl_seconds: int) -> ProbeSandboxPort:
+    SyncSandboxClient construction is documented as synchronous and I/O-free.
+    The client is created only on the first authorized provider operation and is
+    explicitly closed after the one-shot probe. No ambient SDK session is used.
+    """
+
+    def __init__(self) -> None:
+        self._client: Any = None
+
+    def _ensure_client(self) -> Any:
+        if self._client is not None:
+            return self._client
         try:
-            from vercel.sandbox import NetworkPolicy, SandboxResources
-            from vercel.sandbox import sync as vercel_sandbox
+            from vercel.sandbox.sync import SandboxServiceOptions, SyncSandboxClient
         except ImportError as exc:
             raise VercelParserProbeError(
                 f"Vercel Sandbox SDK unavailable; install {VERCEL_SANDBOX_SDK_REQUIREMENT}"
             ) from exc
-        return vercel_sandbox.create_sandbox(
+        self._client = SyncSandboxClient.create(
+            options=SandboxServiceOptions(region="iad1")
+        )
+        return self._client
+
+    def create(self, *, ttl_seconds: int) -> ProbeSandboxPort:
+        try:
+            from vercel.sandbox import NetworkPolicy, SandboxResources
+        except ImportError as exc:
+            raise VercelParserProbeError(
+                f"Vercel Sandbox SDK unavailable; install {VERCEL_SANDBOX_SDK_REQUIREMENT}"
+            ) from exc
+        client = self._ensure_client()
+        return client.create_sandbox(
             image=VERCEL_PROBE_IMAGE,
             execution_time_limit=ttl_seconds,
             resources=SandboxResources(
@@ -370,12 +392,13 @@ class VercelPythonSdkProbeProvider:
         )
 
     def get(self, *, name: str) -> Any:
-        try:
-            from vercel.sandbox import sync as vercel_sandbox
-        except ImportError as exc:
-            raise VercelParserProbeError("Vercel Sandbox SDK unavailable") from exc
-        return vercel_sandbox.get_sandbox(name=name)
+        return self._ensure_client().get_sandbox(name=name)
 
+    def close(self) -> None:
+        client = self._client
+        self._client = None
+        if client is not None:
+            client.close()
 
 class VercelIsolatedParserProbeTransport:
     """Canonical IsolatedParserClient transport over one probe sandbox."""
@@ -645,6 +668,12 @@ def execute_authorized_vercel_parser_probe(
             try:
                 operations[0] += 1
                 sandbox.destroy()
+            except Exception:
+                pass
+        close = getattr(chosen, "close", None)
+        if callable(close):
+            try:
+                close()
             except Exception:
                 pass
 
