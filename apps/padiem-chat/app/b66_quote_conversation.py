@@ -263,10 +263,9 @@ def _server_missing_fields(
         projection.recipient.get("company") or projection.recipient.get("person")
     ):
         missing.append("recipient")
-    if schema.get("quoteNo") is True and projection.quote_no is None:
-        missing.append("quoteNo")
-    if schema.get("issueDate") is True and projection.issue_date is None:
-        missing.append("issueDate")
+    # quoteNo and issueDate are intentionally not conversational blockers.
+    # The canonical browser QuoteCore supplies today's date and its default
+    # quote-number pattern when the user does not explicitly say them.
     if schema.get("items") is True and not projection.items:
         missing.append("items")
     return tuple(missing)
