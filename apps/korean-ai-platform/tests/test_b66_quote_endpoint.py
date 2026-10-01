@@ -380,6 +380,10 @@ def test_deploy_pipeline_stages_canonical_b66_authorities_inside_app_package():
     assert "B66_CORE_PARSER_BOUNDARY_STAGED=YES" in deploy
     assert 'CORE_SOURCE="../../packages/padiem-ai-core/padiem_ai_core"' in deploy
     assert "document_parser_boundary.py" in deploy
+    assert "document_normalization.py" in deploy
+    assert "document_semantics.py" in deploy
+    assert 'Deployment-staged package shell for canonical Core parser modules.' in deploy
+    assert 'cp "${CORE_SOURCE}/__init__.py"' not in deploy
 
     intake_source = INTAKE_PATH.read_text(encoding="utf-8")
     assert "parse_binary_document_via_authority" in intake_source
