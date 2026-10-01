@@ -170,8 +170,3 @@ def with_approval_smoke_binding(
         setattr(resolver, "subject_for_app", subject_for_app)
     return resolver
 
-
-
-APPROVAL_SMOKE_PROVIDER_CALLS = 0
-APPROVAL_SMOKE_EXTERNAL_SIDE_EFFECTS = 0
-APPROVAL_SMOKE_DEFAULT_ENABLED = False
