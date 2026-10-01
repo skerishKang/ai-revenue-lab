@@ -121,14 +121,14 @@ def _payload() -> dict[str, object]:
     return {
         "app_id": "b62",
         "agent": {
-            "id": "agent:padiem:a7_test@1",
-            "title": "A7 test",
-            "description": "A7 composition test",
-            "system_instruction": "No dispatch expected",
+            "id": "agent:padiem:orchestrator_1",
+            "title": "Orchestrator",
+            "description": "Orchestrates execution",
+            "system_instruction": "Execute tasks safely",
             "task_type": "general",
             "optimize_for": "balanced",
-            "max_tokens": 128,
-            "required_capabilities": [],
+            "max_tokens": 2048,
+            "required_capabilities": ["chat"],
             "model_policy": {"model": "test/route"},
         },
         "messages": [
@@ -137,12 +137,15 @@ def _payload() -> dict[str, object]:
                 "content": "prove fail closed",
             }
         ],
+        "session_id": "session:a7_composition_1",
+        "additional_system_context": "Trusted product context",
         "trace_id": "trace_a7_composition",
         "execution_context": {
             "trace_id": "trace_a7_composition",
+            "timeout_seconds": 15.0,
         },
         "subject_id": "subject:padiem:user:a7",
-        "max_retries": 0,
+        "max_retries": 2,
         "require_evidence": False,
         "require_verification": False,
     }
