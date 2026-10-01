@@ -134,6 +134,8 @@ def test_canary_pins_representative_request_and_expected_values() -> None:
     assert helper.EXPECTED_QTY == 100
     assert helper.EXPECTED_UNIT_PRICE == 18000
     source = SCRIPT.read_text(encoding="utf-8")
+    assert "secondary_session_required_for_full_proof" in source
+    assert "foreign_session_required_for_full_proof" in source
     for marker in (
         "BOUNDED_MODEL_CALL_COUNT=1",
         "SOURCE_DOCUMENT_PARSE_CALLS=0",
@@ -144,7 +146,9 @@ def test_canary_pins_representative_request_and_expected_values() -> None:
         "CANONICAL_RENDERER=PASS",
         "PREVIEW=PASS",
         "PRINT_OR_PDF=PASS",
+        "SAME_ACCOUNT_RELOAD_PERSISTENCE=PASS",
         "SAME_ACCOUNT_RELOGIN_PERSISTENCE=PASS",
+        "CROSS_BROWSER_PERSISTENCE=PASS",
         "FOREIGN_ACCOUNT_ACCESS=DENIED_OR_NONDISCLOSING",
         "CLIENT_OWNERSHIP_OVERRIDE=DENIED",
     ):

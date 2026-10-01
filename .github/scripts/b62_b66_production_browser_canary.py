@@ -9,9 +9,10 @@ Primary session proves the real Production user flow:
 Saved Skill list/get -> one bounded interpret request -> canonical B66 iframe
 QuoteCore/render -> preview -> browser print path -> reload persistence.
 
-Optional SECONDARY CDP proves the same durable Saved Quote Skill is visible from a
-separate already-authenticated browser. Optional FOREIGN CDP proves the primary
-saved_skill_id is non-disclosing to another already-authenticated account.
+A separate SECONDARY CDP is required to prove the same durable Saved Quote Skill
+is visible from another already-authenticated browser session. A separate FOREIGN
+CDP is required to prove the primary saved_skill_id is non-disclosing to another
+already-authenticated account.
 
 GitHub Actions never executes the live canary. Live execution requires the
 explicit --authorized-live-run switch and loopback-only CDP endpoints.
@@ -472,7 +473,7 @@ def _run_primary(playwright, cdp_url: str) -> tuple[SavedSkillProjection, Any, b
     print("CANONICAL_RENDERER=PASS")
     print("PREVIEW=PASS")
     print("PRINT_OR_PDF=PASS")
-    print("SAME_ACCOUNT_RELOGIN_PERSISTENCE=PASS")
+    print("SAME_ACCOUNT_RELOAD_PERSISTENCE=PASS")
     print("BROWSER_INTERPRET_POST_COUNT=1")
     print("BROWSER_DIRECT_GOOGLE_CALLS=0")
     return skill, page, created
@@ -488,6 +489,7 @@ def _check_secondary(playwright, cdp_url: str, expected: SavedSkillProjection) -
             raise CanaryFailure("cross_browser_skill_mismatch")
         if detail.get("status") != 200 or detail.get("saved_id_match") is not True:
             raise CanaryFailure("cross_browser_detail_unavailable")
+        print("SAME_ACCOUNT_RELOGIN_PERSISTENCE=PASS")
         print("CROSS_BROWSER_PERSISTENCE=PASS")
         return True
     finally:
@@ -518,6 +520,10 @@ def _check_foreign(playwright, cdp_url: str, primary_skill: SavedSkillProjection
 
 def run_live(primary_cdp_url: str, *, secondary_cdp_url: str | None, foreign_cdp_url: str | None) -> int:
     ensure_distinct_cdp_urls(primary_cdp_url, secondary_cdp_url, foreign_cdp_url)
+    if not secondary_cdp_url:
+        raise CanaryFailure("secondary_session_required_for_full_proof")
+    if not foreign_cdp_url:
+        raise CanaryFailure("foreign_session_required_for_full_proof")
     try:
         from playwright.sync_api import sync_playwright
     except Exception as exc:
@@ -526,14 +532,8 @@ def run_live(primary_cdp_url: str, *, secondary_cdp_url: str | None, foreign_cdp
     with sync_playwright() as playwright:
         primary_skill, primary_page, primary_created = _run_primary(playwright, primary_cdp_url)
         try:
-            if secondary_cdp_url:
-                _check_secondary(playwright, secondary_cdp_url, primary_skill)
-            else:
-                print("CROSS_BROWSER_PERSISTENCE=NOT_RUN_NO_SECONDARY_SESSION")
-            if foreign_cdp_url:
-                _check_foreign(playwright, foreign_cdp_url, primary_skill)
-            else:
-                print("FOREIGN_ACCOUNT_ACCESS=NOT_RUN_NO_FOREIGN_SESSION")
+            _check_secondary(playwright, secondary_cdp_url, primary_skill)
+            _check_foreign(playwright, foreign_cdp_url, primary_skill)
         finally:
             if primary_created:
                 try:
