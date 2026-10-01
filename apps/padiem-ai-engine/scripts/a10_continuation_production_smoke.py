@@ -11,14 +11,11 @@ docs/operations/P01_ENGINE_APPROVAL_CONTINUATION_ACTIVATION_v1.md):
   - Production ENGINE_CONTINUATION D1 binding is present, so resume/cancel
     read the EXPLICIT D1 store (no in-memory fallback);
   - health capabilities orchestration_resume / orchestration_cancel == "available";
-  - BUT no Production approval-requiring pause producer is enabled. The
-    canonical ToolRuntime resolver now serves reviewed READ connectors, while
-    #3317 adds only a disabled-by-default provider-free approval smoke binding.
-    Until that dedicated smoke binding is separately owner-authorized,
-    deployed and allowlisted, no real approval pause -> resume proof exists in
-    Production: BLOCKER_C1 stays OPEN and approval_continuation stays
-    DEFERRED. Manifest flip remains gated on one real prod pause -> resume in a
-    SEPARATE authorization step. This script never flips anything.
+  - BUT no production pause producer exists (tool_binding_resolver=None ->
+    the plan bridge is not wired), so no real pause -> resume can ever happen
+    in Production: BLOCKER_C1 stays OPEN and approval_continuation stays
+    DEFERRED. Manifest flip is gated on A3 (#2010) + one real prod
+    pause -> resume, in a SEPARATE PR. This script never flips anything.
 
 Steps (all probes are REJECTED at parse/resolve, before any claim/mutation):
   S0  GET  /internal/v1/health                    -> 200, capabilities

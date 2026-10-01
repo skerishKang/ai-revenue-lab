@@ -39,7 +39,6 @@ from app.agent_skill_service import AgentSkillEngineService
 from app.agent_skill_authority import build_agent_skill_binding_resolver
 from app.capability_manifest import set_posture_overrides
 from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
-from app.approval_smoke_binding import with_approval_smoke_binding
 from app.attachment_byte_store import CloudflareD1ImageByteStore, ScopedImageByteStore
 from app.attachment_admission_service import (
     ATTACHMENT_ADMISSION_PATH,
@@ -803,14 +802,6 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         )
 
     tool_binding_resolver = await _tool_binding_resolver_for_env(env)
-    # #3317: source-only approval smoke fixture. The wrapper returns the exact
-    # original resolver object while the deployment-owned enable flag is absent
-    # (the default/current Production state), so no ordinary product/connector
-    # authority changes merely because this source exists.
-    tool_binding_resolver = with_approval_smoke_binding(
-        env,
-        tool_binding_resolver,
-    )
     return EngineServices(
         completed=EngineService(
             runtime_factory=runtime_factory,

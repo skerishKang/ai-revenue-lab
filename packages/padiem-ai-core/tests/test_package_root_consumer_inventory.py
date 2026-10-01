@@ -89,22 +89,6 @@ EXPECTED_RUNTIME_ROOT_IMPORTS = {
             "ExecutionRuntimeError",
         }
     ),
-    "apps/padiem-ai-engine/app/approval_smoke_binding.py": frozenset(
-        {
-            "AgentExecutionBudget",
-            "ApprovalPolicy",
-            "BoundedAgentDefinition",
-            "ToolAuthorizationContext",
-            "ToolRegistrySnapshot",
-            "ToolResourcePolicy",
-            "ToolRuntime",
-            "ToolRuntimeBinding",
-            "ToolSideEffect",
-            "ToolSpec",
-            "TrustedAgentRuntimePolicy",
-            "compile_agent_profile",
-        }
-    ),
     "apps/padiem-ai-engine/app/cloudflare_transport.py": frozenset(
         {
             "B14_CHAT_COMPLETIONS_PATH",
