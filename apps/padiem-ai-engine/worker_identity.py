@@ -477,21 +477,18 @@ def _drive_workspace_grant_provider_for_env(env: Any):
     )
 
 
-def _drive_case_folder_service_for_env(env: Any):
-    """B67 private Drive case-folder Engine service (#3190).
+def _drive_case_folder_dependencies_for_env(env: Any):
+    """Resolve the one canonical dependency set for B67 selected-folder reads.
 
-    Reuses the existing ``CONTROL_PLANE_GOOGLE_OAUTH`` binding for the
-    workspace-scoped grant and the trusted Drive port, and the existing Engine
-    D1 binding (the one that owns migration 0008) for the durable selected-folder
-    store. No new binding is declared. Any missing dependency yields ``None`` so
-    the RPC fails closed instead of falling back to the global Drive grant.
+    Both folder-management and PDF-acquisition services consume these same
+    server authorities. No product-local Drive grant, OAuth stack, folder store
+    or provider client is introduced.
     """
 
     from app.drive_case_folder_binding import (
         CloudflareD1DriveCaseFolderBindingStore,
         DriveCaseFolderBindingAuthority,
     )
-    from app.drive_case_folder_service import DriveCaseFolderEngineService
 
     binding = legacy_worker._binding_value(env, DOCUMENT_STORE_BINDING_NAME)
     if binding is None:
@@ -500,10 +497,52 @@ def _drive_case_folder_service_for_env(env: Any):
         store = CloudflareD1DriveCaseFolderBindingStore(binding)
     except (RuntimeError, TypeError, ValueError):
         return None
+    return (
+        _drive_workspace_grant_provider_for_env(env),
+        _drive_port_for_env(env),
+        DriveCaseFolderBindingAuthority(store=store),
+    )
+
+
+def _drive_case_folder_service_for_env(env: Any):
+    """B67 private Drive case-folder Engine service (#3190).
+
+    Reuses the existing CONTROL_PLANE_GOOGLE_OAUTH binding for the
+    workspace-scoped grant and trusted Drive port, plus the canonical Engine D1
+    selected-folder store. Any missing dependency fails closed.
+    """
+
+    from app.drive_case_folder_service import DriveCaseFolderEngineService
+
+    dependencies = _drive_case_folder_dependencies_for_env(env)
+    if dependencies is None:
+        return None
+    grant_provider, drive_port, binding_authority = dependencies
     return DriveCaseFolderEngineService(
-        grant_provider=_drive_workspace_grant_provider_for_env(env),
-        drive_port=_drive_port_for_env(env),
-        binding_authority=DriveCaseFolderBindingAuthority(store=store),
+        grant_provider=grant_provider,
+        drive_port=drive_port,
+        binding_authority=binding_authority,
+    )
+
+
+def _drive_case_pdf_service_for_env(env: Any):
+    """B67 private selected-folder PDF acquisition composition (#3350).
+
+    Source-only composition. It reuses exactly the same workspace-scoped grant,
+    CP access-lease Drive port, and durable selected-folder authority as the
+    existing B67 folder service. No new binding or public route is created.
+    """
+
+    from app.drive_case_pdf_service import DriveCasePdfService
+
+    dependencies = _drive_case_folder_dependencies_for_env(env)
+    if dependencies is None:
+        return None
+    grant_provider, drive_port, binding_authority = dependencies
+    return DriveCasePdfService(
+        grant_provider=grant_provider,
+        drive_port=drive_port,
+        binding_authority=binding_authority,
     )
 
 
