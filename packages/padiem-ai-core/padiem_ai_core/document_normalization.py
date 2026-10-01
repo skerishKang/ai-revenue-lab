@@ -13,9 +13,12 @@ from .document_semantics import (
     MAX_DOCUMENT_SEGMENTS,
     MAX_SEGMENT_TEXT_CHARS,
     DocumentKind,
+    DocumentLocator,
     DocumentSegment,
     DocumentNormalizationError,
     ExtractionStatus,
+    LocatorKind,
+    LocatorPrecision,
     document_kind_for_media,
     normalize_document_warnings,
 )
@@ -966,6 +969,110 @@ def inspect_pdf(*, name: Any, media_type: Any, payload: Any) -> PdfInspection:
         pages=tuple(pages),
         native_text_available=native_text_available,
         native_text_state=native_text_state,
+    )
+
+
+def normalize_pdf_inspection(inspection: PdfInspection) -> NormalizedDocument:
+    """Project a reviewed native PDF inspection into page-addressable Core segments.
+
+    This helper does not parse bytes and does not select a parser authority. It only
+    accepts the canonical :class:`PdfInspection` produced by the reviewed PDF
+    inspection boundary, validates its bounded page provenance, and preserves each
+    non-empty original page as an exact PAGE-located :class:`DocumentSegment`.
+    Empty pages are omitted from the text projection without renumbering neighboring
+    page locators.
+    """
+
+    if not isinstance(inspection, PdfInspection):
+        raise DocumentNormalizationError(
+            "invalid_pdf_inspection",
+            "PDF normalization requires a canonical PdfInspection.",
+        )
+    safe_name, safe_media = validate_document_identity(
+        name=inspection.name,
+        media_type=inspection.media_type,
+        source_kind="binary",
+    )
+    if safe_media != "application/pdf":
+        raise DocumentNormalizationError(
+            "invalid_pdf_inspection",
+            "PDF inspection media type must be application/pdf.",
+        )
+    if (
+        isinstance(inspection.byte_size, bool)
+        or not isinstance(inspection.byte_size, int)
+        or not 1 <= inspection.byte_size <= MAX_BINARY_DOCUMENT_BYTES
+    ):
+        raise DocumentNormalizationError(
+            "invalid_pdf_inspection",
+            "PDF inspection byte size is outside the bounded range.",
+        )
+    if (
+        isinstance(inspection.page_count, bool)
+        or not isinstance(inspection.page_count, int)
+        or not 1 <= inspection.page_count <= MAX_PDF_PAGES
+        or not isinstance(inspection.pages, tuple)
+        or len(inspection.pages) != inspection.page_count
+    ):
+        raise DocumentNormalizationError(
+            "invalid_pdf_page_provenance",
+            "PDF inspection page provenance is inconsistent.",
+        )
+
+    segments: list[DocumentSegment] = []
+    text_parts: list[str] = []
+    for expected_index, page in enumerate(inspection.pages):
+        expected_number = expected_index + 1
+        if (
+            not isinstance(page, PdfPageInspection)
+            or page.page_index != expected_index
+            or page.page_number != expected_number
+            or page.page_count != inspection.page_count
+        ):
+            raise DocumentNormalizationError(
+                "invalid_pdf_page_provenance",
+                "PDF inspection page provenance is inconsistent.",
+            )
+        if not isinstance(page.text, str) or len(page.text) > MAX_PDF_PAGE_TEXT_CHARS:
+            raise DocumentNormalizationError(
+                "invalid_pdf_page_text",
+                "PDF inspection page text is invalid or exceeds the bounded limit.",
+            )
+        if not page.text.strip():
+            continue
+        page_text = normalize_document_text(page.text)
+        text_parts.append(page_text)
+        segments.append(
+            DocumentSegment(
+                text=page_text,
+                order=len(segments),
+                locator=DocumentLocator(
+                    kind=LocatorKind.PAGE,
+                    value=str(page.page_number),
+                    precision=LocatorPrecision.EXACT,
+                ),
+            )
+        )
+
+    if not segments:
+        raise DocumentNormalizationError(
+            "pdf_empty_text",
+            "PDF contains no extractable native text; OCR may be required.",
+        )
+    if inspection.native_text_available is not True or inspection.native_text_state != PDF_NATIVE_TEXT_PRESENT:
+        raise DocumentNormalizationError(
+            "invalid_pdf_inspection",
+            "PDF inspection native-text state is inconsistent.",
+        )
+
+    normalized = normalize_document_text("\n\n".join(text_parts))
+    return NormalizedDocument(
+        name=safe_name,
+        media_type=safe_media,
+        text=normalized,
+        byte_size=inspection.byte_size,
+        source_kind="binary",
+        segments=tuple(segments),
     )
 
 
