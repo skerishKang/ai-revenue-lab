@@ -194,6 +194,7 @@
       if (cursor + 46 > bytes.length || u32(view, cursor) !== 0x02014b50) {
         fail("zip_central_entry_invalid");
       }
+      var versionMadeBy = u16(view, cursor + 4);
       var flags = u16(view, cursor + 8);
       var method = u16(view, cursor + 10);
       var crc = u32(view, cursor + 16);
@@ -202,8 +203,14 @@
       var nameLength = u16(view, cursor + 28);
       var extraLength = u16(view, cursor + 30);
       var commentLength = u16(view, cursor + 32);
+      var externalAttributes = u32(view, cursor + 38);
       var localOffset = u32(view, cursor + 42);
 
+      var madeByHost = (versionMadeBy >>> 8) & 0xff;
+      var unixMode = (externalAttributes >>> 16) & 0xffff;
+      if (madeByHost === 3 && (unixMode & 0xf000) === 0xa000) {
+        fail("zip_symlink_rejected");
+      }
       if (flags & 0x0001) fail("encrypted_document_unsupported");
       if (
         compressedSize === 0xffffffff ||
