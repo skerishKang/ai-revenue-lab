@@ -214,18 +214,16 @@ class RetrievedItem:
     def to_public_dict(self) -> dict[str, object]:
         """Return minimal provenance only; private source_ref remains omitted."""
 
-        return {
+        public: dict[str, object] = {
             "id": self.id,
             "namespace": self.namespace,
             "source_type": self.source_type,
             "provider": self.provider,
             "content_chars": len(self.content),
-            "document_locator": (
-                self.document_locator.to_public_dict()
-                if self.document_locator is not None
-                else None
-            ),
         }
+        if self.document_locator is not None:
+            public["document_locator"] = self.document_locator.to_public_dict()
+        return public
 
 
 class RetrievalProvider(Protocol):
@@ -302,20 +300,18 @@ class PreparedRetrieval:
 
 
 def _retrieval_fragment(item: RetrievedItem) -> ContextFragment:
+    payload_fields: dict[str, object] = {
+        "namespace": item.namespace,
+        "source_type": item.source_type,
+        "provider": item.provider,
+        "source_ref": item.source_ref,
+        "title": item.title,
+        "content": item.content,
+    }
+    if item.document_locator is not None:
+        payload_fields["document_locator"] = item.document_locator.to_public_dict()
     payload = json.dumps(
-        {
-            "namespace": item.namespace,
-            "source_type": item.source_type,
-            "provider": item.provider,
-            "source_ref": item.source_ref,
-            "title": item.title,
-            "document_locator": (
-                item.document_locator.to_public_dict()
-                if item.document_locator is not None
-                else None
-            ),
-            "content": item.content,
-        },
+        payload_fields,
         ensure_ascii=False,
         allow_nan=False,
         separators=(",", ":"),
