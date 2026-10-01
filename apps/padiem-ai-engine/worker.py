@@ -258,23 +258,120 @@ def _agent_skill_service_for_env(
 
 
 async def _engine_services_for_env(env: Any) -> EngineServices:
-    """Compatibility delegate to the one canonical Production composition.
+    """Legacy compatibility composition; never the Production authority.
 
-    Production is deployed from ``worker_identity.py`` and that module owns the
-    only implementation of deployment-shaped Engine service composition. This
-    name remains in ``worker.py`` solely because the legacy/base ``Default``
-    class is still imported by tests and inherited by the canonical Worker.
-
-    The import is intentionally local: ``worker_identity`` imports this module
-    as its shared HTTP/core base. Deferring the reverse dependency until a
-    legacy caller actually asks for services keeps the compatibility cycle
-    bounded while ensuring even a direct ``worker.Default`` invocation uses the
-    canonical composition instead of a stale second implementation.
+    Production is deployed from ``worker_identity.py``. This deliberately
+    narrower bundle remains for legacy/base-entrypoint compatibility and tests:
+    it must not silently inherit identity-only multimodal, document, connector,
+    or canonical-idempotency authorities. ``worker_identity.Default`` subclasses
+    this module's HTTP/core base and overrides ``engine_services_factory`` with
+    the canonical Production composition.
     """
+    # Preview-lane posture only. Every other isolate clears the override, so the
+    # declared manifest truth is untouched outside an explicitly marked pilot.
+    set_posture_overrides(preview_capability_overrides(env))
+    binding = _binding_value(env, B14_SERVICE_BINDING_NAME)
+    if binding is None:
+        unavailable_factory = lambda app_id: (_ for _ in ()).throw(  # noqa: E731
+            RuntimeError("unreachable without B14 service binding")
+        )
+        return EngineServices(
+            completed=EngineService(
+                runtime_factory=unavailable_factory,
+                b14_service_bound=False,
+            ),
+            streaming=StreamingEngineService(
+                runtime_factory=unavailable_factory,
+                b14_service_bound=False,
+            ),
+            orchestration=OrchestrationEngineService(
+                runtime_factory=unavailable_factory,
+                b14_service_bound=False,
+            ),
+            research=WebResearchEngineService(
+                research_runtime_factory=unavailable_factory,
+                execution_runtime_factory=unavailable_factory,
+                b14_service_bound=False,
+            ),
+            memory=_memory_service_for_env(env),
+            # Agent/Skill source routes remain production-unactivated. Without
+            # trusted resolver/store/verifier they fail closed.
+            agent_skill=_agent_skill_service_for_env(
+                env,
+                runtime_factory=unavailable_factory,
+            ),
+            # ACT-2 route admission: the Tool routes are wired, but this
+            # composition carries an explicitly unconfigured resolver (no
+            # trusted Gmail port or grant store here). Every request fails
+            # closed as 503 `tool_runtime_unavailable` with zero provider
+            # calls; the canonical entrypoint composes the real resolver.
+            tool_execution=ToolExecutionEngineService(tool_binding_resolver=None),
+        )
 
-    from worker_identity import _engine_services_for_env as canonical_factory
+    transport = CloudflareB14ServiceBindingTransport(
+        binding=binding,
+        request_factory=Request,
+    )
+    config = B14ExecutionConfig(
+        base_url=B14_INTERNAL_ORIGIN,
+        timeout_seconds=_b14_timeout_seconds_for_env(env),
+    )
+    b14_client = B14ExecutionClient(config, transport=transport)
+    b14_stream_client = B14StreamingClient(config, transport=transport)
+    idempotency_adapter = _idempotency_adapter_for_env(env)
 
-    return await canonical_factory(env)
+    def runtime_factory(app_id: str) -> ExecutionRuntime:
+        return ExecutionRuntime(app_id=app_id, b14_client=b14_client)
+
+    def streaming_runtime_factory(app_id: str) -> StreamingExecutionRuntime:
+        return StreamingExecutionRuntime(
+            app_id=app_id,
+            b14_stream_client=b14_stream_client,
+        )
+
+    def research_runtime_factory(_app_id: str) -> GroundedResearchRuntime:
+        return GroundedResearchRuntime(
+            create_web_provider(_web_runtime_config_for_env(env))
+        )
+
+    return EngineServices(
+        completed=EngineService(
+            runtime_factory=runtime_factory,
+            b14_service_bound=True,
+        ),
+        streaming=StreamingEngineService(
+            runtime_factory=streaming_runtime_factory,
+            b14_service_bound=True,
+        ),
+        orchestration=OrchestrationEngineService(
+            runtime_factory=runtime_factory,
+            b14_service_bound=True,
+            idempotency_adapter=idempotency_adapter,
+        ),
+        research=WebResearchEngineService(
+            research_runtime_factory=research_runtime_factory,
+            execution_runtime_factory=runtime_factory,
+            b14_service_bound=True,
+        ),
+        memory=_memory_service_for_env(env),
+        agent_skill=_agent_skill_service_for_env(
+            env,
+            runtime_factory=runtime_factory,
+            # Trusted registry/session/entitlement and continuation authority
+            # remain later Production gates (#1751/#1753); only an explicitly
+            # marked non-production pilot isolate composes the synthetic lane.
+            idempotency_adapter=idempotency_adapter,
+        ),
+        # #1964 source slice: replay composes only the same trusted durable
+        # adapter as execution; without it the route fails closed (503).
+        idempotency_replay=IdempotencyReplayEngineService(
+            idempotency_adapter=idempotency_adapter,
+        ),
+        # Same explicit unconfigured-resolver slot as the unbound branch:
+        # B14 binding presence never implies a Gmail tool authority.
+        tool_execution=ToolExecutionEngineService(tool_binding_resolver=None),
+    )
+
 
 def _ndjson_response(
     service: StreamingEngineService | OrchestrationEngineService,
