@@ -42,8 +42,8 @@ concurrency:
 
 env:
   B62_WORKER: padiem-chat
-  TARGET_SHA: ${ inputs.target_sha }}
-  EXPECTED_ORIGIN: ${ inputs.expected_origin }}
+  TARGET_SHA: ${{ inputs.target_sha }}
+  EXPECTED_ORIGIN: ${{ inputs.expected_origin }}
 
 jobs:
   source-contract:
@@ -51,23 +51,23 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout PR exact head
-        if: ${ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' }}
         uses: actions/checkout@v4
         with:
-          ref: ${ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 1
           persist-credentials: false
 
       - name: Checkout exact dispatch SHA
-        if: ${ github.event_name == 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         uses: actions/checkout@v4
         with:
-          ref: ${ env.TARGET_SHA }}
+          ref: ${{ env.TARGET_SHA }}
           fetch-depth: 1
           persist-credentials: false
 
       - name: Require exact current main for dispatch
-        if: ${ github.event_name == 'workflow_dispatch' }}
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -91,21 +91,21 @@ jobs:
 
   cloudflare-readonly:
     needs: source-contract
-    if: ${ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode != 'repository_preflight' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       contents: read
     outputs:
-      target_state: ${ steps.classify.outputs.target_state }}
+      target_state: ${{ steps.classify.outputs.target_state }}
     env:
-      CLOUDFLARE_API_TOKEN: ${ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
       - name: Checkout exact target SHA
         uses: actions/checkout@v4
         with:
-          ref: ${ env.TARGET_SHA }}
+          ref: ${{ env.TARGET_SHA }}
           fetch-depth: 1
           persist-credentials: false
 
@@ -150,17 +150,17 @@ jobs:
 
   activate-b66-quote-url:
     needs: [source-contract, cloudflare-readonly]
-    if: ${ github.event_name == 'workflow_dispatch' && inputs.mode == 'activate_b66_quote_url' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'activate_b66_quote_url' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     environment: production
     permissions:
       contents: read
     env:
-      CLOUDFLARE_API_TOKEN: ${ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      CONFIRMATION: ${ inputs.confirmation }}
-      READONLY_TARGET_STATE: ${ needs.cloudflare-readonly.outputs.target_state }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      READONLY_TARGET_STATE: ${{ needs.cloudflare-readonly.outputs.target_state }}
     steps:
       - name: Require explicit activation authorization
         shell: bash
@@ -176,7 +176,7 @@ jobs:
       - name: Checkout exact approved main SHA
         uses: actions/checkout@v4
         with:
-          ref: ${ env.TARGET_SHA }}
+          ref: ${{ env.TARGET_SHA }}
           fetch-depth: 1
           persist-credentials: false
 
@@ -216,7 +216,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: b62-b66-quote-url-premutation-settings
-          path: ${ runner.temp }}/b62-b66-quote-url-premutation-settings.json
+          path: ${{ runner.temp }}/b62-b66-quote-url-premutation-settings.json
           if-no-files-found: error
           retention-days: 90
 
@@ -234,7 +234,7 @@ jobs:
           echo "no_op=${no_op}" >> "${GITHUB_OUTPUT}"
 
       - name: Add B66 quote runtime URL only when missing
-        if: ${ steps.plan.outputs.no_op == '0' }}
+        if: ${{ steps.plan.outputs.no_op == '0' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -249,7 +249,7 @@ jobs:
           echo 'WORKER_CODE_DEPLOY=0'
 
       - name: Record exact no-op
-        if: ${ steps.plan.outputs.no_op == '1' }}
+        if: ${{ steps.plan.outputs.no_op == '1' }}
         run: |
           echo 'B62_B66_QUOTE_URL_ACTIVATION=SKIPPED_ALREADY_EXACT'
           echo 'PRODUCTION_MUTATION=0'
