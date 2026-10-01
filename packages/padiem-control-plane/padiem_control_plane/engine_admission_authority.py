@@ -254,6 +254,11 @@ def _usage_event_from_engine_wire(payload: Any) -> UsageEvent:
             "invalid_engine_usage_event",
             "usage outcome/disposition is invalid",
         ) from exc
+    if disposition is not BillingDisposition.NON_BILLABLE:
+        raise _error(
+            "invalid_engine_usage_event",
+            "Engine admission receipts cannot activate billable accounting",
+        )
     return UsageEvent(
         event_id=wire["event_id"],
         idempotency_key=wire["idempotency_key"],
