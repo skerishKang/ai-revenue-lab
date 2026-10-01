@@ -1,0 +1,276 @@
+"""B66 conversational variable extraction for assigned Saved Quote Skills (#3303).
+
+The model is allowed to map one user utterance into bounded variable fields only.
+It never calculates totals, mutates the assigned Saved Quote Skill, or renders a
+quotation. QuoteCore + the approved B66 renderer remain the only calculation and
+rendering authorities in the browser/runtime that consumes this projection.
+"""
+
+from __future__ import annotations
+
+import json
+import math
+import re
+from dataclasses import dataclass
+from typing import Any, Protocol
+
+MAX_CONVERSATION_CHARS = 4_000
+MAX_RESULT_CHARS = 24_000
+MAX_TEXT_CHARS = 2_000
+MAX_MEMO_CHARS = 4_000
+MAX_ITEMS = 100
+MAX_ITEM_NAME_CHARS = 240
+
+TAX_MODES = frozenset({"EXCLUSIVE", "INCLUSIVE", "EXEMPT"})
+_ALLOWED_TOP = frozenset(
+    {"recipient", "quoteNo", "issueDate", "items", "memo", "taxMode", "missing"}
+)
+_ALLOWED_RECIPIENT = frozenset({"company", "person", "address", "email"})
+_ALLOWED_ITEM = frozenset({"name", "qty", "unitPrice"})
+_ALLOWED_MISSING = frozenset(
+    {"recipient", "quoteNo", "issueDate", "items", "memo", "taxMode"}
+)
+_FORBIDDEN_KEYS = frozenset(
+    {
+        "subtotal",
+        "supply",
+        "supplyAmount",
+        "vat",
+        "vatAmount",
+        "grand",
+        "grandTotal",
+        "total",
+        "amount",
+        "computedTotals",
+        "template",
+        "internalTemplate",
+        "sender",
+        "approval",
+        "fingerprint",
+    }
+)
+_ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+class B66QuoteConversationError(ValueError):
+    pass
+
+
+class B66QuoteConversationClient(Protocol):
+    async def complete(
+        self,
+        messages: list[dict[str, str]],
+        skill: Any | None = None,
+        additional_system_context: str | None = None,
+        attachments: tuple = (),
+    ) -> dict[str, Any]: ...
+
+
+@dataclass(frozen=True, slots=True)
+class B66QuoteConversationProjection:
+    recipient: dict[str, str | None]
+    quote_no: str | None
+    issue_date: str | None
+    items: tuple[dict[str, int | float | str], ...]
+    memo: str | None
+    tax_mode: str | None
+    missing: tuple[str, ...]
+
+    def safe_dict(self) -> dict[str, Any]:
+        return {
+            "recipient": dict(self.recipient),
+            "quoteNo": self.quote_no,
+            "issueDate": self.issue_date,
+            "items": [dict(item) for item in self.items],
+            "memo": self.memo,
+            "taxMode": self.tax_mode,
+            "missing": list(self.missing),
+        }
+
+
+def _contains_forbidden_key(value: Any) -> bool:
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if str(key) in _FORBIDDEN_KEYS or _contains_forbidden_key(item):
+                return True
+    elif isinstance(value, list):
+        return any(_contains_forbidden_key(item) for item in value)
+    return False
+
+
+def _optional_text(value: Any, *, limit: int) -> str | None:
+    if value is None:
+        return None
+    if not isinstance(value, str):
+        raise B66QuoteConversationError("invalid_text")
+    text = " ".join(value.split())
+    if not text:
+        return None
+    if len(text) > limit:
+        raise B66QuoteConversationError("text_too_large")
+    return text
+
+
+def _optional_number(value: Any, *, positive: bool) -> int | float | None:
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise B66QuoteConversationError("invalid_number")
+    number = float(value)
+    if not math.isfinite(number):
+        raise B66QuoteConversationError("invalid_number")
+    if positive and number <= 0:
+        raise B66QuoteConversationError("invalid_number")
+    if not positive and number < 0:
+        raise B66QuoteConversationError("invalid_number")
+    return int(number) if number.is_integer() else number
+
+
+def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
+    """Validate untrusted model output into variable-only quote fields."""
+
+    if isinstance(raw, str):
+        if not raw or len(raw) > MAX_RESULT_CHARS:
+            raise B66QuoteConversationError("invalid_model_output")
+        try:
+            raw = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            raise B66QuoteConversationError("invalid_model_output") from exc
+    if not isinstance(raw, dict):
+        raise B66QuoteConversationError("invalid_model_output")
+    if set(raw) - _ALLOWED_TOP:
+        raise B66QuoteConversationError("unsupported_output_field")
+    if _contains_forbidden_key(raw):
+        raise B66QuoteConversationError("forbidden_output_field")
+
+    recipient_raw = raw.get("recipient")
+    if recipient_raw is None:
+        recipient_raw = {}
+    if not isinstance(recipient_raw, dict) or set(recipient_raw) - _ALLOWED_RECIPIENT:
+        raise B66QuoteConversationError("invalid_recipient")
+    recipient = {
+        key: _optional_text(recipient_raw.get(key), limit=MAX_TEXT_CHARS)
+        for key in ("company", "person", "address", "email")
+    }
+
+    quote_no = _optional_text(raw.get("quoteNo"), limit=120)
+    issue_date = _optional_text(raw.get("issueDate"), limit=10)
+    if issue_date is not None and not _ISO_DATE_RE.fullmatch(issue_date):
+        raise B66QuoteConversationError("invalid_issue_date")
+
+    items_raw = raw.get("items")
+    if items_raw is None:
+        items_raw = []
+    if not isinstance(items_raw, list) or len(items_raw) > MAX_ITEMS:
+        raise B66QuoteConversationError("invalid_items")
+    items: list[dict[str, int | float | str]] = []
+    for entry in items_raw:
+        if not isinstance(entry, dict) or set(entry) - _ALLOWED_ITEM:
+            raise B66QuoteConversationError("invalid_item")
+        name = _optional_text(entry.get("name"), limit=MAX_ITEM_NAME_CHARS)
+        qty = _optional_number(entry.get("qty"), positive=True)
+        unit_price = _optional_number(entry.get("unitPrice"), positive=False)
+        if name is None or qty is None or unit_price is None:
+            raise B66QuoteConversationError("incomplete_item")
+        items.append({"name": name, "qty": qty, "unitPrice": unit_price})
+
+    memo = _optional_text(raw.get("memo"), limit=MAX_MEMO_CHARS)
+    tax_mode_raw = raw.get("taxMode")
+    if tax_mode_raw is None:
+        tax_mode = None
+    elif not isinstance(tax_mode_raw, str) or tax_mode_raw not in TAX_MODES:
+        raise B66QuoteConversationError("invalid_tax_mode")
+    else:
+        tax_mode = tax_mode_raw
+
+    missing_raw = raw.get("missing")
+    if missing_raw is None:
+        missing_raw = []
+    if (
+        not isinstance(missing_raw, list)
+        or len(missing_raw) > len(_ALLOWED_MISSING)
+        or any(not isinstance(item, str) or item not in _ALLOWED_MISSING for item in missing_raw)
+        or len(set(missing_raw)) != len(missing_raw)
+    ):
+        raise B66QuoteConversationError("invalid_missing_fields")
+
+    return B66QuoteConversationProjection(
+        recipient=recipient,
+        quote_no=quote_no,
+        issue_date=issue_date,
+        items=tuple(items),
+        memo=memo,
+        tax_mode=tax_mode,
+        missing=tuple(missing_raw),
+    )
+
+
+def _conversation_prompt(skill: dict[str, Any]) -> str:
+    if not isinstance(skill, dict):
+        raise B66QuoteConversationError("invalid_saved_skill")
+    variable_schema = skill.get("variableSchema")
+    fixed_defaults = skill.get("fixedDefaults")
+    if not isinstance(variable_schema, dict) or not isinstance(fixed_defaults, dict):
+        raise B66QuoteConversationError("invalid_saved_skill")
+
+    allowed = [
+        key
+        for key in ("recipient", "quoteNo", "issueDate", "items", "memo", "taxMode")
+        if variable_schema.get(key) is True
+    ]
+    if not allowed:
+        raise B66QuoteConversationError("invalid_saved_skill")
+
+    default_tax = fixed_defaults.get("taxMode")
+    if default_tax not in TAX_MODES:
+        default_tax = None
+
+    contract = {
+        "allowedVariableFields": allowed,
+        "defaultTaxMode": default_tax,
+    }
+    return (
+        "당신은 견적서 생성기가 아니라 견적 입력값 추출기입니다. "
+        "사용자의 한 문장에서 실제로 말한 값만 JSON 객체 하나로 추출하십시오. "
+        "최상위 키는 recipient, quoteNo, issueDate, items, memo, taxMode, missing 만 허용됩니다. "
+        "recipient는 company/person/address/email, items는 name/qty/unitPrice 만 사용하십시오. "
+        "금액 합계, 공급가액, 부가세 금액, 총액을 계산하거나 반환하지 마십시오. "
+        "sender, template, approval, fingerprint를 변경하거나 반환하지 마십시오. "
+        "없는 값은 null 또는 빈 배열로 두고 필요한 추가 입력 필드 이름만 missing 배열에 넣으십시오. "
+        "설명/마크다운 없이 JSON만 반환하십시오. "
+        "아래 서버 제공 계약 밖 필드는 추출하지 마십시오.\n"
+        + json.dumps(contract, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+    )
+
+
+class B66QuoteConversationInterpreter:
+    """One bounded model call for variable extraction only."""
+
+    def __init__(self, client: B66QuoteConversationClient):
+        if client is None:
+            raise ValueError("B14 client is required")
+        self._client = client
+
+    async def interpret(
+        self,
+        *,
+        message: str,
+        skill: dict[str, Any],
+    ) -> B66QuoteConversationProjection:
+        if not isinstance(message, str):
+            raise B66QuoteConversationError("invalid_message")
+        clean = message.strip()
+        if not clean or len(clean) > MAX_CONVERSATION_CHARS:
+            raise B66QuoteConversationError("invalid_message")
+        prompt = _conversation_prompt(skill)
+        result = await self._client.complete(
+            [{"role": "user", "content": clean}],
+            additional_system_context=prompt,
+            attachments=(),
+        )
+        if not isinstance(result, dict):
+            raise B66QuoteConversationError("invalid_model_output")
+        answer = result.get("answer")
+        if not isinstance(answer, str):
+            raise B66QuoteConversationError("invalid_model_output")
+        return normalize_conversation_output(answer)
