@@ -543,15 +543,16 @@ class CloudflareEngineAdmissionAuthorityStore:
                 "usage reservation timestamp is outside the accepted clock window",
             )
 
+        # Replay identity excludes transport-observation fields. A retried
+        # idempotent execution may arrive with a new trace/timestamp, but it must
+        # still match the same product/subject/billing/fingerprint/units bytes.
         canonical_request = {
             "idempotency_key": idempotency_key,
             "billing_semantic_id": billing_semantic_id,
             "product_id": product,
             "subject": subject.to_public_dict(),
             "request_fingerprint": request_fingerprint,
-            "trace_id": wire["trace_id"],
             "estimated_units": estimated_units,
-            "occurred_at": _iso(occurred_at),
         }
         request_json = _canonical_json(canonical_request)
 
