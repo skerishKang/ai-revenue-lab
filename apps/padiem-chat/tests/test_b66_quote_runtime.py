@@ -24,17 +24,19 @@ USER_B = "usr_" + "b" * 32
 SAVED_ID = "b66skill_" + "c" * 32
 
 
-def _settings() -> Settings:
-    return Settings.from_values(
-        runtime_mode="mock",
-        auth_mode="google",
-        public_base_url="https://chat.example.test",
-        google_client_id="b66-runtime.apps.googleusercontent.com",
-        google_client_secret="b66-runtime-google-secret",
-        session_secret="b66-runtime-session-secret-not-real-00",
-        session_max_age_seconds=3600,
-        live_enabled="false",
-    )
+def _settings(**overrides) -> Settings:
+    values = {
+        "runtime_mode": "mock",
+        "auth_mode": "google",
+        "public_base_url": "https://chat.example.test",
+        "google_client_id": "b66-runtime.apps.googleusercontent.com",
+        "google_client_secret": "b66-runtime-google-secret",
+        "session_secret": "b66-runtime-session-secret-not-real-00",
+        "session_max_age_seconds": 3600,
+        "live_enabled": "false",
+    }
+    values.update(overrides)
+    return Settings.from_values(**values)
 
 
 def _skill():
@@ -151,9 +153,54 @@ def test_routes_registered():
         )
     )
     paths = {getattr(route, "path", None) for route in app.routes}
+    assert "/api/b66/runtime-config" in paths
     assert "/api/b66/saved-skills" in paths
     assert "/api/b66/saved-skills/{saved_skill_id}" in paths
     assert "/api/b66/quote/interpret" in paths
+
+
+def test_runtime_config_is_login_required_and_default_off():
+    store = _Store()
+    interpreter = _Interpreter()
+    anonymous = _client(store, interpreter, signed_in=False)
+    assert anonymous.get("/api/b66/runtime-config").status_code == 401
+
+    signed_in = _client(store, interpreter)
+    response = signed_in.get("/api/b66/runtime-config")
+    assert response.status_code == 200
+    assert response.json() == {
+        "ok": True,
+        "enabled": False,
+        "embed_url": None,
+        "origin": None,
+    }
+
+
+def test_runtime_config_projects_only_public_https_embed_location():
+    settings = _settings(b66_quote_base_url="https://quote.example.test/")
+    app = create_app(
+        settings=settings,
+        history_store=MagicMock(),
+        b66_saved_quote_skill_store=_Store(),
+        b66_quote_interpreter=_Interpreter(),
+    )
+    client = TestClient(app, base_url="https://chat.example.test")
+    client.cookies.set(
+        SESSION_COOKIE,
+        create_session_token(settings, USER_A),
+        domain="chat.example.test",
+        path="/",
+    )
+    response = client.get("/api/b66/runtime-config")
+    assert response.status_code == 200
+    assert response.json() == {
+        "ok": True,
+        "enabled": True,
+        "embed_url": "https://quote.example.test/embed.html",
+        "origin": "https://quote.example.test",
+    }
+    assert "secret" not in response.text.lower()
+    assert "token" not in response.text.lower()
 
 
 def test_anonymous_cannot_list_read_or_interpret():
