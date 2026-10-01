@@ -112,3 +112,36 @@ def test_gate_has_no_provider_or_product_data_mutation_path() -> None:
     )
     for token in forbidden:
         assert token not in text
+
+
+def test_postreadback_failure_stage_markers_are_bounded() -> None:
+    text = source()
+    required = (
+        "POSTREADBACK_SETTINGS_FETCH=PASS",
+        "POSTREADBACK_TOPOLOGY_FETCH=PASS",
+        "POSTREADBACK_VERSION_FETCH=PASS",
+        "SOURCE_ETAG_UNCHANGED=PASS",
+        "SOURCE_ETAG_UNCHANGED=FAIL",
+        "POSTREADBACK_BINDINGS_EXACT=PASS",
+        "POSTREADBACK_PUBLIC_TOPOLOGY_EXACT=PASS",
+        "POSTREADBACK_EXACT_MAIN=PASS",
+        "ROLLBACK_POSTREADBACK_SETTINGS_FETCH=PASS",
+        "ROLLBACK_POSTREADBACK_TOPOLOGY_FETCH=PASS",
+        "ROLLBACK_POSTREADBACK_VERSION_FETCH=PASS",
+        "ROLLBACK_SOURCE_ETAG_UNCHANGED=PASS",
+        "ROLLBACK_SOURCE_ETAG_UNCHANGED=FAIL",
+        "ROLLBACK_POSTREADBACK_BINDINGS_EXACT=PASS",
+        "ROLLBACK_POSTREADBACK_PUBLIC_TOPOLOGY_EXACT=PASS",
+        "ROLLBACK_POSTREADBACK_EXACT_MAIN=PASS",
+    )
+    for marker in required:
+        assert marker in text
+
+
+def test_postreadback_markers_do_not_weaken_existing_invariants() -> None:
+    text = source()
+    assert 'test "${ready}" = yes' in text
+    assert 'test "${latest}" = "${active}"' in text
+    assert "EXISTING_BINDINGS_UNCHANGED=PASS" in text
+    assert "PUBLIC_TOPOLOGY_UNCHANGED=PASS" in text
+    assert 'test "$(git rev-parse origin/main)" = "${TARGET_SHA}"' in text
