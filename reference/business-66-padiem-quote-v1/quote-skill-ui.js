@@ -510,6 +510,7 @@
         var sourceLabel = ui.fileMeta.category === "image" ? "이미지" : "문서";
         if (ui.analysisStatus === "loading") {
           body.appendChild(h(doc, "p", { class: "template-manage-note", text: sourceLabel + "에서 견적 내용을 분석하고 있습니다…" }, []));
+          body.appendChild(actionButton(doc, "wiz-step2", "기다리지 않고 수동으로 계속", "soft"));
         } else if (ui.analysisStatus === "ready") {
           body.appendChild(h(doc, "p", { class: "template-manage-note", text: sourceLabel + " 내용 분석이 끝났습니다. 다음 단계에서 회사 기본값을 확인·수정하세요." }, []));
           body.appendChild(actionButton(doc, "wiz-step2", "다음: 회사정보 확인", "primary"));
@@ -780,6 +781,13 @@
         return;
       }
       if (base === "wiz-step2") {
+        if (ui.analysisStatus === "loading") {
+          ui.analysisToken += 1;
+          ui.analysisStatus = "manual";
+          ui.analysisError = null;
+          ui.extraction = null;
+          ui.facts = null;
+        }
         renderStep2();
         return;
       }
