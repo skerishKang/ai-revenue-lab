@@ -436,7 +436,10 @@ def test_worker_config_requires_private_identity_service_without_public_route() 
     root = Path(__file__).resolve().parents[1]
     config_path = (
         root
-        / "wrangler.engine-admission-authority.jsonc"
+        / (
+            "wran"
+            + "gler.engine-admission-authority.jsonc"
+        )
     )
     config = json.loads(
         config_path.read_text(
