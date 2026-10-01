@@ -455,6 +455,19 @@ async def _drive_case_folder_rpc_for_env(env: Any, operation: str, payload: Any)
     return await drive_case_folder_rpc(service, operation=operation, payload=payload)
 
 
+async def _drive_case_pdf_rpc_for_env(env: Any, operation: str, payload: Any) -> dict:
+    """Run one private B67 PDF RPC; never reachable through public fetch()."""
+
+    from app.drive_case_pdf_rpc import drive_case_pdf_rpc
+    from worker_identity import _drive_case_pdf_service_for_env
+
+    try:
+        service = _drive_case_pdf_service_for_env(env)
+    except Exception:
+        service = None
+    return await drive_case_pdf_rpc(service, operation=operation, payload=payload)
+
+
 class Default(WorkerEntrypoint):
     engine_services_factory = staticmethod(_engine_services_for_env)
 
@@ -469,6 +482,12 @@ class Default(WorkerEntrypoint):
 
     async def drive_case_folder_clear(self, payload: Any) -> Any:
         return await _drive_case_folder_rpc_for_env(self.env, "drive_case_folder_clear", payload)
+
+    async def b67_case_pdf_candidates(self, payload: Any) -> Any:
+        return await _drive_case_pdf_rpc_for_env(self.env, "b67_case_pdf_candidates", payload)
+
+    async def b67_case_pdf_read(self, payload: Any) -> Any:
+        return await _drive_case_pdf_rpc_for_env(self.env, "b67_case_pdf_read", payload)
 
     async def fetch(self, request: Any) -> Any:
         path = urlparse(str(request.url)).path
