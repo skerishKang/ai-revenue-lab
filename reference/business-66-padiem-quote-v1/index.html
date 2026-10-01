@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>견적서 만들기</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="padiem-account.css">
   <script src="quote-core.js" defer></script>
   <script src="quote-extraction.js" defer></script>
   <script src="quote-history.js" defer></script>
@@ -25,6 +26,7 @@
   <script src="quote-skill-ui.js" defer></script>
   <script src="app.js" defer></script>
   <script src="easy-mode.js" defer></script>
+  <script src="padiem-account.js" defer></script>
 </head>
 <body>
   <main class="shell">
@@ -34,10 +36,28 @@
         <p>입력부터 PDF 저장까지 한 화면에서</p>
       </div>
       <div class="topbar-actions">
-        <div class="badge">BETA · 입력 내용은 이 브라우저에만 저장</div>
+        <div class="badge">BETA · 작성 중 견적은 이 브라우저에 저장</div>
+        <button class="padiem-account-button" id="padiemAccountButton" type="button">Padiem 로그인</button>
         <button class="topbar-reset" id="resetLocalData" type="button">저장 데이터 초기화</button>
       </div>
     </header>
+
+    <section class="padiem-account-panel" id="padiemAccountPanel" aria-label="Padiem 계정 견적" hidden>
+      <div class="padiem-account-head">
+        <strong id="padiemAccountLabel">Padiem 계정 · 내 견적서</strong>
+        <button id="padiemLogout" type="button">로그아웃</button>
+      </div>
+      <div class="padiem-quote-grid">
+        <label>배정된 내 견적서
+          <select id="padiemSavedSkillSelect"></select>
+        </label>
+        <label>견적 내용
+          <textarea id="padiemQuoteRequest" rows="3" maxlength="4000" placeholder="예: ABC건설에 배관 20개, 개당 3만원으로 견적서 만들어줘"></textarea>
+        </label>
+        <button id="padiemQuoteGenerate" type="button">견적 만들기</button>
+      </div>
+      <p class="padiem-quote-status" id="padiemQuoteStatus" role="status" aria-live="polite"></p>
+    </section>
 
     <nav class="workspace-modebar" aria-label="견적 작성 모드">
       <button class="workspace-mode active" id="easyModeButton" type="button" aria-pressed="true">쉽게 만들기</button>
@@ -334,6 +354,45 @@
     </div>
     </section>
   </main>
+  <dialog class="padiem-auth-dialog" id="padiemAuthDialog" aria-labelledby="padiemAuthTitle">
+    <section class="padiem-auth-card">
+      <div class="padiem-auth-head">
+        <div>
+          <h2 id="padiemAuthTitle">Padiem 계정</h2>
+          <p>기존 Padiem 계정으로 로그인하면 배정된 내 견적서를 이 화면에서 바로 사용할 수 있습니다.</p>
+        </div>
+        <button class="padiem-auth-close" id="padiemAuthClose" type="button" aria-label="로그인 창 닫기">×</button>
+      </div>
+      <form class="padiem-auth-form" id="padiemLoginForm">
+        <label>아이디 또는 이메일
+          <input id="padiemLoginIdentifier" autocomplete="username" required>
+        </label>
+        <label>비밀번호
+          <input id="padiemLoginPassword" type="password" autocomplete="current-password" required>
+        </label>
+        <button id="padiemLoginSubmit" type="submit">로그인</button>
+      </form>
+      <details class="padiem-auth-register">
+        <summary>처음 사용하는 경우 계정 만들기</summary>
+        <form class="padiem-auth-form" id="padiemRegisterForm">
+          <label>아이디
+            <input id="padiemRegisterUsername" autocomplete="username" required>
+          </label>
+          <label>이메일
+            <input id="padiemRegisterEmail" type="email" autocomplete="email" required>
+          </label>
+          <label>이름
+            <input id="padiemRegisterName" autocomplete="name" required>
+          </label>
+          <label>비밀번호
+            <input id="padiemRegisterPassword" type="password" autocomplete="new-password" required>
+          </label>
+          <button id="padiemRegisterSubmit" type="submit">계정 만들기</button>
+        </form>
+      </details>
+      <p class="padiem-auth-error" id="padiemAuthError" role="alert"></p>
+    </section>
+  </dialog>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
