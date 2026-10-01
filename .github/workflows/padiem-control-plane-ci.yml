@@ -174,3 +174,25 @@ jobs:
           echo 'PROVIDER_SUBJECT_PERSISTED=NO'
           echo 'PUBLIC_ROUTE_CONFIGURED=NO'
           echo 'PRODUCTION_MUTATION=NO'
+
+      - name: Dry-run package canonical Engine admission authority Worker
+        working-directory: packages/padiem-control-plane
+        shell: bash
+        run: |
+          set -euo pipefail
+          temp_config="wrangler.jsonc"
+          trap 'rm -f "${temp_config}"' EXIT
+          test ! -e "${temp_config}"
+
+          cp wrangler.engine-admission-authority.jsonc "${temp_config}"
+          uvx --from 'workers-py>=1.17.1,<2' pywrangler deploy \
+            --dry-run \
+            --outdir "${RUNNER_TEMP}/control-plane-engine-admission-dry-run"
+          rm -f "${temp_config}"
+
+          test -d "${RUNNER_TEMP}/control-plane-engine-admission-dry-run"
+          echo 'CONTROL_PLANE_ENGINE_ADMISSION_WORKER_PACKAGING_PREFLIGHT=PASS'
+          echo 'PRIVATE_SERVICE_BINDING_RPC=YES'
+          echo 'PUBLIC_ROUTE_CONFIGURED=NO'
+          echo 'PRODUCTION_MUTATION=NO'
+
