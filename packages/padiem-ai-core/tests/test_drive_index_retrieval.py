@@ -155,9 +155,18 @@ def test_locator_can_only_come_from_canonical_segment() -> None:
 
     with pytest.raises(TypeError):
         DriveIndexedSegment(
+            item_id="forged_source",
+            namespace="project.legal",
+            source_snapshot=DriveIndexSourceSnapshot.from_projection(projection()),
+            segment=page_segment(),
+            source_ref="drive:other_file",
+        )  # type: ignore[call-arg]
+
+    with pytest.raises(TypeError):
+        DriveIndexedSegment(
             item_id="forged",
             namespace="project.legal",
-                source_snapshot=DriveIndexSourceSnapshot.from_projection(projection()),
+            source_snapshot=DriveIndexSourceSnapshot.from_projection(projection()),
             segment=page_segment(),
             document_locator=DocumentLocator(
                 kind=LocatorKind.PAGE,
@@ -196,7 +205,7 @@ def test_index_record_requires_canonical_snapshot_and_segment() -> None:
         DriveIndexedSegment(
             item_id="chunk",
             namespace="project.legal",
-                source_snapshot={"file_id": "caller"},  # type: ignore[arg-type]
+            source_snapshot={"file_id": "caller"},  # type: ignore[arg-type]
             segment=page_segment(),
         )
 
@@ -204,7 +213,7 @@ def test_index_record_requires_canonical_snapshot_and_segment() -> None:
         DriveIndexedSegment(
             item_id="chunk",
             namespace="project.legal",
-                source_snapshot=DriveIndexSourceSnapshot.from_projection(projection()),
+            source_snapshot=DriveIndexSourceSnapshot.from_projection(projection()),
             segment={"text": "caller"},  # type: ignore[arg-type]
         )
 
