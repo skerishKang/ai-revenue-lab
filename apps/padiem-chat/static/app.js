@@ -80,6 +80,7 @@
   const projectFilesPanel = document.getElementById("projectFilesPanel");
   const projectFileInput = document.getElementById("projectFileInput");
   const projectFilesList = document.getElementById("projectFilesList");
+  const projectFilesUsage = document.getElementById("projectFilesUsage");
   const projectFilesEmpty = document.getElementById("projectFilesEmpty");
   const projectFileStatus = document.getElementById("projectFileStatus");
   const chatTransport = window.PadiemChatTransport;
@@ -531,6 +532,14 @@
   }
   function renderProjectFiles() {
     projectFilesList.replaceChildren();
+    const totalChars = dialogProjectFiles.reduce((sum, file) => sum + Number(file.content_chars || 0), 0);
+    if (projectFilesUsage) {
+      projectFilesUsage.textContent = uiT("project-files-usage", {
+        count: dialogProjectFiles.length,
+        chars: totalChars.toLocaleString(),
+      });
+      projectFilesUsage.hidden = false;
+    }
     projectFilesEmpty.hidden = dialogProjectFiles.length !== 0;
     dialogProjectFiles.forEach((file) => {
       const row = document.createElement("div");

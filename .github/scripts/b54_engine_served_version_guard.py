@@ -58,6 +58,13 @@ CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME = "CONTROL_PLANE_GOOGLE_OAUTH"
 CONTROL_PLANE_GOOGLE_OAUTH_BINDING_TYPE = "service"
 CONTROL_PLANE_GOOGLE_OAUTH_SERVICE = "padiem-google-oauth-state"
 
+# A7 (#3308): private Control Plane Engine-admission Service Binding.  The
+# read-only attestation may report ABSENT while A7 remains deferred, but any
+# PRESENT state must be the exact reviewed service target.
+CONTROL_PLANE_ENGINE_ADMISSION_BINDING_NAME = "CONTROL_PLANE_ENGINE_ADMISSION"
+CONTROL_PLANE_ENGINE_ADMISSION_BINDING_TYPE = "service"
+CONTROL_PLANE_ENGINE_ADMISSION_SERVICE = "padiem-control-plane-engine-admission"
+
 # A6 (#1971 A6-S2B): the two durable byte stores the multimodal and document
 # routes compose. Every reviewed Engine D1 binding resolves to the single
 # provisioned `padiem-engine` database, so this is the same canonical id the
@@ -69,6 +76,17 @@ A6_ENGINE_DATABASE_ID = "6b77ad02-bc27-488f-bb97-6325f6750cba"
 A6_D1_BINDING_TYPE = "d1"
 ENGINE_IMAGE_STORE_BINDING_NAME = "ENGINE_IMAGE_STORE"
 ENGINE_DOCUMENT_STORE_BINDING_NAME = "ENGINE_DOCUMENT_STORE"
+
+# Shared E9 activation read-only authorities (#3314).  These constants are
+# comparison-only; identifiers/targets are never emitted as raw values.
+ENGINE_CONTINUATION_BINDING_NAME = "ENGINE_CONTINUATION"
+ENGINE_CONTINUATION_BINDING_TYPE = "d1"
+B14_SERVICE_BINDING_NAME = "B14_SERVICE"
+B14_SERVICE_BINDING_TYPE = "service"
+B14_SERVICE_TARGET = "ai-revenue-korean-ai-platform"
+CONTROL_PLANE_IDENTITY_BINDING_NAME = "CONTROL_PLANE_IDENTITY"
+CONTROL_PLANE_IDENTITY_BINDING_TYPE = "service"
+CONTROL_PLANE_IDENTITY_SERVICE = "padiem-control-plane-identity"
 
 # Canonical resolver failure codes published under this guard's established
 # wording. The rules live in ``cloudflare_served_version.py``; only the text is
@@ -270,12 +288,112 @@ def _verify_a6_runtime_bindings(bindings: list[dict]) -> dict[str, str]:
     return states
 
 
+def _require_shared_engine_service_bindings(bindings: list[dict]) -> dict[str, str]:
+    """Require exact B14 + Control Plane identity service authorities."""
+    expected = (
+        (
+            B14_SERVICE_BINDING_NAME,
+            B14_SERVICE_BINDING_TYPE,
+            B14_SERVICE_TARGET,
+            "B14_SERVICE_SERVED_BINDING",
+        ),
+        (
+            CONTROL_PLANE_IDENTITY_BINDING_NAME,
+            CONTROL_PLANE_IDENTITY_BINDING_TYPE,
+            CONTROL_PLANE_IDENTITY_SERVICE,
+            "CONTROL_PLANE_IDENTITY_SERVED_BINDING",
+        ),
+    )
+    states: dict[str, str] = {}
+    for name, binding_type, service_target, marker in expected:
+        binding = _single_binding(bindings, name)
+        if binding.get("type") != binding_type:
+            raise ServedVersionGuardError(
+                f"served {name} binding type drift"
+            )
+        if binding.get("service") != service_target:
+            raise ServedVersionGuardError(
+                f"served {name} service target drift"
+            )
+        states[marker] = "PRESENT:service"
+    return states
+
+
+def _verify_approval_runtime_bindings(bindings: list[dict]) -> dict[str, str]:
+    """Require the existing durable continuation + shared service authorities."""
+    continuation = _single_binding(bindings, ENGINE_CONTINUATION_BINDING_NAME)
+    if continuation.get("type") != ENGINE_CONTINUATION_BINDING_TYPE:
+        raise ServedVersionGuardError(
+            "served ENGINE_CONTINUATION binding type is not d1"
+        )
+    if continuation.get("id") != A6_ENGINE_DATABASE_ID:
+        raise ServedVersionGuardError(
+            "served ENGINE_CONTINUATION database identity drift"
+        )
+    states = {
+        "ENGINE_CONTINUATION_SERVED_BINDING": "PRESENT:d1",
+    }
+    states.update(_require_shared_engine_service_bindings(bindings))
+    states["APPROVAL_RUNTIME_BINDINGS_VALIDATED"] = "YES"
+    return states
+
+
+def _verify_a6_activation_runtime_bindings(bindings: list[dict]) -> dict[str, str]:
+    """Require image storage plus the shared identity/model service authorities."""
+    image = _single_binding(bindings, ENGINE_IMAGE_STORE_BINDING_NAME)
+    if image.get("type") != A6_D1_BINDING_TYPE:
+        raise ServedVersionGuardError(
+            "served ENGINE_IMAGE_STORE binding type is not d1"
+        )
+    if image.get("id") != A6_ENGINE_DATABASE_ID:
+        raise ServedVersionGuardError(
+            "served ENGINE_IMAGE_STORE database identity drift"
+        )
+    states = {
+        "ENGINE_IMAGE_STORE_SERVED_BINDING": "PRESENT:d1",
+    }
+    states.update(_require_shared_engine_service_bindings(bindings))
+    states["A6_ACTIVATION_RUNTIME_BINDINGS_VALIDATED"] = "YES"
+    return states
+
+
+def _inspect_engine_admission_binding(bindings: list[dict]) -> dict[str, str]:
+    """Report the A7 admission binding without turning absence into activation failure.
+
+    ABSENT is a valid read-only observation while A7 is DEFERRED.  If the
+    binding exists, however, its type and reviewed service target must be exact
+    or the attestation fails closed.
+    """
+    state = _classify(bindings, CONTROL_PLANE_ENGINE_ADMISSION_BINDING_NAME)
+    if state == "ABSENT":
+        return {
+            "CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING": "ABSENT",
+            "ENGINE_ADMISSION_BINDING_TARGET_VALIDATED": "NOT_APPLICABLE",
+        }
+    if state != f"PRESENT:{CONTROL_PLANE_ENGINE_ADMISSION_BINDING_TYPE}":
+        raise ServedVersionGuardError(
+            "served Control Plane Engine admission binding type drift"
+        )
+    binding = _single_binding(bindings, CONTROL_PLANE_ENGINE_ADMISSION_BINDING_NAME)
+    if binding.get("service") != CONTROL_PLANE_ENGINE_ADMISSION_SERVICE:
+        raise ServedVersionGuardError(
+            "served Control Plane Engine admission service target drift"
+        )
+    return {
+        "CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING": "PRESENT:service",
+        "ENGINE_ADMISSION_BINDING_TARGET_VALIDATED": "YES",
+    }
+
+
 def verify_served(
     payload: object,
     active_version: str,
     expect_overlay: bool,
     require_drive_runtime_bindings: bool = False,
     require_a6_runtime_bindings: bool = False,
+    inspect_engine_admission_binding: bool = False,
+    require_approval_runtime_bindings: bool = False,
+    require_a6_activation_runtime_bindings: bool = False,
 ) -> dict[str, str]:
     """Return NAME -> state for the registry and overlay secrets on the version.
 
@@ -312,6 +430,12 @@ def verify_served(
     if require_a6_runtime_bindings:
         states.update(_verify_a6_runtime_bindings(bindings))
         states["A6_STORAGE_BINDINGS_VALIDATED"] = "YES"
+    if inspect_engine_admission_binding:
+        states.update(_inspect_engine_admission_binding(bindings))
+    if require_approval_runtime_bindings:
+        states.update(_verify_approval_runtime_bindings(bindings))
+    if require_a6_activation_runtime_bindings:
+        states.update(_verify_a6_activation_runtime_bindings(bindings))
     return states
 
 
@@ -333,6 +457,9 @@ def _run_verify(args: argparse.Namespace) -> int:
         args.expect_overlay,
         args.require_drive_runtime_bindings,
         args.require_a6_runtime_bindings,
+        args.inspect_engine_admission_binding,
+        args.require_approval_runtime_bindings,
+        args.require_a6_activation_runtime_bindings,
     )
     print("B54_ENGINE_SERVED_VERSION_GUARD=PASS")
     print(f"ENGINE_SERVED_VERSION_ID={args.active_version}")
@@ -346,6 +473,13 @@ def _run_verify(args: argparse.Namespace) -> int:
         "ENGINE_IMAGE_STORE_SERVED_BINDING",
         "ENGINE_DOCUMENT_STORE_SERVED_BINDING",
         "A6_STORAGE_BINDINGS_VALIDATED",
+        "CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING",
+        "ENGINE_ADMISSION_BINDING_TARGET_VALIDATED",
+        "ENGINE_CONTINUATION_SERVED_BINDING",
+        "B14_SERVICE_SERVED_BINDING",
+        "CONTROL_PLANE_IDENTITY_SERVED_BINDING",
+        "APPROVAL_RUNTIME_BINDINGS_VALIDATED",
+        "A6_ACTIVATION_RUNTIME_BINDINGS_VALIDATED",
     ):
         if key not in states:
             continue
@@ -408,6 +542,24 @@ def main(argv: list[str] | None = None) -> int:
         "--require-a6-runtime-bindings",
         action="store_true",
         help="require the reviewed A6 image and document D1 store bindings",
+    )
+    verify.add_argument(
+        "--inspect-engine-admission-binding",
+        action="store_true",
+        help=(
+            "report the reviewed A7 Control Plane Engine-admission binding; "
+            "absence is reported, while type/target drift fails closed"
+        ),
+    )
+    verify.add_argument(
+        "--require-approval-runtime-bindings",
+        action="store_true",
+        help="require continuation, B14 and Control Plane identity bindings",
+    )
+    verify.add_argument(
+        "--require-a6-activation-runtime-bindings",
+        action="store_true",
+        help="require image store, B14 and Control Plane identity bindings",
     )
     verify.set_defaults(handler=_run_verify)
 
