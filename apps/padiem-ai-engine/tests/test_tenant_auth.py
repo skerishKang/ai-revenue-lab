@@ -104,6 +104,7 @@ def request(**overrides):
         "capability": "orchestration.run",
         "trace_id": "tr-e7",
         "request_fingerprint": "a" * 64,
+        "usage_reservation_identity": "usage-e7-1",
     }
     values.update(overrides)
     return ExecutionAdmissionRequest(**values)
@@ -187,6 +188,17 @@ def test_resume_revalidates_entitlement_without_second_usage_reservation() -> No
 
     assert resolved.allowed is True
     assert resolved.usage_reservation is None
+    assert [kind for kind, _ in client.calls] == ["fetch_entitlement_snapshot"]
+
+
+def test_run_reservation_requires_server_owned_occurrence_identity() -> None:
+    client = FakeControlPlaneClient()
+
+    with pytest.raises(ExecutionAdmissionError) as excinfo:
+        run(adapter(client).resolve_admission(request(usage_reservation_identity=None)))
+
+    assert excinfo.value.code == "entitlement_unavailable"
+    assert excinfo.value.status_code == 503
     assert [kind for kind, _ in client.calls] == ["fetch_entitlement_snapshot"]
 
 
