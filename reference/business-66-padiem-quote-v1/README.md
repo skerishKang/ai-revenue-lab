@@ -61,7 +61,9 @@ reference/business-66-padiem-quote-v1/
 ├─ quote-core.js                 견적 도메인 로직 — DOM 없음, 브라우저/Node 겸용
 ├─ quote-extraction.js           모델 독립 추출 계약 — 검증·provenance·QuoteDraft candidate
 ├─ quote-history.js              브라우저 로컬 최근 견적(최대 20개) + copy-as-new
-├─ file-intake.js                로컬 파일 선택 preflight — 형식/크기만 검사, 업로드 없음
+├─ file-intake.js                로컬 파일 선택 preflight — 형식/크기 검사
+├─ browser-document-parser.js     브라우저 우선 bounded 문서 텍스트 추출(DOCX/PPTX/XLSX/HWPX)
+├─ browser-document-parser-worker.js  전용 Web Worker — timeout/cancel 시 terminate
 ├─ app.js                        UI 레이어 — QuoteDraft 상태·렌더링·자동저장 + reviewed apply seam
 ├─ quote-skill.js                Saved Quote Skill("내 견적서") — 승인된 회사 기본값 + 내부 승인 profile 컴파일 재사용
 ├─ quote-skill-store.js          승인 Skill 전용 browser-local store (원본 바이트 저장 없음)
@@ -101,7 +103,9 @@ Every file stays far below the 500-line guideline. No framework, no build step.
 - JPG/PNG/WebP는 preflight 후 same-origin `POST /api/v1/quote/intake`로 일시 전송되어 서버에서 재검증되고, B14의 canonical image route를 통해 견적 사실을 분석합니다.
 - 브라우저가 MIME을 비우거나 `application/octet-stream`/ZIP generic MIME으로 줄 때는 지원 확장자를 기준으로 preflight하고, 서버 단계에서 다시 권위 검증
 - 이미지 원본 바이트는 브라우저 저장소에 보관하지 않고 요청 중에만 사용하며, 서버 응답은 검증된 extraction facts/provenance만 반환합니다.
-- PDF/DOCX/PPTX/XLSX/HWPX도 same-origin 서버 분석을 시도합니다. Production Worker에 reviewed isolated parser authority가 아직 없으면 서버가 fail-closed하고 기존 수동 확인·보정 방식으로 그대로 계속합니다.
+- DOCX/PPTX/XLSX/HWPX는 먼저 전용 Web Worker에서 bounded ZIP/XML 텍스트 추출을 시도합니다. 성공 시 원본 바이너리를 서버에 보내지 않고 bounded `local_text`만 same-origin B14 extraction 경로로 보냅니다.
+- PDF는 현재 브라우저에서 서명을 확인한 뒤 `pdf_browser_parser_dependency_missing` residual로 정직하게 분류합니다. reviewed local PDF parser 또는 #3294 Oracle Always Free fallback이 준비되기 전에는 기존 수동 확인으로 계속합니다.
+- 브라우저 local parser는 모델/provider/secret을 알지 못하고, archive/path/size/output 제한을 적용하며 전용 Worker timeout/cancel 시 terminate합니다.
 - Korean-first quotation UI
 - sender preset, browser-local custom sender save, sender address
 - recipient/company/contact + recipient address
@@ -127,7 +131,8 @@ Every file stays far below the 500-line guideline. No framework, no build step.
 node tests/quote-core.test.cjs       # money parse/format, 3-mode VAT math, valid-until, draft normalization
 node tests/quote-extraction.test.cjs # model-independent extraction validation + QuoteDraft candidate mapping
 node tests/quote-history.test.cjs    # bounded local history, load/copy/delete metadata rules
-node tests/file-intake.test.cjs      # supported file classification + zero-upload preflight
+node tests/file-intake.test.cjs      # supported file classification + preflight
+node tests/browser-document-parser.test.cjs # browser ZIP/XML extraction + bounds + PDF residual + Worker termination
 node tests/static-contract.test.cjs  # structure, Easy Mode, authority, save/restore, print, intake guards
 node tests/quote-skill-ui.test.cjs   # "내 견적서" primary UI + registration wizard DOM E2E (stub DOM)
 node tests/quote-skill-live-analysis.test.cjs # image bytes -> same-origin intake -> validated extraction helper
@@ -140,7 +145,7 @@ Repeat customers register the quotation they already use instead of picking temp
 
 ```text
 [내가 쓰던 견적서 등록]
-1. 견적서 선택 (이미지와 지원 문서는 서버 분석을 시도하며, parser authority 미가용/분석 실패 시 수동 확인; 원본 바이트 브라우저 저장 없음)
+1. 견적서 선택 (지원 native 문서는 브라우저 Web Worker 분석을 먼저 시도; 성공 시 원본 바이너리 서버 전송 없음; residual/분석 실패 시 수동 확인)
 2. 회사정보/업무값 확인 (이미지 extraction 결과를 기본 초안으로 사용하고 사람이 수정 가능)
 3. 견적서 모양 확인 (기본 초안 + "자동으로 분석하지 않으므로 비교해 수정" 안내)
 4. 필요한 부분 수정 + 미리보기 (저장 없음)
@@ -167,9 +172,11 @@ Live for the Saved Quote Skill registration MVP:
 - The B14 Worker reuses the canonical #3212 image request builder and validates untrusted model output before returning bounded extraction facts.
 - Raw image bytes are transient request data and are not persisted by the browser product flow.
 
-Still not live:
+Still not live / not yet proven:
 
-- Production isolated-parser activation for PDF/DOCX/PPTX/XLSX/HWPX; source/UI routing is wired, but manual review/correction remains the fail-closed fallback until that authority is live;
+- real-browser deflate compatibility and representative-file acceptance for DOCX/PPTX/XLSX/HWPX are still POC evidence gates; source contracts alone are not a browser-live claim;
+- PDF local text extraction is deliberately residual until a reviewed local PDF parser is adopted; #3294 Oracle Always Free is the first cloud fallback if needed;
+- the legacy server binary-document route remains fail-closed unless separately composed, but it is no longer the primary B66 path;
 - chat-to-QuoteDraft semantic generation;
 - server-side source-document persistence;
 - real email sending;
@@ -193,7 +200,7 @@ The Easy Mode is deliberately usable before any model is selected:
 
 `내용을 한번에 말하기` keeps the user's one-shot text in the current page session. If the user chooses 질문받으며 이어가기, that original text is shown again as a reference-only message while authoritative values are still collected one-by-one. The reference is never auto-applied to QuoteDraft, and semantic AI interpretation remains unconnected.
 
-`파일에서 불러오기` opens a real browser file chooser and performs local metadata preflight. In the Saved Quote Skill registration wizard, JPG/JPEG/PNG/WebP and supported native PDF/DOCX/PPTX/XLSX/HWPX bytes are read transiently and sent only to the same-origin intake route; they are not written to browser storage. Native documents reuse the canonical server parser/text-extraction authorities when available and fall back truthfully to manual review when the Production isolated-parser authority is unavailable.
+`파일에서 불러오기` opens a real browser file chooser and performs local metadata preflight. JPG/JPEG/PNG/WebP continue through the same-origin image intake. Native DOCX/PPTX/XLSX/HWPX are read transiently by a dedicated local Web Worker first; on success, only bounded extracted text plus trusted metadata are posted to the same-origin intake route. Raw native bytes are not persisted and are not posted on the successful browser-first path. PDF currently remains a truthful residual/manual-or-#3294 fallback case.
 
 Recent quotations use a separate browser-local key (`quoteBeta.history.v1`) and are capped at 20 snapshots. Snapshot metadata such as totals is derived by `QuoteCore`; trusted totals are not persisted.
 
@@ -209,7 +216,7 @@ Issue #3162 provides the canonical product adapter source at:
 apps/b66-quote-adapter/
 ```
 
-The browser-visible contract is the same-origin `POST /api/v1/quote/intake`. Pages `_worker.js` routes images to the existing B14 image endpoint and native documents to the B14 document endpoint. The Worker stages and reuses canonical `file_intake.py` plus #3212 `extraction_routing.py` rather than committing second intake/parser/extraction implementations.
+The browser-visible contract remains same-origin `POST /api/v1/quote/intake`. Pages `_worker.js` routes images to the existing B14 image endpoint, browser-extracted native text to `/api/b66/v1/quote/extract-local-text`, and retains the older binary-document endpoint only as a fail-closed compatibility path. B14 revalidates document identity/text bounds and reuses canonical #3212 `build_text_extraction_request` plus model-output validation; it does not run a binary parser on the browser-success path.
 
 For native documents, the adapter reuses IP-CORE's reviewed authorities:
 
@@ -239,7 +246,7 @@ Untrusted source totals are ignored. Missing extraction fields remain null at th
 when an extraction is explicitly applied, missing numeric item fields become editable zero placeholders
 rather than fabricated extracted values.
 
-Saved Quote Skill **image and native-document source wiring** now use the governed same-origin/server extraction path. Native-document Production auto-analysis remains gated by the reviewed isolated-parser authority; when that gate is unavailable the registration flow remains manual-first. Chat-to-QuoteDraft remains non-live.
+Saved Quote Skill **image and native-document source wiring** remains same-origin/governed. Native DOCX/PPTX/XLSX/HWPX now have a browser-first extraction source path; B14 receives bounded text and retains the existing governed extraction/model-output authority. PDF remains residual pending reviewed local parsing or #3294. Repeated approved-quote generation remains parser/model-free. Chat-to-QuoteDraft remains non-live.
 No provider/model ID or secret lives in the B66 browser code.
 
 Refs #3136, #3144, #3147, #3154, #3158, #3162, #3164, #3167, #3169, #3171, #3174.
