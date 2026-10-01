@@ -11,7 +11,6 @@ on:
     paths:
       - ".github/workflows/b54-engine-a7-admission-readonly.yml"
       - ".github/scripts/b54_engine_served_version_guard.py"
-      - ".github/tests/test_b54_engine-a7-admission-readonly.py"
       - ".github/tests/test_b54_engine_a7_admission_readonly.py"
       - "apps/padiem-ai-engine/app/control_plane_trust_client.py"
       - "apps/padiem-ai-engine/app/capability_manifest.py"
@@ -98,16 +97,28 @@ jobs:
           echo "A7_NETWORK_FREE_TESTS=PASS"
           echo "PRODUCTION_MUTATION=0"
 
-      - name: Require exact current main on push
+      - name: Reconcile current main A7 source on push
         if: ${{ github.event_name == 'push' }}
         shell: bash
         run: |
           set -euo pipefail
           test "${GITHUB_REF}" = "refs/heads/main"
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
-          git fetch --no-tags --depth=1 origin main
-          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
-          echo "A7_READONLY_EXACT_MAIN_SHA=PASS"
+          git fetch --no-tags origin main
+          relevant=(
+            ".github/workflows/b54-engine-a7-admission-readonly.yml"
+            ".github/scripts/b54_engine_served_version_guard.py"
+            ".github/tests/test_b54_engine_a7_admission_readonly.py"
+            "apps/padiem-ai-engine/app/control_plane_trust_client.py"
+            "apps/padiem-ai-engine/app/capability_manifest.py"
+            "apps/padiem-ai-engine/worker_identity.py"
+            "apps/padiem-ai-engine/wrangler.toml"
+            "packages/padiem-control-plane/engine_admission_authority_worker.py"
+            "packages/padiem-control-plane/wrangler.engine-admission-authority.jsonc"
+          )
+          git diff --quiet "${GITHUB_SHA}" origin/main -- "${relevant[@]}"
+          echo "A7_CURRENT_MAIN_RELEVANT_SOURCE_RECONCILED=PASS"
+          echo "A7_RELEVANT_SOURCE_DRIFT=0"
 
   served-a7-readonly:
     needs: source-contract
@@ -126,14 +137,26 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Reconfirm exact current main before live GETs
+      - name: Reconcile current main A7 source before live GETs
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
-          git fetch --no-tags --depth=1 origin main
-          test "$(git rev-parse origin/main)" = "${GITHUB_SHA}"
-          echo "A7_READONLY_EXACT_MAIN_SHA=PASS"
+          git fetch --no-tags origin main
+          relevant=(
+            ".github/workflows/b54-engine-a7-admission-readonly.yml"
+            ".github/scripts/b54_engine_served_version_guard.py"
+            ".github/tests/test_b54_engine_a7_admission_readonly.py"
+            "apps/padiem-ai-engine/app/control_plane_trust_client.py"
+            "apps/padiem-ai-engine/app/capability_manifest.py"
+            "apps/padiem-ai-engine/worker_identity.py"
+            "apps/padiem-ai-engine/wrangler.toml"
+            "packages/padiem-control-plane/engine_admission_authority_worker.py"
+            "packages/padiem-control-plane/wrangler.engine-admission-authority.jsonc"
+          )
+          git diff --quiet "${GITHUB_SHA}" origin/main -- "${relevant[@]}"
+          echo "A7_CURRENT_MAIN_RELEVANT_SOURCE_RECONCILED=PASS"
+          echo "A7_RELEVANT_SOURCE_DRIFT=0"
 
       - name: Resolve served Engine version and inspect A7 binding
         shell: bash

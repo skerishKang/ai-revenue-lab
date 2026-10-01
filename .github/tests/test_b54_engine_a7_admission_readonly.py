@@ -130,6 +130,9 @@ def test_workflow_is_read_only_and_live_job_runs_only_on_merged_main_push() -> N
         "CP_ENGINE_ADMISSION_WORKER=",
         "ENGINE_ROLLBACK_ANCHOR=",
         "CP_ROLLBACK_ANCHOR=",
+        "A7_CURRENT_MAIN_RELEVANT_SOURCE_RECONCILED=PASS",
+        "A7_RELEVANT_SOURCE_DRIFT=0",
+        'git diff --quiet "${GITHUB_SHA}" origin/main -- "${relevant[@]}"',
         "PROVIDER_CALLS=0",
         "REAL_USER_DATA=0",
         "PRODUCTION_MUTATION=0",
@@ -166,3 +169,20 @@ def test_workflow_never_prints_raw_cloudflare_payloads_or_sensitive_identifiers(
     )
     for marker in required:
         assert marker in text
+
+
+def test_workflow_reconciles_only_reviewed_a7_paths_when_main_advances() -> None:
+    text = WORKFLOW.read_text(encoding="utf-8")
+    for path in (
+        ".github/workflows/b54-engine-a7-admission-readonly.yml",
+        ".github/scripts/b54_engine_served_version_guard.py",
+        ".github/tests/test_b54_engine_a7_admission_readonly.py",
+        "apps/padiem-ai-engine/app/control_plane_trust_client.py",
+        "apps/padiem-ai-engine/app/capability_manifest.py",
+        "apps/padiem-ai-engine/worker_identity.py",
+        "apps/padiem-ai-engine/wrangler.toml",
+        "packages/padiem-control-plane/engine_admission_authority_worker.py",
+        "packages/padiem-control-plane/wrangler.engine-admission-authority.jsonc",
+    ):
+        assert text.count(f'"{path}"') >= 2
+    assert "A7_READONLY_EXACT_MAIN_SHA=PASS" not in text
