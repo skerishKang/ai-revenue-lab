@@ -589,13 +589,13 @@ def test_worker_identity_seam_wires_resolver_and_stays_unbound() -> None:
     assert "GMAIL_PORT_BOUND_IN_PRODUCTION" not in source
 
 
-def test_production_entrypoint_has_one_composition_implementation() -> None:
-    """Pin the canonical Engine entrypoint and keep ``worker.py`` delegate-only.
+def test_production_and_legacy_composition_roles_are_explicit() -> None:
+    """Pin one Production authority while preserving the narrow legacy bundle.
 
-    ``worker.py`` remains the shared HTTP/core base inherited by
-    ``worker_identity.Default``. Its historical composition name is retained
-    only as a compatibility seam and must never grow a second deployment-shaped
-    implementation again.
+    ``worker_identity.py`` is the deployed Production entrypoint and composition
+    authority. ``worker.py`` remains a deliberately narrower compatibility
+    composition because legacy/base callers are contractually forbidden from
+    inheriting identity-only multimodal, document and connector authorities.
     """
     from pathlib import Path
 
@@ -606,27 +606,24 @@ def test_production_entrypoint_has_one_composition_implementation() -> None:
     assert 'main = "worker_identity.py"' in wrangler
 
     legacy_source = (engine_root / "worker.py").read_text(encoding="utf-8")
-    start = legacy_source.index("async def _engine_services_for_env")
-    end = legacy_source.index("\ndef _ndjson_response(", start)
-    delegate = legacy_source[start:end]
-    assert "from worker_identity import _engine_services_for_env as canonical_factory" in delegate
-    assert "return await canonical_factory(env)" in delegate
-    for forbidden in (
-        "EngineServices(",
-        "CloudflareB14ServiceBindingTransport(",
-        "B14ExecutionClient(",
-        "ToolExecutionEngineService(",
-    ):
-        assert forbidden not in delegate
+    assert "Legacy compatibility composition; never the Production authority." in legacy_source
+    assert "async def _engine_services_for_env(env: Any) -> EngineServices:" in legacy_source
+    assert "CanonicalIdempotencyOrchestrationEngineService(" not in legacy_source
+    assert "MultimodalAttachmentEngineService" not in legacy_source
+    assert "DocumentContextEngineService" not in legacy_source
+    assert "_tool_binding_resolver_for_env" not in legacy_source
 
     canonical_source = (engine_root / "worker_identity.py").read_text(encoding="utf-8")
     assert "async def _engine_services_for_env(env: Any) -> EngineServices:" in canonical_source
     assert "class Default(legacy_worker.Default):" in canonical_source
     assert "engine_services_factory = staticmethod(_engine_services_for_env)" in canonical_source
+    assert "CanonicalIdempotencyOrchestrationEngineService(" in canonical_source
+    assert "_tool_binding_resolver_for_env" in canonical_source
 
     readme = (repo_root / "docs/internal-platform/engine/README.md").read_text(encoding="utf-8")
     assert "Production Worker entry: `apps/padiem-ai-engine/worker_identity.py`" in readme
     assert "Production composition authority: `worker_identity._engine_services_for_env`" in readme
+    assert "non-Production compatibility composition" in readme
 
 
 @pytest.mark.asyncio
