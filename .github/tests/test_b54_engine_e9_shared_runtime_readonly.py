@@ -126,7 +126,7 @@ def test_workflow_is_get_only_and_reconciles_relevant_main_drift() -> None:
         "--require-a6-activation-runtime-bindings",
         "APPROVAL_RUNTIME_BINDINGS_VALIDATED=YES",
         "A6_ACTIVATION_RUNTIME_BINDINGS_VALIDATED=YES",
-        "A7_RELEVANT_SOURCE_DRIFT=0",
+        "E9_SHARED_RELEVANT_SOURCE_DRIFT=0",
         "PROVIDER_CALLS=0",
         "REAL_USER_DATA=0",
         "PRODUCTION_MUTATION=0",
