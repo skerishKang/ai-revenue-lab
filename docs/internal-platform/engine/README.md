@@ -39,8 +39,8 @@ This platform prerequisite preserves the existing B61 StoryMemory identity while
 
 - Source: `apps/padiem-ai-engine/`
 - Production Worker entry: `apps/padiem-ai-engine/worker_identity.py`
-- Shared HTTP/core base + compatibility delegate: `apps/padiem-ai-engine/worker.py`
-- Production composition authority: `worker_identity._engine_services_for_env` (the `worker.py` name delegates to it; it is not a second implementation)
+- Shared HTTP/core base + deliberately narrower legacy compatibility composition: `apps/padiem-ai-engine/worker.py`
+- Production composition authority: `worker_identity._engine_services_for_env`; `worker.py::_engine_services_for_env` is a non-Production compatibility composition and must remain narrower
 - Deployment config: `apps/padiem-ai-engine/wrangler.toml`
 - Identity boundary: `apps/padiem-ai-engine/app/identity_enforcement.py`
 - Platform registry: `docs/internal-platform/INTERNAL_PLATFORM_REGISTRY.md`
