@@ -12,6 +12,7 @@ from .auth import GoogleOAuthClient
 from .b66_quote_conversation import B66QuoteConversationInterpreter
 from .b66_quote_routes import (
     b66_quote_interpret,
+    b66_runtime_config,
     b66_saved_skill_detail,
     b66_saved_skills,
 )
@@ -198,6 +199,7 @@ def create_app(
         Route("/api/conversations/{conversation_id}", api_conversation_detail, methods=["GET", "DELETE"]),
         Route("/api/chat/stream", api_chat_stream, methods=["POST"]),
         Route("/api/chat", api_chat, methods=["POST"]),
+        Route("/api/b66/runtime-config", b66_runtime_config, methods=["GET"]),
         Route("/api/b66/saved-skills", b66_saved_skills, methods=["GET"]),
         Route(
             "/api/b66/saved-skills/{saved_skill_id}",
@@ -280,6 +282,9 @@ def create_app(
     app.state.usage_gate_enforced = not (transport is not None and usage_store is None)
     app.state.google_oauth = GoogleOAuthClient(resolved, transport=auth_transport)
     app.state.b14_client = PadiemTierB14Client(resolved, transport=transport)
+    # Public, non-secret browser render origin. Unset means B66 account runtime
+    # stays fully hidden/off; Production activation is a separate env/deploy gate.
+    app.state.b66_quote_base_url = resolved.b66_quote_base_url
     app.state.b66_quote_interpreter = (
         b66_quote_interpreter
         if b66_quote_interpreter is not None
