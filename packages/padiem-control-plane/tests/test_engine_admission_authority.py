@@ -536,10 +536,14 @@ def test_engine_private_gateway_cannot_install_entitlement_truth():
         in durable_methods
     )
 
-    config = (
-        root
-        / "wrangler.engine-admission-authority.jsonc"
-    ).read_text(encoding="utf-8")
+    config_path = next(
+        root.glob(
+            "*.engine-admission-authority.jsonc"
+        )
+    )
+    config = config_path.read_text(
+        encoding="utf-8"
+    )
     assert '"workers_dev": false' in config
     assert '"preview_urls": false' in config
     assert '"routes"' not in config
