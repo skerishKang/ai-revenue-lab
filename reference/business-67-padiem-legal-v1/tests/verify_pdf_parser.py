@@ -11,7 +11,15 @@ NO_TEXT = "JVBERi0xLjMKJeLjz9MKMSAwIG9iago8PAovUHJvZHVjZXIgKHB5cGRmKQo+PgplbmRvY
 ENCRYPTED = "JVBERi0xLjMKJeLjz9MKMSAwIG9iago8PAovUHJvZHVjZXIgPDI0ZjdiNzEyZGY+Cj4+CmVuZG9iagoyIDAgb2JqCjw8Ci9UeXBlIC9QYWdlcwovQ291bnQgMQovS2lkcyBbIDQgMCBSIF0KPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1R5cGUgL0NhdGFsb2cKL1BhZ2VzIDIgMCBSCj4+CmVuZG9iago0IDAgb2JqCjw8Ci9UeXBlIC9QYWdlCi9SZXNvdXJjZXMgPDwKPj4KL01lZGlhQm94IFsgMC4wIDAuMCA2MTIgNzkyIF0KL1BhcmVudCAyIDAgUgo+PgplbmRvYmoKNSAwIG9iago8PAovViAyCi9SIDMKL0xlbmd0aCAxMjgKL1AgNDI5NDk2NzI5MgovRmlsdGVyIC9TdGFuZGFyZAovTyA8MGU1MjI5MjVhM2U0ZTg3NGMzY2ZhY2JlZjUxMWE3M2FjNGVjMmJkODY1ZGNkM2Q0NjI3NjE0OTE3YWJmZDdlND4KL1UgPDAxODBmY2VkMTZhNjA0MjJmNDJjNDhhNTMzZjMzYjRlMjhiZjRlNWU0ZTc1OGE0MTY0MDA0ZTU2ZmZmYTAxMDg+Cj4+CmVuZG9iagp4cmVmCjAgNgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMTUgMDAwMDAgbiAKMDAwMDAwMDA1OSAwMDAwMCBuIAowMDAwMDAwMTE4IDAwMDAwIG4gCjAwMDAwMDAxNjcgMDAwMDAgbiAKMDAwMDAwMDI2MSAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9TaXplIDYKL1Jvb3QgMyAwIFIKL0luZm8gMSAwIFIKL0lEIFsgPDM1NjEzMTMyNjIzNzY0MzczODM1NjEzNjY0MzUzNTM3MzUzNjM5NjI2MjM3MzA2NDMyMzQzMjMyNjEzNzMwMzk+IDwzNTYxMzEzMjYyMzc2NDM3MzgzNTYxMzY2NDM1MzUzNzM1MzYzOTYyNjIzNzMwNjQzMjM0MzIzMjYxMzczMDM5PiBdCi9FbmNyeXB0IDUgMCBSCj4+CnN0YXJ0eHJlZgo0NzYKJSVFT0YK"
 
 
-def evaluate_parse(page, encoded: str, *, pad_to: int | None = None):
+def prepare_session(page) -> None:
+    page.evaluate(
+        """async () => {
+          window.__b67PdfSession = await window.B67PdfPageParser.prepareParser();
+        }"""
+    )
+
+
+def evaluate_prepared_parse(page, encoded: str, *, pad_to: int | None = None):
     return page.evaluate(
         """async ({encoded, padTo}) => {
           const raw = Uint8Array.from(atob(encoded), c => c.charCodeAt(0));
@@ -21,11 +29,15 @@ def evaluate_parse(page, encoded: str, *, pad_to: int | None = None):
             bytes.set(raw);
             bytes.fill(32, raw.length);
           }
-          window.__b67PdfSession = await window.B67PdfPageParser.prepareParser();
           return await window.__b67PdfSession.parseArrayBuffer(bytes.buffer);
         }""",
         {"encoded": encoded, "padTo": pad_to},
     )
+
+
+def evaluate_parse(page, encoded: str, *, pad_to: int | None = None):
+    prepare_session(page)
+    return evaluate_prepared_parse(page, encoded, pad_to=pad_to)
 
 
 def main() -> None:
@@ -41,8 +53,9 @@ def main() -> None:
 
         assert page.evaluate("window.B67PdfPageParser.PINNED_PDFJS_VERSION") == "6.3.289"
 
+        prepare_session(page)
         before = len(requests)
-        multi = evaluate_parse(page, MULTIPAGE)
+        multi = evaluate_prepared_parse(page, MULTIPAGE)
         parse_requests = requests[before:]
         assert multi["ok"] is True
         assert multi["page_count"] == 3
@@ -99,6 +112,38 @@ def main() -> None:
         assert timeout["result"] == {"ok": False, "code": "pdf_parser_timeout"}
         assert timeout["terminated"] == 1
 
+        cancelled = page.evaluate(
+            """async () => {
+              window.__b67CancelledTerminated = 0;
+              class SilentWorker {
+                constructor() {
+                  this.onmessage = null;
+                  this.onerror = null;
+                  setTimeout(() => this.onmessage && this.onmessage({
+                    data: {type: "ready", parser: "pdfjs-dist", parser_version: "6.3.289"}
+                  }), 0);
+                }
+                postMessage() {}
+                terminate() { window.__b67CancelledTerminated += 1; }
+              }
+              const session = await window.B67PdfPageParser.prepareParser({
+                WorkerCtor: SilentWorker,
+                workerUrl: "fake://worker",
+                readyTimeoutMs: 100
+              });
+              const controller = new AbortController();
+              const pending = session.parseArrayBuffer(
+                new Uint8Array([37, 80, 68, 70, 45, 49]).buffer,
+                {timeoutMs: 100, signal: controller.signal}
+              );
+              controller.abort();
+              const result = await pending;
+              return {result, terminated: window.__b67CancelledTerminated};
+            }"""
+        )
+        assert cancelled["result"] == {"ok": False, "code": "pdf_parse_cancelled"}
+        assert cancelled["terminated"] == 1
+
         assert not console_errors, console_errors
         browser.close()
 
@@ -109,6 +154,7 @@ def main() -> None:
     print("BLANK_PAGE_RENUMBER=0")
     print("SCANNED_PDF_FALSE_SUCCESS=0")
     print("TIMEOUT_TERMINATES_WORKER=YES")
+    print("CANCEL_TERMINATES_WORKER=YES")
     print("RAW_SOURCE_BROWSER_PERSISTENCE=0")
     print("PDFJS_VERSION=6.3.289")
     print("PDFJS_LICENSE=Apache-2.0")
