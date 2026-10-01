@@ -64,59 +64,85 @@ async function main() {
   );
   assert.deepEqual(manual, { ok: false, code: "manual_only" });
 
-  /* New generic analysis helper sends native documents through the same-origin route. */
-  const pdfBytes = Uint8Array.from([37, 80, 68, 70, 45, 49, 46, 55, 10, 37, 37, 69, 79, 70]);
-  const pdfFile = {
-    arrayBuffer: async () => pdfBytes.buffer.slice(
-      pdfBytes.byteOffset,
-      pdfBytes.byteOffset + pdfBytes.byteLength
+  /* Native documents are parsed locally first; raw document bytes are not posted. */
+  const documentBytes = Uint8Array.from([80, 75, 3, 4, 1, 2, 3, 4]);
+  const documentFile = {
+    arrayBuffer: async () => documentBytes.buffer.slice(
+      documentBytes.byteOffset,
+      documentBytes.byteOffset + documentBytes.byteLength
     )
   };
-  const pdfMeta = {
-    name: "quotation.pdf",
-    mediaType: "application/pdf",
-    byteSize: pdfBytes.byteLength,
+  const documentMeta = {
+    name: "quotation.docx",
+    extension: ".docx",
+    mediaType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    byteSize: documentBytes.byteLength,
     category: "native_document"
   };
   const documentCalls = [];
   const documentExtraction = {
-    source: { kind: "native_document", filename: "quotation.pdf" },
+    source: { kind: "native_document", filename: "quotation.docx" },
     sender: { company: "문서 테스트상사" },
     recipient: { company: "문서 거래처" },
-    quote: { quoteNo: "PDF-Q-1" },
+    quote: { quoteNo: "DOCX-Q-1" },
     items: [{ name: "문서 품목", qty: 2, unitPrice: 5000 }],
     tax: { mode: "EXCLUSIVE" },
     memo: null,
     evidence: [],
     warnings: []
   };
-
-  const documentResult = await SkillUi.analyzeFile(pdfFile, pdfMeta, async (url, options) => {
-    documentCalls.push({ url, options });
-    return {
-      ok: true,
-      json: async () => ({
-        ok: true,
-        result: { extraction: documentExtraction, unknowns: ["quote.issueDate"] }
-      })
-    };
+  const localParser = async () => ({
+    ok: true,
+    kind: "local_text",
+    text: "견적번호 DOCX-Q-1\n문서 품목 2 5000",
+    textChars: 26,
+    byteSize: documentBytes.byteLength,
+    parser: "test-local"
   });
+
+  const documentResult = await SkillUi.analyzeFile(
+    documentFile,
+    documentMeta,
+    async (url, options) => {
+      documentCalls.push({ url, options });
+      return {
+        ok: true,
+        json: async () => ({
+          ok: true,
+          result: { extraction: documentExtraction, unknowns: ["quote.issueDate"] }
+        })
+      };
+    },
+    localParser
+  );
   assert.equal(documentResult.ok, true);
   assert.deepEqual(documentResult.extraction, documentExtraction);
   assert.deepEqual(documentResult.unknowns, ["quote.issueDate"]);
   assert.equal(documentCalls.length, 1);
   assert.equal(documentCalls[0].url, "/api/v1/quote/intake");
+
   const documentPosted = JSON.parse(documentCalls[0].options.body);
-  assert.equal(documentPosted.name, "quotation.pdf");
-  assert.equal(documentPosted.media_type, "application/pdf");
-  assert.equal(Buffer.from(documentPosted.base64, "base64").length, pdfBytes.byteLength);
+  assert.deepEqual(documentPosted, {
+    name: "quotation.docx",
+    media_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    byte_size: documentBytes.byteLength,
+    local_text: "견적번호 DOCX-Q-1\n문서 품목 2 5000"
+  });
+  assert.ok(!("base64" in documentPosted));
   assert.ok(!("model" in documentPosted) && !("provider" in documentPosted) && !("secret" in documentPosted));
 
-  const parserUnavailable = await SkillUi.analyzeFile(pdfFile, pdfMeta, async () => ({
-    ok: false,
-    json: async () => ({ ok: false, error: { code: "parser_authority_unavailable" } })
-  }));
-  assert.deepEqual(parserUnavailable, { ok: false, code: "parser_authority_unavailable" });
+  let fetchCallsAfterLocalFailure = 0;
+  const localFailure = await SkillUi.analyzeFile(
+    documentFile,
+    documentMeta,
+    async () => {
+      fetchCallsAfterLocalFailure += 1;
+      throw new Error("must not post when local parsing fails");
+    },
+    async () => ({ ok: false, code: "zip_path_traversal" })
+  );
+  assert.deepEqual(localFailure, { ok: false, code: "zip_path_traversal" });
+  assert.equal(fetchCallsAfterLocalFailure, 0);
 
   console.log("quote-skill live image/native analysis contracts: PASS");
 }
