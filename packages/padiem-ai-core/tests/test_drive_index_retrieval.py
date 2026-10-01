@@ -60,7 +60,6 @@ def indexed_segment(
     return DriveIndexedSegment(
         item_id="chunk_page_7",
         namespace="project.legal",
-        source_ref="drive:file_legal_1",
         source_snapshot=DriveIndexSourceSnapshot.from_projection(canonical),
         segment=segment or page_segment(),
     )
@@ -79,6 +78,7 @@ def test_current_drive_source_mints_located_retrieved_item() -> None:
     assert isinstance(retrieved, RetrievedItem)
     assert retrieved.provider == DRIVE_INDEX_RETRIEVAL_PROVIDER
     assert retrieved.source_type == DRIVE_INDEX_RETRIEVAL_SOURCE_TYPE
+    assert retrieved.source_ref == "drive:file_legal_1"
     assert retrieved.title == "brief.pdf"
     assert retrieved.content == "Termination notice"
     assert retrieved.document_locator is indexed.segment.locator
@@ -157,8 +157,7 @@ def test_locator_can_only_come_from_canonical_segment() -> None:
         DriveIndexedSegment(
             item_id="forged",
             namespace="project.legal",
-            source_ref="drive:file_legal_1",
-            source_snapshot=DriveIndexSourceSnapshot.from_projection(projection()),
+                source_snapshot=DriveIndexSourceSnapshot.from_projection(projection()),
             segment=page_segment(),
             document_locator=DocumentLocator(
                 kind=LocatorKind.PAGE,
@@ -197,8 +196,7 @@ def test_index_record_requires_canonical_snapshot_and_segment() -> None:
         DriveIndexedSegment(
             item_id="chunk",
             namespace="project.legal",
-            source_ref="drive:file_legal_1",
-            source_snapshot={"file_id": "caller"},  # type: ignore[arg-type]
+                source_snapshot={"file_id": "caller"},  # type: ignore[arg-type]
             segment=page_segment(),
         )
 
@@ -206,8 +204,7 @@ def test_index_record_requires_canonical_snapshot_and_segment() -> None:
         DriveIndexedSegment(
             item_id="chunk",
             namespace="project.legal",
-            source_ref="drive:file_legal_1",
-            source_snapshot=DriveIndexSourceSnapshot.from_projection(projection()),
+                source_snapshot=DriveIndexSourceSnapshot.from_projection(projection()),
             segment={"text": "caller"},  # type: ignore[arg-type]
         )
 
@@ -223,6 +220,7 @@ def test_architecture_snapshot_keeps_drive_authoritative_and_index_derived() -> 
         "stale_index_retrievable": False,
         "unverifiable_index_retrievable": False,
         "locator_source": "canonical_document_segment",
+        "source_ref_source": "drive_source_snapshot",
         "index_is_primary_truth": False,
         "drive_io": False,
         "model_call": False,
