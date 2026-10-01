@@ -174,7 +174,7 @@ jobs:
           echo 'ROW_DATA_READ=0'
           echo 'PRODUCTION_MUTATION=0'
 
-  apply-migration-012:
+  apply-migration-021:
     needs: [source-contract, cloudflare-readonly]
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'apply_migration_021' }}
     runs-on: ubuntu-24.04
