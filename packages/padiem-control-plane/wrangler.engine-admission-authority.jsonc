@@ -9,6 +9,12 @@
   "vars": {
     "CONTROL_PLANE_ALLOWED_PRODUCTS": "b62,b54-padiem-claw"
   },
+  "services": [
+    {
+      "binding": "CONTROL_PLANE_IDENTITY",
+      "service": "padiem-control-plane-identity"
+    }
+  ],
   "durable_objects": {
     "bindings": [
       {

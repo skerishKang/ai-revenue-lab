@@ -10,7 +10,12 @@ from workers import DurableObject, Response, WorkerEntrypoint
 from padiem_control_plane.contracts import ControlPlaneContractError
 from padiem_control_plane.engine_admission_authority import (
     CloudflareEngineAdmissionAuthorityStore,
+    canonical_subject_from_wire,
+    reservation_scope_from_wire,
     snapshot_from_wire,
+)
+from padiem_control_plane.engine_entitlement_producer import (
+    ensure_authenticated_user_engine_entitlement,
 )
 
 _AUTHORITY_REF = "control-plane.engine-admission.production.v1"
@@ -72,6 +77,53 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
             ctx.storage,
             allowed_product_ids=_ALLOWED_PRODUCTS,
         )
+        identity = getattr(
+            env,
+            "CONTROL_PLANE_IDENTITY",
+            None,
+        )
+        if (
+            identity is None
+            or not callable(
+                getattr(
+                    identity,
+                    "resolve_product_user_for_subject",
+                    None,
+                )
+            )
+            or not callable(
+                getattr(
+                    identity,
+                    "resolve_current_auth_session",
+                    None,
+                )
+            )
+        ):
+            raise RuntimeError(
+                "required CONTROL_PLANE_IDENTITY private service "
+                "binding is missing"
+            )
+        self._identity = identity
+
+    async def _ensure_current_entitlement(
+        self,
+        *,
+        product_id: str,
+        subject: Any,
+        now: datetime,
+    ):
+        subject_ref = canonical_subject_from_wire(
+            subject
+        )
+        return (
+            await ensure_authenticated_user_engine_entitlement(
+                self._store,
+                self._identity,
+                product_id=product_id,
+                subject=subject_ref,
+                now=now,
+            )
+        )
 
     async def fetch_entitlement_snapshot(
         self,
@@ -83,10 +135,11 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
                 _FETCH_KEYS,
                 "entitlement fetch RPC",
             )
-            snapshot = self._store.fetch_entitlement_snapshot(
+            now = datetime.now(UTC)
+            snapshot = await self._ensure_current_entitlement(
                 product_id=wire["product_id"],
                 subject=wire["subject"],
-                now=datetime.now(UTC),
+                now=now,
             )
             return {
                 "ok": True,
@@ -105,9 +158,20 @@ class CanonicalEngineAdmissionDurableObject(DurableObject):
                 _RESERVE_KEYS,
                 "usage reservation RPC",
             )
+            now = datetime.now(UTC)
+            product_id, subject = reservation_scope_from_wire(
+                wire["reservation"]
+            )
+            await ensure_authenticated_user_engine_entitlement(
+                self._store,
+                self._identity,
+                product_id=product_id,
+                subject=subject,
+                now=now,
+            )
             reservation = self._store.reserve_usage(
                 wire["reservation"],
-                now=datetime.now(UTC),
+                now=now,
             )
             return {
                 "ok": True,
@@ -217,5 +281,6 @@ CANONICAL_ENGINE_ADMISSION_AUTHORITY_WORKER_SOURCE = True
 PRIVATE_SERVICE_BINDING_RPC = True
 PUBLIC_ROUTE_CONFIGURED = False
 ENGINE_GATEWAY_CAN_INSTALL_ENTITLEMENTS = False
+CONTROL_PLANE_IDENTITY_REQUIRED_FOR_ENTITLEMENT = True
 PRODUCT_BILLING_LEDGER = False
 PROVIDER_AUTHORITY_CHANGED = False
