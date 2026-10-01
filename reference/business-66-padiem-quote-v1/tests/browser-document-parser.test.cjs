@@ -1,4 +1,5 @@
 const assert = require("node:assert/strict");
+const zlib = require("node:zlib");
 const Parser = require("../browser-document-parser.js");
 
 function crc32(bytes) {
@@ -45,41 +46,45 @@ function storedZip(files) {
   for (const file of files) {
     const name = encoder.encode(file.name);
     const data = encoder.encode(file.text);
+    const method = file.deflate ? 8 : 0;
+    const compressed = method === 8
+      ? Uint8Array.from(zlib.deflateRawSync(data))
+      : data;
     const crc = crc32(data);
     const local = concat([
       u32(0x04034b50),
       u16(20),
       u16(0),
-      u16(0),
+      u16(method),
       u16(0),
       u16(0),
       u32(crc),
-      u32(data.byteLength),
+      u32(compressed.byteLength),
       u32(data.byteLength),
       u16(name.byteLength),
       u16(0),
       name,
-      data
+      compressed
     ]);
     locals.push(local);
 
     const central = concat([
       u32(0x02014b50),
-      u16(20),
+      u16(file.symlink ? 0x0314 : 20),
       u16(20),
       u16(0),
-      u16(0),
+      u16(method),
       u16(0),
       u16(0),
       u32(crc),
-      u32(data.byteLength),
+      u32(compressed.byteLength),
       u32(data.byteLength),
       u16(name.byteLength),
       u16(0),
       u16(0),
       u16(0),
       u16(0),
-      u32(0),
+      u32(file.symlink ? 0xa1ff0000 : 0),
       u32(localOffset),
       name
     ]);
@@ -118,6 +123,7 @@ async function main() {
   const docx = await parse(".docx", [
     {
       name: "word/document.xml",
+      deflate: true,
       text: '<?xml version="1.0"?><w:document><w:p><w:r><w:t>견적번호 Q-100</w:t></w:r></w:p><w:p><w:r><w:t>품목 배관 12000</w:t></w:r></w:p></w:document>'
     }
   ]);
@@ -177,6 +183,13 @@ async function main() {
   ]);
   assert.equal(traversal.ok, false);
   assert.equal(traversal.code, "zip_path_traversal");
+
+  const symlink = await parse(".docx", [
+    { name: "word/document.xml", text: "<w:document><w:t>safe</w:t></w:document>" },
+    { name: "word/link.xml", text: "target", symlink: true }
+  ]);
+  assert.equal(symlink.ok, false);
+  assert.equal(symlink.code, "zip_symlink_rejected");
 
   let terminated = 0;
   class SilentWorker {
@@ -249,6 +262,8 @@ async function main() {
   console.log("B66_BROWSER_DOCUMENT_PARSER_POC=PASS");
   console.log("BROWSER_ZIP_XML_FORMATS=DOCX,PPTX,XLSX,HWPX");
   console.log("PDF_BROWSER_PATH=RESIDUAL_LOCAL_PDF_PARSER_REQUIRED");
+  console.log("DEFLATE_RAW_EXTRACTION=PASS");
+  console.log("ZIP_SYMLINK_REJECTED=YES");
   console.log("WORKER_TIMEOUT_TERMINATES=YES");
   console.log("PROVIDER_CALLS=0");
 }
