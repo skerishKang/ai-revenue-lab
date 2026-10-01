@@ -728,6 +728,11 @@ def test_snapshot_posture_is_source_only() -> None:
     assert snapshot["media_type_override_authority"] is False
     assert snapshot["reuses_canonical_document_store"] is True
     assert snapshot["reuses_canonical_evidence_storage"] is True
+    assert snapshot["drive_is_durable_document_authority"] is True
+    assert snapshot["document_store_is_case_workspace"] is False
+    assert snapshot["document_store_role"] == "bounded_processing_bridge"
+    assert snapshot["full_case_folder_copy_required"] is False
+    assert snapshot["persistent_index_requires_drive_version_linkage"] is True
     assert snapshot["second_drive_runtime"] is False
     assert snapshot["second_document_pipeline"] is False
     assert snapshot["second_evidence_model"] is False
