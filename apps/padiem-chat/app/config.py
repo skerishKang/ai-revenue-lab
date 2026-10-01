@@ -53,6 +53,7 @@ def _strict_bool(value: object, *, name: str) -> bool:
 class Settings:
     runtime_mode: str = "mock"
     b14_base_url: str | None = None
+    b66_quote_base_url: str | None = None
     timeout_seconds: float = 20.0
     completed_timeout_seconds: float = 50.0
     live_enabled: bool = False
@@ -78,6 +79,7 @@ class Settings:
         cls,
         runtime_mode: object = "mock",
         b14_base_url: object = None,
+        b66_quote_base_url: object = None,
         timeout_seconds: object = 20.0,
         completed_timeout_seconds: object = 50.0,
         live_enabled: object = False,
@@ -106,6 +108,13 @@ class Settings:
         base = _normalize_base_url(raw_base) if raw_base else None
         if mode == "b14" and base is None:
             raise ConfigError("PADIEM_CHAT_B14_BASE_URL is required in b14 mode")
+
+        raw_b66_quote = "" if b66_quote_base_url is None else str(b66_quote_base_url).strip()
+        b66_quote = (
+            _normalize_base_url(raw_b66_quote, https_only=True, root_only=True)
+            if raw_b66_quote
+            else None
+        )
 
         try:
             timeout = float(timeout_seconds)
@@ -197,6 +206,7 @@ class Settings:
         return cls(
             runtime_mode=mode,
             b14_base_url=base,
+            b66_quote_base_url=b66_quote,
             timeout_seconds=timeout,
             completed_timeout_seconds=completed_timeout,
             live_enabled=live,
@@ -223,6 +233,7 @@ class Settings:
         return cls.from_values(
             runtime_mode=os.getenv("PADIEM_CHAT_RUNTIME_MODE", "mock"),
             b14_base_url=os.getenv("PADIEM_CHAT_B14_BASE_URL"),
+            b66_quote_base_url=os.getenv("PADIEM_CHAT_B66_QUOTE_BASE_URL"),
             timeout_seconds=os.getenv("PADIEM_CHAT_TIMEOUT_SECONDS", "20"),
             completed_timeout_seconds=os.getenv("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS", "50"),
             live_enabled=os.getenv("PADIEM_CHAT_LIVE_ENABLED", "false"),
