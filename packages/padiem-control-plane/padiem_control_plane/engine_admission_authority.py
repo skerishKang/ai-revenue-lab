@@ -553,7 +553,7 @@ class CloudflareEngineAdmissionAuthorityStore:
         def operation() -> dict[str, Any]:
             existing = _rows(
                 self._sql.exec(
-                    "SELECT reservation_ref, request_json, admitted, expires_at "
+                    "SELECT reservation_ref, request_json, admitted, expires_at, created_at "
                     "FROM engine_usage_reservation WHERE idempotency_key=?",
                     idempotency_key,
                 )
@@ -572,6 +572,7 @@ class CloudflareEngineAdmissionAuthorityStore:
                     "reservation_ref": str(existing[0]["reservation_ref"]),
                     "admitted": bool(existing[0]["admitted"]),
                     "expires_at": str(existing[0]["expires_at"]),
+                    "reserved_at": str(existing[0]["created_at"]),
                 }
 
             try:
@@ -636,6 +637,7 @@ class CloudflareEngineAdmissionAuthorityStore:
                 "reservation_ref": reservation_ref,
                 "admitted": admitted,
                 "expires_at": _iso(expires_at),
+                "reserved_at": _iso(observed_at),
             }
 
         return self._storage.transactionSync(operation)

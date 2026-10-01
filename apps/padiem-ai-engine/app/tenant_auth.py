@@ -60,7 +60,7 @@ _SNAPSHOT_KEYS = frozenset(
 )
 _SUBJECT_KEYS = frozenset({"subject_type", "subject_id"})
 _GRANT_KEYS = frozenset({"key", "allowed", "limit"})
-_RESERVATION_KEYS = frozenset({"reservation_ref", "admitted", "expires_at"})
+_RESERVATION_KEYS = frozenset({"reservation_ref", "admitted", "expires_at", "reserved_at"})
 _RECEIPT_ACK_KEYS = frozenset({"accepted", "event_id"})
 
 
@@ -387,7 +387,7 @@ class ControlPlaneTenantAdmissionAdapter:
                     subject_type=tenant.subject_type,
                     subject_id=tenant.subject_id,
                     request_fingerprint=reservation.request_fingerprint,
-                    reserved_at=reservation.occurred_at,
+                    reserved_at=decision["reserved_at"],
                     expires_at=decision["expires_at"],
                 )
 
@@ -482,6 +482,11 @@ def parse_usage_reservation(payload: Any, *, reservation: UsageReservation, now:
     if not isinstance(admitted, bool):
         raise _unavailable("usage reservation admitted must be a boolean.")
     expires_at = _timestamp(decision["expires_at"], "reservation expires_at")
+    reserved_at = _timestamp(decision["reserved_at"], "reservation reserved_at")
+    if reserved_at > now:
+        raise _unavailable("usage reservation reserved_at is from the future.")
+    if expires_at <= reserved_at:
+        raise _unavailable("usage reservation expiry is not after reservation time.")
     if expires_at <= now:
         if admitted:
             raise ExecutionAdmissionError(
@@ -494,6 +499,7 @@ def parse_usage_reservation(payload: Any, *, reservation: UsageReservation, now:
         "admitted": admitted,
         "idempotency_key": reservation.idempotency_key,
         "expires_at": expires_at,
+        "reserved_at": reserved_at,
     }
 
 
