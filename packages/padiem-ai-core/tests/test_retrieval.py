@@ -1,3 +1,4 @@
+import json
 import pytest
 
 from padiem_ai_core.context_policy import ContextTrust
@@ -161,7 +162,12 @@ def test_exact_page_locator_can_enter_only_from_canonical_document_segment() -> 
     }
 
     prepared = prepare_retrieval_context(request(), [located])
-    assert '"document_locator":{"kind":"page","value":"12","precision":"exact"}' in prepared.context.reference_context
+    fragment_payload = json.loads(prepared.context.references[0].content)
+    assert fragment_payload["document_locator"] == {
+        "kind": "page",
+        "value": "12",
+        "precision": "exact",
+    }
 
     evidence = evidence_from_retrieved_item(
         located,
