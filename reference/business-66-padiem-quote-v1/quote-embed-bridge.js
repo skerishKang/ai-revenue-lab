@@ -128,6 +128,9 @@
         : defaults.meta.issueDate,
       items: candidate.items
     };
+    if (typeof candidate.projectName === "string" && candidate.projectName.trim()) {
+      input.projectName = candidate.projectName.trim();
+    }
     if (typeof candidate.memo === "string") input.memo = candidate.memo;
     if (typeof candidate.taxMode === "string" && candidate.taxMode) input.taxMode = candidate.taxMode;
     return input;
