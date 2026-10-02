@@ -409,21 +409,25 @@
     setHtml("pvItemsHead", model.columns.map(function (column) {
       var styles = [];
       if (column.width) styles.push("width:" + escapeHtml(column.width));
-      if (column.align) styles.push("text-align:" + escapeHtml(column.align));
+      if (model.layoutVariant && column.align) styles.push("text-align:" + escapeHtml(column.align));
       var style = styles.length ? ' style="' + styles.join(";") + '"' : "";
       return "<th" + style + ">" + escapeHtml(column.label) + "</th>";
     }).join(""));
 
     setHtml("pvItems", model.items.map(function (item) {
       var cells = model.columns.map(function (column) {
-        var style = column.align ? ' style="text-align:' + escapeHtml(column.align) + '"' : "";
+        var style = model.layoutVariant && column.align
+          ? ' style="text-align:' + escapeHtml(column.align) + '"'
+          : "";
         if (column.key === "name") {
           var cls = item.emptyName ? ' class="empty"' : "";
           return "<td" + cls + style + ">" + escapeHtml(item.values.name) + "</td>";
         }
         return "<td" + style + ">" + escapeHtml(item.values[column.key]) + "</td>";
       }).join("");
-      return '<tr class="' + (item.filler ? "quote-filler-row" : "") + '">' + cells + "</tr>";
+      return item.filler
+        ? '<tr class="quote-filler-row">' + cells + "</tr>"
+        : "<tr>" + cells + "</tr>";
     }).join(""));
 
     setText("subtotalLabelText", totals.subtotalLabel);
@@ -462,7 +466,7 @@
         var cells = page.columns.map(function (column) {
           if (column.key === "name" && row.suppressName) return "";
           var styles = [];
-          if (column.align) styles.push("text-align:" + escapeHtml(column.align));
+          if (model.layoutVariant && column.align) styles.push("text-align:" + escapeHtml(column.align));
           var style = styles.length ? ' style="' + styles.join(";") + '"' : "";
           var rowspan = column.key === "name" && row.nameRowSpan > 1
             ? ' rowspan="' + row.nameRowSpan + '"'
