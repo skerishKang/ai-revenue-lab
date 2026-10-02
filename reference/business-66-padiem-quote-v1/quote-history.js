@@ -222,11 +222,13 @@
       if (item.spec) copied.spec = item.spec;
       if (item.unit) copied.unit = item.unit;
       if (item.note) copied.note = item.note;
+      if (item.detailSectionId) copied.detailSectionId = item.detailSectionId;
       return copied;
     });
     fresh.tax = clone(source.tax);
     fresh.memo = source.memo;
     if (source.calculationPolicy) fresh.calculationPolicy = clone(source.calculationPolicy);
+    if (source.detailSections) fresh.detailSections = clone(source.detailSections);
     return Core.normalizeDraft(fresh);
   }
 
@@ -242,6 +244,7 @@
     if (JSON.stringify(normalized.sender) !== JSON.stringify(base.sender)) return true;
     if (JSON.stringify(normalized.recipient) !== JSON.stringify(base.recipient)) return true;
     if (JSON.stringify(normalized.items) !== JSON.stringify(base.items)) return true;
+    if (normalized.detailSections && normalized.detailSections.length) return true;
     if (normalized.tax.mode !== base.tax.mode) return true;
     if (normalized.memo !== base.memo) return true;
     return false;
