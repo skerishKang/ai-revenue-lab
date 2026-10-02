@@ -470,6 +470,9 @@ eq(rollupModel.detailPages[0].rows[1].section, "3. 인건비 및 잡자재",
 eq(authoritative.detailPages, [], "existing built-in template renders no detail pages");
 
 const formalDraft = Core.normalizeDraft(Object.assign(clone(detailDraft), {
+  meta: Object.assign({}, detailDraft.meta, { issueDate: "2026-10-02", validDays: 30 }),
+  sender: Object.assign({}, detailDraft.sender, { phone: "010-0000-0000", email: "" }),
+  recipient: Object.assign({}, detailDraft.recipient, { company: "샘플농장", person: "" }),
   items: [{ id: "formal-summary", name: "제어 시스템", unit: "식", qty: 1, unitPrice: 0 }],
   detailGroups: [{
     id: "formal-detail",
@@ -484,7 +487,19 @@ const formalDraft = Core.normalizeDraft(Object.assign(clone(detailDraft), {
 }));
 const formalContent = clone(rollupContent);
 formalContent.layoutVariant = "formal-grid-v1";
+formalContent.meta.issueDateFormat = "yyyy. mm.";
+formalContent.sender.contactPrefix = "MP : ";
+formalContent.recipient.suffix = "귀중";
 formalContent.items.minRows = 9;
+formalContent.items.heading = "(1) 샘플 내역";
+formalContent.summaryTerms = {
+  validity: { label: "유효기간 : ", valuePrefix: "발행일로부터 ", valueSuffix: "일" },
+  rows: [
+    { label: "납품기간 : ", value: "협의" },
+    { label: "결제조건 : ", value: "협의" }
+  ]
+};
+formalContent.totals.supplyLabel = "(1) {firstItemName} 합계 (부가세별도)";
 formalContent.memo.heading = "<특기사항>";
 formalContent.detailPages.mergeRepeatedName = true;
 formalContent.detailPages.finalLabel = "총 계";
@@ -494,6 +509,17 @@ const formalModel = Renderer.buildRenderModel(
   { taxReviewRequired: false }
 );
 eq(formalModel.layoutVariant, "formal-grid-v1", "formal layout variant reaches render model");
+check(formalModel.meta.dateText.endsWith("2026. 10."), "formal issue date uses the approved bounded display format");
+eq(formalModel.parties.sender.contact, "MP : 010-0000-0000", "formal sender contact prefix is presentation-only");
+eq(formalModel.parties.recipient.company, "샘플농장 귀중", "formal recipient suffix is appended without mutating draft");
+eq(formalModel.itemsHeadingText, "(1) 샘플 내역", "formal summary item heading reaches render model");
+eq(formalModel.summaryTerms, [
+  { label: "유효기간 : ", value: "발행일로부터 30일" },
+  { label: "납품기간 : ", value: "협의" },
+  { label: "결제조건 : ", value: "협의" }
+], "formal summary terms combine valid-days display with bounded recurring rows");
+eq(formalModel.totals.subtotalLabel, "(1) 제어 시스템 합계 (부가세별도)",
+  "formal supply label substitutes the first QuoteCore effective item name for display only");
 eq(formalModel.items.length, 9, "summary minRows adds display-only filler rows");
 eq(formalModel.items.filter((item) => item.filler).length, 8, "only missing visual rows are fillers");
 eq(formalModel.items[1].values.amount, "", "filler rows carry no calculated amount");
@@ -632,6 +658,7 @@ const pageHtml = readSource("index.html");
 const stylesCss = readSource("styles.css");
 const ADAPTER_IDS = [
   "pvTitle", "pvQuoteNo", "pvDate", "pvValidity", "pvValidUntil", "pvTaxMode", "pvProjectName", "pvWrittenTotal",
+  "pvItemsHeading", "pvSummaryTerms",
   "pvSenderHeading", "pvSenderCompany", "pvSenderRep", "pvSenderBizNo", "pvSenderAddress", "pvSenderContact",
   "pvRecipientHeading", "pvRecipientCompany", "pvRecipientPerson", "pvRecipientAddress", "pvRecipientEmail",
   "pvItemsHead", "pvItems", "pvDetailPages", "quotePaper",
@@ -655,9 +682,18 @@ drafts.forEach(([label, base]) => {
       const doc = stubDoc(ADAPTER_IDS);
       check(Renderer.applyRenderModel(doc, model) === true, "adapter reports success");
       const expected = legacyProjection(draft, provisional);
-      ADAPTER_IDS.filter((id) => id !== "pvItems" && id !== "pvItemsHead" && id !== "pvDetailPages" && id !== "quotePaper").forEach((id) => {
+      ADAPTER_IDS.filter((id) =>
+        id !== "pvItems" &&
+        id !== "pvItemsHead" &&
+        id !== "pvDetailPages" &&
+        id !== "pvItemsHeading" &&
+        id !== "pvSummaryTerms" &&
+        id !== "quotePaper"
+      ).forEach((id) => {
         eq(doc.getElementById(id).textContent, expected[id], `adapter ${id} for ${label}/${mode}/${provisional}`);
       });
+      eq(doc.getElementById("pvItemsHeading").textContent, "", "built-in emits no summary item heading");
+      eq(doc.getElementById("pvSummaryTerms").innerHTML, "", "built-in emits no summary terms markup");
       eq(
         norm(doc.getElementById("pvItems").innerHTML),
         norm(legacyItemsHtml(draft, totals)),
@@ -719,6 +755,11 @@ eq(
 );
 check(formalDoc.getElementById("pvItems").innerHTML.includes("quote-filler-row"),
   "formal summary adapter emits display-only filler rows");
+eq(formalDoc.getElementById("pvItemsHeading").textContent, "(1) 샘플 내역",
+  "formal item heading is projected through textContent");
+const formalTermsHtml = formalDoc.getElementById("pvSummaryTerms").innerHTML;
+check(formalTermsHtml.includes("quote-summary-term") && formalTermsHtml.includes("발행일로부터 30일"),
+  "formal summary terms are projected as bounded escaped markup");
 const formalDetailHtml = formalDoc.getElementById("pvDetailPages").innerHTML;
 check(formalDetailHtml.includes('data-layout-variant="formal-grid-v1"'),
   "detail pages inherit the formal layout variant");
@@ -738,6 +779,10 @@ check(stylesCss.includes('[data-layout-variant="formal-grid-v1"]'),
   "formal-grid CSS is scoped to the opt-in variant");
 check(stylesCss.includes("background: #c9c9c9"),
   "formal detail header has the reviewed gray treatment");
+check(stylesCss.includes(".quote-summary-terms") && stylesCss.includes("#pvValidity"),
+  "formal summary CSS provides terms layout and hides duplicate top metadata");
+check(stylesCss.includes("#pvSenderBizNo") && stylesCss.includes("#pvSenderContact"),
+  "formal sender CSS has explicit source-like row ordering");
 
 /* 어댑터 방어 */
 check(Renderer.applyRenderModel(null, authoritative) === false, "adapter without document fails safe");
@@ -775,6 +820,13 @@ console.log("QUOTE_TEMPLATE_RENDERER_DETERMINISTIC=YES");
 console.log("CURRENT_DEFAULT_VISUAL_REGRESSION=0");
 console.log("FORMAL_LAYOUT_OPT_IN_ONLY=YES");
 console.log("SUMMARY_MIN_ROWS_DISPLAY_ONLY=PASS");
+console.log("FORMAL_RECIPIENT_SUFFIX=PASS");
+console.log("FORMAL_META_TWO_LINE_HEADER=PASS");
+console.log("FORMAL_SUMMARY_TERMS=PASS");
+console.log("FORMAL_ITEMS_HEADING=PASS");
+console.log("FORMAL_DYNAMIC_SUPPLY_LABEL=PASS");
+console.log("FORMAL_SENDER_ORDER=PASS");
+console.log("FORMAL_ISSUE_DATE_FORMAT=PASS");
 console.log("DETAIL_REPEATED_NAME_MERGED=PASS");
 console.log("DETAIL_HEADER_GRAY=PASS");
 console.log("DETAIL_COMPACT_ROWS=PASS");

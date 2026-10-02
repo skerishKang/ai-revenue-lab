@@ -40,7 +40,9 @@
   var ALLOWED_ORIENTATIONS = ["portrait", "landscape"];
   var ALLOWED_TAX_MODES = ["EXCLUSIVE", "INCLUSIVE", "EXEMPT"];
   var ALLOWED_LAYOUT_VARIANTS = ["formal-grid-v1"];
+  var ALLOWED_ISSUE_DATE_FORMATS = ["iso", "yyyy. mm.", "yyyy. mm. dd."];
   var MAX_SUMMARY_MIN_ROWS = 30;
+  var MAX_SUMMARY_TERMS_ROWS = 8;
 
   var ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$/;
   var HEX_COLOR_PATTERN = /^#[0-9a-fA-F]{3,8}$/;
@@ -422,6 +424,36 @@
     return labels;
   }
 
+  function normalizeSummaryTerms(raw) {
+    if (!isPlainObject(raw)) return null;
+    var rows = raw.rows === undefined || raw.rows === null ? [] : raw.rows;
+    if (!Array.isArray(rows) || rows.length > MAX_SUMMARY_TERMS_ROWS) return null;
+    var normalizedRows = [];
+    for (var i = 0; i < rows.length; i += 1) {
+      var entry = rows[i];
+      if (!isPlainObject(entry) || typeof entry.label !== "string" || typeof entry.value !== "string") return null;
+      normalizedRows.push({
+        label: boundString(entry.label, ""),
+        value: boundString(entry.value, "")
+      });
+    }
+    var normalized = { rows: normalizedRows };
+    if (raw.validity !== undefined && raw.validity !== null) {
+      if (!isPlainObject(raw.validity)) return null;
+      if (
+        typeof raw.validity.label !== "string" ||
+        typeof raw.validity.valuePrefix !== "string" ||
+        typeof raw.validity.valueSuffix !== "string"
+      ) return null;
+      normalized.validity = {
+        label: boundString(raw.validity.label, ""),
+        valuePrefix: boundString(raw.validity.valuePrefix, ""),
+        valueSuffix: boundString(raw.validity.valueSuffix, "")
+      };
+    }
+    return normalized;
+  }
+
   function normalizeStyle(raw) {
     var fallback = BUILTIN_TEMPLATE_CONTENT.style;
     var source = isPlainObject(raw) ? raw : {};
@@ -520,6 +552,35 @@
       style: normalizeStyle(raw.style),
       fallbackText: boundString(raw.fallbackText, defaults.fallbackText)
     };
+
+    if (raw.meta && raw.meta.issueDateFormat !== undefined && raw.meta.issueDateFormat !== null) {
+      if (
+        typeof raw.meta.issueDateFormat !== "string" ||
+        ALLOWED_ISSUE_DATE_FORMATS.indexOf(raw.meta.issueDateFormat) === -1
+      ) return null;
+      content.meta.issueDateFormat = raw.meta.issueDateFormat;
+    }
+
+    if (raw.sender && raw.sender.contactPrefix !== undefined && raw.sender.contactPrefix !== null) {
+      if (typeof raw.sender.contactPrefix !== "string") return null;
+      content.sender.contactPrefix = boundString(raw.sender.contactPrefix, "");
+    }
+
+    if (raw.recipient && raw.recipient.suffix !== undefined && raw.recipient.suffix !== null) {
+      if (typeof raw.recipient.suffix !== "string") return null;
+      content.recipient.suffix = boundString(raw.recipient.suffix, "");
+    }
+
+    if (raw.items && raw.items.heading !== undefined && raw.items.heading !== null) {
+      if (typeof raw.items.heading !== "string") return null;
+      content.items.heading = boundString(raw.items.heading, "");
+    }
+
+    if (raw.summaryTerms !== undefined && raw.summaryTerms !== null) {
+      var summaryTerms = normalizeSummaryTerms(raw.summaryTerms);
+      if (!summaryTerms) return null;
+      content.summaryTerms = summaryTerms;
+    }
 
     if (raw.layoutVariant !== undefined && raw.layoutVariant !== null && raw.layoutVariant !== "") {
       if (typeof raw.layoutVariant !== "string" || ALLOWED_LAYOUT_VARIANTS.indexOf(raw.layoutVariant) === -1) {
@@ -761,7 +822,9 @@
     ALLOWED_ALIGNMENTS: ALLOWED_ALIGNMENTS,
     ALLOWED_TAX_MODES: ALLOWED_TAX_MODES,
     ALLOWED_LAYOUT_VARIANTS: ALLOWED_LAYOUT_VARIANTS.slice(),
+    ALLOWED_ISSUE_DATE_FORMATS: ALLOWED_ISSUE_DATE_FORMATS.slice(),
     MAX_SUMMARY_MIN_ROWS: MAX_SUMMARY_MIN_ROWS,
+    MAX_SUMMARY_TERMS_ROWS: MAX_SUMMARY_TERMS_ROWS,
     ALLOWED_JUSTIFY: ALLOWED_JUSTIFY,
     ALLOWED_PAGE_SIZES: ALLOWED_PAGE_SIZES,
     ALLOWED_ORIENTATIONS: ALLOWED_ORIENTATIONS,
