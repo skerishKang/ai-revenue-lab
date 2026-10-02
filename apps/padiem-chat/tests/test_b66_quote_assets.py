@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import asdict
 from pathlib import Path
 from unittest.mock import MagicMock
 
@@ -14,6 +15,7 @@ from app.b66_quote_assets import (
     B66QuoteAssetError,
     B66QuoteAssetMetadata,
     B66QuoteAssetStore,
+    D1B66QuoteAssetMetadataStore,
     MAX_B66_QUOTE_ASSET_BYTES,
 )
 from app.config import Settings
@@ -173,6 +175,40 @@ async def test_metadata_failure_cleans_private_r2_object():
     key = r2.put_calls[0][0]
     assert key in r2.delete_calls
     assert key not in r2.objects
+
+
+class _D1Statement:
+    def __init__(self, row):
+        self.row = row
+
+    def bind(self, *values):
+        return self
+
+    async def first(self):
+        return self.row
+
+
+class _D1:
+    def __init__(self, row):
+        self.row = row
+
+    def prepare(self, sql):
+        return _D1Statement(self.row)
+
+
+@pytest.mark.asyncio
+async def test_d1_metadata_cannot_redirect_asset_id_to_another_r2_object():
+    row = asdict(_metadata())
+    row["id"] = row.pop("asset_id")
+    row["object_key"] = "workspaces/other/private-object.png"
+    store = D1B66QuoteAssetMetadataStore(_D1(row))
+
+    with pytest.raises(B66QuoteAssetError, match="metadata is invalid"):
+        await store.get_active(
+            asset_id=ASSET_ID,
+            user_id=USER_A,
+            workspace_id=WORKSPACE_A,
+        )
 
 
 class RouteStore:
