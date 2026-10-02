@@ -373,13 +373,14 @@
     var items = [];
     for (var i = 0; i < raw.length; i += 1) {
       var entry = raw[i];
-      if (!isPlainObject(entry) || unknownKeys(entry, ["id", "name", "spec", "unit", "qty", "unitPrice", "note"]).length > 0) return null;
+      if (!isPlainObject(entry) || unknownKeys(entry, ["id", "name", "spec", "unit", "qty", "unitPrice", "note", "detailSectionId"]).length > 0) return null;
       var name = boundedString(entry.name, MAX_ITEM_NAME_CHARS, "").trim();
       var spec = boundedString(entry.spec, 240, "").trim();
       var unit = boundedString(entry.unit, 80, "").trim();
       var note = boundedString(entry.note, 500, "").trim();
+      var detailSectionId = boundedString(entry.detailSectionId, 80, "").trim();
       var qty = Number(entry.qty);
-      var unitPrice = Number(entry.unitPrice);
+      var unitPrice = detailSectionId ? 0 : Number(entry.unitPrice);
       if (!name || !Number.isFinite(qty) || qty <= 0 || !Number.isFinite(unitPrice) || unitPrice < 0) return null;
       var item = {
         id: typeof entry.id === "string" && entry.id.trim() ? entry.id.trim().slice(0, 80) : "item-" + (i + 1),
@@ -390,6 +391,7 @@
       if (spec) item.spec = spec;
       if (unit) item.unit = unit;
       if (note) item.note = note;
+      if (detailSectionId) item.detailSectionId = detailSectionId;
       items.push(item);
     }
     return items;
@@ -442,6 +444,12 @@
     };
     if (skill.fixedDefaults.calculationPolicy) {
       draftInput.calculationPolicy = cloneJson(skill.fixedDefaults.calculationPolicy);
+    }
+    if (input.detailSections !== undefined) {
+      if (!Array.isArray(input.detailSections)) {
+        return { ok: false, code: "invalid_detail_sections", draft: null };
+      }
+      draftInput.detailSections = cloneJson(input.detailSections);
     }
     var draft = Core.normalizeDraft(draftInput);
     if (!draft) return { ok: false, code: "invalid_quote_draft", draft: null };
