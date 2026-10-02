@@ -425,6 +425,15 @@ textarea { min-height: 82px; resize: vertical; }
   font-weight: 700;
   white-space: nowrap;
 }
+.quote-detail-page[data-layout-variant="formal-grid-v1"] .quote-detail-title-row th {
+  padding: 0 0 22px;
+  border: 0;
+  background: #fff;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 800;
+  white-space: normal;
+}
 .quote-detail-page[data-layout-variant="formal-grid-v1"] .quote-table td {
   padding: 9px 4px;
   font-size: 9px;
