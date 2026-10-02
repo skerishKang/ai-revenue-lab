@@ -41,6 +41,9 @@
   let refreshPromise = null;
   let currentRequestId = null;
   let frameLoadedUrl = "";
+  const B66_ASSET_ID = /^b66asset_[0-9a-f]{32}$/;
+  const PRIVATE_ASSET_MEDIA = new Set(["image/png", "image/jpeg", "image/webp"]);
+  const MAX_PRIVATE_ASSET_BYTES = 256 * 1024;
 
   function copy() {
     return COPY[document.documentElement.lang === "en" ? "en" : "ko"];
@@ -241,6 +244,66 @@
     return { response, data };
   }
 
+  function declaredAssetRefs(skill) {
+    const template = skill && typeof skill === "object" ? skill.internalTemplate : null;
+    const content = template && typeof template === "object" ? template.content : null;
+    const slots = content && typeof content === "object" ? content.slots : null;
+    const refs = {};
+    ["logo", "stamp"].forEach((key) => {
+      const value = slots && typeof slots[key] === "string" ? slots[key] : "";
+      if (value && !B66_ASSET_ID.test(value)) throw new Error("invalid_private_asset_ref");
+      if (value) refs[key] = value;
+    });
+    return refs;
+  }
+
+  function arrayBufferToBase64(buffer) {
+    const bytes = new Uint8Array(buffer);
+    const parts = [];
+    const chunkSize = 0x8000;
+    for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+      const chunk = bytes.subarray(offset, Math.min(offset + chunkSize, bytes.length));
+      let binary = "";
+      for (let i = 0; i < chunk.length; i += 1) binary += String.fromCharCode(chunk[i]);
+      parts.push(binary);
+    }
+    return window.btoa(parts.join(""));
+  }
+
+  async function readPrivateAsset(assetId) {
+    if (!B66_ASSET_ID.test(assetId || "")) throw new Error("invalid_private_asset_ref");
+    const response = await nativeFetch("/api/b66/assets/" + encodeURIComponent(assetId), {
+      method: "GET",
+      headers: { "Accept": "image/png,image/jpeg,image/webp" },
+      cache: "no-store",
+      credentials: "same-origin"
+    });
+    if (!response.ok) throw new Error("private_asset_unavailable");
+    const mediaType = String(response.headers.get("content-type") || "").split(";", 1)[0].trim().toLowerCase();
+    if (!PRIVATE_ASSET_MEDIA.has(mediaType)) throw new Error("private_asset_media_invalid");
+    const rawLength = Number(response.headers.get("content-length") || "0");
+    if (Number.isFinite(rawLength) && rawLength > MAX_PRIVATE_ASSET_BYTES) {
+      throw new Error("private_asset_too_large");
+    }
+    const buffer = await response.arrayBuffer();
+    if (!buffer.byteLength || buffer.byteLength > MAX_PRIVATE_ASSET_BYTES) {
+      throw new Error("private_asset_too_large");
+    }
+    return {
+      assetId,
+      dataUrl: "data:" + mediaType + ";base64," + arrayBufferToBase64(buffer)
+    };
+  }
+
+  async function loadPrivateAssets(skill) {
+    const refs = declaredAssetRefs(skill);
+    const assets = {};
+    for (const key of ["logo", "stamp"]) {
+      if (refs[key]) assets[key] = await readPrivateAsset(refs[key]);
+    }
+    return assets;
+  }
+
   async function refresh() {
     if (refreshPromise) return refreshPromise;
     refreshPromise = (async () => {
@@ -332,6 +395,7 @@
       const detail = await readJson("/api/b66/saved-skills/" + encodeURIComponent(savedSkillId));
       const skill = detail.data && detail.data.saved_skill && detail.data.saved_skill.skill;
       if (!detail.response.ok || !skill || typeof skill !== "object") throw new Error("skill_unavailable");
+      const assets = await loadPrivateAssets(skill);
 
       await waitForFrame(frame, runtime.embedUrl);
       const id = requestId();
@@ -340,7 +404,8 @@
         type: "b66.embed.render.v1",
         requestId: id,
         skill,
-        candidate
+        candidate,
+        assets
       }, runtime.origin);
     } catch (_) {
       currentRequestId = null;

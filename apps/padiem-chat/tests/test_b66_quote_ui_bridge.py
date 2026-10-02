@@ -88,3 +88,14 @@ def test_launcher_remains_hidden_without_runtime_and_assigned_skills() -> None:
     assert "launcher.hidden = !(runtime && skills.length > 0)" in source
     assert "launcher.disabled = launcher.hidden" in source
     assert "skills = safeSkills(listResult.data)" in source
+
+def test_quote_ui_bridge_loads_only_bounded_private_quote_assets() -> None:
+    source = (STATIC / "b66-quote-runtime.js").read_text(encoding="utf-8")
+    assert 'B66_ASSET_ID = /^b66asset_' in source
+    assert '"/api/b66/assets/" + encodeURIComponent(assetId)' in source
+    assert 'PRIVATE_ASSET_MEDIA = new Set(["image/png", "image/jpeg", "image/webp"])' in source
+    assert "MAX_PRIVATE_ASSET_BYTES = 256 * 1024" in source
+    assert "response.arrayBuffer()" in source
+    assert "data:" in source and ";base64," in source
+    assert "FileReader" not in source
+    assert "FormData" not in source

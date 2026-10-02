@@ -10,6 +10,8 @@ from starlette.staticfiles import StaticFiles
 
 from .auth import GoogleOAuthClient
 from .b66_quote_conversation import B66QuoteConversationInterpreter
+from .b66_quote_asset_routes import b66_quote_asset_detail
+from .b66_quote_assets import B66QuoteAssetStore, D1B66QuoteAssetMetadataStore
 from .b66_quote_routes import (
     b66_quote_interpret,
     b66_runtime_config,
@@ -150,6 +152,7 @@ def create_app(
     claw_telegram_authority=None,
     approved_memory_store: ApprovedMemoryStore | None = None,
     b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
+    b66_quote_asset_store=None,
     b66_quote_interpreter=None,
     claw_task_alert_store=None,
     calendar_store: CalendarStore | None = None,
@@ -215,6 +218,11 @@ def create_app(
         Route(
             "/api/b66/saved-skills/{saved_skill_id}",
             b66_saved_skill_detail,
+            methods=["GET"],
+        ),
+        Route(
+            "/api/b66/assets/{asset_id}",
+            b66_quote_asset_detail,
             methods=["GET"],
         ),
         Route("/api/b66/quote/interpret", b66_quote_interpret, methods=["POST"]),
@@ -366,6 +374,18 @@ def create_app(
         except Exception:
             _b66_saved_quote_skill_store = None
     app.state.b66_saved_quote_skill_store = _b66_saved_quote_skill_store
+
+    # B66 #3402: private logo/stamp bytes reuse the existing private workspace
+    # R2 binding, while D1 stores only owner/workspace-scoped metadata. No
+    # browser upload surface is composed here.
+    _b66_quote_asset_store = b66_quote_asset_store
+    if _b66_quote_asset_store is None and d1_binding is not None and r2_binding is not None:
+        try:
+            _b66_asset_metadata = D1B66QuoteAssetMetadataStore(d1_binding)
+            _b66_quote_asset_store = B66QuoteAssetStore(_b66_asset_metadata, r2_binding)
+        except Exception:
+            _b66_quote_asset_store = None
+    app.state.b66_quote_asset_store = _b66_quote_asset_store
 
     # #2341 Task/Alert inbox: consume the existing migration-010 D1 authority.
     # No schema creation or alternate DB authority is introduced here.

@@ -10,6 +10,7 @@ const MAX_RESPONSE_BYTES = 1024 * 1024;
 const MAX_PADIEM_BODY_BYTES = 32 * 1024;
 const IMAGE_MEDIA = new Set(["image/jpeg", "image/png", "image/webp"]);
 const SAVED_SKILL_ROW = /^b66skill_[0-9a-f]{32}$/;
+const B66_ASSET_ROW = /^b66asset_[0-9a-f]{32}$/;
 
 function jsonError(code, status) {
   return new Response(JSON.stringify({ ok: false, error: { code } }), {
@@ -110,6 +111,13 @@ function padiemTarget(url, method) {
     const id = path.slice(prefix.length);
     if (!SAVED_SKILL_ROW.test(id)) return null;
     return "/api/b66/saved-skills/" + id;
+  }
+
+  const assetPrefix = "/api/padiem/b66/assets/";
+  if (path.startsWith(assetPrefix) && method === "GET") {
+    const id = path.slice(assetPrefix.length);
+    if (!B66_ASSET_ROW.test(id)) return null;
+    return "/api/b66/assets/" + id;
   }
   return null;
 }

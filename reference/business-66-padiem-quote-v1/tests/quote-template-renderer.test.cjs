@@ -391,14 +391,27 @@ eq(Renderer.buildStyleVariables({ accent: "javascript:alert(1)", titleRule: "}</
 eq(Object.keys(Renderer.buildStyleVariables(styledContent.style)).length, Renderer.STYLE_VARIABLE_MAP.length,
   "every declared style token is projected");
 
-/* ── SLOT — non-live 로 명시되고 조용히 사라지지 않는다 ── */
-eq(authoritative.slots.support, "non_live", "SLOT_BEHAVIOR: slots are declared non-live");
-eq(authoritative.slots.rendered, false, "SLOT_BEHAVIOR: slots are not rendered in this MVP");
+/* ── SLOT — approved private asset id + transient resolved data only ── */
+eq(authoritative.slots.support, "private_asset_v1", "SLOT_BEHAVIOR: private asset refs are live");
+eq(authoritative.slots.rendered, false, "SLOT_BEHAVIOR: empty built-in slots render nothing");
+const logoAssetId = "b66asset_" + "a".repeat(32);
 const declaredSlotContent = clone(Template.builtInTemplate().content);
-declaredSlotContent.slots = { logo: "brand-a", stamp: "" };
-const declaredSlotModel = Renderer.buildRenderModel(defaultDraft, approvedProfile("slot-1", declaredSlotContent), { taxReviewRequired: false });
-eq(declaredSlotModel.slots.declared.logo, "brand-a", "SLOT_BEHAVIOR: declared slot values are surfaced, not silently dropped");
-eq(declaredSlotModel.slots.rendered, false, "SLOT_BEHAVIOR: declared slots are still not rendered");
+declaredSlotContent.slots = { logo: logoAssetId, stamp: "" };
+const logoData = "data:image/png;base64,iVBORw0KGgo=";
+const declaredSlotModel = Renderer.buildRenderModel(
+  defaultDraft,
+  approvedProfile("slot-1", declaredSlotContent),
+  { taxReviewRequired: false, slotSources: { logo: { assetId: logoAssetId, dataUrl: logoData } } }
+);
+eq(declaredSlotModel.slots.logo.assetId, logoAssetId, "SLOT_BEHAVIOR: declared private asset id is retained");
+eq(declaredSlotModel.slots.logo.src, logoData, "SLOT_BEHAVIOR: transient resolved image reaches render model");
+eq(declaredSlotModel.slots.rendered, true, "SLOT_BEHAVIOR: resolved private logo renders");
+const mismatchedSlotModel = Renderer.buildRenderModel(
+  defaultDraft,
+  approvedProfile("slot-2", declaredSlotContent),
+  { taxReviewRequired: false, slotSources: { logo: { assetId: "b66asset_" + "b".repeat(32), dataUrl: logoData } } }
+);
+eq(mismatchedSlotModel.slots.logo.rendered, false, "SLOT_BEHAVIOR: mismatched asset id fails closed");
 
 /* 섹션 게이팅 */
 function profileWithout(section) {
@@ -538,6 +551,6 @@ console.log("TEMPLATE_RULES_APPLIED=PASS");
 console.log("TEMPLATE_ALIGNMENT_APPLIED=PASS");
 console.log("TEMPLATE_TOTALS_WIDTH_APPLIED=PASS");
 console.log("TEMPLATE_PAGE_RULE_APPLIED=PASS");
-console.log("SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY");
+console.log("SLOT_BEHAVIOR=PRIVATE_ASSET_REF_V1");
 console.log("MODEL_DEPENDENCY=0");
 console.log("TRUSTED_TOTALS_IN_TEMPLATE=0");

@@ -28,8 +28,8 @@
   var APPROVAL_SCHEMA_VERSION = 1;
   var MAX_APPROVER_REF_CHARS = 128;
 
-  /* logo/stamp slot 은 이번 MVP 에서 non-live 다. 값이 선언되면 명시적으로 거부한다. */
-  var SLOT_SUPPORT = "non_live";
+  /* #3402: logo/stamp 는 raw bytes/URL 이 아니라 account-bound private asset id 만 보존한다. */
+  var SLOT_SUPPORT = "private_asset_v1";
 
   var ALLOWED_SECTIONS = ["title", "meta", "parties", "items", "totals", "memo", "mark"];
   var ALLOWED_COLUMN_KEYS = ["name", "qty", "unitPrice", "amount"];
@@ -44,7 +44,7 @@
   var CSS_TOKEN_PATTERN = /^[0-9A-Za-z#.,%()\- ]{1,64}$/;
   var MEASURE_PATTERN = /^[0-9A-Za-z.%]{1,16}$/;
   var PAGE_MARGIN_PATTERN = /^\d{1,2}(?:\.\d{1,2})?(?:mm|cm|in)$/;
-  var SLOT_REF_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:/@-]{0,127}$/;
+  var SLOT_REF_PATTERN = /^b66asset_[0-9a-f]{32}$/;
   var APPROVER_REF_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:@/-]{2,127}$/;
   var ISO_UTC_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?Z$/;
   var SHA256_HEX_PATTERN = /^[0-9a-f]{64}$/;
