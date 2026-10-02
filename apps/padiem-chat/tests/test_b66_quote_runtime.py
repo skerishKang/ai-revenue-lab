@@ -329,6 +329,25 @@ def test_normalizer_accepts_variable_fields_and_rejects_calculated_or_template_o
                 "unitPrice": 30000,
                 "note": "현장 설치",
             }],
+            "detailGroups": [{
+                "summaryIndex": 1,
+                "title": "배관 상세",
+                "items": [{
+                    "name": "배관 자재",
+                    "spec": "40A",
+                    "unit": "m",
+                    "qty": 20,
+                    "unitPrice": 25000,
+                    "note": "자재",
+                    "section": "1. 자재",
+                }, {
+                    "name": "설치",
+                    "unit": "식",
+                    "qty": 1,
+                    "unitPrice": 100000,
+                    "section": "2. 인건비",
+                }],
+            }],
             "memo": None,
             "taxMode": None,
             "missing": ["quoteNo", "issueDate"],
@@ -340,6 +359,11 @@ def test_normalizer_accepts_variable_fields_and_rejects_calculated_or_template_o
     assert safe["items"][0]["spec"] == "40A"
     assert safe["items"][0]["unit"] == "m"
     assert safe["items"][0]["note"] == "현장 설치"
+    assert safe["detailGroups"][0]["id"] == "detail-group-1"
+    assert safe["detailGroups"][0]["summaryItemId"] == "item-1"
+    assert safe["detailGroups"][0]["title"] == "배관 상세"
+    assert safe["detailGroups"][0]["items"][0]["section"] == "1. 자재"
+    assert safe["detailGroups"][0]["items"][1]["unitPrice"] == 100000
 
     with pytest.raises(B66QuoteConversationError, match="unsupported_output_field|forbidden_output_field"):
         normalize_conversation_output(
@@ -369,6 +393,32 @@ def test_normalizer_accepts_variable_fields_and_rejects_calculated_or_template_o
                     "qty": 1,
                     "unitPrice": 1000,
                     "amount": 1000,
+                }],
+                "missing": [],
+            }
+        )
+
+    with pytest.raises(B66QuoteConversationError, match="forbidden_output_field"):
+        normalize_conversation_output(
+            {
+                "recipient": {"company": "ABC건설"},
+                "items": [{"name": "요약", "qty": 1, "unitPrice": 1}],
+                "detailGroups": [{
+                    "summaryIndex": 1,
+                    "items": [{"name": "상세", "qty": 1, "unitPrice": 1000, "amount": 1000}],
+                }],
+                "missing": [],
+            }
+        )
+
+    with pytest.raises(B66QuoteConversationError, match="invalid_detail_summary_index"):
+        normalize_conversation_output(
+            {
+                "recipient": {"company": "ABC건설"},
+                "items": [{"name": "요약", "qty": 1, "unitPrice": 1}],
+                "detailGroups": [{
+                    "summaryIndex": 2,
+                    "items": [{"name": "상세", "qty": 1, "unitPrice": 1000}],
                 }],
                 "missing": [],
             }
@@ -431,6 +481,9 @@ async def test_interpreter_calls_model_once_for_fields_only_and_hides_template_c
     assert "items.spec" in context
     assert "items.unit" in context
     assert "items.note" in context
+    assert "detailGroups" in context
+    assert "summaryIndex" in context
+    assert "items[].section" not in context or "section" in context
     assert "template-private" not in context
     assert "테스트상사" not in context
     assert call["attachments"] == ()
