@@ -114,6 +114,11 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
 check(!/(Padiem|파디엠|padiem)/.test(app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + candidate + cloner + skill + skillStore + skillCandidate + skillRegistration + skillUi + intake + easy),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: quote domain logic stays product-neutral");
 check(!html.includes("B66 DEMO"), "PADIEM_ACCOUNT_BRIDGE_CONTRACT: no internal demo label");
+check(worker.includes("B66_ASSET_ROW") &&
+      worker.includes('const assetPrefix = "/api/padiem/b66/assets/"') &&
+      worker.includes('return "/api/b66/assets/" + id;'),
+  "PRIVATE_QUOTE_ASSET_BRIDGE=PASS: Quick Quote proxies only bounded asset ids");
+
 check(html.includes('id="settingsPanel"') &&
       html.includes("작성 중 견적은 이 브라우저에 저장"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: truthful local draft persistence lives in personal settings");
