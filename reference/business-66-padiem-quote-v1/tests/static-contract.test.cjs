@@ -5,6 +5,7 @@ const vm = require("node:vm");
 
 const read = (name) => fs.readFileSync(path.join(__dirname, "..", name), "utf8");
 const html = read("index.html");
+const embed = read("embed.html");
 const css = read("styles.css");
 const app = read("app.js");
 const core = read("quote-core.js");
