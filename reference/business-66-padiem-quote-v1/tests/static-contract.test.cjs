@@ -209,9 +209,9 @@ check(easy.includes('App.createFreshDraft("guided")') &&
   "EASY_MODE_CONTRACT: deterministic guided draft uses shared fresh-draft allocator");
 check(easy.includes("function processGuidedInput("),
   "EASY_MODE_CONTRACT: guided state machine");
-check(easy.includes("Core.computeTotals(guided.draft.items, guided.draft.tax.mode, guided.draft.calculationPolicy)") &&
+check(easy.includes("Core.computeDraftTotals(guided.draft)") &&
       easy.includes("if (current.calculationPolicy) fresh.calculationPolicy = clone(current.calculationPolicy);"),
-  "EASY_MODE_CONTRACT: guided summary and new guided quote reuse QuoteCore family policy");
+  "EASY_MODE_CONTRACT: guided summary uses full-draft QuoteCore authority and preserves family policy");
 check(css.includes(".easy-chip {") && css.includes("min-height: 44px;"),
   "EASY_MODE_CONTRACT: quick chips meet 44px touch target");
 check(!easy.includes("fetch(") && !easy.includes("XMLHttpRequest") &&
@@ -282,9 +282,10 @@ check(app.includes("function createFreshDraft(") && app.includes("function copyH
   "RECENT_HISTORY_CONTRACT: direct and Easy flows share allocator");
 check(easy.includes('App.createFreshDraft("guided")') && easy.includes("App.copyHistoryAsNew(entry)"),
   "RECENT_HISTORY_CONTRACT: guided/copy paths use shared allocation");
-check(history.includes("Core.computeTotals(entry.draft.items, entry.draft.tax.mode, entry.draft.calculationPolicy)") &&
-      history.includes("if (source.calculationPolicy) fresh.calculationPolicy = clone(source.calculationPolicy);"),
-  "RECENT_HISTORY_CONTRACT: displayed/copied totals reuse the QuoteCore family policy");
+check(history.includes("Core.computeDraftTotals(entry.draft)") &&
+      history.includes("if (source.calculationPolicy) fresh.calculationPolicy = clone(source.calculationPolicy);") &&
+      history.includes("if (source.detailSections) fresh.detailSections = clone(source.detailSections);"),
+  "RECENT_HISTORY_CONTRACT: displayed/copied totals and detail structures reuse full-draft QuoteCore authority");
 check(easy.includes("window.confirm(\"이 최근 견적을 이 브라우저에서 삭제할까요?\")"),
   "RECENT_HISTORY_CONTRACT: delete confirmation");
 check(easy.includes("window.confirm(\"현재 작성 중인 견적을 바꾸고 이 견적을 불러올까요?\")"),
@@ -320,6 +321,14 @@ check(easy.includes("150만원") && easy.includes("복합 단위는 추측하지
   "memo:"
 ].forEach((key) => check(core.includes(key), `QUOTEDRAFT_SCHEMA_CONTRACT missing in quote-core.js: ${key}`));
 check(app.includes("Core.createDefaultDraft"), "QUOTEDRAFT_SCHEMA_CONTRACT: app default draft from core");
+check(core.includes("function normalizeDetailSections(") &&
+      core.includes("function computeDraftTotals(") &&
+      core.includes("detailSectionId") &&
+      core.includes("detailSections"),
+  "DETAIL_BREAKDOWN_CONTRACT: bounded detail sections and full-draft totals live in QuoteCore");
+check(core.includes("unitPrice: detailSectionId ? 0") &&
+      core.includes("effectiveUnitPrice = item.detailSectionId"),
+  "TRUSTED_LINKED_SUMMARY_PRICE=0: linked summary price is discarded and re-derived");
 
 /* NEW_QUOTE_SAFETY_CONTRACT — public beta 새 견적은 다음 고객용 빈 상태 */
 check(core.includes("function createBlankQuoteDraft("),
@@ -551,11 +560,11 @@ check(templateStore.includes("findForbiddenKeys") && !templateStore.includes("da
 check(templateRenderer.includes("function buildRenderModel(") &&
       templateRenderer.includes("function applyRenderModel("),
   "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: pure render model separated from the DOM adapter");
-check(templateRenderer.includes("Core.computeTotals(") &&
-      templateRenderer.includes("normalizedDraft.calculationPolicy") &&
+check(templateRenderer.includes("Core.computeDraftTotals(normalizedDraft)") &&
       templateRenderer.includes("Core.formatKoreanMoneyWords(totals.grand)") &&
-      templateRenderer.includes("Core.computeValidUntil("),
-  "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: renderer derives totals, written grand and validity from QuoteCore");
+      templateRenderer.includes("Core.computeValidUntil(") &&
+      templateRenderer.includes("function renderDetailPagesHtml("),
+  "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: renderer derives summary/detail totals, written grand and validity from QuoteCore");
 check(!templateRenderer.includes("grand =") && !templateRenderer.includes("vat =") &&
       !templateRenderer.includes("supply ="),
   "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: the renderer performs no tax arithmetic");
@@ -592,6 +601,15 @@ check(template.includes('raw.status !== "approved"') &&
 check(template.includes("trusted_builtin") && template.includes("explicit_approval") &&
       template.includes("unapproved"),
   "APPROVAL_REQUIRED_FOR_USER_PROFILE=YES: approval basis is explicit");
+check(template.includes('"detailPages"') &&
+      template.includes("groupTotalLabel") &&
+      template.includes("sectionTotalLabel"),
+  "DETAIL_PAGE_TEMPLATE_CONTRACT=PASS: template owns bounded detail-page presentation only");
+check(css.includes("page-break-before: always") && css.includes("break-before: page"),
+  "PRINT_PAGE_BREAK=PASS: detail pages force printed page boundaries");
+check(app.includes("Core.computeDraftTotals(draft)"),
+  "DIRECT_EDITOR_FULL_DRAFT_TOTALS=PASS: direct editor uses linked-detail QuoteCore totals");
+
 check(template.includes('SLOT_SUPPORT = "private_asset_v1"') &&
       template.includes('SLOT_REF_PATTERN = /^b66asset_'),
   "SLOT_BEHAVIOR=PRIVATE_ASSET_REF_V1: only bounded private asset ids persist");
