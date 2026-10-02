@@ -129,7 +129,12 @@
     var sections = content.sections.slice();
     var has = function (name) { return sections.indexOf(name) !== -1; };
 
-    var totals = Core.computeTotals(normalizedDraft.items, normalizedDraft.tax.mode);
+    var totals = Core.computeTotals(
+      normalizedDraft.items,
+      normalizedDraft.tax.mode,
+      normalizedDraft.calculationPolicy
+    );
+    if (!totals) return null;
     var validUntil = Core.computeValidUntil(normalizedDraft.meta.issueDate, normalizedDraft.meta.validDays);
     var mode = normalizedDraft.tax.mode;
 
@@ -193,6 +198,9 @@
       titleText: has("title") ? content.title.text : "",
       projectNameText: has("project") && content.project && normalizedDraft.meta.projectName
         ? content.project.prefix + normalizedDraft.meta.projectName
+        : "",
+      writtenTotalText: has("writtenTotal") && content.writtenTotal
+        ? content.writtenTotal.prefix + (Core.formatKoreanMoneyWords(totals.grand) || content.fallbackText) + content.writtenTotal.suffix
         : "",
       meta: {
         quoteNoText: has("meta") ? content.meta.quoteNoPrefix + textOrDash(normalizedDraft.meta.quoteNo) : "",
@@ -302,6 +310,7 @@
     setText("pvValidUntil", model.meta.validUntilText);
     setText("pvTaxMode", model.meta.taxText);
     setText("pvProjectName", model.projectNameText);
+    setText("pvWrittenTotal", model.writtenTotalText);
 
     setText("pvSenderHeading", sender.heading);
     setText("pvSenderCompany", sender.company);
