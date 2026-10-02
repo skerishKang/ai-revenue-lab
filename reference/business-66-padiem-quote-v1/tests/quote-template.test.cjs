@@ -227,7 +227,7 @@ check(Template.normalizeTemplateContent(builtinContent()) !== null, "valid conte
 
 /* APPROVAL_REQUIRED_FOR_USER_PROFILE — #3181 Candidate → explicit Approval → Profile 경계 */
 check(Template.APPROVAL_SCHEMA_VERSION === 1, "approval schema version");
-check(Template.SLOT_SUPPORT === "non_live", "slot support is declared non-live");
+check(Template.SLOT_SUPPORT === "private_asset_v1", "slot support uses private account-bound asset refs");
 check(Template.ALLOWED_ALIGNMENTS.indexOf("right") !== -1, "alignment enum is exported");
 check(Template.isBuiltInException(profile) === true, "built-in is the trusted exception");
 check(profile.approved === true && profile.approvalBasis === "trusted_builtin", "built-in is approved by exception");
@@ -333,10 +333,19 @@ const slotBad = Template.normalizeTemplateContent(Object.assign(builtinContent()
   slots: { logo: "</style><img src=x>", stamp: "" }
 }));
 check(slotBad.slots.logo === "", "invalid slot reference falls back to empty");
+const privateAssetId = "b66asset_" + "a".repeat(32);
 const slotOk = Template.normalizeTemplateContent(Object.assign(builtinContent(), {
-  slots: { logo: "brand-2026", stamp: "" }
+  slots: { logo: privateAssetId, stamp: "" }
 }));
-check(slotOk.slots.logo === "brand-2026", "bounded slot reference is preserved in the non-live contract");
+check(slotOk.slots.logo === privateAssetId, "validated private asset reference is preserved");
+const slotUrl = Template.normalizeTemplateContent(Object.assign(builtinContent(), {
+  slots: { logo: "https://example.test/logo.png", stamp: "" }
+}));
+check(slotUrl.slots.logo === "", "arbitrary asset URLs are rejected");
+const slotData = Template.normalizeTemplateContent(Object.assign(builtinContent(), {
+  slots: { logo: "data:image/png;base64,AAAA", stamp: "" }
+}));
+check(slotData.slots.logo === "", "inline asset bytes are rejected from template persistence");
 
 /* FORGED_BUILTIN_FLAG_BYPASS=0 — builtin:true 플래그만으로는 신뢰되지 않는다 */
 const canonicalContent = () => clone(Template.builtInTemplate().content);
@@ -431,7 +440,7 @@ console.log("CONTENT_CHANGE_INVALIDATES_APPROVAL=YES");
 console.log("UNAPPROVED_TEMPLATE_ACTIVATION=0");
 console.log("FORGED_BUILTIN_FLAG_BYPASS=0");
 console.log("CANONICAL_BUILTIN_FALLBACK=PASS");
-console.log("SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY");
+console.log("SLOT_BEHAVIOR=PRIVATE_ASSET_REF_V1");
 console.log("TEMPLATE_FINGERPRINT_DETERMINISTIC=PASS");
 console.log("TEMPLATE_CANONICAL_JSON=PASS");
 console.log("TEMPLATE_FORBIDDEN_FIELD_REJECTION=PASS");
