@@ -23,17 +23,19 @@ workspace authority. It has exactly two sources:
   B62 product session resolved through the existing Control Plane identity
   shadow to a canonical ``auth_session_id``; the existing B-1B private
   composition (``compose_workspace_connector_truth``) yields bounded
-  Gmail / Drive truth. Only ``workspace_state`` and ``workspace_reason`` are
-  updated from it — the B-1B row is never published verbatim.
+  Gmail / Drive / Calendar truth. Only ``workspace_state`` and
+  ``workspace_reason`` are updated from it — the private rows are never
+  published verbatim.
 
 A signed cookie is never sufficient on its own. ``COOKIE_UID_PRESENT !=
 PRODUCT_USER_AUTHENTICATED``: a stale or deleted product user degrades to the
 anonymous Phase-A projection and reaches no canonical private authority at all.
 
-The reviewed workspace-truth scope is exactly Gmail and Google Drive, mapped
-through an explicit closed table to the Core canonical connector ids. Telegram,
-Slack and Calendar keep ``unverified`` because no trusted workspace authority
-exists for them yet; their workspace state is never inferred.
+The reviewed workspace-truth scope is Gmail, Google Drive and Google Calendar,
+mapped through an explicit closed table to the Core canonical connector ids.
+Calendar uses the dedicated identity-free private Calendar presence RPC; the
+default Gmail/Drive RPC is not widened. Telegram and Slack keep ``unverified``
+because no trusted workspace authority exists for them here.
 
 ``workspace_state_authority`` is ``True`` only when canonical truth actually
 participated in this response, i.e. at least one reviewed row was updated from a
@@ -133,6 +135,7 @@ _IDENTITY_ERROR_TO_WORKSPACE_REASON = {
 _WORKSPACE_TRUTH_TARGETS = {
     "gmail": ("gmail", GMAIL_CONNECTOR_ID),
     "google-drive": ("drive", DRIVE_CONNECTOR_ID),
+    "google-calendar": ("calendar", CALENDAR_CONNECTOR_ID),
 }
 
 # Trusted B-1B state -> published (workspace_state, workspace_reason). The B-1B

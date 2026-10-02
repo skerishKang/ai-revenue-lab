@@ -14,7 +14,7 @@ from .control_plane_identity_worker import PrivateGoogleConnectTicket
 
 
 MAX_TICKET_REQUEST_BODY_BYTES = 1_024
-_REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive"})
+_REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive", "google-calendar"})
 _NO_STORE_HEADERS = {
     "Cache-Control": "no-store, max-age=0",
     "Pragma": "no-cache",

@@ -254,6 +254,32 @@ async def test_authenticated_same_origin_ticket_request_uses_shadow_session_only
 
 
 @pytest.mark.asyncio
+async def test_authenticated_same_origin_calendar_ticket_uses_reviewed_readonly_connector():
+    app, history, _, binding, _ = app_fixture()
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        client.cookies.set(
+            SESSION_COOKIE,
+            cookie_for(history.profile.id),
+            domain="chat.example.test",
+            path="/",
+        )
+        response = await client.post(
+            "/api/connectors/google/ticket",
+            headers={"Origin": "https://chat.example.test"},
+            json={"connector_id": "google-calendar"},
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["ticket"]["connector_id"] == "google-calendar"
+    assert body["ticket"]["connect_ticket"] == binding.ticket
+    assert binding.calls == [("ticket", {"session_id": "sess_test", "connector_id": "google-calendar"})]
+
+
+@pytest.mark.asyncio
 async def test_client_cannot_assert_account_workspace_scopes_or_actor():
     app, history, _, binding, _ = app_fixture()
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
