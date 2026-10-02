@@ -3,6 +3,7 @@ import worker from "../_worker.js";
 
 const originalFetch = globalThis.fetch;
 const calls = [];
+const ASSET_ID = "b66asset_" + "a".repeat(32);
 
 function json(payload, init = {}) {
   const headers = new Headers(init.headers || {});
@@ -35,6 +36,12 @@ globalThis.fetch = async (target, init = {}) => {
   }
   if (url.endsWith("/api/b66/saved-skills?limit=20")) {
     return json({ ok: true, skills: [] });
+  }
+  if (url.endsWith("/api/b66/assets/" + ASSET_ID)) {
+    return new Response(new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]), {
+      status: 200,
+      headers: { "Content-Type": "image/png", "Cache-Control": "private, no-store" }
+    });
   }
   if (url.endsWith("/auth/google/start")) {
     return new Response(null, {
@@ -98,10 +105,23 @@ try {
   assert.equal(calls.length, 3);
   assert.equal(calls[2].url, "https://chat.padiem.net/api/b66/saved-skills?limit=20");
 
+  const privateAsset = await worker.fetch(
+    new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/assets/" + ASSET_ID, {
+      headers: { "Cookie": "padiem_session=opaque-test-token" }
+    }),
+    env
+  );
+  assert.equal(privateAsset.status, 200);
+  assert.equal(privateAsset.headers.get("content-type"), "image/png");
+  assert.equal(calls.length, 4);
+  assert.equal(calls[3].url, "https://chat.padiem.net/api/b66/assets/" + ASSET_ID);
+  assert.equal(calls[3].headers.get("cookie"), "padiem_session=opaque-test-token");
+
   const countBeforeDeny = calls.length;
   for (const request of [
     new Request("https://quick-quote-kr.pages.dev/api/padiem/admin/anything"),
     new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/saved-skills/not-an-id"),
+    new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/assets/not-an-id"),
     new Request("https://quick-quote-kr.pages.dev/api/padiem/auth/status", { method: "POST" })
   ]) {
     const denied = await worker.fetch(request, env);
@@ -167,6 +187,7 @@ try {
   console.log("ARBITRARY_UPSTREAM_PROXY=0");
   console.log("AUTHORIZATION_HEADER_FORWARD=0");
   console.log("OPAQUE_SESSION_COOKIE_RELAY=PASS");
+  console.log("PRIVATE_QUOTE_ASSET_PROXY=PASS");
   console.log("SERVICE_BINDING_PRIORITY=PASS");
   console.log("PRODUCTION_MUTATION=0");
 } finally {
