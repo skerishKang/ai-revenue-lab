@@ -298,6 +298,10 @@
     return text.slice(0, maxLength);
   }
 
+  function hasUnknownKeys(source, allowed) {
+    return Object.keys(source).some(function (key) { return allowed.indexOf(key) === -1; });
+  }
+
   function boundedDetailId(v) {
     if (typeof v !== "string") return null;
     var text = v.trim();
@@ -342,6 +346,7 @@
     for (var s = 0; s < raw.length; s += 1) {
       var source = raw[s];
       if (!source || typeof source !== "object" || Array.isArray(source)) return null;
+      if (hasUnknownKeys(source, ["id", "title", "groups"])) return null;
       var sectionId = boundedDetailId(source.id);
       if (!sectionId || seenSections[sectionId]) return null;
       seenSections[sectionId] = true;
@@ -354,6 +359,7 @@
       for (var g = 0; g < source.groups.length; g += 1) {
         var groupSource = source.groups[g];
         if (!groupSource || typeof groupSource !== "object" || Array.isArray(groupSource)) return null;
+        if (hasUnknownKeys(groupSource, ["id", "title", "items"])) return null;
         var groupId = boundedDetailId(groupSource.id);
         if (!groupId || seenGroups[groupId]) return null;
         seenGroups[groupId] = true;
@@ -363,7 +369,10 @@
 
         var detailItems = [];
         for (var d = 0; d < groupSource.items.length; d += 1) {
-          var detailItem = normalizeLineItem(groupSource.items[d], d, false);
+          var rawDetailItem = groupSource.items[d];
+          if (!rawDetailItem || typeof rawDetailItem !== "object" || Array.isArray(rawDetailItem)) return null;
+          if (hasUnknownKeys(rawDetailItem, ["id", "name", "spec", "unit", "qty", "unitPrice", "note"])) return null;
+          var detailItem = normalizeLineItem(rawDetailItem, d, false);
           if (!detailItem) return null;
           detailItems.push(detailItem);
         }
