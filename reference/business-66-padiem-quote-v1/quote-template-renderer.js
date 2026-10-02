@@ -420,7 +420,7 @@
           ? ' style="text-align:' + escapeHtml(column.align) + '"'
           : "";
         if (column.key === "name") {
-          var cls = item.emptyName ? ' class="empty"' : "";
+          var cls = ' class="' + (item.emptyName ? "empty" : "") + '"';
           return "<td" + cls + style + ">" + escapeHtml(item.values.name) + "</td>";
         }
         return "<td" + style + ">" + escapeHtml(item.values[column.key]) + "</td>";
