@@ -154,6 +154,19 @@ assert.equal(blankNext.memo, Core.createDefaultDraft().memo, "ordinary default m
 assert.equal(currentForNew.recipient.company, "이전 고객", "source draft not mutated");
 assert.equal(currentForNew.items[0].name, "기존 품목", "source items not mutated");
 
+const familyCurrent = Core.normalizeDraft(Object.assign(JSON.parse(JSON.stringify(currentForNew)), {
+  calculationPolicy: floor10000
+}));
+const familyNext = Core.createBlankQuoteDraft(familyCurrent, {
+  quoteNo: "PQ-20260928-003",
+  issueDate: "2026-09-28",
+  source: "manual"
+});
+assert.deepEqual(familyNext.calculationPolicy, floor10000,
+  "new quote preserves the reviewed family calculation policy");
+assert.notEqual(familyNext.calculationPolicy, familyCurrent.calculationPolicy,
+  "new quote receives a normalized policy snapshot rather than shared mutable state");
+
 /* PRINT_READINESS_CONTRACT — 최소 출력 필수값 */
 const printable = Core.createDefaultDraft();
 assert.deepEqual(Core.printReadiness(printable), { ready: true, missing: [] }, "default demo is printable");
