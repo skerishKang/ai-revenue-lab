@@ -118,7 +118,15 @@ class _Interpreter:
             },
             quote_no=None,
             issue_date=None,
-            items=({"name": "배관", "qty": 20, "unitPrice": 30000},),
+            project_name="환경제어 구축",
+            items=({
+                "name": "배관",
+                "specification": "40A",
+                "unit": "M",
+                "qty": 20,
+                "unitPrice": 30000,
+                "rowNote": "설치 포함",
+            },),
             memo=None,
             tax_mode=None,
             missing=(),
@@ -261,9 +269,15 @@ def test_conversation_interpretation_returns_variable_candidate_only():
         "skill_version": 1,
     }
     assert body["candidate"]["recipient"]["company"] == "ABC건설"
-    assert body["candidate"]["items"] == [
-        {"name": "배관", "qty": 20, "unitPrice": 30000}
-    ]
+    assert body["candidate"]["projectName"] == "환경제어 구축"
+    assert body["candidate"]["items"] == [{
+        "name": "배관",
+        "specification": "40A",
+        "unit": "M",
+        "qty": 20,
+        "unitPrice": 30000,
+        "rowNote": "설치 포함",
+    }]
     assert body["candidate"]["missing"] == []
     assert "subtotal" not in json.dumps(body, ensure_ascii=False)
     assert "grandTotal" not in json.dumps(body, ensure_ascii=False)
@@ -320,12 +334,25 @@ def test_normalizer_accepts_variable_fields_and_rejects_calculated_or_template_o
             },
             "quoteNo": None,
             "issueDate": None,
-            "items": [{"name": "배관", "qty": 20, "unitPrice": 30000}],
+            "projectName": "환경제어 구축",
+            "items": [{
+                "sequence": "1",
+                "name": "배관",
+                "specification": "40A",
+                "unit": "M",
+                "qty": 20,
+                "unitPrice": 30000,
+                "rowNote": "설치 포함",
+            }],
             "memo": None,
             "taxMode": None,
             "missing": ["quoteNo", "issueDate"],
         }
     )
+    assert projection.safe_dict()["projectName"] == "환경제어 구축"
+    assert projection.safe_dict()["items"][0]["specification"] == "40A"
+    assert projection.safe_dict()["items"][0]["unit"] == "M"
+    assert projection.safe_dict()["items"][0]["rowNote"] == "설치 포함"
     assert projection.safe_dict()["items"][0]["unitPrice"] == 30000
 
     with pytest.raises(B66QuoteConversationError, match="unsupported_output_field|forbidden_output_field"):
@@ -372,7 +399,15 @@ class _FakeB14:
                     },
                     "quoteNo": None,
                     "issueDate": None,
-                    "items": [{"name": "배관", "qty": 20, "unitPrice": 30000}],
+                    "projectName": "환경제어 구축",
+                    "items": [{
+                        "name": "배관",
+                        "specification": "40A",
+                        "unit": "M",
+                        "qty": 20,
+                        "unitPrice": 30000,
+                        "rowNote": "설치 포함",
+                    }],
                     "memo": None,
                     "taxMode": None,
                     "missing": [],
@@ -399,6 +434,9 @@ async def test_interpreter_calls_model_once_for_fields_only_and_hides_template_c
     context = call["context"]
     assert "금액 합계" in context
     assert "defaultTaxMode" in context
+    assert "projectName" in context
+    assert "specification" in context
+    assert "rowNote" in context
     assert "template-private" not in context
     assert "테스트상사" not in context
     assert call["attachments"] == ()
