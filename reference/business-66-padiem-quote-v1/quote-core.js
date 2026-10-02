@@ -299,8 +299,10 @@
   }
 
   function boundedDetailId(v) {
-    var text = optionalText(v, 80);
-    return text && DETAIL_ID_PATTERN.test(text) ? text : null;
+    if (typeof v !== "string") return null;
+    var text = v.trim();
+    if (!text || text.length > 80 || !DETAIL_ID_PATTERN.test(text)) return null;
+    return text;
   }
 
   function normalizeLineItem(raw, index, allowDetailLink) {
@@ -308,8 +310,12 @@
     if (!allowDetailLink && src.detailSectionId !== undefined && src.detailSectionId !== null && src.detailSectionId !== "") {
       return null;
     }
-    var detailSectionId = allowDetailLink ? optionalText(src.detailSectionId, 80) : null;
-    if (detailSectionId !== null && !DETAIL_ID_PATTERN.test(detailSectionId)) return null;
+    var hasDetailSectionId = allowDetailLink &&
+      src.detailSectionId !== undefined &&
+      src.detailSectionId !== null &&
+      src.detailSectionId !== "";
+    var detailSectionId = hasDetailSectionId ? boundedDetailId(src.detailSectionId) : null;
+    if (hasDetailSectionId && !detailSectionId) return null;
 
     var item = {
       id: asString(src.id, "item-" + (index + 1)),
