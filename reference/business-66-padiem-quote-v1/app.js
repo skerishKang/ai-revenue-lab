@@ -559,7 +559,7 @@
   /* ── 내 견적서: 선택된 승인 Skill 의 내부 profile 이 미리보기 layout authority.
      template store/selection 을 건드리지 않으며, 실패 시 내장으로 fallback. ── */
 
-  const skillUiState = { activeSkillId: null, serverSkill: null };
+  const skillUiState = { activeSkillId: null, serverSkill: null, serverSlotSources: {} };
   let skillUiApi = null;
 
   function activeSkillProfile() {
@@ -584,6 +584,7 @@
 
   function applySkillToForm(skill) {
     skillUiState.serverSkill = null;
+    skillUiState.serverSlotSources = {};
     if (!skill || !SkillUi) {
       skillUiState.activeSkillId = null;
       toast("기본 견적서로 작성합니다.");
@@ -606,13 +607,16 @@
     return true;
   }
 
-  function setServerSkill(skill) {
+  function setServerSkill(skill, slotSources) {
     if (!SavedSkill || !Template) return false;
     const normalized = SavedSkill.normalizeSkill(skill);
     if (!normalized || normalized.approved !== true) return false;
     const profile = Template.normalizeTemplate(normalized.internalTemplate);
     if (!profile || !Template.isApprovedProfile(profile)) return false;
     skillUiState.serverSkill = normalized;
+    skillUiState.serverSlotSources = slotSources && typeof slotSources === "object"
+      ? slotSources
+      : {};
     skillUiState.activeSkillId = normalized.id;
     render();
     return true;
@@ -624,6 +628,7 @@
       skillUiState.serverSkill.id === skillUiState.activeSkillId
     );
     skillUiState.serverSkill = null;
+    skillUiState.serverSlotSources = {};
     if (activeWasServer) skillUiState.activeSkillId = null;
     render();
     return true;
@@ -708,6 +713,7 @@
     invalid_template_name: "양식 이름을 입력한 뒤 저장해 주세요.",
     selection_storage_failed: "선택한 양식을 저장하지 못했습니다.",
     template_storage_failed: "양식을 저장하지 못했습니다.",
+    private_asset_requires_account_skill: "로고·도장은 로그인 계정의 내 견적서에서만 사용할 수 있습니다.",
     slot_rendering_not_supported: "이번 단계에서는 로고·도장 슬롯을 저장할 수 없습니다."
   };
 
@@ -791,10 +797,20 @@
   function render() {
     const banner = $("skillPreviewBanner");
     if (banner) banner.hidden = true;
+    const previewProfile = previewTemplateProfile();
+    const authority = previewProfile || renderTemplateAuthority();
+    const serverSkillActive = Boolean(
+      !previewProfile &&
+      skillUiState.serverSkill &&
+      skillUiState.serverSkill.id === skillUiState.activeSkillId
+    );
     const model = TemplateRenderer.buildRenderModel(
       draft,
-      previewTemplateProfile() || renderTemplateAuthority(),
-      { taxReviewRequired }
+      authority,
+      {
+        taxReviewRequired,
+        slotSources: serverSkillActive ? skillUiState.serverSlotSources : {}
+      }
     );
     if (model) TemplateRenderer.applyRenderModel(document, model);
 
@@ -1012,6 +1028,7 @@
     session_not_editable: "지금은 후보를 수정할 수 없습니다.",
     template_not_approved: "승인되지 않은 양식은 적용할 수 없습니다.",
     template_limit_reached: "저장할 수 있는 양식 수를 초과했습니다.",
+    private_asset_requires_account_skill: "로고·도장은 로그인 계정의 내 견적서에서만 사용할 수 있습니다.",
     slot_rendering_not_supported: "이번 단계에서는 로고·도장 슬롯을 저장할 수 없습니다.",
     legacy_hwp_unsupported: "구형 HWP 파일은 지원하지 않습니다. HWPX로 변환해 주세요.",
     unsupported_file_type: "지원하지 않는 파일 형식입니다.",
@@ -1233,6 +1250,7 @@
   window.B66QuoteSkillBridge = Object.freeze({
     activeSkillId: () => skillUiState.activeSkillId,
     serverSkillId: () => (skillUiState.serverSkill ? skillUiState.serverSkill.id : null),
+    serverSlotSourceKeys: () => Object.keys(skillUiState.serverSlotSources || {}).sort(),
     applySkill: applySkillToForm,
     setServerSkill,
     clearServerSkill,

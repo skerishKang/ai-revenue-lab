@@ -84,6 +84,8 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'id="pvSenderHeading"',
   'id="pvRecipientHeading"',
   'id="pvMark"',
+  'id="pvLogo"',
+  'id="pvStamp"',
   'id="easyModeButton"',
   'id="directModeButton"',
   'id="easyView"',
@@ -114,6 +116,22 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
 check(!/(Padiem|파디엠|padiem)/.test(app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + candidate + cloner + skill + skillStore + skillCandidate + skillRegistration + skillUi + intake + easy),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: quote domain logic stays product-neutral");
 check(!html.includes("B66 DEMO"), "PADIEM_ACCOUNT_BRIDGE_CONTRACT: no internal demo label");
+check(account.includes("function declaredAssetRefs(") &&
+      account.includes("function readPrivateAsset(") &&
+      account.includes('API + "/b66/assets/" + encodeURIComponent(assetId)') &&
+      account.includes("MAX_PRIVATE_ASSET_BYTES = 256 * 1024"),
+  "PRIVATE_ACCOUNT_ASSET_LOAD=PASS: standalone account bridge resolves only bounded private quote assets");
+check(app.includes("serverSlotSources") &&
+      app.includes("slotSources: serverSkillActive ? skillUiState.serverSlotSources : {}"),
+  "PRIVATE_ACCOUNT_ASSET_RENDER=PASS: only active server-assigned Skill gets transient private assets");
+check(templateStore.includes('return "private_asset_requires_account_skill"'),
+  "PRIVATE_BROWSER_TEMPLATE_ASSET_AUTHORITY=0: browser-local template store stays fail-closed");
+
+check(worker.includes("B66_ASSET_ROW") &&
+      worker.includes('const assetPrefix = "/api/padiem/b66/assets/"') &&
+      worker.includes('return "/api/b66/assets/" + id;'),
+  "PRIVATE_QUOTE_ASSET_BRIDGE=PASS: Quick Quote proxies only bounded asset ids");
+
 check(html.includes('id="settingsPanel"') &&
       html.includes("작성 중 견적은 이 브라우저에 저장"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: truthful local draft persistence lives in personal settings");
@@ -152,10 +170,12 @@ check(worker.includes("PADIEM_CHAT_SERVICE") && worker.includes("else {\n      u
 check(!account.includes("localStorage") && !account.includes("sessionStorage"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: server-assigned skill is memory-only cache");
 check(account.includes('semantic.buildDraft(state.loadedSkill.skill, input)') &&
-      account.includes('bridge.setServerSkill(state.loadedSkill.skill)'),
-  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: server skill feeds canonical browser QuoteCore/renderer path");
-check(app.includes("function setServerSkill(skill)") && app.includes("function clearServerSkill()"),
-  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: app exposes non-persistent server skill seam");
+      account.includes('bridge.setServerSkill(state.loadedSkill.skill, state.loadedSkill.slotSources || {})'),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: server skill + authorized private assets feed canonical browser QuoteCore/renderer path");
+check(app.includes("function setServerSkill(skill, slotSources)") &&
+      app.includes("function clearServerSkill()") &&
+      app.includes("serverSlotSources"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: app exposes non-persistent server skill + transient private asset seam");
 check(accountCss.includes(".padiem-account-panel") && accountCss.includes("@media print"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: account UI has bounded screen/print styling");
 new vm.Script(account, { filename: "padiem-account.js" });
@@ -543,10 +563,12 @@ check(!/(kilo\/|space-bunny|nemotron|openai|anthropic)/i.test(template + templat
 check(!/FileReader|FormData|indexedDB/i.test(template + templateStore + templateRenderer),
   "RAW_SOURCE_FILE_PERSISTENCE=0: template modules never touch raw file bytes");
 check(app.includes("TemplateRenderer.buildRenderModel(") &&
-      app.includes("previewTemplateProfile() || renderTemplateAuthority()") &&
+      app.includes("const previewProfile = previewTemplateProfile();") &&
+      app.includes("const authority = previewProfile || renderTemplateAuthority();") &&
       app.includes("function renderTemplateAuthority()") &&
-      app.includes("return activeSkillProfile() || activeTemplateProfile();"),
-  "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: direct mode renders through the approved template/skill renderer");
+      app.includes("return activeSkillProfile() || activeTemplateProfile();") &&
+      app.includes("slotSources: serverSkillActive ? skillUiState.serverSlotSources : {}"),
+  "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: direct mode renders through approved template/skill authority with transient private assets");
 check(!app.includes("vatSummaryLabel"),
   "QUOTE_TEMPLATE_PROFILE_CONTRACT: presentation labels are no longer hard-coded in app.js");
 check(app.includes("TemplateStore && TemplateStore.TEMPLATE_STORAGE_KEY"),
@@ -563,8 +585,9 @@ check(template.includes('raw.status !== "approved"') &&
 check(template.includes("trusted_builtin") && template.includes("explicit_approval") &&
       template.includes("unapproved"),
   "APPROVAL_REQUIRED_FOR_USER_PROFILE=YES: approval basis is explicit");
-check(template.includes('SLOT_SUPPORT = "non_live"'),
-  "SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY: slot support is declared non-live");
+check(template.includes('SLOT_SUPPORT = "private_asset_v1"') &&
+      template.includes('SLOT_REF_PATTERN = /^b66asset_'),
+  "SLOT_BEHAVIOR=PRIVATE_ASSET_REF_V1: only bounded private asset ids persist");
 check(templateStore.includes("function approveTemplate(") &&
       templateStore.includes('fail("template_not_approved"'),
   "UNAPPROVED_TEMPLATE_ACTIVATION=0: activation requires explicit approval");
@@ -572,8 +595,8 @@ check(templateStore.includes("approval = null;") &&
       templateStore.includes("var keepDefault = !contentChanged && current.isDefault"),
   "CONTENT_CHANGE_INVALIDATES_APPROVAL=YES: content update drops approval and default status");
 check(templateStore.includes("function rejectionForContent(") &&
-      templateStore.includes("slot_rendering_not_supported"),
-  "SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY: declared non-live slots are refused, not ignored");
+      templateStore.includes('return "private_asset_requires_account_skill"'),
+  "SLOT_BEHAVIOR=PRIVATE_ASSET_REF_V1: browser-local templates cannot own account assets");
 check(templateRenderer.includes("template_not_approved") &&
       templateRenderer.includes("fallbackReason"),
   "UNAPPROVED_TEMPLATE_ACTIVATION=0: the renderer falls back with an explicit reason");
@@ -693,11 +716,12 @@ check(app.includes("TEMPLATE_ACTIONS") && app.includes("window.B66QuoteTemplateB
       app.includes("TemplateSelection.resolveActiveTemplate(") &&
       app.includes("templateUiState"),
   "TEMPLATE_SELECTOR_LIVE=YES: the app wires selection, preview and management actions");
-check(app.includes("previewTemplateProfile() || renderTemplateAuthority()") &&
+check(app.includes("const previewProfile = previewTemplateProfile();") &&
+      app.includes("const authority = previewProfile || renderTemplateAuthority();") &&
       app.includes("return activeSkillProfile() || activeTemplateProfile();") &&
       app.includes("return profile && Template.isApprovedProfile(profile) ? profile : null;") &&
       app.includes("candidate && candidate.approved"),
-  "UNAPPROVED_TEMPLATE_SELECTION=0: preview/skill render paths are restricted to approved profiles");
+  "UNAPPROVED_TEMPLATE_SELECTION=0: preview/skill render paths remain restricted to approved profiles");
 
 /* ── #3184 양식 본뜨기(후보 검토 + 명시적 승인) ── */
 check(html.includes('src="quote-template-candidate.js"') && html.includes('src="quote-template-cloner.js"'),
@@ -864,7 +888,7 @@ console.log("TEMPLATE_RULES_APPLIED=PASS");
 console.log("TEMPLATE_ALIGNMENT_APPLIED=PASS");
 console.log("TEMPLATE_TOTALS_WIDTH_APPLIED=PASS");
 console.log("TEMPLATE_PAGE_RULE_APPLIED=PASS");
-console.log("SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY");
+console.log("SLOT_BEHAVIOR=PRIVATE_ASSET_REF_V1");
 console.log("QUOTECORE_TOTALS_UNCHANGED_ACROSS_TEMPLATES=YES");
 console.log("TEMPLATE_SELECTOR_LIVE=YES");
 console.log("TEMPLATE_MANAGEMENT_CRUD=PASS");
