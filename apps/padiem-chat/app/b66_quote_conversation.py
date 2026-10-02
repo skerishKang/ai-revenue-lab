@@ -251,6 +251,12 @@ def _conversation_prompt(skill: dict[str, Any]) -> str:
 
     contract = {
         "allowedVariableFields": allowed,
+        "optionalPresentationFields": [
+            "projectName",
+            "items.spec",
+            "items.unit",
+            "items.note",
+        ],
         "defaultTaxMode": default_tax,
     }
     return (
