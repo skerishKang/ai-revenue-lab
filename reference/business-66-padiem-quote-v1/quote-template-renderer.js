@@ -451,7 +451,7 @@
       var head = page.columns.map(function (column) {
         var styles = [];
         if (column.width) styles.push("width:" + escapeHtml(column.width));
-        if (column.align) styles.push("text-align:" + escapeHtml(column.align));
+        if (model.layoutVariant && column.align) styles.push("text-align:" + escapeHtml(column.align));
         var style = styles.length ? ' style="' + styles.join(";") + '"' : "";
         return "<th" + style + ">" + escapeHtml(column.label) + "</th>";
       }).join("");
