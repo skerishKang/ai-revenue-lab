@@ -106,10 +106,14 @@ Mark `REQUIRED`, `NOT_REQUIRED`, or `DEFERRED_WITH_REASON`:
 
 - Web CTO:
 - Web Developer:
+- `DEV_FAST_GATE` owner/checks:
 - Independent Local Validator required? yes/no + reason:
+- Windows validator actor:
+- Ubuntu validator actor:
+- Browser/full-regression validator actor:
 - Owner-only decision required? yes/no + reason:
 
-Implementation actor and independent Local Validator must not be the same actor for the same revision.
+Implementation actor and independent Local Validator must not be the same actor for the same revision. Windows/Ubuntu/browser validators may run concurrently after `DEV_FAST_GATE=PASS`; the implementation actor does not wait synchronously for the full matrix before moving to another authorized issue.
 
 ## Acceptance criteria
 
@@ -121,6 +125,10 @@ For visual work, include the exact gate that this revision must reach. Do not us
 
 ## Required checks
 
+- `DEV_FAST_GATE` focused commands:
+- `DEV_ACTOR_RELEASED` condition:
+- Asynchronous validator lanes required:
+- Final `FULL_VALIDATION` requirements:
 - Automated commands:
 - CI/checks:
 - Browser/local validation:
