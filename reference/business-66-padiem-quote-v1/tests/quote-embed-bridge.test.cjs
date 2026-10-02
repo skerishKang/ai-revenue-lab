@@ -206,6 +206,29 @@ assert.equal(input.recipient.company, "ABC건설");
 assert.equal(input.items[0].qty, 20);
 assert.equal(input.items[0].unitPrice, 30000);
 
+const detailedCandidate = {
+  recipient: { company: "ABC건설", person: null, address: null, email: null },
+  quoteNo: null,
+  issueDate: null,
+  projectName: "스마트팜 환경제어설비",
+  items: [{
+    name: "ICT환경제어 시스템",
+    spec: "주장치 및 스마트팜 전용S/W",
+    unit: "식",
+    qty: 1,
+    unitPrice: 16330000,
+    note: "설치 포함"
+  }],
+  memo: null,
+  taxMode: null,
+  missing: []
+};
+const detailedInput = Bridge.buildStructuredInput(detailedCandidate, Core);
+assert.equal(detailedInput.projectName, "스마트팜 환경제어설비");
+assert.equal(detailedInput.items[0].spec, "주장치 및 스마트팜 전용S/W");
+assert.equal(detailedInput.items[0].unit, "식");
+assert.equal(detailedInput.items[0].note, "설치 포함");
+
 const doc = fakeDocument();
 const rendered = Bridge.renderRequest(
   {
