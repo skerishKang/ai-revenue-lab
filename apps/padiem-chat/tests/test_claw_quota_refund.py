@@ -410,3 +410,98 @@ def test_execute_route_has_no_body_driven_refund_authority() -> None:
     # so no refund is needed for that path — the count stays at 2.
     assert execute_handler.count("_refund_active_reservation()") == 2
     assert "P01DispatchClass.NOT_DISPATCHED" in execute_handler
+
+
+# ── #3382: a missing canonical session must cost nothing at all ──────────────
+#
+# The refund-site count above only proves the canonical-session path stopped compensating. It
+# does not prove the path stopped SPENDING. These tests assert the four quantities directly by
+# counting store interactions, so a regression that reorders the gate back after the session
+# check fails here instead of silently returning to a net-zero balance.
+
+
+class _CanonicalLaneAdapter:
+    """An adapter with the canonical USER lane ON whose execute must never be reached."""
+
+    subject_identity_lane = True
+
+    def __init__(self) -> None:
+        from unittest.mock import AsyncMock
+
+        self.execute = AsyncMock(return_value=_make_outcome())
+
+
+class _CountingUsageStore(RefundableMemoryStore):
+    """Counts authorize attempts so the test can prove the gate was never consulted."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.bucket_count_calls = 0
+
+    async def _increment(self, **kwargs: Any) -> None:  # type: ignore[override]
+        self.bucket_count_calls += 1
+        await super()._increment(**kwargs)
+
+
+def _canonical_lane_app(store: RefundableMemoryStore):
+    app = _app(store)
+    adapter = _CanonicalLaneAdapter()
+    app.state.claw_p01_adapter = adapter
+    return app, adapter
+
+
+def _no_canonical_session(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def _resolver(_request: Any) -> None:
+        return None
+
+    monkeypatch.setattr(
+        "app.b54_canonical_session.resolve_current_b54_canonical_session",
+        _resolver,
+    )
+
+
+def test_canonical_session_missing_costs_no_quota_and_no_dispatch(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    store = _CountingUsageStore()
+    app, adapter = _canonical_lane_app(store)
+    _no_canonical_session(monkeypatch)
+
+    resp = _post(app)
+
+    assert resp.status_code == 403
+    assert resp.json()["error"]["code"] == "canonical_b54_session_unavailable"
+    # USAGE_GATE_AUTHORIZE_CALLS == 0 and QUOTA_CONSUMED == 0: the gate was never reached, so no
+    # bucket was created or incremented at all — a net-zero balance alone would not prove this.
+    assert store.bucket_count_calls == 0
+    assert store.counts == {}
+    # REFUND_CALLS == 0: nothing was consumed, so nothing may be compensated.
+    assert store.bucket_refund_calls == 0
+    # P01_DISPATCH == 0.
+    assert adapter.execute.await_count == 0
+
+
+def test_canonical_lane_off_preserves_the_historical_subjectless_path() -> None:
+    store = RefundableMemoryStore()
+    app = _app(store)
+    adapter = _make_adapter()
+    adapter.subject_identity_lane = False
+    app.state.claw_p01_adapter = adapter
+
+    resp = _post(app)
+
+    assert resp.status_code == 200
+    assert store.bucket_refund_calls == 0
+
+
+def test_missing_adapter_keeps_the_engine_not_configured_pre_dispatch_path() -> None:
+    store = RefundableMemoryStore()
+    app = _app(store)
+    app.state.claw_p01_adapter = None
+
+    resp = _post(app)
+
+    assert resp.status_code == 503
+    assert resp.json()["error"]["code"] == "engine_not_configured"
+    assert _count_values(store) == [0, 0, 0]
+    assert store.bucket_refund_calls == 3

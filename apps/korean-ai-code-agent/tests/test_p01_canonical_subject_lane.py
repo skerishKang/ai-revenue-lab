@@ -239,3 +239,125 @@ def _context():
     from padiem_ai_core.execution_context import ExecutionContext
 
     return ExecutionContext(trace_id="tr_x", idempotency_key=None, timeout_seconds=20.0)
+
+
+# ── #3382: the canonical grammar is EXACT, and both components judge it identically ──
+
+# The accepted set and the rejected set are asserted directly rather than derived from the
+# implementation. The rejected set is chosen to pin the exact grammar: the old looser rule
+# (non-empty, <=256 chars, alnum first character) admitted nearly every one of these.
+CANONICAL_SUBJECTS = (
+    "sub_00000000000000000000000000000000",
+    "sub_0123456789abcdef0123456789abcdef",
+    "sub_ffffffffffffffffffffffffffffffff",
+)
+
+NON_CANONICAL_SUBJECTS = (
+    "",
+    "   ",
+    "sub_",
+    "SUB_0123456789abcdef0123456789abcdef",
+    "sub_ABCDEF0123456789abcdef0123456789",
+    "user_0123456789abcdef0123456789abcdef",
+    "sub_g0123456789abcdef0123456789abcde",   # non-hex
+    "sub_0123456789abcdef0123456789abcde",     # 31 hex
+    "sub_0123456789abcdef0123456789abcdefa",   # 33 hex
+    "0abcdef0123456789abcdef0123456789abc",
+    " sub_0123456789abcdef0123456789abcdef",  # leading space
+    "sub_0123456789abcdef0123456789abcdef ",  # trailing space
+    "sub_0123456789abcdef0123456789abcdef\n",  # newline suffix
+    "a" * 256,
+)
+
+
+def _orchestration_request(subject_id):
+    """Build a request carrying ``subject_id`` WITHOUT Core's constructor check running first.
+
+    ``OrchestrationRequest`` validates ``subject_id`` as a bounded safe identifier, so several
+    non-canonical values are refused by Core before the client ever sees them. Bypassing only
+    that constructor lets these tests assert the CLIENT's verdict specifically, which is the
+    contract under test; the factory tests above still go through the normal construction path.
+    """
+    from padiem_ai_core import OrchestrationRequest
+    from padiem_ai_core.execution_runtime import ExecutionRequest
+    from kagent.p01_adapter import _agent_profile
+
+    base = OrchestrationRequest(
+        execution_request=ExecutionRequest(
+            agent=_agent_profile(),
+            messages=({"role": "user", "content": "hi"},),
+            trace_id="tr_x",
+        ),
+        context=_context(),
+        app_id="b54-padiem-claw",
+        subject_id=CANONICAL_SUBJECT,
+    )
+    if subject_id == CANONICAL_SUBJECT:
+        return base
+    request = object.__new__(OrchestrationRequest)
+    for name in getattr(OrchestrationRequest, "__dataclass_fields__"):
+        object.__setattr__(
+            request,
+            name,
+            subject_id if name == "subject_id" else getattr(base, name, None),
+        )
+    return request
+
+
+def test_validator_pattern_is_exact() -> None:
+    from kagent.p01_adapter import CANONICAL_SUBJECT_ID_PATTERN
+
+    assert CANONICAL_SUBJECT_ID_PATTERN == r"^sub_[0-9a-f]{32}$"
+
+
+@pytest.mark.parametrize("value", CANONICAL_SUBJECTS)
+def test_factory_accepts_every_canonical_subject(value: str) -> None:
+    _factory(lane=True).build(_run(), subject_id=value)
+
+
+@pytest.mark.parametrize("value", NON_CANONICAL_SUBJECTS)
+def test_factory_rejects_every_non_canonical_subject(value) -> None:
+    with pytest.raises(P01AdapterError):
+        _factory(lane=True).build(_run(), subject_id=value)
+
+
+@pytest.mark.parametrize("value", CANONICAL_SUBJECTS)
+def test_client_accepts_the_same_canonical_subjects_as_the_factory(value: str) -> None:
+    _client(lane=True)[0]._reject_unsupported_authority(
+        _orchestration_request(value)
+    )
+
+
+@pytest.mark.parametrize("value", NON_CANONICAL_SUBJECTS)
+def test_client_rejects_the_same_non_canonical_subjects_as_the_factory(value) -> None:
+    """The wire client must apply the canonical grammar, not a looser safe-identifier shape.
+
+    Before #3382 completed, this path accepted any non-empty, <=256 char, alnum-first value, so
+    a subject the factory refused could still reach the wire.
+    """
+    with pytest.raises(P01AdapterError):
+        _client(lane=True)[0]._reject_unsupported_authority(
+            _orchestration_request(value)
+        )
+
+
+def test_client_reuses_the_adapter_validator_object() -> None:
+    """A second, looser copy of the grammar would let the two components drift apart."""
+    import kagent.p01_adapter as adapter_mod
+    import kagent.p01_orchestration_client as client_mod
+
+    assert (
+        client_mod.is_canonical_subject_id
+        is adapter_mod.is_canonical_subject_id
+    )
+
+
+def test_client_source_declares_no_second_grammar() -> None:
+    import inspect
+
+    import kagent.p01_orchestration_client as client_mod
+
+    source = inspect.getsource(client_mod)
+    assert "re.compile" not in source
+    assert "isalnum" not in source
+    assert "len(request.subject_id) > 256" not in source
