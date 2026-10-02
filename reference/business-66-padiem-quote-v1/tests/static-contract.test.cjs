@@ -440,7 +440,8 @@ check(template.includes('subtotalLabel: "품목 합계(세금 확인 전)"') &&
       template.includes('supplyLabel: "공급가액"') &&
       template.includes('grandLabel: "합계"'),
   "PROVISIONAL_VAT_DISPLAY_CONTRACT: provisional and confirmed labels live in the template profile");
-check(templateRenderer.includes("provisional ? content.totals.provisional.subtotalLabel : content.totals.supplyLabel") &&
+check(templateRenderer.includes("provisional ? content.totals.provisional.subtotalLabel : supplyLabel") &&
+      templateRenderer.includes("var supplyLabel = content.totals.supplyLabel") &&
       templateRenderer.includes("provisional ? content.totals.provisional.vatText : Core.formatMoney(totals.vat)") &&
       templateRenderer.includes("provisional ? content.totals.provisional.grandText : Core.formatMoney(totals.grand)"),
   "PROVISIONAL_VAT_DISPLAY_CONTRACT: unresolved tax-dependent totals are never presented as confirmed");
