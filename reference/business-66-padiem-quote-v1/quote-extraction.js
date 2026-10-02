@@ -283,6 +283,7 @@
     });
 
     if (extracted.items.length > 0) {
+      delete candidate.detailSections;
       candidate.items = extracted.items.map(function (item, index) {
         var mapped = {
           id: "extracted-item-" + (index + 1),
