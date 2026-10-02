@@ -66,6 +66,73 @@ function approvedSkill() {
   return approved;
 }
 
+function approvedSkillWithLogo(assetId) {
+  const content = JSON.parse(JSON.stringify(Template.builtInTemplate().content));
+  content.slots = { logo: assetId, stamp: "" };
+  const templateCandidate = Template.buildProfile({
+    id: "template-private-logo",
+    name: "로고 견적서",
+    builtin: false,
+    isDefault: false,
+    approval: null,
+    createdAt: NOW,
+    updatedAt: NOW,
+    content
+  });
+  const approvedTemplate = Template.buildProfile({
+    id: templateCandidate.id,
+    name: templateCandidate.name,
+    builtin: false,
+    isDefault: false,
+    approval: {
+      schemaVersion: 1,
+      status: "approved",
+      contentFingerprint: templateCandidate.fingerprint,
+      approvedBy: "central-cto",
+      approvedAt: NOW,
+      approvalRef: "issue-3402"
+    },
+    createdAt: NOW,
+    updatedAt: NOW,
+    content
+  });
+  assert.equal(approvedTemplate.approved, true);
+
+  const base = approvedSkill();
+  const skillCandidate = Skill.buildSkill({
+    id: "skill-embed-logo",
+    name: "로고 견적서",
+    fixedDefaults: base.fixedDefaults,
+    variableSchema: base.variableSchema,
+    internalTemplate: Template.serializeTemplate(approvedTemplate),
+    provenance: base.provenance,
+    approval: null,
+    createdAt: NOW,
+    updatedAt: NOW
+  });
+  assert.ok(skillCandidate && skillCandidate.approved === false);
+  const approved = Skill.buildSkill({
+    id: "skill-embed-logo",
+    name: "로고 견적서",
+    fixedDefaults: base.fixedDefaults,
+    variableSchema: base.variableSchema,
+    internalTemplate: Template.serializeTemplate(approvedTemplate),
+    provenance: base.provenance,
+    approval: {
+      schemaVersion: 1,
+      status: "approved",
+      skillFingerprint: skillCandidate.fingerprint,
+      approvedBy: "central-cto",
+      approvedAt: NOW,
+      approvalRef: "issue-3402"
+    },
+    createdAt: NOW,
+    updatedAt: NOW
+  });
+  assert.ok(approved && approved.approved === true);
+  return approved;
+}
+
 function fakeDocument() {
   const ids = [
     "pvTitle", "pvQuoteNo", "pvDate", "pvValidity", "pvValidUntil", "pvTaxMode",
@@ -74,7 +141,7 @@ function fakeDocument() {
     "pvRecipientCompany", "pvRecipientPerson", "pvRecipientAddress",
     "pvRecipientEmail", "pvItemsHead", "pvItems", "pvSubtotalLabel",
     "pvSubtotal", "pvVatLabel", "pvVat", "pvGrandLabel", "pvGrand",
-    "pvMemo", "pvMark", "quotePaper", "embedStatus"
+    "pvMemo", "pvMark", "pvLogo", "pvStamp", "quotePaper", "embedStatus"
   ];
   const elements = new Map();
   for (const id of ids) {
@@ -84,6 +151,10 @@ function fakeDocument() {
       textContent: "",
       innerHTML: "",
       dataset: {},
+      hidden: false,
+      attributes: {},
+      setAttribute(name, value) { this.attributes[name] = String(value); },
+      removeAttribute(name) { delete this.attributes[name]; },
       style: {
         setProperty(name, value) { vars[name] = value; },
         vars
@@ -135,6 +206,29 @@ assert.equal(input.recipient.company, "ABC건설");
 assert.equal(input.items[0].qty, 20);
 assert.equal(input.items[0].unitPrice, 30000);
 
+const detailedCandidate = {
+  recipient: { company: "ABC건설", person: null, address: null, email: null },
+  quoteNo: null,
+  issueDate: null,
+  projectName: "스마트팜 환경제어설비",
+  items: [{
+    name: "ICT환경제어 시스템",
+    spec: "주장치 및 스마트팜 전용S/W",
+    unit: "식",
+    qty: 1,
+    unitPrice: 16330000,
+    note: "설치 포함"
+  }],
+  memo: null,
+  taxMode: null,
+  missing: []
+};
+const detailedInput = Bridge.buildStructuredInput(detailedCandidate, Core);
+assert.equal(detailedInput.projectName, "스마트팜 환경제어설비");
+assert.equal(detailedInput.items[0].spec, "주장치 및 스마트팜 전용S/W");
+assert.equal(detailedInput.items[0].unit, "식");
+assert.equal(detailedInput.items[0].note, "설치 포함");
+
 const doc = fakeDocument();
 const rendered = Bridge.renderRequest(
   {
@@ -156,6 +250,41 @@ assert.match(doc.getElementById("pvItems").innerHTML, /배관/);
 assert.notEqual(doc.getElementById("pvSubtotal").textContent, "");
 assert.notEqual(doc.getElementById("pvGrand").textContent, "");
 assert.ok(doc.getElementById("quotePaper").style.vars["--quote-accent"]);
+
+const logoAssetId = "b66asset_" + "a".repeat(32);
+const logoSkill = approvedSkillWithLogo(logoAssetId);
+const logoDataUrl = "data:image/png;base64,iVBORw0KGgo=";
+const logoDoc = fakeDocument();
+const logoRendered = Bridge.renderRequest(
+  {
+    type: Bridge.REQUEST_TYPE,
+    requestId: "req-logo",
+    skill: logoSkill,
+    candidate,
+    assets: { logo: { assetId: logoAssetId, dataUrl: logoDataUrl } }
+  },
+  { Core, SavedSkill: Skill, Renderer },
+  logoDoc
+);
+assert.equal(logoRendered.ok, true);
+assert.equal(logoDoc.getElementById("pvLogo").hidden, false);
+assert.equal(logoDoc.getElementById("pvLogo").attributes.src, logoDataUrl);
+assert.equal(
+  Bridge.renderRequest(
+    {
+      type: Bridge.REQUEST_TYPE,
+      requestId: "req-logo-missing",
+      skill: logoSkill,
+      candidate,
+      assets: {}
+    },
+    { Core, SavedSkill: Skill, Renderer },
+    fakeDocument()
+  ).code,
+  "private_asset_missing"
+);
+assert.equal(Bridge.normalizeAssetEntry({ assetId: logoAssetId, dataUrl: "https://evil.test/x.png" }), null);
+assert.equal(Bridge.normalizeAssetEntry({ assetId: "not-an-asset", dataUrl: logoDataUrl }), null);
 
 const response = Bridge.publicResponse(rendered, "req-1");
 assert.deepEqual(Object.keys(response).sort(), [
@@ -200,7 +329,11 @@ for (const forbidden of [
   assert.ok(!allEmbedSource.includes(forbidden), "forbidden embed capability: " + forbidden);
 }
 assert.ok(!/\bfetch\s*\(/.test(allEmbedSource), "embed performs no fetch");
+assert.ok(source.includes("MAX_MESSAGE_JSON_CHARS = 1024 * 1024"), "two bounded private image slots fit in the render envelope");
 assert.match(html, /connect-src 'none'/);
+assert.match(html, /img-src data:/);
+assert.match(html, /id="pvLogo"/);
+assert.match(html, /id="pvStamp"/);
 assert.match(html, /quote-core\.js/);
 assert.match(html, /quote-template\.js/);
 assert.match(html, /quote-template-renderer\.js/);
@@ -214,6 +347,8 @@ console.log("B66_CANONICAL_EMBED_BRIDGE=PASS");
 console.log("DUPLICATED_QUOTECORE=0");
 console.log("DUPLICATED_RENDERER=0");
 console.log("NETWORK_CALLS_FROM_EMBED=0");
+console.log("PRIVATE_LOGO_RENDER=PASS");
+console.log("PRIVATE_ASSET_MISMATCH_FAIL_CLOSED=YES");
 console.log("LOCAL_STORAGE_CALLS=0");
 console.log("SOURCE_DOCUMENT_PARSE_CALLS=0");
 console.log("QUOTE_NO_BROWSER_DEFAULT=YES");

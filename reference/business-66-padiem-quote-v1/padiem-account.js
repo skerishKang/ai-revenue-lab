@@ -2,6 +2,9 @@
   "use strict";
 
   const API = "/api/padiem";
+  const B66_ASSET_ID = /^b66asset_[0-9a-f]{32}$/;
+  const PRIVATE_ASSET_MEDIA = new Set(["image/png", "image/jpeg", "image/webp"]);
+  const MAX_PRIVATE_ASSET_BYTES = 256 * 1024;
   const state = {
     authenticated: false,
     user: null,
@@ -34,6 +37,66 @@
     const response = await window.fetch(API + path, opts);
     const data = await response.json().catch(() => null);
     return { response, data };
+  }
+
+  function declaredAssetRefs(skill) {
+    const template = skill && typeof skill === "object" ? skill.internalTemplate : null;
+    const content = template && typeof template === "object" ? template.content : null;
+    const slots = content && typeof content === "object" ? content.slots : null;
+    const refs = {};
+    ["logo", "stamp"].forEach((key) => {
+      const value = slots && typeof slots[key] === "string" ? slots[key] : "";
+      if (value && !B66_ASSET_ID.test(value)) throw new Error("invalid_private_asset_ref");
+      if (value) refs[key] = value;
+    });
+    return refs;
+  }
+
+  function arrayBufferToBase64(buffer) {
+    const bytes = new Uint8Array(buffer);
+    const chunks = [];
+    const chunkSize = 0x8000;
+    for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+      const chunk = bytes.subarray(offset, Math.min(offset + chunkSize, bytes.length));
+      let binary = "";
+      for (let i = 0; i < chunk.length; i += 1) binary += String.fromCharCode(chunk[i]);
+      chunks.push(binary);
+    }
+    return window.btoa(chunks.join(""));
+  }
+
+  async function readPrivateAsset(assetId) {
+    if (!B66_ASSET_ID.test(assetId || "")) throw new Error("invalid_private_asset_ref");
+    const response = await window.fetch(API + "/b66/assets/" + encodeURIComponent(assetId), {
+      method: "GET",
+      cache: "no-store",
+      credentials: "same-origin",
+      headers: { "Accept": "image/png,image/jpeg,image/webp" }
+    });
+    if (!response.ok) throw new Error("private_asset_unavailable");
+    const mediaType = String(response.headers.get("content-type") || "").split(";", 1)[0].trim().toLowerCase();
+    if (!PRIVATE_ASSET_MEDIA.has(mediaType)) throw new Error("private_asset_media_invalid");
+    const rawLength = Number(response.headers.get("content-length") || "0");
+    if (Number.isFinite(rawLength) && rawLength > MAX_PRIVATE_ASSET_BYTES) {
+      throw new Error("private_asset_too_large");
+    }
+    const buffer = await response.arrayBuffer();
+    if (!buffer.byteLength || buffer.byteLength > MAX_PRIVATE_ASSET_BYTES) {
+      throw new Error("private_asset_too_large");
+    }
+    return {
+      assetId,
+      dataUrl: "data:" + mediaType + ";base64," + arrayBufferToBase64(buffer)
+    };
+  }
+
+  async function loadPrivateAssets(skill) {
+    const refs = declaredAssetRefs(skill);
+    const sources = {};
+    for (const key of ["logo", "stamp"]) {
+      if (refs[key]) sources[key] = await readPrivateAsset(refs[key]);
+    }
+    return sources;
   }
 
   function setQuoteStatus(message, kind) {
@@ -127,13 +190,22 @@
       setQuoteStatus("배정된 내 견적서를 확인하지 못했습니다.", "error");
       return false;
     }
+    let slotSources;
+    try {
+      slotSources = await loadPrivateAssets(skill);
+    } catch (_) {
+      clearServerSkill();
+      setQuoteStatus("내 견적서의 로고·도장 자산을 불러오지 못했습니다.", "error");
+      return false;
+    }
     state.loadedSkill = {
       savedSkillId: row.saved_skill_id,
       fingerprint: row.skill_fingerprint,
-      skill
+      skill,
+      slotSources
     };
     const bridge = window.B66QuoteSkillBridge;
-    if (!bridge || typeof bridge.setServerSkill !== "function" || !bridge.setServerSkill(skill)) {
+    if (!bridge || typeof bridge.setServerSkill !== "function" || !bridge.setServerSkill(skill, slotSources)) {
       clearServerSkill();
       setQuoteStatus("내 견적서 렌더러를 준비하지 못했습니다.", "error");
       return false;
@@ -281,6 +353,9 @@
         quoteNo: candidate.quoteNo || (current && current.meta && current.meta.quoteNo),
         issueDate: candidate.issueDate || (current && current.meta && current.meta.issueDate)
       };
+      if (typeof candidate.projectName === "string" && candidate.projectName.trim()) {
+        input.projectName = candidate.projectName.trim();
+      }
       if (typeof candidate.memo === "string") input.memo = candidate.memo;
       if (typeof candidate.taxMode === "string") input.taxMode = candidate.taxMode;
 
@@ -289,7 +364,7 @@
         setQuoteStatus("견적 입력값을 확인해 주세요.", "error");
         return;
       }
-      if (!bridge.setServerSkill(state.loadedSkill.skill)) {
+      if (!bridge.setServerSkill(state.loadedSkill.skill, state.loadedSkill.slotSources || {})) {
         setQuoteStatus("배정된 양식을 적용하지 못했습니다.", "error");
         return;
       }

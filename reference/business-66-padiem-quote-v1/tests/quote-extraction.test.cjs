@@ -168,9 +168,9 @@ const candidate = Extraction.buildDraftCandidate(currentDraft, {
   source: { kind: "image", filename: "quote.png" },
   sender: { company: "새 공급사" },
   recipient: { company: "새 고객" },
-  quote: { quoteNo: "NEW-2" },
+  quote: { quoteNo: "NEW-2", projectName: "스마트팜 환경제어설비" },
   items: [
-    { name: "A", qty: "2", unitPrice: "1,500,000" },
+    { name: "A", spec: "규격-A", unit: "식", qty: "2", unitPrice: "1,500,000", note: "설치 포함" },
     { name: "B" }
   ],
   tax: { mode: "INCLUSIVE" },
@@ -181,13 +181,14 @@ const candidate = Extraction.buildDraftCandidate(currentDraft, {
 assert.equal(candidate.ok, true, JSON.stringify(candidate));
 assert.equal(candidate.value.draft.meta.source, "extraction:image");
 assert.equal(candidate.value.draft.meta.quoteNo, "NEW-2");
+assert.equal(candidate.value.draft.meta.projectName, "스마트팜 환경제어설비");
 assert.equal(candidate.value.draft.meta.issueDate, "2026-09-01", "missing date preserves editable draft value");
 assert.equal(candidate.value.draft.sender.company, "새 공급사");
 assert.equal(candidate.value.draft.sender.rep, "기존 대표", "missing sender field is not fabricated");
 assert.equal(candidate.value.draft.sender.presetId, "custom");
 assert.equal(candidate.value.draft.recipient.company, "새 고객");
 assert.deepEqual(candidate.value.draft.items, [
-  { id: "extracted-item-1", name: "A", qty: 2, unitPrice: 1500000 },
+  { id: "extracted-item-1", name: "A", qty: 2, unitPrice: 1500000, spec: "규격-A", unit: "식", note: "설치 포함" },
   { id: "extracted-item-2", name: "B", qty: 0, unitPrice: 0 }
 ], "extracted item order preserved; missing numeric fields become editable zero placeholders");
 assert.equal(candidate.value.draft.tax.mode, "INCLUSIVE");

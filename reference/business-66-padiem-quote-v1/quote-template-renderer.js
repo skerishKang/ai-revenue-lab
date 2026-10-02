@@ -22,6 +22,9 @@
   var RENDER_MODEL_SCHEMA_VERSION = 1;
   var CALCULATION_AUTHORITY = "quote-core";
   var PAGE_RULE_STYLE_ID = "quote-template-page";
+  var ASSET_ID_PATTERN = /^b66asset_[0-9a-f]{32}$/;
+  var DATA_IMAGE_PATTERN = /^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/;
+  var MAX_SLOT_SOURCE_CHARS = 384 * 1024;
 
   var escapeHtml = Template.escapeHtml;
 
@@ -81,6 +84,18 @@
     return "@page { size: " + (landscape ? size + " landscape" : size) + "; margin: " + margin + "; }";
   }
 
+  function resolvePrivateSlot(assetId, rawSource) {
+    var id = typeof assetId === "string" && ASSET_ID_PATTERN.test(assetId) ? assetId : "";
+    if (!id || !isPlainObject(rawSource) || rawSource.assetId !== id) {
+      return { assetId: id, src: "", rendered: false };
+    }
+    var src = typeof rawSource.dataUrl === "string" ? rawSource.dataUrl : "";
+    if (!src || src.length > MAX_SLOT_SOURCE_CHARS || !DATA_IMAGE_PATTERN.test(src)) {
+      return { assetId: id, src: "", rendered: false };
+    }
+    return { assetId: id, src: src, rendered: true };
+  }
+
   /* 프로필의 표현 문자열은 템플릿이 소유하고, 값은 QuoteCore 파생값만 쓴다. */
   function buildRenderModel(draft, profile, options) {
     var normalizedDraft = Core.normalizeDraft(draft);
@@ -129,10 +144,14 @@
         index: index,
         emptyName: emptyName,
         values: {
+          no: String(index + 1),
           name: emptyName ? emptyNameText : item.name,
+          spec: String(item.spec == null ? "" : item.spec),
+          unit: String(item.unit == null ? "" : item.unit),
           qty: Core.formatInputNumber(item.qty),
           unitPrice: Core.formatMoney(item.unitPrice),
-          amount: Core.formatMoney(totals.amounts[index])
+          amount: Core.formatMoney(totals.amounts[index]),
+          note: String(item.note == null ? "" : item.note)
         }
       };
     }) : [];
@@ -159,17 +178,22 @@
       pageRule: buildPageRule(content.page),
       style: isPlainObject(content.style) ? content.style : {},
       styleVariables: buildStyleVariables(content.style),
-      /* logo/stamp 은 이번 MVP 에서 non-live 다. 선언 값은 버리지 않고 그대로 드러낸다. */
-      slots: {
-        support: Template.SLOT_SUPPORT,
-        rendered: false,
-        declared: {
-          logo: String(content.slots && content.slots.logo || ""),
-          stamp: String(content.slots && content.slots.stamp || "")
-        }
-      },
+      slots: (function () {
+        var sources = isPlainObject(opts.slotSources) ? opts.slotSources : {};
+        var logo = resolvePrivateSlot(String(content.slots && content.slots.logo || ""), sources.logo);
+        var stamp = resolvePrivateSlot(String(content.slots && content.slots.stamp || ""), sources.stamp);
+        return {
+          support: Template.SLOT_SUPPORT,
+          rendered: logo.rendered || stamp.rendered,
+          logo: logo,
+          stamp: stamp
+        };
+      })(),
       columns: columns,
       titleText: has("title") ? content.title.text : "",
+      projectNameText: has("project") && content.project && normalizedDraft.meta.projectName
+        ? content.project.prefix + normalizedDraft.meta.projectName
+        : "",
       meta: {
         quoteNoText: has("meta") ? content.meta.quoteNoPrefix + textOrDash(normalizedDraft.meta.quoteNo) : "",
         dateText: has("meta") ? content.meta.issueDatePrefix + textOrDash(normalizedDraft.meta.issueDate) : "",
@@ -277,6 +301,7 @@
     setText("pvValidity", model.meta.validityText);
     setText("pvValidUntil", model.meta.validUntilText);
     setText("pvTaxMode", model.meta.taxText);
+    setText("pvProjectName", model.projectNameText);
 
     setText("pvSenderHeading", sender.heading);
     setText("pvSenderCompany", sender.company);
@@ -322,6 +347,21 @@
 
     setText("pvMemo", model.memoText);
     setText("pvMark", model.markText);
+
+    var setPrivateImage = function (id, slot) {
+      var el = doc.getElementById(id);
+      if (!el) return;
+      var source = isPlainObject(slot) && slot.rendered === true ? slot.src : "";
+      if (source) {
+        el.setAttribute("src", source);
+        el.hidden = false;
+      } else {
+        el.removeAttribute("src");
+        el.hidden = true;
+      }
+    };
+    setPrivateImage("pvLogo", model.slots && model.slots.logo);
+    setPrivateImage("pvStamp", model.slots && model.slots.stamp);
 
     /* 스타일/페이지: 검증된 custom property 와 bounded @page 규칙만 적용한다. */
     applyStyleVariables(doc, model);

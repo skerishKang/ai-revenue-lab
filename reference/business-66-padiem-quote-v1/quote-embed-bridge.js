@@ -15,8 +15,11 @@
   var RESPONSE_TYPE = "b66.embed.rendered.v1";
   var ERROR_TYPE = "b66.embed.error.v1";
   var PRINT_TYPE = "b66.embed.print.v1";
-  var MAX_MESSAGE_JSON_CHARS = 128 * 1024;
+  var MAX_MESSAGE_JSON_CHARS = 1024 * 1024;
   var REQUEST_REF_RE = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
+  var ASSET_ID_RE = /^b66asset_[0-9a-f]{32}$/;
+  var DATA_IMAGE_RE = /^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/;
+  var MAX_ASSET_DATA_URL_CHARS = 384 * 1024;
 
   function isPlainObject(value) {
     return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -34,19 +37,77 @@
     }
   }
 
+  function normalizeAssetEntry(value) {
+    if (!isPlainObject(value) || Object.keys(value).some(function (key) {
+      return ["assetId", "dataUrl"].indexOf(key) === -1;
+    })) return null;
+    if (typeof value.assetId !== "string" || !ASSET_ID_RE.test(value.assetId)) return null;
+    if (
+      typeof value.dataUrl !== "string" ||
+      value.dataUrl.length > MAX_ASSET_DATA_URL_CHARS ||
+      !DATA_IMAGE_RE.test(value.dataUrl)
+    ) return null;
+    return { assetId: value.assetId, dataUrl: value.dataUrl };
+  }
+
+  function normalizeAssets(value) {
+    if (value === undefined || value === null) return {};
+    if (!isPlainObject(value) || Object.keys(value).some(function (key) {
+      return ["logo", "stamp"].indexOf(key) === -1;
+    })) return null;
+    var output = {};
+    var keys = ["logo", "stamp"];
+    for (var i = 0; i < keys.length; i += 1) {
+      var key = keys[i];
+      if (value[key] === undefined || value[key] === null) continue;
+      var normalized = normalizeAssetEntry(value[key]);
+      if (!normalized) return null;
+      output[key] = normalized;
+    }
+    return output;
+  }
+
+  function declaredAssetId(skill, key) {
+    var template = isPlainObject(skill) ? skill.internalTemplate : null;
+    var content = isPlainObject(template) ? template.content : null;
+    var slots = isPlainObject(content) ? content.slots : null;
+    var value = slots && typeof slots[key] === "string" ? slots[key] : "";
+    return ASSET_ID_RE.test(value) ? value : "";
+  }
+
+  function slotSourcesForSkill(skill, assets) {
+    var source = isPlainObject(assets) ? assets : {};
+    var output = {};
+    var keys = ["logo", "stamp"];
+    for (var i = 0; i < keys.length; i += 1) {
+      var key = keys[i];
+      var declared = declaredAssetId(skill, key);
+      var supplied = source[key];
+      if (!declared) {
+        if (supplied) return null;
+        continue;
+      }
+      if (!supplied || supplied.assetId !== declared) return null;
+      output[key] = supplied;
+    }
+    return output;
+  }
+
   function normalizeRenderMessage(value) {
     if (!isPlainObject(value) || value.type !== REQUEST_TYPE) return null;
     if (Object.keys(value).some(function (key) {
-      return ["type", "requestId", "skill", "candidate"].indexOf(key) === -1;
+      return ["type", "requestId", "skill", "candidate", "assets"].indexOf(key) === -1;
     })) return null;
     var id = requestRef(value.requestId);
-    if (!id || !isPlainObject(value.skill) || !isPlainObject(value.candidate)) return null;
-    if (!jsonSizeOkay(value.skill) || !jsonSizeOkay(value.candidate)) return null;
+    var assets = normalizeAssets(value.assets);
+    if (!id || !isPlainObject(value.skill) || !isPlainObject(value.candidate) || assets === null) return null;
+    if (!jsonSizeOkay(value.skill) || !jsonSizeOkay(value.candidate) || !jsonSizeOkay(assets)) return null;
     return {
       type: REQUEST_TYPE,
       requestId: id,
       skill: value.skill,
-      candidate: value.candidate
+      candidate: value.candidate,
+      assets: assets
     };
   }
 
@@ -67,6 +128,9 @@
         : defaults.meta.issueDate,
       items: candidate.items
     };
+    if (typeof candidate.projectName === "string" && candidate.projectName.trim()) {
+      input.projectName = candidate.projectName.trim();
+    }
     if (typeof candidate.memo === "string") input.memo = candidate.memo;
     if (typeof candidate.taxMode === "string" && candidate.taxMode) input.taxMode = candidate.taxMode;
     return input;
@@ -89,7 +153,14 @@
     var input = buildStructuredInput(normalized.candidate, runtime.Core);
     if (!input) return { ok: false, code: "invalid_embed_candidate" };
 
-    var result = runtime.SavedSkill.buildRenderModel(normalized.skill, input);
+    var slotSources = slotSourcesForSkill(normalized.skill, normalized.assets);
+    if (slotSources === null) return { ok: false, code: "private_asset_missing" };
+
+    var result = runtime.SavedSkill.buildRenderModel(
+      normalized.skill,
+      input,
+      { slotSources: slotSources }
+    );
     if (!result || result.ok !== true || !result.renderModel || !result.draft) {
       return {
         ok: false,
@@ -165,6 +236,9 @@
     ERROR_TYPE: ERROR_TYPE,
     PRINT_TYPE: PRINT_TYPE,
     MAX_MESSAGE_JSON_CHARS: MAX_MESSAGE_JSON_CHARS,
+    normalizeAssetEntry: normalizeAssetEntry,
+    normalizeAssets: normalizeAssets,
+    slotSourcesForSkill: slotSourcesForSkill,
     normalizeRenderMessage: normalizeRenderMessage,
     buildStructuredInput: buildStructuredInput,
     renderRequest: renderRequest,

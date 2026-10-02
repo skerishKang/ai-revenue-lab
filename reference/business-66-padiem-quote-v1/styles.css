@@ -113,10 +113,40 @@ textarea { min-height: 82px; resize: vertical; }
 .preview-wrap { position: sticky; top: 18px; overflow: hidden; }
 .preview-toolbar { padding: 12px 14px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .preview-toolbar strong { font-size: 13px; }
-.quote-paper { background: white; padding: 40px 42px 44px; min-height: 820px; }
+.quote-paper { position: relative; background: white; padding: 40px 42px 44px; min-height: 820px; }
+.quote-private-logo {
+  display: block;
+  max-width: 210px;
+  max-height: 64px;
+  width: auto;
+  height: auto;
+  margin: 0 0 14px;
+  object-fit: contain;
+}
+.quote-private-stamp {
+  position: absolute;
+  top: 118px;
+  right: 44px;
+  max-width: 92px;
+  max-height: 92px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  opacity: .96;
+  pointer-events: none;
+}
 .quote-title { display: flex; justify-content: var(--quote-header-align, space-between); gap: 16px; align-items: flex-start; padding-bottom: 22px; border-bottom: var(--quote-title-rule, 2px solid #111827); }
 .quote-title h2 { font-size: 31px; margin: 0; letter-spacing: .12em; color: var(--quote-accent, #17202a); }
 .quote-title .meta { text-align: var(--quote-meta-align, right); color: #475467; font-size: 12px; line-height: 1.8; }
+.quote-project {
+  margin: 12px 0 14px;
+  padding: 8px 10px;
+  border: var(--quote-party-rule, 1px solid #cfd5dd);
+  font-size: 13px;
+  font-weight: 700;
+}
+.quote-project:empty { display: none; }
+
 .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 26px 0; }
 .party { border-top: var(--quote-party-rule, 1px solid #cfd5dd); padding-top: 10px; }
 .party .eyebrow { font-size: 11px; color: #667085; margin-bottom: 8px; }
