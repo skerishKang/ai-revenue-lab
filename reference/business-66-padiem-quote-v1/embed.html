@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'none'; img-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'none'; img-src data:; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="referrer" content="no-referrer">
   <title>견적서 미리보기</title>
   <link rel="stylesheet" href="styles.css">
@@ -22,6 +22,8 @@
       <button class="embed-print" id="embedPrint" type="button">PDF로 저장 / 인쇄</button>
     </div>
     <article class="quote-paper" id="quotePaper" aria-label="견적서 미리보기">
+      <img class="quote-private-logo" id="pvLogo" alt="" aria-hidden="true" hidden>
+      <img class="quote-private-stamp" id="pvStamp" alt="" aria-hidden="true" hidden>
       <div class="quote-title">
         <h2 id="pvTitle">견 적 서</h2>
         <div class="meta">
