@@ -178,3 +178,155 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
     if not isinstance(items_raw, list) or len(items_raw) > MAX_ITEMS:
         raise B66QuoteConversationError("invalid_items")
     items: list[dict[str, int | float | str]] = []
+    for entry in items_raw:
+        if not isinstance(entry, dict) or set(entry) - _ALLOWED_ITEM:
+            raise B66QuoteConversationError("invalid_item")
+        name = _optional_text(entry.get("name"), limit=MAX_ITEM_NAME_CHARS)
+        qty = _optional_number(entry.get("qty"), positive=True)
+        unit_price = _optional_number(entry.get("unitPrice"), positive=False)
+        if name is None or qty is None or unit_price is None:
+            raise B66QuoteConversationError("incomplete_item")
+        item = {"name": name, "qty": qty, "unitPrice": unit_price}
+        sequence = _optional_text(entry.get("sequence"), limit=40)
+        specification = _optional_text(entry.get("specification"), limit=MAX_ITEM_DETAIL_CHARS)
+        unit = _optional_text(entry.get("unit"), limit=MAX_ITEM_UNIT_CHARS)
+        row_note = _optional_text(entry.get("rowNote"), limit=MAX_ITEM_DETAIL_CHARS)
+        if sequence is not None:
+            item["sequence"] = sequence
+        if specification is not None:
+            item["specification"] = specification
+        if unit is not None:
+            item["unit"] = unit
+        if row_note is not None:
+            item["rowNote"] = row_note
+        items.append(item)
+
+    memo = _optional_text(raw.get("memo"), limit=MAX_MEMO_CHARS)
+    tax_mode_raw = raw.get("taxMode")
+    if tax_mode_raw is None:
+        tax_mode = None
+    elif not isinstance(tax_mode_raw, str) or tax_mode_raw not in TAX_MODES:
+        raise B66QuoteConversationError("invalid_tax_mode")
+    else:
+        tax_mode = tax_mode_raw
+
+    missing_raw = raw.get("missing")
+    if missing_raw is None:
+        missing_raw = []
+    if (
+        not isinstance(missing_raw, list)
+        or len(missing_raw) > len(_ALLOWED_MISSING)
+        or any(not isinstance(item, str) or item not in _ALLOWED_MISSING for item in missing_raw)
+        or len(set(missing_raw)) != len(missing_raw)
+    ):
+        raise B66QuoteConversationError("invalid_missing_fields")
+
+    return B66QuoteConversationProjection(
+        recipient=recipient,
+        quote_no=quote_no,
+        issue_date=issue_date,
+        items=tuple(items),
+        project_name=project_name,
+        memo=memo,
+        tax_mode=tax_mode,
+        missing=tuple(missing_raw),
+    )
+
+
+def _conversation_prompt(skill: dict[str, Any]) -> str:
+    if not isinstance(skill, dict):
+        raise B66QuoteConversationError("invalid_saved_skill")
+    variable_schema = skill.get("variableSchema")
+    fixed_defaults = skill.get("fixedDefaults")
+    if not isinstance(variable_schema, dict) or not isinstance(fixed_defaults, dict):
+        raise B66QuoteConversationError("invalid_saved_skill")
+
+    allowed = [
+        key
+        for key in ("recipient", "quoteNo", "issueDate", "items", "memo", "taxMode")
+        if variable_schema.get(key) is True
+    ]
+    if not allowed:
+        raise B66QuoteConversationError("invalid_saved_skill")
+
+    default_tax = fixed_defaults.get("taxMode")
+    if default_tax not in TAX_MODES:
+        default_tax = None
+
+    contract = {
+        "allowedVariableFields": allowed,
+        "defaultTaxMode": default_tax,
+    }
+    return (
+        "당신은 견적서 생성기가 아니라 견적 입력값 추출기입니다. "
+        "사용자의 한 문장에서 실제로 말한 값만 JSON 객체 하나로 추출하십시오. "
+        "최상위 키는 recipient, quoteNo, issueDate, projectName, items, memo, taxMode, missing 만 허용됩니다. "
+        "recipient는 company/person/address/email을 사용하십시오. "
+        "items는 name/qty/unitPrice를 필수로 하고 sequence/specification/unit/rowNote는 사용자가 실제로 말했을 때만 사용하십시오. "
+        "건명·공사명·프로젝트명이 명시되면 projectName에 넣으십시오. "
+        "금액 합계, 공급가액, 부가세 금액, 총액을 계산하거나 반환하지 마십시오. "
+        "sender, template, approval, fingerprint를 변경하거나 반환하지 마십시오. "
+        "없는 값은 null 또는 빈 배열로 두고 필요한 추가 입력 필드 이름만 missing 배열에 넣으십시오. "
+        "설명/마크다운 없이 JSON만 반환하십시오. "
+        "아래 서버 제공 계약 밖 필드는 추출하지 마십시오.\n"
+        + json.dumps(contract, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+    )
+
+
+def _server_missing_fields(
+    projection: B66QuoteConversationProjection,
+    skill: dict[str, Any],
+) -> tuple[str, ...]:
+    """Derive required missing fields from normalized facts, never model claims."""
+
+    schema = skill.get("variableSchema")
+    if not isinstance(schema, dict):
+        raise B66QuoteConversationError("invalid_saved_skill")
+    missing: list[str] = []
+    if schema.get("recipient") is True and not (
+        projection.recipient.get("company") or projection.recipient.get("person")
+    ):
+        missing.append("recipient")
+    # quoteNo and issueDate are intentionally not conversational blockers.
+    # The canonical browser QuoteCore supplies today's date and its default
+    # quote-number pattern when the user does not explicitly say them.
+    if schema.get("items") is True and not projection.items:
+        missing.append("items")
+    return tuple(missing)
+
+
+class B66QuoteConversationInterpreter:
+    """One bounded model call for variable extraction only."""
+
+    def __init__(self, client: B66QuoteConversationClient):
+        if client is None:
+            raise ValueError("B14 client is required")
+        self._client = client
+
+    async def interpret(
+        self,
+        *,
+        message: str,
+        skill: dict[str, Any],
+    ) -> B66QuoteConversationProjection:
+        if not isinstance(message, str):
+            raise B66QuoteConversationError("invalid_message")
+        clean = message.strip()
+        if not clean or len(clean) > MAX_CONVERSATION_CHARS:
+            raise B66QuoteConversationError("invalid_message")
+        prompt = _conversation_prompt(skill)
+        result = await self._client.complete(
+            [{"role": "user", "content": clean}],
+            additional_system_context=prompt,
+            attachments=(),
+        )
+        if not isinstance(result, dict):
+            raise B66QuoteConversationError("invalid_model_output")
+        answer = result.get("answer")
+        if not isinstance(answer, str):
+            raise B66QuoteConversationError("invalid_model_output")
+        projection = normalize_conversation_output(answer)
+        return replace(
+            projection,
+            missing=_server_missing_fields(projection, skill),
+        )
