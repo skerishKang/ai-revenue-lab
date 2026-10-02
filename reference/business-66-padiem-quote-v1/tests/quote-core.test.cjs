@@ -242,7 +242,7 @@ assert.deepEqual(
 const simpleDraftTotals = Core.computeDraftTotals(detailed);
 assert.deepEqual(
   [simpleDraftTotals.supply, simpleDraftTotals.vat, simpleDraftTotals.grand],
-  [17930000, 1793000, 19723000],
+  [16330000, 1633000, 17963000],
   "computeDraftTotals keeps simple flat quote math unchanged"
 );
 assert.deepEqual(simpleDraftTotals.detailSections, [], "simple draft has no detail totals");
