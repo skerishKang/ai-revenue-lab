@@ -129,11 +129,7 @@
     var sections = content.sections.slice();
     var has = function (name) { return sections.indexOf(name) !== -1; };
 
-    var totals = Core.computeTotals(
-      normalizedDraft.items,
-      normalizedDraft.tax.mode,
-      normalizedDraft.calculationPolicy
-    );
+    var totals = Core.computeDraftTotals(normalizedDraft);
     if (!totals) return null;
     var validUntil = Core.computeValidUntil(normalizedDraft.meta.issueDate, normalizedDraft.meta.validDays);
     var mode = normalizedDraft.tax.mode;
@@ -143,7 +139,8 @@
       return { key: column.key, label: column.label, width: column.width, align: column.align };
     }) : [];
 
-    var items = has("items") ? normalizedDraft.items.map(function (item, index) {
+    var effectiveItems = Array.isArray(totals.effectiveItems) ? totals.effectiveItems : normalizedDraft.items;
+    var items = has("items") ? effectiveItems.map(function (item, index) {
       var emptyName = !String(item.name == null ? "" : item.name);
       return {
         index: index,
@@ -160,6 +157,40 @@
         }
       };
     }) : [];
+
+    var detailPages = [];
+    if (has("detailPages") && content.detailPages && Array.isArray(totals.detailGroups)) {
+      var detailColumns = content.detailPages.columns.map(function (column) {
+        return { key: column.key, label: column.label, width: column.width, align: column.align };
+      });
+      detailPages = totals.detailGroups.map(function (group, groupIndex) {
+        var rows = group.items.map(function (item, itemIndex) {
+          return {
+            index: itemIndex,
+            section: String(item.section == null ? "" : item.section),
+            values: {
+              no: String(itemIndex + 1),
+              name: String(item.name == null ? "" : item.name),
+              spec: String(item.spec == null ? "" : item.spec),
+              unit: String(item.unit == null ? "" : item.unit),
+              qty: Core.formatInputNumber(item.qty),
+              unitPrice: Core.formatMoney(item.unitPrice),
+              amount: Core.formatMoney(group.amounts[itemIndex]),
+              note: String(item.note == null ? "" : item.note)
+            }
+          };
+        });
+        return {
+          id: group.id,
+          summaryItemId: group.summaryItemId,
+          titleText: content.detailPages.titlePrefix + (group.title || String(groupIndex + 1)),
+          columns: detailColumns,
+          rows: rows,
+          subtotalLabel: content.detailPages.subtotalLabel,
+          subtotalText: Core.formatMoney(group.subtotal)
+        };
+      });
+    }
 
     var senderContact = [
       String(normalizedDraft.sender.phone == null ? "" : normalizedDraft.sender.phone).trim(),
@@ -233,6 +264,7 @@
         }
       },
       items: items,
+      detailPages: detailPages,
       totals: {
         subtotalLabel: has("totals")
           ? (provisional ? content.totals.provisional.subtotalLabel : content.totals.supplyLabel)
@@ -281,8 +313,18 @@
   function applyStyleVariables(doc, model) {
     var paper = typeof doc.getElementById === "function" ? doc.getElementById("quotePaper") : null;
     if (!paper || !paper.style || typeof paper.style.setProperty !== "function") return false;
-    Object.keys(model.styleVariables).forEach(function (name) {
-      paper.style.setProperty(name, model.styleVariables[name]);
+    var targets = [paper];
+    if (typeof doc.querySelectorAll === "function") {
+      Array.prototype.forEach.call(
+        doc.querySelectorAll("#pvDetailPages .quote-detail-page"),
+        function (detailPage) { targets.push(detailPage); }
+      );
+    }
+    targets.forEach(function (target) {
+      if (!target || !target.style || typeof target.style.setProperty !== "function") return;
+      Object.keys(model.styleVariables).forEach(function (name) {
+        target.style.setProperty(name, model.styleVariables[name]);
+      });
     });
     return true;
   }
@@ -356,6 +398,31 @@
 
     setText("pvMemo", model.memoText);
     setText("pvMark", model.markText);
+
+    setHtml("pvDetailPages", (Array.isArray(model.detailPages) ? model.detailPages : []).map(function (page) {
+      var head = page.columns.map(function (column) {
+        var width = column.width ? ' style="width:' + escapeHtml(column.width) + '"' : "";
+        return "<th" + width + ">" + escapeHtml(column.label) + "</th>";
+      }).join("");
+      var lastSection = null;
+      var body = page.rows.map(function (row) {
+        var sectionHtml = "";
+        if (row.section && row.section !== lastSection) {
+          lastSection = row.section;
+          sectionHtml = '<tr class="quote-detail-section"><td colspan="' +
+            page.columns.length + '">' + escapeHtml(row.section) + "</td></tr>";
+        }
+        var cells = page.columns.map(function (column) {
+          return "<td>" + escapeHtml(row.values[column.key]) + "</td>";
+        }).join("");
+        return sectionHtml + "<tr>" + cells + "</tr>";
+      }).join("");
+      return '<section class="quote-paper quote-detail-page" data-detail-group="' + escapeHtml(page.id) + '">' +
+        '<h2 class="quote-detail-title">' + escapeHtml(page.titleText) + "</h2>" +
+        '<table class="quote-table"><thead><tr>' + head + "</tr></thead><tbody>" + body + "</tbody></table>" +
+        '<div class="quote-detail-subtotal"><span>' + escapeHtml(page.subtotalLabel) +
+        '</span><strong>' + escapeHtml(page.subtotalText) + "</strong></div></section>";
+    }).join(""));
 
     var setPrivateImage = function (id, slot) {
       var el = doc.getElementById(id);

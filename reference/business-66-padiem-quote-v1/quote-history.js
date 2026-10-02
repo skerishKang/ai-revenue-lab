@@ -128,7 +128,7 @@
 
   function listMetadata(rawEnvelope) {
     return normalizeEnvelope(rawEnvelope).entries.map(function (entry) {
-      var totals = Core.computeTotals(entry.draft.items, entry.draft.tax.mode, entry.draft.calculationPolicy);
+      var totals = Core.computeDraftTotals(entry.draft);
       return {
         id: entry.id,
         savedAt: entry.savedAt,
@@ -212,9 +212,12 @@
     if (source.meta.projectName) fresh.meta.projectName = source.meta.projectName;
     fresh.sender = clone(source.sender);
     fresh.recipient = clone(source.recipient);
+    var itemIdMap = Object.create(null);
     fresh.items = source.items.map(function (item, index) {
+      var newId = "item-" + (index + 1);
+      itemIdMap[item.id] = newId;
       var copied = {
-        id: "item-" + (index + 1),
+        id: newId,
         name: item.name,
         qty: item.qty,
         unitPrice: item.unitPrice
@@ -224,6 +227,17 @@
       if (item.note) copied.note = item.note;
       return copied;
     });
+    if (Array.isArray(source.detailGroups) && source.detailGroups.length) {
+      fresh.detailGroups = source.detailGroups.map(function (group) {
+        var copiedGroup = {
+          id: group.id,
+          summaryItemId: itemIdMap[group.summaryItemId],
+          items: group.items.map(function (item) { return clone(item); })
+        };
+        if (group.title) copiedGroup.title = group.title;
+        return copiedGroup;
+      });
+    }
     fresh.tax = clone(source.tax);
     fresh.memo = source.memo;
     if (source.calculationPolicy) fresh.calculationPolicy = clone(source.calculationPolicy);

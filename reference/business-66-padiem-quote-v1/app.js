@@ -815,11 +815,13 @@
     if (model) TemplateRenderer.applyRenderModel(document, model);
 
     /* 입력 폼의 금액 셀은 견적서 render projection 과 별개로 QuoteCore 파생값을 그대로 쓴다. */
-    const totals = Core.computeTotals(draft.items, draft.tax.mode, draft.calculationPolicy);
-    document.querySelectorAll("#items .item-row").forEach((row, i) => {
-      const cell = row.querySelector(".amount-value");
-      if (cell && totals.amounts[i] !== undefined) cell.textContent = Core.formatMoney(totals.amounts[i]);
-    });
+    const totals = Core.computeDraftTotals(draft);
+    if (totals) {
+      document.querySelectorAll("#items .item-row").forEach((row, i) => {
+        const cell = row.querySelector(".amount-value");
+        if (cell && totals.amounts[i] !== undefined) cell.textContent = Core.formatMoney(totals.amounts[i]);
+      });
+    }
 
     saveDraft();
   }

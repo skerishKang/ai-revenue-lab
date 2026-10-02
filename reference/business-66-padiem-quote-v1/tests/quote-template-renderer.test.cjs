@@ -408,6 +408,67 @@ eq(
   "existing built-in template renders no written-total line"
 );
 
+const rollupDraft = Core.normalizeDraft(Object.assign(clone(detailDraft), {
+  items: [{
+    id: "summary-1",
+    name: "ICT환경제어 시스템",
+    unit: "식",
+    qty: 1,
+    unitPrice: 1
+  }],
+  detailGroups: [{
+    id: "smartfarm-detail",
+    summaryItemId: "summary-1",
+    title: "스마트팜 제출견적",
+    items: [
+      {
+        id: "detail-1",
+        name: "주장치 및 스마트팜 전용S/W",
+        spec: "원격제어장치",
+        unit: "식",
+        qty: 1,
+        unitPrice: 15000000,
+        section: "1. 스마트팜"
+      },
+      {
+        id: "detail-2",
+        name: "인건비 및 잡자재",
+        spec: "설치 포함",
+        unit: "식",
+        qty: 1,
+        unitPrice: 1330000,
+        section: "3. 인건비 및 잡자재"
+      }
+    ]
+  }]
+}));
+const rollupContent = clone(detailContent);
+rollupContent.sections = ["title", "meta", "parties", "project", "items", "totals", "detailPages", "memo", "mark"];
+rollupContent.detailPages = {
+  titlePrefix: "상세내역  ",
+  subtotalLabel: "소 계",
+  columns: clone(detailContent.items.columns)
+};
+const rollupModel = Renderer.buildRenderModel(
+  rollupDraft,
+  approvedProfile("detail-pages", rollupContent),
+  { taxReviewRequired: false }
+);
+eq(rollupModel.items[0].values.unitPrice, Core.formatMoney(16330000),
+  "summary unit price is rendered from linked detail subtotal");
+eq(rollupModel.items[0].values.amount, Core.formatMoney(16330000),
+  "summary amount is rendered from QuoteCore rollup");
+eq(rollupModel.detailPages.length, 1, "one linked detail group produces one printable detail page");
+eq(rollupModel.detailPages[0].titleText, "상세내역  스마트팜 제출견적",
+  "detail page title is template presentation plus bounded group title");
+eq(rollupModel.detailPages[0].subtotalText, Core.formatMoney(16330000),
+  "detail subtotal is projected from QuoteCore");
+eq(rollupModel.detailPages[0].rows[0].section, "1. 스마트팜",
+  "detail section heading is preserved");
+eq(rollupModel.detailPages[0].rows[1].section, "3. 인건비 및 잡자재",
+  "later section heading is preserved");
+eq(authoritative.detailPages, [], "existing built-in template renders no detail pages");
+
 /* ── TEMPLATE_STYLE_APPLIED — 승인된 style/page 프로필이 실제 출력 투영을 바꾼다 ── */
 const styledContent = clone(Template.builtInTemplate().content);
 styledContent.style.accent = "#8a1f1f";
@@ -528,7 +589,7 @@ const ADAPTER_IDS = [
   "pvTitle", "pvQuoteNo", "pvDate", "pvValidity", "pvValidUntil", "pvTaxMode", "pvProjectName", "pvWrittenTotal",
   "pvSenderHeading", "pvSenderCompany", "pvSenderRep", "pvSenderBizNo", "pvSenderAddress", "pvSenderContact",
   "pvRecipientHeading", "pvRecipientCompany", "pvRecipientPerson", "pvRecipientAddress", "pvRecipientEmail",
-  "pvItemsHead", "pvItems", "quotePaper",
+  "pvItemsHead", "pvItems", "pvDetailPages", "quotePaper",
   "subtotalLabelText", "subtotalText", "vatLabelText", "vatText", "grandLabelText", "grandText",
   "pvSubtotalLabel", "pvSubtotal", "pvVatLabel", "pvVat", "pvGrandLabel", "pvGrand", "pvMemo", "pvMark"
 ];
@@ -549,7 +610,7 @@ drafts.forEach(([label, base]) => {
       const doc = stubDoc(ADAPTER_IDS);
       check(Renderer.applyRenderModel(doc, model) === true, "adapter reports success");
       const expected = legacyProjection(draft, provisional);
-      ADAPTER_IDS.filter((id) => id !== "pvItems" && id !== "pvItemsHead" && id !== "quotePaper").forEach((id) => {
+      ADAPTER_IDS.filter((id) => id !== "pvItems" && id !== "pvItemsHead" && id !== "pvDetailPages" && id !== "quotePaper").forEach((id) => {
         eq(doc.getElementById(id).textContent, expected[id], `adapter ${id} for ${label}/${mode}/${provisional}`);
       });
       eq(
@@ -559,6 +620,7 @@ drafts.forEach(([label, base]) => {
       );
       eq(norm(doc.getElementById("pvItemsHead").innerHTML), norm(LEGACY_HEAD_HTML),
         `adapter table head for ${label}/${mode}/${provisional}`);
+      eq(doc.getElementById("pvDetailPages").innerHTML, "", "simple quote emits no detail page markup");
     });
   });
 });
@@ -593,6 +655,15 @@ check(htmlRows.indexOf("<b>") === -1 && htmlRows.indexOf("&lt;b&gt;") !== -1, "i
 eq(htmlDoc.getElementById("pvSenderCompany").textContent, '<img src=x onerror="alert(1)">',
   "textContent targets keep raw text (no double escaping)");
 eq(htmlRows.indexOf("onerror"), -1, "injected attribute text stays inert");
+
+const rollupDoc = stubDoc(ADAPTER_IDS);
+Renderer.applyRenderModel(rollupDoc, rollupModel);
+const detailHtml = rollupDoc.getElementById("pvDetailPages").innerHTML;
+check(detailHtml.includes("quote-detail-page"), "detail-page adapter emits printable page container");
+check(detailHtml.includes("quote-detail-section"), "detail-page adapter emits section headings");
+check(detailHtml.includes("스마트팜 제출견적"), "detail-page title is rendered");
+check(detailHtml.includes("₩16,330,000"), "detail-page subtotal is rendered from QuoteCore");
+check(!/Math\.|computeTotals|computeDraftTotals/.test(detailHtml), "rendered detail markup contains no arithmetic");
 
 /* 어댑터 방어 */
 check(Renderer.applyRenderModel(null, authoritative) === false, "adapter without document fails safe");

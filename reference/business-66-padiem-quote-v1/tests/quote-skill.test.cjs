@@ -123,6 +123,31 @@ eq(detailedResult.draft.items[0].unit, "식", "item unit preserved");
 eq(detailedResult.draft.items[0].note, "설치 포함", "item note preserved");
 eq(detailedResult.compiled.skillFingerprint, first.compiled.skillFingerprint, "existing Saved Quote Skill identity is unchanged by optional detail input");
 
+const groupedInput = input({
+  items: [{ id: "summary-1", name: "ICT환경제어 시스템", qty: 1, unitPrice: 1 }],
+  detailGroups: [{
+    id: "detail-1",
+    summaryItemId: "summary-1",
+    title: "스마트팜 상세",
+    items: [
+      { name: "주장치", section: "1. 스마트팜", qty: 1, unitPrice: 15000000 },
+      { name: "설치 및 잡자재", section: "3. 인건비 및 잡자재", qty: 1, unitPrice: 1330000 }
+    ]
+  }]
+});
+const groupedResult = Skill.buildRenderModel(skill, groupedInput);
+check(groupedResult.ok === true, "detail-group structured input is accepted by existing approved Skill");
+eq(groupedResult.draft.detailGroups[0].summaryItemId, "summary-1", "detail-group link survives Skill runtime");
+eq(
+  Core.computeDraftTotals(groupedResult.draft).effectiveItems[0].unitPrice,
+  16330000,
+  "Saved Quote Skill defers linked summary unit price to QuoteCore detail rollup"
+);
+eq(groupedResult.renderModel.items[0].values.unitPrice, Core.formatMoney(16330000),
+  "canonical renderer receives QuoteCore-derived linked summary unit price");
+eq(groupedResult.compiled.skillFingerprint, first.compiled.skillFingerprint,
+  "optional detailGroups do not change existing Saved Quote Skill identity");
+
 const floorPolicy = { grandRounding: { mode: "FLOOR", unit: 10000 } };
 const policyBase = {
   id: "skill-reviewed-rounding",
@@ -226,6 +251,17 @@ const invalidInput = Skill.buildRenderModel(skill, {
   items: []
 });
 check(invalidInput.ok === false, "invalid structured input fails closed instead of inheriting demo business facts");
+
+const invalidDetail = Skill.buildRenderModel(skill, input({
+  items: [{ id: "summary-1", name: "요약", qty: 1, unitPrice: 1 }],
+  detailGroups: [{
+    id: "bad-detail",
+    summaryItemId: "missing",
+    items: [{ name: "상세", qty: 1, unitPrice: 1000 }]
+  }]
+}));
+check(invalidDetail.ok === false && invalidDetail.code === "invalid_quote_draft",
+  "broken detail-group links fail closed in Saved Quote Skill runtime");
 
 const invalidDate = Skill.buildRenderModel(skill, input({ issueDate: "2026-99-99" }));
 check(invalidDate.ok === false, "invalid calendar dates fail closed before QuoteCore rendering");

@@ -89,6 +89,79 @@ assert.deepEqual([t.supply, t.vat, t.grand], [0, 0, 0], "empty items");
 t = Core.computeTotals(items, "UNKNOWN_MODE");
 assert.equal(t.mode, "EXCLUSIVE", "unknown mode falls back to EXCLUSIVE");
 
+/* SUMMARY_DETAIL_ROLLUP — detail subtotal is the linked summary unitPrice authority */
+const simpleDraftForRollup = Core.createDefaultDraft();
+const simpleDraftTotals = Core.computeDraftTotals(simpleDraftForRollup);
+assert.deepEqual(
+  [simpleDraftTotals.supply, simpleDraftTotals.vat, simpleDraftTotals.grand],
+  [1300000, 130000, 1430000],
+  "simple QuoteDraft totals remain unchanged"
+);
+
+const detail2026 = Core.normalizeDraft(Object.assign(JSON.parse(JSON.stringify(simpleDraftForRollup)), {
+  items: [{ id: "summary-1", name: "ICT환경제어 시스템", qty: 1, unitPrice: 1 }],
+  detailGroups: [{
+    id: "detail-1",
+    summaryItemId: "summary-1",
+    title: "스마트팜 상세내역",
+    items: [
+      { id: "d1", name: "주장치", section: "1. 스마트팜", qty: 1, unitPrice: 15000000 },
+      { id: "d2", name: "설치 및 잡자재", section: "3. 인건비 및 잡자재", qty: 1, unitPrice: 1330000 }
+    ]
+  }],
+  calculationPolicy: floor10000
+}));
+assert.ok(detail2026, "2026-style detail draft normalizes");
+assert.equal(detail2026.items[0].unitPrice, 1, "stored summary unit price is not silently rewritten");
+const rollup2026 = Core.computeDraftTotals(detail2026);
+assert.equal(rollup2026.detailGroups[0].subtotal, 16330000, "detail subtotal is derived from child lines");
+assert.equal(rollup2026.effectiveItems[0].unitPrice, 16330000, "linked summary effective unit price comes from detail subtotal");
+assert.equal(rollup2026.amounts[0], 16330000, "summary amount uses derived unit price");
+assert.equal(rollup2026.rawGrand, 17963000, "detail rollup feeds existing VAT policy");
+assert.equal(rollup2026.grand, 17960000, "detail rollup feeds existing reviewed rounding policy");
+
+const detail2020 = Core.normalizeDraft(Object.assign(JSON.parse(JSON.stringify(simpleDraftForRollup)), {
+  items: [
+    { id: "summary-a", name: "2층 대예배실 음향", qty: 1, unitPrice: 0 },
+    { id: "summary-b", name: "1층 중예배실 음향", qty: 1, unitPrice: 0 },
+    { id: "summary-c", name: "부속실 음향", qty: 7, unitPrice: 0 }
+  ],
+  detailGroups: [
+    { id: "detail-a", summaryItemId: "summary-a", items: [{ name: "A 상세", qty: 1, unitPrice: 300329000 }] },
+    { id: "detail-b", summaryItemId: "summary-b", items: [{ name: "B 상세", qty: 1, unitPrice: 64657500 }] },
+    { id: "detail-c", summaryItemId: "summary-c", items: [{ name: "C 상세", qty: 1, unitPrice: 4744000 }] }
+  ]
+}));
+const rollup2020 = Core.computeDraftTotals(detail2020);
+assert.deepEqual(
+  rollup2020.effectiveItems.map((item) => item.unitPrice),
+  [300329000, 64657500, 4744000],
+  "multiple detail groups independently derive summary unit prices"
+);
+assert.deepEqual(
+  rollup2020.amounts,
+  [300329000, 64657500, 33208000],
+  "summary quantity multiplies each linked detail subtotal"
+);
+assert.equal(rollup2020.supply, 398194500, "2020 reviewed summary subtotal is reproduced");
+
+const badDetailMissingLink = JSON.parse(JSON.stringify(detail2026));
+badDetailMissingLink.detailGroups[0].summaryItemId = "missing-summary";
+assert.equal(Core.normalizeDraft(badDetailMissingLink), null, "broken detail summary link fails closed");
+const badDetailDuplicateLink = JSON.parse(JSON.stringify(detail2026));
+badDetailDuplicateLink.detailGroups.push({
+  id: "detail-2",
+  summaryItemId: "summary-1",
+  items: [{ name: "중복", qty: 1, unitPrice: 1 }]
+});
+assert.equal(Core.normalizeDraft(badDetailDuplicateLink), null, "duplicate summary link fails closed");
+const badNestedDetail = JSON.parse(JSON.stringify(detail2026));
+badNestedDetail.detailGroups[0].items[0].detailGroups = [];
+assert.equal(Core.normalizeDraft(badNestedDetail), null, "nested detail groups fail closed");
+const badDetailAmount = JSON.parse(JSON.stringify(detail2026));
+badDetailAmount.detailGroups[0].items[0].amount = 15000000;
+assert.equal(Core.normalizeDraft(badDetailAmount), null, "trusted detail amount input fails closed");
+
 /* VALID_UNTIL_CONTRACT — 견적일 + 유효기간 파생, 파싱 실패는 null */
 assert.equal(Core.computeValidUntil("2026-09-27", 30), "2026-10-27", "month rollover");
 assert.equal(Core.computeValidUntil("2026-09-27", "30"), "2026-10-27", "string days");
@@ -279,4 +352,11 @@ console.log("QUOTEDRAFT_SCHEMA_CONTRACT=PASS");
 console.log("NEW_QUOTE_DOMAIN_CONTRACT=PASS");
 console.log("PRINT_READINESS_CONTRACT=PASS");
 console.log("DRAFT_RESTORE_CONTRACT=PASS");
+console.log("SIMPLE_QUOTE_TOTALS_UNCHANGED=PASS");
+console.log("DETAIL_GROUP_SUBTOTAL=PASS");
+console.log("SUMMARY_UNIT_PRICE_DERIVED_FROM_DETAIL=PASS");
+console.log("SUMMARY_QTY_MULTIPLIES_DETAIL_SUBTOTAL=PASS");
+console.log("MULTIPLE_DETAIL_GROUPS=PASS");
+console.log("BROKEN_DETAIL_LINK_FAIL_CLOSED=YES");
+console.log("NESTED_DETAIL_GROUPS=0");
 console.log("B66_QUOTE_CORE_UNIT=PASS");

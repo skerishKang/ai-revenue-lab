@@ -212,12 +212,22 @@ const detailedCandidate = {
   issueDate: null,
   projectName: "스마트팜 환경제어설비",
   items: [{
+    id: "summary-1",
     name: "ICT환경제어 시스템",
     spec: "주장치 및 스마트팜 전용S/W",
     unit: "식",
     qty: 1,
-    unitPrice: 16330000,
+    unitPrice: 1,
     note: "설치 포함"
+  }],
+  detailGroups: [{
+    id: "detail-1",
+    summaryItemId: "summary-1",
+    title: "스마트팜 상세",
+    items: [
+      { name: "주장치", section: "1. 스마트팜", qty: 1, unitPrice: 15000000 },
+      { name: "설치", section: "3. 인건비 및 잡자재", qty: 1, unitPrice: 1330000 }
+    ]
   }],
   memo: null,
   taxMode: null,
@@ -228,6 +238,8 @@ assert.equal(detailedInput.projectName, "스마트팜 환경제어설비");
 assert.equal(detailedInput.items[0].spec, "주장치 및 스마트팜 전용S/W");
 assert.equal(detailedInput.items[0].unit, "식");
 assert.equal(detailedInput.items[0].note, "설치 포함");
+assert.equal(detailedInput.detailGroups[0].summaryItemId, "summary-1");
+assert.equal(detailedInput.detailGroups[0].items[0].section, "1. 스마트팜");
 
 const doc = fakeDocument();
 const rendered = Bridge.renderRequest(

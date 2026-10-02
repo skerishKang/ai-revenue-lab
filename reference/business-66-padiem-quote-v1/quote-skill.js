@@ -443,6 +443,12 @@
     if (skill.fixedDefaults.calculationPolicy) {
       draftInput.calculationPolicy = cloneJson(skill.fixedDefaults.calculationPolicy);
     }
+    if (input.detailGroups !== undefined && input.detailGroups !== null) {
+      if (!Array.isArray(input.detailGroups)) {
+        return { ok: false, code: "invalid_detail_groups", draft: null };
+      }
+      draftInput.detailGroups = cloneJson(input.detailGroups);
+    }
     var draft = Core.normalizeDraft(draftInput);
     if (!draft) return { ok: false, code: "invalid_quote_draft", draft: null };
     return { ok: true, code: "draft_ready", draft: draft };
