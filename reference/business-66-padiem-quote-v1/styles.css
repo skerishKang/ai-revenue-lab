@@ -197,7 +197,8 @@ textarea { min-height: 82px; resize: vertical; }
 .demo-mark { margin-top: 28px; text-align: right; color: #98a2b3; font-size: 10px; }
 .empty { color: #98a2b3; }
 .quote-summary-terms:empty,
-.quote-items-heading:empty { display: none; }
+.quote-items-heading:empty,
+.quote-sender-contact-person:empty { display: none; }
 
 /* #3423/#3433 formal-grid-v1: opt-in legacy printed-form presentation only. */
 .quote-paper[data-layout-variant="formal-grid-v1"] {
@@ -275,8 +276,9 @@ textarea { min-height: 82px; resize: vertical; }
 }
 .quote-paper[data-layout-variant="formal-grid-v1"] #pvSenderCompany { order: 2; }
 .quote-paper[data-layout-variant="formal-grid-v1"] #pvSenderRep { order: 3; }
-.quote-paper[data-layout-variant="formal-grid-v1"] #pvSenderContact { order: 4; }
-.quote-paper[data-layout-variant="formal-grid-v1"] #pvSenderAddress { order: 5; }
+.quote-paper[data-layout-variant="formal-grid-v1"] #pvSenderContactPerson { order: 4; }
+.quote-paper[data-layout-variant="formal-grid-v1"] #pvSenderContact { order: 5; }
+.quote-paper[data-layout-variant="formal-grid-v1"] #pvSenderAddress { order: 6; }
 .quote-paper[data-layout-variant="formal-grid-v1"] #pvSenderHeading:empty,
 .quote-paper[data-layout-variant="formal-grid-v1"] #pvSenderContact:empty {
   display: none;

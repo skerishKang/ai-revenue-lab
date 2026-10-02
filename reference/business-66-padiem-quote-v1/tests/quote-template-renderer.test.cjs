@@ -70,6 +70,7 @@ function legacyProjection(draft, provisional) {
     pvSenderHeading: "공급자",
     pvSenderCompany: legacyTextOrDash(draft.sender.company),
     pvSenderRep: "대표자  " + legacyTextOrDash(draft.sender.rep),
+    pvSenderContactPerson: "",
     pvSenderBizNo: "사업자번호  " + legacyTextOrDash(draft.sender.bizNo),
     pvSenderAddress: legacyTextOrDash(draft.sender.address),
     pvSenderContact: [draft.sender.phone.trim(), draft.sender.email.trim()].filter(Boolean).join(" · ") || "-",
@@ -127,6 +128,7 @@ function modelToProjection(model) {
     pvSenderHeading: model.parties.sender.heading,
     pvSenderCompany: model.parties.sender.company,
     pvSenderRep: model.parties.sender.rep,
+    pvSenderContactPerson: model.parties.sender.contactPerson,
     pvSenderBizNo: model.parties.sender.bizNo,
     pvSenderAddress: model.parties.sender.address,
     pvSenderContact: model.parties.sender.contact,
@@ -471,7 +473,7 @@ eq(authoritative.detailPages, [], "existing built-in template renders no detail 
 
 const formalDraft = Core.normalizeDraft(Object.assign(clone(detailDraft), {
   meta: Object.assign({}, detailDraft.meta, { issueDate: "2026-10-02", validDays: 30 }),
-  sender: Object.assign({}, detailDraft.sender, { phone: "010-0000-0000", email: "" }),
+  sender: Object.assign({}, detailDraft.sender, { contactPerson: "김담당", phone: "010-0000-0000", email: "" }),
   recipient: Object.assign({}, detailDraft.recipient, { company: "샘플농장", person: "" }),
   items: [{ id: "formal-summary", name: "제어 시스템", unit: "식", qty: 1, unitPrice: 0 }],
   detailGroups: [{
@@ -489,6 +491,7 @@ const formalContent = clone(rollupContent);
 formalContent.layoutVariant = "formal-grid-v1";
 formalContent.meta.issueDateFormat = "yyyy. mm.";
 formalContent.sender.contactPrefix = "MP : ";
+formalContent.sender.contactPersonPrefix = "담당자: ";
 formalContent.recipient.suffix = "귀중";
 formalContent.items.minRows = 9;
 formalContent.items.heading = "(1) 샘플 내역";
@@ -511,6 +514,7 @@ const formalModel = Renderer.buildRenderModel(
 eq(formalModel.layoutVariant, "formal-grid-v1", "formal layout variant reaches render model");
 check(formalModel.meta.dateText.endsWith("2026. 10."), "formal issue date uses the approved bounded display format");
 eq(formalModel.parties.sender.contact, "MP : 010-0000-0000", "formal sender contact prefix is presentation-only");
+eq(formalModel.parties.sender.contactPerson, "담당자: 김담당", "formal sender contact person comes from QuoteDraft authority");
 eq(formalModel.parties.recipient.company, "샘플농장 귀중", "formal recipient suffix is appended without mutating draft");
 eq(formalModel.itemsHeadingText, "(1) 샘플 내역", "formal summary item heading reaches render model");
 eq(formalModel.summaryTerms, [
@@ -659,7 +663,7 @@ const stylesCss = readSource("styles.css");
 const ADAPTER_IDS = [
   "pvTitle", "pvQuoteNo", "pvDate", "pvValidity", "pvValidUntil", "pvTaxMode", "pvProjectName", "pvWrittenTotal",
   "pvItemsHeading", "pvSummaryTerms",
-  "pvSenderHeading", "pvSenderCompany", "pvSenderRep", "pvSenderBizNo", "pvSenderAddress", "pvSenderContact",
+  "pvSenderHeading", "pvSenderCompany", "pvSenderRep", "pvSenderContactPerson", "pvSenderBizNo", "pvSenderAddress", "pvSenderContact",
   "pvRecipientHeading", "pvRecipientCompany", "pvRecipientPerson", "pvRecipientAddress", "pvRecipientEmail",
   "pvItemsHead", "pvItems", "pvDetailPages", "quotePaper",
   "subtotalLabelText", "subtotalText", "vatLabelText", "vatText", "grandLabelText", "grandText",

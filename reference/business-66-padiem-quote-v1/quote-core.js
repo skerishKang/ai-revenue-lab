@@ -208,6 +208,7 @@
       sender: {
         company: "샘플 공급사",
         rep: "대표자명",
+        contactPerson: "",
         bizNo: "000-00-00000",
         address: "",
         phone: "000-0000-0000",
@@ -398,6 +399,7 @@
         sender: {
           company: asString(raw.sender && raw.sender.company, base.sender.company),
           rep: asString(raw.sender && raw.sender.rep, base.sender.rep),
+          contactPerson: asString(raw.sender && raw.sender.contactPerson, ""),
           bizNo: asString(raw.sender && raw.sender.bizNo, base.sender.bizNo),
           address: asString(raw.sender && raw.sender.address, ""),
           phone: asString(raw.sender && raw.sender.phone, base.sender.phone),
@@ -475,6 +477,7 @@
       sender: {
         company: current.sender.company,
         rep: current.sender.rep,
+        contactPerson: current.sender.contactPerson,
         bizNo: current.sender.bizNo,
         address: current.sender.address,
         phone: current.sender.phone,
