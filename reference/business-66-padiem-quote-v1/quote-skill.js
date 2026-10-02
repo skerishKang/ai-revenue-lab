@@ -44,6 +44,9 @@
   var MAX_EVIDENCE_VALUE_CHARS = 240;
   var MAX_ITEMS = 100;
   var MAX_ITEM_NAME_CHARS = 240;
+  var MAX_ITEM_DETAIL_CHARS = 240;
+  var MAX_ITEM_UNIT_CHARS = 80;
+  var MAX_PROJECT_NAME_CHARS = 240;
   var MAX_APPROVER_REF_CHARS = 128;
 
   var CALCULATION_AUTHORITY = "quote-core";
@@ -367,16 +370,21 @@
     var items = [];
     for (var i = 0; i < raw.length; i += 1) {
       var entry = raw[i];
-      if (!isPlainObject(entry) || unknownKeys(entry, ["id", "name", "qty", "unitPrice"]).length > 0) return null;
+      var allowed = ["id", "sequence", "name", "specification", "unit", "qty", "unitPrice", "rowNote"];
+      if (!isPlainObject(entry) || unknownKeys(entry, allowed).length > 0) return null;
       var name = boundedString(entry.name, MAX_ITEM_NAME_CHARS, "").trim();
       var qty = Number(entry.qty);
       var unitPrice = Number(entry.unitPrice);
       if (!name || !Number.isFinite(qty) || qty <= 0 || !Number.isFinite(unitPrice) || unitPrice < 0) return null;
       items.push({
         id: typeof entry.id === "string" && entry.id.trim() ? entry.id.trim().slice(0, 80) : "item-" + (i + 1),
+        sequence: boundedString(entry.sequence, 40, String(i + 1)).trim() || String(i + 1),
         name: name,
+        specification: boundedString(entry.specification, MAX_ITEM_DETAIL_CHARS, "").trim(),
+        unit: boundedString(entry.unit, MAX_ITEM_UNIT_CHARS, "").trim(),
         qty: qty,
-        unitPrice: unitPrice
+        unitPrice: unitPrice,
+        rowNote: boundedString(entry.rowNote, MAX_ITEM_DETAIL_CHARS, "").trim()
       });
     }
     return items;
@@ -389,6 +397,7 @@
     var skill = compiled.skill;
     var quoteNo = typeof input.quoteNo === "string" ? input.quoteNo.trim() : "";
     var issueDate = typeof input.issueDate === "string" ? input.issueDate.trim() : "";
+    var projectName = boundedString(input.projectName, MAX_PROJECT_NAME_CHARS, "").trim();
     var recipient = normalizeRecipient(input.recipient);
     var items = normalizeItems(input.items);
     if (!quoteNo || quoteNo.length > 120 || !ISO_DATE_PATTERN.test(issueDate) || !Core.parseISODate(issueDate) || !recipient || !items) {
@@ -413,7 +422,8 @@
         quoteNo: quoteNo,
         issueDate: issueDate,
         validDays: skill.fixedDefaults.validDays,
-        source: "saved-quote-skill"
+        source: "saved-quote-skill",
+        projectName: projectName
       },
       sender: cloneJson(skill.fixedDefaults.sender),
       recipient: recipient,

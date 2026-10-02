@@ -351,7 +351,8 @@
         recipient: candidate.recipient,
         items: candidate.items,
         quoteNo: candidate.quoteNo || (current && current.meta && current.meta.quoteNo),
-        issueDate: candidate.issueDate || (current && current.meta && current.meta.issueDate)
+        issueDate: candidate.issueDate || (current && current.meta && current.meta.issueDate),
+        projectName: typeof candidate.projectName === "string" ? candidate.projectName : ""
       };
       if (typeof candidate.memo === "string") input.memo = candidate.memo;
       if (typeof candidate.taxMode === "string") input.taxMode = candidate.taxMode;

@@ -21,13 +21,17 @@ MAX_TEXT_CHARS = 2_000
 MAX_MEMO_CHARS = 4_000
 MAX_ITEMS = 100
 MAX_ITEM_NAME_CHARS = 240
+MAX_ITEM_DETAIL_CHARS = 240
+MAX_ITEM_UNIT_CHARS = 80
 
 TAX_MODES = frozenset({"EXCLUSIVE", "INCLUSIVE", "EXEMPT"})
 _ALLOWED_TOP = frozenset(
-    {"recipient", "quoteNo", "issueDate", "items", "memo", "taxMode", "missing"}
+    {"recipient", "quoteNo", "issueDate", "projectName", "items", "memo", "taxMode", "missing"}
 )
 _ALLOWED_RECIPIENT = frozenset({"company", "person", "address", "email"})
-_ALLOWED_ITEM = frozenset({"name", "qty", "unitPrice"})
+_ALLOWED_ITEM = frozenset(
+    {"sequence", "name", "specification", "unit", "qty", "unitPrice", "rowNote"}
+)
 _ALLOWED_MISSING = frozenset(
     {"recipient", "quoteNo", "issueDate", "items", "memo", "taxMode"}
 )
@@ -76,12 +80,14 @@ class B66QuoteConversationProjection:
     memo: str | None
     tax_mode: str | None
     missing: tuple[str, ...]
+    project_name: str | None = None
 
     def safe_dict(self) -> dict[str, Any]:
         return {
             "recipient": dict(self.recipient),
             "quoteNo": self.quote_no,
             "issueDate": self.issue_date,
+            "projectName": self.project_name,
             "items": [dict(item) for item in self.items],
             "memo": self.memo,
             "taxMode": self.tax_mode,
@@ -164,6 +170,8 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
         except ValueError as exc:
             raise B66QuoteConversationError("invalid_issue_date") from exc
 
+    project_name = _optional_text(raw.get("projectName"), limit=MAX_ITEM_DETAIL_CHARS)
+
     items_raw = raw.get("items")
     if items_raw is None:
         items_raw = []
@@ -178,7 +186,20 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
         unit_price = _optional_number(entry.get("unitPrice"), positive=False)
         if name is None or qty is None or unit_price is None:
             raise B66QuoteConversationError("incomplete_item")
-        items.append({"name": name, "qty": qty, "unitPrice": unit_price})
+        item = {"name": name, "qty": qty, "unitPrice": unit_price}
+        sequence = _optional_text(entry.get("sequence"), limit=40)
+        specification = _optional_text(entry.get("specification"), limit=MAX_ITEM_DETAIL_CHARS)
+        unit = _optional_text(entry.get("unit"), limit=MAX_ITEM_UNIT_CHARS)
+        row_note = _optional_text(entry.get("rowNote"), limit=MAX_ITEM_DETAIL_CHARS)
+        if sequence is not None:
+            item["sequence"] = sequence
+        if specification is not None:
+            item["specification"] = specification
+        if unit is not None:
+            item["unit"] = unit
+        if row_note is not None:
+            item["rowNote"] = row_note
+        items.append(item)
 
     memo = _optional_text(raw.get("memo"), limit=MAX_MEMO_CHARS)
     tax_mode_raw = raw.get("taxMode")
@@ -205,6 +226,7 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
         quote_no=quote_no,
         issue_date=issue_date,
         items=tuple(items),
+        project_name=project_name,
         memo=memo,
         tax_mode=tax_mode,
         missing=tuple(missing_raw),
@@ -238,8 +260,10 @@ def _conversation_prompt(skill: dict[str, Any]) -> str:
     return (
         "당신은 견적서 생성기가 아니라 견적 입력값 추출기입니다. "
         "사용자의 한 문장에서 실제로 말한 값만 JSON 객체 하나로 추출하십시오. "
-        "최상위 키는 recipient, quoteNo, issueDate, items, memo, taxMode, missing 만 허용됩니다. "
-        "recipient는 company/person/address/email, items는 name/qty/unitPrice 만 사용하십시오. "
+        "최상위 키는 recipient, quoteNo, issueDate, projectName, items, memo, taxMode, missing 만 허용됩니다. "
+        "recipient는 company/person/address/email을 사용하십시오. "
+        "items는 name/qty/unitPrice를 필수로 하고 sequence/specification/unit/rowNote는 사용자가 실제로 말했을 때만 사용하십시오. "
+        "건명·공사명·프로젝트명이 명시되면 projectName에 넣으십시오. "
         "금액 합계, 공급가액, 부가세 금액, 총액을 계산하거나 반환하지 마십시오. "
         "sender, template, approval, fingerprint를 변경하거나 반환하지 마십시오. "
         "없는 값은 null 또는 빈 배열로 두고 필요한 추가 입력 필드 이름만 missing 배열에 넣으십시오. "

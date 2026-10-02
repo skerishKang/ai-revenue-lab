@@ -14,6 +14,10 @@ assert.equal(Core.parseMoney("-500"), 0, "negative rejected");
 assert.ok(Number.isFinite(Core.parseMoney("1,000,000")), "never NaN");
 assert.equal(Core.formatMoney(1430000), "₩1,430,000", "money display");
 assert.equal(Core.formatInputNumber(1500000), "1,500,000", "input display format");
+assert.equal(Core.formatKoreanMoneyWords(0), "영원", "written zero");
+assert.equal(Core.formatKoreanMoneyWords(1430000), "백사십삼만원", "written grand formatting");
+assert.equal(Core.formatKoreanMoneyWords(123456789), "일억이천삼백사십오만육천칠백팔십구원", "written large amount");
+assert.equal(Core.formatKoreanMoneyWords(-1), "", "negative written amount rejected");
 
 /* KOREAN_MONEY_SHORTHAND — Easy Mode 단가용 결정론적 한국식 금액 파서 */
 assert.equal(Core.parseKoreanMoney("1,500,000"), 1500000, "comma money");
@@ -77,7 +81,7 @@ assert.equal(draft.schemaVersion, 1, "schema version");
 ["meta", "sender", "recipient", "items", "tax", "memo"].forEach((k) => {
   assert.ok(k in draft, `draft has ${k}`);
 });
-["quoteNo", "issueDate", "validDays", "source"].forEach((k) => {
+["quoteNo", "issueDate", "validDays", "source", "projectName"].forEach((k) => {
   assert.ok(k in draft.meta, `meta has ${k}`);
 });
 ["company", "rep", "bizNo", "address", "phone", "email", "presetId"].forEach((k) => {
@@ -119,7 +123,9 @@ assert.equal(blankNext.meta.quoteNo, "PQ-20260928-002", "fresh quote number inje
 assert.equal(blankNext.meta.issueDate, "2026-09-28", "fresh issue date injected");
 assert.equal(blankNext.meta.validDays, 14, "validity preference preserved");
 assert.deepEqual(blankNext.recipient, { company: "", person: "", address: "", email: "" }, "recipient cleared");
-assert.deepEqual(blankNext.items, [{ id: "item-1", name: "", qty: 1, unitPrice: 0 }], "one blank item");
+assert.deepEqual(blankNext.items, [{
+  id: "item-1", sequence: "1", name: "", specification: "", unit: "", qty: 1, unitPrice: 0, rowNote: ""
+}], "one blank fidelity-capable item");
 assert.equal(blankNext.tax.mode, "EXCLUSIVE", "new quote tax resets to explicit default");
 assert.equal(blankNext.memo, Core.createDefaultDraft().memo, "ordinary default memo restored");
 assert.equal(currentForNew.recipient.company, "이전 고객", "source draft not mutated");
@@ -175,6 +181,7 @@ assert.equal(badItems.items[0].unitPrice, 0, "garbage price falls back");
 
 console.log("KOREAN_MONEY_INPUT_CONTRACT=PASS");
 console.log("KOREAN_MONEY_SHORTHAND=PASS");
+console.log("KOREAN_WRITTEN_MONEY_FORMAT=PASS");
 console.log("AMBIGUOUS_MIXED_UNIT_FAILS_SAFE=YES");
 console.log("VAT_EXCLUSIVE_CONTRACT=PASS");
 console.log("VAT_INCLUSIVE_CONTRACT=PASS");

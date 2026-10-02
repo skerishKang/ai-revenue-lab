@@ -144,10 +144,14 @@
         index: index,
         emptyName: emptyName,
         values: {
+          sequence: String(item.sequence == null || item.sequence === "" ? index + 1 : item.sequence),
           name: emptyName ? emptyNameText : item.name,
+          specification: String(item.specification == null ? "" : item.specification),
+          unit: String(item.unit == null ? "" : item.unit),
           qty: Core.formatInputNumber(item.qty),
           unitPrice: Core.formatMoney(item.unitPrice),
-          amount: Core.formatMoney(totals.amounts[index])
+          amount: Core.formatMoney(totals.amounts[index]),
+          rowNote: String(item.rowNote == null ? "" : item.rowNote)
         }
       };
     }) : [];
@@ -196,6 +200,9 @@
         validUntilText: has("meta") ? content.meta.validUntilPrefix + (validUntil || content.fallbackText) : "",
         taxText: has("meta")
           ? (provisional ? content.meta.taxReviewText : content.meta.taxPrefix + Core.TAX_LABELS[mode])
+          : "",
+        projectNameText: has("meta") && content.meta.projectNamePrefix && String(normalizedDraft.meta.projectName || "").trim()
+          ? content.meta.projectNamePrefix + String(normalizedDraft.meta.projectName).trim()
           : ""
       },
       parties: {
@@ -236,6 +243,9 @@
           : "",
         grandText: has("totals")
           ? (provisional ? content.totals.provisional.grandText : Core.formatMoney(totals.grand))
+          : "",
+        writtenGrandText: has("totals") && provisional !== true && content.totals.showWrittenGrand === true
+          ? String(content.totals.writtenGrandPrefix || "") + Core.formatKoreanMoneyWords(totals.grand)
           : ""
       },
       memoText: has("memo")
@@ -294,6 +304,7 @@
     setText("pvValidity", model.meta.validityText);
     setText("pvValidUntil", model.meta.validUntilText);
     setText("pvTaxMode", model.meta.taxText);
+    setText("pvProjectName", model.meta.projectNameText);
 
     setText("pvSenderHeading", sender.heading);
     setText("pvSenderCompany", sender.company);
@@ -336,6 +347,7 @@
     setText("pvVat", totals.vatText);
     setText("pvGrandLabel", totals.grandLabel);
     setText("pvGrand", totals.grandText);
+    setText("pvWrittenGrand", totals.writtenGrandText);
 
     setText("pvMemo", model.memoText);
     setText("pvMark", model.markText);

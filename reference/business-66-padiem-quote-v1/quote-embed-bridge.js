@@ -126,6 +126,7 @@
       issueDate: typeof candidate.issueDate === "string" && candidate.issueDate.trim()
         ? candidate.issueDate.trim()
         : defaults.meta.issueDate,
+      projectName: typeof candidate.projectName === "string" ? candidate.projectName.trim() : "",
       items: candidate.items
     };
     if (typeof candidate.memo === "string") input.memo = candidate.memo;

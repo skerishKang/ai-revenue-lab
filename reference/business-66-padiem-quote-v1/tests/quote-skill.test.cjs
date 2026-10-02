@@ -98,6 +98,29 @@ eq(first.draft.items[0].qty, 50, "new item quantity is applied");
 eq(first.draft.items[0].unitPrice, 120000, "new item unit price is applied");
 eq(first.draft.meta.source, "saved-quote-skill", "repeat generation is marked as Saved Quote Skill execution");
 
+const fidelity = Skill.buildRenderModel(skill, input({
+  projectName: "스마트팜 환경제어 구축",
+  items: [{
+    id: "item-1",
+    sequence: "7",
+    name: "환경제어 장치",
+    specification: "CGI-X1",
+    unit: "SET",
+    qty: 2,
+    unitPrice: 250000,
+    rowNote: "현장 설치 포함"
+  }]
+}));
+check(fidelity.ok === true, "extended structured repeat generation succeeds");
+eq(fidelity.draft.meta.projectName, "스마트팜 환경제어 구축", "project name is carried as per-quote fact");
+eq(fidelity.draft.items[0].sequence, "7", "item sequence is preserved");
+eq(fidelity.draft.items[0].specification, "CGI-X1", "item specification is preserved");
+eq(fidelity.draft.items[0].unit, "SET", "item unit is preserved");
+eq(fidelity.draft.items[0].rowNote, "현장 설치 포함", "item row note is preserved");
+eq(fidelity.compiled.skillFingerprint, first.compiled.skillFingerprint,
+  "new structural fields do not mutate approved Skill identity");
+
+
 const same = Skill.buildRenderModel(skill, input());
 eq(same.draft, first.draft, "same structured input yields the same QuoteDraft");
 eq(same.renderModel, first.renderModel, "SAME_INPUT_SAME_RENDER=YES");
