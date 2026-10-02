@@ -47,6 +47,8 @@ import type {
   PairingDeepLinkResponse,
   RunnerHealthResponse,
   ShellStatus,
+  WorkspaceListResponse,
+  WorkspaceRootResponse,
 } from './types.js';
 
 export interface ShellViewState {
@@ -54,6 +56,8 @@ export interface ShellViewState {
   readonly health: RunnerHealthResponse | null;
   readonly pairing: PairingDeepLinkResponse | null;
   readonly log: BoundedLogResponse | null;
+  readonly workspaceRoot: WorkspaceRootResponse | null;
+  readonly workspaceListing: WorkspaceListResponse | null;
   readonly notice: string | null;
   /** Which action produced `notice`. The raw reason is a diagnostic. */
   readonly noticeAction: ShellNoticeAction | null;
@@ -69,6 +73,8 @@ export const INITIAL_SHELL_VIEW_STATE: ShellViewState = Object.freeze({
   health: null,
   pairing: null,
   log: null,
+  workspaceRoot: null,
+  workspaceListing: null,
   notice: null,
   noticeAction: null,
   error: null,
@@ -80,6 +86,9 @@ export interface ShellActions {
   readonly start: () => Promise<void>;
   readonly stop: () => Promise<void>;
   readonly submitPairingDeepLink: (deepLink: string) => Promise<void>;
+  readonly chooseWorkspaceRoot: () => Promise<void>;
+  readonly openWorkspaceDirectory: (relativePath: string) => Promise<void>;
+  readonly clearWorkspaceRoot: () => Promise<void>;
 }
 
 export interface ShellBridge {
@@ -151,9 +160,53 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
     [api, refresh],
   );
 
+  const openWorkspaceDirectory = useCallback(
+    async (relativePath: string): Promise<void> => {
+      if (!api) return;
+      const listing = await api.listWorkspaceDirectory(relativePath);
+      setState((prev) => ({
+        ...prev,
+        workspaceRoot: listing.root,
+        workspaceListing: listing,
+      }));
+    },
+    [api],
+  );
+
+  const chooseWorkspaceRoot = useCallback(async (): Promise<void> => {
+    if (!api) return;
+    const root = await api.chooseWorkspaceRoot();
+    setState((prev) => ({ ...prev, workspaceRoot: root }));
+    if (root.selected) {
+      const listing = await api.listWorkspaceDirectory('');
+      setState((prev) => ({
+        ...prev,
+        workspaceRoot: listing.root,
+        workspaceListing: listing,
+      }));
+    }
+  }, [api]);
+
+  const clearWorkspaceRoot = useCallback(async (): Promise<void> => {
+    if (!api) return;
+    const root = await api.clearWorkspaceRoot();
+    setState((prev) => ({
+      ...prev,
+      workspaceRoot: root,
+      workspaceListing: null,
+    }));
+  }, [api]);
+
   useEffect(() => {
     if (!api) return;
     void refresh();
+    void api.listWorkspaceDirectory('').then((listing) => {
+      setState((prev) => ({
+        ...prev,
+        workspaceRoot: listing.root,
+        workspaceListing: listing.ok ? listing : prev.workspaceListing,
+      }));
+    });
     const timer = setInterval(() => void refresh(), 5000);
     return () => clearInterval(timer);
   }, [api, refresh]);
@@ -161,7 +214,19 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
   if (!api) {
     return { error: state.error ?? 'connecting to the local shell bridge…' };
   }
-  return { api, state, actions: { refresh, start, stop, submitPairingDeepLink } };
+  return {
+    api,
+    state,
+    actions: {
+      refresh,
+      start,
+      stop,
+      submitPairingDeepLink,
+      chooseWorkspaceRoot,
+      openWorkspaceDirectory,
+      clearWorkspaceRoot,
+    },
+  };
 }
 
 export interface UiPreferencesController {
@@ -330,6 +395,90 @@ export function RunnerPanel(props: {
           <dt>{t('readiness.lastExitCode')}</dt>
           <dd>{String(health?.lastExitCode ?? '-')}</dd>
         </dl>
+      ) : null}
+    </section>
+  );
+}
+
+function parentWorkspacePath(relativePath: string): string {
+  const parts = relativePath.split('/').filter(Boolean);
+  parts.pop();
+  return parts.join('/');
+}
+
+export function WorkspacePanel(props: {
+  root: WorkspaceRootResponse | null;
+  listing: WorkspaceListResponse | null;
+  actions: ShellActions;
+  locale: ShellLocale;
+  advanced: boolean;
+}): ReactElement {
+  const { root, listing, actions, locale, advanced } = props;
+  const t = (key: ShellStringKey): string => translate(locale, key);
+  const selected = root?.selected === true;
+  const directory = listing?.directory ?? '';
+
+  return (
+    <section className="panel workspace-panel">
+      <div className="workspace-heading">
+        <div>
+          <h2>{t('workspace.title')}</h2>
+          <p className="subtitle">{t('workspace.explainer')}</p>
+        </div>
+        <div className="row">
+          <button className={selected ? '' : 'primary'} onClick={() => void actions.chooseWorkspaceRoot()}>
+            {selected ? t('workspace.change') : t('workspace.choose')}
+          </button>
+          {selected ? (
+            <button onClick={() => void actions.clearWorkspaceRoot()}>{t('workspace.clear')}</button>
+          ) : null}
+        </div>
+      </div>
+
+      {!selected ? <p className="guidance">{t('workspace.empty')}</p> : null}
+
+      {selected ? (
+        <>
+          <div className="workspace-location">
+            <strong>{root?.rootName}</strong>
+            {directory ? <span> / {directory}</span> : null}
+          </div>
+          {advanced && root?.rootPath ? (
+            <p className="workspace-path" data-advanced="true">{root.rootPath}</p>
+          ) : null}
+          <div className="row workspace-nav">
+            <button disabled={directory === ''} onClick={() => void actions.openWorkspaceDirectory(parentWorkspacePath(directory))}>
+              {t('workspace.up')}
+            </button>
+            <button disabled={directory === ''} onClick={() => void actions.openWorkspaceDirectory('')}>
+              {t('workspace.root')}
+            </button>
+          </div>
+          {listing && !listing.ok ? (
+            <p className="workspace-error">{t('workspace.unavailable')}</p>
+          ) : null}
+          <ul className="workspace-list">
+            {(listing?.entries ?? []).map((entry) => (
+              <li key={entry.relativePath} data-kind={entry.kind}>
+                {entry.kind === 'directory' ? (
+                  <button className="workspace-entry" onClick={() => void actions.openWorkspaceDirectory(entry.relativePath)}>
+                    <span aria-hidden="true">▸</span>
+                    <span>{entry.name}</span>
+                  </button>
+                ) : (
+                  <span className="workspace-entry workspace-entry-static">
+                    <span aria-hidden="true">{entry.kind === 'file' ? '·' : '↗'}</span>
+                    <span>{entry.name}</span>
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+          {listing?.ok && listing.entries.length === 0 ? (
+            <p className="guidance">{t('workspace.noEntries')}</p>
+          ) : null}
+          {listing?.truncated ? <p className="notice">{t('workspace.truncated')}</p> : null}
+        </>
       ) : null}
     </section>
   );
@@ -538,6 +687,13 @@ export function ShellView(props: {
         status={state.status}
         health={state.health}
         busy={state.busy}
+        actions={actions}
+        locale={locale}
+        advanced={visibility.developerFacts}
+      />
+      <WorkspacePanel
+        root={state.workspaceRoot}
+        listing={state.workspaceListing}
         actions={actions}
         locale={locale}
         advanced={visibility.developerFacts}

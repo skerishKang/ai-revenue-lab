@@ -20,6 +20,9 @@ export const IPC_CHANNELS = [
   'padiem:shell:runner-health',
   'padiem:shell:pairing-deeplink-submit',
   'padiem:shell:get-bounded-log',
+  'padiem:shell:workspace-choose-root',
+  'padiem:shell:workspace-list',
+  'padiem:shell:workspace-clear-root',
 ] as const;
 
 export type IpcChannel = (typeof IPC_CHANNELS)[number];
@@ -152,6 +155,40 @@ export interface BoundedLogResponse {
   readonly redactionApplied: true;
 }
 
+export interface WorkspaceRootResponse {
+  readonly selected: boolean;
+  readonly rootName: string | null;
+  readonly rootPath: string | null;
+  readonly reason: 'current' | 'selected' | 'cancelled' | 'invalid_selection' | 'cleared';
+}
+
+export type WorkspaceEntryKind = 'directory' | 'file' | 'link';
+
+export interface WorkspaceEntry {
+  readonly name: string;
+  readonly relativePath: string;
+  readonly kind: WorkspaceEntryKind;
+}
+
+export interface WorkspaceListRequest {
+  readonly relativePath?: string;
+}
+
+export interface WorkspaceListResponse {
+  readonly ok: boolean;
+  readonly root: WorkspaceRootResponse;
+  readonly directory: string;
+  readonly entries: readonly WorkspaceEntry[];
+  readonly truncated: boolean;
+  readonly maxEntries: number;
+  readonly errorCode:
+    | null
+    | 'root_not_selected'
+    | 'invalid_relative_path'
+    | 'path_outside_root'
+    | 'workspace_unavailable';
+}
+
 /** Maps a channel to its request/response types — the whole surface, closed. */
 export interface IpcSurface {
   'padiem:shell:get-status': { request: undefined; response: ShellStatus };
@@ -163,6 +200,9 @@ export interface IpcSurface {
     response: PairingDeepLinkResponse;
   };
   'padiem:shell:get-bounded-log': { request: BoundedLogRequest; response: BoundedLogResponse };
+  'padiem:shell:workspace-choose-root': { request: undefined; response: WorkspaceRootResponse };
+  'padiem:shell:workspace-list': { request: WorkspaceListRequest; response: WorkspaceListResponse };
+  'padiem:shell:workspace-clear-root': { request: undefined; response: WorkspaceRootResponse };
 }
 
 export type IpcRequestOf<C extends IpcChannel> = IpcSurface[C]['request'];

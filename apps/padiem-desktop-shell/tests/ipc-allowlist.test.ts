@@ -11,7 +11,7 @@ import {
   isAllowedIpcChannel,
 } from '../src/contract/ipc.js';
 
-test('#3083 IPC surface is exactly the six declared allowlisted channels', () => {
+test('#3436 IPC surface is exactly the declared narrow allowlist', () => {
   assert.deepEqual([...IPC_CHANNELS].sort(), [
     'padiem:shell:get-bounded-log',
     'padiem:shell:get-status',
@@ -19,9 +19,12 @@ test('#3083 IPC surface is exactly the six declared allowlisted channels', () =>
     'padiem:shell:runner-health',
     'padiem:shell:runner-start',
     'padiem:shell:runner-stop',
+    'padiem:shell:workspace-choose-root',
+    'padiem:shell:workspace-clear-root',
+    'padiem:shell:workspace-list',
   ]);
-  assert.equal(IPC_ALLOWLIST.size, 6);
-  assert.equal(IPC_SECURITY.ALLOWLIST_SIZE, 6);
+  assert.equal(IPC_ALLOWLIST.size, 9);
+  assert.equal(IPC_SECURITY.ALLOWLIST_SIZE, 9);
 });
 
 test('#3083 IPC security posture forbids generic invoke, raw shell and renderer credentials', () => {

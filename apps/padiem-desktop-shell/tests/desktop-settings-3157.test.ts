@@ -96,6 +96,9 @@ const NOOP_ACTIONS: ShellActions = {
   start: async () => undefined,
   stop: async () => undefined,
   submitPairingDeepLink: async () => undefined,
+  chooseWorkspaceRoot: async () => undefined,
+  openWorkspaceDirectory: async () => undefined,
+  clearWorkspaceRoot: async () => undefined,
 };
 
 function render(element: ReactElement | null): string {
@@ -426,6 +429,15 @@ test('#3157 Start/Stop/Recheck still drive the existing actions', () => {
     submitPairingDeepLink: async () => {
       calls.push('submitPairingDeepLink');
     },
+    chooseWorkspaceRoot: async () => {
+      calls.push('chooseWorkspaceRoot');
+    },
+    openWorkspaceDirectory: async () => {
+      calls.push('openWorkspaceDirectory');
+    },
+    clearWorkspaceRoot: async () => {
+      calls.push('clearWorkspaceRoot');
+    },
   };
   const runner = render(
     createElement(RunnerPanel, {
@@ -456,9 +468,19 @@ test('#3157 Start/Stop/Recheck still drive the existing actions', () => {
   assert.deepEqual(calls, ['runnerStart', 'runnerStop', 'refresh']);
 });
 
-test('#3157 the renderer still calls only the six allowlisted API methods', () => {
+test('#3436 the renderer still calls only the fixed allowlisted API methods', () => {
   const source = readFileSync(path.join(rendererDir, 'app.tsx'), 'utf8');
-  const allowed = ['getStatus', 'runnerStart', 'runnerStop', 'runnerHealth', 'submitPairingDeepLink', 'getBoundedLog'];
+  const allowed = [
+    'getStatus',
+    'runnerStart',
+    'runnerStop',
+    'runnerHealth',
+    'submitPairingDeepLink',
+    'getBoundedLog',
+    'chooseWorkspaceRoot',
+    'listWorkspaceDirectory',
+    'clearWorkspaceRoot',
+  ];
   const invoked = [...source.matchAll(/\bapi\.([A-Za-z]+)\(/g)].map((match) => match[1] ?? '');
   assert.ok(invoked.length > 0);
   for (const name of invoked) {

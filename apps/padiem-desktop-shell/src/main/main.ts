@@ -14,7 +14,7 @@
  *   - a second execution authority
  */
 
-import { BrowserWindow, app, ipcMain } from 'electron';
+import { BrowserWindow, app, dialog, ipcMain } from 'electron';
 import { fileURLToPath } from 'node:url';
 import {existsSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -30,6 +30,7 @@ import { registerWindowsProtocolClient } from './protocol-registration.js';
 import { acquireSingleInstanceOwnership } from './single-instance.js';
 import { PairingHandoffConsumer } from './pairing-handoff-consumer.js';
 import { resolveRunnerHostMode } from './runner-host-mode.js';
+import { LocalWorkspaceController } from '../workspace/local-workspace.js';
 
 const __dirname_ = path.dirname(fileURLToPath(import.meta.url));
 
@@ -120,9 +121,21 @@ export const supervisor = new HeadlessRunnerSupervisor({
   spec: runnerSpawnSpec(),
 });
 
+export const localWorkspace = new LocalWorkspaceController(async () => {
+  const result = await dialog.showOpenDialog({
+    title: 'Choose a Padiem work folder',
+    properties: ['openDirectory'],
+  });
+  if (result.canceled || result.filePaths.length !== 1) {
+    return null;
+  }
+  return result.filePaths[0] ?? null;
+});
+
 export const controller = new ShellController({
   supervisor,
   boundedLogLines: () => processPort.boundedActiveOutput().lines,
+  workspace: localWorkspace,
 });
 
 let mainWindow: BrowserWindow | null = null;
