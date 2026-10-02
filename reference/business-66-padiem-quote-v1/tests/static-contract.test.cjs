@@ -563,10 +563,12 @@ check(!/(kilo\/|space-bunny|nemotron|openai|anthropic)/i.test(template + templat
 check(!/FileReader|FormData|indexedDB/i.test(template + templateStore + templateRenderer),
   "RAW_SOURCE_FILE_PERSISTENCE=0: template modules never touch raw file bytes");
 check(app.includes("TemplateRenderer.buildRenderModel(") &&
-      app.includes("previewTemplateProfile() || renderTemplateAuthority()") &&
+      app.includes("const previewProfile = previewTemplateProfile();") &&
+      app.includes("const authority = previewProfile || renderTemplateAuthority();") &&
       app.includes("function renderTemplateAuthority()") &&
-      app.includes("return activeSkillProfile() || activeTemplateProfile();"),
-  "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: direct mode renders through the approved template/skill renderer");
+      app.includes("return activeSkillProfile() || activeTemplateProfile();") &&
+      app.includes("slotSources: serverSkillActive ? skillUiState.serverSlotSources : {}"),
+  "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: direct mode renders through approved template/skill authority with transient private assets");
 check(!app.includes("vatSummaryLabel"),
   "QUOTE_TEMPLATE_PROFILE_CONTRACT: presentation labels are no longer hard-coded in app.js");
 check(app.includes("TemplateStore && TemplateStore.TEMPLATE_STORAGE_KEY"),
