@@ -79,9 +79,17 @@ jobs:
               "GOOGLE_PROVIDER_CALLS=0",
           ):
               assert marker in workflow, marker
-          assert workflow.count("pywrangler deploy --strict") == 1
-          for forbidden in ("/workers/routes", "-X PUT", "-X POST", "-X PATCH", "-X DELETE"):
-              assert forbidden not in workflow, forbidden
+          strict_deploy = "pywrangler " + "deploy --strict"
+          assert workflow.count(strict_deploy) == 1
+          forbidden = (
+              "/workers/" + "routes",
+              "-X " + "PUT",
+              "-X " + "POST",
+              "-X " + "PATCH",
+              "-X " + "DELETE",
+          )
+          for marker in forbidden:
+              assert marker not in workflow, marker
           assert edge["name"] == "padiem-google-oauth-edge"
           assert edge["workers_dev"] is False and edge["preview_urls"] is False
           assert edge["services"] == [{
