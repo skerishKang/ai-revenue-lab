@@ -79,6 +79,48 @@ def test_classifier_rejects_wrong_index_or_foreign_key() -> None:
     assert helper.classify_schema(bad_fk) == "drift"
 
 
+def test_classifier_accepts_schema_created_by_migration() -> None:
+    helper = _load_helper()
+    db = sqlite3.connect(":memory:")
+    db.row_factory = sqlite3.Row
+    db.executescript(
+        """
+        PRAGMA foreign_keys=ON;
+        CREATE TABLE users (id TEXT PRIMARY KEY);
+        """
+    )
+    db.executescript(MIGRATION.read_text(encoding="utf-8"))
+    objects = [
+        dict(row)
+        for row in db.execute(
+            "SELECT name, type, sql FROM sqlite_master "
+            "WHERE name IN ('b66_quote_asset','idx_b66_quote_asset_owner_workspace_status') "
+            "ORDER BY name"
+        ).fetchall()
+    ]
+    columns = [dict(row) for row in db.execute("PRAGMA table_info(b66_quote_asset)").fetchall()]
+    index_columns = [
+        dict(row)
+        for row in db.execute(
+            "PRAGMA index_info(idx_b66_quote_asset_owner_workspace_status)"
+        ).fetchall()
+    ]
+    foreign_keys = [
+        dict(row)
+        for row in db.execute("PRAGMA foreign_key_list(b66_quote_asset)").fetchall()
+    ]
+    payload = {
+        "success": True,
+        "result": [
+            _result(objects),
+            _result(columns),
+            _result(index_columns),
+            _result(foreign_keys),
+        ],
+    }
+    assert helper.classify_schema(payload) == "exact"
+
+
 def test_migration_is_additive_and_preserves_existing_rows() -> None:
     db = sqlite3.connect(":memory:")
     db.executescript(
@@ -154,6 +196,7 @@ def test_workflow_is_exact_main_and_migration_specific() -> None:
 if __name__ == "__main__":
     test_schema_classifier_missing_exact_drift()
     test_classifier_rejects_wrong_index_or_foreign_key()
+    test_classifier_accepts_schema_created_by_migration()
     test_migration_is_additive_and_preserves_existing_rows()
     test_migration_contract_is_metadata_only_and_bounded()
     test_workflow_is_exact_main_and_migration_specific()
