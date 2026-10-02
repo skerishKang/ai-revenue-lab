@@ -409,10 +409,13 @@
 
   function showGuidedSummary() {
     guided.step = "summary";
-    const totals = Core.computeTotals(guided.draft.items, guided.draft.tax.mode, guided.draft.calculationPolicy);
+    const totals = Core.computeDraftTotals(guided.draft);
+    const effectiveItems = totals && Array.isArray(totals.effectiveItems)
+      ? totals.effectiveItems
+      : guided.draft.items;
     const itemLines = guided.draft.items.map((item, index) =>
       (index + 1) + ". " + item.name + " · " +
-      Core.formatInputNumber(item.qty) + " × " + Core.formatMoney(item.unitPrice)
+      Core.formatInputNumber(item.qty) + " × " + Core.formatMoney(effectiveItems[index].unitPrice)
     ).join("\n");
     const taxLine = guided.taxUnknown
       ? "부가세: 확인 필요 (직접 입력 화면에서 선택해 주세요)"
