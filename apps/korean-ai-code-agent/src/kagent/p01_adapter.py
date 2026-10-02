@@ -43,6 +43,31 @@ P01_APP_ID = "b54-padiem-claw"
 P01_AGENT_ID = "b54-padiem-claw"
 DEFAULT_P01_TIMEOUT_SECONDS = 20.0
 
+# #3382: the canonical USER subject is CP-issued in the exact
+# `sub_<32 lowercase hex>` form. The Engine's own `_parse_subject_id` accepts
+# a broader safe-identifier shape, so this narrower grammar is the canonical
+# lane's contract check. Both the factory and the Engine client reuse this
+# validator, so a subject that bypasses the factory still fails closed.
+_CANONICAL_SUBJECT_RE = re.compile(r"^sub_[0-9a-f]{32}$")
+
+
+def validate_canonical_subject_id(subject_id: object) -> str:
+    """Validate a canonical USER subject: ``sub_`` + 32 lowercase hex.
+
+    Raises ``P01AdapterError`` on any violation. Returns the subject id as a
+    string on success.
+    """
+    if (
+        not isinstance(subject_id, str)
+        or not _CANONICAL_SUBJECT_RE.fullmatch(subject_id)
+    ):
+        raise P01AdapterError(
+            "invalid_subject_id",
+            "P01 subject identity must be a canonical sub_<32hex> identifier.",
+            dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+        )
+    return subject_id
+
 P01_FAILURE_DETAIL_AUTHENTICATION = "engine_authentication_failed"
 P01_FAILURE_DETAIL_AUTHORIZATION = "engine_authorization_failed"
 P01_FAILURE_DETAIL_TRANSPORT = "engine_transport_or_response_failed"
@@ -319,15 +344,7 @@ class P01RequestFactory:
             # `sub_<32 lowercase hex>` form. The Engine's own
             # `_parse_subject_id` accepts a broader safe-identifier shape, so
             # this narrower grammar is the canonical lane's contract check.
-            if (
-                not isinstance(subject_id, str)
-                or not re.fullmatch(r"^sub_[0-9a-f]{32}$", subject_id)
-            ):
-                raise P01AdapterError(
-                    "invalid_subject_id",
-                    "P01 subject identity must be a canonical sub_<32hex> identifier.",
-                    dispatch_class=P01DispatchClass.NOT_DISPATCHED,
-                )
+            validate_canonical_subject_id(subject_id)
 
         if run.intent.execution_mode is ExecutionMode.CLOUD:
             self._validate_cloud_lease(run, lease)

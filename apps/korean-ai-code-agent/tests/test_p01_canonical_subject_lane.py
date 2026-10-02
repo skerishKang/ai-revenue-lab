@@ -117,6 +117,85 @@ def test_default_client_still_rejects_any_subject() -> None:
     assert exc.value.code == "p01_authority_field_unsupported"
 
 
+@pytest.mark.parametrize(
+    "bad_subject",
+    [
+        "usr_abc",                        # product-user id is not a subject
+        "usr_" + "1" * 32,
+        "sub_",                           # no hex body
+        "sub_" + "c" * 31,                # short
+        "sub_" + "c" * 33,                # long
+        "sub_" + "C" * 32,                # uppercase hex
+        "tenant_" + "a" * 32,             # tenant id is not a subject
+        "b54-padiem-claw",
+        "sub_" + "c" * 31 + "-",           # non-hex character
+        "sub_" + "c" * 32 + "x",           # suffix garbage (core's safe-id allows it; the canonical grammar does not)
+    ],
+)
+def test_canonical_client_rejects_non_canonical_subjects(bad_subject: str) -> None:
+    """#3382: the client enforces the SAME canonical grammar as the factory.
+
+    The Engine client receives an ``OrchestrationRequest`` directly and never
+    passes through ``P01RequestFactory``, so a bounded-but-not-canonical
+    subject (for example a ``usr_*`` product id) must still fail closed here.
+    Without this check a caller holding a request object could smuggle a
+    non-canonical subject onto the wire.
+    """
+    from padiem_ai_core import OrchestrationRequest
+    from padiem_ai_core.execution_runtime import ExecutionRequest
+    from kagent.p01_adapter import _agent_profile
+
+    request = OrchestrationRequest(
+        execution_request=ExecutionRequest(
+            agent=_agent_profile(),
+            messages=({"role": "user", "content": "hi"},),
+            trace_id="tr_x",
+        ),
+        context=_context(),
+        app_id="b54-padiem-claw",
+        subject_id=bad_subject,
+    )
+    # The rejection runs through both the authority gate and the payload build,
+    # so a bypass of either one still fails closed.
+    with pytest.raises(P01AdapterError) as exc:
+        _client(lane=True)[0]._reject_unsupported_authority(request)
+    assert exc.value.code == "invalid_subject_id"
+    with pytest.raises(P01AdapterError) as exc:
+        _client(lane=True)[0]._build_payload(request)
+    assert exc.value.code == "invalid_subject_id"
+
+
+@pytest.mark.parametrize(
+    "malformed",
+    [
+        " sub_" + "c" * 32,               # leading space
+        "sub_" + "c" * 32 + "\n",         # trailing newline
+        "",
+    ],
+)
+def test_core_orchestration_rejects_malformed_subject_before_the_lane(malformed: str) -> None:
+    """Core's own bounded-identifier check runs first, ahead of the canonical lane.
+
+    These shapes never reach ``P01RequestFactory`` or the Engine client: the
+    shared Core contract refuses them at ``OrchestrationRequest`` construction.
+    """
+    from padiem_ai_core import OrchestrationError, OrchestrationRequest
+    from padiem_ai_core.execution_runtime import ExecutionRequest
+    from kagent.p01_adapter import _agent_profile
+
+    with pytest.raises(OrchestrationError):
+        OrchestrationRequest(
+            execution_request=ExecutionRequest(
+                agent=_agent_profile(),
+                messages=({"role": "user", "content": "hi"},),
+                trace_id="tr_x",
+            ),
+            context=_context(),
+            app_id="b54-padiem-claw",
+            subject_id=malformed,
+        )
+
+
 def test_canonical_client_accepts_a_canonical_subject() -> None:
     from padiem_ai_core import OrchestrationRequest
     from padiem_ai_core.execution_runtime import ExecutionRequest

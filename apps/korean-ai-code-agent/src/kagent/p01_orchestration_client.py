@@ -280,17 +280,12 @@ class P01EngineOrchestrationClient:
                 dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
         if request.subject_id is not None:
-            if (
-                not isinstance(request.subject_id, str)
-                or not request.subject_id.strip()
-                or len(request.subject_id) > 256
-                or not request.subject_id[:1].isalnum()
-            ):
-                raise P01AdapterError(
-                    "p01_authority_field_unsupported",
-                    "P01 subject identity must be a bounded safe identifier.",
-                    dispatch_class=P01DispatchClass.NOT_DISPATCHED,
-                )
+            # #3382: reuse the shared canonical subject validator from
+            # p01_adapter.py — the same grammar the factory uses, so a subject
+            # that bypasses the factory still fails closed on shape.
+            from kagent.p01_adapter import validate_canonical_subject_id
+
+            validate_canonical_subject_id(request.subject_id)
         for name in _NULLABLE_AUTHORITY_FIELDS:
             if getattr(request, name) is not None:
                 raise P01AdapterError(
