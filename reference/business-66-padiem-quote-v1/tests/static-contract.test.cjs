@@ -310,7 +310,7 @@ check(easy.includes("150만원") && easy.includes("복합 단위는 추측하지
 /* QUOTEDRAFT_SCHEMA_CONTRACT — QuoteDraft 스키마 계약 */
 [
   "schemaVersion:",
-  "quoteNo:", "issueDate:", "validDays:", "source:",
+  "quoteNo:", "issueDate:", "validDays:", "source:", "projectName:",
   "company:", "rep:", "bizNo:", "address:", "phone:", "email:", "presetId:",
   "person:",
   "items:",
@@ -326,8 +326,11 @@ check(app.includes("function createBlankNextDraft(") &&
       app.includes("draft = next;"),
   "NEW_QUOTE_SAFETY_CONTRACT: direct new quote uses blank-next helper");
 check(core.includes('recipient: { company: "", person: "", address: "", email: "" }') &&
-      core.includes('items: [{ id: "item-1", name: "", qty: 1, unitPrice: 0 }]'),
-  "NEW_QUOTE_SAFETY_CONTRACT: next customer fields are blank");
+      core.includes('projectName: ""') &&
+      core.includes('sequence: "1"') &&
+      core.includes('specification: ""') &&
+      core.includes('rowNote: ""'),
+  "NEW_QUOTE_SAFETY_CONTRACT: next customer and fidelity fields are blank");
 check(app.includes("보내는 사람 정보는 유지하고 새 고객 견적을 시작합니다."),
   "NEW_QUOTE_SAFETY_CONTRACT: user-visible sender preservation");
 
@@ -929,3 +932,16 @@ console.log("NATIVE_DOCUMENT_AUTO_ANALYSIS_SOURCE_WIRED=YES");
 console.log("NATIVE_DOCUMENT_PARSER_AUTHORITY_LIVE=SEPARATE_GATE");
 console.log("CHAT_AI_LIVE=NO");
 console.log("EMAIL_SEND_LIVE=NO");
+/* #3411 REAL_COMPANY_FIDELITY_PRIMITIVES */
+check(core.includes("function formatKoreanMoneyWords(") &&
+      core.includes('projectName: asString(raw.meta && raw.meta.projectName') &&
+      core.includes('specification: asString(src.specification') &&
+      core.includes('rowNote: asString(src.rowNote'),
+  "REAL_COMPANY_FIDELITY_PRIMITIVES: QuoteCore owns bounded structural fields + written amount formatting");
+check(template.includes('"sequence", "name", "specification", "unit", "qty", "unitPrice", "amount", "rowNote"') &&
+      template.includes("REQUIRED_COLUMN_KEYS"),
+  "REAL_COMPANY_FIDELITY_PRIMITIVES: legacy 4-column and real-company extended columns share one bounded contract");
+check(renderer.includes("projectNameText") &&
+      renderer.includes("writtenGrandText") &&
+      renderer.includes("Core.formatKoreanMoneyWords(totals.grand)"),
+  "REAL_COMPANY_FIDELITY_PRIMITIVES: renderer formats only canonical QuoteCore grand");
