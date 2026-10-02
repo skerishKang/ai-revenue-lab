@@ -409,7 +409,7 @@
 
   function showGuidedSummary() {
     guided.step = "summary";
-    const totals = Core.computeTotals(guided.draft.items, guided.draft.tax.mode, guided.draft.calculationPolicy);
+    const totals = Core.computeDraftTotals(guided.draft);
     const itemLines = guided.draft.items.map((item, index) =>
       (index + 1) + ". " + item.name + " · " +
       Core.formatInputNumber(item.qty) + " × " + Core.formatMoney(item.unitPrice)
