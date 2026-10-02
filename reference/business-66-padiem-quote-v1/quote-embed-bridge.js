@@ -56,12 +56,14 @@
       return ["logo", "stamp"].indexOf(key) === -1;
     })) return null;
     var output = {};
-    ["logo", "stamp"].forEach(function (key) {
-      if (value[key] === undefined || value[key] === null) return;
+    var keys = ["logo", "stamp"];
+    for (var i = 0; i < keys.length; i += 1) {
+      var key = keys[i];
+      if (value[key] === undefined || value[key] === null) continue;
       var normalized = normalizeAssetEntry(value[key]);
-      if (normalized) output[key] = normalized;
-      else output = null;
-    });
+      if (!normalized) return null;
+      output[key] = normalized;
+    }
     return output;
   }
 
@@ -76,21 +78,19 @@
   function slotSourcesForSkill(skill, assets) {
     var source = isPlainObject(assets) ? assets : {};
     var output = {};
-    var valid = true;
-    ["logo", "stamp"].forEach(function (key) {
+    var keys = ["logo", "stamp"];
+    for (var i = 0; i < keys.length; i += 1) {
+      var key = keys[i];
       var declared = declaredAssetId(skill, key);
       var supplied = source[key];
       if (!declared) {
-        if (supplied) valid = false;
-        return;
+        if (supplied) return null;
+        continue;
       }
-      if (!supplied || supplied.assetId !== declared) {
-        valid = false;
-        return;
-      }
+      if (!supplied || supplied.assetId !== declared) return null;
       output[key] = supplied;
-    });
-    return valid ? output : null;
+    }
+    return output;
   }
 
   function normalizeRenderMessage(value) {
@@ -117,3 +117,129 @@
     }
     var defaults = core.createDefaultDraft();
     if (!defaults || !defaults.meta) return null;
+
+    var input = {
+      recipient: candidate.recipient,
+      quoteNo: typeof candidate.quoteNo === "string" && candidate.quoteNo.trim()
+        ? candidate.quoteNo.trim()
+        : defaults.meta.quoteNo,
+      issueDate: typeof candidate.issueDate === "string" && candidate.issueDate.trim()
+        ? candidate.issueDate.trim()
+        : defaults.meta.issueDate,
+      items: candidate.items
+    };
+    if (typeof candidate.memo === "string") input.memo = candidate.memo;
+    if (typeof candidate.taxMode === "string" && candidate.taxMode) input.taxMode = candidate.taxMode;
+    return input;
+  }
+
+  function renderRequest(message, runtime, doc) {
+    var normalized = normalizeRenderMessage(message);
+    if (!normalized) return { ok: false, code: "invalid_embed_request" };
+    if (
+      !runtime ||
+      !runtime.Core ||
+      !runtime.SavedSkill ||
+      !runtime.Renderer ||
+      typeof runtime.SavedSkill.buildRenderModel !== "function" ||
+      typeof runtime.Renderer.applyRenderModel !== "function"
+    ) {
+      return { ok: false, code: "embed_runtime_unavailable" };
+    }
+
+    var input = buildStructuredInput(normalized.candidate, runtime.Core);
+    if (!input) return { ok: false, code: "invalid_embed_candidate" };
+
+    var slotSources = slotSourcesForSkill(normalized.skill, normalized.assets);
+    if (slotSources === null) return { ok: false, code: "private_asset_missing" };
+
+    var result = runtime.SavedSkill.buildRenderModel(
+      normalized.skill,
+      input,
+      { slotSources: slotSources }
+    );
+    if (!result || result.ok !== true || !result.renderModel || !result.draft) {
+      return {
+        ok: false,
+        code: result && typeof result.code === "string" ? result.code : "render_model_failed"
+      };
+    }
+    var applied = runtime.Renderer.applyRenderModel(doc, result.renderModel);
+    if (applied !== true) return { ok: false, code: "render_apply_failed" };
+
+    var readiness = typeof runtime.Core.printReadiness === "function"
+      ? runtime.Core.printReadiness(result.draft)
+      : { ready: false, missing: ["runtime"] };
+    return {
+      ok: true,
+      code: "rendered",
+      requestId: normalized.requestId,
+      quoteNo: result.draft.meta.quoteNo,
+      issueDate: result.draft.meta.issueDate,
+      printReady: Boolean(readiness && readiness.ready === true),
+      missing: readiness && Array.isArray(readiness.missing) ? readiness.missing.slice(0, 8) : []
+    };
+  }
+
+  function publicResponse(result, requestId) {
+    if (!result || result.ok !== true) {
+      return {
+        type: ERROR_TYPE,
+        requestId: requestId || null,
+        ok: false,
+        code: result && typeof result.code === "string" ? result.code : "render_failed"
+      };
+    }
+    return {
+      type: RESPONSE_TYPE,
+      requestId: result.requestId,
+      ok: true,
+      code: result.code,
+      quoteNo: result.quoteNo,
+      issueDate: result.issueDate,
+      printReady: result.printReady,
+      missing: result.missing
+    };
+  }
+
+  function installBrowserBridge(win, doc, runtime) {
+    if (!win || !doc || typeof win.addEventListener !== "function") return false;
+    win.addEventListener("message", function (event) {
+      if (!event || event.source !== win.parent) return;
+      if (event.data && event.data.type === PRINT_TYPE) {
+        if (typeof win.print === "function") win.print();
+        return;
+      }
+      var normalized = normalizeRenderMessage(event.data);
+      if (!normalized) return;
+      var result = renderRequest(normalized, runtime, doc);
+      if (event.source && typeof event.source.postMessage === "function") {
+        event.source.postMessage(publicResponse(result, normalized.requestId), event.origin);
+      }
+      var status = typeof doc.getElementById === "function" ? doc.getElementById("embedStatus") : null;
+      if (status) {
+        status.textContent = result.ok
+          ? (result.printReady ? "견적서가 준비되었습니다." : "필수 내용을 확인해 주세요.")
+          : "견적서를 만들지 못했습니다.";
+        status.dataset.state = result.ok ? "ready" : "error";
+      }
+    });
+    return true;
+  }
+
+  return {
+    REQUEST_TYPE: REQUEST_TYPE,
+    RESPONSE_TYPE: RESPONSE_TYPE,
+    ERROR_TYPE: ERROR_TYPE,
+    PRINT_TYPE: PRINT_TYPE,
+    MAX_MESSAGE_JSON_CHARS: MAX_MESSAGE_JSON_CHARS,
+    normalizeAssetEntry: normalizeAssetEntry,
+    normalizeAssets: normalizeAssets,
+    slotSourcesForSkill: slotSourcesForSkill,
+    normalizeRenderMessage: normalizeRenderMessage,
+    buildStructuredInput: buildStructuredInput,
+    renderRequest: renderRequest,
+    publicResponse: publicResponse,
+    installBrowserBridge: installBrowserBridge
+  };
+});
