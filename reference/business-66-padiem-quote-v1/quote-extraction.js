@@ -108,8 +108,11 @@
       if (!isObject(item)) fail("invalid_item_" + index);
       return {
         name: optionalText(item.name, MAX_TEXT, "invalid_item_name"),
+        spec: optionalText(item.spec, MAX_TEXT, "invalid_item_spec"),
+        unit: optionalText(item.unit, 80, "invalid_item_unit"),
         qty: optionalMoney(item.qty, "invalid_item_qty"),
-        unitPrice: optionalMoney(item.unitPrice, "invalid_item_unit_price")
+        unitPrice: optionalMoney(item.unitPrice, "invalid_item_unit_price"),
+        note: optionalText(item.note, MAX_TEXT, "invalid_item_note")
       };
     });
   }
@@ -184,7 +187,8 @@
       var quote = {
         quoteNo: optionalText(quoteRaw.quoteNo, MAX_TEXT, "invalid_quote_number"),
         issueDate: optionalISODate(quoteRaw.issueDate),
-        validDays: optionalPositiveInteger(quoteRaw.validDays, "invalid_valid_days")
+        validDays: optionalPositiveInteger(quoteRaw.validDays, "invalid_valid_days"),
+        projectName: optionalText(quoteRaw.projectName, MAX_TEXT, "invalid_project_name")
       };
 
       var warnings = normalizeWarnings(raw.warnings);
@@ -267,6 +271,7 @@
     assignIfPresent(candidate.meta, "quoteNo", extracted.quote.quoteNo);
     assignIfPresent(candidate.meta, "issueDate", extracted.quote.issueDate);
     assignIfPresent(candidate.meta, "validDays", extracted.quote.validDays);
+    assignIfPresent(candidate.meta, "projectName", extracted.quote.projectName);
 
     ["company", "rep", "bizNo", "address", "phone", "email"].forEach(function (key) {
       assignIfPresent(candidate.sender, key, extracted.sender[key]);
@@ -279,12 +284,16 @@
 
     if (extracted.items.length > 0) {
       candidate.items = extracted.items.map(function (item, index) {
-        return {
+        var mapped = {
           id: "extracted-item-" + (index + 1),
           name: item.name == null ? "" : item.name,
           qty: item.qty == null ? 0 : item.qty,
           unitPrice: item.unitPrice == null ? 0 : item.unitPrice
         };
+        assignIfPresent(mapped, "spec", item.spec);
+        assignIfPresent(mapped, "unit", item.unit);
+        assignIfPresent(mapped, "note", item.note);
+        return mapped;
       });
     }
 

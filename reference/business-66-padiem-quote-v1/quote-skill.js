@@ -367,17 +367,24 @@
     var items = [];
     for (var i = 0; i < raw.length; i += 1) {
       var entry = raw[i];
-      if (!isPlainObject(entry) || unknownKeys(entry, ["id", "name", "qty", "unitPrice"]).length > 0) return null;
+      if (!isPlainObject(entry) || unknownKeys(entry, ["id", "name", "spec", "unit", "qty", "unitPrice", "note"]).length > 0) return null;
       var name = boundedString(entry.name, MAX_ITEM_NAME_CHARS, "").trim();
+      var spec = boundedString(entry.spec, 240, "").trim();
+      var unit = boundedString(entry.unit, 80, "").trim();
+      var note = boundedString(entry.note, 500, "").trim();
       var qty = Number(entry.qty);
       var unitPrice = Number(entry.unitPrice);
       if (!name || !Number.isFinite(qty) || qty <= 0 || !Number.isFinite(unitPrice) || unitPrice < 0) return null;
-      items.push({
+      var item = {
         id: typeof entry.id === "string" && entry.id.trim() ? entry.id.trim().slice(0, 80) : "item-" + (i + 1),
         name: name,
         qty: qty,
         unitPrice: unitPrice
-      });
+      };
+      if (spec) item.spec = spec;
+      if (unit) item.unit = unit;
+      if (note) item.note = note;
+      items.push(item);
     }
     return items;
   }
@@ -395,6 +402,12 @@
       return { ok: false, code: "invalid_structured_input", draft: null };
     }
 
+    var projectName = "";
+    if (input.projectName !== undefined && input.projectName !== null) {
+      if (typeof input.projectName !== "string") return { ok: false, code: "invalid_project_name", draft: null };
+      projectName = input.projectName.trim().slice(0, 240);
+    }
+
     var taxMode = skill.fixedDefaults.taxMode;
     if (skill.variableSchema.taxMode && input.taxMode !== undefined) {
       if (TAX_MODES.indexOf(input.taxMode) === -1) return { ok: false, code: "invalid_tax_mode", draft: null };
@@ -409,12 +422,12 @@
 
     var draft = Core.normalizeDraft({
       schemaVersion: Core.SCHEMA_VERSION,
-      meta: {
+      meta: Object.assign({
         quoteNo: quoteNo,
         issueDate: issueDate,
         validDays: skill.fixedDefaults.validDays,
         source: "saved-quote-skill"
-      },
+      }, projectName ? { projectName: projectName } : {}),
       sender: cloneJson(skill.fixedDefaults.sender),
       recipient: recipient,
       items: items,

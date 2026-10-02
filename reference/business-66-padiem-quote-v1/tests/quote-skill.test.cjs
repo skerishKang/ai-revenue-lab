@@ -97,6 +97,25 @@ eq(first.draft.recipient.company, "대한건설", "new recipient facts are appli
 eq(first.draft.items[0].qty, 50, "new item quantity is applied");
 eq(first.draft.items[0].unitPrice, 120000, "new item unit price is applied");
 eq(first.draft.meta.source, "saved-quote-skill", "repeat generation is marked as Saved Quote Skill execution");
+const detailedInput = input({
+  projectName: "스마트팜 환경제어설비",
+  items: [{
+    id: "item-detail",
+    name: "ICT환경제어 시스템",
+    spec: "주장치 및 스마트팜 전용S/W",
+    unit: "식",
+    qty: 1,
+    unitPrice: 16330000,
+    note: "설치 포함"
+  }]
+});
+const detailedResult = Skill.buildRenderModel(skill, detailedInput);
+check(detailedResult.ok === true, "detail-rich structured input is accepted");
+eq(detailedResult.draft.meta.projectName, "스마트팜 환경제어설비", "projectName is a per-quote fact, not a Skill fingerprint field");
+eq(detailedResult.draft.items[0].spec, "주장치 및 스마트팜 전용S/W", "item spec preserved");
+eq(detailedResult.draft.items[0].unit, "식", "item unit preserved");
+eq(detailedResult.draft.items[0].note, "설치 포함", "item note preserved");
+eq(detailedResult.compiled.skillFingerprint, first.compiled.skillFingerprint, "existing Saved Quote Skill identity is unchanged by optional detail input");
 
 const same = Skill.buildRenderModel(skill, input());
 eq(same.draft, first.draft, "same structured input yields the same QuoteDraft");

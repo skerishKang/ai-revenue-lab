@@ -353,6 +353,9 @@
         quoteNo: candidate.quoteNo || (current && current.meta && current.meta.quoteNo),
         issueDate: candidate.issueDate || (current && current.meta && current.meta.issueDate)
       };
+      if (typeof candidate.projectName === "string" && candidate.projectName.trim()) {
+        input.projectName = candidate.projectName.trim();
+      }
       if (typeof candidate.memo === "string") input.memo = candidate.memo;
       if (typeof candidate.taxMode === "string") input.taxMode = candidate.taxMode;
 
