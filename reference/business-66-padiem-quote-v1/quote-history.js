@@ -209,18 +209,24 @@
     fresh.meta.issueDate = Core.isoFormat(now);
     fresh.meta.validDays = source.meta.validDays;
     fresh.meta.source = "history-copy";
+    if (source.meta.projectName) fresh.meta.projectName = source.meta.projectName;
     fresh.sender = clone(source.sender);
     fresh.recipient = clone(source.recipient);
     fresh.items = source.items.map(function (item, index) {
-      return {
+      var copied = {
         id: "item-" + (index + 1),
         name: item.name,
         qty: item.qty,
         unitPrice: item.unitPrice
       };
+      if (item.spec) copied.spec = item.spec;
+      if (item.unit) copied.unit = item.unit;
+      if (item.note) copied.note = item.note;
+      return copied;
     });
     fresh.tax = clone(source.tax);
     fresh.memo = source.memo;
+    if (source.calculationPolicy) fresh.calculationPolicy = clone(source.calculationPolicy);
     return Core.normalizeDraft(fresh);
   }
 
