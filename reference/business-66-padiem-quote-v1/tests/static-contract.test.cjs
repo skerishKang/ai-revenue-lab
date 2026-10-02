@@ -170,10 +170,12 @@ check(worker.includes("PADIEM_CHAT_SERVICE") && worker.includes("else {\n      u
 check(!account.includes("localStorage") && !account.includes("sessionStorage"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: server-assigned skill is memory-only cache");
 check(account.includes('semantic.buildDraft(state.loadedSkill.skill, input)') &&
-      account.includes('bridge.setServerSkill(state.loadedSkill.skill)'),
-  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: server skill feeds canonical browser QuoteCore/renderer path");
-check(app.includes("function setServerSkill(skill)") && app.includes("function clearServerSkill()"),
-  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: app exposes non-persistent server skill seam");
+      account.includes('bridge.setServerSkill(state.loadedSkill.skill, state.loadedSkill.slotSources || {})'),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: server skill + authorized private assets feed canonical browser QuoteCore/renderer path");
+check(app.includes("function setServerSkill(skill, slotSources)") &&
+      app.includes("function clearServerSkill()") &&
+      app.includes("serverSlotSources"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: app exposes non-persistent server skill + transient private asset seam");
 check(accountCss.includes(".padiem-account-panel") && accountCss.includes("@media print"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: account UI has bounded screen/print styling");
 new vm.Script(account, { filename: "padiem-account.js" });
