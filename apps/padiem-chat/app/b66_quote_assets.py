@@ -95,6 +95,10 @@ def _extension(media_type: str) -> str:
     }[media_type]
 
 
+def _object_key(asset_id: str, media_type: str) -> str:
+    return f"b66/quote-assets/{asset_id}{_extension(media_type)}"
+
+
 def _magic_matches(media_type: str, body: bytes) -> bool:
     if media_type == "image/png":
         return body.startswith(b"\x89PNG\r\n\x1a\n")
@@ -150,7 +154,7 @@ def _metadata(row: dict[str, Any]) -> B66QuoteAssetMetadata:
     except (KeyError, TypeError, ValueError) as exc:
         raise B66QuoteAssetError("asset metadata is invalid") from exc
     if (
-        not meta.object_key
+        meta.object_key != _object_key(meta.asset_id, meta.media_type)
         or meta.byte_length < 1
         or meta.byte_length > MAX_B66_QUOTE_ASSET_BYTES
         or not _SHA256_RE.fullmatch(meta.sha256)
@@ -248,7 +252,7 @@ class B66QuoteAssetStore:
         media = _media_type(media_type)
         payload = _payload(body, media_type=media)
         asset_id = "b66asset_" + uuid.uuid4().hex
-        object_key = f"b66/quote-assets/{asset_id}{_extension(media)}"
+        object_key = _object_key(asset_id, media)
         now = _now_iso()
         metadata = B66QuoteAssetMetadata(
             asset_id=asset_id,
