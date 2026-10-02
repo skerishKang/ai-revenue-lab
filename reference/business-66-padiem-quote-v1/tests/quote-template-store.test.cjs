@@ -176,17 +176,21 @@ eq(Store.updateTemplate(asDefault.store, "missing", { name: "x" }).code,
 eq(Store.updateTemplate(asDefault.store, "tpl-1", { content: { nope: true } }).code,
   "invalid_template_content", "invalid content update is refused");
 
-/* SLOT_BEHAVIOR — non-live 슬롯을 선언하면 조용히 무시하지 않고 거부한다 */
+/* SLOT_BEHAVIOR — private asset id 만 template content 에 보존한다 */
+const logoAssetId = "b66asset_" + "a".repeat(32);
+const stampAssetId = "b66asset_" + "b".repeat(32);
 const slotContent = builtinContent();
-slotContent.slots = { logo: "brand-2026", stamp: "" };
-eq(Store.createTemplate(empty, { name: "slot", content: slotContent }, { id: "tpl-slot" }).code,
-  "slot_rendering_not_supported", "declaring a non-live slot is refused on create");
-eq(Store.updateTemplate(asDefault.store, "tpl-1", { content: slotContent }).code,
-  "slot_rendering_not_supported", "declaring a non-live slot is refused on update");
+slotContent.slots = { logo: logoAssetId, stamp: "" };
+const storedLogo = Store.createTemplate(empty, { name: "slot", content: slotContent }, { id: "tpl-slot" });
+check(storedLogo.ok === true, "private logo asset ref is accepted on create");
+eq(storedLogo.template.content.slots.logo, logoAssetId, "private logo ref is preserved");
+const updatedSlot = Store.updateTemplate(asDefault.store, "tpl-1", { content: slotContent });
+check(updatedSlot.ok === true, "private logo asset ref is accepted on update");
 const stampContent = clone(builtinContent());
-stampContent.slots = { logo: "", stamp: "stamp-1" };
-eq(Store.createTemplate(empty, { name: "stamp", content: stampContent }, { id: "tpl-stamp" }).code,
-  "slot_rendering_not_supported", "declaring a stamp slot is refused");
+stampContent.slots = { logo: "", stamp: stampAssetId };
+const storedStamp = Store.createTemplate(empty, { name: "stamp", content: stampContent }, { id: "tpl-stamp" });
+check(storedStamp.ok === true, "private stamp asset ref is accepted");
+eq(storedStamp.template.content.slots.stamp, stampAssetId, "private stamp ref is preserved");
 
 /* QUOTE_TEMPLATE_DUPLICATE — 복제본은 다시 승인받아야 하는 candidate 다 */
 const duplicated = Store.duplicateTemplate(asDefault.store, "tpl-1", { id: "tpl-copy", now: LATER });
@@ -378,7 +382,7 @@ console.log("FORGED_BUILTIN_FLAG_BYPASS=0");
 console.log("CANONICAL_BUILTIN_FALLBACK=PASS");
 console.log("CONTENT_CHANGE_INVALIDATES_APPROVAL=YES");
 console.log("APPROVED_TEMPLATE_SAVE_AND_RENDER=PASS");
-console.log("SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY");
+console.log("SLOT_BEHAVIOR=PRIVATE_ASSET_REF_V1");
 console.log("RAW_SOURCE_FILE_PERSISTENCE=0");
 console.log("TRUSTED_TOTALS_IN_TEMPLATE=0");
 console.log("MODEL_DEPENDENCY=0");
