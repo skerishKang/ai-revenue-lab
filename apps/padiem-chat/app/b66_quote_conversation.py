@@ -183,8 +183,9 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
         items_raw = []
     if not isinstance(items_raw, list) or len(items_raw) > MAX_ITEMS:
         raise B66QuoteConversationError("invalid_items")
-    items: list[dict[str, int | float | str]] = []
-    for entry in items_raw:
+    items: list[dict[str, Any]] = []
+    missing_summary_prices: set[int] = set()
+    for item_index, entry in enumerate(items_raw, start=1):
         if not isinstance(entry, dict) or set(entry) - _ALLOWED_ITEM:
             raise B66QuoteConversationError("invalid_item")
         name = _optional_text(entry.get("name"), limit=MAX_ITEM_NAME_CHARS)
@@ -193,13 +194,16 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
         qty = _optional_number(entry.get("qty"), positive=True)
         unit_price = _optional_number(entry.get("unitPrice"), positive=False)
         note = _optional_text(entry.get("note"), limit=MAX_ITEM_NAME_CHARS)
-        if name is None or qty is None or unit_price is None:
+        if name is None or qty is None:
             raise B66QuoteConversationError("incomplete_item")
-        item: dict[str, int | float | str] = {
+        item: dict[str, Any] = {
             "name": name,
             "qty": qty,
-            "unitPrice": unit_price,
         }
+        if unit_price is None:
+            missing_summary_prices.add(item_index)
+        else:
+            item["unitPrice"] = unit_price
         if spec is not None:
             item["spec"] = spec
         if unit is not None:
@@ -271,6 +275,13 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
             group["title"] = title
         detail_groups.append(group)
         seen_summary_indexes.add(summary_index)
+
+    for summary_index in missing_summary_prices:
+        if summary_index not in seen_summary_indexes:
+            raise B66QuoteConversationError("incomplete_item")
+        # Detail-group subtotal is the authority. Zero is only a non-authoritative
+        # placeholder required by the existing structured-input item contract.
+        items[summary_index - 1]["unitPrice"] = 0
 
     project_name = _optional_text(raw.get("projectName"), limit=MAX_ITEM_NAME_CHARS)
     memo = _optional_text(raw.get("memo"), limit=MAX_MEMO_CHARS)
@@ -351,6 +362,8 @@ def _conversation_prompt(skill: dict[str, Any]) -> str:
         "사용자가 건명을 말하면 projectName에 그대로 넣으십시오. "
         "상세내역을 말한 경우 detailGroups 배열을 사용하고 각 그룹은 summaryIndex/title/items만 사용하십시오. "
         "summaryIndex는 연결할 요약 items의 1부터 시작하는 순번입니다. "
+        "상세 그룹이 연결된 요약 item의 단가를 사용자가 말하지 않았다면 계산하지 말고 unitPrice를 null로 두십시오. "
+        "서버와 QuoteCore가 상세 소계를 요약 단가로 파생합니다. "
         "상세 items는 name/spec/unit/qty/unitPrice/note/section만 사용하십시오. "
         "금액 합계, 공급가액, 부가세 금액, 총액을 계산하거나 반환하지 마십시오. "
         "sender, template, approval, fingerprint를 변경하거나 반환하지 마십시오. "
