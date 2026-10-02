@@ -131,6 +131,9 @@
     if (typeof candidate.projectName === "string" && candidate.projectName.trim()) {
       input.projectName = candidate.projectName.trim();
     }
+    if (Array.isArray(candidate.detailGroups) && candidate.detailGroups.length) {
+      input.detailGroups = candidate.detailGroups;
+    }
     if (typeof candidate.memo === "string") input.memo = candidate.memo;
     if (typeof candidate.taxMode === "string" && candidate.taxMode) input.taxMode = candidate.taxMode;
     return input;
