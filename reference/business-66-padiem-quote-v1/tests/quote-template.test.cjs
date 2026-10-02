@@ -163,6 +163,7 @@ formalContent.sections = ["title", "meta", "parties", "items", "totals", "detail
 formalContent.detailPages = {
   titlePrefix: "",
   subtotalLabel: "소 계",
+  finalLabel: "총 계",
   mergeRepeatedName: true,
   columns: [
     { key: "name", label: "품명", width: "22%", align: "left" },
@@ -180,6 +181,7 @@ eq(formalNormalized.layoutVariant, "formal-grid-v1", "formal layout variant pres
 eq(formalNormalized.items.minRows, 9, "bounded summary minimum rows preserved");
 eq(formalNormalized.memo.heading, "<특기사항>", "memo heading is presentation-only");
 eq(formalNormalized.detailPages.mergeRepeatedName, true, "detail repeated-name merge is opt-in");
+eq(formalNormalized.detailPages.finalLabel, "총 계", "optional detail final label is presentation-only");
 eq(
   Template.normalizeTemplateContent(builtinContent()),
   builtinContent(),
