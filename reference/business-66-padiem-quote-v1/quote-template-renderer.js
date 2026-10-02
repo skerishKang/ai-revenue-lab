@@ -145,6 +145,7 @@
       return {
         index: index,
         emptyName: emptyName,
+        filler: false,
         values: {
           no: String(index + 1),
           name: emptyName ? emptyNameText : item.name,
@@ -157,6 +158,17 @@
         }
       };
     }) : [];
+    var minRows = Number(content.items && content.items.minRows);
+    if (has("items") && Number.isInteger(minRows) && minRows > items.length) {
+      while (items.length < minRows) {
+        items.push({
+          index: items.length,
+          emptyName: false,
+          filler: true,
+          values: { no: "", name: "", spec: "", unit: "", qty: "", unitPrice: "", amount: "", note: "" }
+        });
+      }
+    }
 
     var detailPages = [];
     if (has("detailPages") && content.detailPages && Array.isArray(totals.detailGroups)) {
@@ -168,6 +180,8 @@
           return {
             index: itemIndex,
             section: String(item.section == null ? "" : item.section),
+            nameRowSpan: 1,
+            suppressName: false,
             values: {
               no: String(itemIndex + 1),
               name: String(item.name == null ? "" : item.name),
@@ -180,6 +194,24 @@
             }
           };
         });
+        if (content.detailPages.mergeRepeatedName === true) {
+          var start = 0;
+          while (start < rows.length) {
+            var end = start + 1;
+            while (
+              end < rows.length &&
+              rows[end].values.name === rows[start].values.name &&
+              rows[end].section === rows[start].section
+            ) {
+              end += 1;
+            }
+            rows[start].nameRowSpan = end - start;
+            for (var mergeIndex = start + 1; mergeIndex < end; mergeIndex += 1) {
+              rows[mergeIndex].suppressName = true;
+            }
+            start = end;
+          }
+        }
         return {
           id: group.id,
           summaryItemId: group.summaryItemId,
@@ -210,6 +242,7 @@
         fallbackReason: fallbackReason
       },
       sections: sections,
+      layoutVariant: typeof content.layoutVariant === "string" ? content.layoutVariant : "",
       page: isPlainObject(content.page) ? content.page : {},
       pageRule: buildPageRule(content.page),
       style: isPlainObject(content.style) ? content.style : {},
@@ -286,7 +319,8 @@
           : ""
       },
       memoText: has("memo")
-        ? (String(normalizedDraft.memo == null ? "" : normalizedDraft.memo).trim() || content.memo.emptyText)
+        ? ((content.memo && content.memo.heading ? content.memo.heading + "\n" : "") +
+          (String(normalizedDraft.memo == null ? "" : normalizedDraft.memo).trim() || content.memo.emptyText))
         : "",
       markText: has("mark") ? content.mark.text : "",
       taxReview: { required: provisional }
@@ -344,6 +378,11 @@
     var sender = model.parties.sender;
     var recipient = model.parties.recipient;
     var totals = model.totals;
+    var paper = doc.getElementById("quotePaper");
+    if (paper && typeof paper.setAttribute === "function") {
+      if (model.layoutVariant) paper.setAttribute("data-layout-variant", model.layoutVariant);
+      else if (typeof paper.removeAttribute === "function") paper.removeAttribute("data-layout-variant");
+    }
 
     setText("pvTitle", model.titleText);
     setText("pvQuoteNo", model.meta.quoteNoText);
@@ -368,18 +407,23 @@
     setText("pvRecipientEmail", recipient.email);
 
     setHtml("pvItemsHead", model.columns.map(function (column) {
-      var width = column.width ? ' style="width:' + escapeHtml(column.width) + '"' : "";
-      return "<th" + width + ">" + escapeHtml(column.label) + "</th>";
+      var styles = [];
+      if (column.width) styles.push("width:" + escapeHtml(column.width));
+      if (column.align) styles.push("text-align:" + escapeHtml(column.align));
+      var style = styles.length ? ' style="' + styles.join(";") + '"' : "";
+      return "<th" + style + ">" + escapeHtml(column.label) + "</th>";
     }).join(""));
 
     setHtml("pvItems", model.items.map(function (item) {
       var cells = model.columns.map(function (column) {
+        var style = column.align ? ' style="text-align:' + escapeHtml(column.align) + '"' : "";
         if (column.key === "name") {
-          return '<td class="' + (item.emptyName ? "empty" : "") + '">' + escapeHtml(item.values.name) + "</td>";
+          var cls = item.emptyName ? ' class="empty"' : "";
+          return "<td" + cls + style + ">" + escapeHtml(item.values.name) + "</td>";
         }
-        return "<td>" + escapeHtml(item.values[column.key]) + "</td>";
+        return "<td" + style + ">" + escapeHtml(item.values[column.key]) + "</td>";
       }).join("");
-      return "<tr>" + cells + "</tr>";
+      return '<tr class="' + (item.filler ? "quote-filler-row" : "") + '">' + cells + "</tr>";
     }).join(""));
 
     setText("subtotalLabelText", totals.subtotalLabel);
@@ -401,8 +445,11 @@
 
     setHtml("pvDetailPages", (Array.isArray(model.detailPages) ? model.detailPages : []).map(function (page) {
       var head = page.columns.map(function (column) {
-        var width = column.width ? ' style="width:' + escapeHtml(column.width) + '"' : "";
-        return "<th" + width + ">" + escapeHtml(column.label) + "</th>";
+        var styles = [];
+        if (column.width) styles.push("width:" + escapeHtml(column.width));
+        if (column.align) styles.push("text-align:" + escapeHtml(column.align));
+        var style = styles.length ? ' style="' + styles.join(";") + '"' : "";
+        return "<th" + style + ">" + escapeHtml(column.label) + "</th>";
       }).join("");
       var lastSection = null;
       var body = page.rows.map(function (row) {
@@ -413,11 +460,21 @@
             page.columns.length + '">' + escapeHtml(row.section) + "</td></tr>";
         }
         var cells = page.columns.map(function (column) {
-          return "<td>" + escapeHtml(row.values[column.key]) + "</td>";
+          if (column.key === "name" && row.suppressName) return "";
+          var styles = [];
+          if (column.align) styles.push("text-align:" + escapeHtml(column.align));
+          var style = styles.length ? ' style="' + styles.join(";") + '"' : "";
+          var rowspan = column.key === "name" && row.nameRowSpan > 1
+            ? ' rowspan="' + row.nameRowSpan + '"'
+            : "";
+          return "<td" + rowspan + style + ">" + escapeHtml(row.values[column.key]) + "</td>";
         }).join("");
         return sectionHtml + "<tr>" + cells + "</tr>";
       }).join("");
-      return '<section class="quote-paper quote-detail-page" data-detail-group="' + escapeHtml(page.id) + '">' +
+      var layoutAttr = model.layoutVariant
+        ? ' data-layout-variant="' + escapeHtml(model.layoutVariant) + '"'
+        : "";
+      return '<section class="quote-paper quote-detail-page" data-detail-group="' + escapeHtml(page.id) + '"' + layoutAttr + '>' +
         '<h2 class="quote-detail-title">' + escapeHtml(page.titleText) + "</h2>" +
         '<table class="quote-table"><thead><tr>' + head + "</tr></thead><tbody>" + body + "</tbody></table>" +
         '<div class="quote-detail-subtotal"><span>' + escapeHtml(page.subtotalLabel) +
