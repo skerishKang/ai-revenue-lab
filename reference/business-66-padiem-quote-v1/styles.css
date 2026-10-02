@@ -367,7 +367,7 @@ textarea { min-height: 82px; resize: vertical; }
   white-space: nowrap;
 }
 .quote-detail-page[data-layout-variant="formal-grid-v1"] .quote-table td {
-  padding: 5px 4px;
+  padding: 9px 4px;
   font-size: 9px;
   line-height: 1.18;
 }
