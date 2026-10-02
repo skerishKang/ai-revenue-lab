@@ -432,9 +432,13 @@
     return Object.assign({}, built, { compiled: compiled.compiled });
   }
 
-  function buildRenderModel(rawSkill, input, options) {
+  function buildRenderModel(rawSkill, input) {
     var built = buildDraft(rawSkill, input);
     if (!built.ok) return { ok: false, code: built.code, draft: null, renderModel: null, compiled: built.compiled };
+    /* Keep the repeat-generation public arity at (skill, input). #3402 may
+       supply one transient third argument for already-authorized private asset
+       render sources; it is neither source-document input nor model authority. */
+    var options = arguments.length > 2 ? arguments[2] : null;
     var opts = isPlainObject(options) ? options : {};
     var renderModel = Renderer.buildRenderModel(built.draft, built.compiled.templateProfile, {
       taxReviewRequired: false,
