@@ -49,14 +49,22 @@ Mark `REQUIRED`, `NOT_REQUIRED`, or `PENDING` and link evidence.
 
 - Commands/checks run against this head:
 - Exit/status and pass/fail/skip counts:
+- `DEV_FAST_GATE=PASS|FAIL|NOT_RUN`:
+- `DEV_ACTOR_RELEASED=YES|NO`:
 - CI/check runs:
 - Implementation self-check limitations:
+
+After `DEV_FAST_GATE=PASS`, the implementation actor may continue another authorized issue while independent Windows/Ubuntu/browser/full validation proceeds asynchronously.
 
 Do not present implementer-run local/browser checks as independent Local Validation.
 
 ## Independent validation
 
 - Required? yes/no + reason:
+- `VALIDATOR_WINDOWS=PENDING|PASS|FAIL|FIXING|NOT_REQUIRED`:
+- `VALIDATOR_UBUNTU=PENDING|PASS|FAIL|FIXING|NOT_REQUIRED`:
+- `VALIDATOR_BROWSER=PENDING|PASS|FAIL|FIXING|NOT_REQUIRED`:
+- `FULL_VALIDATION=PENDING|PASS|FAIL`:
 - Validator actor:
 - Exact tested head:
 - Same actor as implementation? yes/no:
@@ -113,6 +121,7 @@ For Git-connected projects, an authorized merge to the configured Production bra
 - [ ] Failed/skipped/unexecuted checks are reported truthfully.
 - [ ] No secrets, tokens, credentials, personal data, or private evidence were committed.
 - [ ] Independent validation claims satisfy the actor-separation rule and the exact-head validator/result/report pointer is discoverable from this PR, or NOT_REQUIRED is explicitly justified.
+- [ ] Required `FULL_VALIDATION` is PASS on the final exact head before merge; pending full validation did not unnecessarily block unrelated implementation work.
 - [ ] Any external red security/compliance signal is resolved or has an explicit authorized disposition/waiver; unrelated green CI is not used as a substitute.
 - [ ] Contract defects were traced through downstream trust boundaries when applicable; explicit null/undefined/missing semantics are preserved.
 - [ ] Load-bearing mutation/differential proof was recorded when required by the work contract/review.
