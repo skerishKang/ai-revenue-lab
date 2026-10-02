@@ -70,6 +70,43 @@
     return new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 2 }).format(Number(n) || 0);
   }
 
+  /* 이미 확정된 canonical 금액을 한글 금액 문자열로 표시한다.
+     이 함수는 합계를 계산하지 않고 전달받은 정수 금액만 포맷한다. */
+  function formatKoreanMoneyWords(value) {
+    var amount = Number(value);
+    if (!Number.isSafeInteger(amount) || amount < 0) return "";
+    if (amount === 0) return "영원";
+
+    var digits = ["", "일", "이", "삼", "사", "오", "육", "칠", "팔", "구"];
+    var smallUnits = ["", "십", "백", "천"];
+    var largeUnits = ["", "만", "억", "조", "경"];
+    var groups = [];
+    while (amount > 0) {
+      groups.push(amount % 10000);
+      amount = Math.floor(amount / 10000);
+    }
+    if (groups.length > largeUnits.length) return "";
+
+    function groupText(group) {
+      var text = "";
+      for (var pos = 3; pos >= 0; pos -= 1) {
+        var divisor = Math.pow(10, pos);
+        var digit = Math.floor(group / divisor) % 10;
+        if (!digit) continue;
+        if (!(digit === 1 && pos > 0)) text += digits[digit];
+        text += smallUnits[pos];
+      }
+      return text;
+    }
+
+    var result = "";
+    for (var i = groups.length - 1; i >= 0; i -= 1) {
+      if (!groups[i]) continue;
+      result += groupText(groups[i]) + largeUnits[i];
+    }
+    return result + "원";
+  }
+
   /* ── 합계: item.amount / supply / vat / grand 는 저장값이 아니라 매번 파생 ── */
 
   function itemAmount(item) {
@@ -139,7 +176,8 @@
         quoteNo: "PQ-" + today.split("-").join("") + "-001",
         issueDate: today,
         validDays: 30,
-        source: "manual"
+        source: "manual",
+        projectName: ""
       },
       sender: {
         company: "샘플 공급사",
@@ -152,8 +190,8 @@
       },
       recipient: { company: "고객사", person: "담당자님", address: "", email: "" },
       items: [
-        { id: "item-1", name: "서비스 구축", qty: 1, unitPrice: 1000000 },
-        { id: "item-2", name: "운영 지원", qty: 1, unitPrice: 300000 }
+        { id: "item-1", sequence: "1", name: "서비스 구축", specification: "", unit: "", qty: 1, unitPrice: 1000000, rowNote: "" },
+        { id: "item-2", sequence: "2", name: "운영 지원", specification: "", unit: "", qty: 1, unitPrice: 300000, rowNote: "" }
       ],
       tax: { mode: TAX_MODES.EXCLUSIVE, rate: VAT_RATE },
       memo: "견적 유효기간 내 발주 시 상기 금액을 적용합니다.\n세부 일정은 협의 후 확정합니다."
@@ -181,9 +219,13 @@
         var src = it && typeof it === "object" ? it : {};
         return {
           id: asString(src.id, "item-" + (i + 1)),
-          name: asString(src.name, ""),
+          sequence: asString(src.sequence, String(i + 1)).slice(0, 40),
+          name: asString(src.name, "").slice(0, 240),
+          specification: asString(src.specification, "").slice(0, 240),
+          unit: asString(src.unit, "").slice(0, 80),
           qty: asNonNegativeNumber(src.qty, 1),
-          unitPrice: asNonNegativeNumber(src.unitPrice, 0)
+          unitPrice: asNonNegativeNumber(src.unitPrice, 0),
+          rowNote: asString(src.rowNote, "").slice(0, 240)
         };
       });
       var taxMode = raw.tax && TAX_MODES[raw.tax.mode] ? raw.tax.mode : base.tax.mode;
@@ -193,7 +235,8 @@
           quoteNo: asString(raw.meta && raw.meta.quoteNo, base.meta.quoteNo),
           issueDate: asString(raw.meta && raw.meta.issueDate, base.meta.issueDate),
           validDays: asNonNegativeNumber(raw.meta && raw.meta.validDays, base.meta.validDays),
-          source: asString(raw.meta && raw.meta.source, "manual")
+          source: asString(raw.meta && raw.meta.source, "manual"),
+          projectName: asString(raw.meta && raw.meta.projectName, "").slice(0, 240)
         },
         sender: {
           company: asString(raw.sender && raw.sender.company, base.sender.company),
@@ -267,7 +310,8 @@
         quoteNo: quoteNo,
         issueDate: issueDate,
         validDays: current.meta.validDays > 0 ? current.meta.validDays : defaults.meta.validDays,
-        source: source
+        source: source,
+        projectName: ""
       },
       sender: {
         company: current.sender.company,
@@ -279,7 +323,7 @@
         presetId: current.sender.presetId
       },
       recipient: { company: "", person: "", address: "", email: "" },
-      items: [{ id: "item-1", name: "", qty: 1, unitPrice: 0 }],
+      items: [{ id: "item-1", sequence: "1", name: "", specification: "", unit: "", qty: 1, unitPrice: 0, rowNote: "" }],
       tax: { mode: TAX_MODES.EXCLUSIVE, rate: VAT_RATE },
       memo: defaults.memo
     });
@@ -296,6 +340,7 @@
     parseKoreanMoney: parseKoreanMoney,
     formatMoney: formatMoney,
     formatInputNumber: formatInputNumber,
+    formatKoreanMoneyWords: formatKoreanMoneyWords,
     itemAmount: itemAmount,
     computeTotals: computeTotals,
     parseISODate: parseISODate,
