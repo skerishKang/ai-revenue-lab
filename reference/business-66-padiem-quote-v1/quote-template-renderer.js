@@ -313,8 +313,18 @@
   function applyStyleVariables(doc, model) {
     var paper = typeof doc.getElementById === "function" ? doc.getElementById("quotePaper") : null;
     if (!paper || !paper.style || typeof paper.style.setProperty !== "function") return false;
-    Object.keys(model.styleVariables).forEach(function (name) {
-      paper.style.setProperty(name, model.styleVariables[name]);
+    var targets = [paper];
+    if (typeof doc.querySelectorAll === "function") {
+      Array.prototype.forEach.call(
+        doc.querySelectorAll("#pvDetailPages .quote-detail-page"),
+        function (detailPage) { targets.push(detailPage); }
+      );
+    }
+    targets.forEach(function (target) {
+      if (!target || !target.style || typeof target.style.setProperty !== "function") return;
+      Object.keys(model.styleVariables).forEach(function (name) {
+        target.style.setProperty(name, model.styleVariables[name]);
+      });
     });
     return true;
   }
