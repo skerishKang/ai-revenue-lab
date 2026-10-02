@@ -716,11 +716,12 @@ check(app.includes("TEMPLATE_ACTIONS") && app.includes("window.B66QuoteTemplateB
       app.includes("TemplateSelection.resolveActiveTemplate(") &&
       app.includes("templateUiState"),
   "TEMPLATE_SELECTOR_LIVE=YES: the app wires selection, preview and management actions");
-check(app.includes("previewTemplateProfile() || renderTemplateAuthority()") &&
+check(app.includes("const previewProfile = previewTemplateProfile();") &&
+      app.includes("const authority = previewProfile || renderTemplateAuthority();") &&
       app.includes("return activeSkillProfile() || activeTemplateProfile();") &&
       app.includes("return profile && Template.isApprovedProfile(profile) ? profile : null;") &&
       app.includes("candidate && candidate.approved"),
-  "UNAPPROVED_TEMPLATE_SELECTION=0: preview/skill render paths are restricted to approved profiles");
+  "UNAPPROVED_TEMPLATE_SELECTION=0: preview/skill render paths remain restricted to approved profiles");
 
 /* ── #3184 양식 본뜨기(후보 검토 + 명시적 승인) ── */
 check(html.includes('src="quote-template-candidate.js"') && html.includes('src="quote-template-cloner.js"'),
