@@ -47,10 +47,15 @@
     return Boolean(entry) && Template.approvalIsValid(entry.approval, entry.fingerprint);
   }
 
-  /* #3402: slot 값은 Template.normalizeTemplateContent 가 private asset id 로
-     정규화한다. raw URL/data URI/file bytes 는 template contract 에서 보존되지 않는다. */
+  /* #3402: private logo/stamp 는 account/workspace authority 가 필요한 값이다.
+     Browser-local template storage has no such authority, so it stays fail-closed.
+     Server-assigned Saved Quote Skills may carry the same validated b66asset_* refs. */
   function rejectionForContent(content) {
     if (!isPlainObject(content)) return "invalid_template_content";
+    var slots = isPlainObject(content.slots) ? content.slots : {};
+    if (String(slots.logo || "") || String(slots.stamp || "")) {
+      return "private_asset_requires_account_skill";
+    }
     return null;
   }
 
