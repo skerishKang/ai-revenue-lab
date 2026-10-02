@@ -12,6 +12,8 @@
   "use strict";
 
   var MAX_ITEMS = 100;
+  var MAX_DETAIL_GROUPS = 32;
+  var MAX_DETAIL_ITEMS = 300;
   var MAX_TEXT = 2000;
   var MAX_MEMO = 8000;
   var MAX_FILENAME = 255;
@@ -117,6 +119,57 @@
     });
   }
 
+  function normalizeDetailGroups(raw, summaryCount) {
+    if (raw == null) return [];
+    if (!Array.isArray(raw)) fail("invalid_detail_groups");
+    if (raw.length > MAX_DETAIL_GROUPS) fail("too_many_detail_groups");
+    var seen = Object.create(null);
+    var totalItems = 0;
+    return raw.map(function (group, groupIndex) {
+      if (!isObject(group)) fail("invalid_detail_group_" + groupIndex);
+      var keys = Object.keys(group);
+      if (keys.some(function (key) {
+        return ["summaryIndex", "title", "items"].indexOf(key) === -1;
+      })) fail("invalid_detail_group_" + groupIndex);
+
+      var summaryIndex = Number(group.summaryIndex);
+      if (!Number.isInteger(summaryIndex) || summaryIndex < 1 || summaryIndex > summaryCount || seen[summaryIndex]) {
+        fail("invalid_detail_summary_index");
+      }
+      seen[summaryIndex] = true;
+      if (!Array.isArray(group.items) || group.items.length < 1) fail("invalid_detail_items");
+      totalItems += group.items.length;
+      if (totalItems > MAX_DETAIL_ITEMS) fail("too_many_detail_items");
+
+      var items = group.items.map(function (item, itemIndex) {
+        if (!isObject(item)) fail("invalid_detail_item_" + itemIndex);
+        var itemKeys = Object.keys(item);
+        if (itemKeys.some(function (key) {
+          return ["name", "spec", "unit", "qty", "unitPrice", "note", "section"].indexOf(key) === -1;
+        })) fail("invalid_detail_item_" + itemIndex);
+        var name = optionalText(item.name, MAX_TEXT, "invalid_detail_item_name");
+        var qty = optionalMoney(item.qty, "invalid_detail_item_qty");
+        var unitPrice = optionalMoney(item.unitPrice, "invalid_detail_item_unit_price");
+        if (name == null || qty == null || qty <= 0 || unitPrice == null) fail("incomplete_detail_item");
+        return {
+          name: name,
+          spec: optionalText(item.spec, MAX_TEXT, "invalid_detail_item_spec"),
+          unit: optionalText(item.unit, 80, "invalid_detail_item_unit"),
+          qty: qty,
+          unitPrice: unitPrice,
+          note: optionalText(item.note, MAX_TEXT, "invalid_detail_item_note"),
+          section: optionalText(item.section, MAX_TEXT, "invalid_detail_item_section")
+        };
+      });
+
+      return {
+        summaryIndex: summaryIndex,
+        title: optionalText(group.title, MAX_TEXT, "invalid_detail_group_title"),
+        items: items
+      };
+    });
+  }
+
   function normalizeEvidence(raw) {
     if (raw == null) return [];
     if (!Array.isArray(raw)) fail("invalid_evidence");
@@ -214,6 +267,7 @@
         recipient: recipient,
         quote: quote,
         items: normalizeItems(raw.items),
+        detailGroups: normalizeDetailGroups(raw.detailGroups, Array.isArray(raw.items) ? raw.items.length : 0),
         tax: { mode: taxMode },
         memo: optionalText(raw.memo, MAX_MEMO, "invalid_memo"),
         evidence: normalizeEvidence(raw.evidence),
@@ -297,6 +351,30 @@
       });
     }
 
+    if (extracted.detailGroups.length > 0) {
+      candidate.detailGroups = extracted.detailGroups.map(function (group, groupIndex) {
+        var mappedGroup = {
+          id: "extracted-detail-group-" + (groupIndex + 1),
+          summaryItemId: "extracted-item-" + group.summaryIndex,
+          items: group.items.map(function (item, itemIndex) {
+            var mapped = {
+              id: "extracted-detail-group-" + (groupIndex + 1) + "-item-" + (itemIndex + 1),
+              name: item.name,
+              qty: item.qty,
+              unitPrice: item.unitPrice
+            };
+            assignIfPresent(mapped, "spec", item.spec);
+            assignIfPresent(mapped, "unit", item.unit);
+            assignIfPresent(mapped, "note", item.note);
+            assignIfPresent(mapped, "section", item.section);
+            return mapped;
+          })
+        };
+        assignIfPresent(mappedGroup, "title", group.title);
+        return mappedGroup;
+      });
+    }
+
     if (extracted.tax.mode !== null) candidate.tax.mode = extracted.tax.mode;
     if (extracted.memo !== null) candidate.memo = extracted.memo;
 
@@ -315,6 +393,8 @@
 
   return {
     MAX_ITEMS: MAX_ITEMS,
+    MAX_DETAIL_GROUPS: MAX_DETAIL_GROUPS,
+    MAX_DETAIL_ITEMS: MAX_DETAIL_ITEMS,
     MAX_TEXT: MAX_TEXT,
     MAX_MEMO: MAX_MEMO,
     MAX_EVIDENCE: MAX_EVIDENCE,
