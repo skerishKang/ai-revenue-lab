@@ -556,6 +556,14 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
                 "문서 저장소가 설정되지 않았습니다.",
             )
 
+    # #3382: the adapter is read BEFORE the usage gate because the canonical
+    # USER lane check (subject identity) must happen BEFORE quota consumption.
+    # The usage gate is still applied before the actual P01 dispatch, so the
+    # contract intent is preserved.
+    adapter: P01CoreOrchestrationAdapter | None = getattr(
+        request.app.state, "claw_p01_adapter", None
+    )
+
     # #3382: the canonical USER subject is resolved BEFORE the usage gate so a
     # failed revalidation never consumes quota. The subject is derived
     # SERVER-SIDE from the signed Padiem session (current_user_id → current B54
@@ -565,22 +573,25 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     # identity authority is not bound (legacy/test composition), the lane is
     # off and the old subjectless contract applies — the Engine admission
     # rejects the request with 503 entitlement_unavailable.
-    from .b54_canonical_session import resolve_current_b54_canonical_session
+    subject_id: str | None = None
+    if adapter is not None and getattr(
+        adapter, "subject_identity_lane", False
+    ) is True:
+        from .b54_canonical_session import resolve_current_b54_canonical_session
 
-    b54_session = await resolve_current_b54_canonical_session(request)
-    canonical_subject_id = (
-        b54_session.auth_session.subject.subject_id
-        if b54_session is not None
-        else None
-    )
+        b54_session = await resolve_current_b54_canonical_session(request)
+        if b54_session is None:
+            return _error(
+                403,
+                "canonical_b54_session_unavailable",
+                "인증된 Claw 실행 권한을 확인할 수 없습니다.",
+            )
+        subject_id = b54_session.auth_session.subject.subject_id
 
     denial = await _usage_gate_denial(request)
     if denial is not None:
         return denial
 
-    adapter: P01CoreOrchestrationAdapter | None = getattr(
-        request.app.state, "claw_p01_adapter", None
-    )
     if adapter is None:
         # No composed transport exists, so the consumed authorization is
         # provably un-dispatched: compensate the exact receipt (#2226).
@@ -601,26 +612,12 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
             headers=_NO_STORE_HEADERS,
         )
 
-    # #3382: the canonical USER lane requires a resolved canonical subject. If
-    # the lane is on but no subject was resolved (no B54 session), fail closed
-    # before dispatch — the Engine admission would reject it anyway.
-    if (
-        getattr(adapter, "subject_identity_lane", False) is True
-        and canonical_subject_id is None
-    ):
-        await _refund_active_reservation()
-        return _error(
-            403,
-            "canonical_b54_session_unavailable",
-            "인증된 Claw 실행 권한을 확인할 수 없습니다.",
-        )
-
     task_text = _build_execute_task(action, content_clean)
     run = create_claw_run("padiem-chat", task_text)
 
     try:
         outcome = await adapter.execute(
-            run, product_tier=product_tier, subject_id=canonical_subject_id
+            run, product_tier=product_tier, subject_id=subject_id
         )
     except P01AdapterError as exc:
         # Canonical #830 invariant: refund only when B62 can prove the Engine

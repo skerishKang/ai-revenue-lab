@@ -406,7 +406,7 @@ def test_execute_route_has_no_body_driven_refund_authority() -> None:
         assert f"data[{field!r}]" not in execute_handler
     # Refunds exist only through the reservation seam and the server-side
     # dispatch classification, never through a caller-visible knob.
-    # #3382: a third refund site was added for the canonical-session
-    # fail-closed path (pre-dispatch, NOT_DISPATCHED — quota untouched).
-    assert execute_handler.count("_refund_active_reservation()") == 3
+    # #3382: the canonical-session fail-closed happens BEFORE the usage gate,
+    # so no refund is needed for that path — the count stays at 2.
+    assert execute_handler.count("_refund_active_reservation()") == 2
     assert "P01DispatchClass.NOT_DISPATCHED" in execute_handler

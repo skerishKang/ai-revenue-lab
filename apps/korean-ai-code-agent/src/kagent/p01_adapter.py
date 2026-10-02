@@ -5,6 +5,7 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
+import re
 from typing import Protocol
 
 from padiem_ai_core import (
@@ -314,15 +315,17 @@ class P01RequestFactory:
                     "P01 subject identity requires the reviewed canonical USER lane.",
                     dispatch_class=P01DispatchClass.NOT_DISPATCHED,
                 )
+            # #3382: the canonical USER subject is CP-issued in the exact
+            # `sub_<32 lowercase hex>` form. The Engine's own
+            # `_parse_subject_id` accepts a broader safe-identifier shape, so
+            # this narrower grammar is the canonical lane's contract check.
             if (
                 not isinstance(subject_id, str)
-                or not subject_id.strip()
-                or len(subject_id) > 256
-                or not subject_id[:1].isalnum()
+                or not re.fullmatch(r"^sub_[0-9a-f]{32}$", subject_id)
             ):
                 raise P01AdapterError(
                     "invalid_subject_id",
-                    "P01 subject identity must be a bounded safe identifier.",
+                    "P01 subject identity must be a canonical sub_<32hex> identifier.",
                     dispatch_class=P01DispatchClass.NOT_DISPATCHED,
                 )
 
