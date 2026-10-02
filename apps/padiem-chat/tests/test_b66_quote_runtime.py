@@ -365,6 +365,33 @@ def test_normalizer_accepts_variable_fields_and_rejects_calculated_or_template_o
     assert safe["detailGroups"][0]["items"][0]["section"] == "1. 자재"
     assert safe["detailGroups"][0]["items"][1]["unitPrice"] == 100000
 
+    linked_without_summary_price = normalize_conversation_output(
+        {
+            "recipient": {"company": "ABC건설"},
+            "items": [{"name": "요약 공사", "qty": 1, "unitPrice": None}],
+            "detailGroups": [{
+                "summaryIndex": 1,
+                "items": [
+                    {"name": "자재", "qty": 2, "unitPrice": 50000},
+                    {"name": "설치", "qty": 1, "unitPrice": 30000},
+                ],
+            }],
+            "missing": [],
+        }
+    ).safe_dict()
+    assert linked_without_summary_price["items"][0]["unitPrice"] == 0
+    assert linked_without_summary_price["detailGroups"][0]["summaryItemId"] == "item-1"
+
+    with pytest.raises(B66QuoteConversationError, match="incomplete_item"):
+        normalize_conversation_output(
+            {
+                "recipient": {"company": "ABC건설"},
+                "items": [{"name": "요약 공사", "qty": 1, "unitPrice": None}],
+                "detailGroups": [],
+                "missing": [],
+            }
+        )
+
     with pytest.raises(B66QuoteConversationError, match="unsupported_output_field|forbidden_output_field"):
         normalize_conversation_output(
             {
@@ -483,6 +510,8 @@ async def test_interpreter_calls_model_once_for_fields_only_and_hides_template_c
     assert "items.note" in context
     assert "detailGroups" in context
     assert "summaryIndex" in context
+    assert "계산하지 말고 unitPrice를 null" in context
+    assert "QuoteCore가 상세 소계를 요약 단가로 파생" in context
     assert "items[].section" not in context or "section" in context
     assert "template-private" not in context
     assert "테스트상사" not in context
