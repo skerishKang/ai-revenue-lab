@@ -306,6 +306,7 @@ for (const forbidden of [
   assert.ok(!allEmbedSource.includes(forbidden), "forbidden embed capability: " + forbidden);
 }
 assert.ok(!/\bfetch\s*\(/.test(allEmbedSource), "embed performs no fetch");
+assert.ok(source.includes("MAX_MESSAGE_JSON_CHARS = 1024 * 1024"), "two bounded private image slots fit in the render envelope");
 assert.match(html, /connect-src 'none'/);
 assert.match(html, /img-src data:/);
 assert.match(html, /id="pvLogo"/);
