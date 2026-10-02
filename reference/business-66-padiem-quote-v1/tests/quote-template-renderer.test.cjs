@@ -469,6 +469,43 @@ eq(rollupModel.detailPages[0].rows[1].section, "3. 인건비 및 잡자재",
   "later section heading is preserved");
 eq(authoritative.detailPages, [], "existing built-in template renders no detail pages");
 
+const formalDraft = Core.normalizeDraft(Object.assign(clone(detailDraft), {
+  items: [{ id: "formal-summary", name: "제어 시스템", unit: "식", qty: 1, unitPrice: 0 }],
+  detailGroups: [{
+    id: "formal-detail",
+    summaryItemId: "formal-summary",
+    title: "자재산출내역서",
+    items: [
+      { id: "f1", name: "개폐기", spec: "좌 상", unit: "채널", qty: 2, unitPrice: 65000, section: "1. 제어장치" },
+      { id: "f2", name: "개폐기", spec: "좌 하", unit: "채널", qty: 2, unitPrice: 65000, section: "1. 제어장치" },
+      { id: "f3", name: "센서", spec: "온습도", unit: "개", qty: 1, unitPrice: 250000, section: "2. 센서류" }
+    ]
+  }]
+}));
+const formalContent = clone(rollupContent);
+formalContent.layoutVariant = "formal-grid-v1";
+formalContent.items.minRows = 9;
+formalContent.memo.heading = "<특기사항>";
+formalContent.detailPages.mergeRepeatedName = true;
+const formalModel = Renderer.buildRenderModel(
+  formalDraft,
+  approvedProfile("formal-grid", formalContent),
+  { taxReviewRequired: false }
+);
+eq(formalModel.layoutVariant, "formal-grid-v1", "formal layout variant reaches render model");
+eq(formalModel.items.length, 9, "summary minRows adds display-only filler rows");
+eq(formalModel.items.filter((item) => item.filler).length, 8, "only missing visual rows are fillers");
+eq(formalModel.items[1].values.amount, "", "filler rows carry no calculated amount");
+check(formalModel.memoText.startsWith("<특기사항>\n"), "memo heading is presentation-only prefix");
+eq(formalModel.detailPages[0].rows[0].nameRowSpan, 2, "first repeated detail name owns the rowspan");
+eq(formalModel.detailPages[0].rows[1].suppressName, true, "later repeated detail name cell is suppressed");
+eq(formalModel.detailPages[0].rows[2].suppressName, false, "different detail name starts a new cell");
+eq(
+  formalModel.totals.grandText,
+  Core.formatMoney(Core.computeDraftTotals(formalDraft).grand),
+  "formal presentation never changes QuoteCore totals"
+);
+
 /* ── TEMPLATE_STYLE_APPLIED — 승인된 style/page 프로필이 실제 출력 투영을 바꾼다 ── */
 const styledContent = clone(Template.builtInTemplate().content);
 styledContent.style.accent = "#8a1f1f";
@@ -665,6 +702,29 @@ check(detailHtml.includes("스마트팜 제출견적"), "detail-page title is re
 check(detailHtml.includes("₩16,330,000"), "detail-page subtotal is rendered from QuoteCore");
 check(!/Math\.|computeTotals|computeDraftTotals/.test(detailHtml), "rendered detail markup contains no arithmetic");
 
+const formalDoc = stubDoc(ADAPTER_IDS);
+Renderer.applyRenderModel(formalDoc, formalModel);
+eq(
+  formalDoc.getElementById("quotePaper").attributes["data-layout-variant"],
+  "formal-grid-v1",
+  "formal layout is opt-in through a bounded data attribute"
+);
+check(formalDoc.getElementById("pvItems").innerHTML.includes("quote-filler-row"),
+  "formal summary adapter emits display-only filler rows");
+const formalDetailHtml = formalDoc.getElementById("pvDetailPages").innerHTML;
+check(formalDetailHtml.includes('data-layout-variant="formal-grid-v1"'),
+  "detail pages inherit the formal layout variant");
+check(formalDetailHtml.includes('rowspan="2"'),
+  "adjacent repeated detail names render as a merged cell");
+check(formalDetailHtml.includes("text-align:center"),
+  "formal column alignment is applied from the approved template");
+check(!/Math\.|computeTotals|computeDraftTotals/.test(formalDetailHtml),
+  "formal detail markup still contains no arithmetic");
+check(stylesCss.includes('[data-layout-variant="formal-grid-v1"]'),
+  "formal-grid CSS is scoped to the opt-in variant");
+check(stylesCss.includes("background: #c9c9c9"),
+  "formal detail header has the reviewed gray treatment");
+
 /* 어댑터 방어 */
 check(Renderer.applyRenderModel(null, authoritative) === false, "adapter without document fails safe");
 check(Renderer.applyRenderModel(stubDoc(ADAPTER_IDS), null) === false, "adapter without model fails safe");
@@ -699,6 +759,11 @@ eq(authoritative.pageRule, "@page { size: A4; margin: 10mm; }".replace(/\s+/g, "
 
 console.log("QUOTE_TEMPLATE_RENDERER_DETERMINISTIC=YES");
 console.log("CURRENT_DEFAULT_VISUAL_REGRESSION=0");
+console.log("FORMAL_LAYOUT_OPT_IN_ONLY=YES");
+console.log("SUMMARY_MIN_ROWS_DISPLAY_ONLY=PASS");
+console.log("DETAIL_REPEATED_NAME_MERGED=PASS");
+console.log("DETAIL_HEADER_GRAY=PASS");
+console.log("DETAIL_COMPACT_ROWS=PASS");
 console.log("QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES");
 console.log("QUOTECORE_TOTALS_UNCHANGED_ACROSS_TEMPLATES=YES");
 console.log("CURRENT_B66_TEMPLATE_MIGRATED_AS_BUILTIN=YES");
