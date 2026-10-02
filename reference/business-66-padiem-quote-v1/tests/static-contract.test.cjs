@@ -114,6 +114,17 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
 check(!/(Padiem|파디엠|padiem)/.test(app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + candidate + cloner + skill + skillStore + skillCandidate + skillRegistration + skillUi + intake + easy),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: quote domain logic stays product-neutral");
 check(!html.includes("B66 DEMO"), "PADIEM_ACCOUNT_BRIDGE_CONTRACT: no internal demo label");
+check(account.includes("function declaredAssetRefs(") &&
+      account.includes("function readPrivateAsset(") &&
+      account.includes('API + "/b66/assets/" + encodeURIComponent(assetId)') &&
+      account.includes("MAX_PRIVATE_ASSET_BYTES = 256 * 1024"),
+  "PRIVATE_ACCOUNT_ASSET_LOAD=PASS: standalone account bridge resolves only bounded private quote assets");
+check(app.includes("serverSlotSources") &&
+      app.includes("slotSources: serverSkillActive ? skillUiState.serverSlotSources : {}"),
+  "PRIVATE_ACCOUNT_ASSET_RENDER=PASS: only active server-assigned Skill gets transient private assets");
+check(templateStore.includes('return "private_asset_requires_account_skill"'),
+  "PRIVATE_BROWSER_TEMPLATE_ASSET_AUTHORITY=0: browser-local template store stays fail-closed");
+
 check(worker.includes("B66_ASSET_ROW") &&
       worker.includes('const assetPrefix = "/api/padiem/b66/assets/"') &&
       worker.includes('return "/api/b66/assets/" + id;'),
