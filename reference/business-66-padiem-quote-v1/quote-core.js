@@ -261,6 +261,10 @@
     for (var i = 0; i < raw.length; i += 1) {
       var source = raw[i];
       if (!source || typeof source !== "object" || Array.isArray(source)) return { ok: false, value: null };
+      var groupKeys = Object.keys(source);
+      if (groupKeys.some(function (key) {
+        return ["id", "summaryItemId", "title", "items"].indexOf(key) === -1;
+      })) return { ok: false, value: null };
       var id = typeof source.id === "string" ? source.id.trim().slice(0, MAX_DETAIL_ID_CHARS) : "";
       var summaryItemId = typeof source.summaryItemId === "string"
         ? source.summaryItemId.trim().slice(0, MAX_DETAIL_ID_CHARS)
@@ -276,6 +280,10 @@
       for (var j = 0; j < source.items.length; j += 1) {
         var rawItem = source.items[j];
         if (!rawItem || typeof rawItem !== "object" || Array.isArray(rawItem)) return { ok: false, value: null };
+        var detailKeys = Object.keys(rawItem);
+        if (detailKeys.some(function (key) {
+          return ["id", "name", "spec", "unit", "qty", "unitPrice", "note", "section"].indexOf(key) === -1;
+        })) return { ok: false, value: null };
         var name = optionalText(rawItem.name, 240);
         var qty = Number(rawItem.qty);
         var unitPrice = Number(rawItem.unitPrice);
