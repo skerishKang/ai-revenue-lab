@@ -24,10 +24,10 @@ MAX_ITEM_NAME_CHARS = 240
 
 TAX_MODES = frozenset({"EXCLUSIVE", "INCLUSIVE", "EXEMPT"})
 _ALLOWED_TOP = frozenset(
-    {"recipient", "quoteNo", "issueDate", "items", "memo", "taxMode", "missing"}
+    {"recipient", "quoteNo", "issueDate", "projectName", "items", "memo", "taxMode", "missing"}
 )
 _ALLOWED_RECIPIENT = frozenset({"company", "person", "address", "email"})
-_ALLOWED_ITEM = frozenset({"name", "qty", "unitPrice"})
+_ALLOWED_ITEM = frozenset({"name", "spec", "unit", "qty", "unitPrice", "note"})
 _ALLOWED_MISSING = frozenset(
     {"recipient", "quoteNo", "issueDate", "items", "memo", "taxMode"}
 )
@@ -76,12 +76,14 @@ class B66QuoteConversationProjection:
     memo: str | None
     tax_mode: str | None
     missing: tuple[str, ...]
+    project_name: str | None = None
 
     def safe_dict(self) -> dict[str, Any]:
         return {
             "recipient": dict(self.recipient),
             "quoteNo": self.quote_no,
             "issueDate": self.issue_date,
+            "projectName": self.project_name,
             "items": [dict(item) for item in self.items],
             "memo": self.memo,
             "taxMode": self.tax_mode,
@@ -174,12 +176,27 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
         if not isinstance(entry, dict) or set(entry) - _ALLOWED_ITEM:
             raise B66QuoteConversationError("invalid_item")
         name = _optional_text(entry.get("name"), limit=MAX_ITEM_NAME_CHARS)
+        spec = _optional_text(entry.get("spec"), limit=MAX_ITEM_NAME_CHARS)
+        unit = _optional_text(entry.get("unit"), limit=80)
         qty = _optional_number(entry.get("qty"), positive=True)
         unit_price = _optional_number(entry.get("unitPrice"), positive=False)
+        note = _optional_text(entry.get("note"), limit=MAX_ITEM_NAME_CHARS)
         if name is None or qty is None or unit_price is None:
             raise B66QuoteConversationError("incomplete_item")
-        items.append({"name": name, "qty": qty, "unitPrice": unit_price})
+        item: dict[str, int | float | str] = {
+            "name": name,
+            "qty": qty,
+            "unitPrice": unit_price,
+        }
+        if spec is not None:
+            item["spec"] = spec
+        if unit is not None:
+            item["unit"] = unit
+        if note is not None:
+            item["note"] = note
+        items.append(item)
 
+    project_name = _optional_text(raw.get("projectName"), limit=MAX_ITEM_NAME_CHARS)
     memo = _optional_text(raw.get("memo"), limit=MAX_MEMO_CHARS)
     tax_mode_raw = raw.get("taxMode")
     if tax_mode_raw is None:
@@ -208,6 +225,7 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
         memo=memo,
         tax_mode=tax_mode,
         missing=tuple(missing_raw),
+        project_name=project_name,
     )
 
 
@@ -233,13 +251,21 @@ def _conversation_prompt(skill: dict[str, Any]) -> str:
 
     contract = {
         "allowedVariableFields": allowed,
+        "optionalPresentationFields": [
+            "projectName",
+            "items.spec",
+            "items.unit",
+            "items.note",
+        ],
         "defaultTaxMode": default_tax,
     }
     return (
         "당신은 견적서 생성기가 아니라 견적 입력값 추출기입니다. "
         "사용자의 한 문장에서 실제로 말한 값만 JSON 객체 하나로 추출하십시오. "
-        "최상위 키는 recipient, quoteNo, issueDate, items, memo, taxMode, missing 만 허용됩니다. "
-        "recipient는 company/person/address/email, items는 name/qty/unitPrice 만 사용하십시오. "
+        "최상위 키는 recipient, quoteNo, issueDate, projectName, items, memo, taxMode, missing 만 허용됩니다. "
+        "recipient는 company/person/address/email을 사용하십시오. "
+        "items는 name/spec/unit/qty/unitPrice/note 만 사용하십시오. "
+        "사용자가 건명을 말하면 projectName에 그대로 넣으십시오. "
         "금액 합계, 공급가액, 부가세 금액, 총액을 계산하거나 반환하지 마십시오. "
         "sender, template, approval, fingerprint를 변경하거나 반환하지 마십시오. "
         "없는 값은 null 또는 빈 배열로 두고 필요한 추가 입력 필드 이름만 missing 배열에 넣으십시오. "

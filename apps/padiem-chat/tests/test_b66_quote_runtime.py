@@ -320,13 +320,26 @@ def test_normalizer_accepts_variable_fields_and_rejects_calculated_or_template_o
             },
             "quoteNo": None,
             "issueDate": None,
-            "items": [{"name": "배관", "qty": 20, "unitPrice": 30000}],
+            "projectName": "스마트팜 환경제어설비",
+            "items": [{
+                "name": "배관",
+                "spec": "40A",
+                "unit": "m",
+                "qty": 20,
+                "unitPrice": 30000,
+                "note": "현장 설치",
+            }],
             "memo": None,
             "taxMode": None,
             "missing": ["quoteNo", "issueDate"],
         }
     )
-    assert projection.safe_dict()["items"][0]["unitPrice"] == 30000
+    safe = projection.safe_dict()
+    assert safe["projectName"] == "스마트팜 환경제어설비"
+    assert safe["items"][0]["unitPrice"] == 30000
+    assert safe["items"][0]["spec"] == "40A"
+    assert safe["items"][0]["unit"] == "m"
+    assert safe["items"][0]["note"] == "현장 설치"
 
     with pytest.raises(B66QuoteConversationError, match="unsupported_output_field|forbidden_output_field"):
         normalize_conversation_output(
@@ -344,6 +357,20 @@ def test_normalizer_accepts_variable_fields_and_rejects_calculated_or_template_o
                 "items": [],
                 "missing": [],
                 "sender": {"company": "공격자"},
+            }
+        )
+
+    with pytest.raises(B66QuoteConversationError, match="forbidden_output_field"):
+        normalize_conversation_output(
+            {
+                "recipient": {"company": "ABC건설"},
+                "items": [{
+                    "name": "배관",
+                    "qty": 1,
+                    "unitPrice": 1000,
+                    "amount": 1000,
+                }],
+                "missing": [],
             }
         )
 
@@ -399,6 +426,11 @@ async def test_interpreter_calls_model_once_for_fields_only_and_hides_template_c
     context = call["context"]
     assert "금액 합계" in context
     assert "defaultTaxMode" in context
+    assert "optionalPresentationFields" in context
+    assert "projectName" in context
+    assert "items.spec" in context
+    assert "items.unit" in context
+    assert "items.note" in context
     assert "template-private" not in context
     assert "테스트상사" not in context
     assert call["attachments"] == ()

@@ -144,10 +144,14 @@
         index: index,
         emptyName: emptyName,
         values: {
+          no: String(index + 1),
           name: emptyName ? emptyNameText : item.name,
+          spec: String(item.spec == null ? "" : item.spec),
+          unit: String(item.unit == null ? "" : item.unit),
           qty: Core.formatInputNumber(item.qty),
           unitPrice: Core.formatMoney(item.unitPrice),
-          amount: Core.formatMoney(totals.amounts[index])
+          amount: Core.formatMoney(totals.amounts[index]),
+          note: String(item.note == null ? "" : item.note)
         }
       };
     }) : [];
@@ -187,6 +191,9 @@
       })(),
       columns: columns,
       titleText: has("title") ? content.title.text : "",
+      projectNameText: has("project") && content.project && normalizedDraft.meta.projectName
+        ? content.project.prefix + normalizedDraft.meta.projectName
+        : "",
       meta: {
         quoteNoText: has("meta") ? content.meta.quoteNoPrefix + textOrDash(normalizedDraft.meta.quoteNo) : "",
         dateText: has("meta") ? content.meta.issueDatePrefix + textOrDash(normalizedDraft.meta.issueDate) : "",
@@ -294,6 +301,7 @@
     setText("pvValidity", model.meta.validityText);
     setText("pvValidUntil", model.meta.validUntilText);
     setText("pvTaxMode", model.meta.taxText);
+    setText("pvProjectName", model.projectNameText);
 
     setText("pvSenderHeading", sender.heading);
     setText("pvSenderCompany", sender.company);

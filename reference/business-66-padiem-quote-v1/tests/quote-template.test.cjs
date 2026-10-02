@@ -81,6 +81,33 @@ eq(
 );
 check(profile.fingerprint === Template.templateFingerprint(profile.content), "built-in fingerprint is derived from content");
 
+const extendedContent = builtinContent();
+extendedContent.sections = ["title", "meta", "parties", "project", "items", "totals", "memo", "mark"];
+extendedContent.project = { prefix: "건   명 : " };
+extendedContent.items.columns = [
+  { key: "no", label: "NO", width: "6%", align: "center" },
+  { key: "name", label: "품명", width: "20%", align: "left" },
+  { key: "spec", label: "규격", width: "22%", align: "left" },
+  { key: "unit", label: "단위", width: "8%", align: "center" },
+  { key: "qty", label: "수량", width: "8%", align: "right" },
+  { key: "unitPrice", label: "단가", width: "12%", align: "right" },
+  { key: "amount", label: "금액", width: "14%", align: "right" },
+  { key: "note", label: "비고", width: "10%", align: "left" }
+];
+const extendedNormalized = Template.normalizeTemplateContent(extendedContent);
+check(extendedNormalized !== null, "extended quotation columns normalize");
+eq(
+  extendedNormalized.items.columns.map((column) => column.key),
+  ["no", "name", "spec", "unit", "qty", "unitPrice", "amount", "note"],
+  "eight-column quotation order is preserved"
+);
+eq(extendedNormalized.project, { prefix: "건   명 : " }, "optional project presentation section is preserved");
+eq(
+  Template.normalizeTemplateContent(builtinContent()),
+  builtinContent(),
+  "existing four-column builtin stays canonical after extended-column support"
+);
+
 /* TEMPLATE_FINGERPRINT_DETERMINISTIC — 동일 내용 → 동일 지문, 스타일 변경 → 다른 지문 */
 const contentA = builtinContent();
 const contentB = builtinContent();
