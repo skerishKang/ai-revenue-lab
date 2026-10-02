@@ -426,6 +426,11 @@ async def test_interpreter_calls_model_once_for_fields_only_and_hides_template_c
     context = call["context"]
     assert "금액 합계" in context
     assert "defaultTaxMode" in context
+    assert "optionalPresentationFields" in context
+    assert "projectName" in context
+    assert "items.spec" in context
+    assert "items.unit" in context
+    assert "items.note" in context
     assert "template-private" not in context
     assert "테스트상사" not in context
     assert call["attachments"] == ()
