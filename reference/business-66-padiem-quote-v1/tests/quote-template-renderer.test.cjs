@@ -67,8 +67,6 @@ function legacyProjection(draft, provisional) {
     pvTaxMode: provisional ? "세금  확인 필요" : "세금  " + Core.TAX_LABELS[draft.tax.mode],
     pvProjectName: "",
     pvWrittenTotal: "",
-    pvItemsHeading: "",
-    pvSummaryTerms: "",
     pvSenderHeading: "공급자",
     pvSenderCompany: legacyTextOrDash(draft.sender.company),
     pvSenderRep: "대표자  " + legacyTextOrDash(draft.sender.rep),
@@ -684,9 +682,18 @@ drafts.forEach(([label, base]) => {
       const doc = stubDoc(ADAPTER_IDS);
       check(Renderer.applyRenderModel(doc, model) === true, "adapter reports success");
       const expected = legacyProjection(draft, provisional);
-      ADAPTER_IDS.filter((id) => id !== "pvItems" && id !== "pvItemsHead" && id !== "pvDetailPages" && id !== "quotePaper").forEach((id) => {
+      ADAPTER_IDS.filter((id) =>
+        id !== "pvItems" &&
+        id !== "pvItemsHead" &&
+        id !== "pvDetailPages" &&
+        id !== "pvItemsHeading" &&
+        id !== "pvSummaryTerms" &&
+        id !== "quotePaper"
+      ).forEach((id) => {
         eq(doc.getElementById(id).textContent, expected[id], `adapter ${id} for ${label}/${mode}/${provisional}`);
       });
+      eq(doc.getElementById("pvItemsHeading").textContent, "", "built-in emits no summary item heading");
+      eq(doc.getElementById("pvSummaryTerms").innerHTML, "", "built-in emits no summary terms markup");
       eq(
         norm(doc.getElementById("pvItems").innerHTML),
         norm(legacyItemsHtml(draft, totals)),
