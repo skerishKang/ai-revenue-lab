@@ -128,7 +128,7 @@
 
   function listMetadata(rawEnvelope) {
     return normalizeEnvelope(rawEnvelope).entries.map(function (entry) {
-      var totals = Core.computeTotals(entry.draft.items, entry.draft.tax.mode);
+      var totals = Core.computeTotals(entry.draft.items, entry.draft.tax.mode, entry.draft.calculationPolicy);
       return {
         id: entry.id,
         savedAt: entry.savedAt,
