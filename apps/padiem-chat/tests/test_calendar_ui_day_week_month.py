@@ -194,8 +194,12 @@ def test_real_calendar_module_drives_range_navigation_states_and_bounded_month_g
       createElement: (tag) => makeEl(tag), addEventListener() {{}} }};
     const RealDate = Date;
     class FixedDate extends RealDate {{
-      constructor(...args) {{ super(...(args.length ? args : ["2026-09-23T12:00:00Z"])); }}
-      static now() {{ return new RealDate("2026-09-23T12:00:00Z").getTime(); }}
+      constructor(...args) {{
+        super(...(args.length ? args : ["2026-09-23T12:00:00Z"]));
+      }}
+      static now() {{ return RealDate.parse("2026-09-23T12:00:00Z"); }}
+      static UTC(...args) {{ return RealDate.UTC(...args); }}
+      static parse(value) {{ return RealDate.parse(value); }}
     }}
     const sandbox = {{ document, fetch: fetchImpl, Intl, Date: FixedDate, JSON, Number, Object, String, Array,
       RegExp, Promise, setTimeout, clearTimeout, console, MutationObserver: undefined }};
