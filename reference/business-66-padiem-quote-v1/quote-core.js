@@ -17,6 +17,8 @@
   var VAT_RATE = 0.10;
 
   var TAX_MODES = { EXCLUSIVE: "EXCLUSIVE", INCLUSIVE: "INCLUSIVE", EXEMPT: "EXEMPT" };
+  var GRAND_ROUNDING_MODES = { FLOOR: "FLOOR" };
+  var GRAND_ROUNDING_UNITS = [1, 10, 100, 1000, 10000];
   var TAX_LABELS = {
     EXCLUSIVE: "부가세 별도 (VAT 10%)",
     INCLUSIVE: "VAT 포함가",
@@ -70,6 +72,47 @@
     return new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 2 }).format(Number(n) || 0);
   }
 
+  function normalizeCalculationPolicy(raw) {
+    if (raw === undefined || raw === null) return null;
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+    var keys = Object.keys(raw);
+    if (keys.length !== 1 || keys[0] !== "grandRounding") return null;
+    var rounding = raw.grandRounding;
+    if (!rounding || typeof rounding !== "object" || Array.isArray(rounding)) return null;
+    var roundingKeys = Object.keys(rounding).sort();
+    if (roundingKeys.length !== 2 || roundingKeys[0] !== "mode" || roundingKeys[1] !== "unit") return null;
+    if (rounding.mode !== GRAND_ROUNDING_MODES.FLOOR) return null;
+    var unit = Number(rounding.unit);
+    if (GRAND_ROUNDING_UNITS.indexOf(unit) === -1) return null;
+    return { grandRounding: { mode: GRAND_ROUNDING_MODES.FLOOR, unit: unit } };
+  }
+
+  function formatKoreanMoneyWords(value) {
+    var number = Number(value);
+    if (!Number.isSafeInteger(number) || number < 0) return null;
+    if (number === 0) return "영";
+    var digits = ["", "일", "이", "삼", "사", "오", "육", "칠", "팔", "구"];
+    var smallUnits = ["", "십", "백", "천"];
+    var largeUnits = ["", "만", "억", "조"];
+    var result = "";
+    var groupIndex = 0;
+    while (number > 0) {
+      var group = number % 10000;
+      if (group > 0) {
+        var groupText = "";
+        for (var position = 0; position < 4; position += 1) {
+          var digit = Math.floor(group / Math.pow(10, position)) % 10;
+          if (digit > 0) groupText = digits[digit] + smallUnits[position] + groupText;
+        }
+        if (groupIndex >= largeUnits.length) return null;
+        result = groupText + largeUnits[groupIndex] + result;
+      }
+      number = Math.floor(number / 10000);
+      groupIndex += 1;
+    }
+    return result || null;
+  }
+
   /* ── 합계: item.amount / supply / vat / grand 는 저장값이 아니라 매번 파생 ── */
 
   function itemAmount(item) {
@@ -78,7 +121,7 @@
     return Math.round(qty * price);
   }
 
-  function computeTotals(items, taxMode) {
+  function computeTotals(items, taxMode, calculationPolicy) {
     var amounts = (items || []).map(itemAmount);
     var subtotal = amounts.reduce(function (sum, a) { return sum + a; }, 0);
     var mode = TAX_MODES[taxMode] ? taxMode : TAX_MODES.EXCLUSIVE;
@@ -96,7 +139,25 @@
       vat = Math.round(subtotal * 0.10);
       grand = supply + vat;
     }
-    return { amounts: amounts, subtotal: subtotal, supply: supply, vat: vat, grand: grand, mode: mode };
+    if (calculationPolicy === undefined || calculationPolicy === null) {
+      return { amounts: amounts, subtotal: subtotal, supply: supply, vat: vat, grand: grand, mode: mode };
+    }
+    var policy = normalizeCalculationPolicy(calculationPolicy);
+    if (!policy) return null;
+    var rawGrand = grand;
+    var unit = policy.grandRounding.unit;
+    grand = Math.floor(rawGrand / unit) * unit;
+    return {
+      amounts: amounts,
+      subtotal: subtotal,
+      supply: supply,
+      vat: vat,
+      grand: grand,
+      mode: mode,
+      rawGrand: rawGrand,
+      roundingAdjustment: grand - rawGrand,
+      calculationPolicy: policy
+    };
   }
 
   /* ── 날짜: 견적일 + 유효기간 → 유효일. 파싱 실패 시 null (crash 금지) ── */
@@ -209,7 +270,12 @@
       };
       var projectName = optionalText(raw.meta && raw.meta.projectName, 240);
       if (projectName !== null) meta.projectName = projectName;
-      return {
+      var calculationPolicy = null;
+      if (raw.calculationPolicy !== undefined && raw.calculationPolicy !== null) {
+        calculationPolicy = normalizeCalculationPolicy(raw.calculationPolicy);
+        if (!calculationPolicy) return null;
+      }
+      var normalized = {
         schemaVersion: SCHEMA_VERSION,
         meta: meta,
         sender: {
@@ -234,6 +300,8 @@
         },
         memo: asString(raw.memo, base.memo)
       };
+      if (calculationPolicy) normalized.calculationPolicy = calculationPolicy;
+      return normalized;
     } catch (err) {
       return null;
     }
@@ -278,7 +346,7 @@
       ? opts.source.trim()
       : "manual";
 
-    return normalizeDraft({
+    var next = {
       schemaVersion: SCHEMA_VERSION,
       meta: {
         quoteNo: quoteNo,
@@ -299,7 +367,9 @@
       items: [{ id: "item-1", name: "", qty: 1, unitPrice: 0 }],
       tax: { mode: TAX_MODES.EXCLUSIVE, rate: VAT_RATE },
       memo: defaults.memo
-    });
+    };
+    if (current.calculationPolicy) next.calculationPolicy = current.calculationPolicy;
+    return normalizeDraft(next);
   }
 
   return {
@@ -309,6 +379,10 @@
     VAT_RATE: VAT_RATE,
     TAX_MODES: TAX_MODES,
     TAX_LABELS: TAX_LABELS,
+    GRAND_ROUNDING_MODES: GRAND_ROUNDING_MODES,
+    GRAND_ROUNDING_UNITS: GRAND_ROUNDING_UNITS.slice(),
+    normalizeCalculationPolicy: normalizeCalculationPolicy,
+    formatKoreanMoneyWords: formatKoreanMoneyWords,
     parseMoney: parseMoney,
     parseKoreanMoney: parseKoreanMoney,
     formatMoney: formatMoney,

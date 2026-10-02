@@ -31,7 +31,7 @@
   /* #3402: logo/stamp 는 raw bytes/URL 이 아니라 account-bound private asset id 만 보존한다. */
   var SLOT_SUPPORT = "private_asset_v1";
 
-  var ALLOWED_SECTIONS = ["title", "meta", "parties", "project", "items", "totals", "memo", "mark"];
+  var ALLOWED_SECTIONS = ["title", "meta", "parties", "project", "items", "totals", "writtenTotal", "memo", "mark"];
   var ALLOWED_COLUMN_KEYS = ["no", "name", "spec", "unit", "qty", "unitPrice", "amount", "note"];
   var REQUIRED_COLUMN_KEYS = ["name", "qty", "unitPrice", "amount"];
   var ALLOWED_ALIGNMENTS = ["left", "right", "center"];
@@ -523,6 +523,14 @@
       var project = isPlainObject(raw.project) ? raw.project : {};
       content.project = {
         prefix: boundString(project.prefix, "건명  ")
+      };
+    }
+
+    if (sections.indexOf("writtenTotal") !== -1) {
+      var writtenTotal = isPlainObject(raw.writtenTotal) ? raw.writtenTotal : {};
+      content.writtenTotal = {
+        prefix: boundString(writtenTotal.prefix, "일금 "),
+        suffix: boundString(writtenTotal.suffix, "원정")
       };
     }
 

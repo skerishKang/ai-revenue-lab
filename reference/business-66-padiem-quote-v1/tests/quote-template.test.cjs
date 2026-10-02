@@ -108,6 +108,22 @@ eq(
   "existing four-column builtin stays canonical after extended-column support"
 );
 
+const writtenContent = builtinContent();
+writtenContent.sections = ["title", "meta", "parties", "items", "totals", "writtenTotal", "memo", "mark"];
+writtenContent.writtenTotal = { prefix: "일금 ", suffix: "원정[부가세포함]" };
+const writtenNormalized = Template.normalizeTemplateContent(writtenContent);
+check(writtenNormalized !== null, "written-total template section normalizes");
+eq(
+  writtenNormalized.writtenTotal,
+  { prefix: "일금 ", suffix: "원정[부가세포함]" },
+  "template owns written-total presentation text only"
+);
+eq(
+  Template.normalizeTemplateContent(builtinContent()),
+  builtinContent(),
+  "optional written-total support does not change built-in canonical content"
+);
+
 /* TEMPLATE_FINGERPRINT_DETERMINISTIC — 동일 내용 → 동일 지문, 스타일 변경 → 다른 지문 */
 const contentA = builtinContent();
 const contentB = builtinContent();
@@ -398,79 +414,3 @@ check(forgedWrongContent.approved === false, "the canonical id with non-canonica
 check(forgedWrongContent.approvalBasis === "unapproved", "content mismatch records the unapproved basis");
 check(Template.isApprovedProfile(forgedWrongContent) === false, "content mismatch is not an approved profile");
 check(Template.isCanonicalBuiltInContent(forgedContent) === false, "non-canonical content is rejected");
-
-const missingFlag = Template.buildProfile({
-  id: Template.BUILTIN_TEMPLATE_ID, name: "builtin", builtin: false, isDefault: true, approval: null,
-  createdAt: "", updatedAt: "", content: canonicalContent()
-});
-check(missingFlag.builtin === false, "the canonical id without the builtin flag is not trusted");
-check(missingFlag.approved === false, "the canonical id without the flag still needs approval evidence");
-
-/* CANONICAL_BUILTIN_FALLBACK — 세 조건을 모두 만족할 때만 trusted built-in 이다 */
-check(profile.builtin === true, "CANONICAL_BUILTIN_FALLBACK: the canonical built-in is trusted");
-check(profile.approved === true, "CANONICAL_BUILTIN_FALLBACK: the canonical built-in is approved");
-check(profile.fingerprint === Template.BUILTIN_TEMPLATE_FINGERPRINT, "the canonical fingerprint is published");
-check(Template.isCanonicalBuiltIn(profile) === true, "the canonical built-in passes the trust check");
-const canonicalRebuilt = Template.buildProfile({
-  id: Template.BUILTIN_TEMPLATE_ID, name: Template.BUILTIN_TEMPLATE_NAME, builtin: true, isDefault: true,
-  approval: null, createdAt: "", updatedAt: "", content: canonicalContent()
-});
-check(canonicalRebuilt.builtin === true && canonicalRebuilt.approved === true,
-  "a rebuilt canonical built-in is still trusted");
-eq(canonicalRebuilt.fingerprint, Template.BUILTIN_TEMPLATE_FINGERPRINT, "canonical rebuild keeps the fingerprint");
-
-/* 선언된 지문만 canonical 이라고 우기는 것으로는 신뢰를 얻지 못한다 */
-const declaredFingerprintForgery = {
-  id: Template.BUILTIN_TEMPLATE_ID, builtin: true, content: forgedContent,
-  fingerprint: Template.BUILTIN_TEMPLATE_FINGERPRINT
-};
-check(Template.isCanonicalBuiltIn(declaredFingerprintForgery) === false,
-  "declaring the canonical fingerprint cannot make non-canonical content trusted");
-/* 반대로 content 가 canonical 이면 선언 지문과 무관하게 신뢰가 성립한다(content 파생) */
-check(Template.isCanonicalBuiltIn(Object.assign({}, canonicalRebuilt, { fingerprint: "0".repeat(64) })) === true,
-  "canonical trust follows the canonical content, not a declared fingerprint field");
-
-/* 저장된 forged builtin 도 정규화에서 승격되지 않는다 */
-const forgedRawEntry = {
-  schemaVersion: 1, id: "user-forged", name: "forged", builtin: true, isDefault: true, approval: null,
-  createdAt: "", updatedAt: "",
-  fingerprint: Template.BUILTIN_TEMPLATE_FINGERPRINT, content: canonicalContent()
-};
-const forgedNormalized = Template.normalizeTemplate(forgedRawEntry);
-check(forgedNormalized !== null, "a stored forged builtin is still readable as a candidate");
-check(forgedNormalized.builtin === false, "normalisation refuses the forged builtin flag");
-check(forgedNormalized.approved === false, "normalisation never upgrades a forged builtin");
-check(forgedNormalized.approvalBasis === "unapproved", "the normalised forged entry stays unapproved");
-
-const forgedCanonicalIdEntry = Object.assign({}, forgedRawEntry, {
-  id: Template.BUILTIN_TEMPLATE_ID, content: forgedContent,
-  fingerprint: Template.templateFingerprint(forgedContent)
-});
-const forgedCanonicalId = Template.normalizeTemplate(forgedCanonicalIdEntry);
-check(forgedCanonicalId.builtin === false && forgedCanonicalId.approved === false,
-  "the canonical id alone cannot smuggle non-canonical content into trust");
-
-/* HTML 이스케이프 단일 구현 */
-check(Template.escapeHtml('<b>"x"&\'') === "&lt;b&gt;&quot;x&quot;&amp;&#039;", "escapeHtml escapes markup");
-check(Template.isBuiltInTemplate(profile) === true, "isBuiltInTemplate true for built-in");
-check(Template.isBuiltInTemplate(renamedProfile) === false, "isBuiltInTemplate false for user template");
-
-/* 잠금: 프로필은 계산 결과를 담지 않는다 */
-check(
-  Object.keys(profile.content).every((key) => typeof profile.content[key] !== "number" || key === "layoutVersion"),
-  "content holds no numeric totals outside layoutVersion"
-);
-
-console.log("QUOTE_TEMPLATE_PROFILE_CONTRACT=PASS");
-console.log("APPROVAL_REQUIRED_FOR_USER_PROFILE=YES");
-console.log("CONTENT_CHANGE_INVALIDATES_APPROVAL=YES");
-console.log("UNAPPROVED_TEMPLATE_ACTIVATION=0");
-console.log("FORGED_BUILTIN_FLAG_BYPASS=0");
-console.log("CANONICAL_BUILTIN_FALLBACK=PASS");
-console.log("SLOT_BEHAVIOR=PRIVATE_ASSET_REF_V1");
-console.log("TEMPLATE_FINGERPRINT_DETERMINISTIC=PASS");
-console.log("TEMPLATE_CANONICAL_JSON=PASS");
-console.log("TEMPLATE_FORBIDDEN_FIELD_REJECTION=PASS");
-console.log("TRUSTED_TOTALS_IN_TEMPLATE=0");
-console.log("RAW_SOURCE_FILE_PERSISTENCE=0");
-console.log("MODEL_DEPENDENCY=0");

@@ -209,8 +209,9 @@ check(easy.includes('App.createFreshDraft("guided")') &&
   "EASY_MODE_CONTRACT: deterministic guided draft uses shared fresh-draft allocator");
 check(easy.includes("function processGuidedInput("),
   "EASY_MODE_CONTRACT: guided state machine");
-check(easy.includes("Core.computeTotals(guided.draft.items, guided.draft.tax.mode)"),
-  "EASY_MODE_CONTRACT: summary uses QuoteCore totals");
+check(easy.includes("Core.computeTotals(guided.draft.items, guided.draft.tax.mode, guided.draft.calculationPolicy)") &&
+      easy.includes("if (current.calculationPolicy) fresh.calculationPolicy = clone(current.calculationPolicy);"),
+  "EASY_MODE_CONTRACT: guided summary and new guided quote reuse QuoteCore family policy");
 check(css.includes(".easy-chip {") && css.includes("min-height: 44px;"),
   "EASY_MODE_CONTRACT: quick chips meet 44px touch target");
 check(!easy.includes("fetch(") && !easy.includes("XMLHttpRequest") &&
@@ -281,8 +282,9 @@ check(app.includes("function createFreshDraft(") && app.includes("function copyH
   "RECENT_HISTORY_CONTRACT: direct and Easy flows share allocator");
 check(easy.includes('App.createFreshDraft("guided")') && easy.includes("App.copyHistoryAsNew(entry)"),
   "RECENT_HISTORY_CONTRACT: guided/copy paths use shared allocation");
-check(history.includes("Core.computeTotals(entry.draft.items, entry.draft.tax.mode)"),
-  "RECENT_HISTORY_CONTRACT: displayed totals are derived");
+check(history.includes("Core.computeTotals(entry.draft.items, entry.draft.tax.mode, entry.draft.calculationPolicy)") &&
+      history.includes("if (source.calculationPolicy) fresh.calculationPolicy = clone(source.calculationPolicy);"),
+  "RECENT_HISTORY_CONTRACT: displayed/copied totals reuse the QuoteCore family policy");
 check(easy.includes("window.confirm(\"이 최근 견적을 이 브라우저에서 삭제할까요?\")"),
   "RECENT_HISTORY_CONTRACT: delete confirmation");
 check(easy.includes("window.confirm(\"현재 작성 중인 견적을 바꾸고 이 견적을 불러올까요?\")"),
@@ -330,6 +332,8 @@ check(core.includes('recipient: { company: "", person: "", address: "", email: "
   "NEW_QUOTE_SAFETY_CONTRACT: next customer fields are blank");
 check(app.includes("보내는 사람 정보는 유지하고 새 고객 견적을 시작합니다."),
   "NEW_QUOTE_SAFETY_CONTRACT: user-visible sender preservation");
+check(core.includes("if (current.calculationPolicy) next.calculationPolicy = current.calculationPolicy;"),
+  "NEW_QUOTE_SAFETY_CONTRACT: reviewed family calculation policy survives new quote normalization");
 
 /* UNKNOWN_VAT_REVIEW_CONTRACT — 미확정 세금은 확정 합계처럼 보이지 않음 */
 check(html.includes('id="taxReviewNote"') && html.includes('id="taxRow"'),
@@ -547,8 +551,11 @@ check(templateStore.includes("findForbiddenKeys") && !templateStore.includes("da
 check(templateRenderer.includes("function buildRenderModel(") &&
       templateRenderer.includes("function applyRenderModel("),
   "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: pure render model separated from the DOM adapter");
-check(templateRenderer.includes("Core.computeTotals(") && templateRenderer.includes("Core.computeValidUntil("),
-  "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: renderer derives amounts and validity from QuoteCore");
+check(templateRenderer.includes("Core.computeTotals(") &&
+      templateRenderer.includes("normalizedDraft.calculationPolicy") &&
+      templateRenderer.includes("Core.formatKoreanMoneyWords(totals.grand)") &&
+      templateRenderer.includes("Core.computeValidUntil("),
+  "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: renderer derives totals, written grand and validity from QuoteCore");
 check(!templateRenderer.includes("grand =") && !templateRenderer.includes("vat =") &&
       !templateRenderer.includes("supply ="),
   "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: the renderer performs no tax arithmetic");

@@ -299,6 +299,7 @@
     const current = App.getDraft();
     const fresh = App.createFreshDraft("guided");
     fresh.sender = clone(current.sender);
+    if (current.calculationPolicy) fresh.calculationPolicy = clone(current.calculationPolicy);
     fresh.recipient = { company: "", person: "", address: "", email: "" };
     fresh.items = [];
     fresh.memo = "";
@@ -408,7 +409,7 @@
 
   function showGuidedSummary() {
     guided.step = "summary";
-    const totals = Core.computeTotals(guided.draft.items, guided.draft.tax.mode);
+    const totals = Core.computeTotals(guided.draft.items, guided.draft.tax.mode, guided.draft.calculationPolicy);
     const itemLines = guided.draft.items.map((item, index) =>
       (index + 1) + ". " + item.name + " · " +
       Core.formatInputNumber(item.qty) + " × " + Core.formatMoney(item.unitPrice)
