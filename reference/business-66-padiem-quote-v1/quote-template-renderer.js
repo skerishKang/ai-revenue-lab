@@ -329,6 +329,9 @@
           heading: has("parties") ? content.sender.heading : "",
           company: has("parties") ? textOrDash(normalizedDraft.sender.company) : "",
           rep: has("parties") ? content.sender.repPrefix + textOrDash(normalizedDraft.sender.rep) : "",
+          contactPerson: has("parties") && content.sender.contactPersonPrefix && String(normalizedDraft.sender.contactPerson || "").trim()
+            ? content.sender.contactPersonPrefix + String(normalizedDraft.sender.contactPerson).trim()
+            : "",
           bizNo: has("parties") ? content.sender.bizNoPrefix + textOrDash(normalizedDraft.sender.bizNo) : "",
           address: has("parties") ? textOrDash(normalizedDraft.sender.address) : "",
           contact: has("parties") ? senderContact : ""
@@ -448,6 +451,7 @@
     setText("pvSenderHeading", sender.heading);
     setText("pvSenderCompany", sender.company);
     setText("pvSenderRep", sender.rep);
+    setText("pvSenderContactPerson", sender.contactPerson);
     setText("pvSenderBizNo", sender.bizNo);
     setText("pvSenderAddress", sender.address);
     setText("pvSenderContact", sender.contact);

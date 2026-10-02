@@ -352,6 +352,7 @@
   const FIELD_BINDINGS = [
     ["senderCompany", "sender", "company"],
     ["senderRep", "sender", "rep"],
+    ["senderContactPerson", "sender", "contactPerson"],
     ["senderBizNo", "sender", "bizNo"],
     ["senderAddress", "sender", "address"],
     ["senderPhone", "sender", "phone"],
@@ -831,6 +832,7 @@
   const sampleSender = {
     company: "샘플 공급사",
     rep: "대표자명",
+    contactPerson: "",
     bizNo: "000-00-00000",
     address: "",
     phone: "000-0000-0000",
@@ -852,7 +854,7 @@
     } else {
       const saved = loadSavedSender();
       Object.assign(draft.sender, saved || {
-        company: "", rep: "", bizNo: "", address: "", phone: "", email: ""
+        company: "", rep: "", contactPerson: "", bizNo: "", address: "", phone: "", email: ""
       }, { presetId: "custom" });
     }
     fillInputsFromDraft();
@@ -864,6 +866,7 @@
     const sender = {
       company: draft.sender.company.trim(),
       rep: draft.sender.rep.trim(),
+      contactPerson: draft.sender.contactPerson.trim(),
       bizNo: draft.sender.bizNo.trim(),
       address: draft.sender.address.trim(),
       phone: draft.sender.phone.trim(),
