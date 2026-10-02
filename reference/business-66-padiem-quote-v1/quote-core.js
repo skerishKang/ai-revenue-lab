@@ -19,6 +19,10 @@
   var TAX_MODES = { EXCLUSIVE: "EXCLUSIVE", INCLUSIVE: "INCLUSIVE", EXEMPT: "EXEMPT" };
   var GRAND_ROUNDING_MODES = { FLOOR: "FLOOR" };
   var GRAND_ROUNDING_UNITS = [1, 10, 100, 1000, 10000];
+  var DETAIL_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,79}$/;
+  var MAX_DETAIL_SECTIONS = 20;
+  var MAX_DETAIL_GROUPS = 32;
+  var MAX_DETAIL_ITEMS = 200;
   var TAX_LABELS = {
     EXCLUSIVE: "부가세 별도 (VAT 10%)",
     INCLUSIVE: "VAT 포함가",
@@ -160,6 +164,62 @@
     };
   }
 
+
+  function computeDraftTotals(rawDraft) {
+    var draft = normalizeDraft(rawDraft);
+    if (!draft) return null;
+
+    var detailResults = [];
+    var detailTotalsById = Object.create(null);
+    (draft.detailSections || []).forEach(function (section) {
+      var sectionTotal = 0;
+      var groups = section.groups.map(function (group) {
+        var amounts = group.items.map(itemAmount);
+        var total = amounts.reduce(function (sum, amount) { return sum + amount; }, 0);
+        sectionTotal += total;
+        return {
+          id: group.id,
+          title: group.title || "",
+          amounts: amounts,
+          total: total
+        };
+      });
+      var result = {
+        id: section.id,
+        title: section.title,
+        groups: groups,
+        total: sectionTotal
+      };
+      detailResults.push(result);
+      detailTotalsById[section.id] = sectionTotal;
+    });
+
+    var unitPrices = [];
+    var resolvedItems = draft.items.map(function (item) {
+      var effectiveUnitPrice = item.detailSectionId
+        ? detailTotalsById[item.detailSectionId]
+        : parseMoney(item.unitPrice);
+      if (!Number.isFinite(effectiveUnitPrice) || effectiveUnitPrice < 0) effectiveUnitPrice = 0;
+      unitPrices.push(effectiveUnitPrice);
+      return {
+        id: item.id,
+        name: item.name,
+        qty: item.qty,
+        unitPrice: effectiveUnitPrice
+      };
+    });
+
+    var totals = computeTotals(
+      resolvedItems,
+      draft.tax.mode,
+      draft.calculationPolicy
+    );
+    if (!totals) return null;
+    totals.unitPrices = unitPrices;
+    totals.detailSections = detailResults;
+    return totals;
+  }
+
   /* ── 날짜: 견적일 + 유효기간 → 유효일. 파싱 실패 시 null (crash 금지) ── */
 
   function parseISODate(value) {
@@ -238,6 +298,79 @@
     return text.slice(0, maxLength);
   }
 
+  function boundedDetailId(v) {
+    var text = optionalText(v, 80);
+    return text && DETAIL_ID_PATTERN.test(text) ? text : null;
+  }
+
+  function normalizeLineItem(raw, index, allowDetailLink) {
+    var src = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+    var detailSectionId = allowDetailLink ? optionalText(src.detailSectionId, 80) : null;
+    if (detailSectionId !== null && !DETAIL_ID_PATTERN.test(detailSectionId)) return null;
+
+    var item = {
+      id: asString(src.id, "item-" + (index + 1)),
+      name: asString(src.name, ""),
+      qty: asNonNegativeNumber(src.qty, 1),
+      unitPrice: detailSectionId ? 0 : asNonNegativeNumber(src.unitPrice, 0)
+    };
+    var spec = optionalText(src.spec, 240);
+    var unit = optionalText(src.unit, 80);
+    var note = optionalText(src.note, 500);
+    if (spec !== null) item.spec = spec;
+    if (unit !== null) item.unit = unit;
+    if (note !== null) item.note = note;
+    if (detailSectionId !== null) item.detailSectionId = detailSectionId;
+    return item;
+  }
+
+  function normalizeDetailSections(raw) {
+    if (raw === undefined || raw === null) return [];
+    if (!Array.isArray(raw) || raw.length > MAX_DETAIL_SECTIONS) return null;
+
+    var sections = [];
+    var seenSections = Object.create(null);
+    for (var s = 0; s < raw.length; s += 1) {
+      var source = raw[s];
+      if (!source || typeof source !== "object" || Array.isArray(source)) return null;
+      var sectionId = boundedDetailId(source.id);
+      if (!sectionId || seenSections[sectionId]) return null;
+      seenSections[sectionId] = true;
+
+      if (!Array.isArray(source.groups) || source.groups.length < 1 || source.groups.length > MAX_DETAIL_GROUPS) {
+        return null;
+      }
+      var groups = [];
+      var seenGroups = Object.create(null);
+      for (var g = 0; g < source.groups.length; g += 1) {
+        var groupSource = source.groups[g];
+        if (!groupSource || typeof groupSource !== "object" || Array.isArray(groupSource)) return null;
+        var groupId = boundedDetailId(groupSource.id);
+        if (!groupId || seenGroups[groupId]) return null;
+        seenGroups[groupId] = true;
+        if (!Array.isArray(groupSource.items) || groupSource.items.length < 1 || groupSource.items.length > MAX_DETAIL_ITEMS) {
+          return null;
+        }
+
+        var detailItems = [];
+        for (var d = 0; d < groupSource.items.length; d += 1) {
+          var detailItem = normalizeLineItem(groupSource.items[d], d, false);
+          if (!detailItem) return null;
+          detailItems.push(detailItem);
+        }
+
+        var group = { id: groupId, items: detailItems };
+        var groupTitle = optionalText(groupSource.title, 240);
+        if (groupTitle !== null) group.title = groupTitle;
+        groups.push(group);
+      }
+
+      var section = { id: sectionId, title: optionalText(source.title, 240) || sectionId, groups: groups };
+      sections.push(section);
+    }
+    return sections;
+  }
+
   /* 손상된 JSON·구버전 schema → null (앱이 기본 데모 상태로 fallback) */
   function normalizeDraft(raw) {
     try {
@@ -245,22 +378,25 @@
       if (raw.schemaVersion !== SCHEMA_VERSION) return null;
       var base = createDefaultDraft();
       var rawItems = Array.isArray(raw.items) && raw.items.length > 0 ? raw.items : base.items;
-      var items = rawItems.map(function (it, i) {
-        var src = it && typeof it === "object" ? it : {};
-        var item = {
-          id: asString(src.id, "item-" + (i + 1)),
-          name: asString(src.name, ""),
-          qty: asNonNegativeNumber(src.qty, 1),
-          unitPrice: asNonNegativeNumber(src.unitPrice, 0)
-        };
-        var spec = optionalText(src.spec, 240);
-        var unit = optionalText(src.unit, 80);
-        var note = optionalText(src.note, 500);
-        if (spec !== null) item.spec = spec;
-        if (unit !== null) item.unit = unit;
-        if (note !== null) item.note = note;
-        return item;
-      });
+      var items = [];
+      for (var i = 0; i < rawItems.length; i += 1) {
+        var normalizedItem = normalizeLineItem(rawItems[i], i, true);
+        if (!normalizedItem) return null;
+        items.push(normalizedItem);
+      }
+
+      var detailSections = normalizeDetailSections(raw.detailSections);
+      if (detailSections === null) return null;
+      var detailById = Object.create(null);
+      detailSections.forEach(function (section) { detailById[section.id] = section; });
+      var usedDetailRefs = Object.create(null);
+      for (var itemIndex = 0; itemIndex < items.length; itemIndex += 1) {
+        var detailRef = items[itemIndex].detailSectionId;
+        if (!detailRef) continue;
+        if (!detailById[detailRef] || usedDetailRefs[detailRef]) return null;
+        usedDetailRefs[detailRef] = true;
+      }
+
       var taxMode = raw.tax && TAX_MODES[raw.tax.mode] ? raw.tax.mode : base.tax.mode;
       var meta = {
         quoteNo: asString(raw.meta && raw.meta.quoteNo, base.meta.quoteNo),
@@ -301,6 +437,7 @@
         memo: asString(raw.memo, base.memo)
       };
       if (calculationPolicy) normalized.calculationPolicy = calculationPolicy;
+      if (detailSections.length) normalized.detailSections = detailSections;
       return normalized;
     } catch (err) {
       return null;
@@ -389,6 +526,7 @@
     formatInputNumber: formatInputNumber,
     itemAmount: itemAmount,
     computeTotals: computeTotals,
+    computeDraftTotals: computeDraftTotals,
     parseISODate: parseISODate,
     isoFormat: isoFormat,
     todayISO: todayISO,
