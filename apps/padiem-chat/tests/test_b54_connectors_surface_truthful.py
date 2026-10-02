@@ -213,9 +213,9 @@ def test_live_status_locale_keys_are_complete_in_ko_and_en() -> None:
 def test_calendar_read_oauth_is_the_only_connector_connection_action() -> None:
     block = _connector_block()
     assert block.count('fetch("/api/connectors/status"') == 1
-    assert 'GOOGLE_CALENDAR_START_ENDPOINT = "/api/connectors/google/start"' in block
-    assert 'fetch(GOOGLE_CALENDAR_START_ENDPOINT' in block
-    assert 'connector_id: GOOGLE_CALENDAR_CONNECTOR' in block
+    assert 'GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket"' in block
+    assert 'fetch(GOOGLE_CALENDAR_TICKET_ENDPOINT' in block
+    assert 'connector_id: GOOGLE_CALENDAR_CONNECTOR, begin_oauth: true' in block
     assert 'GOOGLE_CALENDAR_CONNECTOR = "google-calendar"' in block
     assert block.count('method: "POST"') == 1
     assert "oauth.padiem.net" not in block

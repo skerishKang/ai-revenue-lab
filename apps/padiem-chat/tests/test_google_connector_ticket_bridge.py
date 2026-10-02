@@ -321,9 +321,9 @@ async def test_calendar_start_posts_private_ticket_server_side_and_returns_only_
             path="/",
         )
         response = await client.post(
-            "/api/connectors/google/start",
+            "/api/connectors/google/ticket",
             headers={"Origin": "https://chat.example.test"},
-            json={"connector_id": "google-calendar"},
+            json={"connector_id": "google-calendar", "begin_oauth": True},
         )
 
     assert response.status_code == 200
@@ -491,7 +491,8 @@ def test_worker_supports_private_identity_binding_without_activating_mock_config
     assert "D1IdentityShadowStore(db_binding)" in worker
     assert 'binding = "IDENTITY_AUTHORITY_SERVICE"' not in wrangler
     assert 'service = "padiem-control-plane-identity"' not in wrangler
-    assert 'set(payload) != {"connector_id"}' in route
+    assert 'set(payload) not in ({"connector_id"}, {"connector_id", "begin_oauth"})' in route
+    assert 'begin_oauth and connector_id != "google-calendar"' in route
     assert "account_ref" not in route
     assert "workspace_ref" not in route
     assert "GOOGLE_CONNECT_TICKET_KEY" not in route

@@ -2521,7 +2521,7 @@
   const connectorsError = document.getElementById("connectorsError");
   const connectorsRetry = document.getElementById("connectorsRetry");
   const GOOGLE_CALENDAR_CONNECTOR = "google-calendar";
-  const GOOGLE_CALENDAR_START_ENDPOINT = "/api/connectors/google/start";
+  const GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket";
   const CONNECTOR_STATUS_IDS = new Set([
     "connector:google:drive@1",
     "connector:google:gmail@1",
@@ -2605,10 +2605,10 @@
     setConnectorCopy(button, "connectors-connecting-calendar");
     if (connectorsError) connectorsError.hidden = true;
     try {
-      const startResponse = await fetch(GOOGLE_CALENDAR_START_ENDPOINT, {
+      const startResponse = await fetch(GOOGLE_CALENDAR_TICKET_ENDPOINT, {
         method: "POST",
         headers: { "Accept": "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify({ connector_id: GOOGLE_CALENDAR_CONNECTOR }),
+        body: JSON.stringify({ connector_id: GOOGLE_CALENDAR_CONNECTOR, begin_oauth: true }),
         cache: "no-store",
       });
       const startDocument = await startResponse.json().catch(() => null);

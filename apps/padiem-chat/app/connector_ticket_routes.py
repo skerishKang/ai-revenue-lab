@@ -56,12 +56,17 @@ async def _closed_body(request: Request) -> dict[str, Any]:
         payload = json.loads(raw.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise IdentityBridgeError(400, "connector_ticket_body_invalid", "연결 요청 형식이 올바르지 않습니다.") from exc
-    if not isinstance(payload, dict) or set(payload) != {"connector_id"}:
+    if not isinstance(payload, dict) or set(payload) not in ({"connector_id"}, {"connector_id", "begin_oauth"}):
         raise IdentityBridgeError(400, "connector_ticket_body_invalid", "연결 요청 형식이 올바르지 않습니다.")
     connector_id = payload.get("connector_id")
     if connector_id not in _REVIEWED_CONNECTORS:
         raise IdentityBridgeError(403, "connector_not_reviewed", "허용되지 않은 연결입니다.")
-    return {"connector_id": connector_id}
+    begin_oauth = payload.get("begin_oauth", False)
+    if not isinstance(begin_oauth, bool):
+        raise IdentityBridgeError(400, "connector_ticket_body_invalid", "연결 요청 형식이 올바르지 않습니다.")
+    if begin_oauth and connector_id != "google-calendar":
+        raise IdentityBridgeError(403, "connector_oauth_start_not_reviewed", "허용되지 않은 연결입니다.")
+    return {"connector_id": connector_id, "begin_oauth": begin_oauth}
 
 
 async def google_connector_ticket(request: Request) -> JSONResponse:
@@ -118,6 +123,13 @@ async def google_connector_ticket(request: Request) -> JSONResponse:
     if not isinstance(receipt, PrivateGoogleConnectTicket):
         return _error(503, "connector_ticket_invalid", "Google 연결을 현재 사용할 수 없습니다.")
 
+    if payload["begin_oauth"] is True:
+        return await _begin_google_oauth(
+            request,
+            receipt=receipt,
+            expected_origin=expected_origin,
+        )
+
     return JSONResponse(
         {
             "ticket": {
@@ -160,28 +172,15 @@ async def _bounded_upstream_json(response: Any) -> dict[str, Any]:
     }
 
 
-async def google_connector_start(request: Request) -> JSONResponse:
-    """Issue a reviewed connect ticket server-side and begin Google OAuth.
+async def _begin_google_oauth(
+    request: Request,
+    *,
+    receipt: PrivateGoogleConnectTicket,
+    expected_origin: str,
+) -> JSONResponse:
+    """Begin reviewed Calendar OAuth without returning the ticket to JavaScript."""
 
-    The browser sends only ``connector_id`` to this same-origin route. The short-
-    lived connect ticket never crosses back into browser JavaScript; it is posted
-    server-to-server to the dedicated Google OAuth edge.
-    """
-
-    ticket_response = await google_connector_ticket(request)
-    if ticket_response.status_code != 200:
-        return ticket_response
     try:
-        ticket_document = json.loads(bytes(ticket_response.body).decode("utf-8"))
-        ticket = ticket_document["ticket"]
-        connector_id = ticket["connector_id"]
-        connect_ticket = ticket["connect_ticket"]
-        if connector_id not in _REVIEWED_CONNECTORS or not isinstance(connect_ticket, str) or not connect_ticket:
-            raise ValueError("invalid connector ticket receipt")
-        settings: Settings = request.app.state.settings
-        expected_origin = _expected_origin(settings)
-        if expected_origin is None:
-            raise ValueError("missing expected origin")
         oauth_client = getattr(request.app.state, "google_oauth", None)
         transport = getattr(oauth_client, "transport", None)
         timeout = httpx.Timeout(15.0, connect=8.0)
@@ -194,12 +193,12 @@ async def google_connector_start(request: Request) -> JSONResponse:
                     "Content-Type": "application/json",
                     "Origin": expected_origin,
                 },
-                json={"connect_ticket": connect_ticket},
+                json={"connect_ticket": receipt.connect_ticket},
             ) as response:
                 authorization = await _bounded_upstream_json(response)
-        if authorization["connector_id"] != connector_id:
+        if authorization["connector_id"] != receipt.connector_id:
             raise ValueError("Google OAuth connector mismatch")
-    except (ValueError, KeyError, TypeError, httpx.HTTPError):
+    except (ValueError, TypeError, httpx.HTTPError):
         return _error(502, "connector_oauth_start_unavailable", "Google 연결을 시작할 수 없습니다.")
 
     return JSONResponse(
@@ -210,7 +209,7 @@ async def google_connector_start(request: Request) -> JSONResponse:
 
 
 GOOGLE_CONNECTOR_TICKET_ROUTE = True
-GOOGLE_CONNECTOR_START_ROUTE = True
+GOOGLE_CONNECTOR_INLINE_OAUTH_START = True
 AUTHENTICATED_SAME_ORIGIN_ONLY = True
 CLIENT_CAN_SELECT_CONNECTOR_ONLY = True
 CLIENT_ACCOUNT_WORKSPACE_AUTHORITY = False
