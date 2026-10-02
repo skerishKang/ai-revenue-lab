@@ -460,8 +460,10 @@
 
   /* ── 품목 행: 단가/수량은 text 입력(콤마 허용) + blur 시 표시 포맷 ── */
 
-  function buildItemRow(item, index) {
+  function buildItemRow(item, index, effectiveUnitPrice) {
     const row = document.createElement("div");
+    const linkedDetail = Boolean(item.detailSectionId);
+    const displayedUnitPrice = linkedDetail ? effectiveUnitPrice : item.unitPrice;
     row.className = "item-row";
     row.innerHTML = `
       <input class="item-name" aria-label="품목명" value="${escapeHtml(item.name)}" placeholder="품목명">
@@ -471,7 +473,7 @@
       </div>
       <div class="item-cell price">
         <span class="cell-label">단가</span>
-        <input class="item-price" aria-label="단가" type="text" inputmode="numeric" value="${escapeHtml(Core.formatInputNumber(item.unitPrice))}">
+        <input class="item-price" aria-label="${linkedDetail ? "단가 (상세내역 합계에서 자동 계산)" : "단가"}" type="text" inputmode="numeric" value="${escapeHtml(Core.formatInputNumber(displayedUnitPrice))}" ${linkedDetail ? 'readonly aria-readonly="true" data-derived="detail-section"' : ""}>
       </div>
       <div class="amount"><span class="amount-label">금액</span><span class="amount-value"></span></div>
       <button class="icon-btn remove-item" aria-label="품목 삭제" title="품목 삭제">×</button>
@@ -488,10 +490,15 @@
       e.target.value = Core.formatInputNumber(Core.parseMoney(e.target.value));
     });
     row.querySelector(".item-price").addEventListener("input", (e) => {
+      if (linkedDetail) return;
       draft.items[index].unitPrice = Core.parseMoney(e.target.value);
       render();
     });
     row.querySelector(".item-price").addEventListener("change", (e) => {
+      if (linkedDetail) {
+        e.target.value = Core.formatInputNumber(effectiveUnitPrice);
+        return;
+      }
       e.target.value = Core.formatInputNumber(Core.parseMoney(e.target.value));
     });
     row.querySelector(".remove-item").addEventListener("click", () => removeItem(index));
@@ -501,7 +508,10 @@
   function renderItems() {
     const host = $("items");
     host.innerHTML = "";
-    draft.items.forEach((item, index) => host.appendChild(buildItemRow(item, index)));
+    const totals = Core.computeDraftTotals(draft);
+    draft.items.forEach((item, index) => host.appendChild(
+      buildItemRow(item, index, totals && totals.unitPrices[index] !== undefined ? totals.unitPrices[index] : item.unitPrice)
+    ));
   }
 
   function addItem() {
@@ -513,10 +523,15 @@
   }
 
   function removeItem(index) {
+    const detailSectionId = draft.items[index] && draft.items[index].detailSectionId;
     if (draft.items.length === 1) {
       draft.items[0] = { id: draft.items[0].id, name: "", qty: 1, unitPrice: 0 };
     } else {
       draft.items.splice(index, 1);
+    }
+    if (detailSectionId && Array.isArray(draft.detailSections)) {
+      draft.detailSections = draft.detailSections.filter((section) => section.id !== detailSectionId);
+      if (draft.detailSections.length === 0) delete draft.detailSections;
     }
     renderItems();
     render();
