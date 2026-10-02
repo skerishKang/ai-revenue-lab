@@ -569,6 +569,10 @@
         if (typeof detailPages.mergeRepeatedName !== "boolean") return null;
         content.detailPages.mergeRepeatedName = detailPages.mergeRepeatedName;
       }
+      if (detailPages.finalLabel !== undefined && detailPages.finalLabel !== null) {
+        if (typeof detailPages.finalLabel !== "string") return null;
+        content.detailPages.finalLabel = boundString(detailPages.finalLabel, "");
+      }
     }
 
     var serialized;
