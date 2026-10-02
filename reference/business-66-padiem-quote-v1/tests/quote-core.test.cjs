@@ -314,6 +314,27 @@ assert.equal(Core.normalizeDraft(duplicateDetailRef), null, "one detail section 
 const nestedDetailLink = JSON.parse(JSON.stringify(linkedDetailDraft));
 nestedDetailLink.detailSections[0].groups[0].items[0].detailSectionId = "detail-system";
 assert.equal(Core.normalizeDraft(nestedDetailLink), null, "detail lines cannot recursively link detail sections");
+
+const trustedDetailAmount = JSON.parse(JSON.stringify(linkedDetailDraft));
+trustedDetailAmount.detailSections[0].groups[0].items[0].amount = 1;
+assert.equal(Core.normalizeDraft(trustedDetailAmount), null,
+  "trusted detail line amount input is rejected");
+
+const trustedGroupTotal = JSON.parse(JSON.stringify(linkedDetailDraft));
+trustedGroupTotal.detailSections[0].groups[0].total = 1;
+assert.equal(Core.normalizeDraft(trustedGroupTotal), null,
+  "trusted detail group total input is rejected");
+
+const trustedSectionTotal = JSON.parse(JSON.stringify(linkedDetailDraft));
+trustedSectionTotal.detailSections[0].total = 1;
+assert.equal(Core.normalizeDraft(trustedSectionTotal), null,
+  "trusted detail section total input is rejected");
+
+const overlongDetailId = JSON.parse(JSON.stringify(linkedDetailDraft));
+overlongDetailId.detailSections[0].id = "x".repeat(81);
+overlongDetailId.items[0].detailSectionId = "x".repeat(81);
+assert.equal(Core.normalizeDraft(overlongDetailId), null,
+  "overlong detail graph ids fail closed");
 const policyDraft = Core.normalizeDraft(Object.assign(JSON.parse(JSON.stringify(draft)), {
   calculationPolicy: floor10000
 }));
@@ -361,4 +382,5 @@ console.log("DETAIL_GROUP_TOTAL_QUOTECORE=PASS");
 console.log("DETAIL_SECTION_TOTAL_QUOTECORE=PASS");
 console.log("SUMMARY_PRICE_DERIVED_FROM_DETAIL=PASS");
 console.log("TRUSTED_LINKED_SUMMARY_PRICE=0");
+console.log("TRUSTED_DETAIL_TOTAL_INPUT=0");
 console.log("B66_QUOTE_CORE_UNIT=PASS");
