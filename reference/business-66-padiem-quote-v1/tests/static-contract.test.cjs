@@ -563,8 +563,9 @@ check(template.includes('raw.status !== "approved"') &&
 check(template.includes("trusted_builtin") && template.includes("explicit_approval") &&
       template.includes("unapproved"),
   "APPROVAL_REQUIRED_FOR_USER_PROFILE=YES: approval basis is explicit");
-check(template.includes('SLOT_SUPPORT = "non_live"'),
-  "SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY: slot support is declared non-live");
+check(template.includes('SLOT_SUPPORT = "private_asset_v1"') &&
+      template.includes('SLOT_REF_PATTERN = /^b66asset_'),
+  "SLOT_BEHAVIOR=PRIVATE_ASSET_REF_V1: only bounded private asset ids persist");
 check(templateStore.includes("function approveTemplate(") &&
       templateStore.includes('fail("template_not_approved"'),
   "UNAPPROVED_TEMPLATE_ACTIVATION=0: activation requires explicit approval");
@@ -572,8 +573,8 @@ check(templateStore.includes("approval = null;") &&
       templateStore.includes("var keepDefault = !contentChanged && current.isDefault"),
   "CONTENT_CHANGE_INVALIDATES_APPROVAL=YES: content update drops approval and default status");
 check(templateStore.includes("function rejectionForContent(") &&
-      templateStore.includes("slot_rendering_not_supported"),
-  "SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY: declared non-live slots are refused, not ignored");
+      !templateStore.includes('return "slot_rendering_not_supported"'),
+  "SLOT_BEHAVIOR=PRIVATE_ASSET_REF_V1: validated asset refs are no longer blanket-refused");
 check(templateRenderer.includes("template_not_approved") &&
       templateRenderer.includes("fallbackReason"),
   "UNAPPROVED_TEMPLATE_ACTIVATION=0: the renderer falls back with an explicit reason");
@@ -864,7 +865,7 @@ console.log("TEMPLATE_RULES_APPLIED=PASS");
 console.log("TEMPLATE_ALIGNMENT_APPLIED=PASS");
 console.log("TEMPLATE_TOTALS_WIDTH_APPLIED=PASS");
 console.log("TEMPLATE_PAGE_RULE_APPLIED=PASS");
-console.log("SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY");
+console.log("SLOT_BEHAVIOR=PRIVATE_ASSET_REF_V1");
 console.log("QUOTECORE_TOTALS_UNCHANGED_ACROSS_TEMPLATES=YES");
 console.log("TEMPLATE_SELECTOR_LIVE=YES");
 console.log("TEMPLATE_MANAGEMENT_CRUD=PASS");
