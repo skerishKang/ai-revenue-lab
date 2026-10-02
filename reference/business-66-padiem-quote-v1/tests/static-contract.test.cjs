@@ -578,8 +578,8 @@ check(templateStore.includes("approval = null;") &&
       templateStore.includes("var keepDefault = !contentChanged && current.isDefault"),
   "CONTENT_CHANGE_INVALIDATES_APPROVAL=YES: content update drops approval and default status");
 check(templateStore.includes("function rejectionForContent(") &&
-      !templateStore.includes('return "slot_rendering_not_supported"'),
-  "SLOT_BEHAVIOR=PRIVATE_ASSET_REF_V1: validated asset refs are no longer blanket-refused");
+      templateStore.includes('return "private_asset_requires_account_skill"'),
+  "SLOT_BEHAVIOR=PRIVATE_ASSET_REF_V1: browser-local templates cannot own account assets");
 check(templateRenderer.includes("template_not_approved") &&
       templateRenderer.includes("fallbackReason"),
   "UNAPPROVED_TEMPLATE_ACTIVATION=0: the renderer falls back with an explicit reason");
