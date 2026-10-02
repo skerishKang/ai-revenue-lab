@@ -37,7 +37,6 @@ from .p01_adapter import (
     P01_FAILURE_DETAIL_CONTRACT,
     P01_FAILURE_DETAIL_DOWNSTREAM,
     P01_FAILURE_DETAIL_TRANSPORT,
-    is_canonical_subject_id,
 )
 from .p01_approval_pause_transport import (
     EngineApprovalPauseWireError,
@@ -281,16 +280,12 @@ class P01EngineOrchestrationClient:
                 dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
         if request.subject_id is not None:
-            # #3382: reuses the adapter-side single authority instead of carrying a second,
-            # looser copy of the grammar. The previous inline check (non-empty, <=256 chars,
-            # alnum first character) accepted ids the canonical lane must reject, so a subject
-            # could be refused by one component and admitted by the other.
-            if not is_canonical_subject_id(request.subject_id):
-                raise P01AdapterError(
-                    "p01_authority_field_unsupported",
-                    "P01 subject identity must be a canonical Control Plane subject.",
-                    dispatch_class=P01DispatchClass.NOT_DISPATCHED,
-                )
+            # #3382: reuse the shared canonical subject validator from
+            # p01_adapter.py — the same grammar the factory uses, so a subject
+            # that bypasses the factory still fails closed on shape.
+            from kagent.p01_adapter import validate_canonical_subject_id
+
+            validate_canonical_subject_id(request.subject_id)
         for name in _NULLABLE_AUTHORITY_FIELDS:
             if getattr(request, name) is not None:
                 raise P01AdapterError(

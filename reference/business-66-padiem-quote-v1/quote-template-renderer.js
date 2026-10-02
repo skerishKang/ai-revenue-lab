@@ -219,7 +219,9 @@
           columns: detailColumns,
           rows: rows,
           subtotalLabel: content.detailPages.subtotalLabel,
-          subtotalText: Core.formatMoney(group.subtotal)
+          subtotalText: Core.formatMoney(group.subtotal),
+          finalLabel: content.detailPages.finalLabel || "",
+          finalText: content.detailPages.finalLabel ? Core.formatMoney(group.subtotal) : ""
         };
       });
     }
@@ -482,7 +484,12 @@
         '<h2 class="quote-detail-title">' + escapeHtml(page.titleText) + "</h2>" +
         '<table class="quote-table"><thead><tr>' + head + "</tr></thead><tbody>" + body + "</tbody></table>" +
         '<div class="quote-detail-subtotal"><span>' + escapeHtml(page.subtotalLabel) +
-        '</span><strong>' + escapeHtml(page.subtotalText) + "</strong></div></section>";
+        '</span><strong>' + escapeHtml(page.subtotalText) + "</strong></div>" +
+        (page.finalLabel
+          ? '<div class="quote-detail-final"><span>' + escapeHtml(page.finalLabel) +
+            '</span><strong>' + escapeHtml(page.finalText) + "</strong></div>"
+          : "") +
+        "</section>";
     }).join(""));
 
     var setPrivateImage = function (id, slot) {

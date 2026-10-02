@@ -43,26 +43,30 @@ P01_APP_ID = "b54-padiem-claw"
 P01_AGENT_ID = "b54-padiem-claw"
 DEFAULT_P01_TIMEOUT_SECONDS = 20.0
 
-# #3382: the canonical USER subject grammar is EXACT. The Control Plane issues
-# `sub_` followed by exactly 32 lowercase hex digits and nothing else. The Engine's own
-# `_parse_subject_id` accepts a broader safe-identifier shape (non-empty, bounded length, alnum
-# first character), which is NOT the canonical lane's contract.
-#
-# This validator is the SINGLE authority for that grammar in this codebase. Both the request
-# factory and the wire client call it, so the two components can never disagree about which
-# subject ids are canonical — a second, looser copy on the wire path would let a non-canonical id
-# past the request factory only to be judged by different rules downstream.
-CANONICAL_SUBJECT_ID_PATTERN = r"^sub_[0-9a-f]{32}$"
-_CANONICAL_SUBJECT_ID_RE = re.compile(CANONICAL_SUBJECT_ID_PATTERN)
+# #3382: the canonical USER subject is CP-issued in the exact
+# `sub_<32 lowercase hex>` form. The Engine's own `_parse_subject_id` accepts
+# a broader safe-identifier shape, so this narrower grammar is the canonical
+# lane's contract check. Both the factory and the Engine client reuse this
+# validator, so a subject that bypasses the factory still fails closed.
+_CANONICAL_SUBJECT_RE = re.compile(r"^sub_[0-9a-f]{32}$")
 
 
-def is_canonical_subject_id(value: object) -> bool:
-    """Return whether ``value`` is exactly a canonical Control Plane USER subject id."""
-    return (
-        isinstance(value, str)
-        and _CANONICAL_SUBJECT_ID_RE.fullmatch(value) is not None
-    )
+def validate_canonical_subject_id(subject_id: object) -> str:
+    """Validate a canonical USER subject: ``sub_`` + 32 lowercase hex.
 
+    Raises ``P01AdapterError`` on any violation. Returns the subject id as a
+    string on success.
+    """
+    if (
+        not isinstance(subject_id, str)
+        or not _CANONICAL_SUBJECT_RE.fullmatch(subject_id)
+    ):
+        raise P01AdapterError(
+            "invalid_subject_id",
+            "P01 subject identity must be a canonical sub_<32hex> identifier.",
+            dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+        )
+    return subject_id
 
 P01_FAILURE_DETAIL_AUTHENTICATION = "engine_authentication_failed"
 P01_FAILURE_DETAIL_AUTHORIZATION = "engine_authorization_failed"
@@ -336,14 +340,11 @@ class P01RequestFactory:
                     "P01 subject identity requires the reviewed canonical USER lane.",
                     dispatch_class=P01DispatchClass.NOT_DISPATCHED,
                 )
-            # #3382: reuses the module-level single authority rather than restating
-            # the grammar, so this path and the wire client cannot drift apart.
-            if not is_canonical_subject_id(subject_id):
-                raise P01AdapterError(
-                    "invalid_subject_id",
-                    "P01 subject identity must be a canonical sub_<32hex> identifier.",
-                    dispatch_class=P01DispatchClass.NOT_DISPATCHED,
-                )
+            # #3382: the canonical USER subject is CP-issued in the exact
+            # `sub_<32 lowercase hex>` form. The Engine's own
+            # `_parse_subject_id` accepts a broader safe-identifier shape, so
+            # this narrower grammar is the canonical lane's contract check.
+            validate_canonical_subject_id(subject_id)
 
         if run.intent.execution_mode is ExecutionMode.CLOUD:
             self._validate_cloud_lease(run, lease)
