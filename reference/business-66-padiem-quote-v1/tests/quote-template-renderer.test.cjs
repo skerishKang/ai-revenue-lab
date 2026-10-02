@@ -66,6 +66,7 @@ function legacyProjection(draft, provisional) {
     pvValidUntil: "유효일  " + (validUntil || "-"),
     pvTaxMode: provisional ? "세금  확인 필요" : "세금  " + Core.TAX_LABELS[draft.tax.mode],
     pvProjectName: "",
+    pvWrittenTotal: "",
     pvSenderHeading: "공급자",
     pvSenderCompany: legacyTextOrDash(draft.sender.company),
     pvSenderRep: "대표자  " + legacyTextOrDash(draft.sender.rep),
@@ -122,6 +123,7 @@ function modelToProjection(model) {
     pvValidUntil: model.meta.validUntilText,
     pvTaxMode: model.meta.taxText,
     pvProjectName: model.projectNameText,
+    pvWrittenTotal: model.writtenTotalText,
     pvSenderHeading: model.parties.sender.heading,
     pvSenderCompany: model.parties.sender.company,
     pvSenderRep: model.parties.sender.rep,
@@ -376,6 +378,36 @@ eq(
   "detail columns never replace QuoteCore totals"
 );
 
+const roundedDraft = Core.normalizeDraft(Object.assign(clone(detailDraft), {
+  calculationPolicy: { grandRounding: { mode: "FLOOR", unit: 10000 } }
+}));
+const writtenContent = clone(detailContent);
+writtenContent.sections = ["title", "meta", "parties", "project", "items", "totals", "writtenTotal", "memo", "mark"];
+writtenContent.writtenTotal = { prefix: "일금 ", suffix: "원정[부가세포함]" };
+const writtenModel = Renderer.buildRenderModel(
+  roundedDraft,
+  approvedProfile("detail-written-total", writtenContent),
+  { taxReviewRequired: false }
+);
+const roundedTotals = Core.computeTotals(
+  roundedDraft.items,
+  roundedDraft.tax.mode,
+  roundedDraft.calculationPolicy
+);
+eq(roundedTotals.rawGrand, 17963000, "reviewed raw grand is explicit in QuoteCore");
+eq(roundedTotals.grand, 17960000, "reviewed floor policy is applied by QuoteCore");
+eq(writtenModel.totals.grandText, Core.formatMoney(17960000), "renderer uses QuoteCore-rounded grand");
+eq(
+  writtenModel.writtenTotalText,
+  "일금 일천칠백구십육만원정[부가세포함]",
+  "written-total section projects QuoteCore Korean grand words"
+);
+eq(
+  authoritative.writtenTotalText,
+  "",
+  "existing built-in template renders no written-total line"
+);
+
 /* ── TEMPLATE_STYLE_APPLIED — 승인된 style/page 프로필이 실제 출력 투영을 바꾼다 ── */
 const styledContent = clone(Template.builtInTemplate().content);
 styledContent.style.accent = "#8a1f1f";
@@ -493,7 +525,7 @@ eq(Renderer.buildRenderModel(defaultDraft, profileWithout("memo"), { taxReviewRe
 const pageHtml = readSource("index.html");
 const stylesCss = readSource("styles.css");
 const ADAPTER_IDS = [
-  "pvTitle", "pvQuoteNo", "pvDate", "pvValidity", "pvValidUntil", "pvTaxMode", "pvProjectName",
+  "pvTitle", "pvQuoteNo", "pvDate", "pvValidity", "pvValidUntil", "pvTaxMode", "pvProjectName", "pvWrittenTotal",
   "pvSenderHeading", "pvSenderCompany", "pvSenderRep", "pvSenderBizNo", "pvSenderAddress", "pvSenderContact",
   "pvRecipientHeading", "pvRecipientCompany", "pvRecipientPerson", "pvRecipientAddress", "pvRecipientEmail",
   "pvItemsHead", "pvItems", "quotePaper",
