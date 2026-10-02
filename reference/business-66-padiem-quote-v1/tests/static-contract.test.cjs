@@ -609,6 +609,12 @@ check(css.includes("page-break-before: always") && css.includes("break-before: p
   "PRINT_PAGE_BREAK=PASS: detail pages force printed page boundaries");
 check(app.includes("Core.computeDraftTotals(draft)"),
   "DIRECT_EDITOR_FULL_DRAFT_TOTALS=PASS: direct editor uses linked-detail QuoteCore totals");
+check(app.includes('data-derived="detail-section"') &&
+      app.includes("if (linkedDetail) return;") &&
+      app.includes("draft.detailSections = draft.detailSections.filter"),
+  "LINKED_SUMMARY_DIRECT_EDIT_AUTHORITY=0: derived summary price is readonly and orphan detail is removed");
+check(extraction.includes("delete candidate.detailSections;"),
+  "STALE_DETAIL_AFTER_FLAT_EXTRACTION=0: replacing flat items clears prior detail graph");
 
 check(template.includes('SLOT_SUPPORT = "private_asset_v1"') &&
       template.includes('SLOT_REF_PATTERN = /^b66asset_'),
