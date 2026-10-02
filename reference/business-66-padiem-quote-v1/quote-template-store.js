@@ -47,12 +47,10 @@
     return Boolean(entry) && Template.approvalIsValid(entry.approval, entry.fingerprint);
   }
 
-  /* logo/stamp slot 은 non-live 로 선언되어 있다. 값을 선언해 놓고 조용히 무시하지 않도록
-     저장·승인 시점에 명시적으로 거부한다. */
+  /* #3402: slot 값은 Template.normalizeTemplateContent 가 private asset id 로
+     정규화한다. raw URL/data URI/file bytes 는 template contract 에서 보존되지 않는다. */
   function rejectionForContent(content) {
     if (!isPlainObject(content)) return "invalid_template_content";
-    var slots = isPlainObject(content.slots) ? content.slots : {};
-    if (String(slots.logo || "") || String(slots.stamp || "")) return "slot_rendering_not_supported";
     return null;
   }
 
