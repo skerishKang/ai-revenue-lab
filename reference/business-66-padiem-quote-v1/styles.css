@@ -1007,6 +1007,7 @@ textarea { min-height: 82px; resize: vertical; }
   .quote-paper { min-height: 0; padding: 0; }
   .quote-detail-page { margin-top: 0; page-break-before: always; break-before: page; }
   .demo-mark { display: none; }
+  .quote-paper[data-layout-variant="formal-grid-v1"] .demo-mark { display: block; }
 }
 
 @media print {

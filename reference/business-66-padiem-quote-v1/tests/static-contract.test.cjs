@@ -413,6 +413,8 @@ check(css.includes(".topbar, .workspace-modebar, .easy-view, .modebar, .future-n
 check(css.includes(".direct-view[hidden] { display: block !important; }"),
   "PRINT_LAYOUT_CONTRACT: hidden Direct view is restored for printing from Easy Mode");
 check(css.includes(".grid { display: block; }"), "PRINT_LAYOUT_CONTRACT: paper in normal flow");
+check(css.includes('.quote-paper[data-layout-variant="formal-grid-v1"] .demo-mark { display: block; }'),
+  "PRINT_LAYOUT_CONTRACT: formal printed mark remains visible without exposing the built-in demo mark");
 check(!css.includes("visibility: hidden"), "PRINT_LAYOUT_CONTRACT: visibility hack removed");
 check(core.includes("function printReadiness(") &&
       app.includes("function printReadinessFailure("),
@@ -879,6 +881,7 @@ check(skillUi.includes("analyzeImageFile") &&
 console.log("VALID_UNTIL_CONTRACT=PASS");
 console.log("ADDRESS_FIELDS_CONTRACT=PASS");
 console.log("PRINT_LAYOUT_CONTRACT=PASS");
+console.log("FORMAL_PRINT_MARK=PASS");
 console.log("PRINT_READINESS_CONTRACT=PASS");
 console.log("PROVISIONAL_VAT_DISPLAY_CONTRACT=PASS");
 console.log("TEMP_EXCLUSIVE_NOT_PRESENTED_AS_CONFIRMED=YES");
