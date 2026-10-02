@@ -432,10 +432,14 @@
     return Object.assign({}, built, { compiled: compiled.compiled });
   }
 
-  function buildRenderModel(rawSkill, input) {
+  function buildRenderModel(rawSkill, input, options) {
     var built = buildDraft(rawSkill, input);
     if (!built.ok) return { ok: false, code: built.code, draft: null, renderModel: null, compiled: built.compiled };
-    var renderModel = Renderer.buildRenderModel(built.draft, built.compiled.templateProfile, { taxReviewRequired: false });
+    var opts = isPlainObject(options) ? options : {};
+    var renderModel = Renderer.buildRenderModel(built.draft, built.compiled.templateProfile, {
+      taxReviewRequired: false,
+      slotSources: isPlainObject(opts.slotSources) ? opts.slotSources : {}
+    });
     if (!renderModel) return { ok: false, code: "render_model_failed", draft: built.draft, renderModel: null, compiled: built.compiled };
     return {
       ok: true,
