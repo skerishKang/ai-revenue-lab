@@ -124,6 +124,37 @@ eq(
   "optional written-total support does not change built-in canonical content"
 );
 
+const detailPageContent = builtinContent();
+detailPageContent.sections = ["title", "meta", "parties", "items", "totals", "detailPages", "memo", "mark"];
+detailPageContent.detailPages = {
+  titlePrefix: "상세내역  ",
+  subtotalLabel: "소 계",
+  columns: [
+    { key: "no", label: "NO", width: "6%", align: "center" },
+    { key: "name", label: "품명", width: "20%", align: "left" },
+    { key: "spec", label: "규격", width: "22%", align: "left" },
+    { key: "unit", label: "단위", width: "8%", align: "center" },
+    { key: "qty", label: "수량", width: "8%", align: "right" },
+    { key: "unitPrice", label: "단가", width: "12%", align: "right" },
+    { key: "amount", label: "금액", width: "14%", align: "right" },
+    { key: "note", label: "비고", width: "10%", align: "left" }
+  ]
+};
+const detailPageNormalized = Template.normalizeTemplateContent(detailPageContent);
+check(detailPageNormalized !== null, "optional detail-pages contract normalizes");
+eq(detailPageNormalized.detailPages.titlePrefix, "상세내역  ", "detail page title prefix preserved");
+eq(detailPageNormalized.detailPages.subtotalLabel, "소 계", "detail page subtotal label preserved");
+eq(
+  detailPageNormalized.detailPages.columns.map((column) => column.key),
+  ["no", "name", "spec", "unit", "qty", "unitPrice", "amount", "note"],
+  "detail page columns preserve approved order"
+);
+eq(
+  Template.normalizeTemplateContent(builtinContent()),
+  builtinContent(),
+  "optional detail-pages support does not change built-in canonical content"
+);
+
 /* TEMPLATE_FINGERPRINT_DETERMINISTIC — 동일 내용 → 동일 지문, 스타일 변경 → 다른 지문 */
 const contentA = builtinContent();
 const contentB = builtinContent();
