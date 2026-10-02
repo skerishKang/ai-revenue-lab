@@ -32,7 +32,8 @@
   var SLOT_SUPPORT = "private_asset_v1";
 
   var ALLOWED_SECTIONS = ["title", "meta", "parties", "items", "totals", "memo", "mark"];
-  var ALLOWED_COLUMN_KEYS = ["name", "qty", "unitPrice", "amount"];
+  var ALLOWED_COLUMN_KEYS = ["sequence", "name", "specification", "unit", "qty", "unitPrice", "amount", "rowNote"];
+  var REQUIRED_COLUMN_KEYS = ["name", "qty", "unitPrice", "amount"];
   var ALLOWED_ALIGNMENTS = ["left", "right", "center"];
   var ALLOWED_JUSTIFY = ["flex-start", "center", "flex-end", "space-between", "space-around"];
   var ALLOWED_PAGE_SIZES = ["A4", "A5", "Legal", "Letter"];
@@ -375,7 +376,7 @@
   /* ── content 정규화: 화이트리스트 기반. 모르는 키는 버리고, 구조가 깨지면 실패 ── */
 
   function normalizeColumns(raw) {
-    if (!Array.isArray(raw) || raw.length !== ALLOWED_COLUMN_KEYS.length) return null;
+    if (!Array.isArray(raw) || raw.length < REQUIRED_COLUMN_KEYS.length || raw.length > ALLOWED_COLUMN_KEYS.length) return null;
     var seen = Object.create(null);
     var columns = [];
     for (var i = 0; i < raw.length; i += 1) {
@@ -390,6 +391,9 @@
         width: cleanMeasure(entry.width, ""),
         align: cleanAlignment(entry.align, "left")
       });
+    }
+    for (var r = 0; r < REQUIRED_COLUMN_KEYS.length; r += 1) {
+      if (!seen[REQUIRED_COLUMN_KEYS[r]]) return null;
     }
     return columns;
   }
@@ -514,6 +518,18 @@
       style: normalizeStyle(raw.style),
       fallbackText: boundString(raw.fallbackText, defaults.fallbackText)
     };
+
+    /* #3411 additive fidelity primitives. They are emitted only when explicitly
+       declared so canonical legacy/builtin content keeps its byte/fingerprint identity. */
+    if (Object.prototype.hasOwnProperty.call(meta, "projectNamePrefix")) {
+      content.meta.projectNamePrefix = boundString(meta.projectNamePrefix, "건명  ");
+    }
+    if (Object.prototype.hasOwnProperty.call(totals, "showWrittenGrand")) {
+      content.totals.showWrittenGrand = totals.showWrittenGrand === true;
+    }
+    if (Object.prototype.hasOwnProperty.call(totals, "writtenGrandPrefix")) {
+      content.totals.writtenGrandPrefix = boundString(totals.writtenGrandPrefix, "일금 ");
+    }
 
     var serialized;
     try {
