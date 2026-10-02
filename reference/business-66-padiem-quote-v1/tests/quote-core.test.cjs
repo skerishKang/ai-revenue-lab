@@ -164,6 +164,38 @@ const partial = Core.normalizeDraft({
 assert.equal(partial.items[0].qty, 2, "partial draft keeps items");
 assert.equal(partial.tax.mode, "INCLUSIVE", "partial draft keeps tax mode");
 assert.equal(partial.meta.validDays, 30, "partial draft fills defaults");
+const detailed = Core.normalizeDraft({
+  schemaVersion: 1,
+  meta: { quoteNo: "Q-DETAIL-1", issueDate: "2026-10-02", validDays: 30, source: "chat", projectName: "스마트팜 환경제어설비" },
+  sender: draft.sender,
+  recipient: draft.recipient,
+  items: [{
+    id: "detail-1",
+    name: "ICT환경제어 시스템",
+    spec: "주장치 및 스마트팜 전용S/W",
+    unit: "식",
+    qty: 1,
+    unitPrice: 16330000,
+    note: "설치 포함"
+  }],
+  tax: { mode: "EXCLUSIVE", rate: 0.1 },
+  memo: ""
+});
+assert.equal(detailed.meta.projectName, "스마트팜 환경제어설비", "optional project name preserved");
+assert.deepEqual(detailed.items[0], {
+  id: "detail-1",
+  name: "ICT환경제어 시스템",
+  qty: 1,
+  unitPrice: 16330000,
+  spec: "주장치 및 스마트팜 전용S/W",
+  unit: "식",
+  note: "설치 포함"
+}, "optional item presentation fields preserved");
+assert.deepEqual(
+  Core.computeTotals(detailed.items, "EXCLUSIVE"),
+  Core.computeTotals([{ id: "detail-1", name: "ICT환경제어 시스템", qty: 1, unitPrice: 16330000 }], "EXCLUSIVE"),
+  "spec/unit/note never change QuoteCore totals"
+);
 assert.equal(Core.normalizeDraft("garbage"), null, "string input rejected");
 assert.equal(Core.normalizeDraft(null), null, "null rejected");
 assert.equal(Core.normalizeDraft({ schemaVersion: 99 }), null, "wrong schema rejected");
