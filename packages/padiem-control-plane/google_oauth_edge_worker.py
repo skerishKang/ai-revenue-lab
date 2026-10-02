@@ -12,6 +12,7 @@ CALLBACK_PATH = "/v1/google/callback"
 MAX_CONNECT_BODY_BYTES = 32_768
 MAX_CALLBACK_QUERY_CHARS = 16_384
 MAX_RPC_RESULT_CHARS = 65_536
+CONNECTED_RETURN_QUERY = "/?google_connector=connected"
 
 _BASE_HEADERS = {
     "cache-control": "no-store, max-age=0",
@@ -67,6 +68,18 @@ def _error(status: int, code: str, *, origin: str | None = None) -> Response:
         },
         origin=origin,
     )
+
+
+def _connected_response(env: Any) -> Response:
+    """Return to the reviewed Padiem origin without projecting connector identity."""
+    try:
+        origin = _required_allowed_origin(env)
+    except RuntimeError:
+        return _json_response(200, {"ok": True, "connected": True})
+    headers = dict(_BASE_HEADERS)
+    headers.pop("content-type", None)
+    headers["location"] = origin + CONNECTED_RETURN_QUERY
+    return Response("", status=303, headers=headers)
 
 
 def _required_allowed_origin(env: Any) -> str:
@@ -247,6 +260,8 @@ class Default(WorkerEntrypoint):
                 return _error(400, "google_oauth_callback_invalid")
             except Exception:
                 return _error(503, "google_oauth_dependency_unavailable")
+            if result["ok"] is True:
+                return _connected_response(self.env)
             return _rpc_http_response(result, success_field="connection", origin=None)
 
         return _error(404, "google_oauth_route_not_found")
@@ -264,6 +279,8 @@ STRICT_BOOLEAN_RPC_STATUS = True
 CALLBACK_GET_ONLY = True
 CALLBACK_AUTHORIZATION_CODE_QUERY_PROTOCOL_REQUIRED = True
 CALLBACK_QUERY_AUTHORITY = False
+CALLBACK_SUCCESS_REDIRECT = True
+CALLBACK_IDENTITY_PROJECTION = False
 PRIVATE_SERVICE_BINDING_RPC = True
 LOCAL_AGENT_ROUTE_OVERLAP = False
 RAW_CONNECT_TICKET_LOGGED = False

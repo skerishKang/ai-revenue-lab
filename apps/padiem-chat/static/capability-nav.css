@@ -194,6 +194,11 @@ html[data-theme="padiem-glass"] .capability-read {
   opacity: .55;
 }
 
+.connector-connect {
+  align-self: flex-start;
+  margin-top: 8px;
+}
+
 .capability-workspace {
   font-size: 11px;
   color: var(--muted);

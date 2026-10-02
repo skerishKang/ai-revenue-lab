@@ -154,13 +154,14 @@ def cookie_for(profile_id: str) -> str:
     return create_session_token(settings(), profile_id)
 
 
-def app_fixture(*, with_shadow=True, binding=None):
+def app_fixture(*, with_shadow=True, binding=None, auth_transport=None):
     history = MemoryHistoryStore()
     shadow_store = MemoryShadowStore(shadow(history.profile.id) if with_shadow else None)
     binding = binding or FakeControlPlaneBinding()
     authority = CloudflareControlPlaneIdentityAuthority(binding)
     app = create_app(
         settings(),
+        auth_transport=auth_transport,
         history_store=history,
         control_plane_identity_authority=authority,
         identity_shadow_store=shadow_store,
@@ -251,6 +252,91 @@ async def test_authenticated_same_origin_ticket_request_uses_shadow_session_only
     assert response.headers["cache-control"].startswith("no-store")
     assert response.headers["referrer-policy"] == "no-referrer"
     assert binding.ticket not in json.dumps(dict(response.headers), ensure_ascii=False)
+
+
+@pytest.mark.asyncio
+async def test_authenticated_same_origin_calendar_ticket_uses_reviewed_readonly_connector():
+    app, history, _, binding, _ = app_fixture()
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        client.cookies.set(
+            SESSION_COOKIE,
+            cookie_for(history.profile.id),
+            domain="chat.example.test",
+            path="/",
+        )
+        response = await client.post(
+            "/api/connectors/google/ticket",
+            headers={"Origin": "https://chat.example.test"},
+            json={"connector_id": "google-calendar"},
+        )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["ticket"]["connector_id"] == "google-calendar"
+    assert body["ticket"]["connect_ticket"] == binding.ticket
+    assert binding.calls == [("ticket", {"session_id": "sess_test", "connector_id": "google-calendar"})]
+
+
+@pytest.mark.asyncio
+async def test_calendar_start_posts_private_ticket_server_side_and_returns_only_authorization():
+    binding = FakeControlPlaneBinding()
+    seen: list[httpx.Request] = []
+
+    async def oauth_edge(request: httpx.Request) -> httpx.Response:
+        seen.append(request)
+        assert str(request.url) == "https://oauth.padiem.net/v1/google/connect"
+        assert request.headers["origin"] == "https://chat.example.test"
+        payload = json.loads(request.content.decode("utf-8"))
+        assert payload == {"connect_ticket": binding.ticket}
+        return httpx.Response(
+            200,
+            json={
+                "ok": True,
+                "authorization": {
+                    "authorization_url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=test&scope=calendar.readonly",
+                    "connector_id": "google-calendar",
+                    "expires_at": (NOW + timedelta(minutes=10)).isoformat(),
+                    "raw_connect_ticket": False,
+                    "raw_pkce_verifier": False,
+                    "raw_client_secret": False,
+                },
+            },
+        )
+
+    app, history, _, _, _ = app_fixture(
+        binding=binding,
+        auth_transport=httpx.MockTransport(oauth_edge),
+    )
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        client.cookies.set(
+            SESSION_COOKIE,
+            cookie_for(history.profile.id),
+            domain="chat.example.test",
+            path="/",
+        )
+        response = await client.post(
+            "/api/connectors/google/ticket",
+            headers={"Origin": "https://chat.example.test"},
+            json={"connector_id": "google-calendar", "begin_oauth": True},
+        )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "authorization": {
+            "authorization_url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=test&scope=calendar.readonly",
+            "connector_id": "google-calendar",
+            "expires_at": (NOW + timedelta(minutes=10)).isoformat(),
+        }
+    }
+    assert binding.ticket not in response.text
+    assert len(seen) == 1
+    assert binding.calls == [("ticket", {"session_id": "sess_test", "connector_id": "google-calendar"})]
 
 
 @pytest.mark.asyncio
@@ -405,7 +491,8 @@ def test_worker_supports_private_identity_binding_without_activating_mock_config
     assert "D1IdentityShadowStore(db_binding)" in worker
     assert 'binding = "IDENTITY_AUTHORITY_SERVICE"' not in wrangler
     assert 'service = "padiem-control-plane-identity"' not in wrangler
-    assert 'set(payload) != {"connector_id"}' in route
+    assert 'set(payload) not in ({"connector_id"}, {"connector_id", "begin_oauth"})' in route
+    assert 'begin_oauth and connector_id != "google-calendar"' in route
     assert "account_ref" not in route
     assert "workspace_ref" not in route
     assert "GOOGLE_CONNECT_TICKET_KEY" not in route

@@ -2520,6 +2520,8 @@
   const connectorsLoading = document.getElementById("connectorsLoading");
   const connectorsError = document.getElementById("connectorsError");
   const connectorsRetry = document.getElementById("connectorsRetry");
+  const GOOGLE_CALENDAR_CONNECTOR = "google-calendar";
+  const GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket";
   const CONNECTOR_STATUS_IDS = new Set([
     "connector:google:drive@1",
     "connector:google:gmail@1",
@@ -2528,6 +2530,7 @@
     "connector:google:calendar@1",
   ]);
   let connectorStatusInFlight = false;
+  let googleConnectorConnectInFlight = false;
 
   function setConnectorCopy(element, key) {
     if (!element) return;
@@ -2559,12 +2562,81 @@
     return Array.from(connectorsDialog.querySelectorAll("[data-connector-id]"));
   }
 
+  function googleCalendarConnectButton() {
+    if (!connectorsDialog) return null;
+    return connectorsDialog.querySelector(`[data-google-connector-connect="${GOOGLE_CALENDAR_CONNECTOR}"]`);
+  }
+
+  function syncGoogleCalendarConnectButton(row = null) {
+    const button = googleCalendarConnectButton();
+    if (!button) return;
+    const workspaceState = row && typeof row.workspace_state === "string" ? row.workspace_state : "";
+    const canConnect = Boolean(
+      authState.authenticated &&
+      (workspaceState === "not_connected" || workspaceState === "unverified")
+    );
+    button.hidden = !canConnect;
+    button.disabled = googleConnectorConnectInFlight;
+    if (!googleConnectorConnectInFlight) setConnectorCopy(button, "connectors-connect-calendar");
+  }
+
+  function reviewedGoogleAuthorizationUrl(value) {
+    if (typeof value !== "string" || !value) return null;
+    let url;
+    try {
+      url = new URL(value);
+    } catch (_) {
+      return null;
+    }
+    if (url.protocol !== "https:" || url.hostname !== "accounts.google.com") return null;
+    if (url.pathname !== "/o/oauth2/v2/auth" || url.username || url.password || url.hash) return null;
+    return url.toString();
+  }
+
+  async function beginGoogleCalendarConnect() {
+    const button = googleCalendarConnectButton();
+    if (!button || googleConnectorConnectInFlight) return;
+    if (!authState.authenticated) {
+      openAuthDialog();
+      return;
+    }
+    googleConnectorConnectInFlight = true;
+    button.disabled = true;
+    setConnectorCopy(button, "connectors-connecting-calendar");
+    if (connectorsError) connectorsError.hidden = true;
+    try {
+      const startResponse = await fetch(GOOGLE_CALENDAR_TICKET_ENDPOINT, {
+        method: "POST",
+        headers: { "Accept": "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ connector_id: GOOGLE_CALENDAR_CONNECTOR, begin_oauth: true }),
+        cache: "no-store",
+      });
+      const startDocument = await startResponse.json().catch(() => null);
+      const authorization = startDocument && startDocument.authorization;
+      const redirect = startResponse.ok && authorization &&
+        authorization.connector_id === GOOGLE_CALENDAR_CONNECTOR
+        ? reviewedGoogleAuthorizationUrl(authorization.authorization_url)
+        : null;
+      if (!redirect) throw new Error("calendar authorization unavailable");
+      window.location.assign(redirect);
+    } catch (_) {
+      googleConnectorConnectInFlight = false;
+      button.disabled = false;
+      setConnectorCopy(button, "connectors-connect-calendar");
+      if (connectorsError) {
+        setConnectorCopy(connectorsError, "connectors-connect-error");
+        connectorsError.hidden = false;
+      }
+    }
+  }
+
   function setConnectorCardsLoading() {
     liveConnectorCards().forEach((card) => {
       card.dataset.connectorStatus = "loading";
       setConnectorCopy(card.querySelector("[data-connector-support]"), "connectors-status-loading");
       setConnectorCopy(card.querySelector("[data-connector-workspace]"), "connectors-workspace-loading");
     });
+    syncGoogleCalendarConnectButton();
   }
 
   function setConnectorCardsUnavailable() {
@@ -2573,6 +2645,7 @@
       setConnectorCopy(card.querySelector("[data-connector-support]"), "connectors-status-unavailable");
       setConnectorCopy(card.querySelector("[data-connector-workspace]"), "connectors-workspace-unavailable");
     });
+    syncGoogleCalendarConnectButton();
   }
 
   function renderConnectorStatus(document) {
@@ -2600,13 +2673,17 @@
       setConnectorCopy(card.querySelector("[data-connector-support]"), supportKey);
       setConnectorCopy(card.querySelector("[data-connector-workspace]"), workspaceKey);
     });
+    syncGoogleCalendarConnectButton(rows.get("connector:google:calendar@1") || null);
   }
 
   async function loadConnectorStatus() {
     if (!connectorsDialog || connectorStatusInFlight) return;
     connectorStatusInFlight = true;
     if (connectorsLoading) connectorsLoading.hidden = false;
-    if (connectorsError) connectorsError.hidden = true;
+    if (connectorsError) {
+      setConnectorCopy(connectorsError, "connectors-error");
+      connectorsError.hidden = true;
+    }
     if (connectorsRetry) {
       connectorsRetry.hidden = true;
       connectorsRetry.disabled = true;
@@ -2652,12 +2729,25 @@
   if (connectorsNavButton) connectorsNavButton.addEventListener("click", openConnectorsDialog);
   if (connectorsDialogClose) connectorsDialogClose.addEventListener("click", closeConnectorsDialog);
   if (connectorsRetry) connectorsRetry.addEventListener("click", () => void loadConnectorStatus());
+  const calendarConnectButton = googleCalendarConnectButton();
+  if (calendarConnectButton) calendarConnectButton.addEventListener("click", () => void beginGoogleCalendarConnect());
   if (connectorsDialog) {
     connectorsDialog.addEventListener("cancel", (event) => {
       event.preventDefault();
       closeConnectorsDialog();
     });
     connectorsDialog.addEventListener("close", () => connectorsNavButton?.setAttribute("aria-expanded", "false"));
+  }
+
+  const connectorReturnSearch = typeof window.location.search === "string" ? window.location.search : "";
+  const connectorReturnParts = connectorReturnSearch.replace(/^\?/, "").split("&").filter(Boolean);
+  const connectorReturned = connectorReturnParts.some((part) => part === "google_connector=connected");
+  if (connectorReturned) {
+    const cleanQuery = connectorReturnParts.filter((part) => !part.startsWith("google_connector=")).join("&");
+    const cleanPath = String(window.location.pathname || "/");
+    const cleanHash = String(window.location.hash || "");
+    window.history.replaceState(null, "", cleanPath + (cleanQuery ? `?${cleanQuery}` : "") + cleanHash);
+    openConnectorsDialog();
   }
 
   if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
