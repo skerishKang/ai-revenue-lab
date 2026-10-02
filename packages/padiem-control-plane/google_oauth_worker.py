@@ -32,6 +32,9 @@ _WORKSPACE_CONNECTOR_STATE_KEYS = frozenset({"workspace_ref"})
 # payload. The connector itself is fixed in code, never supplied by the caller.
 _WORKSPACE_CALENDAR_CONNECTOR_STATE_KEYS = frozenset({"workspace_ref"})
 WORKSPACE_CALENDAR_CONNECTOR_ID = "google-calendar"
+# #2952/#3023: private Calendar binding-selection RPC. Same closed payload;
+# the connector is fixed in code to the reviewed Calendar OAuth authority.
+_WORKSPACE_CALENDAR_BINDING_KEYS = frozenset({"workspace_ref"})
 # #3193: private Drive binding-selection RPC. Same closed payload; the
 # connector is fixed in code to the reviewed Drive OAuth authority.
 _WORKSPACE_DRIVE_BINDING_KEYS = frozenset({"workspace_ref"})
@@ -199,6 +202,24 @@ class GoogleOAuthDurableObject(DurableObject):
         except ControlPlaneContractError as exc:
             return _safe_rpc_error(exc)
 
+    async def select_calendar_binding(self, payload: dict) -> dict:
+        """Private Calendar binding-selection RPC for one trusted workspace."""
+        try:
+            payload = _closed_payload(
+                payload,
+                _WORKSPACE_CALENDAR_BINDING_KEYS,
+                "Google OAuth Calendar binding-selection RPC",
+            )
+            selection = self._store.select_active_calendar_binding(
+                workspace_ref=payload["workspace_ref"],
+                now=datetime.now(timezone.utc),
+            )
+            private = selection.to_private_dict()
+            private.pop("account_ref", None)
+            return {"ok": True, "selection": private}
+        except ControlPlaneContractError as exc:
+            return _safe_rpc_error(exc)
+
     async def select_drive_binding(self, payload: dict) -> dict:
         """Private Drive binding-selection RPC (#3193).
 
@@ -260,6 +281,9 @@ class Default(WorkerEntrypoint):
     async def workspace_calendar_connector_state(self, payload: dict) -> dict:
         return await self._stub().workspace_calendar_connector_state(payload)
 
+    async def select_calendar_binding(self, payload: dict) -> dict:
+        return await self._stub().select_calendar_binding(payload)
+
     async def select_drive_binding(self, payload: dict) -> dict:
         return await self._stub().select_drive_binding(payload)
 
@@ -315,5 +339,10 @@ CALENDAR_TOKEN_OUTPUT = False
 CALENDAR_CREDENTIAL_READ_UNSEALS_REFRESH_TOKEN = False
 CALENDAR_CREDENTIAL_READ_ISSUES_ACCESS_LEASE = False
 CALENDAR_CREDENTIAL_READ_WRITE_AUTHORITY = False
+CALENDAR_BINDING_SELECTION_RPC = True
+CALENDAR_BINDING_SELECTION_PUBLIC_ROUTE = False
+CALENDAR_BINDING_SELECTION_CONNECTOR_FIXED_IN_CODE = True
+CALENDAR_BINDING_SELECTION_RAW_CREDENTIAL_OUTPUT = False
+CALENDAR_BINDING_SELECTION_ACCESS_LEASE_ISSUED = False
 DEFAULT_WORKSPACE_STATUS_INCLUDES_CALENDAR = False
 B62_PUBLIC_CALENDAR_TRUTH_WIDENED = False

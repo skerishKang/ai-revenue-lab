@@ -2522,6 +2522,7 @@
   const connectorsRetry = document.getElementById("connectorsRetry");
   const GOOGLE_CALENDAR_CONNECTOR = "google-calendar";
   const GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket";
+  const GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT = "/api/connectors/google/calendar/activate-read";
   const CONNECTOR_STATUS_IDS = new Set([
     "connector:google:drive@1",
     "connector:google:gmail@1",
@@ -2531,6 +2532,9 @@
   ]);
   let connectorStatusInFlight = false;
   let googleConnectorConnectInFlight = false;
+  let googleCalendarReadActivationInFlight = false;
+  let googleCalendarReadActivationDone = false;
+  let googleCalendarReadActivationAfterConnectReturn = false;
 
   function setConnectorCopy(element, key) {
     if (!element) return;
@@ -2575,9 +2579,22 @@
       authState.authenticated &&
       (workspaceState === "not_connected" || workspaceState === "unverified")
     );
-    button.hidden = !canConnect;
-    button.disabled = googleConnectorConnectInFlight;
-    if (!googleConnectorConnectInFlight) setConnectorCopy(button, "connectors-connect-calendar");
+    const canActivateRead = Boolean(
+      authState.authenticated &&
+      workspaceState === "connected"
+    );
+    button.hidden = !(canConnect || canActivateRead);
+    button.dataset.calendarAction = canActivateRead ? "activate-read" : "connect";
+    button.disabled = googleConnectorConnectInFlight ||
+      googleCalendarReadActivationInFlight ||
+      googleCalendarReadActivationDone;
+    if (googleCalendarReadActivationDone) {
+      setConnectorCopy(button, "connectors-calendar-read-activation-done");
+    } else if (canActivateRead && !googleCalendarReadActivationInFlight) {
+      setConnectorCopy(button, "connectors-activate-calendar-read");
+    } else if (canConnect && !googleConnectorConnectInFlight) {
+      setConnectorCopy(button, "connectors-connect-calendar");
+    }
   }
 
   function reviewedGoogleAuthorizationUrl(value) {
@@ -2627,6 +2644,44 @@
         setConnectorCopy(connectorsError, "connectors-connect-error");
         connectorsError.hidden = false;
       }
+    }
+  }
+
+  async function activateGoogleCalendarRead() {
+    const button = googleCalendarConnectButton();
+    if (!button || googleCalendarReadActivationInFlight || googleCalendarReadActivationDone) return;
+    if (!authState.authenticated) {
+      openAuthDialog();
+      return;
+    }
+    googleCalendarReadActivationInFlight = true;
+    button.disabled = true;
+    setConnectorCopy(button, "connectors-activating-calendar-read");
+    if (connectorsError) connectorsError.hidden = true;
+    try {
+      const response = await fetch(GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT, {
+        method: "POST",
+        headers: { "Accept": "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+        cache: "no-store",
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || data.ok !== true ||
+          data.calendar_read_grant !== "active" ||
+          data.calendar_write_authorized !== false) {
+        throw new Error("calendar read activation unavailable");
+      }
+      googleCalendarReadActivationDone = true;
+      setConnectorCopy(button, "connectors-calendar-read-activation-done");
+    } catch (_) {
+      if (connectorsError) {
+        setConnectorCopy(connectorsError, "connectors-calendar-read-activation-error");
+        connectorsError.hidden = false;
+      }
+      setConnectorCopy(button, "connectors-activate-calendar-read");
+    } finally {
+      googleCalendarReadActivationInFlight = false;
+      button.disabled = googleCalendarReadActivationDone;
     }
   }
 
@@ -2697,6 +2752,13 @@
       const data = await response.json().catch(() => null);
       if (!response.ok) throw new Error("connector status unavailable");
       renderConnectorStatus(data);
+      if (googleCalendarReadActivationAfterConnectReturn) {
+        googleCalendarReadActivationAfterConnectReturn = false;
+        const calendarButton = googleCalendarConnectButton();
+        if (calendarButton?.dataset.calendarAction === "activate-read") {
+          await activateGoogleCalendarRead();
+        }
+      }
     } catch (_) {
       setConnectorCardsUnavailable();
       if (connectorsError) connectorsError.hidden = false;
@@ -2730,7 +2792,13 @@
   if (connectorsDialogClose) connectorsDialogClose.addEventListener("click", closeConnectorsDialog);
   if (connectorsRetry) connectorsRetry.addEventListener("click", () => void loadConnectorStatus());
   const calendarConnectButton = googleCalendarConnectButton();
-  if (calendarConnectButton) calendarConnectButton.addEventListener("click", () => void beginGoogleCalendarConnect());
+  if (calendarConnectButton) calendarConnectButton.addEventListener("click", () => {
+    if (calendarConnectButton.dataset.calendarAction === "activate-read") {
+      void activateGoogleCalendarRead();
+      return;
+    }
+    void beginGoogleCalendarConnect();
+  });
   if (connectorsDialog) {
     connectorsDialog.addEventListener("cancel", (event) => {
       event.preventDefault();
@@ -2743,6 +2811,7 @@
   const connectorReturnParts = connectorReturnSearch.replace(/^\?/, "").split("&").filter(Boolean);
   const connectorReturned = connectorReturnParts.some((part) => part === "google_connector=connected");
   if (connectorReturned) {
+    googleCalendarReadActivationAfterConnectReturn = true;
     const cleanQuery = connectorReturnParts.filter((part) => !part.startsWith("google_connector=")).join("&");
     const cleanPath = String(window.location.pathname || "/");
     const cleanHash = String(window.location.hash || "");

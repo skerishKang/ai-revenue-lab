@@ -217,12 +217,18 @@ def test_calendar_read_oauth_is_the_only_connector_connection_action() -> None:
     assert 'fetch(GOOGLE_CALENDAR_TICKET_ENDPOINT' in block
     assert 'connector_id: GOOGLE_CALENDAR_CONNECTOR, begin_oauth: true' in block
     assert 'GOOGLE_CALENDAR_CONNECTOR = "google-calendar"' in block
-    assert block.count('method: "POST"') == 1
+    assert 'GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT = "/api/connectors/google/calendar/activate-read"' in block
+    assert 'fetch(GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT' in block
+    assert 'body: JSON.stringify({})' in block
+    assert block.count('method: "POST"') == 2
     assert "oauth.padiem.net" not in block
     assert "connect_ticket" not in block
     assert 'url.hostname !== "accounts.google.com"' in block
     assert 'url.pathname !== "/o/oauth2/v2/auth"' in block
     assert 'window.location.assign(redirect)' in block
+    assert "googleCalendarReadActivationAfterConnectReturn = true" in block
+    assert 'calendarButton?.dataset.calendarAction === "activate-read"' in block
+    assert "await activateGoogleCalendarRead()" in block
 
     lowered = block.lower()
     for forbidden in (

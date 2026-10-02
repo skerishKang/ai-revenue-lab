@@ -34,6 +34,7 @@ from app.claw_p01_composition import (
 from app.claw_task_alert_store import D1ClawTaskAlertStore
 from app.config import ConfigError
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
+from app.calendar_read_activation_engine import CloudflareCalendarReadActivationEngineClient
 from app.control_plane_identity_shadow import D1IdentityShadowStore
 from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
 from app.dispatch_quota import DispatchAwareB14Client, DispatchAwareUsageCounterStore
@@ -57,6 +58,7 @@ from app.worker_config import (
     binding_value,
     response_headers_for_path,
     settings_from_worker_bindings,
+    p01_engine_config_from_worker_bindings,
 )
 from app.worker_orchestration import build_orchestration_bridge
 from kagent.claw_automation import ClawAutomationTickRuntime
@@ -731,6 +733,23 @@ class Default(WorkerEntrypoint):
                 except Exception:
                     drive_case_folder_engine_client = None
                 _worker_app.state.drive_case_folder_engine_client = drive_case_folder_engine_client
+                # #2952: Calendar READ activation reuses the existing P01 Engine
+                # Service Binding and caller credential. No second Engine authority.
+                try:
+                    p01_config = p01_engine_config_from_worker_bindings(self.env)
+                    calendar_read_activation_client = (
+                        CloudflareCalendarReadActivationEngineClient(
+                            p01_config.service_binding,
+                            caller_id=p01_config.caller_id,
+                            credential=p01_config.credential,
+                            request_factory=Request,
+                        )
+                        if p01_config is not None
+                        else None
+                    )
+                except Exception:
+                    calendar_read_activation_client = None
+                _worker_app.state.calendar_read_activation_client = calendar_read_activation_client
                 _worker_app.state.project_file_store = project_file_store
                 _worker_app.state.saved_output_store = saved_output_store
                 _worker_app.state.usage_gate = UsageGate(settings, usage_store)
