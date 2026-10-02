@@ -198,6 +198,41 @@ assert.deepEqual(candidate.value.review.source, { kind: "image", filename: "quot
 assert.equal(candidate.value.review.evidence[0].confidence, 0.98);
 assert.deepEqual(candidate.value.review.warnings, []);
 
+const groupedCandidate = Extraction.buildDraftCandidate(currentDraft, {
+  source: { kind: "native_document", filename: "detail.xlsx" },
+  recipient: { company: "상세 고객" },
+  items: [{ name: "부속실 음향", qty: 7, unitPrice: 1 }],
+  detailGroups: [{
+    summaryIndex: 1,
+    title: "부속실 상세",
+    items: [
+      { name: "장비", section: "1) 장비", qty: 1, unitPrice: 3644000 },
+      { name: "인건비", section: "5) 인건비", qty: 1, unitPrice: 1100000 }
+    ]
+  }]
+});
+assert.equal(groupedCandidate.ok, true, JSON.stringify(groupedCandidate));
+assert.equal(groupedCandidate.value.draft.detailGroups[0].summaryItemId, "extracted-item-1",
+  "extraction summaryIndex is converted to canonical summary item id");
+assert.equal(groupedCandidate.value.draft.detailGroups[0].items[0].section, "1) 장비",
+  "extraction preserves detail section heading");
+const groupedNormalized = Core.normalizeDraft(groupedCandidate.value.draft);
+assert.ok(groupedNormalized, "extracted detail-group candidate is a valid QuoteDraft");
+assert.equal(Core.computeDraftTotals(groupedNormalized).effectiveItems[0].unitPrice, 4744000,
+  "extracted detail lines, not source summary unit price, own rollup authority");
+assert.equal(Core.computeDraftTotals(groupedNormalized).amounts[0], 33208000,
+  "extracted summary quantity multiplies derived detail subtotal");
+
+const forbiddenDetailAmount = Extraction.normalizeExtraction({
+  source: { kind: "text" },
+  items: [{ name: "요약", qty: 1, unitPrice: 1 }],
+  detailGroups: [{
+    summaryIndex: 1,
+    items: [{ name: "상세", qty: 1, unitPrice: 1000, amount: 1000 }]
+  }]
+});
+assert.equal(forbiddenDetailAmount.ok, false, "detail amount from extraction fails closed");
+
 const noItemsCandidate = Extraction.buildDraftCandidate(currentDraft, {
   source: { kind: "text" },
   sender: { company: "텍스트 공급사" }
@@ -222,3 +257,5 @@ console.log("MALFORMED_OUTPUT_FAILS_SAFE=YES");
 console.log("MISSING_FIELDS_NOT_FABRICATED=YES");
 console.log("ITEM_ORDER_PRESERVED=YES");
 console.log("SOURCE_TOTALS_NOT_TRUSTED=YES");
+console.log("DETAIL_GROUP_EXTRACTION=PASS");
+console.log("DETAIL_AMOUNT_INPUT_TRUSTED=0");
