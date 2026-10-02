@@ -299,6 +299,7 @@
     const current = App.getDraft();
     const fresh = App.createFreshDraft("guided");
     fresh.sender = clone(current.sender);
+    if (current.calculationPolicy) fresh.calculationPolicy = clone(current.calculationPolicy);
     fresh.recipient = { company: "", person: "", address: "", email: "" };
     fresh.items = [];
     fresh.memo = "";
