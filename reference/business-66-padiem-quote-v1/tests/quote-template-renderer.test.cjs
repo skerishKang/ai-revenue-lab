@@ -65,6 +65,7 @@ function legacyProjection(draft, provisional) {
     pvValidity: "유효기간  " + draft.meta.validDays + "일",
     pvValidUntil: "유효일  " + (validUntil || "-"),
     pvTaxMode: provisional ? "세금  확인 필요" : "세금  " + Core.TAX_LABELS[draft.tax.mode],
+    pvProjectName: "",
     pvSenderHeading: "공급자",
     pvSenderCompany: legacyTextOrDash(draft.sender.company),
     pvSenderRep: "대표자  " + legacyTextOrDash(draft.sender.rep),
@@ -120,6 +121,7 @@ function modelToProjection(model) {
     pvValidity: model.meta.validityText,
     pvValidUntil: model.meta.validUntilText,
     pvTaxMode: model.meta.taxText,
+    pvProjectName: model.projectNameText,
     pvSenderHeading: model.parties.sender.heading,
     pvSenderCompany: model.parties.sender.company,
     pvSenderRep: model.parties.sender.rep,
@@ -319,6 +321,61 @@ eq(authoritative.totals.subtotalText, Core.formatMoney(authoritativeTotals.suppl
 eq(authoritative.totals.vatText, Core.formatMoney(authoritativeTotals.vat), "vat comes from QuoteCore");
 eq(authoritative.totals.grandText, Core.formatMoney(authoritativeTotals.grand), "grand comes from QuoteCore");
 
+const detailDraft = Core.normalizeDraft({
+  schemaVersion: 1,
+  meta: {
+    quoteNo: "CGI-DETAIL-1",
+    issueDate: "2026-10-02",
+    validDays: 30,
+    source: "saved-quote-skill",
+    projectName: "스마트팜 환경제어설비"
+  },
+  sender: defaultDraft.sender,
+  recipient: defaultDraft.recipient,
+  items: [{
+    id: "item-detail",
+    name: "ICT환경제어 시스템",
+    spec: "주장치 및 스마트팜 전용S/W",
+    unit: "식",
+    qty: 1,
+    unitPrice: 16330000,
+    note: "설치 포함"
+  }],
+  tax: { mode: "EXCLUSIVE", rate: 0.1 },
+  memo: ""
+});
+const detailContent = clone(Template.builtInTemplate().content);
+detailContent.sections = ["title", "meta", "parties", "project", "items", "totals", "memo", "mark"];
+detailContent.project = { prefix: "건   명 : " };
+detailContent.items.columns = [
+  { key: "no", label: "NO", width: "6%", align: "center" },
+  { key: "name", label: "품명", width: "20%", align: "left" },
+  { key: "spec", label: "규격", width: "22%", align: "left" },
+  { key: "unit", label: "단위", width: "8%", align: "center" },
+  { key: "qty", label: "수량", width: "8%", align: "right" },
+  { key: "unitPrice", label: "단가", width: "12%", align: "right" },
+  { key: "amount", label: "금액", width: "14%", align: "right" },
+  { key: "note", label: "비고", width: "10%", align: "left" }
+];
+const detailModel = Renderer.buildRenderModel(
+  detailDraft,
+  approvedProfile("detail-8col", detailContent),
+  { taxReviewRequired: false }
+);
+eq(detailModel.projectNameText, "건   명 : 스마트팜 환경제어설비", "project section renders bounded project name");
+eq(detailModel.columns.map((column) => column.key),
+  ["no", "name", "spec", "unit", "qty", "unitPrice", "amount", "note"],
+  "approved 8-column profile drives table columns");
+eq(detailModel.items[0].values.no, "1", "row number is renderer-derived");
+eq(detailModel.items[0].values.spec, "주장치 및 스마트팜 전용S/W", "spec is projected");
+eq(detailModel.items[0].values.unit, "식", "unit is projected");
+eq(detailModel.items[0].values.note, "설치 포함", "note is projected");
+eq(
+  detailModel.totals.grandText,
+  Core.formatMoney(Core.computeTotals(detailDraft.items, detailDraft.tax.mode).grand),
+  "detail columns never replace QuoteCore totals"
+);
+
 /* ── TEMPLATE_STYLE_APPLIED — 승인된 style/page 프로필이 실제 출력 투영을 바꾼다 ── */
 const styledContent = clone(Template.builtInTemplate().content);
 styledContent.style.accent = "#8a1f1f";
@@ -436,7 +493,7 @@ eq(Renderer.buildRenderModel(defaultDraft, profileWithout("memo"), { taxReviewRe
 const pageHtml = readSource("index.html");
 const stylesCss = readSource("styles.css");
 const ADAPTER_IDS = [
-  "pvTitle", "pvQuoteNo", "pvDate", "pvValidity", "pvValidUntil", "pvTaxMode",
+  "pvTitle", "pvQuoteNo", "pvDate", "pvValidity", "pvValidUntil", "pvTaxMode", "pvProjectName",
   "pvSenderHeading", "pvSenderCompany", "pvSenderRep", "pvSenderBizNo", "pvSenderAddress", "pvSenderContact",
   "pvRecipientHeading", "pvRecipientCompany", "pvRecipientPerson", "pvRecipientAddress", "pvRecipientEmail",
   "pvItemsHead", "pvItems", "quotePaper",
