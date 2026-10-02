@@ -19,8 +19,8 @@ A separate rule applies when the work contains a **new art direction or material
 
 1. **User / Product Owner** — product goal, priorities, material product/business decisions, explicit owner visual acceptance where applicable.
 2. **Web CTO** — current remote audit, work contract, architecture/safety boundaries, visual/evidence gates, final technical review.
-3. **Implementation Worker (local model)** — authorized implementation, implementation self-check, Draft PR/report. In the current operating model this is a local model with GitHub access; its local checks are implementation self-checks unless a second actor re-runs them.
-4. **Independent Local Validator** — independent exact-head browser/OS/hardware/local-runtime validation when required, executed by an actor distinct from the Implementation Worker.
+3. **Implementation Worker (local model)** — authorized implementation, focused implementation self-check, `DEV_FAST_GATE`, Draft PR/report. In the current operating model this is a local model with GitHub access; after the fast gate passes it may move to the next authorized issue without waiting for the full validation matrix.
+4. **Independent Local Validator(s)** — asynchronous independent exact-head browser/OS/hardware/local-runtime validation when required, executed by actors distinct from the Implementation Worker. Windows, Ubuntu and browser/full-regression lanes may run concurrently under separate validator ownership.
 
 One actor may perform several non-independent stages. The same actor must not
 claim both implementation and independent Local Validation for the same
@@ -171,10 +171,13 @@ The developer:
 - changes only authorized paths;
 - implements only up to the current authorized visual/product gate;
 - does not expand all routes when the work order authorizes only an anchor/archetype slice;
-- runs implementation self-checks and configured CI;
+- runs the smallest relevant implementation self-checks and the work-order `DEV_FAST_GATE`;
+- after `DEV_FAST_GATE=PASS`, records `DEV_ACTOR_RELEASED=YES` and may move immediately to the next authorized issue instead of waiting for Windows/Ubuntu/full-browser validation;
 - records exact base/head, files, diff, commands, exits, pass/fail/skip counts and limitations;
 - identifies legacy/cascade debt encountered;
 - does not self-assign independent validation or final CTO readiness.
+
+The fast gate is not merge approval. It exists to keep implementation throughput independent from slower cross-platform validation.
 
 ## 8A. GitHub report handoff
 
@@ -220,11 +223,40 @@ When independent validation is required, the validator records:
 - console/page/network/asset/overflow failures;
 - artifacts and reproduction evidence.
 
-If the validator changes product source, the modified run is not independent validation of that new revision.
+Validation lanes should be assigned explicitly when relevant:
+
+```text
+VALIDATOR_WINDOWS
+VALIDATOR_UBUNTU
+VALIDATOR_BROWSER
+VALIDATOR_FULL_REGRESSION
+```
+
+They may run in parallel while the implementation worker continues other authorized work. A failing validator owns reproduction and may own a bounded repair in its own worktree/repair branch.
+
+If the validator changes product source, that actor has become a repair/implementation actor for the new revision. The modified run is not independent validation of that new revision; revalidation must occur on the resulting exact head by another independent validator when independence is required.
 
 A completed independent validation is not considered auditable until the related PR contains a discoverable exact-head record naming the validator, result and immutable report/artifact pointer (or a recorded `NOT_REQUIRED` reason). The evidence may live in the private report repository, but the PR must point to it.
 
 ## 11. CI and automated checks
+
+CI uses three distinct gates:
+
+```text
+GATE_A = DEV_FAST_GATE
+  smallest focused checks proving the implementation slice
+  blocks the implementing actor only until PASS
+
+GATE_B = ASYNC_VALIDATION
+  Windows / Ubuntu / browser / full-regression lanes
+  may run in parallel under separate validator actors
+  failures block merge of the affected revision, not unrelated development
+
+GATE_C = FULL_VALIDATION
+  required configured/relevant exact-head checks before merge
+```
+
+A newer PR head should cancel superseded same-PR validation runs where the workflow can do so safely. Draft/synchronize feedback should prefer fast relevant checks; broad cross-platform/full matrices belong to asynchronous validation and the final merge gate rather than the implementation actor's synchronous loop.
 
 CI is required when configured/relevant but is never universal completion evidence.
 
