@@ -96,7 +96,7 @@ check(badPatch.ok === false, "unsupported sections fail closed");
 eq(TemplateRegistration.correctTemplateCandidate(seeded.candidate, { layout: {} }, { now: NOW }).code,
   "unsupported_template_correction", "unknown correction keys fail closed");
 
-/* #3402: approved private asset refs are supported; arbitrary URLs are not persisted. */
+/* #3402: candidate schema can describe private refs, but browser-local approval cannot own them. */
 const privateLogoId = "b66asset_" + "a".repeat(32);
 const slotContent = correctedContent();
 slotContent.slots = { logo: privateLogoId, stamp: "" };
@@ -106,8 +106,8 @@ const slotStore = TemplateStore.emptyStore();
 const slotApproval = TemplateRegistration.approveTemplateCandidate(slotCandidate.candidate, slotStore, {
   id: "tpl-slot", approvedBy: "local-owner", approvedAt: NOW
 }, { now: NOW });
-check(slotApproval.ok === true, "validated private asset slot can be approved");
-eq(slotApproval.template.content.slots.logo, privateLogoId, "private logo asset id survives approval");
+eq(slotApproval.code, "private_asset_requires_account_skill",
+  "private assets require account-bound Saved Quote Skill authority");
 const urlSlotContent = correctedContent();
 urlSlotContent.slots = { logo: "https://example.test/logo.png", stamp: "" };
 const urlSlotCandidate = TemplateRegistration.correctTemplateCandidate(
