@@ -123,6 +123,46 @@ eq(detailedResult.draft.items[0].unit, "식", "item unit preserved");
 eq(detailedResult.draft.items[0].note, "설치 포함", "item note preserved");
 eq(detailedResult.compiled.skillFingerprint, first.compiled.skillFingerprint, "existing Saved Quote Skill identity is unchanged by optional detail input");
 
+const linkedInput = input({
+  items: [{
+    id: "summary-1",
+    name: "ICT환경제어 시스템",
+    spec: "주장치 및 스마트팜 전용S/W",
+    unit: "식",
+    qty: 1,
+    detailSectionId: "detail-system"
+  }],
+  detailSections: [{
+    id: "detail-system",
+    title: "ICT환경제어 시스템 상세내역",
+    groups: [{
+      id: "hardware",
+      title: "1. 시스템 장비",
+      items: [
+        { id: "d1", name: "제어장치", unit: "EA", qty: 1, unitPrice: 10000000 },
+        { id: "d2", name: "통신모듈", unit: "EA", qty: 2, unitPrice: 2000000 }
+      ]
+    }, {
+      id: "labor",
+      title: "2. 인건비 및 잡자재",
+      items: [
+        { id: "d3", name: "설치 및 잡자재", unit: "식", qty: 1, unitPrice: 2330000 }
+      ]
+    }]
+  }]
+});
+const linkedResult = Skill.buildRenderModel(skill, linkedInput);
+check(linkedResult.ok === true, "detail-linked structured input is accepted");
+eq(linkedResult.draft.items[0].unitPrice, 0, "Saved Quote Skill never freezes a linked summary unit price");
+eq(linkedResult.draft.items[0].detailSectionId, "detail-system", "detail link survives structured generation");
+eq(linkedResult.draft.detailSections[0].groups.length, 2, "detail groups survive structured generation");
+eq(linkedResult.renderModel.items[0].values.unitPrice, Core.formatMoney(16330000),
+  "summary renderer uses QuoteCore-resolved detail total as effective unit price");
+eq(linkedResult.renderModel.totals.grandText, Core.formatMoney(17963000),
+  "simple Skill tax math applies after detail resolution");
+eq(linkedResult.compiled.skillFingerprint, first.compiled.skillFingerprint,
+  "per-quote detail breakdown does not mutate existing Skill identity");
+
 const floorPolicy = { grandRounding: { mode: "FLOOR", unit: 10000 } };
 const policyBase = {
   id: "skill-reviewed-rounding",
