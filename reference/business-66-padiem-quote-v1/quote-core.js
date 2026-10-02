@@ -346,7 +346,7 @@
       ? opts.source.trim()
       : "manual";
 
-    return normalizeDraft({
+    var next = {
       schemaVersion: SCHEMA_VERSION,
       meta: {
         quoteNo: quoteNo,
@@ -367,7 +367,9 @@
       items: [{ id: "item-1", name: "", qty: 1, unitPrice: 0 }],
       tax: { mode: TAX_MODES.EXCLUSIVE, rate: VAT_RATE },
       memo: defaults.memo
-    });
+    };
+    if (current.calculationPolicy) next.calculationPolicy = cloneJson(current.calculationPolicy);
+    return normalizeDraft(next);
   }
 
   return {
