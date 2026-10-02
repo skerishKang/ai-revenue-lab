@@ -96,16 +96,27 @@ check(badPatch.ok === false, "unsupported sections fail closed");
 eq(TemplateRegistration.correctTemplateCandidate(seeded.candidate, { layout: {} }, { now: NOW }).code,
   "unsupported_template_correction", "unknown correction keys fail closed");
 
-/* Slots declared live are NOT_SUPPORTED at the store gate (fidelity honesty). */
+/* #3402: approved private asset refs are supported; arbitrary URLs are not persisted. */
+const privateLogoId = "b66asset_" + "a".repeat(32);
 const slotContent = correctedContent();
-slotContent.slots = { logo: "logo.png", stamp: "" };
+slotContent.slots = { logo: privateLogoId, stamp: "" };
 const slotCandidate = TemplateRegistration.correctTemplateCandidate(seeded.candidate, { content: slotContent }, { now: NOW });
-check(slotCandidate.ok === true, "candidate content may describe slots");
+check(slotCandidate.ok === true, "candidate content may describe private asset slots");
 const slotStore = TemplateStore.emptyStore();
 const slotApproval = TemplateRegistration.approveTemplateCandidate(slotCandidate.candidate, slotStore, {
   id: "tpl-slot", approvedBy: "local-owner", approvedAt: NOW
 }, { now: NOW });
-eq(slotApproval.code, "slot_rendering_not_supported", "live logo/stamp slots are NOT_SUPPORTED, not silently kept");
+check(slotApproval.ok === true, "validated private asset slot can be approved");
+eq(slotApproval.template.content.slots.logo, privateLogoId, "private logo asset id survives approval");
+const urlSlotContent = correctedContent();
+urlSlotContent.slots = { logo: "https://example.test/logo.png", stamp: "" };
+const urlSlotCandidate = TemplateRegistration.correctTemplateCandidate(
+  seeded.candidate,
+  { content: urlSlotContent },
+  { now: NOW }
+);
+check(urlSlotCandidate.ok === true, "invalid slot URL is normalized rather than persisted");
+eq(urlSlotCandidate.candidate.content.slots.logo, "", "arbitrary logo URL is removed by template normalization");
 
 /* 3. preview without any storage mutation. */
 const draft = sampleDraft();
