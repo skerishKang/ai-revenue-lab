@@ -305,6 +305,9 @@
 
   function normalizeLineItem(raw, index, allowDetailLink) {
     var src = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+    if (!allowDetailLink && src.detailSectionId !== undefined && src.detailSectionId !== null && src.detailSectionId !== "") {
+      return null;
+    }
     var detailSectionId = allowDetailLink ? optionalText(src.detailSectionId, 80) : null;
     if (detailSectionId !== null && !DETAIL_ID_PATTERN.test(detailSectionId)) return null;
 
