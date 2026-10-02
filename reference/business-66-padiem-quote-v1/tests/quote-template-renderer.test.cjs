@@ -408,6 +408,85 @@ eq(
   "existing built-in template renders no written-total line"
 );
 
+const linkedDraft = Core.normalizeDraft({
+  schemaVersion: 1,
+  meta: {
+    quoteNo: "Q-LINKED-DETAIL-1",
+    issueDate: "2026-10-02",
+    validDays: 30,
+    source: "saved-quote-skill",
+    projectName: "복합 시스템 구축"
+  },
+  sender: defaultDraft.sender,
+  recipient: defaultDraft.recipient,
+  items: [{
+    id: "summary-1",
+    name: "복합 시스템",
+    spec: "통합 구축",
+    unit: "식",
+    qty: 1,
+    unitPrice: 99999999,
+    detailSectionId: "detail-system"
+  }],
+  detailSections: [{
+    id: "detail-system",
+    title: "복합 시스템 <상세>",
+    groups: [{
+      id: "equipment",
+      title: "1. 장비 <구성>",
+      items: [
+        { id: "d1", name: "제어장치", spec: "MAIN", unit: "EA", qty: 1, unitPrice: 10000000 },
+        { id: "d2", name: "통신모듈", spec: "NET", unit: "EA", qty: 2, unitPrice: 2000000 }
+      ]
+    }, {
+      id: "labor",
+      title: "2. 설치",
+      items: [
+        { id: "d3", name: "설치 및 잡자재", unit: "식", qty: 1, unitPrice: 2330000, note: "현장 포함" }
+      ]
+    }]
+  }],
+  tax: { mode: "EXCLUSIVE", rate: 0.1 },
+  calculationPolicy: { grandRounding: { mode: "FLOOR", unit: 10000 } },
+  memo: ""
+});
+const linkedContent = clone(detailContent);
+linkedContent.sections = ["title", "meta", "parties", "project", "items", "totals", "writtenTotal", "detailPages", "memo", "mark"];
+linkedContent.writtenTotal = { prefix: "일금 ", suffix: "원정[부가세포함]" };
+linkedContent.detailPages = {
+  title: "상 세 내 역 서",
+  columns: clone(detailContent.items.columns),
+  groupTotalLabel: "소 계",
+  sectionTotalLabel: "총 계"
+};
+const linkedModel = Renderer.buildRenderModel(
+  linkedDraft,
+  approvedProfile("detail-linked-pages", linkedContent),
+  { taxReviewRequired: false }
+);
+eq(linkedModel.items[0].values.unitPrice, Core.formatMoney(16330000),
+  "summary effective unit price comes only from linked detail section");
+eq(linkedModel.items[0].values.amount, Core.formatMoney(16330000),
+  "summary amount comes only from QuoteCore-resolved detail section");
+eq(linkedModel.totals.grandText, Core.formatMoney(17960000),
+  "quote-level rounding applies after detail resolution");
+eq(linkedModel.detailPages.length, 1, "one linked detail section produces one detail page model");
+eq(linkedModel.detailPages[0].groups.length, 2, "detail groups are preserved for rendering");
+eq(linkedModel.detailPages[0].groups[0].totalText, Core.formatMoney(14000000),
+  "detail group total is QuoteCore-derived");
+eq(linkedModel.detailPages[0].totalText, Core.formatMoney(16330000),
+  "detail section total is QuoteCore-derived");
+eq(linkedModel.detailPages[0].groups[1].rows[0].values.amount, Core.formatMoney(2330000),
+  "detail line amount is QuoteCore-derived");
+const linkedDetailHtml = Renderer.renderDetailPagesHtml(linkedModel);
+check(linkedDetailHtml.includes('class="quote-paper quote-detail-page"'),
+  "detail page renderer emits bounded page container");
+check(linkedDetailHtml.includes("상 세 내 역 서"), "detail page title is rendered");
+check(linkedDetailHtml.includes("복합 시스템 &lt;상세&gt;"), "detail section title is HTML-escaped");
+check(linkedDetailHtml.includes("1. 장비 &lt;구성&gt;"), "detail group title is HTML-escaped");
+check(!linkedDetailHtml.includes("<상세>") && !linkedDetailHtml.includes("<구성>"),
+  "detail page labels never become raw markup");
+
 /* ── TEMPLATE_STYLE_APPLIED — 승인된 style/page 프로필이 실제 출력 투영을 바꾼다 ── */
 const styledContent = clone(Template.builtInTemplate().content);
 styledContent.style.accent = "#8a1f1f";
@@ -525,7 +604,7 @@ eq(Renderer.buildRenderModel(defaultDraft, profileWithout("memo"), { taxReviewRe
 const pageHtml = readSource("index.html");
 const stylesCss = readSource("styles.css");
 const ADAPTER_IDS = [
-  "pvTitle", "pvQuoteNo", "pvDate", "pvValidity", "pvValidUntil", "pvTaxMode", "pvProjectName", "pvWrittenTotal",
+  "pvTitle", "pvQuoteNo", "pvDate", "pvValidity", "pvValidUntil", "pvTaxMode", "pvProjectName", "pvWrittenTotal", "pvDetailPages",
   "pvSenderHeading", "pvSenderCompany", "pvSenderRep", "pvSenderBizNo", "pvSenderAddress", "pvSenderContact",
   "pvRecipientHeading", "pvRecipientCompany", "pvRecipientPerson", "pvRecipientAddress", "pvRecipientEmail",
   "pvItemsHead", "pvItems", "quotePaper",
@@ -549,7 +628,9 @@ drafts.forEach(([label, base]) => {
       const doc = stubDoc(ADAPTER_IDS);
       check(Renderer.applyRenderModel(doc, model) === true, "adapter reports success");
       const expected = legacyProjection(draft, provisional);
-      ADAPTER_IDS.filter((id) => id !== "pvItems" && id !== "pvItemsHead" && id !== "quotePaper").forEach((id) => {
+      ADAPTER_IDS.filter((id) =>
+        id !== "pvItems" && id !== "pvItemsHead" && id !== "pvDetailPages" && id !== "quotePaper"
+      ).forEach((id) => {
         eq(doc.getElementById(id).textContent, expected[id], `adapter ${id} for ${label}/${mode}/${provisional}`);
       });
       eq(
@@ -559,6 +640,8 @@ drafts.forEach(([label, base]) => {
       );
       eq(norm(doc.getElementById("pvItemsHead").innerHTML), norm(LEGACY_HEAD_HTML),
         `adapter table head for ${label}/${mode}/${provisional}`);
+      eq(doc.getElementById("pvDetailPages").innerHTML, "",
+        `default one-page quote renders no detail pages for ${label}/${mode}/${provisional}`);
     });
   });
 });
@@ -574,6 +657,15 @@ eq(paper.style.getPropertyValue("--quote-header-align"), "flex-end", "TEMPLATE_A
 eq(styleDoc.head.children.length, 1, "adapter injects one page-rule style element");
 eq(styleDoc.head.children[0].id, Renderer.PAGE_RULE_STYLE_ID, "page rule element id is stable");
 eq(styleDoc.head.children[0].textContent, "@page { size: A5 landscape; margin: 8mm; }", "TEMPLATE_PAGE_RULE_APPLIED: adapter injects the page rule");
+
+const detailDoc = stubDoc(ADAPTER_IDS);
+Renderer.applyRenderModel(detailDoc, linkedModel);
+check(detailDoc.getElementById("pvDetailPages").innerHTML.includes("quote-detail-page"),
+  "DOM adapter writes detail page HTML only for detail-enabled model");
+check(detailDoc.getElementById("pvDetailPages").innerHTML.includes(Core.formatMoney(16330000)),
+  "DOM detail page carries QuoteCore-derived section total");
+check(stylesCss.includes("page-break-before: always") && stylesCss.includes("break-before: page"),
+  "PRINT_PAGE_BREAK=PASS: detail pages force a new printed page");
 
 const builtinDoc = stubDoc(ADAPTER_IDS);
 Renderer.applyRenderModel(builtinDoc, authoritative);

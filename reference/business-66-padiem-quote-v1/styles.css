@@ -158,6 +158,37 @@ textarea { min-height: 82px; resize: vertical; }
   font-weight: 700;
 }
 .quote-written-total:empty { display: none; }
+.quote-detail-pages:empty { display: none; }
+.quote-detail-page {
+  margin-top: 24px;
+  page-break-before: always;
+  break-before: page;
+}
+.quote-detail-title { margin-bottom: 14px; }
+.quote-detail-section-title {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 800;
+}
+.quote-detail-group { margin-bottom: 16px; }
+.quote-detail-group-title {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.quote-detail-total {
+  display: flex;
+  justify-content: flex-end;
+  gap: 18px;
+  margin-top: 6px;
+  font-size: 13px;
+}
+.quote-detail-section-total {
+  border-top: var(--quote-title-rule, 2px solid #111827);
+  padding-top: 8px;
+  font-weight: 800;
+}
+
 
 .quote-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .quote-table th { border-bottom: var(--quote-header-rule, 1px solid #111827); padding: 10px 7px; font-size: 11px; text-align: var(--quote-text-align, left); color: #475467; }

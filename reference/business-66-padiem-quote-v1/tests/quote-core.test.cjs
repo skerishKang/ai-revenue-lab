@@ -238,6 +238,103 @@ assert.deepEqual(
   Core.computeTotals([{ id: "detail-1", name: "ICT환경제어 시스템", qty: 1, unitPrice: 16330000 }], "EXCLUSIVE"),
   "spec/unit/note never change QuoteCore totals"
 );
+
+const simpleDraftTotals = Core.computeDraftTotals(detailed);
+assert.deepEqual(
+  [simpleDraftTotals.supply, simpleDraftTotals.vat, simpleDraftTotals.grand],
+  [16330000, 1633000, 17963000],
+  "computeDraftTotals keeps simple flat quote math unchanged"
+);
+assert.deepEqual(simpleDraftTotals.detailSections, [], "simple draft has no detail totals");
+
+const linkedDetailDraft = Core.normalizeDraft({
+  schemaVersion: 1,
+  meta: {
+    quoteNo: "Q-DETAIL-LINK-1",
+    issueDate: "2026-10-02",
+    validDays: 30,
+    source: "saved-quote-skill",
+    projectName: "스마트팜 환경제어설비"
+  },
+  sender: draft.sender,
+  recipient: draft.recipient,
+  items: [{
+    id: "summary-1",
+    name: "ICT환경제어 시스템",
+    spec: "주장치 및 스마트팜 전용S/W",
+    unit: "식",
+    qty: 1,
+    unitPrice: 99999999,
+    detailSectionId: "detail-system"
+  }],
+  detailSections: [{
+    id: "detail-system",
+    title: "ICT환경제어 시스템 상세내역",
+    groups: [{
+      id: "hardware",
+      title: "1. 시스템 장비",
+      items: [
+        { id: "d1", name: "제어장치", spec: "MAIN", unit: "EA", qty: 1, unitPrice: 10000000 },
+        { id: "d2", name: "통신모듈", spec: "NET", unit: "EA", qty: 2, unitPrice: 2000000 }
+      ]
+    }, {
+      id: "labor",
+      title: "2. 인건비 및 잡자재",
+      items: [
+        { id: "d3", name: "설치 및 잡자재", unit: "식", qty: 1, unitPrice: 2330000 }
+      ]
+    }]
+  }],
+  tax: { mode: "EXCLUSIVE", rate: 0.1 },
+  calculationPolicy: floor10000,
+  memo: ""
+});
+assert.ok(linkedDetailDraft, "linked detail draft normalizes");
+assert.equal(linkedDetailDraft.items[0].unitPrice, 0, "linked summary copied unit price is never calculation authority");
+assert.equal(linkedDetailDraft.items[0].detailSectionId, "detail-system", "summary-detail link is preserved");
+const linkedTotals = Core.computeDraftTotals(linkedDetailDraft);
+assert.equal(linkedTotals.detailSections[0].groups[0].total, 14000000, "detail group total derives from detail line amounts");
+assert.equal(linkedTotals.detailSections[0].groups[1].total, 2330000, "second detail group total derives from detail line amount");
+assert.equal(linkedTotals.detailSections[0].total, 16330000, "detail section total derives from group totals");
+assert.equal(linkedTotals.unitPrices[0], 16330000, "summary effective unit price derives from linked detail section");
+assert.equal(linkedTotals.amounts[0], 16330000, "summary amount derives from linked detail total");
+assert.equal(linkedTotals.rawGrand, 17963000, "linked quote raw grand remains QuoteCore-derived");
+assert.equal(linkedTotals.grand, 17960000, "linked quote applies reviewed grand policy after detail resolution");
+
+const brokenDetailRef = JSON.parse(JSON.stringify(linkedDetailDraft));
+brokenDetailRef.items[0].detailSectionId = "missing-detail";
+assert.equal(Core.normalizeDraft(brokenDetailRef), null, "missing detail reference fails closed");
+
+const duplicateDetailRef = JSON.parse(JSON.stringify(linkedDetailDraft));
+duplicateDetailRef.items.push({
+  id: "summary-2", name: "중복 링크", qty: 1, unitPrice: 0, detailSectionId: "detail-system"
+});
+assert.equal(Core.normalizeDraft(duplicateDetailRef), null, "one detail section cannot feed multiple summary items in V1");
+
+const nestedDetailLink = JSON.parse(JSON.stringify(linkedDetailDraft));
+nestedDetailLink.detailSections[0].groups[0].items[0].detailSectionId = "detail-system";
+assert.equal(Core.normalizeDraft(nestedDetailLink), null, "detail lines cannot recursively link detail sections");
+
+const trustedDetailAmount = JSON.parse(JSON.stringify(linkedDetailDraft));
+trustedDetailAmount.detailSections[0].groups[0].items[0].amount = 1;
+assert.equal(Core.normalizeDraft(trustedDetailAmount), null,
+  "trusted detail line amount input is rejected");
+
+const trustedGroupTotal = JSON.parse(JSON.stringify(linkedDetailDraft));
+trustedGroupTotal.detailSections[0].groups[0].total = 1;
+assert.equal(Core.normalizeDraft(trustedGroupTotal), null,
+  "trusted detail group total input is rejected");
+
+const trustedSectionTotal = JSON.parse(JSON.stringify(linkedDetailDraft));
+trustedSectionTotal.detailSections[0].total = 1;
+assert.equal(Core.normalizeDraft(trustedSectionTotal), null,
+  "trusted detail section total input is rejected");
+
+const overlongDetailId = JSON.parse(JSON.stringify(linkedDetailDraft));
+overlongDetailId.detailSections[0].id = "x".repeat(81);
+overlongDetailId.items[0].detailSectionId = "x".repeat(81);
+assert.equal(Core.normalizeDraft(overlongDetailId), null,
+  "overlong detail graph ids fail closed");
 const policyDraft = Core.normalizeDraft(Object.assign(JSON.parse(JSON.stringify(draft)), {
   calculationPolicy: floor10000
 }));
@@ -279,4 +376,11 @@ console.log("QUOTEDRAFT_SCHEMA_CONTRACT=PASS");
 console.log("NEW_QUOTE_DOMAIN_CONTRACT=PASS");
 console.log("PRINT_READINESS_CONTRACT=PASS");
 console.log("DRAFT_RESTORE_CONTRACT=PASS");
+console.log("SIMPLE_QUOTE_TOTALS_UNCHANGED=PASS");
+console.log("DETAIL_LINE_AMOUNT_QUOTECORE=PASS");
+console.log("DETAIL_GROUP_TOTAL_QUOTECORE=PASS");
+console.log("DETAIL_SECTION_TOTAL_QUOTECORE=PASS");
+console.log("SUMMARY_PRICE_DERIVED_FROM_DETAIL=PASS");
+console.log("TRUSTED_LINKED_SUMMARY_PRICE=0");
+console.log("TRUSTED_DETAIL_TOTAL_INPUT=0");
 console.log("B66_QUOTE_CORE_UNIT=PASS");

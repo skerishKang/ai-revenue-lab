@@ -129,11 +129,7 @@
     var sections = content.sections.slice();
     var has = function (name) { return sections.indexOf(name) !== -1; };
 
-    var totals = Core.computeTotals(
-      normalizedDraft.items,
-      normalizedDraft.tax.mode,
-      normalizedDraft.calculationPolicy
-    );
+    var totals = Core.computeDraftTotals(normalizedDraft);
     if (!totals) return null;
     var validUntil = Core.computeValidUntil(normalizedDraft.meta.issueDate, normalizedDraft.meta.validDays);
     var mode = normalizedDraft.tax.mode;
@@ -154,12 +150,56 @@
           spec: String(item.spec == null ? "" : item.spec),
           unit: String(item.unit == null ? "" : item.unit),
           qty: Core.formatInputNumber(item.qty),
-          unitPrice: Core.formatMoney(item.unitPrice),
+          unitPrice: Core.formatMoney(totals.unitPrices[index]),
           amount: Core.formatMoney(totals.amounts[index]),
           note: String(item.note == null ? "" : item.note)
         }
       };
     }) : [];
+
+    var detailPages = [];
+    if (has("detailPages") && content.detailPages && normalizedDraft.detailSections) {
+      var detailColumns = content.detailPages.columns.map(function (column) {
+        return { key: column.key, label: column.label, width: column.width, align: column.align };
+      });
+      detailPages = normalizedDraft.detailSections.map(function (section, sectionIndex) {
+        var sectionTotals = totals.detailSections[sectionIndex];
+        return {
+          id: section.id,
+          titleText: content.detailPages.title,
+          sectionTitle: section.title,
+          columns: detailColumns,
+          groups: section.groups.map(function (group, groupIndex) {
+            var groupTotals = sectionTotals.groups[groupIndex];
+            return {
+              id: group.id,
+              title: group.title || "",
+              rows: group.items.map(function (item, itemIndex) {
+                var emptyName = !String(item.name == null ? "" : item.name);
+                return {
+                  index: itemIndex,
+                  emptyName: emptyName,
+                  values: {
+                    no: String(itemIndex + 1),
+                    name: emptyName ? emptyNameText : item.name,
+                    spec: String(item.spec == null ? "" : item.spec),
+                    unit: String(item.unit == null ? "" : item.unit),
+                    qty: Core.formatInputNumber(item.qty),
+                    unitPrice: Core.formatMoney(item.unitPrice),
+                    amount: Core.formatMoney(groupTotals.amounts[itemIndex]),
+                    note: String(item.note == null ? "" : item.note)
+                  }
+                };
+              }),
+              totalLabel: content.detailPages.groupTotalLabel,
+              totalText: Core.formatMoney(groupTotals.total)
+            };
+          }),
+          totalLabel: content.detailPages.sectionTotalLabel,
+          totalText: Core.formatMoney(sectionTotals.total)
+        };
+      });
+    }
 
     var senderContact = [
       String(normalizedDraft.sender.phone == null ? "" : normalizedDraft.sender.phone).trim(),
@@ -233,6 +273,7 @@
         }
       },
       items: items,
+      detailPages: detailPages,
       totals: {
         subtotalLabel: has("totals")
           ? (provisional ? content.totals.provisional.subtotalLabel : content.totals.supplyLabel)
@@ -287,6 +328,53 @@
     return true;
   }
 
+  function renderTableHead(columns) {
+    return columns.map(function (column) {
+      var width = column.width ? ' style="width:' + escapeHtml(column.width) + '"' : "";
+      return "<th" + width + ">" + escapeHtml(column.label) + "</th>";
+    }).join("");
+  }
+
+  function renderRows(columns, rows) {
+    return rows.map(function (item) {
+      var cells = columns.map(function (column) {
+        if (column.key === "name") {
+          return '<td class="' + (item.emptyName ? "empty" : "") + '">' + escapeHtml(item.values.name) + "</td>";
+        }
+        return "<td>" + escapeHtml(item.values[column.key]) + "</td>";
+      }).join("");
+      return "<tr>" + cells + "</tr>";
+    }).join("");
+  }
+
+  function renderDetailPagesHtml(model) {
+    if (!model || !Array.isArray(model.detailPages) || model.detailPages.length === 0) return "";
+    return model.detailPages.map(function (page) {
+      var groups = page.groups.map(function (group) {
+        var heading = group.title
+          ? '<div class="quote-detail-group-title">' + escapeHtml(group.title) + "</div>"
+          : "";
+        return '<section class="quote-detail-group">' +
+          heading +
+          '<table class="quote-table quote-detail-table">' +
+          '<thead><tr>' + renderTableHead(page.columns) + "</tr></thead>" +
+          '<tbody>' + renderRows(page.columns, group.rows) + "</tbody>" +
+          "</table>" +
+          '<div class="quote-detail-total quote-detail-group-total"><span>' +
+          escapeHtml(group.totalLabel) + '</span><strong>' + escapeHtml(group.totalText) +
+          "</strong></div></section>";
+      }).join("");
+      return '<article class="quote-paper quote-detail-page" data-detail-section="' +
+        escapeHtml(page.id) + '">' +
+        '<div class="quote-title quote-detail-title">' + escapeHtml(page.titleText) + "</div>" +
+        '<div class="quote-detail-section-title">' + escapeHtml(page.sectionTitle) + "</div>" +
+        groups +
+        '<div class="quote-detail-total quote-detail-section-total"><span>' +
+        escapeHtml(page.totalLabel) + '</span><strong>' + escapeHtml(page.totalText) +
+        "</strong></div></article>";
+    }).join("");
+  }
+
   function applyRenderModel(doc, model) {
     if (!doc || typeof doc.getElementById !== "function" || !isPlainObject(model)) return false;
 
@@ -325,20 +413,9 @@
     setText("pvRecipientAddress", recipient.address);
     setText("pvRecipientEmail", recipient.email);
 
-    setHtml("pvItemsHead", model.columns.map(function (column) {
-      var width = column.width ? ' style="width:' + escapeHtml(column.width) + '"' : "";
-      return "<th" + width + ">" + escapeHtml(column.label) + "</th>";
-    }).join(""));
-
-    setHtml("pvItems", model.items.map(function (item) {
-      var cells = model.columns.map(function (column) {
-        if (column.key === "name") {
-          return '<td class="' + (item.emptyName ? "empty" : "") + '">' + escapeHtml(item.values.name) + "</td>";
-        }
-        return "<td>" + escapeHtml(item.values[column.key]) + "</td>";
-      }).join("");
-      return "<tr>" + cells + "</tr>";
-    }).join(""));
+    setHtml("pvItemsHead", renderTableHead(model.columns));
+    setHtml("pvItems", renderRows(model.columns, model.items));
+    setHtml("pvDetailPages", renderDetailPagesHtml(model));
 
     setText("subtotalLabelText", totals.subtotalLabel);
     setText("subtotalText", totals.subtotalText);
@@ -387,6 +464,7 @@
     escapeHtml: escapeHtml,
     buildStyleVariables: buildStyleVariables,
     buildPageRule: buildPageRule,
+    renderDetailPagesHtml: renderDetailPagesHtml,
     buildRenderModel: buildRenderModel,
     applyRenderModel: applyRenderModel
   };

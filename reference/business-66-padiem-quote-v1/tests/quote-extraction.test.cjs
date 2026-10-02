@@ -182,6 +182,36 @@ assert.equal(candidate.ok, true, JSON.stringify(candidate));
 assert.equal(candidate.value.draft.meta.source, "extraction:image");
 assert.equal(candidate.value.draft.meta.quoteNo, "NEW-2");
 assert.equal(candidate.value.draft.meta.projectName, "스마트팜 환경제어설비");
+
+const staleDetailDraft = Core.normalizeDraft({
+  schemaVersion: 1,
+  meta: current.meta,
+  sender: current.sender,
+  recipient: current.recipient,
+  items: [{
+    id: "summary-old",
+    name: "기존 상세연결",
+    qty: 1,
+    unitPrice: 999,
+    detailSectionId: "old-detail"
+  }],
+  detailSections: [{
+    id: "old-detail",
+    title: "기존 상세",
+    groups: [{
+      id: "old-group",
+      items: [{ id: "old-line", name: "기존 품목", qty: 1, unitPrice: 999 }]
+    }]
+  }],
+  tax: current.tax,
+  memo: current.memo
+});
+const staleReplaced = Extraction.buildDraftCandidate(staleDetailDraft, good);
+assert.equal(staleReplaced.ok, true);
+assert.equal("detailSections" in staleReplaced.value.draft, false,
+  "flat extraction clears stale detail sections when replacing items");
+assert.equal(staleReplaced.value.draft.items.some((item) => item.detailSectionId), false,
+  "flat extraction never carries stale summary-detail links");
 assert.equal(candidate.value.draft.meta.issueDate, "2026-09-01", "missing date preserves editable draft value");
 assert.equal(candidate.value.draft.sender.company, "새 공급사");
 assert.equal(candidate.value.draft.sender.rep, "기존 대표", "missing sender field is not fabricated");
