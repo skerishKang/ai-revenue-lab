@@ -1,4 +1,5 @@
 const assert = require("node:assert");
+const Core = require("../quote-core.js");
 const Extraction = require("../quote-extraction.js");
 
 function ok(raw) {
