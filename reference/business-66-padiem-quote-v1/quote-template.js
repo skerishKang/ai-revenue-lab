@@ -39,6 +39,8 @@
   var ALLOWED_PAGE_SIZES = ["A4", "A5", "Legal", "Letter"];
   var ALLOWED_ORIENTATIONS = ["portrait", "landscape"];
   var ALLOWED_TAX_MODES = ["EXCLUSIVE", "INCLUSIVE", "EXEMPT"];
+  var ALLOWED_LAYOUT_VARIANTS = ["formal-grid-v1"];
+  var MAX_SUMMARY_MIN_ROWS = 30;
 
   var ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$/;
   var HEX_COLOR_PATTERN = /^#[0-9a-fA-F]{3,8}$/;
@@ -519,6 +521,24 @@
       fallbackText: boundString(raw.fallbackText, defaults.fallbackText)
     };
 
+    if (raw.layoutVariant !== undefined && raw.layoutVariant !== null && raw.layoutVariant !== "") {
+      if (typeof raw.layoutVariant !== "string" || ALLOWED_LAYOUT_VARIANTS.indexOf(raw.layoutVariant) === -1) {
+        return null;
+      }
+      content.layoutVariant = raw.layoutVariant;
+    }
+
+    if (raw.items && raw.items.minRows !== undefined && raw.items.minRows !== null) {
+      var minRows = Number(raw.items.minRows);
+      if (!Number.isInteger(minRows) || minRows < 0 || minRows > MAX_SUMMARY_MIN_ROWS) return null;
+      content.items.minRows = minRows;
+    }
+
+    if (raw.memo && raw.memo.heading !== undefined && raw.memo.heading !== null) {
+      if (typeof raw.memo.heading !== "string") return null;
+      content.memo.heading = boundString(raw.memo.heading, "");
+    }
+
     if (sections.indexOf("project") !== -1) {
       var project = isPlainObject(raw.project) ? raw.project : {};
       content.project = {
@@ -545,6 +565,10 @@
         subtotalLabel: boundString(detailPages.subtotalLabel, "소 계"),
         columns: detailColumns
       };
+      if (detailPages.mergeRepeatedName !== undefined && detailPages.mergeRepeatedName !== null) {
+        if (typeof detailPages.mergeRepeatedName !== "boolean") return null;
+        content.detailPages.mergeRepeatedName = detailPages.mergeRepeatedName;
+      }
     }
 
     var serialized;
@@ -732,6 +756,8 @@
     REQUIRED_COLUMN_KEYS: REQUIRED_COLUMN_KEYS,
     ALLOWED_ALIGNMENTS: ALLOWED_ALIGNMENTS,
     ALLOWED_TAX_MODES: ALLOWED_TAX_MODES,
+    ALLOWED_LAYOUT_VARIANTS: ALLOWED_LAYOUT_VARIANTS.slice(),
+    MAX_SUMMARY_MIN_ROWS: MAX_SUMMARY_MIN_ROWS,
     ALLOWED_JUSTIFY: ALLOWED_JUSTIFY,
     ALLOWED_PAGE_SIZES: ALLOWED_PAGE_SIZES,
     ALLOWED_ORIENTATIONS: ALLOWED_ORIENTATIONS,
