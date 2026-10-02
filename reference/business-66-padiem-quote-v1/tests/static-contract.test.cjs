@@ -84,6 +84,8 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'id="pvSenderHeading"',
   'id="pvRecipientHeading"',
   'id="pvMark"',
+  'id="pvLogo"',
+  'id="pvStamp"',
   'id="easyModeButton"',
   'id="directModeButton"',
   'id="easyView"',
