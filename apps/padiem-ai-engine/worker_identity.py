@@ -100,6 +100,13 @@ from app.calendar_credential_presence import (
     CALENDAR_CREDENTIAL_PRESENCE_PATH,
     calendar_presence_response,
 )
+from app.calendar_read_activation import (
+    CALENDAR_READ_ACTIVATION_PATH,
+    CalendarReadActivationService,
+    CloudflareCalendarBindingClient,
+    CloudflareConnectorWorkspaceClient,
+    parse_calendar_activation_request,
+)
 from app.multimodal_attachment_service import (
     MULTIMODAL_EXECUTE_PATH,
     MULTIMODAL_STREAM_PATH,
@@ -700,6 +707,26 @@ async def _calendar_grants_for_env(env: Any) -> dict[str, CalendarGrant]:
         ) from None
 
 
+def _calendar_read_activation_service_for_env(
+    env: Any,
+) -> CalendarReadActivationService | None:
+    """Compose the private Calendar READ activation authority from served bindings."""
+
+    identity = legacy_worker._binding_value(env, CONTROL_PLANE_IDENTITY_BINDING_NAME)
+    oauth = legacy_worker._binding_value(env, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    grants = legacy_worker._binding_value(env, ENGINE_CONNECTOR_GRANTS_BINDING)
+    if identity is None or oauth is None or grants is None:
+        return None
+    try:
+        return CalendarReadActivationService(
+            workspace_client=CloudflareConnectorWorkspaceClient(identity),
+            binding_client=CloudflareCalendarBindingClient(oauth),
+            grant_store=CloudflareD1ConnectorGrantStore(grants),
+        )
+    except (TypeError, ValueError):
+        return None
+
+
 def _scope_authority_for_env(env: Any) -> AuthSessionScopeAuthority | None:
     """Resolve the CP auth-session scope authority via private Service Binding.
 
@@ -1000,6 +1027,8 @@ class Default(legacy_worker.Default):
             return self._fetch_authority_diagnostic(request)
         if path == CALENDAR_CREDENTIAL_PRESENCE_PATH:
             return await self._fetch_calendar_credential_presence(request)
+        if path == CALENDAR_READ_ACTIVATION_PATH:
+            return await self._fetch_calendar_read_activation(request)
         if path == DOCUMENT_CONTEXT_PATH:
             return await self._fetch_document_context(request, path)
         if path == MULTIMODAL_EXECUTE_PATH:
@@ -1053,6 +1082,66 @@ class Default(legacy_worker.Default):
         return legacy_worker._json_response(
             ServiceResponse(status_code=status, body=body)
         )
+
+    async def _fetch_calendar_read_activation(self, request: Any) -> Any:
+        """Activate only the canonical Calendar READ grant for a trusted session."""
+
+        method = str(getattr(request, "method", "")).upper()
+        if method != "POST":
+            return legacy_worker._error_response(
+                "method_not_allowed",
+                "Calendar READ activation requires POST.",
+                405,
+            )
+        headers = getattr(request, "headers", None)
+        try:
+            body = str(await request.text()).encode("utf-8")
+        except Exception:
+            return legacy_worker._error_response(
+                "invalid_request",
+                "Calendar activation request could not be read.",
+                400,
+            )
+        if len(body) > 4096:
+            return legacy_worker._error_response(
+                "invalid_request",
+                "Calendar activation request is too large.",
+                400,
+            )
+
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env,
+            headers,
+            body,
+        )
+        if auth_error is not None:
+            return auth_error
+
+        try:
+            session_id = parse_calendar_activation_request(body)
+        except ServiceContractError as exc:
+            return legacy_worker._error_response(
+                exc.code,
+                exc.safe_message,
+                exc.status_code,
+            )
+
+        service = _calendar_read_activation_service_for_env(self.env)
+        if service is None:
+            return legacy_worker._error_response(
+                "calendar_activation_unavailable",
+                "Calendar READ activation authority is unavailable.",
+                503,
+            )
+        try:
+            result = await service.activate(session_id=session_id)
+        except ServiceContractError as exc:
+            return legacy_worker._error_response(
+                exc.code,
+                exc.safe_message,
+                exc.status_code,
+            )
+        return legacy_worker._json_response(result)
 
     async def _fetch_multimodal(self, request: Any, path: str) -> Any:
         """E5A trusted multimodal reference route: source-wired, fail-closed.
