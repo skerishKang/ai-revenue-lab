@@ -368,7 +368,7 @@
       tax: { mode: TAX_MODES.EXCLUSIVE, rate: VAT_RATE },
       memo: defaults.memo
     };
-    if (current.calculationPolicy) next.calculationPolicy = cloneJson(current.calculationPolicy);
+    if (current.calculationPolicy) next.calculationPolicy = current.calculationPolicy;
     return normalizeDraft(next);
   }
 
