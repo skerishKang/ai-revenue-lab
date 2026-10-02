@@ -487,6 +487,7 @@ formalContent.layoutVariant = "formal-grid-v1";
 formalContent.items.minRows = 9;
 formalContent.memo.heading = "<특기사항>";
 formalContent.detailPages.mergeRepeatedName = true;
+formalContent.detailPages.finalLabel = "총 계";
 const formalModel = Renderer.buildRenderModel(
   formalDraft,
   approvedProfile("formal-grid", formalContent),
@@ -500,6 +501,13 @@ check(formalModel.memoText.startsWith("<특기사항>\n"), "memo heading is pres
 eq(formalModel.detailPages[0].rows[0].nameRowSpan, 2, "first repeated detail name owns the rowspan");
 eq(formalModel.detailPages[0].rows[1].suppressName, true, "later repeated detail name cell is suppressed");
 eq(formalModel.detailPages[0].rows[2].suppressName, false, "different detail name starts a new cell");
+eq(formalModel.detailPages[0].subtotalLabel, "소 계", "detail subtotal row remains explicit");
+eq(formalModel.detailPages[0].finalLabel, "총 계", "formal detail final row is opt-in");
+eq(
+  formalModel.detailPages[0].finalText,
+  formalModel.detailPages[0].subtotalText,
+  "detail final row reuses the same QuoteCore-authorized group subtotal"
+);
 eq(
   formalModel.totals.grandText,
   Core.formatMoney(Core.computeDraftTotals(formalDraft).grand),
@@ -716,6 +724,12 @@ check(formalDetailHtml.includes('data-layout-variant="formal-grid-v1"'),
   "detail pages inherit the formal layout variant");
 check(formalDetailHtml.includes('rowspan="2"'),
   "adjacent repeated detail names render as a merged cell");
+check(formalDetailHtml.includes("quote-detail-final"),
+  "formal detail adapter emits the optional final row");
+check(formalDetailHtml.includes("총 계"),
+  "formal detail final label is rendered");
+check((formalDetailHtml.match(/₩510,000/g) || []).length >= 2,
+  "subtotal and final row display the same QuoteCore-derived amount");
 check(formalDetailHtml.includes("text-align:center"),
   "formal column alignment is applied from the approved template");
 check(!/Math\.|computeTotals|computeDraftTotals/.test(formalDetailHtml),
@@ -764,6 +778,9 @@ console.log("SUMMARY_MIN_ROWS_DISPLAY_ONLY=PASS");
 console.log("DETAIL_REPEATED_NAME_MERGED=PASS");
 console.log("DETAIL_HEADER_GRAY=PASS");
 console.log("DETAIL_COMPACT_ROWS=PASS");
+console.log("DETAIL_SUBTOTAL_ROW=PASS");
+console.log("DETAIL_FINAL_ROW=PASS");
+console.log("DETAIL_FINAL_VALUE_EQUALS_QUOTECORE_SUBTOTAL=YES");
 console.log("QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES");
 console.log("QUOTECORE_TOTALS_UNCHANGED_ACROSS_TEMPLATES=YES");
 console.log("CURRENT_B66_TEMPLATE_MIGRATED_AS_BUILTIN=YES");
