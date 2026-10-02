@@ -4,6 +4,8 @@ import json
 from typing import Any
 from urllib.parse import urlsplit
 
+from . import httpx_compat as httpx
+
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
@@ -14,6 +16,8 @@ from .control_plane_identity_worker import PrivateGoogleConnectTicket
 
 
 MAX_TICKET_REQUEST_BODY_BYTES = 1_024
+MAX_CONNECT_START_RESPONSE_BYTES = 64 * 1024
+GOOGLE_OAUTH_CONNECT_URL = "https://oauth.padiem.net/v1/google/connect"
 _REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive", "google-calendar"})
 _NO_STORE_HEADERS = {
     "Cache-Control": "no-store, max-age=0",
@@ -127,7 +131,86 @@ async def google_connector_ticket(request: Request) -> JSONResponse:
     )
 
 
+async def _bounded_upstream_json(response: Any) -> dict[str, Any]:
+    raw = bytearray()
+    async for chunk in response.aiter_bytes():
+        if len(raw) + len(chunk) > MAX_CONNECT_START_RESPONSE_BYTES:
+            raise ValueError("Google OAuth start response exceeds the trusted bound")
+        raw.extend(chunk)
+    if response.status_code != 200:
+        raise ValueError("Google OAuth start was rejected")
+    try:
+        document = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError("Google OAuth start response is invalid") from exc
+    if not isinstance(document, dict) or set(document) != {"ok", "authorization"} or document.get("ok") is not True:
+        raise ValueError("Google OAuth start response is not closed")
+    authorization = document.get("authorization")
+    if not isinstance(authorization, dict):
+        raise ValueError("Google OAuth start authorization is invalid")
+    required = {"authorization_url", "connector_id", "expires_at"}
+    if not required.issubset(authorization):
+        raise ValueError("Google OAuth start authorization is incomplete")
+    if any(not isinstance(authorization.get(key), str) or not authorization.get(key) for key in required):
+        raise ValueError("Google OAuth start authorization is invalid")
+    return {
+        "authorization_url": authorization["authorization_url"],
+        "connector_id": authorization["connector_id"],
+        "expires_at": authorization["expires_at"],
+    }
+
+
+async def google_connector_start(request: Request) -> JSONResponse:
+    """Issue a reviewed connect ticket server-side and begin Google OAuth.
+
+    The browser sends only ``connector_id`` to this same-origin route. The short-
+    lived connect ticket never crosses back into browser JavaScript; it is posted
+    server-to-server to the dedicated Google OAuth edge.
+    """
+
+    ticket_response = await google_connector_ticket(request)
+    if ticket_response.status_code != 200:
+        return ticket_response
+    try:
+        ticket_document = json.loads(bytes(ticket_response.body).decode("utf-8"))
+        ticket = ticket_document["ticket"]
+        connector_id = ticket["connector_id"]
+        connect_ticket = ticket["connect_ticket"]
+        if connector_id not in _REVIEWED_CONNECTORS or not isinstance(connect_ticket, str) or not connect_ticket:
+            raise ValueError("invalid connector ticket receipt")
+        settings: Settings = request.app.state.settings
+        expected_origin = _expected_origin(settings)
+        if expected_origin is None:
+            raise ValueError("missing expected origin")
+        oauth_client = getattr(request.app.state, "google_oauth", None)
+        transport = getattr(oauth_client, "transport", None)
+        timeout = httpx.Timeout(15.0, connect=8.0)
+        async with httpx.AsyncClient(transport=transport, timeout=timeout, follow_redirects=False) as client:
+            async with client.stream(
+                "POST",
+                GOOGLE_OAUTH_CONNECT_URL,
+                headers={
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Origin": expected_origin,
+                },
+                json={"connect_ticket": connect_ticket},
+            ) as response:
+                authorization = await _bounded_upstream_json(response)
+        if authorization["connector_id"] != connector_id:
+            raise ValueError("Google OAuth connector mismatch")
+    except (ValueError, KeyError, TypeError, httpx.HTTPError):
+        return _error(502, "connector_oauth_start_unavailable", "Google 연결을 시작할 수 없습니다.")
+
+    return JSONResponse(
+        {"authorization": authorization},
+        status_code=200,
+        headers=_NO_STORE_HEADERS,
+    )
+
+
 GOOGLE_CONNECTOR_TICKET_ROUTE = True
+GOOGLE_CONNECTOR_START_ROUTE = True
 AUTHENTICATED_SAME_ORIGIN_ONLY = True
 CLIENT_CAN_SELECT_CONNECTOR_ONLY = True
 CLIENT_ACCOUNT_WORKSPACE_AUTHORITY = False

@@ -2521,7 +2521,7 @@
   const connectorsError = document.getElementById("connectorsError");
   const connectorsRetry = document.getElementById("connectorsRetry");
   const GOOGLE_CALENDAR_CONNECTOR = "google-calendar";
-  const GOOGLE_OAUTH_CONNECT_ENDPOINT = "https://oauth.padiem.net/v1/google/connect";
+  const GOOGLE_CALENDAR_START_ENDPOINT = "/api/connectors/google/start";
   const CONNECTOR_STATUS_IDS = new Set([
     "connector:google:drive@1",
     "connector:google:gmail@1",
@@ -2605,29 +2605,15 @@
     setConnectorCopy(button, "connectors-connecting-calendar");
     if (connectorsError) connectorsError.hidden = true;
     try {
-      const ticketResponse = await fetch("/api/connectors/google/ticket", {
+      const startResponse = await fetch(GOOGLE_CALENDAR_START_ENDPOINT, {
         method: "POST",
         headers: { "Accept": "application/json", "Content-Type": "application/json" },
         body: JSON.stringify({ connector_id: GOOGLE_CALENDAR_CONNECTOR }),
         cache: "no-store",
       });
-      const ticketDocument = await ticketResponse.json().catch(() => null);
-      const ticket = ticketDocument && ticketDocument.ticket;
-      if (!ticketResponse.ok || !ticket || ticket.connector_id !== GOOGLE_CALENDAR_CONNECTOR ||
-          typeof ticket.connect_ticket !== "string" || !ticket.connect_ticket) {
-        throw new Error("calendar connect ticket unavailable");
-      }
-      const startResponse = await fetch(GOOGLE_OAUTH_CONNECT_ENDPOINT, {
-        method: "POST",
-        headers: { "Accept": "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify({ connect_ticket: ticket.connect_ticket }),
-        cache: "no-store",
-        credentials: "omit",
-        mode: "cors",
-      });
       const startDocument = await startResponse.json().catch(() => null);
       const authorization = startDocument && startDocument.authorization;
-      const redirect = startResponse.ok && startDocument && startDocument.ok === true && authorization &&
+      const redirect = startResponse.ok && authorization &&
         authorization.connector_id === GOOGLE_CALENDAR_CONNECTOR
         ? reviewedGoogleAuthorizationUrl(authorization.authorization_url)
         : null;
