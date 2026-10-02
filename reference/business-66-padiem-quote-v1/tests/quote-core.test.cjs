@@ -38,6 +38,35 @@ const items = [
 ];
 let t = Core.computeTotals(items, "EXCLUSIVE");
 assert.deepEqual([t.supply, t.vat, t.grand], [1300000, 130000, 1430000], "EXCLUSIVE math");
+assert.deepEqual(
+  Object.keys(t).sort(),
+  ["amounts", "grand", "mode", "subtotal", "supply", "vat"],
+  "STANDARD totals keep the legacy result shape"
+);
+
+const floor10000 = { grandRounding: { mode: "FLOOR", unit: 10000 } };
+const rounded = Core.computeTotals(
+  [{ id: "cgi-summary", name: "ICT환경제어 시스템", qty: 1, unitPrice: 16330000 }],
+  "EXCLUSIVE",
+  floor10000
+);
+assert.equal(rounded.supply, 16330000, "reviewed supply remains exact");
+assert.equal(rounded.vat, 1633000, "reviewed VAT remains exact");
+assert.equal(rounded.rawGrand, 17963000, "raw grand is explicit");
+assert.equal(rounded.grand, 17960000, "FLOOR/10000 matches reviewed 2026 family");
+assert.equal(rounded.roundingAdjustment, -3000, "rounding adjustment is explicit");
+assert.deepEqual(rounded.calculationPolicy, floor10000, "applied policy is explicit");
+assert.equal(Core.computeTotals(items, "EXCLUSIVE", { grandRounding: { mode: "ROUND", unit: 10000 } }), null,
+  "invalid rounding mode fails closed");
+assert.equal(Core.computeTotals(items, "EXCLUSIVE", { grandRounding: { mode: "FLOOR", unit: 3 } }), null,
+  "unbounded rounding unit fails closed");
+
+assert.equal(Core.formatKoreanMoneyWords(17960000), "일천칠백구십육만", "Excel NUMBERSTRING-style reviewed grand");
+assert.equal(Core.formatKoreanMoneyWords(16330000), "일천육백삼십삼만", "formal Korean money words");
+assert.equal(Core.formatKoreanMoneyWords(10000), "일만", "formal one-man retains 일");
+assert.equal(Core.formatKoreanMoneyWords(110000000), "일억일천만", "large groups are deterministic");
+assert.equal(Core.formatKoreanMoneyWords(0), "영", "zero is explicit");
+assert.equal(Core.formatKoreanMoneyWords(-1), null, "negative written money rejected");
 
 /* VAT_INCLUSIVE_CONTRACT — 표시 금액 합계가 곧 합계, 공급가액/부가세 분리 */
 t = Core.computeTotals(items, "INCLUSIVE");
@@ -196,6 +225,23 @@ assert.deepEqual(
   Core.computeTotals([{ id: "detail-1", name: "ICT환경제어 시스템", qty: 1, unitPrice: 16330000 }], "EXCLUSIVE"),
   "spec/unit/note never change QuoteCore totals"
 );
+const policyDraft = Core.normalizeDraft(Object.assign(JSON.parse(JSON.stringify(draft)), {
+  calculationPolicy: floor10000
+}));
+assert.deepEqual(policyDraft.calculationPolicy, floor10000, "QuoteDraft snapshots reviewed calculation policy");
+assert.equal(
+  Core.computeTotals(policyDraft.items, policyDraft.tax.mode, policyDraft.calculationPolicy).grand,
+  Math.floor(Core.computeTotals(policyDraft.items, policyDraft.tax.mode).grand / 10000) * 10000,
+  "restored draft reproduces the same reviewed rounding"
+);
+assert.equal(
+  Core.normalizeDraft(Object.assign(JSON.parse(JSON.stringify(draft)), {
+    calculationPolicy: { grandRounding: { mode: "FLOOR", unit: 7 } }
+  })),
+  null,
+  "invalid stored calculation policy fails closed"
+);
+
 assert.equal(Core.normalizeDraft("garbage"), null, "string input rejected");
 assert.equal(Core.normalizeDraft(null), null, "null rejected");
 assert.equal(Core.normalizeDraft({ schemaVersion: 99 }), null, "wrong schema rejected");
@@ -211,6 +257,10 @@ console.log("AMBIGUOUS_MIXED_UNIT_FAILS_SAFE=YES");
 console.log("VAT_EXCLUSIVE_CONTRACT=PASS");
 console.log("VAT_INCLUSIVE_CONTRACT=PASS");
 console.log("VAT_EXEMPT_CONTRACT=PASS");
+console.log("STANDARD_TOTALS_UNCHANGED=PASS");
+console.log("FLOOR_10000_POLICY=PASS");
+console.log("ROUNDING_ADJUSTMENT_EXPLICIT=PASS");
+console.log("KOREAN_WRITTEN_GRAND_FROM_QUOTECORE=PASS");
 console.log("VALID_UNTIL_CONTRACT=PASS");
 console.log("QUOTEDRAFT_SCHEMA_CONTRACT=PASS");
 console.log("NEW_QUOTE_DOMAIN_CONTRACT=PASS");
