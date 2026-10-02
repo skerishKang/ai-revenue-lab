@@ -176,21 +176,19 @@ eq(Store.updateTemplate(asDefault.store, "missing", { name: "x" }).code,
 eq(Store.updateTemplate(asDefault.store, "tpl-1", { content: { nope: true } }).code,
   "invalid_template_content", "invalid content update is refused");
 
-/* SLOT_BEHAVIOR — private asset id 만 template content 에 보존한다 */
+/* SLOT_BEHAVIOR — private assets require account-bound Saved Quote Skill authority */
 const logoAssetId = "b66asset_" + "a".repeat(32);
 const stampAssetId = "b66asset_" + "b".repeat(32);
 const slotContent = builtinContent();
 slotContent.slots = { logo: logoAssetId, stamp: "" };
-const storedLogo = Store.createTemplate(empty, { name: "slot", content: slotContent }, { id: "tpl-slot" });
-check(storedLogo.ok === true, "private logo asset ref is accepted on create");
-eq(storedLogo.template.content.slots.logo, logoAssetId, "private logo ref is preserved");
-const updatedSlot = Store.updateTemplate(asDefault.store, "tpl-1", { content: slotContent });
-check(updatedSlot.ok === true, "private logo asset ref is accepted on update");
+eq(Store.createTemplate(empty, { name: "slot", content: slotContent }, { id: "tpl-slot" }).code,
+  "private_asset_requires_account_skill", "browser-local template cannot own a private logo ref");
+eq(Store.updateTemplate(asDefault.store, "tpl-1", { content: slotContent }).code,
+  "private_asset_requires_account_skill", "browser-local update cannot activate a private logo ref");
 const stampContent = clone(builtinContent());
 stampContent.slots = { logo: "", stamp: stampAssetId };
-const storedStamp = Store.createTemplate(empty, { name: "stamp", content: stampContent }, { id: "tpl-stamp" });
-check(storedStamp.ok === true, "private stamp asset ref is accepted");
-eq(storedStamp.template.content.slots.stamp, stampAssetId, "private stamp ref is preserved");
+eq(Store.createTemplate(empty, { name: "stamp", content: stampContent }, { id: "tpl-stamp" }).code,
+  "private_asset_requires_account_skill", "browser-local template cannot own a private stamp ref");
 
 /* QUOTE_TEMPLATE_DUPLICATE — 복제본은 다시 승인받아야 하는 candidate 다 */
 const duplicated = Store.duplicateTemplate(asDefault.store, "tpl-1", { id: "tpl-copy", now: LATER });
