@@ -2739,11 +2739,14 @@
     connectorsDialog.addEventListener("close", () => connectorsNavButton?.setAttribute("aria-expanded", "false"));
   }
 
-  const connectorReturnUrl = new URL(window.location.href);
-  if (connectorReturnUrl.searchParams.get("google_connector") === "connected") {
-    connectorReturnUrl.searchParams.delete("google_connector");
-    const cleanQuery = connectorReturnUrl.searchParams.toString();
-    window.history.replaceState(null, "", connectorReturnUrl.pathname + (cleanQuery ? `?${cleanQuery}` : "") + connectorReturnUrl.hash);
+  const connectorReturnSearch = typeof window.location.search === "string" ? window.location.search : "";
+  const connectorReturnParts = connectorReturnSearch.replace(/^\?/, "").split("&").filter(Boolean);
+  const connectorReturned = connectorReturnParts.some((part) => part === "google_connector=connected");
+  if (connectorReturned) {
+    const cleanQuery = connectorReturnParts.filter((part) => !part.startsWith("google_connector=")).join("&");
+    const cleanPath = String(window.location.pathname || "/");
+    const cleanHash = String(window.location.hash || "");
+    window.history.replaceState(null, "", cleanPath + (cleanQuery ? `?${cleanQuery}` : "") + cleanHash);
     openConnectorsDialog();
   }
 
