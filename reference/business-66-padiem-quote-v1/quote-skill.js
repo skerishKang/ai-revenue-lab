@@ -66,7 +66,7 @@
   var TAX_MODES = ["EXCLUSIVE", "INCLUSIVE", "EXEMPT"];
   var SOURCE_KINDS = ["file", "manual", "sample"];
 
-  var FIXED_DEFAULT_KEYS = ["sender", "validDays", "taxMode", "memo"];
+  var FIXED_DEFAULT_KEYS = ["sender", "validDays", "taxMode", "memo", "calculationPolicy"];
   var VARIABLE_SCHEMA_KEYS = ["recipient", "quoteNo", "issueDate", "items", "memo", "taxMode"];
   var REQUIRED_VARIABLE_KEYS = ["recipient", "quoteNo", "issueDate", "items"];
   var PROVENANCE_KEYS = ["sourceKind", "sourceName", "sourceRef", "capturedAt", "warnings", "unknowns", "evidence"];
@@ -139,7 +139,13 @@
     if (TAX_MODES.indexOf(taxMode) === -1) return null;
 
     var memo = boundedString(raw.memo, MAX_MEMO_CHARS, "");
-    return { sender: sender, validDays: validDays, taxMode: taxMode, memo: memo };
+    var normalized = { sender: sender, validDays: validDays, taxMode: taxMode, memo: memo };
+    if (raw.calculationPolicy !== undefined && raw.calculationPolicy !== null) {
+      var calculationPolicy = Core.normalizeCalculationPolicy(raw.calculationPolicy);
+      if (!calculationPolicy) return null;
+      normalized.calculationPolicy = calculationPolicy;
+    }
+    return normalized;
   }
 
   function normalizeVariableSchema(raw) {
@@ -420,7 +426,7 @@
       memo = input.memo.slice(0, MAX_MEMO_CHARS);
     }
 
-    var draft = Core.normalizeDraft({
+    var draftInput = {
       schemaVersion: Core.SCHEMA_VERSION,
       meta: Object.assign({
         quoteNo: quoteNo,
@@ -433,7 +439,17 @@
       items: items,
       tax: { mode: taxMode, rate: Core.VAT_RATE },
       memo: memo
-    });
+    };
+    if (skill.fixedDefaults.calculationPolicy) {
+      draftInput.calculationPolicy = cloneJson(skill.fixedDefaults.calculationPolicy);
+    }
+    if (input.detailGroups !== undefined && input.detailGroups !== null) {
+      if (!Array.isArray(input.detailGroups)) {
+        return { ok: false, code: "invalid_detail_groups", draft: null };
+      }
+      draftInput.detailGroups = cloneJson(input.detailGroups);
+    }
+    var draft = Core.normalizeDraft(draftInput);
     if (!draft) return { ok: false, code: "invalid_quote_draft", draft: null };
     return { ok: true, code: "draft_ready", draft: draft };
   }

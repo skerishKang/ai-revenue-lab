@@ -81,6 +81,12 @@ check(skill && skill.approved === true, "EXPLICIT_SAVED_QUOTE_SKILL_APPROVAL=YES
 eq(skill.calculationAuthority, "quote-core", "QuoteCore remains the calculation authority");
 eq(skill.rendererContract, "quote-template-renderer.v1", "the existing template renderer remains the render contract");
 eq(skill.provenance.sourceName, "our-real-quotation.pdf", "source provenance is retained as metadata");
+eq(
+  Object.keys(skill.fixedDefaults).sort(),
+  ["memo", "sender", "taxMode", "validDays"],
+  "existing Skill fixedDefaults stay canonical when no calculation policy is configured"
+);
+check(!("calculationPolicy" in skill.fixedDefaults), "existing Skill fingerprint basis gains no implicit policy field");
 
 const compile = Skill.compileSkill(skill);
 check(compile.ok === true, "APPROVED_SKILL_COMPILED_FOR_REUSE=YES");
@@ -116,6 +122,71 @@ eq(detailedResult.draft.items[0].spec, "주장치 및 스마트팜 전용S/W", "
 eq(detailedResult.draft.items[0].unit, "식", "item unit preserved");
 eq(detailedResult.draft.items[0].note, "설치 포함", "item note preserved");
 eq(detailedResult.compiled.skillFingerprint, first.compiled.skillFingerprint, "existing Saved Quote Skill identity is unchanged by optional detail input");
+
+const groupedInput = input({
+  items: [{ id: "summary-1", name: "ICT환경제어 시스템", qty: 1, unitPrice: 1 }],
+  detailGroups: [{
+    id: "detail-1",
+    summaryItemId: "summary-1",
+    title: "스마트팜 상세",
+    items: [
+      { name: "주장치", section: "1. 스마트팜", qty: 1, unitPrice: 15000000 },
+      { name: "설치 및 잡자재", section: "3. 인건비 및 잡자재", qty: 1, unitPrice: 1330000 }
+    ]
+  }]
+});
+const groupedResult = Skill.buildRenderModel(skill, groupedInput);
+check(groupedResult.ok === true, "detail-group structured input is accepted by existing approved Skill");
+eq(groupedResult.draft.detailGroups[0].summaryItemId, "summary-1", "detail-group link survives Skill runtime");
+eq(
+  Core.computeDraftTotals(groupedResult.draft).effectiveItems[0].unitPrice,
+  16330000,
+  "Saved Quote Skill defers linked summary unit price to QuoteCore detail rollup"
+);
+eq(groupedResult.renderModel.items[0].values.unitPrice, Core.formatMoney(16330000),
+  "canonical renderer receives QuoteCore-derived linked summary unit price");
+eq(groupedResult.compiled.skillFingerprint, first.compiled.skillFingerprint,
+  "optional detailGroups do not change existing Saved Quote Skill identity");
+
+const floorPolicy = { grandRounding: { mode: "FLOOR", unit: 10000 } };
+const policyBase = {
+  id: "skill-reviewed-rounding",
+  name: "검토된 절사 견적서",
+  fixedDefaults: Object.assign({}, fixedDefaults(), { calculationPolicy: floorPolicy }),
+  variableSchema: { recipient: true, quoteNo: true, issueDate: true, items: true, memo: true, taxMode: true },
+  internalTemplate: Template.serializeTemplate(Template.builtInTemplate()),
+  provenance: provenance(),
+  approval: null,
+  createdAt: NOW,
+  updatedAt: NOW
+};
+const policyCandidate = Skill.buildSkill(policyBase);
+check(policyCandidate && policyCandidate.approved === false, "rounding policy Skill is reviewable before approval");
+const policySkill = Skill.buildSkill(Object.assign({}, policyBase, {
+  approval: {
+    schemaVersion: 1,
+    status: "approved",
+    skillFingerprint: policyCandidate.fingerprint,
+    approvedBy: "central-cto",
+    approvedAt: NOW,
+    approvalRef: "issue-3417"
+  }
+}));
+check(policySkill && policySkill.approved === true, "reviewed rounding policy can be explicitly approved");
+eq(policySkill.fixedDefaults.calculationPolicy, floorPolicy, "approved Skill owns the reviewed calculation policy");
+const policyResult = Skill.buildRenderModel(policySkill, input({
+  items: [{ id: "cgi-summary", name: "ICT환경제어 시스템", qty: 1, unitPrice: 16330000 }]
+}));
+check(policyResult.ok === true, "reviewed rounding Skill generates normally");
+eq(policyResult.draft.calculationPolicy, floorPolicy, "QuoteDraft snapshots the Skill calculation policy");
+eq(policyResult.renderModel.totals.grandText, Core.formatMoney(17960000), "renderer receives QuoteCore-rounded grand");
+eq(
+  Skill.normalizeFixedDefaults(Object.assign({}, fixedDefaults(), {
+    calculationPolicy: { grandRounding: { mode: "FLOOR", unit: 7 } }
+  })),
+  null,
+  "invalid fixed calculation policy fails closed"
+);
 
 const same = Skill.buildRenderModel(skill, input());
 eq(same.draft, first.draft, "same structured input yields the same QuoteDraft");
@@ -180,6 +251,17 @@ const invalidInput = Skill.buildRenderModel(skill, {
   items: []
 });
 check(invalidInput.ok === false, "invalid structured input fails closed instead of inheriting demo business facts");
+
+const invalidDetail = Skill.buildRenderModel(skill, input({
+  items: [{ id: "summary-1", name: "요약", qty: 1, unitPrice: 1 }],
+  detailGroups: [{
+    id: "bad-detail",
+    summaryItemId: "missing",
+    items: [{ name: "상세", qty: 1, unitPrice: 1000 }]
+  }]
+}));
+check(invalidDetail.ok === false && invalidDetail.code === "invalid_quote_draft",
+  "broken detail-group links fail closed in Saved Quote Skill runtime");
 
 const invalidDate = Skill.buildRenderModel(skill, input({ issueDate: "2026-99-99" }));
 check(invalidDate.ok === false, "invalid calendar dates fail closed before QuoteCore rendering");

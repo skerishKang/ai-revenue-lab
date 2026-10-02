@@ -129,7 +129,8 @@
     var sections = content.sections.slice();
     var has = function (name) { return sections.indexOf(name) !== -1; };
 
-    var totals = Core.computeTotals(normalizedDraft.items, normalizedDraft.tax.mode);
+    var totals = Core.computeDraftTotals(normalizedDraft);
+    if (!totals) return null;
     var validUntil = Core.computeValidUntil(normalizedDraft.meta.issueDate, normalizedDraft.meta.validDays);
     var mode = normalizedDraft.tax.mode;
 
@@ -138,11 +139,13 @@
       return { key: column.key, label: column.label, width: column.width, align: column.align };
     }) : [];
 
-    var items = has("items") ? normalizedDraft.items.map(function (item, index) {
+    var effectiveItems = Array.isArray(totals.effectiveItems) ? totals.effectiveItems : normalizedDraft.items;
+    var items = has("items") ? effectiveItems.map(function (item, index) {
       var emptyName = !String(item.name == null ? "" : item.name);
       return {
         index: index,
         emptyName: emptyName,
+        filler: false,
         values: {
           no: String(index + 1),
           name: emptyName ? emptyNameText : item.name,
@@ -155,6 +158,73 @@
         }
       };
     }) : [];
+    var minRows = Number(content.items && content.items.minRows);
+    if (has("items") && Number.isInteger(minRows) && minRows > items.length) {
+      while (items.length < minRows) {
+        items.push({
+          index: items.length,
+          emptyName: false,
+          filler: true,
+          values: { no: "", name: "", spec: "", unit: "", qty: "", unitPrice: "", amount: "", note: "" }
+        });
+      }
+    }
+
+    var detailPages = [];
+    if (has("detailPages") && content.detailPages && Array.isArray(totals.detailGroups)) {
+      var detailColumns = content.detailPages.columns.map(function (column) {
+        return { key: column.key, label: column.label, width: column.width, align: column.align };
+      });
+      detailPages = totals.detailGroups.map(function (group, groupIndex) {
+        var rows = group.items.map(function (item, itemIndex) {
+          return {
+            index: itemIndex,
+            section: String(item.section == null ? "" : item.section),
+            nameRowSpan: 1,
+            suppressName: false,
+            values: {
+              no: String(itemIndex + 1),
+              name: String(item.name == null ? "" : item.name),
+              spec: String(item.spec == null ? "" : item.spec),
+              unit: String(item.unit == null ? "" : item.unit),
+              qty: Core.formatInputNumber(item.qty),
+              unitPrice: Core.formatMoney(item.unitPrice),
+              amount: Core.formatMoney(group.amounts[itemIndex]),
+              note: String(item.note == null ? "" : item.note)
+            }
+          };
+        });
+        if (content.detailPages.mergeRepeatedName === true) {
+          var start = 0;
+          while (start < rows.length) {
+            var end = start + 1;
+            while (
+              end < rows.length &&
+              rows[end].values.name === rows[start].values.name &&
+              rows[end].section === rows[start].section
+            ) {
+              end += 1;
+            }
+            rows[start].nameRowSpan = end - start;
+            for (var mergeIndex = start + 1; mergeIndex < end; mergeIndex += 1) {
+              rows[mergeIndex].suppressName = true;
+            }
+            start = end;
+          }
+        }
+        return {
+          id: group.id,
+          summaryItemId: group.summaryItemId,
+          titleText: content.detailPages.titlePrefix + (group.title || String(groupIndex + 1)),
+          columns: detailColumns,
+          rows: rows,
+          subtotalLabel: content.detailPages.subtotalLabel,
+          subtotalText: Core.formatMoney(group.subtotal),
+          finalLabel: content.detailPages.finalLabel || "",
+          finalText: content.detailPages.finalLabel ? Core.formatMoney(group.subtotal) : ""
+        };
+      });
+    }
 
     var senderContact = [
       String(normalizedDraft.sender.phone == null ? "" : normalizedDraft.sender.phone).trim(),
@@ -174,6 +244,7 @@
         fallbackReason: fallbackReason
       },
       sections: sections,
+      layoutVariant: typeof content.layoutVariant === "string" ? content.layoutVariant : "",
       page: isPlainObject(content.page) ? content.page : {},
       pageRule: buildPageRule(content.page),
       style: isPlainObject(content.style) ? content.style : {},
@@ -193,6 +264,9 @@
       titleText: has("title") ? content.title.text : "",
       projectNameText: has("project") && content.project && normalizedDraft.meta.projectName
         ? content.project.prefix + normalizedDraft.meta.projectName
+        : "",
+      writtenTotalText: has("writtenTotal") && content.writtenTotal
+        ? content.writtenTotal.prefix + (Core.formatKoreanMoneyWords(totals.grand) || content.fallbackText) + content.writtenTotal.suffix
         : "",
       meta: {
         quoteNoText: has("meta") ? content.meta.quoteNoPrefix + textOrDash(normalizedDraft.meta.quoteNo) : "",
@@ -225,6 +299,7 @@
         }
       },
       items: items,
+      detailPages: detailPages,
       totals: {
         subtotalLabel: has("totals")
           ? (provisional ? content.totals.provisional.subtotalLabel : content.totals.supplyLabel)
@@ -246,7 +321,8 @@
           : ""
       },
       memoText: has("memo")
-        ? (String(normalizedDraft.memo == null ? "" : normalizedDraft.memo).trim() || content.memo.emptyText)
+        ? ((content.memo && content.memo.heading ? content.memo.heading + "\n" : "") +
+          (String(normalizedDraft.memo == null ? "" : normalizedDraft.memo).trim() || content.memo.emptyText))
         : "",
       markText: has("mark") ? content.mark.text : "",
       taxReview: { required: provisional }
@@ -273,8 +349,18 @@
   function applyStyleVariables(doc, model) {
     var paper = typeof doc.getElementById === "function" ? doc.getElementById("quotePaper") : null;
     if (!paper || !paper.style || typeof paper.style.setProperty !== "function") return false;
-    Object.keys(model.styleVariables).forEach(function (name) {
-      paper.style.setProperty(name, model.styleVariables[name]);
+    var targets = [paper];
+    if (typeof doc.querySelectorAll === "function") {
+      Array.prototype.forEach.call(
+        doc.querySelectorAll("#pvDetailPages .quote-detail-page"),
+        function (detailPage) { targets.push(detailPage); }
+      );
+    }
+    targets.forEach(function (target) {
+      if (!target || !target.style || typeof target.style.setProperty !== "function") return;
+      Object.keys(model.styleVariables).forEach(function (name) {
+        target.style.setProperty(name, model.styleVariables[name]);
+      });
     });
     return true;
   }
@@ -294,6 +380,11 @@
     var sender = model.parties.sender;
     var recipient = model.parties.recipient;
     var totals = model.totals;
+    var paper = doc.getElementById("quotePaper");
+    if (paper && typeof paper.setAttribute === "function") {
+      if (model.layoutVariant) paper.setAttribute("data-layout-variant", model.layoutVariant);
+      else if (typeof paper.removeAttribute === "function") paper.removeAttribute("data-layout-variant");
+    }
 
     setText("pvTitle", model.titleText);
     setText("pvQuoteNo", model.meta.quoteNoText);
@@ -302,6 +393,7 @@
     setText("pvValidUntil", model.meta.validUntilText);
     setText("pvTaxMode", model.meta.taxText);
     setText("pvProjectName", model.projectNameText);
+    setText("pvWrittenTotal", model.writtenTotalText);
 
     setText("pvSenderHeading", sender.heading);
     setText("pvSenderCompany", sender.company);
@@ -317,18 +409,27 @@
     setText("pvRecipientEmail", recipient.email);
 
     setHtml("pvItemsHead", model.columns.map(function (column) {
-      var width = column.width ? ' style="width:' + escapeHtml(column.width) + '"' : "";
-      return "<th" + width + ">" + escapeHtml(column.label) + "</th>";
+      var styles = [];
+      if (column.width) styles.push("width:" + escapeHtml(column.width));
+      if (model.layoutVariant && column.align) styles.push("text-align:" + escapeHtml(column.align));
+      var style = styles.length ? ' style="' + styles.join(";") + '"' : "";
+      return "<th" + style + ">" + escapeHtml(column.label) + "</th>";
     }).join(""));
 
     setHtml("pvItems", model.items.map(function (item) {
       var cells = model.columns.map(function (column) {
+        var style = model.layoutVariant && column.align
+          ? ' style="text-align:' + escapeHtml(column.align) + '"'
+          : "";
         if (column.key === "name") {
-          return '<td class="' + (item.emptyName ? "empty" : "") + '">' + escapeHtml(item.values.name) + "</td>";
+          var cls = ' class="' + (item.emptyName ? "empty" : "") + '"';
+          return "<td" + cls + style + ">" + escapeHtml(item.values.name) + "</td>";
         }
-        return "<td>" + escapeHtml(item.values[column.key]) + "</td>";
+        return "<td" + style + ">" + escapeHtml(item.values[column.key]) + "</td>";
       }).join("");
-      return "<tr>" + cells + "</tr>";
+      return item.filler
+        ? '<tr class="quote-filler-row">' + cells + "</tr>"
+        : "<tr>" + cells + "</tr>";
     }).join(""));
 
     setText("subtotalLabelText", totals.subtotalLabel);
@@ -347,6 +448,49 @@
 
     setText("pvMemo", model.memoText);
     setText("pvMark", model.markText);
+
+    setHtml("pvDetailPages", (Array.isArray(model.detailPages) ? model.detailPages : []).map(function (page) {
+      var head = page.columns.map(function (column) {
+        var styles = [];
+        if (column.width) styles.push("width:" + escapeHtml(column.width));
+        if (model.layoutVariant && column.align) styles.push("text-align:" + escapeHtml(column.align));
+        var style = styles.length ? ' style="' + styles.join(";") + '"' : "";
+        return "<th" + style + ">" + escapeHtml(column.label) + "</th>";
+      }).join("");
+      var lastSection = null;
+      var body = page.rows.map(function (row) {
+        var sectionHtml = "";
+        if (row.section && row.section !== lastSection) {
+          lastSection = row.section;
+          sectionHtml = '<tr class="quote-detail-section"><td colspan="' +
+            page.columns.length + '">' + escapeHtml(row.section) + "</td></tr>";
+        }
+        var cells = page.columns.map(function (column) {
+          if (column.key === "name" && row.suppressName) return "";
+          var styles = [];
+          if (model.layoutVariant && column.align) styles.push("text-align:" + escapeHtml(column.align));
+          var style = styles.length ? ' style="' + styles.join(";") + '"' : "";
+          var rowspan = column.key === "name" && row.nameRowSpan > 1
+            ? ' rowspan="' + row.nameRowSpan + '"'
+            : "";
+          return "<td" + rowspan + style + ">" + escapeHtml(row.values[column.key]) + "</td>";
+        }).join("");
+        return sectionHtml + "<tr>" + cells + "</tr>";
+      }).join("");
+      var layoutAttr = model.layoutVariant
+        ? ' data-layout-variant="' + escapeHtml(model.layoutVariant) + '"'
+        : "";
+      return '<section class="quote-paper quote-detail-page" data-detail-group="' + escapeHtml(page.id) + '"' + layoutAttr + '>' +
+        '<h2 class="quote-detail-title">' + escapeHtml(page.titleText) + "</h2>" +
+        '<table class="quote-table"><thead><tr>' + head + "</tr></thead><tbody>" + body + "</tbody></table>" +
+        '<div class="quote-detail-subtotal"><span>' + escapeHtml(page.subtotalLabel) +
+        '</span><strong>' + escapeHtml(page.subtotalText) + "</strong></div>" +
+        (page.finalLabel
+          ? '<div class="quote-detail-final"><span>' + escapeHtml(page.finalLabel) +
+            '</span><strong>' + escapeHtml(page.finalText) + "</strong></div>"
+          : "") +
+        "</section>";
+    }).join(""));
 
     var setPrivateImage = function (id, slot) {
       var el = doc.getElementById(id);

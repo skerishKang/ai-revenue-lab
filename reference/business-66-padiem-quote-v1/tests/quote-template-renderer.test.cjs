@@ -66,6 +66,7 @@ function legacyProjection(draft, provisional) {
     pvValidUntil: "유효일  " + (validUntil || "-"),
     pvTaxMode: provisional ? "세금  확인 필요" : "세금  " + Core.TAX_LABELS[draft.tax.mode],
     pvProjectName: "",
+    pvWrittenTotal: "",
     pvSenderHeading: "공급자",
     pvSenderCompany: legacyTextOrDash(draft.sender.company),
     pvSenderRep: "대표자  " + legacyTextOrDash(draft.sender.rep),
@@ -122,6 +123,7 @@ function modelToProjection(model) {
     pvValidUntil: model.meta.validUntilText,
     pvTaxMode: model.meta.taxText,
     pvProjectName: model.projectNameText,
+    pvWrittenTotal: model.writtenTotalText,
     pvSenderHeading: model.parties.sender.heading,
     pvSenderCompany: model.parties.sender.company,
     pvSenderRep: model.parties.sender.rep,
@@ -376,6 +378,142 @@ eq(
   "detail columns never replace QuoteCore totals"
 );
 
+const roundedDraft = Core.normalizeDraft(Object.assign(clone(detailDraft), {
+  calculationPolicy: { grandRounding: { mode: "FLOOR", unit: 10000 } }
+}));
+const writtenContent = clone(detailContent);
+writtenContent.sections = ["title", "meta", "parties", "project", "items", "totals", "writtenTotal", "memo", "mark"];
+writtenContent.writtenTotal = { prefix: "일금 ", suffix: "원정[부가세포함]" };
+const writtenModel = Renderer.buildRenderModel(
+  roundedDraft,
+  approvedProfile("detail-written-total", writtenContent),
+  { taxReviewRequired: false }
+);
+const roundedTotals = Core.computeTotals(
+  roundedDraft.items,
+  roundedDraft.tax.mode,
+  roundedDraft.calculationPolicy
+);
+eq(roundedTotals.rawGrand, 17963000, "reviewed raw grand is explicit in QuoteCore");
+eq(roundedTotals.grand, 17960000, "reviewed floor policy is applied by QuoteCore");
+eq(writtenModel.totals.grandText, Core.formatMoney(17960000), "renderer uses QuoteCore-rounded grand");
+eq(
+  writtenModel.writtenTotalText,
+  "일금 일천칠백구십육만원정[부가세포함]",
+  "written-total section projects QuoteCore Korean grand words"
+);
+eq(
+  authoritative.writtenTotalText,
+  "",
+  "existing built-in template renders no written-total line"
+);
+
+const rollupDraft = Core.normalizeDraft(Object.assign(clone(detailDraft), {
+  items: [{
+    id: "summary-1",
+    name: "ICT환경제어 시스템",
+    unit: "식",
+    qty: 1,
+    unitPrice: 1
+  }],
+  detailGroups: [{
+    id: "smartfarm-detail",
+    summaryItemId: "summary-1",
+    title: "스마트팜 제출견적",
+    items: [
+      {
+        id: "detail-1",
+        name: "주장치 및 스마트팜 전용S/W",
+        spec: "원격제어장치",
+        unit: "식",
+        qty: 1,
+        unitPrice: 15000000,
+        section: "1. 스마트팜"
+      },
+      {
+        id: "detail-2",
+        name: "인건비 및 잡자재",
+        spec: "설치 포함",
+        unit: "식",
+        qty: 1,
+        unitPrice: 1330000,
+        section: "3. 인건비 및 잡자재"
+      }
+    ]
+  }]
+}));
+const rollupContent = clone(detailContent);
+rollupContent.sections = ["title", "meta", "parties", "project", "items", "totals", "detailPages", "memo", "mark"];
+rollupContent.detailPages = {
+  titlePrefix: "상세내역  ",
+  subtotalLabel: "소 계",
+  columns: clone(detailContent.items.columns)
+};
+const rollupModel = Renderer.buildRenderModel(
+  rollupDraft,
+  approvedProfile("detail-pages", rollupContent),
+  { taxReviewRequired: false }
+);
+eq(rollupModel.items[0].values.unitPrice, Core.formatMoney(16330000),
+  "summary unit price is rendered from linked detail subtotal");
+eq(rollupModel.items[0].values.amount, Core.formatMoney(16330000),
+  "summary amount is rendered from QuoteCore rollup");
+eq(rollupModel.detailPages.length, 1, "one linked detail group produces one printable detail page");
+eq(rollupModel.detailPages[0].titleText, "상세내역  스마트팜 제출견적",
+  "detail page title is template presentation plus bounded group title");
+eq(rollupModel.detailPages[0].subtotalText, Core.formatMoney(16330000),
+  "detail subtotal is projected from QuoteCore");
+eq(rollupModel.detailPages[0].rows[0].section, "1. 스마트팜",
+  "detail section heading is preserved");
+eq(rollupModel.detailPages[0].rows[1].section, "3. 인건비 및 잡자재",
+  "later section heading is preserved");
+eq(authoritative.detailPages, [], "existing built-in template renders no detail pages");
+
+const formalDraft = Core.normalizeDraft(Object.assign(clone(detailDraft), {
+  items: [{ id: "formal-summary", name: "제어 시스템", unit: "식", qty: 1, unitPrice: 0 }],
+  detailGroups: [{
+    id: "formal-detail",
+    summaryItemId: "formal-summary",
+    title: "자재산출내역서",
+    items: [
+      { id: "f1", name: "개폐기", spec: "좌 상", unit: "채널", qty: 2, unitPrice: 65000, section: "1. 제어장치" },
+      { id: "f2", name: "개폐기", spec: "좌 하", unit: "채널", qty: 2, unitPrice: 65000, section: "1. 제어장치" },
+      { id: "f3", name: "센서", spec: "온습도", unit: "개", qty: 1, unitPrice: 250000, section: "2. 센서류" }
+    ]
+  }]
+}));
+const formalContent = clone(rollupContent);
+formalContent.layoutVariant = "formal-grid-v1";
+formalContent.items.minRows = 9;
+formalContent.memo.heading = "<특기사항>";
+formalContent.detailPages.mergeRepeatedName = true;
+formalContent.detailPages.finalLabel = "총 계";
+const formalModel = Renderer.buildRenderModel(
+  formalDraft,
+  approvedProfile("formal-grid", formalContent),
+  { taxReviewRequired: false }
+);
+eq(formalModel.layoutVariant, "formal-grid-v1", "formal layout variant reaches render model");
+eq(formalModel.items.length, 9, "summary minRows adds display-only filler rows");
+eq(formalModel.items.filter((item) => item.filler).length, 8, "only missing visual rows are fillers");
+eq(formalModel.items[1].values.amount, "", "filler rows carry no calculated amount");
+check(formalModel.memoText.startsWith("<특기사항>\n"), "memo heading is presentation-only prefix");
+eq(formalModel.detailPages[0].rows[0].nameRowSpan, 2, "first repeated detail name owns the rowspan");
+eq(formalModel.detailPages[0].rows[1].suppressName, true, "later repeated detail name cell is suppressed");
+eq(formalModel.detailPages[0].rows[2].suppressName, false, "different detail name starts a new cell");
+eq(formalModel.detailPages[0].subtotalLabel, "소 계", "detail subtotal row remains explicit");
+eq(formalModel.detailPages[0].finalLabel, "총 계", "formal detail final row is opt-in");
+eq(
+  formalModel.detailPages[0].finalText,
+  formalModel.detailPages[0].subtotalText,
+  "detail final row reuses the same QuoteCore-authorized group subtotal"
+);
+eq(
+  formalModel.totals.grandText,
+  Core.formatMoney(Core.computeDraftTotals(formalDraft).grand),
+  "formal presentation never changes QuoteCore totals"
+);
+
 /* ── TEMPLATE_STYLE_APPLIED — 승인된 style/page 프로필이 실제 출력 투영을 바꾼다 ── */
 const styledContent = clone(Template.builtInTemplate().content);
 styledContent.style.accent = "#8a1f1f";
@@ -493,10 +631,10 @@ eq(Renderer.buildRenderModel(defaultDraft, profileWithout("memo"), { taxReviewRe
 const pageHtml = readSource("index.html");
 const stylesCss = readSource("styles.css");
 const ADAPTER_IDS = [
-  "pvTitle", "pvQuoteNo", "pvDate", "pvValidity", "pvValidUntil", "pvTaxMode", "pvProjectName",
+  "pvTitle", "pvQuoteNo", "pvDate", "pvValidity", "pvValidUntil", "pvTaxMode", "pvProjectName", "pvWrittenTotal",
   "pvSenderHeading", "pvSenderCompany", "pvSenderRep", "pvSenderBizNo", "pvSenderAddress", "pvSenderContact",
   "pvRecipientHeading", "pvRecipientCompany", "pvRecipientPerson", "pvRecipientAddress", "pvRecipientEmail",
-  "pvItemsHead", "pvItems", "quotePaper",
+  "pvItemsHead", "pvItems", "pvDetailPages", "quotePaper",
   "subtotalLabelText", "subtotalText", "vatLabelText", "vatText", "grandLabelText", "grandText",
   "pvSubtotalLabel", "pvSubtotal", "pvVatLabel", "pvVat", "pvGrandLabel", "pvGrand", "pvMemo", "pvMark"
 ];
@@ -517,7 +655,7 @@ drafts.forEach(([label, base]) => {
       const doc = stubDoc(ADAPTER_IDS);
       check(Renderer.applyRenderModel(doc, model) === true, "adapter reports success");
       const expected = legacyProjection(draft, provisional);
-      ADAPTER_IDS.filter((id) => id !== "pvItems" && id !== "pvItemsHead" && id !== "quotePaper").forEach((id) => {
+      ADAPTER_IDS.filter((id) => id !== "pvItems" && id !== "pvItemsHead" && id !== "pvDetailPages" && id !== "quotePaper").forEach((id) => {
         eq(doc.getElementById(id).textContent, expected[id], `adapter ${id} for ${label}/${mode}/${provisional}`);
       });
       eq(
@@ -527,6 +665,7 @@ drafts.forEach(([label, base]) => {
       );
       eq(norm(doc.getElementById("pvItemsHead").innerHTML), norm(LEGACY_HEAD_HTML),
         `adapter table head for ${label}/${mode}/${provisional}`);
+      eq(doc.getElementById("pvDetailPages").innerHTML, "", "simple quote emits no detail page markup");
     });
   });
 });
@@ -562,6 +701,44 @@ eq(htmlDoc.getElementById("pvSenderCompany").textContent, '<img src=x onerror="a
   "textContent targets keep raw text (no double escaping)");
 eq(htmlRows.indexOf("onerror"), -1, "injected attribute text stays inert");
 
+const rollupDoc = stubDoc(ADAPTER_IDS);
+Renderer.applyRenderModel(rollupDoc, rollupModel);
+const detailHtml = rollupDoc.getElementById("pvDetailPages").innerHTML;
+check(detailHtml.includes("quote-detail-page"), "detail-page adapter emits printable page container");
+check(detailHtml.includes("quote-detail-section"), "detail-page adapter emits section headings");
+check(detailHtml.includes("스마트팜 제출견적"), "detail-page title is rendered");
+check(detailHtml.includes("₩16,330,000"), "detail-page subtotal is rendered from QuoteCore");
+check(!/Math\.|computeTotals|computeDraftTotals/.test(detailHtml), "rendered detail markup contains no arithmetic");
+
+const formalDoc = stubDoc(ADAPTER_IDS);
+Renderer.applyRenderModel(formalDoc, formalModel);
+eq(
+  formalDoc.getElementById("quotePaper").attributes["data-layout-variant"],
+  "formal-grid-v1",
+  "formal layout is opt-in through a bounded data attribute"
+);
+check(formalDoc.getElementById("pvItems").innerHTML.includes("quote-filler-row"),
+  "formal summary adapter emits display-only filler rows");
+const formalDetailHtml = formalDoc.getElementById("pvDetailPages").innerHTML;
+check(formalDetailHtml.includes('data-layout-variant="formal-grid-v1"'),
+  "detail pages inherit the formal layout variant");
+check(formalDetailHtml.includes('rowspan="2"'),
+  "adjacent repeated detail names render as a merged cell");
+check(formalDetailHtml.includes("quote-detail-final"),
+  "formal detail adapter emits the optional final row");
+check(formalDetailHtml.includes("총 계"),
+  "formal detail final label is rendered");
+check((formalDetailHtml.match(/₩510,000/g) || []).length >= 2,
+  "subtotal and final row display the same QuoteCore-derived amount");
+check(formalDetailHtml.includes("text-align:center"),
+  "formal column alignment is applied from the approved template");
+check(!/Math\.|computeTotals|computeDraftTotals/.test(formalDetailHtml),
+  "formal detail markup still contains no arithmetic");
+check(stylesCss.includes('[data-layout-variant="formal-grid-v1"]'),
+  "formal-grid CSS is scoped to the opt-in variant");
+check(stylesCss.includes("background: #c9c9c9"),
+  "formal detail header has the reviewed gray treatment");
+
 /* 어댑터 방어 */
 check(Renderer.applyRenderModel(null, authoritative) === false, "adapter without document fails safe");
 check(Renderer.applyRenderModel(stubDoc(ADAPTER_IDS), null) === false, "adapter without model fails safe");
@@ -596,6 +773,14 @@ eq(authoritative.pageRule, "@page { size: A4; margin: 10mm; }".replace(/\s+/g, "
 
 console.log("QUOTE_TEMPLATE_RENDERER_DETERMINISTIC=YES");
 console.log("CURRENT_DEFAULT_VISUAL_REGRESSION=0");
+console.log("FORMAL_LAYOUT_OPT_IN_ONLY=YES");
+console.log("SUMMARY_MIN_ROWS_DISPLAY_ONLY=PASS");
+console.log("DETAIL_REPEATED_NAME_MERGED=PASS");
+console.log("DETAIL_HEADER_GRAY=PASS");
+console.log("DETAIL_COMPACT_ROWS=PASS");
+console.log("DETAIL_SUBTOTAL_ROW=PASS");
+console.log("DETAIL_FINAL_ROW=PASS");
+console.log("DETAIL_FINAL_VALUE_EQUALS_QUOTECORE_SUBTOTAL=YES");
 console.log("QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES");
 console.log("QUOTECORE_TOTALS_UNCHANGED_ACROSS_TEMPLATES=YES");
 console.log("CURRENT_B66_TEMPLATE_MIGRATED_AS_BUILTIN=YES");

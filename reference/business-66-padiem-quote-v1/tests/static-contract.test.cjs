@@ -5,6 +5,7 @@ const vm = require("node:vm");
 
 const read = (name) => fs.readFileSync(path.join(__dirname, "..", name), "utf8");
 const html = read("index.html");
+const embed = read("embed.html");
 const css = read("styles.css");
 const app = read("app.js");
 const core = read("quote-core.js");
@@ -197,6 +198,10 @@ check(!/(kilo\/|sensenova\/|b-ai\/|gpt-5\.6-luna|space-bunny)/i.test(extraction 
   "EXTRACTION_BOUNDARY_CONTRACT: no provider/model ids in B66 seam");
 check(!extraction.includes("grand =") && !extraction.includes("vat =") && !extraction.includes("supply ="),
   "EXTRACTION_BOUNDARY_CONTRACT: extraction layer owns no totals");
+check(extraction.includes("normalizeDetailGroups(") &&
+      extraction.includes('"summaryItemId": "extracted-item-"') === false &&
+      extraction.includes('"extracted-item-" + group.summaryIndex'),
+  "DETAIL_GROUP_EXTRACTION_CONTRACT: summaryIndex is mapped to canonical summary ids without model-owned ids");
 
 /* EASY_MODE_CONTRACT — 기존 직접입력 화면 앞에 deterministic chat UX */
 check(html.includes('id="easyModeButton"') && html.includes('id="directModeButton"') &&
@@ -209,8 +214,9 @@ check(easy.includes('App.createFreshDraft("guided")') &&
   "EASY_MODE_CONTRACT: deterministic guided draft uses shared fresh-draft allocator");
 check(easy.includes("function processGuidedInput("),
   "EASY_MODE_CONTRACT: guided state machine");
-check(easy.includes("Core.computeTotals(guided.draft.items, guided.draft.tax.mode)"),
-  "EASY_MODE_CONTRACT: summary uses QuoteCore totals");
+check(easy.includes("Core.computeDraftTotals(guided.draft)") &&
+      easy.includes("if (current.calculationPolicy) fresh.calculationPolicy = clone(current.calculationPolicy);"),
+  "EASY_MODE_CONTRACT: guided summary uses draft-level QuoteCore detail/family authority");
 check(css.includes(".easy-chip {") && css.includes("min-height: 44px;"),
   "EASY_MODE_CONTRACT: quick chips meet 44px touch target");
 check(!easy.includes("fetch(") && !easy.includes("XMLHttpRequest") &&
@@ -281,8 +287,10 @@ check(app.includes("function createFreshDraft(") && app.includes("function copyH
   "RECENT_HISTORY_CONTRACT: direct and Easy flows share allocator");
 check(easy.includes('App.createFreshDraft("guided")') && easy.includes("App.copyHistoryAsNew(entry)"),
   "RECENT_HISTORY_CONTRACT: guided/copy paths use shared allocation");
-check(history.includes("Core.computeTotals(entry.draft.items, entry.draft.tax.mode)"),
-  "RECENT_HISTORY_CONTRACT: displayed totals are derived");
+check(history.includes("Core.computeDraftTotals(entry.draft)") &&
+      history.includes("if (source.calculationPolicy) fresh.calculationPolicy = clone(source.calculationPolicy);") &&
+      history.includes("if (Array.isArray(source.detailGroups) && source.detailGroups.length)"),
+  "RECENT_HISTORY_CONTRACT: displayed/copied totals preserve QuoteCore family/detail authority");
 check(easy.includes("window.confirm(\"이 최근 견적을 이 브라우저에서 삭제할까요?\")"),
   "RECENT_HISTORY_CONTRACT: delete confirmation");
 check(easy.includes("window.confirm(\"현재 작성 중인 견적을 바꾸고 이 견적을 불러올까요?\")"),
@@ -330,6 +338,8 @@ check(core.includes('recipient: { company: "", person: "", address: "", email: "
   "NEW_QUOTE_SAFETY_CONTRACT: next customer fields are blank");
 check(app.includes("보내는 사람 정보는 유지하고 새 고객 견적을 시작합니다."),
   "NEW_QUOTE_SAFETY_CONTRACT: user-visible sender preservation");
+check(core.includes("if (current.calculationPolicy) next.calculationPolicy = current.calculationPolicy;"),
+  "NEW_QUOTE_SAFETY_CONTRACT: reviewed family calculation policy survives new quote normalization");
 
 /* UNKNOWN_VAT_REVIEW_CONTRACT — 미확정 세금은 확정 합계처럼 보이지 않음 */
 check(html.includes('id="taxReviewNote"') && html.includes('id="taxRow"'),
@@ -518,9 +528,13 @@ check(template.includes("function normalizeTemplateContent(") &&
   "QUOTE_TEMPLATE_PROFILE_CONTRACT: normalization, fingerprint and forbidden-field guard exist");
 check(template.includes("function sha256Hex(") && !template.includes('require("node:crypto")'),
   "TEMPLATE_FINGERPRINT_DETERMINISTIC: dependency-free deterministic fingerprint");
-check(!template.includes("computeTotals(") && !template.includes("grand =") &&
-      !template.includes("vat =") && !template.includes("supply ="),
+check(!template.includes("computeTotals(") && !template.includes("computeDraftTotals(") &&
+      !template.includes("grand =") && !template.includes("vat =") && !template.includes("supply ="),
   "QUOTE_TEMPLATE_PROFILE_CONTRACT: the template layer owns no totals");
+check(template.includes('"detailPages"') && template.includes("content.detailPages") &&
+      html.includes('id="pvDetailPages"') && embed.includes('id="pvDetailPages"') &&
+      css.includes(".quote-detail-page") && css.includes("break-before: page"),
+  "PRINTABLE_DETAIL_PAGES=PASS: approved template can project bounded printable detail pages");
 
 /* QUOTE_TEMPLATE_STORE_BOUNDED — bounded 브라우저 로컬 저장소 */
 check(templateStore.includes('TEMPLATE_STORAGE_KEY = "quoteBetaTemplate.v1"'),
@@ -547,8 +561,10 @@ check(templateStore.includes("findForbiddenKeys") && !templateStore.includes("da
 check(templateRenderer.includes("function buildRenderModel(") &&
       templateRenderer.includes("function applyRenderModel("),
   "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: pure render model separated from the DOM adapter");
-check(templateRenderer.includes("Core.computeTotals(") && templateRenderer.includes("Core.computeValidUntil("),
-  "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: renderer derives amounts and validity from QuoteCore");
+check(templateRenderer.includes("Core.computeDraftTotals(normalizedDraft)") &&
+      templateRenderer.includes("Core.formatKoreanMoneyWords(totals.grand)") &&
+      templateRenderer.includes("Core.computeValidUntil("),
+  "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: renderer derives detail rollups, totals, written grand and validity from QuoteCore");
 check(!templateRenderer.includes("grand =") && !templateRenderer.includes("vat =") &&
       !templateRenderer.includes("supply ="),
   "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: the renderer performs no tax arithmetic");
@@ -556,8 +572,10 @@ check(!/fetch\(|XMLHttpRequest/.test(templateRenderer) &&
       !/Math\.random|Date\.now|new Date\(/.test(templateRenderer),
   "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: no model call and no time/random input");
 check(templateRenderer.includes("CALCULATION_AUTHORITY = \"quote-core\"") &&
-      templateRenderer.includes('setText("pvGrand", totals.grandText)'),
-  "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: adapter publishes QuoteCore-derived totals");
+      templateRenderer.includes('setText("pvGrand", totals.grandText)') &&
+      templateRenderer.includes('setHtml("pvDetailPages"') &&
+      templateRenderer.includes("group.subtotal"),
+  "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: adapter publishes QuoteCore-derived totals/detail pages");
 check(!/(kilo\/|space-bunny|nemotron|openai|anthropic)/i.test(template + templateStore + templateRenderer),
   "MODEL_DEPENDENCY=0: template modules name no provider or model");
 check(!/FileReader|FormData|indexedDB/i.test(template + templateStore + templateRenderer),

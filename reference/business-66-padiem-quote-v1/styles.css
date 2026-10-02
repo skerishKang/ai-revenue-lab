@@ -152,6 +152,40 @@ textarea { min-height: 82px; resize: vertical; }
 .party .eyebrow { font-size: 11px; color: #667085; margin-bottom: 8px; }
 .party strong { display: block; font-size: 16px; margin-bottom: 5px; }
 .party p { margin: 2px 0; font-size: 12px; color: #475467; line-height: 1.55; }
+.quote-written-total {
+  margin: 10px 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.quote-written-total:empty { display: none; }
+
+.quote-detail-page {
+  margin-top: 24px;
+  page-break-before: always;
+  break-before: page;
+}
+.quote-detail-title {
+  margin: 0 0 16px;
+  font-size: 20px;
+  letter-spacing: -.02em;
+}
+.quote-detail-section td {
+  padding-top: 10px;
+  padding-bottom: 8px;
+  font-weight: 800;
+  background: #f7f8fa;
+}
+.quote-detail-subtotal {
+  width: min(320px, 100%);
+  margin: 14px 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding-top: 9px;
+  border-top: 2px solid #111;
+  font-weight: 800;
+}
+
 .quote-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .quote-table th { border-bottom: var(--quote-header-rule, 1px solid #111827); padding: 10px 7px; font-size: 11px; text-align: var(--quote-text-align, left); color: #475467; }
 .quote-table td { border-bottom: var(--quote-row-rule, 1px solid #e4e7ec); padding: 12px 7px; font-size: 12px; vertical-align: top; }
@@ -162,6 +196,214 @@ textarea { min-height: 82px; resize: vertical; }
 .memo { margin-top: 28px; padding-top: 14px; border-top: var(--quote-memo-rule, 1px solid #d0d5dd); color: #475467; font-size: 11px; line-height: 1.7; white-space: pre-wrap; }
 .demo-mark { margin-top: 28px; text-align: right; color: #98a2b3; font-size: 10px; }
 .empty { color: #98a2b3; }
+
+/* #3423 formal-grid-v1: opt-in legacy printed-form presentation only. */
+.quote-paper[data-layout-variant="formal-grid-v1"] {
+  display: flex;
+  flex-direction: column;
+  padding: 18px 30px 22px;
+  min-height: 0;
+  font-family: "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+  color: #111;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] .quote-private-logo {
+  order: 0;
+  max-width: 190px;
+  max-height: 54px;
+  margin: 0 0 5px;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] .quote-private-stamp {
+  top: 230px;
+  right: 72px;
+  max-width: 72px;
+  max-height: 72px;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] .quote-title {
+  order: 1;
+  position: relative;
+  display: block;
+  margin: 0 0 58px;
+  padding: 3px 0 5px;
+  border-top: 2px solid #111;
+  border-bottom: 2px solid #111;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] .quote-title h2 {
+  margin: 0;
+  text-align: center;
+  font-size: 29px;
+  line-height: 1.25;
+  letter-spacing: .34em;
+  color: #000;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] .quote-title .meta {
+  position: absolute;
+  top: 53px;
+  right: 0;
+  min-width: 245px;
+  text-align: left;
+  color: #111;
+  font-size: 10.5px;
+  line-height: 1.8;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] .parties { display: contents; }
+.quote-paper[data-layout-variant="formal-grid-v1"] .party {
+  padding-top: 0;
+  border-top: 0;
+  color: #111;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] .party:first-child {
+  order: 4;
+  width: 46%;
+  margin: 8px 0 18px auto;
+  padding: 5px 0 0;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] .party:last-child {
+  order: 2;
+  width: 55%;
+  margin: 0 0 46px;
+  padding: 0 10px 5px;
+  border-bottom: 2px solid #111;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: end;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] .party:last-child .eyebrow { margin: 0; }
+.quote-paper[data-layout-variant="formal-grid-v1"] .party:last-child strong { margin: 0; font-size: 12px; text-align: center; }
+.quote-paper[data-layout-variant="formal-grid-v1"] .party:last-child p { margin: 0; font-size: 10px; }
+.quote-paper[data-layout-variant="formal-grid-v1"] .party:last-child p:nth-of-type(n+2) { display: none; }
+.quote-paper[data-layout-variant="formal-grid-v1"] .party:first-child .eyebrow { margin-bottom: 5px; color: #111; font-size: 10px; font-weight: 700; }
+.quote-paper[data-layout-variant="formal-grid-v1"] .party:first-child strong { font-size: 16px; margin-bottom: 4px; }
+.quote-paper[data-layout-variant="formal-grid-v1"] .party:first-child p { color: #111; font-size: 10.5px; line-height: 1.45; }
+.quote-paper[data-layout-variant="formal-grid-v1"] .quote-project {
+  order: 3;
+  width: 72%;
+  margin: 0 0 10px;
+  padding: 0 3px 4px;
+  border: 0;
+  border-bottom: 2px solid #111;
+  font-size: 12px;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] .quote-written-total {
+  order: 5;
+  margin: 5px 0 12px;
+  font-size: 11px;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] > .quote-table {
+  order: 6;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] .quote-table {
+  border: 1px solid #111;
+  border-collapse: collapse;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] .quote-table th,
+.quote-paper[data-layout-variant="formal-grid-v1"] .quote-table td {
+  border: 1px solid #111;
+  padding: 4px 5px;
+  color: #111;
+  font-size: 9.5px;
+  line-height: 1.25;
+  vertical-align: middle;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] > .quote-table th {
+  background: #fff;
+  font-weight: 700;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] .quote-filler-row td {
+  height: 28px;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] .quote-totals {
+  order: 7;
+  width: 100%;
+  margin: -1px 0 0;
+  border: 1px solid #111;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] .quote-totals div {
+  display: grid;
+  grid-template-columns: 1fr 22%;
+  gap: 0;
+  padding: 4px 5px;
+  border-top: 1px solid #111;
+  font-size: 10px;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] .quote-totals div:first-child { border-top: 0; }
+.quote-paper[data-layout-variant="formal-grid-v1"] .quote-totals div > :first-child { text-align: center; }
+.quote-paper[data-layout-variant="formal-grid-v1"] .quote-totals div > :last-child { text-align: right; }
+.quote-paper[data-layout-variant="formal-grid-v1"] .quote-totals .grand {
+  margin-top: 0;
+  padding-top: 4px;
+  border-top: 1px solid #111;
+  font-size: 10.5px;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] .memo {
+  order: 8;
+  margin-top: -1px;
+  padding: 4px 5px;
+  border: 1px solid #111;
+  color: #111;
+  font-size: 9.5px;
+  line-height: 1.5;
+}
+.quote-paper[data-layout-variant="formal-grid-v1"] .demo-mark {
+  order: 9;
+  margin-top: 2px;
+  color: #111;
+  font-size: 9px;
+  font-weight: 700;
+}
+.quote-detail-page[data-layout-variant="formal-grid-v1"] {
+  display: block;
+  padding: 18px 18px 20px;
+}
+.quote-detail-page[data-layout-variant="formal-grid-v1"] .quote-detail-title {
+  margin: 0 0 22px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 800;
+}
+.quote-detail-page[data-layout-variant="formal-grid-v1"] .quote-table th {
+  background: #c9c9c9;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.quote-detail-page[data-layout-variant="formal-grid-v1"] .quote-table td {
+  padding: 9px 4px;
+  font-size: 9px;
+  line-height: 1.18;
+}
+.quote-detail-page[data-layout-variant="formal-grid-v1"] .quote-detail-section td {
+  padding: 5px 4px;
+  background: #f3f3f3;
+  font-weight: 800;
+}
+.quote-detail-page[data-layout-variant="formal-grid-v1"] .quote-detail-subtotal {
+  width: 100%;
+  margin: -1px 0 0;
+  padding: 4px 5px;
+  border: 1px solid #111;
+  display: grid;
+  grid-template-columns: 1fr 22%;
+  font-size: 10px;
+}
+.quote-detail-page[data-layout-variant="formal-grid-v1"] .quote-detail-subtotal span { text-align: center; }
+.quote-detail-page[data-layout-variant="formal-grid-v1"] .quote-detail-subtotal strong { text-align: right; }
+.quote-detail-page[data-layout-variant="formal-grid-v1"] .quote-detail-final {
+  width: 100%;
+  margin: -1px 0 0;
+  padding: 5px;
+  border: 1px solid #111;
+  display: grid;
+  grid-template-columns: 1fr 22%;
+  background: #c9ffff;
+  font-size: 10px;
+  font-weight: 800;
+}
+.quote-detail-page[data-layout-variant="formal-grid-v1"] .quote-detail-final span { text-align: center; }
+.quote-detail-page[data-layout-variant="formal-grid-v1"] .quote-detail-final strong { text-align: right; }
+.quote-detail-page[data-layout-variant="formal-grid-v1"] .quote-detail-subtotal {
+  background: #c9ffff;
+}
+
 .toast { position: fixed; right: 24px; bottom: 24px; background: #111827; color: white; padding: 12px 15px; border-radius: 11px; font-size: 13px; opacity: 0; transform: translateY(8px); pointer-events: none; transition: .18s ease; }
 .toast.show { opacity: 1; transform: translateY(0); }
 
@@ -704,6 +946,7 @@ textarea { min-height: 82px; resize: vertical; }
   .grid { display: block; }
   .preview-wrap { position: static; border: 0; border-radius: 0; box-shadow: none; overflow: visible; }
   .quote-paper { min-height: 0; padding: 0; }
+  .quote-detail-page { margin-top: 0; page-break-before: always; break-before: page; }
   .demo-mark { display: none; }
 }
 
