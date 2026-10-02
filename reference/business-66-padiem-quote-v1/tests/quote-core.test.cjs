@@ -90,14 +90,15 @@ t = Core.computeTotals(items, "UNKNOWN_MODE");
 assert.equal(t.mode, "EXCLUSIVE", "unknown mode falls back to EXCLUSIVE");
 
 /* SUMMARY_DETAIL_ROLLUP — detail subtotal is the linked summary unitPrice authority */
-const simpleDraftTotals = Core.computeDraftTotals(draft);
+const simpleDraftForRollup = Core.createDefaultDraft();
+const simpleDraftTotals = Core.computeDraftTotals(simpleDraftForRollup);
 assert.deepEqual(
   [simpleDraftTotals.supply, simpleDraftTotals.vat, simpleDraftTotals.grand],
   [1300000, 130000, 1430000],
   "simple QuoteDraft totals remain unchanged"
 );
 
-const detail2026 = Core.normalizeDraft(Object.assign(JSON.parse(JSON.stringify(draft)), {
+const detail2026 = Core.normalizeDraft(Object.assign(JSON.parse(JSON.stringify(simpleDraftForRollup)), {
   items: [{ id: "summary-1", name: "ICT환경제어 시스템", qty: 1, unitPrice: 1 }],
   detailGroups: [{
     id: "detail-1",
@@ -119,7 +120,7 @@ assert.equal(rollup2026.amounts[0], 16330000, "summary amount uses derived unit 
 assert.equal(rollup2026.rawGrand, 17963000, "detail rollup feeds existing VAT policy");
 assert.equal(rollup2026.grand, 17960000, "detail rollup feeds existing reviewed rounding policy");
 
-const detail2020 = Core.normalizeDraft(Object.assign(JSON.parse(JSON.stringify(draft)), {
+const detail2020 = Core.normalizeDraft(Object.assign(JSON.parse(JSON.stringify(simpleDraftForRollup)), {
   items: [
     { id: "summary-a", name: "2층 대예배실 음향", qty: 1, unitPrice: 0 },
     { id: "summary-b", name: "1층 중예배실 음향", qty: 1, unitPrice: 0 },
