@@ -556,6 +556,22 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
                 "문서 저장소가 설정되지 않았습니다.",
             )
 
+    # #3382: the canonical USER subject is resolved BEFORE the usage gate so a
+    # failed revalidation never consumes quota. The subject is derived
+    # SERVER-SIDE from the signed Padiem session (current_user_id → current B54
+    # canonical session → canonical sub_*) and travels only on the P01 wire.
+    # Nothing about the subject, product user, tenant or workspace is read from
+    # the request, and the value is never returned to the browser.
+    canonical_subject_id = None
+    b54_session = await resolve_current_b54_canonical_session(request)
+    if b54_session is None:
+        return _error(
+            403,
+            "canonical_b54_session_unavailable",
+            "인증된 Claw 실행 권한을 확인할 수 없습니다.",
+        )
+    canonical_subject_id = b54_session.auth_session.subject.subject_id
+
     denial = await _usage_gate_denial(request)
     if denial is not None:
         return denial
@@ -587,7 +603,9 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     run = create_claw_run("padiem-chat", task_text)
 
     try:
-        outcome = await adapter.execute(run, product_tier=product_tier)
+        outcome = await adapter.execute(
+            run, product_tier=product_tier, subject_id=canonical_subject_id
+        )
     except P01AdapterError as exc:
         # Canonical #830 invariant: refund only when B62 can prove the Engine
         # call was never dispatched. Dispatched/ambiguous failures stay counted.
