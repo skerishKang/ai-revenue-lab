@@ -155,6 +155,43 @@ eq(
   "optional detail-pages support does not change built-in canonical content"
 );
 
+const formalContent = builtinContent();
+formalContent.layoutVariant = "formal-grid-v1";
+formalContent.items.minRows = 9;
+formalContent.memo.heading = "<특기사항>";
+formalContent.sections = ["title", "meta", "parties", "items", "totals", "detailPages", "memo", "mark"];
+formalContent.detailPages = {
+  titlePrefix: "",
+  subtotalLabel: "소 계",
+  mergeRepeatedName: true,
+  columns: [
+    { key: "name", label: "품명", width: "22%", align: "left" },
+    { key: "spec", label: "규격", width: "34%", align: "left" },
+    { key: "qty", label: "수량", width: "5%", align: "right" },
+    { key: "unit", label: "단위", width: "5%", align: "center" },
+    { key: "unitPrice", label: "단가", width: "11%", align: "right" },
+    { key: "amount", label: "금액", width: "11%", align: "right" },
+    { key: "note", label: "비고", width: "12%", align: "left" }
+  ]
+};
+const formalNormalized = Template.normalizeTemplateContent(formalContent);
+check(formalNormalized !== null, "formal-grid presentation options normalize");
+eq(formalNormalized.layoutVariant, "formal-grid-v1", "formal layout variant preserved");
+eq(formalNormalized.items.minRows, 9, "bounded summary minimum rows preserved");
+eq(formalNormalized.memo.heading, "<특기사항>", "memo heading is presentation-only");
+eq(formalNormalized.detailPages.mergeRepeatedName, true, "detail repeated-name merge is opt-in");
+eq(
+  Template.normalizeTemplateContent(builtinContent()),
+  builtinContent(),
+  "formal-grid options do not alter built-in canonical content"
+);
+const invalidFormal = builtinContent();
+invalidFormal.layoutVariant = "company-secret-layout";
+check(Template.normalizeTemplateContent(invalidFormal) === null, "unknown layout variant fails closed");
+const invalidRows = builtinContent();
+invalidRows.items.minRows = Template.MAX_SUMMARY_MIN_ROWS + 1;
+check(Template.normalizeTemplateContent(invalidRows) === null, "unbounded summary filler rows fail closed");
+
 /* TEMPLATE_FINGERPRINT_DETERMINISTIC — 동일 내용 → 동일 지문, 스타일 변경 → 다른 지문 */
 const contentA = builtinContent();
 const contentB = builtinContent();
