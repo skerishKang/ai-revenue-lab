@@ -601,6 +601,20 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
             headers=_NO_STORE_HEADERS,
         )
 
+    # #3382: the canonical USER lane requires a resolved canonical subject. If
+    # the lane is on but no subject was resolved (no B54 session), fail closed
+    # before dispatch — the Engine admission would reject it anyway.
+    if (
+        getattr(adapter, "subject_identity_lane", False) is True
+        and canonical_subject_id is None
+    ):
+        await _refund_active_reservation()
+        return _error(
+            403,
+            "canonical_b54_session_unavailable",
+            "인증된 Claw 실행 권한을 확인할 수 없습니다.",
+        )
+
     task_text = _build_execute_task(action, content_clean)
     run = create_claw_run("padiem-chat", task_text)
 
