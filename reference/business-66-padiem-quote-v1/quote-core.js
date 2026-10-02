@@ -170,6 +170,13 @@
     return n;
   }
 
+  function optionalText(v, maxLength) {
+    if (typeof v !== "string") return null;
+    var text = v.trim();
+    if (!text) return null;
+    return text.slice(0, maxLength);
+  }
+
   /* 손상된 JSON·구버전 schema → null (앱이 기본 데모 상태로 fallback) */
   function normalizeDraft(raw) {
     try {
@@ -179,22 +186,32 @@
       var rawItems = Array.isArray(raw.items) && raw.items.length > 0 ? raw.items : base.items;
       var items = rawItems.map(function (it, i) {
         var src = it && typeof it === "object" ? it : {};
-        return {
+        var item = {
           id: asString(src.id, "item-" + (i + 1)),
           name: asString(src.name, ""),
           qty: asNonNegativeNumber(src.qty, 1),
           unitPrice: asNonNegativeNumber(src.unitPrice, 0)
         };
+        var spec = optionalText(src.spec, 240);
+        var unit = optionalText(src.unit, 80);
+        var note = optionalText(src.note, 500);
+        if (spec !== null) item.spec = spec;
+        if (unit !== null) item.unit = unit;
+        if (note !== null) item.note = note;
+        return item;
       });
       var taxMode = raw.tax && TAX_MODES[raw.tax.mode] ? raw.tax.mode : base.tax.mode;
+      var meta = {
+        quoteNo: asString(raw.meta && raw.meta.quoteNo, base.meta.quoteNo),
+        issueDate: asString(raw.meta && raw.meta.issueDate, base.meta.issueDate),
+        validDays: asNonNegativeNumber(raw.meta && raw.meta.validDays, base.meta.validDays),
+        source: asString(raw.meta && raw.meta.source, "manual")
+      };
+      var projectName = optionalText(raw.meta && raw.meta.projectName, 240);
+      if (projectName !== null) meta.projectName = projectName;
       return {
         schemaVersion: SCHEMA_VERSION,
-        meta: {
-          quoteNo: asString(raw.meta && raw.meta.quoteNo, base.meta.quoteNo),
-          issueDate: asString(raw.meta && raw.meta.issueDate, base.meta.issueDate),
-          validDays: asNonNegativeNumber(raw.meta && raw.meta.validDays, base.meta.validDays),
-          source: asString(raw.meta && raw.meta.source, "manual")
-        },
+        meta: meta,
         sender: {
           company: asString(raw.sender && raw.sender.company, base.sender.company),
           rep: asString(raw.sender && raw.sender.rep, base.sender.rep),
