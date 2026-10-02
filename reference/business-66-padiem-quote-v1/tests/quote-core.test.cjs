@@ -182,7 +182,7 @@ assert.equal(draft.schemaVersion, 1, "schema version");
 ["quoteNo", "issueDate", "validDays", "source"].forEach((k) => {
   assert.ok(k in draft.meta, `meta has ${k}`);
 });
-["company", "rep", "bizNo", "address", "phone", "email", "presetId"].forEach((k) => {
+["company", "rep", "contactPerson", "bizNo", "address", "phone", "email", "presetId"].forEach((k) => {
   assert.ok(k in draft.sender, `sender has ${k}`);
 });
 ["company", "person", "address", "email"].forEach((k) => {
@@ -198,6 +198,7 @@ const currentForNew = Core.createDefaultDraft();
 currentForNew.sender = {
   company: "내 회사",
   rep: "홍대표",
+  contactPerson: "김담당",
   bizNo: "123-45-67890",
   address: "광주광역시",
   phone: "010-1234-5678",

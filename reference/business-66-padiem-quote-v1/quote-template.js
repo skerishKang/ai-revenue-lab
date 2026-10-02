@@ -566,6 +566,11 @@
       content.sender.contactPrefix = boundString(raw.sender.contactPrefix, "");
     }
 
+    if (raw.sender && raw.sender.contactPersonPrefix !== undefined && raw.sender.contactPersonPrefix !== null) {
+      if (typeof raw.sender.contactPersonPrefix !== "string") return null;
+      content.sender.contactPersonPrefix = boundString(raw.sender.contactPersonPrefix, "");
+    }
+
     if (raw.recipient && raw.recipient.suffix !== undefined && raw.recipient.suffix !== null) {
       if (typeof raw.recipient.suffix !== "string") return null;
       content.recipient.suffix = boundString(raw.recipient.suffix, "");
