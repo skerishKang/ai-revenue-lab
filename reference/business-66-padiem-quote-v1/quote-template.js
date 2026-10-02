@@ -31,7 +31,7 @@
   /* #3402: logo/stamp 는 raw bytes/URL 이 아니라 account-bound private asset id 만 보존한다. */
   var SLOT_SUPPORT = "private_asset_v1";
 
-  var ALLOWED_SECTIONS = ["title", "meta", "parties", "project", "items", "totals", "writtenTotal", "memo", "mark"];
+  var ALLOWED_SECTIONS = ["title", "meta", "parties", "project", "items", "totals", "writtenTotal", "detailPages", "memo", "mark"];
   var ALLOWED_COLUMN_KEYS = ["no", "name", "spec", "unit", "qty", "unitPrice", "amount", "note"];
   var REQUIRED_COLUMN_KEYS = ["name", "qty", "unitPrice", "amount"];
   var ALLOWED_ALIGNMENTS = ["left", "right", "center"];
@@ -531,6 +531,22 @@
       content.writtenTotal = {
         prefix: boundString(writtenTotal.prefix, "일금 "),
         suffix: boundString(writtenTotal.suffix, "원정")
+      };
+    }
+
+    if (sections.indexOf("detailPages") !== -1) {
+      var detailPages = isPlainObject(raw.detailPages) ? raw.detailPages : {};
+      var detailColumns = normalizeColumns(
+        Array.isArray(detailPages.columns)
+          ? detailPages.columns
+          : (raw.items && raw.items.columns)
+      );
+      if (!detailColumns) return null;
+      content.detailPages = {
+        title: boundString(detailPages.title, "상 세 내 역 서"),
+        columns: detailColumns,
+        groupTotalLabel: boundString(detailPages.groupTotalLabel, "소 계"),
+        sectionTotalLabel: boundString(detailPages.sectionTotalLabel, "총 계")
       };
     }
 
