@@ -36,8 +36,10 @@ import {
 } from '../conversation/canonical-conversation.js';
 import {
   createDesktopCanonicalConversationPort,
-  noDeviceSessionMaterialYet,
 } from '../conversation/desktop-canonical-conversation-port.js';
+import {
+  createResidentDeviceSessionMaterialProvider,
+} from '../conversation/resident-device-session-material.js';
 
 const __dirname_ = path.dirname(fileURLToPath(import.meta.url));
 
@@ -140,24 +142,34 @@ export const localWorkspace = new LocalWorkspaceController(async () => {
 });
 
 /**
- * #3436 B2c — canonical conversation consumer over the authenticated port.
+ * #3436 B2c/B2d — canonical conversation consumer over the authenticated port.
  *
- * The main process now composes the authenticated canonical conversation port:
- * it presents the canonical Local Agent Broker device session to the padiem-chat
+ * The main process composes the authenticated canonical conversation port: it
+ * presents the canonical Local Agent Broker device session to the padiem-chat
  * GET-only Desktop conversation surface and reads the same canonical
- * conversations the Web reads. The material provider is the trusted local
- * boundary attach point and stays main-process-only
- * (RENDERER_DEVICE_CREDENTIAL=0, RENDERER_BROKER_SESSION_SECRET=0); until the
- * resident-side session channel is composed it yields no material, and the
- * surface then keeps the exact B2b fail-closed presentation — every call reads
- * as "canonical conversation unavailable", never a temporary local
+ * conversations the Web reads. B2d replaces the B2c placeholder provider with
+ * the trusted resident boundary: each call asks the supervised resident host
+ * for a bounded projection of the session state it already holds — the host's
+ * own canonical session and the existing protected credential store — over the
+ * existing stdio line channel. The provider stays main-process-only
+ * (RENDERER_DEVICE_CREDENTIAL=0, RENDERER_SESSION_ID=0, RENDERER_MATERIAL_API=0);
+ * no session is opened by the Desktop (DESKTOP_SESSION_OPEN=0) and nothing is
+ * persisted (RAW_CREDENTIAL_SECOND_PERSISTENCE=0). Without an online resident
+ * every call is null, and the surface keeps the exact B2b fail-closed
+ * presentation — "canonical conversation unavailable", never a temporary local
  * conversation. The chat base URL is a named trusted input, never inherited
  * request content.
  */
 export const canonicalConversations = new CanonicalConversationController(
   createDesktopCanonicalConversationPort({
     chatBaseUrl: process.env.PADIEM_CHAT_BASE_URL ?? null,
-    materialProvider: noDeviceSessionMaterialYet,
+    materialProvider: createResidentDeviceSessionMaterialProvider({
+      boundary: {
+        sendResidentLine: (line: string) => supervisor.sendResidentLine(line),
+        takeResidentMaterialLine: () => supervisor.takeResidentMaterialLine(),
+        residentRunning: () => supervisor.residentSnapshot().running,
+      },
+    }),
   }),
 );
 
@@ -367,7 +379,14 @@ function recordPairingHandoffEvidence(outcome: string): void {
           main_flow_running: supervisor.residentSnapshot().running,
           main_flow_lines: supervisor
             .boundedResidentOutput()
-            .lines.filter((line) => !line.includes('pairing_code"')),
+            .lines.filter(
+              (line) =>
+                !line.includes('pairing_code"') &&
+                // #3436 B2d: a material response is never evidence; the
+                // capture layer already redacts it, this keeps the raw event
+                // name itself out of the bundle too.
+                !line.includes('desktop_device_session_material'),
+            ),
           // #3140 stall diagnosis: per-stream timing for the resident child, so a
           // silent stall can be located instead of guessed at.
           resident_observation: redactObservation(supervisor.residentObservation()),

@@ -55,6 +55,45 @@ const MAX_STDERR_LINE_CHARS = 400;
 const DEFAULT_MAX_LINES = 200;
 
 /**
+ * #3436 B2d — the one material response event the resident answers with.
+ *
+ * The response line carries the raw credential across the supervised stdio
+ * boundary, so it is captured into a one-slot volatile holder and REDACTED
+ * out of the retained output buffer at capture time. No retained line, no
+ * evidence projection and no diagnostics export can ever contain it
+ * (RAW_CREDENTIAL_LOGGED=0, RAW_CREDENTIAL_SECOND_PERSISTENCE=0).
+ */
+export const DESKTOP_MATERIAL_EVENT = 'desktop_device_session_material';
+export const MAX_MATERIAL_LINE_CHARS = 65_536;
+
+function asMaterialResponse(line: string): Record<string, unknown> | null {
+  if (line.length === 0 || line.length > MAX_MATERIAL_LINE_CHARS) return null;
+  if (!line.startsWith('{') || !line.includes(DESKTOP_MATERIAL_EVENT)) return null;
+  try {
+    const parsed: unknown = JSON.parse(line);
+    if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+    const record = parsed as Record<string, unknown>;
+    if (record['event'] !== DESKTOP_MATERIAL_EVENT) return null;
+    return record;
+  } catch {
+    return null;
+  }
+}
+
+function redactedMaterialLine(record: Record<string, unknown>): string {
+  return JSON.stringify({
+    event: record['event'],
+    contract_version: record['contract_version'] ?? null,
+    ok: record['ok'] === true,
+    reason: typeof record['reason'] === 'string' ? record['reason'] : null,
+    credential_generation:
+      typeof record['credential_generation'] === 'number' ? record['credential_generation'] : null,
+    expires_at: typeof record['expires_at'] === 'string' ? record['expires_at'] : null,
+    redacted: true,
+  });
+}
+
+/**
  * #3140: the widest line the main process writes to a supervised child.
  *
  * The pairing handoff envelope is a bounded JSON object — a 32-character code,
@@ -81,6 +120,10 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
   #exitedAtMs: number | null = null;
   #stdoutAttached = false;
   #stderrAttached = false;
+  // #3436 B2d: the raw material line, one slot, volatile. Never part of the
+  // retained buffer; cleared on read and cleared on exit, so a settled or
+  // restarted resident can never hand out stale session material.
+  #materialLine: string | null = null;
 
   constructor(child: ChildProcess, maxLines: number) {
     this.#child = child;
@@ -99,7 +142,12 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
       const text = String(chunk);
       for (const line of text.split(/\r?\n/)) {
         if (line.length === 0) continue;
-        this.#lines.push(line);
+        // #3436 B2d: a material response is redacted out of the retained
+        // buffers at capture time and held in the one-slot only.
+        const material = asMaterialResponse(line);
+        const storedLine = material === null ? line : redactedMaterialLine(material);
+        if (material !== null) this.#materialLine = line;
+        this.#lines.push(storedLine);
         if (this.#lines.length > this.#maxLines) this.#lines.shift();
         this.#lastLineAtMs = atMs;
         if (stream === 'stdout') {
@@ -108,7 +156,7 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
         } else {
           this.#stderrLines += 1;
           if (this.#firstStderrAtMs === null) this.#firstStderrAtMs = atMs;
-          this.#stderrTail.push(line.slice(0, MAX_STDERR_LINE_CHARS));
+          this.#stderrTail.push(storedLine.slice(0, MAX_STDERR_LINE_CHARS));
           if (this.#stderrTail.length > MAX_STDERR_TAIL) this.#stderrTail.shift();
         }
       }
@@ -127,6 +175,9 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
     if (this.#result) return;
     this.#exitedAtMs = Date.now();
     this.#result = result;
+    // A resident that is gone can never hand out current session material:
+    // the raw line dies with the process, the redacted marker stays.
+    this.#materialLine = null;
     for (const listener of [...this.#listeners]) {
       listener(result);
     }
@@ -196,6 +247,17 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
   /** Bounded, already-truncated raw lines — redaction happens in the projection layer. */
   boundedOutput(): BoundedRunnerOutput {
     return { lines: [...this.#lines], maxLines: this.#maxLines };
+  }
+
+  /**
+   * #3436 B2d: one-shot read of the raw material response line, then cleared.
+   * The only place the raw credential exists on the Desktop side is this
+   * volatile slot in main-process memory; a second read returns null.
+   */
+  takeMaterialLine(): string | null {
+    const line = this.#materialLine;
+    this.#materialLine = null;
+    return line;
   }
 
   /** #3140 stall diagnosis: bounded per-stream timing for this child. */
@@ -313,6 +375,16 @@ export class NodeRunnerProcessPort implements RunnerProcessPort {
   boundedResidentOutput(): BoundedRunnerOutput {
     if (this.#residentHandle) return boundedResidentOutput(this.#residentHandle);
     return this.#residentSettledOutput ?? boundedResidentOutput(null);
+  }
+
+  /**
+   * #3436 B2d: the live resident's raw material line, one-shot. A settled
+   * resident yields null — material from a dead process is stale by
+   * definition, so it is never retained past exit.
+   */
+  takeResidentMaterialLine(): string | null {
+    if (this.#residentHandle) return this.#residentHandle.takeMaterialLine();
+    return null;
   }
 
   /** #3140 stall diagnosis: the resident's per-stream observation, or null. */
