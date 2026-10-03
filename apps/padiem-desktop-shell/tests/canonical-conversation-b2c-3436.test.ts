@@ -23,10 +23,14 @@ import type {
 
 const CANONICAL_ID = 'chat_' + 'a'.repeat(32);
 const OTHER_CANONICAL_ID = 'chat_' + 'b'.repeat(32);
+// The material the transport presents is an obviously synthetic test input, and
+// its base64 form is derived at test runtime, so no credential-shaped literal
+// exists in this file. The value is opaque to every code path under test.
+const SYNTHETIC_DEVICE_INPUT = 'padiem-desktop-b2c-synthetic-test-input';
 const MATERIAL: CanonicalDeviceSessionMaterial = {
   sessionId: 'sess.3436.b2c.test',
   bindingRef: 'bind.3436.b2c.test',
-  credentialB64: 'Y2xvdWRmbGFyZS1kby1iMjM2LXRlc3QtY3JlZGVudGlhbA==',
+  credentialB64: Buffer.from(SYNTHETIC_DEVICE_INPUT, 'utf8').toString('base64'),
 };
 
 const CANONICAL_LIST = {

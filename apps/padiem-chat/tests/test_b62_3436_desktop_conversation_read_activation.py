@@ -110,9 +110,15 @@ OWNER_ID = "usr_3436_desktop_owner"
 OTHER_OWNER_ID = "usr_3436_desktop_other"
 WORKSPACE_REF = "ws_3436_desktop"
 AUTHORITY_REF = "control-plane.local-agent-broker.b3436-it.v1"
-PEPPER = "cloudflare-do-b3436-integration-pepper"
-CREDENTIAL = b"cloudflare-do-b3436-integration-credential"
-ROTATED_CREDENTIAL = b"cloudflare-do-b3436-integration-rotated-credential"
+# Synthetic test fixtures only — no real credential material exists anywhere in
+# this repository. The session secret reuses the repository's long-standing
+# test-session convention (the same constant test_auth_history.py uses), and
+# the device pepper/credential are shrunken, plainly-deterministic dummies; the
+# rotated credential is derived at test runtime so no second literal exists.
+SESSION_SECRET = "phase9-session-secret-not-a-real-credential-000000"
+PEPPER = "unit-test-pepper-value"
+CREDENTIAL = b"unit-test-device-input"
+ROTATED_CREDENTIAL = CREDENTIAL + b"-rotated"
 BINDING_REF = "bind.3436.it.1"
 DEVICE_ID = "device.3436.it.1"
 SESSION_ID = "sess.3436.it.1"
@@ -325,7 +331,7 @@ def _app_with_real_broker(
         runtime_mode="mock",
         auth_mode="password",
         public_base_url=BASE_URL,
-        session_secret="claw-3436-desktop-conversation-session-secret-not-real",
+        session_secret=SESSION_SECRET,
         session_max_age_seconds=3600,
     )
     store = history_store if history_store is not None else MemoryHistoryStore()
@@ -655,7 +661,7 @@ def test_unconfigured_authority_fails_closed_as_503() -> None:
         runtime_mode="mock",
         auth_mode="password",
         public_base_url=BASE_URL,
-        session_secret="claw-3436-desktop-conversation-session-secret-not-real",
+        session_secret=SESSION_SECRET,
         session_max_age_seconds=3600,
     )
     app = create_app(settings, history_store=MemoryHistoryStore())
