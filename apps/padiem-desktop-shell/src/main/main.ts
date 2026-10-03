@@ -35,6 +35,9 @@ import {
   CanonicalConversationController,
   UnconfiguredCanonicalConversationPort,
 } from '../conversation/canonical-conversation.js';
+import {
+  CanonicalRunController,
+} from '../run/canonical-run.js';
 
 const __dirname_ = path.dirname(fileURLToPath(import.meta.url));
 
@@ -146,11 +149,23 @@ export const localWorkspace = new LocalWorkspaceController(async () => {
  */
 export const canonicalConversations = new CanonicalConversationController();
 
+/**
+ * #3436 B3a — canonical run consumer.
+ *
+ * Left on the fail-closed unconfigured port: the Desktop holds no canonical
+ * Padiem session credential in this slice, so every run surface reads as
+ * "canonical run unavailable" instead of minting or caching a local one. A
+ * future authenticated transport (B2c's credential/session work) is a
+ * main-process-only swap here.
+ */
+export const canonicalRuns = new CanonicalRunController();
+
 export const controller = new ShellController({
   supervisor,
   boundedLogLines: () => processPort.boundedActiveOutput().lines,
   workspace: localWorkspace,
   conversations: canonicalConversations,
+  runs: canonicalRuns,
 });
 
 let mainWindow: BrowserWindow | null = null;

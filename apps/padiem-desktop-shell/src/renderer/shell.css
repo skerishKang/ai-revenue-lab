@@ -390,6 +390,165 @@ button.workspace-entry:hover:not(:disabled) {
   font: 12px/1.55 Consolas, monospace;
 }
 
+/* ── #3436 B3a — canonical run activity surface ─────────────────────────── */
+
+.run-activity {
+  box-sizing: border-box;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface-muted);
+  overflow: hidden;
+}
+
+.run-activity-header {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.run-activity-header h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.run-source-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: 1px solid var(--text-muted);
+  opacity: 0.65;
+}
+
+.run-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.run-entry {
+  padding: 10px 18px;
+}
+
+.run-entry + .run-entry {
+  border-top: 1px solid var(--border);
+}
+
+.run-entry-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.run-status-badge {
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.run-status-badge.status-running,
+.run-status-badge.status-preparing {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.run-status-badge.status-completed {
+  border-color: var(--text-muted);
+}
+
+.run-status-badge.status-failed,
+.run-status-badge.status-cancelled {
+  opacity: 0.75;
+}
+
+.run-title {
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.run-result {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.run-entry-facts {
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.run-chip {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.run-facts {
+  margin: 8px 0 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 12px;
+  font: 11px/1.5 Consolas, monospace;
+}
+
+.run-facts dt {
+  color: var(--text-muted);
+}
+
+.run-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.run-empty-state {
+  margin: 0;
+  padding: 22px 18px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.run-empty-state.run-pending h3 {
+  margin: 0 0 8px;
+  color: var(--text);
+  font-size: 15px;
+}
+
+.run-empty-state.run-pending p {
+  margin: 0;
+}
+
+.run-authority-note {
+  margin: 0 !important;
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  font: 12px/1.55 Consolas, monospace;
+}
+
 .workspace-rail-title {
   padding: 2px 2px 9px;
   color: var(--text-muted);

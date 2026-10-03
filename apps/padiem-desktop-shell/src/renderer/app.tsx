@@ -45,6 +45,9 @@ import type {
   BoundedLogResponse,
   CanonicalConversationDetail,
   CanonicalConversationListResponse,
+  CanonicalRunListItem,
+  CanonicalRunListResponse,
+  CanonicalRunStatus,
   DeviceLifecycleState,
   PairingDeepLinkResponse,
   RunnerHealthResponse,
@@ -62,6 +65,7 @@ export interface ShellViewState {
   readonly workspaceListing: WorkspaceListResponse | null;
   readonly conversationList: CanonicalConversationListResponse | null;
   readonly selectedConversation: CanonicalConversationDetail | null;
+  readonly runList: CanonicalRunListResponse | null;
   readonly notice: string | null;
   /** Which action produced `notice`. The raw reason is a diagnostic. */
   readonly noticeAction: ShellNoticeAction | null;
@@ -81,6 +85,7 @@ export const INITIAL_SHELL_VIEW_STATE: ShellViewState = Object.freeze({
   workspaceListing: null,
   conversationList: null,
   selectedConversation: null,
+  runList: null,
   notice: null,
   noticeAction: null,
   error: null,
@@ -216,6 +221,12 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
     [api],
   );
 
+  const loadRuns = useCallback(async (): Promise<void> => {
+    if (!api) return;
+    const runList = await api.listRuns();
+    setState((prev) => ({ ...prev, runList }));
+  }, [api]);
+
   useEffect(() => {
     if (!api) return;
     void refresh();
@@ -229,9 +240,13 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
     void api.listConversations().then((conversationList) => {
       setState((prev) => ({ ...prev, conversationList }));
     });
-    const timer = setInterval(() => void refresh(), 5000);
+    void loadRuns();
+    const timer = setInterval(() => {
+      void refresh();
+      void loadRuns();
+    }, 5000);
     return () => clearInterval(timer);
-  }, [api, refresh]);
+  }, [api, refresh, loadRuns]);
 
   if (!api) {
     return { error: state.error ?? 'connecting to the local shell bridge…' };
@@ -597,6 +612,128 @@ export function ConversationWorkspacePanel(props: {
 }
 
 /**
+ * #3436 B3a — canonical run activity surface.
+ *
+ * A fail-closed presentation of the canonical Padiem Claw run history
+ * (apps/padiem-chat /api/claw/runs), the same authority Web Claw reads. The
+ * Desktop mints no run id, keeps no run store and offers no mutation: what is
+ * shown is the server's own bounded projection of the owner's recent runs.
+ * When the canonical source is unavailable the surface stays at
+ * `data-run-source="canonical-required"` — never a local run list.
+ *
+ * `liveActivitySource` is projected honestly: the repository has no live
+ * run-event authority yet, so this is a bounded recent-records view, and it is
+ * never presented as a live feed.
+ */
+export function RunActivityPanel(props: {
+  locale: ShellLocale;
+  advanced: boolean;
+  runs: CanonicalRunListResponse | null;
+}): ReactElement {
+  const { locale, advanced, runs } = props;
+  const t = (key: ShellStringKey): string => translate(locale, key);
+  const canonical = runs !== null && runs.ok;
+  const source = canonical ? 'canonical' : 'canonical-required';
+  return (
+    <section className="run-activity" data-run-source={source} aria-labelledby="desktop-run-title">
+      <div className="run-activity-header">
+        <h2 id="desktop-run-title">{t('desktop.runTitle')}</h2>
+        <span className="run-source-dot" aria-hidden="true" />
+      </div>
+      {canonical && runs.runs.length > 0 ? (
+        <ul className="run-list">
+          {runs.runs.map((run) => (
+            <RunActivityEntry key={run.runId} run={run} locale={locale} advanced={advanced} />
+          ))}
+        </ul>
+      ) : canonical ? (
+        <p className="run-empty-state">{t('desktop.runEmpty')}</p>
+      ) : (
+        <div className="run-empty-state run-pending">
+          <h3>{t('desktop.runPendingTitle')}</h3>
+          <p>{t('desktop.runPendingBody')}</p>
+        </div>
+      )}
+      {advanced ? (
+        <p className="run-authority-note" data-advanced="true">
+          {t('desktop.runAuthorityNote')}
+        </p>
+      ) : null}
+    </section>
+  );
+}
+
+function runStatusText(locale: ShellLocale, status: CanonicalRunStatus): string {
+  const key = (
+    {
+      queued: 'desktop.runStatusQueued',
+      preparing: 'desktop.runStatusPreparing',
+      running: 'desktop.runStatusRunning',
+      waiting_approval: 'desktop.runStatusWaitingApproval',
+      completed: 'desktop.runStatusCompleted',
+      failed: 'desktop.runStatusFailed',
+      cancelled: 'desktop.runStatusCancelled',
+    } as const
+  )[status];
+  return translate(locale, key);
+}
+
+/**
+ * One canonical run row. Every field is the server's own: the linked
+ * conversation and workspace ids are projected verbatim and never re-derived
+ * from the Desktop's local state. Canonical ids stay Advanced-only (#3165).
+ */
+function RunActivityEntry(props: {
+  run: CanonicalRunListItem;
+  locale: ShellLocale;
+  advanced: boolean;
+}): ReactElement {
+  const { run, locale, advanced } = props;
+  const t = (key: ShellStringKey): string => translate(locale, key);
+  return (
+    <li className="run-entry" data-run-status={run.status}>
+      <div className="run-entry-main">
+        <span className={`run-status-badge status-${run.status}`}>
+          {runStatusText(locale, run.status)}
+        </span>
+        <span className="run-title">{run.title || run.action || t('desktop.runEmpty')}</span>
+      </div>
+      {run.resultSummary ? <p className="run-result">{run.resultSummary}</p> : null}
+      <div className="run-entry-facts">
+        {run.artifact !== null ? <span className="run-chip">{t('desktop.runArtifact')}</span> : null}
+        {run.conversationId !== null ? (
+          <span className="run-chip">{t('desktop.runConversationLinked')}</span>
+        ) : null}
+      </div>
+      {advanced ? (
+        <dl className="run-facts" data-advanced="true">
+          <dt>{t('desktop.runIdLabel')}</dt>
+          <dd>{run.runId}</dd>
+          {run.conversationId !== null ? (
+            <>
+              <dt>{t('desktop.runConversationLabel')}</dt>
+              <dd>{run.conversationId}</dd>
+            </>
+          ) : null}
+          {run.workspaceId !== null ? (
+            <>
+              <dt>{t('desktop.runWorkspaceLabel')}</dt>
+              <dd>{run.workspaceId}</dd>
+            </>
+          ) : null}
+          {run.channel ? (
+            <>
+              <dt>{t('desktop.runChannelLabel')}</dt>
+              <dd>{run.channel}</dd>
+            </>
+          ) : null}
+        </dl>
+      ) : null}
+    </li>
+  );
+}
+
+/**
  * Advanced-only pairing diagnostics.
  *
  * Easy view renders no version of this panel, so the raw seam text can never
@@ -805,6 +942,11 @@ export function ShellView(props: {
             conversations={state.conversationList}
             selectedConversation={state.selectedConversation}
             onSelectConversation={(conversationId) => void actions.selectConversation(conversationId)}
+          />
+          <RunActivityPanel
+            locale={locale}
+            advanced={visibility.developerFacts}
+            runs={state.runList}
           />
         </section>
         <aside className="workspace-rail workspace-local-rail">

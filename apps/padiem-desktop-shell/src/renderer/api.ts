@@ -9,6 +9,8 @@ import type {
   BoundedLogResponse,
   CanonicalConversationListResponse,
   CanonicalConversationReadResponse,
+  CanonicalRunListResponse,
+  CanonicalRunReadResponse,
   PairingDeepLinkResponse,
   RunnerHealthResponse,
   RunnerStartResponse,
@@ -30,6 +32,8 @@ export interface PadiemShellApi {
   clearWorkspaceRoot(): Promise<WorkspaceRootResponse>;
   listConversations(): Promise<CanonicalConversationListResponse>;
   readConversation(conversationId: string): Promise<CanonicalConversationReadResponse>;
+  listRuns(): Promise<CanonicalRunListResponse>;
+  readRun(runId: string): Promise<CanonicalRunReadResponse>;
 }
 
 declare global {
