@@ -109,11 +109,13 @@
 
   function normalizeSender(raw) {
     if (!isPlainObject(raw)) return null;
-    var allowed = ["company", "rep", "bizNo", "address", "phone", "email", "presetId"];
+    /* contactPerson 은 QuoteDraft authority(#3437)의 회사 고정 기본값이다.
+       표시 authority 가 아닌 데이터 기본값이므로 여기서만 허용된다. */
+    var allowed = ["company", "rep", "contactPerson", "bizNo", "address", "phone", "email", "presetId"];
     if (unknownKeys(raw, allowed).length > 0) return null;
     var company = boundedString(raw.company, MAX_STRING_CHARS, "").trim();
     if (!company) return null;
-    return {
+    var normalized = {
       company: company,
       rep: boundedString(raw.rep, MAX_STRING_CHARS, "").trim(),
       bizNo: boundedString(raw.bizNo, MAX_STRING_CHARS, "").trim(),
@@ -122,6 +124,10 @@
       email: boundedString(raw.email, MAX_STRING_CHARS, "").trim(),
       presetId: boundedString(raw.presetId, 80, "saved-skill").trim() || "saved-skill"
     };
+    /* 비어 있으면 키를 만들지 않는다. 기존 Skill 직렬화 형태를 보존한다(spec/unit/note 선례). */
+    var contactPerson = boundedString(raw.contactPerson, MAX_STRING_CHARS, "").trim();
+    if (contactPerson) normalized.contactPerson = contactPerson;
+    return normalized;
   }
 
   function normalizeFixedDefaults(raw) {

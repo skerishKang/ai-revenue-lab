@@ -511,6 +511,22 @@
         var style = styles.length ? ' style="' + styles.join(";") + '"' : "";
         return "<th" + style + ">" + escapeHtml(column.label) + "</th>";
       }).join("");
+      var formalTitleHead = model.layoutVariant === "formal-grid-v1" && page.titleText
+        ? '<tr class="quote-detail-title-row"><th colspan="' + page.columns.length + '">' +
+          escapeHtml(page.titleText) + "</th></tr>"
+        : "";
+      var standaloneTitle = formalTitleHead
+        ? ""
+        : '<h2 class="quote-detail-title">' + escapeHtml(page.titleText) + "</h2>";
+      var colgroup = formalTitleHead
+        ? "<colgroup>" + page.columns.map(function (column) {
+            var style = column.width ? ' style="width:' + escapeHtml(column.width) + '"' : "";
+            return "<col" + style + ">";
+          }).join("") + "</colgroup>"
+        : "";
+      var headGroup = formalTitleHead
+        ? "<thead>" + formalTitleHead + "</thead><tbody><tr class=\"quote-detail-column-row\">" + head + "</tr>"
+        : "<thead><tr>" + head + "</tr></thead><tbody>";
       var lastSection = null;
       var body = page.rows.map(function (row) {
         var sectionHtml = "";
@@ -535,8 +551,8 @@
         ? ' data-layout-variant="' + escapeHtml(model.layoutVariant) + '"'
         : "";
       return '<section class="quote-paper quote-detail-page" data-detail-group="' + escapeHtml(page.id) + '"' + layoutAttr + '>' +
-        '<h2 class="quote-detail-title">' + escapeHtml(page.titleText) + "</h2>" +
-        '<table class="quote-table"><thead><tr>' + head + "</tr></thead><tbody>" + body + "</tbody></table>" +
+        standaloneTitle +
+        '<table class="quote-table">' + colgroup + headGroup + body + "</tbody></table>" +
         '<div class="quote-detail-subtotal"><span>' + escapeHtml(page.subtotalLabel) +
         '</span><strong>' + escapeHtml(page.subtotalText) + "</strong></div>" +
         (page.finalLabel
