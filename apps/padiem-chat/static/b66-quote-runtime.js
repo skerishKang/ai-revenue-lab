@@ -15,6 +15,7 @@
       idle: "내용을 입력하면 배정된 견적서 양식으로 바로 만듭니다.",
       working: "견적 내용을 정리하고 있습니다.",
       missing: "거래처와 품목·수량·단가를 조금 더 알려 주세요.",
+      companyDefaultsMissing: "회사 기본 유효기간을 확인해 주세요.",
       ready: "견적서가 준비되었습니다. 아래에서 확인하거나 PDF로 저장하세요.",
       failed: "견적서를 만들지 못했습니다. 입력 내용을 확인해 주세요."
     },
@@ -30,6 +31,7 @@
       idle: "Enter the changing values and your assigned template will be used.",
       working: "Preparing the quote values.",
       missing: "Please add the customer and item, quantity, and unit price.",
+      companyDefaultsMissing: "Please confirm your company's default quote validity period.",
       ready: "Your quote is ready. Review it below or save it as PDF.",
       failed: "The quote could not be created. Check your request and try again."
     }
@@ -93,9 +95,10 @@
       email: typeof profile.email === "string" ? profile.email.trim() : "",
       presetId: "account-company-profile"
     };
-    if (Number.isInteger(profile.defaultValidityDays) && profile.defaultValidityDays >= 0 && profile.defaultValidityDays <= 3650) {
-      copy.fixedDefaults.validDays = profile.defaultValidityDays;
+    if (!Number.isInteger(profile.defaultValidityDays) || profile.defaultValidityDays < 0 || profile.defaultValidityDays > 3650) {
+      return null;
     }
+    copy.fixedDefaults.validDays = profile.defaultValidityDays;
     if (["EXCLUSIVE", "INCLUSIVE", "EXEMPT"].includes(profile.defaultTaxMode)) {
       copy.fixedDefaults.taxMode = profile.defaultTaxMode;
     }
@@ -424,7 +427,7 @@
       if (!detail.response.ok || !skill || typeof skill !== "object") throw new Error("skill_unavailable");
       const effectiveSkill = effectiveSkillForCompanyProfile(skill, interpreted.data.company_profile);
       if (!effectiveSkill) {
-        setStatus(c.missing, "missing");
+        setStatus(c.companyDefaultsMissing, "missing");
         return;
       }
       const assets = await loadPrivateAssets(effectiveSkill);

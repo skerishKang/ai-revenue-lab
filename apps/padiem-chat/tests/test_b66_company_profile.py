@@ -173,4 +173,6 @@ def test_chat_runtime_overlays_canonical_profile_without_browser_storage_authori
     assert 'presetId: "account-company-profile"' in source
     assert "interpreted.data.company_profile" in source
     assert "skill: effectiveSkill" in source
+    assert "!Number.isInteger(profile.defaultValidityDays)" in source
+    assert "copy.fixedDefaults.validDays = profile.defaultValidityDays" in source
     assert "localStorage" not in source
