@@ -10,6 +10,8 @@ from starlette.staticfiles import StaticFiles
 
 from .auth import GoogleOAuthClient
 from .b66_quote_conversation import B66QuoteConversationInterpreter
+from .b66_company_profile import CompanyProfileStore, D1CompanyProfileStore
+from .b66_company_profile_routes import b66_company_profile_get, b66_company_profile_put
 from .b66_quote_asset_routes import b66_quote_asset_detail
 from .b66_quote_assets import B66QuoteAssetStore, D1B66QuoteAssetMetadataStore
 from .b66_quote_routes import (
@@ -153,6 +155,7 @@ def create_app(
     claw_telegram_authority=None,
     approved_memory_store: ApprovedMemoryStore | None = None,
     b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
+    b66_company_profile_store: CompanyProfileStore | None = None,
     b66_quote_asset_store=None,
     b66_quote_interpreter=None,
     claw_task_alert_store=None,
@@ -216,6 +219,8 @@ def create_app(
         Route("/api/chat/stream", api_chat_stream, methods=["POST"]),
         Route("/api/chat", api_chat, methods=["POST"]),
         Route("/api/b66/runtime-config", b66_runtime_config, methods=["GET"]),
+        Route("/api/b66/company-profile", b66_company_profile_get, methods=["GET"]),
+        Route("/api/b66/company-profile", b66_company_profile_put, methods=["PUT"]),
         Route("/api/b66/saved-skills", b66_saved_skills, methods=["GET"]),
         Route(
             "/api/b66/saved-skills/{saved_skill_id}",
@@ -376,6 +381,16 @@ def create_app(
         except Exception:
             _b66_saved_quote_skill_store = None
     app.state.b66_saved_quote_skill_store = _b66_saved_quote_skill_store
+
+    # B66 #3406: canonical account/workspace company identity/defaults. This is
+    # separate from Saved Quote Skill layout behavior and browser-local presets.
+    _b66_company_profile_store = b66_company_profile_store
+    if _b66_company_profile_store is None and d1_binding is not None:
+        try:
+            _b66_company_profile_store = D1CompanyProfileStore(d1_binding)
+        except Exception:
+            _b66_company_profile_store = None
+    app.state.b66_company_profile_store = _b66_company_profile_store
 
     # B66 #3402: private logo/stamp bytes reuse the existing private workspace
     # R2 binding, while D1 stores only owner/workspace-scoped metadata. No
