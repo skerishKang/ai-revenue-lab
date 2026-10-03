@@ -75,6 +75,33 @@
     )).slice(0, 20);
   }
 
+  function effectiveSkillForCompanyProfile(skill, profile) {
+    if (!skill || typeof skill !== "object") return null;
+    if (profile === null || profile === undefined) return skill;
+    if (typeof profile !== "object" || Array.isArray(profile)) return null;
+    if (typeof profile.company !== "string" || !profile.company.trim()) return null;
+
+    const copy = JSON.parse(JSON.stringify(skill));
+    if (!copy.fixedDefaults || typeof copy.fixedDefaults !== "object") return null;
+    copy.fixedDefaults.sender = {
+      company: profile.company.trim(),
+      rep: typeof profile.representative === "string" ? profile.representative.trim() : "",
+      contactPerson: typeof profile.contactPerson === "string" ? profile.contactPerson.trim() : "",
+      bizNo: typeof profile.businessNumber === "string" ? profile.businessNumber.trim() : "",
+      address: typeof profile.address === "string" ? profile.address.trim() : "",
+      phone: typeof profile.phone === "string" ? profile.phone.trim() : "",
+      email: typeof profile.email === "string" ? profile.email.trim() : "",
+      presetId: "account-company-profile"
+    };
+    if (Number.isInteger(profile.defaultValidityDays) && profile.defaultValidityDays >= 0 && profile.defaultValidityDays <= 3650) {
+      copy.fixedDefaults.validDays = profile.defaultValidityDays;
+    }
+    if (["EXCLUSIVE", "INCLUSIVE", "EXEMPT"].includes(profile.defaultTaxMode)) {
+      copy.fixedDefaults.taxMode = profile.defaultTaxMode;
+    }
+    return copy;
+  }
+
   function el(tag, className, text) {
     const node = document.createElement(tag);
     if (className) node.className = className;
@@ -395,7 +422,12 @@
       const detail = await readJson("/api/b66/saved-skills/" + encodeURIComponent(savedSkillId));
       const skill = detail.data && detail.data.saved_skill && detail.data.saved_skill.skill;
       if (!detail.response.ok || !skill || typeof skill !== "object") throw new Error("skill_unavailable");
-      const assets = await loadPrivateAssets(skill);
+      const effectiveSkill = effectiveSkillForCompanyProfile(skill, interpreted.data.company_profile);
+      if (!effectiveSkill) {
+        setStatus(c.missing, "missing");
+        return;
+      }
+      const assets = await loadPrivateAssets(effectiveSkill);
 
       await waitForFrame(frame, runtime.embedUrl);
       const id = requestId();
@@ -403,7 +435,7 @@
       frame.contentWindow.postMessage({
         type: "b66.embed.render.v1",
         requestId: id,
-        skill,
+        skill: effectiveSkill,
         candidate,
         assets
       }, runtime.origin);
