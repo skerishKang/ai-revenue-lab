@@ -770,8 +770,11 @@ const formalDetailHtml = formalDoc.getElementById("pvDetailPages").innerHTML;
 check(formalDetailHtml.includes('data-layout-variant="formal-grid-v1"'),
   "detail pages inherit the formal layout variant");
 check(formalDetailHtml.includes('<thead><tr class="quote-detail-title-row"><th colspan="8">') &&
-      formalDetailHtml.includes("자재산출내역서</th></tr><tr>"),
-  "formal detail title is inside the repeating table header group");
+      formalDetailHtml.includes("자재산출내역서</th></tr></thead>"),
+  "formal detail title is the only row inside the repeating table header group");
+check(formalDetailHtml.includes('<tbody><tr class="quote-detail-column-row"><th') &&
+      (formalDetailHtml.match(/quote-detail-column-row/g) || []).length === 1,
+  "column header row renders once as the first body row, so continuation pages repeat the title only");
 check((formalDetailHtml.match(/<colgroup><col/g) || []).length === 1 &&
       (formalDetailHtml.match(/<col[ >]/g) || []).length === 8,
   "formal detail table pins every column width so the repeating title row cannot move columns");
@@ -795,6 +798,8 @@ check(stylesCss.includes("background: #c9c9c9"),
   "formal detail header has the reviewed gray treatment");
 check(stylesCss.includes(".quote-detail-title-row th") && stylesCss.includes("background: #fff"),
   "formal continuation title row has reviewed title styling inside the repeating thead");
+check(/\.quote-detail-page\[data-layout-variant="formal-grid-v1"\] \.quote-detail-title-row th\s*\{[^}]*line-height: 1.5;[^}]*\}/.test(stylesCss),
+  "formal continuation title row keeps the reviewed title metrics");
 check(/\.quote-detail-title-row th\s*\{[^}]*border: 0/.test(stylesCss),
   "formal continuation title row has no box border, matching the standalone title block");
 check(/\.quote-detail-page\[data-layout-variant="formal-grid-v1"\] \.quote-table \{\s*border: 0;/.test(stylesCss),

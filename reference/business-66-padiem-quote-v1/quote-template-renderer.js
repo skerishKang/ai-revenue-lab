@@ -524,6 +524,9 @@
             return "<col" + style + ">";
           }).join("") + "</colgroup>"
         : "";
+      var headGroup = formalTitleHead
+        ? "<thead>" + formalTitleHead + "</thead><tbody><tr class=\"quote-detail-column-row\">" + head + "</tr>"
+        : "<thead><tr>" + head + "</tr></thead><tbody>";
       var lastSection = null;
       var body = page.rows.map(function (row) {
         var sectionHtml = "";
@@ -549,7 +552,7 @@
         : "";
       return '<section class="quote-paper quote-detail-page" data-detail-group="' + escapeHtml(page.id) + '"' + layoutAttr + '>' +
         standaloneTitle +
-        '<table class="quote-table">' + colgroup + "<thead>" + formalTitleHead + "<tr>" + head + "</tr></thead><tbody>" + body + "</tbody></table>" +
+        '<table class="quote-table">' + colgroup + headGroup + body + "</tbody></table>" +
         '<div class="quote-detail-subtotal"><span>' + escapeHtml(page.subtotalLabel) +
         '</span><strong>' + escapeHtml(page.subtotalText) + "</strong></div>" +
         (page.finalLabel
