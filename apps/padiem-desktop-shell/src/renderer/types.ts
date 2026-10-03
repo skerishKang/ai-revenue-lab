@@ -7,11 +7,19 @@
 
 export type {
   BoundedLogResponse,
+  CanonicalConversationDetail,
+  CanonicalConversationListItem,
+  CanonicalConversationListResponse,
+  CanonicalConversationMessage,
+  CanonicalConversationReadResponse,
   PairingDeepLinkResponse,
   RunnerHealthResponse,
   RunnerStartResponse,
   RunnerStopResponse,
   ShellStatus,
+  WorkspaceEntry,
+  WorkspaceListResponse,
+  WorkspaceRootResponse,
 } from '../contract/ipc.js';
 
 export type { DeviceLifecycleState } from '../contract/device-lifecycle.js';
