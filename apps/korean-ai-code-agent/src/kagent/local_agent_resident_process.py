@@ -54,6 +54,10 @@ from typing import Any, Callable
 from .contracts import ContractError
 from .local_agent import LocalAgentDeviceProfile, LocalAgentPlatform, LocalRoot
 from .local_agent_broker_pairing_client import LocalAgentBrokerPairingClient
+from .local_agent_desktop_material import (
+    MAX_PREHANDOFF_SKIP_LINES,
+    ResidentDesktopMaterialResponder,
+)
 from .local_agent_control_plane_admission import (
     ControlPlanePhysicalAdmissionChannel,
     ControlPlanePhysicalAdmissionTransport,
@@ -701,11 +705,22 @@ def main(argv: list[str] | None = None) -> int:
         _emit(status="refused", reason="no_configured_broker_boundary", **RESIDENT_PROCESS_CONTRACT)
         return 2
     _start_stall_watchdog()
-    raw = sys.stdin.readline()
-    try:
-        handoff = read_handoff(raw)
-    except ContractError as exc:
-        _emit(status="refused", reason="handoff_refused", detail=str(exc), **RESIDENT_PROCESS_CONTRACT)
+    # #3436 B2d: the supervised pipe carries more than the handoff now — the
+    # material responder answers requests only after redemption — so lines that
+    # are not a handoff are skipped, never honoured. The handoff itself must
+    # still parse exactly; the bound keeps a hostile stdin from spinning.
+    handoff: dict | None = None
+    for _ in range(MAX_PREHANDOFF_SKIP_LINES):
+        raw = sys.stdin.readline()
+        if not raw:
+            break
+        try:
+            handoff = read_handoff(raw)
+            break
+        except ContractError:
+            continue
+    if handoff is None:
+        _emit(status="refused", reason="handoff_refused", detail="no handoff line", **RESIDENT_PROCESS_CONTRACT)
         return 2
     now = datetime.now(timezone.utc).replace(microsecond=0)
     os.makedirs(entry.credential_dir, exist_ok=True)
@@ -751,6 +766,21 @@ def main(argv: list[str] | None = None) -> int:
         _emit(event="host_built", **_phase_stamp(), **RESIDENT_PROCESS_CONTRACT)
         _emit(event="connect_start", **_phase_stamp(), **RESIDENT_PROCESS_CONTRACT)
         host.start()
+        # #3436 B2d: the bounded trusted-local material responder shares this
+        # supervised stdio boundary. It starts only after the handoff was
+        # consumed and the host is online, answers exactly one request kind,
+        # and projects state the host already holds — no session is opened and
+        # no credential is minted or stored here (DESKTOP_SESSION_OPEN=0).
+        material_responder = ResidentDesktopMaterialResponder(
+            material_projection=host.current_desktop_session_material
+        )
+        material_responder.start()
+        _emit(
+            event="desktop_material_channel_ready",
+            host_state=host.state.value,
+            **_phase_stamp(),
+            **RESIDENT_PROCESS_CONTRACT,
+        )
         _emit(
             event="session_open",
             host_state=host.state.value,
