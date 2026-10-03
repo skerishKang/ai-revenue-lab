@@ -134,14 +134,33 @@ _EMPTY_AUTHORITY_FIELDS = (
 class P01EngineOrchestrationClient:
     """`P01OrchestrationPort` implementation backed by the Engine client."""
 
-    def __init__(self, client: Any) -> None:
+    def __init__(self, client: Any, *, allow_subject_identity: bool = False) -> None:
         if not callable(getattr(client, "orchestrate", None)):
             raise P01AdapterError(
                 "invalid_engine_client",
                 "Engine client must expose async orchestrate(request).",
                 dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
+        if not isinstance(allow_subject_identity, bool):
+            raise P01AdapterError(
+                "invalid_subject_lane",
+                "P01 subject identity lane must be a boolean.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+            )
         self._client = client
+        # #3382: the reviewed canonical USER lane relaxes the blanket subject
+        # rejection for a bounded canonical subject only; the default lane
+        # keeps rejecting subject identity exactly as before.
+        self._allow_subject_identity = allow_subject_identity
+
+    def enable_subject_identity(self, allowed: bool) -> None:
+        if not isinstance(allowed, bool):
+            raise P01AdapterError(
+                "invalid_subject_lane",
+                "P01 subject identity lane must be a boolean.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+            )
+        self._allow_subject_identity = allowed
 
     async def run(
         self, request: OrchestrationRequest
@@ -246,16 +265,27 @@ class P01EngineOrchestrationClient:
             payload["session_id"] = execution.session_id
         if execution.additional_system_context is not None:
             payload["additional_system_context"] = execution.additional_system_context
+        # #3382: the canonical USER lane carries the server-resolved subject on
+        # the Engine wire. The Engine's own admission contract validates the
+        # subject shape and revalidates it against Control Plane Identity.
+        if request.subject_id is not None:
+            payload["subject_id"] = request.subject_id
         return payload
 
-    @staticmethod
-    def _reject_unsupported_authority(request: OrchestrationRequest) -> None:
-        if request.subject_id is not None:
+    def _reject_unsupported_authority(self, request: OrchestrationRequest) -> None:
+        if request.subject_id is not None and not self._allow_subject_identity:
             raise P01AdapterError(
                 "p01_authority_field_unsupported",
                 "P01 requests must not carry a subject identity.",
                 dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
+        if request.subject_id is not None:
+            # #3382: reuse the shared canonical subject validator from
+            # p01_adapter.py — the same grammar the factory uses, so a subject
+            # that bypasses the factory still fails closed on shape.
+            from kagent.p01_adapter import validate_canonical_subject_id
+
+            validate_canonical_subject_id(request.subject_id)
         for name in _NULLABLE_AUTHORITY_FIELDS:
             if getattr(request, name) is not None:
                 raise P01AdapterError(
