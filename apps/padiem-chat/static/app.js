@@ -2583,11 +2583,17 @@
       : "connectors-calendar-read-pending";
   }
 
-  // Bounded backend-code → copy mapping. Only reviewed, safe, secret-free
-  // codes get an entry; anything else — including any future code CENTRAL has
-  // not reviewed — falls back to the same generic OAuth-preserving message.
-  // The server's raw message text is never rendered.
+  // Bounded backend-code → copy mapping (#3451 reviewed diagnostics). Only
+  // this closed, reviewed, secret-free vocabulary gets entries; anything else
+  // — including any future code CENTRAL has not reviewed — falls back to the
+  // generic OAuth-preserving message. The server's raw message text is never
+  // rendered and no credential material is read from the body.
   const CALENDAR_READ_ERROR_KEYS = Object.freeze({
+    "calendar_activation_engine_auth_failed": "connectors-calendar-read-error-engine-auth",
+    "calendar_activation_workspace_unavailable": "connectors-calendar-read-error-workspace",
+    "calendar_activation_binding_unavailable": "connectors-calendar-read-error-binding",
+    "calendar_activation_not_connected": "connectors-calendar-read-error-not-connected",
+    "calendar_activation_grant_unavailable": "connectors-calendar-read-error-grant",
     "calendar_read_activation_unavailable": "connectors-calendar-read-activation-error",
   });
 
@@ -2767,8 +2773,10 @@
       renderCalendarReadState();
     } catch (error) {
       // The Google OAuth/workspace connection is untouched by an activation
-      // failure: the card keeps "Google 계정 연결됨" and the failure copy says
-      // exactly that, so a grant problem is never presented as an OAuth one.
+      // failure: the card keeps the connected-account copy and the failure
+      // copy says exactly that, so a grant problem is never presented as an
+      // OAuth one. The cause-specific wording comes from the locale table,
+      // keyed by the bounded backend code (see CALENDAR_READ_ERROR_KEYS).
       googleCalendarReadState = "failed";
       renderCalendarReadState();
       if (connectorsError) {

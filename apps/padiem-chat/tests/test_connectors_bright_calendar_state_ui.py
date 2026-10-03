@@ -43,7 +43,25 @@ NEW_LOCALE_KEYS = (
     "connectors-calendar-read-activating",
     "connectors-calendar-read-active",
     "connectors-calendar-read-failed",
+    "connectors-calendar-read-error-engine-auth",
+    "connectors-calendar-read-error-workspace",
+    "connectors-calendar-read-error-binding",
+    "connectors-calendar-read-error-not-connected",
+    "connectors-calendar-read-error-grant",
 )
+
+# The reviewed #3451 bounded diagnostic vocabulary the UI maps to
+# cause-specific, secret-free copy. Anything outside this set (including
+# codes #3451 carries but CENTRAL has not assigned to this UI slice) falls
+# back to the generic OAuth-preserving message.
+SAFE_DIAGNOSTIC_CODES = {
+    "calendar_activation_engine_auth_failed": "connectors-calendar-read-error-engine-auth",
+    "calendar_activation_workspace_unavailable": "connectors-calendar-read-error-workspace",
+    "calendar_activation_binding_unavailable": "connectors-calendar-read-error-binding",
+    "calendar_activation_not_connected": "connectors-calendar-read-error-not-connected",
+    "calendar_activation_grant_unavailable": "connectors-calendar-read-error-grant",
+    "calendar_read_activation_unavailable": "connectors-calendar-read-activation-error",
+}
 
 CARD_RE = re.compile(r'<div class="capability-card"([^>]*)>(.*?)</div>', re.DOTALL)
 
@@ -253,6 +271,46 @@ def test_locale_state_copy_is_complete_and_oauth_preserving_in_ko_and_en() -> No
     assert table["en"]["connectors-calendar-read-activation-done"] == "Calendar read access is active"
 
 
+def test_safe_diagnostic_copy_keeps_the_oauth_connection_explicit() -> None:
+    table = _locale_table()
+    # auth_failed / workspace / binding: the OAuth link stays intact, only the
+    # activation service/workspace/binding check failed.
+    for key in (
+        "connectors-calendar-read-error-engine-auth",
+        "connectors-calendar-read-error-workspace",
+        "connectors-calendar-read-error-binding",
+    ):
+        assert "유지됩니다" in table["ko"][key], key
+        assert "stays connected" in table["en"][key].lower(), key
+    # grant: the OAuth link completed; only the grant activation/save failed.
+    assert "연결은 완료되었습니다" in table["ko"]["connectors-calendar-read-error-grant"]
+    assert "is connected" in table["en"]["connectors-calendar-read-error-grant"].lower()
+    # not_connected: asks for a re-check without claiming or blaming OAuth.
+    assert "다시 확인" in table["ko"]["connectors-calendar-read-error-not-connected"]
+    assert "verified again" in table["en"]["connectors-calendar-read-error-not-connected"].lower()
+
+
+def test_all_safe_diagnostic_codes_are_mapped_in_the_app_source() -> None:
+    block = _connector_block()
+    for code, locale_key in SAFE_DIAGNOSTIC_CODES.items():
+        assert f'"{code}"' in block, code
+        assert f'"{locale_key}"' in block, locale_key
+
+
+def test_app_js_is_locale_only_and_contains_no_korean_anywhere() -> None:
+    # Repository invariant: app.js carries runtime code and English identifiers
+    # only. Every user-facing Korean lives in locale.js (ko table), so this
+    # file must not contain Hangul — comments included.
+    source = _app()
+    hangul = re.compile(r"[\uac00-\ud7af\u1100-\u11ff\u3130-\u318f]")
+    offenders = [
+        (index + 1, line.strip())
+        for index, line in enumerate(source.splitlines())
+        if hangul.search(line)
+    ]
+    assert offenders == [], f"app.js must be Korean-free (locale-only): {offenders[:5]}"
+
+
 def test_calendar_state_mapping_functions_execute_with_closed_vocabulary() -> None:
     node = shutil.which("node")
     assert node, "node runtime is required"
@@ -260,14 +318,18 @@ def test_calendar_state_mapping_functions_execute_with_closed_vocabulary() -> No
 const authState = {{ authenticated: true }};
 {_pure_mapping_block()}
 const states = ["unknown", "activating", "active", "failed", "bogus", "constructor"].map(calendarReadStateKey);
-const errors = [
-  {{ calendarReadErrorCode: "calendar_read_activation_unavailable" }},
+const safeCodes = {json.dumps(list(SAFE_DIAGNOSTIC_CODES))};
+const safeErrors = safeCodes.map(function (code) {{
+  return calendarReadActivationErrorKey({{ calendarReadErrorCode: code }});
+}});
+const fallbackErrors = [
   {{ calendarReadErrorCode: "some_future_unreviewed_code" }},
+  {{ calendarReadErrorCode: "calendar_activation_identity_unavailable" }},
   {{ calendarReadErrorCode: "constructor" }},
   {{}},
   null,
 ].map(calendarReadActivationErrorKey);
-console.log(JSON.stringify({{ states, errors }}));
+console.log(JSON.stringify({{ states, safeErrors, fallbackErrors }}));
 """
     result = subprocess.run([node, "-e", script], capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, result.stderr
@@ -281,7 +343,11 @@ console.log(JSON.stringify({{ states, errors }}));
         "connectors-calendar-read-pending",
     ]
     generic = "connectors-calendar-read-activation-error"
-    assert payload["errors"] == [generic, generic, generic, generic, generic]
+    # Every reviewed safe code maps to its own bounded copy.
+    assert payload["safeErrors"] == [SAFE_DIAGNOSTIC_CODES[code] for code in SAFE_DIAGNOSTIC_CODES]
+    # Unknown, not-in-scope, and hostile codes all fall back to the generic
+    # OAuth-preserving message — nothing ever renders the raw server text.
+    assert payload["fallbackErrors"] == [generic, generic, generic, generic, generic]
 
 
 def test_app_state_machine_is_in_session_scope_and_fail_safe() -> None:
