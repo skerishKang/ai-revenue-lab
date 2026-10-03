@@ -48,7 +48,12 @@ ARCHETYPES_BEFORE_FULL_SITE
 FULL_SURFACE_CONTACT_SHEET_REQUIRED
 NO_CUMULATIVE_VISUAL_VERSION_CASCADE
 OWNER_APPROVAL_SEPARATE
+DEV_FAST_GATE_RELEASES_IMPLEMENTER
+WINDOWS_UBUNTU_BROWSER_VALIDATION_PARALLEL
+FULL_VALIDATION_BEFORE_MERGE
 ```
+
+Development throughput also does not wait on a serial full CI matrix. After the scoped `DEV_FAST_GATE` passes, the implementation actor may move to the next authorized issue while Windows/Ubuntu/browser/full validators run in parallel. Required full validation remains a merge gate. See `AI_DEVELOPMENT_OPERATING_POLICY.md` and #3429.
 
 There is still no mandatory repository-wide `UI → UX → backend` ceremony. The Web CTO selects the smallest evidence slice needed for the product uncertainty. However, **when the work includes a new art direction or material visual redesign, the design gates are mandatory before broad UI expansion.**
 

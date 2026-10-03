@@ -46,7 +46,9 @@ Example:
 ```text
 CLAW2 #2827 correction complete.
 HEAD=<exact head SHA>
-Focused/full tests PASS; exact-head CI PASS.
+DEV_FAST_GATE=PASS
+DEV_ACTOR_RELEASED=YES
+FULL_VALIDATION=PENDING
 READY=NO
 MERGE=NO
 
@@ -72,6 +74,12 @@ FILES_CHANGED=
 SCOPE=
 IMPLEMENTATION_RESULT=
 TESTS=
+DEV_FAST_GATE=
+DEV_ACTOR_RELEASED=
+VALIDATOR_WINDOWS=
+VALIDATOR_UBUNTU=
+VALIDATOR_BROWSER=
+FULL_VALIDATION=
 CI=
 LIMITATIONS=
 SECURITY/SECRET_EXPOSURE=
@@ -80,6 +88,8 @@ READY=
 MERGE=
 ISSUE_CLOSE=
 ```
+
+A worker report does not need to wait for full Windows/Ubuntu/browser validation after `DEV_FAST_GATE=PASS`. Validator actors append or link their own exact-head records asynchronously, and `FULL_VALIDATION` is evaluated at merge review.
 
 Report claims remain subordinate to current GitHub truth. CENTRAL still independently checks current main, Issue/PR state, exact head, changed files, CI, predecessors, overlap, and any required live evidence before consequential action.
 
