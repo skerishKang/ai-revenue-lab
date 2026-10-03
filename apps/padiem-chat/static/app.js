@@ -2532,8 +2532,10 @@
   ]);
   let connectorStatusInFlight = false;
   let googleConnectorConnectInFlight = false;
-  let googleCalendarReadActivationInFlight = false;
-  let googleCalendarReadActivationDone = false;
+  // In-session Calendar READ grant truth (#2952). "unknown" until this session
+  // activates it; the status projection carries no persisted grant field, so
+  // nothing here claims a grant the server has not just confirmed.
+  let googleCalendarReadState = "unknown";
   let googleCalendarReadActivationAfterConnectReturn = false;
 
   function setConnectorCopy(element, key) {
@@ -2561,6 +2563,43 @@
     return "connectors-workspace-unverified";
   }
 
+  // Google Calendar has a second, independent axis: the READ grant activation
+  // (#2952). "Google account connected" (the OAuth/workspace axis) must never
+  // read as "Calendar read is ready" — they are separate truths. The grant
+  // state known here is the in-session activation truth; the status projection
+  // does not carry a persisted grant field yet, so "unknown" projects as the
+  // neutral "activation needed" line rather than inventing a connected grant.
+  const CALENDAR_READ_STATES = Object.freeze(["unknown", "activating", "active", "failed"]);
+  const CALENDAR_READ_STATE_KEYS = Object.freeze({
+    unknown: "connectors-calendar-read-pending",
+    activating: "connectors-calendar-read-activating",
+    active: "connectors-calendar-read-active",
+    failed: "connectors-calendar-read-failed",
+  });
+
+  function calendarReadStateKey(state) {
+    return Object.prototype.hasOwnProperty.call(CALENDAR_READ_STATE_KEYS, state)
+      ? CALENDAR_READ_STATE_KEYS[state]
+      : "connectors-calendar-read-pending";
+  }
+
+  // Bounded backend-code → copy mapping. Only reviewed, safe, secret-free
+  // codes get an entry; anything else — including any future code CENTRAL has
+  // not reviewed — falls back to the same generic OAuth-preserving message.
+  // The server's raw message text is never rendered.
+  const CALENDAR_READ_ERROR_KEYS = Object.freeze({
+    "calendar_read_activation_unavailable": "connectors-calendar-read-activation-error",
+  });
+
+  function calendarReadActivationErrorKey(error) {
+    const code = error && typeof error === "object" && typeof error.calendarReadErrorCode === "string"
+      ? error.calendarReadErrorCode
+      : "";
+    return Object.prototype.hasOwnProperty.call(CALENDAR_READ_ERROR_KEYS, code)
+      ? CALENDAR_READ_ERROR_KEYS[code]
+      : "connectors-calendar-read-activation-error";
+  }
+
   function liveConnectorCards() {
     if (!connectorsDialog) return [];
     return Array.from(connectorsDialog.querySelectorAll("[data-connector-id]"));
@@ -2571,8 +2610,50 @@
     return connectorsDialog.querySelector(`[data-google-connector-connect="${GOOGLE_CALENDAR_CONNECTOR}"]`);
   }
 
+  function googleCalendarCard() {
+    if (!connectorsDialog) return null;
+    return connectorsDialog.querySelector(`[data-connector-id="connector:google:calendar@1"]`);
+  }
+
+  /** Projects the READ-grant axis onto the Calendar card's own state line.
+   *  Only visible while the OAuth/workspace axis is "connected"; every value
+   *  is one of the four closed session states, rendered through the bounded
+   *  textContent sink. */
+  function renderCalendarReadState() {
+    const card = googleCalendarCard();
+    if (!card) return;
+    const element = card.querySelector("[data-connector-read-state]");
+    if (!element) return;
+    const state = CALENDAR_READ_STATES.includes(googleCalendarReadState)
+      ? googleCalendarReadState
+      : "unknown";
+    if (card.dataset.connectorStatus !== "connected") {
+      element.hidden = true;
+      delete card.dataset.calendarReadState;
+      return;
+    }
+    // The visual states are the four reviewed ones: an in-session "unknown"
+    // grant presents as "pending" — activation has not happened here yet.
+    const visualState = state === "unknown" ? "pending" : state;
+    element.hidden = false;
+    element.dataset.readState = visualState;
+    card.dataset.calendarReadState = state;
+    setConnectorCopy(element, calendarReadStateKey(state));
+  }
+
   function syncGoogleCalendarConnectButton(row = null) {
     const button = googleCalendarConnectButton();
+    const calendarCard = googleCalendarCard();
+    if (calendarCard) {
+      // When the OAuth/workspace axis is connected, say so in Calendar-specific
+      // words: a connected Google account is not the same truth as an active
+      // Calendar READ grant. The generic workspace copy stays for every other
+      // connector.
+      if (row && row.workspace_state === "connected") {
+        setConnectorCopy(calendarCard.querySelector("[data-connector-workspace]"), "connectors-calendar-oauth-connected");
+      }
+      renderCalendarReadState();
+    }
     if (!button) return;
     const workspaceState = row && typeof row.workspace_state === "string" ? row.workspace_state : "";
     const canConnect = Boolean(
@@ -2586,11 +2667,11 @@
     button.hidden = !(canConnect || canActivateRead);
     button.dataset.calendarAction = canActivateRead ? "activate-read" : "connect";
     button.disabled = googleConnectorConnectInFlight ||
-      googleCalendarReadActivationInFlight ||
-      googleCalendarReadActivationDone;
-    if (googleCalendarReadActivationDone) {
+      googleCalendarReadState === "activating" ||
+      googleCalendarReadState === "active";
+    if (googleCalendarReadState === "active") {
       setConnectorCopy(button, "connectors-calendar-read-activation-done");
-    } else if (canActivateRead && !googleCalendarReadActivationInFlight) {
+    } else if (canActivateRead && googleCalendarReadState !== "activating") {
       setConnectorCopy(button, "connectors-activate-calendar-read");
     } else if (canConnect && !googleConnectorConnectInFlight) {
       setConnectorCopy(button, "connectors-connect-calendar");
@@ -2649,14 +2730,15 @@
 
   async function activateGoogleCalendarRead() {
     const button = googleCalendarConnectButton();
-    if (!button || googleCalendarReadActivationInFlight || googleCalendarReadActivationDone) return;
+    if (!button || googleCalendarReadState === "activating" || googleCalendarReadState === "active") return;
     if (!authState.authenticated) {
       openAuthDialog();
       return;
     }
-    googleCalendarReadActivationInFlight = true;
+    googleCalendarReadState = "activating";
     button.disabled = true;
     setConnectorCopy(button, "connectors-activating-calendar-read");
+    renderCalendarReadState();
     if (connectorsError) connectorsError.hidden = true;
     try {
       const response = await fetch(GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT, {
@@ -2669,19 +2751,33 @@
       if (!response.ok || !data || data.ok !== true ||
           data.calendar_read_grant !== "active" ||
           data.calendar_write_authorized !== false) {
-        throw new Error("calendar read activation unavailable");
+        // Only the bounded code travels; the server's raw message text is never
+        // rendered and no credential material is read from the body.
+        const failure = new Error("calendar read activation unavailable");
+        failure.calendarReadErrorCode =
+          data && typeof data === "object" &&
+          data.error && typeof data.error === "object" &&
+          typeof data.error.code === "string"
+            ? data.error.code
+            : "";
+        throw failure;
       }
-      googleCalendarReadActivationDone = true;
+      googleCalendarReadState = "active";
       setConnectorCopy(button, "connectors-calendar-read-activation-done");
-    } catch (_) {
+      renderCalendarReadState();
+    } catch (error) {
+      // The Google OAuth/workspace connection is untouched by an activation
+      // failure: the card keeps "Google 계정 연결됨" and the failure copy says
+      // exactly that, so a grant problem is never presented as an OAuth one.
+      googleCalendarReadState = "failed";
+      renderCalendarReadState();
       if (connectorsError) {
-        setConnectorCopy(connectorsError, "connectors-calendar-read-activation-error");
+        setConnectorCopy(connectorsError, calendarReadActivationErrorKey(error));
         connectorsError.hidden = false;
       }
       setConnectorCopy(button, "connectors-activate-calendar-read");
     } finally {
-      googleCalendarReadActivationInFlight = false;
-      button.disabled = googleCalendarReadActivationDone;
+      button.disabled = googleCalendarReadState === "active";
     }
   }
 
