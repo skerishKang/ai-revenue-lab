@@ -300,6 +300,54 @@
             <p id="clawAutomationError" data-locale-key="claw-automation-error" hidden>자동화 규칙을 불러오지 못했습니다.</p>
           </div>
           <p class="claw-inbox-help" id="clawAutomationToggleStatus" role="status" aria-live="polite" hidden></p>
+          <form class="calendar-record-form claw-automation-edit-form" id="clawAutomationEditForm" hidden novalidate aria-labelledby="clawAutomationEditTitle">
+            <h4 class="claw-automation-edit-title" id="clawAutomationEditTitle" data-locale-key="claw-automation-edit-summary">자동화 규칙 수정</h4>
+            <p class="calendar-record-hint" data-locale-key="claw-automation-edit-hint">이름과 주기만 수정할 수 있습니다. 할 일·실행 대상·저장 위치·알림 채널은 수정할 수 없습니다.</p>
+            <label class="calendar-record-field" for="clawAutomationEditName">
+              <span data-locale-key="claw-automation-create-name-label">이름</span>
+              <input type="text" id="clawAutomationEditName" name="name" maxlength="256" autocomplete="off" required />
+            </label>
+            <label class="calendar-record-field" for="clawAutomationEditKind">
+              <span data-locale-key="claw-automation-create-kind-label">주기 종류</span>
+              <select id="clawAutomationEditKind" name="schedule_kind">
+                <option value="daypart" data-locale-key="claw-automation-create-kind-daypart">하루 시간대</option>
+                <option value="interval" data-locale-key="claw-automation-create-kind-interval">반복 간격</option>
+                <option value="cron" data-locale-key="claw-automation-create-kind-cron">고급 (cron)</option>
+              </select>
+            </label>
+            <label class="calendar-record-field" for="clawAutomationEditDaypart" id="clawAutomationEditDaypartField">
+              <span data-locale-key="claw-automation-create-daypart-label">시간대 선택</span>
+              <select id="clawAutomationEditDaypart" name="daypart">
+                <option value="morning" data-locale-key="claw-automation-create-daypart-morning">아침</option>
+                <option value="midday" data-locale-key="claw-automation-create-daypart-midday">정오</option>
+                <option value="evening" data-locale-key="claw-automation-create-daypart-evening">저녁</option>
+                <option value="close_of_business" data-locale-key="claw-automation-create-daypart-cob">업무 종료</option>
+              </select>
+            </label>
+            <label class="calendar-record-field" for="clawAutomationEditInterval" id="clawAutomationEditIntervalField" hidden>
+              <span data-locale-key="claw-automation-create-interval-label">반복 간격</span>
+              <input type="text" id="clawAutomationEditInterval" name="interval" list="clawAutomationEditIntervalExamples" autocomplete="off" spellcheck="false" placeholder="15m" />
+              <datalist id="clawAutomationEditIntervalExamples">
+                <option value="15m"></option>
+                <option value="1h"></option>
+                <option value="6h"></option>
+                <option value="1d"></option>
+              </datalist>
+            </label>
+            <label class="calendar-record-field" for="clawAutomationEditCron" id="clawAutomationEditCronField" hidden>
+              <span data-locale-key="claw-automation-create-cron-label">cron 표현식</span>
+              <input type="text" id="clawAutomationEditCron" name="cron" autocomplete="off" spellcheck="false" placeholder="0 9 * * *" />
+            </label>
+            <label class="calendar-record-field" for="clawAutomationEditTimezone">
+              <span data-locale-key="claw-automation-create-timezone-label">시간대 (IANA, 예: Asia/Seoul)</span>
+              <input type="text" id="clawAutomationEditTimezone" name="schedule_timezone" autocomplete="off" spellcheck="false" />
+            </label>
+            <div class="calendar-record-actions">
+              <button type="button" class="calendar-record-cancel" id="clawAutomationEditCancel" data-locale-key="claw-automation-edit-cancel">취소</button>
+              <button type="submit" class="calendar-record-submit" id="clawAutomationEditSubmit" data-locale-key="claw-automation-edit-submit">수정 저장</button>
+            </div>
+          </form>
+          <p class="claw-inbox-help" id="clawAutomationEditStatus" role="status" aria-live="polite" hidden></p>
           <p class="claw-inbox-empty" id="clawAutomationEmpty" data-locale-key="claw-automation-empty" hidden>등록된 자동화 규칙이 없습니다.</p>
           <div class="claw-inbox-list" id="clawAutomationList" role="list"></div>
         </section>
