@@ -134,6 +134,7 @@
       alwaysReusedOrDefault: [
         { key: "sender.company", label: "회사명", value: sender.company },
         { key: "sender.rep", label: "대표자", value: sender.rep },
+        { key: "sender.contactPerson", label: "발신자 담당자", value: sender.contactPerson || "" },
         { key: "sender.bizNo", label: "사업자번호", value: sender.bizNo },
         { key: "sender.address", label: "주소", value: sender.address },
         { key: "sender.phone", label: "연락처", value: sender.phone },

@@ -225,6 +225,56 @@ eq(badItemFreeze, null, "SOURCE_ITEM_VALUES_FROZEN_BY_ACCIDENT=NO");
 const badAmountFreeze = Skill.normalizeFixedDefaults(Object.assign({}, fixedDefaults(), { grandTotal: 999999 }));
 eq(badAmountFreeze, null, "SOURCE_AMOUNTS_FROZEN_BY_ACCIDENT=NO");
 
+/* ── 발신자 담당자(#3437)는 회사 고정 기본값으로 반복 생성에 재사용된다(#3401) ── */
+const contactBase = {
+  id: "skill-sender-contact",
+  name: "발신자 담당자 기본 견적서",
+  fixedDefaults: Object.assign({}, fixedDefaults(), {
+    sender: Object.assign({}, fixedDefaults().sender, { contactPerson: "한담당" })
+  }),
+  variableSchema: { recipient: true, quoteNo: true, issueDate: true, items: true, memo: true, taxMode: true },
+  internalTemplate: Template.serializeTemplate(Template.builtInTemplate()),
+  provenance: provenance(),
+  approval: null,
+  createdAt: NOW,
+  updatedAt: NOW
+};
+const contactPending = Skill.buildSkill(contactBase);
+check(contactPending && contactPending.approved === false, "sender contact person Skill is reviewable before approval");
+eq(contactPending.fixedDefaults.sender.contactPerson, "한담당", "fixedDefaults.sender preserves the sender contact person default");
+const contactSkill = Skill.buildSkill(Object.assign({}, contactBase, {
+  approval: {
+    schemaVersion: 1,
+    status: "approved",
+    skillFingerprint: contactPending.fingerprint,
+    approvedBy: "central-cto",
+    approvedAt: NOW,
+    approvalRef: "issue-3401"
+  }
+}));
+check(contactSkill && contactSkill.approved === true, "sender contact person Skill can be explicitly approved");
+const contactResult = Skill.buildRenderModel(contactSkill, input());
+check(contactResult.ok === true, "approved sender-contact Skill generates normally");
+eq(contactResult.draft.sender.contactPerson, "한담당", "REPEAT_PATH_CARRIES_SENDER_CONTACT_PERSON=YES");
+check(contactResult.compiled.skillFingerprint !== first.compiled.skillFingerprint,
+  "sender contact person participates in the Skill fingerprint basis");
+check(!("contactPerson" in skill.fixedDefaults.sender),
+  "a Skill without a sender contact person keeps the canonical sender shape");
+eq(
+  Skill.normalizeFixedDefaults(Object.assign({}, fixedDefaults(), {
+    sender: Object.assign({}, fixedDefaults().sender, { nickname: "공격 값" })
+  })),
+  null,
+  "unknown sender keys still fail closed"
+);
+eq(
+  Skill.normalizeFixedDefaults(Object.assign({}, fixedDefaults(), {
+    sender: Object.assign({}, fixedDefaults().sender, { contactPerson: "   " })
+  })).sender.contactPerson,
+  undefined,
+  "a blank sender contact person adds no key"
+);
+
 const missingCoreVariable = Skill.normalizeVariableSchema({
   recipient: false, quoteNo: true, issueDate: true, items: true, memo: true, taxMode: true
 });
