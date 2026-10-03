@@ -341,4 +341,3 @@ jobs:
           jq -e '.success == true and (.result | length == 1) and (.result[0].success == true) and ((.result[0].results // []) | length == 0)' "${response}" >/dev/null
           echo 'B62_D1_MIGRATION_023_FOREIGN_KEY_CHECK=PASS'
           echo 'ROW_DATA_READ=0'
-          echo 'ROW_DATA_READ=0'

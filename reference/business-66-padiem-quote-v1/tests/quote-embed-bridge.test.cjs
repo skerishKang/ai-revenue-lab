@@ -263,6 +263,50 @@ assert.notEqual(doc.getElementById("pvSubtotal").textContent, "");
 assert.notEqual(doc.getElementById("pvGrand").textContent, "");
 assert.ok(doc.getElementById("quotePaper").style.vars["--quote-accent"]);
 
+const accountProfile = {
+  company: "Runtime Company",
+  representative: "Runtime Rep",
+  contactPerson: "Runtime Contact",
+  businessNumber: "000-11-22222",
+  address: "Runtime Address",
+  phone: "000-000-0000",
+  email: "runtime@example.test",
+  defaultValidityDays: 45,
+  defaultTaxMode: null
+};
+const profileMessage = Bridge.normalizeRenderMessage({
+  type: Bridge.REQUEST_TYPE,
+  requestId: "req-company-profile",
+  skill,
+  candidate,
+  companyProfile: accountProfile
+});
+assert.ok(profileMessage);
+assert.equal(profileMessage.companyProfile.company, "Runtime Company");
+assert.equal(profileMessage.companyProfile.defaultValidityDays, 45);
+const profileDoc = fakeDocument();
+const profileRendered = Bridge.renderRequest(
+  {
+    type: Bridge.REQUEST_TYPE,
+    requestId: "req-company-profile",
+    skill,
+    candidate,
+    companyProfile: accountProfile
+  },
+  { Core, SavedSkill: Skill, Renderer },
+  profileDoc
+);
+assert.equal(profileRendered.ok, true);
+assert.equal(profileDoc.getElementById("pvSenderCompany").textContent, "Runtime Company");
+assert.equal(Skill.normalizeSkill(skill).fingerprint, skill.fingerprint);
+assert.equal(Bridge.normalizeRenderMessage({
+  type: Bridge.REQUEST_TYPE,
+  requestId: "req-company-profile-invalid",
+  skill,
+  candidate,
+  companyProfile: { company: "Runtime Company" }
+}), null);
+
 const logoAssetId = "b66asset_" + "a".repeat(32);
 const logoSkill = approvedSkillWithLogo(logoAssetId);
 const logoDataUrl = "data:image/png;base64,iVBORw0KGgo=";

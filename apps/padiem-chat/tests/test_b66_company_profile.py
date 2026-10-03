@@ -169,10 +169,11 @@ def test_migration_023_is_additive_partial_profile_schema() -> None:
 
 def test_chat_runtime_overlays_canonical_profile_without_browser_storage_authority() -> None:
     source = (ROOT / "static" / "b66-quote-runtime.js").read_text(encoding="utf-8")
-    assert "effectiveSkillForCompanyProfile" in source
-    assert 'presetId: "account-company-profile"' in source
+    assert "companyProfileForRender" in source
     assert "interpreted.data.company_profile" in source
-    assert "skill: effectiveSkill" in source
     assert "!Number.isInteger(profile.defaultValidityDays)" in source
-    assert "copy.fixedDefaults.validDays = profile.defaultValidityDays" in source
+    assert "companyProfile: profileResult.profile" in source
+    assert "skill: effectiveSkill" not in source
+    assert "copy.fixedDefaults.sender" not in source
+    assert "copy.fixedDefaults.validDays" not in source
     assert "localStorage" not in source
