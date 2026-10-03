@@ -33,8 +33,11 @@ import { resolveRunnerHostMode } from './runner-host-mode.js';
 import { LocalWorkspaceController } from '../workspace/local-workspace.js';
 import {
   CanonicalConversationController,
-  UnconfiguredCanonicalConversationPort,
 } from '../conversation/canonical-conversation.js';
+import {
+  createDesktopCanonicalConversationPort,
+  noDeviceSessionMaterialYet,
+} from '../conversation/desktop-canonical-conversation-port.js';
 
 const __dirname_ = path.dirname(fileURLToPath(import.meta.url));
 
@@ -137,14 +140,26 @@ export const localWorkspace = new LocalWorkspaceController(async () => {
 });
 
 /**
- * #3436 B2b — canonical conversation consumer.
+ * #3436 B2c — canonical conversation consumer over the authenticated port.
  *
- * Left on the fail-closed unconfigured port: the Desktop holds no canonical
- * Padiem session credential in this slice, so every conversation surface reads
- * as "canonical conversation unavailable" instead of minting a local one. A
- * future authenticated port is a main-process-only swap here.
+ * The main process now composes the authenticated canonical conversation port:
+ * it presents the canonical Local Agent Broker device session to the padiem-chat
+ * GET-only Desktop conversation surface and reads the same canonical
+ * conversations the Web reads. The material provider is the trusted local
+ * boundary attach point and stays main-process-only
+ * (RENDERER_DEVICE_CREDENTIAL=0, RENDERER_BROKER_SESSION_SECRET=0); until the
+ * resident-side session channel is composed it yields no material, and the
+ * surface then keeps the exact B2b fail-closed presentation — every call reads
+ * as "canonical conversation unavailable", never a temporary local
+ * conversation. The chat base URL is a named trusted input, never inherited
+ * request content.
  */
-export const canonicalConversations = new CanonicalConversationController();
+export const canonicalConversations = new CanonicalConversationController(
+  createDesktopCanonicalConversationPort({
+    chatBaseUrl: process.env.PADIEM_CHAT_BASE_URL ?? null,
+    materialProvider: noDeviceSessionMaterialYet,
+  }),
+);
 
 export const controller = new ShellController({
   supervisor,
