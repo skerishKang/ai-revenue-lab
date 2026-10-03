@@ -414,7 +414,7 @@ textarea { min-height: 82px; resize: vertical; }
 }
 .quote-detail-page[data-layout-variant="formal-grid-v1"] {
   display: block;
-  padding: 18px 18px 20px;
+  padding: 0 18px 20px;
 }
 .quote-detail-page[data-layout-variant="formal-grid-v1"] .quote-detail-title {
   margin: 0 0 22px;
@@ -426,6 +426,19 @@ textarea { min-height: 82px; resize: vertical; }
   background: #c9c9c9;
   font-weight: 700;
   white-space: nowrap;
+}
+.quote-detail-page[data-layout-variant="formal-grid-v1"] .quote-detail-title-row th {
+  padding: 9.5px 0 30.5px;
+  border: 0;
+  background: #fff;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.5;
+  white-space: normal;
+}
+.quote-detail-page[data-layout-variant="formal-grid-v1"] .quote-table {
+  border: 0;
 }
 .quote-detail-page[data-layout-variant="formal-grid-v1"] .quote-table td {
   padding: 9px 4px;
