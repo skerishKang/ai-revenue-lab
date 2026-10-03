@@ -6,11 +6,13 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import {
   ConversationWorkspacePanel,
   INITIAL_SHELL_VIEW_STATE,
+  RunActivityPanel,
   ShellView,
   WorkspacePanel,
   type ShellActions,
 } from '../src/renderer/app.js';
 import type {
+  CanonicalRunListResponse,
   WorkspaceListResponse,
   WorkspaceRootResponse,
 } from '../src/renderer/types.js';
@@ -150,4 +152,127 @@ test('#3436 B2a Advanced layout states the canonical conversation boundary expli
   assert.match(markup, /data-advanced="true"/);
   assert.match(markup, /existing Padiem Chat\/Claw conversation remains canonical/);
   assert.doesNotMatch(markup, /<textarea/i);
+});
+
+const CANONICAL_RUN_ID = 'run_a2f8c1d94b7e6035fa9c2e11';
+const CANONICAL_CONVERSATION_ID = 'chat_' + 'a'.repeat(32);
+const CANONICAL_WORKSPACE_ID = 'ws_padiem_main_01';
+
+const RUN_LIST: CanonicalRunListResponse = {
+  ok: true,
+  configured: true,
+  liveActivitySource: 'not_yet_available',
+  errorCode: null,
+  runs: [
+    {
+      runId: CANONICAL_RUN_ID,
+      status: 'running',
+      channel: 'web',
+      action: 'quote_draft',
+      title: '[WEB] quote_draft: 홍길동',
+      createdAt: '2026-10-02T09:00:00Z',
+      updatedAt: '2026-10-02T09:03:21Z',
+      resultSummary: '견적서 초안 작성을 진행합니다.',
+      artifact: {
+        documentId: 'doc_' + '1'.repeat(24),
+        filename: 'quote-draft.docx',
+        mediaType: 'application/msword',
+      },
+      conversationId: CANONICAL_CONVERSATION_ID,
+      workspaceId: CANONICAL_WORKSPACE_ID,
+    },
+    {
+      runId: 'run_b3f9d2e85c8f7146ba0d3f22',
+      status: 'waiting_approval',
+      channel: 'claw_automation',
+      action: 'order_draft',
+      title: '[CLAW_AUTOMATION] order_draft',
+      createdAt: '2026-10-02T08:00:00Z',
+      updatedAt: '2026-10-02T08:01:00Z',
+      resultSummary: null,
+      artifact: null,
+      conversationId: null,
+      workspaceId: null,
+    },
+  ],
+};
+
+test('#3436 B3a run surface is fail-closed until the canonical projection exists', () => {
+  for (const runs of [
+    null,
+    { ...RUN_LIST, ok: false, errorCode: 'canonical_run_unavailable' as const, runs: [] },
+  ]) {
+    const markup = renderToStaticMarkup(
+      createElement(RunActivityPanel, { locale: 'ko', advanced: false, runs }),
+    );
+    assert.match(markup, /data-run-source="canonical-required"/);
+    assert.match(markup, /새 작업을 만들지 않습니다/);
+    // No local run fallback: no invented ids, no invented status rows.
+    assert.doesNotMatch(markup, /run_[0-9a-f]/);
+    assert.doesNotMatch(markup, /실시간/);
+    assert.doesNotMatch(markup, /<textarea/i);
+  }
+});
+
+test('#3436 B3a Easy run surface speaks product language and hides canonical ids', () => {
+  const markup = renderToStaticMarkup(
+    createElement(RunActivityPanel, { locale: 'ko', advanced: false, runs: RUN_LIST }),
+  );
+  assert.match(markup, /data-run-source="canonical"/);
+  assert.match(markup, /최근 작업/);
+  assert.match(markup, /실행 중/);
+  assert.match(markup, /승인 대기/);
+  assert.match(markup, /홍길동/);
+  assert.match(markup, /견적서 초안 작성을 진행합니다/);
+  assert.match(markup, /결과 파일 있음/);
+  assert.match(markup, /대화 연결/);
+  // Canonical ids and channel vocabulary are Advanced-only diagnostics (#3165).
+  assert.doesNotMatch(markup, new RegExp(CANONICAL_RUN_ID));
+  assert.doesNotMatch(markup, new RegExp(CANONICAL_CONVERSATION_ID));
+  assert.doesNotMatch(markup, new RegExp(CANONICAL_WORKSPACE_ID));
+  assert.doesNotMatch(markup, /claw_automation/);
+});
+
+test('#3436 B3a Advanced run surface shows canonical ids and the authority note', () => {
+  const markup = renderToStaticMarkup(
+    createElement(RunActivityPanel, { locale: 'en', advanced: true, runs: RUN_LIST }),
+  );
+  assert.match(markup, new RegExp(CANONICAL_RUN_ID));
+  assert.match(markup, new RegExp(CANONICAL_CONVERSATION_ID));
+  assert.match(markup, new RegExp(CANONICAL_WORKSPACE_ID));
+  assert.match(markup, /claw_automation/);
+  assert.match(markup, /data-advanced="true"/);
+  assert.match(markup, /recent-records view, not a live feed/);
+});
+
+test('#3436 B3a an empty canonical run history is a valid answer, not a failure', () => {
+  const markup = renderToStaticMarkup(
+    createElement(RunActivityPanel, {
+      locale: 'en',
+      advanced: false,
+      runs: { ...RUN_LIST, runs: [] },
+    }),
+  );
+  assert.match(markup, /data-run-source="canonical"/);
+  assert.match(markup, /No runs to show yet/);
+  assert.doesNotMatch(markup, /Run history connection is being prepared/);
+});
+
+test('#3436 B3a the workspace layout composes the run activity surface', () => {
+  const markup = renderToStaticMarkup(
+    createElement(ShellView, {
+      state: { ...INITIAL_SHELL_VIEW_STATE, runList: RUN_LIST },
+      preferences: { locale: 'ko', theme: 'system', view: 'easy' },
+      actions: ACTIONS,
+      settingsOpen: false,
+      onToggleSettings: () => undefined,
+      onLocale: () => undefined,
+      onTheme: () => undefined,
+      onView: () => undefined,
+      onCloseSettings: () => undefined,
+    }),
+  );
+  assert.match(markup, /run-activity/);
+  assert.match(markup, /data-run-source="canonical"/);
+  assert.match(markup, /최근 작업/);
 });
