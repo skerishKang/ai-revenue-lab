@@ -33,7 +33,10 @@ import {
   type RunnerStopRequest,
   type RunnerStopResponse,
   type ShellStatus,
+  type WorkspaceListResponse,
+  type WorkspaceRootResponse,
 } from '../contract/ipc.js';
+import type { LocalWorkspaceController } from '../workspace/local-workspace.js';
 import {
   pairingHandoffConsumedMarker,
   parsePairingDeepLink,
@@ -51,6 +54,7 @@ const PAIRING_HANDOFF_LEDGER_LIMIT = 32;
 export interface ShellControllerOptions {
   readonly supervisor: RunnerSupervisor;
   readonly boundedLogLines: () => readonly string[];
+  readonly workspace?: LocalWorkspaceController;
   readonly now?: () => number;
 }
 
@@ -59,6 +63,7 @@ export type IpcHandler = (request: unknown) => Promise<unknown> | unknown;
 export class ShellController {
   readonly #supervisor: RunnerSupervisor;
   readonly #boundedLogLines: () => readonly string[];
+  readonly #workspace: LocalWorkspaceController | null;
   readonly #now: () => number;
   #device: DeviceLifecycleProjection = initialDeviceLifecycleProjection();
   #pairingSeamAccepted = false;
@@ -89,6 +94,7 @@ export class ShellController {
   constructor(options: ShellControllerOptions) {
     this.#supervisor = options.supervisor;
     this.#boundedLogLines = options.boundedLogLines;
+    this.#workspace = options.workspace ?? null;
     this.#now = options.now ?? (() => Date.now());
   }
 
@@ -101,6 +107,9 @@ export class ShellController {
       'padiem:shell:runner-health': () => this.runnerHealth(),
       'padiem:shell:pairing-deeplink-submit': (request) => this.pairingDeepLinkSubmit(request),
       'padiem:shell:get-bounded-log': (request) => this.getBoundedLog(request),
+      'padiem:shell:workspace-choose-root': () => this.workspaceChooseRoot(),
+      'padiem:shell:workspace-list': (request) => this.workspaceList(request),
+      'padiem:shell:workspace-clear-root': () => this.workspaceClearRoot(),
     });
   }
 
@@ -338,6 +347,50 @@ export class ShellController {
     const maxLines =
       typeof typed.maxLines === 'number' ? typed.maxLines : undefined;
     return projectBoundedLog(this.#boundedLogLines(), maxLines);
+  }
+
+  async workspaceChooseRoot(): Promise<WorkspaceRootResponse> {
+    if (this.#workspace === null) {
+      return Object.freeze({
+        selected: false,
+        rootName: null,
+        rootPath: null,
+        reason: 'current' as const,
+      });
+    }
+    return this.#workspace.chooseRoot();
+  }
+
+  async workspaceList(request: unknown): Promise<WorkspaceListResponse> {
+    if (this.#workspace === null) {
+      return Object.freeze({
+        ok: false,
+        root: Object.freeze({
+          selected: false,
+          rootName: null,
+          rootPath: null,
+          reason: 'current' as const,
+        }),
+        directory: '',
+        entries: Object.freeze([]),
+        truncated: false,
+        maxEntries: 200,
+        errorCode: 'root_not_selected' as const,
+      });
+    }
+    return this.#workspace.listDirectory(request);
+  }
+
+  workspaceClearRoot(): WorkspaceRootResponse {
+    if (this.#workspace === null) {
+      return Object.freeze({
+        selected: false,
+        rootName: null,
+        rootPath: null,
+        reason: 'cleared' as const,
+      });
+    }
+    return this.#workspace.clearRoot();
   }
 
   /** Electron shutdown path: the runner must not outlive the app. */

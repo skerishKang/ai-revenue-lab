@@ -1,7 +1,7 @@
 /**
  * CLAW4 #3083 — renderer-side view of the narrow preload API.
  *
- * The renderer has NO node integration. It can only call the six allowlisted
+ * The renderer has NO node integration. It can only call the fixed allowlisted
  * methods below; there is no generic invoke and no channel parameter.
  */
 
@@ -12,6 +12,8 @@ import type {
   RunnerStartResponse,
   RunnerStopResponse,
   ShellStatus,
+  WorkspaceListResponse,
+  WorkspaceRootResponse,
 } from '../contract/ipc.js';
 
 export interface PadiemShellApi {
@@ -21,6 +23,9 @@ export interface PadiemShellApi {
   runnerHealth(): Promise<RunnerHealthResponse>;
   submitPairingDeepLink(deepLink: string): Promise<PairingDeepLinkResponse>;
   getBoundedLog(maxLines?: number): Promise<BoundedLogResponse>;
+  chooseWorkspaceRoot(): Promise<WorkspaceRootResponse>;
+  listWorkspaceDirectory(relativePath?: string): Promise<WorkspaceListResponse>;
+  clearWorkspaceRoot(): Promise<WorkspaceRootResponse>;
 }
 
 declare global {
