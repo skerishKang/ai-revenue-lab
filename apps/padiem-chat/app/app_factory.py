@@ -76,6 +76,13 @@ from .connector_status_projection import connectors_status
 from .connector_ticket_routes import google_connector_ticket
 from .calendar_read_activation_routes import activate_google_calendar_read
 from .conversation_routes import api_conversation_detail, api_conversations
+from .desktop_conversation_authority import UnconfiguredDesktopDeviceSessionAuthority
+from .desktop_conversation_routes import (
+    DESKTOP_CONVERSATION_DETAIL_PATH,
+    DESKTOP_CONVERSATIONS_PATH,
+    desktop_conversation_detail,
+    desktop_conversations,
+)
 from .grounding import GroundedChatService
 from .history import HistoryStore
 from .project_file_routes import project_file_detail, project_files_collection
@@ -162,6 +169,7 @@ def create_app(
     claw_p01_continuation_client=None,
     claw_local_access_source=None,
     local_task_result_source=None,
+    desktop_device_session_authority=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -213,6 +221,16 @@ def create_app(
         Route("/api/outputs/{output_id}", output_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/conversations", api_conversations, methods=["GET"]),
         Route("/api/conversations/{conversation_id}", api_conversation_detail, methods=["GET", "DELETE"]),
+        # #3436 B2c: the GET-only canonical conversation surface for the paired
+        # Desktop. Identity is the canonical broker device session, derived
+        # server-side; it creates, deletes and writes nothing, and no browser
+        # cookie path reaches it.
+        Route(DESKTOP_CONVERSATIONS_PATH, desktop_conversations, methods=["GET"]),
+        Route(
+            DESKTOP_CONVERSATION_DETAIL_PATH,
+            desktop_conversation_detail,
+            methods=["GET"],
+        ),
         Route("/api/chat/stream", api_chat_stream, methods=["POST"]),
         Route("/api/chat", api_chat, methods=["POST"]),
         Route("/api/b66/runtime-config", b66_runtime_config, methods=["GET"]),
@@ -348,6 +366,16 @@ def create_app(
     # result. None keeps the route fail-closed until the Worker root composes
     # the concrete source from the trusted broker binding.
     app.state.local_task_result_source = local_task_result_source
+    # #3436 B2c: the canonical broker device-session authority behind the
+    # GET-only Desktop conversation surface. Composed from the trusted
+    # LOCAL_AGENT_BROKER_AUTHORITY_SERVICE binding by the Worker root; the
+    # default refuses every session, so the surface fails closed until the
+    # trusted runtime actually exists.
+    app.state.desktop_device_session_authority = (
+        desktop_device_session_authority
+        if desktop_device_session_authority is not None
+        else UnconfiguredDesktopDeviceSessionAuthority()
+    )
     # Bounded non-secret composition diagnostic (#2413). Set by the Worker
     # composition root alongside a None adapter; always None on the success
     # path and validated against the closed allowlist before public projection.
