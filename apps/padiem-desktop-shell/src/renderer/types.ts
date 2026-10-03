@@ -7,6 +7,11 @@
 
 export type {
   BoundedLogResponse,
+  CanonicalConversationDetail,
+  CanonicalConversationListItem,
+  CanonicalConversationListResponse,
+  CanonicalConversationMessage,
+  CanonicalConversationReadResponse,
   PairingDeepLinkResponse,
   RunnerHealthResponse,
   RunnerStartResponse,

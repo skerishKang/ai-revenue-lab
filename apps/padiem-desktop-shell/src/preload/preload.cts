@@ -27,6 +27,8 @@ const CHANNELS = {
   WORKSPACE_CHOOSE_ROOT: 'padiem:shell:workspace-choose-root',
   WORKSPACE_LIST: 'padiem:shell:workspace-list',
   WORKSPACE_CLEAR_ROOT: 'padiem:shell:workspace-clear-root',
+  CONVERSATION_LIST: 'padiem:shell:conversation-list',
+  CONVERSATION_READ: 'padiem:shell:conversation-read',
 } as const;
 
 export const PADIEM_SHELL_API = {
@@ -45,6 +47,9 @@ export const PADIEM_SHELL_API = {
   listWorkspaceDirectory: (relativePath = '') =>
     ipcRenderer.invoke(CHANNELS.WORKSPACE_LIST, { relativePath }),
   clearWorkspaceRoot: () => ipcRenderer.invoke(CHANNELS.WORKSPACE_CLEAR_ROOT),
+  listConversations: () => ipcRenderer.invoke(CHANNELS.CONVERSATION_LIST),
+  readConversation: (conversationId: string) =>
+    ipcRenderer.invoke(CHANNELS.CONVERSATION_READ, { conversationId }),
 } as const;
 
 if (process.contextIsolated) {

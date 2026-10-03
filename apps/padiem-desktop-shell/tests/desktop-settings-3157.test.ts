@@ -99,6 +99,7 @@ const NOOP_ACTIONS: ShellActions = {
   chooseWorkspaceRoot: async () => undefined,
   openWorkspaceDirectory: async () => undefined,
   clearWorkspaceRoot: async () => undefined,
+  selectConversation: async () => undefined,
 };
 
 function render(element: ReactElement | null): string {
@@ -438,6 +439,9 @@ test('#3157 Start/Stop/Recheck still drive the existing actions', () => {
     clearWorkspaceRoot: async () => {
       calls.push('clearWorkspaceRoot');
     },
+    selectConversation: async () => {
+      calls.push('selectConversation');
+    },
   };
   const runner = render(
     createElement(RunnerPanel, {
@@ -480,6 +484,8 @@ test('#3436 the renderer still calls only the fixed allowlisted API methods', ()
     'chooseWorkspaceRoot',
     'listWorkspaceDirectory',
     'clearWorkspaceRoot',
+    'listConversations',
+    'readConversation',
   ];
   const invoked = [...source.matchAll(/\bapi\.([A-Za-z]+)\(/g)].map((match) => match[1] ?? '');
   assert.ok(invoked.length > 0);

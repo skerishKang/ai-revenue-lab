@@ -81,6 +81,7 @@ const NOOP_ACTIONS: ShellActions = {
   chooseWorkspaceRoot: async () => undefined,
   openWorkspaceDirectory: async () => undefined,
   clearWorkspaceRoot: async () => undefined,
+  selectConversation: async () => undefined,
 };
 
 function render(element: ReactElement | null): string {
