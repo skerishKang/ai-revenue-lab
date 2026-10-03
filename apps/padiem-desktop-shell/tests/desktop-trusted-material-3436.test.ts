@@ -100,13 +100,16 @@ test('#3436 B2d malformed, stale and widened responses never become material', (
     expires_at: new Date(Date.now() - 1000).toISOString(),
   });
   assert.equal(parseResidentMaterialLine(expired), null);
-  // Caller-shaped extras on the line never widen the material: the projection
-  // carries exactly the closed shape afterwards.
-  const widened = parseResidentMaterialLine(
-    materialLine({ account_ref: 'account.x', workspace_ref: 'workspace.y' }),
-  );
-  assert.ok(widened);
-  assert.deepEqual(Object.keys(widened).sort(), ['bindingRef', 'credentialB64', 'sessionId']);
+  // Unknown fields fail closed: the B2d success schema is exact-closed, so a
+  // widened response — owner/workspace/user-shaped or arbitrary — is never
+  // material, even though only the three material values would be forwarded.
+  for (const extra of ['account_ref', 'workspace_ref', 'user_id', 'tenant', 'paths', 'request_id']) {
+    assert.equal(
+      parseResidentMaterialLine(materialLine({ [extra]: 'caller.chosen' })),
+      null,
+      extra,
+    );
+  }
 });
 
 function fakeBoundary(input: {
@@ -260,6 +263,61 @@ test('#3436 B2d a live resident hands the raw line once and only once', async ()
   assert.equal(port.takeResidentMaterialLine(), null);
   // The retained buffer still shows only the redacted marker.
   assert.doesNotMatch(port.boundedResidentOutput().lines.join('\n'), /credential_b64/);
+  handle.kill('SIGKILL');
+  await handle.waitForExit(2_000);
+});
+
+test('#3436 B2d stderr is never a material authority', async () => {
+  // A material-like line on stderr is redacted for secret hygiene but NEVER
+  // consumed as material: the response authority is stdout only.
+  const port = new NodeRunnerProcessPort(50);
+  const handle = await port.spawnResident({
+    executablePath: process.execPath,
+    args: ['-e', `console.error(${JSON.stringify(materialLine())}); setTimeout(() => {}, 250);`],
+    cwd: process.cwd(),
+    env: {},
+    shell: false,
+    stdio: 'pipe',
+  });
+  await new Promise((resolve) => setTimeout(resolve, 150));
+  // While the child is alive: no material came from stderr.
+  assert.equal(port.takeResidentMaterialLine(), null);
+  // The retained stderr diagnostics keep no raw secret.
+  const observation = port.residentObservation();
+  const stderrTail = observation
+    ? ((observation as { stderr_tail?: readonly string[] }).stderr_tail ?? []).join('\n')
+    : '';
+  assert.doesNotMatch(stderrTail, /credential_b64|b2d-trusted-local-material|sess_b2d_current_1/);
+  handle.kill('SIGKILL');
+  await handle.waitForExit(2_000);
+  // And after settle the slot is still empty — stderr never fed it.
+  assert.equal(port.takeResidentMaterialLine(), null);
+});
+
+test('#3436 B2d stdout remains the material authority when stderr also emits', async () => {
+  const port = new NodeRunnerProcessPort(50);
+  const stderrLine = materialLine({ session_id: 'sess_from_stderr' });
+  const stdoutLine = materialLine({ session_id: 'sess_from_stdout' });
+  const handle = await port.spawnResident({
+    executablePath: process.execPath,
+    args: [
+      '-e',
+      [
+        `console.error(${JSON.stringify(stderrLine)});`,
+        `console.log(${JSON.stringify(stdoutLine)});`,
+        'setTimeout(() => {}, 250);',
+      ].join(''),
+    ],
+    cwd: process.cwd(),
+    env: {},
+    shell: false,
+    stdio: 'pipe',
+  });
+  await new Promise((resolve) => setTimeout(resolve, 150));
+  // The one-shot slot holds the STDOUT response, never the stderr one.
+  const raw = port.takeResidentMaterialLine();
+  assert.ok(raw?.includes('sess_from_stdout'));
+  assert.equal(raw?.includes('sess_from_stderr'), false);
   handle.kill('SIGKILL');
   await handle.waitForExit(2_000);
 });

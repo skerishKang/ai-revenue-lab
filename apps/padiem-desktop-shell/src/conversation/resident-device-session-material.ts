@@ -49,14 +49,32 @@ export interface ResidentMaterialBoundary {
   readonly residentRunning: () => boolean;
 }
 
+/**
+ * The exact closed success schema. A success response carrying ANY other key
+ * — account_ref, workspace_ref, user_id, tenant, an arbitrary extra — is not
+ * the B2d contract and fails closed, even though no field beyond the three
+ * material values would ever be forwarded.
+ */
+const ALLOWED_RESPONSE_KEYS: ReadonlySet<string> = new Set([
+  'event',
+  'contract_version',
+  'ok',
+  'session_id',
+  'binding_ref',
+  'credential_b64',
+  'credential_generation',
+  'expires_at',
+]);
+
 function boundedText(value: unknown, maximum: number): string | null {
   return typeof value === 'string' && value.length > 0 && value.length <= maximum ? value : null;
 }
 
 /**
  * Parses one resident response line into the exact B2c material shape, or
- * null. The final `validateDeviceSessionMaterial` call is the single shape
- * authority: a line it would refuse never becomes material.
+ * null. The success schema is exact-closed (unknown key → null), and the
+ * final `validateDeviceSessionMaterial` call is the single shape authority:
+ * a line it would refuse never becomes material.
  */
 export function parseResidentMaterialLine(
   line: string,
@@ -77,6 +95,9 @@ export function parseResidentMaterialLine(
   if (record['event'] !== 'desktop_device_session_material') return null;
   if (record['contract_version'] !== MATERIAL_RESPONSE_CONTRACT_VERSION) return null;
   if (record['ok'] !== true) return null;
+  for (const key of Object.keys(record)) {
+    if (!ALLOWED_RESPONSE_KEYS.has(key)) return null;
+  }
   const sessionId = boundedText(record['session_id'], 512);
   const bindingRef = boundedText(record['binding_ref'], 512);
   const credentialB64 = boundedText(record['credential_b64'], 24_000);

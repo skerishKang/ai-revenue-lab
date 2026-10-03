@@ -143,10 +143,13 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
       for (const line of text.split(/\r?\n/)) {
         if (line.length === 0) continue;
         // #3436 B2d: a material response is redacted out of the retained
-        // buffers at capture time and held in the one-slot only.
+        // buffers at capture time. The material slot is fed by STDOUT ONLY —
+        // the resident's response authority is stdout, so a material-like
+        // line on stderr is redacted for secret hygiene but never consumed
+        // as material.
         const material = asMaterialResponse(line);
         const storedLine = material === null ? line : redactedMaterialLine(material);
-        if (material !== null) this.#materialLine = line;
+        if (stream === 'stdout' && material !== null) this.#materialLine = line;
         this.#lines.push(storedLine);
         if (this.#lines.length > this.#maxLines) this.#lines.shift();
         this.#lastLineAtMs = atMs;

@@ -343,6 +343,39 @@ class DesktopSessionMaterial3436Test(unittest.TestCase):
         finally:
             fixture.cleanup()
 
+    def test_session_binding_exact_correlation_is_enforced_before_projection(self) -> None:
+        """FIX 3: the existing canonical authority re-validates the exact
+        session/binding correlation right before projection. Same session id
+        and same times, but one correlated field wrong → no material."""
+
+        fixture = _HostFixture()
+        try:
+            fixture.start()
+            session = fixture.host._session
+            overrides = {
+                "binding_ref": "bind.other",
+                "device_id": "dev.other",
+                "account_ref": "account.other",
+                "workspace_ref": "workspace.other",
+            }
+            for field, wrong in overrides.items():
+                forged = DeviceSession(
+                    session_id=session.session_id,
+                    device_id=session.device_id,
+                    binding_ref=session.binding_ref,
+                    account_ref=session.account_ref,
+                    workspace_ref=session.workspace_ref,
+                    issued_at=session.issued_at,
+                    expires_at=session.expires_at,
+                )
+                object.__setattr__(forged, field, wrong)
+                fixture.host._session = forged
+                with self.assertRaises(ContractError) as caught:
+                    fixture.host.current_desktop_session_material()
+                self.assertIn("does not match", str(caught.exception), field)
+        finally:
+            fixture.cleanup()
+
     def test_credential_rotation_leaves_stale_material_unavailable(self) -> None:
         fixture = _HostFixture()
         try:
@@ -445,6 +478,21 @@ class MaterialRequestResponseContractTest(unittest.TestCase):
         payload = json.loads(line)
         self.assertEqual(payload["event"], "desktop_device_session_material")
         self.assertEqual(payload["contract_version"], MATERIAL_RESPONSE_CONTRACT_VERSION)
+        # The success schema is exact-closed: the projection is widened by
+        # nothing, so no owner/workspace/user field can ever ride along.
+        self.assertEqual(
+            set(payload),
+            {
+                "event",
+                "contract_version",
+                "ok",
+                "session_id",
+                "binding_ref",
+                "credential_b64",
+                "credential_generation",
+                "expires_at",
+            },
+        )
         # A credential larger than the repository bound is refused outright.
         with self.assertRaises(ContractError):
             material_response_line({**projection, "credential_b64": "QQ==" * 20_000})
@@ -505,6 +553,8 @@ class MaterialRequestResponseContractTest(unittest.TestCase):
             "resident host is not online": "resident_not_online",
             "resident host has no current broker session": "session_missing",
             "resident broker session is not current": "session_not_current",
+            "device session is not current": "session_not_current",
+            "device session does not match pinned outbound broker authority": "binding_mismatch",
             "device credential binding is expired": "credential_expired",
             "protected device credential is not stored": "credential_store_missing",
             "stored device credential does not match current binding context": "binding_mismatch",
