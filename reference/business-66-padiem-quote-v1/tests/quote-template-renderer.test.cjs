@@ -772,6 +772,9 @@ check(formalDetailHtml.includes('data-layout-variant="formal-grid-v1"'),
 check(formalDetailHtml.includes('<thead><tr class="quote-detail-title-row"><th colspan="8">') &&
       formalDetailHtml.includes("자재산출내역서</th></tr><tr>"),
   "formal detail title is inside the repeating table header group");
+check((formalDetailHtml.match(/<colgroup><col/g) || []).length === 1 &&
+      (formalDetailHtml.match(/<col[ >]/g) || []).length === 8,
+  "formal detail table pins every column width so the repeating title row cannot move columns");
 check(!formalDetailHtml.includes('<h2 class="quote-detail-title">'),
   "formal detail title is not duplicated outside the repeating header");
 check(formalDetailHtml.includes('rowspan="2"'),
@@ -792,6 +795,10 @@ check(stylesCss.includes("background: #c9c9c9"),
   "formal detail header has the reviewed gray treatment");
 check(stylesCss.includes(".quote-detail-title-row th") && stylesCss.includes("background: #fff"),
   "formal continuation title row has reviewed title styling inside the repeating thead");
+check(/\.quote-detail-title-row th\s*\{[^}]*border: 0/.test(stylesCss),
+  "formal continuation title row has no box border, matching the standalone title block");
+check(/\.quote-detail-page\[data-layout-variant="formal-grid-v1"\] \.quote-table \{\s*border: 0;/.test(stylesCss),
+  "formal detail table carries no outer border so the title is not boxed on continuation pages");
 check(stylesCss.includes(".quote-summary-terms") && stylesCss.includes("#pvValidity"),
   "formal summary CSS provides terms layout and hides duplicate top metadata");
 check(stylesCss.includes("#pvSenderBizNo") && stylesCss.includes("#pvSenderContact"),
