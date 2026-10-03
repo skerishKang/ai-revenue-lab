@@ -8,7 +8,7 @@
  *   - cannot declare a device ONLINE
  *   - cannot approve anything (P01 stays in the runner stack)
  *   - cannot spawn a process, read a file, or reach the network
- *   - only calls the six allowlisted preload methods
+ *   - only calls the fixed allowlisted preload methods
  *   - stores only a display language, a theme and a view mode, all non-sensitive
  *
  * #3165 changes what the user reads and where controls sit, never what the shell
@@ -485,6 +485,44 @@ export function WorkspacePanel(props: {
 }
 
 /**
+ * B2a conversation workspace shell.
+ *
+ * This is deliberately a fail-closed presentation surface. Until Desktop has a
+ * server-owned canonical conversation projection, it renders no composer, no
+ * local transcript and no caller/device-selected conversation id. That avoids
+ * accidentally turning layout work into a second conversation authority.
+ */
+export function ConversationWorkspacePanel(props: {
+  locale: ShellLocale;
+  advanced: boolean;
+}): ReactElement {
+  const { locale, advanced } = props;
+  const t = (key: ShellStringKey): string => translate(locale, key);
+  return (
+    <section
+      className="conversation-workspace"
+      data-conversation-source="canonical-required"
+      aria-labelledby="desktop-conversation-title"
+    >
+      <div className="conversation-workspace-header">
+        <h2 id="desktop-conversation-title">{t('desktop.conversationTitle')}</h2>
+        <span className="conversation-source-dot" aria-hidden="true" />
+      </div>
+      <div className="conversation-empty-state">
+        <div className="conversation-mark" aria-hidden="true">P</div>
+        <h3>{t('desktop.conversationPendingTitle')}</h3>
+        <p>{t('desktop.conversationPendingBody')}</p>
+        {advanced ? (
+          <p className="conversation-authority-note" data-advanced="true">
+            {t('desktop.conversationAuthorityNote')}
+          </p>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+/**
  * Advanced-only pairing diagnostics.
  *
  * Easy view renders no version of this panel, so the raw seam text can never
@@ -658,7 +696,7 @@ export function ShellView(props: {
       data-view={preferences.view}
       data-theme-preference={preferences.theme}
     >
-      <header className="row">
+      <header className="shell-header">
         <div>
           <h1>{t('app.title')}</h1>
           <p className="subtitle">{t('app.tagline')}</p>
@@ -676,34 +714,49 @@ export function ShellView(props: {
           onClose={props.onCloseSettings}
         />
       ) : null}
-      <ConnectionPanel
-        status={state.status}
-        busy={state.busy}
-        actions={actions}
-        locale={locale}
-        advanced={visibility.developerFacts}
-      />
-      <RunnerPanel
-        status={state.status}
-        health={state.health}
-        busy={state.busy}
-        actions={actions}
-        locale={locale}
-        advanced={visibility.developerFacts}
-      />
-      <WorkspacePanel
-        root={state.workspaceRoot}
-        listing={state.workspaceListing}
-        actions={actions}
-        locale={locale}
-        advanced={visibility.developerFacts}
-      />
-      <PairingPanel
-        pairing={state.pairing}
-        locale={locale}
-        advanced={visibility.rawPairingSeamText}
-      />
-      <LogPanel log={state.log} locale={locale} advanced={visibility.boundedLogInternals} />
+      <div className="workspace-shell-layout" data-desktop-workspace="stage-b">
+        <aside className="workspace-rail workspace-project-rail">
+          <WorkspacePanel
+            root={state.workspaceRoot}
+            listing={state.workspaceListing}
+            actions={actions}
+            locale={locale}
+            advanced={visibility.developerFacts}
+          />
+        </aside>
+        <section className="workspace-main">
+          <ConversationWorkspacePanel
+            locale={locale}
+            advanced={visibility.developerFacts}
+          />
+        </section>
+        <aside className="workspace-rail workspace-local-rail">
+          <div className="workspace-rail-title">{t('desktop.localTitle')}</div>
+          <ConnectionPanel
+            status={state.status}
+            busy={state.busy}
+            actions={actions}
+            locale={locale}
+            advanced={visibility.developerFacts}
+          />
+          <RunnerPanel
+            status={state.status}
+            health={state.health}
+            busy={state.busy}
+            actions={actions}
+            locale={locale}
+            advanced={visibility.developerFacts}
+          />
+        </aside>
+      </div>
+      <div className="advanced-diagnostics-grid">
+        <PairingPanel
+          pairing={state.pairing}
+          locale={locale}
+          advanced={visibility.rawPairingSeamText}
+        />
+        <LogPanel log={state.log} locale={locale} advanced={visibility.boundedLogInternals} />
+      </div>
       {state.notice ? (
         <p className="notice">
           {/* The runner reasons are raw diagnostics ("headless runner started as
