@@ -43,6 +43,8 @@ import {
 } from './preferences.js';
 import type {
   BoundedLogResponse,
+  CanonicalConversationDetail,
+  CanonicalConversationListResponse,
   DeviceLifecycleState,
   PairingDeepLinkResponse,
   RunnerHealthResponse,
@@ -58,6 +60,8 @@ export interface ShellViewState {
   readonly log: BoundedLogResponse | null;
   readonly workspaceRoot: WorkspaceRootResponse | null;
   readonly workspaceListing: WorkspaceListResponse | null;
+  readonly conversationList: CanonicalConversationListResponse | null;
+  readonly selectedConversation: CanonicalConversationDetail | null;
   readonly notice: string | null;
   /** Which action produced `notice`. The raw reason is a diagnostic. */
   readonly noticeAction: ShellNoticeAction | null;
@@ -75,6 +79,8 @@ export const INITIAL_SHELL_VIEW_STATE: ShellViewState = Object.freeze({
   log: null,
   workspaceRoot: null,
   workspaceListing: null,
+  conversationList: null,
+  selectedConversation: null,
   notice: null,
   noticeAction: null,
   error: null,
@@ -89,6 +95,7 @@ export interface ShellActions {
   readonly chooseWorkspaceRoot: () => Promise<void>;
   readonly openWorkspaceDirectory: (relativePath: string) => Promise<void>;
   readonly clearWorkspaceRoot: () => Promise<void>;
+  readonly selectConversation: (conversationId: string) => Promise<void>;
 }
 
 export interface ShellBridge {
@@ -197,6 +204,18 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
     }));
   }, [api]);
 
+  const selectConversation = useCallback(
+    async (conversationId: string): Promise<void> => {
+      if (!api) return;
+      const result = await api.readConversation(conversationId);
+      setState((prev) => ({
+        ...prev,
+        selectedConversation: result.ok ? result.conversation : null,
+      }));
+    },
+    [api],
+  );
+
   useEffect(() => {
     if (!api) return;
     void refresh();
@@ -206,6 +225,9 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
         workspaceRoot: listing.root,
         workspaceListing: listing.ok ? listing : prev.workspaceListing,
       }));
+    });
+    void api.listConversations().then((conversationList) => {
+      setState((prev) => ({ ...prev, conversationList }));
     });
     const timer = setInterval(() => void refresh(), 5000);
     return () => clearInterval(timer);
@@ -225,6 +247,7 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
       chooseWorkspaceRoot,
       openWorkspaceDirectory,
       clearWorkspaceRoot,
+      selectConversation,
     },
   };
 }
@@ -485,39 +508,90 @@ export function WorkspacePanel(props: {
 }
 
 /**
- * B2a conversation workspace shell.
+ * B2a/B2b conversation workspace surface.
  *
- * This is deliberately a fail-closed presentation surface. Until Desktop has a
- * server-owned canonical conversation projection, it renders no composer, no
- * local transcript and no caller/device-selected conversation id. That avoids
- * accidentally turning layout work into a second conversation authority.
+ * This is deliberately a fail-closed presentation surface. It renders no
+ * composer and no local transcript: what it shows is a projection of the
+ * canonical Padiem conversation authority (apps/padiem-chat /api/conversations)
+ * fetched through the main-owned bounded client. The Desktop mints no
+ * conversation id and keeps no conversation store — if the canonical source is
+ * unavailable or a payload is malformed, the surface stays at
+ * `data-conversation-source="canonical-required"` instead of substituting a
+ * temporary desktop conversation.
  */
 export function ConversationWorkspacePanel(props: {
   locale: ShellLocale;
   advanced: boolean;
+  conversations: CanonicalConversationListResponse | null;
+  selectedConversation: CanonicalConversationDetail | null;
+  onSelectConversation: (conversationId: string) => void;
 }): ReactElement {
-  const { locale, advanced } = props;
+  const { locale, advanced, conversations, selectedConversation } = props;
   const t = (key: ShellStringKey): string => translate(locale, key);
+  const canonical = conversations !== null && conversations.ok;
+  const source = canonical ? 'canonical' : 'canonical-required';
   return (
     <section
       className="conversation-workspace"
-      data-conversation-source="canonical-required"
+      data-conversation-source={source}
       aria-labelledby="desktop-conversation-title"
     >
       <div className="conversation-workspace-header">
         <h2 id="desktop-conversation-title">{t('desktop.conversationTitle')}</h2>
         <span className="conversation-source-dot" aria-hidden="true" />
       </div>
-      <div className="conversation-empty-state">
-        <div className="conversation-mark" aria-hidden="true">P</div>
-        <h3>{t('desktop.conversationPendingTitle')}</h3>
-        <p>{t('desktop.conversationPendingBody')}</p>
-        {advanced ? (
-          <p className="conversation-authority-note" data-advanced="true">
-            {t('desktop.conversationAuthorityNote')}
-          </p>
-        ) : null}
-      </div>
+      {canonical && conversations.conversations.length > 0 ? (
+        <div className="conversation-canonical-body">
+          <nav className="conversation-list" aria-label={t('desktop.conversationListLabel')}>
+            {conversations.conversations.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={
+                  selectedConversation?.id === item.id
+                    ? 'conversation-list-entry selected'
+                    : 'conversation-list-entry'
+                }
+                data-conversation-id={item.id}
+                onClick={() => props.onSelectConversation(item.id)}
+              >
+                {item.title || t('desktop.conversationUntitled')}
+              </button>
+            ))}
+          </nav>
+          <div className="conversation-transcript">
+            {selectedConversation === null ? (
+              <p className="conversation-transcript-note">{t('desktop.conversationSelectHint')}</p>
+            ) : (
+              selectedConversation.messages.map((message, index) => (
+                <article
+                  key={`${selectedConversation.id}-${index}`}
+                  className="conversation-message"
+                  data-role={message.role}
+                >
+                  <p>{message.content}</p>
+                </article>
+              ))
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="conversation-empty-state">
+          <div className="conversation-mark" aria-hidden="true">P</div>
+          <h3>{t('desktop.conversationPendingTitle')}</h3>
+          <p>{t('desktop.conversationPendingBody')}</p>
+          {advanced ? (
+            <p className="conversation-authority-note" data-advanced="true">
+              {t('desktop.conversationAuthorityNote')}
+            </p>
+          ) : null}
+        </div>
+      )}
+      {advanced ? (
+        <p className="conversation-authority-note" data-advanced="true">
+          {t('desktop.conversationAuthorityNote')}
+        </p>
+      ) : null}
     </section>
   );
 }
@@ -728,6 +802,9 @@ export function ShellView(props: {
           <ConversationWorkspacePanel
             locale={locale}
             advanced={visibility.developerFacts}
+            conversations={state.conversationList}
+            selectedConversation={state.selectedConversation}
+            onSelectConversation={(conversationId) => void actions.selectConversation(conversationId)}
           />
         </section>
         <aside className="workspace-rail workspace-local-rail">

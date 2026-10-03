@@ -27,6 +27,8 @@ import {
   type IpcChannel,
   type PairingDeepLinkRequest,
   type PairingDeepLinkResponse,
+  type CanonicalConversationListResponse,
+  type CanonicalConversationReadResponse,
   type RunnerHealthResponse,
   type RunnerStartRequest,
   type RunnerStartResponse,
@@ -37,6 +39,9 @@ import {
   type WorkspaceRootResponse,
 } from '../contract/ipc.js';
 import type { LocalWorkspaceController } from '../workspace/local-workspace.js';
+import {
+  CanonicalConversationController,
+} from '../conversation/canonical-conversation.js';
 import {
   pairingHandoffConsumedMarker,
   parsePairingDeepLink,
@@ -55,6 +60,7 @@ export interface ShellControllerOptions {
   readonly supervisor: RunnerSupervisor;
   readonly boundedLogLines: () => readonly string[];
   readonly workspace?: LocalWorkspaceController;
+  readonly conversations?: CanonicalConversationController;
   readonly now?: () => number;
 }
 
@@ -64,6 +70,7 @@ export class ShellController {
   readonly #supervisor: RunnerSupervisor;
   readonly #boundedLogLines: () => readonly string[];
   readonly #workspace: LocalWorkspaceController | null;
+  readonly #conversations: CanonicalConversationController;
   readonly #now: () => number;
   #device: DeviceLifecycleProjection = initialDeviceLifecycleProjection();
   #pairingSeamAccepted = false;
@@ -95,6 +102,7 @@ export class ShellController {
     this.#supervisor = options.supervisor;
     this.#boundedLogLines = options.boundedLogLines;
     this.#workspace = options.workspace ?? null;
+    this.#conversations = options.conversations ?? new CanonicalConversationController();
     this.#now = options.now ?? (() => Date.now());
   }
 
@@ -110,6 +118,8 @@ export class ShellController {
       'padiem:shell:workspace-choose-root': () => this.workspaceChooseRoot(),
       'padiem:shell:workspace-list': (request) => this.workspaceList(request),
       'padiem:shell:workspace-clear-root': () => this.workspaceClearRoot(),
+      'padiem:shell:conversation-list': () => this.conversationList(),
+      'padiem:shell:conversation-read': (request) => this.conversationRead(request),
     });
   }
 
@@ -391,6 +401,16 @@ export class ShellController {
       });
     }
     return this.#workspace.clearRoot();
+  }
+
+  /** #3436 B2b — canonical conversation list projection. */
+  async conversationList(): Promise<CanonicalConversationListResponse> {
+    return this.#conversations.listConversations();
+  }
+
+  /** #3436 B2b — one canonical conversation, read-only. */
+  async conversationRead(request: unknown): Promise<CanonicalConversationReadResponse> {
+    return this.#conversations.readConversation(request);
   }
 
   /** Electron shutdown path: the runner must not outlive the app. */

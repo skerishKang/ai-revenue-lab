@@ -23,6 +23,7 @@ const ACTIONS: ShellActions = {
   chooseWorkspaceRoot: async () => undefined,
   openWorkspaceDirectory: async () => undefined,
   clearWorkspaceRoot: async () => undefined,
+  selectConversation: async () => undefined,
 };
 
 const ROOT: WorkspaceRootResponse = {
@@ -95,6 +96,9 @@ test('#3436 B2a conversation surface is fail-closed until canonical projection e
     createElement(ConversationWorkspacePanel, {
       locale: 'ko',
       advanced: false,
+      conversations: null,
+      selectedConversation: null,
+      onSelectConversation: () => undefined,
     }),
   );
   assert.match(markup, /data-conversation-source="canonical-required"/);
@@ -138,6 +142,9 @@ test('#3436 B2a Advanced layout states the canonical conversation boundary expli
     createElement(ConversationWorkspacePanel, {
       locale: 'en',
       advanced: true,
+      conversations: null,
+      selectedConversation: null,
+      onSelectConversation: () => undefined,
     }),
   );
   assert.match(markup, /data-advanced="true"/);
