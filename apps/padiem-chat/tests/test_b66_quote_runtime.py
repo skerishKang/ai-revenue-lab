@@ -464,9 +464,33 @@ def test_normalizer_accepts_only_bounded_json_fence_numeric_text_and_tax_case():
     assert safe["items"][0]["unitPrice"] == 1000
     assert safe["taxMode"] == "EXCLUSIVE"
 
+    wrapped = normalize_conversation_output("Here is the JSON:\n" + fenced).safe_dict()
+    assert wrapped["recipient"]["company"] == "Synthetic Buyer"
+    assert wrapped["items"][0]["unitPrice"] == 1000
+
+    raw_wrapped = normalize_conversation_output(
+        "Extracted quote fields:\n"
+        '{"recipient":{"company":"Synthetic Buyer"},"items":[{"name":"Item A","qty":2,"unitPrice":1000}],"missing":[]}'
+        "\nEnd of extraction."
+    ).safe_dict()
+    assert raw_wrapped["items"][0]["qty"] == 2
+
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output(fenced + "\n" + fenced)
+
     with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
         normalize_conversation_output(
-            "Here is the JSON:\n" + fenced
+            '{"recipient":{},"items":[],"missing":[]} trailing {"recipient":{}}'
+        )
+
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output(
+            'Result: {"recipient":{},"items":[],"missing":[],}'
+        )
+
+    with pytest.raises(B66QuoteConversationError, match="unsupported_output_field|forbidden_output_field"):
+        normalize_conversation_output(
+            'Result: {"recipient":{},"items":[],"missing":[],"sender":{"company":"attacker"}}'
         )
 
     with pytest.raises(B66QuoteConversationError, match="invalid_number"):
@@ -568,6 +592,32 @@ def test_normalizer_rejects_impossible_calendar_date():
                 "missing": [],
             }
         )
+
+
+@pytest.mark.asyncio
+async def test_interpreter_repairs_one_safe_wrapper_without_retrying_model():
+    class WrappedClient:
+        def __init__(self):
+            self.calls = 0
+
+        async def complete(self, *args, **kwargs):
+            self.calls += 1
+            return {
+                "answer": (
+                    "Extracted fields:\n```json\n"
+                    '{"recipient":{"company":"Synthetic Buyer"},"items":[{"name":"Item A","qty":1,"unitPrice":1000}],"missing":[]}'
+                    "\n```\nDone."
+                )
+            }
+
+    client = WrappedClient()
+    projection = await B66QuoteConversationInterpreter(client).interpret(
+        message="Synthetic Buyer Item A one unit",
+        skill=_skill(),
+    )
+    assert projection.recipient["company"] == "Synthetic Buyer"
+    assert projection.items[0]["unitPrice"] == 1000
+    assert client.calls == 1
 
 
 @pytest.mark.asyncio

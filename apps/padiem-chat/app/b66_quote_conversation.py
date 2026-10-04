@@ -23,6 +23,7 @@ MAX_ITEMS = 100
 MAX_ITEM_NAME_CHARS = 240
 MAX_DETAIL_GROUPS = 32
 MAX_DETAIL_ITEMS = 300
+MAX_MODEL_WRAPPER_CHARS = 320
 
 TAX_MODES = frozenset({"EXCLUSIVE", "INCLUSIVE", "EXEMPT"})
 _ALLOWED_TOP = frozenset(
@@ -57,6 +58,7 @@ _FORBIDDEN_KEYS = frozenset(
 _ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _NUMERIC_TEXT_RE = re.compile(r"^-?(?:0|[1-9]\d*)(?:\.\d+)?$")
 _JSON_FENCE_RE = re.compile(r"^```(?:json)?\s*(\{.*\})\s*```$", re.IGNORECASE | re.DOTALL)
+_JSON_FENCE_BLOCK_RE = re.compile(r"```(?:json)?\s*(.*?)\s*```", re.IGNORECASE | re.DOTALL)
 
 
 class B66QuoteConversationError(ValueError):
@@ -150,6 +152,50 @@ def _optional_number(value: Any, *, positive: bool) -> int | float | None:
     return int(number) if number.is_integer() else number
 
 
+def _safe_wrapper_text(value: str) -> bool:
+    """Return whether prose outside one JSON payload is safe to discard."""
+
+    if len(value) > MAX_MODEL_WRAPPER_CHARS:
+        return False
+    return not any(marker in value for marker in ("{", "}", "[", "]", "```"))
+
+
+def _recover_wrapped_json(text: str) -> Any:
+    """Recover one valid JSON value from a bounded non-authoritative prose wrapper."""
+
+    fenced_matches = list(_JSON_FENCE_BLOCK_RE.finditer(text))
+    if fenced_matches:
+        if len(fenced_matches) != 1:
+            raise B66QuoteConversationError("invalid_model_output")
+        match = fenced_matches[0]
+        prefix = text[: match.start()].strip()
+        suffix = text[match.end() :].strip()
+        if not _safe_wrapper_text(prefix) or not _safe_wrapper_text(suffix):
+            raise B66QuoteConversationError("invalid_model_output")
+        candidate = match.group(1).strip()
+        try:
+            return json.loads(candidate)
+        except json.JSONDecodeError as exc:
+            raise B66QuoteConversationError("invalid_model_output") from exc
+
+    start = text.find("{")
+    if start < 0:
+        raise B66QuoteConversationError("invalid_model_output")
+    prefix = text[:start].strip()
+    if not _safe_wrapper_text(prefix):
+        raise B66QuoteConversationError("invalid_model_output")
+
+    decoder = json.JSONDecoder()
+    try:
+        value, consumed = decoder.raw_decode(text[start:])
+    except json.JSONDecodeError as exc:
+        raise B66QuoteConversationError("invalid_model_output") from exc
+    suffix = text[start + consumed :].strip()
+    if not _safe_wrapper_text(suffix):
+        raise B66QuoteConversationError("invalid_model_output")
+    return value
+
+
 def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
     """Validate untrusted model output into variable-only quote fields."""
 
@@ -162,8 +208,8 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
             text = fenced.group(1).strip()
         try:
             raw = json.loads(text)
-        except json.JSONDecodeError as exc:
-            raise B66QuoteConversationError("invalid_model_output") from exc
+        except json.JSONDecodeError:
+            raw = _recover_wrapped_json(text)
     if not isinstance(raw, dict):
         raise B66QuoteConversationError("invalid_model_output")
     if set(raw) - _ALLOWED_TOP:
