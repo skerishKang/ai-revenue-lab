@@ -5,6 +5,7 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
+import re
 from typing import Protocol
 
 from padiem_ai_core import (
@@ -41,6 +42,31 @@ from .security import redact_secrets
 P01_APP_ID = "b54-padiem-claw"
 P01_AGENT_ID = "b54-padiem-claw"
 DEFAULT_P01_TIMEOUT_SECONDS = 20.0
+
+# #3382: the canonical USER subject is CP-issued in the exact
+# `sub_<32 lowercase hex>` form. The Engine's own `_parse_subject_id` accepts
+# a broader safe-identifier shape, so this narrower grammar is the canonical
+# lane's contract check. Both the factory and the Engine client reuse this
+# validator, so a subject that bypasses the factory still fails closed.
+_CANONICAL_SUBJECT_RE = re.compile(r"^sub_[0-9a-f]{32}$")
+
+
+def validate_canonical_subject_id(subject_id: object) -> str:
+    """Validate a canonical USER subject: ``sub_`` + 32 lowercase hex.
+
+    Raises ``P01AdapterError`` on any violation. Returns the subject id as a
+    string on success.
+    """
+    if (
+        not isinstance(subject_id, str)
+        or not _CANONICAL_SUBJECT_RE.fullmatch(subject_id)
+    ):
+        raise P01AdapterError(
+            "invalid_subject_id",
+            "P01 subject identity must be a canonical sub_<32hex> identifier.",
+            dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+        )
+    return subject_id
 
 P01_FAILURE_DETAIL_AUTHENTICATION = "engine_authentication_failed"
 P01_FAILURE_DETAIL_AUTHORIZATION = "engine_authorization_failed"
@@ -254,11 +280,18 @@ class P01RequestFactory:
         timeout_seconds: float = DEFAULT_P01_TIMEOUT_SECONDS,
         clock: Callable[[], datetime] | None = None,
         product_tier: ProductTierLabel = ProductTierLabel.PLUS,
+        allow_subject_identity: bool = False,
     ) -> None:
         if isinstance(timeout_seconds, bool) or not isinstance(timeout_seconds, (int, float)):
             raise P01AdapterError(
                 "invalid_timeout",
                 "P01 timeout must be numeric.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+            )
+        if not isinstance(allow_subject_identity, bool):
+            raise P01AdapterError(
+                "invalid_subject_lane",
+                "P01 subject identity lane must be a boolean.",
                 dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
         normalized_timeout = float(timeout_seconds)
@@ -279,6 +312,11 @@ class P01RequestFactory:
         self._timeout_seconds = normalized_timeout
         self._clock = clock or (lambda: datetime.now(timezone.utc))
         self._product_tier = product_tier
+        # #3382: only the reviewed canonical USER lane may carry a subject
+        # identity on the P01 wire. The default lane keeps the historical
+        # subjectless contract; a subject passed here without the lane opt-in
+        # is a hard error, never a silent drop.
+        self._allow_subject_identity = allow_subject_identity
 
     def build(
         self,
@@ -286,6 +324,7 @@ class P01RequestFactory:
         *,
         lease: SandboxLease | None = None,
         product_tier: ProductTierLabel | None = None,
+        subject_id: str | None = None,
     ) -> P01RequestBundle:
         if run.terminal:
             raise P01AdapterError(
@@ -293,6 +332,19 @@ class P01RequestFactory:
                 "Terminal Claw run cannot start P01 execution.",
                 dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
+
+        if subject_id is not None:
+            if not self._allow_subject_identity:
+                raise P01AdapterError(
+                    "p01_authority_field_unsupported",
+                    "P01 subject identity requires the reviewed canonical USER lane.",
+                    dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+                )
+            # #3382: the canonical USER subject is CP-issued in the exact
+            # `sub_<32 lowercase hex>` form. The Engine's own
+            # `_parse_subject_id` accepts a broader safe-identifier shape, so
+            # this narrower grammar is the canonical lane's contract check.
+            validate_canonical_subject_id(subject_id)
 
         if run.intent.execution_mode is ExecutionMode.CLOUD:
             self._validate_cloud_lease(run, lease)
@@ -335,7 +387,7 @@ class P01RequestFactory:
             execution_request=execution_request,
             context=context,
             app_id=P01_APP_ID,
-            subject_id=None,
+            subject_id=subject_id,
         )
         return P01RequestBundle(
             execution_request=execution_request,
@@ -532,6 +584,7 @@ class P01CoreOrchestrationAdapter:
         runner: P01OrchestrationPort,
         *,
         request_factory: P01RequestFactory | None = None,
+        allow_subject_identity: bool = False,
     ) -> None:
         run_method = getattr(runner, "run", None)
         if not callable(run_method):
@@ -540,8 +593,29 @@ class P01CoreOrchestrationAdapter:
                 "P01 runner must expose async run(request).",
                 dispatch_class=P01DispatchClass.NOT_DISPATCHED,
             )
+        if not isinstance(allow_subject_identity, bool):
+            raise P01AdapterError(
+                "invalid_subject_lane",
+                "P01 subject identity lane must be a boolean.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+            )
         self._runner = runner
-        self._factory = request_factory or P01RequestFactory()
+        self._factory = request_factory or P01RequestFactory(
+            allow_subject_identity=allow_subject_identity
+        )
+        # #3382: the canonical USER lane must reach the wire serializer too —
+        # the Engine client's blanket subject rejection is relaxed only when
+        # this same flag is on, so factory and client can never disagree.
+        enable_subject_identity = getattr(runner, "enable_subject_identity", None)
+        if callable(enable_subject_identity):
+            enable_subject_identity(allow_subject_identity)
+        self._allow_subject_identity = allow_subject_identity
+
+    @property
+    def subject_identity_lane(self) -> bool:
+        """True when this adapter may carry a canonical USER subject (#3382)."""
+
+        return self._allow_subject_identity
 
     async def execute(
         self,
@@ -549,12 +623,14 @@ class P01CoreOrchestrationAdapter:
         *,
         lease: SandboxLease | None = None,
         product_tier: ProductTierLabel | None = None,
+        subject_id: str | None = None,
     ) -> ClawOrchestrationOutcome:
         try:
             bundle = self._factory.build(
                 run,
                 lease=lease,
                 product_tier=product_tier,
+                subject_id=subject_id,
             )
             projector = ClawOrchestrationProjector(
                 run,

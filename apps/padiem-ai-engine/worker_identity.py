@@ -107,6 +107,10 @@ from app.calendar_read_activation import (
     CloudflareConnectorWorkspaceClient,
     parse_calendar_activation_request,
 )
+from app.calendar_read_state import (
+    CALENDAR_READ_STATE_PATH,
+    CalendarReadStateService,
+)
 from app.multimodal_attachment_service import (
     MULTIMODAL_EXECUTE_PATH,
     MULTIMODAL_STREAM_PATH,
@@ -727,6 +731,33 @@ def _calendar_read_activation_service_for_env(
         return None
 
 
+def _calendar_read_state_service_for_env(
+    env: Any,
+) -> CalendarReadStateService | None:
+    """Compose the read-only persisted READ-grant state projection.
+
+    Reuses the activation composition's own authorities — the same Control
+    Plane identity binding, the same private Google OAuth binding selector and
+    the same canonical D1 grant store — so no second selector, grant store or
+    OAuth authority exists. Missing bindings fail closed to None (the route
+    then answers 503, never a fabricated state).
+    """
+
+    identity = legacy_worker._binding_value(env, CONTROL_PLANE_IDENTITY_BINDING_NAME)
+    oauth = legacy_worker._binding_value(env, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    grants = legacy_worker._binding_value(env, ENGINE_CONNECTOR_GRANTS_BINDING)
+    if identity is None or oauth is None or grants is None:
+        return None
+    try:
+        return CalendarReadStateService(
+            workspace_client=CloudflareConnectorWorkspaceClient(identity),
+            binding_client=CloudflareCalendarBindingClient(oauth),
+            grant_store=CloudflareD1ConnectorGrantStore(grants),
+        )
+    except (TypeError, ValueError):
+        return None
+
+
 def _scope_authority_for_env(env: Any) -> AuthSessionScopeAuthority | None:
     """Resolve the CP auth-session scope authority via private Service Binding.
 
@@ -1029,6 +1060,8 @@ class Default(legacy_worker.Default):
             return await self._fetch_calendar_credential_presence(request)
         if path == CALENDAR_READ_ACTIVATION_PATH:
             return await self._fetch_calendar_read_activation(request)
+        if path == CALENDAR_READ_STATE_PATH:
+            return await self._fetch_calendar_read_state(request)
         if path == DOCUMENT_CONTEXT_PATH:
             return await self._fetch_document_context(request, path)
         if path == MULTIMODAL_EXECUTE_PATH:
@@ -1135,6 +1168,72 @@ class Default(legacy_worker.Default):
             )
         try:
             result = await service.activate(session_id=session_id)
+        except ServiceContractError as exc:
+            return legacy_worker._error_response(
+                exc.code,
+                exc.safe_message,
+                exc.status_code,
+            )
+        return legacy_worker._json_response(result)
+
+    async def _fetch_calendar_read_state(self, request: Any) -> Any:
+        """Read-only persisted Calendar READ grant state for a trusted session.
+
+        Same caller credential, same closed request body and the same
+        fail-closed surface discipline as the activation route. A failed check
+        is an error response (the chat projection maps it to ``unavailable``),
+        never an ``inactive`` state.
+        """
+
+        method = str(getattr(request, "method", "")).upper()
+        if method != "POST":
+            return legacy_worker._error_response(
+                "method_not_allowed",
+                "Calendar READ state requires POST.",
+                405,
+            )
+        headers = getattr(request, "headers", None)
+        try:
+            body = str(await request.text()).encode("utf-8")
+        except Exception:
+            return legacy_worker._error_response(
+                "invalid_request",
+                "Calendar state request could not be read.",
+                400,
+            )
+        if len(body) > 4096:
+            return legacy_worker._error_response(
+                "invalid_request",
+                "Calendar state request is too large.",
+                400,
+            )
+
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env,
+            headers,
+            body,
+        )
+        if auth_error is not None:
+            return auth_error
+
+        try:
+            session_id = parse_calendar_activation_request(body)
+        except ServiceContractError as exc:
+            return legacy_worker._error_response(
+                exc.code,
+                exc.safe_message,
+                exc.status_code,
+            )
+
+        service = _calendar_read_state_service_for_env(self.env)
+        if service is None:
+            return legacy_worker._error_response(
+                "calendar_activation_unavailable",
+                "Calendar READ state authority is unavailable.",
+                503,
+            )
+        try:
+            result = await service.state(session_id=session_id)
         except ServiceContractError as exc:
             return legacy_worker._error_response(
                 exc.code,

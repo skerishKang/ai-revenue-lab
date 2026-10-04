@@ -27,6 +27,9 @@ from app.claw_automation_store import D1ClawAutomationStore
 from app.claw_local_access_composition import (
     build_claw_local_access_source_with_diagnostic,
 )
+from app.desktop_conversation_authority import (
+    build_desktop_device_session_authority_with_diagnostic,
+)
 from app.claw_p01_composition import (
     build_claw_p01_adapter,
     build_claw_p01_lanes_with_diagnostic,
@@ -35,6 +38,7 @@ from app.claw_task_alert_store import D1ClawTaskAlertStore
 from app.config import ConfigError
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.calendar_read_activation_engine import CloudflareCalendarReadActivationEngineClient
+from app.calendar_read_state_engine import CloudflareCalendarReadStateEngineClient
 from app.control_plane_identity_shadow import D1IdentityShadowStore
 from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
 from app.dispatch_quota import DispatchAwareB14Client, DispatchAwareUsageCounterStore
@@ -750,6 +754,26 @@ class Default(WorkerEntrypoint):
                 except Exception:
                     calendar_read_activation_client = None
                 _worker_app.state.calendar_read_activation_client = calendar_read_activation_client
+                # Persisted Calendar READ grant state (#2952 follow-up): the
+                # read-only half, over the same P01 Engine Service Binding and
+                # caller credential. No second Engine authority; an
+                # unconfigured binding leaves the state surface absent rather
+                # than inventing a grant answer.
+                try:
+                    p01_config_state = p01_engine_config_from_worker_bindings(self.env)
+                    calendar_read_state_engine_client = (
+                        CloudflareCalendarReadStateEngineClient(
+                            p01_config_state.service_binding,
+                            caller_id=p01_config_state.caller_id,
+                            credential=p01_config_state.credential,
+                            request_factory=Request,
+                        )
+                        if p01_config_state is not None
+                        else None
+                    )
+                except Exception:
+                    calendar_read_state_engine_client = None
+                _worker_app.state.calendar_read_state_engine_client = calendar_read_state_engine_client
                 _worker_app.state.project_file_store = project_file_store
                 _worker_app.state.saved_output_store = saved_output_store
                 _worker_app.state.usage_gate = UsageGate(settings, usage_store)
@@ -786,6 +810,20 @@ class Default(WorkerEntrypoint):
                 )
                 if claw_local_access_source is not None:
                     _worker_app.state.claw_local_access_source = claw_local_access_source
+                # #3436 B2c: compose the canonical device-session authority for
+                # the GET-only Desktop conversation surface from the same
+                # trusted broker binding. When the trusted runtime is absent
+                # (today's deploy) the composition yields None and the app
+                # keeps the fail-closed unconfigured authority installed by
+                # create_app; no browser-cookie or self-asserted fallback
+                # exists on this surface.
+                _desktop_device_session_authority, _desktop_auth_diag = (
+                    build_desktop_device_session_authority_with_diagnostic(self.env)
+                )
+                if _desktop_device_session_authority is not None:
+                    _worker_app.state.desktop_device_session_authority = (
+                        _desktop_device_session_authority
+                    )
                 # #3139: compose the Local Runner return leg from the same
                 # trusted broker binding and the real D1 history store. Absent
                 # either, the composition yields None and the route keeps the
