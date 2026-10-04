@@ -121,6 +121,16 @@ export type ShellStringKey =
   | 'desktop.runStatusFailed'
   | 'desktop.runStatusCancelled'
   | 'desktop.runArtifact'
+  | 'desktop.runArtifactsTitle'
+  | 'desktop.runArtifactsEmpty'
+  | 'desktop.runArtifactUnsupported'
+  | 'desktop.runArtifactMediaType'
+  | 'desktop.runArtifactDocumentLabel'
+  | 'desktop.runArtifactKindDocument'
+  | 'desktop.runArtifactKindImage'
+  | 'desktop.runArtifactKindTable'
+  | 'desktop.runArtifactKindArchive'
+  | 'desktop.runArtifactKindOther'
   | 'desktop.runConversationLinked'
   | 'desktop.runAuthorityNote'
   | 'desktop.runIdLabel'
@@ -224,6 +234,16 @@ const KO: Record<ShellStringKey, string> = {
   'desktop.runStatusFailed': '실패',
   'desktop.runStatusCancelled': '취소됨',
   'desktop.runArtifact': '결과 파일 있음',
+  'desktop.runArtifactsTitle': '결과 파일',
+  'desktop.runArtifactsEmpty': '최근 작업에 첨부된 결과 파일이 없습니다.',
+  'desktop.runArtifactUnsupported': '지원하지 않는 결과 형식입니다.',
+  'desktop.runArtifactMediaType': '파일 형식',
+  'desktop.runArtifactDocumentLabel': '문서 참조',
+  'desktop.runArtifactKindDocument': '문서',
+  'desktop.runArtifactKindImage': '이미지',
+  'desktop.runArtifactKindTable': '표',
+  'desktop.runArtifactKindArchive': '압축 파일',
+  'desktop.runArtifactKindOther': '기타',
   'desktop.runConversationLinked': '대화 연결',
   'desktop.runAuthorityNote': '작업 기록은 Padiem Claw 기준 권위가 제공합니다. Desktop은 별도 작업 기록을 만들지 않으며 실시간 표시가 아닌 최근 기록 조회입니다.',
   'desktop.runIdLabel': '실행 ID',
@@ -328,6 +348,16 @@ const EN: Record<ShellStringKey, string> = {
   'desktop.runStatusFailed': 'Failed',
   'desktop.runStatusCancelled': 'Cancelled',
   'desktop.runArtifact': 'Has result file',
+  'desktop.runArtifactsTitle': 'Result files',
+  'desktop.runArtifactsEmpty': 'No result files are attached to recent runs.',
+  'desktop.runArtifactUnsupported': 'This result format is not supported.',
+  'desktop.runArtifactMediaType': 'File type',
+  'desktop.runArtifactDocumentLabel': 'Document reference',
+  'desktop.runArtifactKindDocument': 'Document',
+  'desktop.runArtifactKindImage': 'Image',
+  'desktop.runArtifactKindTable': 'Table',
+  'desktop.runArtifactKindArchive': 'Archive',
+  'desktop.runArtifactKindOther': 'Other',
   'desktop.runConversationLinked': 'Linked conversation',
   'desktop.runAuthorityNote': 'Run history is provided by the canonical Padiem Claw authority. Desktop keeps no separate run history, and this is a recent-records view, not a live feed.',
   'desktop.runIdLabel': 'Run ID',
