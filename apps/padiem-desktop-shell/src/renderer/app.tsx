@@ -52,6 +52,8 @@ import type {
   PairingDeepLinkResponse,
   RunnerHealthResponse,
   ShellStatus,
+  WorkspaceEntry,
+  WorkspaceEntryKind,
   WorkspaceListResponse,
   WorkspaceRootResponse,
 } from './types.js';
@@ -63,6 +65,8 @@ export interface ShellViewState {
   readonly log: BoundedLogResponse | null;
   readonly workspaceRoot: WorkspaceRootResponse | null;
   readonly workspaceListing: WorkspaceListResponse | null;
+  /** #3436 project browser: the selected entry is view state, never IPC. */
+  readonly selectedWorkspaceEntry: WorkspaceEntry | null;
   readonly conversationList: CanonicalConversationListResponse | null;
   readonly selectedConversation: CanonicalConversationDetail | null;
   readonly runList: CanonicalRunListResponse | null;
@@ -83,6 +87,7 @@ export const INITIAL_SHELL_VIEW_STATE: ShellViewState = Object.freeze({
   log: null,
   workspaceRoot: null,
   workspaceListing: null,
+  selectedWorkspaceEntry: null,
   conversationList: null,
   selectedConversation: null,
   runList: null,
@@ -100,6 +105,11 @@ export interface ShellActions {
   readonly chooseWorkspaceRoot: () => Promise<void>;
   readonly openWorkspaceDirectory: (relativePath: string) => Promise<void>;
   readonly clearWorkspaceRoot: () => Promise<void>;
+  /**
+   * #3436 project browser: selecting an entry is local view state. No IPC is
+   * involved — the main process learns nothing about which entry is highlighted.
+   */
+  readonly selectWorkspaceEntry: (relativePath: string) => void;
   readonly selectConversation: (conversationId: string) => Promise<void>;
 }
 
@@ -180,6 +190,9 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
         ...prev,
         workspaceRoot: listing.root,
         workspaceListing: listing,
+        // Expanding a folder is navigation: the previous selection belonged to
+        // the previous directory and is dropped rather than left ambiguous.
+        selectedWorkspaceEntry: null,
       }));
     },
     [api],
@@ -188,13 +201,14 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
   const chooseWorkspaceRoot = useCallback(async (): Promise<void> => {
     if (!api) return;
     const root = await api.chooseWorkspaceRoot();
-    setState((prev) => ({ ...prev, workspaceRoot: root }));
+    setState((prev) => ({ ...prev, workspaceRoot: root, selectedWorkspaceEntry: null }));
     if (root.selected) {
       const listing = await api.listWorkspaceDirectory('');
       setState((prev) => ({
         ...prev,
         workspaceRoot: listing.root,
         workspaceListing: listing,
+        selectedWorkspaceEntry: null,
       }));
     }
   }, [api]);
@@ -206,8 +220,21 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
       ...prev,
       workspaceRoot: root,
       workspaceListing: null,
+      selectedWorkspaceEntry: null,
     }));
   }, [api]);
+
+  const selectWorkspaceEntry = useCallback((relativePath: string): void => {
+    setState((prev) => {
+      // Only an entry of the CURRENT listing can be selected, and the entry is
+      // taken from the main-owned projection rather than reconstructed here.
+      const entry = prev.workspaceListing?.entries.find(
+        (candidate) => candidate.relativePath === relativePath,
+      );
+      if (!entry) return prev;
+      return { ...prev, selectedWorkspaceEntry: entry };
+    });
+  }, []);
 
   const selectConversation = useCallback(
     async (conversationId: string): Promise<void> => {
@@ -262,6 +289,7 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
       chooseWorkspaceRoot,
       openWorkspaceDirectory,
       clearWorkspaceRoot,
+      selectWorkspaceEntry,
       selectConversation,
     },
   };
@@ -444,17 +472,62 @@ function parentWorkspacePath(relativePath: string): string {
   return parts.join('/');
 }
 
+function workspaceBreadcrumbs(rootName: string, relativePath: string): readonly string[] {
+  const segments = relativePath.split('/').filter(Boolean);
+  return [rootName, ...segments];
+}
+
+/** Closed map from the main-owned entry kind to its localized label. */
+const WORKSPACE_KIND_LABEL: Record<WorkspaceEntryKind, ShellStringKey> = {
+  directory: 'workspace.kind.directory',
+  file: 'workspace.kind.file',
+  link: 'workspace.kind.link',
+};
+
+/** Human-readable byte size for the entry list. Bounded, never loads content. */
+function formatWorkspaceSize(sizeBytes: number | null, locale: ShellLocale): string {
+  if (sizeBytes === null || !Number.isFinite(sizeBytes) || sizeBytes < 0) return '';
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  let value = sizeBytes;
+  let unit = 0;
+  while (value >= 1024 && unit < units.length - 1) {
+    value = value / 1024;
+    unit += 1;
+  }
+  const rendered = unit === 0 ? String(Math.round(value)) : value.toFixed(1);
+  return `${rendered} ${units[unit]}`;
+}
+
+/** The selected entry's modified date, localized, or a plain dash. */
+function formatWorkspaceModified(modifiedAt: string | null, locale: ShellLocale): string {
+  if (modifiedAt === null) return '-';
+  const parsed = Date.parse(modifiedAt);
+  if (!Number.isFinite(parsed)) return '-';
+  return new Date(parsed).toLocaleString(locale === 'ko' ? 'ko-KR' : 'en-US');
+}
+
+/**
+ * #3436 project browser.
+ *
+ * Read-only, one directory at a time: the main process owns the selected root
+ * and answers only root-relative list requests, so the renderer can expand a
+ * folder but can never address an absolute path. Selecting an entry is local
+ * view state — no write, rename, delete or create control exists anywhere on
+ * this surface (LOCAL_FILE_BROWSER_READ_ONLY=YES).
+ */
 export function WorkspacePanel(props: {
   root: WorkspaceRootResponse | null;
   listing: WorkspaceListResponse | null;
+  selectedEntry: WorkspaceEntry | null;
   actions: ShellActions;
   locale: ShellLocale;
   advanced: boolean;
 }): ReactElement {
-  const { root, listing, actions, locale, advanced } = props;
+  const { root, listing, selectedEntry, actions, locale, advanced } = props;
   const t = (key: ShellStringKey): string => translate(locale, key);
   const selected = root?.selected === true;
   const directory = listing?.directory ?? '';
+  const crumbs = workspaceBreadcrumbs(root?.rootName ?? '', directory);
 
   return (
     <section className="panel workspace-panel">
@@ -477,13 +550,31 @@ export function WorkspacePanel(props: {
 
       {selected ? (
         <>
-          <div className="workspace-location">
-            <strong>{root?.rootName}</strong>
-            {directory ? <span> / {directory}</span> : null}
-          </div>
+          <nav className="workspace-breadcrumb" aria-label={t('workspace.breadcrumb')}>
+            {crumbs.map((crumb, index) => {
+              const isLast = index === crumbs.length - 1;
+              const target = crumbs.slice(1, index).join('/');
+              return isLast ? (
+                <span key={`${crumb}-${index}`} className="workspace-crumb workspace-crumb-current" aria-current="location">
+                  {crumb}
+                </span>
+              ) : (
+                <button
+                  key={`${crumb}-${index}`}
+                  className="workspace-crumb"
+                  onClick={() => void actions.openWorkspaceDirectory(target)}
+                >
+                  {crumb}
+                </button>
+              );
+            })}
+          </nav>
           {advanced && root?.rootPath ? (
             <p className="workspace-path" data-advanced="true">{root.rootPath}</p>
           ) : null}
+          {/* The local root is a local execution context, not a workspace:
+              saying so here keeps the two concepts from being conflated. */}
+          <p className="workspace-local-note">{t('workspace.localOnlyNote')}</p>
           <div className="row workspace-nav">
             <button disabled={directory === ''} onClick={() => void actions.openWorkspaceDirectory(parentWorkspacePath(directory))}>
               {t('workspace.up')}
@@ -493,29 +584,62 @@ export function WorkspacePanel(props: {
             </button>
           </div>
           {listing && !listing.ok ? (
-            <p className="workspace-error">{t('workspace.unavailable')}</p>
+            <p className="workspace-error" data-error-code={listing.errorCode ?? 'none'}>
+              {listing.errorCode === 'depth_exceeded'
+                ? t('workspace.depthExceeded')
+                : t('workspace.unavailable')}
+            </p>
           ) : null}
           <ul className="workspace-list">
-            {(listing?.entries ?? []).map((entry) => (
-              <li key={entry.relativePath} data-kind={entry.kind}>
-                {entry.kind === 'directory' ? (
-                  <button className="workspace-entry" onClick={() => void actions.openWorkspaceDirectory(entry.relativePath)}>
-                    <span aria-hidden="true">▸</span>
-                    <span>{entry.name}</span>
-                  </button>
-                ) : (
-                  <span className="workspace-entry workspace-entry-static">
-                    <span aria-hidden="true">{entry.kind === 'file' ? '·' : '↗'}</span>
-                    <span>{entry.name}</span>
-                  </span>
-                )}
-              </li>
-            ))}
+            {(listing?.entries ?? []).map((entry) => {
+              const isSelected = selectedEntry?.relativePath === entry.relativePath;
+              const size = formatWorkspaceSize(entry.sizeBytes, locale);
+              return (
+                <li
+                  key={entry.relativePath}
+                  data-kind={entry.kind}
+                  data-entry-path={entry.relativePath}
+                  data-selected={isSelected ? 'true' : 'false'}
+                >
+                  {entry.kind === 'directory' ? (
+                    <button className="workspace-entry" onClick={() => void actions.openWorkspaceDirectory(entry.relativePath)}>
+                      <span aria-hidden="true">▸</span>
+                      <span>{entry.name}</span>
+                    </button>
+                  ) : (
+                    <button
+                      className={`workspace-entry workspace-entry-selectable${isSelected ? ' workspace-entry-selected' : ''}`}
+                      aria-pressed={isSelected}
+                      onClick={() => actions.selectWorkspaceEntry(entry.relativePath)}
+                    >
+                      <span aria-hidden="true">{entry.kind === 'file' ? '·' : '↗'}</span>
+                      <span>{entry.name}</span>
+                      {size ? <span className="workspace-entry-size">{size}</span> : null}
+                    </button>
+                  )}
+                </li>
+              );
+            })}
           </ul>
           {listing?.ok && listing.entries.length === 0 ? (
             <p className="guidance">{t('workspace.noEntries')}</p>
           ) : null}
           {listing?.truncated ? <p className="notice">{t('workspace.truncated')}</p> : null}
+          {selectedEntry ? (
+            <div className="workspace-selection" data-selected-path={selectedEntry.relativePath}>
+              <strong>{selectedEntry.name}</strong>
+              <dl>
+                <dt>{t('workspace.selectedKind')}</dt>
+                <dd>{t(WORKSPACE_KIND_LABEL[selectedEntry.kind])}</dd>
+                <dt>{t('workspace.selectedPath')}</dt>
+                <dd>{selectedEntry.relativePath}</dd>
+                <dt>{t('workspace.selectedSize')}</dt>
+                <dd>{formatWorkspaceSize(selectedEntry.sizeBytes, locale) || '-'}</dd>
+                <dt>{t('workspace.selectedModified')}</dt>
+                <dd>{formatWorkspaceModified(selectedEntry.modifiedAt, locale)}</dd>
+              </dl>
+            </div>
+          ) : null}
         </>
       ) : null}
     </section>
@@ -930,6 +1054,7 @@ export function ShellView(props: {
           <WorkspacePanel
             root={state.workspaceRoot}
             listing={state.workspaceListing}
+            selectedEntry={state.selectedWorkspaceEntry}
             actions={actions}
             locale={locale}
             advanced={visibility.developerFacts}
