@@ -17,8 +17,8 @@ from google_oauth_durable_store import (
 )
 from google_oauth_ingress_runtime import (
     GOOGLE_TOKEN_URL,
-    MAX_TOKEN_RESPONSE_BYTES,
     GoogleOAuthIngressConfig,
+    _read_bounded_google_token_response,
 )
 from google_oauth_webcrypto_sealer import (
     GoogleOAuthSealContext,
@@ -167,12 +167,12 @@ class CloudflareGoogleOAuthRefreshPort:
                 "google_oauth_refresh_failed",
                 "Google OAuth access-token refresh failed",
             )
-        text = await response.text()
-        if not isinstance(text, str) or len(text.encode("utf-8")) > MAX_TOKEN_RESPONSE_BYTES:
-            raise ControlPlaneContractError(
-                "google_oauth_refresh_failed",
-                "Google OAuth refresh response exceeds the trusted bound",
-            )
+        text = await _read_bounded_google_token_response(
+            response,
+            error_code="google_oauth_refresh_failed",
+            overflow_message="Google OAuth refresh response exceeds the trusted bound",
+            invalid_message="Google OAuth refresh response is invalid",
+        )
         try:
             payload = json.loads(text)
         except json.JSONDecodeError as exc:
