@@ -265,6 +265,28 @@ def test_valid_order_executes_through_p01_chain() -> None:
     assert "artifact_token" not in data["result"]
 
 
+def test_manual_execute_does_not_reflect_unexpected_router_exception(client: TestClient) -> None:
+    internal_sentinel = "private-adapter-path=C:/internal/provider?token=sentinel"
+
+    with patch(
+        "app.claw_routes.ManualIntakeRouter.process",
+        side_effect=RuntimeError(internal_sentinel),
+    ):
+        response = client.post(
+            EXECUTE_ROUTE_PATH,
+            json={
+                "content": "내부 오류 노출 방지 테스트",
+                "channel": "sms",
+                "action": "reply",
+            },
+        )
+
+    assert response.status_code == 500
+    assert response.json()["error"]["code"] == "intake_generation_failed"
+    assert internal_sentinel not in response.text
+    assert "C:/internal/provider" not in response.text
+
+
 def test_valid_reply_executes_through_p01_chain(client: TestClient) -> None:
     with _injected_adapter(client, _make_adapter()):
         payload = {
