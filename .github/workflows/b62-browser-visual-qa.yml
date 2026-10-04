@@ -2,6 +2,7 @@ name: B62 Browser Visual QA
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "apps/padiem-chat/static/**"
       - "apps/padiem-chat/app/**"
@@ -20,11 +21,16 @@ on:
       - ".github/workflows/b62-browser-visual-qa.yml"
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
 jobs:
   browser-qa:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:

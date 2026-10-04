@@ -2,6 +2,7 @@ name: B62 Padiem Chat CI
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "apps/padiem-chat/**"
       - "apps/korean-ai-platform/**"
@@ -16,11 +17,16 @@ on:
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
 jobs:
   b62-test:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
@@ -319,6 +325,7 @@ jobs:
         run: uv run --locked pywrangler deploy --dry-run --outdir ../../.tmp/b62-worker-bundle
 
   b14-multimodal-test:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     defaults:
