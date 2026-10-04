@@ -34,6 +34,11 @@ from app.agent_skill_service import (
     AgentSkillEngineService,
 )
 from app.capability_manifest import set_posture_overrides
+from app.cloudflare_request_body import (
+    RequestBodyReadError,
+    RequestBodyTooLarge,
+    read_bounded_worker_request_body,
+)
 from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
@@ -45,7 +50,12 @@ from app.idempotency_replay_service import (
     IdempotencyReplayEngineService,
 )
 from app.identity_enforcement import authenticate_request
-from app.memory_service import MEMORY_PATH, MEMORY_WRITE_PATH, MemoryRetrievalEngineService
+from app.memory_service import (
+    MAX_MEMORY_REQUEST_BODY_BYTES,
+    MEMORY_PATH,
+    MEMORY_WRITE_PATH,
+    MemoryRetrievalEngineService,
+)
 from app.orchestration_service import (
     ORCHESTRATE_CANCEL_PATH,
     ORCHESTRATE_PATH,
@@ -54,7 +64,12 @@ from app.orchestration_service import (
     OrchestrationEngineService,
     PreparedOrchestrationStream,
 )
-from app.service import EngineService, HEALTH_PATH, ServiceResponse
+from app.service import (
+    MAX_REQUEST_BODY_BYTES,
+    EngineService,
+    HEALTH_PATH,
+    ServiceResponse,
+)
 from app.service_identity import ServiceIdentityError
 from app.streaming_service import (
     NDJSON_CONTENT_TYPE,
@@ -495,27 +510,6 @@ class Default(WorkerEntrypoint):
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
 
-        body = b""
-        if method.upper() == "POST":
-            try:
-                text = await request.text()
-                body = str(text).encode("utf-8")
-            except Exception:
-                return _json_response(
-                    ServiceResponse(
-                        status_code=400,
-                        body={
-                            "ok": False,
-                            "error": {
-                                "code": "invalid_request",
-                                "message": "Request body could not be read.",
-                                "retryable": False,
-                                "metadata": None,
-                            },
-                        },
-                    )
-                )
-
         orchestration_paths = {
             ORCHESTRATE_PATH,
             ORCHESTRATE_RESUME_PATH,
@@ -557,6 +551,32 @@ class Default(WorkerEntrypoint):
                 },
             )
             return _json_response(result)
+
+        body = b""
+        if method.upper() == "POST" and path != HEALTH_PATH:
+            max_body_bytes = (
+                MAX_MEMORY_REQUEST_BODY_BYTES
+                if path in {MEMORY_PATH, MEMORY_WRITE_PATH}
+                else MAX_REQUEST_BODY_BYTES
+            )
+            try:
+                body = await read_bounded_worker_request_body(
+                    request,
+                    max_bytes=max_body_bytes,
+                )
+            except RequestBodyTooLarge:
+                message = (
+                    "Request body exceeds the safety limit."
+                    if path in orchestration_paths or path in tool_paths
+                    else "Request body exceeds the internal Engine safety limit."
+                )
+                return _error_response("request_too_large", message, 413)
+            except RequestBodyReadError:
+                return _error_response(
+                    "invalid_request",
+                    "Request body could not be read.",
+                    400,
+                )
 
         if path != HEALTH_PATH:
             auth_error = _authenticate_non_health_request(self.env, headers, body)
