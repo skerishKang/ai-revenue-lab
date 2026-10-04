@@ -32,6 +32,7 @@ function padiemTarget(url, method) {
     ["/api/padiem/auth/google/start", ["GET", "/auth/google/start"]],
     ["/api/padiem/auth/google/callback", ["GET", "/auth/google/callback"]],
     ["/api/padiem/auth/logout", ["POST", "/api/auth/logout"]],
+    ["/api/padiem/b66/company-profile", ["GET", "/api/b66/company-profile"]],
     ["/api/padiem/b66/quote/interpret", ["POST", "/api/b66/quote/interpret"]]
   ]);
   if (exact.has(path)) {

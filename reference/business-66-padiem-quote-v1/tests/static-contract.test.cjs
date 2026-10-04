@@ -200,8 +200,10 @@ check(worker.includes("PADIEM_CHAT_SERVICE") && worker.includes("else {\n      u
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: optional same-account service binding with HTTPS fallback");
 check(!account.includes("localStorage") && !account.includes("sessionStorage"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: server-assigned skill is memory-only cache");
-check(account.includes('semantic.buildDraft(state.loadedSkill.skill, input)') &&
-      account.includes('bridge.setServerSkill(state.loadedSkill.skill, state.loadedSkill.slotSources || {})'),
+check(account.includes("{ companyProfile: profile }") &&
+      account.includes("{ companyProfile: state.companyProfile }") &&
+      account.includes("bridge.setServerSkill(skill, slotSources)") &&
+      account.includes("B66QuoteRuntimeBridge"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: server skill + authorized private assets feed canonical browser QuoteCore/renderer path");
 check(app.includes("function setServerSkill(skill, slotSources)") &&
       app.includes("function clearServerSkill()") &&
@@ -252,8 +254,9 @@ check(css.includes(".easy-chip {") && css.includes("min-height: 44px;"),
 check(!easy.includes("fetch(") && !easy.includes("XMLHttpRequest") &&
       !intake.includes("fetch(") && !intake.includes("XMLHttpRequest"),
   "EASY_MODE_CONTRACT: no network/model call in Easy/file intake mode");
-check(easy.includes("아직 자동 해석 모델은 연결 전"),
-  "EASY_MODE_CONTRACT: free-chat truthfulness");
+check(!easy.includes("아직 자동 해석 모델은 연결 전") &&
+      easy.includes("CGI 기본 견적서 양식과 회사 정보가 자동으로 적용됩니다"),
+  "EASY_MODE_CONTRACT: free-form runs the live assigned-skill runtime (placeholder removed)");
 check(easy.includes("자동 분석 서버는 아직 활성화 전") &&
       easy.includes("이 파일은 외부로 전송되지 않습니다."),
   "EASY_MODE_CONTRACT: selected file is truthful about non-live analysis");
@@ -262,13 +265,12 @@ check(app.includes("window.B66QuoteAppBridge"),
 check(html.includes('id="directView"'),
   "EASY_MODE_CONTRACT: direct mode preserved");
 check(easy.includes("function startGuided(referenceText, options)") &&
-      easy.includes("startGuided(freeChatPending)") &&
       easy.includes("참고용으로 그대로 남겨둘게요"),
-  "FREE_TEXT_CONTINUITY_CONTRACT: one-shot text remains visible when guided flow continues");
-check(easy.includes("inputHandler = (text) => startGuided(text);") &&
-      easy.includes("바로 입력해도 질문이 시작됩니다") &&
-      easy.includes("문장을 알아듣는 기능은 준비 중이라"),
-  "EASY_MODE_CONTRACT: home composer submit starts guided chat");
+  "FREE_TEXT_CONTINUITY_CONTRACT: guided reference text stays visible and non-authoritative");
+check(easy.includes("inputHandler = (text) => startHomeInterpretation(text);") &&
+      easy.includes("보내면 CGI 기본 견적서로 바로 만들어 드립니다") &&
+      !easy.includes("문장을 알아듣는 기능은 준비 중이라"),
+  "EASY_MODE_CONTRACT: home composer submit runs the real free-form runtime");
 check(easy.includes("QuoteDraft에 자동 반영하지 않습니다."),
   "FREE_TEXT_CONTINUITY_CONTRACT: preserved reference is explicitly non-authoritative");
 check(easy.includes('const PRODUCT_HISTORY_KEY = "b66View"') &&
@@ -284,6 +286,29 @@ check(easy.includes('recordProductState(easy ? lastEasyView : "direct")') &&
       easy.includes('recordProductState("free-form")') &&
       easy.includes('recordProductState("recent")'),
   "B66_BROWSER_HISTORY_CONTRACT: direct/guided/file/free-form/recent share the Quote Home boundary");
+
+/* B66_MVP_RUNTIME_CONTRACT (#3478) — Guided/Free-form 이 하나의 runtime authority 로 수렴한다 */
+check(worker.includes('"/api/padiem/b66/company-profile"') &&
+      worker.includes('"/api/b66/company-profile"') &&
+      worker.includes('intake_disabled'),
+  "B66_MVP_RUNTIME_CONTRACT: company-profile GET bridge exists and intake relay stays fail-closed");
+check(easy.includes("window.B66QuoteRuntimeBridge") &&
+      easy.includes("runPrimaryInterpretation") &&
+      easy.includes("buildFromFacts") &&
+      easy.includes('{ label: "견적서 만들기", action: finishGuidedWithRuntime }') &&
+      easy.includes('label: "견적서 확인하기"') &&
+      easy.includes('setWorkspaceMode("direct")'),
+  "B66_MVP_RUNTIME_CONTRACT: primary input converges on one runtime; direct entry is an explicit review action");
+check(account.includes("state.companyProfileLoaded") &&
+      account.includes('"/b66/company-profile"') &&
+      account.includes("{ companyProfile: profile }") &&
+      account.includes("{ companyProfile: state.companyProfile }") &&
+      account.includes("B66QuoteRuntimeBridge"),
+  "B66_MVP_RUNTIME_CONTRACT: standalone runtime builds drafts with the authenticated CompanyProfile");
+check(account.includes("runtimeReadiness()") &&
+      account.includes("notReadyCode(readiness)") &&
+      account.includes("interpretRequest"),
+  "B66_MVP_RUNTIME_CONTRACT: primary actions are gated on auth/skill/profile readiness without demo fallback");
 
 /* FILE_INTAKE_CONTRACT — local chooser/preflight live, upload/model still off */
 check(html.includes('id="easyFileInput"') && html.includes('type="file"'),
@@ -395,9 +420,9 @@ check(css.includes(".tax-row.tax-review-required"),
 check(easy.includes('"품목 합계(세금 확인 전): "') &&
       easy.includes("최종 합계는 부가세 방식을 선택한 뒤 확정됩니다."),
   "UNKNOWN_VAT_REVIEW_CONTRACT: unknown VAT summary is explicitly provisional");
-check(easy.includes("requireTaxReview: guided.taxUnknown") &&
+check(easy.includes("requireTaxReview: taxUnknown") &&
       easy.includes("App.focusTaxReview()"),
-  "UNKNOWN_VAT_REVIEW_CONTRACT: direct mode review is required and focused");
+  "UNKNOWN_VAT_REVIEW_CONTRACT: review stays required and is focused when the user opens the result");
 check(app.includes("taxReviewRequired = false;") &&
       app.includes('$("taxMode").addEventListener("change"'),
   "UNKNOWN_VAT_REVIEW_CONTRACT: choosing VAT clears review state");
@@ -551,9 +576,11 @@ check(!easy.includes("fetch(") && !intake.includes("fetch("),
   "UPLOAD_AI_LIVE=NO: no browser upload request");
 
 /* CHAT_AI_LIVE=NO */
-check(easy.includes("문장을 알아듣는 기능은 준비 중이라") &&
-      easy.includes("아직 자동 해석 모델은 연결 전"),
-  "CHAT_AI_LIVE=NO: easy chat never claims AI interpretation");
+check(!easy.includes("문장을 알아듣는 기능은 준비 중이라") &&
+      !easy.includes("아직 자동 해석 모델은 연결 전") &&
+      easy.includes("CGI 기본 견적서로 작성하고 있습니다") &&
+      easy.includes("window.B66QuoteRuntimeBridge"),
+  "CHAT_AI_LIVE=NO: easy mode performs no local interpretation; it routes to the authenticated runtime");
 check(easy.includes('addEventListener("b66:open-easy-chat"') &&
       app.includes('new CustomEvent("b66:open-easy-chat")') &&
       html.includes('data-mode="chat"'),
@@ -1003,6 +1030,7 @@ console.log("EMAIL_SEND_LIVE=NO");
 const PASSWORD_LOGIN_PATH = "/api/padiem/auth/password/login";
 const AUTH_STATUS_PATH = "/api/padiem/auth/status";
 const GOOGLE_START_PATH = "/api/padiem/auth/google/start";
+const COMPANY_PROFILE_PATH = "/api/padiem/b66/company-profile";
 /* 스텁 DOM 이 제공해야 하는 엘리먼트 id 목록이다. 값이 아니라 id 이므로
    한 줄에 하나씩 두어 비밀값(name/value)로 읽히지 않게 한다. */
 const GATE_HOST_IDS = [
@@ -1089,6 +1117,16 @@ const runPasswordMethodGate = async (statusPayload) => {
       if (target === AUTH_STATUS_PATH) return jsonResponse(statusPayload);
       if (target === PASSWORD_LOGIN_PATH) {
         return jsonResponse({ error: { message: "gate_probe_no_network" } }, 503);
+      }
+      if (target === COMPANY_PROFILE_PATH) {
+        return jsonResponse({
+          company_profile: {
+            company: "게이트상사",
+            representative: "김대표",
+            defaultValidityDays: 30,
+            defaultTaxMode: "EXCLUSIVE"
+          }
+        });
       }
       return jsonResponse({ error: { message: "gate_probe_unexpected_endpoint" } }, 404);
     },
@@ -1183,7 +1221,8 @@ const assertGateClosed = (label, observed, googleNavExpected) => {
   check(enabled.endpoints.includes(GOOGLE_START_PATH),
     "PADIEM_PASSWORD_METHOD_GATE[enabled]: google navigation behavior is unchanged");
   check(enabled.endpoints.every((endpoint) => (
-    endpoint === AUTH_STATUS_PATH || endpoint === PASSWORD_LOGIN_PATH || endpoint === GOOGLE_START_PATH
+    endpoint === AUTH_STATUS_PATH || endpoint === PASSWORD_LOGIN_PATH ||
+    endpoint === GOOGLE_START_PATH || endpoint === COMPANY_PROFILE_PATH
   )), "PADIEM_PASSWORD_METHOD_GATE[enabled]: only bounded account endpoints are called");
 
   console.log("PADIEM_PASSWORD_METHOD_GATE=PASS");

@@ -15,8 +15,59 @@ const SRC = path.join(__dirname, "..");
 const Core = require(path.join(SRC, "quote-core.js"));
 const History = require(path.join(SRC, "quote-history.js"));
 const FileIntake = require(path.join(SRC, "file-intake.js"));
+const Template = require(path.join(SRC, "quote-template.js"));
+const SavedQuoteSkill = require(path.join(SRC, "quote-skill.js"));
 const easySource = fs.readFileSync(path.join(SRC, "easy-mode.js"), "utf8");
 const appSource = fs.readFileSync(path.join(SRC, "app.js"), "utf8");
+
+/* #3478 CGI runtime fixtures: assigned approved Skill + authenticated CompanyProfile.
+   probe 의 runtime bridge 스텁은 실제 SavedQuoteSkill.buildDraft 로 위임해
+   canonical build 경로를 그대로 검증한다. */
+const RUNTIME_NOW = "2026-10-04T09:00:00.000Z";
+const CGI_SKILL_BASE = {
+  id: "skill-cgi-mvp",
+  name: "CGI 기본 견적서",
+  fixedDefaults: {
+    sender: {
+      company: "스킬잔존상사", rep: "스킬대표", bizNo: "000-00-0000",
+      address: "스킬주소", phone: "010-0000-0000", email: "skill@example.invalid",
+      presetId: "saved-skill"
+    },
+    validDays: 30,
+    taxMode: "EXCLUSIVE",
+    memo: "스킬 기본 메모"
+  },
+  variableSchema: { recipient: true, quoteNo: true, issueDate: true, items: true, memo: true, taxMode: true },
+  internalTemplate: Template.serializeTemplate(Template.builtInTemplate()),
+  provenance: {
+    sourceKind: "file", sourceName: "cgi-quotation.pdf", sourceRef: "source:cgi-mvp",
+    capturedAt: RUNTIME_NOW, warnings: [], unknowns: [],
+    evidence: [{ label: "sender", value: "CGI상사" }]
+  },
+  createdAt: RUNTIME_NOW,
+  updatedAt: RUNTIME_NOW
+};
+const CGI_SKILL_DRAFT = SavedQuoteSkill.buildSkill(CGI_SKILL_BASE);
+const CGI_SKILL = SavedQuoteSkill.buildSkill(Object.assign({}, CGI_SKILL_BASE, {
+  approval: {
+    schemaVersion: 1,
+    status: "approved",
+    skillFingerprint: CGI_SKILL_DRAFT.fingerprint,
+    approvedBy: "central-cto",
+    approvedAt: RUNTIME_NOW,
+    approvalRef: "issue-3478"
+  }
+}));
+const CGI_PROFILE = {
+  company: "CGI상사",
+  representative: "김범신",
+  businessNumber: "111-11-11111",
+  address: "서울특별시",
+  phone: "02-000-0000",
+  email: "cgi@example.invalid",
+  defaultValidityDays: 14,
+  defaultTaxMode: "EXCLUSIVE"
+};
 
 const tick = () => new Promise((resolve) => setImmediate(resolve));
 async function flush() {
@@ -172,6 +223,29 @@ function buildEnv() {
       copyHistoryAsNew: () => { appCalls.push("copyHistoryAsNew"); return Core.createDefaultDraft(); },
       toast: (message) => { appCalls.push("toast:" + message); },
       focusTaxReview: () => { appCalls.push("focusTaxReview"); }
+    },
+    /* #3478 runtime bridge 스텁: buildFromFacts 는 실제 SavedQuoteSkill.buildDraft 로 위임한다 */
+    B66QuoteRuntimeBridge: {
+      readiness: () => ({ ready: true, authenticated: true, skillReady: true, profileReady: true }),
+      interpret: (text) => {
+        appCalls.push("interpret:" + text);
+        return Promise.resolve({ ok: false, code: "probe_interpret_unavailable" });
+      },
+      buildFromFacts: (facts) => {
+        appCalls.push("buildFromFacts");
+        const built = SavedQuoteSkill.buildDraft(CGI_SKILL, {
+          recipient: facts.recipient,
+          items: facts.items,
+          quoteNo: facts.quoteNo,
+          issueDate: facts.issueDate,
+          taxMode: facts.taxMode,
+          memo: facts.memo
+        }, { companyProfile: CGI_PROFILE });
+        return Promise.resolve(built && built.ok
+          ? { ok: true, draft: built.draft }
+          : { ok: false, code: built ? built.code : "draft_build_failed" });
+      },
+      errorText: (code) => "probe runtime error: " + code
     },
     CustomEvent: class {
       constructor(type, init) { this.type = type; this.detail = (init || {}).detail; }
@@ -374,7 +448,7 @@ const buttonWith = (env, label) => env.created.filter(
     await type("별도");        /* 부가세 */
     await type("없음");        /* 메모 */
     await type("현재");        /* 보내는 사람 → 요약 */
-    const confirmChips = chipsWith(env, "견적서 확인하기");
+    const confirmChips = chipsWith(env, "견적서 만들기");
     results.guidedStateRestore = results.guidedStateRestore &&
       check(confirmChips.length > 0, "GUIDED_STATE_RESTORE: resumed conversation reaches the summary");
     if (confirmChips.length) confirmChips[confirmChips.length - 1].listeners.click[0]();
@@ -388,6 +462,9 @@ const buttonWith = (env, label) => env.created.filter(
         "GUIDED_STATE_RESTORE: entered recipient survives Back -> Forward") &&
       check(payload && payload.items.some((item) => item.name === "NEW품목"),
         "GUIDED_STATE_RESTORE: entered item survives Back -> Forward") &&
+      check(payload && payload.sender && payload.sender.company === "CGI상사" &&
+            payload.sender.presetId === "account-company-profile",
+        "GUIDED_STATE_RESTORE: sender comes from the authenticated CompanyProfile (no demo leak)") &&
       check(payload && payload.recipient.company !== "시드거래처" &&
             !payload.items.some((item) => item.name === "시드품목"),
         "GUIDED_STATE_RESTORE: OLD App draft recipient/item never substituted into Guided") &&
@@ -395,6 +472,19 @@ const buttonWith = (env, label) => env.created.filter(
         "GUIDED_STATE_RESTORE: quote number is the one from guided start (no re-allocation)") &&
       check(env.allocatedQuoteNos.length === startedAllocations,
         "GUIDED_STATE_RESTORE: zero draft/quote-number allocation across the whole scenario");
+
+    /* 결과 리뷰는 사용자가 명시적으로 열 때만 direct 표면으로 간다 */
+    const reviewChips = chipsWith(env, "견적서 확인하기");
+    results.guidedStateRestore = results.guidedStateRestore &&
+      check(reviewChips.length > 0 && env.getElement("directView").hidden === true,
+        "GUIDED_STATE_RESTORE: result review stays in place until the user opens it");
+    if (reviewChips.length) reviewChips[reviewChips.length - 1].listeners.click[0]();
+    await flush();
+    results.guidedStateRestore = results.guidedStateRestore &&
+      check(env.getElement("directView").hidden === false,
+        "GUIDED_STATE_RESTORE: explicit review opens the canonical result surface");
+    env.history.back();
+    await flush();
   }
 
   /* ── live guided conversation survives a redundant popstate ── */
