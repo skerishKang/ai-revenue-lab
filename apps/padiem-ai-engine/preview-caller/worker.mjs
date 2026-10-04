@@ -38,6 +38,7 @@ export const SYNTHETIC_TASK_PAYLOAD = Object.freeze({
 export const PREVIEW_PILOT_PATH = "/run-pilot";
 export const AUTH_CHECK_PATH = "/auth-check";
 export const ENGINE_SKILL_RUN_URL = "https://padiem-ai-engine-preview.internal/internal/v1/agent-skill/run";
+export const MAX_PREVIEW_ENGINE_RESPONSE_BYTES = 256 * 1024;
 
 const CALLER_ID_HEADER = "x-padiem-engine-caller";
 const CALLER_CREDENTIAL_HEADER = "x-padiem-engine-credential";
@@ -63,6 +64,99 @@ function constantTimeEqual(a, b) {
     diff |= ca ^ cb;
   }
   return diff === 0;
+}
+
+async function cancelReader(reader) {
+  try {
+    await reader.cancel();
+  } catch {
+    // Best-effort cleanup after a fail-closed verdict.
+  }
+}
+
+async function readBoundedEngineObject(response) {
+  const body = response?.body;
+  if (!body || typeof body.getReader !== "function") {
+    return {
+      error: jsonResponse(502, {
+        ok: false,
+        error: {
+          code: "invalid_engine_response",
+          message: "Preview engine returned an invalid response.",
+        },
+      }),
+    };
+  }
+
+  const reader = body.getReader();
+  const chunks = [];
+  let total = 0;
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      const chunk = value instanceof Uint8Array ? value : new Uint8Array(value ?? []);
+      if (total + chunk.byteLength > MAX_PREVIEW_ENGINE_RESPONSE_BYTES) {
+        await cancelReader(reader);
+        return {
+          error: jsonResponse(502, {
+            ok: false,
+            error: {
+              code: "engine_response_too_large",
+              message: "Preview engine response exceeded the safety limit.",
+            },
+          }),
+        };
+      }
+      total += chunk.byteLength;
+      chunks.push(chunk);
+    }
+  } catch {
+    await cancelReader(reader);
+    return {
+      error: jsonResponse(502, {
+        ok: false,
+        error: {
+          code: "invalid_engine_response",
+          message: "Preview engine response could not be read.",
+        },
+      }),
+    };
+  }
+
+  const raw = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    raw.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(raw));
+  } catch {
+    return {
+      error: jsonResponse(502, {
+        ok: false,
+        error: {
+          code: "invalid_engine_response",
+          message: "Preview engine returned an invalid response.",
+        },
+      }),
+    };
+  }
+  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+    return {
+      error: jsonResponse(502, {
+        ok: false,
+        error: {
+          code: "invalid_engine_response",
+          message: "Preview engine returned an invalid response.",
+        },
+      }),
+    };
+  }
+  return { value: parsed };
 }
 
 export async function handleCaller(request, env) {
@@ -178,13 +272,9 @@ export async function handleCaller(request, env) {
   }
 
   const status = engineResponse.status;
-  const rawText = await engineResponse.text();
-  let parsed;
-  try {
-    parsed = JSON.parse(rawText);
-  } catch {
-    parsed = { raw: rawText };
-  }
+  const bounded = await readBoundedEngineObject(engineResponse);
+  if (bounded.error) return bounded.error;
+  const parsed = bounded.value;
 
   return jsonResponse(status, {
     ok: engineResponse.ok,

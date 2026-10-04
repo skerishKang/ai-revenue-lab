@@ -9,6 +9,7 @@ import {
   PREVIEW_PILOT_PATH,
   AUTH_CHECK_PATH,
   ENGINE_SKILL_RUN_URL,
+  MAX_PREVIEW_ENGINE_RESPONSE_BYTES,
   PREVIEW_PILOT_APP_ID,
   SYNTHETIC_TASK_PAYLOAD,
 } from "../worker.mjs";
@@ -198,5 +199,47 @@ test("10. GET /auth-check with missing PREVIEW_ENGINE_CREDENTIAL fails with 503"
   assert.equal(res.status, 503);
   const data = await res.json();
   assert.equal(data.error.code, "caller_credential_unavailable");
+});
+
+test("11. oversized preview response is rejected during streaming and cancels the body", async () => {
+  let cancelCalls = 0;
+  const body = new ReadableStream({
+    start(controller) {
+      controller.enqueue(new Uint8Array(MAX_PREVIEW_ENGINE_RESPONSE_BYTES).fill(120));
+      controller.enqueue(new Uint8Array([121]));
+    },
+    cancel() {
+      cancelCalls += 1;
+    },
+  });
+  const { env } = fakeEnv({
+    engineResponse: new Response(body, {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    }),
+  });
+
+  const response = await handleCaller(validRequest(), env);
+  assert.equal(response.status, 502);
+  const data = await response.json();
+  assert.equal(data.error.code, "engine_response_too_large");
+  assert.equal(cancelCalls, 1);
+});
+
+test("12. malformed preview response never reflects raw internal body text", async () => {
+  const internalSentinel = "private-engine-path=/internal/provider?token=sentinel";
+  const { env } = fakeEnv({
+    engineResponse: new Response(`not-json ${internalSentinel}`, {
+      status: 500,
+      headers: { "content-type": "text/plain" },
+    }),
+  });
+
+  const response = await handleCaller(validRequest(), env);
+  assert.equal(response.status, 502);
+  const text = await response.text();
+  assert.equal(text.includes(internalSentinel), false);
+  assert.equal(text.includes("/internal/provider"), false);
+  assert.equal(JSON.parse(text).error.code, "invalid_engine_response");
 });
 
