@@ -253,10 +253,12 @@ jobs:
           node --check padiem-account.js
           node --check quote-embed-bridge.js
           node --check quote-embed-browser.js
+          node --check xlsx-export.js
           node tests/quote-core.test.cjs
           node tests/quote-extraction.test.cjs
           node tests/quote-history.test.cjs
           node tests/production-draft-safety.test.cjs
+          node tests/xlsx-export.test.cjs
           node tests/file-intake.test.cjs
           node tests/static-contract.test.cjs
           node tests/quote-template.test.cjs
