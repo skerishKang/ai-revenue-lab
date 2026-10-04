@@ -8,7 +8,13 @@ import pytest
 from padiem_control_plane import AuthSessionSnapshot, ProductIdentityLink
 
 from app.auth import SESSION_COOKIE
-from app.auth_abuse import InMemoryAuthAbuseStore
+from app.auth_abuse import (
+    GLOBAL_DAILY_FAILURE_LIMIT,
+    NETWORK_DAILY_FAILURE_LIMIT,
+    AuthAbuseGate,
+    InMemoryAuthAbuseStore,
+)
+from app.auth_routes import _parse_locked_until, _password_lock_minutes
 from app.config import ConfigError, Settings
 from app.history import HistoryConflict, PasswordCredential, UserProfile
 from app.main import create_app
@@ -496,7 +502,10 @@ async def test_hybrid_status_exposes_both_methods() -> None:
 
 
 @pytest.mark.asyncio
-async def test_abuse_gate_prevents_fresh_relock_after_first_threshold() -> None:
+async def test_exhausted_abuse_budget_still_relocks_and_escalates() -> None:
+    # #3508 blocker regression. Once the dedicated identifier budget is spent,
+    # the throttle must get STRONGER, not disappear: a lapsed lock must still
+    # be re-formed by the next full failure block, at an escalated duration.
     store = MemoryStore()
     abuse = InMemoryAuthAbuseStore()
     encoded = hash_password("correct horse battery staple")
@@ -516,34 +525,199 @@ async def test_abuse_gate_prevents_fresh_relock_after_first_threshold() -> None:
         transport=httpx.ASGITransport(app=app),
         base_url="https://chat.example.test",
     ) as client:
-        for _ in range(5):
-            response = await client.post(
-                "/api/auth/password/login",
-                json={
-                    "identifier": "owner.test",
-                    "password": "definitely wrong password",
-                },
-            )
-            assert response.status_code == 401
-
+        # Burn the whole identifier budget and form the first lock.
+        for index in range(5):
+            assert (
+                await client.post(
+                    "/api/auth/password/login",
+                    json={"identifier": "owner.test", "password": f"wrong-{index}"},
+                )
+            ).status_code == 401
         assert store.credentials["owner.test"].locked_until is not None
 
         # Simulate the account lock window expiring while the dedicated abuse
-        # bucket remains at its daily threshold.
+        # window stays spent.
         past = (datetime.now(timezone.utc) - timedelta(minutes=1)).isoformat()
         await store.record_password_failure(profile.id, 5, past)
 
-        throttled = await _login_public(
-            client,
-            "owner.test",
-            "definitely wrong password",
+        # 100 further guesses must not become an unlimited guessing mode: the
+        # account must be re-locked over and over, each lock no shorter than the
+        # previous one and never shorter than the base window.
+        lock_minutes: list[int] = []
+        for index in range(100):
+            await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "owner.test", "password": f"guess-{index}"},
+            )
+            locked_until = _parse_locked_until(store.credentials["owner.test"].locked_until)
+            if locked_until is not None:
+                minutes = round(
+                    (locked_until - datetime.now(timezone.utc)).total_seconds() / 60
+                )
+                if minutes not in lock_minutes:
+                    lock_minutes.append(minutes)
+                # Lapse the lock so the next block of guesses can be attempted.
+                await store.record_password_failure(profile.id, 5, past)
+
+        # The throttle really did escalate rather than reset: the attacker now
+        # pays the full 60 minute ceiling for every further block of guesses.
+        assert lock_minutes[-1] == 60
+        assert min(lock_minutes) >= 15
+        assert max(lock_minutes) <= 60
+        assert lock_minutes == sorted(lock_minutes)
+
+        # Correct password is still denied while a lock is in force. The loop above
+        # leaves the account either locked or holding a lapsed lock, so spend one
+        # more full failure block to guarantee the throttle is engaged.
+        for index in range(5):
+            await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "owner.test", "password": f"final-{index}"},
+            )
+        assert store.credentials["owner.test"].locked_until is not None
+        denied = await _login_public(
+            client, "owner.test", "correct horse battery staple"
         )
-        missing = await _login_public(
-            client,
-            "missing-after-throttle.user",
-            "definitely wrong password",
+
+    assert denied[0] == 401
+    assert denied[1] == "invalid_credentials"
+
+
+@pytest.mark.asyncio
+async def test_lock_escalation_is_monotone_and_capped() -> None:
+    # The escalation floor rises with the identifier's own spend and stops at a
+    # cap, so exhaustion can never become permanent denial of a correct
+    # password.
+    observed = [_password_lock_minutes(value) for value in range(40)]
+    assert observed[0] == 15
+    assert observed == sorted(observed)
+    assert set(observed) == {15, 30, 60}
+    assert max(observed) == 60
+
+
+@pytest.mark.asyncio
+async def test_saturated_identifier_budget_does_not_weaken_unrelated_account() -> None:
+    # One subject spending its whole budget must not change the accounting of a
+    # different account reached from the same network.
+    store = MemoryStore()
+    abuse = InMemoryAuthAbuseStore()
+    encoded = hash_password("correct horse battery staple")
+    await store.register_password_user("victim.test", "victim@example.test", "Victim", encoded)
+    await store.register_password_user(
+        "bystander.test", "bystander@example.test", "Bystander", encoded
+    )
+    app = create_app(
+        password_settings(),
+        history_store=store,
+        auth_abuse_store=abuse,
+    )
+    headers = {"cf-connecting-ip": "203.0.113.42"}
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        for index in range(9):
+            await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "victim.test", "password": f"wrong-{index}"},
+                headers=headers,
+            )
+        assert store.credentials["victim.test"].locked_until is not None
+
+        bystander_failures = []
+        for index in range(5):
+            await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "bystander.test", "password": f"wrong-{index}"},
+                headers=headers,
+            )
+            bystander_failures.append(store.credentials["bystander.test"].failed_attempts)
+
+    assert bystander_failures == [1, 2, 3, 4, 5]
+    assert store.credentials["bystander.test"].locked_until is not None
+
+
+@pytest.mark.asyncio
+async def test_saturated_network_and_global_scopes_never_disable_protection() -> None:
+    # Saturating the shared network scope, then the global scope, must leave
+    # per-identifier accounting fully intact. These are the cross-subject
+    # fail-open and global fail-open regressions.
+    store = MemoryStore()
+    abuse = InMemoryAuthAbuseStore()
+    encoded = hash_password("correct horse battery staple")
+    await store.register_password_user("bystander.test", "bystander@example.test", "Bystander", encoded)
+    settings = password_settings()
+    app = create_app(
+        settings,
+        history_store=store,
+        auth_abuse_store=abuse,
+    )
+    # The same settings/secret, so this gate derives the same opaque keys as the
+    # application's own gate. Advisory scopes are spent directly, which is what
+    # a saturated edge looks like without paying 50 live logins.
+    saturating_gate = AuthAbuseGate(settings, abuse)
+    headers = {"cf-connecting-ip": "198.51.100.7"}
+
+    for _ in range(NETWORK_DAILY_FAILURE_LIMIT + 5):
+        await saturating_gate.record_failure_window(
+            identifier="spray.test", raw_ip=headers["cf-connecting-ip"]
         )
-        after_denied = store.credentials["owner.test"]
+    for _ in range(GLOBAL_DAILY_FAILURE_LIMIT + 5):
+        await saturating_gate.record_failure_window(
+            identifier="spray.test", raw_ip=None
+        )
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        failures = []
+        for index in range(5):
+            await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "bystander.test", "password": f"wrong-{index}"},
+                headers=headers,
+            )
+            failures.append(store.credentials["bystander.test"].failed_attempts)
+        missing = await _login_public(client, "nobody.test", "wrong")
+
+    assert failures == [1, 2, 3, 4, 5]
+    assert store.credentials["bystander.test"].locked_until is not None
+    assert missing[0] == 401
+    assert missing[1] == "invalid_credentials"
+
+
+@pytest.mark.asyncio
+async def test_correct_password_recovers_after_attacker_abuse_state() -> None:
+    # The intended recovery path: once a lock lapses, a correct password still
+    # authenticates even though the attacker burned the whole abuse window.
+    store = MemoryStore()
+    abuse = InMemoryAuthAbuseStore()
+    encoded = hash_password("correct horse battery staple")
+    profile = await store.register_password_user(
+        "owner.test", "owner@example.test", "Owner", encoded
+    )
+    app = create_app(
+        password_settings(),
+        history_store=store,
+        auth_abuse_store=abuse,
+    )
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        for index in range(12):
+            await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "owner.test", "password": f"wrong-{index}"},
+            )
+        assert store.credentials["owner.test"].locked_until is not None
+
+        past = (datetime.now(timezone.utc) - timedelta(minutes=1)).isoformat()
+        await store.record_password_failure(profile.id, 5, past)
+
         recovered = await client.post(
             "/api/auth/password/login",
             json={
@@ -552,30 +726,132 @@ async def test_abuse_gate_prevents_fresh_relock_after_first_threshold() -> None:
             },
         )
 
-    assert throttled == missing
-    assert throttled[0] == 401
-    assert throttled[1] == "invalid_credentials"
-    assert after_denied.failed_attempts == 5
-    assert after_denied.locked_until == past
     assert recovered.status_code == 200
     assert store.credentials["owner.test"].failed_attempts == 0
     assert store.credentials["owner.test"].locked_until is None
 
 
 @pytest.mark.asyncio
-async def test_abuse_store_failure_suppresses_lock_mutation_without_oracle() -> None:
+async def test_missing_existing_locked_and_window_exhausted_are_indistinguishable() -> None:
+    # The public failure tuple must be byte-identical for a missing subject, a
+    # wrong password, a locked subject, and a subject whose abuse window is
+    # spent. No throttle state may leak through status, code, or message.
+    store = MemoryStore()
+    abuse = InMemoryAuthAbuseStore()
+    encoded = hash_password("correct horse battery staple")
+    await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
+    await store.register_password_user(
+        "second.test", "second@example.test", "Second", encoded
+    )
+    app = create_app(
+        password_settings(),
+        history_store=store,
+        auth_abuse_store=abuse,
+    )
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        missing = await _login_public(client, "missing.test", "wrong")
+        for index in range(5):
+            await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "owner.test", "password": f"wrong-{index}"},
+            )
+        locked_wrong = await _login_public(client, "owner.test", "wrong")
+        locked_correct = await _login_public(
+            client, "owner.test", "correct horse battery staple"
+        )
+        # Burn the whole window on a third account without ever locking it, so
+        # the exhausted-window projection can be observed directly.
+        for index in range(9):
+            await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "second.test", "password": f"wrong-{index}"},
+            )
+        exhausted_wrong = await _login_public(client, "second.test", "wrong")
+
+    assert missing == locked_wrong == locked_correct == exhausted_wrong
+    assert missing[0] == 401
+    assert missing[1] == "invalid_credentials"
+
+
+@pytest.mark.asyncio
+async def test_verifier_runs_exactly_once_per_attempt(monkeypatch) -> None:
+    # Timing/uniformity: the KDF must run exactly once whether the subject is
+    # missing, existing, locked, or window-exhausted. A short-circuit before
+    # the verifier is the cheapest existence oracle there is.
+    import app.auth_routes as auth_routes
+
+    calls: list[object] = []
+    original = auth_routes.verify_password
+
+    def counting_verify(password, encoded):
+        calls.append(encoded)
+        return original(password, encoded)
+
+    monkeypatch.setattr(auth_routes, "verify_password", counting_verify)
+
+    store = MemoryStore()
+    abuse = InMemoryAuthAbuseStore()
+    encoded = hash_password("correct horse battery staple")
+    await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
+    app = create_app(
+        password_settings(),
+        history_store=store,
+        auth_abuse_store=abuse,
+    )
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        calls.clear()
+        await client.post(
+            "/api/auth/password/login",
+            json={"identifier": "missing.test", "password": "wrong"},
+        )
+        missing_calls = list(calls)
+
+        calls.clear()
+        for index in range(5):
+            await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "owner.test", "password": f"wrong-{index}"},
+            )
+        existing_calls = list(calls)
+
+        calls.clear()
+        await client.post(
+            "/api/auth/password/login",
+            json={"identifier": "owner.test", "password": "wrong"},
+        )
+        locked_calls = list(calls)
+
+    assert len(missing_calls) == 1
+    assert len(existing_calls) == 5
+    assert len(locked_calls) == 1
+    # A missing subject must still pay one bounded dummy KDF.
+    assert missing_calls[0] is None
+    assert existing_calls[0] == encoded
+    assert locked_calls[0] == encoded
+
+
+@pytest.mark.asyncio
+async def test_abuse_store_outage_keeps_base_lock_without_oracle() -> None:
+    # Regression: a dedicated-store outage must fail closed on the base lock.
+    # The previous design suppressed failure accounting entirely on outage,
+    # which is an unconditional brute-force fail-open.
     class FailingAbuseStore:
-        async def consume(self, **kwargs):
+        async def record_failure(self, **kwargs):
             del kwargs
             raise RuntimeError("simulated auth-abuse store outage")
 
     store = MemoryStore()
     encoded = hash_password("correct horse battery staple")
-    await store.register_password_user(
-        "owner.test",
-        "owner@example.test",
-        "Owner",
-        encoded,
+    profile = await store.register_password_user(
+        "owner.test", "owner@example.test", "Owner", encoded
     )
     app = create_app(
         password_settings(),
@@ -587,18 +863,21 @@ async def test_abuse_store_failure_suppresses_lock_mutation_without_oracle() -> 
         transport=httpx.ASGITransport(app=app),
         base_url="https://chat.example.test",
     ) as client:
-        missing = await _login_public(
-            client,
-            "missing.user",
-            "definitely wrong password",
-        )
+        missing = await _login_public(client, "missing.user", "definitely wrong password")
         wrong = None
-        for _ in range(6):
+        for _ in range(5):
             wrong = await _login_public(
-                client,
-                "owner.test",
-                "definitely wrong password",
+                client, "owner.test", "definitely wrong password"
             )
+        # The base lock is in force even though the dedicated store is down.
+        assert store.credentials["owner.test"].locked_until is not None
+        assert store.credentials["owner.test"].failed_attempts == 5
+        locked_correct = await _login_public(
+            client, "owner.test", "correct horse battery staple"
+        )
+
+        past = (datetime.now(timezone.utc) - timedelta(minutes=1)).isoformat()
+        await store.record_password_failure(profile.id, 5, past)
         recovered = await client.post(
             "/api/auth/password/login",
             json={
@@ -609,6 +888,92 @@ async def test_abuse_store_failure_suppresses_lock_mutation_without_oracle() -> 
 
     assert wrong is not None
     assert missing == wrong
-    assert store.credentials["owner.test"].failed_attempts == 0
-    assert store.credentials["owner.test"].locked_until is None
+    assert missing[0] == 401
+    assert missing == locked_correct
     assert recovered.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_denied_subject_does_not_consume_another_subject_counter() -> None:
+    # D1 atomicity regression at the route boundary: a subject that has spent
+    # its window and formed its lock must not advance or disable a different
+    # subject's counter.
+    store = MemoryStore()
+    abuse = InMemoryAuthAbuseStore()
+    encoded = hash_password("correct horse battery staple")
+    await store.register_password_user("first.test", "first@example.test", "First", encoded)
+    await store.register_password_user("second.test", "second@example.test", "Second", encoded)
+    app = create_app(
+        password_settings(),
+        history_store=store,
+        auth_abuse_store=abuse,
+    )
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        for index in range(5):
+            await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "first.test", "password": f"wrong-{index}"},
+            )
+        for index in range(5):
+            await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "second.test", "password": f"wrong-{index}"},
+            )
+
+    first_counts = [value for key, value in abuse.counts.items() if key[1].startswith("aab_identifier_")]
+    assert len(first_counts) == 2
+    # Equal spend, so neither subject's denial touched the other's counter.
+    assert sorted(first_counts) == [5, 5]
+    assert store.credentials["first.test"].failed_attempts == 5
+    assert store.credentials["second.test"].failed_attempts == 5
+    assert store.credentials["first.test"].locked_until is not None
+    assert store.credentials["second.test"].locked_until is not None
+
+
+@pytest.mark.asyncio
+async def test_durable_abuse_keys_never_contain_raw_identifier_or_ip() -> None:
+    # Privacy regression: only opaque HMAC keys may reach the durable store.
+    class CapturingStore(InMemoryAuthAbuseStore):
+        def __init__(self) -> None:
+            super().__init__()
+            self.seen: list[dict] = []
+
+        async def record_failure(self, **kwargs):
+            self.seen.append(dict(kwargs))
+            return await super().record_failure(**kwargs)
+
+    store = MemoryStore()
+    abuse = CapturingStore()
+    encoded = hash_password("correct horse battery staple")
+    await store.register_password_user(
+        "private.user@example.test", "private.user@example.test", "Private", encoded
+    )
+    app = create_app(
+        password_settings(),
+        history_store=store,
+        auth_abuse_store=abuse,
+    )
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        await client.post(
+            "/api/auth/password/login",
+            json={"identifier": "private.user@example.test", "password": "wrong"},
+            headers={"cf-connecting-ip": "203.0.113.42"},
+        )
+
+    assert abuse.seen, "expected the dedicated store to be consulted"
+    rendered = repr(abuse.seen) + repr(abuse.counts)
+    assert "private.user@example.test" not in rendered
+    assert "203.0.113.42" not in rendered
+    assert SESSION_SECRET not in rendered
+    for key in abuse.counts:
+        assert key[1].startswith("aab_identifier_") or key[1].startswith(
+            "aab_network_"
+        ) or key[1] == "global"

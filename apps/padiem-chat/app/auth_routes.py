@@ -21,6 +21,7 @@ from .auth import (
     session_cookie_kwargs,
     verify_oauth_state,
 )
+from .auth_abuse import UNAVAILABLE_WINDOW, AuthAbuseWindow
 from .b54_canonical_session import (
     B54ServerAuthenticatedOwner,
     b54_canonical_session_producer,
@@ -328,6 +329,8 @@ async def google_callback(request: Request) -> Response:
 _PASSWORD_BODY_LIMIT = 16 * 1024
 _PASSWORD_FAILURE_LIMIT = 5
 _PASSWORD_LOCK_MINUTES = 15
+_PASSWORD_LOCK_MINUTES_ESCALATED = 30
+_PASSWORD_LOCK_MINUTES_MAX = 60
 
 
 def _auth_error(status: int, code: str, message: str) -> JSONResponse:
@@ -380,6 +383,44 @@ def _has_expired_lock(credential: PasswordCredential, now: datetime) -> bool:
     if not credential.locked_until:
         return False
     return _parse_locked_until(credential.locked_until) is not None and not _is_locked(credential, now)
+
+
+def _password_lock_minutes(window_failures: int) -> int:
+    """Lock duration for a recorded failure, from the identifier's own window.
+
+    Monotone in the attacker's own spend and hard-capped. Spending the whole
+    dedicated identifier abuse budget therefore *raises* the throttle instead
+    of removing it, and the cap keeps a correct password recoverable on
+    schedule rather than turning exhaustion into a permanent denial.
+    """
+    if window_failures <= _PASSWORD_FAILURE_LIMIT:
+        return _PASSWORD_LOCK_MINUTES
+    if window_failures <= _PASSWORD_FAILURE_LIMIT * 2:
+        return _PASSWORD_LOCK_MINUTES_ESCALATED
+    return _PASSWORD_LOCK_MINUTES_MAX
+
+
+async def _identifier_failure_window(
+    request: Request, identifier: str
+) -> AuthAbuseWindow:
+    """Read the identifier's own durable failure window.
+
+    Never raises and never touches the public login projection. An absent,
+    exhausted, or failing dedicated store all return the base window, so a
+    dedicated-store outage degrades the throttle to its base strength instead
+    of switching brute-force protection off.
+    """
+    gate = getattr(request.app.state, "auth_abuse_gate", None)
+    if gate is None:
+        return UNAVAILABLE_WINDOW
+    try:
+        window = await gate.record_failure_window(
+            identifier=identifier,
+            raw_ip=request.headers.get("cf-connecting-ip"),
+        )
+    except Exception:
+        return UNAVAILABLE_WINDOW
+    return window if isinstance(window, AuthAbuseWindow) else UNAVAILABLE_WINDOW
 
 
 def _session_response(settings: Settings, profile) -> JSONResponse:
@@ -475,42 +516,30 @@ async def password_login(request: Request) -> JSONResponse:
     now = datetime.now(timezone.utc)
 
     # #3501/#3508: lock state is server-owned and never disclosed. A
-    # missing identifier, wrong password, prior failures, an active lock, and
+    # missing identifier, a wrong password, prior failures, an active lock, and
     # an abuse-throttled attempt all reach the same public 401 projection.
     locked = credential is not None and _is_locked(credential, now)
 
     if credential is None or not password_ok or locked:
-        # The dedicated abuse gate is NOT an authentication authority. Its only
-        # power is to suppress mutation of account-level failure/lock state.
-        # Missing/failed gate state therefore fails closed against remote
-        # lockout amplification without blocking a later verified login.
-        allow_failure_accounting = False
-        gate = getattr(request.app.state, "auth_abuse_gate", None)
-        if gate is not None:
-            try:
-                decision = await gate.authorize_failure_accounting(
-                    identifier=identifier,
-                    raw_ip=request.headers.get("cf-connecting-ip"),
-                )
-                allow_failure_accounting = bool(
-                    getattr(decision, "allow_failure_accounting", False)
-                )
-            except Exception:
-                allow_failure_accounting = False
-
-        if credential is not None and not locked and allow_failure_accounting:
-            # A lapsed lock starts a fresh failure sequence. Once the dedicated
-            # identifier abuse bucket is exhausted, subsequent failed attempts
-            # cannot create another lock until the bounded abuse window resets.
+        # #3508: failure accounting is NEVER suppressed. Exhausting the
+        # dedicated per-identifier abuse budget must strengthen the throttle,
+        # not remove it, and a missing or failing dedicated store must leave the
+        # base lock policy in force. The gate is only consulted when a real
+        # failure is about to be recorded against a real credential, so an
+        # unauthenticated caller cannot inflate another subject's window and
+        # cannot create abuse rows for identifiers that do not exist.
+        if credential is not None and not locked:
+            window = await _identifier_failure_window(request, identifier)
+            # A lapsed lock starts a fresh failure sequence so one stray
+            # failure after expiry does not re-lock the account by itself.
             if _has_expired_lock(credential, now):
                 failures, lock_until = 1, None
             else:
                 failures = min(100, credential.failed_attempts + 1)
                 lock_until = None
                 if failures >= _PASSWORD_FAILURE_LIMIT:
-                    lock_until = (
-                        now + timedelta(minutes=_PASSWORD_LOCK_MINUTES)
-                    ).isoformat()
+                    lock_minutes = _password_lock_minutes(window.identifier_failures)
+                    lock_until = (now + timedelta(minutes=lock_minutes)).isoformat()
             try:
                 await store.record_password_failure(
                     credential.user.id,
