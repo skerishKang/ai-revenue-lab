@@ -23,6 +23,7 @@ from .b66_quote_conversation import (
     B66QuoteConversationError,
     MAX_CONVERSATION_CHARS,
 )
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .claw_memory_routes import _resolve_memory_workspace
 
 MAX_BODY_BYTES = 16 * 1024
@@ -61,11 +62,12 @@ def _company_profile_store(request: Request) -> Any | None:
 async def _json(request: Request) -> dict[str, Any] | JSONResponse:
     if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
-    body = await request.body()
+    try:
+        body = await read_bounded_request_body(request, max_bytes=MAX_BODY_BYTES)
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not body:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-    if len(body) > MAX_BODY_BYTES:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     try:
         data = json.loads(body.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError):
