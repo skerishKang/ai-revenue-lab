@@ -1,6 +1,6 @@
 /* B66 · Quote Beta — app.js (UI 레이어)
    상태는 QuoteDraft 하나(quote-core.js)로 관리하고 화면은 항상 draft에서 파생.
-   draft는 localStorage에 자동 저장되며, 복원 실패 시 기본 데모 상태로 fallback. */
+   draft는 localStorage에 자동 저장되며, 복원 실패 시 Production용 빈 초안으로 fallback. */
 
 (() => {
   "use strict";
@@ -25,7 +25,7 @@
 
   /* ── 상태: QuoteDraft ── */
 
-  let draft = loadDraft() || Core.createDefaultDraft();
+  let draft = loadDraft() || Core.createProductionDraft();
   let lastExtractionReview = null;
   let taxReviewRequired = loadTaxReviewRequired(draft);
   let suppressNextDraftSave = false;
@@ -40,9 +40,30 @@
     return "item-" + itemSeq;
   }
 
+  function isUntouchedLegacyDemoDraft(value) {
+    if (!value) return false;
+    const demo = Core.createDefaultDraft();
+    return (
+      value.meta && value.meta.source === "manual" &&
+      value.meta.validDays === demo.meta.validDays &&
+      JSON.stringify(value.sender) === JSON.stringify(demo.sender) &&
+      JSON.stringify(value.recipient) === JSON.stringify(demo.recipient) &&
+      JSON.stringify(value.items) === JSON.stringify(demo.items) &&
+      value.tax && value.tax.mode === demo.tax.mode &&
+      value.memo === demo.memo &&
+      !value.calculationPolicy &&
+      !value.detailGroups &&
+      !(value.meta && value.meta.projectName)
+    );
+  }
+
   function loadDraft() {
     try {
-      return Core.normalizeDraft(JSON.parse(localStorage.getItem(Core.DRAFT_STORAGE_KEY) || "null"));
+      const normalized = Core.normalizeDraft(
+        JSON.parse(localStorage.getItem(Core.DRAFT_STORAGE_KEY) || "null")
+      );
+      /* Old untouched demo drafts are not authoritative user data. */
+      return isUntouchedLegacyDemoDraft(normalized) ? null : normalized;
     } catch (err) {
       return null;
     }
@@ -101,7 +122,7 @@
     try {
       localStorage.setItem(Core.DRAFT_STORAGE_KEY, JSON.stringify(draft));
     } catch (err) {
-      /* 저장 실패는 데모 진행을 막지 않음 */
+      /* 저장 실패는 현재 브라우저 세션 진행을 막지 않음 */
     }
   }
 
@@ -156,7 +177,7 @@
   }
 
   function allocateFreshQuoteNo(now) {
-    if (!History) return Core.createDefaultDraft().meta.quoteNo;
+    if (!History) return Core.createProductionDraft().meta.quoteNo;
     const allocation = History.allocateQuoteNo(
       loadQuoteNoSequence(),
       quoteNoCandidates(),
@@ -172,7 +193,7 @@
 
   function createFreshDraft(source, now) {
     const dt = now instanceof Date ? now : new Date();
-    const fresh = Core.createDefaultDraft();
+    const fresh = Core.createProductionDraft();
     fresh.meta.quoteNo = allocateFreshQuoteNo(dt);
     fresh.meta.issueDate = Core.isoFormat(dt);
     fresh.meta.source = source || "manual";
