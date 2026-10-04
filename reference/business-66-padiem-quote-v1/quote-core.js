@@ -548,6 +548,7 @@
     computeValidUntil: computeValidUntil,
     printReadiness: printReadiness,
     createDefaultDraft: createDefaultDraft,
+    createProductionDraft: createProductionDraft,
     createBlankQuoteDraft: createBlankQuoteDraft,
     normalizeDraft: normalizeDraft
   };
