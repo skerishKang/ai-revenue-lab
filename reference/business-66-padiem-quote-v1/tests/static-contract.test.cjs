@@ -140,7 +140,14 @@ check(html.includes(">로그인</button>") && html.includes('id="googleSigninBut
       html.includes("Google로 로그인") &&
       !html.includes("Padiem") && !html.includes("파디엠") &&
       !account.includes("Padiem 계정") && !account.includes("Padiem 로그인"),
-  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: standalone google-first surface with neutral login");
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: standalone surface keeps neutral login branding");
+check(html.includes('id="padiemLoginForm"') &&
+      html.includes('id="padiemLoginIdentifier"') &&
+      html.includes('id="padiemLoginPassword"') &&
+      html.includes('id="padiemLoginSubmit"') &&
+      account.includes('api("/auth/password/login"') &&
+      account.includes('loginForm.addEventListener("submit", passwordSignIn)'),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: standalone B66 exposes the existing shared password-login route");
 check(account.includes("/api/padiem/auth/google/start") &&
       worker.includes('"/api/padiem/auth/google/start"') &&
       worker.includes('"/api/padiem/auth/google/callback"') &&
@@ -231,7 +238,7 @@ check(app.includes("window.B66QuoteAppBridge"),
   "EASY_MODE_CONTRACT: reuses existing QuoteDraft renderer");
 check(html.includes('id="directView"'),
   "EASY_MODE_CONTRACT: direct mode preserved");
-check(easy.includes("function startGuided(referenceText)") &&
+check(easy.includes("function startGuided(referenceText, options)") &&
       easy.includes("startGuided(freeChatPending)") &&
       easy.includes("참고용으로 그대로 남겨둘게요"),
   "FREE_TEXT_CONTINUITY_CONTRACT: one-shot text remains visible when guided flow continues");
@@ -241,6 +248,19 @@ check(easy.includes("inputHandler = (text) => startGuided(text);") &&
   "EASY_MODE_CONTRACT: home composer submit starts guided chat");
 check(easy.includes("QuoteDraft에 자동 반영하지 않습니다."),
   "FREE_TEXT_CONTINUITY_CONTRACT: preserved reference is explicitly non-authoritative");
+check(easy.includes('const PRODUCT_HISTORY_KEY = "b66View"') &&
+      easy.includes('"pushState"') &&
+      easy.includes('"replaceState"') &&
+      easy.includes('window.history.back') &&
+      easy.includes('window.addEventListener("popstate"') &&
+      easy.includes('restoreProductState(view)'),
+  "B66_BROWSER_HISTORY_CONTRACT: product states are browser-history aware");
+check(easy.includes('recordProductState(easy ? lastEasyView : "direct")') &&
+      easy.includes('recordProductState("guided")') &&
+      easy.includes('recordProductState("file")') &&
+      easy.includes('recordProductState("free-form")') &&
+      easy.includes('recordProductState("recent")'),
+  "B66_BROWSER_HISTORY_CONTRACT: direct/guided/file/free-form/recent share the Quote Home boundary");
 
 /* FILE_INTAKE_CONTRACT — local chooser/preflight live, upload/model still off */
 check(html.includes('id="easyFileInput"') && html.includes('type="file"'),

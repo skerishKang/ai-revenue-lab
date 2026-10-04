@@ -292,6 +292,46 @@
     }
   }
 
+  async function passwordSignIn(event) {
+    event.preventDefault();
+    const identifier = byId("padiemLoginIdentifier");
+    const password = byId("padiemLoginPassword");
+    const submit = byId("padiemLoginSubmit");
+    if (!identifier || !password || !submit) return;
+
+    const identifierValue = identifier.value.trim();
+    if (!identifierValue || !password.value) {
+      setAuthError("아이디 또는 이메일과 비밀번호를 입력해 주세요.");
+      (identifierValue ? password : identifier).focus();
+      return;
+    }
+
+    submit.disabled = true;
+    setAuthError("");
+    try {
+      const result = await api("/auth/password/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ identifier: identifierValue, password: password.value })
+      });
+      if (!result.response.ok) {
+        setAuthError(safeMessage(result.data, "로그인 정보를 확인해 주세요."));
+        return;
+      }
+      password.value = "";
+      await refreshAuth();
+      if (!state.authenticated) {
+        setAuthError("로그인 상태를 확인하지 못했습니다. 다시 시도해 주세요.");
+        return;
+      }
+      closeAuthDialog();
+    } catch (_) {
+      setAuthError("로그인 연결을 확인해 주세요.");
+    } finally {
+      submit.disabled = false;
+    }
+  }
+
   async function logout() {
     try {
       await api("/auth/logout", { method: "POST" });
@@ -390,6 +430,7 @@
     const accountButton = byId("padiemAccountButton");
     const close = byId("padiemAuthClose");
     const googleButton = byId("googleSigninButton");
+    const loginForm = byId("padiemLoginForm");
     const logoutButton = byId("padiemLogout");
     const select = byId("padiemSavedSkillSelect");
     const generateButton = byId("padiemQuoteGenerate");
@@ -404,6 +445,7 @@
     });
     if (close) close.addEventListener("click", closeAuthDialog);
     if (googleButton) googleButton.addEventListener("click", startGoogleSignIn);
+    if (loginForm) loginForm.addEventListener("submit", passwordSignIn);
     if (logoutButton) logoutButton.addEventListener("click", logout);
     if (select) select.addEventListener("change", changeSkill);
     if (generateButton) generateButton.addEventListener("click", generate);

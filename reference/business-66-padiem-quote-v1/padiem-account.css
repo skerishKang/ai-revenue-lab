@@ -107,6 +107,21 @@
 }
 .padiem-auth-card h2 { margin: 0 0 10px; font-size: 21px; letter-spacing: -0.2px; }
 .padiem-auth-lead { margin: 0 0 26px; color: #667085; font-size: 14px; line-height: 1.65; }
+.padiem-auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0 4px;
+  color: #98a2b3;
+  font-size: 12px;
+}
+.padiem-auth-divider::before,
+.padiem-auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #eaecf0;
+}
 .padiem-auth-note { margin: 14px 0 0; color: #98a2b3; font-size: 12px; }
 .padiem-auth-close {
   width: 40px; height: 40px; border: 1px solid #d0d5dd; border-radius: 10px; background: #fff;
