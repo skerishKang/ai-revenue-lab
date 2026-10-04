@@ -33,7 +33,7 @@ _ALLOWED_ITEM = frozenset({"name", "spec", "unit", "qty", "unitPrice", "note"})
 _ALLOWED_DETAIL_GROUP = frozenset({"summaryIndex", "title", "items"})
 _ALLOWED_DETAIL_ITEM = frozenset({"name", "spec", "unit", "qty", "unitPrice", "note", "section"})
 _ALLOWED_MISSING = frozenset(
-    {"recipient", "quoteNo", "issueDate", "items", "memo", "taxMode"}
+    {"recipient", "quoteNo", "issueDate", "items", "memo", "taxMode", "unitPrice"}
 )
 _FORBIDDEN_KEYS = frozenset(
     {
@@ -291,7 +291,10 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
 
     for summary_index in missing_summary_prices:
         if summary_index not in seen_summary_indexes:
-            raise B66QuoteConversationError("incomplete_item")
+            # 요약 단가도 detailGroup 도 없는 item 은 partial 로 보존한다.
+            # 값을 추정하거나 계산하지 않고 unitPrice 키를 비워 두며,
+            # 최종 검증(QuoteCore/Skill build)에서는 여전히 거부된다.
+            continue
         # Detail-group subtotal is the authority. Zero is only a non-authoritative
         # placeholder required by the existing structured-input item contract.
         items[summary_index - 1]["unitPrice"] = 0
@@ -408,6 +411,11 @@ def _server_missing_fields(
     # quote-number pattern when the user does not explicitly say them.
     if schema.get("items") is True and not projection.items:
         missing.append("items")
+    # 요약 단가가 없는 partial item 은 그대로 두고 추가 입력을 요청한다
+    # (모델이 값을 계산하거나 0 으로 채우게 하지 않는다).
+    if schema.get("items") is True and projection.items:
+        if any("unitPrice" not in item for item in projection.items):
+            missing.append("unitPrice")
     return tuple(missing)
 
 

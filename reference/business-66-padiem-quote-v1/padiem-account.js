@@ -12,6 +12,7 @@
     loadedSkill: null,
     companyProfile: null,
     companyProfileLoaded: false,
+    pendingQuote: null,
     methods: { google: false, password: false }
   };
 
@@ -148,6 +149,7 @@
     state.skills = [];
     state.companyProfile = null;
     state.companyProfileLoaded = false;
+    clearPendingQuote();
     clearServerSkill();
     const button = byId("padiemAccountButton");
     const panel = byId("padiemAccountPanel");
@@ -231,6 +233,8 @@
       skill,
       slotSources
     };
+    /* Skill 이 바뀌면 진행 중이던 견적의 문맥은 새 Skill 로 이어질 수 없다. */
+    clearPendingQuote();
     const bridge = window.B66QuoteSkillBridge;
     if (!bridge || typeof bridge.setServerSkill !== "function" || !bridge.setServerSkill(skill, slotSources)) {
       clearServerSkill();
@@ -372,20 +376,27 @@
     }
   }
 
-  function structuredInputFromCandidate(candidate, profile) {
+  /* quoteNo/issueDate 결정 순서: 이번 응답의 명시값 > 이번 견적의 이미 발급된 값 > 새 발급.
+     이미 발급된 값이 없으면 새 견적으로 보고 정확히 한 번만 발급한다. */
+  function structuredInputFromCandidate(candidate, profile, allocated) {
     const app = window.B66QuoteAppBridge;
     const semantic = window.SavedQuoteSkill;
     if (!app || !semantic || !candidate || typeof candidate !== "object") return null;
+    const pending = allocated || {};
     const quoteNo = typeof candidate.quoteNo === "string" && candidate.quoteNo.trim()
       ? candidate.quoteNo.trim()
-      : app.createFreshDraft("free-form").meta.quoteNo;
+      : (typeof pending.quoteNo === "string" && pending.quoteNo.trim()
+        ? pending.quoteNo.trim()
+        : app.createFreshDraft("free-form").meta.quoteNo);
     const input = {
       recipient: candidate.recipient,
       items: candidate.items,
       quoteNo,
       issueDate: typeof candidate.issueDate === "string" && candidate.issueDate.trim()
         ? candidate.issueDate.trim()
-        : window.QuoteCore.isoFormat(new Date())
+        : (typeof pending.issueDate === "string" && pending.issueDate.trim()
+          ? pending.issueDate.trim()
+          : window.QuoteCore.isoFormat(new Date()))
     };
     if (typeof candidate.projectName === "string" && candidate.projectName.trim()) {
       input.projectName = candidate.projectName.trim();
@@ -399,16 +410,105 @@
     return built && built.ok === true && built.draft ? { ok: true, draft: built.draft } : { ok: false, code: built && built.code ? built.code : "draft_build_failed" };
   }
 
+  /* ── bounded missing-field follow-up (#3391) ──
+     불완전한 첫 요청은 사실만 보관하고 견적번호를 정확히 한 번 발급한다.
+     후속 답변은 원문과 합쳐 같은 stateless interpret route 로 다시 보내며,
+     최종 견적이 확정될 때까지 같은 번호/발행일을 유지한다. 저장소는 브라우저 메모리 1개뿐이다. */
+
+  const MAX_PENDING_TURNS = 4;
+  const MAX_PENDING_TEXT = 4000;
+  const MISSING_QUESTIONS = {
+    unitPrice: "단가는 얼마인가요?",
+    recipient: "받는 업체 또는 담당자를 알려 주세요.",
+    items: "품목명, 수량, 단가를 알려 주세요.",
+    memo: "납기나 결제 조건 등 덧붙일 내용이 있나요?",
+    taxMode: "부가세는 어떻게 할까요?"
+  };
+
+  function clearPendingQuote() {
+    state.pendingQuote = null;
+  }
+
+  function pendingQuote() {
+    return state.pendingQuote ? {
+      turns: state.pendingQuote.turns,
+      quoteNo: state.pendingQuote.quoteNo,
+      issueDate: state.pendingQuote.issueDate,
+      missing: state.pendingQuote.missing.slice(0, 8)
+    } : null;
+  }
+
+  function missingQuestion(missing) {
+    const list = Array.isArray(missing) ? missing : [];
+    for (const key of list) {
+      const question = MISSING_QUESTIONS[key];
+      if (question) return question;
+    }
+    return "견적에 필요한 값을 조금 더 알려 주세요.";
+  }
+
+  function combinePendingText(previousText, followUp) {
+    const combined = previousText + "\n" + followUp;
+    return combined.length <= MAX_PENDING_TEXT ? combined : null;
+  }
+
+  function startPendingQuote(text, candidate) {
+    const app = window.B66QuoteAppBridge;
+    const fresh = app ? app.createFreshDraft("free-form") : null;
+    if (!fresh) return null;
+    state.pendingQuote = {
+      originalText: text,
+      turns: 1,
+      quoteNo: fresh.meta.quoteNo,
+      issueDate: fresh.meta.issueDate,
+      lastCandidate: candidate,
+      missing: candidate.missing.slice(0, 8)
+    };
+    return state.pendingQuote;
+  }
+
+  function updatePendingQuote(text, candidate) {
+    const pending = state.pendingQuote;
+    if (!pending) return startPendingQuote(text, candidate);
+    pending.originalText = text;
+    pending.turns += 1;
+    pending.lastCandidate = candidate;
+    pending.missing = candidate.missing.slice(0, 8);
+    return pending;
+  }
+
   async function interpretRequest(requestText) {
-    const text = typeof requestText === "string" ? requestText.trim().slice(0, 4000) : "";
+    const text = typeof requestText === "string" ? requestText.trim().slice(0, MAX_PENDING_TEXT) : "";
     if (!text) return { ok: false, code: "empty_request" };
     const readiness = runtimeReadiness();
-    if (!readiness.ready) return { ok: false, code: notReadyCode(readiness) };
+    if (!readiness.ready) {
+      clearPendingQuote();
+      return { ok: false, code: notReadyCode(readiness) };
+    }
+
+    /* 진행 중인 견적이 있으면 원문과 합쳐 한 번에 다시 해석한다(서버는 stateless). */
+    let message = text;
+    let allocated = null;
+    const pending = state.pendingQuote;
+    if (pending) {
+      if (pending.turns >= MAX_PENDING_TURNS) {
+        clearPendingQuote();
+      } else {
+        const combined = combinePendingText(pending.originalText, text);
+        if (combined) {
+          message = combined;
+          allocated = pending;
+        } else {
+          clearPendingQuote();
+        }
+      }
+    }
+
     try {
       const result = await api("/b66/quote/interpret", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({ saved_skill_id: state.loadedSkill.savedSkillId, message: text })
+        body: JSON.stringify({ saved_skill_id: state.loadedSkill.savedSkillId, message })
       });
       const data = result.data;
       if (!result.response.ok || !data || data.ok !== true || !data.candidate) {
@@ -416,13 +516,22 @@
       }
       const candidate = data.candidate;
       if (Array.isArray(candidate.missing) && candidate.missing.length) {
-        /* 불완전 문장은 여기서 정직하게 보고한다. follow-up 대화는 #3391 소유다. */
-        return { ok: false, code: "incomplete_request", missing: candidate.missing.slice(0, 8) };
+        /* 알려진 값은 보관하고, 없는 값 하나만 구체적으로 되묻는다. */
+        const pendingQuoteState = updatePendingQuote(message, candidate);
+        return {
+          ok: false,
+          code: "incomplete_request",
+          missing: candidate.missing.slice(0, 8),
+          question: missingQuestion(candidate.missing),
+          pending: pendingQuoteState ? pendingQuote() : null
+        };
       }
       /* 서버가 이 요청에 대한 CompanyProfile 을 함께 내려주면 그것이 최신 authority 다. */
       const profile = projectCompanyProfile(data.company_profile) || state.companyProfile;
       if (!profile) return { ok: false, code: "company_profile_not_ready" };
-      return structuredInputFromCandidate(candidate, profile);
+      const built = structuredInputFromCandidate(candidate, profile, allocated);
+      clearPendingQuote();
+      return built;
     } catch (_) {
       return { ok: false, code: "interpret_unavailable" };
     }
@@ -457,6 +566,8 @@
     readiness: runtimeReadiness,
     interpret: interpretRequest,
     buildFromFacts: buildQuoteFromFacts,
+    pendingQuote: () => pendingQuote(),
+    clearPending: () => { clearPendingQuote(); },
     getCompanyProfile: () => (state.companyProfile ? JSON.parse(JSON.stringify(state.companyProfile)) : null),
     errorText: interpretErrorText
   });
