@@ -362,6 +362,22 @@ def _parse_locked_until(value: str | None) -> datetime | None:
     return parsed.astimezone(timezone.utc)
 
 
+def _is_locked(credential: PasswordCredential, now: datetime) -> bool:
+    locked_until = _parse_locked_until(credential.locked_until)
+    return locked_until is not None and now < locked_until
+
+
+def _has_expired_lock(credential: PasswordCredential, now: datetime) -> bool:
+    """Whether a recorded lock has already lapsed.
+
+    A lapsed lock restarts the failure count instead of letting one new
+    failure ratchet the account straight back into another lock window.
+    """
+    if not credential.locked_until:
+        return False
+    return _parse_locked_until(credential.locked_until) is not None and not _is_locked(credential, now)
+
+
 def _session_response(settings: Settings, profile) -> JSONResponse:
     session = create_session_token(settings, profile.id)
     response = JSONResponse({"ok": True, "user": profile.public_dict()})
@@ -454,21 +470,29 @@ async def password_login(request: Request) -> JSONResponse:
     password_ok = verify_password(password, credential.password_hash if credential else None)
     now = datetime.now(timezone.utc)
 
-    if credential is not None:
-        locked_until = _parse_locked_until(credential.locked_until)
-        if locked_until is not None and now < locked_until:
-            return _auth_error(
-                429,
-                "auth_locked",
-                "로그인 시도가 너무 많습니다. 잠시 후 다시 시도해 주세요.",
-            )
+    # #3501: the per-account lock is enforced but never disclosed. A missing
+    # identifier, a wrong password, prior failures, and an active lock all
+    # reach the identical public 401 below — status, code, message, and
+    # shape are indistinguishable to an unauthenticated caller. A locked
+    # account stays denied even for the correct password (fail-closed),
+    # and attempts made while locked change no server state, so a lock
+    # can never be extended from the outside.
+    locked = credential is not None and _is_locked(credential, now)
 
-    if credential is None or not password_ok:
-        if credential is not None:
-            failures = min(100, credential.failed_attempts + 1)
-            lock_until = None
-            if failures >= _PASSWORD_FAILURE_LIMIT:
-                lock_until = (now + timedelta(minutes=_PASSWORD_LOCK_MINUTES)).isoformat()
+    if credential is None or not password_ok or locked:
+        if credential is not None and not locked:
+            # Fresh failure accounting with stale-lock decay. When a
+            # previously recorded lock has already lapsed, the count
+            # restarts instead of ratcheting one new failure into another
+            # lock window — every lock costs a fresh _PASSWORD_FAILURE_LIMIT,
+            # so remote single-guess denial cannot be sustained.
+            if _has_expired_lock(credential, now):
+                failures, lock_until = 1, None
+            else:
+                failures = min(100, credential.failed_attempts + 1)
+                lock_until = None
+                if failures >= _PASSWORD_FAILURE_LIMIT:
+                    lock_until = (now + timedelta(minutes=_PASSWORD_LOCK_MINUTES)).isoformat()
             try:
                 await store.record_password_failure(
                     credential.user.id,
