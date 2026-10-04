@@ -286,6 +286,16 @@ export class HeadlessRunnerSupervisor implements RunnerSupervisor {
     return handle.sendLine ? handle.sendLine(line) : false;
   }
 
+  /**
+   * #3436 B2d — the live resident's raw session-material response line,
+   * one-shot, or null. Read only by the main-process material provider; the
+   * retained output buffer keeps only the redacted marker.
+   */
+  takeResidentMaterialLine(): string | null {
+    const port = this.#port as { takeResidentMaterialLine?: () => string | null };
+    return port.takeResidentMaterialLine ? port.takeResidentMaterialLine() : null;
+  }
+
   residentSnapshot(): { pid: number | null; running: boolean; startedAtMs: number | null } {
     const handle = this.#residentHandle;
     return {
