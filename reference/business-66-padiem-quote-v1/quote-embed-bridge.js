@@ -50,6 +50,42 @@
     return { assetId: value.assetId, dataUrl: value.dataUrl };
   }
 
+  function normalizeCompanyProfile(value) {
+    if (!isPlainObject(value)) return null;
+    var allowed = [
+      "company", "representative", "contactPerson", "businessNumber",
+      "address", "phone", "email", "defaultValidityDays", "defaultTaxMode"
+    ];
+    if (Object.keys(value).some(function (key) { return allowed.indexOf(key) === -1; })) return null;
+    var company = typeof value.company === "string" ? value.company.trim().slice(0, 512) : "";
+    if (!company) return null;
+    if (!Number.isInteger(value.defaultValidityDays) || value.defaultValidityDays < 0 || value.defaultValidityDays > 3650) return null;
+    var taxMode = value.defaultTaxMode;
+    if (taxMode !== undefined && taxMode !== null && taxMode !== "") {
+      if (["EXCLUSIVE", "INCLUSIVE", "EXEMPT"].indexOf(taxMode) === -1) return null;
+    } else {
+      taxMode = null;
+    }
+    function optional(key, max) {
+      if (value[key] === undefined || value[key] === null) return null;
+      if (typeof value[key] !== "string") return false;
+      return value[key].trim().slice(0, max || 512);
+    }
+    var result = {
+      company: company,
+      representative: optional("representative"),
+      contactPerson: optional("contactPerson"),
+      businessNumber: optional("businessNumber", 80),
+      address: optional("address"),
+      phone: optional("phone", 100),
+      email: optional("email", 320),
+      defaultValidityDays: value.defaultValidityDays,
+      defaultTaxMode: taxMode
+    };
+    if (Object.keys(result).some(function (key) { return result[key] === false; })) return null;
+    return result;
+  }
+
   function normalizeAssets(value) {
     if (value === undefined || value === null) return {};
     if (!isPlainObject(value) || Object.keys(value).some(function (key) {
@@ -96,18 +132,23 @@
   function normalizeRenderMessage(value) {
     if (!isPlainObject(value) || value.type !== REQUEST_TYPE) return null;
     if (Object.keys(value).some(function (key) {
-      return ["type", "requestId", "skill", "candidate", "assets"].indexOf(key) === -1;
+      return ["type", "requestId", "skill", "candidate", "assets", "companyProfile"].indexOf(key) === -1;
     })) return null;
     var id = requestRef(value.requestId);
     var assets = normalizeAssets(value.assets);
+    var companyProfile = value.companyProfile === undefined || value.companyProfile === null
+      ? null
+      : normalizeCompanyProfile(value.companyProfile);
     if (!id || !isPlainObject(value.skill) || !isPlainObject(value.candidate) || assets === null) return null;
-    if (!jsonSizeOkay(value.skill) || !jsonSizeOkay(value.candidate) || !jsonSizeOkay(assets)) return null;
+    if (value.companyProfile !== undefined && value.companyProfile !== null && companyProfile === null) return null;
+    if (!jsonSizeOkay(value.skill) || !jsonSizeOkay(value.candidate) || !jsonSizeOkay(assets) || !jsonSizeOkay(companyProfile)) return null;
     return {
       type: REQUEST_TYPE,
       requestId: id,
       skill: value.skill,
       candidate: value.candidate,
-      assets: assets
+      assets: assets,
+      companyProfile: companyProfile
     };
   }
 
@@ -162,7 +203,10 @@
     var result = runtime.SavedSkill.buildRenderModel(
       normalized.skill,
       input,
-      { slotSources: slotSources }
+      {
+        slotSources: slotSources,
+        companyProfile: normalized.companyProfile
+      }
     );
     if (!result || result.ok !== true || !result.renderModel || !result.draft) {
       return {
@@ -240,6 +284,7 @@
     PRINT_TYPE: PRINT_TYPE,
     MAX_MESSAGE_JSON_CHARS: MAX_MESSAGE_JSON_CHARS,
     normalizeAssetEntry: normalizeAssetEntry,
+    normalizeCompanyProfile: normalizeCompanyProfile,
     normalizeAssets: normalizeAssets,
     slotSourcesForSkill: slotSourcesForSkill,
     normalizeRenderMessage: normalizeRenderMessage,

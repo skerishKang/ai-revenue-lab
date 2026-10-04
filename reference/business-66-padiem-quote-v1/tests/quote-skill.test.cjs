@@ -194,6 +194,34 @@ eq(same.renderModel, first.renderModel, "SAME_INPUT_SAME_RENDER=YES");
 eq(same.compiled.skillFingerprint, first.compiled.skillFingerprint, "compiled skill identity is stable");
 eq(same.compiled.templateFingerprint, first.compiled.templateFingerprint, "compiled internal template identity is stable");
 
+const runtimeProfile = {
+  company: "Runtime Company",
+  representative: "Runtime Rep",
+  contactPerson: "Runtime Contact",
+  businessNumber: "000-11-22222",
+  address: "Runtime Address",
+  phone: "000-000-0000",
+  email: "runtime@example.test",
+  defaultValidityDays: 45,
+  defaultTaxMode: "EXEMPT"
+};
+const profiled = Skill.buildRenderModel(skill, input({ taxMode: undefined }), { companyProfile: runtimeProfile });
+check(profiled.ok === true, "account CompanyProfile runtime override renders through the approved Skill");
+eq(profiled.compiled.skillFingerprint, first.compiled.skillFingerprint,
+  "COMPANY_PROFILE_OVERRIDE_PRESERVES_APPROVED_SKILL_FINGERPRINT=YES");
+eq(profiled.draft.sender.company, "Runtime Company", "CompanyProfile snapshots company into QuoteDraft");
+eq(profiled.draft.sender.rep, "Runtime Rep", "CompanyProfile snapshots representative into QuoteDraft");
+eq(profiled.draft.sender.contactPerson, "Runtime Contact", "CompanyProfile snapshots contact person into QuoteDraft");
+eq(profiled.draft.meta.validDays, 45, "CompanyProfile validity is snapshotted instead of legacy Skill validity");
+eq(profiled.draft.tax.mode, "EXEMPT", "CompanyProfile tax default applies when the quote does not override tax");
+eq(skill.fixedDefaults.sender.company, first.draft.sender.company,
+  "runtime CompanyProfile never mutates the approved Saved Quote Skill");
+const missingProfileValidity = Skill.buildRenderModel(skill, input(), {
+  companyProfile: { company: "Runtime Company" }
+});
+check(missingProfileValidity.ok === false && missingProfileValidity.code === "invalid_company_profile",
+  "missing CompanyProfile validity fails closed instead of inheriting source/Skill validity");
+
 const numeric = Skill.buildRenderModel(skill, input({
   items: [{ id: "item-1", name: "배관 40A", qty: 80, unitPrice: 135000 }]
 }));
