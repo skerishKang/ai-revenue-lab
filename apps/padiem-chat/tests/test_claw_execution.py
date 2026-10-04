@@ -1448,8 +1448,11 @@ def test_usage_gate_is_applied_before_p01_adapter_construction() -> None:
     assert execute_handler.index(
         "artifact_tenant_id = await _resolve_canonical_tenant(request)"
     ) < execute_handler.index("_usage_gate_denial(request)")
+    # #3382: the adapter reference is read before the usage gate (for the
+    # canonical USER lane check), but the usage gate is still applied before
+    # the actual P01 dispatch (adapter.execute).
     assert execute_handler.index("_usage_gate_denial(request)") < execute_handler.index(
-        'request.app.state, "claw_p01_adapter"'
+        "adapter.execute"
     )
     assert "p01_adapter_from_environment" not in source
     preview_handler = source.split("async def claw_manual_intake_preview", 1)[1].split(
