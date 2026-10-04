@@ -728,8 +728,8 @@ def _bootstrap_do():
     """Wire the real Durable Object onto an in-memory SQLite store.
 
     The DO resolves ``datetime.now()`` for session validation, so the in-memory
-    session is minted with a window that brackets the real current time and the
-    clock is pinned to ``NOW`` while the RPC runs.
+    session is minted on the pinned test clock ``NOW`` (never the machine wall
+    clock) and the clock is pinned to ``NOW`` while the RPC runs.
     """
 
     storage = RecordingStorage()
@@ -778,9 +778,15 @@ def _run_rpc_at(callable_, *args, observed_at: datetime = NOW, **kwargs):
 
 
 def _seed_identity_and_session(storage, *, subject_id: str = "sub_1", expires_after_hours: int = 1):
-    """Create an active canonical session whose window brackets the real clock."""
+    """Create an active canonical session anchored to the test clock ``NOW``.
 
-    real_now = datetime.now(timezone.utc)
+    The session window is derived entirely from the pinned test clock — never
+    from the machine wall clock — so absolute-expiry behaviour under the
+    pinned-clock RPC helper is deterministic forever, and
+    ``expires_after_hours`` is the actual session window length.
+    """
+
+    session_now = NOW
     durable = _worker_mod.CloudflareCanonicalIdentityAuthorityStore(
         storage,
         lookup_key=LOOKUP_KEY_BYTES,
@@ -806,9 +812,9 @@ def _seed_identity_and_session(storage, *, subject_id: str = "sub_1", expires_af
     snapshot = durable.establish_auth_session(
         product_id=PRODUCT_ID,
         subject=CanonicalSubjectRef(SubjectType.USER, subject_id),
-        authenticated_at=real_now - timedelta(minutes=5),
-        not_after=real_now + timedelta(hours=12),
-        now=real_now,
+        authenticated_at=session_now - timedelta(minutes=5),
+        not_after=session_now + timedelta(hours=expires_after_hours),
+        now=session_now,
     )
     return durable, snapshot
 
@@ -926,10 +932,13 @@ def test_durable_object_rpc_fails_closed_for_expired_session_by_absolute_time():
     _, snapshot = _seed_identity_and_session(storage, subject_id="sub_timeout")
     storage.sql.reset()
 
+    # One second past the session's absolute ``not_after``: the contract under
+    # test is the absolute expiry itself, so the observation point is derived
+    # from the seeded session rather than any calendar date.
     result = _run_rpc_at(
         durable_object.resolve_connector_workspace,
         {"session_id": snapshot.session_id},
-        observed_at=NOW + timedelta(days=30),
+        observed_at=snapshot.expires_at + timedelta(seconds=1),
     )
     assert result["ok"] is False
     assert result["error"]["code"] == "inactive_auth_session"
