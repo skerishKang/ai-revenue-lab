@@ -243,3 +243,39 @@ test("12. malformed preview response never reflects raw internal body text", asy
   assert.equal(JSON.parse(text).error.code, "invalid_engine_response");
 });
 
+
+
+test("13. bounded preview reader releases its lock after a valid response", async () => {
+  const raw = new TextEncoder().encode(JSON.stringify({
+    ok: true,
+    agent_skill: { execution_state: "completed" },
+  }));
+  let readCalls = 0;
+  let releaseCalls = 0;
+  const reader = {
+    async read() {
+      readCalls += 1;
+      if (readCalls === 1) return { value: raw, done: false };
+      return { value: undefined, done: true };
+    },
+    async cancel() {},
+    releaseLock() {
+      releaseCalls += 1;
+    },
+  };
+  const engineResponse = {
+    status: 200,
+    ok: true,
+    body: {
+      getReader() {
+        return reader;
+      },
+    },
+  };
+  const { env } = fakeEnv({ engineResponse });
+
+  const response = await handleCaller(validRequest(), env);
+  assert.equal(response.status, 200);
+  assert.equal(releaseCalls, 1);
+  assert.equal((await response.json()).engine_response.agent_skill.execution_state, "completed");
+});

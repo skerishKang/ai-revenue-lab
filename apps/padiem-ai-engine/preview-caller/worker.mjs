@@ -74,6 +74,14 @@ async function cancelReader(reader) {
   }
 }
 
+function releaseReader(reader) {
+  try {
+    reader.releaseLock();
+  } catch {
+    // Best-effort cleanup after the body has been consumed or cancelled.
+  }
+}
+
 async function readBoundedEngineObject(response) {
   const body = response?.body;
   if (!body || typeof body.getReader !== "function") {
@@ -122,6 +130,8 @@ async function readBoundedEngineObject(response) {
         },
       }),
     };
+  } finally {
+    releaseReader(reader);
   }
 
   const raw = new Uint8Array(total);
