@@ -13,7 +13,7 @@ from google_oauth_access_lease import (
     GoogleOAuthAccessLeaseRuntime,
 )
 from google_oauth_durable_store import GOOGLE_DRIVE_READONLY_SCOPE
-from google_oauth_ingress_runtime import GoogleOAuthIngressConfig
+from google_oauth_ingress_runtime import GoogleOAuthIngressConfig, MAX_TOKEN_RESPONSE_BYTES
 from google_oauth_webcrypto_sealer import GoogleOAuthSealPurpose
 from padiem_control_plane.contracts import ControlPlaneContractError
 
@@ -279,3 +279,92 @@ def test_runtime_safe_dict_never_contains_raw_tokens_or_client_secret() -> None:
     assert safe["access_token_persisted"] is False
     assert safe["private_rpc_only"] is True
     assert safe["google_write_scope"] is False
+
+
+class _RefreshStreamReader:
+    def __init__(self, chunks: list[bytes]) -> None:
+        self._chunks = list(chunks)
+        self.read_calls = 0
+        self.cancel_calls = 0
+
+    async def read(self):
+        self.read_calls += 1
+        if self._chunks:
+            return SimpleNamespace(done=False, value=self._chunks.pop(0))
+        return SimpleNamespace(done=True, value=None)
+
+    async def cancel(self):
+        self.cancel_calls += 1
+
+
+class _RefreshStreamBody:
+    def __init__(self, reader: _RefreshStreamReader) -> None:
+        self._reader = reader
+
+    def getReader(self):
+        return self._reader
+
+
+class _RefreshStreamResponse:
+    def __init__(self, status: int, chunks: list[bytes]) -> None:
+        self.status = status
+        self.reader = _RefreshStreamReader(chunks)
+        self.body = _RefreshStreamBody(self.reader)
+        self.text_calls = 0
+
+    async def text(self):
+        self.text_calls += 1
+        raise AssertionError("streaming refresh response must not call text()")
+
+
+def test_cloudflare_refresh_reads_with_a_hard_stream_bound(monkeypatch) -> None:
+    payload = {
+        "access_token": ACCESS_TOKEN,
+        "token_type": "Bearer",
+        "expires_in": 3600,
+    }
+    raw = __import__("json").dumps(payload, separators=(",", ":")).encode("utf-8")
+    current = {"response": _RefreshStreamResponse(200, [raw[:17], raw[17:]])}
+
+    async def fake_fetch(_url, **_kwargs):
+        return current["response"]
+
+    monkeypatch.setitem(sys.modules, "workers", SimpleNamespace(fetch=fake_fetch))
+    subject = CloudflareGoogleOAuthRefreshPort()
+    cfg = GoogleOAuthIngressConfig(
+        client_id="client-id-public",
+        client_secret=CLIENT_SECRET,
+        redirect_uri="https://oauth.padiem.net/callback",
+    )
+
+    result = asyncio.run(
+        subject.refresh_access_token(config=cfg, refresh_token=REFRESH_TOKEN)
+    )
+    ok_response = current["response"]
+    assert result == payload
+    assert ok_response.text_calls == 0
+    assert ok_response.reader.cancel_calls == 0
+
+    oversized = _RefreshStreamResponse(
+        200,
+        [b"x" * MAX_TOKEN_RESPONSE_BYTES, b"y"],
+    )
+    current["response"] = oversized
+    with pytest.raises(ControlPlaneContractError) as too_large:
+        asyncio.run(
+            subject.refresh_access_token(config=cfg, refresh_token=REFRESH_TOKEN)
+        )
+    assert too_large.value.code == "google_oauth_refresh_failed"
+    assert oversized.text_calls == 0
+    assert oversized.reader.read_calls == 2
+    assert oversized.reader.cancel_calls == 1
+
+    rejected = _RefreshStreamResponse(503, [b"provider-private-error"])
+    current["response"] = rejected
+    with pytest.raises(ControlPlaneContractError) as failed:
+        asyncio.run(
+            subject.refresh_access_token(config=cfg, refresh_token=REFRESH_TOKEN)
+        )
+    assert failed.value.code == "google_oauth_refresh_failed"
+    assert rejected.text_calls == 0
+    assert rejected.reader.read_calls == 0
