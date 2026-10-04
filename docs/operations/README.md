@@ -30,7 +30,7 @@ SEARCH → REUSE_INTERNAL → BUY / ADOPT / ADAPT → SIDECAR / LOCAL_SERVICE �
 Backend/runtime and repository-boundary authorities remain:
 
 - `BACKEND_MVP_OPERATING_POLICY.md`
-- `EXTERNAL_DEVELOPMENT_PROJECTS_POLICY.md`
+- `EXTERNAL_DEVELOPMENT_PROJECTS_POLICY.md` — external product source/issue authority; Global Classroom currently remains in `skerishKang/global-classroom` with no internal source copy or product-issue duplication
 - `CLOUDFLARE_CREDENTIAL_OPERATIONS.md`
 - `../portfolio/BUSINESS_REGISTRY.md`
 - `../portfolio/BUSINESS_EXPANSION_LINEAGE.md`
