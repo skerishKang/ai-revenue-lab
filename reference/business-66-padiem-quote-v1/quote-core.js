@@ -225,6 +225,35 @@
     };
   }
 
+  /* Production runtime startup authority: truthful blank business facts.
+     Demo defaults remain available only for explicit demo/tests. */
+  function createProductionDraft() {
+    var today = todayISO();
+    return {
+      schemaVersion: SCHEMA_VERSION,
+      meta: {
+        quoteNo: "PQ-" + today.split("-").join("") + "-001",
+        issueDate: today,
+        validDays: 30,
+        source: "manual"
+      },
+      sender: {
+        company: "",
+        rep: "",
+        contactPerson: "",
+        bizNo: "",
+        address: "",
+        phone: "",
+        email: "",
+        presetId: "custom"
+      },
+      recipient: { company: "", person: "", address: "", email: "" },
+      items: [{ id: "item-1", name: "", qty: 1, unitPrice: 0 }],
+      tax: { mode: TAX_MODES.EXCLUSIVE, rate: VAT_RATE },
+      memo: ""
+    };
+  }
+
   function asString(v, fallback) {
     return typeof v === "string" ? v : fallback;
   }
