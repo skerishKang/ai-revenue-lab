@@ -224,7 +224,9 @@ assert.equal(blankNext.meta.validDays, 14, "validity preference preserved");
 assert.deepEqual(blankNext.recipient, { company: "", person: "", address: "", email: "" }, "recipient cleared");
 assert.deepEqual(blankNext.items, [{ id: "item-1", name: "", qty: 1, unitPrice: 0 }], "one blank item");
 assert.equal(blankNext.tax.mode, "EXCLUSIVE", "new quote tax resets to explicit default");
-assert.equal(blankNext.memo, Core.createDefaultDraft().memo, "ordinary default memo restored");
+/* #3479: 새 견적 메모는 truthful blank다. 데모 문구는 계약상 이월되지 않는다. */
+assert.equal(blankNext.memo, "", "new quote memo starts truthful blank, not demo wording");
+assert.notEqual(blankNext.memo, Core.createDefaultDraft().memo, "demo memo never leaks into a new quote");
 assert.equal(currentForNew.recipient.company, "이전 고객", "source draft not mutated");
 assert.equal(currentForNew.items[0].name, "기존 품목", "source items not mutated");
 
@@ -332,8 +334,13 @@ assert.equal(
 assert.equal(Core.normalizeDraft("garbage"), null, "string input rejected");
 assert.equal(Core.normalizeDraft(null), null, "null rejected");
 assert.equal(Core.normalizeDraft({ schemaVersion: 99 }), null, "wrong schema rejected");
+const DEMO_BUSINESS_FACTS = ["샘플 공급사", "대표자명", "000-00-00000", "고객사", "담당자님", "서비스 구축", "운영 지원", "hello@example.com"];
+const containsDemoFactHelper = (value) => DEMO_BUSINESS_FACTS.some((fact) => String(value).includes(fact));
 const badShape = Core.normalizeDraft({ schemaVersion: 1, items: "not-an-array" });
-assert.ok(Array.isArray(badShape.items) && badShape.items.length === 2, "non-array items fall back to defaults");
+/* #3479: 비배열 items 폴백은 truthful blank 1행이다. 데모 품목으로 보충되지 않는다. */
+assert.ok(Array.isArray(badShape.items) && badShape.items.length === 1, "non-array items fall back to one truthful blank row");
+assert.equal(badShape.items[0].name, "", "fallback item row carries no demo name");
+assert.equal(containsDemoFactHelper(JSON.stringify(badShape)), false, "fallback items contain no demo business facts");
 const badItems = Core.normalizeDraft({ schemaVersion: 1, items: [{ qty: -3, unitPrice: "x" }] });
 assert.equal(badItems.items[0].qty, 1, "negative qty falls back");
 assert.equal(badItems.items[0].unitPrice, 0, "garbage price falls back");

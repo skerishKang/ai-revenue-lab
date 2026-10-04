@@ -204,7 +204,9 @@
     var quoteNo = typeof opts.quoteNo === "string" && opts.quoteNo.trim()
       ? opts.quoteNo.trim()
       : allocateQuoteNo(null, [source], now).quoteNo;
-    var fresh = Core.createDefaultDraft();
+    /* 새 견적 기저는 Production truthful blank다. 사용자 source facts만 복사하고
+       데모 사업 정보는 이 경로로 새 견적에 들어가지 않는다 (#3479). */
+    var fresh = Core.createProductionDraft();
     fresh.meta.quoteNo = quoteNo;
     fresh.meta.issueDate = Core.isoFormat(now);
     fresh.meta.validDays = source.meta.validDays;

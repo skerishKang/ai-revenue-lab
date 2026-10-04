@@ -368,7 +368,10 @@ check(easy.includes("150만원") && easy.includes("복합 단위는 추측하지
   "tax:",
   "memo:"
 ].forEach((key) => check(core.includes(key), `QUOTEDRAFT_SCHEMA_CONTRACT missing in quote-core.js: ${key}`));
-check(app.includes("Core.createDefaultDraft"), "QUOTEDRAFT_SCHEMA_CONTRACT: app default draft from core");
+check(app.includes("Core.createProductionDraft") && app.includes("Core.createDefaultDraft"),
+  "QUOTEDRAFT_SCHEMA_CONTRACT: app keeps the demo fixture only for legacy-state detection while startup/reset use the Production authority");
+check(!app.includes("draft = Core.createDefaultDraft();") && app.includes("draft = Core.createProductionDraft();"),
+  "QUOTEDRAFT_SCHEMA_CONTRACT: app never assigns the demo fixture as a live draft");
 
 /* NEW_QUOTE_SAFETY_CONTRACT — public beta 새 견적은 다음 고객용 빈 상태 */
 check(core.includes("function createBlankQuoteDraft("),
@@ -419,7 +422,7 @@ check(app.includes("localStorage.setItem(Core.DRAFT_STORAGE_KEY, JSON.stringify(
 check(app.includes("saveDraft();"), "DRAFT_SAVE_CONTRACT: render triggers save");
 
 /* DRAFT_RESTORE_CONTRACT — 복원 + 손상 fallback 계약 */
-check(app.includes("Core.normalizeDraft(JSON.parse(localStorage.getItem(Core.DRAFT_STORAGE_KEY)"),
+check(/Core\.normalizeDraft\(\s*JSON\.parse\(localStorage\.getItem\(Core\.DRAFT_STORAGE_KEY\)/.test(app),
   "DRAFT_RESTORE_CONTRACT: restore via normalizeDraft");
 check(app.includes("catch (err)"), "DRAFT_RESTORE_CONTRACT: corrupted storage fallback");
 check(core.includes("if (raw.schemaVersion !== SCHEMA_VERSION) return null;"),

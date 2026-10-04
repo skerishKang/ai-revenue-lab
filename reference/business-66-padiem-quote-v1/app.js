@@ -273,7 +273,8 @@
       return false;
     }
 
-    draft = Core.createDefaultDraft();
+    /* 초기화 후에도 데모 사업 정보가 Production에 재등장하지 않는다 (#3479). */
+    draft = Core.createProductionDraft();
     lastExtractionReview = null;
     taxReviewRequired = false;
     itemSeq = draft.items.length;

@@ -156,7 +156,11 @@
     if (!isPlainObject(candidate) || !core || typeof core.createDefaultDraft !== "function") {
       return null;
     }
-    var defaults = core.createDefaultDraft();
+    /* 구조 폴백(견적번호/일자)만 필요하다. Production authority를 우선 사용해
+       데모 fixture를 이 경로에 두지 않는다 (#3479). */
+    var defaults = typeof core.createProductionDraft === "function"
+      ? core.createProductionDraft()
+      : core.createDefaultDraft();
     if (!defaults || !defaults.meta) return null;
 
     var input = {
