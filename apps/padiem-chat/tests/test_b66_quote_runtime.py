@@ -382,11 +382,27 @@ def test_normalizer_accepts_variable_fields_and_rejects_calculated_or_template_o
     assert linked_without_summary_price["items"][0]["unitPrice"] == 0
     assert linked_without_summary_price["detailGroups"][0]["summaryItemId"] == "item-1"
 
+    # 요약 단가도 detailGroup 도 없는 item 은 partial 로 보존한다 (#3391).
+    # 값을 추정하거나 0 으로 채우지 않고 missing 으로 다음 입력을 요청한다.
+    partial_summary = normalize_conversation_output(
+        {
+            "recipient": {"company": "ABC건설"},
+            "items": [{"name": "요약 공사", "qty": 1, "unitPrice": None}],
+            "detailGroups": [],
+            "missing": [],
+        }
+    ).safe_dict()
+    assert partial_summary["recipient"]["company"] == "ABC건설"
+    assert partial_summary["items"][0]["name"] == "요약 공사"
+    assert partial_summary["items"][0]["qty"] == 1
+    assert "unitPrice" not in partial_summary["items"][0]
+    assert partial_summary["items"][0].get("unitPrice") != 0
+
     with pytest.raises(B66QuoteConversationError, match="incomplete_item"):
         normalize_conversation_output(
             {
                 "recipient": {"company": "ABC건설"},
-                "items": [{"name": "요약 공사", "qty": 1, "unitPrice": None}],
+                "items": [{"name": "요약 공사", "qty": None, "unitPrice": 1000}],
                 "detailGroups": [],
                 "missing": [],
             }
@@ -553,6 +569,70 @@ async def test_interpreter_calls_model_once_for_fields_only_and_hides_template_c
     assert "template-private" not in context
     assert "테스트상사" not in context
     assert call["attachments"] == ()
+
+
+@pytest.mark.asyncio
+async def test_interpreter_keeps_partial_item_and_reports_missing_unit_price():
+    class PartialClient:
+        def __init__(self):
+            self.calls = []
+
+        async def complete(self, *args, **kwargs):
+            self.calls.append(args)
+            return {"answer": json.dumps(
+                {
+                    "recipient": {"company": "대한건설"},
+                    "items": [{"name": "배관", "qty": 100, "unitPrice": None}],
+                    "detailGroups": [],
+                    "missing": [],
+                },
+                ensure_ascii=False,
+            )}
+
+    client = PartialClient()
+    result = await B66QuoteConversationInterpreter(client).interpret(
+        message="대한건설에 배관 100미터 견적 만들어줘",
+        skill=_skill(),
+    )
+    safe = result.safe_dict()
+    # 이미 알아낸 사실은 보존되고, 없는 단가는 추정/계산되지 않는다.
+    assert safe["recipient"]["company"] == "대한건설"
+    assert safe["items"][0]["name"] == "배관"
+    assert safe["items"][0]["qty"] == 100
+    assert "unitPrice" not in safe["items"][0]
+    assert safe["items"][0].get("unitPrice") != 0
+    # missing 은 서버가 파생하며 모델 주장을 신뢰하지 않는다.
+    assert "unitPrice" in result.missing
+    assert len(client.calls) == 1
+    print("PARTIAL_ITEM_FACTS_PRESERVED=YES")
+    print("MISSING_UNIT_PRICE_CAN_ENTER_FOLLOWUP=YES")
+    print("MODEL_CALCULATES_MISSING_PRICE=NO")
+
+
+@pytest.mark.asyncio
+async def test_interpreter_does_not_report_missing_for_complete_item():
+    class CompleteClient:
+        def __init__(self):
+            self.calls = []
+
+        async def complete(self, *args, **kwargs):
+            self.calls.append(args)
+            return {"answer": json.dumps(
+                {
+                    "recipient": {"company": "대한건설"},
+                    "items": [{"name": "배관", "qty": 100, "unitPrice": 18000}],
+                    "detailGroups": [],
+                    "missing": [],
+                },
+                ensure_ascii=False,
+            )}
+
+    result = await B66QuoteConversationInterpreter(CompleteClient()).interpret(
+        message="대한건설에 배관 100미터, 미터당 18000원",
+        skill=_skill(),
+    )
+    assert "unitPrice" not in result.missing
+    assert result.safe_dict()["items"][0]["unitPrice"] == 18000
 
 
 def test_normalizer_rejects_impossible_calendar_date():

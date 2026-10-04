@@ -9,7 +9,11 @@
     authenticated: false,
     user: null,
     skills: [],
-    loadedSkill: null
+    loadedSkill: null,
+    companyProfile: null,
+    companyProfileLoaded: false,
+    pendingQuote: null,
+    methods: { google: false, password: false }
   };
 
   const byId = (id) => document.getElementById(id);
@@ -111,6 +115,26 @@
     if (node) node.textContent = message || "";
   }
 
+  /* /auth/status 이 실제로 허용한 로그인 메서드만 노출한다. 기본은 숨김/비활성이다. */
+  function applyAuthMethods(payload) {
+    const methods = payload && typeof payload === "object" ? payload.methods : null;
+    state.methods = {
+      google: Boolean(methods && methods.google === true),
+      password: Boolean(methods && methods.password === true)
+    };
+    const form = byId("padiemLoginForm");
+    const divider = byId("padiemAuthDivider");
+    const submit = byId("padiemLoginSubmit");
+    if (form) form.hidden = !state.methods.password;
+    if (divider) divider.hidden = !state.methods.password;
+    if (submit) submit.disabled = !state.methods.password;
+    return state.methods.password;
+  }
+
+  function passwordLoginAvailable() {
+    return state.methods.password === true;
+  }
+
   function clearServerSkill() {
     state.loadedSkill = null;
     const bridge = window.B66QuoteSkillBridge;
@@ -123,6 +147,9 @@
     state.authenticated = false;
     state.user = null;
     state.skills = [];
+    state.companyProfile = null;
+    state.companyProfileLoaded = false;
+    clearPendingQuote();
     clearServerSkill();
     const button = byId("padiemAccountButton");
     const panel = byId("padiemAccountPanel");
@@ -135,6 +162,7 @@
     const settingsPanelOut = byId("settingsPanel");
     if (settingsPanelOut) settingsPanelOut.hidden = true;
     document.dispatchEvent(new CustomEvent("b66:auth-changed", { detail: { authenticated: false } }));
+    document.dispatchEvent(new CustomEvent("b66:runtime-changed", { detail: runtimeReadiness() }));
   }
 
   function renderSignedIn() {
@@ -155,6 +183,7 @@
     if (!dialog) return;
     if (typeof dialog.showModal === "function") dialog.showModal();
     else dialog.setAttribute("open", "");
+    if (!passwordLoginAvailable()) return;
     const identifier = byId("padiemLoginIdentifier");
     if (identifier) identifier.focus();
   }
@@ -204,6 +233,8 @@
       skill,
       slotSources
     };
+    /* Skill 이 바뀌면 진행 중이던 견적의 문맥은 새 Skill 로 이어질 수 없다. */
+    clearPendingQuote();
     const bridge = window.B66QuoteSkillBridge;
     if (!bridge || typeof bridge.setServerSkill !== "function" || !bridge.setServerSkill(skill, slotSources)) {
       clearServerSkill();
@@ -255,9 +286,11 @@
     try {
       result = await api("/auth/status");
     } catch (_) {
+      applyAuthMethods(null);
       renderSignedOut();
       return;
     }
+    applyAuthMethods(result.response.ok ? result.data : null);
     if (
       !result.response.ok ||
       !result.data ||
@@ -270,7 +303,307 @@
     state.authenticated = true;
     state.user = result.data.user || null;
     renderSignedIn();
-    await loadSkills();
+    await Promise.all([loadSkills(), loadCompanyProfile()]);
+    document.dispatchEvent(new CustomEvent("b66:runtime-changed", { detail: runtimeReadiness() }));
+  }
+
+  /* ── CGI primary runtime authority (#3478) ──
+     배정된 승인 Saved Quote Skill + 인증된 CompanyProfile 만이 견적 생성 authority 다.
+     Guided/Free-form 두 경로 모두 이 함수들을 거치며, 준비되지 않으면 demo fallback 없이
+     정직하게 실패한다. CompanyProfile 은 GET bridge 로 로드하며 모델 호출로 얻지 않는다. */
+
+  const COMPANY_PROFILE_KEYS = [
+    "company", "representative", "contactPerson", "businessNumber", "address",
+    "phone", "email", "defaultValidityDays", "defaultTaxMode"
+  ];
+
+  function projectCompanyProfile(raw) {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+    if (typeof raw.company !== "string" || !raw.company.trim()) return null;
+    const projected = {};
+    COMPANY_PROFILE_KEYS.forEach((key) => {
+      if (raw[key] !== undefined && raw[key] !== null) projected[key] = raw[key];
+    });
+    return projected;
+  }
+
+  function runtimeReadiness() {
+    const authenticated = state.authenticated === true;
+    const skillReady = Boolean(state.loadedSkill);
+    const profileReady = state.companyProfileLoaded === true;
+    return {
+      authenticated,
+      skillReady,
+      profileReady,
+      ready: authenticated && skillReady && profileReady
+    };
+  }
+
+  function notReadyCode(readiness) {
+    if (!readiness.authenticated) return "auth_required";
+    if (!readiness.skillReady) return "skill_not_ready";
+    return "company_profile_not_ready";
+  }
+
+  async function loadCompanyProfile() {
+    state.companyProfile = null;
+    state.companyProfileLoaded = false;
+    try {
+      const result = await api("/b66/company-profile");
+      const data = result.response.ok && result.data && typeof result.data === "object" ? result.data : null;
+      const raw = data ? (data.company_profile && typeof data.company_profile === "object" ? data.company_profile : data) : null;
+      const projected = projectCompanyProfile(raw);
+      if (!projected) {
+        setQuoteStatus("회사 정보(CompanyProfile)를 확인하지 못했습니다.", "error");
+        return;
+      }
+      state.companyProfile = projected;
+      state.companyProfileLoaded = true;
+    } catch (_) {
+      setQuoteStatus("회사 정보(CompanyProfile)를 불러오지 못했습니다.", "error");
+    }
+  }
+
+  function interpretErrorText(code) {
+    switch (code) {
+      case "auth_required": return "로그인 후 다시 시도해 주세요.";
+      case "skill_not_ready": return "배정된 내 견적서를 확인하지 못했습니다.";
+      case "company_profile_not_ready": return "회사 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
+      case "incomplete_request": return "거래처와 품목·수량·단가를 조금 더 알려 주세요.";
+      case "empty_request": return "견적 내용을 입력해 주세요.";
+      case "interpret_unavailable": return "해석 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.";
+      default: return "견적 요청을 해석하지 못했습니다.";
+    }
+  }
+
+  /* quoteNo/issueDate 결정 순서: 이번 응답의 명시값 > 이번 견적의 이미 발급된 값 > 새 발급.
+     이미 발급된 값이 없으면 새 견적으로 보고 정확히 한 번만 발급한다. */
+  function structuredInputFromCandidate(candidate, profile, allocated) {
+    const app = window.B66QuoteAppBridge;
+    const semantic = window.SavedQuoteSkill;
+    if (!app || !semantic || !candidate || typeof candidate !== "object") return null;
+    const pending = allocated || {};
+    const quoteNo = typeof candidate.quoteNo === "string" && candidate.quoteNo.trim()
+      ? candidate.quoteNo.trim()
+      : (typeof pending.quoteNo === "string" && pending.quoteNo.trim()
+        ? pending.quoteNo.trim()
+        : app.createFreshDraft("free-form").meta.quoteNo);
+    const input = {
+      recipient: candidate.recipient,
+      items: candidate.items,
+      quoteNo,
+      issueDate: typeof candidate.issueDate === "string" && candidate.issueDate.trim()
+        ? candidate.issueDate.trim()
+        : (typeof pending.issueDate === "string" && pending.issueDate.trim()
+          ? pending.issueDate.trim()
+          : window.QuoteCore.isoFormat(new Date()))
+    };
+    if (typeof candidate.projectName === "string" && candidate.projectName.trim()) {
+      input.projectName = candidate.projectName.trim();
+    }
+    if (Array.isArray(candidate.detailGroups) && candidate.detailGroups.length) {
+      input.detailGroups = candidate.detailGroups;
+    }
+    if (typeof candidate.memo === "string") input.memo = candidate.memo;
+    if (typeof candidate.taxMode === "string" && candidate.taxMode) input.taxMode = candidate.taxMode;
+    const built = semantic.buildDraft(state.loadedSkill.skill, input, { companyProfile: profile });
+    return built && built.ok === true && built.draft ? { ok: true, draft: built.draft } : { ok: false, code: built && built.code ? built.code : "draft_build_failed" };
+  }
+
+  /* ── bounded missing-field follow-up (#3391) ──
+     불완전한 첫 요청은 사실만 보관하고 견적번호를 정확히 한 번 발급한다.
+     후속 답변은 원문과 합쳐 같은 stateless interpret route 로 다시 보내며,
+     최종 견적이 확정될 때까지 같은 번호/발행일을 유지한다. 저장소는 브라우저 메모리 1개뿐이다. */
+
+  const MAX_PENDING_TURNS = 4;
+  const MAX_PENDING_TEXT = 4000;
+  const MISSING_QUESTIONS = {
+    unitPrice: "단가는 얼마인가요?",
+    recipient: "받는 업체 또는 담당자를 알려 주세요.",
+    items: "품목명, 수량, 단가를 알려 주세요.",
+    memo: "납기나 결제 조건 등 덧붙일 내용이 있나요?",
+    taxMode: "부가세는 어떻게 할까요?"
+  };
+
+  function clearPendingQuote() {
+    state.pendingQuote = null;
+  }
+
+  function pendingQuote() {
+    return state.pendingQuote ? {
+      turns: state.pendingQuote.turns,
+      quoteNo: state.pendingQuote.quoteNo,
+      issueDate: state.pendingQuote.issueDate,
+      missing: state.pendingQuote.missing.slice(0, 8)
+    } : null;
+  }
+
+  function missingQuestion(missing) {
+    const list = Array.isArray(missing) ? missing : [];
+    for (const key of list) {
+      const question = MISSING_QUESTIONS[key];
+      if (question) return question;
+    }
+    return "견적에 필요한 값을 조금 더 알려 주세요.";
+  }
+
+  function combinePendingText(previousText, followUp) {
+    const combined = previousText + "\n" + followUp;
+    return combined.length <= MAX_PENDING_TEXT ? combined : null;
+  }
+
+  function startPendingQuote(text, candidate) {
+    const app = window.B66QuoteAppBridge;
+    const fresh = app ? app.createFreshDraft("free-form") : null;
+    if (!fresh) return null;
+    state.pendingQuote = {
+      originalText: text,
+      turns: 1,
+      quoteNo: fresh.meta.quoteNo,
+      issueDate: fresh.meta.issueDate,
+      lastCandidate: candidate,
+      missing: candidate.missing.slice(0, 8)
+    };
+    return state.pendingQuote;
+  }
+
+  function updatePendingQuote(text, candidate) {
+    const pending = state.pendingQuote;
+    if (!pending) return startPendingQuote(text, candidate);
+    pending.originalText = text;
+    pending.turns += 1;
+    pending.lastCandidate = candidate;
+    pending.missing = candidate.missing.slice(0, 8);
+    return pending;
+  }
+
+  async function interpretRequest(requestText) {
+    const text = typeof requestText === "string" ? requestText.trim().slice(0, MAX_PENDING_TEXT) : "";
+    if (!text) return { ok: false, code: "empty_request" };
+    const readiness = runtimeReadiness();
+    if (!readiness.ready) {
+      clearPendingQuote();
+      return { ok: false, code: notReadyCode(readiness) };
+    }
+
+    /* 진행 중인 견적이 있으면 원문과 합쳐 한 번에 다시 해석한다(서버는 stateless). */
+    let message = text;
+    let allocated = null;
+    const pending = state.pendingQuote;
+    if (pending) {
+      if (pending.turns >= MAX_PENDING_TURNS) {
+        clearPendingQuote();
+      } else {
+        const combined = combinePendingText(pending.originalText, text);
+        if (combined) {
+          message = combined;
+          allocated = pending;
+        } else {
+          clearPendingQuote();
+        }
+      }
+    }
+
+    try {
+      const result = await api("/b66/quote/interpret", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ saved_skill_id: state.loadedSkill.savedSkillId, message })
+      });
+      const data = result.data;
+      if (!result.response.ok || !data || data.ok !== true || !data.candidate) {
+        return { ok: false, code: "interpret_failed", detail: safeMessage(data, "") };
+      }
+      const candidate = data.candidate;
+      if (Array.isArray(candidate.missing) && candidate.missing.length) {
+        /* 알려진 값은 보관하고, 없는 값 하나만 구체적으로 되묻는다. */
+        const pendingQuoteState = updatePendingQuote(message, candidate);
+        return {
+          ok: false,
+          code: "incomplete_request",
+          missing: candidate.missing.slice(0, 8),
+          question: missingQuestion(candidate.missing),
+          pending: pendingQuoteState ? pendingQuote() : null
+        };
+      }
+      /* 서버가 이 요청에 대한 CompanyProfile 을 함께 내려주면 그것이 최신 authority 다. */
+      const profile = projectCompanyProfile(data.company_profile) || state.companyProfile;
+      if (!profile) return { ok: false, code: "company_profile_not_ready" };
+      const built = structuredInputFromCandidate(candidate, profile, allocated);
+      clearPendingQuote();
+      return built;
+    } catch (_) {
+      return { ok: false, code: "interpret_unavailable" };
+    }
+  }
+
+  async function buildQuoteFromFacts(facts) {
+    const readiness = runtimeReadiness();
+    if (!readiness.ready) return { ok: false, code: notReadyCode(readiness) };
+    if (!facts || typeof facts !== "object") return { ok: false, code: "invalid_structured_input" };
+    const input = {
+      recipient: facts.recipient,
+      items: facts.items,
+      quoteNo: typeof facts.quoteNo === "string" && facts.quoteNo.trim()
+        ? facts.quoteNo.trim()
+        : window.B66QuoteAppBridge.createFreshDraft("guided").meta.quoteNo,
+      issueDate: typeof facts.issueDate === "string" && facts.issueDate.trim()
+        ? facts.issueDate.trim()
+        : window.QuoteCore.isoFormat(new Date())
+    };
+    if (typeof facts.taxMode === "string" && facts.taxMode) input.taxMode = facts.taxMode;
+    if (typeof facts.memo === "string") input.memo = facts.memo;
+    const built = window.SavedQuoteSkill.buildDraft(
+      state.loadedSkill.skill, input, { companyProfile: state.companyProfile }
+    );
+    if (!built || built.ok !== true || !built.draft) {
+      return { ok: false, code: built && built.code ? built.code : "draft_build_failed" };
+    }
+    return { ok: true, draft: built.draft };
+  }
+
+  window.B66QuoteRuntimeBridge = Object.freeze({
+    readiness: runtimeReadiness,
+    interpret: interpretRequest,
+    buildFromFacts: buildQuoteFromFacts,
+    pendingQuote: () => pendingQuote(),
+    clearPending: () => { clearPendingQuote(); },
+    getCompanyProfile: () => (state.companyProfile ? JSON.parse(JSON.stringify(state.companyProfile)) : null),
+    errorText: interpretErrorText
+  });
+
+  async function generate() {
+    const message = byId("padiemQuoteRequest");
+    const button = byId("padiemQuoteGenerate");
+    if (!message || !state.authenticated) return;
+    const requestText = message.value.trim();
+    if (!requestText) {
+      setQuoteStatus("견적 내용을 입력해 주세요.", "error");
+      message.focus();
+      return;
+    }
+    if (button) button.disabled = true;
+    setQuoteStatus("견적 내용을 정리하고 있습니다.", "working");
+    try {
+      const result = await interpretRequest(requestText);
+      if (!result.ok) {
+        setQuoteStatus(interpretErrorText(result.code), result.code === "incomplete_request" ? "missing" : "error");
+        return;
+      }
+      const app = window.B66QuoteAppBridge;
+      const replaced = app ? app.replaceDraft(result.draft, { toast: "내 견적서로 작성했습니다." }) : null;
+      if (!replaced || replaced.ok !== true) {
+        setQuoteStatus("견적 화면에 반영하지 못했습니다.", "error");
+        return;
+      }
+      const direct = byId("directModeButton");
+      if (direct) direct.click();
+      setQuoteStatus("견적서가 준비되었습니다. 내용을 확인한 뒤 PDF로 저장하세요.", "ready");
+    } catch (_) {
+      setQuoteStatus("견적 연결을 확인해 주세요.", "error");
+    } finally {
+      if (button) button.disabled = false;
+    }
   }
 
   async function startGoogleSignIn() {
@@ -292,6 +625,53 @@
     }
   }
 
+  async function passwordSignIn(event) {
+    event.preventDefault();
+    /* canonical /api/padiem/auth/status 의 methods.password === true 인 경우에만 로그인 요청을 보낸다. */
+    if (!passwordLoginAvailable()) {
+      applyAuthMethods(null);
+      setAuthError("아이디/이메일 로그인은 현재 제공되지 않습니다. 구글 로그인을 이용해 주세요.");
+      return;
+    }
+    const identifier = byId("padiemLoginIdentifier");
+    const password = byId("padiemLoginPassword");
+    const submit = byId("padiemLoginSubmit");
+    if (!identifier || !password || !submit) return;
+
+    const identifierValue = identifier.value.trim();
+    if (!identifierValue || !password.value) {
+      setAuthError("아이디 또는 이메일과 비밀번호를 입력해 주세요.");
+      (identifierValue ? password : identifier).focus();
+      return;
+    }
+
+    submit.disabled = true;
+    setAuthError("");
+    try {
+      const result = await api("/auth/password/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ identifier: identifierValue, password: password.value })
+      });
+      if (!result.response.ok) {
+        setAuthError(safeMessage(result.data, "로그인 정보를 확인해 주세요."));
+        return;
+      }
+      password.value = "";
+      await refreshAuth();
+      if (!state.authenticated) {
+        setAuthError("로그인 상태를 확인하지 못했습니다. 다시 시도해 주세요.");
+        return;
+      }
+      closeAuthDialog();
+    } catch (_) {
+      setAuthError("로그인 연결을 확인해 주세요.");
+    } finally {
+      /* 메서드가 꺼진 상태에서는 제출 버튼도 비활성 상태로 되돌린다. */
+      submit.disabled = !passwordLoginAvailable();
+    }
+  }
+
   async function logout() {
     try {
       await api("/auth/logout", { method: "POST" });
@@ -307,89 +687,11 @@
     await loadSkill(select.value);
   }
 
-  async function generate() {
-    const select = byId("padiemSavedSkillSelect");
-    const message = byId("padiemQuoteRequest");
-    const button = byId("padiemQuoteGenerate");
-    if (!select || !message || !state.authenticated) return;
-    const requestText = message.value.trim();
-    if (!requestText) {
-      setQuoteStatus("견적 내용을 입력해 주세요.", "error");
-      message.focus();
-      return;
-    }
-    if (!state.loadedSkill || state.loadedSkill.savedSkillId !== select.value) {
-      if (!(await loadSkill(select.value))) return;
-    }
-    if (button) button.disabled = true;
-    setQuoteStatus("견적 내용을 정리하고 있습니다.", "working");
-    try {
-      const result = await api("/b66/quote/interpret", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({ saved_skill_id: select.value, message: requestText })
-      });
-      const candidate = result.data && result.data.candidate;
-      if (!result.response.ok || !result.data || result.data.ok !== true || !candidate) {
-        setQuoteStatus(safeMessage(result.data, "견적 요청을 해석하지 못했습니다."), "error");
-        return;
-      }
-      if (Array.isArray(candidate.missing) && candidate.missing.length) {
-        setQuoteStatus("거래처와 품목·수량·단가를 조금 더 알려 주세요.", "missing");
-        return;
-      }
-
-      const app = window.B66QuoteAppBridge;
-      const semantic = window.SavedQuoteSkill;
-      const bridge = window.B66QuoteSkillBridge;
-      if (!app || !semantic || !bridge || typeof semantic.buildDraft !== "function") {
-        setQuoteStatus("견적 런타임을 준비하지 못했습니다.", "error");
-        return;
-      }
-      const current = app.getDraft();
-      const input = {
-        recipient: candidate.recipient,
-        items: candidate.items,
-        quoteNo: candidate.quoteNo || (current && current.meta && current.meta.quoteNo),
-        issueDate: candidate.issueDate || (current && current.meta && current.meta.issueDate)
-      };
-      if (typeof candidate.projectName === "string" && candidate.projectName.trim()) {
-        input.projectName = candidate.projectName.trim();
-      }
-      if (Array.isArray(candidate.detailGroups) && candidate.detailGroups.length) {
-        input.detailGroups = candidate.detailGroups;
-      }
-      if (typeof candidate.memo === "string") input.memo = candidate.memo;
-      if (typeof candidate.taxMode === "string") input.taxMode = candidate.taxMode;
-
-      const built = semantic.buildDraft(state.loadedSkill.skill, input);
-      if (!built || built.ok !== true || !built.draft) {
-        setQuoteStatus("견적 입력값을 확인해 주세요.", "error");
-        return;
-      }
-      if (!bridge.setServerSkill(state.loadedSkill.skill, state.loadedSkill.slotSources || {})) {
-        setQuoteStatus("배정된 양식을 적용하지 못했습니다.", "error");
-        return;
-      }
-      const replaced = app.replaceDraft(built.draft, { toast: "내 견적서로 작성했습니다." });
-      if (!replaced || replaced.ok !== true) {
-        setQuoteStatus("견적 화면에 반영하지 못했습니다.", "error");
-        return;
-      }
-      const direct = byId("directModeButton");
-      if (direct) direct.click();
-      setQuoteStatus("견적서가 준비되었습니다. 내용을 확인한 뒤 PDF로 저장하세요.", "ready");
-    } catch (_) {
-      setQuoteStatus("견적 연결을 확인해 주세요.", "error");
-    } finally {
-      if (button) button.disabled = false;
-    }
-  }
-
   function bind() {
     const accountButton = byId("padiemAccountButton");
     const close = byId("padiemAuthClose");
     const googleButton = byId("googleSigninButton");
+    const loginForm = byId("padiemLoginForm");
     const logoutButton = byId("padiemLogout");
     const select = byId("padiemSavedSkillSelect");
     const generateButton = byId("padiemQuoteGenerate");
@@ -404,6 +706,7 @@
     });
     if (close) close.addEventListener("click", closeAuthDialog);
     if (googleButton) googleButton.addEventListener("click", startGoogleSignIn);
+    if (loginForm) loginForm.addEventListener("submit", passwordSignIn);
     if (logoutButton) logoutButton.addEventListener("click", logout);
     if (select) select.addEventListener("change", changeSkill);
     if (generateButton) generateButton.addEventListener("click", generate);

@@ -225,6 +225,35 @@
     };
   }
 
+  /* Production runtime startup authority: truthful blank business facts.
+     Demo defaults remain available only for explicit demo/tests. */
+  function createProductionDraft() {
+    var today = todayISO();
+    return {
+      schemaVersion: SCHEMA_VERSION,
+      meta: {
+        quoteNo: "PQ-" + today.split("-").join("") + "-001",
+        issueDate: today,
+        validDays: 30,
+        source: "manual"
+      },
+      sender: {
+        company: "",
+        rep: "",
+        contactPerson: "",
+        bizNo: "",
+        address: "",
+        phone: "",
+        email: "",
+        presetId: "custom"
+      },
+      recipient: { company: "", person: "", address: "", email: "" },
+      items: [{ id: "item-1", name: "", qty: 1, unitPrice: 0 }],
+      tax: { mode: TAX_MODES.EXCLUSIVE, rate: VAT_RATE },
+      memo: ""
+    };
+  }
+
   function asString(v, fallback) {
     return typeof v === "string" ? v : fallback;
   }
@@ -359,7 +388,9 @@
     try {
       if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
       if (raw.schemaVersion !== SCHEMA_VERSION) return null;
-      var base = createDefaultDraft();
+      /* 누락 필드 보충은 truthful blank로만 한다. 데모 사업 정보는
+         normalize 계약으로 자동 보충되지 않는다 (#3479). */
+      var base = createProductionDraft();
       var rawItems = Array.isArray(raw.items) && raw.items.length > 0 ? raw.items : base.items;
       var items = rawItems.map(function (it, i) {
         var src = it && typeof it === "object" ? it : {};
@@ -453,15 +484,17 @@
   }
 
   function createBlankQuoteDraft(currentDraft, options) {
-    var current = normalizeDraft(currentDraft) || createDefaultDraft();
-    var defaults = createDefaultDraft();
+    /* 새 Production 견적은 truthful blank에서 시작한다. 승인된 Skill/
+       CompanyProfile 값은 호출 계약(#3478)으로만 채워진다. */
+    var current = normalizeDraft(currentDraft) || createProductionDraft();
+    var blank = createProductionDraft();
     var opts = options || {};
     var issueDate = typeof opts.issueDate === "string" && parseISODate(opts.issueDate)
       ? opts.issueDate
       : todayISO();
     var quoteNo = typeof opts.quoteNo === "string" && opts.quoteNo.trim()
       ? opts.quoteNo.trim()
-      : defaults.meta.quoteNo;
+      : blank.meta.quoteNo;
     var source = typeof opts.source === "string" && opts.source.trim()
       ? opts.source.trim()
       : "manual";
@@ -471,7 +504,7 @@
       meta: {
         quoteNo: quoteNo,
         issueDate: issueDate,
-        validDays: current.meta.validDays > 0 ? current.meta.validDays : defaults.meta.validDays,
+        validDays: current.meta.validDays > 0 ? current.meta.validDays : blank.meta.validDays,
         source: source
       },
       sender: {
@@ -487,7 +520,7 @@
       recipient: { company: "", person: "", address: "", email: "" },
       items: [{ id: "item-1", name: "", qty: 1, unitPrice: 0 }],
       tax: { mode: TAX_MODES.EXCLUSIVE, rate: VAT_RATE },
-      memo: defaults.memo
+      memo: ""
     };
     if (current.calculationPolicy) next.calculationPolicy = current.calculationPolicy;
     return normalizeDraft(next);
@@ -519,6 +552,7 @@
     computeValidUntil: computeValidUntil,
     printReadiness: printReadiness,
     createDefaultDraft: createDefaultDraft,
+    createProductionDraft: createProductionDraft,
     createBlankQuoteDraft: createBlankQuoteDraft,
     normalizeDraft: normalizeDraft
   };
