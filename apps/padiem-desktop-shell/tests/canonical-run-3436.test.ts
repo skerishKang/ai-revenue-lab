@@ -382,12 +382,23 @@ test('#3436 B3a artifact metadata is bounded to a reference projection', async (
     { document_id: '' },
     { document_id: 42 },
     { filename: 'quote.docx' },
+    // #3436 correction: a widened canonical artifact fails closed at the
+    // parser — it is never silently cleaned into a valid projection. The raw
+    // private values below are fixtures, not expected outputs: an assertion
+    // message that echoed them would be the leak this rule prevents.
+    { document_id: 'doc_' + '1'.repeat(24), filename: 'a.docx', media_type: 'application/msword', extra: 'anything' },
+    { document_id: 'doc_' + '1'.repeat(24), filename: 'a.docx', media_type: 'application/msword', session_id: 'unexpected-private-ref' },
+    { document_id: 'doc_' + '1'.repeat(24), filename: 'a.docx', media_type: 'application/msword', credential: 'x' },
+    { document_id: 'doc_' + '1'.repeat(24), filename: 'a.docx', media_type: 'application/msword', path: 'C:/Windows/win.ini' },
+    // Ambiguous duplicate aliases are a shape error, not a coincidence.
+    { document_id: 'doc_a', documentId: 'doc_b', filename: 'a.docx', media_type: 'application/msword' },
+    { document_id: 'doc_a', filename: 'a.docx', media_type: 'application/msword', mediaType: 'image/png' },
   ]) {
     const controller = new CanonicalRunController(
       fixturePort({ list: canonicalListPayload(canonicalRunRow({ artifact: malformed })) }),
     );
     const list3 = await controller.listRuns();
-    assert.equal(list3.ok, false, JSON.stringify(malformed));
+    assert.equal(list3.ok, false, malformed === null || typeof malformed === 'object' ? 'object' : String(malformed));
     assert.equal(list3.errorCode, 'invalid_run_payload');
   }
 });

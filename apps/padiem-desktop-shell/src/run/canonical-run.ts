@@ -363,18 +363,43 @@ function parseResultSummary(
   return value.slice(0, MAX_RUN_RESULT_SUMMARY_CHARS);
 }
 
+/**
+ * The closed artifact input shape: the server's own snake keys
+ * (`history._run_history_public` emits `document_id` / `filename` /
+ * `media_type`), with the camelCase spelling accepted as the projection's
+ * internal representation. ANY other key — a private ref, a path, an
+ * unexpected extra — makes the whole payload invalid, and carrying both
+ * spellings of one field is an ambiguity, not a coincidence, so it is invalid
+ * too. A widened canonical artifact is never silently cleaned.
+ */
+const ARTIFACT_FIELD_BY_KEY: Readonly<Record<string, 'documentId' | 'filename' | 'mediaType'>> =
+  Object.freeze({
+    document_id: 'documentId',
+    documentId: 'documentId',
+    filename: 'filename',
+    media_type: 'mediaType',
+    mediaType: 'mediaType',
+  });
+
 function parseArtifact(
   value: unknown,
 ): 'invalid' | 'absent' | CanonicalRunArtifactRef {
   if (value === undefined || value === null) return 'absent';
   if (typeof value !== 'object' || Array.isArray(value)) return 'invalid';
   const source = value as Record<string, unknown>;
-  const documentId = boundedText(source.document_id ?? source.documentId, MAX_ARTIFACT_DOCUMENT_ID_LENGTH);
+  const seen = new Map<'documentId' | 'filename' | 'mediaType', unknown>();
+  for (const key of Object.keys(source)) {
+    const field = ARTIFACT_FIELD_BY_KEY[key];
+    if (field === undefined) return 'invalid';
+    if (seen.has(field)) return 'invalid';
+    seen.set(field, source[key]);
+  }
+  const documentId = boundedText(seen.get('documentId'), MAX_ARTIFACT_DOCUMENT_ID_LENGTH);
   if (documentId === null || documentId.length === 0) return 'invalid';
   return Object.freeze({
     documentId,
-    filename: boundedText(source.filename, MAX_ARTIFACT_FILENAME_LENGTH) ?? '',
-    mediaType: boundedText(source.media_type ?? source.mediaType, MAX_ARTIFACT_MEDIA_TYPE_LENGTH) ?? '',
+    filename: boundedText(seen.get('filename'), MAX_ARTIFACT_FILENAME_LENGTH) ?? '',
+    mediaType: boundedText(seen.get('mediaType'), MAX_ARTIFACT_MEDIA_TYPE_LENGTH) ?? '',
   });
 }
 

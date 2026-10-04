@@ -117,6 +117,10 @@ test('#3436 artifacts: malformed or widened metadata fails closed and is counted
     artifact({ filename: '' }),
     artifact({ mediaType: undefined }),
     artifact({ documentId: 'doc_' + 'x'.repeat(200) }),
+    // Closed set: an arbitrary unknown key is refused whatever its name —
+    // there is no extra spelling that slips through a blacklist.
+    artifact({ extra: 'anything' }),
+    artifact({ provider_meta: { a: 1 } }),
     // Private refs the projection must never carry, whatever the payload says.
     artifact({ session_id: 'sess_stolen_1' }),
     artifact({ binding_ref: 'bind_stolen_1' }),
@@ -138,7 +142,7 @@ test('#3436 artifacts: malformed or widened metadata fails closed and is counted
     artifact({ provider_response: { raw: 'everything' } }),
   ]) {
     const projected = presentRunArtifact(runRow(), hostile);
-    assert.equal(projected, null, JSON.stringify(hostile));
+    assert.equal(projected, null, typeof hostile === 'object' ? 'object-shaped' : 'scalar-shaped');
   }
 
   const result = presentRunArtifacts([

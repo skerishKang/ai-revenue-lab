@@ -59,29 +59,18 @@ const MAX_DOCUMENT_ID_LENGTH = 128;
 const MAX_RUN_TITLE_LENGTH = 300;
 
 /**
- * Fields a renderer must never render, whatever the payload says. An artifact
- * carrying one is refused outright rather than projected with the field
- * stripped — a widened canonical payload is a fail-closed answer, not a
- * cleanup job.
+ * The closed presentation input shape: exactly the three canonical artifact
+ * fields. An artifact carrying ANY other key is refused outright rather than
+ * projected with the extra field stripped — a widened payload (a private ref,
+ * a path, a provider dump, or anything unexpected) is a fail-closed answer,
+ * not a cleanup job. This is an allowed-key set, not a blacklist: there is no
+ * extra name a payload could use to slip through.
  */
-const FORBIDDEN_ARTIFACT_FIELDS: readonly string[] = [
-  'credential',
-  'credential_b64',
-  'session_id',
-  'binding_ref',
-  'actor_ref',
-  'workspace_ref',
-  'workspace_id',
-  'token',
-  'secret',
-  'path',
-  'absolute_path',
-  'local_path',
-  'url',
-  'download_url',
-  'provider_response',
-  'raw',
-];
+const ARTIFACT_ALLOWED_KEYS: ReadonlySet<string> = new Set([
+  'documentId',
+  'filename',
+  'mediaType',
+]);
 
 /** A media type is `type/subtype` (RFC 6838 shape), never an address. */
 const MEDIA_TYPE_SHAPE = /^[A-Za-z0-9!#$&^_.+-]+\/[A-Za-z0-9!#$&^_.+-]+$/;
@@ -155,8 +144,8 @@ export function presentRunArtifact(
   artifact: unknown,
 ): RunArtifactPresentation | null {
   if (!isPlainRecord(artifact)) return null;
-  for (const forbidden of FORBIDDEN_ARTIFACT_FIELDS) {
-    if (forbidden in artifact) return null;
+  for (const key of Object.keys(artifact)) {
+    if (!ARTIFACT_ALLOWED_KEYS.has(key)) return null;
   }
   const documentId = boundedString(artifact['documentId'], MAX_DOCUMENT_ID_LENGTH);
   const filename = boundedString(artifact['filename'], MAX_LABEL_LENGTH);
