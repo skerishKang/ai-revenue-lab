@@ -15,6 +15,13 @@ from padiem_ai_core.b14_execution import (
     B14ExecutionConfig,
     B14ExecutionError,
     B14RoutingOptions,
+    MAX_B14_RESPONSE_BYTES,
+)
+from app.service_binding_response import (
+    ServiceBindingResponseError,
+    ServiceBindingResponseTooLarge,
+    cloudflare_chunk_bytes,
+    read_bounded_service_binding_body,
 )
 from padiem_ai_core.b14_streaming import B14StreamingClient
 from padiem_ai_core.contracts import AgentProfile
@@ -146,6 +153,38 @@ class FakeBinding:
         return self.response
 
 
+def _load_worker_completed_type():
+    source = WORKER_PATH.read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    completed = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.ClassDef) and node.name == "CloudflareB14ServiceTransport"
+    )
+    module = ast.Module(
+        body=[
+            ast.ImportFrom(
+                module="__future__",
+                names=[ast.alias(name="annotations")],
+                level=0,
+            ),
+            completed,
+        ],
+        type_ignores=[],
+    )
+    namespace = {
+        "Any": Any,
+        "Request": FakeRequest,
+        "json": json,
+        "MAX_B14_RESPONSE_BYTES": MAX_B14_RESPONSE_BYTES,
+        "read_bounded_service_binding_body": read_bounded_service_binding_body,
+        "ServiceBindingResponseTooLarge": ServiceBindingResponseTooLarge,
+        "ServiceBindingResponseError": ServiceBindingResponseError,
+    }
+    exec(compile(ast.fix_missing_locations(module), str(WORKER_PATH), "exec"), namespace)
+    return namespace["CloudflareB14ServiceTransport"]
+
+
 def _load_worker_streaming_types():
     source = WORKER_PATH.read_text(encoding="utf-8")
     tree = ast.parse(source)
@@ -178,6 +217,8 @@ def _load_worker_streaming_types():
         "Any": Any,
         "Request": FakeRequest,
         "httpx": httpx,
+        "cloudflare_chunk_bytes": cloudflare_chunk_bytes,
+        "ServiceBindingResponseError": ServiceBindingResponseError,
     }
     exec(compile(ast.fix_missing_locations(module), str(WORKER_PATH), "exec"), namespace)
     return (
@@ -687,7 +728,9 @@ def test_completed_json_bridge_is_preserved_and_streaming_bridge_never_buffers_r
     streaming = classes["CloudflareB14StreamingServiceTransport"]
     byte_stream = classes["_CloudflareReadableByteStream"]
 
-    assert "await response.text()" in completed
+    assert "await response.text()" not in completed
+    assert "read_bounded_service_binding_body" in completed
+    assert "MAX_B14_RESPONSE_BYTES" in completed
     assert "CloudflareB14ServiceTransport(b14_binding)" in WORKER_PATH.read_text(
         encoding="utf-8"
     )
@@ -699,3 +742,33 @@ def test_completed_json_bridge_is_preserved_and_streaming_bridge_never_buffers_r
     assert "reader.cancel()" not in byte_stream  # cancellation stays dynamically guarded
     assert "getattr(reader, 'cancel', None)" in byte_stream
     assert "getattr(reader, 'releaseLock', None)" in byte_stream
+
+
+def test_completed_json_bridge_stops_at_response_ceiling_and_preserves_core_classification():
+    completed_type = _load_worker_completed_type()
+    reader = FakeReader(
+        [b"x" * MAX_B14_RESPONSE_BYTES, b"y", b"never-read"],
+    )
+    body = FakeBody(reader)
+    binding = FakeBinding(
+        FakeResponse(200, body, content_type="application/json")
+    )
+    transport = completed_type(binding)
+
+    status, payload = asyncio.run(
+        transport.post_json(
+            f"{BASE_URL}/v1/chat/completions",
+            {"messages": [{"role": "user", "content": "bounded"}]},
+        )
+    )
+
+    assert status == 200
+    # Core classifies any body above its configured ceiling as
+    # upstream_response_too_large. The transport returns only one bounded
+    # sentinel byte beyond that ceiling after cancelling the real stream.
+    assert len(payload) == MAX_B14_RESPONSE_BYTES + 1
+    assert reader.read_count == 2
+    assert reader.cancel_count == 1
+    assert reader.release_count == 1
+    # FakeReader is index-based rather than destructive; read_count=2 proves
+    # the third "never-read" chunk was not consumed after overflow.
