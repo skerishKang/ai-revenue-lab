@@ -116,6 +116,11 @@
   function showHome(options) {
     clearConversation();
     snapshotGuidedConversation();
+    /* Home 에서 명시적으로 새 견적을 시작하면 진행 중이던 문맥을 버린다. */
+    if (!options || options.history !== false) {
+      const bridge = window.B66QuoteRuntimeBridge;
+      if (bridge && typeof bridge.clearPending === "function") bridge.clearPending();
+    }
     selectedFile = null;
     lastEasyView = "home";
     if (!options || options.history !== false) recordProductState("home");
@@ -268,6 +273,15 @@
     disableInput("견적을 만드는 동안에는 입력을 잠시 멈춥니다.");
     Promise.resolve(bridge.interpret(text)).then((result) => {
       if (!result || result.ok !== true || !result.draft) {
+        /* 정보가 부족하면 무엇이 없는지 한 가지만 되묻고 같은 견적을 이어간다.
+           Guided 로 강제 전환하지 않는다 (#3391). */
+        if (result && result.code === "incomplete_request") {
+          addMessage("assistant", typeof result.question === "string" && result.question.trim()
+            ? result.question
+            : "견적에 필요한 값을 조금 더 알려 주세요.");
+          setInput(submitFreeFormText, "답변을 적어 주세요");
+          return;
+        }
         const detail = result && bridge && typeof bridge.errorText === "function"
           ? bridge.errorText(result.code)
           : "견적 요청을 해석하지 못했습니다.";
@@ -573,6 +587,11 @@
     startConversation();
     /* 새 대화 시작은 보존된 스냅샷을 대체한다 — 복원 경로는 startGuided 를 거치지 않는다. */
     guidedSnapshot = null;
+    /* Guided 로 명시적으로 새 견적을 시작하면 free-form 진행 문맥도 버린다. */
+    if (!options || options.history !== false) {
+      const bridge = window.B66QuoteRuntimeBridge;
+      if (bridge && typeof bridge.clearPending === "function") bridge.clearPending();
+    }
     guided = {
       step: "recipientCompany",
       draft: guidedDraft(),
