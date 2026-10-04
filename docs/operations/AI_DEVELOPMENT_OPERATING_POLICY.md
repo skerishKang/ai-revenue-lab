@@ -237,34 +237,34 @@ CI is required when configured/relevant but is never universal completion eviden
 
 Use the evidence type that matches the claim. A red external security/compliance signal must be resolved or carry an explicit authorized disposition/waiver with reason before merge; silence on a later squash/main commit is not evidence that the original signal disappeared.
 
-###" 11A. Test execution "economy
+### 11A. Test execution economy
 
-####" A. During active "implementation
+#### A. During active implementation
 - batch a logical set of related edits before broad validation;
 - run cheap/focused checks (syntax/static/typecheck/compile/focused tests) as needed;
 - DO NOT run the full repository/app suite after every small edit.
 
-####" B. At logical-batch "completion
+#### B. At logical-batch completion
 - run the smallest relevant suite that covers affected app/package/trust boundary;
 - broaden only when changed files/contract impact justify it.
 
-####" C. Merge-forward / main "drift
+#### C. Merge-forward / main drift
 - first compute exact changed-file/contract overlap between the already-tested PR head and new main drift;
 - overlap=0 and no shared authority/core/engine/deployment contract impact => focused smoke/contract checks are sufficient; DO NOT automatically repeat prior full suite;
 - overlap>0 => run the relevant suite for the overlapping area;
 - shared authority/core/engine/identity/session/entitlement/Drive/deployment boundary changes => broaden regression appropriately.
 
-####" D. Full "CI
+#### D. Full CI
 - normally run once when the logical batch/PR is merge-ready;
 - if CI fails, rerun only failed job(s) after diagnosis when infrastructure/flaky behavior is suspected; do not blindly rerun the entire suite;
 - do not relax thresholds/assertions to save time.
 
-####" E. Exact-SHA "evidence
+#### E. Exact-SHA evidence
 - prior evidence remains usable across unrelated/no-overlap main drift when applicability is explicitly recorded;
 - a new commit affecting judged behavior/surface invalidates relevant evidence;
 - exact-head/final checks required by work contract/security/compliance still apply.
 
-####" F. "Exceptions
+#### F. Exceptions
 - red security/compliance signal must still be resolved/waived per existing policy;
 - P0/P1 or shared authority/trust-boundary work may require broader validation;
 - owner/CTO can explicitly require full regression.

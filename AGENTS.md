@@ -119,7 +119,7 @@ This is a responsibility/evidence flow, not a mandatory product-stage sequence. 
 - Deployment follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`; no alternate Preview/manual deployment path is implied by these rules.
 - Local Docker Desktop / local Docker daemon is not a default development or deployment path. Do not start or require it unless established remote build/deploy paths have been checked and the Product Owner explicitly approves a task-specific exception. Follow `LOCAL_DOCKER_AVOIDANCE_POLICY.md`.
 - On Windows, do not run `git worktree remove --force` while the worktree contains a junction/symlink/reparse point into a shared dependency directory (for example another checkout's `node_modules`). Remove the link itself with a link-safe operation first, verify the target directory is intact, then remove the worktree.
-- Follow §11A "Test execution \"economy\" in `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md`: batch logical edits, scale validation to changed impact, and do not repeat broad suites solely because unrelated main drift "occurred.
+- Follow §11A Test execution economy in \`docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md\`: batch logical edits, scale validation to changed impact, and do not repeat broad suites solely because unrelated main drift occurred.
 
 ## GitHub report handoff
 
