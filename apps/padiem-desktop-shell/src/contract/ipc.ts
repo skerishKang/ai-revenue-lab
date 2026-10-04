@@ -20,6 +20,11 @@ export const IPC_CHANNELS = [
   'padiem:shell:runner-health',
   'padiem:shell:pairing-deeplink-submit',
   'padiem:shell:get-bounded-log',
+  'padiem:shell:workspace-choose-root',
+  'padiem:shell:workspace-list',
+  'padiem:shell:workspace-clear-root',
+  'padiem:shell:conversation-list',
+  'padiem:shell:conversation-read',
 ] as const;
 
 export type IpcChannel = (typeof IPC_CHANNELS)[number];
@@ -152,6 +157,84 @@ export interface BoundedLogResponse {
   readonly redactionApplied: true;
 }
 
+export interface WorkspaceRootResponse {
+  readonly selected: boolean;
+  readonly rootName: string | null;
+  readonly rootPath: string | null;
+  readonly reason: 'current' | 'selected' | 'cancelled' | 'invalid_selection' | 'cleared';
+}
+
+export type WorkspaceEntryKind = 'directory' | 'file' | 'link';
+
+export interface WorkspaceEntry {
+  readonly name: string;
+  readonly relativePath: string;
+  readonly kind: WorkspaceEntryKind;
+}
+
+export interface WorkspaceListRequest {
+  readonly relativePath?: string;
+}
+
+export interface WorkspaceListResponse {
+  readonly ok: boolean;
+  readonly root: WorkspaceRootResponse;
+  readonly directory: string;
+  readonly entries: readonly WorkspaceEntry[];
+  readonly truncated: boolean;
+  readonly maxEntries: number;
+  readonly errorCode:
+    | null
+    | 'root_not_selected'
+    | 'invalid_relative_path'
+    | 'path_outside_root'
+    | 'workspace_unavailable';
+}
+
+/**
+ * #3436 B2b — canonical conversation projection (read-only).
+ *
+ * Every value here came from the canonical Padiem conversation authority in
+ * the current call. The Desktop mints no conversation id, keeps no conversation
+ * store, and adds no message history: `SECOND_CONVERSATION_AUTHORITY = 0`.
+ */
+export interface CanonicalConversationListItem {
+  readonly id: string;
+  readonly title: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+}
+
+export interface CanonicalConversationListResponse {
+  readonly ok: boolean;
+  readonly configured: boolean;
+  readonly conversations: readonly CanonicalConversationListItem[];
+  readonly errorCode: null | 'canonical_conversation_unavailable' | 'invalid_conversation_payload';
+}
+
+export interface CanonicalConversationMessage {
+  readonly role: 'user' | 'assistant';
+  readonly content: string;
+}
+
+export interface CanonicalConversationDetail {
+  readonly id: string;
+  readonly title: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+  readonly messages: readonly CanonicalConversationMessage[];
+}
+
+export interface CanonicalConversationReadRequest {
+  readonly conversationId: string;
+}
+
+export interface CanonicalConversationReadResponse {
+  readonly ok: boolean;
+  readonly conversation: CanonicalConversationDetail | null;
+  readonly errorCode: null | 'canonical_conversation_unavailable' | 'invalid_conversation_id' | 'conversation_not_found' | 'invalid_conversation_payload';
+}
+
 /** Maps a channel to its request/response types — the whole surface, closed. */
 export interface IpcSurface {
   'padiem:shell:get-status': { request: undefined; response: ShellStatus };
@@ -163,6 +246,17 @@ export interface IpcSurface {
     response: PairingDeepLinkResponse;
   };
   'padiem:shell:get-bounded-log': { request: BoundedLogRequest; response: BoundedLogResponse };
+  'padiem:shell:workspace-choose-root': { request: undefined; response: WorkspaceRootResponse };
+  'padiem:shell:workspace-list': { request: WorkspaceListRequest; response: WorkspaceListResponse };
+  'padiem:shell:workspace-clear-root': { request: undefined; response: WorkspaceRootResponse };
+  'padiem:shell:conversation-list': {
+    request: undefined;
+    response: CanonicalConversationListResponse;
+  };
+  'padiem:shell:conversation-read': {
+    request: CanonicalConversationReadRequest;
+    response: CanonicalConversationReadResponse;
+  };
 }
 
 export type IpcRequestOf<C extends IpcChannel> = IpcSurface[C]['request'];

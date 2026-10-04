@@ -42,6 +42,8 @@ class B66ProvisioningError(RuntimeError):
 class B66ProvisioningAction(str, Enum):
     ASSIGN = "assign"
     DISABLE = "disable"
+    PROVISION_ASSET = "provision_asset"
+    PROVISION_COMPANY_PROFILE = "provision_company_profile"
 
 
 def _aware(name: str, value: object) -> datetime:

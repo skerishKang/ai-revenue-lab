@@ -10,6 +10,7 @@ from __future__ import annotations
 import inspect
 import json
 from collections.abc import Mapping
+from datetime import datetime, timezone
 from typing import Any
 
 from padiem_ai_core.calendar_capability import (
@@ -27,6 +28,8 @@ from padiem_ai_core.telegram_capability import (
 )
 from app.connector_bindings import (
     GMAIL_CONNECTOR_ID,
+    CALENDAR_AGENT_ID,
+    CALENDAR_REFERENCE_APP_ID,
     CalendarGrant,
     GmailGrant,
     DriveGrant,
@@ -278,6 +281,72 @@ class CloudflareD1ConnectorGrantStore:
                 ) from None
 
         return grants
+
+    async def activate_calendar_read_grant(
+        self,
+        *,
+        binding_ref: str,
+        actor_ref: str,
+    ) -> CalendarGrant:
+        """Upsert the single canonical Calendar READ grant from trusted refs."""
+
+        try:
+            grant = CalendarGrant(
+                app_id=CALENDAR_REFERENCE_APP_ID,
+                canonical_agent_id=CALENDAR_AGENT_ID,
+                binding_ref=str(binding_ref),
+                actor_ref=str(actor_ref),
+                granted_capabilities=(CalendarCapability.READ,),
+            )
+        except (TypeError, ValueError):
+            raise ServiceContractError(
+                "calendar_grant_activation_invalid",
+                "Calendar grant activation received invalid trusted identity.",
+                status_code=503,
+            ) from None
+
+        now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        sql = (
+            f"INSERT INTO {_TABLE_NAME} "
+            "(app_id, canonical_agent_id, connector_id, binding_ref, actor_ref, "
+            "granted_scopes_json, granted_capabilities_json, active, created_at, updated_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?) "
+            "ON CONFLICT(app_id, connector_id) DO UPDATE SET "
+            "canonical_agent_id=excluded.canonical_agent_id, active=1, "
+            "binding_ref=excluded.binding_ref, actor_ref=excluded.actor_ref, "
+            "granted_scopes_json=excluded.granted_scopes_json, "
+            "granted_capabilities_json=excluded.granted_capabilities_json, "
+            "updated_at=excluded.updated_at"
+        )
+        try:
+            await _maybe_await(
+                self._binding.prepare(sql).bind(
+                    grant.app_id,
+                    grant.canonical_agent_id,
+                    CALENDAR_CONNECTOR_ID,
+                    grant.binding_ref,
+                    grant.actor_ref,
+                    "[]",
+                    json.dumps([CalendarCapability.READ.value], separators=(",", ":")),
+                    now,
+                    now,
+                ).run()
+            )
+        except Exception:
+            raise ServiceContractError(
+                "calendar_grant_activation_unavailable",
+                "Calendar grant activation storage is unavailable.",
+                status_code=503,
+            ) from None
+
+        current = (await self.load_calendar_grants()).get(CALENDAR_REFERENCE_APP_ID)
+        if current != grant:
+            raise ServiceContractError(
+                "calendar_grant_activation_unavailable",
+                "Calendar grant activation readback did not match the reviewed grant.",
+                status_code=503,
+            )
+        return current
 
 
 __all__ = ["CloudflareD1ConnectorGrantStore"]

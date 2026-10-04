@@ -194,6 +194,34 @@ eq(same.renderModel, first.renderModel, "SAME_INPUT_SAME_RENDER=YES");
 eq(same.compiled.skillFingerprint, first.compiled.skillFingerprint, "compiled skill identity is stable");
 eq(same.compiled.templateFingerprint, first.compiled.templateFingerprint, "compiled internal template identity is stable");
 
+const runtimeProfile = {
+  company: "Runtime Company",
+  representative: "Runtime Rep",
+  contactPerson: "Runtime Contact",
+  businessNumber: "000-11-22222",
+  address: "Runtime Address",
+  phone: "000-000-0000",
+  email: "runtime@example.test",
+  defaultValidityDays: 45,
+  defaultTaxMode: "EXEMPT"
+};
+const profiled = Skill.buildRenderModel(skill, input({ taxMode: undefined }), { companyProfile: runtimeProfile });
+check(profiled.ok === true, "account CompanyProfile runtime override renders through the approved Skill");
+eq(profiled.compiled.skillFingerprint, first.compiled.skillFingerprint,
+  "COMPANY_PROFILE_OVERRIDE_PRESERVES_APPROVED_SKILL_FINGERPRINT=YES");
+eq(profiled.draft.sender.company, "Runtime Company", "CompanyProfile snapshots company into QuoteDraft");
+eq(profiled.draft.sender.rep, "Runtime Rep", "CompanyProfile snapshots representative into QuoteDraft");
+eq(profiled.draft.sender.contactPerson, "Runtime Contact", "CompanyProfile snapshots contact person into QuoteDraft");
+eq(profiled.draft.meta.validDays, 45, "CompanyProfile validity is snapshotted instead of legacy Skill validity");
+eq(profiled.draft.tax.mode, "EXEMPT", "CompanyProfile tax default applies when the quote does not override tax");
+eq(skill.fixedDefaults.sender.company, first.draft.sender.company,
+  "runtime CompanyProfile never mutates the approved Saved Quote Skill");
+const missingProfileValidity = Skill.buildRenderModel(skill, input(), {
+  companyProfile: { company: "Runtime Company" }
+});
+check(missingProfileValidity.ok === false && missingProfileValidity.code === "invalid_company_profile",
+  "missing CompanyProfile validity fails closed instead of inheriting source/Skill validity");
+
 const numeric = Skill.buildRenderModel(skill, input({
   items: [{ id: "item-1", name: "배관 40A", qty: 80, unitPrice: 135000 }]
 }));
@@ -224,6 +252,56 @@ const badItemFreeze = Skill.normalizeFixedDefaults(Object.assign({}, fixedDefaul
 eq(badItemFreeze, null, "SOURCE_ITEM_VALUES_FROZEN_BY_ACCIDENT=NO");
 const badAmountFreeze = Skill.normalizeFixedDefaults(Object.assign({}, fixedDefaults(), { grandTotal: 999999 }));
 eq(badAmountFreeze, null, "SOURCE_AMOUNTS_FROZEN_BY_ACCIDENT=NO");
+
+/* ── 발신자 담당자(#3437)는 회사 고정 기본값으로 반복 생성에 재사용된다(#3401) ── */
+const contactBase = {
+  id: "skill-sender-contact",
+  name: "발신자 담당자 기본 견적서",
+  fixedDefaults: Object.assign({}, fixedDefaults(), {
+    sender: Object.assign({}, fixedDefaults().sender, { contactPerson: "한담당" })
+  }),
+  variableSchema: { recipient: true, quoteNo: true, issueDate: true, items: true, memo: true, taxMode: true },
+  internalTemplate: Template.serializeTemplate(Template.builtInTemplate()),
+  provenance: provenance(),
+  approval: null,
+  createdAt: NOW,
+  updatedAt: NOW
+};
+const contactPending = Skill.buildSkill(contactBase);
+check(contactPending && contactPending.approved === false, "sender contact person Skill is reviewable before approval");
+eq(contactPending.fixedDefaults.sender.contactPerson, "한담당", "fixedDefaults.sender preserves the sender contact person default");
+const contactSkill = Skill.buildSkill(Object.assign({}, contactBase, {
+  approval: {
+    schemaVersion: 1,
+    status: "approved",
+    skillFingerprint: contactPending.fingerprint,
+    approvedBy: "central-cto",
+    approvedAt: NOW,
+    approvalRef: "issue-3401"
+  }
+}));
+check(contactSkill && contactSkill.approved === true, "sender contact person Skill can be explicitly approved");
+const contactResult = Skill.buildRenderModel(contactSkill, input());
+check(contactResult.ok === true, "approved sender-contact Skill generates normally");
+eq(contactResult.draft.sender.contactPerson, "한담당", "REPEAT_PATH_CARRIES_SENDER_CONTACT_PERSON=YES");
+check(contactResult.compiled.skillFingerprint !== first.compiled.skillFingerprint,
+  "sender contact person participates in the Skill fingerprint basis");
+check(!("contactPerson" in skill.fixedDefaults.sender),
+  "a Skill without a sender contact person keeps the canonical sender shape");
+eq(
+  Skill.normalizeFixedDefaults(Object.assign({}, fixedDefaults(), {
+    sender: Object.assign({}, fixedDefaults().sender, { nickname: "공격 값" })
+  })),
+  null,
+  "unknown sender keys still fail closed"
+);
+eq(
+  Skill.normalizeFixedDefaults(Object.assign({}, fixedDefaults(), {
+    sender: Object.assign({}, fixedDefaults().sender, { contactPerson: "   " })
+  })).sender.contactPerson,
+  undefined,
+  "a blank sender contact person adds no key"
+);
 
 const missingCoreVariable = Skill.normalizeVariableSchema({
   recipient: false, quoteNo: true, issueDate: true, items: true, memo: true, taxMode: true

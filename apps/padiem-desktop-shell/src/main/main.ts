@@ -14,7 +14,7 @@
  *   - a second execution authority
  */
 
-import { BrowserWindow, app, ipcMain } from 'electron';
+import { BrowserWindow, app, dialog, ipcMain } from 'electron';
 import { fileURLToPath } from 'node:url';
 import {existsSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -30,6 +30,11 @@ import { registerWindowsProtocolClient } from './protocol-registration.js';
 import { acquireSingleInstanceOwnership } from './single-instance.js';
 import { PairingHandoffConsumer } from './pairing-handoff-consumer.js';
 import { resolveRunnerHostMode } from './runner-host-mode.js';
+import { LocalWorkspaceController } from '../workspace/local-workspace.js';
+import {
+  CanonicalConversationController,
+  UnconfiguredCanonicalConversationPort,
+} from '../conversation/canonical-conversation.js';
 
 const __dirname_ = path.dirname(fileURLToPath(import.meta.url));
 
@@ -120,9 +125,32 @@ export const supervisor = new HeadlessRunnerSupervisor({
   spec: runnerSpawnSpec(),
 });
 
+export const localWorkspace = new LocalWorkspaceController(async () => {
+  const result = await dialog.showOpenDialog({
+    title: 'Choose a Padiem work folder',
+    properties: ['openDirectory'],
+  });
+  if (result.canceled || result.filePaths.length !== 1) {
+    return null;
+  }
+  return result.filePaths[0] ?? null;
+});
+
+/**
+ * #3436 B2b — canonical conversation consumer.
+ *
+ * Left on the fail-closed unconfigured port: the Desktop holds no canonical
+ * Padiem session credential in this slice, so every conversation surface reads
+ * as "canonical conversation unavailable" instead of minting a local one. A
+ * future authenticated port is a main-process-only swap here.
+ */
+export const canonicalConversations = new CanonicalConversationController();
+
 export const controller = new ShellController({
   supervisor,
   boundedLogLines: () => processPort.boundedActiveOutput().lines,
+  workspace: localWorkspace,
+  conversations: canonicalConversations,
 });
 
 let mainWindow: BrowserWindow | null = null;

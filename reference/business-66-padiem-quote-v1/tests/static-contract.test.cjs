@@ -413,6 +413,8 @@ check(css.includes(".topbar, .workspace-modebar, .easy-view, .modebar, .future-n
 check(css.includes(".direct-view[hidden] { display: block !important; }"),
   "PRINT_LAYOUT_CONTRACT: hidden Direct view is restored for printing from Easy Mode");
 check(css.includes(".grid { display: block; }"), "PRINT_LAYOUT_CONTRACT: paper in normal flow");
+check(css.includes('.quote-paper[data-layout-variant="formal-grid-v1"] .demo-mark { display: block; }'),
+  "PRINT_LAYOUT_CONTRACT: formal printed mark remains visible without exposing the built-in demo mark");
 check(!css.includes("visibility: hidden"), "PRINT_LAYOUT_CONTRACT: visibility hack removed");
 check(core.includes("function printReadiness(") &&
       app.includes("function printReadinessFailure("),
@@ -440,7 +442,8 @@ check(template.includes('subtotalLabel: "품목 합계(세금 확인 전)"') &&
       template.includes('supplyLabel: "공급가액"') &&
       template.includes('grandLabel: "합계"'),
   "PROVISIONAL_VAT_DISPLAY_CONTRACT: provisional and confirmed labels live in the template profile");
-check(templateRenderer.includes("provisional ? content.totals.provisional.subtotalLabel : content.totals.supplyLabel") &&
+check(templateRenderer.includes("provisional ? content.totals.provisional.subtotalLabel : supplyLabel") &&
+      templateRenderer.includes("var supplyLabel = content.totals.supplyLabel") &&
       templateRenderer.includes("provisional ? content.totals.provisional.vatText : Core.formatMoney(totals.vat)") &&
       templateRenderer.includes("provisional ? content.totals.provisional.grandText : Core.formatMoney(totals.grand)"),
   "PROVISIONAL_VAT_DISPLAY_CONTRACT: unresolved tax-dependent totals are never presented as confirmed");
@@ -878,6 +881,7 @@ check(skillUi.includes("analyzeImageFile") &&
 console.log("VALID_UNTIL_CONTRACT=PASS");
 console.log("ADDRESS_FIELDS_CONTRACT=PASS");
 console.log("PRINT_LAYOUT_CONTRACT=PASS");
+console.log("FORMAL_PRINT_MARK=PASS");
 console.log("PRINT_READINESS_CONTRACT=PASS");
 console.log("PROVISIONAL_VAT_DISPLAY_CONTRACT=PASS");
 console.log("TEMP_EXCLUSIVE_NOT_PRESENTED_AS_CONFIRMED=YES");

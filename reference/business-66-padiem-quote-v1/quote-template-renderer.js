@@ -42,6 +42,16 @@
     return v || "-";
   }
 
+  function formatIssueDate(value, format) {
+    var raw = String(value == null ? "" : value).trim();
+    if (!raw || format === undefined || format === null || format === "" || format === "iso") return raw;
+    var match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(raw);
+    if (!match) return raw;
+    if (format === "yyyy. mm.") return match[1] + ". " + match[2] + ".";
+    if (format === "yyyy. mm. dd.") return match[1] + ". " + match[2] + ". " + match[3] + ".";
+    return raw;
+  }
+
   var isRule = function (value) { return typeof value === "string" && RULE_PATTERN.test(value); };
   var isHex = function (value) { return typeof value === "string" && HEX_PATTERN.test(value); };
   var isMeasure = function (value) { return typeof value === "string" && MEASURE_PATTERN.test(value); };
@@ -226,10 +236,41 @@
       });
     }
 
-    var senderContact = [
+    var senderContactValue = [
       String(normalizedDraft.sender.phone == null ? "" : normalizedDraft.sender.phone).trim(),
       String(normalizedDraft.sender.email == null ? "" : normalizedDraft.sender.email).trim()
-    ].filter(Boolean).join(content.sender.contactSeparator) || content.fallbackText;
+    ].filter(Boolean).join(content.sender.contactSeparator);
+    var senderContact = senderContactValue
+      ? (String(content.sender.contactPrefix || "") + senderContactValue)
+      : content.fallbackText;
+
+    var recipientCompany = textOrDash(normalizedDraft.recipient.company);
+    if (content.recipient.suffix) recipientCompany += " " + content.recipient.suffix;
+
+    var summaryTerms = [];
+    if (isPlainObject(content.summaryTerms)) {
+      if (isPlainObject(content.summaryTerms.validity)) {
+        summaryTerms.push({
+          label: content.summaryTerms.validity.label,
+          value: content.summaryTerms.validity.valuePrefix +
+            normalizedDraft.meta.validDays +
+            content.summaryTerms.validity.valueSuffix
+        });
+      }
+      if (Array.isArray(content.summaryTerms.rows)) {
+        content.summaryTerms.rows.forEach(function (row) {
+          summaryTerms.push({ label: row.label, value: row.value });
+        });
+      }
+    }
+
+    var supplyLabel = content.totals.supplyLabel;
+    if (!provisional && supplyLabel.indexOf("{firstItemName}") !== -1) {
+      var firstItemName = effectiveItems.length
+        ? String(effectiveItems[0].name == null ? "" : effectiveItems[0].name).trim()
+        : "";
+      supplyLabel = supplyLabel.split("{firstItemName}").join(firstItemName || content.fallbackText);
+    }
 
     return {
       schemaVersion: RENDER_MODEL_SCHEMA_VERSION,
@@ -262,6 +303,8 @@
       })(),
       columns: columns,
       titleText: has("title") ? content.title.text : "",
+      itemsHeadingText: has("items") ? String(content.items.heading || "") : "",
+      summaryTerms: summaryTerms,
       projectNameText: has("project") && content.project && normalizedDraft.meta.projectName
         ? content.project.prefix + normalizedDraft.meta.projectName
         : "",
@@ -270,7 +313,9 @@
         : "",
       meta: {
         quoteNoText: has("meta") ? content.meta.quoteNoPrefix + textOrDash(normalizedDraft.meta.quoteNo) : "",
-        dateText: has("meta") ? content.meta.issueDatePrefix + textOrDash(normalizedDraft.meta.issueDate) : "",
+        dateText: has("meta")
+          ? content.meta.issueDatePrefix + textOrDash(formatIssueDate(normalizedDraft.meta.issueDate, content.meta.issueDateFormat))
+          : "",
         validityText: has("meta")
           ? content.meta.validityPrefix + normalizedDraft.meta.validDays + content.meta.validityUnit
           : "",
@@ -284,13 +329,16 @@
           heading: has("parties") ? content.sender.heading : "",
           company: has("parties") ? textOrDash(normalizedDraft.sender.company) : "",
           rep: has("parties") ? content.sender.repPrefix + textOrDash(normalizedDraft.sender.rep) : "",
+          contactPerson: has("parties") && content.sender.contactPersonPrefix && String(normalizedDraft.sender.contactPerson || "").trim()
+            ? content.sender.contactPersonPrefix + String(normalizedDraft.sender.contactPerson).trim()
+            : "",
           bizNo: has("parties") ? content.sender.bizNoPrefix + textOrDash(normalizedDraft.sender.bizNo) : "",
           address: has("parties") ? textOrDash(normalizedDraft.sender.address) : "",
           contact: has("parties") ? senderContact : ""
         },
         recipient: {
           heading: has("parties") ? content.recipient.heading : "",
-          company: has("parties") ? textOrDash(normalizedDraft.recipient.company) : "",
+          company: has("parties") ? recipientCompany : "",
           person: has("parties") ? content.recipient.personPrefix + textOrDash(normalizedDraft.recipient.person) : "",
           address: has("parties") ? textOrDash(normalizedDraft.recipient.address) : "",
           email: has("parties")
@@ -302,7 +350,7 @@
       detailPages: detailPages,
       totals: {
         subtotalLabel: has("totals")
-          ? (provisional ? content.totals.provisional.subtotalLabel : content.totals.supplyLabel)
+          ? (provisional ? content.totals.provisional.subtotalLabel : supplyLabel)
           : "",
         subtotalText: has("totals") ? Core.formatMoney(provisional ? totals.subtotal : totals.supply) : "",
         vatLabel: has("totals")
@@ -394,10 +442,16 @@
     setText("pvTaxMode", model.meta.taxText);
     setText("pvProjectName", model.projectNameText);
     setText("pvWrittenTotal", model.writtenTotalText);
+    setText("pvItemsHeading", model.itemsHeadingText);
+    setHtml("pvSummaryTerms", (Array.isArray(model.summaryTerms) ? model.summaryTerms : []).map(function (term) {
+      return '<div class="quote-summary-term"><span>' + escapeHtml(term.label) +
+        '</span><strong>' + escapeHtml(term.value) + "</strong></div>";
+    }).join(""));
 
     setText("pvSenderHeading", sender.heading);
     setText("pvSenderCompany", sender.company);
     setText("pvSenderRep", sender.rep);
+    setText("pvSenderContactPerson", sender.contactPerson);
     setText("pvSenderBizNo", sender.bizNo);
     setText("pvSenderAddress", sender.address);
     setText("pvSenderContact", sender.contact);
@@ -457,6 +511,22 @@
         var style = styles.length ? ' style="' + styles.join(";") + '"' : "";
         return "<th" + style + ">" + escapeHtml(column.label) + "</th>";
       }).join("");
+      var formalTitleHead = model.layoutVariant === "formal-grid-v1" && page.titleText
+        ? '<tr class="quote-detail-title-row"><th colspan="' + page.columns.length + '">' +
+          escapeHtml(page.titleText) + "</th></tr>"
+        : "";
+      var standaloneTitle = formalTitleHead
+        ? ""
+        : '<h2 class="quote-detail-title">' + escapeHtml(page.titleText) + "</h2>";
+      var colgroup = formalTitleHead
+        ? "<colgroup>" + page.columns.map(function (column) {
+            var style = column.width ? ' style="width:' + escapeHtml(column.width) + '"' : "";
+            return "<col" + style + ">";
+          }).join("") + "</colgroup>"
+        : "";
+      var headGroup = formalTitleHead
+        ? "<thead>" + formalTitleHead + "</thead><tbody><tr class=\"quote-detail-column-row\">" + head + "</tr>"
+        : "<thead><tr>" + head + "</tr></thead><tbody>";
       var lastSection = null;
       var body = page.rows.map(function (row) {
         var sectionHtml = "";
@@ -481,8 +551,8 @@
         ? ' data-layout-variant="' + escapeHtml(model.layoutVariant) + '"'
         : "";
       return '<section class="quote-paper quote-detail-page" data-detail-group="' + escapeHtml(page.id) + '"' + layoutAttr + '>' +
-        '<h2 class="quote-detail-title">' + escapeHtml(page.titleText) + "</h2>" +
-        '<table class="quote-table"><thead><tr>' + head + "</tr></thead><tbody>" + body + "</tbody></table>" +
+        standaloneTitle +
+        '<table class="quote-table">' + colgroup + headGroup + body + "</tbody></table>" +
         '<div class="quote-detail-subtotal"><span>' + escapeHtml(page.subtotalLabel) +
         '</span><strong>' + escapeHtml(page.subtotalText) + "</strong></div>" +
         (page.finalLabel
@@ -522,6 +592,7 @@
     escapeHtml: escapeHtml,
     buildStyleVariables: buildStyleVariables,
     buildPageRule: buildPageRule,
+    formatIssueDate: formatIssueDate,
     buildRenderModel: buildRenderModel,
     applyRenderModel: applyRenderModel
   };

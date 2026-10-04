@@ -8,7 +8,7 @@
  *   - cannot declare a device ONLINE
  *   - cannot approve anything (P01 stays in the runner stack)
  *   - cannot spawn a process, read a file, or reach the network
- *   - only calls the six allowlisted preload methods
+ *   - only calls the fixed allowlisted preload methods
  *   - stores only a display language, a theme and a view mode, all non-sensitive
  *
  * #3165 changes what the user reads and where controls sit, never what the shell
@@ -43,10 +43,14 @@ import {
 } from './preferences.js';
 import type {
   BoundedLogResponse,
+  CanonicalConversationDetail,
+  CanonicalConversationListResponse,
   DeviceLifecycleState,
   PairingDeepLinkResponse,
   RunnerHealthResponse,
   ShellStatus,
+  WorkspaceListResponse,
+  WorkspaceRootResponse,
 } from './types.js';
 
 export interface ShellViewState {
@@ -54,6 +58,10 @@ export interface ShellViewState {
   readonly health: RunnerHealthResponse | null;
   readonly pairing: PairingDeepLinkResponse | null;
   readonly log: BoundedLogResponse | null;
+  readonly workspaceRoot: WorkspaceRootResponse | null;
+  readonly workspaceListing: WorkspaceListResponse | null;
+  readonly conversationList: CanonicalConversationListResponse | null;
+  readonly selectedConversation: CanonicalConversationDetail | null;
   readonly notice: string | null;
   /** Which action produced `notice`. The raw reason is a diagnostic. */
   readonly noticeAction: ShellNoticeAction | null;
@@ -69,6 +77,10 @@ export const INITIAL_SHELL_VIEW_STATE: ShellViewState = Object.freeze({
   health: null,
   pairing: null,
   log: null,
+  workspaceRoot: null,
+  workspaceListing: null,
+  conversationList: null,
+  selectedConversation: null,
   notice: null,
   noticeAction: null,
   error: null,
@@ -80,6 +92,10 @@ export interface ShellActions {
   readonly start: () => Promise<void>;
   readonly stop: () => Promise<void>;
   readonly submitPairingDeepLink: (deepLink: string) => Promise<void>;
+  readonly chooseWorkspaceRoot: () => Promise<void>;
+  readonly openWorkspaceDirectory: (relativePath: string) => Promise<void>;
+  readonly clearWorkspaceRoot: () => Promise<void>;
+  readonly selectConversation: (conversationId: string) => Promise<void>;
 }
 
 export interface ShellBridge {
@@ -151,9 +167,68 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
     [api, refresh],
   );
 
+  const openWorkspaceDirectory = useCallback(
+    async (relativePath: string): Promise<void> => {
+      if (!api) return;
+      const listing = await api.listWorkspaceDirectory(relativePath);
+      setState((prev) => ({
+        ...prev,
+        workspaceRoot: listing.root,
+        workspaceListing: listing,
+      }));
+    },
+    [api],
+  );
+
+  const chooseWorkspaceRoot = useCallback(async (): Promise<void> => {
+    if (!api) return;
+    const root = await api.chooseWorkspaceRoot();
+    setState((prev) => ({ ...prev, workspaceRoot: root }));
+    if (root.selected) {
+      const listing = await api.listWorkspaceDirectory('');
+      setState((prev) => ({
+        ...prev,
+        workspaceRoot: listing.root,
+        workspaceListing: listing,
+      }));
+    }
+  }, [api]);
+
+  const clearWorkspaceRoot = useCallback(async (): Promise<void> => {
+    if (!api) return;
+    const root = await api.clearWorkspaceRoot();
+    setState((prev) => ({
+      ...prev,
+      workspaceRoot: root,
+      workspaceListing: null,
+    }));
+  }, [api]);
+
+  const selectConversation = useCallback(
+    async (conversationId: string): Promise<void> => {
+      if (!api) return;
+      const result = await api.readConversation(conversationId);
+      setState((prev) => ({
+        ...prev,
+        selectedConversation: result.ok ? result.conversation : null,
+      }));
+    },
+    [api],
+  );
+
   useEffect(() => {
     if (!api) return;
     void refresh();
+    void api.listWorkspaceDirectory('').then((listing) => {
+      setState((prev) => ({
+        ...prev,
+        workspaceRoot: listing.root,
+        workspaceListing: listing.ok ? listing : prev.workspaceListing,
+      }));
+    });
+    void api.listConversations().then((conversationList) => {
+      setState((prev) => ({ ...prev, conversationList }));
+    });
     const timer = setInterval(() => void refresh(), 5000);
     return () => clearInterval(timer);
   }, [api, refresh]);
@@ -161,7 +236,20 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
   if (!api) {
     return { error: state.error ?? 'connecting to the local shell bridge…' };
   }
-  return { api, state, actions: { refresh, start, stop, submitPairingDeepLink } };
+  return {
+    api,
+    state,
+    actions: {
+      refresh,
+      start,
+      stop,
+      submitPairingDeepLink,
+      chooseWorkspaceRoot,
+      openWorkspaceDirectory,
+      clearWorkspaceRoot,
+      selectConversation,
+    },
+  };
 }
 
 export interface UiPreferencesController {
@@ -330,6 +418,179 @@ export function RunnerPanel(props: {
           <dt>{t('readiness.lastExitCode')}</dt>
           <dd>{String(health?.lastExitCode ?? '-')}</dd>
         </dl>
+      ) : null}
+    </section>
+  );
+}
+
+function parentWorkspacePath(relativePath: string): string {
+  const parts = relativePath.split('/').filter(Boolean);
+  parts.pop();
+  return parts.join('/');
+}
+
+export function WorkspacePanel(props: {
+  root: WorkspaceRootResponse | null;
+  listing: WorkspaceListResponse | null;
+  actions: ShellActions;
+  locale: ShellLocale;
+  advanced: boolean;
+}): ReactElement {
+  const { root, listing, actions, locale, advanced } = props;
+  const t = (key: ShellStringKey): string => translate(locale, key);
+  const selected = root?.selected === true;
+  const directory = listing?.directory ?? '';
+
+  return (
+    <section className="panel workspace-panel">
+      <div className="workspace-heading">
+        <div>
+          <h2>{t('workspace.title')}</h2>
+          <p className="subtitle">{t('workspace.explainer')}</p>
+        </div>
+        <div className="row">
+          <button className={selected ? '' : 'primary'} onClick={() => void actions.chooseWorkspaceRoot()}>
+            {selected ? t('workspace.change') : t('workspace.choose')}
+          </button>
+          {selected ? (
+            <button onClick={() => void actions.clearWorkspaceRoot()}>{t('workspace.clear')}</button>
+          ) : null}
+        </div>
+      </div>
+
+      {!selected ? <p className="guidance">{t('workspace.empty')}</p> : null}
+
+      {selected ? (
+        <>
+          <div className="workspace-location">
+            <strong>{root?.rootName}</strong>
+            {directory ? <span> / {directory}</span> : null}
+          </div>
+          {advanced && root?.rootPath ? (
+            <p className="workspace-path" data-advanced="true">{root.rootPath}</p>
+          ) : null}
+          <div className="row workspace-nav">
+            <button disabled={directory === ''} onClick={() => void actions.openWorkspaceDirectory(parentWorkspacePath(directory))}>
+              {t('workspace.up')}
+            </button>
+            <button disabled={directory === ''} onClick={() => void actions.openWorkspaceDirectory('')}>
+              {t('workspace.root')}
+            </button>
+          </div>
+          {listing && !listing.ok ? (
+            <p className="workspace-error">{t('workspace.unavailable')}</p>
+          ) : null}
+          <ul className="workspace-list">
+            {(listing?.entries ?? []).map((entry) => (
+              <li key={entry.relativePath} data-kind={entry.kind}>
+                {entry.kind === 'directory' ? (
+                  <button className="workspace-entry" onClick={() => void actions.openWorkspaceDirectory(entry.relativePath)}>
+                    <span aria-hidden="true">▸</span>
+                    <span>{entry.name}</span>
+                  </button>
+                ) : (
+                  <span className="workspace-entry workspace-entry-static">
+                    <span aria-hidden="true">{entry.kind === 'file' ? '·' : '↗'}</span>
+                    <span>{entry.name}</span>
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+          {listing?.ok && listing.entries.length === 0 ? (
+            <p className="guidance">{t('workspace.noEntries')}</p>
+          ) : null}
+          {listing?.truncated ? <p className="notice">{t('workspace.truncated')}</p> : null}
+        </>
+      ) : null}
+    </section>
+  );
+}
+
+/**
+ * B2a/B2b conversation workspace surface.
+ *
+ * This is deliberately a fail-closed presentation surface. It renders no
+ * composer and no local transcript: what it shows is a projection of the
+ * canonical Padiem conversation authority (apps/padiem-chat /api/conversations)
+ * fetched through the main-owned bounded client. The Desktop mints no
+ * conversation id and keeps no conversation store — if the canonical source is
+ * unavailable or a payload is malformed, the surface stays at
+ * `data-conversation-source="canonical-required"` instead of substituting a
+ * temporary desktop conversation.
+ */
+export function ConversationWorkspacePanel(props: {
+  locale: ShellLocale;
+  advanced: boolean;
+  conversations: CanonicalConversationListResponse | null;
+  selectedConversation: CanonicalConversationDetail | null;
+  onSelectConversation: (conversationId: string) => void;
+}): ReactElement {
+  const { locale, advanced, conversations, selectedConversation } = props;
+  const t = (key: ShellStringKey): string => translate(locale, key);
+  const canonical = conversations !== null && conversations.ok;
+  const source = canonical ? 'canonical' : 'canonical-required';
+  return (
+    <section
+      className="conversation-workspace"
+      data-conversation-source={source}
+      aria-labelledby="desktop-conversation-title"
+    >
+      <div className="conversation-workspace-header">
+        <h2 id="desktop-conversation-title">{t('desktop.conversationTitle')}</h2>
+        <span className="conversation-source-dot" aria-hidden="true" />
+      </div>
+      {canonical && conversations.conversations.length > 0 ? (
+        <div className="conversation-canonical-body">
+          <nav className="conversation-list" aria-label={t('desktop.conversationListLabel')}>
+            {conversations.conversations.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={
+                  selectedConversation?.id === item.id
+                    ? 'conversation-list-entry selected'
+                    : 'conversation-list-entry'
+                }
+                data-conversation-id={item.id}
+                onClick={() => props.onSelectConversation(item.id)}
+              >
+                {item.title || t('desktop.conversationUntitled')}
+              </button>
+            ))}
+          </nav>
+          <div className="conversation-transcript">
+            {selectedConversation === null ? (
+              <p className="conversation-transcript-note">{t('desktop.conversationSelectHint')}</p>
+            ) : (
+              selectedConversation.messages.map((message, index) => (
+                <article
+                  key={`${selectedConversation.id}-${index}`}
+                  className="conversation-message"
+                  data-role={message.role}
+                >
+                  <p>{message.content}</p>
+                </article>
+              ))
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="conversation-empty-state">
+          <div className="conversation-mark" aria-hidden="true">P</div>
+          <h3>{t('desktop.conversationPendingTitle')}</h3>
+          <p>{t('desktop.conversationPendingBody')}</p>
+          {advanced ? (
+            <p className="conversation-authority-note" data-advanced="true">
+              {t('desktop.conversationAuthorityNote')}
+            </p>
+          ) : null}
+        </div>
+      )}
+      {advanced ? (
+        <p className="conversation-authority-note" data-advanced="true">
+          {t('desktop.conversationAuthorityNote')}
+        </p>
       ) : null}
     </section>
   );
@@ -509,7 +770,7 @@ export function ShellView(props: {
       data-view={preferences.view}
       data-theme-preference={preferences.theme}
     >
-      <header className="row">
+      <header className="shell-header">
         <div>
           <h1>{t('app.title')}</h1>
           <p className="subtitle">{t('app.tagline')}</p>
@@ -527,27 +788,52 @@ export function ShellView(props: {
           onClose={props.onCloseSettings}
         />
       ) : null}
-      <ConnectionPanel
-        status={state.status}
-        busy={state.busy}
-        actions={actions}
-        locale={locale}
-        advanced={visibility.developerFacts}
-      />
-      <RunnerPanel
-        status={state.status}
-        health={state.health}
-        busy={state.busy}
-        actions={actions}
-        locale={locale}
-        advanced={visibility.developerFacts}
-      />
-      <PairingPanel
-        pairing={state.pairing}
-        locale={locale}
-        advanced={visibility.rawPairingSeamText}
-      />
-      <LogPanel log={state.log} locale={locale} advanced={visibility.boundedLogInternals} />
+      <div className="workspace-shell-layout" data-desktop-workspace="stage-b">
+        <aside className="workspace-rail workspace-project-rail">
+          <WorkspacePanel
+            root={state.workspaceRoot}
+            listing={state.workspaceListing}
+            actions={actions}
+            locale={locale}
+            advanced={visibility.developerFacts}
+          />
+        </aside>
+        <section className="workspace-main">
+          <ConversationWorkspacePanel
+            locale={locale}
+            advanced={visibility.developerFacts}
+            conversations={state.conversationList}
+            selectedConversation={state.selectedConversation}
+            onSelectConversation={(conversationId) => void actions.selectConversation(conversationId)}
+          />
+        </section>
+        <aside className="workspace-rail workspace-local-rail">
+          <div className="workspace-rail-title">{t('desktop.localTitle')}</div>
+          <ConnectionPanel
+            status={state.status}
+            busy={state.busy}
+            actions={actions}
+            locale={locale}
+            advanced={visibility.developerFacts}
+          />
+          <RunnerPanel
+            status={state.status}
+            health={state.health}
+            busy={state.busy}
+            actions={actions}
+            locale={locale}
+            advanced={visibility.developerFacts}
+          />
+        </aside>
+      </div>
+      <div className="advanced-diagnostics-grid">
+        <PairingPanel
+          pairing={state.pairing}
+          locale={locale}
+          advanced={visibility.rawPairingSeamText}
+        />
+        <LogPanel log={state.log} locale={locale} advanced={visibility.boundedLogInternals} />
+      </div>
       {state.notice ? (
         <p className="notice">
           {/* The runner reasons are raw diagnostics ("headless runner started as

@@ -15,6 +15,8 @@
       idle: "내용을 입력하면 배정된 견적서 양식으로 바로 만듭니다.",
       working: "견적 내용을 정리하고 있습니다.",
       missing: "거래처와 품목·수량·단가를 조금 더 알려 주세요.",
+      companyIdentityMissing: "견적서에 넣을 회사명을 확인해 주세요.",
+      companyDefaultsMissing: "회사 기본 유효기간을 확인해 주세요.",
       ready: "견적서가 준비되었습니다. 아래에서 확인하거나 PDF로 저장하세요.",
       failed: "견적서를 만들지 못했습니다. 입력 내용을 확인해 주세요."
     },
@@ -30,6 +32,8 @@
       idle: "Enter the changing values and your assigned template will be used.",
       working: "Preparing the quote values.",
       missing: "Please add the customer and item, quantity, and unit price.",
+      companyIdentityMissing: "Please confirm the company name to use on the quote.",
+      companyDefaultsMissing: "Please confirm your company's default quote validity period.",
       ready: "Your quote is ready. Review it below or save it as PDF.",
       failed: "The quote could not be created. Check your request and try again."
     }
@@ -73,6 +77,36 @@
       typeof item.skill_name === "string" &&
       item.skill_name.trim()
     )).slice(0, 20);
+  }
+
+  function companyProfileForRender(profile) {
+    if (profile === null || profile === undefined) {
+      return { ok: true, code: "absent", profile: null };
+    }
+    if (typeof profile !== "object" || Array.isArray(profile)) {
+      return { ok: false, code: "invalid", profile: null };
+    }
+    if (typeof profile.company !== "string" || !profile.company.trim()) {
+      return { ok: false, code: "missing_company", profile: null };
+    }
+    if (!Number.isInteger(profile.defaultValidityDays) || profile.defaultValidityDays < 0 || profile.defaultValidityDays > 3650) {
+      return { ok: false, code: "missing_validity", profile: null };
+    }
+    return {
+      ok: true,
+      code: "ready",
+      profile: {
+        company: profile.company,
+        representative: profile.representative,
+        contactPerson: profile.contactPerson,
+        businessNumber: profile.businessNumber,
+        address: profile.address,
+        phone: profile.phone,
+        email: profile.email,
+        defaultValidityDays: profile.defaultValidityDays,
+        defaultTaxMode: profile.defaultTaxMode
+      }
+    };
   }
 
   function el(tag, className, text) {
@@ -395,6 +429,15 @@
       const detail = await readJson("/api/b66/saved-skills/" + encodeURIComponent(savedSkillId));
       const skill = detail.data && detail.data.saved_skill && detail.data.saved_skill.skill;
       if (!detail.response.ok || !skill || typeof skill !== "object") throw new Error("skill_unavailable");
+
+      const profileResult = companyProfileForRender(interpreted.data.company_profile);
+      if (!profileResult.ok) {
+        setStatus(
+          profileResult.code === "missing_company" ? c.companyIdentityMissing : c.companyDefaultsMissing,
+          "missing"
+        );
+        return;
+      }
       const assets = await loadPrivateAssets(skill);
 
       await waitForFrame(frame, runtime.embedUrl);
@@ -405,7 +448,8 @@
         requestId: id,
         skill,
         candidate,
-        assets
+        assets,
+        companyProfile: profileResult.profile
       }, runtime.origin);
     } catch (_) {
       currentRequestId = null;

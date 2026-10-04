@@ -114,3 +114,55 @@ def test_load_calendar_grants_raises_on_binding_exception() -> None:
     with pytest.raises(ServiceContractError) as exc_info:
         run(store.load_calendar_grants())
     assert exc_info.value.code == "connector_grants_unavailable"
+
+
+class MutableFakeD1Binding(FakeD1Binding):
+    def run(self):
+        if self._fail:
+            raise RuntimeError("d1 transport failure")
+        params = self.params[-1]
+        if len(params) == 9:
+            app_id, agent_id, connector_id, binding_ref, actor_ref, scopes, capabilities, now, _ = params
+            row = {
+                "app_id": app_id,
+                "canonical_agent_id": agent_id,
+                "connector_id": connector_id,
+                "binding_ref": binding_ref,
+                "actor_ref": actor_ref,
+                "granted_scopes_json": scopes,
+                "granted_capabilities_json": capabilities,
+                "active": 1,
+                "created_at": now,
+                "updated_at": now,
+            }
+            self._rows = [
+                existing
+                for existing in self._rows
+                if not (
+                    existing.get("app_id") == app_id
+                    and existing.get("connector_id") == connector_id
+                )
+            ]
+            self._rows.append(row)
+        return {"success": True}
+
+
+def test_activate_calendar_read_grant_upserts_exact_reviewed_grant() -> None:
+    binding = MutableFakeD1Binding()
+    store = CloudflareD1ConnectorGrantStore(binding)
+
+    grant = run(
+        store.activate_calendar_read_grant(
+            binding_ref=BINDING_REF,
+            actor_ref=ACTOR_REF,
+        )
+    )
+
+    assert grant.app_id == CALENDAR_REFERENCE_APP_ID
+    assert grant.canonical_agent_id == CALENDAR_AGENT_ID
+    assert grant.binding_ref == BINDING_REF
+    assert grant.actor_ref == ACTOR_REF
+    assert grant.granted_capabilities == (CalendarCapability.READ,)
+    assert "ON CONFLICT(app_id, connector_id) DO UPDATE" in binding.sqls[0]
+    assert BINDING_REF not in binding.sqls[0]
+    assert ACTOR_REF not in binding.sqls[0]

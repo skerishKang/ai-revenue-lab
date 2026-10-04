@@ -81,6 +81,25 @@ export type ShellStringKey =
   | 'readiness.lastExitCode'
   | 'device.revision'
   | 'device.truthOwner'
+  | 'workspace.title'
+  | 'workspace.explainer'
+  | 'workspace.choose'
+  | 'workspace.change'
+  | 'workspace.clear'
+  | 'workspace.empty'
+  | 'workspace.up'
+  | 'workspace.root'
+  | 'workspace.unavailable'
+  | 'workspace.noEntries'
+  | 'workspace.truncated'
+  | 'desktop.conversationTitle'
+  | 'desktop.conversationPendingTitle'
+  | 'desktop.conversationPendingBody'
+  | 'desktop.conversationAuthorityNote'
+  | 'desktop.conversationListLabel'
+  | 'desktop.conversationUntitled'
+  | 'desktop.conversationSelectHint'
+  | 'desktop.localTitle'
   | 'diagnostics.title'
   | 'diagnostics.body'
   | 'diagnostics.seamIdle'
@@ -137,6 +156,25 @@ const KO: Record<ShellStringKey, string> = {
   'readiness.lastExitCode': '마지막 종료 코드',
   'device.revision': '리비전',
   'device.truthOwner': '기준 권위',
+  'workspace.title': '작업 폴더',
+  'workspace.explainer': '이 컴퓨터에서 Padiem이 작업할 프로젝트 폴더를 선택합니다.',
+  'workspace.choose': '폴더 선택',
+  'workspace.change': '폴더 변경',
+  'workspace.clear': '선택 해제',
+  'workspace.empty': '폴더를 선택하면 파일과 하위 폴더를 안전하게 탐색할 수 있습니다.',
+  'workspace.up': '상위 폴더',
+  'workspace.root': '처음으로',
+  'workspace.unavailable': '이 폴더를 지금 열 수 없습니다.',
+  'workspace.noEntries': '이 폴더는 비어 있습니다.',
+  'workspace.truncated': '항목이 많아 일부만 표시했습니다.',
+  'desktop.conversationTitle': 'Claw',
+  'desktop.conversationPendingTitle': '같은 대화를 데스크톱에서 이어서 여는 연결을 준비 중입니다.',
+  'desktop.conversationPendingBody': '이 화면은 새 대화를 만들지 않습니다. Padiem Web의 기존 대화를 그대로 가져오는 연결이 확인되면 여기에서 이어집니다.',
+  'desktop.conversationAuthorityNote': '기존 Padiem Chat/Claw 대화가 기준입니다. Desktop은 별도 대화를 만들지 않습니다.',
+  'desktop.conversationListLabel': '기존 대화',
+  'desktop.conversationUntitled': '제목 없는 대화',
+  'desktop.conversationSelectHint': '왼쪽에서 이어볼 대화를 선택하면 기존 대화가 그대로 표시됩니다.',
+  'desktop.localTitle': '이 컴퓨터',
   'diagnostics.title': '연결 진단',
   'diagnostics.body': 'Padiem 웹에서 연결 요청을 보내면 이 컴퓨터가 자동으로 연결됩니다.',
   'diagnostics.seamIdle': '이 세션에서 제출된 딥링크가 없습니다.',
@@ -194,6 +232,25 @@ const EN: Record<ShellStringKey, string> = {
   'readiness.lastExitCode': 'Last exit code',
   'device.revision': 'revision',
   'device.truthOwner': 'canonical truth owner',
+  'workspace.title': 'Work folder',
+  'workspace.explainer': 'Choose the project folder Padiem may work with on this computer.',
+  'workspace.choose': 'Choose folder',
+  'workspace.change': 'Change folder',
+  'workspace.clear': 'Clear',
+  'workspace.empty': 'Choose a folder to browse its files and subfolders safely.',
+  'workspace.up': 'Up',
+  'workspace.root': 'Root',
+  'workspace.unavailable': 'This folder cannot be opened right now.',
+  'workspace.noEntries': 'This folder is empty.',
+  'workspace.truncated': 'Only the first items are shown.',
+  'desktop.conversationTitle': 'Claw',
+  'desktop.conversationPendingTitle': 'Same-conversation continuity is being prepared for Desktop.',
+  'desktop.conversationPendingBody': 'This surface does not create another conversation. It will continue the existing Padiem Web conversation once the canonical projection is connected.',
+  'desktop.conversationAuthorityNote': 'The existing Padiem Chat/Claw conversation remains canonical. Desktop does not create another conversation.',
+  'desktop.conversationListLabel': 'Existing conversations',
+  'desktop.conversationUntitled': 'Untitled conversation',
+  'desktop.conversationSelectHint': 'Pick a conversation on the left to see the same existing conversation here.',
+  'desktop.localTitle': 'This computer',
   'diagnostics.title': 'Connection diagnostics',
   'diagnostics.body': 'Send a connection request from Padiem Web and this computer connects itself.',
   'diagnostics.seamIdle': 'No deep link submitted in this session.',

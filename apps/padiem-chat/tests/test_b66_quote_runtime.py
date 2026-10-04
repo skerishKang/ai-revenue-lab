@@ -452,6 +452,43 @@ def test_normalizer_accepts_variable_fields_and_rejects_calculated_or_template_o
         )
 
 
+
+def test_normalizer_accepts_only_bounded_json_fence_numeric_text_and_tax_case():
+    fenced = """```json
+{"recipient":{"company":"Synthetic Buyer"},"items":[{"name":"Item A","qty":"2","unitPrice":"1000"}],"taxMode":"exclusive","missing":[]}
+```"""
+    projection = normalize_conversation_output(fenced)
+    safe = projection.safe_dict()
+    assert safe["recipient"]["company"] == "Synthetic Buyer"
+    assert safe["items"][0]["qty"] == 2
+    assert safe["items"][0]["unitPrice"] == 1000
+    assert safe["taxMode"] == "EXCLUSIVE"
+
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output(
+            "Here is the JSON:\n" + fenced
+        )
+
+    with pytest.raises(B66QuoteConversationError, match="invalid_number"):
+        normalize_conversation_output(
+            {
+                "recipient": {"company": "Synthetic Buyer"},
+                "items": [{"name": "Item A", "qty": "2 units", "unitPrice": "1000"}],
+                "missing": [],
+            }
+        )
+
+    with pytest.raises(B66QuoteConversationError, match="invalid_tax_mode"):
+        normalize_conversation_output(
+            {
+                "recipient": {"company": "Synthetic Buyer"},
+                "items": [{"name": "Item A", "qty": "2", "unitPrice": "1000"}],
+                "taxMode": "exclusive plus tax",
+                "missing": [],
+            }
+        )
+
+
 class _FakeB14:
     def __init__(self):
         self.calls = []
