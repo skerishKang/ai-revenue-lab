@@ -141,13 +141,18 @@ check(html.includes(">로그인</button>") && html.includes('id="googleSigninBut
       !html.includes("Padiem") && !html.includes("파디엠") &&
       !account.includes("Padiem 계정") && !account.includes("Padiem 로그인"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: standalone surface keeps neutral login branding");
-check(html.includes('id="padiemLoginForm"') &&
+check(html.includes('id="padiemLoginForm" hidden') &&
+      html.includes('id="padiemAuthDivider" hidden') &&
       html.includes('id="padiemLoginIdentifier"') &&
       html.includes('id="padiemLoginPassword"') &&
       html.includes('id="padiemLoginSubmit"') &&
+      account.includes('methods.password === true') &&
+      account.includes('form.hidden = !state.methods.password') &&
+      account.includes('submit.disabled = !state.methods.password') &&
+      account.includes('if (!passwordLoginAvailable())') &&
       account.includes('api("/auth/password/login"') &&
       account.includes('loginForm.addEventListener("submit", passwordSignIn)'),
-  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: standalone B66 exposes the existing shared password-login route");
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: standalone password login is status-gated and reuses the shared route");
 check(account.includes("/api/padiem/auth/google/start") &&
       worker.includes('"/api/padiem/auth/google/start"') &&
       worker.includes('"/api/padiem/auth/google/callback"') &&

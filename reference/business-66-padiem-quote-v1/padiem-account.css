@@ -127,6 +127,8 @@
   width: 40px; height: 40px; border: 1px solid #d0d5dd; border-radius: 10px; background: #fff;
 }
 .padiem-auth-form { display: grid; gap: 10px; margin-top: 18px; }
+/* class display 는 UA [hidden] 규칙을 이기므로, 미지원 메서드는 숨김 상태로 고정한다. */
+.padiem-auth-form[hidden], .padiem-auth-divider[hidden] { display: none; }
 .padiem-auth-form label { display: grid; gap: 5px; color: #475467; font-size: 12px; }
 .padiem-auth-form input { min-height: 44px; }
 .padiem-auth-form button {
