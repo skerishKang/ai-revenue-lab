@@ -54,33 +54,34 @@ def _error(status_code: int, code: str, message: str) -> JSONResponse:
     )
 
 
-async def _resolve_memory_workspace(request: Request, user_id: str) -> str:
-    """Bind workspace from canonical tenant authority with an owner-derived fallback.
+async def _resolve_memory_workspace(request: Request, user_id: str) -> str | None:
+    """Resolve the server-owned workspace without failing open across authorities.
 
-    When the canonical session resolves, the tenant_id is the workspace. When
-    the canonical path is unavailable (no shadow/authority in this deployment),
-    the workspace falls back to a server-derived per-owner value. Callers can
-    never supply or override it.
+    The owner-derived namespace is a compatibility path only for deployments
+    where both canonical identity components are genuinely absent. Once either
+    component is configured, partial configuration, resolution failure, or a
+    missing tenant is an unavailable authority verdict and memory I/O must stop.
     """
-    tenant_id: str | None = None
+    if not auth_ready(request):
+        return None
+    shadow_store = getattr(request.app.state, "identity_shadow_store", None)
+    authority = getattr(request.app.state, "control_plane_identity_authority", None)
+    if shadow_store is None and authority is None:
+        return f"owner:{user_id}"
+    if shadow_store is None or authority is None:
+        return None
     try:
-        if auth_ready(request):
-            shadow_store = getattr(request.app.state, "identity_shadow_store", None)
-            authority = getattr(request.app.state, "control_plane_identity_authority", None)
-            if shadow_store is not None and authority is not None:
-                session = await resolve_refreshed_session(
-                    authority=authority,
-                    store=shadow_store,
-                    product_user_id=user_id,
-                )
-                candidate = getattr(session, "tenant_id", None)
-                if isinstance(candidate, str) and candidate:
-                    tenant_id = candidate
+        session = await resolve_refreshed_session(
+            authority=authority,
+            store=shadow_store,
+            product_user_id=user_id,
+        )
     except Exception:
-        tenant_id = None
-    if tenant_id:
-        return tenant_id
-    return f"owner:{user_id}"
+        return None
+    candidate = getattr(session, "tenant_id", None)
+    if not isinstance(candidate, str) or not candidate.strip():
+        return None
+    return candidate
 
 
 def _require_owner(request: Request) -> str | None:
@@ -138,6 +139,8 @@ async def claw_memory_approve(request: Request) -> JSONResponse:
     if store is None or getattr(store, "approve_memory", None) is None:
         return _error(503, "approved_memory_unavailable", "승인 메모리를 사용할 수 없습니다.")
     workspace_id = await _resolve_memory_workspace(request, uid)
+    if workspace_id is None:
+        return _error(503, "approved_memory_authority_unavailable", "메모리 작업 권한을 확인할 수 없습니다.")
     try:
         outcome = store.approve_memory(user_id=uid, workspace_id=workspace_id, proposal=proposal)
         if inspect.isawaitable(outcome):
@@ -182,6 +185,8 @@ async def claw_memory_list(request: Request) -> JSONResponse:
     if limit < 1:
         return _error(400, "invalid_limit", "limit 는 1 이상이어야 합니다.")
     workspace_id = await _resolve_memory_workspace(request, uid)
+    if workspace_id is None:
+        return _error(503, "approved_memory_authority_unavailable", "메모리 작업 권한을 확인할 수 없습니다.")
     try:
         memories = list_fn(user_id=uid, workspace_id=workspace_id, limit=limit)
         if inspect.isawaitable(memories):
@@ -207,6 +212,8 @@ async def claw_memory_detail(request: Request) -> JSONResponse:
     if get_fn is None:
         return _error(503, "approved_memory_unavailable", "승인 메모리를 사용할 수 없습니다.")
     workspace_id = await _resolve_memory_workspace(request, uid)
+    if workspace_id is None:
+        return _error(503, "approved_memory_authority_unavailable", "메모리 작업 권한을 확인할 수 없습니다.")
     try:
         memory = get_fn(user_id=uid, workspace_id=workspace_id, memory_id=memory_id)
         if inspect.isawaitable(memory):
