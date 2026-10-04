@@ -5,12 +5,14 @@ import {
   CanonicalConversationController,
 } from '../src/conversation/canonical-conversation.js';
 import {
+  CANONICAL_CHAT_ORIGIN,
   createDesktopCanonicalConversationPort,
   createDesktopConversationHttpTransport,
   DesktopAuthenticatedCanonicalConversationPort,
   DEVICE_SESSION_BINDING_REF_HEADER,
   DEVICE_SESSION_CREDENTIAL_HEADER,
   DEVICE_SESSION_ID_HEADER,
+  MAX_RESPONSE_JSON_BYTES,
   noDeviceSessionMaterialYet,
   validateDeviceSessionMaterial,
 } from '../src/conversation/desktop-canonical-conversation-port.js';
@@ -223,7 +225,7 @@ test('#3436 B2c the production transport issues GET only with the closed headers
   }) as unknown as typeof fetch;
 
   const transport = createDesktopConversationHttpTransport({
-    baseUrl: 'https://chat.example.test',
+    baseUrl: CANONICAL_CHAT_ORIGIN,
     fetchImpl,
   });
   const payload = await transport.listConversations(MATERIAL);
@@ -233,7 +235,7 @@ test('#3436 B2c the production transport issues GET only with the closed headers
   const request = requests[0];
   assert.ok(request, 'the transport must have issued exactly one request');
   assert.equal(request.init.method, 'GET');
-  assert.equal(request.input, 'https://chat.example.test/api/desktop/conversations');
+  assert.equal(request.input, `${CANONICAL_CHAT_ORIGIN}/api/desktop/conversations`);
   const headers = new Headers(request.init.headers as HeadersInit);
   assert.equal(headers.get('accept'), 'application/json');
   assert.equal(headers.get(DEVICE_SESSION_ID_HEADER), MATERIAL.sessionId);
@@ -250,10 +252,110 @@ test('#3436 B2c the production transport issues GET only with the closed headers
   // A non-200 answer is a refusal, never a projection.
   const refusingFetch = (async () => new Response('no', { status: 401 })) as unknown as typeof fetch;
   const refusingTransport = createDesktopConversationHttpTransport({
-    baseUrl: 'https://chat.example.test',
+    baseUrl: CANONICAL_CHAT_ORIGIN,
     fetchImpl: refusingFetch,
   });
   await assert.rejects(refusingTransport.listConversations(MATERIAL), /401/);
+});
+
+test('#3483 credential-bearing transport accepts only the reviewed canonical Chat origin', () => {
+  let calls = 0;
+  const fetchImpl = (async () => {
+    calls += 1;
+    return new Response('{}', { status: 200 });
+  }) as unknown as typeof fetch;
+
+  for (const bad of [
+    'http://chat.padiem.net',
+    'https://chat.padiem.net.evil.example',
+    'https://evil.example',
+    'https://chat.padiem.net:444',
+    'https://chat.padiem.net/path',
+    'https://chat.padiem.net?next=evil',
+    'https://chat.padiem.net#fragment',
+    'https://user@chat.padiem.net',
+    'not-a-url',
+  ]) {
+    assert.throws(
+      () => createDesktopConversationHttpTransport({ baseUrl: bad, fetchImpl }),
+      /canonical Chat base URL/,
+      bad,
+    );
+  }
+  assert.equal(calls, 0);
+
+  const unconfigured = createDesktopCanonicalConversationPort({
+    chatBaseUrl: 'https://evil.example',
+    materialProvider: materialProviding(MATERIAL),
+    fetchImpl,
+  });
+  assert.equal(unconfigured.configured, false);
+  assert.equal(calls, 0);
+
+  assert.doesNotThrow(() =>
+    createDesktopConversationHttpTransport({
+      baseUrl: `${CANONICAL_CHAT_ORIGIN}/`,
+      fetchImpl,
+    }),
+  );
+});
+
+test('#3483 non-200 responses are refused before their body is touched', async () => {
+  let bodyReads = 0;
+  const response = {
+    status: 401,
+    headers: new Headers(),
+    get body() {
+      bodyReads += 1;
+      throw new Error('body must not be read');
+    },
+  } as unknown as Response;
+  const transport = createDesktopConversationHttpTransport({
+    baseUrl: CANONICAL_CHAT_ORIGIN,
+    fetchImpl: (async () => response) as unknown as typeof fetch,
+  });
+
+  await assert.rejects(transport.listConversations(MATERIAL), /401/);
+  assert.equal(bodyReads, 0);
+});
+
+test('#3483 canonical conversation responses are byte-bounded before buffering', async () => {
+  let oversizedBodyReads = 0;
+  const declaredOversize = {
+    status: 200,
+    headers: new Headers({
+      'content-length': String(MAX_RESPONSE_JSON_BYTES + 1),
+    }),
+    get body() {
+      oversizedBodyReads += 1;
+      return null;
+    },
+  } as unknown as Response;
+  const declaredTransport = createDesktopConversationHttpTransport({
+    baseUrl: CANONICAL_CHAT_ORIGIN,
+    fetchImpl: (async () => declaredOversize) as unknown as typeof fetch,
+  });
+  await assert.rejects(
+    declaredTransport.listConversations(MATERIAL),
+    /exceeds the bounded size/,
+  );
+  assert.equal(oversizedBodyReads, 0);
+
+  const stream = new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(new Uint8Array(MAX_RESPONSE_JSON_BYTES));
+      controller.enqueue(new Uint8Array([0x20]));
+      controller.close();
+    },
+  });
+  const streamedTransport = createDesktopConversationHttpTransport({
+    baseUrl: CANONICAL_CHAT_ORIGIN,
+    fetchImpl: (async () => new Response(stream, { status: 200 })) as unknown as typeof fetch,
+  });
+  await assert.rejects(
+    streamedTransport.listConversations(MATERIAL),
+    /exceeds the bounded size/,
+  );
 });
 
 test('#3436 B2c the composition factory keeps the fail-closed default without a chat base URL', async () => {
@@ -269,7 +371,7 @@ test('#3436 B2c the composition factory keeps the fail-closed default without a 
   assert.equal(list.errorCode, 'canonical_conversation_unavailable');
 
   const authenticated = createDesktopCanonicalConversationPort({
-    chatBaseUrl: 'https://chat.example.test',
+    chatBaseUrl: CANONICAL_CHAT_ORIGIN,
     materialProvider: materialProviding(MATERIAL),
     fetchImpl: (async () => new Response(JSON.stringify(CANONICAL_LIST), { status: 200 })) as unknown as typeof fetch,
   });
