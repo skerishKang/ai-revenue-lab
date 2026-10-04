@@ -172,6 +172,15 @@ export interface WorkspaceEntry {
   readonly name: string;
   readonly relativePath: string;
   readonly kind: WorkspaceEntryKind;
+  /**
+   * #3436 project browser: bounded basic metadata, projected per entry by the
+   * main process from the same validated directory. Null when the entry is
+   * not a regular file or the stat could not be taken — the listing stays
+   * usable and truthful either way. Read-only surface: no content bytes ever
+   * cross this contract.
+   */
+  readonly sizeBytes: number | null;
+  readonly modifiedAt: string | null;
 }
 
 export interface WorkspaceListRequest {
@@ -190,6 +199,7 @@ export interface WorkspaceListResponse {
     | 'root_not_selected'
     | 'invalid_relative_path'
     | 'path_outside_root'
+    | 'depth_exceeded'
     | 'workspace_unavailable';
 }
 

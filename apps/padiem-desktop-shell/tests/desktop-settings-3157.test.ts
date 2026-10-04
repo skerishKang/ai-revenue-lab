@@ -99,6 +99,7 @@ const NOOP_ACTIONS: ShellActions = {
   chooseWorkspaceRoot: async () => undefined,
   openWorkspaceDirectory: async () => undefined,
   clearWorkspaceRoot: async () => undefined,
+  selectWorkspaceEntry: () => undefined,
   selectConversation: async () => undefined,
 };
 
@@ -438,6 +439,9 @@ test('#3157 Start/Stop/Recheck still drive the existing actions', () => {
     },
     clearWorkspaceRoot: async () => {
       calls.push('clearWorkspaceRoot');
+    },
+    selectWorkspaceEntry: () => {
+      calls.push('selectWorkspaceEntry');
     },
     selectConversation: async () => {
       calls.push('selectConversation');

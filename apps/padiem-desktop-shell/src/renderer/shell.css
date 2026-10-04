@@ -241,6 +241,80 @@ pre.log {
   margin: 8px 0;
 }
 
+/* #3436 project browser: breadcrumb, selected entry and read-only detail. */
+.workspace-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin: 8px 0 0;
+  font-size: 13px;
+}
+
+.workspace-crumb {
+  border: 0;
+  background: none;
+  padding: 2px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--accent, #2f6f4f);
+  font: inherit;
+}
+
+.workspace-crumb-current {
+  color: inherit;
+  font-weight: 600;
+  cursor: default;
+}
+
+.workspace-local-note {
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted, #5b6b62);
+}
+
+.workspace-entry-selectable {
+  cursor: pointer;
+}
+
+.workspace-entry-selected {
+  background: var(--surface-2, rgba(47, 111, 79, 0.12));
+  font-weight: 600;
+}
+
+.workspace-entry-size {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--muted, #5b6b62);
+  font-variant-numeric: tabular-nums;
+}
+
+.workspace-selection {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-1, transparent);
+}
+
+.workspace-selection dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 10px;
+  margin: 6px 0 0;
+  font-size: 12px;
+}
+
+.workspace-selection dt {
+  color: var(--muted, #5b6b62);
+}
+
+.workspace-selection dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
 .workspace-list {
   list-style: none;
   margin: 8px 0 0;

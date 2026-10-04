@@ -23,6 +23,7 @@ export type {
   RunnerStopResponse,
   ShellStatus,
   WorkspaceEntry,
+  WorkspaceEntryKind,
   WorkspaceListResponse,
   WorkspaceRootResponse,
 } from '../contract/ipc.js';

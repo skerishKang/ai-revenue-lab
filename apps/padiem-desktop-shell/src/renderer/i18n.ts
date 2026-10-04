@@ -92,6 +92,16 @@ export type ShellStringKey =
   | 'workspace.unavailable'
   | 'workspace.noEntries'
   | 'workspace.truncated'
+  | 'workspace.breadcrumb'
+  | 'workspace.localOnlyNote'
+  | 'workspace.depthExceeded'
+  | 'workspace.selectedKind'
+  | 'workspace.selectedPath'
+  | 'workspace.selectedSize'
+  | 'workspace.selectedModified'
+  | 'workspace.kind.directory'
+  | 'workspace.kind.file'
+  | 'workspace.kind.link'
   | 'desktop.conversationTitle'
   | 'desktop.conversationPendingTitle'
   | 'desktop.conversationPendingBody'
@@ -185,6 +195,16 @@ const KO: Record<ShellStringKey, string> = {
   'workspace.unavailable': '이 폴더를 지금 열 수 없습니다.',
   'workspace.noEntries': '이 폴더는 비어 있습니다.',
   'workspace.truncated': '항목이 많아 일부만 표시했습니다.',
+  'workspace.breadcrumb': '현재 폴더 위치',
+  'workspace.localOnlyNote': '이 폴더는 이 컴퓨터의 로컬 작업 공간이며, Padiem의 워크스페이스를 대체하거나 변경하지 않습니다.',
+  'workspace.depthExceeded': '폴더 깊이 한도를 넘었습니다. 더 위쪽 폴더에서 탐색해 주세요.',
+  'workspace.selectedKind': '종류',
+  'workspace.selectedPath': '경로',
+  'workspace.selectedSize': '크기',
+  'workspace.selectedModified': '수정 시각',
+  'workspace.kind.directory': '폴더',
+  'workspace.kind.file': '파일',
+  'workspace.kind.link': '바로가기(열기 불가)',
   'desktop.conversationTitle': 'Claw',
   'desktop.conversationPendingTitle': '같은 대화를 데스크톱에서 이어서 여는 연결을 준비 중입니다.',
   'desktop.conversationPendingBody': '이 화면은 새 대화를 만들지 않습니다. Padiem Web의 기존 대화를 그대로 가져오는 연결이 확인되면 여기에서 이어집니다.',
@@ -279,6 +299,16 @@ const EN: Record<ShellStringKey, string> = {
   'workspace.unavailable': 'This folder cannot be opened right now.',
   'workspace.noEntries': 'This folder is empty.',
   'workspace.truncated': 'Only the first items are shown.',
+  'workspace.breadcrumb': 'Current folder',
+  'workspace.localOnlyNote': 'This folder is a local working context on this computer. It does not replace or change your Padiem workspace.',
+  'workspace.depthExceeded': 'This folder is deeper than the limit. Browse from a folder closer to the top.',
+  'workspace.selectedKind': 'Type',
+  'workspace.selectedPath': 'Path',
+  'workspace.selectedSize': 'Size',
+  'workspace.selectedModified': 'Modified',
+  'workspace.kind.directory': 'Folder',
+  'workspace.kind.file': 'File',
+  'workspace.kind.link': 'Link (cannot open)',
   'desktop.conversationTitle': 'Claw',
   'desktop.conversationPendingTitle': 'Same-conversation continuity is being prepared for Desktop.',
   'desktop.conversationPendingBody': 'This surface does not create another conversation. It will continue the existing Padiem Web conversation once the canonical projection is connected.',

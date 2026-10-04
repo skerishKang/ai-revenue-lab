@@ -25,6 +25,7 @@ const ACTIONS: ShellActions = {
   chooseWorkspaceRoot: async () => undefined,
   openWorkspaceDirectory: async () => undefined,
   clearWorkspaceRoot: async () => undefined,
+  selectWorkspaceEntry: () => undefined,
   selectConversation: async () => undefined,
 };
 
@@ -39,9 +40,27 @@ const LISTING: WorkspaceListResponse = {
   root: ROOT,
   directory: 'src',
   entries: [
-    { name: 'components', relativePath: 'src/components', kind: 'directory' },
-    { name: 'index.ts', relativePath: 'src/index.ts', kind: 'file' },
-    { name: 'linked', relativePath: 'src/linked', kind: 'link' },
+    {
+      name: 'components',
+      relativePath: 'src/components',
+      kind: 'directory',
+      sizeBytes: null,
+      modifiedAt: '2026-10-01T09:00:00.000Z',
+    },
+    {
+      name: 'index.ts',
+      relativePath: 'src/index.ts',
+      kind: 'file',
+      sizeBytes: 2048,
+      modifiedAt: '2026-10-02T09:00:00.000Z',
+    },
+    {
+      name: 'linked',
+      relativePath: 'src/linked',
+      kind: 'link',
+      sizeBytes: null,
+      modifiedAt: null,
+    },
   ],
   truncated: false,
   maxEntries: 200,
@@ -53,6 +72,7 @@ test('#3436 Easy workspace shows project navigation but not the absolute local p
     createElement(WorkspacePanel, {
       root: ROOT,
       listing: LISTING,
+      selectedEntry: null,
       actions: ACTIONS,
       locale: 'ko',
       advanced: false,
@@ -69,6 +89,7 @@ test('#3436 Advanced workspace may show the user-selected local path as diagnost
     createElement(WorkspacePanel, {
       root: ROOT,
       listing: LISTING,
+      selectedEntry: null,
       actions: ACTIONS,
       locale: 'en',
       advanced: true,
@@ -84,6 +105,7 @@ test('#3436 no-root state offers a native folder selection action', () => {
     createElement(WorkspacePanel, {
       root: null,
       listing: null,
+      selectedEntry: null,
       actions: ACTIONS,
       locale: 'en',
       advanced: false,
@@ -91,6 +113,106 @@ test('#3436 no-root state offers a native folder selection action', () => {
   );
   assert.match(markup, /Choose folder/);
   assert.match(markup, /Choose a folder to browse its files and subfolders safely/);
+});
+
+test('#3436 project browser renders a root-relative breadcrumb for the open folder', () => {
+  const markup = renderToStaticMarkup(
+    createElement(WorkspacePanel, {
+      root: ROOT,
+      listing: LISTING,
+      selectedEntry: null,
+      actions: ACTIONS,
+      locale: 'en',
+      advanced: false,
+    }),
+  );
+  assert.match(markup, /workspace-breadcrumb/);
+  assert.match(markup, /customer-project/);
+  // The current location is the project's basename plus the relative segment:
+  // never an absolute path, in either view mode.
+  assert.match(markup, /aria-current="location"/);
+  assert.doesNotMatch(markup, /C:\\Users\\person/);
+});
+
+test('#3436 selecting an entry shows its read-only metadata detail', () => {
+  const markup = renderToStaticMarkup(
+    createElement(WorkspacePanel, {
+      root: ROOT,
+      listing: LISTING,
+      selectedEntry: LISTING.entries[1] ?? null,
+      actions: ACTIONS,
+      locale: 'en',
+      advanced: false,
+    }),
+  );
+  assert.match(markup, /data-selected-path="src\/index\.ts"/);
+  assert.match(markup, /data-selected="true"/);
+  assert.match(markup, /File/);
+  assert.match(markup, /2\.0 KB/);
+  assert.match(markup, /src\/index\.ts/);
+});
+
+test('#3436 project browser exposes no write, rename, delete or create control', () => {
+  const markup = renderToStaticMarkup(
+    createElement(WorkspacePanel, {
+      root: ROOT,
+      listing: LISTING,
+      selectedEntry: LISTING.entries[1] ?? null,
+      actions: ACTIONS,
+      locale: 'ko',
+      advanced: true,
+    }),
+  );
+  for (const forbidden of [
+    '삭제',
+    '이름 바꾸',
+    '새 폴더',
+    '새 파일',
+    '저장',
+    'Delete',
+    'Rename',
+    'New folder',
+    'Save',
+  ]) {
+    assert.doesNotMatch(markup, new RegExp(forbidden, 'i'), forbidden);
+  }
+});
+
+test('#3436 a depth-capped listing says so instead of rendering an empty folder', () => {
+  const depthCapped: WorkspaceListResponse = {
+    ...LISTING,
+    ok: false,
+    directory: 'a/b/c',
+    entries: [],
+    errorCode: 'depth_exceeded',
+  };
+  const markup = renderToStaticMarkup(
+    createElement(WorkspacePanel, {
+      root: ROOT,
+      listing: depthCapped,
+      selectedEntry: null,
+      actions: ACTIONS,
+      locale: 'ko',
+      advanced: false,
+    }),
+  );
+  assert.match(markup, /data-error-code="depth_exceeded"/);
+  assert.match(markup, /폴더 깊이 한도/);
+});
+
+test('#3436 the local root never presents itself as the canonical Padiem workspace', () => {
+  const markup = renderToStaticMarkup(
+    createElement(WorkspacePanel, {
+      root: ROOT,
+      listing: LISTING,
+      selectedEntry: null,
+      actions: ACTIONS,
+      locale: 'ko',
+      advanced: false,
+    }),
+  );
+  assert.match(markup, /로컬 작업 공간/);
+  assert.match(markup, /대체하거나 변경하지 않습니다/);
 });
 
 test('#3436 B2a conversation surface is fail-closed until canonical projection exists', () => {
