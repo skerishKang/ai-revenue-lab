@@ -204,7 +204,9 @@
     var quoteNo = typeof opts.quoteNo === "string" && opts.quoteNo.trim()
       ? opts.quoteNo.trim()
       : allocateQuoteNo(null, [source], now).quoteNo;
-    var fresh = Core.createDefaultDraft();
+    /* 새 견적 기저는 Production truthful blank다. 사용자 source facts만 복사하고
+       데모 사업 정보는 이 경로로 새 견적에 들어가지 않는다 (#3479). */
+    var fresh = Core.createProductionDraft();
     fresh.meta.quoteNo = quoteNo;
     fresh.meta.issueDate = Core.isoFormat(now);
     fresh.meta.validDays = source.meta.validDays;
@@ -244,21 +246,35 @@
     return Core.normalizeDraft(fresh);
   }
 
+  function sameDraftShape(left, right) {
+    return (
+      left.meta.source === right.meta.source &&
+      left.meta.quoteNo === right.meta.quoteNo &&
+      left.meta.issueDate === right.meta.issueDate &&
+      left.meta.validDays === right.meta.validDays &&
+      JSON.stringify(left.sender) === JSON.stringify(right.sender) &&
+      JSON.stringify(left.recipient) === JSON.stringify(right.recipient) &&
+      JSON.stringify(left.items) === JSON.stringify(right.items) &&
+      left.tax.mode === right.tax.mode &&
+      left.memo === right.memo
+    );
+  }
+
   function isMeaningfulDraft(draft) {
     var normalized = Core.normalizeDraft(draft);
     if (!normalized) return false;
-    var base = Core.createDefaultDraft();
 
-    if (normalized.meta.source !== "manual") return true;
-    if (normalized.meta.quoteNo !== base.meta.quoteNo) return true;
-    if (normalized.meta.issueDate !== base.meta.issueDate) return true;
-    if (normalized.meta.validDays !== base.meta.validDays) return true;
-    if (JSON.stringify(normalized.sender) !== JSON.stringify(base.sender)) return true;
-    if (JSON.stringify(normalized.recipient) !== JSON.stringify(base.recipient)) return true;
-    if (JSON.stringify(normalized.items) !== JSON.stringify(base.items)) return true;
-    if (normalized.tax.mode !== base.tax.mode) return true;
-    if (normalized.memo !== base.memo) return true;
-    return false;
+    /* Both the new truthful Production blank and the legacy untouched demo
+       are non-resumable startup states. */
+    var productionBase = typeof Core.createProductionDraft === "function"
+      ? Core.createProductionDraft()
+      : Core.createDefaultDraft();
+    if (sameDraftShape(normalized, productionBase)) return false;
+
+    var legacyDemo = Core.createDefaultDraft();
+    if (sameDraftShape(normalized, legacyDemo)) return false;
+
+    return true;
   }
 
   return {

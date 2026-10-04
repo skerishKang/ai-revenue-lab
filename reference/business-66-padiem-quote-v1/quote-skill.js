@@ -411,8 +411,14 @@
     var company = boundedString(raw.company, MAX_STRING_CHARS, "").trim();
     if (!company) return null;
 
-    if (!Number.isInteger(raw.defaultValidityDays) || raw.defaultValidityDays < 0 || raw.defaultValidityDays > 3650) {
-      return null;
+    /* canonical 서버 CompanyProfile 은 부분 정보가 정상이다: 회사 식별값은 필수이고
+       유효기간/부가세 기본값은 null 일 수 있다 (unknown key 와 잘못된 값만 fail closed). */
+    var validDays = null;
+    if (raw.defaultValidityDays !== undefined && raw.defaultValidityDays !== null && raw.defaultValidityDays !== "") {
+      if (!Number.isInteger(raw.defaultValidityDays) || raw.defaultValidityDays < 0 || raw.defaultValidityDays > 3650) {
+        return null;
+      }
+      validDays = raw.defaultValidityDays;
     }
     var taxMode = null;
     if (raw.defaultTaxMode !== undefined && raw.defaultTaxMode !== null && raw.defaultTaxMode !== "") {
@@ -430,7 +436,7 @@
         email: boundedString(raw.email, MAX_STRING_CHARS, "").trim(),
         presetId: "account-company-profile"
       },
-      validDays: raw.defaultValidityDays,
+      validDays: validDays,
       taxMode: taxMode
     };
   }
@@ -463,12 +469,17 @@
       projectName = input.projectName.trim().slice(0, 240);
     }
 
-    var taxMode = companyProfile && companyProfile.taxMode
-      ? companyProfile.taxMode
-      : skill.fixedDefaults.taxMode;
+    /* 견적 계열 사실의 precedence: 이번 견적의 명시적 값 > 승인된 Skill 기본값 > CompanyProfile fallback.
+       sender 식별값은 CompanyProfile 이 계속 authority 다. */
+    var taxMode = skill.fixedDefaults.taxMode;
+    if (!taxMode && companyProfile && companyProfile.taxMode) taxMode = companyProfile.taxMode;
     if (skill.variableSchema.taxMode && input.taxMode !== undefined) {
       if (TAX_MODES.indexOf(input.taxMode) === -1) return { ok: false, code: "invalid_tax_mode", draft: null };
       taxMode = input.taxMode;
+    }
+    var validDays = Number.isInteger(skill.fixedDefaults.validDays) ? skill.fixedDefaults.validDays : null;
+    if (validDays === null && companyProfile && Number.isInteger(companyProfile.validDays)) {
+      validDays = companyProfile.validDays;
     }
 
     var memo = skill.fixedDefaults.memo;
@@ -482,7 +493,7 @@
       meta: Object.assign({
         quoteNo: quoteNo,
         issueDate: issueDate,
-        validDays: companyProfile ? companyProfile.validDays : skill.fixedDefaults.validDays,
+        validDays: validDays,
         source: "saved-quote-skill"
       }, projectName ? { projectName: projectName } : {}),
       sender: companyProfile ? cloneJson(companyProfile.sender) : cloneJson(skill.fixedDefaults.sender),

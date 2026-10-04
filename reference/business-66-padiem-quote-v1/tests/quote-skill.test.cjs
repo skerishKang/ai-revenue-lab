@@ -212,15 +212,40 @@ eq(profiled.compiled.skillFingerprint, first.compiled.skillFingerprint,
 eq(profiled.draft.sender.company, "Runtime Company", "CompanyProfile snapshots company into QuoteDraft");
 eq(profiled.draft.sender.rep, "Runtime Rep", "CompanyProfile snapshots representative into QuoteDraft");
 eq(profiled.draft.sender.contactPerson, "Runtime Contact", "CompanyProfile snapshots contact person into QuoteDraft");
-eq(profiled.draft.meta.validDays, 45, "CompanyProfile validity is snapshotted instead of legacy Skill validity");
-eq(profiled.draft.tax.mode, "EXEMPT", "CompanyProfile tax default applies when the quote does not override tax");
+eq(profiled.draft.meta.validDays, skill.fixedDefaults.validDays,
+  "SKILL_VALIDITY_DEFAULT_PRESERVED=YES (approved Skill validity stays authoritative over account defaults)");
+eq(profiled.draft.tax.mode, skill.fixedDefaults.taxMode,
+  "SKILL_TAX_DEFAULT_PRESERVED=YES (approved Skill tax default stays authoritative over account defaults)");
 eq(skill.fixedDefaults.sender.company, first.draft.sender.company,
   "runtime CompanyProfile never mutates the approved Saved Quote Skill");
-const missingProfileValidity = Skill.buildRenderModel(skill, input(), {
-  companyProfile: { company: "Runtime Company" }
+const explicitTax = Skill.buildRenderModel(skill, input({ taxMode: "INCLUSIVE" }), { companyProfile: runtimeProfile });
+check(explicitTax.ok === true && explicitTax.draft.tax.mode === "INCLUSIVE",
+  "EXPLICIT_QUOTE_TAX_WINS=YES (per-quote value outranks Skill default and CompanyProfile)");
+const partialProfile = Skill.buildRenderModel(skill, input(), {
+  companyProfile: {
+    company: "CGI상사",
+    representative: "김범신",
+    defaultValidityDays: null,
+    defaultTaxMode: null
+  }
 });
-check(missingProfileValidity.ok === false && missingProfileValidity.code === "invalid_company_profile",
-  "missing CompanyProfile validity fails closed instead of inheriting source/Skill validity");
+check(partialProfile.ok === true, "PARTIAL_COMPANY_PROFILE_ACCEPTED=YES");
+eq(partialProfile.draft.meta.validDays, skill.fixedDefaults.validDays,
+  "PARTIAL_PROFILE_KEEPS_SKILL_VALIDITY=YES");
+eq(partialProfile.draft.tax.mode, skill.fixedDefaults.taxMode,
+  "PARTIAL_PROFILE_KEEPS_SKILL_TAX=YES");
+eq(partialProfile.draft.sender.company, "CGI상사",
+  "PARTIAL_PROFILE_SENDER_IDENTITY=YES (sender still comes from CompanyProfile)");
+const badProfileStillFails = Skill.buildRenderModel(skill, input(), {
+  companyProfile: { company: "CGI상사", defaultValidityDays: "45" }
+});
+check(badProfileStillFails.ok === false && badProfileStillFails.code === "invalid_company_profile",
+  "malformed CompanyProfile values still fail closed instead of being coerced");
+const missingCompanyFails = Skill.buildRenderModel(skill, input(), {
+  companyProfile: { defaultValidityDays: 45 }
+});
+check(missingCompanyFails.ok === false && missingCompanyFails.code === "invalid_company_profile",
+  "CompanyProfile without company identity still fails closed");
 
 const numeric = Skill.buildRenderModel(skill, input({
   items: [{ id: "item-1", name: "배관 40A", qty: 80, unitPrice: 135000 }]
