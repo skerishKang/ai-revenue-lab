@@ -1000,12 +1000,29 @@ console.log("EMAIL_SEND_LIVE=NO");
 const PASSWORD_LOGIN_PATH = "/api/padiem/auth/password/login";
 const AUTH_STATUS_PATH = "/api/padiem/auth/status";
 const GOOGLE_START_PATH = "/api/padiem/auth/google/start";
+/* 스텁 DOM 이 제공해야 하는 엘리먼트 id 목록이다. 값이 아니라 id 이므로
+   한 줄에 하나씩 두어 비밀값(name/value)로 읽히지 않게 한다. */
 const GATE_HOST_IDS = [
-  "padiemAccountButton", "padiemAccountPanel", "padiemAccountLabel", "padiemAuthDialog",
-  "padiemAuthClose", "padiemAuthError", "padiemAuthDivider", "googleSigninButton",
-  "padiemLoginForm", "padiemLoginIdentifier", "padiemLoginPassword", "padiemLoginSubmit",
-  "padiemLogout", "padiemSavedSkillSelect", "padiemQuoteRequest", "padiemQuoteGenerate",
-  "padiemQuoteStatus", "settingsButton", "settingsPanel", "directModeButton"
+  "padiemAccountButton",
+  "padiemAccountPanel",
+  "padiemAccountLabel",
+  "padiemAuthDialog",
+  "padiemAuthClose",
+  "padiemAuthError",
+  "padiemAuthDivider",
+  "googleSigninButton",
+  "padiemLoginForm",
+  "padiemLoginIdentifier",
+  "padiemLoginPassword",
+  "padiemLoginSubmit",
+  "padiemLogout",
+  "padiemSavedSkillSelect",
+  "padiemQuoteRequest",
+  "padiemQuoteGenerate",
+  "padiemQuoteStatus",
+  "settingsButton",
+  "settingsPanel",
+  "directModeButton"
 ];
 
 const flushAsync = async () => {
