@@ -8,6 +8,7 @@ import pytest
 from padiem_control_plane import AuthSessionSnapshot, ProductIdentityLink
 
 from app.auth import SESSION_COOKIE
+from app.auth_abuse import InMemoryAuthAbuseStore
 from app.config import ConfigError, Settings
 from app.history import HistoryConflict, PasswordCredential, UserProfile
 from app.main import create_app
@@ -274,6 +275,7 @@ async def test_login_failures_are_nondisclosing_across_missing_wrong_and_locked(
     app = create_app(
         password_settings(),
         history_store=store,
+        auth_abuse_store=InMemoryAuthAbuseStore(),
         control_plane_identity_authority=authority,
         identity_shadow_store=shadow,
     )
@@ -309,7 +311,11 @@ async def test_locked_attempts_do_not_extend_lock() -> None:
     store = MemoryStore()
     encoded = hash_password("correct horse battery staple")
     await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
-    app = create_app(password_settings(), history_store=store)
+    app = create_app(
+        password_settings(),
+        history_store=store,
+        auth_abuse_store=InMemoryAuthAbuseStore(),
+    )
 
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
@@ -344,7 +350,11 @@ async def test_expired_lock_decays_instead_of_ratcheting() -> None:
     profile = await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
     past = (datetime.now(timezone.utc) - timedelta(minutes=1)).isoformat()
     await store.record_password_failure(profile.id, 5, past)
-    app = create_app(password_settings(), history_store=store)
+    app = create_app(
+        password_settings(),
+        history_store=store,
+        auth_abuse_store=InMemoryAuthAbuseStore(),
+    )
 
     async with httpx.AsyncClient(
         transport=httpx.ASGITransport(app=app),
@@ -380,6 +390,7 @@ async def test_success_resets_failure_count() -> None:
     app = create_app(
         password_settings(),
         history_store=store,
+        auth_abuse_store=InMemoryAuthAbuseStore(),
         control_plane_identity_authority=authority,
         identity_shadow_store=shadow,
     )
@@ -482,3 +493,122 @@ async def test_hybrid_status_exposes_both_methods() -> None:
     assert status.status_code == 200
     assert status.json()["methods"] == {"google": True, "password": True}
     assert google.status_code == 302
+
+
+@pytest.mark.asyncio
+async def test_abuse_gate_prevents_fresh_relock_after_first_threshold() -> None:
+    store = MemoryStore()
+    abuse = InMemoryAuthAbuseStore()
+    encoded = hash_password("correct horse battery staple")
+    profile = await store.register_password_user(
+        "owner.test",
+        "owner@example.test",
+        "Owner",
+        encoded,
+    )
+    app = create_app(
+        password_settings(),
+        history_store=store,
+        auth_abuse_store=abuse,
+    )
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        for _ in range(5):
+            response = await client.post(
+                "/api/auth/password/login",
+                json={
+                    "identifier": "owner.test",
+                    "password": "definitely wrong password",
+                },
+            )
+            assert response.status_code == 401
+
+        assert store.credentials["owner.test"].locked_until is not None
+
+        # Simulate the account lock window expiring while the dedicated abuse
+        # bucket remains at its daily threshold.
+        past = (datetime.now(timezone.utc) - timedelta(minutes=1)).isoformat()
+        await store.record_password_failure(profile.id, 5, past)
+
+        throttled = await _login_public(
+            client,
+            "owner.test",
+            "definitely wrong password",
+        )
+        missing = await _login_public(
+            client,
+            "missing-after-throttle.user",
+            "definitely wrong password",
+        )
+        after_denied = store.credentials["owner.test"]
+        recovered = await client.post(
+            "/api/auth/password/login",
+            json={
+                "identifier": "owner.test",
+                "password": "correct horse battery staple",
+            },
+        )
+
+    assert throttled == missing
+    assert throttled[0] == 401
+    assert throttled[1] == "invalid_credentials"
+    assert after_denied.failed_attempts == 5
+    assert after_denied.locked_until == past
+    assert recovered.status_code == 200
+    assert store.credentials["owner.test"].failed_attempts == 0
+    assert store.credentials["owner.test"].locked_until is None
+
+
+@pytest.mark.asyncio
+async def test_abuse_store_failure_suppresses_lock_mutation_without_oracle() -> None:
+    class FailingAbuseStore:
+        async def consume(self, **kwargs):
+            del kwargs
+            raise RuntimeError("simulated auth-abuse store outage")
+
+    store = MemoryStore()
+    encoded = hash_password("correct horse battery staple")
+    await store.register_password_user(
+        "owner.test",
+        "owner@example.test",
+        "Owner",
+        encoded,
+    )
+    app = create_app(
+        password_settings(),
+        history_store=store,
+        auth_abuse_store=FailingAbuseStore(),
+    )
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        missing = await _login_public(
+            client,
+            "missing.user",
+            "definitely wrong password",
+        )
+        wrong = None
+        for _ in range(6):
+            wrong = await _login_public(
+                client,
+                "owner.test",
+                "definitely wrong password",
+            )
+        recovered = await client.post(
+            "/api/auth/password/login",
+            json={
+                "identifier": "owner.test",
+                "password": "correct horse battery staple",
+            },
+        )
+
+    assert wrong is not None
+    assert missing == wrong
+    assert store.credentials["owner.test"].failed_attempts == 0
+    assert store.credentials["owner.test"].locked_until is None
+    assert recovered.status_code == 200

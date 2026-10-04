@@ -474,29 +474,43 @@ async def password_login(request: Request) -> JSONResponse:
     password_ok = verify_password(password, credential.password_hash if credential else None)
     now = datetime.now(timezone.utc)
 
-    # #3501: the per-account lock is enforced but never disclosed. A missing
-    # identifier, a wrong password, prior failures, and an active lock all
-    # reach the identical public 401 below — status, code, message, and
-    # shape are indistinguishable to an unauthenticated caller. A locked
-    # account stays denied even for the correct password (fail-closed),
-    # and attempts made while locked change no server state, so a lock
-    # can never be extended from the outside.
+    # #3501/#3508: lock state is server-owned and never disclosed. A
+    # missing identifier, wrong password, prior failures, an active lock, and
+    # an abuse-throttled attempt all reach the same public 401 projection.
     locked = credential is not None and _is_locked(credential, now)
 
     if credential is None or not password_ok or locked:
-        if credential is not None and not locked:
-            # Fresh failure accounting with stale-lock decay. When a
-            # previously recorded lock has already lapsed, the count
-            # restarts instead of ratcheting one new failure into another
-            # lock window — every lock costs a fresh _PASSWORD_FAILURE_LIMIT,
-            # so remote single-guess denial cannot be sustained.
+        # The dedicated abuse gate is NOT an authentication authority. Its only
+        # power is to suppress mutation of account-level failure/lock state.
+        # Missing/failed gate state therefore fails closed against remote
+        # lockout amplification without blocking a later verified login.
+        allow_failure_accounting = False
+        gate = getattr(request.app.state, "auth_abuse_gate", None)
+        if gate is not None:
+            try:
+                decision = await gate.authorize_failure_accounting(
+                    identifier=identifier,
+                    raw_ip=request.headers.get("cf-connecting-ip"),
+                )
+                allow_failure_accounting = bool(
+                    getattr(decision, "allow_failure_accounting", False)
+                )
+            except Exception:
+                allow_failure_accounting = False
+
+        if credential is not None and not locked and allow_failure_accounting:
+            # A lapsed lock starts a fresh failure sequence. Once the dedicated
+            # identifier abuse bucket is exhausted, subsequent failed attempts
+            # cannot create another lock until the bounded abuse window resets.
             if _has_expired_lock(credential, now):
                 failures, lock_until = 1, None
             else:
                 failures = min(100, credential.failed_attempts + 1)
                 lock_until = None
                 if failures >= _PASSWORD_FAILURE_LIMIT:
-                    lock_until = (now + timedelta(minutes=_PASSWORD_LOCK_MINUTES)).isoformat()
+                    lock_until = (
+                        now + timedelta(minutes=_PASSWORD_LOCK_MINUTES)
+                    ).isoformat()
             try:
                 await store.record_password_failure(
                     credential.user.id,

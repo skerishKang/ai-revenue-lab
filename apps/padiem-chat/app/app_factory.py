@@ -9,6 +9,7 @@ from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
 from .auth import GoogleOAuthClient
+from .auth_abuse import AuthAbuseGate, AuthAbuseStore, D1AuthAbuseStore
 from .b66_quote_conversation import B66QuoteConversationInterpreter
 from .b66_company_profile import CompanyProfileStore, D1CompanyProfileStore
 from .b66_company_profile_routes import b66_company_profile_get, b66_company_profile_put
@@ -173,6 +174,7 @@ def create_app(
     claw_local_access_source=None,
     local_task_result_source=None,
     desktop_device_session_authority=None,
+    auth_abuse_store: AuthAbuseStore | None = None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -319,6 +321,18 @@ def create_app(
     # closed with 503; there is no global/network fallback.
     app.state.drive_case_folder_engine_client = drive_case_folder_engine_client
     app.state.usage_gate = UsageGate(resolved, usage_store)
+
+    # #3508 dedicated password-login abuse authority. This deliberately does
+    # not reuse the B14/AI UsageGate. Production derives a durable store from
+    # the existing Chat D1 binding; tests may inject a network-free oracle.
+    _auth_abuse_store = auth_abuse_store
+    if _auth_abuse_store is None and d1_binding is not None:
+        try:
+            _auth_abuse_store = D1AuthAbuseStore(d1_binding)
+        except Exception:
+            _auth_abuse_store = None
+    app.state.auth_abuse_gate = AuthAbuseGate(resolved, _auth_abuse_store)
+
     # An explicitly injected B14 transport is the existing network-free regression seam.
     # It cannot occur through browser input or Worker bindings. Production/ordinary runtime
     # (transport=None) always enforces the gate; quota-specific integration tests also
