@@ -11,6 +11,7 @@ import httpx
 import pytest
 
 from app.config import Settings
+from app.service_binding_response import ServiceBindingResponseError, cloudflare_chunk_bytes
 from app.web_tools import DaumWebProvider, FirecrawlWebProvider, WebToolError
 
 
@@ -35,7 +36,12 @@ def _load_worker_web_transport():
     found = {node.name for node in selected}
     assert found == names
     module = ast.Module(body=selected, type_ignores=[])
-    namespace = {"httpx": httpx, "Any": Any}
+    namespace = {
+        "httpx": httpx,
+        "Any": Any,
+        "cloudflare_chunk_bytes": cloudflare_chunk_bytes,
+        "ServiceBindingResponseError": ServiceBindingResponseError,
+    }
     exec(compile(module, str(WORKER_PATH), "exec"), namespace)
     return namespace["CloudflareExternalHttpTransport"]
 

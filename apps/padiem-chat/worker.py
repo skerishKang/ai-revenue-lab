@@ -16,6 +16,13 @@ from urllib.parse import urlparse
 # Service-Binding transport must use that same httpx Request/Response/stream
 # type family; app.httpx_compat is only for app-owned JS-fetch clients.
 import httpx
+from padiem_ai_core.b14_execution import MAX_B14_RESPONSE_BYTES
+from app.service_binding_response import (
+    ServiceBindingResponseError,
+    ServiceBindingResponseTooLarge,
+    cloudflare_chunk_bytes,
+    read_bounded_service_binding_body,
+)
 from app.claw_automation_due_workspace_discovery import (
     compose_canonical_due_workspace_discovery,
 )
@@ -177,8 +184,23 @@ class CloudflareB14ServiceTransport:
             body=json.dumps(payload, ensure_ascii=False),
         )
         response = await self.binding.fetch(request.js_object)
-        text = await response.text()
-        return int(response.status), str(text).encode("utf-8")
+        status = int(response.status)
+        try:
+            body = await read_bounded_service_binding_body(
+                response,
+                max_bytes=MAX_B14_RESPONSE_BYTES,
+            )
+        except ServiceBindingResponseTooLarge:
+            # Core owns the public "response too large" classification. Return
+            # one bounded sentinel byte beyond its configured ceiling so that
+            # classification remains unchanged without consuming the rest of
+            # the Service Binding stream.
+            return status, bytes(MAX_B14_RESPONSE_BYTES + 1)
+        except ServiceBindingResponseError as exc:
+            raise RuntimeError(
+                "Business 14 Service Binding response could not be read."
+            ) from exc
+        return status, body
 
 
 class _CloudflareReadableByteStream(httpx.AsyncByteStream):
@@ -204,52 +226,12 @@ class _CloudflareReadableByteStream(httpx.AsyncByteStream):
 
     @staticmethod
     def _to_bytes(value: Any) -> bytes:
-        # A Service Binding ReadableStream hands back one already-delivered
-        # chunk at a time. In workerd that chunk is a JS typed array (Uint8Array)
-        # surfaced to Python as a proxy object, not a native bytes/bytearray, and
-        # it does not carry a ``to_bytes()`` method. Convert the single chunk to
-        # bytes without ever buffering the whole stream, and fail closed on shapes
-        # we cannot interpret.
-        if value is None:
-            return b""
-        if isinstance(value, bytes):
-            return value
-        if isinstance(value, (bytearray, memoryview)):
-            return bytes(value)
-
-        # Buffer protocol (JS typed arrays expose this through the proxy).
         try:
-            return memoryview(value).tobytes()
-        except (TypeError, ValueError):
-            pass
-
-        # Explicit byte materialiser (kept for adapters/tests that expose it).
-        to_bytes = getattr(value, "to_bytes", None)
-        if callable(to_bytes):
-            try:
-                converted = to_bytes()
-            except Exception as exc:
-                raise httpx.ReadError(
-                    "Business 14 Service Binding returned unreadable stream bytes."
-                ) from exc
-            if isinstance(converted, (bytes, bytearray, memoryview)):
-                return bytes(converted)
-            try:
-                return bytes(converted)
-            except Exception as exc:
-                raise httpx.ReadError(
-                    "Business 14 Service Binding returned unreadable stream bytes."
-                ) from exc
-
-        # Integer-iterable proxy (a Uint8Array yields 0..255 per element).
-        try:
-            return bytes(value)
-        except (TypeError, ValueError):
-            pass
-
-        raise httpx.ReadError(
-            "Business 14 Service Binding returned an unsupported stream chunk."
-        )
+            return cloudflare_chunk_bytes(value)
+        except ServiceBindingResponseError as exc:
+            raise httpx.ReadError(
+                "Business 14 Service Binding returned an unsupported stream chunk."
+            ) from exc
 
     async def __aiter__(self):
         reader = self._reader_or_create()

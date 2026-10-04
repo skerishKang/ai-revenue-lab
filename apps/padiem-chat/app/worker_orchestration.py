@@ -20,6 +20,11 @@ from padiem_ai_core.b14_multimodal import MAX_B14_IMAGE_BYTES
 
 from .canonical_orchestration_bridge import CanonicalSubjectB62EngineOrchestrationBridge
 from .orchestration_bridge import B62EngineOrchestrationBridge, D1OrchestrationStateStore
+from .service_binding_response import (
+    ServiceBindingResponseError,
+    ServiceBindingResponseTooLarge,
+    read_bounded_service_binding_body,
+)
 from .worker_config import binding_value
 
 ENGINE_SERVICE_BINDING_NAME = "ENGINE_SERVICE"
@@ -101,9 +106,17 @@ class CloudflareEngineServiceTransport:
             body=body_text,
         )
         response = await self._binding.fetch(request.js_object)
-        encoded = str(await response.text()).encode("utf-8")
-        if len(encoded) > _MAX_ENGINE_RESPONSE_BYTES:
-            raise ValueError("Engine response exceeded the B62 transport safety limit")
+        try:
+            encoded = await read_bounded_service_binding_body(
+                response,
+                max_bytes=_MAX_ENGINE_RESPONSE_BYTES,
+            )
+        except ServiceBindingResponseTooLarge:
+            raise ValueError(
+                "Engine response exceeded the B62 transport safety limit"
+            ) from None
+        except ServiceBindingResponseError as exc:
+            raise ValueError("Engine response could not be read safely") from exc
         response_headers: dict[str, str] = {}
         try:
             content_type = response.headers.get("content-type")
