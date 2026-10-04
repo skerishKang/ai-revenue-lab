@@ -29,8 +29,14 @@ const makeElement = (id) => {
   const classes = new Set();
   return {
     id, value: "", textContent: "", placeholder: "", disabled: false,
-    hidden: false, innerHTML: "", className: "", type: "", style: {},
+    hidden: false, className: "", type: "", style: {},
     dataset: {}, children: [], listeners: {}, focusCount: 0, clickCount: 0,
+    get innerHTML() { return this._innerHTML || ""; },
+    set innerHTML(value) {
+      this._innerHTML = value;
+      /* 빈 문자열 대입은 실제 DOM 처럼 내용을 비운다 */
+      if (value === "") this.children = [];
+    },
     classList: {
       toggle(name, on) { if (on) classes.add(name); else classes.delete(name); },
       add(name) { classes.add(name); },
@@ -225,7 +231,7 @@ const buttonWith = (env, label) => env.created.filter(
     return condition;
   };
   const countCalls = (env, prefix) => env.appCalls.filter((c) => c.startsWith(prefix)).length;
-  const restoreFlags = { newDraftAllocation: 0, newQuoteNoAllocation: 0, pushLoops: 0 };
+  const restoreFlags = { newDraftAllocation: 0, newQuoteNoAllocation: 0, pushLoops: 0, oldAppDraftImported: 0 };
   const results = {
     backGuidedToHome: false,
     backFreeformToHome: false,
@@ -233,7 +239,11 @@ const buttonWith = (env, label) => env.created.filter(
     noResetOnBack: true,
     guidedStateRestore: true,
     cancelPath: true,
-    unsavedResetConfirm: false
+    unsavedResetConfirm: false,
+    noSnapshotRestore: true,
+    safeFallback: true,
+    explicitRestart: true,
+    explicitRestartAllocations: 0
   };
 
   const env = buildEnv();
@@ -531,6 +541,66 @@ const buttonWith = (env, label) => env.created.filter(
     confirmState.value = true;
   }
 
+  /* ── NO_SNAPSHOT_GUIDED_RESTORE: guided entry without session state must not import the App draft ──
+     재시작(페이지 reload) 시뮬레이션: 히스토리 항목은 이전 세션에서 남았지만 메모리의
+     guided/guidedSnapshot 는 없다. 이때 OLD App draft(시드거래처/시드품목)를 guided 로
+     가져오거나 새 견적을 발급해서는 안 되고, Home 으로 안전 귀결해야 한다. */
+  {
+    const env2 = buildEnv();
+    new vm.Script(easySource, { filename: "easy-mode.js" }).runInContext(env2.context);
+    await flush();
+
+    /* 이전 세션에서 남은 guided 항목을 흉내낸다: 항목은 있고 메모리 상태는 없다 */
+    env2.history.pushState({ b66View: "guided" }, "", "https://quick-quote-kr.pages.dev/");
+    env2.history.back();
+    await flush();
+    results.noSnapshotRestore = results.noSnapshotRestore &&
+      check(env2.history._view() === "home" && env2.getElement("easyEmpty").hidden === false,
+        "NO_SNAPSHOT_GUIDED_RESTORE: prior-session guided entry staged (current=home, forward=guided)");
+
+    const freshBefore = countCalls(env2, "createFreshDraft");
+    const seqBefore = env2.storage.getItem(History.SEQUENCE_STORAGE_KEY);
+    const pushBefore = env2.history._ops("push");
+    const draftBefore2 = env2.storage.getItem(Core.DRAFT_STORAGE_KEY);
+
+    env2.history.forward();
+    await flush();
+
+    /* guided 대화가 시작됐다는 것은 App draft 가 guided 로 유입될 수 있는 길이 열렸다는 뜻이다.
+       안전 귀결에서는 대화 자체가 만들어지지 않아야 한다. */
+    const guidedConversationStarted =
+      env2.getElement("easyMessageList").children.length > 0 ||
+      env2.getElement("easyEmpty").hidden === true;
+    restoreFlags.oldAppDraftImported += guidedConversationStarted ? 1 : 0;
+    results.noSnapshotRestore = results.noSnapshotRestore &&
+      check(countCalls(env2, "createFreshDraft") === freshBefore,
+        "POPSTATE_NEW_DRAFT_ALLOCATION=0 (no-state guided restore allocates nothing)") &&
+      check(env2.storage.getItem(History.SEQUENCE_STORAGE_KEY) === seqBefore,
+        "POPSTATE_NEW_QUOTE_NUMBER_ALLOCATION=0 (no-state guided restore consumes no quote number)") &&
+      check(!guidedConversationStarted,
+        "OLD_APP_DRAFT_IMPORTED_INTO_GUIDED=0 (no guided conversation is created, so the App draft cannot be imported)") &&
+      check(env2.storage.getItem(Core.DRAFT_STORAGE_KEY) === draftBefore2,
+        "NO_SNAPSHOT_GUIDED_RESTORE: stored App draft untouched") &&
+      check(env2.history._ops("push") === pushBefore,
+        "NO_SNAPSHOT_GUIDED_RESTORE: restore pushes nothing (no loop)");
+    results.safeFallback = results.safeFallback &&
+      check(env2.appCalls.filter((c) => c.startsWith("toast:진행 중이던 견적 상태를 복원할 수 없습니다")).length === 1,
+        "SAFE_FALLBACK: honest restore-impossible notice is shown exactly once") &&
+      check(env2.getElement("easyEmpty").hidden === false &&
+            env2.getElement("easyMessageList").children.length === 0,
+        "SAFE_FALLBACK=PASS (settles on Home; no guided conversation is started from the old draft)");
+
+    /* 사용자가 명시적으로 다시 시작하면 그때는 fresh allocation 이 정확히 1회 허용된다 */
+    clickStarter(env2, "guidedStarter");
+    await flush();
+    results.explicitRestartAllocations = countCalls(env2, "createFreshDraft") - freshBefore;
+    results.explicitRestart = results.explicitRestart &&
+      check(results.explicitRestartAllocations === 1,
+        "EXPLICIT_RESTART_FRESH_ALLOCATION=1 (user-initiated start allocates exactly once)") &&
+      check(env2.storage.getItem(History.SEQUENCE_STORAGE_KEY) !== seqBefore,
+        "EXPLICIT_RESTART_FRESH_ALLOCATION: quote number sequence advances for the new quote");
+  }
+
   /* ── UNSAVED_RESET_CONFIRM: destructive browser-local reset stays confirm-gated (app.js) ── */
   {
     const resetConfirmIndex = appSource.indexOf('window.confirm("이 브라우저에 저장한 견적, 발신자, 최근 견적 기록을 초기화할까요?")');
@@ -542,12 +612,12 @@ const buttonWith = (env, label) => env.created.filter(
     );
   }
 
-  /* ── guided restore wiring: restore and explicit start are distinct intents (source contract) ── */
+  /* ── guided restore wiring: restore never imports the App draft (source contract) ── */
   {
-    check(easySource.includes("options.reuseCurrentDraft === true") &&
-          easySource.includes('startGuided("", { history: false, reuseCurrentDraft: true })') &&
-          easySource.includes("draft: guidedDraft(options)"),
-      "GUIDED_RESTORE_REUSE_CONTRACT=PASS (popstate restore reuses the draft; explicit start still allocates)");
+    check(!easySource.includes("reuseCurrentDraft") &&
+          easySource.includes("function restoreGuidedWithoutState") &&
+          easySource.includes('App.createFreshDraft("guided")'),
+      "GUIDED_RESTORE_SOURCE_CONTRACT=PASS (popstate restore never imports the App draft; explicit start still allocates)");
   }
 
   /* ── final invariants ── */
@@ -558,14 +628,19 @@ const buttonWith = (env, label) => env.created.filter(
   check(results.draftPreserved,
     "FINAL: stored QuoteDraft identical to its value before any navigation");
   check(restoreFlags.newDraftAllocation === 0 && restoreFlags.newQuoteNoAllocation === 0 &&
-        restoreFlags.pushLoops === 0,
-    "FINAL: every observed restore was allocation-free");
+        restoreFlags.pushLoops === 0 && restoreFlags.oldAppDraftImported === 0,
+    "FINAL: every observed restore was allocation-free and App-draft-free");
 
   console.log("");
   console.log("BACK_GUIDED_TO_HOME=" + (results.backGuidedToHome ? "PASS" : "FAIL"));
   console.log("BACK_FREEFORM_TO_HOME=" + (results.backFreeformToHome ? "PASS" : "FAIL"));
   console.log("POPSTATE_DRAFT_PRESERVED=" + (results.draftPreserved ? "PASS" : "FAIL"));
   console.log("GUIDED_STATE_RESTORE=" + (results.guidedStateRestore ? "PASS" : "FAIL"));
+  console.log("NO_SNAPSHOT_GUIDED_RESTORE=" + (results.noSnapshotRestore ? "PASS" : "FAIL"));
+  console.log("OLD_APP_DRAFT_IMPORTED_INTO_GUIDED=" + restoreFlags.oldAppDraftImported);
+  console.log("SAFE_FALLBACK=" + (results.safeFallback ? "PASS" : "FAIL"));
+  console.log("EXPLICIT_RESTART_FRESH_ALLOCATION=" + results.explicitRestartAllocations +
+    " (" + (results.explicitRestart ? "PASS" : "FAIL") + ")");
   console.log("POPSTATE_NEW_DRAFT_ALLOCATION=" + restoreFlags.newDraftAllocation);
   console.log("POPSTATE_NEW_QUOTE_NUMBER_ALLOCATION=" + restoreFlags.newQuoteNoAllocation);
   console.log("NO_RESET_ON_BACK=" + (results.noResetOnBack ? "PASS" : "FAIL"));

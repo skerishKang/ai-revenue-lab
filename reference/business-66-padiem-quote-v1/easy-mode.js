@@ -338,10 +338,8 @@
     return value;
   }
 
-  function guidedDraft(options) {
+  function guidedDraft() {
     const current = App.getDraft();
-    /* 브라우저 히스토리 복원은 새 견적 명령이 아니므로 기존 초안과 견적번호를 그대로 이어 쓴다. */
-    if (options && options.reuseCurrentDraft === true && current) return current;
     const fresh = App.createFreshDraft("guided");
     fresh.sender = clone(current.sender);
     if (current.calculationPolicy) fresh.calculationPolicy = clone(current.calculationPolicy);
@@ -365,6 +363,15 @@
       taxUnknown: guided.taxUnknown
     };
     guided = null;
+  }
+
+  /* guided 히스토리 항목에 세션 상태(대화/스냅샷)가 없으면 복원할 대상이 없다(재시작 등).
+     App draft 는 이전/다른 견적일 수 있으므로 guided 로 가져오지 않고, 새 초안·견적번호도
+     발급하지 않는다 — Home 으로 귀결시키고 새 견적은 명시적 시작에서만 발급한다. */
+  function restoreGuidedWithoutState() {
+    App.toast("진행 중이던 견적 상태를 복원할 수 없습니다. 새 견적 만들기를 다시 시작해 주세요.");
+    showHome({ history: false });
+    guidedSnapshot = null;
   }
 
   function resumeGuidedConversation(state) {
@@ -403,8 +410,7 @@
         setInput(processGuidedInput, "예: 테스트상사");
         break;
       case "summary": showGuidedSummary(); break;
-      default:
-        startGuided("", { history: false, reuseCurrentDraft: true });
+      default: restoreGuidedWithoutState();
     }
   }
 
@@ -419,7 +425,7 @@
     guidedSnapshot = null;
     guided = {
       step: "recipientCompany",
-      draft: guidedDraft(options),
+      draft: guidedDraft(),
       currentItem: -1,
       taxUnknown: false
     };
@@ -855,13 +861,13 @@
         startFileIntake({ history: false, openChooser: false });
       } else if (view === "guided") {
         /* popstate 복원은 진행 중이던 guided 상태를 이어 쓴다 — App draft 로 대체하거나
-           새 견적번호를 발급하지 않는다. 스냅샷도 없으면 기존 초안 재사용으로 귀결한다. */
+           새 견적번호를 발급하지 않는다. 세션 상태가 없으면 안전하게 Home 으로 귀결한다. */
         if (guided) {
           resumeGuidedConversation(guided);
         } else if (guidedSnapshot) {
           resumeGuidedConversation(guidedSnapshot);
         } else {
-          startGuided("", { history: false, reuseCurrentDraft: true });
+          restoreGuidedWithoutState();
         }
       } else {
         showHome({ history: false });
