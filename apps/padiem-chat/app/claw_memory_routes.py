@@ -30,6 +30,7 @@ from .approved_memory import (
     validate_memory_id,
 )
 from .auth_routes import auth_ready, current_user_id
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .control_plane_identity_shadow import resolve_refreshed_session
 
 MAX_MEMORY_BODY_BYTES = 64 * 1024
@@ -98,11 +99,15 @@ async def _read_json_body(request: Request) -> dict[str, Any] | JSONResponse:
     content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
     if content_type != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
-    raw_body = await request.body()
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_MEMORY_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not raw_body:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-    if len(raw_body) > MAX_MEMORY_BODY_BYTES:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     try:
         data = json.loads(raw_body.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError):
