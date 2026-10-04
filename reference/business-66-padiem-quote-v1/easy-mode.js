@@ -337,8 +337,10 @@
     return value;
   }
 
-  function guidedDraft() {
+  function guidedDraft(options) {
     const current = App.getDraft();
+    /* 브라우저 히스토리 복원은 새 견적 명령이 아니므로 기존 초안과 견적번호를 그대로 이어 쓴다. */
+    if (options && options.reuseCurrentDraft === true && current) return current;
     const fresh = App.createFreshDraft("guided");
     fresh.sender = clone(current.sender);
     if (current.calculationPolicy) fresh.calculationPolicy = clone(current.calculationPolicy);
@@ -357,7 +359,7 @@
     startConversation();
     guided = {
       step: "recipientCompany",
-      draft: guidedDraft(),
+      draft: guidedDraft(options),
       currentItem: -1,
       taxUnknown: false
     };
@@ -792,7 +794,8 @@
       } else if (view === "file") {
         startFileIntake({ history: false, openChooser: false });
       } else if (view === "guided") {
-        startGuided("", { history: false });
+        /* popstate 복원은 새 견적 발급이 아니라 기존 초안 위에서 흐름을 다시 여는 것이다. */
+        startGuided("", { history: false, reuseCurrentDraft: true });
       } else {
         showHome({ history: false });
       }
