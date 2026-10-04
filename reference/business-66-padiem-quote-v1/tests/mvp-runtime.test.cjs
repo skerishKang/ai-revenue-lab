@@ -73,6 +73,17 @@ const CGI_PROFILE = {
   defaultValidityDays: 14,
   defaultTaxMode: "EXCLUSIVE"
 };
+/* canonical 서버는 부분 CompanyProfile 을 허용한다 (유효기간/부가세 기본값 null) */
+const PARTIAL_CGI_PROFILE = {
+  company: "CGI상사",
+  representative: "김범신",
+  businessNumber: "111-11-11111",
+  address: "서울특별시",
+  phone: "02-000-0000",
+  email: "cgi@example.invalid",
+  defaultValidityDays: null,
+  defaultTaxMode: null
+};
 const INTERPRET_TEXT = "대한건설에 배관 100미터, 미터당 18000원, 부가세 별도로 견적 만들어줘";
 const INTERPRET_CANDIDATE = {
   recipient: { company: "ABC건설", person: "" },
@@ -124,7 +135,8 @@ const jsonResponse = (data, status) => ({
 });
 
 /* ── harness A: padiem-account runtime authority ── */
-function buildAccountEnv({ signedIn, withSkill, withProfile }) {
+function buildAccountEnv({ signedIn, withSkill, withProfile, profile }) {
+  const runtimeProfile = profile || CGI_PROFILE;
   const elements = new Map();
   const httpCalls = [];
   const appCalls = [];
@@ -170,7 +182,7 @@ function buildAccountEnv({ signedIn, withSkill, withProfile }) {
     }
     if (target.endsWith("/api/padiem/b66/company-profile")) {
       if (!withProfile) return jsonResponse({ error: { message: "profile unavailable" } }, 404);
-      return jsonResponse({ company_profile: CGI_PROFILE });
+      return jsonResponse({ company_profile: runtimeProfile });
     }
     if (target.endsWith("/api/padiem/b66/quote/interpret")) {
       const body = JSON.parse(opts.body || "{}");
@@ -180,7 +192,7 @@ function buildAccountEnv({ signedIn, withSkill, withProfile }) {
       return jsonResponse({
         ok: true,
         candidate: Object.assign({}, INTERPRET_CANDIDATE),
-        company_profile: CGI_PROFILE
+        company_profile: runtimeProfile
       });
     }
     return jsonResponse({ error: { message: "unexpected endpoint" } }, 404);
@@ -268,8 +280,10 @@ async function harnessA() {
   assert.equal(draft.items[0].unitPrice, 18000, "item unitPrice");
   assert.equal(draft.sender.company, "CGI상사", "sender from CompanyProfile (skill demo sender never leaks)");
   assert.equal(draft.sender.rep, "김범신", "sender rep from CompanyProfile");
-  assert.equal(draft.meta.validDays, 14, "validity from CompanyProfile");
-  assert.equal(draft.tax.mode, "EXCLUSIVE", "tax mode from CompanyProfile default");
+  assert.equal(draft.meta.validDays, CGI_SKILL.fixedDefaults.validDays,
+    "SKILL_VALIDITY_DEFAULT_PRESERVED=YES (approved Skill validity outranks account defaults)");
+  assert.equal(draft.tax.mode, CGI_SKILL.fixedDefaults.taxMode,
+    "SKILL_TAX_DEFAULT_PRESERVED=YES (approved Skill tax default outranks account defaults)");
   assert.equal(draft.meta.source, "saved-quote-skill", "draft is built by the assigned skill authority");
   assert.ok(draft.calculationPolicy, "skill calculationPolicy carried into the draft");
   const totals = Core.computeDraftTotals(draft);
@@ -277,6 +291,33 @@ async function harnessA() {
   assert.ok(env.httpCalls.some((c) => c.url.endsWith("/api/padiem/b66/company-profile")),
     "company profile came from the standalone GET bridge");
   assert.ok(env.httpCalls.every((c) => !c.url.includes("extract-")), "no provider calls in the runtime path");
+
+  /* partial canonical CompanyProfile: 유효기간/부가세 기본값이 없어도 견적이 만들어져야 한다 */
+  const partialEnv = buildAccountEnv({
+    signedIn: true,
+    withSkill: true,
+    withProfile: true,
+    profile: PARTIAL_CGI_PROFILE
+  });
+  await flush();
+  const partialBridge = partialEnv.context.window.B66QuoteRuntimeBridge;
+  assert.equal(partialBridge.readiness().ready, true, "PARTIAL_COMPANY_PROFILE_ACCEPTED=YES");
+  const partialFreeForm = await partialBridge.interpret(INTERPRET_TEXT);
+  assert.equal(partialFreeForm.ok, true, "FREE_FORM_BUILD_WITH_PARTIAL_PROFILE=PASS");
+  assert.equal(partialFreeForm.draft.meta.validDays, CGI_SKILL.fixedDefaults.validDays,
+    "partial profile keeps the approved Skill validity");
+  assert.equal(partialFreeForm.draft.tax.mode, CGI_SKILL.fixedDefaults.taxMode,
+    "partial profile keeps the approved Skill tax default");
+  assert.equal(partialFreeForm.draft.sender.company, "CGI상사",
+    "DEMO_SENDER_LEAK=0 (partial profile still carries the account sender identity)");
+  const partialGuidedBuild = await partialBridge.buildFromFacts({
+    recipient: INTERPRET_CANDIDATE.recipient,
+    items: INTERPRET_CANDIDATE.items,
+    quoteNo: "PQ-20261004-045",
+    issueDate: "2026-10-04"
+  });
+  assert.equal(partialGuidedBuild.ok === true && partialGuidedBuild.draft.sender.company === "CGI상사", true,
+    "GUIDED_BUILD_WITH_PARTIAL_PROFILE=PASS " + JSON.stringify(partialGuidedBuild.ok));
 
   /* 서버가 응답으로 내려준 company_profile 이 최신 authority 다 (무시 금지) */
   env.httpCalls.push({ url: "/api/padiem/b66/quote/interpret", method: "POST", body: null });
@@ -293,6 +334,38 @@ async function harnessA() {
   const branched = await bridge.interpret(INTERPRET_TEXT);
   assert.equal(branched.ok, true);
   assert.equal(branched.draft.sender.company, "CGI지점상사", "server-returned company profile is honored");
+
+  /* precedence: 이번 견적의 명시적 값 > 승인된 Skill 기본값 > CompanyProfile fallback */
+  env.context.fetch = async (url, options) => {
+    const target = String(url);
+    if (target.endsWith("/api/padiem/b66/quote/interpret")) {
+      env.httpCalls.push({ url: target, method: "POST", body: options && options.body });
+      return jsonResponse({
+        ok: true,
+        candidate: Object.assign({ taxMode: "INCLUSIVE" }, INTERPRET_CANDIDATE),
+        company_profile: Object.assign({}, CGI_PROFILE, { defaultTaxMode: "EXEMPT" })
+      });
+    }
+    return fetchOriginal(url, options);
+  };
+  const explicitTaxDraft = await bridge.interpret(INTERPRET_TEXT);
+  assert.equal(explicitTaxDraft.draft.tax.mode, "INCLUSIVE",
+    "EXPLICIT_QUOTE_TAX_WINS=YES (per-quote tax outranks Skill default and CompanyProfile)");
+  env.context.fetch = async (url, options) => {
+    const target = String(url);
+    if (target.endsWith("/api/padiem/b66/quote/interpret")) {
+      env.httpCalls.push({ url: target, method: "POST", body: options && options.body });
+      return jsonResponse({
+        ok: true,
+        candidate: Object.assign({}, INTERPRET_CANDIDATE),
+        company_profile: Object.assign({}, CGI_PROFILE, { defaultTaxMode: "EXEMPT" })
+      });
+    }
+    return fetchOriginal(url, options);
+  };
+  const skillTaxDraft = await bridge.interpret(INTERPRET_TEXT);
+  assert.equal(skillTaxDraft.draft.tax.mode, CGI_SKILL.fixedDefaults.taxMode,
+    "account tax default never overrides the approved Skill family default");
 
   /* 불완전 문장: follow-up engine 없이 정직한 partial 보고 */
   env.context.fetch = async (url, options) => {
@@ -334,7 +407,8 @@ async function harnessA() {
 }
 
 /* ── harness B: easy-mode UI 수렴 ── */
-function buildEasyEnv({ ready }) {
+function buildEasyEnv({ ready, profile }) {
+  const runtimeProfile = profile || CGI_PROFILE;
   const elements = new Map();
   const created = [];
   const documentListeners = {};
@@ -418,7 +492,7 @@ function buildEasyEnv({ ready }) {
           issueDate: facts.issueDate,
           taxMode: facts.taxMode,
           memo: facts.memo
-        }, { companyProfile: CGI_PROFILE });
+        }, { companyProfile: runtimeProfile });
         return Promise.resolve(built.ok ? { ok: true, draft: built.draft } : { ok: false, code: built.code });
       },
       errorText: (code) => "runtime error: " + code
@@ -540,6 +614,39 @@ async function harnessB() {
   const guidedDraft = guidedEnv.replaceDrafts[0];
   assert.equal(guidedDraft.sender.company, "CGI상사", "GUIDED_DEMO_SENDER_LEAK=0");
   assert.equal(guidedDraft.recipient.company, "ABC건설", "guided result keeps per-quote facts");
+  assert.equal(guidedDraft.meta.validDays, CGI_SKILL.fixedDefaults.validDays,
+    "guided build keeps the approved Skill validity");
+  assert.equal(guidedDraft.tax.mode, "EXCLUSIVE", "guided per-quote tax answer wins over the Skill default");
+
+  /* B4. partial canonical CompanyProfile 로도 guided 가 정상 견적을 만든다 */
+  const partialEnv = buildEasyEnv({ ready: true, profile: PARTIAL_CGI_PROFILE });
+  await flush();
+  clickStarter(partialEnv, "guidedStarter");
+  await flush();
+  const partialAnswer = async (text) => {
+    partialEnv.getElement("easyComposer").value = text;
+    clickStarter(partialEnv, "easySend");
+    await flush();
+  };
+  await partialAnswer("ABC건설");
+  await partialAnswer("없음");
+  await partialAnswer("배관");
+  await partialAnswer("100");
+  await partialAnswer("18000");
+  await partialAnswer("다음");
+  await partialAnswer("별도");
+  await partialAnswer("없음");
+  await partialAnswer("현재");
+  const partialChips = chipsWith(partialEnv, "견적서 만들기");
+  assert.equal(partialChips.length > 0, true, "partial-profile guided reaches the summary");
+  partialChips[partialChips.length - 1].listeners.click[0]();
+  await flush();
+  const partialGuidedDraft = partialEnv.replaceDrafts[0];
+  assert.ok(partialGuidedDraft, "GUIDED_BUILD_WITH_PARTIAL_PROFILE=PASS");
+  assert.equal(partialGuidedDraft.sender.company, "CGI상사", "partial-profile guided keeps the account sender");
+  assert.equal(partialGuidedDraft.meta.validDays, CGI_SKILL.fixedDefaults.validDays,
+    "partial-profile guided keeps the Skill validity default");
+  assert.equal(partialGuidedDraft.recipient.company, "ABC건설", "partial-profile guided keeps per-quote facts");
 
   console.log("ONE_PRIMARY_B66_RUNTIME=PASS");
   console.log("HOME_COMPOSER_DEFAULT=FREE_FORM");
@@ -547,6 +654,12 @@ async function harnessB() {
   console.log("HOME_TEXT_SILENTLY_CONVERTED_TO_GUIDED=NO");
   console.log("GUIDED_USES_ASSIGNED_SERVER_SKILL=PASS");
   console.log("GUIDED_USES_ACCOUNT_COMPANY_PROFILE=PASS");
+  console.log("PARTIAL_COMPANY_PROFILE_ACCEPTED=YES");
+  console.log("SKILL_VALIDITY_DEFAULT_PRESERVED=YES");
+  console.log("SKILL_TAX_DEFAULT_PRESERVED=YES");
+  console.log("GUIDED_BUILD_WITH_PARTIAL_PROFILE=PASS");
+  console.log("FREE_FORM_BUILD_WITH_PARTIAL_PROFILE=PASS");
+  console.log("DEMO_SENDER_LEAK=0");
   console.log("GUIDED_DEMO_SENDER_LEAK=0");
   console.log("FREE_FORM_DEMO_SENDER_LEAK=0");
   console.log("PRIMARY_FLOW_AUTO_OPENS_COMPLEX_DIRECT_FORM=NO");
