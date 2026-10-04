@@ -525,8 +525,15 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
         router.process(intake_req)
     except ContractError as exc:
         return _error(400, "contract_violation", str(exc))
-    except Exception as exc:
-        return _error(400, "invalid_input", str(exc))
+    except Exception:
+        # Unexpected router/runtime details are never browser-facing. Contract
+        # violations above remain specific; everything else is an internal
+        # execution failure with bounded product copy.
+        return _error(
+            500,
+            "intake_generation_failed",
+            "요청 처리 준비 중 오류가 발생했습니다. 다시 시도해 주세요.",
+        )
 
     # Canonical session reference (#2829): resolved through the conversation
     # authority itself, and it fails closed before quota, tenant, or dispatch.
