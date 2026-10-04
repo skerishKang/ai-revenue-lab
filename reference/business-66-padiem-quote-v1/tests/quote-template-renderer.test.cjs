@@ -747,6 +747,8 @@ const detailHtml = rollupDoc.getElementById("pvDetailPages").innerHTML;
 check(detailHtml.includes("quote-detail-page"), "detail-page adapter emits printable page container");
 check(detailHtml.includes("quote-detail-section"), "detail-page adapter emits section headings");
 check(detailHtml.includes("스마트팜 제출견적"), "detail-page title is rendered");
+check(detailHtml.includes('<h2 class="quote-detail-title">'),
+  "non-formal detail page keeps the standalone title");
 check(detailHtml.includes("₩16,330,000"), "detail-page subtotal is rendered from QuoteCore");
 check(!/Math\.|computeTotals|computeDraftTotals/.test(detailHtml), "rendered detail markup contains no arithmetic");
 
@@ -767,6 +769,17 @@ check(formalTermsHtml.includes("quote-summary-term") && formalTermsHtml.includes
 const formalDetailHtml = formalDoc.getElementById("pvDetailPages").innerHTML;
 check(formalDetailHtml.includes('data-layout-variant="formal-grid-v1"'),
   "detail pages inherit the formal layout variant");
+check(formalDetailHtml.includes('<thead><tr class="quote-detail-title-row"><th colspan="8">') &&
+      formalDetailHtml.includes("자재산출내역서</th></tr></thead>"),
+  "formal detail title is the only row inside the repeating table header group");
+check(formalDetailHtml.includes('<tbody><tr class="quote-detail-column-row"><th') &&
+      (formalDetailHtml.match(/quote-detail-column-row/g) || []).length === 1,
+  "column header row renders once as the first body row, so continuation pages repeat the title only");
+check((formalDetailHtml.match(/<colgroup><col/g) || []).length === 1 &&
+      (formalDetailHtml.match(/<col[ >]/g) || []).length === 8,
+  "formal detail table pins every column width so the repeating title row cannot move columns");
+check(!formalDetailHtml.includes('<h2 class="quote-detail-title">'),
+  "formal detail title is not duplicated outside the repeating header");
 check(formalDetailHtml.includes('rowspan="2"'),
   "adjacent repeated detail names render as a merged cell");
 check(formalDetailHtml.includes("quote-detail-final"),
@@ -783,6 +796,14 @@ check(stylesCss.includes('[data-layout-variant="formal-grid-v1"]'),
   "formal-grid CSS is scoped to the opt-in variant");
 check(stylesCss.includes("background: #c9c9c9"),
   "formal detail header has the reviewed gray treatment");
+check(stylesCss.includes(".quote-detail-title-row th") && stylesCss.includes("background: #fff"),
+  "formal continuation title row has reviewed title styling inside the repeating thead");
+check(/\.quote-detail-page\[data-layout-variant="formal-grid-v1"\] \.quote-detail-title-row th\s*\{[^}]*line-height: 1.5;[^}]*\}/.test(stylesCss),
+  "formal continuation title row keeps the reviewed title metrics");
+check(/\.quote-detail-title-row th\s*\{[^}]*border: 0/.test(stylesCss),
+  "formal continuation title row has no box border, matching the standalone title block");
+check(/\.quote-detail-page\[data-layout-variant="formal-grid-v1"\] \.quote-table \{\s*border: 0;/.test(stylesCss),
+  "formal detail table carries no outer border so the title is not boxed on continuation pages");
 check(stylesCss.includes(".quote-summary-terms") && stylesCss.includes("#pvValidity"),
   "formal summary CSS provides terms layout and hides duplicate top metadata");
 check(stylesCss.includes("#pvSenderBizNo") && stylesCss.includes("#pvSenderContact"),
@@ -833,6 +854,7 @@ console.log("FORMAL_SENDER_ORDER=PASS");
 console.log("FORMAL_ISSUE_DATE_FORMAT=PASS");
 console.log("DETAIL_REPEATED_NAME_MERGED=PASS");
 console.log("DETAIL_HEADER_GRAY=PASS");
+console.log("DETAIL_CONTINUATION_HEADER=PASS");
 console.log("DETAIL_COMPACT_ROWS=PASS");
 console.log("DETAIL_SUBTOTAL_ROW=PASS");
 console.log("DETAIL_FINAL_ROW=PASS");

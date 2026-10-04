@@ -174,6 +174,7 @@
       sender: {
         company: skill.fixedDefaults.sender.company,
         rep: skill.fixedDefaults.sender.rep,
+        contactPerson: skill.fixedDefaults.sender.contactPerson || "",
         bizNo: skill.fixedDefaults.sender.bizNo,
         address: skill.fixedDefaults.sender.address,
         phone: skill.fixedDefaults.sender.phone,

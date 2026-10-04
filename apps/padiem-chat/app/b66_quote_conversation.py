@@ -55,6 +55,8 @@ _FORBIDDEN_KEYS = frozenset(
     }
 )
 _ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+_NUMERIC_TEXT_RE = re.compile(r"^-?(?:0|[1-9]\d*)(?:\.\d+)?$")
+_JSON_FENCE_RE = re.compile(r"^```(?:json)?\s*(\{.*\})\s*```$", re.IGNORECASE | re.DOTALL)
 
 
 class B66QuoteConversationError(ValueError):
@@ -129,7 +131,14 @@ def _optional_text(value: Any, *, limit: int) -> str | None:
 def _optional_number(value: Any, *, positive: bool) -> int | float | None:
     if value is None:
         return None
-    if isinstance(value, bool) or not isinstance(value, (int, float)):
+    if isinstance(value, bool):
+        raise B66QuoteConversationError("invalid_number")
+    if isinstance(value, str):
+        text = value.strip()
+        if not _NUMERIC_TEXT_RE.fullmatch(text):
+            raise B66QuoteConversationError("invalid_number")
+        value = text
+    elif not isinstance(value, (int, float)):
         raise B66QuoteConversationError("invalid_number")
     number = float(value)
     if not math.isfinite(number):
@@ -147,8 +156,12 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
     if isinstance(raw, str):
         if not raw or len(raw) > MAX_RESULT_CHARS:
             raise B66QuoteConversationError("invalid_model_output")
+        text = raw.strip()
+        fenced = _JSON_FENCE_RE.fullmatch(text)
+        if fenced is not None:
+            text = fenced.group(1).strip()
         try:
-            raw = json.loads(raw)
+            raw = json.loads(text)
         except json.JSONDecodeError as exc:
             raise B66QuoteConversationError("invalid_model_output") from exc
     if not isinstance(raw, dict):
@@ -288,10 +301,12 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
     tax_mode_raw = raw.get("taxMode")
     if tax_mode_raw is None:
         tax_mode = None
-    elif not isinstance(tax_mode_raw, str) or tax_mode_raw not in TAX_MODES:
+    elif not isinstance(tax_mode_raw, str):
         raise B66QuoteConversationError("invalid_tax_mode")
     else:
-        tax_mode = tax_mode_raw
+        tax_mode = tax_mode_raw.strip().upper()
+        if tax_mode not in TAX_MODES:
+            raise B66QuoteConversationError("invalid_tax_mode")
 
     missing_raw = raw.get("missing")
     if missing_raw is None:

@@ -346,6 +346,42 @@ class LocalAgentResidentRuntimeHost:
     def _now(self) -> datetime:
         return _aware(self._clock(), "clock")
 
+    def current_desktop_session_material(self) -> dict[str, Any]:
+        """#3436 B2d — one bounded current-session projection for the trusted
+        local Desktop boundary. Fail-closed on everything that is not the
+        host's own current ONLINE canonical session.
+
+        No value is minted here and no new verifier is invented: the existing
+        canonical pinned authority re-validates the exact session/binding
+        correlation (binding_ref, device_id, account_ref, workspace_ref) and
+        currentness (`require_current_binding`, `require_session`), and the
+        existing protected store re-validates the full binding context on
+        load, so a rotated generation, an expired credential or a mismatched
+        binding refuse here. DESKTOP_SESSION_OPEN=0: the host never opens a
+        session to satisfy this projection.
+        """
+        from .local_agent_desktop_material import project_session_material
+
+        with self._host_lock:
+            if self._state is not ResidentHostState.ONLINE:
+                raise ContractError("resident host is not online")
+            session = self._session
+            if session is None:
+                raise ContractError("resident host has no current broker session")
+            now = self._now()
+            binding = self._assembly._binding
+            authority = self._channel.authority
+            authority.require_current_binding(binding, now=now)
+            authority.require_session(session, now=now)
+            credential = self._credential_store.load(binding=binding, now=now)
+            return project_session_material(
+                session_id=session.session_id,
+                binding_ref=binding.binding_ref,
+                credential=credential,
+                credential_generation=binding.credential_generation,
+                expires_at=session.expires_at,
+            )
+
     def heartbeat_freshness_seconds(self) -> float | None:
         """Client-local freshness of the last acknowledged heartbeat (#3140).
 

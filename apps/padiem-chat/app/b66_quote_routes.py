@@ -54,6 +54,10 @@ def _store(request: Request) -> Any | None:
     return getattr(request.app.state, "b66_saved_quote_skill_store", None)
 
 
+def _company_profile_store(request: Request) -> Any | None:
+    return getattr(request.app.state, "b66_company_profile_store", None)
+
+
 async def _json(request: Request) -> dict[str, Any] | JSONResponse:
     if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
@@ -199,6 +203,17 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     if not callable(safe_dict):
         return _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
     candidate = safe_dict()
+
+    company_profile = None
+    profile_store = _company_profile_store(request)
+    get_profile = getattr(profile_store, "get_profile", None) if profile_store is not None else None
+    if callable(get_profile):
+        try:
+            value = get_profile(user_id=uid, workspace_id=workspace_id)
+            company_profile = await value if inspect.isawaitable(value) else value
+        except Exception:
+            return _error(503, "company_profile_read_failed", "회사정보를 불러오지 못했습니다.")
+
     return JSONResponse(
         {
             "ok": True,
@@ -210,6 +225,7 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
                 "skill_version": saved.get("skill_version"),
             },
             "candidate": candidate,
+            "company_profile": company_profile,
             "execution": {
                 "source_document_parse_calls": 0,
                 "server_total_calculation": False,

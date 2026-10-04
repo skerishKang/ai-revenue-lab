@@ -220,3 +220,85 @@ html[data-theme="padiem-glass"] .capability-read {
     flex-wrap: wrap;
   }
 }
+
+/* ── Connectors dialog brightness — #connectorsDialog scoped only ──────── */
+/* On Padiem Glass, --panel resolves to rgba(235,239,242,.46), so the
+   Connectors dialog rendered as a fogged sheet over a near-black backdrop.
+   The glass effect is kept; the transparency is reduced instead. This is the
+   same near-solid treatment #clawDialog already carries, scoped to the
+   Connectors surface — Skills/Claw dialogs are intentionally untouched. */
+html[data-theme="padiem-glass"] #connectorsDialog {
+  background: rgba(246, 249, 251, .97);
+  color: #17212a;
+  box-shadow: 0 16px 56px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, .72);
+}
+
+/* Shared backdrop is rgba(0,0,0,.58); for Connectors that read as a dark pit
+   behind a transparent panel. A lighter scrim plus blur keeps focus while the
+   page stays legible behind the bright panel. */
+#connectorsDialog::backdrop {
+  background: rgba(9, 20, 30, .38);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+#connectorsDialog .capability-card {
+  background: rgba(255, 255, 255, .92);
+  border-color: rgba(23, 33, 42, .14);
+}
+
+/* Connector action buttons reuse .connector-retry, whose var(--panel)
+   background is translucent on glass. Give the dialog's buttons a solid
+   bright surface so the label stays readable over the card. */
+#connectorsDialog .connector-retry {
+  background: rgba(255, 255, 255, .92);
+  border-color: rgba(23, 33, 42, .16);
+  color: #17212a;
+}
+
+/* Small type on the bright panel: the shared rules mute these at opacity
+   .5–.6, which fails small-text contrast on the near-solid surface. Solid,
+   AA-checked grays replace opacity muting inside this dialog only. */
+#connectorsDialog .capability-kicker,
+#connectorsDialog .capability-status,
+#connectorsDialog .capability-tagline,
+#connectorsDialog .capability-card small,
+#connectorsDialog .capability-soon {
+  opacity: 1;
+  color: #3d4c59;
+}
+
+#connectorsDialog .capability-workspace {
+  color: #3d4c59;
+}
+
+#connectorsDialog .capability-card[data-connector-status="connected"] .capability-workspace {
+  color: #1f5f86;
+}
+
+/* ── Calendar READ activation state (separate axis from the OAuth link) ── */
+/* #connectorsDialog .capability-read-state is the Calendar card's own READ
+   line. data-read-state carries the closed session state; every color meets
+   WCAG AA at 11px/700 on the bright card surface. The span is [hidden] in
+   markup and only shown while the OAuth/workspace axis is connected. */
+#connectorsDialog .capability-read-state[data-read-state="pending"] {
+  color: #8a5300;
+}
+
+#connectorsDialog .capability-read-state[data-read-state="activating"] {
+  color: #175cd3;
+}
+
+#connectorsDialog .capability-read-state[data-read-state="active"] {
+  color: #16794c;
+}
+
+#connectorsDialog .capability-read-state[data-read-state="failed"] {
+  color: #b3261e;
+}
+
+/* The server-side check could not be trusted: a neutral fact, never a state
+   claim — it must not read as "needs activation" nor as "active". */
+#connectorsDialog .capability-read-state[data-read-state="unavailable"] {
+  color: #3d4c59;
+}
