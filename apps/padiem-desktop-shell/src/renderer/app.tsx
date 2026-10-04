@@ -45,10 +45,15 @@ import type {
   BoundedLogResponse,
   CanonicalConversationDetail,
   CanonicalConversationListResponse,
+  CanonicalRunListItem,
+  CanonicalRunListResponse,
+  CanonicalRunStatus,
   DeviceLifecycleState,
   PairingDeepLinkResponse,
   RunnerHealthResponse,
   ShellStatus,
+  WorkspaceEntry,
+  WorkspaceEntryKind,
   WorkspaceListResponse,
   WorkspaceRootResponse,
 } from './types.js';
@@ -60,8 +65,11 @@ export interface ShellViewState {
   readonly log: BoundedLogResponse | null;
   readonly workspaceRoot: WorkspaceRootResponse | null;
   readonly workspaceListing: WorkspaceListResponse | null;
+  /** #3436 project browser: the selected entry is view state, never IPC. */
+  readonly selectedWorkspaceEntry: WorkspaceEntry | null;
   readonly conversationList: CanonicalConversationListResponse | null;
   readonly selectedConversation: CanonicalConversationDetail | null;
+  readonly runList: CanonicalRunListResponse | null;
   readonly notice: string | null;
   /** Which action produced `notice`. The raw reason is a diagnostic. */
   readonly noticeAction: ShellNoticeAction | null;
@@ -79,8 +87,10 @@ export const INITIAL_SHELL_VIEW_STATE: ShellViewState = Object.freeze({
   log: null,
   workspaceRoot: null,
   workspaceListing: null,
+  selectedWorkspaceEntry: null,
   conversationList: null,
   selectedConversation: null,
+  runList: null,
   notice: null,
   noticeAction: null,
   error: null,
@@ -95,6 +105,11 @@ export interface ShellActions {
   readonly chooseWorkspaceRoot: () => Promise<void>;
   readonly openWorkspaceDirectory: (relativePath: string) => Promise<void>;
   readonly clearWorkspaceRoot: () => Promise<void>;
+  /**
+   * #3436 project browser: selecting an entry is local view state. No IPC is
+   * involved — the main process learns nothing about which entry is highlighted.
+   */
+  readonly selectWorkspaceEntry: (relativePath: string) => void;
   readonly selectConversation: (conversationId: string) => Promise<void>;
 }
 
@@ -175,6 +190,9 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
         ...prev,
         workspaceRoot: listing.root,
         workspaceListing: listing,
+        // Expanding a folder is navigation: the previous selection belonged to
+        // the previous directory and is dropped rather than left ambiguous.
+        selectedWorkspaceEntry: null,
       }));
     },
     [api],
@@ -183,13 +201,14 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
   const chooseWorkspaceRoot = useCallback(async (): Promise<void> => {
     if (!api) return;
     const root = await api.chooseWorkspaceRoot();
-    setState((prev) => ({ ...prev, workspaceRoot: root }));
+    setState((prev) => ({ ...prev, workspaceRoot: root, selectedWorkspaceEntry: null }));
     if (root.selected) {
       const listing = await api.listWorkspaceDirectory('');
       setState((prev) => ({
         ...prev,
         workspaceRoot: listing.root,
         workspaceListing: listing,
+        selectedWorkspaceEntry: null,
       }));
     }
   }, [api]);
@@ -201,8 +220,21 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
       ...prev,
       workspaceRoot: root,
       workspaceListing: null,
+      selectedWorkspaceEntry: null,
     }));
   }, [api]);
+
+  const selectWorkspaceEntry = useCallback((relativePath: string): void => {
+    setState((prev) => {
+      // Only an entry of the CURRENT listing can be selected, and the entry is
+      // taken from the main-owned projection rather than reconstructed here.
+      const entry = prev.workspaceListing?.entries.find(
+        (candidate) => candidate.relativePath === relativePath,
+      );
+      if (!entry) return prev;
+      return { ...prev, selectedWorkspaceEntry: entry };
+    });
+  }, []);
 
   const selectConversation = useCallback(
     async (conversationId: string): Promise<void> => {
@@ -215,6 +247,12 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
     },
     [api],
   );
+
+  const loadRuns = useCallback(async (): Promise<void> => {
+    if (!api) return;
+    const runList = await api.listRuns();
+    setState((prev) => ({ ...prev, runList }));
+  }, [api]);
 
   useEffect(() => {
     if (!api) return;
@@ -229,9 +267,13 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
     void api.listConversations().then((conversationList) => {
       setState((prev) => ({ ...prev, conversationList }));
     });
-    const timer = setInterval(() => void refresh(), 5000);
+    void loadRuns();
+    const timer = setInterval(() => {
+      void refresh();
+      void loadRuns();
+    }, 5000);
     return () => clearInterval(timer);
-  }, [api, refresh]);
+  }, [api, refresh, loadRuns]);
 
   if (!api) {
     return { error: state.error ?? 'connecting to the local shell bridge…' };
@@ -247,6 +289,7 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
       chooseWorkspaceRoot,
       openWorkspaceDirectory,
       clearWorkspaceRoot,
+      selectWorkspaceEntry,
       selectConversation,
     },
   };
@@ -429,17 +472,62 @@ function parentWorkspacePath(relativePath: string): string {
   return parts.join('/');
 }
 
+function workspaceBreadcrumbs(rootName: string, relativePath: string): readonly string[] {
+  const segments = relativePath.split('/').filter(Boolean);
+  return [rootName, ...segments];
+}
+
+/** Closed map from the main-owned entry kind to its localized label. */
+const WORKSPACE_KIND_LABEL: Record<WorkspaceEntryKind, ShellStringKey> = {
+  directory: 'workspace.kind.directory',
+  file: 'workspace.kind.file',
+  link: 'workspace.kind.link',
+};
+
+/** Human-readable byte size for the entry list. Bounded, never loads content. */
+function formatWorkspaceSize(sizeBytes: number | null, locale: ShellLocale): string {
+  if (sizeBytes === null || !Number.isFinite(sizeBytes) || sizeBytes < 0) return '';
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  let value = sizeBytes;
+  let unit = 0;
+  while (value >= 1024 && unit < units.length - 1) {
+    value = value / 1024;
+    unit += 1;
+  }
+  const rendered = unit === 0 ? String(Math.round(value)) : value.toFixed(1);
+  return `${rendered} ${units[unit]}`;
+}
+
+/** The selected entry's modified date, localized, or a plain dash. */
+function formatWorkspaceModified(modifiedAt: string | null, locale: ShellLocale): string {
+  if (modifiedAt === null) return '-';
+  const parsed = Date.parse(modifiedAt);
+  if (!Number.isFinite(parsed)) return '-';
+  return new Date(parsed).toLocaleString(locale === 'ko' ? 'ko-KR' : 'en-US');
+}
+
+/**
+ * #3436 project browser.
+ *
+ * Read-only, one directory at a time: the main process owns the selected root
+ * and answers only root-relative list requests, so the renderer can expand a
+ * folder but can never address an absolute path. Selecting an entry is local
+ * view state — no write, rename, delete or create control exists anywhere on
+ * this surface (LOCAL_FILE_BROWSER_READ_ONLY=YES).
+ */
 export function WorkspacePanel(props: {
   root: WorkspaceRootResponse | null;
   listing: WorkspaceListResponse | null;
+  selectedEntry: WorkspaceEntry | null;
   actions: ShellActions;
   locale: ShellLocale;
   advanced: boolean;
 }): ReactElement {
-  const { root, listing, actions, locale, advanced } = props;
+  const { root, listing, selectedEntry, actions, locale, advanced } = props;
   const t = (key: ShellStringKey): string => translate(locale, key);
   const selected = root?.selected === true;
   const directory = listing?.directory ?? '';
+  const crumbs = workspaceBreadcrumbs(root?.rootName ?? '', directory);
 
   return (
     <section className="panel workspace-panel">
@@ -462,13 +550,31 @@ export function WorkspacePanel(props: {
 
       {selected ? (
         <>
-          <div className="workspace-location">
-            <strong>{root?.rootName}</strong>
-            {directory ? <span> / {directory}</span> : null}
-          </div>
+          <nav className="workspace-breadcrumb" aria-label={t('workspace.breadcrumb')}>
+            {crumbs.map((crumb, index) => {
+              const isLast = index === crumbs.length - 1;
+              const target = crumbs.slice(1, index).join('/');
+              return isLast ? (
+                <span key={`${crumb}-${index}`} className="workspace-crumb workspace-crumb-current" aria-current="location">
+                  {crumb}
+                </span>
+              ) : (
+                <button
+                  key={`${crumb}-${index}`}
+                  className="workspace-crumb"
+                  onClick={() => void actions.openWorkspaceDirectory(target)}
+                >
+                  {crumb}
+                </button>
+              );
+            })}
+          </nav>
           {advanced && root?.rootPath ? (
             <p className="workspace-path" data-advanced="true">{root.rootPath}</p>
           ) : null}
+          {/* The local root is a local execution context, not a workspace:
+              saying so here keeps the two concepts from being conflated. */}
+          <p className="workspace-local-note">{t('workspace.localOnlyNote')}</p>
           <div className="row workspace-nav">
             <button disabled={directory === ''} onClick={() => void actions.openWorkspaceDirectory(parentWorkspacePath(directory))}>
               {t('workspace.up')}
@@ -478,29 +584,62 @@ export function WorkspacePanel(props: {
             </button>
           </div>
           {listing && !listing.ok ? (
-            <p className="workspace-error">{t('workspace.unavailable')}</p>
+            <p className="workspace-error" data-error-code={listing.errorCode ?? 'none'}>
+              {listing.errorCode === 'depth_exceeded'
+                ? t('workspace.depthExceeded')
+                : t('workspace.unavailable')}
+            </p>
           ) : null}
           <ul className="workspace-list">
-            {(listing?.entries ?? []).map((entry) => (
-              <li key={entry.relativePath} data-kind={entry.kind}>
-                {entry.kind === 'directory' ? (
-                  <button className="workspace-entry" onClick={() => void actions.openWorkspaceDirectory(entry.relativePath)}>
-                    <span aria-hidden="true">▸</span>
-                    <span>{entry.name}</span>
-                  </button>
-                ) : (
-                  <span className="workspace-entry workspace-entry-static">
-                    <span aria-hidden="true">{entry.kind === 'file' ? '·' : '↗'}</span>
-                    <span>{entry.name}</span>
-                  </span>
-                )}
-              </li>
-            ))}
+            {(listing?.entries ?? []).map((entry) => {
+              const isSelected = selectedEntry?.relativePath === entry.relativePath;
+              const size = formatWorkspaceSize(entry.sizeBytes, locale);
+              return (
+                <li
+                  key={entry.relativePath}
+                  data-kind={entry.kind}
+                  data-entry-path={entry.relativePath}
+                  data-selected={isSelected ? 'true' : 'false'}
+                >
+                  {entry.kind === 'directory' ? (
+                    <button className="workspace-entry" onClick={() => void actions.openWorkspaceDirectory(entry.relativePath)}>
+                      <span aria-hidden="true">▸</span>
+                      <span>{entry.name}</span>
+                    </button>
+                  ) : (
+                    <button
+                      className={`workspace-entry workspace-entry-selectable${isSelected ? ' workspace-entry-selected' : ''}`}
+                      aria-pressed={isSelected}
+                      onClick={() => actions.selectWorkspaceEntry(entry.relativePath)}
+                    >
+                      <span aria-hidden="true">{entry.kind === 'file' ? '·' : '↗'}</span>
+                      <span>{entry.name}</span>
+                      {size ? <span className="workspace-entry-size">{size}</span> : null}
+                    </button>
+                  )}
+                </li>
+              );
+            })}
           </ul>
           {listing?.ok && listing.entries.length === 0 ? (
             <p className="guidance">{t('workspace.noEntries')}</p>
           ) : null}
           {listing?.truncated ? <p className="notice">{t('workspace.truncated')}</p> : null}
+          {selectedEntry ? (
+            <div className="workspace-selection" data-selected-path={selectedEntry.relativePath}>
+              <strong>{selectedEntry.name}</strong>
+              <dl>
+                <dt>{t('workspace.selectedKind')}</dt>
+                <dd>{t(WORKSPACE_KIND_LABEL[selectedEntry.kind])}</dd>
+                <dt>{t('workspace.selectedPath')}</dt>
+                <dd>{selectedEntry.relativePath}</dd>
+                <dt>{t('workspace.selectedSize')}</dt>
+                <dd>{formatWorkspaceSize(selectedEntry.sizeBytes, locale) || '-'}</dd>
+                <dt>{t('workspace.selectedModified')}</dt>
+                <dd>{formatWorkspaceModified(selectedEntry.modifiedAt, locale)}</dd>
+              </dl>
+            </div>
+          ) : null}
         </>
       ) : null}
     </section>
@@ -593,6 +732,128 @@ export function ConversationWorkspacePanel(props: {
         </p>
       ) : null}
     </section>
+  );
+}
+
+/**
+ * #3436 B3a — canonical run activity surface.
+ *
+ * A fail-closed presentation of the canonical Padiem Claw run history
+ * (apps/padiem-chat /api/claw/runs), the same authority Web Claw reads. The
+ * Desktop mints no run id, keeps no run store and offers no mutation: what is
+ * shown is the server's own bounded projection of the owner's recent runs.
+ * When the canonical source is unavailable the surface stays at
+ * `data-run-source="canonical-required"` — never a local run list.
+ *
+ * `liveActivitySource` is projected honestly: the repository has no live
+ * run-event authority yet, so this is a bounded recent-records view, and it is
+ * never presented as a live feed.
+ */
+export function RunActivityPanel(props: {
+  locale: ShellLocale;
+  advanced: boolean;
+  runs: CanonicalRunListResponse | null;
+}): ReactElement {
+  const { locale, advanced, runs } = props;
+  const t = (key: ShellStringKey): string => translate(locale, key);
+  const canonical = runs !== null && runs.ok;
+  const source = canonical ? 'canonical' : 'canonical-required';
+  return (
+    <section className="run-activity" data-run-source={source} aria-labelledby="desktop-run-title">
+      <div className="run-activity-header">
+        <h2 id="desktop-run-title">{t('desktop.runTitle')}</h2>
+        <span className="run-source-dot" aria-hidden="true" />
+      </div>
+      {canonical && runs.runs.length > 0 ? (
+        <ul className="run-list">
+          {runs.runs.map((run) => (
+            <RunActivityEntry key={run.runId} run={run} locale={locale} advanced={advanced} />
+          ))}
+        </ul>
+      ) : canonical ? (
+        <p className="run-empty-state">{t('desktop.runEmpty')}</p>
+      ) : (
+        <div className="run-empty-state run-pending">
+          <h3>{t('desktop.runPendingTitle')}</h3>
+          <p>{t('desktop.runPendingBody')}</p>
+        </div>
+      )}
+      {advanced ? (
+        <p className="run-authority-note" data-advanced="true">
+          {t('desktop.runAuthorityNote')}
+        </p>
+      ) : null}
+    </section>
+  );
+}
+
+function runStatusText(locale: ShellLocale, status: CanonicalRunStatus): string {
+  const key = (
+    {
+      queued: 'desktop.runStatusQueued',
+      preparing: 'desktop.runStatusPreparing',
+      running: 'desktop.runStatusRunning',
+      waiting_approval: 'desktop.runStatusWaitingApproval',
+      completed: 'desktop.runStatusCompleted',
+      failed: 'desktop.runStatusFailed',
+      cancelled: 'desktop.runStatusCancelled',
+    } as const
+  )[status];
+  return translate(locale, key);
+}
+
+/**
+ * One canonical run row. Every field is the server's own: the linked
+ * conversation and workspace ids are projected verbatim and never re-derived
+ * from the Desktop's local state. Canonical ids stay Advanced-only (#3165).
+ */
+function RunActivityEntry(props: {
+  run: CanonicalRunListItem;
+  locale: ShellLocale;
+  advanced: boolean;
+}): ReactElement {
+  const { run, locale, advanced } = props;
+  const t = (key: ShellStringKey): string => translate(locale, key);
+  return (
+    <li className="run-entry" data-run-status={run.status}>
+      <div className="run-entry-main">
+        <span className={`run-status-badge status-${run.status}`}>
+          {runStatusText(locale, run.status)}
+        </span>
+        <span className="run-title">{run.title || run.action || t('desktop.runEmpty')}</span>
+      </div>
+      {run.resultSummary ? <p className="run-result">{run.resultSummary}</p> : null}
+      <div className="run-entry-facts">
+        {run.artifact !== null ? <span className="run-chip">{t('desktop.runArtifact')}</span> : null}
+        {run.conversationId !== null ? (
+          <span className="run-chip">{t('desktop.runConversationLinked')}</span>
+        ) : null}
+      </div>
+      {advanced ? (
+        <dl className="run-facts" data-advanced="true">
+          <dt>{t('desktop.runIdLabel')}</dt>
+          <dd>{run.runId}</dd>
+          {run.conversationId !== null ? (
+            <>
+              <dt>{t('desktop.runConversationLabel')}</dt>
+              <dd>{run.conversationId}</dd>
+            </>
+          ) : null}
+          {run.workspaceId !== null ? (
+            <>
+              <dt>{t('desktop.runWorkspaceLabel')}</dt>
+              <dd>{run.workspaceId}</dd>
+            </>
+          ) : null}
+          {run.channel ? (
+            <>
+              <dt>{t('desktop.runChannelLabel')}</dt>
+              <dd>{run.channel}</dd>
+            </>
+          ) : null}
+        </dl>
+      ) : null}
+    </li>
   );
 }
 
@@ -793,6 +1054,7 @@ export function ShellView(props: {
           <WorkspacePanel
             root={state.workspaceRoot}
             listing={state.workspaceListing}
+            selectedEntry={state.selectedWorkspaceEntry}
             actions={actions}
             locale={locale}
             advanced={visibility.developerFacts}
@@ -805,6 +1067,11 @@ export function ShellView(props: {
             conversations={state.conversationList}
             selectedConversation={state.selectedConversation}
             onSelectConversation={(conversationId) => void actions.selectConversation(conversationId)}
+          />
+          <RunActivityPanel
+            locale={locale}
+            advanced={visibility.developerFacts}
+            runs={state.runList}
           />
         </section>
         <aside className="workspace-rail workspace-local-rail">

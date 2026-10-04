@@ -20,6 +20,7 @@ import {existsSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { IPC_CHANNELS, type IpcChannel } from '../contract/ipc.js';
+import { redactEvidenceLine } from '../contract/safe-log-projection.js';
 import { ShellController } from '../supervisor/shell-controller.js';
 import { NodeRunnerProcessPort } from '../supervisor/production-runner-process-port.js';
 import {
@@ -34,6 +35,9 @@ import { LocalWorkspaceController } from '../workspace/local-workspace.js';
 import {
   CanonicalConversationController,
 } from '../conversation/canonical-conversation.js';
+import {
+  CanonicalRunController,
+} from '../run/canonical-run.js';
 import {
   createDesktopCanonicalConversationPort,
 } from '../conversation/desktop-canonical-conversation-port.js';
@@ -173,11 +177,23 @@ export const canonicalConversations = new CanonicalConversationController(
   }),
 );
 
+/**
+ * #3436 B3a — canonical run consumer.
+ *
+ * Left on the fail-closed unconfigured port: the Desktop holds no canonical
+ * Padiem session credential in this slice, so every run surface reads as
+ * "canonical run unavailable" instead of minting or caching a local one. A
+ * future authenticated transport (B2c's credential/session work) is a
+ * main-process-only swap here.
+ */
+export const canonicalRuns = new CanonicalRunController();
+
 export const controller = new ShellController({
   supervisor,
   boundedLogLines: () => processPort.boundedActiveOutput().lines,
   workspace: localWorkspace,
   conversations: canonicalConversations,
+  runs: canonicalRuns,
 });
 
 let mainWindow: BrowserWindow | null = null;
@@ -195,7 +211,12 @@ export function createMainWindow(): BrowserWindow {
     },
   });
   window.once('ready-to-show', () => window.show());
-  // The shell never navigates to remote content and never opens windows.
+  // #3471: this privileged WebContents is a packaged local UI only. Electron's
+  // will-navigate event is for renderer/page initiated navigation (the initial
+  // main-process loadFile below is not a renderer navigation), so deny every
+  // attempt instead of carrying the preload bridge onto another document.
+  window.webContents.on('will-navigate', (event) => event.preventDefault());
+  window.webContents.on('will-redirect', (event) => event.preventDefault());
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   void window.loadFile(path.join(__dirname_, '..', 'renderer', 'index.html'));
   mainWindow = window;
@@ -349,19 +370,18 @@ export async function deliverPendingPairingHandoff(): Promise<void> {
 /**
  * #3140 stall diagnosis: bounded, secret-free observation projection.
  *
- * Every 32-hex-character token is masked wherever it appears, so a pairing code
- * can never travel into evidence even if a child prints one by mistake. The
- * observation itself is counts and timestamps only, plus a bounded stderr tail.
+ * Every persisted diagnostic line is projected through the same credential
+ * redaction plus pairing-code masking, so a child mistake cannot turn the
+ * evidence marker into a secret persistence channel.
  */
 function redactObservation(
   observation: Record<string, unknown> | null,
 ): Record<string, unknown> | null {
   if (!observation) return null;
-  const mask = (value: string): string => value.replace(/[0-9a-f]{32}/g, '[redacted]');
   const tail = Array.isArray(observation.stderr_tail) ? observation.stderr_tail : [];
   return {
     ...observation,
-    stderr_tail: tail.map((line) => mask(String(line))),
+    stderr_tail: tail.map((line) => redactEvidenceLine(String(line))),
   };
 }
 
@@ -386,7 +406,8 @@ function recordPairingHandoffEvidence(outcome: string): void {
                 // capture layer already redacts it, this keeps the raw event
                 // name itself out of the bundle too.
                 !line.includes('desktop_device_session_material'),
-            ),
+            )
+            .map((line) => redactEvidenceLine(String(line))),
           // #3140 stall diagnosis: per-stream timing for the resident child, so a
           // silent stall can be located instead of guessed at.
           resident_observation: redactObservation(supervisor.residentObservation()),

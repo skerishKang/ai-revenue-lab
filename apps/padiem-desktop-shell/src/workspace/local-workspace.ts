@@ -3,7 +3,10 @@
  *
  * The renderer never supplies an absolute path and never receives file
  * contents. A native main-process picker selects one root; later list calls
- * accept only safe relative paths under that root.
+ * accept only safe relative paths under that root. The root is a LOCAL
+ * execution context only — it never becomes, replaces or writes a canonical
+ * Padiem workspace (LOCAL_ROOT_IS_CANONICAL_WORKSPACE=NO), and the whole
+ * surface is read-only: list and classify, nothing more.
  */
 import { lstat, readdir, realpath } from 'node:fs/promises';
 import path from 'node:path';
@@ -17,6 +20,12 @@ import type {
 export const MAX_WORKSPACE_ENTRIES = 200;
 const MAX_RELATIVE_PATH_LENGTH = 512;
 const MAX_SEGMENT_LENGTH = 255;
+/**
+ * #3436 project browser: navigation depth is bounded so a deep tree cannot
+ * walk the renderer (or this controller) without limit. One directory at a
+ * time; anything deeper fails closed with `depth_exceeded`.
+ */
+export const MAX_TREE_DEPTH = 24;
 
 export type WorkspaceRootPicker = () => Promise<string | null>;
 
@@ -78,6 +87,9 @@ export class LocalWorkspaceController {
 
     const relativePath = parsed.relativePath;
     const segments = relativePath === '' ? [] : relativePath.split('/');
+    if (segments.length > MAX_TREE_DEPTH) {
+      return emptyListing('depth_exceeded', this.rootState(), relativePath);
+    }
     const candidate = path.resolve(this.#root, ...segments);
     if (!isInsideRoot(this.#root, candidate)) {
       return emptyListing('path_outside_root', this.rootState());
@@ -112,11 +124,7 @@ export class LocalWorkspaceController {
               ? 'file' as const
               : 'link' as const;
           const childRelativePath = [...segments, row.name].join('/');
-          return Object.freeze({
-            name: row.name,
-            relativePath: childRelativePath,
-            kind,
-          });
+          return { name: row.name, relativePath: childRelativePath, kind };
         })
         .sort((left, right) => {
           const rank = (value: typeof left.kind): number =>
@@ -127,11 +135,29 @@ export class LocalWorkspaceController {
         });
 
       const bounded = entries.slice(0, MAX_WORKSPACE_ENTRIES);
+      const withMetadata = await Promise.all(
+        bounded.map(async (entry) => {
+          // Bounded basic metadata from the same validated directory: at most
+          // MAX_WORKSPACE_ENTRIES stats, one directory at a time. A vanished
+          // or unstat-able entry keeps its place with null metadata instead
+          // of failing the whole listing.
+          try {
+            const stats = await lstat(path.join(canonicalCandidate, entry.name));
+            return Object.freeze({
+              ...entry,
+              sizeBytes: stats.isFile() ? stats.size : null,
+              modifiedAt: stats.mtime.toISOString(),
+            });
+          } catch {
+            return Object.freeze({ ...entry, sizeBytes: null, modifiedAt: null });
+          }
+        }),
+      );
       return Object.freeze({
         ok: true,
         root: this.rootState(),
         directory: relativePath,
-        entries: Object.freeze(bounded),
+        entries: Object.freeze(withMetadata),
         truncated: entries.length > bounded.length,
         maxEntries: MAX_WORKSPACE_ENTRIES,
         errorCode: null,

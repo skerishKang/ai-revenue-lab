@@ -6,6 +6,7 @@ import path from 'node:path';
 
 import {
   LocalWorkspaceController,
+  MAX_TREE_DEPTH,
   MAX_WORKSPACE_ENTRIES,
 } from '../src/workspace/local-workspace.js';
 
@@ -199,4 +200,76 @@ test('#3436 listing is capped even for a large selected directory', async (t) =>
   assert.equal(listing.entries.length, MAX_WORKSPACE_ENTRIES);
   assert.equal(listing.truncated, true);
   assert.equal(listing.maxEntries, MAX_WORKSPACE_ENTRIES);
+});
+
+test('#3436 entries carry bounded basic metadata and never file content', async (t) => {
+  const root = await mkdtemp(path.join(tmpdir(), 'padiem-workspace-meta-'));
+  t.after(async () => rm(root, { recursive: true, force: true }));
+  await mkdir(path.join(root, 'src'));
+  await writeFile(path.join(root, 'README.md'), 'TOP SECRET CONTENT', 'utf8');
+
+  const workspace = new LocalWorkspaceController(async () => root);
+  await workspace.chooseRoot();
+  const listing = await workspace.listDirectory({ relativePath: '' });
+
+  assert.equal(listing.ok, true);
+  const readme = listing.entries.find((entry) => entry.name === 'README.md');
+  const src = listing.entries.find((entry) => entry.name === 'src');
+  assert.equal(readme?.kind, 'file');
+  assert.equal(readme?.sizeBytes, 'TOP SECRET CONTENT'.length);
+  assert.match(String(readme?.modifiedAt), /^\d{4}-\d{2}-\d{2}T/);
+  // Directories carry no file size, only a timestamp.
+  assert.equal(src?.kind, 'directory');
+  assert.equal(src?.sizeBytes, null);
+  assert.match(String(src?.modifiedAt), /^\d{4}-\d{2}-\d{2}T/);
+  // Metadata is a projection of the stat, never the bytes.
+  assert.doesNotMatch(JSON.stringify(listing), /TOP SECRET CONTENT/);
+});
+
+test('#3436 navigation depth is capped and refuses rather than walking further', async (t) => {
+  const root = await mkdtemp(path.join(tmpdir(), 'padiem-workspace-deep-'));
+  t.after(async () => rm(root, { recursive: true, force: true }));
+
+  let deep = root;
+  for (let depth = 0; depth < MAX_TREE_DEPTH; depth += 1) {
+    deep = path.join(deep, `d${depth}`);
+    await mkdir(deep);
+  }
+  const atLimit = new Array(MAX_TREE_DEPTH).fill(0).map((_, index) => `d${index}`).join('/');
+  const beyondLimit = new Array(MAX_TREE_DEPTH + 1).fill(0).map((_, index) => `d${index}`).join('/');
+
+  const workspace = new LocalWorkspaceController(async () => root);
+  await workspace.chooseRoot();
+
+  const deepest = await workspace.listDirectory({ relativePath: atLimit });
+  assert.equal(deepest.ok, true);
+  assert.equal(deepest.entries.length, 0);
+
+  const refused = await workspace.listDirectory({ relativePath: beyondLimit });
+  assert.equal(refused.ok, false);
+  assert.equal(refused.errorCode, 'depth_exceeded');
+  assert.equal(refused.entries.length, 0);
+});
+
+test('#3436 the project root is a local context, not a canonical workspace handle', async (t) => {
+  const root = await mkdtemp(path.join(tmpdir(), 'padiem-workspace-local-'));
+  t.after(async () => rm(root, { recursive: true, force: true }));
+  await writeFile(path.join(root, 'a.txt'), 'a', 'utf8');
+
+  const workspace = new LocalWorkspaceController(async () => root);
+  const selected = await workspace.chooseRoot();
+
+  // The picker yields exactly the local root facts — no workspace_id,
+  // account_ref, workspace_ref, tenant or project authority of any kind.
+  assert.deepEqual(Object.keys(selected).sort(), [
+    'reason',
+    'rootName',
+    'rootPath',
+    'selected',
+  ]);
+  const listing = await workspace.listDirectory({ relativePath: '' });
+  const serialized = JSON.stringify(listing);
+  for (const forbidden of ['workspace_id', 'workspaceRef', 'account_ref', 'tenant', 'project_id']) {
+    assert.equal(serialized.includes(forbidden), false, forbidden);
+  }
 });

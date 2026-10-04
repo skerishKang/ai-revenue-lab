@@ -25,6 +25,8 @@ export const IPC_CHANNELS = [
   'padiem:shell:workspace-clear-root',
   'padiem:shell:conversation-list',
   'padiem:shell:conversation-read',
+  'padiem:shell:run-list',
+  'padiem:shell:run-read',
 ] as const;
 
 export type IpcChannel = (typeof IPC_CHANNELS)[number];
@@ -170,6 +172,15 @@ export interface WorkspaceEntry {
   readonly name: string;
   readonly relativePath: string;
   readonly kind: WorkspaceEntryKind;
+  /**
+   * #3436 project browser: bounded basic metadata, projected per entry by the
+   * main process from the same validated directory. Null when the entry is
+   * not a regular file or the stat could not be taken — the listing stays
+   * usable and truthful either way. Read-only surface: no content bytes ever
+   * cross this contract.
+   */
+  readonly sizeBytes: number | null;
+  readonly modifiedAt: string | null;
 }
 
 export interface WorkspaceListRequest {
@@ -188,6 +199,7 @@ export interface WorkspaceListResponse {
     | 'root_not_selected'
     | 'invalid_relative_path'
     | 'path_outside_root'
+    | 'depth_exceeded'
     | 'workspace_unavailable';
 }
 
@@ -235,6 +247,28 @@ export interface CanonicalConversationReadResponse {
   readonly errorCode: null | 'canonical_conversation_unavailable' | 'invalid_conversation_id' | 'conversation_not_found' | 'invalid_conversation_payload';
 }
 
+/**
+ * #3436 B3a — canonical run projection (read-only).
+ *
+ * The canonical types live in `../run/canonical-run.js` next to the authority
+ * boundary that validates them; the IPC surface re-exports them unchanged so a
+ * projection can never be reshaped on its way to the renderer.
+ */
+import type {
+  CanonicalRunListResponse,
+  CanonicalRunReadRequest,
+  CanonicalRunReadResponse,
+} from '../run/canonical-run.js';
+
+export type {
+  CanonicalRunArtifactRef,
+  CanonicalRunListItem,
+  CanonicalRunListResponse,
+  CanonicalRunReadRequest,
+  CanonicalRunReadResponse,
+  CanonicalRunStatus,
+} from '../run/canonical-run.js';
+
 /** Maps a channel to its request/response types — the whole surface, closed. */
 export interface IpcSurface {
   'padiem:shell:get-status': { request: undefined; response: ShellStatus };
@@ -256,6 +290,14 @@ export interface IpcSurface {
   'padiem:shell:conversation-read': {
     request: CanonicalConversationReadRequest;
     response: CanonicalConversationReadResponse;
+  };
+  'padiem:shell:run-list': {
+    request: undefined;
+    response: CanonicalRunListResponse;
+  };
+  'padiem:shell:run-read': {
+    request: CanonicalRunReadRequest;
+    response: CanonicalRunReadResponse;
   };
 }
 

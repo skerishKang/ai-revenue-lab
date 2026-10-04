@@ -44,6 +44,14 @@ const REDACTION_PATTERNS: readonly RegExp[] = Object.freeze([
 
 export const REDACTION_PLACEHOLDER = '[REDACTED]';
 
+/**
+ * A pairing code is exactly 32 lowercase hexadecimal characters. Keep this
+ * pairing-specific rule out of the general renderer log projection so ordinary
+ * 32-hex diagnostic refs remain useful there; evidence files are persistent
+ * and therefore use the stricter projection below.
+ */
+const PAIRING_CODE_IN_TEXT = /[0-9a-f]{32}/g;
+
 /** Strips credentials from a single line and bounds its length. */
 export function redactLine(line: string): string {
   let out = line;
@@ -55,6 +63,15 @@ export function redactLine(line: string): string {
     out = `${out.slice(0, SAFE_LOG_PROJECTION.MAX_LINE_LENGTH)}…[TRUNCATED]`;
   }
   return out;
+}
+
+/**
+ * Persistent pairing evidence has a stricter boundary than transient renderer
+ * logs: apply all common credential redaction and also mask any 32-hex pairing
+ * material wherever it appears.
+ */
+export function redactEvidenceLine(line: string): string {
+  return redactLine(line.replace(PAIRING_CODE_IN_TEXT, REDACTION_PLACEHOLDER));
 }
 
 export interface BoundedLogProjection {

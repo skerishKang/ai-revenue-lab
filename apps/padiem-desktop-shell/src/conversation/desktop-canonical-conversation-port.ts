@@ -60,7 +60,94 @@ const BASE64_PATTERN = /^[A-Za-z0-9+/]+={0,2}$/;
 // ceil((16384 + 2) / 3) * 4 — the base64 length of the 16 KiB raw credential bound.
 const MAX_CREDENTIAL_B64_CHARS = Math.ceil((16_384 + 2) / 3) * 4;
 
-const MAX_RESPONSE_JSON_CHARS = 2_000_000;
+export const CANONICAL_CHAT_ORIGIN = 'https://chat.padiem.net';
+export const MAX_RESPONSE_JSON_BYTES = 2_000_000;
+
+function canonicalChatOrigin(value: string): string {
+  const trimmed = value.trim();
+  let parsed: URL;
+  try {
+    parsed = new URL(trimmed);
+  } catch {
+    throw new Error('canonical Chat base URL is invalid');
+  }
+  if (
+    parsed.origin !== CANONICAL_CHAT_ORIGIN ||
+    parsed.pathname !== '/' ||
+    parsed.search !== '' ||
+    parsed.hash !== '' ||
+    parsed.username !== '' ||
+    parsed.password !== ''
+  ) {
+    throw new Error('canonical Chat base URL is not the reviewed origin');
+  }
+  return CANONICAL_CHAT_ORIGIN;
+}
+
+async function readBoundedJsonPayload(response: Response): Promise<unknown> {
+  const declared = response.headers.get('content-length');
+  if (declared !== null) {
+    const declaredBytes = Number(declared);
+    if (
+      Number.isFinite(declaredBytes) &&
+      declaredBytes >= 0 &&
+      declaredBytes > MAX_RESPONSE_JSON_BYTES
+    ) {
+      throw new Error('canonical conversation response exceeds the bounded size');
+    }
+  }
+
+  if (response.body === null) {
+    throw new Error('canonical conversation response body is unavailable');
+  }
+
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      if (!(value instanceof Uint8Array)) {
+        throw new Error('canonical conversation response chunk is invalid');
+      }
+      total += value.byteLength;
+      if (total > MAX_RESPONSE_JSON_BYTES) {
+        try {
+          await reader.cancel();
+        } catch {
+          // Best-effort transport cleanup; the bounded refusal is authoritative.
+        }
+        throw new Error('canonical conversation response exceeds the bounded size');
+      }
+      chunks.push(value);
+    }
+  } finally {
+    try {
+      reader.releaseLock();
+    } catch {
+      // A released/closed stream needs no further action.
+    }
+  }
+
+  const joined = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    joined.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  let text: string;
+  try {
+    text = new TextDecoder('utf-8', { fatal: true }).decode(joined);
+  } catch {
+    throw new Error('canonical conversation response is not valid UTF-8');
+  }
+  try {
+    return JSON.parse(text) as unknown;
+  } catch {
+    throw new Error('canonical conversation response is not valid JSON');
+  }
+}
 
 /**
  * Accepts only material in the exact canonical shapes. A malformed material
@@ -106,7 +193,7 @@ export function createDesktopConversationHttpTransport(input: {
   baseUrl: string;
   fetchImpl?: typeof fetch;
 }): CanonicalConversationHttpTransport {
-  const base = input.baseUrl.replace(/\/+$/, '');
+  const base = canonicalChatOrigin(input.baseUrl);
   const fetchImpl = input.fetchImpl ?? fetch;
   async function get(url: string, material: CanonicalDeviceSessionMaterial): Promise<CanonicalConversationHttpResponse> {
     const response = await fetchImpl(url, {
@@ -119,14 +206,10 @@ export function createDesktopConversationHttpTransport(input: {
       },
       redirect: 'error',
     });
-    const text = await response.text();
-    if (text.length > MAX_RESPONSE_JSON_CHARS) {
-      throw new Error('canonical conversation response exceeds the bounded size');
-    }
     if (response.status !== 200) {
       throw new Error(`canonical conversation read refused (${response.status})`);
     }
-    return { status: response.status, payload: JSON.parse(text) as unknown };
+    return { status: response.status, payload: await readBoundedJsonPayload(response) };
   }
   return {
     async listConversations(material) {
@@ -202,11 +285,17 @@ export function createDesktopCanonicalConversationPort(input: {
   if (typeof input.chatBaseUrl !== 'string' || !input.chatBaseUrl.trim()) {
     return new UnconfiguredCanonicalConversationPort();
   }
-  return new DesktopAuthenticatedCanonicalConversationPort({
-    materialProvider: input.materialProvider,
-    transport: createDesktopConversationHttpTransport({
+  let transport: CanonicalConversationHttpTransport;
+  try {
+    transport = createDesktopConversationHttpTransport({
       baseUrl: input.chatBaseUrl,
       fetchImpl: input.fetchImpl,
-    }),
+    });
+  } catch {
+    return new UnconfiguredCanonicalConversationPort();
+  }
+  return new DesktopAuthenticatedCanonicalConversationPort({
+    materialProvider: input.materialProvider,
+    transport,
   });
 }
