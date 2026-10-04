@@ -28,6 +28,9 @@
   let freeChatPending = "";
   let accountSignedIn = false;
   let selectedFile = null;
+  let lastEasyView = "home";
+  let restoringProductHistory = false;
+  const PRODUCT_HISTORY_KEY = "b66View";
 
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
@@ -35,6 +38,38 @@
 
   function safeText(value, max) {
     return String(value == null ? "" : value).trim().slice(0, max || 2000);
+  }
+
+  function recordProductState(view, options) {
+    if (restoringProductHistory || !window.history) return;
+    const opts = options || {};
+    const currentState = Object.assign({}, window.history.state || {});
+    const current = currentState[PRODUCT_HISTORY_KEY];
+    if (!opts.replace && current === view) return;
+
+    const write = (method, nextView) => {
+      if (typeof window.history[method] !== "function") return;
+      const nextState = Object.assign({}, window.history.state || {});
+      nextState[PRODUCT_HISTORY_KEY] = nextView;
+      window.history[method](nextState, "", window.location.href);
+    };
+
+    if (opts.replace) {
+      write("replaceState", view);
+      return;
+    }
+
+    if (view === "home" && current && current !== "home") {
+      if (typeof window.history.back === "function") window.history.back();
+      return;
+    }
+
+    if (view !== "home" && current && current !== "home") {
+      write("replaceState", view);
+      return;
+    }
+
+    write("pushState", view);
   }
 
   function readHistory() {
@@ -56,7 +91,7 @@
     }
   }
 
-  function setWorkspaceMode(mode) {
+  function setWorkspaceMode(mode, options) {
     const easy = mode === "easy";
     easyView.hidden = !easy;
     directView.hidden = easy;
@@ -65,6 +100,9 @@
     $("easyModeButton").setAttribute("aria-pressed", String(easy));
     $("directModeButton").setAttribute("aria-pressed", String(!easy));
     if (!easy) window.scrollTo({ top: 0, behavior: "smooth" });
+    if (!options || options.history !== false) {
+      recordProductState(easy ? lastEasyView : "direct");
+    }
   }
 
   function clearConversation() {
@@ -75,11 +113,13 @@
     inputHandler = null;
   }
 
-  function showHome() {
+  function showHome(options) {
     clearConversation();
     guided = null;
     freeChatPending = "";
     selectedFile = null;
+    lastEasyView = "home";
+    if (!options || options.history !== false) recordProductState("home");
     easyEmpty.hidden = false;
     composer.value = "";
     composer.placeholder = "필요한 내용을 편하게 입력하세요";
@@ -192,7 +232,9 @@
     }
   }
 
-  function showRecentHistory() {
+  function showRecentHistory(options) {
+    lastEasyView = "recent";
+    if (!options || options.history !== false) recordProductState("recent");
     startConversation();
     addMessage("assistant", "이 브라우저에 저장한 최근 견적입니다. 불러오거나 복사해서 새 견적으로 사용할 수 있어요.");
     renderHistory();
@@ -306,10 +348,12 @@
     return fresh;
   }
 
-  function startGuided(referenceText) {
+  function startGuided(referenceText, options) {
     const reference = typeof referenceText === "string"
       ? safeText(referenceText, 8000)
       : "";
+    lastEasyView = "guided";
+    if (!options || options.history !== false) recordProductState("guided");
     startConversation();
     guided = {
       step: "recipientCompany",
@@ -574,7 +618,9 @@
     }
   }
 
-  function startFreeChat() {
+  function startFreeChat(options) {
+    lastEasyView = "free-form";
+    if (!options || options.history !== false) recordProductState("free-form");
     startConversation();
     guided = null;
     freeChatPending = "";
@@ -707,7 +753,9 @@
     renderSelectedFile(file, result.value);
   }
 
-  function startFileIntake() {
+  function startFileIntake(options) {
+    lastEasyView = "file";
+    if (!options || options.history !== false) recordProductState("file");
     startConversation();
     selectedFile = null;
     addMessage(
@@ -721,7 +769,36 @@
       { label: "처음으로", action: showHome }
     ]);
     disableInput("파일 선택 단계는 로컬 preflight만 수행하며 네트워크 업로드는 하지 않습니다.");
-    openFileChooser();
+    if (!options || options.openChooser !== false) openFileChooser();
+  }
+
+  function restoreProductState(view) {
+    restoringProductHistory = true;
+    try {
+      if (view === "direct") {
+        setWorkspaceMode("direct", { history: false });
+        return;
+      }
+
+      setWorkspaceMode("easy", { history: false });
+      if (view === "home") {
+        showHome({ history: false });
+      } else if (lastEasyView === view) {
+        return;
+      } else if (view === "recent") {
+        showRecentHistory({ history: false });
+      } else if (view === "free-form") {
+        startFreeChat({ history: false });
+      } else if (view === "file") {
+        startFileIntake({ history: false, openChooser: false });
+      } else if (view === "guided") {
+        startGuided("", { history: false });
+      } else {
+        showHome({ history: false });
+      }
+    } finally {
+      restoringProductHistory = false;
+    }
   }
 
   $("easyModeButton").addEventListener("click", () => setWorkspaceMode("easy"));
@@ -756,11 +833,11 @@
   window.addEventListener("b66:history-changed", refreshStarters);
   window.addEventListener("b66:local-data-reset", () => {
     fileInput.value = "";
-    setWorkspaceMode("easy");
+    setWorkspaceMode("easy", { history: false });
     showHome();
   });
   document.addEventListener("b66:open-file-intake", () => {
-    setWorkspaceMode("easy");
+    setWorkspaceMode("easy", { history: false });
     startFileIntake();
   });
 
@@ -768,6 +845,12 @@
     setWorkspaceMode("easy");
   });
 
-  setWorkspaceMode("easy");
-  showHome();
+  window.addEventListener("popstate", (event) => {
+    const view = event.state && event.state[PRODUCT_HISTORY_KEY];
+    if (typeof view === "string" && view) restoreProductState(view);
+  });
+
+  setWorkspaceMode("easy", { history: false });
+  showHome({ history: false });
+  recordProductState("home", { replace: true });
 })();

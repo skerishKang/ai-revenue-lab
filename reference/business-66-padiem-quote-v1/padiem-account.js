@@ -9,7 +9,8 @@
     authenticated: false,
     user: null,
     skills: [],
-    loadedSkill: null
+    loadedSkill: null,
+    methods: { google: false, password: false }
   };
 
   const byId = (id) => document.getElementById(id);
@@ -111,6 +112,26 @@
     if (node) node.textContent = message || "";
   }
 
+  /* /auth/status 이 실제로 허용한 로그인 메서드만 노출한다. 기본은 숨김/비활성이다. */
+  function applyAuthMethods(payload) {
+    const methods = payload && typeof payload === "object" ? payload.methods : null;
+    state.methods = {
+      google: Boolean(methods && methods.google === true),
+      password: Boolean(methods && methods.password === true)
+    };
+    const form = byId("padiemLoginForm");
+    const divider = byId("padiemAuthDivider");
+    const submit = byId("padiemLoginSubmit");
+    if (form) form.hidden = !state.methods.password;
+    if (divider) divider.hidden = !state.methods.password;
+    if (submit) submit.disabled = !state.methods.password;
+    return state.methods.password;
+  }
+
+  function passwordLoginAvailable() {
+    return state.methods.password === true;
+  }
+
   function clearServerSkill() {
     state.loadedSkill = null;
     const bridge = window.B66QuoteSkillBridge;
@@ -155,6 +176,7 @@
     if (!dialog) return;
     if (typeof dialog.showModal === "function") dialog.showModal();
     else dialog.setAttribute("open", "");
+    if (!passwordLoginAvailable()) return;
     const identifier = byId("padiemLoginIdentifier");
     if (identifier) identifier.focus();
   }
@@ -255,9 +277,11 @@
     try {
       result = await api("/auth/status");
     } catch (_) {
+      applyAuthMethods(null);
       renderSignedOut();
       return;
     }
+    applyAuthMethods(result.response.ok ? result.data : null);
     if (
       !result.response.ok ||
       !result.data ||
@@ -289,6 +313,53 @@
       setAuthError("로그인 연결을 확인해 주세요.");
     } finally {
       if (button) button.disabled = false;
+    }
+  }
+
+  async function passwordSignIn(event) {
+    event.preventDefault();
+    /* canonical /api/padiem/auth/status 의 methods.password === true 인 경우에만 로그인 요청을 보낸다. */
+    if (!passwordLoginAvailable()) {
+      applyAuthMethods(null);
+      setAuthError("아이디/이메일 로그인은 현재 제공되지 않습니다. 구글 로그인을 이용해 주세요.");
+      return;
+    }
+    const identifier = byId("padiemLoginIdentifier");
+    const password = byId("padiemLoginPassword");
+    const submit = byId("padiemLoginSubmit");
+    if (!identifier || !password || !submit) return;
+
+    const identifierValue = identifier.value.trim();
+    if (!identifierValue || !password.value) {
+      setAuthError("아이디 또는 이메일과 비밀번호를 입력해 주세요.");
+      (identifierValue ? password : identifier).focus();
+      return;
+    }
+
+    submit.disabled = true;
+    setAuthError("");
+    try {
+      const result = await api("/auth/password/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ identifier: identifierValue, password: password.value })
+      });
+      if (!result.response.ok) {
+        setAuthError(safeMessage(result.data, "로그인 정보를 확인해 주세요."));
+        return;
+      }
+      password.value = "";
+      await refreshAuth();
+      if (!state.authenticated) {
+        setAuthError("로그인 상태를 확인하지 못했습니다. 다시 시도해 주세요.");
+        return;
+      }
+      closeAuthDialog();
+    } catch (_) {
+      setAuthError("로그인 연결을 확인해 주세요.");
+    } finally {
+      /* 메서드가 꺼진 상태에서는 제출 버튼도 비활성 상태로 되돌린다. */
+      submit.disabled = !passwordLoginAvailable();
     }
   }
 
@@ -390,6 +461,7 @@
     const accountButton = byId("padiemAccountButton");
     const close = byId("padiemAuthClose");
     const googleButton = byId("googleSigninButton");
+    const loginForm = byId("padiemLoginForm");
     const logoutButton = byId("padiemLogout");
     const select = byId("padiemSavedSkillSelect");
     const generateButton = byId("padiemQuoteGenerate");
@@ -404,6 +476,7 @@
     });
     if (close) close.addEventListener("click", closeAuthDialog);
     if (googleButton) googleButton.addEventListener("click", startGoogleSignIn);
+    if (loginForm) loginForm.addEventListener("submit", passwordSignIn);
     if (logoutButton) logoutButton.addEventListener("click", logout);
     if (select) select.addEventListener("change", changeSkill);
     if (generateButton) generateButton.addEventListener("click", generate);
