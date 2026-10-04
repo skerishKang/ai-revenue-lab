@@ -38,6 +38,7 @@ from app.claw_task_alert_store import D1ClawTaskAlertStore
 from app.config import ConfigError
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.calendar_read_activation_engine import CloudflareCalendarReadActivationEngineClient
+from app.calendar_read_state_engine import CloudflareCalendarReadStateEngineClient
 from app.control_plane_identity_shadow import D1IdentityShadowStore
 from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
 from app.dispatch_quota import DispatchAwareB14Client, DispatchAwareUsageCounterStore
@@ -753,6 +754,26 @@ class Default(WorkerEntrypoint):
                 except Exception:
                     calendar_read_activation_client = None
                 _worker_app.state.calendar_read_activation_client = calendar_read_activation_client
+                # Persisted Calendar READ grant state (#2952 follow-up): the
+                # read-only half, over the same P01 Engine Service Binding and
+                # caller credential. No second Engine authority; an
+                # unconfigured binding leaves the state surface absent rather
+                # than inventing a grant answer.
+                try:
+                    p01_config_state = p01_engine_config_from_worker_bindings(self.env)
+                    calendar_read_state_engine_client = (
+                        CloudflareCalendarReadStateEngineClient(
+                            p01_config_state.service_binding,
+                            caller_id=p01_config_state.caller_id,
+                            credential=p01_config_state.credential,
+                            request_factory=Request,
+                        )
+                        if p01_config_state is not None
+                        else None
+                    )
+                except Exception:
+                    calendar_read_state_engine_client = None
+                _worker_app.state.calendar_read_state_engine_client = calendar_read_state_engine_client
                 _worker_app.state.project_file_store = project_file_store
                 _worker_app.state.saved_output_store = saved_output_store
                 _worker_app.state.usage_gate = UsageGate(settings, usage_store)
