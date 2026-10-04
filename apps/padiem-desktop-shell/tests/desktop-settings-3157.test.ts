@@ -486,6 +486,8 @@ test('#3436 the renderer still calls only the fixed allowlisted API methods', ()
     'clearWorkspaceRoot',
     'listConversations',
     'readConversation',
+    'listRuns',
+    'readRun',
   ];
   const invoked = [...source.matchAll(/\bapi\.([A-Za-z]+)\(/g)].map((match) => match[1] ?? '');
   assert.ok(invoked.length > 0);

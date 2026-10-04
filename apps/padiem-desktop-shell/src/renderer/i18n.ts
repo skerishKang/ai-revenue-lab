@@ -99,6 +99,24 @@ export type ShellStringKey =
   | 'desktop.conversationListLabel'
   | 'desktop.conversationUntitled'
   | 'desktop.conversationSelectHint'
+  | 'desktop.runTitle'
+  | 'desktop.runPendingTitle'
+  | 'desktop.runPendingBody'
+  | 'desktop.runEmpty'
+  | 'desktop.runStatusQueued'
+  | 'desktop.runStatusPreparing'
+  | 'desktop.runStatusRunning'
+  | 'desktop.runStatusWaitingApproval'
+  | 'desktop.runStatusCompleted'
+  | 'desktop.runStatusFailed'
+  | 'desktop.runStatusCancelled'
+  | 'desktop.runArtifact'
+  | 'desktop.runConversationLinked'
+  | 'desktop.runAuthorityNote'
+  | 'desktop.runIdLabel'
+  | 'desktop.runConversationLabel'
+  | 'desktop.runWorkspaceLabel'
+  | 'desktop.runChannelLabel'
   | 'desktop.localTitle'
   | 'diagnostics.title'
   | 'diagnostics.body'
@@ -174,6 +192,24 @@ const KO: Record<ShellStringKey, string> = {
   'desktop.conversationListLabel': '기존 대화',
   'desktop.conversationUntitled': '제목 없는 대화',
   'desktop.conversationSelectHint': '왼쪽에서 이어볼 대화를 선택하면 기존 대화가 그대로 표시됩니다.',
+  'desktop.runTitle': '최근 작업',
+  'desktop.runPendingTitle': '작업 기록 연결을 준비 중입니다.',
+  'desktop.runPendingBody': 'Padiem Web에서 맡긴 작업과 결과를 그대로 보여드리기 위해 연결을 확인하는 중입니다. 이 화면은 새 작업을 만들지 않습니다.',
+  'desktop.runEmpty': '아직 표시할 작업이 없습니다.',
+  'desktop.runStatusQueued': '대기 중',
+  'desktop.runStatusPreparing': '준비 중',
+  'desktop.runStatusRunning': '실행 중',
+  'desktop.runStatusWaitingApproval': '승인 대기',
+  'desktop.runStatusCompleted': '완료',
+  'desktop.runStatusFailed': '실패',
+  'desktop.runStatusCancelled': '취소됨',
+  'desktop.runArtifact': '결과 파일 있음',
+  'desktop.runConversationLinked': '대화 연결',
+  'desktop.runAuthorityNote': '작업 기록은 Padiem Claw 기준 권위가 제공합니다. Desktop은 별도 작업 기록을 만들지 않으며 실시간 표시가 아닌 최근 기록 조회입니다.',
+  'desktop.runIdLabel': '실행 ID',
+  'desktop.runConversationLabel': '대화 ID',
+  'desktop.runWorkspaceLabel': '워크스페이스 ID',
+  'desktop.runChannelLabel': '채널',
   'desktop.localTitle': '이 컴퓨터',
   'diagnostics.title': '연결 진단',
   'diagnostics.body': 'Padiem 웹에서 연결 요청을 보내면 이 컴퓨터가 자동으로 연결됩니다.',
@@ -250,6 +286,24 @@ const EN: Record<ShellStringKey, string> = {
   'desktop.conversationListLabel': 'Existing conversations',
   'desktop.conversationUntitled': 'Untitled conversation',
   'desktop.conversationSelectHint': 'Pick a conversation on the left to see the same existing conversation here.',
+  'desktop.runTitle': 'Recent runs',
+  'desktop.runPendingTitle': 'Run history connection is being prepared.',
+  'desktop.runPendingBody': 'Runs and results you started in Padiem Web will appear here exactly as they are. This surface does not create new runs.',
+  'desktop.runEmpty': 'No runs to show yet.',
+  'desktop.runStatusQueued': 'Queued',
+  'desktop.runStatusPreparing': 'Preparing',
+  'desktop.runStatusRunning': 'Running',
+  'desktop.runStatusWaitingApproval': 'Waiting for approval',
+  'desktop.runStatusCompleted': 'Completed',
+  'desktop.runStatusFailed': 'Failed',
+  'desktop.runStatusCancelled': 'Cancelled',
+  'desktop.runArtifact': 'Has result file',
+  'desktop.runConversationLinked': 'Linked conversation',
+  'desktop.runAuthorityNote': 'Run history is provided by the canonical Padiem Claw authority. Desktop keeps no separate run history, and this is a recent-records view, not a live feed.',
+  'desktop.runIdLabel': 'Run ID',
+  'desktop.runConversationLabel': 'Conversation ID',
+  'desktop.runWorkspaceLabel': 'Workspace ID',
+  'desktop.runChannelLabel': 'Channel',
   'desktop.localTitle': 'This computer',
   'diagnostics.title': 'Connection diagnostics',
   'diagnostics.body': 'Send a connection request from Padiem Web and this computer connects itself.',
