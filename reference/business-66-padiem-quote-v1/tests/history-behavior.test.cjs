@@ -78,6 +78,8 @@ function buildEnv() {
   const windowListeners = {};
   const navigations = [];
   const appCalls = [];
+  const replaceDrafts = [];
+  const allocatedQuoteNos = [];
   const storage = makeStorage();
 
   storage.setItem(Core.DRAFT_STORAGE_KEY, JSON.stringify(DRAFT));
@@ -138,7 +140,11 @@ function buildEnv() {
     QuoteCore: Core, QuoteHistory: History, B66FileIntake: FileIntake,
     B66QuoteAppBridge: {
       getDraft: () => { appCalls.push("getDraft"); return JSON.parse(JSON.stringify(DRAFT)); },
-      replaceDraft: (next, opts) => { appCalls.push("replaceDraft" + (opts && opts.toast ? ":" + opts.toast : "")); return { ok: true, draft: next }; },
+      replaceDraft: (next, opts) => {
+        appCalls.push("replaceDraft" + (opts && opts.toast ? ":" + opts.toast : ""));
+        replaceDrafts.push(next);
+        return { ok: true, draft: next };
+      },
       /* app.js allocateFreshQuoteNo 미러: 시퀀스를 읽고 배정한 뒤 저장한다 —
          이 스텁이 불리면 SEQUENCE_STORAGE_KEY 가 실제로 소비된다 */
       createFreshDraft: (source) => {
@@ -151,6 +157,7 @@ function buildEnv() {
         }
         const allocation = History.allocateQuoteNo(rawSequence, [DRAFT], new Date());
         storage.setItem(History.SEQUENCE_STORAGE_KEY, JSON.stringify(allocation.state));
+        allocatedQuoteNos.push(allocation.quoteNo);
         const fresh = Core.createDefaultDraft();
         fresh.meta.quoteNo = allocation.quoteNo;
         fresh.meta.source = source || "manual";
@@ -192,7 +199,7 @@ function buildEnv() {
   };
   context.dispatchEvent = () => true;
 
-  return { context, elements, getElement, created, storage, history, appCalls, draftBefore, DRAFT, navigations, windowListeners };
+  return { context, elements, getElement, created, storage, history, appCalls, replaceDrafts, allocatedQuoteNos, draftBefore, DRAFT, navigations, windowListeners };
 }
 
 const clickStarter = (env, id) => {
@@ -224,6 +231,7 @@ const buttonWith = (env, label) => env.created.filter(
     backFreeformToHome: false,
     draftPreserved: true,
     noResetOnBack: true,
+    guidedStateRestore: true,
     cancelPath: true,
     unsavedResetConfirm: false
   };
@@ -318,6 +326,65 @@ const buttonWith = (env, label) => env.created.filter(
     restoreFlags.pushLoops += pushDelta;
     env.history.back();
     await flush();
+  }
+
+  /* ── in-progress guided conversation survives Back -> Forward (CENTRAL blocker) ──
+     구분 불가능한 OLD App draft(시드거래처/시드품목) 위에서 guided를 새로 시작하고
+     답변을 입력한 뒤 Back/Forward 해도 답한 값이 유지되고 OLD 값이 섞이지 않아야 한다. */
+  {
+    clickStarter(env, "guidedStarter");
+    await flush();
+    const startedAllocations = env.allocatedQuoteNos.length;
+    const startedQuoteNo = env.allocatedQuoteNos[env.allocatedQuoteNos.length - 1];
+    const type = async (text) => {
+      env.getElement("easyComposer").value = text;
+      clickStarter(env, "easySend");
+      await flush();
+    };
+    await type("B상사");      /* guided recipient: App draft(시드거래처)와 다른 값 */
+    await type("없음");        /* 담당자 없음 */
+    await type("NEW품목");     /* guided item: App draft(시드품목)와 다른 값 */
+
+    const freshBefore = countCalls(env, "createFreshDraft");
+    const seqBefore = env.storage.getItem(History.SEQUENCE_STORAGE_KEY);
+    env.history.back();
+    await flush();
+    check(env.history._view() === "home", "GUIDED_STATE_RESTORE: Back returns home from mid-conversation");
+    env.history.forward();
+    await flush();
+    check(env.history._view() === "guided", "GUIDED_STATE_RESTORE: Forward reopens the guided flow");
+    check(countCalls(env, "createFreshDraft") === freshBefore,
+      "GUIDED_STATE_RESTORE: restore allocates no new draft");
+    check(env.storage.getItem(History.SEQUENCE_STORAGE_KEY) === seqBefore,
+      "GUIDED_STATE_RESTORE: restore consumes no quote number");
+
+    await type("2");          /* 수량 */
+    await type("15000");      /* 단가 */
+    await type("다음");        /* 품목 완료 */
+    await type("별도");        /* 부가세 */
+    await type("없음");        /* 메모 */
+    await type("현재");        /* 보내는 사람 → 요약 */
+    const confirmChips = chipsWith(env, "견적서 확인하기");
+    results.guidedStateRestore = results.guidedStateRestore &&
+      check(confirmChips.length > 0, "GUIDED_STATE_RESTORE: resumed conversation reaches the summary");
+    if (confirmChips.length) confirmChips[confirmChips.length - 1].listeners.click[0]();
+    await flush();
+
+    const payload = env.replaceDrafts[env.replaceDrafts.length - 1];
+    results.guidedStateRestore = results.guidedStateRestore &&
+      check(Boolean(payload) && payload.recipient && Array.isArray(payload.items),
+        "GUIDED_STATE_RESTORE: completed quote reaches App.replaceDraft") &&
+      check(payload && payload.recipient.company === "B상사",
+        "GUIDED_STATE_RESTORE: entered recipient survives Back -> Forward") &&
+      check(payload && payload.items.some((item) => item.name === "NEW품목"),
+        "GUIDED_STATE_RESTORE: entered item survives Back -> Forward") &&
+      check(payload && payload.recipient.company !== "시드거래처" &&
+            !payload.items.some((item) => item.name === "시드품목"),
+        "GUIDED_STATE_RESTORE: OLD App draft recipient/item never substituted into Guided") &&
+      check(payload && payload.meta.quoteNo === startedQuoteNo,
+        "GUIDED_STATE_RESTORE: quote number is the one from guided start (no re-allocation)") &&
+      check(env.allocatedQuoteNos.length === startedAllocations,
+        "GUIDED_STATE_RESTORE: zero draft/quote-number allocation across the whole scenario");
   }
 
   /* ── live guided conversation survives a redundant popstate ── */
@@ -498,6 +565,7 @@ const buttonWith = (env, label) => env.created.filter(
   console.log("BACK_GUIDED_TO_HOME=" + (results.backGuidedToHome ? "PASS" : "FAIL"));
   console.log("BACK_FREEFORM_TO_HOME=" + (results.backFreeformToHome ? "PASS" : "FAIL"));
   console.log("POPSTATE_DRAFT_PRESERVED=" + (results.draftPreserved ? "PASS" : "FAIL"));
+  console.log("GUIDED_STATE_RESTORE=" + (results.guidedStateRestore ? "PASS" : "FAIL"));
   console.log("POPSTATE_NEW_DRAFT_ALLOCATION=" + restoreFlags.newDraftAllocation);
   console.log("POPSTATE_NEW_QUOTE_NUMBER_ALLOCATION=" + restoreFlags.newQuoteNoAllocation);
   console.log("NO_RESET_ON_BACK=" + (results.noResetOnBack ? "PASS" : "FAIL"));

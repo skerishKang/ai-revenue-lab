@@ -25,6 +25,7 @@
 
   let inputHandler = null;
   let guided = null;
+  let guidedSnapshot = null;
   let freeChatPending = "";
   let accountSignedIn = false;
   let selectedFile = null;
@@ -115,7 +116,7 @@
 
   function showHome(options) {
     clearConversation();
-    guided = null;
+    snapshotGuidedConversation();
     freeChatPending = "";
     selectedFile = null;
     lastEasyView = "home";
@@ -350,6 +351,63 @@
     return fresh;
   }
 
+  /* 진행 중인 guided 대화는 화면 전환으로 버려지지 않고 스냅샷 한 슬롯으로만 보존한다(bounded).
+     브라우저 Back/Forward 복원은 App draft 대신 이 guided 상태를 이어 쓴다. */
+  function snapshotGuidedConversation() {
+    if (!guided) {
+      guidedSnapshot = null;
+      return;
+    }
+    guidedSnapshot = {
+      step: guided.step,
+      draft: clone(guided.draft),
+      currentItem: guided.currentItem,
+      taxUnknown: guided.taxUnknown
+    };
+    guided = null;
+  }
+
+  function resumeGuidedConversation(state) {
+    startConversation();
+    guided = {
+      step: state.step,
+      draft: clone(state.draft),
+      currentItem: state.currentItem,
+      taxUnknown: state.taxUnknown
+    };
+    guidedSnapshot = null;
+    lastEasyView = "guided";
+    addMessage("assistant", "이전에 진행 중이던 견적 만들기를 이어서 진행합니다.");
+    rebindGuidedStep();
+  }
+
+  /* 스냅샷 복원은 대기 중인 질문만 다시 묶는다. 이미 답한 값은 guided.draft 에 그대로 있다. */
+  function rebindGuidedStep() {
+    switch (guided.step) {
+      case "recipientCompany":
+        addMessage("assistant", "누구에게 보내는 견적인가요? 업체명이나 받는 분 이름을 입력해 주세요.");
+        setChips([{ label: "직접 입력으로 전환", action: () => setWorkspaceMode("direct") }]);
+        setInput(processGuidedInput, "예: 홍길동건설");
+        break;
+      case "recipientPerson": askRecipientPerson(); break;
+      case "itemName": askItemName(); break;
+      case "qty": askQty(); break;
+      case "price": askPrice(); break;
+      case "moreItems": askMoreItems(); break;
+      case "tax": askTax(); break;
+      case "memo": askMemo(); break;
+      case "senderChoice": askSender(); break;
+      case "senderCompany":
+        addMessage("assistant", "보내는 사람의 상호를 입력해 주세요. 나머지 정보는 확인 화면에서 채울 수 있어요.");
+        setChips([]);
+        setInput(processGuidedInput, "예: 테스트상사");
+        break;
+      case "summary": showGuidedSummary(); break;
+      default:
+        startGuided("", { history: false, reuseCurrentDraft: true });
+    }
+  }
+
   function startGuided(referenceText, options) {
     const reference = typeof referenceText === "string"
       ? safeText(referenceText, 8000)
@@ -357,6 +415,8 @@
     lastEasyView = "guided";
     if (!options || options.history !== false) recordProductState("guided");
     startConversation();
+    /* 새 대화 시작은 보존된 스냅샷을 대체한다 — 복원 경로는 startGuided 를 거치지 않는다. */
+    guidedSnapshot = null;
     guided = {
       step: "recipientCompany",
       draft: guidedDraft(options),
@@ -624,7 +684,7 @@
     lastEasyView = "free-form";
     if (!options || options.history !== false) recordProductState("free-form");
     startConversation();
-    guided = null;
+    snapshotGuidedConversation();
     freeChatPending = "";
     addMessage(
       "assistant",
@@ -794,8 +854,15 @@
       } else if (view === "file") {
         startFileIntake({ history: false, openChooser: false });
       } else if (view === "guided") {
-        /* popstate 복원은 새 견적 발급이 아니라 기존 초안 위에서 흐름을 다시 여는 것이다. */
-        startGuided("", { history: false, reuseCurrentDraft: true });
+        /* popstate 복원은 진행 중이던 guided 상태를 이어 쓴다 — App draft 로 대체하거나
+           새 견적번호를 발급하지 않는다. 스냅샷도 없으면 기존 초안 재사용으로 귀결한다. */
+        if (guided) {
+          resumeGuidedConversation(guided);
+        } else if (guidedSnapshot) {
+          resumeGuidedConversation(guidedSnapshot);
+        } else {
+          startGuided("", { history: false, reuseCurrentDraft: true });
+        }
       } else {
         showHome({ history: false });
       }
@@ -838,6 +905,8 @@
     fileInput.value = "";
     setWorkspaceMode("easy", { history: false });
     showHome();
+    /* 브라우저 로컬 데이터를 지웠으면 보존된 guided 스냅샷도 함께 폐기한다. */
+    guidedSnapshot = null;
   });
   document.addEventListener("b66:open-file-intake", () => {
     setWorkspaceMode("easy", { history: false });
