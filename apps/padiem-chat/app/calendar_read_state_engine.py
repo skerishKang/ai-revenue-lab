@@ -94,6 +94,24 @@ class CloudflareCalendarReadStateEngineClient:
         )
         try:
             response = await self._binding.fetch(request.js_object)
+        except Exception:
+            raise CalendarReadStateUnavailableError(
+                "Calendar READ state transport failed"
+            ) from None
+        try:
+            status = int(getattr(response, "status", 0))
+        except (TypeError, ValueError) as exc:
+            raise CalendarReadStateUnavailableError(
+                "Calendar READ state transport failed"
+            ) from exc
+        if status != 200:
+            # Only the fact of the failure is consumed: the body is never
+            # read, so no Engine prose, error code, or private reference can
+            # travel from a rejection.
+            raise CalendarReadStateUnavailableError(
+                "Calendar READ state check was rejected"
+            )
+        try:
             raw = str(await response.text()).encode("utf-8")
         except Exception:
             raise CalendarReadStateUnavailableError(
@@ -107,19 +125,6 @@ class CloudflareCalendarReadStateEngineClient:
             document = json.loads(raw.decode("utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError):
             document = None
-
-        try:
-            status = int(getattr(response, "status", 0))
-        except (TypeError, ValueError) as exc:
-            raise CalendarReadStateUnavailableError(
-                "Calendar READ state transport failed"
-            ) from exc
-        if status != 200:
-            # Only the fact of the failure is consumed; the body is discarded
-            # unread so no Engine prose or private reference can travel.
-            raise CalendarReadStateUnavailableError(
-                "Calendar READ state check was rejected"
-            )
         expected = {
             "ok",
             "calendar_read_grant_state",

@@ -112,16 +112,20 @@ def _binding_ok(binding_ref: str = BINDING, actor_ref: str = ACTOR) -> OAuthBind
     })
 
 
-def _active_grant(binding_ref: str = BINDING, actor_ref: str = ACTOR) -> dict:
-    return {
-        CALENDAR_REFERENCE_APP_ID: CalendarGrant(
-            app_id=CALENDAR_REFERENCE_APP_ID,
-            canonical_agent_id=CALENDAR_AGENT_ID,
-            binding_ref=binding_ref,
-            actor_ref=actor_ref,
-            granted_capabilities=(CalendarCapability.READ,),
-        )
+def _grant(binding_ref: str = BINDING, actor_ref: str = ACTOR, **overrides) -> CalendarGrant:
+    values = {
+        "app_id": CALENDAR_REFERENCE_APP_ID,
+        "canonical_agent_id": CALENDAR_AGENT_ID,
+        "binding_ref": binding_ref,
+        "actor_ref": actor_ref,
+        "granted_capabilities": (CalendarCapability.READ,),
     }
+    values.update(overrides)
+    return CalendarGrant(**values)
+
+
+def _active_grant(binding_ref: str = BINDING, actor_ref: str = ACTOR) -> dict:
+    return {CALENDAR_REFERENCE_APP_ID: _grant(binding_ref, actor_ref)}
 
 
 def _service(workspace, oauth, store) -> CalendarReadStateService:
@@ -251,6 +255,57 @@ def test_state_vocabulary_is_the_closed_pair_for_200_bodies() -> None:
     for state in CALENDAR_READ_GRANT_STATES:
         assert state in ("active", "inactive")
     assert len(CALENDAR_READ_GRANT_STATES) == 2
+
+
+def test_malformed_non_dict_store_result_fails_closed_not_inactive() -> None:
+    # CONFIRMED_NO_GRANT=inactive; UNRELIABLE_STORE_RESULT=unavailable. A
+    # store answer that is not a mapping at all is an unreliable store, so the
+    # check raises (the caller projects unavailable) instead of saying
+    # inactive.
+    for malformed in (None, [], "not-a-mapping", 42):
+        store = ReadOnlyGrantStore(malformed)
+        service = _service(_workspace_ok(), _binding_ok(), store)
+        with pytest.raises(ServiceContractError) as excinfo:
+            run(service.state(session_id=SESSION))
+        assert excinfo.value.code == "calendar_read_state_unavailable"
+        assert excinfo.value.status_code == 503
+
+
+def test_non_canonical_grant_in_the_canonical_slot_fails_closed() -> None:
+    # A row occupying the canonical slot that is not the canonical grant —
+    # wrong app id, wrong canonical_agent_id, or capabilities other than
+    # exactly the reviewed READ — breaks the store contract: fail closed so a
+    # non-canonical grant can never be projected as active (or as a confirmed
+    # inactive).
+    imposters = (
+        {CALENDAR_REFERENCE_APP_ID: _grant(app_id="app:imposter")},
+        {CALENDAR_REFERENCE_APP_ID: _grant(canonical_agent_id="agent:imposter")},
+        {CALENDAR_REFERENCE_APP_ID: _grant(granted_capabilities=())},
+        # Not even a grant object: an arbitrary mapping in the canonical slot
+        # must not be duck-typed into a state answer.
+        {CALENDAR_REFERENCE_APP_ID: {"app_id": CALENDAR_REFERENCE_APP_ID}},
+        {CALENDAR_REFERENCE_APP_ID: "not-a-grant"},
+    )
+    for grants in imposters:
+        store = ReadOnlyGrantStore(grants)
+        service = _service(_workspace_ok(), _binding_ok(), store)
+        with pytest.raises(ServiceContractError) as excinfo:
+            run(service.state(session_id=SESSION))
+        assert excinfo.value.code == "calendar_read_state_unavailable"
+        assert excinfo.value.status_code == 503
+
+
+def test_canonical_grant_with_stale_binding_or_actor_is_inactive() -> None:
+    # A well-formed canonical grant whose binding/actor no longer match the
+    # current resolution is a confirmed negative, not a store fault.
+    for grants in (
+        _active_grant(binding_ref="binding:stale"),
+        _active_grant(actor_ref="actor:stale"),
+    ):
+        store = ReadOnlyGrantStore(grants)
+        service = _service(_workspace_ok(), _binding_ok(), store)
+        result = run(service.state(session_id=SESSION))
+        assert result.body["calendar_read_grant_state"] == "inactive"
 
 
 def test_store_protocol_is_read_only() -> None:

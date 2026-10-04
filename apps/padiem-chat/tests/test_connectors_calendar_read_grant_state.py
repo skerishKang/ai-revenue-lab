@@ -91,17 +91,20 @@ class _FakeEngineBinding:
         self.body = body
         self.fail = fail
         self.requests: list[dict[str, Any]] = []
+        self.text_calls = 0
 
     async def fetch(self, js_object: Any) -> Any:
         self.requests.append(dict(js_object))
         if self.fail:
             raise RuntimeError("binding down")
         body_text = json.dumps(self.body)
+        binding = self
 
         class _Response:
             status = self.status
 
             async def text(self) -> str:
+                binding.text_calls += 1
                 return body_text
 
         return _Response()
@@ -253,6 +256,9 @@ def test_client_failure_responses_raise_unavailable_without_reading_the_body():
         except CalendarReadStateUnavailableError:
             raised = True
         assert raised, status
+        # NON_200_BODY_READ_COUNT=0: a rejection body is never read, so no
+        # Engine prose, error code, or private reference can travel from it.
+        assert binding.text_calls == 0
         text = json.dumps(binding.requests[0])
         assert "prose" not in text
 
