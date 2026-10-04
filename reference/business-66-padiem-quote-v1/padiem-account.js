@@ -281,14 +281,29 @@
     await loadSkill(select.value);
   }
 
+  /* canonical authenticated projection 이 owner authority 다. 브라우저는 owner 를
+     선택하거나 제출하지 않는다. raw user id 는 여기서 로그/화면/저장소로 나가지 않고
+     storage 경계는 app.js(단일 브라우저 저장소 authority)만 통과한다. */
+  function applyOwnerScope(projection) {
+    const bridge = window.B66QuoteAppBridge;
+    if (bridge && typeof bridge.applyOwnerScope === "function") {
+      return bridge.applyOwnerScope(projection);
+    }
+    /* 저장소 authority 없이는 private 상태를 노출하지 않는다. */
+    const detail = { authenticated: false, privateStateReadable: false, action: null };
+    document.dispatchEvent(new CustomEvent("b66:account-scope-changed", { detail }));
+    return detail;
+  }
+
   async function refreshAuth() {
     let result;
     try {
       result = await api("/auth/status");
     } catch (_) {
       applyAuthMethods(null);
+      applyOwnerScope({ authenticated: false, userId: null });
       renderSignedOut();
-      return;
+      return { authenticated: false };
     }
     applyAuthMethods(result.response.ok ? result.data : null);
     if (
@@ -297,14 +312,19 @@
       result.data.authenticated !== true ||
       result.data.session_state !== "signed_in"
     ) {
+      applyOwnerScope({ authenticated: false, userId: null });
       renderSignedOut();
-      return;
+      return { authenticated: false };
     }
+    /* opaque user.id 만 owner marker source 다. 이름/이메일/사용자명은 쓰지 않는다. */
+    const owner = result.data.user && typeof result.data.user === "object" ? result.data.user : null;
+    applyOwnerScope({ authenticated: true, userId: owner ? owner.id : null });
     state.authenticated = true;
-    state.user = result.data.user || null;
+    state.user = owner;
     renderSignedIn();
     await Promise.all([loadSkills(), loadCompanyProfile()]);
     document.dispatchEvent(new CustomEvent("b66:runtime-changed", { detail: runtimeReadiness() }));
+    return { authenticated: true };
   }
 
   /* ── CGI primary runtime authority (#3478) ──
@@ -672,13 +692,52 @@
     }
   }
 
+  /* canonical 인증 상태의 확정 여부를 함께 돌려준다. 판정 불가면 ok=false 이고
+     "signed-out 이다" 라고 말하지 않는다. */
+  async function canonicalAuthState() {
+    try {
+      const result = await api("/auth/status");
+      if (!result.response.ok || !result.data || typeof result.data !== "object") {
+        return { ok: false, authenticated: null };
+      }
+      return {
+        ok: true,
+        authenticated: result.data.authenticated === true && result.data.session_state === "signed_in"
+      };
+    } catch (_) {
+      return { ok: false, authenticated: null };
+    }
+  }
+
+  const LOGOUT_UNCONFIRMED_TEXT = "로그아웃을 확인하지 못했습니다. 로그인 상태를 다시 확인해 주세요.";
+
   async function logout() {
+    /* private 인용은 요청 즉시 숨기고, canonical logout 성공 여부는 /auth/status 재확인으로만
+       결정한다. POST 결과나 로컬 projection 을 성공 근거로 쓰지 않는다. */
+    applyOwnerScope({ authenticated: false, userId: null });
+    let posted = false;
     try {
       await api("/auth/logout", { method: "POST" });
+      posted = true;
     } catch (_) {
-      // Local projection is still cleared; canonical session will be rechecked on refresh.
+      posted = false;
     }
-    renderSignedOut();
+
+    const recheck = await canonicalAuthState();
+    if (recheck.ok && recheck.authenticated === false) {
+      renderSignedOut();
+      setQuoteStatus("로그아웃되었습니다.", "ready");
+      return { ok: true, signedOut: true, posted: posted };
+    }
+
+    /* 확인 실패: canonical 세션이 남아 있을 수 있으므로 정직한 error path 를 유지한다. */
+    setAuthError(LOGOUT_UNCONFIRMED_TEXT);
+    const app = window.B66QuoteAppBridge;
+    if (app && typeof app.toast === "function") app.toast(LOGOUT_UNCONFIRMED_TEXT, 4000);
+    await refreshAuth();
+    /* 갱신된 canonical projection 위에서 다시 알린다. */
+    setQuoteStatus(LOGOUT_UNCONFIRMED_TEXT, "error");
+    return { ok: false, signedOut: state.authenticated !== true, posted: posted };
   }
 
   async function changeSkill() {
