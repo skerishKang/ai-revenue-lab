@@ -393,6 +393,16 @@ test('#3436 B3a artifact metadata is bounded to a reference projection', async (
     // Ambiguous duplicate aliases are a shape error, not a coincidence.
     { document_id: 'doc_a', documentId: 'doc_b', filename: 'a.docx', media_type: 'application/msword' },
     { document_id: 'doc_a', filename: 'a.docx', media_type: 'application/msword', mediaType: 'image/png' },
+    // The server wire shape is snake_case only (`history._run_history_public`);
+    // a pure camelCase artifact is not a legitimate server payload, whatever
+    // the internal projection calls its fields after parsing.
+    { documentId: 'doc_' + '1'.repeat(24), filename: 'a.docx', media_type: 'application/msword' },
+    { documentId: 'doc_' + '1'.repeat(24), filename: 'a.docx', mediaType: 'application/msword' },
+    { document_id: 'doc_' + '1'.repeat(24), filename: 'a.docx', mediaType: 'application/msword' },
+    // #3469 CENTRAL correction: the camelCase spelling was never a server
+    // input shape. Any payload carrying it — even with the other keys correct
+    // — fails closed rather than being accepted as a widened contract.
+    { document_id: 'doc_' + '1'.repeat(24), documentId: 'doc_' + '1'.repeat(24), filename: 'a.docx', media_type: 'application/msword' },
   ]) {
     const controller = new CanonicalRunController(
       fixturePort({ list: canonicalListPayload(canonicalRunRow({ artifact: malformed })) }),
