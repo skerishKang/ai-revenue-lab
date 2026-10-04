@@ -296,3 +296,9 @@ html[data-theme="padiem-glass"] #connectorsDialog {
 #connectorsDialog .capability-read-state[data-read-state="failed"] {
   color: #b3261e;
 }
+
+/* The server-side check could not be trusted: a neutral fact, never a state
+   claim — it must not read as "needs activation" nor as "active". */
+#connectorsDialog .capability-read-state[data-read-state="unavailable"] {
+  color: #3d4c59;
+}

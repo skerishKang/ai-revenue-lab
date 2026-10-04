@@ -43,6 +43,7 @@ NEW_LOCALE_KEYS = (
     "connectors-calendar-read-activating",
     "connectors-calendar-read-active",
     "connectors-calendar-read-failed",
+    "connectors-calendar-read-unavailable",
     "connectors-calendar-read-error-engine-auth",
     "connectors-calendar-read-error-workspace",
     "connectors-calendar-read-error-binding",
@@ -317,7 +318,21 @@ def test_calendar_state_mapping_functions_execute_with_closed_vocabulary() -> No
     script = f"""
 const authState = {{ authenticated: true }};
 {_pure_mapping_block()}
-const states = ["unknown", "activating", "active", "failed", "bogus", "constructor"].map(calendarReadStateKey);
+const states = ["unknown", "activating", "active", "failed", "unavailable", "bogus", "constructor"].map(calendarReadStateKey);
+const transitions = [
+  ["unknown", "active", "active"],
+  ["unknown", "inactive", "unknown"],
+  ["unknown", "unavailable", "unavailable"],
+  ["unavailable", "active", "active"],
+  ["unavailable", "inactive", "unknown"],
+  ["unknown", "bogus", "unknown"],
+  ["activating", "active", "activating"],
+  ["active", "inactive", "active"],
+  ["failed", "active", "failed"],
+  ["failed", "unavailable", "failed"],
+].map(function ([current, server, expected]) {{
+  return calendarServerGrantSessionState(current, server) === expected;
+}});
 const safeCodes = {json.dumps(list(SAFE_DIAGNOSTIC_CODES))};
 const safeErrors = safeCodes.map(function (code) {{
   return calendarReadActivationErrorKey({{ calendarReadErrorCode: code }});
@@ -329,7 +344,7 @@ const fallbackErrors = [
   {{}},
   null,
 ].map(calendarReadActivationErrorKey);
-console.log(JSON.stringify({{ states, safeErrors, fallbackErrors }}));
+console.log(JSON.stringify({{ states, transitions, safeErrors, fallbackErrors }}));
 """
     result = subprocess.run([node, "-e", script], capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, result.stderr
@@ -339,9 +354,14 @@ console.log(JSON.stringify({{ states, safeErrors, fallbackErrors }}));
         "connectors-calendar-read-activating",
         "connectors-calendar-read-active",
         "connectors-calendar-read-failed",
+        "connectors-calendar-read-unavailable",
         "connectors-calendar-read-pending",
         "connectors-calendar-read-pending",
     ]
+    # Every server-truth transition must match the reviewed expectation,
+    # including REFRESH_ACTIVE (a fresh page load shows the persisted grant)
+    # and the no-overwrite rules for in-session truths.
+    assert payload["transitions"] == [True] * 10
     generic = "connectors-calendar-read-activation-error"
     # Every reviewed safe code maps to its own bounded copy.
     assert payload["safeErrors"] == [SAFE_DIAGNOSTIC_CODES[code] for code in SAFE_DIAGNOSTIC_CODES]
@@ -363,6 +383,11 @@ def test_app_state_machine_is_in_session_scope_and_fail_safe() -> None:
     assert 'card.dataset.connectorStatus !== "connected"' in block
     assert "function renderCalendarReadState()" in block
     assert "renderCalendarReadState();" in block
+    # The persisted server projection is consumed with a bounded type guard and
+    # feeds the closed transition — a fresh load shows the server's answer.
+    assert 'typeof row.calendar_read_grant_state === "string"' in block
+    assert "calendarServerGrantSessionState(" in block
+    assert 'CALENDAR_SERVER_GRANT_STATES.includes(serverState)' in block
     # The workspace copy becomes the OAuth fact only for a connected row,
     # and every other connector keeps the generic workspace copy.
     assert 'setConnectorCopy(calendarCard.querySelector("[data-connector-workspace]"), "connectors-calendar-oauth-connected");' in block

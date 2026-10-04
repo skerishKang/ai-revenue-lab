@@ -2565,22 +2565,41 @@
 
   // Google Calendar has a second, independent axis: the READ grant activation
   // (#2952). "Google account connected" (the OAuth/workspace axis) must never
-  // read as "Calendar read is ready" — they are separate truths. The grant
-  // state known here is the in-session activation truth; the status projection
-  // does not carry a persisted grant field yet, so "unknown" projects as the
-  // neutral "activation needed" line rather than inventing a connected grant.
-  const CALENDAR_READ_STATES = Object.freeze(["unknown", "activating", "active", "failed"]);
+  // read as "Calendar read is ready" — they are separate truths. The session
+  // state starts "unknown" and is then filled from two bounded sources: the
+  // persisted server projection (row.calendar_read_grant_state) and the
+  // in-session activation result. The server truth is a projection of the
+  // Engine's own grant store — "unavailable" means the check could not be
+  // trusted, never that the grant is missing.
+  const CALENDAR_READ_STATES = Object.freeze(["unknown", "activating", "active", "failed", "unavailable"]);
   const CALENDAR_READ_STATE_KEYS = Object.freeze({
     unknown: "connectors-calendar-read-pending",
     activating: "connectors-calendar-read-activating",
     active: "connectors-calendar-read-active",
     failed: "connectors-calendar-read-failed",
+    unavailable: "connectors-calendar-read-unavailable",
   });
+  // The closed per-row vocabulary the status projection publishes for the
+  // Calendar row's persisted READ grant axis.
+  const CALENDAR_SERVER_GRANT_STATES = Object.freeze(["active", "inactive", "unavailable"]);
 
   function calendarReadStateKey(state) {
     return Object.prototype.hasOwnProperty.call(CALENDAR_READ_STATE_KEYS, state)
       ? CALENDAR_READ_STATE_KEYS[state]
       : "connectors-calendar-read-pending";
+  }
+
+  // Pure server-truth → session-state transition. The server projection fills
+  // an unset ("unknown") or stale-unavailable session state and can raise it
+  // to "active" — that is what makes a fresh page load show the persisted
+  // grant instead of "activation needed". It never overwrites an in-session
+  // truth ("activating"/"active"/"failed"): the activation response and the
+  // user's own retry flow stay authoritative for this session, and a failed
+  // status check ("unavailable") never claims the grant is missing.
+  function calendarServerGrantSessionState(current, serverState) {
+    if (!CALENDAR_SERVER_GRANT_STATES.includes(serverState)) return current;
+    if (current !== "unknown" && current !== "unavailable") return current;
+    return serverState === "inactive" ? "unknown" : serverState;
   }
 
   // Bounded backend-code → copy mapping (#3451 reviewed diagnostics). Only
@@ -2648,6 +2667,17 @@
   }
 
   function syncGoogleCalendarConnectButton(row = null) {
+    // Consume the persisted server truth for the READ grant axis before the
+    // button logic: a fresh session must show the server's answer, not
+    // "activation needed" for a grant the Engine already holds.
+    const serverGrantState =
+      row && typeof row.calendar_read_grant_state === "string"
+        ? row.calendar_read_grant_state
+        : "";
+    googleCalendarReadState = calendarServerGrantSessionState(
+      googleCalendarReadState,
+      serverGrantState,
+    );
     const button = googleCalendarConnectButton();
     const calendarCard = googleCalendarCard();
     if (calendarCard) {
