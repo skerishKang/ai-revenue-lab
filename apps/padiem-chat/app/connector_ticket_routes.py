@@ -10,6 +10,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .auth_routes import current_user_id
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .config import Settings
 from .control_plane_identity import IdentityBridgeError
 from .control_plane_identity_worker import PrivateGoogleConnectTicket
@@ -49,8 +50,18 @@ async def _closed_body(request: Request) -> dict[str, Any]:
     content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
     if content_type != "application/json":
         raise IdentityBridgeError(415, "connector_ticket_json_required", "JSON 요청만 허용됩니다.")
-    raw = await request.body()
-    if not raw or len(raw) > MAX_TICKET_REQUEST_BODY_BYTES:
+    try:
+        raw = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_TICKET_REQUEST_BODY_BYTES,
+        )
+    except RequestBodyTooLarge as exc:
+        raise IdentityBridgeError(
+            400,
+            "connector_ticket_body_invalid",
+            "연결 요청 형식이 올바르지 않습니다.",
+        ) from exc
+    if not raw:
         raise IdentityBridgeError(400, "connector_ticket_body_invalid", "연결 요청 형식이 올바르지 않습니다.")
     try:
         payload = json.loads(raw.decode("utf-8"))

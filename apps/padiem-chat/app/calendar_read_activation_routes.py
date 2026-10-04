@@ -29,6 +29,7 @@ from starlette.responses import JSONResponse
 
 from .auth_routes import current_user_id
 from .b54_canonical_session import resolve_current_b54_canonical_session
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .calendar_read_activation_engine import (
     GENERIC_CALENDAR_READ_ACTIVATION_CODE,
     CALENDAR_ACTIVATION_SAFE_DIAGNOSTIC_CODES,
@@ -83,8 +84,11 @@ async def _require_empty_json(request: Request) -> None:
     content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
     if content_type != "application/json":
         raise ValueError("json required")
-    raw = await request.body()
-    if not raw or len(raw) > _MAX_BODY_BYTES:
+    try:
+        raw = await read_bounded_request_body(request, max_bytes=_MAX_BODY_BYTES)
+    except RequestBodyTooLarge as exc:
+        raise ValueError("invalid body") from exc
+    if not raw:
         raise ValueError("invalid body")
     try:
         payload = json.loads(raw.decode("utf-8"))
