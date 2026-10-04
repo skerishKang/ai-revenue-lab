@@ -655,4 +655,118 @@ test("N21. ingress source keeps dual-credential seam bounded and secret-clean", 
   assert.doesNotMatch(ingressSource, /while\s*\(|for\s*\(\s*let\s+\w*attempt/i);
   // NEXT must remain an ingress-owner secret read (never caller-supplied).
   assert.doesNotMatch(ingressSource, /request\.headers\.get\(\s*["']x-padiem-engine-secret-next/i);
+  // The bounded reader must not use a while-loop (structure guard for #3500).
+  assert.doesNotMatch(ingressSource, /while\s*\(/);
+  assert.match(ingressSource, /readBoundedBytes/);
+});
+
+// ---------------------------------------------------------------------------
+// #3500: request/response body limits enforced DURING the read.
+// ---------------------------------------------------------------------------
+
+function chunkStream(chunks, counters) {
+  let index = 0;
+  return new ReadableStream({
+    pull(controller) {
+      counters.pulls += 1;
+      if (counters.cancelled) counters.pulledAfterCancel = true;
+      if (index < chunks.length) {
+        controller.enqueue(chunks[index++]);
+      } else {
+        controller.close();
+      }
+    },
+    cancel(reason) {
+      counters.cancelled = true;
+      counters.cancelReason = reason;
+    },
+  });
+}
+
+test("R1. declared Content-Length oversized -> 413 before reading the body stream", async () => {
+  const counters = { pulls: 0, cancelled: false };
+  const stream = chunkStream([new Uint8Array(128 * 1024 + 1)], counters);
+  const request = new Request(EXECUTE_URL, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-padiem-ingress-credential": INGRESS_SECRET,
+      "content-length": String(128 * 1024 + 1),
+    },
+    body: stream,
+    duplex: "half",
+  });
+  const { calls, env } = fakeEnv();
+  const response = await handleIngress(request, env);
+
+  assert.equal(response.status, 413);
+  assert.equal(JSON.parse(await response.text()).error.code, "request_too_large");
+  assert.equal(calls.length, 0);
+  // The precheck rejects before the body stream is materially consumed:
+  // at most the runtime's own initial pull, never an overflow cancel.
+  assert.equal(counters.cancelled, false);
+  assert.ok(counters.pulls <= 1);
+});
+
+test("R2. chunked/unknown-length request over limit -> cancelled at the crossing chunk, later chunks unread", async () => {
+  const counters = { pulls: 0, cancelled: false };
+  const big = new Uint8Array(64 * 1024);
+  const stream = chunkStream([big, big, big], counters); // 192 KiB total, limit 128 KiB
+  const request = new Request(EXECUTE_URL, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-padiem-ingress-credential": INGRESS_SECRET,
+    },
+    body: stream,
+    duplex: "half",
+  });
+  const { calls, env } = fakeEnv();
+  const response = await handleIngress(request, env);
+
+  assert.equal(response.status, 413);
+  assert.equal(JSON.parse(await response.text()).error.code, "request_too_large");
+  assert.equal(calls.length, 0);
+  assert.equal(counters.cancelled, true);
+  // Two 64 KiB chunks were consumed (128 KiB fits exactly); the third must
+  // remain undelivered: the stream is cancelled at the first crossing chunk.
+  assert.equal(counters.cancelled, true);
+  // Two 64 KiB chunks are consumed (128 KiB fits exactly); the third read is
+  // the one that crosses, so the stream is cancelled there and no further
+  // pull is honored.
+  assert.equal(counters.pulledAfterCancel, undefined);
+  assert.ok(counters.pulls <= 3);
+});
+
+test("R3. Engine response exactly MAX_RESPONSE_BYTES -> forwarded intact", async () => {
+  const payload = new Uint8Array(1024 * 1024);
+  for (let i = 0; i < payload.length; i += 1) payload[i] = i % 251;
+  const { env } = fakeEnv({
+    response: new Response(payload, { status: 200 }),
+  });
+  const response = await handleIngress(validRequest(), env);
+
+  assert.equal(response.status, 200);
+  const delivered = new Uint8Array(await response.arrayBuffer());
+  assert.equal(delivered.byteLength, 1024 * 1024);
+  assert.deepEqual(delivered, payload);
+});
+
+test("R4. Engine response MAX_RESPONSE_BYTES + 1 across chunks -> immediate cancel, later chunks unread, 502 vocab", async () => {
+  const counters = { pulls: 0, cancelled: false };
+  const part = new Uint8Array(512 * 1024 + 1);
+  const stream = chunkStream([part, part, part], counters); // exceeds 1 MiB on second chunk
+  const { calls, env } = fakeEnv({
+    response: new Response(stream, { status: 200 }),
+  });
+  const response = await handleIngress(validRequest(), env);
+
+  assert.equal(response.status, 502);
+  const body = JSON.parse(await response.text());
+  assert.equal(body.error.code, "engine_response_too_large");
+  assert.equal(body.error.message, "Padiem AI Engine response exceeded the safety limit.");
+  assert.equal(counters.cancelled, true);
+  assert.ok(counters.pulls <= 3);
+  assert.equal(counters.pulledAfterCancel, undefined);
+  assert.equal(calls.length, 1);
 });
