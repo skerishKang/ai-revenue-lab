@@ -25,6 +25,7 @@ from .b54_canonical_session import (
     B54ServerAuthenticatedOwner,
     b54_canonical_session_producer,
 )
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .config import Settings
 from .control_plane_identity import TrustedProductAuthEvidence, bridge_trusted_product_auth
 from .history import HistoryConflict, HistoryStore, PasswordCredential
@@ -340,8 +341,11 @@ async def _json_body(request: Request) -> dict | None:
     content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
     if content_type != "application/json":
         return None
-    raw = await request.body()
-    if not raw or len(raw) > _PASSWORD_BODY_LIMIT:
+    try:
+        raw = await read_bounded_request_body(request, max_bytes=_PASSWORD_BODY_LIMIT)
+    except RequestBodyTooLarge:
+        return None
+    if not raw:
         return None
     try:
         parsed = json.loads(raw.decode("utf-8"))

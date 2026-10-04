@@ -77,6 +77,7 @@ from padiem_control_plane.product_tier_routes import (
 )
 
 from .auth_routes import auth_ready, current_user_id
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .control_plane_identity_shadow import (
     IdentityShadowRecord,
     IdentityShadowStore,
@@ -374,11 +375,15 @@ async def claw_manual_intake_preview(request: Request) -> JSONResponse:
     if content_type != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
 
-    raw_body = await request.body()
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_MANUAL_INTAKE_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not raw_body:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-    if len(raw_body) > MAX_MANUAL_INTAKE_BODY_BYTES:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
 
     try:
         data = json.loads(raw_body.decode("utf-8"))
@@ -460,11 +465,15 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     if content_type != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
 
-    raw_body = await request.body()
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_MANUAL_INTAKE_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not raw_body:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-    if len(raw_body) > MAX_MANUAL_INTAKE_BODY_BYTES:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
 
     try:
         data = json.loads(raw_body.decode("utf-8"))
@@ -1037,11 +1046,15 @@ async def claw_approval_decision(request: Request) -> JSONResponse:
     if uid is None:
         return _error(401, "unauthorized", "로그인이 필요합니다.")
 
-    raw_body = await request.body()
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_APPROVAL_DECISION_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not raw_body:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-    if len(raw_body) > MAX_APPROVAL_DECISION_BODY_BYTES:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     try:
         data = json.loads(raw_body.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError):
@@ -1321,11 +1334,15 @@ async def claw_manual_intake_quote_compare(request: Request) -> JSONResponse:
     if content_type != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
 
-    raw_body = await request.body()
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_MANUAL_INTAKE_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not raw_body:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-    if len(raw_body) > MAX_MANUAL_INTAKE_BODY_BYTES:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
 
     try:
         data = json.loads(raw_body.decode("utf-8"))
