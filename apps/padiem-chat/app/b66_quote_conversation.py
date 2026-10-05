@@ -15,6 +15,8 @@ from dataclasses import dataclass, replace
 from datetime import date
 from typing import Any, Protocol
 
+from .b66_quote_deterministic_fallback import parse_b66_mvp_fallback
+
 MAX_CONVERSATION_CHARS = 4_000
 MAX_RESULT_CHARS = 24_000
 MAX_TEXT_CHARS = 2_000
@@ -593,11 +595,36 @@ class B66QuoteConversationInterpreter:
         if not clean or len(clean) > MAX_CONVERSATION_CHARS:
             raise B66QuoteConversationError("invalid_message")
         prompt = _conversation_prompt(skill)
-        result = await self._client.complete(
-            [{"role": "user", "content": clean}],
-            additional_system_context=prompt,
-            attachments=(),
-        )
+        try:
+            result = await self._client.complete(
+                [{"role": "user", "content": clean}],
+                additional_system_context=prompt,
+                attachments=(),
+            )
+        except Exception as exc:
+            # First-MVP resilience boundary (#3391): keep every existing
+            # runtime/error contract except the exact Production blocker
+            # observed on the current B66 lane. Only a projected provider 5xx
+            # may enter the narrow deterministic Korean quote grammar.
+            if getattr(exc, "code", None) != "provider_server_error":
+                raise
+            schema = skill.get("variableSchema")
+            if (
+                not isinstance(schema, dict)
+                or schema.get("recipient") is not True
+                or schema.get("items") is not True
+            ):
+                raise
+            raw_fallback = parse_b66_mvp_fallback(clean)
+            if raw_fallback is None:
+                raise
+            if schema.get("taxMode") is not True:
+                raw_fallback.pop("taxMode", None)
+            projection = normalize_conversation_output(raw_fallback)
+            return replace(
+                projection,
+                missing=_server_missing_fields(projection, skill),
+            )
         if not isinstance(result, dict):
             raise B66QuoteConversationError("invalid_model_output")
         answer = result.get("answer")
