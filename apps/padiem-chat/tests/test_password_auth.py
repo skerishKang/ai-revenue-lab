@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from datetime import datetime, timedelta, timezone
 
 import httpx
@@ -10,6 +11,7 @@ from padiem_control_plane import AuthSessionSnapshot, ProductIdentityLink
 from app.auth import SESSION_COOKIE
 from app.auth_abuse import (
     GLOBAL_DAILY_FAILURE_LIMIT,
+    IDENTIFIER_DAILY_FAILURE_LIMIT,
     NETWORK_DAILY_FAILURE_LIMIT,
     AuthAbuseGate,
     InMemoryAuthAbuseStore,
@@ -977,3 +979,320 @@ async def test_durable_abuse_keys_never_contain_raw_identifier_or_ip() -> None:
         assert key[1].startswith("aab_identifier_") or key[1].startswith(
             "aab_network_"
         ) or key[1] == "global"
+
+
+class ShapeProbeAbuseStore(InMemoryAuthAbuseStore):
+    """Deterministic operation-shape probe for the timing-oracle repro.
+
+    Counts durable gate transits and can block inside record_failure, so a
+    test proves the route awaits the gate (rather than assuming timing).
+    Never blocks unless a test clears ``released`` first.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.entered = asyncio.Event()
+        self.released = asyncio.Event()
+        self.released.set()
+
+    async def record_failure(self, **kwargs):
+        self.entered.set()
+        await self.released.wait()
+        return await super().record_failure(**kwargs)
+
+
+class ShapeProbeHistoryStore(MemoryStore):
+    def __init__(self) -> None:
+        super().__init__()
+        self.failure_writes = 0
+
+    async def record_password_failure(self, user_id, failed_attempts, locked_until):
+        self.failure_writes += 1
+        return await super().record_password_failure(
+            user_id, failed_attempts, locked_until
+        )
+
+
+@pytest.mark.asyncio
+async def test_failure_durable_shape_is_equalized_across_classes(
+    monkeypatch,
+) -> None:
+    # CENTRAL blocker regression (#3508 section 6): every public failure
+    # class performs the same durable gate shape — exactly one KDF and
+    # exactly one abuse-gate transit — proved with exact call counters, no
+    # wall clock. Shape is (KDF calls, abuse-gate transits, credential
+    # failure writes). Missing/locked classes run the fixed-bucket decoy,
+    # so their gate count matches the real accounting pass.
+    #
+    # Documented residual: only a real, unlocked failure performs the
+    # single credential-row write. Padding that write for missing/locked
+    # classes would require fake credential rows, which is forbidden, so
+    # the remaining systematic difference is exactly one PK UPDATE on the
+    # real-failure path — not an obvious multi-operation path split.
+    import app.auth_routes as auth_routes
+
+    kdf_calls: list[object] = []
+    original = auth_routes.verify_password
+
+    def counting_verify(password, encoded):
+        kdf_calls.append(encoded)
+        return original(password, encoded)
+
+    monkeypatch.setattr(auth_routes, "verify_password", counting_verify)
+
+    abuse = ShapeProbeAbuseStore()
+    store = ShapeProbeHistoryStore()
+    encoded = hash_password("correct horse battery staple")
+    await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
+    await store.register_password_user(
+        "second.test", "second@example.test", "Second", encoded
+    )
+    app = create_app(
+        password_settings(), history_store=store, auth_abuse_store=abuse
+    )
+
+    async def shape(client, identifier, password):
+        kdf_calls.clear()
+        abuse_before = abuse.record_calls
+        writes_before = store.failure_writes
+        response = await client.post(
+            "/api/auth/password/login",
+            json={"identifier": identifier, "password": password},
+        )
+        assert response.status_code == 401
+        assert response.json()["error"]["code"] == "invalid_credentials"
+        return (
+            len(kdf_calls),
+            abuse.record_calls - abuse_before,
+            store.failure_writes - writes_before,
+        )
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        shape_a = await shape(client, "missing.test", "wrong password value")
+        shape_b = await shape(client, "owner.test", "wrong password value")
+        for index in range(4):
+            await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "owner.test", "password": f"wrong-{index}"},
+            )
+        assert store.credentials["owner.test"].locked_until is not None
+        shape_c = await shape(client, "owner.test", "wrong password value")
+        shape_d = await shape(
+            client, "owner.test", "correct horse battery staple"
+        )
+        gate = app.state.auth_abuse_gate
+        for _ in range(IDENTIFIER_DAILY_FAILURE_LIMIT + 1):
+            await gate.record_failure_window(identifier="second.test", raw_ip=None)
+        shape_e = await shape(client, "second.test", "wrong password value")
+
+    assert shape_a == (1, 1, 0)
+    assert shape_b == (1, 1, 1)
+    assert shape_c == (1, 1, 0)
+    assert shape_d == (1, 1, 0)
+    assert shape_e == (1, 1, 1)
+
+
+@pytest.mark.asyncio
+async def test_every_failure_path_blocks_on_durable_abuse_gate() -> None:
+    # Proves by loop turns (not wall clock) that every public failure class
+    # — missing, existing-unlocked, and locked — awaits the durable gate
+    # before responding. No failure class may return without transiting it.
+    abuse = ShapeProbeAbuseStore()
+    abuse.released.clear()
+    store = ShapeProbeHistoryStore()
+    encoded = hash_password("correct horse battery staple")
+    await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
+    app = create_app(
+        password_settings(), history_store=store, auth_abuse_store=abuse
+    )
+
+    async def settled(task, turns=300):
+        for _ in range(turns):
+            if task.done():
+                return True
+            await asyncio.sleep(0)
+        return task.done()
+
+    async def stalled_login(identifier, password):
+        task = asyncio.create_task(
+            client.post(
+                "/api/auth/password/login",
+                json={"identifier": identifier, "password": password},
+            )
+        )
+        for _ in range(300):
+            if abuse.entered.is_set():
+                break
+            await asyncio.sleep(0)
+        assert abuse.entered.is_set()
+        assert await settled(task) is False
+        abuse.entered.clear()
+        return task
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        missing_task = await stalled_login("missing.test", "wrong")
+        wrong_task = await stalled_login("owner.test", "wrong")
+        abuse.released.set()
+        assert (await missing_task).status_code == 401
+        assert (await wrong_task).status_code == 401
+        assert abuse.record_calls == 2
+
+        # A locked account's failures also transit the gate (via decoy).
+        for _ in range(4):
+            await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "owner.test", "password": "wrong"},
+            )
+        assert store.credentials["owner.test"].locked_until is not None
+        abuse.released.clear()
+        locked_task = await stalled_login("owner.test", "wrong")
+        abuse.released.set()
+        assert (await locked_task).status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_decoy_keyspace_stays_bounded_for_arbitrary_missing_identifiers() -> None:
+    # Privacy/bounded-growth regression (#3508 section 7/9): inventing
+    # arbitrary missing identifiers must not mint durable rows. All decoy
+    # traffic lands in exactly one fixed bucket, provably disjoint from
+    # every real identifier bucket.
+    abuse = InMemoryAuthAbuseStore()
+    store = MemoryStore()
+    encoded = hash_password("correct horse battery staple")
+    await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
+    app = create_app(
+        password_settings(), history_store=store, auth_abuse_store=abuse
+    )
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        for index in range(50):
+            response = await client.post(
+                "/api/auth/password/login",
+                json={"identifier": f"phantom-{index}.test", "password": "wrong"},
+            )
+            assert response.status_code == 401
+        for _ in range(5):
+            await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "owner.test", "password": "wrong"},
+            )
+
+    identifier_keys = sorted(
+        key[1] for key in abuse.counts if key[0] == "identifier"
+    )
+    # One decoy bucket for all fifty phantoms, plus the one real bucket.
+    assert len(identifier_keys) == 2
+    assert store.credentials["owner.test"].locked_until is not None
+    rendered = repr(identifier_keys) + repr(abuse.counts)
+    for index in range(50):
+        assert f"phantom-{index}" not in rendered
+
+
+@pytest.mark.asyncio
+async def test_locked_attempts_never_mutate_real_identifier_counter() -> None:
+    # Active-lock equalization must not advance the real escalation meter:
+    # hammering a locked account must leave its future lock exactly where
+    # the original lock window left it — otherwise the decoy itself would
+    # become a new remote lock amplification.
+    abuse = InMemoryAuthAbuseStore()
+    store = MemoryStore()
+    encoded = hash_password("correct horse battery staple")
+    await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
+    app = create_app(
+        password_settings(), history_store=store, auth_abuse_store=abuse
+    )
+
+    def identifier_counts():
+        return {
+            key[1]: count
+            for key, count in abuse.counts.items()
+            if key[0] == "identifier"
+        }
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        for index in range(5):
+            await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "owner.test", "password": f"wrong-{index}"},
+            )
+        frozen_lock = store.credentials["owner.test"].locked_until
+        assert frozen_lock is not None
+        counts = identifier_counts()
+        assert len(counts) == 1
+        (owner_key, owner_count) = next(iter(counts.items()))
+        assert owner_count == 5
+        for _ in range(6):
+            response = await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "owner.test", "password": "wrong-again"},
+            )
+            assert response.status_code == 401
+            assert response.json()["error"]["code"] == "invalid_credentials"
+        counts = identifier_counts()
+
+    assert store.credentials["owner.test"].locked_until == frozen_lock
+    assert store.credentials["owner.test"].failed_attempts == 5
+    # The real meter is frozen; the six locked attempts advanced only the
+    # single fixed decoy bucket.
+    assert counts[owner_key] == 5
+    assert len(counts) == 2
+    assert sorted(counts.values()) == [5, 6]
+
+
+@pytest.mark.asyncio
+async def test_decoy_saturation_never_feeds_real_lock_decisions() -> None:
+    # The decoy bucket is timing padding only. Spending it directly must
+    # not change any real account's failure count, lock formation, or lock
+    # escalation floor.
+    from app.auth_routes import _LOGIN_DECOY_IDENTIFIER
+
+    abuse = InMemoryAuthAbuseStore()
+    store = MemoryStore()
+    encoded = hash_password("correct horse battery staple")
+    await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
+    app = create_app(
+        password_settings(), history_store=store, auth_abuse_store=abuse
+    )
+    gate = app.state.auth_abuse_gate
+    for _ in range(12):
+        await gate.record_failure_window(
+            identifier=_LOGIN_DECOY_IDENTIFIER, raw_ip=None
+        )
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        for index in range(5):
+            await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "owner.test", "password": f"wrong-{index}"},
+            )
+
+    credential = store.credentials["owner.test"]
+    assert credential.failed_attempts == 5
+    assert credential.locked_until is not None
+    real_counts = [
+        count
+        for (scope, _key, _day), count in abuse.counts.items()
+        if scope == "identifier"
+    ]
+    # Twelve decoy spends plus five real spends, on strictly separate keys.
+    assert sorted(real_counts) == [5, 12]
+    # Base escalation floor: five real failures still mean the base window.
+    minutes = (
+        _parse_locked_until(credential.locked_until) - datetime.now(timezone.utc)
+    ).total_seconds() / 60
+    assert 10 < minutes <= 15

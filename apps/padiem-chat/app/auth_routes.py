@@ -400,6 +400,36 @@ def _password_lock_minutes(window_failures: int) -> int:
     return _PASSWORD_LOCK_MINUTES_MAX
 
 
+_LOGIN_DECOY_IDENTIFIER = "\x00padiem-login-decoy"
+# The decoy preimage can never equal a normalized identifier: NUL is rejected
+# by both the username grammar and the email grammar, so the decoy HMAC key
+# is provably disjoint from every real identifier bucket. Exactly one decoy
+# bucket exists per day, no matter how many distinct missing identifiers an
+# attacker invents — the missing-identifier durable keyspace stays bounded.
+
+
+async def _decoy_failure_window(request: Request) -> None:
+    """Bounded timing decoy for failure classes without real accounting.
+
+    Missing identifiers and locked accounts have no real counter to advance:
+    a real take would either mint durable rows for arbitrary attacker-chosen
+    strings or mutate a locked account's escalation state (a new remote lock
+    amplification). The fixed-bucket decoy performs the same durable gate
+    shape instead. Its result is always discarded: it is never a lock input,
+    never an authentication input, and never an existence signal.
+    """
+    gate = getattr(request.app.state, "auth_abuse_gate", None)
+    if gate is None:
+        return
+    try:
+        await gate.record_failure_window(
+            identifier=_LOGIN_DECOY_IDENTIFIER,
+            raw_ip=request.headers.get("cf-connecting-ip"),
+        )
+    except Exception:
+        pass
+
+
 async def _identifier_failure_window(
     request: Request, identifier: str
 ) -> AuthAbuseWindow:
@@ -528,6 +558,10 @@ async def password_login(request: Request) -> JSONResponse:
         # failure is about to be recorded against a real credential, so an
         # unauthenticated caller cannot inflate another subject's window and
         # cannot create abuse rows for identifiers that do not exist.
+        #
+        # Every other failure class (missing identifier, active lock) runs the
+        # fixed-bucket timing decoy instead, so all public failures share one
+        # durable gate shape. The decoy never feeds a lock decision.
         if credential is not None and not locked:
             window = await _identifier_failure_window(request, identifier)
             # A lapsed lock starts a fresh failure sequence so one stray
@@ -548,6 +582,8 @@ async def password_login(request: Request) -> JSONResponse:
                 )
             except Exception:
                 pass
+        else:
+            await _decoy_failure_window(request)
         return _auth_error(
             401,
             "invalid_credentials",
