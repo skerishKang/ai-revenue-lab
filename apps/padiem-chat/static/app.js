@@ -159,6 +159,11 @@
     if (workspace) workspace.hidden = state !== "claw";
     const modeBar = document.getElementById("clawManualForm");
     if (modeBar) modeBar.hidden = !(state === "claw" && workspace && workspace.dataset.view === "manual");
+    // #3531: the explicit manual-entry control lives in the fixed composer
+    // wrap and shows only on the general Claw view — never by default
+    // elsewhere, never inside the manual form it opens.
+    const entryBar = document.getElementById("clawManualEntryBar");
+    if (entryBar) entryBar.hidden = !(state === "claw" && workspace && workspace.dataset.view === "general");
     syncComposerForClaw(state === "claw");
     const chatNav = document.getElementById("newChatButton");
     const clawNav = document.getElementById("clawNavButton");
@@ -864,8 +869,8 @@
       }
       if (workspace) {
         delete workspace.dataset.inboxKind;
-        if (workspace.dataset.view === "inbox") workspace.dataset.view = "manual";
-        if (workspace.dataset.view === "automation") workspace.dataset.view = "manual";
+        if (workspace.dataset.view === "inbox") workspace.dataset.view = "general";
+        if (workspace.dataset.view === "automation") workspace.dataset.view = "general";
       }
       // Auth loss tears down any pending execute recovery: no timer outlives the session.
       clearClawRecovery({ syncControls: true });
@@ -1376,11 +1381,10 @@
   });
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    // #2532: in the Claw workspace the composer is the request input; Enter routes to preview.
-    if (shell.dataset.state === "claw" && clawManualForm && !clawManualForm.hidden) {
-      clawManualForm.requestSubmit();
-      return;
-    }
+    // #3531: the shared composer always submits to the general Claw
+    // conversation, in every shell state. The quotation/document workflow
+    // runs only via the manual form's own explicit draft submit button;
+    // a generic request must never auto-enter it through the composer.
     submitPrompt(input.value);
   });
   cancelStreamButton.addEventListener("click", cancelActiveStream);
@@ -1646,7 +1650,11 @@
 
   function syncComposerForClaw(isClaw) {
     if (!input) return;
-    if (isClaw) {
+    // #3531: the business-request prompt belongs to the explicit manual
+    // workflow view only. The general Claw view shares the generic prompt
+    // so placeholder parity with Chat Home holds.
+    const manualView = isClaw && clawWorkspace && clawWorkspace.dataset.view === "manual";
+    if (manualView) {
       input.placeholder = localeOr("claw-request-placeholder", "Paste a business request you received by chat, SMS, or email.");
       input.setAttribute("aria-describedby", "clawStatus");
       input.setAttribute("maxlength", "4000");
@@ -2470,6 +2478,27 @@
   if (clawAutomationRetry) clawAutomationRetry.addEventListener("click", () => void loadClawAutomationRules());
 
   function openClawWorkspace() {
+    // #3531: Claw opens on the general conversation view. The document
+    // workflow (manual form, workflow chrome) stays hidden until the user
+    // explicitly enters it via openClawManual.
+    if (!clawWorkspace) return;
+    shell.dataset.state = "claw";
+    clawWorkspace.dataset.view = "general";
+    delete clawWorkspace.dataset.inboxKind;
+    if (clawInbox) clawInbox.hidden = true;
+    if (clawAutomation) clawAutomation.hidden = true;
+    if (clawManualForm) clawManualForm.hidden = true;
+    if (clawResultArea) clawResultArea.hidden = false;
+    setNavActive();
+    input.focus();
+    closeSidebar();
+    syncApprovedMemoryVisibility();
+    syncClawRunHistoryVisibility();
+  }
+
+  function openClawManual() {
+    // Explicit entry into the document/quotation workflow only. The manual
+    // form and its workflow chrome are never shown by default.
     if (!clawWorkspace) return;
     shell.dataset.state = "claw";
     clawWorkspace.dataset.view = "manual";
@@ -2954,6 +2983,8 @@
   }
 
   if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
+  const clawManualEntryButton = document.getElementById("clawManualEntryButton");
+  if (clawManualEntryButton) clawManualEntryButton.addEventListener("click", openClawManual);
   if (tasksNavButton) tasksNavButton.addEventListener("click", () => openClawInbox("tasks"));
   if (alertsNavButton) alertsNavButton.addEventListener("click", () => openClawInbox("alerts"));
   if (clawInboxRetry) clawInboxRetry.addEventListener("click", () => {
