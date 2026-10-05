@@ -284,6 +284,7 @@ class ExecutionRuntimeError(RuntimeError):
         metadata: RunMetadata,
         retryable: bool = False,
         upstream_status_code: int | None = None,
+        diagnostic_class: str | None = None,
     ) -> None:
         super().__init__(safe_message)
         self.code = _safe_identifier("error code", code)
@@ -292,6 +293,11 @@ class ExecutionRuntimeError(RuntimeError):
         self.retryable = bool(retryable)
         self.upstream_status_code = _normalize_upstream_status_code(
             upstream_status_code
+        )
+        self.diagnostic_class = (
+            _safe_identifier("diagnostic class", diagnostic_class)
+            if diagnostic_class is not None
+            else None
         )
 
     def to_public_dict(self) -> dict[str, Any]:
@@ -428,6 +434,7 @@ class ExecutionRuntime:
                 metadata=metadata,
                 retryable=exc.retryable,
                 upstream_status_code=exc.upstream_status_code,
+                diagnostic_class=exc.diagnostic_class,
             ) from None
         except Exception:
             metadata = self._metadata(

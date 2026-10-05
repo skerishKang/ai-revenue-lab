@@ -356,12 +356,14 @@ class B14ExecutionError(RuntimeError):
         *,
         upstream_status_code: int | None = None,
         retryable: bool = False,
+        diagnostic_class: str | None = None,
     ) -> None:
         super().__init__(safe_message)
         self.code = code
         self.safe_message = safe_message
         self.upstream_status_code = upstream_status_code
         self.retryable = retryable
+        self.diagnostic_class = diagnostic_class
 
     def to_public_dict(self) -> dict[str, Any]:
         return {
@@ -505,12 +507,14 @@ class B14ExecutionClient:
                 "malformed_upstream",
                 "Business 14 returned malformed JSON.",
                 upstream_status_code=status_code,
+                diagnostic_class="upstream_malformed_json",
             ) from exc
         if not isinstance(data, Mapping):
             raise B14ExecutionError(
                 "malformed_upstream",
                 "Business 14 returned an unexpected response shape.",
                 upstream_status_code=status_code,
+                diagnostic_class="upstream_unexpected_shape",
             )
 
         try:
@@ -520,12 +524,14 @@ class B14ExecutionClient:
                 "malformed_upstream",
                 "Business 14 response did not contain assistant content.",
                 upstream_status_code=status_code,
+                diagnostic_class="upstream_missing_content",
             ) from exc
         if not isinstance(answer, str):
             raise B14ExecutionError(
                 "malformed_upstream",
                 "Business 14 assistant content was not text.",
                 upstream_status_code=status_code,
+                diagnostic_class="upstream_non_text_content",
             )
         normalized_answer = answer.strip()
         if not normalized_answer:
@@ -533,6 +539,7 @@ class B14ExecutionClient:
                 "empty_upstream_answer",
                 "Business 14 returned an empty assistant answer.",
                 upstream_status_code=status_code,
+                diagnostic_class="upstream_empty_answer",
             )
 
         return B14ExecutionResult(
