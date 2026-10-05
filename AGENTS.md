@@ -48,7 +48,9 @@ BUT_IMPLEMENTATION_AND_INDEPENDENT_LOCAL_VALIDATION
 MUST_NOT_BE_CLAIMED_BY_THE_SAME_ACTOR_FOR_THE_SAME_REVISION
 ```
 
-If environment constraints require the implementer to execute local checks too, report them as implementation self-checks/non-independent verification and leave the independent gate pending when the work contract requires it. "independent gate pending" is not a mergeable state: before merge the PR must record either a completed `LOCAL_VALIDATION_REPORT.md` instantiation for the exact head, or `NOT_REQUIRED` with an explicit reason.
+Independent validation is required only when the work contract needs evidence that implementation self-check + relevant CI cannot supply, such as real browser/OS/hardware/local-service behavior, high-risk environment composition, or an explicitly reserved independent gate. For a tiny deterministic bug fix with a focused load-bearing regression, default to `NOT_REQUIRED` unless one of those conditions applies; do not commission a second validator merely because the issue is P0/P1.
+
+If environment constraints require the implementer to execute local checks too, report them as implementation self-checks/non-independent verification and leave the independent gate pending only when the work contract actually requires it. "independent gate pending" is not a mergeable state: before merge the PR must record either a completed `LOCAL_VALIDATION_REPORT.md` instantiation for the exact head, or `NOT_REQUIRED` with an explicit reason.
 
 Independent validation must also be **discoverable from the PR itself**. A private report that cannot be found from the reviewed PR is insufficient audit trail. Before merge, the PR review/comment history must record:
 
@@ -144,7 +146,7 @@ This is a responsibility/evidence flow, not a mandatory product-stage sequence. 
 - For fail-open or bypass-prone fixes, add a load-bearing regression and use mutation/differential proof when practical so the test is shown to fail when the defect is restored.
 - Wrong-project Preview or deployment output is defect evidence, not product acceptance evidence.
 - `READY`, `CONDITIONALLY_READY`, and `NOT_READY` are Web CTO technical/review verdicts, not automatic merge commands.
-- Before merge, the Web CTO posts the filled `CTO_FINAL_REVIEW` checklist as a PR review/comment containing the exact head SHA and per-item checklist results; prose-only verdict assertions are not an auditable record.
+- Before merge, the Web CTO posts an auditable `CTO_FINAL_REVIEW` record containing the exact head SHA and the **applicable** checklist results. Tiny bounded fixes may use the compact checklist; do not populate irrelevant template sections merely for ceremony.
 - Owner-delegated merges must be single-purpose, head-SHA-pinned, and condition-checked at execution time (re-read remote state; required CI/gate results still valid).
 - Final owner visual approval must never be inferred from a model/worker approval when the work contract explicitly reserves visual taste to the owner.
 - Deployment follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`; no alternate Preview/manual deployment path is implied by these rules.
