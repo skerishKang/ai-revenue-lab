@@ -219,7 +219,16 @@ class BrokerAuthorityDeviceSessionAuthPort:
             result = await result
         if not isinstance(result, Mapping) or result.get("ok") is not True:
             return None
-        return validate_authenticated_device_session(result.get("device_session"))
+        projection = validate_authenticated_device_session(result.get("device_session"))
+        if projection is None:
+            return None
+        # #3485: the trusted boundary must answer the exact request it was
+        # given. A valid-looking projection for another live session/binding
+        # is not authentication for this caller, even if every projected field
+        # is otherwise well formed.
+        if projection["session_id"] != session_id or projection["binding_ref"] != binding_ref:
+            return None
+        return projection
 
 
 def build_desktop_device_session_authority_with_diagnostic(

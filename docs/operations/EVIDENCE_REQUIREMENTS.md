@@ -5,7 +5,9 @@
 
 ## 1. Revision identity
 
-Every implementation, validation and final-review report records:
+Evidence should be **minimum sufficient for the claim**. The purpose of evidence is to make a decision reviewable, not to maximize report volume.
+
+Every implementation, validation and final-review report records the relevant subset of:
 
 - repository/default branch;
 - exact starting base SHA;
@@ -14,7 +16,7 @@ Every implementation, validation and final-review report records:
 - base/head relationship where relevant;
 - repository/worktree state or branch-only write method.
 
-Evidence belongs to the exact revision it tested unless applicability to a newer revision is explicitly reviewed.
+Evidence belongs to the exact revision it tested unless applicability to a newer revision is explicitly reviewed. Applicability review may carry evidence forward across unrelated drift; it does not require re-executing unchanged journeys.
 
 ## 2. Scope evidence
 
@@ -140,7 +142,9 @@ Do not reject a technology solely because it has a price. Do not accept an OSS p
 
 ## 9. Implementation evidence
 
-The Web Developer report includes:
+For a bounded bug fix, a compact PR report is sufficient when the diff, focused regression and relevant CI make the claim directly reviewable. Do not require a separate long-form report merely because the repository is Padiem/CLAW.
+
+The Web Developer report includes the relevant subset of:
 
 - exact base/head and branch;
 - behavior/contracts changed;
@@ -196,7 +200,9 @@ HTTP 200 alone is not revision identity.
 
 ## 13. CTO final-review evidence
 
-The final review records:
+Final-review depth is proportional to the change. Tiny bounded fixes may use a compact checklist; broad/high-risk changes use the full template.
+
+The final review records the relevant subset of:
 
 - exact reviewed head and current main/base relationship;
 - changed files/scope verdict;

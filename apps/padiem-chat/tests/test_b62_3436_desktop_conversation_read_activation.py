@@ -52,6 +52,7 @@ import pytest
 from app.auth import SESSION_COOKIE, create_session_token
 from app.claw_local_access_composition import build_claw_local_access_source_with_diagnostic  # noqa: F401  (sibling composition proves the same binding)
 from app.desktop_conversation_authority import (
+    BrokerAuthorityDeviceSessionAuthPort,
     build_desktop_device_session_authority_with_diagnostic,
     validate_authenticated_device_session,
 )
@@ -735,3 +736,110 @@ def test_projection_validation_rejects_extra_or_missing_material() -> None:
 
     missing_scope = {key: value for key, value in base.items() if key != "workspace_ref"}
     assert validate_authenticated_device_session(missing_scope) is None
+
+
+def _broker_projection(*, session_id: str = SESSION_ID, binding_ref: str = BINDING_REF, account_ref: str = OWNER_ID) -> dict:
+    return {
+        "authenticated": True,
+        "session_id": session_id,
+        "binding_ref": binding_ref,
+        "device_id": DEVICE_ID,
+        "account_ref": account_ref,
+        "workspace_ref": WORKSPACE_REF,
+        "credential_generation": 1,
+        "session_expires_at": _iso(NOW + timedelta(seconds=900)),
+        "credential_digest_exposed": False,
+        "raw_device_credential": False,
+    }
+
+
+class _ProjectionBinding:
+    def __init__(self, projection: dict) -> None:
+        self.projection = projection
+        self.calls: list[dict] = []
+
+    def authenticate_device_session(self, payload: dict) -> dict:
+        self.calls.append(dict(payload))
+        return {"ok": True, "device_session": self.projection}
+
+
+@pytest.mark.parametrize(
+    ("projection", "label"),
+    [
+        (_broker_projection(session_id="sess.3436.other"), "session"),
+        (_broker_projection(binding_ref="bind.3436.other"), "binding"),
+    ],
+)
+def test_broker_adapter_rejects_valid_looking_projection_for_another_request_correlation(
+    projection: dict,
+    label: str,
+) -> None:
+    binding = _ProjectionBinding(projection)
+    authority = BrokerAuthorityDeviceSessionAuthPort(binding)
+
+    result = asyncio.run(
+        authority.authenticate_device_session(
+            session_id=SESSION_ID,
+            binding_ref=BINDING_REF,
+            credential_b64=_credential_b64(),
+        )
+    )
+
+    assert result is None, label
+    assert binding.calls == [
+        {
+            "session_id": SESSION_ID,
+            "binding_ref": BINDING_REF,
+            "credential_b64": _credential_b64(),
+        }
+    ]
+
+
+def test_broker_adapter_accepts_only_the_exact_requested_session_and_binding() -> None:
+    binding = _ProjectionBinding(_broker_projection())
+    authority = BrokerAuthorityDeviceSessionAuthPort(binding)
+
+    result = asyncio.run(
+        authority.authenticate_device_session(
+            session_id=SESSION_ID,
+            binding_ref=BINDING_REF,
+            credential_b64=_credential_b64(),
+        )
+    )
+
+    assert result is not None
+    assert result["session_id"] == SESSION_ID
+    assert result["binding_ref"] == BINDING_REF
+
+
+def test_mismatched_broker_projection_cannot_select_another_history_owner() -> None:
+    from app.config import Settings
+
+    binding = _ProjectionBinding(
+        _broker_projection(
+            session_id="sess.3436.other",
+            binding_ref="bind.3436.other",
+            account_ref=OTHER_OWNER_ID,
+        )
+    )
+    authority = BrokerAuthorityDeviceSessionAuthPort(binding)
+    store = MemoryHistoryStore()
+    asyncio.run(store.append_exchange(OTHER_OWNER_ID, None, "other secret", "other answer"))
+    settings = Settings.from_values(
+        runtime_mode="mock",
+        auth_mode="password",
+        public_base_url=BASE_URL,
+        session_secret=SESSION_SECRET,
+        session_max_age_seconds=3600,
+    )
+    app = create_app(settings, history_store=store)
+    app.state.desktop_device_session_authority = authority
+
+    response = asyncio.run(
+        _get(app, path=DESKTOP_CONVERSATIONS_PATH, headers=_device_headers())
+    )
+
+    assert response.status_code == 401
+    assert response.json()["error"]["code"] == "device_session_auth_required"
+    assert OTHER_OWNER_ID not in response.text
+    assert "other secret" not in response.text
