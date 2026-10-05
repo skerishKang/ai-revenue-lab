@@ -5,6 +5,7 @@ This file is the repository-wide entry point for AI-assisted work. A more specif
 Canonical operating documents:
 
 - `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md`
+- `docs/operations/TEST_SCOPE_AND_DELIVERY_POLICY.md`
 - `docs/operations/TECHNOLOGY_ADOPTION_POLICY.md`
 - `docs/operations/WORKFLOW_STATUS_MODEL.md`
 - `docs/operations/EVIDENCE_REQUIREMENTS.md`
@@ -128,6 +129,21 @@ User request / portfolio authority
 ```
 
 This is a responsibility/evidence flow, not a mandatory product-stage sequence. A stage may be `NOT_REQUIRED` only with a recorded reason.
+
+## Repository-wide test-scope rule
+
+`docs/operations/TEST_SCOPE_AND_DELIVERY_POLICY.md` applies to **every** Business/app/package and to Engine/Core/Control Plane/Chat/Claw/Desktop work.
+
+Default for a bounded bug fix:
+
+```text
+REPORT_MODE=COMPACT
+focused load-bearing regression
++ relevant configured CI
++ Production smoke only when applicable
+```
+
+Do not turn every available/automatically-triggered test into a required gate. Do not wait for unrelated observational CI. Do not commission independent validation merely because an issue is P0/P1. Whole-product/repository testing requires an actual whole-surface blast radius or explicit gate.
 
 ## Non-negotiable rules
 
