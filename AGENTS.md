@@ -153,19 +153,30 @@ This is a responsibility/evidence flow, not a mandatory product-stage sequence. 
 
 ## GitHub report handoff
 
-For Padiem/CLAW work, the full local-model report is committed to the private report repository rather than pasted into the public Issue/PR or relayed through chat.
+Reporting depth is proportional to task risk.
+
+For bounded bug fixes/tiny glue with directly reviewable diff + focused tests/CI, default to:
 
 ```text
+REPORT_MODE=COMPACT
+```
+
+The compact Issue/PR comment is the complete report. Do **not** create a separate workdiary report merely because the task is Padiem/CLAW.
+
+Use:
+
+```text
+REPORT_MODE=LONG
 REPORT_REPO=skerishKang/workdiary
 REPORT_PATH=padiem-reports/YYYY-MM-DD/<CLAW>/<task>.md
 REPORT_COMMIT=<immutable workdiary commit SHA>
 ```
 
-The related `ai-revenue-lab` Issue/PR should contain only a short final result, key status fields, and those three pointers. CENTRAL reads the long report directly from GitHub.
+only for materially complex/high-risk work, large evidence packages, independent local/browser/hardware validation, migrations/destructive/auth-secret boundary work, incident investigations, or when CENTRAL explicitly requests it.
 
 Google Drive/rclone reporting is disabled. Do not retry quota failures or perform Drive delete/trash cleanup. Prefer GitHub Actions artifacts for screenshots, Playwright traces and large logs. Never put password/secret/token/cookie/private-key/database-credential values into reports, comments or artifacts.
 
-If the private report repository cannot be written, preserve the report locally and report `REPORT_WRITE=BLOCKED`; do not fall back to a long public comment or Drive.
+A LONG-mode report-write failure blocks only work that actually requires LONG mode; it must not manufacture a blocker for a COMPACT-eligible tiny fix.
 
 Follow `docs/operations/GITHUB_REPORT_HANDOFF_POLICY.md`.
 
