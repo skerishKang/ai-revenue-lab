@@ -38,6 +38,21 @@ globalThis.fetch = async (target, init = {}) => {
     return json({ ok: true, skills: [] });
   }
   if (url.endsWith("/api/b66/quote/interpret")) {
+    const rawBody = init.body instanceof ArrayBuffer
+      ? new TextDecoder().decode(init.body)
+      : String(init.body || "");
+    if (rawBody.includes("bounded-upstream-class-input")) {
+      return json(
+        { ok: false, error: { code: "quote_interpretation_failed", message: "견적 요청을 해석하지 못했습니다." } },
+        {
+          status: 502,
+          headers: {
+            "X-B66-Upstream-Class": "upstream_timeout",
+            "X-Internal-Debug": "must-not-relay"
+          }
+        }
+      );
+    }
     return json(
       { ok: false, error: { code: "quote_input_unrecognized", message: "견적 입력값을 확인해 주세요." } },
       {
@@ -153,6 +168,26 @@ try {
   assert.equal(calls[4].url, "https://chat.padiem.net/api/b66/assets/" + ASSET_ID);
   assert.equal(calls[3].headers.get("cookie"), "padiem_session=opaque-test-token");
 
+  const upstreamFailure = await worker.fetch(
+    new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/quote/interpret", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Cookie": "padiem_session=opaque-test-token"
+      },
+      body: JSON.stringify({
+        saved_skill_id: "b66skill_" + "c".repeat(32),
+        message: "bounded-upstream-class-input"
+      })
+    }),
+    env
+  );
+  assert.equal(upstreamFailure.status, 502);
+  assert.equal(upstreamFailure.headers.get("x-b66-upstream-class"), "upstream_timeout");
+  assert.equal(upstreamFailure.headers.get("x-internal-debug"), null);
+  assert.equal(calls.length, 6);
+  assert.equal(calls[5].url, "https://chat.padiem.net/api/b66/quote/interpret");
+
   const countBeforeDeny = calls.length;
   for (const request of [
     new Request("https://quick-quote-kr.pages.dev/api/padiem/admin/anything"),
@@ -225,6 +260,7 @@ try {
   console.log("OPAQUE_SESSION_COOKIE_RELAY=PASS");
   console.log("PRIVATE_QUOTE_ASSET_PROXY=PASS");
   console.log("B66_REJECTION_DIAGNOSTIC_HEADER_RELAY=PASS");
+  console.log("B66_UPSTREAM_CLASS_DIAGNOSTIC_HEADER_RELAY=PASS");
   console.log("ARBITRARY_RESPONSE_HEADER_RELAY=0");
   console.log("SERVICE_BINDING_PRIORITY=PASS");
   console.log("PRODUCTION_MUTATION=0");

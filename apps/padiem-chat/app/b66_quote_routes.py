@@ -20,6 +20,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
+from .b14_client import ChatRuntimeError
 from .b66_quote_conversation import (
     B66QuoteConversationError,
     MAX_CONVERSATION_CHARS,
@@ -41,6 +42,35 @@ _NO_STORE = {"Cache-Control": "no-store, max-age=0", "Pragma": "no-cache"}
 _REJECTION_REASON_RE = re.compile(r"^[a-z_]{1,64}$")
 _REJECTION_PATH_RE = re.compile(r"^[A-Za-z0-9_.\[\]]{1,64}$")
 _REJECTION_TYPE_RE = re.compile(r"^[a-z]{1,16}$")
+
+
+# Bounded 502 upstream diagnostics (#3391): a provider/runtime failure may carry
+# only the product-owned ``ChatRuntimeError.code``, and only when it is one of
+# the fixed upstream classes below. Raw exception text, provider payloads, model
+# output and customer values are never part of this header.
+_UPSTREAM_CLASS_ALLOWLIST = frozenset(
+    {
+        "upstream_timeout",
+        "upstream_busy",
+        "upstream_response_too_large",
+        "malformed_upstream",
+        "upstream_unavailable",
+        "provider_auth_error",
+        "provider_route_error",
+        "provider_server_error",
+        "upstream_execution_failed",
+        "upstream_error",
+    }
+)
+
+
+def _upstream_class_headers(exc: BaseException) -> dict[str, str]:
+    if not isinstance(exc, ChatRuntimeError):
+        return {}
+    code = getattr(exc, "code", None)
+    if not isinstance(code, str) or code not in _UPSTREAM_CLASS_ALLOWLIST:
+        return {}
+    return {"X-B66-Upstream-Class": code}
 
 
 def _rejection_diagnostic_headers(exc: BaseException) -> dict[str, str]:
@@ -224,8 +254,11 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
         for header_name, header_value in _rejection_diagnostic_headers(exc).items():
             response.headers[header_name] = header_value
         return response
-    except Exception:
-        return _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
+    except Exception as exc:
+        response = _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
+        for header_name, header_value in _upstream_class_headers(exc).items():
+            response.headers[header_name] = header_value
+        return response
 
     safe_dict = getattr(projection, "safe_dict", None)
     if not callable(safe_dict):

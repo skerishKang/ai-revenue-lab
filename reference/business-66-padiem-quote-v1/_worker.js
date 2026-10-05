@@ -130,7 +130,8 @@ async function handlePadiemBridge(request, url, env) {
   for (const name of [
     "X-B66-Rejection-Reason",
     "X-B66-Rejection-Path",
-    "X-B66-Rejection-Type"
+    "X-B66-Rejection-Type",
+    "X-B66-Upstream-Class"
   ]) {
     const value = upstream.headers.get(name);
     if (value) responseHeaders.set(name, value);
