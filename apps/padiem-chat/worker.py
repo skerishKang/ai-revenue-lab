@@ -42,6 +42,7 @@ from app.claw_p01_composition import (
     build_claw_p01_lanes_with_diagnostic,
 )
 from app.claw_task_alert_store import D1ClawTaskAlertStore
+from app.b66_quote_conversation import B66QuoteConversationInterpreter
 from app.config import ConfigError
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.calendar_read_activation_engine import CloudflareCalendarReadActivationEngineClient
@@ -765,6 +766,13 @@ class Default(WorkerEntrypoint):
                     service_transport=service_transport,
                     stream_transport=stream_transport,
                     require_service_binding=settings.runtime_mode == "b14",
+                )
+                # #3391: create_app composed the B66 quote interpreter against
+                # the pre-composition B14 client. Rebind it to the Production
+                # DispatchAwareB14Client so quote interpretation always rides
+                # the same composed authority as chat.
+                _worker_app.state.b66_quote_interpreter = B66QuoteConversationInterpreter(
+                    _worker_app.state.b14_client
                 )
                 _worker_app.state.grounded_chat = GroundedChatService(
                     _worker_app.state.b14_client,
