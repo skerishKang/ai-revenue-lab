@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "apps/padiem-chat/**"
+      - "!apps/padiem-chat/tests/**"
+      - "!apps/padiem-chat/worker.py"
       - ".github/scripts/b62_auth_history_browser_qa.py"
       - ".github/scripts/b62_account_session_browser_qa.py"
       - ".github/workflows/b62-auth-history-browser-qa.yml"
