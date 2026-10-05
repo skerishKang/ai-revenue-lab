@@ -54,7 +54,7 @@ jobs:
         run: |
           set -euo pipefail
           python .github/scripts/b66_cgi_partial_live_canary.py --self-test
-          python -m unittest .github/tests/test_b66_cgi_partial_live_canary.py
+          python .github/tests/test_b66_cgi_partial_live_canary.py
 
       - name: Pin bounded live-call contract
         shell: bash
