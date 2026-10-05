@@ -236,7 +236,7 @@
     article.querySelector("[data-runtime-label]").textContent = skillTitle ? `${runtimeLabel} · ${skillTitle}` : runtimeLabel;
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
-  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, actionLabel = uiT("retry")) {
+  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, actionLabel = uiT("retry")) {
     const box = document.createElement("div");
     box.className = "error-box";
     const strong = document.createElement("strong");
@@ -252,7 +252,7 @@
       conversationState.setConversationId(retryContext.conversationId);
       activeProject = retryContext.project;
       renderProjectState();
-      const success = await requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext);
+      const success = await requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest);
       if (success && selectedAttachment === retryAttachment) clearAttachment();
     }, { once: true });
     box.append(strong, p, retry);
@@ -261,29 +261,29 @@
   function revealErrorState(article) {
     article.scrollIntoView({ block: "center", behavior: "auto" });
   }
-  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
+  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
-    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext));
+    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
-  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
+  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
-    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext));
+    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
-  function renderCancelled(article, retryMessages, retrySkill, retryContext) {
+  function renderCancelled(article, retryMessages, retrySkill, retryContext, clawGeneralRequest = false) {
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
     article.querySelector("[data-runtime-label]").textContent = uiT("generation-cancelled");
-    content.appendChild(buildRetryBox(uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, uiT("regenerate")));
+    content.appendChild(buildRetryBox(uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, uiT("regenerate")));
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.CANCELLED);
     revealErrorState(article);
   }
@@ -1206,7 +1206,10 @@
     // #3539: product-state-aware routing. A generic B54 Claw submit runs on the
     // canonical P01 Engine lane; the standalone Padiem Chat path keeps the
     // existing /api/chat/stream transport call byte-for-byte.
-    const response = route && route.clawGeneral
+    // The decision is an immutable snapshot taken before showConversation()
+    // mutates shell.dataset.state, so it is never re-derived from live state.
+    const clawGeneralRequest = !!(route && route.clawGeneral);
+    const response = clawGeneralRequest
       ? await chatTransport.requestClawGeneral(payload, signal)
       : await chatTransport.requestStreaming(payload, signal);
 
@@ -1243,7 +1246,7 @@
             : uiT("stream-continue-failed");
           if (!paragraph) throw chatTransport.errorFor(data, message);
           terminalError = true;
-          renderStreamError(article, message, outboundMessages, skill, contextSnapshot, lifecycleForError(chatTransport.errorFor(data, message)));
+          renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(chatTransport.errorFor(data, message)));
           return true;
         }
         if (!data || data.done !== true || !paragraph || !answer) throw new Error(uiT("stream-complete-invalid"));
@@ -1258,7 +1261,7 @@
     } catch (error) {
       if (error && error.name === "AbortError") throw error;
       if (paragraph) {
-        renderStreamError(article, error instanceof Error ? error.message : uiT("stream-continue-failed"), outboundMessages, skill, contextSnapshot);
+        renderStreamError(article, error instanceof Error ? error.message : uiT("stream-continue-failed"), outboundMessages, skill, contextSnapshot, clawGeneralRequest);
         return false;
       }
       throw error;
@@ -1277,7 +1280,7 @@
     return "plus";
   }
 
-  async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot) {
+  async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest) {
     if (inFlight) return false;
     inFlight = true;
     activeRequestCancelReason = null;
@@ -1290,12 +1293,15 @@
     renderTyping(article);
     try {
       const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };
-      // #3539: product-state-aware routing. A generic B54 Claw submit runs on the
-      // canonical P01 Engine lane with no direct-B14 /api/chat/stream fallback;
-      // the standalone Padiem Chat composer keeps /api/chat/stream unchanged.
-      // The explicit manual form submits through clawManualForm below, never here.
-      const clawGeneralRequest =
-        shell.dataset.state === "claw" && !(clawManualForm && !clawManualForm.hidden);
+      // #3539: the routing decision arrives as a submit-time snapshot. It is
+      // NEVER re-derived from live shell state here, because showConversation()
+      // has already flipped shell.dataset.state to "chat" by the time this runs
+      // (re-deriving it silently rerouted the generic Claw composer onto the
+      // standalone /api/chat/stream lane in Production).
+      // A generic B54 Claw submit runs on the canonical P01 Engine lane with no
+      // direct-B14 /api/chat/stream fallback; the standalone Padiem Chat composer
+      // keeps /api/chat/stream unchanged, and the explicit manual form submits
+      // through clawManualForm below, never here.
       const attachments = attachmentPayload(attachment);
       if (attachments) payload.attachments = attachments;
       if (contextSnapshot.conversationId) payload.conversation_id = contextSnapshot.conversationId;
@@ -1315,7 +1321,7 @@
     } catch (error) {
       if (error && error.name === "AbortError") {
         if (activeRequestCancelReason === "user_cancel" && requestEpoch === conversationEpoch) {
-          renderCancelled(article, outboundMessages, skill, contextSnapshot);
+          renderCancelled(article, outboundMessages, skill, contextSnapshot, clawGeneralRequest);
         }
         return false;
       }
@@ -1327,6 +1333,7 @@
         skill,
         attachment,
         contextSnapshot,
+        clawGeneralRequest,
         lifecycleForError(error),
       );
       return false;
@@ -1341,17 +1348,29 @@
       }
     }
   }
+  // #3539: the generic B54 Claw composer runs on the canonical P01 Engine lane.
+  // This predicate documents the product state that selects the lane: the Claw
+  // shell with the explicit manual form hidden. It must be read at submit time,
+  // BEFORE showConversation() flips shell.dataset.state to "chat".
+  function clawGeneralRequestActive() {
+    return shell.dataset.state === "claw" && !(clawManualForm && !clawManualForm.hidden);
+  }
+
   async function submitPrompt(text, selectedSkill) {
     const prompt = text.trim();
     if (!prompt || inFlight) return;
     if (selectedSkill) conversationState.setSkill(selectedSkill);
     const attachmentSnapshot = selectedAttachment;
     const contextSnapshot = { conversationId: conversationState.getConversationId(), project: activeProject };
+    // #3539: snapshot the routing decision BEFORE showConversation() resets the
+    // shell state. The immutable snapshot is threaded through requestAnswer so a
+    // generic Claw submit cannot silently fall back to /api/chat/stream.
+    const clawGeneralRequest = clawGeneralRequestActive();
     showConversation();
     addUserMessage(prompt, attachmentSnapshot);
     input.value = "";
     const outbound = conversationState.outboundWithUser(prompt);
-    const success = await requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot);
+    const success = await requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot, clawGeneralRequest);
     if (success && selectedAttachment === attachmentSnapshot) clearAttachment();
   }
 
