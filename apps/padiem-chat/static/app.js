@@ -1376,11 +1376,10 @@
   });
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    // #2532: in the Claw workspace the composer is the request input; Enter routes to preview.
-    if (shell.dataset.state === "claw" && clawManualForm && !clawManualForm.hidden) {
-      clawManualForm.requestSubmit();
-      return;
-    }
+    // #3531: the shared composer always submits to the general Claw
+    // conversation, in every shell state. The quotation/document workflow
+    // runs only via the manual form's own explicit draft submit button;
+    // a generic request must never auto-enter it through the composer.
     submitPrompt(input.value);
   });
   cancelStreamButton.addEventListener("click", cancelActiveStream);
