@@ -90,6 +90,18 @@ class _AnswerClient:
         return {"answer": json.dumps(self.answer, ensure_ascii=False)}
 
 
+class _RawAnswerClient:
+    """One-model-call client returning an exact raw provider answer string."""
+
+    def __init__(self, answer: str):
+        self.answer = answer
+        self.calls = 0
+
+    async def complete(self, *args, **kwargs):
+        self.calls += 1
+        return {"answer": self.answer}
+
+
 def _client(interpreter) -> TestClient:
     app = create_app(
         settings=_settings(),
@@ -217,3 +229,40 @@ def test_generic_public_error_contract_unchanged_for_engine_failures():
     assert "X-B66-Rejection-Reason" not in response.headers
     print("GENERIC_PUBLIC_ERROR_CONTRACT=UNCHANGED")
     print("RAW_ANSWER_EXPOSED=NO")
+
+def test_invalid_model_output_reports_specific_bounded_answer_stage():
+    cases = [
+        ("", "answer.empty"),
+        ("plain prose without a JSON object", "answer.no_json_object"),
+        (
+            "```json\\n{}\\n```\\n```json\\n{}\\n```",
+            "answer.multiple_fences",
+        ),
+        ("```json\\n{bad json}\\n```", "answer.fenced_json_decode"),
+        ('prefix {"recipient":', "answer.raw_json_decode"),
+        (
+            'prefix {"recipient": {}, "items": []} trailing { structural',
+            "answer.unsafe_wrapper",
+        ),
+    ]
+
+    for raw_answer, expected_path in cases:
+        provider = _RawAnswerClient(raw_answer)
+        response = _post(
+            _client(B66QuoteConversationInterpreter(provider)),
+            "bounded diagnostic input",
+        )
+
+        assert response.status_code == 422
+        assert response.json()["error"]["code"] == "quote_input_unrecognized"
+        assert response.headers["X-B66-Rejection-Reason"] == "invalid_model_output"
+        assert response.headers["X-B66-Rejection-Path"] == expected_path
+        assert response.headers["X-B66-Rejection-Type"] == "string"
+        assert raw_answer not in response.text
+        for name, value in response.headers.items():
+            if name.lower().startswith("x-b66-rejection-"):
+                assert raw_answer not in value
+        assert provider.calls == 1
+
+    print("INVALID_MODEL_OUTPUT_STAGE_DIAGNOSTICS=PASS")
+    print("VALIDATION_ACCEPTANCE_CHANGED=NO")
