@@ -67,6 +67,7 @@ class ChatRuntimeError(Exception):
     status_code: int
     code: str
     user_message: str
+    upstream_class: str | None = None
 
     def __str__(self) -> str:
         return self.user_message
@@ -99,7 +100,11 @@ def _messages_with_attachment(
     return out
 
 
-def _chat_error(code: str) -> ChatRuntimeError:
+def _chat_error(
+    code: str,
+    *,
+    upstream_class: str | None = None,
+) -> ChatRuntimeError:
     if code == "upstream_timeout":
         return ChatRuntimeError(
             504,
@@ -123,6 +128,7 @@ def _chat_error(code: str) -> ChatRuntimeError:
             502,
             "malformed_upstream",
             "AI 응답 형식을 확인할 수 없습니다. 다시 시도해 주세요.",
+            upstream_class=upstream_class,
         )
     if code == "upstream_unavailable":
         return ChatRuntimeError(
@@ -170,7 +176,7 @@ def _chat_error(code: str) -> ChatRuntimeError:
 def _translate_execution_error(exc: ExecutionRuntimeError) -> ChatRuntimeError:
     """Translate the product-neutral Core runtime error into B62 Korean UX copy."""
 
-    return _chat_error(exc.code)
+    return _chat_error(exc.code, upstream_class=exc.diagnostic_class)
 
 
 def _resolve_b62_policy(messages: list[dict[str, str]]):

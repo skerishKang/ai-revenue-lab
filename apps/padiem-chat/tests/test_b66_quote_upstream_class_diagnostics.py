@@ -40,6 +40,11 @@ ALLOWLISTED_CLASSES = (
     "upstream_busy",
     "upstream_response_too_large",
     "malformed_upstream",
+    "upstream_malformed_json",
+    "upstream_unexpected_shape",
+    "upstream_missing_content",
+    "upstream_non_text_content",
+    "upstream_empty_answer",
     "upstream_unavailable",
     "provider_auth_error",
     "provider_route_error",
@@ -233,6 +238,38 @@ def test_allowlisted_upstream_classes_are_relayed_exactly_once():
     print("UPSTREAM_CLASS_ALLOWLIST_RELAY=PASS")
     print(f"UPSTREAM_CLASS_ALLOWLIST_SIZE={len(ALLOWLISTED_CLASSES)}")
     print("UPSTREAM_CLASS_HEADER_COUNT=1")
+
+
+@pytest.mark.parametrize(
+    "diagnostic_class",
+    [
+        "upstream_malformed_json",
+        "upstream_unexpected_shape",
+        "upstream_missing_content",
+        "upstream_non_text_content",
+        "upstream_empty_answer",
+    ],
+)
+def test_bounded_malformed_detail_overrides_public_chat_code_for_header_only(
+    diagnostic_class: str,
+):
+    provider = _RaisingClient(
+        ChatRuntimeError(
+            502,
+            "malformed_upstream",
+            "bounded upstream diagnostic",
+            upstream_class=diagnostic_class,
+        )
+    )
+    response = _post(_client(B66QuoteConversationInterpreter(provider)))
+
+    assert response.status_code == 502
+    body = response.json()
+    assert body["error"]["code"] == "quote_interpretation_failed"
+    assert body["error"]["message"] == "견적 요청을 해석하지 못했습니다."
+    assert _upstream_class_values(response) == [diagnostic_class]
+    assert "malformed_upstream" not in _upstream_class_values(response)
+    assert provider.calls == 1
 
 
 def test_non_allowlisted_chat_runtime_errors_carry_no_header():

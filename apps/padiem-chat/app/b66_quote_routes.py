@@ -45,15 +45,17 @@ _REJECTION_TYPE_RE = re.compile(r"^[a-z]{1,16}$")
 
 
 # Bounded 502 upstream diagnostics (#3391): a provider/runtime failure may carry
-# only the product-owned ``ChatRuntimeError.code``, and only when it is one of
-# the fixed upstream classes below. Raw exception text, provider payloads, model
-# output and customer values are never part of this header.
+# only a product-owned fixed upstream class. For broad errors this is the public
+# ``ChatRuntimeError.code``; malformed-answer failures may additionally carry a
+# narrower internal ``upstream_class``. Raw exception text, provider payloads,
+# model output and customer values are never part of this header.
 #
 # Every value here is reachable on this lane today, which is what keeps "header
-# present" meaningful. The nine Core/provider classes come from
-# ``b14_client._chat_error`` (the ExecutionRuntime/B14ExecutionError taxonomy),
-# and ``upstream_binding_unavailable`` is raised by the Production-composed
-# ``DispatchAwareB14Client.complete`` itself when the required B14 Service
+# present" meaningful. Broad Core/provider classes come from
+# ``b14_client._chat_error``; the five ``upstream_*content/shape/json/empty*``
+# values are bounded internal refinements of the existing malformed-answer
+# public contract. ``upstream_binding_unavailable`` is raised by the
+# Production-composed ``DispatchAwareB14Client.complete`` itself when the required B14 Service
 # Binding is absent (``require_service_binding`` True with
 # ``service_transport`` None, as composed in ``worker.py``).
 #
@@ -69,6 +71,11 @@ _UPSTREAM_CLASS_ALLOWLIST = frozenset(
         "upstream_busy",
         "upstream_response_too_large",
         "malformed_upstream",
+        "upstream_malformed_json",
+        "upstream_unexpected_shape",
+        "upstream_missing_content",
+        "upstream_non_text_content",
+        "upstream_empty_answer",
         "upstream_unavailable",
         "provider_auth_error",
         "provider_route_error",
@@ -83,7 +90,12 @@ _UPSTREAM_CLASS_ALLOWLIST = frozenset(
 def _upstream_class_headers(exc: BaseException) -> dict[str, str]:
     if not isinstance(exc, ChatRuntimeError):
         return {}
-    code = getattr(exc, "code", None)
+    upstream_class = getattr(exc, "upstream_class", None)
+    code = (
+        upstream_class
+        if isinstance(upstream_class, str)
+        else getattr(exc, "code", None)
+    )
     if not isinstance(code, str) or code not in _UPSTREAM_CLASS_ALLOWLIST:
         return {}
     return {"X-B66-Upstream-Class": code}
