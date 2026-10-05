@@ -114,6 +114,58 @@ Handoff-gating checks must be named **before** the final fix/deploy whenever pra
 
 After the final Production-changing revision, run the agreed primary-journey smoke once. Repeat the same smoke only if the deployed revision changes, the first result is ambiguous/failed, or a new concrete defect affects that journey.
 
+## Finish-first execution mode
+
+For Padiem platform work, completion throughput takes priority over maximizing concurrent feature starts.
+
+Canonical current authority: `#3523`.
+
+```text
+DEVELOPMENT_MODE=FINISH_FIRST
+ACTIVE_PRIMARY_IMPLEMENTATION_AXES=1
+MAX_SUPPORTING_BLOCKER_LANES=2
+BACKGROUND_LANES=READ_ONLY_OR_VALIDATION
+UNRELATED_NEW_FEATURE_IMPLEMENTATION=FROZEN
+```
+
+Parallel work is allowed only when it helps finish the same primary axis: blocker removal, exact-head validation, CI diagnosis, forensic investigation, or directly required platform integration. A free implementation worker must not select an unrelated issue merely to stay busy.
+
+For the current Padiem cycle, the primary axis is:
+
+```text
+Padiem Platform
+-> canonical identity/account/workspace
+-> required entitlement/admission
+-> Padiem AI Engine
+-> Padiem Core / B14
+-> B54 Padiem Claw
+-> user-visible result
+```
+
+Architecture is decided top-down, but implementation proceeds from the **lowest missing dependency upward** until the user-visible vertical slice is complete.
+
+A discovered issue must be classified before implementation:
+
+```text
+PRIMARY_BLOCKER
+PRIMARY_NONBLOCKING_FOLLOWUP
+UNRELATED_BACKLOG
+```
+
+Only `PRIMARY_BLOCKER` may preempt the primary lane.
+
+Source-complete or merged-main is not terminal completion for a Finish-first axis. The applicable terminal definition includes Production activation, end-to-end reference-product proof, a user-visible result, rollback readiness, and zero primary blockers.
+
+Product boundaries remain strict. B66 Padiem Quote, B67 Padiem Legal, B62 Padiem Chat, and B54 Padiem Claw are independent products that may reuse Padiem Platform authorities. Shared Platform usage does not authorize moving product-local work into another product's lane.
+
+```text
+B66_IS_ENGINE=NO
+B66_IS_CLAW=NO
+B66_PRODUCT_INDEPENDENT=YES
+```
+
+The fast-development rule means “do not wait on unrelated validation”; it does **not** mean “start an unrelated feature after every fast-gate pass.” Validators may run in parallel while the implementation actor continues the same primary axis.
+
 ## Default responsibility flow
 
 ```text

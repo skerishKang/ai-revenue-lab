@@ -2,6 +2,27 @@
 
 For a tiny bounded fix or MVP closeout, a compact exact-head checklist is sufficient when it covers the fixed handoff gate. Do not require every section below to be populated when it is not applicable.
 
+## Finish-first completion review
+
+When governed by a Finish-first authority:
+
+- Primary authority / issue:
+- Primary axis:
+- Work classification: PRIMARY_BLOCKER / PRIMARY_NONBLOCKING_FOLLOWUP / UNRELATED_BACKLOG
+- Lowest missing dependency before this revision:
+- Lowest missing dependency after this revision:
+- Did this revision start unrelated implementation? must be NO:
+- Source complete:
+- Merged main:
+- Production active:
+- Reference-product E2E:
+- User-visible result:
+- Rollback ready:
+- Remaining primary blockers:
+- Axis state: AXIS_ACTIVE / AXIS_BLOCKED / AXIS_READY_FOR_PRODUCTION / AXIS_PRODUCTION_ACTIVE / AXIS_E2E_PROVEN / AXIS_DONE
+
+Do not mark the axis DONE from a green PR alone.
+
 ## Current remote identity
 
 - Repository:
