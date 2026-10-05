@@ -108,6 +108,41 @@ HANDOFF_BLOCKING_IF_FAILED=YES|NO
 
 If those fields cannot be answered concretely, the check is non-blocking follow-up work.
 
+### Fixed handoff gate
+
+Before the final blocker fix is merged, identify the smallest explicit handoff gate:
+
+```text
+HANDOFF_BLOCKERS=
+HANDOFF_REQUIRED_CHECKS=
+HANDOFF_PRODUCTION_SMOKE=
+```
+
+Do not silently add new required checks after this point. A later check may join the handoff gate only when it is justified by a new concrete blocker or by a changed high-blast-radius boundary.
+
+Repository CI fan-out may execute more jobs than the handoff requires. Distinguish:
+
+```text
+HANDOFF_REQUIRED_CHECK
+OBSERVATIONAL_NONBLOCKING_CHECK
+```
+
+An automatically triggered unrelated job is not handoff-blocking merely because it exists, is slow, or is still running.
+
+Open P1/P2, hardening, refactor, optional-format, and backlog issues remain non-blocking unless the owner explicitly promotes one or new evidence shows that it invalidates the current customer promise.
+
+### Final Production smoke budget
+
+For a final Production-changing revision, one bounded smoke of the accepted primary journey is the default. Do not repeatedly rerun the same real-account journey without one of:
+
+- a new deployed revision affecting that journey;
+- a failed or ambiguous prior smoke;
+- a newly reproduced blocker affecting that journey.
+
+```text
+UNCHANGED_DEPLOY + PRIOR_CLEAR_PASS != REPEAT_SMOKE_REQUIRED
+```
+
 ### Evidence carry-forward after main drift
 
 Evidence still belongs to the exact revision that produced it, but unrelated repository drift does not automatically force full revalidation. The Web CTO first determines whether intervening commits affect the tested behavior, transitive dependency, runtime authority, configuration, deployment target, or user-facing surface.
