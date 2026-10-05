@@ -106,7 +106,7 @@ async def call_chat_completions(
     api_key: str,
     messages: list[dict[str, str]],
     temperature: float | None = 0.2,
-    max_tokens: int | None = 300,
+    max_tokens: int | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
     *,
     # Phase 2 multi-provider: RouteTarget override

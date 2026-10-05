@@ -63,7 +63,7 @@ class PilotChatRequest:
     model: str = ""
     messages: list[dict[str, str]] | list[ChatMessage] = field(default_factory=list)
     temperature: float | None = 0.2
-    max_tokens: int | None = 300
+    max_tokens: int | None = None
     stream: bool | None = False
     tools: list[dict[str, Any]] | None = None
 
