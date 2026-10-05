@@ -126,14 +126,17 @@ class OperatingPolicyConsistencyTests(unittest.TestCase):
         ):
             self.assertIn(mode, policy)
 
-    def test_pr_template_requires_revision_and_independence_truth(self) -> None:
+    def test_pr_template_supports_compact_revision_and_validation_truth(self) -> None:
         template = self.read(REPO / ".github" / "pull_request_template.md")
+        self.assertIn("REPORT_MODE=COMPACT | EXTENDED", template)
+        self.assertIn("TEST_CLASS=T0 | T1 | T2 | T3", template)
         self.assertIn("Exact starting base SHA", template)
         self.assertIn("Exact current head SHA", template)
-        self.assertIn("Same actor as implementation?", template)
-        self.assertIn("Source modified during validation?", template)
+        self.assertIn("Independent validation: REQUIRED / NOT_REQUIRED", template)
+        self.assertIn("Observational/non-blocking CI", template)
         self.assertIn("Expected head for merge", template)
         self.assertIn("OWNER_UI_APPROVED", template)
+        self.assertIn("READY_FOR_CUSTOMER_HANDOFF", template)
 
     def test_template_links_declared_by_policy_exist(self) -> None:
         for name in (
