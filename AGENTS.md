@@ -107,6 +107,10 @@ confirmed blocker
 
 Once the accepted handoff blocker set is zero and the required Production smoke passes, continued exploratory validation must not delay delivery unless it produces new concrete blocker evidence.
 
+Handoff-gating checks must be named **before** the final fix/deploy whenever practical. Automatically triggered but unrelated CI jobs may continue in the background; their existence does not make them handoff gates. A P1/P2 or backlog item does not block an MVP merely because it is open. Only the owner or a new concrete P0/P1 customer-impacting finding may promote it into the handoff blocker set.
+
+After the final Production-changing revision, run the agreed primary-journey smoke once. Repeat the same smoke only if the deployed revision changes, the first result is ambiguous/failed, or a new concrete defect affects that journey.
+
 ## Default responsibility flow
 
 ```text
