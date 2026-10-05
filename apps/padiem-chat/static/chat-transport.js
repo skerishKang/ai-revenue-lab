@@ -180,12 +180,7 @@
     return response;
   }
 
-  async function requestStreaming(payload, signal, route) {
-    // #3539: product-state-aware routing. A Claw general request never touches
-    // the B62 orchestration bridge or the direct-B14 chat stream; standalone
-    // Padiem Chat keeps its existing behavior byte-for-byte.
-    if (route && route.clawGeneral === true) return requestClawGeneral(payload, signal);
-
+  async function requestStreaming(payload, signal) {
     const orchestrated = await tryOrchestration(payload, signal);
     if (orchestrated) return orchestrated;
 

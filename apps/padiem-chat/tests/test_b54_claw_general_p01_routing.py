@@ -255,14 +255,13 @@ def test_claw_general_route_is_registered() -> None:
 def test_frontend_claw_branch_uses_claw_route_without_chat_stream_fallback() -> None:
     claw_fn = _js_function(TRANSPORT_SOURCE, "requestClawGeneral")
     assert '"/api/claw/general"' in claw_fn
-    # No B62 stream target of any kind is reachable from the claw branch.
+    # No B62 stream target of any kind is reachable from the claw lane.
     assert '"/api/chat/stream"' not in claw_fn
     assert 'fetch("/api/chat/stream"' not in claw_fn
-    # The transport dispatches the claw flag to the claw lane and returns it
-    # without any fallthrough to the B62 stream.
-    streaming_fn = _js_function(TRANSPORT_SOURCE, "requestStreaming")
-    assert "route.clawGeneral === true" in streaming_fn
-    assert "requestClawGeneral(payload, signal)" in streaming_fn
+    # app.js selects the claw lane from product state and returns it directly;
+    # there is no fallthrough to the B62 stream for a Claw general request.
+    assert "requestClawGeneral(payload, signal)" in APP_JS_SOURCE
+    assert "route && route.clawGeneral" in APP_JS_SOURCE
 
 
 def test_b62_chat_general_path_unchanged() -> None:
@@ -276,6 +275,10 @@ def test_b62_chat_general_path_unchanged() -> None:
     # The flag is derived from product state: the Claw shell with the explicit
     # manual form hidden (i.e. the generic composer).
     assert 'shell.dataset.state === "claw"' in APP_JS_SOURCE
+    # The standalone transport call stays byte-for-byte (also pinned by
+    # tests/test_browser_streaming_contract.py).
+    assert "chatTransport.requestStreaming(payload, signal)" in APP_JS_SOURCE
+    assert "chatTransport.requestCompleted(payload, signal)" in APP_JS_SOURCE
 
 
 def test_b66_product_boundary_unchanged() -> None:

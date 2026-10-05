@@ -1203,7 +1203,12 @@
   }
 
   async function requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, signal, route) {
-    const response = await chatTransport.requestStreaming(payload, signal, route);
+    // #3539: product-state-aware routing. A generic B54 Claw submit runs on the
+    // canonical P01 Engine lane; the standalone Padiem Chat path keeps the
+    // existing /api/chat/stream transport call byte-for-byte.
+    const response = route && route.clawGeneral
+      ? await chatTransport.requestClawGeneral(payload, signal)
+      : await chatTransport.requestStreaming(payload, signal);
 
     let answer = "";
     let paragraph = null;
