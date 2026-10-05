@@ -167,6 +167,68 @@ the technical disposition is `READY_FOR_CUSTOMER_HANDOFF`.
 
 Exploratory QA may continue after handoff, but it must not delay delivery unless it finds new concrete blocker evidence.
 
+## 3B. Finish-first completion policy
+
+For Padiem platform development, the default active operating mode is **Finish-first** unless the Product Owner explicitly selects another portfolio priority.
+
+```text
+PRIMARY_IMPLEMENTATION_AXIS=1
+SUPPORTING_BLOCKER_LANES<=2
+UNRELATED_IMPLEMENTATION_FANOUT=0
+PARALLEL_VALIDATION=ALLOWED
+PARALLEL_BLOCKER_REMOVAL=ALLOWED
+```
+
+The purpose is to convert already-built source into visible, Production-complete capability rather than maximizing the number of partially completed issues.
+
+### Primary-axis selection
+
+A primary axis must describe a user-visible vertical result, not a list of source issues. Its work order records:
+
+```text
+PRIMARY_AXIS=
+REFERENCE_PRODUCT=
+CURRENT_LOWEST_MISSING_DEPENDENCY=
+PRIMARY_BLOCKERS=
+TERMINAL_USER_RESULT=
+```
+
+For the current Padiem cycle, #3523 defines the axis as Platform -> Engine -> B54 Claw.
+
+### Bottom-up implementation under top-down authority
+
+Ownership and architecture are decided top-down. Once ownership is known, implementation starts at the lowest missing dependency and moves upward through the vertical slice.
+
+Do not keep adding new architecture layers or generic capability work when the primary slice is blocked lower in the stack.
+
+### Capacity rule
+
+Passing a development fast gate releases the actor from waiting on broad unrelated validation, but does not release the actor to unrelated feature work.
+
+After a fast-gate pass, the actor must continue the primary axis, take one of its concrete blockers, help reconcile/validate the same axis, or remain idle/background.
+
+### Completion rule
+
+A Finish-first axis is not DONE merely because source is implemented, CI is green, or a PR merged.
+
+Use the applicable terminal set:
+
+```text
+SOURCE_COMPLETE=YES
+MERGED_MAIN=YES
+PRODUCTION_ACTIVE=YES
+REFERENCE_PRODUCT_E2E=PASS
+USER_VISIBLE_RESULT=YES
+ROLLBACK_READY=YES
+PRIMARY_BLOCKERS=0
+```
+
+Until then, report `ACTIVE`.
+
+### Product-boundary rule
+
+Shared Padiem Platform infrastructure does not collapse products into one another. Product-local work remains with its product owner. A generic defect discovered inside a product is split to the proper Platform/Core/Engine/Control-Plane owner rather than moving the whole product task into that lane.
+
 ## 4. Mandatory design-gate overlay for visual redesign
 
 When the work is a new visual system, owner-rejected redesign or broad multi-route visual reset, use:
