@@ -19,6 +19,7 @@ class OperatingPolicyConsistencyTests(unittest.TestCase):
             REPO / "README.md",
             REPO / ".github" / "pull_request_template.md",
             OPS / "AI_DEVELOPMENT_OPERATING_POLICY.md",
+            OPS / "TEST_SCOPE_AND_DELIVERY_POLICY.md",
             OPS / "TECHNOLOGY_ADOPTION_POLICY.md",
             REPO / "docs" / "architecture" / "PADIEM_TECHNOLOGY_COMPONENT_REGISTRY_v1.md",
             OPS / "WORKFLOW_STATUS_MODEL.md",
@@ -59,6 +60,28 @@ class OperatingPolicyConsistencyTests(unittest.TestCase):
         self.assertIn("Technology adoption gate", work_order)
         self.assertIn("Technology adoption / build decision", pr_template)
         self.assertIn("Technology adoption review", final_review)
+
+    def test_repository_wide_test_scope_policy_is_wired_into_active_contracts(self) -> None:
+        test_policy = self.read(OPS / "TEST_SCOPE_AND_DELIVERY_POLICY.md")
+        agents = self.read(REPO / "AGENTS.md")
+        ops_index = self.read(OPS / "README.md")
+        pr_template = self.read(REPO / ".github" / "pull_request_template.md")
+        guard = self.read(REPO / ".github" / "scripts" / "pr_contract_guard.py")
+
+        self.assertIn("CANONICAL REPOSITORY-WIDE POLICY", test_policy)
+        self.assertIn("TEST_COUNT != CONFIDENCE", test_policy)
+        self.assertIn("REPORT_MODE=COMPACT", test_policy)
+        self.assertIn("OBSERVATIONAL_NONBLOCKING_CHECK", test_policy)
+        self.assertIn("UNRELATED_DRIFT != RETEST", test_policy)
+        self.assertIn("UNCHANGED_DEPLOY + CLEAR_PASS != REPEAT_SMOKE", test_policy)
+
+        for text in (agents, ops_index):
+            self.assertIn("TEST_SCOPE_AND_DELIVERY_POLICY.md", text)
+
+        self.assertIn("REPORT_MODE=COMPACT | EXTENDED", pr_template)
+        self.assertIn("Observational/non-blocking CI", pr_template)
+        self.assertIn("COMPACT_REQUIRED_SECTIONS", guard)
+        self.assertIn("unrelated_ci_becomes_required", guard)
 
     def test_actor_separation_invariant_is_consistent(self) -> None:
         agents = self.read(REPO / "AGENTS.md")
