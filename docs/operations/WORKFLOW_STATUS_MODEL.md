@@ -218,3 +218,24 @@ Open P1/P2/backlog work, unrelated CI fan-out, and exploratory QA do not move th
 ## 13. Revision rule
 
 Every source-dependent status records the exact SHA or exact artifact/revision identity. A new commit affecting the judged surface may move only the **affected** validation/review/gates back to pending or invalidated. Unrelated repository drift does not automatically invalidate previously accepted evidence.
+
+## Finish-first axis status
+
+When governed by a Finish-first authority such as #3523, track the axis separately from individual issue/PR states:
+
+```text
+AXIS_NOT_SELECTED
+AXIS_ACTIVE
+AXIS_BLOCKED
+AXIS_READY_FOR_PRODUCTION
+AXIS_PRODUCTION_ACTIVE
+AXIS_E2E_PROVEN
+AXIS_DONE
+```
+
+`AXIS_DONE` requires the work contract's complete terminal set, normally including merged source, required Production activation, reference-product end-to-end proof, user-visible result, rollback readiness, and zero primary blockers.
+
+Do not infer `AXIS_DONE` from issue count, PR count, source-complete status, or CI green.
+
+New implementation findings are classified `PRIMARY_BLOCKER`, `PRIMARY_NONBLOCKING_FOLLOWUP`, or `UNRELATED_BACKLOG`. Only `PRIMARY_BLOCKER` changes the active implementation queue. Validators may operate in parallel without creating a second primary implementation axis.
+
