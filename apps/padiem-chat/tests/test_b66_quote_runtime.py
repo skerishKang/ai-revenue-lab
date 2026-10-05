@@ -823,3 +823,187 @@ async def test_interpreter_fails_truthfully_without_retrying_model():
     assert failing.calls == 1
     print("MALFORMED_OUTPUT_MODEL_CALLS=1")
     print("PROVIDER_FAILURE_MODEL_CALLS=1")
+
+# ── Production blocker boundary proof: partial free-form request (#3391 lineage) ──
+# Production observed 502 quote_interpretation_failed for a partial sentence.
+# The B66 conversation module raises ONLY B66QuoteConversationError; every other
+# exception is the shared engine lane (B14Client.complete). The route maps the
+# former to 422 and the latter to 502. These tests pin that boundary and the
+# realistic provider answer shapes for a partial request.
+
+
+def test_route_maps_conversation_error_to_422_and_engine_lane_to_502():
+    from app.b14_client import ChatRuntimeError
+
+    class ConversationErrorInterpreter:
+        async def interpret(self, *, message, skill):
+            raise B66QuoteConversationError("invalid_model_output")
+
+    class EngineLaneInterpreter:
+        async def interpret(self, *, message, skill):
+            raise ChatRuntimeError(502, "malformed_upstream", "엔진 응답을 해석하지 못했습니다.")
+
+    message = {"saved_skill_id": SAVED_ID, "message": "대한건설에 배관 100미터, 부가세 별도"}
+
+    recognized = _client(_Store(), ConversationErrorInterpreter()).post(
+        "/api/b66/quote/interpret", json=message
+    )
+    assert recognized.status_code == 422
+    assert recognized.json()["error"]["code"] == "quote_input_unrecognized"
+
+    engine = _client(_Store(), EngineLaneInterpreter()).post(
+        "/api/b66/quote/interpret", json=message
+    )
+    assert engine.status_code == 502
+    assert engine.json()["error"]["code"] == "quote_interpretation_failed"
+    print("BLOCKER1_BOUNDARY_422_VS_502=PASS")
+
+
+@pytest.mark.asyncio
+async def test_interpreter_keeps_partial_item_when_unit_price_key_is_omitted():
+    class OmittedPriceClient:
+        async def complete(self, *args, **kwargs):
+            return {"answer": json.dumps(
+                {
+                    "recipient": {"company": "대한건설"},
+                    "items": [{"name": "배관", "qty": 100}],
+                    "taxMode": "EXCLUSIVE",
+                    "detailGroups": [],
+                },
+                ensure_ascii=False,
+            )}
+
+    result = await B66QuoteConversationInterpreter(OmittedPriceClient()).interpret(
+        message="대한건설에 배관 100미터, 부가세 별도",
+        skill=_skill(),
+    )
+    safe = result.safe_dict()
+    assert safe["items"] == [{"name": "배관", "qty": 100}]
+    assert "unitPrice" in result.missing
+    assert safe["taxMode"] == "EXCLUSIVE"
+    print("PARTIAL_ITEM_UNIT_PRICE_OMITTED_PRESERVED=YES")
+
+
+@pytest.mark.asyncio
+async def test_interpreter_recovers_partial_answer_from_safe_prose_wrapper():
+    """모델이 JSON 앞뒤로 설명문을 붙여도(#3518) partial 사실은 보존된다."""
+
+    class ProseWrapperClient:
+        async def complete(self, *args, **kwargs):
+            return {"answer": (
+                "단가를 알려 주시면 견적을 완성할 수 있습니다.\n"
+                "```json\n"
+                + json.dumps(
+                    {
+                        "recipient": {"company": "대한건설"},
+                        "items": [{"name": "배관", "qty": 100}],
+                        "taxMode": "EXCLUSIVE",
+                    },
+                    ensure_ascii=False,
+                )
+                + "\n```"
+            )}
+
+    result = await B66QuoteConversationInterpreter(ProseWrapperClient()).interpret(
+        message="대한건설에 배관 100미터, 부가세 별도",
+        skill=_skill(),
+    )
+    safe = result.safe_dict()
+    assert safe["items"] == [{"name": "배관", "qty": 100}]
+    assert "unitPrice" in result.missing
+    print("PARTIAL_PROSE_WRAPPER_RECOVERED=YES")
+
+
+@pytest.mark.asyncio
+async def test_interpreter_accepts_numeric_string_facts():
+    class NumericStringClient:
+        async def complete(self, *args, **kwargs):
+            return {"answer": json.dumps(
+                {
+                    "recipient": {"company": "대한건설"},
+                    "items": [{"name": "배관", "qty": "100", "unitPrice": "18000"}],
+                    "detailGroups": [],
+                },
+                ensure_ascii=False,
+            )}
+
+    result = await B66QuoteConversationInterpreter(NumericStringClient()).interpret(
+        message="대한건설에 배관 100미터, 미터당 18000원",
+        skill=_skill(),
+    )
+    safe = result.safe_dict()
+    assert safe["items"][0]["qty"] == 100
+    assert safe["items"][0]["unitPrice"] == 18000
+    assert result.missing == ()
+    print("NUMERIC_STRING_FACTS_NORMALIZED=YES")
+
+
+@pytest.mark.asyncio
+async def test_followup_combined_message_completes_without_new_allocation_inputs():
+    """stateless 서버 계약: 브라우저가 원문+후속을 합쳐 보내면 완성 후보가 나온다."""
+
+    class SequentialClient:
+        def __init__(self):
+            self.messages = []
+
+        async def complete(self, *args, **kwargs):
+            self.messages.append(args[0][0]["content"])
+            if len(self.messages) == 1:
+                return {"answer": json.dumps(
+                    {
+                        "recipient": {"company": "대한건설"},
+                        "items": [{"name": "배관", "qty": 100}],
+                        "taxMode": "EXCLUSIVE",
+                        "detailGroups": [],
+                    },
+                    ensure_ascii=False,
+                )}
+            return {"answer": json.dumps(
+                {
+                    "recipient": {"company": "대한건설"},
+                    "items": [{"name": "배관", "qty": 100, "unitPrice": 18000}],
+                    "taxMode": "EXCLUSIVE",
+                    "detailGroups": [],
+                },
+                ensure_ascii=False,
+            )}
+
+    client = SequentialClient()
+    interpreter = B66QuoteConversationInterpreter(client)
+    first = await interpreter.interpret(
+        message="대한건설에 배관 100미터, 부가세 별도", skill=_skill()
+    )
+    assert "unitPrice" in first.missing
+    combined = "대한건설에 배관 100미터, 부가세 별도\n미터당 18000원"
+    second = await interpreter.interpret(message=combined, skill=_skill())
+    safe = second.safe_dict()
+    assert safe["items"][0]["unitPrice"] == 18000
+    assert safe["items"][0]["qty"] == 100
+    assert safe["recipient"]["company"] == "대한건설"
+    assert second.missing == ()
+    assert client.messages[1] == combined
+    print("FOLLOWUP_COMBINED_TEXT_COMPLETES=YES")
+    print("NO_SECOND_CALCULATION_AUTHORITY=YES")
+
+
+@pytest.mark.asyncio
+async def test_normalizer_fails_bounded_on_out_of_range_model_numbers():
+    """모델이 float 범위를 넘는 수치를 반환하면 generic exception(502)이 아니라
+    bounded conversation error(422)로 실패한다 — Production에서 관측된
+    quote_interpretation_failed 502 클래스의 B66 측 잔여 경로를 차단한다."""
+
+    class OutOfRangeClient:
+        async def complete(self, *args, **kwargs):
+            return {"answer": json.dumps(
+                {"items": [{"name": "배관", "qty": 1, "unitPrice": 10 ** 400}]},
+                ensure_ascii=False,
+            )}
+
+    with pytest.raises(B66QuoteConversationError) as excinfo:
+        await B66QuoteConversationInterpreter(OutOfRangeClient()).interpret(
+            message="대한건설에 배관 1미터",
+            skill=_skill(),
+        )
+    assert "invalid_number" in str(excinfo.value)
+    print("OUT_OF_RANGE_MODEL_NUMBER_FAILS_BOUNDED=YES")
+    print("NORMALIZE_CONTRACT_HAS_NO_GENERIC_EXCEPTION_PATH=YES")

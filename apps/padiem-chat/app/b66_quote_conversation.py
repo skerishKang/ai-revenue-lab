@@ -146,7 +146,12 @@ def _optional_number(value: Any, *, positive: bool) -> int | float | None:
         value = text
     elif not isinstance(value, (int, float)):
         raise B66QuoteConversationError("invalid_number")
-    number = float(value)
+    try:
+        number = float(value)
+    except OverflowError as exc:
+        # int 범위를 넘는 모델 출력도 generic exception(502)이 아니라
+        # bounded conversation error(422)로 실패해야 한다 (#3391 lineage).
+        raise B66QuoteConversationError("invalid_number") from exc
     if not math.isfinite(number):
         raise B66QuoteConversationError("invalid_number")
     if positive and number <= 0:
