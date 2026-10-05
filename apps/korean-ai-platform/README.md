@@ -119,6 +119,24 @@ python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 
 Useful local surfaces may include the workspace and pilot APIs exposed by the current application. Always verify endpoint availability against current source/tests rather than historical phase docs.
 
+## Generation-budget semantics
+
+B14 distinguishes a product-requested output limit from provider/model defaults and from runtime safety ceilings.
+
+```text
+max_tokens omitted / null
+  -> preserve None through B14
+  -> provider adapter omits max_tokens
+  -> provider/model default behavior
+
+max_tokens explicitly set
+  -> preserve the explicit value
+  -> validate it against the current B14 request contract
+  -> send the explicit value upstream
+```
+
+Do not silently replace an omitted value with a hidden product budget. Product-specific workloads may intentionally choose a bounded value; that choice belongs to the product/runtime profile, not to a generic provider adapter default. The current explicit `1..4096` request range is retained pending the separate hard-ceiling/model-capability review in #3553.
+
 ## Security boundary
 
 - Provider origins/endpoints are server-controlled and validated.
