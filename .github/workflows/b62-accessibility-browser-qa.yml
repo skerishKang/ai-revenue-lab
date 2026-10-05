@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'apps/padiem-chat/**'
+      - "!apps/padiem-chat/tests/**"
+      - "!apps/padiem-chat/worker.py"
       - '.github/scripts/b62_accessibility_browser_qa.py'
       - '.github/scripts/b62_small_type_accessibility_qa.py'
       - '.github/scripts/b62_confirm_dialog_browser_qa.py'

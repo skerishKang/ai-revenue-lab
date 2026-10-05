@@ -4,6 +4,7 @@
 - Effective reset: 2026-08-14
 - Design authority: `PORTFOLIO_DESIGN_OPERATING_SYSTEM.md`
 - Evidence authority: `EVIDENCE_REQUIREMENTS.md`
+- Test-scope/delivery authority: `TEST_SCOPE_AND_DELIVERY_POLICY.md`
 - Deployment authority: `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
 - Technology adoption authority: `TECHNOLOGY_ADOPTION_POLICY.md`
 
@@ -333,6 +334,8 @@ If the validator changes product source, the modified run is not independent val
 A completed independent validation is not considered auditable until the related PR contains a discoverable exact-head record naming the validator, result and immutable report/artifact pointer (or a recorded `NOT_REQUIRED` reason). The evidence may live in the private report repository, but the PR must point to it.
 
 ## 11. CI and automated checks
+
+Repository-wide test selection and stop rules are defined by `TEST_SCOPE_AND_DELIVERY_POLICY.md` and apply to every Business/app/package.
 
 CI is required when configured/relevant but is never universal completion evidence.
 
