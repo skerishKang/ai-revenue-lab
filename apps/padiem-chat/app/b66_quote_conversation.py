@@ -230,28 +230,28 @@ def _recover_single_json_payload(text: str) -> Any:
     fenced_blocks = list(_JSON_FENCE_BLOCK_RE.finditer(text))
     if fenced_blocks:
         if len(fenced_blocks) != 1:
-            raise B66QuoteConversationError("invalid_model_output", path="answer", observed_type="string")
+            raise B66QuoteConversationError("invalid_model_output", path="answer.multiple_fences", observed_type="string")
         block = fenced_blocks[0]
         prefix = text[: block.start()].strip()
         suffix = text[block.end() :].strip()
         if not _safe_wrapper_text(prefix, suffix):
-            raise B66QuoteConversationError("invalid_model_output", path="answer", observed_type="string")
+            raise B66QuoteConversationError("invalid_model_output", path="answer.unsafe_wrapper", observed_type="string")
         try:
             return json.loads(block.group(1).strip())
         except json.JSONDecodeError as exc:
-            raise B66QuoteConversationError("invalid_model_output", path="answer", observed_type="string") from exc
+            raise B66QuoteConversationError("invalid_model_output", path="answer.fenced_json_decode", observed_type="string") from exc
 
     start = text.find("{")
     if start < 0:
-        raise B66QuoteConversationError("invalid_model_output", path="answer", observed_type="string")
+        raise B66QuoteConversationError("invalid_model_output", path="answer.no_json_object", observed_type="string")
     try:
         value, consumed = json.JSONDecoder().raw_decode(text[start:])
     except json.JSONDecodeError as exc:
-        raise B66QuoteConversationError("invalid_model_output", path="answer", observed_type="string") from exc
+        raise B66QuoteConversationError("invalid_model_output", path="answer.raw_json_decode", observed_type="string") from exc
     prefix = text[:start].strip()
     suffix = text[start + consumed :].strip()
     if not _safe_wrapper_text(prefix, suffix):
-        raise B66QuoteConversationError("invalid_model_output")
+        raise B66QuoteConversationError("invalid_model_output", path="answer.unsafe_wrapper", observed_type="string")
     return value
 
 
@@ -259,8 +259,10 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
     """Validate untrusted model output into variable-only quote fields."""
 
     if isinstance(raw, str):
-        if not raw or len(raw) > MAX_RESULT_CHARS:
-            raise B66QuoteConversationError("invalid_model_output", path="answer", observed_type="string")
+        if not raw:
+            raise B66QuoteConversationError("invalid_model_output", path="answer.empty", observed_type="string")
+        if len(raw) > MAX_RESULT_CHARS:
+            raise B66QuoteConversationError("invalid_model_output", path="answer.too_large", observed_type="string")
         text = raw.strip()
         fenced = _JSON_FENCE_RE.fullmatch(text)
         if fenced is not None:
@@ -269,7 +271,7 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
             try:
                 raw = json.loads(fenced.group(1).strip())
             except json.JSONDecodeError as exc:
-                raise B66QuoteConversationError("invalid_model_output", path="answer", observed_type="string") from exc
+                raise B66QuoteConversationError("invalid_model_output", path="answer.fenced_json_decode", observed_type="string") from exc
         else:
             raw = _recover_single_json_payload(text)
     if not isinstance(raw, dict):
