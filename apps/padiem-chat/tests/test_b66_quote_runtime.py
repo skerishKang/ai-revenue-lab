@@ -14,6 +14,7 @@ from app.b66_quote_conversation import (
     B66QuoteConversationError,
     B66QuoteConversationInterpreter,
     B66QuoteConversationProjection,
+    MAX_MODEL_WRAPPER_CHARS,
     normalize_conversation_output,
 )
 from app.config import Settings
@@ -480,11 +481,6 @@ def test_normalizer_accepts_only_bounded_json_fence_numeric_text_and_tax_case():
     assert safe["items"][0]["unitPrice"] == 1000
     assert safe["taxMode"] == "EXCLUSIVE"
 
-    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
-        normalize_conversation_output(
-            "Here is the JSON:\n" + fenced
-        )
-
     with pytest.raises(B66QuoteConversationError, match="invalid_number"):
         normalize_conversation_output(
             {
@@ -661,3 +657,169 @@ async def test_interpreter_rejects_non_json_model_answer():
             message="ABC건설 견적",
             skill=_skill(),
         )
+
+
+_EXTRACT_PAYLOAD = {
+    "recipient": {"company": "Synthetic Buyer"},
+    "items": [{"name": "Item A", "qty": 2, "unitPrice": 1000}],
+    "detailGroups": [],
+    "missing": [],
+}
+_EXTRACT_JSON = json.dumps(_EXTRACT_PAYLOAD, ensure_ascii=False)
+
+
+def test_normalizer_recovers_only_one_bounded_safe_wrapper():
+    # A) exact JSON answer
+    exact = normalize_conversation_output(_EXTRACT_JSON).safe_dict()
+    assert exact["recipient"]["company"] == "Synthetic Buyer"
+    assert exact["items"][0]["qty"] == 2
+
+    # B) one whole-answer JSON fence
+    fenced = normalize_conversation_output(f"```json\n{_EXTRACT_JSON}\n```").safe_dict()
+    assert fenced["recipient"]["company"] == "Synthetic Buyer"
+    assert fenced["items"][0]["unitPrice"] == 1000
+
+    # C) bounded prose around one fenced payload
+    wrapped_fence = normalize_conversation_output(
+        f"Here is the extracted JSON:\n```json\n{_EXTRACT_JSON}\n```\nThat is all."
+    ).safe_dict()
+    assert wrapped_fence["recipient"]["company"] == "Synthetic Buyer"
+    assert wrapped_fence["items"][0]["unitPrice"] == 1000
+
+    # D) bounded prose around one raw object
+    wrapped_raw = normalize_conversation_output(
+        f"Extracted quote fields:\n{_EXTRACT_JSON}\nEnd of extraction."
+    ).safe_dict()
+    assert wrapped_raw["recipient"]["company"] == "Synthetic Buyer"
+    assert wrapped_raw["items"][0]["qty"] == 2
+
+    # E) two fenced payloads are ambiguous, not recoverable
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output(
+            f"```json\n{_EXTRACT_JSON}\n```\n```json\n{_EXTRACT_JSON}\n```"
+        )
+
+    # F) two raw objects are ambiguous, not recoverable
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output(f"{_EXTRACT_JSON}\n{_EXTRACT_JSON}")
+
+    # G) malformed JSON fails truthfully, wrapped or fenced
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output(
+            'Result: {"recipient":{},"items":[],"missing":[],}'
+        )
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output(
+            '```json\n{"recipient":{},"items":[],"missing":[],}\n```'
+        )
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output('Result: {"recipient":{},"items":[')
+
+    # H) server authority fields stay forbidden through the recovery path
+    for authority_field in ("total", "sender", "template", "vat"):
+        payload = json.dumps(
+            {**_EXTRACT_PAYLOAD, authority_field: {"company": "공격자"}},
+            ensure_ascii=False,
+        )
+        with pytest.raises(
+            B66QuoteConversationError,
+            match="unsupported_output_field|forbidden_output_field",
+        ):
+            normalize_conversation_output(f"Extracted:\n{payload}")
+    with pytest.raises(B66QuoteConversationError, match="forbidden_output_field"):
+        normalize_conversation_output(
+            'Extracted: {"recipient":{},"items":[{"name":"A","qty":1,'
+            '"unitPrice":1,"amount":5}],"missing":[]}'
+        )
+
+    # I) the wrapper budget bounds prefix and suffix together
+    long_prefix = "a" * (MAX_MODEL_WRAPPER_CHARS + 1)
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output(f"{long_prefix}{_EXTRACT_JSON}")
+    half = "b" * (MAX_MODEL_WRAPPER_CHARS // 2 + 1)
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output(f"{half}{_EXTRACT_JSON}\n{half}")
+
+    # J) structural characters in the wrapper always fail closed
+    for prefix, suffix in (
+        ("[note] ", ""),
+        ("", " }"),
+        ("", " [1]"),
+        ("Here {draft}: ", ""),
+    ):
+        with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+            normalize_conversation_output(f"{prefix}{_EXTRACT_JSON}{suffix}")
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        normalize_conversation_output(
+            f"Here {{draft}}:\n```json\n{_EXTRACT_JSON}\n```\nDone."
+        )
+
+
+@pytest.mark.asyncio
+async def test_interpreter_recovers_one_safe_wrapper_with_one_model_call():
+    class WrappedClient:
+        def __init__(self):
+            self.calls = 0
+
+        async def complete(self, *args, **kwargs):
+            self.calls += 1
+            return {
+                "answer": (
+                    "Extracted fields:\n```json\n"
+                    '{"recipient":{"company":"Synthetic Buyer"},'
+                    '"items":[{"name":"Item A","qty":1,"unitPrice":1000}],'
+                    '"detailGroups":[],"missing":["unitPrice"]}\n'
+                    "```\nDone."
+                )
+            }
+
+    client = WrappedClient()
+    result = await B66QuoteConversationInterpreter(client).interpret(
+        message="Synthetic Buyer Item A one unit",
+        skill=_skill(),
+    )
+    safe = result.safe_dict()
+    assert safe["recipient"]["company"] == "Synthetic Buyer"
+    assert safe["items"][0]["unitPrice"] == 1000
+    # 모델이 선언한 missing 은 신뢰하지 않고 서버가 정규화된 사실에서 파생한다.
+    assert "unitPrice" not in result.missing
+    assert client.calls == 1
+    print("SAFE_WRAPPER_MODEL_CALLS=1")
+    print("MODEL_MISSING_CLAIM_TRUSTED=NO")
+
+
+@pytest.mark.asyncio
+async def test_interpreter_fails_truthfully_without_retrying_model():
+    class MalformedClient:
+        def __init__(self):
+            self.calls = 0
+
+        async def complete(self, *args, **kwargs):
+            self.calls += 1
+            return {"answer": 'Extracted: {"recipient":{},"items":[],}'}
+
+    malformed = MalformedClient()
+    with pytest.raises(B66QuoteConversationError, match="invalid_model_output"):
+        await B66QuoteConversationInterpreter(malformed).interpret(
+            message="ABC건설 견적",
+            skill=_skill(),
+        )
+    assert malformed.calls == 1
+
+    class FailingClient:
+        def __init__(self):
+            self.calls = 0
+
+        async def complete(self, *args, **kwargs):
+            self.calls += 1
+            raise RuntimeError("provider unavailable")
+
+    failing = FailingClient()
+    with pytest.raises(RuntimeError, match="provider unavailable"):
+        await B66QuoteConversationInterpreter(failing).interpret(
+            message="ABC건설 견적",
+            skill=_skill(),
+        )
+    assert failing.calls == 1
+    print("MALFORMED_OUTPUT_MODEL_CALLS=1")
+    print("PROVIDER_FAILURE_MODEL_CALLS=1")

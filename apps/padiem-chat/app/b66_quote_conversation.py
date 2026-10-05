@@ -23,6 +23,7 @@ MAX_ITEMS = 100
 MAX_ITEM_NAME_CHARS = 240
 MAX_DETAIL_GROUPS = 32
 MAX_DETAIL_ITEMS = 300
+MAX_MODEL_WRAPPER_CHARS = 320
 
 TAX_MODES = frozenset({"EXCLUSIVE", "INCLUSIVE", "EXEMPT"})
 _ALLOWED_TOP = frozenset(
@@ -57,6 +58,11 @@ _FORBIDDEN_KEYS = frozenset(
 _ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _NUMERIC_TEXT_RE = re.compile(r"^-?(?:0|[1-9]\d*)(?:\.\d+)?$")
 _JSON_FENCE_RE = re.compile(r"^```(?:json)?\s*(\{.*\})\s*```$", re.IGNORECASE | re.DOTALL)
+_JSON_FENCE_BLOCK_RE = re.compile(r"```(?:json)?\s*(.*?)\s*```", re.IGNORECASE | re.DOTALL)
+# Wrapper prose may not contain any structural character. A brace, bracket or
+# fence in the wrapper means a second payload, an array or a stray fragment, and
+# such output is rejected instead of parsed.
+_STRUCTURAL_MARKERS = ("{", "}", "[", "]", "```")
 
 
 class B66QuoteConversationError(ValueError):
@@ -150,6 +156,57 @@ def _optional_number(value: Any, *, positive: bool) -> int | float | None:
     return int(number) if number.is_integer() else number
 
 
+def _safe_wrapper_text(prefix: str, suffix: str) -> bool:
+    """Return whether prose around one JSON payload is bounded and non-structural.
+
+    The wrapper is commentary only. Bounding prefix and suffix together keeps one
+    total prose budget, and forbidding structural characters keeps a second
+    payload, an array or a stray fragment from being silently absorbed.
+    """
+
+    if len(prefix) + len(suffix) > MAX_MODEL_WRAPPER_CHARS:
+        return False
+    return not any(marker in prefix or marker in suffix for marker in _STRUCTURAL_MARKERS)
+
+
+def _recover_single_json_payload(text: str) -> Any:
+    """Deterministically recover one JSON value from one bounded prose wrapper.
+
+    Exactly two shapes are accepted: a single fenced block, or a single raw JSON
+    object that begins at the first structural character. There is no retry, no
+    recursion and no second parse pass, so this cannot grow into an arbitrary
+    substring scanner. Recovery only produces a candidate value; every field,
+    authority and forbidden-key decision stays in ``normalize_conversation_output``.
+    """
+
+    fenced_blocks = list(_JSON_FENCE_BLOCK_RE.finditer(text))
+    if fenced_blocks:
+        if len(fenced_blocks) != 1:
+            raise B66QuoteConversationError("invalid_model_output")
+        block = fenced_blocks[0]
+        prefix = text[: block.start()].strip()
+        suffix = text[block.end() :].strip()
+        if not _safe_wrapper_text(prefix, suffix):
+            raise B66QuoteConversationError("invalid_model_output")
+        try:
+            return json.loads(block.group(1).strip())
+        except json.JSONDecodeError as exc:
+            raise B66QuoteConversationError("invalid_model_output") from exc
+
+    start = text.find("{")
+    if start < 0:
+        raise B66QuoteConversationError("invalid_model_output")
+    try:
+        value, consumed = json.JSONDecoder().raw_decode(text[start:])
+    except json.JSONDecodeError as exc:
+        raise B66QuoteConversationError("invalid_model_output") from exc
+    prefix = text[:start].strip()
+    suffix = text[start + consumed :].strip()
+    if not _safe_wrapper_text(prefix, suffix):
+        raise B66QuoteConversationError("invalid_model_output")
+    return value
+
+
 def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
     """Validate untrusted model output into variable-only quote fields."""
 
@@ -159,11 +216,14 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
         text = raw.strip()
         fenced = _JSON_FENCE_RE.fullmatch(text)
         if fenced is not None:
-            text = fenced.group(1).strip()
-        try:
-            raw = json.loads(text)
-        except json.JSONDecodeError as exc:
-            raise B66QuoteConversationError("invalid_model_output") from exc
+            # A whole-answer fence that still fails to parse is malformed model
+            # output, not a wrapper to repair.
+            try:
+                raw = json.loads(fenced.group(1).strip())
+            except json.JSONDecodeError as exc:
+                raise B66QuoteConversationError("invalid_model_output") from exc
+        else:
+            raw = _recover_single_json_payload(text)
     if not isinstance(raw, dict):
         raise B66QuoteConversationError("invalid_model_output")
     if set(raw) - _ALLOWED_TOP:
