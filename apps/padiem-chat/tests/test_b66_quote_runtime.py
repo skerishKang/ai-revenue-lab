@@ -5,11 +5,13 @@ from __future__ import annotations
 import json
 from unittest.mock import MagicMock
 
+import httpx
 import pytest
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
+from app.b14_client import B14Client
 from app.b66_quote_conversation import (
     B66QuoteConversationError,
     B66QuoteConversationInterpreter,
@@ -565,6 +567,57 @@ async def test_interpreter_calls_model_once_for_fields_only_and_hides_template_c
     assert "template-private" not in context
     assert "테스트상사" not in context
     assert call["attachments"] == ()
+    assert call["skill"] is not None
+    assert call["skill"].id == "b66-quote-extract"
+    assert call["skill"].max_tokens == 2048
+    assert call["skill"].system_instruction is None
+
+
+@pytest.mark.asyncio
+async def test_b66_extraction_budget_reaches_the_actual_b14_request_payload():
+    seen = {}
+
+    async def handler(request):
+        body = json.loads(request.content)
+        seen["body"] = body
+        answer = json.dumps(
+            {
+                "recipient": {"company": "대한건설"},
+                "items": [{"name": "배관", "qty": 100, "unitPrice": None}],
+                "detailGroups": [],
+                "missing": [],
+            },
+            ensure_ascii=False,
+        )
+        return httpx.Response(
+            200,
+            json={
+                "choices": [
+                    {"message": {"role": "assistant", "content": answer}}
+                ],
+                "business14": {
+                    "request_id": "b14req_b66_budget_test",
+                    "route_mode": "manual",
+                    "selected_model": body["model"],
+                    "selected_provider": "Kilo Gateway / Stealth",
+                },
+            },
+        )
+
+    client = B14Client(
+        Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
+        httpx.MockTransport(handler),
+    )
+    result = await B66QuoteConversationInterpreter(client).interpret(
+        message="대한건설에 배관 100미터, 부가세 별도",
+        skill=_skill(),
+    )
+
+    assert seen["body"]["max_tokens"] == 2048
+    assert seen["body"]["business14"]["max_attempts"] == 1
+    assert seen["body"]["business14"]["allow_external_fallback"] is False
+    assert result.recipient["company"] == "대한건설"
+    assert "unitPrice" in result.missing
 
 
 @pytest.mark.asyncio

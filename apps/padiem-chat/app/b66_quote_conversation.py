@@ -15,6 +15,8 @@ from dataclasses import dataclass, replace
 from datetime import date
 from typing import Any, Protocol
 
+from .task_modes import TaskMode
+
 MAX_CONVERSATION_CHARS = 4_000
 MAX_RESULT_CHARS = 24_000
 MAX_TEXT_CHARS = 2_000
@@ -24,6 +26,22 @@ MAX_ITEM_NAME_CHARS = 240
 MAX_DETAIL_GROUPS = 32
 MAX_DETAIL_ITEMS = 300
 MAX_MODEL_WRAPPER_CHARS = 320
+
+# B66 extraction is a bounded structured-output task, not ordinary chat. The
+# current reasoning-capable upstream lane can exhaust a too-small completion
+# budget before emitting assistant content. Keep this
+# product-owned budget explicit so the generic B62 task-mode defaults remain
+# unchanged while B66 has enough room to return its one JSON object.
+B66_EXTRACTION_MAX_TOKENS = 2_048
+_B66_EXTRACTION_TASK_MODE = TaskMode(
+    id="b66-quote-extract",
+    title="B66 견적 입력 추출",
+    short_description="견적 요청의 변수 필드만 추출합니다.",
+    system_instruction=None,
+    task_type="general",
+    optimize_for="korean",
+    max_tokens=B66_EXTRACTION_MAX_TOKENS,
+)
 
 TAX_MODES = frozenset({"EXCLUSIVE", "INCLUSIVE", "EXEMPT"})
 _ALLOWED_TOP = frozenset(
@@ -595,6 +613,7 @@ class B66QuoteConversationInterpreter:
         prompt = _conversation_prompt(skill)
         result = await self._client.complete(
             [{"role": "user", "content": clean}],
+            skill=_B66_EXTRACTION_TASK_MODE,
             additional_system_context=prompt,
             attachments=(),
         )
