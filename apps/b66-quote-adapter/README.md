@@ -9,6 +9,23 @@ BROWSER_MODEL_PROVIDER_IDENTITY = 0
 
 This package is the product-owned server authority for B66 quotation intake/extraction. Runtime deployment state is tracked separately by the B14/Pages deployment gates; this document describes source ownership.
 
+## Source-analysis handoff (#3542)
+
+This adapter is an **intake/extraction boundary**, not the final source-fidelity authority.
+
+```text
+browser/server intake
+-> bounded parser/extraction evidence
+-> Source Analysis Record (#3542)
+-> Saved Quote Skill Candidate
+-> linked QuoteTemplateProfile Candidate
+-> review/approval
+```
+
+Where the underlying format exposes style/layout/asset metadata (for example XLSX fonts, sizes, merged ranges, row/column geometry, fills, borders, alignment, print settings, embedded images/drawings), the adapter/parser path should preserve that evidence instead of flattening it away when practical.
+
+The final decisions about fixed/default/variable/calculated semantics, deterministic template geometry, asset reuse and visual fidelity remain outside this adapter and are owned by #3542/#3180/#3186.
+
 ## Ownership
 
 ```text
