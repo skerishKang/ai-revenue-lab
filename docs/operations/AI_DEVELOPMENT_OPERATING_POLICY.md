@@ -315,6 +315,8 @@ Follow `CODE_STRUCTURE_AND_ASSET_VERSIONING_POLICY.md`.
 
 ## 10. Local Validator responsibilities
 
+Independent validation is **selective**, not automatic for every P0/P1. A bounded deterministic fix defaults to `NOT_REQUIRED` when focused regression + relevant CI can prove the pre-merge claim and live behavior is already covered by the separately authorized post-deploy Production smoke. Require an independent validator when the claim materially depends on a distinct browser/OS/hardware/local-service environment, a high-risk runtime boundary not covered by CI, or an explicit work-contract gate.
+
 When independent validation is required, the validator records:
 
 - expected/actual exact head;
@@ -414,7 +416,7 @@ After authorized merge, verify the configured Git-connected Production against t
 
 ### Verdict record requirement
 
-Before merge, the Web CTO (CENTRAL) must post the filled `CTO_FINAL_REVIEW` checklist as a PR review or PR comment containing the exact head SHA and per-item checklist results (precedent: PR #1900 procedure, work order 2026-09-05). Prose-only assertions of a final-review verdict are not an auditable record.
+Before merge, the Web CTO (CENTRAL) must post an auditable `CTO_FINAL_REVIEW` record as a PR review or PR comment containing the exact head SHA and results for the **applicable** gates. For a tiny bounded fix, a compact exact-head checklist is sufficient; the full template is not a required ceremony. Prose-only verdict assertions with no reviewable fields are not sufficient.
 
 For P0/P1 or otherwise critical PRs, the final review also records the exact-head independent-validator record (or `NOT_REQUIRED` reason), any load-bearing mutation/differential proof requested by the work contract, and the disposition of every external red security/compliance signal.
 
