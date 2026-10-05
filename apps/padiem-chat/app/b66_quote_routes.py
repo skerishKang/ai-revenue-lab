@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import inspect
 import json
+import re
 from typing import Any
 
 from starlette.requests import Request
@@ -32,6 +33,28 @@ _FORBIDDEN_OWNER_KEYS = frozenset(
     {"user_id", "userId", "tenant_id", "tenantId", "workspace_id", "workspaceId", "owner"}
 )
 _NO_STORE = {"Cache-Control": "no-store, max-age=0", "Pragma": "no-cache"}
+
+# Bounded rejection diagnostics (#3391): the 422 response may carry the
+# structured reason / field path / JSON type name of the failed conversation
+# validation. Header values are allowlist-checked so customer text or model
+# output can never reach the response regardless of what a raise site attaches.
+_REJECTION_REASON_RE = re.compile(r"^[a-z_]{1,64}$")
+_REJECTION_PATH_RE = re.compile(r"^[A-Za-z0-9_.\[\]]{1,64}$")
+_REJECTION_TYPE_RE = re.compile(r"^[a-z]{1,16}$")
+
+
+def _rejection_diagnostic_headers(exc: BaseException) -> dict[str, str]:
+    headers: dict[str, str] = {}
+    reason = getattr(exc, "message", None)
+    if isinstance(reason, str) and _REJECTION_REASON_RE.fullmatch(reason):
+        headers["X-B66-Rejection-Reason"] = reason
+    path = getattr(exc, "path", None)
+    if isinstance(path, str) and _REJECTION_PATH_RE.fullmatch(path):
+        headers["X-B66-Rejection-Path"] = path
+    observed_type = getattr(exc, "observed_type", None)
+    if isinstance(observed_type, str) and _REJECTION_TYPE_RE.fullmatch(observed_type):
+        headers["X-B66-Rejection-Type"] = observed_type
+    return headers
 
 
 def _error(status: int, code: str, message: str) -> JSONResponse:
@@ -196,8 +219,11 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     try:
         value = interpret_fn(message=message.strip(), skill=skill)
         projection = await value if inspect.isawaitable(value) else value
-    except B66QuoteConversationError:
-        return _error(422, "quote_input_unrecognized", "견적 입력값을 확인해 주세요.")
+    except B66QuoteConversationError as exc:
+        response = _error(422, "quote_input_unrecognized", "견적 입력값을 확인해 주세요.")
+        for header_name, header_value in _rejection_diagnostic_headers(exc).items():
+            response.headers[header_name] = header_value
+        return response
     except Exception:
         return _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
 
