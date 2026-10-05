@@ -48,6 +48,21 @@ _REJECTION_TYPE_RE = re.compile(r"^[a-z]{1,16}$")
 # only the product-owned ``ChatRuntimeError.code``, and only when it is one of
 # the fixed upstream classes below. Raw exception text, provider payloads, model
 # output and customer values are never part of this header.
+#
+# Every value here is reachable on this lane today, which is what keeps "header
+# present" meaningful. The nine Core/provider classes come from
+# ``b14_client._chat_error`` (the ExecutionRuntime/B14ExecutionError taxonomy),
+# and ``upstream_binding_unavailable`` is raised by the Production-composed
+# ``DispatchAwareB14Client.complete`` itself when the required B14 Service
+# Binding is absent (``require_service_binding`` True with
+# ``service_transport`` None, as composed in ``worker.py``).
+#
+# Deliberately outside the allowlist: request/policy classes such as
+# ``model_profile_unassigned`` (unreachable here — the B66 lane never binds a
+# request tier, so policy resolution always yields the executable Padiem Plus
+# default), ``tier_unavailable`` / ``unknown_model_alias`` (only for a quote text
+# that literally begins with a slash alias) and ``invalid_request`` (Core
+# request-contract rejection, not an upstream class).
 _UPSTREAM_CLASS_ALLOWLIST = frozenset(
     {
         "upstream_timeout",
@@ -60,6 +75,7 @@ _UPSTREAM_CLASS_ALLOWLIST = frozenset(
         "provider_server_error",
         "upstream_execution_failed",
         "upstream_error",
+        "upstream_binding_unavailable",
     }
 )
 

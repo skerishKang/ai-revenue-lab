@@ -11,9 +11,11 @@ payload, model output or any customer value.
 
 from __future__ import annotations
 
+import asyncio
 import json
 from unittest.mock import MagicMock
 
+import pytest
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
@@ -21,6 +23,13 @@ from app.auth import SESSION_COOKIE, create_session_token
 from app.b14_client import ChatRuntimeError
 from app.b66_quote_conversation import B66QuoteConversationInterpreter
 from app.config import Settings
+from app.dispatch_quota import DispatchAwareB14Client
+from app.model_policy import (
+    DEFAULT_B14_MODEL_ID,
+    EXECUTABLE_B14_MODEL_IDS,
+    model_policy_is_executable,
+    resolve_request_model_policy,
+)
 
 USER = "usr_" + "a" * 32
 SAVED_ID = "b66skill_" + "c" * 32
@@ -37,6 +46,25 @@ ALLOWLISTED_CLASSES = (
     "provider_server_error",
     "upstream_execution_failed",
     "upstream_error",
+    # Raised by the Production-composed DispatchAwareB14Client itself when the
+    # required B14 Service Binding is absent (worker.py composition).
+    "upstream_binding_unavailable",
+)
+
+# Stable product-owned ChatRuntimeError codes that stay OUT of the
+# ``X-B66-Upstream-Class`` allowlist. Each entry records the status the code
+# actually carries and why it is not an upstream class on this lane.
+EXCLUDED_CLASSES = (
+    # Unreachable from the B66 lane: the quote route never binds a request tier,
+    # so policy resolution always returns the executable Padiem Plus default.
+    (503, "model_profile_unassigned"),
+    # Reachable only when the quote text itself begins with a slash alias; these
+    # are product policy rejections, not upstream failures.
+    (422, "tier_unavailable"),
+    (422, "unknown_model_alias"),
+    (422, "model_alias_requires_prompt"),
+    # Core request-contract rejection, not a provider/upstream class.
+    (422, "invalid_request"),
 )
 
 
@@ -48,6 +76,35 @@ def _settings() -> Settings:
         session_secret="b66-upstream-class-diagnostics-session-secret-not-real",
         session_max_age_seconds=3600,
         live_enabled="false",
+    )
+
+
+def _production_settings() -> Settings:
+    """Same flags as the worker.py composition: runtime_mode b14 + live armed."""
+
+    return Settings.from_values(
+        runtime_mode="b14",
+        b14_base_url="https://b14.internal",
+        auth_mode="password",
+        public_base_url="https://chat.example.test",
+        session_secret="b66-upstream-class-diagnostics-session-secret-not-real",
+        session_max_age_seconds=3600,
+        live_enabled="true",
+    )
+
+
+def _unbound_production_client() -> DispatchAwareB14Client:
+    """The Production-composed client with the B14 Service Binding absent.
+
+    worker.py composes ``require_service_binding=settings.runtime_mode == "b14"``
+    and leaves ``service_transport`` None when the binding is missing, so this is
+    the real pre-dispatch shape, not a simulated raise. No provider call happens.
+    """
+
+    return DispatchAwareB14Client(
+        _production_settings(),
+        service_transport=None,
+        require_service_binding=True,
     )
 
 
@@ -179,8 +236,8 @@ def test_allowlisted_upstream_classes_are_relayed_exactly_once():
 
 
 def test_non_allowlisted_chat_runtime_errors_carry_no_header():
-    for code in ("model_profile_unassigned", "upstream_binding_unavailable", "invalid_request"):
-        provider = _RaisingClient(ChatRuntimeError(503, code, "bounded upstream diagnostic"))
+    for status, code in EXCLUDED_CLASSES:
+        provider = _RaisingClient(ChatRuntimeError(status, code, "bounded upstream diagnostic"))
         response = _post(_client(B66QuoteConversationInterpreter(provider)))
 
         assert response.status_code == 502
@@ -189,6 +246,63 @@ def test_non_allowlisted_chat_runtime_errors_carry_no_header():
         assert provider.calls == 1
 
     print("NON_ALLOWLISTED_CLASS_HEADER_ABSENT=PASS")
+    print(f"EXCLUDED_CLASS_COUNT={len(EXCLUDED_CLASSES)}")
+
+
+def test_binding_class_is_reachable_from_the_production_composed_client():
+    """Reachability proof for ``upstream_binding_unavailable`` on this lane.
+
+    This drives the real Production-composed client (not a fake raising client),
+    so a header value is backed by a path the deployment can actually take.
+    """
+
+    message = "대한건설에 배관 100미터, 부가세 별도"
+
+    async def scenario():
+        client = _unbound_production_client()
+        with pytest.raises(ChatRuntimeError) as info:
+            await client.complete(
+                [{"role": "user", "content": message}],
+                additional_system_context="견적 입력값 추출 계약",
+                attachments=(),
+            )
+        return info.value
+
+    error = asyncio.run(scenario())
+    assert error.code == "upstream_binding_unavailable"
+    assert error.status_code == 503
+    assert error.code in ALLOWLISTED_CLASSES
+
+    # Why ``model_profile_unassigned`` is excluded from the allowlist is fixed by
+    # the two facts below: no request tier is bound on the B66 lane, and the
+    # resolved default route is executable. Together they make the
+    # non-executable-policy branch unreachable for an ordinary Korean quote
+    # message, so this lane can only produce the binding class before dispatch.
+    assert resolve_request_model_policy([{"role": "user", "content": message}]).model_id == (
+        DEFAULT_B14_MODEL_ID
+    )
+    assert model_policy_is_executable(DEFAULT_B14_MODEL_ID) is True
+    assert DEFAULT_B14_MODEL_ID in EXECUTABLE_B14_MODEL_IDS
+
+    print("UPSTREAM_BINDING_UNAVAILABLE_REACHABLE_FROM_PRODUCTION_COMPOSITION=YES")
+    print("MODEL_PROFILE_UNASSIGNED_REACHABLE_FROM_B66_TEXT=NO")
+
+
+def test_real_binding_class_reaches_the_route_as_one_bounded_header():
+    """End-to-end: the real unbound Production client -> route -> one header."""
+
+    interpreter = B66QuoteConversationInterpreter(_unbound_production_client())
+    response = _post(_client(interpreter))
+
+    assert response.status_code == 502
+    body = response.json()
+    assert body["ok"] is False
+    assert body["error"]["code"] == "quote_interpretation_failed"
+    assert body["error"]["message"] == "견적 요청을 해석하지 못했습니다."
+    assert _upstream_class_values(response) == ["upstream_binding_unavailable"]
+    assert not [name for name in response.headers if name.startswith("X-B66-Rejection-")]
+
+    print("REAL_BINDING_CLASS_HEADER_RELAY=PASS")
 
 
 def test_generic_runtime_error_carries_no_upstream_class_header():
