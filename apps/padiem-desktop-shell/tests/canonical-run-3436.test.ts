@@ -382,12 +382,33 @@ test('#3436 B3a artifact metadata is bounded to a reference projection', async (
     { document_id: '' },
     { document_id: 42 },
     { filename: 'quote.docx' },
+    // #3436 correction: a widened canonical artifact fails closed at the
+    // parser — it is never silently cleaned into a valid projection. The raw
+    // private values below are fixtures, not expected outputs: an assertion
+    // message that echoed them would be the leak this rule prevents.
+    { document_id: 'doc_' + '1'.repeat(24), filename: 'a.docx', media_type: 'application/msword', extra: 'anything' },
+    { document_id: 'doc_' + '1'.repeat(24), filename: 'a.docx', media_type: 'application/msword', session_id: 'unexpected-private-ref' },
+    { document_id: 'doc_' + '1'.repeat(24), filename: 'a.docx', media_type: 'application/msword', credential: 'x' },
+    { document_id: 'doc_' + '1'.repeat(24), filename: 'a.docx', media_type: 'application/msword', path: 'C:/Windows/win.ini' },
+    // Ambiguous duplicate aliases are a shape error, not a coincidence.
+    { document_id: 'doc_a', documentId: 'doc_b', filename: 'a.docx', media_type: 'application/msword' },
+    { document_id: 'doc_a', filename: 'a.docx', media_type: 'application/msword', mediaType: 'image/png' },
+    // The server wire shape is snake_case only (`history._run_history_public`);
+    // a pure camelCase artifact is not a legitimate server payload, whatever
+    // the internal projection calls its fields after parsing.
+    { documentId: 'doc_' + '1'.repeat(24), filename: 'a.docx', media_type: 'application/msword' },
+    { documentId: 'doc_' + '1'.repeat(24), filename: 'a.docx', mediaType: 'application/msword' },
+    { document_id: 'doc_' + '1'.repeat(24), filename: 'a.docx', mediaType: 'application/msword' },
+    // #3469 CENTRAL correction: the camelCase spelling was never a server
+    // input shape. Any payload carrying it — even with the other keys correct
+    // — fails closed rather than being accepted as a widened contract.
+    { document_id: 'doc_' + '1'.repeat(24), documentId: 'doc_' + '1'.repeat(24), filename: 'a.docx', media_type: 'application/msword' },
   ]) {
     const controller = new CanonicalRunController(
       fixturePort({ list: canonicalListPayload(canonicalRunRow({ artifact: malformed })) }),
     );
     const list3 = await controller.listRuns();
-    assert.equal(list3.ok, false, JSON.stringify(malformed));
+    assert.equal(list3.ok, false, malformed === null || typeof malformed === 'object' ? 'object' : String(malformed));
     assert.equal(list3.errorCode, 'invalid_run_payload');
   }
 });

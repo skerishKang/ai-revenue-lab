@@ -20,6 +20,10 @@ import { useCallback, useEffect, useState, type ReactElement } from 'react';
 
 import { requireShellApi, RendererAuthorityError, type PadiemShellApi } from './api.js';
 import {
+  type RunArtifactKind,
+  presentRunArtifacts,
+} from '../run/artifact-presentation.js';
+import {
   SHELL_LOCALES,
   connectionNextActionText,
   deviceStateText,
@@ -778,6 +782,7 @@ export function RunActivityPanel(props: {
           <p>{t('desktop.runPendingBody')}</p>
         </div>
       )}
+      {canonical ? <RunArtifactsSection runs={runs.runs} locale={locale} advanced={advanced} /> : null}
       {advanced ? (
         <p className="run-authority-note" data-advanced="true">
           {t('desktop.runAuthorityNote')}
@@ -786,6 +791,76 @@ export function RunActivityPanel(props: {
     </section>
   );
 }
+
+/**
+ * #3436 result artifact presentation.
+ *
+ * A read-only list of the artifact metadata the canonical run projection
+ * already carries. Nothing here opens, downloads, copies, renames or executes
+ * an artifact, and no ref is resolved into a location — a filename is a label.
+ * Easy mode renders the human label and category only; the bounded canonical
+ * document reference and media type are Advanced diagnostics, and a private ref
+ * or a widened payload never renders at all (see artifact-presentation.ts).
+ */
+export function RunArtifactsSection(props: {
+  runs: readonly CanonicalRunListItem[];
+  locale: ShellLocale;
+  advanced: boolean;
+}): ReactElement {
+  const { runs, locale, advanced } = props;
+  const t = (key: ShellStringKey): string => translate(locale, key);
+  const { artifacts, unsupportedCount } = presentRunArtifacts(runs);
+
+  return (
+    <section className="run-artifacts" aria-labelledby="desktop-run-artifacts-title">
+      <h3 id="desktop-run-artifacts-title">{t('desktop.runArtifactsTitle')}</h3>
+      {artifacts.length === 0 ? (
+        <p className="run-artifacts-empty">{t('desktop.runArtifactsEmpty')}</p>
+      ) : (
+        <ul className="run-artifact-list" data-artifact-count={artifacts.length}>
+          {artifacts.map((artifact) => (
+            <li
+              key={artifact.key}
+              className="run-artifact"
+              data-artifact-kind={artifact.kind}
+              data-run-status={artifact.runStatus}
+            >
+              <span className="run-artifact-label">{artifact.label}</span>
+              <span className="run-chip run-artifact-kind">
+                {t(RUN_ARTIFACT_KIND_LABEL[artifact.kind])}
+              </span>
+              {artifact.runTitle ? (
+                <span className="run-artifact-run">{artifact.runTitle}</span>
+              ) : null}
+              {advanced ? (
+                <dl className="run-artifact-facts" data-advanced="true">
+                  <dt>{t('desktop.runArtifactMediaType')}</dt>
+                  <dd>{artifact.mediaType}</dd>
+                  <dt>{t('desktop.runArtifactDocumentLabel')}</dt>
+                  <dd>{artifact.documentId}</dd>
+                </dl>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      )}
+      {unsupportedCount > 0 ? (
+        <p className="run-artifacts-unsupported" data-unsupported-count={unsupportedCount}>
+          {t('desktop.runArtifactUnsupported')}
+        </p>
+      ) : null}
+    </section>
+  );
+}
+
+/** Closed map from the derived artifact category to its localized label. */
+const RUN_ARTIFACT_KIND_LABEL: Record<RunArtifactKind, ShellStringKey> = {
+  document: 'desktop.runArtifactKindDocument',
+  image: 'desktop.runArtifactKindImage',
+  table: 'desktop.runArtifactKindTable',
+  archive: 'desktop.runArtifactKindArchive',
+  other: 'desktop.runArtifactKindOther',
+};
 
 function runStatusText(locale: ShellLocale, status: CanonicalRunStatus): string {
   const key = (

@@ -363,18 +363,33 @@ function parseResultSummary(
   return value.slice(0, MAX_RUN_RESULT_SUMMARY_CHARS);
 }
 
+/**
+ * The server's artifact WIRE shape, exactly as `history._run_history_public`
+ * emits it: `document_id`, `filename`, `media_type` — snake_case only. The
+ * camelCase spelling is this projection's post-parse internal representation
+ * (`CanonicalRunArtifactRef`), never an input shape, so a payload carrying
+ * `documentId` or `mediaType` is not a legitimate server artifact and fails
+ * closed. Any other key — a private ref, a path, an unexpected extra —
+ * invalidates the whole payload. A widened canonical artifact is never
+ * silently cleaned.
+ */
+const SERVER_ARTIFACT_KEYS: ReadonlySet<string> = new Set(['document_id', 'filename', 'media_type']);
+
 function parseArtifact(
   value: unknown,
 ): 'invalid' | 'absent' | CanonicalRunArtifactRef {
   if (value === undefined || value === null) return 'absent';
   if (typeof value !== 'object' || Array.isArray(value)) return 'invalid';
   const source = value as Record<string, unknown>;
-  const documentId = boundedText(source.document_id ?? source.documentId, MAX_ARTIFACT_DOCUMENT_ID_LENGTH);
+  for (const key of Object.keys(source)) {
+    if (!SERVER_ARTIFACT_KEYS.has(key)) return 'invalid';
+  }
+  const documentId = boundedText(source['document_id'], MAX_ARTIFACT_DOCUMENT_ID_LENGTH);
   if (documentId === null || documentId.length === 0) return 'invalid';
   return Object.freeze({
     documentId,
-    filename: boundedText(source.filename, MAX_ARTIFACT_FILENAME_LENGTH) ?? '',
-    mediaType: boundedText(source.media_type ?? source.mediaType, MAX_ARTIFACT_MEDIA_TYPE_LENGTH) ?? '',
+    filename: boundedText(source['filename'], MAX_ARTIFACT_FILENAME_LENGTH) ?? '',
+    mediaType: boundedText(source['media_type'], MAX_ARTIFACT_MEDIA_TYPE_LENGTH) ?? '',
   });
 }
 
