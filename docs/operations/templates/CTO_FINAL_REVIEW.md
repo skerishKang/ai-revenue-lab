@@ -1,5 +1,7 @@
 # Web CTO Final Review
 
+For a tiny bounded fix or MVP closeout, a compact exact-head checklist is sufficient when it covers the fixed handoff gate. Do not require every section below to be populated when it is not applicable.
+
 ## Current remote identity
 
 - Repository:
@@ -144,6 +146,7 @@ State the smallest correct recovery level.
 
 ```text
 READY / CONDITIONALLY_READY / NOT_READY
+READY_FOR_CUSTOMER_HANDOFF   # only after the fixed handoff gate + required Production smoke pass
 ```
 
 Reason:

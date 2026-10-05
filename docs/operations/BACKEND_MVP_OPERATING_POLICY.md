@@ -143,7 +143,7 @@ Use cost ceilings before scaling automation.
 
 ## 11. Testing
 
-Choose the smallest useful set:
+Choose the smallest useful set that proves the claim changed by the current slice:
 
 - schema/contract tests;
 - domain unit tests;
@@ -155,6 +155,42 @@ Choose the smallest useful set:
 - Production smoke after deployment.
 
 Implementation self-test is not independent validation.
+
+### 11A. MVP closeout test discipline
+
+For a narrow MVP defect, default to:
+
+```text
+focused regression
+→ relevant configured CI
+→ bounded Production smoke
+→ handoff
+```
+
+Do not automatically rerun the whole backend, whole browser matrix, every previously accepted journey, or unrelated product surfaces.
+
+Broader testing is required only when at least one applies:
+
+- the fix changes shared authority or a broadly reused contract;
+- the fix changes auth/authz, persistence, migration, billing, destructive behavior, secrets/bindings, or another high-blast-radius boundary;
+- relevant dependency/configuration/runtime drift occurred since the prior evidence;
+- a focused test reveals evidence of a wider defect class;
+- the work contract explicitly names the broader suite as a handoff gate.
+
+A previously passed journey is not invalidated merely by elapsed time. A newer `main` invalidates it only to the extent that intervening changes can affect that journey.
+
+For customer-bound MVPs, classify every remaining finding:
+
+```text
+HANDOFF_BLOCKER
+POST_HANDOFF_FIX
+HARDENING
+BACKLOG
+```
+
+Only `HANDOFF_BLOCKER` may delay delivery. The classification must be supported by concrete evidence, not the possibility that another defect might exist.
+
+If the accepted primary journey and required safety boundaries pass after the final fix, stop expanding pre-handoff validation and deliver. Continue non-blocking reliability and hardening work after the customer has the MVP.
 
 ## 12. Commercial hardening trigger
 

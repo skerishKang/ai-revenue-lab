@@ -108,8 +108,10 @@ Direct upload, API-created deployment, Preview, or staging is permitted only whe
 
 ### D3 — backend, secrets, cache, authentication, or persistence
 
-- full deterministic and runtime tests;
-- secret and authorization boundary verification;
+- **full relevant coverage of the changed high-risk boundary**, not an automatic whole-repository or whole-product suite;
+- focused deterministic/runtime regression for the changed behavior plus the configured CI that protects affected dependencies;
+- broader runtime suites only when the change crosses those broader surfaces;
+- secret and authorization boundary verification when those boundaries are actually touched;
 - Production configuration prepared before the merge that should activate it whenever practicable;
 - exact configuration restoration steps and reviewed source fix/revert path prepared;
 - security and leakage checks;

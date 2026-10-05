@@ -192,6 +192,29 @@ RESTORED
 
 Production status is revision/deployment evidence only.
 
-## 12. Revision rule
+## 12. Customer handoff
 
-Every source-dependent status records the exact SHA or exact artifact/revision identity. A new commit affecting the judged surface may move validation/review/gates back to pending or invalidated.
+For a customer-bound MVP, keep handoff status separate from ordinary CTO readiness:
+
+```text
+HANDOFF_NOT_APPLICABLE
+HANDOFF_BLOCKED
+HANDOFF_READY_PENDING_PRODUCTION
+READY_FOR_CUSTOMER_HANDOFF
+HANDED_OFF
+```
+
+`READY_FOR_CUSTOMER_HANDOFF` requires only the **fixed handoff gate** defined by the current work contract/operating policy:
+
+```text
+ACCEPTED_HANDOFF_BLOCKERS=0
+FOCUSED_CHANGE_REGRESSION=PASS
+HANDOFF_REQUIRED_CI=PASS
+REQUIRED_PRODUCTION_SMOKE=PASS
+```
+
+Open P1/P2/backlog work, unrelated CI fan-out, and exploratory QA do not move this state backward unless they produce new concrete handoff-blocking evidence.
+
+## 13. Revision rule
+
+Every source-dependent status records the exact SHA or exact artifact/revision identity. A new commit affecting the judged surface may move only the **affected** validation/review/gates back to pending or invalidated. Unrelated repository drift does not automatically invalidate previously accepted evidence.
