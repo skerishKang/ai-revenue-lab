@@ -14,7 +14,7 @@ Padiem Routing Profile v1 = first product/customer-specific routing profile
 Padiem has already selected the routes it wants for the current MVP. Therefore Padiem Profile v1 does not require a generic automatic best-model router to be active.
 
 ```text
-Padiem Plus = agnes-ai/agnes-3.0-flash        (only executable product route)
+Padiem Plus = kilo/stealth-space-bunny-alpha (current executable product route; #3209)
 Padiem Pro  = HOLD / padiem-profile/pro-hold
 Padiem Max  = HOLD / padiem-profile/max-hold
 
@@ -49,7 +49,7 @@ Padiem product/profile declaration
 
 | Padiem tier | Route | Status |
 |---|---|---|
-| Plus | `agnes-ai/agnes-3.0-flash` | explicit / executable when B14 catalog permits |
+| Plus | `kilo/stealth-space-bunny-alpha` | explicit / executable while current B14/Kilo route remains available; Kilo marks it `retires Oct 5` (#3209, #3554) |
 | Pro | `padiem-profile/pro-hold` | HOLD / non-executable (owner decision #2601) |
 | Max | `padiem-profile/max-hold` | HOLD / non-executable |
 
@@ -57,10 +57,13 @@ Product-declaration data that is **not** a product route:
 
 | Route | Declaration state | Why it is still recorded |
 |---|---|---|
-| `poolside/laguna-s-2.1` | `HOLD_AS_DATA_ONLY` | Owner-designated second position of the `b14/auto` fixed chain; never a Padiem tier route or a silent fallback. |
+| `agnes-ai/agnes-3.0-flash` | `HOLD_AS_DATA_ONLY` | Historical Plus route superseded by owner decision #3209; provider registration is preserved, but it is not a silent fallback. |
+| `poolside/laguna-s-2.1` | `HOLD_AS_DATA_ONLY` | Historical routing data; never a Padiem tier route or a silent fallback. |
 | `kilo/poolside-laguna-s-2.1-free`, `kilo/nvidia-nemotron-3-ultra-550b-a55b-free` | superseded | Earlier Plus/Pro mapping. No Padiem tier points at them; a B14 route exists only while the current catalog registers it. |
 
 Retired historical routes such as MiniMax M3 and Tencent HY3 must not re-enter the executable catalog or a Padiem tier through stale documentation, fallback, or compatibility defaults.
+
+**Current retirement risk:** Kilo's public catalog still lists `stealth/space-bunny-alpha` on 2026-10-05 but names it `Space Bunny Alpha (retires Oct 5)` and reports `expiration_date=2026-10-05`. Treat the current Plus route as an at-risk current route, not a stable long-term default. Successor selection/proof is owned by #3554; do not silently restore an older route.
 
 ## Router Platform roadmap
 
