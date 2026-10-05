@@ -34,6 +34,7 @@ from .auth_routes import (
 )
 from .auto_grounding import AutoGroundingService
 from .chat_routes import api_chat, api_chat_stream
+from .claw_general_routes import claw_general_execute
 from .claw_routes import (
     claw_approval_decision,
     claw_manual_intake_artifact,
@@ -253,6 +254,10 @@ def create_app(
         Route("/api/b66/quote/interpret", b66_quote_interpret, methods=["POST"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
+        # #3539: the generic Claw composer runs through the canonical #3382 P01
+        # Engine lane. It is a distinct B54 product boundary from manual-intake
+        # and has no direct-B14 (/api/chat/stream) fallback.
+        Route("/api/claw/general", claw_general_execute, methods=["POST"]),
         Route(
             "/api/claw/manual-intake/quote-compare",
             claw_manual_intake_quote_compare,
