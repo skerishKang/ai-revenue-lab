@@ -864,8 +864,8 @@
       }
       if (workspace) {
         delete workspace.dataset.inboxKind;
-        if (workspace.dataset.view === "inbox") workspace.dataset.view = "manual";
-        if (workspace.dataset.view === "automation") workspace.dataset.view = "manual";
+        if (workspace.dataset.view === "inbox") workspace.dataset.view = "general";
+        if (workspace.dataset.view === "automation") workspace.dataset.view = "general";
       }
       // Auth loss tears down any pending execute recovery: no timer outlives the session.
       clearClawRecovery({ syncControls: true });
@@ -2469,6 +2469,27 @@
   if (clawAutomationRetry) clawAutomationRetry.addEventListener("click", () => void loadClawAutomationRules());
 
   function openClawWorkspace() {
+    // #3531: Claw opens on the general conversation view. The document
+    // workflow (manual form, workflow chrome) stays hidden until the user
+    // explicitly enters it via openClawManual.
+    if (!clawWorkspace) return;
+    shell.dataset.state = "claw";
+    clawWorkspace.dataset.view = "general";
+    delete clawWorkspace.dataset.inboxKind;
+    if (clawInbox) clawInbox.hidden = true;
+    if (clawAutomation) clawAutomation.hidden = true;
+    if (clawManualForm) clawManualForm.hidden = true;
+    if (clawResultArea) clawResultArea.hidden = false;
+    setNavActive();
+    input.focus();
+    closeSidebar();
+    syncApprovedMemoryVisibility();
+    syncClawRunHistoryVisibility();
+  }
+
+  function openClawManual() {
+    // Explicit entry into the document/quotation workflow only. The manual
+    // form and its workflow chrome are never shown by default.
     if (!clawWorkspace) return;
     shell.dataset.state = "claw";
     clawWorkspace.dataset.view = "manual";
@@ -2953,6 +2974,8 @@
   }
 
   if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
+  const clawManualEntryButton = document.getElementById("clawManualEntryButton");
+  if (clawManualEntryButton) clawManualEntryButton.addEventListener("click", openClawManual);
   if (tasksNavButton) tasksNavButton.addEventListener("click", () => openClawInbox("tasks"));
   if (alertsNavButton) alertsNavButton.addEventListener("click", () => openClawInbox("alerts"));
   if (clawInboxRetry) clawInboxRetry.addEventListener("click", () => {

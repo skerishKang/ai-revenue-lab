@@ -43,8 +43,9 @@ def test_claw_bottom_composer_visible() -> None:
     # The workspace chrome yields to the conversation in manual view...
     manual_rule = WORKSPACE_CSS.split('.claw-workspace[data-view="manual"] {', 1)[1].split("}", 1)[0]
     assert "display: none" in manual_rule
-    # ...and only the inbox (non-manual) subview hides the conversation.
-    inbox_rule = WORKSPACE_CSS.split('.claw-workspace:not([data-view="manual"]) ~ .conversation {', 1)[1].split("}", 1)[0]
+    # ...and only the inbox/automation (non-manual, non-general) subviews
+    # hide the conversation (#3531: general keeps the primary surface).
+    inbox_rule = WORKSPACE_CSS.split('.claw-workspace:not([data-view="manual"]):not([data-view="general"]) ~ .conversation {', 1)[1].split("}", 1)[0]
     assert "display: none !important" in inbox_rule
     # The intake form now lives inside the composer wrap, above #composerForm.
     wrap = INDEX.split('class="composer-wrap"', 1)[1]
