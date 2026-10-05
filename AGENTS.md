@@ -80,6 +80,33 @@ OPERATING_PRODUCT
 
 UI, UX, backend, live providers, local runtime, or service-led operations may start when they are materially required for that evidence goal and explicitly included in scope. Their verdicts remain separate so one kind of evidence is never presented as another.
 
+## MVP delivery closure
+
+A customer handoff or pilot deadline is an operating constraint, not an invitation to keep expanding validation indefinitely.
+
+For an MVP that already has a defined primary journey:
+
+- treat only **concrete, evidenced** primary-journey failure, auth/authz bypass, secret/private-data leakage, data corruption/destructive behavior, or another explicitly accepted P0/P1 condition as a handoff blocker;
+- record newly discovered lower-severity defects, hardening ideas, broad refactors, speculative risks, and unrelated debt as follow-up work rather than silently expanding the current blocker set;
+- validate a narrow fix with the smallest load-bearing regression first, then rely on relevant configured CI, then run the bounded Production smoke needed for the customer promise;
+- do not rerun unrelated full suites or previously passed journeys merely because time has passed or `main` moved; first determine whether the new commits affect the tested behavior, dependency, authority, configuration, or deployment surface;
+- when broad validation is proposed after the MVP acceptance matrix is otherwise satisfied, the Web CTO must state the concrete claim it protects and why existing evidence is insufficient.
+
+Default MVP closeout flow:
+
+```text
+confirmed blocker
+→ minimal fix
+→ focused regression
+→ relevant configured CI
+→ authorized Production deployment
+→ bounded real-account/primary-journey smoke
+→ customer handoff
+→ non-blocking hardening continues after handoff
+```
+
+Once the accepted handoff blocker set is zero and the required Production smoke passes, continued exploratory validation must not delay delivery unless it produces new concrete blocker evidence.
+
 ## Default responsibility flow
 
 ```text
