@@ -192,7 +192,6 @@
             <h2 class="claw-workspace-title" id="clawWorkspaceTitle" data-locale-key="claw-title">Padiem Claw</h2>
           </div>
           <p class="claw-workspace-chip" data-locale-key="claw-mode-chip">미리보기 + 실제 실행</p>
-          <button type="button" class="claw-inbox-retry" id="clawManualEntryButton" data-locale-key="claw-manual-entry">문서 초안 작성</button>
         </header>
         <p class="claw-workspace-tagline" data-locale-key="claw-tagline">카톡, 문자, 이메일로 받은 요청을 붙여넣으면 견적서·발주서·답장 초안을 준비하는 업무 에이전트</p>
         <p class="claw-workspace-help" data-locale-key="claw-workspace-help">미리보기는 바로 확인하는 임시 결과, 실제 실행은 AI가 완성해 문서까지 준비합니다.</p>
@@ -566,10 +565,13 @@
             <button id="exitProjectButton" type="button" data-locale-key="project-exit">나가기</button>
           </div>
         </div>
+        <div class="claw-entry-bar" id="clawManualEntryBar" hidden>
+          <button type="button" class="claw-inbox-retry" id="clawManualEntryButton" data-locale-key="claw-manual-entry">문서 초안 작성</button>
+        </div>
         <form class="claw-mode-bar" id="clawManualForm" data-locale-aria-label="claw-form-aria" aria-label="수동 인입 양식" hidden>
           <div class="claw-mode-bar-row">
             <div class="claw-chips" role="group" aria-label="Claw 작업 선택">
-              <button type="button" class="claw-chip" id="clawQuoteCard" data-claw-action="quote" aria-pressed="true"><span data-locale-key="claw-chip-quote">견적서</span></button>
+              <button type="button" class="claw-chip" id="clawQuoteCard" data-claw-action="quote" aria-pressed="false"><span data-locale-key="claw-chip-quote">견적서</span></button>
               <button type="button" class="claw-chip" id="clawOrderCard" data-claw-action="order" aria-pressed="false"><span data-locale-key="claw-chip-order">발주서</span></button>
               <button type="button" class="claw-chip" id="clawReplyCard" data-claw-action="reply" aria-pressed="false"><span data-locale-key="claw-chip-reply">답장</span></button>
               <button type="button" class="claw-chip" id="clawRequestsCard" data-claw-action="summary" aria-pressed="false"><span data-locale-key="claw-chip-summary">요청 정리</span></button>

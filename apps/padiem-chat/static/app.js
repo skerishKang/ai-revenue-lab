@@ -159,6 +159,11 @@
     if (workspace) workspace.hidden = state !== "claw";
     const modeBar = document.getElementById("clawManualForm");
     if (modeBar) modeBar.hidden = !(state === "claw" && workspace && workspace.dataset.view === "manual");
+    // #3531: the explicit manual-entry control lives in the fixed composer
+    // wrap and shows only on the general Claw view — never by default
+    // elsewhere, never inside the manual form it opens.
+    const entryBar = document.getElementById("clawManualEntryBar");
+    if (entryBar) entryBar.hidden = !(state === "claw" && workspace && workspace.dataset.view === "general");
     syncComposerForClaw(state === "claw");
     const chatNav = document.getElementById("newChatButton");
     const clawNav = document.getElementById("clawNavButton");
@@ -1645,7 +1650,11 @@
 
   function syncComposerForClaw(isClaw) {
     if (!input) return;
-    if (isClaw) {
+    // #3531: the business-request prompt belongs to the explicit manual
+    // workflow view only. The general Claw view shares the generic prompt
+    // so placeholder parity with Chat Home holds.
+    const manualView = isClaw && clawWorkspace && clawWorkspace.dataset.view === "manual";
+    if (manualView) {
       input.placeholder = localeOr("claw-request-placeholder", "Paste a business request you received by chat, SMS, or email.");
       input.setAttribute("aria-describedby", "clawStatus");
       input.setAttribute("maxlength", "4000");

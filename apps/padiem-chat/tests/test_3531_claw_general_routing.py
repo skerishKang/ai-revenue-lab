@@ -95,12 +95,25 @@ def test_claw_default_view_is_general_not_manual() -> None:
 
 
 def test_manual_workflow_is_explicitly_reachable_only() -> None:
-    # A visible entry control opens the manual view; nothing else does.
+    # A visible entry control opens the manual view; nothing else does. It
+    # lives in the fixed composer wrap (always on screen), not in the
+    # workspace canvas, so geometry parity with Chat Home is preserved.
+    assert 'id="clawManualEntryBar"' in INDEX
     assert 'id="clawManualEntryButton"' in INDEX
     assert 'data-locale-key="claw-manual-entry"' in INDEX
+    wrap = INDEX.split('class="composer-wrap"', 1)[1]
+    assert 'id="clawManualEntryBar"' in wrap
     assert 'clawManualEntryButton.addEventListener("click", openClawManual)' in APP
     # The workspace header keeps its identity; the entry control is new.
     assert 'id="clawWorkspaceTitle"' in INDEX
+
+
+def test_general_view_hides_workspace_canvas() -> None:
+    # Geometry parity forces the workspace canvas hidden in general view
+    # (like manual): any in-flow header above the thread would push the
+    # conversation down. The entry bar carries explicit access instead.
+    assert '.claw-workspace[data-view="general"]' in WORKSPACE_CSS
+    assert 'document.getElementById("clawManualEntryBar")' in APP
 
 
 def test_manual_chrome_hidden_unless_manual_view() -> None:
@@ -108,7 +121,7 @@ def test_manual_chrome_hidden_unless_manual_view() -> None:
     # view: chip/help only in manual, entry control everywhere else.
     assert ".claw-workspace:not([data-view=\"manual\"]) .claw-workspace-chip" in WORKSPACE_CSS
     assert ".claw-workspace:not([data-view=\"manual\"]) .claw-workspace-help" in WORKSPACE_CSS
-    assert '.claw-workspace[data-view="manual"] #clawManualEntryButton' in WORKSPACE_CSS
+    assert ".claw-entry-bar[hidden]" in WORKSPACE_CSS
     # The manual result empty/hint copy is workflow-view-only. The result
     # card and memory surfaces keep their own explicit reveal logic.
     assert "#clawResultEmpty" in WORKSPACE_CSS

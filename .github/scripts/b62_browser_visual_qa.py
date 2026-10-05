@@ -1042,8 +1042,8 @@ async def _run_claw_intermediate(page: Page) -> dict[str, Any]:
     # stays hidden until the manual entry control is actually clicked.
     if await workspace.get_attribute("data-view") != "general":
         raise AssertionError("Claw navigation must enter the general conversation view")
-    if not await workspace.is_visible():
-        raise AssertionError("general Claw workspace header canvas must stay visible")
+    if await workspace.is_visible():
+        raise AssertionError("general Claw workspace canvas must stay hidden for home geometry parity")
     for selector in (".conversation", "#composerForm", "#messageInput"):
         if not await page.locator(selector).is_visible():
             raise AssertionError(f"{selector} must stay visible in general Claw at 820px")
@@ -1089,7 +1089,7 @@ async def _run_claw_intermediate(page: Page) -> dict[str, Any]:
         "viewport": {"width": 820, "height": 900},
         "shared_shell_mobile_menu": True,
         "general_default_view": True,
-        "general_workspace_header_visible": True,
+        "general_workspace_canvas_hidden": True,
         "shared_conversation_visible": True,
         "shared_composer_visible": True,
         "manual_form_hidden_by_default": True,
