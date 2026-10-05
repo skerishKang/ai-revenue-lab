@@ -1037,13 +1037,29 @@ async def _run_claw_intermediate(page: Page) -> dict[str, Any]:
 
     await page.locator('.app-shell[data-state="claw"]').wait_for(state="attached")
     workspace = page.locator("#clawWorkspace")
-    if await workspace.get_attribute("data-view") != "manual":
-        raise AssertionError("Claw navigation must enter the manual shared-conversation view")
-    if await workspace.is_visible():
-        raise AssertionError("manual Claw workspace header canvas must stay hidden under #2532 continuity")
-    for selector in (".conversation", "#clawManualForm", "#composerForm", "#messageInput"):
+    # #3531 canonical contract: Claw navigation lands on the general
+    # conversation view. The document workflow is explicit-only: its form
+    # stays hidden until the manual entry control is actually clicked.
+    if await workspace.get_attribute("data-view") != "general":
+        raise AssertionError("Claw navigation must enter the general conversation view")
+    if not await workspace.is_visible():
+        raise AssertionError("general Claw workspace header canvas must stay visible")
+    for selector in (".conversation", "#composerForm", "#messageInput"):
         if not await page.locator(selector).is_visible():
-            raise AssertionError(f"{selector} must stay visible in manual Claw at 820px")
+            raise AssertionError(f"{selector} must stay visible in general Claw at 820px")
+    if await page.locator("#clawManualForm").is_visible():
+        raise AssertionError("#clawManualForm must stay hidden until the manual workflow is explicitly entered")
+
+    entry = page.locator("#clawManualEntryButton")
+    if not await entry.is_visible():
+        raise AssertionError("manual workflow entry control must be visible on the Claw general view")
+    await entry.click()
+    await page.wait_for_function(
+        "() => document.querySelector('#clawWorkspace')?.dataset.view === 'manual'",
+        timeout=5_000,
+    )
+    if not await page.locator("#clawManualForm").is_visible():
+        raise AssertionError("#clawManualForm must become visible after explicit manual entry")
 
     await _assert_no_horizontal_overflow(page, name)
     conversation_box = await _assert_in_viewport(page, ".conversation")
@@ -1072,9 +1088,13 @@ async def _run_claw_intermediate(page: Page) -> dict[str, Any]:
     return {
         "viewport": {"width": 820, "height": 900},
         "shared_shell_mobile_menu": True,
-        "manual_workspace_header_hidden": True,
+        "general_default_view": True,
+        "general_workspace_header_visible": True,
         "shared_conversation_visible": True,
         "shared_composer_visible": True,
+        "manual_form_hidden_by_default": True,
+        "manual_entry_reachable": True,
+        "manual_view_on_explicit_entry": True,
         "mode_bar_direction": direction,
         "touch_target_heights": target_heights,
         "input_font_px": input_font_px,
