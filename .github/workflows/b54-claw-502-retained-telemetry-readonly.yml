@@ -31,8 +31,8 @@ env:
   # Push-to-main retains the exact #3548 failure window so merging this
   # source-only diagnostic repair performs one bounded read-only correlation.
   # Manual runs must supply an explicit bounded window.
-  CANARY_FROM_MS: ${{ github.event_name == 'workflow_dispatch' && inputs.from_ms || '1791205417860' }}
-  CANARY_TO_MS: ${{ github.event_name == 'workflow_dispatch' && inputs.to_ms || '1791205657860' }}
+  CANARY_FROM_MS: ${{ github.event_name == 'workflow_dispatch' && inputs.from_ms || '1791205530000' }}
+  CANARY_TO_MS: ${{ github.event_name == 'workflow_dispatch' && inputs.to_ms || '1791205560000' }}
 
 jobs:
   source-contract:
@@ -64,6 +64,8 @@ jobs:
               "padiem-chat",
               "padiem-ai-engine",
               "ai-revenue-korean-ai-platform",
+              "padiem-control-plane-engine-admission",
+              "padiem-control-plane-identity",
               "RAW_LOG_OUTPUT=0",
               "PROMPT_OUTPUT=0",
               "RESPONSE_BODY_OUTPUT=0",
@@ -416,6 +418,22 @@ jobs:
                   sum { requests errors subrequests }
                   dimensions { datetime scriptName status }
                 }
+                cpAdmission: workersInvocationsAdaptive(limit: 1000, filter: {
+                  scriptName: "padiem-control-plane-engine-admission",
+                  datetime_geq: $datetimeStart,
+                  datetime_leq: $datetimeEnd
+                }) {
+                  sum { requests errors subrequests }
+                  dimensions { datetime scriptName status }
+                }
+                cpIdentity: workersInvocationsAdaptive(limit: 1000, filter: {
+                  scriptName: "padiem-control-plane-identity",
+                  datetime_geq: $datetimeStart,
+                  datetime_leq: $datetimeEnd
+                }) {
+                  sum { requests errors subrequests }
+                  dimensions { datetime scriptName status }
+                }
               }
             }
           }
@@ -505,6 +523,8 @@ jobs:
               "B62": normalize(account.get("b62")),
               "ENGINE": normalize(account.get("engine")),
               "B14": normalize(account.get("b14")),
+              "CP_ADMISSION": normalize(account.get("cpAdmission")),
+              "CP_IDENTITY": normalize(account.get("cpIdentity")),
           }
 
           for label, rows in series.items():
@@ -513,7 +533,7 @@ jobs:
               print(f"{label}_ANALYTICS_SUBREQUESTS={sum(r['subrequests'] for r in rows)}")
               active = sorted({r["when"] for r in rows if r["requests"] > 0})
               print(f"{label}_ACTIVE_SECOND_COUNT={len(active)}")
-              if label in {"ENGINE", "B14"}:
+              if label in {"ENGINE", "B14", "CP_ADMISSION", "CP_IDENTITY"}:
                   print(f"{label}_ACTIVE_SECONDS={','.join(active) if active else 'NONE'}")
                   statuses = sorted({r["status"] for r in rows})
                   print(f"{label}_WORKER_OUTCOMES={','.join(statuses) if statuses else 'NONE'}")
@@ -524,33 +544,38 @@ jobs:
               except Exception:
                   return None
 
-          engine_times = {
-              epoch_seconds(r["when"])
-              for r in series["ENGINE"]
-              if r["requests"] > 0
-          }
-          b14_times = {
-              epoch_seconds(r["when"])
-              for r in series["B14"]
-              if r["requests"] > 0
-          }
-          engine_times.discard(None)
-          b14_times.discard(None)
+          def active_seconds(label):
+              values = {
+                  epoch_seconds(r["when"])
+                  for r in series[label]
+                  if r["requests"] > 0
+              }
+              values.discard(None)
+              return values
 
-          near = sorted(
-              e
-              for e in engine_times
-              if any(abs(e - b) <= 2 for b in b14_times)
-          )
-          print(f"ENGINE_B14_NEAR_SECOND_COUNT={len(near)}")
-          if near:
-              rendered = [
-                  dt.datetime.fromtimestamp(value, tz=dt.timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
-                  for value in near
-              ]
-              print(f"ENGINE_B14_NEAR_SECONDS={','.join(rendered)}")
-          else:
-              print("ENGINE_B14_NEAR_SECONDS=NONE")
+          def emit_near(left_label, right_label, marker):
+              left = active_seconds(left_label)
+              right = active_seconds(right_label)
+              near = sorted(
+                  value
+                  for value in left
+                  if any(abs(value - other) <= 2 for other in right)
+              )
+              print(f"{marker}_NEAR_SECOND_COUNT={len(near)}")
+              if near:
+                  rendered = [
+                      dt.datetime.fromtimestamp(value, tz=dt.timezone.utc)
+                      .isoformat(timespec="seconds")
+                      .replace("+00:00", "Z")
+                      for value in near
+                  ]
+                  print(f"{marker}_NEAR_SECONDS={','.join(rendered)}")
+              else:
+                  print(f"{marker}_NEAR_SECONDS=NONE")
+
+          emit_near("ENGINE", "B14", "ENGINE_B14")
+          emit_near("ENGINE", "CP_ADMISSION", "ENGINE_CP_ADMISSION")
+          emit_near("CP_ADMISSION", "CP_IDENTITY", "CP_ADMISSION_IDENTITY")
 
           print("WORKERS_ANALYTICS_RAW_OUTPUT=0")
           print("PROMPT_OUTPUT=0")
