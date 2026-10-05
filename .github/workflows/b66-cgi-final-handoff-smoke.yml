@@ -1,0 +1,122 @@
+name: B66 CGI Final Handoff Smoke
+
+on:
+  pull_request:
+    paths:
+      - ".github/scripts/b66_cgi_final_handoff_smoke.py"
+      - ".github/tests/test_b66_cgi_final_handoff_smoke.py"
+      - ".github/workflows/b66-cgi-final-handoff-smoke.yml"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA authorized for final B66 CGI handoff smoke"
+        required: true
+        type: string
+      confirmation:
+        description: "Type RUN_B66_CGI_FINAL_HANDOFF_SMOKE"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b66-cgi-final-handoff-smoke
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.target_sha || github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ inputs.target_sha }}"
+          echo 'PREFLIGHT_EXACT_MAIN=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Network-free final smoke contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/b66_cgi_final_handoff_smoke.py --self-test
+          python .github/tests/test_b66_cgi_final_handoff_smoke.py
+
+      - name: Pin bounded live contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=.github/scripts/b66_cgi_final_handoff_smoke.py
+          grep -Fq 'MAX_INTERPRET_POSTS = 3' "$script"
+          grep -Fq 'RETRY = 0' "$script"
+          grep -Fq 'FALLBACK = 0' "$script"
+          grep -Fq 'DEFAULT_LIVE_EXECUTION=BLOCKED' "$script"
+          grep -Fq 'PASSWORD_OUTPUT=0' "$script"
+          grep -Fq 'COOKIE_OUTPUT=0' "$script"
+          grep -Fq 'TOKEN_OUTPUT=0' "$script"
+          grep -Fq 'RAW_RESPONSE_OUTPUT=0' "$script"
+          echo 'B66_FINAL_HANDOFF_SOURCE_CONTRACT=PASS'
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'LIVE_INTERPRET_POSTS=0'
+
+  live-smoke:
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      inputs.confirmation == 'RUN_B66_CGI_FINAL_HANDOFF_SMOKE'
+    needs: source-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production
+    env:
+      TARGET_SHA: ${{ inputs.target_sha }}
+      B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
+      B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+    steps:
+      - name: Checkout exact approved main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+
+      - name: Reconfirm exact current main and credential presence
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          test -n "${B66_CGI_ALPHA_USERNAME}"
+          test -n "${B66_CGI_ALPHA_PASSWORD}"
+          echo 'PRECALL_EXACT_MAIN=PASS'
+          echo 'CGI_CREDENTIAL_PRESENT=YES'
+          echo 'SECRET_VALUE_OUTPUT=0'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned Playwright
+        run: python -m pip install --disable-pip-version-check --quiet "playwright==1.55.0"
+
+      - name: Install Chromium runtime
+        run: python -m playwright install --with-deps chromium
+
+      - name: Run one bounded B66 CGI final handoff browser smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/b66_cgi_final_handoff_smoke.py --authorized-live-run
