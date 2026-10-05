@@ -61,6 +61,77 @@ The work order identifies what is needed now: visual desirability, UX, determini
 
 UI, UX, backend/runtime, security, deployment, market-reference, commercial and owner-visual verdicts remain separate.
 
+## 3A. MVP delivery closure and validation budget
+
+The operating system optimizes for **validated delivery**, not maximum possible pre-delivery certainty.
+
+When a customer handoff, pilot, or owner-defined delivery target exists, record the accepted handoff blocker set and primary acceptance journey. From that point, validation may expand only when it protects a concrete claim that can still invalidate the handoff.
+
+A new concern is a handoff blocker only when there is concrete evidence of at least one of:
+
+- primary customer journey unusable or materially incorrect;
+- authentication/authorization bypass;
+- secret, credential, private-data, or material infrastructure leakage;
+- data corruption, uncontrolled destructive behavior, or irreversible external harm;
+- a P0/P1 failure explicitly named in the work contract or customer promise.
+
+The following default to **post-handoff follow-up**, not new blockers:
+
+- speculative edge cases without a reproduction;
+- unrelated legacy debt;
+- broad refactors or architecture cleanup;
+- additional hardening beyond the accepted MVP threat/failure model;
+- optional formats/features not required by the current customer promise;
+- repeated re-testing of unchanged surfaces solely because time passed.
+
+### Validation budget
+
+For an MVP closeout, use this order:
+
+```text
+1. smallest load-bearing focused regression for the changed defect
+2. relevant configured CI for the changed dependency/authority surface
+3. bounded Production smoke of the accepted primary journey after deployment
+4. broader suites only when the change actually crosses those surfaces
+```
+
+Do not start with a repository-wide, product-wide, or all-browser test sweep for a narrow defect unless the change touches shared authority or the work contract explicitly requires that breadth.
+
+If new validation is added after the acceptance matrix is otherwise satisfied, the Web CTO records:
+
+```text
+NEW_VALIDATION=
+PROTECTED_CLAIM=
+WHY_EXISTING_EVIDENCE_IS_INSUFFICIENT=
+HANDOFF_BLOCKING_IF_FAILED=YES|NO
+```
+
+If those fields cannot be answered concretely, the check is non-blocking follow-up work.
+
+### Evidence carry-forward after main drift
+
+Evidence still belongs to the exact revision that produced it, but unrelated repository drift does not automatically force full revalidation. The Web CTO first determines whether intervening commits affect the tested behavior, transitive dependency, runtime authority, configuration, deployment target, or user-facing surface.
+
+```text
+UNRELATED_DRIFT != AUTOMATIC_FULL_RETEST
+RELEVANT_DRIFT   = REVALIDATE_AFFECTED_CLAIMS
+```
+
+### MVP terminal rule
+
+When:
+
+```text
+ACCEPTED_HANDOFF_BLOCKERS=0
+FOCUSED_CHANGE_REGRESSION=PASS
+RELEVANT_REQUIRED_CI=PASS
+REQUIRED_PRODUCTION_SMOKE=PASS
+```
+
+the technical disposition is `READY_FOR_CUSTOMER_HANDOFF`.
+
+Exploratory QA may continue after handoff, but it must not delay delivery unless it finds new concrete blocker evidence.
+
 ## 4. Mandatory design-gate overlay for visual redesign
 
 When the work is a new visual system, owner-rejected redesign or broad multi-route visual reset, use:
