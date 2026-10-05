@@ -257,6 +257,7 @@ jobs:
           node tests/quote-extraction.test.cjs
           node tests/quote-history.test.cjs
           node tests/production-draft-safety.test.cjs
+          node tests/guided-finalize.test.cjs
           node tests/file-intake.test.cjs
           node tests/static-contract.test.cjs
           node tests/quote-template.test.cjs
