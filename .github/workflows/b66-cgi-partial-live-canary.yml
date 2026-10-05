@@ -32,7 +32,7 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
         with:
-          ref: \${{ github.event_name == 'workflow_dispatch' && inputs.target_sha || github.event.pull_request.head.sha }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.target_sha || github.event.pull_request.head.sha }}
           persist-credentials: false
 
       - name: Require exact current main for dispatch
@@ -40,9 +40,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "\${{ inputs.target_sha }}"
+          test "$(git rev-parse HEAD)" = "${{ inputs.target_sha }}"
           git fetch origin main
-          test "$(git rev-parse origin/main)" = "\${{ inputs.target_sha }}"
+          test "$(git rev-parse origin/main)" = "${{ inputs.target_sha }}"
           echo 'PREFLIGHT_EXACT_MAIN=PASS'
 
       - uses: actions/setup-python@v5
@@ -81,25 +81,25 @@ jobs:
     timeout-minutes: 10
     environment: production
     env:
-      TARGET_SHA: \${{ inputs.target_sha }}
-      B66_CGI_ALPHA_USERNAME: \${{ vars.B66_CGI_ALPHA_USERNAME }}
-      B66_CGI_ALPHA_PASSWORD: \${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+      TARGET_SHA: ${{ inputs.target_sha }}
+      B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
+      B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
     steps:
       - name: Checkout exact approved main
         uses: actions/checkout@v4
         with:
-          ref: \${{ env.TARGET_SHA }}
+          ref: ${{ env.TARGET_SHA }}
           persist-credentials: false
 
       - name: Reconfirm exact current main
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "\${TARGET_SHA}"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
           git fetch origin main
-          test "$(git rev-parse origin/main)" = "\${TARGET_SHA}"
-          test -n "\${B66_CGI_ALPHA_USERNAME}"
-          test -n "\${B66_CGI_ALPHA_PASSWORD}"
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          test -n "${B66_CGI_ALPHA_USERNAME}"
+          test -n "${B66_CGI_ALPHA_PASSWORD}"
           echo 'PRECALL_EXACT_MAIN=PASS'
           echo 'CGI_CREDENTIAL_PRESENT=YES'
           echo 'SECRET_VALUE_OUTPUT=0'
