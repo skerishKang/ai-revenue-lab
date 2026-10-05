@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+import sys
 import unittest
 
 
@@ -9,6 +10,7 @@ SCRIPT = Path(__file__).parents[1] / "scripts" / "b66_cgi_partial_live_canary.py
 SPEC = importlib.util.spec_from_file_location("b66_cgi_partial_live_canary", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
 module = importlib.util.module_from_spec(SPEC)
+sys.modules[SPEC.name] = module
 SPEC.loader.exec_module(module)
 
 
