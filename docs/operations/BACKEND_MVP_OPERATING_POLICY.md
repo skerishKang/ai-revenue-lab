@@ -192,6 +192,21 @@ Only `HANDOFF_BLOCKER` may delay delivery. The classification must be supported 
 
 If the accepted primary journey and required safety boundaries pass after the final fix, stop expanding pre-handoff validation and deliver. Continue non-blocking reliability and hardening work after the customer has the MVP.
 
+## 11B. Finish-first vertical completion
+
+When multiple backend/platform capabilities are partially built, prefer finishing one customer-visible vertical slice over opening more independent implementation lanes.
+
+```text
+one primary vertical slice
++ at most two blocker-support lanes
++ parallel validation
+!= many unrelated feature lanes
+```
+
+Start implementation at the lowest missing dependency of the selected slice, then move upward through shared platform/runtime and into the reference product.
+
+A source-complete backend capability may remain deferred if it is not required by the active slice. Free worker capacity is not itself a reason to activate another backend capability.
+
 ## 12. Commercial hardening trigger
 
 Hardening begins only when evidence justifies one or more of:
