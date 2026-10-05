@@ -477,6 +477,12 @@ check(html.includes('id="pvSenderAddress"') && html.includes('id="pvRecipientAdd
   "ADDRESS_FIELDS_CONTRACT: preview elements");
 
 /* PRINT_LAYOUT_CONTRACT — 빈 페이지 없는 A4 인쇄 계약 */
+check(css.includes("width: var(--quote-page-width, 210mm)") &&
+      css.includes("min-height: var(--quote-page-height, 297mm)") &&
+      css.includes("padding: var(--quote-page-margin, 10mm)"),
+  "SCREEN_PDF_WYSIWYG_GEOMETRY: screen paper uses template page dimensions and margin");
+check(css.includes(".quote-paper { width: auto; min-height: 0; margin: 0; padding: 0; }"),
+  "SCREEN_PDF_WYSIWYG_GEOMETRY: print transfers the same margin to @page");
 check(css.includes("@page { size: A4"), "PRINT_LAYOUT_CONTRACT: A4 page rule");
 check(css.includes("@media print"), "PRINT_LAYOUT_CONTRACT: print media");
 check(css.includes(".topbar, .workspace-modebar, .easy-view, .modebar, .future-note, .panel, .preview-toolbar, .toast { display: none !important; }"),

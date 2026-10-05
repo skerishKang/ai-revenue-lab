@@ -586,6 +586,9 @@ eq(styledModel.styleVariables["--quote-text-align"], "center", "TEMPLATE_ALIGNME
 eq(styledModel.styleVariables["--quote-totals-width"], "420px", "TEMPLATE_TOTALS_WIDTH_APPLIED: totals width projected");
 /* page rule */
 eq(styledModel.pageRule, "@page { size: A5 landscape; margin: 8mm; }", "TEMPLATE_PAGE_RULE_APPLIED: page rule projected");
+eq(styledModel.styleVariables["--quote-page-width"], "210mm", "landscape A5 preview width follows page authority");
+eq(styledModel.styleVariables["--quote-page-height"], "148mm", "landscape A5 preview height follows page authority");
+eq(styledModel.styleVariables["--quote-page-margin"], "8mm", "preview margin follows page authority");
 check(styledModel.pageRule !== authoritative.pageRule, "TEMPLATE_PAGE_RULE_APPLIED: page rule differs from the built-in");
 
 /* QUOTECORE_TOTALS_UNCHANGED_ACROSS_TEMPLATES */
@@ -606,6 +609,21 @@ const richerModel = Renderer.buildRenderModel(richerDraft, builtinProfile(), { t
 check(richerModel.totals.grandText !== authoritative.totals.grandText, "draft change moves the QuoteCore grand total");
 
 /* ── 스타일·페이지 검증기는 임의 주입을 막는다 ── */
+eq(Renderer.buildPageStyleVariables({ size: "A4", margin: "10mm", orientation: "portrait" }), {
+  "--quote-page-width": "210mm",
+  "--quote-page-height": "297mm",
+  "--quote-page-margin": "10mm"
+}, "A4 preview geometry matches print page authority");
+eq(Renderer.buildPageStyleVariables({ size: "A4", margin: "12mm", orientation: "landscape" }), {
+  "--quote-page-width": "297mm",
+  "--quote-page-height": "210mm",
+  "--quote-page-margin": "12mm"
+}, "landscape preview geometry swaps page dimensions");
+eq(Renderer.buildPageStyleVariables({ size: "Letter", margin: "0.5in", orientation: "portrait" }), {
+  "--quote-page-width": "8.5in",
+  "--quote-page-height": "11in",
+  "--quote-page-margin": "0.5in"
+}, "Letter preview geometry follows template page authority");
 eq(Renderer.buildPageRule({ size: "A4} </style><script>", margin: "10mm; } body{display:none}", orientation: "diagonal" }),
   "@page { size: A4; margin: 10mm; }", "TEMPLATE_PAGE_RULE_APPLIED: hostile page values are neutralised");
 ['@page { size: A4; margin: 2mm; }', '@page { size: A4; margin: 10mm; }'].forEach(() => {});

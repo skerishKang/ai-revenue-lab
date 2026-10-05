@@ -110,10 +110,18 @@ textarea { min-height: 82px; resize: vertical; }
 .summary { margin-left: auto; width: min(100%, 360px); display: grid; gap: 7px; padding-top: 12px; }
 .summary-line { display: flex; justify-content: space-between; font-size: 13px; }
 .summary-line.total { margin-top: 4px; border-top: 1px solid var(--line); padding-top: 10px; font-size: 18px; font-weight: 800; }
-.preview-wrap { position: sticky; top: 18px; overflow: hidden; }
+.preview-wrap { position: sticky; top: 18px; overflow-x: auto; overflow-y: hidden; }
 .preview-toolbar { padding: 12px 14px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .preview-toolbar strong { font-size: 13px; }
-.quote-paper { position: relative; background: white; padding: 40px 42px 44px; min-height: 820px; }
+.quote-paper {
+  position: relative;
+  width: var(--quote-page-width, 210mm);
+  min-height: var(--quote-page-height, 297mm);
+  margin: 0 auto;
+  padding: var(--quote-page-margin, 10mm);
+  background: white;
+  box-sizing: border-box;
+}
 .quote-private-logo {
   display: block;
   max-width: 210px;
@@ -1019,7 +1027,7 @@ textarea { min-height: 82px; resize: vertical; }
   .shell { max-width: none; margin: 0; padding: 0; }
   .grid { display: block; }
   .preview-wrap { position: static; border: 0; border-radius: 0; box-shadow: none; overflow: visible; }
-  .quote-paper { min-height: 0; padding: 0; }
+  .quote-paper { width: auto; min-height: 0; margin: 0; padding: 0; }
   .quote-detail-page { margin-top: 0; page-break-before: always; break-before: page; }
   .demo-mark { display: none; }
   .quote-paper[data-layout-variant="formal-grid-v1"] .demo-mark { display: block; }

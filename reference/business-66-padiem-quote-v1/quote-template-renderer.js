@@ -32,6 +32,12 @@
   var HEX_PATTERN = /^#[0-9a-fA-F]{3,8}$/;
   var MEASURE_PATTERN = /^[0-9A-Za-z.%]{1,16}$/;
   var PAGE_MARGIN_PATTERN = /^\d{1,2}(?:\.\d{1,2})?(?:mm|cm|in)$/;
+  var PAGE_SIZE_DIMENSIONS = {
+    A4: ["210mm", "297mm"],
+    A5: ["148mm", "210mm"],
+    Letter: ["8.5in", "11in"],
+    Legal: ["8.5in", "14in"]
+  };
 
   function isPlainObject(value) {
     return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -92,6 +98,21 @@
       : "10mm";
     var landscape = source.orientation === "landscape";
     return "@page { size: " + (landscape ? size + " landscape" : size) + "; margin: " + margin + "; }";
+  }
+
+  function buildPageStyleVariables(page) {
+    var source = isPlainObject(page) ? page : {};
+    var size = Template.ALLOWED_PAGE_SIZES.indexOf(source.size) === -1 ? "A4" : source.size;
+    var dimensions = PAGE_SIZE_DIMENSIONS[size] || PAGE_SIZE_DIMENSIONS.A4;
+    var landscape = source.orientation === "landscape";
+    var margin = typeof source.margin === "string" && PAGE_MARGIN_PATTERN.test(source.margin)
+      ? source.margin
+      : "10mm";
+    return {
+      "--quote-page-width": landscape ? dimensions[1] : dimensions[0],
+      "--quote-page-height": landscape ? dimensions[0] : dimensions[1],
+      "--quote-page-margin": margin
+    };
   }
 
   function resolvePrivateSlot(assetId, rawSource) {
@@ -289,7 +310,11 @@
       page: isPlainObject(content.page) ? content.page : {},
       pageRule: buildPageRule(content.page),
       style: isPlainObject(content.style) ? content.style : {},
-      styleVariables: buildStyleVariables(content.style),
+      styleVariables: Object.assign(
+        {},
+        buildStyleVariables(content.style),
+        buildPageStyleVariables(content.page)
+      ),
       slots: (function () {
         var sources = isPlainObject(opts.slotSources) ? opts.slotSources : {};
         var logo = resolvePrivateSlot(String(content.slots && content.slots.logo || ""), sources.logo);
@@ -591,6 +616,7 @@
     STYLE_VARIABLE_MAP: STYLE_VARIABLE_MAP,
     escapeHtml: escapeHtml,
     buildStyleVariables: buildStyleVariables,
+    buildPageStyleVariables: buildPageStyleVariables,
     buildPageRule: buildPageRule,
     formatIssueDate: formatIssueDate,
     buildRenderModel: buildRenderModel,
