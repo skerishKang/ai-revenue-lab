@@ -161,7 +161,31 @@
     return syntheticSseResponse(data);
   }
 
-  async function requestStreaming(payload, signal) {
+  async function requestClawGeneral(payload, signal) {
+    // #3539: the B54 Claw general composer runs on the canonical P01 Engine
+    // lane. There is deliberately NO fallback to the standalone B62
+    // /api/chat/stream direct-B14 route: an unavailable P01 lane surfaces as a
+    // bounded error instead of silently changing products.
+    const response = await fetch("/api/claw/general", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "text/event-stream" },
+      body: JSON.stringify(payload),
+      signal,
+    });
+    const contentType = (response.headers.get("content-type") || "").toLowerCase();
+    if (!response.ok || !contentType.startsWith("text/event-stream")) {
+      const data = await response.json().catch(() => null);
+      throw errorFor(data, "AI 작업을 처리하지 못했습니다. 다시 시도해 주세요.");
+    }
+    return response;
+  }
+
+  async function requestStreaming(payload, signal, route) {
+    // #3539: product-state-aware routing. A Claw general request never touches
+    // the B62 orchestration bridge or the direct-B14 chat stream; standalone
+    // Padiem Chat keeps its existing behavior byte-for-byte.
+    if (route && route.clawGeneral === true) return requestClawGeneral(payload, signal);
+
     const orchestrated = await tryOrchestration(payload, signal);
     if (orchestrated) return orchestrated;
 
@@ -184,6 +208,7 @@
     parseSseFrame,
     readSseEvents,
     requestCompleted,
+    requestClawGeneral,
     requestStreaming,
     orchestrationReady,
     resumeOrchestration,

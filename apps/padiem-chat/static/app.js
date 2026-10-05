@@ -1202,8 +1202,8 @@
     article.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
-  async function requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, signal) {
-    const response = await chatTransport.requestStreaming(payload, signal);
+  async function requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, signal, route) {
+    const response = await chatTransport.requestStreaming(payload, signal, route);
 
     let answer = "";
     let paragraph = null;
@@ -1285,6 +1285,12 @@
     renderTyping(article);
     try {
       const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };
+      // #3539: product-state-aware routing. A generic B54 Claw submit runs on the
+      // canonical P01 Engine lane with no direct-B14 /api/chat/stream fallback;
+      // the standalone Padiem Chat composer keeps /api/chat/stream unchanged.
+      // The explicit manual form submits through clawManualForm below, never here.
+      const clawGeneralRequest =
+        shell.dataset.state === "claw" && !(clawManualForm && !clawManualForm.hidden);
       const attachments = attachmentPayload(attachment);
       if (attachments) payload.attachments = attachments;
       if (contextSnapshot.conversationId) payload.conversation_id = contextSnapshot.conversationId;
@@ -1292,7 +1298,15 @@
       if (attachments) {
         return await requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, controller.signal);
       }
-      return await requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, controller.signal);
+      return await requestStreamingAnswer(
+        article,
+        payload,
+        outboundMessages,
+        skill,
+        contextSnapshot,
+        controller.signal,
+        clawGeneralRequest ? { clawGeneral: true } : null,
+      );
     } catch (error) {
       if (error && error.name === "AbortError") {
         if (activeRequestCancelReason === "user_cancel" && requestEpoch === conversationEpoch) {
