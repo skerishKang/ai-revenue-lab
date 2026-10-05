@@ -32,9 +32,10 @@ Padiem has already selected the target routes for the current MVP.
 
 ```text
 Padiem Plus
-  provider = agnes-ai
-  model = agnes-ai/agnes-3.0-flash
-  executable = YES (the only executable product route)
+  provider = kilo
+  model = kilo/stealth-space-bunny-alpha
+  upstream = stealth/space-bunny-alpha
+  executable = YES while the current B14/Kilo route remains available (#3209)
 
 Padiem Pro
   model = padiem-profile/pro-hold
@@ -45,10 +46,13 @@ Padiem Max
   executable = NO
 
 Declared data, not a product route
-  poolside/laguna-s-2.1        HOLD_AS_DATA_ONLY, b14/auto fixed-chain second position
+  agnes-ai/agnes-3.0-flash     HOLD_AS_DATA_ONLY, historical Plus route superseded by #3209
+  poolside/laguna-s-2.1        HOLD_AS_DATA_ONLY, historical routing/fixed-chain evidence
 ```
 
-The earlier mapping `Plus = kilo/poolside-laguna-s-2.1-free` / `Pro = kilo/nvidia-nemotron-3-ultra-550b-a55b-free` is superseded: no Padiem tier points at those Kilo free lanes, and Poolside Laguna's status in the shared declaration is product data plus gateway-side fixed-chain evidence — never a Padiem tier route and never a silent fallback.
+The earlier mappings `Plus = agnes-ai/agnes-3.0-flash` and, before that, `Plus = kilo/poolside-laguna-s-2.1-free` / `Pro = kilo/nvidia-nemotron-3-ultra-550b-a55b-free` are superseded as current Padiem tier routes. Historical provider registrations/data do not authorize fallback.
+
+**Retirement boundary:** Kilo's public catalog still lists `stealth/space-bunny-alpha` on 2026-10-05 but names it `Space Bunny Alpha (retires Oct 5)` and reports `expiration_date=2026-10-05`. Current source remains the route authority until an explicit successor decision, but the route is now operationally at risk. Successor selection/proof is tracked in #3554; do not silently restore an older route.
 
 Current success criteria are therefore:
 

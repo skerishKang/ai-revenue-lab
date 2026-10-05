@@ -26,7 +26,7 @@ CURRENT SOURCE + TESTS
 B14 = General AI Router Platform
 Padiem Routing Profile v1 = first product/customer-specific profile
 
-Plus = agnes-ai/agnes-3.0-flash        (only executable product route)
+Plus = kilo/stealth-space-bunny-alpha  (current executable product route; retirement risk tracked in #3554)
 Pro  = HOLD / padiem-profile/pro-hold
 Max  = HOLD / padiem-profile/max-hold
 
@@ -36,7 +36,7 @@ PADIEM_SILENT_FALLBACK = NO
 B14_GENERIC_AUTOROUTER = VALID_FUTURE_CAPABILITY
 ```
 
-The shared Padiem profile declaration and B14 execution authority are separate. Product code declares intent; B14 decides whether that route is currently executable.
+The shared Padiem profile declaration and B14 execution authority are separate. Product code declares intent; B14 decides whether that route is currently executable. Kilo currently marks Space Bunny Alpha as `retires Oct 5`; current source remains authoritative until a successor is explicitly selected and proven under #3554.
 
 `poolside/laguna-s-2.1` is `HOLD_AS_DATA_ONLY` in that declaration — product data and `b14/auto` fixed-chain second-position evidence, not a Padiem tier route — and the historical `kilo/poolside-laguna-s-2.1-free` / `kilo/nvidia-nemotron-3-ultra-550b-a55b-free` mapping is superseded, so no index in this folder may be read as reinstating it.
 
