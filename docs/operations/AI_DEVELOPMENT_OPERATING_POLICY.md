@@ -168,6 +168,44 @@ the technical disposition is `READY_FOR_CUSTOMER_HANDOFF`.
 
 Exploratory QA may continue after handoff, but it must not delay delivery unless it finds new concrete blocker evidence.
 
+## 3B. Finish-first completion policy
+
+For Padiem platform development, the default active operating mode is **Finish-first** unless the Product Owner explicitly selects another portfolio priority.
+
+```text
+PRIMARY_IMPLEMENTATION_AXIS=1
+SUPPORTING_BLOCKER_LANES<=2
+UNRELATED_IMPLEMENTATION_FANOUT=0
+PARALLEL_VALIDATION=ALLOWED
+PARALLEL_BLOCKER_REMOVAL=ALLOWED
+```
+
+The purpose is to convert already-built source into visible, Production-complete capability rather than maximizing the number of partially completed issues.
+
+A primary axis must describe a user-visible vertical result, not a list of source issues. Record the axis, reference product, current lowest missing dependency, primary blockers, and terminal user result.
+
+For the current Padiem cycle, #3523 defines the axis as Platform -> Engine -> B54 Claw.
+
+Ownership and architecture are decided top-down. Once ownership is known, implementation starts at the lowest missing dependency and moves upward through the vertical slice. Do not keep adding generic capability work when the primary slice is blocked lower in the stack.
+
+Passing a development fast gate releases the actor from waiting on broad unrelated validation, but does not release the actor to unrelated feature work. The actor continues the primary axis, takes one of its concrete blockers, helps reconcile/validate the same axis, or remains idle/background.
+
+A Finish-first axis is not DONE merely because source is implemented, CI is green, or a PR merged.
+
+```text
+SOURCE_COMPLETE=YES
+MERGED_MAIN=YES
+PRODUCTION_ACTIVE=YES
+REFERENCE_PRODUCT_E2E=PASS
+USER_VISIBLE_RESULT=YES
+ROLLBACK_READY=YES
+PRIMARY_BLOCKERS=0
+```
+
+Until then, report `ACTIVE`.
+
+Shared Padiem Platform infrastructure does not collapse products into one another. Product-local work remains with its product owner. A generic defect discovered inside a product is split to the proper Platform/Core/Engine/Control-Plane owner rather than moving the whole product task into that lane.
+
 ## 4. Mandatory design-gate overlay for visual redesign
 
 When the work is a new visual system, owner-rejected redesign or broad multi-route visual reset, use:
