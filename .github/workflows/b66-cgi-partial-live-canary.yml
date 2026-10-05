@@ -62,6 +62,7 @@ jobs:
           set -euo pipefail
           script=.github/scripts/b66_cgi_partial_live_canary.py
           grep -Fq 'MAX_INTERPRET_POSTS = 1' "$script"
+          grep -Fq 'padiem-b66-cgi-partial-canary/1.0 (+github-actions)' "$script"
           grep -Fq 'RETRY = 0' "$script"
           grep -Fq 'FALLBACK = 0' "$script"
           grep -Fq 'DEFAULT_LIVE_EXECUTION=BLOCKED' "$script"

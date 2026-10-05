@@ -23,6 +23,7 @@ BASE_URL = "https://quick-quote-kr.pages.dev"
 PARTIAL_TEXT = "대한건설에 배관 100미터, 부가세 별도"
 MAX_BODY_BYTES = 64 * 1024
 MAX_INTERPRET_POSTS = 1
+USER_AGENT = "padiem-b66-cgi-partial-canary/1.0 (+github-actions)"
 RETRY = 0
 FALLBACK = 0
 
@@ -97,7 +98,7 @@ def _json_request(
     payload: dict[str, Any] | None = None,
 ) -> SafeHttpResult:
     data = None
-    headers = {"Accept": "application/json"}
+    headers = {"Accept": "application/json", "User-Agent": USER_AGENT}
     if payload is not None:
         data = json.dumps(
             payload,
@@ -310,6 +311,7 @@ def run_live(username: str, password: str) -> int:
 
 def self_test() -> int:
     assert MAX_INTERPRET_POSTS == 1
+    assert USER_AGENT == "padiem-b66-cgi-partial-canary/1.0 (+github-actions)"
     assert RETRY == 0
     assert FALLBACK == 0
     assert sanitize_upstream_class("upstream_non_text_content") == "upstream_non_text_content"

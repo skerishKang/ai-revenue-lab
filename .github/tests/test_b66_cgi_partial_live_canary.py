@@ -17,6 +17,7 @@ SPEC.loader.exec_module(module)
 class CanaryContractTests(unittest.TestCase):
     def test_one_shot_and_no_retry_contract(self):
         self.assertEqual(module.MAX_INTERPRET_POSTS, 1)
+        self.assertEqual(module.USER_AGENT, "padiem-b66-cgi-partial-canary/1.0 (+github-actions)")
         self.assertEqual(module.RETRY, 0)
         self.assertEqual(module.FALLBACK, 0)
 
