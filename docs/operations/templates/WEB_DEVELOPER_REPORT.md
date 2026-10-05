@@ -1,5 +1,7 @@
 # Web Developer Report
 
+For a tiny bounded fix, prefer the compact report in `GITHUB_REPORT_HANDOFF_POLICY.md`. Use this full template only when the work contract or risk requires it.
+
 ## Revision
 
 - Repository:
