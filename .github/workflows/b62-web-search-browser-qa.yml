@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "apps/padiem-chat/**"
+      - "!apps/padiem-chat/tests/**"
+      - "!apps/padiem-chat/worker.py"
       - "packages/padiem-ai-core/**"
       - ".github/scripts/b62_web_search_browser_qa.py"
       - ".github/workflows/b62-web-search-browser-qa.yml"
