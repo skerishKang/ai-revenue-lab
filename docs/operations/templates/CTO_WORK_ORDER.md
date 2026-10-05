@@ -9,6 +9,19 @@
 - Target branch:
 - Product-evidence stage:
 
+## Finish-first lane control
+
+- Finish-first authority / issue:
+- Primary axis:
+- Reference product:
+- Current lowest missing dependency:
+- Classification: PRIMARY_BLOCKER / PRIMARY_NONBLOCKING_FOLLOWUP / UNRELATED_BACKLOG
+- Active primary implementation axes after this work: must be 1 unless owner explicitly overrides
+- Supporting blocker lane number: PRIMARY / SUPPORT_1 / SUPPORT_2 / BACKGROUND
+- Does this work directly move the primary terminal state? yes/no:
+- If no, why is implementation authorized now?:
+- Unrelated new feature started? must be NO:
+
 ## Objective
 
 State the smallest user/product outcome this revision must prove.
