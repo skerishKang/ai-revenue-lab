@@ -126,6 +126,38 @@ class BoundedFieldValidationTests(unittest.TestCase):
                 with self.assertRaises(ArtifactRegistrationError):
                     record(**{field: bad})
 
+    def test_credential_shaped_provenance_refs_never_reach_projection(self) -> None:
+        # CENTRAL correction: workspace_ref/run_ref are identifier semantics
+        # (no scheme, no credential-like prefix) and source_ref is never a
+        # local path, URL, or credential material. Adversarial values are
+        # rejected at construction, so they can never reach a projection.
+        adversarial = [
+            ("workspace_ref", "secret:example"),
+            ("workspace_ref", "oauth:abc123"),
+            ("workspace_ref", "api_key:example"),
+            ("run_ref", "oauth:example"),
+            ("run_ref", "token:abc"),
+            ("run_ref", "bearer:xyz"),
+            ("source_ref", "https://example.test/private"),
+            ("source_ref", "http://example.test/private"),
+            ("source_ref", "api_key:example"),
+            ("source_ref", "file:///tmp/x"),
+            ("source_ref", "/tmp/x.docx"),
+            ("source_ref", "C:\\tmp\\x.docx"),
+            ("source_ref", "reports/file.pdf?key=***"),
+        ]
+        for field, value in adversarial:
+            with self.assertRaises(ArtifactRegistrationError):
+                record(**{field: value})
+
+    def test_valid_provenance_forms_remain_accepted(self) -> None:
+        rec = record(
+            workspace_ref="ws_" + "2" * 16,
+            run_ref="run_2026-10-07_001",
+            source_ref="reports/result.json",
+        )
+        self.assertEqual(rec.source_ref, "reports/result.json")
+
     def test_malformed_durable_locations_are_rejected(self) -> None:
         for kind, ref in (
             ("", "ref"),

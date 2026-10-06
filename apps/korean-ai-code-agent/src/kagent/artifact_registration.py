@@ -44,15 +44,15 @@ _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,255}$")
 _CONTROL_RE = re.compile(r"[\x00-\x1f\x7f]")
 _FILENAME_MAX_CHARS = 240
-# Bounded to match the widest existing in-repo artifact surface
-# (kagent document export 8 MiB bound; sandbox candidates are stricter).
+# Bounded to the widest in-repo *canonical-eligible* surface
+# (kagent document export 8 MiB bound). See the sandbox bound-policy note
+# below for how the sandbox export policy relates to these bounds.
 MAX_ARTIFACT_SIZE_BYTES = 8 * 1024 * 1024
-# Bound alignment note (CENTRAL review correction): the canonical record is
-# deliberately the STRICTER of the two in-repo surfaces — the sandbox export
-# policy may admit files up to 25 MiB with paths up to 512 chars and zero-byte
-# candidates, all of which exceed/c violate the canonical 8 MiB / bare-name /
-# positive-size contract. The sandbox adapter therefore classifies those
-# candidates as ADAPTER_NOT_APPLICABLE instead of silently accepting them.
+# Bound policy: the canonical record is intentionally STRICTER than the
+# sandbox export policy (25 MiB files, zero-byte candidates, 512-char paths).
+# Sandbox candidates outside these bounds are classified ADAPTER_NOT_APPLICABLE
+# by the adapter below — they are never silently squeezed into the canonical
+# contract.
 _LOCATION_KIND_MAX_CHARS = 48
 _LOCATION_REF_MAX_CHARS = 512
 
@@ -99,11 +99,55 @@ def _bounded_id(value: str, field_name: str) -> str:
 
 
 def _bounded_ref(value: str, field_name: str) -> str:
-    if not isinstance(value, str) or not _SAFE_REF_RE.fullmatch(value.strip()):
-        raise ArtifactRegistrationError(f"{field_name} must be a bounded safe reference")
+    """Identifier-semantics provenance ref (workspace_ref / run_ref).
+
+    Strict safe-ID form: no separators that could carry a URL scheme, no
+    credential-shaped prefixes, no traversal/control characters. These are
+    identity tokens, not addresses.
+    """
+    if not isinstance(value, str) or not _SAFE_ID_RE.fullmatch(value.strip()):
+        raise ArtifactRegistrationError(f"{field_name} must be a bounded safe identifier")
     value = value.strip()
     if _CONTROL_RE.search(value) or ".." in value:
         raise ArtifactRegistrationError(f"{field_name} must not contain traversal or control characters")
+    lowered = value.lower()
+    if "://" in lowered or ":" in value:
+        raise ArtifactRegistrationError(f"{field_name} must be an identifier, not a URL or scheme-prefixed token")
+    if any(lowered.startswith(prefix) for prefix in ("secret", "oauth", "token", "api_key", "apikey", "bearer", "password", "credential")):
+        raise ArtifactRegistrationError(f"{field_name} must not carry credential-like material")
+    return value
+
+
+def _bounded_source_ref(value: str) -> str:
+    """Bounded provenance/reference for an artifact source (source_ref).
+
+    A source_ref names where the artifact came from (a workspace-relative
+    path, a job id, a document id) — it is never a network address and never
+    credential material. Local absolute paths, file:// URIs, any URL scheme,
+    query/fragment components and credential-like prefixes fail closed.
+    Existing valid forms such as ``reports/result.json`` remain accepted.
+    """
+    if not isinstance(value, str) or not _SAFE_REF_RE.fullmatch(value.strip()):
+        raise ArtifactRegistrationError("source_ref must be a bounded safe reference")
+    value = value.strip()
+    if _CONTROL_RE.search(value) or ".." in value:
+        raise ArtifactRegistrationError("source_ref must not contain traversal or control characters")
+    lowered = value.lower()
+    if (
+        re.match(r"^[A-Za-z]:[\\/]", value)
+        or value.startswith(("\\\\", "/", "file:", "file://"))
+        or "file://" in lowered
+        or "://" in lowered
+        or "?" in value
+        or "#" in value
+        or " " in value
+        or "=" in value
+        or lowered.startswith(("bearer ", "basic ", "token "))
+    ):
+        raise ArtifactRegistrationError("source_ref must not be a local path, URL, or credential material")
+    for prefix in ("secret:", "oauth:", "api_key:", "apikey:", "token:", "bearer:", "password:", "credential:"):
+        if lowered.startswith(prefix):
+            raise ArtifactRegistrationError("source_ref must not carry credential-like material")
     return value
 
 
@@ -211,10 +255,12 @@ class CanonicalArtifactRecord:
         object.__setattr__(self, "integrity_ref", _bounded_sha256(self.integrity_ref))
         if not isinstance(self.lifecycle, ArtifactLifecycle):
             raise ArtifactRegistrationError("lifecycle must be an ArtifactLifecycle value")
-        for field_name in ("workspace_ref", "run_ref", "source_ref"):
+        for field_name in ("workspace_ref", "run_ref"):
             value = getattr(self, field_name)
             if value is not None:
                 object.__setattr__(self, field_name, _bounded_ref(value, field_name))
+        if self.source_ref is not None:
+            object.__setattr__(self, "source_ref", _bounded_source_ref(self.source_ref))
         if self.durable_location is not None and not isinstance(self.durable_location, ArtifactLocation):
             raise ArtifactRegistrationError("durable_location must be an ArtifactLocation or None")
         if self.lifecycle is ArtifactLifecycle.DURABLE and self.durable_location is None:
