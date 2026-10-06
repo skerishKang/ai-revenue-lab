@@ -1414,7 +1414,7 @@ body.b66-three-pane .shell-preview-host .quote-detail-page {
 }
 .quote-paper[data-layout-variant="cgi-v2"] .cgi-v2-title {
   height: 70px;
-  margin: 4px 0 26px;
+  margin: 68px 0 5px;
   color: #111;
   font-family: GulimChe, Gulim, "굴림체", "굴림", sans-serif;
   font-size: 28pt;
@@ -1428,7 +1428,7 @@ body.b66-three-pane .shell-preview-host .quote-detail-page {
 }
 .quote-paper[data-layout-variant="cgi-v2"] .cgi-v2-head-grid {
   display: grid;
-  grid-template-columns: 54% 46%;
+  grid-template-columns: 47fr 53fr;
   gap: 8px;
   width: 100%;
 }
@@ -1443,7 +1443,7 @@ body.b66-three-pane .shell-preview-host .quote-detail-page {
 .quote-paper[data-layout-variant="cgi-v2"] .cgi-v2-head-table th,
 .quote-paper[data-layout-variant="cgi-v2"] .cgi-v2-head-table td {
   height: 29px;
-  padding: 3px 6px;
+  padding: 3px 2px;
   border: 1px solid #111;
   font-weight: 400;
   vertical-align: middle;
@@ -1486,22 +1486,22 @@ body.b66-three-pane .shell-preview-host .quote-detail-page {
   object-fit: contain;
 }
 .quote-paper[data-layout-variant="cgi-v2"] .cgi-v2-total-band {
-  height: 40px;
+  height: 34px;
   margin-top: 8px;
-  padding: 0 12px;
+  padding: 0 8px;
   border: 1.5px solid #111;
   background: #ffff99;
   font-family: GulimChe, Gulim, "굴림체", "굴림", sans-serif;
   font-size: 12pt;
   font-weight: 700;
-  line-height: 36px;
+  line-height: 30px;
   white-space: nowrap;
 }
-.quote-paper[data-layout-variant="cgi-v2"] .cgi-v2-items-table { margin-top: 8px; }
+.quote-paper[data-layout-variant="cgi-v2"] .cgi-v2-items-table { margin-top: 6px; }
 .quote-paper[data-layout-variant="cgi-v2"] .cgi-v2-items-table th,
 .quote-paper[data-layout-variant="cgi-v2"] .cgi-v2-items-table td {
   height: 30px;
-  padding: 2px 5px;
+  padding: 2px 2px;
   border: 1px solid #111;
   color: #111;
   vertical-align: middle;
@@ -1539,7 +1539,7 @@ body.b66-three-pane .shell-preview-host .quote-detail-page {
 .quote-paper[data-layout-variant="cgi-v2"] .cgi-v2-pay-table th,
 .quote-paper[data-layout-variant="cgi-v2"] .cgi-v2-pay-table td {
   height: 30px;
-  padding: 3px 6px;
+  padding: 3px 2px;
   border: 1px solid #111;
 }
 .quote-paper[data-layout-variant="cgi-v2"] .cgi-v2-pay-table th {
@@ -1563,7 +1563,7 @@ body.b66-three-pane .shell-preview-host .quote-detail-page {
 }
 .quote-paper[data-layout-variant="cgi-v2"] .cgi-v2-terms ol {
   margin: 0;
-  padding-left: 18px;
+  padding-left: 12px;
   line-height: 18px;
 }
 .quote-paper[data-layout-variant="cgi-v2"] .cgi-v2-logo {
@@ -1585,4 +1585,26 @@ body.b66-three-pane .shell-preview-host .quote-detail-page {
     padding: 0;
   }
   .quote-paper[data-layout-variant="cgi-v2"] .cgi-v2-content { min-height: 0; }
+}
+
+.shell-picker-label {
+  display: grid;
+  gap: 5px;
+  padding: 7px 4px 0;
+  color: #667085;
+  font-size: 11px;
+  font-weight: 750;
+}
+.shell-picker-label select-host {
+  display: block;
+}
+.shell-picker-label select {
+  width: 100%;
+  min-height: 38px;
+  font-size: 12px;
+}
+.shell-new-quote {
+  margin-bottom: 4px;
+  border-color: #cbd2da;
+  background: #fff;
 }

@@ -68,7 +68,9 @@ async def main() -> int:
                   legacyVisible: !!(document.getElementById('padiemAccountPanel') &&
                     document.getElementById('padiemAccountPanel').getClientRects().length),
                   accountInRail: document.querySelectorAll('#shellAccountRow #padiemAccountButton').length,
-                  skillInRail: document.querySelectorAll('#shellTemplateSelect #padiemSavedSkillSelect').length,
+                  skillInRail: document.querySelectorAll('#shellSkillSelect #padiemSavedSkillSelect').length,
+                  templateInRail: document.querySelectorAll('#shellQuoteTemplateSelect #templateSelect').length,
+                  newQuoteCount: document.querySelectorAll('#shellNewQuote').length,
                   previewCount: document.querySelectorAll('#shellPreviewHost .preview-wrap').length,
                   quotePaperCount: document.querySelectorAll('#quotePaper').length,
                   composerCount: document.querySelectorAll('#easyComposer').length,
@@ -81,6 +83,8 @@ async def main() -> int:
             assert shell["legacyVisible"] is False
             assert shell["accountInRail"] == 1
             assert shell["skillInRail"] == 1
+            assert shell["templateInRail"] == 1
+            assert shell["newQuoteCount"] == 1
             assert shell["previewCount"] == 1
             assert shell["quotePaperCount"] == 1
             assert shell["composerCount"] == 1
@@ -97,7 +101,84 @@ async def main() -> int:
             await page.click("#shellRailToggle")
             assert await page.evaluate("document.body.classList.contains('rail-collapsed')") is False
 
-            await page.add_script_tag(url=f"http://127.0.0.1:{server.server_address[1]}/cgi-template-v2.js")
+            switch = await page.evaluate(
+                """() => {
+                  const base = {
+                    id: 'skill-cgi-browser-smoke',
+                    name: '(주)시지아이 기본 견적서',
+                    fixedDefaults: {
+                      sender: {
+                        company: '(주)시지아이', rep: '김범신', contactPerson: '김범신',
+                        bizNo: '410-86-46283', address: '전라남도 장성군 남면 나노산단로 102(삼태리)',
+                        phone: '062-576-8100', email: '', presetId: 'saved-skill'
+                      },
+                      validDays: 7, taxMode: 'EXCLUSIVE', memo: '',
+                      calculationPolicy: { grandRounding: { mode: 'FLOOR', unit: 10000 } }
+                    },
+                    variableSchema: {
+                      recipient: true, quoteNo: true, issueDate: true,
+                      items: true, memo: true, taxMode: true
+                    },
+                    internalTemplate: QuoteTemplate.serializeTemplate(QuoteTemplate.builtInTemplate()),
+                    provenance: {
+                      sourceKind: 'file', sourceName: 'cgi-quotation.pdf',
+                      sourceRef: 'source:cgi-browser-smoke',
+                      capturedAt: '2026-10-06T00:00:00.000Z',
+                      warnings: [], unknowns: [], evidence: []
+                    },
+                    createdAt: '2026-10-06T00:00:00.000Z',
+                    updatedAt: '2026-10-06T00:00:00.000Z'
+                  };
+                  const unsigned = SavedQuoteSkill.buildSkill(base);
+                  const approved = SavedQuoteSkill.buildSkill(Object.assign({}, base, {
+                    approval: {
+                      schemaVersion: 1, status: 'approved',
+                      skillFingerprint: unsigned.fingerprint,
+                      approvedBy: 'browser-smoke',
+                      approvedAt: '2026-10-06T00:00:00.000Z',
+                      approvalRef: 'browser-smoke'
+                    }
+                  }));
+                  const set = B66QuoteSkillBridge.setServerSkill(approved, {});
+                  const select = document.getElementById('templateSelect');
+                  return {
+                    set,
+                    initialLayout: document.getElementById('quotePaper').getAttribute('data-layout-variant') || 'GENERIC',
+                    cgiOptions: Array.from(select.options).filter(o => o.value === 'cgi-v2').length
+                  };
+                }"""
+            )
+            assert switch["set"] is True
+            assert switch["initialLayout"] == "GENERIC"
+            assert switch["cgiOptions"] == 1
+
+            await page.select_option("#templateSelect", "cgi-v2")
+            await page.wait_for_timeout(50)
+            selected = await page.evaluate(
+                """() => ({
+                  selected: B66QuoteTemplateBridge.selectedId(),
+                  layout: document.getElementById('quotePaper').getAttribute('data-layout-variant') || 'GENERIC',
+                  cgiVisible: !document.getElementById('cgiV2Content').hidden,
+                  genericHidden: document.getElementById('quoteGenericContent').hidden
+                })"""
+            )
+            assert selected["selected"] == "cgi-v2"
+            assert selected["layout"] == "cgi-v2"
+            assert selected["cgiVisible"] is True
+            assert selected["genericHidden"] is True
+
+            page.once("dialog", lambda dialog: asyncio.create_task(dialog.accept()))
+            await page.click("#shellNewQuote")
+            await page.wait_for_timeout(100)
+            reset = await page.evaluate(
+                """() => ({
+                  selected: B66QuoteTemplateBridge.selectedId(),
+                  layout: document.getElementById('quotePaper').getAttribute('data-layout-variant') || 'GENERIC'
+                })"""
+            )
+            assert reset["selected"] is None
+            assert reset["layout"] == "GENERIC"
+
             result = await page.evaluate(
                 """() => {
                   const profile = B66CgiTemplateV2.approvedProfile({
@@ -174,7 +255,7 @@ async def main() -> int:
             assert result["grandModel"] == "₩1,980,000"
             assert result["grandCgi"] == "1,980,000"
             assert "14일" in result["validity"]
-            assert result["pageMargin"] == "12mm"
+            assert result["pageMargin"] == "10mm"
 
             paper = page.locator("#quotePaper")
             await paper.screenshot(path=str(screen_path))
@@ -214,6 +295,10 @@ async def main() -> int:
         print("B66_PRIMARY_COMPOSER_COUNT=1")
         print("B66_CANONICAL_PREVIEW_COUNT=1")
         print("B66_CGI_IFRAME_COUNT=0")
+        print("B66_SAVED_SKILL_SELECTOR_IN_RAIL=PASS")
+        print("B66_QUOTE_TEMPLATE_SELECTOR_IN_RAIL=PASS")
+        print("B66_CGI_TEMPLATE_SELECTION=PASS")
+        print("B66_NEW_QUOTE_TEMPLATE_RESET=PASS")
         print("B66_CGI_V2_BROWSER_RENDER=PASS")
         print(f"B66_CGI_V2_SCREEN_SIZE={screen.width}x{screen.height}")
         print(f"B66_CGI_V2_PDF_SIZE={pdf.width}x{pdf.height}")
