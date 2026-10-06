@@ -13,6 +13,7 @@ Canonical operating documents:
 - `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
 - `docs/operations/LOCAL_DOCKER_AVOIDANCE_POLICY.md`
 - `docs/operations/GITHUB_REPORT_HANDOFF_POLICY.md`
+- `docs/operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 
 ## Search / adopt before build
 
@@ -217,6 +218,7 @@ Do not turn every available/automatically-triggered test into a required gate. D
 - Before merge, the Web CTO posts an auditable `CTO_FINAL_REVIEW` record containing the exact head SHA and the **applicable** checklist results. Tiny bounded fixes may use the compact checklist; do not populate irrelevant template sections merely for ceremony.
 - Owner-delegated merges must be single-purpose, head-SHA-pinned, and condition-checked at execution time (re-read remote state; required CI/gate results still valid).
 - Final owner visual approval must never be inferred from a model/worker approval when the work contract explicitly reserves visual taste to the owner.
+- **Model/provider decisions are owner-only.** If work encounters model selection, replacement, benchmarking, fallback ordering, provider routing, model-specific credential/binding, or activation/deployment decisions, stop model work and ask the Product Owner. Do not search, compare, live-test, rank, modify, merge, or deploy model/provider choices without fresh explicit owner instruction for that scope. Follow `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`.
 - Deployment follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`; no alternate Preview/manual deployment path is implied by these rules.
 - Local Docker Desktop / local Docker daemon is not a default development or deployment path. Do not start or require it unless established remote build/deploy paths have been checked and the Product Owner explicitly approves a task-specific exception. Follow `LOCAL_DOCKER_AVOIDANCE_POLICY.md`.
 - On Windows, do not run `git worktree remove --force` while the worktree contains a junction/symlink/reparse point into a shared dependency directory (for example another checkout's `node_modules`). Remove the link itself with a link-safe operation first, verify the target directory is intact, then remove the worktree.
