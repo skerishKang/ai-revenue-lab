@@ -63,6 +63,15 @@ MAX_CLAW_GENERAL_MESSAGE_CHARS = 8_000
 MAX_CLAW_GENERAL_MESSAGES = 40
 _CLAW_GENERAL_ROLES = frozenset({"user", "assistant"})
 
+# Successor-pending product HOLD (#3568/#3566): these adapter codes mean the
+# run was refused before any Engine/B14/provider dispatch because the selected
+# tier has no executable route yet. They are product states, not engine
+# failures, so they must not surface as a generic 502 engine error.
+_MODEL_HOLD_ERROR_CODES = frozenset({"tier_hold", "max_tier_hold"})
+_MODEL_HOLD_USER_MESSAGE = (
+    "AI 모델 전환 준비 중입니다. 곧 사용할 수 있도록 준비하겠습니다."
+)
+
 
 def _sse_frame(event: str, payload: dict[str, Any]) -> bytes:
     data = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
@@ -229,6 +238,12 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             await _refund_active_reservation()
         else:
             _clear_reservation()
+        if exc.code in _MODEL_HOLD_ERROR_CODES:
+            # Successor-pending product HOLD (#3568): the run never dispatched,
+            # so the user sees a bounded "model unavailable" state instead of a
+            # generic engine failure. Same code family as the pre-dispatch
+            # tier_unavailable projection used by the other tiers.
+            return _error(503, "tier_unavailable", _MODEL_HOLD_USER_MESSAGE)
         return JSONResponse(
             {
                 "ok": False,
