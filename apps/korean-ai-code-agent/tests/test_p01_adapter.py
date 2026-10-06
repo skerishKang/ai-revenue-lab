@@ -45,7 +45,8 @@ from kagent.sandbox import DeterministicFakeSandboxProvider
 # against whatever the declaration says instead of restating a model id as their own truth.
 # An owner tier switch then exercises the derivation instead of silently passing or breaking
 # a literal nobody re-ran.
-PLUS_ROUTE_MODEL = active_route_for(ProductTierLabel.PLUS).model_id
+_PLUS_ROUTE = active_route_for(ProductTierLabel.PLUS)
+PLUS_ROUTE_MODEL = _PLUS_ROUTE.model_id if _PLUS_ROUTE is not None else None
 
 
 class _ResultFactory:
@@ -162,6 +163,7 @@ class _FailingRunner:
         raise RuntimeError("provider secret should never escape here")
 
 
+@unittest.skipIf(PLUS_ROUTE_MODEL is None, "P01 execution requires a selected model route")
 class P01RequestFactoryTests(unittest.TestCase):
     def local_run(self, run_id: str = "run_local") -> ClawRun:
         intent = ClawTaskIntent(
@@ -258,6 +260,14 @@ class P01RequestFactoryTests(unittest.TestCase):
         with self.assertRaises(P01AdapterError) as caught:
             P01RequestFactory(clock=lambda: now + timedelta(hours=1)).build(run, lease=lease)
         self.assertEqual(caught.exception.code, "cloud_lease_expired")
+
+
+class P01ModelHoldTests(unittest.TestCase):
+    def test_default_profile_fails_closed_before_dispatch_while_successor_pending(self):
+        with self.assertRaises(P01AdapterError) as caught:
+            _agent_profile(ProductTierLabel.PLUS)
+        self.assertEqual(caught.exception.code, "tier_hold")
+        self.assertEqual(caught.exception.dispatch_class, "not_dispatched")
 
 
 class P01ProjectionTests(unittest.TestCase):
@@ -380,6 +390,7 @@ class P01ProjectionTests(unittest.TestCase):
         self.assertEqual(caught.exception.code, "event_id_reuse_conflict")
 
 
+@unittest.skipIf(PLUS_ROUTE_MODEL is None, "P01 execution requires a selected model route")
 class P01CoreAdapterTests(unittest.IsolatedAsyncioTestCase):
     def local_run(self, run_id: str = "run_adapter") -> ClawRun:
         intent = ClawTaskIntent(
