@@ -78,7 +78,6 @@ def test_current_truth_all_tiers_hold_while_plus_successor_is_pending() -> None:
     pro_routes = get_tier(ProductTierLabel.PRO).routes
     assert any(r.model_id == PRO_HOLD_MODEL_ID for r in pro_routes)
     assert all(r.status is not ProductRouteStatus.EXECUTABLE for r in pro_routes)
-
 def test_no_user_visible_auto_or_fallback_anywhere() -> None:
     for tier in PRODUCT_TIER_ROUTES:
         assert tier.silent_fallback_allowed is False
@@ -97,7 +96,6 @@ def test_executable_routes_are_explicit_secret_bound_and_unretired() -> None:
         assert route.model_id.startswith(f"{route.provider_id}/")
         assert route.model_id not in RETIRED_PRODUCT_MODEL_IDS
         assert route.evidence
-
 def test_retired_lanes_are_declared_data_only_with_reasons() -> None:
     retired = [
         route
@@ -240,7 +238,6 @@ def test_parity_with_b14_tier_registry_active_routes() -> None:
     }
     assert contract == registry == {}
 
-
 def test_parity_with_chat_model_policy_derivation() -> None:
     source = CHAT_MODEL_POLICY_PATH.read_text(encoding="utf-8")
     assert "from padiem_control_plane.product_tier_routes import (" in source
@@ -252,422 +249,25 @@ def test_parity_with_chat_model_policy_derivation() -> None:
     assert '"kilo/' not in source
     assert "'kilo/" not in source
 
-
 def test_selected_routes_match_registered_provider_constants() -> None:
     executables = _executables()
     agnes_source = AGNES_PROVIDER_PATH.read_text(encoding="utf-8")
     bai_source = BAI_PROVIDER_PATH.read_text(encoding="utf-8")
     kilo_source = KILO_PROVIDER_PATH.read_text(encoding="utf-8")
 
-    agnes_model = re.search(r'^AGNES_MODEL_ID = "([^"]+)"
-def test_kilo_routes_are_historical_only_and_retirement_stays_pinned() -> None:
-    source = KILO_PROVIDER_PATH.read_text(encoding="utf-8")
-
-    for tier in (ProductTierLabel.PRO,):
-        kilo_routes = [route for route in get_tier(tier).routes if route.provider_id == "kilo"]
-        assert kilo_routes
-        assert all(route.status is not ProductRouteStatus.EXECUTABLE for route in kilo_routes)
-
-    retired_block = re.search(
-        r"RETIRED_KILO_FREE_MODEL_IDS = frozenset\(\s*\{(.*?)\}", source, re.DOTALL
-    )
-    assert retired_block, "B14 retirement block not found"
-    assert "KILO_MINIMAX_M3_MODEL_ID" in retired_block.group(1)
-    assert "KILO_HY3_MODEL_ID" in retired_block.group(1)
-
-    for name, model_id in (
-        ("KILO_MINIMAX_M3_MODEL_ID", "kilo/minimax-minimax-m3-free"),
-        ("KILO_HY3_MODEL_ID", "kilo/tencent-hy3-free"),
-    ):
-        constant = re.search(rf'^{name} = "([^"]+)"$', source, re.MULTILINE)
-        assert constant and constant.group(1) == model_id
-        assert model_id in RETIRED_PRODUCT_MODEL_IDS
-
-
-def test_contract_module_is_stdlib_only_and_side_effect_free() -> None:
-    source = CONTRACT_PATH.read_text(encoding="utf-8")
-    # Tokens are split by concatenation so this scanner never self-matches the
-    # package-wide CI side-effect guard (which scans every *.py in the package).
-    _i = "import "
-    forbidden = (
-        _i + "httpx",
-        _i + "requests",
-        _i + "socket",
-        "urllib",
-        "from app",
-        _i + "app",
-        "os.environ",
-        "open(",
-        "register_platform_provider",
-        "sqlite",
-        "asyncio",
-        "subprocess",
-        "threading",
-    )
-    for token in forbidden:
-        assert token not in source, f"contract module must not contain {token!r}"
-
-    tree = ast.parse(source)
-    imported: set[str] = set()
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import):
-            imported.update(alias.name for alias in node.names)
-        elif isinstance(node, ast.ImportFrom):
-            assert node.level == 0, "contract must not use relative package imports"
-            if node.module:
-                imported.add(node.module)
-    assert imported <= {"__future__", "dataclasses", "enum", "re"}, (
-        f"contract imports exceed the stdlib allow-list: {imported}"
-    )
-
-    # Import already happened at this point (module-level fixtures above); if
-    # importing performed file/socket/env side effects the guard scans and the
-    # package-wide CI side-effect assertion cover, tests would fail loudly.
-    import padiem_control_plane.product_tier_routes as contract_module
-    assert contract_module.PRODUCT_TIER_POLICY_VERSION == PRODUCT_TIER_POLICY_VERSION
-, agnes_source, re.MULTILINE)
-    bai_model = re.search(r'^BAI_QWEN_MODEL_ID = "([^"]+)"
-def test_kilo_routes_are_historical_only_and_retirement_stays_pinned() -> None:
-    source = KILO_PROVIDER_PATH.read_text(encoding="utf-8")
-
-    for tier in (ProductTierLabel.PRO,):
-        kilo_routes = [route for route in get_tier(tier).routes if route.provider_id == "kilo"]
-        assert kilo_routes
-        assert all(route.status is not ProductRouteStatus.EXECUTABLE for route in kilo_routes)
-
-    retired_block = re.search(
-        r"RETIRED_KILO_FREE_MODEL_IDS = frozenset\(\s*\{(.*?)\}", source, re.DOTALL
-    )
-    assert retired_block, "B14 retirement block not found"
-    assert "KILO_MINIMAX_M3_MODEL_ID" in retired_block.group(1)
-    assert "KILO_HY3_MODEL_ID" in retired_block.group(1)
-
-    for name, model_id in (
-        ("KILO_MINIMAX_M3_MODEL_ID", "kilo/minimax-minimax-m3-free"),
-        ("KILO_HY3_MODEL_ID", "kilo/tencent-hy3-free"),
-    ):
-        constant = re.search(rf'^{name} = "([^"]+)"$', source, re.MULTILINE)
-        assert constant and constant.group(1) == model_id
-        assert model_id in RETIRED_PRODUCT_MODEL_IDS
-
-
-def test_contract_module_is_stdlib_only_and_side_effect_free() -> None:
-    source = CONTRACT_PATH.read_text(encoding="utf-8")
-    # Tokens are split by concatenation so this scanner never self-matches the
-    # package-wide CI side-effect guard (which scans every *.py in the package).
-    _i = "import "
-    forbidden = (
-        _i + "httpx",
-        _i + "requests",
-        _i + "socket",
-        "urllib",
-        "from app",
-        _i + "app",
-        "os.environ",
-        "open(",
-        "register_platform_provider",
-        "sqlite",
-        "asyncio",
-        "subprocess",
-        "threading",
-    )
-    for token in forbidden:
-        assert token not in source, f"contract module must not contain {token!r}"
-
-    tree = ast.parse(source)
-    imported: set[str] = set()
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import):
-            imported.update(alias.name for alias in node.names)
-        elif isinstance(node, ast.ImportFrom):
-            assert node.level == 0, "contract must not use relative package imports"
-            if node.module:
-                imported.add(node.module)
-    assert imported <= {"__future__", "dataclasses", "enum", "re"}, (
-        f"contract imports exceed the stdlib allow-list: {imported}"
-    )
-
-    # Import already happened at this point (module-level fixtures above); if
-    # importing performed file/socket/env side effects the guard scans and the
-    # package-wide CI side-effect assertion cover, tests would fail loudly.
-    import padiem_control_plane.product_tier_routes as contract_module
-    assert contract_module.PRODUCT_TIER_POLICY_VERSION == PRODUCT_TIER_POLICY_VERSION
-, bai_source, re.MULTILINE)
+    agnes_model = re.search(r'^AGNES_MODEL_ID = "([^"]+)"$', agnes_source, re.MULTILINE)
+    bai_model = re.search(r'^BAI_QWEN_MODEL_ID = "([^"]+)"$', bai_source, re.MULTILINE)
     agnes_binding = re.search(
-        r'^AGNES_CREDENTIAL_BINDING = "([^"]+)"
-def test_kilo_routes_are_historical_only_and_retirement_stays_pinned() -> None:
-    source = KILO_PROVIDER_PATH.read_text(encoding="utf-8")
-
-    for tier in (ProductTierLabel.PRO,):
-        kilo_routes = [route for route in get_tier(tier).routes if route.provider_id == "kilo"]
-        assert kilo_routes
-        assert all(route.status is not ProductRouteStatus.EXECUTABLE for route in kilo_routes)
-
-    retired_block = re.search(
-        r"RETIRED_KILO_FREE_MODEL_IDS = frozenset\(\s*\{(.*?)\}", source, re.DOTALL
-    )
-    assert retired_block, "B14 retirement block not found"
-    assert "KILO_MINIMAX_M3_MODEL_ID" in retired_block.group(1)
-    assert "KILO_HY3_MODEL_ID" in retired_block.group(1)
-
-    for name, model_id in (
-        ("KILO_MINIMAX_M3_MODEL_ID", "kilo/minimax-minimax-m3-free"),
-        ("KILO_HY3_MODEL_ID", "kilo/tencent-hy3-free"),
-    ):
-        constant = re.search(rf'^{name} = "([^"]+)"$', source, re.MULTILINE)
-        assert constant and constant.group(1) == model_id
-        assert model_id in RETIRED_PRODUCT_MODEL_IDS
-
-
-def test_contract_module_is_stdlib_only_and_side_effect_free() -> None:
-    source = CONTRACT_PATH.read_text(encoding="utf-8")
-    # Tokens are split by concatenation so this scanner never self-matches the
-    # package-wide CI side-effect guard (which scans every *.py in the package).
-    _i = "import "
-    forbidden = (
-        _i + "httpx",
-        _i + "requests",
-        _i + "socket",
-        "urllib",
-        "from app",
-        _i + "app",
-        "os.environ",
-        "open(",
-        "register_platform_provider",
-        "sqlite",
-        "asyncio",
-        "subprocess",
-        "threading",
-    )
-    for token in forbidden:
-        assert token not in source, f"contract module must not contain {token!r}"
-
-    tree = ast.parse(source)
-    imported: set[str] = set()
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import):
-            imported.update(alias.name for alias in node.names)
-        elif isinstance(node, ast.ImportFrom):
-            assert node.level == 0, "contract must not use relative package imports"
-            if node.module:
-                imported.add(node.module)
-    assert imported <= {"__future__", "dataclasses", "enum", "re"}, (
-        f"contract imports exceed the stdlib allow-list: {imported}"
-    )
-
-    # Import already happened at this point (module-level fixtures above); if
-    # importing performed file/socket/env side effects the guard scans and the
-    # package-wide CI side-effect assertion cover, tests would fail loudly.
-    import padiem_control_plane.product_tier_routes as contract_module
-    assert contract_module.PRODUCT_TIER_POLICY_VERSION == PRODUCT_TIER_POLICY_VERSION
-, agnes_source, re.MULTILINE
+        r'^AGNES_CREDENTIAL_BINDING = "([^"]+)"$', agnes_source, re.MULTILINE
     )
     bai_binding = re.search(
-        r'^BAI_CREDENTIAL_BINDING = "([^"]+)"
-def test_kilo_routes_are_historical_only_and_retirement_stays_pinned() -> None:
-    source = KILO_PROVIDER_PATH.read_text(encoding="utf-8")
-
-    for tier in (ProductTierLabel.PRO,):
-        kilo_routes = [route for route in get_tier(tier).routes if route.provider_id == "kilo"]
-        assert kilo_routes
-        assert all(route.status is not ProductRouteStatus.EXECUTABLE for route in kilo_routes)
-
-    retired_block = re.search(
-        r"RETIRED_KILO_FREE_MODEL_IDS = frozenset\(\s*\{(.*?)\}", source, re.DOTALL
-    )
-    assert retired_block, "B14 retirement block not found"
-    assert "KILO_MINIMAX_M3_MODEL_ID" in retired_block.group(1)
-    assert "KILO_HY3_MODEL_ID" in retired_block.group(1)
-
-    for name, model_id in (
-        ("KILO_MINIMAX_M3_MODEL_ID", "kilo/minimax-minimax-m3-free"),
-        ("KILO_HY3_MODEL_ID", "kilo/tencent-hy3-free"),
-    ):
-        constant = re.search(rf'^{name} = "([^"]+)"$', source, re.MULTILINE)
-        assert constant and constant.group(1) == model_id
-        assert model_id in RETIRED_PRODUCT_MODEL_IDS
-
-
-def test_contract_module_is_stdlib_only_and_side_effect_free() -> None:
-    source = CONTRACT_PATH.read_text(encoding="utf-8")
-    # Tokens are split by concatenation so this scanner never self-matches the
-    # package-wide CI side-effect guard (which scans every *.py in the package).
-    _i = "import "
-    forbidden = (
-        _i + "httpx",
-        _i + "requests",
-        _i + "socket",
-        "urllib",
-        "from app",
-        _i + "app",
-        "os.environ",
-        "open(",
-        "register_platform_provider",
-        "sqlite",
-        "asyncio",
-        "subprocess",
-        "threading",
-    )
-    for token in forbidden:
-        assert token not in source, f"contract module must not contain {token!r}"
-
-    tree = ast.parse(source)
-    imported: set[str] = set()
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import):
-            imported.update(alias.name for alias in node.names)
-        elif isinstance(node, ast.ImportFrom):
-            assert node.level == 0, "contract must not use relative package imports"
-            if node.module:
-                imported.add(node.module)
-    assert imported <= {"__future__", "dataclasses", "enum", "re"}, (
-        f"contract imports exceed the stdlib allow-list: {imported}"
-    )
-
-    # Import already happened at this point (module-level fixtures above); if
-    # importing performed file/socket/env side effects the guard scans and the
-    # package-wide CI side-effect assertion cover, tests would fail loudly.
-    import padiem_control_plane.product_tier_routes as contract_module
-    assert contract_module.PRODUCT_TIER_POLICY_VERSION == PRODUCT_TIER_POLICY_VERSION
-, bai_source, re.MULTILINE
+        r'^BAI_CREDENTIAL_BINDING = "([^"]+)"$', bai_source, re.MULTILINE
     )
     kilo_bunny = re.search(
-        r'^KILO_SPACE_BUNNY_MODEL_ID = "([^"]+)"
-def test_kilo_routes_are_historical_only_and_retirement_stays_pinned() -> None:
-    source = KILO_PROVIDER_PATH.read_text(encoding="utf-8")
-
-    for tier in (ProductTierLabel.PRO,):
-        kilo_routes = [route for route in get_tier(tier).routes if route.provider_id == "kilo"]
-        assert kilo_routes
-        assert all(route.status is not ProductRouteStatus.EXECUTABLE for route in kilo_routes)
-
-    retired_block = re.search(
-        r"RETIRED_KILO_FREE_MODEL_IDS = frozenset\(\s*\{(.*?)\}", source, re.DOTALL
-    )
-    assert retired_block, "B14 retirement block not found"
-    assert "KILO_MINIMAX_M3_MODEL_ID" in retired_block.group(1)
-    assert "KILO_HY3_MODEL_ID" in retired_block.group(1)
-
-    for name, model_id in (
-        ("KILO_MINIMAX_M3_MODEL_ID", "kilo/minimax-minimax-m3-free"),
-        ("KILO_HY3_MODEL_ID", "kilo/tencent-hy3-free"),
-    ):
-        constant = re.search(rf'^{name} = "([^"]+)"$', source, re.MULTILINE)
-        assert constant and constant.group(1) == model_id
-        assert model_id in RETIRED_PRODUCT_MODEL_IDS
-
-
-def test_contract_module_is_stdlib_only_and_side_effect_free() -> None:
-    source = CONTRACT_PATH.read_text(encoding="utf-8")
-    # Tokens are split by concatenation so this scanner never self-matches the
-    # package-wide CI side-effect guard (which scans every *.py in the package).
-    _i = "import "
-    forbidden = (
-        _i + "httpx",
-        _i + "requests",
-        _i + "socket",
-        "urllib",
-        "from app",
-        _i + "app",
-        "os.environ",
-        "open(",
-        "register_platform_provider",
-        "sqlite",
-        "asyncio",
-        "subprocess",
-        "threading",
-    )
-    for token in forbidden:
-        assert token not in source, f"contract module must not contain {token!r}"
-
-    tree = ast.parse(source)
-    imported: set[str] = set()
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import):
-            imported.update(alias.name for alias in node.names)
-        elif isinstance(node, ast.ImportFrom):
-            assert node.level == 0, "contract must not use relative package imports"
-            if node.module:
-                imported.add(node.module)
-    assert imported <= {"__future__", "dataclasses", "enum", "re"}, (
-        f"contract imports exceed the stdlib allow-list: {imported}"
-    )
-
-    # Import already happened at this point (module-level fixtures above); if
-    # importing performed file/socket/env side effects the guard scans and the
-    # package-wide CI side-effect assertion cover, tests would fail loudly.
-    import padiem_control_plane.product_tier_routes as contract_module
-    assert contract_module.PRODUCT_TIER_POLICY_VERSION == PRODUCT_TIER_POLICY_VERSION
-, kilo_source, re.MULTILINE
+        r'^KILO_SPACE_BUNNY_MODEL_ID = "([^"]+)"$', kilo_source, re.MULTILINE
     )
     kilo_bunny_upstream = re.search(
-        r'^KILO_SPACE_BUNNY_UPSTREAM_MODEL = "([^"]+)"
-def test_kilo_routes_are_historical_only_and_retirement_stays_pinned() -> None:
-    source = KILO_PROVIDER_PATH.read_text(encoding="utf-8")
-
-    for tier in (ProductTierLabel.PRO,):
-        kilo_routes = [route for route in get_tier(tier).routes if route.provider_id == "kilo"]
-        assert kilo_routes
-        assert all(route.status is not ProductRouteStatus.EXECUTABLE for route in kilo_routes)
-
-    retired_block = re.search(
-        r"RETIRED_KILO_FREE_MODEL_IDS = frozenset\(\s*\{(.*?)\}", source, re.DOTALL
-    )
-    assert retired_block, "B14 retirement block not found"
-    assert "KILO_MINIMAX_M3_MODEL_ID" in retired_block.group(1)
-    assert "KILO_HY3_MODEL_ID" in retired_block.group(1)
-
-    for name, model_id in (
-        ("KILO_MINIMAX_M3_MODEL_ID", "kilo/minimax-minimax-m3-free"),
-        ("KILO_HY3_MODEL_ID", "kilo/tencent-hy3-free"),
-    ):
-        constant = re.search(rf'^{name} = "([^"]+)"$', source, re.MULTILINE)
-        assert constant and constant.group(1) == model_id
-        assert model_id in RETIRED_PRODUCT_MODEL_IDS
-
-
-def test_contract_module_is_stdlib_only_and_side_effect_free() -> None:
-    source = CONTRACT_PATH.read_text(encoding="utf-8")
-    # Tokens are split by concatenation so this scanner never self-matches the
-    # package-wide CI side-effect guard (which scans every *.py in the package).
-    _i = "import "
-    forbidden = (
-        _i + "httpx",
-        _i + "requests",
-        _i + "socket",
-        "urllib",
-        "from app",
-        _i + "app",
-        "os.environ",
-        "open(",
-        "register_platform_provider",
-        "sqlite",
-        "asyncio",
-        "subprocess",
-        "threading",
-    )
-    for token in forbidden:
-        assert token not in source, f"contract module must not contain {token!r}"
-
-    tree = ast.parse(source)
-    imported: set[str] = set()
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Import):
-            imported.update(alias.name for alias in node.names)
-        elif isinstance(node, ast.ImportFrom):
-            assert node.level == 0, "contract must not use relative package imports"
-            if node.module:
-                imported.add(node.module)
-    assert imported <= {"__future__", "dataclasses", "enum", "re"}, (
-        f"contract imports exceed the stdlib allow-list: {imported}"
-    )
-
-    # Import already happened at this point (module-level fixtures above); if
-    # importing performed file/socket/env side effects the guard scans and the
-    # package-wide CI side-effect assertion cover, tests would fail loudly.
-    import padiem_control_plane.product_tier_routes as contract_module
-    assert contract_module.PRODUCT_TIER_POLICY_VERSION == PRODUCT_TIER_POLICY_VERSION
-, kilo_source, re.MULTILINE
+        r'^KILO_SPACE_BUNNY_UPSTREAM_MODEL = "([^"]+)"$', kilo_source, re.MULTILINE
     )
 
     assert agnes_model and bai_model and agnes_binding and bai_binding
@@ -690,7 +290,6 @@ def test_contract_module_is_stdlib_only_and_side_effect_free() -> None:
     assert held_bai.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
     assert bai_model.group(1) == held_bai.model_id
     assert bai_binding.group(1) == held_bai.credential_binding
-
 def test_kilo_routes_are_historical_only_and_retirement_stays_pinned() -> None:
     source = KILO_PROVIDER_PATH.read_text(encoding="utf-8")
 
