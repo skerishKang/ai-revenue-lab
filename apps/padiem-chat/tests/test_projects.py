@@ -187,7 +187,7 @@ async def client_with_session(app, app_settings, user: UserProfile):
 
 
 @pytest.mark.asyncio
-async def test_projects_unavailable_without_auth_and_chat_holds_without_model():
+async def test_projects_unavailable_without_auth_and_anonymous_chat_unchanged():
     app = create_app(Settings.from_values())
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
         projects = await client.get("/api/projects")
@@ -196,8 +196,7 @@ async def test_projects_unavailable_without_auth_and_chat_holds_without_model():
             "messages": [{"role": "user", "content": "안녕"}], "mode": "auto", "project_id": "proj_" + "1" * 32,
         })
     assert projects.status_code == 503
-    assert chat.status_code == 422
-    assert chat.json()["error"]["code"] == "tier_unavailable"
+    assert chat.status_code == 200 and "project_id" not in chat.json()
     assert project_chat.status_code == 401
 
 
