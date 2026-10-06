@@ -11,6 +11,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: b62-mobile-touch-target-qa-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   mobile-touch-target-qa:
     runs-on: ubuntu-24.04
