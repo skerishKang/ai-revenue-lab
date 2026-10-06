@@ -39,7 +39,7 @@
   var ALLOWED_PAGE_SIZES = ["A4", "A5", "Legal", "Letter"];
   var ALLOWED_ORIENTATIONS = ["portrait", "landscape"];
   var ALLOWED_TAX_MODES = ["EXCLUSIVE", "INCLUSIVE", "EXEMPT"];
-  var ALLOWED_LAYOUT_VARIANTS = ["formal-grid-v1"];
+  var ALLOWED_LAYOUT_VARIANTS = ["formal-grid-v1", "cgi-v2"];
   var ALLOWED_ISSUE_DATE_FORMATS = ["iso", "yyyy. mm.", "yyyy. mm. dd."];
   var MAX_SUMMARY_MIN_ROWS = 30;
   var MAX_SUMMARY_TERMS_ROWS = 8;
@@ -474,6 +474,33 @@
     };
   }
 
+  function normalizeCgiV2(raw) {
+    if (!isPlainObject(raw)) return null;
+    var allowed = ["slogan", "fax", "bank", "terms", "underfillText", "underfillAfterRows"];
+    if (Object.keys(raw).some(function (key) { return allowed.indexOf(key) === -1; })) return null;
+    var terms = raw.terms === undefined || raw.terms === null ? [] : raw.terms;
+    if (!Array.isArray(terms) || terms.length > MAX_SUMMARY_TERMS_ROWS) return null;
+    var normalizedTerms = [];
+    for (var i = 0; i < terms.length; i += 1) {
+      if (typeof terms[i] !== "string") return null;
+      normalizedTerms.push(boundString(terms[i], ""));
+    }
+    var underfillAfterRows = raw.underfillAfterRows === undefined || raw.underfillAfterRows === null
+      ? 4
+      : Number(raw.underfillAfterRows);
+    if (!Number.isInteger(underfillAfterRows) || underfillAfterRows < 0 || underfillAfterRows > MAX_SUMMARY_MIN_ROWS) {
+      return null;
+    }
+    return {
+      slogan: boundString(raw.slogan, ""),
+      fax: boundString(raw.fax, ""),
+      bank: boundString(raw.bank, ""),
+      terms: normalizedTerms,
+      underfillText: boundString(raw.underfillText, ""),
+      underfillAfterRows: underfillAfterRows
+    };
+  }
+
   function normalizeTemplateContent(raw) {
     var defaults = BUILTIN_TEMPLATE_CONTENT;
     if (!isPlainObject(raw)) return null;
@@ -592,6 +619,14 @@
         return null;
       }
       content.layoutVariant = raw.layoutVariant;
+    }
+
+    if (content.layoutVariant === "cgi-v2") {
+      var cgiV2 = normalizeCgiV2(raw.cgiV2);
+      if (!cgiV2) return null;
+      content.cgiV2 = cgiV2;
+    } else if (raw.cgiV2 !== undefined && raw.cgiV2 !== null) {
+      return null;
     }
 
     if (raw.items && raw.items.minRows !== undefined && raw.items.minRows !== null) {
@@ -849,6 +884,7 @@
     sha256Hex: sha256Hex,
     escapeHtml: escapeHtml,
     templateFingerprint: templateFingerprint,
+    normalizeCgiV2: normalizeCgiV2,
     normalizeTemplateContent: normalizeTemplateContent,
     normalizeTemplate: normalizeTemplate,
     normalizeTemplateId: normalizeTemplateId,
