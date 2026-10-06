@@ -578,11 +578,15 @@ class WebDesktopE2E:
         self.fixture_dir = tmp_path / "fixture-root"
         self.fixture_dir.mkdir(parents=True, exist_ok=True)
         (self.fixture_dir / "sample.txt").write_bytes(SAMPLE_TEXT.encode("utf-8"))
+        # The device profile speaks Windows paths by contract. On Windows the
+        # root is the real fixture directory; elsewhere the receipt runtime
+        # never touches the filesystem, so a synthetic absolute root stands in.
+        fixture_windows_path = str(self.fixture_dir) if os.name == "nt" else r"C:\padiem98-e2e-fixture"
         self.device = LocalAgentDeviceProfile(
             device_id=DEVICE_ID,
             workspace_ref=WORKSPACE,
             platform=LocalAgentPlatform.WINDOWS,
-            roots=(LocalRoot(root_ref=ROOT_REF, windows_path=str(self.fixture_dir)),),
+            roots=(LocalRoot(root_ref=ROOT_REF, windows_path=fixture_windows_path),),
         )
         self.credentials = DeviceCredentialStore(base_dir=tmp_path / "credentials")
         self.config = OutboundTransportConfig(
