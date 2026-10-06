@@ -464,6 +464,7 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
     complete_ms = 0
     response_status = 0
     sse_content_type = False
+    stage = "init"
 
     try:
         with sync_playwright() as pw:
@@ -480,8 +481,10 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
                     direct_provider_requests += 1
 
             page.on("request", observe_request)
+            stage = "load_chat"
             page.goto(CLAW_TARGET_URL, wait_until="domcontentloaded", timeout=30000)
 
+            stage = "login"
             page.locator("#loginButton").wait_for(state="visible", timeout=15000)
             page.locator("#loginButton").click()
             page.locator("#authDialog").wait_for(state="visible", timeout=15000)
@@ -511,10 +514,29 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
             )
             print("OWNER_LOGIN=PASS")
 
-            page.locator("#clawNavButton").click()
-            page.locator("#clawWorkspace").wait_for(state="visible", timeout=15000)
+            stage = "open_claw"
+            page.locator("#clawNavButton").wait_for(state="attached", timeout=15000)
+            page.evaluate("() => document.getElementById('clawNavButton')?.click()")
+            page.wait_for_function(
+                """() => {
+                  const shell = document.querySelector('.app-shell');
+                  const workspace = document.getElementById('clawWorkspace');
+                  const nav = document.getElementById('clawNavButton');
+                  return Boolean(
+                    shell
+                    && workspace
+                    && nav
+                    && shell.dataset.state === 'claw'
+                    && workspace.dataset.view === 'general'
+                    && workspace.hidden === false
+                    && nav.getAttribute('aria-current') === 'page'
+                  );
+                }""",
+                timeout=15000,
+            )
             print("CLAW_WORKSPACE=PASS")
 
+            stage = "compose"
             before_assistants = page.locator("#messageList .assistant-message").count()
             before_errors = page.locator("#messageList .error-box").count()
             page.locator("#messageInput").fill(CLAW_SYNTHETIC_PROMPT)
@@ -523,6 +545,7 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
 
             submit_ms = int(time.time() * 1000)
             print("SUBMIT_MS=" + str(submit_ms))
+            stage = "submit"
             with page.expect_response(
                 lambda response: (
                     response.request.method == "POST"
@@ -533,6 +556,7 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
                 page.locator("#sendButton").click()
 
             response = claw_info.value
+            stage = "response"
             response_status = response.status
             content_type = (response.headers.get("content-type") or "").lower()
             sse_content_type = content_type.startswith("text/event-stream")
@@ -541,6 +565,7 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
             if not sse_content_type:
                 _fail("claw_general_not_sse")
 
+            stage = "assistant"
             page.wait_for_function(
                 """before => {
                   const items = Array.from(document.querySelectorAll('#messageList .assistant-message'));
@@ -597,6 +622,7 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
         print("RAW_PROMPT_OUTPUT=0")
         print("RAW_RESPONSE_OUTPUT=0")
         print("RETRY=0")
+        print("FAIL_STAGE=" + stage)
         print("B54_CLAW_OWNER_ONE_SHOT=FAIL_" + str(exc))
         return 22
     except Exception as exc:
@@ -609,6 +635,7 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
         print("RAW_PROMPT_OUTPUT=0")
         print("RAW_RESPONSE_OUTPUT=0")
         print("RETRY=0")
+        print("FAIL_STAGE=" + stage)
         print("B54_CLAW_OWNER_ONE_SHOT=FAIL_BROWSER_RUNTIME_" + type(exc).__name__)
         return 23
 
