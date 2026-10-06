@@ -53,6 +53,11 @@ FORBIDDEN_BROWSER_TOKENS = (
     "platform_provider_id",
 )
 
+# Obvious synthetic fixture, intentionally not credential-shaped: it proves the
+# optional model-scoped auth path without resembling any real API token, so
+# secret scanners do not misclassify this test source as a leaked credential.
+SYNTHETIC_TEST_CREDENTIAL = "TEST_ONLY_NOT_A_REAL_CREDENTIAL"
+
 
 def _browser_sources() -> list[Path]:
     return sorted(
@@ -90,10 +95,10 @@ def test_space_bunny_uses_optional_model_scoped_kilo_secret(monkeypatch) -> None
     # Existing owner-managed key is used when present.
     monkeypatch.setenv(
         KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
-        "kilo_live_abcdefghijklmnopqrstuvwxyz1234",
+        SYNTHETIC_TEST_CREDENTIAL,
     )
     authenticated = plat._request_headers(spec, model_id=KILO_SPACE_BUNNY_MODEL_ID)
-    assert authenticated["Authorization"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
+    assert authenticated["Authorization"] == f"Bearer {SYNTHETIC_TEST_CREDENTIAL}"
 
     # Missing optional key falls back to the anonymous request shape.
     monkeypatch.delenv(KILO_SPACE_BUNNY_CREDENTIAL_BINDING, raising=False)

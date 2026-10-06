@@ -740,10 +740,14 @@ class B66CanonicalIntegrationTests(unittest.TestCase):
     and is not re-proven here. This class only pins that the B66 server-side
     adapter cannot drift from the canonical authorities:
 
-    - ``padiem_ai_core.model_primary`` (canonical text+vision primary IDs);
-    - the registered B14 ``kilo_provider`` Space Bunny lane (route IDs plus
-      the canonical ``image`` capability tag, read via AST so this suite never
-      imports the platform runtime);
+    - ``padiem_ai_core.model_primary`` stays in the model-neutral HOLD state
+      (canonical text+vision primary pending successor selection, no
+      secondary, no fallback, no silent fallback anywhere);
+    - the registered B14 ``kilo_provider`` Space Bunny lane survives as
+      historical metadata only (route IDs plus the historical ``image``
+      capability tag, read via AST so this suite never imports the platform
+      runtime); the retired lane is never re-registered as an executable
+      canonical primary;
     - the canonical B14 multimodal shape (text + exactly one base64 data-URL
       image, manual, fallback off).
     """
@@ -824,15 +828,30 @@ class B66CanonicalIntegrationTests(unittest.TestCase):
         assert capabilities, "space bunny lane capabilities not found"
         return model_id, upstream, capabilities
 
-    def test_governed_lane_matches_canonical_primary(self) -> None:
+    def test_governed_lane_is_historical_while_canonical_primary_pending(self) -> None:
         primary = self._load_model_primary()
-        self.assertEqual(B66_GOVERNED_ROUTE, primary.TEXT_PRIMARY_MODEL_ID)
-        self.assertEqual(B66_GOVERNED_ROUTE, primary.VISION_PRIMARY_MODEL_ID)
-        self.assertEqual(B66_GOVERNED_UPSTREAM, primary.TEXT_PRIMARY_UPSTREAM_MODEL)
-        self.assertEqual(B66_GOVERNED_UPSTREAM, primary.VISION_PRIMARY_UPSTREAM_MODEL)
-        self.assertEqual(B66_GOVERNED_PROVIDER, primary.TEXT_PRIMARY_PROVIDER_ID)
+        # Canonical Padiem primary stays model-neutral HOLD: pending successor
+        # selection, no provider, no upstream model, no secondary, no fallback.
+        self.assertEqual(primary.TEXT_PRIMARY_DECISION, "PENDING_SUCCESSOR_SELECTION")
+        self.assertIsNone(primary.TEXT_PRIMARY_MODEL_ID)
+        self.assertIsNone(primary.TEXT_PRIMARY_PROVIDER_ID)
+        self.assertIsNone(primary.TEXT_PRIMARY_UPSTREAM_MODEL)
+        self.assertEqual(primary.VISION_PRIMARY_DECISION, "PENDING_SUCCESSOR_SELECTION")
+        self.assertIsNone(primary.VISION_PRIMARY_MODEL_ID)
+        self.assertIsNone(primary.VISION_PRIMARY_PROVIDER_ID)
+        self.assertIsNone(primary.VISION_PRIMARY_UPSTREAM_MODEL)
         self.assertIsNone(primary.TEXT_SECONDARY_MODEL_ID)
         self.assertFalse(primary.TEXT_FALLBACK_ENABLED)
+        # The B66 governed lane identity survives as historical metadata only.
+        # The historical pin differs from the active canonical primary while the
+        # successor is pending: that mismatch is expected and correct during
+        # HOLD, and neither the retired Space Bunny lane nor any new model is
+        # re-registered as an executable canonical primary.
+        self.assertEqual(B66_GOVERNED_ROUTE, "kilo/stealth-space-bunny-alpha")
+        self.assertEqual(B66_GOVERNED_UPSTREAM, "stealth/space-bunny-alpha")
+        self.assertEqual(B66_GOVERNED_PROVIDER, "kilo")
+        self.assertNotEqual(primary.TEXT_PRIMARY_MODEL_ID, B66_GOVERNED_ROUTE)
+        self.assertNotEqual(primary.VISION_PRIMARY_MODEL_ID, B66_GOVERNED_ROUTE)
 
     def test_governed_lane_matches_registered_b14_lane(self) -> None:
         model_id, upstream, capabilities = self._space_bunny_lane_facts()

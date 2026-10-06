@@ -41,6 +41,11 @@ _TINY_PNG_URL = (
     "data:image/png;base64," + base64.b64encode(_TINY_PNG).decode("ascii")
 )
 
+# Obvious synthetic fixture, intentionally not credential-shaped: it proves the
+# optional model-scoped auth path without resembling any real API token, so
+# secret scanners do not misclassify this test source as a leaked credential.
+SYNTHETIC_TEST_CREDENTIAL = "TEST_ONLY_NOT_A_REAL_CREDENTIAL"
+
 
 def test_space_bunny_is_not_canonical_primary_but_registration_is_preserved() -> None:
     text = CANONICAL_PATH.read_text(encoding="utf-8")
@@ -104,7 +109,7 @@ async def test_space_bunny_image_payload_reaches_kilo_adapter_with_optional_secr
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setenv(
         KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
-        "kilo_live_abcdefghijklmnopqrstuvwxyz1234",
+        SYNTHETIC_TEST_CREDENTIAL,
     )
     captured: dict[str, object] = {}
 
@@ -154,7 +159,7 @@ async def test_space_bunny_image_payload_reaches_kilo_adapter_with_optional_secr
         {"type": "text", "text": "이 영수증 금액을 읽어줘"},
         {"type": "image_url", "image_url": {"url": _TINY_PNG_URL}},
     ]
-    assert captured["auth"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
+    assert captured["auth"] == f"Bearer {SYNTHETIC_TEST_CREDENTIAL}"
     assert response["choices"][0]["message"]["content"] == "이미지 확인됨"
 
     spec = ps.get_platform_provider(KILO_PROVIDER_ID)
@@ -162,7 +167,7 @@ async def test_space_bunny_image_payload_reaches_kilo_adapter_with_optional_secr
     assert spec.credential_source == ps.CredentialSource.NONE
     assert "Authorization" not in plat._request_headers(spec)
     headers = plat._request_headers(spec, model_id=KILO_SPACE_BUNNY_MODEL_ID)
-    assert headers["Authorization"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
+    assert headers["Authorization"] == f"Bearer {SYNTHETIC_TEST_CREDENTIAL}"
 
     monkeypatch.delenv(KILO_SPACE_BUNNY_CREDENTIAL_BINDING, raising=False)
     anonymous_headers = plat._request_headers(
