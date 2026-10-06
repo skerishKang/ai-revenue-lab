@@ -102,6 +102,10 @@ export type ShellStringKey =
   | 'workspace.kind.directory'
   | 'workspace.kind.file'
   | 'workspace.kind.link'
+  | 'workspace.searchLabel'
+  | 'workspace.searchPlaceholder'
+  | 'workspace.searchNoMatches'
+  | 'workspace.searchTruncated'
   | 'desktop.conversationTitle'
   | 'desktop.conversationPendingTitle'
   | 'desktop.conversationPendingBody'
@@ -205,6 +209,10 @@ const KO: Record<ShellStringKey, string> = {
   'workspace.kind.directory': '폴더',
   'workspace.kind.file': '파일',
   'workspace.kind.link': '바로가기(열기 불가)',
+  'workspace.searchLabel': '파일 검색',
+  'workspace.searchPlaceholder': '선택한 폴더 안에서 이름으로 찾기',
+  'workspace.searchNoMatches': '일치하는 항목이 없습니다.',
+  'workspace.searchTruncated': '많은 항목 중 일부만 살펴보고 처음 50개를 표시했습니다.',
   'desktop.conversationTitle': 'Claw',
   'desktop.conversationPendingTitle': '같은 대화를 데스크톱에서 이어서 여는 연결을 준비 중입니다.',
   'desktop.conversationPendingBody': '이 화면은 새 대화를 만들지 않습니다. Padiem Web의 기존 대화를 그대로 가져오는 연결이 확인되면 여기에서 이어집니다.',
@@ -309,6 +317,10 @@ const EN: Record<ShellStringKey, string> = {
   'workspace.kind.directory': 'Folder',
   'workspace.kind.file': 'File',
   'workspace.kind.link': 'Link (cannot open)',
+  'workspace.searchLabel': 'File search',
+  'workspace.searchPlaceholder': 'Find files by name inside the chosen folder',
+  'workspace.searchNoMatches': 'No matching items.',
+  'workspace.searchTruncated': 'Only the first 50 matches are shown from a bounded scan.',
   'desktop.conversationTitle': 'Claw',
   'desktop.conversationPendingTitle': 'Same-conversation continuity is being prepared for Desktop.',
   'desktop.conversationPendingBody': 'This surface does not create another conversation. It will continue the existing Padiem Web conversation once the canonical projection is connected.',

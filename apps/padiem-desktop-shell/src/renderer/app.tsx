@@ -56,6 +56,7 @@ import type {
   WorkspaceEntryKind,
   WorkspaceListResponse,
   WorkspaceRootResponse,
+  WorkspaceSearchResponse,
 } from './types.js';
 
 export interface ShellViewState {
@@ -65,6 +66,8 @@ export interface ShellViewState {
   readonly log: BoundedLogResponse | null;
   readonly workspaceRoot: WorkspaceRootResponse | null;
   readonly workspaceListing: WorkspaceListResponse | null;
+  /** #3583 — last bounded search response; null until the first search. */
+  readonly workspaceSearch: WorkspaceSearchResponse | null;
   /** #3436 project browser: the selected entry is view state, never IPC. */
   readonly selectedWorkspaceEntry: WorkspaceEntry | null;
   readonly conversationList: CanonicalConversationListResponse | null;
@@ -87,6 +90,7 @@ export const INITIAL_SHELL_VIEW_STATE: ShellViewState = Object.freeze({
   log: null,
   workspaceRoot: null,
   workspaceListing: null,
+  workspaceSearch: null,
   selectedWorkspaceEntry: null,
   conversationList: null,
   selectedConversation: null,
@@ -105,6 +109,11 @@ export interface ShellActions {
   readonly chooseWorkspaceRoot: () => Promise<void>;
   readonly openWorkspaceDirectory: (relativePath: string) => Promise<void>;
   readonly clearWorkspaceRoot: () => Promise<void>;
+  /**
+   * #3583 — bounded fuzzy file search over the selected root. The renderer
+   * supplies only a query string; results are a main-owned projection.
+   */
+  readonly searchWorkspace: (query: string) => Promise<void>;
   /**
    * #3436 project browser: selecting an entry is local view state. No IPC is
    * involved — the main process learns nothing about which entry is highlighted.
@@ -220,9 +229,19 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
       ...prev,
       workspaceRoot: root,
       workspaceListing: null,
+      workspaceSearch: null,
       selectedWorkspaceEntry: null,
     }));
   }, [api]);
+
+  const searchWorkspace = useCallback(
+    async (query: string): Promise<void> => {
+      if (!api) return;
+      const search = await api.searchWorkspace(query);
+      setState((prev) => ({ ...prev, workspaceSearch: search }));
+    },
+    [api],
+  );
 
   const selectWorkspaceEntry = useCallback((relativePath: string): void => {
     setState((prev) => {
@@ -289,6 +308,7 @@ export function useShellBridge(): ShellBridge | { readonly error: string } {
       chooseWorkspaceRoot,
       openWorkspaceDirectory,
       clearWorkspaceRoot,
+      searchWorkspace,
       selectWorkspaceEntry,
       selectConversation,
     },
@@ -518,16 +538,20 @@ function formatWorkspaceModified(modifiedAt: string | null, locale: ShellLocale)
 export function WorkspacePanel(props: {
   root: WorkspaceRootResponse | null;
   listing: WorkspaceListResponse | null;
+  /** #3583 — last bounded search response; null until the first search. */
+  search: WorkspaceSearchResponse | null;
   selectedEntry: WorkspaceEntry | null;
   actions: ShellActions;
   locale: ShellLocale;
   advanced: boolean;
 }): ReactElement {
-  const { root, listing, selectedEntry, actions, locale, advanced } = props;
+  const { root, listing, search, selectedEntry, actions, locale, advanced } = props;
   const t = (key: ShellStringKey): string => translate(locale, key);
   const selected = root?.selected === true;
   const directory = listing?.directory ?? '';
   const crumbs = workspaceBreadcrumbs(root?.rootName ?? '', directory);
+  /** While a query is active the search projection replaces the listing. */
+  const searchActive = search !== null && search.query.trim() !== '';
 
   return (
     <section className="panel workspace-panel">
@@ -583,6 +607,80 @@ export function WorkspacePanel(props: {
               {t('workspace.root')}
             </button>
           </div>
+          {/* #3583 — bounded file search. The form submits ONLY a query
+              string; there is no path input anywhere on this surface. */}
+          <form
+            className="workspace-search"
+            data-search-active={searchActive ? 'true' : 'false'}
+            onSubmit={(event) => {
+              event.preventDefault();
+              const value = new FormData(event.currentTarget).get('query');
+              if (typeof value === 'string') void actions.searchWorkspace(value);
+            }}
+            onReset={() => void actions.searchWorkspace('')}
+          >
+            <label className="workspace-search-label" htmlFor="workspace-search-input">
+              {t('workspace.searchLabel')}
+            </label>
+            <input
+              id="workspace-search-input"
+              name="query"
+              type="search"
+              maxLength={128}
+              placeholder={t('workspace.searchPlaceholder')}
+              disabled={!selected}
+            />
+          </form>
+          {searchActive && search && !search.ok ? (
+            <p className="workspace-error" data-error-code={search.errorCode ?? 'none'}>
+              {search.errorCode === 'invalid_query'
+                ? t('workspace.searchNoMatches')
+                : t('workspace.unavailable')}
+            </p>
+          ) : null}
+          {searchActive && search?.ok ? (
+            <ul className="workspace-list workspace-search-results" data-search-results="true">
+              {search.matches.map((entry) => (
+                <li
+                  key={entry.relativePath}
+                  data-kind={entry.kind}
+                  data-entry-path={entry.relativePath}
+                >
+                  {entry.kind === 'directory' ? (
+                    <button
+                      className="workspace-entry"
+                      onClick={() => {
+                        void actions.openWorkspaceDirectory(entry.relativePath);
+                        void actions.searchWorkspace('');
+                      }}
+                    >
+                      <span aria-hidden="true">▸</span>
+                      <span>{entry.name}</span>
+                      <span className="workspace-entry-size">{entry.relativePath}</span>
+                    </button>
+                  ) : (
+                    <button className="workspace-entry workspace-entry-selectable">
+                      <span aria-hidden="true">{entry.kind === 'file' ? '·' : '↗'}</span>
+                      <span>{entry.name}</span>
+                      <span className="workspace-entry-size">{entry.relativePath}</span>
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {searchActive && search?.ok && search.matches.length === 0 ? (
+            <p className="guidance" data-search-empty="true">
+              {t('workspace.searchNoMatches')}
+            </p>
+          ) : null}
+          {searchActive && search?.ok && (search.truncated || search.matches.length >= search.maxResults) ? (
+            <p className="notice" data-search-truncated="true">
+              {t('workspace.searchTruncated')}
+            </p>
+          ) : null}
+          {!searchActive ? (
+            <>
           {listing && !listing.ok ? (
             <p className="workspace-error" data-error-code={listing.errorCode ?? 'none'}>
               {listing.errorCode === 'depth_exceeded'
@@ -625,6 +723,8 @@ export function WorkspacePanel(props: {
             <p className="guidance">{t('workspace.noEntries')}</p>
           ) : null}
           {listing?.truncated ? <p className="notice">{t('workspace.truncated')}</p> : null}
+            </>
+          ) : null}
           {selectedEntry ? (
             <div className="workspace-selection" data-selected-path={selectedEntry.relativePath}>
               <strong>{selectedEntry.name}</strong>
@@ -1054,6 +1154,7 @@ export function ShellView(props: {
           <WorkspacePanel
             root={state.workspaceRoot}
             listing={state.workspaceListing}
+            search={state.workspaceSearch}
             selectedEntry={state.selectedWorkspaceEntry}
             actions={actions}
             locale={locale}

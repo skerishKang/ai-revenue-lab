@@ -15,7 +15,13 @@ import type {
   WorkspaceListRequest,
   WorkspaceListResponse,
   WorkspaceRootResponse,
+  WorkspaceSearchRequest,
+  WorkspaceSearchResponse,
 } from '../contract/ipc.js';
+import {
+  mapWorkspaceEntryToSearchCandidate,
+  searchWorkspaceEntries,
+} from './workspace-file-search.js';
 
 export const MAX_WORKSPACE_ENTRIES = 200;
 const MAX_RELATIVE_PATH_LENGTH = 512;
@@ -26,6 +32,17 @@ const MAX_SEGMENT_LENGTH = 255;
  * time; anything deeper fails closed with `depth_exceeded`.
  */
 export const MAX_TREE_DEPTH = 24;
+
+/**
+ * #3583 workspace file search: the walk is bounded twice — by tree depth
+ * (MAX_TREE_DEPTH, shared with listing) and by a total scanned-entry budget.
+ * Reaching the budget stops the walk cleanly and reports `truncated` instead
+ * of failing, so huge trees still return useful ranked results.
+ */
+export const MAX_SEARCH_ENTRIES = 4000;
+/** Top-K matches returned per search; the rest stay on the caller's side. */
+export const MAX_SEARCH_RESULTS = 50;
+const MAX_QUERY_LENGTH = 128;
 
 export type WorkspaceRootPicker = () => Promise<string | null>;
 
@@ -166,6 +183,129 @@ export class LocalWorkspaceController {
       return emptyListing('workspace_unavailable', this.rootState(), relativePath);
     }
   }
+
+  /**
+   * #3583 — bounded fuzzy file search over the selected root.
+   *
+   * The renderer supplies only `{ query }`: there is no path input and no
+   * absolute path anywhere in the response (matching rows reuse the same
+   * relative-path-only projection as listing). The walk is main-process,
+   * read-only, depth- and entry-bounded, and never follows symbolic links:
+   * a link entry is skipped entirely, which both blocks traversal and keeps
+   * the scan inside the user-selected root.
+   */
+  async search(request: unknown): Promise<WorkspaceSearchResponse> {
+    if (this.#root === null) {
+      return emptySearch('root_not_selected');
+    }
+
+    const query = parseSearchQuery(request);
+    if (query === null) {
+      return emptySearch('invalid_query', this.rootState(), '');
+    }
+    // Capture into a local const: async closures below cannot re-observe the
+    // private field's null narrowing between awaits.
+    const root: string = this.#root;
+
+    // Walk state. Scanned entries are collected flat with their relative
+    // paths; ranking happens once, after the walk, in the pure primitive.
+    // Each queue item carries the parent's relative segments so a directory
+    // can never be re-resolved from a mutable string (junction/TOCTOU-safe).
+    const candidates: Array<{
+      readonly name: string;
+      readonly relativePath: string;
+      readonly kind: 'directory' | 'file';
+    }> = [];
+    let truncated = false;
+
+    // Iterative BFS with explicit depth accounting. The root is depth 0 and
+    // its children are depth 1, so MAX_TREE_DEPTH bounds levels below the
+    // root consistently with listing.
+    const queue: Array<{
+      readonly absolutePath: string;
+      readonly depth: number;
+      readonly segments: readonly string[];
+    }> = [{ absolutePath: root, depth: 0, segments: [] }];
+    try {
+      while (queue.length > 0) {
+        if (candidates.length >= MAX_SEARCH_ENTRIES) {
+          truncated = true;
+          break;
+        }
+        const current = queue.shift();
+        if (current === undefined) break;
+        const rows = await readdir(current.absolutePath, { withFileTypes: true });
+        for (const row of rows) {
+          if (candidates.length >= MAX_SEARCH_ENTRIES) {
+            truncated = true;
+            break;
+          }
+          if (row.isSymbolicLink()) {
+            // Never follow and never surface links during search: withFileTypes
+            // reports them via lstat semantics, so a symlink/junction to
+            // anywhere (including outside the root) is skipped entirely —
+            // traversal stays impossible by construction.
+            continue;
+          }
+          const relativePath = [...current.segments, row.name].join('/');
+          if (row.isDirectory()) {
+            candidates.push({ name: row.name, relativePath, kind: 'directory' });
+            if (current.depth + 1 < MAX_TREE_DEPTH) {
+              queue.push({
+                absolutePath: path.join(current.absolutePath, row.name),
+                depth: current.depth + 1,
+                segments: [...current.segments, row.name],
+              });
+            }
+          } else if (row.isFile()) {
+            candidates.push({ name: row.name, relativePath, kind: 'file' });
+          }
+          // Anything else (sockets, FIFOs, etc.) is ignored.
+        }
+      }
+
+      const ranked = searchWorkspaceEntries(
+        candidates.map(mapWorkspaceEntryToSearchCandidate),
+        query,
+        { limit: MAX_SEARCH_RESULTS },
+      );
+
+      const withMetadata = await Promise.all(
+        ranked.map(async (match) => {
+          try {
+            const stats = await lstat(path.join(root, match.relativePath));
+            return Object.freeze({
+              name: match.name,
+              relativePath: match.relativePath,
+              kind: match.kind,
+              sizeBytes: stats.isFile() ? stats.size : null,
+              modifiedAt: stats.mtime.toISOString(),
+            });
+          } catch {
+            return Object.freeze({
+              name: match.name,
+              relativePath: match.relativePath,
+              kind: match.kind,
+              sizeBytes: null,
+              modifiedAt: null,
+            });
+          }
+        }),
+      );
+      return Object.freeze({
+        ok: true,
+        root: this.rootState(),
+        query,
+        matches: Object.freeze(withMetadata),
+        truncated,
+        scannedEntries: candidates.length,
+        maxResults: MAX_SEARCH_RESULTS,
+        errorCode: null,
+      });
+    } catch {
+      return emptySearch('workspace_unavailable', this.rootState(), query);
+    }
+  }
 }
 
 function parseRelativePath(
@@ -216,6 +356,50 @@ function parseRelativePath(
 function isInsideRoot(root: string, candidate: string): boolean {
   const relative = path.relative(root, candidate);
   return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
+}
+
+/**
+ * #3583 search request validation: the renderer supplies only a query
+ * string. Anything that is not a plain non-empty string within the length
+ * bound is refused with `invalid_query`. There is deliberately no path
+ * parsing here — search has no path input at all.
+ */
+function parseSearchQuery(request: unknown): string | null {
+  if (
+    request !== undefined &&
+    request !== null &&
+    (typeof request !== 'object' || Array.isArray(request))
+  ) {
+    return null;
+  }
+  const raw = (request ?? {}) as WorkspaceSearchRequest;
+  const value = raw.query;
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (trimmed.length === 0 || trimmed.length > MAX_QUERY_LENGTH) return null;
+  return trimmed;
+}
+
+function emptySearch(
+  errorCode: WorkspaceSearchResponse['errorCode'],
+  root: WorkspaceRootResponse = Object.freeze({
+    selected: false,
+    rootName: null,
+    rootPath: null,
+    reason: 'current',
+  }),
+  query = '',
+): WorkspaceSearchResponse {
+  return Object.freeze({
+    ok: false,
+    root,
+    query,
+    matches: Object.freeze([]),
+    truncated: false,
+    scannedEntries: 0,
+    maxResults: MAX_SEARCH_RESULTS,
+    errorCode,
+  });
 }
 function emptyListing(
   errorCode: WorkspaceListResponse['errorCode'],
