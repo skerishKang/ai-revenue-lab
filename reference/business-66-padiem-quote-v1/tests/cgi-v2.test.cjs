@@ -16,10 +16,17 @@ eq(candidate.content.items.columns.map((c) => c.width),
   ["5.3%", "23.9%", "18.6%", "5.7%", "5.7%", "15.4%", "17.1%", "8.4%"],
   "CGI measured eight-column widths");
 
+eq(candidate.content.cgiV2.bank, "", "CGI source profile contains no payment account");
+eq(candidate.content.cgiV2.fax, "", "CGI source profile contains no customer-private fax");
+
 const approved = CgiV2.approvedProfile({
   approvedBy: "operator:central",
   approvedAt: "2026-10-06T00:00:00.000Z",
-  approvalRef: "issue-3521"
+  approvalRef: "issue-3521",
+  privatePresentation: {
+    bank: "테스트은행 000-000 테스트계정",
+    fax: "FAX : 000-000-0000"
+  }
 });
 check(approved && approved.approved === true, "CGI explicit approval activates profile");
 eq(approved.approvalBasis, "explicit_approval", "CGI has no built-in trust exception");
