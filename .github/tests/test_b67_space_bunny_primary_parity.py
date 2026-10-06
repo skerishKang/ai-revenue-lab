@@ -62,7 +62,7 @@ def test_product_tiers_and_registry_hold_plus_space_bunny() -> None:
     for path in (PRODUCT_TIERS, TIER_REGISTRY):
         text = path.read_text(encoding="utf-8")
         assert 'route_id="plus.hold.v1"' in text
-        assert 'model_id="padiem-profile/plus-hold"' in text
+        assert "model_id=PLUS_HOLD_MODEL_ID" in text
         assert 'model_id="kilo/stealth-space-bunny-alpha"' in text
         assert 'upstream_model="stealth/space-bunny-alpha"' in text
         assert "HOLD_AS_DATA_ONLY" in text
