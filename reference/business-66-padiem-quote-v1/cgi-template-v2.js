@@ -106,16 +106,16 @@
     return out;
   }
 
-  function candidate() {
+  function candidate(privatePresentation) {
     return Template.buildProfile({
       id: TEMPLATE_ID, name: TEMPLATE_NAME, builtin: false, isDefault: false,
-      approval: null, createdAt: "", updatedAt: "", content: content()
+      approval: null, createdAt: "", updatedAt: "", content: content(privatePresentation)
     });
   }
 
   function approvedProfile(meta) {
     var info = meta && typeof meta === "object" ? meta : {};
-    var candidateProfile = candidate();
+    var candidateProfile = candidate(info.privatePresentation);
     if (!candidateProfile || !candidateProfile.fingerprint) return null;
     return Template.buildProfile({
       id: TEMPLATE_ID,
