@@ -19,6 +19,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: b53-padiem-sidecar-s0-ci-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   b53-sidecar-s0-contract:
     runs-on: ubuntu-latest

@@ -96,13 +96,19 @@ Strategic controller writes architecture, issue contract, and acceptance criteri
         ↓
 Free model implements on a dedicated branch
         ↓
-Free model reports changed files, tests, outputs, and remaining risks
+Focused implementation checks / DEV_FAST_GATE
         ↓
-Strategic controller inspects the exact diff and evidence
+Implementation actor is released to the next authorized task
+        ↓
+Independent Windows / Ubuntu / browser validators run in parallel as required
+        ↓
+Validator owns reproduction and may repair attributable failures
+        ↓
+Strategic controller inspects the exact diff and final validation evidence
         ↓
 Revise, reject, or open/approve a pull request
         ↓
-Merge only after acceptance criteria are demonstrated
+Merge only after acceptance criteria and required FULL_VALIDATION are demonstrated
 ```
 
 ## 5. Issue contract requirements
@@ -137,6 +143,8 @@ A completion claim should include at minimum:
 - confirmation that prohibited files and scope were not changed.
 
 Claims without evidence are not completion.
+
+Implementation completion and merge readiness are deliberately separate. A worker may report `DEV_FAST_GATE=PASS` and `DEV_ACTOR_RELEASED=YES` while `FULL_VALIDATION=PENDING`; that is valid progress, not a merge claim.
 
 ## 7. Model abstraction
 

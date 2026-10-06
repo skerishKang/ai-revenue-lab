@@ -116,6 +116,12 @@ Missing required adoption evidence is a `NOT_READY` condition.
 ## Evidence sufficiency
 
 - Implementation self-check:
+- `DEV_FAST_GATE` result:
+- `DEV_ACTOR_RELEASED`:
+- `VALIDATOR_WINDOWS`:
+- `VALIDATOR_UBUNTU`:
+- `VALIDATOR_BROWSER`:
+- `FULL_VALIDATION`:
 - CI:
 - Independent Local Validation required? yes/no:
 - Independent validator different from implementation actor? yes/no/N/A:
@@ -177,6 +183,7 @@ Reason:
 - Merge authorized? yes/no/pending authority:
 - Applicable design gate satisfied? yes/no/N/A:
 - Expected head required for merge:
+- Final required `FULL_VALIDATION=PASS`? yes/no/N/A:
 - Exact-head independent-validation record present or NOT_REQUIRED reason present? yes/no:
 - External red security/compliance signals resolved or explicitly authorized/waived? yes/no/N/A:
 - Deployment rule:

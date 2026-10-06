@@ -39,8 +39,8 @@ Technology discovery does not automatically pause an already-approved active tas
 
 1. **User / Product Owner** — product goals, priorities, material UX/business decisions, merge/Production authority when the work contract requires owner authorization.
 2. **Web CTO** — work contract, architecture/safety boundary, acceptance criteria, current-remote audit, independent final review.
-3. **Implementation Worker (local model)** — implementation on the authorized branch, implementation tests, Draft PR, CI response, implementation report. In the current operating model this is a local model with GitHub access; its local checks are implementation self-checks unless a second actor re-runs them.
-4. **Local Validator** — exact-head execution in the required real environment when independent local/browser/OS/hardware validation is required.
+3. **Implementation Worker (local model)** — implementation on the authorized branch, focused implementation tests, Draft PR, `DEV_FAST_GATE`, and implementation report. After the fast gate passes, the worker is released to the next authorized issue instead of waiting synchronously for the full Windows/Ubuntu/browser matrix.
+4. **Local Validator(s)** — asynchronous exact-head execution in the required real environments when independent local/browser/OS/hardware validation is required. Windows, Ubuntu and browser/full-regression validation may be owned by different validator actors in parallel.
 
 One actor may perform multiple **non-independent** stages. The same actor must not claim both implementation and **independent Local Validation** for the same revision.
 
@@ -64,6 +64,30 @@ REPORT_POINTER=<immutable report/artifact pointer or NOT_REQUIRED reason>
 ```
 
 The Web CTO re-checks that this record names the exact head being merged.
+
+## Fast development gate and parallel validation
+
+Development progress and merge readiness are separate gates.
+
+```text
+DEV_FAST_GATE=PASS
+→ DEV_ACTOR_RELEASED=YES
+→ implementation actor may move to the next authorized issue
+
+VALIDATOR_WINDOWS=PENDING|PASS|FAIL|FIXING
+VALIDATOR_UBUNTU=PENDING|PASS|FAIL|FIXING
+VALIDATOR_BROWSER=PENDING|PASS|FAIL|NOT_REQUIRED
+→ validators run asynchronously and may work in parallel
+
+FULL_VALIDATION=PASS
+→ required before merge when configured/relevant
+```
+
+A failing asynchronous validator blocks merge of the affected revision, not unrelated development progress. If a validator fixes source, that actor becomes a repair/implementation actor for the new revision; the modified run is not independent validation of the new head. The repair may be revalidated by another independent actor while the original implementation worker continues other work.
+
+For Windows-first slices, the focused Windows proof may be the `DEV_FAST_GATE`. For web/backend slices, use the smallest focused web/API/contract proof that actually exercises the change. Do not require every supported OS/browser in the implementer's synchronous critical path.
+
+See issue #3429 for the CI/workflow optimization program.
 
 ## Product-evidence stages are flexible
 
@@ -173,8 +197,10 @@ The fast-development rule means “do not wait on unrelated validation”; it do
 User request / portfolio authority
 → Web CTO exact work contract
 → Implementation Worker (local model) implementation
-→ implementation self-check + configured CI
-→ independent validation when required
+→ focused self-check + DEV_FAST_GATE
+→ DEV_ACTOR_RELEASED; implementation may continue elsewhere
+→ asynchronous Windows / Ubuntu / browser validators when required
+→ FULL_VALIDATION on the final exact head
 → Web CTO final review
 → owner decision when materially required
 → merge

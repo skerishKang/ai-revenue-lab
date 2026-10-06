@@ -31,15 +31,27 @@ Use `EXTENDED` only when the change is materially broad/high-risk, needs indepen
 ## Implementation evidence
 
 - Focused load-bearing regression:
+- Commands/checks run against this head:
+- Exit/status and pass/fail/skip counts:
+- `DEV_FAST_GATE=PASS|FAIL|NOT_RUN`:
+- `DEV_ACTOR_RELEASED=YES|NO`:
 - Relevant configured CI:
 - Observational/non-blocking CI, if any:
 - Known limitations:
 - Production mutation: 0 / authorized:
 
+After `DEV_FAST_GATE=PASS`, the implementation actor may continue another authorized issue while independent Windows/Ubuntu/browser/full validation proceeds asynchronously. The fast gate is not merge approval.
+
+Do not present implementer-run local/browser checks as independent Local Validation.
+
 ## Validation decision
 
 - Independent validation: REQUIRED / NOT_REQUIRED
 - Reason:
+- `VALIDATOR_WINDOWS=PENDING|PASS|FAIL|FIXING|NOT_REQUIRED`:
+- `VALIDATOR_UBUNTU=PENDING|PASS|FAIL|FIXING|NOT_REQUIRED`:
+- `VALIDATOR_BROWSER=PENDING|PASS|FAIL|FIXING|NOT_REQUIRED`:
+- `FULL_VALIDATION=PENDING|PASS|FAIL`:
 - If REQUIRED, validator / exact head / result / artifact:
 - If MVP_HANDOFF, fixed handoff blockers:
 - If MVP_HANDOFF, required final Production smoke:
@@ -126,8 +138,11 @@ Use only the items applicable to this change.
 - [ ] No unrelated files are included.
 - [ ] Failed/skipped/unexecuted checks are reported truthfully.
 - [ ] No secrets, tokens, credentials, personal data, or private evidence were committed.
-- [ ] Independent validation is either REQUIRED with exact-head evidence or explicitly NOT_REQUIRED.
-- [ ] Any external red security/compliance signal is resolved or explicitly dispositioned when applicable.
+- [ ] Independent validation claims satisfy the actor-separation rule and the exact-head validator/result/report pointer is discoverable from this PR, or NOT_REQUIRED is explicitly justified.
+- [ ] Required `FULL_VALIDATION` is PASS on the final exact head before merge; pending full validation did not unnecessarily block unrelated implementation work.
+- [ ] Any external red security/compliance signal is resolved or has an explicit authorized disposition/waiver; unrelated green CI is not used as a substitute.
+- [ ] Contract defects were traced through downstream trust boundaries when applicable; explicit null/undefined/missing semantics are preserved.
+- [ ] Load-bearing mutation/differential proof was recorded when required by the work contract/review.
 - [ ] Owner-only decisions are not inferred.
 - [ ] Production claims, when applicable, are tied to the actual deployed revision.
 

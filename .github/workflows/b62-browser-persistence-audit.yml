@@ -16,6 +16,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: b62-browser-persistence-audit-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   browser-persistence-audit:
     runs-on: ubuntu-24.04

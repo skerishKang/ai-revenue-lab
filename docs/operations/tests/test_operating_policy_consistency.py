@@ -94,6 +94,28 @@ class OperatingPolicyConsistencyTests(unittest.TestCase):
                 "same-revision independence boundary missing",
             )
 
+    def test_fast_gate_parallel_validation_policy_is_wired_into_active_contracts(self) -> None:
+        agents = self.read(REPO / "AGENTS.md")
+        policy = self.read(OPS / "AI_DEVELOPMENT_OPERATING_POLICY.md")
+        workflow = self.read(OPS / "WORKFLOW_STATUS_MODEL.md")
+        work_order = self.read(OPS / "templates" / "CTO_WORK_ORDER.md")
+        developer_report = self.read(OPS / "templates" / "WEB_DEVELOPER_REPORT.md")
+        validator_report = self.read(OPS / "templates" / "LOCAL_VALIDATION_REPORT.md")
+        final_review = self.read(OPS / "templates" / "CTO_FINAL_REVIEW.md")
+        pr_template = self.read(REPO / ".github" / "pull_request_template.md")
+
+        for text in (agents, policy, workflow, work_order, developer_report, final_review, pr_template):
+            self.assertIn("DEV_FAST_GATE", text)
+        for text in (agents, policy, workflow, developer_report, final_review, pr_template):
+            self.assertIn("FULL_VALIDATION", text)
+
+        self.assertIn("DEV_ACTOR_RELEASED", agents)
+        self.assertIn("VALIDATOR_WINDOWS", policy)
+        self.assertIn("VALIDATOR_UBUNTU", policy)
+        self.assertIn("VALIDATOR_BROWSER", policy)
+        self.assertIn("repair/implementation actor", validator_report)
+        self.assertIn("does not wait synchronously", work_order.lower())
+
     def test_active_policy_does_not_restore_mandatory_ui_ux_backend_sequence(self) -> None:
         files = [
             REPO / "AGENTS.md",
