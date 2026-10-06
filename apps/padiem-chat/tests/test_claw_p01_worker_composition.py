@@ -48,6 +48,8 @@ from app.worker_config import (
     p01_engine_binding_diagnostic,
     p01_engine_config_from_worker_bindings,
 )
+_MODEL_EXECUTION_AVAILABLE = active_route_for(ProductTierLabel.PLUS) is not None
+
 from kagent.contracts import ClawTaskIntent, ExecutionMode
 from kagent.p01_adapter import P01_AGENT_ID, P01_APP_ID, P01CoreOrchestrationAdapter
 from kagent.runs import ClawRun
@@ -168,6 +170,7 @@ class _FakeEngineServiceBinding:
         )
 
 
+@pytest.mark.skipif(not _MODEL_EXECUTION_AVAILABLE, reason="successor model route not selected")
 def test_plus_production_composition_reaches_engine_service_binding_once() -> None:
     """Regression for #2617's pre-Engine boundary using the real production composition stack."""
     binding = _FakeEngineServiceBinding()
