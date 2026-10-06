@@ -134,7 +134,11 @@ def _apply_b62_model_policy(
         if tier_id is None:
             policy = resolve_model_policy(messages, require_executable=False)
         else:
-            policy = resolve_tier_policy(messages, tier_id, require_executable=True)
+            # Browser validation owns product identity only. Executability is
+            # enforced by B14Client/P01 at the dispatch boundary so mock,
+            # projects and other non-model features remain usable while a tier
+            # is deliberately HOLD (#3568).
+            policy = resolve_tier_policy(messages, tier_id, require_executable=False)
     except ModelPolicyError as exc:
         raise BrowserRequestError(exc.message) from exc
     # Preserve validated browser messages until the B14/tier-identity dispatch
