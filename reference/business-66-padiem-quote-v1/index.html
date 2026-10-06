@@ -27,6 +27,7 @@
   <script src="app.js" defer></script>
   <script src="easy-mode.js" defer></script>
   <script src="padiem-account.js" defer></script>
+  <script src="shell-layout.js" defer></script>
 </head>
 <body>
   <main class="shell">
@@ -322,6 +323,44 @@
           <span id="skillPreviewBanner" hidden style="font-size:11px;color:#b54708">미리보기: 승인 전 모양 (저장되지 않음)</span>
         </div>
         <article class="quote-paper" id="quotePaper">
+          <section class="cgi-v2-content" id="cgiV2Content" hidden aria-label="CGI 견적서">
+            <h2 class="cgi-v2-title" id="cgiV2Title">견 적 서</h2>
+            <div class="cgi-v2-head-grid">
+              <table class="cgi-v2-head-table cgi-v2-head-left">
+                <tbody>
+                  <tr><th>견적번호</th><td colspan="3" class="cgi-v2-quote-no" id="cgiV2QuoteNo"></td></tr>
+                  <tr><th>작성일자</th><td colspan="3" id="cgiV2IssueDate"></td></tr>
+                  <tr><th>작 성 자</th><td id="cgiV2Author"></td><th class="cgi-v2-tel-label">TEL</th><td id="cgiV2AuthorTel"></td></tr>
+                  <tr><th>견 적 처</th><td id="cgiV2Recipient"></td><td colspan="2" class="cgi-v2-center">귀중</td></tr>
+                  <tr><th>담 당 자</th><td id="cgiV2RecipientPerson"></td><th class="cgi-v2-tel-label">TEL</th><td id="cgiV2RecipientTel"></td></tr>
+                  <tr><th>건    명</th><td colspan="3" id="cgiV2Project"></td></tr>
+                </tbody>
+              </table>
+              <table class="cgi-v2-head-table cgi-v2-head-right">
+                <tbody>
+                  <tr><th>등록번호</th><td class="cgi-v2-center" id="cgiV2BizNo"></td></tr>
+                  <tr><td colspan="2" class="cgi-v2-slogan" id="cgiV2Slogan"></td></tr>
+                  <tr><th>상    호</th><td class="cgi-v2-center" id="cgiV2SenderCompany"></td></tr>
+                  <tr><th>주    소</th><td class="cgi-v2-address" id="cgiV2SenderAddress"></td></tr>
+                  <tr><th>대    표</th><td class="cgi-v2-rep-cell"><span id="cgiV2SenderRep"></span> 인<img class="cgi-v2-stamp" id="cgiV2Stamp" alt="" aria-hidden="true" hidden></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="cgi-v2-total-band"><span id="cgiV2WrittenTotal"></span> ( ₩<span id="cgiV2GrandTop"></span> )</div>
+            <table class="cgi-v2-items-table">
+              <thead><tr id="cgiV2ItemsHead"></tr></thead>
+              <tbody id="cgiV2Items"></tbody>
+            </table>
+            <table class="cgi-v2-pay-table">
+              <tbody><tr><th>입 금 계 좌</th><td id="cgiV2Bank"></td></tr></tbody>
+            </table>
+            <div class="cgi-v2-terms">
+              <strong>※ 특기사항</strong>
+              <ol id="cgiV2Terms"></ol>
+            </div>
+            <img class="cgi-v2-logo" id="cgiV2Logo" alt="" aria-hidden="true" hidden>
+          </section>
+          <div id="quoteGenericContent">
           <img class="quote-private-logo" id="pvLogo" alt="" aria-hidden="true" hidden>
           <img class="quote-private-stamp" id="pvStamp" alt="" aria-hidden="true" hidden>
           <div class="quote-title">
@@ -367,6 +406,7 @@
           </div>
           <div class="memo" id="pvMemo"></div>
           <div class="demo-mark" id="pvMark">견적서 베타</div>
+          </div>
         </article>
         <div id="pvDetailPages"></div>
       </aside>

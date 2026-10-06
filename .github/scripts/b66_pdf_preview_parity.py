@@ -99,9 +99,10 @@ async def main() -> int:
                 """() => {
                   document.getElementById('directView').hidden = false;
                   document.getElementById('easyView').hidden = true;
+                  document.documentElement.style.setProperty('--b66-preview-width', '1000px');
                 }"""
             )
-            await page.wait_for_timeout(300)
+            await page.wait_for_timeout(350)
 
             metrics = await page.locator("#quotePaper").evaluate(
                 """el => {
