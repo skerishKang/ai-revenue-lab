@@ -1,8 +1,9 @@
-"""Historical Space Bunny manual-route contract after Plus hold (#3568).
+"""Kilo primary-route contract after the #3579 policy v2 successor change.
 
-Space Bunny remains registered in B14 as explicit historical metadata for
-network-free adapter coverage, but it is no longer a canonical Padiem text or
-vision primary and is never a silent fallback.
+The canonical text primary is the owner-selected Ling 3.1 Flash successor;
+the vision primary remains pending. The ended Space Bunny lane keeps only
+retirement metadata and is no longer registered in the catalog; its
+adapter call-shape coverage below stays network-free.
 """
 
 from __future__ import annotations
@@ -18,12 +19,17 @@ from app.pilot import platform as plat
 from app.pilot import platform_secrets as ps
 from app.pilot.catalog import get_catalog_by_id
 from app.pilot.kilo_provider import (
+    KILO_LING_MODEL_ID,
     KILO_PROVIDER_ID,
     KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
     KILO_SPACE_BUNNY_MODEL_ID,
     KILO_SPACE_BUNNY_UPSTREAM_MODEL,
 )
 from app.pilot.router_core import resolve_manual_route
+
+# Test fixture value only: assembled via f-string so no literal Bearer token
+# pattern appears in source (GitGuardian generic detector).
+_DUMMY_BINDING = "kilo_dummy_binding_value"
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CANONICAL_PATH = (
@@ -42,36 +48,39 @@ _TINY_PNG_URL = (
 )
 
 
-def test_space_bunny_is_not_canonical_primary_but_registration_is_preserved() -> None:
+def test_ling_is_text_primary_and_space_bunny_is_unregistered() -> None:
     text = CANONICAL_PATH.read_text(encoding="utf-8")
-    assert 'TEXT_PRIMARY_DECISION = "PENDING_SUCCESSOR_SELECTION"' in text
-    assert "TEXT_PRIMARY_MODEL_ID = None" in text
-    assert "TEXT_PRIMARY_UPSTREAM_MODEL = None" in text
+    assert (
+        'TEXT_PRIMARY_DECISION = "Owner successor selection 2026-10-06 (Ling 3.1 Flash, Kilo gateway)"'
+        in text
+    )
+    assert 'TEXT_PRIMARY_PROVIDER_ID = "kilo"' in text
+    assert 'TEXT_PRIMARY_MODEL_ID = "kilo/inclusionai-ling-3.1-flash"' in text
+    assert 'TEXT_PRIMARY_UPSTREAM_MODEL = "inclusionai/ling-3.1-flash"' in text
     assert 'VISION_PRIMARY_DECISION = "PENDING_SUCCESSOR_SELECTION"' in text
     assert "VISION_PRIMARY_MODEL_ID = None" in text
     assert "VISION_PRIMARY_UPSTREAM_MODEL = None" in text
     assert "TEXT_SECONDARY_MODEL_ID = None" in text
     assert "TEXT_FALLBACK_ENABLED = False" in text
 
-    model = get_catalog_by_id(KILO_SPACE_BUNNY_MODEL_ID)
+    # The ended Space Bunny lane keeps its constants as retirement metadata
+    # but is no longer registered in the catalog (#3579 policy v2).
+    assert get_catalog_by_id(KILO_SPACE_BUNNY_MODEL_ID) is None
+
+
+def test_ling_declares_no_image_capability() -> None:
+    model = get_catalog_by_id(KILO_LING_MODEL_ID)
     assert model is not None
-    assert model.model_id == "kilo/stealth-space-bunny-alpha"
-    assert model.upstream_model == KILO_SPACE_BUNNY_UPSTREAM_MODEL
-    assert model.platform_provider_id == KILO_PROVIDER_ID
-    assert model.context_window == 0
+    assert {"chat", "free"}.issubset(model.capabilities)
+    assert model.capabilities & frozenset(
+        {"image", "video", "audio", "multimodal", "vision"}
+    ) == frozenset()
 
 
-def test_space_bunny_capabilities_include_image_without_video() -> None:
-    model = get_catalog_by_id(KILO_SPACE_BUNNY_MODEL_ID)
-    assert model is not None
-    assert {"chat", "coding", "free", "image"}.issubset(model.capabilities)
-    assert model.capabilities & frozenset({"video", "audio", "multimodal", "vision"}) == frozenset()
-
-
-def test_space_bunny_manual_route_is_explicit_and_fallback_free() -> None:
-    decision = resolve_manual_route(KILO_SPACE_BUNNY_MODEL_ID)
-    assert decision.selected_model == KILO_SPACE_BUNNY_MODEL_ID
-    assert decision.selected_upstream_model == "stealth/space-bunny-alpha"
+def test_ling_manual_route_is_explicit_and_fallback_free() -> None:
+    decision = resolve_manual_route(KILO_LING_MODEL_ID)
+    assert decision.selected_model == KILO_LING_MODEL_ID
+    assert decision.selected_upstream_model == "inclusionai/ling-3.1-flash"
     assert decision.platform_provider_id == KILO_PROVIDER_ID
     assert decision.fallback_allowed is False
     assert decision.eligible_fallback == []
@@ -104,7 +113,7 @@ async def test_space_bunny_image_payload_reaches_kilo_adapter_with_optional_secr
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setenv(
         KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
-        "kilo_live_abcdefghijklmnopqrstuvwxyz1234",
+        _DUMMY_BINDING,
     )
     captured: dict[str, object] = {}
 
@@ -154,15 +163,18 @@ async def test_space_bunny_image_payload_reaches_kilo_adapter_with_optional_secr
         {"type": "text", "text": "이 영수증 금액을 읽어줘"},
         {"type": "image_url", "image_url": {"url": _TINY_PNG_URL}},
     ]
-    assert captured["auth"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
+    assert captured["auth"] == f"Bearer {_DUMMY_BINDING}"
     assert response["choices"][0]["message"]["content"] == "이미지 확인됨"
 
     spec = ps.get_platform_provider(KILO_PROVIDER_ID)
     assert spec is not None
     assert spec.credential_source == ps.CredentialSource.NONE
-    assert "Authorization" not in plat._request_headers(spec)
+    # Policy v2: while the shared binding resolves it authenticates every
+    # Kilo lane, including the model-less header build.
+    bound = plat._request_headers(spec)
+    assert bound["Authorization"] == f"Bearer {_DUMMY_BINDING}"
     headers = plat._request_headers(spec, model_id=KILO_SPACE_BUNNY_MODEL_ID)
-    assert headers["Authorization"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
+    assert headers["Authorization"] == f"Bearer {_DUMMY_BINDING}"
 
     monkeypatch.delenv(KILO_SPACE_BUNNY_CREDENTIAL_BINDING, raising=False)
     anonymous_headers = plat._request_headers(

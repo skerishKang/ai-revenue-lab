@@ -263,9 +263,13 @@ class P01RequestFactoryTests(unittest.TestCase):
 
 
 class P01ModelHoldTests(unittest.TestCase):
-    def test_default_profile_fails_closed_before_dispatch_while_successor_pending(self):
+    def test_default_profile_resolves_successor_route_and_held_tier_fails_closed(self):
+        # #3579 policy v2: the Plus text lane resolves to the owner-selected
+        # Ling successor; Pro stays HOLD and still fails closed before dispatch.
+        profile = _agent_profile(ProductTierLabel.PLUS)
+        self.assertEqual(profile.model_policy["model"], "kilo/inclusionai-ling-3.1-flash")
         with self.assertRaises(P01AdapterError) as caught:
-            _agent_profile(ProductTierLabel.PLUS)
+            _agent_profile(ProductTierLabel.PRO)
         self.assertEqual(caught.exception.code, "tier_hold")
         self.assertEqual(caught.exception.dispatch_class, "not_dispatched")
 
