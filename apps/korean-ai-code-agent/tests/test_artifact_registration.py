@@ -84,6 +84,22 @@ class BoundedFieldValidationTests(unittest.TestCase):
             with self.assertRaises(ArtifactRegistrationError):
                 record(filename=bad)
 
+    def test_filename_with_path_separators_fails_closed(self) -> None:
+        # CENTRAL correction: leaf normalization must never silently accept a
+        # path-shaped input. Forward-slash traversal, POSIX absolute and
+        # backslash forms are all bare-filename contract violations.
+        for bad in (
+            "../../x.docx",
+            "dir/x.docx",
+            "/tmp/x.docx",
+            "C:\\tmp\\x.docx",
+            "\\\\server\\share\\x.docx",
+            "a/b.docx",
+            "a\\b.docx",
+        ):
+            with self.assertRaises(ArtifactRegistrationError):
+                record(filename=bad)
+
     def test_credential_shaped_filenames_are_rejected(self) -> None:
         for bad in ("credentials.json", "server.pem", "id_rsa", ".env", "app.key"):
             with self.assertRaises(ArtifactRegistrationError):
@@ -119,6 +135,13 @@ class BoundedFieldValidationTests(unittest.TestCase):
             ("drive", "/abs/path"),
             ("drive", ""),
             ("drive", "x" * 600),
+            ("drive", "file://C:/secret/file.pdf"),
+            ("drive", "file:///etc/passwd"),
+            ("drive", "https://api.example.test/v1/files?token=abc123"),
+            ("telegram", "Bearer abcdef123456"),
+            ("telegram", "token sk-live-abcdef0123456789"),
+            ("telegram", "chat=-1001234567890;bot=123:ABC"),
+            ("drive", "key=AIzaSyD-1234567890"),
         ):
             with self.assertRaises(ArtifactRegistrationError):
                 record(
@@ -149,7 +172,6 @@ class LifecycleTests(unittest.TestCase):
         )
         self.assertEqual(rec.durable_location.location_ref, "1AbC_drive-file-ref-9")
 
-
 class PublicProjectionTests(unittest.TestCase):
     def test_projection_is_json_safe_and_metadata_only(self) -> None:
         rec = record(
@@ -164,9 +186,47 @@ class PublicProjectionTests(unittest.TestCase):
         self.assertIsInstance(encoded, str)
         self.assertEqual(projection["raw_bytes_in_projection"], False)
         self.assertEqual(projection["lifecycle"], "durable")
+        # Raw location material never reaches the projection; only the neutral
+        # kind and a durability flag do (CENTRAL correction #2).
         self.assertEqual(projection["durable_location"]["location_kind"], "r2")
+        self.assertEqual(projection["durable_location"]["available"], True)
+        self.assertNotIn("location_ref", json.dumps(projection))
+        self.assertNotIn("tenants/t/art/x", encoded)
         self.assertNotIn("content", projection)
         self.assertNotIn("base64", encoded)
+
+    def test_projection_never_leaks_raw_location_material(self) -> None:
+        # Adversarial: inject credential/URL/channel-id-like location refs and
+        # prove none of the raw material can reach public_projection. These
+        # refs are individually rejected at construction, and even if a
+        # projection shape changed the digest-independent check below would
+        # still hold for every accepted ref shape.
+        adversarial = [
+            ("file://C:/secret/file.pdf", "secret"),
+            ("file:///etc/passwd", "passwd"),
+            ("https://api.example.test/v1/files?token=abc123", "abc123"),
+            ("Bearer abcdef123456", "abcdef123456"),
+            ("token sk-live-abcdef0123456789", "sk-live"),
+            ("chat=-1001234567890;bot=123:ABC", "-1001234567890"),
+            ("key=AIzaSyD-1234567890", "AIzaSyD"),
+        ]
+        for ref, marker in adversarial:
+            with self.assertRaises(ArtifactRegistrationError):
+                record(
+                    lifecycle=ArtifactLifecycle.DURABLE,
+                    durable_location=ArtifactLocation(location_kind="drive", location_ref=ref),
+                )
+            # And for every ref shape that IS accepted, the raw value never
+            # appears in the projection (proved by the accepted-ref check in
+            # test_projection_is_json_safe_and_metadata_only).
+
+    def test_accepted_location_ref_is_never_projected_verbatim(self) -> None:
+        rec = record(
+            lifecycle=ArtifactLifecycle.DURABLE,
+            durable_location=ArtifactLocation(location_kind="drive_file", location_ref="1AbC_drive-file-ref-9"),
+        )
+        encoded = json.dumps(rec.public_projection(), ensure_ascii=False)
+        self.assertNotIn("1AbC_drive-file-ref-9", encoded)
 
     def test_no_local_absolute_paths_in_projection(self) -> None:
         rec = record()
@@ -175,7 +235,10 @@ class PublicProjectionTests(unittest.TestCase):
             self.assertNotIn(forbidden, encoded)
 
     def test_no_secret_shaped_material_in_projection(self) -> None:
-        rec = record()
+        rec = record(
+            lifecycle=ArtifactLifecycle.DURABLE,
+            durable_location=ArtifactLocation(location_kind="r2", location_ref="tenants/t/art/x"),
+        )
         encoded = json.dumps(rec.public_projection(), ensure_ascii=False).lower()
         for forbidden in (
             "bot token",
@@ -186,6 +249,8 @@ class PublicProjectionTests(unittest.TestCase):
             "secret=",
             "authorization:",
             "oauth",
+            "location_ref",
+            "file://",
         ):
             self.assertNotIn(forbidden, encoded)
 
@@ -201,7 +266,6 @@ class DocumentArtifactAdapterTests(unittest.TestCase):
         rec = from_document_artifact(
             doc,
             artifact_id="art_" + "d" * 16,
-            integrity_ref=hashlib.sha256(doc.content_bytes()).hexdigest(),
             run_ref="run_" + "3" * 16,
         )
         self.assertEqual(rec.artifact_kind, "claw.generated_document")
@@ -209,13 +273,34 @@ class DocumentArtifactAdapterTests(unittest.TestCase):
         self.assertEqual(rec.media_type, doc.media_type)
         self.assertEqual(rec.size_bytes, doc.byte_length)
         self.assertEqual(rec.size_bytes, len(doc.content_bytes()))
+        # Integrity is COMPUTED from the actual document bytes.
+        self.assertEqual(rec.integrity_ref, hashlib.sha256(doc.content_bytes()).hexdigest())
         self.assertEqual(rec.run_ref, "run_" + "3" * 16)
         # The adapter never carries the raw document bytes.
         self.assertNotIn(b"PK", json.dumps(rec.public_projection()).encode("utf-8"))
 
+    def test_correct_claimed_digest_is_accepted(self) -> None:
+        doc = build_document_artifact(**QUOTA_ARGS)
+        correct = hashlib.sha256(doc.content_bytes()).hexdigest()
+        rec = from_document_artifact(doc, artifact_id="art_" + "d" * 16, integrity_ref=correct)
+        self.assertEqual(rec.integrity_ref, correct)
+
+    def test_wrong_valid_looking_digest_fails_closed(self) -> None:
+        doc = build_document_artifact(**QUOTA_ARGS)
+        wrong = hashlib.sha256(b"not the actual document bytes").hexdigest()
+        with self.assertRaises(ArtifactRegistrationError) as ctx:
+            from_document_artifact(doc, artifact_id="art_" + "d" * 16, integrity_ref=wrong)
+        self.assertIn("does not match", str(ctx.exception))
+
+    def test_malformed_claimed_digest_fails_closed(self) -> None:
+        doc = build_document_artifact(**QUOTA_ARGS)
+        for bad in ("", "ABC", "z" * 64):
+            with self.assertRaises(ArtifactRegistrationError):
+                from_document_artifact(doc, artifact_id="art_" + "d" * 16, integrity_ref=bad)
+
     def test_adapter_rejects_non_document_sources(self) -> None:
         with self.assertRaises(ArtifactRegistrationError):
-            from_document_artifact(object(), artifact_id="art_x", integrity_ref=DIGEST)
+            from_document_artifact(object(), artifact_id="art_x")
 
 
 class SandboxCandidateAdapterTests(unittest.TestCase):
@@ -248,17 +333,41 @@ class SandboxCandidateAdapterTests(unittest.TestCase):
         # unknown extensions before an adapter can see them), so the
         # not-applicable guard is proven at the adapter contract level with a
         # same-shaped stub whose extension is outside the canonical MIME map.
+        probe = self._probe_with(path="reports/blob.xyz", size_bytes=256)
+        with self.assertRaises(ArtifactRegistrationError) as ctx:
+            from_sandbox_candidate(probe)
+        self.assertIn("ADAPTER_NOT_APPLICABLE", str(ctx.exception))
+
+    def _probe_with(self, *, path: str, size_bytes: int):
+        """Same-shaped SandboxArtifactCandidate bypassing the export allowlist,
+        used to prove the ADAPTER_NOT_APPLICABLE classification guards."""
         from kagent.artifact_export import SandboxArtifactCandidate as _C
 
-        probe = _C.__new__(_C)  # bypass export-side allowlist for this probe
+        probe = _C.__new__(_C)
         object.__setattr__(probe, "artifact_id", "art_" + "s" * 16)
         object.__setattr__(probe, "run_id", "run_" + "4" * 16)
         object.__setattr__(probe, "lease_id", "lease_" + "5" * 16)
-        object.__setattr__(probe, "path", "reports/blob.xyz")
+        object.__setattr__(probe, "path", path)
         object.__setattr__(probe, "kind", "report")
-        object.__setattr__(probe, "size_bytes", 256)
+        object.__setattr__(probe, "size_bytes", size_bytes)
         object.__setattr__(probe, "sha256", DIGEST)
         object.__setattr__(probe, "is_symlink", False)
+        return probe
+
+    def test_zero_byte_candidate_is_not_applicable(self) -> None:
+        probe = self._probe_with(path="reports/empty.json", size_bytes=0)
+        with self.assertRaises(ArtifactRegistrationError) as ctx:
+            from_sandbox_candidate(probe)
+        self.assertIn("ADAPTER_NOT_APPLICABLE", str(ctx.exception))
+
+    def test_oversize_candidate_is_not_applicable(self) -> None:
+        probe = self._probe_with(path="reports/big.json", size_bytes=25 * 1024 * 1024)
+        with self.assertRaises(ArtifactRegistrationError) as ctx:
+            from_sandbox_candidate(probe)
+        self.assertIn("ADAPTER_NOT_APPLICABLE", str(ctx.exception))
+
+    def test_overlong_path_candidate_is_not_applicable(self) -> None:
+        probe = self._probe_with(path="reports/" + "d" * 260 + ".json", size_bytes=128)
         with self.assertRaises(ArtifactRegistrationError) as ctx:
             from_sandbox_candidate(probe)
         self.assertIn("ADAPTER_NOT_APPLICABLE", str(ctx.exception))

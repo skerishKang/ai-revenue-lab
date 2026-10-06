@@ -29,6 +29,7 @@ construction, in the same style as the reviewed connector contracts.
 
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass
 from enum import Enum
 import re
@@ -46,6 +47,12 @@ _FILENAME_MAX_CHARS = 240
 # Bounded to match the widest existing in-repo artifact surface
 # (kagent document export 8 MiB bound; sandbox candidates are stricter).
 MAX_ARTIFACT_SIZE_BYTES = 8 * 1024 * 1024
+# Bound alignment note (CENTRAL review correction): the canonical record is
+# deliberately the STRICTER of the two in-repo surfaces — the sandbox export
+# policy may admit files up to 25 MiB with paths up to 512 chars and zero-byte
+# candidates, all of which exceed/c violate the canonical 8 MiB / bare-name /
+# positive-size contract. The sandbox adapter therefore classifies those
+# candidates as ADAPTER_NOT_APPLICABLE instead of silently accepting them.
 _LOCATION_KIND_MAX_CHARS = 48
 _LOCATION_REF_MAX_CHARS = 512
 
@@ -115,21 +122,40 @@ def _bounded_location_ref(value: str) -> str:
     value = value.strip()
     if len(value) > _LOCATION_REF_MAX_CHARS or _CONTROL_RE.search(value):
         raise ArtifactRegistrationError("location_ref must be bounded control-free text")
-    # A location ref is an opaque provider reference, never a local path.
-    if re.match(r"^[A-Za-z]:[\\/]", value) or value.startswith(("\\\\", "/")):
-        raise ArtifactRegistrationError("location_ref must not be a local filesystem path")
+    # A location ref is an opaque provider reference, never a local path and
+    # never a credential/capability surface. Anything that smells like a local
+    # reference (drive letter, UNC, absolute POSIX), a file URI, a URL with a
+    # query/credential component, or whitespace-bearing credential material is
+    # rejected at construction so it can never reach any projection.
+    lowered = value.lower()
+    if (
+        re.match(r"^[A-Za-z]:[\\/]", value)
+        or value.startswith(("\\\\", "/", "file:", "file://"))
+        or "file://" in lowered
+        or "://" in value
+        or "?" in value
+        or "#" in value
+        or " " in value
+        or "=" in value
+        or ";" in value
+        or "," in value
+        or lowered.startswith(("bearer ", "basic ", "token "))
+    ):
+        raise ArtifactRegistrationError("location_ref must be an opaque provider reference without URL/credential/local-path material")
     return value
 
 
 def _bounded_filename(value: str) -> str:
     if not isinstance(value, str):
         raise ArtifactRegistrationError("filename must be text")
-    leaf = value.replace("\\", "/").split("/")[-1].strip()
+    # Fail closed on ANY path separator BEFORE leaf normalization: a bare
+    # filename contract must never silently strip "../../x.docx",
+    # "dir/x.docx", "/tmp/x.docx" or "C:\\tmp\\x.docx" down to "x.docx".
+    if "/" in value or "\\" in value:
+        raise ArtifactRegistrationError("filename must be a bare name, not a path")
+    leaf = value.strip()
     if not leaf or len(leaf) > _FILENAME_MAX_CHARS or _CONTROL_RE.search(leaf):
         raise ArtifactRegistrationError("filename must be a bounded control-free name")
-    if "/" in leaf or "\\" in value and "/" not in value:
-        # Any remaining separator after leaf extraction means a path was passed.
-        raise ArtifactRegistrationError("filename must be a bare name, not a path")
     lowered = leaf.lower()
     if lowered in _FORBIDDEN_FILENAME_NAMES or any(lowered.endswith(suffix) for suffix in _FORBIDDEN_FILENAME_SUFFIXES):
         raise ArtifactRegistrationError("filename is a forbidden credential/key class")
@@ -217,7 +243,12 @@ class CanonicalArtifactRecord:
         if self.durable_location is not None:
             projection["durable_location"] = {
                 "location_kind": self.durable_location.location_kind,
-                "location_ref": self.durable_location.location_ref,
+                # The raw location_ref is provider-bound opaque material (a
+                # Drive file id, a channel id, a bucket key...). It stays
+                # internal: the public projection only proves durability and
+                # the neutral location kind, never the raw reference.
+                "available": True,
+                # raw location_ref intentionally absent from the projection.
             }
         return projection
 
@@ -257,7 +288,7 @@ def from_document_artifact(
     artifact: GeneratedDocumentArtifact,
     *,
     artifact_id: str,
-    integrity_ref: str,
+    integrity_ref: str | None = None,
     workspace_ref: str | None = None,
     run_ref: str | None = None,
     source_ref: str | None = None,
@@ -265,19 +296,29 @@ def from_document_artifact(
     """Adapter: #2115 generated document -> canonical record.
 
     The document artifact already bounds bytes (8 MiB), sanitizes the filename
-    and pins the media type, so the mapping is direct. Content itself is never
-    carried over.
+    and pins the media type, so the mapping is direct. The integrity ref is
+    always COMPUTED from the actual document bytes inside this adapter; a
+    caller-supplied digest is verified against the computed value and fails
+    closed on mismatch, so a record can never be registered under an integrity
+    claim its content does not satisfy. Content itself is never carried over.
     """
 
     if not isinstance(artifact, GeneratedDocumentArtifact):
         raise ArtifactRegistrationError("adapter source must be a GeneratedDocumentArtifact")
+    computed_digest = hashlib.sha256(artifact.content_bytes()).hexdigest()
+    if integrity_ref is not None:
+        claimed = integrity_ref.strip().lower() if isinstance(integrity_ref, str) else ""
+        if not _SHA256_RE.fullmatch(claimed):
+            raise ArtifactRegistrationError("integrity_ref must be a lowercase SHA-256 digest")
+        if claimed != computed_digest:
+            raise ArtifactRegistrationError("integrity_ref does not match the actual document bytes")
     return register_canonical_artifact(
         artifact_id=artifact_id,
         artifact_kind=artifact.kind,
         filename=artifact.filename,
         media_type=artifact.media_type,
         size_bytes=artifact.byte_length,
-        integrity_ref=integrity_ref,
+        integrity_ref=computed_digest,
         lifecycle=ArtifactLifecycle.GENERATED,
         workspace_ref=workspace_ref,
         run_ref=run_ref,
@@ -300,6 +341,21 @@ def from_sandbox_candidate(candidate: Any, *, workspace_ref: str | None = None) 
 
     if not isinstance(candidate, SandboxArtifactCandidate):
         raise ArtifactRegistrationError("adapter source must be a SandboxArtifactCandidate")
+    # Canonical bounds are intentionally stricter than the sandbox export
+    # policy (25 MiB files, zero-byte candidates, 512-char paths). Candidates
+    # outside the canonical contract are classified, not silently squeezed:
+    if candidate.size_bytes <= 0:
+        raise ArtifactRegistrationError(
+            "ADAPTER_NOT_APPLICABLE: zero-byte sandbox candidates have no canonical size contract"
+        )
+    if candidate.size_bytes > MAX_ARTIFACT_SIZE_BYTES:
+        raise ArtifactRegistrationError(
+            "ADAPTER_NOT_APPLICABLE: sandbox candidate exceeds the canonical artifact size bound"
+        )
+    if len(candidate.path) > 255:
+        raise ArtifactRegistrationError(
+            "ADAPTER_NOT_APPLICABLE: sandbox path exceeds the canonical source_ref bound"
+        )
     media_type = _MIME_BY_EXTENSION.get(candidate.path.rsplit(".", 1)[-1].lower())
     if media_type is None:
         # Semantic mismatch guard: the sandbox export allowlist is text-only
