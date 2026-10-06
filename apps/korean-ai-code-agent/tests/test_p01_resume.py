@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 import unittest
+from p01_test_model_route import SyntheticPlusRouteMixin
 
 from padiem_ai_core import (
     ApprovalOutcome,
@@ -103,7 +104,7 @@ class _FakeResumeRunner:
         )
 
 
-class P01ApprovalResumeTests(unittest.IsolatedAsyncioTestCase):
+class P01ApprovalResumeTests(SyntheticPlusRouteMixin, unittest.IsolatedAsyncioTestCase):
     def make_waiting_run_and_request(
         self,
         *,

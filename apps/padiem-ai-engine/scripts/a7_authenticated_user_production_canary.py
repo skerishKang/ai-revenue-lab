@@ -129,6 +129,9 @@ def _error_code(body: dict[str, Any] | None) -> str:
 
 
 def main() -> int:
+    if not isinstance(PINNED_MODEL, str) or not PINNED_MODEL:
+        print("A7_AUTHENTICATED_USER_CANARY=BLOCKED_NO_PRIMARY_MODEL", file=sys.stderr)
+        return 2
     if not CALLER_ID or not CALLER_SECRET or not CANARY_SUBJECT_ID:
         print("A7_AUTHENTICATED_USER_CANARY=SKIPPED_MISSING_PROTECTED_INPUT", file=sys.stderr)
         return 2

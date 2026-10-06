@@ -48,8 +48,8 @@ from .p01_approval_pause_transport import (
 def _padiem_executable_route_ids() -> frozenset[str]:
     """Model IDs of the executable Padiem v1 tiers, derived from the shared
     declaration contract (#2099 SOT). B14 stays the execution authority: a
-    route unregistered there still fails closed at dispatch. Max is HOLD and
-    therefore never enters this set."""
+    route unregistered there still fails closed at dispatch. A successor-pending Plus HOLD may make this set empty; that is an import-safe
+    state and never authorizes a dispatch."""
     ids: set[str] = set()
     for label in (ProductTierLabel.PLUS, ProductTierLabel.PRO):
         try:
@@ -62,12 +62,10 @@ def _padiem_executable_route_ids() -> frozenset[str]:
             ) from exc
         if route is not None and route.model_id is not None:
             ids.add(route.model_id)
-    if not ids:
-        raise P01AdapterError(
-            "invalid_product_tier",
-            "Padiem 공유 라우트 계약에 실행 가능한 등급 라우트가 없습니다.",
-            dispatch_class=P01DispatchClass.NOT_DISPATCHED,
-        )
+    # Zero executable routes is a valid model-selection HOLD state (#3568).
+    # Importing Claw/KAgent must remain safe so non-model features still work.
+    # Actual execution fails closed earlier in P01RequestFactory/_agent_profile
+    # with tier_hold before any Engine/B14/provider dispatch.
     return frozenset(ids)
 
 

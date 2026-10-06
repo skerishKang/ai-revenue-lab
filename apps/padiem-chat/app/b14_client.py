@@ -179,9 +179,16 @@ def _translate_execution_error(exc: ExecutionRuntimeError) -> ChatRuntimeError:
     return _chat_error(exc.code, upstream_class=exc.diagnostic_class)
 
 
-def _resolve_b62_policy(messages: list[dict[str, str]]):
+def _resolve_b62_policy(
+    messages: list[dict[str, str]],
+    *,
+    require_executable: bool = True,
+):
     try:
-        return resolve_request_model_policy(messages)
+        return resolve_request_model_policy(
+            messages,
+            require_executable=require_executable,
+        )
     except ModelPolicyError as exc:
         raise ChatRuntimeError(422, exc.code, exc.message) from exc
 
@@ -403,7 +410,10 @@ class B14Client:
         product-neutral ExecutionRequest to Core.
         """
 
-        policy = _resolve_b62_policy(messages)
+        policy = _resolve_b62_policy(
+            messages,
+            require_executable=self.settings.runtime_mode != "mock",
+        )
         resolved_skill = skill or get_task_mode()
         bounded_context = _bounded_context(additional_system_context)
 
@@ -547,7 +557,10 @@ class B14Client:
         if len(attachments) > 1:
             raise ValueError("only one image attachment is supported")
 
-        policy = _resolve_b62_policy(messages)
+        policy = _resolve_b62_policy(
+            messages,
+            require_executable=self.settings.runtime_mode != "mock",
+        )
         resolved_skill = skill or get_task_mode()
         bounded_context = _bounded_context(additional_system_context)
         attachment = attachments[0] if attachments else None

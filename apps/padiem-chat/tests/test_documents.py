@@ -16,10 +16,20 @@ from app.documents import (
 )
 from app.history import ProjectProfile, UserProfile
 from app.main import create_app
+import app.model_policy as model_policy_module
 from app.model_policy import DEFAULT_B14_MODEL_ID
 from app.project_files import D1ProjectFileStore, ProjectFileLimitError, ProjectFileRecord
 
 SESSION_SECRET = "phase11-document-session-secret-not-a-real-key-00000000"
+
+
+@pytest.fixture(autouse=True)
+def _selected_model_for_document_contracts(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(
+        model_policy_module,
+        "EXECUTABLE_B14_MODEL_IDS",
+        frozenset({DEFAULT_B14_MODEL_ID}),
+    )
 
 
 def doc(name="notes.md", media_type="text/markdown", text="# 메모\n핵심 내용을 요약해줘"):

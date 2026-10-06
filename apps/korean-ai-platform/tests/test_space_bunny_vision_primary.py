@@ -1,16 +1,8 @@
-"""Space Bunny text+vision primary source contract (#3209).
+"""Historical Space Bunny manual-route contract after Plus hold (#3568).
 
-Proves against the real B14 registry/router/adapter (no string-presence
-checks):
-
-- Space Bunny is the canonical text+vision primary lane on the existing Kilo
-  Kilo provider with model-scoped Space Bunny auth (repo id + upstream preserved, context_window 0 unchanged).
-- The lane declares image alongside chat/coding/free; video/audio/wildcard
-  stay undeclared (VIDEO_ACTIVATION=0).
-- SenseNova/Agnes/Poolside provider registrations stay intact, but none is
-  an active product secondary/fallback.
-- The multimodal image_url payload shape reaches the Kilo adapter unchanged
-  over a mock transport with the existing owner-managed Kilo credential.
+Space Bunny remains registered in B14 as explicit historical metadata for
+network-free adapter coverage, but it is no longer a canonical Padiem text or
+vision primary and is never a silent fallback.
 """
 
 from __future__ import annotations
@@ -50,21 +42,21 @@ _TINY_PNG_URL = (
 )
 
 
-def test_space_bunny_matches_canonical_text_and_vision_primary() -> None:
+def test_space_bunny_is_not_canonical_primary_but_registration_is_preserved() -> None:
     text = CANONICAL_PATH.read_text(encoding="utf-8")
-    assert 'TEXT_PRIMARY_MODEL_ID = "kilo/stealth-space-bunny-alpha"' in text
-    assert 'TEXT_PRIMARY_UPSTREAM_MODEL = "stealth/space-bunny-alpha"' in text
-    assert 'VISION_PRIMARY_MODEL_ID = "kilo/stealth-space-bunny-alpha"' in text
-    assert 'VISION_PRIMARY_UPSTREAM_MODEL = "stealth/space-bunny-alpha"' in text
+    assert 'TEXT_PRIMARY_DECISION = "PENDING_SUCCESSOR_SELECTION"' in text
+    assert "TEXT_PRIMARY_MODEL_ID = None" in text
+    assert "TEXT_PRIMARY_UPSTREAM_MODEL = None" in text
+    assert 'VISION_PRIMARY_DECISION = "PENDING_SUCCESSOR_SELECTION"' in text
+    assert "VISION_PRIMARY_MODEL_ID = None" in text
+    assert "VISION_PRIMARY_UPSTREAM_MODEL = None" in text
     assert "TEXT_SECONDARY_MODEL_ID = None" in text
     assert "TEXT_FALLBACK_ENABLED = False" in text
-    assert 'VISION_FALLBACK_DECISION = "UNDECIDED"' in text
-    assert 'VIDEO_PRIMARY_DECISION = "UNDECIDED"' in text
 
     model = get_catalog_by_id(KILO_SPACE_BUNNY_MODEL_ID)
     assert model is not None
     assert model.model_id == "kilo/stealth-space-bunny-alpha"
-    assert model.upstream_model == KILO_SPACE_BUNNY_UPSTREAM_MODEL == "stealth/space-bunny-alpha"
+    assert model.upstream_model == KILO_SPACE_BUNNY_UPSTREAM_MODEL
     assert model.platform_provider_id == KILO_PROVIDER_ID
     assert model.context_window == 0
 
