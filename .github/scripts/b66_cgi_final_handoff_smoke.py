@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import os
 import sys
+import time
 from dataclasses import dataclass
 from urllib.parse import urlparse
 
@@ -31,6 +32,11 @@ FALLBACK = 0
 COMPLETE_TEXT = "대한건설에 배관 100미터, 미터당 18000원, 부가세 별도"
 PARTIAL_TEXT = "대한건설에 배관 100미터, 부가세 별도"
 FOLLOWUP_TEXT = "미터당 18000원"
+
+CLAW_TARGET_URL = "https://chat.padiem.net/"
+CLAW_GENERAL_PATH = "/api/claw/general"
+CLAW_SYNTHETIC_PROMPT = "테스트입니다. 한 문장으로 정상 작동 중이라고 답해주세요."
+MAX_CLAW_GENERAL_POSTS = 1
 
 
 class SmokeFailure(RuntimeError):
@@ -436,6 +442,204 @@ def run_live(username: str, password: str) -> int:
         return 11
 
 
+
+def run_claw_owner_one_shot(username: str, password: str) -> int:
+    if not username or not password:
+        print("B54_CLAW_OWNER_ONE_SHOT=FAIL_CREDENTIAL_UNAVAILABLE")
+        print("PASSWORD_OUTPUT=0")
+        print("COOKIE_OUTPUT=0")
+        print("TOKEN_OUTPUT=0")
+        print("RAW_RESPONSE_OUTPUT=0")
+        return 20
+
+    try:
+        from playwright.sync_api import sync_playwright
+    except Exception:
+        print("B54_CLAW_OWNER_ONE_SHOT=FAIL_PLAYWRIGHT_UNAVAILABLE")
+        return 21
+
+    claw_posts = 0
+    direct_provider_requests = 0
+    submit_ms = 0
+    complete_ms = 0
+    response_status = 0
+    sse_content_type = False
+    stage = "init"
+
+    try:
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch(headless=True)
+            context = browser.new_context(viewport={"width": 1440, "height": 1100})
+            page = context.new_page()
+
+            def observe_request(request) -> None:
+                nonlocal claw_posts, direct_provider_requests
+                parsed = urlparse(request.url)
+                if request.method == "POST" and parsed.path == CLAW_GENERAL_PATH:
+                    claw_posts += 1
+                if _is_direct_provider(request.url):
+                    direct_provider_requests += 1
+
+            page.on("request", observe_request)
+            stage = "load_chat"
+            page.goto(CLAW_TARGET_URL, wait_until="domcontentloaded", timeout=30000)
+
+            stage = "login"
+            page.locator("#loginButton").wait_for(state="visible", timeout=15000)
+            page.locator("#loginButton").click()
+            page.locator("#authDialog").wait_for(state="visible", timeout=15000)
+            page.locator("#passwordLoginIdentifier").fill(username)
+            page.locator("#passwordLoginPassword").fill(password)
+
+            with page.expect_response(
+                lambda response: (
+                    response.request.method == "POST"
+                    and urlparse(response.url).path == "/api/auth/password/login"
+                ),
+                timeout=30000,
+            ) as login_info:
+                page.locator("#passwordLoginSubmit").click()
+            if login_info.value.status != 200:
+                _fail("owner_login_http_" + str(login_info.value.status))
+
+            page.locator("#authDialog").wait_for(state="hidden", timeout=20000)
+            page.wait_for_function(
+                """() => {
+                  const b = document.querySelector('#loginButton');
+                  if (!b) return false;
+                  const t = (b.textContent || '').trim().toLowerCase();
+                  return t.includes('로그아웃') || t.includes('logout');
+                }""",
+                timeout=20000,
+            )
+            print("OWNER_LOGIN=PASS")
+
+            stage = "open_claw"
+            page.locator("#clawNavButton").wait_for(state="attached", timeout=15000)
+            page.evaluate("() => document.getElementById('clawNavButton')?.click()")
+            page.wait_for_function(
+                """() => {
+                  const shell = document.querySelector('.app-shell');
+                  const workspace = document.getElementById('clawWorkspace');
+                  const nav = document.getElementById('clawNavButton');
+                  return Boolean(
+                    shell
+                    && workspace
+                    && nav
+                    && shell.dataset.state === 'claw'
+                    && workspace.dataset.view === 'general'
+                    && workspace.hidden === false
+                    && nav.getAttribute('aria-current') === 'page'
+                  );
+                }""",
+                timeout=15000,
+            )
+            print("CLAW_WORKSPACE=PASS")
+
+            stage = "compose"
+            before_assistants = page.locator("#messageList .assistant-message").count()
+            before_errors = page.locator("#messageList .error-box").count()
+            page.locator("#messageInput").fill(CLAW_SYNTHETIC_PROMPT)
+            if page.locator("#sendButton").is_disabled():
+                _fail("send_button_disabled")
+
+            submit_ms = int(time.time() * 1000)
+            print("SUBMIT_MS=" + str(submit_ms))
+            stage = "submit"
+            with page.expect_response(
+                lambda response: (
+                    response.request.method == "POST"
+                    and urlparse(response.url).path == CLAW_GENERAL_PATH
+                ),
+                timeout=120000,
+            ) as claw_info:
+                page.locator("#sendButton").click()
+
+            response = claw_info.value
+            stage = "response"
+            response_status = response.status
+            content_type = (response.headers.get("content-type") or "").lower()
+            sse_content_type = content_type.startswith("text/event-stream")
+            if response_status != 200:
+                _fail("claw_general_http_" + str(response_status))
+            if not sse_content_type:
+                _fail("claw_general_not_sse")
+
+            stage = "assistant"
+            page.wait_for_function(
+                """before => {
+                  const items = Array.from(document.querySelectorAll('#messageList .assistant-message'));
+                  if (items.length <= before) return false;
+                  const last = items[items.length - 1];
+                  const content = last.querySelector('.assistant-content');
+                  return Boolean(content && (content.innerText || '').trim().length > 0);
+                }""",
+                arg=before_assistants,
+                timeout=120000,
+            )
+            page.wait_for_function(
+                "() => !document.querySelector('#messageList .assistant-message:last-of-type .typing')",
+                timeout=120000,
+            )
+            time.sleep(1.0)
+
+            if claw_posts != MAX_CLAW_GENERAL_POSTS:
+                _fail("claw_post_count_" + str(claw_posts))
+            if page.locator("#messageList .error-box").count() != before_errors:
+                _fail("visible_error_box")
+            if direct_provider_requests != 0:
+                _fail("browser_direct_provider_request")
+
+            complete_ms = int(time.time() * 1000)
+            context.close()
+            browser.close()
+
+        print("COMPLETE_MS=" + str(complete_ms))
+        print("CLAW_GENERAL_POSTS=" + str(claw_posts))
+        print("MAX_CLAW_GENERAL_POSTS=1")
+        print("CLAW_GENERAL_HTTP=" + str(response_status))
+        print("CLAW_SSE_CONTENT_TYPE=" + ("PASS" if sse_content_type else "FAIL"))
+        print("ASSISTANT_MESSAGE_NONEMPTY=YES")
+        print("BROWSER_DIRECT_PROVIDER_CALLS=0")
+        print("RETRY=0")
+        print("FALLBACK_FANOUT=0")
+        print("PASSWORD_OUTPUT=0")
+        print("COOKIE_OUTPUT=0")
+        print("TOKEN_OUTPUT=0")
+        print("RAW_PROMPT_OUTPUT=0")
+        print("RAW_RESPONSE_OUTPUT=0")
+        print("PRODUCTION_CONFIG_MUTATION=0")
+        print("SECRET_MUTATION=0")
+        print("B54_CLAW_OWNER_ONE_SHOT=PASS")
+        return 0
+    except SmokeFailure as exc:
+        print("COMPLETE_MS=" + str(int(time.time() * 1000)))
+        print("CLAW_GENERAL_POSTS=" + str(claw_posts))
+        print("CLAW_GENERAL_HTTP=" + (str(response_status) if response_status else "NONE"))
+        print("PASSWORD_OUTPUT=0")
+        print("COOKIE_OUTPUT=0")
+        print("TOKEN_OUTPUT=0")
+        print("RAW_PROMPT_OUTPUT=0")
+        print("RAW_RESPONSE_OUTPUT=0")
+        print("RETRY=0")
+        print("FAIL_STAGE=" + stage)
+        print("B54_CLAW_OWNER_ONE_SHOT=FAIL_" + str(exc))
+        return 22
+    except Exception as exc:
+        print("COMPLETE_MS=" + str(int(time.time() * 1000)))
+        print("CLAW_GENERAL_POSTS=" + str(claw_posts))
+        print("CLAW_GENERAL_HTTP=" + (str(response_status) if response_status else "NONE"))
+        print("PASSWORD_OUTPUT=0")
+        print("COOKIE_OUTPUT=0")
+        print("TOKEN_OUTPUT=0")
+        print("RAW_PROMPT_OUTPUT=0")
+        print("RAW_RESPONSE_OUTPUT=0")
+        print("RETRY=0")
+        print("FAIL_STAGE=" + stage)
+        print("B54_CLAW_OWNER_ONE_SHOT=FAIL_BROWSER_RUNTIME_" + type(exc).__name__)
+        return 23
+
+
 def self_test() -> int:
     assert TARGET_URL == "https://quick-quote-kr.pages.dev/"
     assert INTERPRET_PATH == "/api/padiem/b66/quote/interpret"
@@ -447,6 +651,9 @@ def self_test() -> int:
     assert COMPLETE_TEXT == "대한건설에 배관 100미터, 미터당 18000원, 부가세 별도"
     assert PARTIAL_TEXT == "대한건설에 배관 100미터, 부가세 별도"
     assert FOLLOWUP_TEXT == "미터당 18000원"
+    assert CLAW_TARGET_URL == "https://chat.padiem.net/"
+    assert CLAW_GENERAL_PATH == "/api/claw/general"
+    assert MAX_CLAW_GENERAL_POSTS == 1
     print("B66_FINAL_HANDOFF_SMOKE_SELF_TEST=PASS")
     print("DEFAULT_LIVE_EXECUTION=BLOCKED")
     print("MAX_INTERPRET_POSTS=3")
@@ -457,11 +664,17 @@ def self_test() -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--authorized-live-run", action="store_true")
+    parser.add_argument("--claw-owner-one-shot", action="store_true")
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
 
     if args.self_test:
         return self_test()
+    if args.claw_owner_one_shot:
+        return run_claw_owner_one_shot(
+            os.getenv("B66_CGI_ALPHA_USERNAME", ""),
+            os.getenv("B66_CGI_ALPHA_PASSWORD", ""),
+        )
     if not args.authorized_live_run:
         print("B66_FINAL_HANDOFF_SMOKE=FAIL_AUTHORIZATION_REQUIRED")
         print("DEFAULT_LIVE_EXECUTION=BLOCKED")
