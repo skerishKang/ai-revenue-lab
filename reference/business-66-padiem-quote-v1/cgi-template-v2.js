@@ -75,8 +75,8 @@
     },
     cgiV2: {
       slogan: "We experess the Creation of God through Industry",
-      fax: "FAX : 062-576-8181",
-      bank: "기업은행 408-064563-01-016 (주)시지아이",
+      fax: "",
+      bank: "",
       terms: [
         "상기 견적 내역은 현장 조건에 따라 변경될 수 있습니다.",
         "대금 결제조건: 현금",
@@ -89,7 +89,22 @@
   };
 
   function clone(value) { return JSON.parse(JSON.stringify(value)); }
-  function content() { return clone(CONTENT); }
+
+  function cleanPrivatePresentation(raw) {
+    var source = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+    return {
+      fax: typeof source.fax === "string" ? source.fax.slice(0, 160) : "",
+      bank: typeof source.bank === "string" ? source.bank.slice(0, 240) : ""
+    };
+  }
+
+  function content(privatePresentation) {
+    var out = clone(CONTENT);
+    var privateValues = cleanPrivatePresentation(privatePresentation);
+    out.cgiV2.fax = privateValues.fax;
+    out.cgiV2.bank = privateValues.bank;
+    return out;
+  }
 
   function candidate() {
     return Template.buildProfile({
@@ -117,7 +132,7 @@
       },
       createdAt: String(info.createdAt || info.approvedAt || ""),
       updatedAt: String(info.updatedAt || info.approvedAt || ""),
-      content: content()
+      content: content(info.privatePresentation)
     });
   }
 
