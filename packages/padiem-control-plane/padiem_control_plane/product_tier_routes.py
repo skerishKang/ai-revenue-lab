@@ -212,6 +212,25 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
         label=ProductTierLabel.PLUS,
         routes=(
             ProductTierRoute(
+                route_id="plus.ling-3.1-flash.v1",
+                status=ProductRouteStatus.EXECUTABLE,
+                model_family="ling-3.1-flash",
+                provider_id="kilo",
+                model_id="kilo/inclusionai-ling-3.1-flash",
+                upstream_model="inclusionai/ling-3.1-flash",
+                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+                credential_binding="PADIEM_KILO_API_KEY",
+                evidence=(
+                    "Owner successor selection (2026-10-06, #3568/#3569 follow-up): "
+                    "Ling 3.1 Flash verified live on the Kilo gateway "
+                    "(public model list re-checked 2026-10-06: "
+                    "inclusionai/ling-3.1-flash present, pricing 0, context 262,144, "
+                    "max completion 32,768; keyless probe HTTP 200, cost 0). "
+                    "Policy v2: model lanes authenticate through Secrets Store "
+                    "bindings; the keyless-preference era is retired."
+                ),
+            ),
+            ProductTierRoute(
                 route_id="plus.hold.v1",
                 status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="plus",
@@ -221,7 +240,8 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                     "successor model is selected yet. Padiem Plus remains a product identity "
                     "but must fail closed before B14/provider dispatch."
                 ),
-                evidence="#3568 model-independent successor-pending hold.",
+                evidence="#3568 model-independent successor-pending hold. "
+                "Superseded as the executable route by plus.ling-3.1-flash.v1 (2026-10-06).",
             ),
             ProductTierRoute(
                 route_id="plus.space-bunny-alpha.v1",

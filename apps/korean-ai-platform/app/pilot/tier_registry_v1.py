@@ -171,13 +171,32 @@ TIER_REGISTRY: tuple[TierDefinition, ...] = (
         label=TierLabel.PLUS,
         routes=(
             TierRoute(
+                route_id="plus.ling-3.1-flash.v1",
+                status=RouteStatus.EXECUTABLE,
+                model_family="ling-3.1-flash",
+                provider_id="kilo",
+                model_id="kilo/inclusionai-ling-3.1-flash",
+                upstream_model="inclusionai/ling-3.1-flash",
+                credential_mode=CredentialMode.PLATFORM_SECRET_BINDING,
+                credential_binding="PADIEM_KILO_API_KEY",
+                evidence=(
+                    "Owner successor selection (2026-10-06, #3568/#3569 follow-up): "
+                    "Ling 3.1 Flash verified live on the Kilo gateway (public model "
+                    "list present, pricing 0, context 262,144, max output 32,768, "
+                    "keyless probe HTTP 200 / cost 0). Policy v2: lanes authenticate "
+                    "through Secrets Store bindings."
+                ),
+            ),
+            TierRoute(
                 route_id="plus.hold.v1",
                 status=RouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="plus",
                 model_id=PLUS_HOLD_MODEL_ID,
                 hold_reason=(
                     "Owner decision #3568: Space Bunny free availability ended and the "
-                    "successor model is not selected yet. Plus is held fail-closed."
+                    "successor model is not selected yet. Plus is held fail-closed. "
+                    "Superseded as the executable route by plus.ling-3.1-flash.v1 "
+                    "(2026-10-06)."
                 ),
                 evidence="#3568 successor-pending product hold.",
             ),
