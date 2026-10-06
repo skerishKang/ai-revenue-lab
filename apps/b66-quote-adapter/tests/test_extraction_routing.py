@@ -771,7 +771,7 @@ class B66CanonicalIntegrationTests(unittest.TestCase):
         return module
 
     @staticmethod
-    def _space_bunny_lane_facts() -> tuple[str, str]:
+    def _space_bunny_lane_facts() -> tuple[str, str, frozenset]:
         path = (
             B66CanonicalIntegrationTests._repo_root()
             / "apps"
@@ -782,8 +782,7 @@ class B66CanonicalIntegrationTests(unittest.TestCase):
         )
         tree = ast.parse(path.read_text(encoding="utf-8"))
         model_id = upstream = None
-        registered_as_free_route = False
-        retired_member = False
+        capabilities: frozenset = frozenset()
         for node in ast.walk(tree):
             if isinstance(node, ast.Assign) and len(node.targets) == 1:
                 target = node.targets[0]
@@ -799,16 +798,6 @@ class B66CanonicalIntegrationTests(unittest.TestCase):
                     and isinstance(node.value, ast.Constant)
                 ):
                     upstream = node.value.value
-                if (
-                    isinstance(target, ast.Name)
-                    and target.id == "RETIRED_KILO_FREE_MODEL_IDS"
-                    and isinstance(node.value, ast.Call)
-                ):
-                    retired_member = any(
-                        isinstance(elt, ast.Name)
-                        and elt.id == "KILO_SPACE_BUNNY_MODEL_ID"
-                        for elt in ast.walk(node.value)
-                    )
             if (
                 isinstance(node, ast.Call)
                 and isinstance(node.func, ast.Name)
@@ -820,36 +809,40 @@ class B66CanonicalIntegrationTests(unittest.TestCase):
                     isinstance(route_ref, ast.Name)
                     and route_ref.id == "KILO_SPACE_BUNNY_MODEL_ID"
                 ):
-                    registered_as_free_route = True
+                    caps = keywords.get("capabilities")
+                    if (
+                        isinstance(caps, ast.Call)
+                        and len(caps.args) == 1
+                        and isinstance(caps.args[0], (ast.Set, ast.List, ast.Tuple))
+                    ):
+                        capabilities = frozenset(
+                            elt.value
+                            for elt in caps.args[0].elts
+                            if isinstance(elt, ast.Constant)
+                        )
         assert model_id is not None and upstream is not None
-        assert not registered_as_free_route, (
-            "retired space bunny lane must not be re-registered as a free route"
-        )
-        assert retired_member, "space bunny lane must stay in the retirement block"
-        return model_id, upstream
+        assert capabilities, "space bunny lane capabilities not found"
+        return model_id, upstream, capabilities
 
-    def test_governed_lane_identity_vs_canonical_primary_after_successor(self) -> None:
+    def test_governed_lane_matches_canonical_primary(self) -> None:
         primary = self._load_model_primary()
-        # Canonical B14 primary moved to the owner-selected Ling successor for
-        # text; vision remains pending (#3579 policy v2).
-        self.assertEqual(primary.TEXT_PRIMARY_MODEL_ID, "kilo/inclusionai-ling-3.1-flash")
-        self.assertEqual(primary.TEXT_PRIMARY_UPSTREAM_MODEL, "inclusionai/ling-3.1-flash")
-        self.assertIsNone(primary.VISION_PRIMARY_MODEL_ID)
-        self.assertIsNone(primary.VISION_PRIMARY_UPSTREAM_MODEL)
+        self.assertEqual(B66_GOVERNED_ROUTE, primary.TEXT_PRIMARY_MODEL_ID)
+        self.assertEqual(B66_GOVERNED_ROUTE, primary.VISION_PRIMARY_MODEL_ID)
+        self.assertEqual(B66_GOVERNED_UPSTREAM, primary.TEXT_PRIMARY_UPSTREAM_MODEL)
+        self.assertEqual(B66_GOVERNED_UPSTREAM, primary.VISION_PRIMARY_UPSTREAM_MODEL)
+        self.assertEqual(B66_GOVERNED_PROVIDER, primary.TEXT_PRIMARY_PROVIDER_ID)
         self.assertIsNone(primary.TEXT_SECONDARY_MODEL_ID)
         self.assertFalse(primary.TEXT_FALLBACK_ENABLED)
-        # The B66 governed lane keeps its historical Space Bunny identity. The
-        # upstream lane has ended, so this pin documents the gap explicitly:
-        # retargeting B66 extraction is a separate owner decision, never a
-        # silent re-point.
-        self.assertEqual(B66_GOVERNED_ROUTE, "kilo/stealth-space-bunny-alpha")
-        self.assertEqual(B66_GOVERNED_UPSTREAM, "stealth/space-bunny-alpha")
-        self.assertEqual(B66_GOVERNED_PROVIDER, primary.TEXT_PRIMARY_PROVIDER_ID)
 
-    def test_governed_lane_stays_pinned_to_retired_b14_metadata(self) -> None:
-        model_id, upstream = self._space_bunny_lane_facts()
+    def test_governed_lane_matches_registered_b14_lane(self) -> None:
+        model_id, upstream, capabilities = self._space_bunny_lane_facts()
         self.assertEqual(B66_GOVERNED_ROUTE, model_id)
         self.assertEqual(B66_GOVERNED_UPSTREAM, upstream)
+        self.assertIn("image", capabilities)
+        self.assertTrue({"chat", "coding", "free"}.issubset(capabilities))
+        self.assertEqual(
+            capabilities & {"vision", "video", "multimodal", "audio"}, frozenset()
+        )
 
     @staticmethod
     def _gateway_allowed_request_fields() -> tuple[frozenset[str], frozenset[str]]:

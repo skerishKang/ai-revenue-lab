@@ -91,23 +91,17 @@ def test_executable_routes_have_explicit_provider_and_model() -> None:
     executables = [
         (tier, route) for tier, route in all_routes() if route.status is RouteStatus.EXECUTABLE
     ]
-    assert {(tier, route.model_id) for tier, route in executables} == {
-        (TierLabel.PLUS, "kilo/inclusionai-ling-3.1-flash")
-    }
-    assert active_route_for(TierLabel.PLUS) is not None
+    assert executables == []
+    assert active_route_for(TierLabel.PLUS) is None
     assert active_route_for(TierLabel.PRO) is None
     assert active_route_for(TierLabel.MAX) is None
 
     plus_routes = get_tier(TierLabel.PLUS).routes
     hold = next(route for route in plus_routes if route.model_id == PLUS_HOLD_MODEL_ID)
     assert hold.status is RouteStatus.HOLD_AS_DATA_ONLY
-    ling = next(
-        route for route in plus_routes if route.model_id == "kilo/inclusionai-ling-3.1-flash"
-    )
-    assert ling.status is RouteStatus.EXECUTABLE
     bunny = next(
         route for route in plus_routes
-        if route.model_id == "kilo/stealth-space-bunny-alpha"  # historical hold
+        if route.model_id == "kilo/stealth-space-bunny-alpha"
     )
     assert bunny.status is RouteStatus.HOLD_AS_DATA_ONLY
 
@@ -132,10 +126,7 @@ def test_plus_pro_registry_routes_match_shared_contract() -> None:
         for _tier, route in all_routes()
         if route.status is RouteStatus.EXECUTABLE
     }
-    assert contract == registry
-    assert contract == {
-        "plus.ling-3.1-flash.v1": "kilo/inclusionai-ling-3.1-flash"
-    }
+    assert contract == registry == {}
 
 def test_executable_registry_routes_exist_in_b14_catalog() -> None:
     """#2085 ACT-1 drift guard: registry may certify only registered B14 lanes."""

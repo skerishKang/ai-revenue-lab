@@ -19,22 +19,18 @@ registered in the catalog: explicit manual/auto resolution fails closed with
 ``unsupported_model``. The IDs and upstream models below are retained purely
 as retirement metadata for contract tests and operator documentation.
 
-Owner decision (#3143) pinned ``stealth/space-bunny-alpha`` as the Business 66
-quotation text primary. That upstream lane was REMOVED from the public Kilo
-Gateway model list (re-checked 2026-10-06), and the keyless-lane preference is
-RETIRED by owner policy v2 (2026-10-06): model lanes authenticate through
-Secrets Store bindings (``PADIEM_KILO_API_KEY``).
-
-Owner successor selection (2026-10-06, follow-up to #3568/#3569) pins
-``inclusionai/ling-3.1-flash`` as the Business 66 quotation text primary:
-verified live on the Kilo gateway (public model list present, pricing 0,
-context 262,144, max completion 32,768, keyless probe HTTP 200 / cost 0).
-It is registered here as an explicit free lane under the same ``kilo``
-Provider spec, now executing with the Secrets Store binding per policy v2.
-Like the lanes above it is never appended to ``CATALOG_MODELS``
+Owner decision (#3143) pins ``stealth/space-bunny-alpha`` as the Business 66
+quotation text primary. It is registered here as one additional explicit
+free lane under the same ``kilo`` Provider spec. Owner correction #3209
+keeps the shared Provider boundary keyless for all free lanes while Space Bunny
+may reuse the existing ``PADIEM_KILO_API_KEY`` runtime binding when available;
+no new provider adapter or secret value is introduced. Like the lanes above it is never appended to ``CATALOG_MODELS``
 or to ``b14/auto``; the global auto chain and its fallback set are unchanged.
-The retired Space Bunny vision-primary declaration is not carried over:
-Ling 3.1 Flash is text-only, so image work remains fail closed (Policy A).
+Owner decision (#3209) additionally names the same lane the canonical vision
+primary for the existing single-image product contract (``chat``/``coding``/
+``free`` plus ``image``): Product image requests reuse the existing B14
+multimodal path. No ``video``/``audio``/generic-multimodal capability is
+declared and no video product activation follows from upstream metadata.
 """
 
 from __future__ import annotations
@@ -57,10 +53,6 @@ KILO_PROVIDER_ID = "kilo"
 KILO_BASE_ORIGIN = "https://api.kilo.ai/api/gateway"
 KILO_ALLOWED_HOST = "api.kilo.ai"
 KILO_SPACE_BUNNY_CREDENTIAL_BINDING = "PADIEM_KILO_API_KEY"
-# Policy v2 (2026-10-06): all Kilo lanes authenticate through the owner-managed
-# Secrets Store binding when it resolves; the anonymous request shape remains
-# the fallback when the binding is absent.
-KILO_CREDENTIAL_BINDING = "PADIEM_KILO_API_KEY"
 
 KILO_NEMOTRON_MODEL_ID = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 KILO_NEMOTRON_UPSTREAM_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
@@ -74,13 +66,6 @@ KILO_LAGUNA_UPSTREAM_MODEL = "poolside/laguna-s-2.1:free"
 # ``kilo/stealth-space-bunny-alpha``.
 KILO_SPACE_BUNNY_MODEL_ID = "kilo/stealth-space-bunny-alpha"
 KILO_SPACE_BUNNY_UPSTREAM_MODEL = "stealth/space-bunny-alpha"
-
-# Owner successor selection (2026-10-06): Ling 3.1 Flash on the same gateway.
-# Upstream id carries no ``:free`` suffix -> same repo-facing transformation:
-# ``inclusionai/ling-3.1-flash`` -> ``kilo/inclusionai-ling-3.1-flash``.
-KILO_LING_MODEL_ID = "kilo/inclusionai-ling-3.1-flash"
-KILO_LING_UPSTREAM_MODEL = "inclusionai/ling-3.1-flash"
-KILO_LING_SOURCE_CHECKED_AT = "2026-10-06"
 # Date of the owner/CENTRAL evidence that re-confirmed this lane callable on
 # the Kilo free route (#3143 refresh). Space Bunny may use the existing
 # owner-managed PADIEM_KILO_API_KEY runtime binding (#3209), but the binding is
@@ -102,7 +87,6 @@ RETIRED_KILO_FREE_MODEL_IDS = frozenset(
     {
         KILO_MINIMAX_M3_MODEL_ID,
         KILO_HY3_MODEL_ID,
-        KILO_SPACE_BUNNY_MODEL_ID,
     }
 )
 
@@ -143,14 +127,19 @@ KILO_FREE_ROUTES = (
         sort_order=91,
     ),
     _KiloFreeRoute(
-        model_id=KILO_LING_MODEL_ID,
-        upstream_model=KILO_LING_UPSTREAM_MODEL,
-        display_name="Kilo: InclusionAI Ling 3.1 Flash (free)",
-        provider="Kilo Gateway / InclusionAI",
-        context_window=262_144,
+        model_id=KILO_SPACE_BUNNY_MODEL_ID,
+        upstream_model=KILO_SPACE_BUNNY_UPSTREAM_MODEL,
+        display_name="Kilo: Stealth Space Bunny Alpha (free)",
+        provider="Kilo Gateway / Stealth",
+        # No context-window figure exists in the owner/issue evidence for this
+        # lane. 0 keeps it explicitly undeclared instead of inventing a value;
+        # routing does not enforce context length on explicit manual routes.
+        # Authority: unchanged from main (#3209 preserves the 0 sentinel and
+        # does not resurrect stale #3202 metadata).
+        context_window=0,
         sort_order=92,
-        capabilities=frozenset({"chat", "free"}),
-        source_checked_at=KILO_LING_SOURCE_CHECKED_AT,
+        capabilities=frozenset({"chat", "coding", "free", "image"}),
+        source_checked_at=KILO_SPACE_BUNNY_SOURCE_CHECKED_AT,
     ),
 )
 

@@ -15,17 +15,14 @@ from app.pilot.kilo_provider import (
     KILO_MINIMAX_M3_MODEL_ID,
     KILO_NEMOTRON_MODEL_ID,
     KILO_LAGUNA_MODEL_ID,
-    KILO_SPACE_BUNNY_MODEL_ID,
     RETIRED_KILO_FREE_MODEL_IDS,
 )
 from app.pilot.routing_policy import B14_AUTO_CHAIN
 
 
 def test_retired_free_ids_are_declared() -> None:
-    # #3579 policy v2: the Space Bunny upstream lane ended and joins the
-    # retired ids as data-only metadata.
     assert RETIRED_KILO_FREE_MODEL_IDS == frozenset(
-        {KILO_MINIMAX_M3_MODEL_ID, KILO_HY3_MODEL_ID, KILO_SPACE_BUNNY_MODEL_ID}
+        {KILO_MINIMAX_M3_MODEL_ID, KILO_HY3_MODEL_ID}
     )
 
 
