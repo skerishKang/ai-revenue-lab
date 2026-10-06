@@ -109,7 +109,7 @@ async def test_space_bunny_image_payload_reaches_kilo_adapter_with_optional_secr
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setenv(
         KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
-        "kilo_live_abcdefghijklmnopqrstuvwxyz1234",
+        "kilo_dummy_binding_value",
     )
     captured: dict[str, object] = {}
 
@@ -159,7 +159,7 @@ async def test_space_bunny_image_payload_reaches_kilo_adapter_with_optional_secr
         {"type": "text", "text": "이 영수증 금액을 읽어줘"},
         {"type": "image_url", "image_url": {"url": _TINY_PNG_URL}},
     ]
-    assert captured["auth"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
+    assert captured["auth"] == "Bearer kilo_dummy_binding_value"
     assert response["choices"][0]["message"]["content"] == "이미지 확인됨"
 
     spec = ps.get_platform_provider(KILO_PROVIDER_ID)
@@ -168,9 +168,9 @@ async def test_space_bunny_image_payload_reaches_kilo_adapter_with_optional_secr
     # Policy v2: while the shared binding resolves it authenticates every
     # Kilo lane, including the model-less header build.
     bound = plat._request_headers(spec)
-    assert bound["Authorization"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
+    assert bound["Authorization"] == "Bearer kilo_dummy_binding_value"
     headers = plat._request_headers(spec, model_id=KILO_SPACE_BUNNY_MODEL_ID)
-    assert headers["Authorization"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
+    assert headers["Authorization"] == "Bearer kilo_dummy_binding_value"
 
     monkeypatch.delenv(KILO_SPACE_BUNNY_CREDENTIAL_BINDING, raising=False)
     anonymous_headers = plat._request_headers(

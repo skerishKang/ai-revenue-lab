@@ -100,10 +100,10 @@ def test_kilo_lanes_share_the_optional_owner_managed_binding(monkeypatch) -> Non
     # Existing owner-managed key authenticates the successor lane when present.
     monkeypatch.setenv(
         KILO_CREDENTIAL_BINDING,
-        "kilo_live_abcdefghijklmnopqrstuvwxyz1234",
+        "kilo_dummy_binding_value",
     )
     authenticated = plat._request_headers(spec, model_id=KILO_LING_MODEL_ID)
-    assert authenticated["Authorization"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
+    assert authenticated["Authorization"] == "Bearer kilo_dummy_binding_value"
 
     # Missing binding falls back to the anonymous request shape.
     monkeypatch.delenv(KILO_CREDENTIAL_BINDING, raising=False)
