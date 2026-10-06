@@ -103,7 +103,11 @@ async def main() -> int:
                   const profile = B66CgiTemplateV2.approvedProfile({
                     approvedBy: 'operator:central',
                     approvedAt: '2026-10-06T00:00:00.000Z',
-                    approvalRef: 'issue-3521'
+                    approvalRef: 'issue-3521',
+                    privatePresentation: {
+                      bank: '테스트은행 000-000 테스트계정',
+                      fax: 'FAX : 000-000-0000'
+                    }
                   });
                   const draft = QuoteCore.normalizeDraft({
                     schemaVersion: 1,
@@ -194,7 +198,7 @@ async def main() -> int:
         pdf = Image.open(pdf_png_path).convert("RGB")
         assert abs(screen.width - pdf.width) <= 1
         assert abs(screen.height - pdf.height) <= 1
-        for token in ("대한건설", "배관", "1,980,000", "기업은행"):
+        for token in ("대한건설", "배관", "1,980,000", "테스트은행"):
             assert token in pdf_text
 
         if screen.size != pdf.size:
