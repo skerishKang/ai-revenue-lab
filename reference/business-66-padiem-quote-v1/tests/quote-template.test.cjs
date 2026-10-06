@@ -157,7 +157,19 @@ eq(
 
 const formalContent = builtinContent();
 formalContent.layoutVariant = "formal-grid-v1";
+formalContent.meta.issueDateFormat = "yyyy. mm.";
+formalContent.sender.contactPrefix = "MP : ";
+formalContent.recipient.suffix = "귀중";
 formalContent.items.minRows = 9;
+formalContent.items.heading = "(1) 샘플 내역";
+formalContent.summaryTerms = {
+  validity: { label: "유효기간 : ", valuePrefix: "발행일로부터 ", valueSuffix: "일" },
+  rows: [
+    { label: "납품기간 : ", value: "협의" },
+    { label: "결제조건 : ", value: "협의" }
+  ]
+};
+formalContent.totals.supplyLabel = "(1) {firstItemName} 합계 (부가세별도)";
 formalContent.memo.heading = "<특기사항>";
 formalContent.sections = ["title", "meta", "parties", "items", "totals", "detailPages", "memo", "mark"];
 formalContent.detailPages = {
@@ -178,7 +190,14 @@ formalContent.detailPages = {
 const formalNormalized = Template.normalizeTemplateContent(formalContent);
 check(formalNormalized !== null, "formal-grid presentation options normalize");
 eq(formalNormalized.layoutVariant, "formal-grid-v1", "formal layout variant preserved");
+eq(formalNormalized.meta.issueDateFormat, "yyyy. mm.", "bounded issue-date presentation format preserved");
+eq(formalNormalized.sender.contactPrefix, "MP : ", "sender contact prefix is presentation-only");
+eq(formalNormalized.recipient.suffix, "귀중", "recipient suffix is presentation-only");
 eq(formalNormalized.items.minRows, 9, "bounded summary minimum rows preserved");
+eq(formalNormalized.items.heading, "(1) 샘플 내역", "optional summary item heading preserved");
+eq(formalNormalized.summaryTerms.validity.valuePrefix, "발행일로부터 ", "dynamic validity presentation prefix preserved");
+eq(formalNormalized.summaryTerms.rows.length, 2, "bounded recurring summary terms preserved");
+eq(formalNormalized.totals.supplyLabel, "(1) {firstItemName} 합계 (부가세별도)", "first-item display token stays inert in template");
 eq(formalNormalized.memo.heading, "<특기사항>", "memo heading is presentation-only");
 eq(formalNormalized.detailPages.mergeRepeatedName, true, "detail repeated-name merge is opt-in");
 eq(formalNormalized.detailPages.finalLabel, "총 계", "optional detail final label is presentation-only");
@@ -193,6 +212,14 @@ check(Template.normalizeTemplateContent(invalidFormal) === null, "unknown layout
 const invalidRows = builtinContent();
 invalidRows.items.minRows = Template.MAX_SUMMARY_MIN_ROWS + 1;
 check(Template.normalizeTemplateContent(invalidRows) === null, "unbounded summary filler rows fail closed");
+const invalidDateFormat = builtinContent();
+invalidDateFormat.meta.issueDateFormat = "javascript-date";
+check(Template.normalizeTemplateContent(invalidDateFormat) === null, "unknown issue-date presentation format fails closed");
+const invalidTerms = builtinContent();
+invalidTerms.summaryTerms = {
+  rows: Array.from({ length: Template.MAX_SUMMARY_TERMS_ROWS + 1 }, (_, i) => ({ label: "L" + i, value: "V" + i }))
+};
+check(Template.normalizeTemplateContent(invalidTerms) === null, "unbounded summary terms fail closed");
 
 /* TEMPLATE_FINGERPRINT_DETERMINISTIC — 동일 내용 → 동일 지문, 스타일 변경 → 다른 지문 */
 const contentA = builtinContent();

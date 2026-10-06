@@ -68,13 +68,15 @@ jobs:
           test -f "${SOURCE_DIR}/quote-skill-ui.js"
           test -f "${SOURCE_DIR}/padiem-account.js"
           test -f "${SOURCE_DIR}/padiem-account.css"
+          test -f "${SOURCE_DIR}/shell-layout.js"
+          test -f "${SOURCE_DIR}/cgi-template-v2.js"
           test -f "${SOURCE_DIR}/tests/padiem-account-bridge.test.mjs"
           test -f "${SOURCE_DIR}/embed.html"
           test -f "${SOURCE_DIR}/quote-embed-bridge.js"
           test -f "${SOURCE_DIR}/quote-embed-browser.js"
           test -f "${SOURCE_DIR}/quote-embed.css"
           test -f "apps/b66-quote-adapter/app/file_intake.py"
-          for js_file in _worker.js app.js file-intake.js easy-mode.js quote-template.js quote-template-store.js quote-template-renderer.js quote-template-selection.js quote-template-ui.js quote-template-candidate.js quote-template-cloner.js quote-skill.js quote-skill-store.js quote-skill-candidate.js quote-skill-registration.js quote-template-registration.js quote-registration-session.js quote-skill-ui.js padiem-account.js quote-embed-bridge.js quote-embed-browser.js; do
+          for js_file in _worker.js app.js file-intake.js easy-mode.js quote-template.js quote-template-store.js quote-template-renderer.js quote-template-selection.js quote-template-ui.js quote-template-candidate.js quote-template-cloner.js quote-skill.js quote-skill-store.js quote-skill-candidate.js quote-skill-registration.js quote-template-registration.js quote-registration-session.js quote-skill-ui.js padiem-account.js shell-layout.js cgi-template-v2.js quote-embed-bridge.js quote-embed-browser.js; do
             node --check "${SOURCE_DIR}/${js_file}"
           done
           echo "B66_SHIP_GUARD=PASS"
@@ -168,7 +170,7 @@ jobs:
             url="$1"
             output="$2"
             for attempt in $(seq 1 36); do
-              if curl -fsS --connect-timeout 5 --max-time 20                   -H 'Cache-Control: no-cache'                   "${url}?release=${TARGET_SHA}-${attempt}" -o "${output}"                 && grep -F '<title>견적서 만들기</title>' "${output}" >/dev/null                 && grep -F '샘플 공급사' "${output}" >/dev/null                 && grep -F 'id="padiemAccountButton"' "${output}" >/dev/null                 && grep -F '>로그인</button>' "${output}" >/dev/null                 && ! grep -F 'B66 DEMO' "${output}" >/dev/null; then
+              if curl -fsS --connect-timeout 5 --max-time 20                   -H 'Cache-Control: no-cache'                   "${url}?release=${TARGET_SHA}-${attempt}" -o "${output}"                 && grep -F '<title>견적서 만들기</title>' "${output}" >/dev/null                 && grep -F 'id="easyView"' "${output}" >/dev/null                 && grep -F 'id="padiemAccountButton"' "${output}" >/dev/null                 && grep -F '>로그인</button>' "${output}" >/dev/null                 && ! grep -F 'B66 DEMO' "${output}" >/dev/null; then
                 return 0
               fi
               sleep 5
@@ -220,7 +222,7 @@ jobs:
         run: |
           set -euo pipefail
           grep -F '<title>견적서 만들기</title>' "${SOURCE_DIR}/index.html" >/dev/null
-          grep -F '샘플 공급사' "${SOURCE_DIR}/index.html" >/dev/null
+          grep -F 'id="easyView"' "${SOURCE_DIR}/index.html" >/dev/null
           grep -F 'id="padiemAccountButton"' "${SOURCE_DIR}/index.html" >/dev/null
           grep -F '>로그인</button>' "${SOURCE_DIR}/index.html" >/dev/null
           ! grep -F 'B66 DEMO' "${SOURCE_DIR}/index.html" >/dev/null
@@ -251,11 +253,14 @@ jobs:
           node --check quote-registration-session.js
           node --check quote-skill-ui.js
           node --check padiem-account.js
+          node --check shell-layout.js
+          node --check cgi-template-v2.js
           node --check quote-embed-bridge.js
           node --check quote-embed-browser.js
           node tests/quote-core.test.cjs
           node tests/quote-extraction.test.cjs
           node tests/quote-history.test.cjs
+          node tests/production-draft-safety.test.cjs
           node tests/file-intake.test.cjs
           node tests/static-contract.test.cjs
           node tests/quote-template.test.cjs
@@ -276,6 +281,8 @@ jobs:
           node tests/quote-skill-live-analysis.test.cjs
           node tests/pages-live-intake.test.mjs
           node tests/padiem-account-bridge.test.mjs
+          node tests/cgi-v2.test.cjs
+          node tests/three-pane-shell-contract.test.cjs
 
       - name: Run B66 server intake adapter contracts
         shell: bash

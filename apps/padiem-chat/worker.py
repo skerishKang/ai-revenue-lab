@@ -16,6 +16,13 @@ from urllib.parse import urlparse
 # Service-Binding transport must use that same httpx Request/Response/stream
 # type family; app.httpx_compat is only for app-owned JS-fetch clients.
 import httpx
+from padiem_ai_core.b14_execution import MAX_B14_RESPONSE_BYTES
+from app.service_binding_response import (
+    ServiceBindingResponseError,
+    ServiceBindingResponseTooLarge,
+    cloudflare_chunk_bytes,
+    read_bounded_service_binding_body,
+)
 from app.claw_automation_due_workspace_discovery import (
     compose_canonical_due_workspace_discovery,
 )
@@ -27,13 +34,19 @@ from app.claw_automation_store import D1ClawAutomationStore
 from app.claw_local_access_composition import (
     build_claw_local_access_source_with_diagnostic,
 )
+from app.desktop_conversation_authority import (
+    build_desktop_device_session_authority_with_diagnostic,
+)
 from app.claw_p01_composition import (
     build_claw_p01_adapter,
     build_claw_p01_lanes_with_diagnostic,
 )
 from app.claw_task_alert_store import D1ClawTaskAlertStore
+from app.b66_quote_conversation import B66QuoteConversationInterpreter
 from app.config import ConfigError
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
+from app.calendar_read_activation_engine import CloudflareCalendarReadActivationEngineClient
+from app.calendar_read_state_engine import CloudflareCalendarReadStateEngineClient
 from app.control_plane_identity_shadow import D1IdentityShadowStore
 from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
 from app.dispatch_quota import DispatchAwareB14Client, DispatchAwareUsageCounterStore
@@ -57,6 +70,7 @@ from app.worker_config import (
     binding_value,
     response_headers_for_path,
     settings_from_worker_bindings,
+    p01_engine_config_from_worker_bindings,
 )
 from app.worker_orchestration import build_orchestration_bridge
 from kagent.claw_automation import ClawAutomationTickRuntime
@@ -171,8 +185,23 @@ class CloudflareB14ServiceTransport:
             body=json.dumps(payload, ensure_ascii=False),
         )
         response = await self.binding.fetch(request.js_object)
-        text = await response.text()
-        return int(response.status), str(text).encode("utf-8")
+        status = int(response.status)
+        try:
+            body = await read_bounded_service_binding_body(
+                response,
+                max_bytes=MAX_B14_RESPONSE_BYTES,
+            )
+        except ServiceBindingResponseTooLarge:
+            # Core owns the public "response too large" classification. Return
+            # one bounded sentinel byte beyond its configured ceiling so that
+            # classification remains unchanged without consuming the rest of
+            # the Service Binding stream.
+            return status, bytes(MAX_B14_RESPONSE_BYTES + 1)
+        except ServiceBindingResponseError as exc:
+            raise RuntimeError(
+                "Business 14 Service Binding response could not be read."
+            ) from exc
+        return status, body
 
 
 class _CloudflareReadableByteStream(httpx.AsyncByteStream):
@@ -198,52 +227,12 @@ class _CloudflareReadableByteStream(httpx.AsyncByteStream):
 
     @staticmethod
     def _to_bytes(value: Any) -> bytes:
-        # A Service Binding ReadableStream hands back one already-delivered
-        # chunk at a time. In workerd that chunk is a JS typed array (Uint8Array)
-        # surfaced to Python as a proxy object, not a native bytes/bytearray, and
-        # it does not carry a ``to_bytes()`` method. Convert the single chunk to
-        # bytes without ever buffering the whole stream, and fail closed on shapes
-        # we cannot interpret.
-        if value is None:
-            return b""
-        if isinstance(value, bytes):
-            return value
-        if isinstance(value, (bytearray, memoryview)):
-            return bytes(value)
-
-        # Buffer protocol (JS typed arrays expose this through the proxy).
         try:
-            return memoryview(value).tobytes()
-        except (TypeError, ValueError):
-            pass
-
-        # Explicit byte materialiser (kept for adapters/tests that expose it).
-        to_bytes = getattr(value, "to_bytes", None)
-        if callable(to_bytes):
-            try:
-                converted = to_bytes()
-            except Exception as exc:
-                raise httpx.ReadError(
-                    "Business 14 Service Binding returned unreadable stream bytes."
-                ) from exc
-            if isinstance(converted, (bytes, bytearray, memoryview)):
-                return bytes(converted)
-            try:
-                return bytes(converted)
-            except Exception as exc:
-                raise httpx.ReadError(
-                    "Business 14 Service Binding returned unreadable stream bytes."
-                ) from exc
-
-        # Integer-iterable proxy (a Uint8Array yields 0..255 per element).
-        try:
-            return bytes(value)
-        except (TypeError, ValueError):
-            pass
-
-        raise httpx.ReadError(
-            "Business 14 Service Binding returned an unsupported stream chunk."
-        )
+            return cloudflare_chunk_bytes(value)
+        except ServiceBindingResponseError as exc:
+            raise httpx.ReadError(
+                "Business 14 Service Binding returned an unsupported stream chunk."
+            ) from exc
 
     async def __aiter__(self):
         reader = self._reader_or_create()
@@ -731,6 +720,43 @@ class Default(WorkerEntrypoint):
                 except Exception:
                     drive_case_folder_engine_client = None
                 _worker_app.state.drive_case_folder_engine_client = drive_case_folder_engine_client
+                # #2952: Calendar READ activation reuses the existing P01 Engine
+                # Service Binding and caller credential. No second Engine authority.
+                try:
+                    p01_config = p01_engine_config_from_worker_bindings(self.env)
+                    calendar_read_activation_client = (
+                        CloudflareCalendarReadActivationEngineClient(
+                            p01_config.service_binding,
+                            caller_id=p01_config.caller_id,
+                            credential=p01_config.credential,
+                            request_factory=Request,
+                        )
+                        if p01_config is not None
+                        else None
+                    )
+                except Exception:
+                    calendar_read_activation_client = None
+                _worker_app.state.calendar_read_activation_client = calendar_read_activation_client
+                # Persisted Calendar READ grant state (#2952 follow-up): the
+                # read-only half, over the same P01 Engine Service Binding and
+                # caller credential. No second Engine authority; an
+                # unconfigured binding leaves the state surface absent rather
+                # than inventing a grant answer.
+                try:
+                    p01_config_state = p01_engine_config_from_worker_bindings(self.env)
+                    calendar_read_state_engine_client = (
+                        CloudflareCalendarReadStateEngineClient(
+                            p01_config_state.service_binding,
+                            caller_id=p01_config_state.caller_id,
+                            credential=p01_config_state.credential,
+                            request_factory=Request,
+                        )
+                        if p01_config_state is not None
+                        else None
+                    )
+                except Exception:
+                    calendar_read_state_engine_client = None
+                _worker_app.state.calendar_read_state_engine_client = calendar_read_state_engine_client
                 _worker_app.state.project_file_store = project_file_store
                 _worker_app.state.saved_output_store = saved_output_store
                 _worker_app.state.usage_gate = UsageGate(settings, usage_store)
@@ -740,6 +766,13 @@ class Default(WorkerEntrypoint):
                     service_transport=service_transport,
                     stream_transport=stream_transport,
                     require_service_binding=settings.runtime_mode == "b14",
+                )
+                # #3391: create_app composed the B66 quote interpreter against
+                # the pre-composition B14 client. Rebind it to the Production
+                # DispatchAwareB14Client so quote interpretation always rides
+                # the same composed authority as chat.
+                _worker_app.state.b66_quote_interpreter = B66QuoteConversationInterpreter(
+                    _worker_app.state.b14_client
                 )
                 _worker_app.state.grounded_chat = GroundedChatService(
                     _worker_app.state.b14_client,
@@ -767,6 +800,20 @@ class Default(WorkerEntrypoint):
                 )
                 if claw_local_access_source is not None:
                     _worker_app.state.claw_local_access_source = claw_local_access_source
+                # #3436 B2c: compose the canonical device-session authority for
+                # the GET-only Desktop conversation surface from the same
+                # trusted broker binding. When the trusted runtime is absent
+                # (today's deploy) the composition yields None and the app
+                # keeps the fail-closed unconfigured authority installed by
+                # create_app; no browser-cookie or self-asserted fallback
+                # exists on this surface.
+                _desktop_device_session_authority, _desktop_auth_diag = (
+                    build_desktop_device_session_authority_with_diagnostic(self.env)
+                )
+                if _desktop_device_session_authority is not None:
+                    _worker_app.state.desktop_device_session_authority = (
+                        _desktop_device_session_authority
+                    )
                 # #3139: compose the Local Runner return leg from the same
                 # trusted broker binding and the real D1 history store. Absent
                 # either, the composition yields None and the route keeps the

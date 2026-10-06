@@ -43,9 +43,15 @@ from app.approval_smoke_binding import with_approval_smoke_binding
 from app.attachment_byte_store import CloudflareD1ImageByteStore, ScopedImageByteStore
 from app.attachment_admission_service import (
     ATTACHMENT_ADMISSION_PATH,
+    MAX_ADMISSION_REQUEST_BODY_BYTES,
     AttachmentAdmissionEngineService,
 )
 from app.auth_session_scope_authority import AuthSessionScopeAuthority
+from app.cloudflare_request_body import (
+    RequestBodyReadError,
+    RequestBodyTooLarge,
+    read_bounded_worker_request_body,
+)
 from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
@@ -79,6 +85,7 @@ from app.google_oauth_access_lease import (
 )
 from app.document_admission_service import (
     DOCUMENT_ADMISSION_PATH,
+    MAX_DOCUMENT_ADMISSION_REQUEST_BODY_BYTES,
     DocumentAdmissionEngineService,
 )
 from app.document_byte_store import (
@@ -98,7 +105,19 @@ from app.authority_diagnostic import (
 )
 from app.calendar_credential_presence import (
     CALENDAR_CREDENTIAL_PRESENCE_PATH,
+    MAX_PRESENCE_BODY_BYTES,
     calendar_presence_response,
+)
+from app.calendar_read_activation import (
+    CALENDAR_READ_ACTIVATION_PATH,
+    CalendarReadActivationService,
+    CloudflareCalendarBindingClient,
+    CloudflareConnectorWorkspaceClient,
+    parse_calendar_activation_request,
+)
+from app.calendar_read_state import (
+    CALENDAR_READ_STATE_PATH,
+    CalendarReadStateService,
 )
 from app.multimodal_attachment_service import (
     MULTIMODAL_EXECUTE_PATH,
@@ -121,7 +140,12 @@ from app.tenant_auth import (
     ControlPlaneTenantAdmissionAdapter,
     build_control_plane_admission_adapter,
 )
-from app.service import EngineService, ServiceContractError, ServiceResponse
+from app.service import (
+    MAX_REQUEST_BODY_BYTES,
+    EngineService,
+    ServiceContractError,
+    ServiceResponse,
+)
 from app.streaming_service import StreamingEngineService
 from app.tool_execution_service import ToolExecutionEngineService
 from app.tool_projection import (
@@ -168,6 +192,37 @@ ENGINE_SLACK_PRIVATE_CHANNELS_ENV = "ENGINE_SLACK_PRIVATE_CHANNELS"
 # allowlist is server-derived configuration. Nothing is ever logged and no
 # caller-provided calendar id can widen the allowlist.
 ENGINE_CALENDAR_ALLOWED_CALENDARS_ENV = "ENGINE_CALENDAR_ALLOWED_CALENDARS"
+_CALENDAR_READ_REQUEST_BODY_BYTES = 4_096
+
+
+async def _read_bounded_post_body(
+    request: Any,
+    *,
+    max_bytes: int,
+    too_large_code: str = "request_too_large",
+    too_large_message: str = "Request body exceeds the internal Engine safety limit.",
+    too_large_status: int = 413,
+    read_error_message: str = "Request body could not be read.",
+) -> tuple[bytes | None, Any | None]:
+    """Read one POST body while preserving the route's existing error contract."""
+
+    if str(getattr(request, "method", "")).upper() != "POST":
+        return b"", None
+    try:
+        body = await read_bounded_worker_request_body(request, max_bytes=max_bytes)
+    except RequestBodyTooLarge:
+        return None, legacy_worker._error_response(
+            too_large_code,
+            too_large_message,
+            too_large_status,
+        )
+    except RequestBodyReadError:
+        return None, legacy_worker._error_response(
+            "invalid_request",
+            read_error_message,
+            400,
+        )
+    return body, None
 
 
 def _continuation_store_for_env(
@@ -700,6 +755,53 @@ async def _calendar_grants_for_env(env: Any) -> dict[str, CalendarGrant]:
         ) from None
 
 
+def _calendar_read_activation_service_for_env(
+    env: Any,
+) -> CalendarReadActivationService | None:
+    """Compose the private Calendar READ activation authority from served bindings."""
+
+    identity = legacy_worker._binding_value(env, CONTROL_PLANE_IDENTITY_BINDING_NAME)
+    oauth = legacy_worker._binding_value(env, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    grants = legacy_worker._binding_value(env, ENGINE_CONNECTOR_GRANTS_BINDING)
+    if identity is None or oauth is None or grants is None:
+        return None
+    try:
+        return CalendarReadActivationService(
+            workspace_client=CloudflareConnectorWorkspaceClient(identity),
+            binding_client=CloudflareCalendarBindingClient(oauth),
+            grant_store=CloudflareD1ConnectorGrantStore(grants),
+        )
+    except (TypeError, ValueError):
+        return None
+
+
+def _calendar_read_state_service_for_env(
+    env: Any,
+) -> CalendarReadStateService | None:
+    """Compose the read-only persisted READ-grant state projection.
+
+    Reuses the activation composition's own authorities — the same Control
+    Plane identity binding, the same private Google OAuth binding selector and
+    the same canonical D1 grant store — so no second selector, grant store or
+    OAuth authority exists. Missing bindings fail closed to None (the route
+    then answers 503, never a fabricated state).
+    """
+
+    identity = legacy_worker._binding_value(env, CONTROL_PLANE_IDENTITY_BINDING_NAME)
+    oauth = legacy_worker._binding_value(env, CONTROL_PLANE_GOOGLE_OAUTH_BINDING_NAME)
+    grants = legacy_worker._binding_value(env, ENGINE_CONNECTOR_GRANTS_BINDING)
+    if identity is None or oauth is None or grants is None:
+        return None
+    try:
+        return CalendarReadStateService(
+            workspace_client=CloudflareConnectorWorkspaceClient(identity),
+            binding_client=CloudflareCalendarBindingClient(oauth),
+            grant_store=CloudflareD1ConnectorGrantStore(grants),
+        )
+    except (TypeError, ValueError):
+        return None
+
+
 def _scope_authority_for_env(env: Any) -> AuthSessionScopeAuthority | None:
     """Resolve the CP auth-session scope authority via private Service Binding.
 
@@ -1000,6 +1102,10 @@ class Default(legacy_worker.Default):
             return self._fetch_authority_diagnostic(request)
         if path == CALENDAR_CREDENTIAL_PRESENCE_PATH:
             return await self._fetch_calendar_credential_presence(request)
+        if path == CALENDAR_READ_ACTIVATION_PATH:
+            return await self._fetch_calendar_read_activation(request)
+        if path == CALENDAR_READ_STATE_PATH:
+            return await self._fetch_calendar_read_state(request)
         if path == DOCUMENT_CONTEXT_PATH:
             return await self._fetch_document_context(request, path)
         if path == MULTIMODAL_EXECUTE_PATH:
@@ -1044,15 +1150,142 @@ class Default(legacy_worker.Default):
         raw = b""
         if method.upper() == "POST":
             try:
-                text = await request.text()
-                raw = str(text).encode("utf-8")
-            except Exception:
+                raw = await read_bounded_worker_request_body(
+                    request,
+                    max_bytes=MAX_PRESENCE_BODY_BYTES,
+                )
+            except RequestBodyTooLarge:
+                # Preserve the existing token-auth-first projection: the
+                # presence service receives only a bounded oversize sentinel,
+                # never the attacker-controlled remainder of the stream.
+                raw = bytes(MAX_PRESENCE_BODY_BYTES + 1)
+            except RequestBodyReadError:
                 raw = b""
 
         status, body = await calendar_presence_response(self.env, method, headers, raw)
         return legacy_worker._json_response(
             ServiceResponse(status_code=status, body=body)
         )
+
+    async def _fetch_calendar_read_activation(self, request: Any) -> Any:
+        """Activate only the canonical Calendar READ grant for a trusted session."""
+
+        method = str(getattr(request, "method", "")).upper()
+        if method != "POST":
+            return legacy_worker._error_response(
+                "method_not_allowed",
+                "Calendar READ activation requires POST.",
+                405,
+            )
+        headers = getattr(request, "headers", None)
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=_CALENDAR_READ_REQUEST_BODY_BYTES,
+            too_large_code="invalid_request",
+            too_large_message="Calendar activation request is too large.",
+            too_large_status=400,
+            read_error_message="Calendar activation request could not be read.",
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
+
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env,
+            headers,
+            body,
+        )
+        if auth_error is not None:
+            return auth_error
+
+        try:
+            session_id = parse_calendar_activation_request(body)
+        except ServiceContractError as exc:
+            return legacy_worker._error_response(
+                exc.code,
+                exc.safe_message,
+                exc.status_code,
+            )
+
+        service = _calendar_read_activation_service_for_env(self.env)
+        if service is None:
+            return legacy_worker._error_response(
+                "calendar_activation_unavailable",
+                "Calendar READ activation authority is unavailable.",
+                503,
+            )
+        try:
+            result = await service.activate(session_id=session_id)
+        except ServiceContractError as exc:
+            return legacy_worker._error_response(
+                exc.code,
+                exc.safe_message,
+                exc.status_code,
+            )
+        return legacy_worker._json_response(result)
+
+    async def _fetch_calendar_read_state(self, request: Any) -> Any:
+        """Read-only persisted Calendar READ grant state for a trusted session.
+
+        Same caller credential, same closed request body and the same
+        fail-closed surface discipline as the activation route. A failed check
+        is an error response (the chat projection maps it to ``unavailable``),
+        never an ``inactive`` state.
+        """
+
+        method = str(getattr(request, "method", "")).upper()
+        if method != "POST":
+            return legacy_worker._error_response(
+                "method_not_allowed",
+                "Calendar READ state requires POST.",
+                405,
+            )
+        headers = getattr(request, "headers", None)
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=_CALENDAR_READ_REQUEST_BODY_BYTES,
+            too_large_code="invalid_request",
+            too_large_message="Calendar state request is too large.",
+            too_large_status=400,
+            read_error_message="Calendar state request could not be read.",
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
+
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env,
+            headers,
+            body,
+        )
+        if auth_error is not None:
+            return auth_error
+
+        try:
+            session_id = parse_calendar_activation_request(body)
+        except ServiceContractError as exc:
+            return legacy_worker._error_response(
+                exc.code,
+                exc.safe_message,
+                exc.status_code,
+            )
+
+        service = _calendar_read_state_service_for_env(self.env)
+        if service is None:
+            return legacy_worker._error_response(
+                "calendar_activation_unavailable",
+                "Calendar READ state authority is unavailable.",
+                503,
+            )
+        try:
+            result = await service.state(session_id=session_id)
+        except ServiceContractError as exc:
+            return legacy_worker._error_response(
+                exc.code,
+                exc.safe_message,
+                exc.status_code,
+            )
+        return legacy_worker._json_response(result)
 
     async def _fetch_multimodal(self, request: Any, path: str) -> Any:
         """E5A trusted multimodal reference route: source-wired, fail-closed.
@@ -1065,26 +1298,13 @@ class Default(legacy_worker.Default):
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
 
-        body = b""
-        if method.upper() == "POST":
-            try:
-                text = await request.text()
-                body = str(text).encode("utf-8")
-            except Exception:
-                return legacy_worker._json_response(
-                    ServiceResponse(
-                        status_code=400,
-                        body={
-                            "ok": False,
-                            "error": {
-                                "code": "invalid_request",
-                                "message": "Request body could not be read.",
-                                "retryable": False,
-                                "metadata": None,
-                            },
-                        },
-                    )
-                )
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_REQUEST_BODY_BYTES,
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
 
         auth_error = legacy_worker._authenticate_non_health_request(
             self.env,
@@ -1121,26 +1341,13 @@ class Default(legacy_worker.Default):
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
 
-        body = b""
-        if method.upper() == "POST":
-            try:
-                text = await request.text()
-                body = str(text).encode("utf-8")
-            except Exception:
-                return legacy_worker._json_response(
-                    ServiceResponse(
-                        status_code=400,
-                        body={
-                            "ok": False,
-                            "error": {
-                                "code": "invalid_request",
-                                "message": "Request body could not be read.",
-                                "retryable": False,
-                                "metadata": None,
-                            },
-                        },
-                    )
-                )
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_ADMISSION_REQUEST_BODY_BYTES,
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
 
         auth_error = legacy_worker._authenticate_non_health_request(
             self.env,
@@ -1177,26 +1384,13 @@ class Default(legacy_worker.Default):
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
 
-        body = b""
-        if method.upper() == "POST":
-            try:
-                text = await request.text()
-                body = str(text).encode("utf-8")
-            except Exception:
-                return legacy_worker._json_response(
-                    ServiceResponse(
-                        status_code=400,
-                        body={
-                            "ok": False,
-                            "error": {
-                                "code": "invalid_request",
-                                "message": "Request body could not be read.",
-                                "retryable": False,
-                                "metadata": None,
-                            },
-                        },
-                    )
-                )
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_DOCUMENT_ADMISSION_REQUEST_BODY_BYTES,
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
 
         auth_error = legacy_worker._authenticate_non_health_request(
             self.env,
@@ -1225,17 +1419,13 @@ class Default(legacy_worker.Default):
         method = str(getattr(request, "method", ""))
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
-        body = b""
-        if method.upper() == "POST":
-            try:
-                body = str(await request.text()).encode("utf-8")
-            except Exception:
-                return legacy_worker._json_response(
-                    ServiceResponse(status_code=400, body={"ok": False, "error": {
-                        "code": "invalid_request", "message": "Request body could not be read.",
-                        "retryable": False, "metadata": None,
-                    }})
-                )
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_REQUEST_BODY_BYTES,
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
         auth_error = legacy_worker._authenticate_non_health_request(self.env, headers, body)
         if auth_error is not None:
             return auth_error
@@ -1265,26 +1455,14 @@ class Default(legacy_worker.Default):
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
 
-        body = b""
-        if method.upper() == "POST":
-            try:
-                text = await request.text()
-                body = str(text).encode("utf-8")
-            except Exception:
-                return legacy_worker._json_response(
-                    ServiceResponse(
-                        status_code=400,
-                        body={
-                            "ok": False,
-                            "error": {
-                                "code": "invalid_request",
-                                "message": "Request body could not be read.",
-                                "retryable": False,
-                                "metadata": None,
-                            },
-                        },
-                    )
-                )
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_REQUEST_BODY_BYTES,
+            too_large_message="Request body exceeds the safety limit.",
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
 
         auth_error = legacy_worker._authenticate_non_health_request(
             self.env,
@@ -1321,26 +1499,13 @@ class Default(legacy_worker.Default):
         method = str(getattr(request, "method", ""))
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
-        body = b""
-        if method.upper() == "POST":
-            try:
-                text = await request.text()
-                body = str(text).encode("utf-8")
-            except Exception:
-                return legacy_worker._json_response(
-                    ServiceResponse(
-                        status_code=400,
-                        body={
-                            "ok": False,
-                            "error": {
-                                "code": "invalid_request",
-                                "message": "Request body could not be read.",
-                                "retryable": False,
-                                "metadata": None,
-                            },
-                        },
-                    )
-                )
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_REQUEST_BODY_BYTES,
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
 
         auth_error = legacy_worker._authenticate_non_health_request(
             self.env,

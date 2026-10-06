@@ -314,6 +314,27 @@ def test_b14_errors_map_to_stable_shared_error_classes(
     assert "PRIVATE-UPSTREAM-DETAIL" not in public
 
 
+def test_b14_bounded_diagnostic_class_survives_runtime_without_public_projection() -> None:
+    executor = FakeExecutor(
+        error=B14ExecutionError(
+            "malformed_upstream",
+            "PRIVATE-UPSTREAM-DETAIL",
+            diagnostic_class="upstream_missing_content",
+        )
+    )
+    runtime = ExecutionRuntime(app_id="test-app", b14_client=executor)
+
+    with pytest.raises(ExecutionRuntimeError) as info:
+        run(runtime.run(request()))
+
+    assert info.value.code == "malformed_upstream"
+    assert info.value.diagnostic_class == "upstream_missing_content"
+    public = info.value.to_public_dict()
+    assert "diagnostic_class" not in public
+    assert "upstream_missing_content" not in json.dumps(public)
+    assert "PRIVATE-UPSTREAM-DETAIL" not in json.dumps(public)
+
+
 @pytest.mark.parametrize("status_code", [502, 503, 504])
 def test_b14_upstream_http_status_survives_the_non_stream_conversion(
     status_code: int,

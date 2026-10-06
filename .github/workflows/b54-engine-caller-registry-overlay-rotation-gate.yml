@@ -25,11 +25,13 @@ name: B54 Engine Caller Registry Overlay Rotation Gate
 #    "caller": {"caller_id": "b54-p01-overlay-20260914-a1",
 #               "credential": <raw B62_P01_ENGINE_CREDENTIAL>,
 #               "allowed_app_ids": ["b54-padiem-claw", "b54-padiem-claw-drive",
-#                                   "b54-padiem-claw-telegram"]}}
+#                                   "b54-padiem-claw-telegram",
+#                                   "b54-padiem-claw-calendar"]}}
 #
 # The app list started as the single Claw reader (#2375), gained the canonical
-# Drive reader (#2645), and gains the canonical Telegram reader (#2721); each
-# extension is additive and re-proven by the P01 caller-id parity contract.
+# Drive reader (#2645) and Telegram reader (#2721), and now adds the canonical
+# Calendar reader (#2952); each extension is additive and re-proven by the P01
+# caller-id parity contract.
 #
 # Served-version proof (not the settings plane): a secret PUT may create or
 # activate a NEW Worker version, so pre- and post-mutation readback is proven on

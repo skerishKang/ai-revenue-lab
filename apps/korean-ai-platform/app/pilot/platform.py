@@ -201,7 +201,7 @@ async def call_platform_chat_completions(
     platform_provider_id: str,
     messages: list[dict[str, str]],
     temperature: float | None = 0.2,
-    max_tokens: int | None = 300,
+    max_tokens: int | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> dict[str, Any]:
     """Completed-JSON call to a fixed platform Provider.
@@ -230,6 +230,8 @@ async def call_platform_chat_completions(
     }
     if temperature is not None:
         body["temperature"] = float(temperature)
+    # Do not invent a generation budget here. Product/runtime policy owns any
+    # explicit limit; None intentionally delegates to the provider/model default.
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
 
@@ -322,7 +324,7 @@ async def stream_platform_chat_completions(
     platform_provider_id: str,
     messages: list[dict[str, str]],
     temperature: float | None = 0.2,
-    max_tokens: int | None = 300,
+    max_tokens: int | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> Any:
     """Streaming call to a fixed platform Provider (OpenAI-compatible SSE).
@@ -363,6 +365,8 @@ async def stream_platform_chat_completions(
     }
     if temperature is not None:
         body["temperature"] = float(temperature)
+    # Do not invent a generation budget here. Product/runtime policy owns any
+    # explicit limit; None intentionally delegates to the provider/model default.
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
 

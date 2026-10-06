@@ -13,16 +13,19 @@ from __future__ import annotations
 
 import inspect
 import json
+import re
 from typing import Any
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
+from .b14_client import ChatRuntimeError
 from .b66_quote_conversation import (
     B66QuoteConversationError,
     MAX_CONVERSATION_CHARS,
 )
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .claw_memory_routes import _resolve_memory_workspace
 
 MAX_BODY_BYTES = 16 * 1024
@@ -31,6 +34,85 @@ _FORBIDDEN_OWNER_KEYS = frozenset(
     {"user_id", "userId", "tenant_id", "tenantId", "workspace_id", "workspaceId", "owner"}
 )
 _NO_STORE = {"Cache-Control": "no-store, max-age=0", "Pragma": "no-cache"}
+
+# Bounded rejection diagnostics (#3391): the 422 response may carry the
+# structured reason / field path / JSON type name of the failed conversation
+# validation. Header values are allowlist-checked so customer text or model
+# output can never reach the response regardless of what a raise site attaches.
+_REJECTION_REASON_RE = re.compile(r"^[a-z_]{1,64}$")
+_REJECTION_PATH_RE = re.compile(r"^[A-Za-z0-9_.\[\]]{1,64}$")
+_REJECTION_TYPE_RE = re.compile(r"^[a-z]{1,16}$")
+
+
+# Bounded 502 upstream diagnostics (#3391): a provider/runtime failure may carry
+# only a product-owned fixed upstream class. For broad errors this is the public
+# ``ChatRuntimeError.code``; malformed-answer failures may additionally carry a
+# narrower internal ``upstream_class``. Raw exception text, provider payloads,
+# model output and customer values are never part of this header.
+#
+# Every value here is reachable on this lane today, which is what keeps "header
+# present" meaningful. Broad Core/provider classes come from
+# ``b14_client._chat_error``; the five ``upstream_*content/shape/json/empty*``
+# values are bounded internal refinements of the existing malformed-answer
+# public contract. ``upstream_binding_unavailable`` is raised by the
+# Production-composed ``DispatchAwareB14Client.complete`` itself when the required B14 Service
+# Binding is absent (``require_service_binding`` True with
+# ``service_transport`` None, as composed in ``worker.py``).
+#
+# Deliberately outside the allowlist: request/policy classes such as
+# ``model_profile_unassigned`` (unreachable here — the B66 lane never binds a
+# request tier, so policy resolution always yields the executable Padiem Plus
+# default), ``tier_unavailable`` / ``unknown_model_alias`` (only for a quote text
+# that literally begins with a slash alias) and ``invalid_request`` (Core
+# request-contract rejection, not an upstream class).
+_UPSTREAM_CLASS_ALLOWLIST = frozenset(
+    {
+        "upstream_timeout",
+        "upstream_busy",
+        "upstream_response_too_large",
+        "malformed_upstream",
+        "upstream_malformed_json",
+        "upstream_unexpected_shape",
+        "upstream_missing_content",
+        "upstream_non_text_content",
+        "upstream_empty_answer",
+        "upstream_unavailable",
+        "provider_auth_error",
+        "provider_route_error",
+        "provider_server_error",
+        "upstream_execution_failed",
+        "upstream_error",
+        "upstream_binding_unavailable",
+    }
+)
+
+
+def _upstream_class_headers(exc: BaseException) -> dict[str, str]:
+    if not isinstance(exc, ChatRuntimeError):
+        return {}
+    upstream_class = getattr(exc, "upstream_class", None)
+    code = (
+        upstream_class
+        if isinstance(upstream_class, str)
+        else getattr(exc, "code", None)
+    )
+    if not isinstance(code, str) or code not in _UPSTREAM_CLASS_ALLOWLIST:
+        return {}
+    return {"X-B66-Upstream-Class": code}
+
+
+def _rejection_diagnostic_headers(exc: BaseException) -> dict[str, str]:
+    headers: dict[str, str] = {}
+    reason = getattr(exc, "message", None)
+    if isinstance(reason, str) and _REJECTION_REASON_RE.fullmatch(reason):
+        headers["X-B66-Rejection-Reason"] = reason
+    path = getattr(exc, "path", None)
+    if isinstance(path, str) and _REJECTION_PATH_RE.fullmatch(path):
+        headers["X-B66-Rejection-Path"] = path
+    observed_type = getattr(exc, "observed_type", None)
+    if isinstance(observed_type, str) and _REJECTION_TYPE_RE.fullmatch(observed_type):
+        headers["X-B66-Rejection-Type"] = observed_type
+    return headers
 
 
 def _error(status: int, code: str, message: str) -> JSONResponse:
@@ -54,14 +136,19 @@ def _store(request: Request) -> Any | None:
     return getattr(request.app.state, "b66_saved_quote_skill_store", None)
 
 
+def _company_profile_store(request: Request) -> Any | None:
+    return getattr(request.app.state, "b66_company_profile_store", None)
+
+
 async def _json(request: Request) -> dict[str, Any] | JSONResponse:
     if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
-    body = await request.body()
+    try:
+        body = await read_bounded_request_body(request, max_bytes=MAX_BODY_BYTES)
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not body:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-    if len(body) > MAX_BODY_BYTES:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     try:
         data = json.loads(body.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError):
@@ -190,15 +277,32 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     try:
         value = interpret_fn(message=message.strip(), skill=skill)
         projection = await value if inspect.isawaitable(value) else value
-    except B66QuoteConversationError:
-        return _error(422, "quote_input_unrecognized", "견적 입력값을 확인해 주세요.")
-    except Exception:
-        return _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
+    except B66QuoteConversationError as exc:
+        response = _error(422, "quote_input_unrecognized", "견적 입력값을 확인해 주세요.")
+        for header_name, header_value in _rejection_diagnostic_headers(exc).items():
+            response.headers[header_name] = header_value
+        return response
+    except Exception as exc:
+        response = _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
+        for header_name, header_value in _upstream_class_headers(exc).items():
+            response.headers[header_name] = header_value
+        return response
 
     safe_dict = getattr(projection, "safe_dict", None)
     if not callable(safe_dict):
         return _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
     candidate = safe_dict()
+
+    company_profile = None
+    profile_store = _company_profile_store(request)
+    get_profile = getattr(profile_store, "get_profile", None) if profile_store is not None else None
+    if callable(get_profile):
+        try:
+            value = get_profile(user_id=uid, workspace_id=workspace_id)
+            company_profile = await value if inspect.isawaitable(value) else value
+        except Exception:
+            return _error(503, "company_profile_read_failed", "회사정보를 불러오지 못했습니다.")
+
     return JSONResponse(
         {
             "ok": True,
@@ -210,6 +314,7 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
                 "skill_version": saved.get("skill_version"),
             },
             "candidate": candidate,
+            "company_profile": company_profile,
             "execution": {
                 "source_document_parse_calls": 0,
                 "server_total_calculation": False,

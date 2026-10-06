@@ -397,19 +397,24 @@ def test_malformed_json_or_utf8_fails_closed(content: bytes) -> None:
     with pytest.raises(B14ExecutionError) as info:
         run(client.execute(request_fixture()))
     assert info.value.code == "malformed_upstream"
+    assert info.value.diagnostic_class == "upstream_malformed_json"
+    assert "diagnostic_class" not in info.value.to_public_dict()
 
 
 @pytest.mark.parametrize(
-    "payload",
+    ("payload", "diagnostic_class"),
     [
-        {},
-        {"choices": []},
-        {"choices": [{}]},
-        {"choices": [{"message": {}}]},
-        {"choices": [{"message": {"content": 123}}]},
+        ({}, "upstream_missing_content"),
+        ({"choices": []}, "upstream_missing_content"),
+        ({"choices": [{}]}, "upstream_missing_content"),
+        ({"choices": [{"message": {}}]}, "upstream_missing_content"),
+        ({"choices": [{"message": {"content": 123}}]}, "upstream_non_text_content"),
     ],
 )
-def test_missing_or_invalid_assistant_content_fails_closed(payload) -> None:
+def test_missing_or_invalid_assistant_content_fails_closed(
+    payload,
+    diagnostic_class: str,
+) -> None:
     async def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json=payload)
 
@@ -420,6 +425,21 @@ def test_missing_or_invalid_assistant_content_fails_closed(payload) -> None:
     with pytest.raises(B14ExecutionError) as info:
         run(client.execute(request_fixture()))
     assert info.value.code == "malformed_upstream"
+    assert info.value.diagnostic_class == diagnostic_class
+
+
+def test_unexpected_top_level_shape_has_bounded_diagnostic_class() -> None:
+    async def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json=[])
+
+    client = B14ExecutionClient(
+        B14ExecutionConfig(base_url="https://b14.example"),
+        httpx.MockTransport(handler),
+    )
+    with pytest.raises(B14ExecutionError) as info:
+        run(client.execute(request_fixture()))
+    assert info.value.code == "malformed_upstream"
+    assert info.value.diagnostic_class == "upstream_unexpected_shape"
 
 
 def test_empty_assistant_answer_has_distinct_error() -> None:
@@ -436,6 +456,7 @@ def test_empty_assistant_answer_has_distinct_error() -> None:
     with pytest.raises(B14ExecutionError) as info:
         run(client.execute(request_fixture()))
     assert info.value.code == "empty_upstream_answer"
+    assert info.value.diagnostic_class == "upstream_empty_answer"
 
 
 def test_success_parses_bounded_route_and_usage_metadata_without_raw_unknowns() -> None:

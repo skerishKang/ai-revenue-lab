@@ -740,6 +740,10 @@ class _Stub:
         self.calls.append(("workspace_calendar_connector_state", payload))
         return {"ok": True, "routed": True}
 
+    async def select_calendar_binding(self, payload):
+        self.calls.append(("select_calendar_binding", payload))
+        return {"ok": True, "routed": True}
+
 
 class _Namespace:
     def __init__(self, stub: _Stub) -> None:
@@ -942,6 +946,10 @@ def _calendar_credential(*, binding_ref, workspace_ref=WORKSPACE_A, expires_at=N
 
 def _calendar_rpc(durable_object, payload):
     return asyncio.run(durable_object.workspace_calendar_connector_state(payload))
+
+
+def _calendar_binding_rpc(durable_object, payload):
+    return asyncio.run(durable_object.select_calendar_binding(payload))
 
 
 def _calendar_read(store, *, workspace_ref=WORKSPACE_A, now=NOW):
@@ -1250,3 +1258,68 @@ def test_calendar_presence_read_declares_its_truth_flags() -> None:
     assert worker.DEFAULT_WORKSPACE_STATUS_INCLUDES_CALENDAR is False
     assert worker.B62_PUBLIC_CALENDAR_TRUTH_WIDENED is False
     assert durable_module.WORKSPACE_READ_CONNECTOR_SCOPE == ("gmail", "google-drive")
+
+
+def test_calendar_binding_rpc_resolves_private_identity_without_credentials() -> None:
+    storage, durable_object = _durable_object()
+    CloudflareDurableGoogleOAuthStore(storage).save_credential(
+        _calendar_credential(binding_ref="binding.a.calendar")
+    )
+
+    result = _calendar_binding_rpc(durable_object, {"workspace_ref": WORKSPACE_A})
+
+    assert result["ok"] is True
+    selection = result["selection"]
+    assert selection == {
+        "status": "resolved",
+        "connector_id": CALENDAR_CONNECTOR_ID,
+        "workspace_ref": WORKSPACE_A,
+        "binding_ref": "binding.a.calendar",
+        "actor_ref": "actor.binding.a.calendar",
+    }
+    rendered = json.dumps(result, sort_keys=True)
+    assert SEALED_REFRESH not in rendered
+    assert "refresh_token" not in rendered
+    assert "access_token" not in rendered
+
+
+def test_calendar_binding_rpc_rejects_caller_connector_or_identity_authority() -> None:
+    _, durable_object = _durable_object()
+    for denied in (
+        {},
+        {"workspace_ref": WORKSPACE_A, "connector_id": CALENDAR_CONNECTOR_ID},
+        {"workspace_ref": WORKSPACE_A, "binding_ref": "binding.a.calendar"},
+        {"workspace_ref": WORKSPACE_A, "actor_ref": "actor.a"},
+    ):
+        assert _calendar_binding_rpc(durable_object, denied)["ok"] is False
+
+
+def test_calendar_binding_rpc_duplicate_binding_fails_closed() -> None:
+    storage, durable_object = _durable_object()
+    store = CloudflareDurableGoogleOAuthStore(storage)
+    store.save_credential(_calendar_credential(binding_ref="binding.a.calendar.one"))
+    store.save_credential(_calendar_credential(binding_ref="binding.a.calendar.two"))
+
+    result = _calendar_binding_rpc(durable_object, {"workspace_ref": WORKSPACE_A})
+
+    assert result["ok"] is False
+    assert result["error"]["code"] == "ambiguous_google_oauth_binding"
+
+
+def test_calendar_binding_gateway_is_private_service_binding_only() -> None:
+    stub = _Stub()
+    namespace = _Namespace(stub)
+    entrypoint = worker.Default(_Env(namespace=namespace))
+
+    result = asyncio.run(
+        entrypoint.select_calendar_binding({"workspace_ref": WORKSPACE_A})
+    )
+
+    assert result == {"ok": True, "routed": True}
+    assert stub.calls == [("select_calendar_binding", {"workspace_ref": WORKSPACE_A})]
+    assert asyncio.run(entrypoint.fetch(object())).status == 404
+    assert worker.CALENDAR_BINDING_SELECTION_RPC is True
+    assert worker.CALENDAR_BINDING_SELECTION_PUBLIC_ROUTE is False
+    assert worker.CALENDAR_BINDING_SELECTION_CONNECTOR_FIXED_IN_CODE is True
+    assert worker.CALENDAR_BINDING_SELECTION_RAW_CREDENTIAL_OUTPUT is False
+    assert worker.CALENDAR_BINDING_SELECTION_ACCESS_LEASE_ISSUED is False

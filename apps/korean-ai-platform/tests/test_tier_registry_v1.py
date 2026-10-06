@@ -22,6 +22,7 @@ import pytest
 
 from app.pilot.tier_registry_v1 import (
     CredentialMode,
+    PLUS_HOLD_MODEL_ID,
     RouteStatus,
     SCHEMA_VERSION,
     TierDefinition,
@@ -85,21 +86,24 @@ def test_no_user_visible_auto_label() -> None:
         assert "auto" not in route.route_id.lower()
 
 
+
 def test_executable_routes_have_explicit_provider_and_model() -> None:
     executables = [
         (tier, route) for tier, route in all_routes() if route.status is RouteStatus.EXECUTABLE
     ]
-    assert executables, "registry must carry at least one explicit executable route"
-    for tier, route in executables:
-        assert route.route_id
-        assert route.provider_id, f"{tier.value}: executable route lacks provider_id"
-        assert route.model_id, f"{tier.value}: executable route lacks model_id"
-        assert route.model_id.startswith(f"{route.provider_id}/")
-        assert route.evidence
-
-    assert active_route_for(TierLabel.PLUS) is not None
+    assert executables == []
+    assert active_route_for(TierLabel.PLUS) is None
     assert active_route_for(TierLabel.PRO) is None
     assert active_route_for(TierLabel.MAX) is None
+
+    plus_routes = get_tier(TierLabel.PLUS).routes
+    hold = next(route for route in plus_routes if route.model_id == PLUS_HOLD_MODEL_ID)
+    assert hold.status is RouteStatus.HOLD_AS_DATA_ONLY
+    bunny = next(
+        route for route in plus_routes
+        if route.model_id == "kilo/stealth-space-bunny-alpha"
+    )
+    assert bunny.status is RouteStatus.HOLD_AS_DATA_ONLY
 
 def _contract_executable_model_ids() -> dict[str, str]:
     """Read-only scan of the shared contract's EXECUTABLE route declarations."""
@@ -114,19 +118,15 @@ def _contract_executable_model_ids() -> dict[str, str]:
             found[route_id.group(1)] = model.group(1)
     return found
 
+
 def test_plus_pro_registry_routes_match_shared_contract() -> None:
-    """Registry and shared contract must name the same explicit active routes."""
     contract = _contract_executable_model_ids()
     registry = {
         route.route_id: route.model_id
         for _tier, route in all_routes()
         if route.status is RouteStatus.EXECUTABLE
     }
-    # Compared file-to-file rather than against a route id typed twice, so switching a tier
-    # route keeps proving parity here without this suite restating the model (#2800).
-    assert registry, "registry must certify at least one explicit executable route"
-    assert contract == registry
-
+    assert contract == registry == {}
 
 def test_executable_registry_routes_exist_in_b14_catalog() -> None:
     """#2085 ACT-1 drift guard: registry may certify only registered B14 lanes."""

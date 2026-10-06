@@ -11,6 +11,7 @@ from starlette.responses import JSONResponse
 from starlette.routing import Route
 
 from .auth_routes import auth_ready, current_user_id
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .history import HistoryForbidden, HistoryStore
 from .model_policy import ModelPolicyError, resolve_model_policy
 from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
@@ -56,9 +57,17 @@ async def _json_body(request: Request) -> Any:
                 raise B62OrchestrationError("request_too_large", "요청이 너무 큽니다.", status_code=413)
         except ValueError:
             raise B62OrchestrationError("invalid_request", "요청 형식이 올바르지 않습니다.", status_code=422) from None
-    body = await request.body()
-    if len(body) > MAX_ORCHESTRATION_BROWSER_BODY_BYTES:
-        raise B62OrchestrationError("request_too_large", "요청이 너무 큽니다.", status_code=413)
+    try:
+        body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_ORCHESTRATION_BROWSER_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        raise B62OrchestrationError(
+            "request_too_large",
+            "요청이 너무 큽니다.",
+            status_code=413,
+        ) from None
     try:
         return json.loads(body.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError):

@@ -32,9 +32,11 @@ Padiem has already selected the target routes for the current MVP.
 
 ```text
 Padiem Plus
-  provider = agnes-ai
-  model = agnes-ai/agnes-3.0-flash
-  executable = YES (the only executable product route)
+  model = padiem-profile/plus-hold
+  executable = NO (HOLD_PENDING_SUCCESSOR, owner decision #3568)
+  Space Bunny retired from the executable Plus route; historical/manual
+  route metadata only. No successor is selected yet (#3554) and no older
+  route may be silently promoted as fallback.
 
 Padiem Pro
   model = padiem-profile/pro-hold
@@ -45,10 +47,15 @@ Padiem Max
   executable = NO
 
 Declared data, not a product route
-  poolside/laguna-s-2.1        HOLD_AS_DATA_ONLY, b14/auto fixed-chain second position
+  agnes-ai/agnes-3.0-flash     HOLD_AS_DATA_ONLY, historical Plus route
+  kilo/stealth-space-bunny-alpha  HOLD_AS_DATA_ONLY, retired Plus primary
+                                 (#3568); historical metadata only
+  poolside/laguna-s-2.1        HOLD_AS_DATA_ONLY, historical routing/fixed-chain evidence
 ```
 
-The earlier mapping `Plus = kilo/poolside-laguna-s-2.1-free` / `Pro = kilo/nvidia-nemotron-3-ultra-550b-a55b-free` is superseded: no Padiem tier points at those Kilo free lanes, and Poolside Laguna's status in the shared declaration is product data plus gateway-side fixed-chain evidence — never a Padiem tier route and never a silent fallback.
+The earlier mappings `Plus = agnes-ai/agnes-3.0-flash` and, before that, `Plus = kilo/poolside-laguna-s-2.1-free` / `Pro = kilo/nvidia-nemotron-3-ultra-550b-a55b-free` are superseded as current Padiem tier routes. Historical provider registrations/data do not authorize fallback.
+
+**Retirement boundary (closed 2026-10-06):** Kilo's public catalog listed `stealth/space-bunny-alpha` with `expiration_date=2026-10-05`. The owner decision #3568 then retired Space Bunny from the executable Padiem Plus route; main now declares Plus as `HOLD_PENDING_SUCCESSOR` with no executable route (#3569). Successor selection/proof is tracked in #3554; do not silently restore an older route.
 
 Current success criteria are therefore:
 

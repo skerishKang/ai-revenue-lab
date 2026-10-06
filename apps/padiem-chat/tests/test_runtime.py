@@ -207,6 +207,7 @@ async def test_malformed_b14_success_fails_closed():
     with pytest.raises(ChatRuntimeError) as info:
         await client.complete(USER_MESSAGES)
     assert info.value.code == "malformed_upstream"
+    assert info.value.upstream_class == "upstream_missing_content"
 
 
 @pytest.mark.asyncio

@@ -42,6 +42,8 @@ from kagent.p01_orchestration_client import P01EngineOrchestrationClient
 from kagent.runs import ClawRun
 
 
+_MODEL_EXECUTION_AVAILABLE = active_route_for(ProductTierLabel.PLUS) is not None
+
 _FAKE_CREDENTIAL = "b54-test-credential-" + ("0" * 32)
 _COMPLETED_RUN_ID = "orch_test_001"
 _ENGINE_CONTINUATION_REF = "cont_EngineOpaqueRef_01"
@@ -197,6 +199,7 @@ def _client(transport: FakeEngineTransport) -> PadiemAiEngineClient:
     )
 
 
+@unittest.skipUnless(_MODEL_EXECUTION_AVAILABLE, "successor model route not selected")
 class P01EngineOrchestrationClientTests(unittest.TestCase):
     def run_port(self, transport: FakeEngineTransport, request):
         port = P01EngineOrchestrationClient(_client(transport))

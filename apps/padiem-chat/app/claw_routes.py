@@ -77,6 +77,7 @@ from padiem_control_plane.product_tier_routes import (
 )
 
 from .auth_routes import auth_ready, current_user_id
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .control_plane_identity_shadow import (
     IdentityShadowRecord,
     IdentityShadowStore,
@@ -374,11 +375,15 @@ async def claw_manual_intake_preview(request: Request) -> JSONResponse:
     if content_type != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
 
-    raw_body = await request.body()
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_MANUAL_INTAKE_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not raw_body:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-    if len(raw_body) > MAX_MANUAL_INTAKE_BODY_BYTES:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
 
     try:
         data = json.loads(raw_body.decode("utf-8"))
@@ -460,11 +465,15 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     if content_type != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
 
-    raw_body = await request.body()
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_MANUAL_INTAKE_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not raw_body:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-    if len(raw_body) > MAX_MANUAL_INTAKE_BODY_BYTES:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
 
     try:
         data = json.loads(raw_body.decode("utf-8"))
@@ -525,8 +534,15 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
         router.process(intake_req)
     except ContractError as exc:
         return _error(400, "contract_violation", str(exc))
-    except Exception as exc:
-        return _error(400, "invalid_input", str(exc))
+    except Exception:
+        # Unexpected router/runtime details are never browser-facing. Contract
+        # violations above remain specific; everything else is an internal
+        # execution failure with bounded product copy.
+        return _error(
+            500,
+            "intake_generation_failed",
+            "요청 처리 준비 중 오류가 발생했습니다. 다시 시도해 주세요.",
+        )
 
     # Canonical session reference (#2829): resolved through the conversation
     # authority itself, and it fails closed before quota, tenant, or dispatch.
@@ -556,13 +572,42 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
                 "문서 저장소가 설정되지 않았습니다.",
             )
 
+    # #3382: the adapter is read BEFORE the usage gate because the canonical
+    # USER lane check (subject identity) must happen BEFORE quota consumption.
+    # The usage gate is still applied before the actual P01 dispatch, so the
+    # contract intent is preserved.
+    adapter: P01CoreOrchestrationAdapter | None = getattr(
+        request.app.state, "claw_p01_adapter", None
+    )
+
+    # #3382: the canonical USER subject is resolved BEFORE the usage gate so a
+    # failed revalidation never consumes quota. The subject is derived
+    # SERVER-SIDE from the signed Padiem session (current_user_id → current B54
+    # canonical session → canonical sub_*) and travels only on the P01 wire.
+    # Nothing about the subject, product user, tenant or workspace is read from
+    # the request, and the value is never returned to the browser. When the
+    # identity authority is not bound (legacy/test composition), the lane is
+    # off and the old subjectless contract applies — the Engine admission
+    # rejects the request with 503 entitlement_unavailable.
+    subject_id: str | None = None
+    if adapter is not None and getattr(
+        adapter, "subject_identity_lane", False
+    ) is True:
+        from .b54_canonical_session import resolve_current_b54_canonical_session
+
+        b54_session = await resolve_current_b54_canonical_session(request)
+        if b54_session is None:
+            return _error(
+                403,
+                "canonical_b54_session_unavailable",
+                "인증된 Claw 실행 권한을 확인할 수 없습니다.",
+            )
+        subject_id = b54_session.auth_session.subject.subject_id
+
     denial = await _usage_gate_denial(request)
     if denial is not None:
         return denial
 
-    adapter: P01CoreOrchestrationAdapter | None = getattr(
-        request.app.state, "claw_p01_adapter", None
-    )
     if adapter is None:
         # No composed transport exists, so the consumed authorization is
         # provably un-dispatched: compensate the exact receipt (#2226).
@@ -587,7 +632,9 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     run = create_claw_run("padiem-chat", task_text)
 
     try:
-        outcome = await adapter.execute(run, product_tier=product_tier)
+        outcome = await adapter.execute(
+            run, product_tier=product_tier, subject_id=subject_id
+        )
     except P01AdapterError as exc:
         # Canonical #830 invariant: refund only when B62 can prove the Engine
         # call was never dispatched. Dispatched/ambiguous failures stay counted.
@@ -999,11 +1046,15 @@ async def claw_approval_decision(request: Request) -> JSONResponse:
     if uid is None:
         return _error(401, "unauthorized", "로그인이 필요합니다.")
 
-    raw_body = await request.body()
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_APPROVAL_DECISION_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not raw_body:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-    if len(raw_body) > MAX_APPROVAL_DECISION_BODY_BYTES:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     try:
         data = json.loads(raw_body.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError):
@@ -1283,11 +1334,15 @@ async def claw_manual_intake_quote_compare(request: Request) -> JSONResponse:
     if content_type != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
 
-    raw_body = await request.body()
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_MANUAL_INTAKE_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not raw_body:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-    if len(raw_body) > MAX_MANUAL_INTAKE_BODY_BYTES:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
 
     try:
         data = json.loads(raw_body.decode("utf-8"))

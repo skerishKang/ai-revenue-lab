@@ -238,8 +238,74 @@ async def test_password_login_accepts_username_or_email_and_reuses_tenant() -> N
     assert len(shadow.saved) == 2
 
 
+async def _login_public(client, identifier, password):
+    """Project one login attempt onto the unauthenticated public boundary.
+
+    Returns (status, error code, error message, top-level keys, error keys)
+    so tests compare everything an unauthenticated caller can observe.
+    """
+    response = await client.post(
+        "/api/auth/password/login",
+        json={"identifier": identifier, "password": password},
+    )
+    body = response.json()
+    return (
+        response.status_code,
+        body["error"]["code"],
+        body["error"]["message"],
+        sorted(body.keys()),
+        sorted(body["error"].keys()),
+    )
+
+
 @pytest.mark.asyncio
-async def test_wrong_password_is_generic_and_locks_after_five_failures() -> None:
+async def test_login_failures_are_nondisclosing_across_missing_wrong_and_locked() -> None:
+    # #3501 matrix: A nonexistent identifier, B existing + wrong password,
+    # C existing at/over the failure threshold (wrong and even correct
+    # password while locked) must be observationally identical. D proves
+    # the success path still works on an unlocked account.
+    store = MemoryStore()
+    shadow = ShadowStore()
+    authority = Authority()
+    encoded = hash_password("correct horse battery staple")
+    await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
+    await store.register_password_user("second.user", "second@example.test", "Second", encoded)
+    authority.memberships[:] = ["tenant_0123456789abcdef0123456789abcdef"]
+    app = create_app(
+        password_settings(),
+        history_store=store,
+        control_plane_identity_authority=authority,
+        identity_shadow_store=shadow,
+    )
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        missing = await _login_public(client, "missing.user", "definitely wrong password")
+        first_wrong = await _login_public(client, "owner.test", "definitely wrong password")
+        for _ in range(4):
+            assert await _login_public(client, "owner.test", "definitely wrong password") == first_wrong
+        locked_wrong = await _login_public(client, "owner.test", "definitely wrong password")
+        locked_correct = await _login_public(client, "owner.test", "correct horse battery staple")
+        second_ok = await client.post(
+            "/api/auth/password/login",
+            json={"identifier": "second.user", "password": "correct horse battery staple"},
+        )
+
+    # The internal lock must actually be engaged for this proof to count.
+    assert store.credentials["owner.test"].locked_until is not None
+    assert missing == first_wrong == locked_wrong == locked_correct
+    assert missing[0] == 401
+    assert missing[1] == "invalid_credentials"
+    assert second_ok.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_locked_attempts_do_not_extend_lock() -> None:
+    # Guesses made while locked change no server state: the lock lapses
+    # on schedule and cannot be stretched by further unauthenticated
+    # attempts.
     store = MemoryStore()
     encoded = hash_password("correct horse battery staple")
     await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
@@ -249,28 +315,134 @@ async def test_wrong_password_is_generic_and_locks_after_five_failures() -> None
         transport=httpx.ASGITransport(app=app),
         base_url="https://chat.example.test",
     ) as client:
-        responses = [
-            await client.post(
+        for _ in range(5):
+            response = await client.post(
                 "/api/auth/password/login",
                 json={"identifier": "owner.test", "password": "definitely wrong password"},
             )
-            for _ in range(5)
-        ]
-        locked = await client.post(
+            assert response.status_code == 401
+        frozen_lock = store.credentials["owner.test"].locked_until
+        assert frozen_lock is not None
+        for _ in range(3):
+            response = await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "owner.test", "password": "definitely wrong password"},
+            )
+            assert response.status_code == 401
+            assert response.json()["error"]["code"] == "invalid_credentials"
+
+    assert store.credentials["owner.test"].locked_until == frozen_lock
+    assert store.credentials["owner.test"].failed_attempts == 5
+
+
+@pytest.mark.asyncio
+async def test_expired_lock_decays_instead_of_ratcheting() -> None:
+    # A lapsed lock restarts the count: one stray failure after expiry
+    # must not re-lock the account on its own.
+    store = MemoryStore()
+    encoded = hash_password("correct horse battery staple")
+    profile = await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
+    past = (datetime.now(timezone.utc) - timedelta(minutes=1)).isoformat()
+    await store.record_password_failure(profile.id, 5, past)
+    app = create_app(password_settings(), history_store=store)
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        response = await client.post(
+            "/api/auth/password/login",
+            json={"identifier": "owner.test", "password": "definitely wrong password"},
+        )
+        assert response.status_code == 401
+        assert response.json()["error"]["code"] == "invalid_credentials"
+        assert store.credentials["owner.test"].failed_attempts == 1
+        assert store.credentials["owner.test"].locked_until is None
+        recovered = await client.post(
             "/api/auth/password/login",
             json={"identifier": "owner.test", "password": "correct horse battery staple"},
         )
+
+    assert recovered.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_success_resets_failure_count() -> None:
+    # Four failures followed by success must reset the counter: a second
+    # run of four failures stays below the lock threshold, which a stale
+    # counter would have crossed.
+    store = MemoryStore()
+    shadow = ShadowStore()
+    authority = Authority()
+    encoded = hash_password("correct horse battery staple")
+    await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
+    authority.memberships[:] = ["tenant_0123456789abcdef0123456789abcdef"]
+    app = create_app(
+        password_settings(),
+        history_store=store,
+        control_plane_identity_authority=authority,
+        identity_shadow_store=shadow,
+    )
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        for _ in range(2):
+            for _ in range(4):
+                response = await client.post(
+                    "/api/auth/password/login",
+                    json={"identifier": "owner.test", "password": "definitely wrong password"},
+                )
+                assert response.status_code == 401
+            response = await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "owner.test", "password": "correct horse battery staple"},
+            )
+            assert response.status_code == 200
+
+    assert store.credentials["owner.test"].failed_attempts == 0
+    assert store.credentials["owner.test"].locked_until is None
+
+
+@pytest.mark.asyncio
+async def test_verifier_runs_for_missing_and_existing_identifiers(monkeypatch) -> None:
+    # The password KDF must execute exactly once per login attempt whether
+    # or not the identifier exists; a missing account takes the dummy-hash
+    # path instead of skipping verification.
+    from app import auth_routes
+
+    calls = []
+    real_verify = auth_routes.verify_password
+
+    def counting(password, encoded):
+        calls.append(encoded)
+        return real_verify(password, encoded)
+
+    monkeypatch.setattr(auth_routes, "verify_password", counting)
+    store = MemoryStore()
+    encoded = hash_password("correct horse battery staple")
+    await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
+    app = create_app(password_settings(), history_store=store)
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
         missing = await client.post(
             "/api/auth/password/login",
             json={"identifier": "missing.user", "password": "definitely wrong password"},
         )
+        wrong = await client.post(
+            "/api/auth/password/login",
+            json={"identifier": "owner.test", "password": "definitely wrong password"},
+        )
 
-    assert all(response.status_code == 401 for response in responses)
-    assert all(response.json()["error"]["code"] == "invalid_credentials" for response in responses)
-    assert locked.status_code == 429
-    assert locked.json()["error"]["code"] == "auth_locked"
     assert missing.status_code == 401
-    assert missing.json()["error"]["code"] == "invalid_credentials"
+    assert wrong.status_code == 401
+    assert len(calls) == 2
+    assert calls[0] is None
+    assert calls[1] == encoded
 
 
 @pytest.mark.asyncio

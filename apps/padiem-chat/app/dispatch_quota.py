@@ -117,7 +117,7 @@ class DispatchAwareB14Client(B14Client):
     async def _reject_non_executable_policy(self, messages: list[dict[str, str]]) -> None:
         if self.settings.runtime_mode == "mock" or not self.settings.live_enabled:
             return
-        policy = _resolve_b62_policy(messages)
+        policy = _resolve_b62_policy(messages, require_executable=False)
         if model_policy_is_executable(policy.model_id):
             return
         await _refund_active_reservation()

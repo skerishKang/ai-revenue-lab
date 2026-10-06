@@ -13,6 +13,8 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+from padiem_ai_engine_client import ENGINE_INTERNAL_ORIGIN, ENGINE_ORCHESTRATE_PATH
 from padiem_ai_core.b14_execution import B14RouteMetadata
 from padiem_ai_core.contracts import RunMetadata, RunStatus
 from padiem_ai_core.execution_context import ExecutionContext
@@ -31,6 +33,10 @@ from app.claw_p01_composition import (
     build_claw_p01_adapter,
     build_claw_p01_adapter_with_diagnostic,
 )
+from app.worker_orchestration import (
+    CloudflareEngineServiceTransport,
+    _MAX_ENGINE_RESPONSE_BYTES,
+)
 from app.worker_config import (
     P01_DIAG_CALLER_ID_SHAPE_INVALID,
     P01_DIAG_CLIENT_CONSTRUCTOR_ERROR,
@@ -42,6 +48,8 @@ from app.worker_config import (
     p01_engine_binding_diagnostic,
     p01_engine_config_from_worker_bindings,
 )
+_MODEL_EXECUTION_AVAILABLE = active_route_for(ProductTierLabel.PLUS) is not None
+
 from kagent.contracts import ClawTaskIntent, ExecutionMode
 from kagent.p01_adapter import P01_AGENT_ID, P01_APP_ID, P01CoreOrchestrationAdapter
 from kagent.runs import ClawRun
@@ -162,6 +170,7 @@ class _FakeEngineServiceBinding:
         )
 
 
+@pytest.mark.skipif(not _MODEL_EXECUTION_AVAILABLE, reason="successor model route not selected")
 def test_plus_production_composition_reaches_engine_service_binding_once() -> None:
     """Regression for #2617's pre-Engine boundary using the real production composition stack."""
     binding = _FakeEngineServiceBinding()
@@ -375,3 +384,78 @@ def test_composition_modules_never_read_os_environ() -> None:
         assert "import os" not in source
         assert "os.environ[" not in source
         assert "os.environ.get" not in source
+
+
+class _BoundedEngineReader:
+    def __init__(self, chunks: list[bytes]) -> None:
+        self.chunks = list(chunks)
+        self.read_calls = 0
+        self.cancel_calls = 0
+        self.release_calls = 0
+
+    async def read(self):
+        self.read_calls += 1
+        if self.chunks:
+            return SimpleNamespace(done=False, value=self.chunks.pop(0))
+        return SimpleNamespace(done=True, value=None)
+
+    async def cancel(self):
+        self.cancel_calls += 1
+
+    def releaseLock(self):
+        self.release_calls += 1
+
+
+class _BoundedEngineBody:
+    def __init__(self, reader: _BoundedEngineReader) -> None:
+        self.reader = reader
+
+    def getReader(self):
+        return self.reader
+
+
+class _BoundedEngineResponse:
+    def __init__(self, chunks: list[bytes]) -> None:
+        self.status = 200
+        self.headers = {"content-type": "application/json"}
+        self.reader = _BoundedEngineReader(chunks)
+        self.body = _BoundedEngineBody(self.reader)
+        self.text_calls = 0
+
+    async def text(self):
+        self.text_calls += 1
+        raise AssertionError("production-shaped response must stream")
+
+
+class _BoundedEngineBinding:
+    def __init__(self, response: _BoundedEngineResponse) -> None:
+        self.response = response
+
+    async def fetch(self, _request):
+        return self.response
+
+
+def test_engine_service_transport_cancels_oversized_stream_before_full_buffering() -> None:
+    response = _BoundedEngineResponse(
+        [b"x" * _MAX_ENGINE_RESPONSE_BYTES, b"y", b"never-read"]
+    )
+    transport = CloudflareEngineServiceTransport(
+        _BoundedEngineBinding(response),
+        request_factory=_FakeWorkerRequest,
+    )
+
+    with pytest.raises(ValueError, match="safety limit"):
+        asyncio.run(
+            transport.request(
+                method="POST",
+                url=f"{ENGINE_INTERNAL_ORIGIN}{ENGINE_ORCHESTRATE_PATH}",
+                headers={},
+                body=b"{}",
+            )
+        )
+
+    assert response.text_calls == 0
+    assert response.reader.read_calls == 2
+    assert response.reader.cancel_calls == 1
+    assert response.reader.release_calls == 1
+    assert response.reader.chunks == [b"never-read"]

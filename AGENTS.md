@@ -5,6 +5,7 @@ This file is the repository-wide entry point for AI-assisted work. A more specif
 Canonical operating documents:
 
 - `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md`
+- `docs/operations/TEST_SCOPE_AND_DELIVERY_POLICY.md`
 - `docs/operations/TECHNOLOGY_ADOPTION_POLICY.md`
 - `docs/operations/WORKFLOW_STATUS_MODEL.md`
 - `docs/operations/EVIDENCE_REQUIREMENTS.md`
@@ -12,6 +13,7 @@ Canonical operating documents:
 - `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
 - `docs/operations/LOCAL_DOCKER_AVOIDANCE_POLICY.md`
 - `docs/operations/GITHUB_REPORT_HANDOFF_POLICY.md`
+- `docs/operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 
 ## Search / adopt before build
 
@@ -48,7 +50,9 @@ BUT_IMPLEMENTATION_AND_INDEPENDENT_LOCAL_VALIDATION
 MUST_NOT_BE_CLAIMED_BY_THE_SAME_ACTOR_FOR_THE_SAME_REVISION
 ```
 
-If environment constraints require the implementer to execute local checks too, report them as implementation self-checks/non-independent verification and leave the independent gate pending when the work contract requires it. "independent gate pending" is not a mergeable state: before merge the PR must record either a completed `LOCAL_VALIDATION_REPORT.md` instantiation for the exact head, or `NOT_REQUIRED` with an explicit reason.
+Independent validation is required only when the work contract needs evidence that implementation self-check + relevant CI cannot supply, such as real browser/OS/hardware/local-service behavior, high-risk environment composition, or an explicitly reserved independent gate. For a tiny deterministic bug fix with a focused load-bearing regression, default to `NOT_REQUIRED` unless one of those conditions applies; do not commission a second validator merely because the issue is P0/P1.
+
+If environment constraints require the implementer to execute local checks too, report them as implementation self-checks/non-independent verification and leave the independent gate pending only when the work contract actually requires it. "independent gate pending" is not a mergeable state: before merge the PR must record either a completed `LOCAL_VALIDATION_REPORT.md` instantiation for the exact head, or `NOT_REQUIRED` with an explicit reason.
 
 Independent validation must also be **discoverable from the PR itself**. A private report that cannot be found from the reviewed PR is insufficient audit trail. Before merge, the PR review/comment history must record:
 
@@ -104,6 +108,89 @@ OPERATING_PRODUCT
 
 UI, UX, backend, live providers, local runtime, or service-led operations may start when they are materially required for that evidence goal and explicitly included in scope. Their verdicts remain separate so one kind of evidence is never presented as another.
 
+## MVP delivery closure
+
+A customer handoff or pilot deadline is an operating constraint, not an invitation to keep expanding validation indefinitely.
+
+For an MVP that already has a defined primary journey:
+
+- treat only **concrete, evidenced** primary-journey failure, auth/authz bypass, secret/private-data leakage, data corruption/destructive behavior, or another explicitly accepted P0/P1 condition as a handoff blocker;
+- record newly discovered lower-severity defects, hardening ideas, broad refactors, speculative risks, and unrelated debt as follow-up work rather than silently expanding the current blocker set;
+- validate a narrow fix with the smallest load-bearing regression first, then rely on relevant configured CI, then run the bounded Production smoke needed for the customer promise;
+- do not rerun unrelated full suites or previously passed journeys merely because time has passed or `main` moved; first determine whether the new commits affect the tested behavior, dependency, authority, configuration, or deployment surface;
+- when broad validation is proposed after the MVP acceptance matrix is otherwise satisfied, the Web CTO must state the concrete claim it protects and why existing evidence is insufficient.
+
+Default MVP closeout flow:
+
+```text
+confirmed blocker
+→ minimal fix
+→ focused regression
+→ relevant configured CI
+→ authorized Production deployment
+→ bounded real-account/primary-journey smoke
+→ customer handoff
+→ non-blocking hardening continues after handoff
+```
+
+Once the accepted handoff blocker set is zero and the required Production smoke passes, continued exploratory validation must not delay delivery unless it produces new concrete blocker evidence.
+
+Handoff-gating checks must be named **before** the final fix/deploy whenever practical. Automatically triggered but unrelated CI jobs may continue in the background; their existence does not make them handoff gates. A P1/P2 or backlog item does not block an MVP merely because it is open. Only the owner or a new concrete P0/P1 customer-impacting finding may promote it into the handoff blocker set.
+
+After the final Production-changing revision, run the agreed primary-journey smoke once. Repeat the same smoke only if the deployed revision changes, the first result is ambiguous/failed, or a new concrete defect affects that journey.
+
+## Finish-first execution mode
+
+For Padiem platform work, completion throughput takes priority over maximizing concurrent feature starts.
+
+Canonical current authority: `#3523`.
+
+```text
+DEVELOPMENT_MODE=FINISH_FIRST
+ACTIVE_PRIMARY_IMPLEMENTATION_AXES=1
+MAX_SUPPORTING_BLOCKER_LANES=2
+BACKGROUND_LANES=READ_ONLY_OR_VALIDATION
+UNRELATED_NEW_FEATURE_IMPLEMENTATION=FROZEN
+```
+
+Parallel work is allowed only when it helps finish the same primary axis: blocker removal, exact-head validation, CI diagnosis, forensic investigation, or directly required platform integration. A free implementation worker must not select an unrelated issue merely to stay busy.
+
+For the current Padiem cycle, the primary axis is:
+
+```text
+Padiem Platform
+-> canonical identity/account/workspace
+-> required entitlement/admission
+-> Padiem AI Engine
+-> Padiem Core / B14
+-> B54 Padiem Claw
+-> user-visible result
+```
+
+Architecture is decided top-down, but implementation proceeds from the **lowest missing dependency upward** until the user-visible vertical slice is complete.
+
+A discovered issue must be classified before implementation:
+
+```text
+PRIMARY_BLOCKER
+PRIMARY_NONBLOCKING_FOLLOWUP
+UNRELATED_BACKLOG
+```
+
+Only `PRIMARY_BLOCKER` may preempt the primary lane.
+
+Source-complete or merged-main is not terminal completion for a Finish-first axis. The applicable terminal definition includes Production activation, end-to-end reference-product proof, a user-visible result, rollback readiness, and zero primary blockers.
+
+Product boundaries remain strict. B66 Padiem Quote, B67 Padiem Legal, B62 Padiem Chat, and B54 Padiem Claw are independent products that may reuse Padiem Platform authorities. Shared Platform usage does not authorize moving product-local work into another product's lane.
+
+```text
+B66_IS_ENGINE=NO
+B66_IS_CLAW=NO
+B66_PRODUCT_INDEPENDENT=YES
+```
+
+The fast-development rule means “do not wait on unrelated validation”; it does **not** mean “start an unrelated feature after every fast-gate pass.” Validators may run in parallel while the implementation actor continues the same primary axis.
+
 ## Default responsibility flow
 
 ```text
@@ -122,6 +209,21 @@ User request / portfolio authority
 
 This is a responsibility/evidence flow, not a mandatory product-stage sequence. A stage may be `NOT_REQUIRED` only with a recorded reason.
 
+## Repository-wide test-scope rule
+
+`docs/operations/TEST_SCOPE_AND_DELIVERY_POLICY.md` applies to **every** Business/app/package and to Engine/Core/Control Plane/Chat/Claw/Desktop work.
+
+Default for a bounded bug fix:
+
+```text
+REPORT_MODE=COMPACT
+focused load-bearing regression
++ relevant configured CI
++ Production smoke only when applicable
+```
+
+Do not turn every available/automatically-triggered test into a required gate. Do not wait for unrelated observational CI. Do not commission independent validation merely because an issue is P0/P1. Whole-product/repository testing requires an actual whole-surface blast radius or explicit gate.
+
 ## Non-negotiable rules
 
 - Re-read current remote state immediately before mutation, review, and merge.
@@ -139,28 +241,40 @@ This is a responsibility/evidence flow, not a mandatory product-stage sequence. 
 - For fail-open or bypass-prone fixes, add a load-bearing regression and use mutation/differential proof when practical so the test is shown to fail when the defect is restored.
 - Wrong-project Preview or deployment output is defect evidence, not product acceptance evidence.
 - `READY`, `CONDITIONALLY_READY`, and `NOT_READY` are Web CTO technical/review verdicts, not automatic merge commands.
-- Before merge, the Web CTO posts the filled `CTO_FINAL_REVIEW` checklist as a PR review/comment containing the exact head SHA and per-item checklist results; prose-only verdict assertions are not an auditable record.
+- Before merge, the Web CTO posts an auditable `CTO_FINAL_REVIEW` record containing the exact head SHA and the **applicable** checklist results. Tiny bounded fixes may use the compact checklist; do not populate irrelevant template sections merely for ceremony.
 - Owner-delegated merges must be single-purpose, head-SHA-pinned, and condition-checked at execution time (re-read remote state; required CI/gate results still valid).
 - Final owner visual approval must never be inferred from a model/worker approval when the work contract explicitly reserves visual taste to the owner.
+- **Model/provider decisions are owner-only.** If work encounters model selection, replacement, benchmarking, fallback ordering, provider routing, model-specific credential/binding, or activation/deployment decisions, stop model work and ask the Product Owner. Do not search, compare, live-test, rank, modify, merge, or deploy model/provider choices without fresh explicit owner instruction for that scope. Follow `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`.
 - Deployment follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`; no alternate Preview/manual deployment path is implied by these rules.
 - Local Docker Desktop / local Docker daemon is not a default development or deployment path. Do not start or require it unless established remote build/deploy paths have been checked and the Product Owner explicitly approves a task-specific exception. Follow `LOCAL_DOCKER_AVOIDANCE_POLICY.md`.
 - On Windows, do not run `git worktree remove --force` while the worktree contains a junction/symlink/reparse point into a shared dependency directory (for example another checkout's `node_modules`). Remove the link itself with a link-safe operation first, verify the target directory is intact, then remove the worktree.
 
 ## GitHub report handoff
 
-For Padiem/CLAW work, the full local-model report is committed to the private report repository rather than pasted into the public Issue/PR or relayed through chat.
+Reporting depth is proportional to task risk.
+
+For bounded bug fixes/tiny glue with directly reviewable diff + focused tests/CI, default to:
 
 ```text
+REPORT_MODE=COMPACT
+```
+
+The compact Issue/PR comment is the complete report. Do **not** create a separate workdiary report merely because the task is Padiem/CLAW.
+
+Use:
+
+```text
+REPORT_MODE=LONG
 REPORT_REPO=skerishKang/workdiary
 REPORT_PATH=padiem-reports/YYYY-MM-DD/<CLAW>/<task>.md
 REPORT_COMMIT=<immutable workdiary commit SHA>
 ```
 
-The related `ai-revenue-lab` Issue/PR should contain only a short final result, key status fields, and those three pointers. CENTRAL reads the long report directly from GitHub.
+only for materially complex/high-risk work, large evidence packages, independent local/browser/hardware validation, migrations/destructive/auth-secret boundary work, incident investigations, or when CENTRAL explicitly requests it.
 
 Google Drive/rclone reporting is disabled. Do not retry quota failures or perform Drive delete/trash cleanup. Prefer GitHub Actions artifacts for screenshots, Playwright traces and large logs. Never put password/secret/token/cookie/private-key/database-credential values into reports, comments or artifacts.
 
-If the private report repository cannot be written, preserve the report locally and report `REPORT_WRITE=BLOCKED`; do not fall back to a long public comment or Drive.
+A LONG-mode report-write failure blocks only work that actually requires LONG mode; it must not manufacture a blocker for a COMPACT-eligible tiny fix.
 
 Follow `docs/operations/GITHUB_REPORT_HANDOFF_POLICY.md`.
 

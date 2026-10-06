@@ -1,6 +1,6 @@
 /* B66 · Quote Beta — app.js (UI 레이어)
    상태는 QuoteDraft 하나(quote-core.js)로 관리하고 화면은 항상 draft에서 파생.
-   draft는 localStorage에 자동 저장되며, 복원 실패 시 기본 데모 상태로 fallback. */
+   draft는 localStorage에 자동 저장되며, 복원 실패 시 Production용 빈 초안으로 fallback. */
 
 (() => {
   "use strict";
@@ -10,6 +10,7 @@
   const Extraction = window.QuoteExtraction || null;
   const History = window.QuoteHistory || null;
   const Template = window.QuoteTemplate || null;
+  const CgiTemplateV2 = window.B66CgiTemplateV2 || null;
   const TemplateStore = window.QuoteTemplateStore || null;
   const TemplateRenderer = window.QuoteTemplateRenderer || null;
   const TemplateSelection = window.QuoteTemplateSelection || null;
@@ -25,7 +26,7 @@
 
   /* ── 상태: QuoteDraft ── */
 
-  let draft = loadDraft() || Core.createDefaultDraft();
+  let draft = loadDraft() || Core.createProductionDraft();
   let lastExtractionReview = null;
   let taxReviewRequired = loadTaxReviewRequired(draft);
   let suppressNextDraftSave = false;
@@ -40,9 +41,30 @@
     return "item-" + itemSeq;
   }
 
+  function isUntouchedLegacyDemoDraft(value) {
+    if (!value) return false;
+    const demo = Core.createDefaultDraft();
+    return (
+      value.meta && value.meta.source === "manual" &&
+      value.meta.validDays === demo.meta.validDays &&
+      JSON.stringify(value.sender) === JSON.stringify(demo.sender) &&
+      JSON.stringify(value.recipient) === JSON.stringify(demo.recipient) &&
+      JSON.stringify(value.items) === JSON.stringify(demo.items) &&
+      value.tax && value.tax.mode === demo.tax.mode &&
+      value.memo === demo.memo &&
+      !value.calculationPolicy &&
+      !value.detailGroups &&
+      !(value.meta && value.meta.projectName)
+    );
+  }
+
   function loadDraft() {
     try {
-      return Core.normalizeDraft(JSON.parse(localStorage.getItem(Core.DRAFT_STORAGE_KEY) || "null"));
+      const normalized = Core.normalizeDraft(
+        JSON.parse(localStorage.getItem(Core.DRAFT_STORAGE_KEY) || "null")
+      );
+      /* Old untouched demo drafts are not authoritative user data. */
+      return isUntouchedLegacyDemoDraft(normalized) ? null : normalized;
     } catch (err) {
       return null;
     }
@@ -101,7 +123,7 @@
     try {
       localStorage.setItem(Core.DRAFT_STORAGE_KEY, JSON.stringify(draft));
     } catch (err) {
-      /* 저장 실패는 데모 진행을 막지 않음 */
+      /* 저장 실패는 현재 브라우저 세션 진행을 막지 않음 */
     }
   }
 
@@ -156,7 +178,7 @@
   }
 
   function allocateFreshQuoteNo(now) {
-    if (!History) return Core.createDefaultDraft().meta.quoteNo;
+    if (!History) return Core.createProductionDraft().meta.quoteNo;
     const allocation = History.allocateQuoteNo(
       loadQuoteNoSequence(),
       quoteNoCandidates(),
@@ -172,7 +194,7 @@
 
   function createFreshDraft(source, now) {
     const dt = now instanceof Date ? now : new Date();
-    const fresh = Core.createDefaultDraft();
+    const fresh = Core.createProductionDraft();
     fresh.meta.quoteNo = allocateFreshQuoteNo(dt);
     fresh.meta.issueDate = Core.isoFormat(dt);
     fresh.meta.source = source || "manual";
@@ -252,7 +274,8 @@
       return false;
     }
 
-    draft = Core.createDefaultDraft();
+    /* 초기화 후에도 데모 사업 정보가 Production에 재등장하지 않는다 (#3479). */
+    draft = Core.createProductionDraft();
     lastExtractionReview = null;
     taxReviewRequired = false;
     itemSeq = draft.items.length;
@@ -352,6 +375,7 @@
   const FIELD_BINDINGS = [
     ["senderCompany", "sender", "company"],
     ["senderRep", "sender", "rep"],
+    ["senderContactPerson", "sender", "contactPerson"],
     ["senderBizNo", "sender", "bizNo"],
     ["senderAddress", "sender", "address"],
     ["senderPhone", "sender", "phone"],
@@ -618,6 +642,7 @@
       ? slotSources
       : {};
     skillUiState.activeSkillId = normalized.id;
+    renderTemplateUi();
     render();
     return true;
   }
@@ -630,6 +655,7 @@
     skillUiState.serverSkill = null;
     skillUiState.serverSlotSources = {};
     if (activeWasServer) skillUiState.activeSkillId = null;
+    renderTemplateUi();
     render();
     return true;
   }
@@ -642,8 +668,58 @@
     return true;
   }
 
+  function cgiTemplateEligibleSkill() {
+    const skill = skillUiState.serverSkill;
+    if (!skill || !CgiTemplateV2) return null;
+    const name = typeof skill.name === "string" ? skill.name : "";
+    const provenanceName = skill.provenance && typeof skill.provenance.sourceName === "string"
+      ? skill.provenance.sourceName
+      : "";
+    return /(?:시지아이|cgi)/i.test(name + " " + provenanceName) ? skill : null;
+  }
+
+  function cgiTemplateProfile() {
+    const skill = cgiTemplateEligibleSkill();
+    if (!skill || !Template || !CgiTemplateV2) return null;
+    const internal = skill.internalTemplate && typeof skill.internalTemplate === "object"
+      ? skill.internalTemplate
+      : {};
+    const content = internal.content && typeof internal.content === "object"
+      ? internal.content
+      : {};
+    const cgi = content.cgiV2 && typeof content.cgiV2 === "object" ? content.cgiV2 : {};
+    const slots = content.slots && typeof content.slots === "object" ? content.slots : {};
+    return CgiTemplateV2.approvedProfile({
+      approvedBy: "product-owner",
+      approvedAt: "2026-10-06T00:00:00.000Z",
+      approvalRef: "github:pr-3567",
+      privatePresentation: {
+        fax: typeof cgi.fax === "string" ? cgi.fax : "",
+        bank: typeof cgi.bank === "string" ? cgi.bank : ""
+      },
+      slotRefs: {
+        logo: typeof slots.logo === "string" ? slots.logo : "",
+        stamp: typeof slots.stamp === "string" ? slots.stamp : ""
+      }
+    });
+  }
+
+  function explicitTemplateProfile() {
+    if (!TemplateSelection) return null;
+    const id = currentTemplateId();
+    if (!id) return null;
+    if (CgiTemplateV2 && id === CgiTemplateV2.TEMPLATE_ID) {
+      return cgiTemplateProfile();
+    }
+    if (!TemplateStore) return null;
+    const candidate = TemplateStore.getTemplate(loadTemplateStore(), id);
+    return candidate && candidate.approved ? candidate : null;
+  }
+
   function activeTemplateProfile() {
     if (!Template) return null;
+    const explicit = explicitTemplateProfile();
+    if (explicit) return explicit;
     if (!TemplateStore) return Template.builtInTemplate();
     const store = loadTemplateStore();
     if (!TemplateSelection) return TemplateStore.defaultTemplate(store);
@@ -658,7 +734,7 @@
      없으면 기존 template selection 으로 fallback. advanced template-management UI 는
      activeTemplateProfile 을 그대로 쓰므로 이 override 에 영향받지 않는다. */
   function renderTemplateAuthority() {
-    return activeSkillProfile() || activeTemplateProfile();
+    return explicitTemplateProfile() || activeSkillProfile() || activeTemplateProfile();
   }
 
   /* 미리보기는 승인된 양식만 대상으로 한다(승인 경계 우회 금지). */
@@ -668,9 +744,33 @@
     return candidate && candidate.approved ? candidate : null;
   }
 
+  function templateManagementEntries() {
+    if (!TemplateSelection) return [];
+    const entries = TemplateSelection.listForManagement(loadTemplateStore()).slice();
+    const cgi = cgiTemplateProfile();
+    if (cgi) {
+      entries.push({
+        id: cgi.id,
+        name: cgi.name,
+        builtin: false,
+        approved: true,
+        approvalBasis: cgi.approvalBasis,
+        isDefault: false,
+        fingerprint: cgi.fingerprint,
+        selectable: true,
+        canRename: false,
+        canDuplicate: false,
+        canDelete: false,
+        canSetDefault: false,
+        canApprove: false
+      });
+    }
+    return entries;
+  }
+
   function templateRows() {
     if (!TemplateUi || !TemplateSelection) return [];
-    return TemplateUi.buildRows(TemplateSelection.listForManagement(loadTemplateStore()), {
+    return TemplateUi.buildRows(templateManagementEntries(), {
       activeTemplateId: (activeTemplateProfile() || {}).id || null,
       previewTemplateId: templateUiState.previewTemplateId,
       renamingTemplateId: templateUiState.renamingTemplateId
@@ -680,7 +780,7 @@
   function renderTemplateUi() {
     if (!TemplateUi || !TemplateStore || !TemplateSelection) return;
     const store = loadTemplateStore();
-    const templates = TemplateSelection.listForManagement(store);
+    const templates = templateManagementEntries();
     const active = activeTemplateProfile();
     const select = $("templateSelect");
     const listHost = $("templateList");
@@ -735,6 +835,19 @@
 
   const TEMPLATE_ACTIONS = {
     select: function (id) {
+      if (CgiTemplateV2 && id === CgiTemplateV2.TEMPLATE_ID) {
+        if (!cgiTemplateProfile()) return applyTemplateResult({ ok: false, code: "template_not_approved" });
+        const storage = templateStorage();
+        const envelope = TemplateSelection.setSelection(
+          TemplateSelection.readEnvelope(storage),
+          draft.meta.quoteNo,
+          id
+        );
+        if (!envelope || !TemplateSelection.writeEnvelope(storage, envelope)) {
+          return applyTemplateResult({ ok: false, code: "selection_storage_failed" });
+        }
+        return applyTemplateResult({ ok: true, code: "selected" }, "이 견적에 CGI 양식을 적용했습니다.");
+      }
       const result = TemplateSelection.selectTemplate(templateStorage(), draft.meta.quoteNo, id);
       return applyTemplateResult(result, "이 견적에 사용할 양식을 변경했습니다.");
     },
@@ -831,6 +944,7 @@
   const sampleSender = {
     company: "샘플 공급사",
     rep: "대표자명",
+    contactPerson: "",
     bizNo: "000-00-00000",
     address: "",
     phone: "000-0000-0000",
@@ -852,7 +966,7 @@
     } else {
       const saved = loadSavedSender();
       Object.assign(draft.sender, saved || {
-        company: "", rep: "", bizNo: "", address: "", phone: "", email: ""
+        company: "", rep: "", contactPerson: "", bizNo: "", address: "", phone: "", email: ""
       }, { presetId: "custom" });
     }
     fillInputsFromDraft();
@@ -864,6 +978,7 @@
     const sender = {
       company: draft.sender.company.trim(),
       rep: draft.sender.rep.trim(),
+      contactPerson: draft.sender.contactPerson.trim(),
       bizNo: draft.sender.bizNo.trim(),
       address: draft.sender.address.trim(),
       phone: draft.sender.phone.trim(),
@@ -883,18 +998,31 @@
 
   $("newQuote").addEventListener("click", () => {
     if (!window.confirm("현재 입력한 견적 내용을 모두 지우고 새로 시작할까요?")) return;
+    const previousQuoteNo = String(draft.meta.quoteNo || "");
     const next = createBlankNextDraft();
     if (!next) {
       toast("새 견적을 시작하지 못했습니다.");
       return;
     }
+    if (TemplateSelection) {
+      const storage = templateStorage();
+      let envelope = TemplateSelection.removeSelection(
+        TemplateSelection.readEnvelope(storage),
+        previousQuoteNo
+      );
+      envelope = TemplateSelection.removeSelection(envelope, next.meta.quoteNo);
+      TemplateSelection.writeEnvelope(storage, envelope);
+    }
     draft = next;
+    templateUiState.previewTemplateId = null;
+    templateUiState.renamingTemplateId = null;
     taxReviewRequired = false;
     persistTaxReviewRequired(false);
     itemSeq = 1;
     renderItems();
     fillInputsFromDraft();
     renderTaxReviewState();
+    renderTemplateUi();
     render();
     toast("보내는 사람 정보는 유지하고 새 고객 견적을 시작합니다.");
   });

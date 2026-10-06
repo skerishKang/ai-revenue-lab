@@ -10,6 +10,8 @@ from starlette.staticfiles import StaticFiles
 
 from .auth import GoogleOAuthClient
 from .b66_quote_conversation import B66QuoteConversationInterpreter
+from .b66_company_profile import CompanyProfileStore, D1CompanyProfileStore
+from .b66_company_profile_routes import b66_company_profile_get, b66_company_profile_put
 from .b66_quote_asset_routes import b66_quote_asset_detail
 from .b66_quote_assets import B66QuoteAssetStore, D1B66QuoteAssetMetadataStore
 from .b66_quote_routes import (
@@ -32,6 +34,7 @@ from .auth_routes import (
 )
 from .auto_grounding import AutoGroundingService
 from .chat_routes import api_chat, api_chat_stream
+from .claw_general_routes import claw_general_execute
 from .claw_routes import (
     claw_approval_decision,
     claw_manual_intake_artifact,
@@ -74,7 +77,15 @@ from .claw_automation_rule_enabled_routes import claw_automation_rule_set_enable
 from .config import Settings
 from .connector_status_projection import connectors_status
 from .connector_ticket_routes import google_connector_ticket
+from .calendar_read_activation_routes import activate_google_calendar_read
 from .conversation_routes import api_conversation_detail, api_conversations
+from .desktop_conversation_authority import UnconfiguredDesktopDeviceSessionAuthority
+from .desktop_conversation_routes import (
+    DESKTOP_CONVERSATION_DETAIL_PATH,
+    DESKTOP_CONVERSATIONS_PATH,
+    desktop_conversation_detail,
+    desktop_conversations,
+)
 from .grounding import GroundedChatService
 from .history import HistoryStore
 from .project_file_routes import project_file_detail, project_files_collection
@@ -152,6 +163,7 @@ def create_app(
     claw_telegram_authority=None,
     approved_memory_store: ApprovedMemoryStore | None = None,
     b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
+    b66_company_profile_store: CompanyProfileStore | None = None,
     b66_quote_asset_store=None,
     b66_quote_interpreter=None,
     claw_task_alert_store=None,
@@ -161,6 +173,7 @@ def create_app(
     claw_p01_continuation_client=None,
     claw_local_access_source=None,
     local_task_result_source=None,
+    desktop_device_session_authority=None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -172,6 +185,7 @@ def create_app(
         Route("/api/auth/password/login", password_login, methods=["POST"]),
         Route("/api/auth/logout", logout, methods=["POST"]),
         Route("/api/connectors/google/ticket", google_connector_ticket, methods=["POST"]),
+        Route("/api/connectors/google/calendar/activate-read", activate_google_calendar_read, methods=["POST"]),
         Route("/api/connectors/status", connectors_status, methods=["GET"]),
         Route("/api/projects", projects_collection, methods=["GET", "POST"]),
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH", "DELETE"]),
@@ -211,9 +225,21 @@ def create_app(
         Route("/api/outputs/{output_id}", output_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/conversations", api_conversations, methods=["GET"]),
         Route("/api/conversations/{conversation_id}", api_conversation_detail, methods=["GET", "DELETE"]),
+        # #3436 B2c: the GET-only canonical conversation surface for the paired
+        # Desktop. Identity is the canonical broker device session, derived
+        # server-side; it creates, deletes and writes nothing, and no browser
+        # cookie path reaches it.
+        Route(DESKTOP_CONVERSATIONS_PATH, desktop_conversations, methods=["GET"]),
+        Route(
+            DESKTOP_CONVERSATION_DETAIL_PATH,
+            desktop_conversation_detail,
+            methods=["GET"],
+        ),
         Route("/api/chat/stream", api_chat_stream, methods=["POST"]),
         Route("/api/chat", api_chat, methods=["POST"]),
         Route("/api/b66/runtime-config", b66_runtime_config, methods=["GET"]),
+        Route("/api/b66/company-profile", b66_company_profile_get, methods=["GET"]),
+        Route("/api/b66/company-profile", b66_company_profile_put, methods=["PUT"]),
         Route("/api/b66/saved-skills", b66_saved_skills, methods=["GET"]),
         Route(
             "/api/b66/saved-skills/{saved_skill_id}",
@@ -228,6 +254,10 @@ def create_app(
         Route("/api/b66/quote/interpret", b66_quote_interpret, methods=["POST"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
+        # #3539: the generic Claw composer runs through the canonical #3382 P01
+        # Engine lane. It is a distinct B54 product boundary from manual-intake
+        # and has no direct-B14 (/api/chat/stream) fallback.
+        Route("/api/claw/general", claw_general_execute, methods=["POST"]),
         Route(
             "/api/claw/manual-intake/quote-compare",
             claw_manual_intake_quote_compare,
@@ -346,6 +376,16 @@ def create_app(
     # result. None keeps the route fail-closed until the Worker root composes
     # the concrete source from the trusted broker binding.
     app.state.local_task_result_source = local_task_result_source
+    # #3436 B2c: the canonical broker device-session authority behind the
+    # GET-only Desktop conversation surface. Composed from the trusted
+    # LOCAL_AGENT_BROKER_AUTHORITY_SERVICE binding by the Worker root; the
+    # default refuses every session, so the surface fails closed until the
+    # trusted runtime actually exists.
+    app.state.desktop_device_session_authority = (
+        desktop_device_session_authority
+        if desktop_device_session_authority is not None
+        else UnconfiguredDesktopDeviceSessionAuthority()
+    )
     # Bounded non-secret composition diagnostic (#2413). Set by the Worker
     # composition root alongside a None adapter; always None on the success
     # path and validated against the closed allowlist before public projection.
@@ -374,6 +414,16 @@ def create_app(
         except Exception:
             _b66_saved_quote_skill_store = None
     app.state.b66_saved_quote_skill_store = _b66_saved_quote_skill_store
+
+    # B66 #3406: canonical account/workspace company identity/defaults. This is
+    # separate from Saved Quote Skill layout behavior and browser-local presets.
+    _b66_company_profile_store = b66_company_profile_store
+    if _b66_company_profile_store is None and d1_binding is not None:
+        try:
+            _b66_company_profile_store = D1CompanyProfileStore(d1_binding)
+        except Exception:
+            _b66_company_profile_store = None
+    app.state.b66_company_profile_store = _b66_company_profile_store
 
     # B66 #3402: private logo/stamp bytes reuse the existing private workspace
     # R2 binding, while D1 stores only owner/workspace-scoped metadata. No

@@ -24,6 +24,13 @@ const CHANNELS = {
   RUNNER_HEALTH: 'padiem:shell:runner-health',
   PAIRING_DEEPLINK_SUBMIT: 'padiem:shell:pairing-deeplink-submit',
   GET_BOUNDED_LOG: 'padiem:shell:get-bounded-log',
+  WORKSPACE_CHOOSE_ROOT: 'padiem:shell:workspace-choose-root',
+  WORKSPACE_LIST: 'padiem:shell:workspace-list',
+  WORKSPACE_CLEAR_ROOT: 'padiem:shell:workspace-clear-root',
+  CONVERSATION_LIST: 'padiem:shell:conversation-list',
+  CONVERSATION_READ: 'padiem:shell:conversation-read',
+  RUN_LIST: 'padiem:shell:run-list',
+  RUN_READ: 'padiem:shell:run-read',
 } as const;
 
 export const PADIEM_SHELL_API = {
@@ -38,6 +45,15 @@ export const PADIEM_SHELL_API = {
     ipcRenderer.invoke(CHANNELS.PAIRING_DEEPLINK_SUBMIT, { deepLink }),
   getBoundedLog: (maxLines?: number) =>
     ipcRenderer.invoke(CHANNELS.GET_BOUNDED_LOG, maxLines === undefined ? {} : { maxLines }),
+  chooseWorkspaceRoot: () => ipcRenderer.invoke(CHANNELS.WORKSPACE_CHOOSE_ROOT),
+  listWorkspaceDirectory: (relativePath = '') =>
+    ipcRenderer.invoke(CHANNELS.WORKSPACE_LIST, { relativePath }),
+  clearWorkspaceRoot: () => ipcRenderer.invoke(CHANNELS.WORKSPACE_CLEAR_ROOT),
+  listConversations: () => ipcRenderer.invoke(CHANNELS.CONVERSATION_LIST),
+  readConversation: (conversationId: string) =>
+    ipcRenderer.invoke(CHANNELS.CONVERSATION_READ, { conversationId }),
+  listRuns: () => ipcRenderer.invoke(CHANNELS.RUN_LIST),
+  readRun: (runId: string) => ipcRenderer.invoke(CHANNELS.RUN_READ, { runId }),
 } as const;
 
 if (process.contextIsolated) {

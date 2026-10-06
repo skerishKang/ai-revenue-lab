@@ -159,6 +159,11 @@
     if (workspace) workspace.hidden = state !== "claw";
     const modeBar = document.getElementById("clawManualForm");
     if (modeBar) modeBar.hidden = !(state === "claw" && workspace && workspace.dataset.view === "manual");
+    // #3531: the explicit manual-entry control lives in the fixed composer
+    // wrap and shows only on the general Claw view — never by default
+    // elsewhere, never inside the manual form it opens.
+    const entryBar = document.getElementById("clawManualEntryBar");
+    if (entryBar) entryBar.hidden = !(state === "claw" && workspace && workspace.dataset.view === "general");
     syncComposerForClaw(state === "claw");
     const chatNav = document.getElementById("newChatButton");
     const clawNav = document.getElementById("clawNavButton");
@@ -231,7 +236,7 @@
     article.querySelector("[data-runtime-label]").textContent = skillTitle ? `${runtimeLabel} · ${skillTitle}` : runtimeLabel;
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
-  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, actionLabel = uiT("retry")) {
+  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, actionLabel = uiT("retry")) {
     const box = document.createElement("div");
     box.className = "error-box";
     const strong = document.createElement("strong");
@@ -247,7 +252,7 @@
       conversationState.setConversationId(retryContext.conversationId);
       activeProject = retryContext.project;
       renderProjectState();
-      const success = await requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext);
+      const success = await requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest);
       if (success && selectedAttachment === retryAttachment) clearAttachment();
     }, { once: true });
     box.append(strong, p, retry);
@@ -256,29 +261,29 @@
   function revealErrorState(article) {
     article.scrollIntoView({ block: "center", behavior: "auto" });
   }
-  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
+  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
-    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext));
+    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
-  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
+  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
-    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext));
+    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
-  function renderCancelled(article, retryMessages, retrySkill, retryContext) {
+  function renderCancelled(article, retryMessages, retrySkill, retryContext, clawGeneralRequest = false) {
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
     article.querySelector("[data-runtime-label]").textContent = uiT("generation-cancelled");
-    content.appendChild(buildRetryBox(uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, uiT("regenerate")));
+    content.appendChild(buildRetryBox(uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, uiT("regenerate")));
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.CANCELLED);
     revealErrorState(article);
   }
@@ -864,8 +869,8 @@
       }
       if (workspace) {
         delete workspace.dataset.inboxKind;
-        if (workspace.dataset.view === "inbox") workspace.dataset.view = "manual";
-        if (workspace.dataset.view === "automation") workspace.dataset.view = "manual";
+        if (workspace.dataset.view === "inbox") workspace.dataset.view = "general";
+        if (workspace.dataset.view === "automation") workspace.dataset.view = "general";
       }
       // Auth loss tears down any pending execute recovery: no timer outlives the session.
       clearClawRecovery({ syncControls: true });
@@ -1197,8 +1202,16 @@
     article.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
-  async function requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, signal) {
-    const response = await chatTransport.requestStreaming(payload, signal);
+  async function requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, signal, route) {
+    // #3539: product-state-aware routing. A generic B54 Claw submit runs on the
+    // canonical P01 Engine lane; the standalone Padiem Chat path keeps the
+    // existing /api/chat/stream transport call byte-for-byte.
+    // The decision is an immutable snapshot taken before showConversation()
+    // mutates shell.dataset.state, so it is never re-derived from live state.
+    const clawGeneralRequest = !!(route && route.clawGeneral);
+    const response = clawGeneralRequest
+      ? await chatTransport.requestClawGeneral(payload, signal)
+      : await chatTransport.requestStreaming(payload, signal);
 
     let answer = "";
     let paragraph = null;
@@ -1233,7 +1246,7 @@
             : uiT("stream-continue-failed");
           if (!paragraph) throw chatTransport.errorFor(data, message);
           terminalError = true;
-          renderStreamError(article, message, outboundMessages, skill, contextSnapshot, lifecycleForError(chatTransport.errorFor(data, message)));
+          renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(chatTransport.errorFor(data, message)));
           return true;
         }
         if (!data || data.done !== true || !paragraph || !answer) throw new Error(uiT("stream-complete-invalid"));
@@ -1248,7 +1261,7 @@
     } catch (error) {
       if (error && error.name === "AbortError") throw error;
       if (paragraph) {
-        renderStreamError(article, error instanceof Error ? error.message : uiT("stream-continue-failed"), outboundMessages, skill, contextSnapshot);
+        renderStreamError(article, error instanceof Error ? error.message : uiT("stream-continue-failed"), outboundMessages, skill, contextSnapshot, clawGeneralRequest);
         return false;
       }
       throw error;
@@ -1267,7 +1280,7 @@
     return "plus";
   }
 
-  async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot) {
+  async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest) {
     if (inFlight) return false;
     inFlight = true;
     activeRequestCancelReason = null;
@@ -1280,6 +1293,15 @@
     renderTyping(article);
     try {
       const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };
+      // #3539: the routing decision arrives as a submit-time snapshot. It is
+      // NEVER re-derived from live shell state here, because showConversation()
+      // has already flipped shell.dataset.state to "chat" by the time this runs
+      // (re-deriving it silently rerouted the generic Claw composer onto the
+      // standalone /api/chat/stream lane in Production).
+      // A generic B54 Claw submit runs on the canonical P01 Engine lane with no
+      // direct-B14 /api/chat/stream fallback; the standalone Padiem Chat composer
+      // keeps /api/chat/stream unchanged, and the explicit manual form submits
+      // through clawManualForm below, never here.
       const attachments = attachmentPayload(attachment);
       if (attachments) payload.attachments = attachments;
       if (contextSnapshot.conversationId) payload.conversation_id = contextSnapshot.conversationId;
@@ -1287,11 +1309,19 @@
       if (attachments) {
         return await requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, controller.signal);
       }
-      return await requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, controller.signal);
+      return await requestStreamingAnswer(
+        article,
+        payload,
+        outboundMessages,
+        skill,
+        contextSnapshot,
+        controller.signal,
+        clawGeneralRequest ? { clawGeneral: true } : null,
+      );
     } catch (error) {
       if (error && error.name === "AbortError") {
         if (activeRequestCancelReason === "user_cancel" && requestEpoch === conversationEpoch) {
-          renderCancelled(article, outboundMessages, skill, contextSnapshot);
+          renderCancelled(article, outboundMessages, skill, contextSnapshot, clawGeneralRequest);
         }
         return false;
       }
@@ -1303,6 +1333,7 @@
         skill,
         attachment,
         contextSnapshot,
+        clawGeneralRequest,
         lifecycleForError(error),
       );
       return false;
@@ -1317,17 +1348,29 @@
       }
     }
   }
+  // #3539: the generic B54 Claw composer runs on the canonical P01 Engine lane.
+  // This predicate documents the product state that selects the lane: the Claw
+  // shell with the explicit manual form hidden. It must be read at submit time,
+  // BEFORE showConversation() flips shell.dataset.state to "chat".
+  function clawGeneralRequestActive() {
+    return shell.dataset.state === "claw" && !(clawManualForm && !clawManualForm.hidden);
+  }
+
   async function submitPrompt(text, selectedSkill) {
     const prompt = text.trim();
     if (!prompt || inFlight) return;
     if (selectedSkill) conversationState.setSkill(selectedSkill);
     const attachmentSnapshot = selectedAttachment;
     const contextSnapshot = { conversationId: conversationState.getConversationId(), project: activeProject };
+    // #3539: snapshot the routing decision BEFORE showConversation() resets the
+    // shell state. The immutable snapshot is threaded through requestAnswer so a
+    // generic Claw submit cannot silently fall back to /api/chat/stream.
+    const clawGeneralRequest = clawGeneralRequestActive();
     showConversation();
     addUserMessage(prompt, attachmentSnapshot);
     input.value = "";
     const outbound = conversationState.outboundWithUser(prompt);
-    const success = await requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot);
+    const success = await requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot, clawGeneralRequest);
     if (success && selectedAttachment === attachmentSnapshot) clearAttachment();
   }
 
@@ -1376,11 +1419,10 @@
   });
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    // #2532: in the Claw workspace the composer is the request input; Enter routes to preview.
-    if (shell.dataset.state === "claw" && clawManualForm && !clawManualForm.hidden) {
-      clawManualForm.requestSubmit();
-      return;
-    }
+    // #3531: the shared composer always submits to the general Claw
+    // conversation, in every shell state. The quotation/document workflow
+    // runs only via the manual form's own explicit draft submit button;
+    // a generic request must never auto-enter it through the composer.
     submitPrompt(input.value);
   });
   cancelStreamButton.addEventListener("click", cancelActiveStream);
@@ -1646,7 +1688,11 @@
 
   function syncComposerForClaw(isClaw) {
     if (!input) return;
-    if (isClaw) {
+    // #3531: the business-request prompt belongs to the explicit manual
+    // workflow view only. The general Claw view shares the generic prompt
+    // so placeholder parity with Chat Home holds.
+    const manualView = isClaw && clawWorkspace && clawWorkspace.dataset.view === "manual";
+    if (manualView) {
       input.placeholder = localeOr("claw-request-placeholder", "Paste a business request you received by chat, SMS, or email.");
       input.setAttribute("aria-describedby", "clawStatus");
       input.setAttribute("maxlength", "4000");
@@ -2470,6 +2516,27 @@
   if (clawAutomationRetry) clawAutomationRetry.addEventListener("click", () => void loadClawAutomationRules());
 
   function openClawWorkspace() {
+    // #3531: Claw opens on the general conversation view. The document
+    // workflow (manual form, workflow chrome) stays hidden until the user
+    // explicitly enters it via openClawManual.
+    if (!clawWorkspace) return;
+    shell.dataset.state = "claw";
+    clawWorkspace.dataset.view = "general";
+    delete clawWorkspace.dataset.inboxKind;
+    if (clawInbox) clawInbox.hidden = true;
+    if (clawAutomation) clawAutomation.hidden = true;
+    if (clawManualForm) clawManualForm.hidden = true;
+    if (clawResultArea) clawResultArea.hidden = false;
+    setNavActive();
+    input.focus();
+    closeSidebar();
+    syncApprovedMemoryVisibility();
+    syncClawRunHistoryVisibility();
+  }
+
+  function openClawManual() {
+    // Explicit entry into the document/quotation workflow only. The manual
+    // form and its workflow chrome are never shown by default.
     if (!clawWorkspace) return;
     shell.dataset.state = "claw";
     clawWorkspace.dataset.view = "manual";
@@ -2522,6 +2589,7 @@
   const connectorsRetry = document.getElementById("connectorsRetry");
   const GOOGLE_CALENDAR_CONNECTOR = "google-calendar";
   const GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket";
+  const GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT = "/api/connectors/google/calendar/activate-read";
   const CONNECTOR_STATUS_IDS = new Set([
     "connector:google:drive@1",
     "connector:google:gmail@1",
@@ -2531,6 +2599,11 @@
   ]);
   let connectorStatusInFlight = false;
   let googleConnectorConnectInFlight = false;
+  // In-session Calendar READ grant truth (#2952). "unknown" until this session
+  // activates it; the status projection carries no persisted grant field, so
+  // nothing here claims a grant the server has not just confirmed.
+  let googleCalendarReadState = "unknown";
+  let googleCalendarReadActivationAfterConnectReturn = false;
 
   function setConnectorCopy(element, key) {
     if (!element) return;
@@ -2557,6 +2630,68 @@
     return "connectors-workspace-unverified";
   }
 
+  // Google Calendar has a second, independent axis: the READ grant activation
+  // (#2952). "Google account connected" (the OAuth/workspace axis) must never
+  // read as "Calendar read is ready" — they are separate truths. The session
+  // state starts "unknown" and is then filled from two bounded sources: the
+  // persisted server projection (row.calendar_read_grant_state) and the
+  // in-session activation result. The server truth is a projection of the
+  // Engine's own grant store — "unavailable" means the check could not be
+  // trusted, never that the grant is missing.
+  const CALENDAR_READ_STATES = Object.freeze(["unknown", "activating", "active", "failed", "unavailable"]);
+  const CALENDAR_READ_STATE_KEYS = Object.freeze({
+    unknown: "connectors-calendar-read-pending",
+    activating: "connectors-calendar-read-activating",
+    active: "connectors-calendar-read-active",
+    failed: "connectors-calendar-read-failed",
+    unavailable: "connectors-calendar-read-unavailable",
+  });
+  // The closed per-row vocabulary the status projection publishes for the
+  // Calendar row's persisted READ grant axis.
+  const CALENDAR_SERVER_GRANT_STATES = Object.freeze(["active", "inactive", "unavailable"]);
+
+  function calendarReadStateKey(state) {
+    return Object.prototype.hasOwnProperty.call(CALENDAR_READ_STATE_KEYS, state)
+      ? CALENDAR_READ_STATE_KEYS[state]
+      : "connectors-calendar-read-pending";
+  }
+
+  // Pure server-truth → session-state transition. The server projection fills
+  // an unset ("unknown") or stale-unavailable session state and can raise it
+  // to "active" — that is what makes a fresh page load show the persisted
+  // grant instead of "activation needed". It never overwrites an in-session
+  // truth ("activating"/"active"/"failed"): the activation response and the
+  // user's own retry flow stay authoritative for this session, and a failed
+  // status check ("unavailable") never claims the grant is missing.
+  function calendarServerGrantSessionState(current, serverState) {
+    if (!CALENDAR_SERVER_GRANT_STATES.includes(serverState)) return current;
+    if (current !== "unknown" && current !== "unavailable") return current;
+    return serverState === "inactive" ? "unknown" : serverState;
+  }
+
+  // Bounded backend-code → copy mapping (#3451 reviewed diagnostics). Only
+  // this closed, reviewed, secret-free vocabulary gets entries; anything else
+  // — including any future code CENTRAL has not reviewed — falls back to the
+  // generic OAuth-preserving message. The server's raw message text is never
+  // rendered and no credential material is read from the body.
+  const CALENDAR_READ_ERROR_KEYS = Object.freeze({
+    "calendar_activation_engine_auth_failed": "connectors-calendar-read-error-engine-auth",
+    "calendar_activation_workspace_unavailable": "connectors-calendar-read-error-workspace",
+    "calendar_activation_binding_unavailable": "connectors-calendar-read-error-binding",
+    "calendar_activation_not_connected": "connectors-calendar-read-error-not-connected",
+    "calendar_activation_grant_unavailable": "connectors-calendar-read-error-grant",
+    "calendar_read_activation_unavailable": "connectors-calendar-read-activation-error",
+  });
+
+  function calendarReadActivationErrorKey(error) {
+    const code = error && typeof error === "object" && typeof error.calendarReadErrorCode === "string"
+      ? error.calendarReadErrorCode
+      : "";
+    return Object.prototype.hasOwnProperty.call(CALENDAR_READ_ERROR_KEYS, code)
+      ? CALENDAR_READ_ERROR_KEYS[code]
+      : "connectors-calendar-read-activation-error";
+  }
+
   function liveConnectorCards() {
     if (!connectorsDialog) return [];
     return Array.from(connectorsDialog.querySelectorAll("[data-connector-id]"));
@@ -2567,17 +2702,83 @@
     return connectorsDialog.querySelector(`[data-google-connector-connect="${GOOGLE_CALENDAR_CONNECTOR}"]`);
   }
 
+  function googleCalendarCard() {
+    if (!connectorsDialog) return null;
+    return connectorsDialog.querySelector(`[data-connector-id="connector:google:calendar@1"]`);
+  }
+
+  /** Projects the READ-grant axis onto the Calendar card's own state line.
+   *  Only visible while the OAuth/workspace axis is "connected"; every value
+   *  is one of the four closed session states, rendered through the bounded
+   *  textContent sink. */
+  function renderCalendarReadState() {
+    const card = googleCalendarCard();
+    if (!card) return;
+    const element = card.querySelector("[data-connector-read-state]");
+    if (!element) return;
+    const state = CALENDAR_READ_STATES.includes(googleCalendarReadState)
+      ? googleCalendarReadState
+      : "unknown";
+    if (card.dataset.connectorStatus !== "connected") {
+      element.hidden = true;
+      delete card.dataset.calendarReadState;
+      return;
+    }
+    // The visual states are the four reviewed ones: an in-session "unknown"
+    // grant presents as "pending" — activation has not happened here yet.
+    const visualState = state === "unknown" ? "pending" : state;
+    element.hidden = false;
+    element.dataset.readState = visualState;
+    card.dataset.calendarReadState = state;
+    setConnectorCopy(element, calendarReadStateKey(state));
+  }
+
   function syncGoogleCalendarConnectButton(row = null) {
+    // Consume the persisted server truth for the READ grant axis before the
+    // button logic: a fresh session must show the server's answer, not
+    // "activation needed" for a grant the Engine already holds.
+    const serverGrantState =
+      row && typeof row.calendar_read_grant_state === "string"
+        ? row.calendar_read_grant_state
+        : "";
+    googleCalendarReadState = calendarServerGrantSessionState(
+      googleCalendarReadState,
+      serverGrantState,
+    );
     const button = googleCalendarConnectButton();
+    const calendarCard = googleCalendarCard();
+    if (calendarCard) {
+      // When the OAuth/workspace axis is connected, say so in Calendar-specific
+      // words: a connected Google account is not the same truth as an active
+      // Calendar READ grant. The generic workspace copy stays for every other
+      // connector.
+      if (row && row.workspace_state === "connected") {
+        setConnectorCopy(calendarCard.querySelector("[data-connector-workspace]"), "connectors-calendar-oauth-connected");
+      }
+      renderCalendarReadState();
+    }
     if (!button) return;
     const workspaceState = row && typeof row.workspace_state === "string" ? row.workspace_state : "";
     const canConnect = Boolean(
       authState.authenticated &&
       (workspaceState === "not_connected" || workspaceState === "unverified")
     );
-    button.hidden = !canConnect;
-    button.disabled = googleConnectorConnectInFlight;
-    if (!googleConnectorConnectInFlight) setConnectorCopy(button, "connectors-connect-calendar");
+    const canActivateRead = Boolean(
+      authState.authenticated &&
+      workspaceState === "connected"
+    );
+    button.hidden = !(canConnect || canActivateRead);
+    button.dataset.calendarAction = canActivateRead ? "activate-read" : "connect";
+    button.disabled = googleConnectorConnectInFlight ||
+      googleCalendarReadState === "activating" ||
+      googleCalendarReadState === "active";
+    if (googleCalendarReadState === "active") {
+      setConnectorCopy(button, "connectors-calendar-read-activation-done");
+    } else if (canActivateRead && googleCalendarReadState !== "activating") {
+      setConnectorCopy(button, "connectors-activate-calendar-read");
+    } else if (canConnect && !googleConnectorConnectInFlight) {
+      setConnectorCopy(button, "connectors-connect-calendar");
+    }
   }
 
   function reviewedGoogleAuthorizationUrl(value) {
@@ -2627,6 +2828,61 @@
         setConnectorCopy(connectorsError, "connectors-connect-error");
         connectorsError.hidden = false;
       }
+    }
+  }
+
+  async function activateGoogleCalendarRead() {
+    const button = googleCalendarConnectButton();
+    if (!button || googleCalendarReadState === "activating" || googleCalendarReadState === "active") return;
+    if (!authState.authenticated) {
+      openAuthDialog();
+      return;
+    }
+    googleCalendarReadState = "activating";
+    button.disabled = true;
+    setConnectorCopy(button, "connectors-activating-calendar-read");
+    renderCalendarReadState();
+    if (connectorsError) connectorsError.hidden = true;
+    try {
+      const response = await fetch(GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT, {
+        method: "POST",
+        headers: { "Accept": "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+        cache: "no-store",
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || data.ok !== true ||
+          data.calendar_read_grant !== "active" ||
+          data.calendar_write_authorized !== false) {
+        // Only the bounded code travels; the server's raw message text is never
+        // rendered and no credential material is read from the body.
+        const failure = new Error("calendar read activation unavailable");
+        failure.calendarReadErrorCode =
+          data && typeof data === "object" &&
+          data.error && typeof data.error === "object" &&
+          typeof data.error.code === "string"
+            ? data.error.code
+            : "";
+        throw failure;
+      }
+      googleCalendarReadState = "active";
+      setConnectorCopy(button, "connectors-calendar-read-activation-done");
+      renderCalendarReadState();
+    } catch (error) {
+      // The Google OAuth/workspace connection is untouched by an activation
+      // failure: the card keeps the connected-account copy and the failure
+      // copy says exactly that, so a grant problem is never presented as an
+      // OAuth one. The cause-specific wording comes from the locale table,
+      // keyed by the bounded backend code (see CALENDAR_READ_ERROR_KEYS).
+      googleCalendarReadState = "failed";
+      renderCalendarReadState();
+      if (connectorsError) {
+        setConnectorCopy(connectorsError, calendarReadActivationErrorKey(error));
+        connectorsError.hidden = false;
+      }
+      setConnectorCopy(button, "connectors-activate-calendar-read");
+    } finally {
+      button.disabled = googleCalendarReadState === "active";
     }
   }
 
@@ -2697,6 +2953,13 @@
       const data = await response.json().catch(() => null);
       if (!response.ok) throw new Error("connector status unavailable");
       renderConnectorStatus(data);
+      if (googleCalendarReadActivationAfterConnectReturn) {
+        googleCalendarReadActivationAfterConnectReturn = false;
+        const calendarButton = googleCalendarConnectButton();
+        if (calendarButton?.dataset.calendarAction === "activate-read") {
+          await activateGoogleCalendarRead();
+        }
+      }
     } catch (_) {
       setConnectorCardsUnavailable();
       if (connectorsError) connectorsError.hidden = false;
@@ -2730,7 +2993,13 @@
   if (connectorsDialogClose) connectorsDialogClose.addEventListener("click", closeConnectorsDialog);
   if (connectorsRetry) connectorsRetry.addEventListener("click", () => void loadConnectorStatus());
   const calendarConnectButton = googleCalendarConnectButton();
-  if (calendarConnectButton) calendarConnectButton.addEventListener("click", () => void beginGoogleCalendarConnect());
+  if (calendarConnectButton) calendarConnectButton.addEventListener("click", () => {
+    if (calendarConnectButton.dataset.calendarAction === "activate-read") {
+      void activateGoogleCalendarRead();
+      return;
+    }
+    void beginGoogleCalendarConnect();
+  });
   if (connectorsDialog) {
     connectorsDialog.addEventListener("cancel", (event) => {
       event.preventDefault();
@@ -2743,6 +3012,7 @@
   const connectorReturnParts = connectorReturnSearch.replace(/^\?/, "").split("&").filter(Boolean);
   const connectorReturned = connectorReturnParts.some((part) => part === "google_connector=connected");
   if (connectorReturned) {
+    googleCalendarReadActivationAfterConnectReturn = true;
     const cleanQuery = connectorReturnParts.filter((part) => !part.startsWith("google_connector=")).join("&");
     const cleanPath = String(window.location.pathname || "/");
     const cleanHash = String(window.location.hash || "");
@@ -2751,6 +3021,8 @@
   }
 
   if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
+  const clawManualEntryButton = document.getElementById("clawManualEntryButton");
+  if (clawManualEntryButton) clawManualEntryButton.addEventListener("click", openClawManual);
   if (tasksNavButton) tasksNavButton.addEventListener("click", () => openClawInbox("tasks"));
   if (alertsNavButton) alertsNavButton.addEventListener("click", () => openClawInbox("alerts"));
   if (clawInboxRetry) clawInboxRetry.addEventListener("click", () => {

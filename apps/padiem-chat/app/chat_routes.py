@@ -10,6 +10,7 @@ from starlette.responses import JSONResponse, StreamingResponse
 from .attachments import ImageAttachment
 from .auth_routes import auth_ready, current_user_id
 from .auto_grounding import AutoGroundingService
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .b14_client import B14Client, ChatRuntimeError
 from .config import Settings
 from .conversation_routes import _history_unavailable
@@ -116,8 +117,9 @@ async def api_chat_stream(request: Request):
                 return _too_large_response()
         except ValueError:
             return JSONResponse({"error": {"code": "invalid_request", "message": "요청 형식이 올바르지 않습니다."}}, status_code=422)
-    body = await request.body()
-    if len(body) > MAX_BROWSER_BODY_BYTES:
+    try:
+        body = await read_bounded_request_body(request, max_bytes=MAX_BROWSER_BODY_BYTES)
+    except RequestBodyTooLarge:
         return _too_large_response()
 
     try:
@@ -329,8 +331,9 @@ async def api_chat(request: Request) -> JSONResponse:
                 return _too_large_response()
         except ValueError:
             return JSONResponse({"error": {"code": "invalid_request", "message": "요청 형식이 올바르지 않습니다."}}, status_code=422)
-    body = await request.body()
-    if len(body) > MAX_BROWSER_BODY_BYTES:
+    try:
+        body = await read_bounded_request_body(request, max_bytes=MAX_BROWSER_BODY_BYTES)
+    except RequestBodyTooLarge:
         return _too_large_response()
 
     try:

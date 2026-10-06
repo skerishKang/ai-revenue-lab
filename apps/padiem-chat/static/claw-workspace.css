@@ -38,8 +38,41 @@
 .app-shell[data-state="claw"] .claw-workspace[data-view="manual"] {
   display: none;
 }
-.app-shell[data-state="claw"] .claw-workspace:not([data-view="manual"]) ~ .conversation {
+/* #3531: the general view hides the workspace canvas like the manual view
+ * does, so the conversation keeps its exact home geometry (the parity
+ * contract tolerates no pushed-down thread). The manual entry control
+ * lives in the fixed composer wrap instead. */
+.app-shell[data-state="claw"] .claw-workspace[data-view="general"] {
+  display: none;
+}
+/* #3531: the general view keeps the conversation (primary result surface)
+ * visible alongside the slim workspace header. Only inbox/automation take
+ * over the canvas and hide the conversation. */
+.app-shell[data-state="claw"] .claw-workspace:not([data-view="manual"]):not([data-view="general"]) ~ .conversation {
   display: none !important;
+}
+/* #3531: document-workflow chrome (mode chip, workflow help, manual entry
+ * is the inverse) appears only in its own view. The general view shows the
+ * generalized tagline plus the explicit manual-entry control. */
+.app-shell[data-state="claw"] .claw-workspace:not([data-view="manual"]) .claw-workspace-chip,
+.app-shell[data-state="claw"] .claw-workspace:not([data-view="manual"]) .claw-workspace-help {
+  display: none;
+}
+.claw-entry-bar {
+  display: flex;
+  justify-content: center;
+  padding: 0 0 10px;
+}
+.claw-entry-bar[hidden] {
+  display: none;
+}
+/* #3531: the manual result empty/hint copy belongs to the workflow view.
+ * The result card and memory surfaces keep their own explicit reveal logic
+ * and are unaffected by this rule. */
+.app-shell[data-state="claw"] .claw-workspace:not([data-view="manual"]) ~ .conversation #clawResultEmpty,
+.app-shell[data-state="claw"] .claw-workspace:not([data-view="manual"]) ~ .conversation #clawResultHint,
+.app-shell[data-state="claw"] .claw-workspace:not([data-view="manual"]) ~ .conversation #clawExecuteHint {
+  display: none;
 }
 /* Claw-only nodes now live inside the shared conversation column: hide them
  * whenever the shell is not in the Claw state. */

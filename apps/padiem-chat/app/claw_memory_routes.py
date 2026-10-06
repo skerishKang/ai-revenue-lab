@@ -30,6 +30,7 @@ from .approved_memory import (
     validate_memory_id,
 )
 from .auth_routes import auth_ready, current_user_id
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .control_plane_identity_shadow import resolve_refreshed_session
 
 MAX_MEMORY_BODY_BYTES = 64 * 1024
@@ -54,33 +55,34 @@ def _error(status_code: int, code: str, message: str) -> JSONResponse:
     )
 
 
-async def _resolve_memory_workspace(request: Request, user_id: str) -> str:
-    """Bind workspace from canonical tenant authority with an owner-derived fallback.
+async def _resolve_memory_workspace(request: Request, user_id: str) -> str | None:
+    """Resolve the server-owned workspace without failing open across authorities.
 
-    When the canonical session resolves, the tenant_id is the workspace. When
-    the canonical path is unavailable (no shadow/authority in this deployment),
-    the workspace falls back to a server-derived per-owner value. Callers can
-    never supply or override it.
+    The owner-derived namespace is a compatibility path only for deployments
+    where both canonical identity components are genuinely absent. Once either
+    component is configured, partial configuration, resolution failure, or a
+    missing tenant is an unavailable authority verdict and memory I/O must stop.
     """
-    tenant_id: str | None = None
+    if not auth_ready(request):
+        return None
+    shadow_store = getattr(request.app.state, "identity_shadow_store", None)
+    authority = getattr(request.app.state, "control_plane_identity_authority", None)
+    if shadow_store is None and authority is None:
+        return f"owner:{user_id}"
+    if shadow_store is None or authority is None:
+        return None
     try:
-        if auth_ready(request):
-            shadow_store = getattr(request.app.state, "identity_shadow_store", None)
-            authority = getattr(request.app.state, "control_plane_identity_authority", None)
-            if shadow_store is not None and authority is not None:
-                session = await resolve_refreshed_session(
-                    authority=authority,
-                    store=shadow_store,
-                    product_user_id=user_id,
-                )
-                candidate = getattr(session, "tenant_id", None)
-                if isinstance(candidate, str) and candidate:
-                    tenant_id = candidate
+        session = await resolve_refreshed_session(
+            authority=authority,
+            store=shadow_store,
+            product_user_id=user_id,
+        )
     except Exception:
-        tenant_id = None
-    if tenant_id:
-        return tenant_id
-    return f"owner:{user_id}"
+        return None
+    candidate = getattr(session, "tenant_id", None)
+    if not isinstance(candidate, str) or not candidate.strip():
+        return None
+    return candidate
 
 
 def _require_owner(request: Request) -> str | None:
@@ -97,11 +99,15 @@ async def _read_json_body(request: Request) -> dict[str, Any] | JSONResponse:
     content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
     if content_type != "application/json":
         return _error(415, "unsupported_media_type", "JSON 요청만 허용됩니다.")
-    raw_body = await request.body()
+    try:
+        raw_body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_MEMORY_BODY_BYTES,
+        )
+    except RequestBodyTooLarge:
+        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     if not raw_body:
         return _error(400, "empty_request_body", "요청 본문이 비어 있습니다.")
-    if len(raw_body) > MAX_MEMORY_BODY_BYTES:
-        return _error(413, "request_too_large", "요청 크기가 너무 큽니다.")
     try:
         data = json.loads(raw_body.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError):
@@ -138,6 +144,8 @@ async def claw_memory_approve(request: Request) -> JSONResponse:
     if store is None or getattr(store, "approve_memory", None) is None:
         return _error(503, "approved_memory_unavailable", "승인 메모리를 사용할 수 없습니다.")
     workspace_id = await _resolve_memory_workspace(request, uid)
+    if workspace_id is None:
+        return _error(503, "approved_memory_authority_unavailable", "메모리 작업 권한을 확인할 수 없습니다.")
     try:
         outcome = store.approve_memory(user_id=uid, workspace_id=workspace_id, proposal=proposal)
         if inspect.isawaitable(outcome):
@@ -182,6 +190,8 @@ async def claw_memory_list(request: Request) -> JSONResponse:
     if limit < 1:
         return _error(400, "invalid_limit", "limit 는 1 이상이어야 합니다.")
     workspace_id = await _resolve_memory_workspace(request, uid)
+    if workspace_id is None:
+        return _error(503, "approved_memory_authority_unavailable", "메모리 작업 권한을 확인할 수 없습니다.")
     try:
         memories = list_fn(user_id=uid, workspace_id=workspace_id, limit=limit)
         if inspect.isawaitable(memories):
@@ -207,6 +217,8 @@ async def claw_memory_detail(request: Request) -> JSONResponse:
     if get_fn is None:
         return _error(503, "approved_memory_unavailable", "승인 메모리를 사용할 수 없습니다.")
     workspace_id = await _resolve_memory_workspace(request, uid)
+    if workspace_id is None:
+        return _error(503, "approved_memory_authority_unavailable", "메모리 작업 권한을 확인할 수 없습니다.")
     try:
         memory = get_fn(user_id=uid, workspace_id=workspace_id, memory_id=memory_id)
         if inspect.isawaitable(memory):

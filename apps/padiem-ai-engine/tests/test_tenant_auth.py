@@ -178,6 +178,57 @@ def test_adapter_supports_async_control_plane_client() -> None:
     assert [kind for kind, _ in client.calls] == ["fetch_entitlement_snapshot", "reserve_usage"]
 
 
+def test_adapter_validates_reservation_against_post_roundtrip_observation_time() -> None:
+    reservation_time = NOW + timedelta(seconds=4)
+    client = AsyncFakeControlPlaneClient(
+        reservation=reservation_dict(
+            reserved_at=iso(reservation_time),
+            expires_at=iso(reservation_time + timedelta(minutes=5)),
+        )
+    )
+    observations = iter((NOW, reservation_time))
+    built = ControlPlaneTenantAdmissionAdapter(
+        client=client,
+        clock=lambda: next(observations),
+    )
+
+    resolved = run(built.resolve_admission(request()))
+
+    assert resolved.allowed is True
+    assert resolved.issued_at == NOW
+    assert resolved.usage_reservation is not None
+    assert resolved.usage_reservation.reserved_at == reservation_time
+    assert [kind for kind, _ in client.calls] == [
+        "fetch_entitlement_snapshot",
+        "reserve_usage",
+    ]
+
+
+def test_adapter_rejects_reservation_future_to_post_roundtrip_observation() -> None:
+    observation_time = NOW + timedelta(seconds=4)
+    client = AsyncFakeControlPlaneClient(
+        reservation=reservation_dict(
+            reserved_at=iso(observation_time + timedelta(seconds=1)),
+            expires_at=iso(observation_time + timedelta(minutes=5)),
+        )
+    )
+    observations = iter((NOW, observation_time))
+    built = ControlPlaneTenantAdmissionAdapter(
+        client=client,
+        clock=lambda: next(observations),
+    )
+
+    with pytest.raises(ExecutionAdmissionError) as excinfo:
+        run(built.resolve_admission(request()))
+
+    assert excinfo.value.code == "entitlement_unavailable"
+    assert excinfo.value.status_code == 503
+    assert [kind for kind, _ in client.calls] == [
+        "fetch_entitlement_snapshot",
+        "reserve_usage",
+    ]
+
+
 def test_resume_revalidates_entitlement_without_second_usage_reservation() -> None:
     client = FakeControlPlaneClient(
         snapshot=snapshot_dict(

@@ -254,6 +254,11 @@ IDENTITY_REF_PROJECTED = False
 TOKEN_OR_SECRET_PROJECTED = False
 SCOPE_PROJECTED = False
 READ_TRUTH_PROMOTES_TO_SEND_WRITE = False
+# Persisted Calendar READ grant state: read-only projection of the Engine's
+# existing grant store. Chat keeps no grant store of its own and this surface
+# can never activate, revoke, or write a grant.
+SECOND_CALENDAR_GRANT_STORE = False
+CALENDAR_READ_GRANT_STATE_WRITE_AUTHORITY = False
 # B62 product authentication boundary. The canonical shadow is reached only
 # after the local product session is proven against the product authority.
 AUTH_READY_REQUIRED = True
@@ -303,16 +308,20 @@ def _composed_overrides(connectors: Any) -> dict[str, tuple[str, str | None]] | 
 
 async def _reviewed_workspace_truth(
     request: Request,
-) -> tuple[dict[str, tuple[str, str | None]], str, bool]:
+) -> tuple[dict[str, tuple[str, str | None]], str, bool, str | None]:
     """Compose reviewed workspace truth for the signed-in B62 product user.
 
-    Returns ``(overrides, fallback_reason, authority)``:
+    Returns ``(overrides, fallback_reason, authority, session_id)``:
 
     * ``overrides`` — published ``(workspace_state, workspace_reason)`` per
       reviewed row that a trusted authority spoke for;
     * ``fallback_reason`` — the closed reason for reviewed rows without an
       override;
-    * ``authority`` — ``True`` only when canonical truth actually participated.
+    * ``authority`` — ``True`` only when canonical truth actually participated;
+    * ``session_id`` — the canonical shadow session id once product
+      authentication and the shadow proven, else ``None``. The persisted
+      Calendar READ grant projection reuses this one resolution so the
+      product profile and shadow are read exactly once per request.
 
     This never raises. Every failure is mapped to a closed, bounded reason, so
     an operational fault (missing binding, malformed RPC, unresolved session)
@@ -332,50 +341,56 @@ async def _reviewed_workspace_truth(
     ready, absent, or cannot be evaluated, no private call is made at all.
     """
 
+    # The canonical shadow session, once product authentication and the shadow
+    # both prove out. Returned to the caller so the persisted Calendar READ
+    # grant projection reuses the single profile/shadow read below.
+    shadow_session_id: str | None = None
+
     # 1. Prove B62 product authentication before reaching any canonical private
     #    authority. A stale or deleted product user must never be able to read
     #    canonical workspace truth through the shadow.
     try:
         if not auth_ready(request):
             # auth_mode="off", or no product history store: not authenticated.
-            return {}, WORKSPACE_REASON_NO_TRUSTED_AUTHORITY, False
+            return {}, WORKSPACE_REASON_NO_TRUSTED_AUTHORITY, False, None
         user_id = current_user_id(request)
         if user_id is None:
             # No valid signed product cookie.
-            return {}, WORKSPACE_REASON_NO_TRUSTED_AUTHORITY, False
+            return {}, WORKSPACE_REASON_NO_TRUSTED_AUTHORITY, False, None
         history_store = getattr(request.app.state, "history_store", None)
         if history_store is None:
-            return {}, WORKSPACE_REASON_NO_TRUSTED_AUTHORITY, False
+            return {}, WORKSPACE_REASON_NO_TRUSTED_AUTHORITY, False, None
         profile = await history_store.get_user(user_id)
     except Exception:  # noqa: BLE001 - product authentication could not be evaluated
-        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False
+        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False, None
     if profile is None:
         # The cookie decodes to a uid that no longer has a product user. That is
         # the B62 "expired / not authenticated" state, so degrade exactly to the
         # anonymous Phase-A projection instead of reaching the canonical shadow.
-        return {}, WORKSPACE_REASON_NO_TRUSTED_AUTHORITY, False
+        return {}, WORKSPACE_REASON_NO_TRUSTED_AUTHORITY, False, None
 
     # 2. Only now may the canonical private authorities be reached.
     try:
         _require_reviewed_targets()
     except RuntimeError:
-        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False
+        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False, None
 
     identity_authority = getattr(request.app.state, "control_plane_identity_authority", None)
     shadow_store = getattr(request.app.state, "identity_shadow_store", None)
     google_oauth_authority = getattr(request.app.state, "google_oauth_workspace_truth", None)
     if identity_authority is None or shadow_store is None or google_oauth_authority is None:
-        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False
+        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False, None
 
     try:
         shadow = await shadow_store.load_projection(user_id)
     except Exception:  # noqa: BLE001 - a shadow read fault is never a workspace state
-        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False
+        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False, None
     if shadow is None:
-        return {}, WORKSPACE_REASON_IDENTITY_NOT_LINKED, False
+        return {}, WORKSPACE_REASON_IDENTITY_NOT_LINKED, False, None
     session_id = getattr(shadow, "auth_session_id", None)
     if not isinstance(session_id, str) or not session_id:
-        return {}, WORKSPACE_REASON_IDENTITY_NOT_LINKED, False
+        return {}, WORKSPACE_REASON_IDENTITY_NOT_LINKED, False, None
+    shadow_session_id = session_id
 
     try:
         result = await compose_workspace_connector_truth(
@@ -390,19 +405,60 @@ async def _reviewed_workspace_truth(
                 exc.code, WORKSPACE_REASON_TRUTH_UNAVAILABLE
             ),
             False,
+            shadow_session_id,
         )
     except Exception:  # noqa: BLE001 - never leak a driver error into a state
-        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False
+        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False, shadow_session_id
 
     if not isinstance(result, dict) or not isinstance(result.get("available"), bool):
-        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False
+        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False, shadow_session_id
     if result["available"] is False:
-        return {}, WORKSPACE_REASON_NO_CANONICAL_WORKSPACE, False
+        return {}, WORKSPACE_REASON_NO_CANONICAL_WORKSPACE, False, shadow_session_id
 
     overrides = _composed_overrides(result.get("connectors"))
     if overrides is None:
-        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False
-    return overrides, WORKSPACE_REASON_CONNECTOR_NOT_REPORTED, bool(overrides)
+        return {}, WORKSPACE_REASON_TRUTH_UNAVAILABLE, False, shadow_session_id
+    return overrides, WORKSPACE_REASON_CONNECTOR_NOT_REPORTED, bool(overrides), shadow_session_id
+
+
+CALENDAR_READ_GRANT_ROW_FIELD = "calendar_read_grant_state"
+CALENDAR_READ_GRANT_ACTIVE = "active"
+CALENDAR_READ_GRANT_INACTIVE = "inactive"
+CALENDAR_READ_GRANT_UNAVAILABLE = "unavailable"
+_CALENDAR_ROW_CONNECTOR_ID = CALENDAR_CONNECTOR_ID
+
+
+async def _reviewed_calendar_read_grant_state(
+    request: Request,
+    session_id: str | None,
+) -> str | None:
+    """Read-only persisted Calendar READ grant state for the signed-in user.
+
+    ``session_id`` is the canonical shadow session the workspace-truth
+    composition already proved (one product-profile/shadow read per request).
+    The Engine is asked through the read-only state client (no write, no
+    second authority) and only its closed answer travels:
+
+    * ``active`` / ``inactive`` — the Engine's confirmed projection;
+    * ``unavailable`` — the check ran but could not be trusted (transport,
+      rejection, malformed body). It is never folded into ``inactive``;
+    * ``None`` — this session may not be used to infer grant state at all
+      (anonymous/untrusted, or the state client is unconfigured). The row
+      then carries no grant field, exactly like the pre-feature shape.
+    """
+
+    if not isinstance(session_id, str) or not session_id:
+        return None
+    client = getattr(request.app.state, "calendar_read_state_engine_client", None)
+    if client is None:
+        return None
+    try:
+        state = await client.read_state(session_id=session_id)
+    except Exception:  # noqa: BLE001 - a failed check is unavailable, never inactive
+        return CALENDAR_READ_GRANT_UNAVAILABLE
+    return state if state in (CALENDAR_READ_GRANT_ACTIVE, CALENDAR_READ_GRANT_INACTIVE) else (
+        CALENDAR_READ_GRANT_UNAVAILABLE
+    )
 
 
 async def connectors_status(request: Request) -> JSONResponse:
@@ -414,7 +470,7 @@ async def connectors_status(request: Request) -> JSONResponse:
     """
 
     document = build_connector_status_projection()
-    overrides, fallback_reason, authority = await _reviewed_workspace_truth(request)
+    overrides, fallback_reason, authority, session_id = await _reviewed_workspace_truth(request)
     if overrides or fallback_reason != WORKSPACE_REASON_NO_TRUSTED_AUTHORITY:
         rows = {row["connector_id"]: row for row in document["connectors"]}
         for row_name, public_id in _WORKSPACE_TRUTH_TARGETS.values():
@@ -425,4 +481,13 @@ async def connectors_status(request: Request) -> JSONResponse:
                 row_name, (WORKSPACE_STATE_UNVERIFIED, fallback_reason)
             )
         document["workspace_state_authority"] = authority
+    # Additive third axis: the persisted Calendar READ grant, projected for the
+    # calendar row only and only when a trusted canonical session allows the
+    # question to be asked at all. The support and workspace axes above are
+    # untouched; untrusted sessions get the pre-feature shape unchanged.
+    grant_state = await _reviewed_calendar_read_grant_state(request, session_id)
+    if grant_state is not None:
+        for row in document["connectors"]:
+            if row.get("connector_id") == _CALENDAR_ROW_CONNECTOR_ID:
+                row[CALENDAR_READ_GRANT_ROW_FIELD] = grant_state
     return JSONResponse(document, headers=dict(_NO_STORE_HEADERS))

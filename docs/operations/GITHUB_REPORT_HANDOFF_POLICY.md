@@ -10,36 +10,62 @@ Local CLAW workers and CENTRAL coordinate through GitHub rather than by copying 
 
 The related `ai-revenue-lab` Issue/PR is the coordination surface. The private `skerishKang/workdiary` repository is the long-form report/evidence surface.
 
-## 2. Required reporting flow
+## 2. Reporting modes
 
-At the end of a CLAW task:
+Reporting depth follows task risk and review need. **A long report is not the default for every tiny fix.**
 
-1. Write the complete report to the private report repository:
+### COMPACT mode — default for bounded fixes
+
+Use `COMPACT` when all are true:
+
+- root cause/scope is already bounded;
+- changed files are small and reviewable directly in the PR;
+- no migration, destructive action, billing, secret mutation, auth/authz redesign, or broad shared-authority change;
+- focused tests/CI provide the needed evidence;
+- CENTRAL did not explicitly request a long report.
+
+The Issue/PR comment itself is the report:
+
+```text
+REPORT_MODE=COMPACT
+BASE_SHA=
+HEAD_SHA=
+FILES_CHANGED=
+IMPLEMENTATION_RESULT=
+FOCUSED_TESTS=
+RELEVANT_CI=
+LIMITATIONS=
+PRODUCTION_MUTATION=0|AUTHORIZED
+```
+
+No separate `workdiary` commit is required in COMPACT mode.
+
+### LONG mode — only when materially useful
+
+Use the private `skerishKang/workdiary` report when at least one applies:
+
+- complex multi-surface or multi-authority change;
+- large evidence set that would clutter the PR;
+- independent local/browser/hardware validation with artifacts;
+- migration/destructive/billing/high-risk auth or secret-boundary work;
+- incident/root-cause investigation requiring durable detailed evidence;
+- CENTRAL explicitly requests `REPORT_MODE=LONG`.
+
+Then use:
 
 ```text
 REPORT_REPO=skerishKang/workdiary
 REPORT_PATH=padiem-reports/YYYY-MM-DD/<CLAW>/<task>.md
+REPORT_COMMIT=<immutable workdiary commit SHA>
 ```
 
-2. Commit the exact report revision and record the immutable commit SHA.
-
-3. Post only a compact final result to the related `ai-revenue-lab` Issue or PR. Do not paste the long report into the public Issue/PR.
-
-4. The compact comment must include:
-
-```text
-REPORT_REPO=skerishKang/workdiary
-REPORT_PATH=padiem-reports/YYYY-MM-DD/<CLAW>/<task>.md
-REPORT_COMMIT=<workdiary commit SHA containing the exact report>
-```
-
-5. CENTRAL fresh-reads the relevant `ai-revenue-lab` state and reads the full report directly from the private report repository.
-
-The Product Owner does not need to copy/paste the full report into ChatGPT.
+The Product Owner does not need to relay either report mode through chat. CENTRAL fresh-reads GitHub directly.
 
 ## 3. Compact Issue/PR comment
 
-The Issue/PR comment may contain a short result summary, key exact-head/status fields, and the three report pointers. It must not contain the complete narrative report or large raw logs.
+In `COMPACT` mode, the Issue/PR comment contains the complete bounded report and no private-report pointer is required.
+
+In `LONG` mode, the Issue/PR comment contains only a short result summary, key exact-head/status fields, and the three private-report pointers. It must not contain the complete narrative report or large raw logs.
 
 Example:
 
@@ -59,7 +85,7 @@ REPORT_COMMIT=<immutable workdiary commit SHA>
 
 ## 4. Long-report requirements
 
-The private long report should contain enough evidence for CENTRAL to independently review the claim, including when applicable:
+Only `REPORT_MODE=LONG` uses this section. The private long report should contain enough evidence for CENTRAL to independently review the claim, including when applicable:
 
 ```text
 LOCAL=
@@ -134,7 +160,9 @@ Secret binding names or presence-only readiness may be recorded only when the wo
 
 ## 8. Failure to write the private report
 
-If the worker cannot write to `skerishKang/workdiary`, it must not fall back to posting the entire report publicly and must not fall back to Google Drive/rclone.
+This section applies only when `REPORT_MODE=LONG` was actually required. Failure to write a private long report must not manufacture a reporting blocker for a task that qualifies for `COMPACT` mode.
+
+If a required LONG-mode worker cannot write to `skerishKang/workdiary`, it must not fall back to posting the entire report publicly and must not fall back to Google Drive/rclone.
 
 Instead, preserve the report locally and post only:
 

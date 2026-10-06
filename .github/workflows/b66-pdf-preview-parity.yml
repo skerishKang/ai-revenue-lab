@@ -1,0 +1,65 @@
+name: B66 PDF Preview Parity
+
+on:
+  pull_request:
+    paths:
+      - "reference/business-66-padiem-quote-v1/index.html"
+      - "reference/business-66-padiem-quote-v1/app.js"
+      - "reference/business-66-padiem-quote-v1/styles.css"
+      - "reference/business-66-padiem-quote-v1/quote-template.js"
+      - "reference/business-66-padiem-quote-v1/quote-template-renderer.js"
+      - "reference/business-66-padiem-quote-v1/shell-layout.js"
+      - "reference/business-66-padiem-quote-v1/cgi-template-v2.js"
+      - "reference/business-66-padiem-quote-v1/tests/cgi-v2.test.cjs"
+      - "reference/business-66-padiem-quote-v1/tests/three-pane-shell-contract.test.cjs"
+      - ".github/scripts/b66_shell_cgi_v2_smoke.py"
+      - "reference/business-66-padiem-quote-v1/tests/quote-template-renderer.test.cjs"
+      - "reference/business-66-padiem-quote-v1/tests/static-contract.test.cjs"
+      - ".github/scripts/b66_pdf_preview_parity.py"
+      - ".github/workflows/b66-pdf-preview-parity.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  parity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install browser parity dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check             "playwright==1.55.0"             "PyMuPDF==1.26.4"             "Pillow==11.3.0"
+          python -m playwright install --with-deps chromium
+
+      - name: Verify static renderer contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          node reference/business-66-padiem-quote-v1/tests/quote-template-renderer.test.cjs
+          node reference/business-66-padiem-quote-v1/tests/static-contract.test.cjs
+          node reference/business-66-padiem-quote-v1/tests/cgi-v2.test.cjs
+          node reference/business-66-padiem-quote-v1/tests/three-pane-shell-contract.test.cjs
+
+      - name: Compare screen A4 preview with actual PDF render
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/b66_pdf_preview_parity.py
+
+      - name: Verify three-pane shell and CGI v2 with actual PDF
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/b66_shell_cgi_v2_smoke.py

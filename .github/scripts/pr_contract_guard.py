@@ -1,24 +1,18 @@
 #!/usr/bin/env python3
-"""Pull-request contract report for the Web CTO review chain.
+"""Pull-request contract report for the repository review chain.
 
-`AGENTS.md` and `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md` separate
-product authority, the Web CTO contract/review, the Web Developer
-implementation and independent Local Validation. Those separations are only
-auditable when a pull request body carries the fields the chain depends on:
-exact revision identity, the evidence dimensions in play, implementation
-evidence, the independent-validation decision, owner-only decisions, the
-completion checklist and the Web CTO final status.
+The repository supports two reporting modes:
 
-This guard never edits a pull request and never claims a review verdict. It
-reports which load-bearing fields are present.
+- COMPACT: default for bounded fixes/tiny glue. Keep only the fields needed to
+  review the exact change, focused regression, relevant CI and validation
+  decision.
+- EXTENDED: broad/high-risk work or an explicit work-contract requirement.
 
-- default: report only (exit 0) so an in-flight pipeline is not blocked;
-- `PR_CONTRACT_GUARD_ENFORCE=1`: fail when a load-bearing field is missing.
+The guard reports contract shape only. It never assigns a CTO verdict and never
+turns automatically-triggered unrelated CI into a required gate.
 
-A pull request body that claims a CTO approval without recording the CTO final
-status block is reported as `unrecorded_approval_claim`. The claim may be true,
-but it is not attributable to a revision until it is recorded in the pull
-request or in a committed `CTO_FINAL_REVIEW` artifact.
+Default is report-only. `PR_CONTRACT_GUARD_ENFORCE=1` may enforce the
+appropriate shape for the selected report mode.
 """
 
 from __future__ import annotations
@@ -29,36 +23,35 @@ import re
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-
-# Sections the pull request template declares and the review chain depends on.
-REQUIRED_SECTIONS = (
+COMPACT_REQUIRED_SECTIONS = (
     "Authority / revision",
+    "Scope",
+    "Implementation evidence",
+    "Validation decision",
+    "CTO final status",
+)
+
+EXTENDED_REQUIRED_SECTIONS = (
+    "Authority / revision",
+    "Scope",
     "Evidence dimensions",
     "Implementation evidence",
-    "Independent validation",
     "Owner-only decisions",
     "Completion checklist",
     "CTO final status",
 )
 
-# Revision identity: at least one git object id (short or full).
+REPORT_MODE_PATTERN = re.compile(r"(?im)^\s*REPORT_MODE\s*=\s*(COMPACT|EXTENDED)\s*$")
 SHA_PATTERN = re.compile(r"\b[0-9a-f]{7,40}\b")
-
-# Issue / work-order authority link.
 ISSUE_LINK_PATTERNS = (
     re.compile(
         r"(?i)\b(?:closes|close|closed|fixes|fix|fixed|resolves|resolve|refs|ref|references|advances|tracks|part of)\b[^\n#]{0,24}#\d+"
     ),
     re.compile(r"#\d{3,}"),
 )
-
-# Web CTO final status vocabulary from WORKFLOW_STATUS_MODEL.md §8.
 STATUS_PATTERN = re.compile(
-    r"\b(NOT_REVIEWED|NOT_READY|CONDITIONALLY_READY|READY)\b"
+    r"\b(NOT_REVIEWED|NOT_READY|CONDITIONALLY_READY|READY|READY_FOR_CUSTOMER_HANDOFF)\b"
 )
-
-# A CTO approval claim that is not accompanied by the CTO final status block.
 APPROVAL_CLAIM_PATTERN = re.compile(
     r"(?i)(cto[\s_-]*approved|cto[\s_-]*approval|approved by (?:the )?cto|"
     r"cto[\s_-]*review(?:ed)? and approved)"
@@ -74,11 +67,24 @@ def _has_issue_link(body: str) -> bool:
     return any(pattern.search(body) for pattern in ISSUE_LINK_PATTERNS)
 
 
+def _report_mode(body: str) -> str:
+    match = REPORT_MODE_PATTERN.search(body)
+    # Backward compatibility for open PRs created before compact mode existed.
+    return match.group(1) if match else "EXTENDED"
+
+
 def audit(body: str | None) -> dict[str, object]:
     """Report contract compliance for one pull request body."""
     text = body or ""
-    present = [name for name in REQUIRED_SECTIONS if _has_section(text, name)]
-    missing = [name for name in REQUIRED_SECTIONS if name not in present]
+    report_mode = _report_mode(text)
+    required_sections = (
+        COMPACT_REQUIRED_SECTIONS
+        if report_mode == "COMPACT"
+        else EXTENDED_REQUIRED_SECTIONS
+    )
+
+    present = [name for name in required_sections if _has_section(text, name)]
+    missing = [name for name in required_sections if name not in present]
 
     status_match = STATUS_PATTERN.search(text)
     status_token = status_match.group(1) if status_match else "MISSING"
@@ -89,20 +95,22 @@ def audit(body: str | None) -> dict[str, object]:
 
     has_sha = bool(SHA_PATTERN.search(text))
     has_link = _has_issue_link(text)
-
     contract_complete = not missing and has_sha and has_link
 
     return {
         "pull_request_body_present": bool(body),
+        "report_mode": report_mode,
+        "required_sections": list(required_sections),
         "present_sections": present,
         "missing_sections": missing,
-        "sections_recorded": f"{len(present)}/{len(REQUIRED_SECTIONS)}",
+        "sections_recorded": f"{len(present)}/{len(required_sections)}",
         "revision_identity": "recorded" if has_sha else "MISSING",
         "work_order_link": "recorded" if has_link else "MISSING",
         "cto_status_token": status_token,
         "unrecorded_approval_claim": approval_claim,
         "contract_complete": contract_complete,
         "guard_mode": "report",
+        "unrelated_ci_becomes_required": False,
     }
 
 
@@ -130,21 +138,13 @@ def main(argv: list[str] | None = None) -> int:
 
     enforce = os.environ.get("PR_CONTRACT_GUARD_ENFORCE", "") == "1"
     if enforce and not report["contract_complete"]:
+        missing = list(report["missing_sections"])
+        if report["revision_identity"] == "MISSING":
+            missing.append("revision_identity")
+        if report["work_order_link"] == "MISSING":
+            missing.append("work_order_link")
         print(
-            "PR_CONTRACT_GUARD=FAIL missing: "
-            + ", ".join(
-                list(report["missing_sections"])
-                + (
-                    ["revision_identity"]
-                    if report["revision_identity"] == "MISSING"
-                    else []
-                )
-                + (
-                    ["work_order_link"]
-                    if report["work_order_link"] == "MISSING"
-                    else []
-                )
-            ),
+            "PR_CONTRACT_GUARD=FAIL missing: " + ", ".join(missing),
             file=sys.stderr,
         )
         return 1
