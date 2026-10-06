@@ -1,11 +1,9 @@
-"""Space Bunny vision source readiness using the B66 fixture corpus (#3209).
+"""Model-independent vision payload readiness while primary selection is HOLD (#3568).
 
-Source-only regression: the existing synthetic/non-sensitive B66 PNG fixtures
-must pass through the existing bounded B14 image contract unchanged. No new
-fixture is created and no live model call is made.
-
-Covers §20 fixture reuse (f02/f11/f13) and §14 payload preservation at the
-Core normalizer boundary for the canonical Space Bunny route.
+The synthetic/non-sensitive B66 PNG fixture corpus still proves the bounded
+Core image payload contract. No executable provider/model route is implied by
+this test; a local synthetic model identifier is used only to exercise the
+normalizer.
 """
 
 from __future__ import annotations
@@ -16,11 +14,13 @@ from pathlib import Path
 from padiem_ai_core.b14_multimodal import B14MultimodalChatRequest
 from padiem_ai_core.model_primary import (
     VISION_FALLBACK_DECISION,
+    VISION_PRIMARY_DECISION,
     VISION_PRIMARY_MODEL_ID,
     VISION_PRIMARY_UPSTREAM_MODEL,
 )
 
 CORPUS_DIR = Path(__file__).resolve().parent / "fixtures" / "b66_e2e_corpus"
+MODEL_UNDER_TEST = "test/vision-contract-only"
 
 REUSED_FIXTURES = (
     "f02-scanned-quotation.png",
@@ -39,13 +39,14 @@ def _data_url_for(fixture_name: str) -> tuple[str, bytes]:
     return f"data:image/png;base64,{encoded}", raw
 
 
-def test_vision_primary_is_space_bunny_alpha() -> None:
-    assert VISION_PRIMARY_MODEL_ID == "kilo/stealth-space-bunny-alpha"
-    assert VISION_PRIMARY_UPSTREAM_MODEL == "stealth/space-bunny-alpha"
+def test_vision_primary_is_pending_successor_selection() -> None:
+    assert VISION_PRIMARY_DECISION == "PENDING_SUCCESSOR_SELECTION"
+    assert VISION_PRIMARY_MODEL_ID is None
+    assert VISION_PRIMARY_UPSTREAM_MODEL is None
     assert VISION_FALLBACK_DECISION == "UNDECIDED"
 
 
-def test_b66_corpus_fixtures_pass_the_existing_image_contract() -> None:
+def test_b66_corpus_fixtures_pass_the_model_independent_image_contract() -> None:
     for fixture_name in REUSED_FIXTURES:
         url, raw = _data_url_for(fixture_name)
         request = B14MultimodalChatRequest(
@@ -58,12 +59,11 @@ def test_b66_corpus_fixtures_pass_the_existing_image_contract() -> None:
                     ],
                 },
             ),
-            model=VISION_PRIMARY_MODEL_ID,
+            model=MODEL_UNDER_TEST,
         )
         payload = request.to_payload()
-        assert payload["model"] == VISION_PRIMARY_MODEL_ID
+        assert payload["model"] == MODEL_UNDER_TEST
         content = payload["messages"][0]["content"]
         assert content[0] == {"type": "text", "text": "합계 금액을 읽어줘"}
         assert content[1]["image_url"]["url"] == url
-        # The normalizer validates magic bytes: a PNG fixture must survive.
         assert raw.startswith(b"\x89PNG\r\n\x1a\n")
