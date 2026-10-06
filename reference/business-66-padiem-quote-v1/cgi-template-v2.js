@@ -19,7 +19,7 @@
   var CONTENT = {
     layoutVersion: 2,
     layoutVariant: "cgi-v2",
-    page: { size: "A4", margin: "12mm", orientation: "portrait" },
+    page: { size: "A4", margin: "10mm", orientation: "portrait" },
     sections: ["title","meta","parties","project","writtenTotal","items","totals","memo","mark"],
     title: { text: "견 적 서" },
     meta: {
@@ -78,9 +78,9 @@
       fax: "",
       bank: "",
       terms: [
-        "상기 견적 내역은 현장 조건에 따라 변경될 수 있습니다.",
-        "대금 결제조건: 현금",
-        "견적 유효기간은 발행일로부터 {validDays}일입니다."
+        "상기의 견적 내역은 현장 조건에 따라 변경될 수 있습니다.",
+        "세부 결제조건: 현금",
+        "견적유효기간은 {validityText} 입니다."
       ],
       underfillText: "********************  이 하 여 백  ********************",
       underfillAfterRows: 4
@@ -98,24 +98,37 @@
     };
   }
 
-  function content(privatePresentation) {
+  function cleanSlotRefs(raw) {
+    var source = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+    var pattern = /^b66asset_[0-9a-f]{32}$/;
+    return {
+      logo: typeof source.logo === "string" && pattern.test(source.logo) ? source.logo : "",
+      stamp: typeof source.stamp === "string" && pattern.test(source.stamp) ? source.stamp : ""
+    };
+  }
+
+  function content(privatePresentation, slotRefs) {
     var out = clone(CONTENT);
     var privateValues = cleanPrivatePresentation(privatePresentation);
+    var slots = cleanSlotRefs(slotRefs);
     out.cgiV2.fax = privateValues.fax;
     out.cgiV2.bank = privateValues.bank;
+    out.slots.logo = slots.logo;
+    out.slots.stamp = slots.stamp;
     return out;
   }
 
-  function candidate(privatePresentation) {
+  function candidate(privatePresentation, slotRefs) {
     return Template.buildProfile({
       id: TEMPLATE_ID, name: TEMPLATE_NAME, builtin: false, isDefault: false,
-      approval: null, createdAt: "", updatedAt: "", content: content(privatePresentation)
+      approval: null, createdAt: "", updatedAt: "",
+      content: content(privatePresentation, slotRefs)
     });
   }
 
   function approvedProfile(meta) {
     var info = meta && typeof meta === "object" ? meta : {};
-    var candidateProfile = candidate(info.privatePresentation);
+    var candidateProfile = candidate(info.privatePresentation, info.slotRefs);
     if (!candidateProfile || !candidateProfile.fingerprint) return null;
     return Template.buildProfile({
       id: TEMPLATE_ID,
@@ -132,7 +145,7 @@
       },
       createdAt: String(info.createdAt || info.approvedAt || ""),
       updatedAt: String(info.updatedAt || info.approvedAt || ""),
-      content: content(info.privatePresentation)
+      content: content(info.privatePresentation, info.slotRefs)
     });
   }
 

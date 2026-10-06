@@ -41,14 +41,20 @@
     newSection.className = "shell-rail-section";
     newSection.innerHTML =
       '<h2>새 견적 · 템플릿</h2>' +
+      '<button type="button" class="shell-rail-item shell-new-quote" id="shellNewQuote">' +
+      '<span class="shell-rail-icon" aria-hidden="true">＋</span>' +
+      '<span><strong>새 견적 시작</strong><small>내용을 비우고 대화에서 새 견적을 시작합니다.</small></span>' +
+      '</button>' +
       '<div class="shell-template-current">' +
-      '<span class="shell-rail-icon" aria-hidden="true">▤</span>' +
-      '<span><strong>배정된 템플릿으로 만들기</strong>' +
-      '<small id="shellTemplateName">로그인 후 템플릿을 불러옵니다</small></span>' +
+      '<span class="shell-rail-icon" aria-hidden="true">▣</span>' +
+      '<span><strong>배정된 내 견적서</strong>' +
+      '<small id="shellTemplateName">로그인한 계정의 Saved Skill을 불러옵니다.</small></span>' +
       '</div>' +
-      '<div class="shell-template-select" id="shellTemplateSelect"></div>' +
+      '<label class="shell-picker-label">내 견적서<select-host id="shellSkillSelect"></select-host></label>' +
+      '<label class="shell-picker-label">출력 양식<select-host id="shellQuoteTemplateSelect"></select-host></label>' +
       '<p class="shell-runtime-status" id="shellRuntimeStatus" role="status" aria-live="polite"></p>';
     menu.appendChild(newSection);
+
 
     var historySection = document.createElement("section");
     historySection.className = "shell-rail-section";
@@ -86,10 +92,12 @@
     shell.appendChild(rail);
 
     var skillSelect = byId("padiemSavedSkillSelect");
+    var templateSelect = byId("templateSelect");
     var skillStatus = byId("padiemQuoteStatus");
-    var selectHost = byId("shellTemplateSelect");
-    if (skillSelect && selectHost) {
-      selectHost.appendChild(skillSelect);
+    var skillHost = byId("shellSkillSelect");
+    var templateHost = byId("shellQuoteTemplateSelect");
+    if (skillSelect && skillHost) {
+      skillHost.appendChild(skillSelect);
       function syncTemplateName() {
         var name = byId("shellTemplateName");
         if (!name) return;
@@ -105,6 +113,16 @@
         attributes: true
       });
       syncTemplateName();
+    }
+    if (templateSelect && templateHost) {
+      templateHost.appendChild(templateSelect);
+    }
+    var newQuoteButton = byId("shellNewQuote");
+    if (newQuoteButton) {
+      newQuoteButton.addEventListener("click", function () {
+        clickExisting("newQuote");
+        document.dispatchEvent(new CustomEvent("b66:open-easy-chat"));
+      });
     }
     if (skillStatus) {
       byId("shellRuntimeStatus").replaceWith(skillStatus);
