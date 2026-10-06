@@ -123,7 +123,15 @@ def test_two_executable_routes_in_one_tier_fail_closed() -> None:
         label=ProductTierLabel.PLUS,
         routes=plus.routes + (
             ProductTierRoute(
-                route_id="plus.duplicate.v1",
+                route_id="plus.duplicate-a.v1",
+                status=ProductRouteStatus.EXECUTABLE,
+                model_family="first",
+                provider_id="kilo",
+                model_id="kilo/first",
+                evidence="forbidden",
+            ),
+            ProductTierRoute(
+                route_id="plus.duplicate-b.v1",
                 status=ProductRouteStatus.EXECUTABLE,
                 model_family="second",
                 provider_id="kilo",
