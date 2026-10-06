@@ -594,6 +594,10 @@ class ClawP01ProfileContractTests(unittest.TestCase):
     profile to the Core-owned enums so the drift cannot return.
     """
 
+    @unittest.skipIf(
+        PLUS_ROUTE_MODEL is None,
+        "profile contract requires a selected executable Plus model",
+    )
     def test_profile_routing_values_are_accepted_by_core(self) -> None:
         profile = _agent_profile()
         routing = B14RoutingOptions(
@@ -603,18 +607,30 @@ class ClawP01ProfileContractTests(unittest.TestCase):
         self.assertEqual(routing.task_type, "coding")
         self.assertEqual(routing.optimize_for, "balanced")
 
+    @unittest.skipIf(
+        PLUS_ROUTE_MODEL is None,
+        "profile contract requires a selected executable Plus model",
+    )
     def test_profile_normalizes_into_core_model_policy(self) -> None:
         model, _temperature, routing = _normalize_model_policy(_agent_profile())
         self.assertEqual(model, PLUS_ROUTE_MODEL)
         self.assertIn(routing.task_type, _TASK_TYPES)
         self.assertIn(routing.optimize_for, _OPTIMIZE_FOR)
 
+    @unittest.skipIf(
+        PLUS_ROUTE_MODEL is None,
+        "profile contract requires a selected executable Plus model",
+    )
     def test_profile_pins_plus_route_from_shared_contract(self) -> None:
         profile = _agent_profile()
         self.assertEqual(profile.model_policy, {"model": PLUS_ROUTE_MODEL})
         self.assertEqual(profile.allowed_tools, ())
         self.assertEqual(profile.required_capabilities, ())
 
+    @unittest.skipIf(
+        PLUS_ROUTE_MODEL is None,
+        "profile contract requires a selected executable Plus model",
+    )
     def test_plus_tier_resolves_to_the_declared_route(self) -> None:
         profile = _agent_profile(ProductTierLabel.PLUS)
         self.assertEqual(profile.model_policy, {"model": PLUS_ROUTE_MODEL})
