@@ -46,10 +46,23 @@ const MAX_QUERY_LENGTH = 128;
 
 export type WorkspaceRootPicker = () => Promise<string | null>;
 
+/**
+ * Injectable readdir seam (same DI pattern as the root picker). Production
+ * default is `fs/promises.readdir`; tests inject a deterministic driver for
+ * the post-enumeration swap race.
+ */
+export type WorkspaceReaddirFn = typeof readdir;
+
 export class LocalWorkspaceController {
   #root: string | null = null;
+  #readdirFn: WorkspaceReaddirFn;
 
-  constructor(private readonly pickRoot: WorkspaceRootPicker) {}
+  constructor(
+    private readonly pickRoot: WorkspaceRootPicker,
+    readdirFn: WorkspaceReaddirFn = readdir,
+  ) {
+    this.#readdirFn = readdirFn;
+  }
 
   rootState(reason: WorkspaceRootResponse['reason'] = 'current'): WorkspaceRootResponse {
     if (this.#root === null) {
@@ -209,8 +222,11 @@ export class LocalWorkspaceController {
 
     // Walk state. Scanned entries are collected flat with their relative
     // paths; ranking happens once, after the walk, in the pure primitive.
-    // Each queue item carries the parent's relative segments so a directory
-    // can never be re-resolved from a mutable string (junction/TOCTOU-safe).
+    // Containment discipline mirrors listDirectory(): every queued directory
+    // is re-canonicalized (realpath) and re-verified with isInsideRoot()
+    // immediately before its readdir, so a directory swapped to a
+    // symlink/junction/reparse target after enumeration can never be read
+    // outside the selected root (TOCTOU containment).
     const candidates: Array<{
       readonly name: string;
       readonly relativePath: string;
@@ -220,7 +236,9 @@ export class LocalWorkspaceController {
 
     // Iterative BFS with explicit depth accounting. The root is depth 0 and
     // its children are depth 1, so MAX_TREE_DEPTH bounds levels below the
-    // root consistently with listing.
+    // root consistently with listing. Queue items carry the parent's
+    // relative segments; the joined path is re-validated before every read.
+    const skipped = new Set<string>();
     const queue: Array<{
       readonly absolutePath: string;
       readonly depth: number;
@@ -234,17 +252,37 @@ export class LocalWorkspaceController {
         }
         const current = queue.shift();
         if (current === undefined) break;
-        const rows = await readdir(current.absolutePath, { withFileTypes: true });
+        // Containment re-check BEFORE reading (TOCTOU): resolve the queued
+        // path through the filesystem and require it to still be a canonical
+        // directory inside the selected root. A symlink swap, junction
+        // replacement or reparse escape fails closed here — the directory is
+        // not read and its stale enumerated candidate is dropped.
+        let canonicalDir: string;
+        try {
+          canonicalDir = await realpath(current.absolutePath);
+        } catch {
+          if (current.segments.length > 0) skipped.add(current.segments.join('/'));
+          continue;
+        }
+        if (!isInsideRoot(root, canonicalDir)) {
+          if (current.segments.length > 0) skipped.add(current.segments.join('/'));
+          continue;
+        }
+        const dirStat = await lstat(canonicalDir);
+        if (!dirStat.isDirectory()) {
+          if (current.segments.length > 0) skipped.add(current.segments.join('/'));
+          continue;
+        }
+        const rows = await this.#readdirFn(canonicalDir, { withFileTypes: true });
         for (const row of rows) {
           if (candidates.length >= MAX_SEARCH_ENTRIES) {
             truncated = true;
             break;
           }
           if (row.isSymbolicLink()) {
-            // Never follow and never surface links during search: withFileTypes
-            // reports them via lstat semantics, so a symlink/junction to
-            // anywhere (including outside the root) is skipped entirely —
-            // traversal stays impossible by construction.
+            // Never follow and never surface links: withFileTypes reports
+            // them via lstat semantics, so a symlink/junction entry is
+            // excluded from both the walk and the candidate list.
             continue;
           }
           const relativePath = [...current.segments, row.name].join('/');
@@ -252,7 +290,7 @@ export class LocalWorkspaceController {
             candidates.push({ name: row.name, relativePath, kind: 'directory' });
             if (current.depth + 1 < MAX_TREE_DEPTH) {
               queue.push({
-                absolutePath: path.join(current.absolutePath, row.name),
+                absolutePath: path.join(canonicalDir, row.name),
                 depth: current.depth + 1,
                 segments: [...current.segments, row.name],
               });
@@ -260,12 +298,15 @@ export class LocalWorkspaceController {
           } else if (row.isFile()) {
             candidates.push({ name: row.name, relativePath, kind: 'file' });
           }
-          // Anything else (sockets, FIFOs, etc.) is ignored.
+          // Anything else (reparse points not classified as plain files or
+          // directories, sockets, FIFOs) is ignored.
         }
       }
 
       const ranked = searchWorkspaceEntries(
-        candidates.map(mapWorkspaceEntryToSearchCandidate),
+        candidates
+          .filter((candidate) => !skipped.has(candidate.relativePath))
+          .map(mapWorkspaceEntryToSearchCandidate),
         query,
         { limit: MAX_SEARCH_RESULTS },
       );
@@ -273,6 +314,10 @@ export class LocalWorkspaceController {
       const withMetadata = await Promise.all(
         ranked.map(async (match) => {
           try {
+            // Same containment posture as listing: lstat (never follows
+            // links) the addressed path. A post-enumeration swap to a link
+            // simply fails this stat and the row keeps its place with null
+            // metadata — nothing outside the root is ever read.
             const stats = await lstat(path.join(root, match.relativePath));
             return Object.freeze({
               name: match.name,

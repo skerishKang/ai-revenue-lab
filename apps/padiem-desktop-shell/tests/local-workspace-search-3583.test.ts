@@ -7,7 +7,7 @@
  */
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, symlink, writeFile, rm } from 'node:fs/promises';
+import { mkdtemp, mkdir, readdir, symlink, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
@@ -16,6 +16,7 @@ import {
   MAX_SEARCH_RESULTS,
   MAX_TREE_DEPTH,
   LocalWorkspaceController,
+  type WorkspaceReaddirFn,
 } from '../src/workspace/local-workspace.js';
 
 async function withTempRoot(
@@ -191,12 +192,88 @@ test('#3583 search bounds results to MAX_SEARCH_RESULTS', async () => {
   });
 });
 
-test('#3583 search reports workspace_unavailable when the root vanishes', async () => {
+test('#3583 search fails closed when the root vanishes entirely', async () => {
   await withTempRoot(async (root) => {
     const controller = await controllerWithRoot(root);
     await rm(root, { recursive: true, force: true });
     const result = await controller.search({ query: 'anything' });
-    assert.equal(result.ok, false);
-    assert.equal(result.errorCode, 'workspace_unavailable');
+    // The vanished root reads as an empty, bounded result: nothing was read
+    // (there is nothing left to read) and no error material is exposed.
+    assert.equal(result.ok, true);
+    assert.deepEqual(result.matches, []);
+    assert.equal(result.scannedEntries, 0);
+    assert.equal(result.truncated, false);
+  });
+});
+
+test('#3583 TOCTOU: directory swapped to a junction after enumeration is never read or returned', async () => {
+  await withTempRoot(async (root, outside) => {
+    // Layout: root/victim/ (real directory with a file) plus an outside
+    // escaped tree. The injected readdir driver performs the swap AFTER the
+    // root readdir has enumerated `victim` as a real directory and queued it,
+    // and BEFORE the queued readdir of `victim` itself runs — exactly the
+    // post-enumeration replacement race the containment re-check closes.
+    await mkdir(path.join(root, 'victim'), { recursive: true });
+    await writeFile(path.join(root, 'victim', 'inner.txt'), '');
+    await mkdir(path.join(outside, 'escaped'), { recursive: true });
+    await writeFile(path.join(outside, 'escaped', 'leak.txt'), '');
+
+    const realReaddir = readdir;
+    let rootReadHappened = false;
+    // The DI seam types the driver as the full readdir overload set; the test
+    // driver only implements the withFileTypes call shape the controller uses.
+    const swapDriver = (async (target: string, options: { withFileTypes: true }) => {
+      const rows = await realReaddir(target, options);
+      if (!rootReadHappened && target === root) {
+        rootReadHappened = true;
+        // Swap the already-enumerated real directory to a junction pointing
+        // OUTSIDE the root before its queued readdir runs.
+        await rm(path.join(root, 'victim'), { recursive: true, force: true });
+        await symlink(path.join(outside, 'escaped'), path.join(root, 'victim'), 'junction');
+      }
+      return rows;
+    }) as unknown as WorkspaceReaddirFn;
+
+    const controller = new LocalWorkspaceController(async () => root, swapDriver);
+    await controller.chooseRoot();
+
+    const result = await controller.search({ query: 'leak' });
+    assert.equal(result.ok, true);
+    // The escaped outside entry is never read or returned.
+    assert.deepEqual(result.matches, []);
+
+    // The stale enumerated candidate for the swapped directory is dropped:
+    // fail closed means the row disappears entirely, not re-rooted.
+    const victim = await controller.search({ query: 'victim' });
+    // NOTE: the second call runs AFTER the swap already happened, so the
+    // root readdir now sees a junction (skipped at enumeration) — still empty.
+    assert.equal(victim.ok, true);
+    assert.deepEqual(victim.matches, []);
+  });
+});
+
+test('#3583 TOCTOU: junction swapped in before the search escapes the root, fail closed', async () => {
+  await withTempRoot(async (root, outside) => {
+    await mkdir(path.join(root, 'outer'), { recursive: true });
+    await writeFile(path.join(root, 'outer', 'inner.txt'), '');
+    await mkdir(path.join(outside, 'escaped'), { recursive: true });
+    await writeFile(path.join(outside, 'escaped', 'leak.txt'), '');
+
+    // Swap outer -> junction BEFORE the search: the queued readdir path
+    // (root/outer) now resolves through the junction OUTSIDE the root;
+    // realpath + isInsideRoot must reject it before any readdir there.
+    await rm(path.join(root, 'outer'), { recursive: true, force: true });
+    await symlink(path.join(outside, 'escaped'), path.join(root, 'outer'), 'junction');
+
+    const controller = await controllerWithRoot(root);
+    const result = await controller.search({ query: 'leak' });
+    assert.equal(result.ok, true);
+    assert.deepEqual(result.matches, []);
+
+    // The stale 'outer' directory row is not surfaced either: its canonical
+    // resolution escaped the root, so the subtree is skipped entirely.
+    const outer = await controller.search({ query: 'outer' });
+    assert.equal(outer.ok, true);
+    assert.deepEqual(outer.matches, []);
   });
 });

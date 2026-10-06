@@ -83,6 +83,11 @@ files:
   - dist/src/renderer/**/*
   - dist/src/runner/**/*
   - package.json
+  # #3583 third-party redistribution material (Apache-2.0 §4(a) for the
+  # ZCode-derived portion): the notice and the byte-exact local license copy
+  # must ship inside any packaged build. Pinned by tests/zcode-provenance-3583.test.ts.
+  - THIRD_PARTY_NOTICES.md
+  - LICENSE.zcode
 
 extraResources:
   - from: dist/src/runner
