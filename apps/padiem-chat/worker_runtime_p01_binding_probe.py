@@ -7,14 +7,30 @@ from workers import Request, Response, WorkerEntrypoint
 
 from app.claw_p01_composition import build_claw_p01_adapter
 from app.worker_config import P01_ENGINE_SERVICE_BINDING_NAME
+from kagent import p01_adapter as p01_adapter_module
+from kagent import p01_orchestration_client as p01_client_module
 from kagent.contracts import ClawTaskIntent, ExecutionMode
 from kagent.p01_adapter import P01AdapterError, P01CoreOrchestrationAdapter, P01_FAILURE_DETAILS
 from kagent.runs import ClawRun
-from padiem_control_plane.product_tier_routes import ProductTierLabel
+from padiem_control_plane import product_tier_routes as tier_routes
 
 
 _CALLER_ID = "b54-p01-overlay-20260914-a1"
 _SYNTHETIC_CREDENTIAL = "c" * 48
+_SYNTHETIC_PLUS_MODEL_ID = "test/plus-worker-probe"
+
+
+def _active_route_for(label: tier_routes.ProductTierLabel):
+    if label is tier_routes.ProductTierLabel.PLUS:
+        return tier_routes.ProductTierRoute(
+            route_id="test.plus.worker-probe.v1",
+            status=tier_routes.ProductRouteStatus.EXECUTABLE,
+            model_family="test",
+            provider_id="test",
+            model_id=_SYNTHETIC_PLUS_MODEL_ID,
+            evidence="CI-only synthetic Plus route for Worker binding composition probe",
+        )
+    return None
 
 
 class _SyntheticPostFetchBinding:
@@ -65,6 +81,11 @@ class Default(WorkerEntrypoint):
             "P01_ENGINE_CREDENTIAL": _SYNTHETIC_CREDENTIAL,
         }
 
+        executable = frozenset({_SYNTHETIC_PLUS_MODEL_ID})
+        p01_adapter_module.active_route_for = _active_route_for
+        p01_client_module.active_route_for = _active_route_for
+        p01_client_module.PADIEM_EXECUTABLE_MODEL_IDS = executable
+
         try:
             adapter = build_claw_p01_adapter(env, request_factory=Request)
             result["adapter_composed"] = isinstance(adapter, P01CoreOrchestrationAdapter)
@@ -83,7 +104,7 @@ class Default(WorkerEntrypoint):
             )
             result["plus_route_entered"] = True
             try:
-                await adapter.execute(run, product_tier=ProductTierLabel.PLUS)
+                await adapter.execute(run, product_tier=tier_routes.ProductTierLabel.PLUS)
             except P01AdapterError as exc:
                 result["binding_fetch_called_once"] = binding.calls == 1
                 result["bounded_error_after_fetch"] = (
