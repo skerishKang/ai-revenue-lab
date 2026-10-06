@@ -130,24 +130,23 @@ def _request_headers(
     headers = {"Content-Type": "application/json"}
 
     if spec.provider_id == "kilo":
-        from app.pilot.kilo_provider import (
-            KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
-            KILO_SPACE_BUNNY_MODEL_ID,
-        )
+        from app.pilot.kilo_provider import KILO_CREDENTIAL_BINDING
 
-        if model_id == KILO_SPACE_BUNNY_MODEL_ID:
-            scoped_spec = PlatformProviderSpec(
-                provider_id=spec.provider_id,
-                credential_source=CredentialSource.PLATFORM_SECRET,
-                credential_binding_name=KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
-                base_origin=spec.base_origin,
-                allowed_hosts=spec.allowed_hosts,
-                enabled=spec.enabled,
-            )
-            secret = resolve_secret(scoped_spec)
-            if secret:
-                headers["Authorization"] = f"Bearer {secret}"
-            return headers
+        # Policy v2 (2026-10-06): every Kilo lane authenticates with the
+        # owner-managed Secrets Store binding when it resolves. The anonymous
+        # request shape remains the fallback when the binding is absent.
+        scoped_spec = PlatformProviderSpec(
+            provider_id=spec.provider_id,
+            credential_source=CredentialSource.PLATFORM_SECRET,
+            credential_binding_name=KILO_CREDENTIAL_BINDING,
+            base_origin=spec.base_origin,
+            allowed_hosts=spec.allowed_hosts,
+            enabled=spec.enabled,
+        )
+        secret = resolve_secret(scoped_spec)
+        if secret:
+            headers["Authorization"] = f"Bearer {secret}"
+        return headers
 
     if spec.credential_source == CredentialSource.NONE:
         return headers
