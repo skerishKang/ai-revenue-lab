@@ -11,7 +11,7 @@ check(candidate, "CGI candidate builds");
 eq(candidate.id, "cgi-v2", "CGI template id is stable");
 eq(candidate.approved, false, "CGI profile is not trusted before explicit approval");
 eq(candidate.content.layoutVariant, "cgi-v2", "CGI layout variant is explicit");
-eq(candidate.content.page, { size: "A4", margin: "12mm", orientation: "portrait" }, "CGI A4 page authority");
+eq(candidate.content.page, { size: "A4", margin: "10mm", orientation: "portrait" }, "CGI A4 page authority");
 eq(candidate.content.items.columns.map((c) => c.width),
   ["5.3%", "23.9%", "18.6%", "5.7%", "5.7%", "15.4%", "17.1%", "8.4%"],
   "CGI measured eight-column widths");
@@ -47,8 +47,8 @@ eq(model.layoutVariant, "cgi-v2", "CGI reaches dedicated renderer path");
 eq(model.facts.sender.company, "(주)시지아이", "company remains QuoteDraft authority");
 eq(model.facts.recipient.company, "대한건설", "recipient remains QuoteDraft authority");
 eq(model.facts.meta.validDays, 14, "validity remains QuoteDraft authority");
-eq(model.styleVariables["--quote-page-margin"], "12mm", "screen margin uses CGI page authority");
-eq(model.pageRule, "@page { size: A4; margin: 12mm; }", "PDF margin uses same page authority");
+eq(model.styleVariables["--quote-page-margin"], "10mm", "screen margin uses CGI page authority");
+eq(model.pageRule, "@page { size: A4; margin: 10mm; }", "PDF margin uses same page authority");
 const totals = Core.computeDraftTotals(draft);
 eq(model.totals.subtotalText, Core.formatMoney(totals.supply), "CGI supply is QuoteCore-authoritative");
 eq(model.totals.vatText, Core.formatMoney(totals.vat), "CGI VAT is QuoteCore-authoritative");

@@ -554,27 +554,33 @@
         escapeHtml(cgi.underfillText) + '</td></tr>');
     }
 
-    var labelSpan = Math.max(1, model.columns.length - 4);
     rows.push(
-      '<tr class="cgi-v2-sum-row"><td></td><td class="cgi-v2-sum-label" colspan="' + labelSpan + '">' +
-      escapeHtml(model.totals.subtotalLabel) + '</td><td></td><td class="cgi-v2-right">' +
+      '<tr class="cgi-v2-sum-row"><td></td><td class="cgi-v2-sum-label">' +
+      escapeHtml(model.totals.subtotalLabel) +
+      '</td><td></td><td></td><td></td><td></td><td class="cgi-v2-right">' +
       escapeHtml(cgiMoneyText(model.totals.subtotalText)) + '</td><td></td></tr>'
     );
     rows.push(
-      '<tr class="cgi-v2-sum-row"><td></td><td class="cgi-v2-sum-label" colspan="' + labelSpan + '">' +
-      escapeHtml(model.totals.vatLabel) + '</td><td class="cgi-v2-center">' +
-      escapeHtml(facts.taxRateText || "") + '</td><td class="cgi-v2-right">' +
+      '<tr class="cgi-v2-sum-row"><td></td><td class="cgi-v2-sum-label">' +
+      escapeHtml(model.totals.vatLabel) +
+      '</td><td></td><td></td><td class="cgi-v2-center">' +
+      escapeHtml(facts.taxRateText || "") + '</td><td></td><td class="cgi-v2-right">' +
       escapeHtml(cgiMoneyText(model.totals.vatText)) + '</td><td></td></tr>'
     );
     rows.push(
-      '<tr class="cgi-v2-grand-row"><td></td><td class="cgi-v2-sum-label" colspan="' + labelSpan + '">' +
-      escapeHtml(model.totals.grandLabel) + '</td><td></td><td class="cgi-v2-right">' +
+      '<tr class="cgi-v2-grand-row"><td></td><td class="cgi-v2-sum-label">' +
+      escapeHtml(model.totals.grandLabel) +
+      '</td><td></td><td></td><td></td><td></td><td class="cgi-v2-right">' +
       escapeHtml(cgiMoneyText(model.totals.grandText)) + '</td><td></td></tr>'
     );
     setHtml("cgiV2Items", rows.join(""));
 
     setHtml("cgiV2Terms", (Array.isArray(cgi.terms) ? cgi.terms : []).map(function (term) {
-      var renderedTerm = String(term).replace("{validDays}", String(meta.validDays == null ? "" : meta.validDays));
+      var validDays = meta.validDays == null ? "" : String(meta.validDays);
+      var validityText = Number(meta.validDays) === 7 ? "1주일" : (validDays ? validDays + "일" : "");
+      var renderedTerm = String(term)
+        .replace("{validDays}", validDays)
+        .replace("{validityText}", validityText);
       return "<li>" + escapeHtml(renderedTerm) + "</li>";
     }).join(""));
 
