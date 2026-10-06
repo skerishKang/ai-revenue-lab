@@ -7,6 +7,7 @@
 - Test-scope/delivery authority: `TEST_SCOPE_AND_DELIVERY_POLICY.md`
 - Deployment authority: `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
 - Technology adoption authority: `TECHNOLOGY_ADOPTION_POLICY.md`
+- Model/provider decision authority: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 
 ## 1. Purpose
 
@@ -415,6 +416,14 @@ Use expected-head protection where available.
 - no wrong-project Preview/deployment as product evidence;
 - no unverified live-revision claim.
 
+### 13A. Owner-only model/provider decisions
+
+Model/provider selection is not an autonomous Web CTO or worker decision. When a task encounters model selection, replacement, benchmarking, primary/fallback order, provider routing, model-specific credentials/bindings, or activation/deployment, the agent must stop that model work and ask the Product Owner for an explicit current decision.
+
+A model mention, historical approval, worker recommendation, passing benchmark, existing branch, or product blocker does not create model-change authority. Non-model product work may continue when it does not depend on choosing a model.
+
+Canonical contract: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md` and tracking issue `#3571`.
+
 ## 14. Owner visual authority
 
 The CTO may reject objective defects: overflow, clipping, unreadable contrast, broken hierarchy, functional controls, responsive breakage, inconsistent typography/cross-state system, visible legacy leakage and product-contract mismatch.
@@ -493,4 +502,5 @@ In particular, a historical product direction document is now an implementation 
 - New/rebuilt Business playbook: `NEW_BUSINESS_UI_FIRST_PLAYBOOK.md`
 - Live visual review: `LIVE_PRODUCTION_UI_REVIEW_POLICY.md`
 - GitHub report handoff: `GITHUB_REPORT_HANDOFF_POLICY.md`
+- Owner-only model/provider decisions: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 - Templates: `templates/`
