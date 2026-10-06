@@ -12,6 +12,14 @@ on:
         description: "Exact current main SHA authorized for final B66 CGI handoff smoke"
         required: true
         type: string
+      mode:
+        description: "Bounded browser smoke mode"
+        required: false
+        type: choice
+        default: b66_final_handoff
+        options:
+          - b66_final_handoff
+          - b54_claw_owner_one_shot
       confirmation:
         description: "Type RUN_B66_CGI_FINAL_HANDOFF_SMOKE"
         required: true
@@ -69,6 +77,8 @@ jobs:
           grep -Fq 'COOKIE_OUTPUT=0' "$script"
           grep -Fq 'TOKEN_OUTPUT=0' "$script"
           grep -Fq 'RAW_RESPONSE_OUTPUT=0' "$script"
+          grep -Fq 'MAX_CLAW_GENERAL_POSTS = 1' "$script"
+          grep -Fq -- '--claw-owner-one-shot' "$script"
           echo 'B66_FINAL_HANDOFF_SOURCE_CONTRACT=PASS'
           echo 'PRODUCTION_MUTATION=0'
           echo 'LIVE_INTERPRET_POSTS=0'
@@ -115,8 +125,12 @@ jobs:
       - name: Install Chromium runtime
         run: python -m playwright install --with-deps chromium
 
-      - name: Run one bounded B66 CGI final handoff browser smoke
+      - name: Run one bounded Production browser smoke
         shell: bash
         run: |
           set -euo pipefail
-          python .github/scripts/b66_cgi_final_handoff_smoke.py --authorized-live-run
+          if [ "${{ inputs.mode }}" = "b54_claw_owner_one_shot" ]; then
+            python .github/scripts/b66_cgi_final_handoff_smoke.py --claw-owner-one-shot
+          else
+            python .github/scripts/b66_cgi_final_handoff_smoke.py --authorized-live-run
+          fi
