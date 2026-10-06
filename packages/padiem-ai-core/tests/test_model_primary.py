@@ -8,11 +8,13 @@ import pathlib
 import padiem_ai_core.model_primary as model_primary
 
 
-def test_text_primary_is_pending_successor_selection() -> None:
-    assert model_primary.TEXT_PRIMARY_DECISION == "PENDING_SUCCESSOR_SELECTION"
-    assert model_primary.TEXT_PRIMARY_PROVIDER_ID is None
-    assert model_primary.TEXT_PRIMARY_MODEL_ID is None
-    assert model_primary.TEXT_PRIMARY_UPSTREAM_MODEL is None
+def test_text_primary_is_ling_3_1_flash_successor() -> None:
+    assert model_primary.TEXT_PRIMARY_DECISION == (
+        "Owner successor selection 2026-10-06 (Ling 3.1 Flash, Kilo gateway)"
+    )
+    assert model_primary.TEXT_PRIMARY_PROVIDER_ID == "kilo"
+    assert model_primary.TEXT_PRIMARY_MODEL_ID == "kilo/inclusionai-ling-3.1-flash"
+    assert model_primary.TEXT_PRIMARY_UPSTREAM_MODEL == "inclusionai/ling-3.1-flash"
 
 
 def test_vision_primary_is_pending_successor_selection() -> None:

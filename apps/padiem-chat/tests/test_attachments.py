@@ -11,7 +11,7 @@ from app.attachments import MAX_IMAGE_BYTES, parse_attachments
 from app.b14_client import PADIEM_IDENTITY_INSTRUCTION
 from app.config import Settings
 from app.main import create_app
-from app.model_policy import DEFAULT_B14_MODEL_ID, EXECUTABLE_B14_MODEL_IDS
+from app.model_policy import DEFAULT_B14_MODEL_ID, EXECUTABLE_B14_MODEL_IDS, LOW_B14_MODEL_ID
 
 
 JPEG = b"\xff\xd8\xff\xe0phase8"
@@ -117,7 +117,9 @@ async def test_valid_live_image_attachment_fails_closed_without_primary_model(
             },
         )
 
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset()
+    # Ling 3.1 Flash is text-only: the executable set is non-empty, but no
+    # executable model claims the image capability, so images stay closed.
+    assert EXECUTABLE_B14_MODEL_IDS == frozenset({LOW_B14_MODEL_ID})
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "image_model_unavailable"
     assert calls == 0
