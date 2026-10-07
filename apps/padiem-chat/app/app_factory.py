@@ -106,7 +106,11 @@ from .drive_case_folder_routes import (
     drive_case_folder_status,
     drive_folders_collection,
 )
-from .drive_case_pdf_routes import drive_case_pdf_detail, drive_case_pdfs_collection
+from .drive_case_pdf_routes import (
+    drive_case_pdf_detail,
+    drive_case_pdf_extraction_review,
+    drive_case_pdfs_collection,
+)
 from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
 from .request_telemetry import RequestTelemetryMiddleware
@@ -235,6 +239,11 @@ def create_app(
             "/api/projects/{project_id}/drive-case-pdfs/{file_id}",
             drive_case_pdf_detail,
             methods=["GET"],
+        ),
+        Route(
+            "/api/projects/{project_id}/drive-case-pdfs/{file_id}/browser-extraction",
+            drive_case_pdf_extraction_review,
+            methods=["POST"],
         ),
         Route("/api/outputs", outputs_collection, methods=["GET", "POST"]),
         Route("/api/outputs/{output_id}", output_detail, methods=["GET", "PATCH", "DELETE"]),

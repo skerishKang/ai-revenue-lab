@@ -11,6 +11,7 @@ import pytest
 from app.drive_case_folder_engine import (
     PDF_CANDIDATES_OPERATION,
     PDF_READ_OPERATION,
+    PDF_REVIEW_OPERATION,
     CloudflareDriveCaseFolderEngineClient,
     DriveCaseFolderEngineError,
     drive_case_folder_engine_seam_snapshot,
@@ -50,6 +51,10 @@ class FakeEngineBinding:
     async def b67_case_pdf_read(self, payload):
         self.calls.append((PDF_READ_OPERATION, dict(payload)))
         return self.responses.get(PDF_READ_OPERATION, read_response())
+
+    async def b67_case_pdf_review_extraction(self, payload):
+        self.calls.append((PDF_REVIEW_OPERATION, dict(payload)))
+        return self.responses.get(PDF_REVIEW_OPERATION, review_response())
 
 
 class FolderOnlyBinding:
@@ -103,6 +108,34 @@ def read_response():
         },
         "authorization": {"direct_parent_proof": True, "source_type": "drive"},
         "contract_version": "engine-b67-case-pdf.v1",
+    }
+
+
+def review_response():
+    return {
+        "ok": True,
+        "contract_version": "b67-browser-pdf-extraction.v1",
+        "source_freshness": "current",
+        "page_count": 2,
+        "indexed_page_count": 1,
+        "blank_page_count": 1,
+        "segments": [
+            {
+                "order": 0,
+                "char_count": 8,
+                "locator": {"kind": "page", "value": "1", "precision": "exact"},
+            }
+        ],
+        "retrieved_items": [
+            {
+                "id": "b67_deadbeef_p1_c1",
+                "namespace": "project.legal",
+                "source_type": "drive_file",
+                "provider": "padiem_drive_index",
+                "content_chars": 8,
+                "document_locator": {"kind": "page", "value": "1", "precision": "exact"},
+            }
+        ],
     }
 
 
@@ -187,6 +220,72 @@ def test_pdf_client_never_returns_workspace_or_project_refs():
 
 def test_seam_snapshot_declares_pdf_ops_without_second_binding():
     snapshot = drive_case_folder_engine_seam_snapshot()
-    assert snapshot["pdf_operations"] == [PDF_CANDIDATES_OPERATION, PDF_READ_OPERATION]
+    assert snapshot["pdf_operations"] == [
+        PDF_CANDIDATES_OPERATION,
+        PDF_READ_OPERATION,
+        PDF_REVIEW_OPERATION,
+    ]
     assert snapshot["binding_name"]
     assert snapshot["browser_selects_endpoint"] is False
+
+
+def test_pdf_review_extraction_uses_fixed_private_rpc_and_rejects_source_authority_projection():
+    binding = FakeEngineBinding()
+    client = CloudflareDriveCaseFolderEngineClient(binding)
+    extraction = {
+        "ok": True,
+        "contract_version": "b67-browser-pdf-extraction.v1",
+        "parser": "pdfjs-dist",
+        "parser_version": "6.3.289",
+        "source_sha256": "a" * 64,
+        "page_count": 1,
+        "pages": [{"page_number": 1, "text": "evidence", "text_chars": 8, "native_text": True}],
+        "total_text_chars": 8,
+        "native_text_state": "all",
+        "ocr_candidate_pages": [],
+    }
+    body = run(
+        client.review_pdf_extraction(
+            workspace_ref=WORKSPACE_REF,
+            project_id=PROJECT_ID,
+            file_id=FILE_ID,
+            extraction=extraction,
+        )
+    )
+    assert body["source_freshness"] == "current"
+    assert body["segments"][0]["locator"]["value"] == "1"
+    rendered = json.dumps(body)
+    assert "source_ref" not in rendered
+    assert WORKSPACE_REF not in rendered
+    assert PROJECT_ID not in rendered
+    assert binding.calls[-1] == (
+        PDF_REVIEW_OPERATION,
+        {
+            "workspace_ref": WORKSPACE_REF,
+            "project_id": PROJECT_ID,
+            "file_id": FILE_ID,
+            "extraction": extraction,
+        },
+    )
+
+
+def test_pdf_review_rejects_malformed_locator_projection():
+    bad = review_response()
+    bad["segments"][0]["locator"] = {
+        "kind": "page",
+        "value": "999",
+        "precision": "exact",
+    }
+    client = CloudflareDriveCaseFolderEngineClient(
+        FakeEngineBinding({PDF_REVIEW_OPERATION: bad})
+    )
+    with pytest.raises(DriveCaseFolderEngineError) as excinfo:
+        run(
+            client.review_pdf_extraction(
+                workspace_ref=WORKSPACE_REF,
+                project_id=PROJECT_ID,
+                file_id=FILE_ID,
+                extraction={"ok": True},
+            )
+        )
+    assert excinfo.value.code == "drive_case_pdf_response_invalid"
