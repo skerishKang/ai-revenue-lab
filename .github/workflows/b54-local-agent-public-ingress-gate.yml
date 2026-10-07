@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - ".github/workflows/b54-local-agent-public-ingress-gate.yml"
+      - ".github/scripts/cloudflare_served_version_cli.py"
+      - ".github/tests/test_3703_local_agent_public_served_version.py"
       - "packages/padiem-control-plane/local_agent_broker_edge_worker.py"
       - "packages/padiem-control-plane/local_agent_broker_device_http.py"
       - "packages/padiem-control-plane/local_agent_broker_worker.py"
@@ -142,6 +144,15 @@ jobs:
           assert "PUBLIC_ENDPOINT_ADDED = False" in state_worker_source
           assert "ADMIN_BROKER_RPC_PUBLIC = False" in state_worker_source
 
+          workflow = Path(".github/workflows/b54-local-agent-public-ingress-gate.yml").read_text(encoding="utf-8")
+          pull_paths = workflow.split("pull_request:", 1)[1].split("workflow_dispatch:", 1)[0]
+          assert ".github/scripts/cloudflare_served_version_cli.py" in pull_paths
+          assert workflow.count("cloudflare_served_version_cli.py resolve-active") == 3
+          assert ".result.deployments[0].versions[0].version_id" not in workflow
+          assert ".result.deployments[0].versions[0].percentage" not in workflow
+          assert "(.result.deployments[0].versions | length) == 1" not in workflow
+          print("CANONICAL_SERVED_VERSION_CLI=YES")
+          print("INLINE_SERVED_VERSION_SHAPE_JQ=0")
           print("PRIVATE_STATE_WORKER_PUBLIC=NO")
           print("EDGE_ONLY_PUBLIC_CANDIDATE=YES")
           print("CLOSED_DEVICE_ROUTES=PASS")
@@ -207,12 +218,12 @@ jobs:
               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" \
               -o "${deployments}"
             jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
-            jq -e '.success == true and (.result.deployments | length) > 0' "${deployments}" >/dev/null
+            active_version="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
 
             if [ "${worker}" = "${STATE_WORKER}" ]; then
-              jq -e --arg version "${EXPECTED_STATE_VERSION}" '(.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].version_id == $version and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+              test "${active_version}" = "${EXPECTED_STATE_VERSION}"
             else
-              jq -e --arg version "${EXPECTED_EDGE_VERSION}" '(.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].version_id == $version and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+              test "${active_version}" = "${EXPECTED_EDGE_VERSION}"
               jq -e --arg state "${STATE_WORKER}" '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_SERVICE" and .service == $state))' "${settings}" >/dev/null
             fi
           done
@@ -338,8 +349,10 @@ jobs:
           jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${state_sub}" >/dev/null
           jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${edge_sub}" >/dev/null
           jq -e --arg state "${STATE_WORKER}" '.success == true and (.result.bindings | any(.name == "LOCAL_AGENT_BROKER_SERVICE" and .service == $state))' "${edge_settings}" >/dev/null
-          jq -e --arg version "${EXPECTED_STATE_VERSION}" '(.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].version_id == $version and .result.deployments[0].versions[0].percentage == 100' "${state_deployments}" >/dev/null
-          jq -e --arg version "${EXPECTED_EDGE_VERSION}" '(.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].version_id == $version and .result.deployments[0].versions[0].percentage == 100' "${edge_deployments}" >/dev/null
+          state_active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${state_deployments}")"
+          edge_active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${edge_deployments}")"
+          test "${state_active}" = "${EXPECTED_STATE_VERSION}"
+          test "${edge_active}" = "${EXPECTED_EDGE_VERSION}"
 
           python - <<'PY'
           import socket
