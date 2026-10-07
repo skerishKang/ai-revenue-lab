@@ -61,6 +61,15 @@ jobs:
       - name: Run R2 credential authority split contract tests
         run: python -m pytest -q .github/tests/test_r2_credential_authority_split.py
 
+      # #3527: workflow trigger scope is a policy consistency property. This
+      # lane has no paths filter, so the trigger contract test always runs and
+      # a re-broadened (or silently too-narrow) trigger cannot land unnoticed.
+      - name: Run CI trigger scope contract tests
+        run: |
+          python -m pytest -q \
+            .github/tests/test_b62_pr_preview_trigger_scope.py \
+            .github/tests/test_b62_worker_deploy_trigger_scope.py
+
       - name: Record guard scope
         run: |
           echo 'OPERATIONS_POLICY_GUARD=PASSED'
