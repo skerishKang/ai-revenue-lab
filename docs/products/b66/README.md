@@ -61,10 +61,11 @@ GENERIC_RUNTIME_RENDERER = YES
 CGI_TEMPLATE_REUSABLE = YES
 GENERIC_ANALYZER_COMPILER = UNPROVEN
 SECOND_UNRELATED_TEMPLATE_REQUIRED = YES
-PRODUCT_INTEGRATION = PENDING
+SOURCE_PRODUCT_INTEGRATION = VALIDATED_LOCAL
+PRODUCT_INTEGRATION = PRODUCTION_PENDING
 ```
 
-The important boundary is that the runtime renderer can consume compiled template data without CGI/customer literals, while the current compiler still contains CGI-specific source/cell structure. Do not describe this as a proven universal quotation compiler yet.
+The important boundary is that the runtime renderer can consume compiled template data without CGI/customer literals, while the current compiler still contains CGI-specific source/cell structure. Do not describe this as a proven universal quotation compiler yet. The authenticated Saved Quote Skill -> QuoteCore -> certified PDF download path is source/local-runtime validated, but customer handoff is not complete until the reviewed private CGI bundle is provisioned and the Production account path passes authenticated E2E.
 
 ## Source formats: intake capability vs template-registration policy
 

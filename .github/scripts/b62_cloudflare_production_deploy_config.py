@@ -122,6 +122,18 @@ def build_production_config(
     for key in ("main", "compatibility_date"):
         if not isinstance(repo.get(key), str) or not repo[key]:
             raise ProductionConfigError(f"repository config must define {key!r}")
+    base_dir = repo.get("base_dir")
+    if base_dir is not None and (not isinstance(base_dir, str) or not base_dir):
+        raise ProductionConfigError("repository base_dir must be a non-empty string")
+    build = repo.get("build")
+    build_command = None
+    if build is not None:
+        if not isinstance(build, dict):
+            raise ProductionConfigError("repository [build] must be a table")
+        build_command = build.get("command")
+        if not isinstance(build_command, str) or not build_command:
+            raise ProductionConfigError("repository [build].command must be a non-empty string")
+
     assets_dir = (repo.get("assets") or {}).get("directory")
     assets_binding = (repo.get("assets") or {}).get("binding")
     if not isinstance(assets_dir, str) or not assets_dir:
@@ -149,7 +161,13 @@ def build_production_config(
     flag_text = ", ".join(_toml_string(f) for f in flags)
     lines.append(f"compatibility_flags = [{flag_text}]")
     lines.append("workers_dev = true")
+    if base_dir is not None:
+        lines.append(f"base_dir = {_toml_string(base_dir)}")
     lines.append("")
+    if build_command is not None:
+        lines.append("[build]")
+        lines.append(f"command = {_toml_string(build_command)}")
+        lines.append("")
     lines.append("[assets]")
     lines.append(f"directory = {_toml_string(assets_dir)}")
     lines.append(f"binding = {_toml_string(assets_binding)}")

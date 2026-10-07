@@ -160,7 +160,24 @@ repeat quote values
 -> final PDF
 ```
 
-The unchanged original PDF content stream is not rewritten for slot mutations.
+The reference-reproduction benchmark keeps the original PDF content stream
+unchanged and overlays replacement content. The customer-facing product
+integration adds one bounded safety step before the same overlay: text inside
+the **changed compiled slot covers only** is removed so superseded customer
+values are not left searchable/copyable beneath the visual replacement.
+Images and line art are not redacted. A no-op render still returns the
+reference PDF byte-for-byte.
+
+This product-integration hardening changes the internal content stream for a
+mutated document, so it does **not** inherit the benchmark's content-stream
+identity claim. It must instead be re-certified against all of the following:
+
+```text
+BASELINE_BYTE_IDENTICAL = YES
+CHANGED_SLOT_STALE_TEXT = 0
+MAX_OUTSIDE_ALLOWED_CHANGED_PIXELS = 0
+COMPILED_FONT_RESOURCE_MATCH = YES
+```
 
 Current independently rechecked CGI evidence:
 
@@ -173,6 +190,29 @@ MAX_OUTSIDE_ALLOWED_CHANGED_PIXELS = 0
 REJECTION_CASES = 4/4 PASS
 RUNTIME_CGI_LITERAL = 0
 ```
+
+Current source-only product-integration recertification on the actual local
+Cloudflare workerd / Pyodide path additionally records:
+
+```text
+WORKER_PYMUPDF = 1.26.3
+WORKER_MUTATION_CASES = 12/12 PASS
+WORKER_REJECTION_CASES = 4/4 PASS
+MUPDF_PDFIUM_DPI_MUTATION_CHECKS = 72/72 PASS
+MAX_OUTSIDE_ALLOWED_CHANGED_PIXELS = 0
+CHANGED_SLOT_STALE_TEXT_CHECKS = 51/51 PASS
+COMPILED_FONT_RESOURCE_CHECKS = 63/63 PASS
+RUNTIME_CGI_LITERAL = 0
+MAX_TEST_PDF_BYTES = 20047904
+FULL_PRODUCT_WRANGLER_DRY_RUN = PASS
+PRODUCTION_ACTIVATION = PENDING
+```
+
+The Worker integration is independently re-certified rather than automatically
+inheriting the CPython/PyMuPDF 1.26.4 benchmark result. The private bundle is
+bound to the approved Saved Quote Skill/profile fingerprints, renderer source
+hash and engine version; a renderer change therefore invalidates the old
+bundle instead of silently reusing it.
 
 The prior camera leak was not a camera-scale defect. Direct content-stream mutation changed interpretation of existing graphics state. Isolated overlay removed the outside-region leak without a camera-scale constant.
 

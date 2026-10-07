@@ -569,7 +569,8 @@ check(easy.includes('"b66:local-data-reset"') &&
 
 /* 결정론적 계산 잔여 계약 (원본에서 승계) */
 check(core.includes("Math.round(qty * price)"), "deterministic item amount");
-check(app.includes("window.print()"), "print action");
+check(!app.includes("window.print()") && app.includes("bridge.downloadPdf(model)"),
+  "certified PDF download replaces the final browser print action");
 check(app.includes("localStorage"), "browser-local persistence");
 
 /* FILE_CHOOSER_LIVE=YES / UPLOAD_AI_LIVE=NO */

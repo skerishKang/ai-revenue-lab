@@ -15,6 +15,8 @@ from .b66_company_profile import CompanyProfileStore, D1CompanyProfileStore
 from .b66_company_profile_routes import b66_company_profile_get, b66_company_profile_put
 from .b66_quote_asset_routes import b66_quote_asset_detail
 from .b66_quote_assets import B66QuoteAssetStore, D1B66QuoteAssetMetadataStore
+from .b66_certified_quote_bundle import B66CertifiedQuoteBundleStore
+from .b66_certified_pdf_routes import b66_certified_pdf
 from .b66_quote_routes import (
     b66_quote_interpret,
     b66_runtime_config,
@@ -167,6 +169,7 @@ def create_app(
     b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
     b66_company_profile_store: CompanyProfileStore | None = None,
     b66_quote_asset_store=None,
+    b66_certified_quote_bundle_store=None,
     b66_quote_interpreter=None,
     claw_task_alert_store=None,
     calendar_store: CalendarStore | None = None,
@@ -255,6 +258,7 @@ def create_app(
             methods=["GET"],
         ),
         Route("/api/b66/quote/interpret", b66_quote_interpret, methods=["POST"]),
+        Route("/api/b66/quote/pdf", b66_certified_pdf, methods=["POST"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
         # #3539: the generic Claw composer runs through the canonical #3382 P01
@@ -455,6 +459,17 @@ def create_app(
         except Exception:
             _b66_quote_asset_store = None
     app.state.b66_quote_asset_store = _b66_quote_asset_store
+
+    # Certified private PDF bundles reuse the approved Saved Quote Skill and
+    # existing private R2 binding. This composition reads only; no upload,
+    # assignment, D1 migration or production activation occurs here.
+    _b66_bundle_store = b66_certified_quote_bundle_store
+    if _b66_bundle_store is None and r2_binding is not None:
+        try:
+            _b66_bundle_store = B66CertifiedQuoteBundleStore(r2_binding)
+        except Exception:
+            _b66_bundle_store = None
+    app.state.b66_certified_quote_bundle_store = _b66_bundle_store
 
     # #2341 Task/Alert inbox: consume the existing migration-010 D1 authority.
     # No schema creation or alternate DB authority is introduced here.

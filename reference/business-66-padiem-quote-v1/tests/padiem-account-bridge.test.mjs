@@ -72,6 +72,16 @@ globalThis.fetch = async (target, init = {}) => {
       headers: { "Content-Type": "image/png", "Cache-Control": "private, no-store" }
     });
   }
+  if (url.endsWith("/api/b66/quote/pdf")) {
+    return new Response("%PDF-1.7\nsynthetic-test", {
+      status: 200,
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": 'attachment; filename="quote-test.pdf"',
+        "X-Internal-Debug": "must-not-relay"
+      }
+    });
+  }
   if (url.endsWith("/auth/google/start")) {
     return new Response(null, {
       status: 302,
@@ -193,6 +203,7 @@ try {
     new Request("https://quick-quote-kr.pages.dev/api/padiem/admin/anything"),
     new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/saved-skills/not-an-id"),
     new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/assets/not-an-id"),
+    new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/quote/pdf"),
     new Request("https://quick-quote-kr.pages.dev/api/padiem/auth/status", { method: "POST" })
   ]) {
     const denied = await worker.fetch(request, env);
@@ -254,11 +265,34 @@ try {
   );
   assert.equal(oversized.status, 413);
 
+  const pdf = await worker.fetch(new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/quote/pdf", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Cookie": "padiem_session=pdf-test", "Authorization": "Bearer forged" },
+    body: JSON.stringify({ saved_skill_id: "b66skill_" + "c".repeat(32), render_model: { derivedBy: "quote-core" } })
+  }), env);
+  assert.equal(pdf.status, 200);
+  assert.equal(pdf.headers.get("content-type"), "application/pdf");
+  assert.equal(pdf.headers.get("content-disposition"), 'attachment; filename="quote-test.pdf"');
+  assert.match(pdf.headers.get("cache-control"), /no-store/);
+  assert.equal(pdf.headers.get("x-internal-debug"), null);
+  assert.match(await pdf.text(), /^%PDF-/);
+  assert.equal(calls.at(-1).url, "https://chat.padiem.net/api/b66/quote/pdf");
+  assert.equal(calls.at(-1).headers.get("cookie"), "padiem_session=pdf-test");
+  assert.equal(calls.at(-1).headers.get("authorization"), null);
+  assert.equal(calls.at(-1).headers.get("accept"), "application/pdf,application/json");
+  const pdfCalls = calls.length;
+  const oversizedPdf = await worker.fetch(new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/quote/pdf", {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: "x".repeat(33 * 1024)
+  }), env);
+  assert.equal(oversizedPdf.status, 413);
+  assert.equal(calls.length, pdfCalls);
+
   console.log("PADIEM_ACCOUNT_BRIDGE_RUNTIME=PASS");
   console.log("ARBITRARY_UPSTREAM_PROXY=0");
   console.log("AUTHORIZATION_HEADER_FORWARD=0");
   console.log("OPAQUE_SESSION_COOKIE_RELAY=PASS");
   console.log("PRIVATE_QUOTE_ASSET_PROXY=PASS");
+  console.log("CERTIFIED_QUOTE_PDF_PROXY=PASS");
   console.log("B66_REJECTION_DIAGNOSTIC_HEADER_RELAY=PASS");
   console.log("B66_UPSTREAM_CLASS_DIAGNOSTIC_HEADER_RELAY=PASS");
   console.log("ARBITRARY_RESPONSE_HEADER_RELAY=0");
