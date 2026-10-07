@@ -83,6 +83,21 @@ def _click_chip(page, label: str) -> None:
     locator.click()
 
 
+def _click_chip_index(page, *, index: int, expected_count: int, stage: str) -> None:
+    try:
+        page.wait_for_function(
+            "([selector, expected]) => document.querySelectorAll(selector).length === expected",
+            arg=["#easyChipRow button", expected_count],
+            timeout=5000,
+        )
+    except Exception as exc:
+        raise SmokeFailure("guided_chip_count_" + stage) from exc
+    try:
+        page.locator("#easyChipRow button").nth(index).click(timeout=5000)
+    except Exception as exc:
+        raise SmokeFailure("guided_chip_click_" + stage) from exc
+
+
 def _wait_runtime_ready(page) -> None:
     page.wait_for_function(
         """() => {
@@ -247,16 +262,16 @@ def _guided(page, counters: Counters) -> None:
     before = counters.interpret_posts
     page.locator("#guidedStarter").click()
 
-    _send(page, "가이드테스트건설")
-    _click_chip(page, "담당자 없음")
-    _send(page, "배관")
-    _click_chip(page, "2")
+    _send(page, "\uac00\uc774\ub4dc\ud14c\uc2a4\ud2b8\uac74\uc124")
+    _click_chip_index(page, index=0, expected_count=1, stage="recipient_person_none")
+    _send(page, "\ubc30\uad00")
+    _click_chip_index(page, index=1, expected_count=4, stage="quantity_two")
     _send(page, "10000")
-    _click_chip(page, "다음으로")
-    _click_chip(page, "별도")
-    _click_chip(page, "없음")
-    _click_chip(page, "현재 정보 사용")
-    _click_chip(page, "견적서 만들기")
+    _click_chip_index(page, index=1, expected_count=2, stage="items_done")
+    _click_chip_index(page, index=0, expected_count=4, stage="tax_exclusive")
+    _click_chip_index(page, index=0, expected_count=1, stage="memo_none")
+    _click_chip_index(page, index=0, expected_count=3, stage="sender_current")
+    _click_chip_index(page, index=0, expected_count=3, stage="finish")
     page.wait_for_function(
         """() => {
           const d = window.B66QuoteAppBridge.getDraft();
