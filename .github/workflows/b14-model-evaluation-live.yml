@@ -78,8 +78,17 @@ jobs:
 
       - name: Re-run shared fixture and served-version contracts
         shell: bash
+        env:
+          # pytest collects apps/padiem-chat/tests from the repo root, so its
+          # conftest (which imports app.model_policy, app.same_origin_guard and
+          # padiem_control_plane) needs those sources on sys.path, and it needs
+          # the Chat runtime's own httpx/starlette dependencies installed. #3625
+          # guards this cross-lane coupling: a shared conftest change must not
+          # break this workflow. The suite itself stays network-free and offline.
+          PYTHONPATH: apps/padiem-chat:packages/padiem-ai-core:packages/padiem-control-plane
         run: |
           set -euo pipefail
+          python -m pip install --quiet 'httpx>=0.27,<1' 'starlette>=0.37,<1'
           python -m pytest -q \
             apps/padiem-chat/tests/test_tier_benchmark_corpus.py \
             .github/tests/test_cloudflare_served_version.py
