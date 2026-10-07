@@ -44,18 +44,25 @@ def test_canonical_declaration_holds_text_and_vision_primary() -> None:
     assert "TEXT_FALLBACK_ENABLED = False" in text
 
 
-def test_kilo_catalog_preserves_space_bunny_only_as_non_primary_metadata() -> None:
+def test_kilo_catalog_fully_retires_space_bunny_to_historical_metadata() -> None:
     kilo_text = KILO_PROVIDER.read_text(encoding="utf-8")
     canonical_text = MODEL_PRIMARY.read_text(encoding="utf-8")
 
+    # Historical identity constants survive for audit purposes.
     assert _string_constant(kilo_text, "KILO_SPACE_BUNNY_MODEL_ID") == "kilo/stealth-space-bunny-alpha"
     assert _string_constant(kilo_text, "KILO_SPACE_BUNNY_UPSTREAM_MODEL") == "stealth/space-bunny-alpha"
     assert _string_constant(kilo_text, "KILO_SPACE_BUNNY_CREDENTIAL_BINDING") == "PADIEM_KILO_API_KEY"
     assert "credential_source=CredentialSource.NONE" in kilo_text
 
+    # Owner final retirement decision: the lane is declared retired, absent
+    # from KILO_FREE_ROUTES, and no Space Bunny _KiloFreeRoute entry remains.
+    retired_block = kilo_text.split("RETIRED_KILO_FREE_MODEL_IDS = frozenset(", 1)[1].split("})", 1)[0]
+    assert "KILO_SPACE_BUNNY_MODEL_ID" in retired_block
+    assert "model_id=KILO_SPACE_BUNNY_MODEL_ID" not in kilo_text
+    assert "Kilo: Stealth Space Bunny Alpha" not in kilo_text
+
     assert "TEXT_PRIMARY_MODEL_ID = None" in canonical_text
     assert "VISION_PRIMARY_MODEL_ID = None" in canonical_text
-    assert "context_window=0" in kilo_text
 
 
 def test_product_tiers_and_registry_hold_plus_space_bunny() -> None:

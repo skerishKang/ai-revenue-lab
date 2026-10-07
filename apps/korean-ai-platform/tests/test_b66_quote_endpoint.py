@@ -89,56 +89,37 @@ def _ok_upstream(content):
     )
 
 
-def test_image_route_reuses_canonical_builder_and_server_validator(monkeypatch):
+def test_image_route_fails_closed_before_any_upstream_dispatch(monkeypatch):
+    # HOLD fail-closed: the retired Space Bunny lane must never be requested,
+    # and no successor model may be substituted. The endpoint returns the
+    # deterministic builder error before the upstream adapter runs.
     monkeypatch.setattr(endpoint, "_authority", lambda: AUTHORITY)
-    captured = {}
 
-    async def fake_handle(request_id, body):
-        captured["request_id"] = request_id
-        captured["body"] = body
-        return _ok_upstream(json.dumps(_model_answer(), ensure_ascii=False))
+    async def forbidden_handle(request_id, body):
+        raise AssertionError("upstream must not run under the HOLD")
 
-    monkeypatch.setattr(pilot_gateway, "_handle_alpha_chat", fake_handle)
+    monkeypatch.setattr(pilot_gateway, "_handle_alpha_chat", forbidden_handle)
 
     with TestClient(create_app()) as client:
         response = client.post("/api/b66/v1/quote/extract-image", json=_payload())
 
-    assert response.status_code == 200
+    assert response.status_code == 422
     body = response.json()
-    assert body["ok"] is True
-    result = body["result"]
-    assert result["source"] == {
-        "kind": "image",
-        "filename": "quotation.png",
-        "media_type": "image/png",
-        "byte_size": len(TINY_PNG),
-    }
-    assert result["extraction"]["source"] == {
-        "kind": "image",
-        "filename": "quotation.png",
-    }
-    assert result["extraction"]["quote"]["quoteNo"] == "Q-2026-3002"
-    assert result["extraction"]["items"][0]["unitPrice"] == 9800
-    assert result["quotecore_authority"] is True
-
-    request_body = captured["body"]
-    assert request_body["model"] == AUTHORITY.B66_GOVERNED_ROUTE
-    assert request_body["business14"]["required_capabilities"] == ["image"]
-    assert request_body["business14"]["allow_external_fallback"] is False
-    assert request_body["business14"]["max_attempts"] == 1
-    content = request_body["messages"][0]["content"]
-    assert content[0]["type"] == "text"
-    assert content[1]["type"] == "image_url"
-    assert content[1]["image_url"]["url"].startswith("data:image/png;base64,")
+    assert body["ok"] is False
+    assert body["error"]["code"] == "model_route_unavailable"
+    assert response.headers["cache-control"] == "no-store"
 
 
-def test_model_source_spoof_is_rejected_without_raw_content(monkeypatch):
+def test_model_source_spoof_never_reaches_upstream_or_normalization(monkeypatch):
     monkeypatch.setattr(endpoint, "_authority", lambda: AUTHORITY)
     raw = _model_answer()
     raw["source"] = {"kind": "image", "filename": "evil.png"}
     sentinel = "PRIVATE_MODEL_SENTINEL"
 
+    captured: dict[str, object] = {}
+
     async def fake_handle(request_id, body):
+        captured["body"] = body
         raw["warnings"] = [sentinel]
         return _ok_upstream(json.dumps(raw, ensure_ascii=False))
 
@@ -146,11 +127,11 @@ def test_model_source_spoof_is_rejected_without_raw_content(monkeypatch):
     with TestClient(create_app()) as client:
         response = client.post("/api/b66/v1/quote/extract-image", json=_payload())
 
-    assert response.status_code == 502
-    text = response.text
-    assert "model_output_source_provenance_mismatch" in text
-    assert sentinel not in text
-    assert "evil.png" not in text
+    # The builder fails closed before any model output exists to spoof.
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "model_route_unavailable"
+    assert sentinel not in response.text
+    assert "evil.png" not in response.text
 
 
 def test_non_image_and_malformed_payloads_fail_before_upstream(monkeypatch):
@@ -186,22 +167,21 @@ def test_non_image_and_malformed_payloads_fail_before_upstream(monkeypatch):
     assert calls == []
 
 
-def test_upstream_error_is_collapsed_to_product_safe_code(monkeypatch):
+def test_hold_failure_is_collapsed_to_product_safe_code(monkeypatch):
     monkeypatch.setattr(endpoint, "_authority", lambda: AUTHORITY)
     sentinel = "PRIVATE_UPSTREAM_DETAIL"
 
     async def fake_handle(request_id, body):
-        return JSONResponse(
-            {"error": {"code": "upstream_timeout", "message": sentinel}},
-            status_code=504,
-        )
+        raise AssertionError("upstream must not run under the HOLD")
 
     monkeypatch.setattr(pilot_gateway, "_handle_alpha_chat", fake_handle)
     with TestClient(create_app()) as client:
         response = client.post("/api/b66/v1/quote/extract-image", json=_payload())
 
-    assert response.status_code == 502
-    assert response.json()["error"]["code"] == "b14_upstream_unavailable"
+    # The deterministic HOLD error surfaces product-safe: no builder detail,
+    # no sentinel, no-store caching.
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "model_route_unavailable"
     assert response.headers["cache-control"] == "no-store"
     assert sentinel not in response.text
 
@@ -239,7 +219,10 @@ def test_native_document_route_reuses_text_extraction_after_canonical_intake(mon
         captured["body"] = body
         return _ok_upstream(json.dumps(_model_answer(), ensure_ascii=False))
 
-    monkeypatch.setattr(pilot_gateway, "_handle_alpha_chat", fake_handle)
+    async def forbidden_handle(request_id, body):
+        raise AssertionError("upstream must not run under the HOLD")
+
+    monkeypatch.setattr(pilot_gateway, "_handle_alpha_chat", forbidden_handle)
 
     with TestClient(create_app()) as client:
         response = client.post(
@@ -251,26 +234,12 @@ def test_native_document_route_reuses_text_extraction_after_canonical_intake(mon
             },
         )
 
-    assert response.status_code == 200
+    # HOLD fail-closed: intake succeeds, but the text builder emits nothing.
+    assert response.status_code == 422
     body = response.json()
-    assert body["ok"] is True
-    assert body["result"]["source"] == {
-        "kind": "native_document",
-        "filename": "quotation.pdf",
-        "media_type": "application/pdf",
-        "byte_size": len(TINY_PDF),
-    }
-    assert body["result"]["extraction"]["source"] == {
-        "kind": "native_document",
-        "filename": "quotation.pdf",
-    }
-    assert body["result"]["extraction"]["quote"]["quoteNo"] == "Q-2026-3002"
-    request_body = captured["body"]
-    assert request_body["model"] == AUTHORITY.B66_GOVERNED_ROUTE
-    assert request_body["business14"]["allow_external_fallback"] is False
-    assert request_body["business14"]["max_attempts"] == 1
-    assert isinstance(request_body["messages"][0]["content"], str)
-    assert "견적번호 Q-2026-3002" in request_body["messages"][0]["content"]
+    assert body["ok"] is False
+    assert body["error"]["code"] == "model_route_unavailable"
+    assert response.headers["cache-control"] == "no-store"
 
 
 def test_native_document_route_fails_closed_before_model_without_parser_authority(monkeypatch):
