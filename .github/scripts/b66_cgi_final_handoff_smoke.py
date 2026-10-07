@@ -158,31 +158,42 @@ def _assert_quote(
 
 def _pdf_download_probe(page, counters: Counters) -> None:
     before = counters.pdf_posts
-    response = None
-    try:
-        with page.expect_download(timeout=30000) as download_info:
-            with page.expect_response(
-                lambda response: (
-                    response.request.method == "POST"
-                    and urlparse(response.url).path == PDF_PATH
-                ),
-                timeout=30000,
-            ) as response_info:
-                page.locator("#printPdf").click()
-            response = response_info.value
-            if response.status != 200:
-                _fail("pdf_http_" + str(response.status))
-            media_type = (response.headers.get("content-type") or "").split(";", 1)[0].strip().lower()
-            if media_type != "application/pdf":
-                _fail("pdf_content_type_mismatch")
-        download = download_info.value
-    except SmokeFailure:
-        raise
-    except Exception as exc:
-        if response is not None:
-            raise SmokeFailure("pdf_download_missing_after_http_" + str(response.status)) from exc
-        raise SmokeFailure("pdf_response_or_download_missing") from exc
+    responses = []
 
+    def capture_response(response) -> None:
+        try:
+            if (
+                response.request.method == "POST"
+                and urlparse(response.url).path == PDF_PATH
+            ):
+                responses.append(response)
+        except Exception:
+            return
+
+    page.on("response", capture_response)
+    try:
+        try:
+            with page.expect_download(timeout=30000) as download_info:
+                page.locator("#printPdf").click()
+            download = download_info.value
+        except Exception as exc:
+            if responses:
+                status = int(responses[-1].status)
+                if status != 200:
+                    raise SmokeFailure("pdf_http_" + str(status)) from exc
+                raise SmokeFailure("pdf_download_missing_after_http_200") from exc
+            raise SmokeFailure("pdf_response_or_download_missing") from exc
+    finally:
+        page.remove_listener("response", capture_response)
+
+    if not responses:
+        _fail("pdf_response_missing")
+    response = responses[-1]
+    if response.status != 200:
+        _fail("pdf_http_" + str(response.status))
+    media_type = (response.headers.get("content-type") or "").split(";", 1)[0].strip().lower()
+    if media_type != "application/pdf":
+        _fail("pdf_content_type_mismatch")
     body = response.body()
     if not isinstance(body, bytes) or not body.startswith(b"%PDF-"):
         _fail("pdf_bytes_invalid")
