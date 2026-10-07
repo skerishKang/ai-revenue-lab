@@ -20,6 +20,10 @@ MAX_TICKET_REQUEST_BODY_BYTES = 1_024
 MAX_CONNECT_START_RESPONSE_BYTES = 64 * 1024
 GOOGLE_OAUTH_CONNECT_URL = "https://oauth.padiem.net/v1/google/connect"
 _REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive", "google-calendar"})
+# #3289: the reviewed connectors whose OAuth handoff the product surface may
+# start. Each maps to exactly one control-plane reviewed readonly scope set;
+# Drive is https://www.googleapis.com/auth/drive.readonly and never widens it.
+_OAUTH_START_REVIEWED_CONNECTORS = frozenset({"google-calendar", "google-drive"})
 _NO_STORE_HEADERS = {
     "Cache-Control": "no-store, max-age=0",
     "Pragma": "no-cache",
@@ -65,7 +69,7 @@ async def _closed_body(request: Request) -> dict[str, Any]:
     begin_oauth = payload.get("begin_oauth", False)
     if not isinstance(begin_oauth, bool):
         raise IdentityBridgeError(400, "connector_ticket_body_invalid", "연결 요청 형식이 올바르지 않습니다.")
-    if begin_oauth and connector_id != "google-calendar":
+    if begin_oauth and connector_id not in _OAUTH_START_REVIEWED_CONNECTORS:
         raise IdentityBridgeError(403, "connector_oauth_start_not_reviewed", "허용되지 않은 연결입니다.")
     return {"connector_id": connector_id, "begin_oauth": begin_oauth}
 
@@ -182,8 +186,11 @@ async def _begin_google_oauth(
     receipt: PrivateGoogleConnectTicket,
     expected_origin: str,
 ) -> JSONResponse:
-    """Begin reviewed Calendar OAuth without returning the ticket to JavaScript."""
-
+    """Begin a reviewed Google connector OAuth handoff without returning the
+    connect ticket to JavaScript. Caller-provided connector input is already
+    closed to the reviewed set, so Drive can only ever request
+    drive.readonly through the same server-owned exchange.
+    """
     try:
         oauth_client = getattr(request.app.state, "google_oauth", None)
         transport = getattr(oauth_client, "transport", None)
@@ -214,7 +221,8 @@ async def _begin_google_oauth(
 
 GOOGLE_CONNECTOR_TICKET_ROUTE = True
 GOOGLE_CONNECTOR_INLINE_OAUTH_START = True
-AUTHENTICATED_SAME_ORIGIN_ONLY = True
+OAUTH_START_REVIEWED_CONNECTORS = ("google-calendar", "google-drive")
+RAW_CONNECT_TICKET_IN_JAVASCRIPT = FalseAUTHENTICATED_SAME_ORIGIN_ONLY = True
 CLIENT_CAN_SELECT_CONNECTOR_ONLY = True
 CLIENT_ACCOUNT_WORKSPACE_AUTHORITY = False
 RAW_TICKET_QUERY_PARAMETER = False

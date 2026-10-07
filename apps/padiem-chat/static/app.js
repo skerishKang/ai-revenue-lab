@@ -2588,7 +2588,10 @@
   const connectorsError = document.getElementById("connectorsError");
   const connectorsRetry = document.getElementById("connectorsRetry");
   const GOOGLE_CALENDAR_CONNECTOR = "google-calendar";
-  const GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket";
+  // #3289: the reviewed Google Drive READ-only connect handoff reuses the
+  // same reviewed ticket endpoint; only the reviewed connector id differs.
+  const GOOGLE_DRIVE_CONNECTOR = "google-drive";
+  const GOOGLE_DRIVE_TICKET_ENDPOINT = "/api/connectors/google/ticket";  const GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket";
   const GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT = "/api/connectors/google/calendar/activate-read";
   const CONNECTOR_STATUS_IDS = new Set([
     "connector:google:drive@1",
@@ -2705,6 +2708,83 @@
   function googleCalendarCard() {
     if (!connectorsDialog) return null;
     return connectorsDialog.querySelector(`[data-connector-id="connector:google:calendar@1"]`);
+  }
+
+
+  function googleDriveConnectButton() {
+    if (!connectorsDialog) return null;
+    return connectorsDialog.querySelector(`[data-google-connector-connect="${GOOGLE_DRIVE_CONNECTOR}"]`);
+  }
+
+  function googleDriveCard() {
+    if (!connectorsDialog) return null;
+    return connectorsDialog.querySelector(`[data-connector-id="connector:google:drive@1"]`);
+  }
+
+  /** The whole Drive visibility rule as a pure predicate: an authenticated
+   *  session and a canonical ``not_connected`` row. ``unverified``,
+   *  ``ambiguous``, ``connected``, a missing row and a signed-out session all
+   *  withhold the action, so the browser can never start a connect for a
+   *  workspace whose truth it does not hold. */
+  function driveConnectOffered(authenticated, workspaceState) {
+    return Boolean(authenticated && workspaceState === "not_connected");
+  }
+
+  /** Drive has no second axis: connect is the whole action. */
+  function syncGoogleDriveConnectButton(row = null) {
+    const button = googleDriveConnectButton();
+    if (!button) return;
+    const workspaceState = row && typeof row.workspace_state === "string" ? row.workspace_state : "";
+    const offered = driveConnectOffered(authState.authenticated, workspaceState);
+    button.hidden = !offered;
+    button.disabled = googleConnectorConnectInFlight;
+    if (offered && !googleConnectorConnectInFlight) {
+      setConnectorCopy(button, "connectors-connect-drive");
+    }
+  }
+
+  async function beginGoogleDriveConnect() {
+    const button = googleDriveConnectButton();
+    if (!button || googleConnectorConnectInFlight) return;
+    if (!authState.authenticated) {
+      openAuthDialog();
+      return;
+    }
+    googleConnectorConnectInFlight = true;
+    button.disabled = true;
+    setConnectorCopy(button, "connectors-connecting-drive");
+    if (connectorsError) connectorsError.hidden = true;
+    try {
+      // Exactly one ticket POST per user attempt. The raw connect ticket is
+      // never handed to this scope: the reviewed route performs the single
+      // OAuth-edge exchange server-side and answers with the bounded
+      // authorization shape only, so no ticket, provider or credential
+      // material can reach the DOM, storage, logs or the query string.
+      const startResponse = await fetch(GOOGLE_DRIVE_TICKET_ENDPOINT, {
+        method: "POST",
+        headers: { "Accept": "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ connector_id: GOOGLE_DRIVE_CONNECTOR, begin_oauth: true }),
+        cache: "no-store",
+      });
+      const startDocument = await startResponse.json().catch(() => null);
+      const authorization = startDocument && startDocument.authorization;
+      const redirect = startResponse.ok && authorization &&
+        authorization.connector_id === GOOGLE_DRIVE_CONNECTOR
+        ? reviewedGoogleAuthorizationUrl(authorization.authorization_url)
+        : null;
+      if (!redirect) throw new Error("drive authorization unavailable");
+      window.location.assign(redirect);
+    } catch (_) {
+      // Bounded failure with no automatic retry: only a new explicit user
+      // gesture starts another attempt, and this attempt's state is dropped.
+      googleConnectorConnectInFlight = false;
+      button.disabled = false;
+      setConnectorCopy(button, "connectors-connect-drive");
+      if (connectorsError) {
+        setConnectorCopy(connectorsError, "connectors-connect-drive-error");
+        connectorsError.hidden = false;
+      }
+    }
   }
 
   /** Projects the READ-grant axis onto the Calendar card's own state line.
@@ -2893,7 +2973,7 @@
       setConnectorCopy(card.querySelector("[data-connector-workspace]"), "connectors-workspace-loading");
     });
     syncGoogleCalendarConnectButton();
-  }
+    syncGoogleDriveConnectButton();  }
 
   function setConnectorCardsUnavailable() {
     liveConnectorCards().forEach((card) => {
@@ -2902,7 +2982,7 @@
       setConnectorCopy(card.querySelector("[data-connector-workspace]"), "connectors-workspace-unavailable");
     });
     syncGoogleCalendarConnectButton();
-  }
+    syncGoogleDriveConnectButton();  }
 
   function renderConnectorStatus(document) {
     if (!document || document.static_support_vs_workspace_state_separated !== true ||
@@ -2930,7 +3010,7 @@
       setConnectorCopy(card.querySelector("[data-connector-workspace]"), workspaceKey);
     });
     syncGoogleCalendarConnectButton(rows.get("connector:google:calendar@1") || null);
-  }
+    syncGoogleDriveConnectButton(rows.get("connector:google:drive@1") || null);  }
 
   async function loadConnectorStatus() {
     if (!connectorsDialog || connectorStatusInFlight) return;
@@ -2999,6 +3079,11 @@
       return;
     }
     void beginGoogleCalendarConnect();
+  });
+  // #3289: Drive connect starts only from this explicit user gesture.
+  const driveConnectButton = googleDriveConnectButton();
+  if (driveConnectButton) driveConnectButton.addEventListener("click", () => {
+    void beginGoogleDriveConnect();
   });
   if (connectorsDialog) {
     connectorsDialog.addEventListener("cancel", (event) => {
