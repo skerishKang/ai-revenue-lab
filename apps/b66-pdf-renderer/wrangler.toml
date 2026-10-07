@@ -5,6 +5,12 @@ compatibility_flags = ["python_workers", "disable_python_external_sdk"]
 workers_dev = false
 base_dir = ".worker-src"
 
+# PyMuPDF's first import compiles/initializes a large WASM module in the
+# production Python isolate. Keep this limit scoped to the private PDF worker;
+# the main Padiem Chat worker retains its existing CPU posture.
+[limits]
+cpu_ms = 300000
+
 [build]
 command = "uv run python scripts/build_worker_dependencies.py"
 
