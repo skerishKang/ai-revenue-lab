@@ -87,6 +87,7 @@ def test_server_only_worker_bindings_and_google_config_validation():
         "PADIEM_CHAT_WEB_PROVIDER",
         "FIRECRAWL_API_KEY",
         "PADIEM_CHAT_DAUM_REST_API_KEY",
+        "TINYFISH_API_KEY",
         "PADIEM_CHAT_WEB_TIMEOUT_SECONDS",
         "PADIEM_CHAT_AUTH_MODE",
         "PADIEM_CHAT_PUBLIC_BASE_URL",
@@ -107,6 +108,7 @@ def test_server_only_worker_bindings_and_google_config_validation():
     assert "BUSINESS14_PROVIDER_KEY" not in joined
     assert "FIRECRAWL_API_KEY" in WORKER_BINDING_NAMES
     assert "PADIEM_CHAT_DAUM_REST_API_KEY" in WORKER_BINDING_NAMES
+    assert "TINYFISH_API_KEY" in WORKER_BINDING_NAMES
 
     with pytest.raises(ConfigError):
         settings_from_worker_bindings({"PADIEM_CHAT_WEB_PROVIDER": "firecrawl"})
