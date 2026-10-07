@@ -6,7 +6,7 @@ from io import BytesIO
 from pathlib import PurePath, PurePosixPath
 from typing import Any
 from xml.etree import ElementTree
-from zipfile import BadZipFile, ZipFile
+from zipfile import BadZipFile, ZipFile, ZipInfo
 
 from .document_semantics import (
     DOCUMENT_CONTENT_TRUST_CLASS,
@@ -262,6 +262,30 @@ def validate_ooxml_member_name(name: object) -> str:
     return name
 
 
+def _read_member_bounded(archive: ZipFile, member: ZipInfo | str, *, max_bytes: int) -> bytes:
+    """Read one archive member with the inflate work bounded by the member bound.
+
+    ``ZipFile.read``/``ZipExtFile.read()`` inflate the *entire* deflate stream
+    and only afterwards truncate the result to the declared uncompressed size,
+    so an archive that declares a small size while carrying a large compressed
+    stream is amplified far beyond the declared-metadata bounds
+    :func:`validate_ooxml_archive` enforces. Passing an explicit length through
+    the streaming API caps the real inflate work at the bound; because the
+    declared size is also the truncation cap ``read()`` applies, a well-formed
+    archive reads byte-identically.
+    """
+
+    info = member if isinstance(member, ZipInfo) else archive.getinfo(member)
+    limit = min(info.file_size, max_bytes)
+    with archive.open(info) as handle:
+        data = handle.read(limit + 1)
+    if len(data) > limit:
+        raise DocumentNormalizationError(
+            "ooxml_entry_size", "OOXML archive entry exceeds the size limit."
+        )
+    return data
+
+
 def validate_ooxml_archive(payload: bytes) -> None:
     if not isinstance(payload, (bytes, bytearray)) or not payload or len(payload) > MAX_BINARY_DOCUMENT_BYTES:
         raise DocumentNormalizationError("ooxml_archive_size", "OOXML archive size is out of bounds.")
@@ -283,7 +307,9 @@ def validate_ooxml_archive(payload: bytes) -> None:
                     raise DocumentNormalizationError("ooxml_total_size", "OOXML archive exceeds the total uncompressed size limit.")
                 lowered = info.filename.lower()
                 if lowered.endswith(".xml") or lowered.endswith(".rels"):
-                    xml = archive.read(info)
+                    xml = _read_member_bounded(
+                        archive, info, max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+                    )
                     if b"<!doctype" in xml.lower():
                         raise DocumentNormalizationError("ooxml_dtd_rejected", "DTDs are not supported in OOXML documents.")
     except DocumentNormalizationError:
@@ -310,7 +336,11 @@ def extract_docx_text(payload: bytes) -> str:
     try:
         with ZipFile(BytesIO(payload)) as archive:
             try:
-                root = _parse_xml(archive.read("word/document.xml"))
+                root = _parse_xml(
+                    _read_member_bounded(
+                        archive, "word/document.xml", max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+                    )
+                )
             except KeyError as exc:
                 raise DocumentNormalizationError("docx_missing_part", "DOCX is missing word/document.xml.") from exc
     except DocumentNormalizationError:
@@ -354,7 +384,11 @@ def extract_pptx_text(payload: bytes) -> str:
                 raise DocumentNormalizationError("pptx_missing_slides", "PPTX contains no slide XML parts.")
             slides: list[str] = []
             for slide_name in slide_names:
-                root = _parse_xml(archive.read(slide_name))
+                root = _parse_xml(
+                    _read_member_bounded(
+                        archive, slide_name, max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+                    )
+                )
                 pieces = [node.text or "" for node in root.iter() if _local_name(node) == "t"]
                 slide = "\n".join(piece for piece in pieces if piece).strip()
                 if slide:
@@ -769,7 +803,9 @@ def parse_hwpx_sections(payload: bytes) -> tuple[HwpxParsedSection, ...]:
         with ZipFile(BytesIO(payload)) as archive:
             names = archive.namelist()
             if "mimetype" in names:
-                declared = archive.read("mimetype").decode("utf-8", "replace").strip()
+                declared = _read_member_bounded(
+                    archive, "mimetype", max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+                ).decode("utf-8", "replace").strip()
                 if declared != "application/hwp+zip":
                     raise DocumentNormalizationError(
                         "hwpx_mimetype_mismatch",
@@ -779,7 +815,9 @@ def parse_hwpx_sections(payload: bytes) -> tuple[HwpxParsedSection, ...]:
             if not located:
                 raise DocumentNormalizationError("hwpx_missing_part", "HWPX is missing Contents/section<N>.xml parts.")
             for index, section_name in sorted(located):
-                part = archive.read(section_name)
+                part = _read_member_bounded(
+                    archive, section_name, max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+                )
                 root = _parse_xml(part)
                 facts = _ordered_section_block_facts(index=index, root=root, part=part)
                 fact_sections.append(facts)
@@ -861,7 +899,14 @@ def read_hwpx_package_members(payload: bytes) -> tuple[HwpxPackageMember, ...]:
     try:
         with ZipFile(BytesIO(bytes(payload))) as archive:
             for info in archive.infolist():
-                members.append(HwpxPackageMember(name=info.filename, payload=archive.read(info)))
+                members.append(
+                    HwpxPackageMember(
+                        name=info.filename,
+                        payload=_read_member_bounded(
+                            archive, info, max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+                        ),
+                    )
+                )
     except DocumentNormalizationError:
         raise
     except (BadZipFile, OSError, ValueError, RuntimeError) as exc:
