@@ -44,6 +44,51 @@ export const MAX_SEARCH_ENTRIES = 4000;
 export const MAX_SEARCH_RESULTS = 50;
 const MAX_QUERY_LENGTH = 128;
 
+/**
+ * #1635 — system/credential directories are deny-by-default in the Desktop
+ * local resource layer (LocalWorkspaceController).
+ *
+ * These directories are never surfaced by workspace listing, never walked by
+ * search, and can never be selected as a workspace root. The set mirrors the
+ * Transfer Policy's credential parts (execution_target_router.py) plus the
+ * commonly credential-bearing configuration directories. Deliberately
+ * excluded: .git and other repository bookkeeping (workspace tools need it),
+ * generic hidden dotfiles (e.g. .npmrc, .DS_Store — hidden does not mean
+ * credential, and blanket dotfile denial would break normal work browsing),
+ * and OS shell directories (e.g. AppData) that would over-block ordinary
+ * application working directories.
+ */
+export const SYSTEM_CREDENTIAL_DIRECTORY_SEGMENTS: ReadonlySet<string> = new Set([
+  '.ssh',
+  '.aws',
+  '.gnupg',
+  '.azure',
+  '.kube',
+  '.docker',
+  '.mozilla',
+]);
+
+/**
+ * True when a name matches one of the credential directory segments above,
+ * compared case-insensitively (Windows junctions/reparse points are
+ * case-insensitive, and the same deny set must apply on POSIX mounts).
+ */
+export function isSystemCredentialSegment(name: string): boolean {
+  return SYSTEM_CREDENTIAL_DIRECTORY_SEGMENTS.has(name.toLowerCase());
+}
+
+/**
+ * True when any segment of a relative path is a credential directory.
+ * Used to refuse listing into/under system/credential directories (and to
+ * refuse canonical paths that resolve into them, e.g. a junction planted
+ * inside a benign subdirectory).
+ */
+export function isSystemCredentialRelativePath(relativePath: string): boolean {
+  return relativePath.split(/[\\/]+/).some(
+    (segment) => segment !== '' && isSystemCredentialSegment(segment),
+  );
+}
+
 export type WorkspaceRootPicker = () => Promise<string | null>;
 
 /**
@@ -88,7 +133,20 @@ export class LocalWorkspaceController {
     }
 
     try {
-      const canonical = await realpath(path.resolve(selected));
+      const resolved = path.resolve(selected);
+      // #1635: the deny set bounds which root can be selected at all, otherwise
+      // re-rooting inside a credential directory would bypass the list/search
+      // deny. The helper compares whole path segments, so it reads an absolute
+      // path the same way.
+      if (isSystemCredentialRelativePath(resolved)) {
+        return this.rootState('invalid_selection');
+      }
+      const canonical = await realpath(resolved);
+      // The picker's own path can be a link into a credential directory, so the
+      // canonical root is refused as well (same posture as listing/search).
+      if (isSystemCredentialRelativePath(canonical)) {
+        return this.rootState('invalid_selection');
+      }
       const rootStat = await lstat(canonical);
       if (!rootStat.isDirectory()) {
         return this.rootState('invalid_selection');
@@ -120,6 +178,11 @@ export class LocalWorkspaceController {
     if (segments.length > MAX_TREE_DEPTH) {
       return emptyListing('depth_exceeded', this.rootState(), relativePath);
     }
+    // #1635 deny-by-default: never list into or under a system/credential
+    // directory, even when the user-relative path must already be bounded.
+    if (isSystemCredentialRelativePath(relativePath)) {
+      return emptyListing('path_denied', this.rootState(), relativePath);
+    }
     const candidate = path.resolve(this.#root, ...segments);
     if (!isInsideRoot(this.#root, candidate)) {
       return emptyListing('path_outside_root', this.rootState());
@@ -141,12 +204,24 @@ export class LocalWorkspaceController {
       }
 
       const canonicalCandidate = await realpath(candidate);
+      // #1635: the canonical target may have changed after enumeration
+      // (junction/symlink swap into a credential directory). Refuse the
+      // request when the realpath resolves into a credential directory.
+      const canonicalSegments = path
+        .relative(this.#root, canonicalCandidate)
+        .split(/[\\/]+/)
+        .filter((segment) => segment !== '');
+      if (canonicalSegments.some(isSystemCredentialSegment)) {
+        return emptyListing('path_denied', this.rootState(), relativePath);
+      }
       if (!isInsideRoot(this.#root, canonicalCandidate)) {
         return emptyListing('path_outside_root', this.rootState(), relativePath);
       }
 
       const rows = await readdir(canonicalCandidate, { withFileTypes: true });
+      // #1635: credential directories never surface as entries either.
       const entries = rows
+        .filter((row) => !isSystemCredentialSegment(row.name))
         .map((row) => {
           const kind = row.isDirectory()
             ? 'directory' as const
@@ -268,6 +343,14 @@ export class LocalWorkspaceController {
           if (current.segments.length > 0) skipped.add(current.segments.join('/'));
           continue;
         }
+        // #1635: the canonical target may resolve to a credential directory
+        // even when the traversed name was benign (e.g. a junction planted
+        // inside a subdirectory to escape the walk). Refuse such a directory
+        // for readahead, dropping the stale enumerated candidate.
+        if (isSystemCredentialRelativePath(path.relative(root, canonicalDir))) {
+          if (current.segments.length > 0) skipped.add(current.segments.join('/'));
+          continue;
+        }
         const dirStat = await lstat(canonicalDir);
         if (!dirStat.isDirectory()) {
           if (current.segments.length > 0) skipped.add(current.segments.join('/'));
@@ -283,6 +366,10 @@ export class LocalWorkspaceController {
             // Never follow and never surface links: withFileTypes reports
             // them via lstat semantics, so a symlink/junction entry is
             // excluded from both the walk and the candidate list.
+            continue;
+          }
+          // #1635: credential directories never surface as entries.
+          if (isSystemCredentialSegment(row.name)) {
             continue;
           }
           const relativePath = [...current.segments, row.name].join('/');
