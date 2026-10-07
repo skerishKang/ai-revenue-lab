@@ -255,3 +255,8 @@ def test_phase1_css_blob_content_remains_byte_equal():
     assert (root / "static/styles.css").read_bytes() == (
         repo / "reference/business-62-padiem-chat-v1/styles.css"
     ).read_bytes()
+
+
+def test_b66_pdf_renderer_binding_is_fixed_server_authority():
+    from app.worker_config import B66_PDF_RENDERER_SERVICE_BINDING_NAME
+    assert B66_PDF_RENDERER_SERVICE_BINDING_NAME == "B66_PDF_RENDERER_SERVICE"
