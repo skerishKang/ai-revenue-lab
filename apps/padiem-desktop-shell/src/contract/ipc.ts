@@ -201,6 +201,7 @@ export interface WorkspaceListResponse {
     | 'invalid_relative_path'
     | 'path_outside_root'
     | 'depth_exceeded'
+    | 'path_denied'
     | 'workspace_unavailable';
 }
 
