@@ -211,11 +211,9 @@ def _login(page, username: str, password: str) -> None:
         _fail("login_http_" + str(login_response.status))
 
     print("SMOKE_STAGE=LOGIN_HTTP_200")
-    try:
-        page.locator("#padiemAccountPanel").wait_for(state="visible", timeout=20000)
-    except Exception as exc:
-        raise SmokeFailure("account_panel_not_visible") from exc
-    print("SMOKE_STAGE=ACCOUNT_PANEL_VISIBLE")
+    # The canonical three-pane shell intentionally hides the legacy account panel
+    # after moving account/skill controls into the left rail. Runtime readiness,
+    # not legacy-panel visibility, is the authenticated product authority.
     try:
         _wait_runtime_ready(page)
     except Exception as exc:
