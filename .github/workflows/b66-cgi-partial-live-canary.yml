@@ -1,0 +1,112 @@
+name: B66 CGI Partial Live Canary
+
+on:
+  pull_request:
+    paths:
+      - ".github/scripts/b66_cgi_partial_live_canary.py"
+      - ".github/tests/test_b66_cgi_partial_live_canary.py"
+      - ".github/workflows/b66-cgi-partial-live-canary.yml"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA authorized for this one-shot B66 CGI Production partial canary"
+        required: true
+        type: string
+      confirmation:
+        description: "Type RUN_B66_CGI_PARTIAL_LIVE_CANARY_ONCE"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b66-cgi-partial-live-canary
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.target_sha || github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Require exact current main for dispatch
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ inputs.target_sha }}"
+          echo 'PREFLIGHT_EXACT_MAIN=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Network-free canary contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/b66_cgi_partial_live_canary.py --self-test
+          python .github/tests/test_b66_cgi_partial_live_canary.py
+
+      - name: Pin bounded live-call contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          script=.github/scripts/b66_cgi_partial_live_canary.py
+          grep -Fq 'MAX_INTERPRET_POSTS = 1' "$script"
+          grep -Fq 'padiem-b66-cgi-partial-canary/1.0 (+github-actions)' "$script"
+          grep -Fq 'RETRY = 0' "$script"
+          grep -Fq 'FALLBACK = 0' "$script"
+          grep -Fq 'DEFAULT_LIVE_EXECUTION=BLOCKED' "$script"
+          grep -Fq 'SECRET_VALUE_OUTPUT=0' "$script"
+          grep -Fq 'RAW_RESPONSE_OUTPUT=0' "$script"
+          grep -Fq 'PRODUCTION_DATA_MUTATION=0' "$script"
+          echo 'B66_CGI_PARTIAL_SOURCE_CONTRACT=PASS'
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'LIVE_PROVIDER_CALLS=0'
+
+  live-partial:
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      inputs.confirmation == 'RUN_B66_CGI_PARTIAL_LIVE_CANARY_ONCE'
+    needs: source-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    env:
+      TARGET_SHA: ${{ inputs.target_sha }}
+      B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
+      B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
+    steps:
+      - name: Checkout exact approved main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          persist-credentials: false
+
+      - name: Reconfirm exact current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          test -n "${B66_CGI_ALPHA_USERNAME}"
+          test -n "${B66_CGI_ALPHA_PASSWORD}"
+          echo 'PRECALL_EXACT_MAIN=PASS'
+          echo 'CGI_CREDENTIAL_PRESENT=YES'
+          echo 'SECRET_VALUE_OUTPUT=0'
+
+      - name: Run exactly one authenticated B66 partial interpret request
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/b66_cgi_partial_live_canary.py --authorized-live-run

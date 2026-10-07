@@ -1,11 +1,17 @@
-"""B66 quotation extraction routing toward the governed Space Bunny lane.
+"""B66 quotation extraction routing under the successor-pending HOLD.
 
-Source wiring only (#3212). This module builds bounded extraction requests
-for the already-registered explicit manual lane and validates untrusted
-model output before any QuoteDraft projection. It never calls a model,
+Source wiring only (#3212, retired by the owner final decision 2026-10-07).
+This module validates untrusted model output before any QuoteDraft
+projection and owns the bounded prompt contracts. It never calls a model,
 never touches the network, and never carries credential material.
 
-Governed lane (server-side only; never mirrored into B66 browser sources):
+Extraction routing is FAIL-CLOSED while no successor model is selected:
+the retired Space Bunny lane must never be executed and no new model may be
+substituted silently. Every request builder raises the deterministic
+``model_route_unavailable`` error instead of emitting any model request.
+
+Retired historical lane identity (server-side metadata only; never mirrored
+into B66 browser sources, never executed):
 
 ```text
 B66_TEXT_PRIMARY=stealth/space-bunny-alpha
@@ -19,10 +25,6 @@ Reuse (no second authority):
   (same port as ``file_intake.py``);
 - scanned-PDF raster: ``padiem_ai_core.pdf_render.render_pdf_pages``
   (adopted PDFium adapter, full-page PNG previews);
-- image execution schema: the canonical B14 ``multimodal_contract`` shape
-  (``text`` + exactly one ``image_url`` data URL, JPEG/PNG/WebP, decoded
-  image <= 4 MiB, remote URL forbidden). This module emits that shape and
-  the gateway revalidates it; no second image schema is defined here.
 - extraction validation: behavioral parity with the model-independent
   ``reference/business-66-padiem-quote-v1/quote-extraction.js`` contract
   (untrusted input, strict nested types, ISO/calendar dates, validDays,
@@ -35,20 +37,25 @@ Manual fallback is always off for the MVP (``allow_external_fallback`` is
 
 from __future__ import annotations
 
-import base64
-import binascii
 import math
 import re
 from datetime import date
 from pathlib import PurePath
 from typing import Any, Callable
 
-# Governed Space Bunny lane. Server-side routing metadata only. The B66
-# browser must never import or inline these values (static contract guard).
+# Retired historical lane identity (owner final retirement decision,
+# 2026-10-07). Metadata only: never an executable route, never a request
+# target, never a fallback. B66 extraction stays fail-closed under the
+# successor-pending HOLD; no successor model is substituted here.
 B66_GOVERNED_ROUTE = "kilo/stealth-space-bunny-alpha"
 B66_GOVERNED_UPSTREAM = "stealth/space-bunny-alpha"
 B66_GOVERNED_PROVIDER = "kilo"
 MANUAL_FALLBACK_ALLOWED = False
+
+# Deterministic fail-closed code raised by every request builder while the
+# extraction lane has no executable model (successor pending, retired lane
+# never re-activated, no silent substitution).
+B66_MODEL_ROUTE_UNAVAILABLE = "model_route_unavailable"
 
 # Execution stays on the canonical non-streaming completion path (#3212:
 # staged SSE stays ``model=b14/auto`` text-only and is untouched here).
@@ -138,16 +145,6 @@ _EXTRACTION_JSON_CONTRACT = (
     "없는 값은 문자열 UNKNOWN이 아니라 JSON null로 반환하십시오. "
     "금액 합계·부가세 금액·총액·유효일은 계산하거나 만들어내지 마십시오."
 )
-_TEXT_PROMPT = (
-    "다음 견적서 텍스트에서 원문에 있는 사실만 추출하십시오. "
-    + _EXTRACTION_JSON_CONTRACT
-)
-_IMAGE_PROMPT = (
-    "다음 견적서 이미지에서 실제로 보이는 사실만 추출하십시오. "
-    + _EXTRACTION_JSON_CONTRACT
-)
-
-
 class B66ExtractionRoutingError(ValueError):
     """Bounded extraction-routing failure (fail closed, Korean-safe code)."""
 
@@ -167,85 +164,20 @@ def _safe_filename(value: Any) -> str:
     return cleaned
 
 
-def _checked_text(value: Any) -> str:
-    if not isinstance(value, str) or not value.strip():
-        raise B66ExtractionRoutingError("empty_text")
-    text = value.strip()
-    if len(text) > MAX_EXTRACTION_TEXT_CHARS:
-        raise B66ExtractionRoutingError("text_too_large")
-    return text
-
-
-def _image_magic_matches(media_type: str, payload: bytes) -> bool:
-    if media_type == "image/jpeg":
-        return payload.startswith(b"\xff\xd8\xff")
-    if media_type == "image/png":
-        return payload.startswith(b"\x89PNG\r\n\x1a\n")
-    if media_type == "image/webp":
-        return (
-            len(payload) >= 12
-            and payload.startswith(b"RIFF")
-            and payload[8:12] == b"WEBP"
-        )
-    return False
-
-
-def _checked_image_bytes(payload: Any, *, media_type: str) -> bytes:
-    if media_type not in _IMAGE_MEDIA:
-        raise B66ExtractionRoutingError("unsupported_image_type")
-    if not isinstance(payload, (bytes, bytearray)) or not payload:
-        raise B66ExtractionRoutingError("empty_file")
-    raw = bytes(payload)
-    if len(raw) > MAX_IMAGE_BYTES:
-        raise B66ExtractionRoutingError("image_too_large")
-    if not _image_magic_matches(media_type, raw):
-        raise B66ExtractionRoutingError("image_magic_mismatch")
-    return raw
-
-
-def _checked_image_request_args(
-    *, filename: str, media_type: Any
-) -> tuple[str, str]:
-    name = _safe_filename(filename)
-    if not isinstance(media_type, str) or media_type not in _IMAGE_MEDIA:
-        raise B66ExtractionRoutingError("unsupported_image_type")
-    suffix = PurePath(name.lower()).suffix
-    if suffix not in _IMAGE_MEDIA[media_type]:
-        raise B66ExtractionRoutingError("media_extension_mismatch")
-    return name, media_type
-
-
 def build_text_extraction_request(
     normalized_text: Any,
     *,
     filename: Any,
     source_kind: Any = "native_document",
 ) -> dict[str, Any]:
-    """Build a gateway-valid text extraction request for the governed lane.
+    """Fail closed: no executable extraction lane exists (successor pending).
 
-    Native path: PDF native text / DOCX / XLSX / other normalized native
-    document text produced through the Core document authority. The returned
-    object contains only canonical B14 gateway fields; source provenance stays
-    server-owned outside the provider request.
+    The retired Space Bunny lane must never be requested and no successor
+    model may be substituted silently, so every request builder raises the
+    deterministic ``model_route_unavailable`` error before any model request
+    shape could exist.
     """
-    if source_kind not in ("text", "native_document"):
-        raise B66ExtractionRoutingError("unsupported_source_kind")
-    name = _safe_filename(filename)
-    text = _checked_text(normalized_text)
-    return {
-        "model": B66_GOVERNED_ROUTE,
-        "messages": [
-            {
-                "role": "user",
-                "content": f"{_TEXT_PROMPT}\n\n[출처: {name}]\n{text}",
-            }
-        ],
-        "stream": B66_USE_STREAMING,
-        "business14": {
-            "allow_external_fallback": MANUAL_FALLBACK_ALLOWED,
-            "max_attempts": 1,
-        },
-    }
+    raise B66ExtractionRoutingError(B66_MODEL_ROUTE_UNAVAILABLE)
 
 
 def build_image_extraction_request(
@@ -255,42 +187,12 @@ def build_image_extraction_request(
     filename: Any,
     source_kind: Any = "image",
 ) -> dict[str, Any]:
-    """Build one gateway-valid canonical B14 multimodal request.
+    """Fail closed: no executable extraction lane exists (successor pending).
 
-    Emits the canonical ``text`` + exactly one ``image_url`` data-URL shape
-    (JPEG/PNG/WebP, base64 data URL only, decoded image <= 4 MiB). The B14
-    gateway revalidates this shape with ``multimodal_contract``. Only
-    canonical gateway fields are returned; source provenance remains in the
-    trusted B66 server boundary and is never sent as provider-request metadata.
+    See ``build_text_extraction_request``; every request builder raises the
+    deterministic ``model_route_unavailable`` error.
     """
-    if source_kind not in ("image", "scanned_pdf"):
-        raise B66ExtractionRoutingError("unsupported_source_kind")
-    name, safe_media = _checked_image_request_args(
-        filename=filename, media_type=media_type
-    )
-    raw = _checked_image_bytes(image_bytes, media_type=safe_media)
-    encoded = base64.b64encode(raw).decode("ascii")
-    data_url = f"data:{safe_media};base64,{encoded}"
-    if len(raw) > MAX_IMAGE_BYTES:
-        raise B66ExtractionRoutingError("image_too_large")
-    return {
-        "model": B66_GOVERNED_ROUTE,
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": _IMAGE_PROMPT},
-                    {"type": "image_url", "image_url": {"url": data_url}},
-                ],
-            }
-        ],
-        "stream": B66_USE_STREAMING,
-        "business14": {
-            "allow_external_fallback": MANUAL_FALLBACK_ALLOWED,
-            "required_capabilities": ["image"],
-            "max_attempts": 1,
-        },
-    }
+    raise B66ExtractionRoutingError(B66_MODEL_ROUTE_UNAVAILABLE)
 
 
 def build_scanned_pdf_extraction_requests(
@@ -299,60 +201,13 @@ def build_scanned_pdf_extraction_requests(
     name: Any,
     renderer: Callable[..., Any] | None = None,
 ) -> list[dict[str, Any]]:
-    """Render a scanned PDF via the Core authority, then build image requests.
+    """Fail closed: no executable extraction lane exists (successor pending).
 
-    Uses ``padiem_ai_core.pdf_render.render_pdf_pages`` (adopted PDFium
-    adapter). No custom rendering or OCR lives here. One canonical
-    multimodal request is produced per rendered page (the B14 contract
-    carries exactly one image per request).
+    See ``build_text_extraction_request``; the scanned-PDF builder also raises
+    the deterministic ``model_route_unavailable`` error without rendering any
+    page and without producing any model request.
     """
-    filename = _safe_filename(name)
-    suffix = PurePath(filename.lower()).suffix
-    if suffix != ".pdf":
-        raise B66ExtractionRoutingError("unsupported_file_type")
-    if not isinstance(pdf_bytes, (bytes, bytearray)) or not pdf_bytes:
-        raise B66ExtractionRoutingError("empty_file")
-
-    if renderer is None:
-        from padiem_ai_core.pdf_render import render_pdf_pages as _render
-
-        renderer = _render
-
-    try:
-        result = renderer(
-            name=filename, media_type="application/pdf", payload=bytes(pdf_bytes)
-        )
-    except B66ExtractionRoutingError:
-        raise
-    except Exception as exc:
-        # Fail closed like the intake boundary: a missing render authority is
-        # reported distinctly so callers never mistake it for a bad document.
-        if getattr(exc, "code", None) == "pdf_render_dependency_unavailable":
-            raise B66ExtractionRoutingError("render_authority_unavailable") from exc
-        raise B66ExtractionRoutingError("document_render_failed") from exc
-
-    pages = getattr(result, "pages", None)
-    if not pages:
-        raise B66ExtractionRoutingError("document_render_failed")
-
-    requests: list[dict[str, Any]] = []
-    stem = PurePath(filename).stem or "scan"
-    for page in pages:
-        data = getattr(page, "data", None)
-        page_number = getattr(page, "page_number", len(requests) + 1)
-        raw = _checked_image_bytes(data, media_type="image/png")
-        page_name = f"{stem}-p{page_number}.png"
-        requests.append(
-            build_image_extraction_request(
-                raw,
-                media_type="image/png",
-                filename=page_name,
-                source_kind="scanned_pdf",
-            )
-        )
-    if not requests:
-        raise B66ExtractionRoutingError("document_render_failed")
-    return requests
+    raise B66ExtractionRoutingError(B66_MODEL_ROUTE_UNAVAILABLE)
 
 
 def _contains_forbidden_key(value: Any) -> bool:
@@ -759,6 +614,7 @@ def project_to_quote_draft_candidate(
 
 __all__ = [
     "B66_GOVERNED_PROVIDER",
+    "B66_MODEL_ROUTE_UNAVAILABLE",
     "B66_GOVERNED_ROUTE",
     "B66_GOVERNED_UPSTREAM",
     "B66_USE_STREAMING",

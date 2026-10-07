@@ -27,14 +27,14 @@ on:
         description: 'Exact current main SHA authorized for this one-shot candidate live smoke'
         required: true
       candidate_id:
-        description: 'Allowlisted candidate id (agnes|sensenova|poolside|motif|mercury|atria|luna|space-bunny)'
+        description: 'Allowlisted candidate id (agnes|sensenova|poolside|motif|mercury|atria|luna)'
         required: true
       modality:
-        description: 'Request modality (text|image). Image is only permitted for space-bunny.'
+        description: 'Request modality (text). Image is retired with space-bunny (2026-10-07).'
         required: false
         default: 'text'
       image_case:
-        description: 'Image proof case (generic|b66-f02). b66-f02 requires space-bunny + image.'
+        description: 'Retained for source compatibility; only generic works.'
         required: false
         default: 'generic'
       expected_b14_version:
@@ -85,8 +85,17 @@ jobs:
 
       - name: Run model-evaluation harness and shared fixture contracts
         shell: bash
+        env:
+          # pytest collects apps/padiem-chat/tests from the repo root, so its
+          # conftest (which imports app.model_policy, app.same_origin_guard and
+          # padiem_control_plane) needs those sources on sys.path, and its ASGI
+          # transport hooks (#3476/#3615) need the Chat runtime's own
+          # httpx/starlette dependencies installed. The suite itself stays
+          # network-free and offline.
+          PYTHONPATH: apps/padiem-chat:packages/padiem-ai-core:packages/padiem-control-plane
         run: |
           set -euo pipefail
+          python -m pip install --quiet 'httpx>=0.27,<1' 'starlette>=0.37,<1'
           python -m pytest -q \
             .github/tests/test_b14_model_evaluation.py \
             apps/padiem-chat/tests/test_tier_benchmark_corpus.py
@@ -258,26 +267,26 @@ jobs:
           set -euo pipefail
           python -m pytest -q .github/tests/test_b14_agnes_production_smoke.py
 
-      - name: Pin the Space Bunny image canary source extension
+      - name: Pin the Space Bunny retirement source contract
         shell: bash
         run: |
           set -euo pipefail
           script=.github/scripts/b14_candidate_live_smoke.py
           wf=.github/workflows/b14-candidate-live-smoke.yml
-          grep -Fq 'candidate_id="space-bunny"' "${script}"
-          grep -Fq 'credential_binding="PADIEM_KILO_API_KEY"' "${script}"
-          grep -Fq 'expected_binding="PADIEM_KILO_API_KEY"' "${script}"
-          grep -Fq 'credential_mode="optional_platform_secret"' "${script}"
+          # Owner final retirement decision (2026-10-07): the Space Bunny
+          # candidate must be absent from the allowlist and no image candidate
+          # may exist. The bounded image gate stays fail-closed.
+          if grep -Fq 'candidate_id="space-bunny"' "${script}"; then
+            echo 'SPACE_BUNNY_STILL_ALLOWLISTED=1'
+            exit 1
+          fi
+          grep -Fq 'IMAGE_ONLY_CANDIDATE_ID = ""' "${script}"
           grep -Fq 'def canonical_image_body' "${script}"
-          grep -Fq 'SPACE_BUNNY_PRODUCTION_IMAGE_SMOKE=PASS' "${script}"
+          grep -Fq 'image_modality_not_permitted' "${script}"
           grep -Fq 'IMAGE_CASE_B66_F02 = "b66-f02"' "${script}"
-          grep -Fq 'B66_F02_VISUAL_FACTS=PASS' "${script}"
-          grep -Fq 'B66_F02_IMAGE_SHA256' "${script}"
-          grep -Fq 'IMAGE_MODE_NON_SPACE_BUNNY=REJECTED_BEFORE_PROVIDER_CALL' "${wf}"
-          grep -Fq 'SPACE_BUNNY_PRODUCTION_IMAGE_SMOKE=PASS' "${wf}"
           grep -Fq 'RAW_IMAGE_PAYLOAD_OUTPUT=0' "${script}"
           grep -Fq "modality" "${wf}"
-          echo 'SPACE_BUNNY_IMAGE_SOURCE_EXTENSION=PASS'
+          echo 'SPACE_BUNNY_RETIREMENT_SOURCE_CONTRACT=PASS'
 
       - name: Pin the canonical served-version resolver is unbroken
         shell: bash
@@ -321,29 +330,19 @@ jobs:
         run: |
           set -euo pipefail
           echo "${CANDIDATE_ID}" | grep -Eq '^[a-z0-9.-]{1,32}$'
+          # Owner final retirement decision (2026-10-07): space-bunny is no
+          # longer allowlisted and no image candidate exists.
           case "${CANDIDATE_ID}" in
-            agnes|sensenova|poolside|motif|mercury|atria|luna|space-bunny) ;;
+            agnes|sensenova|poolside|motif|mercury|atria|luna) ;;
             *) echo 'CANDIDATE_NOT_ALLOWLISTED=1'; exit 1 ;;
           esac
           echo "CANDIDATE_ID_ALLOWLISTED=${CANDIDATE_ID}"
           case "${MODALITY:-text}" in
             text) ;;
-            image)
-              if [ "${CANDIDATE_ID}" != "space-bunny" ]; then
-                echo 'IMAGE_MODE_NON_SPACE_BUNNY=REJECTED_BEFORE_PROVIDER_CALL'
-                exit 1
-              fi
-              ;;
-            *) echo 'UNKNOWN_MODALITY=1'; exit 1 ;;
+            *) echo 'IMAGE_MODE_NO_CANDIDATE_AVAILABLE=REJECTED_BEFORE_PROVIDER_CALL'; exit 1 ;;
           esac
           case "${IMAGE_CASE:-generic}" in
             generic) ;;
-            b66-f02)
-              if [ "${CANDIDATE_ID}" != "space-bunny" ] || [ "${MODALITY:-text}" != "image" ]; then
-                echo 'B66_F02_CASE_REQUIRES_SPACE_BUNNY_IMAGE=1'
-                exit 1
-              fi
-              ;;
             *) echo 'UNKNOWN_IMAGE_CASE=1'; exit 1 ;;
           esac
           echo "MODALITY=${MODALITY:-text}"
@@ -427,21 +426,6 @@ jobs:
           grep -qx 'RAW_IMAGE_PAYLOAD_OUTPUT=0' "${log}"
           grep -qx 'PRIVATE_PAYLOAD_OUTPUT=0' "${log}"
           grep -qx 'SECRET_VALUE_OUTPUT=0' "${log}"
-          if [ "${MODALITY:-text}" = "image" ]; then
-            grep -qx 'SPACE_BUNNY_PRODUCTION_IMAGE_SMOKE=PASS' "${log}"
-            grep -qx 'SPACE_BUNNY_PROVIDER_REGISTERED=YES' "${log}"
-            grep -qx 'SPACE_BUNNY_ROUTE_REGISTERED=YES' "${log}"
-            grep -qx 'SPACE_BUNNY_EXACT_MODEL_IDENTITY=PASS' "${log}"
-            grep -qx 'SPACE_BUNNY_INPUT_MODALITY=IMAGE' "${log}"
-            grep -qx 'SPACE_BUNNY_ACTUAL_RESPONSE_MODEL_EVIDENCE=PASS' "${log}"
-            grep -qx 'SPACE_BUNNY_PROVIDER_MATCH=YES' "${log}"
-            grep -qx 'SPACE_BUNNY_FALLBACK_USED=NO' "${log}"
-            grep -qx 'SPACE_BUNNY_ATTEMPT_COUNT=1' "${log}"
-            if [ "${IMAGE_CASE:-generic}" = "b66-f02" ]; then
-              grep -qx 'B66_F02_VISUAL_FACTS=PASS' "${log}"
-              grep -qx 'B66_F02_FIXTURE_SHA256=PASS' "${log}"
-            fi
-          fi
 
       - name: Record immutable execution locks
         if: always()

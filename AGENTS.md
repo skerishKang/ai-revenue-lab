@@ -13,6 +13,8 @@ Canonical operating documents:
 - `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
 - `docs/operations/LOCAL_DOCKER_AVOIDANCE_POLICY.md`
 - `docs/operations/GITHUB_REPORT_HANDOFF_POLICY.md`
+- `docs/operations/MULTI_MACHINE_LOCAL_WORKTREE_POLICY.md`
+- `docs/operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 
 ## Search / adopt before build
 
@@ -38,8 +40,8 @@ Technology discovery does not automatically pause an already-approved active tas
 
 1. **User / Product Owner** — product goals, priorities, material UX/business decisions, merge/Production authority when the work contract requires owner authorization.
 2. **Web CTO** — work contract, architecture/safety boundary, acceptance criteria, current-remote audit, independent final review.
-3. **Implementation Worker (local model)** — implementation on the authorized branch, implementation tests, Draft PR, CI response, implementation report. In the current operating model this is a local model with GitHub access; its local checks are implementation self-checks unless a second actor re-runs them.
-4. **Local Validator** — exact-head execution in the required real environment when independent local/browser/OS/hardware validation is required.
+3. **Implementation Worker (local model)** — implementation on the authorized branch, focused implementation tests, Draft PR, `DEV_FAST_GATE`, and implementation report. After the fast gate passes, the worker is released to the next authorized issue instead of waiting synchronously for the full Windows/Ubuntu/browser matrix.
+4. **Local Validator(s)** — asynchronous exact-head execution in the required real environments when independent local/browser/OS/hardware validation is required. Windows, Ubuntu and browser/full-regression validation may be owned by different validator actors in parallel.
 
 One actor may perform multiple **non-independent** stages. The same actor must not claim both implementation and **independent Local Validation** for the same revision.
 
@@ -63,6 +65,30 @@ REPORT_POINTER=<immutable report/artifact pointer or NOT_REQUIRED reason>
 ```
 
 The Web CTO re-checks that this record names the exact head being merged.
+
+## Fast development gate and parallel validation
+
+Development progress and merge readiness are separate gates.
+
+```text
+DEV_FAST_GATE=PASS
+→ DEV_ACTOR_RELEASED=YES
+→ implementation actor may move to the next authorized issue
+
+VALIDATOR_WINDOWS=PENDING|PASS|FAIL|FIXING
+VALIDATOR_UBUNTU=PENDING|PASS|FAIL|FIXING
+VALIDATOR_BROWSER=PENDING|PASS|FAIL|NOT_REQUIRED
+→ validators run asynchronously and may work in parallel
+
+FULL_VALIDATION=PASS
+→ required before merge when configured/relevant
+```
+
+A failing asynchronous validator blocks merge of the affected revision, not unrelated development progress. If a validator fixes source, that actor becomes a repair/implementation actor for the new revision; the modified run is not independent validation of the new head. The repair may be revalidated by another independent actor while the original implementation worker continues other work.
+
+For Windows-first slices, the focused Windows proof may be the `DEV_FAST_GATE`. For web/backend slices, use the smallest focused web/API/contract proof that actually exercises the change. Do not require every supported OS/browser in the implementer's synchronous critical path.
+
+See issue #3429 for the CI/workflow optimization program.
 
 ## Product-evidence stages are flexible
 
@@ -172,8 +198,10 @@ The fast-development rule means “do not wait on unrelated validation”; it do
 User request / portfolio authority
 → Web CTO exact work contract
 → Implementation Worker (local model) implementation
-→ implementation self-check + configured CI
-→ independent validation when required
+→ focused self-check + DEV_FAST_GATE
+→ DEV_ACTOR_RELEASED; implementation may continue elsewhere
+→ asynchronous Windows / Ubuntu / browser validators when required
+→ FULL_VALIDATION on the final exact head
 → Web CTO final review
 → owner decision when materially required
 → merge
@@ -200,6 +228,7 @@ Do not turn every available/automatically-triggered test into a required gate. D
 ## Non-negotiable rules
 
 - Re-read current remote state immediately before mutation, review, and merge.
+- Treat local clones and worktrees as machine-local working copies; the freshly fetched remote head is the only cross-machine source of truth. Follow `docs/operations/MULTI_MACHINE_LOCAL_WORKTREE_POLICY.md`.
 - Record repository, exact base SHA, branch, allowed paths, forbidden paths, non-goals, and acceptance criteria before implementation.
 - Do not directly modify `main` for ordinary development.
 - Do not include unrelated dirty files or out-of-scope files.
@@ -217,6 +246,7 @@ Do not turn every available/automatically-triggered test into a required gate. D
 - Before merge, the Web CTO posts an auditable `CTO_FINAL_REVIEW` record containing the exact head SHA and the **applicable** checklist results. Tiny bounded fixes may use the compact checklist; do not populate irrelevant template sections merely for ceremony.
 - Owner-delegated merges must be single-purpose, head-SHA-pinned, and condition-checked at execution time (re-read remote state; required CI/gate results still valid).
 - Final owner visual approval must never be inferred from a model/worker approval when the work contract explicitly reserves visual taste to the owner.
+- **Model/provider decisions are owner-only.** If work encounters model selection, replacement, benchmarking, fallback ordering, provider routing, model-specific credential/binding, or activation/deployment decisions, stop model work and ask the Product Owner. Do not search, compare, live-test, rank, modify, merge, or deploy model/provider choices without fresh explicit owner instruction for that scope. Follow `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`.
 - Deployment follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`; no alternate Preview/manual deployment path is implied by these rules.
 - Local Docker Desktop / local Docker daemon is not a default development or deployment path. Do not start or require it unless established remote build/deploy paths have been checked and the Product Owner explicitly approves a task-specific exception. Follow `LOCAL_DOCKER_AVOIDANCE_POLICY.md`.
 - On Windows, do not run `git worktree remove --force` while the worktree contains a junction/symlink/reparse point into a shared dependency directory (for example another checkout's `node_modules`). Remove the link itself with a link-safe operation first, verify the target directory is intact, then remove the worktree.

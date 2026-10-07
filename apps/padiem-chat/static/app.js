@@ -159,6 +159,11 @@
     if (workspace) workspace.hidden = state !== "claw";
     const modeBar = document.getElementById("clawManualForm");
     if (modeBar) modeBar.hidden = !(state === "claw" && workspace && workspace.dataset.view === "manual");
+    // #3531: the explicit manual-entry control lives in the fixed composer
+    // wrap and shows only on the general Claw view — never by default
+    // elsewhere, never inside the manual form it opens.
+    const entryBar = document.getElementById("clawManualEntryBar");
+    if (entryBar) entryBar.hidden = !(state === "claw" && workspace && workspace.dataset.view === "general");
     syncComposerForClaw(state === "claw");
     const chatNav = document.getElementById("newChatButton");
     const clawNav = document.getElementById("clawNavButton");
@@ -231,7 +236,7 @@
     article.querySelector("[data-runtime-label]").textContent = skillTitle ? `${runtimeLabel} · ${skillTitle}` : runtimeLabel;
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.COMPLETED);
   }
-  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, actionLabel = uiT("retry")) {
+  function buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, actionLabel = uiT("retry")) {
     const box = document.createElement("div");
     box.className = "error-box";
     const strong = document.createElement("strong");
@@ -247,7 +252,7 @@
       conversationState.setConversationId(retryContext.conversationId);
       activeProject = retryContext.project;
       renderProjectState();
-      const success = await requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext);
+      const success = await requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest);
       if (success && selectedAttachment === retryAttachment) clearAttachment();
     }, { once: true });
     box.append(strong, p, retry);
@@ -256,29 +261,29 @@
   function revealErrorState(article) {
     article.scrollIntoView({ block: "center", behavior: "auto" });
   }
-  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
+  function renderError(article, message, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
     const content = article.querySelector(".assistant-content");
     content.replaceChildren();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
-    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext));
+    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
-  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
+  function renderStreamError(article, message, retryMessages, retrySkill, retryContext, clawGeneralRequest = false, lifecycle = MESSAGE_LIFECYCLE.FAILED) {
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
     article.querySelector("[data-runtime-label]").textContent = lifecycle === MESSAGE_LIFECYCLE.TIMED_OUT ? uiT("timeout") : uiT("connection-error");
-    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext));
+    content.appendChild(buildRetryBox(message, article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest));
     PadiemChatLifecycle.set(article, lifecycle);
     revealErrorState(article);
   }
-  function renderCancelled(article, retryMessages, retrySkill, retryContext) {
+  function renderCancelled(article, retryMessages, retrySkill, retryContext, clawGeneralRequest = false) {
     const content = article.querySelector(".assistant-content");
     const typing = content.querySelector(".typing");
     if (typing) typing.remove();
     article.querySelector("[data-runtime-label]").textContent = uiT("generation-cancelled");
-    content.appendChild(buildRetryBox(uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, uiT("regenerate")));
+    content.appendChild(buildRetryBox(uiT("generation-cancelled-copy"), article, retryMessages, retrySkill, null, retryContext, clawGeneralRequest, uiT("regenerate")));
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.CANCELLED);
     revealErrorState(article);
   }
@@ -864,8 +869,8 @@
       }
       if (workspace) {
         delete workspace.dataset.inboxKind;
-        if (workspace.dataset.view === "inbox") workspace.dataset.view = "manual";
-        if (workspace.dataset.view === "automation") workspace.dataset.view = "manual";
+        if (workspace.dataset.view === "inbox") workspace.dataset.view = "general";
+        if (workspace.dataset.view === "automation") workspace.dataset.view = "general";
       }
       // Auth loss tears down any pending execute recovery: no timer outlives the session.
       clearClawRecovery({ syncControls: true });
@@ -1197,8 +1202,16 @@
     article.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
-  async function requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, signal) {
-    const response = await chatTransport.requestStreaming(payload, signal);
+  async function requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, signal, route) {
+    // #3539: product-state-aware routing. A generic B54 Claw submit runs on the
+    // canonical P01 Engine lane; the standalone Padiem Chat path keeps the
+    // existing /api/chat/stream transport call byte-for-byte.
+    // The decision is an immutable snapshot taken before showConversation()
+    // mutates shell.dataset.state, so it is never re-derived from live state.
+    const clawGeneralRequest = !!(route && route.clawGeneral);
+    const response = clawGeneralRequest
+      ? await chatTransport.requestClawGeneral(payload, signal)
+      : await chatTransport.requestStreaming(payload, signal);
 
     let answer = "";
     let paragraph = null;
@@ -1233,7 +1246,7 @@
             : uiT("stream-continue-failed");
           if (!paragraph) throw chatTransport.errorFor(data, message);
           terminalError = true;
-          renderStreamError(article, message, outboundMessages, skill, contextSnapshot, lifecycleForError(chatTransport.errorFor(data, message)));
+          renderStreamError(article, message, outboundMessages, skill, contextSnapshot, clawGeneralRequest, lifecycleForError(chatTransport.errorFor(data, message)));
           return true;
         }
         if (!data || data.done !== true || !paragraph || !answer) throw new Error(uiT("stream-complete-invalid"));
@@ -1248,7 +1261,7 @@
     } catch (error) {
       if (error && error.name === "AbortError") throw error;
       if (paragraph) {
-        renderStreamError(article, error instanceof Error ? error.message : uiT("stream-continue-failed"), outboundMessages, skill, contextSnapshot);
+        renderStreamError(article, error instanceof Error ? error.message : uiT("stream-continue-failed"), outboundMessages, skill, contextSnapshot, clawGeneralRequest);
         return false;
       }
       throw error;
@@ -1267,7 +1280,7 @@
     return "plus";
   }
 
-  async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot) {
+  async function requestAnswer(outboundMessages, skill, attachment, contextSnapshot, clawGeneralRequest) {
     if (inFlight) return false;
     inFlight = true;
     activeRequestCancelReason = null;
@@ -1280,6 +1293,15 @@
     renderTyping(article);
     try {
       const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };
+      // #3539: the routing decision arrives as a submit-time snapshot. It is
+      // NEVER re-derived from live shell state here, because showConversation()
+      // has already flipped shell.dataset.state to "chat" by the time this runs
+      // (re-deriving it silently rerouted the generic Claw composer onto the
+      // standalone /api/chat/stream lane in Production).
+      // A generic B54 Claw submit runs on the canonical P01 Engine lane with no
+      // direct-B14 /api/chat/stream fallback; the standalone Padiem Chat composer
+      // keeps /api/chat/stream unchanged, and the explicit manual form submits
+      // through clawManualForm below, never here.
       const attachments = attachmentPayload(attachment);
       if (attachments) payload.attachments = attachments;
       if (contextSnapshot.conversationId) payload.conversation_id = contextSnapshot.conversationId;
@@ -1287,11 +1309,19 @@
       if (attachments) {
         return await requestCompletedAnswer(article, payload, outboundMessages, attachment, contextSnapshot, controller.signal);
       }
-      return await requestStreamingAnswer(article, payload, outboundMessages, skill, contextSnapshot, controller.signal);
+      return await requestStreamingAnswer(
+        article,
+        payload,
+        outboundMessages,
+        skill,
+        contextSnapshot,
+        controller.signal,
+        clawGeneralRequest ? { clawGeneral: true } : null,
+      );
     } catch (error) {
       if (error && error.name === "AbortError") {
         if (activeRequestCancelReason === "user_cancel" && requestEpoch === conversationEpoch) {
-          renderCancelled(article, outboundMessages, skill, contextSnapshot);
+          renderCancelled(article, outboundMessages, skill, contextSnapshot, clawGeneralRequest);
         }
         return false;
       }
@@ -1303,6 +1333,7 @@
         skill,
         attachment,
         contextSnapshot,
+        clawGeneralRequest,
         lifecycleForError(error),
       );
       return false;
@@ -1317,17 +1348,29 @@
       }
     }
   }
+  // #3539: the generic B54 Claw composer runs on the canonical P01 Engine lane.
+  // This predicate documents the product state that selects the lane: the Claw
+  // shell with the explicit manual form hidden. It must be read at submit time,
+  // BEFORE showConversation() flips shell.dataset.state to "chat".
+  function clawGeneralRequestActive() {
+    return shell.dataset.state === "claw" && !(clawManualForm && !clawManualForm.hidden);
+  }
+
   async function submitPrompt(text, selectedSkill) {
     const prompt = text.trim();
     if (!prompt || inFlight) return;
     if (selectedSkill) conversationState.setSkill(selectedSkill);
     const attachmentSnapshot = selectedAttachment;
     const contextSnapshot = { conversationId: conversationState.getConversationId(), project: activeProject };
+    // #3539: snapshot the routing decision BEFORE showConversation() resets the
+    // shell state. The immutable snapshot is threaded through requestAnswer so a
+    // generic Claw submit cannot silently fall back to /api/chat/stream.
+    const clawGeneralRequest = clawGeneralRequestActive();
     showConversation();
     addUserMessage(prompt, attachmentSnapshot);
     input.value = "";
     const outbound = conversationState.outboundWithUser(prompt);
-    const success = await requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot);
+    const success = await requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot, clawGeneralRequest);
     if (success && selectedAttachment === attachmentSnapshot) clearAttachment();
   }
 
@@ -1376,11 +1419,10 @@
   });
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    // #2532: in the Claw workspace the composer is the request input; Enter routes to preview.
-    if (shell.dataset.state === "claw" && clawManualForm && !clawManualForm.hidden) {
-      clawManualForm.requestSubmit();
-      return;
-    }
+    // #3531: the shared composer always submits to the general Claw
+    // conversation, in every shell state. The quotation/document workflow
+    // runs only via the manual form's own explicit draft submit button;
+    // a generic request must never auto-enter it through the composer.
     submitPrompt(input.value);
   });
   cancelStreamButton.addEventListener("click", cancelActiveStream);
@@ -1646,7 +1688,11 @@
 
   function syncComposerForClaw(isClaw) {
     if (!input) return;
-    if (isClaw) {
+    // #3531: the business-request prompt belongs to the explicit manual
+    // workflow view only. The general Claw view shares the generic prompt
+    // so placeholder parity with Chat Home holds.
+    const manualView = isClaw && clawWorkspace && clawWorkspace.dataset.view === "manual";
+    if (manualView) {
       input.placeholder = localeOr("claw-request-placeholder", "Paste a business request you received by chat, SMS, or email.");
       input.setAttribute("aria-describedby", "clawStatus");
       input.setAttribute("maxlength", "4000");
@@ -2470,6 +2516,27 @@
   if (clawAutomationRetry) clawAutomationRetry.addEventListener("click", () => void loadClawAutomationRules());
 
   function openClawWorkspace() {
+    // #3531: Claw opens on the general conversation view. The document
+    // workflow (manual form, workflow chrome) stays hidden until the user
+    // explicitly enters it via openClawManual.
+    if (!clawWorkspace) return;
+    shell.dataset.state = "claw";
+    clawWorkspace.dataset.view = "general";
+    delete clawWorkspace.dataset.inboxKind;
+    if (clawInbox) clawInbox.hidden = true;
+    if (clawAutomation) clawAutomation.hidden = true;
+    if (clawManualForm) clawManualForm.hidden = true;
+    if (clawResultArea) clawResultArea.hidden = false;
+    setNavActive();
+    input.focus();
+    closeSidebar();
+    syncApprovedMemoryVisibility();
+    syncClawRunHistoryVisibility();
+  }
+
+  function openClawManual() {
+    // Explicit entry into the document/quotation workflow only. The manual
+    // form and its workflow chrome are never shown by default.
     if (!clawWorkspace) return;
     shell.dataset.state = "claw";
     clawWorkspace.dataset.view = "manual";
@@ -2954,6 +3021,8 @@
   }
 
   if (clawNavButton) clawNavButton.addEventListener("click", openClawWorkspace);
+  const clawManualEntryButton = document.getElementById("clawManualEntryButton");
+  if (clawManualEntryButton) clawManualEntryButton.addEventListener("click", openClawManual);
   if (tasksNavButton) tasksNavButton.addEventListener("click", () => openClawInbox("tasks"));
   if (alertsNavButton) alertsNavButton.addEventListener("click", () => openClawInbox("alerts"));
   if (clawInboxRetry) clawInboxRetry.addEventListener("click", () => {

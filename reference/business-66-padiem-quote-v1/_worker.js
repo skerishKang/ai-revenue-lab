@@ -33,7 +33,8 @@ function padiemTarget(url, method) {
     ["/api/padiem/auth/google/callback", ["GET", "/auth/google/callback"]],
     ["/api/padiem/auth/logout", ["POST", "/api/auth/logout"]],
     ["/api/padiem/b66/company-profile", ["GET", "/api/b66/company-profile"]],
-    ["/api/padiem/b66/quote/interpret", ["POST", "/api/b66/quote/interpret"]]
+    ["/api/padiem/b66/quote/interpret", ["POST", "/api/b66/quote/interpret"]],
+    ["/api/padiem/b66/quote/pdf", ["POST", "/api/b66/quote/pdf"]]
   ]);
   if (exact.has(path)) {
     const [allowedMethod, upstreamPath] = exact.get(path);
@@ -82,7 +83,9 @@ async function handlePadiemBridge(request, url, env) {
   const upstreamPath = padiemTarget(url, request.method);
   if (!upstreamPath) return jsonError("padiem_route_not_allowed", 404);
 
-  const headers = new Headers({ "Accept": "application/json" });
+  const headers = new Headers({
+    "Accept": upstreamPath === "/api/b66/quote/pdf" ? "application/pdf,application/json" : "application/json"
+  });
   headers.set("X-B66-Origin", url.origin);
   const cookie = request.headers.get("cookie");
   if (cookie) headers.set("Cookie", cookie);
@@ -127,6 +130,19 @@ async function handlePadiemBridge(request, url, env) {
   });
   const upstreamType = upstream.headers.get("content-type");
   if (upstreamType) responseHeaders.set("Content-Type", upstreamType);
+  if (upstreamPath === "/api/b66/quote/pdf") {
+    const disposition = upstream.headers.get("content-disposition");
+    if (disposition) responseHeaders.set("Content-Disposition", disposition);
+  }
+  for (const name of [
+    "X-B66-Rejection-Reason",
+    "X-B66-Rejection-Path",
+    "X-B66-Rejection-Type",
+    "X-B66-Upstream-Class"
+  ]) {
+    const value = upstream.headers.get(name);
+    if (value) responseHeaders.set(name, value);
+  }
   relaySetCookies(upstream.headers, responseHeaders);
   const location = upstream.headers.get("location");
   if (location && upstream.status >= 300 && upstream.status < 400) {

@@ -242,7 +242,8 @@ def _validate_body(raw: Any) -> dict:
         if temp < 0.0 or temp > 2.0:
             raise _InvalidBody("temperature must be between 0.0 and 2.0")
 
-    # max_tokens
+    # max_tokens. None is meaningful: preserve omission so a product may either
+    # request an explicit bounded budget or defer to the provider/model default.
     mt = raw.get("max_tokens")
     if mt is not None:
         if isinstance(mt, bool) or not isinstance(mt, int):
@@ -268,7 +269,7 @@ def _validate_body(raw: Any) -> dict:
         "model": model,
         "messages": validated_messages,
         "temperature": float(temp) if temp is not None else 0.2,
-        "max_tokens": int(mt) if mt is not None else 300,
+        "max_tokens": int(mt) if mt is not None else None,
         "business14": _validate_b14_options(raw.get("business14")),
     }
 

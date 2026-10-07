@@ -97,7 +97,7 @@ class PadiemTierB14Client(B14Client):
                 "route": {"mode": "manual", "model": policy.model_id, "provider": None},
                 "skill": task_mode_public_metadata(resolved_skill),
             }
-        if not model_policy_is_executable(policy.model_id):
+        if self.settings.runtime_mode != "mock" and not model_policy_is_executable(policy.model_id):
             raise ChatRuntimeError(422, "tier_unavailable", _TIER_UNAVAILABLE_MESSAGE)
         return await super().complete(
             messages,
@@ -119,7 +119,7 @@ class PadiemTierB14Client(B14Client):
             yield ChatStreamEvent(delta_content=answer)
             yield ChatStreamEvent(done=True)
             return
-        if not model_policy_is_executable(policy.model_id):
+        if self.settings.runtime_mode != "mock" and not model_policy_is_executable(policy.model_id):
             raise ChatRuntimeError(422, "tier_unavailable", _TIER_UNAVAILABLE_MESSAGE)
 
         stream = super().stream_text_auto(

@@ -63,6 +63,8 @@ CONTINUATION_REF = "cont_EngineOpaqueRef_01"
 NEXT_CONTINUATION_REF = "cont_EngineOpaqueRef_02"
 PAUSE_ID = "pause_engine_001"
 NEXT_PAUSE_ID = "pause_engine_002"
+if not PADIEM_EXECUTABLE_MODEL_IDS:
+    raise unittest.SkipTest("P01 approval continuation requires a selected executable model route")
 MODEL_ID = sorted(PADIEM_EXECUTABLE_MODEL_IDS)[0]
 
 # Exactly the fields the canonical Engine resume wire accepts for the agent.

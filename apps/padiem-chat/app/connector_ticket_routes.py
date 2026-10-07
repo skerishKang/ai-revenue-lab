@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from typing import Any
-from urllib.parse import urlsplit
 
 from . import httpx_compat as httpx
 
@@ -14,6 +13,7 @@ from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .config import Settings
 from .control_plane_identity import IdentityBridgeError
 from .control_plane_identity_worker import PrivateGoogleConnectTicket
+from .same_origin_guard import expected_browser_origin
 
 
 MAX_TICKET_REQUEST_BODY_BYTES = 1_024
@@ -34,16 +34,6 @@ def _error(status: int, code: str, message: str) -> JSONResponse:
         status_code=status,
         headers=_NO_STORE_HEADERS,
     )
-
-
-def _expected_origin(settings: Settings) -> str | None:
-    value = settings.public_base_url
-    if not isinstance(value, str) or not value:
-        return None
-    parsed = urlsplit(value)
-    if parsed.scheme != "https" or not parsed.netloc:
-        return None
-    return f"https://{parsed.netloc}"
 
 
 async def _closed_body(request: Request) -> dict[str, Any]:
@@ -89,7 +79,10 @@ async def google_connector_ticket(request: Request) -> JSONResponse:
     """
 
     settings: Settings = request.app.state.settings
-    expected_origin = _expected_origin(settings)
+    # The #3476 middleware already covers cookie-authenticated browser traffic,
+    # but this route answers origin problems before it resolves a session, so it
+    # keeps its own check. The expected-origin derivation is single-sourced.
+    expected_origin = expected_browser_origin(settings)
     request_origin = request.headers.get("origin")
     if expected_origin is None:
         return _error(503, "connector_ticket_unavailable", "Google 연결을 현재 사용할 수 없습니다.")

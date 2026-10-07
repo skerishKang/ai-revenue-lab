@@ -18,6 +18,7 @@ import type {
   ShellStatus,
   WorkspaceListResponse,
   WorkspaceRootResponse,
+  WorkspaceSearchResponse,
 } from '../contract/ipc.js';
 
 export interface PadiemShellApi {
@@ -30,6 +31,7 @@ export interface PadiemShellApi {
   chooseWorkspaceRoot(): Promise<WorkspaceRootResponse>;
   listWorkspaceDirectory(relativePath?: string): Promise<WorkspaceListResponse>;
   clearWorkspaceRoot(): Promise<WorkspaceRootResponse>;
+  searchWorkspace(query: string): Promise<WorkspaceSearchResponse>;
   listConversations(): Promise<CanonicalConversationListResponse>;
   readConversation(conversationId: string): Promise<CanonicalConversationReadResponse>;
   listRuns(): Promise<CanonicalRunListResponse>;

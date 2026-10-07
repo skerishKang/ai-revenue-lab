@@ -81,6 +81,19 @@ SUPERSEDED
 
 `IMPLEMENTED_SELF_CHECKED` is implementation-actor evidence, not independent validation.
 
+Track implementation throughput separately:
+
+```text
+DEV_FAST_GATE_NOT_RUN
+DEV_FAST_GATE_PENDING
+DEV_FAST_GATE_FAILED
+DEV_FAST_GATE_PASSED
+
+DEV_ACTOR_RELEASED=NO|YES
+```
+
+`DEV_FAST_GATE_PASSED` allows the implementation actor to move to the next authorized issue. It does not mean merge-ready.
+
 ## 5. Independent validation
 
 ```text
@@ -94,6 +107,16 @@ INVALIDATED_BY_NEW_REVISION
 
 Use `PASSED` only when the required independent validator tested the exact revision and did not create a new product-source revision during that validation.
 
+When multiple environments matter, track them independently and allow them to run in parallel:
+
+```text
+VALIDATOR_WINDOWS=PENDING|PASS|FAIL|FIXING|NOT_REQUIRED
+VALIDATOR_UBUNTU=PENDING|PASS|FAIL|FIXING|NOT_REQUIRED
+VALIDATOR_BROWSER=PENDING|PASS|FAIL|FIXING|NOT_REQUIRED
+```
+
+A validator that edits source changes role to repair/implementation actor for the new revision; that run cannot be the independent `PASSED` evidence for the new head.
+
 ## 6. CI
 
 ```text
@@ -103,6 +126,14 @@ PENDING
 FAILED
 PASSED
 ```
+
+Also track the aggregate merge gate separately:
+
+```text
+FULL_VALIDATION=PENDING|FAIL|PASS
+```
+
+`FULL_VALIDATION=PENDING` does not block unrelated implementation work after `DEV_FAST_GATE_PASSED`; it does block merge when the full gate is required.
 
 CI never substitutes for a different required evidence type.
 

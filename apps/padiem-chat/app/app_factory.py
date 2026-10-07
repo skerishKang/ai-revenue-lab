@@ -9,11 +9,14 @@ from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
 from .auth import GoogleOAuthClient
+from .auth_abuse import AuthAbuseGate, AuthAbuseStore, D1AuthAbuseStore
 from .b66_quote_conversation import B66QuoteConversationInterpreter
 from .b66_company_profile import CompanyProfileStore, D1CompanyProfileStore
 from .b66_company_profile_routes import b66_company_profile_get, b66_company_profile_put
 from .b66_quote_asset_routes import b66_quote_asset_detail
 from .b66_quote_assets import B66QuoteAssetStore, D1B66QuoteAssetMetadataStore
+from .b66_certified_quote_bundle import B66CertifiedQuoteBundleStore
+from .b66_certified_pdf_routes import b66_certified_pdf
 from .b66_quote_routes import (
     b66_quote_interpret,
     b66_runtime_config,
@@ -34,6 +37,7 @@ from .auth_routes import (
 )
 from .auto_grounding import AutoGroundingService
 from .chat_routes import api_chat, api_chat_stream
+from .claw_general_routes import claw_general_execute
 from .claw_routes import (
     claw_approval_decision,
     claw_manual_intake_artifact,
@@ -98,6 +102,7 @@ from .drive_case_pdf_routes import drive_case_pdf_detail, drive_case_pdfs_collec
 from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
 from .request_telemetry import RequestTelemetryMiddleware
+from .same_origin_guard import SameOriginGuardMiddleware
 from .saved_output_routes import output_detail, outputs_collection
 from .saved_outputs import SavedOutputStore
 from .tier_identity_client import PadiemTierB14Client
@@ -164,6 +169,7 @@ def create_app(
     b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
     b66_company_profile_store: CompanyProfileStore | None = None,
     b66_quote_asset_store=None,
+    b66_certified_quote_bundle_store=None,
     b66_quote_interpreter=None,
     claw_task_alert_store=None,
     calendar_store: CalendarStore | None = None,
@@ -173,6 +179,7 @@ def create_app(
     claw_local_access_source=None,
     local_task_result_source=None,
     desktop_device_session_authority=None,
+    auth_abuse_store: AuthAbuseStore | None = None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -251,8 +258,13 @@ def create_app(
             methods=["GET"],
         ),
         Route("/api/b66/quote/interpret", b66_quote_interpret, methods=["POST"]),
+        Route("/api/b66/quote/pdf", b66_certified_pdf, methods=["POST"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
+        # #3539: the generic Claw composer runs through the canonical #3382 P01
+        # Engine lane. It is a distinct B54 product boundary from manual-intake
+        # and has no direct-B14 (/api/chat/stream) fallback.
+        Route("/api/claw/general", claw_general_execute, methods=["POST"]),
         Route(
             "/api/claw/manual-intake/quote-compare",
             claw_manual_intake_quote_compare,
@@ -303,6 +315,10 @@ def create_app(
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     app = Starlette(routes=routes)
+    # #3476: added before telemetry deliberately — Starlette prepends each
+    # middleware, so the later-added telemetry layer stays outermost and keeps
+    # recording guard rejections.
+    app.add_middleware(SameOriginGuardMiddleware)
     # #1975: raw ASGI middleware, installed outermost so every route (including
     # the static Mount and the later-installed orchestration routes) is covered.
     app.add_middleware(RequestTelemetryMiddleware, emitter=telemetry_emitter)
@@ -319,6 +335,18 @@ def create_app(
     # closed with 503; there is no global/network fallback.
     app.state.drive_case_folder_engine_client = drive_case_folder_engine_client
     app.state.usage_gate = UsageGate(resolved, usage_store)
+
+    # #3508 dedicated password-login abuse authority. This deliberately does
+    # not reuse the B14/AI UsageGate. Production derives a durable store from
+    # the existing Chat D1 binding; tests may inject a network-free oracle.
+    _auth_abuse_store = auth_abuse_store
+    if _auth_abuse_store is None and d1_binding is not None:
+        try:
+            _auth_abuse_store = D1AuthAbuseStore(d1_binding)
+        except Exception:
+            _auth_abuse_store = None
+    app.state.auth_abuse_gate = AuthAbuseGate(resolved, _auth_abuse_store)
+
     # An explicitly injected B14 transport is the existing network-free regression seam.
     # It cannot occur through browser input or Worker bindings. Production/ordinary runtime
     # (transport=None) always enforces the gate; quota-specific integration tests also
@@ -431,6 +459,17 @@ def create_app(
         except Exception:
             _b66_quote_asset_store = None
     app.state.b66_quote_asset_store = _b66_quote_asset_store
+
+    # Certified private PDF bundles reuse the approved Saved Quote Skill and
+    # existing private R2 binding. This composition reads only; no upload,
+    # assignment, D1 migration or production activation occurs here.
+    _b66_bundle_store = b66_certified_quote_bundle_store
+    if _b66_bundle_store is None and r2_binding is not None:
+        try:
+            _b66_bundle_store = B66CertifiedQuoteBundleStore(r2_binding)
+        except Exception:
+            _b66_bundle_store = None
+    app.state.b66_certified_quote_bundle_store = _b66_bundle_store
 
     # #2341 Task/Alert inbox: consume the existing migration-010 D1 authority.
     # No schema creation or alternate DB authority is introduced here.

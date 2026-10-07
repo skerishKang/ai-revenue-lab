@@ -13,6 +13,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: b62-conversation-export-browser-qa-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   conversation-export-browser-qa:
     runs-on: ubuntu-latest

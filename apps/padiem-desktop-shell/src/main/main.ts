@@ -32,6 +32,9 @@ import { acquireSingleInstanceOwnership } from './single-instance.js';
 import { PairingHandoffConsumer } from './pairing-handoff-consumer.js';
 import { resolveRunnerHostMode } from './runner-host-mode.js';
 import { LocalWorkspaceController } from '../workspace/local-workspace.js';
+import { createElectronBrowserOpenViewPort } from '../browser/browser-open-electron-view.js';
+import { composeTrustedBrowserOpen } from '../browser/browser-open-composition.js';
+import { createResidentBrowserOpenRedemptionPort } from '../conversation/resident-browser-open-redemption.js';
 import {
   CanonicalConversationController,
 } from '../conversation/canonical-conversation.js';
@@ -187,6 +190,29 @@ export const canonicalConversations = new CanonicalConversationController(
  * main-process-only swap here.
  */
 export const canonicalRuns = new CanonicalRunController();
+
+/**
+ * #3611 — the trusted-main `browser.open` composition.
+ *
+ * The ephemeral view owner is the *only* Electron-touching browser module, and it
+ * is created here, in the trusted main process, exactly once.
+ *
+ * Redemption goes over the *existing* supervised resident pipe — the same one
+ * #3436 B2d device-session material already uses — so the durable one-shot stays
+ * with the agent that owns the store. The desktop never becomes the replay
+ * authority, and no second socket, listener or reader is introduced.
+ */
+export const browserOpen = composeTrustedBrowserOpen({
+  view: createElectronBrowserOpenViewPort(),
+  redemption: createResidentBrowserOpenRedemptionPort({
+    boundary: {
+      sendResidentLine: (line: string) => supervisor.sendResidentLine(line),
+      takeResidentBrowserOpenRedemptionLine: () =>
+        supervisor.takeResidentBrowserOpenRedemptionLine(),
+      residentRunning: () => supervisor.residentSnapshot().running,
+    },
+  }),
+});
 
 export const controller = new ShellController({
   supervisor,

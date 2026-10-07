@@ -3,8 +3,16 @@ name: B62 PR Preview
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    # #3527: the deploy surface is `apps/padiem-chat/static` only — this job runs
+    # `wrangler pages deploy apps/padiem-chat/static` with no build step, and every
+    # path it reads (index.html, the two glass CSS files, assets/*.jpg) plus the
+    # browser-QA target live inside that directory. Backend (`app/**`), the Worker
+    # entrypoint, tests, Python deps, migrations and `packages/**` cannot change the
+    # produced preview bytes, so they no longer fan out into this lane. The workflow
+    # file itself stays in scope, which keeps a future deploy-command change
+    # self-correcting. Proven by `.github/tests/test_b62_pr_preview_trigger_scope.py`.
     paths:
-      - "apps/padiem-chat/**"
+      - "apps/padiem-chat/static/**"
       - ".github/workflows/b62-pr-preview.yml"
       - ".github/scripts/b62_pr_preview_glass_qa.py"
 
