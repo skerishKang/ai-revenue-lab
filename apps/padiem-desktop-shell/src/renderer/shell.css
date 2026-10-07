@@ -869,6 +869,16 @@ button.workbench-session-entry:hover:not(:disabled) {
   display: none;
 }
 
+/* The collapsed rails are icon/summary strips, so their padding shrinks with
+   them — otherwise a three-character state word would wrap in a 52px column. */
+.workbench[data-left-rail='collapsed'] .workbench-left {
+  padding: 8px 6px;
+}
+
+.workbench[data-right-rail='collapsed'] .workbench-tools {
+  padding: 8px 5px;
+}
+
 .workbench[data-left-rail='collapsed'] .workbench-nav-list {
   flex-direction: column;
   flex-wrap: nowrap;
