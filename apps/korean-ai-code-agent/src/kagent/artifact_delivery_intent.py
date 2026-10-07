@@ -302,16 +302,6 @@ class ArtifactDeliveryIntent:
     def artifact_integrity_ref(self) -> str:
         return self.artifact_ref.integrity_ref
 
-    @property
-    def requires_external_approval(self) -> bool:
-        """Whether the existing approval-continuation authority is implicated.
-
-        External connector delivery may require approval; the in-app current
-        surface does not. This is a *description*, not an approval decision —
-        the decision stays with the existing approval authority.
-        """
-        return self.delivery_kind is DeliveryKind.EXTERNAL_CONNECTOR
-
     def public_projection(self) -> dict[str, Any]:
         """JSON-safe metadata-only projection (never bytes, never destinations).
 

@@ -68,7 +68,6 @@ class DeliveryKindShapeTests(unittest.TestCase):
     def test_current_surface_intent_is_valid(self) -> None:
         rec = intent()
         self.assertEqual(rec.delivery_kind, DeliveryKind.CURRENT_SURFACE)
-        self.assertFalse(rec.requires_external_approval)
         self.assertIsNone(rec.channel_binding_ref)
 
     def test_external_connector_intent_requires_binding_authority(self) -> None:
@@ -79,13 +78,11 @@ class DeliveryKindShapeTests(unittest.TestCase):
             delivery_kind=DeliveryKind.EXTERNAL_CONNECTOR,
             channel_binding_ref="binding_ref_opaque_4",
         )
-        self.assertTrue(rec.requires_external_approval)
         self.assertEqual(rec.channel_binding_ref, "binding_ref_opaque_4")
 
     def test_durable_store_intent_is_valid_and_provider_neutral(self) -> None:
         rec = intent(delivery_kind=DeliveryKind.DURABLE_STORE)
         self.assertEqual(rec.delivery_kind, DeliveryKind.DURABLE_STORE)
-        self.assertFalse(rec.requires_external_approval)
 
     def test_delivery_kind_accepts_its_wire_value(self) -> None:
         rec = intent(delivery_kind="durable_store")
@@ -434,14 +431,14 @@ class AuthorityBoundaryTests(unittest.TestCase):
             self.assertNotIn("ApprovalState", name)
             self.assertNotIn("ApprovalPause", name)
 
-    def test_requires_external_approval_describes_does_not_decide(self) -> None:
+    def test_delivery_intent_does_not_decide_approval_requirement(self) -> None:
         rec = intent(
             delivery_kind=DeliveryKind.EXTERNAL_CONNECTOR,
             channel_binding_ref="binding_ref_opaque_4",
         )
-        self.assertIsInstance(rec.requires_external_approval, bool)
-        # An external intent with no approval_ref is still a valid *intent*:
-        # approval is decided by the existing authority, not inferred here.
+        # External delivery may require approval, but that policy belongs to the
+        # existing approval authority. This inert intent must not decide it.
+        self.assertFalse(hasattr(rec, "requires_external_approval"))
         self.assertIsNone(rec.approval_ref)
 
     def test_frozen_intent_cannot_be_mutated(self) -> None:
