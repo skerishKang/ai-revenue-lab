@@ -1,35 +1,37 @@
 # -*- coding: utf-8 -*-
 """#3679 bounded-archive contract for the generic B66 analyzer.
 
-Fifteen proofs:
+Proofs, grouped:
 
-1.  a valid workbook still analyzes, and the committed fixture's analysis is unchanged;
-2.  too many entries is refused;
-3.  one oversized member is refused;
-4.  aggregate uncompressed bytes past the total budget are refused;
-5.  an extreme expansion ratio is refused even inside the byte caps;
-6.  ``../`` traversal is refused;
-7.  an absolute member path is refused;
-8.  an encrypted member is refused with a deterministic code;
-9.  a duplicate member the analyzer reads is refused rather than silently first-wins;
-10. a malformed / truncated archive is refused, never skipped;
-11. malformed XML inside an otherwise in-budget member is a bounded failure;
-12. the optional drawings / rels / sharedStrings / VML routes still work;
-13. a member read can never exceed the configured bound;
-14. the bounded reader does not materialize the payload before the limit (peak-memory control
-    against the unsized ``ZipFile.read`` it replaces) -- the #3637 measurement re-aimed here;
-15. the analyzer's bounds equal Core's canonical constants whenever Core is importable.
-
-Fixtures are built in-process; nothing here reads a customer document, and the only committed
-fixture used is the public-safe synthetic one already in this directory.
+* valid input still analyzes, and the committed fixture's analysis is byte-for-byte unchanged;
+* budget refusals -- entry count, per-entry size, running total, per-entry expansion ratio, and a
+  directly pinned aggregate ratio;
+* membership refusals -- ``../`` traversal, absolute path, link entry (KAgent semantics), encrypted
+  (deterministic code), and any exact duplicate filename at admission;
+* malformed input -- truncated archive, non-archive bytes, empty file, malformed XML inside an
+  in-budget member, a degenerate compressed size, and a declared size that lies about its content;
+* the read itself -- bounded, capped by configuration, and proven not to materialize the payload by a
+  peak-memory control against the unsized ``ZipFile.read`` it replaces;
+* resource ownership -- the archive handle is closed on the success path, on a mid-analysis failure
+  and on an admission refusal;
+* the optional routes (drawings, drawing rels, sharedStrings, VML) still produce their facts, and an
+  embedded archive is neither opened nor recursed into;
+* single authority -- the analyzer's bounds, path predicate and link predicate are asserted against
+  **this checkout's** Core and KAgent through a pinned subprocess, on the same DTD archives, so the
+  parity runs in CI instead of skipping;
+* the refusal surface -- the CLI exits non-zero with a code and writes no evidence JSON.
 """
 
 from __future__ import annotations
 
+import base64
 import json
+import os
+import stat
 import struct
 import subprocess
 import sys
+import tempfile
 import tracemalloc
 import zipfile
 from io import BytesIO
@@ -74,6 +76,13 @@ SHEET = (
     "</worksheet>"
 ).encode()
 SHARED = f'<sst xmlns="{NS_MAIN}" count="1" uniqueCount="1"><si><t>견적번호</t></si></sst>'.encode()
+# A generic OOXML entity declaration, not a document-specific literal: #3637's Core gate refuses
+# DTDs in every XML part it admits, and the analyzer must agree part for part.
+DTD_XML = b'<?xml version="1.0"?><!DOCTYPE x [<!ENTITY e "v">]><x>&e;</x>'
+DTD_RELS = (
+    b'<?xml version="1.0"?><!DOCTYPE x [<!ENTITY e "v">]>'
+    b'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"/>'
+)
 
 
 def xlsx_bytes(extra=None, overrides=None):
@@ -402,15 +411,22 @@ def read_bound_payload(tmp_path):
 
 
 def test_member_read_cannot_exceed_the_configured_bound(tmp_path):
-    """A lying member is either capped or refused -- never handed back whole."""
+    """The primitive itself, on a raw archive: capped or refused, never handed back whole.
 
-    raw, archive = analyze.open_bounded_ooxml(write(tmp_path, read_bound_payload(tmp_path)))
-    try:
+    The gate now refuses this archive during admission (see
+    ``test_analyzer_refuses_a_lying_member_instead_of_amplifying``), so the helper is exercised
+    directly against ``zipfile`` to keep the read-level property covered.
+    """
+
+    path = write(tmp_path, read_bound_payload(tmp_path))
+    with zipfile.ZipFile(path) as archive:
+        info = archive.getinfo("xl/filler.xml")
+        assert info.file_size == 64, "the forged declaration is what the bound is computed from"
         with pytest.raises(analyze.ArchivePolicyError) as excinfo:
-            archive.read("xl/filler.xml")
+            analyze.bounded_read_zip_member(
+                archive, info, max_bytes=analyze.MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+            )
         assert excinfo.value.code == "ooxml_malformed"
-    finally:
-        archive.close()
 
 
 def test_bounded_read_does_not_materialize_the_payload(tmp_path):
@@ -434,17 +450,17 @@ def test_bounded_read_does_not_materialize_the_payload(tmp_path):
         peak_unsized = tracemalloc.get_traced_memory()[1]
         tracemalloc.stop()
 
-    raw, archive = analyze.open_bounded_ooxml(path)
-    try:
+    with zipfile.ZipFile(path) as archive:
+        info = archive.getinfo("xl/filler.xml")
         tracemalloc.start()
         try:
-            archive.read("xl/filler.xml")
+            analyze.bounded_read_zip_member(
+                archive, info, max_bytes=analyze.MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+            )
         except analyze.ArchivePolicyError:
             pass
         peak_bounded = tracemalloc.get_traced_memory()[1]
         tracemalloc.stop()
-    finally:
-        archive.close()
 
     assert peak_bounded < 1024 * 1024, f"bounded reader peaked at {peak_bounded} bytes"
     assert peak_unsized > 4 * 1024 * 1024, f"unsized read only peaked at {peak_unsized} bytes"
@@ -494,43 +510,381 @@ def test_no_unbounded_member_read_left_in_the_analyzer():
     assert "zf.read_xml(" in xlsx_route and "zf.read(" in xlsx_route
 
 
-def _core_authority():
-    """Core's canonical module, but only when it is *this* checkout's Core.
+def test_route_does_not_pre_allocate_the_raw_ceiling(tmp_path):
+    """A few-kilobyte workbook must not cost 2 MiB of input buffer.
 
-    A shared interpreter can resolve ``padiem_ai_core`` into a concurrent worktree (#3658). Parity
-    against that copy would be a false signal -- it would certify agreement with a version of Core
-    that this branch does not contain -- so the comparison is skipped instead.
+    ``handle.read(bound + 1)`` allocates the requested size, not the available size, so the bounded
+    raw read is deliberately chunked. This pins that the whole route stays near the input size.
     """
 
-    core = pytest.importorskip("padiem_ai_core.document_normalization")
-    origin = Path(core.__file__).resolve()
-    if not str(origin).startswith(str(REPO_ROOT)):
-        pytest.skip(f"padiem_ai_core resolves outside this checkout ({origin}); #3658 preflight")
-    return core
+    path = write(tmp_path, xlsx_bytes())
+    tracemalloc.start()
+    analyze.analyze_xlsx(path)
+    peak = tracemalloc.get_traced_memory()[1]
+    tracemalloc.stop()
+
+    assert len(path.read_bytes()) < 16 * 1024
+    assert peak < 512 * 1024, f"route peaked at {peak:,} bytes for a {len(path.read_bytes()):,} B file"
 
 
-@pytest.mark.parametrize(
-    "name",
-    [
-        "MAX_OOXML_ENTRIES",
-        "MAX_OOXML_MEMBER_NAME_CHARS",
-        "MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES",
-        "MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES",
-        "MAX_BINARY_DOCUMENT_BYTES",
-    ],
+# --------------------------------------------------------------------------- #
+# 16-22. the corrections CENTRAL required on review
+# --------------------------------------------------------------------------- #
+
+
+def symlink_xlsx() -> bytes:
+    """A workbook carrying a link entry, built the way an archive would carry one."""
+
+    buf = BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("xl/workbook.xml", WORKBOOK)
+        archive.writestr("xl/_rels/workbook.xml.rels", WORKBOOK_RELS)
+        archive.writestr("xl/styles.xml", STYLES)
+        info = zipfile.ZipInfo("xl/escape")
+        info.create_system = 3                      # unix: external_attr carries the POSIX mode
+        info.external_attr = (stat.S_IFLNK | 0o777) << 16
+        archive.writestr(info, "../../../../../etc/passwd")
+    return buf.getvalue()
+
+
+def test_symlink_like_entry_is_refused(tmp_path):
+    """KAgent semantics, no new policy: a link entry is the defect, extraction is irrelevant."""
+
+    assert code_for(tmp_path, symlink_xlsx()) == "ooxml_link_entry"
+
+
+def test_regular_and_directory_entries_are_not_mistaken_for_links(tmp_path):
+    """No false positive on the forms real archives use."""
+
+    buf = BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr("xl/workbook.xml", WORKBOOK)
+        archive.writestr("xl/_rels/workbook.xml.rels", WORKBOOK_RELS)
+        archive.writestr("xl/styles.xml", STYLES)
+        directory = zipfile.ZipInfo("xl/media/")
+        directory.create_system = 3
+        directory.external_attr = (stat.S_IFDIR | 0o755) << 16
+        archive.writestr(directory, b"")
+        regular = zipfile.ZipInfo("xl/media/logo.png")
+        regular.create_system = 3
+        regular.external_attr = (stat.S_IFREG | 0o644) << 16
+        archive.writestr(regular, b"\x89PNG\r\n\x1a\n")
+    assert code_for(tmp_path, buf.getvalue()) != "ooxml_link_entry"
+
+
+def forge_compressed_sizes(payload: bytes, overridden: dict) -> bytes:
+    """Set members' declared *compressed* size while leaving content and declarations intact."""
+
+    data = bytearray(payload)
+    with zipfile.ZipFile(BytesIO(data)) as archive:
+        locals_by_name = {info.filename: info.header_offset for info in archive.infolist()}
+    for offset, name, _size_field in _central_directory_walk(data):
+        if name not in overridden:
+            continue
+        value = overridden[name]
+        struct.pack_into("<I", data, offset + 20, value)          # central dir compressed size
+        struct.pack_into("<I", data, locals_by_name[name] + 18, value)  # local header, same field
+    return bytes(data)
+
+
+def test_degenerate_compressed_size_is_refused_deterministically(tmp_path):
+    """``compress_size <= 0`` with content is metadata the ratio check cannot divide by."""
+
+    payload = xlsx_bytes(extra={"xl/filler.xml": filler(64 * 1024, seed=3)})
+    forged = forge_compressed_sizes(payload, {"xl/filler.xml": 0})
+    assert code_for(tmp_path, forged) == "ooxml_compressed_size_invalid"
+
+
+def test_aggregate_expansion_check_is_reachable_and_unit_pinned():
+    """The aggregate bound is KAgent's; pinned directly because it is defensive, not reachable.
+
+    With the per-entry check in force the aggregate can only ever be the weighted mean of ratios that
+    each already passed, so no archive can trip it through the walk -- which is exactly why KAgent
+    documents the per-entry check as the one that "stops a bomb entry being diluted by padding".
+    Asserting the function rather than conjuring an impossible archive keeps the property covered and
+    the claim honest.
+    """
+
+    assert analyze.aggregate_expansion_violation(1000, 1) is True
+    assert analyze.aggregate_expansion_violation(200, 1) is False
+    assert analyze.aggregate_expansion_violation(201, 1) is True
+    assert analyze.aggregate_expansion_violation(10_000, 0) is False, "no divide by zero"
+    assert analyze.aggregate_expansion_violation(0, 10) is False
+
+
+def test_per_entry_ratio_is_what_the_walk_uses(tmp_path):
+    """When both ratio checks could describe an archive, the walk reports the per-entry one."""
+
+    payload = xlsx_bytes(extra={"xl/filler.xml": "Q" * (900 * 1024)})
+    with pytest.raises(analyze.ArchivePolicyError) as excinfo:
+        analyze.analyze_xlsx(write(tmp_path, payload))
+    assert excinfo.value.code == "ooxml_expansion_ratio"
+    assert "entry expansion ratio" in str(excinfo.value)
+    assert "aggregate" not in str(excinfo.value)
+
+
+def test_duplicate_is_refused_for_a_member_the_analyzer_never_reads(tmp_path):
+    """Admission-level rule: the read surface may grow later; duplicate ambiguity must not return."""
+
+    buf = BytesIO()
+    with pytest.warns(UserWarning, match="Duplicate name"):
+        with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as archive:
+            archive.writestr("xl/workbook.xml", WORKBOOK)
+            archive.writestr("xl/_rels/workbook.xml.rels", WORKBOOK_RELS)
+            archive.writestr("xl/styles.xml", STYLES)
+            archive.writestr("xl/notused.xml", "<a/>")
+            archive.writestr("xl/notused.xml", "<b/>")
+    assert code_for(tmp_path, buf.getvalue()) == "ooxml_duplicate_member"
+
+
+def test_archive_is_closed_when_analysis_fails_part_way(tmp_path):
+    """A refusal after admission must still release the handle, not wait for GC.
+
+    The failure is placed in an optional drawing route, so it is raised by the analyzer body after
+    the gate has already opened and returned the archive -- exactly the path a close written only
+    beside ``return`` would leak.
+    """
+
+    path = write(tmp_path, xlsx_bytes(extra={"xl/drawings/drawing1.xml": b"<xdr:broken"}))
+    opened = []
+    real_zipfile = zipfile.ZipFile
+
+    class Spy(real_zipfile):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            opened.append(self)
+
+    zipfile.ZipFile = Spy
+    try:
+        with pytest.raises(analyze.ArchivePolicyError):
+            analyze.analyze_xlsx(path)
+    finally:
+        zipfile.ZipFile = real_zipfile
+
+    assert opened, "the route should have opened an archive before failing"
+    for handle in opened:
+        assert handle.fp is None, "archive handle leaked on the failure path"
+
+
+def test_archive_is_closed_when_the_gate_itself_refuses(tmp_path):
+    """Admission opens an archive too; a refusal inside that walk must not leak either."""
+
+    opened = []
+    real_zipfile = zipfile.ZipFile
+
+    class Spy(real_zipfile):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            opened.append(self)
+
+    # Refuse on the *second* member, so the walk has already opened the archive.
+    path = write(tmp_path, xlsx_bytes(extra={"../escape.xml": "<a/>"}))
+    zipfile.ZipFile = Spy
+    try:
+        with pytest.raises(analyze.ArchivePolicyError):
+            analyze.open_bounded_ooxml(path)
+    finally:
+        zipfile.ZipFile = real_zipfile
+    assert opened
+    for handle in opened:
+        assert handle.fp is None, "archive handle leaked on the admission refusal path"
+
+
+# --------------------------------------------------------------------------- #
+# 23+. single authority: parity must RUN, not skip
+#
+# These run in a pinned subprocess rather than in-process. `PYTHONNOUSERSITE=1` keeps a stale
+# user-level editable install out of the picture and `PYTHONPATH` points at this checkout's Core and
+# KAgent source, so the comparison is always against the code in the branch under review. Probing
+# in-process would either import a foreign worktree's Core or skip, and a skipped parity check is the
+# exact hole #3679 exists to close.
+# --------------------------------------------------------------------------- #
+
+_CORE_NAMES = (
+    "MAX_BINARY_DOCUMENT_BYTES",
+    "MAX_OOXML_ENTRIES",
+    "MAX_OOXML_MEMBER_NAME_CHARS",
+    "MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES",
+    "MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES",
 )
-def test_bounds_equal_the_canonical_core_values(name):
+_POLICY_NAMES = (
+    "max_raw_bytes",
+    "max_archive_entries",
+    "max_archive_uncompressed_bytes",
+    "max_single_archive_entry_bytes",
+    "max_expansion_ratio",
+    "max_filename_bytes",
+)
+_PREDICATE_NAMES = [
+    "xl/workbook.xml", "../evil", "/abs", "a\\b", "C:x", "", "..", "x/../y",
+    "xl/./workbook.xml", "xl//workbook.xml", "x" * 300, "xl\\..\\escape.xml",
+]
+
+_PROBE = r"""
+import json, sys, zipfile
+from io import BytesIO
+from pathlib import Path
+
+import padiem_ai_core.document_normalization as core
+import kagent.file_intake_safety as gate
+
+root = Path(sys.argv[1]).resolve()
+spec = json.loads(sys.argv[2])
+
+for module in (core, gate):
+    origin = Path(module.__file__).resolve()
+    try:
+        origin.relative_to(root)
+    except ValueError:
+        raise SystemExit("%s imported from %s, outside %s" % (module.__name__, origin, root))
+
+link_modes = []
+for attr in spec["link_attrs"]:
+    info = zipfile.ZipInfo("probe")
+    info.create_system = 3
+    info.external_attr = attr << 16
+    link_modes.append(gate._is_link_entry(info))
+
+def core_code(payload_b64):
+    import base64
+    data = base64.b64decode(payload_b64)
+    try:
+        core.validate_ooxml_archive(data)
+    except core.DocumentNormalizationError as exc:
+        return exc.code
+    except Exception as exc:
+        return "unexpected:" + type(exc).__name__
+    return "accepted"
+
+print(json.dumps({
+    "core_origin": str(Path(core.__file__).resolve()),
+    "gate_origin": str(Path(gate.__file__).resolve()),
+    "core": {name: getattr(core, name) for name in spec["core_names"]},
+    "core_predicate": {n: core._safe_ooxml_member(n) for n in spec["predicate_names"]},
+    "policy": {k: getattr(gate.DEFAULT_POLICY, k) for k in spec["policy_names"]},
+    "depth": gate.MAX_SUPPORTED_ARCHIVE_DEPTH,
+    "link_modes": link_modes,
+    "core_codes": [core_code(a) for a in spec["archives"]],
+}))
+"""
+
+
+def _parity_probe(archives=()):
+    """Run the pinned probe once and return its verdict document."""
+
+    tmp_root = Path(tempfile.mkdtemp(prefix="parity-probe-"))
+    payload = {
+        "core_names": list(_CORE_NAMES),
+        "policy_names": list(_POLICY_NAMES),
+        "predicate_names": _PREDICATE_NAMES,
+        "link_attrs": [stat.S_IFLNK | 0o777, stat.S_IFREG | 0o644, 0],
+        "archives": [base64.b64encode(Path(p).read_bytes()).decode() for p in archives],
+    }
+    env = {
+        **os.environ,
+        "PYTHONPATH": os.pathsep.join(
+            [str(REPO_ROOT / "packages" / "padiem-ai-core"),
+             str(REPO_ROOT / "apps" / "korean-ai-code-agent" / "src")]
+        ),
+        "PYTHONNOUSERSITE": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+    }
+    proc = subprocess.run(
+        [sys.executable, "-c", _PROBE, str(REPO_ROOT), json.dumps(payload)],
+        capture_output=True,
+        text=True,
+        env=env,
+        cwd=str(tmp_root),
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    return json.loads(proc.stdout.strip().splitlines()[-1])
+
+
+@pytest.fixture(scope="module")
+def parity():
+    """One pinned probe run for the whole module, so parity executes rather than skips."""
+
+    return _parity_probe()
+
+
+def test_parity_probe_reads_this_checkout_only(parity):
+    """Guard the guard: a probe that resolved elsewhere would certify the wrong code."""
+
+    for key in ("core_origin", "gate_origin"):
+        origin = Path(parity[key])
+        assert origin.is_file(), parity[key]
+        assert str(origin).startswith(str(REPO_ROOT)), origin
+
+
+@pytest.mark.parametrize("name", _CORE_NAMES)
+def test_bounds_equal_the_canonical_core_values(name, parity):
     """Divergence between the analyzer's mirror and Core's authority fails here, not in production."""
 
-    core = _core_authority()
-    assert getattr(analyze, name) == getattr(core, name)
+    assert getattr(analyze, name) == parity["core"][name]
 
 
-def test_safe_member_predicate_matches_core():
-    core = _core_authority()
-    for name in ("xl/workbook.xml", "../evil", "/abs", "a\\b", "C:x", "", "..", "x/../y",
-                 "xl/./workbook.xml", "xl//workbook.xml", "x" * 300):
-        assert analyze._safe_ooxml_member(name) is core._safe_ooxml_member(name), name
+def test_bounds_equal_the_kagent_canonical_policy(parity):
+    """The same numbers the #2824 gate ships, not a parallel set chosen for this tool."""
+
+    policy = parity["policy"]
+    assert analyze.MAX_BINARY_DOCUMENT_BYTES == policy["max_raw_bytes"]
+    assert analyze.MAX_OOXML_ENTRIES == policy["max_archive_entries"]
+    assert analyze.MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES == policy["max_archive_uncompressed_bytes"]
+    assert analyze.MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES == policy["max_single_archive_entry_bytes"]
+    assert analyze.MAX_EXPANSION_RATIO == policy["max_expansion_ratio"]
+    assert analyze.MAX_OOXML_MEMBER_NAME_CHARS == policy["max_filename_bytes"]
+    assert parity["depth"] == 4
+    # Core and the intake gate agree with each other, which is why mirroring one mirrors both.
+    assert policy["max_raw_bytes"] == parity["core"]["MAX_BINARY_DOCUMENT_BYTES"]
+    assert policy["max_archive_entries"] == parity["core"]["MAX_OOXML_ENTRIES"]
+
+
+def test_safe_member_predicate_matches_core(parity):
+    for name, expected in parity["core_predicate"].items():
+        assert analyze._safe_ooxml_member(name) is expected, name
+
+
+def test_link_entry_predicate_matches_kagent(parity):
+    """Symlink semantics are KAgent's verbatim, including the non-link and zero-attr cases."""
+
+    attrs = [stat.S_IFLNK | 0o777, stat.S_IFREG | 0o644, 0]
+    for attr, expected in zip(attrs, parity["link_modes"]):
+        info = zipfile.ZipInfo("probe")
+        info.create_system = 3
+        info.external_attr = attr << 16
+        assert analyze._is_link_entry(info) is expected, oct(attr)
+        assert expected is (attr == (stat.S_IFLNK | 0o777))
+
+
+# --------------------------------------------------------------------------- #
+# Canonical behaviour parity on real archives: same input, same verdict.
+# --------------------------------------------------------------------------- #
+
+
+def test_dtd_refusals_match_canonical_core_behaviour(tmp_path):
+    """Core rejects DTDs in every XML/`.rels` part it admits; this analyzer must match, part by part.
+
+    Both authorities are fed the *same* bytes, so a divergence in scope -- e.g. only checking parts
+    the analyzer happens to parse -- shows up as different codes rather than as a silent gap.
+    """
+
+    cases = {
+        "dtd in the workbook": xlsx_bytes(overrides={"xl/workbook.xml": DTD_XML}),
+        "dtd in an unused member": xlsx_bytes(extra={"xl/notused.xml": DTD_XML}),
+        "dtd in a rels part": xlsx_bytes(
+            overrides={"xl/_rels/workbook.xml.rels": DTD_RELS}
+        ),
+    }
+    paths = []
+    for index, (label, payload) in enumerate(cases.items()):
+        path = write(tmp_path, payload, f"dtd{index}.xlsx")
+        with pytest.raises(analyze.ArchivePolicyError) as excinfo:
+            analyze.analyze_xlsx(path)
+        assert excinfo.value.code == "ooxml_dtd_rejected", label
+        paths.append(path)
+
+    verdict = _parity_probe(paths)
+    assert verdict["core_codes"] == ["ooxml_dtd_rejected"] * len(cases), verdict["core_codes"]
 
 
 # --------------------------------------------------------------------------- #
