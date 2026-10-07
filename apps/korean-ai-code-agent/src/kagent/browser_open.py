@@ -251,6 +251,23 @@ def browser_open_target_ref(request: BrowserOpenRequest) -> str:
     return f"url_sha256_{digest}"
 
 
+def browser_open_host_lease_ref(request: BrowserOpenRequest) -> str:
+    """Deterministic, bounded lease reference for one approved open.
+
+    The trusted main host owns the ephemeral view for exactly this lease, so the
+    lease must be derivable from the *approved* request rather than supplied by a
+    caller. Being a pure function of the request it can never address another
+    run's view, and it carries no URL material.
+    """
+
+    if not isinstance(request, BrowserOpenRequest):
+        raise ContractError("request must be BrowserOpenRequest")
+    digest = hashlib.sha256(
+        f"{request.open_id}:{request.run_id}:{request.device_id}".encode("utf-8")
+    ).hexdigest()[:24]
+    return f"browser_open_lease_{digest}"
+
+
 @dataclass(frozen=True, slots=True)
 class TrustedBrowserOpenGrant:
     grant_id: str

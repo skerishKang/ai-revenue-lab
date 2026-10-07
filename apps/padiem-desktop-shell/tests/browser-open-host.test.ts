@@ -25,11 +25,16 @@ import {
   BROWSER_CONTROL_IMPLEMENTED,
   BROWSER_OPEN_IMPLEMENTED,
   BROWSER_OPEN_PAGE_DERIVED_OUTPUT_SUPPORTED,
+  BROWSER_OPEN_REDEMPTION_REQUIRED,
   BROWSER_OPEN_USES_EXISTING_P01,
+  DESKTOP_DURABLE_REDEMPTION_AUTHORITY,
+  IN_PROCESS_CONSUMED_SET_IS_AUTHORITY,
+  SECOND_BROWSER_AUTHORITY,
   BrowserOpenHost,
   BrowserOpenRefusalError,
   PERSISTENT_BROWSER_PROFILE_SUPPORTED,
-  SECOND_BROWSER_AUTHORITY,
+  unconfiguredBrowserOpenRedemption,
+  type BrowserOpenRedemptionPort,
   type BrowserOpenViewPort,
   type BrowserOpenViewSession,
   type TrustedBrowserOpenGrant,
@@ -97,10 +102,49 @@ function grant(overrides: Partial<TrustedBrowserOpenGrant> = {}): TrustedBrowser
     requestFingerprint: 'fingerprint_3611',
     p01ApprovalRef: 'decision_3611',
     hostLeaseRef: 'host_lease_3611',
+    redemptionRef: 'redemption_3611',
     issuedAtIso: NOW.toISOString(),
     expiresAtIso: new Date(NOW.getTime() + 300_000).toISOString(),
     ...overrides,
   };
+}
+
+/**
+ * Fake canonical redemption authority.
+ *
+ * The ledger is supplied by the caller on purpose: handing two different hosts
+ * the SAME ledger while each keeps its own private consumed set is exactly a
+ * restart, and it is how the tests below prove the host's memory is not the
+ * authority.
+ */
+class FakeRedemption implements BrowserOpenRedemptionPort {
+  configured = true;
+  denied = false;
+  readonly redeemed: string[] = [];
+  readonly #ledger: Set<string> | undefined;
+
+  constructor(ledger?: Set<string>) {
+    this.#ledger = ledger;
+  }
+
+  async redeem(input: { redemptionRef: string }): Promise<void> {
+    if (this.denied) {
+      throw new BrowserOpenRefusalError(
+        'grant_rejected',
+        'canonical redemption refused this browser open',
+      );
+    }
+    if (this.#ledger !== undefined) {
+      if (this.#ledger.has(input.redemptionRef)) {
+        throw new BrowserOpenRefusalError(
+          'grant_rejected',
+          'canonical redemption has already been consumed',
+        );
+      }
+      this.#ledger.add(input.redemptionRef);
+    }
+    this.redeemed.push(input.redemptionRef);
+  }
 }
 
 type ViewBehavior = 'loaded' | 'blocked' | 'load_failed' | 'hang' | 'throw';
@@ -151,8 +195,12 @@ class FakeView implements BrowserOpenViewPort {
   }
 }
 
-function hostWith(view: FakeView, timeoutMs = 1_000): BrowserOpenHost {
-  return new BrowserOpenHost({ view, now: () => NOW, timeoutMs });
+function hostWith(
+  view: FakeView,
+  timeoutMs = 1_000,
+  redemption: BrowserOpenRedemptionPort = new FakeRedemption(),
+): BrowserOpenHost {
+  return new BrowserOpenHost({ view, redemption, now: () => NOW, timeoutMs });
 }
 
 function assertReceiptShape(receipt: BrowserOpenReceipt): void {
@@ -262,6 +310,7 @@ test('#3611 an expired grant never reaches the view', async () => {
   const view = new FakeView();
   const host = new BrowserOpenHost({
     view,
+    redemption: new FakeRedemption(),
     now: () => new Date(NOW.getTime() + 600_000),
   });
   await assert.rejects(
@@ -487,4 +536,85 @@ test('#3611 the host and contracts never touch Electron browser or session APIs'
       assert.equal(source.includes(forbidden), false, `${file} must not reference ${forbidden}`);
     }
   }
+});
+
+test('#3611 the durable redemption gate runs before any view exists', async () => {
+  const view = new FakeView();
+  const order: string[] = [];
+  const inner = new FakeRedemption();
+  const observed: BrowserOpenRedemptionPort = {
+    configured: true,
+    redeem: async (input) => {
+      order.push(`redeem:${input.redemptionRef}`);
+      await inner.redeem(input);
+    },
+  };
+  // Record the view call in the same order log. The point is the *order*, so the
+  // open still succeeds and the receipt is still produced.
+  const originalOpen = view.open.bind(view);
+  view.open = async (input: Parameters<BrowserOpenViewPort['open']>[0]) => {
+    order.push('view');
+    return await originalOpen(input);
+  };
+
+  const receipt = await hostWith(view, 1_000, observed).open(approvedRequest(), grant());
+  assert.deepEqual(order, ['redeem:redemption_3611', 'view']);
+  assert.equal(receipt.loadOutcome, 'loaded');
+});
+
+test('#3611 an unconfigured redemption authority fails closed with no view', async () => {
+  const view = new FakeView();
+  const host = new BrowserOpenHost({
+    view,
+    redemption: unconfiguredBrowserOpenRedemption(),
+    now: () => NOW,
+  });
+  assert.equal(host.redemptionConfigured, false);
+  await assert.rejects(
+    () => host.open(approvedRequest(), grant()),
+    (error: unknown) =>
+      error instanceof BrowserOpenRefusalError && error.code === 'redemption_unavailable',
+  );
+  assert.equal(view.calls.length, 0);
+});
+
+test('#3611 a refused canonical redemption never creates a view', async () => {
+  const view = new FakeView();
+  const redemption = new FakeRedemption();
+  redemption.denied = true;
+  await assert.rejects(
+    () => hostWith(view, 1_000, redemption).open(approvedRequest(), grant()),
+    (error: unknown) => error instanceof BrowserOpenRefusalError && error.code === 'grant_rejected',
+  );
+  assert.equal(view.calls.length, 0);
+});
+
+test('#3611 a restarted host reuses the canonical ledger and denies a replayed grant', async () => {
+  // One canonical ledger, two independent hosts. The second host has an EMPTY
+  // in-process consumed set, which is exactly what a restart leaves behind.
+  const ledger = new Set<string>();
+  const firstView = new FakeView();
+  await hostWith(firstView, 1_000, new FakeRedemption(ledger)).open(
+    approvedRequest(),
+    grant(),
+  );
+  assert.equal(firstView.calls.length, 1);
+
+  const secondView = new FakeView();
+  const restarted = hostWith(secondView, 1_000, new FakeRedemption(ledger));
+  assert.equal(restarted.consumedCount, 0, 'a restarted host remembers nothing');
+  await assert.rejects(
+    () => restarted.open(approvedRequest(), grant()),
+    (error: unknown) =>
+      error instanceof BrowserOpenRefusalError &&
+      error.message.includes('already been consumed'),
+  );
+  assert.equal(secondView.calls.length, 0, 'a replayed grant must not create a view');
+});
+
+test('#3611 the desktop is not a durable redemption authority and the host is not the replay gate', () => {
+  assert.equal(BROWSER_OPEN_REDEMPTION_REQUIRED, true);
+  assert.equal(DESKTOP_DURABLE_REDEMPTION_AUTHORITY, false);
+  assert.equal(IN_PROCESS_CONSUMED_SET_IS_AUTHORITY, false);
+  assert.equal(SECOND_BROWSER_AUTHORITY, false);
 });

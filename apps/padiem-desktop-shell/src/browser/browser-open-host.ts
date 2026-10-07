@@ -32,7 +32,11 @@ import {
 } from './browser-open-contracts.js';
 import { isNavigationPermitted, isPermittedPublicUrl } from './public-url-policy.js';
 
-export type BrowserOpenRefusalCode = 'policy_denied' | 'grant_rejected' | 'host_unavailable';
+export type BrowserOpenRefusalCode =
+  | 'policy_denied'
+  | 'grant_rejected'
+  | 'host_unavailable'
+  | 'redemption_unavailable';
 
 export class BrowserOpenRefusalError extends Error {
   readonly code: BrowserOpenRefusalCode;
@@ -54,6 +58,13 @@ export interface TrustedBrowserOpenGrant {
   readonly requestFingerprint: string;
   readonly p01ApprovalRef: string;
   readonly hostLeaseRef: string;
+  /**
+   * The canonical, agent-owned redemption this open belongs to (the durable
+   * admission the one-shot is anchored to). The desktop never mints it: it is
+   * carried from the authority that owns the durable store and is what the
+   * redemption port redeems against.
+   */
+  readonly redemptionRef: string;
   readonly issuedAtIso: string;
   readonly expiresAtIso: string;
 }
@@ -89,6 +100,7 @@ export function assertTrustedBrowserOpenGrant(value: unknown): TrustedBrowserOpe
   assertSafeRef(record.requestFingerprint, 'requestFingerprint');
   assertSafeRef(record.p01ApprovalRef, 'p01ApprovalRef');
   assertSafeRef(record.hostLeaseRef, 'hostLeaseRef');
+  assertSafeRef(record.redemptionRef, 'redemptionRef');
   const issuedAtIso = assertInstant(record.issuedAtIso, 'issuedAtIso');
   const expiresAtIso = assertInstant(record.expiresAtIso, 'expiresAtIso');
   const lifetime = (Date.parse(expiresAtIso) - Date.parse(issuedAtIso)) / 1000;
@@ -138,29 +150,81 @@ export interface BrowserOpenViewPort {
   }): Promise<BrowserOpenViewSession>;
 }
 
+/**
+ * The Desktop-side binding of the canonical, agent-owned one-shot authority.
+ *
+ * #3611: the desktop has no durable store of its own (`DESKTOP_RUN_DATABASE=0`),
+ * so it must not become a second replay authority either. `redeem` is the durable
+ * gate: it is awaited exactly once per open, **before any view exists**, and its
+ * refusal is the restart-safe denial. The host's own consumed set is a fast path
+ * only — losing it on restart must not re-enable an open.
+ */
+export interface BrowserOpenRedemptionPort {
+  /** False when no canonical redemption authority is wired: the host fails closed. */
+  readonly configured: boolean;
+  redeem(input: {
+    readonly redemptionRef: string;
+    readonly requestFingerprint: string;
+    readonly openId: string;
+    readonly runRef: string;
+  }): Promise<void>;
+}
+
+/** Fails closed until a canonical redemption authority is bound. */
+export function unconfiguredBrowserOpenRedemption(): BrowserOpenRedemptionPort {
+  return Object.freeze({
+    configured: false,
+    redeem: async () => {
+      throw new BrowserOpenRefusalError(
+        'redemption_unavailable',
+        'no canonical browser open redemption authority is configured',
+      );
+    },
+  });
+}
+
 export interface BrowserOpenHostDependencies {
   readonly view: BrowserOpenViewPort;
+  readonly redemption: BrowserOpenRedemptionPort;
   readonly now?: () => Date;
   readonly timeoutMs?: number;
 }
 
 export class BrowserOpenHost {
   readonly #view: BrowserOpenViewPort;
+  readonly #redemption: BrowserOpenRedemptionPort;
   readonly #now: () => Date;
   readonly #timeoutMs: number;
+  /** Fast path only. Never the replay authority. */
   readonly #consumed = new Set<string>();
 
   constructor(dependencies: BrowserOpenHostDependencies) {
     if (!dependencies || typeof dependencies.view !== 'object' || dependencies.view === null) {
       throw new BrowserOpenContractError('browser open host requires an injected view port');
     }
+    if (
+      !dependencies.redemption ||
+      typeof dependencies.redemption !== 'object' ||
+      dependencies.redemption === null ||
+      typeof dependencies.redemption.redeem !== 'function'
+    ) {
+      throw new BrowserOpenContractError(
+        'browser open host requires an injected canonical redemption port',
+      );
+    }
     this.#view = dependencies.view;
+    this.#redemption = dependencies.redemption;
     this.#now = dependencies.now ?? (() => new Date());
     this.#timeoutMs = dependencies.timeoutMs ?? BROWSER_OPEN_DEFAULT_TIMEOUT_MS;
   }
 
   get consumedCount(): number {
     return this.#consumed.size;
+  }
+
+  /** True only when a canonical redemption authority is actually bound. */
+  get redemptionConfigured(): boolean {
+    return this.#redemption.configured === true;
   }
 
   async open(
@@ -205,11 +269,27 @@ export class BrowserOpenHost {
         'browser open grant has already been consumed',
       );
     }
-    this.#consumed.add(consumptionKey);
 
     if (!this.#view.configured) {
       throw new BrowserOpenRefusalError('host_unavailable', 'no trusted browser view host is configured');
     }
+    if (!this.redemptionConfigured) {
+      throw new BrowserOpenRefusalError(
+        'redemption_unavailable',
+        'no canonical browser open redemption authority is configured',
+      );
+    }
+
+    // The durable gate, and it runs BEFORE any view exists. A refusal here is the
+    // restart-safe denial: it comes from the canonical authority, not from this
+    // process's memory, so a fresh host cannot accept a replayed grant.
+    await this.#redemption.redeem({
+      redemptionRef: trustedGrant.redemptionRef,
+      requestFingerprint: trustedGrant.requestFingerprint,
+      openId: trustedGrant.openId,
+      runRef: trustedGrant.runRef,
+    });
+    this.#consumed.add(consumptionKey);
 
     let session: BrowserOpenViewSession | null = null;
     let outcome: BrowserOpenLoadOutcome = 'cancelled';
@@ -324,3 +404,6 @@ export const PERSISTENT_BROWSER_PROFILE_SUPPORTED = false;
 export const BROWSER_OPEN_PAGE_DERIVED_OUTPUT_SUPPORTED = false;
 export const BROWSER_OPEN_USES_EXISTING_P01 = true;
 export const SECOND_BROWSER_AUTHORITY = false;
+export const BROWSER_OPEN_REDEMPTION_REQUIRED = true;
+export const DESKTOP_DURABLE_REDEMPTION_AUTHORITY = false;
+export const IN_PROCESS_CONSUMED_SET_IS_AUTHORITY = false;

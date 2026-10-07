@@ -32,6 +32,8 @@ import { acquireSingleInstanceOwnership } from './single-instance.js';
 import { PairingHandoffConsumer } from './pairing-handoff-consumer.js';
 import { resolveRunnerHostMode } from './runner-host-mode.js';
 import { LocalWorkspaceController } from '../workspace/local-workspace.js';
+import { createElectronBrowserOpenViewPort } from '../browser/browser-open-electron-view.js';
+import { composeTrustedBrowserOpen } from '../browser/browser-open-composition.js';
 import {
   CanonicalConversationController,
 } from '../conversation/canonical-conversation.js';
@@ -187,6 +189,19 @@ export const canonicalConversations = new CanonicalConversationController(
  * main-process-only swap here.
  */
 export const canonicalRuns = new CanonicalRunController();
+
+/**
+ * #3611 — the trusted-main `browser.open` composition.
+ *
+ * The ephemeral view owner is the *only* Electron-touching browser module, and it
+ * is created here, in the trusted main process, exactly once. The canonical
+ * redemption port is deliberately left unconfigured: the desktop owns no durable
+ * store, so the one-shot authority stays with the agent-side canonical store and
+ * an unwired build fails closed instead of opening a browser on its own say-so.
+ */
+export const browserOpen = composeTrustedBrowserOpen({
+  view: createElectronBrowserOpenViewPort(),
+});
 
 export const controller = new ShellController({
   supervisor,
