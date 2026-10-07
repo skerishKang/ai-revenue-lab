@@ -1,10 +1,13 @@
-"""Route execution contract for the Space Bunny text+vision primary lane (#3209).
+"""Route execution contract for the historical/manual B14 Space Bunny lane.
 
-Owner decision: ``stealth/space-bunny-alpha`` is both the canonical text
-primary and the canonical vision primary (decision source #3143, revised
-#3209). Everything here runs against the real registry, the real provider
-spec, and the real router resolvers — no string-presence checks — so the
-evidence is the actual registry result, not a keyword match.
+Status after #3568/#3569: the Space Bunny lane is an explicit historical and
+manual B14 provider registration that is preserved as metadata. It is NOT a
+Padiem canonical primary (the canonical text/vision primary stays pending
+successor selection in ``padiem_ai_core.model_primary``), NOT a Padiem Plus
+executable route (Plus holds at ``plus.hold.v1``), and it participates in no
+auto chain or fallback. Everything here runs against the real registry, the
+real provider spec, and the real router resolvers — no string-presence checks
+— so the evidence is the actual registry result, not a keyword match.
 
 Scope is the existing single-image product contract: the lane declares
 ``image`` alongside ``chat``/``coding``/``free`` and reuses the existing B14
