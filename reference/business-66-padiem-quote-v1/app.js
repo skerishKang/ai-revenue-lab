@@ -1068,6 +1068,32 @@
     }
   });
 
+  /* ── Excel 내보내기: 현재 확정된 QuoteDraft 를 그대로 포맷 어댑터에 넘긴다 ──
+     계산 authority 는 QuoteCore 하나이며, exporter 는 값을 재계산하지 않는다. */
+  $("xlsxDownload").addEventListener("click", () => {
+    const exporter = window.B66XlsxExport;
+    if (!exporter || typeof exporter.buildWorkbook !== "function") {
+      toast("Excel 내보내기를 준비하지 못했습니다.");
+      return;
+    }
+    try {
+      const bytes = exporter.buildWorkbook(draft);
+      const blob = new Blob([bytes], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = exporter.suggestFileName(draft);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      toast("Excel 파일을 내려받습니다.");
+    } catch (err) {
+      toast("Excel 파일을 만들지 못했습니다. 견적 내용을 확인해 주세요.", 4200);
+    }
+  });
+
   $("emailFuture").addEventListener("click", () => {
     toast("이메일 전송은 다음 단계에서 Gmail/메일 연동으로 붙입니다.");
   });
