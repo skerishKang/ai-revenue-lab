@@ -452,4 +452,3 @@ async def test_unrelated_local_result_suffix_mutation_is_denied() -> None:
         )
     assert response.status_code == 403
     assert _code(response) == ORIGIN_REJECTED_CODE
-
