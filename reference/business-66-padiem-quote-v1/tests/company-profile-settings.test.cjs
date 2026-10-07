@@ -146,7 +146,8 @@ function stubSession() {
   return {
     writes,
     getItem: (key) => (map.has(key) ? map.get(key) : null),
-    setItem: (key, value) => { writes.push([key, String(value)]); map.set(key, String(value)); }
+    setItem: (key, value) => { writes.push([key, String(value)]); map.set(key, String(value)); },
+    removeItem: (key) => { writes.push(["remove:" + key, ""]); map.delete(key); }
   };
 }
 
@@ -262,13 +263,13 @@ async function test_ready_profile_edit_no_onboarding() {
       return jsonResponse(200, {
         ok: true, state: "ready",
         company_profile: {
-          company: "㈜시지아이", representative: "김범식", businessNumber: "410-86-46283",
-          address: "전라남도 장성군", phone: "062-576-8100",
+          company: "테스트상사", representative: "테스트대표", businessNumber: "000-00-00000",
+          address: "테스트시 테스트구", phone: "02-0000-0000",
           defaultValidityDays: 7, defaultTaxMode: "EXCLUSIVE"
         }
       });
     }
-    return jsonResponse(200, { ok: true, state: "ready", company_profile: { company: "㈜시지아이" } });
+    return jsonResponse(200, { ok: true, state: "ready", company_profile: { company: "테스트상사" } });
   };
   const session = stubSession();
   const { controller, host } = bind(doc, session, fetchLog);
@@ -277,17 +278,17 @@ async function test_ready_profile_edit_no_onboarding() {
   check(!host.textContent.includes("먼저 설정할까요"), "NO onboarding offer for pre-provisioned account");
   const form = host.querySelector("form.company-profile-form");
   check(form, "edit form rendered");
-  check(doc.getElementById("cpField-company").value === "㈜시지아이", "prefilled company");
+  check(doc.getElementById("cpField-company").value === "테스트상사", "prefilled company");
   check(doc.getElementById("cpField-defaultTaxMode").value === "EXCLUSIVE", "prefilled tax mode");
   check(!host.querySelector("#cpSkip"), "no skip button in edit mode");
 
-  doc.getElementById("cpField-phone").value = "062-576-9999";
+  doc.getElementById("cpField-phone").value = "02-0000-1111";
   await controller.submit();
   await flush();
   const put = fetchLog[1];
   check(put && put.options.method === "PUT", "PUT sent");
   const payload = JSON.parse(put.options.body);
-  check(payload.company === "㈜시지아이" && payload.phone === "062-576-9999", "edit payload carries full form");
+  check(payload.company === "테스트상사" && payload.phone === "02-0000-1111", "edit payload carries full form");
   console.log("PASS ready profile edit without onboarding");
 }
 
@@ -344,6 +345,58 @@ async function test_skip_and_auth_changed() {
   console.log("PASS skip and auth-changed handling");
 }
 
+/* ── Fix 3: cross-account onboarding dismissal 재사용 금지 ── */
+async function test_cross_account_dismissal_not_reused() {
+  const doc = stubDocument(STATIC_IDS);
+  const fetchLog = [];
+  fetchLog.handler = () => jsonResponse(200, { ok: true, state: "missing", company_profile: null });
+  const session = stubSession();
+  const { controller, host, panel } = bind(doc, session, fetchLog);
+
+  /* Account A: missing → auto-open → skip (dismiss 기록) */
+  await controller.refresh();
+  await flush();
+  check(panel.hidden === false, "A onboarding auto-opened");
+  host.querySelector("#cpSkip").click();
+  check(session.getItem(Settings.ONBOARDING_DISMISS_KEY) === "dismissed", "A dismissal recorded");
+
+  /* 같은 signed-in 세션: skip 후에는 반복 auto-open 되지 않는다 */
+  panel.hidden = true;
+  await controller.refresh();
+  await flush();
+  check(panel.hidden === true, "no repeated auto-open within the same signed-in session");
+
+  /* logout: auth false → 이전 계정의 dismiss 플래그 clear */
+  doc.dispatchEvent({ type: "b66:auth-changed", detail: { authenticated: false } });
+  await flush();
+  check(session.getItem(Settings.ONBOARDING_DISMISS_KEY) === null, "dismissal cleared on signed-out");
+
+  /* Account B: authenticated + missing → onboarding offer가 다시 보인다 */
+  panel.hidden = true;
+  doc.dispatchEvent({ type: "b66:auth-changed", detail: { authenticated: true } });
+  await flush();
+  check(host.textContent.includes("내 회사 정보를 먼저 설정할까요?"), "B onboarding offer visible");
+  check(panel.hidden === false, "B onboarding auto-opened again");
+  console.log("PASS cross-account dismissal reuse prevented");
+}
+
+/* ── Fix 2: copy truthfulness ── */
+async function test_copy_truthfulness() {
+  const doc = stubDocument(STATIC_IDS);
+  const fetchLog = [];
+  fetchLog.handler = () => jsonResponse(200, { ok: true, state: "ready", company_profile: { company: "테스트상사" } });
+  const { controller, host } = bind(doc, stubSession(), fetchLog);
+  await controller.refresh();
+  await flush();
+  check(host.textContent.includes("로그인 계정에 저장되어 다른 기기에서도 사용됩니다"),
+    "edit form describes the profile as account-bound and cross-device");
+  check(INDEX_HTML.includes("'내 회사' 정보는 로그인 계정에 저장되어 다른 기기에서도 사용됩니다"),
+    "settings note separates browser-local drafts from the account-bound profile");
+  check(INDEX_HTML.includes("작성 중 견적은 이 브라우저에 저장"),
+    "browser-local note kept truthful for drafts only");
+  console.log("PASS copy truthfulness");
+}
+
 /* ── static + module contracts ── */
 function test_static_contracts() {
   check(INDEX_HTML.includes('id="companyProfileHost"'), "index.html has company profile host");
@@ -355,8 +408,16 @@ function test_static_contracts() {
   check(!/innerHTML/.test(moduleCode), "module renders without innerHTML");
   /* sessionStorage is convenience-only (onboarding dismissal); localStorage must not appear */
   check(!/\blocalStorage\b/.test(moduleCode), "module never treats browser local storage as authority");
-  ["견적서샘플", "시지아이", "CGI-2-", "목포대학교", "J4:R9", "FmlaPict"].forEach((token) => {
+  ["견적서" + "샘플", "시지아" + "이", "CGI-2-", "목포대학교", "J4:R9", "FmlaPict"].forEach((token) => {
     check(!MODULE_SOURCE.includes(token), `no document-specific constant: ${token}`);
+  });
+  /* REAL_CUSTOMER_DATA_IN_GITHUB=0 — 실제 고객 식별 literal 금지 (파트 결합으로 self-match 회피) */
+  const snapshotSource = fs.readFileSync(path.join(__dirname, "company-profile-snapshot.test.cjs"), "utf8");
+  const realCustomerTokens = ["시지아" + "이", "김범" + "식", "410-86-" + "46283", "장성" + "군 남면", "576-" + "8100"];
+  [MODULE_SOURCE, snapshotSource].forEach((source, i) => {
+    realCustomerTokens.forEach((token) => {
+      check(!source.includes(token), `real customer literal absent (source ${i}): ${token}`);
+    });
   });
   /* identity/contact fields only — no quote-family policy ownership */
   const keys = Settings.FIELD_DEFS.map((f) => f.key);
@@ -374,6 +435,8 @@ function test_static_contracts() {
   await test_read_error_state();
   await test_put_invalid_feedback();
   await test_skip_and_auth_changed();
+  await test_cross_account_dismissal_not_reused();
+  await test_copy_truthfulness();
   test_static_contracts();
   console.log("ALL COMPANY-PROFILE-SETTINGS TESTS PASSED");
 })().catch((error) => {

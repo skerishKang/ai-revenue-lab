@@ -234,6 +234,12 @@
 
     function renderSignedOut() {
       state.phase = "signed-out";
+      /* CROSS_ACCOUNT_ONBOARDING_DISMISS_REUSE=0: 로그아웃/세션 종료 시 이전 계정에서
+         남긴 onboarding 해제 편의 플래그를 지운다. 플래그에 계정 식별자를 넣지 않고
+         계정 전환 시 clear 하는 bounded 방식이다 (새 identity authority 없음). */
+      if (d.session) {
+        try { d.session.removeItem(ONBOARDING_DISMISS_KEY); } catch (_) {}
+      }
       host.textContent = "";
       host.appendChild(el(doc, "p", "company-profile-note", "로그인하면 내 회사 정보를 설정하고 기기와 관계없이 재사용할 수 있습니다."));
     }
@@ -257,10 +263,10 @@
       if (phase === "onboarding") {
         host.appendChild(el(doc, "p", "company-profile-offer", "내 회사 정보를 먼저 설정할까요?"));
         host.appendChild(el(doc, "p", "company-profile-note",
-          "견적서에 사용될 회사 기본정보를 저장해 두면 다음 견적부터 재사용합니다. 회사명만 입력해도 저장할 수 있습니다."));
+          "견적서에 사용될 회사 기본정보를 저장해 두면 다음 견적부터 재사용합니다. 회사명만 입력해도 저장할 수 있습니다. 저장된 정보는 로그인 계정에 귀속되어 다른 기기에서도 사용됩니다."));
       } else {
         host.appendChild(el(doc, "p", "company-profile-note",
-          "견적서 발신자 기본정보입니다. 승인된 견적 양식(Saved Quote Skill)에 유효기간/부가세 등 family 기본값이 있으면 양식 값이 우선하며, 이 화면의 기본값은 양식에 값이 없을 때만 사용됩니다."));
+          "견적서 발신자 기본정보입니다. 이 정보는 로그인 계정에 저장되어 다른 기기에서도 사용됩니다. 승인된 견적 양식(Saved Quote Skill)에 유효기간/부가세 등 family 기본값이 있으면 양식 값이 우선하며, 이 화면의 기본값은 양식에 값이 없을 때만 사용됩니다."));
       }
       var form = buildProfileForm(doc, values, phase);
       host.appendChild(form);
