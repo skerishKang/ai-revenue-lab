@@ -219,7 +219,6 @@ class ConsumedNotMintedTests(unittest.TestCase):
         projection = rec.public_projection()
         self.assertEqual(projection["delivery_execution"], False)
         self.assertEqual(projection["send_write_authority"], False)
-        self.assertEqual(projection["caller_minted_destination"], False)
 
     def test_credential_shaped_refs_are_rejected(self) -> None:
         for bad in (
@@ -380,8 +379,6 @@ class PublicProjectionTests(unittest.TestCase):
         self.assertEqual(projection["artifact_integrity_ref"], DIGEST)
         self.assertEqual(projection["delivery_kind"], "external_connector")
         self.assertEqual(projection["trusted_channel_ref_present"], True)
-        self.assertEqual(projection["caller_minted_destination"], False)
-        self.assertEqual(projection["model_selected_destination"], False)
         self.assertEqual(projection["delivery_execution"], False)
         self.assertEqual(projection["send_write_authority"], False)
 
@@ -456,6 +453,78 @@ class AuthorityBoundaryTests(unittest.TestCase):
 
     def test_contract_error_family_is_preserved(self) -> None:
         self.assertTrue(issubclass(ArtifactDeliveryIntentError, ContractError))
+
+
+class OriginPreconditionTests(unittest.TestCase):
+    """CENTRAL #3608: the ref's origin is an input precondition, never an attestation.
+
+    ``trusted_channel_ref`` is an opaque string. This record cannot mechanically
+    determine whether it came from the trusted host/channel-binding authority, a
+    caller, or a model, so it must not assert any origin — in the schema, in the
+    projection, or via a new authority type added to compensate.
+    """
+
+    def test_projection_does_not_attest_channel_ref_origin(self) -> None:
+        projection = intent().public_projection()
+        for field in ("caller_minted_destination", "model_selected_destination"):
+            self.assertNotIn(field, projection)
+        names = list(ArtifactDeliveryIntent.__dataclass_fields__) + list(projection)
+        for name in names:
+            lowered = name.lower()
+            for token in ("minted", "origin", "selected", "provenance", "attest", "trusted_by"):
+                self.assertNotIn(
+                    token, lowered, f"{name} asserts an origin this record cannot know"
+                )
+
+    def test_projection_is_identical_regardless_of_ref_origin(self) -> None:
+        # Two different opaque handles project byte-identically, so the
+        # projection cannot be encoding an origin claim.
+        first = json.dumps(
+            intent(trusted_channel_ref="opaque_handle_a").public_projection(), sort_keys=True
+        )
+        second = json.dumps(
+            intent(trusted_channel_ref="opaque_handle_b").public_projection(), sort_keys=True
+        )
+        self.assertEqual(first, second)
+
+    def test_record_carries_the_ref_without_claiming_its_origin(self) -> None:
+        rec = intent(trusted_channel_ref="opaque_handle_a")
+        self.assertEqual(rec.trusted_channel_ref, "opaque_handle_a")
+        projection = rec.public_projection()
+        self.assertEqual(projection["trusted_channel_ref_present"], True)
+        self.assertNotIn("opaque_handle_a", json.dumps(projection, ensure_ascii=False))
+
+    def test_no_new_channel_authority_type_or_store_is_created(self) -> None:
+        import ast
+        import kagent.artifact_delivery_intent as module
+
+        source = pathlib.Path(module.__file__).read_text(encoding="utf-8")
+        defined = {
+            node.name for node in ast.parse(source).body if isinstance(node, ast.ClassDef)
+        }
+        for name in defined:
+            for token in ("TrustedChannel", "ChannelRef", "Resolver", "Authority", "Store", "Grant"):
+                self.assertNotIn(token, name, f"unexpected authority type: {name}")
+        for name in dir(module):
+            if name.startswith("_"):
+                continue
+            for token in ("TrustedChannelRef", "Resolver", "Authority", "Store"):
+                self.assertNotIn(token, name, f"unexpected authority symbol: {name}")
+
+    def test_no_resolver_mint_or_send_surface_exists(self) -> None:
+        import ast
+        import kagent.artifact_delivery_intent as module
+
+        source = pathlib.Path(module.__file__).read_text(encoding="utf-8")
+        defined = {
+            node.name
+            for node in ast.parse(source).body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        }
+        for name in defined:
+            lowered = name.lower()
+            for token in ("resolve", "mint", "send", "deliver_to", "grant"):
+                self.assertNotIn(token, lowered, f"unexpected execution surface: {name}")
 
 
 class DependencyRegressionTests(unittest.TestCase):

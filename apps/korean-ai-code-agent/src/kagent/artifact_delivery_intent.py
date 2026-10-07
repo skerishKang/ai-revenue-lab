@@ -39,6 +39,20 @@ contract never derives a provider chat id, never derives a Drive destination,
 never reads an OAuth/bot token, never maps a request-body ``channel`` label
 into a trusted binding, never queries a connector, and never authorizes a send.
 
+### Origin is an input precondition, not an attestation
+
+The **origin** of ``trusted_channel_ref`` — that it was resolved by the
+existing trusted host / channel-binding authority rather than supplied by a
+caller or chosen by a model — is an **input precondition guaranteed by that
+authority**. This record only **validates and carries** the value: it sees an
+opaque string and cannot mechanically determine who produced it, so it makes no
+origin claim anywhere, including in ``public_projection()``. The trustworthy
+resolution stays with the existing host/connector-binding authority; this
+module adds no resolver, no authority, and no provenance assertion to
+compensate. A caller that passes an opaque handle it minted itself is a
+violation of the precondition by the caller, not something this record can or
+claims to detect.
+
 Structural, not lexical, protection. The record has **no** provider-specific
 field: no chat id, no Drive file id or path, no OAuth/bot token, no connector
 secret, no model-selected destination. Raw provider destinations and
@@ -305,6 +319,14 @@ class ArtifactDeliveryIntent:
         #3594's raw ``location_ref`` and #3602's raw
         ``working_representation_ref``: it is a handle whose meaning belongs to
         the trusted host. Only its presence is projected.
+
+        This projection carries **no origin/provenance attestation** for the
+        ref. The record validates and carries an opaque value; it cannot know
+        whether that value came from a trusted host, a caller or a model, so it
+        never asserts one. The origin guarantee is an input precondition owned
+        by the existing trusted host/channel-binding authority (see the module
+        docstring). The remaining flags describe only this contract's own
+        surface — it has no execution path and grants no SEND/WRITE authority.
         """
 
         projection: dict[str, Any] = {
@@ -317,8 +339,6 @@ class ArtifactDeliveryIntent:
             "run_ref": self.run_ref,
             "created_at": _iso(self.created_at),
             "trusted_channel_ref_present": True,
-            "caller_minted_destination": False,
-            "model_selected_destination": False,
             "delivery_execution": False,
             "send_write_authority": False,
         }
