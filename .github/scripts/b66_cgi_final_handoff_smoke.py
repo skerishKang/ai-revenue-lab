@@ -247,19 +247,15 @@ def _guided(page, counters: Counters) -> None:
     before = counters.interpret_posts
     page.locator("#guidedStarter").click()
 
-    for text in (
-        "가이드테스트건설",
-        "없음",
-        "배관",
-        "2",
-        "10000",
-        "다음",
-        "별도",
-        "없음",
-        "현재",
-    ):
-        _send(page, text)
-
+    _send(page, "가이드테스트건설")
+    _click_chip(page, "담당자 없음")
+    _send(page, "배관")
+    _click_chip(page, "2")
+    _send(page, "10000")
+    _click_chip(page, "다음으로")
+    _click_chip(page, "별도")
+    _click_chip(page, "없음")
+    _click_chip(page, "현재 정보 사용")
     _click_chip(page, "견적서 만들기")
     page.wait_for_function(
         """() => {
