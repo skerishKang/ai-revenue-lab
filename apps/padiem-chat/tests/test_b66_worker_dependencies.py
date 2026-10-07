@@ -92,16 +92,23 @@ def test_local_builds_use_staging_without_existing_build_metadata(tmp_path):
 
 def test_runtime_copy_is_byte_identical_and_refreshes_from_canonical_source(tmp_path):
     (tmp_path / "app").mkdir()
+    (tmp_path / "static").mkdir()
     (tmp_path / "worker.py").write_bytes(b"worker-one\r\n")
     source = tmp_path / "app" / "renderer.py"
     source.write_bytes(b"renderer-one\r\n")
+    static_source = tmp_path / "static" / "index.html"
+    static_source.write_bytes(b"<main>one</main>\r\n")
     result = builder.generate_runtime(tmp_path)
     copied = tmp_path / builder.RUNTIME_DIRECTORY / "app" / "renderer.py"
+    static_copy = tmp_path / builder.RUNTIME_DIRECTORY / "static" / "index.html"
     assert result["byte_identical"] is True
     assert copied.read_bytes() == source.read_bytes()
+    assert static_copy.read_bytes() == static_source.read_bytes()
     source.write_bytes(b"renderer-two\n")
+    static_source.write_bytes(b"<main>two</main>\n")
     builder.generate_runtime(tmp_path)
     assert copied.read_bytes() == source.read_bytes()
+    assert static_copy.read_bytes() == static_source.read_bytes()
 
 
 def test_unmarked_generated_runtime_is_preserved(tmp_path):
