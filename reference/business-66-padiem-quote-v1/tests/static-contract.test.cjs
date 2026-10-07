@@ -1249,3 +1249,57 @@ const assertGateClosed = (label, observed, googleNavExpected) => {
   console.error(error && error.message ? error.message : error);
   process.exitCode = 1;
 });
+
+/* SERVER_HISTORY_CONTRACT (#3405 Slice B) — signed-in server quote-history authority.
+   Structural wiring only. Behavioral contracts (DELETE_CONFIRM,
+   NO_OPTIMISTIC_DELETE, COPY_AS_NEW, QUOTECORE_RECALCULATION,
+   NO_SILENT_LOCAL_FALLBACK, FOREIGN_ACCOUNT_ACCESS) are owned by
+   tests/history-server-behavior.test.cjs, which drives the real app.js /
+   easy-mode.js and clicks the real buttons; this file must not print them. */
+check(require("fs").existsSync(path.join(__dirname, "..", "quote-history-server.js")),
+  "SERVER_HISTORY_CONTRACT: quote-history-server.js ships in the reference app");
+check(html.includes('src="quote-history-server.js"'),
+  "SERVER_HISTORY_CONTRACT: index.html includes the server history client");
+check(worker.includes("/api/padiem/b66/quotes"),
+  "SERVER_HISTORY_CONTRACT: B66 Pages worker proxies the canonical quote-history API");
+check(worker.includes("B66_QUOTE_ROW") && worker.includes('"/api/padiem/b66/quotes/"'),
+  "SERVER_HISTORY_CONTRACT: worker bounds quote-history row ids before upstream");
+check(app.includes("ServerHistory.draftToHistorySnapshot") && app.includes("ServerHistory.historySnapshotToDraft"),
+  "SERVER_HISTORY_CONTRACT: app converts drafts through the server snapshot boundary");
+check(app.includes("serverHistoryActive()") && app.includes("serverHistorySignedIn"),
+  "SERVER_HISTORY_CONTRACT: server authority is active only while signed in");
+check(app.includes('authority: "server"') && app.includes("history_read_failed") && app.includes("history_save_failed"),
+  "SERVER_HISTORY_CONTRACT: server errors stay on the server authority path");
+check(easy.includes("readRecentHistory()") && easy.includes("App.listRecentQuotes"),
+  "SERVER_HISTORY_CONTRACT: Easy history surface reads through the server-aware bridge");
+check(easy.includes("renderHistoryPending()") && easy.includes("renderHistoryError"),
+  "SERVER_HISTORY_CONTRACT: history renderer distinguishes pending and bounded-error states");
+check(!app.includes("localStorage.setItem(" + JSON.stringify("quoteBeta.history.v1")) ||
+      app.includes('authority: "server"'),
+  "SERVER_HISTORY_CONTRACT: server success may update the local cache, but failure does not silently use it as authority");
+check(!app.includes("History.copyAsNew(entry, { now: new Date() })") ||
+      app.includes("ServerHistory.draftToHistorySnapshot"),
+  "SERVER_HISTORY_CONTRACT: copy/new authority stays QuoteCore + server snapshot, not persisted totals");
+/* the behavioral probe must not regress into a bridge stub */
+const behaviorProbe = fs.readFileSync(path.join(__dirname, "history-server-behavior.test.cjs"), "utf8");
+check(!/B66QuoteAppBridge:\s*\{/.test(behaviorProbe),
+  "SERVER_HISTORY_CONTRACT: the behavioral probe never substitutes its own B66QuoteAppBridge stub");
+check(/INDEX_HTML[\s\S]{0,400}SCRIPT_TAGS/.test(behaviorProbe) &&
+      /recentQuoteStarter/.test(behaviorProbe),
+  "SERVER_HISTORY_CONTRACT: the behavioral probe boots the real scripts and opens the real recent view");
+check(!/\|\|\s*true\b/.test(behaviorProbe) && !/\|\|\s*===\s*/.test(behaviorProbe) &&
+      !/!==[^;()]*\|\|\s*===/.test(behaviorProbe),
+  "SERVER_HISTORY_CONTRACT: the behavioral probe has no tautological assertion");
+
+/* WORK 7: the behavioral probes must actually run in CI, not merely exist */
+const workflowPath = path.join(__dirname, "..", "..", "..", ".github", "workflows", "b66-neutral-pages-beta.yml");
+const workflowText = fs.readFileSync(workflowPath, "utf8");
+check(workflowText.includes("node tests/history-behavior.test.cjs"),
+  "CI_WIRING: b66-neutral-pages-beta.yml executes history-behavior.test.cjs");
+check(workflowText.includes("node tests/history-server-behavior.test.cjs"),
+  "CI_WIRING: b66-neutral-pages-beta.yml executes history-server-behavior.test.cjs");
+
+console.log("SERVER_HISTORY_CONTRACT=PASS");
+console.log("SERVER_HISTORY_STRUCTURAL_CONTRACT=PASS");
+console.log("BEHAVIOR_CONTRACTS_OWNED_BY=tests/history-server-behavior.test.cjs");
+console.log("CI_WIRING=PASS");
