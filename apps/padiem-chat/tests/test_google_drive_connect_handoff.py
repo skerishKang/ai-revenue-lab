@@ -266,7 +266,7 @@ def test_oauth_start_is_closed_to_exactly_the_reviewed_connectors() -> None:
     routes = TICKET_ROUTES.read_text(encoding="utf-8")
     assert '_OAUTH_START_REVIEWED_CONNECTORS = frozenset({"google-calendar", "google-drive"})' in routes
     assert "if begin_oauth and connector_id not in _OAUTH_START_REVIEWED_CONNECTORS:" in routes
-    assert 'OAUTH_START_REVIEWED_CONNECTORS = ("google-calendar", "google-drive")' in routes
+    assert 'OAUTH_START_REVIEWED_CONNECTORS = tuple(sorted(_OAUTH_START_REVIEWED_CONNECTORS))' in routes
     # the Drive scope is the reviewed Control Plane readonly set, unchanged
     assert f'GOOGLE_DRIVE_READONLY_SCOPE = "{DRIVE_SCOPE}"' in DURABLE_STORE.read_text(encoding="utf-8")
     ingress = INGRESS_RUNTIME.read_text(encoding="utf-8")

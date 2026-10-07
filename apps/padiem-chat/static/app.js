@@ -3150,7 +3150,8 @@
       setConnectorCopy(card.querySelector("[data-connector-workspace]"), "connectors-workspace-loading");
     });
     syncGoogleCalendarConnectButton();
-    syncGoogleDriveConnectButton();  }
+    syncGoogleDriveConnectButton();
+  }
 
   function setConnectorCardsUnavailable() {
     liveConnectorCards().forEach((card) => {
@@ -3159,7 +3160,8 @@
       setConnectorCopy(card.querySelector("[data-connector-workspace]"), "connectors-workspace-unavailable");
     });
     syncGoogleCalendarConnectButton();
-    syncGoogleDriveConnectButton();  }
+    syncGoogleDriveConnectButton();
+  }
 
   function renderConnectorStatus(document) {
     if (!document || document.static_support_vs_workspace_state_separated !== true ||
@@ -3187,7 +3189,8 @@
       setConnectorCopy(card.querySelector("[data-connector-workspace]"), workspaceKey);
     });
     syncGoogleCalendarConnectButton(rows.get("connector:google:calendar@1") || null);
-    syncGoogleDriveConnectButton(rows.get("connector:google:drive@1") || null);  }
+    syncGoogleDriveConnectButton(rows.get("connector:google:drive@1") || null);
+  }
 
   async function loadConnectorStatus() {
     if (!connectorsDialog || connectorStatusInFlight) return;
