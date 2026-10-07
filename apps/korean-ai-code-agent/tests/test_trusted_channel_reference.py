@@ -319,6 +319,21 @@ class FailClosedTests(unittest.TestCase):
             verify(ref.channel_ref, other)
         self.assertIn("does not match the context", str(ctx.exception))
 
+    def test_reference_object_with_tampered_bound_metadata_is_refused(self) -> None:
+        context = current_surface_context()
+        ref = resolve(context)
+        tampered = TrustedChannelReference(
+            channel_ref=ref.channel_ref,
+            channel_class=ref.channel_class,
+            account_ref=ref.account_ref,
+            workspace_ref=OTHER_WORKSPACE_REF,
+            conversation_ref=ref.conversation_ref,
+            resolved_at=ref.resolved_at,
+        )
+        with self.assertRaises(TrustedChannelReferenceError) as ctx:
+            verify(tampered, context)
+        self.assertIn("metadata does not match the context", str(ctx.exception))
+
     def test_unknown_or_malformed_reference_is_refused(self) -> None:
         context = current_surface_context()
         for forged in (

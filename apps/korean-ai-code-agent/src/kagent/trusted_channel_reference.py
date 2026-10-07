@@ -505,6 +505,17 @@ def verify_trusted_channel_reference(
     if candidate is not None:
         if candidate.channel_ref != resolved.channel_ref:
             raise TrustedChannelReferenceError("trusted channel reference does not match the context")
+        if (
+            candidate.account_ref != resolved.account_ref
+            or candidate.workspace_ref != resolved.workspace_ref
+            or candidate.conversation_ref != resolved.conversation_ref
+            or candidate.channel_class is not resolved.channel_class
+            or candidate.binding_ref != resolved.binding_ref
+            or candidate.connector_id != resolved.connector_id
+        ):
+            raise TrustedChannelReferenceError(
+                "trusted channel reference metadata does not match the context"
+            )
         if candidate.is_expired(current):
             raise TrustedChannelReferenceError("trusted channel reference is expired")
         return candidate
