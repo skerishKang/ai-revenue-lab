@@ -59,6 +59,15 @@ export const DENIED_IPC_CHANNELS = Object.freeze([
   'padiem:shell:mint-session',
   'padiem:shell:broker-transport',
   'padiem:shell:approve',
+  // #3611: browser control surfaces stay denied. The open-only slice has no IPC
+  // channel at all — an approved open is delivered to the trusted host, and the
+  // renderer never selects a URL. These names are asserted by the negative guard
+  // so no browser authority can be added to the allowlist by accident.
+  'padiem:shell:browser-control',
+  'padiem:shell:browser-evaluate',
+  'padiem:shell:browser-cookie-read',
+  'padiem:shell:browser-profile-import',
+  'padiem:shell:browser-download',
   '*',
   'padiem:shell:*',
 ]);
