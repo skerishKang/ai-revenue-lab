@@ -187,7 +187,7 @@ def _pdf_download_probe(page, counters: Counters) -> None:
 
 
 def _open_result_and_download(page, counters: Counters) -> None:
-    _click_chip(page, "??? ????")
+    _click_chip(page, "견적서 확인하기")
     page.locator("#directView").wait_for(state="visible", timeout=10000)
     _pdf_download_probe(page, counters)
 
