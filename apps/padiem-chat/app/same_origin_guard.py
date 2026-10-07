@@ -43,7 +43,9 @@ Route inventory (the #3476 read-only classification, kept next to the policy)
 * **B — read-only (GET/HEAD):** out of scope; untouched.
 * **C — server-to-server ingress (explicitly exempt below):**
   ``/api/claw/telegram/ingest/*`` (Telegram webhook, proof-authenticated) and
-  ``*/local-result`` (trusted Local Runner result ingress).
+  the canonical Local Runner result family ``/api/claw/runs/{run_id}/local-result``
+  only. The suffix alone is never an exemption: an unrelated browser route that
+  happens to end with ``local-result`` stays guarded.
 * **D — OAuth callback:** ``/auth/google/callback`` is protocol authority and
   GET-only; listed explicitly below so the exemption is visible in one place.
   Its existing state/signature validation is unchanged.
@@ -70,6 +72,7 @@ from urllib.parse import urlsplit
 from starlette.responses import JSONResponse
 
 from .auth import SESSION_COOKIE
+from .claw_local_task_result_routes import CLAW_LOCAL_TASK_RESULT_PATH
 
 MUTATING_METHODS = frozenset({"POST", "PUT", "PATCH", "DELETE"})
 
@@ -91,11 +94,10 @@ SERVER_TO_SERVER_EXEMPT_PATH_PREFIXES: tuple[str, ...] = (
     # Class D: OAuth provider callback (GET-only protocol authority).
     "/auth/google/callback",
 )
-SERVER_TO_SERVER_EXEMPT_PATH_SUFFIXES: tuple[str, ...] = (
-    # Trusted Local Runner result ingress (see claw_local_task_result_routes),
-    # authenticated by its own run/owner authority.
-    "/local-result",
-)
+# Trusted Local Runner result ingress (see claw_local_task_result_routes),
+# authenticated by its own run/owner authority. Split out of the route's own path
+# template so the exemption can neither drift from the route nor widen past it.
+_LOCAL_RESULT_PREFIX, _, _LOCAL_RESULT_SUFFIX = CLAW_LOCAL_TASK_RESULT_PATH.partition("{run_id}")
 
 _JSON_MEDIA_TYPE = "application/json"
 
@@ -125,15 +127,27 @@ def expected_browser_origin(settings: Any) -> str | None:
     return f"https://{parsed.netloc}"
 
 
+def is_local_runner_result_ingress(path: str) -> bool:
+    """True only for the canonical ``/api/claw/runs/{run_id}/local-result``.
+
+    A bare ``endswith("/local-result")`` also exempted any unrelated
+    cookie-authenticated browser route that happened to share that last segment,
+    which is a CSRF bypass rather than an ingress allowance. The run id must be
+    exactly one non-empty segment; validating its shape stays the route's own
+    authority.
+    """
+    if not path.startswith(_LOCAL_RESULT_PREFIX) or not path.endswith(_LOCAL_RESULT_SUFFIX):
+        return False
+    run_id = path[len(_LOCAL_RESULT_PREFIX) : len(path) - len(_LOCAL_RESULT_SUFFIX)]
+    return bool(run_id) and "/" not in run_id
+
+
 def is_exempt_path(path: str) -> bool:
     """True for explicitly exempt non-browser ingress paths (classes C/D)."""
     for prefix in SERVER_TO_SERVER_EXEMPT_PATH_PREFIXES:
         if path.startswith(prefix):
             return True
-    for suffix in SERVER_TO_SERVER_EXEMPT_PATH_SUFFIXES:
-        if path.endswith(suffix):
-            return True
-    return False
+    return is_local_runner_result_ingress(path)
 
 
 def _error(status: int, code: str, message: str) -> JSONResponse:
@@ -247,8 +261,8 @@ __all__ = [
     "ORIGIN_GUARD_UNAVAILABLE_CODE",
     "ORIGIN_REJECTED_CODE",
     "SERVER_TO_SERVER_EXEMPT_PATH_PREFIXES",
-    "SERVER_TO_SERVER_EXEMPT_PATH_SUFFIXES",
     "SameOriginGuardMiddleware",
     "expected_browser_origin",
     "is_exempt_path",
+    "is_local_runner_result_ingress",
 ]

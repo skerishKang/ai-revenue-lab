@@ -13,6 +13,7 @@ import httpx
 import pytest
 
 from app.auth import SESSION_COOKIE, create_session_token
+from app.claw_local_task_result_routes import CLAW_LOCAL_TASK_RESULT_PATH
 from app.config import Settings
 from app.main import create_app
 from app.orchestration_routes import install_orchestration_routes
@@ -23,6 +24,7 @@ from app.same_origin_guard import (
     ORIGIN_REJECTED_CODE,
     SameOriginGuardMiddleware,
     expected_browser_origin,
+    is_local_runner_result_ingress,
 )
 
 ORIGIN = "https://chat.example.test"
@@ -30,6 +32,10 @@ ORIGIN = "https://chat.example.test"
 SAME_SITE_OTHER_ORIGIN = "https://app.example.test"
 # Totally cross-site origin: must be denied.
 CROSS_SITE_ORIGIN = "https://evil.example.test"
+
+# Derived from the ingress route's own path template, so a route rename moves
+# these paths too instead of stranding the exemption.
+CANONICAL_LOCAL_RESULT_PATH = CLAW_LOCAL_TASK_RESULT_PATH.replace("{run_id}", "run_" + "0" * 32)
 
 # conftest attaches the reviewed Origin to every ASGI mutation so unrelated
 # tests keep representing real browser traffic; this marker opts out of that
@@ -166,11 +172,15 @@ async def test_server_to_server_telegram_ingress_is_explicitly_exempt() -> None:
 
 
 async def test_server_to_server_local_runner_ingress_is_explicitly_exempt() -> None:
-    """Trusted Local Runner result ingress keeps its own run/owner authority."""
+    """Trusted Local Runner result ingress keeps its own run/owner authority.
+
+    The path is the canonical family built from the route template: the narrowing
+    must remove unrelated suffix matches without closing this ingress off.
+    """
     app = _app()
     async with _authenticated(app) as client:
         response = await client.post(
-            "/api/claw/runs/run_00000000000000000000000000000001/local-result",
+            CANONICAL_LOCAL_RESULT_PATH,
             headers={SUPPRESS_ORIGIN_HEADER: "1"},
             json={"status": "succeeded"},
         )
@@ -395,3 +405,51 @@ async def test_exempt_ingress_is_path_specific_not_a_blanket_bypass() -> None:
     assert _code(exempt) == "telegram_ingest_not_configured"
     assert guarded.status_code == 403
     assert _code(guarded) == ORIGIN_REJECTED_CODE
+
+
+@pytest.mark.parametrize(
+    ("path", "exempt"),
+    [
+        (CANONICAL_LOCAL_RESULT_PATH, True),
+        ("/api/projects/proj_1/local-result", False),
+        ("/api/claw/local-result", False),
+        ("/local-result", False),
+        ("/api/claw/runs//local-result", False),
+        ("/api/claw/runs/run_1/children/local-result", False),
+        ("/api/claw/runs/run_1/local-results", False),
+    ],
+)
+def test_local_result_exemption_is_the_canonical_route_family_only(
+    path: str,
+    exempt: bool,
+) -> None:
+    """The exemption used to be a bare ``endswith("/local-result")``, which let
+    any unrelated cookie-authenticated route sharing that last segment escape the
+    origin check. Only one non-empty run-id segment inside the canonical family
+    is exempt; the run-id shape itself stays the route's authority."""
+    assert is_local_runner_result_ingress(path) is exempt
+
+
+def test_local_result_exemption_follows_the_route_path_template() -> None:
+    """The family is derived from ``CLAW_LOCAL_TASK_RESULT_PATH`` rather than a
+    second hardcoded literal, so a route rename cannot silently widen or strand
+    the exemption."""
+    assert CLAW_LOCAL_TASK_RESULT_PATH.count("{run_id}") == 1
+    assert is_local_runner_result_ingress(
+        CLAW_LOCAL_TASK_RESULT_PATH.replace("{run_id}", "any-single-segment")
+    )
+
+
+async def test_unrelated_local_result_suffix_mutation_is_denied() -> None:
+    """End-to-end proof of the narrowing: before it this path was exempt and fell
+    through to the router (404); now the guard denies the cookie mutation."""
+    app = _app()
+    async with _authenticated(app) as client:
+        response = await client.post(
+            "/api/projects/proj_1/local-result",
+            headers={SUPPRESS_ORIGIN_HEADER: "1"},
+            json={},
+        )
+    assert response.status_code == 403
+    assert _code(response) == ORIGIN_REJECTED_CODE
+
