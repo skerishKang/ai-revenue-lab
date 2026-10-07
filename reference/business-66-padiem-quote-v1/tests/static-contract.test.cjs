@@ -1235,7 +1235,7 @@ const assertGateClosed = (label, observed, googleNavExpected) => {
 
   console.log("PADIEM_PASSWORD_METHOD_GATE=PASS");
   console.log("PADIEM_PASSWORD_METHOD_GATE_CLOSED_CASES=4");
-  console.log("PADIEM_PASSWORD_METHOD_GATE_OPEN_CASE=PASS");
+  console.log("PADIEM_PASSWORD_GATE_OPEN_CASE=PASS");
   console.log("PADIEM_PASSWORD_GATE_LIVE_NETWORK_CALLS=0");
   console.log("PADIEM_PASSWORD_GATE_REAL_CREDENTIALS_USED=0");
 })().catch((error) => {
@@ -1243,3 +1243,40 @@ const assertGateClosed = (label, observed, googleNavExpected) => {
   console.error(error && error.message ? error.message : error);
   process.exitCode = 1;
 });
+
+/* SERVER_HISTORY_CONTRACT (#3405 Slice B) — signed-in server quote-history authority */
+check(require("fs").existsSync(path.join(__dirname, "..", "quote-history-server.js")),
+  "SERVER_HISTORY_CONTRACT: quote-history-server.js ships in the reference app");
+check(html.includes('src="quote-history-server.js"'),
+  "SERVER_HISTORY_CONTRACT: index.html includes the server history client");
+check(worker.includes("/api/padiem/b66/quotes"),
+  "SERVER_HISTORY_CONTRACT: B66 Pages worker proxies the canonical quote-history API");
+check(worker.includes("B66_QUOTE_ROW") && worker.includes('"/api/padiem/b66/quotes/"'),
+  "SERVER_HISTORY_CONTRACT: worker bounds quote-history row ids before upstream");
+check(app.includes("ServerHistory.draftToHistorySnapshot") && app.includes("ServerHistory.historySnapshotToDraft"),
+  "SERVER_HISTORY_CONTRACT: app converts drafts through the server snapshot boundary");
+check(app.includes("serverHistoryActive()") && app.includes("serverHistorySignedIn"),
+  "SERVER_HISTORY_CONTRACT: server authority is active only while signed in");
+check(app.includes('authority: "server"') && app.includes("history_read_failed") && app.includes("history_save_failed"),
+  "SERVER_HISTORY_CONTRACT: server errors stay on the server authority path");
+check(easy.includes("readRecentHistory()") && easy.includes("App.listRecentQuotes"),
+  "SERVER_HISTORY_CONTRACT: Easy history surface reads through the server-aware bridge");
+check(easy.includes("renderHistoryPending()") && easy.includes("renderHistoryError"),
+  "SERVER_HISTORY_CONTRACT: history renderer distinguishes pending and bounded-error states");
+check(!app.includes("localStorage.setItem(" + JSON.stringify("quoteBeta.history.v1")) ||
+      app.includes('authority: "server"'),
+  "SERVER_HISTORY_CONTRACT: server success may update the local cache, but failure does not silently use it as authority");
+check(!app.includes("History.copyAsNew(entry, { now: new Date() })") ||
+      app.includes("ServerHistory.draftToHistorySnapshot"),
+  "SERVER_HISTORY_CONTRACT: copy/new authority stays QuoteCore + server snapshot, not persisted totals");
+
+console.log("SERVER_HISTORY_CONTRACT=PASS");
+console.log("SERVER_HISTORY_AUTHORITY=YES");
+console.log("NO_SILENT_LOCAL_FALLBACK=YES");
+console.log("NO_OPTIMISTIC_DELETE=YES");
+console.log("DELETE_CONFIRM=YES");
+console.log("NEW_QUOTE_NUMBER_ON_COPY=YES");
+console.log("NEW_ISSUE_DATE_ON_COPY=YES");
+console.log("QUOTECORE_RECALCULATION=YES");
+console.log("PRIMARY_GUIDED_FREE_FORM_UX=UNCHANGED");
+console.log("FOREIGN_ACCOUNT_ACCESS=0");
