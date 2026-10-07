@@ -66,6 +66,35 @@ def require_unlinked_output(output: Path) -> None:
             raise ValueError("Worker dependency output must not traverse a symlink or junction")
 
 
+def consume_pywrangler_placeholder(output: Path) -> bool:
+    """Remove only pywrangler's marker-only handoff, never arbitrary vendor data."""
+    require_unlinked_output(output)
+    if not output.exists():
+        return False
+    if not output.is_dir():
+        return False
+    entries = {item.name: item for item in output.iterdir()}
+    if set(entries) != {".synced", "pyvenv.cfg"}:
+        return False
+    synced = entries[".synced"]
+    pyvenv = entries["pyvenv.cfg"]
+    if (
+        not synced.is_file()
+        or not pyvenv.is_file()
+        or synced.is_symlink()
+        or pyvenv.is_symlink()
+        or synced.stat().st_size > 128
+        or pyvenv.stat().st_size > 4096
+    ):
+        raise ValueError("Unsafe pywrangler placeholder")
+    version = synced.read_text(encoding="utf-8").strip()
+    if re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version) is None:
+        raise ValueError("Unexpected pywrangler placeholder version")
+    synced.unlink()
+    pyvenv.unlink()
+    return True
+
+
 def require_fresh_output(output: Path) -> None:
     require_unlinked_output(output)
     if output.exists() and (not output.is_dir() or any(output.iterdir())):
@@ -152,6 +181,7 @@ def build(output: Path, *, lock_path: Path = APP_ROOT / "pylock.toml", uv: str =
     locked_bytes = lock_path.read_bytes()
     versions = validate_lock(tomllib.loads(locked_bytes.decode("utf-8")))
     require_unlinked_output(output)
+    consume_pywrangler_placeholder(output)
     try:
         require_fresh_output(output)
     except ValueError:

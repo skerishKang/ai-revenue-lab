@@ -50,6 +50,26 @@ def test_existing_output_is_preserved(tmp_path):
     assert marker.read_bytes() == b"preserve"
 
 
+def test_pywrangler_marker_only_handoff_is_consumed(tmp_path):
+    output = tmp_path / "python_modules"
+    output.mkdir()
+    (output / ".synced").write_text("1.17.7\n", encoding="utf-8")
+    (output / "pyvenv.cfg").write_text("", encoding="utf-8")
+    assert builder.consume_pywrangler_placeholder(output) is True
+    assert list(output.iterdir()) == []
+
+
+def test_pywrangler_handoff_with_extra_file_is_preserved(tmp_path):
+    output = tmp_path / "python_modules"
+    output.mkdir()
+    (output / ".synced").write_text("1.17.7\n", encoding="utf-8")
+    (output / "pyvenv.cfg").write_text("", encoding="utf-8")
+    extra = output / "user-file"
+    extra.write_bytes(b"preserve")
+    assert builder.consume_pywrangler_placeholder(output) is False
+    assert extra.read_bytes() == b"preserve"
+
+
 def test_local_builds_use_staging_without_existing_build_metadata(tmp_path):
     source = tmp_path / "source"
     source.mkdir()
