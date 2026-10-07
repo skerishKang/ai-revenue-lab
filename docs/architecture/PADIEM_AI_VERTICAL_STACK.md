@@ -4,7 +4,7 @@
 DOC_STATUS = CANONICAL
 OWNER = Padiem platform architecture
 SCOPE = shared AI platform layers, product adapters, routing/provider ownership
-LAST_VERIFIED = 2026-09-08
+LAST_VERIFIED = 2026-10-07
 SUPERSEDES = fragmented layer descriptions only; historical evidence remains preserved
 ```
 
@@ -29,7 +29,7 @@ IP-CONTROL OWNS CROSS-CUTTING IDENTITY/ENTITLEMENT/USAGE/AUDIT TRUTH.
 
 ```text
 Padiem product / Business
-(Chat, Claw, StoryMemory, Living Learning, future products)
+(Chat, Claw, B66 Padiem Quote, StoryMemory, Living Learning, future products)
         │
         │ product/domain adapter
         ▼
@@ -179,6 +179,27 @@ Consumes or targets reuse of:
 
 KAgent source path is `apps/korean-ai-code-agent/**`. Current product docs must distinguish deterministic/mock preview from real model/runtime activation.
 
+### B66 · Padiem Quote
+
+B66 is a standalone quotation product. It owns quotation-specific UX/state, Saved Quote Skill lifecycle, source-derived quotation onboarding, document-fidelity certification, quotation history/presentation and optional editable outputs.
+
+Canonical source-derived lifecycle:
+
+```text
+source quotation
+-> analysis
+-> Canonical Quote Template candidate
+-> reproduction against reference facts
+-> certification
+-> certified repeat execution
+```
+
+B66 reuses QuoteCore/shared calculation semantics and approved Padiem identity/storage/Engine/Core/B14 capabilities where applicable. It does not become a second Provider/model registry or a second quotation-calculation authority.
+
+The current CGI reference template is certified within its declared scope. That does not yet prove a generic analyzer/compiler; #3595 remains the generalization/certification authority until a materially different second template proves the compiler path.
+
+Canonical B66 documentation: `docs/products/b66/`.
+
 ### B61 · StoryMemory (including Bible/classic-work domain)
 
 B61 owns:
@@ -272,5 +293,6 @@ For IP-SIDECAR specifically, S2 currently proves source/contract presence only; 
 - `apps/korean-ai-platform/README.md`
 - `apps/padiem-chat/README.md`
 - `apps/korean-ai-code-agent/README.md`
+- `docs/products/b66/README.md`
 
 When those documents disagree on volatile status, current merged source and executable contract win; when they disagree on stable ownership, this architecture + the relevant canonical registry should be reconciled before new feature work proceeds.
