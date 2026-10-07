@@ -19,7 +19,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     env:
-      PYTHONPATH: ${{ github.workspace }}/apps/padiem-chat
+      # The collected tree loads apps/padiem-chat/tests/conftest.py, which
+      # imports app.model_policy / padiem_control_plane, so both source roots
+      # must be importable. #3625 guards this cross-lane coupling.
+      PYTHONPATH: ${{ github.workspace }}/apps/padiem-chat:${{ github.workspace }}/packages/padiem-control-plane
     steps:
       - name: Checkout PR exact head
         uses: actions/checkout@v4
@@ -33,7 +36,9 @@ jobs:
       - name: Run bounded canary contract tests
         run: |
           set -euo pipefail
-          python -m pip install --disable-pip-version-check --quiet pytest
+          # The shared conftest also needs the Chat runtime's own httpx/starlette
+          # dependencies installed before pytest can load it. #3625 guards this.
+          python -m pip install --disable-pip-version-check --quiet pytest 'httpx>=0.27,<1' 'starlette>=0.37,<1'
           python -m pytest apps/padiem-chat/tests/test_claw_automation_canary.py -q
       - name: Prove live canary is not dispatched
         run: |
