@@ -444,18 +444,16 @@ class TelegramArtifactDeliveryAdapter:
             )
         _require_callable(channel_context, "channel_context")
         _require_callable(approval_evidence, "approval_evidence")
-        object.__setattr__(self, "_scope", scope)
-        object.__setattr__(self, "_binding", trusted_binding)
-        object.__setattr__(self, "_document_send", document_send)
-        object.__setattr__(self, "_material", artifact_material)
-        object.__setattr__(self, "_channel_context", channel_context)
-        object.__setattr__(self, "_approval_evidence", approval_evidence)
-        object.__setattr__(self, "_account_ref", _bounded_ref(account_ref, "account_ref"))
-        object.__setattr__(self, "_actor_ref", _bounded_ref(actor_ref, "actor_ref"))
-        object.__setattr__(self, "_clock", clock or (lambda: datetime.now(timezone.utc)))
-        object.__setattr__(
-            self, "_attempts", attempt_registry or InMemoryDeliveryAttemptRegistry()
-        )
+        self._scope = scope
+        self._binding = trusted_binding
+        self._document_send = document_send
+        self._material = artifact_material
+        self._channel_context = channel_context
+        self._approval_evidence = approval_evidence
+        self._account_ref = _bounded_ref(account_ref, "account_ref")
+        self._actor_ref = _bounded_ref(actor_ref, "actor_ref")
+        self._clock = clock or (lambda: datetime.now(timezone.utc))
+        self._attempts = attempt_registry or InMemoryDeliveryAttemptRegistry()
 
     @property
     def scope(self) -> TelegramBotScope:
