@@ -1027,9 +1027,11 @@
     toast("보내는 사람 정보는 유지하고 새 고객 견적을 시작합니다.");
   });
 
-  /* ── 인쇄: 브라우저 머리글/바닥글은 코드로 끌 수 없어 저장 전 짧게 안내 ── */
+  /* ── PDF: 배정된 Saved Skill 의 인증 renderer 를 통해 다운로드한다 ── */
 
-  $("printPdf").addEventListener("click", () => {
+  let pdfDownloadPending = false;
+  $("printPdf").addEventListener("click", async () => {
+    if (pdfDownloadPending) return;
     const failure = printReadinessFailure();
     if (failure) {
       toast(failure.message, 4200);
@@ -1038,9 +1040,58 @@
       return;
     }
 
-    render();
-    toast("PDF 저장 시 인쇄 설정에서 '머리글과 바닥글'을 해제하면 견적서만 깔끔하게 저장됩니다.", 5000);
-    setTimeout(() => window.print(), 600);
+    const bridge = window.B66QuoteRuntimeBridge;
+    if (!bridge || typeof bridge.downloadPdf !== "function" || !TemplateRenderer ||
+        typeof TemplateRenderer.buildCertifiedPdfRenderModel !== "function") {
+      toast("PDF 다운로드 연결을 확인해 주세요.", 4200);
+      return;
+    }
+    const model = TemplateRenderer.buildCertifiedPdfRenderModel(draft, activeSkillProfile(), {
+      taxReviewRequired: taxReviewRequired
+    });
+    if (!model) {
+      toast("배정된 양식과 PDF로 저장할 수 있는 견적 내용을 확인해 주세요.", 4200);
+      return;
+    }
+    const button = $("printPdf");
+    pdfDownloadPending = true;
+    button.disabled = true;
+    try {
+      const result = await bridge.downloadPdf(model);
+      if (result && result.ok === true) toast("PDF 견적서를 다운로드했습니다.");
+      else toast(result && result.message ? result.message : "PDF 다운로드에 실패했습니다. 잠시 후 다시 시도해 주세요.", 4200);
+    } catch (_) {
+      toast("PDF 다운로드에 실패했습니다. 잠시 후 다시 시도해 주세요.", 4200);
+    } finally {
+      pdfDownloadPending = false;
+      button.disabled = false;
+    }
+  });
+
+  /* ── Excel 내보내기: 현재 확정된 QuoteDraft 를 그대로 포맷 어댑터에 넘긴다 ──
+     계산 authority 는 QuoteCore 하나이며, exporter 는 값을 재계산하지 않는다. */
+  $("xlsxDownload").addEventListener("click", () => {
+    const exporter = window.B66XlsxExport;
+    if (!exporter || typeof exporter.buildWorkbook !== "function") {
+      toast("Excel 내보내기를 준비하지 못했습니다.");
+      return;
+    }
+    try {
+      const bytes = exporter.buildWorkbook(draft);
+      const blob = new Blob([bytes], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = exporter.suggestFileName(draft);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      toast("Excel 파일을 내려받습니다.");
+    } catch (err) {
+      toast("Excel 파일을 만들지 못했습니다. 견적 내용을 확인해 주세요.", 4200);
+    }
   });
 
   $("emailFuture").addEventListener("click", () => {
