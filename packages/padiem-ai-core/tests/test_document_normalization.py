@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import inspect
 import os
+import tracemalloc
+import zlib
 from dataclasses import replace
 from io import BytesIO
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
@@ -22,6 +24,7 @@ except ModuleNotFoundError:  # Core base install intentionally excludes document
 
 from padiem_ai_core.document_normalization import (
     MAX_BINARY_DOCUMENT_BYTES,
+    read_hwpx_package_members,
     MAX_DOCUMENT_CHARS,
     MAX_OOXML_ENTRIES,
     MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES,
@@ -698,3 +701,169 @@ def test_binary_size_bound_fails_without_echoing_payload() -> None:
         extract_binary_document(name="x.pdf", media_type=PDF_MIME, payload=payload)
     assert exc.value.code == "binary_too_large"
     assert "PRIVATE" not in str(exc.value)
+
+
+def _lying_declared_size_zip(entry_name: str, real: bytes, declared: int) -> bytes:
+    """A ZIP that declares a tiny uncompressed size for a huge deflate stream.
+
+    Both the local header and the central directory are rewritten, and the CRC
+    is rewritten to match the declared prefix so the archive is rejected by a
+    size policy rather than by a CRC error. That is what makes this an
+    amplification fixture instead of a malformed-archive fixture: every piece of
+    declared metadata is internally consistent and passes every declared bound.
+    """
+
+    payload = bytearray(_zip_bytes({entry_name: real}))
+    crc = zlib.crc32(real[:declared]) & 0xFFFFFFFF
+    for signature, crc_offset, size_offset in (
+        (b"PK\x03\x04", 14, 22),
+        (b"PK\x01\x02", 16, 24),
+    ):
+        index = payload.find(signature)
+        assert index >= 0
+        while index != -1:
+            payload[index + crc_offset : index + crc_offset + 4] = crc.to_bytes(4, "little")
+            payload[index + size_offset : index + size_offset + 4] = declared.to_bytes(4, "little")
+            index = payload.find(signature, index + 4)
+    return bytes(payload)
+
+
+def _forge_declared_size(payload: bytes, target: str, real: bytes, declared: int) -> bytes:
+    """Rewrite one member's declared uncompressed size over a real deflate stream.
+
+    Both the local header and the central directory are rewritten, and the CRC
+    is rewritten to match the declared prefix, so the member is internally
+    consistent and passes every declared-metadata bound while its deflate stream
+    expands far beyond the declaration.
+    """
+
+    data = bytearray(payload)
+    name = target.encode("utf-8")
+    crc = zlib.crc32(real[:declared]) & 0xFFFFFFFF
+    for signature, name_at, crc_at, size_at in (
+        (b"PK\x03\x04", 30, 14, 22),
+        (b"PK\x01\x02", 46, 16, 24),
+    ):
+        index = data.find(signature)
+        while index != -1:
+            if bytes(data[index + name_at : index + name_at + len(name)]) == name:
+                data[index + crc_at : index + crc_at + 4] = crc.to_bytes(4, "little")
+                data[index + size_at : index + size_at + 4] = declared.to_bytes(4, "little")
+            index = data.find(signature, index + 4)
+    return bytes(data)
+
+
+def _traced_peak(action) -> tuple[object, int]:
+    tracemalloc.start()
+    try:
+        value = action()
+        _, peak = tracemalloc.get_traced_memory()
+    finally:
+        tracemalloc.stop()
+    return value, peak
+
+
+def test_ooxml_declared_size_lie_cannot_amplify_decompression_work() -> None:
+    """A declared size is a claim, so it must not license real inflation.
+
+    ``ZipExtFile.read()`` without a length inflates the whole deflate stream and
+    only then truncates to the declared size, which let a ~260 KB archive that
+    declares 24 bytes allocate hundreds of megabytes before any member bound was
+    consulted. The declared-metadata bounds stay exactly as they were; what this
+    pins is that the *work* is bounded by the same number.
+    """
+
+    real = b"<?xml version='1.0'?>" + b"\x00" * (8 * 1024 * 1024)
+    lying = _lying_declared_size_zip("word/document.xml", real, 24)
+    assert len(lying) < 64 * 1024
+
+    _, validate_peak = _traced_peak(lambda: validate_ooxml_archive(lying))
+    _, extract_peak = _traced_peak(lambda: _extract_docx_expecting_failure(lying))
+
+    # ~8 MiB of real deflate expansion from a well under 64 KB archive.
+    assert validate_peak < 1024 * 1024, validate_peak
+    assert extract_peak < 1024 * 1024, extract_peak
+
+
+def _extract_docx_expecting_failure(payload: bytes) -> str:
+    try:
+        return extract_docx_text(payload)
+    except DocumentNormalizationError:
+        # The truncated member is not a whole document, so failing closed here is
+        # the correct outcome; the point of the fixture is the bounded work.
+        return ""
+
+
+def test_xlsx_third_party_reader_never_receives_the_untrusted_original_archive() -> None:
+    """XLSX must not hand the original ZIP back to openpyxl after validation.
+
+    ``openpyxl`` opens its own ``ZipFile`` over whatever file-like object it is
+    given, so passing the original bytes re-exposed the declared-size deflate
+    amplification the canonical gate had just bounded. The fixture is a
+    syntactically XLSX-shaped workbook whose ``[Content_Types].xml`` - a member
+    openpyxl always reads - declares 64 bytes over a 16 MiB deflate stream.
+    """
+
+    _require_xlsx_extra()
+    declared = 64
+    real = b"<Types>" + b"\x00" * (16 * 1024 * 1024)
+    forged = _forge_declared_size(
+        _replace_zip_entry(_xlsx_bytes(), "[Content_Types].xml", real),
+        "[Content_Types].xml",
+        real,
+        declared,
+    )
+    assert len(forged) < 128 * 1024
+
+    def run():
+        try:
+            return extract_binary_document(name="bomb.xlsx", media_type=XLSX_MIME, payload=forged)
+        except DocumentNormalizationError as exc:
+            # A truncated Content-Types part is not a whole workbook, so failing
+            # closed is the correct outcome; the fixture pins the bounded work.
+            return exc.code
+
+    outcome, peak = _traced_peak(run)
+    assert peak < 1024 * 1024, peak
+    assert isinstance(outcome, str), outcome
+    assert outcome == "xlsx_invalid", outcome
+
+
+def test_bounded_ooxml_repackage_preserves_a_well_formed_workbook() -> None:
+    """The sanitized copy must keep every member openpyxl needs."""
+
+    _require_xlsx_extra()
+    payload = _xlsx_bytes()
+    document = extract_binary_document(name="book.xlsx", media_type=XLSX_MIME, payload=payload)
+    assert "[Summary!A1] Padiem XLSX" in document.text
+    assert "[Summary!B2] 42" in document.text
+    assert "[Detail!C3] bounded" in document.text
+
+    sanitized = document_normalization._bounded_ooxml_repackage(payload)
+    with ZipFile(BytesIO(payload)) as original, ZipFile(BytesIO(sanitized)) as copy:
+        assert copy.namelist() == original.namelist()
+        for name in original.namelist():
+            assert copy.read(name) == original.read(name), name
+            entry = copy.getinfo(name)
+            # Stored, so the copy cannot declare a size it does not really hold.
+            assert entry.compress_type == 0
+            assert entry.file_size == entry.compress_size
+
+
+def test_bounded_member_read_returns_the_full_declared_content() -> None:
+    """Honest members must read byte-identically, including CRC verification."""
+
+    big = bytes(range(256)) * 2_400
+    assert len(big) <= MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+    payload = _zip_bytes(
+        {
+            "mimetype": b"application/hwp+zip",
+            "Contents/section0.xml": _hwpx_section_xml("hello"),
+            "BinData/big.bin": big,
+        }
+    )
+    members = {member.name: member.payload for member in read_hwpx_package_members(payload)}
+    assert members["BinData/big.bin"] == big
+    assert len(members["BinData/big.bin"]) == len(big)
+    assert members["Contents/section0.xml"] == _hwpx_section_xml("hello")
+    assert extract_hwpx_text(payload) == "hello"

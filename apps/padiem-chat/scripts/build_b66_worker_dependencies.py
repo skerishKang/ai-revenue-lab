@@ -135,6 +135,11 @@ def generate_runtime(app_root: Path = APP_ROOT) -> dict:
     output.mkdir()
     shutil.copy2(app_root / "worker.py", output / "worker.py")
     shutil.copytree(app_root / "app", output / "app", ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+    # Starlette validates STATIC_DIR while the Python module is imported by the
+    # Worker version API. Assets are also uploaded through Cloudflare's Assets
+    # binding, but the generated Python moduleRoot must retain this canonical
+    # directory so version validation does not fail before the Worker starts.
+    shutil.copytree(app_root / "static", output / "static")
     hashes = {}
     for path in output.rglob("*"):
         if path.is_file():
