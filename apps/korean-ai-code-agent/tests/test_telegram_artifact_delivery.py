@@ -8,7 +8,7 @@ adapter core is exercised end to end without a single socket.
 Pins:
 
 1. trusted current Telegram channel + paired chat + canonical artifact +
-   existing approval evidence -> SUCCEEDED receipt with exactly one external
+   existing approval verdict -> SUCCEEDED receipt with exactly one external
    side effect and exactly one provider call;
 2. the trusted channel reference is re-resolved per execution: a forged,
    wrong-account, wrong-workspace, revoked/expired-binding or stale-context
@@ -21,8 +21,8 @@ Pins:
    through the existing ``TelegramTrustedBindingPort`` and appears in no
    receipt, projection or error reference;
 5. a noncanonical or integrity-mismatched artifact reference fails closed
-   before any provider interaction — canonical material is verified against
-   the #3594 record;
+   before any provider interaction — canonical material is verified against the
+   #3594 record, including its run/workspace provenance;
 6. duplicate/replayed attempts fail closed (reused
    ``InMemoryDeliveryAttemptRegistry`` vocabulary) and never produce a second
    send;
@@ -30,8 +30,10 @@ Pins:
    ``ConnectorProviderError``/``ConnectorProviderErrorKind`` taxonomy, with
    the ``retryable`` flag selecting FAILED_RETRYABLE vs FAILED_TERMINAL, and
    the raw provider error body never surfaced;
-8. missing/unresolvable approval evidence produces a REFUSED receipt with
-   zero side effects, while mismatched approval evidence fails closed;
+8. the approval is consumed as an opaque verdict from the existing authority:
+   no approval reference yields a REFUSED receipt with zero side effects, a
+   reference the authority does not accept fails closed, and the adapter
+   defines no approval material schema, mints nothing and stores nothing;
 9. receipt correlation is copied from the request by #3631's
    ``build_delivery_receipt`` — a receipt can never be pointed at another
    attempt, and no second receipt authority exists;
@@ -42,6 +44,7 @@ Pins:
 
 from __future__ import annotations
 
+import ast
 import dataclasses
 import hashlib
 import inspect
@@ -74,12 +77,11 @@ from kagent.telegram_artifact_delivery import (
     TelegramArtifactDeliveryError,
     TelegramArtifactDeliveryRefusal,
     TelegramArtifactMaterial,
-    document_material_fingerprint,
 )
 from kagent.telegram_contracts import (
     TelegramBotScope,
     TelegramChatKind,
-    TelegramOutboundApproval,
+    TelegramOutboundPreflightDecision,
     TelegramPairedChat,
 )
 from kagent.trusted_channel_reference import (
@@ -99,13 +101,18 @@ BOT_REF = "bot-alpha"
 CHAT_REF = "chat-alpha"
 SENDER_REF = "user-alpha"
 RUN_REF = "run-alpha"
+OTHER_WORKSPACE_REF = "ws-other"
+OTHER_RUN_REF = "run-other"
 INTENT_ID = "intent-alpha-1"
 ATTEMPT_REF = "attempt-alpha-1"
 APPROVAL_REF = "approval-alpha-1"
-EVIDENCE_REF = "approval-evidence:alpha-1"
 CONNECTOR_ID = "telegram"
 ARTIFACT_ID = "artifact-report-1"
 PROVIDER_CHAT_ID = 987_654_321
+#: Telegram group/supergroup/channel identities are negative. The existing
+#: runtime applies no sign policy, so neither may this adapter.
+PROVIDER_GROUP_CHAT_ID = -100_123_456_789
+PROVIDER_CHANNEL_CHAT_ID = -1_000_000_000_123
 PROVIDER_TOKEN = b"123456:AAfixtureTokenMaterial01"
 DOCUMENT_BYTES = b"%PDF-1.4 telegram document delivery fixture bytes"
 _FORBIDDEN_NETWORK_TOKENS = (
@@ -119,16 +126,16 @@ _FORBIDDEN_NETWORK_TOKENS = (
 )
 
 
-def _record():
+def _record(*, workspace_ref=WORKSPACE_REF, run_ref=RUN_REF, artifact_id=ARTIFACT_ID, data=DOCUMENT_BYTES):
     return register_canonical_artifact(
-        artifact_id=ARTIFACT_ID,
+        artifact_id=artifact_id,
         artifact_kind="claw.document",
         filename="report.pdf",
         media_type="application/pdf",
-        size_bytes=len(DOCUMENT_BYTES),
-        integrity_ref=hashlib.sha256(DOCUMENT_BYTES).hexdigest(),
-        workspace_ref=WORKSPACE_REF,
-        run_ref=RUN_REF,
+        size_bytes=len(data),
+        integrity_ref=hashlib.sha256(data).hexdigest(),
+        workspace_ref=workspace_ref,
+        run_ref=run_ref,
     )
 
 
@@ -236,21 +243,26 @@ def _material(record=None, data=DOCUMENT_BYTES):
     return TelegramArtifactMaterial(record=record or _record(), document_bytes=data)
 
 
-def _approval(record=None, *, fingerprint=None, approval_ref=APPROVAL_REF):
-    if fingerprint is None:
-        fingerprint = document_material_fingerprint(
-            record or _record(),
-            binding_ref=BINDING_REF,
-            workspace_ref=WORKSPACE_REF,
-            bot_ref=BOT_REF,
-            chat_ref=CHAT_REF,
-        )
-    return TelegramOutboundApproval(
-        approval_ref=approval_ref,
-        evidence_ref=EVIDENCE_REF,
-        material_fingerprint=fingerprint,
-        approved_at=NOW - timedelta(minutes=5),
-    )
+def _adapter_code() -> str:
+    """Adapter source with every docstring/comment removed.
+
+    Prohibition scans must look at executable code, not at the module
+    docstring, which legitimately *explains* why the inbound quarantine shape
+    is not reused.
+    """
+
+    tree = ast.parse(pathlib.Path(tad.__file__).read_text(encoding="utf-8"))
+    for node in ast.walk(tree):
+        if isinstance(node, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+            body = getattr(node, "body", None)
+            if (
+                body
+                and isinstance(body[0], ast.Expr)
+                and isinstance(body[0].value, ast.Constant)
+                and isinstance(body[0].value.value, str)
+            ):
+                node.body = body[1:] or [ast.Pass()]
+    return ast.unparse(ast.fix_missing_locations(tree))
 
 
 class _FakeTrustedBinding:
@@ -285,6 +297,20 @@ class _FakeDocumentSend:
 
 
 class _FakeMaterialResolver:
+    """Hermetic stand-in for the existing run/workspace scoped artifact lookup."""
+
+    def __init__(self, material):
+        self.material = material
+        self.calls = []
+
+    def resolve_artifact_material(self, artifact_ref, *, workspace_ref, run_ref):
+        self.calls.append((artifact_ref, workspace_ref, run_ref))
+        return self.material
+
+
+class _ScopeBlindResolver:
+    """A global lookup: knows only ``artifact_id``/digest, no scope at all."""
+
     def __init__(self, material):
         self.material = material
         self.calls = []
@@ -294,12 +320,33 @@ class _FakeMaterialResolver:
         return self.material
 
 
+class _FakeApprovalAuthority:
+    """Hermetic stand-in for the existing opaque approval authority.
+
+    It answers one question with the existing decision vocabulary and holds no
+    approval record of its own — mirroring the production seam exactly.
+    """
+
+    def __init__(self, decision=TelegramOutboundPreflightDecision.ALLOW):
+        self.decision = decision
+        self.calls = []
+
+    def verify_delivery_approval(self, *, approval_ref, request):
+        self.calls.append((approval_ref, request))
+        return self.decision
+
+
+class _UnusableApprovalAuthority:
+    def verify_delivery_approval(self, *, approval_ref, request):
+        return {"allowed": True}
+
+
 def _adapter(
     *,
     context=None,
     material=None,
     approval=None,
-    approval_lookup=None,
+    resolver=None,
     send=None,
     binding=None,
     account_ref=ACCOUNT_REF,
@@ -310,18 +357,17 @@ def _adapter(
     material = material if material is not None else _material(record)
     binding = binding or _binding()
     context = context if context is not None else _context(binding=binding)
-    if approval is None:
-        approval = _approval(record)
-    lookup = approval_lookup if approval_lookup is not None else {APPROVAL_REF: approval}
     send = send if send is not None else _FakeDocumentSend()
     trusted_binding = _FakeTrustedBinding()
     adapter = TelegramArtifactDeliveryAdapter(
         scope=_scope(),
         trusted_binding=trusted_binding,
         document_send=send,
-        artifact_material=_FakeMaterialResolver(material),
+        artifact_material=resolver if resolver is not None else _FakeMaterialResolver(material),
         channel_context=lambda: context,
-        approval_evidence=lambda ref: lookup.get(ref),
+        approval_authority=(
+            approval if approval is not None else _FakeApprovalAuthority()
+        ),
         account_ref=account_ref,
         actor_ref=actor_ref,
         clock=clock or (lambda: NOW),
@@ -516,6 +562,109 @@ class TelegramArtifactDeliveryAdapterTests(unittest.TestCase):
             adapter.deliver(_request())
         self.assertEqual(send.calls, [])
 
+    # 9. artifact scope correlation: workspace and run are verified facts
+    def test_cross_workspace_artifact_material_fails_closed(self):
+        foreign = _record(workspace_ref=OTHER_WORKSPACE_REF)
+        adapter, send, _, _ = _adapter(material=TelegramArtifactMaterial(record=foreign, document_bytes=DOCUMENT_BYTES))
+
+        with self.assertRaises(TelegramArtifactDeliveryError):
+            adapter.deliver(_request())
+        self.assertEqual(send.calls, [])
+
+    def test_wrong_run_artifact_material_fails_closed(self):
+        foreign = _record(run_ref=OTHER_RUN_REF)
+        adapter, send, _, _ = _adapter(material=TelegramArtifactMaterial(record=foreign, document_bytes=DOCUMENT_BYTES))
+
+        with self.assertRaises(TelegramArtifactDeliveryError):
+            adapter.deliver(_request())
+        self.assertEqual(send.calls, [])
+
+    def test_artifact_record_without_scope_provenance_fails_closed(self):
+        unscoped = register_canonical_artifact(
+            artifact_id=ARTIFACT_ID,
+            artifact_kind="claw.document",
+            filename="report.pdf",
+            media_type="application/pdf",
+            size_bytes=len(DOCUMENT_BYTES),
+            integrity_ref=hashlib.sha256(DOCUMENT_BYTES).hexdigest(),
+        )
+        adapter, send, _, _ = _adapter(
+            material=TelegramArtifactMaterial(record=unscoped, document_bytes=DOCUMENT_BYTES)
+        )
+
+        with self.assertRaises(TelegramArtifactDeliveryError):
+            adapter.deliver(_request())
+        self.assertEqual(send.calls, [])
+
+    def test_material_lookup_receives_the_delivering_scope(self):
+        resolver = _FakeMaterialResolver(_material())
+        adapter, send, _, _ = _adapter(resolver=resolver)
+
+        adapter.deliver(_request())
+
+        self.assertEqual(len(resolver.calls), 1)
+        artifact_ref, workspace_ref, run_ref = resolver.calls[0]
+        self.assertEqual(artifact_ref.artifact_id, ARTIFACT_ID)
+        self.assertEqual(workspace_ref, WORKSPACE_REF)
+        self.assertEqual(run_ref, RUN_REF)
+        self.assertEqual(len(send.calls), 1)
+
+    def test_scope_blind_global_lookup_is_refused_at_composition(self):
+        blind = _ScopeBlindResolver(_material())
+        send = _FakeDocumentSend()
+
+        with self.assertRaises(TelegramArtifactDeliveryError):
+            TelegramArtifactDeliveryAdapter(
+                scope=_scope(),
+                trusted_binding=_FakeTrustedBinding(),
+                document_send=send,
+                artifact_material=blind,
+                channel_context=lambda: _context(),
+                approval_authority=_FakeApprovalAuthority(),
+                account_ref=ACCOUNT_REF,
+                actor_ref=SENDER_REF,
+                clock=lambda: NOW,
+            )
+        self.assertEqual(send.calls, [])
+        self.assertEqual(blind.calls, [])
+
+    def test_resolver_port_contract_requires_scope_keywords(self):
+        parameters = set(
+            inspect.signature(tad.TelegramArtifactMaterialResolver.resolve_artifact_material).parameters
+        )
+        self.assertLessEqual({"workspace_ref", "run_ref"}, parameters)
+
+        resolver_signature = inspect.signature(_FakeMaterialResolver.resolve_artifact_material)
+        self.assertEqual(
+            {name for name, p in resolver_signature.parameters.items() if p.default is inspect.Parameter.empty},
+            {"self", "artifact_ref", "workspace_ref", "run_ref"},
+        )
+
+        self.assertTrue(tad.ARTIFACT_WORKSPACE_SCOPE_VERIFIED)
+        self.assertTrue(tad.ARTIFACT_RUN_SCOPE_VERIFIED)
+        self.assertTrue(tad.ARTIFACT_RESOLVER_SCOPED_TO_RUN_AND_WORKSPACE)
+        self.assertEqual(tad.SECOND_ARTIFACT_AUTHORITY, 0)
+
+    def test_scope_swallows_kwargs_lookup_is_refused_at_composition(self):
+        class _KwargsSwallowingResolver:
+            def resolve_artifact_material(self, artifact_ref, **kwargs):
+                return _material()
+
+        send = _FakeDocumentSend()
+        with self.assertRaises(TelegramArtifactDeliveryError):
+            TelegramArtifactDeliveryAdapter(
+                scope=_scope(),
+                trusted_binding=_FakeTrustedBinding(),
+                document_send=send,
+                artifact_material=_KwargsSwallowingResolver(),
+                channel_context=lambda: _context(),
+                approval_authority=_FakeApprovalAuthority(),
+                account_ref=ACCOUNT_REF,
+                actor_ref=SENDER_REF,
+                clock=lambda: NOW,
+            )
+        self.assertEqual(send.calls, [])
+
     def test_empty_material_bytes_are_rejected_at_construction(self):
         with self.assertRaises(TelegramArtifactDeliveryError):
             TelegramArtifactMaterial(record=_record(), document_bytes=b"")
@@ -655,7 +804,7 @@ class TelegramArtifactDeliveryAdapterTests(unittest.TestCase):
         self.assertEqual(tad.RAW_ARTIFACT_BYTES_IN_RECEIPT, 0)
         self.assertFalse(receipt.public_projection()["artifact_bytes_in_projection"])
 
-    # approval evidence: consumed, never minted
+    # approval: consumed opaquely, never minted, never defined locally
     def test_missing_approval_ref_yields_refused_receipt(self):
         adapter, send, _, _ = _adapter()
         request = _request(approval_ref=None)
@@ -669,36 +818,132 @@ class TelegramArtifactDeliveryAdapterTests(unittest.TestCase):
         self.assertTrue(receipt.correlates_with(request))
         self.assertEqual(send.calls, [])
 
-    def test_unresolvable_approval_evidence_yields_refused_receipt(self):
-        adapter, send, _, _ = _adapter(approval_lookup={})
+    def test_unresolvable_approval_reference_yields_refused_receipt(self):
+        authority = _FakeApprovalAuthority()
+        adapter, send, _, _ = _adapter(approval=authority)
+        request = _request(approval_ref=None)
 
-        receipt = adapter.deliver(_request())
+        receipt = adapter.deliver(request)
 
         self.assertIs(receipt.terminal_status, DeliveryTerminalStatus.REFUSED)
         self.assertEqual(send.calls, [])
+        self.assertEqual(authority.calls, [])
 
-    def test_mismatched_approval_fingerprint_fails_closed(self):
+    def test_mismatched_approval_fails_closed(self):
+        for decision in (
+            TelegramOutboundPreflightDecision.APPROVAL_MISMATCH,
+            TelegramOutboundPreflightDecision.MATERIAL_CHANGED,
+            TelegramOutboundPreflightDecision.VERSION_BINDING_MISMATCH,
+            TelegramOutboundPreflightDecision.TARGET_MISMATCH,
+        ):
+            with self.subTest(decision=decision.value):
+                adapter, send, _, _ = _adapter(approval=_FakeApprovalAuthority(decision))
+                with self.assertRaises(TelegramArtifactDeliveryError):
+                    adapter.deliver(_request(attempt_ref=f"attempt-mismatch-{decision.value}"))
+                self.assertEqual(send.calls, [])
+
+    def test_out_of_scope_approval_fails_closed(self):
         adapter, send, _, _ = _adapter(
-            approval=_approval(fingerprint=hashlib.sha256(b"other-material").hexdigest())
+            approval=_FakeApprovalAuthority(TelegramOutboundPreflightDecision.OUT_OF_SCOPE)
         )
 
         with self.assertRaises(TelegramArtifactDeliveryError):
             adapter.deliver(_request())
         self.assertEqual(send.calls, [])
 
-    def test_approval_for_another_chat_fails_closed(self):
-        fingerprint = document_material_fingerprint(
-            _record(),
-            binding_ref=BINDING_REF,
-            workspace_ref=WORKSPACE_REF,
-            bot_ref=BOT_REF,
-            chat_ref="chat-somewhere-else",
-        )
-        adapter, send, _, _ = _adapter(approval=_approval(fingerprint=fingerprint))
+    def test_unusable_approval_verdict_fails_closed(self):
+        adapter, send, _, _ = _adapter(approval=_UnusableApprovalAuthority())
 
         with self.assertRaises(TelegramArtifactDeliveryError):
             adapter.deliver(_request())
         self.assertEqual(send.calls, [])
+
+    def test_adapter_cannot_mint_approval(self):
+        surface = {name for name in dir(TelegramArtifactDeliveryAdapter) if not name.startswith("_")}
+        self.assertEqual(surface, {"deliver", "scope"})
+        for forbidden in ("mint_approval", "approve", "grant_approval", "issue_approval"):
+            self.assertNotIn(forbidden, surface)
+        code = _adapter_code()
+        for forbidden in (
+            "TelegramOutboundApproval(",
+            "ApprovedDocument(",
+            "quarantine_evidence_ref",
+            "def approve",
+            "def mint",
+        ):
+            self.assertNotIn(forbidden, code, f"adapter must not construct {forbidden}")
+
+    def test_custom_local_approval_fingerprint_authority_is_absent(self):
+        module_names = set(dir(tad))
+        for forbidden in (
+            "document_material_fingerprint",
+            "approval_material_fingerprint",
+            "material_fingerprint",
+            "TelegramOutboundApproval",
+            "TelegramOutboundMaterial",
+            "TelegramApprovedDocument",
+            "APPROVAL_MATERIAL_SCHEMA",
+        ):
+            self.assertNotIn(forbidden, module_names, f"adapter defines {forbidden}")
+
+        source = _adapter_code()
+        for forbidden in (
+            "claw-telegram-document-delivery-material",
+            "material_fingerprint",
+            "telegram_outbound_preflight",
+        ):
+            self.assertNotIn(forbidden, source, f"adapter must not reference {forbidden}")
+
+        self.assertFalse(tad.CUSTOM_APPROVAL_FINGERPRINT_AUTHORITY)
+        self.assertFalse(tad.NEW_APPROVAL_MATERIAL_SCHEMA)
+        self.assertFalse(tad.LOCAL_APPROVAL_STORE)
+        self.assertFalse(tad.LOCAL_APPROVAL_MINT)
+        self.assertFalse(tad.FAKE_QUARANTINE_EVIDENCE)
+        self.assertEqual(tad.APPROVAL_FINGERPRINT_AUTHORITY_IN_ADAPTER, 0)
+        self.assertEqual(tad.SECOND_APPROVAL_AUTHORITY, 0)
+        self.assertTrue(tad.APPROVAL_VERDICT_IS_OPAQUE)
+        self.assertFalse(tad.APPROVAL_MATERIAL_RECONSTRUCTED_IN_ADAPTER)
+
+    def test_existing_preflight_semantic_mismatch_is_reported(self):
+        # The existing preflight material contract is the inbound quarantine
+        # flow, so it is left untouched rather than force-fit with fabricated
+        # quarantine evidence.
+        self.assertFalse(tad.REAL_EXISTING_PRELIGHT_REUSABLE)
+        self.assertTrue(tad.PREFLIGHT_REUSE_BLOCKED_BY_SEMANTIC_MISMATCH)
+        self.assertFalse(tad.FAKE_QUARANTINE_EVIDENCE)
+
+        from kagent.telegram_contracts import TelegramApprovedDocument
+
+        import dataclasses as _dc
+
+        document_fields = {f.name for f in _dc.fields(TelegramApprovedDocument)}
+        self.assertIn("quarantine_evidence_ref", document_fields)
+
+        untouched = (
+            pathlib.Path(tad.__file__).resolve().parent / "telegram_contracts.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn("class TelegramApprovedDocument", untouched)
+        self.assertIn("class TelegramOutboundApproval", untouched)
+        self.assertIn("def telegram_outbound_preflight", untouched)
+
+    def test_approval_authority_is_asked_exactly_one_question(self):
+        authority = _FakeApprovalAuthority()
+        adapter, _, _, _ = _adapter(approval=authority)
+        request = _request()
+
+        adapter.deliver(request)
+
+        self.assertEqual(len(authority.calls), 1)
+        approval_ref, seen_request = authority.calls[0]
+        self.assertEqual(approval_ref, APPROVAL_REF)
+        self.assertIs(seen_request, request)
+
+        parameters = set(
+            inspect.signature(tad.TelegramDeliveryApprovalPort.verify_delivery_approval).parameters
+        )
+        self.assertEqual(parameters, {"self", "approval_ref", "request"})
+        for forbidden in ("material", "record", "fingerprint", "document", "chat_ref"):
+            self.assertNotIn(forbidden, parameters)
 
     def test_refusal_type_is_a_fail_closed_error(self):
         self.assertTrue(issubclass(TelegramArtifactDeliveryRefusal, TelegramArtifactDeliveryError))
@@ -759,14 +1004,58 @@ class TelegramArtifactDeliveryAdapterTests(unittest.TestCase):
             adapter.deliver(request)
         self.assertEqual(send.calls, [])
 
-    def test_invalid_provider_chat_identity_fails_closed(self):
-        for bad_chat_id in (0, -5, "987654321"):
+    def test_positive_private_chat_id_is_supported(self):
+        adapter, send, _, _ = _adapter()
+        adapter._binding.chat_id = PROVIDER_CHAT_ID
+
+        receipt = adapter.deliver(_request())
+
+        self.assertIs(receipt.terminal_status, DeliveryTerminalStatus.SUCCEEDED)
+        self.assertEqual(send.calls[0]["provider_chat_id"], PROVIDER_CHAT_ID)
+
+    def test_negative_group_and_channel_chat_id_are_supported(self):
+        for label, chat_id in (
+            ("group", PROVIDER_GROUP_CHAT_ID),
+            ("channel", PROVIDER_CHANNEL_CHAT_ID),
+        ):
+            with self.subTest(provider_chat_id=label):
+                adapter, send, _, _ = _adapter()
+                adapter._binding.chat_id = chat_id
+
+                receipt = adapter.deliver(_request(attempt_ref=f"attempt-negative-{label}"))
+
+                self.assertIs(receipt.terminal_status, DeliveryTerminalStatus.SUCCEEDED)
+                self.assertEqual(send.calls[0]["provider_chat_id"], chat_id)
+                serialized = json.dumps(receipt.public_projection()) + repr(receipt)
+                self.assertNotIn(str(chat_id), serialized)
+
+        self.assertTrue(tad.NEGATIVE_PROVIDER_CHAT_ID_SUPPORTED)
+        self.assertFalse(tad.POSITIVE_ONLY_CHAT_ID_POLICY)
+        self.assertTrue(tad.CHAT_ID_RESOLVED_FROM_TRUSTED_BINDING_ONLY)
+
+    def test_non_integer_chat_identity_fails_closed(self):
+        for bad_chat_id in (True, False, "987654321", 987654321.0, None, b"987654321"):
             with self.subTest(chat_id=bad_chat_id):
                 adapter, send, _, _ = _adapter()
                 adapter._binding.chat_id = bad_chat_id
                 with self.assertRaises(ContractError):
-                    adapter.deliver(_request(attempt_ref=f"attempt-bad-chat-{bad_chat_id}"))
+                    adapter.deliver(_request(attempt_ref=f"attempt-bad-chat-{repr(bad_chat_id)}"))
                 self.assertEqual(send.calls, [])
+
+    def test_chat_identity_policy_matches_the_existing_runtime(self):
+        # Same exact-integer rule the existing runtime applies; no sign policy.
+        adapter, send, _, _ = _adapter()
+        adapter._binding.chat_id = 0
+        receipt = adapter.deliver(_request())
+        self.assertIs(receipt.terminal_status, DeliveryTerminalStatus.SUCCEEDED)
+        self.assertEqual(send.calls[0]["provider_chat_id"], 0)
+
+        runtime_source = (
+            pathlib.Path(tad.__file__).resolve().parent / "telegram_bot_runtime.py"
+        ).read_text(encoding="utf-8")
+        self.assertIn('provider_chat_id = _provider_int(provider_chat_id, "provider_chat_id")', runtime_source)
+        self.assertNotIn("provider_chat_id <= 0", runtime_source)
+        self.assertNotIn("provider_chat_id > 0", runtime_source)
 
     # 16-17. no second execution / receipt authority
     def test_second_execution_authority_is_zero(self):
@@ -815,43 +1104,66 @@ class TelegramArtifactDeliveryAdapterTests(unittest.TestCase):
             source = path.read_text(encoding="utf-8")
             self.assertIsNone(network_import.search(source), f"network import in {path.name}")
 
-    # fingerprint binding function
-    def test_document_material_fingerprint_is_deterministic_and_bound(self):
-        record = _record()
-        base = document_material_fingerprint(
-            record,
-            binding_ref=BINDING_REF,
-            workspace_ref=WORKSPACE_REF,
-            bot_ref=BOT_REF,
-            chat_ref=CHAT_REF,
+    # provider error boundary: raw bodies and exception text never surface
+    def test_raw_provider_error_body_never_reaches_the_receipt(self):
+        send = _FakeDocumentSend(
+            envelope={
+                "ok": False,
+                "error_code": 400,
+                "description": "Bad Request: chat not found token=123456:AAfixtureTokenMaterial01",
+            }
         )
-        self.assertEqual(len(base), 64)
-        self.assertRegex(base, r"^[0-9a-f]{64}$")
-        again = document_material_fingerprint(
-            record,
-            binding_ref=BINDING_REF,
-            workspace_ref=WORKSPACE_REF,
-            bot_ref=BOT_REF,
-            chat_ref=CHAT_REF,
+        adapter, _, _, _ = _adapter(send=send)
+
+        receipt = adapter.deliver(_request())
+
+        self.assertIs(receipt.terminal_status, DeliveryTerminalStatus.FAILED_TERMINAL)
+        serialized = json.dumps(receipt.public_projection()) + repr(receipt)
+        for leaked in ("Bad Request", "chat not found", "AAfixtureTokenMaterial01"):
+            self.assertNotIn(leaked, serialized)
+        self.assertEqual(tad.RAW_PROVIDER_ERROR_BODY, 0)
+        self.assertEqual(tad.PROVIDER_ERROR_TEXT_IN_RECEIPT, 0)
+        self.assertEqual(tad.RAW_BOT_TOKEN_IN_LOG, 0)
+
+    def test_transport_exception_text_never_reaches_the_receipt(self):
+        secrety_message = (
+            "connection failed for https://api.example/bot123456:AAfixtureTokenMaterial01/sendDocument"
         )
-        self.assertEqual(base, again)
-        for changed in (
-            document_material_fingerprint(
-                record,
-                binding_ref=BINDING_REF,
-                workspace_ref=WORKSPACE_REF,
-                bot_ref=BOT_REF,
-                chat_ref="chat-other",
-            ),
-            document_material_fingerprint(
-                _record(),
-                binding_ref="binding-other",
-                workspace_ref=WORKSPACE_REF,
-                bot_ref=BOT_REF,
-                chat_ref=CHAT_REF,
-            ),
-        ):
-            self.assertNotEqual(base, changed)
+        send = _FakeDocumentSend(error=OSError(secrety_message))
+        adapter, _, _, _ = _adapter(send=send)
+
+        receipt = adapter.deliver(_request())
+
+        self.assertIs(receipt.terminal_status, DeliveryTerminalStatus.FAILED_RETRYABLE)
+        self.assertIs(receipt.provider_error.kind, ConnectorProviderErrorKind.UNAVAILABLE)
+        serialized = json.dumps(receipt.public_projection()) + repr(receipt)
+        for leaked in ("connection failed", "api.example", "AAfixtureTokenMaterial01", secrety_message):
+            self.assertNotIn(leaked, serialized)
+        self.assertRegex(receipt.provider_error.error_ref, r"^tgdocerr-0-[0-9a-f]{16}$")
+
+    def test_terminal_split_follows_the_existing_taxonomy_retryable_flag(self):
+        cases = {
+            429: (ConnectorProviderErrorKind.RATE_LIMITED, True, DeliveryTerminalStatus.FAILED_RETRYABLE),
+            500: (ConnectorProviderErrorKind.UNAVAILABLE, True, DeliveryTerminalStatus.FAILED_RETRYABLE),
+            503: (ConnectorProviderErrorKind.UNAVAILABLE, True, DeliveryTerminalStatus.FAILED_RETRYABLE),
+            400: (ConnectorProviderErrorKind.INVALID_REQUEST, False, DeliveryTerminalStatus.FAILED_TERMINAL),
+            401: (ConnectorProviderErrorKind.AUTHORIZATION, False, DeliveryTerminalStatus.FAILED_TERMINAL),
+            404: (ConnectorProviderErrorKind.NOT_FOUND, False, DeliveryTerminalStatus.FAILED_TERMINAL),
+            418: (ConnectorProviderErrorKind.UNKNOWN, False, DeliveryTerminalStatus.FAILED_TERMINAL),
+        }
+        for code, (kind, retryable, status) in cases.items():
+            with self.subTest(error_code=code):
+                send = _FakeDocumentSend(
+                    envelope={"ok": False, "error_code": code, "description": "denied"}
+                )
+                adapter, _, _, _ = _adapter(send=send)
+                receipt = adapter.deliver(_request(attempt_ref=f"attempt-split-{code}"))
+
+                self.assertIs(receipt.provider_error.kind, kind)
+                self.assertIs(receipt.provider_error.retryable, retryable)
+                self.assertIs(receipt.terminal_status, status)
+                self.assertEqual(receipt.external_side_effect_count, 0)
+                self.assertEqual(receipt.retry_count, 0)
 
     def test_material_size_bound_keeps_canonical_ceiling(self):
         self.assertLessEqual(MAX_ARTIFACT_SIZE_BYTES, 8 * 1024 * 1024)
