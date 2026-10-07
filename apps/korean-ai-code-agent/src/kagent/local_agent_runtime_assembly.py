@@ -8,7 +8,7 @@ import re
 import threading
 from typing import Any, Protocol
 
-from .browser_open import BrowserOpenRefusal, BrowserOpenRequest
+from .browser_open import BrowserOpenRefusal, BrowserOpenRequest  # noqa: F401
 from .browser_open_authority import BrowserOpenAuthority, BrowserOpenAuthorityOutcome
 from .contracts import ContractError
 from .local_agent import LocalAgentDeviceProfile, LocalCommandRequest
@@ -293,6 +293,16 @@ class BoundLocalAgentRuntimeAssembly:
     @property
     def browser_open_configured(self) -> bool:
         return self._browser_open is not None
+
+    @property
+    def browser_open_authority(self) -> BrowserOpenAuthority | None:
+        """The composed `browser.open` authority, or None when unwired.
+
+        Exposed so the resident host can hand the Desktop exactly one redemption
+        entry point without growing a second authority or a second pipe.
+        """
+
+        return self._browser_open
 
     def open_browser(
         self,

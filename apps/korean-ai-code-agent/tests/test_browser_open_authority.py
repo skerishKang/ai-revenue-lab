@@ -373,6 +373,18 @@ class RestartReplayTests(unittest.TestCase):
                 evidence_port=DeterministicBrowserOpenAuthorityEvidencePort((evidence(request()),)),
             )
             grant, _ = port.authorize(request=request(), now=NOW)
+            # Authorization alone must not consume the durable transition.
+            authorized = first.get(command_id=COMMAND_ID)
+            assert authorized is not None
+            self.assertIs(authorized.state, DurableRunState.ADMITTED)
+            # The redemption is the single owner of the transition.
+            port.redeem(
+                redemption_ref=COMMAND_ID,
+                request_fingerprint=grant.request_fingerprint,
+                open_id=grant.open_id,
+                run_ref=grant.run_id,
+                now=NOW,
+            )
             started = first.get(command_id=COMMAND_ID)
             assert started is not None
             self.assertIs(started.state, DurableRunState.EXECUTING)
@@ -410,6 +422,96 @@ class RestartReplayTests(unittest.TestCase):
             self.assertEqual(report.replay_candidates, ())
             self.assertFalse(report.execution_authority_granted)
             self.assertEqual(report.safe_dict()["execution_authority_granted"], False)
+
+
+class DurableOneShotOwnershipTests(unittest.TestCase):
+    """The durable transition has exactly one owner: the redemption step."""
+
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.path = os.path.join(self._tmp.name, "durable-runs.sqlite3")
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def _port(self, store: DurableRunStore) -> P01LocalPermissionBrowserOpenAuthorizationPort:
+        return P01LocalPermissionBrowserOpenAuthorizationPort(
+            device=device(),
+            permission_profile=profile(),
+            store=store,
+            evidence_port=DeterministicBrowserOpenAuthorityEvidencePort((evidence(request()),)),
+        )
+
+    def test_authorize_performs_no_durable_write(self) -> None:
+        with DurableRunStore(self.path) as store:
+            store.put(admitted_record())
+            self._port(store).authorize(request=request(), now=NOW)
+            record = store.get(command_id=COMMAND_ID)
+            assert record is not None
+            self.assertIs(record.state, DurableRunState.ADMITTED)
+            self.assertIsNone(record.started_at)
+
+    def test_redeem_is_the_single_transition_and_is_done_once(self) -> None:
+        with DurableRunStore(self.path) as store:
+            store.put(admitted_record())
+            port = self._port(store)
+            grant, _ = port.authorize(request=request(), now=NOW)
+            port.redeem(
+                redemption_ref=COMMAND_ID,
+                request_fingerprint=grant.request_fingerprint,
+                open_id=grant.open_id,
+                run_ref=grant.run_id,
+                now=NOW,
+            )
+            with self.assertRaises(BrowserOpenRefusal) as raised:
+                port.redeem(
+                    redemption_ref=COMMAND_ID,
+                    request_fingerprint=grant.request_fingerprint,
+                    open_id=grant.open_id,
+                    run_ref=grant.run_id,
+                    now=NOW,
+                )
+            self.assertEqual(raised.exception.code, "command_already_started")
+
+    def test_redeem_refuses_a_command_this_agent_never_authorized(self) -> None:
+        with DurableRunStore(self.path) as store:
+            store.put(admitted_record())
+            port = self._port(store)
+            with self.assertRaises(BrowserOpenRefusal) as raised:
+                port.redeem(
+                    redemption_ref=COMMAND_ID,
+                    request_fingerprint=browser_open_fingerprint(request()),
+                    open_id="open_1",
+                    run_ref="run_3611",
+                    now=NOW,
+                )
+            self.assertEqual(raised.exception.code, "redemption_not_authorized")
+            # Still untouched: a bare id is not authorization.
+            record = store.get(command_id=COMMAND_ID)
+            assert record is not None
+            self.assertIs(record.state, DurableRunState.ADMITTED)
+
+    def test_redeem_refuses_mismatched_correlation(self) -> None:
+        with DurableRunStore(self.path) as store:
+            store.put(admitted_record())
+            port = self._port(store)
+            grant, _ = port.authorize(request=request(), now=NOW)
+            for mismatch in (
+                {"request_fingerprint": "b" * 64},
+                {"open_id": "open_other"},
+                {"run_ref": "run_other"},
+            ):
+                kwargs = {
+                    "redemption_ref": COMMAND_ID,
+                    "request_fingerprint": grant.request_fingerprint,
+                    "open_id": grant.open_id,
+                    "run_ref": grant.run_id,
+                    "now": NOW,
+                }
+                kwargs.update(mismatch)
+                with self.assertRaises(BrowserOpenRefusal) as raised:
+                    port.redeem(**kwargs)  # type: ignore[arg-type]
+                self.assertEqual(raised.exception.code, "redemption_not_authorized")
 
 
 class DurableStoreTransitionTests(unittest.TestCase):

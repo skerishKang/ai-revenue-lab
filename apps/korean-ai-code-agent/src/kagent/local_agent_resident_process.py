@@ -55,6 +55,7 @@ from .contracts import ContractError
 from .local_agent import LocalAgentDeviceProfile, LocalAgentPlatform, LocalRoot
 from .local_agent_broker_pairing_client import LocalAgentBrokerPairingClient
 from .local_agent_desktop_material import (
+    DESKTOP_REQUEST_KINDS,
     MAX_PREHANDOFF_SKIP_LINES,
     ResidentDesktopMaterialResponder,
 )
@@ -838,18 +839,24 @@ def main(argv: list[str] | None = None) -> int:
         _emit(event="host_built", **_phase_stamp(), **RESIDENT_PROCESS_CONTRACT)
         _emit(event="connect_start", **_phase_stamp(), **RESIDENT_PROCESS_CONTRACT)
         host.start()
-        # #3436 B2d: the bounded trusted-local material responder shares this
-        # supervised stdio boundary. It starts only after the handoff was
-        # consumed and the host is online, answers exactly one request kind,
-        # and projects state the host already holds — no session is opened and
-        # no credential is minted or stored here (DESKTOP_SESSION_OPEN=0).
+        # #3436 B2d + #3611: one bounded dispatcher, one reader thread, exactly
+        # two literal request kinds, on the supervised stdio boundary the
+        # resident already shares with the shell. It starts only after the
+        # handoff was consumed and the host is online, projects state the host
+        # already holds (no session is opened, no credential minted or stored),
+        # and owns the agent side of the browser-open redemption.
+        #
+        # A second reader on this same stdin would race this one, so the
+        # redemption kind is added here instead of in a new thread.
         material_responder = ResidentDesktopMaterialResponder(
-            material_projection=host.current_desktop_session_material
+            material_projection=host.current_desktop_session_material,
+            redemption=host.redeem_desktop_browser_open,
         )
         material_responder.start()
         _emit(
             event="desktop_material_channel_ready",
             host_state=host.state.value,
+            request_kinds=sorted(DESKTOP_REQUEST_KINDS),
             **_phase_stamp(),
             **RESIDENT_PROCESS_CONTRACT,
         )

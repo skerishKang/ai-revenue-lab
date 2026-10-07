@@ -38,6 +38,7 @@ from datetime import datetime, timezone
 import hashlib
 import re
 import threading
+from collections.abc import Callable
 from typing import Any, Protocol
 
 from padiem_ai_core.agent_approval import (
@@ -83,6 +84,7 @@ from .local_agent_permissions import (
 )
 
 _SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,511}$")
+_SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 _SHA256_RE = re.compile(r"^[a-f0-9]{64}$")
 
 #: Receipt outcomes that mean the admitted command actually ran to a local exit.
@@ -100,6 +102,12 @@ def _digest(value: Any, field_name: str) -> str:
     if not _SHA256_RE.fullmatch(normalized):
         raise ContractError(f"{field_name} must be a lowercase SHA-256 digest")
     return normalized
+
+
+def _id(value: Any, field_name: str) -> str:
+    if not isinstance(value, str) or not _SAFE_ID_RE.fullmatch(value.strip()):
+        raise ContractError(f"{field_name} must be a bounded safe identifier")
+    return value.strip()
 
 
 def _aware(value: Any, field_name: str) -> datetime:
@@ -381,11 +389,18 @@ class P01LocalPermissionBrowserOpenAuthorizationPort:
     4. the canonical P01 decision must be APPROVED, in scope and still resumable;
     5. local policy is **recomputed** — a DENY wins even with an approved decision;
     6. the durable admission must exist, still be ``ADMITTED``, and still be inside
-       its hard deadline; the ``ADMITTED -> EXECUTING`` write is the one-shot.
+       its hard deadline.
 
-    Step 6 is what makes replay denial survive a restart: the in-process consumed
-    sets below are only a cheap fast path and are explicitly **not** the
-    authority.
+    Step 6 is a **read-only precondition**. The ``ADMITTED -> EXECUTING`` write is
+    deliberately *not* here: it happens exactly once, later, in :meth:`redeem`, so
+    there is a single owner of the durable transition and a single place where a
+    concurrent replay can be resolved.
+
+        ADMITTED_TO_EXECUTING_OWNER=CANONICAL_BROWSER_OPEN_REDEMPTION
+        DURABLE_TRANSITION_COUNT_MAX=1
+
+    The in-process consumed sets are only a cheap fast path and are explicitly
+    **not** the authority.
     """
 
     def __init__(
@@ -415,6 +430,10 @@ class P01LocalPermissionBrowserOpenAuthorizationPort:
         self._evidence_port = evidence_port or UnconfiguredBrowserOpenAuthorityEvidencePort()
         self._consumed_fingerprints: set[str] = set()
         self._consumed_decisions: set[str] = set()
+        # Authorized-but-not-yet-redeemed opens, keyed by the durable command.
+        # This is what lets a redemption verify that the Desktop is redeeming an
+        # open this agent actually authorized, instead of trusting a bare id.
+        self._pending: dict[str, tuple[str, str, str]] = {}
         self._lock = threading.Lock()
 
     @property
@@ -463,13 +482,12 @@ class P01LocalPermissionBrowserOpenAuthorizationPort:
                     "grant_rejected", "canonical P01 decision has already been consumed"
                 )
 
-        # The durable one-shot. Everything above is pure validation, so the row is
-        # only entered once this open is certain to be attempted.
-        self._enter_durable_command(
+        # Read-only durable precondition. No write happens here — the single
+        # transition belongs to `redeem`.
+        self._require_admitted_command(
             command_id=evidence.command_id,
             request=request,
             now=now,
-            evidence=evidence,
         )
 
         grant = authorize_browser_open(
@@ -484,16 +502,96 @@ class P01LocalPermissionBrowserOpenAuthorizationPort:
         with self._lock:
             self._consumed_fingerprints.add(fingerprint)
             self._consumed_decisions.add(evidence.approval_decision.decision_id)
+            self._pending[evidence.command_id] = (
+                grant.request_fingerprint,
+                grant.open_id,
+                grant.run_id,
+            )
         return grant, evidence
 
-    def _enter_durable_command(
+    def redeem(
+        self,
+        *,
+        redemption_ref: str,
+        request_fingerprint: str,
+        open_id: str,
+        run_ref: str,
+        now: datetime,
+    ) -> None:
+        """The one and only ``ADMITTED -> EXECUTING`` transition.
+
+        Called from the trusted boundary that owns the browser (the Desktop
+        trusted main, through the existing supervised resident pipe) immediately
+        before a view may exist. Two concurrent callers cannot both succeed: the
+        decision is one SQLite transaction, so the loser is refused.
+        """
+
+        moment = _aware(now, "now")
+        command_id = _ref(redemption_ref, "redemption_ref")
+        fingerprint = _digest(request_fingerprint, "request_fingerprint")
+        open_id = _id(open_id, "open_id")
+        run_ref = _ref(run_ref, "run_ref")
+
+        with self._lock:
+            pending = self._pending.get(command_id)
+        if pending != (fingerprint, open_id, run_ref):
+            # Never redeem a command this agent did not authorize for exactly
+            # this open. A bare id is not authorization.
+            raise BrowserOpenRefusal(
+                "redemption_not_authorized",
+                "browser open redemption does not match an authorized open",
+            )
+
+        # Correlation only above; the durable row is the authority here.
+        self._transition_to_executing(command_id=command_id, now=moment)
+
+    def _transition_to_executing(self, *, command_id: str, now: datetime) -> DurableRunRecord:
+        """The single durable write. Refuses unless the row is still ADMITTED."""
+
+        record = self._store.get(command_id=command_id)
+        if record is None:
+            raise BrowserOpenRefusal(
+                "command_not_admitted",
+                "browser open requires an already-admitted durable command",
+            )
+        if record.state is DurableRunState.TERMINAL:
+            raise BrowserOpenRefusal(
+                "command_already_settled",
+                "browser open command has already reached a durable terminal outcome",
+            )
+        if record.state is not DurableRunState.ADMITTED:
+            # The restart-safe denial: this command's single local run has already
+            # begun, durably, in this process or a previous one.
+            raise BrowserOpenRefusal(
+                "command_already_started",
+                "browser open command has already started its single local run",
+            )
+        if record.hard_deadline_passed(now=now):
+            raise BrowserOpenRefusal("command_expired", "browser open command hard deadline passed")
+        if now < record.admitted_at:
+            raise BrowserOpenRefusal(
+                "command_not_admitted", "browser open command is not yet admitted"
+            )
+        if not self._store.mark_started(command_id=command_id, started_at=now):
+            # Lost the race between the read and the write.
+            raise BrowserOpenRefusal(
+                "command_already_started",
+                "browser open command has already started its single local run",
+            )
+        started = self._store.get(command_id=command_id)
+        if started is None:  # pragma: no cover - the write above just succeeded
+            raise ContractError("durable browser open command disappeared after mark_started")
+        return started
+
+    def _require_admitted_command(
         self,
         *,
         command_id: str,
         request: BrowserOpenRequest,
         now: datetime,
-        evidence: BrowserOpenAuthorityEvidence,
     ) -> DurableRunRecord:
+        """Read-only durable precondition. Performs no write at all."""
+
         record = self._store.get(command_id=command_id)
         if record is None:
             raise BrowserOpenRefusal(
@@ -508,28 +606,17 @@ class P01LocalPermissionBrowserOpenAuthorizationPort:
                 "browser open command has already reached a durable terminal outcome",
             )
         if record.state is not DurableRunState.ADMITTED:
-            # The restart-safe denial: this command's single local run has already
-            # begun, durably, in this process or a previous one.
             raise BrowserOpenRefusal(
                 "command_already_started",
                 "browser open command has already started its single local run",
             )
-        # R6 and record invariants are enforced *before* the write, so this module
-        # can never persist a row the store would refuse to load back.
+        # R6 and record invariants are checked here so the later write can never
+        # persist a row the store would refuse to load back.
         if record.hard_deadline_passed(now=now):
             raise BrowserOpenRefusal("command_expired", "browser open command hard deadline passed")
         if now < record.admitted_at:
             raise BrowserOpenRefusal("command_not_admitted", "browser open command is not yet admitted")
-        if not self._store.mark_started(command_id=command_id, started_at=now):
-            # Lost the race to another process between the read and the write.
-            raise BrowserOpenRefusal(
-                "command_already_started",
-                "browser open command has already started its single local run",
-            )
-        started = self._store.get(command_id=command_id)
-        if started is None:  # pragma: no cover - the write above just succeeded
-            raise ContractError("durable browser open command disappeared after mark_started")
-        return started
+        return record
 
     @staticmethod
     def _validate_permission_request(
@@ -676,6 +763,7 @@ class BrowserOpenAuthority:
         store: DurableRunStore,
         host: BrowserOpenHostPort | None = None,
         evidence_port: BrowserOpenAuthorityEvidencePort | None = None,
+        clock: Callable[[], datetime] | None = None,
     ) -> None:
         if not isinstance(device, LocalAgentDeviceProfile):
             raise ContractError("device must be LocalAgentDeviceProfile")
@@ -700,6 +788,9 @@ class BrowserOpenAuthority:
             evidence_port=evidence_port,
         )
         self._consumer = BrowserOpenGrantConsumer()
+        # The transport carries no timestamp, so the redemption reads the clock
+        # here. Injectable so a caller (and a test) can pin it.
+        self._clock = clock or (lambda: datetime.now(timezone.utc))
 
     @property
     def workspace_ref(self) -> str:
@@ -709,6 +800,56 @@ class BrowserOpenAuthority:
     def consumed_count(self) -> int:
         return self._consumer.consumed_count
 
+    def authorize(
+        self, *, request: BrowserOpenRequest, now: datetime
+    ) -> TrustedBrowserOpenGrant:
+        """Authorize one open **without** consuming the durable transition.
+
+        This is the agent half of the two-sided product topology: the agent
+        authorizes and mints the one-shot grant, and the Desktop must then redeem
+        before it may create a view. :meth:`open` composes the same two steps in
+        one process for an in-process caller.
+        """
+
+        if not isinstance(request, BrowserOpenRequest):
+            raise ContractError("request must be BrowserOpenRequest")
+        moment = _aware(now, "now")
+        if request.device_id != self._device.device_id:
+            raise ContractError("browser open request device mismatch")
+        grant, _ = self._authorization.authorize(request=request, now=moment)
+        return grant
+
+    def redeem_transport(
+        self,
+        *,
+        redemption_ref: str,
+        request_fingerprint: str,
+        open_id: str,
+        run_ref: str,
+        now: datetime | None = None,
+    ) -> None:
+        """Redemption entry point for the supervised resident transport.
+
+        This is the whole server side of ``browser_open_redemption``: it takes
+        exactly the correlation the Desktop port needs, performs the one atomic
+        durable transition, and returns nothing. The Desktop then owns the view;
+        the durable fact stays here.
+        """
+
+        moment = _aware(now, "now") if now is not None else _aware(self._clock(), "clock")
+        self._authorization.redeem(
+            redemption_ref=redemption_ref,
+            request_fingerprint=request_fingerprint,
+            open_id=open_id,
+            run_ref=run_ref,
+            now=moment,
+        )
+
+    def redemption_callable(self) -> Any:
+        """The exact callable the bounded dispatcher invokes for its second kind."""
+
+        return self.redeem_transport
+
     def open(self, *, request: BrowserOpenRequest, now: datetime) -> BrowserOpenAuthorityOutcome:
         if not isinstance(request, BrowserOpenRequest):
             raise ContractError("request must be BrowserOpenRequest")
@@ -717,6 +858,14 @@ class BrowserOpenAuthority:
             raise ContractError("browser open request device mismatch")
 
         grant, evidence = self._authorization.authorize(request=request, now=moment)
+        # The single durable transition, immediately before anything can open.
+        self._authorization.redeem(
+            redemption_ref=evidence.command_id,
+            request_fingerprint=grant.request_fingerprint,
+            open_id=grant.open_id,
+            run_ref=grant.run_id,
+            now=moment,
+        )
         try:
             receipt = run_browser_open(
                 request=request,
@@ -788,3 +937,10 @@ PAGE_DERIVED_BYTES = 0
 P01_EVIDENCE_ROUTE_REUSED = "/v1/broker/p01-evidence"
 NEW_BROKER_ROUTE = False
 CONCRETE_EVIDENCE_CLIENT_IMPLEMENTED = True
+
+#: The durable one-shot has exactly one owner: the redemption step, which is the
+#: step the Desktop must pass through before a view may exist.
+ADMITTED_TO_EXECUTING_OWNER = "CANONICAL_BROWSER_OPEN_REDEMPTION"
+DURABLE_TRANSITION_COUNT_MAX = 1
+AUTHORIZE_PERFORMS_DURABLE_WRITE = False
+REDEMPTION_VERIFIES_AN_AUTHORIZED_OPEN = True
