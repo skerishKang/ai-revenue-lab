@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - ".github/workflows/b54-google-oauth-readonly-main-audit.yml"
+      - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/workflows/b54-google-oauth-production-gate.yml"
       - ".github/workflows/b62-control-plane-identity-binding-gate.yml"
   push:
@@ -11,6 +12,7 @@ on:
       - main
     paths:
       - ".github/workflows/b54-google-oauth-readonly-main-audit.yml"
+      - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/workflows/b54-google-oauth-production-gate.yml"
       - ".github/workflows/b62-control-plane-identity-binding-gate.yml"
 
@@ -104,6 +106,19 @@ jobs:
           # The dedicated-token path opens only after the absent-domain branch, so an
           # absent Custom Domain makes zero dedicated-token calls.
           assert audit.index('if [ "${domain_state}" = "absent" ]') < audit.index('"${route_auth[@]}"')
+
+          # #2451/#3701: all served-version shape and 100%-traffic validation is
+          # delegated to the canonical CLI. inspect_worker suppresses CLI stdout so
+          # its command-substitution state remains exactly "present_private".
+          pull_paths = text.split("pull_request:", 1)[1].split("push:", 1)[0]
+          assert ".github/scripts/cloudflare_served_version_cli.py" in pull_paths
+          assert audit.count("cloudflare_served_version_cli.py resolve-active") == 2
+          assert '.result.deployments[0].versions[0].percentage == 100' not in audit
+          assert '(.result.deployments[0].versions | length) == 1' not in audit
+          assert 'resolve-active --deployments "${deployments}" >/dev/null' in audit
+          assert 'b62_active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${b62_deployments}")"' in audit
+          print("CANONICAL_SERVED_VERSION_CLI=YES")
+          print("INLINE_SERVED_VERSION_SHAPE_JQ=0")
           print("DEDICATED_ROUTES_SECRET_REFERENCED=YES")
           print("OAUTH_ROUTES_API_TOKEN_DEFINED=YES")
           print("GENERIC_AUTH_PRESERVED_FOR_WORKER_ACCOUNT_APIS=YES")
@@ -241,7 +256,7 @@ jobs:
               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" \
               -o "${deployments}"
             jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
-            jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+            python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}" >/dev/null
             printf '%s\n' "present_private"
           }
 
@@ -291,9 +306,8 @@ jobs:
           curl -fsS "${auth[@]}" \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/versions?per_page=1&deployable=true" -o "${b62_versions}"
           jq -e '.success == true and (.result.bindings | type == "array")' "${b62_settings}" >/dev/null
-          jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${b62_deployments}" >/dev/null
+          b62_active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${b62_deployments}")"
           jq -e '.success == true and (.result.items | length) > 0' "${b62_versions}" >/dev/null
-          b62_active="$(jq -r '.result.deployments[0].versions[0].version_id' "${b62_deployments}")"
           b62_latest="$(jq -r '.result.items[0].id' "${b62_versions}")"
           test "${b62_active}" = "${b62_latest}"
           echo "B62_LATEST_VERSION_EQUALS_ACTIVE_VERSION=PASS"
