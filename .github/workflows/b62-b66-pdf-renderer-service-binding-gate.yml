@@ -5,7 +5,9 @@ on:
     paths:
       - ".github/workflows/b62-b66-pdf-renderer-service-binding-gate.yml"
       - ".github/scripts/cloudflare_served_version.py"
+      - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/tests/test_cloudflare_served_version.py"
+      - ".github/tests/test_3711_b62_b66_pdf_served_version_cli_adoption.py"
       - "apps/padiem-chat/app/worker_config.py"
       - "apps/padiem-chat/wrangler.toml"
       - "apps/b66-pdf-renderer/wrangler.toml"
@@ -136,6 +138,17 @@ jobs:
           # it is added only through this gate's settings patch.
           assert "B66_PDF_RENDERER_SERVICE" not in chat_config
 
+          trigger_paths = gate.split("on:", 1)[1].split("workflow_dispatch:", 1)[0]
+          mutation_runtime = gate.split("\n  activate-b66-pdf-renderer-binding:", 1)[1]
+          assert ".github/scripts/cloudflare_served_version_cli.py" in trigger_paths
+          assert ".github/tests/test_3711_b62_b66_pdf_served_version_cli_adoption.py" in trigger_paths
+          assert mutation_runtime.count("cloudflare_served_version_cli.py resolve-active") == 4
+          assert ".result.deployments[0].versions[0].version_id" not in mutation_runtime
+          assert ".result.deployments[0].versions[0].percentage" not in mutation_runtime
+          assert "(.result.deployments[0].versions | length) == 1" not in mutation_runtime
+
+          print("CANONICAL_SERVED_VERSION_CLI=YES")
+          print("INLINE_SERVED_VERSION_SHAPE_JQ=0")
           print("B66_PDF_BINDING_GATE_SOURCE=PASS")
           print("PATCH_ERROR_BODY_CAPTURE=YES")
           print("SECRET_BINDING_VALUE_READ_OR_REWRITTEN=NO")
@@ -145,6 +158,15 @@ jobs:
           print("DEFAULT_B62_CONFIG_MUTATION=NO")
           print("PRODUCTION_MUTATION=0")
           PY
+
+      - name: Run served-version source regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --quiet pytest
+          python -m pytest .github/tests/test_3711_b62_b66_pdf_served_version_cli_adoption.py -q
+          echo "B62_B66_PDF_SERVED_VERSION_TESTS=PASS"
+          echo "PRODUCTION_MUTATION=0"
 
   cloudflare-readonly:
     needs: source-contract
@@ -310,12 +332,11 @@ jobs:
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/subdomain" -o "${subdomain}"
 
           jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
-          jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+          active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           jq -e '.success == true and (.result.items | length) > 0' "${versions}" >/dev/null
           jq -e --arg name "${PDF_BINDING}" '[.result.bindings[] | select(.name == $name)] | length == 0' "${settings}" >/dev/null
           jq -e '.success == true and (.result | type == "object")' "${subdomain}" >/dev/null
 
-          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
           latest="$(jq -r '.result.items[0].id' "${versions}")"
           test "${active}" = "${latest}"
 
@@ -424,8 +445,10 @@ jobs:
           ready=no
           for _ in $(seq 1 30); do
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" -o "${deployments}"
-            active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
-            if [ -n "${active}" ] && [ "${active}" != "${BEFORE_VERSION}" ] && jq -e '.result.deployments[0].versions | length == 1 and .[0].percentage == 100' "${deployments}" >/dev/null 2>&1; then
+            if ! active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"; then
+              active=""
+            fi
+            if [ -n "${active}" ] && [ "${active}" != "${BEFORE_VERSION}" ]; then
               ready=yes
               break
             fi
@@ -535,8 +558,7 @@ jobs:
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/domains" -o "${domains}"
           curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/subdomain" -o "${subdomain}"
 
-          jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
-          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           latest="$(jq -r '.result.items[0].id' "${versions}")"
           test "${active}" = "${latest}"
           jq -e --arg name "${PDF_BINDING}" --arg service "${PDF_WORKER}" '[.result.bindings[] | select(.name == $name and .type == "service" and .service == $service)] | length == 1' "${settings}" >/dev/null
@@ -622,8 +644,10 @@ jobs:
           ready=no
           for _ in $(seq 1 30); do
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" -o "${deployments}"
-            active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
-            if [ -n "${active}" ] && [ "${active}" != "${BEFORE_VERSION}" ] && jq -e '.result.deployments[0].versions | length == 1 and .[0].percentage == 100' "${deployments}" >/dev/null 2>&1; then
+            if ! active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"; then
+              active=""
+            fi
+            if [ -n "${active}" ] && [ "${active}" != "${BEFORE_VERSION}" ]; then
               ready=yes
               break
             fi
