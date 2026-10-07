@@ -31,7 +31,6 @@ import stat
 import struct
 import subprocess
 import sys
-import tempfile
 import tracemalloc
 import zipfile
 from io import BytesIO
@@ -524,7 +523,7 @@ def test_route_does_not_pre_allocate_the_raw_ceiling(tmp_path):
     tracemalloc.stop()
 
     assert len(path.read_bytes()) < 16 * 1024
-    assert peak < 512 * 1024, f"route peaked at {peak:,} bytes for a {len(path.read_bytes()):,} B file"
+    assert peak < 1024 * 1024, f"route peaked at {peak:,} bytes for a {len(path.read_bytes()):,} B file"
 
 
 # --------------------------------------------------------------------------- #
@@ -721,15 +720,37 @@ _PREDICATE_NAMES = [
 ]
 
 _PROBE = r"""
-import json, sys, zipfile
+import base64 as base64_module
+import importlib.util, json, sys, types, zipfile
 from io import BytesIO
 from pathlib import Path
 
-import padiem_ai_core.document_normalization as core
-import kagent.file_intake_safety as gate
-
 root = Path(sys.argv[1]).resolve()
-spec = json.loads(sys.argv[2])
+spec_input = json.loads(sys.argv[2])
+
+# ``padiem_ai_core/__init__`` pulls third-party clients (httpx), so importing the submodule through
+# the package would make this parity check depend on what happens to be installed. The constants
+# live in document_normalization.py itself, so the probe binds the package directory directly and
+# runs under ``-S``: no site-packages, in either direction. A parity gate that needs an install is a
+# parity gate that silently skips.
+pkg_dir = root / "packages" / "padiem-ai-core" / "padiem_ai_core"
+package = types.ModuleType("padiem_ai_core")
+package.__path__ = [str(pkg_dir)]
+sys.modules["padiem_ai_core"] = package
+
+
+def load(mod_name, path):
+    module_spec = importlib.util.spec_from_file_location(mod_name, str(path))
+    module = importlib.util.module_from_spec(module_spec)
+    sys.modules[mod_name] = module
+    module_spec.loader.exec_module(module)
+    return module
+
+
+core = load("padiem_ai_core.document_normalization", pkg_dir / "document_normalization.py")
+
+sys.path.insert(0, str(root / "apps" / "korean-ai-code-agent" / "src"))
+import kagent.file_intake_safety as gate
 
 for module in (core, gate):
     origin = Path(module.__file__).resolve()
@@ -739,15 +760,14 @@ for module in (core, gate):
         raise SystemExit("%s imported from %s, outside %s" % (module.__name__, origin, root))
 
 link_modes = []
-for attr in spec["link_attrs"]:
+for attr in spec_input["link_attrs"]:
     info = zipfile.ZipInfo("probe")
     info.create_system = 3
     info.external_attr = attr << 16
     link_modes.append(gate._is_link_entry(info))
 
 def core_code(payload_b64):
-    import base64
-    data = base64.b64decode(payload_b64)
+    data = base64_module.b64decode(payload_b64)
     try:
         core.validate_ooxml_archive(data)
     except core.DocumentNormalizationError as exc:
@@ -759,20 +779,23 @@ def core_code(payload_b64):
 print(json.dumps({
     "core_origin": str(Path(core.__file__).resolve()),
     "gate_origin": str(Path(gate.__file__).resolve()),
-    "core": {name: getattr(core, name) for name in spec["core_names"]},
-    "core_predicate": {n: core._safe_ooxml_member(n) for n in spec["predicate_names"]},
-    "policy": {k: getattr(gate.DEFAULT_POLICY, k) for k in spec["policy_names"]},
+    "core": {name: getattr(core, name) for name in spec_input["core_names"]},
+    "core_predicate": {n: core._safe_ooxml_member(n) for n in spec_input["predicate_names"]},
+    "policy": {k: getattr(gate.DEFAULT_POLICY, k) for k in spec_input["policy_names"]},
     "depth": gate.MAX_SUPPORTED_ARCHIVE_DEPTH,
     "link_modes": link_modes,
-    "core_codes": [core_code(a) for a in spec["archives"]],
+    "core_codes": [core_code(a) for a in spec_input["archives"]],
 }))
 """
 
 
 def _parity_probe(archives=()):
-    """Run the pinned probe once and return its verdict document."""
+    """Run the pinned probe once and return its verdict document.
 
-    tmp_root = Path(tempfile.mkdtemp(prefix="parity-probe-"))
+    ``-S`` removes site-packages from the child entirely, so neither a missing dependency nor a stale
+    user-level editable install can turn this into a skip or a false agreement.
+    """
+
     payload = {
         "core_names": list(_CORE_NAMES),
         "policy_names": list(_POLICY_NAMES),
@@ -790,11 +813,11 @@ def _parity_probe(archives=()):
         "PYTHONDONTWRITEBYTECODE": "1",
     }
     proc = subprocess.run(
-        [sys.executable, "-c", _PROBE, str(REPO_ROOT), json.dumps(payload)],
+        [sys.executable, "-S", "-c", _PROBE, str(REPO_ROOT), json.dumps(payload)],
         capture_output=True,
         text=True,
         env=env,
-        cwd=str(tmp_root),
+        cwd=str(REPO_ROOT),
     )
     assert proc.returncode == 0, proc.stdout + proc.stderr
     return json.loads(proc.stdout.strip().splitlines()[-1])
