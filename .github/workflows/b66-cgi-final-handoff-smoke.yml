@@ -96,6 +96,7 @@ jobs:
     timeout-minutes: 15
     environment: production
     env:
+      B66_SCREENSHOT_DIR: artifacts/b66-cgi-customer-scenario
       TARGET_SHA: ${{ inputs.target_sha }}
       B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
       B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
@@ -138,3 +139,12 @@ jobs:
           else
             python .github/scripts/b66_cgi_final_handoff_smoke.py --authorized-live-run
           fi
+
+      - name: Upload customer-view screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b66-cgi-customer-scenario-${{ github.run_id }}
+          path: artifacts/b66-cgi-customer-scenario
+          if-no-files-found: warn
+          retention-days: 7
