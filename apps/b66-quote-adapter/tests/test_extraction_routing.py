@@ -872,14 +872,18 @@ class B66CanonicalIntegrationTests(unittest.TestCase):
                             found = True
         return found
 
-    def test_canonical_primary_pending_and_lane_fully_retired(self) -> None:
+    def test_canonical_text_selected_vision_pending_and_lane_fully_retired(self) -> None:
         primary = self._load_model_primary()
-        # Canonical Padiem primary stays model-neutral HOLD: pending successor
-        # selection, no provider, no upstream model, no secondary, no fallback.
-        self.assertEqual(primary.TEXT_PRIMARY_DECISION, "PENDING_SUCCESSOR_SELECTION")
-        self.assertIsNone(primary.TEXT_PRIMARY_MODEL_ID)
-        self.assertIsNone(primary.TEXT_PRIMARY_PROVIDER_ID)
-        self.assertIsNone(primary.TEXT_PRIMARY_UPSTREAM_MODEL)
+        # Owner decision 2026-10-07 (#3554) fills the TEXT role; the canonical
+        # declaration still carries no vision primary, no secondary and no
+        # fallback, so the retired Space Bunny lane stays metadata-only.
+        self.assertEqual(
+            primary.TEXT_PRIMARY_DECISION,
+            "Owner successor selection 2026-10-07 (#3554): Agnes 3.0 Flash, text role only",
+        )
+        self.assertEqual(primary.TEXT_PRIMARY_MODEL_ID, "agnes-ai/agnes-3.0-flash")
+        self.assertEqual(primary.TEXT_PRIMARY_PROVIDER_ID, "agnes-ai")
+        self.assertEqual(primary.TEXT_PRIMARY_UPSTREAM_MODEL, "agnes-3.0-flash")
         self.assertEqual(primary.VISION_PRIMARY_DECISION, "PENDING_SUCCESSOR_SELECTION")
         self.assertIsNone(primary.VISION_PRIMARY_MODEL_ID)
         self.assertIsNone(primary.VISION_PRIMARY_PROVIDER_ID)

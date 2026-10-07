@@ -43,7 +43,7 @@ def test_mock_completed_answer_uses_plain_truthful_preview_copy():
         result = await B14Client(Settings(runtime_mode="mock")).complete(MESSAGES)
         answer = result["answer"]
 
-        assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID == PLUS_HOLD_MODEL_ID
+        assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID
         assert result["request_id"] == "mock_b62"
         assert result["runtime"] == "mock"
         assert result["route"]["model"] == LOW_B14_MODEL_ID

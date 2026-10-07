@@ -263,9 +263,17 @@ class P01RequestFactoryTests(unittest.TestCase):
 
 
 class P01ModelHoldTests(unittest.TestCase):
-    def test_default_profile_fails_closed_before_dispatch_while_successor_pending(self):
+    def test_plus_profile_resolves_to_the_selected_text_route(self):
+        # #3554 selects the Plus TEXT role, so P01 may now resolve a Plus
+        # profile instead of failing closed on a successor-pending HOLD.
+        route = active_route_for(ProductTierLabel.PLUS)
+        self.assertIsNotNone(route)
+        profile = _agent_profile(ProductTierLabel.PLUS)
+        self.assertEqual(profile.model_policy, {"model": route.model_id})
+
+    def test_pro_profile_still_fails_closed_before_dispatch(self):
         with self.assertRaises(P01AdapterError) as caught:
-            _agent_profile(ProductTierLabel.PLUS)
+            _agent_profile(ProductTierLabel.PRO)
         self.assertEqual(caught.exception.code, "tier_hold")
         self.assertEqual(caught.exception.dispatch_class, "not_dispatched")
 

@@ -1,4 +1,8 @@
-"""Contract tests for the model-neutral canonical primary declaration (#3568)."""
+"""Contract tests for the split-role canonical primary declaration (#3554).
+
+The text role is owner-selected; the vision role stays pending; neither may
+carry a silent fallback.
+"""
 
 from __future__ import annotations
 
@@ -8,14 +12,16 @@ import pathlib
 import padiem_ai_core.model_primary as model_primary
 
 
-def test_text_primary_is_pending_successor_selection() -> None:
-    assert model_primary.TEXT_PRIMARY_DECISION == "PENDING_SUCCESSOR_SELECTION"
-    assert model_primary.TEXT_PRIMARY_PROVIDER_ID is None
-    assert model_primary.TEXT_PRIMARY_MODEL_ID is None
-    assert model_primary.TEXT_PRIMARY_UPSTREAM_MODEL is None
+def test_text_primary_is_the_owner_selected_agnes_lane() -> None:
+    assert model_primary.TEXT_PRIMARY_DECISION == (
+        "Owner successor selection 2026-10-07 (#3554): Agnes 3.0 Flash, text role only"
+    )
+    assert model_primary.TEXT_PRIMARY_PROVIDER_ID == "agnes-ai"
+    assert model_primary.TEXT_PRIMARY_MODEL_ID == "agnes-ai/agnes-3.0-flash"
+    assert model_primary.TEXT_PRIMARY_UPSTREAM_MODEL == "agnes-3.0-flash"
 
 
-def test_vision_primary_is_pending_successor_selection() -> None:
+def test_vision_primary_is_still_pending_successor_selection() -> None:
     assert model_primary.VISION_PRIMARY_DECISION == "PENDING_SUCCESSOR_SELECTION"
     assert model_primary.VISION_PRIMARY_PROVIDER_ID is None
     assert model_primary.VISION_PRIMARY_MODEL_ID is None

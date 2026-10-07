@@ -1,6 +1,22 @@
 # Agnes AI Provider Intake — B14 V1
 
-Status: **RETIRED** (#1933 S2-b, 2026-09-07) — historical intake record kept for provenance. The Agnes route is no longer registered in production code or the catalog; do not reimplement without a new owner decision.
+Status: **RE-REGISTERED, PLUS TEXT ROLE SELECTED** — see the reconciliation below
+before using the historical banner wording further down.
+
+Historical accuracy note (corrected 2026-10-07, #3554): this record previously
+carried a blanket `RETIRED (#1933 S2-b, 2026-09-07)` banner claiming the Agnes
+route "is no longer registered in production code or the catalog". That statement
+was false against the tree it lived in: `app/pilot/agnes_provider.py` registers
+`agnes-ai/agnes-3.0-flash` into the exact-ID `CATALOG_BY_ID` table (manual-pin
+only, deliberately absent from `CATALOG_MODELS`), `apps/korean-ai-platform/wrangler.toml`
+carries the `PADIEM_AGNES_API_KEY` secret-store binding, and
+`tests/test_agnes_provider.py` pins both facts. #1933 S2-b retired the *first*
+integration; #2126/#2133 re-approved and re-onboarded the provider. The banner is
+replaced here by that sequence so the provenance chain is auditable.
+
+Current owner decision (2026-10-07, #3554): `agnes-ai/agnes-3.0-flash` is the
+Padiem Plus **text** primary. Vision stays unselected, `image` capability is not
+claimed for Plus, and no lane may act as a silent fallback.
 
 Original status: CANDIDATE / OWNER_TEST_ONLY
 
@@ -53,4 +69,41 @@ Do not mark this provider as generally public/shared-free until terms or account
 
 ## Source date
 
-Research snapshot: 2026-08-27 Asia/Seoul.
+Research snapshot: 2026-08-27 Asia/Seoul. That snapshot covers `agnes-2.5-flash`
+and is NOT the evidence for the currently registered model id below.
+
+## Re-verification evidence for `agnes-3.0-flash` (2026-10-07, #3554)
+
+`app/pilot/agnes_provider.py` previously stamped this provider's registration
+with `source_checked_at="2026-08-27"` while registering `agnes-3.0-flash`, a
+model that the 2026-08-27 intake never named. The stamp is corrected to the date
+the lane was actually re-verified, from these observations:
+
+```text
+MODEL_ID_EVIDENCE = POST https://apihub.agnes-ai.com/v1/chat/completions with
+                    model="agnes-3.0-flash" -> HTTP 200 and the provider echoed
+                    model="agnes-3.0-flash" in the response body. The exact model id is
+                    therefore accepted by the registered origin.
+CATALOG_GET       = NOT PERFORMED against apihub.agnes-ai.com (#3554 recorded
+                    new_catalog_gets=0). The id claim rests on the accepted request plus
+                    the provider echo above, not on a /v1/models listing.
+THIRD-PARTY_NOTE  = agnes-3.0-flash also appears in third-party router catalogues
+                    (aihubmix.com, api.unorouter.com, kiosapi.com). Those are NOT
+                    evidence for the direct origin and were not used as such.
+EXTRACTION_CASE   = owner-approved single direct-provider call, synthetic Korean
+                    quotation, temperature 0, strict JSON only:
+                    7/7 exact facts, 0 extra keys, 0 prose, no code fence,
+                    1.41s, HTTP 200, finish_reason=stop
+COST              = the response carried no cost / market_cost /
+                    upstream_inference_cost field → COST_STATUS=UNCONFIRMED
+```
+
+Two honesty limits on this evidence, both material to registration review:
+
+1. The calls used the operator's locally configured CLI credential, **not** the
+   Cloudflare secret-store `PADIEM_AGNES_API_KEY` binding. Production binding
+   readiness is a separate, still-pending check (`#3554` step 6/7).
+2. Extraction quality is `n=1` — one lane-verification `PONG` probe (HTTP 200,
+   660 ms) and the single structured case above. That proves transport and
+   structured-output shape, not answer quality at volume, and no rate-limit or
+   daily-quota behaviour was measured.

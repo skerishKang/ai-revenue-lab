@@ -176,10 +176,12 @@ TIER_REGISTRY: tuple[TierDefinition, ...] = (
                 model_family="plus",
                 model_id=PLUS_HOLD_MODEL_ID,
                 hold_reason=(
-                    "Owner decision #3568: Space Bunny free availability ended and the "
-                    "successor model is not selected yet. Plus is held fail-closed."
+                    "Owner decision #3568 held Plus while no successor existed. Owner "
+                    "decision 2026-10-07 (#3554) filled the TEXT role only, so this "
+                    "sentinel is retained as data-only history and the vision role stays "
+                    "fail-closed."
                 ),
-                evidence="#3568 successor-pending product hold.",
+                evidence="#3568 successor-pending hold; #3554 split-role text selection.",
             ),
             TierRoute(
                 route_id="plus.space-bunny-alpha.v1",
@@ -197,19 +199,19 @@ TIER_REGISTRY: tuple[TierDefinition, ...] = (
             ),
             TierRoute(
                 route_id="plus.agnes-3.0-flash.v1",
-                status=RouteStatus.HOLD_AS_DATA_ONLY,
+                status=RouteStatus.EXECUTABLE,
                 model_family="agnes-3.0-flash",
                 provider_id="agnes-ai",
                 model_id="agnes-ai/agnes-3.0-flash",
                 upstream_model="agnes-3.0-flash",
                 credential_mode=CredentialMode.PLATFORM_SECRET_BINDING,
                 credential_binding="PADIEM_AGNES_API_KEY",
-                hold_reason=(
-                    "Superseded as the active Padiem Plus route by owner decision "
-                    "#3209 (Space Bunny Alpha). Retained as historical data only; "
-                    "the Agnes provider registration itself is preserved."
+                evidence=(
+                    "Mirrors the canonical control-plane declaration: owner decision "
+                    "2026-10-07 (#3554) selects Agnes 3.0 Flash for the TEXT role. "
+                    "Vision stays pending; never a silent fallback. This projection is "
+                    "runtime-unwired (#2099)."
                 ),
-                evidence="Historical Plus route; app/pilot/agnes_provider.py (#2133).",
             ),
             TierRoute(
                 route_id="plus.kilo-laguna-s-2.1-free.v1",

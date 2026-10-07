@@ -1,8 +1,10 @@
-"""Successor-pending canonical-primary parity contract (#3568).
+"""Canonical primary parity contract (#3568, split-role update #3554).
 
 Static and network-free. Space Bunny remains registered as historical/manual
-B14 metadata, but Padiem has no canonical text/vision primary and no executable
-Plus route until an explicit successor is selected.
+B14 metadata and is never executable. Owner decision 2026-10-07 (#3554) filled
+the TEXT role with Agnes 3.0 Flash, so the canonical declaration, the control-plane
+contract and the platform projection must agree on exactly one executable Plus
+route; the vision role stays unselected and no lane may act as a silent fallback.
 """
 
 from __future__ import annotations
@@ -30,12 +32,14 @@ def _string_constant(text: str, name: str) -> str | None:
     return match.group(1) if match else None
 
 
-def test_canonical_declaration_holds_text_and_vision_primary() -> None:
+def test_canonical_declaration_selects_text_and_holds_vision_primary() -> None:
     text = MODEL_PRIMARY.read_text(encoding="utf-8")
-    assert _string_constant(text, "TEXT_PRIMARY_DECISION") == "PENDING_SUCCESSOR_SELECTION"
-    assert "TEXT_PRIMARY_PROVIDER_ID = None" in text
-    assert "TEXT_PRIMARY_MODEL_ID = None" in text
-    assert "TEXT_PRIMARY_UPSTREAM_MODEL = None" in text
+    assert _string_constant(text, "TEXT_PRIMARY_DECISION") == (
+        "Owner successor selection 2026-10-07 (#3554): Agnes 3.0 Flash, text role only"
+    )
+    assert _string_constant(text, "TEXT_PRIMARY_PROVIDER_ID") == "agnes-ai"
+    assert 'TEXT_PRIMARY_MODEL_ID = "agnes-ai/agnes-3.0-flash"' in text
+    assert 'TEXT_PRIMARY_UPSTREAM_MODEL = "agnes-3.0-flash"' in text
     assert _string_constant(text, "VISION_PRIMARY_DECISION") == "PENDING_SUCCESSOR_SELECTION"
     assert "VISION_PRIMARY_PROVIDER_ID = None" in text
     assert "VISION_PRIMARY_MODEL_ID = None" in text
@@ -61,7 +65,7 @@ def test_kilo_catalog_fully_retires_space_bunny_to_historical_metadata() -> None
     assert "model_id=KILO_SPACE_BUNNY_MODEL_ID" not in kilo_text
     assert "Kilo: Stealth Space Bunny Alpha" not in kilo_text
 
-    assert "TEXT_PRIMARY_MODEL_ID = None" in canonical_text
+    assert 'TEXT_PRIMARY_MODEL_ID = "agnes-ai/agnes-3.0-flash"' in canonical_text
     assert "VISION_PRIMARY_MODEL_ID = None" in canonical_text
 
 
@@ -74,6 +78,16 @@ def test_product_tiers_and_registry_hold_plus_space_bunny() -> None:
         assert 'upstream_model="stealth/space-bunny-alpha"' in text
         assert "HOLD_AS_DATA_ONLY" in text
         assert 'model_id="agnes-ai/agnes-3.0-flash"' in text
+        # Space Bunny never becomes executable again...
+        assert not re.search(
+            r'route_id="plus\.space-bunny-alpha\.v1",\s*\n\s*status=\w+Status\.EXECUTABLE',
+            text,
+        )
+        # ...and both registries declare the same single executable Agnes text route.
+        assert re.search(
+            r'route_id="plus\.agnes-3\.0-flash\.v1",\s*\n\s*status=\w+Status\.EXECUTABLE',
+            text,
+        ), f"{path.name}: Agnes text route is not executable"
 
 
 def test_a9_and_a12_smokes_source_the_canonical_pin() -> None:

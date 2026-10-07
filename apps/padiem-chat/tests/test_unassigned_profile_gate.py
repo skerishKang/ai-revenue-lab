@@ -12,7 +12,12 @@ from app.dispatch_quota import (
     DispatchAwareUsageCounterStore,
     _refund_active_reservation,
 )
-from app.model_policy import DEFAULT_B14_MODEL_ID, DEFAULT_CHAT_PROFILE, LOW_B14_MODEL_ID
+from app.model_policy import (
+    DEFAULT_B14_MODEL_ID,
+    DEFAULT_CHAT_PROFILE,
+    LOW_B14_MODEL_ID,
+    request_tier_context,
+)
 from app.usage_gate import UsageDecision
 from padiem_control_plane.product_tier_routes import PLUS_HOLD_MODEL_ID
 
@@ -52,7 +57,10 @@ def live_settings() -> Settings:
     )
 
 
-def test_live_completed_plus_hold_refunds_before_service_binding_dispatch():
+def test_live_completed_held_tier_refunds_before_service_binding_dispatch():
+    """#3554 leaves Pro/Max held, so the refund-before-dispatch guarantee is
+    proven on a tier that still cannot run; Plus text now dispatches."""
+
     async def scenario():
         store = ReservationStore()
         await reserve(store)
@@ -70,13 +78,13 @@ def test_live_completed_plus_hold_refunds_before_service_binding_dispatch():
             require_service_binding=True,
         )
 
-        with pytest.raises(ChatRuntimeError) as info:
+        with request_tier_context("pro"), pytest.raises(ChatRuntimeError) as info:
             await client.complete(MESSAGES)
 
         assert info.value.status_code == 503
         assert info.value.code == "model_profile_unassigned"
         assert DEFAULT_CHAT_PROFILE == "low"
-        assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID == PLUS_HOLD_MODEL_ID
+        assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID != PLUS_HOLD_MODEL_ID
         assert calls == 0
         assert len(store.refunds) == 3
         assert await _refund_active_reservation() is False
@@ -84,7 +92,7 @@ def test_live_completed_plus_hold_refunds_before_service_binding_dispatch():
     asyncio.run(scenario())
 
 
-def test_live_stream_plus_hold_refunds_before_stream_transport_dispatch():
+def test_live_stream_held_tier_refunds_before_stream_transport_dispatch():
     async def scenario():
         store = ReservationStore()
         await reserve(store)
@@ -101,7 +109,7 @@ def test_live_stream_plus_hold_refunds_before_stream_transport_dispatch():
             require_service_binding=True,
         )
 
-        with pytest.raises(ChatRuntimeError) as info:
+        with request_tier_context("pro"), pytest.raises(ChatRuntimeError) as info:
             async for _ in client.stream_text_auto(MESSAGES):
                 pass
 
@@ -114,7 +122,7 @@ def test_live_stream_plus_hold_refunds_before_stream_transport_dispatch():
     asyncio.run(scenario())
 
 
-def test_non_live_b14_default_plus_still_fails_before_transport_while_held():
+def test_non_live_b14_default_held_tier_still_fails_before_transport():
     async def scenario():
         calls = 0
 
@@ -129,7 +137,7 @@ def test_non_live_b14_default_plus_still_fails_before_transport_while_held():
             service_transport=ServiceTransport(),
             require_service_binding=True,
         )
-        with pytest.raises(ChatRuntimeError) as info:
+        with request_tier_context("pro"), pytest.raises(ChatRuntimeError) as info:
             await client.complete(MESSAGES)
         assert info.value.code == "tier_unavailable"
         assert calls == 0
@@ -152,7 +160,9 @@ def test_mock_chat_remains_available_without_provider_dispatch():
         )
         result = await client.complete(MESSAGES)
         assert result["runtime"] == "mock"
-        assert result["route"]["model"] == PLUS_HOLD_MODEL_ID
+        # Mock stays mock: the Plus lane identity is the selected text route, and
+        # mock mode must still never reach the provider.
+        assert result["route"]["model"] == DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID
         assert calls == 0
 
     asyncio.run(scenario())

@@ -36,14 +36,16 @@ CANONICAL_PATH = (
 
 def test_space_bunny_is_not_canonical_primary_and_is_unregistered() -> None:
     text = CANONICAL_PATH.read_text(encoding="utf-8")
-    assert 'TEXT_PRIMARY_DECISION = "PENDING_SUCCESSOR_SELECTION"' in text
-    assert "TEXT_PRIMARY_MODEL_ID = None" in text
-    assert "TEXT_PRIMARY_UPSTREAM_MODEL = None" in text
+    # #3554 fills the text role with Agnes; Space Bunny must still never appear
+    # as a canonical primary in either role.
+    assert 'TEXT_PRIMARY_MODEL_ID = "agnes-ai/agnes-3.0-flash"' in text
+    assert 'TEXT_PRIMARY_UPSTREAM_MODEL = "agnes-3.0-flash"' in text
     assert 'VISION_PRIMARY_DECISION = "PENDING_SUCCESSOR_SELECTION"' in text
     assert "VISION_PRIMARY_MODEL_ID = None" in text
     assert "VISION_PRIMARY_UPSTREAM_MODEL = None" in text
     assert "TEXT_SECONDARY_MODEL_ID = None" in text
     assert "TEXT_FALLBACK_ENABLED = False" in text
+    assert "stealth-space-bunny" not in text
 
     # SPACE_BUNNY_IN_CATALOG=NO: the retired lane is fully unregistered.
     assert get_catalog_by_id(KILO_SPACE_BUNNY_MODEL_ID) is None

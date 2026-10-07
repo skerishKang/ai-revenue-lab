@@ -231,7 +231,9 @@ def _agent_profile(product_tier: ProductTierLabel = ProductTierLabel.PLUS) -> Ag
     declaration (padiem_control_plane.product_tier_routes), shared with
     B62 Padiem Chat.  B14 remains provider/model execution authority.
 
-    Plus → HOLD_PENDING_SUCCESSOR (#3568: Space Bunny retired, successor not selected)
+    Plus → TEXT route selected by owner decision #3554 (dispatchable); the
+           vision role stays unselected, so image work must not be dispatched
+           through this profile.
     Pro  → HOLD / fail-closed
     Max  → HOLD / fail-closed
     """

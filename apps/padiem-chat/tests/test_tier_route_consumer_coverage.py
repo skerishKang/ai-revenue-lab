@@ -77,17 +77,20 @@ def test_trigger_stays_narrow_to_the_declaration_file() -> None:
 
 
 def test_chat_current_route_expectation_is_derived_not_restated() -> None:
-    # A successor-pending product may have zero executable routes. Chat must mirror
-    # that declaration instead of retaining a stale provider/model literal.
-    assert active_route_for(ProductTierLabel.PLUS) is None
-    assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID
-    assert set(EXECUTABLE_B14_MODEL_IDS) == {
+    # Chat must mirror whatever the shared declaration currently says — including
+    # the #3554 Plus TEXT selection — instead of keeping a stale provider/model
+    # literal or a stale "nothing is executable" assumption.
+    declared_executable = {
         route.model_id
         for tier in (ProductTierLabel.PLUS, ProductTierLabel.PRO, ProductTierLabel.MAX)
         for route in get_tier(tier).routes
         if route.status is ProductRouteStatus.EXECUTABLE
     }
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset()
+    plus_route = active_route_for(ProductTierLabel.PLUS)
+    assert plus_route is not None
+    assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID == plus_route.model_id
+    assert set(EXECUTABLE_B14_MODEL_IDS) == declared_executable
+    assert EXECUTABLE_B14_MODEL_IDS == frozenset(declared_executable) == frozenset({LOW_B14_MODEL_ID})
 
 
 def test_owner_policy_invariants_are_not_traded_for_coverage() -> None:

@@ -2,19 +2,33 @@
 
 Owner decision (#2126 5584200820) re-approved Agnes as an explicit Plus-pool
 candidate after the #1933 S2-b retirement of the first Agnes integration.
-ACT-0 authority for this route is the repository intake record
-``docs/providers/AGNES_AI_V1.md`` (research snapshot 2026-08-27): OpenAI-
-compatible fixed origin ``https://apihub.agnes-ai.com/v1``, Bearer auth,
- advertised streaming, model ``agnes-3.0-flash``. The owner-approved credential
-binding name is ``PADIEM_AGNES_API_KEY`` (names only; the value is never read,
-printed, or committed here).
+
+Two different provenance dates apply to this registration and are no longer
+collapsed into one:
+
+* Provider/intake facts — OpenAI-compatible fixed origin
+  ``https://apihub.agnes-ai.com/v1``, Bearer auth, advertised streaming —
+  come from ``docs/providers/AGNES_AI_V1.md`` (research snapshot 2026-08-27),
+  which named ``agnes-2.5-flash``.
+* The model registered here, ``agnes-3.0-flash``, was re-verified against the
+  registered origin on 2026-10-07 under owner decision #3554 (the provider
+  accepted and echoed the exact id; no ``/v1/models`` catalog GET was made),
+  which also selected this lane as the Padiem Plus TEXT primary. The 2026-08-27
+  intake is NOT evidence for the 3.0 model id; stamping it as such was a
+  provenance error and is corrected here. See the re-verification section of
+  ``AGNES_AI_V1.md`` for what was actually observed, including the two limits
+  recorded there (operator-local credential, single sample).
+
+The owner-approved credential binding name is ``PADIEM_AGNES_API_KEY`` (names
+only; the value is never read, printed, or committed here).
 
 Registration is explicit/manual-pin only: the model lives in the exact-ID
 ``CATALOG_BY_ID`` table and is NOT appended to ``CATALOG_MODELS``, so
 ``b14/auto`` and the legacy public summary surface are untouched. Missing
 credential fails closed with zero upstream calls (generic platform adapter
 contract). Pricing: the intake records a Credits-denominated free/default
-tier, not USD rates — no price or free claim is fabricated here.
+tier, not USD rates — no price or free claim is fabricated here, and the
+#3554 evaluation returned no cost field at all (COST_STATUS=UNCONFIRMED).
 """
 
 from __future__ import annotations
@@ -34,8 +48,11 @@ AGNES_CREDENTIAL_BINDING = "PADIEM_AGNES_API_KEY"
 
 AGNES_MODEL_ID = "agnes-ai/agnes-3.0-flash"
 AGNES_UPSTREAM_MODEL = "agnes-3.0-flash"
-# Authority date of the intake record facts this registration reuses (#2133 ACT-0).
-AGNES_SOURCE_CHECKED_AT = "2026-08-27"
+# Authority date for THIS model id: direct-provider re-verification under owner
+# decision #3554 (2026-10-07), where the registered origin accepted and echoed
+# agnes-3.0-flash. Provider-level intake facts stay dated 2026-08-27 in
+# docs/providers/AGNES_AI_V1.md and are not evidence for 3.0.
+AGNES_SOURCE_CHECKED_AT = "2026-10-07"
 
 
 def register_agnes_provider() -> None:
@@ -74,7 +91,11 @@ def register_agnes_provider() -> None:
         sort_order=78,
         credential_source="platform_secret",
         platform_provider_id=AGNES_PROVIDER_ID,
-        source="agnes_official_public_docs (#917 intake record)",
+        source=(
+            "direct-provider chat completion re-verified 2026-10-07 (#3554): "
+            "model id accepted and echoed by the registered origin, no catalog GET; "
+            "provider-level intake lineage from the #917 record"
+        ),
         source_checked_at=AGNES_SOURCE_CHECKED_AT,
         snapshot_state="configured_snapshot",
     )

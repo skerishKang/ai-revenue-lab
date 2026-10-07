@@ -142,11 +142,14 @@ MODEL_ALIASES: dict[str, str] = {
     # executable tier route in that declaration — not by inventing a hold identity here.
 }
 
-# Product capability claims remain conservative. HOLD identities claim no
-# executable capabilities. The future Plus successor will add capabilities only
-# after its route is explicitly selected and proven.
+# Product capability claims stay conservative and are declared PER ROLE.
+# Owner decision 2026-10-07 (#3554) selected the Plus TEXT role only, so the
+# Plus route claims "chat" and nothing else: "image" is deliberately absent,
+# which keeps every attachment path (chat_routes, b14_client) failing closed
+# through model_supports() until a VISION role is explicitly selected.
+# HOLD identities keep claiming no executable capabilities.
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
-    LOW_B14_MODEL_ID: frozenset(),
+    LOW_B14_MODEL_ID: frozenset({"chat"}),
     MEDIUM_B14_MODEL_ID: frozenset(),
     HIGH_B14_MODEL_ID: frozenset(),
     AUTO_B14_MODEL_ID: frozenset(),

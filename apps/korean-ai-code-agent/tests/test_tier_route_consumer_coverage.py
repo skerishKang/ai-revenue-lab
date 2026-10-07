@@ -93,9 +93,12 @@ class TierRouteConsumerCoverageTests(unittest.TestCase):
             if route is not None and route.model_id is not None
         }
         self.assertEqual(set(PADIEM_EXECUTABLE_MODEL_IDS), expected)
-        # #3568: an explicit successor-pending HOLD may intentionally expose
-        # zero executable routes while keeping imports/non-model features alive.
-        self.assertEqual(expected, set())
+        # #3554 fills the Plus TEXT role, so the derived set is no longer empty.
+        # What this test actually guards is that Claw mirrors the contract
+        # exactly — whether that contract currently exposes zero routes or one.
+        plus_route = active_route_for(ProductTierLabel.PLUS)
+        self.assertIsNotNone(plus_route)
+        self.assertEqual(expected, {plus_route.model_id})
 
     def test_owner_policy_invariants_hold_while_consumers_derive(self):
         # Asserted rather than assumed, because this child makes Claw lean harder on them.

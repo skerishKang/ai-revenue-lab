@@ -58,16 +58,28 @@ def test_contract_defines_exactly_three_padiem_tiers() -> None:
     assert PRODUCT_TIER_POLICY_VERSION == "padiem.product_tier_routes.v1"
 
 
-def test_current_truth_all_tiers_hold_while_plus_successor_is_pending() -> None:
+def test_current_truth_plus_text_is_selected_and_other_tiers_hold() -> None:
     executables = _executables()
-    assert executables == {}
-    assert active_route_for(ProductTierLabel.PLUS) is None
+    assert list(executables) == [ProductTierLabel.PLUS]
+    plus_active = active_route_for(ProductTierLabel.PLUS)
+    assert plus_active is not None
+    assert plus_active.route_id == "plus.agnes-3.0-flash.v1"
+    assert plus_active.provider_id == "agnes-ai"
+    assert plus_active.model_id == "agnes-ai/agnes-3.0-flash"
+    assert plus_active.upstream_model == "agnes-3.0-flash"
+    assert plus_active.credential_binding == "PADIEM_AGNES_API_KEY"
+    assert plus_active.hold_reason is None
+    assert "#3554" in (plus_active.evidence or "")
     assert active_route_for(ProductTierLabel.PRO) is None
     assert active_route_for(ProductTierLabel.MAX) is None
 
     plus_routes = get_tier(ProductTierLabel.PLUS).routes
+    assert (
+        sum(1 for r in plus_routes if r.status is ProductRouteStatus.EXECUTABLE) == 1
+    ), "Plus may expose exactly one executable route"
     plus_hold = next(r for r in plus_routes if r.model_id == PLUS_HOLD_MODEL_ID)
     assert plus_hold.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
+    assert plus_hold.hold_reason and "#3554" in plus_hold.hold_reason
 
     bunny_hold = next(
         r for r in plus_routes if r.model_id == "kilo/stealth-space-bunny-alpha"
@@ -89,13 +101,15 @@ def test_no_user_visible_auto_or_fallback_anywhere() -> None:
 
 def test_executable_routes_are_explicit_secret_bound_and_unretired() -> None:
     executables = _executables()
-    assert executables == {}
-    for tier, route in executables.items():  # pragma: no cover - successor not selected
+    assert list(executables) == [ProductTierLabel.PLUS]
+    for tier, route in executables.items():
         assert route.provider_id, f"{tier.value}: explicit provider_id required"
         assert route.model_id, f"{tier.value}: explicit model_id required"
         assert route.model_id.startswith(f"{route.provider_id}/")
         assert route.model_id not in RETIRED_PRODUCT_MODEL_IDS
         assert route.evidence
+        assert route.credential_mode is ProductCredentialMode.PLATFORM_SECRET_BINDING
+        assert route.credential_binding and route.credential_binding.startswith("PADIEM_")
 def test_retired_lanes_are_declared_data_only_with_reasons() -> None:
     retired = [
         route
@@ -244,7 +258,7 @@ def test_parity_with_b14_tier_registry_active_routes() -> None:
         for route in tier.routes
         if route.status is ProductRouteStatus.EXECUTABLE
     }
-    assert contract == registry == {}
+    assert contract == registry == {"plus.agnes-3.0-flash.v1": "agnes-ai/agnes-3.0-flash"}
 
 def test_parity_with_chat_model_policy_derivation() -> None:
     source = CHAT_MODEL_POLICY_PATH.read_text(encoding="utf-8")
@@ -280,7 +294,9 @@ def test_selected_routes_match_registered_provider_constants() -> None:
 
     assert agnes_model and bai_model and agnes_binding and bai_binding
     assert kilo_bunny and kilo_bunny_upstream
-    assert executables == {}
+    assert list(executables) == [ProductTierLabel.PLUS]
+    assert executables[ProductTierLabel.PLUS].model_id == agnes_model.group(1)
+    assert executables[ProductTierLabel.PLUS].credential_binding == agnes_binding.group(1)
 
     plus_routes = get_tier(ProductTierLabel.PLUS).routes
     plus_hold = next(r for r in plus_routes if r.model_id == PLUS_HOLD_MODEL_ID)
@@ -289,9 +305,9 @@ def test_selected_routes_match_registered_provider_constants() -> None:
     assert bunny_hold.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
     assert bunny_hold.upstream_model == kilo_bunny_upstream.group(1)
 
-    agnes_hold = next(r for r in plus_routes if r.model_id == agnes_model.group(1))
-    assert agnes_hold.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
-    assert agnes_binding.group(1) == agnes_hold.credential_binding
+    agnes_route = next(r for r in plus_routes if r.model_id == agnes_model.group(1))
+    assert agnes_route.status is ProductRouteStatus.EXECUTABLE
+    assert agnes_binding.group(1) == agnes_route.credential_binding
 
     pro_routes = get_tier(ProductTierLabel.PRO).routes
     held_bai = next(r for r in pro_routes if r.provider_id == "b-ai")

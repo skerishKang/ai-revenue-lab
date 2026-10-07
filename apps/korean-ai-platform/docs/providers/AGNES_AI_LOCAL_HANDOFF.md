@@ -1,6 +1,18 @@
 # Local handoff — Agnes AI first B14 provider candidate
 
-> **RETIRED** (#1933 S2-b, 2026-09-07): The Agnes route is no longer registered in production code or the catalog. This document is preserved as a historical handoff record. The generic platform-owned credential plane and the platform adapter contract described below remain live code; they are exercised in tests under `tests/test_platform_provider_credential_plane.py` via a synthetic platform_secret provider, and in `tests/test_platform_provider_readiness.py` via SenseNova.
+> **History corrected 2026-10-07 (#3554).** This banner previously asserted that
+> the Agnes route was "no longer registered in production code or the catalog"
+> (#1933 S2-b). #1933 retired the *first* integration only; #2126 re-approved the
+> provider and #2133 re-onboarded it, and `app/pilot/agnes_provider.py` registers
+> `agnes-ai/agnes-3.0-flash` into `CATALOG_BY_ID` today. This document stays a
+> historical handoff record for the original `agnes-2.5-flash` slice — see
+> `AGNES_AI_V1.md` for the re-verification evidence behind the 3.0 lane, which is
+> what owner decision #3554 selected for the Plus TEXT role. The generic
+> platform-owned credential plane and the platform adapter contract described
+> below remain live code; they are exercised in tests under
+> `tests/test_platform_provider_credential_plane.py` via a synthetic
+> platform_secret provider, and in
+> `tests/test_platform_provider_readiness.py` via SenseNova.
 
 Repository: `skerishKang/ai-revenue-lab`
 

@@ -91,8 +91,11 @@ def test_executable_routes_have_explicit_provider_and_model() -> None:
     executables = [
         (tier, route) for tier, route in all_routes() if route.status is RouteStatus.EXECUTABLE
     ]
-    assert executables == []
-    assert active_route_for(TierLabel.PLUS) is None
+    assert [tier for tier, _route in executables] == [TierLabel.PLUS]
+    plus_active = active_route_for(TierLabel.PLUS)
+    assert plus_active is not None
+    assert plus_active.route_id == "plus.agnes-3.0-flash.v1"
+    assert plus_active.model_id == "agnes-ai/agnes-3.0-flash"
     assert active_route_for(TierLabel.PRO) is None
     assert active_route_for(TierLabel.MAX) is None
 
@@ -126,10 +129,20 @@ def test_plus_pro_registry_routes_match_shared_contract() -> None:
         for _tier, route in all_routes()
         if route.status is RouteStatus.EXECUTABLE
     }
-    assert contract == registry == {}
+    assert contract == registry == {"plus.agnes-3.0-flash.v1": "agnes-ai/agnes-3.0-flash"}
 
 def test_executable_registry_routes_exist_in_b14_catalog() -> None:
-    """#2085 ACT-1 drift guard: registry may certify only registered B14 lanes."""
+    """#2085 ACT-1 drift guard: registry may certify only registered B14 lanes.
+
+    The catalog is filled by the app's own provider wiring: ``app.pilot.platform``
+    imports each provider module and a manual-pin provider such as Agnes registers
+    itself into ``CATALOG_BY_ID`` there (it is deliberately absent from
+    ``CATALOG_MODELS``, which is what keeps it out of ``b14/auto``). Import the
+    wiring so this guard validates the catalog the running worker actually has
+    instead of this test file's bare import graph.
+    """
+    import app.pilot.platform  # noqa: F401  (production provider wiring)
+
     for tier, route in all_routes():
         if route.status is RouteStatus.EXECUTABLE:
             assert get_catalog_by_id(route.model_id) is not None, (

@@ -11,7 +11,11 @@ from app.attachments import MAX_IMAGE_BYTES, parse_attachments
 from app.b14_client import PADIEM_IDENTITY_INSTRUCTION
 from app.config import Settings
 from app.main import create_app
-from app.model_policy import DEFAULT_B14_MODEL_ID, EXECUTABLE_B14_MODEL_IDS
+from app.model_policy import (
+    DEFAULT_B14_MODEL_ID,
+    EXECUTABLE_B14_MODEL_IDS,
+    model_supports,
+)
 
 
 JPEG = b"\xff\xd8\xff\xe0phase8"
@@ -117,7 +121,13 @@ async def test_valid_live_image_attachment_fails_closed_without_primary_model(
             },
         )
 
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset()
+    # #3554 selects the Plus TEXT role only. The image refusal must therefore
+    # come from a missing image capability on the selected lane, not from an
+    # unselected model: that keeps the vision hold enforceable after text goes
+    # live instead of resting on emptiness.
+    assert DEFAULT_B14_MODEL_ID in EXECUTABLE_B14_MODEL_IDS
+    assert model_supports(DEFAULT_B14_MODEL_ID, "chat") is True
+    assert model_supports(DEFAULT_B14_MODEL_ID, "image") is False
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "image_model_unavailable"
     assert calls == 0

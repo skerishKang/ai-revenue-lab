@@ -61,9 +61,10 @@ class ProductCredentialMode(str, Enum):
     PLATFORM_SECRET_BINDING = "platform_secret_binding"
 
 # Product-level HOLD sentinels are product identities, not B14 catalog model IDs.
-# Plus is temporarily held after the Space Bunny free lane ended and before an
-# explicit successor is selected (#3568). Pro and Max retain their existing
-# independent HOLD gates.
+# Plus used this sentinel while no successor existed (#3568). Owner decision
+# 2026-10-07 (#3554) filled the TEXT role only, so the sentinel stays as
+# data-only history while the vision role is unselected. Pro and Max retain
+# their existing independent HOLD gates.
 PLUS_HOLD_MODEL_ID = "padiem-profile/plus-hold"
 PRO_HOLD_MODEL_ID = "padiem-profile/pro-hold"
 MAX_HOLD_MODEL_ID = "padiem-profile/max-hold"
@@ -217,11 +218,13 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
                 model_family="plus",
                 model_id=PLUS_HOLD_MODEL_ID,
                 hold_reason=(
-                    "Owner decision #3568: Space Bunny free availability ended and no "
-                    "successor model is selected yet. Padiem Plus remains a product identity "
-                    "but must fail closed before B14/provider dispatch."
+                    "Owner decision #3568 introduced this product-level hold identity while "
+                    "no successor existed. Owner decision 2026-10-07 (#3554) filled the TEXT "
+                    "role with Agnes 3.0 Flash, so this sentinel is retained as data-only "
+                    "history: the vision role is still unselected, and Plus must keep failing "
+                    "closed rather than fall back to this identity for image work."
                 ),
-                evidence="#3568 model-independent successor-pending hold.",
+                evidence="#3568 successor-pending hold; #3554 split-role text selection.",
             ),
             ProductTierRoute(
                 route_id="plus.space-bunny-alpha.v1",
@@ -243,22 +246,23 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
             ),
             ProductTierRoute(
                 route_id="plus.agnes-3.0-flash.v1",
-                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
+                status=ProductRouteStatus.EXECUTABLE,
                 model_family="agnes-3.0-flash",
                 provider_id="agnes-ai",
                 model_id="agnes-ai/agnes-3.0-flash",
                 upstream_model="agnes-3.0-flash",
                 credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
                 credential_binding="PADIEM_AGNES_API_KEY",
-                hold_reason=(
-                    "Superseded as the active Padiem Plus route by owner decision "
-                    "#3209 (Space Bunny Alpha). Retained as historical data only; "
-                    "the Agnes provider registration itself is preserved and never "
-                    "a silent fallback."
-                ),
                 evidence=(
-                    "Historical Plus route; B14 app/pilot/agnes_provider.py "
-                    "registration (#2133) preserved."
+                    "Owner decision 2026-10-07 (#3554) selects Agnes 3.0 Flash for the "
+                    "TEXT role. Same-condition direct-provider evaluation: strict JSON, "
+                    "7/7 exact facts, 0 extra keys, 0 prose, 1.41s. The B14 provider "
+                    "registration is already present (#2133) and wrangler.toml declares "
+                    "the PADIEM_AGNES_API_KEY binding name; production secret-store "
+                    "readiness is a separate, still-pending check. Owner accepted the "
+                    "open terms/cost risk: DATA_HANDLING_REVIEW="
+                    "RISK_ACCEPTED_BY_OWNER, COST_STATUS=UNCONFIRMED_ACCEPTED_BY_OWNER. "
+                    "Vision stays pending and this route is never a silent fallback."
                 ),
             ),
             ProductTierRoute(
