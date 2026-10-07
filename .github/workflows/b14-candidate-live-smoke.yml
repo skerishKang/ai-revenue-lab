@@ -87,9 +87,10 @@ jobs:
         shell: bash
         env:
           # pytest collects apps/padiem-chat/tests from the repo root, so its
-          # conftest (which imports app.model_policy) needs the app package on
-          # sys.path. The suite itself stays network-free and offline.
-          PYTHONPATH: apps/padiem-chat
+          # conftest (which imports app.model_policy and padiem_control_plane)
+          # needs both packages' sources on sys.path. The suite itself stays
+          # network-free and offline.
+          PYTHONPATH: apps/padiem-chat:packages/padiem-ai-core:packages/padiem-control-plane
         run: |
           set -euo pipefail
           python -m pytest -q \
