@@ -1,46 +1,55 @@
 /**
- * #3647 — trusted-main bounded action host, slice 1.
+ * #3647 / #3669 — trusted-main bounded action host.
  *
  * Authority boundary of this slice (source of truth: the #3607 CENTRAL final
- * design disposition + the #3629 observation authority + #3609 D1):
+ * design disposition + the #3629 observation authority + #3609 D1 + the #3669
+ * DECISION=B canonical lease ruling):
  *
  *   BROWSER_ACTION_EXECUTION           = lease-eligible slice only
  *     click restricted to CLICK_ALLOWED_ROLE_ALLOWLIST (tab/treeitem);
  *     focus has its own gate (credential=false + focusable + fresh element);
- *   STEP_UP_EXECUTION                  = false  (next slice)
+ *   STEP_UP_EXECUTION                  = false
  *   TRUSTED_MAIN_HOST_OWNS_EXTRACTION  = true   (reused #3629 host)
  *   RENDERER_OWNS_PROJECTION_AUTHORITY = false
  *   SECOND_BROWSER_AUTHORITY           = false
  *   GENERIC_IPC_SURFACE                = false
  *   NEW_APPROVAL_STORE                 = false
- *   CANONICAL_LEASE_ADMISSION_WIRED    = false  (next slice's fail-closed port)
+ *   CANONICAL_LEASE_ADMISSION_WIRED    = false  (the two-phase port and the
+ *                                                resident transport module exist;
+ *                                                trusted view wiring is the
+ *                                                follow-up child)
+ *   LOCAL_LEASE_BOOKKEEPING            = 0      (no local mirror; budget/idle
+ *                                                correctness lives in the
+ *                                                canonical durable store)
  *
- * Flow per action: validate the bounded request -> obtain the #3607 lease
- * through the fail-closed provider port (the canonical P01 + durable one-shot
- * authority plugs in there next slice; an unwired build refuses everything) ->
- * take a FRESH #3629 observation -> bind element_ref against the current
- * projection -> enforce origin/credential/role/budget/idle boundaries ->
- * dispatch input synthesis through the injected binding -> zero-page-derived
- * receipt.
+ * Two-phase flow per action (#3669 DECISION=B):
  *
- * Policy separation (CENTRAL review): focus is NOT click policy. Focus is
- * lease-eligible with its own gate (credential=false, focusable state, fresh
- * element, scope match) and dispatches a press whose release lands OUTSIDE the
- * element so no click activation can occur. Click keeps the strict
- * effect-class gate: a verb being "click" never makes it safe.
+ *   1. PHASE A — READ-ONLY RESOLVE. The canonical authority returns the
+ *      durable lease (never mutates: no slot increment, no revoke; first
+ *      resolve may lazily mint the agent-side row exactly once).
+ *   2. Read-only checks against that lease: expiry, session/origin
+ *      binding, action coverage.
+ *   3. A FRESH #3629 observation; the post-observation origin check; the
+ *      element/credential/role/effect checks. A step-up target refuses HERE,
+ *      so it never consumes a durable slot.
+ *   4. PHASE B — the single atomic durable consume, called immediately
+ *      before input-synthesis dispatch and carrying the observed origin.
+ *      On refusal INPUT_COMMAND_COUNT=0 and no retry; the store owns every
+ *      slot fact (REFUND=NO, DECREMENT=NO, AUTO_RETRY=NO).
+ *   5. Dispatch through the injected binding. A dispatch failure refuses:
+ *      the already-consumed slot stays consumed — no refund, no retry.
  *
- * The local per-lease bookkeeping below is a fast-path mirror ONLY — the
- * canonical durable admission authority (next slice) is the only replay and
- * budget authority. Cross-origin movement invalidates the local lease state
- * immediately (INVALIDATE_AND_REQUIRE_STEP_UP) and the canonical authority is
- * re-consulted on every single execute.
+ * Error policy: only closed desktop codes escape this host. The canonical
+ * authority's own budget/idle/origin refusals pass through unchanged; every
+ * other code — including P01 evidence and issuance failures — collapses into
+ * lease_invalid, and authority error text (which may carry approval
+ * material) is never forwarded.
  */
 
 import { createHash } from 'node:crypto';
 
 import {
   CLICK_ALLOWED_ROLE_ALLOWLIST,
-  LEASE_IDLE_SECONDS,
   TYPEABLE_ROLE_ALLOWLIST,
   SELECT_ROLE_ALLOWLIST,
   assertBoundedActionLease,
@@ -54,14 +63,32 @@ import {
 import { BrowserObservationHost } from './browser-observation-host.js';
 import type { BoundedObservationElement, BoundedPageObservation } from './browser-observation-contract.js';
 
-/** Canonical lease admission port. Unwired => every action refuses. */
-export interface BrowserActionLeaseProvider {
+/**
+ * #3669 — the canonical lease admission port, two phases.
+ *
+ * PHASE A (`resolve`) is READ-ONLY: it returns the canonical lease shape —
+ * the 14-key desktop lease dict, re-validated by `assertBoundedActionLease`
+ * — and mutates no durable state. PHASE B (`consume`) is the single atomic
+ * durable slot write for one action, called exactly once immediately before
+ * input-synthesis dispatch; it carries the observed origin from the fresh
+ * observation and resolves to the new durable consumed-actions count.
+ *
+ * Unwired, every action refuses. Budget, idle and replay correctness live in
+ * the canonical durable store on the agent side — never in this host.
+ */
+export interface BrowserActionLeaseAuthority {
   readonly configured: boolean;
-  lease(input: {
+  /** PHASE A — the read-only resolve. Never consumes a slot. */
+  resolve(input: {
     readonly browserSessionRef: string;
-    readonly runRef?: string;
     readonly action: LeaseEligibleAction;
   }): Promise<unknown>;
+  /** PHASE B — the atomic durable consume, immediately before dispatch. */
+  consume(input: {
+    readonly browserSessionRef: string;
+    readonly action: LeaseEligibleAction;
+    readonly observedOrigin: string;
+  }): Promise<number>;
 }
 
 export type ActionDispatchOp =
@@ -83,13 +110,27 @@ export interface BrowserActionDispatchPort {
 export interface BrowserActionHostDependencies {
   readonly observation: BrowserObservationHost;
   readonly binding: BrowserActionDispatchPort;
-  readonly leaseProvider: BrowserActionLeaseProvider;
+  readonly leaseAuthority: BrowserActionLeaseAuthority;
   readonly now?: () => Date;
 }
 
 const MAX_BOUNDS_COORD = 10_000_000;
 const FOCUS_RELEASE_OFFSET = 64;
 const ACTION_ID_PATTERN_PREFIX = 'act_';
+
+/**
+ * The closed codes a lease authority failure may surface at the host. The
+ * canonical authority's budget, idle and origin-scope facts mean the same
+ * thing on the desktop side and pass through; lease_invalid and
+ * host_unavailable are the two collapsed outcomes everything else maps to.
+ */
+const AUTHORITY_ERROR_CODES: ReadonlySet<string> = new Set([
+  'action_budget_exhausted',
+  'lease_idle_exceeded',
+  'origin_scope_exceeded',
+  'lease_invalid',
+  'host_unavailable',
+]);
 
 function elementCenter(element: BoundedObservationElement): { x: number; y: number } {
   const x = Math.max(0, Math.min(element.bounds.x + Math.floor(element.bounds.width / 2), MAX_BOUNDS_COORD));
@@ -128,33 +169,28 @@ function assertFocusAllowedTarget(element: BoundedObservationElement): void {
 export class BrowserActionHost {
   readonly #observation: BrowserObservationHost;
   readonly #binding: BrowserActionDispatchPort;
-  readonly #leaseProvider: BrowserActionLeaseProvider;
+  readonly #leaseAuthority: BrowserActionLeaseAuthority;
   readonly #now: () => Date;
   #sequence = 0;
-  // Fast-path mirror ONLY: per-lease dispatch count and last-activity stamp
-  // used to surface idle/budget refusals early. It is NOT the replay or budget
-  // authority — the canonical durable admission (next slice) is, and this map
-  // is invalidated on scope loss and re-derived from the provider's lease on
-  // every execute.
-  readonly #leaseFastPath = new Map<string, { consumed: number; lastDispatchAtMs: number }>();
 
   constructor(dependencies: BrowserActionHostDependencies) {
     if (
       !dependencies ||
       !(dependencies.observation instanceof BrowserObservationHost) ||
       typeof dependencies.binding?.dispatch !== 'function' ||
-      typeof dependencies.leaseProvider?.lease !== 'function'
+      typeof dependencies.leaseAuthority?.resolve !== 'function' ||
+      typeof dependencies.leaseAuthority?.consume !== 'function'
     ) {
-      throw new Error('browser action host requires observation host, dispatch binding and lease provider');
+      throw new Error('browser action host requires observation host, dispatch binding and lease authority');
     }
     this.#observation = dependencies.observation;
     this.#binding = dependencies.binding;
-    this.#leaseProvider = dependencies.leaseProvider;
+    this.#leaseAuthority = dependencies.leaseAuthority;
     this.#now = dependencies.now ?? (() => new Date());
   }
 
   get configured(): boolean {
-    return this.#binding.configured === true && this.#leaseProvider.configured === true;
+    return this.#binding.configured === true && this.#leaseAuthority.configured === true;
   }
 
   get dispatchedCount(): number {
@@ -167,28 +203,25 @@ export class BrowserActionHost {
       throw actionError('host_unavailable', 'no trusted browser action binding and lease authority is configured');
     }
 
-    // The canonical authority is consulted on EVERY execute; nothing here
-    // mints, refreshes, stores or replays a lease.
+    // PHASE A — the READ-ONLY resolve: confirm the durable lease, never burn a
+    // slot. The canonical authority is consulted on every execute; nothing in
+    // this host mints, refreshes, stores or replays a lease.
     let lease: BoundedActionLease;
     try {
-      lease = assertBoundedActionLease(
-        await this.#leaseProvider.lease({ browserSessionRef: request.browserSessionRef, action: request.action }),
-      );
+      const resolved: unknown = await this.#leaseAuthority.resolve({
+        browserSessionRef: request.browserSessionRef,
+        action: request.action,
+      });
+      lease = assertBoundedActionLease(resolved);
     } catch (error) {
-      if (error instanceof Error && 'code' in error) throw error;
-      // Never surface provider error text: it may carry approval material.
-      throw actionError('lease_invalid', 'the canonical action lease authority refused this request');
+      throw this.#authorityRefusal(error);
     }
     if (Date.parse(lease.expiresAtIso) <= this.#now().getTime()) {
-      this.#leaseFastPath.delete(lease.leaseId);
       throw actionError('lease_invalid', 'the action lease has expired');
     }
-    if (
-      request.originRef !== lease.originScope ||
-      request.browserSessionRef !== lease.browserSessionRef
-    ) {
-      // INVALIDATE_AND_REQUIRE_STEP_UP: scope loss drops the local mirror at once.
-      this.#leaseFastPath.delete(lease.leaseId);
+    if (request.originRef !== lease.originScope || request.browserSessionRef !== lease.browserSessionRef) {
+      // Read-only scope check: the lease does not bind this origin/session.
+      // No slot is consumed and nothing durable is mutated.
       throw actionError('origin_scope_exceeded', 'the lease does not bind this origin/session');
     }
     if (!(lease.allowedActionClasses as readonly string[]).includes(request.action)) {
@@ -203,8 +236,10 @@ export class BrowserActionHost {
       throw actionError(code, 'bounded observation for the action target failed');
     }
     if (observation.originRef !== lease.originScope) {
-      // The view moved off the leased origin: invalidate, require step-up.
-      this.#leaseFastPath.delete(lease.leaseId);
+      // The view moved off the leased origin. This refusal is read-only:
+      // INPUT_COMMAND_COUNT=0 and no slot is consumed. The canonical store's
+      // cross-origin revoke is the backstop for any consume that did carry a
+      // mismatched observed origin; the host never relies on it for checks.
       throw actionError('origin_scope_exceeded', 'the view left the leased origin');
     }
 
@@ -256,26 +291,28 @@ export class BrowserActionHost {
       }
     }
 
-    const fastPath = this.#leaseFastPath.get(lease.leaseId) ?? { consumed: 0, lastDispatchAtMs: 0 };
-    if (fastPath.consumed + 1 > lease.maxActions) {
-      throw actionError('action_budget_exhausted', 'the action lease budget is exhausted');
+    // PHASE B — the single atomic durable consume, immediately before dispatch.
+    // The observed origin comes from the fresh observation. A refusal means
+    // INPUT_COMMAND_COUNT=0 with no retry; the store owns every slot fact
+    // (REFUND=NO, DECREMENT=NO, AUTO_RETRY=NO).
+    try {
+      await this.#leaseAuthority.consume({
+        browserSessionRef: request.browserSessionRef,
+        action: request.action,
+        observedOrigin: observation.originRef,
+      });
+    } catch (error) {
+      throw this.#authorityRefusal(error);
     }
-    const nowMs = this.#now().getTime();
-    if (
-      fastPath.consumed > 0 &&
-      nowMs - fastPath.lastDispatchAtMs > LEASE_IDLE_SECONDS * 1000
-    ) {
-      // Idle expiry (local mirror of LEASE_IDLE_SECONDS=120): invalidate.
-      this.#leaseFastPath.delete(lease.leaseId);
-      throw actionError('lease_idle_exceeded', 'the action lease went idle beyond the bounded idle window');
-    }
+
     try {
       await this.#binding.dispatch(ops);
     } catch (error) {
+      // Dispatch failed AFTER the durable consume: the slot stays consumed —
+      // no refund, no decrement, no auto-retry.
       if (error instanceof Error && 'code' in error) throw error;
       throw actionError('contract_violation', 'trusted action dispatch failed');
     }
-    this.#leaseFastPath.set(lease.leaseId, { consumed: fastPath.consumed + 1, lastDispatchAtMs: nowMs });
     this.#sequence += 1;
     const digest = createHash('sha256')
       .update(`${request.browserSessionRef}\u0000${request.action}\u0000${this.#sequence}`)
@@ -285,21 +322,32 @@ export class BrowserActionHost {
       actionId: `${ACTION_ID_PATTERN_PREFIX}${digest}`,
       action: request.action,
       elementRef: request.action === 'scroll' ? null : (element?.elementRef ?? null),
-      originRef: lease.originScope,
+      originRef: observation.originRef,
     });
   }
 
-  /** Fast-path mirror reset; the canonical authority stays authoritative. */
-  resetFastPath(): void {
-    this.#leaseFastPath.clear();
+  /**
+   * Collapses one lease-authority failure into the closed desktop code set.
+   * Only a code already in the vocabulary may escape; authority error text may
+   * carry P01 approval material and is never forwarded.
+   */
+  #authorityRefusal(error: unknown): Error {
+    if (error instanceof Error) {
+      const code = (error as { code?: unknown }).code;
+      if (typeof code === 'string' && AUTHORITY_ERROR_CODES.has(code)) {
+        return error;
+      }
+    }
+    return actionError('lease_invalid', 'the canonical action lease authority refused this request');
   }
 }
 
 export const BROWSER_ACTION_EXECUTION_IMPLEMENTED = true;
 export const STEP_UP_EXECUTION_IMPLEMENTED = false;
+/** The two-phase port and resident transport exist; trusted view wiring is the follow-up child. */
 export const CANONICAL_LEASE_ADMISSION_WIRED = false;
 export const NEW_APPROVAL_STORE = false;
 export const SECOND_BROWSER_AUTHORITY = false;
 export const GENERIC_IPC_SURFACE = false;
-/** The local per-lease bookkeeping never claims replay/budget authority. */
+/** No local lease bookkeeping exists at all: budget/idle correctness lives in the canonical durable store. */
 export const LOCAL_LEASE_BOOKKEEPING_IS_AUTHORITY = false;

@@ -1,15 +1,19 @@
 /**
- * #3647 — trusted-main bounded action composition root.
+ * #3647 / #3669 — trusted-main bounded action composition root.
  *
  * Wires exactly three injected ports:
  *
- *   observation   the #3629 trusted observation host (fresh projection per action),
- *   binding       the input-synthesis binding (in the product,
- *                 `createElectronBrowserActionBinding(<webContents>)`), and
- *   leaseProvider the canonical bounded-lease admission port — deliberately
- *                 fail-closed until the next slice wires the canonical P01 +
- *                 durable one-shot authority into it. No second approval
- *                 store exists and none is created here.
+ *   observation     the #3629 trusted observation host (fresh projection per
+ *                   action),
+ *   binding         the input-synthesis binding (in the product,
+ *                   `createElectronBrowserActionBinding(<webContents>)`), and
+ *   leaseAuthority  the canonical two-phase lease admission port (#3669
+ *                   DECISION=B). The real implementation is
+ *                   `createResidentBrowserControlLeaseAuthority` in
+ *                   `conversation/resident-browser-control-lease.ts`, which
+ *                   speaks the two bounded request kinds to the supervised
+ *                   resident; trusted view wiring is the follow-up child. No
+ *                   second approval store exists and none is created here.
  *
  *   no Electron import — the composition is hermetic and unit-testable;
  *   every default fails closed, so an unwired build refuses every action;
@@ -19,7 +23,7 @@
 import {
   BrowserActionHost,
   type BrowserActionDispatchPort,
-  type BrowserActionLeaseProvider,
+  type BrowserActionLeaseAuthority,
 } from './browser-action-host.js';
 import type { BrowserObservationHost } from './browser-observation-host.js';
 
@@ -34,11 +38,14 @@ export function unconfiguredActionDispatchBinding(): BrowserActionDispatchPort {
   });
 }
 
-/** Fails closed until the canonical bounded-lease authority is injected. */
-export function unconfiguredActionLeaseProvider(): BrowserActionLeaseProvider {
+/** Fails closed until the canonical two-phase lease authority is injected. */
+export function unconfiguredActionLeaseAuthority(): BrowserActionLeaseAuthority {
   return Object.freeze({
     configured: false,
-    lease: async () => {
+    resolve: async () => {
+      throw new Error('no canonical browser action lease authority is configured');
+    },
+    consume: async () => {
       throw new Error('no canonical browser action lease authority is configured');
     },
   });
@@ -48,31 +55,31 @@ export interface TrustedBrowserActionCompositionInput {
   /** The #3629 trusted observation host: every action binds to a fresh projection. */
   readonly observation: BrowserObservationHost;
   readonly binding?: BrowserActionDispatchPort;
-  readonly leaseProvider?: BrowserActionLeaseProvider;
+  readonly leaseAuthority?: BrowserActionLeaseAuthority;
   readonly now?: () => Date;
 }
 
 export interface TrustedBrowserActionComposition {
   readonly host: BrowserActionHost;
   readonly bindingConfigured: boolean;
-  readonly leaseProviderConfigured: boolean;
+  readonly leaseAuthorityConfigured: boolean;
 }
 
 export function composeTrustedBrowserActions(
   input: TrustedBrowserActionCompositionInput,
 ): TrustedBrowserActionComposition {
   const binding = input.binding ?? unconfiguredActionDispatchBinding();
-  const leaseProvider = input.leaseProvider ?? unconfiguredActionLeaseProvider();
+  const leaseAuthority = input.leaseAuthority ?? unconfiguredActionLeaseAuthority();
   const host = new BrowserActionHost({
     observation: input.observation,
     binding,
-    leaseProvider,
+    leaseAuthority,
     ...(input.now === undefined ? {} : { now: input.now }),
   });
   return Object.freeze({
     host,
     bindingConfigured: binding.configured === true,
-    leaseProviderConfigured: leaseProvider.configured === true,
+    leaseAuthorityConfigured: leaseAuthority.configured === true,
   });
 }
 

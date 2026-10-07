@@ -1,11 +1,14 @@
 /**
- * #3647 — trusted-main bounded action host tests (post-CENTRAL-review).
+ * #3647 / #3669 — trusted-main bounded action host tests (post-CENTRAL ruling,
+ * DECISION=B two-phase canonical lease admission).
  *
- * Hermetic: the extraction source, lease provider and dispatch binding are
- * fakes. The host always takes a FRESH observation per action; click is
+ * Hermetic: the extraction source, the two-phase lease authority and the
+ * dispatch binding are fakes. The fake authority emulates the canonical
+ * durable store: PHASE A resolve is read-only; PHASE B consume is the single
+ * owner of the budget/idle/cross-origin slot facts, called immediately before
+ * dispatch. The host always takes a FRESH observation per action; click is
  * restricted to roles the projection can prove non-committing; focus has its
- * own gate; the lease carries the #3607 correlations and the local bookkeeping
- * is a non-authoritative fast path that invalidates on scope loss and idle.
+ * own gate; a step-up target refuses without ever consuming a slot.
  * The final block reads real sources so authority drift fails here.
  */
 
@@ -29,10 +32,11 @@ import {
   BrowserActionHost,
   type ActionDispatchOp,
   type BrowserActionDispatchPort,
-  type BrowserActionLeaseProvider,
+  type BrowserActionLeaseAuthority,
 } from '../src/browser/browser-action-host.js';
 import type { BrowserObservationSourcePort } from '../src/browser/browser-observation-host.js';
 import { composeTrustedBrowserActions } from '../src/browser/browser-action-composition.js';
+import { LEASE_IDLE_SECONDS } from '../src/browser/browser-action-contract.js';
 import type {
   ObservationSourceElement,
   ObservationSourceSnapshot,
@@ -98,9 +102,16 @@ function validLease(overrides: Record<string, unknown> = {}): Record<string, unk
   };
 }
 
+interface AuthorityCounters {
+  readonly resolveCalls: number;
+  readonly consumeCalls: number;
+  readonly consumed: number;
+}
+
 interface HostHarness {
   readonly host: BrowserActionHost;
   readonly binding: BrowserActionDispatchPort & { ops: ActionDispatchOp[][] };
+  readonly authority: AuthorityCounters;
   readonly snapshotCount: () => number;
 }
 
@@ -109,7 +120,8 @@ function harnessFactory(
     readonly origin?: string;
     readonly elements?: ObservationSourceElement[];
     readonly lease?: Record<string, unknown>;
-    readonly leaseThrows?: Error;
+    readonly resolveThrows?: Error;
+    readonly consumeRefusalCode?: string;
     readonly now?: () => Date;
   } = {},
 ): HostHarness {
@@ -133,20 +145,65 @@ function harnessFactory(
     close: async () => undefined,
     ops,
   };
-  const leaseProvider: BrowserActionLeaseProvider = {
+  const clock = options.now ?? (() => new Date('2026-10-08T09:00:00.000Z'));
+  // The fake authority emulates the canonical durable store: PHASE A is
+  // read-only; PHASE B is the single owner of the budget/idle/cross-origin
+  // slot facts (check order mirrors the store: cross-origin, idle, budget).
+  const state = { resolveCalls: 0, consumeCalls: 0, consumed: 0, lastConsumeAtMs: 0 };
+  const leaseAuthority: BrowserActionLeaseAuthority = {
     configured: true,
-    lease: async () => {
-      if (options.leaseThrows) throw options.leaseThrows;
+    resolve: async () => {
+      state.resolveCalls += 1;
+      if (options.resolveThrows) throw options.resolveThrows;
       return options.lease ?? validLease();
+    },
+    consume: async (input) => {
+      state.consumeCalls += 1;
+      if (options.consumeRefusalCode !== undefined) {
+        throw Object.assign(new Error('canonical lease refusal'), {
+          code: options.consumeRefusalCode,
+        });
+      }
+      const lease = options.lease ?? validLease();
+      if (input.observedOrigin !== lease.originScope) {
+        // The store revokes with reason=cross_origin and refuses; no increment.
+        throw Object.assign(new Error('cross origin'), { code: 'origin_scope_exceeded' });
+      }
+      const nowMs = clock().getTime();
+      if (state.consumed > 0 && nowMs - state.lastConsumeAtMs > LEASE_IDLE_SECONDS * 1000) {
+        // The store revokes with reason=idle_expired and refuses; no increment.
+        throw Object.assign(new Error('idle expired'), { code: 'lease_idle_exceeded' });
+      }
+      if (state.consumed + 1 > (lease.maxActions as number)) {
+        throw Object.assign(new Error('budget exhausted'), { code: 'action_budget_exhausted' });
+      }
+      state.consumed += 1;
+      state.lastConsumeAtMs = nowMs;
+      return state.consumed;
     },
   };
   const host = new BrowserActionHost({
     observation,
     binding,
-    leaseProvider,
+    leaseAuthority,
     ...(options.now === undefined ? {} : { now: options.now }),
   });
-  return { host, binding, snapshotCount: () => snapshots };
+  return {
+    host,
+    binding,
+    authority: {
+      get resolveCalls() {
+        return state.resolveCalls;
+      },
+      get consumeCalls() {
+        return state.consumeCalls;
+      },
+      get consumed() {
+        return state.consumed;
+      },
+    },
+    snapshotCount: () => snapshots,
+  };
 }
 
 function errorCode(error: unknown): string {
@@ -168,7 +225,7 @@ test('unwired composition fails closed: no action is ever dispatched', async () 
     observation: new BrowserObservationHost({ source }),
   });
   assert.equal(composition.bindingConfigured, false);
-  assert.equal(composition.leaseProviderConfigured, false);
+  assert.equal(composition.leaseAuthorityConfigured, false);
   await assert.rejects(
     () => composition.host.execute(clickRequest('el-0001')),
     (error: unknown) => errorCode(error) === 'host_unavailable',
@@ -178,7 +235,7 @@ test('unwired composition fails closed: no action is ever dispatched', async () 
 test('a refusing canonical lease authority collapses into lease_invalid without leaking', async () => {
   const harness = harnessFactory({
     elements: DEFAULT_ELEMENTS,
-    leaseThrows: new Error('internal approval material: p01-decision-xyz'),
+    resolveThrows: new Error('internal approval material: p01-decision-xyz'),
   });
   await assert.rejects(
     () => harness.host.execute(clickRequest('el-0001')),
@@ -188,9 +245,24 @@ test('a refusing canonical lease authority collapses into lease_invalid without 
       return true;
     },
   );
+
+  // A coded authority failure carrying P01 material collapses the same way.
+  const coded = harnessFactory({
+    elements: DEFAULT_ELEMENTS,
+    consumeRefusalCode: 'p01_approval_invalid',
+  });
+  await assert.rejects(
+    () => coded.host.execute(clickRequest('el-0001')),
+    (error: unknown) => {
+      assert.equal(errorCode(error), 'lease_invalid');
+      assert.ok(!((error as Error).message.includes('p01')));
+      return true;
+    },
+  );
+  assert.equal(coded.binding.ops.length, 0);
 });
 
-test('expired leases and scope mismatches refuse and invalidate the local mirror', async () => {
+test('expired leases and scope mismatches refuse read-only, without consuming', async () => {
   const expired = harnessFactory({
     elements: DEFAULT_ELEMENTS,
     lease: validLease({ expiresAtIso: '2026-10-08T08:00:00.000Z' }),
@@ -199,6 +271,7 @@ test('expired leases and scope mismatches refuse and invalidate the local mirror
     () => expired.host.execute(clickRequest('el-0001')),
     (error: unknown) => errorCode(error) === 'lease_invalid',
   );
+  assert.equal(expired.authority.consumeCalls, 0);
 
   const otherOrigin = harnessFactory({
     elements: DEFAULT_ELEMENTS,
@@ -208,6 +281,7 @@ test('expired leases and scope mismatches refuse and invalidate the local mirror
     () => otherOrigin.host.execute(clickRequest('el-0001')),
     (error: unknown) => errorCode(error) === 'origin_scope_exceeded',
   );
+  assert.equal(otherOrigin.binding.ops.length, 0);
 
   const viewMoved = harnessFactory({ elements: DEFAULT_ELEMENTS, origin: 'https://moved.example' });
   await assert.rejects(
@@ -215,6 +289,7 @@ test('expired leases and scope mismatches refuse and invalidate the local mirror
     (error: unknown) => errorCode(error) === 'origin_scope_exceeded',
   );
   assert.equal(viewMoved.binding.ops.length, 0);
+  assert.equal(viewMoved.authority.consumeCalls, 0);
 
   const uncovered = harnessFactory({
     elements: DEFAULT_ELEMENTS,
@@ -231,6 +306,7 @@ test('expired leases and scope mismatches refuse and invalidate the local mirror
       }),
     (error: unknown) => errorCode(error) === 'lease_invalid',
   );
+  assert.equal(uncovered.authority.consumeCalls, 0);
 });
 
 test('actions bind only to elements of the fresh observation', async () => {
@@ -241,6 +317,7 @@ test('actions bind only to elements of the fresh observation', async () => {
   );
   assert.equal(harness.snapshotCount(), 1);
   assert.equal(harness.binding.ops.length, 0);
+  assert.equal(harness.authority.consumeCalls, 0);
 });
 
 test('credential elements refuse every direct action on the masked marker alone', async () => {
@@ -261,23 +338,31 @@ test('credential elements refuse every direct action on the masked marker alone'
     (error: unknown) => errorCode(error) === 'credential_element_forbidden',
   );
   await assert.rejects(
-    () => harness.host.execute({ action: 'focus', browserSessionRef: 'run/session-1', originRef: ORIGIN, elementRef: 'el-0004' }),
+    () =>
+      harness.host.execute({
+        action: 'focus',
+        browserSessionRef: 'run/session-1',
+        originRef: ORIGIN,
+        elementRef: 'el-0004',
+      }),
     (error: unknown) => errorCode(error) === 'credential_element_forbidden',
   );
   assert.equal(harness.binding.ops.length, 0);
+  assert.equal(harness.authority.consumeCalls, 0);
 });
 
-test('click policy: effect class first — only tab/treeitem stay lease-allowed', async () => {
+test('click policy: effect class first — step-up targets refuse without consuming', async () => {
   const harness = harnessFactory({ elements: DEFAULT_ELEMENTS });
-  // Provable non-committing roles dispatch.
+  // Provable non-committing roles dispatch — each through a PHASE B consume.
   const receipt = await harness.host.execute(clickRequest('el-0001'));
   assert.equal(receipt.outcome, 'dispatched');
   assert.deepEqual(harness.binding.ops[0], [{ kind: 'click', x: 50, y: 20 }]);
   await harness.host.execute(clickRequest('el-0007'));
   assert.deepEqual(harness.binding.ops[1], [{ kind: 'click', x: 80, y: 212 }]);
+  assert.equal(harness.authority.consumeCalls, 2);
 
-  // Everything the projection cannot prove steps up — verb "click" is not safe,
-  // and non-interactive containers are no exception (fail closed).
+  // Everything the projection cannot prove steps up — the target check
+  // refuses BEFORE PHASE B, so no slot is consumed and nothing dispatches.
   for (const [elementRef, role] of [
     ['el-0002', 'button'],
     ['el-0006', 'link'],
@@ -293,6 +378,8 @@ test('click policy: effect class first — only tab/treeitem stay lease-allowed'
       `click on ${role} must step up`,
     );
   }
+  assert.equal(harness.authority.consumeCalls, 2);
+  assert.equal(harness.binding.ops.length, 2);
 });
 
 test('focus policy is separate: focusable non-credential elements focus without role limits', async () => {
@@ -309,7 +396,8 @@ test('focus policy is separate: focusable non-credential elements focus without 
   assert.deepEqual(harness.binding.ops[0], [
     { kind: 'focus', x: 50, y: 20, releaseX: 50, releaseY: 94 },
   ]);
-  // A non-focusable element refuses through the focus gate.
+  assert.equal(harness.authority.consumeCalls, 1);
+  // A non-focusable element refuses through the focus gate — without consuming.
   await assert.rejects(
     () =>
       harness.host.execute({
@@ -321,6 +409,7 @@ test('focus policy is separate: focusable non-credential elements focus without 
     (error: unknown) => errorCode(error) === 'element_not_focusable',
   );
   assert.equal(harness.binding.ops.length, 1);
+  assert.equal(harness.authority.consumeCalls, 1);
 });
 
 test('type dispatches a bounded click-then-insertText pair at the observed center', async () => {
@@ -404,6 +493,7 @@ test('select uses the deterministic absolute index path', async () => {
     optionIndex: 1023,
   });
   assert.equal(harness.binding.ops[3]?.length, 1 + 1 + 1023 + 1);
+  assert.equal(harness.authority.consumeCalls, 4);
 
   const scrollReceipt = await harness.host.execute({
     action: 'scroll',
@@ -414,34 +504,118 @@ test('select uses the deterministic absolute index path', async () => {
   });
   assert.equal(scrollReceipt.elementRef, null);
   assert.deepEqual(harness.binding.ops[4], [{ kind: 'wheel', x: 0, y: 0, dx: 0, dy: -240 }]);
+  assert.equal(harness.authority.consumeCalls, 5);
 });
 
-test('the lease action budget and idle window are enforced on the fast path', async () => {
+test('the canonical store owns the action budget: N succeeds, N+1 refuses without dispatch', async () => {
   let clock = new Date('2026-10-08T09:00:00.000Z');
   const harness = harnessFactory({
     elements: DEFAULT_ELEMENTS,
-    lease: validLease({ allowedActionClasses: ['click'], maxActions: 1 }),
+    lease: validLease({ allowedActionClasses: ['click'], maxActions: 2 }),
     now: () => clock,
   });
   await harness.host.execute(clickRequest('el-0001'));
+  await harness.host.execute(clickRequest('el-0007'));
+  assert.equal(harness.authority.consumed, 2);
+  // The N+1th action: the durable consume refuses; INPUT_COMMAND_COUNT=0.
   await assert.rejects(
     () => harness.host.execute(clickRequest('el-0001')),
     (error: unknown) => errorCode(error) === 'action_budget_exhausted',
   );
+  assert.equal(harness.binding.ops.length, 2);
+  assert.equal(harness.authority.consumed, 2);
+  // No retry after the refusal: the refusal stands.
+  await assert.rejects(
+    () => harness.host.execute(clickRequest('el-0001')),
+    (error: unknown) => errorCode(error) === 'action_budget_exhausted',
+  );
+  assert.equal(harness.binding.ops.length, 2);
+});
 
-  const idleHarness = harnessFactory({
+test('the canonical store owns the idle window: a >120s gap refuses, inside it still admits', async () => {
+  let clock = new Date('2026-10-08T09:00:00.000Z');
+  const harness = harnessFactory({
     elements: DEFAULT_ELEMENTS,
     lease: validLease({ allowedActionClasses: ['click'], maxActions: 5 }),
     now: () => clock,
   });
-  await idleHarness.host.execute(clickRequest('el-0001'));
-  clock = new Date('2026-10-08T09:00:00.000Z');
+  await harness.host.execute(clickRequest('el-0001'));
   clock = new Date(clock.getTime() + 121 * 1000);
   await assert.rejects(
-    () => idleHarness.host.execute(clickRequest('el-0001')),
+    () => harness.host.execute(clickRequest('el-0001')),
     (error: unknown) => errorCode(error) === 'lease_idle_exceeded',
   );
-  assert.equal(idleHarness.binding.ops.length, 1);
+  assert.equal(harness.binding.ops.length, 1);
+
+  const within = harnessFactory({
+    elements: DEFAULT_ELEMENTS,
+    lease: validLease({ allowedActionClasses: ['click'], maxActions: 5 }),
+    now: () => clock,
+  });
+  // The new authority has no last-consume fact, so the idle gate does not apply.
+  await within.host.execute(clickRequest('el-0001'));
+  assert.equal(within.binding.ops.length, 1);
+});
+
+test('a PHASE B cross-origin consume refusal passes through and dispatches nothing', async () => {
+  const harness = harnessFactory({
+    elements: DEFAULT_ELEMENTS,
+    consumeRefusalCode: 'origin_scope_exceeded',
+  });
+  await assert.rejects(
+    () => harness.host.execute(clickRequest('el-0001')),
+    (error: unknown) => errorCode(error) === 'origin_scope_exceeded',
+  );
+  assert.equal(harness.binding.ops.length, 0);
+  assert.equal(harness.authority.consumed, 0);
+});
+
+test('a dispatch failure after the durable consume keeps the slot consumed, no retry', async () => {
+  const source: BrowserObservationSourcePort = {
+    configured: true,
+    snapshot: async () => ({ origin: ORIGIN, elements: DEFAULT_ELEMENTS }),
+    close: async () => undefined,
+  };
+  const ops: ActionDispatchOp[][] = [];
+  let dispatchFails = true;
+  const binding: BrowserActionDispatchPort = {
+    configured: true,
+    dispatch: async (batch) => {
+      if (dispatchFails) {
+        dispatchFails = false;
+        throw new Error('the input channel dropped the batch');
+      }
+      ops.push([...batch]);
+    },
+    close: async () => undefined,
+  };
+  const state = { consumed: 0 };
+  const authority: BrowserActionLeaseAuthority = {
+    configured: true,
+    resolve: async () => validLease(),
+    consume: async () => {
+      state.consumed += 1;
+      return state.consumed;
+    },
+  };
+  const host = new BrowserActionHost({
+    observation: new BrowserObservationHost({ source }),
+    binding,
+    leaseAuthority: authority,
+    now: () => new Date('2026-10-08T09:00:00.000Z'),
+  });
+  // First action: the PHASE B consume succeeds (the slot is written), then the
+  // dispatch fails. REFUND=NO, DECREMENT=NO — the slot stays consumed.
+  await assert.rejects(
+    () => host.execute(clickRequest('el-0001')),
+    (error: unknown) => errorCode(error) === 'contract_violation',
+  );
+  assert.equal(state.consumed, 1);
+  // No auto-retry of the failed batch: the next action is a new admission.
+  const receipt = await host.execute(clickRequest('el-0001'));
+  assert.equal(receipt.outcome, 'dispatched');
+  assert.equal(ops.length, 1);
+  assert.equal(state.consumed, 2);
 });
 
 test('action ids are deterministic, content-free and sequence-scoped', async () => {
@@ -469,15 +643,26 @@ test('no renderer channel, no second authority, no script evaluation exists', ()
   assert.equal(NEW_APPROVAL_STORE, false);
   assert.equal(SECOND_BROWSER_AUTHORITY, false);
   assert.equal(GENERIC_IPC_SURFACE, false);
-  // The local per-lease bookkeeping never claims replay/budget authority.
+  // No local lease bookkeeping survives: the canonical store owns budget/idle.
   assert.equal(LOCAL_LEASE_BOOKKEEPING_IS_AUTHORITY, false);
+  assert.ok(!hostModule.includes('leaseFastPath'), 'the local fast-path mirror is gone');
+  // The two phases are explicit in the host.
+  assert.ok(hostModule.includes('leaseAuthority.resolve'));
+  assert.ok(hostModule.includes('leaseAuthority.consume'));
   for (const code of [hostModule, composition]) {
     assert.ok(!code.includes('ipcMain'));
     assert.ok(!code.includes('ipcRenderer'));
     assert.ok(!code.includes('execute' + 'JavaScript'));
   }
   // The lease carries the full correlation set (code-level, not comments).
-  for (const correlation of ['requestFingerprint', 'runRef', 'workspaceRef', 'ownerRef', 'approvalRef', 'evidenceRef']) {
+  for (const correlation of [
+    'requestFingerprint',
+    'runRef',
+    'workspaceRef',
+    'ownerRef',
+    'approvalRef',
+    'evidenceRef',
+  ]) {
     assert.ok(contract.includes(correlation), `lease correlation ${correlation} missing`);
   }
   // The binding's whole CDP surface is the declared Input.* allowlist.
