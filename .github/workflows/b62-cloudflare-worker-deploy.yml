@@ -2,14 +2,30 @@ name: B62 Cloudflare mock deploy
 
 on:
   pull_request:
+    # #3527 Slice B: `apps/padiem-chat/tests/**` is the only overbroad part of
+    # this trigger. Everything else under `apps/padiem-chat/**` is a proven
+    # dependency and stays in scope:
+    #   worker.py        wrangler.toml `main = "worker.py"`
+    #   app/**           imported by the Worker
+    #   static/**        wrangler.toml `[assets] directory = "static"`, and the
+    #                    deployed-parity step compares static/*.js to the live site
+    #   wrangler.toml    read directly by .github/scripts/b62_cloudflare_mock_config_guard.py
+    #   pyproject/uv.lock/pylock.toml  consumed by `uvx pywrangler deploy`
+    # No step in this workflow (guard scripts, read-only preflight, parity,
+    # mock smoke) reads `tests/`, so a tests-only change cannot alter the
+    # preflight outcome or the deployed Worker bundle. Blind narrowing of the
+    # rest of the tree is explicitly forbidden.
+    # Proven by `.github/tests/test_b62_worker_deploy_trigger_scope.py`.
     paths:
       - "apps/padiem-chat/**"
+      - "!apps/padiem-chat/tests/**"
       - ".github/scripts/b62_cloudflare_*.py"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   push:
     branches: [main]
     paths:
       - "apps/padiem-chat/**"
+      - "!apps/padiem-chat/tests/**"
       - ".github/scripts/b62_cloudflare_*.py"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   workflow_dispatch:

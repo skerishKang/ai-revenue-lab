@@ -102,6 +102,10 @@ export type ShellStringKey =
   | 'workspace.kind.directory'
   | 'workspace.kind.file'
   | 'workspace.kind.link'
+  | 'workspace.searchLabel'
+  | 'workspace.searchPlaceholder'
+  | 'workspace.searchNoMatches'
+  | 'workspace.searchTruncated'
   | 'desktop.conversationTitle'
   | 'desktop.conversationPendingTitle'
   | 'desktop.conversationPendingBody'
@@ -136,6 +140,52 @@ export type ShellStringKey =
   | 'notice.signing'
   | 'notice.started'
   | 'notice.stopped'
+  | 'topbar.currentTask'
+  | 'topbar.noTask'
+  | 'topbar.context'
+  | 'topbar.noWorkspace'
+  | 'nav.label'
+  | 'nav.newTask'
+  | 'nav.search'
+  | 'nav.automations'
+  | 'nav.plugins'
+  | 'nav.projects'
+  | 'nav.sessions'
+  | 'nav.comingLater'
+  | 'sessions.title'
+  | 'sessions.explainer'
+  | 'sessions.empty'
+  | 'sessions.pending'
+  | 'tools.title'
+  | 'tools.progress'
+  | 'tools.progressPending'
+  | 'tools.approvals'
+  | 'tools.approvalsPending'
+  | 'tools.approvalsNone'
+  | 'tools.artifacts'
+  | 'tools.artifactsPending'
+  | 'tools.artifactsNone'
+  | 'tools.git'
+  | 'tools.gitPending'
+  | 'tools.gitBranch'
+  | 'tools.gitCommit'
+  | 'tools.gitPush'
+  | 'composer.label'
+  | 'composer.placeholder'
+  | 'composer.send'
+  | 'composer.sendUnavailable'
+  | 'composer.executionMode'
+  | 'composer.modeLocal'
+  | 'composer.computerAccess'
+  | 'desktop.conversationSelectHintNav'
+  | 'tabs.label'
+  | 'tabs.none'
+  | 'tabs.authorityNote'
+  | 'rail.leftToggle'
+  | 'rail.rightToggle'
+  | 'rail.collapse'
+  | 'rail.expand'
+  | 'sessions.updated'
   | 'app.bridgeUnavailable';
 
 const KO: Record<ShellStringKey, string> = {
@@ -205,6 +255,10 @@ const KO: Record<ShellStringKey, string> = {
   'workspace.kind.directory': '폴더',
   'workspace.kind.file': '파일',
   'workspace.kind.link': '바로가기(열기 불가)',
+  'workspace.searchLabel': '파일 검색',
+  'workspace.searchPlaceholder': '선택한 폴더 안에서 이름으로 찾기',
+  'workspace.searchNoMatches': '일치하는 항목이 없습니다.',
+  'workspace.searchTruncated': '많은 항목 중 일부만 살펴보고 처음 50개를 표시했습니다.',
   'desktop.conversationTitle': 'Claw',
   'desktop.conversationPendingTitle': '같은 대화를 데스크톱에서 이어서 여는 연결을 준비 중입니다.',
   'desktop.conversationPendingBody': '이 화면은 새 대화를 만들지 않습니다. Padiem Web의 기존 대화를 그대로 가져오는 연결이 확인되면 여기에서 이어집니다.',
@@ -239,6 +293,52 @@ const KO: Record<ShellStringKey, string> = {
   'notice.signing': '이 빌드는 내부용이며 서명되지 않았습니다.',
   'notice.started': '작업 준비를 시작했습니다.',
   'notice.stopped': '작업을 일시 정지했습니다.',
+  'topbar.currentTask': '현재 작업',
+  'topbar.noTask': '아직 선택된 작업이 없습니다',
+  'topbar.context': '작업 위치',
+  'topbar.noWorkspace': '폴더 미선택',
+  'nav.label': '작업 탐색',
+  'nav.newTask': '새 작업',
+  'nav.search': '검색',
+  'nav.automations': '자동화',
+  'nav.plugins': '플러그인',
+  'nav.projects': '프로젝트',
+  'nav.sessions': '세션',
+  'nav.comingLater': '준비 중',
+  'sessions.title': '세션',
+  'sessions.explainer': 'Padiem Web에서 이어온 기존 대화를 여기에서 고릅니다.',
+  'sessions.empty': '아직 표시할 세션이 없습니다.',
+  'sessions.pending': '기존 대화 연결을 준비 중입니다.',
+  'tools.title': '도구와 상태',
+  'tools.progress': '진행',
+  'tools.progressPending': '작업 기록 연결을 준비 중입니다.',
+  'tools.approvals': '승인',
+  'tools.approvalsPending': '승인 상태를 확인하는 중입니다.',
+  'tools.approvalsNone': '승인 대기 중인 작업이 없습니다.',
+  'tools.artifacts': '결과 파일',
+  'tools.artifactsPending': '결과 파일 연결을 준비 중입니다.',
+  'tools.artifactsNone': '아직 결과 파일이 없습니다.',
+  'tools.git': 'Git',
+  'tools.gitPending': 'Git 도구는 아직 연결되지 않았습니다.',
+  'tools.gitBranch': '브랜치',
+  'tools.gitCommit': '커밋',
+  'tools.gitPush': '푸시',
+  'composer.label': '작업 입력',
+  'composer.placeholder': '이 컴퓨터에서 할 작업을 적어 주세요',
+  'composer.send': '실행',
+  'composer.sendUnavailable': '작업 전송은 아직 연결되지 않았습니다.',
+  'composer.executionMode': '실행 방식',
+  'composer.modeLocal': '이 컴퓨터',
+  'composer.computerAccess': '컴퓨터 접근',
+  'desktop.conversationSelectHintNav': '탐색에서 세션을 열고 이어볼 대화를 고르면 여기에 표시됩니다.',
+  'tabs.label': '작업 탭',
+  'tabs.none': '표시할 작업 탭이 없습니다',
+  'tabs.authorityNote': '탭은 Padiem의 기존 대화를 그대로 가리킵니다. Desktop은 대화를 만들거나 지우지 않습니다.',
+  'rail.leftToggle': '탐색 레일',
+  'rail.rightToggle': '도구 레일',
+  'rail.collapse': '접기',
+  'rail.expand': '펼치기',
+  'sessions.updated': '최근 갱신',
   'app.bridgeUnavailable': 'Padiem 데스크톱이 지금 연결할 수 없습니다. 앱을 다시 시작해 주세요.',
 };
 
@@ -309,6 +409,10 @@ const EN: Record<ShellStringKey, string> = {
   'workspace.kind.directory': 'Folder',
   'workspace.kind.file': 'File',
   'workspace.kind.link': 'Link (cannot open)',
+  'workspace.searchLabel': 'File search',
+  'workspace.searchPlaceholder': 'Find files by name inside the chosen folder',
+  'workspace.searchNoMatches': 'No matching items.',
+  'workspace.searchTruncated': 'Only the first 50 matches are shown from a bounded scan.',
   'desktop.conversationTitle': 'Claw',
   'desktop.conversationPendingTitle': 'Same-conversation continuity is being prepared for Desktop.',
   'desktop.conversationPendingBody': 'This surface does not create another conversation. It will continue the existing Padiem Web conversation once the canonical projection is connected.',
@@ -343,6 +447,52 @@ const EN: Record<ShellStringKey, string> = {
   'notice.signing': 'This build is internal and unsigned.',
   'notice.started': 'Getting this computer ready to run work.',
   'notice.stopped': 'Work has been paused.',
+  'topbar.currentTask': 'Current task',
+  'topbar.noTask': 'No task selected yet',
+  'topbar.context': 'Working context',
+  'topbar.noWorkspace': 'No folder selected',
+  'nav.label': 'Task navigation',
+  'nav.newTask': 'New task',
+  'nav.search': 'Search',
+  'nav.automations': 'Automations',
+  'nav.plugins': 'Plugins',
+  'nav.projects': 'Projects',
+  'nav.sessions': 'Sessions',
+  'nav.comingLater': 'Coming later',
+  'sessions.title': 'Sessions',
+  'sessions.explainer': 'Pick one of the existing conversations carried over from Padiem Web.',
+  'sessions.empty': 'No sessions to show yet.',
+  'sessions.pending': 'Conversation connection is being prepared.',
+  'tools.title': 'Tools and status',
+  'tools.progress': 'Progress',
+  'tools.progressPending': 'Run history connection is being prepared.',
+  'tools.approvals': 'Approvals',
+  'tools.approvalsPending': 'Checking approval status.',
+  'tools.approvalsNone': 'No work is waiting for approval.',
+  'tools.artifacts': 'Artifacts',
+  'tools.artifactsPending': 'Artifact connection is being prepared.',
+  'tools.artifactsNone': 'No result files yet.',
+  'tools.git': 'Git',
+  'tools.gitPending': 'Git tools are not connected yet.',
+  'tools.gitBranch': 'Branch',
+  'tools.gitCommit': 'Commit',
+  'tools.gitPush': 'Push',
+  'composer.label': 'Task input',
+  'composer.placeholder': 'Describe the work to run on this computer',
+  'composer.send': 'Run',
+  'composer.sendUnavailable': 'Sending a task is not connected yet.',
+  'composer.executionMode': 'Execution mode',
+  'composer.modeLocal': 'This computer',
+  'composer.computerAccess': 'Computer access',
+  'desktop.conversationSelectHintNav': 'Open Sessions in the navigation and pick a conversation to continue it here.',
+  'tabs.label': 'Task tabs',
+  'tabs.none': 'No task tabs yet',
+  'tabs.authorityNote': 'Tabs point at the existing Padiem conversations. Desktop neither creates nor deletes a conversation.',
+  'rail.leftToggle': 'Navigation rail',
+  'rail.rightToggle': 'Tools rail',
+  'rail.collapse': 'Collapse',
+  'rail.expand': 'Expand',
+  'sessions.updated': 'Updated',
   'app.bridgeUnavailable': 'Padiem Desktop cannot connect right now. Restart the app and try again.',
 };
 
@@ -457,6 +607,42 @@ const READINESS_BODY_TEXT: Readonly<Record<string, ShellStringKey>> = Object.fre
 export function readinessBodyText(locale: ShellLocale, state: string | null | undefined): string {
   const key = READINESS_BODY_TEXT[state ?? 'UNKNOWN'] ?? 'readiness.bodyChecking';
   return translate(locale, key);
+}
+
+/**
+ * #3598 — plain summaries for the right tools/status rail.
+ *
+ * Each one is a projection of the canonical run list the shell already holds;
+ * the counts are supplied by the caller from real server records. There is no
+ * fabricated progress, no estimated percentage and no locally invented state —
+ * an unavailable canonical source is a separate, explicit sentence.
+ */
+export function progressSummaryText(
+  locale: ShellLocale,
+  total: number,
+  inProgress: number,
+): string {
+  return locale === 'ko'
+    ? `작업 ${total}건 · 진행 중 ${inProgress}건`
+    : `${total} runs · ${inProgress} in progress`;
+}
+
+export function approvalsSummaryText(locale: ShellLocale, waiting: number): string {
+  return locale === 'ko' ? `승인 대기 ${waiting}건` : `${waiting} waiting for approval`;
+}
+
+export function artifactsSummaryText(locale: ShellLocale, count: number): string {
+  return locale === 'ko' ? `결과 파일 ${count}건` : `${count} result files`;
+}
+
+/**
+ * #3606 — a real count of the canonical sessions the projection returned.
+ *
+ * This is the size of the server's own list, never an unread/pinned/grouped
+ * number that the projection does not carry.
+ */
+export function sessionCountText(locale: ShellLocale, total: number): string {
+  return locale === 'ko' ? `세션 ${total}` : `${total} sessions`;
 }
 
 export const LOCALE_CHANGES_NO_AUTHORITY = true;

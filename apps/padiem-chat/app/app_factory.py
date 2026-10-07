@@ -9,11 +9,21 @@ from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
 from .auth import GoogleOAuthClient
+from .auth_abuse import AuthAbuseGate, AuthAbuseStore, D1AuthAbuseStore
 from .b66_quote_conversation import B66QuoteConversationInterpreter
 from .b66_company_profile import CompanyProfileStore, D1CompanyProfileStore
 from .b66_company_profile_routes import b66_company_profile_get, b66_company_profile_put
 from .b66_quote_asset_routes import b66_quote_asset_detail
+from .b66_quote_history_routes import (
+    b66_quote_history_delete,
+    b66_quote_history_detail,
+    b66_quote_history_list,
+    b66_quote_history_save,
+)
+from .b66_quote_history_store import D1QuoteHistoryStore
 from .b66_quote_assets import B66QuoteAssetStore, D1B66QuoteAssetMetadataStore
+from .b66_certified_quote_bundle import B66CertifiedQuoteBundleStore
+from .b66_certified_pdf_routes import b66_certified_pdf
 from .b66_quote_routes import (
     b66_quote_interpret,
     b66_runtime_config,
@@ -73,6 +83,7 @@ from .claw_task_alert_store import D1ClawTaskAlertStore
 from .claw_automation_store import D1ClawAutomationStore
 from .claw_automation_rules_routes import claw_automation_rules
 from .claw_automation_rule_create_routes import claw_automation_rule_create
+from .claw_automation_rule_edit_routes import claw_automation_rule_edit
 from .claw_automation_rule_enabled_routes import claw_automation_rule_set_enabled
 from .config import Settings
 from .connector_status_projection import connectors_status
@@ -99,6 +110,7 @@ from .drive_case_pdf_routes import drive_case_pdf_detail, drive_case_pdfs_collec
 from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
 from .request_telemetry import RequestTelemetryMiddleware
+from .same_origin_guard import SameOriginGuardMiddleware
 from .saved_output_routes import output_detail, outputs_collection
 from .saved_outputs import SavedOutputStore
 from .tier_identity_client import PadiemTierB14Client
@@ -164,7 +176,9 @@ def create_app(
     approved_memory_store: ApprovedMemoryStore | None = None,
     b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
     b66_company_profile_store: CompanyProfileStore | None = None,
+    b66_quote_history_store=None,
     b66_quote_asset_store=None,
+    b66_certified_quote_bundle_store=None,
     b66_quote_interpreter=None,
     claw_task_alert_store=None,
     calendar_store: CalendarStore | None = None,
@@ -174,6 +188,7 @@ def create_app(
     claw_local_access_source=None,
     local_task_result_source=None,
     desktop_device_session_authority=None,
+    auth_abuse_store: AuthAbuseStore | None = None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -252,6 +267,19 @@ def create_app(
             methods=["GET"],
         ),
         Route("/api/b66/quote/interpret", b66_quote_interpret, methods=["POST"]),
+        Route("/api/b66/quote/pdf", b66_certified_pdf, methods=["POST"]),
+        Route("/api/b66/quotes", b66_quote_history_list, methods=["GET"]),
+        Route("/api/b66/quotes", b66_quote_history_save, methods=["POST"]),
+        Route(
+            "/api/b66/quotes/{quote_history_id}",
+            b66_quote_history_detail,
+            methods=["GET"],
+        ),
+        Route(
+            "/api/b66/quotes/{quote_history_id}",
+            b66_quote_history_delete,
+            methods=["DELETE"],
+        ),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
         # #3539: the generic Claw composer runs through the canonical #3382 P01
@@ -287,6 +315,10 @@ def create_app(
             claw_automation_rule_set_enabled,
             methods=["PATCH"],
         ),
+        # #3270: bounded Edit of name + schedule on a canonical, execution-ready
+        # rule. The #2908 execution intent, owner provenance, target, output,
+        # notifications and enabled state are carried over unchanged.
+        Route("/api/claw/automation/rules/{rule_id}", claw_automation_rule_edit, methods=["PATCH"]),
         # #3094: the one real read-only source behind the "Connect this computer"
         # panel. Owner-scoped; it pairs nothing and approves nothing.
         Route(CLAW_LOCAL_ACCESS_PATH, claw_local_access, methods=["GET"]),
@@ -308,6 +340,10 @@ def create_app(
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     app = Starlette(routes=routes)
+    # #3476: added before telemetry deliberately — Starlette prepends each
+    # middleware, so the later-added telemetry layer stays outermost and keeps
+    # recording guard rejections.
+    app.add_middleware(SameOriginGuardMiddleware)
     # #1975: raw ASGI middleware, installed outermost so every route (including
     # the static Mount and the later-installed orchestration routes) is covered.
     app.add_middleware(RequestTelemetryMiddleware, emitter=telemetry_emitter)
@@ -324,6 +360,18 @@ def create_app(
     # closed with 503; there is no global/network fallback.
     app.state.drive_case_folder_engine_client = drive_case_folder_engine_client
     app.state.usage_gate = UsageGate(resolved, usage_store)
+
+    # #3508 dedicated password-login abuse authority. This deliberately does
+    # not reuse the B14/AI UsageGate. Production derives a durable store from
+    # the existing Chat D1 binding; tests may inject a network-free oracle.
+    _auth_abuse_store = auth_abuse_store
+    if _auth_abuse_store is None and d1_binding is not None:
+        try:
+            _auth_abuse_store = D1AuthAbuseStore(d1_binding)
+        except Exception:
+            _auth_abuse_store = None
+    app.state.auth_abuse_gate = AuthAbuseGate(resolved, _auth_abuse_store)
+
     # An explicitly injected B14 transport is the existing network-free regression seam.
     # It cannot occur through browser input or Worker bindings. Production/ordinary runtime
     # (transport=None) always enforces the gate; quota-specific integration tests also
@@ -425,6 +473,18 @@ def create_app(
             _b66_company_profile_store = None
     app.state.b66_company_profile_store = _b66_company_profile_store
 
+    # B66 #3405 (Slice A): durable account/workspace-scoped quotation history.
+    # Server authority only — browser-local quoteBeta.history.v1 is untouched.
+    # A stored record is a normalized QuoteDraft snapshot, never a total
+    # authority; QuoteCore recalculates on load.
+    _b66_quote_history_store = b66_quote_history_store
+    if _b66_quote_history_store is None and d1_binding is not None:
+        try:
+            _b66_quote_history_store = D1QuoteHistoryStore(d1_binding)
+        except Exception:
+            _b66_quote_history_store = None
+    app.state.b66_quote_history_store = _b66_quote_history_store
+
     # B66 #3402: private logo/stamp bytes reuse the existing private workspace
     # R2 binding, while D1 stores only owner/workspace-scoped metadata. No
     # browser upload surface is composed here.
@@ -436,6 +496,17 @@ def create_app(
         except Exception:
             _b66_quote_asset_store = None
     app.state.b66_quote_asset_store = _b66_quote_asset_store
+
+    # Certified private PDF bundles reuse the approved Saved Quote Skill and
+    # existing private R2 binding. This composition reads only; no upload,
+    # assignment, D1 migration or production activation occurs here.
+    _b66_bundle_store = b66_certified_quote_bundle_store
+    if _b66_bundle_store is None and r2_binding is not None:
+        try:
+            _b66_bundle_store = B66CertifiedQuoteBundleStore(r2_binding)
+        except Exception:
+            _b66_bundle_store = None
+    app.state.b66_certified_quote_bundle_store = _b66_bundle_store
 
     # #2341 Task/Alert inbox: consume the existing migration-010 D1 authority.
     # No schema creation or alternate DB authority is introduced here.

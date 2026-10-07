@@ -21,8 +21,81 @@
   const SavedSkill = window.SavedQuoteSkill || null;
   const SkillStore = window.SavedQuoteSkillStore || null;
   const SkillUi = window.SavedQuoteSkillUi || null;
+  const AccountScope = window.QuoteAccountScope || null;
   const TAX_REVIEW_STORAGE_KEY = "quoteBeta.taxReview.v1";
   const TAX_REVIEW_SCHEMA_VERSION = 1;
+
+  /* ── 계정 경계(#3480) ──
+     브라우저 로컬 private 상태는 canonical 인증 projection 이 소유권을 확정한 뒤에만
+     읽는다/쓴다. storage 부재·marker 손상·signed-out 은 모두 fail closed 다. */
+
+  const PRIVATE_STORAGE_KEYS = AccountScope
+    ? AccountScope.privateKeys({
+        Core,
+        History,
+        taxReviewKey: TAX_REVIEW_STORAGE_KEY,
+        TemplateStore,
+        TemplateSelection,
+        SkillStore
+      })
+    : [
+        Core.DRAFT_STORAGE_KEY,
+        Core.SENDER_STORAGE_KEY,
+        History && History.HISTORY_STORAGE_KEY,
+        History && History.SEQUENCE_STORAGE_KEY,
+        TAX_REVIEW_STORAGE_KEY,
+        TemplateStore && TemplateStore.TEMPLATE_STORAGE_KEY,
+        TemplateSelection && TemplateSelection.SELECTION_STORAGE_KEY,
+        SkillStore && SkillStore.STORAGE_KEY
+      ].filter(Boolean);
+
+  function localStorageRef() {
+    try {
+      return typeof localStorage === "undefined" ? null : localStorage;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  /* canonical owner 가 확정되기 전에는 어떤 private key 도 읽지 않는다. */
+  function privateStateReadable() {
+    return AccountScope ? AccountScope.privateStateReadable() === true : false;
+  }
+
+  function readPrivateItem(key) {
+    if (!privateStateReadable()) return null;
+    const storage = localStorageRef();
+    if (!storage) return null;
+    try {
+      const raw = storage.getItem(key);
+      return raw === null || raw === undefined ? null : raw;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function writePrivateItem(key, value) {
+    if (!privateStateReadable()) return false;
+    const storage = localStorageRef();
+    if (!storage) return false;
+    try {
+      storage.setItem(key, value);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function removePrivateItem(key) {
+    const storage = localStorageRef();
+    if (!storage) return false;
+    try {
+      storage.removeItem(key);
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
 
   /* ── 상태: QuoteDraft ── */
 
@@ -30,6 +103,7 @@
   let lastExtractionReview = null;
   let taxReviewRequired = loadTaxReviewRequired(draft);
   let suppressNextDraftSave = false;
+  let transientPublicTemplateSelection = null;
   let clonerSession = null;
   let itemSeq = draft.items.reduce((max, it) => {
     const n = parseInt(String(it.id).replace(/^item-/, ""), 10);
@@ -60,9 +134,7 @@
 
   function loadDraft() {
     try {
-      const normalized = Core.normalizeDraft(
-        JSON.parse(localStorage.getItem(Core.DRAFT_STORAGE_KEY) || "null")
-      );
+      const normalized = Core.normalizeDraft(JSON.parse(readPrivateItem(Core.DRAFT_STORAGE_KEY) || "null"));
       /* Old untouched demo drafts are not authoritative user data. */
       return isUntouchedLegacyDemoDraft(normalized) ? null : normalized;
     } catch (err) {
@@ -83,9 +155,7 @@
 
   function loadTaxReviewRequired(activeDraft) {
     try {
-      const state = normalizeTaxReviewState(
-        JSON.parse(localStorage.getItem(TAX_REVIEW_STORAGE_KEY) || "null")
-      );
+      const state = normalizeTaxReviewState(JSON.parse(readPrivateItem(TAX_REVIEW_STORAGE_KEY) || "null"));
       const quoteNo = String(activeDraft && activeDraft.meta && activeDraft.meta.quoteNo || "").trim();
       return Boolean(state && quoteNo && state.quoteNo === quoteNo);
     } catch (err) {
@@ -96,20 +166,19 @@
   function persistTaxReviewRequired(required) {
     try {
       if (!required) {
-        localStorage.removeItem(TAX_REVIEW_STORAGE_KEY);
+        removePrivateItem(TAX_REVIEW_STORAGE_KEY);
         return true;
       }
       const quoteNo = String(draft && draft.meta && draft.meta.quoteNo || "").trim();
       if (!quoteNo) {
-        localStorage.removeItem(TAX_REVIEW_STORAGE_KEY);
+        removePrivateItem(TAX_REVIEW_STORAGE_KEY);
         return false;
       }
-      localStorage.setItem(TAX_REVIEW_STORAGE_KEY, JSON.stringify({
+      return writePrivateItem(TAX_REVIEW_STORAGE_KEY, JSON.stringify({
         schemaVersion: TAX_REVIEW_SCHEMA_VERSION,
         quoteNo,
         required: true
       }));
-      return true;
     } catch (err) {
       return false;
     }
@@ -120,11 +189,8 @@
       suppressNextDraftSave = false;
       return;
     }
-    try {
-      localStorage.setItem(Core.DRAFT_STORAGE_KEY, JSON.stringify(draft));
-    } catch (err) {
-      /* 저장 실패는 현재 브라우저 세션 진행을 막지 않음 */
-    }
+    /* 저장 실패는 현재 브라우저 세션 진행을 막지 않음 */
+    writePrivateItem(Core.DRAFT_STORAGE_KEY, JSON.stringify(draft));
   }
 
   function cloneDraft(value) {
@@ -152,7 +218,7 @@
   function loadHistoryEnvelope() {
     if (!History) return null;
     try {
-      return History.normalizeEnvelope(JSON.parse(localStorage.getItem(History.HISTORY_STORAGE_KEY) || "null"));
+      return History.normalizeEnvelope(JSON.parse(readPrivateItem(History.HISTORY_STORAGE_KEY) || "null"));
     } catch (err) {
       return History.normalizeEnvelope(null);
     }
@@ -162,7 +228,7 @@
     if (!History) return null;
     try {
       return History.normalizeSequenceState(
-        JSON.parse(localStorage.getItem(History.SEQUENCE_STORAGE_KEY) || "null")
+        JSON.parse(readPrivateItem(History.SEQUENCE_STORAGE_KEY) || "null")
       );
     } catch (err) {
       return History.normalizeSequenceState(null);
@@ -184,11 +250,8 @@
       quoteNoCandidates(),
       now instanceof Date ? now : new Date()
     );
-    try {
-      localStorage.setItem(History.SEQUENCE_STORAGE_KEY, JSON.stringify(allocation.state));
-    } catch (err) {
-      /* 번호는 history/draft와 대조해 계산되므로 sequence 저장 실패만으로 진행을 막지 않음 */
-    }
+    /* 번호는 history/draft와 대조해 계산되므로 sequence 저장 실패만으로 진행을 막지 않음 */
+    writePrivateItem(History.SEQUENCE_STORAGE_KEY, JSON.stringify(allocation.state));
     return allocation.quoteNo;
   }
 
@@ -227,9 +290,7 @@
       String(entry.draft.meta.quoteNo || "").trim() === quoteNo
     ));
     const envelope = History.upsertEntryByQuoteNo(before, draft);
-    try {
-      localStorage.setItem(History.HISTORY_STORAGE_KEY, JSON.stringify(envelope));
-    } catch (err) {
+    if (!writePrivateItem(History.HISTORY_STORAGE_KEY, JSON.stringify(envelope))) {
       return { ok: false, error: "history_storage_failed" };
     }
     toast(existed
@@ -256,23 +317,22 @@
       return false;
     }
 
-    const keys = [
-      Core.DRAFT_STORAGE_KEY,
-      Core.SENDER_STORAGE_KEY,
-      History && History.HISTORY_STORAGE_KEY,
-      History && History.SEQUENCE_STORAGE_KEY,
-      TemplateStore && TemplateStore.TEMPLATE_STORAGE_KEY,
-      TemplateSelection && TemplateSelection.SELECTION_STORAGE_KEY,
-      SkillStore && SkillStore.STORAGE_KEY,
-      TAX_REVIEW_STORAGE_KEY
-    ].filter(Boolean);
+    /* 계정 결합(owner marker)은 계정 경계 authority 이므로 남기고 private 데이터만 지운다. */
+    const storage = localStorageRef();
+    if (!storage) {
+      toast("브라우저 저장 데이터를 지우지 못했습니다.");
+      return false;
+    }
 
     try {
-      keys.forEach((key) => localStorage.removeItem(key));
+      if (AccountScope) AccountScope.removePrivateKeys(storage, PRIVATE_STORAGE_KEYS);
+      else PRIVATE_STORAGE_KEYS.forEach((key) => storage.removeItem(key));
     } catch (err) {
       toast("브라우저 저장 데이터를 지우지 못했습니다.");
       return false;
     }
+
+    clearTransientPublicTemplateSelection();
 
     /* 초기화 후에도 데모 사업 정보가 Production에 재등장하지 않는다 (#3479). */
     draft = Core.createProductionDraft();
@@ -552,7 +612,7 @@
     if (!TemplateStore) return null;
     try {
       return TemplateStore.normalizeStore(
-        JSON.parse(localStorage.getItem(TemplateStore.TEMPLATE_STORAGE_KEY) || "null")
+        JSON.parse(readPrivateItem(TemplateStore.TEMPLATE_STORAGE_KEY) || "null")
       );
     } catch (err) {
       return TemplateStore.normalizeStore(null);
@@ -568,12 +628,53 @@
     renamingTemplateId: null
   };
 
+  function transientPublicTemplateId() {
+    if (privateStateReadable() || !transientPublicTemplateSelection) return null;
+    const quoteNo = String(draft.meta.quoteNo || "");
+    return transientPublicTemplateSelection.quoteNo === quoteNo
+      ? transientPublicTemplateSelection.templateId
+      : null;
+  }
+
+  function setTransientPublicTemplateSelection(templateId) {
+    transientPublicTemplateSelection = {
+      quoteNo: String(draft.meta.quoteNo || ""),
+      templateId
+    };
+  }
+
+  function clearTransientPublicTemplateSelection() {
+    transientPublicTemplateSelection = null;
+  }
+
   function templateStorage() {
-    return typeof localStorage === "undefined" ? null : localStorage;
+    /* 계정 owner 가 확정되지 않았으면 선택/양식 브라우저 저장소를 읽거나 쓰지 않는다. */
+    return privateStateReadable() ? localStorageRef() : null;
+  }
+
+  /* 외부 storage 를 받는 모듈(Selection/Store/SkillUi)에 주는 owner 게이트. */
+  function ownerGatedStorage() {
+    const storage = localStorageRef();
+    if (!storage) return null;
+    return {
+      getItem(key) {
+        if (!privateStateReadable()) return null;
+        return storage.getItem(key);
+      },
+      setItem(key, value) {
+        if (!privateStateReadable()) return;
+        storage.setItem(key, value);
+      },
+      removeItem(key) {
+        storage.removeItem(key);
+      }
+    };
   }
 
   function currentTemplateId() {
     if (!TemplateSelection) return null;
+    const transientId = transientPublicTemplateId();
+    if (transientId) return transientId;
     return TemplateSelection.selectionForQuote(
       TemplateSelection.readEnvelope(templateStorage()),
       draft.meta.quoteNo
@@ -596,7 +697,7 @@
       ) {
         skill = SavedSkill.normalizeSkill(skillUiState.serverSkill);
       } else if (SkillStore && typeof localStorage !== "undefined") {
-        skill = SkillStore.getSkill(SkillStore.readStore(localStorage), skillUiState.activeSkillId);
+        skill = SkillStore.getSkill(SkillStore.readStore(ownerGatedStorage()), skillUiState.activeSkillId);
       }
       if (!skill || skill.approved !== true) return null;
       const profile = Template.normalizeTemplate(skill.internalTemplate);
@@ -837,6 +938,10 @@
     select: function (id) {
       if (CgiTemplateV2 && id === CgiTemplateV2.TEMPLATE_ID) {
         if (!cgiTemplateProfile()) return applyTemplateResult({ ok: false, code: "template_not_approved" });
+        if (!privateStateReadable()) {
+          setTransientPublicTemplateSelection(id);
+          return applyTemplateResult({ ok: true, code: "selected" });
+        }
         const storage = templateStorage();
         const envelope = TemplateSelection.setSelection(
           TemplateSelection.readEnvelope(storage),
@@ -953,7 +1058,7 @@
 
   function loadSavedSender() {
     try {
-      const saved = JSON.parse(localStorage.getItem(Core.SENDER_STORAGE_KEY) || "null");
+      const saved = JSON.parse(readPrivateItem(Core.SENDER_STORAGE_KEY) || "null");
       return saved && typeof saved === "object" ? saved : null;
     } catch (err) {
       return null;
@@ -984,11 +1089,7 @@
       phone: draft.sender.phone.trim(),
       email: draft.sender.email.trim()
     };
-    try {
-      localStorage.setItem(Core.SENDER_STORAGE_KEY, JSON.stringify(sender));
-    } catch (err) {
-      /* 저장 실패 시에도 데모 진행 가능 */
-    }
+    writePrivateItem(Core.SENDER_STORAGE_KEY, JSON.stringify(sender));
     $("senderPreset").value = "custom";
     render();
     toast("이 브라우저에 발신자를 저장했습니다.");
@@ -1004,6 +1105,7 @@
       toast("새 견적을 시작하지 못했습니다.");
       return;
     }
+    clearTransientPublicTemplateSelection();
     if (TemplateSelection) {
       const storage = templateStorage();
       let envelope = TemplateSelection.removeSelection(
@@ -1027,9 +1129,11 @@
     toast("보내는 사람 정보는 유지하고 새 고객 견적을 시작합니다.");
   });
 
-  /* ── 인쇄: 브라우저 머리글/바닥글은 코드로 끌 수 없어 저장 전 짧게 안내 ── */
+  /* ── PDF: 배정된 Saved Skill 의 인증 renderer 를 통해 다운로드한다 ── */
 
-  $("printPdf").addEventListener("click", () => {
+  let pdfDownloadPending = false;
+  $("printPdf").addEventListener("click", async () => {
+    if (pdfDownloadPending) return;
     const failure = printReadinessFailure();
     if (failure) {
       toast(failure.message, 4200);
@@ -1038,9 +1142,58 @@
       return;
     }
 
-    render();
-    toast("PDF 저장 시 인쇄 설정에서 '머리글과 바닥글'을 해제하면 견적서만 깔끔하게 저장됩니다.", 5000);
-    setTimeout(() => window.print(), 600);
+    const bridge = window.B66QuoteRuntimeBridge;
+    if (!bridge || typeof bridge.downloadPdf !== "function" || !TemplateRenderer ||
+        typeof TemplateRenderer.buildCertifiedPdfRenderModel !== "function") {
+      toast("PDF 다운로드 연결을 확인해 주세요.", 4200);
+      return;
+    }
+    const model = TemplateRenderer.buildCertifiedPdfRenderModel(draft, activeSkillProfile(), {
+      taxReviewRequired: taxReviewRequired
+    });
+    if (!model) {
+      toast("배정된 양식과 PDF로 저장할 수 있는 견적 내용을 확인해 주세요.", 4200);
+      return;
+    }
+    const button = $("printPdf");
+    pdfDownloadPending = true;
+    button.disabled = true;
+    try {
+      const result = await bridge.downloadPdf(model);
+      if (result && result.ok === true) toast("PDF 견적서를 다운로드했습니다.");
+      else toast(result && result.message ? result.message : "PDF 다운로드에 실패했습니다. 잠시 후 다시 시도해 주세요.", 4200);
+    } catch (_) {
+      toast("PDF 다운로드에 실패했습니다. 잠시 후 다시 시도해 주세요.", 4200);
+    } finally {
+      pdfDownloadPending = false;
+      button.disabled = false;
+    }
+  });
+
+  /* ── Excel 내보내기: 현재 확정된 QuoteDraft 를 그대로 포맷 어댑터에 넘긴다 ──
+     계산 authority 는 QuoteCore 하나이며, exporter 는 값을 재계산하지 않는다. */
+  $("xlsxDownload").addEventListener("click", () => {
+    const exporter = window.B66XlsxExport;
+    if (!exporter || typeof exporter.buildWorkbook !== "function") {
+      toast("Excel 내보내기를 준비하지 못했습니다.");
+      return;
+    }
+    try {
+      const bytes = exporter.buildWorkbook(draft);
+      const blob = new Blob([bytes], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = exporter.suggestFileName(draft);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      toast("Excel 파일을 내려받습니다.");
+    } catch (err) {
+      toast("Excel 파일을 만들지 못했습니다. 견적 내용을 확인해 주세요.", 4200);
+    }
   });
 
   $("emailFuture").addEventListener("click", () => {
@@ -1315,6 +1468,72 @@
     }
   });
 
+  /* ── 계정 경계 적용(#3480) ──
+   canonical owner 가 확정된 뒤에만 저장된 private 상태를 화면으로 올린다.
+   signed-out / owner 미확정 / 이 계정 것이 아닌 격리 상태에서는 진행 중 private
+   projection 을 버린다. 격리 시 이미 디스크에서 제거되므로 같은 계정 재로그인은
+   새 상태에서 시작한다. */
+
+  const QUARANTINE_ACTIONS = AccountScope
+    ? [
+        AccountScope.SCOPE_ACTIONS.QUARANTINED_FOREIGN_OWNER,
+        AccountScope.SCOPE_ACTIONS.QUARANTINED_MALFORMED_OWNER
+      ]
+    : [];
+
+  function itemSeqFromDraft(value) {
+    return value.items.reduce((max, it) => {
+      const n = parseInt(String(it.id).replace(/^(?:item-|extracted-item-)/, ""), 10);
+      return Number.isFinite(n) ? Math.max(max, n) : max;
+    }, 0);
+  }
+
+  function discardPrivateProjection() {
+    /* 이 브라우저 저장소 상태는 유지되지만 메모리/화면의 private 사본만 버린다. */
+    draft = Core.createProductionDraft();
+    lastExtractionReview = null;
+    taxReviewRequired = false;
+    suppressNextDraftSave = true;
+    skillUiState.serverSkill = null;
+    skillUiState.serverSlotSources = {};
+    skillUiState.activeSkillId = null;
+    templateUiState.previewTemplateId = null;
+    templateUiState.renamingTemplateId = null;
+    clonerSession = null;
+    itemSeq = draft.items.length;
+  }
+
+  function restorePrivateProjection() {
+    const restored = loadDraft();
+    if (!restored) return;
+    draft = restored;
+    taxReviewRequired = loadTaxReviewRequired(draft);
+    itemSeq = itemSeqFromDraft(draft);
+  }
+
+  function applyAccountScopeDetail(detail) {
+    const action = detail && detail.action ? detail.action : null;
+    const readable = Boolean(detail && detail.privateStateReadable);
+    if (detail && detail.authenticated === true) clearTransientPublicTemplateSelection();
+    if (!readable || QUARANTINE_ACTIONS.indexOf(action) !== -1) {
+      discardPrivateProjection();
+    } else if (!History || !History.isMeaningfulDraft(draft)) {
+      /* 사용자가 이미 입력 중이면 자동 복원으로 덮어쓰지 않는다. */
+      restorePrivateProjection();
+    }
+    renderItems();
+    fillInputsFromDraft();
+    renderTaxReviewState();
+    renderTemplateUi();
+    render();
+    if (skillUiApi && typeof skillUiApi.refresh === "function") skillUiApi.refresh();
+    window.dispatchEvent(new CustomEvent("b66:history-changed"));
+  }
+
+  document.addEventListener("b66:account-scope-changed", (event) => {
+    applyAccountScopeDetail(event.detail);
+  });
+
   window.B66QuoteExtractionBridge = Object.freeze({
     validate: validateExtractionResult,
     apply: applyExtractionResult,
@@ -1329,9 +1548,34 @@
     copyHistoryAsNew,
     saveCurrentToHistory,
     resetBrowserLocalData,
+    privateStateReadable: () => privateStateReadable(),
+    applyOwnerScope: (projection) => {
+      const storage = localStorageRef();
+      if (!AccountScope) {
+        const denied = { authenticated: false, privateStateReadable: false, action: null };
+        document.dispatchEvent(new CustomEvent("b66:account-scope-changed", { detail: denied }));
+        return denied;
+      }
+      const result = AccountScope.applyAccountScope(storage, projection, PRIVATE_STORAGE_KEYS);
+      document.dispatchEvent(new CustomEvent("b66:account-scope-changed", {
+        detail: {
+          authenticated: result.authenticated === true,
+          privateStateReadable: result.privateStateReadable === true,
+          action: result.action || null
+        }
+      }));
+      return result;
+    },
     getHistoryEnvelope: () => {
       const envelope = loadHistoryEnvelope();
       return envelope ? cloneDraft(envelope) : null;
+    },
+    writeHistoryEnvelope: (envelope) => {
+      if (!History) return false;
+      return writePrivateItem(
+        History.HISTORY_STORAGE_KEY,
+        JSON.stringify(History.normalizeEnvelope(envelope))
+      );
     },
     focusTaxReview,
     toast
@@ -1363,7 +1607,7 @@
   renderTemplateUi();
   if (SkillUi && typeof SkillUi.bindSkillSection === "function" && typeof localStorage !== "undefined") {
     skillUiApi = SkillUi.bindSkillSection(document, {
-      storage: localStorage,
+      storage: ownerGatedStorage(),
       fetch: (url, options) => window.fetch(url, options),
       getDraftSnapshot: () => cloneDraft(draft),
       applySkillToForm,

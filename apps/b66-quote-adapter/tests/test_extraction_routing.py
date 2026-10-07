@@ -1,13 +1,19 @@
-"""B66 Space Bunny extraction routing (source-only, #3212).
+"""B66 extraction routing under full Space Bunny retirement (source-only).
 
-Proves, without any live provider call:
+Proves, without any live provider call, the owner final retirement decision
+(2026-10-07):
 
-- native text -> governed text request (manual, fallback off);
-- image -> canonical B14 multimodal request (manual, fallback off);
-- scanned PDF -> Core PDF rendering authority -> per-page multimodal;
-- model output stays untrusted (missing facts null; UNKNOWN is display-only);
-- QuoteCore stays the only calculation authority;
-- #3205 Korean synthetic corpus fixtures drive the routing proof.
+- the canonical Padiem primary stays pending/None (no successor selected);
+- the Space Bunny lane identity survives as historical metadata only;
+- the retired lane is absent from KILO_FREE_ROUTES and from the catalog;
+- manual resolution of the retired lane fails closed;
+- every B66 request builder fails closed (model_route_unavailable) and no
+  builder emits a Space Bunny (or any other) model request;
+- no fallback and no silent substitution of a new model exists;
+- model output validation authority is unchanged (missing facts null;
+  UNKNOWN is display-only) and QuoteCore stays the only calculation
+  authority;
+- #3205 Korean synthetic corpus fixtures remain the shared fixture basis.
 """
 
 from __future__ import annotations
@@ -34,6 +40,8 @@ from app.extraction_routing import (
     normalize_model_output,
     project_to_quote_draft_candidate,
 )
+# CI runs this suite with PYTHONPATH limited to padiem-ai-core + this adapter,
+# so the platform pilot modules are read via AST instead of imported.
 from app.file_intake import handle_intake_payload
 from padiem_ai_core.document_normalization import NormalizedDocument
 
@@ -45,6 +53,8 @@ CORPUS_DIR = (
     / "fixtures"
     / "b66_e2e_corpus"
 )
+
+KILO_SPACE_BUNNY_ROUTE_ID = "kilo/stealth-space-bunny-alpha"
 
 PNG = b"\x89PNG\r\n\x1a\n" + b"b66vision"
 JPEG = b"\xff\xd8\xff\xe0" + b"b66vision"
@@ -91,7 +101,9 @@ def normalize_from_model(raw):
 
 
 class B66GovernedRouteTests(unittest.TestCase):
-    def test_governed_lane_pins_space_bunny_without_new_provider(self) -> None:
+    def test_retired_lane_identity_survives_as_metadata_only(self) -> None:
+        # Historical identity constants are preserved, but they name a retired
+        # lane, not an executable route.
         self.assertEqual(B66_GOVERNED_ROUTE, "kilo/stealth-space-bunny-alpha")
         self.assertEqual(B66_GOVERNED_UPSTREAM, "stealth/space-bunny-alpha")
         self.assertEqual(B66_GOVERNED_PROVIDER, "kilo")
@@ -99,7 +111,7 @@ class B66GovernedRouteTests(unittest.TestCase):
         self.assertFalse(B66_USE_STREAMING)
         self.assertTrue(QUOTECORE_CALCULATION_AUTHORITY)
 
-    def test_native_text_to_text_route(self) -> None:
+    def test_text_builder_fails_closed_under_hold(self) -> None:
         intake = handle_intake_payload(
             {
                 "name": "quote.pdf",
@@ -110,21 +122,16 @@ class B66GovernedRouteTests(unittest.TestCase):
         )
         self.assertTrue(intake["ok"])
         self.assertEqual(intake["result"]["kind"], "native_document")
-        request = build_text_extraction_request(
-            intake["result"]["text"],
-            filename="quote.pdf",
-            source_kind="native_document",
-        )
-        self.assertEqual(request["model"], "kilo/stealth-space-bunny-alpha")
-        self.assertEqual(request["messages"][0]["role"], "user")
-        self.assertIsInstance(request["messages"][0]["content"], str)
-        self.assertIn("견적번호", request["messages"][0]["content"])
-        self.assertFalse(request["business14"]["allow_external_fallback"])
-        self.assertEqual(request["business14"]["max_attempts"], 1)
-        self.assertFalse(request["stream"])
-        self.assertNotIn("b66", request)
+        # HOLD fail-closed: the builder emits no model request at all.
+        with self.assertRaises(B66ExtractionRoutingError) as ctx:
+            build_text_extraction_request(
+                intake["result"]["text"],
+                filename="quote.pdf",
+                source_kind="native_document",
+            )
+        self.assertEqual(ctx.exception.code, "model_route_unavailable")
 
-    def test_image_to_multimodal_route_png_jpeg_webp(self) -> None:
+    def test_image_builder_fails_closed_under_hold(self) -> None:
         cases = [
             ("quote.png", "image/png", PNG),
             ("quote.jpg", "image/jpeg", JPEG),
@@ -132,86 +139,62 @@ class B66GovernedRouteTests(unittest.TestCase):
         ]
         for name, media_type, raw in cases:
             with self.subTest(name=name):
-                request = build_image_extraction_request(
-                    raw, media_type=media_type, filename=name
-                )
-                self.assertEqual(request["model"], "kilo/stealth-space-bunny-alpha")
-                content = request["messages"][0]["content"]
-                self.assertIsInstance(content, list)
-                self.assertEqual(len(content), 2)
-                self.assertEqual(content[0]["type"], "text")
-                self.assertEqual(content[1]["type"], "image_url")
-                url = content[1]["image_url"]["url"]
-                self.assertTrue(url.startswith(f"data:{media_type};base64,"))
-                self.assertFalse(request["business14"]["allow_external_fallback"])
-                self.assertEqual(request["business14"]["max_attempts"], 1)
-                self.assertEqual(
-                    request["business14"]["required_capabilities"], ["image"]
-                )
-                self.assertFalse(request["stream"])
-                self.assertNotIn("b66", request)
+                # HOLD fail-closed: the builder emits no model request at all,
+                # for every modality, with no successor substitution.
+                with self.assertRaises(B66ExtractionRoutingError) as ctx:
+                    build_image_extraction_request(
+                        raw, media_type=media_type, filename=name
+                    )
+                self.assertEqual(ctx.exception.code, "model_route_unavailable")
 
-    def test_remote_url_forbidden_oversized_rejected_magic_rejected(self) -> None:
-        # Remote URLs are never a valid input to the byte-level builder.
-        with self.assertRaises(Exception):
-            build_image_extraction_request(
-                "https://example.com/photo.png",  # type: ignore[arg-type]
-                media_type="image/png",
-                filename="quote.png",
-            )
+    def test_image_builder_fails_closed_before_any_shape_check(self) -> None:
+        # Under the HOLD the builder raises the deterministic route-unavailable
+        # code regardless of input shape: remote URLs, oversized payloads, and
+        # magic mismatches can never reach a model request.
         too_large = b"\xff\xd8\xff" + b"x" * (4 * 1024 * 1024)
-        with self.assertRaises(Exception):
-            build_image_extraction_request(
-                too_large, media_type="image/jpeg", filename="quote.jpg"
-            )
-        with self.assertRaises(Exception):
-            build_image_extraction_request(
-                b"not-png", media_type="image/png", filename="quote.png"
-            )
-        # Declared MIME must match magic bytes (JPEG bytes as PNG fails).
-        with self.assertRaises(Exception):
-            build_image_extraction_request(
-                JPEG, media_type="image/png", filename="quote.png"
-            )
+        for raw, media_type, filename in (
+            ("https://example.com/photo.png", "image/png", "quote.png"),
+            (too_large, "image/jpeg", "quote.jpg"),
+            (b"not-png", "image/png", "quote.png"),
+            (JPEG, "image/png", "quote.png"),
+        ):
+            with self.subTest(media_type=media_type):
+                with self.assertRaises(B66ExtractionRoutingError) as ctx:
+                    build_image_extraction_request(
+                        raw,  # type: ignore[arg-type]
+                        media_type=media_type,
+                        filename=filename,
+                    )
+                self.assertEqual(ctx.exception.code, "model_route_unavailable")
 
-    def test_scanned_pdf_to_multimodal_via_core_render_authority(self) -> None:
+    def test_scanned_pdf_builder_fails_closed_under_hold(self) -> None:
+        # HOLD fail-closed applies with or without a render authority: no page
+        # is rendered, no per-page model request is produced.
         try:
             import pypdfium2  # noqa: F401
         except ImportError:
-            # Render authority unavailable here: the adapter must fail closed
-            # with a distinct code, never a raw dependency error.
-            with self.assertRaises(B66ExtractionRoutingError) as ctx:
-                build_scanned_pdf_extraction_requests(
-                    b"%PDF-1.4\nstub", name="scan.pdf"
-                )
-            self.assertEqual(ctx.exception.code, "render_authority_unavailable")
-            return
-        source = (CORPUS_DIR / "f02-scanned-quotation.source.pdf").read_bytes()
-        requests = build_scanned_pdf_extraction_requests(source, name="scan.pdf")
-        self.assertGreaterEqual(len(requests), 1)
-        for request in requests:
-            self.assertEqual(request["model"], "kilo/stealth-space-bunny-alpha")
-            content = request["messages"][0]["content"]
-            self.assertIsInstance(content, list)
-            self.assertEqual(content[1]["type"], "image_url")
-            self.assertTrue(
-                content[1]["image_url"]["url"].startswith("data:image/png;base64,")
+            pass
+        with self.assertRaises(B66ExtractionRoutingError) as ctx:
+            build_scanned_pdf_extraction_requests(
+                b"%PDF-1.4\nstub", name="scan.pdf"
             )
-            self.assertFalse(request["business14"]["allow_external_fallback"])
-            self.assertEqual(request["business14"]["max_attempts"], 1)
-            self.assertFalse(request["stream"])
-            self.assertNotIn("b66", request)
+        self.assertEqual(ctx.exception.code, "model_route_unavailable")
 
-    def test_scanned_pdf_uses_render_pages_not_custom_decoding(self) -> None:
+    def test_builder_source_has_no_executable_model_or_render_surface(self) -> None:
         source_path = (
             Path(__file__).resolve().parents[1].joinpath("app", "extraction_routing.py")
         )
         text = source_path.read_text(encoding="utf-8")
-        self.assertIn("render_pdf_pages", text)
-        self.assertIn("pdf_render", text)
-        # No custom rendering stack and no network/model execution surface.
+        # The retired route is named only as historical metadata; the builder
+        # fail-closed constant exists; no render/OCR stack and no network
+        # surface exist.
+        self.assertIn("B66_MODEL_ROUTE_UNAVAILABLE", text)
+        self.assertIn("model_route_unavailable", text)
+        self.assertIn("raise B66ExtractionRoutingError(B66_MODEL_ROUTE_UNAVAILABLE)", text)
         for token in ("fitz", "pdf2image", "poppler", "ocrmypdf", "tesseract"):
             self.assertNotIn(token, text.lower())
+        # No builder body constructs a provider request anymore.
+        self.assertNotIn('"model": B66_GOVERNED_ROUTE', text)
 
     def test_corpus_minimum_targets_drive_routing(self) -> None:
         required = {
@@ -232,7 +215,8 @@ class B66GovernedRouteTests(unittest.TestCase):
                 self.assertTrue(path.exists(), f"missing corpus file {relative}")
                 self.assertGreater(path.stat().st_size, 0)
 
-        # Native corpus members route to the text lane (parser port reused).
+        # Native corpus members still pass intake (parser port reused), but
+        # the text builder fails closed under the HOLD.
         for fixture_id, relative, media in [
             ("F01", "f01-native-quotation.pdf", "application/pdf"),
             ("F03", "f03-quotation.docx",
@@ -248,53 +232,51 @@ class B66GovernedRouteTests(unittest.TestCase):
             )
             self.assertTrue(intake["ok"], (fixture_id, intake))
             self.assertEqual(intake["result"]["kind"], "native_document")
-            request = build_text_extraction_request(
-                intake["result"]["text"],
-                filename=relative,
-                source_kind="native_document",
-            )
-            self.assertEqual(request["model"], "kilo/stealth-space-bunny-alpha")
+            with self.assertRaises(B66ExtractionRoutingError) as ctx:
+                build_text_extraction_request(
+                    intake["result"]["text"],
+                    filename=relative,
+                    source_kind="native_document",
+                )
+            self.assertEqual(ctx.exception.code, "model_route_unavailable")
 
-        # Vision corpus members route to the multimodal lane.
+        # Vision corpus members: image builder fails closed as well.
         for fixture_id, relative, media in [
             ("F02", "f02-scanned-quotation.png", "image/png"),
             ("F13", "f13-degraded-scan.png", "image/png"),
         ]:
             raw = (CORPUS_DIR / relative).read_bytes()
             self.assertTrue(raw.startswith(b"\x89PNG\r\n\x1a\n"), fixture_id)
-            request = build_image_extraction_request(
-                raw, media_type=media, filename=relative
-            )
-            self.assertEqual(request["model"], "kilo/stealth-space-bunny-alpha")
+            with self.assertRaises(B66ExtractionRoutingError) as ctx:
+                build_image_extraction_request(
+                    raw, media_type=media, filename=relative
+                )
+            self.assertEqual(ctx.exception.code, "model_route_unavailable")
 
-        # Multipage corpus member renders to per-page multimodal requests.
+        # Multipage corpus member stays valid fixture data; the scanned-PDF
+        # builder never renders or emits anything.
         multipage = (CORPUS_DIR / "f12-multipage-quotation.pdf").read_bytes()
-        page_requests = build_scanned_pdf_extraction_requests(
-            b"%PDF-stub", name="stub.pdf", renderer=_fake_two_page_renderer()
-        )
-        self.assertEqual(len(page_requests), 2)
         self.assertGreater(len(multipage), 0)
+        with self.assertRaises(B66ExtractionRoutingError) as ctx:
+            build_scanned_pdf_extraction_requests(
+                b"%PDF-stub", name="stub.pdf", renderer=_fake_two_page_renderer()
+            )
+        self.assertEqual(ctx.exception.code, "model_route_unavailable")
 
-    def test_extraction_prompt_requires_json_null_and_server_owned_source(self) -> None:
-        text_request = build_text_extraction_request(
-            "견적번호 Q-2026-3001", filename="quote.pdf"
-        )
-        image_request = build_image_extraction_request(
-            PNG, media_type="image/png", filename="quote.png"
-        )
-        prompts = [
-            text_request["messages"][0]["content"],
-            image_request["messages"][0]["content"][0]["text"],
-        ]
-        for prompt in prompts:
-            self.assertIn("JSON 객체 하나만", prompt)
-            self.assertIn("JSON null", prompt)
-            self.assertIn("source는 서버가 소유", prompt)
-            self.assertIn("마크다운/설명 문장을 덧붙이지", prompt)
-            self.assertIn("공급자", prompt)
-            self.assertIn("공급받는 자", prompt)
-            self.assertIn("sender 값을 recipient에 복사", prompt)
-            self.assertNotIn("없는 값은 UNKNOWN", prompt)
+    def test_extraction_prompt_contract_is_retained_for_successor_lane(self) -> None:
+        # The bounded prompt contract stays as documented authority for the
+        # future successor lane; builders themselves emit nothing under HOLD.
+        from app.extraction_routing import _EXTRACTION_JSON_CONTRACT
+
+        prompt = _EXTRACTION_JSON_CONTRACT
+        self.assertIn("JSON 객체 하나만", prompt)
+        self.assertIn("JSON null", prompt)
+        self.assertIn("source는 서버가 소유", prompt)
+        self.assertIn("마크다운/설명 문장을 덧붙이지", prompt)
+        self.assertIn("공급자", prompt)
+        self.assertIn("공급받는 자", prompt)
+        self.assertIn("sender 값을 recipient에 복사", prompt)
+        self.assertNotIn("없는 값은 UNKNOWN", prompt)
 
     def test_literal_unknown_is_rejected_as_model_fact(self) -> None:
         result = normalize_model_output(
@@ -734,18 +716,20 @@ class B66GovernedRouteTests(unittest.TestCase):
 
 
 class B66CanonicalIntegrationTests(unittest.TestCase):
-    """Minimal B66-specific integration: built requests plug into the shared lane.
+    """Minimal B66-specific integration under full Space Bunny retirement.
 
-    The platform-level route/capability/payload contract lives on main (#3214)
-    and is not re-proven here. This class only pins that the B66 server-side
-    adapter cannot drift from the canonical authorities:
+    This class pins that the B66 server-side adapter cannot drift from the
+    retirement truth:
 
-    - ``padiem_ai_core.model_primary`` (canonical text+vision primary IDs);
-    - the registered B14 ``kilo_provider`` Space Bunny lane (route IDs plus
-      the canonical ``image`` capability tag, read via AST so this suite never
-      imports the platform runtime);
-    - the canonical B14 multimodal shape (text + exactly one base64 data-URL
-      image, manual, fallback off).
+    - ``padiem_ai_core.model_primary`` stays in the model-neutral HOLD state
+      (canonical text+vision primary pending successor selection, no
+      secondary, no fallback, no silent fallback anywhere);
+    - the retired Space Bunny lane is absent from ``KILO_FREE_ROUTES`` and
+      from the catalog, and is declared in ``RETIRED_KILO_FREE_MODEL_IDS``;
+      manual resolution fails closed with ``model_not_in_catalog``;
+    - the historical metadata (model id / upstream id / credential binding
+      constant / dated evidence snapshot) survives for audit only;
+    - the B66 builders fail closed and emit no model request.
     """
 
     @staticmethod
@@ -771,7 +755,7 @@ class B66CanonicalIntegrationTests(unittest.TestCase):
         return module
 
     @staticmethod
-    def _space_bunny_lane_facts() -> tuple[str, str]:
+    def _space_bunny_lane_facts() -> tuple[str, str, frozenset]:
         path = (
             B66CanonicalIntegrationTests._repo_root()
             / "apps"
@@ -782,8 +766,7 @@ class B66CanonicalIntegrationTests(unittest.TestCase):
         )
         tree = ast.parse(path.read_text(encoding="utf-8"))
         model_id = upstream = None
-        registered_as_free_route = False
-        retired_member = False
+        capabilities: frozenset = frozenset()
         for node in ast.walk(tree):
             if isinstance(node, ast.Assign) and len(node.targets) == 1:
                 target = node.targets[0]
@@ -799,16 +782,6 @@ class B66CanonicalIntegrationTests(unittest.TestCase):
                     and isinstance(node.value, ast.Constant)
                 ):
                     upstream = node.value.value
-                if (
-                    isinstance(target, ast.Name)
-                    and target.id == "RETIRED_KILO_FREE_MODEL_IDS"
-                    and isinstance(node.value, ast.Call)
-                ):
-                    retired_member = any(
-                        isinstance(elt, ast.Name)
-                        and elt.id == "KILO_SPACE_BUNNY_MODEL_ID"
-                        for elt in ast.walk(node.value)
-                    )
             if (
                 isinstance(node, ast.Call)
                 and isinstance(node.func, ast.Name)
@@ -820,36 +793,123 @@ class B66CanonicalIntegrationTests(unittest.TestCase):
                     isinstance(route_ref, ast.Name)
                     and route_ref.id == "KILO_SPACE_BUNNY_MODEL_ID"
                 ):
-                    registered_as_free_route = True
+                    caps = keywords.get("capabilities")
+                    if (
+                        isinstance(caps, ast.Call)
+                        and len(caps.args) == 1
+                        and isinstance(caps.args[0], (ast.Set, ast.List, ast.Tuple))
+                    ):
+                        capabilities = frozenset(
+                            elt.value
+                            for elt in caps.args[0].elts
+                            if isinstance(elt, ast.Constant)
+                        )
         assert model_id is not None and upstream is not None
-        assert not registered_as_free_route, (
-            "retired space bunny lane must not be re-registered as a free route"
-        )
-        assert retired_member, "space bunny lane must stay in the retirement block"
-        return model_id, upstream
+        # Historical metadata only: the lane is retired, so no registered
+        # capabilities exist anymore. Keep whatever the constants name.
+        return model_id, upstream, capabilities
 
-    def test_governed_lane_identity_vs_canonical_primary_after_successor(self) -> None:
+    @staticmethod
+    def _kilo_route_registration_facts() -> tuple[str, frozenset[str]]:
+        """AST-read kilo_provider: raw source + model ids registered as routes.
+
+        A model id counts as registered only when a ``_KiloFreeRoute(...)``
+        entry inside ``KILO_FREE_ROUTES`` names it (register_kilo_provider
+        turns exactly those entries into catalog entries).
+        """
+        path = (
+            B66CanonicalIntegrationTests._repo_root()
+            / "apps"
+            / "korean-ai-platform"
+            / "app"
+            / "pilot"
+            / "kilo_provider.py"
+        )
+        source = path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        registered: set[str] = set()
+        for node in ast.walk(tree):
+            if (
+                isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name)
+                and node.func.id == "_KiloFreeRoute"
+            ):
+                keywords = {k.arg: k.value for k in node.keywords if k.arg}
+                route_ref = keywords.get("model_id")
+                if isinstance(route_ref, ast.Name):
+                    registered.add(f"<ref:{route_ref.id}>")
+                elif isinstance(route_ref, ast.Constant) and isinstance(
+                    route_ref.value, str
+                ):
+                    registered.add(route_ref.value)
+        return source, frozenset(registered)
+
+    @staticmethod
+    def _retired_set_contains_space_bunny(kilo_source: str) -> bool:
+        """AST-verify the retired frozenset references the Space Bunny id."""
+        tree = ast.parse(kilo_source)
+        found = False
+        for node in ast.walk(tree):
+            if (
+                isinstance(node, ast.Assign)
+                and len(node.targets) == 1
+                and isinstance(node.targets[0], ast.Name)
+                and node.targets[0].id == "RETIRED_KILO_FREE_MODEL_IDS"
+            ):
+                call = node.value
+                if (
+                    isinstance(call, ast.Call)
+                    and isinstance(call.func, ast.Name)
+                    and call.func.id == "frozenset"
+                    and call.args
+                    and isinstance(call.args[0], (ast.Set, ast.List, ast.Tuple))
+                ):
+                    for elt in call.args[0].elts:
+                        if (
+                            isinstance(elt, ast.Name)
+                            and elt.id == "KILO_SPACE_BUNNY_MODEL_ID"
+                        ):
+                            found = True
+        return found
+
+    def test_canonical_primary_pending_and_lane_fully_retired(self) -> None:
         primary = self._load_model_primary()
-        # Canonical B14 primary moved to the owner-selected Ling successor for
-        # text; vision remains pending (#3579 policy v2).
-        self.assertEqual(primary.TEXT_PRIMARY_MODEL_ID, "kilo/inclusionai-ling-3.1-flash")
-        self.assertEqual(primary.TEXT_PRIMARY_UPSTREAM_MODEL, "inclusionai/ling-3.1-flash")
+        # Canonical Padiem primary stays model-neutral HOLD: pending successor
+        # selection, no provider, no upstream model, no secondary, no fallback.
+        self.assertEqual(primary.TEXT_PRIMARY_DECISION, "PENDING_SUCCESSOR_SELECTION")
+        self.assertIsNone(primary.TEXT_PRIMARY_MODEL_ID)
+        self.assertIsNone(primary.TEXT_PRIMARY_PROVIDER_ID)
+        self.assertIsNone(primary.TEXT_PRIMARY_UPSTREAM_MODEL)
+        self.assertEqual(primary.VISION_PRIMARY_DECISION, "PENDING_SUCCESSOR_SELECTION")
         self.assertIsNone(primary.VISION_PRIMARY_MODEL_ID)
+        self.assertIsNone(primary.VISION_PRIMARY_PROVIDER_ID)
         self.assertIsNone(primary.VISION_PRIMARY_UPSTREAM_MODEL)
         self.assertIsNone(primary.TEXT_SECONDARY_MODEL_ID)
         self.assertFalse(primary.TEXT_FALLBACK_ENABLED)
-        # The B66 governed lane keeps its historical Space Bunny identity. The
-        # upstream lane has ended, so this pin documents the gap explicitly:
-        # retargeting B66 extraction is a separate owner decision, never a
-        # silent re-point.
+        # The B66 historical lane identity survives as metadata only.
         self.assertEqual(B66_GOVERNED_ROUTE, "kilo/stealth-space-bunny-alpha")
         self.assertEqual(B66_GOVERNED_UPSTREAM, "stealth/space-bunny-alpha")
-        self.assertEqual(B66_GOVERNED_PROVIDER, primary.TEXT_PRIMARY_PROVIDER_ID)
+        self.assertEqual(B66_GOVERNED_PROVIDER, "kilo")
+        # Full retirement: the lane is in the retired set, absent from
+        # KILO_FREE_ROUTES and from the catalog (read via AST so this suite
+        # never imports the platform runtime).
+        kilo_source, registered_routes = self._kilo_route_registration_facts()
+        self.assertTrue(self._retired_set_contains_space_bunny(kilo_source))
+        self.assertNotIn(KILO_SPACE_BUNNY_ROUTE_ID, registered_routes)
+        self.assertNotEqual(primary.TEXT_PRIMARY_MODEL_ID, B66_GOVERNED_ROUTE)
+        self.assertNotEqual(primary.VISION_PRIMARY_MODEL_ID, B66_GOVERNED_ROUTE)
 
-    def test_governed_lane_stays_pinned_to_retired_b14_metadata(self) -> None:
-        model_id, upstream = self._space_bunny_lane_facts()
+    def test_retired_lane_metadata_preserved_but_unregistered(self) -> None:
+        model_id, upstream, capabilities = self._space_bunny_lane_facts()
+        # Historical constants survive as metadata...
         self.assertEqual(B66_GOVERNED_ROUTE, model_id)
         self.assertEqual(B66_GOVERNED_UPSTREAM, upstream)
+        # ...but the lane is no longer a registered free route and the
+        # historical image capability exists nowhere executable.
+        kilo_source, registered_routes = self._kilo_route_registration_facts()
+        self.assertNotIn(model_id, registered_routes)
+        self.assertTrue(self._retired_set_contains_space_bunny(kilo_source))
+        self.assertNotIn("image", capabilities | set())
 
     @staticmethod
     def _gateway_allowed_request_fields() -> tuple[frozenset[str], frozenset[str]]:
@@ -887,47 +947,42 @@ class B66CanonicalIntegrationTests(unittest.TestCase):
         assert set(found) == {"_ALLOWED_CHAT_FIELDS", "_ALLOWED_B14_FIELDS"}
         return found["_ALLOWED_CHAT_FIELDS"], found["_ALLOWED_B14_FIELDS"]
 
-    def test_built_requests_are_gateway_valid_top_level_shapes(self) -> None:
+    def test_gateway_allowed_fields_are_unchanged_for_future_lane(self) -> None:
+        # The gateway field allow-lists stay exactly as the future successor
+        # lane will find them; the HOLD changes routing, not the gateway
+        # contract surface.
         allowed_chat, allowed_b14 = self._gateway_allowed_request_fields()
-        text_request = build_text_extraction_request(
-            "견적번호 Q-2026-3001", filename="quote.pdf"
-        )
-        image_request = build_image_extraction_request(
-            (CORPUS_DIR / "f02-scanned-quotation.png").read_bytes(),
-            media_type="image/png",
-            filename="f02-scanned-quotation.png",
-        )
-        for request in (text_request, image_request):
-            self.assertLessEqual(set(request), allowed_chat)
-            self.assertLessEqual(set(request["business14"]), allowed_b14)
-            self.assertNotIn("b66", request)
-            self.assertFalse(request["stream"])
-            self.assertEqual(request["business14"]["max_attempts"], 1)
+        self.assertIn("model", allowed_chat)
+        self.assertIn("messages", allowed_chat)
+        self.assertIn("stream", allowed_chat)
+        self.assertIn("business14", allowed_chat)
+        self.assertIn("allow_external_fallback", allowed_b14)
+        self.assertIn("max_attempts", allowed_b14)
+        self.assertIn("required_capabilities", allowed_b14)
 
-    def test_builtin_requests_target_the_governed_lane_without_fallback(self) -> None:
-        text_request = build_text_extraction_request(
-            "견적번호 Q-2026-3001", filename="quote.pdf"
+    def test_builders_emit_no_space_bunny_request_and_fail_closed(self) -> None:
+        # B66_TEXT_REQUEST_EMITS_SPACE_BUNNY=NO,
+        # B66_IMAGE_REQUEST_EMITS_SPACE_BUNNY=NO,
+        # B66_SCANNED_PDF_REQUEST_EMITS_SPACE_BUNNY=NO,
+        # B66_SUCCESSOR_AUTO_SUBSTITUTION=NO (builders raise; nothing else).
+        cases = (
+            ("text", lambda: build_text_extraction_request(
+                "견적번호 Q-2026-3001", filename="quote.pdf"
+            )),
+            ("image", lambda: build_image_extraction_request(
+                (CORPUS_DIR / "f02-scanned-quotation.png").read_bytes(),
+                media_type="image/png",
+                filename="f02-scanned-quotation.png",
+            )),
+            ("scanned_pdf", lambda: build_scanned_pdf_extraction_requests(
+                b"%PDF-stub", name="stub.pdf", renderer=_fake_two_page_renderer()
+            )),
         )
-        image_request = build_image_extraction_request(
-            (CORPUS_DIR / "f02-scanned-quotation.png").read_bytes(),
-            media_type="image/png",
-            filename="f02-scanned-quotation.png",
-        )
-        for request in (text_request, image_request):
-            self.assertEqual(request["model"], B66_GOVERNED_ROUTE)
-            self.assertFalse(request["business14"]["allow_external_fallback"])
-            self.assertEqual(request["business14"]["max_attempts"], 1)
-            self.assertFalse(request["stream"])
-            self.assertNotIn("b66", request)
-        content = image_request["messages"][0]["content"]
-        self.assertEqual(len(content), 2)
-        self.assertEqual(content[1]["type"], "image_url")
-        self.assertTrue(
-            content[1]["image_url"]["url"].startswith("data:image/png;base64,")
-        )
-        self.assertEqual(
-            image_request["business14"]["required_capabilities"], ["image"]
-        )
+        for name, call in cases:
+            with self.subTest(builder=name):
+                with self.assertRaises(B66ExtractionRoutingError) as ctx:
+                    call()
+                self.assertEqual(ctx.exception.code, "model_route_unavailable")
 
 
 def _fake_two_page_renderer():

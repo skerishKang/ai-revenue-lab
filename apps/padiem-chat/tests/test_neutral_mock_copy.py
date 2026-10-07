@@ -6,6 +6,7 @@ from app.attachments import ImageAttachment
 from app.b14_client import B14Client
 from app.config import Settings
 from app.model_policy import DEFAULT_B14_MODEL_ID, LOW_B14_MODEL_ID
+from padiem_control_plane.product_tier_routes import PLUS_HOLD_MODEL_ID
 
 
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
@@ -42,7 +43,7 @@ def test_mock_completed_answer_uses_plain_truthful_preview_copy():
         result = await B14Client(Settings(runtime_mode="mock")).complete(MESSAGES)
         answer = result["answer"]
 
-        assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID
+        assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID == PLUS_HOLD_MODEL_ID
         assert result["request_id"] == "mock_b62"
         assert result["runtime"] == "mock"
         assert result["route"]["model"] == LOW_B14_MODEL_ID

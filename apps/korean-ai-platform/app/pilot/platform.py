@@ -122,31 +122,13 @@ def _request_headers(
 ) -> dict[str, str]:
     """Build the fixed Provider auth boundary without credential widening.
 
-    Kilo's historical free lanes keep the shared keyless Provider spec. The
-    owner-selected Space Bunny lane reuses the existing Kilo credential when
-    it is present, while preserving the documented anonymous free-model path
-    when it is absent. Callers cannot supply or override either mode.
+    Kilo's historical free lanes keep the shared keyless Provider spec. No
+    model-scoped auth special-case exists: the retired Space Bunny lane
+    supports no runtime execution and no runtime auth handling (owner final
+    retirement decision, 2026-10-07). Callers cannot supply or override any
+    credential mode.
     """
     headers = {"Content-Type": "application/json"}
-
-    if spec.provider_id == "kilo":
-        from app.pilot.kilo_provider import KILO_CREDENTIAL_BINDING
-
-        # Policy v2 (2026-10-06): every Kilo lane authenticates with the
-        # owner-managed Secrets Store binding when it resolves. The anonymous
-        # request shape remains the fallback when the binding is absent.
-        scoped_spec = PlatformProviderSpec(
-            provider_id=spec.provider_id,
-            credential_source=CredentialSource.PLATFORM_SECRET,
-            credential_binding_name=KILO_CREDENTIAL_BINDING,
-            base_origin=spec.base_origin,
-            allowed_hosts=spec.allowed_hosts,
-            enabled=spec.enabled,
-        )
-        secret = resolve_secret(scoped_spec)
-        if secret:
-            headers["Authorization"] = f"Bearer {secret}"
-        return headers
 
     if spec.credential_source == CredentialSource.NONE:
         return headers
