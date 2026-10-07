@@ -66,11 +66,20 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # facts into exact PAGE-located NormalizedDocument segments. This is additive
 # provenance composition only; it adds no parser, process, network, filesystem,
 # OCR, provider or Production authority.
+# Re-pinned for #3637: a ZIP declared uncompressed size was being trusted as a
+# bound, so every Core member read now goes through a bounded streaming read
+# limited by that same declared size, and the XLSX path hands openpyxl a
+# sanitized archive built from those bounded reads instead of the untrusted
+# original bytes. That is a resource bound inside the one existing archive
+# authority: no new parser, archive walk, process, network, filesystem, OCR,
+# provider or Production authority is introduced, and no declared-metadata
+# bound, decision or error code changes. Only the two pins for the changed files
+# move; the other two are unchanged.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "caaff3778160f0d7c546d55d3fc90ab1d5a8b0ac8971fa72843deb15c5c675f4",
+    CORE_PACKAGE / "document_normalization.py": "1bfaea2fb294d66f2307ee93d2299a05dc17d7e74fc9bcb93b2c7e9253d73978",
     CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
     CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
-    CORE_TESTS / "test_document_normalization.py": "ec8533fdd9ac9aa7fc834d579b510f352ae48408a546baac9af110acde61bdfe",
+    CORE_TESTS / "test_document_normalization.py": "c1de17a7584cfb011e6b9f9351a7bf9c0debbe00fc77e603661f6e63fc7d0cd2",
 }
 
 REF = "doc_r2741resolvertest1"
