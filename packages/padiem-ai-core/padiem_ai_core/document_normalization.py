@@ -6,7 +6,7 @@ from io import BytesIO
 from pathlib import PurePath, PurePosixPath
 from typing import Any
 from xml.etree import ElementTree
-from zipfile import BadZipFile, ZipFile, ZipInfo
+from zipfile import ZIP_STORED, BadZipFile, ZipFile, ZipInfo
 
 from .document_semantics import (
     DOCUMENT_CONTENT_TRUST_CLASS,
@@ -284,6 +284,43 @@ def _read_member_bounded(archive: ZipFile, member: ZipInfo | str, *, max_bytes: 
             "ooxml_entry_size", "OOXML archive entry exceeds the size limit."
         )
     return data
+
+
+def _bounded_ooxml_repackage(payload: bytes) -> bytes:
+    """Rebuild a sanitized in-memory OOXML archive from bounded member reads.
+
+    A third-party OOXML reader (``openpyxl``) is handed a file-like object and
+    opens its own ``ZipFile`` over it, so passing the original untrusted bytes
+    re-exposes the declared-size deflate amplification that
+    :func:`validate_ooxml_archive` has just bounded. The replacement archive
+    carries only bytes that already came through the canonical bounded member
+    read, and is written stored rather than deflated, so no member it contains
+    can declare a size the archive does not really hold.
+
+    This is a copy authority, not a second parser authority: every bound
+    (entry count, per-entry size, total uncompressed size, member path,
+    encryption, DTD) was already decided by the one existing gate, and member
+    names, order and duplicates are carried over verbatim so the sanitized
+    archive resolves members the same way the original did.
+    """
+
+    output = BytesIO()
+    with ZipFile(BytesIO(bytes(payload))) as source:
+        with ZipFile(output, "w", compression=ZIP_STORED) as target:
+            for info in source.infolist():
+                member = ZipInfo(info.filename)
+                # ``ZipInfo.__init__`` rewrites ``os.sep`` to ``/``; the name was
+                # already judged by the canonical path predicate, so the raw
+                # member name is carried over exactly as written.
+                member.filename = info.filename
+                member.compress_type = ZIP_STORED
+                target.writestr(
+                    member,
+                    _read_member_bounded(
+                        source, info, max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+                    ),
+                )
+    return output.getvalue()
 
 
 def validate_ooxml_archive(payload: bytes) -> None:
@@ -1156,7 +1193,14 @@ def _extract_xlsx_text(payload: bytes) -> str:
     except ModuleNotFoundError as exc:
         raise DocumentNormalizationError("document_dependency_unavailable", "XLSX extraction dependency is unavailable.") from exc
     try:
-        workbook = load_workbook(BytesIO(payload), read_only=True, data_only=True, keep_links=False)
+        # The third-party reader never receives the untrusted original archive:
+        # it reads the bounded, stored, sanitized copy instead.
+        workbook = load_workbook(
+            BytesIO(_bounded_ooxml_repackage(payload)),
+            read_only=True,
+            data_only=True,
+            keep_links=False,
+        )
     except Exception as exc:
         raise DocumentNormalizationError("xlsx_invalid", "XLSX could not be parsed safely.") from exc
     try:

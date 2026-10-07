@@ -728,6 +728,31 @@ def _lying_declared_size_zip(entry_name: str, real: bytes, declared: int) -> byt
     return bytes(payload)
 
 
+def _forge_declared_size(payload: bytes, target: str, real: bytes, declared: int) -> bytes:
+    """Rewrite one member's declared uncompressed size over a real deflate stream.
+
+    Both the local header and the central directory are rewritten, and the CRC
+    is rewritten to match the declared prefix, so the member is internally
+    consistent and passes every declared-metadata bound while its deflate stream
+    expands far beyond the declaration.
+    """
+
+    data = bytearray(payload)
+    name = target.encode("utf-8")
+    crc = zlib.crc32(real[:declared]) & 0xFFFFFFFF
+    for signature, name_at, crc_at, size_at in (
+        (b"PK\x03\x04", 30, 14, 22),
+        (b"PK\x01\x02", 46, 16, 24),
+    ):
+        index = data.find(signature)
+        while index != -1:
+            if bytes(data[index + name_at : index + name_at + len(name)]) == name:
+                data[index + crc_at : index + crc_at + 4] = crc.to_bytes(4, "little")
+                data[index + size_at : index + size_at + 4] = declared.to_bytes(4, "little")
+            index = data.find(signature, index + 4)
+    return bytes(data)
+
+
 def _traced_peak(action) -> tuple[object, int]:
     tracemalloc.start()
     try:
@@ -767,6 +792,62 @@ def _extract_docx_expecting_failure(payload: bytes) -> str:
         # The truncated member is not a whole document, so failing closed here is
         # the correct outcome; the point of the fixture is the bounded work.
         return ""
+
+
+def test_xlsx_third_party_reader_never_receives_the_untrusted_original_archive() -> None:
+    """XLSX must not hand the original ZIP back to openpyxl after validation.
+
+    ``openpyxl`` opens its own ``ZipFile`` over whatever file-like object it is
+    given, so passing the original bytes re-exposed the declared-size deflate
+    amplification the canonical gate had just bounded. The fixture is a
+    syntactically XLSX-shaped workbook whose ``[Content_Types].xml`` - a member
+    openpyxl always reads - declares 64 bytes over a 16 MiB deflate stream.
+    """
+
+    _require_xlsx_extra()
+    declared = 64
+    real = b"<Types>" + b"\x00" * (16 * 1024 * 1024)
+    forged = _forge_declared_size(
+        _replace_zip_entry(_xlsx_bytes(), "[Content_Types].xml", real),
+        "[Content_Types].xml",
+        real,
+        declared,
+    )
+    assert len(forged) < 128 * 1024
+
+    def run():
+        try:
+            return extract_binary_document(name="bomb.xlsx", media_type=XLSX_MIME, payload=forged)
+        except DocumentNormalizationError as exc:
+            # A truncated Content-Types part is not a whole workbook, so failing
+            # closed is the correct outcome; the fixture pins the bounded work.
+            return exc.code
+
+    outcome, peak = _traced_peak(run)
+    assert peak < 1024 * 1024, peak
+    assert isinstance(outcome, str), outcome
+    assert outcome == "xlsx_invalid", outcome
+
+
+def test_bounded_ooxml_repackage_preserves_a_well_formed_workbook() -> None:
+    """The sanitized copy must keep every member openpyxl needs."""
+
+    _require_xlsx_extra()
+    payload = _xlsx_bytes()
+    document = extract_binary_document(name="book.xlsx", media_type=XLSX_MIME, payload=payload)
+    assert "[Summary!A1] Padiem XLSX" in document.text
+    assert "[Summary!B2] 42" in document.text
+    assert "[Detail!C3] bounded" in document.text
+
+    sanitized = document_normalization._bounded_ooxml_repackage(payload)
+    with ZipFile(BytesIO(payload)) as original, ZipFile(BytesIO(sanitized)) as copy:
+        assert copy.namelist() == original.namelist()
+        for name in original.namelist():
+            assert copy.read(name) == original.read(name), name
+            entry = copy.getinfo(name)
+            # Stored, so the copy cannot declare a size it does not really hold.
+            assert entry.compress_type == 0
+            assert entry.file_size == entry.compress_size
 
 
 def test_bounded_member_read_returns_the_full_declared_content() -> None:
