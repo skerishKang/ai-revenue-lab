@@ -14,6 +14,7 @@ on:
     paths:
       - ".github/workflows/b62-script-lineage-comparator.yml"
       - ".github/scripts/b62_script_lineage_comparator.py"
+      - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/tests/test_b62_script_lineage_comparator.py"
   workflow_dispatch:
     inputs:
@@ -145,8 +146,7 @@ jobs:
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
           deployments="${RUNNER_TEMP}/b62-lineage-deployments.json"
           curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
-          jq -e '.success == true and (.result.deployments | length) >= 1 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
-          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           [[ "${active}" =~ $uuid_re ]]
           if [[ "${active}" != "${EXPECTED_ACTIVE_VERSION}" ]]; then
             echo "ACTIVE_VERSION=${active}"

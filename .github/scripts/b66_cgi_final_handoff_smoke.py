@@ -307,10 +307,39 @@ def _login(page, username: str, password: str) -> None:
     page.locator("#padiemLoginForm").wait_for(state="visible", timeout=15000)
     page.locator("#padiemLoginIdentifier").fill(username)
     page.locator("#padiemLoginPassword").fill(password)
-    page.locator("#padiemLoginSubmit").click()
+    try:
+        with page.expect_response(
+            lambda response: (
+                response.request.method == "POST"
+                and urlparse(response.url).path == "/api/padiem/auth/password/login"
+            ),
+            timeout=15000,
+        ) as login_info:
+            page.locator("#padiemLoginSubmit").click()
+        login_response = login_info.value
+    except Exception as exc:
+        raise SmokeFailure("login_response_missing") from exc
+    if login_response.status != 200:
+        _fail("login_http_" + str(login_response.status))
 
     page.locator("#padiemAccountPanel").wait_for(state="visible", timeout=20000)
-    _wait_runtime_ready(page)
+    try:
+        _wait_runtime_ready(page)
+    except Exception as exc:
+        readiness = page.evaluate(
+            """() => {
+              const b = window.B66QuoteRuntimeBridge;
+              return b && typeof b.readiness === 'function' ? b.readiness() : null;
+            }"""
+        )
+        if not isinstance(readiness, dict):
+            raise SmokeFailure("runtime_bridge_missing") from exc
+        code = "runtime_not_ready_a%s_s%s_p%s" % (
+            int(readiness.get("authenticated") is True),
+            int(readiness.get("skillReady") is True),
+            int(readiness.get("profileReady") is True),
+        )
+        raise SmokeFailure(code) from exc
 
     skill_count = page.locator("#padiemSavedSkillSelect option").count()
     if skill_count != 1:
