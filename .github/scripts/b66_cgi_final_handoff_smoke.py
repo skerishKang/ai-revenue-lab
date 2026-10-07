@@ -187,8 +187,11 @@ def _reset_browser_local_quote_state(page) -> None:
 
 
 def _login(page, username: str, password: str) -> None:
+    print("SMOKE_STAGE=PAGE_GOTO")
     page.goto(TARGET_URL, wait_until="domcontentloaded", timeout=30000)
+    print("SMOKE_STAGE=ACCOUNT_BUTTON")
     page.locator("#padiemAccountButton").click()
+    print("SMOKE_STAGE=LOGIN_FORM")
     page.locator("#padiemLoginForm").wait_for(state="visible", timeout=15000)
     page.locator("#padiemLoginIdentifier").fill(username)
     page.locator("#padiemLoginPassword").fill(password)
@@ -207,7 +210,12 @@ def _login(page, username: str, password: str) -> None:
     if login_response.status != 200:
         _fail("login_http_" + str(login_response.status))
 
-    page.locator("#padiemAccountPanel").wait_for(state="visible", timeout=20000)
+    print("SMOKE_STAGE=LOGIN_HTTP_200")
+    try:
+        page.locator("#padiemAccountPanel").wait_for(state="visible", timeout=20000)
+    except Exception as exc:
+        raise SmokeFailure("account_panel_not_visible") from exc
+    print("SMOKE_STAGE=ACCOUNT_PANEL_VISIBLE")
     try:
         _wait_runtime_ready(page)
     except Exception as exc:
@@ -226,9 +234,11 @@ def _login(page, username: str, password: str) -> None:
         )
         raise SmokeFailure(code) from exc
 
+    print("SMOKE_STAGE=RUNTIME_READY")
     skill_count = page.locator("#padiemSavedSkillSelect option").count()
     if skill_count != 1:
         _fail("saved_skill_count_not_one")
+    print("SMOKE_STAGE=LOGIN_READY")
 
 
 def _guided(page, counters: Counters) -> None:
