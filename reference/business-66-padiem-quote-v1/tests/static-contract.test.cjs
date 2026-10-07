@@ -438,17 +438,17 @@ check(app.includes("raw.schemaVersion !== TAX_REVIEW_SCHEMA_VERSION") &&
       app.includes("raw.required !== true"),
   "VAT_REVIEW_PERSISTENCE_CONTRACT: malformed/old review state fails safe");
 check(app.includes("TAX_REVIEW_STORAGE_KEY") &&
-      app.includes("localStorage.removeItem(TAX_REVIEW_STORAGE_KEY)"),
+      app.includes("removePrivateItem(TAX_REVIEW_STORAGE_KEY)"),
   "VAT_REVIEW_PERSISTENCE_CONTRACT: tax review state is independently removable");
 
-/* DRAFT_SAVE_CONTRACT — draft 자동 저장 계약 */
-check(app.includes("localStorage.setItem(Core.DRAFT_STORAGE_KEY, JSON.stringify(draft))"),
+/* DRAFT_SAVE_CONTRACT — draft 자동 저장 계약 (#3480: owner 게이트 경유) */
+check(app.includes("writePrivateItem(Core.DRAFT_STORAGE_KEY, JSON.stringify(draft))"),
   "DRAFT_SAVE_CONTRACT: autosave whole draft");
 check(app.includes("saveDraft();"), "DRAFT_SAVE_CONTRACT: render triggers save");
 
 /* DRAFT_RESTORE_CONTRACT — 복원 + 손상 fallback 계약 */
-check(/Core\.normalizeDraft\(\s*JSON\.parse\(localStorage\.getItem\(Core\.DRAFT_STORAGE_KEY\)/.test(app),
-  "DRAFT_RESTORE_CONTRACT: restore via normalizeDraft");
+check(/Core\.normalizeDraft\(JSON\.parse\(readPrivateItem\(Core\.DRAFT_STORAGE_KEY\)/.test(app),
+  "DRAFT_RESTORE_CONTRACT: restore via normalizeDraft behind the owner gate");
 check(app.includes("catch (err)"), "DRAFT_RESTORE_CONTRACT: corrupted storage fallback");
 check(core.includes("if (raw.schemaVersion !== SCHEMA_VERSION) return null;"),
   "DRAFT_RESTORE_CONTRACT: schema version guard");
@@ -552,9 +552,9 @@ check(app.includes("Core.DRAFT_STORAGE_KEY") &&
       app.includes("History.SEQUENCE_STORAGE_KEY") &&
       app.includes("TAX_REVIEW_STORAGE_KEY"),
   "BETA_POLISH_CONTRACT: reset enumerates B66-owned keys including VAT review state");
-check(app.includes("localStorage.removeItem(key)") &&
+check(app.includes("AccountScope.removePrivateKeys(storage, PRIVATE_STORAGE_KEYS)") &&
       !app.includes("localStorage.clear("),
-  "BETA_POLISH_CONTRACT: reset never clears unrelated origin storage");
+  "BETA_POLISH_CONTRACT: reset removes only enumerated B66-owned keys, never the whole origin");
 check(account.includes("settingsButton.hidden = true") &&
       account.includes("settingsButton.hidden = false"),
   "BETA_POLISH_CONTRACT: personal settings appears only after sign-in");
