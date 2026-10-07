@@ -1101,8 +1101,9 @@ def test_replacement_job_mutates_only_the_p01_credential_binding_name() -> None:
 def test_replacement_job_records_served_version_evidence() -> None:
     block = _replacement_job_block()
     assert "PREMUTATION_SERVED_VERSION_ID" in block
-    assert "(.result.deployments[0].versions | length) == 1" in block
-    assert ".result.deployments[0].versions[0].percentage == 100" in block
+    assert "cloudflare_served_version_cli.py resolve-active" in block
+    assert "replacement-served-version-read" in block
+    assert ".result.deployments[0].versions[0]" not in block
     assert "WORKER_CODE_DEPLOY_SUBMITTED=0" in block
 
 
@@ -1123,7 +1124,8 @@ def test_replacement_served_version_evidence_is_bounded_polling_not_single_read(
     assert "replacement-served-version-read" in step
     assert "replacement-served-version-final" in step
     assert '--pre-version "${PREMUTATION_SERVED_VERSION_ID}"' in step
-    assert "(.result.deployments | length) > 0" in step
+    assert ".result.deployments[0].versions[0]" not in step
+    assert "replacement-served-version-read" in step
     # the first acceptable divergent read closes YES, and NO needs the 15-observation floor
     assert '[ "${served}" != "${PREMUTATION_SERVED_VERSION_ID}" ]' in step
     assert '[ "${same}" -ge 15 ]' in step

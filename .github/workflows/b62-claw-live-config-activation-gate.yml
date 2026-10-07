@@ -5,6 +5,7 @@ on:
     paths:
       - ".github/workflows/b62-claw-live-config-activation-gate.yml"
       - ".github/scripts/b62_claw_live_config_activation.py"
+      - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/scripts/b62_binding_state_guard.py"
       - ".github/tests/test_b62_claw_live_config_activation.py"
       - ".github/tests/test_b62_deploy_prereq_rollback_contracts.py"
@@ -323,9 +324,7 @@ jobs:
           curl -fsS "${auth[@]}" \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
             -o "${deployments}"
-          jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' \
-            "${deployments}" >/dev/null
-          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           test -n "${active}"
           echo "B62_CLAW_CONFIG_PREMUTATION_VERSION_ID=${active}"
           echo "active_version=${active}" >> "${GITHUB_OUTPUT}"
@@ -559,9 +558,7 @@ jobs:
           curl -fsS "${auth[@]}" \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
             -o "${deployments}"
-          jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' \
-            "${deployments}" >/dev/null
-          served="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          served="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           test -n "${served}"
           echo "PREMUTATION_SERVED_VERSION_ID=${served}" >> "${GITHUB_ENV}"
           jq -c '.result.bindings | map({name, type})' "${settings}"
@@ -648,9 +645,7 @@ jobs:
             served=""
             if curl -fsS "${auth[@]}" \
               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
-              -o "${deployments}" \
-              && jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' \
-                "${deployments}" >/dev/null; then
+              -o "${deployments}"; then
               served="$(python .github/scripts/b62_claw_live_config_activation.py replacement-served-version-read --deployments "${deployments}")" || served=""
             fi
             if [ -n "${served}" ]; then
@@ -759,7 +754,7 @@ jobs:
           curl -fsS "${auth[@]}" \
             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
             -o "${deployments}"
-          current="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
+          current="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           if [ "${current}" = "${ROLLBACK_VERSION_ID}" ]; then
             echo 'CODE_VERSION_ROLLBACK=SKIPPED_ALREADY_RESTORED'
             echo 'PRODUCTION_MUTATION=0'
@@ -813,8 +808,8 @@ jobs:
             curl -fsS "${auth[@]}" \
               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}/deployments" \
               -o "${deployments}"
-            active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
-            if [ "${active}" = "${ROLLBACK_VERSION_ID}" ] && jq -e '.result.deployments[0].versions | length == 1 and .[0].percentage == 100' "${deployments}" >/dev/null 2>&1; then
+            if active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")" \
+              && [ "${active}" = "${ROLLBACK_VERSION_ID}" ]; then
               restored=yes
               break
             fi
