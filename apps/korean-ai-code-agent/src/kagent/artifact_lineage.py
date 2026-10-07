@@ -11,11 +11,13 @@ ORIGINAL SOURCE
   -> OUTPUT ARTIFACT(S)
 ```
 
-This is a **reference** contract, not a second artifact record. It deliberately
-does not re-copy ``filename`` / ``media_type`` / ``size_bytes`` /
-``artifact_kind``: it only binds the existing ``artifact_id`` values owned by
-#3594 plus the integrity digests that make "the source was not silently
-replaced" provable. The artifact authority stays in #3594; the run/workspace
+This is a **reference** contract, not a second artifact record. It carries only
+``artifact_id`` + integrity bindings. When a ``CanonicalArtifactRecord`` is
+supplied, this module can mechanically derive that pair from #3594. When a
+caller supplies a ``LineageArtifactRef`` directly, prior canonical registration
+is an **input precondition owned by the existing artifact authority/caller
+composition boundary**, not an attestation this module can make: there is no
+registry lookup here. The artifact authority stays in #3594; the run/workspace
 authority stays wherever it already lives; this module mints neither.
 
 Invariants enforced at construction (fail closed, never silently corrected):
@@ -185,9 +187,11 @@ class LineageArtifactRef:
     """``(artifact_id, integrity_ref)`` binding to an existing canonical artifact.
 
     Deliberately not a second artifact record: no filename, media type, size or
-    kind. The id is owned by #3594's canonical artifact registration and the
-    digest is what makes silent replacement of the referenced content
-    detectable.
+    kind. A ref derived from ``CanonicalArtifactRecord`` is mechanically bound
+    to #3594's record. A directly constructed ref is accepted under the input
+    precondition that the existing artifact authority/caller already resolved
+    it from a canonical artifact; this module validates shape/integrity format
+    but does not attest registry existence.
     """
 
     artifact_id: str
@@ -204,9 +208,11 @@ class LineageArtifactRef:
 def ref_from_canonical_artifact(record: CanonicalArtifactRecord) -> LineageArtifactRef:
     """Adapter: #3594 canonical artifact -> lineage ref (identity + integrity only).
 
-    This is the only way a canonical artifact enters a lineage, and it proves
-    the direction of authority: the lineage consumes the artifact record and
-    copies exactly two fields out of it.
+    This is the mechanically verifiable adapter when the canonical record is
+    available: the lineage consumes the artifact record and copies exactly two
+    fields out of it. ``declare_lineage`` also accepts a pre-resolved
+    ``LineageArtifactRef``; canonical origin of that direct ref is an input
+    precondition, not an attestation by this module.
     """
 
     if not isinstance(record, CanonicalArtifactRecord):
@@ -384,7 +390,10 @@ def declare_lineage(
     """Single entry point for lineage declaration (validation included).
 
     ``source`` / ``working`` / each output accept either a
-    ``LineageArtifactRef`` or a #3594 ``CanonicalArtifactRecord``.
+    ``LineageArtifactRef`` or a #3594 ``CanonicalArtifactRecord``. Passing the
+    record gives this module a mechanically verifiable adapter path. Passing a
+    ref directly means canonical registration was already resolved upstream;
+    this module does not contain or query a registry to attest that provenance.
     """
 
     return ArtifactLineage(
