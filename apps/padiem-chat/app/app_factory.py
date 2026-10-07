@@ -76,6 +76,7 @@ from .claw_task_alert_store import D1ClawTaskAlertStore
 from .claw_automation_store import D1ClawAutomationStore
 from .claw_automation_rules_routes import claw_automation_rules
 from .claw_automation_rule_create_routes import claw_automation_rule_create
+from .claw_automation_rule_edit_routes import claw_automation_rule_edit
 from .claw_automation_rule_enabled_routes import claw_automation_rule_set_enabled
 from .config import Settings
 from .connector_status_projection import connectors_status
@@ -294,6 +295,10 @@ def create_app(
             claw_automation_rule_set_enabled,
             methods=["PATCH"],
         ),
+        # #3270: bounded Edit of name + schedule on a canonical, execution-ready
+        # rule. The #2908 execution intent, owner provenance, target, output,
+        # notifications and enabled state are carried over unchanged.
+        Route("/api/claw/automation/rules/{rule_id}", claw_automation_rule_edit, methods=["PATCH"]),
         # #3094: the one real read-only source behind the "Connect this computer"
         # panel. Owner-scoped; it pairs nothing and approves nothing.
         Route(CLAW_LOCAL_ACCESS_PATH, claw_local_access, methods=["GET"]),
