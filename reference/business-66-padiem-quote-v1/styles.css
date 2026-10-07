@@ -1608,3 +1608,63 @@ body.b66-three-pane .shell-preview-host .quote-detail-page {
   border-color: #cbd2da;
   background: #fff;
 }
+
+/* ── CompanyProfile self-service settings (#3406) ── */
+.company-profile-section { margin: 0 0 14px; }
+.company-profile-heading {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.company-profile-section .company-profile-note,
+.company-profile-section .company-profile-offer,
+.company-profile-section .company-profile-error {
+  margin: 0 0 10px;
+  font-size: 13px;
+}
+.company-profile-section .company-profile-offer { font-weight: 700; color: #111827; }
+.company-profile-section .company-profile-error { color: #b42318; }
+.company-profile-field { margin: 0 0 10px; }
+.company-profile-field label {
+  display: block;
+  margin: 0 0 4px;
+  font-size: 13px;
+  color: #344054;
+}
+.company-profile-field input,
+.company-profile-field select {
+  width: 100%;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.company-profile-field-error { margin: 4px 0 0; font-size: 12px; color: #b42318; }
+.company-profile-actions { display: flex; gap: 8px; margin: 12px 0 0; }
+.company-profile-save {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  background: #1570ef;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.company-profile-save:disabled { opacity: 0.6; cursor: default; }
+.company-profile-skip {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid #d0d5dd;
+  border-radius: 10px;
+  background: #fff;
+  color: #344054;
+  font-size: 14px;
+  cursor: pointer;
+}
+.company-profile-status { margin: 10px 0 0; font-size: 13px; }
+.company-profile-status[data-kind="error"] { color: #b42318; }
+.company-profile-status[data-kind="ok"] { color: #067647; }

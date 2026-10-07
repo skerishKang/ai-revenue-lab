@@ -70,7 +70,19 @@ url
 secret
 ```
 
-## Supported categories
+## Parser/intake capability vs B66 template-registration policy
+
+This component describes lower-level intake/parser capability. It is not the B66 reusable quotation-template registration allowlist.
+
+```text
+NATIVE_PARSER_CAPABILITY
+!=
+B66_TEMPLATE_REGISTRATION_POLICY
+```
+
+Current B66 source-template registration policy is governed by #3586: accept XLSX now, treat HWPX as future, reject legacy XLS/HWP. A lower-level parser being able to inspect PDF/DOCX/PPTX or another supported category does not automatically authorize that category as a reusable B66 template source.
+
+## Supported lower-level intake categories
 
 Native binary documents, up to Core's 2 MiB limit:
 
