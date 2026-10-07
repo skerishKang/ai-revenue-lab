@@ -430,6 +430,31 @@
     };
   }
 
+  /* 인증 PDF 입력은 기존 projection 과 QuoteCore 확정값만 전달한다.
+     미리보기 자산/data URL 은 private PDF bundle 의 입력이 아니다. */
+  function buildCertifiedPdfRenderModel(draft, profile, options) {
+    var normalizedDraft = Core.normalizeDraft(draft);
+    if (!normalizedDraft) return null;
+    var model = buildRenderModel(normalizedDraft, profile, options);
+    if (!model || model.template.fallbackReason || model.taxReview.required) return null;
+    var coreTotals = Core.computeDraftTotals(normalizedDraft);
+    if (!coreTotals || (Array.isArray(coreTotals.detailGroups) && coreTotals.detailGroups.length) ||
+        (Array.isArray(model.detailPages) && model.detailPages.length)) return null;
+    var writtenWords = Core.formatKoreanMoneyWords(coreTotals.grand);
+    if (writtenWords === null) return null;
+    return {
+      schemaVersion: model.schemaVersion,
+      derivedBy: model.derivedBy,
+      template: model.template,
+      facts: model.facts,
+      items: model.items,
+      totals: model.totals,
+      coreTotals: coreTotals,
+      writtenWords: writtenWords,
+      taxReview: model.taxReview
+    };
+  }
+
   /* ── 얇은 DOM adapter: projection 을 기존 화면 요소에 적용한다 ── */
 
   function ensurePageRule(doc, rule) {
@@ -778,6 +803,7 @@
     applyCgiV2: applyCgiV2,
     formatIssueDate: formatIssueDate,
     buildRenderModel: buildRenderModel,
+    buildCertifiedPdfRenderModel: buildCertifiedPdfRenderModel,
     applyRenderModel: applyRenderModel
   };
 });

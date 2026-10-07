@@ -1192,3 +1192,31 @@
 @media (max-width: 920px) {
   .claw-automation-rule-toggle { width: 100%; }
 }
+
+/* #3270 — bounded edit control + form on canonical rule rows */
+.claw-automation-rule-edit {
+  min-height: 44px;
+  min-width: 44px;
+  margin: 8px 0 0 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--border, rgba(15, 23, 42, 0.18));
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.claw-automation-rule-edit:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+.claw-automation-edit-form {
+  margin-top: 12px;
+}
+.claw-automation-edit-title {
+  margin: 0 0 4px;
+  font-size: 14px;
+}
+@media (max-width: 920px) {
+  .claw-automation-rule-edit { width: 100%; margin: 8px 0 0 0; }
+}
