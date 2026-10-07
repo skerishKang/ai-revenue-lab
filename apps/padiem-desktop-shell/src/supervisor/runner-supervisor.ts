@@ -296,6 +296,19 @@ export class HeadlessRunnerSupervisor implements RunnerSupervisor {
     return port.takeResidentMaterialLine ? port.takeResidentMaterialLine() : null;
   }
 
+  /**
+   * #3611 — the live resident's bounded browser-open redemption answer,
+   * one-shot, or null. Read only by the main-process redemption port.
+   */
+  takeResidentBrowserOpenRedemptionLine(): string | null {
+    const port = this.#port as {
+      takeResidentBrowserOpenRedemptionLine?: () => string | null;
+    };
+    return port.takeResidentBrowserOpenRedemptionLine
+      ? port.takeResidentBrowserOpenRedemptionLine()
+      : null;
+  }
+
   residentSnapshot(): { pid: number | null; running: boolean; startedAtMs: number | null } {
     const handle = this.#residentHandle;
     return {

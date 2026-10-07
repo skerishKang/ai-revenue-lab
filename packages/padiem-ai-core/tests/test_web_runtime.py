@@ -12,9 +12,12 @@ from padiem_ai_core.web_runtime import (
     MAX_PROVIDER_RESPONSE_BYTES,
     MAX_QUERY_CHARS,
     MAX_RESULTS,
+    TINYFISH_FETCH_ORIGIN,
+    TINYFISH_SEARCH_ORIGIN,
     FirecrawlWebProvider,
     MockWebProvider,
     OffWebProvider,
+    TinyFishWebProvider,
     WebRuntimeConfig,
     WebRuntimeError,
     create_web_provider,
@@ -50,6 +53,7 @@ def test_web_config_defaults_off_and_redacts_server_key() -> None:
         "web_timeout_seconds": 9.0,
         "firecrawl_configured": True,
         "daum_configured": False,
+        "tinyfish_configured": False,
         "daum_search_sort": "accuracy",
     }
 
@@ -391,3 +395,290 @@ def test_public_serialization_contains_no_secret_fields() -> None:
     public = config.to_public_dict()
     assert not ({"api_key", "firecrawl_api_key", "daum_rest_api_key", "secret", "credential", "token"} & set(public))
     assert "fc-secret" not in json.dumps(public)
+
+
+# ---------------------------------------------------------------------------
+# #3385 / #3622: TinyFish Search/Fetch provider (source-only integration)
+# Every test below uses httpx.MockTransport, so LIVE_CALLS == 0. The provider is
+# built on the same reviewed safety envelope as Firecrawl/Daum: fixed origins, no
+# redirect following, bounded streaming, bounded timeout, server-only API key.
+# ---------------------------------------------------------------------------
+
+
+def test_tinyfish_config_requires_key_and_redacts_it() -> None:
+    with pytest.raises(ValueError, match="server-side API key"):
+        WebRuntimeConfig(provider="tinyfish")
+
+    configured = WebRuntimeConfig(
+        provider="TINYFISH",
+        tinyfish_api_key=" tf-secret-server-only ",
+        web_timeout_seconds=8,
+    )
+    assert configured.provider == "tinyfish"
+    assert configured.tinyfish_api_key == "tf-secret-server-only"
+    assert "tf-secret-server-only" not in repr(configured)
+    assert "tf-secret-server-only" not in json.dumps(configured.to_public_dict())
+    assert configured.to_public_dict() == {
+        "provider": "tinyfish",
+        "web_timeout_seconds": 8.0,
+        "firecrawl_configured": False,
+        "daum_configured": False,
+        "tinyfish_configured": True,
+        "daum_search_sort": "accuracy",
+    }
+
+
+def test_tinyfish_provider_refuses_non_tinyfish_config() -> None:
+    with pytest.raises(ValueError, match="TinyFish provider requires"):
+        TinyFishWebProvider(WebRuntimeConfig(provider="off"))
+
+
+def test_tinyfish_search_uses_fixed_origin_and_reads_results_envelope() -> None:
+    seen: dict[str, object] = {}
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        seen["method"] = request.method
+        seen["url"] = str(request.url)
+        seen["headers"] = dict(request.headers)
+        seen["params"] = dict(request.url.params)
+        return httpx.Response(
+            200,
+            json={
+                "results": [
+                    {
+                        "title": "Current AI news",
+                        "url": "https://example.com/a#section",
+                        "description": "A useful result",
+                    },
+                    {
+                        "title": "Unsafe result",
+                        "url": "http://127.0.0.1/private",
+                        "snippet": "must be dropped",
+                    },
+                ]
+            },
+        )
+
+    provider = TinyFishWebProvider(
+        WebRuntimeConfig(provider="tinyfish", tinyfish_api_key="tf-secret"),
+        httpx.MockTransport(handler),
+    )
+    results = run(provider.search("current AI news", 3))
+
+    assert seen["method"] == "GET"
+    assert seen["url"].startswith(TINYFISH_SEARCH_ORIGIN)  # type: ignore[union-attr]
+    assert seen["params"] == {"query": "current AI news"}  # type: ignore[union-attr]
+    assert seen["headers"]["x-api-key"] == "tf-secret"  # type: ignore[index]
+    assert len(results) == 1
+    assert results[0].url == "https://example.com/a"
+    assert results[0].snippet == "A useful result"
+    assert results[0].provider == "tinyfish"
+    assert results[0].source_type == "search"
+    assert "tf-secret" not in json.dumps(results[0].to_public_dict())
+
+
+def test_tinyfish_search_empty_results_yields_empty_list() -> None:
+    async def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"results": []})
+
+    provider = TinyFishWebProvider(
+        WebRuntimeConfig(provider="tinyfish", tinyfish_api_key="tf-secret"),
+        httpx.MockTransport(handler),
+    )
+    assert run(provider.search("anything")) == []
+
+
+def test_tinyfish_fetch_posts_url_and_unwraps_envelope() -> None:
+    seen: dict[str, object] = {}
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        seen["method"] = request.method
+        seen["url"] = str(request.url)
+        seen["headers"] = dict(request.headers)
+        seen["body"] = json.loads(request.content)
+        return httpx.Response(
+            200,
+            json={
+                "data": {
+                    "markdown": "page body content",
+                    "title": "Fetched page",
+                    "url": "https://example.com/final#ignored",
+                }
+            },
+        )
+
+    provider = TinyFishWebProvider(
+        WebRuntimeConfig(provider="tinyfish", tinyfish_api_key="tf-secret"),
+        httpx.MockTransport(handler),
+    )
+    evidence = run(provider.fetch("https://example.com/start#strip"))
+
+    assert seen["method"] == "POST"
+    assert seen["url"] == TINYFISH_FETCH_ORIGIN
+    assert seen["headers"]["x-api-key"] == "tf-secret"  # type: ignore[index]
+    assert seen["body"] == {"url": "https://example.com/start"}  # type: ignore[comparison-overlap]
+    assert evidence.url == "https://example.com/final"
+    assert evidence.snippet == "page body content"
+    assert evidence.provider == "tinyfish"
+    assert evidence.source_type == "fetch"
+    assert "tf-secret" not in json.dumps(evidence.to_public_dict())
+
+
+def test_tinyfish_fetch_accepts_result_envelope_and_content_alias() -> None:
+    async def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={"result": {"content": "plain body", "source_url": "https://example.com/b"}},
+        )
+
+    provider = TinyFishWebProvider(
+        WebRuntimeConfig(provider="tinyfish", tinyfish_api_key="tf-secret"),
+        httpx.MockTransport(handler),
+    )
+    evidence = run(provider.fetch("https://example.com/start"))
+    assert evidence.url == "https://example.com/b"
+    assert evidence.snippet == "plain body"
+
+
+def test_tinyfish_fetch_unknown_shape_fails_closed() -> None:
+    async def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"results": [{"unexpected": "shape"}]})
+
+    provider = TinyFishWebProvider(
+        WebRuntimeConfig(provider="tinyfish", tinyfish_api_key="tf-secret"),
+        httpx.MockTransport(handler),
+    )
+    with pytest.raises(WebRuntimeError) as info:
+        run(provider.fetch("https://example.com/start"))
+    assert info.value.code == "web_malformed"
+    assert "tf-secret" not in str(info.value)
+
+
+def test_tinyfish_fetch_private_input_url_fails_before_network() -> None:
+    calls = 0
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        raise AssertionError("no network should occur for a private URL")
+
+    provider = TinyFishWebProvider(
+        WebRuntimeConfig(provider="tinyfish", tinyfish_api_key="tf-secret"),
+        httpx.MockTransport(handler),
+    )
+    with pytest.raises(ValueError):
+        run(provider.fetch("http://127.0.0.1/private"))
+    assert calls == 0
+
+
+def test_tinyfish_fetch_private_returned_url_fails_closed() -> None:
+    async def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={"data": {"markdown": "private", "url": "http://127.0.0.1/private"}},
+        )
+
+    provider = TinyFishWebProvider(
+        WebRuntimeConfig(provider="tinyfish", tinyfish_api_key="tf-secret"),
+        httpx.MockTransport(handler),
+    )
+    with pytest.raises(WebRuntimeError) as info:
+        run(provider.fetch("https://example.com/start"))
+    assert info.value.code == "unsafe_web_result"
+
+
+@pytest.mark.parametrize(
+    ("status", "code"),
+    [
+        (401, "web_auth"),
+        (403, "web_auth"),
+        (429, "web_busy"),
+        (500, "web_unavailable"),
+        (503, "web_unavailable"),
+        (404, "web_request_failed"),
+    ],
+)
+def test_tinyfish_errors_are_normalized_without_body_or_key_leak(status: int, code: str) -> None:
+    async def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(status, json={"error": "PRIVATE-UPSTREAM-DETAIL"})
+
+    provider = TinyFishWebProvider(
+        WebRuntimeConfig(provider="tinyfish", tinyfish_api_key="tf-secret"),
+        httpx.MockTransport(handler),
+    )
+    with pytest.raises(WebRuntimeError) as info:
+        run(provider.search("test"))
+    assert info.value.code == code
+    assert "PRIVATE-UPSTREAM-DETAIL" not in info.value.message
+    assert "tf-secret" not in info.value.message
+    assert "PRIVATE-UPSTREAM-DETAIL" not in str(info.value)
+    assert "tf-secret" not in str(info.value)
+
+
+def test_tinyfish_timeout_and_transport_errors_are_normalized() -> None:
+    async def timeout_handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ReadTimeout("PRIVATE timeout detail", request=request)
+
+    timeout_provider = TinyFishWebProvider(
+        WebRuntimeConfig(provider="tinyfish", tinyfish_api_key="tf-secret"),
+        httpx.MockTransport(timeout_handler),
+    )
+    with pytest.raises(WebRuntimeError) as timeout_info:
+        run(timeout_provider.search("test"))
+    assert timeout_info.value.code == "web_timeout"
+    assert "PRIVATE" not in timeout_info.value.message
+
+    async def transport_handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ConnectError("PRIVATE transport detail", request=request)
+
+    transport_provider = TinyFishWebProvider(
+        WebRuntimeConfig(provider="tinyfish", tinyfish_api_key="tf-secret"),
+        httpx.MockTransport(transport_handler),
+    )
+    with pytest.raises(WebRuntimeError) as transport_info:
+        run(transport_provider.search("test"))
+    assert transport_info.value.code == "web_unavailable"
+    assert "PRIVATE" not in transport_info.value.message
+
+
+def test_tinyfish_malformed_json_and_shape_are_normalized() -> None:
+    responses = [
+        httpx.Response(200, content=b"\xff\xfe"),
+        httpx.Response(200, content=b"not-json"),
+        httpx.Response(200, json=["not", "an", "object"]),
+        httpx.Response(200, json="not-an-object"),
+    ]
+
+    for response in responses:
+        async def handler(request: httpx.Request, response=response) -> httpx.Response:
+            return response
+
+        provider = TinyFishWebProvider(
+            WebRuntimeConfig(provider="tinyfish", tinyfish_api_key="tf-secret"),
+            httpx.MockTransport(handler),
+        )
+        with pytest.raises(WebRuntimeError) as info:
+            run(provider.search("test"))
+        assert info.value.code == "web_malformed"
+        assert "PRIVATE" not in info.value.message
+        assert "tf-secret" not in info.value.message
+
+
+def test_tinyfish_response_byte_cap_is_enforced() -> None:
+    async def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, content=b"x" * (MAX_PROVIDER_RESPONSE_BYTES + 1))
+
+    provider = TinyFishWebProvider(
+        WebRuntimeConfig(provider="tinyfish", tinyfish_api_key="tf-secret"),
+        httpx.MockTransport(handler),
+    )
+    with pytest.raises(WebRuntimeError) as info:
+        run(provider.search("test"))
+    assert info.value.code == "web_response_too_large"
+
+
+def test_tinyfish_factory_returns_provider() -> None:
+    provider = create_web_provider(
+        WebRuntimeConfig(provider="tinyfish", tinyfish_api_key="tf-secret"),
+    )
+    assert isinstance(provider, TinyFishWebProvider)

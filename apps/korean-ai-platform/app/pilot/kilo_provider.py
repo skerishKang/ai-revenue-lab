@@ -2,15 +2,13 @@
 
 This module keeps a bounded set of explicit current free routes rather than
 ``kilo-auto/free``. Kilo's official Gateway documentation checked on
-2026-09-02 lists the exact upstream IDs below as free and preserves their existing
-anonymous/keyless execution contract. Space Bunny may additionally reuse the
-owner-managed ``PADIEM_KILO_API_KEY`` runtime binding when it is present; the
-binding maps to the existing account Secrets Store item and is optional.
+2026-09-02 lists the exact upstream IDs below as free and preserves their
+existing anonymous/keyless execution contract.
 
 Free availability is volatile. These registrations are dated snapshots, remain
 explicit/manual-only, and are never inserted into ``b14/auto``. The fixed Kilo
-Gateway origin, Space Bunny credential binding name, and upstream model IDs are
-server-owned metadata; callers cannot replace any of them.
+Gateway origin and upstream model IDs are server-owned metadata; callers
+cannot replace any of them.
 
 Re-check on 2026-09-08 against the public Gateway model list (#2094):
 ``minimax/minimax-m3:free`` and ``tencent/hy3:free`` are no longer offered.
@@ -19,22 +17,14 @@ registered in the catalog: explicit manual/auto resolution fails closed with
 ``unsupported_model``. The IDs and upstream models below are retained purely
 as retirement metadata for contract tests and operator documentation.
 
-Owner decision (#3143) pinned ``stealth/space-bunny-alpha`` as the Business 66
-quotation text primary. That upstream lane was REMOVED from the public Kilo
-Gateway model list (re-checked 2026-10-06), and the keyless-lane preference is
-RETIRED by owner policy v2 (2026-10-06): model lanes authenticate through
-Secrets Store bindings (``PADIEM_KILO_API_KEY``).
-
-Owner successor selection (2026-10-06, follow-up to #3568/#3569) pins
-``inclusionai/ling-3.1-flash`` as the Business 66 quotation text primary:
-verified live on the Kilo gateway (public model list present, pricing 0,
-context 262,144, max completion 32,768, keyless probe HTTP 200 / cost 0).
-It is registered here as an explicit free lane under the same ``kilo``
-Provider spec, now executing with the Secrets Store binding per policy v2.
-Like the lanes above it is never appended to ``CATALOG_MODELS``
-or to ``b14/auto``; the global auto chain and its fallback set are unchanged.
-The retired Space Bunny vision-primary declaration is not carried over:
-Ling 3.1 Flash is text-only, so image work remains fail closed (Policy A).
+Owner final decision (LOCAL4, 2026-10-07): the Space Bunny lane
+(``kilo/stealth-space-bunny-alpha``) is fully retired as well. It executes
+nowhere: no product execution, no manual execution, no auto route, and no
+fallback. The historical constants (model id, upstream id, credential
+binding name, dated evidence snapshot) remain as retirement metadata only.
+The lane is absent from ``KILO_FREE_ROUTES`` and from the catalog, and its
+id lives in ``RETIRED_KILO_FREE_MODEL_IDS`` so explicit resolution fails
+closed. The retired lane supports no runtime auth special-case.
 """
 
 from __future__ import annotations
@@ -57,47 +47,37 @@ KILO_PROVIDER_ID = "kilo"
 KILO_BASE_ORIGIN = "https://api.kilo.ai/api/gateway"
 KILO_ALLOWED_HOST = "api.kilo.ai"
 KILO_SPACE_BUNNY_CREDENTIAL_BINDING = "PADIEM_KILO_API_KEY"
-# Policy v2 (2026-10-06): all Kilo lanes authenticate through the owner-managed
-# Secrets Store binding when it resolves; the anonymous request shape remains
-# the fallback when the binding is absent.
-KILO_CREDENTIAL_BINDING = "PADIEM_KILO_API_KEY"
 
 KILO_NEMOTRON_MODEL_ID = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
 KILO_NEMOTRON_UPSTREAM_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
 KILO_LAGUNA_MODEL_ID = "kilo/poolside-laguna-s-2.1-free"
 KILO_LAGUNA_UPSTREAM_MODEL = "poolside/laguna-s-2.1:free"
 
-# Business 66 quotation text-primary lane (#3143). The upstream id carries no
-# ``:free`` suffix, so the repo-facing id applies the same transformation used
-# for the lanes above (``/`` -> ``-``, ``:`` -> ``-``) and therefore keeps no
-# ``-free`` marker: ``stealth/space-bunny-alpha`` ->
+# Historical Business 66 quotation lane identity (#3143). The upstream id
+# carries no ``:free`` suffix, so the repo-facing id applies the same
+# transformation used for the lanes above (``/`` -> ``-``, ``:`` -> ``-``) and
+# therefore keeps no ``-free`` marker: ``stealth/space-bunny-alpha`` ->
 # ``kilo/stealth-space-bunny-alpha``.
 KILO_SPACE_BUNNY_MODEL_ID = "kilo/stealth-space-bunny-alpha"
 KILO_SPACE_BUNNY_UPSTREAM_MODEL = "stealth/space-bunny-alpha"
-
-# Owner successor selection (2026-10-06): Ling 3.1 Flash on the same gateway.
-# Upstream id carries no ``:free`` suffix -> same repo-facing transformation:
-# ``inclusionai/ling-3.1-flash`` -> ``kilo/inclusionai-ling-3.1-flash``.
-KILO_LING_MODEL_ID = "kilo/inclusionai-ling-3.1-flash"
-KILO_LING_UPSTREAM_MODEL = "inclusionai/ling-3.1-flash"
-KILO_LING_SOURCE_CHECKED_AT = "2026-10-06"
-# Date of the owner/CENTRAL evidence that re-confirmed this lane callable on
-# the Kilo free route (#3143 refresh). Space Bunny may use the existing
-# owner-managed PADIEM_KILO_API_KEY runtime binding (#3209), but the binding is
-# not required for route eligibility; this remains a dated availability snapshot.
+# Dated availability snapshot from the owner/CENTRAL evidence that once
+# re-confirmed this lane callable on the Kilo free route (#3143 refresh).
+# Retained purely as historical evidence metadata: the lane is retired and
+# never executes (#3568 plus the owner final retirement decision).
 KILO_SPACE_BUNNY_SOURCE_CHECKED_AT = "2026-09-28"
 
 # Retired lane identifiers kept as retirement metadata only. They are never
-# registered in the catalog; #2097 removed them from KILO_FREE_ROUTES and from
-# the fixed_chain_v1 fallback.
+# registered in the catalog; #2097 removed the minimax/hy3 pair from
+# KILO_FREE_ROUTES and from the fixed_chain_v1 fallback.
 KILO_HY3_MODEL_ID = "kilo/tencent-hy3-free"
 KILO_HY3_UPSTREAM_MODEL = "tencent/hy3:free"
 KILO_MINIMAX_M3_MODEL_ID = "kilo/minimax-minimax-m3-free"
 KILO_MINIMAX_M3_UPSTREAM_MODEL = "minimax/minimax-m3:free"
 
 # Free lanes observed as removed from the public Kilo Gateway model list on
-# 2026-09-08 (#2094). Retired lanes are unregistered and must never appear in
-# any executable route lane (chain, catalog, or product tier).
+# 2026-09-08 (#2094), plus the Space Bunny lane retired everywhere by the
+# owner final decision (2026-10-07). Retired lanes are unregistered and must
+# never appear in any executable route lane (chain, catalog, or product tier).
 RETIRED_KILO_FREE_MODEL_IDS = frozenset(
     {
         KILO_MINIMAX_M3_MODEL_ID,
@@ -142,27 +122,21 @@ KILO_FREE_ROUTES = (
         context_window=262_144,
         sort_order=91,
     ),
-    _KiloFreeRoute(
-        model_id=KILO_LING_MODEL_ID,
-        upstream_model=KILO_LING_UPSTREAM_MODEL,
-        display_name="Kilo: InclusionAI Ling 3.1 Flash (free)",
-        provider="Kilo Gateway / InclusionAI",
-        context_window=262_144,
-        sort_order=92,
-        capabilities=frozenset({"chat", "free"}),
-        source_checked_at=KILO_LING_SOURCE_CHECKED_AT,
-    ),
 )
+# Historical note: the Space Bunny lane (kilo/stealth-space-bunny-alpha,
+# sort_order 92, capabilities {chat, coding, free, image}, context_window 0)
+# was removed from KILO_FREE_ROUTES by the owner final retirement decision
+# (2026-10-07). Its identity survives only in the constants and retired set
+# above.
 
 
 def register_kilo_provider() -> None:
     """Idempotently register the explicit Kilo free routes.
 
-    The shared Kilo Provider spec remains keyless so all free lanes preserve
-    their existing contract. Space Bunny has one optional model-scoped
-    ``KILO_SPACE_BUNNY_CREDENTIAL_BINDING`` in the platform adapter: when the
-    binding resolves, B14 sends Bearer auth; when it does not, B14 sends the same
-    anonymous request shape as the existing free lanes.
+    The shared Kilo Provider spec stays keyless so all registered free lanes
+    preserve their existing anonymous contract. No retired lane (including
+    Space Bunny) is registered here, and no lane carries a model-scoped auth
+    special-case in the platform adapter.
     """
 
     if get_platform_provider(KILO_PROVIDER_ID) is None:

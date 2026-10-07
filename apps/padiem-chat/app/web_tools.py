@@ -14,10 +14,13 @@ from padiem_ai_core.web_runtime import (
     MAX_SNIPPET_CHARS,
     MAX_TITLE_CHARS,
     MAX_URL_CHARS,
+    TINYFISH_FETCH_ORIGIN,
+    TINYFISH_SEARCH_ORIGIN,
     DaumWebProvider as CoreDaumWebProvider,
     FirecrawlWebProvider as CoreFirecrawlWebProvider,
     MockWebProvider as CoreMockWebProvider,
     OffWebProvider as CoreOffWebProvider,
+    TinyFishWebProvider as CoreTinyFishWebProvider,
     WebRuntimeConfig,
     WebRuntimeError,
     normalize_public_url as core_normalize_public_url,
@@ -226,6 +229,32 @@ class DaumWebProvider:
         return _from_core_evidence(item)
 
 
+class TinyFishWebProvider:
+    def __init__(self, settings: Settings, transport: httpx.AsyncBaseTransport | None = None):
+        if settings.web_provider != "tinyfish" or not settings.tinyfish_api_key:
+            raise ValueError("TinyFish provider requires configured server settings")
+        config = WebRuntimeConfig(
+            provider="tinyfish",
+            tinyfish_api_key=settings.tinyfish_api_key,
+            web_timeout_seconds=settings.web_timeout_seconds,
+        )
+        self._core = CoreTinyFishWebProvider(config, transport=transport)
+
+    async def search(self, query: str, limit: int = 5) -> list[Evidence]:
+        try:
+            items = await self._core.search(query, limit=limit)
+        except WebRuntimeError as exc:
+            raise _translate_runtime_error(exc) from exc
+        return [_from_core_evidence(item) for item in items]
+
+    async def fetch(self, url: str) -> Evidence:
+        try:
+            item = await self._core.fetch(url)
+        except WebRuntimeError as exc:
+            raise _translate_runtime_error(exc) from exc
+        return _from_core_evidence(item)
+
+
 def create_web_provider(
     settings: Settings,
     transport: httpx.AsyncBaseTransport | None = None,
@@ -238,6 +267,8 @@ def create_web_provider(
         provider = FirecrawlWebProvider(settings, transport=transport)
     elif settings.web_provider == "daum":
         provider = DaumWebProvider(settings, transport=transport)
+    elif settings.web_provider == "tinyfish":
+        provider = TinyFishWebProvider(settings, transport=transport)
     else:
         raise RuntimeError("unreachable web provider configuration")
 

@@ -104,7 +104,7 @@ async def pilot_page_post(
     model_id = form.get("model_id", "")
     prompt = form.get("prompt", "")
     temperature = float(form.get("temperature", 0.2))
-    max_tokens = int(form.get("max_tokens", 4096))
+    max_tokens = int(form.get("max_tokens", 300))
     state = resolve_configuration()
 
     if state == PilotConfigurationState.INVALID_REGISTRY:

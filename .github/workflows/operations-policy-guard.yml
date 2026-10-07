@@ -70,11 +70,23 @@ jobs:
             .github/tests/test_b62_pr_preview_trigger_scope.py \
             .github/tests/test_b62_worker_deploy_trigger_scope.py
 
+      # #3625: a merge-forward can show CHANGED_FILE_OVERLAP=0 and still break a
+      # lane that collects another component's test tree, because a shared
+      # conftest/fixture import is not a changed file in that lane. This guard
+      # is derived from source, never a hardcoded package allowlist.
+      - name: Run cross-lane test dependency guard
+        run: python .github/scripts/cross_lane_test_dependency_guard.py
+
+      - name: Run cross-lane dependency guard contract tests
+        run: python -m pytest -q .github/tests/test_cross_lane_test_dependency_guard.py
+
       - name: Record guard scope
         run: |
           echo 'OPERATIONS_POLICY_GUARD=PASSED'
           echo 'GUARD_REVIEWS_THE_CHANGE=NO'
           echo 'GUARD_ASSIGNS_CTO_READINESS=NO'
+          echo 'FILE_OVERLAP_GUARD=ADVISORY_ONLY'
+          echo 'CROSS_LANE_DEPENDENCY_GUARD=ENFORCED'
           echo 'PRODUCTION_MUTATION=NO'
 
   pr-contract:

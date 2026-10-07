@@ -50,7 +50,7 @@ def test_three_product_tier_identities_remain_known_while_all_routes_hold() -> N
     )
 
     assert DEFAULT_CHAT_PROFILE == "low"
-    assert LOW_B14_MODEL_ID == "kilo/inclusionai-ling-3.1-flash"
+    assert LOW_B14_MODEL_ID == CONTRACT_PLUS_HOLD_MODEL_ID
     assert MEDIUM_B14_MODEL_ID == CONTRACT_PRO_HOLD_MODEL_ID
     assert MAX_HOLD_MODEL_ID == CONTRACT_MAX_HOLD_MODEL_ID
     assert HIGH_B14_MODEL_ID == MAX_HOLD_MODEL_ID
@@ -65,19 +65,20 @@ def test_three_product_tier_identities_remain_known_while_all_routes_hold() -> N
         MEDIUM_B14_MODEL_ID: PADIEM_PRO,
         HIGH_B14_MODEL_ID: PADIEM_MAX,
     }
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset({LOW_B14_MODEL_ID})
+    assert EXECUTABLE_B14_MODEL_IDS == frozenset()
     assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID
     assert policy.model_id == LOW_B14_MODEL_ID
     assert policy.profile == "low"
     assert product_tier_name(policy.model_id) == PADIEM_PLUS
     assert model_profile_is_assigned(policy.model_id) is True
-    assert model_policy_is_executable(policy.model_id) is True
+    assert model_policy_is_executable(policy.model_id) is False
 
 
-def test_ordinary_chat_resolves_executable_successor_route() -> None:
-    policy = resolve_model_policy([{"role": "user", "content": "안녕하세요"}])
-    assert policy.model_id == LOW_B14_MODEL_ID
-    assert model_policy_is_executable(policy.model_id) is True
+def test_ordinary_chat_fails_closed_before_b14_while_successor_is_pending() -> None:
+    with pytest.raises(ModelPolicyError) as info:
+        resolve_model_policy([{"role": "user", "content": "안녕하세요"}])
+    assert info.value.code == "tier_unavailable"
+    assert "준비 중" in info.value.message
 
 
 def test_plus_alias_preserves_product_identity_without_becoming_executable() -> None:
@@ -91,11 +92,11 @@ def test_plus_alias_preserves_product_identity_without_becoming_executable() -> 
     assert policy.alias == "/plus"
     assert policy.messages[-1] == {"role": "user", "content": "테스트 질문입니다"}
     assert product_tier_name(policy.model_id) == PADIEM_PLUS
-    assert model_policy_is_executable(policy.model_id) is True
+    assert model_policy_is_executable(policy.model_id) is False
 
 
-@pytest.mark.parametrize("alias", ["/pro", "/max"])
-def test_held_tier_aliases_fail_closed_before_b14(alias: str) -> None:
+@pytest.mark.parametrize("alias", ["/plus", "/pro", "/max"])
+def test_all_product_aliases_fail_closed_before_b14(alias: str) -> None:
     with pytest.raises(ModelPolicyError) as info:
         resolve_model_policy([{"role": "user", "content": f"{alias} 질문"}])
     assert info.value.code == "tier_unavailable"
@@ -114,7 +115,7 @@ def test_poolside_alias_is_not_a_fallback() -> None:
     with pytest.raises(ModelPolicyError) as info:
         resolve_model_policy([{"role": "user", "content": "/poolside 질문"}])
     assert info.value.code == "unknown_model_alias"
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset({LOW_B14_MODEL_ID})
+    assert EXECUTABLE_B14_MODEL_IDS == frozenset()
     assert model_policy_is_executable("poolside/laguna-s-2.1") is False
 
 
@@ -158,8 +159,6 @@ def test_hold_identities_claim_no_model_capabilities() -> None:
 def test_tier_assignment_is_distinct_from_route_executability() -> None:
     for model_id in (LOW_B14_MODEL_ID, MEDIUM_B14_MODEL_ID, HIGH_B14_MODEL_ID):
         assert model_profile_is_assigned(model_id) is True
-    assert model_policy_is_executable(LOW_B14_MODEL_ID) is True
-    for model_id in (MEDIUM_B14_MODEL_ID, HIGH_B14_MODEL_ID):
         assert model_policy_is_executable(model_id) is False
 
     for model_id in (AUTO_B14_MODEL_ID, UNASSIGNED_B14_MODEL_ID):
@@ -168,10 +167,10 @@ def test_tier_assignment_is_distinct_from_route_executability() -> None:
 
 
 def test_route_identities_are_derived_from_shared_contract() -> None:
-    assert active_route_for(ProductTierLabel.PLUS) is not None
-    assert active_route_for(ProductTierLabel.PLUS).model_id == LOW_B14_MODEL_ID
+    assert active_route_for(ProductTierLabel.PLUS) is None
     assert active_route_for(ProductTierLabel.PRO) is None
     assert active_route_for(ProductTierLabel.MAX) is None
+    assert LOW_B14_MODEL_ID == CONTRACT_PLUS_HOLD_MODEL_ID
     assert MEDIUM_B14_MODEL_ID == CONTRACT_PRO_HOLD_MODEL_ID
     assert HIGH_B14_MODEL_ID == CONTRACT_MAX_HOLD_MODEL_ID
 
@@ -186,9 +185,9 @@ def test_model_policy_source_contains_no_provider_route_literals() -> None:
     assert "EXECUTABLE_B14_MODEL_IDS = _contract_executable_ids()" in source
 
 
-def test_successor_selection_makes_default_profile_executable() -> None:
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset({LOW_B14_MODEL_ID})
-    assert model_policy_is_executable(DEFAULT_B14_MODEL_ID) is True
+def test_no_product_profile_is_executable_until_successor_selection() -> None:
+    assert EXECUTABLE_B14_MODEL_IDS == frozenset()
+    assert model_policy_is_executable(DEFAULT_B14_MODEL_ID) is False
     assert DEFAULT_B14_MODEL_ID == PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
     assert RETIRED_B14_MODEL_IDS == frozenset(
         {
@@ -218,7 +217,7 @@ def test_browser_tier_identity_resolves_without_execution(
     assert policy.messages == messages
 
 
-@pytest.mark.parametrize("tier_id", ["pro", "max"])
+@pytest.mark.parametrize("tier_id", ["plus", "pro", "max"])
 def test_browser_held_tiers_fail_closed(tier_id: str) -> None:
     with pytest.raises(ModelPolicyError) as info:
         resolve_tier_policy([{"role": "user", "content": "HOLD 등급 테스트"}], tier_id)
@@ -232,7 +231,7 @@ def test_browser_tier_rejects_non_product_values(tier_id: str) -> None:
     assert info.value.code == "unknown_product_tier"
 
 
-def test_request_tier_context_scoping_with_executable_plus() -> None:
+def test_request_tier_context_remains_scoped_while_hold_fails_closed() -> None:
     messages = [{"role": "user", "content": "등급 컨텍스트 테스트"}]
 
     identity = resolve_request_model_policy(messages, require_executable=False)
@@ -241,13 +240,10 @@ def test_request_tier_context_scoping_with_executable_plus() -> None:
     with request_tier_context("plus"):
         plus_identity = resolve_request_model_policy(messages, require_executable=False)
         assert plus_identity.model_id == LOW_B14_MODEL_ID
-        executable = resolve_request_model_policy(messages)
-        assert executable.model_id == LOW_B14_MODEL_ID
-
-    with request_tier_context("pro"):
         with pytest.raises(ModelPolicyError) as info:
             resolve_request_model_policy(messages)
         assert info.value.code == "tier_unavailable"
 
-    identity = resolve_request_model_policy(messages, require_executable=False)
-    assert identity.model_id == LOW_B14_MODEL_ID
+    with pytest.raises(ModelPolicyError) as info:
+        resolve_request_model_policy(messages)
+    assert info.value.code == "tier_unavailable"
