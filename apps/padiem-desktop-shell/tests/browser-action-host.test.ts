@@ -1,11 +1,12 @@
 /**
- * #3647 — trusted-main bounded action host tests.
+ * #3647 — trusted-main bounded action host tests (post-CENTRAL-review).
  *
  * Hermetic: the extraction source, lease provider and dispatch binding are
- * fakes. The host always takes a FRESH observation per action, so element
- * identity, credential markers and roles come from the same bounded authority
- * the action is about to act on. The final block reads real sources so a
- * future edit that widens authority fails here rather than in review.
+ * fakes. The host always takes a FRESH observation per action; click is
+ * restricted to roles the projection can prove non-committing; focus has its
+ * own gate; the lease carries the #3607 correlations and the local bookkeeping
+ * is a non-authoritative fast path that invalidates on scope loss and idle.
+ * The final block reads real sources so authority drift fails here.
  */
 
 import test from 'node:test';
@@ -22,6 +23,7 @@ import {
 } from '../src/browser/browser-observation-host.js';
 import {
   CANONICAL_LEASE_ADMISSION_WIRED,
+  LOCAL_LEASE_BOOKKEEPING_IS_AUTHORITY,
   NEW_APPROVAL_STORE,
   STEP_UP_EXECUTION_IMPLEMENTED,
   BrowserActionHost,
@@ -61,25 +63,37 @@ function sourceElement(overrides: Partial<ObservationSourceElement>): Observatio
   } as ObservationSourceElement;
 }
 
-/** el-0001 link · el-0002 button · el-0003 textbox · el-0004 credential · el-0005 listbox · el-0006 group */
+/**
+ * el-0001 tab · el-0002 button · el-0003 textbox · el-0004 credential
+ * el-0005 listbox · el-0006 link · el-0007 treeitem · el-0008 group
+ * (textbox has no focusable flag variant below for the focus-gate refusal.)
+ */
 const DEFAULT_ELEMENTS: ObservationSourceElement[] = [
-  sourceElement({ role: 'link', name: 'Docs' }),
+  sourceElement({ role: 'tab', name: '일반', interactionFlags: ['clickable'] }),
   sourceElement({ role: 'button', name: '로그인' }),
   sourceElement({ role: 'textbox', name: '이름', interactionFlags: ['typeable', 'editable'] }),
   sourceElement({ role: 'textbox', name: '', credentialField: true, stateFlags: ['focusable', 'required'] }),
   sourceElement({ role: 'listbox', name: '옵션', bounds: { x: 0, y: 100, width: 200, height: 30 } }),
-  sourceElement({ role: 'group', name: '패널', bounds: { x: 0, y: 0, width: 800, height: 600 } }),
+  sourceElement({ role: 'link', name: '도움말', bounds: { x: 400, y: 560, width: 60, height: 20 } }),
+  sourceElement({ role: 'treeitem', name: '폴더', bounds: { x: 20, y: 200, width: 120, height: 24 } }),
+  sourceElement({ role: 'group', name: '패널', bounds: { x: 0, y: 0, width: 800, height: 600 }, stateFlags: [] }),
 ];
 
 function validLease(overrides: Record<string, unknown> = {}): Record<string, unknown> {
   return {
     leaseId: 'lease/session-1',
-    sessionRef: 'run/session-1',
-    originRef: ORIGIN,
-    allowedActions: ['click', 'type', 'scroll', 'focus', 'select'],
-    maxActions: 8,
+    requestFingerprint: 'fingerprint/session-1',
+    browserSessionRef: 'run/session-1',
+    runRef: 'run_3647',
+    workspaceRef: 'workspace_3647',
+    ownerRef: 'owner_3647',
+    allowedActionClasses: ['click', 'type', 'scroll', 'focus', 'select'],
+    originScope: ORIGIN,
+    maxActions: 25,
     issuedAtIso: '2026-10-08T09:00:00.000Z',
     expiresAtIso: '2026-10-08T09:05:00.000Z',
+    approvalRef: 'decision_3647',
+    evidenceRef: 'evidence_3647',
     ...overrides,
   };
 }
@@ -140,6 +154,10 @@ function errorCode(error: unknown): string {
   return (error as { code?: string }).code ?? '';
 }
 
+function clickRequest(elementRef: string): Record<string, unknown> {
+  return { action: 'click', browserSessionRef: 'run/session-1', originRef: ORIGIN, elementRef };
+}
+
 test('unwired composition fails closed: no action is ever dispatched', async () => {
   const source: BrowserObservationSourcePort = {
     configured: true,
@@ -152,13 +170,7 @@ test('unwired composition fails closed: no action is ever dispatched', async () 
   assert.equal(composition.bindingConfigured, false);
   assert.equal(composition.leaseProviderConfigured, false);
   await assert.rejects(
-    () =>
-      composition.host.execute({
-        action: 'click',
-        sessionRef: 'run/session-1',
-        originRef: ORIGIN,
-        elementRef: 'el-0001',
-      }),
+    () => composition.host.execute(clickRequest('el-0001')),
     (error: unknown) => errorCode(error) === 'host_unavailable',
   );
 });
@@ -169,13 +181,7 @@ test('a refusing canonical lease authority collapses into lease_invalid without 
     leaseThrows: new Error('internal approval material: p01-decision-xyz'),
   });
   await assert.rejects(
-    () =>
-      harness.host.execute({
-        action: 'click',
-        sessionRef: 'run/session-1',
-        originRef: ORIGIN,
-        elementRef: 'el-0001',
-      }),
+    () => harness.host.execute(clickRequest('el-0001')),
     (error: unknown) => {
       assert.equal(errorCode(error), 'lease_invalid');
       assert.ok(!((error as Error).message.includes('p01-decision-xyz')));
@@ -184,59 +190,41 @@ test('a refusing canonical lease authority collapses into lease_invalid without 
   );
 });
 
-test('expired leases and scope mismatches refuse before any dispatch', async () => {
+test('expired leases and scope mismatches refuse and invalidate the local mirror', async () => {
   const expired = harnessFactory({
     elements: DEFAULT_ELEMENTS,
     lease: validLease({ expiresAtIso: '2026-10-08T08:00:00.000Z' }),
   });
   await assert.rejects(
-    () =>
-      expired.host.execute({
-        action: 'click',
-        sessionRef: 'run/session-1',
-        originRef: ORIGIN,
-        elementRef: 'el-0001',
-      }),
+    () => expired.host.execute(clickRequest('el-0001')),
     (error: unknown) => errorCode(error) === 'lease_invalid',
   );
 
   const otherOrigin = harnessFactory({
     elements: DEFAULT_ELEMENTS,
-    lease: validLease({ originRef: 'https://other.example' }),
+    lease: validLease({ originScope: 'https://other.example' }),
   });
   await assert.rejects(
-    () =>
-      otherOrigin.host.execute({
-        action: 'click',
-        sessionRef: 'run/session-1',
-        originRef: ORIGIN,
-        elementRef: 'el-0001',
-      }),
+    () => otherOrigin.host.execute(clickRequest('el-0001')),
     (error: unknown) => errorCode(error) === 'origin_scope_exceeded',
   );
 
   const viewMoved = harnessFactory({ elements: DEFAULT_ELEMENTS, origin: 'https://moved.example' });
   await assert.rejects(
-    () =>
-      viewMoved.host.execute({
-        action: 'click',
-        sessionRef: 'run/session-1',
-        originRef: ORIGIN,
-        elementRef: 'el-0001',
-      }),
+    () => viewMoved.host.execute(clickRequest('el-0001')),
     (error: unknown) => errorCode(error) === 'origin_scope_exceeded',
   );
   assert.equal(viewMoved.binding.ops.length, 0);
 
   const uncovered = harnessFactory({
     elements: DEFAULT_ELEMENTS,
-    lease: validLease({ allowedActions: ['click'] }),
+    lease: validLease({ allowedActionClasses: ['click'] }),
   });
   await assert.rejects(
     () =>
       uncovered.host.execute({
         action: 'type',
-        sessionRef: 'run/session-1',
+        browserSessionRef: 'run/session-1',
         originRef: ORIGIN,
         elementRef: 'el-0003',
         text: 'hi',
@@ -248,13 +236,7 @@ test('expired leases and scope mismatches refuse before any dispatch', async () 
 test('actions bind only to elements of the fresh observation', async () => {
   const harness = harnessFactory({ elements: DEFAULT_ELEMENTS });
   await assert.rejects(
-    () =>
-      harness.host.execute({
-        action: 'click',
-        sessionRef: 'run/session-1',
-        originRef: ORIGIN,
-        elementRef: 'el-0099',
-      }),
+    () => harness.host.execute(clickRequest('el-0099')),
     (error: unknown) => errorCode(error) === 'element_not_observed',
   );
   assert.equal(harness.snapshotCount(), 1);
@@ -267,7 +249,7 @@ test('credential elements refuse every direct action on the masked marker alone'
     () =>
       harness.host.execute({
         action: 'type',
-        sessionRef: 'run/session-1',
+        browserSessionRef: 'run/session-1',
         originRef: ORIGIN,
         elementRef: 'el-0004',
         text: 'hunter2',
@@ -275,69 +257,77 @@ test('credential elements refuse every direct action on the masked marker alone'
     (error: unknown) => errorCode(error) === 'credential_element_forbidden',
   );
   await assert.rejects(
-    () =>
-      harness.host.execute({
-        action: 'click',
-        sessionRef: 'run/session-1',
-        originRef: ORIGIN,
-        elementRef: 'el-0004',
-      }),
+    () => harness.host.execute(clickRequest('el-0004')),
+    (error: unknown) => errorCode(error) === 'credential_element_forbidden',
+  );
+  await assert.rejects(
+    () => harness.host.execute({ action: 'focus', browserSessionRef: 'run/session-1', originRef: ORIGIN, elementRef: 'el-0004' }),
     (error: unknown) => errorCode(error) === 'credential_element_forbidden',
   );
   assert.equal(harness.binding.ops.length, 0);
 });
 
-test('button-role click and focus default to step-up; other roles stay bounded', async () => {
+test('click policy: effect class first — only tab/treeitem stay lease-allowed', async () => {
   const harness = harnessFactory({ elements: DEFAULT_ELEMENTS });
-  await assert.rejects(
-    () =>
-      harness.host.execute({
-        action: 'click',
-        sessionRef: 'run/session-1',
-        originRef: ORIGIN,
-        elementRef: 'el-0002',
-      }),
-    (error: unknown) => errorCode(error) === 'step_up_required',
-  );
+  // Provable non-committing roles dispatch.
+  const receipt = await harness.host.execute(clickRequest('el-0001'));
+  assert.equal(receipt.outcome, 'dispatched');
+  assert.deepEqual(harness.binding.ops[0], [{ kind: 'click', x: 50, y: 20 }]);
+  await harness.host.execute(clickRequest('el-0007'));
+  assert.deepEqual(harness.binding.ops[1], [{ kind: 'click', x: 80, y: 212 }]);
+
+  // Everything the projection cannot prove steps up — verb "click" is not safe,
+  // and non-interactive containers are no exception (fail closed).
+  for (const [elementRef, role] of [
+    ['el-0002', 'button'],
+    ['el-0006', 'link'],
+    ['el-0008', 'group'],
+  ] as const) {
+    await assert.rejects(
+      () => harness.host.execute(clickRequest(elementRef)),
+      (error: unknown) => {
+        assert.equal(errorCode(error), 'step_up_required');
+        assert.ok((error as Error).message.includes(role));
+        return true;
+      },
+      `click on ${role} must step up`,
+    );
+  }
+});
+
+test('focus policy is separate: focusable non-credential elements focus without role limits', async () => {
+  const harness = harnessFactory({ elements: DEFAULT_ELEMENTS });
+  // A textbox (never click-allowed) focuses fine through the focus gate.
+  const receipt = await harness.host.execute({
+    action: 'focus',
+    browserSessionRef: 'run/session-1',
+    originRef: ORIGIN,
+    elementRef: 'el-0003',
+  });
+  assert.equal(receipt.action, 'focus');
+  // Press ON the element, release BELOW it — no click activation.
+  assert.deepEqual(harness.binding.ops[0], [
+    { kind: 'focus', x: 50, y: 20, releaseX: 50, releaseY: 94 },
+  ]);
+  // A non-focusable element refuses through the focus gate.
   await assert.rejects(
     () =>
       harness.host.execute({
         action: 'focus',
-        sessionRef: 'run/session-1',
+        browserSessionRef: 'run/session-1',
         originRef: ORIGIN,
-        elementRef: 'el-0002',
+        elementRef: 'el-0008',
       }),
-    (error: unknown) => errorCode(error) === 'step_up_required',
+    (error: unknown) => errorCode(error) === 'element_not_focusable',
   );
-  await assert.rejects(
-    () =>
-      harness.host.execute({
-        action: 'click',
-        sessionRef: 'run/session-1',
-        originRef: ORIGIN,
-        elementRef: 'el-0006',
-      }),
-    (error: unknown) => errorCode(error) === 'contract_violation',
-  );
-  assert.equal(harness.binding.ops.length, 0);
-
-  const receipt = await harness.host.execute({
-    action: 'click',
-    sessionRef: 'run/session-1',
-    originRef: ORIGIN,
-    elementRef: 'el-0001',
-  });
-  assert.equal(receipt.outcome, 'dispatched');
-  assert.equal(receipt.elementRef, 'el-0001');
-  assert.equal(receipt.pageContentIncluded, false);
-  assert.deepEqual(harness.binding.ops[0], [{ kind: 'click', x: 50, y: 20 }]);
+  assert.equal(harness.binding.ops.length, 1);
 });
 
 test('type dispatches a bounded click-then-insertText pair at the observed center', async () => {
   const harness = harnessFactory({ elements: DEFAULT_ELEMENTS });
   const receipt = await harness.host.execute({
     action: 'type',
-    sessionRef: 'run/session-1',
+    browserSessionRef: 'run/session-1',
     originRef: ORIGIN,
     elementRef: 'el-0003',
     text: '안녕하세요',
@@ -351,7 +341,7 @@ test('type dispatches a bounded click-then-insertText pair at the observed cente
     () =>
       harness.host.execute({
         action: 'type',
-        sessionRef: 'run/session-1',
+        browserSessionRef: 'run/session-1',
         originRef: ORIGIN,
         elementRef: 'el-0001',
         text: 'hi',
@@ -360,54 +350,98 @@ test('type dispatches a bounded click-then-insertText pair at the observed cente
   );
 });
 
-test('select dispatches the bounded keyboard path and scroll needs no element', async () => {
+test('select uses the deterministic absolute index path', async () => {
   const harness = harnessFactory({ elements: DEFAULT_ELEMENTS });
   await harness.host.execute({
     action: 'select',
-    sessionRef: 'run/session-1',
+    browserSessionRef: 'run/session-1',
     originRef: ORIGIN,
     elementRef: 'el-0005',
     optionIndex: 2,
   });
+  // optionIndex=2 must be exactly: click, Home, 2×ArrowDown, Enter —
+  // independent of whatever was already selected.
   assert.deepEqual(harness.binding.ops[0], [
     { kind: 'click', x: 100, y: 115 },
-    { kind: 'key', key: 'ArrowDown' },
+    { kind: 'key', key: 'Home' },
     { kind: 'key', key: 'ArrowDown' },
     { kind: 'key', key: 'ArrowDown' },
     { kind: 'key', key: 'Enter' },
   ]);
+
+  // optionIndex=0 is Home+Enter with zero ArrowDowns.
+  await harness.host.execute({
+    action: 'select',
+    browserSessionRef: 'run/session-1',
+    originRef: ORIGIN,
+    elementRef: 'el-0005',
+    optionIndex: 0,
+  });
+  assert.deepEqual(harness.binding.ops[1], [
+    { kind: 'click', x: 100, y: 115 },
+    { kind: 'key', key: 'Home' },
+    { kind: 'key', key: 'Enter' },
+  ]);
+
+  // The same index always produces the same absolute key path (already-selected
+  // middle options change nothing).
+  const before = JSON.stringify(harness.binding.ops[0]);
+  await harness.host.execute({
+    action: 'select',
+    browserSessionRef: 'run/session-1',
+    originRef: ORIGIN,
+    elementRef: 'el-0005',
+    optionIndex: 2,
+  });
+  assert.equal(JSON.stringify(harness.binding.ops[2]), before);
+
+  // Max bounded index stays bounded.
+  await harness.host.execute({
+    action: 'select',
+    browserSessionRef: 'run/session-1',
+    originRef: ORIGIN,
+    elementRef: 'el-0005',
+    optionIndex: 1023,
+  });
+  assert.equal(harness.binding.ops[3]?.length, 1 + 1 + 1023 + 1);
+
   const scrollReceipt = await harness.host.execute({
     action: 'scroll',
-    sessionRef: 'run/session-1',
+    browserSessionRef: 'run/session-1',
     originRef: ORIGIN,
     dx: 0,
     dy: -240,
   });
   assert.equal(scrollReceipt.elementRef, null);
-  assert.deepEqual(harness.binding.ops[1], [{ kind: 'wheel', x: 0, y: 0, dx: 0, dy: -240 }]);
+  assert.deepEqual(harness.binding.ops[4], [{ kind: 'wheel', x: 0, y: 0, dx: 0, dy: -240 }]);
 });
 
-test('the lease action budget is enforced on the fast path', async () => {
+test('the lease action budget and idle window are enforced on the fast path', async () => {
+  let clock = new Date('2026-10-08T09:00:00.000Z');
   const harness = harnessFactory({
     elements: DEFAULT_ELEMENTS,
-    lease: validLease({ allowedActions: ['click'], maxActions: 1 }),
+    lease: validLease({ allowedActionClasses: ['click'], maxActions: 1 }),
+    now: () => clock,
   });
-  await harness.host.execute({
-    action: 'click',
-    sessionRef: 'run/session-1',
-    originRef: ORIGIN,
-    elementRef: 'el-0001',
-  });
+  await harness.host.execute(clickRequest('el-0001'));
   await assert.rejects(
-    () =>
-      harness.host.execute({
-        action: 'click',
-        sessionRef: 'run/session-1',
-        originRef: ORIGIN,
-        elementRef: 'el-0001',
-      }),
+    () => harness.host.execute(clickRequest('el-0001')),
     (error: unknown) => errorCode(error) === 'action_budget_exhausted',
   );
+
+  const idleHarness = harnessFactory({
+    elements: DEFAULT_ELEMENTS,
+    lease: validLease({ allowedActionClasses: ['click'], maxActions: 5 }),
+    now: () => clock,
+  });
+  await idleHarness.host.execute(clickRequest('el-0001'));
+  clock = new Date('2026-10-08T09:00:00.000Z');
+  clock = new Date(clock.getTime() + 121 * 1000);
+  await assert.rejects(
+    () => idleHarness.host.execute(clickRequest('el-0001')),
+    (error: unknown) => errorCode(error) === 'lease_idle_exceeded',
+  );
+  assert.equal(idleHarness.binding.ops.length, 1);
 });
 
 test('action ids are deterministic, content-free and sequence-scoped', async () => {
@@ -415,22 +449,12 @@ test('action ids are deterministic, content-free and sequence-scoped', async () 
     elements: DEFAULT_ELEMENTS,
     now: () => new Date('2026-10-08T09:00:00.000Z'),
   });
-  const receipt = await first.host.execute({
-    action: 'click',
-    sessionRef: 'run/session-1',
-    originRef: ORIGIN,
-    elementRef: 'el-0001',
-  });
+  const receipt = await first.host.execute(clickRequest('el-0001'));
   const second = harnessFactory({
     elements: DEFAULT_ELEMENTS,
     now: () => new Date('2026-10-08T09:00:00.000Z'),
   });
-  const replayed = await second.host.execute({
-    action: 'click',
-    sessionRef: 'run/session-1',
-    originRef: ORIGIN,
-    elementRef: 'el-0001',
-  });
+  const replayed = await second.host.execute(clickRequest('el-0001'));
   assert.match(receipt.actionId, /^act_[0-9a-f]{24}$/);
   assert.equal(receipt.actionId, replayed.actionId);
 });
@@ -439,15 +463,22 @@ test('no renderer channel, no second authority, no script evaluation exists', ()
   const hostModule = stripComments(readSource('browser', 'browser-action-host.ts'));
   const composition = stripComments(readSource('browser', 'browser-action-composition.ts'));
   const binding = stripComments(readSource('browser', 'browser-action-electron-binding.ts'));
+  const contract = stripComments(readSource('browser', 'browser-action-contract.ts'));
   assert.equal(STEP_UP_EXECUTION_IMPLEMENTED, false);
   assert.equal(CANONICAL_LEASE_ADMISSION_WIRED, false);
   assert.equal(NEW_APPROVAL_STORE, false);
   assert.equal(SECOND_BROWSER_AUTHORITY, false);
   assert.equal(GENERIC_IPC_SURFACE, false);
+  // The local per-lease bookkeeping never claims replay/budget authority.
+  assert.equal(LOCAL_LEASE_BOOKKEEPING_IS_AUTHORITY, false);
   for (const code of [hostModule, composition]) {
     assert.ok(!code.includes('ipcMain'));
     assert.ok(!code.includes('ipcRenderer'));
     assert.ok(!code.includes('execute' + 'JavaScript'));
+  }
+  // The lease carries the full correlation set (code-level, not comments).
+  for (const correlation of ['requestFingerprint', 'runRef', 'workspaceRef', 'ownerRef', 'approvalRef', 'evidenceRef']) {
+    assert.ok(contract.includes(correlation), `lease correlation ${correlation} missing`);
   }
   // The binding's whole CDP surface is the declared Input.* allowlist.
   assert.ok(binding.includes("'Input.dispatchMouseEvent'"));

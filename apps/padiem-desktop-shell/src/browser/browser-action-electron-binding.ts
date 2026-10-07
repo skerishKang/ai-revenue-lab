@@ -41,7 +41,7 @@ const ALLOWED_COMMANDS = Object.freeze([
   'Input.dispatchKeyEvent',
 ] as const);
 
-const KEY_CODES = Object.freeze({ ArrowDown: 40, Enter: 13 } as const);
+const KEY_CODES = Object.freeze({ Home: 36, ArrowDown: 40, Enter: 13 } as const);
 
 export function createElectronBrowserActionBinding(
   webContents: ActionWebContentsLike,
@@ -70,6 +70,25 @@ export function createElectronBrowserActionBinding(
           type: 'mouseReleased',
           x: op.x,
           y: op.y,
+          button: 'left',
+          clickCount: 1,
+        });
+        return;
+      case 'focus':
+        // Focus without activation: press ON the target (mousedown focuses),
+        // then release OUTSIDE it so no click is completed on the target or on
+        // whatever sits under the release point.
+        await sendAllowed('Input.dispatchMouseEvent', {
+          type: 'mousePressed',
+          x: op.x,
+          y: op.y,
+          button: 'left',
+          clickCount: 1,
+        });
+        await sendAllowed('Input.dispatchMouseEvent', {
+          type: 'mouseReleased',
+          x: op.releaseX,
+          y: op.releaseY,
           button: 'left',
           clickCount: 1,
         });

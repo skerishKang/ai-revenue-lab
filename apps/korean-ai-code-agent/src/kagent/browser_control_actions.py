@@ -1,24 +1,43 @@
 """#3647 — bounded browser.control action slice 1 (agent-side authority).
 
-Implements the #3607 approval-granularity design for the **lease-eligible
-first slice only**, on top of the #3629 bounded observation authority and the
-#3609 D1=ENABLED_BOUNDED decision:
+Source of truth: the #3607 CENTRAL final design disposition
+(BOUNDED_HYBRID_LEASE_PLUS_STEP_UP), applied on top of the #3629 bounded
+observation authority and the #3609 D1=ENABLED_BOUNDED decision.
 
-    lease-eligible: scroll / focus / click / type / select
-    step-up required (refused here): submit, download, upload, clipboard
-        read/write, open/close tab, cross-origin navigation, credential-field
-        interaction, payment, account/security change, permission prompts,
-        external protocol launch, destructive actions
-    prohibited (structurally absent): javascript_evaluate, raw DOM read
+Lease policy (authoritative values, never redefined):
 
-No new approval or browser authority exists here: the lease shape follows the
-#3607 frozen design (one origin, explicit action classes, bounded action
-count, TTL inside the reviewed grant-family limits, no cross-run transfer)
-and the canonical P01 approval + durable one-shot admission is the next
-slice's port. Bounded observation cannot distinguish a submit button from a
-safe one (arbitrary attributes are banned from the projection), so button-role
-clicks default to step-up refusal; typing is single-line non-credential text
-via input synthesis (no keystroke injection, no page-derived material).
+    LEASE_TTL_SECONDS=300          canonical issuance default
+    LEASE_TTL_MAX_SECONDS=900      hard max
+    LEASE_MAX_ACTIONS=25           canonical issuance default
+    LEASE_MAX_ACTIONS_HARD_CAP=100
+    LEASE_IDLE_SECONDS=120
+    LEASE_SITE_SCOPE=EXACT_ORIGIN_MAX_3_NO_WILDCARD
+    SLICE1_ORIGIN_SCOPE=EXACT_ONE_ORIGIN   (deliberate slice-1 tightening)
+    LEASE_CROSS_ORIGIN_POLICY=INVALIDATE_AND_REQUIRE_STEP_UP
+    LEASE_RUN_TRANSFER=PROHIBITED
+    LEASE_REVOCATION=IMMEDIATE_USER_VISIBLE
+
+Action taxonomy (#3607 effect class first, verb second):
+
+    LEASE_ALLOWED      bounded non-committing interaction only; a role is
+                       lease-allowed only where the #3629 projection can prove
+                       it (click is restricted to tab/treeitem roles);
+    STEP_UP_REQUIRED   submit, credential_field_interaction, upload, download
+                       (download additionally EXECUTION_BLOCKED until the
+                       artifact/filesystem.write authority exists),
+                       clipboard_read/write, cross_origin_navigation;
+    PROHIBITED         javascript_evaluate, payment_or_purchase,
+                       account_or_security_change, destructive_action,
+                       permission_prompt;
+    OUT_OF_SCOPE       external_protocol_launch, OS Computer Use, the generic
+                       CDP/DevTools surface, file: navigation.
+
+No new approval or browser authority exists here: the lease carries the full
+#3607 correlation set (request fingerprint, browser session, owner/workspace/
+run, exact action classes, exact origin scope, bounded action count, expiry,
+P01 approval/evidence refs) and the canonical durable admission that mints it
+is NOT wired in this slice — nothing mints, refreshes, stores or replays a
+lease, and no second approval store exists.
 
     BROWSER_ACTION_EXECUTION_IMPLEMENTED = True   (lease-eligible slice only)
     STEP_UP_EXECUTION_IMPLEMENTED = False
@@ -41,21 +60,26 @@ BROWSER_ACTION_SESSION_REF = "browser-control-action@1"
 LEASE_ELIGIBLE_ACTIONS = ("scroll", "focus", "click", "type", "select")
 STEP_UP_REQUIRED_ACTIONS = (
     "submit",
-    "download",
+    "credential_field_interaction",
     "upload",
+    "download",
     "clipboard_read",
     "clipboard_write",
-    "open_new_tab",
-    "close_tab",
     "cross_origin_navigation",
-    "credential_field_interaction",
+)
+PROHIBITED_ACTIONS = (
+    "javascript_evaluate",
     "payment_or_purchase",
     "account_or_security_change",
-    "permission_prompt",
-    "external_protocol_launch",
     "destructive_action",
+    "permission_prompt",
 )
-PROHIBITED_ACTIONS = ("javascript_evaluate", "observe_dom_read")
+OUT_OF_SCOPE_ACTIONS = ("external_protocol_launch",)
+OUT_OF_SCOPE_SURFACES = (
+    "os_computer_use",
+    "generic_cdp_devtools_surface",
+    "file_navigation",
+)
 
 BROWSER_ACTION_EXECUTION_IMPLEMENTED = True
 STEP_UP_EXECUTION_IMPLEMENTED = False
@@ -65,13 +89,23 @@ SECOND_BROWSER_AUTHORITY = False
 NEW_APPROVAL_STORE = False
 DURABLE_ADMISSION_WIRED = False
 
+# #3607 authoritative lease values.
+LEASE_TTL_SECONDS = 300
+LEASE_TTL_MAX_SECONDS = 900
+LEASE_MAX_ACTIONS = 25
+LEASE_MAX_ACTIONS_HARD_CAP = 100
+LEASE_IDLE_SECONDS = 120
+LEASE_SITE_SCOPE_POLICY = "EXACT_ORIGIN_MAX_3_NO_WILDCARD"
+LEASE_CROSS_ORIGIN_POLICY = "INVALIDATE_AND_REQUIRE_STEP_UP"
+LEASE_RUN_TRANSFER = "PROHIBITED"
+LEASE_REVOCATION = "IMMEDIATE_USER_VISIBLE"
+SLICE1_ORIGIN_SCOPE = "EXACT_ONE_ORIGIN"
+DOWNLOAD_EXECUTION_BLOCKED_UNTIL_ARTIFACT_AUTHORITY = True
+
 MAX_ACTION_TEXT_CHARS = 256
 MAX_SCROLL_DELTA = 10_000
 MAX_SELECT_INDEX = 1023
 MAX_SERIALIZED_ACTION_BYTES = 2048
-MAX_ACTIONS_PER_LEASE = 64
-MAX_LEASE_TTL_SECONDS = 900
-MIN_LEASE_TTL_SECONDS = 60
 MAX_ORIGIN_CHARS = 255
 
 ACTION_ID_RE = re.compile(r"^act_[0-9a-f]{24}$")
@@ -81,27 +115,41 @@ ORIGIN_RE = re.compile(
 )
 SAFE_REF_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,511}$")
 
-#: Roles a bounded click/focus may target in slice 1. Buttons are excluded on
-#: purpose: the projection cannot tell submit from safe, so they step up.
-CLICKABLE_ROLE_ALLOWLIST = frozenset(
-    {"link", "tab", "menuitem", "treeitem", "checkbox", "radio", "switch", "option"}
-)
+#: Roles where the #3629 projection can actually prove non-committing
+#: interaction. Everything else — link (href invisible), button (submit
+#: indistinguishable), menuitem/checkbox/radio/switch/option (durable or
+#: external effect not disprovable) — steps up. Effect class first, verb
+#: second; no new observation attribute was invented for this.
+CLICK_ALLOWED_ROLE_ALLOWLIST = frozenset({"tab", "treeitem"})
 TYPEABLE_ROLE_ALLOWLIST = frozenset(
     {"textbox", "textarea", "searchbox", "combobox", "spinbutton"}
 )
 SELECT_ROLE_ALLOWLIST = frozenset({"listbox", "combobox"})
 
-ACTION_PARAMS_KEYS = frozenset({"dx", "dy", "text", "option_index"})
-ACTION_REQUEST_KEYS = frozenset({"action", "element_ref", "session_ref", "origin_ref", "params"})
+ACTION_REQUEST_KEYS = frozenset(
+    {
+        "action",
+        "element_ref",
+        "browser_session_ref",
+        "origin_ref",
+        "params",
+    }
+)
 ACTION_LEASE_KEYS = frozenset(
     {
         "lease_id",
-        "session_ref",
-        "origin_ref",
-        "allowed_actions",
+        "request_fingerprint",
+        "browser_session_ref",
+        "run_ref",
+        "workspace_ref",
+        "owner_ref",
+        "allowed_action_classes",
+        "origin_scope",
         "max_actions",
         "issued_at",
         "expires_at",
+        "approval_ref",
+        "evidence_ref",
     }
 )
 ACTION_RECEIPT_KEYS = frozenset(
@@ -129,13 +177,15 @@ class BrowserControlActionRefusal(ContractError):
 
 
 def classify_browser_control_action(action: str) -> str:
-    """Map one action name to lease_eligible | step_up_required | prohibited."""
+    """Map one action name to lease_eligible | step_up_required | prohibited | out_of_scope."""
     if action in LEASE_ELIGIBLE_ACTIONS:
         return "lease_eligible"
     if action in STEP_UP_REQUIRED_ACTIONS:
         return "step_up_required"
     if action in PROHIBITED_ACTIONS:
         return "prohibited"
+    if action in OUT_OF_SCOPE_ACTIONS:
+        return "out_of_scope"
     raise BrowserControlActionRefusal("unknown_action", "unknown browser control action")
 
 
@@ -170,7 +220,7 @@ class BrowserControlActionRequest:
     """One bounded action request. Only lease-eligible classes validate here."""
 
     action: str
-    session_ref: str
+    browser_session_ref: str
     origin_ref: str
     element_ref: str | None = None
     params: Mapping[str, Any] | None = None
@@ -179,10 +229,14 @@ class BrowserControlActionRequest:
         classification = classify_browser_control_action(self.action)
         if classification != "lease_eligible":
             raise BrowserControlActionRefusal(
-                "step_up_required" if classification == "step_up_required" else "action_prohibited",
+                "step_up_required"
+                if classification == "step_up_required"
+                else "action_prohibited" if classification == "prohibited" else "out_of_scope",
                 f"action {self.action!r} is not part of the lease-eligible slice",
             )
-        object.__setattr__(self, "session_ref", _ref(self.session_ref, "session_ref"))
+        object.__setattr__(
+            self, "browser_session_ref", _ref(self.browser_session_ref, "browser_session_ref")
+        )
         object.__setattr__(self, "origin_ref", _origin(self.origin_ref, "origin_ref"))
 
         if self.action == "scroll":
@@ -192,7 +246,7 @@ class BrowserControlActionRequest:
             if not isinstance(params, Mapping) or set(params) != {"dx", "dy"}:
                 _refuse("scroll params must carry exactly dx and dy")
             for axis in ("dx", "dy"):
-                entry = params.get(axis, 0)
+                entry = params.get(axis)
                 if isinstance(entry, bool) or not isinstance(entry, int) or abs(entry) > MAX_SCROLL_DELTA:
                     _refuse(f"scroll {axis} must be a bounded integer")
         elif self.action in ("focus", "click"):
@@ -226,7 +280,7 @@ class BrowserControlActionRequest:
     def safe_dict(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
             "action": self.action,
-            "session_ref": self.session_ref,
+            "browser_session_ref": self.browser_session_ref,
             "origin_ref": self.origin_ref,
             "element_ref": self.element_ref,
             "params": dict(self.params) if self.params else {},
@@ -241,54 +295,69 @@ class BrowserControlActionRequest:
 
 @dataclass(frozen=True, slots=True)
 class BrowserControlActionLease:
-    """The #3607 bounded lease shape for slice 1 (validation authority).
+    """The #3607 bounded lease shape for slice 1 (validation authority only).
 
-    One origin, explicit action classes, bounded action count, TTL inside the
-    reviewed grant-family limits, non-transferable. The canonical P01 approval
-    and the durable one-shot admission plug in through the next slice's port;
-    this slice creates no second approval store.
+    Carries the full correlation set and never mints, refreshes, stores or
+    replays a lease: the canonical P01 approval + durable admission that mints
+    it is the next slice's fail-closed port, and no second approval store
+    exists here.
     """
 
     lease_id: str
-    session_ref: str
-    origin_ref: str
-    allowed_actions: tuple[str, ...]
+    request_fingerprint: str
+    browser_session_ref: str
+    run_ref: str
+    workspace_ref: str
+    owner_ref: str
+    allowed_action_classes: tuple[str, ...]
+    origin_scope: str
     max_actions: int
     issued_at: datetime
     expires_at: datetime
+    approval_ref: str
+    evidence_ref: str
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "lease_id", _ref(self.lease_id, "lease_id"))
-        object.__setattr__(self, "session_ref", _ref(self.session_ref, "session_ref"))
-        object.__setattr__(self, "origin_ref", _origin(self.origin_ref, "origin_ref"))
-        actions = tuple(self.allowed_actions)
+        object.__setattr__(
+            self, "request_fingerprint", _ref(self.request_fingerprint, "request_fingerprint")
+        )
+        object.__setattr__(
+            self, "browser_session_ref", _ref(self.browser_session_ref, "browser_session_ref")
+        )
+        object.__setattr__(self, "run_ref", _ref(self.run_ref, "run_ref"))
+        object.__setattr__(self, "workspace_ref", _ref(self.workspace_ref, "workspace_ref"))
+        object.__setattr__(self, "owner_ref", _ref(self.owner_ref, "owner_ref"))
+        object.__setattr__(self, "approval_ref", _ref(self.approval_ref, "approval_ref"))
+        object.__setattr__(self, "evidence_ref", _ref(self.evidence_ref, "evidence_ref"))
+        # Slice 1: exactly one exact origin; the general #3607 policy allows up
+        # to three exact origins without wildcards and is not exercised here.
+        object.__setattr__(self, "origin_scope", _origin(self.origin_scope, "origin_scope"))
+        actions = tuple(self.allowed_action_classes)
         if not actions:
-            _refuse("lease must allow at least one bounded action")
+            _refuse("lease must allow at least one bounded action class")
         if any(classify_browser_control_action(entry) != "lease_eligible" for entry in actions):
-            _refuse("lease allowed_actions must be lease-eligible only")
-        object.__setattr__(self, "allowed_actions", tuple(sorted(set(actions))))
+            _refuse("lease allowed_action_classes must be lease-eligible only")
+        object.__setattr__(self, "allowed_action_classes", tuple(sorted(set(actions))))
         if (
             isinstance(self.max_actions, bool)
             or not isinstance(self.max_actions, int)
-            or not 1 <= self.max_actions <= MAX_ACTIONS_PER_LEASE
+            or not 1 <= self.max_actions <= LEASE_MAX_ACTIONS_HARD_CAP
         ):
-            _refuse(f"lease max_actions must be 1..{MAX_ACTIONS_PER_LEASE}")
+            _refuse(f"lease max_actions must be 1..{LEASE_MAX_ACTIONS_HARD_CAP}")
         issued = _aware(self.issued_at, "issued_at")
         expires = _aware(self.expires_at, "expires_at")
         lifetime = (expires - issued).total_seconds()
-        if not MIN_LEASE_TTL_SECONDS <= lifetime <= MAX_LEASE_TTL_SECONDS:
-            _refuse(
-                f"lease lifetime must be between {MIN_LEASE_TTL_SECONDS} and "
-                f"{MAX_LEASE_TTL_SECONDS} seconds"
-            )
+        if lifetime <= 0 or lifetime > LEASE_TTL_MAX_SECONDS:
+            _refuse(f"lease lifetime must be positive and at most {LEASE_TTL_MAX_SECONDS} seconds")
         object.__setattr__(self, "issued_at", issued)
         object.__setattr__(self, "expires_at", expires)
 
     def allows(self, request: BrowserControlActionRequest) -> bool:
         return (
-            request.action in self.allowed_actions
-            and request.origin_ref == self.origin_ref
-            and request.session_ref == self.session_ref
+            request.action in self.allowed_action_classes
+            and request.origin_ref == self.origin_scope
+            and request.browser_session_ref == self.browser_session_ref
         )
 
 

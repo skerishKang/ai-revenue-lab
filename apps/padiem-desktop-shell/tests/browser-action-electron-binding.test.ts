@@ -59,21 +59,28 @@ test('click dispatches exactly one bounded press/release pair', async () => {
   assert.equal(fake.detachCount(), 1);
 });
 
-test('wheel, text and key ops map to their single allowed command pair', async () => {
+test('wheel, focus, text and key ops map to their allowed command sequences', async () => {
   const fake = fakeWebContents();
   const binding = createElectronBrowserActionBinding(fake.webContents);
   await binding.dispatch([
     { kind: 'wheel', x: 0, y: 0, dx: 0, dy: -240 },
+    { kind: 'focus', x: 50, y: 20, releaseX: 50, releaseY: 94 },
     { kind: 'insertText', text: '안녕' },
+    { kind: 'key', key: 'Home' },
     { kind: 'key', key: 'ArrowDown' },
     { kind: 'key', key: 'Enter' },
   ]);
-  // Every key op is one rawKeyDown + one keyUp pair.
+  // Every key op is one rawKeyDown + one keyUp pair; focus is a press ON the
+  // element followed by a release OUTSIDE it (no click activation).
   assert.deepEqual(
     fake.commands.map((entry) => entry.method),
     [
       'Input.dispatchMouseEvent',
+      'Input.dispatchMouseEvent',
+      'Input.dispatchMouseEvent',
       'Input.insertText',
+      'Input.dispatchKeyEvent',
+      'Input.dispatchKeyEvent',
       'Input.dispatchKeyEvent',
       'Input.dispatchKeyEvent',
       'Input.dispatchKeyEvent',
@@ -81,11 +88,15 @@ test('wheel, text and key ops map to their single allowed command pair', async (
     ],
   );
   assert.deepEqual(fake.commands[0]?.params, { type: 'mouseWheel', x: 0, y: 0, deltaX: 0, deltaY: -240 });
-  assert.deepEqual(fake.commands[1]?.params, { text: '안녕' });
-  assert.deepEqual(fake.commands[2]?.params, { type: 'rawKeyDown', key: 'ArrowDown', windowsVirtualKeyCode: 40 });
-  assert.deepEqual(fake.commands[3]?.params, { type: 'keyUp', key: 'ArrowDown', windowsVirtualKeyCode: 40 });
-  assert.deepEqual(fake.commands[4]?.params, { type: 'rawKeyDown', key: 'Enter', windowsVirtualKeyCode: 13 });
-  assert.deepEqual(fake.commands[5]?.params, { type: 'keyUp', key: 'Enter', windowsVirtualKeyCode: 13 });
+  assert.deepEqual(fake.commands[1]?.params, { type: 'mousePressed', x: 50, y: 20, button: 'left', clickCount: 1 });
+  assert.deepEqual(fake.commands[2]?.params, { type: 'mouseReleased', x: 50, y: 94, button: 'left', clickCount: 1 });
+  assert.deepEqual(fake.commands[3]?.params, { text: '안녕' });
+  assert.deepEqual(fake.commands[4]?.params, { type: 'rawKeyDown', key: 'Home', windowsVirtualKeyCode: 36 });
+  assert.deepEqual(fake.commands[5]?.params, { type: 'keyUp', key: 'Home', windowsVirtualKeyCode: 36 });
+  assert.deepEqual(fake.commands[6]?.params, { type: 'rawKeyDown', key: 'ArrowDown', windowsVirtualKeyCode: 40 });
+  assert.deepEqual(fake.commands[7]?.params, { type: 'keyUp', key: 'ArrowDown', windowsVirtualKeyCode: 40 });
+  assert.deepEqual(fake.commands[8]?.params, { type: 'rawKeyDown', key: 'Enter', windowsVirtualKeyCode: 13 });
+  assert.deepEqual(fake.commands[9]?.params, { type: 'keyUp', key: 'Enter', windowsVirtualKeyCode: 13 });
 });
 
 test('a batch is atomic: the debugger is attached and detached exactly once', async () => {

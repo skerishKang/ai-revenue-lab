@@ -1,23 +1,34 @@
 /**
- * #3647 — bounded action contract tests, slice 1.
+ * #3647 — bounded action contract tests, slice 1 (post-CENTRAL-review).
  *
- * Hermetic. The taxonomy boundary (lease-eligible vs step-up vs prohibited)
- * and every parameter bound are exercised at the exact-key level so a future
- * edit that widens the action surface fails here rather than in review.
+ * Hermetic. The taxonomy boundary is aligned to the #3607 CENTRAL final
+ * design disposition (effect class first, verb second), the lease carries the
+ * full correlation set with the authoritative policy values, and every
+ * parameter bound is exercised at the exact-key level.
  */
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-  BROWSER_ACTION_LEASE_MAX_TTL_SECONDS,
-  BROWSER_ACTION_LEASE_MIN_TTL_SECONDS,
+  DOWNLOAD_EXECUTION_BLOCKED_UNTIL_ARTIFACT_AUTHORITY,
+  LEASE_CROSS_ORIGIN_POLICY,
   LEASE_ELIGIBLE_ACTIONS,
-  MAX_ACTIONS_PER_LEASE,
+  LEASE_IDLE_SECONDS,
+  LEASE_MAX_ACTIONS,
+  LEASE_MAX_ACTIONS_HARD_CAP,
+  LEASE_REVOCATION,
+  LEASE_RUN_TRANSFER,
+  LEASE_SITE_SCOPE_POLICY,
+  LEASE_TTL_MAX_SECONDS,
+  LEASE_TTL_SECONDS,
   MAX_ACTION_TEXT_CHARS,
   MAX_SCROLL_DELTA,
   MAX_SELECT_INDEX,
+  OUT_OF_SCOPE_ACTIONS,
+  OUT_OF_SCOPE_SURFACES,
   PROHIBITED_ACTIONS,
+  SLICE1_ORIGIN_SCOPE,
   STEP_UP_REQUIRED_ACTIONS,
   BrowserActionContractError,
   assertBoundedActionLease,
@@ -26,7 +37,7 @@ import {
 } from '../src/browser/browser-action-contract.js';
 
 const BASE = {
-  sessionRef: 'run/session-1',
+  browserSessionRef: 'run/session-1',
   originRef: 'https://example.com',
 };
 
@@ -34,8 +45,103 @@ function rawRequest(overrides: Record<string, unknown>): Record<string, unknown>
   return { ...BASE, ...overrides };
 }
 
-test('slice 1 implements exactly the lease-eligible set', () => {
+function validLease(overrides: Record<string, unknown> = {}): Record<string, unknown> {
+  return {
+    leaseId: 'lease/session-1',
+    requestFingerprint: 'fingerprint/session-1',
+    browserSessionRef: 'run/session-1',
+    runRef: 'run_3647',
+    workspaceRef: 'workspace_3647',
+    ownerRef: 'owner_3647',
+    allowedActionClasses: ['click', 'type', 'scroll', 'focus', 'select'],
+    originScope: 'https://example.com',
+    maxActions: LEASE_MAX_ACTIONS,
+    issuedAtIso: '2026-10-08T09:00:00.000Z',
+    expiresAtIso: '2026-10-08T09:05:00.000Z',
+    approvalRef: 'decision_3647',
+    evidenceRef: 'evidence_3647',
+    ...overrides,
+  };
+}
+
+test('authoritative #3607 lease values are declared exactly', () => {
+  assert.equal(LEASE_TTL_SECONDS, 300);
+  assert.equal(LEASE_TTL_MAX_SECONDS, 900);
+  assert.equal(LEASE_MAX_ACTIONS, 25);
+  assert.equal(LEASE_MAX_ACTIONS_HARD_CAP, 100);
+  assert.equal(LEASE_IDLE_SECONDS, 120);
+  assert.equal(LEASE_SITE_SCOPE_POLICY, 'EXACT_ORIGIN_MAX_3_NO_WILDCARD');
+  assert.equal(SLICE1_ORIGIN_SCOPE, 'EXACT_ONE_ORIGIN');
+  assert.equal(LEASE_CROSS_ORIGIN_POLICY, 'INVALIDATE_AND_REQUIRE_STEP_UP');
+  assert.equal(LEASE_RUN_TRANSFER, 'PROHIBITED');
+  assert.equal(LEASE_REVOCATION, 'IMMEDIATE_USER_VISIBLE');
+  assert.equal(DOWNLOAD_EXECUTION_BLOCKED_UNTIL_ARTIFACT_AUTHORITY, true);
+});
+
+test('slice 1 implements exactly the lease-eligible verbs', () => {
   assert.deepEqual(LEASE_ELIGIBLE_ACTIONS, ['scroll', 'focus', 'click', 'type', 'select']);
+});
+
+test('step-up classes match the #3607 effect classes', () => {
+  assert.deepEqual(STEP_UP_REQUIRED_ACTIONS, [
+    'submit',
+    'credential_field_interaction',
+    'upload',
+    'download',
+    'clipboard_read',
+    'clipboard_write',
+    'cross_origin_navigation',
+  ]);
+  for (const action of STEP_UP_REQUIRED_ACTIONS) {
+    assert.throws(
+      () => validateBoundedBrowserAction(rawRequest({ action })),
+      (error: unknown) =>
+        error instanceof BrowserActionContractError && error.code === 'step_up_required',
+      `step-up action ${action} must refuse`,
+    );
+  }
+});
+
+test('prohibited classes are never step-up able', () => {
+  assert.deepEqual(PROHIBITED_ACTIONS, [
+    'javascript_evaluate',
+    'payment_or_purchase',
+    'account_or_security_change',
+    'destructive_action',
+    'permission_prompt',
+  ]);
+  for (const action of PROHIBITED_ACTIONS) {
+    assert.throws(
+      () => validateBoundedBrowserAction(rawRequest({ action })),
+      (error: unknown) =>
+        error instanceof BrowserActionContractError && error.code === 'action_prohibited',
+      `prohibited action ${action} must refuse`,
+    );
+    assert.ok(!(LEASE_ELIGIBLE_ACTIONS as readonly string[]).includes(action));
+    assert.ok(!(STEP_UP_REQUIRED_ACTIONS as readonly string[]).includes(action));
+  }
+});
+
+test('out-of-scope surfaces refuse with out_of_scope', () => {
+  assert.deepEqual(OUT_OF_SCOPE_ACTIONS, ['external_protocol_launch']);
+  assert.deepEqual(OUT_OF_SCOPE_SURFACES, [
+    'os_computer_use',
+    'generic_cdp_devtools_surface',
+    'file_navigation',
+  ]);
+  assert.throws(
+    () => validateBoundedBrowserAction(rawRequest({ action: 'external_protocol_launch' })),
+    (error: unknown) =>
+      error instanceof BrowserActionContractError && error.code === 'out_of_scope',
+  );
+});
+
+test('unknown actions refuse rather than guess', () => {
+  assert.throws(
+    () => validateBoundedBrowserAction(rawRequest({ action: 'format_the_disk' })),
+    (error: unknown) =>
+      error instanceof BrowserActionContractError && error.code === 'unknown_action',
+  );
 });
 
 test('click and focus validate into the exact bounded shape', () => {
@@ -43,7 +149,7 @@ test('click and focus validate into the exact bounded shape', () => {
     const request = validateBoundedBrowserAction(rawRequest({ action, elementRef: 'el-0002' }));
     assert.deepEqual(request, {
       action,
-      sessionRef: 'run/session-1',
+      browserSessionRef: 'run/session-1',
       originRef: 'https://example.com',
       elementRef: 'el-0002',
     });
@@ -56,10 +162,12 @@ test('click and focus validate into the exact bounded shape', () => {
 });
 
 test('scroll takes bounded deltas and refuses an element target', () => {
-  const request = validateBoundedBrowserAction(rawRequest({ action: 'scroll', dx: 0, dy: -MAX_SCROLL_DELTA }));
+  const request = validateBoundedBrowserAction(
+    rawRequest({ action: 'scroll', dx: 0, dy: -MAX_SCROLL_DELTA }),
+  );
   assert.deepEqual(request, {
     action: 'scroll',
-    sessionRef: 'run/session-1',
+    browserSessionRef: 'run/session-1',
     originRef: 'https://example.com',
     dx: 0,
     dy: -MAX_SCROLL_DELTA,
@@ -80,7 +188,9 @@ test('scroll takes bounded deltas and refuses an element target', () => {
 });
 
 test('type text is single-line, control-character-free and bounded', () => {
-  const request = validateBoundedBrowserAction(rawRequest({ action: 'type', elementRef: 'el-0003', text: '안녕하세요' }));
+  const request = validateBoundedBrowserAction(
+    rawRequest({ action: 'type', elementRef: 'el-0003', text: '안녕하세요' }),
+  );
   assert.ok(request.action === 'type' && request.text === '안녕하세요');
   for (const text of ['line1\nline2', 'line1\rline2', 'tab\there', 'null\u0000byte', '']) {
     assert.throws(
@@ -120,80 +230,40 @@ test('select takes a bounded option index and nothing else', () => {
   );
 });
 
-test('every step-up class refuses with its stable code', () => {
-  for (const action of STEP_UP_REQUIRED_ACTIONS) {
-    assert.throws(
-      () => validateBoundedBrowserAction(rawRequest({ action })),
-      (error: unknown) =>
-        error instanceof BrowserActionContractError && error.code === 'step_up_required',
-      `step-up action ${action} must refuse`,
-    );
-  }
+test('action leases carry the full #3607 correlation set', () => {
+  const lease = assertBoundedActionLease(validLease());
+  assert.equal(lease.requestFingerprint, 'fingerprint/session-1');
+  assert.equal(lease.browserSessionRef, 'run/session-1');
+  assert.equal(lease.runRef, 'run_3647');
+  assert.equal(lease.workspaceRef, 'workspace_3647');
+  assert.equal(lease.ownerRef, 'owner_3647');
+  assert.equal(lease.approvalRef, 'decision_3647');
+  assert.equal(lease.evidenceRef, 'evidence_3647');
+  assert.equal(lease.originScope, 'https://example.com');
+  assert.deepEqual(lease.allowedActionClasses, ['click', 'focus', 'scroll', 'select', 'type']);
 });
 
-test('prohibited actions refuse with action_prohibited and are never lease-eligible', () => {
-  assert.deepEqual(PROHIBITED_ACTIONS, ['javascript_evaluate', 'observe_dom_read']);
-  for (const action of PROHIBITED_ACTIONS) {
-    assert.throws(
-      () => validateBoundedBrowserAction(rawRequest({ action })),
-      (error: unknown) =>
-        error instanceof BrowserActionContractError && error.code === 'action_prohibited',
-      `prohibited action ${action} must refuse`,
-    );
-    assert.ok(!(LEASE_ELIGIBLE_ACTIONS as readonly string[]).includes(action));
-  }
-});
-
-test('unknown actions refuse rather than guess', () => {
-  assert.throws(
-    () => validateBoundedBrowserAction(rawRequest({ action: 'format_the_disk' })),
-    (error: unknown) =>
-      error instanceof BrowserActionContractError && error.code === 'unknown_action',
-  );
-});
-
-test('action leases validate the #3607 shape exactly', () => {
-  const lease = assertBoundedActionLease({
-    leaseId: 'lease/session-1',
-    sessionRef: 'run/session-1',
-    originRef: 'https://example.com',
-    allowedActions: ['type', 'click'],
-    maxActions: 8,
-    issuedAtIso: '2026-10-08T09:00:00.000Z',
-    expiresAtIso: '2026-10-08T09:05:00.000Z',
-  });
-  assert.deepEqual(lease.allowedActions, ['click', 'type']);
+test('lease mutations refuse with lease_invalid', () => {
   const mutations: Array<Record<string, unknown>> = [
-    { allowedActions: [] },
-    { allowedActions: ['submit'] },
-    { maxActions: MAX_ACTIONS_PER_LEASE + 1 },
+    { allowedActionClasses: [] },
+    { allowedActionClasses: ['submit'] },
+    { maxActions: LEASE_MAX_ACTIONS_HARD_CAP + 1 },
     { maxActions: 0 },
-    { expiresAtIso: '2026-10-08T09:00:30.000Z' },
+    { expiresAtIso: 'not-an-instant' },
     { expiresAtIso: '2026-10-08T10:00:00.000Z' },
-    { originRef: 'https://example.com/path?token=secret' },
+    { originScope: 'https://example.com/path?token=secret' },
+    { requestFingerprint: '' },
+    { approvalRef: '' },
     { unexpected: true },
   ];
   for (const mutation of mutations) {
     assert.throws(
-      () =>
-        assertBoundedActionLease({
-          leaseId: 'lease/session-1',
-          sessionRef: 'run/session-1',
-          originRef: 'https://example.com',
-          allowedActions: ['click'],
-          maxActions: 1,
-          issuedAtIso: '2026-10-08T09:00:00.000Z',
-          expiresAtIso: '2026-10-08T09:05:00.000Z',
-          ...mutation,
-        }),
+      () => assertBoundedActionLease(validLease(mutation)),
       (error: unknown) =>
         error instanceof BrowserActionContractError && error.code === 'lease_invalid',
       `lease mutation ${JSON.stringify(mutation)} must refuse`,
     );
   }
-  assert.ok(
-    BROWSER_ACTION_LEASE_MIN_TTL_SECONDS === 60 && BROWSER_ACTION_LEASE_MAX_TTL_SECONDS === 900,
-  );
 });
 
 test('action receipts pin zero page-derived bytes', () => {
@@ -209,12 +279,13 @@ test('action receipts pin zero page-derived bytes', () => {
   assert.equal(receipt.credentialValueIncluded, false);
   assert.equal(receipt.domApiExposed, false);
   assert.throws(
-    () => buildBoundedActionReceipt({
-      actionId: 'renderer-minted',
-      action: 'click',
-      elementRef: null,
-      originRef: 'https://example.com',
-    }),
+    () =>
+      buildBoundedActionReceipt({
+        actionId: 'renderer-minted',
+        action: 'click',
+        elementRef: null,
+        originRef: 'https://example.com',
+      }),
     (error: unknown) =>
       error instanceof BrowserActionContractError && error.code === 'contract_violation',
   );

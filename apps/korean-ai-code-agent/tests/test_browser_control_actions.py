@@ -1,8 +1,9 @@
 """#3647 — bounded browser.control action slice 1 tests (agent-side authority).
 
 Hermetic: no browser, no network, no model call, no production surface. The
-action taxonomy, request bounds, lease shape and receipt pinning of the
-#3607/#3609 authority family are exercised at the exact-key level.
+taxonomy (#3607 effect classes), the authoritative lease policy values, the
+full lease correlation set and the receipt pinning are exercised at the
+exact-key level.
 """
 
 from __future__ import annotations
@@ -14,18 +15,30 @@ from datetime import datetime, timedelta, timezone
 from kagent.browser_control_actions import (
     ACTION_RECEIPT_KEYS,
     BROWSER_ACTION_EXECUTION_IMPLEMENTED,
+    CLICK_ALLOWED_ROLE_ALLOWLIST,
     DURABLE_ADMISSION_WIRED,
+    DOWNLOAD_EXECUTION_BLOCKED_UNTIL_ARTIFACT_AUTHORITY,
     GENERIC_IPC_SURFACE,
     JAVASCRIPT_EVALUATE_PERMITTED,
+    LEASE_CROSS_ORIGIN_POLICY,
     LEASE_ELIGIBLE_ACTIONS,
-    MAX_ACTIONS_PER_LEASE,
+    LEASE_IDLE_SECONDS,
+    LEASE_MAX_ACTIONS,
+    LEASE_MAX_ACTIONS_HARD_CAP,
+    LEASE_REVOCATION,
+    LEASE_RUN_TRANSFER,
+    LEASE_SITE_SCOPE_POLICY,
+    LEASE_TTL_MAX_SECONDS,
+    LEASE_TTL_SECONDS,
     MAX_ACTION_TEXT_CHARS,
-    MAX_LEASE_TTL_SECONDS,
     MAX_SCROLL_DELTA,
     MAX_SELECT_INDEX,
     NEW_APPROVAL_STORE,
+    OUT_OF_SCOPE_ACTIONS,
+    OUT_OF_SCOPE_SURFACES,
     PROHIBITED_ACTIONS,
     SECOND_BROWSER_AUTHORITY,
+    SLICE1_ORIGIN_SCOPE,
     STEP_UP_EXECUTION_IMPLEMENTED,
     STEP_UP_REQUIRED_ACTIONS,
     BrowserControlActionLease,
@@ -43,7 +56,7 @@ NOW = datetime(2026, 10, 8, 9, 0, 0, tzinfo=timezone.utc)
 def action_request(**overrides: object) -> BrowserControlActionRequest:
     values: dict[str, object] = {
         "action": "click",
-        "session_ref": "run/session-1",
+        "browser_session_ref": "run/session-1",
         "origin_ref": "https://example.com",
         "element_ref": "el-0002",
         "params": None,
@@ -55,15 +68,36 @@ def action_request(**overrides: object) -> BrowserControlActionRequest:
 def lease(**overrides: object) -> BrowserControlActionLease:
     values: dict[str, object] = {
         "lease_id": "lease/session-1",
-        "session_ref": "run/session-1",
-        "origin_ref": "https://example.com",
-        "allowed_actions": ("click", "type", "scroll", "focus", "select"),
-        "max_actions": 8,
+        "request_fingerprint": "fingerprint/session-1",
+        "browser_session_ref": "run/session-1",
+        "run_ref": "run_3647",
+        "workspace_ref": "workspace_3647",
+        "owner_ref": "owner_3647",
+        "allowed_action_classes": ("click", "type", "scroll", "focus", "select"),
+        "origin_scope": "https://example.com",
+        "max_actions": LEASE_MAX_ACTIONS,
         "issued_at": NOW,
-        "expires_at": NOW + timedelta(seconds=300),
+        "expires_at": NOW + timedelta(seconds=LEASE_TTL_SECONDS),
+        "approval_ref": "decision_3647",
+        "evidence_ref": "evidence_3647",
     }
     values.update(overrides)
     return BrowserControlActionLease(**values)  # type: ignore[arg-type]
+
+
+class LeasePolicyValuesTest(unittest.TestCase):
+    def test_authoritative_3607_lease_values_are_declared_exactly(self) -> None:
+        self.assertEqual(LEASE_TTL_SECONDS, 300)
+        self.assertEqual(LEASE_TTL_MAX_SECONDS, 900)
+        self.assertEqual(LEASE_MAX_ACTIONS, 25)
+        self.assertEqual(LEASE_MAX_ACTIONS_HARD_CAP, 100)
+        self.assertEqual(LEASE_IDLE_SECONDS, 120)
+        self.assertEqual(LEASE_SITE_SCOPE_POLICY, "EXACT_ORIGIN_MAX_3_NO_WILDCARD")
+        self.assertEqual(SLICE1_ORIGIN_SCOPE, "EXACT_ONE_ORIGIN")
+        self.assertEqual(LEASE_CROSS_ORIGIN_POLICY, "INVALIDATE_AND_REQUIRE_STEP_UP")
+        self.assertEqual(LEASE_RUN_TRANSFER, "PROHIBITED")
+        self.assertEqual(LEASE_REVOCATION, "IMMEDIATE_USER_VISIBLE")
+        self.assertTrue(DOWNLOAD_EXECUTION_BLOCKED_UNTIL_ARTIFACT_AUTHORITY)
 
 
 class ActionTaxonomyTest(unittest.TestCase):
@@ -74,46 +108,74 @@ class ActionTaxonomyTest(unittest.TestCase):
         self.assertTrue(BROWSER_ACTION_EXECUTION_IMPLEMENTED)
         self.assertFalse(STEP_UP_EXECUTION_IMPLEMENTED)
 
-    def test_step_up_classes_are_refused_by_construction(self) -> None:
+    def test_step_up_classes_match_the_3607_effect_classes(self) -> None:
+        self.assertEqual(
+            STEP_UP_REQUIRED_ACTIONS,
+            (
+                "submit",
+                "credential_field_interaction",
+                "upload",
+                "download",
+                "clipboard_read",
+                "clipboard_write",
+                "cross_origin_navigation",
+            ),
+        )
         for action in STEP_UP_REQUIRED_ACTIONS:
+            self.assertEqual(classify_browser_control_action(action), "step_up_required")
             with self.assertRaises(BrowserControlActionRefusal) as caught:
-                classify_browser_control_action(action)
                 BrowserControlActionRequest(  # type: ignore[arg-type]
                     action=action,  # type: ignore[dict-item]
-                    session_ref="run/session-1",
+                    browser_session_ref="run/session-1",
                     origin_ref="https://example.com",
                 )
-            self.assertIn(
-                caught.exception.code, {"step_up_required", "unknown_action"}, action
-            )
+            self.assertEqual(caught.exception.code, "step_up_required")
 
-    def test_submit_download_and_credential_interaction_are_step_up(self) -> None:
-        self.assertEqual(classify_browser_control_action("submit"), "step_up_required")
-        self.assertEqual(classify_browser_control_action("download"), "step_up_required")
+    def test_prohibited_classes_are_never_step_up_able(self) -> None:
         self.assertEqual(
-            classify_browser_control_action("credential_field_interaction"), "step_up_required"
-        )
-        self.assertEqual(
-            classify_browser_control_action("cross_origin_navigation"), "step_up_required"
-        )
-
-    def test_prohibited_actions_stay_prohibited(self) -> None:
-        self.assertEqual(
-            PROHIBITED_ACTIONS, ("javascript_evaluate", "observe_dom_read")
+            PROHIBITED_ACTIONS,
+            (
+                "javascript_evaluate",
+                "payment_or_purchase",
+                "account_or_security_change",
+                "destructive_action",
+                "permission_prompt",
+            ),
         )
         for action in PROHIBITED_ACTIONS:
+            self.assertEqual(classify_browser_control_action(action), "prohibited")
             with self.assertRaises(BrowserControlActionRefusal) as caught:
                 BrowserControlActionRequest(  # type: ignore[arg-type]
                     action=action,  # type: ignore[dict-item]
-                    session_ref="run/session-1",
+                    browser_session_ref="run/session-1",
                     origin_ref="https://example.com",
                 )
             self.assertEqual(caught.exception.code, "action_prohibited")
+
+    def test_out_of_scope_surfaces_are_never_classified_as_actions(self) -> None:
+        self.assertEqual(OUT_OF_SCOPE_ACTIONS, ("external_protocol_launch",))
+        self.assertEqual(
+            OUT_OF_SCOPE_SURFACES,
+            ("os_computer_use", "generic_cdp_devtools_surface", "file_navigation"),
+        )
+        self.assertEqual(classify_browser_control_action("external_protocol_launch"), "out_of_scope")
+        with self.assertRaises(BrowserControlActionRefusal) as caught:
+            BrowserControlActionRequest(  # type: ignore[arg-type]
+                action="external_protocol_launch",
+                browser_session_ref="run/session-1",
+                origin_ref="https://example.com",
+            )
+        self.assertEqual(caught.exception.code, "out_of_scope")
 
     def test_unknown_actions_are_refused(self) -> None:
         with self.assertRaises(BrowserControlActionRefusal) as caught:
             classify_browser_control_action("format_the_disk")  # type: ignore[arg-type]
         self.assertEqual(caught.exception.code, "unknown_action")
+
+    def test_click_roles_provable_non_committing_only(self) -> None:
+        # The #3629 projection cannot prove link/button/menuitem/checkbox/
+        # radio/switch/option clicks non-committing; only tab/treeitem remain.
+        self.assertEqual(CLICK_ALLOWED_ROLE_ALLOWLIST, frozenset({"tab", "treeitem"}))
 
 
 class ActionRequestBoundsTest(unittest.TestCase):
@@ -144,12 +206,9 @@ class ActionRequestBoundsTest(unittest.TestCase):
         self.assertLessEqual(
             len(request.params["text"]), MAX_ACTION_TEXT_CHARS  # type: ignore[index]
         )
-        with self.assertRaises(BrowserControlActionRefusal):
-            action_request(action="type", params={"text": "line1\nline2"})
-        with self.assertRaises(BrowserControlActionRefusal):
-            action_request(action="type", params={"text": "tab\there"})
-        with self.assertRaises(BrowserControlActionRefusal):
-            action_request(action="type", params={"text": "x" * (MAX_ACTION_TEXT_CHARS + 1)})
+        for bad_text in ("line1\nline2", "tab\there", "x" * (MAX_ACTION_TEXT_CHARS + 1), ""):
+            with self.assertRaises(BrowserControlActionRefusal):
+                action_request(action="type", params={"text": bad_text})
         with self.assertRaises(BrowserControlActionRefusal):
             action_request(action="type", params={})
 
@@ -168,6 +227,17 @@ class ActionRequestBoundsTest(unittest.TestCase):
 
 
 class ActionLeaseTest(unittest.TestCase):
+    def test_lease_carries_the_full_correlation_set(self) -> None:
+        bounded = lease()
+        self.assertEqual(bounded.request_fingerprint, "fingerprint/session-1")
+        self.assertEqual(bounded.browser_session_ref, "run/session-1")
+        self.assertEqual(bounded.run_ref, "run_3647")
+        self.assertEqual(bounded.workspace_ref, "workspace_3647")
+        self.assertEqual(bounded.owner_ref, "owner_3647")
+        self.assertEqual(bounded.approval_ref, "decision_3647")
+        self.assertEqual(bounded.evidence_ref, "evidence_3647")
+        self.assertEqual(bounded.origin_scope, "https://example.com")
+
     def test_lease_binds_origin_session_actions_count_and_ttl(self) -> None:
         bounded = lease()
         self.assertTrue(bounded.allows(action_request()))
@@ -175,25 +245,29 @@ class ActionLeaseTest(unittest.TestCase):
             bounded.allows(action_request(origin_ref="https://other.example"))
         )
         self.assertFalse(
-            lease(allowed_actions=("click",)).allows(
+            lease(allowed_action_classes=("click",)).allows(
                 action_request(action="type", params={"text": "hi"})
             )
         )
-        self.assertFalse(bounded.allows(action_request(session_ref="run/session-2")))
+        self.assertFalse(
+            bounded.allows(action_request(browser_session_ref="run/session-2"))
+        )
 
     def test_lease_refuses_out_of_family_shapes(self) -> None:
         with self.assertRaises(BrowserControlActionRefusal):
-            lease(allowed_actions=())
+            lease(allowed_action_classes=())
         with self.assertRaises(BrowserControlActionRefusal):
-            lease(allowed_actions=("submit",))
+            lease(allowed_action_classes=("submit",))
         with self.assertRaises(BrowserControlActionRefusal):
-            lease(max_actions=MAX_ACTIONS_PER_LEASE + 1)
+            lease(max_actions=LEASE_MAX_ACTIONS_HARD_CAP + 1)
         with self.assertRaises(BrowserControlActionRefusal):
-            lease(expires_at=NOW + timedelta(seconds=MAX_LEASE_TTL_SECONDS + 1))
+            lease(expires_at=NOW + timedelta(seconds=LEASE_TTL_MAX_SECONDS + 1))
         with self.assertRaises(BrowserControlActionRefusal):
-            lease(expires_at=NOW + timedelta(seconds=30))
+            lease(expires_at=NOW)  # non-positive lifetime
         with self.assertRaises(BrowserControlActionRefusal):
-            lease(origin_ref="https://example.com/path?token=secret")
+            lease(origin_scope="https://example.com/path?token=secret")
+        with self.assertRaises(BrowserControlActionRefusal):
+            lease(request_fingerprint="")
 
     def test_slice_does_not_create_a_second_approval_authority(self) -> None:
         self.assertFalse(NEW_APPROVAL_STORE)
