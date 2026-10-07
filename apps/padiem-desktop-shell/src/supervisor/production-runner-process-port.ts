@@ -64,7 +64,31 @@ const DEFAULT_MAX_LINES = 200;
  * (RAW_CREDENTIAL_LOGGED=0, RAW_CREDENTIAL_SECOND_PERSISTENCE=0).
  */
 export const DESKTOP_MATERIAL_EVENT = 'desktop_device_session_material';
+
+/** #3611 — the resident's bounded browser-open redemption answer event. */
+export const BROWSER_OPEN_REDEMPTION_EVENT = 'browser_open_redemption';
+
+/**
+ * Recognises one redemption answer by its literal event tag. It is a recognition
+ * helper only: the schema authority stays `parseBrowserOpenRedemptionLine` in the
+ * port module, so this file cannot widen that contract.
+ */
+function asBrowserOpenRedemptionResponse(line: string): Record<string, unknown> | null {
+  if (line.length === 0 || line.length > MAX_BROWSER_OPEN_REDEMPTION_LINE_CHARS) return null;
+  if (!line.startsWith('{') || !line.includes(BROWSER_OPEN_REDEMPTION_EVENT)) return null;
+  try {
+    const parsed: unknown = JSON.parse(line);
+    if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+    const record = parsed as Record<string, unknown>;
+    if (record['event'] !== BROWSER_OPEN_REDEMPTION_EVENT) return null;
+    return record;
+  } catch {
+    return null;
+  }
+}
 export const MAX_MATERIAL_LINE_CHARS = 65_536;
+/** #3611 — the redemption answer is bounded correlation only. */
+export const MAX_BROWSER_OPEN_REDEMPTION_LINE_CHARS = 2_048;
 
 function asMaterialResponse(line: string): Record<string, unknown> | null {
   if (line.length === 0 || line.length > MAX_MATERIAL_LINE_CHARS) return null;
@@ -124,6 +148,11 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
   // retained buffer; cleared on read and cleared on exit, so a settled or
   // restarted resident can never hand out stale session material.
   #materialLine: string | null = null;
+  // #3611: a second, dedicated bounded slot for the browser-open redemption
+  // answer. Deliberately separate from the material slot: the two answers have
+  // different schemas and different consumers, and sharing a slot would let one
+  // overwrite the other. Also volatile and cleared on read and on exit.
+  #browserOpenRedemptionLine: string | null = null;
 
   constructor(child: ChildProcess, maxLines: number) {
     this.#child = child;
@@ -148,8 +177,12 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
         // line on stderr is redacted for secret hygiene but never consumed
         // as material.
         const material = asMaterialResponse(line);
+        const redemption = asBrowserOpenRedemptionResponse(line);
         const storedLine = material === null ? line : redactedMaterialLine(material);
         if (stream === 'stdout' && material !== null) this.#materialLine = line;
+        // The redemption answer carries only bounded correlation, so it stays in
+        // the retained buffer; it holds no secret to redact.
+        if (stream === 'stdout' && redemption !== null) this.#browserOpenRedemptionLine = line;
         this.#lines.push(storedLine);
         if (this.#lines.length > this.#maxLines) this.#lines.shift();
         this.#lastLineAtMs = atMs;
@@ -181,6 +214,9 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
     // A resident that is gone can never hand out current session material:
     // the raw line dies with the process, the redacted marker stays.
     this.#materialLine = null;
+    // The same rule for the redemption answer: a dead resident cannot have
+    // redeemed anything, so its slot dies with it.
+    this.#browserOpenRedemptionLine = null;
     for (const listener of [...this.#listeners]) {
       listener(result);
     }
@@ -260,6 +296,16 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
   takeMaterialLine(): string | null {
     const line = this.#materialLine;
     this.#materialLine = null;
+    return line;
+  }
+
+  /**
+   * #3611: one-shot read of the browser-open redemption answer, then cleared.
+   * Holder of the last bounded answer only; it carries no secret.
+   */
+  takeBrowserOpenRedemptionLine(): string | null {
+    const line = this.#browserOpenRedemptionLine;
+    this.#browserOpenRedemptionLine = null;
     return line;
   }
 
@@ -387,6 +433,15 @@ export class NodeRunnerProcessPort implements RunnerProcessPort {
    */
   takeResidentMaterialLine(): string | null {
     if (this.#residentHandle) return this.#residentHandle.takeMaterialLine();
+    return null;
+  }
+
+  /**
+   * #3611: the live resident's bounded browser-open redemption answer,
+   * one-shot. A settled resident yields null.
+   */
+  takeResidentBrowserOpenRedemptionLine(): string | null {
+    if (this.#residentHandle) return this.#residentHandle.takeBrowserOpenRedemptionLine();
     return null;
   }
 
