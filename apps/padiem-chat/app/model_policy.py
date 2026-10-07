@@ -12,6 +12,7 @@ from padiem_control_plane.product_tier_routes import (
 )
 from padiem_control_plane.product_tier_routes import (
     MAX_HOLD_MODEL_ID as _CONTRACT_MAX_HOLD_MODEL_ID,
+    PLUS_HOLD_MODEL_ID as _CONTRACT_PLUS_HOLD_MODEL_ID,
     PRO_HOLD_MODEL_ID as _CONTRACT_PRO_HOLD_MODEL_ID,
 )
 
@@ -22,14 +23,29 @@ from padiem_control_plane.product_tier_routes import (
 # catalog remains the final execution authority: a contract route that B14
 # unregisters fails closed at dispatch time.
 
-def _contract_route_id(label: ProductTierLabel) -> str:
+def _contract_route_or_hold_id(
+    label: ProductTierLabel,
+    hold_model_id: str,
+) -> str:
     try:
         route = active_route_for(label)
     except ProductTierRoutesError as exc:  # fail closed before any dispatch
         raise RuntimeError(f"product tier route contract is invalid: {exc}") from exc
     if route is None or not route.model_id:
-        raise RuntimeError(f"product tier route contract has no executable route for {label.value}")
+        return hold_model_id
     return route.model_id
+
+
+def _contract_executable_ids() -> frozenset[str]:
+    model_ids: set[str] = set()
+    for label in ProductTierLabel:
+        try:
+            route = active_route_for(label)
+        except ProductTierRoutesError as exc:
+            raise RuntimeError(f"product tier route contract is invalid: {exc}") from exc
+        if route is not None and route.model_id:
+            model_ids.add(route.model_id)
+    return frozenset(model_ids)
 
 
 DEFAULT_CHAT_PROFILE = "low"
@@ -54,7 +70,10 @@ _REQUEST_TIER_ID: ContextVar[str | None] = ContextVar(
 # Product tiers are intentionally decoupled from upstream model/provider names.
 # LOW/MEDIUM/HIGH remain internal compatibility identifiers only; users see
 # Padiem Plus / Padiem Pro / Padiem Max.
-LOW_B14_MODEL_ID = _contract_route_id(ProductTierLabel.PLUS)
+LOW_B14_MODEL_ID = _contract_route_or_hold_id(
+    ProductTierLabel.PLUS,
+    _CONTRACT_PLUS_HOLD_MODEL_ID,
+)
 MEDIUM_B14_MODEL_ID = _CONTRACT_PRO_HOLD_MODEL_ID
 MAX_HOLD_MODEL_ID = _CONTRACT_MAX_HOLD_MODEL_ID
 
@@ -94,18 +113,17 @@ PRODUCT_TIER_NAMES: dict[str, str] = {
     MEDIUM_B14_MODEL_ID: PADIEM_PRO,
     HIGH_B14_MODEL_ID: PADIEM_MAX,
 }
-EXECUTABLE_B14_MODEL_IDS = frozenset({LOW_B14_MODEL_ID})
+EXECUTABLE_B14_MODEL_IDS = _contract_executable_ids()
 
-# Current source posture after owner decision #3209:
+# Current source posture after owner decision #3568:
 #
-#   Padiem Plus -> Space Bunny Alpha on the keyless Kilo free lane
-#     (only executable tier; text + single-image via the existing
-#     MultimodalExecutionRuntime)
-#   Padiem Pro  -> HOLD
-#   Padiem Max  -> HOLD
+#   Padiem Plus -> HOLD while a successor model is selected.
+#   Padiem Pro  -> HOLD.
+#   Padiem Max  -> HOLD.
 #
-# The historical Agnes lane is not a product fallback. `b14/auto` and
-# provider-side auto/fallback behavior remain disabled for product routing.
+# Space Bunny is historical route metadata only. No provider lane becomes a
+# silent replacement. `b14/auto` and provider-side auto/fallback behavior
+# remain disabled for product routing.
 DEFAULT_B14_MODEL_ID = PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
 
 # Slash selectors are hidden/operator test controls. Normal UI can later expose
@@ -124,13 +142,11 @@ MODEL_ALIASES: dict[str, str] = {
     # executable tier route in that declaration — not by inventing a hold identity here.
 }
 
-# Product capability claims remain conservative. Free/promotional status is not
-# encoded as a durable B62 capability because upstream zero-cost availability
-# can change independently of the Padiem product tier. HOLD has no executable
-# capabilities. Plus carries image because the active Space Bunny route
-# declares it and Chat reuses the existing single-image multimodal path.
+# Product capability claims remain conservative. HOLD identities claim no
+# executable capabilities. The future Plus successor will add capabilities only
+# after its route is explicitly selected and proven.
 MODEL_CAPABILITIES: dict[str, frozenset[str]] = {
-    LOW_B14_MODEL_ID: frozenset({"chat", "coding", "long_context", "image"}),
+    LOW_B14_MODEL_ID: frozenset(),
     MEDIUM_B14_MODEL_ID: frozenset(),
     HIGH_B14_MODEL_ID: frozenset(),
     AUTO_B14_MODEL_ID: frozenset(),
@@ -201,11 +217,13 @@ def resolve_tier_policy(
                 "tier_unavailable",
                 "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.",
             )
-        if label is ProductTierLabel.PRO:
+        if label is ProductTierLabel.PLUS:
+            model_id = LOW_B14_MODEL_ID
+        elif label is ProductTierLabel.PRO:
             model_id = MEDIUM_B14_MODEL_ID
         elif label is ProductTierLabel.MAX:
             model_id = MAX_HOLD_MODEL_ID
-        else:
+        else:  # pragma: no cover - exhaustive enum guard
             model_id = ""
     else:
         model_id = route.model_id
@@ -268,11 +286,21 @@ def resolve_model_policy(
     out = [dict(message) for message in messages]
     user_index = _latest_user_index(out)
     if user_index is None:
+        if require_executable and not model_policy_is_executable(DEFAULT_B14_MODEL_ID):
+            raise ModelPolicyError(
+                "tier_unavailable",
+                "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.",
+            )
         return ResolvedModelPolicy(DEFAULT_B14_MODEL_ID, out)
 
     content = out[user_index].get("content", "")
     stripped = content.lstrip()
     if not stripped.startswith("/"):
+        if require_executable and not model_policy_is_executable(DEFAULT_B14_MODEL_ID):
+            raise ModelPolicyError(
+                "tier_unavailable",
+                "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.",
+            )
         return ResolvedModelPolicy(DEFAULT_B14_MODEL_ID, out)
 
     token, separator, remainder = stripped.partition(" ")

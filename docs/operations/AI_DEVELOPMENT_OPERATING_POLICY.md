@@ -4,8 +4,10 @@
 - Effective reset: 2026-08-14
 - Design authority: `PORTFOLIO_DESIGN_OPERATING_SYSTEM.md`
 - Evidence authority: `EVIDENCE_REQUIREMENTS.md`
+- Test-scope/delivery authority: `TEST_SCOPE_AND_DELIVERY_POLICY.md`
 - Deployment authority: `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
 - Technology adoption authority: `TECHNOLOGY_ADOPTION_POLICY.md`
+- Model/provider decision authority: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 
 ## 1. Purpose
 
@@ -19,8 +21,8 @@ A separate rule applies when the work contains a **new art direction or material
 
 1. **User / Product Owner** — product goal, priorities, material product/business decisions, explicit owner visual acceptance where applicable.
 2. **Web CTO** — current remote audit, work contract, architecture/safety boundaries, visual/evidence gates, final technical review.
-3. **Implementation Worker (local model)** — authorized implementation, implementation self-check, Draft PR/report. In the current operating model this is a local model with GitHub access; its local checks are implementation self-checks unless a second actor re-runs them.
-4. **Independent Local Validator** — independent exact-head browser/OS/hardware/local-runtime validation when required, executed by an actor distinct from the Implementation Worker.
+3. **Implementation Worker (local model)** — authorized implementation, focused implementation self-check, `DEV_FAST_GATE`, Draft PR/report. In the current operating model this is a local model with GitHub access; after the fast gate passes it may move to the next authorized issue without waiting for the full validation matrix.
+4. **Independent Local Validator(s)** — asynchronous independent exact-head browser/OS/hardware/local-runtime validation when required, executed by actors distinct from the Implementation Worker. Windows, Ubuntu and browser/full-regression lanes may run concurrently under separate validator ownership.
 
 One actor may perform several non-independent stages. The same actor must not
 claim both implementation and independent Local Validation for the same
@@ -60,6 +62,150 @@ OPERATING_PRODUCT
 The work order identifies what is needed now: visual desirability, UX, deterministic simulation, service-led operation, local runtime, live backend/provider, auth/persistence, security or commercial hardening.
 
 UI, UX, backend/runtime, security, deployment, market-reference, commercial and owner-visual verdicts remain separate.
+
+## 3A. MVP delivery closure and validation budget
+
+The operating system optimizes for **validated delivery**, not maximum possible pre-delivery certainty.
+
+When a customer handoff, pilot, or owner-defined delivery target exists, record the accepted handoff blocker set and primary acceptance journey. From that point, validation may expand only when it protects a concrete claim that can still invalidate the handoff.
+
+A new concern is a handoff blocker only when there is concrete evidence of at least one of:
+
+- primary customer journey unusable or materially incorrect;
+- authentication/authorization bypass;
+- secret, credential, private-data, or material infrastructure leakage;
+- data corruption, uncontrolled destructive behavior, or irreversible external harm;
+- a P0/P1 failure explicitly named in the work contract or customer promise.
+
+The following default to **post-handoff follow-up**, not new blockers:
+
+- speculative edge cases without a reproduction;
+- unrelated legacy debt;
+- broad refactors or architecture cleanup;
+- additional hardening beyond the accepted MVP threat/failure model;
+- optional formats/features not required by the current customer promise;
+- repeated re-testing of unchanged surfaces solely because time passed.
+
+### Validation budget
+
+For an MVP closeout, use this order:
+
+```text
+1. smallest load-bearing focused regression for the changed defect
+2. relevant configured CI for the changed dependency/authority surface
+3. bounded Production smoke of the accepted primary journey after deployment
+4. broader suites only when the change actually crosses those surfaces
+```
+
+Do not start with a repository-wide, product-wide, or all-browser test sweep for a narrow defect unless the change touches shared authority or the work contract explicitly requires that breadth.
+
+If new validation is added after the acceptance matrix is otherwise satisfied, the Web CTO records:
+
+```text
+NEW_VALIDATION=
+PROTECTED_CLAIM=
+WHY_EXISTING_EVIDENCE_IS_INSUFFICIENT=
+HANDOFF_BLOCKING_IF_FAILED=YES|NO
+```
+
+If those fields cannot be answered concretely, the check is non-blocking follow-up work.
+
+### Fixed handoff gate
+
+Before the final blocker fix is merged, identify the smallest explicit handoff gate:
+
+```text
+HANDOFF_BLOCKERS=
+HANDOFF_REQUIRED_CHECKS=
+HANDOFF_PRODUCTION_SMOKE=
+```
+
+Do not silently add new required checks after this point. A later check may join the handoff gate only when it is justified by a new concrete blocker or by a changed high-blast-radius boundary.
+
+Repository CI fan-out may execute more jobs than the handoff requires. Distinguish:
+
+```text
+HANDOFF_REQUIRED_CHECK
+OBSERVATIONAL_NONBLOCKING_CHECK
+```
+
+An automatically triggered unrelated job is not handoff-blocking merely because it exists, is slow, or is still running.
+
+Open P1/P2, hardening, refactor, optional-format, and backlog issues remain non-blocking unless the owner explicitly promotes one or new evidence shows that it invalidates the current customer promise.
+
+### Final Production smoke budget
+
+For a final Production-changing revision, one bounded smoke of the accepted primary journey is the default. Do not repeatedly rerun the same real-account journey without one of:
+
+- a new deployed revision affecting that journey;
+- a failed or ambiguous prior smoke;
+- a newly reproduced blocker affecting that journey.
+
+```text
+UNCHANGED_DEPLOY + PRIOR_CLEAR_PASS != REPEAT_SMOKE_REQUIRED
+```
+
+### Evidence carry-forward after main drift
+
+Evidence still belongs to the exact revision that produced it, but unrelated repository drift does not automatically force full revalidation. The Web CTO first determines whether intervening commits affect the tested behavior, transitive dependency, runtime authority, configuration, deployment target, or user-facing surface.
+
+```text
+UNRELATED_DRIFT != AUTOMATIC_FULL_RETEST
+RELEVANT_DRIFT   = REVALIDATE_AFFECTED_CLAIMS
+```
+
+### MVP terminal rule
+
+When:
+
+```text
+ACCEPTED_HANDOFF_BLOCKERS=0
+FOCUSED_CHANGE_REGRESSION=PASS
+RELEVANT_REQUIRED_CI=PASS
+REQUIRED_PRODUCTION_SMOKE=PASS
+```
+
+the technical disposition is `READY_FOR_CUSTOMER_HANDOFF`.
+
+Exploratory QA may continue after handoff, but it must not delay delivery unless it finds new concrete blocker evidence.
+
+## 3B. Finish-first completion policy
+
+For Padiem platform development, the default active operating mode is **Finish-first** unless the Product Owner explicitly selects another portfolio priority.
+
+```text
+PRIMARY_IMPLEMENTATION_AXIS=1
+SUPPORTING_BLOCKER_LANES<=2
+UNRELATED_IMPLEMENTATION_FANOUT=0
+PARALLEL_VALIDATION=ALLOWED
+PARALLEL_BLOCKER_REMOVAL=ALLOWED
+```
+
+The purpose is to convert already-built source into visible, Production-complete capability rather than maximizing the number of partially completed issues.
+
+A primary axis must describe a user-visible vertical result, not a list of source issues. Record the axis, reference product, current lowest missing dependency, primary blockers, and terminal user result.
+
+For the current Padiem cycle, #3523 defines the axis as Platform -> Engine -> B54 Claw.
+
+Ownership and architecture are decided top-down. Once ownership is known, implementation starts at the lowest missing dependency and moves upward through the vertical slice. Do not keep adding generic capability work when the primary slice is blocked lower in the stack.
+
+Passing a development fast gate releases the actor from waiting on broad unrelated validation, but does not release the actor to unrelated feature work. The actor continues the primary axis, takes one of its concrete blockers, helps reconcile/validate the same axis, or remains idle/background.
+
+A Finish-first axis is not DONE merely because source is implemented, CI is green, or a PR merged.
+
+```text
+SOURCE_COMPLETE=YES
+MERGED_MAIN=YES
+PRODUCTION_ACTIVE=YES
+REFERENCE_PRODUCT_E2E=PASS
+USER_VISIBLE_RESULT=YES
+ROLLBACK_READY=YES
+PRIMARY_BLOCKERS=0
+```
+
+Until then, report `ACTIVE`.
+
+Shared Padiem Platform infrastructure does not collapse products into one another. Product-local work remains with its product owner. A generic defect discovered inside a product is split to the proper Platform/Core/Engine/Control-Plane owner rather than moving the whole product task into that lane.
 
 ## 4. Mandatory design-gate overlay for visual redesign
 
@@ -129,6 +275,7 @@ Technology scans run in parallel with already-approved in-flight implementation.
 Record:
 
 - repository/default branch;
+- machine identity (`MACHINE_IDENTITY`) when the work can run on more than one machine; follow `MULTI_MACHINE_LOCAL_WORKTREE_POLICY.md`;
 - exact current base SHA;
 - branch;
 - Issue/owner/work-order authority;
@@ -171,10 +318,13 @@ The developer:
 - changes only authorized paths;
 - implements only up to the current authorized visual/product gate;
 - does not expand all routes when the work order authorizes only an anchor/archetype slice;
-- runs implementation self-checks and configured CI;
+- runs the smallest relevant implementation self-checks and the work-order `DEV_FAST_GATE`;
+- after `DEV_FAST_GATE=PASS`, records `DEV_ACTOR_RELEASED=YES` and may move immediately to the next authorized issue instead of waiting for Windows/Ubuntu/full-browser validation;
 - records exact base/head, files, diff, commands, exits, pass/fail/skip counts and limitations;
 - identifies legacy/cascade debt encountered;
 - does not self-assign independent validation or final CTO readiness.
+
+The fast gate is not merge approval. It exists to keep implementation throughput independent from slower cross-platform validation.
 
 ## 8A. GitHub report handoff
 
@@ -209,6 +359,8 @@ Follow `CODE_STRUCTURE_AND_ASSET_VERSIONING_POLICY.md`.
 
 ## 10. Local Validator responsibilities
 
+Independent validation is **selective**, not automatic for every P0/P1. A bounded deterministic fix defaults to `NOT_REQUIRED` when focused regression + relevant CI can prove the pre-merge claim and live behavior is already covered by the separately authorized post-deploy Production smoke. Require an independent validator when the claim materially depends on a distinct browser/OS/hardware/local-service environment, a high-risk runtime boundary not covered by CI, or an explicit work-contract gate.
+
 When independent validation is required, the validator records:
 
 - expected/actual exact head;
@@ -220,11 +372,42 @@ When independent validation is required, the validator records:
 - console/page/network/asset/overflow failures;
 - artifacts and reproduction evidence.
 
-If the validator changes product source, the modified run is not independent validation of that new revision.
+Validation lanes should be assigned explicitly when relevant:
+
+```text
+VALIDATOR_WINDOWS
+VALIDATOR_UBUNTU
+VALIDATOR_BROWSER
+VALIDATOR_FULL_REGRESSION
+```
+
+They may run in parallel while the implementation worker continues other authorized work. A failing validator owns reproduction and may own a bounded repair in its own worktree/repair branch.
+
+If the validator changes product source, that actor has become a repair/implementation actor for the new revision. The modified run is not independent validation of that new revision; revalidation must occur on the resulting exact head by another independent validator when independence is required.
 
 A completed independent validation is not considered auditable until the related PR contains a discoverable exact-head record naming the validator, result and immutable report/artifact pointer (or a recorded `NOT_REQUIRED` reason). The evidence may live in the private report repository, but the PR must point to it.
 
 ## 11. CI and automated checks
+
+CI uses three distinct gates:
+
+```text
+GATE_A = DEV_FAST_GATE
+  smallest focused checks proving the implementation slice
+  blocks the implementing actor only until PASS
+
+GATE_B = ASYNC_VALIDATION
+  Windows / Ubuntu / browser / full-regression lanes
+  may run in parallel under separate validator actors
+  failures block merge of the affected revision, not unrelated development
+
+GATE_C = FULL_VALIDATION
+  required configured/relevant exact-head checks before merge
+```
+
+A newer PR head should cancel superseded same-PR validation runs where the workflow can do so safely. Draft/synchronize feedback should prefer fast relevant checks; broad cross-platform/full matrices belong to asynchronous validation and the final merge gate rather than the implementation actor's synchronous loop.
+
+Repository-wide test selection and stop rules are defined by `TEST_SCOPE_AND_DELIVERY_POLICY.md` and apply to every Business/app/package.
 
 CI is required when configured/relevant but is never universal completion evidence.
 
@@ -265,6 +448,14 @@ Use expected-head protection where available.
 - no `git worktree remove --force` on Windows while the worktree contains junctions/symlinks/reparse points into shared dependency directories; unlink the reparse point first and verify the target remains intact;
 - no wrong-project Preview/deployment as product evidence;
 - no unverified live-revision claim.
+
+### 13A. Owner-only model/provider decisions
+
+Model/provider selection is not an autonomous Web CTO or worker decision. When a task encounters model selection, replacement, benchmarking, primary/fallback order, provider routing, model-specific credentials/bindings, or activation/deployment, the agent must stop that model work and ask the Product Owner for an explicit current decision.
+
+A model mention, historical approval, worker recommendation, passing benchmark, existing branch, or product blocker does not create model-change authority. Non-model product work may continue when it does not depend on choosing a model.
+
+Canonical contract: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md` and tracking issue `#3571`.
 
 ## 14. Owner visual authority
 
@@ -308,7 +499,7 @@ After authorized merge, verify the configured Git-connected Production against t
 
 ### Verdict record requirement
 
-Before merge, the Web CTO (CENTRAL) must post the filled `CTO_FINAL_REVIEW` checklist as a PR review or PR comment containing the exact head SHA and per-item checklist results (precedent: PR #1900 procedure, work order 2026-09-05). Prose-only assertions of a final-review verdict are not an auditable record.
+Before merge, the Web CTO (CENTRAL) must post an auditable `CTO_FINAL_REVIEW` record as a PR review or PR comment containing the exact head SHA and results for the **applicable** gates. For a tiny bounded fix, a compact exact-head checklist is sufficient; the full template is not a required ceremony. Prose-only verdict assertions with no reviewable fields are not sufficient.
 
 For P0/P1 or otherwise critical PRs, the final review also records the exact-head independent-validator record (or `NOT_REQUIRED` reason), any load-bearing mutation/differential proof requested by the work contract, and the disposition of every external red security/compliance signal.
 
@@ -344,4 +535,5 @@ In particular, a historical product direction document is now an implementation 
 - New/rebuilt Business playbook: `NEW_BUSINESS_UI_FIRST_PLAYBOOK.md`
 - Live visual review: `LIVE_PRODUCTION_UI_REVIEW_POLICY.md`
 - GitHub report handoff: `GITHUB_REPORT_HANDOFF_POLICY.md`
+- Owner-only model/provider decisions: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 - Templates: `templates/`

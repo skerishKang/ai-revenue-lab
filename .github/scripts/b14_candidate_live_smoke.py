@@ -103,17 +103,14 @@ class CandidateSpec:
 # --------------------------------------------------------------------------
 # Explicit candidate allowlist (#2798 authority correction).
 #
-# PLUS  : Agnes, SenseNova, Poolside, Motif, Mercury, Atria, Space Bunny
+# PLUS  : Agnes, SenseNova, Poolside, Motif, Mercury, Atria
 # PRO   : GPT-5.6 Luna
 # EXCLUDED: B.AI Qwen3.8 (deliberately absent — see _EXCLUDED_* below)
-#
-# Space Bunny (#3209, decision source #3143) is the Padiem Plus text+vision
-# primary on the Kilo Gateway free lane. The existing owner-managed
-# ``PADIEM_KILO_API_KEY`` binding is optional: B14 may use it when present
-# (``kilo/stealth-space-bunny-alpha``, upstream ``stealth/space-bunny-alpha``,
-# provider display ``Kilo Gateway / Stealth`` per the B14 registry). It is the
-# only candidate permitted in image modality; every other candidate stays
-# text-only.
+#           Space Bunny (owner final retirement decision 2026-10-07: the lane
+#           executes nowhere — no product, manual, auto, or smoke execution.
+#           It was the image-modality candidate under #3209; with its removal
+#           no image candidate exists and every remaining candidate is
+#           text-only.)
 # --------------------------------------------------------------------------
 
 _CANDIDATES: tuple[CandidateSpec, ...] = (
@@ -187,17 +184,8 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         credential_binding="PADIEM_EXLAB_API_KEY",
         expected_binding="PADIEM_EXLAB_API_KEY",
     ),
-    CandidateSpec(
-        candidate_id="space-bunny",
-        tier="plus",
-        provider_id="kilo",
-        provider_name="Kilo Gateway / Stealth",
-        model_id="kilo/stealth-space-bunny-alpha",
-        upstream_model="stealth/space-bunny-alpha",
-        credential_binding="PADIEM_KILO_API_KEY",
-        expected_binding="PADIEM_KILO_API_KEY",
-        credential_mode="optional_platform_secret",
-    ),
+    # space-bunny removed from the allowlist: owner final retirement decision
+    # (2026-10-07). Historical id: kilo/stealth-space-bunny-alpha.
 )
 
 CANDIDATE_REGISTRY: dict[str, CandidateSpec] = {
@@ -309,17 +297,20 @@ def canonical_chat_body(spec: CandidateSpec) -> dict[str, Any]:
 
 
 # --------------------------------------------------------------------------
-# Bounded image modality (#3209 S1).
+# Bounded image modality (#3209 S1, retired 2026-10-07).
 #
-# Only the Space Bunny candidate may run in image modality, reusing the
-# existing single-image product contract (one PNG/JPEG/WebP data URL plus one
-# text part, bounded fixture, no raw payload output). Every other
-# candidate/modality combination fails closed before any provider POST.
+# Space Bunny was the only image-modality candidate and is now fully retired;
+# no image candidate remains. The bounded image scaffolding is retained only
+# so every image attempt fails closed before any provider POST without
+# touching the shared canary fixtures.
 # --------------------------------------------------------------------------
 
 MODALITY_TEXT = "text"
 MODALITY_IMAGE = "image"
-IMAGE_ONLY_CANDIDATE_ID = "space-bunny"
+# No image-modality candidate exists after the owner final retirement decision
+# (2026-10-07). The empty sentinel can never equal a real candidate id, so
+# every image attempt fails closed before any provider POST.
+IMAGE_ONLY_CANDIDATE_ID = ""
 
 IMAGE_CASE_GENERIC = "generic"
 IMAGE_CASE_B66_F02 = "b66-f02"
@@ -416,7 +407,12 @@ def canonical_image_body(
     *,
     image_case: str = IMAGE_CASE_GENERIC,
 ) -> dict[str, Any]:
-    """Pin one exact manual image route for the Space Bunny candidate only."""
+    """Pin one exact manual image route — unavailable after retirement.
+
+    The only image candidate (Space Bunny) was retired by the owner final
+    decision (2026-10-07); no image-modality candidate remains, so this always
+    fails closed.
+    """
 
     if spec.candidate_id != IMAGE_ONLY_CANDIDATE_ID:
         raise ValueError("image_modality_not_permitted")

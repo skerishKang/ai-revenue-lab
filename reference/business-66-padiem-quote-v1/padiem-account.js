@@ -582,10 +582,99 @@
     return { ok: true, draft: built.draft };
   }
 
+  function pdfFailure(code, message) {
+    return { ok: false, code, message: message || "PDF 다운로드에 실패했습니다. 잠시 후 다시 시도해 주세요." };
+  }
+
+  function pdfFilename(disposition, quoteNo) {
+    let filename = "";
+    const extended = /filename\*\s*=\s*UTF-8''([^;]+)/i.exec(disposition || "");
+    if (extended) {
+      try { filename = decodeURIComponent(extended[1].trim().replace(/^"|"$/g, "")); } catch (_) {}
+    }
+    if (!filename) {
+      const plain = /filename\s*=\s*(?:"([^"]*)"|([^;]*))/i.exec(disposition || "");
+      if (plain) filename = (plain[1] || plain[2] || "").trim();
+    }
+    filename = filename || String(quoteNo || "quote") + ".pdf";
+    filename = filename.replace(/[\/\\\u0000-\u001f\u007f:*?"<>|]/g, "_")
+      .replace(/^[.\s]+|[.\s]+$/g, "").slice(0, 120);
+    if (!filename) filename = "quote.pdf";
+    if (!/\.pdf$/i.test(filename)) filename += ".pdf";
+    return filename;
+  }
+
+  async function downloadPdf(renderModel) {
+    const readiness = runtimeReadiness();
+    if (!readiness.ready) return pdfFailure(notReadyCode(readiness), interpretErrorText(notReadyCode(readiness)));
+    if (state.pendingQuote) return pdfFailure("pending_quote", "진행 중인 견적 내용을 완성한 뒤 PDF로 저장해 주세요.");
+    const loaded = state.loadedSkill;
+    const selected = byId("padiemSavedSkillSelect");
+    const template = loaded && loaded.skill && loaded.skill.internalTemplate;
+    if (!loaded || !/^b66skill_[0-9a-f]{32}$/.test(loaded.savedSkillId || "") ||
+        !selected || selected.value !== loaded.savedSkillId || !loaded.fingerprint ||
+        loaded.skill.fingerprint !== loaded.fingerprint || loaded.skill.approved !== true ||
+        !template || !template.fingerprint || !renderModel || typeof renderModel !== "object" ||
+        !renderModel.template || renderModel.template.approved !== true ||
+        renderModel.template.fingerprint !== template.fingerprint) {
+      return pdfFailure("pdf_skill_mismatch", "배정된 내 견적서의 PDF 양식을 다시 확인해 주세요.");
+    }
+    const allowedKeys = ["schemaVersion", "derivedBy", "template", "facts", "items", "totals", "coreTotals", "writtenWords", "taxReview"];
+    if (Object.keys(renderModel).some((key) => allowedKeys.indexOf(key) === -1) ||
+        renderModel.schemaVersion !== 1 || renderModel.derivedBy !== "quote-core" ||
+        !renderModel.coreTotals || typeof renderModel.writtenWords !== "string" || !renderModel.writtenWords ||
+        !renderModel.taxReview || renderModel.taxReview.required !== false ||
+        (Array.isArray(renderModel.coreTotals.detailGroups) && renderModel.coreTotals.detailGroups.length)) {
+      return pdfFailure("invalid_pdf_model", "PDF로 저장할 수 있는 확정된 견적 내용을 확인해 주세요.");
+    }
+    const body = JSON.stringify({ saved_skill_id: loaded.savedSkillId, render_model: renderModel });
+    if (new window.Blob([body]).size > 32 * 1024) {
+      return pdfFailure("pdf_request_too_large", "견적 내용이 PDF 양식의 지원 범위를 초과했습니다.");
+    }
+    try {
+      const response = await window.fetch(API + "/b66/quote/pdf", {
+        method: "POST", cache: "no-store", credentials: "same-origin",
+        headers: { "Content-Type": "application/json", "Accept": "application/pdf,application/json" },
+        body
+      });
+      if (!response.ok) {
+        const data = await response.json().catch(() => null);
+        return pdfFailure("pdf_render_failed", safeMessage(data, "배정된 양식의 PDF 다운로드가 아직 준비되지 않았습니다."));
+      }
+      const mediaType = String(response.headers.get("content-type") || "").split(";", 1)[0].trim().toLowerCase();
+      if (mediaType !== "application/pdf") return pdfFailure("pdf_media_invalid");
+      const buffer = await response.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      if (bytes.length < 5 || bytes[0] !== 37 || bytes[1] !== 80 || bytes[2] !== 68 || bytes[3] !== 70 || bytes[4] !== 45) {
+        return pdfFailure("pdf_bytes_invalid");
+      }
+      if (!state.authenticated || state.loadedSkill !== loaded || selected.value !== loaded.savedSkillId || state.pendingQuote) {
+        return pdfFailure("pdf_skill_changed", "내 견적서 선택과 현재 견적 내용을 확인한 뒤 다시 저장해 주세요.");
+      }
+      const filename = pdfFilename(response.headers.get("content-disposition"), renderModel.facts && renderModel.facts.meta && renderModel.facts.meta.quoteNo);
+      const blobUrl = window.URL.createObjectURL(new window.Blob([buffer], { type: "application/pdf" }));
+      const anchor = document.createElement("a");
+      try {
+        anchor.href = blobUrl;
+        anchor.download = filename;
+        anchor.hidden = true;
+        document.body.appendChild(anchor);
+        anchor.click();
+      } finally {
+        anchor.remove();
+        window.setTimeout(() => window.URL.revokeObjectURL(blobUrl), 0);
+      }
+      return { ok: true, filename };
+    } catch (_) {
+      return pdfFailure("pdf_unavailable");
+    }
+  }
+
   window.B66QuoteRuntimeBridge = Object.freeze({
     readiness: runtimeReadiness,
     interpret: interpretRequest,
     buildFromFacts: buildQuoteFromFacts,
+    downloadPdf,
     pendingQuote: () => pendingQuote(),
     clearPending: () => { clearPendingQuote(); },
     getCompanyProfile: () => (state.companyProfile ? JSON.parse(JSON.stringify(state.companyProfile)) : null),

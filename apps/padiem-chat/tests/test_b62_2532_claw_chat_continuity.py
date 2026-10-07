@@ -7,7 +7,8 @@ separate app. These contracts lock the accepted slice:
   data-state="claw"; only the chat conversation column yields the canvas.
 - CLAW_MESSAGE_INPUT_PRIMARY: #messageInput is the Claw request input;
   the old hero textarea (#clawRequestText) is gone and Enter in the
-  composer routes to the preview flow.
+  composer always routes to the general conversation (#3531); the
+  quotation workflow runs only via the manual form's explicit submit.
 - The workspace stacks above the fixed glass portrait layer (z-index).
 - Contrast regressions from #2114 stay fixed (no stacked opacity, glass
   kicker uses the chat eyebrow ink).
@@ -42,8 +43,9 @@ def test_claw_bottom_composer_visible() -> None:
     # The workspace chrome yields to the conversation in manual view...
     manual_rule = WORKSPACE_CSS.split('.claw-workspace[data-view="manual"] {', 1)[1].split("}", 1)[0]
     assert "display: none" in manual_rule
-    # ...and only the inbox (non-manual) subview hides the conversation.
-    inbox_rule = WORKSPACE_CSS.split('.claw-workspace:not([data-view="manual"]) ~ .conversation {', 1)[1].split("}", 1)[0]
+    # ...and only the inbox/automation (non-manual, non-general) subviews
+    # hide the conversation (#3531: general keeps the primary surface).
+    inbox_rule = WORKSPACE_CSS.split('.claw-workspace:not([data-view="manual"]):not([data-view="general"]) ~ .conversation {', 1)[1].split("}", 1)[0]
     assert "display: none !important" in inbox_rule
     # The intake form now lives inside the composer wrap, above #composerForm.
     wrap = INDEX.split('class="composer-wrap"', 1)[1]
@@ -60,9 +62,11 @@ def test_claw_bottom_composer_visible() -> None:
 def test_claw_message_input_primary() -> None:
     assert 'id="clawRequestText"' not in INDEX
     assert "clawRequestText" not in APP
-    # Composer submit routes to the Claw preview flow while data-state="claw".
-    assert 'shell.dataset.state === "claw" && clawManualForm' in APP
-    assert "clawManualForm.requestSubmit()" in APP
+    # #3531: composer submit always routes to the general Claw conversation,
+    # in every shell state. No claw-state branch may divert the composer into
+    # the quotation workflow.
+    assert "clawManualForm.requestSubmit()" not in APP
+    assert "submitPrompt(input.value)" in APP
     # Preview and execute read the composer value; the API contract is unchanged.
     assert APP.count('const body = (input.value || "").trim();') == 2
     assert 'fetch("/api/claw/manual-intake/preview"' in APP

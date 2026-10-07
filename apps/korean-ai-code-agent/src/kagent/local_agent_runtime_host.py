@@ -19,6 +19,7 @@ from .local_agent_control_plane_admission import (
     ControlPlanePhysicalAdmissionChannel,
 )
 from .local_agent_pairing import DeviceLifecycle, DeviceSession
+from .browser_open import BrowserOpenRefusal
 from .local_agent_runtime_assembly import BoundLocalAgentRuntimeAssembly
 from .local_agent_secure_transport import DeviceCredentialStore, OutboundPollRequest
 from .security import redact_secrets
@@ -345,6 +346,24 @@ class LocalAgentResidentRuntimeHost:
 
     def _now(self) -> datetime:
         return _aware(self._clock(), "clock")
+
+    def redeem_desktop_browser_open(self, **correlation: Any) -> None:
+        """#3611 — the Desktop's redemption entry point, on the existing pipe.
+
+        Delegates straight to the assembly's composed `browser.open` authority,
+        which owns the single durable ``ADMITTED -> EXECUTING`` transition. This
+        host adds no authority of its own and creates no view: the Desktop trusted
+        main owns the browser, and it may only create a view after this call
+        returns.
+        """
+
+        authority = self._assembly.browser_open_authority
+        if authority is None:
+            raise BrowserOpenRefusal(
+                "redemption_unavailable",
+                "no approved browser.open authority is composed on this host",
+            )
+        authority.redeem_transport(**correlation)
 
     def current_desktop_session_material(self) -> dict[str, Any]:
         """#3436 B2d — one bounded current-session projection for the trusted

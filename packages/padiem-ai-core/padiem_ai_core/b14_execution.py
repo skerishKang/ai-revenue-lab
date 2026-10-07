@@ -12,8 +12,37 @@ import httpx
 from .contracts import UsageMetadata
 
 B14_CHAT_COMPLETIONS_PATH = "/api/pilot/v1/chat/completions"
-MAX_B14_RESPONSE_BYTES = 1_048_576
-MAX_CONFIGURED_B14_RESPONSE_BYTES = 8 * 1_048_576
+
+# ── B14 output-limit authorities (#3553) ─────────────────────────────────────
+# Three different authorities must never be merged into one number:
+#
+#   PRODUCT_REQUESTED_LIMIT
+#       What a product/feature actually asks for as an output budget.
+#       The explicit-request compatibility ceiling below is a LEGACY B14
+#       PILOT VALIDATION VALUE, not model-capability truth:
+#       origin commit d8714ad4 (2026-07-25, #142) validated explicit
+#       max_tokens as 1..4096 in gateway.py/schemas.py; the shared Core
+#       contract later copied the same range (1d6e1b7f, 2026-08-26).
+#       GLOBAL_4096_ORIGIN=EARLY_B14_PILOT_VALIDATION
+#       GLOBAL_4096_IS_PROVIDER_MODEL_MAX=NO
+#   RUNTIME_HARD_SAFETY_CEILING
+#       B14's own resource-abuse guards, independent of max_tokens:
+#       response byte cap (MAX_B14_RESPONSE_BYTES / configurable up to
+#       MAX_CONFIGURED_B14_RESPONSE_BYTES) and request timeout bounds
+#       (B14ExecutionConfig.timeout_seconds, 1..60s). Values unchanged.
+#   PROVIDER_MODEL_MAX_OUTPUT
+#       What the selected provider/model can technically produce.
+#       Capability metadata only (see padiem_ai_core.b14_output_limits).
+#       It must never become the global request validator and must never
+#       be fabricated when unknown.
+#
+# AUTOMATIC_MAX_OUTPUT_WIDENING=NO: raising PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING
+# is a deliberate product decision with targeted tests and byte/time safeguards,
+# never an automatic copy of a provider maximum.
+PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING = 4096
+
+MAX_B14_RESPONSE_BYTES = 1_048_576  # RUNTIME_HARD_SAFETY_CEILING (response bytes)
+MAX_CONFIGURED_B14_RESPONSE_BYTES = 8 * 1_048_576  # RUNTIME_HARD_SAFETY_CEILING (configured cap)
 MAX_B14_MESSAGES = 100
 MAX_B14_MESSAGE_CHARS = 32_000
 MAX_B14_MODEL_CHARS = 200
@@ -149,7 +178,9 @@ def _safe_reason_codes(value: Any) -> tuple[str, ...]:
 @dataclass(frozen=True, slots=True)
 class B14ExecutionConfig:
     base_url: str
+    # RUNTIME_HARD_SAFETY_CEILING: duration guard, independent of max_tokens (#3553).
     timeout_seconds: float = 20.0
+    # RUNTIME_HARD_SAFETY_CEILING: response byte guard, independent of max_tokens.
     max_response_bytes: int = MAX_B14_RESPONSE_BYTES
 
     def __post_init__(self) -> None:
@@ -279,12 +310,21 @@ class B14ChatRequest:
             raise ValueError("temperature must be between 0 and 2")
         object.__setattr__(self, "temperature", float(self.temperature))
 
+        # PRODUCT_REQUESTED_LIMIT authority: explicit output budget must stay
+        # within the product's explicit-request compatibility ceiling. The
+        # omitted-value contract is separate (#3551): None stays None and the
+        # payload omits the field. RUNTIME byte/time guards and provider/model
+        # capability metadata are separate authorities and are not consulted
+        # here (capability must never be fabricated; see b14_output_limits).
         if self.max_tokens is not None and (
             isinstance(self.max_tokens, bool)
             or not isinstance(self.max_tokens, int)
-            or not 1 <= self.max_tokens <= 4096
+            or not 1 <= self.max_tokens <= PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING
         ):
-            raise ValueError("max_tokens must be between 1 and 4096 or None")
+            raise ValueError(
+                "max_tokens must be between 1 and "
+                f"{PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING} or None"
+            )
         if not isinstance(self.routing, B14RoutingOptions):
             raise ValueError("routing must be B14RoutingOptions")
 
@@ -356,12 +396,14 @@ class B14ExecutionError(RuntimeError):
         *,
         upstream_status_code: int | None = None,
         retryable: bool = False,
+        diagnostic_class: str | None = None,
     ) -> None:
         super().__init__(safe_message)
         self.code = code
         self.safe_message = safe_message
         self.upstream_status_code = upstream_status_code
         self.retryable = retryable
+        self.diagnostic_class = diagnostic_class
 
     def to_public_dict(self) -> dict[str, Any]:
         return {
@@ -505,12 +547,14 @@ class B14ExecutionClient:
                 "malformed_upstream",
                 "Business 14 returned malformed JSON.",
                 upstream_status_code=status_code,
+                diagnostic_class="upstream_malformed_json",
             ) from exc
         if not isinstance(data, Mapping):
             raise B14ExecutionError(
                 "malformed_upstream",
                 "Business 14 returned an unexpected response shape.",
                 upstream_status_code=status_code,
+                diagnostic_class="upstream_unexpected_shape",
             )
 
         try:
@@ -520,12 +564,14 @@ class B14ExecutionClient:
                 "malformed_upstream",
                 "Business 14 response did not contain assistant content.",
                 upstream_status_code=status_code,
+                diagnostic_class="upstream_missing_content",
             ) from exc
         if not isinstance(answer, str):
             raise B14ExecutionError(
                 "malformed_upstream",
                 "Business 14 assistant content was not text.",
                 upstream_status_code=status_code,
+                diagnostic_class="upstream_non_text_content",
             )
         normalized_answer = answer.strip()
         if not normalized_answer:
@@ -533,6 +579,7 @@ class B14ExecutionClient:
                 "empty_upstream_answer",
                 "Business 14 returned an empty assistant answer.",
                 upstream_status_code=status_code,
+                diagnostic_class="upstream_empty_answer",
             )
 
         return B14ExecutionResult(

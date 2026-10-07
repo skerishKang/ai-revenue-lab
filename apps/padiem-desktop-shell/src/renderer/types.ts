@@ -26,6 +26,7 @@ export type {
   WorkspaceEntryKind,
   WorkspaceListResponse,
   WorkspaceRootResponse,
+  WorkspaceSearchResponse,
 } from '../contract/ipc.js';
 
 export type { DeviceLifecycleState } from '../contract/device-lifecycle.js';

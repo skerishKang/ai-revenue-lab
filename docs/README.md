@@ -3,7 +3,7 @@
 ```text
 DOC_STATUS = CANONICAL_ENTRYPOINT
 OWNER = repository documentation governance
-LAST_VERIFIED = 2026-09-08
+LAST_VERIFIED = 2026-10-07
 ```
 
 `docs/` is the entrypoint for **current documentation authority**. Dated audits, issue-specific designs, phase documents and Git history remain evidence; file existence alone does not make them current architecture or runtime truth.
@@ -18,6 +18,7 @@ LAST_VERIFIED = 2026-09-08
 6. `product/AI_PRODUCT_CONSUMER_MATRIX.md` — product-to-platform relationships
 7. `governance/DOCUMENTATION_AUTHORITY_MODEL.md` — document precedence/freshness
 8. `governance/LEGACY_AI_TERMINOLOGY_MAP.md` — legacy terminology interpretation
+9. `products/b66/README.md` — B66 Padiem Quote canonical product entrypoint
 
 Audit trail:
 
@@ -61,12 +62,14 @@ docs/products/padiem-sidecar/README.md       -> B53 Padiem Sidecar commercial pr
 apps/korean-ai-platform/README.md            -> B14 execution platform
 apps/padiem-chat/README.md                   -> B62 Padiem Chat
 apps/korean-ai-code-agent/README.md          -> B54 Padiem Claw
+docs/products/b66/README.md                  -> B66 Padiem Quote
 ```
 
 ## Product boundary locks
 
 - **B62 Padiem Chat** owns chat UX, conversations, Projects, attachments, Saved Outputs and product modes. Generic Tool/Skill/Agent/Memory/Evidence semantics remain IP-CORE-owned.
 - **B54 Padiem Claw** owns task/run/repository/workspace/GitHub product flow. `P01` is historical terminology for the shared Core lineage; current canonical identity is `IP-CORE`.
+- **B66 Padiem Quote** owns quotation UX/state, Saved Quote Skill, source-derived template onboarding, document-fidelity certification and quote presentation. Its canonical product docs are under `docs/products/b66/`; historical CGI renderer issues are evidence, not competing policy authority.
 - **B61 StoryMemory** owns reader/domain semantics including locator grammar, progress, knowledge ceiling and spoiler/no-future behavior. Generic retrieval/permission/evidence remains IP-CORE-owned.
 - **B53 Padiem Sidecar** is the commercial product whose product charter, requirements, architecture, operations, security and commercialization documents live under `docs/products/padiem-sidecar/`.
 - **IP-SIDECAR** is the reusable embedded runtime layer consumed by B53 and future approved hosts. B53 and IP-SIDECAR are distinct authorities.

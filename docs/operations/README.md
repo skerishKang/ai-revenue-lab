@@ -11,15 +11,16 @@ For a numbered internal user-facing web Business, read in this order:
 
 1. `PORTFOLIO_DESIGN_OPERATING_SYSTEM.md` — **mandatory visual/product-design process**: reference translation → anchor → archetypes → full expansion.
 2. `AI_DEVELOPMENT_OPERATING_POLICY.md` — roles, exact-revision work, validation, review and merge boundaries.
-3. `TECHNOLOGY_ADOPTION_POLICY.md` — search internal/OSS/commercial options before substantial custom build; prefer buy/adopt/adapt/sidecar where credible; preserve Padiem product authority.
-4. `ui-ux/UI_UX_VISUAL_DIRECTION_STANDARD.md` — visual thesis, Korean typography, reference fidelity, mobile and cross-state quality standard.
-5. `NEW_BUSINESS_UI_FIRST_PLAYBOOK.md` — practical start/rebuild playbook.
-6. `UI_UX_BACKEND_PHASE_GATES.md` — independent UI/UX/backend/runtime evidence dimensions.
-7. `CODE_STRUCTURE_AND_ASSET_VERSIONING_POLICY.md` — canonical source/style/asset structure; no cumulative visual-generation cascade.
-8. `EVIDENCE_REQUIREMENTS.md` — exact-SHA and visual/contact-sheet evidence.
-9. `WORKFLOW_STATUS_MODEL.md` — implementation, visual-gate, owner, merge and Production statuses.
-10. `LIVE_PRODUCTION_UI_REVIEW_POLICY.md` — when live owner review is allowed and when an art-direction reset must pass design gates first.
-11. `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md` — Git-connected Production and recovery.
+3. `TEST_SCOPE_AND_DELIVERY_POLICY.md` — **repository-wide test budgeting**: focused regression, affected CI only, selective independent validation, bounded Production smoke and stop rules.
+4. `TECHNOLOGY_ADOPTION_POLICY.md` — search internal/OSS/commercial options before substantial custom build; prefer buy/adopt/adapt/sidecar where credible; preserve Padiem product authority.
+5. `ui-ux/UI_UX_VISUAL_DIRECTION_STANDARD.md` — visual thesis, Korean typography, reference fidelity, mobile and cross-state quality standard.
+6. `NEW_BUSINESS_UI_FIRST_PLAYBOOK.md` — practical start/rebuild playbook.
+7. `UI_UX_BACKEND_PHASE_GATES.md` — independent UI/UX/backend/runtime evidence dimensions.
+8. `CODE_STRUCTURE_AND_ASSET_VERSIONING_POLICY.md` — canonical source/style/asset structure; no cumulative visual-generation cascade.
+9. `EVIDENCE_REQUIREMENTS.md` — exact-SHA and visual/contact-sheet evidence.
+10. `WORKFLOW_STATUS_MODEL.md` — implementation, visual-gate, owner, merge and Production statuses.
+11. `LIVE_PRODUCTION_UI_REVIEW_POLICY.md` — when live owner review is allowed and when an art-direction reset must pass design gates first.
+12. `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md` — Git-connected Production and recovery.
 
 Technology-adoption invariant:
 
@@ -48,9 +49,14 @@ ARCHETYPES_BEFORE_FULL_SITE
 FULL_SURFACE_CONTACT_SHEET_REQUIRED
 NO_CUMULATIVE_VISUAL_VERSION_CASCADE
 OWNER_APPROVAL_SEPARATE
+DEV_FAST_GATE_RELEASES_IMPLEMENTER
+WINDOWS_UBUNTU_BROWSER_VALIDATION_PARALLEL
+FULL_VALIDATION_BEFORE_MERGE
 ```
 
-There is still no mandatory repository-wide `UI → UX → backend` ceremony. The Web CTO selects the smallest evidence slice needed for the product uncertainty. However, **when the work includes a new art direction or material visual redesign, the design gates are mandatory before broad UI expansion.**
+Development throughput also does not wait on a serial full CI matrix. After the scoped `DEV_FAST_GATE` passes, the implementation actor may move to the next authorized issue while Windows/Ubuntu/browser/full validators run in parallel. Required full validation remains a merge gate. See `AI_DEVELOPMENT_OPERATING_POLICY.md` and #3429.
+
+There is still no mandatory repository-wide `UI → UX → backend` ceremony. There is also no repository-wide `run everything` testing ceremony: test scope follows the changed claim and blast radius under `TEST_SCOPE_AND_DELIVERY_POLICY.md`. The Web CTO selects the smallest evidence slice needed for the product uncertainty. However, **when the work includes a new art direction or material visual redesign, the design gates are mandatory before broad UI expansion.**
 
 ## Visual redesign invariant
 

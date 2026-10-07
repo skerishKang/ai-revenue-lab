@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "apps/padiem-chat/**"
+      - "!apps/padiem-chat/tests/**"
+      - "!apps/padiem-chat/worker.py"
       - "packages/padiem-ai-core/**"
       - ".github/scripts/b62_deep_research_browser_qa.py"
       - ".github/workflows/b62-deep-research-browser-qa.yml"
@@ -11,6 +13,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: b62-deep-research-browser-qa-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   deep-research-browser-qa:

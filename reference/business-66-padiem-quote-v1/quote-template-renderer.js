@@ -32,6 +32,12 @@
   var HEX_PATTERN = /^#[0-9a-fA-F]{3,8}$/;
   var MEASURE_PATTERN = /^[0-9A-Za-z.%]{1,16}$/;
   var PAGE_MARGIN_PATTERN = /^\d{1,2}(?:\.\d{1,2})?(?:mm|cm|in)$/;
+  var PAGE_SIZE_DIMENSIONS = {
+    A4: ["210mm", "297mm"],
+    A5: ["148mm", "210mm"],
+    Letter: ["8.5in", "11in"],
+    Legal: ["8.5in", "14in"]
+  };
 
   function isPlainObject(value) {
     return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -92,6 +98,21 @@
       : "10mm";
     var landscape = source.orientation === "landscape";
     return "@page { size: " + (landscape ? size + " landscape" : size) + "; margin: " + margin + "; }";
+  }
+
+  function buildPageStyleVariables(page) {
+    var source = isPlainObject(page) ? page : {};
+    var size = Template.ALLOWED_PAGE_SIZES.indexOf(source.size) === -1 ? "A4" : source.size;
+    var dimensions = PAGE_SIZE_DIMENSIONS[size] || PAGE_SIZE_DIMENSIONS.A4;
+    var landscape = source.orientation === "landscape";
+    var margin = typeof source.margin === "string" && PAGE_MARGIN_PATTERN.test(source.margin)
+      ? source.margin
+      : "10mm";
+    return {
+      "--quote-page-width": landscape ? dimensions[1] : dimensions[0],
+      "--quote-page-height": landscape ? dimensions[0] : dimensions[1],
+      "--quote-page-margin": margin
+    };
   }
 
   function resolvePrivateSlot(assetId, rawSource) {
@@ -286,10 +307,42 @@
       },
       sections: sections,
       layoutVariant: typeof content.layoutVariant === "string" ? content.layoutVariant : "",
+      cgiV2: isPlainObject(content.cgiV2) ? content.cgiV2 : null,
+      facts: {
+        meta: {
+          quoteNo: String(normalizedDraft.meta.quoteNo == null ? "" : normalizedDraft.meta.quoteNo),
+          issueDate: String(normalizedDraft.meta.issueDate == null ? "" : normalizedDraft.meta.issueDate),
+          issueDateDisplay: formatIssueDate(normalizedDraft.meta.issueDate, "yyyy. mm. dd."),
+          validDays: normalizedDraft.meta.validDays,
+          projectName: String(normalizedDraft.meta.projectName == null ? "" : normalizedDraft.meta.projectName)
+        },
+        sender: {
+          company: String(normalizedDraft.sender.company == null ? "" : normalizedDraft.sender.company),
+          rep: String(normalizedDraft.sender.rep == null ? "" : normalizedDraft.sender.rep),
+          contactPerson: String(normalizedDraft.sender.contactPerson == null ? "" : normalizedDraft.sender.contactPerson),
+          bizNo: String(normalizedDraft.sender.bizNo == null ? "" : normalizedDraft.sender.bizNo),
+          address: String(normalizedDraft.sender.address == null ? "" : normalizedDraft.sender.address),
+          phone: String(normalizedDraft.sender.phone == null ? "" : normalizedDraft.sender.phone),
+          email: String(normalizedDraft.sender.email == null ? "" : normalizedDraft.sender.email)
+        },
+        recipient: {
+          company: String(normalizedDraft.recipient.company == null ? "" : normalizedDraft.recipient.company),
+          person: String(normalizedDraft.recipient.person == null ? "" : normalizedDraft.recipient.person),
+          address: String(normalizedDraft.recipient.address == null ? "" : normalizedDraft.recipient.address),
+          email: String(normalizedDraft.recipient.email == null ? "" : normalizedDraft.recipient.email)
+        },
+        taxRateText: Number.isFinite(Number(normalizedDraft.tax.rate))
+          ? String(Math.round(Number(normalizedDraft.tax.rate) * 100)) + "%"
+          : ""
+      },
       page: isPlainObject(content.page) ? content.page : {},
       pageRule: buildPageRule(content.page),
       style: isPlainObject(content.style) ? content.style : {},
-      styleVariables: buildStyleVariables(content.style),
+      styleVariables: Object.assign(
+        {},
+        buildStyleVariables(content.style),
+        buildPageStyleVariables(content.page)
+      ),
       slots: (function () {
         var sources = isPlainObject(opts.slotSources) ? opts.slotSources : {};
         var logo = resolvePrivateSlot(String(content.slots && content.slots.logo || ""), sources.logo);
@@ -377,6 +430,31 @@
     };
   }
 
+  /* 인증 PDF 입력은 기존 projection 과 QuoteCore 확정값만 전달한다.
+     미리보기 자산/data URL 은 private PDF bundle 의 입력이 아니다. */
+  function buildCertifiedPdfRenderModel(draft, profile, options) {
+    var normalizedDraft = Core.normalizeDraft(draft);
+    if (!normalizedDraft) return null;
+    var model = buildRenderModel(normalizedDraft, profile, options);
+    if (!model || model.template.fallbackReason || model.taxReview.required) return null;
+    var coreTotals = Core.computeDraftTotals(normalizedDraft);
+    if (!coreTotals || (Array.isArray(coreTotals.detailGroups) && coreTotals.detailGroups.length) ||
+        (Array.isArray(model.detailPages) && model.detailPages.length)) return null;
+    var writtenWords = Core.formatKoreanMoneyWords(coreTotals.grand);
+    if (writtenWords === null) return null;
+    return {
+      schemaVersion: model.schemaVersion,
+      derivedBy: model.derivedBy,
+      template: model.template,
+      facts: model.facts,
+      items: model.items,
+      totals: model.totals,
+      coreTotals: coreTotals,
+      writtenWords: writtenWords,
+      taxReview: model.taxReview
+    };
+  }
+
   /* ── 얇은 DOM adapter: projection 을 기존 화면 요소에 적용한다 ── */
 
   function ensurePageRule(doc, rule) {
@@ -413,6 +491,127 @@
     return true;
   }
 
+  function cgiMoneyText(value) {
+    return String(value == null ? "" : value)
+      .replace(/^\s*₩\s*/, "")
+      .replace(/\s*원$/, "");
+  }
+
+  function applyCgiV2(doc, model) {
+    if (!doc || !isPlainObject(model) || model.layoutVariant !== "cgi-v2") return false;
+    var facts = isPlainObject(model.facts) ? model.facts : {};
+    var meta = isPlainObject(facts.meta) ? facts.meta : {};
+    var sender = isPlainObject(facts.sender) ? facts.sender : {};
+    var recipient = isPlainObject(facts.recipient) ? facts.recipient : {};
+    var cgi = isPlainObject(model.cgiV2) ? model.cgiV2 : {};
+
+    var setText = function (id, value) {
+      var el = doc.getElementById(id);
+      if (el) el.textContent = value == null ? "" : String(value);
+    };
+    var setHtml = function (id, html) {
+      var el = doc.getElementById(id);
+      if (el) el.innerHTML = html;
+    };
+
+    setText("cgiV2Title", model.titleText);
+    setText("cgiV2QuoteNo", meta.quoteNo);
+    setText("cgiV2IssueDate", meta.issueDateDisplay || meta.issueDate);
+    setText("cgiV2Author", sender.contactPerson || sender.rep);
+    setText("cgiV2AuthorTel", sender.phone);
+    setText("cgiV2Recipient", recipient.company);
+    setText("cgiV2RecipientPerson", recipient.person);
+    setText("cgiV2RecipientTel", "");
+    setText("cgiV2Project", meta.projectName);
+    setText("cgiV2BizNo", sender.bizNo);
+    setText("cgiV2Slogan", cgi.slogan || "");
+    setText("cgiV2SenderCompany", sender.company);
+    setText(
+      "cgiV2SenderAddress",
+      [sender.address, sender.phone ? "TEL : " + sender.phone : "", cgi.fax || ""].filter(Boolean).join("\n")
+    );
+    setText("cgiV2SenderRep", sender.rep);
+    setText("cgiV2WrittenTotal", model.writtenTotalText);
+    setText("cgiV2GrandTop", cgiMoneyText(model.totals.grandText));
+    setText("cgiV2Bank", cgi.bank || "");
+
+    setHtml("cgiV2ItemsHead", model.columns.map(function (column) {
+      var styles = [];
+      if (column.width) styles.push("width:" + escapeHtml(column.width));
+      if (column.align) styles.push("text-align:" + escapeHtml(column.align));
+      var style = styles.length ? ' style="' + styles.join(";") + '"' : "";
+      return "<th" + style + ">" + escapeHtml(column.label) + "</th>";
+    }).join(""));
+
+    var rows = [];
+    if (meta.projectName) {
+      rows.push(
+        '<tr class="cgi-v2-project-row"><td></td><td colspan="' +
+        Math.max(1, model.columns.length - 2) + '">' + escapeHtml(meta.projectName) +
+        '</td><td></td></tr>'
+      );
+    }
+
+    var items = Array.isArray(model.items) ? model.items : [];
+    var actualCount = items.filter(function (item) { return !item.filler; }).length;
+    var configuredAfter = Number(cgi.underfillAfterRows);
+    var underfillAfter = Number.isInteger(configuredAfter)
+      ? Math.max(actualCount, Math.min(items.length, configuredAfter))
+      : items.length;
+
+    items.forEach(function (item, index) {
+      if (index === underfillAfter && cgi.underfillText) {
+        rows.push('<tr class="cgi-v2-underfill"><td colspan="' + model.columns.length + '">' +
+          escapeHtml(cgi.underfillText) + '</td></tr>');
+      }
+      var cells = model.columns.map(function (column) {
+        var cls = [];
+        if (column.align === "center") cls.push("cgi-v2-center");
+        if (column.align === "right") cls.push("cgi-v2-right");
+        if (item.filler) cls.push("cgi-v2-empty");
+        var classAttr = cls.length ? ' class="' + cls.join(" ") + '"' : "";
+        return "<td" + classAttr + ">" + escapeHtml(item.values[column.key]) + "</td>";
+      }).join("");
+      rows.push('<tr' + (item.filler ? ' class="cgi-v2-filler-row"' : "") + '>' + cells + "</tr>");
+    });
+    if (underfillAfter >= items.length && cgi.underfillText) {
+      rows.push('<tr class="cgi-v2-underfill"><td colspan="' + model.columns.length + '">' +
+        escapeHtml(cgi.underfillText) + '</td></tr>');
+    }
+
+    rows.push(
+      '<tr class="cgi-v2-sum-row"><td></td><td class="cgi-v2-sum-label">' +
+      escapeHtml(model.totals.subtotalLabel) +
+      '</td><td></td><td></td><td></td><td></td><td class="cgi-v2-right">' +
+      escapeHtml(cgiMoneyText(model.totals.subtotalText)) + '</td><td></td></tr>'
+    );
+    rows.push(
+      '<tr class="cgi-v2-sum-row"><td></td><td class="cgi-v2-sum-label">' +
+      escapeHtml(model.totals.vatLabel) +
+      '</td><td></td><td></td><td class="cgi-v2-center">' +
+      escapeHtml(facts.taxRateText || "") + '</td><td></td><td class="cgi-v2-right">' +
+      escapeHtml(cgiMoneyText(model.totals.vatText)) + '</td><td></td></tr>'
+    );
+    rows.push(
+      '<tr class="cgi-v2-grand-row"><td></td><td class="cgi-v2-sum-label">' +
+      escapeHtml(model.totals.grandLabel) +
+      '</td><td></td><td></td><td></td><td></td><td class="cgi-v2-right">' +
+      escapeHtml(cgiMoneyText(model.totals.grandText)) + '</td><td></td></tr>'
+    );
+    setHtml("cgiV2Items", rows.join(""));
+
+    setHtml("cgiV2Terms", (Array.isArray(cgi.terms) ? cgi.terms : []).map(function (term) {
+      var validDays = meta.validDays == null ? "" : String(meta.validDays);
+      var validityText = Number(meta.validDays) === 7 ? "1주일" : (validDays ? validDays + "일" : "");
+      var renderedTerm = String(term)
+        .replace("{validDays}", validDays)
+        .replace("{validityText}", validityText);
+      return "<li>" + escapeHtml(renderedTerm) + "</li>";
+    }).join(""));
+
+    return true;
+  }
+
   function applyRenderModel(doc, model) {
     if (!doc || typeof doc.getElementById !== "function" || !isPlainObject(model)) return false;
 
@@ -429,6 +628,11 @@
     var recipient = model.parties.recipient;
     var totals = model.totals;
     var paper = doc.getElementById("quotePaper");
+    var cgiContent = doc.getElementById("cgiV2Content");
+    var genericContent = doc.getElementById("quoteGenericContent");
+    var cgiMode = model.layoutVariant === "cgi-v2";
+    if (cgiContent) cgiContent.hidden = !cgiMode;
+    if (genericContent) genericContent.hidden = cgiMode;
     if (paper && typeof paper.setAttribute === "function") {
       if (model.layoutVariant) paper.setAttribute("data-layout-variant", model.layoutVariant);
       else if (typeof paper.removeAttribute === "function") paper.removeAttribute("data-layout-variant");
@@ -576,6 +780,9 @@
     };
     setPrivateImage("pvLogo", model.slots && model.slots.logo);
     setPrivateImage("pvStamp", model.slots && model.slots.stamp);
+    setPrivateImage("cgiV2Logo", model.slots && model.slots.logo);
+    setPrivateImage("cgiV2Stamp", model.slots && model.slots.stamp);
+    if (cgiMode) applyCgiV2(doc, model);
 
     /* 스타일/페이지: 검증된 custom property 와 bounded @page 규칙만 적용한다. */
     applyStyleVariables(doc, model);
@@ -591,9 +798,12 @@
     STYLE_VARIABLE_MAP: STYLE_VARIABLE_MAP,
     escapeHtml: escapeHtml,
     buildStyleVariables: buildStyleVariables,
+    buildPageStyleVariables: buildPageStyleVariables,
     buildPageRule: buildPageRule,
+    applyCgiV2: applyCgiV2,
     formatIssueDate: formatIssueDate,
     buildRenderModel: buildRenderModel,
+    buildCertifiedPdfRenderModel: buildCertifiedPdfRenderModel,
     applyRenderModel: applyRenderModel
   };
 });
