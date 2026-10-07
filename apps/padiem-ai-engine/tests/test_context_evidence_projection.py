@@ -85,11 +85,18 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # facts into exact PAGE-located NormalizedDocument segments. This is additive
 # provenance composition only; it adds no parser, process, network, filesystem,
 # OCR, provider or Production authority.
+# Re-pinned for #3637: a ZIP declared uncompressed size was being trusted as a
+# bound, so every Core member read now goes through a bounded streaming read
+# limited by that same declared size. That is a resource bound inside the one
+# existing archive authority: no new parser, archive walk, process, network,
+# filesystem, OCR, provider or Production authority is introduced, and no
+# declared-metadata bound, decision or error code changes. Only the two pins
+# for the changed files move; the other two are unchanged.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "caaff3778160f0d7c546d55d3fc90ab1d5a8b0ac8971fa72843deb15c5c675f4",
+    CORE_PACKAGE / "document_normalization.py": "c9bc267544a6736419fef839412d63c2fbf31f2ff54f43f9c7afe53c9e83bb3d",
     CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
     CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
-    CORE_TESTS / "test_document_normalization.py": "ec8533fdd9ac9aa7fc834d579b510f352ae48408a546baac9af110acde61bdfe",
+    CORE_TESTS / "test_document_normalization.py": "bb8d34f47423f67ee3ac58489e8114a820e79e0fab8d1c0ffc251d32e7938244",
 }
 
 REF = "doc_s3doc0000000000b"
