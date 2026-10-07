@@ -103,6 +103,7 @@
   let lastExtractionReview = null;
   let taxReviewRequired = loadTaxReviewRequired(draft);
   let suppressNextDraftSave = false;
+  let transientPublicTemplateSelection = null;
   let clonerSession = null;
   let itemSeq = draft.items.reduce((max, it) => {
     const n = parseInt(String(it.id).replace(/^item-/, ""), 10);
@@ -330,6 +331,8 @@
       toast("브라우저 저장 데이터를 지우지 못했습니다.");
       return false;
     }
+
+    clearTransientPublicTemplateSelection();
 
     /* 초기화 후에도 데모 사업 정보가 Production에 재등장하지 않는다 (#3479). */
     draft = Core.createProductionDraft();
@@ -625,6 +628,25 @@
     renamingTemplateId: null
   };
 
+  function transientPublicTemplateId() {
+    if (privateStateReadable() || !transientPublicTemplateSelection) return null;
+    const quoteNo = String(draft.meta.quoteNo || "");
+    return transientPublicTemplateSelection.quoteNo === quoteNo
+      ? transientPublicTemplateSelection.templateId
+      : null;
+  }
+
+  function setTransientPublicTemplateSelection(templateId) {
+    transientPublicTemplateSelection = {
+      quoteNo: String(draft.meta.quoteNo || ""),
+      templateId
+    };
+  }
+
+  function clearTransientPublicTemplateSelection() {
+    transientPublicTemplateSelection = null;
+  }
+
   function templateStorage() {
     /* 계정 owner 가 확정되지 않았으면 선택/양식 브라우저 저장소를 읽거나 쓰지 않는다. */
     return privateStateReadable() ? localStorageRef() : null;
@@ -651,6 +673,8 @@
 
   function currentTemplateId() {
     if (!TemplateSelection) return null;
+    const transientId = transientPublicTemplateId();
+    if (transientId) return transientId;
     return TemplateSelection.selectionForQuote(
       TemplateSelection.readEnvelope(templateStorage()),
       draft.meta.quoteNo
@@ -914,6 +938,10 @@
     select: function (id) {
       if (CgiTemplateV2 && id === CgiTemplateV2.TEMPLATE_ID) {
         if (!cgiTemplateProfile()) return applyTemplateResult({ ok: false, code: "template_not_approved" });
+        if (!privateStateReadable()) {
+          setTransientPublicTemplateSelection(id);
+          return applyTemplateResult({ ok: true, code: "selected" });
+        }
         const storage = templateStorage();
         const envelope = TemplateSelection.setSelection(
           TemplateSelection.readEnvelope(storage),
@@ -1077,6 +1105,7 @@
       toast("새 견적을 시작하지 못했습니다.");
       return;
     }
+    clearTransientPublicTemplateSelection();
     if (TemplateSelection) {
       const storage = templateStorage();
       let envelope = TemplateSelection.removeSelection(
@@ -1485,6 +1514,7 @@
   function applyAccountScopeDetail(detail) {
     const action = detail && detail.action ? detail.action : null;
     const readable = Boolean(detail && detail.privateStateReadable);
+    if (detail && detail.authenticated === true) clearTransientPublicTemplateSelection();
     if (!readable || QUARANTINE_ACTIONS.indexOf(action) !== -1) {
       discardPrivateProjection();
     } else if (!History || !History.isMeaningfulDraft(draft)) {
