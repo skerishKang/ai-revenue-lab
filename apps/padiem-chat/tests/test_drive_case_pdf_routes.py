@@ -11,7 +11,11 @@ import pytest
 
 import app.drive_case_folder_routes as folder_routes
 from app.drive_case_folder_engine import DriveCaseFolderEngineError
-from app.drive_case_pdf_routes import drive_case_pdf_detail, drive_case_pdfs_collection
+from app.drive_case_pdf_routes import (
+    drive_case_pdf_detail,
+    drive_case_pdf_extraction_review,
+    drive_case_pdfs_collection,
+)
 
 UID = "user-1"
 PROJECT_ID = "proj_" + "a" * 32
@@ -38,12 +42,18 @@ class FakeQuery:
 
 
 class FakeRequest:
-    def __init__(self, *, project_id=PROJECT_ID, file_id=None, query=None, state=None):
+    def __init__(self, *, project_id=PROJECT_ID, file_id=None, query=None, body=None, state=None):
         self.path_params = {"project_id": project_id}
         if file_id is not None:
             self.path_params["file_id"] = file_id
         self.query_params = FakeQuery(query)
+        self._body = body
         self.app = SimpleNamespace(state=state if state is not None else SimpleNamespace())
+
+    async def json(self):
+        if isinstance(self._body, Exception):
+            raise self._body
+        return self._body
 
 
 class FakeHistory:
@@ -112,6 +122,44 @@ class FakeEngineClient:
                 "head_revision_id": None,
             },
             "authorization": {"direct_parent_proof": True, "source_type": "drive"},
+        }
+
+
+    async def review_pdf_extraction(self, *, workspace_ref, project_id, file_id, extraction):
+        self.calls.append(
+            (
+                "review",
+                {
+                    "workspace_ref": workspace_ref,
+                    "project_id": project_id,
+                    "file_id": file_id,
+                    "extraction": extraction,
+                },
+            )
+        )
+        return {
+            "contract_version": "b67-browser-pdf-extraction.v1",
+            "source_freshness": "current",
+            "page_count": 2,
+            "indexed_page_count": 1,
+            "blank_page_count": 1,
+            "segments": [
+                {
+                    "order": 0,
+                    "char_count": 8,
+                    "locator": {"kind": "page", "value": "1", "precision": "exact"},
+                }
+            ],
+            "retrieved_items": [
+                {
+                    "id": "b67_deadbeef_p1_c1",
+                    "namespace": "project.legal",
+                    "source_type": "drive_file",
+                    "provider": "padiem_drive_index",
+                    "content_chars": 8,
+                    "document_locator": {"kind": "page", "value": "1", "precision": "exact"},
+                }
+            ],
         }
 
 
@@ -238,3 +286,93 @@ def test_route_module_reuses_existing_project_workspace_resolver():
     assert module.FILE_ID_IS_SELECTION_INTENT is True
     assert module.SECOND_ENGINE_BINDING is False
     assert module.PRODUCTION_MUTATION is False
+
+
+def test_browser_extraction_review_uses_server_resolved_scope_and_closed_body():
+    engine = FakeEngineClient()
+    extraction = {
+        "ok": True,
+        "contract_version": "b67-browser-pdf-extraction.v1",
+        "parser": "pdfjs-dist",
+        "parser_version": "6.3.289",
+        "source_sha256": "a" * 64,
+        "page_count": 1,
+        "pages": [{"page_number": 1, "text": "evidence", "text_chars": 8, "native_text": True}],
+        "total_text_chars": 8,
+        "native_text_state": "all",
+        "ocr_candidate_pages": [],
+    }
+    response = run(
+        drive_case_pdf_extraction_review(
+            FakeRequest(
+                file_id=FILE_ID,
+                body={"extraction": extraction},
+                state=state(client=engine),
+            )
+        )
+    )
+    assert response.status_code == 200
+    body = json.loads(response.body)
+    assert body["source_freshness"] == "current"
+    assert body["segments"][0]["locator"]["value"] == "1"
+    assert engine.calls == [
+        (
+            "review",
+            {
+                "workspace_ref": WORKSPACE_REF,
+                "project_id": PROJECT_ID,
+                "file_id": FILE_ID,
+                "extraction": extraction,
+            },
+        )
+    ]
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {},
+        {"extraction": {}, "workspace_ref": "caller"},
+        {"extraction": {}, "binding_ref": "caller"},
+        {"extraction": {}, "source_ref": "drive:caller"},
+        {"extraction": {}, "freshness": "current"},
+        {"extraction": {}, "locator": {"kind": "page", "value": "9"}},
+    ],
+)
+def test_browser_extraction_review_rejects_outer_authority_fields(payload):
+    engine = FakeEngineClient()
+    response = run(
+        drive_case_pdf_extraction_review(
+            FakeRequest(file_id=FILE_ID, body=payload, state=state(client=engine))
+        )
+    )
+    assert response.status_code == 400
+    assert engine.calls == []
+
+
+def test_browser_extraction_review_rejects_query_and_bad_json_before_engine():
+    engine = FakeEngineClient()
+    response = run(
+        drive_case_pdf_extraction_review(
+            FakeRequest(
+                file_id=FILE_ID,
+                query={"workspace_ref": "caller"},
+                body={"extraction": {}},
+                state=state(client=engine),
+            )
+        )
+    )
+    assert response.status_code == 400
+    assert engine.calls == []
+
+    response = run(
+        drive_case_pdf_extraction_review(
+            FakeRequest(
+                file_id=FILE_ID,
+                body=ValueError("bad json"),
+                state=state(client=engine),
+            )
+        )
+    )
+    assert response.status_code == 400
+    assert engine.calls == []

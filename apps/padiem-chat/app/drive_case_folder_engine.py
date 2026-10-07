@@ -32,6 +32,7 @@ SELECT_OPERATION = "drive_case_folder_select"
 CLEAR_OPERATION = "drive_case_folder_clear"
 PDF_CANDIDATES_OPERATION = "b67_case_pdf_candidates"
 PDF_READ_OPERATION = "b67_case_pdf_read"
+PDF_REVIEW_OPERATION = "b67_case_pdf_review_extraction"
 
 DRIVE_CASE_FOLDER_OPERATIONS = (
     STATUS_OPERATION,
@@ -39,7 +40,11 @@ DRIVE_CASE_FOLDER_OPERATIONS = (
     SELECT_OPERATION,
     CLEAR_OPERATION,
 )
-DRIVE_CASE_PDF_OPERATIONS = (PDF_CANDIDATES_OPERATION, PDF_READ_OPERATION)
+DRIVE_CASE_PDF_OPERATIONS = (
+    PDF_CANDIDATES_OPERATION,
+    PDF_READ_OPERATION,
+    PDF_REVIEW_OPERATION,
+)
 
 MAX_FOLDER_QUERY_CHARS = 200
 MAX_CANDIDATE_FOLDERS = 25
@@ -63,6 +68,23 @@ _PDF_READ_KEYS = frozenset({"ok", "file", "content_base64", "byte_size", "versio
 _PDF_FILE_FIELDS = frozenset({"file_id", "name", "mime_type", "size_bytes", "modified_time", "space_kind", "intake_state"})
 _PDF_VERSION_FIELDS = frozenset({"version", "modified_time", "md5_checksum", "sha256_checksum", "head_revision_id"})
 _PDF_AUTHORIZATION_FIELDS = frozenset({"direct_parent_proof", "source_type"})
+_PDF_REVIEW_KEYS = frozenset(
+    {
+        "ok",
+        "contract_version",
+        "source_freshness",
+        "page_count",
+        "indexed_page_count",
+        "blank_page_count",
+        "segments",
+        "retrieved_items",
+    }
+)
+_PDF_REVIEW_SEGMENT_FIELDS = frozenset({"order", "char_count", "locator"})
+_PDF_REVIEW_ITEM_FIELDS = frozenset(
+    {"id", "namespace", "source_type", "provider", "content_chars", "document_locator"}
+)
+_PDF_LOCATOR_FIELDS = frozenset({"kind", "value", "precision"})
 
 _SPACE_KINDS = frozenset({"my_drive", "shared_drive"})
 _OUTCOMES = frozenset({"created", "idempotent", "replaced"})
@@ -98,6 +120,27 @@ _ERROR_TAXONOMY: dict[str, tuple[int, str]] = {
     "execution_fallback_required": (413, "Selected PDF requires bounded execution fallback."),
     "pdf_integrity_mismatch": (502, "Selected PDF bytes failed integrity verification."),
     "pdf_signature_mismatch": (415, "Selected Drive content is not a PDF payload."),
+    "browser_pdf_extraction_invalid": (422, "Browser PDF extraction is invalid."),
+    "browser_pdf_contract_version_mismatch": (422, "Browser PDF extraction contract version is not accepted."),
+    "browser_pdf_parser_version_mismatch": (422, "Browser PDF parser version is not accepted."),
+    "browser_pdf_source_hash_invalid": (422, "Browser PDF source fingerprint is invalid."),
+    "browser_pdf_page_count_invalid": (422, "Browser PDF page count is invalid."),
+    "browser_pdf_page_bound_exceeds_core": (413, "PDF exceeds the current canonical page bound."),
+    "browser_pdf_page_provenance_invalid": (422, "Browser PDF page provenance is invalid."),
+    "browser_pdf_page_invalid": (422, "Browser PDF page extraction is invalid."),
+    "browser_pdf_page_text_exceeds_core": (413, "PDF page text exceeds the current canonical bound."),
+    "browser_pdf_total_text_limit": (413, "Browser PDF extraction exceeds the text bound."),
+    "browser_pdf_total_text_invalid": (422, "Browser PDF text accounting is invalid."),
+    "browser_pdf_ocr_pages_invalid": (422, "Browser PDF OCR page projection is invalid."),
+    "browser_pdf_native_text_state_invalid": (422, "Browser PDF native-text state is invalid."),
+    "browser_pdf_no_native_text": (422, "PDF has no usable native text."),
+    "browser_pdf_empty_text": (422, "PDF has no canonical native-text segments."),
+    "browser_pdf_source_not_pdf": (415, "Current Drive source is not an eligible PDF."),
+    "browser_pdf_source_invalid": (415, "Current Drive PDF bytes are invalid."),
+    "browser_pdf_source_size_changed": (409, "Drive PDF size changed; parse it again."),
+    "browser_pdf_source_changed": (409, "Drive PDF changed; parse it again."),
+    "unverifiable_drive_index": (422, "Drive source freshness cannot be verified."),
+    "stale_drive_index": (409, "Drive source changed; refresh the extraction."),
 }
 _DEFAULT_ERROR = (502, "Drive case folder operation failed.")
 
@@ -296,6 +339,132 @@ class CloudflareDriveCaseFolderEngineClient:
             "byte_size": byte_size,
             "version_evidence": version_body,
             "authorization": {"direct_parent_proof": True, "source_type": "drive"},
+        }
+
+    async def review_pdf_extraction(
+        self,
+        *,
+        workspace_ref: str,
+        project_id: str,
+        file_id: object,
+        extraction: object,
+    ) -> dict[str, Any]:
+        bounded_file_id = _bounded_text(file_id, MAX_PDF_FILE_ID_CHARS)
+        if bounded_file_id is None or not isinstance(extraction, Mapping):
+            raise DriveCaseFolderEngineError(
+                "browser_pdf_extraction_invalid",
+                "Browser PDF extraction is invalid.",
+                status_code=422,
+            )
+        result = await self._call(
+            PDF_REVIEW_OPERATION,
+            {
+                "workspace_ref": workspace_ref,
+                "project_id": project_id,
+                "file_id": bounded_file_id,
+                "extraction": dict(extraction),
+            },
+        )
+        self._require_exact_keys(result, _PDF_REVIEW_KEYS, PDF_REVIEW_OPERATION)
+        if result.get("source_freshness") != "current":
+            raise self._malformed(PDF_REVIEW_OPERATION)
+        if result.get("contract_version") != "b67-browser-pdf-extraction.v1":
+            raise self._malformed(PDF_REVIEW_OPERATION)
+
+        counts = [
+            result.get("page_count"),
+            result.get("indexed_page_count"),
+            result.get("blank_page_count"),
+        ]
+        if any(isinstance(value, bool) or not isinstance(value, int) or value < 0 for value in counts):
+            raise self._malformed(PDF_REVIEW_OPERATION)
+        page_count, indexed_count, blank_count = counts
+        if not 1 <= page_count <= 80 or indexed_count < 1 or indexed_count > page_count:
+            raise self._malformed(PDF_REVIEW_OPERATION)
+        if blank_count != page_count - indexed_count:
+            raise self._malformed(PDF_REVIEW_OPERATION)
+
+        segments = result.get("segments")
+        items = result.get("retrieved_items")
+        if not isinstance(segments, list) or len(segments) != indexed_count:
+            raise self._malformed(PDF_REVIEW_OPERATION)
+        if not isinstance(items, list) or not items or len(items) > 240:
+            raise self._malformed(PDF_REVIEW_OPERATION)
+
+        def checked_locator(value: object) -> dict[str, str]:
+            if not isinstance(value, Mapping) or set(value) != _PDF_LOCATOR_FIELDS:
+                raise self._malformed(PDF_REVIEW_OPERATION)
+            if value.get("kind") != "page" or value.get("precision") != "exact":
+                raise self._malformed(PDF_REVIEW_OPERATION)
+            page = _bounded_text(value.get("value"), 3)
+            if page is None or not page.isdigit() or not 1 <= int(page) <= page_count:
+                raise self._malformed(PDF_REVIEW_OPERATION)
+            return {"kind": "page", "value": page, "precision": "exact"}
+
+        safe_segments = []
+        segment_pages: set[str] = set()
+        previous_page = 0
+        for segment in segments:
+            if not isinstance(segment, Mapping) or set(segment) != _PDF_REVIEW_SEGMENT_FIELDS:
+                raise self._malformed(PDF_REVIEW_OPERATION)
+            char_count = segment.get("char_count")
+            locator = checked_locator(segment.get("locator"))
+            page_number = int(locator["value"])
+            if (
+                segment.get("order") != page_number - 1
+                or page_number <= previous_page
+                or isinstance(char_count, bool)
+                or not isinstance(char_count, int)
+                or not 1 <= char_count <= 16000
+            ):
+                raise self._malformed(PDF_REVIEW_OPERATION)
+            previous_page = page_number
+            segment_pages.add(locator["value"])
+            safe_segments.append(
+                {
+                    "order": page_number - 1,
+                    "char_count": char_count,
+                    "locator": locator,
+                }
+            )
+
+        safe_items = []
+        for item in items:
+            if not isinstance(item, Mapping) or set(item) != _PDF_REVIEW_ITEM_FIELDS:
+                raise self._malformed(PDF_REVIEW_OPERATION)
+            item_id = _bounded_text(item.get("id"), 128)
+            content_chars = item.get("content_chars")
+            if (
+                item_id is None
+                or item.get("namespace") != "project.legal"
+                or item.get("source_type") != "drive_file"
+                or item.get("provider") != "padiem_drive_index"
+                or isinstance(content_chars, bool)
+                or not isinstance(content_chars, int)
+                or not 1 <= content_chars <= 6000
+            ):
+                raise self._malformed(PDF_REVIEW_OPERATION)
+            item_locator = checked_locator(item.get("document_locator"))
+            if item_locator["value"] not in segment_pages:
+                raise self._malformed(PDF_REVIEW_OPERATION)
+            safe_items.append(
+                {
+                    "id": item_id,
+                    "namespace": "project.legal",
+                    "source_type": "drive_file",
+                    "provider": "padiem_drive_index",
+                    "content_chars": content_chars,
+                    "document_locator": item_locator,
+                }
+            )
+        return {
+            "contract_version": result["contract_version"],
+            "source_freshness": "current",
+            "page_count": page_count,
+            "indexed_page_count": indexed_count,
+            "blank_page_count": blank_count,
+            "segments": safe_segments,
+            "retrieved_items": safe_items,
         }
 
     @staticmethod

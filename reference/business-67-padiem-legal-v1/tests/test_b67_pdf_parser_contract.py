@@ -50,6 +50,17 @@ def test_parse_contract_is_bounded_and_page_numbered() -> None:
     assert 'pdf_password_required' in worker
 
 
+def test_browser_extraction_contract_is_versioned_and_hash_bound() -> None:
+    parser = read(PARSER)
+    worker = read(WORKER)
+    marker = 'b67-browser-pdf-extraction.v1'
+    assert marker in parser
+    assert marker in worker
+    assert "contract_version" in worker
+    assert "source_sha256" in worker
+    assert "pdf_extraction_contract_version_mismatch" in parser
+
+
 def test_pdfjs_receives_bytes_not_a_url_and_runtime_fetch_is_disabled() -> None:
     worker = read(WORKER)
     assert "data: new Uint8Array(buffer)" in worker
