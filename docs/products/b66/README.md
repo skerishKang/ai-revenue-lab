@@ -44,7 +44,7 @@ QuoteCore remains the sole calculation authority. The renderer does not become a
 |---|---|---|
 | Product / Saved Quote Skill | #3180 | overall product epic |
 | Source analysis | #3542 | source facts -> ANALYZED candidate |
-| Reproduction / certification / compiler generalization | #3595 | pre-execution fidelity gate; second unrelated-template proof still required for generic compiler |
+| Reproduction / certification / compiler generalization | #3595 | pre-execution fidelity gate; generic compiler proven on a second unrelated template |
 | Template registration source formats | #3586 | XLSX now; HWPX future; legacy XLS/HWP rejected |
 | Quote shell / single composer UX | #3536 | product UX |
 | Native XLSX output | #3496 | optional editable output; not PDF critical path |
@@ -59,13 +59,21 @@ The CGI reference quotation has reached a certified template result inside its d
 CGI_REFERENCE_TEMPLATE = CERTIFIED
 GENERIC_RUNTIME_RENDERER = YES
 CGI_TEMPLATE_REUSABLE = YES
-GENERIC_ANALYZER_COMPILER = UNPROVEN
-SECOND_UNRELATED_TEMPLATE_REQUIRED = YES
-SOURCE_PRODUCT_INTEGRATION = VALIDATED_LOCAL
-PRODUCT_INTEGRATION = PRODUCTION_PENDING
+GENERIC_ANALYZER_COMPILER = PROVEN
+SECOND_UNRELATED_TEMPLATE = CERTIFIED
+SOURCE_PRODUCT_INTEGRATION = MERGED
+PRODUCT_INTEGRATION = PRODUCTION_ACTIVATION_PENDING
 ```
 
-The important boundary is that the runtime renderer can consume compiled template data without CGI/customer literals, while the current compiler still contains CGI-specific source/cell structure. Do not describe this as a proven universal quotation compiler yet. The authenticated Saved Quote Skill -> QuoteCore -> certified PDF download path is source/local-runtime validated, but customer handoff is not complete until the reviewed private CGI bundle is provisioned and the Production account path passes authenticated E2E.
+The runtime renderer consumes compiled template data without CGI/customer literals, and the
+generic analyzer/compiler no longer carries CGI-specific source/cell structure: a materially
+different second quotation (landscape, left-aligned header block, gapped item columns,
+`[소계]/[V.A.T]/[총계]` totals, no camera object, 80 vs 23 source merges) was compiled and
+certified by the same generic code path with no document-specific cell/path literal
+(`tools/b66_generic/`, with evidence under `tools/b66_generic/evidence/`). The authenticated
+Saved Quote Skill -> QuoteCore -> certified PDF download path is source-integration validated;
+customer handoff is not complete until the reviewed private CGI bundle is provisioned and the
+Production account path passes authenticated E2E.
 
 ## Source formats: intake capability vs template-registration policy
 
