@@ -80,6 +80,17 @@ jobs:
       - name: Run cross-lane dependency guard contract tests
         run: python -m pytest -q .github/tests/test_cross_lane_test_dependency_guard.py
 
+      # #3652: the Engine canaries hash working-copy bytes, so a PINNED_SHA256
+      # target without an autocrlf-proof .gitattributes rule passes on
+      # ubuntu-latest and fails only on a Windows checkout. This guard couples the
+      # two lists statically and is collected from source, never a hardcoded path
+      # allowlist.
+      - name: Run frozen-source checkout-byte guard
+        run: python .github/scripts/frozen_source_checkout_byte_guard.py
+
+      - name: Run frozen-source checkout-byte guard contract tests
+        run: python -m pytest -q .github/tests/test_frozen_source_checkout_byte_guard.py
+
       - name: Record guard scope
         run: |
           echo 'OPERATIONS_POLICY_GUARD=PASSED'
@@ -87,6 +98,7 @@ jobs:
           echo 'GUARD_ASSIGNS_CTO_READINESS=NO'
           echo 'FILE_OVERLAP_GUARD=ADVISORY_ONLY'
           echo 'CROSS_LANE_DEPENDENCY_GUARD=ENFORCED'
+          echo 'FROZEN_SOURCE_PIN_GUARD=ENFORCED'
           echo 'PRODUCTION_MUTATION=NO'
 
   pr-contract:
