@@ -339,6 +339,98 @@ async def test_calendar_start_posts_private_ticket_server_side_and_returns_only_
     assert binding.calls == [("ticket", {"session_id": "sess_test", "connector_id": "google-calendar"})]
 
 
+
+@pytest.mark.asyncio
+async def test_drive_start_posts_private_ticket_server_side_and_returns_only_authorization():
+    binding = FakeControlPlaneBinding()
+    seen: list[httpx.Request] = []
+
+    async def oauth_edge(request: httpx.Request) -> httpx.Response:
+        seen.append(request)
+        assert str(request.url) == "https://oauth.padiem.net/v1/google/connect"
+        assert request.headers["origin"] == "https://chat.example.test"
+        payload = json.loads(request.content.decode("utf-8"))
+        # The raw connect ticket never leaves this server-side exchange.
+        assert payload == {"connect_ticket": binding.ticket}
+        return httpx.Response(
+            200,
+            json={
+                "ok": True,
+                "authorization": {
+                    "authorization_url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=test&scope=drive.readonly",
+                    "connector_id": "google-drive",
+                    "expires_at": (NOW + timedelta(minutes=10)).isoformat(),
+                    "raw_connect_ticket": False,
+                    "raw_pkce_verifier": False,
+                    "raw_client_secret": False,
+                },
+            },
+        )
+
+    app, history, _, _, _ = app_fixture(
+        binding=binding,
+        auth_transport=httpx.MockTransport(oauth_edge),
+    )
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        client.cookies.set(
+            SESSION_COOKIE,
+            cookie_for(history.profile.id),
+            domain="chat.example.test",
+            path="/",
+        )
+        response = await client.post(
+            "/api/connectors/google/ticket",
+            headers={"Origin": "https://chat.example.test"},
+            json={"connector_id": "google-drive", "begin_oauth": True},
+        )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "authorization": {
+            "authorization_url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=test&scope=drive.readonly",
+            "connector_id": "google-drive",
+            "expires_at": (NOW + timedelta(minutes=10)).isoformat(),
+        }
+    }
+    assert binding.ticket not in response.text
+    assert len(seen) == 1
+    assert binding.calls == [("ticket", {"session_id": "sess_test", "connector_id": "google-drive"})]
+
+
+@pytest.mark.asyncio
+async def test_oauth_start_stays_closed_to_every_unreviewed_connector():
+    app, history, _, binding, _ = app_fixture()
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+        client.cookies.set(
+            SESSION_COOKIE,
+            cookie_for(history.profile.id),
+            domain="chat.example.test",
+            path="/",
+        )
+        # Gmail is a reviewed ticket connector but not a reviewed OAuth start,
+        # so the OAuth-start gate refuses it; connectors outside the reviewed
+        # set never reach that gate at all.
+        for connector_id, expected_code in (
+            ("gmail", "connector_oauth_start_not_reviewed"),
+            ("telegram", "connector_not_reviewed"),
+            ("slack", "connector_not_reviewed"),
+        ):
+            response = await client.post(
+                "/api/connectors/google/ticket",
+                headers={"Origin": "https://chat.example.test"},
+                json={"connector_id": connector_id, "begin_oauth": True},
+            )
+            assert response.status_code == 403
+            assert response.json()["error"]["code"] == expected_code
+    assert binding.calls == []
+
+
 @pytest.mark.asyncio
 async def test_client_cannot_assert_account_workspace_scopes_or_actor():
     app, history, _, binding, _ = app_fixture()
@@ -492,7 +584,7 @@ def test_worker_supports_private_identity_binding_without_activating_mock_config
     assert 'binding = "IDENTITY_AUTHORITY_SERVICE"' not in wrangler
     assert 'service = "padiem-control-plane-identity"' not in wrangler
     assert 'set(payload) not in ({"connector_id"}, {"connector_id", "begin_oauth"})' in route
-    assert 'begin_oauth and connector_id != "google-calendar"' in route
+    assert "if begin_oauth and connector_id not in _OAUTH_START_REVIEWED_CONNECTORS:" in route
     assert "account_ref" not in route
     assert "workspace_ref" not in route
     assert "GOOGLE_CONNECT_TICKET_KEY" not in route

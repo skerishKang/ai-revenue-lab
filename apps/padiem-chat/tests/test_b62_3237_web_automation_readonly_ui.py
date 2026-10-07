@@ -96,6 +96,7 @@ def test_no_rule_mutation_control_exists_in_the_ui() -> None:
     # mutation verb of any kind.
     block = block.split("#3257 Web Automation Create")[0]
     block = block.split("#3262 owner-gated enable/disable")[0]
+    block = block.split("#3270 bounded edit (name + schedule only)")[0]
     for forbidden in (
         "POST",
         "PUT",

@@ -197,6 +197,15 @@ function buildEnv() {
     QuoteCore: Core, QuoteHistory: History, B66FileIntake: FileIntake,
     B66QuoteAppBridge: {
       getDraft: () => { appCalls.push("getDraft"); return JSON.parse(JSON.stringify(DRAFT)); },
+      privateStateReadable: () => true,
+      /* app.js owner 게이트 미러: 최근 견적 저장소 접근은 이 스텁을 통해서만 일어난다 */
+      getHistoryEnvelope: () => History.normalizeEnvelope(
+        JSON.parse(storage.getItem(History.HISTORY_STORAGE_KEY) || "null")
+      ),
+      writeHistoryEnvelope: (envelope) => {
+        storage.setItem(History.HISTORY_STORAGE_KEY, JSON.stringify(History.normalizeEnvelope(envelope)));
+        return true;
+      },
       replaceDraft: (next, opts) => {
         appCalls.push("replaceDraft" + (opts && opts.toast ? ":" + opts.toast : ""));
         replaceDrafts.push(next);

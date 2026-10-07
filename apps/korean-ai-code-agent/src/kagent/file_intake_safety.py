@@ -401,6 +401,37 @@ def _bounded_prefix(archive: zipfile.ZipFile, info: zipfile.ZipInfo) -> bytes | 
         return None
 
 
+def _read_entry_bounded(
+    archive: zipfile.ZipFile,
+    info: zipfile.ZipInfo,
+    *,
+    max_bytes: int,
+) -> bytes | None:
+    """Read at most ``max_bytes`` of one entry through the streaming API.
+
+    ``ZipFile.read``/``ZipExtFile.read()`` inflate the *entire* deflate stream
+    and only afterwards truncate the result to the declared uncompressed size,
+    so an archive that declares a tiny size while carrying a large compressed
+    stream is amplified far beyond every declared-metadata bound this gate
+    enforces. Passing an explicit length caps the real inflate work at the
+    entry bound; because the declared size is also the truncation cap that
+    ``read()`` applies, a well-formed archive reads byte-identically.
+
+    Returns ``None`` when the entry cannot be read or exceeds the bound, so the
+    caller fails closed instead of widening authority.
+    """
+
+    limit = min(info.file_size, max_bytes)
+    try:
+        with archive.open(info) as handle:
+            data = handle.read(limit + 1)
+    except (zipfile.BadZipFile, OSError, ValueError, RuntimeError, NotImplementedError):
+        return None
+    if len(data) > limit:
+        return None
+    return data
+
+
 def _walk_archive(payload: bytes, depth: int, budget: _ArchiveBudget) -> str | None:
     """Walk one archive level and its nested levels against one shared budget.
 
@@ -459,9 +490,12 @@ def _walk_archive(payload: bytes, depth: int, budget: _ArchiveBudget) -> str | N
                 budget.nested_archives += 1
                 if depth + 1 > policy.max_archive_depth:
                     return "archive_depth_exceeded"
-                try:
-                    nested_payload = archive.read(info)
-                except (zipfile.BadZipFile, OSError, ValueError, RuntimeError, NotImplementedError):
+                nested_payload = _read_entry_bounded(
+                    archive,
+                    info,
+                    max_bytes=policy.max_single_archive_entry_bytes,
+                )
+                if nested_payload is None:
                     return "archive_nested_unreadable"
                 code = _walk_archive(nested_payload, depth + 1, budget)
                 if code is not None:
@@ -501,15 +535,25 @@ def _inspect_archive(
             mismatch=extension == ".hwpx",
         )
 
-    # Every size bound has passed, so the single structural read below is safe.
+    # Every declared size bound has passed. The structural reads below are
+    # additionally bounded by the entry bound, because a declared size is a
+    # claim and not a proof of how much the deflate stream really expands.
     try:
         with zipfile.ZipFile(BytesIO(payload)) as archive:
-            names = [info.filename for info in archive.infolist()]
-            has_mimetype = "mimetype" in names
-            if has_mimetype:
-                declared = archive.read("mimetype").decode("utf-8", "replace").strip()
-            else:
-                declared = ""
+            infos = archive.infolist()
+            names = [info.filename for info in infos]
+            mimetype_info = next((info for info in infos if info.filename == "mimetype"), None)
+            has_mimetype = mimetype_info is not None
+            declared = ""
+            if mimetype_info is not None:
+                raw_mimetype = _read_entry_bounded(
+                    archive,
+                    mimetype_info,
+                    max_bytes=policy.max_single_archive_entry_bytes,
+                )
+                if raw_mimetype is None:
+                    raise zipfile.BadZipFile("mimetype entry exceeds the intake bound")
+                declared = raw_mimetype.decode("utf-8", "replace").strip()
     except (zipfile.BadZipFile, OSError, ValueError, RuntimeError, KeyError, NotImplementedError):
         return _result(
             IntakeDecision.CORRUPT,

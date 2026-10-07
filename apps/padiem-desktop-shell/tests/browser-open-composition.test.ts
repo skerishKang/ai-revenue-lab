@@ -59,7 +59,13 @@ test('#3611 an unwired composition fails closed on both ports', async () => {
       throw new Error('must not be reached');
     },
   };
-  const halfWired = composeTrustedBrowserOpen({ view });
+  // The clock is injected exactly like the fully-wired test below: the grant
+  // carries absolute review timestamps, so a real clock past 12:05Z must not
+  // reorder this refusal from redemption_unavailable into grant_rejected.
+  const halfWired = composeTrustedBrowserOpen({
+    view,
+    now: () => new Date('2026-10-07T12:00:00.000Z'),
+  });
   await assert.rejects(
     () =>
       halfWired.host.open(
