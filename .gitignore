@@ -1,6 +1,7 @@
 # Repository-wide generated Python artifacts
 __pycache__/
 *.py[cod]
+apps/padiem-chat/.b66-worker-src/
 
 # Local OCR model provisioning evidence (#2828). Model weights and the
 # provisioning notes that reference them are local evidence, never source.

@@ -1,8 +1,11 @@
 name = "padiem-chat"
-main = "worker.py"
+main = ".b66-worker-src/worker.py"
 compatibility_date = "2026-08-25"
 compatibility_flags = ["python_workers"]
 workers_dev = true
+
+[build]
+command = "uv run python scripts/build_b66_worker_dependencies.py"
 
 [assets]
 directory = "static"

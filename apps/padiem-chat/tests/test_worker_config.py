@@ -218,7 +218,8 @@ def test_worker_package_is_mock_first_static_bound_and_no_fake_d1_id():
     wrangler = (root / "wrangler.toml").read_text(encoding="utf-8")
     worker = (root / "worker.py").read_text(encoding="utf-8")
     assert 'name = "padiem-chat"' in wrangler
-    assert 'main = "worker.py"' in wrangler
+    assert 'main = ".b66-worker-src/worker.py"' in wrangler
+    assert 'command = "uv run python scripts/build_b66_worker_dependencies.py"' in wrangler
     assert 'compatibility_flags = ["python_workers"]' in wrangler
     assert 'directory = "static"' in wrangler
     assert 'PADIEM_CHAT_RUNTIME_MODE = "mock"' in wrangler

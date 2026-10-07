@@ -1027,9 +1027,11 @@
     toast("보내는 사람 정보는 유지하고 새 고객 견적을 시작합니다.");
   });
 
-  /* ── 인쇄: 브라우저 머리글/바닥글은 코드로 끌 수 없어 저장 전 짧게 안내 ── */
+  /* ── PDF: 배정된 Saved Skill 의 인증 renderer 를 통해 다운로드한다 ── */
 
-  $("printPdf").addEventListener("click", () => {
+  let pdfDownloadPending = false;
+  $("printPdf").addEventListener("click", async () => {
+    if (pdfDownloadPending) return;
     const failure = printReadinessFailure();
     if (failure) {
       toast(failure.message, 4200);
@@ -1038,9 +1040,32 @@
       return;
     }
 
-    render();
-    toast("PDF 저장 시 인쇄 설정에서 '머리글과 바닥글'을 해제하면 견적서만 깔끔하게 저장됩니다.", 5000);
-    setTimeout(() => window.print(), 600);
+    const bridge = window.B66QuoteRuntimeBridge;
+    if (!bridge || typeof bridge.downloadPdf !== "function" || !TemplateRenderer ||
+        typeof TemplateRenderer.buildCertifiedPdfRenderModel !== "function") {
+      toast("PDF 다운로드 연결을 확인해 주세요.", 4200);
+      return;
+    }
+    const model = TemplateRenderer.buildCertifiedPdfRenderModel(draft, activeSkillProfile(), {
+      taxReviewRequired: taxReviewRequired
+    });
+    if (!model) {
+      toast("배정된 양식과 PDF로 저장할 수 있는 견적 내용을 확인해 주세요.", 4200);
+      return;
+    }
+    const button = $("printPdf");
+    pdfDownloadPending = true;
+    button.disabled = true;
+    try {
+      const result = await bridge.downloadPdf(model);
+      if (result && result.ok === true) toast("PDF 견적서를 다운로드했습니다.");
+      else toast(result && result.message ? result.message : "PDF 다운로드에 실패했습니다. 잠시 후 다시 시도해 주세요.", 4200);
+    } catch (_) {
+      toast("PDF 다운로드에 실패했습니다. 잠시 후 다시 시도해 주세요.", 4200);
+    } finally {
+      pdfDownloadPending = false;
+      button.disabled = false;
+    }
   });
 
   $("emailFuture").addEventListener("click", () => {
