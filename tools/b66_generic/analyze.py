@@ -20,8 +20,9 @@ import argparse
 import hashlib
 import json
 import re
+import sys
 import zipfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from xml.etree import ElementTree as ET
 
 NS = {
@@ -75,31 +76,216 @@ def _resolve_mc_children(container) -> list:
     return out
 
 
+# ──────────────────── bounded archive policy (#3679) ────────────────────
+#
+# Every value below is the canonical OOXML/archive bound already enforced by
+# ``padiem_ai_core.document_normalization`` (#3637) and by
+# ``kagent.file_intake_safety.FileIntakePolicy`` (#2824). The names mirror Core's on purpose, and
+# ``tests/test_b66_generic_archive_bounds.py`` asserts them against the real Core module whenever
+# Core is importable, so this tool can never drift into a second, looser archive authority.
+#
+# The analyzer cannot simply import the Core helper: ``test_b66_generic_compile.py`` runs this file
+# as a bare script (``[sys.executable, "…/analyze.py", …]``) with no install step, and no workflow
+# anywhere runs the ``tools/b66_generic`` suite, so a Core import would be an undeclared runtime
+# dependency that nothing would catch.
+MAX_BINARY_DOCUMENT_BYTES = 2 * 1024 * 1024          # Core MAX_BINARY_DOCUMENT_BYTES
+MAX_OOXML_ENTRIES = 256                              # Core MAX_OOXML_ENTRIES
+MAX_OOXML_MEMBER_NAME_CHARS = 255                    # Core MAX_OOXML_MEMBER_NAME_CHARS
+MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES = 1 * 1024 * 1024  # Core MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES = 8 * 1024 * 1024  # Core MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES
+#: ``FileIntakePolicy.max_expansion_ratio``. A declared uncompressed size is a claim, not a bound, so
+#: the compressed -> uncompressed ratio is capped independently of the byte ceilings above.
+MAX_EXPANSION_RATIO = 200.0
+
+# ``MAX_SUPPORTED_ARCHIVE_DEPTH`` is 4 in the Product gate. This tool opens exactly one archive and
+# never constructs a ZipFile from a member's bytes -- embedded archives are hashed as media, not
+# parsed -- so its nested depth is 0 by construction.
+
+
+class ArchivePolicyError(RuntimeError):
+    """A refusal to read an archive, carrying Core's code vocabulary."""
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(f"{code}: {message}")
+        self.code = code
+
+
+def _safe_ooxml_member(name: object) -> bool:
+    """Mirror of Core's single path-safety predicate. Do not widen it here."""
+
+    if not isinstance(name, str) or not name:
+        return False
+    if "\\" in name or name.startswith("/") or "//" in name:
+        return False
+    if len(name) >= 2 and name[1] == ":":
+        return False
+    return all(part not in {"", ".", ".."} for part in PurePosixPath(name).parts)
+
+
+def bounded_read_zip_member(archive, member, *, max_bytes: int) -> bytes:
+    """Read one member with the *inflate work* bounded, rather than the result truncated.
+
+    ``ZipFile.read`` and an unsized ``ZipExtFile.read`` decompress the entire deflate stream and only
+    afterwards cut the result to the declared size, so an archive declaring a small size over a large
+    compressed stream is amplified before any metadata bound can apply. Passing an explicit length
+    through the streaming API caps the real inflate work at ``min(file_size, max_bytes)``; a
+    well-formed member still reads byte-identically, which is what keeps evidence hashes stable.
+    """
+
+    info = member if isinstance(member, zipfile.ZipInfo) else archive.getinfo(member)
+    limit = min(info.file_size, max_bytes)
+    try:
+        with archive.open(info) as handle:
+            data = handle.read(limit + 1)
+    except (zipfile.BadZipFile, OSError, ValueError, RuntimeError) as exc:
+        # A member whose real bytes do not match its own declared metadata is a malformed archive,
+        # not a readable one: fail closed with a code instead of surfacing a raw traceback.
+        raise ArchivePolicyError("ooxml_malformed", "OOXML archive member is unreadable.") from exc
+    if len(data) > limit:
+        raise ArchivePolicyError("ooxml_entry_size", "OOXML archive entry exceeds the size limit.")
+    return data
+
+
+class BoundedOOXML:
+    """A ZIP archive whose central directory has been judged before any member is read.
+
+    Checks run over every member up front, in Core's order, and the parsed directory is reused for
+    each read, so a read is an already-admitted lookup rather than a fresh act of trust.
+    """
+
+    def __init__(self, archive, infos_by_name, duplicate_names):
+        self._archive = archive
+        self._infos = infos_by_name
+        self._duplicates = duplicate_names
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc_info):
+        self.close()
+
+    def close(self) -> None:
+        self._archive.close()
+
+    def names(self) -> list:
+        return sorted(self._infos)
+
+    def has(self, name: str) -> bool:
+        return name in self._infos
+
+    def read(self, name: str, *, max_bytes: int = MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES) -> bytes:
+        info = self._infos.get(name)
+        if info is None:
+            raise ArchivePolicyError("ooxml_malformed", "Required OOXML member is missing.")
+        if name in self._duplicates:
+            raise ArchivePolicyError(
+                "ooxml_duplicate_member", "Duplicate OOXML member is ambiguous."
+            )
+        return bounded_read_zip_member(self._archive, info, max_bytes=max_bytes)
+
+    def read_xml(self, name: str, *, max_bytes: int = MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES):
+        """Bounded read, then parse: the byte cap is what makes XML failure cheap."""
+
+        data = self.read(name, max_bytes=max_bytes)
+        try:
+            return ET.fromstring(data)
+        except ET.ParseError as exc:
+            raise ArchivePolicyError("ooxml_invalid_xml", "Invalid OOXML XML part.") from exc
+
+
+def open_bounded_ooxml(path: Path) -> tuple:
+    """Bounded raw input plus a fully pre-validated archive.
+
+    Returns ``(raw_bytes, BoundedOOXML)``: the raw bytes are the evidence hash input, and they are
+    read through the same ceiling, so a source too large to admit is also never materialized.
+    """
+
+    try:
+        size = path.stat().st_size
+    except OSError as exc:
+        raise ArchivePolicyError("ooxml_archive_size", "Source workbook is unreadable.") from exc
+    if not size or size > MAX_BINARY_DOCUMENT_BYTES:
+        raise ArchivePolicyError("ooxml_archive_size", "OOXML archive size is out of bounds.")
+
+    with path.open("rb") as handle:
+        raw = handle.read(MAX_BINARY_DOCUMENT_BYTES + 1)
+    if len(raw) > MAX_BINARY_DOCUMENT_BYTES:
+        raise ArchivePolicyError("ooxml_archive_size", "OOXML archive size is out of bounds.")
+
+    try:
+        archive = zipfile.ZipFile(path)
+    except (zipfile.BadZipFile, OSError, ValueError) as exc:
+        raise ArchivePolicyError("ooxml_malformed", "Malformed OOXML ZIP archive.") from exc
+
+    try:
+        infos = archive.infolist()
+        if len(infos) > MAX_OOXML_ENTRIES:
+            raise ArchivePolicyError("ooxml_entry_count", "OOXML archive contains too many entries.")
+
+        infos_by_name: dict = {}
+        duplicate_names = set()
+        total = 0
+        for info in infos:
+            name = info.filename
+            if len(name) > MAX_OOXML_MEMBER_NAME_CHARS or not _safe_ooxml_member(name):
+                raise ArchivePolicyError(
+                    "ooxml_unsafe_path", "OOXML archive contains an unsafe member path."
+                )
+            if name in infos_by_name:
+                duplicate_names.add(name)
+            else:
+                infos_by_name[name] = info
+            if info.flag_bits & 0x1:
+                raise ArchivePolicyError(
+                    "ooxml_encrypted", "Encrypted OOXML entries are not supported."
+                )
+            if info.file_size > MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES:
+                raise ArchivePolicyError(
+                    "ooxml_entry_size", "OOXML archive entry exceeds the size limit."
+                )
+            if info.compress_size and info.file_size > info.compress_size * MAX_EXPANSION_RATIO:
+                raise ArchivePolicyError(
+                    "ooxml_expansion_ratio", "OOXML entry expansion ratio exceeds the limit."
+                )
+            total += info.file_size
+            if total > MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES:
+                raise ArchivePolicyError(
+                    "ooxml_total_size", "OOXML archive exceeds the total uncompressed size limit."
+                )
+    except ArchivePolicyError:
+        archive.close()
+        raise
+    except (zipfile.BadZipFile, OSError, ValueError, RuntimeError) as exc:
+        archive.close()
+        raise ArchivePolicyError("ooxml_malformed", "Malformed OOXML ZIP archive.") from exc
+
+    return raw, BoundedOOXML(archive, infos_by_name, duplicate_names)
+
+
 # ────────────────────────────── XLSX ──────────────────────────────
 
 def analyze_xlsx(path: Path) -> dict:
-    data = path.read_bytes()
-    zf = zipfile.ZipFile(path)
+    data, zf = open_bounded_ooxml(path)
     nsm = {"m": NS["main"]}
-    names = zf.namelist()
+    names = zf.names()
 
-    wb = ET.fromstring(zf.read("xl/workbook.xml"))
+    wb = zf.read_xml("xl/workbook.xml")
     sheets = [{"name": s.get("name"), "sheet_id": s.get("sheetId"),
                "rel_id": s.get("{%s}id" % NS["r"])}
               for s in wb.findall(".//m:sheet", nsm)]
     defined_names = [{"name": d.get("name"), "value": (d.text or "").strip()}
                      for d in wb.findall(".//m:definedNames/m:definedName", nsm)]
 
-    rels = ET.fromstring(zf.read("xl/_rels/workbook.xml.rels"))
+    rels = zf.read_xml("xl/_rels/workbook.xml.rels")
     relmap = {r.get("Id"): r.get("Target") for r in rels}
 
     shared = []
     if "xl/sharedStrings.xml" in names:
-        ss = ET.fromstring(zf.read("xl/sharedStrings.xml"))
+        ss = zf.read_xml("xl/sharedStrings.xml")
         for si in ss.findall("m:si", nsm):
             shared.append("".join(t.text or "" for t in si.findall(".//m:t", nsm)))
 
-    styles_root = ET.fromstring(zf.read("xl/styles.xml"))
+    styles_root = zf.read_xml("xl/styles.xml")
     fonts = []
     for f in _resolve_mc_children(styles_root.find("m:fonts", nsm)):
         nm = f.find("m:name", nsm); sz = f.find("m:sz", nsm)
@@ -137,7 +323,7 @@ def analyze_xlsx(path: Path) -> dict:
             ws = "xl/worksheets/" + Path(target).name
         if ws not in names:
             continue
-        root = ET.fromstring(zf.read(ws))
+        root = zf.read_xml(ws)
         dim = root.find("m:dimension", nsm)
         cells = {}
         for row in root.find("m:sheetData", nsm):
@@ -205,9 +391,9 @@ def analyze_xlsx(path: Path) -> dict:
         relpath = f"xl/drawings/_rels/{Path(dn).name}.rels"
         drels = {}
         if relpath in names:
-            for rel in ET.fromstring(zf.read(relpath)):
+            for rel in zf.read_xml(relpath):
                 drels[rel.get("Id")] = rel.get("Target")
-        droot = ET.fromstring(zf.read(dn))
+        droot = zf.read_xml(dn)
         for anchor in droot:
             pic = anchor.find(".//xdr:pic", NS)
             if pic is None:
@@ -246,7 +432,7 @@ def analyze_xlsx(path: Path) -> dict:
                                "is_camera": "<x:Camera" in body,
                                "imagedata_relid": rm.group(1) if rm else None})
 
-    return {
+    result = {
         "source": {"path": str(path), "sha256": sha256_bytes(data), "size": len(data)},
         "workbook": {"sheets": sheets, "defined_names": defined_names},
         "sheet_names": [s["name"] for s in sheets],
@@ -255,6 +441,8 @@ def analyze_xlsx(path: Path) -> dict:
         "drawing_images": drawing_images,
         "vml_shapes": vml_shapes,
     }
+    zf.close()
+    return result
 
 
 # ────────────────────────────── PDF ──────────────────────────────
@@ -351,7 +539,13 @@ def main() -> None:
     a = ap.parse_args()
     outdir = Path(a.outdir)
     outdir.mkdir(parents=True, exist_ok=True)
-    x = analyze_xlsx(Path(a.xlsx))
+    try:
+        x = analyze_xlsx(Path(a.xlsx))
+    except ArchivePolicyError as exc:
+        # Fail closed with a machine-readable classification. Nothing downstream may treat a
+        # refusal as an empty analysis: no evidence JSON is written and the exit code is non-zero.
+        print(f"REFUSED {exc.code}", file=sys.stderr)
+        raise SystemExit(1)
     (outdir / "xlsx_analysis.json").write_text(
         json.dumps(x, ensure_ascii=False, indent=1), encoding="utf-8")
     p = analyze_pdf(Path(a.pdf))
