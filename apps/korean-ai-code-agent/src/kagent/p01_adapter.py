@@ -86,6 +86,11 @@ P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE = "engine_provider_unavailable"
 P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION = "engine_provider_authorization_failed"
 P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED = "engine_provider_request_rejected"
 P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE = "engine_provider_bad_response"
+# #3566 evidence rule: the Engine's trusted-admission gate fails closed with
+# enumerated entitlement/admission codes; retaining the admission class lets
+# the final canary record ENGINE_ADMISSION_RESULT instead of collapsing it
+# into the downstream bucket.
+P01_FAILURE_DETAIL_ENGINE_ADMISSION = "engine_admission_denied"
 P01_FAILURE_DETAILS = frozenset(
     {
         P01_FAILURE_DETAIL_AUTHENTICATION,
@@ -101,6 +106,7 @@ P01_FAILURE_DETAILS = frozenset(
         P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION,
         P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED,
         P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
+        P01_FAILURE_DETAIL_ENGINE_ADMISSION,
     }
 )
 
@@ -172,6 +178,13 @@ class ClawOrchestrationOutcome:
     pause_id: str | None = None
     pause_expires_at: str | None = None
     trusted_request: dict[str, object] | None = None
+    # #3655 canary evidence: bounded refs threaded from the Engine result's
+    # existing B14 route metadata (selected_route_id / attempt_count /
+    # fallback_used). Server-side only — safe_dict does not project them —
+    # and the chat route grammar-checks each value before any header emit.
+    selected_route_id: str | None = None
+    provider_attempt_count: int | None = None
+    fallback_used: bool | None = None
 
     def safe_dict(self) -> dict[str, object]:
         # pause_id / pause_expires_at / trusted_request stay server-side only;
@@ -741,6 +754,11 @@ class P01CoreOrchestrationAdapter:
                 p01_run_id=projector.p01_run_id,
                 p01_event_count=projector.event_count,
                 continuation_ref=None,
+                # #3655: thread the existing B14 route metadata through for
+                # the canary evidence seam; None values stay None.
+                selected_route_id=result.execution_result.route.selected_route_id,
+                provider_attempt_count=result.execution_result.route.attempt_count,
+                fallback_used=result.execution_result.route.fallback_used,
             )
         except asyncio.CancelledError:
             self._cancel_run_if_possible(run)
