@@ -189,6 +189,10 @@ def _send(page, text: str) -> None:
 
 def _click_chip(page, label: str) -> None:
     locator = page.locator("#easyChipRow button", has_text=label)
+    try:
+        locator.wait_for(state="visible", timeout=5000)
+    except Exception as exc:
+        raise SmokeFailure("chip_missing_" + label) from exc
     if locator.count() != 1:
         _fail("chip_not_unique_" + label)
     locator.click()
@@ -302,8 +306,11 @@ def _reset_browser_local_quote_state(page) -> None:
 
 
 def _login(page, username: str, password: str) -> None:
+    print("SMOKE_STAGE=PAGE_GOTO")
     page.goto(TARGET_URL, wait_until="domcontentloaded", timeout=30000)
+    print("SMOKE_STAGE=ACCOUNT_BUTTON")
     page.locator("#padiemAccountButton").click()
+    print("SMOKE_STAGE=LOGIN_FORM")
     page.locator("#padiemLoginForm").wait_for(state="visible", timeout=15000)
     page.locator("#padiemLoginIdentifier").fill(username)
     page.locator("#padiemLoginPassword").fill(password)
@@ -322,7 +329,10 @@ def _login(page, username: str, password: str) -> None:
     if login_response.status != 200:
         _fail("login_http_" + str(login_response.status))
 
-    page.locator("#padiemAccountPanel").wait_for(state="visible", timeout=20000)
+    print("SMOKE_STAGE=LOGIN_HTTP_200")
+    # The canonical three-pane shell intentionally hides the legacy account panel
+    # after moving account/skill controls into the left rail. Runtime readiness,
+    # not legacy-panel visibility, is the authenticated product authority.
     try:
         _wait_runtime_ready(page)
     except Exception as exc:
@@ -341,28 +351,26 @@ def _login(page, username: str, password: str) -> None:
         )
         raise SmokeFailure(code) from exc
 
+    print("SMOKE_STAGE=RUNTIME_READY")
     skill_count = page.locator("#padiemSavedSkillSelect option").count()
     if skill_count != 1:
         _fail("saved_skill_count_not_one")
+    print("SMOKE_STAGE=LOGIN_READY")
 
 
 def _guided(page, counters: Counters) -> None:
     before = counters.interpret_posts
     page.locator("#guidedStarter").click()
 
-    for text in (
-        "가이드테스트건설",
-        "없음",
-        "배관",
-        "2",
-        "10000",
-        "다음",
-        "별도",
-        "없음",
-        "현재",
-    ):
-        _send(page, text)
-
+    _send(page, "가이드테스트건설")
+    _click_chip(page, "담당자 없음")
+    _send(page, "배관")
+    _click_chip(page, "2")
+    _send(page, "10000")
+    _click_chip(page, "다음으로")
+    _click_chip(page, "별도")
+    _click_chip(page, "없음")
+    _click_chip(page, "현재 정보 사용")
     _click_chip(page, "견적서 만들기")
     page.wait_for_function(
         """() => {
