@@ -36,6 +36,13 @@ from .p01_adapter import (
     P01_FAILURE_DETAIL_AUTHORIZATION,
     P01_FAILURE_DETAIL_CONTRACT,
     P01_FAILURE_DETAIL_DOWNSTREAM,
+    P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION,
+    P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
+    P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+    P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED,
+    P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR,
+    P01_FAILURE_DETAIL_PROVIDER_TIMEOUT,
+    P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE,
     P01_FAILURE_DETAIL_TRANSPORT,
 )
 from .p01_approval_pause_transport import (
@@ -86,6 +93,19 @@ _ENGINE_AUTHORIZATION_CODES = frozenset({"service_app_not_authorized"})
 _ENGINE_TRANSPORT_CODES = frozenset(
     {"invalid_engine_response", "engine_http_error", "invalid_engine_transport"}
 )
+# Bounded Engine/B14 model-execution failure codes (#3566 evidence rule).
+# The Engine's orchestrate boundary already bounds these to an enumerated
+# `code`; retaining the exact class keeps the terminal evidence load-bearing
+# without forwarding any message, prompt, or provider payload.
+_ENGINE_PROVIDER_SERVER_ERROR_CODES = frozenset({"upstream_server_error"})
+_ENGINE_PROVIDER_TIMEOUT_CODES = frozenset({"upstream_timeout"})
+_ENGINE_PROVIDER_RATE_LIMITED_CODES = frozenset({"upstream_rate_limited"})
+_ENGINE_PROVIDER_UNAVAILABLE_CODES = frozenset({"upstream_unavailable"})
+_ENGINE_PROVIDER_AUTHORIZATION_CODES = frozenset({"upstream_auth_error"})
+_ENGINE_PROVIDER_REQUEST_REJECTED_CODES = frozenset({"upstream_request_error"})
+_ENGINE_PROVIDER_BAD_RESPONSE_CODES = frozenset(
+    {"malformed_upstream", "empty_upstream_answer", "upstream_response_too_large"}
+)
 
 
 def _engine_failure_detail(code: object) -> str:
@@ -95,6 +115,20 @@ def _engine_failure_detail(code: object) -> str:
         return P01_FAILURE_DETAIL_AUTHORIZATION
     if code in _ENGINE_TRANSPORT_CODES:
         return P01_FAILURE_DETAIL_TRANSPORT
+    if code in _ENGINE_PROVIDER_SERVER_ERROR_CODES:
+        return P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR
+    if code in _ENGINE_PROVIDER_TIMEOUT_CODES:
+        return P01_FAILURE_DETAIL_PROVIDER_TIMEOUT
+    if code in _ENGINE_PROVIDER_RATE_LIMITED_CODES:
+        return P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED
+    if code in _ENGINE_PROVIDER_UNAVAILABLE_CODES:
+        return P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE
+    if code in _ENGINE_PROVIDER_AUTHORIZATION_CODES:
+        return P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION
+    if code in _ENGINE_PROVIDER_REQUEST_REJECTED_CODES:
+        return P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED
+    if code in _ENGINE_PROVIDER_BAD_RESPONSE_CODES:
+        return P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE
     return P01_FAILURE_DETAIL_DOWNSTREAM
 
 # OrchestrationRequest fields that carry authority the public wire cannot
@@ -221,11 +255,23 @@ class P01EngineOrchestrationClient:
         execution = request.execution_request
         agent = execution.agent
         model_policy = dict(agent.model_policy)
+        model_retries = model_policy.get("max_retries")
+        # #3382/#3566: the only extra model_policy authority the P01 wire
+        # accepts is the single-dispatch retry budget `max_retries=0` (the
+        # Claw one-shot canary contract: PROVIDER_CALL_COUNT_MAX=1, RETRY=0).
+        # Any other retry budget is authority widening and fails closed.
         valid_model_policy = (
             not model_policy
             or (
                 set(model_policy) == {"model"}
                 and model_policy["model"] in PADIEM_EXECUTABLE_MODEL_IDS
+            )
+            or (
+                set(model_policy) == {"model", "max_retries"}
+                and model_policy["model"] in PADIEM_EXECUTABLE_MODEL_IDS
+                and isinstance(model_retries, int)
+                and not isinstance(model_retries, bool)
+                and model_retries == 0
             )
         )
         if (

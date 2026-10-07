@@ -74,6 +74,18 @@ P01_FAILURE_DETAIL_TRANSPORT = "engine_transport_or_response_failed"
 P01_FAILURE_DETAIL_DOWNSTREAM = "engine_downstream_execution_failed"
 P01_FAILURE_DETAIL_CONTRACT = "p01_contract_failure"
 P01_FAILURE_DETAIL_UNKNOWN = "unknown_engine_failure"
+# Bounded provider terminal classes (#3566 evidence rule). These mirror the
+# closed Engine/B14 upstream_* transport vocabulary one-to-one so the exact
+# application-level provider error class survives to the Claw terminal record
+# instead of collapsing into a single downstream constant. Values are
+# enumerated codes only — never messages, prompts, or provider payloads.
+P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR = "engine_provider_server_error"
+P01_FAILURE_DETAIL_PROVIDER_TIMEOUT = "engine_provider_timeout"
+P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED = "engine_provider_rate_limited"
+P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE = "engine_provider_unavailable"
+P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION = "engine_provider_authorization_failed"
+P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED = "engine_provider_request_rejected"
+P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE = "engine_provider_bad_response"
 P01_FAILURE_DETAILS = frozenset(
     {
         P01_FAILURE_DETAIL_AUTHENTICATION,
@@ -82,6 +94,13 @@ P01_FAILURE_DETAILS = frozenset(
         P01_FAILURE_DETAIL_DOWNSTREAM,
         P01_FAILURE_DETAIL_CONTRACT,
         P01_FAILURE_DETAIL_UNKNOWN,
+        P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR,
+        P01_FAILURE_DETAIL_PROVIDER_TIMEOUT,
+        P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+        P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE,
+        P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION,
+        P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED,
+        P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
     }
 )
 
@@ -267,7 +286,11 @@ def _agent_profile(product_tier: ProductTierLabel = ProductTierLabel.PLUS) -> Ag
         allowed_tools=(),
         required_capabilities=(),
         context_policy={},
-        model_policy={"model": route.model_id},
+        # #3382/#3566 one-shot canary contract: the Claw lane dispatches the
+        # provider at most once. `max_retries=0` pins B14's same-route retry
+        # ceiling to zero; the port refuses any other budget, so widening
+        # requires a fresh explicit owner decision.
+        model_policy={"model": route.model_id, "max_retries": 0},
         max_steps=1,
         output_contract={},
     )

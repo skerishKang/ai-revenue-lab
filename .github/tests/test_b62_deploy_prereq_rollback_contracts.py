@@ -487,9 +487,9 @@ def test_case_17_readonly_publishes_active_version_as_non_secret_evidence() -> N
     # publishes its own marker and fails closed by exit code), and the existing
     # GITHUB_OUTPUT consumer and the read-only GET-only surface stay intact.
     readonly = _readonly_job_block()
-    assert ".result.deployments[0].versions[0].version_id" in readonly
-    assert "versions | length) == 1" in readonly
-    assert ".versions[0].percentage == 100" in readonly
+    assert "cloudflare_served_version_cli.py resolve-active" in readonly
+    assert ".result.deployments[0].versions[0].version_id" not in readonly
+    assert ".result.deployments[0].versions[0].percentage" not in readonly
     # INLINE_LATEST_ACTIVE_TEST=0 / SELF_ASSERTED_PASS_MARKER=0
     assert 'test "${latest}" = "${active}"' not in readonly
     assert 'echo "LATEST_VERSION_EQUALS_ACTIVE_VERSION' not in readonly

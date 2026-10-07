@@ -23,37 +23,20 @@ import tomllib
 
 
 APP_ROOT = Path(__file__).resolve().parents[1]
-PYMUPDF_VERSION = "1.26.3"
-PYMUPDF_WHEEL = (
-    "https://cdn.jsdelivr.net/pyodide/v0.28.3/full/"
-    "pymupdf-1.26.3-cp313-none-pyodide_2025_0_wasm32.whl"
-)
-PYMUPDF_SHA256 = "8b343b6584098287e02c5131369341267f54461b0f2a233deec1a31dfe47693c"
 RUNTIME_DIRECTORY = ".b66-worker-src"
 RUNTIME_MARKER = ".b66-generated.json"
-
 
 def normalize(name: str) -> str:
     return re.sub(r"[-_.]+", "-", name).lower()
 
 
 def validate_lock(lock: dict) -> dict[str, str]:
-    packages = lock.get("packages", [])
-    pymupdf = [p for p in packages if normalize(p.get("name", "")) == "pymupdf"]
-    if len(pymupdf) != 1 or pymupdf[0].get("version") != PYMUPDF_VERSION:
-        raise ValueError("Worker lock must contain exactly PyMuPDF 1.26.3")
-    wheels = pymupdf[0].get("wheels", [])
-    if not any(
-        wheel.get("url") == PYMUPDF_WHEEL
-        and wheel.get("hashes", {}).get("sha256") == PYMUPDF_SHA256
-        for wheel in wheels
-    ):
-        raise ValueError("Worker lock must pin the reviewed official PyMuPDF WASM wheel and hash")
     return {
         normalize(package["name"]): package["version"]
-        for package in packages
-        if "version" in package
+        for package in lock.get("packages", [])
+        if isinstance(package.get("name"), str) and isinstance(package.get("version"), str)
     }
+
 
 
 def require_unlinked_output(output: Path) -> None:
@@ -110,12 +93,6 @@ def installed_versions(output: Path, versions: dict[str, str]) -> dict[str, str]
     mismatched = [name for name, version in versions.items() if installed.get(name) != version]
     if mismatched:
         raise ValueError("Installed versions differ from Worker lock: " + ", ".join(mismatched))
-    wheel_metadata = output / f"pymupdf-{PYMUPDF_VERSION}.dist-info" / "WHEEL"
-    if "Tag: cp313-none-pyodide_2025_0_wasm32" not in wheel_metadata.read_text():
-        raise ValueError("Worker dependencies contain a native PyMuPDF wheel")
-    with (output / "pymupdf" / "_mupdf.so").open("rb") as binary:
-        if binary.read(4) != b"\x00asm":
-            raise ValueError("Worker dependencies do not contain the expected WASM binary")
     return installed
 
 
@@ -205,7 +182,7 @@ def build(output: Path, *, lock_path: Path = APP_ROOT / "pylock.toml", uv: str =
                 uv, "pip", "install", "--python-platform", "wasm32-pyodide2025",
                 "--python-version", "3.13", "--target", str(output),
                 "--requirements", str(staged_lock), "--preview-features", "pylock",
-                "--only-binary", "pymupdf", "--link-mode", "copy",
+                "--link-mode", "copy",
             ],
             cwd=lock_path.parent,
             env=env,
@@ -220,7 +197,6 @@ def build(output: Path, *, lock_path: Path = APP_ROOT / "pylock.toml", uv: str =
     return {
         "status": "PASS",
         "platform": "wasm32-pyodide2025",
-        "pymupdf": installed["pymupdf"],
         "workers_runtime_sdk": installed.get("workers-runtime-sdk"),
         "lock_sha256": hashlib.sha256(locked_bytes).hexdigest(),
         "locked_package_count": len(versions),
