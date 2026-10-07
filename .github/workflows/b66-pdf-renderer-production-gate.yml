@@ -81,6 +81,7 @@ jobs:
           assert cfg["base_dir"] == ".worker-src"
           assert cfg["workers_dev"] is False
           assert cfg["compatibility_flags"] == ["python_workers", "disable_python_external_sdk"]
+          assert cfg["limits"] == {"cpu_ms": 300000}
           assert cfg["r2_buckets"] == [{"binding":"PADIEM_WORKSPACE_FILES","bucket_name":"padiem-workspace-files"}]
           chat = Path("apps/padiem-chat/wrangler.toml").read_text()
           assert "B66_PDF_RENDERER_SERVICE" not in chat
