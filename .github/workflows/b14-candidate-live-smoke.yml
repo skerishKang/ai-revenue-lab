@@ -269,6 +269,7 @@ jobs:
         run: |
           set -euo pipefail
           script=.github/scripts/b14_candidate_live_smoke.py
+          wf=.github/workflows/b14-candidate-live-smoke.yml
           # Owner final retirement decision (2026-10-07): the Space Bunny
           # candidate must be absent from the allowlist and no image candidate
           # may exist. The bounded image gate stays fail-closed.
