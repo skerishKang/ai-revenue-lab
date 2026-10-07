@@ -112,9 +112,9 @@ jobs:
           jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
           jq -e '.result.bindings | any(.name == "CONTROL_PLANE_IDENTITY" and .type == "service" and .service == "padiem-control-plane-identity")' "${settings}" >/dev/null
           jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
-          jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
-          active_version="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
+          active_version="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           test -n "${active_version}"
+          echo 'CP_ADMISSION_SERVED_VERSION_RESOLVER=CANONICAL'
 
           echo 'PREDEPLOY_CP_ADMISSION_READINESS=PASS'
           echo 'PRIVATE_INGRESS=PASS'
