@@ -50,3 +50,27 @@ def max_output_tokens_for(model_id: str) -> int | None:
     """
 
     return MODEL_MAX_OUTPUT_TOKENS.get(model_id)
+
+
+def effective_max_tokens(model_id: str, requested: int | None) -> int | None:
+    """Normalize a caller's ``max_tokens`` onto the selected model's own ceiling.
+
+    Owner policy (2026-10-07): a request above the selected model's cap is
+    *clamped*, never rejected, so a caller that asks for more than a route can
+    produce still gets a bounded, successful call instead of a 4xx. The clamp is
+    applied against the model that actually answers, which also covers the
+    gateway-side ``b14/auto`` fixed chain (internal-only, #2677) and any
+    fallback candidate without a separate policy.
+
+    ``None`` is preserved: the caller omitted ``max_tokens`` and the provider's
+    own default (the model's real ceiling) applies. A model that advertises no
+    cap is clamped to ``MAX_REQUEST_TOKENS`` so the forwarded value stays bounded
+    by the largest budget any registered route can use.
+    """
+
+    if requested is None:
+        return None
+    cap = MODEL_MAX_OUTPUT_TOKENS.get(model_id)
+    if cap is None:
+        cap = MAX_REQUEST_TOKENS
+    return min(int(requested), cap)

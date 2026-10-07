@@ -133,12 +133,15 @@ max_tokens omitted / null
   -> provider/model default behavior
 
 max_tokens explicitly set
-  -> preserve the explicit value
-  -> validate it against the current B14 request contract
-  -> send the explicit value upstream
+  -> validate it against the absolute B14 request ceiling (MAX_REQUEST_TOKENS)
+  -> normalize it onto the SELECTED model's own cap at dispatch
+     (model_output_caps.effective_max_tokens)
+  -> send the normalized value upstream
 ```
 
-Do not silently replace an omitted value with a hidden product budget. Product-specific workloads may intentionally choose a bounded value; that choice belongs to the product/runtime profile, not to a generic provider adapter default. The explicit request ceiling is the per-model maximum output budget (`app/pilot/model_output_caps.py`, `MAX_REQUEST_TOKENS`), so a caller can request as much as the selected model actually supports instead of the former blanket `4096` that starved reasoning models into empty completions.
+Do not silently replace an omitted value with a hidden product budget. Product-specific workloads may intentionally choose a bounded value; that choice belongs to the product/runtime profile, not to a generic provider adapter default. The absolute request ceiling is the largest per-model maximum output budget (`app/pilot/model_output_caps.py`, `MAX_REQUEST_TOKENS`), so a caller can request as much as the selected model actually supports instead of the former blanket `4096` that starved reasoning models into empty completions.
+
+An over-limit request is clamped, never rejected (owner policy 2026-10-07): a caller that asks for more than the selected model can produce still gets a bounded, successful call instead of a `4xx`. Normalization is applied against the model that actually answers, so the gateway-side `b14/auto` fixed chain — an internal compatibility path, not a product selector (#2677) — and any fallback candidate are covered by the same rule with no separate policy. A model that advertises no cap is clamped to `MAX_REQUEST_TOKENS`, keeping the forwarded value bounded.
 
 ## Security boundary
 

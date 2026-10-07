@@ -22,7 +22,7 @@ from starlette.responses import JSONResponse
 from starlette.requests import Request
 
 from app.pilot.config import pilot_settings
-from app.pilot.model_output_caps import MAX_REQUEST_TOKENS
+from app.pilot.model_output_caps import MAX_REQUEST_TOKENS, effective_max_tokens
 from app.pilot.errors import (
     InvalidRequest,
     MissingProviderKey,
@@ -245,6 +245,10 @@ def _validate_body(raw: Any) -> dict:
 
     # max_tokens. None is meaningful: preserve omission so a product may either
     # request an explicit bounded budget or defer to the provider/model default.
+    # The ceiling checked here is only an absolute sanity bound. The value that
+    # actually reaches upstream is normalized to the SELECTED model's own cap at
+    # dispatch (model_output_caps.effective_max_tokens): an over-limit request is
+    # clamped, never rejected (owner policy 2026-10-07).
     mt = raw.get("max_tokens")
     if mt is not None:
         if isinstance(mt, bool) or not isinstance(mt, int):
@@ -818,7 +822,9 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 platform_provider_id=current.get("platform_provider_id") or decision.platform_provider_id,
                 messages=body["messages"],
                 temperature=body.get("temperature"),
-                max_tokens=body.get("max_tokens"),
+                max_tokens=effective_max_tokens(
+                    current["model_id"], body.get("max_tokens")
+                ),
             )
         raise InvalidRequest(
             "non-platform route is not routable (OpenRouter retired, #1933 S2)"
@@ -1119,7 +1125,7 @@ async def pilot_chat_completions(
             api_key=api_key,
             messages=body["messages"],
             temperature=body.get("temperature"),
-            max_tokens=body.get("max_tokens"),
+            max_tokens=effective_max_tokens(route.model_id, body.get("max_tokens")),
             base_url=route.base_url,
             upstream_model=route.upstream_model,
             timeout_seconds=route.timeout_seconds,
