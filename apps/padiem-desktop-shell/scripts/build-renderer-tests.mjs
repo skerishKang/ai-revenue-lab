@@ -78,6 +78,7 @@ const testFiles = [
   'desktop-settings-3157.test.ts',
   'desktop-easy-mode-3165.test.ts',
   'desktop-workspace-ui-3436.test.ts',
+  'desktop-workbench-shell-3598.test.ts',
 ].map((name) => path.join(root, 'tests', name));
 for (const testFile of testFiles) {
   if (report(compile([testFile], { outDir: path.join(root, 'dist', 'tests') }))) {

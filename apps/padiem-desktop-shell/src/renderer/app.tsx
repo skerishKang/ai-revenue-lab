@@ -16,13 +16,16 @@
  * state is still the connection truth the renderer reports.
  */
 
-import { useCallback, useEffect, useState, type ReactElement } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactElement } from 'react';
 
 import { requireShellApi, RendererAuthorityError, type PadiemShellApi } from './api.js';
 import {
   SHELL_LOCALES,
+  approvalsSummaryText,
+  artifactsSummaryText,
   connectionNextActionText,
   deviceStateText,
+  progressSummaryText,
   readinessBodyText,
   readinessStateText,
   translate,
@@ -544,8 +547,26 @@ export function WorkspacePanel(props: {
   actions: ShellActions;
   locale: ShellLocale;
   advanced: boolean;
+  /**
+   * #3598 — the shell's Search navigation asks the existing #3583 field for
+   * focus. This changes nothing about the search contract: the same form, the
+   * same bounded query and the same main-owned authority are used.
+   */
+  focusSearch?: boolean;
 }): ReactElement {
   const { root, listing, search, selectedEntry, actions, locale, advanced } = props;
+  const focusSearch = props.focusSearch === true;
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const focusRequestedRef = useRef(false);
+  // #3598 — the Search navigation opens this surface, so the bounded #3583 field
+  // takes focus once. Only on the transition into the request, so the shell's
+  // periodic refresh can never steal focus from a user who is typing.
+  useEffect(() => {
+    if (focusSearch && !focusRequestedRef.current) {
+      searchInputRef.current?.focus();
+    }
+    focusRequestedRef.current = focusSearch;
+  }, [focusSearch]);
   const t = (key: ShellStringKey): string => translate(locale, key);
   const selected = root?.selected === true;
   const directory = listing?.directory ?? '';
@@ -612,6 +633,7 @@ export function WorkspacePanel(props: {
           <form
             className="workspace-search"
             data-search-active={searchActive ? 'true' : 'false'}
+            data-search-focus={focusSearch ? 'requested' : 'false'}
             onSubmit={(event) => {
               event.preventDefault();
               const value = new FormData(event.currentTarget).get('query');
@@ -629,6 +651,8 @@ export function WorkspacePanel(props: {
               maxLength={128}
               placeholder={t('workspace.searchPlaceholder')}
               disabled={!selected}
+              autoFocus={focusSearch}
+              ref={searchInputRef}
             />
           </form>
           {searchActive && search && !search.ok ? (
@@ -764,8 +788,15 @@ export function ConversationWorkspacePanel(props: {
   conversations: CanonicalConversationListResponse | null;
   selectedConversation: CanonicalConversationDetail | null;
   onSelectConversation: (conversationId: string) => void;
+  /**
+   * #3598 — when the session list lives in the left navigation, the centre keeps
+   * only the transcript. Defaults to true so the standalone surface is
+   * unchanged for existing callers.
+   */
+  showList?: boolean;
 }): ReactElement {
   const { locale, advanced, conversations, selectedConversation } = props;
+  const showList = props.showList !== false;
   const t = (key: ShellStringKey): string => translate(locale, key);
   const canonical = conversations !== null && conversations.ok;
   const source = canonical ? 'canonical' : 'canonical-required';
@@ -781,26 +812,32 @@ export function ConversationWorkspacePanel(props: {
       </div>
       {canonical && conversations.conversations.length > 0 ? (
         <div className="conversation-canonical-body">
-          <nav className="conversation-list" aria-label={t('desktop.conversationListLabel')}>
-            {conversations.conversations.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className={
-                  selectedConversation?.id === item.id
-                    ? 'conversation-list-entry selected'
-                    : 'conversation-list-entry'
-                }
-                data-conversation-id={item.id}
-                onClick={() => props.onSelectConversation(item.id)}
-              >
-                {item.title || t('desktop.conversationUntitled')}
-              </button>
-            ))}
-          </nav>
+          {showList ? (
+            <nav className="conversation-list" aria-label={t('desktop.conversationListLabel')}>
+              {conversations.conversations.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={
+                    selectedConversation?.id === item.id
+                      ? 'conversation-list-entry selected'
+                      : 'conversation-list-entry'
+                  }
+                  data-conversation-id={item.id}
+                  onClick={() => props.onSelectConversation(item.id)}
+                >
+                  {item.title || t('desktop.conversationUntitled')}
+                </button>
+              ))}
+            </nav>
+          ) : null}
           <div className="conversation-transcript">
             {selectedConversation === null ? (
-              <p className="conversation-transcript-note">{t('desktop.conversationSelectHint')}</p>
+              <p className="conversation-transcript-note">
+                {t(
+                  showList ? 'desktop.conversationSelectHint' : 'desktop.conversationSelectHintNav',
+                )}
+              </p>
             ) : (
               selectedConversation.messages.map((message, index) => (
                 <article
@@ -1109,6 +1146,315 @@ export function ShellErrorView(props: {
   );
 }
 
+/* ── #3598 — ZCode-derived workbench shell ────────────────────────────────
+ *
+ * The first product-shaped Desktop IA: a task/workspace navigation rail on the
+ * left, the Claw task workspace in the centre, a tools/status rail on the right
+ * and a task composer along the bottom.
+ *
+ * Authority is unchanged. Every control below is one of exactly three things:
+ *   1. an existing allowlisted action (#3083 / #3436 / #3583) that is only
+ *      re-placed into the new IA;
+ *   2. a purely local view choice (which navigation section is open, what the
+ *      composer draft says) that never leaves the renderer;
+ *   3. a visibly non-executable control (`disabled` + `aria-disabled` +
+ *      `data-unsupported`) for a surface whose backend authority does not exist
+ *      in this slice — a new task, Automations, the plugin marketplace, task
+ *      submission and Git.
+ *
+ * FAKE_EXECUTABLE_CONTROLS=0 · MODEL_SELECTOR_ACTIVATION=0.
+ */
+
+export const WORKBENCH_NAV_SECTIONS = [
+  'new-task',
+  'search',
+  'automations',
+  'plugins',
+  'projects',
+  'sessions',
+] as const;
+export type WorkbenchNavSection = (typeof WORKBENCH_NAV_SECTIONS)[number];
+
+/** The section the workbench opens on: the workspace/project surface. */
+export const DEFAULT_WORKBENCH_SECTION: WorkbenchNavSection = 'projects';
+
+/**
+ * Navigation entries whose backend authority does not exist in this slice.
+ * They stay in the navigation shell so the intended IA is visible, but they are
+ * rendered non-executable with a visible "coming later" badge.
+ */
+export const WORKBENCH_UNSUPPORTED_SECTIONS: readonly WorkbenchNavSection[] = Object.freeze([
+  'new-task',
+  'automations',
+  'plugins',
+]);
+
+export function isWorkbenchSectionSupported(section: WorkbenchNavSection): boolean {
+  return !WORKBENCH_UNSUPPORTED_SECTIONS.includes(section);
+}
+
+const WORKBENCH_NAV_LABEL: Readonly<Record<WorkbenchNavSection, ShellStringKey>> = Object.freeze({
+  'new-task': 'nav.newTask',
+  search: 'nav.search',
+  automations: 'nav.automations',
+  plugins: 'nav.plugins',
+  projects: 'nav.projects',
+  sessions: 'nav.sessions',
+});
+
+/** Decorative only; every entry carries a real accessible name. */
+const WORKBENCH_NAV_ICON: Readonly<Record<WorkbenchNavSection, string>> = Object.freeze({
+  'new-task': '＋',
+  search: '⌕',
+  automations: '↻',
+  plugins: '⬡',
+  projects: '▤',
+  sessions: '❐',
+});
+
+/**
+ * Left task/workspace navigation.
+ *
+ * An entry is either an active view selector (`aria-current="page"`) or a
+ * disabled shell entry. Nothing here calls the main process.
+ */
+export function WorkbenchNavRail(props: {
+  active: WorkbenchNavSection;
+  onSelect: (section: WorkbenchNavSection) => void;
+  locale: ShellLocale;
+}): ReactElement {
+  const { active, onSelect, locale } = props;
+  const t = (key: ShellStringKey): string => translate(locale, key);
+  return (
+    <nav className="workbench-nav-rail" aria-label={t('nav.label')} data-nav-rail="true">
+      <ul className="workbench-nav-list">
+        {WORKBENCH_NAV_SECTIONS.map((section) => {
+          const supported = isWorkbenchSectionSupported(section);
+          const label = t(WORKBENCH_NAV_LABEL[section]);
+          const isActive = supported && active === section;
+          return (
+            <li key={section}>
+              <button
+                type="button"
+                className={isActive ? 'workbench-nav-item active' : 'workbench-nav-item'}
+                data-nav-section={section}
+                data-unsupported={supported ? 'false' : 'true'}
+                aria-current={isActive ? 'page' : undefined}
+                aria-disabled={supported ? undefined : true}
+                aria-label={supported ? label : `${label} — ${t('nav.comingLater')}`}
+                title={supported ? label : t('nav.comingLater')}
+                disabled={!supported}
+                onClick={() => onSelect(section)}
+              >
+                <span className="workbench-nav-icon" aria-hidden="true">
+                  {WORKBENCH_NAV_ICON[section]}
+                </span>
+                <span className="workbench-nav-label">{label}</span>
+                {supported ? null : (
+                  <span className="workbench-nav-badge">{t('nav.comingLater')}</span>
+                )}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+}
+
+/**
+ * Canonical session list for the left navigation.
+ *
+ * Same authority as the centre conversation surface: the server's own
+ * projection, opened through the existing `conversation-read` action. The
+ * Desktop still mints no conversation id and keeps no conversation store.
+ */
+export function SessionListPanel(props: {
+  conversations: CanonicalConversationListResponse | null;
+  selectedConversationId: string | null;
+  onSelectConversation: (conversationId: string) => void;
+  locale: ShellLocale;
+  advanced: boolean;
+}): ReactElement {
+  const { conversations, selectedConversationId, locale, advanced } = props;
+  const t = (key: ShellStringKey): string => translate(locale, key);
+  const canonical = conversations !== null && conversations.ok;
+  return (
+    <section
+      className="panel workbench-session-panel"
+      data-session-source={canonical ? 'canonical' : 'canonical-required'}
+    >
+      <h2>{t('sessions.title')}</h2>
+      <p className="subtitle">{t('sessions.explainer')}</p>
+      {canonical && conversations.conversations.length > 0 ? (
+        <nav className="workbench-session-list" aria-label={t('desktop.conversationListLabel')}>
+          {conversations.conversations.map((item) => {
+            const isSelected = selectedConversationId === item.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className={
+                  isSelected ? 'workbench-session-entry selected' : 'workbench-session-entry'
+                }
+                data-conversation-id={item.id}
+                aria-current={isSelected ? 'true' : undefined}
+                onClick={() => props.onSelectConversation(item.id)}
+              >
+                {item.title || t('desktop.conversationUntitled')}
+              </button>
+            );
+          })}
+        </nav>
+      ) : (
+        <p className="guidance">{canonical ? t('sessions.empty') : t('sessions.pending')}</p>
+      )}
+      {advanced ? (
+        <p className="conversation-authority-note" data-advanced="true">
+          {t('desktop.conversationAuthorityNote')}
+        </p>
+      ) : null}
+    </section>
+  );
+}
+
+/**
+ * Right tools/status rail.
+ *
+ * Progress, Approvals and Artifacts are *projections of the canonical run list*
+ * the shell already holds — counts of real server records, never invented
+ * values and never a percentage. When the canonical source is unavailable the
+ * rail says so, instead of showing a zero that would read as "nothing pending".
+ *
+ * Git is a placeholder: this slice has no Git authority, so branch/commit/push
+ * are visibly non-executable and no changed-file list is fabricated.
+ */
+export function ToolsStatusPanel(props: {
+  runs: CanonicalRunListResponse | null;
+  locale: ShellLocale;
+  advanced: boolean;
+}): ReactElement {
+  const { runs, locale, advanced } = props;
+  const t = (key: ShellStringKey): string => translate(locale, key);
+  const canonical = runs !== null && runs.ok;
+  const rows = canonical ? runs.runs : [];
+  const inProgress = rows.filter(
+    (run) => run.status !== 'completed' && run.status !== 'failed' && run.status !== 'cancelled',
+  ).length;
+  const waitingApproval = rows.filter((run) => run.status === 'waiting_approval').length;
+  const artifacts = rows.filter((run) => run.artifact !== null).length;
+  const source = canonical ? 'canonical' : 'canonical-required';
+  return (
+    <section className="panel workbench-tools-panel" data-tools-rail="true">
+      <h2>{t('tools.title')}</h2>
+      <div className="workbench-tool" data-progress-source={source}>
+        <div className="workbench-tool-name">{t('tools.progress')}</div>
+        <p className="workbench-tool-value">
+          {canonical
+            ? progressSummaryText(locale, rows.length, inProgress)
+            : t('tools.progressPending')}
+        </p>
+      </div>
+      <div className="workbench-tool" data-approvals-source={source}>
+        <div className="workbench-tool-name">{t('tools.approvals')}</div>
+        <p className="workbench-tool-value">
+          {canonical
+            ? waitingApproval > 0
+              ? approvalsSummaryText(locale, waitingApproval)
+              : t('tools.approvalsNone')
+            : t('tools.approvalsPending')}
+        </p>
+      </div>
+      <div className="workbench-tool" data-artifacts-source={source}>
+        <div className="workbench-tool-name">{t('tools.artifacts')}</div>
+        <p className="workbench-tool-value">
+          {canonical
+            ? artifacts > 0
+              ? artifactsSummaryText(locale, artifacts)
+              : t('tools.artifactsNone')
+            : t('tools.artifactsPending')}
+        </p>
+      </div>
+      <div className="workbench-tool" data-git-authority="none">
+        <div className="workbench-tool-name">{t('tools.git')}</div>
+        <p className="workbench-tool-value">{t('tools.gitPending')}</p>
+        <div className="row">
+          {(['tools.gitBranch', 'tools.gitCommit', 'tools.gitPush'] as const).map((key) => (
+            <button key={key} type="button" disabled aria-disabled="true" data-unsupported="true">
+              {t(key)}
+            </button>
+          ))}
+        </div>
+      </div>
+      {advanced ? (
+        <p className="run-authority-note" data-advanced="true">
+          {t('desktop.runAuthorityNote')}
+        </p>
+      ) : null}
+    </section>
+  );
+}
+
+/**
+ * Bottom task composer shell.
+ *
+ * The input holds renderer-local draft text only. Task submission has no
+ * backend authority in this slice, so the run action is visibly
+ * non-executable and says why — it is never wired to an invented channel. The
+ * status chips are the provider-neutral execution facts the shell already has
+ * (local execution, the canonical computer-access state). There is
+ * deliberately no model or provider selector (MODEL_SELECTOR_ACTIVATION=0).
+ */
+export function TaskComposer(props: {
+  status: ShellStatus | null;
+  health: RunnerHealthResponse | null;
+  locale: ShellLocale;
+}): ReactElement {
+  const { status, health, locale } = props;
+  const t = (key: ShellStringKey): string => translate(locale, key);
+  const [draft, setDraft] = useState('');
+  const accessState = health ? health.state : status ? status.runnerState : 'UNKNOWN';
+  return (
+    <div className="workbench-composer" data-composer-authority="read-only">
+      <div className="workbench-composer-status">
+        <span className="workbench-chip" data-execution-mode="local">
+          {t('composer.executionMode')}: {t('composer.modeLocal')}
+        </span>
+        <span className="workbench-chip" data-computer-access={String(accessState)}>
+          {t('composer.computerAccess')}: {readinessStateText(locale, accessState)}
+        </span>
+      </div>
+      <form className="workbench-composer-input" onSubmit={(event) => event.preventDefault()}>
+        <label className="visually-hidden" htmlFor="workbench-task-input">
+          {t('composer.label')}
+        </label>
+        <textarea
+          id="workbench-task-input"
+          name="task"
+          className="workbench-task-input"
+          rows={1}
+          maxLength={2000}
+          value={draft}
+          placeholder={t('composer.placeholder')}
+          onChange={(event) => setDraft(event.target.value)}
+        />
+        <button
+          type="submit"
+          className="primary workbench-composer-send"
+          disabled
+          aria-disabled="true"
+          data-unsupported="true"
+          data-unavailable-reason="no_task_submit_authority"
+          title={t('composer.sendUnavailable')}
+        >
+          {t('composer.send')}
+        </button>
+      </form>
+      <p className="workbench-composer-note">{t('composer.sendUnavailable')}</p>
+    </div>
+  );
+}
+
 export function ShellView(props: {
   state: ShellViewState;
   preferences: ShellUiPreferences;
@@ -1124,49 +1470,80 @@ export function ShellView(props: {
   const locale = preferences.locale;
   const t = (key: ShellStringKey): string => translate(locale, key);
   const visibility = visibilityFor(preferences.view);
+  // #3598 — which navigation section is open is local view state. No IPC, and
+  // it never changes the canonical connection or readiness state.
+  const [section, setSection] = useState<WorkbenchNavSection>(DEFAULT_WORKBENCH_SECTION);
+  const workspaceName =
+    state.workspaceRoot?.selected === true && state.workspaceRoot.rootName
+      ? state.workspaceRoot.rootName
+      : t('topbar.noWorkspace');
   return (
     <main
-      className="shell"
+      className="shell workbench"
       data-locale={locale}
       data-view={preferences.view}
       data-theme-preference={preferences.theme}
+      data-workbench-ia="zcode-derived"
     >
-      <header className="shell-header">
-        <div>
-          <h1>{t('app.title')}</h1>
-          <p className="subtitle">{t('app.tagline')}</p>
+      <header className="workbench-topbar">
+        <div className="workbench-topbar-context">
+          <span className="workbench-brand">{t('app.title')}</span>
+          <div className="workbench-current-task">
+            <span className="workbench-context-label">{t('topbar.currentTask')}</span>
+            <h1 className="workbench-title" data-current-task="true">
+              {state.selectedConversation?.title || t('topbar.noTask')}
+            </h1>
+          </div>
+          <span className="workbench-context">
+            <span className="workbench-context-label">{t('topbar.context')}</span>
+            <span className="workbench-context-value" data-workspace-context="true">
+              {workspaceName}
+            </span>
+          </span>
         </div>
         <button className="settings-trigger" onClick={props.onToggleSettings}>
           {t('app.settings')}
         </button>
       </header>
-      {props.settingsOpen ? (
-        <SettingsPanel
-          preferences={preferences}
-          onLocale={props.onLocale}
-          onTheme={props.onTheme}
-          onView={props.onView}
-          onClose={props.onCloseSettings}
-        />
-      ) : null}
-      <div className="workspace-shell-layout" data-desktop-workspace="stage-b">
-        <aside className="workspace-rail workspace-project-rail">
-          <WorkspacePanel
-            root={state.workspaceRoot}
-            listing={state.workspaceListing}
-            search={state.workspaceSearch}
-            selectedEntry={state.selectedWorkspaceEntry}
-            actions={actions}
-            locale={locale}
-            advanced={visibility.developerFacts}
-          />
+      <div className="workbench-body workspace-shell-layout" data-desktop-workspace="stage-b">
+        <aside
+          className="workbench-left workspace-rail workspace-project-rail"
+          data-left-section={section}
+        >
+          <WorkbenchNavRail active={section} onSelect={setSection} locale={locale} />
+          <div className="workbench-left-panel">
+            {section === 'sessions' ? (
+              <SessionListPanel
+                conversations={state.conversationList}
+                selectedConversationId={state.selectedConversation?.id ?? null}
+                onSelectConversation={(conversationId) =>
+                  void actions.selectConversation(conversationId)
+                }
+                locale={locale}
+                advanced={visibility.developerFacts}
+              />
+            ) : (
+              <WorkspacePanel
+                key={section}
+                root={state.workspaceRoot}
+                listing={state.workspaceListing}
+                search={state.workspaceSearch}
+                selectedEntry={state.selectedWorkspaceEntry}
+                actions={actions}
+                locale={locale}
+                advanced={visibility.developerFacts}
+                focusSearch={section === 'search'}
+              />
+            )}
+          </div>
         </aside>
-        <section className="workspace-main">
+        <section className="workbench-center workspace-main" data-center-role="claw-workspace">
           <ConversationWorkspacePanel
             locale={locale}
             advanced={visibility.developerFacts}
             conversations={state.conversationList}
             selectedConversation={state.selectedConversation}
+            showList={false}
             onSelectConversation={(conversationId) => void actions.selectConversation(conversationId)}
           />
           <RunActivityPanel
@@ -1175,7 +1552,7 @@ export function ShellView(props: {
             runs={state.runList}
           />
         </section>
-        <aside className="workspace-rail workspace-local-rail">
+        <aside className="workbench-tools workspace-rail workspace-local-rail">
           <div className="workspace-rail-title">{t('desktop.localTitle')}</div>
           <ConnectionPanel
             status={state.status}
@@ -1192,26 +1569,43 @@ export function ShellView(props: {
             locale={locale}
             advanced={visibility.developerFacts}
           />
+          <ToolsStatusPanel
+            runs={state.runList}
+            locale={locale}
+            advanced={visibility.developerFacts}
+          />
+          <PairingPanel
+            pairing={state.pairing}
+            locale={locale}
+            advanced={visibility.rawPairingSeamText}
+          />
+          <LogPanel log={state.log} locale={locale} advanced={visibility.boundedLogInternals} />
         </aside>
       </div>
-      <div className="advanced-diagnostics-grid">
-        <PairingPanel
-          pairing={state.pairing}
-          locale={locale}
-          advanced={visibility.rawPairingSeamText}
-        />
-        <LogPanel log={state.log} locale={locale} advanced={visibility.boundedLogInternals} />
-      </div>
-      {state.notice ? (
-        <p className="notice">
-          {/* The runner reasons are raw diagnostics ("headless runner started as
-              a separate process"). Easy says the same thing plainly. */}
-          {visibility.developerFacts
-            ? state.notice
-            : t(state.noticeAction === 'start' ? 'notice.started' : 'notice.stopped')}
-        </p>
+      <footer className="workbench-footer">
+        {state.notice ? (
+          <p className="notice">
+            {/* The runner reasons are raw diagnostics ("headless runner started as
+                a separate process"). Easy says the same thing plainly. */}
+            {visibility.developerFacts
+              ? state.notice
+              : t(state.noticeAction === 'start' ? 'notice.started' : 'notice.stopped')}
+          </p>
+        ) : null}
+        {visibility.signingNote ? <p className="notice">{t('notice.signing')}</p> : null}
+        <TaskComposer status={state.status} health={state.health} locale={locale} />
+      </footer>
+      {props.settingsOpen ? (
+        <div className="workbench-settings-overlay">
+          <SettingsPanel
+            preferences={preferences}
+            onLocale={props.onLocale}
+            onTheme={props.onTheme}
+            onView={props.onView}
+            onClose={props.onCloseSettings}
+          />
+        </div>
       ) : null}
-      {visibility.signingNote ? <p className="notice">{t('notice.signing')}</p> : null}
     </main>
   );
 }
