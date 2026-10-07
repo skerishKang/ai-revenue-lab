@@ -1476,9 +1476,12 @@ export function ShellView(props: {
       <header className="workbench-topbar">
         <div className="workbench-topbar-context">
           <span className="workbench-brand">{t('app.title')}</span>
-          <h1 className="workbench-title" data-current-task="true">
-            {state.selectedConversation?.title || t('topbar.noTask')}
-          </h1>
+          <div className="workbench-current-task">
+            <span className="workbench-context-label">{t('topbar.currentTask')}</span>
+            <h1 className="workbench-title" data-current-task="true">
+              {state.selectedConversation?.title || t('topbar.noTask')}
+            </h1>
+          </div>
           <span className="workbench-context">
             <span className="workbench-context-label">{t('topbar.context')}</span>
             <span className="workbench-context-value" data-workspace-context="true">

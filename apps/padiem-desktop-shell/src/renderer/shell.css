@@ -401,6 +401,13 @@ button.workspace-entry:hover:not(:disabled) {
   white-space: nowrap;
 }
 
+.workbench-current-task {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+
 .workbench-title {
   margin: 0;
   font-size: 15px;
