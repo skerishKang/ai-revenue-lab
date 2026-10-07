@@ -1,0 +1,170 @@
+name: B66 PDF Renderer Production Gate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b66-pdf-renderer-production-gate.yml"
+      - "apps/b66-pdf-renderer/**"
+      - "apps/padiem-chat/app/b66_certified_pdf_renderer.py"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "B66 PDF renderer gate mode"
+        required: true
+        type: choice
+        default: repository_preflight
+        options:
+          - repository_preflight
+          - deploy_production
+      target_sha:
+        description: "Exact current main SHA"
+        required: true
+        type: string
+      confirmation:
+        description: "Exact production deploy confirmation"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b66-pdf-renderer-production-gate
+  cancel-in-progress: false
+
+env:
+  PDF_WORKER: padiem-b66-pdf-renderer
+  TARGET_SHA: ${{ inputs.target_sha }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && env.TARGET_SHA || github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Require exact current main for dispatch
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo "EXACT_CURRENT_MAIN=PASS"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: "0.12.5"
+      - name: Prove renderer source identity and private topology
+        shell: bash
+        run: |
+          set -euo pipefail
+          cmp apps/b66-pdf-renderer/renderer.py apps/padiem-chat/app/b66_certified_pdf_renderer.py
+          python - <<'PY'
+          import tomllib
+          from pathlib import Path
+          cfg = tomllib.loads(Path("apps/b66-pdf-renderer/wrangler.toml").read_text())
+          assert cfg["name"] == "padiem-b66-pdf-renderer"
+          assert cfg["main"] == "worker.py"
+          assert cfg["base_dir"] == ".worker-src"
+          assert cfg["workers_dev"] is False
+          assert cfg["compatibility_flags"] == ["python_workers"]
+          assert cfg["r2_buckets"] == [{"binding":"PADIEM_WORKSPACE_FILES","bucket_name":"padiem-workspace-files"}]
+          chat = Path("apps/padiem-chat/wrangler.toml").read_text()
+          assert "B66_PDF_RENDERER_SERVICE" not in chat
+          print("PDF_RENDERER_SOURCE_IDENTITY=PASS")
+          print("PDF_RENDERER_PUBLIC_ROUTE_DECLARED=NO")
+          print("CHAT_BINDING_ACTIVATION_SEPARATE=YES")
+          PY
+      - name: Build and dry-run dedicated renderer Worker
+        working-directory: apps/b66-pdf-renderer
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv lock --check
+          npx --yes wrangler@4.130.0 deploy --dry-run --outdir "${RUNNER_TEMP}/b66-pdf-dryrun" --config wrangler.toml | tee "${RUNNER_TEMP}/b66-pdf-dryrun.log"
+          grep -q 'PDF_WORKER_VENDOR=PASS' "${RUNNER_TEMP}/b66-pdf-dryrun.log"
+          grep -q 'PDF_WORKER_RUNTIME_COPY=PASS' "${RUNNER_TEMP}/b66-pdf-dryrun.log"
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("python_modules/pymupdf/_mupdf.so")
+          assert p.read_bytes()[:4] == b"\x00asm"
+          total=sum(x.stat().st_size for x in Path("python_modules").rglob("*") if x.is_file())
+          assert total < 64 * 1024 * 1024
+          print("PDF_WORKER_WASM_AND_SIZE=PASS")
+          PY
+
+  deploy-production:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'deploy_production' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment: production
+    steps:
+      - name: Require explicit deploy authorization
+        shell: bash
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          set -euo pipefail
+          test "${CONFIRMATION}" = "DEPLOY_B66_PDF_RENDERER_FROM_EXACT_MAIN"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Reconfirm exact main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: "0.12.5"
+      - name: Deploy private PDF renderer Worker
+        working-directory: apps/b66-pdf-renderer
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.130.0 deploy --config wrangler.toml
+      - name: Verify deployed Worker bindings and private posture
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
+          settings="${RUNNER_TEMP}/pdf-worker-settings.json"
+          subdomain="${RUNNER_TEMP}/pdf-worker-subdomain.json"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${PDF_WORKER}/settings" -o "${settings}"
+          curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${PDF_WORKER}/subdomain" -o "${subdomain}"
+          jq -e --arg bucket "padiem-workspace-files" '.success == true and ([.result.bindings[] | select(.name=="PADIEM_WORKSPACE_FILES" and .type=="r2_bucket" and .bucket_name==$bucket)] | length)==1' "${settings}" >/dev/null
+          jq -e '.success == true and .result.enabled == false' "${subdomain}" >/dev/null
+          echo "PDF_RENDERER_PRODUCTION_DEPLOY=PASS"
+          echo "PDF_RENDERER_WORKERS_DEV=DISABLED"
+          echo "PDF_RENDERER_R2_BINDING=PASS"
