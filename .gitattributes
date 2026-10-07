@@ -1,0 +1,12 @@
+# #3645: these byte-exact PDF fixtures hold no NUL byte, so Git auto-detects them as
+# text and core.autocrlf=true (the Windows system default) rewrites every LF to CRLF at
+# checkout. Blob and worktree then differ by exactly the fixture's LF count, which breaks
+# the manifest size/SHA-256 checks and pypdf parsing on Windows for reasons unrelated to
+# the source under review. Pinned at the paths that are read as raw bytes, not repo-wide:
+# the business-35 customer package declares its own package-local policy and its PDFs
+# already contain NUL bytes, so they never needed this.
+#
+# `binary` is -diff -merge -text. -merge is load-bearing rather than cosmetic: on a file
+# Git thinks is text, a 3-way merge silently emits corrupt PDF bytes with no conflict.
+packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/*.pdf binary
+tools/b66_generic/tests/fixtures/*.pdf binary

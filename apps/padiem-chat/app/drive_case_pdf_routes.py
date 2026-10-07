@@ -17,6 +17,8 @@ returning bytes.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
@@ -120,9 +122,50 @@ async def drive_case_pdf_detail(request: Request) -> JSONResponse:
     return JSONResponse(body)
 
 
+async def drive_case_pdf_extraction_review(request: Request) -> JSONResponse:
+    _uid, pid, workspace_ref, client, error = await _resolve_context(request)
+    if error is not None:
+        return error
+
+    if set(request.query_params.keys()):
+        return _invalid("invalid_request", "PDF extraction review does not accept query parameters.")
+
+    file_id = request.path_params.get("file_id")
+    if not isinstance(file_id, str):
+        return _invalid("invalid_file_id", "PDF selection is invalid.")
+    file_id = file_id.strip()
+    if not file_id or len(file_id) > MAX_PDF_FILE_ID_CHARS:
+        return _invalid("invalid_file_id", "PDF selection is invalid.")
+
+    try:
+        body = await request.json()
+    except Exception:
+        return _invalid("invalid_request", "PDF extraction review body is invalid.")
+    if not isinstance(body, Mapping) or set(body) != {"extraction"}:
+        return _invalid("invalid_request", "PDF extraction review accepts only extraction data.")
+    extraction = body.get("extraction")
+    if not isinstance(extraction, Mapping):
+        return _invalid("browser_pdf_extraction_invalid", "Browser PDF extraction is invalid.")
+
+    try:
+        reviewed = await client.review_pdf_extraction(
+            workspace_ref=workspace_ref,
+            project_id=pid,
+            file_id=file_id,
+            extraction=extraction,
+        )
+    except DriveCaseFolderEngineError as exc:
+        return _engine_error(exc)
+    except Exception:
+        return _generic_failure()
+
+    return JSONResponse(reviewed)
+
+
 DRIVE_CASE_PDF_ROUTE_PATHS = {
     "candidates": "/api/projects/{project_id}/drive-case-pdfs",
     "read": "/api/projects/{project_id}/drive-case-pdfs/{file_id}",
+    "review_extraction": "/api/projects/{project_id}/drive-case-pdfs/{file_id}/browser-extraction",
 }
 
 BROWSER_WORKSPACE_REF_AUTHORITY = False
@@ -147,4 +190,5 @@ __all__ = [
     "PRODUCTION_MUTATION",
     "drive_case_pdfs_collection",
     "drive_case_pdf_detail",
+    "drive_case_pdf_extraction_review",
 ]
