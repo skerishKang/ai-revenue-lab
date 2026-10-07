@@ -182,6 +182,12 @@ check(!html.includes('class="badge"') && !html.includes("Padiem 로그인") &&
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: topbar carries no stale badge or vendor-branded login label");
 check(worker.includes('PADIEM_CHAT_ORIGIN = "https://chat.padiem.net"'),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: canonical Padiem upstream fixed");
+check(worker.includes('bridgeMutationOriginAllowed(request, url)') &&
+      worker.includes('request.headers.get("origin") === url.origin') &&
+      worker.includes('jsonError("padiem_origin_rejected", 403)'),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: cookie-authenticated mutations fail closed on cross-origin callers");
+check(worker.includes('headers.set("Origin", PADIEM_CHAT_ORIGIN)'),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: guarded mutations stamp the canonical Padiem Chat Origin upstream");
 [
   "/api/padiem/auth/status",
   "/api/padiem/auth/password/login",

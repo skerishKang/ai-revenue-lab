@@ -29,13 +29,36 @@
   /* ── 최근 견적 server authority(#3405 Slice B) ──
      signed-in 동안 최근 견적 authority 는 서버다. browser local
      quoteBeta.history.v1 은 offline convenience cache 로만 유지되며,
-     서버 실패가 localStorage 로 조용히 대체되는 일은 없다. */
+     서버 실패가 localStorage 로 조용히 대체되는 일은 없다.
+
+     계정 사실(sign-in)과 client 가용성은 분리한다:
+       SIGNED_IN + CLIENT_AVAILABLE -> server
+       SIGNED_IN + CLIENT_MISSING   -> bounded ERROR (local fallback 금지)
+       SIGNED_OUT                   -> bounded local/offline history
+     client 부재로 signed-in authority 가 local 로 내려가면 안 된다. */
+  const HISTORY_CLIENT_UNAVAILABLE = "history_client_unavailable";
   let serverHistorySignedIn = false;
   let serverSaveInFlight = false;
   let serverQuoteNoCandidates = [];
 
+  /* canonical #3480 projection 이 확정한 계정 사실만 사용한다 */
+  function serverHistoryRequired() {
+    return serverHistorySignedIn === true;
+  }
+
+  /* server client 모듈과 그 계약 함수의 존재 여부만 본다 */
+  function serverHistoryAvailable() {
+    return Boolean(ServerHistory && AccountScope &&
+      typeof ServerHistory.listQuotes === "function" &&
+      typeof ServerHistory.getQuote === "function" &&
+      typeof ServerHistory.saveQuote === "function" &&
+      typeof ServerHistory.deleteQuote === "function" &&
+      typeof ServerHistory.draftToHistorySnapshot === "function" &&
+      typeof ServerHistory.historySnapshotToDraft === "function");
+  }
+
   function serverHistoryActive() {
-    return Boolean(ServerHistory && AccountScope && serverHistorySignedIn);
+    return serverHistoryRequired() && serverHistoryAvailable();
   }
 
   /* ── 계정 경계(#3480) ──
@@ -303,7 +326,11 @@
 
   async function saveCurrentToHistory() {
     if (!History) return { ok: false, error: "history_unavailable" };
-    if (serverHistoryActive()) {
+    if (serverHistoryRequired()) {
+      if (!serverHistoryAvailable()) {
+        /* signed-in + client 부재: server authority 실패다. local 쓰기 0. */
+        return { ok: false, error: HISTORY_CLIENT_UNAVAILABLE, authority: "server" };
+      }
       /* signed-in: 서버가 authority 다. 서버 실패 시 local 쓰기로 대체하지
          않는다(NO_SILENT_LOCAL_FALLBACK). 성공 시에만 local cache 를 갱신한다. */
       if (serverSaveInFlight) return { ok: false, error: "save_in_progress", authority: "server" };
@@ -364,8 +391,13 @@
      대신 돌려주지 않는다. */
   async function listRecentQuotes() {
     if (!History) return { ok: false, authority: "local", error: "history_unavailable" };
-    if (!serverHistoryActive()) {
+    if (!serverHistoryRequired()) {
       return { ok: true, authority: "local", envelope: loadHistoryEnvelope() };
+    }
+    if (!serverHistoryAvailable()) {
+      /* signed-in 인데 server client 가 없다: local 로 내려가지 않고 bounded error */
+      serverQuoteNoCandidates = [];
+      return { ok: false, authority: "server", error: HISTORY_CLIENT_UNAVAILABLE };
     }
     const result = await ServerHistory.listQuotes();
     if (!result.ok) {
@@ -404,8 +436,12 @@
   /* signed-in 삭제는 서버 성공 후에만 UI 에 반영된다(NO_OPTIMISTIC_DELETE).
      실패하면 행을 그대로 유지하고 bounded error 로 돌아온다. */
   async function deleteRecentQuote(quoteHistoryId) {
-    if (!serverHistoryActive()) {
+    if (!serverHistoryRequired()) {
       return { ok: false, authority: "local", error: "history_unavailable" };
+    }
+    if (!serverHistoryAvailable()) {
+      /* signed-in + client 부재: server authority 실패다. local 삭제 0. */
+      return { ok: false, authority: "server", error: HISTORY_CLIENT_UNAVAILABLE };
     }
     const result = await ServerHistory.deleteQuote(quoteHistoryId);
     if (!result.ok) {
@@ -1702,7 +1738,7 @@
     },
     listRecentQuotes,
     deleteRecentQuote,
-    recentListAuthority: () => (serverHistoryActive() ? "server" : "local"),
+    recentListAuthority: () => (serverHistoryRequired() ? "server" : "local"),
     focusTaxReview,
     toast
   });

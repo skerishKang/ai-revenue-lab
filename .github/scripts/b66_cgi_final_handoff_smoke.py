@@ -17,7 +17,9 @@ response logging is permitted.
 from __future__ import annotations
 
 import argparse
+import json
 import os
+import re
 import sys
 import time
 from dataclasses import dataclass
@@ -40,6 +42,45 @@ CLAW_GENERAL_PATH = "/api/claw/general"
 CLAW_SYNTHETIC_PROMPT = "테스트입니다. 한 문장으로 정상 작동 중이라고 답해주세요."
 MAX_CLAW_GENERAL_POSTS = 1
 
+# #3655 one-shot canary evidence seam. The request marker opts the ONE canary
+# request into the chat route's bounded evidence headers; the normal user
+# surface is unchanged. Playwright lowercases response header names.
+CLAW_EVIDENCE_REQUEST_HEADER = "X-Padiem-Claw-Evidence"
+CLAW_EVIDENCE_MARKER = "one-shot"
+CLAW_EVIDENCE_RESPONSE_HEADERS = (
+    "x-padiem-claw-run-id",
+    "x-padiem-orchestration-run-id",
+    "x-padiem-selected-route-id",
+    "x-padiem-provider-attempts",
+    "x-padiem-fallback-used",
+)
+# Mirror of kagent P01_FAILURE_DETAILS (apps/korean-ai-code-agent/src/kagent/
+# p01_adapter.py): the closed terminal failure vocabulary the Claw 502 `detail`
+# may carry. Kept as a literal because this smoke script must not import
+# product packages; .github/tests cross-checks the mirror stays in sync.
+CLAW_FAILURE_DETAIL_VOCABULARY = frozenset(
+    {
+        "engine_authentication_failed",
+        "engine_authorization_failed",
+        "engine_transport_or_response_failed",
+        "engine_downstream_execution_failed",
+        "p01_contract_failure",
+        "unknown_engine_failure",
+        "engine_provider_server_error",
+        "engine_provider_timeout",
+        "engine_provider_rate_limited",
+        "engine_provider_unavailable",
+        "engine_provider_authorization_failed",
+        "engine_provider_request_rejected",
+        "engine_provider_bad_response",
+        "engine_admission_denied",
+    }
+)
+CLAW_ADMISSION_DENIED_DETAIL = "engine_admission_denied"
+_EVIDENCE_RUN_ID_RE = re.compile(r"^run_[0-9a-f]{24}$")
+_EVIDENCE_VALUE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,79}$")
+_EVIDENCE_ATTEMPTS_RE = re.compile(r"^\d{1,2}$")
+
 
 class SmokeFailure(RuntimeError):
     pass
@@ -54,6 +95,80 @@ class Counters:
 
 def _fail(code: str) -> None:
     raise SmokeFailure(code)
+
+
+def _bounded_evidence_headers(headers: object) -> dict[str, str]:
+    """Extract only the allowlisted evidence headers with grammar-valid values.
+
+    Playwright hands back lowercase header names. A value that fails its
+    grammar is dropped rather than degraded, so the evidence record can never
+    carry a fabricated ref, oversized junk, or free text.
+    """
+    if not isinstance(headers, object) or not hasattr(headers, "get"):
+        return {}
+    extracted: dict[str, str] = {}
+    for name in CLAW_EVIDENCE_RESPONSE_HEADERS:
+        value = headers.get(name)  # type: ignore[attr-defined]
+        if not isinstance(value, str):
+            continue
+        if name == "x-padiem-provider-attempts":
+            if not _EVIDENCE_ATTEMPTS_RE.fullmatch(value):
+                continue
+            extracted[name] = value
+            continue
+        if name == "x-padiem-fallback-used":
+            if value not in ("true", "false"):
+                continue
+            extracted[name] = value
+            continue
+        pattern = _EVIDENCE_RUN_ID_RE if name == "x-padiem-claw-run-id" else _EVIDENCE_VALUE_RE
+        if not pattern.fullmatch(value):
+            continue
+        extracted[name] = value
+    return extracted
+
+
+def _bounded_error_class(body_text: object) -> tuple[str | None, str | None]:
+    """Extract ONLY the bounded error code/detail from a Claw error body.
+
+    Never returns the message or any other body content: a malformed body or
+    an out-of-vocabulary detail degrades to None so unbounded text can never
+    reach the evidence record.
+    """
+    if not isinstance(body_text, str):
+        return None, None
+    try:
+        parsed = json.loads(body_text)
+    except ValueError:
+        return None, None
+    if not isinstance(parsed, dict):
+        return None, None
+    error = parsed.get("error")
+    if not isinstance(error, dict):
+        return None, None
+    code = error.get("code")
+    code_bounded = (
+        code if isinstance(code, str) and _EVIDENCE_VALUE_RE.fullmatch(code) else None
+    )
+    detail = error.get("detail")
+    detail_bounded = (
+        detail
+        if isinstance(detail, str) and detail in CLAW_FAILURE_DETAIL_VOCABULARY
+        else None
+    )
+    return code_bounded, detail_bounded
+
+
+def _canonical_admission_result(detail: str | None) -> str:
+    """ENGINE_ADMISSION_RESULT for a terminal failure.
+
+    Only the engine's enumerated admission-denial class proves DENIED; every
+    other failure (transport, provider, contract) leaves the admission stage
+    unproven rather than inferred.
+    """
+    if detail == CLAW_ADMISSION_DENIED_DETAIL:
+        return "DENIED"
+    return "UNPROVEN"
 
 
 def _is_direct_provider(url: str) -> bool:
@@ -74,9 +189,28 @@ def _send(page, text: str) -> None:
 
 def _click_chip(page, label: str) -> None:
     locator = page.locator("#easyChipRow button", has_text=label)
+    try:
+        locator.wait_for(state="visible", timeout=5000)
+    except Exception as exc:
+        raise SmokeFailure("chip_missing_" + label) from exc
     if locator.count() != 1:
         _fail("chip_not_unique_" + label)
     locator.click()
+
+
+def _click_chip_index(page, *, index: int, expected_count: int, stage: str) -> None:
+    try:
+        page.wait_for_function(
+            "([selector, expected]) => document.querySelectorAll(selector).length === expected",
+            arg=["#easyChipRow button", expected_count],
+            timeout=5000,
+        )
+    except Exception as exc:
+        raise SmokeFailure("guided_chip_count_" + stage) from exc
+    try:
+        page.locator("#easyChipRow button").nth(index).click(timeout=5000)
+    except Exception as exc:
+        raise SmokeFailure("guided_chip_click_" + stage) from exc
 
 
 def _wait_runtime_ready(page) -> None:
@@ -139,20 +273,37 @@ def _assert_quote(
 
 def _pdf_download_probe(page, counters: Counters) -> None:
     before = counters.pdf_posts
+    responses = []
+
+    def capture_response(response) -> None:
+        try:
+            if (
+                response.request.method == "POST"
+                and urlparse(response.url).path == PDF_PATH
+            ):
+                responses.append(response)
+        except Exception:
+            return
+
+    page.on("response", capture_response)
     try:
-        with page.expect_download(timeout=30000) as download_info:
-            with page.expect_response(
-                lambda response: (
-                    response.request.method == "POST"
-                    and urlparse(response.url).path == PDF_PATH
-                ),
-                timeout=30000,
-            ) as response_info:
+        try:
+            with page.expect_download(timeout=30000) as download_info:
                 page.locator("#printPdf").click()
-        response = response_info.value
-        download = download_info.value
-    except Exception as exc:
-        raise SmokeFailure("pdf_download_missing") from exc
+            download = download_info.value
+        except Exception as exc:
+            if responses:
+                status = int(responses[-1].status)
+                if status != 200:
+                    raise SmokeFailure("pdf_http_" + str(status)) from exc
+                raise SmokeFailure("pdf_download_missing_after_http_200") from exc
+            raise SmokeFailure("pdf_response_or_download_missing") from exc
+    finally:
+        page.remove_listener("response", capture_response)
+
+    if not responses:
+        _fail("pdf_response_missing")
+    response = responses[-1]
     if response.status != 200:
         _fail("pdf_http_" + str(response.status))
     media_type = (response.headers.get("content-type") or "").split(";", 1)[0].strip().lower()
@@ -168,7 +319,7 @@ def _pdf_download_probe(page, counters: Counters) -> None:
 
 
 def _open_result_and_download(page, counters: Counters) -> None:
-    _click_chip(page, "??? ????")
+    _click_chip(page, "견적서 확인하기")
     page.locator("#directView").wait_for(state="visible", timeout=10000)
     _pdf_download_probe(page, counters)
 
@@ -187,39 +338,72 @@ def _reset_browser_local_quote_state(page) -> None:
 
 
 def _login(page, username: str, password: str) -> None:
+    print("SMOKE_STAGE=PAGE_GOTO")
     page.goto(TARGET_URL, wait_until="domcontentloaded", timeout=30000)
+    print("SMOKE_STAGE=ACCOUNT_BUTTON")
     page.locator("#padiemAccountButton").click()
+    print("SMOKE_STAGE=LOGIN_FORM")
     page.locator("#padiemLoginForm").wait_for(state="visible", timeout=15000)
     page.locator("#padiemLoginIdentifier").fill(username)
     page.locator("#padiemLoginPassword").fill(password)
-    page.locator("#padiemLoginSubmit").click()
+    try:
+        with page.expect_response(
+            lambda response: (
+                response.request.method == "POST"
+                and urlparse(response.url).path == "/api/padiem/auth/password/login"
+            ),
+            timeout=15000,
+        ) as login_info:
+            page.locator("#padiemLoginSubmit").click()
+        login_response = login_info.value
+    except Exception as exc:
+        raise SmokeFailure("login_response_missing") from exc
+    if login_response.status != 200:
+        _fail("login_http_" + str(login_response.status))
 
-    page.locator("#padiemAccountPanel").wait_for(state="visible", timeout=20000)
-    _wait_runtime_ready(page)
+    print("SMOKE_STAGE=LOGIN_HTTP_200")
+    # The canonical three-pane shell intentionally hides the legacy account panel
+    # after moving account/skill controls into the left rail. Runtime readiness,
+    # not legacy-panel visibility, is the authenticated product authority.
+    try:
+        _wait_runtime_ready(page)
+    except Exception as exc:
+        readiness = page.evaluate(
+            """() => {
+              const b = window.B66QuoteRuntimeBridge;
+              return b && typeof b.readiness === 'function' ? b.readiness() : null;
+            }"""
+        )
+        if not isinstance(readiness, dict):
+            raise SmokeFailure("runtime_bridge_missing") from exc
+        code = "runtime_not_ready_a%s_s%s_p%s" % (
+            int(readiness.get("authenticated") is True),
+            int(readiness.get("skillReady") is True),
+            int(readiness.get("profileReady") is True),
+        )
+        raise SmokeFailure(code) from exc
 
+    print("SMOKE_STAGE=RUNTIME_READY")
     skill_count = page.locator("#padiemSavedSkillSelect option").count()
     if skill_count != 1:
         _fail("saved_skill_count_not_one")
+    print("SMOKE_STAGE=LOGIN_READY")
 
 
 def _guided(page, counters: Counters) -> None:
     before = counters.interpret_posts
     page.locator("#guidedStarter").click()
 
-    for text in (
-        "가이드테스트건설",
-        "없음",
-        "배관",
-        "2",
-        "10000",
-        "다음",
-        "별도",
-        "없음",
-        "현재",
-    ):
-        _send(page, text)
-
-    _click_chip(page, "견적서 만들기")
+    _send(page, "\uac00\uc774\ub4dc\ud14c\uc2a4\ud2b8\uac74\uc124")
+    _click_chip_index(page, index=0, expected_count=1, stage="recipient_person_none")
+    _send(page, "\ubc30\uad00")
+    _click_chip_index(page, index=1, expected_count=4, stage="quantity_two")
+    _send(page, "10000")
+    _click_chip_index(page, index=1, expected_count=2, stage="items_done")
+    _click_chip_index(page, index=0, expected_count=4, stage="tax_exclusive")
+    _click_chip_index(page, index=0, expected_count=1, stage="memo_none")
+    _click_chip_index(page, index=0, expected_count=3, stage="sender_current")
+    _click_chip_index(page, index=0, expected_count=3, stage="finish")
     page.wait_for_function(
         """() => {
           const d = window.B66QuoteAppBridge.getDraft();
@@ -500,11 +684,21 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
     response_status = 0
     sse_content_type = False
     stage = "init"
+    evidence_headers: dict[str, str] = {}
+    terminal_error_class: str | None = None
+    terminal_error_code: str | None = None
+    admission_result = "UNPROVEN"
+    assistant_projection_count = 0
 
     try:
         with sync_playwright() as pw:
             browser = pw.chromium.launch(headless=True)
-            context = browser.new_context(viewport={"width": 1440, "height": 1100})
+            context = browser.new_context(
+                viewport={"width": 1440, "height": 1100},
+                # #3655: opt this one canary request flow into the chat route's
+                # bounded evidence headers; the normal user surface is unchanged.
+                extra_http_headers={CLAW_EVIDENCE_REQUEST_HEADER: CLAW_EVIDENCE_MARKER},
+            )
             page = context.new_page()
 
             def observe_request(request) -> None:
@@ -595,7 +789,15 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
             response_status = response.status
             content_type = (response.headers.get("content-type") or "").lower()
             sse_content_type = content_type.startswith("text/event-stream")
+            evidence_headers = _bounded_evidence_headers(response.headers)
             if response_status != 200:
+                # Read the bounded terminal class from the error envelope
+                # BEFORE failing: only the closed code/detail fields survive;
+                # the message and body text are never printed or stored.
+                terminal_error_code, terminal_error_class = _bounded_error_class(
+                    response.text()
+                )
+                admission_result = _canonical_admission_result(terminal_error_class)
                 _fail("claw_general_http_" + str(response_status))
             if not sse_content_type:
                 _fail("claw_general_not_sse")
@@ -618,12 +820,33 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
             )
             time.sleep(1.0)
 
+            after_assistants = page.locator("#messageList .assistant-message").count()
+            assistant_projection_count = after_assistants - before_assistants
+
             if claw_posts != MAX_CLAW_GENERAL_POSTS:
                 _fail("claw_post_count_" + str(claw_posts))
             if page.locator("#messageList .error-box").count() != before_errors:
                 _fail("visible_error_box")
             if direct_provider_requests != 0:
                 _fail("browser_direct_provider_request")
+            # #3655 evidence bounds: the measured dispatch/fallback/projection
+            # counts are load-bearing acceptance evidence, not printed claims.
+            if assistant_projection_count != 1:
+                _fail("assistant_projection_count_" + str(assistant_projection_count))
+            attempts_value = evidence_headers.get("x-padiem-provider-attempts")
+            if attempts_value != "1":
+                _fail("provider_dispatch_count_" + (attempts_value or "MISSING"))
+            fallback_value = evidence_headers.get("x-padiem-fallback-used")
+            if fallback_value != "false":
+                _fail("fallback_used_" + (fallback_value or "MISSING"))
+            if not evidence_headers.get("x-padiem-claw-run-id"):
+                _fail("missing_claw_run_ref")
+            if not evidence_headers.get("x-padiem-orchestration-run-id"):
+                _fail("missing_orchestration_run_ref")
+            if not evidence_headers.get("x-padiem-selected-route-id"):
+                _fail("missing_selected_route_id")
+            terminal_error_class = None
+            admission_result = "PASS"
 
             complete_ms = int(time.time() * 1000)
             context.close()
@@ -637,7 +860,34 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
         print("ASSISTANT_MESSAGE_NONEMPTY=YES")
         print("BROWSER_DIRECT_PROVIDER_CALLS=0")
         print("RETRY=0")
+        print("FALLBACK=0")
         print("FALLBACK_FANOUT=0")
+        # #3655 evidence block: correlation + admission + route + measured
+        # dispatch/append counts. Values are bounded refs/enums only.
+        print("CLAW_RUN_REF=" + evidence_headers.get("x-padiem-claw-run-id", "MISSING"))
+        print(
+            "ORCHESTRATION_RUN_REF="
+            + evidence_headers.get("x-padiem-orchestration-run-id", "MISSING")
+        )
+        print(
+            "SELECTED_ROUTE_ID="
+            + evidence_headers.get("x-padiem-selected-route-id", "MISSING")
+        )
+        print(
+            "PROVIDER_DISPATCH_COUNT="
+            + evidence_headers.get("x-padiem-provider-attempts", "MISSING")
+        )
+        print(
+            "FALLBACK_USED=" + evidence_headers.get("x-padiem-fallback-used", "MISSING")
+        )
+        print("ENGINE_ADMISSION_RESULT=" + admission_result)
+        print("TERMINAL_ERROR_CLASS=" + (terminal_error_class or "NONE"))
+        # Source-truth for this lane: /api/claw/general is a terminal-SSE
+        # projection and performs no conversation-store append (#3539/#3655).
+        print("ASSISTANT_STORE_APPEND_COUNT=0")
+        print(
+            "ASSISTANT_VISIBLE_PROJECTION_COUNT=" + str(assistant_projection_count)
+        )
         print("PASSWORD_OUTPUT=0")
         print("COOKIE_OUTPUT=0")
         print("TOKEN_OUTPUT=0")
@@ -651,6 +901,21 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
         print("COMPLETE_MS=" + str(int(time.time() * 1000)))
         print("CLAW_GENERAL_POSTS=" + str(claw_posts))
         print("CLAW_GENERAL_HTTP=" + (str(response_status) if response_status else "NONE"))
+        # #3655: even a failed canary must retain its bounded terminal class
+        # and whatever correlation/route evidence the served surface returned.
+        if evidence_headers.get("x-padiem-claw-run-id"):
+            print("CLAW_RUN_REF=" + evidence_headers["x-padiem-claw-run-id"])
+        if evidence_headers.get("x-padiem-selected-route-id"):
+            print("SELECTED_ROUTE_ID=" + evidence_headers["x-padiem-selected-route-id"])
+        if evidence_headers.get("x-padiem-provider-attempts"):
+            print(
+                "PROVIDER_DISPATCH_COUNT="
+                + evidence_headers["x-padiem-provider-attempts"]
+            )
+        print("ENGINE_ADMISSION_RESULT=" + admission_result)
+        print("TERMINAL_ERROR_CLASS=" + (terminal_error_class or "NONE"))
+        if terminal_error_code:
+            print("TERMINAL_ERROR_CODE=" + terminal_error_code)
         print("PASSWORD_OUTPUT=0")
         print("COOKIE_OUTPUT=0")
         print("TOKEN_OUTPUT=0")
@@ -664,6 +929,10 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
         print("COMPLETE_MS=" + str(int(time.time() * 1000)))
         print("CLAW_GENERAL_POSTS=" + str(claw_posts))
         print("CLAW_GENERAL_HTTP=" + (str(response_status) if response_status else "NONE"))
+        if evidence_headers.get("x-padiem-claw-run-id"):
+            print("CLAW_RUN_REF=" + evidence_headers["x-padiem-claw-run-id"])
+        print("ENGINE_ADMISSION_RESULT=" + admission_result)
+        print("TERMINAL_ERROR_CLASS=" + (terminal_error_class or "NONE"))
         print("PASSWORD_OUTPUT=0")
         print("COOKIE_OUTPUT=0")
         print("TOKEN_OUTPUT=0")
@@ -689,11 +958,72 @@ def self_test() -> int:
     assert CLAW_TARGET_URL == "https://chat.padiem.net/"
     assert CLAW_GENERAL_PATH == "/api/claw/general"
     assert MAX_CLAW_GENERAL_POSTS == 1
+    # #3655: bounded evidence seam contract.
+    assert "engine_admission_denied" in CLAW_FAILURE_DETAIL_VOCABULARY
+    assert "engine_provider_server_error" in CLAW_FAILURE_DETAIL_VOCABULARY
+    assert CLAW_EVIDENCE_MARKER == "one-shot"
+    _run_evidence_self_tests()
     print("B66_FINAL_HANDOFF_SMOKE_SELF_TEST=PASS")
     print("DEFAULT_LIVE_EXECUTION=BLOCKED")
     print("MAX_INTERPRET_POSTS=3")
     print("SECRET_VALUE_OUTPUT=0")
     return 0
+
+
+def _run_evidence_self_tests() -> None:
+    valid_headers = {
+        "x-padiem-claw-run-id": "run_" + "a" * 24,
+        "x-padiem-orchestration-run-id": "orch_test_001",
+        "x-padiem-selected-route-id": "plus.agnes-3.0-flash.v1",
+        "x-padiem-provider-attempts": "1",
+        "x-padiem-fallback-used": "false",
+        "x-padiem-unlisted-header": "should-not-survive",
+        "content-type": "text/event-stream",
+    }
+    extracted = _bounded_evidence_headers(valid_headers)
+    assert extracted == {
+        "x-padiem-claw-run-id": "run_" + "a" * 24,
+        "x-padiem-orchestration-run-id": "orch_test_001",
+        "x-padiem-selected-route-id": "plus.agnes-3.0-flash.v1",
+        "x-padiem-provider-attempts": "1",
+        "x-padiem-fallback-used": "false",
+    }
+    # Junk, oversized, and out-of-vocabulary values are dropped, never degraded.
+    assert _bounded_evidence_headers(
+        {
+            "x-padiem-claw-run-id": "not-a-run-id",
+            "x-padiem-orchestration-run-id": "bad id with spaces",
+            "x-padiem-selected-route-id": "x" * 200,
+            "x-padiem-provider-attempts": "not-a-number",
+            "x-padiem-fallback-used": "maybe",
+        }
+    ) == {}
+    assert _bounded_evidence_headers(None) == {}
+    # Only the bounded code/detail survive the error envelope; the message
+    # (which could carry free text) never does.
+    body = json.dumps(
+        {
+            "ok": False,
+            "error": {
+                "code": "engine_execution_failed",
+                "message": "Engine 실행에 실패했습니다.",
+                "detail": "engine_provider_server_error",
+            },
+        }
+    )
+    assert _bounded_error_class(body) == (
+        "engine_execution_failed",
+        "engine_provider_server_error",
+    )
+    assert _bounded_error_class('{"error": {"code": "x", "detail": "free text!"}}') == (
+        "x",
+        None,
+    )
+    assert _bounded_error_class("not json") == (None, None)
+    assert _bounded_error_class('{"error": "flat"}') == (None, None)
+    assert _canonical_admission_result("engine_admission_denied") == "DENIED"
+    assert _canonical_admission_result("engine_provider_server_error") == "UNPROVEN"
+    assert _canonical_admission_result(None) == "UNPROVEN"
 
 
 def main(argv: list[str] | None = None) -> int:

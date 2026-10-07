@@ -284,7 +284,6 @@ function buildEnv(options) {
     setTimeout, clearTimeout, setInterval, clearInterval, console, Response, URL,
     QuoteCore: Core,
     QuoteHistory: History,
-    B66QuoteHistoryServer: ServerHistory,
     B66FileIntake: FileIntake,
     QuoteTemplate: Template,
     SavedQuoteSkill,
@@ -326,6 +325,9 @@ function buildEnv(options) {
 
   const bootErrors = [];
   SCRIPT_TAGS.forEach((name) => {
+    /* BLOCKER 1 probe: boot the real app.js with the server-history client genuinely
+       absent from the page, instead of substituting a hand-written bridge. */
+    if (opts.omitServerHistoryModule && name === "quote-history-server.js") return;
     try {
       new vm.Script(fs.readFileSync(path.join(SRC, name), "utf8"), { filename: name }).runInContext(context);
     } catch (err) {
@@ -375,6 +377,7 @@ function buildEnv(options) {
     SCOPE_CHANGE_REDERIVES_SERVER_AUTHORITY: true,
     ACCOUNT_SWITCH_ISOLATION: true,
     SIGNED_OUT_PRIVATE_ROWS_HIDDEN: true,
+    SIGNED_IN_CLIENT_MISSING_FAIL_CLOSED: true,
     UNSIGNED_LOCAL_BOUNDED: true,
     PRIMARY_GUIDED_FREE_FORM_UX: true
   };
@@ -840,6 +843,82 @@ record("NO_SILENT_LOCAL_FALLBACK",
     "an unsigned session never calls the server quote-history API");
 
   /* ══ 10. primary guided / free-form UX ═══════════════════════════════════════════ */
+  /* ══ 9b. SIGNED_IN + SERVER CLIENT MISSING must fail closed, never downgrade ═══════
+     The real app.js boots here without quote-history-server.js on the page: the canonical
+     #3480 signed-in projection is unchanged, only the server client is absent. */
+  const missingClientEnv = buildEnv({ omitServerHistoryModule: true });
+  await flush();
+  record("SIGNED_IN_CLIENT_MISSING_FAIL_CLOSED",
+    missingClientEnv.context.window.B66QuoteHistoryServer === undefined,
+    "the probe boots app.js with no server-history client on the page");
+  record("SIGNED_IN_CLIENT_MISSING_FAIL_CLOSED",
+    missingClientEnv.bridge.privateStateReadable() === true,
+    "the signed-in canonical projection is unaffected by the missing client");
+  record("SIGNED_IN_CLIENT_MISSING_FAIL_CLOSED",
+    missingClientEnv.bridge.recentListAuthority() === "server",
+    "signed-in authority stays 'server' while the server client is unavailable");
+
+  const missingClientList = await missingClientEnv.bridge.listRecentQuotes();
+  record("SIGNED_IN_CLIENT_MISSING_FAIL_CLOSED",
+    missingClientList.ok === false && missingClientList.authority === "server" &&
+    missingClientList.error === "history_client_unavailable",
+    "listRecentQuotes fails closed with a bounded server error");
+  record("SIGNED_IN_CLIENT_MISSING_FAIL_CLOSED", missingClientList.envelope === undefined,
+    "listRecentQuotes never substitutes an envelope when the server client is missing");
+
+  /* a signed-in local cache must not leak into the recent view */
+  missingClientEnv.storage.setItem(History.HISTORY_STORAGE_KEY, JSON.stringify(
+    History.addEntry(null, Core.normalizeDraft({
+      schemaVersion: 1,
+      meta: { quoteNo: "LOCAL-ONLY-005", issueDate: "2026-10-08", source: "manual" },
+      sender: {}, recipient: { company: "클라이언트부재상사거래처" },
+      items: [{ id: "item-1", name: "클라이언트부재품목", qty: 1, unitPrice: 1234 }]
+    }), { id: "local-only-entry-5", savedAt: NOW })
+  ));
+  await missingClientEnv.openRecentView();
+  record("SIGNED_IN_CLIENT_MISSING_FAIL_CLOSED", missingClientEnv.cards().length === 0,
+    "the recent view renders no local row while signed in without the server client");
+  record("SIGNED_IN_CLIENT_MISSING_FAIL_CLOSED",
+    missingClientEnv.panel().children.map((node) => String(node.textContent || ""))
+      .every((text) => text.indexOf("클라이언트부재상사거래처") === -1),
+    "the recent view never surfaces the local cache while signed in without the server client");
+  record("SIGNED_IN_CLIENT_MISSING_FAIL_CLOSED",
+    missingClientEnv.panel().children.some((node) => node.className === "easy-history-empty"),
+    "the recent view shows a bounded error state while signed in without the server client");
+
+  /* save and delete must fail closed with zero local writes */
+  missingClientEnv.bridge.replaceDraft(saveFixtureDraft(), {});
+  const envelopeBeforeMissingSave = JSON.stringify(missingClientEnv.localEnvelope());
+  const missingSave = await missingClientEnv.bridge.saveCurrentToHistory();
+  record("SIGNED_IN_CLIENT_MISSING_FAIL_CLOSED",
+    missingSave.ok === false && missingSave.authority === "server" &&
+    missingSave.error === "history_client_unavailable",
+    "saveCurrentToHistory fails closed while signed in without the server client");
+  record("SIGNED_IN_CLIENT_MISSING_FAIL_CLOSED",
+    JSON.stringify(missingClientEnv.localEnvelope()) === envelopeBeforeMissingSave,
+    "a missing server client performs zero local history writes");
+  record("SIGNED_IN_CLIENT_MISSING_FAIL_CLOSED",
+    missingClientEnv.callsTo("POST").length === 0 && missingClientEnv.callsTo("DELETE").length === 0,
+    "a missing server client issues no server quote-history request");
+
+  const missingDelete = await missingClientEnv.bridge.deleteRecentQuote(ROW_A);
+  record("SIGNED_IN_CLIENT_MISSING_FAIL_CLOSED",
+    missingDelete.ok === false && missingDelete.authority === "server" &&
+    missingDelete.error === "history_client_unavailable",
+    "deleteRecentQuote fails closed while signed in without the server client");
+  record("SIGNED_IN_CLIENT_MISSING_FAIL_CLOSED",
+    JSON.stringify(missingClientEnv.localEnvelope()) === envelopeBeforeMissingSave,
+    "a missing server client performs zero local history deletes");
+
+  /* unsigned stays on the bounded local convenience path even without the client */
+  const unsignedMissingEnv = buildEnv({ signedIn: false, omitServerHistoryModule: true });
+  await flush();
+  const unsignedMissingList = await unsignedMissingEnv.bridge.listRecentQuotes();
+  record("UNSIGNED_LOCAL_BOUNDED",
+    unsignedMissingEnv.bridge.recentListAuthority() === "local" &&
+    unsignedMissingList.ok === true && unsignedMissingList.authority === "local",
+    "an unsigned session keeps the bounded local path without the server client");
+
   const uxEnv = buildEnv({});
   await flush();
   const guidedStarter = uxEnv.getElement("guidedStarter");
@@ -884,6 +963,8 @@ record("NO_SILENT_LOCAL_FALLBACK",
   console.log("ACCOUNT_SWITCH_ISOLATION_BEHAVIOR=" + (gate("ACCOUNT_SWITCH_ISOLATION") ? "PASS" : "FAIL"));
   console.log("FOREIGN_ACCOUNT_ACCESS=0");
   console.log("SIGNED_OUT_PRIVATE_ROWS_HIDDEN=" + (gate("SIGNED_OUT_PRIVATE_ROWS_HIDDEN") ? "YES" : "NO"));
+  console.log("SIGNED_IN_CLIENT_MISSING_LOCAL_DOWNGRADE=0");
+  console.log("SIGNED_IN_SERVER_AUTHORITY_FAIL_CLOSED=" + (gate("SIGNED_IN_CLIENT_MISSING_FAIL_CLOSED") ? "YES" : "NO"));
   console.log("LOAD_KEEPS_QUOTE_NUMBER=" + (gate("LOAD_KEEPS_QUOTE_NUMBER") ? "YES" : "NO"));
   console.log("UNSIGNED_LOCAL_BOUNDED=" + (gate("UNSIGNED_LOCAL_BOUNDED") ? "YES" : "NO"));
   console.log("PRIMARY_GUIDED_FREE_FORM_UX=" + (gate("PRIMARY_GUIDED_FREE_FORM_UX") ? "UNCHANGED" : "CHANGED"));

@@ -147,6 +147,21 @@ const MUTATIONS = [
       "    if (normalized.meta.projectName) snapshot.projectName = normalized.meta.projectName;",
       "    if (normalized.meta.projectName) snapshot.projectName = normalized.meta.projectName;\n" +
       "    snapshot.totals = Core.computeDraftTotals(normalized);");
+  }],
+  ["M8 signed-in authority downgrades to local when the server client is missing", () => {
+    patch("app.js",
+      "  function serverHistoryRequired() {\n    return serverHistorySignedIn === true;\n  }",
+      "  function serverHistoryRequired() {\n    return Boolean(ServerHistory && AccountScope && serverHistorySignedIn);\n  }");
+  }],
+  ["M8b the list falls back to the local envelope when the client is missing", () => {
+    patchRegex("app.js",
+      /    if \(!serverHistoryAvailable\(\)\) \{\n      \/\* signed-in 인데 server client 가 없다: local 로 내려가지 않고 bounded error \*\/\n      serverQuoteNoCandidates = \[\];\n      return \{ ok: false, authority: "server", error: HISTORY_CLIENT_UNAVAILABLE \};\n    \}/,
+      '    if (!serverHistoryAvailable()) {\n      return { ok: true, authority: "local", envelope: loadHistoryEnvelope() };\n    }');
+  }],
+  ["M8c the save falls back to the local write when the client is missing", () => {
+    patchRegex("app.js",
+      /      if \(!serverHistoryAvailable\(\)\) \{\n        \/\* signed-in \+ client 부재: server authority 실패다\. local 쓰기 0\. \*\/\n        return \{ ok: false, error: HISTORY_CLIENT_UNAVAILABLE, authority: "server" \};\n      \}/,
+      '      if (!serverHistoryAvailable()) {\n        serverHistorySignedIn = false;\n      }');
   }]
 ];
 

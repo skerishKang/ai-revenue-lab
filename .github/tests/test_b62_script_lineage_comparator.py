@@ -255,12 +255,13 @@ def test_workflow_is_get_only_and_exact_main_guarded():
     assert 'test "${GITHUB_REF}" = "refs/heads/main"' in workflow
     assert 'test "$(git rev-parse HEAD)" = "${TARGET_SHA}"' in workflow
     assert 'test "$(git rev-parse origin/main)" = "${TARGET_SHA}"' in workflow
-    assert '(.result.deployments | length) >= 1' in workflow
-    assert '(.result.deployments | length) == 1' not in workflow
+    assert "cloudflare_served_version_cli.py resolve-active" in workflow
+    assert ".result.deployments[0].versions[0].version_id" not in workflow
+    assert ".result.deployments[0].versions[0].percentage" not in workflow
     assert 'if [[ "${active}" != "${EXPECTED_ACTIVE_VERSION}" ]]; then' in workflow
     assert "EXPECTED_ACTIVE_VERSION_MATCH=FAIL" in workflow
-    assert "percentage == 100" in workflow
     assert "b62_script_lineage_comparator.py" in workflow
+    assert ".github/scripts/cloudflare_served_version_cli.py" in workflow
     assert "RAW_SCRIPT_ETAG_OUTPUT=0" in workflow
     assert "PRODUCTION_MUTATION=0" in workflow
     assert "permissions:\n  contents: read" in workflow

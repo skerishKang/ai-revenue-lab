@@ -266,6 +266,7 @@ jobs:
           node tests/history-behavior.test.cjs
           node tests/quote-history-server.test.cjs
           node tests/history-server-behavior.test.cjs
+          node tests/quote-history-bridge-origin.test.mjs
           node tests/account-scope-3480.test.cjs
           node tests/production-draft-safety.test.cjs
           node tests/file-intake.test.cjs
