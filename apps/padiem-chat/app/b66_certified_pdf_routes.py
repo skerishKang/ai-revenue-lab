@@ -15,7 +15,6 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from .auth_routes import auth_ready, current_user_id
-from .b66_certified_quote_bundle import B66CertifiedQuoteBundle, B66CertifiedQuoteBundleError
 from .b66_saved_quote_skill_store import SavedQuoteSkillStoreError, validate_row_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .claw_memory_routes import _resolve_memory_workspace
@@ -135,9 +134,9 @@ async def b66_certified_pdf(request: Request) -> Response:
         return _error(422, "invalid_render_model")
     skill_store = getattr(request.app.state, "b66_saved_quote_skill_store", None)
     get_skill = getattr(skill_store, "get_skill", None)
-    bundle_store = getattr(request.app.state, "b66_certified_quote_bundle_store", None)
-    get_bundle = getattr(bundle_store, "get_bundle", None)
-    if not callable(get_skill) or not callable(get_bundle):
+    pdf_client = getattr(request.app.state, "b66_pdf_renderer_client", None)
+    render_pdf = getattr(pdf_client, "render_pdf", None)
+    if not callable(get_skill) or not callable(render_pdf):
         return _error(503, "certified_pdf_unavailable")
     try:
         workspace_id = await _resolve_memory_workspace(request, uid)
@@ -158,38 +157,31 @@ async def b66_certified_pdf(request: Request) -> Response:
     if model["template"].get("fingerprint") != profile_fingerprint:
         return _error(422, "render_template_mismatch")
     try:
-        value = get_bundle(
-            saved_skill_id=saved_skill_id, skill_fingerprint=saved["skill_fingerprint"],
+        result = render_pdf(
+            saved_skill_id=saved_skill_id,
+            skill_fingerprint=saved["skill_fingerprint"],
             profile_fingerprint=profile_fingerprint,
+            render_model=model,
         )
-        bundle = await value if inspect.isawaitable(value) else value
-    except B66CertifiedQuoteBundleError:
-        return _error(503, "certified_bundle_unavailable")
-    except Exception:
-        return _error(503, "certified_bundle_unavailable")
-    if not isinstance(bundle, B66CertifiedQuoteBundle):
-        return _error(503, "certified_bundle_unavailable")
-    effective_items = model["coreTotals"].get("effectiveItems")
-    max_rows = bundle.manifest["supported_scope"]["max_item_rows"]
-    if not isinstance(effective_items, list) or not 1 <= len(effective_items) <= max_rows:
-        return _error(422, "unsupported_item_count")
-    try:
-        from . import b66_certified_pdf_renderer as renderer
+        result = await result if inspect.isawaitable(result) else result
     except Exception:
         return _error(503, "certified_pdf_unavailable")
-    try:
-        pdf = renderer.render_pdf(
-            template=bundle.template, baseline_render_model=bundle.baseline_render_model,
-            render_model=model, base_pdf=bundle.base_pdf, fonts=bundle.fonts,
-        )
-    except ImportError:
-        return _error(503, "certified_pdf_unavailable")
-    except Exception as exc:
-        if isinstance(exc, renderer.B66CertifiedPdfError):
-            status = 422 if exc.code.startswith("REJECT_") else 503
-            return _error(status, "certified_pdf_unavailable" if status == 503 else "certified_pdf_input_rejected")
+    if (
+        not isinstance(result, tuple) or len(result) != 3
+        or type(result[0]) is not int or not isinstance(result[1], bytes)
+        or not isinstance(result[2], str)
+    ):
         return _error(503, "certified_pdf_failed")
-    if not isinstance(pdf, bytes) or not pdf.startswith(b"%PDF-") or len(pdf) > MAX_PDF_RESPONSE_BYTES:
+    status, pdf, content_type = result
+    if status == 422:
+        return _error(422, "certified_pdf_input_rejected")
+    if status != 200:
+        return _error(503, "certified_pdf_unavailable")
+    if (
+        content_type.split(";", 1)[0].strip().lower() != "application/pdf"
+        or not pdf.startswith(b"%PDF-")
+        or len(pdf) > MAX_PDF_RESPONSE_BYTES
+    ):
         return _error(503, "certified_pdf_failed")
     return Response(
         pdf, media_type="application/pdf",
