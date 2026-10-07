@@ -91,6 +91,12 @@ jobs:
       - name: Run frozen-source checkout-byte guard contract tests
         run: python -m pytest -q .github/tests/test_frozen_source_checkout_byte_guard.py
 
+      # #3658: a shared user interpreter plus editable installs recorded from another worktree can
+      # answer a suite's imports, so a green local run may prove nothing about the checkout under
+      # review. The preflight contract is pure stdlib and needs no local packages installed.
+      - name: Run import-origin preflight contract tests
+        run: python -m pytest -q .github/tests/test_verify_import_origin.py
+
       - name: Record guard scope
         run: |
           echo 'OPERATIONS_POLICY_GUARD=PASSED'
@@ -99,6 +105,7 @@ jobs:
           echo 'FILE_OVERLAP_GUARD=ADVISORY_ONLY'
           echo 'CROSS_LANE_DEPENDENCY_GUARD=ENFORCED'
           echo 'FROZEN_SOURCE_PIN_GUARD=ENFORCED'
+          echo 'IMPORT_ORIGIN_PREFLIGHT=ENFORCED_IN_CORE_CONFTEST'
           echo 'PRODUCTION_MUTATION=NO'
 
   pr-contract:
