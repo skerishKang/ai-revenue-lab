@@ -254,8 +254,10 @@
     const candidates = envelope ? envelope.entries.map((entry) => entry.draft) : [];
     if (History.isMeaningfulDraft(draft)) candidates.push(draft);
     /* server history 의 견적번호도 오늘 번호 중복 방지 후보로 반영한다.
-       후보는 {meta:{quoteNo, issueDate}} 최소형이며 allocateQuoteNo 가
-       오늘 날짜 번호만 소비한다. */
+       후보는 반드시 QuoteCore 가 정규화할 수 있는 형태여야 한다
+       (allocateQuoteNo 는 후보마다 Core.normalizeDraft 를 거치므로
+       schemaVersion 없는 최소형은 조용히 버려진다). 그래서 서버 스냅샷
+       경계(historySnapshotToDraft)를 거쳐 오늘 번호만 후보로 남긴다. */
     serverQuoteNoCandidates.forEach((candidate) => candidates.push(candidate));
     return candidates;
   }
@@ -372,7 +374,12 @@
     }
     serverQuoteNoCandidates = result.quotes
       .filter((row) => row.quoteNo)
-      .map((row) => ({ meta: { quoteNo: row.quoteNo, issueDate: row.issueDate } }));
+      .map((row) => ServerHistory.historySnapshotToDraft({
+        schema: ServerHistory.SNAPSHOT_SCHEMA,
+        quotationNo: row.quoteNo,
+        issueDate: row.issueDate
+      }))
+      .filter(Boolean);
     const hydrated = await Promise.all(result.quotes.map(async (row) => {
       const detail = await ServerHistory.getQuote(row.quoteHistoryId);
       if (!detail.ok) return null;

@@ -1235,7 +1235,7 @@ const assertGateClosed = (label, observed, googleNavExpected) => {
 
   console.log("PADIEM_PASSWORD_METHOD_GATE=PASS");
   console.log("PADIEM_PASSWORD_METHOD_GATE_CLOSED_CASES=4");
-  console.log("PADIEM_PASSWORD_GATE_OPEN_CASE=PASS");
+  console.log("PADIEM_PASSWORD_METHOD_GATE_OPEN_CASE=PASS");
   console.log("PADIEM_PASSWORD_GATE_LIVE_NETWORK_CALLS=0");
   console.log("PADIEM_PASSWORD_GATE_REAL_CREDENTIALS_USED=0");
 })().catch((error) => {
@@ -1244,7 +1244,12 @@ const assertGateClosed = (label, observed, googleNavExpected) => {
   process.exitCode = 1;
 });
 
-/* SERVER_HISTORY_CONTRACT (#3405 Slice B) — signed-in server quote-history authority */
+/* SERVER_HISTORY_CONTRACT (#3405 Slice B) — signed-in server quote-history authority.
+   Structural wiring only. Behavioral contracts (DELETE_CONFIRM,
+   NO_OPTIMISTIC_DELETE, COPY_AS_NEW, QUOTECORE_RECALCULATION,
+   NO_SILENT_LOCAL_FALLBACK, FOREIGN_ACCOUNT_ACCESS) are owned by
+   tests/history-server-behavior.test.cjs, which drives the real app.js /
+   easy-mode.js and clicks the real buttons; this file must not print them. */
 check(require("fs").existsSync(path.join(__dirname, "..", "quote-history-server.js")),
   "SERVER_HISTORY_CONTRACT: quote-history-server.js ships in the reference app");
 check(html.includes('src="quote-history-server.js"'),
@@ -1269,14 +1274,26 @@ check(!app.includes("localStorage.setItem(" + JSON.stringify("quoteBeta.history.
 check(!app.includes("History.copyAsNew(entry, { now: new Date() })") ||
       app.includes("ServerHistory.draftToHistorySnapshot"),
   "SERVER_HISTORY_CONTRACT: copy/new authority stays QuoteCore + server snapshot, not persisted totals");
+/* the behavioral probe must not regress into a bridge stub */
+const behaviorProbe = fs.readFileSync(path.join(__dirname, "history-server-behavior.test.cjs"), "utf8");
+check(!/B66QuoteAppBridge:\s*\{/.test(behaviorProbe),
+  "SERVER_HISTORY_CONTRACT: the behavioral probe never substitutes its own B66QuoteAppBridge stub");
+check(/INDEX_HTML[\s\S]{0,400}SCRIPT_TAGS/.test(behaviorProbe) &&
+      /recentQuoteStarter/.test(behaviorProbe),
+  "SERVER_HISTORY_CONTRACT: the behavioral probe boots the real scripts and opens the real recent view");
+check(!/\|\|\s*true\b/.test(behaviorProbe) && !/\|\|\s*===\s*/.test(behaviorProbe) &&
+      !/!==[^;()]*\|\|\s*===/.test(behaviorProbe),
+  "SERVER_HISTORY_CONTRACT: the behavioral probe has no tautological assertion");
+
+/* WORK 7: the behavioral probes must actually run in CI, not merely exist */
+const workflowPath = path.join(__dirname, "..", "..", "..", ".github", "workflows", "b66-neutral-pages-beta.yml");
+const workflowText = fs.readFileSync(workflowPath, "utf8");
+check(workflowText.includes("node tests/history-behavior.test.cjs"),
+  "CI_WIRING: b66-neutral-pages-beta.yml executes history-behavior.test.cjs");
+check(workflowText.includes("node tests/history-server-behavior.test.cjs"),
+  "CI_WIRING: b66-neutral-pages-beta.yml executes history-server-behavior.test.cjs");
 
 console.log("SERVER_HISTORY_CONTRACT=PASS");
-console.log("SERVER_HISTORY_AUTHORITY=YES");
-console.log("NO_SILENT_LOCAL_FALLBACK=YES");
-console.log("NO_OPTIMISTIC_DELETE=YES");
-console.log("DELETE_CONFIRM=YES");
-console.log("NEW_QUOTE_NUMBER_ON_COPY=YES");
-console.log("NEW_ISSUE_DATE_ON_COPY=YES");
-console.log("QUOTECORE_RECALCULATION=YES");
-console.log("PRIMARY_GUIDED_FREE_FORM_UX=UNCHANGED");
-console.log("FOREIGN_ACCOUNT_ACCESS=0");
+console.log("SERVER_HISTORY_STRUCTURAL_CONTRACT=PASS");
+console.log("BEHAVIOR_CONTRACTS_OWNED_BY=tests/history-server-behavior.test.cjs");
+console.log("CI_WIRING=PASS");
