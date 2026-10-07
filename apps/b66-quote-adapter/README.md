@@ -70,6 +70,18 @@ url
 secret
 ```
 
+## Product allowlist vs parser capability
+
+This component describes lower-level intake/parser capability. It is not the B66 quotation-template registration allowlist.
+
+~~~text
+NATIVE_PARSER_CAPABILITY
+!=
+B66_TEMPLATE_REGISTRATION_POLICY
+~~~
+
+For source-derived quotation-template onboarding, the current product policy is governed by #3586: accept .xlsx now, reject legacy .xls, and treat .hwpx as a future supported candidate while rejecting legacy .hwp. A lower-level parser being capable of another native document category does not automatically expose that format in B66 template registration.
+
 ## Supported categories
 
 Native binary documents, up to Core's 2 MiB limit:

@@ -140,6 +140,38 @@ For a substantial new commodity capability, record before or with implementation
 
 Do not reject a technology solely because it has a price. Do not accept an OSS project solely because its repository license looks permissive when model/data/artifact rights are separate.
 
+## 8B. Source-derived artifact reproduction evidence
+
+When a claim says that a user-supplied document/artifact has been learned, reproduced or made reusable, distinguish at least:
+
+~~~text
+ANALYSIS_EVIDENCE
+REPRODUCTION_EVIDENCE
+CERTIFICATION_EVIDENCE
+EXECUTION_EVIDENCE
+~~~
+
+Where material to the source, reproduction evidence records:
+
+- source artifact identity/provenance and reference artifact identity;
+- the canonical/compiled representation being judged;
+- reproduction artifact identity;
+- page/print geometry and page count;
+- layout/text geometry;
+- font family/substitution and size;
+- baseline/line-height/tracking/wrap/shrink behavior;
+- table/vector line geometry;
+- logo/image geometry;
+- stamp/signature geometry, alpha and layering;
+- reference value parity;
+- aggregate and important-region visual-difference metrics;
+- known unsupported/approximated features;
+- bounded mutation-robustness evidence before repeat execution.
+
+Do not treat an aggregate raster score as a substitute for a material critical-element gate.
+
+If a material difference remains but the user/owner explicitly accepts it, evidence records the exact accepted deviation and a CERTIFIED_WITH_TOLERANCE-equivalent verdict. Silence is not acceptance.
+
 ## 9. Implementation evidence
 
 For a bounded bug fix, a compact PR report is sufficient when the diff, focused regression and relevant CI make the claim directly reviewable. Do not require a separate long-form report merely because the repository is Padiem/CLAW.

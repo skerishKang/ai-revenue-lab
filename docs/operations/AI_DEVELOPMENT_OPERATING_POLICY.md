@@ -207,6 +207,40 @@ Until then, report `ACTIVE`.
 
 Shared Padiem Platform infrastructure does not collapse products into one another. Product-local work remains with its product owner. A generic defect discovered inside a product is split to the proper Platform/Core/Engine/Control-Plane owner rather than moving the whole product task into that lane.
 
+## 3C. Source-derived artifact analysis/reproduction gate
+
+When a product promises to learn, reproduce or repeatedly reuse a user-supplied document or visual artifact, source extraction and final fidelity are separate claims.
+
+Default lifecycle:
+
+~~~text
+SOURCE
+-> ANALYSIS
+-> CANONICAL REPRESENTATION
+-> REPRODUCTION
+-> REFERENCE COMPARISON
+-> CERTIFICATION
+-> EXECUTION
+~~~
+
+ANALYSIS_PASS proves that available source facts were understood. It does not by itself prove that the resulting artifact is faithful enough for repeated user execution.
+
+Before a new source-derived template/artifact becomes executable, the product defines the minimum reproduction evidence appropriate to its promise. This may include page/layout geometry, typography/font identity, text metrics, assets, alpha/layering, print behavior, structural parity and an aggregate visual-difference metric.
+
+A single aggregate score must not hide a material critical-element failure.
+
+When the user explicitly accepts a known visual deviation for workflow convenience, record the deviation and the acceptance as a distinct tolerance state. Do not infer tolerance silently.
+
+~~~text
+SYSTEM_ASSUMED_TOLERANCE = NO
+EXPLICIT_USER_TOLERANCE = ALLOWED
+SILENT_FIDELITY_DOWNGRADE = NO
+~~~
+
+Once certified, repeat execution should reuse the compiled/canonical artifact instead of repeating expensive source analysis unless the product contract explicitly requires otherwise.
+
+B66's product-specific implementation of this rule is `docs/products/b66/TEMPLATE_LIFECYCLE.md` and `docs/products/b66/REPRODUCTION_CERTIFICATION.md`.
+
 ## 4. Mandatory design-gate overlay for visual redesign
 
 When the work is a new visual system, owner-rejected redesign or broad multi-route visual reset, use:

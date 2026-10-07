@@ -4,7 +4,7 @@
 DOC_STATUS = CANONICAL
 OWNER = Padiem platform architecture
 SCOPE = shared AI platform layers, product adapters, routing/provider ownership
-LAST_VERIFIED = 2026-09-08
+LAST_VERIFIED = 2026-10-07
 SUPERSEDES = fragmented layer descriptions only; historical evidence remains preserved
 ```
 
@@ -29,7 +29,7 @@ IP-CONTROL OWNS CROSS-CUTTING IDENTITY/ENTITLEMENT/USAGE/AUDIT TRUTH.
 
 ```text
 Padiem product / Business
-(Chat, Claw, StoryMemory, Living Learning, future products)
+(Chat, Claw, B66 Padiem Quote, StoryMemory, Living Learning, future products)
         │
         │ product/domain adapter
         ▼
@@ -179,6 +179,34 @@ Consumes or targets reuse of:
 
 KAgent source path is `apps/korean-ai-code-agent/**`. Current product docs must distinguish deterministic/mock preview from real model/runtime activation.
 
+### B66 · Padiem Quote
+
+B66 is a standalone quotation product. It owns:
+
+- quotation-specific user journeys and product state;
+- Saved Quote Skill lifecycle and account assignment;
+- source-derived quotation onboarding;
+- Canonical Quote Template / internal QuoteTemplateProfile product contract;
+- reproduction certification before new template execution;
+- quotation history and quote presentation/export choices.
+
+Its source-derived lifecycle is:
+
+~~~text
+source quotation
+-> analysis
+-> Canonical Quote Template candidate
+-> reproduction against reference facts
+-> reference-PDF certification
+-> certified repeat execution
+~~~
+
+B66 reuses QuoteCore/shared calculation semantics and approved Padiem identity, storage/Drive, Engine/Core and B14 capabilities where applicable. It does not transfer product ownership to Padiem Chat or Padiem Claw and must not create a second provider/model registry or duplicate quotation calculation authority.
+
+Routine repeat generation must reuse the certified template; it must not reanalyze the source quotation on every quote.
+
+Canonical B66 product documentation lives under `docs/products/b66/`.
+
 ### B61 · StoryMemory (including Bible/classic-work domain)
 
 B61 owns:
@@ -272,5 +300,6 @@ For IP-SIDECAR specifically, S2 currently proves source/contract presence only; 
 - `apps/korean-ai-platform/README.md`
 - `apps/padiem-chat/README.md`
 - `apps/korean-ai-code-agent/README.md`
+- `docs/products/b66/README.md`
 
 When those documents disagree on volatile status, current merged source and executable contract win; when they disagree on stable ownership, this architecture + the relevant canonical registry should be reconciled before new feature work proceeds.

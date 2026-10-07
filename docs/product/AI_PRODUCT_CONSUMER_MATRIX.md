@@ -4,7 +4,7 @@
 DOC_STATUS = CANONICAL_PRODUCT_MATRIX
 OWNER = Padiem platform architecture + product owners
 SCOPE = how Padiem products consume shared AI layers without transferring domain ownership
-LAST_VERIFIED = 2026-09-08
+LAST_VERIFIED = 2026-10-07
 SUPERSEDES = fragmented product-to-platform relationship descriptions only
 ```
 
@@ -16,6 +16,7 @@ SUPERSEDES = fragmented product-to-platform relationship descriptions only
 |---|---|---|---|---|---|---|---|
 | **B62 Padiem Chat** | chat UX, conversations, Projects, attachments, Saved Outputs, product modes | not architectural owner | approved cross-runtime/orchestration path | execution, grounding, evidence and shared semantics | identity/approval/entitlement paths where composed; tier declaration consumer | actual model execution | standalone general AI front door |
 | **B54 Padiem Claw / KAgent** | task/run/workspace/repository/GitHub product flow | not owner | target/default cross-runtime agent/orchestration boundary | Agent/Tool/Skill/approval/recovery/orchestration reuse | identity/entitlement/usage/audit where integrated | model execution | current product docs must distinguish network-free preview from real activation |
+| **B66 Padiem Quote** | quotation UX/state, Saved Quote Skill, source-derived template lifecycle, reproduction certification, quote history/presentation | not owner | approved cross-runtime paths where needed | shared document/calculation semantics including QuoteCore | identity/tenant/entitlement where integrated | bounded model execution for approved natural-language/source extraction paths | standalone quotation product; certified template drives deterministic repeat rendering |
 | **B61 StoryMemory** | Reader, locator grammar, progress, knowledge ceiling, spoiler/no-future semantics, annotations, product retrieval adapter | candidate consumer of S2 embedded primitives when adopted | accepted cross-runtime AI path | retrieval permission, context boundary, evidence/execution semantics | account/entitlement authority where integrated | model execution | Bible/classic-work locator meaning stays in B61 |
 | **B53 Padiem Sidecar** | commercial product, onboarding, install UX, packaging/customer journey | **primary commercial consumer** of source-present S2 runtime contract | downstream execution boundary when implemented | downstream shared semantics | tenant/entitlement/usage/audit | model execution | B53 product != IP-SIDECAR runtime; S2 has no real Engine transport yet |
 | **B14 Korean AI Platform** | Korean-first platform workspace and B14 product UX | no | may be downstream execution dependency, not product adapter | consumes/aligns shared execution contracts where composed | neutral Padiem tier declarations may feed B14 validation | **owner** | Provider/model/router/credentials/execution authority |
@@ -65,6 +66,31 @@ apps/korean-ai-code-agent/**
 B54 owns repository/task/run/workspace/GitHub product semantics. Shared Agent/Tool/Skill/approval/recovery/orchestration semantics belong to Core and their cross-runtime projection belongs to Engine.
 
 A deterministic/mock B14 adapter or product preview does not prove a live provider call.
+
+## B66 · Padiem Quote
+
+Canonical product authority:
+
+~~~text
+docs/products/b66/
+~~~
+
+B66 owns quotation-specific product meaning and the lifecycle from an existing business quotation to a reusable Saved Quote Skill.
+
+~~~text
+source
+-> analysis
+-> Canonical Quote Template candidate
+-> reproduction
+-> certification
+-> repeat execution
+~~~
+
+Analysis success does not itself authorize a new source-derived template for execution. Certification compares the reproduction artifact to the reference PDF, including critical geometry, typography and asset behavior. Known material deviations may be accepted only through explicit CERTIFIED_WITH_TOLERANCE review.
+
+Routine execution reuses the certified template and QuoteCore results. B14/model calls may support bounded natural-language/source extraction under the approved product contract, but they do not become calculation or layout authority.
+
+B66 is not a Padiem Chat or Claw subproduct.
 
 ## B61 · StoryMemory / Bible
 
