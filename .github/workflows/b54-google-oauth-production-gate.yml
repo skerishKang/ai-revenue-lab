@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - ".github/workflows/b54-google-oauth-production-gate.yml"
+      - ".github/scripts/cloudflare_served_version_cli.py"
       - "packages/padiem-control-plane/google_oauth_*.py"
       - "packages/padiem-control-plane/identity_authority_worker.py"
       - "packages/padiem-control-plane/wrangler.google-oauth.jsonc"
@@ -371,7 +372,7 @@ jobs:
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/subdomain" -o "${subdomain}"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${deployments}"
             jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
-            jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
+            python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}" >/dev/null
             echo "${output_name}=present" >> "${GITHUB_OUTPUT}"
           }
 
@@ -628,7 +629,7 @@ jobs:
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" -o "${dep}"
             curl -fsS "${auth[@]}" "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/settings" -o "${settings}"
             jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${sub}" >/dev/null
-            jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${dep}" >/dev/null
+            python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${dep}" >/dev/null
           done
 
           jq -e --arg state "${OAUTH_STATE_WORKER}" '.result.bindings | any(.name == "GOOGLE_OAUTH_SERVICE" and .service == $state)' "${RUNNER_TEMP}/${OAUTH_EDGE_WORKER}-settings-after.json" >/dev/null

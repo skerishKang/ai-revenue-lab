@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - ".github/workflows/b54-google-oauth-edge-origin-reconciliation.yml"
+      - ".github/scripts/cloudflare_served_version_cli.py"
       - "packages/padiem-control-plane/google_oauth_edge_worker.py"
       - "packages/padiem-control-plane/wrangler.google-oauth-edge.jsonc"
   workflow_dispatch:
@@ -103,6 +104,16 @@ jobs:
 
           strict_deploy = "pywrangler " + "deploy --strict"
           assert workflow.count(strict_deploy) == 1
+
+          pull_paths = workflow.split("pull_request:", 1)[1].split("workflow_dispatch:", 1)[0]
+          runtime = workflow.split("\n  reconcile-edge-origin:", 1)[1]
+          assert ".github/scripts/cloudflare_served_version_cli.py" in pull_paths
+          assert runtime.count("cloudflare_served_version_cli.py") == 1
+          assert runtime.count("resolve-active --deployments") == 1
+          assert runtime.count("active_version ") == 6
+          assert ".result.deployments[0].versions[0].version_id" not in runtime
+          assert ".result.deployments[0].versions[0].percentage" not in runtime
+          assert "(.result.deployments[0].versions | length) == 1" not in runtime
 
           assert edge["name"] == "padiem-google-oauth-edge"
           assert edge["workers_dev"] is False
@@ -240,8 +251,7 @@ jobs:
             curl -fsS "${auth[@]}" \
               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" \
               -o "${output}"
-            jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${output}" >/dev/null
-            jq -r '.result.deployments[0].versions[0].version_id' "${output}"
+            python "${GITHUB_WORKSPACE}/.github/scripts/cloudflare_served_version_cli.py" resolve-active --deployments "${output}"
           }
 
           require_private_subdomain_disabled() {

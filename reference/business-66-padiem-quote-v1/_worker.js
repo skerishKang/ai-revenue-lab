@@ -4,6 +4,24 @@ const PADIEM_PREFIX = "/api/padiem";
 const MAX_PADIEM_BODY_BYTES = 32 * 1024;
 const SAVED_SKILL_ROW = /^b66skill_[0-9a-f]{32}$/;
 const B66_ASSET_ROW = /^b66asset_[0-9a-f]{32}$/;
+const B66_QUOTE_ROW = /^b66quote_[0-9a-f]{32}$/;
+const MAX_QUOTE_HISTORY_LIMIT = 50;
+const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+const SESSION_COOKIE_NAME = "padiem_session";
+
+function carriesSessionCookie(cookieHeader) {
+  return String(cookieHeader || "").split(";").some((part) => {
+    const eq = part.indexOf("=");
+    const name = (eq === -1 ? part : part.slice(0, eq)).trim();
+    return name === SESSION_COOKIE_NAME;
+  });
+}
+
+function bridgeMutationOriginAllowed(request, url) {
+  if (!MUTATING_METHODS.has(request.method)) return true;
+  if (!carriesSessionCookie(request.headers.get("cookie"))) return true;
+  return request.headers.get("origin") === url.origin;
+}
 
 function jsonError(code, status) {
   return new Response(JSON.stringify({ ok: false, error: { code } }), {
@@ -63,6 +81,25 @@ function padiemTarget(url, method) {
     if (!B66_ASSET_ROW.test(id)) return null;
     return "/api/b66/assets/" + id;
   }
+
+  /* #3405 Slice B: canonical quote-history 프록시. 서버가 세션에서 owner/
+     workspace 를 도출하므로 브리지는 경로/limit/기록 id 형태만 경계한다. */
+  if (path === "/api/padiem/b66/quotes" && (method === "GET" || method === "POST")) {
+    if (method === "POST") return "/api/b66/quotes";
+    const raw = url.searchParams.get("limit");
+    if (raw === null) return "/api/b66/quotes";
+    if (!/^\d{1,2}$/.test(raw)) return null;
+    const limit = Number(raw);
+    if (!Number.isInteger(limit) || limit < 1 || limit > MAX_QUOTE_HISTORY_LIMIT) return null;
+    return "/api/b66/quotes?limit=" + String(limit);
+  }
+
+  const quotePrefix = "/api/padiem/b66/quotes/";
+  if (path.startsWith(quotePrefix) && (method === "GET" || method === "DELETE")) {
+    const id = path.slice(quotePrefix.length);
+    if (!B66_QUOTE_ROW.test(id)) return null;
+    return "/api/b66/quotes/" + id;
+  }
   return null;
 }
 
@@ -82,11 +119,15 @@ function relaySetCookies(source, target) {
 async function handlePadiemBridge(request, url, env) {
   const upstreamPath = padiemTarget(url, request.method);
   if (!upstreamPath) return jsonError("padiem_route_not_allowed", 404);
+  if (!bridgeMutationOriginAllowed(request, url)) {
+    return jsonError("padiem_origin_rejected", 403);
+  }
 
   const headers = new Headers({
     "Accept": upstreamPath === "/api/b66/quote/pdf" ? "application/pdf,application/json" : "application/json"
   });
   headers.set("X-B66-Origin", url.origin);
+  if (MUTATING_METHODS.has(request.method)) headers.set("Origin", PADIEM_CHAT_ORIGIN);
   const cookie = request.headers.get("cookie");
   if (cookie) headers.set("Cookie", cookie);
   const contentType = request.headers.get("content-type");

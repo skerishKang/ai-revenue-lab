@@ -36,6 +36,7 @@ from .p01_adapter import (
     P01_FAILURE_DETAIL_AUTHORIZATION,
     P01_FAILURE_DETAIL_CONTRACT,
     P01_FAILURE_DETAIL_DOWNSTREAM,
+    P01_FAILURE_DETAIL_ENGINE_ADMISSION,
     P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION,
     P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
     P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
@@ -106,6 +107,22 @@ _ENGINE_PROVIDER_REQUEST_REJECTED_CODES = frozenset({"upstream_request_error"})
 _ENGINE_PROVIDER_BAD_RESPONSE_CODES = frozenset(
     {"malformed_upstream", "empty_upstream_answer", "upstream_response_too_large"}
 )
+# Engine trusted-admission denial codes (#3655 canary evidence rule). These
+# are the enumerated fail-closed codes raised by the Engine's admission gate
+# (apps/padiem-ai-engine/app/execution_admission.py); retaining the admission
+# class lets the final canary record ENGINE_ADMISSION_RESULT=DENIED instead
+# of collapsing it into the downstream bucket.
+_ENGINE_ADMISSION_CODES = frozenset(
+    {
+        "missing_entitlement",
+        "entitlement_denied",
+        "entitlement_expired",
+        "entitlement_app_mismatch",
+        "entitlement_subject_mismatch",
+        "invalid_admission",
+        "invalid_admission_request",
+    }
+)
 
 
 def _engine_failure_detail(code: object) -> str:
@@ -115,6 +132,8 @@ def _engine_failure_detail(code: object) -> str:
         return P01_FAILURE_DETAIL_AUTHORIZATION
     if code in _ENGINE_TRANSPORT_CODES:
         return P01_FAILURE_DETAIL_TRANSPORT
+    if code in _ENGINE_ADMISSION_CODES:
+        return P01_FAILURE_DETAIL_ENGINE_ADMISSION
     if code in _ENGINE_PROVIDER_SERVER_ERROR_CODES:
         return P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR
     if code in _ENGINE_PROVIDER_TIMEOUT_CODES:

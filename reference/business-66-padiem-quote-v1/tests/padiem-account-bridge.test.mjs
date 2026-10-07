@@ -149,7 +149,8 @@ try {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Cookie": "padiem_session=opaque-test-token"
+        "Cookie": "padiem_session=opaque-test-token",
+        "Origin": "https://quick-quote-kr.pages.dev"
       },
       body: JSON.stringify({
         saved_skill_id: "b66skill_" + "c".repeat(32),
@@ -165,6 +166,7 @@ try {
   assert.equal(rejectedQuote.headers.get("x-internal-debug"), null);
   assert.equal(calls.length, 4);
   assert.equal(calls[3].url, "https://chat.padiem.net/api/b66/quote/interpret");
+  assert.equal(calls[3].headers.get("origin"), "https://chat.padiem.net");
 
   const privateAsset = await worker.fetch(
     new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/assets/" + ASSET_ID, {
@@ -183,7 +185,8 @@ try {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Cookie": "padiem_session=opaque-test-token"
+        "Cookie": "padiem_session=opaque-test-token",
+        "Origin": "https://quick-quote-kr.pages.dev"
       },
       body: JSON.stringify({
         saved_skill_id: "b66skill_" + "c".repeat(32),
@@ -267,7 +270,7 @@ try {
 
   const pdf = await worker.fetch(new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/quote/pdf", {
     method: "POST",
-    headers: { "Content-Type": "application/json", "Cookie": "padiem_session=pdf-test", "Authorization": "Bearer forged" },
+    headers: { "Content-Type": "application/json", "Cookie": "padiem_session=pdf-test", "Origin": "https://quick-quote-kr.pages.dev", "Authorization": "Bearer forged" },
     body: JSON.stringify({ saved_skill_id: "b66skill_" + "c".repeat(32), render_model: { derivedBy: "quote-core" } })
   }), env);
   assert.equal(pdf.status, 200);
@@ -280,7 +283,23 @@ try {
   assert.equal(calls.at(-1).headers.get("cookie"), "padiem_session=pdf-test");
   assert.equal(calls.at(-1).headers.get("authorization"), null);
   assert.equal(calls.at(-1).headers.get("accept"), "application/pdf,application/json");
+  assert.equal(calls.at(-1).headers.get("origin"), "https://chat.padiem.net");
   const pdfCalls = calls.length;
+  const beforeOriginDeny = calls.length;
+  for (const originHeaders of [
+    { "Content-Type": "application/json", "Cookie": "padiem_session=origin-test", "Origin": "https://evil.example" },
+    { "Content-Type": "application/json", "Cookie": "padiem_session=origin-test" }
+  ]) {
+    const deniedOrigin = await worker.fetch(new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/quote/pdf", {
+      method: "POST",
+      headers: originHeaders,
+      body: JSON.stringify({ saved_skill_id: "b66skill_" + "c".repeat(32), render_model: { derivedBy: "quote-core" } })
+    }), env);
+    assert.equal(deniedOrigin.status, 403);
+    assert.equal((await deniedOrigin.json()).error.code, "padiem_origin_rejected");
+  }
+  assert.equal(calls.length, beforeOriginDeny);
+
   const oversizedPdf = await worker.fetch(new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/quote/pdf", {
     method: "POST", headers: { "Content-Type": "application/json" }, body: "x".repeat(33 * 1024)
   }), env);
