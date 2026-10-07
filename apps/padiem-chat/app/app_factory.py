@@ -99,6 +99,7 @@ from .drive_case_pdf_routes import drive_case_pdf_detail, drive_case_pdfs_collec
 from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
 from .request_telemetry import RequestTelemetryMiddleware
+from .same_origin_guard import SameOriginGuardMiddleware
 from .saved_output_routes import output_detail, outputs_collection
 from .saved_outputs import SavedOutputStore
 from .tier_identity_client import PadiemTierB14Client
@@ -308,6 +309,10 @@ def create_app(
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     app = Starlette(routes=routes)
+    # #3476: added before telemetry deliberately — Starlette prepends each
+    # middleware, so the later-added telemetry layer stays outermost and keeps
+    # recording guard rejections.
+    app.add_middleware(SameOriginGuardMiddleware)
     # #1975: raw ASGI middleware, installed outermost so every route (including
     # the static Mount and the later-installed orchestration routes) is covered.
     app.add_middleware(RequestTelemetryMiddleware, emitter=telemetry_emitter)

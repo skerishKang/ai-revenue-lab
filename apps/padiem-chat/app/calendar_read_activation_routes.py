@@ -22,7 +22,6 @@ credential family, whose Engine 401/403 is a server-side service fault).
 from __future__ import annotations
 
 import json
-from urllib.parse import urlsplit
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse
@@ -36,6 +35,7 @@ from .calendar_read_activation_engine import (
     CalendarReadActivationClientError,
 )
 from .config import Settings
+from .same_origin_guard import expected_browser_origin
 
 
 _NO_STORE_HEADERS = {
@@ -70,16 +70,6 @@ def _error(status: int, code: str, message: str) -> JSONResponse:
     )
 
 
-def _expected_origin(settings: Settings) -> str | None:
-    value = settings.public_base_url
-    if not isinstance(value, str) or not value:
-        return None
-    parsed = urlsplit(value)
-    if parsed.scheme != "https" or not parsed.netloc:
-        return None
-    return f"https://{parsed.netloc}"
-
-
 async def _require_empty_json(request: Request) -> None:
     content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
     if content_type != "application/json":
@@ -102,7 +92,10 @@ async def activate_google_calendar_read(request: Request) -> JSONResponse:
     """Activate the fixed Calendar READ grant from the current canonical session."""
 
     settings: Settings = request.app.state.settings
-    expected_origin = _expected_origin(settings)
+    # The #3476 middleware already covers cookie-authenticated browser traffic,
+    # but this route is reachable without a session cookie, so it keeps its own
+    # check. The expected-origin derivation itself is single-sourced.
+    expected_origin = expected_browser_origin(settings)
     if expected_origin is None:
         return _error(503, "calendar_read_activation_unavailable", "캘린더 읽기 활성화를 사용할 수 없습니다.")
     if request.headers.get("origin") != expected_origin:
