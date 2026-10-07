@@ -52,10 +52,10 @@ def test_kilo_explicit_free_models_are_registered_keyless() -> None:
         KILO_NEMOTRON_MODEL_ID: (KILO_NEMOTRON_UPSTREAM_MODEL, "Kilo Gateway / NVIDIA", 1_000_000),
         KILO_LAGUNA_MODEL_ID: (KILO_LAGUNA_UPSTREAM_MODEL, "Kilo Gateway / Poolside", 262_144),
     }
-    # #2097: minimax + hy3 free lanes are retired/unregistered. #3143 adds the
-    # Business 66 quotation text-primary lane (stealth/space-bunny-alpha), so
-    # three live explicit free routes remain.
-    assert len(KILO_FREE_ROUTES) == 3
+    # #2097: minimax + hy3 free lanes are retired/unregistered. The owner
+    # final retirement decision (2026-10-07) retired the Space Bunny lane as
+    # well, so two live explicit free routes remain.
+    assert len(KILO_FREE_ROUTES) == 2
     assert KILO_MODEL_ID == KILO_NEMOTRON_MODEL_ID
     assert KILO_UPSTREAM_MODEL == KILO_NEMOTRON_UPSTREAM_MODEL
 
