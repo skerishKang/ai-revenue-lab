@@ -61,8 +61,10 @@ class ProductCredentialMode(str, Enum):
     PLATFORM_SECRET_BINDING = "platform_secret_binding"
 
 # Product-level HOLD sentinels are product identities, not B14 catalog model IDs.
-# Pro is temporarily disabled by owner decision #2601 while its provider route
-# is replaced/re-verified. Max remains HOLD under the existing #1397 gate.
+# Plus is temporarily held after the Space Bunny free lane ended and before an
+# explicit successor is selected (#3568). Pro and Max retain their existing
+# independent HOLD gates.
+PLUS_HOLD_MODEL_ID = "padiem-profile/plus-hold"
 PRO_HOLD_MODEL_ID = "padiem-profile/pro-hold"
 MAX_HOLD_MODEL_ID = "padiem-profile/max-hold"
 
@@ -175,6 +177,16 @@ def validate_product_tier_routes(tiers: tuple[ProductTierDefinition, ...]) -> No
                     token not in route.route_id.lower(),
                     f"{tier.label.value}: route_id must not contain {token!r}",
                 )
+        if tier.label is ProductTierLabel.PLUS and not active:
+            held_ids = {
+                route.model_id
+                for route in tier.routes
+                if route.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
+            }
+            _require(
+                PLUS_HOLD_MODEL_ID in held_ids,
+                "Padiem Plus without an executable route must expose the Plus hold identity",
+            )
         if tier.label is ProductTierLabel.MAX:
             _require(not active, "Padiem Max must not expose an executable route")
             held = {
@@ -200,17 +212,53 @@ PRODUCT_TIER_ROUTES: tuple[ProductTierDefinition, ...] = (
         label=ProductTierLabel.PLUS,
         routes=(
             ProductTierRoute(
-                route_id="plus.space-bunny-alpha.v1",
+                route_id="plus.ling-3.1-flash.v1",
                 status=ProductRouteStatus.EXECUTABLE,
+                model_family="ling-3.1-flash",
+                provider_id="kilo",
+                model_id="kilo/inclusionai-ling-3.1-flash",
+                upstream_model="inclusionai/ling-3.1-flash",
+                credential_mode=ProductCredentialMode.PLATFORM_SECRET_BINDING,
+                credential_binding="PADIEM_KILO_API_KEY",
+                evidence=(
+                    "Owner successor selection (2026-10-06, #3568/#3569 follow-up): "
+                    "Ling 3.1 Flash verified live on the Kilo gateway "
+                    "(public model list re-checked 2026-10-06: "
+                    "inclusionai/ling-3.1-flash present, pricing 0, context 262,144, "
+                    "max completion 32,768; keyless probe HTTP 200, cost 0). "
+                    "Policy v2: model lanes authenticate through Secrets Store "
+                    "bindings; the keyless-preference era is retired."
+                ),
+            ),
+            ProductTierRoute(
+                route_id="plus.hold.v1",
+                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
+                model_family="plus",
+                model_id=PLUS_HOLD_MODEL_ID,
+                hold_reason=(
+                    "Owner decision #3568: Space Bunny free availability ended and no "
+                    "successor model is selected yet. Padiem Plus remains a product identity "
+                    "but must fail closed before B14/provider dispatch."
+                ),
+                evidence="#3568 model-independent successor-pending hold. "
+                "Superseded as the executable route by plus.ling-3.1-flash.v1 (2026-10-06).",
+            ),
+            ProductTierRoute(
+                route_id="plus.space-bunny-alpha.v1",
+                status=ProductRouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="space-bunny-alpha",
                 provider_id="kilo",
                 model_id="kilo/stealth-space-bunny-alpha",
                 upstream_model="stealth/space-bunny-alpha",
                 credential_mode=ProductCredentialMode.ANONYMOUS,
+                hold_reason=(
+                    "Owner decision #3568: the Space Bunny free lane is no longer used "
+                    "for Padiem/Claw execution. Retained as historical route metadata only; "
+                    "it is never a silent fallback while a successor is pending."
+                ),
                 evidence=(
-                    "Owner decision #3209 (decision source #3143): Padiem Plus text "
-                    "and image primary is Space Bunny Alpha on the keyless Kilo "
-                    "free lane; B14 kilo_provider.py registration."
+                    "Historical owner decision #3209 / #3143 and Production evidence in "
+                    "#3566; execution disabled by #3568."
                 ),
             ),
             ProductTierRoute(

@@ -45,7 +45,8 @@ from kagent.sandbox import DeterministicFakeSandboxProvider
 # against whatever the declaration says instead of restating a model id as their own truth.
 # An owner tier switch then exercises the derivation instead of silently passing or breaking
 # a literal nobody re-ran.
-PLUS_ROUTE_MODEL = active_route_for(ProductTierLabel.PLUS).model_id
+_PLUS_ROUTE = active_route_for(ProductTierLabel.PLUS)
+PLUS_ROUTE_MODEL = _PLUS_ROUTE.model_id if _PLUS_ROUTE is not None else None
 
 
 class _ResultFactory:
@@ -162,6 +163,7 @@ class _FailingRunner:
         raise RuntimeError("provider secret should never escape here")
 
 
+@unittest.skipIf(PLUS_ROUTE_MODEL is None, "P01 execution requires a selected model route")
 class P01RequestFactoryTests(unittest.TestCase):
     def local_run(self, run_id: str = "run_local") -> ClawRun:
         intent = ClawTaskIntent(
@@ -258,6 +260,18 @@ class P01RequestFactoryTests(unittest.TestCase):
         with self.assertRaises(P01AdapterError) as caught:
             P01RequestFactory(clock=lambda: now + timedelta(hours=1)).build(run, lease=lease)
         self.assertEqual(caught.exception.code, "cloud_lease_expired")
+
+
+class P01ModelHoldTests(unittest.TestCase):
+    def test_default_profile_resolves_successor_route_and_held_tier_fails_closed(self):
+        # #3579 policy v2: the Plus text lane resolves to the owner-selected
+        # Ling successor; Pro stays HOLD and still fails closed before dispatch.
+        profile = _agent_profile(ProductTierLabel.PLUS)
+        self.assertEqual(profile.model_policy["model"], "kilo/inclusionai-ling-3.1-flash")
+        with self.assertRaises(P01AdapterError) as caught:
+            _agent_profile(ProductTierLabel.PRO)
+        self.assertEqual(caught.exception.code, "tier_hold")
+        self.assertEqual(caught.exception.dispatch_class, "not_dispatched")
 
 
 class P01ProjectionTests(unittest.TestCase):
@@ -380,6 +394,7 @@ class P01ProjectionTests(unittest.TestCase):
         self.assertEqual(caught.exception.code, "event_id_reuse_conflict")
 
 
+@unittest.skipIf(PLUS_ROUTE_MODEL is None, "P01 execution requires a selected model route")
 class P01CoreAdapterTests(unittest.IsolatedAsyncioTestCase):
     def local_run(self, run_id: str = "run_adapter") -> ClawRun:
         intent = ClawTaskIntent(
@@ -583,6 +598,10 @@ class ClawP01ProfileContractTests(unittest.TestCase):
     profile to the Core-owned enums so the drift cannot return.
     """
 
+    @unittest.skipIf(
+        PLUS_ROUTE_MODEL is None,
+        "profile contract requires a selected executable Plus model",
+    )
     def test_profile_routing_values_are_accepted_by_core(self) -> None:
         profile = _agent_profile()
         routing = B14RoutingOptions(
@@ -592,18 +611,30 @@ class ClawP01ProfileContractTests(unittest.TestCase):
         self.assertEqual(routing.task_type, "coding")
         self.assertEqual(routing.optimize_for, "balanced")
 
+    @unittest.skipIf(
+        PLUS_ROUTE_MODEL is None,
+        "profile contract requires a selected executable Plus model",
+    )
     def test_profile_normalizes_into_core_model_policy(self) -> None:
         model, _temperature, routing = _normalize_model_policy(_agent_profile())
         self.assertEqual(model, PLUS_ROUTE_MODEL)
         self.assertIn(routing.task_type, _TASK_TYPES)
         self.assertIn(routing.optimize_for, _OPTIMIZE_FOR)
 
+    @unittest.skipIf(
+        PLUS_ROUTE_MODEL is None,
+        "profile contract requires a selected executable Plus model",
+    )
     def test_profile_pins_plus_route_from_shared_contract(self) -> None:
         profile = _agent_profile()
         self.assertEqual(profile.model_policy, {"model": PLUS_ROUTE_MODEL})
         self.assertEqual(profile.allowed_tools, ())
         self.assertEqual(profile.required_capabilities, ())
 
+    @unittest.skipIf(
+        PLUS_ROUTE_MODEL is None,
+        "profile contract requires a selected executable Plus model",
+    )
     def test_plus_tier_resolves_to_the_declared_route(self) -> None:
         profile = _agent_profile(ProductTierLabel.PLUS)
         self.assertEqual(profile.model_policy, {"model": PLUS_ROUTE_MODEL})

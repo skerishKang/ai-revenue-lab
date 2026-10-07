@@ -15,6 +15,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: validate-b14-alpha-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 # Exact-head gate: product tests remain network-free except the documented
 # localhost-only startup regression, which never reaches an upstream provider.
 jobs:

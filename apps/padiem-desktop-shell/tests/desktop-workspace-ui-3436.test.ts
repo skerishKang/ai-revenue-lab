@@ -25,6 +25,7 @@ const ACTIONS: ShellActions = {
   chooseWorkspaceRoot: async () => undefined,
   openWorkspaceDirectory: async () => undefined,
   clearWorkspaceRoot: async () => undefined,
+  searchWorkspace: async () => undefined,
   selectWorkspaceEntry: () => undefined,
   selectConversation: async () => undefined,
 };
@@ -72,6 +73,7 @@ test('#3436 Easy workspace shows project navigation but not the absolute local p
     createElement(WorkspacePanel, {
       root: ROOT,
       listing: LISTING,
+      search: null,
       selectedEntry: null,
       actions: ACTIONS,
       locale: 'ko',
@@ -89,6 +91,7 @@ test('#3436 Advanced workspace may show the user-selected local path as diagnost
     createElement(WorkspacePanel, {
       root: ROOT,
       listing: LISTING,
+      search: null,
       selectedEntry: null,
       actions: ACTIONS,
       locale: 'en',
@@ -105,6 +108,7 @@ test('#3436 no-root state offers a native folder selection action', () => {
     createElement(WorkspacePanel, {
       root: null,
       listing: null,
+      search: null,
       selectedEntry: null,
       actions: ACTIONS,
       locale: 'en',
@@ -120,6 +124,7 @@ test('#3436 project browser renders a root-relative breadcrumb for the open fold
     createElement(WorkspacePanel, {
       root: ROOT,
       listing: LISTING,
+      search: null,
       selectedEntry: null,
       actions: ACTIONS,
       locale: 'en',
@@ -139,6 +144,7 @@ test('#3436 selecting an entry shows its read-only metadata detail', () => {
     createElement(WorkspacePanel, {
       root: ROOT,
       listing: LISTING,
+      search: null,
       selectedEntry: LISTING.entries[1] ?? null,
       actions: ACTIONS,
       locale: 'en',
@@ -157,6 +163,7 @@ test('#3436 project browser exposes no write, rename, delete or create control',
     createElement(WorkspacePanel, {
       root: ROOT,
       listing: LISTING,
+      search: null,
       selectedEntry: LISTING.entries[1] ?? null,
       actions: ACTIONS,
       locale: 'ko',
@@ -190,6 +197,7 @@ test('#3436 a depth-capped listing says so instead of rendering an empty folder'
     createElement(WorkspacePanel, {
       root: ROOT,
       listing: depthCapped,
+      search: null,
       selectedEntry: null,
       actions: ACTIONS,
       locale: 'ko',
@@ -205,6 +213,7 @@ test('#3436 the local root never presents itself as the canonical Padiem workspa
     createElement(WorkspacePanel, {
       root: ROOT,
       listing: LISTING,
+      search: null,
       selectedEntry: null,
       actions: ACTIONS,
       locale: 'ko',

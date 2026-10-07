@@ -14,7 +14,7 @@ Padiem Routing Profile v1 = first product/customer-specific routing profile
 Padiem has already selected the routes it wants for the current MVP. Therefore Padiem Profile v1 does not require a generic automatic best-model router to be active.
 
 ```text
-Padiem Plus = agnes-ai/agnes-3.0-flash        (only executable product route)
+Padiem Plus = HOLD / padiem-profile/plus-hold (#3568; successor pending)
 Padiem Pro  = HOLD / padiem-profile/pro-hold
 Padiem Max  = HOLD / padiem-profile/max-hold
 
@@ -49,7 +49,7 @@ Padiem product/profile declaration
 
 | Padiem tier | Route | Status |
 |---|---|---|
-| Plus | `agnes-ai/agnes-3.0-flash` | explicit / executable when B14 catalog permits |
+| Plus | `padiem-profile/plus-hold` | HOLD / non-executable while a successor model is explicitly selected and proven (#3568) |
 | Pro | `padiem-profile/pro-hold` | HOLD / non-executable (owner decision #2601) |
 | Max | `padiem-profile/max-hold` | HOLD / non-executable |
 
@@ -57,10 +57,13 @@ Product-declaration data that is **not** a product route:
 
 | Route | Declaration state | Why it is still recorded |
 |---|---|---|
-| `poolside/laguna-s-2.1` | `HOLD_AS_DATA_ONLY` | Owner-designated second position of the `b14/auto` fixed chain; never a Padiem tier route or a silent fallback. |
+| `agnes-ai/agnes-3.0-flash` | `HOLD_AS_DATA_ONLY` | Historical Plus route superseded by owner decision #3209; provider registration is preserved, but it is not a silent fallback. |
+| `poolside/laguna-s-2.1` | `HOLD_AS_DATA_ONLY` | Historical routing data; never a Padiem tier route or a silent fallback. |
 | `kilo/poolside-laguna-s-2.1-free`, `kilo/nvidia-nemotron-3-ultra-550b-a55b-free` | superseded | Earlier Plus/Pro mapping. No Padiem tier points at them; a B14 route exists only while the current catalog registers it. |
 
 Retired historical routes such as MiniMax M3 and Tencent HY3 must not re-enter the executable catalog or a Padiem tier through stale documentation, fallback, or compatibility defaults.
+
+**Current successor boundary:** Space Bunny is no longer an executable Padiem Plus route. Its B14 registration may remain as historical/manual route metadata, but Padiem Plus stays HOLD until a successor is explicitly selected, registered, proven, and activated. No older route may be silently promoted as fallback (#3568/#3554).
 
 ## Router Platform roadmap
 
@@ -118,6 +121,24 @@ python3 -m uvicorn app.main:app --host 127.0.0.1 --port 8000
 `app.main` loads working-directory `.env` before creating the application; the documented owner-startup contract intentionally does not use `--env-file .env`.
 
 Useful local surfaces may include the workspace and pilot APIs exposed by the current application. Always verify endpoint availability against current source/tests rather than historical phase docs.
+
+## Generation-budget semantics
+
+B14 distinguishes a product-requested output limit from provider/model defaults and from runtime safety ceilings.
+
+```text
+max_tokens omitted / null
+  -> preserve None through B14
+  -> provider adapter omits max_tokens
+  -> provider/model default behavior
+
+max_tokens explicitly set
+  -> preserve the explicit value
+  -> validate it against the current B14 request contract
+  -> send the explicit value upstream
+```
+
+Do not silently replace an omitted value with a hidden product budget. Product-specific workloads may intentionally choose a bounded value; that choice belongs to the product/runtime profile, not to a generic provider adapter default. The current explicit `1..4096` request range is retained pending the separate hard-ceiling/model-capability review in #3553.
 
 ## Security boundary
 

@@ -231,7 +231,7 @@ def _agent_profile(product_tier: ProductTierLabel = ProductTierLabel.PLUS) -> Ag
     declaration (padiem_control_plane.product_tier_routes), shared with
     B62 Padiem Chat.  B14 remains provider/model execution authority.
 
-    Plus → kilo/stealth-space-bunny-alpha (#3209 Space Bunny primary)
+    Plus → HOLD_PENDING_SUCCESSOR (#3568: Space Bunny retired, successor not selected)
     Pro  → HOLD / fail-closed
     Max  → HOLD / fail-closed
     """

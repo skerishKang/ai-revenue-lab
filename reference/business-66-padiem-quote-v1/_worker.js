@@ -127,6 +127,15 @@ async function handlePadiemBridge(request, url, env) {
   });
   const upstreamType = upstream.headers.get("content-type");
   if (upstreamType) responseHeaders.set("Content-Type", upstreamType);
+  for (const name of [
+    "X-B66-Rejection-Reason",
+    "X-B66-Rejection-Path",
+    "X-B66-Rejection-Type",
+    "X-B66-Upstream-Class"
+  ]) {
+    const value = upstream.headers.get(name);
+    if (value) responseHeaders.set(name, value);
+  }
   relaySetCookies(upstream.headers, responseHeaders);
   const location = upstream.headers.get("location");
   if (location && upstream.status >= 300 && upstream.status < 400) {

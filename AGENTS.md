@@ -5,6 +5,7 @@ This file is the repository-wide entry point for AI-assisted work. A more specif
 Canonical operating documents:
 
 - `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md`
+- `docs/operations/TEST_SCOPE_AND_DELIVERY_POLICY.md`
 - `docs/operations/TECHNOLOGY_ADOPTION_POLICY.md`
 - `docs/operations/WORKFLOW_STATUS_MODEL.md`
 - `docs/operations/EVIDENCE_REQUIREMENTS.md`
@@ -12,6 +13,7 @@ Canonical operating documents:
 - `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
 - `docs/operations/LOCAL_DOCKER_AVOIDANCE_POLICY.md`
 - `docs/operations/GITHUB_REPORT_HANDOFF_POLICY.md`
+- `docs/operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 
 ## Search / adopt before build
 
@@ -37,8 +39,8 @@ Technology discovery does not automatically pause an already-approved active tas
 
 1. **User / Product Owner** — product goals, priorities, material UX/business decisions, merge/Production authority when the work contract requires owner authorization.
 2. **Web CTO** — work contract, architecture/safety boundary, acceptance criteria, current-remote audit, independent final review.
-3. **Implementation Worker (local model)** — implementation on the authorized branch, implementation tests, Draft PR, CI response, implementation report. In the current operating model this is a local model with GitHub access; its local checks are implementation self-checks unless a second actor re-runs them.
-4. **Local Validator** — exact-head execution in the required real environment when independent local/browser/OS/hardware validation is required.
+3. **Implementation Worker (local model)** — implementation on the authorized branch, focused implementation tests, Draft PR, `DEV_FAST_GATE`, and implementation report. After the fast gate passes, the worker is released to the next authorized issue instead of waiting synchronously for the full Windows/Ubuntu/browser matrix.
+4. **Local Validator(s)** — asynchronous exact-head execution in the required real environments when independent local/browser/OS/hardware validation is required. Windows, Ubuntu and browser/full-regression validation may be owned by different validator actors in parallel.
 
 One actor may perform multiple **non-independent** stages. The same actor must not claim both implementation and **independent Local Validation** for the same revision.
 
@@ -62,6 +64,30 @@ REPORT_POINTER=<immutable report/artifact pointer or NOT_REQUIRED reason>
 ```
 
 The Web CTO re-checks that this record names the exact head being merged.
+
+## Fast development gate and parallel validation
+
+Development progress and merge readiness are separate gates.
+
+```text
+DEV_FAST_GATE=PASS
+→ DEV_ACTOR_RELEASED=YES
+→ implementation actor may move to the next authorized issue
+
+VALIDATOR_WINDOWS=PENDING|PASS|FAIL|FIXING
+VALIDATOR_UBUNTU=PENDING|PASS|FAIL|FIXING
+VALIDATOR_BROWSER=PENDING|PASS|FAIL|NOT_REQUIRED
+→ validators run asynchronously and may work in parallel
+
+FULL_VALIDATION=PASS
+→ required before merge when configured/relevant
+```
+
+A failing asynchronous validator blocks merge of the affected revision, not unrelated development progress. If a validator fixes source, that actor becomes a repair/implementation actor for the new revision; the modified run is not independent validation of the new head. The repair may be revalidated by another independent actor while the original implementation worker continues other work.
+
+For Windows-first slices, the focused Windows proof may be the `DEV_FAST_GATE`. For web/backend slices, use the smallest focused web/API/contract proof that actually exercises the change. Do not require every supported OS/browser in the implementer's synchronous critical path.
+
+See issue #3429 for the CI/workflow optimization program.
 
 ## Product-evidence stages are flexible
 
@@ -113,14 +139,68 @@ Handoff-gating checks must be named **before** the final fix/deploy whenever pra
 
 After the final Production-changing revision, run the agreed primary-journey smoke once. Repeat the same smoke only if the deployed revision changes, the first result is ambiguous/failed, or a new concrete defect affects that journey.
 
+## Finish-first execution mode
+
+For Padiem platform work, completion throughput takes priority over maximizing concurrent feature starts.
+
+Canonical current authority: `#3523`.
+
+```text
+DEVELOPMENT_MODE=FINISH_FIRST
+ACTIVE_PRIMARY_IMPLEMENTATION_AXES=1
+MAX_SUPPORTING_BLOCKER_LANES=2
+BACKGROUND_LANES=READ_ONLY_OR_VALIDATION
+UNRELATED_NEW_FEATURE_IMPLEMENTATION=FROZEN
+```
+
+Parallel work is allowed only when it helps finish the same primary axis: blocker removal, exact-head validation, CI diagnosis, forensic investigation, or directly required platform integration. A free implementation worker must not select an unrelated issue merely to stay busy.
+
+For the current Padiem cycle, the primary axis is:
+
+```text
+Padiem Platform
+-> canonical identity/account/workspace
+-> required entitlement/admission
+-> Padiem AI Engine
+-> Padiem Core / B14
+-> B54 Padiem Claw
+-> user-visible result
+```
+
+Architecture is decided top-down, but implementation proceeds from the **lowest missing dependency upward** until the user-visible vertical slice is complete.
+
+A discovered issue must be classified before implementation:
+
+```text
+PRIMARY_BLOCKER
+PRIMARY_NONBLOCKING_FOLLOWUP
+UNRELATED_BACKLOG
+```
+
+Only `PRIMARY_BLOCKER` may preempt the primary lane.
+
+Source-complete or merged-main is not terminal completion for a Finish-first axis. The applicable terminal definition includes Production activation, end-to-end reference-product proof, a user-visible result, rollback readiness, and zero primary blockers.
+
+Product boundaries remain strict. B66 Padiem Quote, B67 Padiem Legal, B62 Padiem Chat, and B54 Padiem Claw are independent products that may reuse Padiem Platform authorities. Shared Platform usage does not authorize moving product-local work into another product's lane.
+
+```text
+B66_IS_ENGINE=NO
+B66_IS_CLAW=NO
+B66_PRODUCT_INDEPENDENT=YES
+```
+
+The fast-development rule means “do not wait on unrelated validation”; it does **not** mean “start an unrelated feature after every fast-gate pass.” Validators may run in parallel while the implementation actor continues the same primary axis.
+
 ## Default responsibility flow
 
 ```text
 User request / portfolio authority
 → Web CTO exact work contract
 → Implementation Worker (local model) implementation
-→ implementation self-check + configured CI
-→ independent validation when required
+→ focused self-check + DEV_FAST_GATE
+→ DEV_ACTOR_RELEASED; implementation may continue elsewhere
+→ asynchronous Windows / Ubuntu / browser validators when required
+→ FULL_VALIDATION on the final exact head
 → Web CTO final review
 → owner decision when materially required
 → merge
@@ -128,6 +208,21 @@ User request / portfolio authority
 ```
 
 This is a responsibility/evidence flow, not a mandatory product-stage sequence. A stage may be `NOT_REQUIRED` only with a recorded reason.
+
+## Repository-wide test-scope rule
+
+`docs/operations/TEST_SCOPE_AND_DELIVERY_POLICY.md` applies to **every** Business/app/package and to Engine/Core/Control Plane/Chat/Claw/Desktop work.
+
+Default for a bounded bug fix:
+
+```text
+REPORT_MODE=COMPACT
+focused load-bearing regression
++ relevant configured CI
++ Production smoke only when applicable
+```
+
+Do not turn every available/automatically-triggered test into a required gate. Do not wait for unrelated observational CI. Do not commission independent validation merely because an issue is P0/P1. Whole-product/repository testing requires an actual whole-surface blast radius or explicit gate.
 
 ## Non-negotiable rules
 
@@ -149,6 +244,7 @@ This is a responsibility/evidence flow, not a mandatory product-stage sequence. 
 - Before merge, the Web CTO posts an auditable `CTO_FINAL_REVIEW` record containing the exact head SHA and the **applicable** checklist results. Tiny bounded fixes may use the compact checklist; do not populate irrelevant template sections merely for ceremony.
 - Owner-delegated merges must be single-purpose, head-SHA-pinned, and condition-checked at execution time (re-read remote state; required CI/gate results still valid).
 - Final owner visual approval must never be inferred from a model/worker approval when the work contract explicitly reserves visual taste to the owner.
+- **Model/provider decisions are owner-only.** If work encounters model selection, replacement, benchmarking, fallback ordering, provider routing, model-specific credential/binding, or activation/deployment decisions, stop model work and ask the Product Owner. Do not search, compare, live-test, rank, modify, merge, or deploy model/provider choices without fresh explicit owner instruction for that scope. Follow `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`.
 - Deployment follows `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`; no alternate Preview/manual deployment path is implied by these rules.
 - Local Docker Desktop / local Docker daemon is not a default development or deployment path. Do not start or require it unless established remote build/deploy paths have been checked and the Product Owner explicitly approves a task-specific exception. Follow `LOCAL_DOCKER_AVOIDANCE_POLICY.md`.
 - On Windows, do not run `git worktree remove --force` while the worktree contains a junction/symlink/reparse point into a shared dependency directory (for example another checkout's `node_modules`). Remove the link itself with a link-safe operation first, verify the target directory is intact, then remove the worktree.

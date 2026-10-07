@@ -6,6 +6,10 @@ from pathlib import Path
 import httpx
 import pytest
 
+from padiem_control_plane.product_tier_routes import ProductTierLabel, active_route_for
+
+_MODEL_EXECUTION_AVAILABLE = active_route_for(ProductTierLabel.PLUS) is not None
+
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.history import (
@@ -268,6 +272,7 @@ async def test_project_delete_is_owner_scoped_file_safe_and_preserves_conversati
     assert store.conversations[cid]["project_id"] is None
 
 
+@pytest.mark.skipif(not _MODEL_EXECUTION_AVAILABLE, reason="successor model route not selected")
 @pytest.mark.asyncio
 async def test_new_project_chat_persists_project_and_injects_one_system_message():
     store = MemoryProjectStore()
@@ -310,6 +315,7 @@ async def test_new_project_chat_persists_project_and_injects_one_system_message(
     assert sum(1 for item in upstream["messages"] if item["role"] == "system") == 1
 
 
+@pytest.mark.skipif(not _MODEL_EXECUTION_AVAILABLE, reason="successor model route not selected")
 @pytest.mark.asyncio
 async def test_reopen_derives_stored_project_and_conflict_fails_before_model():
     store = MemoryProjectStore()
@@ -377,6 +383,7 @@ async def test_cross_user_project_chat_and_browser_system_injection_rejected_pre
     assert calls == 0
 
 
+@pytest.mark.skipif(not _MODEL_EXECUTION_AVAILABLE, reason="successor model route not selected")
 @pytest.mark.asyncio
 async def test_grounded_project_combines_project_context_and_evidence_under_one_system_role():
     store = MemoryProjectStore()

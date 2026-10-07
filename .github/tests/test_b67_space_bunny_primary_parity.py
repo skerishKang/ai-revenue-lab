@@ -1,18 +1,9 @@
-"""Space Bunny text+vision primary parity + smoke pin-source contract (#3209).
+"""Canonical-primary parity contract after the #3579 policy v2 successor change.
 
-Static and network-free. Proves that:
-
-1. the canonical declaration (``padiem_ai_core.model_primary``) names Space
-   Bunny Alpha as both text and vision primary with no text fallback and an
-   UNDECIDED vision fallback;
-2. the B14 Kilo catalog registers that exact repo-facing route id with the
-   identical upstream model, keeps context_window 0, and declares image
-   without video;
-3. the shared product-tier declaration and the B14 tier registry both expose
-   the same executable Plus route (Space Bunny) while preserving Agnes /
-   Poolside / SenseNova registrations as non-executable;
-4. A9/A12 smokes source their pin from the canonical declaration;
-5. b14/auto and the A12 classification contract are untouched.
+Static and network-free. The canonical text primary is the owner-selected
+Ling 3.1 Flash successor; the vision primary remains pending. The ended
+Space Bunny lane survives only as retirement metadata and is never an
+executable catalog route.
 """
 
 from __future__ import annotations
@@ -40,21 +31,27 @@ def _string_constant(text: str, name: str) -> str | None:
     return match.group(1) if match else None
 
 
-def test_canonical_declaration_names_space_bunny_for_text_and_vision() -> None:
+def test_canonical_declaration_holds_text_and_vision_primary() -> None:
     text = MODEL_PRIMARY.read_text(encoding="utf-8")
+    assert _string_constant(text, "TEXT_PRIMARY_DECISION") == (
+        "Owner successor selection 2026-10-06 (Ling 3.1 Flash, Kilo gateway)"
+    )
     assert _string_constant(text, "TEXT_PRIMARY_PROVIDER_ID") == "kilo"
-    assert _string_constant(text, "TEXT_PRIMARY_MODEL_ID") == "kilo/stealth-space-bunny-alpha"
-    assert _string_constant(text, "TEXT_PRIMARY_UPSTREAM_MODEL") == "stealth/space-bunny-alpha"
-    assert _string_constant(text, "VISION_PRIMARY_PROVIDER_ID") == "kilo"
-    assert _string_constant(text, "VISION_PRIMARY_MODEL_ID") == "kilo/stealth-space-bunny-alpha"
-    assert _string_constant(text, "VISION_PRIMARY_UPSTREAM_MODEL") == "stealth/space-bunny-alpha"
+    assert _string_constant(text, "TEXT_PRIMARY_MODEL_ID") == (
+        "kilo/inclusionai-ling-3.1-flash"
+    )
+    assert _string_constant(text, "TEXT_PRIMARY_UPSTREAM_MODEL") == (
+        "inclusionai/ling-3.1-flash"
+    )
+    assert _string_constant(text, "VISION_PRIMARY_DECISION") == "PENDING_SUCCESSOR_SELECTION"
+    assert "VISION_PRIMARY_PROVIDER_ID = None" in text
+    assert "VISION_PRIMARY_MODEL_ID = None" in text
+    assert "VISION_PRIMARY_UPSTREAM_MODEL = None" in text
     assert "TEXT_SECONDARY_MODEL_ID = None" in text
     assert "TEXT_FALLBACK_ENABLED = False" in text
-    assert 'VISION_FALLBACK_DECISION = "UNDECIDED"' in text
-    assert 'VIDEO_PRIMARY_DECISION = "UNDECIDED"' in text
 
 
-def test_kilo_catalog_registers_the_exact_canonical_route() -> None:
+def test_kilo_catalog_preserves_space_bunny_only_as_non_primary_metadata() -> None:
     kilo_text = KILO_PROVIDER.read_text(encoding="utf-8")
     canonical_text = MODEL_PRIMARY.read_text(encoding="utf-8")
 
@@ -62,34 +59,32 @@ def test_kilo_catalog_registers_the_exact_canonical_route() -> None:
     assert _string_constant(kilo_text, "KILO_SPACE_BUNNY_UPSTREAM_MODEL") == "stealth/space-bunny-alpha"
     assert _string_constant(kilo_text, "KILO_SPACE_BUNNY_CREDENTIAL_BINDING") == "PADIEM_KILO_API_KEY"
     assert "credential_source=CredentialSource.NONE" in kilo_text
-
-    assert _string_constant(canonical_text, "TEXT_PRIMARY_MODEL_ID") == _string_constant(
-        kilo_text, "KILO_SPACE_BUNNY_MODEL_ID"
+    # #3579 policy v2: the ended lane stays retirement metadata only — it
+    # is never registered as an executable catalog route — while the Ling
+    # successor is the registered free lane with its public context window.
+    retired_block = kilo_text[kilo_text.index("RETIRED_KILO_FREE_MODEL_IDS"):]
+    assert "KILO_SPACE_BUNNY_MODEL_ID" in retired_block
+    assert "model_id=KILO_SPACE_BUNNY_MODEL_ID" not in kilo_text
+    assert _string_constant(kilo_text, "KILO_LING_MODEL_ID") == (
+        "kilo/inclusionai-ling-3.1-flash"
     )
-    assert _string_constant(canonical_text, "TEXT_PRIMARY_UPSTREAM_MODEL") == _string_constant(
-        kilo_text, "KILO_SPACE_BUNNY_UPSTREAM_MODEL"
+    assert "context_window=262_144" in kilo_text
+
+    assert _string_constant(canonical_text, "TEXT_PRIMARY_MODEL_ID") == (
+        "kilo/inclusionai-ling-3.1-flash"
     )
-    assert _string_constant(canonical_text, "VISION_PRIMARY_MODEL_ID") == _string_constant(
-        kilo_text, "KILO_SPACE_BUNNY_MODEL_ID"
-    )
-
-    # Context-window authority stays 0; stale 1M metadata is not resurrected.
-    assert "context_window=0" in kilo_text
-
-    # Image enabled, video/audio/wildcard off.
-    assert '"image"' in kilo_text or "'image'" in kilo_text
-    space_bunny_block = kilo_text.split("KILO_SPACE_BUNNY_MODEL_ID")[1].split("KILO_FREE_ROUTES")[0]
-    assert "video" not in space_bunny_block.lower() or "no ``video``" in kilo_text.lower()
+    assert "VISION_PRIMARY_MODEL_ID = None" in canonical_text
 
 
-def test_product_tiers_and_registry_expose_plus_space_bunny() -> None:
+def test_product_tiers_and_registry_hold_plus_space_bunny() -> None:
     for path in (PRODUCT_TIERS, TIER_REGISTRY):
         text = path.read_text(encoding="utf-8")
+        assert 'route_id="plus.hold.v1"' in text
+        assert "model_id=PLUS_HOLD_MODEL_ID" in text
         assert 'model_id="kilo/stealth-space-bunny-alpha"' in text
         assert 'upstream_model="stealth/space-bunny-alpha"' in text
-        # Agnes is preserved as historical data-only, never deleted.
+        assert "HOLD_AS_DATA_ONLY" in text
         assert 'model_id="agnes-ai/agnes-3.0-flash"' in text
-        assert "PADIEM_AGNES_API_KEY" in text
 
 
 def test_a9_and_a12_smokes_source_the_canonical_pin() -> None:

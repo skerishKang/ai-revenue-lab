@@ -48,7 +48,19 @@ async def _open_claw(page: Page, *, width: int) -> None:
         await page.locator("#clawNavButton").wait_for(state="visible")
     await page.locator("#clawNavButton").click()
     await page.locator('.app-shell[data-state="claw"]').wait_for(state="attached")
-    await page.locator("#clawManualForm").wait_for(state="visible")
+    # #3531 canonical contract: Claw navigation lands on the general
+    # conversation view. The manual form stays hidden until the document
+    # workflow is explicitly entered.
+    view = await page.locator("#clawWorkspace").get_attribute("data-view")
+    if view != "general":
+        raise AssertionError(f"Claw navigation must enter the general view, got {view!r}")
+    for selector in (".conversation", "#composerForm", "#messageInput"):
+        if not await page.locator(selector).is_visible():
+            raise AssertionError(f"{selector} must stay visible on Claw general view")
+    if await page.locator("#clawManualForm").is_visible():
+        raise AssertionError("#clawManualForm must stay hidden on Claw general view")
+    if not await page.locator("#clawManualEntryButton").is_visible():
+        raise AssertionError("manual workflow entry control must be visible on Claw general view")
     # The preceding Chat fixture is intentionally long and may leave the page
     # scrolled. Geometry parity must compare each surface from the same origin.
     await page.evaluate("window.scrollTo(0, 0)")
@@ -292,8 +304,21 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         raise AssertionError(
             f"{name} Claw placeholder diverged from Chat Home: {claw_placeholder!r} vs {home_placeholder!r}"
         )
+    # Explicit manual entry only: the document workflow — and its quote
+    # action selection — appears after the entry control is clicked, never
+    # by default. No workflow action may be pre-selected on entry.
+    if await page.locator("#clawQuoteCard").get_attribute("aria-pressed") != "false":
+        raise AssertionError(f"{name} quote action must not be pre-selected before explicit selection")
+    await page.locator("#clawManualEntryButton").click()
+    await page.wait_for_function(
+        "() => document.querySelector('#clawWorkspace')?.dataset.view === 'manual'",
+        timeout=5_000,
+    )
+    if not await page.locator("#clawManualForm").is_visible():
+        raise AssertionError(f"{name} manual form must become visible after explicit manual entry")
+    await page.locator("#clawQuoteCard").click()
     if await page.locator("#clawQuoteCard").get_attribute("aria-pressed") != "true":
-        raise AssertionError(f"{name} default quote action must be visibly selected")
+        raise AssertionError(f"{name} explicit quote selection must be visibly selected")
 
     screenshot = f"{name}-shared-gutter.png"
     await page.screenshot(path=str(OUT_DIR / screenshot), full_page=True)
@@ -309,7 +334,12 @@ async def _capture(page: Page, *, name: str, width: int, height: int) -> dict[st
         "home_claw_bottom_inset_parity": True,
         "home_claw_composer_padding_parity": True,
         "home_claw_placeholder_parity": True,
-        "claw_default_quote_selected": True,
+        "claw_general_default_view": True,
+        "claw_manual_hidden_by_default": True,
+        "claw_manual_entry_reachable": True,
+        "claw_manual_view_on_explicit_entry": True,
+        "claw_no_preselected_workflow_action": True,
+        "claw_explicit_quote_selection": True,
         "conversation": conversation,
         "composer": composer,
         "inner_gutter_left_px": inner_gutter_left,

@@ -89,7 +89,28 @@ def _ok_upstream(content):
     )
 
 
+def _synthetic_image_catalog(monkeypatch):
+    """Stand in for the pending vision successor (#3579).
+
+    No image-capable lane is registered while the vision primary is
+    PENDING_SUCCESSOR_SELECTION. These contracts prove the endpoint's own
+    logic (canonical builder reuse, provenance validation, error
+    collapse) and are route-agnostic, so a synthetic catalog entry keeps
+    them executable. It does not represent a selectable product route.
+    """
+    from app.pilot import multimodal_contract
+
+    synthetic = SimpleNamespace(
+        model_id=AUTHORITY.B66_GOVERNED_ROUTE,
+        capabilities=frozenset({"chat", "image"}),
+    )
+    monkeypatch.setattr(
+        multimodal_contract, "get_catalog_by_id", lambda _model_id: synthetic
+    )
+
+
 def test_image_route_reuses_canonical_builder_and_server_validator(monkeypatch):
+    _synthetic_image_catalog(monkeypatch)
     monkeypatch.setattr(endpoint, "_authority", lambda: AUTHORITY)
     captured = {}
 
@@ -133,6 +154,7 @@ def test_image_route_reuses_canonical_builder_and_server_validator(monkeypatch):
 
 
 def test_model_source_spoof_is_rejected_without_raw_content(monkeypatch):
+    _synthetic_image_catalog(monkeypatch)
     monkeypatch.setattr(endpoint, "_authority", lambda: AUTHORITY)
     raw = _model_answer()
     raw["source"] = {"kind": "image", "filename": "evil.png"}
@@ -187,6 +209,7 @@ def test_non_image_and_malformed_payloads_fail_before_upstream(monkeypatch):
 
 
 def test_upstream_error_is_collapsed_to_product_safe_code(monkeypatch):
+    _synthetic_image_catalog(monkeypatch)
     monkeypatch.setattr(endpoint, "_authority", lambda: AUTHORITY)
     sentinel = "PRIVATE_UPSTREAM_DETAIL"
 
@@ -204,6 +227,28 @@ def test_upstream_error_is_collapsed_to_product_safe_code(monkeypatch):
     assert response.json()["error"]["code"] == "b14_upstream_unavailable"
     assert response.headers["cache-control"] == "no-store"
     assert sentinel not in response.text
+
+
+def test_retired_governed_route_fails_closed_before_upstream(monkeypatch):
+    """#3579: the ended Space Bunny lane is unregistered, so the image
+
+    extraction route fails closed at the multimodal contract before any
+    upstream dispatch instead of silently routing a retired model id.
+    """
+    monkeypatch.setattr(endpoint, "_authority", lambda: AUTHORITY)
+    calls = []
+
+    async def fake_handle(request_id, body):
+        calls.append(body)
+        return _ok_upstream(json.dumps(_model_answer(), ensure_ascii=False))
+
+    monkeypatch.setattr(pilot_gateway, "_handle_alpha_chat", fake_handle)
+    with TestClient(create_app()) as client:
+        response = client.post("/api/b66/v1/quote/extract-image", json=_payload())
+
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "extraction_authority_unavailable"
+    assert calls == []
 
 
 def _intake_module(result):

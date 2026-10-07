@@ -261,3 +261,36 @@ What changed since 2026-09-08 and is now stated consistently in current-state do
 * The default product chat tier is Padiem Plus. AUTO product routing stays off; `b14/auto` remains a gateway-side compatibility resolution path and must not become a user-visible Padiem selector.
 
 Documentation rule this entry reasserts: current-state documents restate the shared declaration and the B14 catalog instead of carrying an independent copy of the mapping, and a dated entry in this log is never rewritten to match a later decision — the correction is a new dated entry that names what it supersedes.
+
+
+## 2026-10-05 — Space Bunny remains current Plus route but is at its retirement boundary
+
+Owner model-role authority #3209 superseded the 2026-09-20 Agnes mapping for the active Padiem Plus route. Current shared source declares:
+
+```text
+Padiem Plus = kilo/stealth-space-bunny-alpha
+upstream    = stealth/space-bunny-alpha
+provider    = kilo
+status      = EXECUTABLE while current catalog/runtime accepts the route
+
+Padiem Pro  = padiem-profile/pro-hold
+Padiem Max  = padiem-profile/max-hold
+```
+
+The September 20 decision entry above remains historical evidence and is not rewritten.
+
+Fresh public Kilo catalog evidence on 2026-10-05 still lists the exact Space Bunny model, but labels it `Space Bunny Alpha (retires Oct 5)` and reports `expiration_date=2026-10-05`. Therefore the route is current source authority but no longer a stable long-term default.
+
+Operational rule:
+
+```text
+CURRENT_ROUTE_AUTHORITY=SPACE_BUNNY_ALPHA
+RETIREMENT_BOUNDARY=2026-10-05
+POST_RETIREMENT_AVAILABILITY=UNPROVEN
+SILENT_RESTORE_OLD_ROUTE=NO
+SUCCESSOR_AUTHORITY=#3554
+```
+
+Agnes, Poolside and other historical provider registrations remain available only according to their current catalog/declaration status. None becomes a product fallback merely because Space Bunny retires.
+
+Related output-generation policy is separate: #3551 owns omitted `max_tokens` semantics and #3553 owns the explicit hard-ceiling/model-capability review.

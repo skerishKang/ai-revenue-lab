@@ -25,6 +25,8 @@ from padiem_control_plane.product_tier_routes import (
     active_route_for,
 )
 
+_MODEL_EXECUTION_AVAILABLE = active_route_for(ProductTierLabel.PLUS) is not None
+
 from kagent import review_flow as review_flow_module
 from kagent.cli import main, parser
 from kagent.contracts import ClawRunStatus, ExecutionMode, RunProjection
@@ -469,6 +471,7 @@ class DraftFlowTests(unittest.TestCase):
         )
         self.assertEqual(code, 0)
 
+    @unittest.skipUnless(_MODEL_EXECUTION_AVAILABLE, "successor model route not selected")
     def test_end_to_end_through_real_adapter_and_fake_transport(self) -> None:
         transport = CorrelatedTransport(
             answers=[

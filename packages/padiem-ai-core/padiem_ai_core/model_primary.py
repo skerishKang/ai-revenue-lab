@@ -1,52 +1,34 @@
-"""Canonical platform model-primary declaration (#3209).
+"""Canonical platform model-primary declaration.
 
-Product-neutral single source that names Space Bunny Alpha as both the
-canonical text primary and the canonical vision primary.
+Owner successor selection (2026-10-06, follow-up to #3568/#3569): the Padiem
+Plus TEXT primary is Ling 3.1 Flash on the Kilo gateway
+(kilo/inclusionai-ling-3.1-flash, upstream inclusionai/ling-3.1-flash),
+verified live (HTTP 200, zero-cost free lane, context 262,144 / max output
+32,768). Policy v2: model lanes authenticate through Secrets Store bindings;
+the keyless-preference era is retired.
 
-Owner policy encoded here (2026-09-29, Refs #3209, decision source #3143):
+- text primary: Ling 3.1 Flash (selected and verified);
+- vision primary: pending explicit successor selection — Ling 3.1 Flash is
+  text-only, so image work stays fail closed (Policy A);
+- no secondary model;
+- no fallback;
+- no runtime execution, network I/O, or secret access.
 
-```text
-TEXT_PRIMARY=Space Bunny Alpha
-VISION_PRIMARY=Space Bunny Alpha
-
-TEXT_SECONDARY=NONE
-TEXT_FALLBACK=NONE
-
-VISION_FALLBACK=UNDECIDED
-
-VIDEO_ACTIVATION=0
-```
-
-Scope locks:
-
-```text
-NETWORK_IO=0
-RUNTIME_EXECUTION=0
-SECRET_ACCESS=0
-```
-
-This module performs no I/O, imports nothing outside the standard library,
-and carries identifier constants only. The Business 14 catalog
-(``apps/korean-ai-platform/app/pilot/kilo_provider.py``) remains the final
-execution authority: a declared route can only run if B14 has it registered
-and not retired. Parity between the two authorities is asserted by source
-tests. The A9/A12 production smokes import ``TEXT_PRIMARY_MODEL_ID`` from
-here so their pinned model can never drift by copy-paste.
-
-SenseNova is not part of the active primary/secondary routing policy. Its
-provider registration and provider-specific tests remain intact elsewhere;
-nothing in this module assigns it a product route.
+Business 14 provider registrations may retain historical/manual route metadata,
+but none becomes a Padiem product primary or silent fallback through this file.
 """
 
 from __future__ import annotations
 
+TEXT_PRIMARY_DECISION = "Owner successor selection 2026-10-06 (Ling 3.1 Flash, Kilo gateway)"
 TEXT_PRIMARY_PROVIDER_ID = "kilo"
-TEXT_PRIMARY_MODEL_ID = "kilo/stealth-space-bunny-alpha"
-TEXT_PRIMARY_UPSTREAM_MODEL = "stealth/space-bunny-alpha"
+TEXT_PRIMARY_MODEL_ID = "kilo/inclusionai-ling-3.1-flash"
+TEXT_PRIMARY_UPSTREAM_MODEL = "inclusionai/ling-3.1-flash"
 
-VISION_PRIMARY_PROVIDER_ID = "kilo"
-VISION_PRIMARY_MODEL_ID = "kilo/stealth-space-bunny-alpha"
-VISION_PRIMARY_UPSTREAM_MODEL = "stealth/space-bunny-alpha"
+VISION_PRIMARY_DECISION = "PENDING_SUCCESSOR_SELECTION"
+VISION_PRIMARY_PROVIDER_ID = None
+VISION_PRIMARY_MODEL_ID = None
+VISION_PRIMARY_UPSTREAM_MODEL = None
 
 TEXT_SECONDARY_MODEL_ID = None
 TEXT_FALLBACK_ENABLED = False

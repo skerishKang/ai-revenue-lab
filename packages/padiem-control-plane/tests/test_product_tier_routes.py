@@ -16,6 +16,7 @@ import pytest
 
 from padiem_control_plane.product_tier_routes import (
     MAX_HOLD_MODEL_ID,
+    PLUS_HOLD_MODEL_ID,
     PRO_HOLD_MODEL_ID,
     PRODUCT_TIER_POLICY_VERSION,
     PRODUCT_TIER_ROUTES,
@@ -56,25 +57,30 @@ def test_contract_defines_exactly_three_padiem_tiers() -> None:
     ]
     assert PRODUCT_TIER_POLICY_VERSION == "padiem.product_tier_routes.v1"
 
-def test_current_truth_plus_only_with_pro_and_max_hold() -> None:
+
+def test_current_truth_plus_successor_selected_ling_3_1_flash() -> None:
     executables = _executables()
-    assert executables == {
-        ProductTierLabel.PLUS: active_route_for(ProductTierLabel.PLUS)
-    }
-    assert executables[ProductTierLabel.PLUS].model_id == "kilo/stealth-space-bunny-alpha"
-    assert executables[ProductTierLabel.PLUS].provider_id == "kilo"
-    assert executables[ProductTierLabel.PLUS].upstream_model == "stealth/space-bunny-alpha"
+    assert set(executables) == {ProductTierLabel.PLUS}
+    plus_route = active_route_for(ProductTierLabel.PLUS)
+    assert plus_route is not None
+    assert plus_route.model_id == "kilo/inclusionai-ling-3.1-flash"
+    assert plus_route.status is ProductRouteStatus.EXECUTABLE
     assert active_route_for(ProductTierLabel.PRO) is None
     assert active_route_for(ProductTierLabel.MAX) is None
+
+    plus_routes = get_tier(ProductTierLabel.PLUS).routes
+    plus_hold = next(r for r in plus_routes if r.model_id == PLUS_HOLD_MODEL_ID)
+    assert plus_hold.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
+
+    bunny_hold = next(
+        r for r in plus_routes if r.model_id == "kilo/stealth-space-bunny-alpha"
+    )
+    assert bunny_hold.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
+    assert bunny_hold.hold_reason and "#3568" in bunny_hold.hold_reason
+
     pro_routes = get_tier(ProductTierLabel.PRO).routes
     assert any(r.model_id == PRO_HOLD_MODEL_ID for r in pro_routes)
     assert all(r.status is not ProductRouteStatus.EXECUTABLE for r in pro_routes)
-    # Agnes is superseded as the active Plus route by #3209 but its provider
-    # registration is preserved as historical data-only.
-    plus_routes = get_tier(ProductTierLabel.PLUS).routes
-    agnes_hold = next(r for r in plus_routes if r.model_id == "agnes-ai/agnes-3.0-flash")
-    assert agnes_hold.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
-
 def test_no_user_visible_auto_or_fallback_anywhere() -> None:
     for tier in PRODUCT_TIER_ROUTES:
         assert tier.silent_fallback_allowed is False
@@ -83,23 +89,19 @@ def test_no_user_visible_auto_or_fallback_anywhere() -> None:
             for route in tier.routes:
                 assert token not in route.route_id.lower()
 
+
 def test_executable_routes_are_explicit_secret_bound_and_unretired() -> None:
     executables = _executables()
+    assert set(executables) == {ProductTierLabel.PLUS}
     for tier, route in executables.items():
         assert route.provider_id, f"{tier.value}: explicit provider_id required"
         assert route.model_id, f"{tier.value}: explicit model_id required"
         assert route.model_id.startswith(f"{route.provider_id}/")
         assert route.model_id not in RETIRED_PRODUCT_MODEL_IDS
         assert route.evidence
-        if tier is ProductTierLabel.PLUS:
-            # #3209: Plus is Space Bunny Alpha on the keyless Kilo free lane.
-            assert route.provider_id == "kilo"
-            assert route.model_id == "kilo/stealth-space-bunny-alpha"
-            assert route.credential_mode is ProductCredentialMode.ANONYMOUS
-            assert route.credential_binding is None
-        else:  # pragma: no cover - only Plus is executable in current truth
-            assert route.credential_mode is ProductCredentialMode.PLATFORM_SECRET_BINDING
-
+        # Policy v2: model lanes authenticate through Secrets Store bindings.
+        assert route.credential_mode is ProductCredentialMode.PLATFORM_SECRET_BINDING
+        assert route.credential_binding == "PADIEM_KILO_API_KEY"
 def test_retired_lanes_are_declared_data_only_with_reasons() -> None:
     retired = [
         route
@@ -127,7 +129,15 @@ def test_two_executable_routes_in_one_tier_fail_closed() -> None:
         label=ProductTierLabel.PLUS,
         routes=plus.routes + (
             ProductTierRoute(
-                route_id="plus.duplicate.v1",
+                route_id="plus.duplicate-a.v1",
+                status=ProductRouteStatus.EXECUTABLE,
+                model_family="first",
+                provider_id="kilo",
+                model_id="kilo/first",
+                evidence="forbidden",
+            ),
+            ProductTierRoute(
+                route_id="plus.duplicate-b.v1",
                 status=ProductRouteStatus.EXECUTABLE,
                 model_family="second",
                 provider_id="kilo",
@@ -231,6 +241,7 @@ def _registry_executable_model_ids() -> dict[str, str]:
             found[route_id.group(1)] = model.group(1)
     return found
 
+
 def test_parity_with_b14_tier_registry_active_routes() -> None:
     registry = _registry_executable_model_ids()
     contract = {
@@ -239,28 +250,19 @@ def test_parity_with_b14_tier_registry_active_routes() -> None:
         for route in tier.routes
         if route.status is ProductRouteStatus.EXECUTABLE
     }
-    # The two files are compared against each other instead of against a hand-typed route
-    # id, so an owner tier switch keeps proving parity without this test needing to learn
-    # the new literal (#2800).
-    assert contract, "the shared declaration must expose at least one executable route"
-    assert registry == contract
-
+    assert contract == registry
+    assert contract == {"plus.ling-3.1-flash.v1": "kilo/inclusionai-ling-3.1-flash"}
 
 def test_parity_with_chat_model_policy_derivation() -> None:
-    """#2099 STEP-2: Chat derives tier routes from this contract.
-
-    Locks the derivation itself and forbids literal regressions that would
-    re-create the duplicated source of truth #2099 exists to remove.
-    """
     source = CHAT_MODEL_POLICY_PATH.read_text(encoding="utf-8")
     assert "from padiem_control_plane.product_tier_routes import (" in source
-    assert "LOW_B14_MODEL_ID = _contract_route_id(ProductTierLabel.PLUS)" in source
+    assert "_CONTRACT_PLUS_HOLD_MODEL_ID" in source
+    assert "LOW_B14_MODEL_ID = _contract_route_or_hold_id(" in source
     assert "MEDIUM_B14_MODEL_ID = _CONTRACT_PRO_HOLD_MODEL_ID" in source
     assert "MAX_HOLD_MODEL_ID = _CONTRACT_MAX_HOLD_MODEL_ID" in source
     assert "RETIRED_B14_MODEL_IDS = frozenset(RETIRED_PRODUCT_MODEL_IDS)" in source
     assert '"kilo/' not in source
     assert "'kilo/" not in source
-
 
 def test_selected_routes_match_registered_provider_constants() -> None:
     executables = _executables()
@@ -282,25 +284,43 @@ def test_selected_routes_match_registered_provider_constants() -> None:
     kilo_bunny_upstream = re.search(
         r'^KILO_SPACE_BUNNY_UPSTREAM_MODEL = "([^"]+)"$', kilo_source, re.MULTILINE
     )
+    kilo_ling = re.search(
+        r'^KILO_LING_MODEL_ID = "([^"]+)"$', kilo_source, re.MULTILINE
+    )
+    kilo_ling_upstream = re.search(
+        r'^KILO_LING_UPSTREAM_MODEL = "([^"]+)"$', kilo_source, re.MULTILINE
+    )
+    kilo_binding = re.search(
+        r'^KILO_CREDENTIAL_BINDING = "([^"]+)"$', kilo_source, re.MULTILINE
+    )
 
     assert agnes_model and bai_model and agnes_binding and bai_binding
     assert kilo_bunny and kilo_bunny_upstream
-    # #3209: the active Plus route is the Kilo Space Bunny lane.
-    assert kilo_bunny.group(1) == executables[ProductTierLabel.PLUS].model_id
-    assert kilo_bunny_upstream.group(1) == executables[ProductTierLabel.PLUS].upstream_model
-    assert executables[ProductTierLabel.PLUS].provider_id == "kilo"
-    # Agnes provider registration is preserved as historical Plus data-only.
+    assert kilo_ling and kilo_ling_upstream and kilo_binding
+    assert set(executables) == {ProductTierLabel.PLUS}
+
+    plus_routes_all = get_tier(ProductTierLabel.PLUS).routes
+    ling_route = next(r for r in plus_routes_all if r.model_id == kilo_ling.group(1))
+    assert ling_route.status is ProductRouteStatus.EXECUTABLE
+    assert ling_route.upstream_model == kilo_ling_upstream.group(1)
+    assert ling_route.credential_binding == kilo_binding.group(1)
+
     plus_routes = get_tier(ProductTierLabel.PLUS).routes
+    plus_hold = next(r for r in plus_routes if r.model_id == PLUS_HOLD_MODEL_ID)
+    assert plus_hold.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
+    bunny_hold = next(r for r in plus_routes if r.model_id == kilo_bunny.group(1))
+    assert bunny_hold.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
+    assert bunny_hold.upstream_model == kilo_bunny_upstream.group(1)
+
     agnes_hold = next(r for r in plus_routes if r.model_id == agnes_model.group(1))
     assert agnes_hold.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
     assert agnes_binding.group(1) == agnes_hold.credential_binding
+
     pro_routes = get_tier(ProductTierLabel.PRO).routes
     held_bai = next(r for r in pro_routes if r.provider_id == "b-ai")
     assert held_bai.status is ProductRouteStatus.HOLD_AS_DATA_ONLY
     assert bai_model.group(1) == held_bai.model_id
     assert bai_binding.group(1) == held_bai.credential_binding
-
-
 def test_kilo_routes_are_historical_only_and_retirement_stays_pinned() -> None:
     source = KILO_PROVIDER_PATH.read_text(encoding="utf-8")
 
@@ -315,6 +335,9 @@ def test_kilo_routes_are_historical_only_and_retirement_stays_pinned() -> None:
     assert retired_block, "B14 retirement block not found"
     assert "KILO_MINIMAX_M3_MODEL_ID" in retired_block.group(1)
     assert "KILO_HY3_MODEL_ID" in retired_block.group(1)
+    # #3579 policy v2: the Space Bunny upstream lane ended and joins the
+    # retirement block as data-only metadata.
+    assert "KILO_SPACE_BUNNY_MODEL_ID" in retired_block.group(1)
 
     for name, model_id in (
         ("KILO_MINIMAX_M3_MODEL_ID", "kilo/minimax-minimax-m3-free"),

@@ -150,7 +150,8 @@ The Web Developer report includes the relevant subset of:
 - behavior/contracts changed;
 - current visual gate and whether expansion was authorized;
 - automated commands, status and pass/fail/skip counts;
-- CI references when configured;
+- `DEV_FAST_GATE` command/result and `DEV_ACTOR_RELEASED` status;
+- CI references when configured, distinguishing fast-gate evidence from asynchronous/full validation;
 - self-check/browser evidence clearly labelled non-independent;
 - for fail-open/bypass-prone fixes, the load-bearing regression and mutation/differential proof when practical;
 - trust-boundary coverage when the same runtime value crosses parser/builder/projector/serializer/export/write layers;
@@ -159,6 +160,8 @@ The Web Developer report includes the relevant subset of:
 When a defect involves nullable or runtime-shaped input, evidence distinguishes explicit `null`, `undefined`, and a missing required property unless the canonical contract explicitly makes them equivalent.
 
 ## 10. Independent validation evidence
+
+Independent validation is asynchronous with respect to implementation throughput. After `DEV_FAST_GATE=PASS`, the implementation actor may continue to another authorized issue while Windows/Ubuntu/browser/full-regression validators work on the exact PR head.
 
 When required, record:
 
