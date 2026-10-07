@@ -1,8 +1,9 @@
-"""Shared B14 optional max_tokens contract (#3551).
+"""Shared B14 optional max_tokens contract (#3551, ceiling revised #3553).
 
 Omitted generation limits must stay omitted end-to-end. Product-specific callers
-may still provide an explicit bounded value; the existing explicit 1..4096
-validation is intentionally unchanged in this PR.
+may still provide an explicit bounded value. The explicit request ceiling is now
+the per-model maximum output budget (``model_output_caps.MAX_REQUEST_TOKENS``)
+rather than the old blanket ``4096`` that starved reasoning models.
 """
 
 from __future__ import annotations

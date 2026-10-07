@@ -22,6 +22,7 @@ from starlette.responses import JSONResponse
 from starlette.requests import Request
 
 from app.pilot.config import pilot_settings
+from app.pilot.model_output_caps import MAX_REQUEST_TOKENS
 from app.pilot.errors import (
     InvalidRequest,
     MissingProviderKey,
@@ -248,8 +249,8 @@ def _validate_body(raw: Any) -> dict:
     if mt is not None:
         if isinstance(mt, bool) or not isinstance(mt, int):
             raise _InvalidBody("max_tokens must be an integer or null")
-        if mt < 1 or mt > 4096:
-            raise _InvalidBody("max_tokens must be between 1 and 4096")
+        if mt < 1 or mt > MAX_REQUEST_TOKENS:
+            raise _InvalidBody(f"max_tokens must be between 1 and {MAX_REQUEST_TOKENS}")
 
     # stream
     st = raw.get("stream")
@@ -367,6 +368,35 @@ def _providers_with_registered_routes() -> list:
     ]
 
 
+def _provider_has_key(spec) -> bool:
+    """Report whether the provider's credential actually resolves.
+
+    Keyless (``none``) routes report ``False`` in the generic case, but the Kilo
+    free lanes authenticate with the owner-managed ``PADIEM_KILO_API_KEY``
+    binding at request time (policy v2). The health surface therefore reports
+    that binding's real state instead of a hard-coded ``False``, while the route
+    keeps its documented anonymous fallback when the binding is absent.
+    """
+
+    if spec.provider_id == "kilo":
+        from app.pilot.kilo_provider import KILO_CREDENTIAL_BINDING
+        from app.pilot.platform_secrets import (
+            CredentialSource,
+            PlatformProviderSpec,
+        )
+
+        scoped = PlatformProviderSpec(
+            provider_id=spec.provider_id,
+            credential_source=CredentialSource.PLATFORM_SECRET,
+            credential_binding_name=KILO_CREDENTIAL_BINDING,
+            base_origin=spec.base_origin,
+            allowed_hosts=spec.allowed_hosts,
+            enabled=spec.enabled,
+        )
+        return bool(resolve_secret(scoped))
+    return bool(resolve_secret(spec))
+
+
 def _registered_route_dicts() -> list[dict]:
     """Return the exact-ID route registry surface without prices or secrets.
 
@@ -443,7 +473,7 @@ async def pilot_health(request: Request):
             {
                 "id": spec.provider_id,
                 "registered": True,
-                "has_key": bool(resolve_secret(spec)),
+                "has_key": _provider_has_key(spec),
             }
             for spec in sorted(
                 _providers_with_registered_routes(),

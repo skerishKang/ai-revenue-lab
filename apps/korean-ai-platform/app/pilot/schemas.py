@@ -17,6 +17,7 @@ from typing import Any, Literal
 # Error types (replaces pydantic.ValidationError)
 # ---------------------------------------------------------------------------
 from app.pilot.errors import PilotError
+from app.pilot.model_output_caps import MAX_REQUEST_TOKENS
 
 
 class ValidationError(PilotError):
@@ -78,8 +79,10 @@ class PilotChatRequest:
         if self.temperature is not None and (self.temperature < 0.0 or self.temperature > 2.0):
             _raise("temperature must be between 0.0 and 2.0")
 
-        if self.max_tokens is not None and (self.max_tokens < 1 or self.max_tokens > 4096):
-            _raise("max_tokens must be between 1 and 4096")
+        if self.max_tokens is not None and (
+            self.max_tokens < 1 or self.max_tokens > MAX_REQUEST_TOKENS
+        ):
+            _raise(f"max_tokens must be between 1 and {MAX_REQUEST_TOKENS}")
 
         if len(self.messages) < 1:
             _raise("at least one message is required")

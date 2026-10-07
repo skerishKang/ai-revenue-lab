@@ -125,7 +125,7 @@ def test_allowlist_matches_2798_authority_correction() -> None:
         "atria",
         "space-bunny",
     )
-    assert smoke.PRO_CANDIDATE_IDS == ("luna",)
+    assert smoke.PRO_CANDIDATE_IDS == ("glm",)
     assert set(smoke.candidate_ids()) == {
         "agnes",
         "sensenova",
@@ -133,7 +133,7 @@ def test_allowlist_matches_2798_authority_correction() -> None:
         "motif",
         "mercury",
         "atria",
-        "luna",
+        "glm",
         "space-bunny",
     }
 
@@ -312,7 +312,7 @@ def test_actual_response_model_mismatch_is_failure_not_fallback() -> None:
 
 
 def test_attempt_count_two_or_fallback_true_is_failure() -> None:
-    spec_obj = smoke.CANDIDATE_REGISTRY["luna"]
+    spec_obj = smoke.CANDIDATE_REGISTRY["glm"]
     payload = json.loads(_chat(spec_obj).decode("utf-8"))
     payload["business14"]["attempt_count"] = 2
     payload["business14"]["fallback_used"] = True
@@ -326,7 +326,7 @@ def test_attempt_count_two_or_fallback_true_is_failure() -> None:
 
     stdout = io.StringIO()
     with contextlib.redirect_stdout(stdout):
-        rc = smoke.run("luna", transport=transport)
+        rc = smoke.run("glm", transport=transport)
 
     output = stdout.getvalue()
     assert rc == 1
@@ -881,7 +881,7 @@ def test_canonical_image_body_pins_exact_model_and_parts() -> None:
 
 
 def test_canonical_image_body_is_fail_closed_for_other_candidates() -> None:
-    for cid in ("agnes", "sensenova", "poolside", "motif", "mercury", "atria", "luna"):
+    for cid in ("agnes", "sensenova", "poolside", "motif", "mercury", "atria", "glm"):
         with pytest.raises(ValueError, match="image_modality_not_permitted"):
             smoke.canonical_image_body(smoke.CANDIDATE_REGISTRY[cid], _S1_TINY_PNG_URL)
 
@@ -988,7 +988,7 @@ def test_space_bunny_image_failure_posts_at_most_once() -> None:
     assert "FAIL_CHAT_HTTP_503" in stdout.getvalue()
 
 
-@pytest.mark.parametrize("candidate_id", ["agnes", "sensenova", "poolside", "motif", "mercury", "atria", "luna"])
+@pytest.mark.parametrize("candidate_id", ["agnes", "sensenova", "poolside", "motif", "mercury", "atria", "glm"])
 def test_image_modality_for_non_space_bunny_is_rejected_before_provider_call(
     candidate_id: str,
 ) -> None:
@@ -1402,7 +1402,13 @@ def test_text_default_behavior_is_unchanged_for_all_candidates() -> None:
     for cid in sorted(smoke.CANDIDATE_REGISTRY):
         spec_obj = smoke.CANDIDATE_REGISTRY[cid]
         body = smoke.canonical_chat_body(spec_obj)
-        assert set(body) == {"model", "messages", "temperature", "max_tokens"}
+        # The output budget follows the model's own advertised maximum: present
+        # when the provider publishes one, omitted (provider default) otherwise.
+        assert set(body) <= {"model", "messages", "temperature", "max_tokens"}
+        if spec_obj.max_output_tokens is None:
+            assert "max_tokens" not in body
+        else:
+            assert body["max_tokens"] == spec_obj.max_output_tokens
         assert body["messages"] == [
             {
                 "role": "user",

@@ -138,7 +138,7 @@ max_tokens explicitly set
   -> send the explicit value upstream
 ```
 
-Do not silently replace an omitted value with a hidden product budget. Product-specific workloads may intentionally choose a bounded value; that choice belongs to the product/runtime profile, not to a generic provider adapter default. The current explicit `1..4096` request range is retained pending the separate hard-ceiling/model-capability review in #3553.
+Do not silently replace an omitted value with a hidden product budget. Product-specific workloads may intentionally choose a bounded value; that choice belongs to the product/runtime profile, not to a generic provider adapter default. The explicit request ceiling is the per-model maximum output budget (`app/pilot/model_output_caps.py`, `MAX_REQUEST_TOKENS`), so a caller can request as much as the selected model actually supports instead of the former blanket `4096` that starved reasoning models into empty completions.
 
 ## Security boundary
 

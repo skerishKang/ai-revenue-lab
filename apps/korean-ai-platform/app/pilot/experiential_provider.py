@@ -14,9 +14,14 @@ EXPERIENTIAL_PROVIDER_ID = "experiential"
 EXPERIENTIAL_BASE_ORIGIN = "https://api.experientiallabs.ai/v1"
 EXPERIENTIAL_ALLOWED_HOST = "api.experientiallabs.ai"
 EXPERIENTIAL_CREDENTIAL_BINDING = "PADIEM_EXLAB_API_KEY"
-EXPERIENTIAL_MODEL_ID = "experiential/gpt-5.6-luna"
-EXPERIENTIAL_UPSTREAM_MODEL = "gpt-5.6-luna"
-EXPERIENTIAL_SOURCE_CHECKED_AT = "2026-09-18"
+# Owner selection 2026-10-07: the Experiential Labs lane moves off the retired
+# ``gpt-5.6-luna`` pin to the GLM model the owner named. The route id carries
+# the model name so the catalog can never silently drift from the upstream it
+# actually calls.
+EXPERIENTIAL_MODEL_ID = "experiential/glm-5.3-flash-abliterated"
+EXPERIENTIAL_UPSTREAM_MODEL = "glm-5.3-flash-abliterated"
+EXPERIENTIAL_DISPLAY_NAME = "Experiential Labs: GLM 5.3 Flash (abliterated)"
+EXPERIENTIAL_SOURCE_CHECKED_AT = "2026-10-07"
 
 
 def register_experiential_provider() -> None:
@@ -40,7 +45,7 @@ def register_experiential_provider() -> None:
     model = CatalogModel(
         model_id=EXPERIENTIAL_MODEL_ID,
         upstream_model=EXPERIENTIAL_UPSTREAM_MODEL,
-        display_name="Experiential Labs: GPT 5.6 Luna",
+        display_name=EXPERIENTIAL_DISPLAY_NAME,
         provider="Experiential Labs",
         provider_type="platform",
         input_price_usd_per_1m=None,

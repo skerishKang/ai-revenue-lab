@@ -71,6 +71,15 @@
     return localeMap[key] || key;
   }
 
+  // ── Per-model output budget ───────────────────────────────────────────
+  function applyModelBudget() {
+    var map = (state.config && state.config.modelMaxTokens) || {};
+    var cap = map[state.activeModel];
+    if (cap) {
+      state.maxTokens = cap;
+    }
+  }
+
   // ── Model change ──────────────────────────────────────────────────────
   function onModelChange() {
     var opt = DOM.model.options[DOM.model.selectedIndex];
@@ -81,6 +90,7 @@
     if (DOM._initializing) {
       state.activeModel = newModel;
       state.activeProvider = newProvider;
+      applyModelBudget();
       updateProviderDisplay();
       return;
     }
@@ -88,6 +98,7 @@
     var providerChanged = newProvider !== state.activeProvider;
     state.activeModel = newModel;
     state.activeProvider = newProvider;
+    applyModelBudget();
     updateProviderDisplay();
 
     // Clear key + messages for isolation
@@ -336,6 +347,7 @@
     if (config.models && config.models.length > 0) {
       state.activeModel = config.models[0].id;
       state.activeProvider = config.models[0].provider_name || "";
+      applyModelBudget();
     }
 
     DOM.model = document.getElementById("ws_model");

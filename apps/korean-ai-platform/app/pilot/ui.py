@@ -104,7 +104,10 @@ async def pilot_page_post(
     model_id = form.get("model_id", "")
     prompt = form.get("prompt", "")
     temperature = float(form.get("temperature", 0.2))
-    max_tokens = int(form.get("max_tokens", 4096))
+    # Per-model budget: an empty field means "omit max_tokens" so the provider's
+    # own default ceiling applies instead of a hard-coded low value.
+    _max_tokens_raw = str(form.get("max_tokens", "") or "").strip()
+    max_tokens = int(_max_tokens_raw) if _max_tokens_raw.isdigit() else None
     state = resolve_configuration()
 
     if state == PilotConfigurationState.INVALID_REGISTRY:

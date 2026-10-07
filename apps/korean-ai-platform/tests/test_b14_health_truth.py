@@ -222,6 +222,23 @@ def test_business14_providers_reflect_registered_route_owners(client):
     assert kilo["has_key"] is False
 
 
+def test_kilo_has_key_reports_the_real_binding_when_present(client, monkeypatch):
+    """Owner correction 2026-10-07: ``has_key`` is truthful, not hard-coded.
+
+    The Kilo free lanes authenticate with the owner-managed
+    ``PADIEM_KILO_API_KEY`` binding at request time, so the health surface must
+    report that binding's real state instead of an unconditional ``False``.
+    """
+    _set_live()
+    monkeypatch.setenv("PADIEM_KILO_API_KEY", "kil_live_test_key_1234567890")
+
+    data = client.get("/api/pilot/health").json()
+
+    kilo = next(p for p in data["business14"]["providers"] if p["id"] == "kilo")
+    assert kilo["registered"] is True
+    assert kilo["has_key"] is True
+
+
 def test_health_and_models_surfaces_have_zero_openrouter_mentions(client):
     _set_live()
 

@@ -58,7 +58,7 @@ All workspace API requests are validated against `PilotChatRequest` schema:
 - `role` restricted to `system`, `user`, `assistant`
 - `content` non-empty, max 32,000 chars
 - `temperature` 0.0–2.0
-- `max_tokens` 1–4096
+- `max_tokens` 1–`MAX_REQUEST_TOKENS` (per-model maximum output budget)
 - `messages` 1–100 items
 
 ## Error Safety
