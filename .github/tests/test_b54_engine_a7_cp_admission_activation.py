@@ -94,10 +94,39 @@ def test_activation_mutates_only_cp_admission_worker_and_has_no_provider_or_mani
         assert forbidden not in activation
 
 
-def test_post_readback_requires_private_ingress_identity_binding_and_single_served_version() -> None:
+def test_post_readback_requires_private_ingress_identity_binding_and_canonical_served_version() -> None:
     text = _text()
     assert '.result.enabled == false and .result.previews_enabled == false' in text
     assert '"CONTROL_PLANE_IDENTITY"' in text
     assert '"padiem-control-plane-identity"' in text
-    assert ".result.deployments[0].versions[0].percentage == 100" in text
+    assert text.count("cloudflare_served_version_cli.py resolve-active") == 2
+    assert ".result.deployments[0].versions[0].version_id" not in text
+    assert ".result.deployments[0].versions[0].percentage" not in text
     assert "ROLLBACK_POSTURE=ENGINE_STILL_DETACHED_CP_WORKER_MAY_REMAIN_INERT" in text
+
+
+def test_readonly_present_state_and_post_activation_readback_both_use_canonical_cli() -> None:
+    wf = _workflow()
+    readonly = "\n".join(
+        step.get("run", "")
+        for step in wf["jobs"]["cloudflare-readonly"]["steps"]
+        if "run" in step
+    )
+    activation = "\n".join(
+        step.get("run", "")
+        for step in wf["jobs"]["activate-cp-engine-admission-worker"]["steps"]
+        if "run" in step
+    )
+
+    assert readonly.count("cloudflare_served_version_cli.py resolve-active") == 1
+    assert activation.count("cloudflare_served_version_cli.py resolve-active") == 1
+    assert "CP_ENGINE_ADMISSION_WORKER=ABSENT" in readonly
+    assert "CP_ENGINE_ADMISSION_WORKER=PRESENT" in readonly
+    assert "CP_ENGINE_ADMISSION_WORKER=PRESENT" in activation
+    assert "ENGINE_BINDING_MUTATION=0" in activation
+
+
+def test_workflow_retriggers_when_generic_served_version_cli_changes() -> None:
+    text = _text()
+    trigger_paths = text.split("on:", 1)[1].split("workflow_dispatch:", 1)[0]
+    assert ".github/scripts/cloudflare_served_version_cli.py" in trigger_paths

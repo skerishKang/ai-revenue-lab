@@ -158,6 +158,7 @@ def _assert_quote(
 
 def _pdf_download_probe(page, counters: Counters) -> None:
     before = counters.pdf_posts
+    response = None
     try:
         with page.expect_download(timeout=30000) as download_info:
             with page.expect_response(
@@ -168,15 +169,20 @@ def _pdf_download_probe(page, counters: Counters) -> None:
                 timeout=30000,
             ) as response_info:
                 page.locator("#printPdf").click()
-        response = response_info.value
+            response = response_info.value
+            if response.status != 200:
+                _fail("pdf_http_" + str(response.status))
+            media_type = (response.headers.get("content-type") or "").split(";", 1)[0].strip().lower()
+            if media_type != "application/pdf":
+                _fail("pdf_content_type_mismatch")
         download = download_info.value
+    except SmokeFailure:
+        raise
     except Exception as exc:
-        raise SmokeFailure("pdf_download_missing") from exc
-    if response.status != 200:
-        _fail("pdf_http_" + str(response.status))
-    media_type = (response.headers.get("content-type") or "").split(";", 1)[0].strip().lower()
-    if media_type != "application/pdf":
-        _fail("pdf_content_type_mismatch")
+        if response is not None:
+            raise SmokeFailure("pdf_download_missing_after_http_" + str(response.status)) from exc
+        raise SmokeFailure("pdf_response_or_download_missing") from exc
+
     body = response.body()
     if not isinstance(body, bytes) or not body.startswith(b"%PDF-"):
         _fail("pdf_bytes_invalid")
@@ -187,7 +193,7 @@ def _pdf_download_probe(page, counters: Counters) -> None:
 
 
 def _open_result_and_download(page, counters: Counters) -> None:
-    _click_chip(page, "??? ????")
+    _click_chip(page, "견적서 확인하기")
     page.locator("#directView").wait_for(state="visible", timeout=10000)
     _pdf_download_probe(page, counters)
 
