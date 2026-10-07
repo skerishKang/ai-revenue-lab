@@ -22,6 +22,7 @@ def test_settings_from_values_and_env_share_validation(monkeypatch):
 
     monkeypatch.setenv("PADIEM_CHAT_RUNTIME_MODE", "b14")
     monkeypatch.setenv("PADIEM_CHAT_B14_BASE_URL", "https://example.com/root/")
+    monkeypatch.delenv("PADIEM_CHAT_B66_QUOTE_BASE_URL", raising=False)
     monkeypatch.setenv("PADIEM_CHAT_TIMEOUT_SECONDS", "12")
     monkeypatch.delenv("PADIEM_CHAT_LIVE_ENABLED", raising=False)
     monkeypatch.delenv("PADIEM_CHAT_WEB_PROVIDER", raising=False)
@@ -80,11 +81,13 @@ def test_server_only_worker_bindings_and_google_config_validation():
     assert WORKER_BINDING_NAMES == {
         "PADIEM_CHAT_RUNTIME_MODE",
         "PADIEM_CHAT_B14_BASE_URL",
+        "PADIEM_CHAT_B66_QUOTE_BASE_URL",
         "PADIEM_CHAT_TIMEOUT_SECONDS",
         "PADIEM_CHAT_LIVE_ENABLED",
         "PADIEM_CHAT_WEB_PROVIDER",
         "FIRECRAWL_API_KEY",
         "PADIEM_CHAT_DAUM_REST_API_KEY",
+        "TINYFISH_API_KEY",
         "PADIEM_CHAT_WEB_TIMEOUT_SECONDS",
         "PADIEM_CHAT_AUTH_MODE",
         "PADIEM_CHAT_PUBLIC_BASE_URL",
@@ -105,6 +108,7 @@ def test_server_only_worker_bindings_and_google_config_validation():
     assert "BUSINESS14_PROVIDER_KEY" not in joined
     assert "FIRECRAWL_API_KEY" in WORKER_BINDING_NAMES
     assert "PADIEM_CHAT_DAUM_REST_API_KEY" in WORKER_BINDING_NAMES
+    assert "TINYFISH_API_KEY" in WORKER_BINDING_NAMES
 
     with pytest.raises(ConfigError):
         settings_from_worker_bindings({"PADIEM_CHAT_WEB_PROVIDER": "firecrawl"})
@@ -173,6 +177,27 @@ def test_quota_config_is_server_owned_bounded_and_secret_redacted():
             settings_from_worker_bindings({key: "0"})
         with pytest.raises(ConfigError):
             settings_from_worker_bindings({key: "unlimited"})
+
+
+def test_b66_worker_binding_and_csp_share_one_validated_origin():
+    settings = settings_from_worker_bindings({
+        "PADIEM_CHAT_B66_QUOTE_BASE_URL": "https://quote.example.test/",
+    })
+    assert settings.b66_quote_base_url == "https://quote.example.test"
+
+    default_csp = response_headers_for_path("/")["Content-Security-Policy"]
+    assert "frame-src 'none'" in default_csp
+
+    enabled_csp = response_headers_for_path(
+        "/",
+        b66_quote_base_url=settings.b66_quote_base_url,
+    )["Content-Security-Policy"]
+    frame_directives = [
+        part.strip()
+        for part in enabled_csp.split(";")
+        if part.strip().startswith("frame-src ")
+    ]
+    assert frame_directives == ["frame-src https://quote.example.test"]
 
 
 def test_security_headers_and_api_auth_no_store():

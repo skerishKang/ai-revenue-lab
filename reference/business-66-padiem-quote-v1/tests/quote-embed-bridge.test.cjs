@@ -1,0 +1,411 @@
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+
+const Core = require("../quote-core.js");
+const Template = require("../quote-template.js");
+const Renderer = require("../quote-template-renderer.js");
+const Skill = require("../quote-skill.js");
+const Bridge = require("../quote-embed-bridge.js");
+
+const NOW = "2026-10-01T05:00:00.000Z";
+
+function approvedSkill() {
+  const base = {
+    id: "skill-embed-test",
+    name: "우리 견적서",
+    fixedDefaults: {
+      sender: {
+        company: "한빛설비",
+        rep: "김대표",
+        bizNo: "123-45-67890",
+        address: "광주광역시",
+        phone: "062-000-0000",
+        email: "quote@example.com",
+        presetId: "saved-skill"
+      },
+      validDays: 30,
+      taxMode: "EXCLUSIVE",
+      memo: "발주 후 일정 협의"
+    },
+    variableSchema: {
+      recipient: true,
+      quoteNo: true,
+      issueDate: true,
+      items: true,
+      memo: true,
+      taxMode: true
+    },
+    internalTemplate: Template.serializeTemplate(Template.builtInTemplate()),
+    provenance: {
+      sourceKind: "manual",
+      sourceName: "",
+      sourceRef: "manual:operator",
+      capturedAt: NOW,
+      warnings: [],
+      unknowns: [],
+      evidence: []
+    },
+    approval: null,
+    createdAt: NOW,
+    updatedAt: NOW
+  };
+  const candidate = Skill.buildSkill(base);
+  assert.ok(candidate && candidate.approved === false);
+  const approved = Skill.buildSkill(Object.assign({}, base, {
+    approval: {
+      schemaVersion: 1,
+      status: "approved",
+      skillFingerprint: candidate.fingerprint,
+      approvedBy: "central-cto",
+      approvedAt: NOW,
+      approvalRef: "issue-3310"
+    }
+  }));
+  assert.ok(approved && approved.approved === true);
+  return approved;
+}
+
+function approvedSkillWithLogo(assetId) {
+  const content = JSON.parse(JSON.stringify(Template.builtInTemplate().content));
+  content.slots = { logo: assetId, stamp: "" };
+  const templateCandidate = Template.buildProfile({
+    id: "template-private-logo",
+    name: "로고 견적서",
+    builtin: false,
+    isDefault: false,
+    approval: null,
+    createdAt: NOW,
+    updatedAt: NOW,
+    content
+  });
+  const approvedTemplate = Template.buildProfile({
+    id: templateCandidate.id,
+    name: templateCandidate.name,
+    builtin: false,
+    isDefault: false,
+    approval: {
+      schemaVersion: 1,
+      status: "approved",
+      contentFingerprint: templateCandidate.fingerprint,
+      approvedBy: "central-cto",
+      approvedAt: NOW,
+      approvalRef: "issue-3402"
+    },
+    createdAt: NOW,
+    updatedAt: NOW,
+    content
+  });
+  assert.equal(approvedTemplate.approved, true);
+
+  const base = approvedSkill();
+  const skillCandidate = Skill.buildSkill({
+    id: "skill-embed-logo",
+    name: "로고 견적서",
+    fixedDefaults: base.fixedDefaults,
+    variableSchema: base.variableSchema,
+    internalTemplate: Template.serializeTemplate(approvedTemplate),
+    provenance: base.provenance,
+    approval: null,
+    createdAt: NOW,
+    updatedAt: NOW
+  });
+  assert.ok(skillCandidate && skillCandidate.approved === false);
+  const approved = Skill.buildSkill({
+    id: "skill-embed-logo",
+    name: "로고 견적서",
+    fixedDefaults: base.fixedDefaults,
+    variableSchema: base.variableSchema,
+    internalTemplate: Template.serializeTemplate(approvedTemplate),
+    provenance: base.provenance,
+    approval: {
+      schemaVersion: 1,
+      status: "approved",
+      skillFingerprint: skillCandidate.fingerprint,
+      approvedBy: "central-cto",
+      approvedAt: NOW,
+      approvalRef: "issue-3402"
+    },
+    createdAt: NOW,
+    updatedAt: NOW
+  });
+  assert.ok(approved && approved.approved === true);
+  return approved;
+}
+
+function fakeDocument() {
+  const ids = [
+    "pvTitle", "pvQuoteNo", "pvDate", "pvValidity", "pvValidUntil", "pvTaxMode",
+    "pvSenderHeading", "pvSenderCompany", "pvSenderRep", "pvSenderBizNo",
+    "pvSenderAddress", "pvSenderContact", "pvRecipientHeading",
+    "pvRecipientCompany", "pvRecipientPerson", "pvRecipientAddress",
+    "pvRecipientEmail", "pvItemsHead", "pvItems", "pvSubtotalLabel",
+    "pvSubtotal", "pvVatLabel", "pvVat", "pvGrandLabel", "pvGrand",
+    "pvMemo", "pvMark", "pvLogo", "pvStamp", "quotePaper", "embedStatus"
+  ];
+  const elements = new Map();
+  for (const id of ids) {
+    const vars = {};
+    elements.set(id, {
+      id,
+      textContent: "",
+      innerHTML: "",
+      dataset: {},
+      hidden: false,
+      attributes: {},
+      setAttribute(name, value) { this.attributes[name] = String(value); },
+      removeAttribute(name) { delete this.attributes[name]; },
+      style: {
+        setProperty(name, value) { vars[name] = value; },
+        vars
+      }
+    });
+  }
+  const head = {
+    children: [],
+    appendChild(node) {
+      this.children.push(node);
+      if (node.id) elements.set(node.id, node);
+      return node;
+    }
+  };
+  return {
+    head,
+    elements,
+    getElementById(id) { return elements.get(id) || null; },
+    getElementsByTagName(name) { return name === "head" ? [head] : []; },
+    createElement(tag) { return { tagName: tag.toUpperCase(), id: "", textContent: "" }; }
+  };
+}
+
+const skill = approvedSkill();
+const candidate = {
+  recipient: { company: "ABC건설", person: null, address: null, email: null },
+  quoteNo: null,
+  issueDate: null,
+  items: [{ name: "배관", qty: 20, unitPrice: 30000 }],
+  memo: null,
+  taxMode: null,
+  missing: []
+};
+
+const normalized = Bridge.normalizeRenderMessage({
+  type: Bridge.REQUEST_TYPE,
+  requestId: "req-1",
+  skill,
+  candidate
+});
+assert.ok(normalized);
+assert.equal(normalized.requestId, "req-1");
+
+const defaults = Core.createDefaultDraft();
+const input = Bridge.buildStructuredInput(candidate, Core);
+assert.equal(input.quoteNo, defaults.meta.quoteNo);
+assert.equal(input.issueDate, defaults.meta.issueDate);
+assert.equal(input.recipient.company, "ABC건설");
+assert.equal(input.items[0].qty, 20);
+assert.equal(input.items[0].unitPrice, 30000);
+
+const detailedCandidate = {
+  recipient: { company: "ABC건설", person: null, address: null, email: null },
+  quoteNo: null,
+  issueDate: null,
+  projectName: "스마트팜 환경제어설비",
+  items: [{
+    id: "summary-1",
+    name: "ICT환경제어 시스템",
+    spec: "주장치 및 스마트팜 전용S/W",
+    unit: "식",
+    qty: 1,
+    unitPrice: 1,
+    note: "설치 포함"
+  }],
+  detailGroups: [{
+    id: "detail-1",
+    summaryItemId: "summary-1",
+    title: "스마트팜 상세",
+    items: [
+      { name: "주장치", section: "1. 스마트팜", qty: 1, unitPrice: 15000000 },
+      { name: "설치", section: "3. 인건비 및 잡자재", qty: 1, unitPrice: 1330000 }
+    ]
+  }],
+  memo: null,
+  taxMode: null,
+  missing: []
+};
+const detailedInput = Bridge.buildStructuredInput(detailedCandidate, Core);
+assert.equal(detailedInput.projectName, "스마트팜 환경제어설비");
+assert.equal(detailedInput.items[0].spec, "주장치 및 스마트팜 전용S/W");
+assert.equal(detailedInput.items[0].unit, "식");
+assert.equal(detailedInput.items[0].note, "설치 포함");
+assert.equal(detailedInput.detailGroups[0].summaryItemId, "summary-1");
+assert.equal(detailedInput.detailGroups[0].items[0].section, "1. 스마트팜");
+
+const doc = fakeDocument();
+const rendered = Bridge.renderRequest(
+  {
+    type: Bridge.REQUEST_TYPE,
+    requestId: "req-1",
+    skill,
+    candidate
+  },
+  { Core, SavedSkill: Skill, Renderer },
+  doc
+);
+assert.equal(rendered.ok, true);
+assert.equal(rendered.printReady, true);
+assert.equal(rendered.quoteNo, defaults.meta.quoteNo);
+assert.equal(rendered.issueDate, defaults.meta.issueDate);
+assert.equal(doc.getElementById("pvSenderCompany").textContent, "한빛설비");
+assert.equal(doc.getElementById("pvRecipientCompany").textContent, "ABC건설");
+assert.match(doc.getElementById("pvItems").innerHTML, /배관/);
+assert.notEqual(doc.getElementById("pvSubtotal").textContent, "");
+assert.notEqual(doc.getElementById("pvGrand").textContent, "");
+assert.ok(doc.getElementById("quotePaper").style.vars["--quote-accent"]);
+
+const accountProfile = {
+  company: "Runtime Company",
+  representative: "Runtime Rep",
+  contactPerson: "Runtime Contact",
+  businessNumber: "000-11-22222",
+  address: "Runtime Address",
+  phone: "000-000-0000",
+  email: "runtime@example.test",
+  defaultValidityDays: 45,
+  defaultTaxMode: null
+};
+const profileMessage = Bridge.normalizeRenderMessage({
+  type: Bridge.REQUEST_TYPE,
+  requestId: "req-company-profile",
+  skill,
+  candidate,
+  companyProfile: accountProfile
+});
+assert.ok(profileMessage);
+assert.equal(profileMessage.companyProfile.company, "Runtime Company");
+assert.equal(profileMessage.companyProfile.defaultValidityDays, 45);
+const profileDoc = fakeDocument();
+const profileRendered = Bridge.renderRequest(
+  {
+    type: Bridge.REQUEST_TYPE,
+    requestId: "req-company-profile",
+    skill,
+    candidate,
+    companyProfile: accountProfile
+  },
+  { Core, SavedSkill: Skill, Renderer },
+  profileDoc
+);
+assert.equal(profileRendered.ok, true);
+assert.equal(profileDoc.getElementById("pvSenderCompany").textContent, "Runtime Company");
+assert.equal(Skill.normalizeSkill(skill).fingerprint, skill.fingerprint);
+assert.equal(Bridge.normalizeRenderMessage({
+  type: Bridge.REQUEST_TYPE,
+  requestId: "req-company-profile-invalid",
+  skill,
+  candidate,
+  companyProfile: { company: "Runtime Company" }
+}), null);
+
+const logoAssetId = "b66asset_" + "a".repeat(32);
+const logoSkill = approvedSkillWithLogo(logoAssetId);
+const logoDataUrl = "data:image/png;base64,iVBORw0KGgo=";
+const logoDoc = fakeDocument();
+const logoRendered = Bridge.renderRequest(
+  {
+    type: Bridge.REQUEST_TYPE,
+    requestId: "req-logo",
+    skill: logoSkill,
+    candidate,
+    assets: { logo: { assetId: logoAssetId, dataUrl: logoDataUrl } }
+  },
+  { Core, SavedSkill: Skill, Renderer },
+  logoDoc
+);
+assert.equal(logoRendered.ok, true);
+assert.equal(logoDoc.getElementById("pvLogo").hidden, false);
+assert.equal(logoDoc.getElementById("pvLogo").attributes.src, logoDataUrl);
+assert.equal(
+  Bridge.renderRequest(
+    {
+      type: Bridge.REQUEST_TYPE,
+      requestId: "req-logo-missing",
+      skill: logoSkill,
+      candidate,
+      assets: {}
+    },
+    { Core, SavedSkill: Skill, Renderer },
+    fakeDocument()
+  ).code,
+  "private_asset_missing"
+);
+assert.equal(Bridge.normalizeAssetEntry({ assetId: logoAssetId, dataUrl: "https://evil.test/x.png" }), null);
+assert.equal(Bridge.normalizeAssetEntry({ assetId: "not-an-asset", dataUrl: logoDataUrl }), null);
+
+const response = Bridge.publicResponse(rendered, "req-1");
+assert.deepEqual(Object.keys(response).sort(), [
+  "code", "issueDate", "missing", "ok", "printReady", "quoteNo", "requestId", "type"
+].sort());
+assert.ok(!("totals" in response));
+assert.ok(!("skill" in response));
+assert.ok(!("renderModel" in response));
+
+const unapproved = JSON.parse(JSON.stringify(skill));
+unapproved.approval = null;
+const denied = Bridge.renderRequest(
+  {
+    type: Bridge.REQUEST_TYPE,
+    requestId: "req-denied",
+    skill: unapproved,
+    candidate
+  },
+  { Core, SavedSkill: Skill, Renderer },
+  fakeDocument()
+);
+assert.equal(denied.ok, false);
+assert.equal(denied.code, "skill_not_approved");
+
+assert.equal(Bridge.normalizeRenderMessage({
+  type: Bridge.REQUEST_TYPE,
+  requestId: "req-bad",
+  skill,
+  candidate,
+  tenant_id: "tenant_evil"
+}), null);
+
+const source = fs.readFileSync(path.join(__dirname, "..", "quote-embed-bridge.js"), "utf8");
+const boot = fs.readFileSync(path.join(__dirname, "..", "quote-embed-browser.js"), "utf8");
+const html = fs.readFileSync(path.join(__dirname, "..", "embed.html"), "utf8");
+const allEmbedSource = source + "\n" + boot + "\n" + html;
+
+for (const forbidden of [
+  "localStorage", "sessionStorage", "indexedDB", "FileReader", "FormData",
+  "XMLHttpRequest", "WebSocket", "navigator.sendBeacon"
+]) {
+  assert.ok(!allEmbedSource.includes(forbidden), "forbidden embed capability: " + forbidden);
+}
+assert.ok(!/\bfetch\s*\(/.test(allEmbedSource), "embed performs no fetch");
+assert.ok(source.includes("MAX_MESSAGE_JSON_CHARS = 1024 * 1024"), "two bounded private image slots fit in the render envelope");
+assert.match(html, /connect-src 'none'/);
+assert.match(html, /img-src data:/);
+assert.match(html, /id="pvLogo"/);
+assert.match(html, /id="pvStamp"/);
+assert.match(html, /quote-core\.js/);
+assert.match(html, /quote-template\.js/);
+assert.match(html, /quote-template-renderer\.js/);
+assert.match(html, /quote-skill\.js/);
+assert.ok(!html.includes("app.js"));
+assert.ok(!html.includes("easy-mode.js"));
+assert.ok(!html.includes("file-intake.js"));
+assert.ok(!html.includes("quote-skill-store.js"));
+
+console.log("B66_CANONICAL_EMBED_BRIDGE=PASS");
+console.log("DUPLICATED_QUOTECORE=0");
+console.log("DUPLICATED_RENDERER=0");
+console.log("NETWORK_CALLS_FROM_EMBED=0");
+console.log("PRIVATE_LOGO_RENDER=PASS");
+console.log("PRIVATE_ASSET_MISMATCH_FAIL_CLOSED=YES");
+console.log("LOCAL_STORAGE_CALLS=0");
+console.log("SOURCE_DOCUMENT_PARSE_CALLS=0");
+console.log("QUOTE_NO_BROWSER_DEFAULT=YES");
+console.log("ISSUE_DATE_BROWSER_DEFAULT=YES");

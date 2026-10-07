@@ -1,10 +1,11 @@
-"""#2094/#2097: retired Kilo free lanes must be absent from every executable route lane.
+"""#2094/#2097 + LOCAL4: retired Kilo free lanes must be absent from every executable route lane.
 
 The public Gateway model list re-checked on 2026-09-08 no longer offers
 ``minimax/minimax-m3:free`` or ``tencent/hy3:free``. #2097 unregistered both
 from the catalog and removed the minimax position from fixed_chain_v1, so
 explicit resolution fails closed with ``unsupported_model`` /
-``model_not_in_catalog``.
+``model_not_in_catalog``. The owner final retirement decision (2026-10-07)
+adds the Space Bunny lane to the same retired set: it executes nowhere.
 """
 
 from __future__ import annotations
@@ -15,6 +16,7 @@ from app.pilot.kilo_provider import (
     KILO_MINIMAX_M3_MODEL_ID,
     KILO_NEMOTRON_MODEL_ID,
     KILO_LAGUNA_MODEL_ID,
+    KILO_SPACE_BUNNY_MODEL_ID,
     RETIRED_KILO_FREE_MODEL_IDS,
 )
 from app.pilot.routing_policy import B14_AUTO_CHAIN
@@ -22,7 +24,7 @@ from app.pilot.routing_policy import B14_AUTO_CHAIN
 
 def test_retired_free_ids_are_declared() -> None:
     assert RETIRED_KILO_FREE_MODEL_IDS == frozenset(
-        {KILO_MINIMAX_M3_MODEL_ID, KILO_HY3_MODEL_ID}
+        {KILO_MINIMAX_M3_MODEL_ID, KILO_HY3_MODEL_ID, KILO_SPACE_BUNNY_MODEL_ID}
     )
 
 

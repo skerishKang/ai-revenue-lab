@@ -67,6 +67,7 @@ from padiem_control_plane.tenants import (
     TenantMembershipState,
 )
 
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .claw_automation_execution_target import (
     compose_canonical_automation_execution_intent,
     resolve_automation_execution_revision,
@@ -173,8 +174,9 @@ async def _read_bounded_json(request: Request) -> tuple[dict[str, Any] | None, J
                 )
         except ValueError:
             return None, _error(400, "invalid_request", "요청을 해석할 수 없습니다.")
-    raw = await request.body()
-    if len(raw) > MAX_BODY_BYTES:
+    try:
+        raw = await read_bounded_request_body(request, max_bytes=MAX_BODY_BYTES)
+    except RequestBodyTooLarge:
         return None, _error(413, "request_body_too_large", "요청 본문이 너무 큽니다.")
     try:
         body = json.loads(raw)

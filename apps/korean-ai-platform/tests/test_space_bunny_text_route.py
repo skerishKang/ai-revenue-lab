@@ -1,15 +1,16 @@
-"""Route execution contract for the Space Bunny text+vision primary lane (#3209).
+"""Retirement contract for the historical Space Bunny B14 lane (LOCAL4 final).
 
-Owner decision: ``stealth/space-bunny-alpha`` is both the canonical text
-primary and the canonical vision primary (decision source #3143, revised
-#3209). Everything here runs against the real registry, the real provider
-spec, and the real router resolvers — no string-presence checks — so the
-evidence is the actual registry result, not a keyword match.
+Owner final decision (2026-10-07): the Space Bunny lane executes nowhere —
+no product execution, no manual execution, no auto route, no fallback. These
+tests pin that end state without any live provider call:
 
-Scope is the existing single-image product contract: the lane declares
-``image`` alongside ``chat``/``coding``/``free`` and reuses the existing B14
-multimodal path. No ``video``/``audio``/generic-multimodal capability is
-declared and the global ``b14/auto`` chain stays unchanged.
+- the historical identity constants survive as metadata only;
+- the lane is absent from KILO_FREE_ROUTES, from the catalog, and from the
+  fixed b14/auto chain, and is declared in RETIRED_KILO_FREE_MODEL_IDS;
+- manual resolution fails closed (model_not_in_catalog);
+- the model-scoped auth special-case is gone from the platform adapter;
+- the global b14/auto chain and its fallback set stay unchanged;
+- Business 66 browser sources still carry no model/provider identity.
 """
 
 from __future__ import annotations
@@ -23,18 +24,17 @@ from app.pilot import platform_secrets as ps
 from app.pilot.catalog import CATALOG_MODELS, get_catalog_by_id
 from app.pilot.kilo_provider import (
     KILO_FREE_ROUTES,
-    KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
     KILO_HY3_MODEL_ID,
     KILO_LAGUNA_MODEL_ID,
-    KILO_LAGUNA_UPSTREAM_MODEL,
     KILO_MINIMAX_M3_MODEL_ID,
     KILO_NEMOTRON_MODEL_ID,
-    KILO_NEMOTRON_UPSTREAM_MODEL,
-    KILO_PROVIDER_ID,
+    KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
     KILO_SPACE_BUNNY_MODEL_ID,
     KILO_SPACE_BUNNY_SOURCE_CHECKED_AT,
     KILO_SPACE_BUNNY_UPSTREAM_MODEL,
+    RETIRED_KILO_FREE_MODEL_IDS,
 )
+from app.pilot.routing_policy import B14_AUTO_CHAIN
 from app.pilot.router_core import resolve_auto_route, resolve_manual_route
 
 B66_BROWSER_DIR = (
@@ -62,99 +62,41 @@ def _browser_sources() -> list[Path]:
     )
 
 
-def test_space_bunny_route_is_registered_on_the_existing_kilo_provider() -> None:
-    model = get_catalog_by_id(KILO_SPACE_BUNNY_MODEL_ID)
-    assert model is not None, "space bunny lane is not registered in the catalog"
-    assert model.platform_provider_id == KILO_PROVIDER_ID
-    assert model.upstream_model == KILO_SPACE_BUNNY_UPSTREAM_MODEL
-    assert model.upstream_model == "stealth/space-bunny-alpha"
-    assert model.provider == "Kilo Gateway / Stealth"
-    assert model.enabled is True
-    assert model.input_price_usd_per_1m == 0.0
-    assert model.output_price_usd_per_1m == 0.0
-    assert model.source_checked_at == KILO_SPACE_BUNNY_SOURCE_CHECKED_AT
-    # Context-window authority stays exactly as current main (#3209): the lane
-    # keeps the explicit 0 sentinel instead of inventing a value.
-    assert model.context_window == 0
+def test_space_bunny_identity_survives_only_as_historical_metadata() -> None:
+    # Historical constants are preserved for audit/evidence purposes.
+    assert KILO_SPACE_BUNNY_MODEL_ID == "kilo/stealth-space-bunny-alpha"
+    assert KILO_SPACE_BUNNY_UPSTREAM_MODEL == "stealth/space-bunny-alpha"
+    assert KILO_SPACE_BUNNY_SOURCE_CHECKED_AT == "2026-09-28"
+    assert KILO_SPACE_BUNNY_CREDENTIAL_BINDING == "PADIEM_KILO_API_KEY"
 
 
-def test_space_bunny_uses_optional_model_scoped_kilo_secret(monkeypatch) -> None:
-    spec = ps.get_platform_provider(KILO_PROVIDER_ID)
-    assert spec is not None
-
-    # Shared Kilo provider stays keyless.
-    assert spec.credential_source == ps.CredentialSource.NONE
-    assert spec.credential_binding_name == ""
-    assert "Authorization" not in plat._request_headers(spec)
-
-    # Existing owner-managed key is used when present.
-    monkeypatch.setenv(
-        KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
-        "kilo_live_abcdefghijklmnopqrstuvwxyz1234",
-    )
-    authenticated = plat._request_headers(spec, model_id=KILO_SPACE_BUNNY_MODEL_ID)
-    assert authenticated["Authorization"] == "Bearer kilo_live_abcdefghijklmnopqrstuvwxyz1234"
-
-    # Missing optional key falls back to the anonymous request shape.
-    monkeypatch.delenv(KILO_SPACE_BUNNY_CREDENTIAL_BINDING, raising=False)
-    anonymous = plat._request_headers(spec, model_id=KILO_SPACE_BUNNY_MODEL_ID)
-    assert anonymous == {"Content-Type": "application/json"}
-
-
-def test_space_bunny_declares_text_and_image_capabilities_only() -> None:
-    model = get_catalog_by_id(KILO_SPACE_BUNNY_MODEL_ID)
-    assert model is not None
-    assert {"chat", "coding", "free", "image"}.issubset(model.capabilities)
-    # Video product activation stays off (#3209): upstream metadata may list
-    # video input, but no video/audio/wildcard capability is declared.
-    unsupported = {"vision", "video", "multimodal", "audio"}
-    assert model.capabilities & unsupported == frozenset()
-
-
-def test_space_bunny_manual_resolution_is_explicit_and_fallback_free() -> None:
-    decision = resolve_manual_route(KILO_SPACE_BUNNY_MODEL_ID)
-    assert decision.route_mode == "manual"
-    assert decision.selected_model == KILO_SPACE_BUNNY_MODEL_ID
-    assert decision.selected_upstream_model == "stealth/space-bunny-alpha"
-    assert decision.platform_provider_id == KILO_PROVIDER_ID
-    assert decision.selected_route_id == f"platform:{KILO_SPACE_BUNNY_MODEL_ID}"
-    assert decision.fallback_allowed is False
-    assert decision.eligible_fallback == []
-    assert decision.max_attempts == 1
-    assert decision.credential_available is True
-    assert decision.credential_status == "key_available"
-
-
-def test_existing_kilo_routes_are_preserved_unchanged() -> None:
-    nemotron = get_catalog_by_id(KILO_NEMOTRON_MODEL_ID)
-    laguna = get_catalog_by_id(KILO_LAGUNA_MODEL_ID)
-    assert nemotron is not None and laguna is not None
-    assert nemotron.upstream_model == KILO_NEMOTRON_UPSTREAM_MODEL
-    assert laguna.upstream_model == KILO_LAGUNA_UPSTREAM_MODEL
-    # nemotron is seeded from ``CATALOG_MODELS`` (the provider loop skips an
-    # already-present id), laguna comes from the loop itself. Neither set is
-    # widened by the new lane — this pins their current exact values.
-    assert nemotron.capabilities == frozenset({"chat", "coding", "free"})
-    assert laguna.capabilities == frozenset({"chat", "free"})
-    assert nemotron.context_window == 1_000_000
-    assert laguna.context_window == 262_144
-
-    # Retired lanes stay unregistered (#2097): the new lane must not revive them.
-    assert get_catalog_by_id(KILO_HY3_MODEL_ID) is None
-    assert get_catalog_by_id(KILO_MINIMAX_M3_MODEL_ID) is None
-
-    registered = {route.model_id for route in KILO_FREE_ROUTES}
-    assert registered == {
-        KILO_NEMOTRON_MODEL_ID,
-        KILO_LAGUNA_MODEL_ID,
-        KILO_SPACE_BUNNY_MODEL_ID,
-    }
-
-
-def test_global_b14_auto_chain_is_unchanged_by_this_lane() -> None:
-    # The lane must stay out of the auto lane's model list entirely.
+def test_space_bunny_is_absent_from_routes_catalog_and_chain() -> None:
+    route_ids = {route.model_id for route in KILO_FREE_ROUTES}
+    assert KILO_SPACE_BUNNY_MODEL_ID not in route_ids
+    assert get_catalog_by_id(KILO_SPACE_BUNNY_MODEL_ID) is None
+    assert KILO_SPACE_BUNNY_MODEL_ID not in B14_AUTO_CHAIN
     assert KILO_SPACE_BUNNY_MODEL_ID not in {m.model_id for m in CATALOG_MODELS}
 
+
+def test_space_bunny_is_declared_in_the_retired_set() -> None:
+    assert KILO_SPACE_BUNNY_MODEL_ID in RETIRED_KILO_FREE_MODEL_IDS
+    # The previously retired lanes stay retired alongside it.
+    assert {KILO_MINIMAX_M3_MODEL_ID, KILO_HY3_MODEL_ID} <= RETIRED_KILO_FREE_MODEL_IDS
+
+
+def test_space_bunny_manual_resolution_fails_closed() -> None:
+    # SPACE_BUNNY_MANUAL_RESOLVE=FAIL_CLOSED: the retired lane is not in the
+    # catalog, so explicit resolution raises NoSafeRoute before any upstream
+    # call and never falls back.
+    from app.pilot.errors import NoSafeRoute
+
+    with pytest.raises(NoSafeRoute) as info:
+        resolve_manual_route(KILO_SPACE_BUNNY_MODEL_ID)
+    assert info.value.reason_code == "model_not_in_catalog"
+    assert info.value.upstream_called is False
+
+
+def test_space_bunny_absent_from_auto_chain_and_fallback() -> None:
     decision = resolve_auto_route(
         task_type="general",
         required_capabilities=["free"],
@@ -162,40 +104,39 @@ def test_global_b14_auto_chain_is_unchanged_by_this_lane() -> None:
         allow_external_fallback=True,
         max_attempts=3,
     )
-    assert decision.selected_model == KILO_NEMOTRON_MODEL_ID
-    assert decision.eligible_fallback == []
-
+    assert decision.selected_model != KILO_SPACE_BUNNY_MODEL_ID
     fallback_ids = {item["model_id"] for item in decision.eligible_fallback}
     assert KILO_SPACE_BUNNY_MODEL_ID not in fallback_ids
-    assert KILO_LAGUNA_MODEL_ID not in fallback_ids
 
 
-@pytest.mark.asyncio
-async def test_space_bunny_call_shape_is_accepted_by_the_platform_stream_adapter(
-    monkeypatch,
-) -> None:
-    """The provider-generic streaming adapter accepts this route's call shape.
+def test_platform_adapter_has_no_space_bunny_auth_special_case() -> None:
+    # SPACE_BUNNY_AUTH_SPECIAL_CASE=REMOVED: the platform adapter builds the
+    # same keyless header shape for the kilo Provider regardless of model_id,
+    # and never reads the historical credential binding.
+    import inspect
 
-    Mock provider mode keeps the check network-free while still exercising the
-    real ``stream_platform_chat_completions`` entry point with the registered
-    provider id, upstream model, and model-scoped Kilo credential.
-    """
-    monkeypatch.setenv("B14_PROVIDER_MODE", "mock")
-    model = get_catalog_by_id(KILO_SPACE_BUNNY_MODEL_ID)
-    assert model is not None
+    source = inspect.getsource(plat._request_headers)
+    assert "KILO_SPACE_BUNNY" not in source
+    spec = ps.get_platform_provider("kilo")
+    assert spec is not None
+    headers = plat._request_headers(spec, model_id=KILO_SPACE_BUNNY_MODEL_ID)
+    assert headers == {"Content-Type": "application/json"}
+    assert "Authorization" not in headers
 
-    events = []
-    async for event in plat.stream_platform_chat_completions(
-        model_id=model.model_id,
-        upstream_model=model.upstream_model,
-        provider=model.provider,
-        platform_provider_id=model.platform_provider_id,
-        messages=[{"role": "user", "content": "견적서 항목을 추출해 주세요"}],
-    ):
-        events.append(event)
 
-    assert events, "stream adapter produced no events for the lane"
-    assert any(getattr(event, "done", False) for event in events)
+def test_live_kilo_free_routes_stay_registered_and_keyless() -> None:
+    # Other Kilo routes keep their existing credential/keyless behavior.
+    route_ids = {route.model_id for route in KILO_FREE_ROUTES}
+    assert route_ids == {KILO_NEMOTRON_MODEL_ID, KILO_LAGUNA_MODEL_ID}
+    nemotron = get_catalog_by_id(KILO_NEMOTRON_MODEL_ID)
+    laguna = get_catalog_by_id(KILO_LAGUNA_MODEL_ID)
+    assert nemotron is not None and laguna is not None
+    assert nemotron.context_window == 1_000_000
+    assert laguna.context_window == 262_144
+
+    # Retired lanes stay unregistered (#2097 + Space Bunny retirement).
+    assert get_catalog_by_id(KILO_HY3_MODEL_ID) is None
+    assert get_catalog_by_id(KILO_MINIMAX_M3_MODEL_ID) is None
 
 
 def test_business_66_browser_sources_carry_no_model_or_provider_identity() -> None:

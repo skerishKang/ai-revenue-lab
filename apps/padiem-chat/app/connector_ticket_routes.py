@@ -2,19 +2,24 @@ from __future__ import annotations
 
 import json
 from typing import Any
-from urllib.parse import urlsplit
+
+from . import httpx_compat as httpx
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .auth_routes import current_user_id
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .config import Settings
 from .control_plane_identity import IdentityBridgeError
 from .control_plane_identity_worker import PrivateGoogleConnectTicket
+from .same_origin_guard import expected_browser_origin
 
 
 MAX_TICKET_REQUEST_BODY_BYTES = 1_024
-_REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive"})
+MAX_CONNECT_START_RESPONSE_BYTES = 64 * 1024
+GOOGLE_OAUTH_CONNECT_URL = "https://oauth.padiem.net/v1/google/connect"
+_REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive", "google-calendar"})
 _NO_STORE_HEADERS = {
     "Cache-Control": "no-store, max-age=0",
     "Pragma": "no-cache",
@@ -31,33 +36,38 @@ def _error(status: int, code: str, message: str) -> JSONResponse:
     )
 
 
-def _expected_origin(settings: Settings) -> str | None:
-    value = settings.public_base_url
-    if not isinstance(value, str) or not value:
-        return None
-    parsed = urlsplit(value)
-    if parsed.scheme != "https" or not parsed.netloc:
-        return None
-    return f"https://{parsed.netloc}"
-
-
 async def _closed_body(request: Request) -> dict[str, Any]:
     content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
     if content_type != "application/json":
         raise IdentityBridgeError(415, "connector_ticket_json_required", "JSON 요청만 허용됩니다.")
-    raw = await request.body()
-    if not raw or len(raw) > MAX_TICKET_REQUEST_BODY_BYTES:
+    try:
+        raw = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_TICKET_REQUEST_BODY_BYTES,
+        )
+    except RequestBodyTooLarge as exc:
+        raise IdentityBridgeError(
+            400,
+            "connector_ticket_body_invalid",
+            "연결 요청 형식이 올바르지 않습니다.",
+        ) from exc
+    if not raw:
         raise IdentityBridgeError(400, "connector_ticket_body_invalid", "연결 요청 형식이 올바르지 않습니다.")
     try:
         payload = json.loads(raw.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise IdentityBridgeError(400, "connector_ticket_body_invalid", "연결 요청 형식이 올바르지 않습니다.") from exc
-    if not isinstance(payload, dict) or set(payload) != {"connector_id"}:
+    if not isinstance(payload, dict) or set(payload) not in ({"connector_id"}, {"connector_id", "begin_oauth"}):
         raise IdentityBridgeError(400, "connector_ticket_body_invalid", "연결 요청 형식이 올바르지 않습니다.")
     connector_id = payload.get("connector_id")
     if connector_id not in _REVIEWED_CONNECTORS:
         raise IdentityBridgeError(403, "connector_not_reviewed", "허용되지 않은 연결입니다.")
-    return {"connector_id": connector_id}
+    begin_oauth = payload.get("begin_oauth", False)
+    if not isinstance(begin_oauth, bool):
+        raise IdentityBridgeError(400, "connector_ticket_body_invalid", "연결 요청 형식이 올바르지 않습니다.")
+    if begin_oauth and connector_id != "google-calendar":
+        raise IdentityBridgeError(403, "connector_oauth_start_not_reviewed", "허용되지 않은 연결입니다.")
+    return {"connector_id": connector_id, "begin_oauth": begin_oauth}
 
 
 async def google_connector_ticket(request: Request) -> JSONResponse:
@@ -69,7 +79,10 @@ async def google_connector_ticket(request: Request) -> JSONResponse:
     """
 
     settings: Settings = request.app.state.settings
-    expected_origin = _expected_origin(settings)
+    # The #3476 middleware already covers cookie-authenticated browser traffic,
+    # but this route answers origin problems before it resolves a session, so it
+    # keeps its own check. The expected-origin derivation is single-sourced.
+    expected_origin = expected_browser_origin(settings)
     request_origin = request.headers.get("origin")
     if expected_origin is None:
         return _error(503, "connector_ticket_unavailable", "Google 연결을 현재 사용할 수 없습니다.")
@@ -114,6 +127,13 @@ async def google_connector_ticket(request: Request) -> JSONResponse:
     if not isinstance(receipt, PrivateGoogleConnectTicket):
         return _error(503, "connector_ticket_invalid", "Google 연결을 현재 사용할 수 없습니다.")
 
+    if payload["begin_oauth"] is True:
+        return await _begin_google_oauth(
+            request,
+            receipt=receipt,
+            expected_origin=expected_origin,
+        )
+
     return JSONResponse(
         {
             "ticket": {
@@ -127,7 +147,73 @@ async def google_connector_ticket(request: Request) -> JSONResponse:
     )
 
 
+async def _bounded_upstream_json(response: Any) -> dict[str, Any]:
+    raw = bytearray()
+    async for chunk in response.aiter_bytes():
+        if len(raw) + len(chunk) > MAX_CONNECT_START_RESPONSE_BYTES:
+            raise ValueError("Google OAuth start response exceeds the trusted bound")
+        raw.extend(chunk)
+    if response.status_code != 200:
+        raise ValueError("Google OAuth start was rejected")
+    try:
+        document = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError("Google OAuth start response is invalid") from exc
+    if not isinstance(document, dict) or set(document) != {"ok", "authorization"} or document.get("ok") is not True:
+        raise ValueError("Google OAuth start response is not closed")
+    authorization = document.get("authorization")
+    if not isinstance(authorization, dict):
+        raise ValueError("Google OAuth start authorization is invalid")
+    required = {"authorization_url", "connector_id", "expires_at"}
+    if not required.issubset(authorization):
+        raise ValueError("Google OAuth start authorization is incomplete")
+    if any(not isinstance(authorization.get(key), str) or not authorization.get(key) for key in required):
+        raise ValueError("Google OAuth start authorization is invalid")
+    return {
+        "authorization_url": authorization["authorization_url"],
+        "connector_id": authorization["connector_id"],
+        "expires_at": authorization["expires_at"],
+    }
+
+
+async def _begin_google_oauth(
+    request: Request,
+    *,
+    receipt: PrivateGoogleConnectTicket,
+    expected_origin: str,
+) -> JSONResponse:
+    """Begin reviewed Calendar OAuth without returning the ticket to JavaScript."""
+
+    try:
+        oauth_client = getattr(request.app.state, "google_oauth", None)
+        transport = getattr(oauth_client, "transport", None)
+        timeout = httpx.Timeout(15.0, connect=8.0)
+        async with httpx.AsyncClient(transport=transport, timeout=timeout, follow_redirects=False) as client:
+            async with client.stream(
+                "POST",
+                GOOGLE_OAUTH_CONNECT_URL,
+                headers={
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Origin": expected_origin,
+                },
+                json={"connect_ticket": receipt.connect_ticket},
+            ) as response:
+                authorization = await _bounded_upstream_json(response)
+        if authorization["connector_id"] != receipt.connector_id:
+            raise ValueError("Google OAuth connector mismatch")
+    except (ValueError, TypeError, httpx.HTTPError):
+        return _error(502, "connector_oauth_start_unavailable", "Google 연결을 시작할 수 없습니다.")
+
+    return JSONResponse(
+        {"authorization": authorization},
+        status_code=200,
+        headers=_NO_STORE_HEADERS,
+    )
+
+
 GOOGLE_CONNECTOR_TICKET_ROUTE = True
+GOOGLE_CONNECTOR_INLINE_OAUTH_START = True
 AUTHENTICATED_SAME_ORIGIN_ONLY = True
 CLIENT_CAN_SELECT_CONNECTOR_ONLY = True
 CLIENT_ACCOUNT_WORKSPACE_AUTHORITY = False

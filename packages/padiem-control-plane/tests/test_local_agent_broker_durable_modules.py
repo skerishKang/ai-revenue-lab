@@ -258,4 +258,10 @@ def test_worker_file_is_thin_and_storage_schemas_live_outside_entrypoint() -> No
     # class, exactly like #3094's device_truth: the Claw return leg's source of
     # truth, on the same private Service Binding surface. Still no storage,
     # schema or authority in the entrypoint file.
-    assert len(source.splitlines()) < 223
+    # Issue #3436 B2c adds the read-only device-session authentication
+    # passthrough per entrypoint class, on the same pattern and the same
+    # private Service Binding surface: the canonical broker session verifier
+    # the B62 Desktop conversation read consumes. The verifier itself and its
+    # contract markers live in the durable runtime module and the broker auth
+    # seam — this file only forwards. Still no storage, schema or authority.
+    assert len(source.splitlines()) < 236

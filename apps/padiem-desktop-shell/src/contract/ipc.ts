@@ -20,6 +20,14 @@ export const IPC_CHANNELS = [
   'padiem:shell:runner-health',
   'padiem:shell:pairing-deeplink-submit',
   'padiem:shell:get-bounded-log',
+  'padiem:shell:workspace-choose-root',
+  'padiem:shell:workspace-list',
+  'padiem:shell:workspace-clear-root',
+  'padiem:shell:workspace-search',
+  'padiem:shell:conversation-list',
+  'padiem:shell:conversation-read',
+  'padiem:shell:run-list',
+  'padiem:shell:run-read',
 ] as const;
 
 export type IpcChannel = (typeof IPC_CHANNELS)[number];
@@ -52,6 +60,15 @@ export const DENIED_IPC_CHANNELS = Object.freeze([
   'padiem:shell:mint-session',
   'padiem:shell:broker-transport',
   'padiem:shell:approve',
+  // #3611: browser control surfaces stay denied. The open-only slice has no IPC
+  // channel at all — an approved open is delivered to the trusted host, and the
+  // renderer never selects a URL. These names are asserted by the negative guard
+  // so no browser authority can be added to the allowlist by accident.
+  'padiem:shell:browser-control',
+  'padiem:shell:browser-evaluate',
+  'padiem:shell:browser-cookie-read',
+  'padiem:shell:browser-profile-import',
+  'padiem:shell:browser-download',
   '*',
   'padiem:shell:*',
 ]);
@@ -152,6 +169,145 @@ export interface BoundedLogResponse {
   readonly redactionApplied: true;
 }
 
+export interface WorkspaceRootResponse {
+  readonly selected: boolean;
+  readonly rootName: string | null;
+  readonly rootPath: string | null;
+  readonly reason: 'current' | 'selected' | 'cancelled' | 'invalid_selection' | 'cleared';
+}
+
+export type WorkspaceEntryKind = 'directory' | 'file' | 'link';
+
+export interface WorkspaceEntry {
+  readonly name: string;
+  readonly relativePath: string;
+  readonly kind: WorkspaceEntryKind;
+  /**
+   * #3436 project browser: bounded basic metadata, projected per entry by the
+   * main process from the same validated directory. Null when the entry is
+   * not a regular file or the stat could not be taken — the listing stays
+   * usable and truthful either way. Read-only surface: no content bytes ever
+   * cross this contract.
+   */
+  readonly sizeBytes: number | null;
+  readonly modifiedAt: string | null;
+}
+
+export interface WorkspaceListRequest {
+  readonly relativePath?: string;
+}
+
+export interface WorkspaceListResponse {
+  readonly ok: boolean;
+  readonly root: WorkspaceRootResponse;
+  readonly directory: string;
+  readonly entries: readonly WorkspaceEntry[];
+  readonly truncated: boolean;
+  readonly maxEntries: number;
+  readonly errorCode:
+    | null
+    | 'root_not_selected'
+    | 'invalid_relative_path'
+    | 'path_outside_root'
+    | 'depth_exceeded'
+    | 'path_denied'
+    | 'workspace_unavailable';
+}
+
+/**
+ * #3583 — bounded workspace file search request.
+ *
+ * The renderer supplies ONLY a query string. There is deliberately no path
+ * field: search is always scoped to the already-validated selected root, so
+ * a hostile or buggy renderer cannot address anywhere else.
+ */
+export interface WorkspaceSearchRequest {
+  readonly query: string;
+}
+
+export interface WorkspaceSearchResponse {
+  readonly ok: boolean;
+  readonly root: WorkspaceRootResponse;
+  readonly query: string;
+  readonly matches: readonly WorkspaceEntry[];
+  /** True when the bounded walk stopped at MAX_SEARCH_ENTRIES before finishing. */
+  readonly truncated: boolean;
+  /** Entries actually scanned (bounded by MAX_SEARCH_ENTRIES). */
+  readonly scannedEntries: number;
+  readonly maxResults: number;
+  readonly errorCode:
+    | null
+    | 'root_not_selected'
+    | 'invalid_query'
+    | 'workspace_unavailable';
+}
+
+/**
+ * #3436 B2b — canonical conversation projection (read-only).
+ *
+ * Every value here came from the canonical Padiem conversation authority in
+ * the current call. The Desktop mints no conversation id, keeps no conversation
+ * store, and adds no message history: `SECOND_CONVERSATION_AUTHORITY = 0`.
+ */
+export interface CanonicalConversationListItem {
+  readonly id: string;
+  readonly title: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+}
+
+export interface CanonicalConversationListResponse {
+  readonly ok: boolean;
+  readonly configured: boolean;
+  readonly conversations: readonly CanonicalConversationListItem[];
+  readonly errorCode: null | 'canonical_conversation_unavailable' | 'invalid_conversation_payload';
+}
+
+export interface CanonicalConversationMessage {
+  readonly role: 'user' | 'assistant';
+  readonly content: string;
+}
+
+export interface CanonicalConversationDetail {
+  readonly id: string;
+  readonly title: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+  readonly messages: readonly CanonicalConversationMessage[];
+}
+
+export interface CanonicalConversationReadRequest {
+  readonly conversationId: string;
+}
+
+export interface CanonicalConversationReadResponse {
+  readonly ok: boolean;
+  readonly conversation: CanonicalConversationDetail | null;
+  readonly errorCode: null | 'canonical_conversation_unavailable' | 'invalid_conversation_id' | 'conversation_not_found' | 'invalid_conversation_payload';
+}
+
+/**
+ * #3436 B3a — canonical run projection (read-only).
+ *
+ * The canonical types live in `../run/canonical-run.js` next to the authority
+ * boundary that validates them; the IPC surface re-exports them unchanged so a
+ * projection can never be reshaped on its way to the renderer.
+ */
+import type {
+  CanonicalRunListResponse,
+  CanonicalRunReadRequest,
+  CanonicalRunReadResponse,
+} from '../run/canonical-run.js';
+
+export type {
+  CanonicalRunArtifactRef,
+  CanonicalRunListItem,
+  CanonicalRunListResponse,
+  CanonicalRunReadRequest,
+  CanonicalRunReadResponse,
+  CanonicalRunStatus,
+} from '../run/canonical-run.js';
+
 /** Maps a channel to its request/response types — the whole surface, closed. */
 export interface IpcSurface {
   'padiem:shell:get-status': { request: undefined; response: ShellStatus };
@@ -163,6 +319,29 @@ export interface IpcSurface {
     response: PairingDeepLinkResponse;
   };
   'padiem:shell:get-bounded-log': { request: BoundedLogRequest; response: BoundedLogResponse };
+  'padiem:shell:workspace-choose-root': { request: undefined; response: WorkspaceRootResponse };
+  'padiem:shell:workspace-list': { request: WorkspaceListRequest; response: WorkspaceListResponse };
+  'padiem:shell:workspace-clear-root': { request: undefined; response: WorkspaceRootResponse };
+  'padiem:shell:workspace-search': {
+    request: WorkspaceSearchRequest;
+    response: WorkspaceSearchResponse;
+  };
+  'padiem:shell:conversation-list': {
+    request: undefined;
+    response: CanonicalConversationListResponse;
+  };
+  'padiem:shell:conversation-read': {
+    request: CanonicalConversationReadRequest;
+    response: CanonicalConversationReadResponse;
+  };
+  'padiem:shell:run-list': {
+    request: undefined;
+    response: CanonicalRunListResponse;
+  };
+  'padiem:shell:run-read': {
+    request: CanonicalRunReadRequest;
+    response: CanonicalRunReadResponse;
+  };
 }
 
 export type IpcRequestOf<C extends IpcChannel> = IpcSurface[C]['request'];

@@ -34,6 +34,11 @@ from app.agent_skill_service import (
     AgentSkillEngineService,
 )
 from app.capability_manifest import set_posture_overrides
+from app.cloudflare_request_body import (
+    RequestBodyReadError,
+    RequestBodyTooLarge,
+    read_bounded_worker_request_body,
+)
 from app.cloudflare_transport import (
     B14_INTERNAL_ORIGIN,
     CloudflareB14ServiceBindingTransport,
@@ -45,7 +50,12 @@ from app.idempotency_replay_service import (
     IdempotencyReplayEngineService,
 )
 from app.identity_enforcement import authenticate_request
-from app.memory_service import MEMORY_PATH, MEMORY_WRITE_PATH, MemoryRetrievalEngineService
+from app.memory_service import (
+    MAX_MEMORY_REQUEST_BODY_BYTES,
+    MEMORY_PATH,
+    MEMORY_WRITE_PATH,
+    MemoryRetrievalEngineService,
+)
 from app.orchestration_service import (
     ORCHESTRATE_CANCEL_PATH,
     ORCHESTRATE_PATH,
@@ -54,7 +64,12 @@ from app.orchestration_service import (
     OrchestrationEngineService,
     PreparedOrchestrationStream,
 )
-from app.service import EngineService, HEALTH_PATH, ServiceResponse
+from app.service import (
+    MAX_REQUEST_BODY_BYTES,
+    EngineService,
+    HEALTH_PATH,
+    ServiceResponse,
+)
 from app.service_identity import ServiceIdentityError
 from app.streaming_service import (
     NDJSON_CONTENT_TYPE,
@@ -258,6 +273,15 @@ def _agent_skill_service_for_env(
 
 
 async def _engine_services_for_env(env: Any) -> EngineServices:
+    """Legacy compatibility composition; never the Production authority.
+
+    Production is deployed from ``worker_identity.py``. This deliberately
+    narrower bundle remains for legacy/base-entrypoint compatibility and tests:
+    it must not silently inherit identity-only widened runtime authorities.
+    ``worker_identity.Default`` subclasses
+    this module's HTTP/core base and overrides ``engine_services_factory`` with
+    the canonical Production composition.
+    """
     # Preview-lane posture only. Every other isolate clears the override, so the
     # declared manifest truth is untouched outside an explicitly marked pilot.
     set_posture_overrides(preview_capability_overrides(env))
@@ -446,6 +470,19 @@ async def _drive_case_folder_rpc_for_env(env: Any, operation: str, payload: Any)
     return await drive_case_folder_rpc(service, operation=operation, payload=payload)
 
 
+async def _drive_case_pdf_rpc_for_env(env: Any, operation: str, payload: Any) -> dict:
+    """Run one private B67 PDF RPC; never reachable through public fetch()."""
+
+    from app.drive_case_pdf_rpc import drive_case_pdf_rpc
+    from worker_identity import _drive_case_pdf_service_for_env
+
+    try:
+        service = _drive_case_pdf_service_for_env(env)
+    except Exception:
+        service = None
+    return await drive_case_pdf_rpc(service, operation=operation, payload=payload)
+
+
 class Default(WorkerEntrypoint):
     engine_services_factory = staticmethod(_engine_services_for_env)
 
@@ -461,32 +498,17 @@ class Default(WorkerEntrypoint):
     async def drive_case_folder_clear(self, payload: Any) -> Any:
         return await _drive_case_folder_rpc_for_env(self.env, "drive_case_folder_clear", payload)
 
+    async def b67_case_pdf_candidates(self, payload: Any) -> Any:
+        return await _drive_case_pdf_rpc_for_env(self.env, "b67_case_pdf_candidates", payload)
+
+    async def b67_case_pdf_read(self, payload: Any) -> Any:
+        return await _drive_case_pdf_rpc_for_env(self.env, "b67_case_pdf_read", payload)
+
     async def fetch(self, request: Any) -> Any:
         path = urlparse(str(request.url)).path
         method = str(getattr(request, "method", ""))
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
-
-        body = b""
-        if method.upper() == "POST":
-            try:
-                text = await request.text()
-                body = str(text).encode("utf-8")
-            except Exception:
-                return _json_response(
-                    ServiceResponse(
-                        status_code=400,
-                        body={
-                            "ok": False,
-                            "error": {
-                                "code": "invalid_request",
-                                "message": "Request body could not be read.",
-                                "retryable": False,
-                                "metadata": None,
-                            },
-                        },
-                    )
-                )
 
         orchestration_paths = {
             ORCHESTRATE_PATH,
@@ -529,6 +551,32 @@ class Default(WorkerEntrypoint):
                 },
             )
             return _json_response(result)
+
+        body = b""
+        if method.upper() == "POST" and path != HEALTH_PATH:
+            max_body_bytes = (
+                MAX_MEMORY_REQUEST_BODY_BYTES
+                if path in {MEMORY_PATH, MEMORY_WRITE_PATH}
+                else MAX_REQUEST_BODY_BYTES
+            )
+            try:
+                body = await read_bounded_worker_request_body(
+                    request,
+                    max_bytes=max_body_bytes,
+                )
+            except RequestBodyTooLarge:
+                message = (
+                    "Request body exceeds the safety limit."
+                    if path in orchestration_paths or path in tool_paths
+                    else "Request body exceeds the internal Engine safety limit."
+                )
+                return _error_response("request_too_large", message, 413)
+            except RequestBodyReadError:
+                return _error_response(
+                    "invalid_request",
+                    "Request body could not be read.",
+                    400,
+                )
 
         if path != HEALTH_PATH:
             auth_error = _authenticate_non_health_request(self.env, headers, body)

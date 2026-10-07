@@ -7,6 +7,8 @@ import hashlib
 import hmac
 import json
 import sqlite3
+import sys
+from types import SimpleNamespace
 from urllib.parse import parse_qs, urlsplit
 
 import pytest
@@ -16,8 +18,10 @@ from google_oauth_durable_store import (
     CloudflareDurableGoogleOAuthStore,
 )
 from google_oauth_ingress_runtime import (
+    CloudflareGoogleOAuthTokenExchangePort,
     GoogleOAuthIngressConfig,
     GoogleOAuthIngressRuntime,
+    MAX_TOKEN_RESPONSE_BYTES,
 )
 from google_oauth_webcrypto_sealer import (
     AES_GCM_IV_BYTES,
@@ -443,3 +447,110 @@ def test_runtime_safe_projection_states_live_boundaries_truthfully():
     assert public["production_deployment"] is False
     assert public["production_ready"] is False
     assert CLIENT_SECRET not in json.dumps(public)
+
+
+class _TokenStreamReader:
+    def __init__(self, chunks: list[bytes]) -> None:
+        self._chunks = list(chunks)
+        self.read_calls = 0
+        self.cancel_calls = 0
+
+    async def read(self):
+        self.read_calls += 1
+        if self._chunks:
+            return SimpleNamespace(done=False, value=self._chunks.pop(0))
+        return SimpleNamespace(done=True, value=None)
+
+    async def cancel(self):
+        self.cancel_calls += 1
+
+
+class _TokenStreamBody:
+    def __init__(self, reader: _TokenStreamReader) -> None:
+        self._reader = reader
+
+    def getReader(self):
+        return self._reader
+
+
+class _TokenStreamResponse:
+    def __init__(self, status: int, chunks: list[bytes]) -> None:
+        self.status = status
+        self.reader = _TokenStreamReader(chunks)
+        self.body = _TokenStreamBody(self.reader)
+        self.text_calls = 0
+
+    async def text(self):
+        self.text_calls += 1
+        raise AssertionError("streaming token response must not call text()")
+
+
+def _cloudflare_oauth_config() -> GoogleOAuthIngressConfig:
+    return GoogleOAuthIngressConfig(
+        client_id="client-id-public",
+        client_secret=CLIENT_SECRET,
+        redirect_uri="https://oauth.example.invalid/v1/google/callback",
+    )
+
+
+def test_cloudflare_token_exchange_reads_with_a_hard_stream_bound(monkeypatch) -> None:
+    payload = {
+        "access_token": ACCESS_TOKEN,
+        "refresh_token": REFRESH_TOKEN,
+        "token_type": "Bearer",
+        "scope": GMAIL_READONLY_SCOPE,
+    }
+    raw = json.dumps(payload, separators=(",", ":")).encode("utf-8")
+    current = {"response": _TokenStreamResponse(200, [raw[:19], raw[19:]])}
+
+    async def fake_fetch(_url, **_kwargs):
+        return current["response"]
+
+    monkeypatch.setitem(sys.modules, "workers", SimpleNamespace(fetch=fake_fetch))
+    subject = CloudflareGoogleOAuthTokenExchangePort()
+    result = asyncio.run(
+        subject.exchange_authorization_code(
+            config=_cloudflare_oauth_config(),
+            code=AUTH_CODE,
+            code_verifier=PKCE_VERIFIER,
+            redirect_uri="https://oauth.example.invalid/v1/google/callback",
+        )
+    )
+    ok_response = current["response"]
+    assert result == payload
+    assert ok_response.text_calls == 0
+    assert ok_response.reader.cancel_calls == 0
+
+    oversized = _TokenStreamResponse(
+        200,
+        [b"x" * MAX_TOKEN_RESPONSE_BYTES, b"y"],
+    )
+    current["response"] = oversized
+    with pytest.raises(ControlPlaneContractError) as too_large:
+        asyncio.run(
+            subject.exchange_authorization_code(
+                config=_cloudflare_oauth_config(),
+                code=AUTH_CODE,
+                code_verifier=PKCE_VERIFIER,
+                redirect_uri="https://oauth.example.invalid/v1/google/callback",
+            )
+        )
+    assert too_large.value.code == "google_oauth_token_exchange_failed"
+    assert oversized.text_calls == 0
+    assert oversized.reader.read_calls == 2
+    assert oversized.reader.cancel_calls == 1
+
+    rejected = _TokenStreamResponse(503, [b"provider-private-error"])
+    current["response"] = rejected
+    with pytest.raises(ControlPlaneContractError) as failed:
+        asyncio.run(
+            subject.exchange_authorization_code(
+                config=_cloudflare_oauth_config(),
+                code=AUTH_CODE,
+                code_verifier=PKCE_VERIFIER,
+                redirect_uri="https://oauth.example.invalid/v1/google/callback",
+            )
+        )
+    assert failed.value.code == "google_oauth_token_exchange_failed"
+    assert rejected.text_calls == 0
+    assert rejected.reader.read_calls == 0

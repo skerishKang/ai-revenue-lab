@@ -6,6 +6,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from .auth_routes import auth_ready, current_user_id
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .binary_documents import BinaryDocumentValidationError, parse_binary_document_item
 from .documents import DocumentValidationError, validate_document_fields
 from .history import HistoryStore, validate_project_id
@@ -99,8 +100,12 @@ async def project_files_collection(request: Request) -> JSONResponse:
             return _unavailable()
         return JSONResponse({"files": [item.public_dict() for item in files]})
 
-    body = await request.body()
-    if len(body) > MAX_BINARY_PROJECT_FILE_BASE64_BYTES:
+    try:
+        body = await read_bounded_request_body(
+            request,
+            max_bytes=MAX_BINARY_PROJECT_FILE_BASE64_BYTES,
+        )
+    except RequestBodyTooLarge:
         return JSONResponse({"error": {"code": "invalid_document", "message": "문서 요청이 너무 큽니다."}}, status_code=413)
     try:
         raw = json.loads(body.decode("utf-8"))

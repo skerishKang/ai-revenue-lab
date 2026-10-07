@@ -1,7 +1,10 @@
 name: B54 Engine Production Smoke-Only Gate
 
-# ISSUE #2484 Goal B — re-prove A9/A10/A11/A12 against the ALREADY DEPLOYED
-# production Engine WITHOUT another Engine deploy. This workflow is dispatch-only
+# ISSUE #2484 Goal B + A7 #3340 — re-prove bounded post-deploy runtime evidence
+# against the ALREADY DEPLOYED production Engine WITHOUT another Engine deploy.
+# A7 authenticated-user entitlement makes the legacy account-level A9 success
+# probe invalid; this gate now requires the unscoped orchestration request to
+# fail closed before provider dispatch, then runs A10/A11/A12. This workflow is dispatch-only
 # and mutation-free: it performs no wrangler/pywrangler deploy, no secret PUT,
 # no binding mutation, no D1 migration, no rollback, no Phase-A/Chat request and
 # no Production source mutation. It reads the live served version with the
@@ -28,10 +31,6 @@ on:
       confirmation:
         description: 'Type RUN_B54_ENGINE_POSTDEPLOY_SMOKE_ONLY to authorize the read-only smoke gate'
         required: true
-      custom_payload_json:
-        description: 'Optional JSON payload for the A9 orchestrate request; blank keeps the fixed synthetic payload'
-        required: false
-        default: ''
 
 permissions:
   contents: read
@@ -62,7 +61,6 @@ jobs:
       # The source the currently served Engine version was deployed from. Fixed
       # literal, deliberately NOT derived from target_sha.
       DEPLOYED_ENGINE_SOURCE_SHA: b0bf34ab90420d6b47070c192e108adf3f4ea76d
-      CUSTOM_PAYLOAD_JSON: ${{ github.event.inputs.custom_payload_json }}
     steps:
       - name: Checkout exact workflow-source SHA
         uses: actions/checkout@v4
@@ -104,13 +102,18 @@ jobs:
           fi
           version_detail="${RUNNER_TEMP}/version-smoke-only.json"
           curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
-          python3 .github/scripts/b54_engine_served_version_guard.py verify \
+          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify \
             --version-settings "${version_detail}" \
             --active-version "${active_version}" \
-            --expect-overlay
+            --expect-overlay \
+            --inspect-engine-admission-binding)"
+          printf '%s\n' "${verify_out}"
+          printf '%s\n' "${verify_out}" | grep -q '^CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING=PRESENT:service$'
+          printf '%s\n' "${verify_out}" | grep -q '^ENGINE_ADMISSION_BINDING_TARGET_VALIDATED=YES$'
           echo "SMOKE_ONLY_SERVED_VERSION=${active_version}"
           echo 'PREFLIGHT_SERVED_VERSION_MATCH=PASS'
           echo 'PREFLIGHT_V1_OVERLAY_PRESENT=PASS'
+          echo 'PREFLIGHT_A7_ADMISSION_BINDING=PASS'
           echo 'PRODUCTION_MUTATION=0'
 
       - uses: actions/setup-python@v5
@@ -130,13 +133,14 @@ jobs:
           fi
           echo 'SMOKE_SECRETS_PRESENT=1'
 
-      - name: Run A9 production idempotency smoke
+      - name: Run A7 unscoped admission fail-closed smoke
         shell: bash
         run: |
           set -euo pipefail
-          python apps/padiem-ai-engine/scripts/a9_production_smoke.py | tee /tmp/a9_smoke.log
-          grep -q 'A9_SMOKE=PASS' /tmp/a9_smoke.log
-          grep 'A9_SMOKE=PASS' /tmp/a9_smoke.log | tail -1
+          python apps/padiem-ai-engine/scripts/a7_unscoped_admission_production_smoke.py | tee /tmp/a7_unscoped_smoke.log
+          grep -q '^A7_UNSCOPED_ADMISSION_SMOKE=PASS$' /tmp/a7_unscoped_smoke.log
+          grep -q '^REAL_PROVIDER_CALLS=0$' /tmp/a7_unscoped_smoke.log
+          grep -q '^AUTHENTICATED_USER_LIVE_PROOF=NOT_CLAIMED$' /tmp/a7_unscoped_smoke.log
 
       - name: Run A10 continuation fail-closed smoke
         shell: bash

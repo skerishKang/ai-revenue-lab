@@ -1,0 +1,721 @@
+(() => {
+  "use strict";
+
+  const API = "/api/padiem";
+  const B66_ASSET_ID = /^b66asset_[0-9a-f]{32}$/;
+  const PRIVATE_ASSET_MEDIA = new Set(["image/png", "image/jpeg", "image/webp"]);
+  const MAX_PRIVATE_ASSET_BYTES = 256 * 1024;
+  const state = {
+    authenticated: false,
+    user: null,
+    skills: [],
+    loadedSkill: null,
+    companyProfile: null,
+    companyProfileLoaded: false,
+    pendingQuote: null,
+    methods: { google: false, password: false }
+  };
+
+  const byId = (id) => document.getElementById(id);
+
+  function safeMessage(data, fallback) {
+    const message = data && data.error && data.error.message;
+    return typeof message === "string" && message.trim() ? message.trim() : fallback;
+  }
+
+  function accountName(user) {
+    if (!user || typeof user !== "object") return "내 계정";
+    for (const key of ["name", "display_name", "email", "username"]) {
+      if (typeof user[key] === "string" && user[key].trim()) return user[key].trim();
+    }
+    return "내 계정";
+  }
+
+  async function api(path, options) {
+    const opts = Object.assign({
+      cache: "no-store",
+      credentials: "same-origin",
+      headers: { "Accept": "application/json" }
+    }, options || {});
+    opts.headers = Object.assign({ "Accept": "application/json" }, (options && options.headers) || {});
+    const response = await window.fetch(API + path, opts);
+    const data = await response.json().catch(() => null);
+    return { response, data };
+  }
+
+  function declaredAssetRefs(skill) {
+    const template = skill && typeof skill === "object" ? skill.internalTemplate : null;
+    const content = template && typeof template === "object" ? template.content : null;
+    const slots = content && typeof content === "object" ? content.slots : null;
+    const refs = {};
+    ["logo", "stamp"].forEach((key) => {
+      const value = slots && typeof slots[key] === "string" ? slots[key] : "";
+      if (value && !B66_ASSET_ID.test(value)) throw new Error("invalid_private_asset_ref");
+      if (value) refs[key] = value;
+    });
+    return refs;
+  }
+
+  function arrayBufferToBase64(buffer) {
+    const bytes = new Uint8Array(buffer);
+    const chunks = [];
+    const chunkSize = 0x8000;
+    for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+      const chunk = bytes.subarray(offset, Math.min(offset + chunkSize, bytes.length));
+      let binary = "";
+      for (let i = 0; i < chunk.length; i += 1) binary += String.fromCharCode(chunk[i]);
+      chunks.push(binary);
+    }
+    return window.btoa(chunks.join(""));
+  }
+
+  async function readPrivateAsset(assetId) {
+    if (!B66_ASSET_ID.test(assetId || "")) throw new Error("invalid_private_asset_ref");
+    const response = await window.fetch(API + "/b66/assets/" + encodeURIComponent(assetId), {
+      method: "GET",
+      cache: "no-store",
+      credentials: "same-origin",
+      headers: { "Accept": "image/png,image/jpeg,image/webp" }
+    });
+    if (!response.ok) throw new Error("private_asset_unavailable");
+    const mediaType = String(response.headers.get("content-type") || "").split(";", 1)[0].trim().toLowerCase();
+    if (!PRIVATE_ASSET_MEDIA.has(mediaType)) throw new Error("private_asset_media_invalid");
+    const rawLength = Number(response.headers.get("content-length") || "0");
+    if (Number.isFinite(rawLength) && rawLength > MAX_PRIVATE_ASSET_BYTES) {
+      throw new Error("private_asset_too_large");
+    }
+    const buffer = await response.arrayBuffer();
+    if (!buffer.byteLength || buffer.byteLength > MAX_PRIVATE_ASSET_BYTES) {
+      throw new Error("private_asset_too_large");
+    }
+    return {
+      assetId,
+      dataUrl: "data:" + mediaType + ";base64," + arrayBufferToBase64(buffer)
+    };
+  }
+
+  async function loadPrivateAssets(skill) {
+    const refs = declaredAssetRefs(skill);
+    const sources = {};
+    for (const key of ["logo", "stamp"]) {
+      if (refs[key]) sources[key] = await readPrivateAsset(refs[key]);
+    }
+    return sources;
+  }
+
+  function setQuoteStatus(message, kind) {
+    const node = byId("padiemQuoteStatus");
+    if (!node) return;
+    node.textContent = message || "";
+    node.dataset.state = kind || "";
+  }
+
+  function setAuthError(message) {
+    const node = byId("padiemAuthError");
+    if (node) node.textContent = message || "";
+  }
+
+  /* /auth/status 이 실제로 허용한 로그인 메서드만 노출한다. 기본은 숨김/비활성이다. */
+  function applyAuthMethods(payload) {
+    const methods = payload && typeof payload === "object" ? payload.methods : null;
+    state.methods = {
+      google: Boolean(methods && methods.google === true),
+      password: Boolean(methods && methods.password === true)
+    };
+    const form = byId("padiemLoginForm");
+    const divider = byId("padiemAuthDivider");
+    const submit = byId("padiemLoginSubmit");
+    if (form) form.hidden = !state.methods.password;
+    if (divider) divider.hidden = !state.methods.password;
+    if (submit) submit.disabled = !state.methods.password;
+    return state.methods.password;
+  }
+
+  function passwordLoginAvailable() {
+    return state.methods.password === true;
+  }
+
+  function clearServerSkill() {
+    state.loadedSkill = null;
+    const bridge = window.B66QuoteSkillBridge;
+    if (bridge && typeof bridge.clearServerSkill === "function") {
+      bridge.clearServerSkill();
+    }
+  }
+
+  function renderSignedOut() {
+    state.authenticated = false;
+    state.user = null;
+    state.skills = [];
+    state.companyProfile = null;
+    state.companyProfileLoaded = false;
+    clearPendingQuote();
+    clearServerSkill();
+    const button = byId("padiemAccountButton");
+    const panel = byId("padiemAccountPanel");
+    const select = byId("padiemSavedSkillSelect");
+    if (button) button.textContent = "로그인";
+    if (panel) panel.hidden = true;
+    if (select) select.replaceChildren();
+    const settingsButton = byId("settingsButton");
+    if (settingsButton) settingsButton.hidden = true;
+    const settingsPanelOut = byId("settingsPanel");
+    if (settingsPanelOut) settingsPanelOut.hidden = true;
+    document.dispatchEvent(new CustomEvent("b66:auth-changed", { detail: { authenticated: false } }));
+    document.dispatchEvent(new CustomEvent("b66:runtime-changed", { detail: runtimeReadiness() }));
+  }
+
+  function renderSignedIn() {
+    const button = byId("padiemAccountButton");
+    const panel = byId("padiemAccountPanel");
+    const label = byId("padiemAccountLabel");
+    if (button) button.textContent = accountName(state.user);
+    if (label) label.textContent = accountName(state.user) + " · 내 견적서";
+    if (panel) panel.hidden = false;
+    const settingsButton = byId("settingsButton");
+    if (settingsButton) settingsButton.hidden = false;
+    document.dispatchEvent(new CustomEvent("b66:auth-changed", { detail: { authenticated: true } }));
+  }
+
+  function openAuthDialog() {
+    const dialog = byId("padiemAuthDialog");
+    setAuthError("");
+    if (!dialog) return;
+    if (typeof dialog.showModal === "function") dialog.showModal();
+    else dialog.setAttribute("open", "");
+    if (!passwordLoginAvailable()) return;
+    const identifier = byId("padiemLoginIdentifier");
+    if (identifier) identifier.focus();
+  }
+
+  function closeAuthDialog() {
+    const dialog = byId("padiemAuthDialog");
+    if (!dialog) return;
+    if (typeof dialog.close === "function" && dialog.open) dialog.close();
+    else dialog.removeAttribute("open");
+  }
+
+  async function loadSkill(savedSkillId) {
+    if (!/^b66skill_[0-9a-f]{32}$/.test(savedSkillId || "")) {
+      clearServerSkill();
+      setQuoteStatus("내 견적서 선택을 확인해 주세요.", "error");
+      return false;
+    }
+    const result = await api("/b66/saved-skills/" + encodeURIComponent(savedSkillId));
+    const row = result.data && result.data.saved_skill;
+    const semantic = window.SavedQuoteSkill;
+    const rawSkill = row && row.skill;
+    const skill = semantic && typeof semantic.normalizeSkill === "function"
+      ? semantic.normalizeSkill(rawSkill)
+      : null;
+    if (
+      !result.response.ok ||
+      !row ||
+      !skill ||
+      skill.approved !== true ||
+      skill.fingerprint !== row.skill_fingerprint
+    ) {
+      clearServerSkill();
+      setQuoteStatus("배정된 내 견적서를 확인하지 못했습니다.", "error");
+      return false;
+    }
+    let slotSources;
+    try {
+      slotSources = await loadPrivateAssets(skill);
+    } catch (_) {
+      clearServerSkill();
+      setQuoteStatus("내 견적서의 로고·도장 자산을 불러오지 못했습니다.", "error");
+      return false;
+    }
+    state.loadedSkill = {
+      savedSkillId: row.saved_skill_id,
+      fingerprint: row.skill_fingerprint,
+      skill,
+      slotSources
+    };
+    /* Skill 이 바뀌면 진행 중이던 견적의 문맥은 새 Skill 로 이어질 수 없다. */
+    clearPendingQuote();
+    const bridge = window.B66QuoteSkillBridge;
+    if (!bridge || typeof bridge.setServerSkill !== "function" || !bridge.setServerSkill(skill, slotSources)) {
+      clearServerSkill();
+      setQuoteStatus("내 견적서 렌더러를 준비하지 못했습니다.", "error");
+      return false;
+    }
+    setQuoteStatus("배정된 양식을 불러왔습니다. 거래처·품목·수량·단가를 한 문장으로 입력해 주세요.", "ready");
+    return true;
+  }
+
+  async function loadSkills() {
+    const result = await api("/b66/saved-skills?limit=20");
+    if (!result.response.ok || !result.data || !Array.isArray(result.data.skills)) {
+      state.skills = [];
+      clearServerSkill();
+      setQuoteStatus("계정의 내 견적서를 불러오지 못했습니다.", "error");
+      return;
+    }
+    state.skills = result.data.skills.filter((item) => (
+      item &&
+      /^b66skill_[0-9a-f]{32}$/.test(item.saved_skill_id || "") &&
+      typeof item.skill_name === "string"
+    ));
+    const select = byId("padiemSavedSkillSelect");
+    if (!select) return;
+    select.replaceChildren();
+    if (!state.skills.length) {
+      const option = document.createElement("option");
+      option.value = "";
+      option.textContent = "배정된 내 견적서 없음";
+      select.append(option);
+      select.disabled = true;
+      clearServerSkill();
+      setQuoteStatus("아직 이 계정에 배정된 내 견적서가 없습니다.", "empty");
+      return;
+    }
+    select.disabled = false;
+    state.skills.forEach((row) => {
+      const option = document.createElement("option");
+      option.value = row.saved_skill_id;
+      option.textContent = row.skill_name;
+      select.append(option);
+    });
+    await loadSkill(select.value);
+  }
+
+  async function refreshAuth() {
+    let result;
+    try {
+      result = await api("/auth/status");
+    } catch (_) {
+      applyAuthMethods(null);
+      renderSignedOut();
+      return;
+    }
+    applyAuthMethods(result.response.ok ? result.data : null);
+    if (
+      !result.response.ok ||
+      !result.data ||
+      result.data.authenticated !== true ||
+      result.data.session_state !== "signed_in"
+    ) {
+      renderSignedOut();
+      return;
+    }
+    state.authenticated = true;
+    state.user = result.data.user || null;
+    renderSignedIn();
+    await Promise.all([loadSkills(), loadCompanyProfile()]);
+    document.dispatchEvent(new CustomEvent("b66:runtime-changed", { detail: runtimeReadiness() }));
+  }
+
+  /* ── CGI primary runtime authority (#3478) ──
+     배정된 승인 Saved Quote Skill + 인증된 CompanyProfile 만이 견적 생성 authority 다.
+     Guided/Free-form 두 경로 모두 이 함수들을 거치며, 준비되지 않으면 demo fallback 없이
+     정직하게 실패한다. CompanyProfile 은 GET bridge 로 로드하며 모델 호출로 얻지 않는다. */
+
+  const COMPANY_PROFILE_KEYS = [
+    "company", "representative", "contactPerson", "businessNumber", "address",
+    "phone", "email", "defaultValidityDays", "defaultTaxMode"
+  ];
+
+  function projectCompanyProfile(raw) {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+    if (typeof raw.company !== "string" || !raw.company.trim()) return null;
+    const projected = {};
+    COMPANY_PROFILE_KEYS.forEach((key) => {
+      if (raw[key] !== undefined && raw[key] !== null) projected[key] = raw[key];
+    });
+    return projected;
+  }
+
+  function runtimeReadiness() {
+    const authenticated = state.authenticated === true;
+    const skillReady = Boolean(state.loadedSkill);
+    const profileReady = state.companyProfileLoaded === true;
+    return {
+      authenticated,
+      skillReady,
+      profileReady,
+      ready: authenticated && skillReady && profileReady
+    };
+  }
+
+  function notReadyCode(readiness) {
+    if (!readiness.authenticated) return "auth_required";
+    if (!readiness.skillReady) return "skill_not_ready";
+    return "company_profile_not_ready";
+  }
+
+  async function loadCompanyProfile() {
+    state.companyProfile = null;
+    state.companyProfileLoaded = false;
+    try {
+      const result = await api("/b66/company-profile");
+      const data = result.response.ok && result.data && typeof result.data === "object" ? result.data : null;
+      const raw = data ? (data.company_profile && typeof data.company_profile === "object" ? data.company_profile : data) : null;
+      const projected = projectCompanyProfile(raw);
+      if (!projected) {
+        setQuoteStatus("회사 정보(CompanyProfile)를 확인하지 못했습니다.", "error");
+        return;
+      }
+      state.companyProfile = projected;
+      state.companyProfileLoaded = true;
+    } catch (_) {
+      setQuoteStatus("회사 정보(CompanyProfile)를 불러오지 못했습니다.", "error");
+    }
+  }
+
+  function interpretErrorText(code) {
+    switch (code) {
+      case "auth_required": return "로그인 후 다시 시도해 주세요.";
+      case "skill_not_ready": return "배정된 내 견적서를 확인하지 못했습니다.";
+      case "company_profile_not_ready": return "회사 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
+      case "incomplete_request": return "거래처와 품목·수량·단가를 조금 더 알려 주세요.";
+      case "empty_request": return "견적 내용을 입력해 주세요.";
+      case "interpret_unavailable": return "해석 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.";
+      default: return "견적 요청을 해석하지 못했습니다.";
+    }
+  }
+
+  /* quoteNo/issueDate 결정 순서: 이번 응답의 명시값 > 이번 견적의 이미 발급된 값 > 새 발급.
+     이미 발급된 값이 없으면 새 견적으로 보고 정확히 한 번만 발급한다. */
+  function structuredInputFromCandidate(candidate, profile, allocated) {
+    const app = window.B66QuoteAppBridge;
+    const semantic = window.SavedQuoteSkill;
+    if (!app || !semantic || !candidate || typeof candidate !== "object") return null;
+    const pending = allocated || {};
+    const quoteNo = typeof candidate.quoteNo === "string" && candidate.quoteNo.trim()
+      ? candidate.quoteNo.trim()
+      : (typeof pending.quoteNo === "string" && pending.quoteNo.trim()
+        ? pending.quoteNo.trim()
+        : app.createFreshDraft("free-form").meta.quoteNo);
+    const input = {
+      recipient: candidate.recipient,
+      items: candidate.items,
+      quoteNo,
+      issueDate: typeof candidate.issueDate === "string" && candidate.issueDate.trim()
+        ? candidate.issueDate.trim()
+        : (typeof pending.issueDate === "string" && pending.issueDate.trim()
+          ? pending.issueDate.trim()
+          : window.QuoteCore.isoFormat(new Date()))
+    };
+    if (typeof candidate.projectName === "string" && candidate.projectName.trim()) {
+      input.projectName = candidate.projectName.trim();
+    }
+    if (Array.isArray(candidate.detailGroups) && candidate.detailGroups.length) {
+      input.detailGroups = candidate.detailGroups;
+    }
+    if (typeof candidate.memo === "string") input.memo = candidate.memo;
+    if (typeof candidate.taxMode === "string" && candidate.taxMode) input.taxMode = candidate.taxMode;
+    const built = semantic.buildDraft(state.loadedSkill.skill, input, { companyProfile: profile });
+    return built && built.ok === true && built.draft ? { ok: true, draft: built.draft } : { ok: false, code: built && built.code ? built.code : "draft_build_failed" };
+  }
+
+  /* ── bounded missing-field follow-up (#3391) ──
+     불완전한 첫 요청은 사실만 보관하고 견적번호를 정확히 한 번 발급한다.
+     후속 답변은 원문과 합쳐 같은 stateless interpret route 로 다시 보내며,
+     최종 견적이 확정될 때까지 같은 번호/발행일을 유지한다. 저장소는 브라우저 메모리 1개뿐이다. */
+
+  const MAX_PENDING_TURNS = 4;
+  const MAX_PENDING_TEXT = 4000;
+  const MISSING_QUESTIONS = {
+    unitPrice: "단가는 얼마인가요?",
+    recipient: "받는 업체 또는 담당자를 알려 주세요.",
+    items: "품목명, 수량, 단가를 알려 주세요.",
+    memo: "납기나 결제 조건 등 덧붙일 내용이 있나요?",
+    taxMode: "부가세는 어떻게 할까요?"
+  };
+
+  function clearPendingQuote() {
+    state.pendingQuote = null;
+  }
+
+  function pendingQuote() {
+    return state.pendingQuote ? {
+      turns: state.pendingQuote.turns,
+      quoteNo: state.pendingQuote.quoteNo,
+      issueDate: state.pendingQuote.issueDate,
+      missing: state.pendingQuote.missing.slice(0, 8)
+    } : null;
+  }
+
+  function missingQuestion(missing) {
+    const list = Array.isArray(missing) ? missing : [];
+    for (const key of list) {
+      const question = MISSING_QUESTIONS[key];
+      if (question) return question;
+    }
+    return "견적에 필요한 값을 조금 더 알려 주세요.";
+  }
+
+  function combinePendingText(previousText, followUp) {
+    const combined = previousText + "\n" + followUp;
+    return combined.length <= MAX_PENDING_TEXT ? combined : null;
+  }
+
+  function startPendingQuote(text, candidate) {
+    const app = window.B66QuoteAppBridge;
+    const fresh = app ? app.createFreshDraft("free-form") : null;
+    if (!fresh) return null;
+    state.pendingQuote = {
+      originalText: text,
+      turns: 1,
+      quoteNo: fresh.meta.quoteNo,
+      issueDate: fresh.meta.issueDate,
+      lastCandidate: candidate,
+      missing: candidate.missing.slice(0, 8)
+    };
+    return state.pendingQuote;
+  }
+
+  function updatePendingQuote(text, candidate) {
+    const pending = state.pendingQuote;
+    if (!pending) return startPendingQuote(text, candidate);
+    pending.originalText = text;
+    pending.turns += 1;
+    pending.lastCandidate = candidate;
+    pending.missing = candidate.missing.slice(0, 8);
+    return pending;
+  }
+
+  async function interpretRequest(requestText) {
+    const text = typeof requestText === "string" ? requestText.trim().slice(0, MAX_PENDING_TEXT) : "";
+    if (!text) return { ok: false, code: "empty_request" };
+    const readiness = runtimeReadiness();
+    if (!readiness.ready) {
+      clearPendingQuote();
+      return { ok: false, code: notReadyCode(readiness) };
+    }
+
+    /* 진행 중인 견적이 있으면 원문과 합쳐 한 번에 다시 해석한다(서버는 stateless). */
+    let message = text;
+    let allocated = null;
+    const pending = state.pendingQuote;
+    if (pending) {
+      if (pending.turns >= MAX_PENDING_TURNS) {
+        clearPendingQuote();
+      } else {
+        const combined = combinePendingText(pending.originalText, text);
+        if (combined) {
+          message = combined;
+          allocated = pending;
+        } else {
+          clearPendingQuote();
+        }
+      }
+    }
+
+    try {
+      const result = await api("/b66/quote/interpret", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ saved_skill_id: state.loadedSkill.savedSkillId, message })
+      });
+      const data = result.data;
+      if (!result.response.ok || !data || data.ok !== true || !data.candidate) {
+        return { ok: false, code: "interpret_failed", detail: safeMessage(data, "") };
+      }
+      const candidate = data.candidate;
+      if (Array.isArray(candidate.missing) && candidate.missing.length) {
+        /* 알려진 값은 보관하고, 없는 값 하나만 구체적으로 되묻는다. */
+        const pendingQuoteState = updatePendingQuote(message, candidate);
+        return {
+          ok: false,
+          code: "incomplete_request",
+          missing: candidate.missing.slice(0, 8),
+          question: missingQuestion(candidate.missing),
+          pending: pendingQuoteState ? pendingQuote() : null
+        };
+      }
+      /* 서버가 이 요청에 대한 CompanyProfile 을 함께 내려주면 그것이 최신 authority 다. */
+      const profile = projectCompanyProfile(data.company_profile) || state.companyProfile;
+      if (!profile) return { ok: false, code: "company_profile_not_ready" };
+      const built = structuredInputFromCandidate(candidate, profile, allocated);
+      clearPendingQuote();
+      return built;
+    } catch (_) {
+      return { ok: false, code: "interpret_unavailable" };
+    }
+  }
+
+  async function buildQuoteFromFacts(facts) {
+    const readiness = runtimeReadiness();
+    if (!readiness.ready) return { ok: false, code: notReadyCode(readiness) };
+    if (!facts || typeof facts !== "object") return { ok: false, code: "invalid_structured_input" };
+    const input = {
+      recipient: facts.recipient,
+      items: facts.items,
+      quoteNo: typeof facts.quoteNo === "string" && facts.quoteNo.trim()
+        ? facts.quoteNo.trim()
+        : window.B66QuoteAppBridge.createFreshDraft("guided").meta.quoteNo,
+      issueDate: typeof facts.issueDate === "string" && facts.issueDate.trim()
+        ? facts.issueDate.trim()
+        : window.QuoteCore.isoFormat(new Date())
+    };
+    if (typeof facts.taxMode === "string" && facts.taxMode) input.taxMode = facts.taxMode;
+    if (typeof facts.memo === "string") input.memo = facts.memo;
+    const built = window.SavedQuoteSkill.buildDraft(
+      state.loadedSkill.skill, input, { companyProfile: state.companyProfile }
+    );
+    if (!built || built.ok !== true || !built.draft) {
+      return { ok: false, code: built && built.code ? built.code : "draft_build_failed" };
+    }
+    return { ok: true, draft: built.draft };
+  }
+
+  window.B66QuoteRuntimeBridge = Object.freeze({
+    readiness: runtimeReadiness,
+    interpret: interpretRequest,
+    buildFromFacts: buildQuoteFromFacts,
+    pendingQuote: () => pendingQuote(),
+    clearPending: () => { clearPendingQuote(); },
+    getCompanyProfile: () => (state.companyProfile ? JSON.parse(JSON.stringify(state.companyProfile)) : null),
+    errorText: interpretErrorText
+  });
+
+  async function generate() {
+    const message = byId("padiemQuoteRequest");
+    const button = byId("padiemQuoteGenerate");
+    if (!message || !state.authenticated) return;
+    const requestText = message.value.trim();
+    if (!requestText) {
+      setQuoteStatus("견적 내용을 입력해 주세요.", "error");
+      message.focus();
+      return;
+    }
+    if (button) button.disabled = true;
+    setQuoteStatus("견적 내용을 정리하고 있습니다.", "working");
+    try {
+      const result = await interpretRequest(requestText);
+      if (!result.ok) {
+        setQuoteStatus(interpretErrorText(result.code), result.code === "incomplete_request" ? "missing" : "error");
+        return;
+      }
+      const app = window.B66QuoteAppBridge;
+      const replaced = app ? app.replaceDraft(result.draft, { toast: "내 견적서로 작성했습니다." }) : null;
+      if (!replaced || replaced.ok !== true) {
+        setQuoteStatus("견적 화면에 반영하지 못했습니다.", "error");
+        return;
+      }
+      const direct = byId("directModeButton");
+      if (direct) direct.click();
+      setQuoteStatus("견적서가 준비되었습니다. 내용을 확인한 뒤 PDF로 저장하세요.", "ready");
+    } catch (_) {
+      setQuoteStatus("견적 연결을 확인해 주세요.", "error");
+    } finally {
+      if (button) button.disabled = false;
+    }
+  }
+
+  async function startGoogleSignIn() {
+    const button = byId("googleSigninButton");
+    if (button) button.disabled = true;
+    setAuthError("");
+    try {
+      const result = await api("/auth/status");
+      const methods = result.data && result.data.methods;
+      if (result.response.ok && methods && methods.google === true) {
+        window.location.assign("/api/padiem/auth/google/start");
+        return;
+      }
+      setAuthError("구글 로그인이 아직 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.");
+    } catch (_) {
+      setAuthError("로그인 연결을 확인해 주세요.");
+    } finally {
+      if (button) button.disabled = false;
+    }
+  }
+
+  async function passwordSignIn(event) {
+    event.preventDefault();
+    /* canonical /api/padiem/auth/status 의 methods.password === true 인 경우에만 로그인 요청을 보낸다. */
+    if (!passwordLoginAvailable()) {
+      applyAuthMethods(null);
+      setAuthError("아이디/이메일 로그인은 현재 제공되지 않습니다. 구글 로그인을 이용해 주세요.");
+      return;
+    }
+    const identifier = byId("padiemLoginIdentifier");
+    const password = byId("padiemLoginPassword");
+    const submit = byId("padiemLoginSubmit");
+    if (!identifier || !password || !submit) return;
+
+    const identifierValue = identifier.value.trim();
+    if (!identifierValue || !password.value) {
+      setAuthError("아이디 또는 이메일과 비밀번호를 입력해 주세요.");
+      (identifierValue ? password : identifier).focus();
+      return;
+    }
+
+    submit.disabled = true;
+    setAuthError("");
+    try {
+      const result = await api("/auth/password/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ identifier: identifierValue, password: password.value })
+      });
+      if (!result.response.ok) {
+        setAuthError(safeMessage(result.data, "로그인 정보를 확인해 주세요."));
+        return;
+      }
+      password.value = "";
+      await refreshAuth();
+      if (!state.authenticated) {
+        setAuthError("로그인 상태를 확인하지 못했습니다. 다시 시도해 주세요.");
+        return;
+      }
+      closeAuthDialog();
+    } catch (_) {
+      setAuthError("로그인 연결을 확인해 주세요.");
+    } finally {
+      /* 메서드가 꺼진 상태에서는 제출 버튼도 비활성 상태로 되돌린다. */
+      submit.disabled = !passwordLoginAvailable();
+    }
+  }
+
+  async function logout() {
+    try {
+      await api("/auth/logout", { method: "POST" });
+    } catch (_) {
+      // Local projection is still cleared; canonical session will be rechecked on refresh.
+    }
+    renderSignedOut();
+  }
+
+  async function changeSkill() {
+    const select = byId("padiemSavedSkillSelect");
+    if (!select) return;
+    await loadSkill(select.value);
+  }
+
+  function bind() {
+    const accountButton = byId("padiemAccountButton");
+    const close = byId("padiemAuthClose");
+    const googleButton = byId("googleSigninButton");
+    const loginForm = byId("padiemLoginForm");
+    const logoutButton = byId("padiemLogout");
+    const select = byId("padiemSavedSkillSelect");
+    const generateButton = byId("padiemQuoteGenerate");
+
+    if (accountButton) accountButton.addEventListener("click", () => {
+      if (state.authenticated) {
+        const panel = byId("padiemAccountPanel");
+        if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        openAuthDialog();
+      }
+    });
+    if (close) close.addEventListener("click", closeAuthDialog);
+    if (googleButton) googleButton.addEventListener("click", startGoogleSignIn);
+    if (loginForm) loginForm.addEventListener("submit", passwordSignIn);
+    if (logoutButton) logoutButton.addEventListener("click", logout);
+    if (select) select.addEventListener("change", changeSkill);
+    if (generateButton) generateButton.addEventListener("click", generate);
+    refreshAuth();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bind, { once: true });
+  } else {
+    bind();
+  }
+})();

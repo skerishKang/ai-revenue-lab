@@ -28,23 +28,28 @@
   var APPROVAL_SCHEMA_VERSION = 1;
   var MAX_APPROVER_REF_CHARS = 128;
 
-  /* logo/stamp slot 은 이번 MVP 에서 non-live 다. 값이 선언되면 명시적으로 거부한다. */
-  var SLOT_SUPPORT = "non_live";
+  /* #3402: logo/stamp 는 raw bytes/URL 이 아니라 account-bound private asset id 만 보존한다. */
+  var SLOT_SUPPORT = "private_asset_v1";
 
-  var ALLOWED_SECTIONS = ["title", "meta", "parties", "items", "totals", "memo", "mark"];
-  var ALLOWED_COLUMN_KEYS = ["name", "qty", "unitPrice", "amount"];
+  var ALLOWED_SECTIONS = ["title", "meta", "parties", "project", "items", "totals", "writtenTotal", "detailPages", "memo", "mark"];
+  var ALLOWED_COLUMN_KEYS = ["no", "name", "spec", "unit", "qty", "unitPrice", "amount", "note"];
+  var REQUIRED_COLUMN_KEYS = ["name", "qty", "unitPrice", "amount"];
   var ALLOWED_ALIGNMENTS = ["left", "right", "center"];
   var ALLOWED_JUSTIFY = ["flex-start", "center", "flex-end", "space-between", "space-around"];
   var ALLOWED_PAGE_SIZES = ["A4", "A5", "Legal", "Letter"];
   var ALLOWED_ORIENTATIONS = ["portrait", "landscape"];
   var ALLOWED_TAX_MODES = ["EXCLUSIVE", "INCLUSIVE", "EXEMPT"];
+  var ALLOWED_LAYOUT_VARIANTS = ["formal-grid-v1", "cgi-v2"];
+  var ALLOWED_ISSUE_DATE_FORMATS = ["iso", "yyyy. mm.", "yyyy. mm. dd."];
+  var MAX_SUMMARY_MIN_ROWS = 30;
+  var MAX_SUMMARY_TERMS_ROWS = 8;
 
   var ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,63}$/;
   var HEX_COLOR_PATTERN = /^#[0-9a-fA-F]{3,8}$/;
   var CSS_TOKEN_PATTERN = /^[0-9A-Za-z#.,%()\- ]{1,64}$/;
   var MEASURE_PATTERN = /^[0-9A-Za-z.%]{1,16}$/;
   var PAGE_MARGIN_PATTERN = /^\d{1,2}(?:\.\d{1,2})?(?:mm|cm|in)$/;
-  var SLOT_REF_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:/@-]{0,127}$/;
+  var SLOT_REF_PATTERN = /^b66asset_[0-9a-f]{32}$/;
   var APPROVER_REF_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:@/-]{2,127}$/;
   var ISO_UTC_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,6})?Z$/;
   var SHA256_HEX_PATTERN = /^[0-9a-f]{64}$/;
@@ -375,7 +380,7 @@
   /* ── content 정규화: 화이트리스트 기반. 모르는 키는 버리고, 구조가 깨지면 실패 ── */
 
   function normalizeColumns(raw) {
-    if (!Array.isArray(raw) || raw.length !== ALLOWED_COLUMN_KEYS.length) return null;
+    if (!Array.isArray(raw) || raw.length < REQUIRED_COLUMN_KEYS.length || raw.length > ALLOWED_COLUMN_KEYS.length) return null;
     var seen = Object.create(null);
     var columns = [];
     for (var i = 0; i < raw.length; i += 1) {
@@ -390,6 +395,9 @@
         width: cleanMeasure(entry.width, ""),
         align: cleanAlignment(entry.align, "left")
       });
+    }
+    for (var r = 0; r < REQUIRED_COLUMN_KEYS.length; r += 1) {
+      if (!seen[REQUIRED_COLUMN_KEYS[r]]) return null;
     }
     return columns;
   }
@@ -416,6 +424,36 @@
     return labels;
   }
 
+  function normalizeSummaryTerms(raw) {
+    if (!isPlainObject(raw)) return null;
+    var rows = raw.rows === undefined || raw.rows === null ? [] : raw.rows;
+    if (!Array.isArray(rows) || rows.length > MAX_SUMMARY_TERMS_ROWS) return null;
+    var normalizedRows = [];
+    for (var i = 0; i < rows.length; i += 1) {
+      var entry = rows[i];
+      if (!isPlainObject(entry) || typeof entry.label !== "string" || typeof entry.value !== "string") return null;
+      normalizedRows.push({
+        label: boundString(entry.label, ""),
+        value: boundString(entry.value, "")
+      });
+    }
+    var normalized = { rows: normalizedRows };
+    if (raw.validity !== undefined && raw.validity !== null) {
+      if (!isPlainObject(raw.validity)) return null;
+      if (
+        typeof raw.validity.label !== "string" ||
+        typeof raw.validity.valuePrefix !== "string" ||
+        typeof raw.validity.valueSuffix !== "string"
+      ) return null;
+      normalized.validity = {
+        label: boundString(raw.validity.label, ""),
+        valuePrefix: boundString(raw.validity.valuePrefix, ""),
+        valueSuffix: boundString(raw.validity.valueSuffix, "")
+      };
+    }
+    return normalized;
+  }
+
   function normalizeStyle(raw) {
     var fallback = BUILTIN_TEMPLATE_CONTENT.style;
     var source = isPlainObject(raw) ? raw : {};
@@ -433,6 +471,33 @@
       numericAlignment: cleanAlignment(source.numericAlignment, fallback.numericAlignment),
       textAlignment: cleanAlignment(source.textAlignment, fallback.textAlignment),
       totalsWidth: cleanMeasure(source.totalsWidth, fallback.totalsWidth)
+    };
+  }
+
+  function normalizeCgiV2(raw) {
+    if (!isPlainObject(raw)) return null;
+    var allowed = ["slogan", "fax", "bank", "terms", "underfillText", "underfillAfterRows"];
+    if (Object.keys(raw).some(function (key) { return allowed.indexOf(key) === -1; })) return null;
+    var terms = raw.terms === undefined || raw.terms === null ? [] : raw.terms;
+    if (!Array.isArray(terms) || terms.length > MAX_SUMMARY_TERMS_ROWS) return null;
+    var normalizedTerms = [];
+    for (var i = 0; i < terms.length; i += 1) {
+      if (typeof terms[i] !== "string") return null;
+      normalizedTerms.push(boundString(terms[i], ""));
+    }
+    var underfillAfterRows = raw.underfillAfterRows === undefined || raw.underfillAfterRows === null
+      ? 4
+      : Number(raw.underfillAfterRows);
+    if (!Number.isInteger(underfillAfterRows) || underfillAfterRows < 0 || underfillAfterRows > MAX_SUMMARY_MIN_ROWS) {
+      return null;
+    }
+    return {
+      slogan: boundString(raw.slogan, ""),
+      fax: boundString(raw.fax, ""),
+      bank: boundString(raw.bank, ""),
+      terms: normalizedTerms,
+      underfillText: boundString(raw.underfillText, ""),
+      underfillAfterRows: underfillAfterRows
     };
   }
 
@@ -514,6 +579,102 @@
       style: normalizeStyle(raw.style),
       fallbackText: boundString(raw.fallbackText, defaults.fallbackText)
     };
+
+    if (raw.meta && raw.meta.issueDateFormat !== undefined && raw.meta.issueDateFormat !== null) {
+      if (
+        typeof raw.meta.issueDateFormat !== "string" ||
+        ALLOWED_ISSUE_DATE_FORMATS.indexOf(raw.meta.issueDateFormat) === -1
+      ) return null;
+      content.meta.issueDateFormat = raw.meta.issueDateFormat;
+    }
+
+    if (raw.sender && raw.sender.contactPrefix !== undefined && raw.sender.contactPrefix !== null) {
+      if (typeof raw.sender.contactPrefix !== "string") return null;
+      content.sender.contactPrefix = boundString(raw.sender.contactPrefix, "");
+    }
+
+    if (raw.sender && raw.sender.contactPersonPrefix !== undefined && raw.sender.contactPersonPrefix !== null) {
+      if (typeof raw.sender.contactPersonPrefix !== "string") return null;
+      content.sender.contactPersonPrefix = boundString(raw.sender.contactPersonPrefix, "");
+    }
+
+    if (raw.recipient && raw.recipient.suffix !== undefined && raw.recipient.suffix !== null) {
+      if (typeof raw.recipient.suffix !== "string") return null;
+      content.recipient.suffix = boundString(raw.recipient.suffix, "");
+    }
+
+    if (raw.items && raw.items.heading !== undefined && raw.items.heading !== null) {
+      if (typeof raw.items.heading !== "string") return null;
+      content.items.heading = boundString(raw.items.heading, "");
+    }
+
+    if (raw.summaryTerms !== undefined && raw.summaryTerms !== null) {
+      var summaryTerms = normalizeSummaryTerms(raw.summaryTerms);
+      if (!summaryTerms) return null;
+      content.summaryTerms = summaryTerms;
+    }
+
+    if (raw.layoutVariant !== undefined && raw.layoutVariant !== null && raw.layoutVariant !== "") {
+      if (typeof raw.layoutVariant !== "string" || ALLOWED_LAYOUT_VARIANTS.indexOf(raw.layoutVariant) === -1) {
+        return null;
+      }
+      content.layoutVariant = raw.layoutVariant;
+    }
+
+    if (content.layoutVariant === "cgi-v2") {
+      var cgiV2 = normalizeCgiV2(raw.cgiV2);
+      if (!cgiV2) return null;
+      content.cgiV2 = cgiV2;
+    } else if (raw.cgiV2 !== undefined && raw.cgiV2 !== null) {
+      return null;
+    }
+
+    if (raw.items && raw.items.minRows !== undefined && raw.items.minRows !== null) {
+      var minRows = Number(raw.items.minRows);
+      if (!Number.isInteger(minRows) || minRows < 0 || minRows > MAX_SUMMARY_MIN_ROWS) return null;
+      content.items.minRows = minRows;
+    }
+
+    if (raw.memo && raw.memo.heading !== undefined && raw.memo.heading !== null) {
+      if (typeof raw.memo.heading !== "string") return null;
+      content.memo.heading = boundString(raw.memo.heading, "");
+    }
+
+    if (sections.indexOf("project") !== -1) {
+      var project = isPlainObject(raw.project) ? raw.project : {};
+      content.project = {
+        prefix: boundString(project.prefix, "건명  ")
+      };
+    }
+
+    if (sections.indexOf("writtenTotal") !== -1) {
+      var writtenTotal = isPlainObject(raw.writtenTotal) ? raw.writtenTotal : {};
+      content.writtenTotal = {
+        prefix: boundString(writtenTotal.prefix, "일금 "),
+        suffix: boundString(writtenTotal.suffix, "원정")
+      };
+    }
+
+    if (sections.indexOf("detailPages") !== -1) {
+      var detailPages = isPlainObject(raw.detailPages) ? raw.detailPages : {};
+      var detailColumns = normalizeColumns(
+        Array.isArray(detailPages.columns) ? detailPages.columns : raw.items && raw.items.columns
+      );
+      if (!detailColumns) return null;
+      content.detailPages = {
+        titlePrefix: boundString(detailPages.titlePrefix, "상세내역  "),
+        subtotalLabel: boundString(detailPages.subtotalLabel, "소 계"),
+        columns: detailColumns
+      };
+      if (detailPages.mergeRepeatedName !== undefined && detailPages.mergeRepeatedName !== null) {
+        if (typeof detailPages.mergeRepeatedName !== "boolean") return null;
+        content.detailPages.mergeRepeatedName = detailPages.mergeRepeatedName;
+      }
+      if (detailPages.finalLabel !== undefined && detailPages.finalLabel !== null) {
+        if (typeof detailPages.finalLabel !== "string") return null;
+        content.detailPages.finalLabel = boundString(detailPages.finalLabel, "");
+      }
+    }
 
     var serialized;
     try {
@@ -697,8 +858,13 @@
     MAX_TEMPLATE_CONTENT_BYTES: MAX_TEMPLATE_CONTENT_BYTES,
     ALLOWED_SECTIONS: ALLOWED_SECTIONS,
     ALLOWED_COLUMN_KEYS: ALLOWED_COLUMN_KEYS,
+    REQUIRED_COLUMN_KEYS: REQUIRED_COLUMN_KEYS,
     ALLOWED_ALIGNMENTS: ALLOWED_ALIGNMENTS,
     ALLOWED_TAX_MODES: ALLOWED_TAX_MODES,
+    ALLOWED_LAYOUT_VARIANTS: ALLOWED_LAYOUT_VARIANTS.slice(),
+    ALLOWED_ISSUE_DATE_FORMATS: ALLOWED_ISSUE_DATE_FORMATS.slice(),
+    MAX_SUMMARY_MIN_ROWS: MAX_SUMMARY_MIN_ROWS,
+    MAX_SUMMARY_TERMS_ROWS: MAX_SUMMARY_TERMS_ROWS,
     ALLOWED_JUSTIFY: ALLOWED_JUSTIFY,
     ALLOWED_PAGE_SIZES: ALLOWED_PAGE_SIZES,
     ALLOWED_ORIENTATIONS: ALLOWED_ORIENTATIONS,
@@ -718,6 +884,7 @@
     sha256Hex: sha256Hex,
     escapeHtml: escapeHtml,
     templateFingerprint: templateFingerprint,
+    normalizeCgiV2: normalizeCgiV2,
     normalizeTemplateContent: normalizeTemplateContent,
     normalizeTemplate: normalizeTemplate,
     normalizeTemplateId: normalizeTemplateId,

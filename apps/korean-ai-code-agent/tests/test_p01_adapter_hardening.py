@@ -3,6 +3,8 @@ from __future__ import annotations
 import asyncio
 import unittest
 
+from p01_test_model_route import SyntheticPlusRouteMixin
+
 from padiem_ai_core import (
     B14RouteMetadata,
     ExecutionResult,
@@ -105,7 +107,7 @@ def _local_run(run_id: str) -> ClawRun:
     )
 
 
-class P01PublicContractConformanceTests(unittest.IsolatedAsyncioTestCase):
+class P01PublicContractConformanceTests(SyntheticPlusRouteMixin, unittest.IsolatedAsyncioTestCase):
     async def test_real_core_orchestration_runner_projects_network_free_completion(self):
         run = _local_run("run_real_core")
         runner = OrchestrationRunner(runtime=_NetworkFreeRuntime())

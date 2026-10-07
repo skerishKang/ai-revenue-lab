@@ -1,0 +1,283 @@
+name: B54 Slack Read Production Canary
+
+on:
+  pull_request:
+    paths:
+      - 'apps/padiem-ai-engine/scripts/a17_slack_read_production_canary.py'
+      - '.github/tests/test_b54_slack_read_production_canary.py'
+      - '.github/workflows/b54-slack-read-production-canary.yml'
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: 'Exact current main SHA authorized for this one-shot Slack READ canary'
+        required: true
+      expected_engine_version:
+        description: 'Exact Production Engine version that must still be actively served'
+        required: true
+      confirmation:
+        description: 'Type RUN_B54_SLACK_READ_CANARY_ONCE to authorize exactly one Engine tool POST'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-slack-read-production-canary
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout source under review
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.target_sha || github.sha }}
+          persist-credentials: false
+
+      - name: Dispatch exact-main preflight
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          echo 'PREFLIGHT_EXACT_MAIN=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install contract test dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The canary contract test parses this workflow's structure, so PyYAML
+          # must be present before the test runs.
+          python -m pip install --disable-pip-version-check --quiet 'pyyaml>=6,<7'
+          echo 'SLACK_CANARY_CONTRACT_DEPS=INSTALLED'
+
+      - name: Run bounded canary contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/tests/test_b54_slack_read_production_canary.py
+
+      - name: Pin canonical Slack provider single-POST and read-only semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq 'MAX_SLACK_RESPONSE_BYTES = 1_000_000' apps/padiem-ai-engine/app/slack_port_httpx.py
+          grep -Fq 'SLACK_CONVERSATIONS_LIST_PATH = "/api/conversations.list"' apps/padiem-ai-engine/app/slack_port_httpx.py
+          grep -Fq 'ALLOWED_SLACK_METHOD_PATHS' apps/padiem-ai-engine/app/slack_port_httpx.py
+          grep -Fq 'CHANNEL_GATED_SLACK_PATHS' apps/padiem-ai-engine/app/slack_port_httpx.py
+          grep -Fq 'follow_redirects=False' apps/padiem-ai-engine/app/slack_port_httpx.py
+          grep -Fq 'PROVIDER_READ_BUDGET_MAX = 1' apps/padiem-ai-engine/scripts/a17_slack_read_production_canary.py
+          grep -Fq 'TOOL_ID = "tool:slack:channel.list@1"' apps/padiem-ai-engine/scripts/a17_slack_read_production_canary.py
+          grep -Fq 'RAW_CHANNEL_ID_OUTPUT=0' apps/padiem-ai-engine/scripts/a17_slack_read_production_canary.py
+          grep -Fq 'SLACK_WRITE=0' apps/padiem-ai-engine/scripts/a17_slack_read_production_canary.py
+          grep -Fq 'SLACK_SEND=0' apps/padiem-ai-engine/scripts/a17_slack_read_production_canary.py
+          grep -Fq 'SLACK_POST_MESSAGE=0' apps/padiem-ai-engine/scripts/a17_slack_read_production_canary.py
+          grep -Fq 'SLACK_REPLY_THREAD=0' apps/padiem-ai-engine/scripts/a17_slack_read_production_canary.py
+          grep -Fq 'SLACK_UPDATE_MESSAGE=0' apps/padiem-ai-engine/scripts/a17_slack_read_production_canary.py
+          grep -Fq 'SLACK_UPLOAD_FILE=0' apps/padiem-ai-engine/scripts/a17_slack_read_production_canary.py
+          grep -Fq 'SLACK_EVENTS_INGRESS=0' apps/padiem-ai-engine/scripts/a17_slack_read_production_canary.py
+          grep -Fq 'SLACK_BOT_TOKEN_PROVISIONING=0' apps/padiem-ai-engine/scripts/a17_slack_read_production_canary.py
+          grep -Fq 'SLACK_ALLOWED_CHANNEL_CONFIG=0' apps/padiem-ai-engine/scripts/a17_slack_read_production_canary.py
+          grep -Fq 'SLACK_GRANT_SEED=0' apps/padiem-ai-engine/scripts/a17_slack_read_production_canary.py
+          echo 'SLACK_PROVIDER_READ_BUDGET_CONTRACT=MAX_1'
+          echo 'SLACK_CANARY_READ_ONLY_CONTRACT=PASS'
+
+  live-slack-read:
+    needs: source-contract
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.confirmation == 'RUN_B54_SLACK_READ_CANARY_ONCE'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    env:
+      PADIEM_ENGINE_SLACK_CANARY_CREDENTIAL: ${{ secrets.B62_P01_ENGINE_CREDENTIAL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      EXPECTED_ENGINE_VERSION: ${{ github.event.inputs.expected_engine_version }}
+    steps:
+      - name: Checkout exact authorized main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+
+      - name: Re-check exact current main before live read
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.inputs.target_sha }}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${{ github.event.inputs.target_sha }}"
+          echo 'LIVE_EXACT_MAIN=PASS'
+
+      - name: GET-only served Engine version and Slack runtime binding guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "${EXPECTED_ENGINE_VERSION}" | grep -Eq '^[A-Za-z0-9._-]{1,64}$'
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID}"
+          auth=( -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" )
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+          deployments="${RUNNER_TEMP}/slack-canary-engine-deployments.json"
+          curl -fsS "${auth[@]}" "${base}/deployments" -o "${deployments}"
+          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
+          active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+          test -n "${active_version}"
+          test "${active_version}" = "${EXPECTED_ENGINE_VERSION}"
+          version_detail="${RUNNER_TEMP}/slack-canary-engine-version.json"
+          curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
+          python3 .github/scripts/b54_engine_served_version_guard.py verify \
+            --version-settings "${version_detail}" \
+            --active-version "${active_version}" >/dev/null
+          # Canonical Slack readiness observation: NAME/TYPE only. The Engine
+          # owns the Slack bot token secret plus the server-derived public and
+          # private channel partitions; none of their values may be emitted.
+          python3 - "${version_detail}" "${active_version}" <<'PY'
+          import json
+          import re
+          import sys
+
+          payload = json.load(open(sys.argv[1], encoding="utf-8"))
+          active_version = sys.argv[2]
+          result = payload.get("result") if payload.get("success") is True else None
+          if not isinstance(result, dict) or result.get("id") != active_version:
+              raise SystemExit("served Engine version identity drifted")
+          resources = result.get("resources")
+          raw = resources.get("bindings") if isinstance(resources, dict) else None
+          if isinstance(raw, dict):
+              bindings = [
+                  {**value, "name": name} for name, value in raw.items() if isinstance(value, dict)
+              ]
+          elif isinstance(raw, list):
+              bindings = raw
+          else:
+              raise SystemExit("served binding collection malformed")
+
+          token = [b for b in bindings if b.get("name") == "ENGINE_SLACK_BOT_TOKEN"]
+          allowed = [b for b in bindings if b.get("name") == "ENGINE_SLACK_ALLOWED_CHANNELS"]
+          private = [b for b in bindings if b.get("name") == "ENGINE_SLACK_PRIVATE_CHANNELS"]
+          if len(token) != 1 or token[0].get("type") != "secret_text":
+              raise SystemExit("Slack bot token binding missing or wrong type")
+          if len(allowed) != 1:
+              raise SystemExit("Slack allowed-channels binding missing")
+          allowed_type = allowed[0].get("type")
+          if not isinstance(allowed_type, str) or re.fullmatch(r"[A-Za-z0-9._-]{1,64}", allowed_type) is None:
+              raise SystemExit("Slack allowed-channels binding type invalid")
+          # The canonical Slack composition treats the explicit private-channel
+          # partition as optional; classify it as NAME/TYPE only.
+          if len(private) > 1:
+              raise SystemExit("duplicate Slack private-channels binding")
+          private_type = private[0].get("type") if len(private) == 1 else None
+          if private_type is not None and (
+              not isinstance(private_type, str)
+              or re.fullmatch(r"[A-Za-z0-9._-]{1,64}", private_type) is None
+          ):
+              raise SystemExit("Slack private-channels binding type invalid")
+
+          print("SLACK_BOT_TOKEN_SERVED_BINDING=PRESENT:secret_text")
+          print(f"SLACK_ALLOWED_CHANNELS_SERVED_BINDING=PRESENT:{allowed_type}")
+          if private_type is None:
+              print("SLACK_PRIVATE_CHANNELS_SERVED_BINDING=ABSENT")
+          else:
+              print(f"SLACK_PRIVATE_CHANNELS_SERVED_BINDING=PRESENT:{private_type}")
+          print("RAW_BOT_TOKEN_OUTPUT=0")
+          print("RAW_CHANNEL_CONFIG_VALUE_OUTPUT=0")
+          print("RAW_BINDING_VALUE_OUTPUT=0")
+          print("SECRET_VALUE_OUTPUT=0")
+          PY
+          echo "ENGINE_EXPECTED_VERSION_ACTIVE=PASS"
+          echo "ENGINE_EXPECTED_VERSION=${EXPECTED_ENGINE_VERSION}"
+          echo 'ENGINE_VERSION_ID_OUTPUT=0'
+          echo 'ENGINE_DEPLOY=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: Fail closed if protected Engine credential is unavailable
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${PADIEM_ENGINE_SLACK_CANARY_CREDENTIAL:-}"
+          echo 'ENGINE_CALLER_CREDENTIAL_PRESENT=YES'
+          echo 'PROVIDER_CREDENTIAL_OUTPUT=0'
+
+      - name: Execute exactly one bounded Slack READ through Engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          log="${RUNNER_TEMP}/slack-read-canary.log"
+          python apps/padiem-ai-engine/scripts/a17_slack_read_production_canary.py | tee "${log}"
+          grep -qx 'SLACK_READ_LIVE_CANARY=PASS' "${log}"
+          grep -qx 'ENGINE_TOOL_EXECUTE_HTTP=200' "${log}"
+          grep -qx 'ENGINE_TOOL_RESULT=PASS' "${log}"
+          grep -qx 'ENGINE_TOOL_EXECUTE_POST_COUNT=1' "${log}"
+          grep -qx 'NETWORK_RETRY_COUNT=0' "${log}"
+          grep -qx 'LIVE_PROVIDER_CALLS=1' "${log}"
+          grep -qx 'REAL_PROVIDER_CALLS=UNOBSERVABLE_FROM_ENGINE_BOUNDARY' "${log}"
+          grep -qx 'SLACK_RESULT_BOUNDED=YES' "${log}"
+          grep -qx 'SLACK_RESULT_STATUS=OK' "${log}"
+          grep -qx 'SLACK_PROVIDER_READ_BUDGET_MAX=1' "${log}"
+          grep -qx 'SLACK_PROVIDER_READ_ACTUAL=UNOBSERVABLE_FROM_ENGINE_BOUNDARY' "${log}"
+          grep -qx 'SLACK_PROVIDER_RESPONSE_BYTES_MAX=1000000' "${log}"
+          grep -qx 'SLACK_CONVERSATIONS_LIST_BOUNDED=YES' "${log}"
+          grep -qx 'RAW_CHANNEL_ID_OUTPUT=0' "${log}"
+          grep -qx 'RAW_CHANNEL_NAME_OUTPUT=0' "${log}"
+          grep -qx 'RAW_CHANNEL_PRIVACY_OUTPUT=0' "${log}"
+          grep -qx 'RAW_MESSAGE_OUTPUT=0' "${log}"
+          grep -qx 'RAW_USER_OUTPUT=0' "${log}"
+          grep -qx 'RAW_FILE_OUTPUT=0' "${log}"
+          grep -qx 'RAW_TEAM_ID_OUTPUT=0' "${log}"
+          grep -qx 'RAW_BOT_TOKEN_OUTPUT=0' "${log}"
+          grep -qx 'RAW_BINDING_REF_OUTPUT=0' "${log}"
+          grep -qx 'RAW_ACTOR_REF_OUTPUT=0' "${log}"
+          grep -qx 'PROVIDER_CREDENTIAL_OUTPUT=0' "${log}"
+          grep -qx 'SLACK_SEND=0' "${log}"
+          grep -qx 'SLACK_POST_MESSAGE=0' "${log}"
+          grep -qx 'SLACK_REPLY_THREAD=0' "${log}"
+          grep -qx 'SLACK_UPDATE_MESSAGE=0' "${log}"
+          grep -qx 'SLACK_UPLOAD_FILE=0' "${log}"
+          grep -qx 'SLACK_WRITE=0' "${log}"
+          grep -qx 'SLACK_EVENTS_INGRESS=0' "${log}"
+          grep -qx 'WEBHOOK_MUTATION=0' "${log}"
+          grep -qx 'SLACK_BOT_TOKEN_PROVISIONING=0' "${log}"
+          grep -qx 'SLACK_ALLOWED_CHANNEL_CONFIG=0' "${log}"
+          grep -qx 'SLACK_GRANT_SEED=0' "${log}"
+          grep -qx 'D1_MUTATION=0' "${log}"
+          grep -qx 'ENGINE_DEPLOY=0' "${log}"
+          grep -qx 'B14_DEPLOY=0' "${log}"
+          grep -qx 'SECRET_MUTATION=0' "${log}"
+
+      - name: Record immutable execution locks
+        if: always()
+        shell: bash
+        run: |
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'WORKFLOW_INTERNAL_RERUN=0'
+          echo 'ENGINE_TOOL_EXECUTE_POST_MAX=1'
+          echo 'CANARY_NETWORK_RETRY=0'
+          echo 'LIVE_PROVIDER_CALLS_MAX=1'
+          echo 'SLACK_PROVIDER_READ_BUDGET_MAX=1'
+          echo 'SLACK_SEND=0'
+          echo 'SLACK_POST_MESSAGE=0'
+          echo 'SLACK_REPLY_THREAD=0'
+          echo 'SLACK_UPDATE_MESSAGE=0'
+          echo 'SLACK_UPLOAD_FILE=0'
+          echo 'SLACK_WRITE=0'
+          echo 'SLACK_EVENTS_INGRESS=0'
+          echo 'WEBHOOK_MUTATION=0'
+          echo 'SLACK_BOT_TOKEN_PROVISIONING=0'
+          echo 'SLACK_ALLOWED_CHANNEL_CONFIG=0'
+          echo 'SLACK_GRANT_SEED=0'
+          echo 'D1_MUTATION=0'
+          echo 'ENGINE_DEPLOY=0'
+          echo 'B14_DEPLOY=0'
+          echo 'SECRET_MUTATION=0'
+          echo 'READ_DOES_NOT_IMPLY_WRITE=YES'

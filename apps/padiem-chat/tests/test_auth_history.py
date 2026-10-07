@@ -10,6 +10,7 @@ import pytest
 
 from app.auth import (
     GOOGLE_AUTH_URL,
+    GoogleOAuthClient,
     GOOGLE_TOKEN_URL,
     GOOGLE_USERINFO_URL,
     OAUTH_STATE_COOKIE,
@@ -22,6 +23,7 @@ from app.auth import (
 from app.config import ConfigError, Settings
 from app.history import D1HistoryStore, HistoryForbidden, UserProfile
 from app.main import create_app
+from app.model_policy import EXECUTABLE_B14_MODEL_IDS
 
 SESSION_SECRET = "phase9-session-secret-not-a-real-credential-000000"
 
@@ -140,6 +142,38 @@ def test_signed_session_and_state_reject_tamper_and_expiry():
     assert verify_oauth_state(settings, state, signed, now=101)
     assert not verify_oauth_state(settings, state + "x", signed, now=101)
     assert not verify_oauth_state(settings, state, signed, now=701)
+
+
+def test_redirect_uri_for_bridge_requires_exact_configured_origin():
+    settings = google_settings(b66_quote_base_url="https://quick-quote-kr.pages.dev")
+    client = GoogleOAuthClient(settings)
+    assert (
+        client.redirect_uri_for_bridge("https://quick-quote-kr.pages.dev/")
+        == "https://quick-quote-kr.pages.dev/api/padiem/auth/google/callback"
+    )
+    assert client.redirect_uri_for_bridge("https://evil.example.test") == client.redirect_uri
+    assert client.redirect_uri_for_bridge(None) == client.redirect_uri
+    plain = GoogleOAuthClient(google_settings())
+    assert plain.redirect_uri_for_bridge("https://quick-quote-kr.pages.dev") == plain.redirect_uri
+
+
+@pytest.mark.asyncio
+async def test_oauth_start_redirect_follows_b66_bridge_origin():
+    settings = google_settings(b66_quote_base_url="https://quick-quote-kr.pages.dev")
+    store = MemoryHistoryStore()
+    app = create_app(settings, history_store=store)
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test", follow_redirects=False
+    ) as client:
+        bridged = await client.get("/auth/google/start", headers={"X-B66-Origin": "https://quick-quote-kr.pages.dev"})
+        canonical = await client.get("/auth/google/start")
+    assert bridged.status_code == 302
+    assert (
+        "redirect_uri=https%3A%2F%2Fquick-quote-kr.pages.dev%2Fapi%2Fpadiem%2Fauth%2Fgoogle%2Fcallback"
+        in bridged.headers["location"]
+    )
+    assert canonical.status_code == 302
+    assert "redirect_uri=https%3A%2F%2Fchat.example.test%2Fauth%2Fgoogle%2Fcallback" in canonical.headers["location"]
 
 
 @pytest.mark.asyncio
@@ -307,13 +341,22 @@ async def test_failed_model_call_does_not_persist_and_image_base64_never_persist
     store = MemoryHistoryStore()
     profile = await add_test_user(store)
     failing_settings = google_settings(runtime_mode="b14", b14_base_url="https://b14.example")
+    provider_calls = 0
     async def fail_handler(request):
+        nonlocal provider_calls
+        provider_calls += 1
         return httpx.Response(500, json={"private": "not exposed"})
     fail_app = create_app(failing_settings, transport=httpx.MockTransport(fail_handler), history_store=store)
     async with httpx.AsyncClient(transport=httpx.ASGITransport(app=fail_app), base_url="https://chat.example.test") as client:
         client.cookies.set(SESSION_COOKIE, create_session_token(failing_settings, profile.id), domain="chat.example.test", path="/")
         failed = await client.post("/api/chat", json={"messages": [{"role": "user", "content": "실패"}], "mode": "auto"})
-    assert failed.status_code == 502
+    if EXECUTABLE_B14_MODEL_IDS:
+        assert failed.status_code == 502
+        assert provider_calls == 1
+    else:
+        assert failed.status_code == 422
+        assert failed.json()["error"]["code"] == "tier_unavailable"
+        assert provider_calls == 0
     assert store.conversations == {}
 
     settings = google_settings()

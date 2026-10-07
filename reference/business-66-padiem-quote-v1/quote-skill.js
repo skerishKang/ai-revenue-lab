@@ -66,7 +66,7 @@
   var TAX_MODES = ["EXCLUSIVE", "INCLUSIVE", "EXEMPT"];
   var SOURCE_KINDS = ["file", "manual", "sample"];
 
-  var FIXED_DEFAULT_KEYS = ["sender", "validDays", "taxMode", "memo"];
+  var FIXED_DEFAULT_KEYS = ["sender", "validDays", "taxMode", "memo", "calculationPolicy"];
   var VARIABLE_SCHEMA_KEYS = ["recipient", "quoteNo", "issueDate", "items", "memo", "taxMode"];
   var REQUIRED_VARIABLE_KEYS = ["recipient", "quoteNo", "issueDate", "items"];
   var PROVENANCE_KEYS = ["sourceKind", "sourceName", "sourceRef", "capturedAt", "warnings", "unknowns", "evidence"];
@@ -109,11 +109,13 @@
 
   function normalizeSender(raw) {
     if (!isPlainObject(raw)) return null;
-    var allowed = ["company", "rep", "bizNo", "address", "phone", "email", "presetId"];
+    /* contactPerson 은 QuoteDraft authority(#3437)의 회사 고정 기본값이다.
+       표시 authority 가 아닌 데이터 기본값이므로 여기서만 허용된다. */
+    var allowed = ["company", "rep", "contactPerson", "bizNo", "address", "phone", "email", "presetId"];
     if (unknownKeys(raw, allowed).length > 0) return null;
     var company = boundedString(raw.company, MAX_STRING_CHARS, "").trim();
     if (!company) return null;
-    return {
+    var normalized = {
       company: company,
       rep: boundedString(raw.rep, MAX_STRING_CHARS, "").trim(),
       bizNo: boundedString(raw.bizNo, MAX_STRING_CHARS, "").trim(),
@@ -122,6 +124,10 @@
       email: boundedString(raw.email, MAX_STRING_CHARS, "").trim(),
       presetId: boundedString(raw.presetId, 80, "saved-skill").trim() || "saved-skill"
     };
+    /* 비어 있으면 키를 만들지 않는다. 기존 Skill 직렬화 형태를 보존한다(spec/unit/note 선례). */
+    var contactPerson = boundedString(raw.contactPerson, MAX_STRING_CHARS, "").trim();
+    if (contactPerson) normalized.contactPerson = contactPerson;
+    return normalized;
   }
 
   function normalizeFixedDefaults(raw) {
@@ -139,7 +145,13 @@
     if (TAX_MODES.indexOf(taxMode) === -1) return null;
 
     var memo = boundedString(raw.memo, MAX_MEMO_CHARS, "");
-    return { sender: sender, validDays: validDays, taxMode: taxMode, memo: memo };
+    var normalized = { sender: sender, validDays: validDays, taxMode: taxMode, memo: memo };
+    if (raw.calculationPolicy !== undefined && raw.calculationPolicy !== null) {
+      var calculationPolicy = Core.normalizeCalculationPolicy(raw.calculationPolicy);
+      if (!calculationPolicy) return null;
+      normalized.calculationPolicy = calculationPolicy;
+    }
+    return normalized;
   }
 
   function normalizeVariableSchema(raw) {
@@ -367,19 +379,66 @@
     var items = [];
     for (var i = 0; i < raw.length; i += 1) {
       var entry = raw[i];
-      if (!isPlainObject(entry) || unknownKeys(entry, ["id", "name", "qty", "unitPrice"]).length > 0) return null;
+      if (!isPlainObject(entry) || unknownKeys(entry, ["id", "name", "spec", "unit", "qty", "unitPrice", "note"]).length > 0) return null;
       var name = boundedString(entry.name, MAX_ITEM_NAME_CHARS, "").trim();
+      var spec = boundedString(entry.spec, 240, "").trim();
+      var unit = boundedString(entry.unit, 80, "").trim();
+      var note = boundedString(entry.note, 500, "").trim();
       var qty = Number(entry.qty);
       var unitPrice = Number(entry.unitPrice);
       if (!name || !Number.isFinite(qty) || qty <= 0 || !Number.isFinite(unitPrice) || unitPrice < 0) return null;
-      items.push({
+      var item = {
         id: typeof entry.id === "string" && entry.id.trim() ? entry.id.trim().slice(0, 80) : "item-" + (i + 1),
         name: name,
         qty: qty,
         unitPrice: unitPrice
-      });
+      };
+      if (spec) item.spec = spec;
+      if (unit) item.unit = unit;
+      if (note) item.note = note;
+      items.push(item);
     }
     return items;
+  }
+
+  function normalizeRuntimeCompanyProfile(raw) {
+    if (!isPlainObject(raw)) return null;
+    var allowed = [
+      "company", "representative", "contactPerson", "businessNumber",
+      "address", "phone", "email", "defaultValidityDays", "defaultTaxMode"
+    ];
+    if (unknownKeys(raw, allowed).length > 0) return null;
+    var company = boundedString(raw.company, MAX_STRING_CHARS, "").trim();
+    if (!company) return null;
+
+    /* canonical 서버 CompanyProfile 은 부분 정보가 정상이다: 회사 식별값은 필수이고
+       유효기간/부가세 기본값은 null 일 수 있다 (unknown key 와 잘못된 값만 fail closed). */
+    var validDays = null;
+    if (raw.defaultValidityDays !== undefined && raw.defaultValidityDays !== null && raw.defaultValidityDays !== "") {
+      if (!Number.isInteger(raw.defaultValidityDays) || raw.defaultValidityDays < 0 || raw.defaultValidityDays > 3650) {
+        return null;
+      }
+      validDays = raw.defaultValidityDays;
+    }
+    var taxMode = null;
+    if (raw.defaultTaxMode !== undefined && raw.defaultTaxMode !== null && raw.defaultTaxMode !== "") {
+      if (typeof raw.defaultTaxMode !== "string" || TAX_MODES.indexOf(raw.defaultTaxMode.trim()) === -1) return null;
+      taxMode = raw.defaultTaxMode.trim();
+    }
+    return {
+      sender: {
+        company: company,
+        rep: boundedString(raw.representative, MAX_STRING_CHARS, "").trim(),
+        contactPerson: boundedString(raw.contactPerson, MAX_STRING_CHARS, "").trim(),
+        bizNo: boundedString(raw.businessNumber, MAX_STRING_CHARS, "").trim(),
+        address: boundedString(raw.address, MAX_STRING_CHARS, "").trim(),
+        phone: boundedString(raw.phone, MAX_STRING_CHARS, "").trim(),
+        email: boundedString(raw.email, MAX_STRING_CHARS, "").trim(),
+        presetId: "account-company-profile"
+      },
+      validDays: validDays,
+      taxMode: taxMode
+    };
   }
 
   function buildDraftFromCompiled(compiled, input) {
@@ -387,6 +446,15 @@
       return { ok: false, code: "invalid_structured_input", draft: null };
     }
     var skill = compiled.skill;
+    var options = arguments.length > 2 ? arguments[2] : null;
+    var opts = isPlainObject(options) ? options : {};
+    var companyProfile = null;
+    if (opts.companyProfile !== undefined && opts.companyProfile !== null) {
+      companyProfile = normalizeRuntimeCompanyProfile(opts.companyProfile);
+      if (!companyProfile) {
+        return { ok: false, code: "invalid_company_profile", draft: null };
+      }
+    }
     var quoteNo = typeof input.quoteNo === "string" ? input.quoteNo.trim() : "";
     var issueDate = typeof input.issueDate === "string" ? input.issueDate.trim() : "";
     var recipient = normalizeRecipient(input.recipient);
@@ -395,10 +463,23 @@
       return { ok: false, code: "invalid_structured_input", draft: null };
     }
 
+    var projectName = "";
+    if (input.projectName !== undefined && input.projectName !== null) {
+      if (typeof input.projectName !== "string") return { ok: false, code: "invalid_project_name", draft: null };
+      projectName = input.projectName.trim().slice(0, 240);
+    }
+
+    /* 견적 계열 사실의 precedence: 이번 견적의 명시적 값 > 승인된 Skill 기본값 > CompanyProfile fallback.
+       sender 식별값은 CompanyProfile 이 계속 authority 다. */
     var taxMode = skill.fixedDefaults.taxMode;
+    if (!taxMode && companyProfile && companyProfile.taxMode) taxMode = companyProfile.taxMode;
     if (skill.variableSchema.taxMode && input.taxMode !== undefined) {
       if (TAX_MODES.indexOf(input.taxMode) === -1) return { ok: false, code: "invalid_tax_mode", draft: null };
       taxMode = input.taxMode;
+    }
+    var validDays = Number.isInteger(skill.fixedDefaults.validDays) ? skill.fixedDefaults.validDays : null;
+    if (validDays === null && companyProfile && Number.isInteger(companyProfile.validDays)) {
+      validDays = companyProfile.validDays;
     }
 
     var memo = skill.fixedDefaults.memo;
@@ -407,35 +488,54 @@
       memo = input.memo.slice(0, MAX_MEMO_CHARS);
     }
 
-    var draft = Core.normalizeDraft({
+    var draftInput = {
       schemaVersion: Core.SCHEMA_VERSION,
-      meta: {
+      meta: Object.assign({
         quoteNo: quoteNo,
         issueDate: issueDate,
-        validDays: skill.fixedDefaults.validDays,
+        validDays: validDays,
         source: "saved-quote-skill"
-      },
-      sender: cloneJson(skill.fixedDefaults.sender),
+      }, projectName ? { projectName: projectName } : {}),
+      sender: companyProfile ? cloneJson(companyProfile.sender) : cloneJson(skill.fixedDefaults.sender),
       recipient: recipient,
       items: items,
       tax: { mode: taxMode, rate: Core.VAT_RATE },
       memo: memo
-    });
+    };
+    if (skill.fixedDefaults.calculationPolicy) {
+      draftInput.calculationPolicy = cloneJson(skill.fixedDefaults.calculationPolicy);
+    }
+    if (input.detailGroups !== undefined && input.detailGroups !== null) {
+      if (!Array.isArray(input.detailGroups)) {
+        return { ok: false, code: "invalid_detail_groups", draft: null };
+      }
+      draftInput.detailGroups = cloneJson(input.detailGroups);
+    }
+    var draft = Core.normalizeDraft(draftInput);
     if (!draft) return { ok: false, code: "invalid_quote_draft", draft: null };
     return { ok: true, code: "draft_ready", draft: draft };
   }
 
   function buildDraft(rawSkill, input) {
+    var options = arguments.length > 2 ? arguments[2] : null;
     var compiled = compileSkill(rawSkill);
     if (!compiled.ok) return { ok: false, code: compiled.code, draft: null, compiled: null };
-    var built = buildDraftFromCompiled(compiled.compiled, input);
+    var built = buildDraftFromCompiled(compiled.compiled, input, options);
     return Object.assign({}, built, { compiled: compiled.compiled });
   }
 
   function buildRenderModel(rawSkill, input) {
-    var built = buildDraft(rawSkill, input);
+    /* The third argument carries transient runtime authorities such as
+       approved private asset sources and the authenticated CompanyProfile.
+       It never mutates the approved Saved Quote Skill or its fingerprint. */
+    var options = arguments.length > 2 ? arguments[2] : null;
+    var opts = isPlainObject(options) ? options : {};
+    var built = buildDraft(rawSkill, input, opts);
     if (!built.ok) return { ok: false, code: built.code, draft: null, renderModel: null, compiled: built.compiled };
-    var renderModel = Renderer.buildRenderModel(built.draft, built.compiled.templateProfile, { taxReviewRequired: false });
+    var renderModel = Renderer.buildRenderModel(built.draft, built.compiled.templateProfile, {
+      taxReviewRequired: false,
+      slotSources: isPlainObject(opts.slotSources) ? opts.slotSources : {}
+    });
     if (!renderModel) return { ok: false, code: "render_model_failed", draft: built.draft, renderModel: null, compiled: built.compiled };
     return {
       ok: true,
@@ -463,6 +563,7 @@
     normalizeVariableSchema: normalizeVariableSchema,
     normalizeProvenance: normalizeProvenance,
     normalizeApproval: normalizeApproval,
+    normalizeRuntimeCompanyProfile: normalizeRuntimeCompanyProfile,
     skillFingerprint: skillFingerprint,
     buildSkill: buildSkill,
     normalizeSkill: normalizeSkill,

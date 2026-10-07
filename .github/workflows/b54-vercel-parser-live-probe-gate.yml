@@ -1,0 +1,127 @@
+name: B54 Vercel Parser Live Probe Gate
+
+# #3283 — source-only gate for a future one-shot non-Production parser probe.
+# No Vercel SDK/client, credential, sandbox allocation, provider request, or
+# Production B14/B66 binding is implemented in this slice.
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/b54-vercel-parser-live-probe-gate.yml"
+      - ".github/tests/test_b54_vercel_parser_live_probe_gate.py"
+      - "apps/korean-ai-code-agent/src/kagent/vercel_parser_live_gate.py"
+      - "apps/korean-ai-code-agent/tests/test_vercel_parser_live_gate.py"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA for a future parser live gate"
+        required: true
+        type: string
+      central_confirmation:
+        description: "Exact CENTRAL confirmation marker"
+        required: true
+        type: string
+      parser_deadline_seconds:
+        description: "Canonical parser hard deadline; must be 30"
+        required: true
+        default: "30"
+        type: string
+      sandbox_ttl_seconds:
+        description: "Outer non-Production sandbox TTL; 60-300"
+        required: true
+        default: "120"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b54-vercel-parser-live-probe-gate
+  cancel-in-progress: false
+
+env:
+  TARGET_SHA: ${{ inputs.target_sha }}
+  CENTRAL_CONFIRMATION: ${{ inputs.central_confirmation }}
+  PARSER_DEADLINE_SECONDS: ${{ inputs.parser_deadline_seconds }}
+  SANDBOX_TTL_SECONDS: ${{ inputs.sandbox_ttl_seconds }}
+
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout pull request head
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout exact dispatch target
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact current main and explicit CENTRAL marker
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          test "${CENTRAL_CONFIRMATION}" = "CENTRAL_VERCEL_PARSER_LIVE_PROBE=YES"
+          test "${PARSER_DEADLINE_SECONDS}" -eq 30
+          test "${SANDBOX_TTL_SECONDS}" -ge 60
+          test "${SANDBOX_TTL_SECONDS}" -le 300
+          test "${SANDBOX_TTL_SECONDS}" -gt "${PARSER_DEADLINE_SECONDS}"
+          echo 'EXACT_MAIN_GUARD=PASS'
+          echo 'CENTRAL_CONFIRMATION=PASS'
+          echo 'PARSER_HARD_DEADLINE_GUARD=PASS'
+          echo 'SANDBOX_TTL_GUARD=PASS'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run Vercel parser source-contract tests
+        env:
+          PYTHONPATH: apps/korean-ai-code-agent/src
+        run: python -m unittest apps/korean-ai-code-agent/tests/test_vercel_parser_live_gate.py
+
+      - name: Source-only evidence
+        run: |
+          echo 'VERCEL_PARSER_LIVE_PROBE_GATE_SOURCE=PASS'
+          echo 'CANONICAL_CLOUD_M1_PROFILE_REUSED=YES'
+          echo 'CANONICAL_PARSER_CLIENT_REUSED=YES'
+          echo 'LIVE_DISPATCH_EXECUTED=NO'
+          echo 'PROVIDER_CALLS=0'
+          echo 'SANDBOX_ALLOCATIONS=0'
+          echo 'CREDENTIAL_BINDING=0'
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'NETWORK_NEGATIVE_TEST_REQUIRED=YES'
+          echo 'METADATA_NEGATIVE_TEST_REQUIRED=YES'
+          echo 'PROCESS_TREE_DEATH_REQUIRED=YES'
+          echo 'NON_RESURRECTION_REQUIRED=YES'
+          echo 'RESOURCE_LIMIT_EVIDENCE_REQUIRED=YES'
+
+  future-live-probe:
+    needs: source-contract
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.central_confirmation == 'CENTRAL_VERCEL_PARSER_LIVE_PROBE=YES' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    steps:
+      - name: Future Vercel parser execution is not wired in source slice
+        run: |
+          echo 'LIVE_PROVIDER_CALL=BLOCKED_NOT_IMPLEMENTED'
+          echo 'VERCEL_SANDBOX_CREATE=0'
+          echo 'PARSER_PROCESS_START=0'
+          echo 'CREDENTIAL_BINDING=0'
+          echo 'PROVIDER_CALLS=0'
+          echo 'PRODUCTION_BINDING=0'
+          echo 'STOP_FOR_CENTRAL=YES'

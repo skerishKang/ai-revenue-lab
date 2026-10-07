@@ -41,7 +41,7 @@ _MEMBERSHIP_KEYS = frozenset({"tenant_id", "canonical_subject_id", "state", "cre
 _MEMBERSHIP_RESOLVE_KEYS = frozenset(
     {"tenant_id", "canonical_subject_id", "state", "created_at", "role"}
 )
-_REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive"})
+_REVIEWED_CONNECTORS = frozenset({"gmail", "google-drive", "google-calendar"})
 
 
 async def _maybe_await(value: Any) -> Any:

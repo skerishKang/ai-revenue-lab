@@ -21,6 +21,9 @@ on:
       - ".github/scripts/cloudflare_served_version.py"
       - ".github/scripts/cloudflare_mutation_evidence.py"
       - "apps/padiem-ai-engine/scripts/a9_production_smoke.py"
+      - "apps/padiem-ai-engine/scripts/a7_unscoped_admission_production_smoke.py"
+      - ".github/workflows/b54-engine-a7-cp-admission-production-activation.yml"
+      - ".github/tests/test_b54_engine_a7_cp_admission_activation.py"
       - "apps/padiem-ai-engine/scripts/a10_continuation_production_smoke.py"
       - "apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py"
       - ".github/tests/test_b67_space_bunny_primary_parity.py"
@@ -32,6 +35,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: b54-engine-deploy-gate-contract-tests-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   gate-contract-tests:
@@ -54,7 +61,7 @@ jobs:
         run: python -m pip install --quiet pyyaml pytest -e packages/padiem-ai-core
 
       - name: Run gate contract tests
-        run: python -m pytest -q .github/tests/test_b54_engine_deploy_gate_smoke.py .github/tests/test_b54_engine_served_version_guard.py .github/tests/test_cloudflare_served_version.py .github/tests/test_cloudflare_mutation_evidence.py .github/tests/test_b67_space_bunny_primary_parity.py
+        run: python -m pytest -q .github/tests/test_b54_engine_deploy_gate_smoke.py .github/tests/test_b54_engine_a7_cp_admission_activation.py .github/tests/test_b54_engine_served_version_guard.py .github/tests/test_cloudflare_served_version.py .github/tests/test_cloudflare_mutation_evidence.py .github/tests/test_b67_space_bunny_primary_parity.py
 
       - name: Record no deploy performed
         run: |

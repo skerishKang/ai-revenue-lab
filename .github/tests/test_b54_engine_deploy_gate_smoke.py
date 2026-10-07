@@ -10,8 +10,10 @@ Proves statically that the deploy gate:
      longer references the independent PADIEM_ENGINE_SMOKE_CALLER_* secrets;
   4. checks out the exact target SHA without persisted credentials;
   5. fails honestly when smoke secrets are missing (SKIPPED_MISSING_SECRET);
-  6. runs the A9 smoke script and requires the A9_SMOKE=PASS line;
-  7. does not alter the existing deploy or rollback jobs.
+  6. requires the A7 unscoped orchestration probe to fail closed before any provider call;
+  7. keeps the legacy A9 script covered as a standalone historical/runtime contract,
+     but no longer treats an account-level A9 success as a valid post-A7 deploy signal;
+  8. does not alter the existing deploy or rollback jobs.
 """
 
 from __future__ import annotations
@@ -24,6 +26,9 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / ".github" / "workflows" / "b54-engine-production-deploy-gate.yml"
 SMOKE_SCRIPT = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a9_production_smoke.py"
+A7_UNSCOPED_SMOKE_SCRIPT = (
+    ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a7_unscoped_admission_production_smoke.py"
+)
 A10_SMOKE_SCRIPT = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a10_continuation_production_smoke.py"
 A11_SMOKE_SCRIPT = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a11_gmail_tool_runtime_smoke.py"
 A12_SMOKE_SCRIPT = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a12_stream_replay_production_smoke.py"
@@ -65,7 +70,7 @@ def test_smoke_job_is_production_scoped_and_time_bounded() -> None:
 def test_deploy_gate_smoke_uses_canonical_dedicated_overlay_caller_id() -> None:
     # #2484 Goal A (test 1) + #2520: the deploy gate smoke binds the fixed
     # non-secret canonical caller id of the dedicated overlay-only Claw caller
-    # (both the CALLER_ID name the A9 script reads and the legacy NAME the A10
+    # (both the CALLER_ID name the A7 probe reads and the legacy NAME the A10
     # script reads).
     smoke_block = _smoke_idempotency_block(_workflow_text())
     assert "CALLER_ID: b54-p01-overlay-20260914-a1" in smoke_block
@@ -88,7 +93,7 @@ def test_deploy_gate_smoke_credential_source_is_b62_p01() -> None:
 
 def test_deploy_gate_smoke_no_longer_references_legacy_smoke_secrets() -> None:
     # #2484 Goal A (test 3): the independent PADIEM_ENGINE_SMOKE_CALLER_* SECRETS
-    # no longer gate A9/A10/A11/A12. The env NAMES may persist (A10 reads them)
+    # no longer gate A7/A10/A11/A12. The env NAMES may persist (A10 reads them)
     # but only re-pointed at the canonical source; no old secret reference.
     text = _workflow_text()
     assert "secrets.PADIEM_ENGINE_SMOKE_CALLER_ID" not in text
@@ -107,17 +112,39 @@ def test_smoke_job_fails_honestly_on_missing_secrets() -> None:
     assert "SMOKE=SKIPPED_MISSING_SECRET" in text
 
 
-def test_smoke_job_runs_the_a9_script_and_requires_the_pass_line() -> None:
+def test_smoke_job_requires_a7_unscoped_fail_closed_before_provider() -> None:
     text = _workflow_text()
     smoke_block = text.split("smoke-idempotency:", 1)[1].split("rollback-production-engine:", 1)[0]
-    assert "a9_production_smoke.py" in smoke_block
-    assert "A9_SMOKE=PASS" in smoke_block
-    assert SMOKE_SCRIPT.is_file(), "smoke script must exist in the repo"
+    assert "a7_unscoped_admission_production_smoke.py" in smoke_block
+    assert "A7_UNSCOPED_ADMISSION_SMOKE=PASS" in smoke_block
+    assert "REAL_PROVIDER_CALLS=0" in smoke_block
+    assert "AUTHENTICATED_USER_LIVE_PROOF=NOT_CLAIMED" in smoke_block
+    assert "a9_production_smoke.py" not in smoke_block
+    assert A7_UNSCOPED_SMOKE_SCRIPT.is_file(), "A7 unscoped smoke script must exist in the repo"
+
+
+def test_a7_unscoped_smoke_script_never_claims_authenticated_user_or_provider_execution() -> None:
+    source = A7_UNSCOPED_SMOKE_SCRIPT.read_text(encoding="utf-8")
+    for required in (
+        "A7_UNSCOPED_ADMISSION_SMOKE=PASS",
+        "EXPECTED_AUTH_GATE=PASS",
+        "SUBJECT_ID_SENT=0",
+        "ACCOUNT_LEVEL_ALLOW_EXPECTED=NO",
+        "REAL_PROVIDER_CALLS=0",
+        "D1_USAGE_RESERVATION_WRITES=0",
+        "AUTHENTICATED_USER_LIVE_PROOF=NOT_CLAIMED",
+        'code != "entitlement_unavailable"',
+        "status != 503",
+    ):
+        assert required in source
+    assert "subprocess" not in source
+    assert "pywrangler" not in source
+    assert "wrangler " not in source
 
 
 def test_smoke_job_runs_the_a10_script_and_requires_the_pass_line() -> None:
     # WO-9 PR-A (#1966): A10 continuation fail-closed smoke runs in the same
-    # smoke-idempotency job, right after A9, and the job requires its PASS line.
+    # smoke-idempotency job, right after the A7 fail-closed probe, and the job requires its PASS line.
     text = _workflow_text()
     smoke_block = text.split("smoke-idempotency:", 1)[1].split("rollback-production-engine:", 1)[0]
     assert "a10_continuation_production_smoke.py" in smoke_block
@@ -165,13 +192,13 @@ def test_smoke_job_runs_the_a11_script_and_requires_its_verdict() -> None:
     assert A11_SMOKE_SCRIPT.is_file(), "a11 smoke script must exist in the repo"
 
 
-def test_smoke_job_runs_a9_a10_a11_a12_in_deterministic_order() -> None:
-    # Static order contract: A9 -> A10 -> A11 -> A12 inside smoke-idempotency.
+def test_smoke_job_runs_a7_a10_a11_a12_in_deterministic_order() -> None:
+    # Static order contract: A7 -> A10 -> A11 -> A12 inside smoke-idempotency.
     wf = _workflow()
     steps = wf["jobs"]["smoke-idempotency"]["steps"]
     names = [str(step.get("name", "")) for step in steps]
     order = [
-        "Run A9 production idempotency smoke",
+        "Run A7 unscoped admission fail-closed smoke",
         "Run A10 continuation fail-closed smoke",
         "Run A11 Gmail tool_runtime smoke",
         "Run A12 streaming idempotency replay smoke",
@@ -379,7 +406,7 @@ def test_a9_script_has_no_exact_endpoint_count_hardcode() -> None:
 
 # --- #2484 Goal B: mutation-free post-deploy smoke-only production gate ------
 # These static contract tests prove the new smoke-only gate can re-run
-# A9/A10/A11/A12 against the already-deployed Engine WITHOUT any deploy, secret
+# A7/A10/A11/A12 against the already-deployed Engine WITHOUT any deploy, secret
 # PUT, binding mutation, D1 migration, rollback, Phase-A/Chat request or source
 # mutation, and that it fails closed unless the live served version is exactly
 # the expected one carrying the V1 + OVERLAY caller-registry secrets.
@@ -477,12 +504,12 @@ def test_smoke_only_gate_uses_canonical_deployments_resolver() -> None:
     assert "-X PUT" not in runs
 
 
-def test_smoke_only_gate_fails_closed_on_served_version_mismatch_before_a9() -> None:
+def test_smoke_only_gate_fails_closed_on_served_version_mismatch_before_a7() -> None:
     # Goal B test 9: served-version mismatch aborts before any smoke runs.
     names = _smoke_only_step_names()
     preflight_idx = next(i for i, n in enumerate(names) if "served-version preflight" in n)
-    a9_idx = names.index("Run A9 production idempotency smoke")
-    assert preflight_idx < a9_idx
+    a7_idx = names.index("Run A7 unscoped admission fail-closed smoke")
+    assert preflight_idx < a7_idx
     runs = _smoke_only_runs()
     assert "SERVED_VERSION_MISMATCH" in runs
     assert "SMOKE_ONLY_PREFLIGHT=FAIL_SERVED_VERSION_MISMATCH" in runs
@@ -494,6 +521,10 @@ def test_smoke_only_gate_requires_v1_and_overlay_name_type_readback() -> None:
     assert "verify" in runs
     assert "--expect-overlay" in runs
     assert "PREFLIGHT_V1_OVERLAY_PRESENT=PASS" in runs
+    assert "--inspect-engine-admission-binding" in runs
+    assert "CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING=PRESENT:service" in runs
+    assert "ENGINE_ADMISSION_BINDING_TARGET_VALIDATED=YES" in runs
+    assert "PREFLIGHT_A7_ADMISSION_BINDING=PASS" in runs
 
 
 def test_smoke_only_gate_never_outputs_secret_values() -> None:
@@ -504,11 +535,11 @@ def test_smoke_only_gate_never_outputs_secret_values() -> None:
     assert not re.search(r"echo[^\n]*CALLER_SECRET", runs)
 
 
-def test_smoke_only_gate_runs_a9_a10_a11_a12_in_exact_order() -> None:
-    # Goal B test 12: A9 -> A10 -> A11 -> A12, each wired to its script.
+def test_smoke_only_gate_runs_a7_a10_a11_a12_in_exact_order() -> None:
+    # Goal B test 12: A7 -> A10 -> A11 -> A12, each wired to its script.
     names = _smoke_only_step_names()
     order = [
-        "Run A9 production idempotency smoke",
+        "Run A7 unscoped admission fail-closed smoke",
         "Run A10 continuation fail-closed smoke",
         "Run A11 Gmail tool_runtime smoke",
         "Run A12 streaming idempotency replay smoke",
@@ -518,7 +549,8 @@ def test_smoke_only_gate_runs_a9_a10_a11_a12_in_exact_order() -> None:
     positions = [names.index(step_name) for step_name in order]
     assert positions == sorted(positions)
     runs = _smoke_only_runs()
-    assert "a9_production_smoke.py" in runs
+    assert "a7_unscoped_admission_production_smoke.py" in runs
+    assert "a9_production_smoke.py" not in runs
     assert "a10_continuation_production_smoke.py" in runs
     assert "a11_gmail_tool_runtime_smoke.py" in runs
     assert "a12_stream_replay_production_smoke.py" in runs
@@ -593,6 +625,54 @@ def test_post_deploy_served_version_guard_runs_before_health_smoke() -> None:
     assert "Pre-deploy served-version secret guard" in names
     assert "POST_DEPLOY_SERVED_VERSION_GUARD=PASS" in _workflow_text()
     assert check_post_deploy_guard_before_smoke(names), names
+
+
+def test_post_deploy_served_version_guard_requires_a7_admission_binding() -> None:
+    run = _deploy_step_run("Post-deploy served-version secret guard")
+    assert "--inspect-engine-admission-binding" in run
+    assert "CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING=PRESENT:service" in run
+    assert "ENGINE_ADMISSION_BINDING_TARGET_VALIDATED=YES" in run
+    assert "POST_DEPLOY_A7_ADMISSION_BINDING=PASS" in run
+
+
+
+
+def test_predeploy_cp_admission_readiness_guard_is_before_engine_mutation() -> None:
+    names = _deploy_step_names()
+    cp_guard = names.index("Pre-deploy A7 Control Plane admission readiness")
+    deploy = names.index("Deploy engine to production")
+    assert cp_guard < deploy
+
+
+def test_predeploy_cp_admission_readiness_guard_is_get_only_and_fail_closed() -> None:
+    run = _deploy_step_run("Pre-deploy A7 Control Plane admission readiness")
+    assert "padiem-control-plane-engine-admission" in run
+    assert "/settings" in run
+    assert "/subdomain" in run
+    assert "/deployments" in run
+    assert 'CONTROL_PLANE_IDENTITY' in run
+    assert 'padiem-control-plane-identity' in run
+    assert '.result.enabled == false' in run
+    assert '.result.previews_enabled == false' in run
+    assert '.result.deployments[0].versions[0].percentage == 100' in run
+    assert "PREDEPLOY_CP_ADMISSION_READINESS=PASS" in run
+    assert "PRIVATE_INGRESS=PASS" in run
+    assert "CP_MUTATION=0" in run
+    assert "ENGINE_MUTATION_BEFORE_GUARD=0" in run
+    assert "PROVIDER_CALLS=0" in run
+    assert "REAL_USER_DATA=0" in run
+    for forbidden in (
+        " -X POST",
+        " -X PUT",
+        " -X DELETE",
+        "--data",
+        "pywrangler deploy",
+        "wrangler deploy",
+        "wrangler secret",
+        "d1 ",
+        "migrations ",
+    ):
+        assert forbidden not in run, f"mutation surface in CP readiness guard: {forbidden}"
 
 
 def test_smoke_first_order_fails_the_same_checker() -> None:

@@ -26,6 +26,7 @@ import pytest
 from starlette.testclient import TestClient
 
 from app.app_factory import create_app
+from app.model_policy import DEFAULT_B14_MODEL_ID
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from app.control_plane_identity import PADIEM_CHAT_PRODUCT_ID
@@ -67,7 +68,7 @@ FUTURE_EXPIRES_AT = datetime(2099, 1, 1, tzinfo=timezone.utc)
 FUTURE_EXPIRES = FUTURE_EXPIRES_AT.isoformat()
 AGENT_ID = "b54-padiem-claw"
 APP_ID = "b54-padiem-claw"
-MODEL_ID = "kilo/stealth-space-bunny-alpha"
+MODEL_ID = DEFAULT_B14_MODEL_ID
 
 # Every field a caller might try to promote into authority. §3/§8 forbid each one.
 BROWSER_AUTHORITY_FIELDS = (

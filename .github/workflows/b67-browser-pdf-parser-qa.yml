@@ -1,0 +1,111 @@
+name: B67 Browser PDF Parser QA
+
+on:
+  pull_request:
+    paths:
+      - "reference/business-67-padiem-legal-v1/pdf/**"
+      - "reference/business-67-padiem-legal-v1/tests/pdf-parser-harness.html"
+      - "reference/business-67-padiem-legal-v1/tests/test_b67_pdf_parser_contract.py"
+      - "reference/business-67-padiem-legal-v1/tests/verify_pdf_parser.py"
+      - ".github/workflows/b67-browser-pdf-parser-qa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b67-browser-pdf-parser-qa-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  browser-pdf-parser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      B67_ROOT: reference/business-67-padiem-legal-v1
+      PDFJS_VERSION: "6.3.289"
+      B67_PDF_QA_BASE_URL: http://127.0.0.1:8899
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install exact reviewed PDF.js package without lifecycle scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/b67-pdfjs"
+          cd "${RUNNER_TEMP}/b67-pdfjs"
+          npm init -y >/dev/null
+          npm install --ignore-scripts --no-audit --no-fund --save-exact "pdfjs-dist@${PDFJS_VERSION}"
+          node - <<'NODE'
+          const pkg = require(process.env.RUNNER_TEMP + "/b67-pdfjs/node_modules/pdfjs-dist/package.json");
+          if (pkg.version !== process.env.PDFJS_VERSION) throw new Error("PDF.js version mismatch");
+          if (pkg.license !== "Apache-2.0") throw new Error("PDF.js license mismatch");
+          if (pkg.dependencies && Object.keys(pkg.dependencies).length !== 0) {
+            throw new Error("Unexpected pdfjs-dist runtime dependencies");
+          }
+          console.log("PDFJS_VERSION=" + pkg.version);
+          console.log("PDFJS_LICENSE=" + pkg.license);
+          NODE
+
+      - name: Stage reviewed local PDF.js assets for browser QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${B67_ROOT}/pdf/vendor"
+          cp "${RUNNER_TEMP}/b67-pdfjs/node_modules/pdfjs-dist/build/pdf.mjs" "${B67_ROOT}/pdf/vendor/pdf.mjs"
+          cp "${RUNNER_TEMP}/b67-pdfjs/node_modules/pdfjs-dist/build/pdf.worker.mjs" "${B67_ROOT}/pdf/vendor/pdf.worker.mjs"
+          test -s "${B67_ROOT}/pdf/vendor/pdf.mjs"
+          test -s "${B67_ROOT}/pdf/vendor/pdf.worker.mjs"
+
+      - name: Install pinned browser QA runtime
+        run: |
+          python -m pip install --disable-pip-version-check "pytest==8.4.2" "playwright==1.55.0"
+          python -m playwright install --with-deps chromium
+
+      - name: Run B67 PDF source contracts
+        run: |
+          python -m pytest -q             "${B67_ROOT}/tests/test_b67_pdf_parser_contract.py"
+
+      - name: Start B67 static review server
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "${B67_ROOT}/tests/serve.py" 8899 > /tmp/b67-pdf-server.log 2>&1 &
+          echo $! > /tmp/b67-pdf-server.pid
+          for i in $(seq 1 30); do
+            if curl --fail --silent "${B67_PDF_QA_BASE_URL}/tests/pdf-parser-harness.html" >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/b67-pdf-server.log
+          exit 1
+
+      - name: Run real Chromium PDF.js page extraction QA
+        run: python "${B67_ROOT}/tests/verify_pdf_parser.py"
+
+      - name: Assert no generated vendor bundle was tracked
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git ls-files "${B67_ROOT}/pdf/vendor/pdf.mjs" "${B67_ROOT}/pdf/vendor/pdf.worker.mjs")"
+          git diff --exit-code -- . ':!reference/business-67-padiem-legal-v1/pdf/vendor/pdf.mjs' ':!reference/business-67-padiem-legal-v1/pdf/vendor/pdf.worker.mjs'
+          echo 'B67_BROWSER_PDF_NATIVE_TEXT=PASS'
+          echo 'DEDICATED_WEB_WORKER=YES'
+          echo 'NETWORK_DURING_PARSE=0'
+          echo 'PAGE_NUMBERS_EXACT=YES'
+          echo 'BLANK_PAGE_RENUMBER=0'
+          echo 'SCANNED_PDF_FALSE_SUCCESS=0'
+          echo 'TIMEOUT_TERMINATES_WORKER=YES'
+          echo 'RAW_SOURCE_BROWSER_PERSISTENCE=0'
+          echo 'PAID_PARSER_PROVIDER=0'
+          echo 'SECOND_DOCUMENT_AUTHORITY=0'
+          echo 'PRODUCTION_MUTATION=0'

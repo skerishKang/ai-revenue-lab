@@ -47,12 +47,15 @@
     return Boolean(entry) && Template.approvalIsValid(entry.approval, entry.fingerprint);
   }
 
-  /* logo/stamp slot 은 non-live 로 선언되어 있다. 값을 선언해 놓고 조용히 무시하지 않도록
-     저장·승인 시점에 명시적으로 거부한다. */
+  /* #3402: private logo/stamp 는 account/workspace authority 가 필요한 값이다.
+     Browser-local template storage has no such authority, so it stays fail-closed.
+     Server-assigned Saved Quote Skills may carry the same validated b66asset_* refs. */
   function rejectionForContent(content) {
     if (!isPlainObject(content)) return "invalid_template_content";
     var slots = isPlainObject(content.slots) ? content.slots : {};
-    if (String(slots.logo || "") || String(slots.stamp || "")) return "slot_rendering_not_supported";
+    if (String(slots.logo || "") || String(slots.stamp || "")) {
+      return "private_asset_requires_account_skill";
+    }
     return null;
   }
 

@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>견적서 만들기</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="padiem-account.css">
   <script src="quote-core.js" defer></script>
   <script src="quote-extraction.js" defer></script>
   <script src="quote-history.js" defer></script>
   <script src="quote-template.js" defer></script>
+  <script src="cgi-template-v2.js" defer></script>
   <script src="quote-template-store.js" defer></script>
   <script src="quote-template-renderer.js" defer></script>
   <script src="quote-skill.js" defer></script>
@@ -25,6 +27,9 @@
   <script src="quote-skill-ui.js" defer></script>
   <script src="app.js" defer></script>
   <script src="easy-mode.js" defer></script>
+  <script src="company-profile-settings.js" defer></script>
+  <script src="padiem-account.js" defer></script>
+  <script src="shell-layout.js" defer></script>
 </head>
 <body>
   <main class="shell">
@@ -34,13 +39,43 @@
         <p>입력부터 PDF 저장까지 한 화면에서</p>
       </div>
       <div class="topbar-actions">
-        <div class="badge">BETA · 입력 내용은 이 브라우저에만 저장</div>
-        <button class="topbar-reset" id="resetLocalData" type="button">저장 데이터 초기화</button>
+        <button class="padiem-account-button" id="padiemAccountButton" type="button">로그인</button>
+        <button class="topbar-reset" id="settingsButton" type="button" hidden>설정</button>
       </div>
     </header>
 
+    <section class="padiem-account-panel" id="padiemAccountPanel" aria-label="내 견적서" hidden>
+      <div class="padiem-account-head">
+        <strong id="padiemAccountLabel">내 견적서</strong>
+        <button id="padiemLogout" type="button">로그아웃</button>
+      </div>
+      <div class="padiem-quote-grid">
+        <label>배정된 내 견적서
+          <select id="padiemSavedSkillSelect"></select>
+        </label>
+        <label>견적 내용
+          <textarea id="padiemQuoteRequest" rows="3" maxlength="4000" placeholder="예: ABC건설에 배관 20개, 개당 3만원으로 견적서 만들어줘"></textarea>
+        </label>
+        <button id="padiemQuoteGenerate" type="button">견적 만들기</button>
+      </div>
+      <p class="padiem-quote-status" id="padiemQuoteStatus" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="settings-panel" id="settingsPanel" aria-label="개인 설정" hidden>
+      <div class="padiem-account-head">
+        <strong>개인 설정</strong>
+        <button id="settingsClose" type="button">닫기</button>
+      </div>
+      <p class="settings-note">작성 중 견적은 이 브라우저에 저장됩니다. 기기를 바꾸거나 브라우저 데이터를 지우면 사라집니다. '내 회사' 정보는 로그인 계정에 저장되어 다른 기기에서도 사용됩니다.</p>
+      <div class="company-profile-section" id="companyProfileSection">
+        <h3 class="company-profile-heading">내 회사</h3>
+        <div id="companyProfileHost"></div>
+      </div>
+      <button class="settings-reset" id="resetLocalData" type="button">저장 데이터 초기화</button>
+    </section>
+
     <nav class="workspace-modebar" aria-label="견적 작성 모드">
-      <button class="workspace-mode active" id="easyModeButton" type="button" aria-pressed="true">쉽게 만들기</button>
+      <button class="workspace-mode active" id="easyModeButton" type="button" aria-pressed="true">채팅</button>
       <button class="workspace-mode" id="directModeButton" type="button" aria-pressed="false">직접 입력</button>
     </nav>
 
@@ -96,7 +131,7 @@
           <textarea id="easyComposer" rows="1" placeholder="필요한 내용을 편하게 입력하세요" aria-label="견적서 대화 입력"></textarea>
           <button class="easy-send" id="easySend" type="button" aria-label="보내기">↑</button>
         </div>
-        <p class="easy-composer-note" id="easyComposerNote">질문형 만들기는 AI 없이도 동작합니다. 자유 문장 자동 해석은 모델 연결 후 제공됩니다.</p>
+        <p class="easy-composer-note" id="easyComposerNote">바로 입력해도 질문이 시작됩니다. 문장을 알아듣는 기능은 준비 중이라, 필요한 값은 하나씩 여쭤봅니다.</p>
       </div>
     </section>
 
@@ -104,7 +139,7 @@
     <nav class="modebar" aria-label="견적 생성 방식">
       <button class="mode active" data-mode="manual">직접 입력</button>
       <button class="mode" data-mode="upload">파일 불러오기</button>
-      <button class="mode future" data-mode="chat">채팅으로 만들기 · 다음 단계</button>
+      <button class="mode" data-mode="chat">채팅</button>
     </nav>
     <div class="future-note" id="futureNote"></div>
 
@@ -124,6 +159,9 @@
             </label>
             <label>대표자
               <input id="senderRep" value="대표자명">
+            </label>
+            <label>담당자
+              <input id="senderContactPerson" placeholder="실무 담당자">
             </label>
             <label>사업자등록번호
               <input id="senderBizNo" value="000-00-00000">
@@ -291,6 +329,46 @@
           <span id="skillPreviewBanner" hidden style="font-size:11px;color:#b54708">미리보기: 승인 전 모양 (저장되지 않음)</span>
         </div>
         <article class="quote-paper" id="quotePaper">
+          <section class="cgi-v2-content" id="cgiV2Content" hidden aria-label="CGI 견적서">
+            <h2 class="cgi-v2-title" id="cgiV2Title">견 적 서</h2>
+            <div class="cgi-v2-head-grid">
+              <table class="cgi-v2-head-table cgi-v2-head-left">
+                <tbody>
+                  <tr><th>견적번호</th><td colspan="3" class="cgi-v2-quote-no" id="cgiV2QuoteNo"></td></tr>
+                  <tr><th>작성일자</th><td colspan="3" id="cgiV2IssueDate"></td></tr>
+                  <tr><th>작 성 자</th><td id="cgiV2Author"></td><th class="cgi-v2-tel-label">TEL</th><td id="cgiV2AuthorTel"></td></tr>
+                  <tr><th>제 출 처</th><td id="cgiV2Recipient"></td><td colspan="2" class="cgi-v2-center">귀하</td></tr>
+                  <tr><th>담 당 자</th><td id="cgiV2RecipientPerson"></td><th class="cgi-v2-tel-label">TEL</th><td id="cgiV2RecipientTel"></td></tr>
+                  <tr><th>건    명</th><td colspan="3" id="cgiV2Project"></td></tr>
+                </tbody>
+              </table>
+              <table class="cgi-v2-head-table cgi-v2-head-right">
+                <tbody>
+                  <tr><th>등록번호</th><td class="cgi-v2-center" id="cgiV2BizNo"></td></tr>
+                  <tr><td colspan="2" class="cgi-v2-slogan" id="cgiV2Slogan"></td></tr>
+                  <tr><th>상    호</th><td class="cgi-v2-center" id="cgiV2SenderCompany"></td></tr>
+                  <tr><th>주    소</th><td class="cgi-v2-address" id="cgiV2SenderAddress"></td></tr>
+                  <tr><th>대    표</th><td class="cgi-v2-rep-cell"><span id="cgiV2SenderRep"></span> 인<img class="cgi-v2-stamp" id="cgiV2Stamp" alt="" aria-hidden="true" hidden></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="cgi-v2-total-band"><span id="cgiV2WrittenTotal"></span> ( ₩<span id="cgiV2GrandTop"></span> )</div>
+            <table class="cgi-v2-items-table">
+              <thead><tr id="cgiV2ItemsHead"></tr></thead>
+              <tbody id="cgiV2Items"></tbody>
+            </table>
+            <table class="cgi-v2-pay-table">
+              <tbody><tr><th>결 제 계 좌</th><td id="cgiV2Bank"></td></tr></tbody>
+            </table>
+            <div class="cgi-v2-terms">
+              <strong>⊙ 특기사항</strong>
+              <ol id="cgiV2Terms"></ol>
+            </div>
+            <img class="cgi-v2-logo" id="cgiV2Logo" alt="" aria-hidden="true" hidden>
+          </section>
+          <div id="quoteGenericContent">
+          <img class="quote-private-logo" id="pvLogo" alt="" aria-hidden="true" hidden>
+          <img class="quote-private-stamp" id="pvStamp" alt="" aria-hidden="true" hidden>
           <div class="quote-title">
             <h2 id="pvTitle">견 적 서</h2>
             <div class="meta">
@@ -301,11 +379,13 @@
               <div id="pvTaxMode"></div>
             </div>
           </div>
+          <div class="quote-project" id="pvProjectName"></div>
           <div class="parties">
             <div class="party">
               <div class="eyebrow" id="pvSenderHeading">공급자</div>
               <strong id="pvSenderCompany"></strong>
               <p id="pvSenderRep"></p>
+              <p class="quote-sender-contact-person" id="pvSenderContactPerson"></p>
               <p id="pvSenderBizNo"></p>
               <p id="pvSenderAddress"></p>
               <p id="pvSenderContact"></p>
@@ -318,7 +398,10 @@
               <p id="pvRecipientEmail"></p>
             </div>
           </div>
-          <table class="quote-table">
+          <div class="quote-summary-terms" id="pvSummaryTerms"></div>
+          <div class="quote-written-total" id="pvWrittenTotal"></div>
+          <div class="quote-items-heading" id="pvItemsHeading"></div>
+      <table class="quote-table">
             <thead><tr id="pvItemsHead"><th style="width:42%">품목</th><th>수량</th><th>단가</th><th>금액</th></tr></thead>
             <tbody id="pvItems"></tbody>
           </table>
@@ -329,11 +412,37 @@
           </div>
           <div class="memo" id="pvMemo"></div>
           <div class="demo-mark" id="pvMark">견적서 베타</div>
+          </div>
         </article>
+        <div id="pvDetailPages"></div>
       </aside>
     </div>
     </section>
   </main>
+  <dialog class="padiem-auth-dialog" id="padiemAuthDialog" aria-labelledby="padiemAuthTitle">
+    <section class="padiem-auth-card">
+      <button class="padiem-auth-close" id="padiemAuthClose" type="button" aria-label="로그인 창 닫기">×</button>
+      <div class="padiem-auth-brand" aria-hidden="true">견</div>
+      <h2 id="padiemAuthTitle">로그인</h2>
+      <p class="padiem-auth-lead">로그인하면 배정된 내 견적서를<br>어디에서나 사용할 수 있습니다.</p>
+      <button class="google-signin" id="googleSigninButton" type="button">
+        <svg class="google-signin-logo" aria-hidden="true" width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Google로 로그인
+      </button>
+      <div class="padiem-auth-divider" id="padiemAuthDivider" hidden><span>또는</span></div>
+      <form class="padiem-auth-form" id="padiemLoginForm" hidden>
+        <label for="padiemLoginIdentifier">아이디 또는 이메일
+          <input id="padiemLoginIdentifier" name="identifier" type="text" autocomplete="username" maxlength="320" required>
+        </label>
+        <label for="padiemLoginPassword">비밀번호
+          <input id="padiemLoginPassword" name="password" type="password" autocomplete="current-password" maxlength="128" required>
+        </label>
+        <button id="padiemLoginSubmit" type="submit">아이디/이메일로 로그인</button>
+      </form>
+      <p class="padiem-auth-note">구글 계정 또는 기존 계정으로 로그인할 수 있습니다.</p>
+      <p class="padiem-auth-error" id="padiemAuthError" role="alert"></p>
+    </section>
+  </dialog>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>

@@ -861,6 +861,8 @@ BASE_APP_ENDPOINTS = frozenset(
 # than by weakening the historical baseline.
 ALLOWED_APP_ENDPOINTS = BASE_APP_ENDPOINTS | frozenset({
     "/api/connectors/status",
+    "/api/connectors/google/ticket",
+    "/api/connectors/google/calendar/activate-read",
     "/api/claw/automation/rules",
 })
 

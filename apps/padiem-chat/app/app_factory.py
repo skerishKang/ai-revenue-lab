@@ -9,6 +9,22 @@ from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
 from .auth import GoogleOAuthClient
+from .auth_abuse import AuthAbuseGate, AuthAbuseStore, D1AuthAbuseStore
+from .b66_quote_conversation import B66QuoteConversationInterpreter
+from .b66_company_profile import CompanyProfileStore, D1CompanyProfileStore
+from .b66_company_profile_routes import b66_company_profile_get, b66_company_profile_put
+from .b66_quote_asset_routes import b66_quote_asset_detail
+from .b66_quote_assets import B66QuoteAssetStore, D1B66QuoteAssetMetadataStore
+from .b66_quote_routes import (
+    b66_quote_interpret,
+    b66_runtime_config,
+    b66_saved_skill_detail,
+    b66_saved_skills,
+)
+from .b66_saved_quote_skill_store import (
+    D1SavedQuoteSkillStore,
+    SavedQuoteSkillStore,
+)
 from .auth_routes import (
     auth_status,
     google_callback,
@@ -19,6 +35,7 @@ from .auth_routes import (
 )
 from .auto_grounding import AutoGroundingService
 from .chat_routes import api_chat, api_chat_stream
+from .claw_general_routes import claw_general_execute
 from .claw_routes import (
     claw_approval_decision,
     claw_manual_intake_artifact,
@@ -62,7 +79,15 @@ from .claw_automation_rule_enabled_routes import claw_automation_rule_set_enable
 from .config import Settings
 from .connector_status_projection import connectors_status
 from .connector_ticket_routes import google_connector_ticket
+from .calendar_read_activation_routes import activate_google_calendar_read
 from .conversation_routes import api_conversation_detail, api_conversations
+from .desktop_conversation_authority import UnconfiguredDesktopDeviceSessionAuthority
+from .desktop_conversation_routes import (
+    DESKTOP_CONVERSATION_DETAIL_PATH,
+    DESKTOP_CONVERSATIONS_PATH,
+    desktop_conversation_detail,
+    desktop_conversations,
+)
 from .grounding import GroundedChatService
 from .history import HistoryStore
 from .project_file_routes import project_file_detail, project_files_collection
@@ -72,9 +97,11 @@ from .drive_case_folder_routes import (
     drive_case_folder_status,
     drive_folders_collection,
 )
+from .drive_case_pdf_routes import drive_case_pdf_detail, drive_case_pdfs_collection
 from .project_files import ProjectFileStore
 from .project_routes import project_detail, projects_collection
 from .request_telemetry import RequestTelemetryMiddleware
+from .same_origin_guard import SameOriginGuardMiddleware
 from .saved_output_routes import output_detail, outputs_collection
 from .saved_outputs import SavedOutputStore
 from .tier_identity_client import PadiemTierB14Client
@@ -138,6 +165,10 @@ def create_app(
     claw_p01_adapter=None,
     claw_telegram_authority=None,
     approved_memory_store: ApprovedMemoryStore | None = None,
+    b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
+    b66_company_profile_store: CompanyProfileStore | None = None,
+    b66_quote_asset_store=None,
+    b66_quote_interpreter=None,
     claw_task_alert_store=None,
     calendar_store: CalendarStore | None = None,
     claw_automation_store=None,
@@ -145,6 +176,8 @@ def create_app(
     claw_p01_continuation_client=None,
     claw_local_access_source=None,
     local_task_result_source=None,
+    desktop_device_session_authority=None,
+    auth_abuse_store: AuthAbuseStore | None = None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -156,6 +189,7 @@ def create_app(
         Route("/api/auth/password/login", password_login, methods=["POST"]),
         Route("/api/auth/logout", logout, methods=["POST"]),
         Route("/api/connectors/google/ticket", google_connector_ticket, methods=["POST"]),
+        Route("/api/connectors/google/calendar/activate-read", activate_google_calendar_read, methods=["POST"]),
         Route("/api/connectors/status", connectors_status, methods=["GET"]),
         Route("/api/projects", projects_collection, methods=["GET", "POST"]),
         Route("/api/projects/{project_id}", project_detail, methods=["GET", "PATCH", "DELETE"]),
@@ -181,14 +215,53 @@ def create_app(
             drive_folders_collection,
             methods=["GET"],
         ),
+        Route(
+            "/api/projects/{project_id}/drive-case-pdfs",
+            drive_case_pdfs_collection,
+            methods=["GET"],
+        ),
+        Route(
+            "/api/projects/{project_id}/drive-case-pdfs/{file_id}",
+            drive_case_pdf_detail,
+            methods=["GET"],
+        ),
         Route("/api/outputs", outputs_collection, methods=["GET", "POST"]),
         Route("/api/outputs/{output_id}", output_detail, methods=["GET", "PATCH", "DELETE"]),
         Route("/api/conversations", api_conversations, methods=["GET"]),
         Route("/api/conversations/{conversation_id}", api_conversation_detail, methods=["GET", "DELETE"]),
+        # #3436 B2c: the GET-only canonical conversation surface for the paired
+        # Desktop. Identity is the canonical broker device session, derived
+        # server-side; it creates, deletes and writes nothing, and no browser
+        # cookie path reaches it.
+        Route(DESKTOP_CONVERSATIONS_PATH, desktop_conversations, methods=["GET"]),
+        Route(
+            DESKTOP_CONVERSATION_DETAIL_PATH,
+            desktop_conversation_detail,
+            methods=["GET"],
+        ),
         Route("/api/chat/stream", api_chat_stream, methods=["POST"]),
         Route("/api/chat", api_chat, methods=["POST"]),
+        Route("/api/b66/runtime-config", b66_runtime_config, methods=["GET"]),
+        Route("/api/b66/company-profile", b66_company_profile_get, methods=["GET"]),
+        Route("/api/b66/company-profile", b66_company_profile_put, methods=["PUT"]),
+        Route("/api/b66/saved-skills", b66_saved_skills, methods=["GET"]),
+        Route(
+            "/api/b66/saved-skills/{saved_skill_id}",
+            b66_saved_skill_detail,
+            methods=["GET"],
+        ),
+        Route(
+            "/api/b66/assets/{asset_id}",
+            b66_quote_asset_detail,
+            methods=["GET"],
+        ),
+        Route("/api/b66/quote/interpret", b66_quote_interpret, methods=["POST"]),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
+        # #3539: the generic Claw composer runs through the canonical #3382 P01
+        # Engine lane. It is a distinct B54 product boundary from manual-intake
+        # and has no direct-B14 (/api/chat/stream) fallback.
+        Route("/api/claw/general", claw_general_execute, methods=["POST"]),
         Route(
             "/api/claw/manual-intake/quote-compare",
             claw_manual_intake_quote_compare,
@@ -243,6 +316,10 @@ def create_app(
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     app = Starlette(routes=routes)
+    # #3476: added before telemetry deliberately — Starlette prepends each
+    # middleware, so the later-added telemetry layer stays outermost and keeps
+    # recording guard rejections.
+    app.add_middleware(SameOriginGuardMiddleware)
     # #1975: raw ASGI middleware, installed outermost so every route (including
     # the static Mount and the later-installed orchestration routes) is covered.
     app.add_middleware(RequestTelemetryMiddleware, emitter=telemetry_emitter)
@@ -259,6 +336,18 @@ def create_app(
     # closed with 503; there is no global/network fallback.
     app.state.drive_case_folder_engine_client = drive_case_folder_engine_client
     app.state.usage_gate = UsageGate(resolved, usage_store)
+
+    # #3508 dedicated password-login abuse authority. This deliberately does
+    # not reuse the B14/AI UsageGate. Production derives a durable store from
+    # the existing Chat D1 binding; tests may inject a network-free oracle.
+    _auth_abuse_store = auth_abuse_store
+    if _auth_abuse_store is None and d1_binding is not None:
+        try:
+            _auth_abuse_store = D1AuthAbuseStore(d1_binding)
+        except Exception:
+            _auth_abuse_store = None
+    app.state.auth_abuse_gate = AuthAbuseGate(resolved, _auth_abuse_store)
+
     # An explicitly injected B14 transport is the existing network-free regression seam.
     # It cannot occur through browser input or Worker bindings. Production/ordinary runtime
     # (transport=None) always enforces the gate; quota-specific integration tests also
@@ -266,6 +355,14 @@ def create_app(
     app.state.usage_gate_enforced = not (transport is not None and usage_store is None)
     app.state.google_oauth = GoogleOAuthClient(resolved, transport=auth_transport)
     app.state.b14_client = PadiemTierB14Client(resolved, transport=transport)
+    # Public, non-secret browser render origin. Unset means B66 account runtime
+    # stays fully hidden/off; Production activation is a separate env/deploy gate.
+    app.state.b66_quote_base_url = resolved.b66_quote_base_url
+    app.state.b66_quote_interpreter = (
+        b66_quote_interpreter
+        if b66_quote_interpreter is not None
+        else B66QuoteConversationInterpreter(app.state.b14_client)
+    )
     app.state.web_provider = create_web_provider(resolved, transport=web_transport)
     app.state.grounded_chat = GroundedChatService(app.state.b14_client, app.state.web_provider)
     app.state.auto_grounding = AutoGroundingService(app.state.web_provider)
@@ -303,6 +400,16 @@ def create_app(
     # result. None keeps the route fail-closed until the Worker root composes
     # the concrete source from the trusted broker binding.
     app.state.local_task_result_source = local_task_result_source
+    # #3436 B2c: the canonical broker device-session authority behind the
+    # GET-only Desktop conversation surface. Composed from the trusted
+    # LOCAL_AGENT_BROKER_AUTHORITY_SERVICE binding by the Worker root; the
+    # default refuses every session, so the surface fails closed until the
+    # trusted runtime actually exists.
+    app.state.desktop_device_session_authority = (
+        desktop_device_session_authority
+        if desktop_device_session_authority is not None
+        else UnconfiguredDesktopDeviceSessionAuthority()
+    )
     # Bounded non-secret composition diagnostic (#2413). Set by the Worker
     # composition root alongside a None adapter; always None on the success
     # path and validated against the closed allowlist before public projection.
@@ -321,6 +428,38 @@ def create_app(
         except Exception:
             _approved_memory_store = None
     app.state.approved_memory_store = _approved_memory_store
+
+    # B66 #3301/#3303: account-bound approved Saved Quote Skills reuse the
+    # existing PADIEM_CHAT_DB D1. Browser/local storage is not account authority.
+    _b66_saved_quote_skill_store = b66_saved_quote_skill_store
+    if _b66_saved_quote_skill_store is None and d1_binding is not None:
+        try:
+            _b66_saved_quote_skill_store = D1SavedQuoteSkillStore(d1_binding)
+        except Exception:
+            _b66_saved_quote_skill_store = None
+    app.state.b66_saved_quote_skill_store = _b66_saved_quote_skill_store
+
+    # B66 #3406: canonical account/workspace company identity/defaults. This is
+    # separate from Saved Quote Skill layout behavior and browser-local presets.
+    _b66_company_profile_store = b66_company_profile_store
+    if _b66_company_profile_store is None and d1_binding is not None:
+        try:
+            _b66_company_profile_store = D1CompanyProfileStore(d1_binding)
+        except Exception:
+            _b66_company_profile_store = None
+    app.state.b66_company_profile_store = _b66_company_profile_store
+
+    # B66 #3402: private logo/stamp bytes reuse the existing private workspace
+    # R2 binding, while D1 stores only owner/workspace-scoped metadata. No
+    # browser upload surface is composed here.
+    _b66_quote_asset_store = b66_quote_asset_store
+    if _b66_quote_asset_store is None and d1_binding is not None and r2_binding is not None:
+        try:
+            _b66_asset_metadata = D1B66QuoteAssetMetadataStore(d1_binding)
+            _b66_quote_asset_store = B66QuoteAssetStore(_b66_asset_metadata, r2_binding)
+        except Exception:
+            _b66_quote_asset_store = None
+    app.state.b66_quote_asset_store = _b66_quote_asset_store
 
     # #2341 Task/Alert inbox: consume the existing migration-010 D1 authority.
     # No schema creation or alternate DB authority is introduced here.

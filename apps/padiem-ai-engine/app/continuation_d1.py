@@ -19,6 +19,7 @@ from padiem_ai_core.agent_approval import ApprovalPause, ApprovalRequirement
 
 from app.continuation_binding import IdentityBoundContinuationRecord
 from app.continuation_identity import ContinuationExecutionIdentity
+from app.execution_admission import TrustedUsageReservation
 from app.execution_admission_resume import OriginalAdmissionBinding
 from app.service import ServiceContractError
 
@@ -91,10 +92,10 @@ def _pause_from_json(value: Any) -> ApprovalPause:
 
 def _original_admission_payload(
     original_admission: OriginalAdmissionBinding,
-) -> dict[str, str | None]:
+) -> dict[str, Any]:
     if not isinstance(original_admission, OriginalAdmissionBinding):
         raise ValueError("original admission binding is invalid")
-    return {
+    payload: dict[str, Any] = {
         "decision_id": original_admission.decision_id,
         "app_id": original_admission.app_id,
         "subject_id": original_admission.subject_id,
@@ -102,6 +103,20 @@ def _original_admission_payload(
         "policy_revision": original_admission.policy_revision,
         "request_fingerprint": original_admission.request_fingerprint,
     }
+    reservation = original_admission.usage_reservation
+    if reservation is not None:
+        payload["usage_reservation"] = {
+            "reservation_ref": reservation.reservation_ref,
+            "idempotency_key": reservation.idempotency_key,
+            "billing_semantic_id": reservation.billing_semantic_id,
+            "product_id": reservation.product_id,
+            "subject_type": reservation.subject_type,
+            "subject_id": reservation.subject_id,
+            "request_fingerprint": reservation.request_fingerprint,
+            "reserved_at": reservation.reserved_at.isoformat(),
+            "expires_at": reservation.expires_at.isoformat(),
+        }
+    return payload
 
 
 def _identity_json(
@@ -173,6 +188,29 @@ def _original_admission_from_identity_json(value: Any) -> OriginalAdmissionBindi
         int(request_fingerprint, 16)
     except ValueError as exc:
         raise ValueError("original admission request_fingerprint is invalid") from exc
+    reservation_raw = raw.get("usage_reservation")
+    reservation: TrustedUsageReservation | None = None
+    if reservation_raw is not None:
+        if not isinstance(reservation_raw, Mapping):
+            raise ValueError("original admission usage reservation is invalid")
+        reservation_fingerprint = _required_bounded_text(reservation_raw, "request_fingerprint")
+        if len(reservation_fingerprint) != 64:
+            raise ValueError("original admission usage reservation fingerprint is invalid")
+        try:
+            int(reservation_fingerprint, 16)
+        except ValueError as exc:
+            raise ValueError("original admission usage reservation fingerprint is invalid") from exc
+        reservation = TrustedUsageReservation(
+            reservation_ref=_required_bounded_text(reservation_raw, "reservation_ref"),
+            idempotency_key=_required_bounded_text(reservation_raw, "idempotency_key"),
+            billing_semantic_id=_required_bounded_text(reservation_raw, "billing_semantic_id"),
+            product_id=_required_bounded_text(reservation_raw, "product_id"),
+            subject_type=_required_bounded_text(reservation_raw, "subject_type"),
+            subject_id=_required_bounded_text(reservation_raw, "subject_id"),
+            request_fingerprint=reservation_fingerprint.lower(),
+            reserved_at=_parse_time(_required_bounded_text(reservation_raw, "reserved_at")),
+            expires_at=_parse_time(_required_bounded_text(reservation_raw, "expires_at")),
+        )
     return OriginalAdmissionBinding(
         decision_id=_required_bounded_text(raw, "decision_id"),
         app_id=_required_bounded_text(raw, "app_id"),
@@ -180,6 +218,7 @@ def _original_admission_from_identity_json(value: Any) -> OriginalAdmissionBindi
         authority_ref=_required_bounded_text(raw, "authority_ref"),
         policy_revision=_required_bounded_text(raw, "policy_revision"),
         request_fingerprint=request_fingerprint.lower(),
+        usage_reservation=reservation,
     )
 
 

@@ -32,6 +32,7 @@ from enum import Enum
 
 SCHEMA_VERSION = "b14.tier_registry.v1"
 POLICY_ID = "explicit_tier_selection_v1"
+PLUS_HOLD_MODEL_ID = "padiem-profile/plus-hold"
 PRO_HOLD_MODEL_ID = "padiem-profile/pro-hold"
 
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$")
@@ -142,6 +143,16 @@ def validate_tier_registry(tiers: tuple[TierDefinition, ...]) -> None:
         _require(len(active) <= 1, f"{tier.label.value}: at most one executable route")
         for route in tier.routes:
             _validate_route(route, tier.label)
+        if tier.label is TierLabel.PLUS and not active:
+            held_ids = {
+                route.model_id
+                for route in tier.routes
+                if route.status is RouteStatus.HOLD_AS_DATA_ONLY
+            }
+            _require(
+                PLUS_HOLD_MODEL_ID in held_ids,
+                "Padiem Plus without an executable route must expose the Plus hold identity",
+            )
         if tier.label is TierLabel.MAX:
             _require(not active, "Padiem Max must not expose an executable route")
             held = {
@@ -160,18 +171,29 @@ TIER_REGISTRY: tuple[TierDefinition, ...] = (
         label=TierLabel.PLUS,
         routes=(
             TierRoute(
+                route_id="plus.hold.v1",
+                status=RouteStatus.HOLD_AS_DATA_ONLY,
+                model_family="plus",
+                model_id=PLUS_HOLD_MODEL_ID,
+                hold_reason=(
+                    "Owner decision #3568: Space Bunny free availability ended and the "
+                    "successor model is not selected yet. Plus is held fail-closed."
+                ),
+                evidence="#3568 successor-pending product hold.",
+            ),
+            TierRoute(
                 route_id="plus.space-bunny-alpha.v1",
-                status=RouteStatus.EXECUTABLE,
+                status=RouteStatus.HOLD_AS_DATA_ONLY,
                 model_family="space-bunny-alpha",
                 provider_id="kilo",
                 model_id="kilo/stealth-space-bunny-alpha",
                 upstream_model="stealth/space-bunny-alpha",
                 credential_mode=CredentialMode.ANONYMOUS,
-                evidence=(
-                    "Owner decision #3209 (decision source #3143): Padiem Plus text "
-                    "and image primary is Space Bunny Alpha on the keyless Kilo "
-                    "free lane; app/pilot/kilo_provider.py registration."
+                hold_reason=(
+                    "Owner decision #3568: Space Bunny is historical data only and must not "
+                    "execute or become a silent fallback while a successor is pending."
                 ),
+                evidence="Historical #3209/#3143 route; disabled by #3568.",
             ),
             TierRoute(
                 route_id="plus.agnes-3.0-flash.v1",

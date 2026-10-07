@@ -10,11 +10,13 @@ from .config import Settings
 WORKER_BINDING_NAMES = frozenset({
     "PADIEM_CHAT_RUNTIME_MODE",
     "PADIEM_CHAT_B14_BASE_URL",
+    "PADIEM_CHAT_B66_QUOTE_BASE_URL",
     "PADIEM_CHAT_TIMEOUT_SECONDS",
     "PADIEM_CHAT_LIVE_ENABLED",
     "PADIEM_CHAT_WEB_PROVIDER",
     "FIRECRAWL_API_KEY",
     "PADIEM_CHAT_DAUM_REST_API_KEY",
+    "TINYFISH_API_KEY",
     "PADIEM_CHAT_WEB_TIMEOUT_SECONDS",
     "PADIEM_CHAT_AUTH_MODE",
     "PADIEM_CHAT_PUBLIC_BASE_URL",
@@ -115,12 +117,14 @@ def settings_from_worker_bindings(env: Any) -> Settings:
     return Settings.from_values(
         runtime_mode=binding_value(env, "PADIEM_CHAT_RUNTIME_MODE") or "mock",
         b14_base_url=binding_value(env, "PADIEM_CHAT_B14_BASE_URL"),
+        b66_quote_base_url=binding_value(env, "PADIEM_CHAT_B66_QUOTE_BASE_URL"),
         timeout_seconds=binding_value(env, "PADIEM_CHAT_TIMEOUT_SECONDS") or "20",
         completed_timeout_seconds=binding_value(env, "PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS") or "50",
         live_enabled=binding_value(env, "PADIEM_CHAT_LIVE_ENABLED") or "false",
         web_provider=binding_value(env, "PADIEM_CHAT_WEB_PROVIDER") or "off",
         firecrawl_api_key=binding_value(env, "FIRECRAWL_API_KEY"),
         daum_rest_api_key=binding_value(env, "PADIEM_CHAT_DAUM_REST_API_KEY"),
+        tinyfish_api_key=binding_value(env, "TINYFISH_API_KEY"),
         web_timeout_seconds=binding_value(env, "PADIEM_CHAT_WEB_TIMEOUT_SECONDS") or "15",
         auth_mode=binding_value(env, "PADIEM_CHAT_AUTH_MODE") or "off",
         public_base_url=binding_value(env, "PADIEM_CHAT_PUBLIC_BASE_URL"),
@@ -213,8 +217,20 @@ def apply_live_deadman_switch(settings: Settings) -> Settings:
     return settings
 
 
-def response_headers_for_path(path: str) -> dict[str, str]:
+def response_headers_for_path(
+    path: str,
+    *,
+    b66_quote_base_url: str | None = None,
+) -> dict[str, str]:
     headers = dict(BASE_SECURITY_HEADERS)
+    if b66_quote_base_url:
+        # Settings already validate this as one HTTPS root origin. Derive the
+        # sole frame authority from the same deployment-owned value that powers
+        # /api/b66/runtime-config; browser/request input cannot widen CSP.
+        headers["Content-Security-Policy"] = CONTENT_SECURITY_POLICY.replace(
+            "frame-src 'none';",
+            f"frame-src {b66_quote_base_url};",
+        )
     if path == "/health" or path.startswith("/api/") or path.startswith("/auth/"):
         headers["Cache-Control"] = "no-store"
     return headers

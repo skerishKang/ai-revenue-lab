@@ -4,6 +4,7 @@ import base64
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 import hashlib
+import inspect
 import json
 import re
 import secrets
@@ -357,6 +358,95 @@ class GoogleOAuthTokenExchangePort(Protocol):
         ...
 
 
+def _cloudflare_chunk_bytes(value: Any) -> bytes:
+    if value is None:
+        return b""
+    if isinstance(value, (bytes, bytearray)):
+        return bytes(value)
+    if isinstance(value, memoryview):
+        return value.tobytes()
+    to_bytes = getattr(value, "to_bytes", None)
+    if callable(to_bytes):
+        converted = to_bytes()
+        if isinstance(converted, (bytes, bytearray)):
+            return bytes(converted)
+        return bytes(converted)
+    return bytes(value)
+
+
+async def _cancel_cloudflare_reader(reader: Any) -> None:
+    cancel = getattr(reader, "cancel", None)
+    if not callable(cancel):
+        return
+    try:
+        outcome = cancel()
+        if inspect.isawaitable(outcome):
+            await outcome
+    except Exception:
+        # Cancellation is best-effort after a fail-closed verdict.
+        pass
+
+
+async def _read_bounded_google_token_response(
+    response: Any,
+    *,
+    error_code: str,
+    overflow_message: str,
+    invalid_message: str,
+) -> str:
+    """Read one successful Google token response without buffering past the cap.
+
+    Production Workers Fetch exposes a ReadableStream body with getReader().
+    That path is mandatory-bounded while reading. The response.text() fallback
+    exists only for narrow test/runtime adapters that do not expose a stream.
+    """
+
+    body = getattr(response, "body", None)
+    get_reader = getattr(body, "getReader", None)
+    if callable(get_reader):
+        try:
+            reader = get_reader()
+        except Exception as exc:
+            raise ControlPlaneContractError(error_code, invalid_message) from exc
+        raw = bytearray()
+        try:
+            while True:
+                result = await reader.read()
+                if bool(getattr(result, "done", False)):
+                    break
+                try:
+                    chunk = _cloudflare_chunk_bytes(getattr(result, "value", None))
+                except Exception as exc:
+                    await _cancel_cloudflare_reader(reader)
+                    raise ControlPlaneContractError(error_code, invalid_message) from exc
+                if len(raw) + len(chunk) > MAX_TOKEN_RESPONSE_BYTES:
+                    await _cancel_cloudflare_reader(reader)
+                    raise ControlPlaneContractError(error_code, overflow_message)
+                raw.extend(chunk)
+        except ControlPlaneContractError:
+            raise
+        except Exception as exc:
+            await _cancel_cloudflare_reader(reader)
+            raise ControlPlaneContractError(error_code, invalid_message) from exc
+        try:
+            return bytes(raw).decode("utf-8")
+        except UnicodeDecodeError as exc:
+            raise ControlPlaneContractError(error_code, invalid_message) from exc
+
+    text_method = getattr(response, "text", None)
+    if not callable(text_method):
+        raise ControlPlaneContractError(error_code, invalid_message)
+    try:
+        text = await text_method()
+    except Exception as exc:
+        raise ControlPlaneContractError(error_code, invalid_message) from exc
+    if not isinstance(text, str):
+        raise ControlPlaneContractError(error_code, invalid_message)
+    if len(text.encode("utf-8")) > MAX_TOKEN_RESPONSE_BYTES:
+        raise ControlPlaneContractError(error_code, overflow_message)
+    return text
+
+
 class CloudflareGoogleOAuthTokenExchangePort:
     """Worker-native outbound token exchange using the supported async Fetch API."""
 
@@ -396,12 +486,12 @@ class CloudflareGoogleOAuthTokenExchangePort:
                 "google_oauth_token_exchange_failed",
                 "Google OAuth authorization-code exchange failed",
             )
-        text = await response.text()
-        if not isinstance(text, str) or len(text.encode("utf-8")) > MAX_TOKEN_RESPONSE_BYTES:
-            raise ControlPlaneContractError(
-                "google_oauth_token_exchange_failed",
-                "Google OAuth token response exceeds the trusted bound",
-            )
+        text = await _read_bounded_google_token_response(
+            response,
+            error_code="google_oauth_token_exchange_failed",
+            overflow_message="Google OAuth token response exceeds the trusted bound",
+            invalid_message="Google OAuth token response is invalid",
+        )
         try:
             payload = json.loads(text)
         except json.JSONDecodeError as exc:

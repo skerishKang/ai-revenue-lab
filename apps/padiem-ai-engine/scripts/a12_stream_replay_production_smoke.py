@@ -112,6 +112,9 @@ def _classify_upstream_skip(step: str, status: int, lines: list[dict[str, Any]])
 
 
 def _require_env() -> bool:
+    if not isinstance(PINNED_MODEL, str) or not PINNED_MODEL:
+        print("A12_STREAM_REPLAY_SMOKE=BLOCKED_NO_PRIMARY_MODEL", file=sys.stderr)
+        return False
     if not CALLER_ID or not CALLER_SECRET:
         print("A12_STREAM_REPLAY_SMOKE=SKIPPED_UPSTREAM (smoke caller secrets missing)", file=sys.stderr)
         return False

@@ -81,6 +81,12 @@ check(skill && skill.approved === true, "EXPLICIT_SAVED_QUOTE_SKILL_APPROVAL=YES
 eq(skill.calculationAuthority, "quote-core", "QuoteCore remains the calculation authority");
 eq(skill.rendererContract, "quote-template-renderer.v1", "the existing template renderer remains the render contract");
 eq(skill.provenance.sourceName, "our-real-quotation.pdf", "source provenance is retained as metadata");
+eq(
+  Object.keys(skill.fixedDefaults).sort(),
+  ["memo", "sender", "taxMode", "validDays"],
+  "existing Skill fixedDefaults stay canonical when no calculation policy is configured"
+);
+check(!("calculationPolicy" in skill.fixedDefaults), "existing Skill fingerprint basis gains no implicit policy field");
 
 const compile = Skill.compileSkill(skill);
 check(compile.ok === true, "APPROVED_SKILL_COMPILED_FOR_REUSE=YES");
@@ -97,12 +103,149 @@ eq(first.draft.recipient.company, "대한건설", "new recipient facts are appli
 eq(first.draft.items[0].qty, 50, "new item quantity is applied");
 eq(first.draft.items[0].unitPrice, 120000, "new item unit price is applied");
 eq(first.draft.meta.source, "saved-quote-skill", "repeat generation is marked as Saved Quote Skill execution");
+const detailedInput = input({
+  projectName: "스마트팜 환경제어설비",
+  items: [{
+    id: "item-detail",
+    name: "ICT환경제어 시스템",
+    spec: "주장치 및 스마트팜 전용S/W",
+    unit: "식",
+    qty: 1,
+    unitPrice: 16330000,
+    note: "설치 포함"
+  }]
+});
+const detailedResult = Skill.buildRenderModel(skill, detailedInput);
+check(detailedResult.ok === true, "detail-rich structured input is accepted");
+eq(detailedResult.draft.meta.projectName, "스마트팜 환경제어설비", "projectName is a per-quote fact, not a Skill fingerprint field");
+eq(detailedResult.draft.items[0].spec, "주장치 및 스마트팜 전용S/W", "item spec preserved");
+eq(detailedResult.draft.items[0].unit, "식", "item unit preserved");
+eq(detailedResult.draft.items[0].note, "설치 포함", "item note preserved");
+eq(detailedResult.compiled.skillFingerprint, first.compiled.skillFingerprint, "existing Saved Quote Skill identity is unchanged by optional detail input");
+
+const groupedInput = input({
+  items: [{ id: "summary-1", name: "ICT환경제어 시스템", qty: 1, unitPrice: 1 }],
+  detailGroups: [{
+    id: "detail-1",
+    summaryItemId: "summary-1",
+    title: "스마트팜 상세",
+    items: [
+      { name: "주장치", section: "1. 스마트팜", qty: 1, unitPrice: 15000000 },
+      { name: "설치 및 잡자재", section: "3. 인건비 및 잡자재", qty: 1, unitPrice: 1330000 }
+    ]
+  }]
+});
+const groupedResult = Skill.buildRenderModel(skill, groupedInput);
+check(groupedResult.ok === true, "detail-group structured input is accepted by existing approved Skill");
+eq(groupedResult.draft.detailGroups[0].summaryItemId, "summary-1", "detail-group link survives Skill runtime");
+eq(
+  Core.computeDraftTotals(groupedResult.draft).effectiveItems[0].unitPrice,
+  16330000,
+  "Saved Quote Skill defers linked summary unit price to QuoteCore detail rollup"
+);
+eq(groupedResult.renderModel.items[0].values.unitPrice, Core.formatMoney(16330000),
+  "canonical renderer receives QuoteCore-derived linked summary unit price");
+eq(groupedResult.compiled.skillFingerprint, first.compiled.skillFingerprint,
+  "optional detailGroups do not change existing Saved Quote Skill identity");
+
+const floorPolicy = { grandRounding: { mode: "FLOOR", unit: 10000 } };
+const policyBase = {
+  id: "skill-reviewed-rounding",
+  name: "검토된 절사 견적서",
+  fixedDefaults: Object.assign({}, fixedDefaults(), { calculationPolicy: floorPolicy }),
+  variableSchema: { recipient: true, quoteNo: true, issueDate: true, items: true, memo: true, taxMode: true },
+  internalTemplate: Template.serializeTemplate(Template.builtInTemplate()),
+  provenance: provenance(),
+  approval: null,
+  createdAt: NOW,
+  updatedAt: NOW
+};
+const policyCandidate = Skill.buildSkill(policyBase);
+check(policyCandidate && policyCandidate.approved === false, "rounding policy Skill is reviewable before approval");
+const policySkill = Skill.buildSkill(Object.assign({}, policyBase, {
+  approval: {
+    schemaVersion: 1,
+    status: "approved",
+    skillFingerprint: policyCandidate.fingerprint,
+    approvedBy: "central-cto",
+    approvedAt: NOW,
+    approvalRef: "issue-3417"
+  }
+}));
+check(policySkill && policySkill.approved === true, "reviewed rounding policy can be explicitly approved");
+eq(policySkill.fixedDefaults.calculationPolicy, floorPolicy, "approved Skill owns the reviewed calculation policy");
+const policyResult = Skill.buildRenderModel(policySkill, input({
+  items: [{ id: "cgi-summary", name: "ICT환경제어 시스템", qty: 1, unitPrice: 16330000 }]
+}));
+check(policyResult.ok === true, "reviewed rounding Skill generates normally");
+eq(policyResult.draft.calculationPolicy, floorPolicy, "QuoteDraft snapshots the Skill calculation policy");
+eq(policyResult.renderModel.totals.grandText, Core.formatMoney(17960000), "renderer receives QuoteCore-rounded grand");
+eq(
+  Skill.normalizeFixedDefaults(Object.assign({}, fixedDefaults(), {
+    calculationPolicy: { grandRounding: { mode: "FLOOR", unit: 7 } }
+  })),
+  null,
+  "invalid fixed calculation policy fails closed"
+);
 
 const same = Skill.buildRenderModel(skill, input());
 eq(same.draft, first.draft, "same structured input yields the same QuoteDraft");
 eq(same.renderModel, first.renderModel, "SAME_INPUT_SAME_RENDER=YES");
 eq(same.compiled.skillFingerprint, first.compiled.skillFingerprint, "compiled skill identity is stable");
 eq(same.compiled.templateFingerprint, first.compiled.templateFingerprint, "compiled internal template identity is stable");
+
+const runtimeProfile = {
+  company: "Runtime Company",
+  representative: "Runtime Rep",
+  contactPerson: "Runtime Contact",
+  businessNumber: "000-11-22222",
+  address: "Runtime Address",
+  phone: "000-000-0000",
+  email: "runtime@example.test",
+  defaultValidityDays: 45,
+  defaultTaxMode: "EXEMPT"
+};
+const profiled = Skill.buildRenderModel(skill, input({ taxMode: undefined }), { companyProfile: runtimeProfile });
+check(profiled.ok === true, "account CompanyProfile runtime override renders through the approved Skill");
+eq(profiled.compiled.skillFingerprint, first.compiled.skillFingerprint,
+  "COMPANY_PROFILE_OVERRIDE_PRESERVES_APPROVED_SKILL_FINGERPRINT=YES");
+eq(profiled.draft.sender.company, "Runtime Company", "CompanyProfile snapshots company into QuoteDraft");
+eq(profiled.draft.sender.rep, "Runtime Rep", "CompanyProfile snapshots representative into QuoteDraft");
+eq(profiled.draft.sender.contactPerson, "Runtime Contact", "CompanyProfile snapshots contact person into QuoteDraft");
+eq(profiled.draft.meta.validDays, skill.fixedDefaults.validDays,
+  "SKILL_VALIDITY_DEFAULT_PRESERVED=YES (approved Skill validity stays authoritative over account defaults)");
+eq(profiled.draft.tax.mode, skill.fixedDefaults.taxMode,
+  "SKILL_TAX_DEFAULT_PRESERVED=YES (approved Skill tax default stays authoritative over account defaults)");
+eq(skill.fixedDefaults.sender.company, first.draft.sender.company,
+  "runtime CompanyProfile never mutates the approved Saved Quote Skill");
+const explicitTax = Skill.buildRenderModel(skill, input({ taxMode: "INCLUSIVE" }), { companyProfile: runtimeProfile });
+check(explicitTax.ok === true && explicitTax.draft.tax.mode === "INCLUSIVE",
+  "EXPLICIT_QUOTE_TAX_WINS=YES (per-quote value outranks Skill default and CompanyProfile)");
+const partialProfile = Skill.buildRenderModel(skill, input(), {
+  companyProfile: {
+    company: "CGI상사",
+    representative: "김범신",
+    defaultValidityDays: null,
+    defaultTaxMode: null
+  }
+});
+check(partialProfile.ok === true, "PARTIAL_COMPANY_PROFILE_ACCEPTED=YES");
+eq(partialProfile.draft.meta.validDays, skill.fixedDefaults.validDays,
+  "PARTIAL_PROFILE_KEEPS_SKILL_VALIDITY=YES");
+eq(partialProfile.draft.tax.mode, skill.fixedDefaults.taxMode,
+  "PARTIAL_PROFILE_KEEPS_SKILL_TAX=YES");
+eq(partialProfile.draft.sender.company, "CGI상사",
+  "PARTIAL_PROFILE_SENDER_IDENTITY=YES (sender still comes from CompanyProfile)");
+const badProfileStillFails = Skill.buildRenderModel(skill, input(), {
+  companyProfile: { company: "CGI상사", defaultValidityDays: "45" }
+});
+check(badProfileStillFails.ok === false && badProfileStillFails.code === "invalid_company_profile",
+  "malformed CompanyProfile values still fail closed instead of being coerced");
+const missingCompanyFails = Skill.buildRenderModel(skill, input(), {
+  companyProfile: { defaultValidityDays: 45 }
+});
+check(missingCompanyFails.ok === false && missingCompanyFails.code === "invalid_company_profile",
+  "CompanyProfile without company identity still fails closed");
 
 const numeric = Skill.buildRenderModel(skill, input({
   items: [{ id: "item-1", name: "배관 40A", qty: 80, unitPrice: 135000 }]
@@ -135,6 +278,56 @@ eq(badItemFreeze, null, "SOURCE_ITEM_VALUES_FROZEN_BY_ACCIDENT=NO");
 const badAmountFreeze = Skill.normalizeFixedDefaults(Object.assign({}, fixedDefaults(), { grandTotal: 999999 }));
 eq(badAmountFreeze, null, "SOURCE_AMOUNTS_FROZEN_BY_ACCIDENT=NO");
 
+/* ── 발신자 담당자(#3437)는 회사 고정 기본값으로 반복 생성에 재사용된다(#3401) ── */
+const contactBase = {
+  id: "skill-sender-contact",
+  name: "발신자 담당자 기본 견적서",
+  fixedDefaults: Object.assign({}, fixedDefaults(), {
+    sender: Object.assign({}, fixedDefaults().sender, { contactPerson: "한담당" })
+  }),
+  variableSchema: { recipient: true, quoteNo: true, issueDate: true, items: true, memo: true, taxMode: true },
+  internalTemplate: Template.serializeTemplate(Template.builtInTemplate()),
+  provenance: provenance(),
+  approval: null,
+  createdAt: NOW,
+  updatedAt: NOW
+};
+const contactPending = Skill.buildSkill(contactBase);
+check(contactPending && contactPending.approved === false, "sender contact person Skill is reviewable before approval");
+eq(contactPending.fixedDefaults.sender.contactPerson, "한담당", "fixedDefaults.sender preserves the sender contact person default");
+const contactSkill = Skill.buildSkill(Object.assign({}, contactBase, {
+  approval: {
+    schemaVersion: 1,
+    status: "approved",
+    skillFingerprint: contactPending.fingerprint,
+    approvedBy: "central-cto",
+    approvedAt: NOW,
+    approvalRef: "issue-3401"
+  }
+}));
+check(contactSkill && contactSkill.approved === true, "sender contact person Skill can be explicitly approved");
+const contactResult = Skill.buildRenderModel(contactSkill, input());
+check(contactResult.ok === true, "approved sender-contact Skill generates normally");
+eq(contactResult.draft.sender.contactPerson, "한담당", "REPEAT_PATH_CARRIES_SENDER_CONTACT_PERSON=YES");
+check(contactResult.compiled.skillFingerprint !== first.compiled.skillFingerprint,
+  "sender contact person participates in the Skill fingerprint basis");
+check(!("contactPerson" in skill.fixedDefaults.sender),
+  "a Skill without a sender contact person keeps the canonical sender shape");
+eq(
+  Skill.normalizeFixedDefaults(Object.assign({}, fixedDefaults(), {
+    sender: Object.assign({}, fixedDefaults().sender, { nickname: "공격 값" })
+  })),
+  null,
+  "unknown sender keys still fail closed"
+);
+eq(
+  Skill.normalizeFixedDefaults(Object.assign({}, fixedDefaults(), {
+    sender: Object.assign({}, fixedDefaults().sender, { contactPerson: "   " })
+  })).sender.contactPerson,
+  undefined,
+  "a blank sender contact person adds no key"
+);
+
 const missingCoreVariable = Skill.normalizeVariableSchema({
   recipient: false, quoteNo: true, issueDate: true, items: true, memo: true, taxMode: true
 });
@@ -161,6 +354,17 @@ const invalidInput = Skill.buildRenderModel(skill, {
   items: []
 });
 check(invalidInput.ok === false, "invalid structured input fails closed instead of inheriting demo business facts");
+
+const invalidDetail = Skill.buildRenderModel(skill, input({
+  items: [{ id: "summary-1", name: "요약", qty: 1, unitPrice: 1 }],
+  detailGroups: [{
+    id: "bad-detail",
+    summaryItemId: "missing",
+    items: [{ name: "상세", qty: 1, unitPrice: 1000 }]
+  }]
+}));
+check(invalidDetail.ok === false && invalidDetail.code === "invalid_quote_draft",
+  "broken detail-group links fail closed in Saved Quote Skill runtime");
 
 const invalidDate = Skill.buildRenderModel(skill, input({ issueDate: "2026-99-99" }));
 check(invalidDate.ok === false, "invalid calendar dates fail closed before QuoteCore rendering");

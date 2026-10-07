@@ -6,6 +6,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .history import HistoryStore, validate_project_fields, validate_project_id
 
 MAX_PROJECT_BODY_BYTES = 8192
@@ -33,9 +34,10 @@ def _not_found() -> JSONResponse:
 
 
 async def _json_body(request: Request) -> dict:
-    body = await request.body()
-    if len(body) > MAX_PROJECT_BODY_BYTES:
-        raise ValueError("프로젝트 요청이 너무 큽니다.")
+    try:
+        body = await read_bounded_request_body(request, max_bytes=MAX_PROJECT_BODY_BYTES)
+    except RequestBodyTooLarge as exc:
+        raise ValueError("프로젝트 요청이 너무 큽니다.") from exc
     try:
         raw = json.loads(body.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:

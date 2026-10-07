@@ -13,6 +13,11 @@ from padiem_ai_core import (
     ToolSideEffect,
     ToolSpec,
 )
+from padiem_ai_core.dispatch_evidence import (
+    ExecutionDispatchEvidence,
+    activate_execution_dispatch_evidence,
+    reset_execution_dispatch_evidence,
+)
 from padiem_ai_core.tool_runtime import (
     MAX_TOOL_ARGUMENT_BYTES,
     MAX_TOOL_OUTPUT_BYTES,
@@ -677,3 +682,57 @@ def test_valid_output_is_copy_safe_and_public_result_is_bounded_shape() -> None:
     assert public["event"]["status"] == "completed"
     assert public["event"]["error_class"] is None
     assert public["output"] == {"nested": {"items": [1, 2]}}
+
+
+def test_dispatch_evidence_stays_clear_for_pre_handler_policy_rejection() -> None:
+    runtime = ToolRuntime()
+
+    async def handler(arguments):
+        return arguments
+
+    runtime.register(spec("core.echo"), handler)
+    evidence = ExecutionDispatchEvidence()
+    token = activate_execution_dispatch_evidence(evidence)
+    try:
+        with pytest.raises(ToolRuntimeError):
+            run(
+                runtime.execute(
+                    ToolInvocation("core.echo", {"value": "x"}),
+                    profile(),
+                    auth(),
+                )
+            )
+    finally:
+        reset_execution_dispatch_evidence(token)
+
+    assert evidence.dispatched is False
+    assert evidence.dispatch_count == 0
+
+
+def test_dispatch_evidence_marks_only_when_trusted_handler_starts() -> None:
+    runtime = ToolRuntime()
+    calls = 0
+
+    async def handler(arguments):
+        nonlocal calls
+        calls += 1
+        return arguments
+
+    runtime.register(spec("core.echo"), handler)
+    evidence = ExecutionDispatchEvidence()
+    token = activate_execution_dispatch_evidence(evidence)
+    try:
+        result = run(
+            runtime.execute(
+                ToolInvocation("core.echo", {"value": "x"}),
+                profile("core.echo"),
+                auth(),
+            )
+        )
+    finally:
+        reset_execution_dispatch_evidence(token)
+
+    assert result.output_copy() == {"value": "x"}
+    assert calls == 1
+    assert evidence.dispatched is True
+    assert evidence.dispatch_count == 1

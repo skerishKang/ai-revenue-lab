@@ -16,10 +16,20 @@ from app.documents import (
 )
 from app.history import ProjectProfile, UserProfile
 from app.main import create_app
+import app.model_policy as model_policy_module
 from app.model_policy import DEFAULT_B14_MODEL_ID
 from app.project_files import D1ProjectFileStore, ProjectFileLimitError, ProjectFileRecord
 
 SESSION_SECRET = "phase11-document-session-secret-not-a-real-key-00000000"
+
+
+@pytest.fixture(autouse=True)
+def _selected_model_for_document_contracts(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(
+        model_policy_module,
+        "EXECUTABLE_B14_MODEL_IDS",
+        frozenset({DEFAULT_B14_MODEL_ID}),
+    )
 
 
 def doc(name="notes.md", media_type="text/markdown", text="# 메모\n핵심 내용을 요약해줘"):
@@ -314,8 +324,8 @@ def test_frontend_contract_distinguishes_binary_composer_from_text_only_project_
     assert 'id="attachmentFileInput"' in html
     assert 'id="projectFilesPanel"' in html
     assert ".pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx" in html
-    assert "PDF·DOCX는 텍스트만 안전하게 추출해 저장하며 원본 파일은 저장하지 않습니다." in html
-    assert "PPTX·XLSX는 지원하지 않습니다." in html
+    assert "PDF·DOCX는 텍스트만 추출해 저장하며 원본은 저장하지 않습니다." in html
+    assert "PPTX·XLSX는 미지원." in html
     assert 'script src="./attachment-capabilities.js"' in html
     assert 'label: "PDF"' in capabilities
     assert 'label: "DOCX"' in capabilities

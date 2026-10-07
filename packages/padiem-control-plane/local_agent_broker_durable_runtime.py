@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import base64
 from datetime import datetime, timezone
 from typing import Any, Callable, TypeVar
 
 from padiem_control_plane.contracts import ControlPlaneContractError
 from padiem_control_plane.local_agent_broker import MAX_POLL_BATCH, BrokerBindingState, BrokerCommandState
+from padiem_control_plane.local_agent_broker_auth import StateBackedLocalAgentBindingAuthenticator
 from padiem_control_plane.local_agent_broker_http import LocalAgentMaterialResolutionRequest
 from padiem_control_plane.local_agent_broker_rpc import LocalAgentBrokerRpcFacade
 from padiem_control_plane.local_agent_broker_state import (
@@ -36,6 +38,12 @@ _MATERIAL_RESOLVE_RPC_KEYS = frozenset(
 # #3094 — the device-truth projection is owner-scoped by the server-derived
 # identity only; no conversation, device or destination ref is accepted here.
 _DEVICE_TRUTH_RPC_KEYS = frozenset({"account_ref", "workspace_ref"})
+
+# #3436 B2c — the device-session authentication RPC accepts exactly the
+# caller-held session material and nothing else. No user_id, account_ref,
+# workspace_ref, tenant or product key exists: those are derived by the
+# canonical authority from the verified binding state, never named by a caller.
+_DEVICE_SESSION_AUTH_RPC_KEYS = frozenset({"session_id", "binding_ref", "credential_b64"})
 
 def _iso_utc(value: datetime) -> str:
     return value.astimezone(timezone.utc).isoformat()
@@ -420,6 +428,67 @@ class LocalAgentBrokerDurableRuntime:
         stored = self.state_port.load(authority_ref=self.authority_ref())
         return terminal_command_result_from_snapshot(stored.snapshot, payload)
 
+    def authenticate_device_session(self, payload: dict) -> dict:
+        """#3436 B2c — one narrow, read-only device-session authentication projection.
+
+        The read-only RPC the B62 Desktop conversation surface consumes through
+        the private Service Binding gateway. It runs exactly the canonical
+        verifier preamble the ``poll`` path has always taken — binding digest,
+        expiry, revocation, then the full session/binding scope correlation —
+        over the canonical persisted state, and projects only the server-derived
+        facts the Desktop conversation read needs:
+
+        * ``account_ref`` / ``workspace_ref`` come from the verified canonical
+          binding state. The closed RPC key set above has no caller-supplied
+          identity field, so a caller can never name its owner or scope.
+        * Every denial is one bounded code. Whether the credential was wrong,
+          expired, rotated, or the binding revoked is never distinguished here,
+          so no deny-reason oracle exists at this boundary.
+        * Read-only: no transaction, no compare-and-swap, no state write. The
+          response never carries the credential digest or any raw credential.
+        """
+
+        try:
+            payload = closed_mapping(payload, _DEVICE_SESSION_AUTH_RPC_KEYS, "device session authentication RPC")
+            session_id = safe_ref(str(payload["session_id"]), "session_id")
+            binding_ref = safe_ref(str(payload["binding_ref"]), "binding_ref")
+            credential_b64 = payload["credential_b64"]
+            if not isinstance(credential_b64, str) or not credential_b64:
+                raise ValueError("credential_b64 must be non-empty text")
+            decoded = base64.b64decode(credential_b64, validate=True)
+            if not decoded:
+                raise ValueError("credential_b64 must decode to non-empty bytes")
+        except (KeyError, TypeError, ValueError):
+            return {
+                "ok": False,
+                "error": {
+                    "code": "invalid_device_session_auth_request",
+                    "message": "device session authentication request was rejected",
+                },
+            }
+
+        authenticator = StateBackedLocalAgentBindingAuthenticator(
+            pepper=str(self._env.LOCAL_AGENT_BROKER_PEPPER).encode("utf-8"),
+            authority_ref=self.authority_ref(),
+            state_port=self.state_port,
+        )
+        try:
+            projection = authenticator.authenticate_device_session(
+                session_id=session_id,
+                binding_ref=binding_ref,
+                credential=decoded,
+                now=datetime.now(timezone.utc),
+            )
+        except (ControlPlaneContractError, ValueError, TypeError, RuntimeError):
+            return {
+                "ok": False,
+                "error": {
+                    "code": "device_session_auth_failed",
+                    "message": "device session authentication failed",
+                },
+            }
+        return {"ok": True, "device_session": projection}
+
     def safe_dict(self) -> dict[str, Any]:
         return {
             "durable_runtime_composition": True,
@@ -469,3 +538,12 @@ MATERIAL_LESS_COMMAND_ACKNOWLEDGABLE = False
 SECOND_MATERIAL_SEQUENCE_MINT = False
 SECOND_MATERIAL_REVISION_MINT = False
 MISSING_MATERIAL_POLLABLE = False
+
+# --- #3436 B2c — the device-session authentication projection RPC -----------
+NARROW_DEVICE_SESSION_AUTH_PROJECTION = True
+DEVICE_SESSION_AUTH_STATE_MUTATION = False
+DEVICE_SESSION_AUTH_SECOND_CREDENTIAL_VERIFIER = False
+DEVICE_SESSION_AUTH_CALLER_IDENTITY_AUTHORITY = False
+DEVICE_SESSION_AUTH_RAW_CREDENTIAL_RETURNED = False
+DEVICE_SESSION_AUTH_DENY_REASON_DISCLOSED = False
+DEVICE_SESSION_AUTH_PRODUCTION_READY = False

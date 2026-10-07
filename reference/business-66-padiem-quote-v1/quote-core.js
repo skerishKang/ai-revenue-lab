@@ -17,6 +17,11 @@
   var VAT_RATE = 0.10;
 
   var TAX_MODES = { EXCLUSIVE: "EXCLUSIVE", INCLUSIVE: "INCLUSIVE", EXEMPT: "EXEMPT" };
+  var GRAND_ROUNDING_MODES = { FLOOR: "FLOOR" };
+  var GRAND_ROUNDING_UNITS = [1, 10, 100, 1000, 10000];
+  var MAX_DETAIL_GROUPS = 32;
+  var MAX_DETAIL_ITEMS = 300;
+  var MAX_DETAIL_ID_CHARS = 80;
   var TAX_LABELS = {
     EXCLUSIVE: "부가세 별도 (VAT 10%)",
     INCLUSIVE: "VAT 포함가",
@@ -70,6 +75,47 @@
     return new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 2 }).format(Number(n) || 0);
   }
 
+  function normalizeCalculationPolicy(raw) {
+    if (raw === undefined || raw === null) return null;
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
+    var keys = Object.keys(raw);
+    if (keys.length !== 1 || keys[0] !== "grandRounding") return null;
+    var rounding = raw.grandRounding;
+    if (!rounding || typeof rounding !== "object" || Array.isArray(rounding)) return null;
+    var roundingKeys = Object.keys(rounding).sort();
+    if (roundingKeys.length !== 2 || roundingKeys[0] !== "mode" || roundingKeys[1] !== "unit") return null;
+    if (rounding.mode !== GRAND_ROUNDING_MODES.FLOOR) return null;
+    var unit = Number(rounding.unit);
+    if (GRAND_ROUNDING_UNITS.indexOf(unit) === -1) return null;
+    return { grandRounding: { mode: GRAND_ROUNDING_MODES.FLOOR, unit: unit } };
+  }
+
+  function formatKoreanMoneyWords(value) {
+    var number = Number(value);
+    if (!Number.isSafeInteger(number) || number < 0) return null;
+    if (number === 0) return "영";
+    var digits = ["", "일", "이", "삼", "사", "오", "육", "칠", "팔", "구"];
+    var smallUnits = ["", "십", "백", "천"];
+    var largeUnits = ["", "만", "억", "조"];
+    var result = "";
+    var groupIndex = 0;
+    while (number > 0) {
+      var group = number % 10000;
+      if (group > 0) {
+        var groupText = "";
+        for (var position = 0; position < 4; position += 1) {
+          var digit = Math.floor(group / Math.pow(10, position)) % 10;
+          if (digit > 0) groupText = digits[digit] + smallUnits[position] + groupText;
+        }
+        if (groupIndex >= largeUnits.length) return null;
+        result = groupText + largeUnits[groupIndex] + result;
+      }
+      number = Math.floor(number / 10000);
+      groupIndex += 1;
+    }
+    return result || null;
+  }
+
   /* ── 합계: item.amount / supply / vat / grand 는 저장값이 아니라 매번 파생 ── */
 
   function itemAmount(item) {
@@ -78,7 +124,7 @@
     return Math.round(qty * price);
   }
 
-  function computeTotals(items, taxMode) {
+  function computeTotals(items, taxMode, calculationPolicy) {
     var amounts = (items || []).map(itemAmount);
     var subtotal = amounts.reduce(function (sum, a) { return sum + a; }, 0);
     var mode = TAX_MODES[taxMode] ? taxMode : TAX_MODES.EXCLUSIVE;
@@ -96,7 +142,25 @@
       vat = Math.round(subtotal * 0.10);
       grand = supply + vat;
     }
-    return { amounts: amounts, subtotal: subtotal, supply: supply, vat: vat, grand: grand, mode: mode };
+    if (calculationPolicy === undefined || calculationPolicy === null) {
+      return { amounts: amounts, subtotal: subtotal, supply: supply, vat: vat, grand: grand, mode: mode };
+    }
+    var policy = normalizeCalculationPolicy(calculationPolicy);
+    if (!policy) return null;
+    var rawGrand = grand;
+    var unit = policy.grandRounding.unit;
+    grand = Math.floor(rawGrand / unit) * unit;
+    return {
+      amounts: amounts,
+      subtotal: subtotal,
+      supply: supply,
+      vat: vat,
+      grand: grand,
+      mode: mode,
+      rawGrand: rawGrand,
+      roundingAdjustment: grand - rawGrand,
+      calculationPolicy: policy
+    };
   }
 
   /* ── 날짜: 견적일 + 유효기간 → 유효일. 파싱 실패 시 null (crash 금지) ── */
@@ -144,6 +208,7 @@
       sender: {
         company: "샘플 공급사",
         rep: "대표자명",
+        contactPerson: "",
         bizNo: "000-00-00000",
         address: "",
         phone: "000-0000-0000",
@@ -160,6 +225,35 @@
     };
   }
 
+  /* Production runtime startup authority: truthful blank business facts.
+     Demo defaults remain available only for explicit demo/tests. */
+  function createProductionDraft() {
+    var today = todayISO();
+    return {
+      schemaVersion: SCHEMA_VERSION,
+      meta: {
+        quoteNo: "PQ-" + today.split("-").join("") + "-001",
+        issueDate: today,
+        validDays: 30,
+        source: "manual"
+      },
+      sender: {
+        company: "",
+        rep: "",
+        contactPerson: "",
+        bizNo: "",
+        address: "",
+        phone: "",
+        email: "",
+        presetId: "custom"
+      },
+      recipient: { company: "", person: "", address: "", email: "" },
+      items: [{ id: "item-1", name: "", qty: 1, unitPrice: 0 }],
+      tax: { mode: TAX_MODES.EXCLUSIVE, rate: VAT_RATE },
+      memo: ""
+    };
+  }
+
   function asString(v, fallback) {
     return typeof v === "string" ? v : fallback;
   }
@@ -170,34 +264,173 @@
     return n;
   }
 
+  function optionalText(v, maxLength) {
+    if (typeof v !== "string") return null;
+    var text = v.trim();
+    if (!text) return null;
+    return text.slice(0, maxLength);
+  }
+
+  function normalizeDetailGroups(raw, summaryItems) {
+    if (raw === undefined || raw === null || (Array.isArray(raw) && raw.length === 0)) {
+      return { ok: true, value: null };
+    }
+    if (!Array.isArray(raw) || raw.length > MAX_DETAIL_GROUPS) return { ok: false, value: null };
+
+    var summaryIds = Object.create(null);
+    for (var s = 0; s < summaryItems.length; s += 1) {
+      var summaryId = String(summaryItems[s].id || "").trim();
+      if (!summaryId || summaryIds[summaryId]) return { ok: false, value: null };
+      summaryIds[summaryId] = true;
+    }
+
+    var seenGroups = Object.create(null);
+    var seenSummaryLinks = Object.create(null);
+    var totalItems = 0;
+    var groups = [];
+    for (var i = 0; i < raw.length; i += 1) {
+      var source = raw[i];
+      if (!source || typeof source !== "object" || Array.isArray(source)) return { ok: false, value: null };
+      var groupKeys = Object.keys(source);
+      if (groupKeys.some(function (key) {
+        return ["id", "summaryItemId", "title", "items"].indexOf(key) === -1;
+      })) return { ok: false, value: null };
+      var id = typeof source.id === "string" ? source.id.trim().slice(0, MAX_DETAIL_ID_CHARS) : "";
+      var summaryItemId = typeof source.summaryItemId === "string"
+        ? source.summaryItemId.trim().slice(0, MAX_DETAIL_ID_CHARS)
+        : "";
+      if (!id || seenGroups[id] || !summaryIds[summaryItemId] || seenSummaryLinks[summaryItemId]) {
+        return { ok: false, value: null };
+      }
+      if (!Array.isArray(source.items) || source.items.length < 1) return { ok: false, value: null };
+      totalItems += source.items.length;
+      if (totalItems > MAX_DETAIL_ITEMS) return { ok: false, value: null };
+
+      var items = [];
+      for (var j = 0; j < source.items.length; j += 1) {
+        var rawItem = source.items[j];
+        if (!rawItem || typeof rawItem !== "object" || Array.isArray(rawItem)) return { ok: false, value: null };
+        var detailKeys = Object.keys(rawItem);
+        if (detailKeys.some(function (key) {
+          return ["id", "name", "spec", "unit", "qty", "unitPrice", "note", "section"].indexOf(key) === -1;
+        })) return { ok: false, value: null };
+        var name = optionalText(rawItem.name, 240);
+        var qty = Number(rawItem.qty);
+        var unitPrice = Number(rawItem.unitPrice);
+        if (!name || !Number.isFinite(qty) || qty <= 0 || !Number.isFinite(unitPrice) || unitPrice < 0) {
+          return { ok: false, value: null };
+        }
+        var item = {
+          id: typeof rawItem.id === "string" && rawItem.id.trim()
+            ? rawItem.id.trim().slice(0, MAX_DETAIL_ID_CHARS)
+            : id + "-item-" + (j + 1),
+          name: name,
+          qty: qty,
+          unitPrice: unitPrice
+        };
+        var spec = optionalText(rawItem.spec, 240);
+        var unit = optionalText(rawItem.unit, 80);
+        var note = optionalText(rawItem.note, 500);
+        var section = optionalText(rawItem.section, 240);
+        if (spec !== null) item.spec = spec;
+        if (unit !== null) item.unit = unit;
+        if (note !== null) item.note = note;
+        if (section !== null) item.section = section;
+        items.push(item);
+      }
+
+      var group = { id: id, summaryItemId: summaryItemId, items: items };
+      var title = optionalText(source.title, 240);
+      if (title !== null) group.title = title;
+      groups.push(group);
+      seenGroups[id] = true;
+      seenSummaryLinks[summaryItemId] = true;
+    }
+    return { ok: true, value: groups };
+  }
+
+  function computeDraftTotals(rawDraft) {
+    var draft = normalizeDraft(rawDraft);
+    if (!draft) return null;
+
+    var groups = Array.isArray(draft.detailGroups) ? draft.detailGroups : [];
+    var groupBySummary = Object.create(null);
+    var detailResults = groups.map(function (group) {
+      var amounts = group.items.map(itemAmount);
+      var subtotal = amounts.reduce(function (sum, amount) { return sum + amount; }, 0);
+      var result = {
+        id: group.id,
+        summaryItemId: group.summaryItemId,
+        title: group.title || "",
+        items: group.items,
+        amounts: amounts,
+        subtotal: subtotal
+      };
+      groupBySummary[group.summaryItemId] = result;
+      return result;
+    });
+
+    var effectiveItems = draft.items.map(function (item) {
+      var copy = Object.assign({}, item);
+      var linked = groupBySummary[item.id];
+      if (linked) copy.unitPrice = linked.subtotal;
+      return copy;
+    });
+    var totals = computeTotals(effectiveItems, draft.tax.mode, draft.calculationPolicy);
+    if (!totals) return null;
+    totals.effectiveItems = effectiveItems;
+    totals.detailGroups = detailResults;
+    return totals;
+  }
+
   /* 손상된 JSON·구버전 schema → null (앱이 기본 데모 상태로 fallback) */
   function normalizeDraft(raw) {
     try {
       if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
       if (raw.schemaVersion !== SCHEMA_VERSION) return null;
-      var base = createDefaultDraft();
+      /* 누락 필드 보충은 truthful blank로만 한다. 데모 사업 정보는
+         normalize 계약으로 자동 보충되지 않는다 (#3479). */
+      var base = createProductionDraft();
       var rawItems = Array.isArray(raw.items) && raw.items.length > 0 ? raw.items : base.items;
       var items = rawItems.map(function (it, i) {
         var src = it && typeof it === "object" ? it : {};
-        return {
+        var item = {
           id: asString(src.id, "item-" + (i + 1)),
           name: asString(src.name, ""),
           qty: asNonNegativeNumber(src.qty, 1),
           unitPrice: asNonNegativeNumber(src.unitPrice, 0)
         };
+        var spec = optionalText(src.spec, 240);
+        var unit = optionalText(src.unit, 80);
+        var note = optionalText(src.note, 500);
+        if (spec !== null) item.spec = spec;
+        if (unit !== null) item.unit = unit;
+        if (note !== null) item.note = note;
+        return item;
       });
+      var normalizedDetails = normalizeDetailGroups(raw.detailGroups, items);
+      if (!normalizedDetails.ok) return null;
       var taxMode = raw.tax && TAX_MODES[raw.tax.mode] ? raw.tax.mode : base.tax.mode;
-      return {
+      var meta = {
+        quoteNo: asString(raw.meta && raw.meta.quoteNo, base.meta.quoteNo),
+        issueDate: asString(raw.meta && raw.meta.issueDate, base.meta.issueDate),
+        validDays: asNonNegativeNumber(raw.meta && raw.meta.validDays, base.meta.validDays),
+        source: asString(raw.meta && raw.meta.source, "manual")
+      };
+      var projectName = optionalText(raw.meta && raw.meta.projectName, 240);
+      if (projectName !== null) meta.projectName = projectName;
+      var calculationPolicy = null;
+      if (raw.calculationPolicy !== undefined && raw.calculationPolicy !== null) {
+        calculationPolicy = normalizeCalculationPolicy(raw.calculationPolicy);
+        if (!calculationPolicy) return null;
+      }
+      var normalized = {
         schemaVersion: SCHEMA_VERSION,
-        meta: {
-          quoteNo: asString(raw.meta && raw.meta.quoteNo, base.meta.quoteNo),
-          issueDate: asString(raw.meta && raw.meta.issueDate, base.meta.issueDate),
-          validDays: asNonNegativeNumber(raw.meta && raw.meta.validDays, base.meta.validDays),
-          source: asString(raw.meta && raw.meta.source, "manual")
-        },
+        meta: meta,
         sender: {
           company: asString(raw.sender && raw.sender.company, base.sender.company),
           rep: asString(raw.sender && raw.sender.rep, base.sender.rep),
+          contactPerson: asString(raw.sender && raw.sender.contactPerson, ""),
           bizNo: asString(raw.sender && raw.sender.bizNo, base.sender.bizNo),
           address: asString(raw.sender && raw.sender.address, ""),
           phone: asString(raw.sender && raw.sender.phone, base.sender.phone),
@@ -217,6 +450,9 @@
         },
         memo: asString(raw.memo, base.memo)
       };
+      if (calculationPolicy) normalized.calculationPolicy = calculationPolicy;
+      if (normalizedDetails.value) normalized.detailGroups = normalizedDetails.value;
+      return normalized;
     } catch (err) {
       return null;
     }
@@ -248,30 +484,33 @@
   }
 
   function createBlankQuoteDraft(currentDraft, options) {
-    var current = normalizeDraft(currentDraft) || createDefaultDraft();
-    var defaults = createDefaultDraft();
+    /* 새 Production 견적은 truthful blank에서 시작한다. 승인된 Skill/
+       CompanyProfile 값은 호출 계약(#3478)으로만 채워진다. */
+    var current = normalizeDraft(currentDraft) || createProductionDraft();
+    var blank = createProductionDraft();
     var opts = options || {};
     var issueDate = typeof opts.issueDate === "string" && parseISODate(opts.issueDate)
       ? opts.issueDate
       : todayISO();
     var quoteNo = typeof opts.quoteNo === "string" && opts.quoteNo.trim()
       ? opts.quoteNo.trim()
-      : defaults.meta.quoteNo;
+      : blank.meta.quoteNo;
     var source = typeof opts.source === "string" && opts.source.trim()
       ? opts.source.trim()
       : "manual";
 
-    return normalizeDraft({
+    var next = {
       schemaVersion: SCHEMA_VERSION,
       meta: {
         quoteNo: quoteNo,
         issueDate: issueDate,
-        validDays: current.meta.validDays > 0 ? current.meta.validDays : defaults.meta.validDays,
+        validDays: current.meta.validDays > 0 ? current.meta.validDays : blank.meta.validDays,
         source: source
       },
       sender: {
         company: current.sender.company,
         rep: current.sender.rep,
+        contactPerson: current.sender.contactPerson,
         bizNo: current.sender.bizNo,
         address: current.sender.address,
         phone: current.sender.phone,
@@ -281,8 +520,10 @@
       recipient: { company: "", person: "", address: "", email: "" },
       items: [{ id: "item-1", name: "", qty: 1, unitPrice: 0 }],
       tax: { mode: TAX_MODES.EXCLUSIVE, rate: VAT_RATE },
-      memo: defaults.memo
-    });
+      memo: ""
+    };
+    if (current.calculationPolicy) next.calculationPolicy = current.calculationPolicy;
+    return normalizeDraft(next);
   }
 
   return {
@@ -292,18 +533,26 @@
     VAT_RATE: VAT_RATE,
     TAX_MODES: TAX_MODES,
     TAX_LABELS: TAX_LABELS,
+    GRAND_ROUNDING_MODES: GRAND_ROUNDING_MODES,
+    GRAND_ROUNDING_UNITS: GRAND_ROUNDING_UNITS.slice(),
+    MAX_DETAIL_GROUPS: MAX_DETAIL_GROUPS,
+    MAX_DETAIL_ITEMS: MAX_DETAIL_ITEMS,
+    normalizeCalculationPolicy: normalizeCalculationPolicy,
+    formatKoreanMoneyWords: formatKoreanMoneyWords,
     parseMoney: parseMoney,
     parseKoreanMoney: parseKoreanMoney,
     formatMoney: formatMoney,
     formatInputNumber: formatInputNumber,
     itemAmount: itemAmount,
     computeTotals: computeTotals,
+    computeDraftTotals: computeDraftTotals,
     parseISODate: parseISODate,
     isoFormat: isoFormat,
     todayISO: todayISO,
     computeValidUntil: computeValidUntil,
     printReadiness: printReadiness,
     createDefaultDraft: createDefaultDraft,
+    createProductionDraft: createProductionDraft,
     createBlankQuoteDraft: createBlankQuoteDraft,
     normalizeDraft: normalizeDraft
   };

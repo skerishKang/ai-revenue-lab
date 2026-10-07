@@ -1,0 +1,300 @@
+/* B66 canonical browser render bridge (#3310).
+   No storage, file intake, network access, model calls, or duplicate math.
+   The bridge delegates all quote semantics to canonical SavedQuoteSkill,
+   QuoteCore and QuoteTemplateRenderer modules already loaded by embed.html. */
+(function (root, factory) {
+  if (typeof module === "object" && module.exports) {
+    module.exports = factory();
+  } else {
+    root.B66QuoteEmbedBridge = factory();
+  }
+})(typeof self !== "undefined" ? self : this, function () {
+  "use strict";
+
+  var REQUEST_TYPE = "b66.embed.render.v1";
+  var RESPONSE_TYPE = "b66.embed.rendered.v1";
+  var ERROR_TYPE = "b66.embed.error.v1";
+  var PRINT_TYPE = "b66.embed.print.v1";
+  var MAX_MESSAGE_JSON_CHARS = 1024 * 1024;
+  var REQUEST_REF_RE = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
+  var ASSET_ID_RE = /^b66asset_[0-9a-f]{32}$/;
+  var DATA_IMAGE_RE = /^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/;
+  var MAX_ASSET_DATA_URL_CHARS = 384 * 1024;
+
+  function isPlainObject(value) {
+    return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+  }
+
+  function requestRef(value) {
+    return typeof value === "string" && REQUEST_REF_RE.test(value) ? value : null;
+  }
+
+  function jsonSizeOkay(value) {
+    try {
+      return JSON.stringify(value).length <= MAX_MESSAGE_JSON_CHARS;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function normalizeAssetEntry(value) {
+    if (!isPlainObject(value) || Object.keys(value).some(function (key) {
+      return ["assetId", "dataUrl"].indexOf(key) === -1;
+    })) return null;
+    if (typeof value.assetId !== "string" || !ASSET_ID_RE.test(value.assetId)) return null;
+    if (
+      typeof value.dataUrl !== "string" ||
+      value.dataUrl.length > MAX_ASSET_DATA_URL_CHARS ||
+      !DATA_IMAGE_RE.test(value.dataUrl)
+    ) return null;
+    return { assetId: value.assetId, dataUrl: value.dataUrl };
+  }
+
+  function normalizeCompanyProfile(value) {
+    if (!isPlainObject(value)) return null;
+    var allowed = [
+      "company", "representative", "contactPerson", "businessNumber",
+      "address", "phone", "email", "defaultValidityDays", "defaultTaxMode"
+    ];
+    if (Object.keys(value).some(function (key) { return allowed.indexOf(key) === -1; })) return null;
+    var company = typeof value.company === "string" ? value.company.trim().slice(0, 512) : "";
+    if (!company) return null;
+    if (!Number.isInteger(value.defaultValidityDays) || value.defaultValidityDays < 0 || value.defaultValidityDays > 3650) return null;
+    var taxMode = value.defaultTaxMode;
+    if (taxMode !== undefined && taxMode !== null && taxMode !== "") {
+      if (["EXCLUSIVE", "INCLUSIVE", "EXEMPT"].indexOf(taxMode) === -1) return null;
+    } else {
+      taxMode = null;
+    }
+    function optional(key, max) {
+      if (value[key] === undefined || value[key] === null) return null;
+      if (typeof value[key] !== "string") return false;
+      return value[key].trim().slice(0, max || 512);
+    }
+    var result = {
+      company: company,
+      representative: optional("representative"),
+      contactPerson: optional("contactPerson"),
+      businessNumber: optional("businessNumber", 80),
+      address: optional("address"),
+      phone: optional("phone", 100),
+      email: optional("email", 320),
+      defaultValidityDays: value.defaultValidityDays,
+      defaultTaxMode: taxMode
+    };
+    if (Object.keys(result).some(function (key) { return result[key] === false; })) return null;
+    return result;
+  }
+
+  function normalizeAssets(value) {
+    if (value === undefined || value === null) return {};
+    if (!isPlainObject(value) || Object.keys(value).some(function (key) {
+      return ["logo", "stamp"].indexOf(key) === -1;
+    })) return null;
+    var output = {};
+    var keys = ["logo", "stamp"];
+    for (var i = 0; i < keys.length; i += 1) {
+      var key = keys[i];
+      if (value[key] === undefined || value[key] === null) continue;
+      var normalized = normalizeAssetEntry(value[key]);
+      if (!normalized) return null;
+      output[key] = normalized;
+    }
+    return output;
+  }
+
+  function declaredAssetId(skill, key) {
+    var template = isPlainObject(skill) ? skill.internalTemplate : null;
+    var content = isPlainObject(template) ? template.content : null;
+    var slots = isPlainObject(content) ? content.slots : null;
+    var value = slots && typeof slots[key] === "string" ? slots[key] : "";
+    return ASSET_ID_RE.test(value) ? value : "";
+  }
+
+  function slotSourcesForSkill(skill, assets) {
+    var source = isPlainObject(assets) ? assets : {};
+    var output = {};
+    var keys = ["logo", "stamp"];
+    for (var i = 0; i < keys.length; i += 1) {
+      var key = keys[i];
+      var declared = declaredAssetId(skill, key);
+      var supplied = source[key];
+      if (!declared) {
+        if (supplied) return null;
+        continue;
+      }
+      if (!supplied || supplied.assetId !== declared) return null;
+      output[key] = supplied;
+    }
+    return output;
+  }
+
+  function normalizeRenderMessage(value) {
+    if (!isPlainObject(value) || value.type !== REQUEST_TYPE) return null;
+    if (Object.keys(value).some(function (key) {
+      return ["type", "requestId", "skill", "candidate", "assets", "companyProfile"].indexOf(key) === -1;
+    })) return null;
+    var id = requestRef(value.requestId);
+    var assets = normalizeAssets(value.assets);
+    var companyProfile = value.companyProfile === undefined || value.companyProfile === null
+      ? null
+      : normalizeCompanyProfile(value.companyProfile);
+    if (!id || !isPlainObject(value.skill) || !isPlainObject(value.candidate) || assets === null) return null;
+    if (value.companyProfile !== undefined && value.companyProfile !== null && companyProfile === null) return null;
+    if (!jsonSizeOkay(value.skill) || !jsonSizeOkay(value.candidate) || !jsonSizeOkay(assets) || !jsonSizeOkay(companyProfile)) return null;
+    return {
+      type: REQUEST_TYPE,
+      requestId: id,
+      skill: value.skill,
+      candidate: value.candidate,
+      assets: assets,
+      companyProfile: companyProfile
+    };
+  }
+
+  function buildStructuredInput(candidate, core) {
+    if (!isPlainObject(candidate) || !core || typeof core.createDefaultDraft !== "function") {
+      return null;
+    }
+    /* 구조 폴백(견적번호/일자)만 필요하다. Production authority를 우선 사용해
+       데모 fixture를 이 경로에 두지 않는다 (#3479). */
+    var defaults = typeof core.createProductionDraft === "function"
+      ? core.createProductionDraft()
+      : core.createDefaultDraft();
+    if (!defaults || !defaults.meta) return null;
+
+    var input = {
+      recipient: candidate.recipient,
+      quoteNo: typeof candidate.quoteNo === "string" && candidate.quoteNo.trim()
+        ? candidate.quoteNo.trim()
+        : defaults.meta.quoteNo,
+      issueDate: typeof candidate.issueDate === "string" && candidate.issueDate.trim()
+        ? candidate.issueDate.trim()
+        : defaults.meta.issueDate,
+      items: candidate.items
+    };
+    if (typeof candidate.projectName === "string" && candidate.projectName.trim()) {
+      input.projectName = candidate.projectName.trim();
+    }
+    if (Array.isArray(candidate.detailGroups) && candidate.detailGroups.length) {
+      input.detailGroups = candidate.detailGroups;
+    }
+    if (typeof candidate.memo === "string") input.memo = candidate.memo;
+    if (typeof candidate.taxMode === "string" && candidate.taxMode) input.taxMode = candidate.taxMode;
+    return input;
+  }
+
+  function renderRequest(message, runtime, doc) {
+    var normalized = normalizeRenderMessage(message);
+    if (!normalized) return { ok: false, code: "invalid_embed_request" };
+    if (
+      !runtime ||
+      !runtime.Core ||
+      !runtime.SavedSkill ||
+      !runtime.Renderer ||
+      typeof runtime.SavedSkill.buildRenderModel !== "function" ||
+      typeof runtime.Renderer.applyRenderModel !== "function"
+    ) {
+      return { ok: false, code: "embed_runtime_unavailable" };
+    }
+
+    var input = buildStructuredInput(normalized.candidate, runtime.Core);
+    if (!input) return { ok: false, code: "invalid_embed_candidate" };
+
+    var slotSources = slotSourcesForSkill(normalized.skill, normalized.assets);
+    if (slotSources === null) return { ok: false, code: "private_asset_missing" };
+
+    var result = runtime.SavedSkill.buildRenderModel(
+      normalized.skill,
+      input,
+      {
+        slotSources: slotSources,
+        companyProfile: normalized.companyProfile
+      }
+    );
+    if (!result || result.ok !== true || !result.renderModel || !result.draft) {
+      return {
+        ok: false,
+        code: result && typeof result.code === "string" ? result.code : "render_model_failed"
+      };
+    }
+    var applied = runtime.Renderer.applyRenderModel(doc, result.renderModel);
+    if (applied !== true) return { ok: false, code: "render_apply_failed" };
+
+    var readiness = typeof runtime.Core.printReadiness === "function"
+      ? runtime.Core.printReadiness(result.draft)
+      : { ready: false, missing: ["runtime"] };
+    return {
+      ok: true,
+      code: "rendered",
+      requestId: normalized.requestId,
+      quoteNo: result.draft.meta.quoteNo,
+      issueDate: result.draft.meta.issueDate,
+      printReady: Boolean(readiness && readiness.ready === true),
+      missing: readiness && Array.isArray(readiness.missing) ? readiness.missing.slice(0, 8) : []
+    };
+  }
+
+  function publicResponse(result, requestId) {
+    if (!result || result.ok !== true) {
+      return {
+        type: ERROR_TYPE,
+        requestId: requestId || null,
+        ok: false,
+        code: result && typeof result.code === "string" ? result.code : "render_failed"
+      };
+    }
+    return {
+      type: RESPONSE_TYPE,
+      requestId: result.requestId,
+      ok: true,
+      code: result.code,
+      quoteNo: result.quoteNo,
+      issueDate: result.issueDate,
+      printReady: result.printReady,
+      missing: result.missing
+    };
+  }
+
+  function installBrowserBridge(win, doc, runtime) {
+    if (!win || !doc || typeof win.addEventListener !== "function") return false;
+    win.addEventListener("message", function (event) {
+      if (!event || event.source !== win.parent) return;
+      if (event.data && event.data.type === PRINT_TYPE) {
+        if (typeof win.print === "function") win.print();
+        return;
+      }
+      var normalized = normalizeRenderMessage(event.data);
+      if (!normalized) return;
+      var result = renderRequest(normalized, runtime, doc);
+      if (event.source && typeof event.source.postMessage === "function") {
+        event.source.postMessage(publicResponse(result, normalized.requestId), event.origin);
+      }
+      var status = typeof doc.getElementById === "function" ? doc.getElementById("embedStatus") : null;
+      if (status) {
+        status.textContent = result.ok
+          ? (result.printReady ? "견적서가 준비되었습니다." : "필수 내용을 확인해 주세요.")
+          : "견적서를 만들지 못했습니다.";
+        status.dataset.state = result.ok ? "ready" : "error";
+      }
+    });
+    return true;
+  }
+
+  return {
+    REQUEST_TYPE: REQUEST_TYPE,
+    RESPONSE_TYPE: RESPONSE_TYPE,
+    ERROR_TYPE: ERROR_TYPE,
+    PRINT_TYPE: PRINT_TYPE,
+    MAX_MESSAGE_JSON_CHARS: MAX_MESSAGE_JSON_CHARS,
+    normalizeAssetEntry: normalizeAssetEntry,
+    normalizeCompanyProfile: normalizeCompanyProfile,
+    normalizeAssets: normalizeAssets,
+    slotSourcesForSkill: slotSourcesForSkill,
+    normalizeRenderMessage: normalizeRenderMessage,
+    buildStructuredInput: buildStructuredInput,
+    renderRequest: renderRequest,
+    publicResponse: publicResponse,
+    installBrowserBridge: installBrowserBridge
+  };
+});

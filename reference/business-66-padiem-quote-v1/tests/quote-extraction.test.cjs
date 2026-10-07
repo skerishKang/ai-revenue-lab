@@ -1,4 +1,5 @@
 const assert = require("node:assert");
+const Core = require("../quote-core.js");
 const Extraction = require("../quote-extraction.js");
 
 function ok(raw) {
@@ -168,9 +169,9 @@ const candidate = Extraction.buildDraftCandidate(currentDraft, {
   source: { kind: "image", filename: "quote.png" },
   sender: { company: "새 공급사" },
   recipient: { company: "새 고객" },
-  quote: { quoteNo: "NEW-2" },
+  quote: { quoteNo: "NEW-2", projectName: "스마트팜 환경제어설비" },
   items: [
-    { name: "A", qty: "2", unitPrice: "1,500,000" },
+    { name: "A", spec: "규격-A", unit: "식", qty: "2", unitPrice: "1,500,000", note: "설치 포함" },
     { name: "B" }
   ],
   tax: { mode: "INCLUSIVE" },
@@ -181,13 +182,14 @@ const candidate = Extraction.buildDraftCandidate(currentDraft, {
 assert.equal(candidate.ok, true, JSON.stringify(candidate));
 assert.equal(candidate.value.draft.meta.source, "extraction:image");
 assert.equal(candidate.value.draft.meta.quoteNo, "NEW-2");
+assert.equal(candidate.value.draft.meta.projectName, "스마트팜 환경제어설비");
 assert.equal(candidate.value.draft.meta.issueDate, "2026-09-01", "missing date preserves editable draft value");
 assert.equal(candidate.value.draft.sender.company, "새 공급사");
 assert.equal(candidate.value.draft.sender.rep, "기존 대표", "missing sender field is not fabricated");
 assert.equal(candidate.value.draft.sender.presetId, "custom");
 assert.equal(candidate.value.draft.recipient.company, "새 고객");
 assert.deepEqual(candidate.value.draft.items, [
-  { id: "extracted-item-1", name: "A", qty: 2, unitPrice: 1500000 },
+  { id: "extracted-item-1", name: "A", qty: 2, unitPrice: 1500000, spec: "규격-A", unit: "식", note: "설치 포함" },
   { id: "extracted-item-2", name: "B", qty: 0, unitPrice: 0 }
 ], "extracted item order preserved; missing numeric fields become editable zero placeholders");
 assert.equal(candidate.value.draft.tax.mode, "INCLUSIVE");
@@ -196,6 +198,41 @@ assert.ok(!("totals" in candidate.value.draft), "untrusted source totals never e
 assert.deepEqual(candidate.value.review.source, { kind: "image", filename: "quote.png" });
 assert.equal(candidate.value.review.evidence[0].confidence, 0.98);
 assert.deepEqual(candidate.value.review.warnings, []);
+
+const groupedCandidate = Extraction.buildDraftCandidate(currentDraft, {
+  source: { kind: "native_document", filename: "detail.xlsx" },
+  recipient: { company: "상세 고객" },
+  items: [{ name: "부속실 음향", qty: 7, unitPrice: 1 }],
+  detailGroups: [{
+    summaryIndex: 1,
+    title: "부속실 상세",
+    items: [
+      { name: "장비", section: "1) 장비", qty: 1, unitPrice: 3644000 },
+      { name: "인건비", section: "5) 인건비", qty: 1, unitPrice: 1100000 }
+    ]
+  }]
+});
+assert.equal(groupedCandidate.ok, true, JSON.stringify(groupedCandidate));
+assert.equal(groupedCandidate.value.draft.detailGroups[0].summaryItemId, "extracted-item-1",
+  "extraction summaryIndex is converted to canonical summary item id");
+assert.equal(groupedCandidate.value.draft.detailGroups[0].items[0].section, "1) 장비",
+  "extraction preserves detail section heading");
+const groupedNormalized = Core.normalizeDraft(groupedCandidate.value.draft);
+assert.ok(groupedNormalized, "extracted detail-group candidate is a valid QuoteDraft");
+assert.equal(Core.computeDraftTotals(groupedNormalized).effectiveItems[0].unitPrice, 4744000,
+  "extracted detail lines, not source summary unit price, own rollup authority");
+assert.equal(Core.computeDraftTotals(groupedNormalized).amounts[0], 33208000,
+  "extracted summary quantity multiplies derived detail subtotal");
+
+const forbiddenDetailAmount = Extraction.normalizeExtraction({
+  source: { kind: "text" },
+  items: [{ name: "요약", qty: 1, unitPrice: 1 }],
+  detailGroups: [{
+    summaryIndex: 1,
+    items: [{ name: "상세", qty: 1, unitPrice: 1000, amount: 1000 }]
+  }]
+});
+assert.equal(forbiddenDetailAmount.ok, false, "detail amount from extraction fails closed");
 
 const noItemsCandidate = Extraction.buildDraftCandidate(currentDraft, {
   source: { kind: "text" },
@@ -221,3 +258,5 @@ console.log("MALFORMED_OUTPUT_FAILS_SAFE=YES");
 console.log("MISSING_FIELDS_NOT_FABRICATED=YES");
 console.log("ITEM_ORDER_PRESERVED=YES");
 console.log("SOURCE_TOTALS_NOT_TRUSTED=YES");
+console.log("DETAIL_GROUP_EXTRACTION=PASS");
+console.log("DETAIL_AMOUNT_INPUT_TRUSTED=0");

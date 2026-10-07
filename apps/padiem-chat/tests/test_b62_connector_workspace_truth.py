@@ -50,6 +50,20 @@ DRIVE_NOT_CONNECTED = {
     "expires_present": False,
     "ambiguous": False,
 }
+CALENDAR_NOT_CONNECTED = {
+    "connector_id": "google-calendar",
+    "state": "not_connected",
+    "usable": False,
+    "expires_present": False,
+    "ambiguous": False,
+}
+CALENDAR_CONNECTED = {
+    "connector_id": "google-calendar",
+    "state": "connected",
+    "usable": True,
+    "expires_present": True,
+    "ambiguous": False,
+}
 
 
 class _IdentityBinding:
@@ -73,16 +87,29 @@ class _IdentityBinding:
 class _OAuthBinding:
     """Fake Google OAuth binding honouring the B-0 private contract."""
 
-    def __init__(self, connectors: list[dict[str, Any]] | None = None, error: dict | None = None) -> None:
+    def __init__(
+        self,
+        connectors: list[dict[str, Any]] | None = None,
+        error: dict | None = None,
+        calendar_connector: dict[str, Any] | None = None,
+    ) -> None:
         self.connectors = connectors if connectors is not None else [GMAIL_CONNECTED, DRIVE_NOT_CONNECTED]
         self.error = error
+        self.calendar_connector = calendar_connector or CALENDAR_NOT_CONNECTED
         self.seen_payloads: list[dict[str, Any]] = []
+        self.calendar_seen_payloads: list[dict[str, Any]] = []
 
     async def workspace_connector_state(self, payload: dict[str, Any]) -> dict[str, Any]:
         self.seen_payloads.append(dict(payload))
         if self.error is not None:
             return {"ok": False, "error": self.error}
         return {"ok": True, "connectors": self.connectors}
+
+    async def workspace_calendar_connector_state(self, payload: dict[str, Any]) -> dict[str, Any]:
+        self.calendar_seen_payloads.append(dict(payload))
+        if self.error is not None:
+            return {"ok": False, "error": self.error}
+        return {"ok": True, "connectors": [self.calendar_connector]}
 
 
 def _identity(*, present: bool = True, workspace_ref: str | None = WORKSPACE_REF):
@@ -91,8 +118,10 @@ def _identity(*, present: bool = True, workspace_ref: str | None = WORKSPACE_REF
     return CloudflareControlPlaneIdentityAuthority(_IdentityBinding(present=present, workspace_ref=workspace_ref))
 
 
-def _oauth(connectors=None, error=None):
-    return CloudflareGoogleOAuthWorkspaceTruth(_OAuthBinding(connectors, error))
+def _oauth(connectors=None, error=None, calendar_connector=None):
+    return CloudflareGoogleOAuthWorkspaceTruth(
+        _OAuthBinding(connectors, error, calendar_connector)
+    )
 
 
 FORBIDDEN_KEYS = (
@@ -129,7 +158,7 @@ def _assert_no_leak(payload: Any) -> None:
 
 
 # --------------------------------------------------------------------------
-# 1-2. canonical session -> canonical workspace -> Gmail / Drive truth
+# 1-3. canonical session -> canonical workspace -> Gmail / Drive / Calendar truth
 # --------------------------------------------------------------------------
 
 
@@ -159,6 +188,52 @@ async def test_drive_workspace_truth_is_composed():
     assert row["state"] == "not_connected"
     assert row["usable"] is False
     _assert_no_leak(result)
+
+
+async def test_calendar_workspace_truth_is_composed_from_dedicated_rpc():
+    result = await compose_workspace_connector_truth(
+        identity_authority=_identity(),
+        google_oauth_authority=_oauth(
+            [GMAIL_CONNECTED],
+            calendar_connector=CALENDAR_CONNECTED,
+        ),
+        session_id=SESSION_ID,
+    )
+    calendar = next(
+        row for row in result["connectors"] if row["connector_id"] == "google-calendar"
+    )
+    assert calendar == CALENDAR_CONNECTED
+    _assert_no_leak(result)
+
+
+async def test_default_google_rpc_cannot_smuggle_calendar_truth():
+    binding = _OAuthBinding([CALENDAR_CONNECTED])
+    with pytest.raises(IdentityBridgeError):
+        await CloudflareGoogleOAuthWorkspaceTruth(binding).workspace_connector_state(
+            workspace_ref=WORKSPACE_REF
+        )
+
+
+async def test_calendar_rpc_requires_exactly_one_calendar_row():
+    class _WrongCalendarBinding(_OAuthBinding):
+        async def workspace_calendar_connector_state(self, payload):
+            self.calendar_seen_payloads.append(dict(payload))
+            return {"ok": True, "connectors": [GMAIL_CONNECTED]}
+
+    with pytest.raises(IdentityBridgeError):
+        await CloudflareGoogleOAuthWorkspaceTruth(
+            _WrongCalendarBinding()
+        ).workspace_calendar_connector_state(workspace_ref=WORKSPACE_REF)
+
+    class _DuplicateCalendarBinding(_OAuthBinding):
+        async def workspace_calendar_connector_state(self, payload):
+            self.calendar_seen_payloads.append(dict(payload))
+            return {"ok": True, "connectors": [CALENDAR_CONNECTED, CALENDAR_CONNECTED]}
+
+    with pytest.raises(IdentityBridgeError):
+        await CloudflareGoogleOAuthWorkspaceTruth(
+            _DuplicateCalendarBinding()
+        ).workspace_calendar_connector_state(workspace_ref=WORKSPACE_REF)
 
 
 # --------------------------------------------------------------------------
@@ -584,6 +659,7 @@ async def test_workspace_ref_is_only_used_for_the_private_read():
     )
     binding = oauth._binding
     assert binding.seen_payloads == [{"workspace_ref": WORKSPACE_REF}]
+    assert binding.calendar_seen_payloads == [{"workspace_ref": WORKSPACE_REF}]
 
 
 # --------------------------------------------------------------------------
@@ -591,8 +667,12 @@ async def test_workspace_ref_is_only_used_for_the_private_read():
 # --------------------------------------------------------------------------
 
 
-def test_reviewed_connector_scope_is_gmail_and_drive_only():
-    assert REVIEWED_WORKSPACE_TRUTH_CONNECTORS == {"gmail", "google-drive"}
+def test_reviewed_connector_scope_is_google_readonly_only():
+    assert REVIEWED_WORKSPACE_TRUTH_CONNECTORS == {
+        "gmail",
+        "google-drive",
+        "google-calendar",
+    }
 
 
 async def test_unreviewed_connector_is_rejected():

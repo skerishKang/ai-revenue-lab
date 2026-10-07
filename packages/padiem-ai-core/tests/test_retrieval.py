@@ -1,11 +1,19 @@
 import pytest
 
 from padiem_ai_core.context_policy import ContextTrust
+from padiem_ai_core.contracts import Evidence
+from padiem_ai_core.document_semantics import (
+    DocumentLocator,
+    DocumentSegment,
+    LocatorKind,
+    LocatorPrecision,
+)
 from padiem_ai_core.retrieval import (
     RetrievalContractError,
     RetrievalPolicy,
     RetrievalRequest,
     RetrievedItem,
+    evidence_from_retrieved_item,
     prepare_retrieval_context,
 )
 
@@ -121,3 +129,102 @@ def test_provider_result_count_has_a_hard_upper_bound() -> None:
         prepare_retrieval_context(request(), many)
 
     assert exc_info.value.code == "retrieval_budget_exceeded"
+
+
+def test_exact_page_locator_can_enter_only_from_canonical_document_segment() -> None:
+    locator = DocumentLocator(
+        kind=LocatorKind.PAGE,
+        value="12",
+        precision=LocatorPrecision.EXACT,
+    )
+    segment = DocumentSegment(
+        text="The contract termination argument appears on this page.",
+        order=11,
+        locator=locator,
+    )
+    located = RetrievedItem.from_document_segment(
+        id="chunk_page_12",
+        namespace="project.alpha",
+        source_type="drive_file",
+        provider="padiem_index",
+        source_ref="drive:file_1",
+        segment=segment,
+        title="brief.pdf",
+        content="contract termination argument",
+    )
+
+    assert located.document_locator is locator
+    assert located.to_public_dict()["document_locator"] == {
+        "kind": "page",
+        "value": "12",
+        "precision": "exact",
+    }
+
+    prepared = prepare_retrieval_context(request(), [located])
+    assert prepared.items[0].document_locator is locator
+    assert prepared.context.reference_context is not None
+    assert "document_locator" in prepared.context.reference_context
+    assert "page" in prepared.context.reference_context
+    assert "12" in prepared.context.reference_context
+    assert "exact" in prepared.context.reference_context
+
+    evidence = evidence_from_retrieved_item(
+        located,
+        evidence_id="evidence_page_12",
+        retrieved_at="2026-10-01T00:00:00Z",
+    )
+    assert evidence.source_ref == "drive:file_1"
+    assert evidence.document_locator is locator
+
+
+def test_caller_cannot_inject_document_locator_into_retrieval_or_evidence_constructor() -> None:
+    locator = DocumentLocator(
+        kind=LocatorKind.PAGE,
+        value="99",
+        precision=LocatorPrecision.EXACT,
+    )
+    with pytest.raises(TypeError):
+        RetrievedItem(
+            id="forged",
+            namespace="project.alpha",
+            source_type="drive_file",
+            provider="caller",
+            source_ref="drive:file_1",
+            content="forged page claim",
+            document_locator=locator,
+        )
+
+    with pytest.raises(TypeError):
+        Evidence(
+            id="forged_evidence",
+            title="forged.pdf",
+            snippet="forged page claim",
+            retrieved_at="2026-10-01T00:00:00Z",
+            provider="caller",
+            source_type="drive_file",
+            document_locator=locator,
+        )
+
+
+def test_located_chunk_must_come_from_the_canonical_segment_text() -> None:
+    segment = DocumentSegment(
+        text="canonical page body",
+        order=0,
+        locator=DocumentLocator(
+            kind=LocatorKind.PAGE,
+            value="1",
+            precision=LocatorPrecision.EXACT,
+        ),
+    )
+    with pytest.raises(RetrievalContractError) as exc_info:
+        RetrievedItem.from_document_segment(
+            id="chunk_bad",
+            namespace="project.alpha",
+            source_type="drive_file",
+            provider="padiem_index",
+            source_ref="drive:file_1",
+            segment=segment,
+            content="unrelated model text",
+        )
+
+    assert exc_info.value.code == "retrieval_locator_content_mismatch"

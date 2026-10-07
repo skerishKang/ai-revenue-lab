@@ -122,32 +122,13 @@ def _request_headers(
 ) -> dict[str, str]:
     """Build the fixed Provider auth boundary without credential widening.
 
-    Kilo's historical free lanes keep the shared keyless Provider spec. The
-    owner-selected Space Bunny lane reuses the existing Kilo credential when
-    it is present, while preserving the documented anonymous free-model path
-    when it is absent. Callers cannot supply or override either mode.
+    Kilo's historical free lanes keep the shared keyless Provider spec. No
+    model-scoped auth special-case exists: the retired Space Bunny lane
+    supports no runtime execution and no runtime auth handling (owner final
+    retirement decision, 2026-10-07). Callers cannot supply or override any
+    credential mode.
     """
     headers = {"Content-Type": "application/json"}
-
-    if spec.provider_id == "kilo":
-        from app.pilot.kilo_provider import (
-            KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
-            KILO_SPACE_BUNNY_MODEL_ID,
-        )
-
-        if model_id == KILO_SPACE_BUNNY_MODEL_ID:
-            scoped_spec = PlatformProviderSpec(
-                provider_id=spec.provider_id,
-                credential_source=CredentialSource.PLATFORM_SECRET,
-                credential_binding_name=KILO_SPACE_BUNNY_CREDENTIAL_BINDING,
-                base_origin=spec.base_origin,
-                allowed_hosts=spec.allowed_hosts,
-                enabled=spec.enabled,
-            )
-            secret = resolve_secret(scoped_spec)
-            if secret:
-                headers["Authorization"] = f"Bearer {secret}"
-            return headers
 
     if spec.credential_source == CredentialSource.NONE:
         return headers
@@ -201,7 +182,7 @@ async def call_platform_chat_completions(
     platform_provider_id: str,
     messages: list[dict[str, str]],
     temperature: float | None = 0.2,
-    max_tokens: int | None = 300,
+    max_tokens: int | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> dict[str, Any]:
     """Completed-JSON call to a fixed platform Provider.
@@ -230,6 +211,8 @@ async def call_platform_chat_completions(
     }
     if temperature is not None:
         body["temperature"] = float(temperature)
+    # Do not invent a generation budget here. Product/runtime policy owns any
+    # explicit limit; None intentionally delegates to the provider/model default.
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
 
@@ -322,7 +305,7 @@ async def stream_platform_chat_completions(
     platform_provider_id: str,
     messages: list[dict[str, str]],
     temperature: float | None = 0.2,
-    max_tokens: int | None = 300,
+    max_tokens: int | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> Any:
     """Streaming call to a fixed platform Provider (OpenAI-compatible SSE).
@@ -363,6 +346,8 @@ async def stream_platform_chat_completions(
     }
     if temperature is not None:
         body["temperature"] = float(temperature)
+    # Do not invent a generation budget here. Product/runtime policy owns any
+    # explicit limit; None intentionally delegates to the provider/model default.
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
 

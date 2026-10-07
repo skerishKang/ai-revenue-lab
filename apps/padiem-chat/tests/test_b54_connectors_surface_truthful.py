@@ -1,10 +1,10 @@
 """B54/B62 Web Claw connector-status surface truthfulness (#3222).
 
 The Web Claw Connectors dialog consumes the existing read-only
-`GET /api/connectors/status` projection from #2830.  The browser is presentation
-only: platform READ availability and this workspace's connection state remain
-separate axes, unknown rows are ignored, and no OAuth/provider/send authority is
-introduced here.
+`GET /api/connectors/status` projection from #2830. Platform READ availability
+and this workspace's connection state remain separate axes. The only connection
+mutation exposed here is the reviewed Google Calendar READ OAuth handoff; the
+browser never receives provider tokens, workspace authority, or send/write scope.
 """
 
 from __future__ import annotations
@@ -51,6 +51,9 @@ LOCALE_KEYS = (
     "connectors-workspace-sign-in",
     "connectors-workspace-ambiguous",
     "connectors-workspace-unavailable",
+    "connectors-connect-calendar",
+    "connectors-connecting-calendar",
+    "connectors-connect-error",
     "connectors-grid-aria",
     "retry",
     "coming-soon",
@@ -158,6 +161,9 @@ def test_live_cards_are_exactly_the_reviewed_canonical_connector_ids() -> None:
         assert 'data-locale-key="coming-soon"' in card["inner"]
 
     assert "google-calendar" in cards
+    assert 'data-google-connector-connect="google-calendar"' in cards["google-calendar"]["inner"]
+    for slug in ("google-drive", "gmail", "telegram", "slack"):
+        assert "data-google-connector-connect" not in cards[slug]["inner"]
     assert "discord" in cards and "kakao-business" in cards
 
 
@@ -198,33 +204,44 @@ def test_live_status_locale_keys_are_complete_in_ko_and_en() -> None:
         missing = [key for key in LOCALE_KEYS if not table[language].get(key)]
         assert missing == [], f"{language} missing {missing}"
 
-    # The old static claim that this surface cannot verify workspace state is gone.
-    assert "연결 상태를 확인하거나 새 연결을 설정하지 않습니다" not in table["ko"]["connectors-note"]
-    assert "does not currently verify or configure" not in table["en"]["connectors-note"]
+    assert "Google Calendar" in table["ko"]["connectors-note"]
+    assert "Google Calendar" in table["en"]["connectors-note"]
+    assert "쓰기" in table["ko"]["connectors-note"]
+    assert "write" in table["en"]["connectors-note"].lower()
 
 
-def test_existing_read_only_projection_is_the_only_connector_request() -> None:
+def test_calendar_read_oauth_is_the_only_connector_connection_action() -> None:
     block = _connector_block()
     assert block.count('fetch("/api/connectors/status"') == 1
-    assert 'headers: { "Accept": "application/json" }' in block
-    assert 'cache: "no-store"' in block
+    assert 'GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket"' in block
+    assert 'fetch(GOOGLE_CALENDAR_TICKET_ENDPOINT' in block
+    assert 'connector_id: GOOGLE_CALENDAR_CONNECTOR, begin_oauth: true' in block
+    assert 'GOOGLE_CALENDAR_CONNECTOR = "google-calendar"' in block
+    assert 'GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT = "/api/connectors/google/calendar/activate-read"' in block
+    assert 'fetch(GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT' in block
+    assert 'body: JSON.stringify({})' in block
+    assert block.count('method: "POST"') == 2
+    assert "oauth.padiem.net" not in block
+    assert "connect_ticket" not in block
+    assert 'url.hostname !== "accounts.google.com"' in block
+    assert 'url.pathname !== "/o/oauth2/v2/auth"' in block
+    assert 'window.location.assign(redirect)' in block
+    assert "googleCalendarReadActivationAfterConnectReturn = true" in block
+    assert 'calendarButton?.dataset.calendarAction === "activate-read"' in block
+    assert "await activateGoogleCalendarRead()" in block
 
-    # No connect ticket, OAuth handoff, provider call, mutation, or invented URL.
-    # Match executable URL syntax rather than prose comments such as
-    # "connector/OAuth authority".
     lowered = block.lower()
     for forbidden in (
-        "connect-ticket",
-        "authorization_url",
         "access_token",
         "refresh_token",
-        'method: "post"',
         'method: "put"',
         'method: "patch"',
         'method: "delete"',
+        "calendar.events.insert",
+        "calendar.events.update",
+        "calendar.events.delete",
     ):
         assert forbidden not in lowered, forbidden
-    assert not re.search(r'''fetch\(\s*["']/+(?:api/)?oauth(?:/|["'])''', lowered)
 
 
 def test_response_guards_preserve_server_owned_truth_boundaries() -> None:

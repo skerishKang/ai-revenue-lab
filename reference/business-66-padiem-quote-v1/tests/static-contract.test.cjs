@@ -1,9 +1,11 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const assert = require("node:assert");
+const vm = require("node:vm");
 
 const read = (name) => fs.readFileSync(path.join(__dirname, "..", name), "utf8");
 const html = read("index.html");
+const embed = read("embed.html");
 const css = read("styles.css");
 const app = read("app.js");
 const core = read("quote-core.js");
@@ -25,6 +27,9 @@ const registrationSession = read("quote-registration-session.js");
 const skillUi = read("quote-skill-ui.js");
 const intake = read("file-intake.js");
 const easy = read("easy-mode.js");
+const worker = read("_worker.js");
+const account = read("padiem-account.js");
+const accountCss = read("padiem-account.css");
 
 const check = (condition, label) => assert.ok(condition, `contract failed: ${label}`);
 
@@ -53,6 +58,14 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'src="file-intake.js"',
   'src="app.js"',
   'src="easy-mode.js"',
+  'src="padiem-account.js"',
+  'href="padiem-account.css"',
+  'id="padiemAccountButton"',
+  'id="padiemAccountPanel"',
+  'id="padiemSavedSkillSelect"',
+  'id="padiemQuoteRequest"',
+  'id="padiemQuoteGenerate"',
+  'id="padiemAuthDialog"',
   'id="senderPreset"',
   'id="senderCompany"',
   'id="senderAddress"',
@@ -72,6 +85,8 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'id="pvSenderHeading"',
   'id="pvRecipientHeading"',
   'id="pvMark"',
+  'id="pvLogo"',
+  'id="pvStamp"',
   'id="easyModeButton"',
   'id="directModeButton"',
   'id="easyView"',
@@ -98,12 +113,105 @@ const check = (condition, label) => assert.ok(condition, `contract failed: ${lab
   'id="templateCloneFile"'
 ].forEach((marker) => check(html.includes(marker), `B66_STATIC_CONTRACT missing in index.html: ${marker}`));
 
-/* NEUTRAL_PUBLIC_UI_CONTRACT — 외부 화면/상태에 내부 제품 브랜드를 노출하지 않음 */
-check(!/(Padiem|파디엠|padiem)/.test(html + app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + candidate + cloner + skill + skillStore + skillCandidate + skillRegistration + skillUi + intake + easy),
-  "NEUTRAL_PUBLIC_UI_CONTRACT: no Padiem branding in rendered/runtime source");
-check(!html.includes("B66 DEMO"), "NEUTRAL_PUBLIC_UI_CONTRACT: no internal demo label");
-check(html.includes("BETA · 입력 내용은 이 브라우저에만 저장"),
-  "NEUTRAL_PUBLIC_UI_CONTRACT: truthful browser-local persistence label");
+/* PADIEM_ACCOUNT_BRIDGE_CONTRACT — 공개 견적 UI는 유지하되 계정 authority만 Padiem을 재사용 */
+check(!/(Padiem|파디엠|padiem)/.test(app + core + extraction + history + template + templateStore + templateRenderer + templateSelection + templateUi + candidate + cloner + skill + skillStore + skillCandidate + skillRegistration + skillUi + intake + easy),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: quote domain logic stays product-neutral");
+check(!html.includes("B66 DEMO"), "PADIEM_ACCOUNT_BRIDGE_CONTRACT: no internal demo label");
+check(account.includes("function declaredAssetRefs(") &&
+      account.includes("function readPrivateAsset(") &&
+      account.includes('API + "/b66/assets/" + encodeURIComponent(assetId)') &&
+      account.includes("MAX_PRIVATE_ASSET_BYTES = 256 * 1024"),
+  "PRIVATE_ACCOUNT_ASSET_LOAD=PASS: standalone account bridge resolves only bounded private quote assets");
+check(app.includes("serverSlotSources") &&
+      app.includes("slotSources: serverSkillActive ? skillUiState.serverSlotSources : {}"),
+  "PRIVATE_ACCOUNT_ASSET_RENDER=PASS: only active server-assigned Skill gets transient private assets");
+check(templateStore.includes('return "private_asset_requires_account_skill"'),
+  "PRIVATE_BROWSER_TEMPLATE_ASSET_AUTHORITY=0: browser-local template store stays fail-closed");
+
+check(worker.includes("B66_ASSET_ROW") &&
+      worker.includes('const assetPrefix = "/api/padiem/b66/assets/"') &&
+      worker.includes('return "/api/b66/assets/" + id;'),
+  "PRIVATE_QUOTE_ASSET_BRIDGE=PASS: Quick Quote proxies only bounded asset ids");
+
+check(html.includes('id="settingsPanel"') &&
+      html.includes("작성 중 견적은 이 브라우저에 저장"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: truthful local draft persistence lives in personal settings");
+check(html.includes(">로그인</button>") && html.includes('id="googleSigninButton"') &&
+      html.includes("Google로 로그인") &&
+      !html.includes("Padiem") && !html.includes("파디엠") &&
+      !account.includes("Padiem 계정") && !account.includes("Padiem 로그인"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: standalone surface keeps neutral login branding");
+check(html.includes('id="padiemLoginForm" hidden') &&
+      html.includes('id="padiemAuthDivider" hidden') &&
+      html.includes('id="padiemLoginIdentifier"') &&
+      html.includes('id="padiemLoginPassword"') &&
+      html.includes('id="padiemLoginSubmit"') &&
+      account.includes('methods.password === true') &&
+      account.includes('form.hidden = !state.methods.password') &&
+      account.includes('divider.hidden = !state.methods.password') &&
+      account.includes('submit.disabled = !state.methods.password') &&
+      account.includes('if (!passwordLoginAvailable())') &&
+      account.includes('api("/auth/password/login"') &&
+      account.includes('loginForm.addEventListener("submit", passwordSignIn)'),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: standalone password login is status-gated and reuses the shared route");
+check(html.includes('id="padiemLoginForm" hidden') &&
+      html.includes('id="padiemAuthDivider" hidden') &&
+      accountCss.includes(".padiem-auth-form[hidden]") &&
+      accountCss.includes(".padiem-auth-divider[hidden]") &&
+      /\[hidden\][^{]*\{[^}]*display:\s*none/.test(accountCss),
+  "PADIEM_PASSWORD_METHOD_GATE: password form ships hidden and the class display rule cannot re-expose it");
+check(account.includes('result = await api("/auth/status")') &&
+      account.includes("applyAuthMethods(result.response.ok ? result.data : null)") &&
+      account.includes("applyAuthMethods(null)"),
+  "PADIEM_PASSWORD_METHOD_GATE: bounded boolean method flag is sourced only from canonical /auth/status");
+check(!/state\.user\s*\?\s*\{\s*password/.test(account) &&
+      !/password\s*:\s*state\.(user|authenticated)/.test(account) &&
+      !/methods\.password\s*\)?\s*===?\s*state\./.test(account),
+  "PADIEM_PASSWORD_METHOD_GATE: no non-canonical derivation of the password method flag");
+check(!account.includes("submit.disabled = false") &&
+      account.includes("submit.disabled = !passwordLoginAvailable()"),
+  "PADIEM_PASSWORD_METHOD_GATE: submit button is never re-enabled outside the canonical gate");
+check(account.includes("/api/padiem/auth/google/start") &&
+      worker.includes('"/api/padiem/auth/google/start"') &&
+      worker.includes('"/api/padiem/auth/google/callback"') &&
+      worker.includes('upstream.headers.get("location")') &&
+      worker.includes('headers.set("X-B66-Origin", url.origin)'),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: google oauth is proxied through the B66 worker");
+check(!html.includes('class="badge"') && !html.includes("Padiem 로그인") &&
+      !account.includes("Padiem 로그인") && account.includes('button.textContent = "로그인"'),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: topbar carries no stale badge or vendor-branded login label");
+check(worker.includes('PADIEM_CHAT_ORIGIN = "https://chat.padiem.net"'),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: canonical Padiem upstream fixed");
+[
+  "/api/padiem/auth/status",
+  "/api/padiem/auth/password/login",
+  "/api/padiem/auth/password/register",
+  "/api/padiem/auth/logout",
+  "/api/padiem/b66/quote/interpret",
+  "/api/padiem/b66/saved-skills"
+].forEach((route) => check(worker.includes(route),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: bounded route " + route));
+check(worker.includes("padiem_route_not_allowed") && worker.includes("SAVED_SKILL_ROW"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: arbitrary upstream path denied");
+check(worker.includes('request.headers.get("cookie")') &&
+      !worker.includes('request.headers.get("authorization")'),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: opaque session forwarded without browser Authorization authority");
+check(worker.includes("PADIEM_CHAT_SERVICE") && worker.includes("else {\n      upstream = await fetch(target, init);"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: optional same-account service binding with HTTPS fallback");
+check(!account.includes("localStorage") && !account.includes("sessionStorage"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: server-assigned skill is memory-only cache");
+check(account.includes("{ companyProfile: profile }") &&
+      account.includes("{ companyProfile: state.companyProfile }") &&
+      account.includes("bridge.setServerSkill(skill, slotSources)") &&
+      account.includes("B66QuoteRuntimeBridge"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: server skill + authorized private assets feed canonical browser QuoteCore/renderer path");
+check(app.includes("function setServerSkill(skill, slotSources)") &&
+      app.includes("function clearServerSkill()") &&
+      app.includes("serverSlotSources"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: app exposes non-persistent server skill + transient private asset seam");
+check(accountCss.includes(".padiem-account-panel") && accountCss.includes("@media print"),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: account UI has bounded screen/print styling");
+new vm.Script(account, { filename: "padiem-account.js" });
 
 /* EXTRACTION_BOUNDARY_CONTRACT — 모델/프로바이더 비종속 추출 seam */
 check(extraction.includes("function normalizeExtraction("),
@@ -122,10 +230,15 @@ check(!/(kilo\/|sensenova\/|b-ai\/|gpt-5\.6-luna|space-bunny)/i.test(extraction 
   "EXTRACTION_BOUNDARY_CONTRACT: no provider/model ids in B66 seam");
 check(!extraction.includes("grand =") && !extraction.includes("vat =") && !extraction.includes("supply ="),
   "EXTRACTION_BOUNDARY_CONTRACT: extraction layer owns no totals");
+check(extraction.includes("normalizeDetailGroups(") &&
+      extraction.includes('"summaryItemId": "extracted-item-"') === false &&
+      extraction.includes('"extracted-item-" + group.summaryIndex'),
+  "DETAIL_GROUP_EXTRACTION_CONTRACT: summaryIndex is mapped to canonical summary ids without model-owned ids");
 
 /* EASY_MODE_CONTRACT — 기존 직접입력 화면 앞에 deterministic chat UX */
-check(html.includes("쉽게 만들기") && html.includes("직접 입력"),
-  "EASY_MODE_CONTRACT: top-level easy/direct switch");
+check(html.includes('id="easyModeButton"') && html.includes('id="directModeButton"') &&
+      html.includes(">채팅</button>") && html.includes("직접 입력"),
+  "EASY_MODE_CONTRACT: top-level chat/direct switch");
 check(html.includes("질문받으며 새로 만들기") && html.includes("내용을 한번에 말하기"),
   "EASY_MODE_CONTRACT: easy entry choices");
 check(easy.includes('App.createFreshDraft("guided")') &&
@@ -133,15 +246,17 @@ check(easy.includes('App.createFreshDraft("guided")') &&
   "EASY_MODE_CONTRACT: deterministic guided draft uses shared fresh-draft allocator");
 check(easy.includes("function processGuidedInput("),
   "EASY_MODE_CONTRACT: guided state machine");
-check(easy.includes("Core.computeTotals(guided.draft.items, guided.draft.tax.mode)"),
-  "EASY_MODE_CONTRACT: summary uses QuoteCore totals");
+check(easy.includes("Core.computeDraftTotals(guided.draft)") &&
+      easy.includes("if (current.calculationPolicy) fresh.calculationPolicy = clone(current.calculationPolicy);"),
+  "EASY_MODE_CONTRACT: guided summary uses draft-level QuoteCore detail/family authority");
 check(css.includes(".easy-chip {") && css.includes("min-height: 44px;"),
   "EASY_MODE_CONTRACT: quick chips meet 44px touch target");
 check(!easy.includes("fetch(") && !easy.includes("XMLHttpRequest") &&
       !intake.includes("fetch(") && !intake.includes("XMLHttpRequest"),
   "EASY_MODE_CONTRACT: no network/model call in Easy/file intake mode");
-check(easy.includes("아직 자동 해석 모델은 연결 전"),
-  "EASY_MODE_CONTRACT: free-chat truthfulness");
+check(!easy.includes("아직 자동 해석 모델은 연결 전") &&
+      easy.includes("CGI 기본 견적서 양식과 회사 정보가 자동으로 적용됩니다"),
+  "EASY_MODE_CONTRACT: free-form runs the live assigned-skill runtime (placeholder removed)");
 check(easy.includes("자동 분석 서버는 아직 활성화 전") &&
       easy.includes("이 파일은 외부로 전송되지 않습니다."),
   "EASY_MODE_CONTRACT: selected file is truthful about non-live analysis");
@@ -149,12 +264,51 @@ check(app.includes("window.B66QuoteAppBridge"),
   "EASY_MODE_CONTRACT: reuses existing QuoteDraft renderer");
 check(html.includes('id="directView"'),
   "EASY_MODE_CONTRACT: direct mode preserved");
-check(easy.includes("function startGuided(referenceText)") &&
-      easy.includes("startGuided(freeChatPending)") &&
+check(easy.includes("function startGuided(referenceText, options)") &&
       easy.includes("참고용으로 그대로 남겨둘게요"),
-  "FREE_TEXT_CONTINUITY_CONTRACT: one-shot text remains visible when guided flow continues");
+  "FREE_TEXT_CONTINUITY_CONTRACT: guided reference text stays visible and non-authoritative");
+check(easy.includes("inputHandler = (text) => startHomeInterpretation(text);") &&
+      easy.includes("보내면 CGI 기본 견적서로 바로 만들어 드립니다") &&
+      !easy.includes("문장을 알아듣는 기능은 준비 중이라"),
+  "EASY_MODE_CONTRACT: home composer submit runs the real free-form runtime");
 check(easy.includes("QuoteDraft에 자동 반영하지 않습니다."),
   "FREE_TEXT_CONTINUITY_CONTRACT: preserved reference is explicitly non-authoritative");
+check(easy.includes('const PRODUCT_HISTORY_KEY = "b66View"') &&
+      easy.includes('"pushState"') &&
+      easy.includes('"replaceState"') &&
+      easy.includes('window.history.back') &&
+      easy.includes('window.addEventListener("popstate"') &&
+      easy.includes('restoreProductState(view)'),
+  "B66_BROWSER_HISTORY_CONTRACT: product states are browser-history aware");
+check(easy.includes('recordProductState(easy ? lastEasyView : "direct")') &&
+      easy.includes('recordProductState("guided")') &&
+      easy.includes('recordProductState("file")') &&
+      easy.includes('recordProductState("free-form")') &&
+      easy.includes('recordProductState("recent")'),
+  "B66_BROWSER_HISTORY_CONTRACT: direct/guided/file/free-form/recent share the Quote Home boundary");
+
+/* B66_MVP_RUNTIME_CONTRACT (#3478) — Guided/Free-form 이 하나의 runtime authority 로 수렴한다 */
+check(worker.includes('"/api/padiem/b66/company-profile"') &&
+      worker.includes('"/api/b66/company-profile"') &&
+      worker.includes('intake_disabled'),
+  "B66_MVP_RUNTIME_CONTRACT: company-profile GET bridge exists and intake relay stays fail-closed");
+check(easy.includes("window.B66QuoteRuntimeBridge") &&
+      easy.includes("runPrimaryInterpretation") &&
+      easy.includes("buildFromFacts") &&
+      easy.includes('{ label: "견적서 만들기", action: finishGuidedWithRuntime }') &&
+      easy.includes('label: "견적서 확인하기"') &&
+      easy.includes('setWorkspaceMode("direct")'),
+  "B66_MVP_RUNTIME_CONTRACT: primary input converges on one runtime; direct entry is an explicit review action");
+check(account.includes("state.companyProfileLoaded") &&
+      account.includes('"/b66/company-profile"') &&
+      account.includes("{ companyProfile: profile }") &&
+      account.includes("{ companyProfile: state.companyProfile }") &&
+      account.includes("B66QuoteRuntimeBridge"),
+  "B66_MVP_RUNTIME_CONTRACT: standalone runtime builds drafts with the authenticated CompanyProfile");
+check(account.includes("runtimeReadiness()") &&
+      account.includes("notReadyCode(readiness)") &&
+      account.includes("interpretRequest"),
+  "B66_MVP_RUNTIME_CONTRACT: primary actions are gated on auth/skill/profile readiness without demo fallback");
 
 /* FILE_INTAKE_CONTRACT — local chooser/preflight live, upload/model still off */
 check(html.includes('id="easyFileInput"') && html.includes('type="file"'),
@@ -201,8 +355,10 @@ check(app.includes("function createFreshDraft(") && app.includes("function copyH
   "RECENT_HISTORY_CONTRACT: direct and Easy flows share allocator");
 check(easy.includes('App.createFreshDraft("guided")') && easy.includes("App.copyHistoryAsNew(entry)"),
   "RECENT_HISTORY_CONTRACT: guided/copy paths use shared allocation");
-check(history.includes("Core.computeTotals(entry.draft.items, entry.draft.tax.mode)"),
-  "RECENT_HISTORY_CONTRACT: displayed totals are derived");
+check(history.includes("Core.computeDraftTotals(entry.draft)") &&
+      history.includes("if (source.calculationPolicy) fresh.calculationPolicy = clone(source.calculationPolicy);") &&
+      history.includes("if (Array.isArray(source.detailGroups) && source.detailGroups.length)"),
+  "RECENT_HISTORY_CONTRACT: displayed/copied totals preserve QuoteCore family/detail authority");
 check(easy.includes("window.confirm(\"이 최근 견적을 이 브라우저에서 삭제할까요?\")"),
   "RECENT_HISTORY_CONTRACT: delete confirmation");
 check(easy.includes("window.confirm(\"현재 작성 중인 견적을 바꾸고 이 견적을 불러올까요?\")"),
@@ -237,7 +393,10 @@ check(easy.includes("150만원") && easy.includes("복합 단위는 추측하지
   "tax:",
   "memo:"
 ].forEach((key) => check(core.includes(key), `QUOTEDRAFT_SCHEMA_CONTRACT missing in quote-core.js: ${key}`));
-check(app.includes("Core.createDefaultDraft"), "QUOTEDRAFT_SCHEMA_CONTRACT: app default draft from core");
+check(app.includes("Core.createProductionDraft") && app.includes("Core.createDefaultDraft"),
+  "QUOTEDRAFT_SCHEMA_CONTRACT: app keeps the demo fixture only for legacy-state detection while startup/reset use the Production authority");
+check(!app.includes("draft = Core.createDefaultDraft();") && app.includes("draft = Core.createProductionDraft();"),
+  "QUOTEDRAFT_SCHEMA_CONTRACT: app never assigns the demo fixture as a live draft");
 
 /* NEW_QUOTE_SAFETY_CONTRACT — public beta 새 견적은 다음 고객용 빈 상태 */
 check(core.includes("function createBlankQuoteDraft("),
@@ -250,6 +409,8 @@ check(core.includes('recipient: { company: "", person: "", address: "", email: "
   "NEW_QUOTE_SAFETY_CONTRACT: next customer fields are blank");
 check(app.includes("보내는 사람 정보는 유지하고 새 고객 견적을 시작합니다."),
   "NEW_QUOTE_SAFETY_CONTRACT: user-visible sender preservation");
+check(core.includes("if (current.calculationPolicy) next.calculationPolicy = current.calculationPolicy;"),
+  "NEW_QUOTE_SAFETY_CONTRACT: reviewed family calculation policy survives new quote normalization");
 
 /* UNKNOWN_VAT_REVIEW_CONTRACT — 미확정 세금은 확정 합계처럼 보이지 않음 */
 check(html.includes('id="taxReviewNote"') && html.includes('id="taxRow"'),
@@ -259,9 +420,9 @@ check(css.includes(".tax-row.tax-review-required"),
 check(easy.includes('"품목 합계(세금 확인 전): "') &&
       easy.includes("최종 합계는 부가세 방식을 선택한 뒤 확정됩니다."),
   "UNKNOWN_VAT_REVIEW_CONTRACT: unknown VAT summary is explicitly provisional");
-check(easy.includes("requireTaxReview: guided.taxUnknown") &&
+check(easy.includes("requireTaxReview: taxUnknown") &&
       easy.includes("App.focusTaxReview()"),
-  "UNKNOWN_VAT_REVIEW_CONTRACT: direct mode review is required and focused");
+  "UNKNOWN_VAT_REVIEW_CONTRACT: review stays required and is focused when the user opens the result");
 check(app.includes("taxReviewRequired = false;") &&
       app.includes('$("taxMode").addEventListener("change"'),
   "UNKNOWN_VAT_REVIEW_CONTRACT: choosing VAT clears review state");
@@ -286,7 +447,7 @@ check(app.includes("localStorage.setItem(Core.DRAFT_STORAGE_KEY, JSON.stringify(
 check(app.includes("saveDraft();"), "DRAFT_SAVE_CONTRACT: render triggers save");
 
 /* DRAFT_RESTORE_CONTRACT — 복원 + 손상 fallback 계약 */
-check(app.includes("Core.normalizeDraft(JSON.parse(localStorage.getItem(Core.DRAFT_STORAGE_KEY)"),
+check(/Core\.normalizeDraft\(\s*JSON\.parse\(localStorage\.getItem\(Core\.DRAFT_STORAGE_KEY\)/.test(app),
   "DRAFT_RESTORE_CONTRACT: restore via normalizeDraft");
 check(app.includes("catch (err)"), "DRAFT_RESTORE_CONTRACT: corrupted storage fallback");
 check(core.includes("if (raw.schemaVersion !== SCHEMA_VERSION) return null;"),
@@ -316,6 +477,12 @@ check(html.includes('id="pvSenderAddress"') && html.includes('id="pvRecipientAdd
   "ADDRESS_FIELDS_CONTRACT: preview elements");
 
 /* PRINT_LAYOUT_CONTRACT — 빈 페이지 없는 A4 인쇄 계약 */
+check(css.includes("width: var(--quote-page-width, 210mm)") &&
+      css.includes("min-height: var(--quote-page-height, 297mm)") &&
+      css.includes("padding: var(--quote-page-margin, 10mm)"),
+  "SCREEN_PDF_WYSIWYG_GEOMETRY: screen paper uses template page dimensions and margin");
+check(css.includes(".quote-paper { width: auto; min-height: 0; margin: 0; padding: 0; }"),
+  "SCREEN_PDF_WYSIWYG_GEOMETRY: print transfers the same margin to @page");
 check(css.includes("@page { size: A4"), "PRINT_LAYOUT_CONTRACT: A4 page rule");
 check(css.includes("@media print"), "PRINT_LAYOUT_CONTRACT: print media");
 check(css.includes(".topbar, .workspace-modebar, .easy-view, .modebar, .future-note, .panel, .preview-toolbar, .toast { display: none !important; }"),
@@ -323,6 +490,8 @@ check(css.includes(".topbar, .workspace-modebar, .easy-view, .modebar, .future-n
 check(css.includes(".direct-view[hidden] { display: block !important; }"),
   "PRINT_LAYOUT_CONTRACT: hidden Direct view is restored for printing from Easy Mode");
 check(css.includes(".grid { display: block; }"), "PRINT_LAYOUT_CONTRACT: paper in normal flow");
+check(css.includes('.quote-paper[data-layout-variant="formal-grid-v1"] .demo-mark { display: block; }'),
+  "PRINT_LAYOUT_CONTRACT: formal printed mark remains visible without exposing the built-in demo mark");
 check(!css.includes("visibility: hidden"), "PRINT_LAYOUT_CONTRACT: visibility hack removed");
 check(core.includes("function printReadiness(") &&
       app.includes("function printReadinessFailure("),
@@ -350,7 +519,8 @@ check(template.includes('subtotalLabel: "품목 합계(세금 확인 전)"') &&
       template.includes('supplyLabel: "공급가액"') &&
       template.includes('grandLabel: "합계"'),
   "PROVISIONAL_VAT_DISPLAY_CONTRACT: provisional and confirmed labels live in the template profile");
-check(templateRenderer.includes("provisional ? content.totals.provisional.subtotalLabel : content.totals.supplyLabel") &&
+check(templateRenderer.includes("provisional ? content.totals.provisional.subtotalLabel : supplyLabel") &&
+      templateRenderer.includes("var supplyLabel = content.totals.supplyLabel") &&
       templateRenderer.includes("provisional ? content.totals.provisional.vatText : Core.formatMoney(totals.vat)") &&
       templateRenderer.includes("provisional ? content.totals.provisional.grandText : Core.formatMoney(totals.grand)"),
   "PROVISIONAL_VAT_DISPLAY_CONTRACT: unresolved tax-dependent totals are never presented as confirmed");
@@ -371,6 +541,11 @@ check(css.includes(".mode { min-height: 44px;") &&
   "BETA_POLISH_CONTRACT: visible action controls use 44px minimum");
 check(html.includes("저장 데이터 초기화") && app.includes("function resetBrowserLocalData("),
   "BETA_POLISH_CONTRACT: first-party browser reset exists");
+check(html.includes('id="settingsButton"') && html.includes('id="settingsClose"') &&
+      html.includes('class="settings-reset" id="resetLocalData"') &&
+      app.includes('$("settingsButton")') && app.includes('$("settingsClose")') &&
+      css.includes(".settings-panel {"),
+  "BETA_POLISH_CONTRACT: personal settings owns the destructive reset");
 check(app.includes("Core.DRAFT_STORAGE_KEY") &&
       app.includes("Core.SENDER_STORAGE_KEY") &&
       app.includes("History.HISTORY_STORAGE_KEY") &&
@@ -380,6 +555,14 @@ check(app.includes("Core.DRAFT_STORAGE_KEY") &&
 check(app.includes("localStorage.removeItem(key)") &&
       !app.includes("localStorage.clear("),
   "BETA_POLISH_CONTRACT: reset never clears unrelated origin storage");
+check(account.includes("settingsButton.hidden = true") &&
+      account.includes("settingsButton.hidden = false"),
+  "BETA_POLISH_CONTRACT: personal settings appears only after sign-in");
+check(easy.includes('addEventListener("b66:auth-changed"') &&
+      account.includes('b66:auth-changed", { detail: { authenticated: true } }') &&
+      easy.includes("로그인하면 견적을 이어서 진행할 수 있습니다.") &&
+      easy.includes("이전에 작성하던 견적이 있습니다"),
+  "EASY_MODE_CONTRACT: resume hint follows sign-in state");
 check(easy.includes('"b66:local-data-reset"') &&
       easy.includes('fileInput.value = ""'),
   "BETA_POLISH_CONTRACT: reset clears ephemeral selected-file state");
@@ -399,8 +582,15 @@ check(!easy.includes("fetch(") && !intake.includes("fetch("),
   "UPLOAD_AI_LIVE=NO: no browser upload request");
 
 /* CHAT_AI_LIVE=NO */
-check(app.includes("자연어 채팅 → QuoteDraft 자동 입력은 다음 단계에서 연결합니다."),
-  "CHAT_AI_LIVE=NO: chat is explicitly future");
+check(!easy.includes("문장을 알아듣는 기능은 준비 중이라") &&
+      !easy.includes("아직 자동 해석 모델은 연결 전") &&
+      easy.includes("CGI 기본 견적서로 작성하고 있습니다") &&
+      easy.includes("window.B66QuoteRuntimeBridge"),
+  "CHAT_AI_LIVE=NO: easy mode performs no local interpretation; it routes to the authenticated runtime");
+check(easy.includes('addEventListener("b66:open-easy-chat"') &&
+      app.includes('new CustomEvent("b66:open-easy-chat")') &&
+      html.includes('data-mode="chat"'),
+  "EASY_MODE_CONTRACT: direct-modebar chat button opens the easy workspace");
 
 /* EMAIL_SEND_LIVE=NO */
 check(app.includes("이메일 전송은 다음 단계에서"), "EMAIL_SEND_LIVE=NO: email is future");
@@ -420,9 +610,13 @@ check(template.includes("function normalizeTemplateContent(") &&
   "QUOTE_TEMPLATE_PROFILE_CONTRACT: normalization, fingerprint and forbidden-field guard exist");
 check(template.includes("function sha256Hex(") && !template.includes('require("node:crypto")'),
   "TEMPLATE_FINGERPRINT_DETERMINISTIC: dependency-free deterministic fingerprint");
-check(!template.includes("computeTotals(") && !template.includes("grand =") &&
-      !template.includes("vat =") && !template.includes("supply ="),
+check(!template.includes("computeTotals(") && !template.includes("computeDraftTotals(") &&
+      !template.includes("grand =") && !template.includes("vat =") && !template.includes("supply ="),
   "QUOTE_TEMPLATE_PROFILE_CONTRACT: the template layer owns no totals");
+check(template.includes('"detailPages"') && template.includes("content.detailPages") &&
+      html.includes('id="pvDetailPages"') && embed.includes('id="pvDetailPages"') &&
+      css.includes(".quote-detail-page") && css.includes("break-before: page"),
+  "PRINTABLE_DETAIL_PAGES=PASS: approved template can project bounded printable detail pages");
 
 /* QUOTE_TEMPLATE_STORE_BOUNDED — bounded 브라우저 로컬 저장소 */
 check(templateStore.includes('TEMPLATE_STORAGE_KEY = "quoteBetaTemplate.v1"'),
@@ -449,8 +643,10 @@ check(templateStore.includes("findForbiddenKeys") && !templateStore.includes("da
 check(templateRenderer.includes("function buildRenderModel(") &&
       templateRenderer.includes("function applyRenderModel("),
   "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: pure render model separated from the DOM adapter");
-check(templateRenderer.includes("Core.computeTotals(") && templateRenderer.includes("Core.computeValidUntil("),
-  "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: renderer derives amounts and validity from QuoteCore");
+check(templateRenderer.includes("Core.computeDraftTotals(normalizedDraft)") &&
+      templateRenderer.includes("Core.formatKoreanMoneyWords(totals.grand)") &&
+      templateRenderer.includes("Core.computeValidUntil("),
+  "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: renderer derives detail rollups, totals, written grand and validity from QuoteCore");
 check(!templateRenderer.includes("grand =") && !templateRenderer.includes("vat =") &&
       !templateRenderer.includes("supply ="),
   "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: the renderer performs no tax arithmetic");
@@ -458,17 +654,21 @@ check(!/fetch\(|XMLHttpRequest/.test(templateRenderer) &&
       !/Math\.random|Date\.now|new Date\(/.test(templateRenderer),
   "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: no model call and no time/random input");
 check(templateRenderer.includes("CALCULATION_AUTHORITY = \"quote-core\"") &&
-      templateRenderer.includes('setText("pvGrand", totals.grandText)'),
-  "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: adapter publishes QuoteCore-derived totals");
+      templateRenderer.includes('setText("pvGrand", totals.grandText)') &&
+      templateRenderer.includes('setHtml("pvDetailPages"') &&
+      templateRenderer.includes("group.subtotal"),
+  "QUOTECORE_REMAINS_CALCULATION_AUTHORITY=YES: adapter publishes QuoteCore-derived totals/detail pages");
 check(!/(kilo\/|space-bunny|nemotron|openai|anthropic)/i.test(template + templateStore + templateRenderer),
   "MODEL_DEPENDENCY=0: template modules name no provider or model");
 check(!/FileReader|FormData|indexedDB/i.test(template + templateStore + templateRenderer),
   "RAW_SOURCE_FILE_PERSISTENCE=0: template modules never touch raw file bytes");
 check(app.includes("TemplateRenderer.buildRenderModel(") &&
-      app.includes("previewTemplateProfile() || renderTemplateAuthority()") &&
+      app.includes("const previewProfile = previewTemplateProfile();") &&
+      app.includes("const authority = previewProfile || renderTemplateAuthority();") &&
       app.includes("function renderTemplateAuthority()") &&
-      app.includes("return activeSkillProfile() || activeTemplateProfile();"),
-  "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: direct mode renders through the approved template/skill renderer");
+      app.includes("return explicitTemplateProfile() || activeSkillProfile() || activeTemplateProfile();") &&
+      app.includes("slotSources: serverSkillActive ? skillUiState.serverSlotSources : {}"),
+  "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: direct mode renders through approved template/skill authority with transient private assets");
 check(!app.includes("vatSummaryLabel"),
   "QUOTE_TEMPLATE_PROFILE_CONTRACT: presentation labels are no longer hard-coded in app.js");
 check(app.includes("TemplateStore && TemplateStore.TEMPLATE_STORAGE_KEY"),
@@ -485,8 +685,9 @@ check(template.includes('raw.status !== "approved"') &&
 check(template.includes("trusted_builtin") && template.includes("explicit_approval") &&
       template.includes("unapproved"),
   "APPROVAL_REQUIRED_FOR_USER_PROFILE=YES: approval basis is explicit");
-check(template.includes('SLOT_SUPPORT = "non_live"'),
-  "SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY: slot support is declared non-live");
+check(template.includes('SLOT_SUPPORT = "private_asset_v1"') &&
+      template.includes('SLOT_REF_PATTERN = /^b66asset_'),
+  "SLOT_BEHAVIOR=PRIVATE_ASSET_REF_V1: only bounded private asset ids persist");
 check(templateStore.includes("function approveTemplate(") &&
       templateStore.includes('fail("template_not_approved"'),
   "UNAPPROVED_TEMPLATE_ACTIVATION=0: activation requires explicit approval");
@@ -494,8 +695,8 @@ check(templateStore.includes("approval = null;") &&
       templateStore.includes("var keepDefault = !contentChanged && current.isDefault"),
   "CONTENT_CHANGE_INVALIDATES_APPROVAL=YES: content update drops approval and default status");
 check(templateStore.includes("function rejectionForContent(") &&
-      templateStore.includes("slot_rendering_not_supported"),
-  "SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY: declared non-live slots are refused, not ignored");
+      templateStore.includes('return "private_asset_requires_account_skill"'),
+  "SLOT_BEHAVIOR=PRIVATE_ASSET_REF_V1: browser-local templates cannot own account assets");
 check(templateRenderer.includes("template_not_approved") &&
       templateRenderer.includes("fallbackReason"),
   "UNAPPROVED_TEMPLATE_ACTIVATION=0: the renderer falls back with an explicit reason");
@@ -615,11 +816,13 @@ check(app.includes("TEMPLATE_ACTIONS") && app.includes("window.B66QuoteTemplateB
       app.includes("TemplateSelection.resolveActiveTemplate(") &&
       app.includes("templateUiState"),
   "TEMPLATE_SELECTOR_LIVE=YES: the app wires selection, preview and management actions");
-check(app.includes("previewTemplateProfile() || renderTemplateAuthority()") &&
-      app.includes("return activeSkillProfile() || activeTemplateProfile();") &&
+check(app.includes("const previewProfile = previewTemplateProfile();") &&
+      app.includes("const authority = previewProfile || renderTemplateAuthority();") &&
+      app.includes("return explicitTemplateProfile() || activeSkillProfile() || activeTemplateProfile();") &&
       app.includes("return profile && Template.isApprovedProfile(profile) ? profile : null;") &&
-      app.includes("candidate && candidate.approved"),
-  "UNAPPROVED_TEMPLATE_SELECTION=0: preview/skill render paths are restricted to approved profiles");
+      app.includes("candidate && candidate.approved") &&
+      app.includes("CgiTemplateV2.approvedProfile("),
+  "UNAPPROVED_TEMPLATE_SELECTION=0: explicit CGI/preview/skill render paths remain restricted to approved profiles");
 
 /* ── #3184 양식 본뜨기(후보 검토 + 명시적 승인) ── */
 check(html.includes('src="quote-template-candidate.js"') && html.includes('src="quote-template-cloner.js"'),
@@ -749,13 +952,16 @@ check(app.includes("B66QuoteSkillBridge") && app.includes("applySkillToForm") &&
       app.includes("skillUiState"),
   "MY_QUOTATION_UI: app hosts the skill bridge with form application and builtin fallback");
 check(skillUi.includes("analyzeImageFile") &&
+      skillUi.includes("analyzeFile") &&
+      skillUi.includes('"native_document"') &&
       skillUi.includes("factsFromExtraction") &&
       skillUi.includes("registrationModelOutput"),
-  "MY_QUOTATION_LIVE_IMAGE_INTAKE=YES: validated extraction feeds review/registration");
+  "MY_QUOTATION_LIVE_FILE_INTAKE=YES: image/native validated extraction feeds review/registration");
 
 console.log("VALID_UNTIL_CONTRACT=PASS");
 console.log("ADDRESS_FIELDS_CONTRACT=PASS");
 console.log("PRINT_LAYOUT_CONTRACT=PASS");
+console.log("FORMAL_PRINT_MARK=PASS");
 console.log("PRINT_READINESS_CONTRACT=PASS");
 console.log("PROVISIONAL_VAT_DISPLAY_CONTRACT=PASS");
 console.log("TEMP_EXCLUSIVE_NOT_PRESENTED_AS_CONFIRMED=YES");
@@ -784,7 +990,7 @@ console.log("TEMPLATE_RULES_APPLIED=PASS");
 console.log("TEMPLATE_ALIGNMENT_APPLIED=PASS");
 console.log("TEMPLATE_TOTALS_WIDTH_APPLIED=PASS");
 console.log("TEMPLATE_PAGE_RULE_APPLIED=PASS");
-console.log("SLOT_BEHAVIOR=PLACEHOLDER_CONTRACT_ONLY");
+console.log("SLOT_BEHAVIOR=PRIVATE_ASSET_REF_V1");
 console.log("QUOTECORE_TOTALS_UNCHANGED_ACROSS_TEMPLATES=YES");
 console.log("TEMPLATE_SELECTOR_LIVE=YES");
 console.log("TEMPLATE_MANAGEMENT_CRUD=PASS");
@@ -821,6 +1027,218 @@ console.log("MOBILE_TEMPLATE_UI=PASS");
 console.log("PRINT_UI_LEAK=0");
 console.log("BROWSER_PROVIDER_MODEL_NETWORK_CALLS=0");
 console.log("SAVED_QUOTE_IMAGE_INTAKE_SOURCE_WIRED=YES");
-console.log("NATIVE_DOCUMENT_AUTO_ANALYSIS_SOURCE_WIRED=NO");
+console.log("NATIVE_DOCUMENT_AUTO_ANALYSIS_SOURCE_WIRED=YES");
+console.log("NATIVE_DOCUMENT_PARSER_AUTHORITY_LIVE=SEPARATE_GATE");
 console.log("CHAT_AI_LIVE=NO");
 console.log("EMAIL_SEND_LIVE=NO");
+
+/* PADIEM_PASSWORD_METHOD_GATE_BEHAVIOR — 실제 padiem-account.js 를 vm 에 돌려
+   canonical /api/padiem/auth/status 의 methods.password === true 일 때만 비밀번호 로그인이 열린다 */
+const PASSWORD_LOGIN_PATH = "/api/padiem/auth/password/login";
+const AUTH_STATUS_PATH = "/api/padiem/auth/status";
+const GOOGLE_START_PATH = "/api/padiem/auth/google/start";
+const COMPANY_PROFILE_PATH = "/api/padiem/b66/company-profile";
+/* 스텁 DOM 이 제공해야 하는 엘리먼트 id 목록이다. 값이 아니라 id 이므로
+   한 줄에 하나씩 두어 비밀값(name/value)로 읽히지 않게 한다. */
+const GATE_HOST_IDS = [
+  "padiemAccountButton",
+  "padiemAccountPanel",
+  "padiemAccountLabel",
+  "padiemAuthDialog",
+  "padiemAuthClose",
+  "padiemAuthError",
+  "padiemAuthDivider",
+  "googleSigninButton",
+  "padiemLoginForm",
+  "padiemLoginIdentifier",
+  "padiemLoginPassword",
+  "padiemLoginSubmit",
+  "padiemLogout",
+  "padiemSavedSkillSelect",
+  "padiemQuoteRequest",
+  "padiemQuoteGenerate",
+  "padiemQuoteStatus",
+  "settingsButton",
+  "settingsPanel",
+  "directModeButton"
+];
+
+const flushAsync = async () => {
+  for (let index = 0; index < 8; index += 1) {
+    await new Promise((resolve) => setImmediate(resolve));
+  }
+  await new Promise((resolve) => setTimeout(resolve, 0));
+};
+
+const fakeElement = (id) => ({
+  id,
+  value: "",
+  textContent: "",
+  hidden: false,
+  disabled: false,
+  open: false,
+  dataset: {},
+  children: [],
+  listeners: {},
+  addEventListener(type, handler) {
+    if (!this.listeners[type]) this.listeners[type] = [];
+    this.listeners[type].push(handler);
+  },
+  dispatchEvent() { return true; },
+  replaceChildren() { this.children = []; },
+  append(child) { this.children.push(child); },
+  focus() { this.focusCount = (this.focusCount || 0) + 1; },
+  showModal() { this.open = true; },
+  close() { this.open = false; },
+  setAttribute() {},
+  removeAttribute() {},
+  scrollIntoView() {},
+  click() {}
+});
+
+const jsonResponse = (data, status) => ({
+  ok: status === undefined || (status >= 200 && status < 300),
+  status: status === undefined ? 200 : status,
+  headers: { get: () => null },
+  json: async () => data
+});
+
+/* 실제 네트워크/자격증명 없이 canonical status 응답만 주입해 게이트를 관찰한다. */
+const runPasswordMethodGate = async (statusPayload) => {
+  const elements = new Map(GATE_HOST_IDS.map((id) => [id, fakeElement(id)]));
+  const calls = [];
+  const context = vm.createContext({
+    setTimeout,
+    clearTimeout,
+    CustomEvent: class {
+      constructor(type, init) { this.type = type; this.detail = (init || {}).detail; }
+    },
+    btoa: (value) => value,
+    location: {
+      assign(target) { calls.push({ url: String(target), method: "NAVIGATE", body: null }); }
+    },
+    fetch: async (url, options) => {
+      const opts = options || {};
+      const target = String(url);
+      calls.push({ url: target, method: opts.method || "GET", body: opts.body || null });
+      if (target === AUTH_STATUS_PATH) return jsonResponse(statusPayload);
+      if (target === PASSWORD_LOGIN_PATH) {
+        return jsonResponse({ error: { message: "gate_probe_no_network" } }, 503);
+      }
+      if (target === COMPANY_PROFILE_PATH) {
+        return jsonResponse({
+          company_profile: {
+            company: "게이트상사",
+            representative: "김대표",
+            defaultValidityDays: 30,
+            defaultTaxMode: "EXCLUSIVE"
+          }
+        });
+      }
+      return jsonResponse({ error: { message: "gate_probe_unexpected_endpoint" } }, 404);
+    },
+    document: {
+      readyState: "complete",
+      getElementById: (id) => elements.get(id) || null,
+      addEventListener() {},
+      dispatchEvent() { return true; },
+      createElement: (tag) => fakeElement(tag)
+    }
+  });
+  context.window = context;
+
+  new vm.Script(account, { filename: "padiem-account.js" }).runInContext(context);
+  await flushAsync();
+
+  const form = elements.get("padiemLoginForm");
+  const divider = elements.get("padiemAuthDivider");
+  const submit = elements.get("padiemLoginSubmit");
+  const submitHandler = (form.listeners.submit || [])[0];
+  check(typeof submitHandler === "function",
+    "PADIEM_PASSWORD_METHOD_GATE: password form submit is bound");
+
+  elements.get("padiemLoginIdentifier").value = "gate-probe@example.invalid";
+  elements.get("padiemLoginPassword").value = "gate-probe-placeholder";
+  await submitHandler({ preventDefault() {} });
+  await flushAsync();
+
+  /* google 클릭은 setAuthError("") 로 인라인 오류를 지우므로 그 전에 스냅샷한다. */
+  const authErrorAfterSubmit = elements.get("padiemAuthError").textContent;
+
+  const googleHandler = (elements.get("googleSigninButton").listeners.click || [])[0];
+  check(typeof googleHandler === "function",
+    "PADIEM_PASSWORD_METHOD_GATE: google sign-in binding still present");
+  await googleHandler();
+  await flushAsync();
+
+  return {
+    formHidden: form.hidden,
+    dividerHidden: divider.hidden,
+    submitDisabled: submit.disabled,
+    authError: authErrorAfterSubmit,
+    endpoints: calls.map((call) => call.url),
+    loginCalls: calls.filter((call) => call.url === PASSWORD_LOGIN_PATH)
+  };
+};
+
+const assertGateClosed = (label, observed, googleNavExpected) => {
+  check(observed.formHidden === true, label + ": password form stays hidden");
+  check(observed.dividerHidden === true, label + ": divider stays hidden");
+  check(observed.submitDisabled === true, label + ": submit stays disabled");
+  check(observed.loginCalls.length === 0, label + ": no password login request is sent");
+  check(!observed.endpoints.includes(PASSWORD_LOGIN_PATH), label + ": password endpoint never called");
+  check(typeof observed.authError === "string" && observed.authError.length > 0,
+    label + ": closed gate explains itself instead of failing silently");
+  check(observed.endpoints.includes(GOOGLE_START_PATH) === googleNavExpected,
+    label + ": google navigation still follows methods.google only");
+};
+
+(async () => {
+  const explicitOff = await runPasswordMethodGate({
+    authenticated: false, methods: { google: true, password: false }
+  });
+  assertGateClosed("PADIEM_PASSWORD_METHOD_GATE[methods.password=false]", explicitOff, true);
+
+  const missingMethods = await runPasswordMethodGate({ authenticated: false });
+  assertGateClosed("PADIEM_PASSWORD_METHOD_GATE[methods absent]", missingMethods, false);
+
+  const truthyNonBoolean = await runPasswordMethodGate({
+    authenticated: false, methods: { google: true, password: "true" }
+  });
+  assertGateClosed("PADIEM_PASSWORD_METHOD_GATE[methods.password='true']", truthyNonBoolean, true);
+
+  const signedInWithoutPassword = await runPasswordMethodGate({
+    authenticated: true, session_state: "signed_in", user: { email: "gate-probe@example.invalid" },
+    skills: [], methods: { google: true, password: false }
+  });
+  assertGateClosed("PADIEM_PASSWORD_METHOD_GATE[signed_in, methods.password=false]",
+    signedInWithoutPassword, true);
+
+  const enabled = await runPasswordMethodGate({
+    authenticated: false, methods: { google: true, password: true }
+  });
+  check(enabled.formHidden === false, "PADIEM_PASSWORD_METHOD_GATE[enabled]: form is shown");
+  check(enabled.dividerHidden === false, "PADIEM_PASSWORD_METHOD_GATE[enabled]: divider is shown");
+  check(enabled.submitDisabled === false, "PADIEM_PASSWORD_METHOD_GATE[enabled]: submit is enabled");
+  check(enabled.loginCalls.length === 1, "PADIEM_PASSWORD_METHOD_GATE[enabled]: exactly one login request");
+  check(enabled.loginCalls[0].method === "POST",
+    "PADIEM_PASSWORD_METHOD_GATE[enabled]: password login uses POST");
+  check(JSON.parse(enabled.loginCalls[0].body).identifier === "gate-probe@example.invalid",
+    "PADIEM_PASSWORD_METHOD_GATE[enabled]: identifier is forwarded to the shared route");
+  check(enabled.endpoints.includes(GOOGLE_START_PATH),
+    "PADIEM_PASSWORD_METHOD_GATE[enabled]: google navigation behavior is unchanged");
+  check(enabled.endpoints.every((endpoint) => (
+    endpoint === AUTH_STATUS_PATH || endpoint === PASSWORD_LOGIN_PATH ||
+    endpoint === GOOGLE_START_PATH || endpoint === COMPANY_PROFILE_PATH
+  )), "PADIEM_PASSWORD_METHOD_GATE[enabled]: only bounded account endpoints are called");
+
+  console.log("PADIEM_PASSWORD_METHOD_GATE=PASS");
+  console.log("PADIEM_PASSWORD_METHOD_GATE_CLOSED_CASES=4");
+  console.log("PADIEM_PASSWORD_METHOD_GATE_OPEN_CASE=PASS");
+  console.log("PADIEM_PASSWORD_GATE_LIVE_NETWORK_CALLS=0");
+  console.log("PADIEM_PASSWORD_GATE_REAL_CREDENTIALS_USED=0");
+})().catch((error) => {
+  console.error("PADIEM_PASSWORD_METHOD_GATE=FAIL");
+  console.error(error && error.message ? error.message : error);
+  process.exitCode = 1;
+});

@@ -14,10 +14,7 @@ from app.dispatch_quota import (
 )
 from app.model_policy import DEFAULT_B14_MODEL_ID, DEFAULT_CHAT_PROFILE, LOW_B14_MODEL_ID
 from app.usage_gate import UsageDecision
-from padiem_control_plane.product_tier_routes import (
-    ProductTierLabel,
-    active_route_for,
-)
+from padiem_control_plane.product_tier_routes import PLUS_HOLD_MODEL_ID
 
 
 MESSAGES = [{"role": "user", "content": "안녕하세요"}]
@@ -55,7 +52,7 @@ def live_settings() -> Settings:
     )
 
 
-def test_live_completed_default_plus_reaches_service_binding_with_exact_default_route():
+def test_live_completed_plus_hold_refunds_before_service_binding_dispatch():
     async def scenario():
         store = ReservationStore()
         await reserve(store)
@@ -65,7 +62,6 @@ def test_live_completed_default_plus_reaches_service_binding_with_exact_default_
             async def post_json(self, url, payload):
                 nonlocal calls
                 calls += 1
-                assert payload["model"] == LOW_B14_MODEL_ID
                 return 503, b'{"error":{"code":"upstream_error"}}'
 
         client = DispatchAwareB14Client(
@@ -74,23 +70,21 @@ def test_live_completed_default_plus_reaches_service_binding_with_exact_default_
             require_service_binding=True,
         )
 
-        with pytest.raises(ChatRuntimeError):
+        with pytest.raises(ChatRuntimeError) as info:
             await client.complete(MESSAGES)
 
+        assert info.value.status_code == 503
+        assert info.value.code == "model_profile_unassigned"
         assert DEFAULT_CHAT_PROFILE == "low"
-        assert (
-            DEFAULT_B14_MODEL_ID
-            == LOW_B14_MODEL_ID
-            == active_route_for(ProductTierLabel.PLUS).model_id
-        )
-        assert calls == 1
-        assert store.refunds == []
+        assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID == PLUS_HOLD_MODEL_ID
+        assert calls == 0
+        assert len(store.refunds) == 3
         assert await _refund_active_reservation() is False
 
     asyncio.run(scenario())
 
 
-def test_live_stream_default_plus_reaches_manual_stream_transport_without_pre_dispatch_refund():
+def test_live_stream_plus_hold_refunds_before_stream_transport_dispatch():
     async def scenario():
         store = ReservationStore()
         await reserve(store)
@@ -99,10 +93,6 @@ def test_live_stream_default_plus_reaches_manual_stream_transport_without_pre_di
         async def handler(request: httpx.Request) -> httpx.Response:
             nonlocal calls
             calls += 1
-            assert request.url.path.endswith("/stream-preview")
-            assert not request.url.path.endswith("/auto-stream-preview")
-            body = __import__("json").loads(request.content)
-            assert body["model"] == LOW_B14_MODEL_ID
             return httpx.Response(500, content=b"upstream failure")
 
         client = DispatchAwareB14Client(
@@ -111,18 +101,20 @@ def test_live_stream_default_plus_reaches_manual_stream_transport_without_pre_di
             require_service_binding=True,
         )
 
-        with pytest.raises(ChatRuntimeError):
+        with pytest.raises(ChatRuntimeError) as info:
             async for _ in client.stream_text_auto(MESSAGES):
                 pass
 
-        assert calls == 1
-        assert store.refunds == []
+        assert info.value.status_code == 503
+        assert info.value.code == "model_profile_unassigned"
+        assert calls == 0
+        assert len(store.refunds) == 3
         assert await _refund_active_reservation() is False
 
     asyncio.run(scenario())
 
 
-def test_non_live_b14_preflight_remains_available_for_exact_default_plus_regression():
+def test_non_live_b14_default_plus_still_fails_before_transport_while_held():
     async def scenario():
         calls = 0
 
@@ -130,7 +122,6 @@ def test_non_live_b14_preflight_remains_available_for_exact_default_plus_regress
             async def post_json(self, url, payload):
                 nonlocal calls
                 calls += 1
-                assert payload["model"] == LOW_B14_MODEL_ID
                 return 503, b'{"error":{"code":"upstream_error"}}'
 
         client = DispatchAwareB14Client(
@@ -138,9 +129,10 @@ def test_non_live_b14_preflight_remains_available_for_exact_default_plus_regress
             service_transport=ServiceTransport(),
             require_service_binding=True,
         )
-        with pytest.raises(ChatRuntimeError):
+        with pytest.raises(ChatRuntimeError) as info:
             await client.complete(MESSAGES)
-        assert calls == 1
+        assert info.value.code == "tier_unavailable"
+        assert calls == 0
 
     asyncio.run(scenario())
 
@@ -160,7 +152,7 @@ def test_mock_chat_remains_available_without_provider_dispatch():
         )
         result = await client.complete(MESSAGES)
         assert result["runtime"] == "mock"
-        assert result["route"]["model"] == LOW_B14_MODEL_ID
+        assert result["route"]["model"] == PLUS_HOLD_MODEL_ID
         assert calls == 0
 
     asyncio.run(scenario())

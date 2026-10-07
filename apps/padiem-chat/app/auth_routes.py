@@ -21,10 +21,12 @@ from .auth import (
     session_cookie_kwargs,
     verify_oauth_state,
 )
+from .auth_abuse import UNAVAILABLE_WINDOW, AuthAbuseWindow
 from .b54_canonical_session import (
     B54ServerAuthenticatedOwner,
     b54_canonical_session_producer,
 )
+from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .config import Settings
 from .control_plane_identity import TrustedProductAuthEvidence, bridge_trusted_product_auth
 from .history import HistoryConflict, HistoryStore, PasswordCredential
@@ -125,14 +127,24 @@ async def auth_status(request: Request) -> JSONResponse:
     return JSONResponse(payload)
 
 
+def _bridge_origin(request: Request) -> str | None:
+    """Read the B66 bridge origin header; tolerate headerless test doubles."""
+
+    headers = getattr(request, "headers", None)
+    if headers is None:
+        return None
+    return headers.get("x-b66-origin")
+
+
 async def google_start(request: Request) -> Response:
     if not google_auth_ready(request):
         return _unavailable()
     settings: Settings = request.app.state.settings
     oauth: GoogleOAuthClient = request.app.state.google_oauth
+    bridge_origin = _bridge_origin(request)
     try:
         state, signed = create_oauth_state(settings)
-        location = oauth.authorization_url(state)
+        location = oauth.authorization_url(state, bridge_origin=bridge_origin)
     except AuthError as exc:
         return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
     response = RedirectResponse(location, status_code=302)
@@ -273,8 +285,9 @@ async def google_callback(request: Request) -> Response:
         )
     oauth: GoogleOAuthClient = request.app.state.google_oauth
     store: HistoryStore = request.app.state.history_store
+    bridge_origin = _bridge_origin(request)
     try:
-        access_token = await oauth.exchange_code(code.strip())
+        access_token = await oauth.exchange_code(code.strip(), bridge_origin=bridge_origin)
         identity = await oauth.fetch_userinfo(access_token)
         profile = await store.upsert_google_user(
             identity["subject"], identity["email"], identity["name"], identity["picture"]
@@ -316,6 +329,8 @@ async def google_callback(request: Request) -> Response:
 _PASSWORD_BODY_LIMIT = 16 * 1024
 _PASSWORD_FAILURE_LIMIT = 5
 _PASSWORD_LOCK_MINUTES = 15
+_PASSWORD_LOCK_MINUTES_ESCALATED = 30
+_PASSWORD_LOCK_MINUTES_MAX = 60
 
 
 def _auth_error(status: int, code: str, message: str) -> JSONResponse:
@@ -329,8 +344,11 @@ async def _json_body(request: Request) -> dict | None:
     content_type = request.headers.get("content-type", "").split(";", 1)[0].strip().lower()
     if content_type != "application/json":
         return None
-    raw = await request.body()
-    if not raw or len(raw) > _PASSWORD_BODY_LIMIT:
+    try:
+        raw = await read_bounded_request_body(request, max_bytes=_PASSWORD_BODY_LIMIT)
+    except RequestBodyTooLarge:
+        return None
+    if not raw:
         return None
     try:
         parsed = json.loads(raw.decode("utf-8"))
@@ -349,6 +367,90 @@ def _parse_locked_until(value: str | None) -> datetime | None:
     if parsed.tzinfo is None or parsed.utcoffset() is None:
         return None
     return parsed.astimezone(timezone.utc)
+
+
+def _is_locked(credential: PasswordCredential, now: datetime) -> bool:
+    locked_until = _parse_locked_until(credential.locked_until)
+    return locked_until is not None and now < locked_until
+
+
+def _has_expired_lock(credential: PasswordCredential, now: datetime) -> bool:
+    """Whether a recorded lock has already lapsed.
+
+    A lapsed lock restarts the failure count instead of letting one new
+    failure ratchet the account straight back into another lock window.
+    """
+    if not credential.locked_until:
+        return False
+    return _parse_locked_until(credential.locked_until) is not None and not _is_locked(credential, now)
+
+
+def _password_lock_minutes(window_failures: int) -> int:
+    """Lock duration for a recorded failure, from the identifier's own window.
+
+    Monotone in the attacker's own spend and hard-capped. Spending the whole
+    dedicated identifier abuse budget therefore *raises* the throttle instead
+    of removing it, and the cap keeps a correct password recoverable on
+    schedule rather than turning exhaustion into a permanent denial.
+    """
+    if window_failures <= _PASSWORD_FAILURE_LIMIT:
+        return _PASSWORD_LOCK_MINUTES
+    if window_failures <= _PASSWORD_FAILURE_LIMIT * 2:
+        return _PASSWORD_LOCK_MINUTES_ESCALATED
+    return _PASSWORD_LOCK_MINUTES_MAX
+
+
+_LOGIN_DECOY_IDENTIFIER = "\x00padiem-login-decoy"
+# The decoy preimage can never equal a normalized identifier: NUL is rejected
+# by both the username grammar and the email grammar, so the decoy HMAC key
+# is provably disjoint from every real identifier bucket. Exactly one decoy
+# bucket exists per day, no matter how many distinct missing identifiers an
+# attacker invents — the missing-identifier durable keyspace stays bounded.
+
+
+async def _decoy_failure_window(request: Request) -> None:
+    """Bounded timing decoy for failure classes without real accounting.
+
+    Missing identifiers and locked accounts have no real counter to advance:
+    a real take would either mint durable rows for arbitrary attacker-chosen
+    strings or mutate a locked account's escalation state (a new remote lock
+    amplification). The fixed-bucket decoy performs the same durable gate
+    shape instead. Its result is always discarded: it is never a lock input,
+    never an authentication input, and never an existence signal.
+    """
+    gate = getattr(request.app.state, "auth_abuse_gate", None)
+    if gate is None:
+        return
+    try:
+        await gate.record_failure_window(
+            identifier=_LOGIN_DECOY_IDENTIFIER,
+            raw_ip=request.headers.get("cf-connecting-ip"),
+        )
+    except Exception:
+        pass
+
+
+async def _identifier_failure_window(
+    request: Request, identifier: str
+) -> AuthAbuseWindow:
+    """Read the identifier's own durable failure window.
+
+    Never raises and never touches the public login projection. An absent,
+    exhausted, or failing dedicated store all return the base window, so a
+    dedicated-store outage degrades the throttle to its base strength instead
+    of switching brute-force protection off.
+    """
+    gate = getattr(request.app.state, "auth_abuse_gate", None)
+    if gate is None:
+        return UNAVAILABLE_WINDOW
+    try:
+        window = await gate.record_failure_window(
+            identifier=identifier,
+            raw_ip=request.headers.get("cf-connecting-ip"),
+        )
+    except Exception:
+        return UNAVAILABLE_WINDOW
+    return window if isinstance(window, AuthAbuseWindow) else UNAVAILABLE_WINDOW
 
 
 def _session_response(settings: Settings, profile) -> JSONResponse:
@@ -443,21 +545,35 @@ async def password_login(request: Request) -> JSONResponse:
     password_ok = verify_password(password, credential.password_hash if credential else None)
     now = datetime.now(timezone.utc)
 
-    if credential is not None:
-        locked_until = _parse_locked_until(credential.locked_until)
-        if locked_until is not None and now < locked_until:
-            return _auth_error(
-                429,
-                "auth_locked",
-                "로그인 시도가 너무 많습니다. 잠시 후 다시 시도해 주세요.",
-            )
+    # #3501/#3508: lock state is server-owned and never disclosed. A
+    # missing identifier, a wrong password, prior failures, an active lock, and
+    # an abuse-throttled attempt all reach the same public 401 projection.
+    locked = credential is not None and _is_locked(credential, now)
 
-    if credential is None or not password_ok:
-        if credential is not None:
-            failures = min(100, credential.failed_attempts + 1)
-            lock_until = None
-            if failures >= _PASSWORD_FAILURE_LIMIT:
-                lock_until = (now + timedelta(minutes=_PASSWORD_LOCK_MINUTES)).isoformat()
+    if credential is None or not password_ok or locked:
+        # #3508: failure accounting is NEVER suppressed. Exhausting the
+        # dedicated per-identifier abuse budget must strengthen the throttle,
+        # not remove it, and a missing or failing dedicated store must leave the
+        # base lock policy in force. The gate is only consulted when a real
+        # failure is about to be recorded against a real credential, so an
+        # unauthenticated caller cannot inflate another subject's window and
+        # cannot create abuse rows for identifiers that do not exist.
+        #
+        # Every other failure class (missing identifier, active lock) runs the
+        # fixed-bucket timing decoy instead, so all public failures share one
+        # durable gate shape. The decoy never feeds a lock decision.
+        if credential is not None and not locked:
+            window = await _identifier_failure_window(request, identifier)
+            # A lapsed lock starts a fresh failure sequence so one stray
+            # failure after expiry does not re-lock the account by itself.
+            if _has_expired_lock(credential, now):
+                failures, lock_until = 1, None
+            else:
+                failures = min(100, credential.failed_attempts + 1)
+                lock_until = None
+                if failures >= _PASSWORD_FAILURE_LIMIT:
+                    lock_minutes = _password_lock_minutes(window.identifier_failures)
+                    lock_until = (now + timedelta(minutes=lock_minutes)).isoformat()
             try:
                 await store.record_password_failure(
                     credential.user.id,
@@ -466,6 +582,8 @@ async def password_login(request: Request) -> JSONResponse:
                 )
             except Exception:
                 pass
+        else:
+            await _decoy_failure_window(request)
         return _auth_error(
             401,
             "invalid_credentials",

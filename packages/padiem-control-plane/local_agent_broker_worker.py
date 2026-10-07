@@ -94,6 +94,9 @@ class LocalAgentBrokerDurableObject(DurableObject):
     async def device_truth(self, payload: dict) -> dict:
         return self._runtime.device_truth(payload)
 
+    async def authenticate_device_session(self, payload: dict) -> dict:
+        return self._runtime.authenticate_device_session(payload)
+
     async def terminal_command_result(self, payload: dict) -> dict:  # #3139 read-only RPC
         return self._runtime.terminal_command_result(payload)
 
@@ -153,6 +156,9 @@ class Default(WorkerEntrypoint):
 
     async def device_truth(self, payload: dict) -> dict:
         return await self._stub().device_truth(payload)
+
+    async def authenticate_device_session(self, payload: dict) -> dict:
+        return await self._stub().authenticate_device_session(payload)
 
     async def terminal_command_result(self, payload: dict) -> dict:
         return await self._stub().terminal_command_result(payload)
@@ -215,6 +221,10 @@ NARROW_DEVICE_TRUTH_PROJECTION = True
 DEVICE_TRUTH_VOCABULARY_HAS_ONLINE = False
 DEVICE_TRUTH_SECOND_ONLINE_AUTHORITY = False
 DEVICE_TRUTH_MUTATION = False
+# #3436 B2c adds the read-only device-session authentication passthrough per
+# entrypoint class, exactly like #3094's device_truth and #3139's terminal
+# result: thin forwarding only. Its contract markers live in the durable
+# runtime module.
 PRODUCTION_DEPLOYMENT = False
 PRODUCTION_ROUTE_CONFIGURED = False
 PRODUCTION_SECRET_BOUND = False

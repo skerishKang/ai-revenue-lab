@@ -53,12 +53,14 @@ def _strict_bool(value: object, *, name: str) -> bool:
 class Settings:
     runtime_mode: str = "mock"
     b14_base_url: str | None = None
+    b66_quote_base_url: str | None = None
     timeout_seconds: float = 20.0
     completed_timeout_seconds: float = 50.0
     live_enabled: bool = False
     web_provider: str = "off"
     firecrawl_api_key: str | None = field(default=None, repr=False)
     daum_rest_api_key: str | None = field(default=None, repr=False)
+    tinyfish_api_key: str | None = field(default=None, repr=False)
     web_timeout_seconds: float = 15.0
     auth_mode: str = "off"
     public_base_url: str | None = None
@@ -84,6 +86,7 @@ class Settings:
         web_provider: object = "off",
         firecrawl_api_key: object = None,
         daum_rest_api_key: object = None,
+        tinyfish_api_key: object = None,
         web_timeout_seconds: object = 15.0,
         auth_mode: object = "off",
         public_base_url: object = None,
@@ -97,6 +100,7 @@ class Settings:
         user_burst_limit: object = 8,
         user_daily_limit: object = 100,
         global_daily_limit: object = 1000,
+        b66_quote_base_url: object = None,
     ) -> "Settings":
         mode = str(runtime_mode or "mock").strip().lower()
         if mode not in {"mock", "b14"}:
@@ -106,6 +110,13 @@ class Settings:
         base = _normalize_base_url(raw_base) if raw_base else None
         if mode == "b14" and base is None:
             raise ConfigError("PADIEM_CHAT_B14_BASE_URL is required in b14 mode")
+
+        raw_b66_quote = "" if b66_quote_base_url is None else str(b66_quote_base_url).strip()
+        b66_quote = (
+            _normalize_base_url(raw_b66_quote, https_only=True, root_only=True)
+            if raw_b66_quote
+            else None
+        )
 
         try:
             timeout = float(timeout_seconds)
@@ -124,8 +135,10 @@ class Settings:
         live = _strict_bool(live_enabled, name="PADIEM_CHAT_LIVE_ENABLED")
 
         web = str(web_provider or "off").strip().lower()
-        if web not in {"off", "mock", "firecrawl", "daum"}:
-            raise ConfigError("PADIEM_CHAT_WEB_PROVIDER must be off, mock, firecrawl, or daum")
+        if web not in {"off", "mock", "firecrawl", "daum", "tinyfish"}:
+            raise ConfigError(
+                "PADIEM_CHAT_WEB_PROVIDER must be off, mock, firecrawl, daum, or tinyfish"
+            )
         raw_firecrawl_key = "" if firecrawl_api_key is None else str(firecrawl_api_key).strip()
         firecrawl_key = raw_firecrawl_key or None
         if web == "firecrawl" and firecrawl_key is None:
@@ -134,6 +147,12 @@ class Settings:
         daum_key = raw_daum_key or None
         if web == "daum" and daum_key is None:
             raise ConfigError("PADIEM_CHAT_DAUM_REST_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=daum")
+        # #3622: TinyFish is server-key-only. Selecting it without a key fails
+        # closed here so there is no keyless fallback and no silent provider swap.
+        raw_tinyfish_key = "" if tinyfish_api_key is None else str(tinyfish_api_key).strip()
+        tinyfish_key = raw_tinyfish_key or None
+        if web == "tinyfish" and tinyfish_key is None:
+            raise ConfigError("TINYFISH_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=tinyfish")
 
         try:
             web_timeout = float(web_timeout_seconds)
@@ -197,12 +216,14 @@ class Settings:
         return cls(
             runtime_mode=mode,
             b14_base_url=base,
+            b66_quote_base_url=b66_quote,
             timeout_seconds=timeout,
             completed_timeout_seconds=completed_timeout,
             live_enabled=live,
             web_provider=web,
             firecrawl_api_key=firecrawl_key,
             daum_rest_api_key=daum_key,
+            tinyfish_api_key=tinyfish_key,
             web_timeout_seconds=web_timeout,
             auth_mode=auth,
             public_base_url=public,
@@ -223,12 +244,14 @@ class Settings:
         return cls.from_values(
             runtime_mode=os.getenv("PADIEM_CHAT_RUNTIME_MODE", "mock"),
             b14_base_url=os.getenv("PADIEM_CHAT_B14_BASE_URL"),
+            b66_quote_base_url=os.getenv("PADIEM_CHAT_B66_QUOTE_BASE_URL"),
             timeout_seconds=os.getenv("PADIEM_CHAT_TIMEOUT_SECONDS", "20"),
             completed_timeout_seconds=os.getenv("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS", "50"),
             live_enabled=os.getenv("PADIEM_CHAT_LIVE_ENABLED", "false"),
             web_provider=os.getenv("PADIEM_CHAT_WEB_PROVIDER", "off"),
             firecrawl_api_key=os.getenv("FIRECRAWL_API_KEY"),
             daum_rest_api_key=os.getenv("PADIEM_CHAT_DAUM_REST_API_KEY"),
+            tinyfish_api_key=os.getenv("TINYFISH_API_KEY"),
             web_timeout_seconds=os.getenv("PADIEM_CHAT_WEB_TIMEOUT_SECONDS", "15"),
             auth_mode=os.getenv("PADIEM_CHAT_AUTH_MODE", "off"),
             public_base_url=os.getenv("PADIEM_CHAT_PUBLIC_BASE_URL"),

@@ -48,6 +48,7 @@ def reservation_dict(**overrides):
         "reservation_ref": "res-e7-1",
         "admitted": True,
         "expires_at": iso(NOW + timedelta(minutes=5)),
+        "reserved_at": iso(NOW),
     }
     values.update(overrides)
     return values
@@ -102,7 +103,8 @@ def request(**overrides):
         "subject_id": "subject:owner",
         "capability": "orchestration.run",
         "trace_id": "tr-e7",
-        "request_fingerprint": "fp-e7-1",
+        "request_fingerprint": "a" * 64,
+        "usage_reservation_identity": "usage-e7-1",
     }
     values.update(overrides)
     return ExecutionAdmissionRequest(**values)
@@ -151,7 +153,13 @@ def test_adapter_issues_allowed_admission_with_reservation_binding() -> None:
     assert resolved.capability == "orchestration.run"
     assert resolved.policy_revision == "policy-rev-7"
     assert "control-plane:entitlement:snap-e7-1@res-e7-1" == resolved.authority_ref
-    assert resolved.request_fingerprint == "fp-e7-1"
+    assert resolved.request_fingerprint == "a" * 64
+    assert resolved.usage_reservation is not None
+    assert resolved.usage_reservation.reservation_ref == "res-e7-1"
+    assert resolved.usage_reservation.idempotency_key.startswith("res-")
+    assert resolved.usage_reservation.billing_semantic_id == "orchestration.run"
+    assert resolved.usage_reservation.request_fingerprint == "a" * 64
+    assert resolved.usage_reservation.reserved_at == NOW
     assert resolved.issued_at == NOW
     # Snapshot grants 30 minutes but adapter TTL caps the admission window.
     assert resolved.expires_at == NOW + timedelta(minutes=5)
@@ -168,6 +176,81 @@ def test_adapter_supports_async_control_plane_client() -> None:
 
     assert resolved.allowed is True
     assert [kind for kind, _ in client.calls] == ["fetch_entitlement_snapshot", "reserve_usage"]
+
+
+def test_adapter_validates_reservation_against_post_roundtrip_observation_time() -> None:
+    reservation_time = NOW + timedelta(seconds=4)
+    client = AsyncFakeControlPlaneClient(
+        reservation=reservation_dict(
+            reserved_at=iso(reservation_time),
+            expires_at=iso(reservation_time + timedelta(minutes=5)),
+        )
+    )
+    observations = iter((NOW, reservation_time))
+    built = ControlPlaneTenantAdmissionAdapter(
+        client=client,
+        clock=lambda: next(observations),
+    )
+
+    resolved = run(built.resolve_admission(request()))
+
+    assert resolved.allowed is True
+    assert resolved.issued_at == NOW
+    assert resolved.usage_reservation is not None
+    assert resolved.usage_reservation.reserved_at == reservation_time
+    assert [kind for kind, _ in client.calls] == [
+        "fetch_entitlement_snapshot",
+        "reserve_usage",
+    ]
+
+
+def test_adapter_rejects_reservation_future_to_post_roundtrip_observation() -> None:
+    observation_time = NOW + timedelta(seconds=4)
+    client = AsyncFakeControlPlaneClient(
+        reservation=reservation_dict(
+            reserved_at=iso(observation_time + timedelta(seconds=1)),
+            expires_at=iso(observation_time + timedelta(minutes=5)),
+        )
+    )
+    observations = iter((NOW, observation_time))
+    built = ControlPlaneTenantAdmissionAdapter(
+        client=client,
+        clock=lambda: next(observations),
+    )
+
+    with pytest.raises(ExecutionAdmissionError) as excinfo:
+        run(built.resolve_admission(request()))
+
+    assert excinfo.value.code == "entitlement_unavailable"
+    assert excinfo.value.status_code == 503
+    assert [kind for kind, _ in client.calls] == [
+        "fetch_entitlement_snapshot",
+        "reserve_usage",
+    ]
+
+
+def test_resume_revalidates_entitlement_without_second_usage_reservation() -> None:
+    client = FakeControlPlaneClient(
+        snapshot=snapshot_dict(
+            grants=[{"key": "orchestration.resume", "allowed": True, "limit": None}]
+        )
+    )
+    resolved = run(adapter(client).resolve_admission(request(capability="orchestration.resume")))
+
+    assert resolved.allowed is True
+    assert resolved.usage_reservation is None
+    assert [kind for kind, _ in client.calls] == ["fetch_entitlement_snapshot"]
+
+
+def test_run_reservation_requires_server_owned_occurrence_identity() -> None:
+    client = FakeControlPlaneClient()
+
+    with pytest.raises(ExecutionAdmissionError) as excinfo:
+        run(adapter(client).resolve_admission(request(usage_reservation_identity=None)))
+
+    assert excinfo.value.code == "entitlement_unavailable"
+    assert excinfo.value.status_code == 503
+    assert [kind for kind, _ in client.calls] == ["fetch_entitlement_snapshot"]
 
 
 def test_adapter_denies_when_grant_is_absent() -> None:
@@ -318,6 +401,16 @@ def test_record_usage_receipt_submits_server_evidence() -> None:
     assert event["outcome"] == "succeeded"
     assert event["tokens"] == {"input_tokens": 10, "output_tokens": 5, "total_tokens": 15}
     assert "prompt" not in event and "response" not in event
+
+
+def test_record_usage_receipt_rejects_unaccepted_acknowledgement() -> None:
+    client = FakeControlPlaneClient(receipt_ack={"accepted": False, "event_id": "evt-e7-1"})
+
+    with pytest.raises(ExecutionAdmissionError) as excinfo:
+        run(adapter(client).record_usage_receipt(receipt()))
+
+    assert excinfo.value.code == "usage_receipt_rejected"
+    assert excinfo.value.status_code == 503
 
 
 def test_record_usage_receipt_rejects_event_identity_mismatch() -> None:

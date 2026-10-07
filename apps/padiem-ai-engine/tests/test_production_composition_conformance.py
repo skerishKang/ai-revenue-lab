@@ -477,6 +477,39 @@ async def test_web_research_composition_tracks_manifest_state() -> None:
 
 
 @pytest.mark.asyncio
+async def test_tenant_entitlement_usage_admission_stays_deferred_without_live_cp_trust_authority() -> None:
+    """E7 source composition may be wired while live Production stays DEFERRED.
+
+    #3300 established the canonical authenticated-user entitlement producer and
+    #3298 wires the Engine admission service in source. The current Production-
+    shaped test env intentionally has no CONTROL_PLANE_ENGINE_ADMISSION binding.
+    Therefore orchestration must remain admission-bound but carry no adapter:
+    it can only fail closed and can never fall back to unguarded Core execution.
+
+    The capability manifest remains DEFERRED until separate Production deploy,
+    binding readback, and bounded runtime evidence are accepted.
+    """
+    from app.capability_manifest import CapabilityState, current_capability_manifest
+    from app.execution_admission_service import AdmissionBoundOrchestrationEngineService
+
+    declaration = next(
+        item
+        for item in current_capability_manifest().capabilities
+        if item.id == "tenant_entitlement_usage_admission"
+    )
+    assert declaration.state is CapabilityState.DEFERRED
+    assert declaration.routes == ()
+
+    compose = _load_composition()
+    services = await compose(_ProductionShapedEnv())
+    assert isinstance(
+        services.orchestration,
+        AdmissionBoundOrchestrationEngineService,
+    )
+    assert services.orchestration._admission_adapter is None
+
+
+@pytest.mark.asyncio
 async def test_memory_rag_composition_fails_closed() -> None:
     compose = _load_composition()
     services = await compose(_StubEnv())
@@ -587,6 +620,43 @@ def test_worker_identity_seam_wires_resolver_and_stays_unbound() -> None:
     # authorities (including CP Google OAuth Service Binding) + D1 grant
     # references. No static truth flag remains.
     assert "GMAIL_PORT_BOUND_IN_PRODUCTION" not in source
+
+
+def test_production_and_legacy_composition_roles_are_explicit() -> None:
+    """Pin one Production authority while preserving the narrow legacy bundle.
+
+    ``worker_identity.py`` is the deployed Production entrypoint and composition
+    authority. ``worker.py`` remains a deliberately narrower compatibility
+    composition because legacy/base callers are contractually forbidden from
+    inheriting identity-only multimodal, document and connector authorities.
+    """
+    from pathlib import Path
+
+    engine_root = Path(__file__).resolve().parents[1]
+    repo_root = Path(__file__).resolve().parents[3]
+
+    wrangler = (engine_root / "wrangler.toml").read_text(encoding="utf-8")
+    assert 'main = "worker_identity.py"' in wrangler
+
+    legacy_source = (engine_root / "worker.py").read_text(encoding="utf-8")
+    assert "Legacy compatibility composition; never the Production authority." in legacy_source
+    assert "async def _engine_services_for_env(env: Any) -> EngineServices:" in legacy_source
+    assert "CanonicalIdempotencyOrchestrationEngineService(" not in legacy_source
+    assert "MultimodalAttachmentEngineService" not in legacy_source
+    assert "DocumentContextEngineService" not in legacy_source
+    assert "_tool_binding_resolver_for_env" not in legacy_source
+
+    canonical_source = (engine_root / "worker_identity.py").read_text(encoding="utf-8")
+    assert "async def _engine_services_for_env(env: Any) -> EngineServices:" in canonical_source
+    assert "class Default(legacy_worker.Default):" in canonical_source
+    assert "engine_services_factory = staticmethod(_engine_services_for_env)" in canonical_source
+    assert "CanonicalIdempotencyOrchestrationEngineService(" in canonical_source
+    assert "_tool_binding_resolver_for_env" in canonical_source
+
+    readme = (repo_root / "docs/internal-platform/engine/README.md").read_text(encoding="utf-8")
+    assert "Production Worker entry: `apps/padiem-ai-engine/worker_identity.py`" in readme
+    assert "Production composition authority: `worker_identity._engine_services_for_env`" in readme
+    assert "non-Production compatibility composition" in readme
 
 
 @pytest.mark.asyncio

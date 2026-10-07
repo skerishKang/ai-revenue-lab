@@ -81,11 +81,15 @@ CORE_TESTS = REPO_ROOT / "packages" / "padiem-ai-core" / "tests"
 # facts plus explicit native-text availability state and reuse the canonical
 # pypdf reader; no process, network, filesystem, OCR, or second archive-walk
 # authority is introduced.
+# Re-pinned for #3327: Core now projects those already-reviewed native PDF page
+# facts into exact PAGE-located NormalizedDocument segments. This is additive
+# provenance composition only; it adds no parser, process, network, filesystem,
+# OCR, provider or Production authority.
 PINNED_SHA256 = {
-    CORE_PACKAGE / "document_normalization.py": "f47ac7d054aa219028b9d5a16836862c4016d8c03ef2906350ae1622b94455c1",
+    CORE_PACKAGE / "document_normalization.py": "caaff3778160f0d7c546d55d3fc90ab1d5a8b0ac8971fa72843deb15c5c675f4",
     CORE_PACKAGE / "document_semantics.py": "a9cb2284d538c38aa5e08eb0e0ea4ff792922ae8ce58514e09228288ac57be85",
     CORE_TESTS / "test_document_semantics.py": "650ca215c9842b6bb4d45faed6707749c3cf2a7c008bb18fc4a567b0487fa7e5",
-    CORE_TESTS / "test_document_normalization.py": "ba88eb112d5855751ba4316013daef60095e574ed8bb13441c479ad0cc70da5e",
+    CORE_TESTS / "test_document_normalization.py": "ec8533fdd9ac9aa7fc834d579b510f352ae48408a546baac9af110acde61bdfe",
 }
 
 REF = "doc_s3doc0000000000b"

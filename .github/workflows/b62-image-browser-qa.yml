@@ -4,12 +4,18 @@ on:
   pull_request:
     paths:
       - "apps/padiem-chat/**"
+      - "!apps/padiem-chat/tests/**"
+      - "!apps/padiem-chat/worker.py"
       - ".github/scripts/b62_image_browser_qa.py"
       - ".github/workflows/b62-image-browser-qa.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: b62-image-browser-qa-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   image-browser-qa:

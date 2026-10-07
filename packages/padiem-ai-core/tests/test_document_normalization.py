@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import inspect
 import os
+from dataclasses import replace
 from io import BytesIO
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
@@ -33,6 +34,8 @@ from padiem_ai_core.document_normalization import (
     extract_docx_text,
     extract_hwpx_text,
     extract_pptx_text,
+    inspect_pdf,
+    normalize_pdf_inspection,
     normalize_text_document,
     parse_hwpx_sections,
     validate_document_identity,
@@ -151,6 +154,35 @@ def _minimal_text_pdf(text: str) -> bytes:
     return output.getvalue()
 
 
+def _multi_page_text_pdf(*texts: str) -> bytes:
+    _require_pdf_extra()
+    assert PdfWriter is not None
+    assert DictionaryObject is not None and NameObject is not None and DecodedStreamObject is not None
+    writer = PdfWriter()
+    font = DictionaryObject(
+        {
+            NameObject("/Type"): NameObject("/Font"),
+            NameObject("/Subtype"): NameObject("/Type1"),
+            NameObject("/BaseFont"): NameObject("/Helvetica"),
+        }
+    )
+    font_ref = writer._add_object(font)
+    for text in texts:
+        page = writer.add_blank_page(width=320, height=180)
+        if not text:
+            continue
+        page[NameObject("/Resources")] = DictionaryObject(
+            {NameObject("/Font"): DictionaryObject({NameObject("/F1"): font_ref})}
+        )
+        content = DecodedStreamObject()
+        escaped = text.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+        content.set_data(f"BT /F1 14 Tf 36 90 Td ({escaped}) Tj ET".encode("ascii"))
+        page[NameObject("/Contents")] = writer._add_object(content)
+    output = BytesIO()
+    writer.write(output)
+    return output.getvalue()
+
+
 def _blank_pdf(*, encrypted: bool = False, pages: int = 1) -> bytes:
     _require_pdf_extra()
     assert PdfWriter is not None
@@ -248,6 +280,56 @@ def test_binary_identity_is_product_neutral_and_has_no_path_or_url_authority() -
     import inspect
 
     assert tuple(inspect.signature(extract_binary_document).parameters) == ("name", "media_type", "payload")
+
+
+def test_pdf_inspection_normalizes_to_exact_page_segments() -> None:
+    payload = _multi_page_text_pdf("Page One", "Page Two")
+    inspection = inspect_pdf(name="case.pdf", media_type=PDF_MIME, payload=payload)
+
+    document = normalize_pdf_inspection(inspection)
+
+    assert document.text == "Page One\n\nPage Two"
+    assert document.byte_size == len(payload)
+    assert document.source_kind == "binary"
+    assert [segment.order for segment in document.segments] == [0, 1]
+    assert [segment.locator.to_public_dict() for segment in document.segments if segment.locator] == [
+        {"kind": "page", "value": "1", "precision": "exact"},
+        {"kind": "page", "value": "2", "precision": "exact"},
+    ]
+    assert "Page One" not in repr(document)
+    assert "Page Two" not in repr(document)
+
+
+def test_pdf_inspection_skips_empty_pages_without_renumbering() -> None:
+    payload = _multi_page_text_pdf("First", "", "Third")
+    inspection = inspect_pdf(name="case.pdf", media_type=PDF_MIME, payload=payload)
+
+    document = normalize_pdf_inspection(inspection)
+
+    assert [segment.locator.value for segment in document.segments if segment.locator] == ["1", "3"]
+    assert document.text == "First\n\nThird"
+
+
+def test_pdf_inspection_page_provenance_fails_closed() -> None:
+    payload = _multi_page_text_pdf("Only")
+    inspection = inspect_pdf(name="case.pdf", media_type=PDF_MIME, payload=payload)
+    bad_page = replace(inspection.pages[0], page_number=2)
+    malformed = replace(inspection, pages=(bad_page,))
+
+    with pytest.raises(DocumentNormalizationError) as exc:
+        normalize_pdf_inspection(malformed)
+
+    assert exc.value.code == "invalid_pdf_page_provenance"
+
+
+def test_pdf_inspection_without_native_text_requires_ocr_path() -> None:
+    payload = _blank_pdf()
+    inspection = inspect_pdf(name="scan.pdf", media_type=PDF_MIME, payload=payload)
+
+    with pytest.raises(DocumentNormalizationError) as exc:
+        normalize_pdf_inspection(inspection)
+
+    assert exc.value.code == "pdf_empty_text"
 
 
 def test_pdf_extracts_text_and_never_retains_raw_binary() -> None:

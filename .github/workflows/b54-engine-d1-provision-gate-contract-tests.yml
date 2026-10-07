@@ -17,6 +17,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: b54-engine-d1-provision-gate-contract-tests-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   gate-contract-tests:
     name: Gate contract (parse only, no provisioning)
