@@ -247,11 +247,45 @@ async def test_password_login_accepts_username_or_email_and_reuses_tenant() -> N
     assert len(shadow.saved) == 2
 
 
+# Headers that are per-request or transport-level rather than part of the
+# route's own public vocabulary, so they cannot be compared for equality:
+#   * date / server          — added by the serving transport, not the route
+#   * x-request-id           — a fresh correlation id minted for every request
+#                              by RequestTelemetryMiddleware (its value is
+#                              random, not derived from the login outcome)
+# Everything else is compared, because a header that appeared on only one
+# failure class would itself be an oracle.
+_VOLATILE_PUBLIC_HEADERS = frozenset({"date", "server", "x-request-id"})
+
+
+def _public_header_projection(response) -> tuple[tuple[str, str], ...]:
+    """Headers an unauthenticated caller can observe on this response.
+
+    Included in the public-boundary projection so a header that appears on only
+    one failure class — a throttle hint (``Retry-After``), an authentication
+    challenge (``WWW-Authenticate``), or a cookie — fails the equality
+    assertions instead of going unnoticed.
+    """
+    return tuple(
+        sorted(
+            (name.lower(), value)
+            for name, value in response.headers.items()
+            if name.lower() not in _VOLATILE_PUBLIC_HEADERS
+        )
+    )
+
+
+def _raw_header_names(response) -> set[str]:
+    """Every header name the response actually carries, before projection."""
+    return {name.lower() for name in response.headers}
+
+
 async def _login_public(client, identifier, password):
     """Project one login attempt onto the unauthenticated public boundary.
 
-    Returns (status, error code, error message, top-level keys, error keys)
-    so tests compare everything an unauthenticated caller can observe.
+    Returns (status, error code, error message, top-level keys, error keys,
+    observable headers) so tests compare everything an unauthenticated caller
+    can observe — status, body shape and headers alike.
     """
     response = await client.post(
         "/api/auth/password/login",
@@ -264,6 +298,7 @@ async def _login_public(client, identifier, password):
         body["error"]["message"],
         sorted(body.keys()),
         sorted(body["error"].keys()),
+        _public_header_projection(response),
     )
 
 
@@ -777,6 +812,80 @@ async def test_missing_existing_locked_and_window_exhausted_are_indistinguishabl
     assert missing == locked_wrong == locked_correct == exhausted_wrong
     assert missing[0] == 401
     assert missing[1] == "invalid_credentials"
+
+
+@pytest.mark.asyncio
+async def test_public_header_matrix_is_identical_across_failure_classes() -> None:
+    # Closes the #3508 review evidence gap: header equality used to rest on
+    # source inspection alone. This test names the matrix explicitly, so a
+    # throttle hint (Retry-After), an authentication challenge
+    # (WWW-Authenticate) or a cookie appearing on any single failure class is a
+    # hard failure rather than an unnoticed oracle.
+    store = MemoryStore()
+    abuse = InMemoryAuthAbuseStore()
+    encoded = hash_password("correct horse battery staple")
+    await store.register_password_user("owner.test", "owner@example.test", "Owner", encoded)
+    await store.register_password_user(
+        "second.test", "second@example.test", "Second", encoded
+    )
+    app = create_app(
+        password_settings(),
+        history_store=store,
+        auth_abuse_store=abuse,
+    )
+
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+    ) as client:
+
+        async def projection(identifier: str, password: str):
+            response = await client.post(
+                "/api/auth/password/login",
+                json={"identifier": identifier, "password": password},
+            )
+            return (
+                response.status_code,
+                _public_header_projection(response),
+                _raw_header_names(response),
+            )
+
+        missing = await projection("missing.test", "wrong")
+        for index in range(5):
+            await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "owner.test", "password": f"wrong-{index}"},
+            )
+        locked_wrong = await projection("owner.test", "wrong")
+        locked_correct = await projection("owner.test", "correct horse battery staple")
+        for index in range(9):
+            await client.post(
+                "/api/auth/password/login",
+                json={"identifier": "second.test", "password": f"wrong-{index}"},
+            )
+        exhausted = await projection("second.test", "wrong")
+
+    assert missing == locked_wrong == locked_correct == exhausted
+
+    status, headers, raw_names = missing
+    assert status == 401
+    names = {name for name, _value in headers}
+    # Exactly the JSON error projection, nothing else. A non-vacuous assertion:
+    # the response really does declare a JSON body.
+    assert names == {"content-type", "content-length"}
+    # Checked against the raw header names too, so excluding the correlation id
+    # above cannot hide a class-specific header.
+    for forbidden in (
+        "retry-after",
+        "www-authenticate",
+        "set-cookie",
+        "x-lock",
+        "x-throttle",
+        "x-ratelimit-limit",
+        "x-ratelimit-remaining",
+    ):
+        assert forbidden not in raw_names
+    assert raw_names == {"content-type", "content-length", "x-request-id"}
 
 
 @pytest.mark.asyncio
