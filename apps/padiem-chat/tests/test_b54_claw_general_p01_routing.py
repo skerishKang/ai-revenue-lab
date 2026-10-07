@@ -285,3 +285,91 @@ def test_b66_product_boundary_unchanged() -> None:
     block = _strip_docstring(_python_block(CLAW_GENERAL_SOURCE, "claw_general_execute")).lower()
     assert "b66" not in block
     assert "quote" not in block
+
+
+# ── #3655: opt-in one-shot canary evidence headers ──────────────────────────
+
+
+def _make_evidence_outcome():
+    outcome = _make_outcome()
+    outcome.p01_run_id = "orch_evidence_001"
+    outcome.selected_route_id = "plus.agnes-3.0-flash.v1"
+    outcome.provider_attempt_count = 1
+    outcome.fallback_used = False
+    return outcome
+
+
+def test_claw_general_evidence_headers_emitted_only_with_opt_in_marker() -> None:
+    adapter = _make_adapter(outcome=_make_evidence_outcome())
+    with _client(adapter) as client:
+        with_marker = client.post(
+            GENERAL_ROUTE_PATH,
+            json=_payload(),
+            headers={"X-Padiem-Claw-Evidence": "one-shot"},
+        )
+        without_marker = client.post(GENERAL_ROUTE_PATH, json=_payload())
+    assert with_marker.status_code == 200
+    assert with_marker.headers["x-padiem-claw-run-id"].startswith("run_")
+    assert with_marker.headers["x-padiem-orchestration-run-id"] == "orch_evidence_001"
+    assert with_marker.headers["x-padiem-selected-route-id"] == "plus.agnes-3.0-flash.v1"
+    assert with_marker.headers["x-padiem-provider-attempts"] == "1"
+    assert with_marker.headers["x-padiem-fallback-used"] == "false"
+    # Without the exact marker the normal user surface is byte-identical.
+    assert without_marker.status_code == 200
+    assert "x-padiem-claw-run-id" not in without_marker.headers
+    assert "x-padiem-orchestration-run-id" not in without_marker.headers
+    assert "x-padiem-selected-route-id" not in without_marker.headers
+    assert "x-padiem-provider-attempts" not in without_marker.headers
+    assert "x-padiem-fallback-used" not in without_marker.headers
+
+
+def test_claw_general_evidence_headers_drop_malformed_values() -> None:
+    outcome = _make_evidence_outcome()
+    outcome.p01_run_id = "bad id with spaces"
+    outcome.selected_route_id = "not a route id!"
+    outcome.provider_attempt_count = 99
+    outcome.fallback_used = True
+    adapter = _make_adapter(outcome=outcome)
+    with _client(adapter) as client:
+        resp = client.post(
+            GENERAL_ROUTE_PATH,
+            json=_payload(),
+            headers={"X-Padiem-Claw-Evidence": "one-shot"},
+        )
+    assert resp.status_code == 200
+    # A value that fails its grammar is omitted, never degraded.
+    assert "x-padiem-orchestration-run-id" not in resp.headers
+    assert "x-padiem-selected-route-id" not in resp.headers
+    assert resp.headers["x-padiem-provider-attempts"] == "99"
+    assert resp.headers["x-padiem-fallback-used"] == "true"
+
+
+def test_claw_general_error_response_carries_bounded_detail_and_run_ref() -> None:
+    from kagent.p01_adapter import (
+        P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR,
+        P01AdapterError,
+        P01DispatchClass,
+    )
+
+    adapter = _make_adapter()
+    adapter.execute = AsyncMock(
+        side_effect=P01AdapterError(
+            "p01_engine_request_failed",
+            "P01 orchestration failed at the Engine boundary.",
+            dispatch_class=P01DispatchClass.UNKNOWN,
+            failure_detail=P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR,
+        )
+    )
+    with _client(adapter) as client:
+        resp = client.post(
+            GENERAL_ROUTE_PATH,
+            json=_payload(),
+            headers={"X-Padiem-Claw-Evidence": "one-shot"},
+        )
+    assert resp.status_code == 502
+    body = resp.json()
+    assert body["error"]["detail"] == "engine_provider_server_error"
+    # The outcome never materialized on this path: only the route-minted run
+    # id is available as the correlation ref.
+    assert resp.headers["x-padiem-claw-run-id"].startswith("run_")
+    assert "x-padiem-orchestration-run-id" not in resp.headers

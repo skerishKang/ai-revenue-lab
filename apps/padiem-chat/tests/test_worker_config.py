@@ -87,6 +87,7 @@ def test_server_only_worker_bindings_and_google_config_validation():
         "PADIEM_CHAT_WEB_PROVIDER",
         "FIRECRAWL_API_KEY",
         "PADIEM_CHAT_DAUM_REST_API_KEY",
+        "TINYFISH_API_KEY",
         "PADIEM_CHAT_WEB_TIMEOUT_SECONDS",
         "PADIEM_CHAT_AUTH_MODE",
         "PADIEM_CHAT_PUBLIC_BASE_URL",
@@ -107,6 +108,7 @@ def test_server_only_worker_bindings_and_google_config_validation():
     assert "BUSINESS14_PROVIDER_KEY" not in joined
     assert "FIRECRAWL_API_KEY" in WORKER_BINDING_NAMES
     assert "PADIEM_CHAT_DAUM_REST_API_KEY" in WORKER_BINDING_NAMES
+    assert "TINYFISH_API_KEY" in WORKER_BINDING_NAMES
 
     with pytest.raises(ConfigError):
         settings_from_worker_bindings({"PADIEM_CHAT_WEB_PROVIDER": "firecrawl"})
@@ -219,6 +221,8 @@ def test_worker_package_is_mock_first_static_bound_and_no_fake_d1_id():
     worker = (root / "worker.py").read_text(encoding="utf-8")
     assert 'name = "padiem-chat"' in wrangler
     assert 'main = "worker.py"' in wrangler
+    assert 'base_dir = ".b66-worker-src"' in wrangler
+    assert 'command = "uv run python scripts/build_b66_worker_dependencies.py"' in wrangler
     assert 'compatibility_flags = ["python_workers"]' in wrangler
     assert 'directory = "static"' in wrangler
     assert 'PADIEM_CHAT_RUNTIME_MODE = "mock"' in wrangler
@@ -251,3 +255,8 @@ def test_phase1_css_blob_content_remains_byte_equal():
     assert (root / "static/styles.css").read_bytes() == (
         repo / "reference/business-62-padiem-chat-v1/styles.css"
     ).read_bytes()
+
+
+def test_b66_pdf_renderer_binding_is_fixed_server_authority():
+    from app.worker_config import B66_PDF_RENDERER_SERVICE_BINDING_NAME
+    assert B66_PDF_RENDERER_SERVICE_BINDING_NAME == "B66_PDF_RENDERER_SERVICE"

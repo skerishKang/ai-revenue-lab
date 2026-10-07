@@ -23,6 +23,7 @@ export const IPC_CHANNELS = [
   'padiem:shell:workspace-choose-root',
   'padiem:shell:workspace-list',
   'padiem:shell:workspace-clear-root',
+  'padiem:shell:workspace-search',
   'padiem:shell:conversation-list',
   'padiem:shell:conversation-read',
   'padiem:shell:run-list',
@@ -59,6 +60,15 @@ export const DENIED_IPC_CHANNELS = Object.freeze([
   'padiem:shell:mint-session',
   'padiem:shell:broker-transport',
   'padiem:shell:approve',
+  // #3611: browser control surfaces stay denied. The open-only slice has no IPC
+  // channel at all — an approved open is delivered to the trusted host, and the
+  // renderer never selects a URL. These names are asserted by the negative guard
+  // so no browser authority can be added to the allowlist by accident.
+  'padiem:shell:browser-control',
+  'padiem:shell:browser-evaluate',
+  'padiem:shell:browser-cookie-read',
+  'padiem:shell:browser-profile-import',
+  'padiem:shell:browser-download',
   '*',
   'padiem:shell:*',
 ]);
@@ -200,6 +210,35 @@ export interface WorkspaceListResponse {
     | 'invalid_relative_path'
     | 'path_outside_root'
     | 'depth_exceeded'
+    | 'path_denied'
+    | 'workspace_unavailable';
+}
+
+/**
+ * #3583 — bounded workspace file search request.
+ *
+ * The renderer supplies ONLY a query string. There is deliberately no path
+ * field: search is always scoped to the already-validated selected root, so
+ * a hostile or buggy renderer cannot address anywhere else.
+ */
+export interface WorkspaceSearchRequest {
+  readonly query: string;
+}
+
+export interface WorkspaceSearchResponse {
+  readonly ok: boolean;
+  readonly root: WorkspaceRootResponse;
+  readonly query: string;
+  readonly matches: readonly WorkspaceEntry[];
+  /** True when the bounded walk stopped at MAX_SEARCH_ENTRIES before finishing. */
+  readonly truncated: boolean;
+  /** Entries actually scanned (bounded by MAX_SEARCH_ENTRIES). */
+  readonly scannedEntries: number;
+  readonly maxResults: number;
+  readonly errorCode:
+    | null
+    | 'root_not_selected'
+    | 'invalid_query'
     | 'workspace_unavailable';
 }
 
@@ -283,6 +322,10 @@ export interface IpcSurface {
   'padiem:shell:workspace-choose-root': { request: undefined; response: WorkspaceRootResponse };
   'padiem:shell:workspace-list': { request: WorkspaceListRequest; response: WorkspaceListResponse };
   'padiem:shell:workspace-clear-root': { request: undefined; response: WorkspaceRootResponse };
+  'padiem:shell:workspace-search': {
+    request: WorkspaceSearchRequest;
+    response: WorkspaceSearchResponse;
+  };
   'padiem:shell:conversation-list': {
     request: undefined;
     response: CanonicalConversationListResponse;

@@ -70,6 +70,10 @@ jobs:
           set -euo pipefail
           script=.github/scripts/b66_cgi_final_handoff_smoke.py
           grep -Fq 'MAX_INTERPRET_POSTS = 3' "$script"
+          grep -Fq 'MAX_PDF_POSTS = 3' "$script"
+          grep -Fq 'PDF_PATH = "/api/padiem/b66/quote/pdf"' "$script"
+          grep -Fq 'page.expect_download' "$script"
+          if grep -Fq 'window.print =' "$script"; then exit 1; fi
           grep -Fq 'RETRY = 0' "$script"
           grep -Fq 'FALLBACK = 0' "$script"
           grep -Fq 'DEFAULT_LIVE_EXECUTION=BLOCKED' "$script"

@@ -55,6 +55,7 @@ from .contracts import ContractError
 from .local_agent import LocalAgentDeviceProfile, LocalAgentPlatform, LocalRoot
 from .local_agent_broker_pairing_client import LocalAgentBrokerPairingClient
 from .local_agent_desktop_material import (
+    DESKTOP_REQUEST_KINDS,
     MAX_PREHANDOFF_SKIP_LINES,
     ResidentDesktopMaterialResponder,
 )
@@ -175,6 +176,65 @@ def _acceptance_authorization_port(
                 request_id=acceptance_request_id,
                 request_fingerprint=acceptance_request_fingerprint,
             ),
+        ),
+    )
+
+
+def _browser_open_authority(
+    *,
+    device: Any,
+    store: Any,
+    root_source: str,
+    acceptance_command_id: str = "",
+    acceptance_binding_ref: str = "",
+    acceptance_request_id: str = "",
+    host: Any | None = None,
+) -> Any:
+    """Compose the approved `browser.open` slice, fail-closed by default (#3611).
+
+    The slice is built from the *same* redeemed device, the *same* local policy
+    profile and the *same* durable store as the Windows execution lane, so there
+    is no second device view, no second policy and no second one-shot store.
+
+    Only when a real shell-supplied root (root_source=env) and a configured broker
+    boundary and the acceptance correlation exist is the existing canonical P01
+    evidence route wired; otherwise the authority keeps its fail-closed default
+    evidence port. The **host** is never defaulted to something permissive: the
+    trusted main view owner is injected by the process that owns the browser, so
+    an unrouted authority refuses instead of opening.
+    """
+
+    from .browser_open_authority import (
+        BrowserOpenAuthority,
+        P01LoopbackBrowserOpenEvidenceClient,
+    )
+
+    permission_profile = default_device_permission_profile(device=device)
+    broker_url = os.environ.get("PADIEM_AGENT_BROKER_URL")
+    if (
+        root_source != "env"
+        or not broker_url
+        or not acceptance_command_id
+        or not acceptance_binding_ref
+        or not acceptance_request_id
+    ):
+        return BrowserOpenAuthority(
+            device=device,
+            permission_profile=permission_profile,
+            store=store,
+            host=host,
+        )
+    return BrowserOpenAuthority(
+        device=device,
+        permission_profile=permission_profile,
+        store=store,
+        host=host,
+        evidence_port=P01LoopbackBrowserOpenEvidenceClient(
+            store=store,
+            command_id=acceptance_command_id,
+            binding_ref=acceptance_binding_ref,
+            request_id=acceptance_request_id,
+            base_url=broker_url,
         ),
     )
 
@@ -590,6 +650,7 @@ def build_resident_host(
     acceptance_binding_ref: str = "",
     acceptance_request_id: str = "",
     acceptance_request_fingerprint: str = "",
+    browser_open_host: Any | None = None,
 ) -> LocalAgentResidentRuntimeHost:
     """Construct *the* resident host, once, on the redeemed binding."""
 
@@ -665,6 +726,17 @@ def build_resident_host(
     _observe_phase("host_build_store_start")
     durable_store = DurableRunStore(entry.durable_store_path, observer=_observe_phase)
     _observe_phase("host_build_store_done")
+    # #3611: the approved browser.open slice shares this durable store, the
+    # redeemed device and the same local policy profile as the Windows lane.
+    browser_open_authority = _browser_open_authority(
+        device=device,
+        store=durable_store,
+        root_source=root_source,
+        acceptance_command_id=acceptance_command_id,
+        acceptance_binding_ref=acceptance_binding_ref,
+        acceptance_request_id=acceptance_request_id,
+        host=browser_open_host,
+    )
     # #3140 stall diagnosis: the facts a stalled SQLite open would have produced,
     # reported only once the store is actually ready. No path, no handle.
     try:
@@ -685,6 +757,7 @@ def build_resident_host(
             permissions=default_device_permission_profile(device=device),
             broker_authority=broker_binding,
             runtime=runtime,
+            browser_open=browser_open_authority,
         ),
         channel=channel,
         credential_store=redeemed["store"],
@@ -766,18 +839,24 @@ def main(argv: list[str] | None = None) -> int:
         _emit(event="host_built", **_phase_stamp(), **RESIDENT_PROCESS_CONTRACT)
         _emit(event="connect_start", **_phase_stamp(), **RESIDENT_PROCESS_CONTRACT)
         host.start()
-        # #3436 B2d: the bounded trusted-local material responder shares this
-        # supervised stdio boundary. It starts only after the handoff was
-        # consumed and the host is online, answers exactly one request kind,
-        # and projects state the host already holds — no session is opened and
-        # no credential is minted or stored here (DESKTOP_SESSION_OPEN=0).
+        # #3436 B2d + #3611: one bounded dispatcher, one reader thread, exactly
+        # two literal request kinds, on the supervised stdio boundary the
+        # resident already shares with the shell. It starts only after the
+        # handoff was consumed and the host is online, projects state the host
+        # already holds (no session is opened, no credential minted or stored),
+        # and owns the agent side of the browser-open redemption.
+        #
+        # A second reader on this same stdin would race this one, so the
+        # redemption kind is added here instead of in a new thread.
         material_responder = ResidentDesktopMaterialResponder(
-            material_projection=host.current_desktop_session_material
+            material_projection=host.current_desktop_session_material,
+            redemption=host.redeem_desktop_browser_open,
         )
         material_responder.start()
         _emit(
             event="desktop_material_channel_ready",
             host_state=host.state.value,
+            request_kinds=sorted(DESKTOP_REQUEST_KINDS),
             **_phase_stamp(),
             **RESIDENT_PROCESS_CONTRACT,
         )

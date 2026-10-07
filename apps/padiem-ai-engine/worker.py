@@ -504,6 +504,11 @@ class Default(WorkerEntrypoint):
     async def b67_case_pdf_read(self, payload: Any) -> Any:
         return await _drive_case_pdf_rpc_for_env(self.env, "b67_case_pdf_read", payload)
 
+    async def b67_case_pdf_review_extraction(self, payload: Any) -> Any:
+        return await _drive_case_pdf_rpc_for_env(
+            self.env, "b67_case_pdf_review_extraction", payload
+        )
+
     async def fetch(self, request: Any) -> Any:
         path = urlparse(str(request.url)).path
         method = str(getattr(request, "method", ""))

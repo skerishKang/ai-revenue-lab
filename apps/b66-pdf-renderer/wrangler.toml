@@ -1,0 +1,13 @@
+name = "padiem-b66-pdf-renderer"
+main = "worker.py"
+compatibility_date = "2026-08-25"
+compatibility_flags = ["python_workers", "disable_python_external_sdk"]
+workers_dev = false
+base_dir = ".worker-src"
+
+[build]
+command = "uv run python scripts/build_worker_dependencies.py"
+
+[[r2_buckets]]
+binding = "PADIEM_WORKSPACE_FILES"
+bucket_name = "padiem-workspace-files"

@@ -32,6 +32,10 @@ from padiem_ai_core.drive_case_folder_scope import (
 )
 
 from app.connector_bindings import DriveGrant
+from app.drive_case_pdf_browser_bridge import (
+    BrowserPdfBridgeError,
+    review_browser_pdf_extraction,
+)
 from app.drive_case_folder_binding import (
     DriveCaseFolderBindingAuthority,
     DriveCaseFolderBindingError,
@@ -332,13 +336,15 @@ class DriveCasePdfService:
             "contract_version": B67_CASE_PDF_SERVICE_VERSION,
         }
 
-    async def read(
+    async def _authorized_pdf(
         self,
         *,
         workspace_ref: str,
         project_id: str,
         file_id: object,
-    ) -> dict[str, Any]:
+    ) -> tuple[DriveCaseResource, dict[str, Any], dict[str, Any], bytes]:
+        """Re-resolve selected-folder authority, fresh metadata and exact PDF bytes."""
+
         intent = _bounded(file_id, limit=200)
         if intent is None:
             raise DriveCasePdfError("invalid_file_id", "PDF selection intent is invalid.")
@@ -388,19 +394,36 @@ class DriveCasePdfService:
                 "Selected Drive content is not a PDF payload.",
                 status_code=415,
             )
+        if resource.evidence is None:
+            raise DriveCasePdfError(
+                "drive_provider_contract_failed",
+                "Drive PDF metadata did not produce canonical source evidence.",
+                status_code=502,
+            )
+        return resource, admission, projected, payload
+
+    async def read(
+        self,
+        *,
+        workspace_ref: str,
+        project_id: str,
+        file_id: object,
+    ) -> dict[str, Any]:
+        resource, admission, projected, payload = await self._authorized_pdf(
+            workspace_ref=workspace_ref,
+            project_id=project_id,
+            file_id=file_id,
+        )
 
         source = resource.evidence
-        version = (
-            {
-                "version": source.version,
-                "modified_time": source.modified_time,
-                "md5_checksum": source.md5_checksum,
-                "sha256_checksum": source.sha256_checksum,
-                "head_revision_id": source.head_revision_id,
-            }
-            if source is not None
-            else {}
-        )
+        assert source is not None
+        version = {
+            "version": source.version,
+            "modified_time": source.modified_time,
+            "md5_checksum": source.md5_checksum,
+            "sha256_checksum": source.sha256_checksum,
+            "head_revision_id": source.head_revision_id,
+        }
         return {
             "ok": True,
             "file": projected,
@@ -413,6 +436,33 @@ class DriveCasePdfService:
             },
             "contract_version": B67_CASE_PDF_SERVICE_VERSION,
         }
+
+    async def review_browser_extraction(
+        self,
+        *,
+        workspace_ref: str,
+        project_id: str,
+        file_id: object,
+        extraction: object,
+    ) -> dict[str, Any]:
+        """Bind untrusted browser page text to a fresh authorized Drive source."""
+
+        resource, _admission, _projected, payload = await self._authorized_pdf(
+            workspace_ref=workspace_ref,
+            project_id=project_id,
+            file_id=file_id,
+        )
+        source = resource.evidence
+        assert source is not None
+        try:
+            review = review_browser_pdf_extraction(
+                extraction=extraction,
+                current_source=source,
+                current_pdf_bytes=payload,
+            )
+        except BrowserPdfBridgeError as exc:
+            raise DriveCasePdfError(exc.code, exc.safe_message, status_code=exc.status_code) from exc
+        return review.safe_dict()
 
 
 def drive_case_pdf_service_snapshot() -> dict[str, Any]:

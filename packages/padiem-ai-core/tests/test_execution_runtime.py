@@ -424,3 +424,49 @@ def test_runtime_validates_app_id(bad: str) -> None:
 def test_request_validates_trace_and_session_identifiers(field: str) -> None:
     with pytest.raises(ValueError, match=field):
         request(**{field: "bad id"})
+
+
+# #3382/#3566: model_policy.max_retries must flow through to the B14 routing
+# options so a product lane can pin a single provider dispatch (RETRY=0).
+def test_model_policy_max_retries_zero_pins_single_provider_dispatch() -> None:
+    executor = FakeExecutor()
+    profile = agent(
+        model_policy={
+            "model": "test/route",
+            "max_retries": 0,
+        }
+    )
+    runtime = ExecutionRuntime(app_id="test-app", b14_client=executor)
+
+    run(runtime.run(request(profile)))
+
+    payload = executor.calls[0].to_payload()
+    assert payload["business14"]["max_retries"] == 0
+
+
+def test_model_policy_max_retries_none_omits_business14_field() -> None:
+    executor = FakeExecutor()
+    profile = agent(model_policy={"model": "test/route"})
+    runtime = ExecutionRuntime(app_id="test-app", b14_client=executor)
+
+    run(runtime.run(request(profile)))
+
+    assert "max_retries" not in executor.calls[0].to_payload().get("business14", {})
+
+
+@pytest.mark.parametrize("retries", [True, "0", -1, 3])
+def test_model_policy_invalid_max_retries_fails_closed_before_b14(retries) -> None:
+    executor = FakeExecutor()
+    profile = agent(
+        model_policy={
+            "model": "test/route",
+            "max_retries": retries,
+        }
+    )
+    runtime = ExecutionRuntime(app_id="test-app", b14_client=executor)
+
+    with pytest.raises(ExecutionRuntimeError) as info:
+        run(runtime.run(request(profile)))
+
+    assert info.value.code == "invalid_execution_request"
+    assert executor.calls == []

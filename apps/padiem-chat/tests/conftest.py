@@ -3,10 +3,62 @@ from __future__ import annotations
 import importlib
 from pathlib import Path
 
+import httpx
 import pytest
+from starlette import testclient as starlette_testclient
 
 import app.model_policy as model_policy_module
+from app.same_origin_guard import MUTATING_METHODS, expected_browser_origin
 from padiem_control_plane import product_tier_routes as tier_routes
+
+# A real same-origin browser always attaches Origin to a mutation, so an ASGI
+# test client that omits it is not representing the traffic #3476 guards. The
+# marker lets a test assert the missing-Origin case on purpose.
+NO_BROWSER_ORIGIN_MARKER = "x-test-no-origin"
+
+
+def _attach_reviewed_browser_origin(app: object, request: httpx.Request) -> None:
+    if str(request.method).upper() not in MUTATING_METHODS:
+        return
+    if NO_BROWSER_ORIGIN_MARKER in request.headers:
+        del request.headers[NO_BROWSER_ORIGIN_MARKER]
+        return
+    if request.headers.get("origin") is not None:
+        return
+    expected = expected_browser_origin(getattr(getattr(app, "state", None), "settings", None))
+    if expected is not None:
+        request.headers["origin"] = expected
+
+
+@pytest.fixture(autouse=True)
+def _simulate_same_origin_browser_mutations(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Make every ASGI test transport behave like a same-origin browser.
+
+    Without this, #3476's Origin rule would be asserted only by
+    ``test_3476_same_origin_guard.py`` and every unrelated cookie-authenticated
+    mutation test would fail as a false positive. The expectation is read from
+    the app under test, never hardcoded, so a test can never inject an Origin
+    its own configuration would deny.
+    """
+
+    asgi_handle = httpx.ASGITransport.handle_async_request
+
+    async def _asgi_handle(self: httpx.ASGITransport, request: httpx.Request):
+        _attach_reviewed_browser_origin(self.app, request)
+        return await asgi_handle(self, request)
+
+    sync_handle = starlette_testclient._TestClientTransport.handle_request
+
+    def _sync_handle(self: object, request: httpx.Request):
+        _attach_reviewed_browser_origin(self.app, request)
+        return sync_handle(self, request)
+
+    monkeypatch.setattr(httpx.ASGITransport, "handle_async_request", _asgi_handle)
+    monkeypatch.setattr(
+        starlette_testclient._TestClientTransport,
+        "handle_request",
+        _sync_handle,
+    )
 
 
 _HOLD_POLICY_MODULES = {

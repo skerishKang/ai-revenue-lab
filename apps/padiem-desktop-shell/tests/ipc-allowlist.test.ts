@@ -26,9 +26,10 @@ test('#3436 IPC surface is exactly the declared narrow allowlist', () => {
     'padiem:shell:workspace-choose-root',
     'padiem:shell:workspace-clear-root',
     'padiem:shell:workspace-list',
+    'padiem:shell:workspace-search',
   ]);
-  assert.equal(IPC_ALLOWLIST.size, 13);
-  assert.equal(IPC_SECURITY.ALLOWLIST_SIZE, 13);
+  assert.equal(IPC_ALLOWLIST.size, 14);
+  assert.equal(IPC_SECURITY.ALLOWLIST_SIZE, 14);
 });
 
 test('#3083 IPC security posture forbids generic invoke, raw shell and renderer credentials', () => {

@@ -17,6 +17,14 @@ from .contracts import Evidence
 FIRECRAWL_ORIGIN = "https://api.firecrawl.dev"
 DAUM_SEARCH_ORIGIN = "https://dapi.kakao.com"
 DAUM_WEB_SEARCH_PATH = "/v2/search/web"
+# #3385/#3622: TinyFish Search/Fetch origins are fixed constants, exactly like the
+# reviewed providers above. The parent issue declares them, and the in-repo
+# benchmark runner (`scripts/experiments/benchmark_padiem_search_providers.py`)
+# already uses the bare `https://api.search.tinyfish.ai` origin with an
+# `X-API-Key` header and a `{"results": [...]}` envelope. No caller-supplied
+# host or path ever reaches these endpoints.
+TINYFISH_SEARCH_ORIGIN = "https://api.search.tinyfish.ai"
+TINYFISH_FETCH_ORIGIN = "https://api.fetch.tinyfish.ai"
 MAX_PROVIDER_RESPONSE_BYTES = 1_048_576
 MAX_QUERY_CHARS = 2_000
 MAX_RESULTS = 5
@@ -25,9 +33,18 @@ MAX_SNIPPET_CHARS = 2_000
 MAX_URL_CHARS = 2_048
 MAX_TIMEOUT_SECONDS = 30.0
 _BLOCKED_HOST_SUFFIXES = (".localhost", ".local", ".internal", ".lan", ".home")
-_ALLOWED_PROVIDERS = frozenset({"off", "mock", "firecrawl", "daum"})
+_ALLOWED_PROVIDERS = frozenset({"off", "mock", "firecrawl", "daum", "tinyfish"})
 _ALLOWED_FIRECRAWL_PATHS = frozenset({"/v2/search", "/v2/scrape"})
 _ALLOWED_DAUM_SORTS = frozenset({"accuracy", "recency"})
+# TinyFish search result fields, in the precedence order the in-repo benchmark
+# runner already uses for this provider.
+_TINYFISH_SNIPPET_KEYS = ("snippet", "description", "summary", "content")
+# TinyFish fetch content fields. The fetch wire shape is declared by #3385 as
+# POST against a fixed origin but is not yet empirically verified, so the
+# accepted envelope is deliberately narrow and documented rather than guessed
+# open-endedly; anything unrecognized fails closed as `web_malformed`.
+_TINYFISH_FETCH_CONTENT_KEYS = ("markdown", "text", "content", "snippet", "description")
+_TINYFISH_FETCH_ENVELOPE_KEYS = ("data", "result")
 
 
 class WebRuntimeError(RuntimeError):
@@ -45,13 +62,14 @@ class WebRuntimeConfig:
     provider: str = "off"
     firecrawl_api_key: str | None = field(default=None, repr=False)
     daum_rest_api_key: str | None = field(default=None, repr=False)
+    tinyfish_api_key: str | None = field(default=None, repr=False)
     daum_search_sort: str = "accuracy"
     web_timeout_seconds: float = 15.0
 
     def __post_init__(self) -> None:
         provider = self.provider.strip().lower() if isinstance(self.provider, str) else ""
         if provider not in _ALLOWED_PROVIDERS:
-            raise ValueError("provider must be one of: off, mock, firecrawl, daum")
+            raise ValueError("provider must be one of: off, mock, firecrawl, daum, tinyfish")
         object.__setattr__(self, "provider", provider)
 
         timeout = self.web_timeout_seconds
@@ -79,17 +97,31 @@ class WebRuntimeConfig:
         if provider == "daum" and self.daum_rest_api_key is None:
             raise ValueError("daum provider requires a server-side REST API key")
 
+        # #3622: the TinyFish key is server-only. Selecting the provider without a
+        # key fails closed here, so there is no keyless production fallback and no
+        # silent degradation to another provider.
+        tinyfish_key = self.tinyfish_api_key
+        if tinyfish_key is not None:
+            if not isinstance(tinyfish_key, str) or not tinyfish_key.strip():
+                raise ValueError("tinyfish_api_key must be a non-empty string or None")
+            object.__setattr__(self, "tinyfish_api_key", tinyfish_key.strip())
+        if provider == "tinyfish" and self.tinyfish_api_key is None:
+            raise ValueError("tinyfish provider requires a server-side API key")
+
         daum_sort = self.daum_search_sort.strip().lower() if isinstance(self.daum_search_sort, str) else ""
         if daum_sort not in _ALLOWED_DAUM_SORTS:
             raise ValueError("daum_search_sort must be accuracy or recency")
         object.__setattr__(self, "daum_search_sort", daum_sort)
 
     def to_public_dict(self) -> dict[str, Any]:
+        # Only a boolean "configured" flag is exposed for every provider key. No
+        # key value is ever read out, logged or projected.
         return {
             "provider": self.provider,
             "web_timeout_seconds": self.web_timeout_seconds,
             "firecrawl_configured": self.firecrawl_api_key is not None,
             "daum_configured": self.daum_rest_api_key is not None,
+            "tinyfish_configured": self.tinyfish_api_key is not None,
             "daum_search_sort": self.daum_search_sort,
         }
 
@@ -494,6 +526,169 @@ class DaumWebProvider:
         return await extractor.fetch(safe_url)
 
 
+class TinyFishWebProvider:
+    """TinyFish Search/Fetch provider (#3385 source child, #3622).
+
+    Source-only integration of the existing `WebProvider` protocol. Search issues
+    a GET against the fixed Search origin with an `X-API-Key` header and reads the
+    `{"results": [...]}` envelope — the shape the in-repo benchmark runner
+    (`scripts/experiments/benchmark_padiem_search_providers.py`) already uses for
+    this provider. Fetch POSTs exactly one `normalize_public_url`-approved URL to
+    the fixed Fetch origin.
+
+    Both requests reuse the reviewed provider safety envelope: fixed origin, no
+    redirect following, bounded streaming response size, bounded timeout, and the
+    existing `WebRuntimeError` vocabulary. The API key is server-only — it is
+    placed in the request header and never appears in `Evidence`, logs or any
+    projection. Selecting the provider without a key fails closed in
+    `WebRuntimeConfig`, so there is no keyless fallback to another provider.
+
+    The Fetch response envelope is declared by #3385 but not yet empirically
+    verified, so the accepted shape is deliberately narrow and documented:
+    a JSON object, optionally wrapped in `data`/`result`, carrying at least one
+    recognized content field. Anything else fails closed as `web_malformed`.
+    """
+
+    def __init__(self, config: WebRuntimeConfig, transport: httpx.AsyncBaseTransport | None = None):
+        if config.provider != "tinyfish" or not config.tinyfish_api_key:
+            raise ValueError("TinyFish provider requires tinyfish configuration")
+        self._api_key = config.tinyfish_api_key
+        self._timeout_seconds = config.web_timeout_seconds
+        self._transport = transport
+
+    async def _request(
+        self,
+        method: str,
+        url: str,
+        *,
+        headers: dict[str, str],
+        params: dict[str, Any] | None = None,
+        json_body: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        timeout = httpx.Timeout(
+            connect=min(self._timeout_seconds, 8.0),
+            read=self._timeout_seconds,
+            write=min(self._timeout_seconds, 8.0),
+            pool=min(self._timeout_seconds, 8.0),
+        )
+        try:
+            async with httpx.AsyncClient(transport=self._transport, timeout=timeout, follow_redirects=False) as client:
+                async with client.stream(
+                    method,
+                    url,
+                    headers=headers,
+                    params=params,
+                    json=json_body,
+                ) as response:
+                    status = response.status_code
+                    raw = bytearray()
+                    async for chunk in response.aiter_bytes():
+                        if len(raw) + len(chunk) > MAX_PROVIDER_RESPONSE_BYTES:
+                            raise WebRuntimeError(
+                                "web_response_too_large",
+                                "web provider response exceeded the safe size limit",
+                                502,
+                            )
+                        raw.extend(chunk)
+        except WebRuntimeError:
+            raise
+        except httpx.TimeoutException as exc:
+            raise WebRuntimeError("web_timeout", "web provider timed out", 504) from exc
+        except httpx.HTTPError as exc:
+            raise WebRuntimeError("web_unavailable", "web provider transport failed", 502) from exc
+
+        if status in {401, 403}:
+            raise WebRuntimeError("web_auth", "web provider authentication failed", 503)
+        if status == 429:
+            raise WebRuntimeError("web_busy", "web provider is rate limited", 503)
+        if status >= 500:
+            raise WebRuntimeError("web_unavailable", "web provider is unavailable", 502)
+        if status < 200 or status >= 300:
+            raise WebRuntimeError("web_request_failed", "web provider rejected the request", 502)
+        try:
+            data = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise WebRuntimeError("web_malformed", "web provider returned malformed data", 502) from exc
+        if not isinstance(data, dict):
+            raise WebRuntimeError("web_malformed", "web provider returned malformed data", 502)
+        return data
+
+    async def search(self, query: str, limit: int = 5) -> list[Evidence]:
+        safe_query = _query(query)
+        safe_limit = _limit(limit)
+        data = await self._request(
+            "GET",
+            TINYFISH_SEARCH_ORIGIN,
+            headers={"X-API-Key": self._api_key, "Accept": "application/json"},
+            params={"query": safe_query},
+        )
+        items = data.get("results", [])
+        if not isinstance(items, list):
+            raise WebRuntimeError("web_malformed", "web search result shape is invalid", 502)
+        result: list[Evidence] = []
+        for item in items[:safe_limit]:
+            if not isinstance(item, dict):
+                continue
+            snippet = next(
+                (item.get(key) for key in _TINYFISH_SNIPPET_KEYS if item.get(key)),
+                None,
+            )
+            evidence = _evidence(
+                title=item.get("title"),
+                url=item.get("url"),
+                snippet=snippet,
+                provider="tinyfish",
+                source_type="search",
+            )
+            if evidence is not None:
+                result.append(evidence)
+        return result
+
+    async def fetch(self, url: str) -> Evidence:
+        safe_url = normalize_public_url(url)
+        data = await self._request(
+            "POST",
+            TINYFISH_FETCH_ORIGIN,
+            headers={
+                "X-API-Key": self._api_key,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            json_body={"url": safe_url},
+        )
+        payload: Any = data
+        for envelope in _TINYFISH_FETCH_ENVELOPE_KEYS:
+            candidate = payload.get(envelope)
+            if isinstance(candidate, dict):
+                payload = candidate
+                break
+        if not isinstance(payload, dict) or not any(
+            key in payload for key in _TINYFISH_FETCH_CONTENT_KEYS
+        ):
+            raise WebRuntimeError("web_malformed", "web page result shape is invalid", 502)
+        snippet = next(
+            (
+                payload.get(key)
+                for key in _TINYFISH_FETCH_CONTENT_KEYS
+                if isinstance(payload.get(key), str)
+            ),
+            "",
+        )
+        returned_url = (
+            payload.get("url") or payload.get("final_url") or payload.get("source_url") or safe_url
+        )
+        evidence = _evidence(
+            title=payload.get("title"),
+            url=returned_url,
+            snippet=snippet,
+            provider="tinyfish",
+            source_type="fetch",
+        )
+        if evidence is None:
+            raise WebRuntimeError("unsafe_web_result", "web provider returned an unsafe source URL", 502)
+        return evidence
+
+
 def create_web_provider(
     config: WebRuntimeConfig | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
@@ -507,4 +702,6 @@ def create_web_provider(
         return FirecrawlWebProvider(resolved, transport=transport)
     if resolved.provider == "daum":
         return DaumWebProvider(resolved, transport=transport)
+    if resolved.provider == "tinyfish":
+        return TinyFishWebProvider(resolved, transport=transport)
     raise RuntimeError("unreachable web provider configuration")

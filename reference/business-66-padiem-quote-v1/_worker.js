@@ -4,6 +4,22 @@ const PADIEM_PREFIX = "/api/padiem";
 const MAX_PADIEM_BODY_BYTES = 32 * 1024;
 const SAVED_SKILL_ROW = /^b66skill_[0-9a-f]{32}$/;
 const B66_ASSET_ROW = /^b66asset_[0-9a-f]{32}$/;
+const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+const SESSION_COOKIE_NAME = "padiem_session";
+
+function carriesSessionCookie(cookieHeader) {
+  return String(cookieHeader || "").split(";").some((part) => {
+    const eq = part.indexOf("=");
+    const name = (eq === -1 ? part : part.slice(0, eq)).trim();
+    return name === SESSION_COOKIE_NAME;
+  });
+}
+
+function bridgeMutationOriginAllowed(request, url) {
+  if (!MUTATING_METHODS.has(request.method)) return true;
+  if (!carriesSessionCookie(request.headers.get("cookie"))) return true;
+  return request.headers.get("origin") === url.origin;
+}
 
 function jsonError(code, status) {
   return new Response(JSON.stringify({ ok: false, error: { code } }), {
@@ -33,7 +49,8 @@ function padiemTarget(url, method) {
     ["/api/padiem/auth/google/callback", ["GET", "/auth/google/callback"]],
     ["/api/padiem/auth/logout", ["POST", "/api/auth/logout"]],
     ["/api/padiem/b66/company-profile", ["GET", "/api/b66/company-profile"]],
-    ["/api/padiem/b66/quote/interpret", ["POST", "/api/b66/quote/interpret"]]
+    ["/api/padiem/b66/quote/interpret", ["POST", "/api/b66/quote/interpret"]],
+    ["/api/padiem/b66/quote/pdf", ["POST", "/api/b66/quote/pdf"]]
   ]);
   if (exact.has(path)) {
     const [allowedMethod, upstreamPath] = exact.get(path);
@@ -81,9 +98,15 @@ function relaySetCookies(source, target) {
 async function handlePadiemBridge(request, url, env) {
   const upstreamPath = padiemTarget(url, request.method);
   if (!upstreamPath) return jsonError("padiem_route_not_allowed", 404);
+  if (!bridgeMutationOriginAllowed(request, url)) {
+    return jsonError("padiem_origin_rejected", 403);
+  }
 
-  const headers = new Headers({ "Accept": "application/json" });
+  const headers = new Headers({
+    "Accept": upstreamPath === "/api/b66/quote/pdf" ? "application/pdf,application/json" : "application/json"
+  });
   headers.set("X-B66-Origin", url.origin);
+  if (MUTATING_METHODS.has(request.method)) headers.set("Origin", PADIEM_CHAT_ORIGIN);
   const cookie = request.headers.get("cookie");
   if (cookie) headers.set("Cookie", cookie);
   const contentType = request.headers.get("content-type");
@@ -127,6 +150,10 @@ async function handlePadiemBridge(request, url, env) {
   });
   const upstreamType = upstream.headers.get("content-type");
   if (upstreamType) responseHeaders.set("Content-Type", upstreamType);
+  if (upstreamPath === "/api/b66/quote/pdf") {
+    const disposition = upstream.headers.get("content-disposition");
+    if (disposition) responseHeaders.set("Content-Disposition", disposition);
+  }
   for (const name of [
     "X-B66-Rejection-Reason",
     "X-B66-Rejection-Path",

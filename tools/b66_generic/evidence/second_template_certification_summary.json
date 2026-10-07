@@ -1,0 +1,82 @@
+{
+ "second_template": {
+  "identity": "private real quotation (customer facts NOT committed)",
+  "source_xlsx_sha256": "a4f067fcf61d8f0f682d14e3d80eeec3d30f93675b01c98aabfdfa7f2d332ef9",
+  "reference_pdf_sha256": "3b58eff344d84e1f96b66e690801b2291a4d3216fa0796a9b262e3c7b46ecbe7",
+  "reference_pdf_note": "faithful print of the source workbook (LibreOffice headless); page index 1",
+  "source_sheet": "갑지",
+  "page_index": 1,
+  "material_differences_vs_CGI": {
+   "page_orientation": "portrait -> landscape",
+   "header_field_block": "right-aligned (J..P) -> left-aligned (A..G)",
+   "item_table_columns": "A..H contiguous -> A,B,D,E,F,G,I,L with gaps",
+   "totals_wording": "소계/부가세/합계 -> [소계]/[V.A.T]/[총계]",
+   "totals_value_cell": "G22/G23/G24 -> I22/I23/I24",
+   "camera_object": "present -> absent",
+   "source_sheet_merges": "23 -> 80",
+   "written_total_cell": "A11 -> A8"
+  }
+ },
+ "compiler": {
+  "generic_compiler": true,
+  "template_specific_literals": "none",
+  "detection": "label-anchored semantic roles + geometric table/totals detection",
+  "source_cell_provenance": {
+   "quote_number": "B2",
+   "recipient": "B5",
+   "project_name": "B7"
+  }
+ },
+ "certification": {
+  "template": "second_unrelated_quotation",
+  "page_index": 1,
+  "gates": {
+   "BASELINE_BYTE_IDENTICAL": true,
+   "PAGE_GEOMETRY": true,
+   "PAGE_COUNT": true,
+   "TEXT_POSITION": true,
+   "FONT_FAMILY": true,
+   "FONT_SIZE": true,
+   "TEXT_SPACING_BASELINE": true,
+   "WRAP_SHRINK": true,
+   "LAYOUT_GEOMETRY": true,
+   "TABLE_LINES_BORDERS": true,
+   "LOGO_GEOMETRY": true,
+   "STAMP_GEOMETRY": true,
+   "STAMP_ALPHA": true,
+   "ASSET_LAYERING": true,
+   "REFERENCE_VALUE_PARITY": true,
+   "REFERENCE_VALUE_PARITY_detail": {
+    "quote_number": true,
+    "recipient": true,
+    "project_name": true,
+    "issue_date_serial": true,
+    "items": true
+   },
+   "RASTER_SIMILARITY": {
+    "72dpi": 0,
+    "150dpi": 0,
+    "300dpi": 0
+   }
+  },
+  "CRITICAL_GATES_PASS": true,
+  "SECOND_TEMPLATE_CERTIFICATION": "PASS"
+ },
+ "mutation_robustness": {
+  "cases": 14,
+  "pass": 11,
+  "rejected": [
+   "12_reject_negative:REJECT_NEGATIVE_AMOUNT",
+   "13_reject_bad_date:REJECT_INVALID_DATE",
+   "14_reject_text_overflow:REJECT_TEXT_OVERFLOW"
+  ],
+  "fail": 0,
+  "max_outside_allowed_changed_pixels": 0
+ },
+ "literal_scan": {
+  "CGI_SPECIFIC_LITERAL_IN_GENERIC_COMPILER": 0,
+  "CUSTOMER_PRIVATE_FACT_IN_GENERIC_ENGINE": 0,
+  "forbidden_literals_derived": 27,
+  "PASS": true
+ }
+}

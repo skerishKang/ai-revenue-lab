@@ -1565,6 +1565,22 @@
   // #3262: enable/disable toggle state for one canonical rule.
   const clawAutomationToggleStatus = document.getElementById("clawAutomationToggleStatus");
   const clawAutomationInFlightRules = new Set();
+  // #3270: bounded Edit (name + schedule) on a canonical, execution-ready rule.
+  const clawAutomationEditForm = document.getElementById("clawAutomationEditForm");
+  const clawAutomationEditName = document.getElementById("clawAutomationEditName");
+  const clawAutomationEditKind = document.getElementById("clawAutomationEditKind");
+  const clawAutomationEditDaypartField = document.getElementById("clawAutomationEditDaypartField");
+  const clawAutomationEditDaypart = document.getElementById("clawAutomationEditDaypart");
+  const clawAutomationEditIntervalField = document.getElementById("clawAutomationEditIntervalField");
+  const clawAutomationEditInterval = document.getElementById("clawAutomationEditInterval");
+  const clawAutomationEditCronField = document.getElementById("clawAutomationEditCronField");
+  const clawAutomationEditCron = document.getElementById("clawAutomationEditCron");
+  const clawAutomationEditTimezone = document.getElementById("clawAutomationEditTimezone");
+  const clawAutomationEditStatus = document.getElementById("clawAutomationEditStatus");
+  const clawAutomationEditSubmit = document.getElementById("clawAutomationEditSubmit");
+  const clawAutomationEditCancel = document.getElementById("clawAutomationEditCancel");
+  let clawAutomationEditingRuleId = null;
+  let clawAutomationEditInFlight = false;
   const clawManualForm = document.getElementById("clawManualForm");
   const clawChannel = document.getElementById("clawChannel");
   const clawAction = document.getElementById("clawAction");
@@ -2271,6 +2287,18 @@
           void toggleClawAutomationRule(rule.rule_id, rule.enabled !== true, toggle);
         });
         row.appendChild(toggle);
+        // #3270: Edit is offered on the same eligible rows only, and edits
+        // name + schedule exclusively (never task/execution material).
+        const edit = document.createElement("button");
+        edit.type = "button";
+        edit.className = "claw-automation-rule-edit";
+        edit.dataset.ruleEditRuleId = rule.rule_id;
+        edit.dataset.localeKey = "claw-automation-edit-button";
+        edit.textContent = uiT("claw-automation-edit-button");
+        edit.addEventListener("click", () => {
+          openClawAutomationEdit(rule);
+        });
+        row.appendChild(edit);
       }
       clawAutomationList.appendChild(row);
     });
@@ -2293,6 +2321,155 @@
     } catch (_) {
       setClawAutomationError();
     }
+  }
+
+  // --- #3270 bounded edit (name + schedule only) -----------------------------
+  // The form is prefilled ONLY from the existing safe projection, so the
+  // browser never sees task/execution material. The PATCH carries exactly the
+  // four editable fields; nothing is changed locally before the server answers
+  // 200 and the canonical list is reloaded.
+  function setClawAutomationEditStatus(messageKey) {
+    if (!clawAutomationEditStatus) return;
+    if (!messageKey) {
+      clawAutomationEditStatus.hidden = true;
+      clawAutomationEditStatus.textContent = "";
+      return;
+    }
+    clawAutomationEditStatus.hidden = false;
+    clawAutomationEditStatus.textContent = uiT(messageKey);
+  }
+
+  function syncClawAutomationEditFields() {
+    const kind = clawAutomationEditKind ? clawAutomationEditKind.value : "daypart";
+    if (clawAutomationEditDaypartField) clawAutomationEditDaypartField.hidden = kind !== "daypart";
+    if (clawAutomationEditIntervalField) clawAutomationEditIntervalField.hidden = kind !== "interval";
+    if (clawAutomationEditCronField) clawAutomationEditCronField.hidden = kind !== "cron";
+  }
+
+  function clawAutomationEditExpression() {
+    const kind = clawAutomationEditKind ? clawAutomationEditKind.value : "daypart";
+    if (kind === "interval") return clawAutomationEditInterval ? clawAutomationEditInterval.value : "";
+    if (kind === "cron") return clawAutomationEditCron ? clawAutomationEditCron.value : "";
+    return clawAutomationEditDaypart ? clawAutomationEditDaypart.value : "";
+  }
+
+  function findRuleEditButton(ruleId) {
+    if (!clawAutomationList) return null;
+    for (const row of clawAutomationList.children) {
+      for (const node of row.children || []) {
+        if (node.dataset && node.dataset.ruleEditRuleId === ruleId) return node;
+      }
+    }
+    return null;
+  }
+
+  function focusRuleEditAfterReload(ruleId) {
+    const button = findRuleEditButton(ruleId);
+    if (button) {
+      button.focus();
+      return;
+    }
+    if (clawAutomation) clawAutomation.focus();
+  }
+
+  function openClawAutomationEdit(rule) {
+    if (!clawAutomationEditForm) return;
+    clawAutomationEditingRuleId = rule.rule_id;
+    if (clawAutomationEditName) clawAutomationEditName.value = rule.name || "";
+    if (clawAutomationEditKind) clawAutomationEditKind.value = rule.schedule_kind || "daypart";
+    if (clawAutomationEditTimezone) clawAutomationEditTimezone.value = rule.schedule_timezone || "";
+    // Prefill the kind-aware expression control from the projected schedule.
+    const expression = rule.schedule_expression || "";
+    if (rule.schedule_kind === "interval") {
+      if (clawAutomationEditInterval) clawAutomationEditInterval.value = expression;
+    } else if (rule.schedule_kind === "cron") {
+      if (clawAutomationEditCron) clawAutomationEditCron.value = expression;
+    } else if (clawAutomationEditDaypart) {
+      clawAutomationEditDaypart.value = expression;
+    }
+    syncClawAutomationEditFields();
+    setClawAutomationEditStatus(null);
+    clawAutomationEditForm.hidden = false;
+    if (clawAutomationEditName) clawAutomationEditName.focus();
+  }
+
+  function closeClawAutomationEdit() {
+    const ruleId = clawAutomationEditingRuleId;
+    clawAutomationEditingRuleId = null;
+    if (clawAutomationEditForm) clawAutomationEditForm.hidden = true;
+    if (ruleId) {
+      const button = findRuleEditButton(ruleId);
+      if (button) {
+        button.focus();
+        return;
+      }
+    }
+    if (clawAutomation) clawAutomation.focus();
+  }
+
+  async function submitClawAutomationEdit(event) {
+    event.preventDefault();
+    const ruleId = clawAutomationEditingRuleId;
+    if (!clawAutomationEditForm || clawAutomationEditInFlight || !ruleId) return;
+    // Exactly the four editable fields — no authority or immutable field.
+    const payload = {
+      name: clawAutomationEditName ? clawAutomationEditName.value : "",
+      schedule_kind: clawAutomationEditKind ? clawAutomationEditKind.value : "",
+      schedule_expression: clawAutomationEditExpression(),
+      schedule_timezone: clawAutomationEditTimezone ? clawAutomationEditTimezone.value : "",
+    };
+    clawAutomationEditInFlight = true;
+    if (clawAutomationEditSubmit) clawAutomationEditSubmit.disabled = true;
+    try {
+      const response = await fetch(
+        `/api/claw/automation/rules/${encodeURIComponent(ruleId)}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload),
+        },
+      );
+      const data = await response.json().catch(() => null);
+      if (response.status === 200 && data && data.ok === true) {
+        setClawAutomationEditStatus("claw-automation-edit-saved");
+        await loadClawAutomationRules();
+        closeClawAutomationEdit();
+        return;
+      }
+      const code = data && data.error && typeof data.error.code === "string" ? data.error.code : "";
+      if (response.status === 403 || code === "owner_role_required") {
+        setClawAutomationEditStatus("claw-automation-toggle-forbidden");
+      } else if (response.status === 404 || code === "automation_rule_not_found") {
+        setClawAutomationEditStatus("claw-automation-toggle-not-found");
+      } else if (code === "automation_rule_not_mutable") {
+        setClawAutomationEditStatus("claw-automation-toggle-not-mutable");
+      } else if (code === "automation_rule_not_execution_ready") {
+        setClawAutomationEditStatus("claw-automation-toggle-not-ready");
+      } else if (response.status === 400 || response.status === 413) {
+        setClawAutomationEditStatus("claw-automation-edit-invalid");
+      } else {
+        setClawAutomationEditStatus("claw-automation-edit-failed");
+      }
+      // Failure: the form stays open with the entered values untouched and the
+      // rendered rows unchanged — nothing is optimistically edited.
+    } catch (_) {
+      setClawAutomationEditStatus("claw-automation-edit-failed");
+    } finally {
+      clawAutomationEditInFlight = false;
+      if (clawAutomationEditSubmit) clawAutomationEditSubmit.disabled = false;
+    }
+  }
+
+  if (clawAutomationEditForm) {
+    clawAutomationEditForm.addEventListener("submit", (event) => {
+      void submitClawAutomationEdit(event);
+    });
+  }
+  if (clawAutomationEditKind) {
+    clawAutomationEditKind.addEventListener("change", syncClawAutomationEditFields);
+  }
+  if (clawAutomationEditCancel) {
+    clawAutomationEditCancel.addEventListener("click", () => closeClawAutomationEdit());
   }
 
   // --- #3262 owner-gated enable/disable -------------------------------------
@@ -2588,6 +2765,10 @@
   const connectorsError = document.getElementById("connectorsError");
   const connectorsRetry = document.getElementById("connectorsRetry");
   const GOOGLE_CALENDAR_CONNECTOR = "google-calendar";
+  // #3289: the reviewed Google Drive READ-only connect handoff reuses the
+  // same reviewed ticket endpoint; only the reviewed connector id differs.
+  const GOOGLE_DRIVE_CONNECTOR = "google-drive";
+  const GOOGLE_DRIVE_TICKET_ENDPOINT = "/api/connectors/google/ticket";
   const GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket";
   const GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT = "/api/connectors/google/calendar/activate-read";
   const CONNECTOR_STATUS_IDS = new Set([
@@ -2705,6 +2886,83 @@
   function googleCalendarCard() {
     if (!connectorsDialog) return null;
     return connectorsDialog.querySelector(`[data-connector-id="connector:google:calendar@1"]`);
+  }
+
+
+  function googleDriveConnectButton() {
+    if (!connectorsDialog) return null;
+    return connectorsDialog.querySelector(`[data-google-connector-connect="${GOOGLE_DRIVE_CONNECTOR}"]`);
+  }
+
+  function googleDriveCard() {
+    if (!connectorsDialog) return null;
+    return connectorsDialog.querySelector(`[data-connector-id="connector:google:drive@1"]`);
+  }
+
+  /** The whole Drive visibility rule as a pure predicate: an authenticated
+   *  session and a canonical ``not_connected`` row. ``unverified``,
+   *  ``ambiguous``, ``connected``, a missing row and a signed-out session all
+   *  withhold the action, so the browser can never start a connect for a
+   *  workspace whose truth it does not hold. */
+  function driveConnectOffered(authenticated, workspaceState) {
+    return Boolean(authenticated && workspaceState === "not_connected");
+  }
+
+  /** Drive has no second axis: connect is the whole action. */
+  function syncGoogleDriveConnectButton(row = null) {
+    const button = googleDriveConnectButton();
+    if (!button) return;
+    const workspaceState = row && typeof row.workspace_state === "string" ? row.workspace_state : "";
+    const offered = driveConnectOffered(authState.authenticated, workspaceState);
+    button.hidden = !offered;
+    button.disabled = googleConnectorConnectInFlight;
+    if (offered && !googleConnectorConnectInFlight) {
+      setConnectorCopy(button, "connectors-connect-drive");
+    }
+  }
+
+  async function beginGoogleDriveConnect() {
+    const button = googleDriveConnectButton();
+    if (!button || googleConnectorConnectInFlight) return;
+    if (!authState.authenticated) {
+      openAuthDialog();
+      return;
+    }
+    googleConnectorConnectInFlight = true;
+    button.disabled = true;
+    setConnectorCopy(button, "connectors-connecting-drive");
+    if (connectorsError) connectorsError.hidden = true;
+    try {
+      // Exactly one ticket POST per user attempt. The raw connect ticket is
+      // never handed to this scope: the reviewed route performs the single
+      // OAuth-edge exchange server-side and answers with the bounded
+      // authorization shape only, so no ticket, provider or credential
+      // material can reach the DOM, storage, logs or the query string.
+      const startResponse = await fetch(GOOGLE_DRIVE_TICKET_ENDPOINT, {
+        method: "POST",
+        headers: { "Accept": "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ connector_id: GOOGLE_DRIVE_CONNECTOR, begin_oauth: true }),
+        cache: "no-store",
+      });
+      const startDocument = await startResponse.json().catch(() => null);
+      const authorization = startDocument && startDocument.authorization;
+      const redirect = startResponse.ok && authorization &&
+        authorization.connector_id === GOOGLE_DRIVE_CONNECTOR
+        ? reviewedGoogleAuthorizationUrl(authorization.authorization_url)
+        : null;
+      if (!redirect) throw new Error("drive authorization unavailable");
+      window.location.assign(redirect);
+    } catch (_) {
+      // Bounded failure with no automatic retry: only a new explicit user
+      // gesture starts another attempt, and this attempt's state is dropped.
+      googleConnectorConnectInFlight = false;
+      button.disabled = false;
+      setConnectorCopy(button, "connectors-connect-drive");
+      if (connectorsError) {
+        setConnectorCopy(connectorsError, "connectors-connect-drive-error");
+        connectorsError.hidden = false;
+      }
+    }
   }
 
   /** Projects the READ-grant axis onto the Calendar card's own state line.
@@ -2893,6 +3151,7 @@
       setConnectorCopy(card.querySelector("[data-connector-workspace]"), "connectors-workspace-loading");
     });
     syncGoogleCalendarConnectButton();
+    syncGoogleDriveConnectButton();
   }
 
   function setConnectorCardsUnavailable() {
@@ -2902,6 +3161,7 @@
       setConnectorCopy(card.querySelector("[data-connector-workspace]"), "connectors-workspace-unavailable");
     });
     syncGoogleCalendarConnectButton();
+    syncGoogleDriveConnectButton();
   }
 
   function renderConnectorStatus(document) {
@@ -2930,6 +3190,7 @@
       setConnectorCopy(card.querySelector("[data-connector-workspace]"), workspaceKey);
     });
     syncGoogleCalendarConnectButton(rows.get("connector:google:calendar@1") || null);
+    syncGoogleDriveConnectButton(rows.get("connector:google:drive@1") || null);
   }
 
   async function loadConnectorStatus() {
@@ -2999,6 +3260,11 @@
       return;
     }
     void beginGoogleCalendarConnect();
+  });
+  // #3289: Drive connect starts only from this explicit user gesture.
+  const driveConnectButton = googleDriveConnectButton();
+  if (driveConnectButton) driveConnectButton.addEventListener("click", () => {
+    void beginGoogleDriveConnect();
   });
   if (connectorsDialog) {
     connectorsDialog.addEventListener("cancel", (event) => {

@@ -116,6 +116,8 @@ def _happy_transport(spec, calls: list | None = None):
 
 
 def test_allowlist_matches_2798_authority_correction() -> None:
+    # Space Bunny was removed by the owner final retirement decision
+    # (2026-10-07): the Plus candidate list now excludes it.
     assert smoke.PLUS_CANDIDATE_IDS == (
         "agnes",
         "sensenova",
@@ -123,7 +125,6 @@ def test_allowlist_matches_2798_authority_correction() -> None:
         "motif",
         "mercury",
         "atria",
-        "space-bunny",
     )
     assert smoke.PRO_CANDIDATE_IDS == ("luna",)
     assert set(smoke.candidate_ids()) == {
@@ -134,8 +135,8 @@ def test_allowlist_matches_2798_authority_correction() -> None:
         "mercury",
         "atria",
         "luna",
-        "space-bunny",
     }
+    assert "space-bunny" not in smoke.CANDIDATE_REGISTRY
 
 
 def test_bai_qwen_is_excluded() -> None:
@@ -665,7 +666,7 @@ def test_canonical_safe_error_code_is_projected() -> None:
 
 
 def test_b14_normalized_upstream_timeout_is_projected_without_message() -> None:
-    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+    spec_obj = smoke.CANDIDATE_REGISTRY["agnes"]
 
     def transport(method: str, path: str, body: dict | None):
         if path == smoke.HEALTH_PATH:
@@ -684,14 +685,13 @@ def test_b14_normalized_upstream_timeout_is_projected_without_message() -> None:
     stdout = io.StringIO()
     with contextlib.redirect_stdout(stdout):
         rc = smoke.run(
-            "space-bunny",
+            "agnes",
             transport=transport,
-            modality="image",
         )
 
     output = stdout.getvalue()
     assert rc == 1
-    assert "SPACE_BUNNY_PRODUCTION_SMOKE=FAIL_CHAT_HTTP_504" in output
+    assert "AGNES_PRODUCTION_SMOKE=FAIL_CHAT_HTTP_504" in output
     assert "ENGINE_ERROR_CODE=upstream_timeout" in output
     assert PRIVATE_SENTINEL not in output
     assert "B14_CHAT_POST_COUNT=1" in output
@@ -769,256 +769,77 @@ def test_source_contract_forbids_raw_error_code_echo() -> None:
 
 
 # --------------------------------------------------------------------------
-# S1 — bounded Space Bunny image live-canary source extension (#3209).
+# S1 — Space Bunny retirement (LOCAL4 final, 2026-10-07).
 #
-# Source-only: every transport here is a synthetic in-process fake. No live
-# provider call is made by these tests.
+# Space Bunny was the only image-modality candidate and is now fully retired:
+# no product, manual, auto, or smoke execution, and no image candidate remains.
+# These tests pin that end state. Every transport below is a synthetic
+# in-process fake that must never be called.
 # --------------------------------------------------------------------------
 
-import base64
 
-_S1_TINY_PNG = b"\x89PNG\r\n\x1a\ns1-canary"
-_S1_TINY_PNG_URL = "data:image/png;base64," + base64.b64encode(_S1_TINY_PNG).decode("ascii")
-
-_S1_IMAGE_FIXTURE = (
-    ROOT
-    / "packages"
-    / "padiem-ai-core"
-    / "tests"
-    / "fixtures"
-    / "b66_e2e_corpus"
-    / "f11-simple-logo.png"
-)
+def test_space_bunny_candidate_is_not_allowlisted() -> None:
+    with pytest.raises(ValueError, match="candidate_not_allowlisted"):
+        smoke.resolve_candidate("space-bunny")
+    assert "space-bunny" not in smoke.CANDIDATE_REGISTRY
+    assert "space-bunny" not in smoke.PLUS_CANDIDATE_IDS
 
 
-def _s1_image_chat(sentinel_answer: str = "S1_IMAGE_ANSWER_SENTINEL") -> bytes:
-    return _json(
-        {
-            "id": "synthetic-image",
-            "object": "chat.completion",
-            "model": "stealth/space-bunny-alpha",
-            "choices": [
-                {
-                    "index": 0,
-                    "message": {"role": "assistant", "content": sentinel_answer},
-                    "finish_reason": "stop",
-                }
-            ],
-            "business14": {
-                "mode": "live",
-                "provider_mode": "live",
-                "provider": "Kilo Gateway / Stealth",
-                "selected_provider": "Kilo Gateway / Stealth",
-                "model_route": "kilo/stealth-space-bunny-alpha",
-                "selected_model": "kilo/stealth-space-bunny-alpha",
-                "upstream_model": "stealth/space-bunny-alpha",
-                "selected_upstream_model": "stealth/space-bunny-alpha",
-                "actual_response_model": "stealth/space-bunny-alpha",
-                "route_mode": "manual",
-                "fallback_used": False,
-                "attempt_count": 1,
-                "route_evidence_status": "live_verified",
-            },
-        }
-    )
-
-
-def _s1_image_transport(spec, calls: list | None = None, answer: str = "S1_IMAGE_ANSWER_SENTINEL"):
-    def transport(method: str, path: str, body: dict | None):
-        if calls is not None:
-            calls.append((method, path, body))
-        if path == smoke.HEALTH_PATH:
-            return 200, _health(spec)
-        if path == smoke.MODELS_PATH:
-            return 200, _models(spec)
-        if path == smoke.CHAT_PATH:
-            return 200, _s1_image_chat(answer)
-        raise AssertionError(path)
-
-    return transport
-
-
-def test_space_bunny_candidate_reuses_kilo_platform_secret() -> None:
-    spec_obj = smoke.resolve_candidate("space-bunny")
-    assert spec_obj.candidate_id == "space-bunny"
-    assert spec_obj.tier == "plus"
-    assert spec_obj.provider_id == "kilo"
-    assert spec_obj.provider_name == "Kilo Gateway / Stealth"
-    assert spec_obj.model_id == "kilo/stealth-space-bunny-alpha"
-    assert spec_obj.upstream_model == "stealth/space-bunny-alpha"
-    assert spec_obj.credential_binding == "PADIEM_KILO_API_KEY"
-    assert spec_obj.expected_binding == "PADIEM_KILO_API_KEY"
-    assert spec_obj.credential_mode == "optional_platform_secret"
-
-
-def test_space_bunny_auth_is_optional_but_other_candidates_remain_secret_required() -> None:
-    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
-    assert spec_obj.credential_mode == "optional_platform_secret"
-    assert spec_obj.credential_binding == "PADIEM_KILO_API_KEY"
-    assert spec_obj.expected_binding == "PADIEM_KILO_API_KEY"
-    for cid, candidate in smoke.CANDIDATE_REGISTRY.items():
-        if cid == "space-bunny":
-            continue
-        assert candidate.credential_mode == "platform_secret"
-        assert candidate.credential_binding
-        assert candidate.expected_binding
-
-
-def test_canonical_image_body_pins_exact_model_and_parts() -> None:
-    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
-    body = smoke.canonical_image_body(spec_obj, _S1_TINY_PNG_URL)
-    assert body["model"] == "kilo/stealth-space-bunny-alpha"
-    assert body["temperature"] == 0
-    assert body["max_tokens"] == smoke.SPACE_BUNNY_IMAGE_MAX_TOKENS == 1024
-    (message,) = body["messages"]
-    assert message["role"] == "user"
-    text_part, image_part = message["content"]
-    assert text_part["type"] == "text" and text_part["text"].strip()
-    assert image_part == {
-        "type": "image_url",
-        "image_url": {"url": _S1_TINY_PNG_URL},
-    }
-
-
-def test_canonical_image_body_is_fail_closed_for_other_candidates() -> None:
-    for cid in ("agnes", "sensenova", "poolside", "motif", "mercury", "atria", "luna"):
+def test_no_image_candidate_remains_after_retirement() -> None:
+    # The retired Space Bunny was the only image candidate.
+    assert smoke.IMAGE_ONLY_CANDIDATE_ID == ""
+    for cid in sorted(smoke.CANDIDATE_REGISTRY):
         with pytest.raises(ValueError, match="image_modality_not_permitted"):
-            smoke.canonical_image_body(smoke.CANDIDATE_REGISTRY[cid], _S1_TINY_PNG_URL)
+            smoke.canonical_image_body(
+                smoke.CANDIDATE_REGISTRY[cid], "data:image/png;base64,AAAA"
+            )
 
 
-def test_space_bunny_image_success_posts_once_with_image_evidence() -> None:
-    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+def test_space_bunny_run_fails_closed_before_any_transport() -> None:
     calls: list = []
 
-    stdout = io.StringIO()
-    with contextlib.redirect_stdout(stdout):
-        rc = smoke.run(
-            "space-bunny",
-            transport=_s1_image_transport(spec_obj, calls),
-            modality="image",
-        )
-
-    assert rc == 0
-    assert [(m, p) for m, p, _ in calls] == [
-        ("GET", smoke.HEALTH_PATH),
-        ("GET", smoke.MODELS_PATH),
-        ("POST", smoke.CHAT_PATH),
-    ]
-    posted = calls[2][2]
-    assert posted["model"] == "kilo/stealth-space-bunny-alpha"
-    content = posted["messages"][0]["content"]
-    assert content[0]["type"] == "text"
-    assert content[1]["type"] == "image_url"
-    assert content[1]["image_url"]["url"].startswith("data:image/png;base64,")
-
-    output = stdout.getvalue()
-    assert "SPACE_BUNNY_PRODUCTION_IMAGE_SMOKE=PASS" in output
-    assert "SPACE_BUNNY_PROVIDER_REGISTERED=YES" in output
-    assert "SPACE_BUNNY_ROUTE_REGISTERED=YES" in output
-    assert "SPACE_BUNNY_EXACT_MODEL_IDENTITY=PASS" in output
-    assert "SPACE_BUNNY_INPUT_MODALITY=IMAGE" in output
-    assert "SPACE_BUNNY_ACTUAL_RESPONSE_MODEL_EVIDENCE=PASS" in output
-    assert "SPACE_BUNNY_PROVIDER_MATCH=YES" in output
-    assert "SPACE_BUNNY_FALLBACK_USED=NO" in output
-    assert "SPACE_BUNNY_ATTEMPT_COUNT=1" in output
-    assert "B14_CHAT_POST_COUNT=1" in output
-    assert "NETWORK_RETRY_COUNT=0" in output
-    assert "MAX_PROVIDER_CALLS=1" in output
-    assert "RETRY=0" in output
-    assert "FALLBACK=0" in output
-    assert "AUTO_ROUTE_USED=0" in output
-    assert "RAW_IMAGE_PAYLOAD_OUTPUT=0" in output
-    assert "RAW_RESPONSE_CONTENT_OUTPUT=0" in output
-    assert "PRIVATE_PAYLOAD_OUTPUT=0" in output
-    assert "SECRET_VALUE_OUTPUT=0" in output
-    assert "PRODUCTION_MUTATION=0" in output
-    assert "S1_IMAGE_ANSWER_SENTINEL" not in output
-
-
-def test_space_bunny_health_without_kilo_secret_still_runs_anonymous() -> None:
-    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
-    calls: list = []
-
-    def transport(method: str, path: str, body: dict | None):
-        calls.append((method, path, body))
-        if path == smoke.HEALTH_PATH:
-            return 200, _health(spec_obj, has_key=False)
-        if path == smoke.MODELS_PATH:
-            return 200, _models(spec_obj)
-        if path == smoke.CHAT_PATH:
-            return 200, _chat(spec_obj)
-        raise AssertionError(path)
+    def transport(*args, **kwargs):
+        calls.append((args, kwargs))
+        raise AssertionError("network must not run for a retired candidate")
 
     stdout = io.StringIO()
     with contextlib.redirect_stdout(stdout):
         rc = smoke.run("space-bunny", transport=transport)
 
-    assert rc == 0
-    assert [(m, p) for m, p, _ in calls] == [
-        ("GET", smoke.HEALTH_PATH),
-        ("GET", smoke.MODELS_PATH),
-        ("POST", smoke.CHAT_PATH),
-    ]
-    output = stdout.getvalue()
-    assert "SPACE_BUNNY_PRODUCTION_SMOKE=PASS" in output
-    assert "SPACE_BUNNY_CREDENTIAL_MODE=OPTIONAL_PLATFORM_SECRET" in output
-    assert "SPACE_BUNNY_CREDENTIAL_PRESENT=NO" in output
-    assert "B14_CHAT_POST_COUNT=1" in output
-
-
-def test_space_bunny_image_failure_posts_at_most_once() -> None:
-    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
-    posts = 0
-
-    def transport(method: str, path: str, body: dict | None):
-        nonlocal posts
-        if path == smoke.HEALTH_PATH:
-            return 200, _health(spec_obj)
-        if path == smoke.MODELS_PATH:
-            return 200, _models(spec_obj)
-        posts += 1
-        return 503, _json({"error": {"code": "overloaded_error", "message": "busy"}})
-
-    stdout = io.StringIO()
-    with contextlib.redirect_stdout(stdout):
-        rc = smoke.run("space-bunny", transport=transport, modality="image")
-
-    assert rc == 1
-    assert posts <= 1
-    assert "FAIL_CHAT_HTTP_503" in stdout.getvalue()
-
-
-@pytest.mark.parametrize("candidate_id", ["agnes", "sensenova", "poolside", "motif", "mercury", "atria", "luna"])
-def test_image_modality_for_non_space_bunny_is_rejected_before_provider_call(
-    candidate_id: str,
-) -> None:
-    spec_obj = smoke.CANDIDATE_REGISTRY[candidate_id]
-    calls: list = []
-
-    stdout = io.StringIO()
-    with contextlib.redirect_stdout(stdout):
-        rc = smoke.run(
-            candidate_id,
-            transport=_happy_transport(spec_obj, calls),
-            modality="image",
-        )
-
     assert rc == 1
     assert calls == []
-    output = stdout.getvalue()
-    assert "FAIL_IMAGE_MODALITY_NOT_PERMITTED" in output
-    assert "B14_CHAT_POST_COUNT=0" in output
+    assert "B14_CHAT_POST_COUNT=0" in stdout.getvalue()
+
+
+def test_image_modality_is_rejected_before_provider_call_for_every_candidate() -> None:
+    for candidate_id in sorted(smoke.CANDIDATE_REGISTRY):
+        spec_obj = smoke.CANDIDATE_REGISTRY[candidate_id]
+        calls: list = []
+
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            rc = smoke.run(
+                candidate_id,
+                transport=_happy_transport(spec_obj, calls),
+                modality="image",
+            )
+
+        assert rc == 1
+        assert calls == []
+        output = stdout.getvalue()
+        assert "FAIL_IMAGE_MODALITY_NOT_PERMITTED" in output
+        assert "B14_CHAT_POST_COUNT=0" in output
 
 
 @pytest.mark.parametrize("modality", ["video", "audio", "IMAGE", "", "text ", "auto"])
 def test_unknown_modality_is_rejected_before_provider_call(modality: str) -> None:
-    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
+    spec_obj = smoke.CANDIDATE_REGISTRY["agnes"]
     calls: list = []
 
     stdout = io.StringIO()
     with contextlib.redirect_stdout(stdout):
         rc = smoke.run(
-            "space-bunny",
+            "agnes",
             transport=_happy_transport(spec_obj, calls),
             modality=modality,
         )
@@ -1039,125 +860,40 @@ def test_unknown_candidate_with_image_modality_is_rejected() -> None:
     assert "B14_CHAT_POST_COUNT=0" in stdout.getvalue()
 
 
-def test_image_payload_and_answer_never_reach_stdout() -> None:
-    sentinel_url = "data:image/png;base64,S1_IMAGE_SENTINEL_PAYLOAD"
-    answer_sentinel = "S1_ANSWER_SENTINEL_PRIVATE"
-    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
-    calls: list = []
-
-    real_loader = smoke._load_space_bunny_image_data_url
-    smoke._load_space_bunny_image_data_url = lambda: sentinel_url  # type: ignore[assignment]
-    try:
-        stdout = io.StringIO()
-        with contextlib.redirect_stdout(stdout):
-            rc = smoke.run(
-                "space-bunny",
-                transport=_s1_image_transport(spec_obj, calls, answer=answer_sentinel),
-                modality="image",
-            )
-    finally:
-        smoke._load_space_bunny_image_data_url = real_loader
-
-    assert rc == 0
-    assert calls[2][2]["messages"][0]["content"][1]["image_url"]["url"] == sentinel_url
-    output = stdout.getvalue()
-    assert sentinel_url not in output
-    assert "S1_IMAGE_SENTINEL_PAYLOAD" not in output
-    assert answer_sentinel not in output
-
-
-def test_image_fixture_is_the_reused_synthetic_corpus_png() -> None:
-    assert smoke.SPACE_BUNNY_IMAGE_FIXTURE == _S1_IMAGE_FIXTURE
-    assert _S1_IMAGE_FIXTURE.is_file()
-    raw = _S1_IMAGE_FIXTURE.read_bytes()
-    assert 0 < len(raw) <= 4 * 1024 * 1024
-    assert raw.startswith(b"\x89PNG\r\n\x1a\n")
-    url = smoke._load_space_bunny_image_data_url()
-    assert url.startswith("data:image/png;base64,")
-    assert len(url) > len("data:image/png;base64,")
-
-
-def test_b66_f02_image_body_matches_b66_gateway_posture() -> None:
-    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
-    data_url = smoke._load_b66_f02_image_data_url()
-    body = smoke.canonical_image_body(
-        spec_obj,
-        data_url,
-        image_case=smoke.IMAGE_CASE_B66_F02,
-    )
-    assert body["model"] == "kilo/stealth-space-bunny-alpha"
-    assert body["stream"] is False
-    assert body["temperature"] == 0
-    assert body["max_tokens"] == smoke.B66_F02_IMAGE_MAX_TOKENS == 3500
-    assert body["business14"] == {
-        "required_capabilities": ["image"],
-        "allow_external_fallback": False,
-        "max_attempts": 1,
-        "max_retries": 0,
+def test_recipient_mismatch_class_vocabulary_is_fixed() -> None:
+    assert smoke.RECIPIENT_MISMATCH_CLASSES == {
+        "non_string",
+        "spacing_punctuation",
+        "corporate_designator",
+        "sender_confusion",
+        "core_name_overlap",
+        "semantic",
     }
-    text_part, image_part = body["messages"][0]["content"]
-    assert text_part["type"] == "text"
-    assert "JSON 객체 하나만" in text_part["text"]
-    assert "JSON null" in text_part["text"]
-    assert "합계나 부가세를 계산하지" in text_part["text"]
-    assert "공급받는 자:" in text_part["text"]
-    assert "공급자:" in text_part["text"]
-    assert "recipient가 아니므로 사용하지" in text_part["text"]
-    assert image_part["type"] == "image_url"
-    assert image_part["image_url"]["url"].startswith("data:image/png;base64,")
 
 
-def test_b66_f02_fixture_is_exact_committed_synthetic_quotation() -> None:
-    assert smoke.B66_F02_IMAGE_FIXTURE.is_file()
-    raw = smoke.B66_F02_IMAGE_FIXTURE.read_bytes()
-    assert hashlib.sha256(raw).hexdigest() == smoke.B66_F02_IMAGE_SHA256
-    assert smoke.B66_F02_IMAGE_SHA256 == (
-        "af9f48578b79dc9d712e695079e4b0fd44a02916f12007c14429593173432ba4"
-    )
-    assert raw.startswith(b"\x89PNG\r\n\x1a\n")
-    url = smoke._load_b66_f02_image_data_url()
-    assert url.startswith("data:image/png;base64,")
-
-
-def test_b66_f02_visual_facts_success_uses_shared_canary_authority() -> None:
-    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
-    calls: list = []
-    answer = json.dumps(
-        {
-            "quote_number": "Q-2026-3002",
-            "recipient": "주식회사 샘플산업",
-            "first_item": "스테인리스 배관 40x40",
-            "first_quantity": 12,
-            "first_unit_price": "9.800",
-        },
-        ensure_ascii=False,
-    )
-
-    stdout = io.StringIO()
-    with contextlib.redirect_stdout(stdout):
-        rc = smoke.run(
-            "space-bunny",
-            transport=_s1_image_transport(spec_obj, calls, answer=answer),
-            modality="image",
-            image_case=smoke.IMAGE_CASE_B66_F02,
-        )
-
-    assert rc == 0
-    assert [(m, p) for m, p, _ in calls] == [
-        ("GET", smoke.HEALTH_PATH),
-        ("GET", smoke.MODELS_PATH),
-        ("POST", smoke.CHAT_PATH),
-    ]
-    posted = calls[2][2]
-    assert posted["business14"]["required_capabilities"] == ["image"]
-    assert posted["business14"]["allow_external_fallback"] is False
-    assert posted["business14"]["max_attempts"] == 1
-    output = stdout.getvalue()
-    assert "B66_F02_VISUAL_FACTS=PASS" in output
-    assert "B66_F02_FIXTURE_SHA256=PASS" in output
-    assert "SPACE_BUNNY_ATTEMPT_COUNT=1" in output
-    assert "B14_CHAT_POST_COUNT=1" in output
-    assert answer not in output
+@pytest.mark.parametrize(
+    "value,expected_class",
+    [
+        (None, "non_string"),
+        (123, "non_string"),
+        ("주식회사샘플산업", "spacing_punctuation"),
+        ("주식회사·샘플산업", "spacing_punctuation"),
+        ("(주) 샘플산업", "corporate_designator"),
+        ("㈜ 샘플산업", "corporate_designator"),
+        ("샘플산업", "corporate_designator"),
+        ("샘플산업 주식회사", "corporate_designator"),
+        ("주식회사 테스트상사", "sender_confusion"),
+        ("(주) 테스트상사", "sender_confusion"),
+        ("주식회사 샘플산업 귀중", "core_name_overlap"),
+        ("샘플산업 본사", "core_name_overlap"),
+        ("다른회사", "semantic"),
+    ],
+)
+def test_recipient_mismatch_classification_is_closed_and_payload_free(
+    value, expected_class,
+) -> None:
+    assert smoke._recipient_mismatch_class(value) == expected_class
+    assert expected_class in smoke.RECIPIENT_MISMATCH_CLASSES
 
 
 @pytest.mark.parametrize(
@@ -1186,213 +922,10 @@ def test_compact_unsigned_number_grouping_is_bounded(value, expected) -> None:
     assert smoke._compact_unsigned_number(value) == expected
 
 
-@pytest.mark.parametrize(
-    "value,expected_class",
-    [
-        (None, "non_string"),
-        (123, "non_string"),
-        ("주식회사샘플산업", "spacing_punctuation"),
-        ("주식회사·샘플산업", "spacing_punctuation"),
-        ("(주) 샘플산업", "corporate_designator"),
-        ("㈜ 샘플산업", "corporate_designator"),
-        ("샘플산업", "corporate_designator"),
-        ("샘플산업 주식회사", "corporate_designator"),
-        ("주식회사 테스트상사", "sender_confusion"),
-        ("(주) 테스트상사", "sender_confusion"),
-        ("주식회사 샘플산업 귀중", "core_name_overlap"),
-        ("샘플산업 본사", "core_name_overlap"),
-        ("다른회사", "semantic"),
-    ],
-)
-def test_recipient_mismatch_classification_is_closed_and_payload_free(
-    value, expected_class,
-) -> None:
-    assert smoke._recipient_mismatch_class(value) == expected_class
-    assert expected_class in smoke.RECIPIENT_MISMATCH_CLASSES
-
-
-def test_recipient_mismatch_class_vocabulary_is_fixed() -> None:
-    assert smoke.RECIPIENT_MISMATCH_CLASSES == {
-        "non_string",
-        "spacing_punctuation",
-        "corporate_designator",
-        "sender_confusion",
-        "core_name_overlap",
-        "semantic",
-    }
-
-
-@pytest.mark.parametrize(
-    "field,bad_value,expected_code",
-    [
-        ("quote_number", "Q-WRONG", "b66_f02_visual_fact_mismatch_quote_number"),
-        ("recipient", "다른회사", "b66_f02_visual_fact_mismatch_recipient_semantic"),
-        ("first_item", "다른품목", "b66_f02_visual_fact_mismatch_first_item"),
-        ("first_quantity", 99, "b66_f02_visual_fact_mismatch_first_quantity"),
-        ("first_unit_price", "123", "b66_f02_visual_fact_mismatch_first_unit_price"),
-    ],
-)
-def test_b66_f02_wrong_visual_fact_fails_closed_without_raw_answer(
-    field: str, bad_value, expected_code: str,
-) -> None:
-    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
-    calls: list = []
-    facts = dict(smoke.B66_F02_EXPECTED_FACTS)
-    facts[field] = bad_value
-    answer = json.dumps(facts, ensure_ascii=False)
-
-    stdout = io.StringIO()
-    with contextlib.redirect_stdout(stdout):
-        rc = smoke.run(
-            "space-bunny",
-            transport=_s1_image_transport(spec_obj, calls, answer=answer),
-            modality="image",
-            image_case=smoke.IMAGE_CASE_B66_F02,
-        )
-
-    assert rc == 1
-    output = stdout.getvalue()
-    assert "SPACE_BUNNY_PRODUCTION_SMOKE=FAIL_b66_f02_visual_facts_mismatch" in output
-    assert f"B66_F02_MISMATCH_FIELDS={field}" in output
-    if field == "recipient":
-        assert "B66_F02_RECIPIENT_DIAGNOSTIC=semantic" in output
-    else:
-        assert "B66_F02_RECIPIENT_DIAGNOSTIC=" not in output
-    assert "B14_CHAT_POST_COUNT=1" in output
-    assert answer not in output
-    assert str(bad_value) not in output
-    with pytest.raises(ValueError, match=expected_code):
-        smoke._validate_b66_f02_answer(answer)
-
-
-@pytest.mark.parametrize(
-    "recipient,expected_class",
-    [
-        ("주식회사샘플산업", "spacing_punctuation"),
-        ("(주) 샘플산업", "corporate_designator"),
-        ("주식회사 테스트상사", "sender_confusion"),
-        ("주식회사 샘플산업 귀중", "core_name_overlap"),
-        (None, "non_string"),
-    ],
-)
-def test_b66_f02_recipient_diagnostic_never_emits_raw_value(
-    recipient, expected_class: str,
-) -> None:
-    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
-    facts = dict(smoke.B66_F02_EXPECTED_FACTS)
-    facts["recipient"] = recipient
-    answer = json.dumps(facts, ensure_ascii=False)
-
-    stdout = io.StringIO()
-    with contextlib.redirect_stdout(stdout):
-        rc = smoke.run(
-            "space-bunny",
-            transport=_s1_image_transport(spec_obj, [], answer=answer),
-            modality="image",
-            image_case=smoke.IMAGE_CASE_B66_F02,
-        )
-
-    assert rc == 1
-    output = stdout.getvalue()
-    assert "SPACE_BUNNY_PRODUCTION_SMOKE=FAIL_b66_f02_visual_facts_mismatch" in output
-    assert "B66_F02_VISUAL_FACTS=FAIL" in output
-    assert "B66_F02_MISMATCH_FIELDS=recipient" in output
-    assert f"B66_F02_RECIPIENT_DIAGNOSTIC={expected_class}" in output
-    assert answer not in output
-    if isinstance(recipient, str):
-        assert recipient not in output
-
-
-def test_b66_f02_batch_diagnostics_cover_all_facts_in_one_response() -> None:
-    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
-    facts = dict(smoke.B66_F02_EXPECTED_FACTS)
-    facts.update(
-        {
-            "recipient": smoke.B66_F02_EXPECTED_SENDER,
-            "first_item": "다른품목",
-            "first_quantity": 99,
-            "first_unit_price": "123",
-        }
-    )
-    answer = json.dumps(facts, ensure_ascii=False)
-
-    stdout = io.StringIO()
-    with contextlib.redirect_stdout(stdout):
-        rc = smoke.run(
-            "space-bunny",
-            transport=_s1_image_transport(spec_obj, [], answer=answer),
-            modality="image",
-            image_case=smoke.IMAGE_CASE_B66_F02,
-        )
-
-    assert rc == 1
-    output = stdout.getvalue()
-    assert "SPACE_BUNNY_PRODUCTION_SMOKE=FAIL_b66_f02_visual_facts_mismatch" in output
-    assert "B66_F02_VISUAL_FACTS=FAIL" in output
-    assert (
-        "B66_F02_MISMATCH_FIELDS="
-        "recipient,first_item,first_quantity,first_unit_price"
-    ) in output
-    assert "B66_F02_RECIPIENT_DIAGNOSTIC=sender_confusion" in output
-    assert "B14_CHAT_POST_COUNT=1" in output
-    assert answer not in output
-    assert smoke.B66_F02_EXPECTED_SENDER not in output
-    assert "다른품목" not in output
-
-
-def test_b66_f02_non_json_answer_fails_closed_without_raw_answer() -> None:
-    spec_obj = smoke.CANDIDATE_REGISTRY["space-bunny"]
-    answer = "PRIVATE_B66_F02_NON_JSON"
-    stdout = io.StringIO()
-    with contextlib.redirect_stdout(stdout):
-        rc = smoke.run(
-            "space-bunny",
-            transport=_s1_image_transport(spec_obj, [], answer=answer),
-            modality="image",
-            image_case=smoke.IMAGE_CASE_B66_F02,
-        )
-    assert rc == 1
-    output = stdout.getvalue()
-    assert "FAIL_b66_f02_answer_not_json" in output
-    assert answer not in output
-
-
-def test_b66_image_case_requires_image_modality_and_known_case() -> None:
-    calls: list = []
-
-    def transport(*args, **kwargs):
-        calls.append((args, kwargs))
-        raise AssertionError("network must not run")
-
-    stdout = io.StringIO()
-    with contextlib.redirect_stdout(stdout):
-        rc = smoke.run(
-            "space-bunny",
-            transport=transport,
-            modality="text",
-            image_case=smoke.IMAGE_CASE_B66_F02,
-        )
-    assert rc == 1
-    assert calls == []
-    assert "FAIL_IMAGE_CASE_REQUIRES_IMAGE_MODALITY" in stdout.getvalue()
-
-    stdout = io.StringIO()
-    with contextlib.redirect_stdout(stdout):
-        rc = smoke.run(
-            "space-bunny",
-            transport=transport,
-            modality="image",
-            image_case="unknown-case",
-        )
-    assert rc == 1
-    assert calls == []
-    assert "FAIL_UNKNOWN_IMAGE_CASE" in stdout.getvalue()
-
-
 def test_cli_bogus_modality_fails_closed_without_network() -> None:
     stdout = io.StringIO()
     with contextlib.redirect_stdout(stdout):
-        rc = smoke.main(["space-bunny", "--authorized-live-run", "--modality=bogus"])
+        rc = smoke.main(["agnes", "--authorized-live-run", "--modality=bogus"])
 
     assert rc == 1
     assert "FAIL_UNKNOWN_MODALITY" in stdout.getvalue()

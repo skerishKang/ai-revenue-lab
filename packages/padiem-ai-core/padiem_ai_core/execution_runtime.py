@@ -37,6 +37,7 @@ _MODEL_POLICY_FIELDS = frozenset(
         "allow_external_fallback",
         "provider_order",
         "max_attempts",
+        "max_retries",
     }
 )
 
@@ -152,6 +153,11 @@ def _normalize_model_policy(
 
     allow_external_fallback = policy.get("allow_external_fallback")
     max_attempts = policy.get("max_attempts")
+    max_retries = policy.get("max_retries")
+    if max_retries is not None and (
+        isinstance(max_retries, bool) or not isinstance(max_retries, int)
+    ):
+        raise ValueError("model_policy.max_retries must be an integer or None")
 
     routing = B14RoutingOptions(
         task_type=agent.task_type,
@@ -162,6 +168,7 @@ def _normalize_model_policy(
         allow_external_fallback=allow_external_fallback,
         provider_order=provider_order,
         max_attempts=max_attempts,
+        max_retries=max_retries,
     )
     return model.strip(), float(temperature), routing
 

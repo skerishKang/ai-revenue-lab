@@ -8,6 +8,7 @@ import * as pdfjsLib from "./vendor/pdf.mjs";
 import { WorkerMessageHandler } from "./vendor/pdf.worker.mjs";
 
 const PINNED_PDFJS_VERSION = "6.3.289";
+const B67_BROWSER_EXTRACTION_CONTRACT_VERSION = "b67-browser-pdf-extraction.v1";
 if (pdfjsLib.version !== PINNED_PDFJS_VERSION) {
   throw new Error("Pinned PDF.js version mismatch");
 }
@@ -35,6 +36,15 @@ function normalizePageText(textContent) {
     .trim();
 }
 
+function sha256Hex(buffer) {
+  if (!globalThis.crypto || !globalThis.crypto.subtle) {
+    throw new Error("Web Crypto unavailable");
+  }
+  return globalThis.crypto.subtle.digest("SHA-256", buffer).then((digest) => {
+    return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  });
+}
+
 function mapPdfError(error) {
   const name = error && typeof error.name === "string" ? error.name : "";
   if (name === "PasswordException") return "pdf_password_required";
@@ -57,6 +67,7 @@ async function parsePdf(buffer, limits) {
   let loadingTask = null;
   let document = null;
   try {
+    const sourceSha256 = await sha256Hex(buffer);
     loadingTask = pdfjsLib.getDocument({
       data: new Uint8Array(buffer),
       disableAutoFetch: true,
@@ -112,8 +123,10 @@ async function parsePdf(buffer, limits) {
       : (ocrCandidatePages.length === 0 ? "all" : "mixed");
 
     const projection = {
+      contract_version: B67_BROWSER_EXTRACTION_CONTRACT_VERSION,
       parser: "pdfjs-dist",
       parser_version: PINNED_PDFJS_VERSION,
+      source_sha256: sourceSha256,
       page_count: pages.length,
       pages,
       total_text_chars: totalTextChars,

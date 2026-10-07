@@ -61,11 +61,51 @@ jobs:
       - name: Run R2 credential authority split contract tests
         run: python -m pytest -q .github/tests/test_r2_credential_authority_split.py
 
+      # #3527: workflow trigger scope is a policy consistency property. This
+      # lane has no paths filter, so the trigger contract test always runs and
+      # a re-broadened (or silently too-narrow) trigger cannot land unnoticed.
+      - name: Run CI trigger scope contract tests
+        run: |
+          python -m pytest -q \
+            .github/tests/test_b62_pr_preview_trigger_scope.py \
+            .github/tests/test_b62_worker_deploy_trigger_scope.py
+
+      # #3625: a merge-forward can show CHANGED_FILE_OVERLAP=0 and still break a
+      # lane that collects another component's test tree, because a shared
+      # conftest/fixture import is not a changed file in that lane. This guard
+      # is derived from source, never a hardcoded package allowlist.
+      - name: Run cross-lane test dependency guard
+        run: python .github/scripts/cross_lane_test_dependency_guard.py
+
+      - name: Run cross-lane dependency guard contract tests
+        run: python -m pytest -q .github/tests/test_cross_lane_test_dependency_guard.py
+
+      # #3652: the Engine canaries hash working-copy bytes, so a PINNED_SHA256
+      # target without an autocrlf-proof .gitattributes rule passes on
+      # ubuntu-latest and fails only on a Windows checkout. This guard couples the
+      # two lists statically and is collected from source, never a hardcoded path
+      # allowlist.
+      - name: Run frozen-source checkout-byte guard
+        run: python .github/scripts/frozen_source_checkout_byte_guard.py
+
+      - name: Run frozen-source checkout-byte guard contract tests
+        run: python -m pytest -q .github/tests/test_frozen_source_checkout_byte_guard.py
+
+      # #3658: a shared user interpreter plus editable installs recorded from another worktree can
+      # answer a suite's imports, so a green local run may prove nothing about the checkout under
+      # review. The preflight contract is pure stdlib and needs no local packages installed.
+      - name: Run import-origin preflight contract tests
+        run: python -m pytest -q .github/tests/test_verify_import_origin.py
+
       - name: Record guard scope
         run: |
           echo 'OPERATIONS_POLICY_GUARD=PASSED'
           echo 'GUARD_REVIEWS_THE_CHANGE=NO'
           echo 'GUARD_ASSIGNS_CTO_READINESS=NO'
+          echo 'FILE_OVERLAP_GUARD=ADVISORY_ONLY'
+          echo 'CROSS_LANE_DEPENDENCY_GUARD=ENFORCED'
+          echo 'FROZEN_SOURCE_PIN_GUARD=ENFORCED'
+          echo 'IMPORT_ORIGIN_PREFLIGHT=ENFORCED_IN_CORE_CONFTEST'
           echo 'PRODUCTION_MUTATION=NO'
 
   pr-contract:

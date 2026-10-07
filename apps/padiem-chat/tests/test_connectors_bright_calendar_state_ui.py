@@ -416,7 +416,9 @@ def test_no_secret_or_authority_material_enters_the_calendar_state_surface() -> 
 
 def test_existing_surface_truth_pins_still_hold() -> None:
     block = _connector_block()
-    assert block.count('method: "POST"') == 2, "exactly the status + activation endpoints"
+    # #3289 adds exactly one more reviewed POST: the Google Drive connect
+    # attempt. Nothing else may post from this block.
+    assert block.count('method: "POST"') == 3, "exactly the status + activation + drive connect endpoints"
     assert "googleCalendarReadActivationAfterConnectReturn = true" in block
     assert "await activateGoogleCalendarRead()" in block
     assert "connectorWorkspaceKey(row.workspace_state)" in block

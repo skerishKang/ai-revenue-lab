@@ -63,7 +63,7 @@ Product-declaration data that is **not** a product route:
 
 Retired historical routes such as MiniMax M3 and Tencent HY3 must not re-enter the executable catalog or a Padiem tier through stale documentation, fallback, or compatibility defaults.
 
-**Current successor boundary:** Space Bunny is no longer an executable Padiem Plus route. Its B14 registration may remain as historical/manual route metadata, but Padiem Plus stays HOLD until a successor is explicitly selected, registered, proven, and activated. No older route may be silently promoted as fallback (#3568/#3554).
+**Current successor boundary:** Space Bunny is fully retired (owner final retirement decision, 2026-10-07): no product execution, no manual execution, no auto route, no fallback. Its B14 route registration is removed (absent from `KILO_FREE_ROUTES` and from the catalog, declared in `RETIRED_KILO_FREE_MODEL_IDS`), and only its historical identity constants survive as metadata. Padiem Plus stays HOLD until a successor is explicitly selected, registered, proven, and activated. No older route may be silently promoted as fallback (#3568/#3554).
 
 ## Router Platform roadmap
 

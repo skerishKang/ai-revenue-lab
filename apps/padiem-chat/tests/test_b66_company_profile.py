@@ -177,3 +177,45 @@ def test_chat_runtime_overlays_canonical_profile_without_browser_storage_authori
     assert "copy.fixedDefaults.sender" not in source
     assert "copy.fixedDefaults.validDays" not in source
     assert "localStorage" not in source
+
+
+def test_new_session_readback_same_account_and_foreign_isolation() -> None:
+    """CROSS_DEVICE_COMPANY_PROFILE / FOREIGN_ACCOUNT_COMPANY_PROFILE_ACCESS=0 (#3406).
+
+    Same canonical account, brand-new client session (device simulation):
+    write via one session -> read the same profile via a fresh session.
+    A foreign account gets truthful missing and cannot touch the row.
+    """
+    store = _ProfileStore()
+    writer = _client(store, user_id=USER_A, signed_in=True)
+    saved = writer.put(
+        "/api/b66/company-profile",
+        json={"company": "스냅샷상사", "address": "테스트시 테스트구", "phone": "02-0000-0000"},
+    )
+    assert saved.status_code == 200
+    assert saved.json()["state"] == "ready"
+
+    # brand-new client/session, same authenticated account
+    fresh_session_reader = _client(store, user_id=USER_A, signed_in=True)
+    read = fresh_session_reader.get("/api/b66/company-profile")
+    assert read.status_code == 200
+    payload = read.json()
+    assert payload["state"] == "ready"
+    assert payload["company_profile"]["company"] == "스냅샷상사"
+    assert payload["company_profile"]["address"] == "테스트시 테스트구"
+
+    # foreign account: separate session, its own workspace -> truthful missing
+    foreign = _client(store, user_id=USER_B, signed_in=True)
+    foreign_read = foreign.get("/api/b66/company-profile")
+    assert foreign_read.status_code == 200
+    assert foreign_read.json()["state"] == "missing"
+    assert foreign_read.json()["company_profile"] is None
+
+    # foreign write lands only in the foreign account's own row
+    foreign_write = foreign.put(
+        "/api/b66/company-profile", json={"company": "다른계정상사"}
+    )
+    assert foreign_write.status_code == 200
+    read_again = fresh_session_reader.get("/api/b66/company-profile")
+    assert read_again.json()["company_profile"]["company"] == "스냅샷상사"
+    assert read_again.json()["company_profile"].get("phone") == "02-0000-0000"

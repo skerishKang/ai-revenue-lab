@@ -16,6 +16,7 @@ WORKER_BINDING_NAMES = frozenset({
     "PADIEM_CHAT_WEB_PROVIDER",
     "FIRECRAWL_API_KEY",
     "PADIEM_CHAT_DAUM_REST_API_KEY",
+    "TINYFISH_API_KEY",
     "PADIEM_CHAT_WEB_TIMEOUT_SECONDS",
     "PADIEM_CHAT_AUTH_MODE",
     "PADIEM_CHAT_PUBLIC_BASE_URL",
@@ -32,6 +33,7 @@ WORKER_BINDING_NAMES = frozenset({
 })
 D1_BINDING_NAME = "PADIEM_CHAT_DB"
 B14_SERVICE_BINDING_NAME = "B14_SERVICE"
+B66_PDF_RENDERER_SERVICE_BINDING_NAME = "B66_PDF_RENDERER_SERVICE"
 IDENTITY_AUTHORITY_SERVICE_BINDING_NAME = "IDENTITY_AUTHORITY_SERVICE"
 WORKSPACE_R2_BINDING_NAME = "PADIEM_WORKSPACE_FILES"
 # #2830 B-1B private Google OAuth workspace-truth Service Binding. Resolved from
@@ -123,6 +125,7 @@ def settings_from_worker_bindings(env: Any) -> Settings:
         web_provider=binding_value(env, "PADIEM_CHAT_WEB_PROVIDER") or "off",
         firecrawl_api_key=binding_value(env, "FIRECRAWL_API_KEY"),
         daum_rest_api_key=binding_value(env, "PADIEM_CHAT_DAUM_REST_API_KEY"),
+        tinyfish_api_key=binding_value(env, "TINYFISH_API_KEY"),
         web_timeout_seconds=binding_value(env, "PADIEM_CHAT_WEB_TIMEOUT_SECONDS") or "15",
         auth_mode=binding_value(env, "PADIEM_CHAT_AUTH_MODE") or "off",
         public_base_url=binding_value(env, "PADIEM_CHAT_PUBLIC_BASE_URL"),

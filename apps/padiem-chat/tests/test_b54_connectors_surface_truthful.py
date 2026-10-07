@@ -52,6 +52,9 @@ LOCALE_KEYS = (
     "connectors-workspace-ambiguous",
     "connectors-workspace-unavailable",
     "connectors-connect-calendar",
+    "connectors-connect-drive",
+    "connectors-connecting-drive",
+    "connectors-connect-drive-error",
     "connectors-connecting-calendar",
     "connectors-connect-error",
     "connectors-grid-aria",
@@ -162,7 +165,10 @@ def test_live_cards_are_exactly_the_reviewed_canonical_connector_ids() -> None:
 
     assert "google-calendar" in cards
     assert 'data-google-connector-connect="google-calendar"' in cards["google-calendar"]["inner"]
-    for slug in ("google-drive", "gmail", "telegram", "slack"):
+    # #3289: Drive is the second reviewed connection action. It is the only
+    # other live card allowed to own one.
+    assert 'data-google-connector-connect="google-drive"' in cards["google-drive"]["inner"]
+    for slug in ("gmail", "telegram", "slack"):
         assert "data-google-connector-connect" not in cards[slug]["inner"]
     assert "discord" in cards and "kakao-business" in cards
 
@@ -210,7 +216,7 @@ def test_live_status_locale_keys_are_complete_in_ko_and_en() -> None:
     assert "write" in table["en"]["connectors-note"].lower()
 
 
-def test_calendar_read_oauth_is_the_only_connector_connection_action() -> None:
+def test_reviewed_google_connector_connection_actions_are_exactly_calendar_and_drive() -> None:
     block = _connector_block()
     assert block.count('fetch("/api/connectors/status"') == 1
     assert 'GOOGLE_CALENDAR_TICKET_ENDPOINT = "/api/connectors/google/ticket"' in block
@@ -220,7 +226,16 @@ def test_calendar_read_oauth_is_the_only_connector_connection_action() -> None:
     assert 'GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT = "/api/connectors/google/calendar/activate-read"' in block
     assert 'fetch(GOOGLE_CALENDAR_READ_ACTIVATION_ENDPOINT' in block
     assert 'body: JSON.stringify({})' in block
-    assert block.count('method: "POST"') == 2
+    # #3289 Drive: connect only, over the same reviewed ticket endpoint. Drive
+    # has no READ-activation axis and no other route.
+    assert 'GOOGLE_DRIVE_CONNECTOR = "google-drive"' in block
+    assert 'GOOGLE_DRIVE_TICKET_ENDPOINT = "/api/connectors/google/ticket"' in block
+    assert 'fetch(GOOGLE_DRIVE_TICKET_ENDPOINT' in block
+    assert 'connector_id: GOOGLE_DRIVE_CONNECTOR, begin_oauth: true' in block
+    assert 'google/drive/activate-read' not in block
+    # Exactly the three reviewed POSTs: status is a read, and Calendar owns
+    # the only other two.
+    assert block.count('method: "POST"') == 3
     assert "oauth.padiem.net" not in block
     assert "connect_ticket" not in block
     assert 'url.hostname !== "accounts.google.com"' in block
@@ -240,6 +255,10 @@ def test_calendar_read_oauth_is_the_only_connector_connection_action() -> None:
         "calendar.events.insert",
         "calendar.events.update",
         "calendar.events.delete",
+        "drive.files.insert",
+        "drive.files.update",
+        "drive.files.delete",
+        "drive.permissions",
     ):
         assert forbidden not in lowered, forbidden
 
@@ -373,6 +392,11 @@ def test_web_claw_connector_acceptance_markers() -> None:
     print("STATIC_SUPPORT_VS_WORKSPACE_STATE_SEPARATED=YES")
     print("OAUTH_DUPLICATION=0")
     print("SEND_WRITE_ENABLEMENT=0")
+    assert 'GOOGLE_DRIVE_CONNECTOR = "google-drive"' in _connector_block()
+    assert 'function driveConnectOffered(authenticated, workspaceState) {' in _connector_block()
     print("RAW_WORKSPACE_REASON_RENDERED=NO")
+    print("GOOGLE_DRIVE_CONNECT_HANDOFF=YES")
+    print("GOOGLE_DRIVE_SCOPE=drive.readonly")
+    print("GOOGLE_DRIVE_WRITE_AUTHORITY=0")
     print("DESKTOP_DEPENDENCY=0")
     print("PRODUCTION_MUTATION=0")

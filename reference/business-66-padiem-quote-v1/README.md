@@ -1,5 +1,7 @@
 # B66 · Quote Beta / 견적서 만들기
 
+> Implementation/demo reference. Canonical B66 product policy now lives in `docs/products/b66/README.md` and `docs/products/b66/SOURCE_TEMPLATE_FIDELITY.md`. When this demo README conflicts with those documents, the canonical product docs win.
+
 Rapid customer-facing quotation demo for Issue #3136.
 
 ## Purpose
@@ -97,7 +99,7 @@ Every file stays far below the 500-line guideline. No framework, no build step.
 - 새 견적/복사본은 browser-local 일일 순번으로 짧은 번호 사용: `PQ-YYYYMMDD-001`, `-002`, `-003` …
 - 자유 문장 자동 해석은 아직 비연결 상태를 명확히 표시하며 가짜 AI 응답을 만들지 않음
 - `내용을 한번에 말하기`에서 질문형으로 이어가면 원문을 참고용 버블로 그대로 보존하지만 QuoteDraft에는 자동 반영하지 않음
-- **파일 선택은 실제 동작**: PDF/DOCX/PPTX/XLSX/HWPX(2 MiB 이하), JPG/PNG/WebP(4 MiB 이하)를 로컬 preflight
+- **파일 선택은 실제 동작**: PDF/DOCX/PPTX/XLSX/HWPX(2 MiB 이하), JPG/PNG/WebP(4 MiB 이하)를 로컬 preflight. 이 목록은 generic intake/extraction capability이며, 재사용 B66 템플릿의 등록 source-format allowlist와 동일하지 않음(`#3586`: XLSX now, HWPX future; XLS/HWP reject).
 - JPG/PNG/WebP는 preflight 후 same-origin `POST /api/v1/quote/intake`로 일시 전송되어 서버에서 재검증되고, B14의 canonical image route를 통해 견적 사실을 분석합니다.
 - 브라우저가 MIME을 비우거나 `application/octet-stream`/ZIP generic MIME으로 줄 때는 지원 확장자를 기준으로 preflight하고, 서버 단계에서 다시 권위 검증
 - 이미지 원본 바이트는 브라우저 저장소에 보관하지 않고 요청 중에만 사용하며, 서버 응답은 검증된 extraction facts/provenance만 반환합니다.
@@ -193,7 +195,7 @@ The Easy Mode is deliberately usable before any model is selected:
 
 `내용을 한번에 말하기` keeps the user's one-shot text in the current page session. If the user chooses 질문받으며 이어가기, that original text is shown again as a reference-only message while authoritative values are still collected one-by-one. The reference is never auto-applied to QuoteDraft, and semantic AI interpretation remains unconnected.
 
-`파일에서 불러오기` opens a real browser file chooser and performs local metadata preflight. In the Saved Quote Skill registration wizard, JPG/JPEG/PNG/WebP and supported native PDF/DOCX/PPTX/XLSX/HWPX bytes are read transiently and sent only to the same-origin intake route; they are not written to browser storage. Native documents reuse the canonical server parser/text-extraction authorities when available and fall back truthfully to manual review when the Production isolated-parser authority is unavailable.
+`파일에서 불러오기` opens a real browser file chooser and performs local metadata preflight. JPG/JPEG/PNG/WebP and native PDF/DOCX/PPTX/XLSX/HWPX bytes may be read transiently by the bounded intake/extraction path and sent only to the same-origin intake route; they are not written to browser storage. This is **not** the reusable-template registration allowlist. For source-derived B66 template registration, `#3586` is authoritative: XLSX is the current canonical spreadsheet source, HWPX is future, and legacy XLS/HWP are rejected. Native documents reuse the canonical server parser/text-extraction authorities when available and fall back truthfully to manual review when the Production isolated-parser authority is unavailable.
 
 Recent quotations use a separate browser-local key (`quoteBeta.history.v1`) and are capped at 20 snapshots. Snapshot metadata such as totals is derived by `QuoteCore`; trusted totals are not persisted.
 

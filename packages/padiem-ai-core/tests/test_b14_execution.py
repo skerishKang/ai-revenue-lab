@@ -565,3 +565,39 @@ def test_missing_business14_and_usage_metadata_is_valid() -> None:
         "output_tokens": None,
         "total_tokens": None,
     }
+
+
+# #3382/#3566: B14 same-route retry budget must be expressible and pinnable to
+# zero so a product lane can enforce PROVIDER_CALL_COUNT_MAX=1 (RETRY=0).
+def test_routing_options_max_retries_zero_serializes_single_dispatch() -> None:
+    assert B14RoutingOptions(max_retries=0).to_dict() == {"max_retries": 0}
+
+
+def test_routing_options_max_retries_none_omits_field_keeps_b14_default() -> None:
+    assert B14RoutingOptions().to_dict() == {}
+
+
+def test_explicit_request_payload_pins_business14_max_retries_zero() -> None:
+    request = B14ChatRequest(
+        messages=({"role": "user", "content": "x"},),
+        model="test/route",
+        routing=B14RoutingOptions(max_retries=0),
+    )
+    payload = request.to_payload()
+    assert payload["business14"] == {"max_retries": 0}
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "match"),
+    [
+        ({"max_retries": 3}, "max_retries"),
+        ({"max_retries": -1}, "max_retries"),
+        ({"max_retries": True}, "max_retries"),
+        ({"max_retries": "0"}, "max_retries"),
+    ],
+)
+def test_routing_options_max_retries_fail_closed_before_network(
+    kwargs, match: str
+) -> None:
+    with pytest.raises(ValueError, match=match):
+        B14RoutingOptions(**kwargs)

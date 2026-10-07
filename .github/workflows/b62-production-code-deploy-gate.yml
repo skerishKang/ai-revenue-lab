@@ -7,6 +7,7 @@ on:
       - ".github/scripts/b62_cloudflare_production_deploy_config.py"
       - ".github/scripts/b62_binding_state_guard.py"
       - ".github/scripts/b62_served_version_secret_guard.py"
+      - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/scripts/cloudflare_served_version_lineage.py"
       - ".github/tests/test_cloudflare_served_version_lineage.py"
       - ".github/scripts/b62_claw_live_config_activation.py"
@@ -156,9 +157,9 @@ jobs:
           # the canonical extraction, the single-version/100% and latest==active
           # assertions, and the existing GITHUB_OUTPUT consumer unchanged.
           readonly_job = workflow.split("\n  cloudflare-readonly:", 1)[1].split("\n  deploy-production-code:", 1)[0]
-          assert ".result.deployments[0].versions[0].version_id" in readonly_job
-          assert "versions | length) == 1" in readonly_job
-          assert ".versions[0].percentage == 100" in readonly_job
+          assert "cloudflare_served_version_cli.py resolve-active" in readonly_job
+          assert ".result.deployments[0].versions[0].version_id" not in readonly_job
+          assert ".result.deployments[0].versions[0].percentage" not in readonly_job
           # #2898: the latest==active equality authority is the canonical lineage
           # primitive. It publishes LATEST_VERSION_EQUALS_ACTIVE_VERSION itself and
           # fails closed by exit code, so the workflow must not restate the
@@ -186,6 +187,7 @@ jobs:
           # The canonical lineage primitive is a shared authority: a change to it must
           # retrigger this consumer gate's natural PR CI.
           trigger_paths = workflow.split("on:", 1)[1].split("workflow_dispatch:", 1)[0]
+          assert ".github/scripts/cloudflare_served_version_cli.py" in trigger_paths
           assert ".github/scripts/cloudflare_served_version_lineage.py" in trigger_paths
 
           assert "unsupported live binding type" in generator
@@ -273,9 +275,8 @@ jobs:
 
           deployments="${RUNNER_TEMP}/b62-deployments-readonly.json"
           curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
-          jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
-          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
-          test -n "${active}" && test "${active}" != "null"
+          active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
+          test -n "${active}"
 
           versions="${RUNNER_TEMP}/b62-versions-readonly.json"
           curl -fsS "${auth[@]}" "${api}/versions?page=1&per_page=1" -o "${versions}"
@@ -393,7 +394,7 @@ jobs:
           jq -e '.success == true' "${settings}" >/dev/null
           deployments="${RUNNER_TEMP}/b62-deployments-before.json"
           curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
-          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           test "${active}" = "${READONLY_ACTIVE_VERSION}"
           echo "PREMUTATION_ACTIVE_VERSION_STABLE=PASS"
           detail="${RUNNER_TEMP}/b62-version-before.json"
@@ -549,7 +550,9 @@ jobs:
           for attempt in $(seq 1 12); do
             deployments="${RUNNER_TEMP}/b62-deployments-after.json"
             curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
-            active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+            if ! active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"; then
+              active=""
+            fi
             versions="${RUNNER_TEMP}/b62-versions-after.json"
             curl -fsS "${auth[@]}" "${api}/versions?page=1&per_page=1" -o "${versions}"
             latest="$(jq -r '.result.items[0].id // empty' "${versions}")"
@@ -683,7 +686,7 @@ jobs:
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
           deployments="${RUNNER_TEMP}/b62-rollback-precheck.json"
           curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
-          active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           if [ "${active}" = "${PREVIOUS_VERSION_ID}" ]; then
             echo "ROLLBACK_NOT_REQUIRED_ACTIVE_VERSION_UNCHANGED"
             echo "ROLLBACK_POST_ATTEMPTED=NO"
@@ -697,7 +700,9 @@ jobs:
           for attempt in $(seq 1 12); do
             deployments="${RUNNER_TEMP}/b62-auto-rollback-state.json"
             curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
-            active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+            if ! active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"; then
+              active=""
+            fi
             if [ "${active}" = "${PREVIOUS_VERSION_ID}" ]; then
               break
             fi
@@ -779,7 +784,9 @@ jobs:
           for attempt in $(seq 1 12); do
             deployments="${RUNNER_TEMP}/b62-rollback-state.json"
             curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
-            active="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+            if ! active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"; then
+              active=""
+            fi
             if [ "${active}" = "${PREVIOUS_VERSION_ID}" ]; then
               break
             fi

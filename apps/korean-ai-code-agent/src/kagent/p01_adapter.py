@@ -74,6 +74,23 @@ P01_FAILURE_DETAIL_TRANSPORT = "engine_transport_or_response_failed"
 P01_FAILURE_DETAIL_DOWNSTREAM = "engine_downstream_execution_failed"
 P01_FAILURE_DETAIL_CONTRACT = "p01_contract_failure"
 P01_FAILURE_DETAIL_UNKNOWN = "unknown_engine_failure"
+# Bounded provider terminal classes (#3566 evidence rule). These mirror the
+# closed Engine/B14 upstream_* transport vocabulary one-to-one so the exact
+# application-level provider error class survives to the Claw terminal record
+# instead of collapsing into a single downstream constant. Values are
+# enumerated codes only — never messages, prompts, or provider payloads.
+P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR = "engine_provider_server_error"
+P01_FAILURE_DETAIL_PROVIDER_TIMEOUT = "engine_provider_timeout"
+P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED = "engine_provider_rate_limited"
+P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE = "engine_provider_unavailable"
+P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION = "engine_provider_authorization_failed"
+P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED = "engine_provider_request_rejected"
+P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE = "engine_provider_bad_response"
+# #3566 evidence rule: the Engine's trusted-admission gate fails closed with
+# enumerated entitlement/admission codes; retaining the admission class lets
+# the final canary record ENGINE_ADMISSION_RESULT instead of collapsing it
+# into the downstream bucket.
+P01_FAILURE_DETAIL_ENGINE_ADMISSION = "engine_admission_denied"
 P01_FAILURE_DETAILS = frozenset(
     {
         P01_FAILURE_DETAIL_AUTHENTICATION,
@@ -82,6 +99,14 @@ P01_FAILURE_DETAILS = frozenset(
         P01_FAILURE_DETAIL_DOWNSTREAM,
         P01_FAILURE_DETAIL_CONTRACT,
         P01_FAILURE_DETAIL_UNKNOWN,
+        P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR,
+        P01_FAILURE_DETAIL_PROVIDER_TIMEOUT,
+        P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+        P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE,
+        P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION,
+        P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED,
+        P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
+        P01_FAILURE_DETAIL_ENGINE_ADMISSION,
     }
 )
 
@@ -153,6 +178,13 @@ class ClawOrchestrationOutcome:
     pause_id: str | None = None
     pause_expires_at: str | None = None
     trusted_request: dict[str, object] | None = None
+    # #3655 canary evidence: bounded refs threaded from the Engine result's
+    # existing B14 route metadata (selected_route_id / attempt_count /
+    # fallback_used). Server-side only — safe_dict does not project them —
+    # and the chat route grammar-checks each value before any header emit.
+    selected_route_id: str | None = None
+    provider_attempt_count: int | None = None
+    fallback_used: bool | None = None
 
     def safe_dict(self) -> dict[str, object]:
         # pause_id / pause_expires_at / trusted_request stay server-side only;
@@ -267,7 +299,11 @@ def _agent_profile(product_tier: ProductTierLabel = ProductTierLabel.PLUS) -> Ag
         allowed_tools=(),
         required_capabilities=(),
         context_policy={},
-        model_policy={"model": route.model_id},
+        # #3382/#3566 one-shot canary contract: the Claw lane dispatches the
+        # provider at most once. `max_retries=0` pins B14's same-route retry
+        # ceiling to zero; the port refuses any other budget, so widening
+        # requires a fresh explicit owner decision.
+        model_policy={"model": route.model_id, "max_retries": 0},
         max_steps=1,
         output_contract={},
     )
@@ -718,6 +754,11 @@ class P01CoreOrchestrationAdapter:
                 p01_run_id=projector.p01_run_id,
                 p01_event_count=projector.event_count,
                 continuation_ref=None,
+                # #3655: thread the existing B14 route metadata through for
+                # the canary evidence seam; None values stay None.
+                selected_route_id=result.execution_result.route.selected_route_id,
+                provider_attempt_count=result.execution_result.route.attempt_count,
+                fallback_used=result.execution_result.route.fallback_used,
             )
         except asyncio.CancelledError:
             self._cancel_run_if_possible(run)
