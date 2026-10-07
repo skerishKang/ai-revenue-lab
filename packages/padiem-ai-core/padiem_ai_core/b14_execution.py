@@ -222,6 +222,11 @@ class B14RoutingOptions:
     allow_external_fallback: bool | None = None
     provider_order: tuple[str, ...] | None = None
     max_attempts: int | None = None
+    # B14 same-route retry ceiling for one dispatch. The gateway accepts
+    # business14.max_retries in [0, 2] and defaults to 2 when the field is
+    # omitted, so None keeps the historical behavior while an explicit 0
+    # pins a single provider call per dispatch (#3382 one-shot contract).
+    max_retries: int | None = None
 
     def __post_init__(self) -> None:
         if self.task_type is not None:
@@ -264,6 +269,13 @@ class B14RoutingOptions:
         ):
             raise ValueError("max_attempts must be between 1 and 5")
 
+        if self.max_retries is not None and (
+            isinstance(self.max_retries, bool)
+            or not isinstance(self.max_retries, int)
+            or not 0 <= self.max_retries <= 2
+        ):
+            raise ValueError("max_retries must be between 0 and 2")
+
     def to_dict(self) -> dict[str, Any]:
         out: dict[str, Any] = {}
         if self.task_type is not None:
@@ -278,6 +290,8 @@ class B14RoutingOptions:
             out["provider_order"] = list(self.provider_order)
         if self.max_attempts is not None:
             out["max_attempts"] = self.max_attempts
+        if self.max_retries is not None:
+            out["max_retries"] = self.max_retries
         return out
 
 
