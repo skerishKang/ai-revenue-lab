@@ -9,6 +9,7 @@
   const History = window.QuoteHistory;
   const FileIntake = window.B66FileIntake;
   const App = window.B66QuoteAppBridge;
+  const AccountScope = window.QuoteAccountScope || null;
 
   if (!Core || !History || !FileIntake || !App) return;
 
@@ -31,6 +32,17 @@
   let lastEasyView = "home";
   let restoringProductHistory = false;
   const PRODUCT_HISTORY_KEY = "b66View";
+
+  const QUARANTINE_ACTIONS = AccountScope
+    ? [
+        AccountScope.SCOPE_ACTIONS.QUARANTINED_FOREIGN_OWNER,
+        AccountScope.SCOPE_ACTIONS.QUARANTINED_MALFORMED_OWNER
+      ]
+    : [];
+
+  function quarantineAction(action) {
+    return QUARANTINE_ACTIONS.indexOf(action) !== -1;
+  }
 
   function clone(value) {
     return JSON.parse(JSON.stringify(value));
@@ -73,22 +85,18 @@
   }
 
   function readHistory() {
-    try {
-      return History.normalizeEnvelope(JSON.parse(localStorage.getItem(History.HISTORY_STORAGE_KEY) || "null"));
-    } catch (err) {
-      return History.normalizeEnvelope(null);
-    }
+    /* 계정 owner 게이트는 app.js(단일 브라우저 저장소 authority)가 통과시킨다 (#3480). */
+    const envelope = App.getHistoryEnvelope();
+    return envelope || History.normalizeEnvelope(null);
   }
 
   function writeHistory(envelope) {
-    try {
-      localStorage.setItem(History.HISTORY_STORAGE_KEY, JSON.stringify(History.normalizeEnvelope(envelope)));
+    if (App.writeHistoryEnvelope(envelope)) {
       window.dispatchEvent(new CustomEvent("b66:history-changed"));
       return true;
-    } catch (err) {
-      App.toast("최근 견적 저장소를 갱신하지 못했습니다.");
-      return false;
     }
+    App.toast("로그인한 계정의 최근 견적에만 저장할 수 있습니다.");
+    return false;
   }
 
   function setWorkspaceMode(mode, options) {
@@ -1040,6 +1048,23 @@
   composer.addEventListener("input", () => {
     composer.style.height = "auto";
     composer.style.height = Math.min(composer.scrollHeight, 160) + "px";
+  });
+
+  document.addEventListener("b66:account-scope-changed", (event) => {
+    const detail = event.detail || {};
+    const discarded = detail.privateStateReadable !== true || quarantineAction(detail.action);
+    if (!discarded) {
+      refreshStarters();
+      return;
+    }
+    /* 계정 경계가 바뀌면 진행 중 private 문맥과 파일 intake 를 버린다 (#3480). */
+    guidedSnapshot = null;
+    selectedFile = null;
+    if (lastEasyView === "recent") {
+      setWorkspaceMode("easy", { history: false });
+      showHome({ history: false });
+    }
+    refreshStarters();
   });
 
   document.addEventListener("b66:auth-changed", (event) => {
