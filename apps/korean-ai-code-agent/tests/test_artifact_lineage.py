@@ -28,6 +28,8 @@ import json
 import unittest
 from datetime import datetime, timedelta, timezone
 
+import kagent.artifact_lineage as lineage_module
+
 from kagent.artifact_lineage import (
     MAX_OUTPUT_ARTIFACTS,
     ArtifactLineage,
@@ -390,6 +392,39 @@ class AdapterAndRegressionTests(unittest.TestCase):
         for bad in (object(), None, "art_x", {"artifact_id": "art_x"}):
             with self.assertRaises(ArtifactLineageError):
                 ref_from_canonical_artifact(bad)
+
+    def test_direct_ref_origin_is_precondition_not_attestation(self) -> None:
+        record = self.canonical_record()
+        direct = LineageArtifactRef(
+            artifact_id=record.artifact_id,
+            integrity_ref=record.integrity_ref,
+        )
+        common = dict(
+            lineage_id="lin_" + "8" * 16,
+            transformation_kind="claw.identity",
+            workspace_ref="ws_" + "2" * 16,
+            run_ref="run_" + "3" * 16,
+            created_at=CREATED_AT,
+        )
+        from_record = declare_lineage(source=record, **common)
+        from_direct = declare_lineage(source=direct, **common)
+        self.assertEqual(
+            json.dumps(from_record.public_projection(), sort_keys=True),
+            json.dumps(from_direct.public_projection(), sort_keys=True),
+        )
+        for key in from_direct.public_projection():
+            lowered = key.lower()
+            self.assertNotIn("registered_by", lowered)
+            self.assertNotIn("registry_provenance", lowered)
+            self.assertNotIn("origin_attest", lowered)
+
+    def test_lineage_adds_no_registry_store_resolver_or_authority(self) -> None:
+        public_names = [name.lower() for name in dir(lineage_module) if not name.startswith("_")]
+        for forbidden in ("registry", "store", "resolver", "authority"):
+            self.assertFalse(
+                any(forbidden in name for name in public_names),
+                f"unexpected new {forbidden} surface: {public_names}",
+            )
 
     def test_canonical_artifact_contract_regression(self) -> None:
         # #3594 behaviour is untouched by this module: registration, optional
