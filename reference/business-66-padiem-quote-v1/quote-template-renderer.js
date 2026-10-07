@@ -25,6 +25,8 @@
   var ASSET_ID_PATTERN = /^b66asset_[0-9a-f]{32}$/;
   var DATA_IMAGE_PATTERN = /^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/;
   var MAX_SLOT_SOURCE_CHARS = 384 * 1024;
+  var CERTIFIED_PREVIEW_URL = /^\/api\/[A-Za-z0-9_/?=&.%-]{1,480}$/;
+  var CGI_PREVIEW_PAGE_WIDTH = 595;
 
   var escapeHtml = Template.escapeHtml;
 
@@ -308,6 +310,9 @@
       sections: sections,
       layoutVariant: typeof content.layoutVariant === "string" ? content.layoutVariant : "",
       cgiV2: isPlainObject(content.cgiV2) ? content.cgiV2 : null,
+      certifiedPreviewBaseUrl: typeof opts.certifiedPreviewBaseUrl === "string" && CERTIFIED_PREVIEW_URL.test(opts.certifiedPreviewBaseUrl)
+        ? opts.certifiedPreviewBaseUrl
+        : "",
       facts: {
         meta: {
           quoteNo: String(normalizedDraft.meta.quoteNo == null ? "" : normalizedDraft.meta.quoteNo),
@@ -497,8 +502,118 @@
       .replace(/\s*원$/, "");
   }
 
+  function ensureCgiCertifiedPreview(doc) {
+    var section = doc.getElementById("cgiCertifiedPreview");
+    if (section) return section;
+    var cgiContent = doc.getElementById("cgiV2Content");
+    if (!cgiContent || !cgiContent.parentNode) return null;
+    section = doc.createElement("section");
+    section.id = "cgiCertifiedPreview";
+    section.className = "cgi-certified-preview";
+    section.hidden = true;
+    var image = doc.createElement("img");
+    image.id = "cgiCertifiedPreviewBase";
+    image.className = "cgi-certified-preview-base";
+    image.alt = "";
+    image.setAttribute("aria-hidden", "true");
+    var overlay = doc.createElement("div");
+    overlay.id = "cgiCertifiedPreviewOverlay";
+    overlay.className = "cgi-certified-preview-overlay";
+    section.appendChild(image);
+    section.appendChild(overlay);
+    cgiContent.parentNode.insertBefore(section, cgiContent);
+    return section;
+  }
+
+  function addCgiCertifiedText(doc, overlay, key, text, x, baselineY, size, options) {
+    var value = String(text == null ? "" : text);
+    if (!value) return;
+    var opts = isPlainObject(options) ? options : {};
+    var el = doc.createElement("span");
+    el.className = "cgi-certified-field cgi-certified-" + key;
+    el.textContent = value;
+    el.style.top = (baselineY - (size * 0.80)) + "pt";
+    el.style.fontSize = size + "pt";
+    el.style.fontFamily = opts.fontFamily || '"Malgun Gothic", "?? ??", sans-serif';
+    el.style.fontWeight = opts.bold === true ? "700" : "400";
+    if (Number.isFinite(Number(opts.rightX))) {
+      el.style.right = (CGI_PREVIEW_PAGE_WIDTH - Number(opts.rightX)) + "pt";
+      el.style.textAlign = "right";
+    } else {
+      el.style.left = Number(x) + "pt";
+    }
+    overlay.appendChild(el);
+  }
+
+  function applyCgiCertifiedPreview(doc, model) {
+    var url = typeof model.certifiedPreviewBaseUrl === "string" ? model.certifiedPreviewBaseUrl : "";
+    var section = ensureCgiCertifiedPreview(doc);
+    if (!section) return false;
+    var image = doc.getElementById("cgiCertifiedPreviewBase");
+    var overlay = doc.getElementById("cgiCertifiedPreviewOverlay");
+    var cgiContent = doc.getElementById("cgiV2Content");
+    var paper = doc.getElementById("quotePaper");
+    if (!url || !CERTIFIED_PREVIEW_URL.test(url) || !image || !overlay) {
+      section.hidden = true;
+      if (paper && typeof paper.removeAttribute === "function") paper.removeAttribute("data-certified-preview");
+      return false;
+    }
+
+    if (image.getAttribute("src") !== url) image.setAttribute("src", url);
+    section.hidden = false;
+    if (cgiContent) cgiContent.hidden = true;
+    if (paper && typeof paper.setAttribute === "function") paper.setAttribute("data-certified-preview", "true");
+    overlay.textContent = "";
+
+    var facts = isPlainObject(model.facts) ? model.facts : {};
+    var meta = isPlainObject(facts.meta) ? facts.meta : {};
+    var recipient = isPlainObject(facts.recipient) ? facts.recipient : {};
+    var bold = { bold: true };
+    var right = function (x, isBold) { return { rightX: x, bold: isBold === true }; };
+
+    addCgiCertifiedText(doc, overlay, "quote-number", meta.quoteNo, 97.52, 148.30, 10.13);
+    var dateParts = String(meta.issueDate || "").split("-");
+    if (dateParts.length === 3) {
+      addCgiCertifiedText(doc, overlay, "date-y", dateParts[0], 97.52, 169.38, 10.13);
+      addCgiCertifiedText(doc, overlay, "date-m", dateParts[1], 135.96, 169.38, 10.13);
+      addCgiCertifiedText(doc, overlay, "date-d", dateParts[2], 162.70, 169.38, 10.13);
+    }
+    addCgiCertifiedText(doc, overlay, "recipient", recipient.company, 84.99, 211.53, 10.13, bold);
+    addCgiCertifiedText(doc, overlay, "project-head", meta.projectName, 84.99, 253.68, 9.351, bold);
+    addCgiCertifiedText(doc, overlay, "project-row", meta.projectName, 55.29, 331.92, 9.832, bold);
+
+    var rowY = [353.61, 375.31, 397.13];
+    var amountRight = [520.29, 519.63, 519.63];
+    (Array.isArray(model.items) ? model.items : []).filter(function (item) {
+      return item && item.filler !== true;
+    }).slice(0, 3).forEach(function (item, index) {
+      var values = isPlainObject(item.values) ? item.values : {};
+      addCgiCertifiedText(doc, overlay, "item-name-" + index, values.name, 55.29, rowY[index], 9.832);
+      addCgiCertifiedText(doc, overlay, "item-qty-" + index, values.qty, 0, rowY[index], 9.832, right(341.83));
+      addCgiCertifiedText(doc, overlay, "item-unit-price-" + index, cgiMoneyText(values.unitPrice), 0, rowY[index], 9.832, right(426.62));
+      addCgiCertifiedText(doc, overlay, "item-amount-" + index, cgiMoneyText(values.amount), 0, rowY[index], 9.832, right(amountRight[index]));
+    });
+
+    addCgiCertifiedText(doc, overlay, "subtotal", cgiMoneyText(model.totals && model.totals.subtotalText), 0, 532.70, 9.832, right(520.34, true));
+    addCgiCertifiedText(doc, overlay, "vat-rate", facts.taxRateText || "", 0, 554.39, 9.832, right(243.77));
+    addCgiCertifiedText(doc, overlay, "vat", cgiMoneyText(model.totals && model.totals.vatText), 0, 554.39, 9.832, right(519.98, true));
+    addCgiCertifiedText(doc, overlay, "grand", cgiMoneyText(model.totals && model.totals.grandText), 0, 576.09, 9.832, right(520.34, true));
+
+    var written = String(model.writtenTotalText || "");
+    var grandText = cgiMoneyText(model.totals && model.totals.grandText);
+    if (written && grandText) written += " ( \\" + grandText + " )";
+    addCgiCertifiedText(
+      doc, overlay, "written-total", written, 26.03, 289.00, 11.75,
+      { fontFamily: 'GulimChe, Gulim, "???", "??", monospace', bold: true }
+    );
+    return true;
+  }
+
   function applyCgiV2(doc, model) {
     if (!doc || !isPlainObject(model) || model.layoutVariant !== "cgi-v2") return false;
+    if (applyCgiCertifiedPreview(doc, model)) return true;
+    var certifiedSection = doc.getElementById("cgiCertifiedPreview");
+    if (certifiedSection) certifiedSection.hidden = true;
     var facts = isPlainObject(model.facts) ? model.facts : {};
     var meta = isPlainObject(facts.meta) ? facts.meta : {};
     var sender = isPlainObject(facts.sender) ? facts.sender : {};
