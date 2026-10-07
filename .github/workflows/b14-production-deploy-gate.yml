@@ -23,6 +23,15 @@ on:
       confirmation:
         description: 'Type DEPLOY_B14_FROM_EXACT_MAIN to deploy, ROLLBACK_B14_TO_PREVIOUS_VERSION to roll back, or RETIRE_B14_SECRET_OPENROUTER_API_KEY for the #1933 S2-c one-shot dead-secret removal'
         required: true
+      # #3704: a rollback must name its own target, the contract the Engine gate
+      # established in #2748. Optional at the schema level so a deploy dispatch is
+      # not forced to supply it, but the rollback branch refuses to run without
+      # it, so Wrangler can never implicitly select a "previous upload" version
+      # that no evidence names.
+      rollback_version_id:
+        description: 'Exact B14 Worker version id to roll back to (required for the rollback branch)'
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -231,6 +240,13 @@ jobs:
           python3 -c "import json;d=json.load(open('/tmp/health.json'));assert d.get('mode')=='b14-live',d.get('mode');assert d.get('configured_providers')==3,d.get('configured_providers');r=d.get('registered_routes');n=len(r) if isinstance(r,list) else r;assert n==6,n;print('B14_POST_RETIRE_HEALTH=PASS mode=b14-live providers=3 routes=6')"
           npx wrangler@4 deployments list 2>/dev/null | head -20 || true
 
+  # #3704: a rollback names its target and then proves that target is serving.
+  # Before this the job ran a bare `wrangler rollback` and declared PASS from the
+  # command exit, which is the #2451 defect class twice over: an unnamed version
+  # selection, and an exit code mistaken for a served-version proof. The Engine
+  # gate is the canonical precedent (#2748 explicit target, #2752 mutation-class
+  # evidence) and is reused through the repository-wide adapters, not
+  # reimplemented here.
   rollback-production-b14:
     if: github.event.inputs.confirmation == 'ROLLBACK_B14_TO_PREVIOUS_VERSION'
     runs-on: ubuntu-latest
@@ -247,11 +263,143 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Rollback B14 worker to previous version
+      - name: Roll back B14 to the named version and prove it is serving
         working-directory: apps/korean-ai-platform
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          ROLLBACK_TARGET: ${{ github.event.inputs.rollback_version_id }}
+          # This step runs with working-directory apps/korean-ai-platform, so the
+          # canonical adapters are addressed from the workspace root instead of a
+          # cwd-relative guess.
+          B14_SERVED_VERSION_SCRIPTS: ${{ github.workspace }}/.github/scripts
         run: |
-          npx wrangler@4 rollback --message "B14 production rollback (owner-authorized gate)"
-          echo 'B14_PRODUCTION_ROLLBACK=PASS'
+          set -euo pipefail
+          cli="${B14_SERVED_VERSION_SCRIPTS}/cloudflare_served_version_cli.py"
+          class_cli="${B14_SERVED_VERSION_SCRIPTS}/cloudflare_mutation_evidence.py"
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/ai-revenue-korean-ai-platform"
+
+          # Durable, bounded evidence: version ids, read counts and the primitive's
+          # own verdict lines. Never a token, an account id, a header or a response
+          # envelope, which is why the raw deployment files stay out of the path
+          # this step publishes.
+          evidence="${RUNNER_TEMP}/b14-rollback-evidence.txt"
+          : > "${evidence}"
+          record() {
+            printf '%s\n' "$1"
+            printf '%s\n' "$1" >> "${evidence}"
+          }
+          record "MUTATION_CLASS=ROLLBACK"
+          record "B14_WORKER_SCRIPT=ai-revenue-korean-ai-platform"
+          record "RAW_DEPLOYMENTS_ENVELOPE_INCLUDED=NO"
+          record "SECRET_VALUES_INCLUDED=NO"
+          record "ACCOUNT_ID_INCLUDED=NO"
+
+          # (1) #2748: name the target or stop before touching Production. A
+          # rollback that lets Wrangler pick the previous upload proves nothing
+          # about the version any evidence names.
+          if [ -z "${ROLLBACK_TARGET:-}" ]; then
+            echo 'B14_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=rollback_version_id is required; implicit previous-version selection is refused' >&2
+            echo 'ROLLBACK_TARGET_EXPLICIT=NO' >&2
+            exit 1
+          fi
+          # Canonical safe-id contract, recorded before the value is written
+          # anywhere, so a rejected string can neither reach the CLI nor forge an
+          # evidence line.
+          python3 "${cli}" validate-version-id --version-id "${ROLLBACK_TARGET}"
+          record "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}"
+          record "ROLLBACK_TARGET_EXPLICIT=YES"
+          record "IMPLICIT_PREVIOUS_VERSION_SELECTION=NO"
+
+          # (2) Baseline the served version BEFORE mutating, through the canonical
+          # resolver rather than a shell-side envelope read.
+          pre_deployments="${RUNNER_TEMP}/deployments-rollback-baseline.json"
+          curl -fsS --max-time 30 \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "${base}/deployments" -o "${pre_deployments}"
+          if ! pre_version="$(python3 "${cli}" resolve-active --deployments "${pre_deployments}")"; then
+            echo 'B14_PRODUCTION_ROLLBACK=FAIL' >&2
+            echo 'REASON=canonical resolver refused the pre-rollback deployments read' >&2
+            exit 1
+          fi
+          test -n "${pre_version}"
+          record "PRE_ROLLBACK_SERVED_VERSION_ID=${pre_version}"
+          record "PRE_MUTATION_VERSION_CAPTURED=YES"
+
+          # (3) Mutate only the named version. The command exit is recorded as one
+          # step, never as the verdict.
+          npx wrangler@4 rollback "${ROLLBACK_TARGET}" \
+            --message "B14 production rollback to explicit target (owner-authorized gate)"
+          record "B14_ROLLBACK_COMMAND=EXIT_ZERO"
+          record "ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO"
+
+          # (4) Bounded readback. Each attempt is resolved through the canonical
+          # resolver and recorded as one observation; a refused read is recorded too
+          # and finalizes nothing while the window is open. No envelope rule is
+          # evaluated in this shell.
+          observations="${RUNNER_TEMP}/b14-rollback-observations.txt"
+          : > "${observations}"
+          rollback_reads=0
+          for attempt in $(seq 1 30); do
+            rollback_reads="${attempt}"
+            deployments="${RUNNER_TEMP}/deployments-rollback-${attempt}.json"
+            if curl -fsS --max-time 20 \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              "${base}/deployments" -o "${deployments}" \
+              && candidate="$(python3 "${cli}" resolve-active --deployments "${deployments}")" \
+              && [ -n "${candidate}" ]; then
+              printf 'ok %s\n' "${candidate}" >> "${observations}"
+            else
+              printf 'reject -\n' >> "${observations}"
+            fi
+            # The open-window verdict is only a continue/stop signal; the closed
+            # window below is what publishes a decision, so nothing is lost here.
+            if python3 "${class_cli}" evaluate \
+              --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+              --observations "${observations}" --window-open >/dev/null; then
+              open_rc=0
+            else
+              open_rc=$?
+            fi
+            # 3 means "not final yet, keep reading"; anything else ends the poll
+            # and the closed-window decision below settles the verdict.
+            if [ "${open_rc}" -ne 3 ]; then
+              break
+            fi
+            sleep 2
+          done
+          record "POST_ROLLBACK_CONVERGENCE_READS=${rollback_reads}"
+
+          # (5) The verdict must be one the evidence primitive itself considers
+          # final, and a ROLLBACK is final only when the served version EQUALS the
+          # named target. A timed-out window, a refused read, a split-traffic
+          # deployment and a wrong served version all close as FAIL here.
+          if final_out="$(python3 "${class_cli}" evaluate \
+            --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+            --observations "${observations}")"; then
+            final_rc=0
+          else
+            final_rc=$?
+          fi
+          while IFS= read -r line; do
+            record "${line}"
+          done <<< "${final_out}"
+          if [ "${final_rc}" -ne 0 ]; then
+            echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=FAIL' >&2
+            echo 'B14_PRODUCTION_ROLLBACK=FAIL' >&2
+            exit 1
+          fi
+          served_version="$(printf '%s\n' "${final_out}" | sed -n 's/^POST_MUTATION_SERVED_VERSION_ID=//p')"
+          record "POST_ROLLBACK_SERVED_VERSION_ID=${served_version}"
+          record "POST_ROLLBACK_SERVED_EQUALS_TARGET=PASS"
+          record "B14_PRODUCTION_ROLLBACK=PASS"
+
+      - name: Publish the bounded rollback evidence artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b14-production-rollback-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/b14-rollback-evidence.txt
+          if-no-files-found: error
+          retention-days: 90
