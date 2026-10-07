@@ -86,6 +86,13 @@
     return document.getElementById(id);
   }
 
+  // Per-model output budget: follow the model's own advertised maximum output
+  // tokens instead of a flat low default that starves reasoning models.
+  function _modelMaxTokens(modelId) {
+    var map = (state.config && state.config.modelMaxTokens) || {};
+    return map[modelId] || 512;
+  }
+
   // ── DOM initialization ──────────────────────────────────────────────
   function init() {
     var configEl = document.getElementById("workspace-config");
@@ -304,7 +311,7 @@
           model: model,
           messages: [{ role: "user", content: text }],
           temperature: 0.2,
-          max_tokens: 512,
+          max_tokens: _modelMaxTokens(model),
           business14: b14_opts,
         }),
       });

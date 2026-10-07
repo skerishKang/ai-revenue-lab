@@ -33,7 +33,7 @@ def _transport(calls: list[dict]):
             "infron/motif/motif-3": "motif/motif-3",
             "inception/mercury-2.5": "mercury-2.5",
             "atria/Atria-Dawn-Preview": "Atria-Dawn-Preview",
-            "experiential/gpt-5.6-luna": "gpt-5.6-luna",
+            "experiential/glm-5.3-flash-abliterated": "glm-5.3-flash-abliterated",
         }[model]
         return 200, _json({
             "model": upstream,

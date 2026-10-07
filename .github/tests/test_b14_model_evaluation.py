@@ -54,7 +54,7 @@ def test_fixture_is_shared_synthetic_six_case_corpus() -> None:
 
 
 def test_only_five_manual_pin_candidates_are_in_scope() -> None:
-    assert harness.EVALUATION_CANDIDATE_IDS == ("agnes", "motif", "mercury", "atria", "luna")
+    assert harness.EVALUATION_CANDIDATE_IDS == ("agnes", "motif", "mercury", "atria", "glm")
     assert all(cid in harness.CANDIDATE_REGISTRY for cid in harness.EVALUATION_CANDIDATE_IDS)
     assert "b14/auto" not in {harness.CANDIDATE_REGISTRY[cid].model_id for cid in harness.EVALUATION_CANDIDATE_IDS}
 
@@ -164,7 +164,7 @@ def test_fallback_and_attempt_count_are_preserved_as_evidence() -> None:
             "business14": {"actual_response_model": "wrong-model", "fallback_used": True, "attempt_count": 2},
         })
 
-    report = harness.evaluate_candidate("luna", fallback_transport)
+    report = harness.evaluate_candidate("glm", fallback_transport)
     assert report["cases"][0]["actual_model"] == "wrong-model"
     assert report["cases"][0]["fallback_used"] is True
     assert report["cases"][0]["attempt_count"] == 2

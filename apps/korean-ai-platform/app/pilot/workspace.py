@@ -23,6 +23,8 @@ from starlette.routing import Router
 from starlette.requests import Request
 from starlette.responses import Response
 
+from app.pilot.model_output_caps import MODEL_MAX_OUTPUT_TOKENS
+
 from app.factory import render_template
 from app.pilot.demo_models import get_pilot_models, get_pilot_provider_count, get_pilot_model_count
 from app.pilot.locale import PLATFORM_SITE_NAME, gettext, locale_from_request, set_locale_cookie, Locale
@@ -68,7 +70,14 @@ async def workspace_page(request: Request):
         "modelCount": 0,
         "lang": locale.value,
         "errorCode": None,
-        "maxTokens": 512,
+        # No flat default: the client follows the selected model's own maximum
+        # output tokens (modelMaxTokens) and only falls back when it is unknown.
+        "maxTokens": None,
+        "modelMaxTokens": {
+            model_id: cap
+            for model_id, cap in MODEL_MAX_OUTPUT_TOKENS.items()
+            if cap is not None
+        },
         "b14ProviderMode": runtime_config.provider_mode,
         "b14HasKey": any_platform_secret_present(),
         "b14SiteName": PLATFORM_SITE_NAME,

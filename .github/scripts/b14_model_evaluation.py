@@ -43,7 +43,7 @@ FIXTURE_PATH = (
     / "fixtures"
     / "padiem_tier_benchmark_v1.json"
 )
-EVALUATION_CANDIDATE_IDS = ("agnes", "motif", "mercury", "atria", "luna")
+EVALUATION_CANDIDATE_IDS = ("agnes", "motif", "mercury", "atria", "glm")
 REQUIRED_CASE_IDS = frozenset({
     "KR-CONV-001",
     "KR-REASON-001",
@@ -233,14 +233,22 @@ def _manual_rubrics(rubric: Iterable[str], objective: Iterable[str]) -> tuple[st
 
 
 def request_body(spec: CandidateSpec, case: dict[str, Any]) -> dict[str, Any]:
-    """Build a manual, deterministic request for one fixture case."""
+    """Build a manual, deterministic request for one fixture case.
 
-    return {
+    ``max_tokens`` follows the candidate's own advertised maximum output tokens.
+    When the provider advertises none, the field is omitted so the provider
+    default applies; a flat value would starve reasoning models into empty
+    completions and fail the objective checks for the wrong reason.
+    """
+
+    body: dict[str, Any] = {
         "model": spec.model_id,
         "messages": [{"role": "user", "content": case["prompt"]}],
         "temperature": 0,
-        "max_tokens": 512,
     }
+    if spec.max_output_tokens is not None:
+        body["max_tokens"] = spec.max_output_tokens
+    return body
 
 
 def evaluate_candidate(

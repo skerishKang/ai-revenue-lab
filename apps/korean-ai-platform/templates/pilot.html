@@ -61,7 +61,7 @@
         <label for="pilot_model">모델</label>
         <select id="pilot_model" name="model_id" class="model-select">
           {% for model in pilot_models %}
-          <option value="{{ model.id }}" {{ 'selected' if selected_model == model.id else '' }}>
+          <option value="{{ model.id }}" data-max="{{ model.max_output_tokens if model.max_output_tokens is not none else '' }}" {{ 'selected' if selected_model == model.id else '' }}>
             {{ model.name }}{% if model.provider_name %} · {{ model.provider_name }}{% endif %}
           </option>
           {% endfor %}
@@ -85,7 +85,8 @@
         </div>
         <div class="pilot-section">
           <label for="pilot_maxtokens">Max tokens</label>
-          <input type="number" id="pilot_maxtokens" name="max_tokens" value="300" min="1" max="4096" class="pilot-num-input">
+          <input type="number" id="pilot_maxtokens" name="max_tokens" min="1" max="{{ max_request_tokens|default(131072, true) }}" class="pilot-num-input">
+          <span class="field-note">선택한 모델의 최대 출력 토큰으로 자동 설정됩니다. 비우면 모델 기본값을 사용합니다.</span>
         </div>
       </div>
 
@@ -93,6 +94,20 @@
         <button type="submit" class="btn btn-primary btn-lg btn-block">BYOK 요청 실행</button>
       </div>
     </form>
+    <script>
+      (function () {
+        var sel = document.getElementById('pilot_model');
+        var inp = document.getElementById('pilot_maxtokens');
+        if (!sel || !inp) { return; }
+        function applyModelBudget() {
+          var opt = sel.options[sel.selectedIndex];
+          var cap = opt ? (opt.getAttribute('data-max') || '') : '';
+          inp.value = cap;
+        }
+        sel.addEventListener('change', applyModelBudget);
+        applyModelBudget();
+      })();
+    </script>
   </div>
 
   <div class="pilot-right">

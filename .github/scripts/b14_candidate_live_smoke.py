@@ -98,6 +98,11 @@ class CandidateSpec:
     credential_binding: str
     expected_binding: str
     credential_mode: str = "platform_secret"
+    # Upstream-advertised maximum output tokens (measured 2026-10-07). ``None``
+    # means the provider advertises no cap, so the request omits ``max_tokens``
+    # and the provider's own default ceiling applies. A flat low value starves
+    # reasoning models into empty completions.
+    max_output_tokens: int | None = None
 
 
 # --------------------------------------------------------------------------
@@ -136,6 +141,7 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         upstream_model="sensenova-6.8-flash-lite",
         credential_binding="PADIEM_SENSENOVA_API_KEY",
         expected_binding="PADIEM_SENSENOVA_API_KEY",
+        max_output_tokens=65536,
     ),
     CandidateSpec(
         candidate_id="poolside",
@@ -146,6 +152,7 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         upstream_model="poolside/laguna-s-2.1",
         credential_binding="PADIEM_POOLSIDE_API_KEY",
         expected_binding="PADIEM_POOLSIDE_API_KEY",
+        max_output_tokens=32768,
     ),
     CandidateSpec(
         candidate_id="motif",
@@ -166,6 +173,7 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         upstream_model="mercury-2.5",
         credential_binding="PADIEM_INCEPTION_MERCURY_API_KEY",
         expected_binding="PADIEM_INCEPTION_MERCURY_API_KEY",
+        max_output_tokens=65536,
     ),
     CandidateSpec(
         candidate_id="atria",
@@ -178,14 +186,15 @@ _CANDIDATES: tuple[CandidateSpec, ...] = (
         expected_binding="PADIEM_ATRIA_API_KEY",
     ),
     CandidateSpec(
-        candidate_id="luna",
+        candidate_id="glm",
         tier="pro",
         provider_id="experiential",
         provider_name="Experiential Labs",
-        model_id="experiential/gpt-5.6-luna",
-        upstream_model="gpt-5.6-luna",
+        model_id="experiential/glm-5.3-flash-abliterated",
+        upstream_model="glm-5.3-flash-abliterated",
         credential_binding="PADIEM_EXLAB_API_KEY",
         expected_binding="PADIEM_EXLAB_API_KEY",
+        max_output_tokens=131072,
     ),
     CandidateSpec(
         candidate_id="space-bunny",
@@ -293,9 +302,15 @@ def _request(method: str, path: str, body: dict[str, Any] | None) -> tuple[int, 
 
 
 def canonical_chat_body(spec: CandidateSpec) -> dict[str, Any]:
-    """Pin one exact manual route. The AUTO lane is never requested."""
+    """Pin one exact manual route. The AUTO lane is never requested.
 
-    return {
+    The output budget follows the model's own advertised maximum. When the
+    provider advertises none (``max_output_tokens is None``) the request omits
+    ``max_tokens`` so the provider default applies instead of a flat low value
+    that would starve a reasoning model into an empty completion.
+    """
+
+    body: dict[str, Any] = {
         "model": spec.model_id,
         "messages": [
             {
@@ -304,8 +319,10 @@ def canonical_chat_body(spec: CandidateSpec) -> dict[str, Any]:
             }
         ],
         "temperature": 0,
-        "max_tokens": 8,
     }
+    if spec.max_output_tokens is not None:
+        body["max_tokens"] = spec.max_output_tokens
+    return body
 
 
 # --------------------------------------------------------------------------

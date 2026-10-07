@@ -60,8 +60,8 @@ CANDIDATES = (
         "PADIEM_EXLAB_API_KEY",
         "https://api.experientiallabs.ai/v1",
         "api.experientiallabs.ai",
-        "experiential/gpt-5.6-luna",
-        "gpt-5.6-luna",
+        "experiential/glm-5.3-flash-abliterated",
+        "glm-5.3-flash-abliterated",
         "Experiential Labs",
     ),
 )

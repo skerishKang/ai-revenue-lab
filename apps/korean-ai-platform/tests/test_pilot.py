@@ -151,7 +151,7 @@ class TestSchemaValidation:
 
     def test_max_tokens_too_high(self):
         with pytest.raises(ValidationError):
-            PilotChatRequest(model="test", messages=[ChatMessage(role="user", content="hi")], max_tokens=99999)
+            PilotChatRequest(model="test", messages=[ChatMessage(role="user", content="hi")], max_tokens=999999)
 
     def test_max_tokens_zero(self):
         with pytest.raises(ValidationError):
