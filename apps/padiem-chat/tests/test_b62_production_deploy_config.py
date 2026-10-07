@@ -42,6 +42,10 @@ def _write_repo_config(tmp_path: Path) -> Path:
         'main = "worker.py"\n'
         'compatibility_date = "2026-08-25"\n'
         'compatibility_flags = ["python_workers"]\n'
+        'base_dir = ".b66-worker-src"\n'
+        "\n"
+        "[build]\n"
+        'command = "uv run python scripts/build_b66_worker_dependencies.py"\n'
         "\n"
         "[assets]\n"
         'directory = "static"\n'
@@ -107,6 +111,9 @@ def test_live_dump_is_authority_and_repo_mock_vars_do_not_leak(tmp_path):
     assert 'service = "ai-revenue-korean-ai-platform"' in config
     assert 'database_id = "702bb62b-36f5-41a0-973f-c4f663ee01e6"' in config
     assert 'directory = "static"' in config
+    assert 'base_dir = ".b66-worker-src"' in config
+    assert '[build]' in config
+    assert 'command = "uv run python scripts/build_b66_worker_dependencies.py"' in config
     assert "compatibility_flags = [" in config
 
 

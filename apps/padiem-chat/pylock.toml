@@ -64,6 +64,12 @@ name = "padiem-control-plane"
 directory = { path = "../../packages/padiem-control-plane" }
 
 [[packages]]
+name = "pymupdf"
+version = "1.26.3"
+sdist = { url = "https://files.pythonhosted.org/packages/6d/d4/70a265e4bcd43e97480ae62da69396ef4507c8f9cfd179005ee731c92a04/pymupdf-1.26.3.tar.gz", hashes = { sha256 = "b7d2c3ffa9870e1e4416d18862f5ccd356af5fe337b4511093bbbce2ca73b7e5" } }
+wheels = [{ url = "https://cdn.jsdelivr.net/pyodide/v0.28.3/full/pymupdf-1.26.3-cp313-none-pyodide_2025_0_wasm32.whl", hashes = { sha256 = "8b343b6584098287e02c5131369341267f54461b0f2a233deec1a31dfe47693c" } }]
+
+[[packages]]
 name = "pypdf"
 version = "6.18.1"
 sdist = { url = "https://files.pythonhosted.org/packages/4f/c2/e537e78a8282b51ed47031566be118debbc34c04782a9afd8739672eb07d/pypdf-6.18.1.tar.gz", upload-time = 2026-09-11T10:10:07Z, size = 7027577, hashes = { sha256 = "2441fc839053745638d9b9ddb38ed66beed8d611f47a3036c9838fc4e3074dea" } }
