@@ -216,13 +216,13 @@ dependencies = [
     { name = "padiem-ai-core", extra = ["documents"] },
     { name = "padiem-ai-engine-client" },
     { name = "padiem-control-plane" },
-    { name = "pymupdf" },
     { name = "starlette" },
     { name = "uvicorn" },
 ]
 
 [package.optional-dependencies]
 dev = [
+    { name = "pymupdf" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "workers-py" },
@@ -236,7 +236,7 @@ requires-dist = [
     { name = "padiem-ai-core", extras = ["documents"], directory = "../../packages/padiem-ai-core" },
     { name = "padiem-ai-engine-client", directory = "../padiem-ai-engine/clients/python" },
     { name = "padiem-control-plane", directory = "../../packages/padiem-control-plane" },
-    { name = "pymupdf", specifier = "==1.26.3" },
+    { name = "pymupdf", marker = "extra == 'dev'", specifier = "==1.26.3" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8,<10" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23,<2" },
     { name = "starlette", specifier = ">=0.37,<1" },

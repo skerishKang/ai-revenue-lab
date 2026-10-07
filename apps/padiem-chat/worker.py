@@ -62,6 +62,7 @@ from app.saved_outputs import D1SavedOutputStore
 from app.usage_gate import D1UsageCounterStore, UsageGate
 from app.worker_config import (
     B14_SERVICE_BINDING_NAME,
+    B66_PDF_RENDERER_SERVICE_BINDING_NAME,
     D1_BINDING_NAME,
     GOOGLE_OAUTH_SERVICE_BINDING_NAME,
     IDENTITY_AUTHORITY_SERVICE_BINDING_NAME,
@@ -162,6 +163,39 @@ def _apply_headers(
     ).items():
         response.headers[name] = value
     return response
+
+
+class CloudflareB66PdfRendererClient:
+    """Private render-only adapter over the dedicated PDF Worker binding."""
+
+    def __init__(self, binding: Any):
+        if binding is None:
+            raise ValueError("B66 PDF renderer service binding is required")
+        self.binding = binding
+
+    async def render_pdf(
+        self, *, saved_skill_id: str, skill_fingerprint: str,
+        profile_fingerprint: str, render_model: dict[str, Any],
+    ) -> tuple[int, bytes, str]:
+        request = Request(
+            "https://padiem-b66-pdf-renderer/internal/v1/render",
+            method="POST",
+            headers={"Content-Type": "application/json"},
+            body=json.dumps({
+                "saved_skill_id": saved_skill_id,
+                "skill_fingerprint": skill_fingerprint,
+                "profile_fingerprint": profile_fingerprint,
+                "render_model": render_model,
+            }, ensure_ascii=False, separators=(",", ":")),
+        )
+        response = await self.binding.fetch(request.js_object)
+        status = int(response.status)
+        content_type = response.headers.get("content-type") or ""
+        try:
+            body = await read_bounded_service_binding_body(response, max_bytes=32 * 1024 * 1024)
+        except (ServiceBindingResponseTooLarge, ServiceBindingResponseError) as exc:
+            raise RuntimeError("B66 PDF renderer response could not be read") from exc
+        return status, body, str(content_type)
 
 
 class CloudflareB14ServiceTransport:
@@ -646,6 +680,7 @@ class Default(WorkerEntrypoint):
                 settings = apply_live_deadman_switch(settings_from_worker_bindings(self.env))
                 db_binding = binding_value(self.env, D1_BINDING_NAME)
                 b14_binding = binding_value(self.env, B14_SERVICE_BINDING_NAME)
+                b66_pdf_binding = binding_value(self.env, B66_PDF_RENDERER_SERVICE_BINDING_NAME)
                 identity_binding = binding_value(self.env, IDENTITY_AUTHORITY_SERVICE_BINDING_NAME)
                 google_oauth_binding = binding_value(self.env, GOOGLE_OAUTH_SERVICE_BINDING_NAME)
                 # Private Claw workspace bytes (#2266). Resolved from trusted
@@ -684,12 +719,18 @@ class Default(WorkerEntrypoint):
                     else None
                 )
                 web_transport = CloudflareExternalHttpTransport()
+                b66_pdf_renderer_client = (
+                    CloudflareB66PdfRendererClient(b66_pdf_binding)
+                    if b66_pdf_binding is not None
+                    else None
+                )
                 _worker_app = create_app(
                     settings=settings,
                     history_store=history_store,
                     d1_binding=db_binding,
                     r2_binding=r2_binding,
                     web_transport=web_transport,
+                    b66_pdf_renderer_client=b66_pdf_renderer_client,
                 )
                 _worker_app.state.control_plane_identity_authority = identity_authority
                 _worker_app.state.identity_shadow_store = identity_shadow_store
