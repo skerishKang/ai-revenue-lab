@@ -654,7 +654,9 @@ def test_predeploy_cp_admission_readiness_guard_is_get_only_and_fail_closed() ->
     assert 'padiem-control-plane-identity' in run
     assert '.result.enabled == false' in run
     assert '.result.previews_enabled == false' in run
-    assert '.result.deployments[0].versions[0].percentage == 100' in run
+    assert "cloudflare_served_version_cli.py resolve-active" in run
+    assert "CP_ADMISSION_SERVED_VERSION_RESOLVER=CANONICAL" in run
+    assert ".result.deployments[0].versions[0]" not in run
     assert "PREDEPLOY_CP_ADMISSION_READINESS=PASS" in run
     assert "PRIVATE_INGRESS=PASS" in run
     assert "CP_MUTATION=0" in run

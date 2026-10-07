@@ -19,6 +19,8 @@ SPEC.loader.exec_module(module)
 class FinalHandoffSmokeContractTests(unittest.TestCase):
     def test_exact_three_interpret_budget(self):
         self.assertEqual(module.MAX_INTERPRET_POSTS, 3)
+        self.assertEqual(module.MAX_PDF_POSTS, 3)
+        self.assertEqual(module.PDF_PATH, "/api/padiem/b66/quote/pdf")
         self.assertEqual(module.RETRY, 0)
         self.assertEqual(module.FALLBACK, 0)
 
@@ -41,6 +43,12 @@ class FinalHandoffSmokeContractTests(unittest.TestCase):
                 "https://quick-quote-kr.pages.dev/api/padiem/b66/quote/interpret"
             )
         )
+
+    def test_final_handoff_uses_real_certified_pdf_download_not_window_print(self):
+        source = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn("page.expect_download", source)
+        self.assertIn('body.startswith(b"%PDF-")', source)
+        self.assertNotIn("window.print =", source)
 
     def test_target_is_standalone_b66_production(self):
         self.assertEqual(module.TARGET_URL, "https://quick-quote-kr.pages.dev/")

@@ -20,26 +20,19 @@ def worker_lock() -> dict:
     return tomllib.loads((APP_ROOT / "pylock.toml").read_text(encoding="utf-8"))
 
 
-def test_host_and_worker_pin_same_reviewed_pymupdf_version():
+def test_pymupdf_is_dev_only_and_absent_from_chat_worker_lock():
     versions = builder.validate_lock(worker_lock())
+    assert "pymupdf" not in versions
     host = tomllib.loads((APP_ROOT / "uv.lock").read_text(encoding="utf-8"))
     packages = [package for package in host["package"] if package["name"] == "pymupdf"]
-    assert [package["version"] for package in packages] == [versions["pymupdf"]]
+    assert [package["version"] for package in packages] == ["1.26.3"]
 
 
-@pytest.mark.parametrize("field", ["hash", "url", "version"])
-def test_changed_wasm_artifact_is_rejected_before_install(tmp_path, monkeypatch, field):
-    lock = deepcopy(worker_lock())
-    package = next(p for p in lock["packages"] if p["name"] == "pymupdf")
-    if field == "version":
-        package["version"] = "1.26.4"
-    elif field == "url":
-        package["wheels"][0]["url"] = "https://example.invalid/unreviewed.whl"
-    else:
-        package["wheels"][0]["hashes"]["sha256"] = "0" * 64
-    monkeypatch.setattr(builder.subprocess, "run", lambda *args, **kwargs: pytest.fail("install ran"))
-    with pytest.raises(ValueError):
-        builder.validate_lock(lock)
+
+def test_chat_worker_lock_has_no_heavy_pdf_engine():
+    names = {package.get("name") for package in worker_lock().get("packages", [])}
+    assert "pymupdf" not in names
+
 
 
 def test_existing_output_is_preserved(tmp_path):

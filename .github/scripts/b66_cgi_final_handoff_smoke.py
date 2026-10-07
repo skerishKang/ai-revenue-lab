@@ -8,7 +8,7 @@ standalone B66 Production UI:
 2) Guided quote path (AI/model interpret calls: zero)
 3) complete free-form quote (one interpret POST)
 4) partial free-form + bounded follow-up (two interpret POSTs)
-5) QuoteCore totals + result view + print/PDF invocation
+5) QuoteCore totals + result view + certified PDF download
 
 No retry, provider fanout, account creation, Saved Skill mutation, or raw
 response logging is permitted.
@@ -27,7 +27,9 @@ from urllib.parse import urlparse
 
 TARGET_URL = "https://quick-quote-kr.pages.dev/"
 INTERPRET_PATH = "/api/padiem/b66/quote/interpret"
+PDF_PATH = "/api/padiem/b66/quote/pdf"
 MAX_INTERPRET_POSTS = 3
+MAX_PDF_POSTS = 3
 RETRY = 0
 FALLBACK = 0
 
@@ -87,6 +89,7 @@ class SmokeFailure(RuntimeError):
 @dataclass
 class Counters:
     interpret_posts: int = 0
+    pdf_posts: int = 0
     direct_provider_requests: int = 0
 
 
@@ -249,21 +252,40 @@ def _assert_quote(
     return draft
 
 
-def _print_probe(page) -> None:
-    page.evaluate(
-        """() => {
-          window.__b66FinalPrintCalls = 0;
-          window.print = () => { window.__b66FinalPrintCalls += 1; };
-        }"""
-    )
-    page.locator("#printPdf").click()
-    page.wait_for_function("() => window.__b66FinalPrintCalls === 1", timeout=5000)
+def _pdf_download_probe(page, counters: Counters) -> None:
+    before = counters.pdf_posts
+    try:
+        with page.expect_download(timeout=30000) as download_info:
+            with page.expect_response(
+                lambda response: (
+                    response.request.method == "POST"
+                    and urlparse(response.url).path == PDF_PATH
+                ),
+                timeout=30000,
+            ) as response_info:
+                page.locator("#printPdf").click()
+        response = response_info.value
+        download = download_info.value
+    except Exception as exc:
+        raise SmokeFailure("pdf_download_missing") from exc
+    if response.status != 200:
+        _fail("pdf_http_" + str(response.status))
+    media_type = (response.headers.get("content-type") or "").split(";", 1)[0].strip().lower()
+    if media_type != "application/pdf":
+        _fail("pdf_content_type_mismatch")
+    body = response.body()
+    if not isinstance(body, bytes) or not body.startswith(b"%PDF-"):
+        _fail("pdf_bytes_invalid")
+    if counters.pdf_posts != before + 1:
+        _fail("pdf_request_budget_mismatch")
+    if not str(download.suggested_filename or "").lower().endswith(".pdf"):
+        _fail("pdf_filename_invalid")
 
 
-def _open_result_and_print(page) -> None:
-    _click_chip(page, "견적서 확인하기")
+def _open_result_and_download(page, counters: Counters) -> None:
+    _click_chip(page, "??? ????")
     page.locator("#directView").wait_for(state="visible", timeout=10000)
-    _print_probe(page)
+    _pdf_download_probe(page, counters)
 
 
 def _reset_browser_local_quote_state(page) -> None:
@@ -335,10 +357,11 @@ def _guided(page, counters: Counters) -> None:
     )
     if counters.interpret_posts != before:
         _fail("guided_used_interpret")
-    _open_result_and_print(page)
+    _open_result_and_download(page, counters)
     print("GUIDED=PASS")
     print("GUIDED_INTERPRET_POSTS=0")
     print("GUIDED_QUOTECORE_TOTAL=PASS")
+    print("GUIDED_PDF_DOWNLOAD=PASS")
     print("GUIDED_PRINT_OR_PDF=PASS")
 
 
@@ -380,9 +403,10 @@ def _complete_free_form(page, counters: Counters) -> None:
     )
     if counters.interpret_posts != before + 1:
         _fail("complete_interpret_budget_mismatch")
-    _open_result_and_print(page)
+    _open_result_and_download(page, counters)
     print("COMPLETE_FREEFORM=PASS")
     print("COMPLETE_QUOTECORE_TOTAL=1980000")
+    print("COMPLETE_PDF_DOWNLOAD=PASS")
     print("COMPLETE_PRINT_OR_PDF=PASS")
 
 
@@ -466,7 +490,7 @@ def _partial_followup(page, counters: Counters) -> None:
     if counters.interpret_posts != before + 2:
         _fail("partial_followup_interpret_budget_mismatch")
 
-    _open_result_and_print(page)
+    _open_result_and_download(page, counters)
     print("PARTIAL_FREEFORM=PASS")
     print("MISSING_UNIT_PRICE_QUESTION=PASS")
     print("FOLLOWUP_COMPLETE=PASS")
@@ -474,6 +498,7 @@ def _partial_followup(page, counters: Counters) -> None:
     print("FOLLOWUP_SAME_ISSUE_DATE=YES")
     print("FOLLOWUP_DOUBLE_ALLOCATION=0")
     print("FOLLOWUP_QUOTECORE_TOTAL=1980000")
+    print("FOLLOWUP_PDF_DOWNLOAD=PASS")
     print("FOLLOWUP_PRINT_OR_PDF=PASS")
 
 
@@ -502,6 +527,10 @@ def run_live(username: str, password: str) -> int:
                     counters.interpret_posts += 1
                     if counters.interpret_posts > MAX_INTERPRET_POSTS:
                         _fail("interpret_budget_exceeded")
+                if request.method == "POST" and parsed.path == PDF_PATH:
+                    counters.pdf_posts += 1
+                    if counters.pdf_posts > MAX_PDF_POSTS:
+                        _fail("pdf_budget_exceeded")
                 if _is_direct_provider(request.url):
                     counters.direct_provider_requests += 1
 
@@ -518,6 +547,8 @@ def run_live(username: str, password: str) -> int:
 
             if counters.interpret_posts != MAX_INTERPRET_POSTS:
                 _fail("final_interpret_budget_mismatch")
+            if counters.pdf_posts != MAX_PDF_POSTS:
+                _fail("final_pdf_budget_mismatch")
             if counters.direct_provider_requests != 0:
                 _fail("browser_direct_provider_request")
 
@@ -527,6 +558,9 @@ def run_live(username: str, password: str) -> int:
 
         print("INTERPRET_POSTS=3")
         print("MAX_INTERPRET_POSTS=3")
+        print("PDF_POSTS=3")
+        print("MAX_PDF_POSTS=3")
+        print("CERTIFIED_PDF_DOWNLOADS=3")
         print("BROWSER_DIRECT_PROVIDER_CALLS=0")
         print("RETRY=0")
         print("FALLBACK_FANOUT=0")
@@ -540,6 +574,7 @@ def run_live(username: str, password: str) -> int:
         return 0
     except SmokeFailure as exc:
         print("INTERPRET_POSTS=" + str(counters.interpret_posts))
+        print("PDF_POSTS=" + str(counters.pdf_posts))
         print("BROWSER_DIRECT_PROVIDER_CALLS=" + str(counters.direct_provider_requests))
         print("PASSWORD_OUTPUT=0")
         print("COOKIE_OUTPUT=0")

@@ -183,6 +183,7 @@ def create_app(
     b66_quote_history_store=None,
     b66_quote_asset_store=None,
     b66_certified_quote_bundle_store=None,
+    b66_pdf_renderer_client=None,
     b66_quote_interpreter=None,
     claw_task_alert_store=None,
     calendar_store: CalendarStore | None = None,
@@ -516,6 +517,7 @@ def create_app(
         except Exception:
             _b66_bundle_store = None
     app.state.b66_certified_quote_bundle_store = _b66_bundle_store
+    app.state.b66_pdf_renderer_client = b66_pdf_renderer_client
 
     # #2341 Task/Alert inbox: consume the existing migration-010 D1 authority.
     # No schema creation or alternate DB authority is introduced here.
