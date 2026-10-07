@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - ".github/workflows/b54-engine-a7-cp-admission-production-activation.yml"
+      - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/tests/test_b54_engine_a7_cp_admission_activation.py"
       - "packages/padiem-control-plane/wrangler.engine-admission-authority.jsonc"
       - "packages/padiem-control-plane/engine_admission_authority_worker.py"
@@ -191,8 +192,7 @@ jobs:
             curl -fsS "${auth[@]}" "${cp_base}/subdomain" -o "${subdomain}"
             curl -fsS "${auth[@]}" "${cp_base}/deployments" -o "${deployments}"
             jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
-            jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
-            active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
+            active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
             test -n "${active}"
             cp_state="present"
             echo "CP_ENGINE_ADMISSION_WORKER=PRESENT"
@@ -348,8 +348,7 @@ jobs:
           jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
           jq -e --arg identity "${IDENTITY_WORKER}"             '.result.bindings | any(.name == "CONTROL_PLANE_IDENTITY" and .type == "service" and .service == $identity)'             "${settings}" >/dev/null
           jq -e '.success == true and .result.enabled == false and .result.previews_enabled == false' "${subdomain}" >/dev/null
-          jq -e '.success == true and (.result.deployments | length) > 0 and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
-          active="$(jq -r '.result.deployments[0].versions[0].version_id // empty' "${deployments}")"
+          active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           test -n "${active}"
           echo "CP_ENGINE_ADMISSION_WORKER=PRESENT"
           echo "CP_ENGINE_ADMISSION_ACTIVE_VERSION=${active}"

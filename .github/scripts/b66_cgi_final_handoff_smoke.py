@@ -74,9 +74,28 @@ def _send(page, text: str) -> None:
 
 def _click_chip(page, label: str) -> None:
     locator = page.locator("#easyChipRow button", has_text=label)
+    try:
+        locator.wait_for(state="visible", timeout=5000)
+    except Exception as exc:
+        raise SmokeFailure("chip_missing_" + label) from exc
     if locator.count() != 1:
         _fail("chip_not_unique_" + label)
     locator.click()
+
+
+def _click_chip_index(page, *, index: int, expected_count: int, stage: str) -> None:
+    try:
+        page.wait_for_function(
+            "([selector, expected]) => document.querySelectorAll(selector).length === expected",
+            arg=["#easyChipRow button", expected_count],
+            timeout=5000,
+        )
+    except Exception as exc:
+        raise SmokeFailure("guided_chip_count_" + stage) from exc
+    try:
+        page.locator("#easyChipRow button").nth(index).click(timeout=5000)
+    except Exception as exc:
+        raise SmokeFailure("guided_chip_click_" + stage) from exc
 
 
 def _wait_runtime_ready(page) -> None:
@@ -139,6 +158,7 @@ def _assert_quote(
 
 def _pdf_download_probe(page, counters: Counters) -> None:
     before = counters.pdf_posts
+    response = None
     try:
         with page.expect_download(timeout=30000) as download_info:
             with page.expect_response(
@@ -149,15 +169,20 @@ def _pdf_download_probe(page, counters: Counters) -> None:
                 timeout=30000,
             ) as response_info:
                 page.locator("#printPdf").click()
-        response = response_info.value
+            response = response_info.value
+            if response.status != 200:
+                _fail("pdf_http_" + str(response.status))
+            media_type = (response.headers.get("content-type") or "").split(";", 1)[0].strip().lower()
+            if media_type != "application/pdf":
+                _fail("pdf_content_type_mismatch")
         download = download_info.value
+    except SmokeFailure:
+        raise
     except Exception as exc:
-        raise SmokeFailure("pdf_download_missing") from exc
-    if response.status != 200:
-        _fail("pdf_http_" + str(response.status))
-    media_type = (response.headers.get("content-type") or "").split(";", 1)[0].strip().lower()
-    if media_type != "application/pdf":
-        _fail("pdf_content_type_mismatch")
+        if response is not None:
+            raise SmokeFailure("pdf_download_missing_after_http_" + str(response.status)) from exc
+        raise SmokeFailure("pdf_response_or_download_missing") from exc
+
     body = response.body()
     if not isinstance(body, bytes) or not body.startswith(b"%PDF-"):
         _fail("pdf_bytes_invalid")
@@ -168,7 +193,7 @@ def _pdf_download_probe(page, counters: Counters) -> None:
 
 
 def _open_result_and_download(page, counters: Counters) -> None:
-    _click_chip(page, "??? ????")
+    _click_chip(page, "견적서 확인하기")
     page.locator("#directView").wait_for(state="visible", timeout=10000)
     _pdf_download_probe(page, counters)
 
@@ -187,8 +212,11 @@ def _reset_browser_local_quote_state(page) -> None:
 
 
 def _login(page, username: str, password: str) -> None:
+    print("SMOKE_STAGE=PAGE_GOTO")
     page.goto(TARGET_URL, wait_until="domcontentloaded", timeout=30000)
+    print("SMOKE_STAGE=ACCOUNT_BUTTON")
     page.locator("#padiemAccountButton").click()
+    print("SMOKE_STAGE=LOGIN_FORM")
     page.locator("#padiemLoginForm").wait_for(state="visible", timeout=15000)
     page.locator("#padiemLoginIdentifier").fill(username)
     page.locator("#padiemLoginPassword").fill(password)
@@ -207,7 +235,10 @@ def _login(page, username: str, password: str) -> None:
     if login_response.status != 200:
         _fail("login_http_" + str(login_response.status))
 
-    page.locator("#padiemAccountPanel").wait_for(state="visible", timeout=20000)
+    print("SMOKE_STAGE=LOGIN_HTTP_200")
+    # The canonical three-pane shell intentionally hides the legacy account panel
+    # after moving account/skill controls into the left rail. Runtime readiness,
+    # not legacy-panel visibility, is the authenticated product authority.
     try:
         _wait_runtime_ready(page)
     except Exception as exc:
@@ -226,29 +257,27 @@ def _login(page, username: str, password: str) -> None:
         )
         raise SmokeFailure(code) from exc
 
+    print("SMOKE_STAGE=RUNTIME_READY")
     skill_count = page.locator("#padiemSavedSkillSelect option").count()
     if skill_count != 1:
         _fail("saved_skill_count_not_one")
+    print("SMOKE_STAGE=LOGIN_READY")
 
 
 def _guided(page, counters: Counters) -> None:
     before = counters.interpret_posts
     page.locator("#guidedStarter").click()
 
-    for text in (
-        "가이드테스트건설",
-        "없음",
-        "배관",
-        "2",
-        "10000",
-        "다음",
-        "별도",
-        "없음",
-        "현재",
-    ):
-        _send(page, text)
-
-    _click_chip(page, "견적서 만들기")
+    _send(page, "\uac00\uc774\ub4dc\ud14c\uc2a4\ud2b8\uac74\uc124")
+    _click_chip_index(page, index=0, expected_count=1, stage="recipient_person_none")
+    _send(page, "\ubc30\uad00")
+    _click_chip_index(page, index=1, expected_count=4, stage="quantity_two")
+    _send(page, "10000")
+    _click_chip_index(page, index=1, expected_count=2, stage="items_done")
+    _click_chip_index(page, index=0, expected_count=4, stage="tax_exclusive")
+    _click_chip_index(page, index=0, expected_count=1, stage="memo_none")
+    _click_chip_index(page, index=0, expected_count=3, stage="sender_current")
+    _click_chip_index(page, index=0, expected_count=3, stage="finish")
     page.wait_for_function(
         """() => {
           const d = window.B66QuoteAppBridge.getDraft();
