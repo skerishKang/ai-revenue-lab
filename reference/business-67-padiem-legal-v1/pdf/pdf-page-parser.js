@@ -10,6 +10,7 @@
   "use strict";
 
   var PINNED_PDFJS_VERSION = "6.3.289";
+  var B67_BROWSER_EXTRACTION_CONTRACT_VERSION = "b67-browser-pdf-extraction.v1";
   var SCRIPT_URL = global.document && global.document.currentScript
     ? global.document.currentScript.src
     : null;
@@ -55,8 +56,14 @@
         ? payload
         : resultError("pdf_worker_invalid_result");
     }
+    if (payload.contract_version !== B67_BROWSER_EXTRACTION_CONTRACT_VERSION) {
+      return resultError("pdf_extraction_contract_version_mismatch");
+    }
     if (payload.parser !== "pdfjs-dist" || payload.parser_version !== PINNED_PDFJS_VERSION) {
       return resultError("pdf_parser_version_mismatch");
+    }
+    if (typeof payload.source_sha256 !== "string" || !/^[0-9a-f]{64}$/.test(payload.source_sha256)) {
+      return resultError("pdf_worker_invalid_result");
     }
     if (!Number.isInteger(payload.page_count) || payload.page_count < 1 || payload.page_count > LIMITS.maxPages) {
       return resultError("pdf_worker_invalid_result");
@@ -267,6 +274,7 @@
 
   global.B67PdfPageParser = Object.freeze({
     PINNED_PDFJS_VERSION: PINNED_PDFJS_VERSION,
+    EXTRACTION_CONTRACT_VERSION: B67_BROWSER_EXTRACTION_CONTRACT_VERSION,
     LIMITS: LIMITS,
     prepareParser: prepareParser,
     parseArrayBuffer: parseArrayBuffer

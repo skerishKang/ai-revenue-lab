@@ -18,15 +18,26 @@ B67_CASE_PDF_RPC_VERSION = "engine-b67-case-pdf-rpc.v1"
 
 CANDIDATES_OPERATION = "b67_case_pdf_candidates"
 READ_OPERATION = "b67_case_pdf_read"
-B67_CASE_PDF_RPC_OPERATIONS = (CANDIDATES_OPERATION, READ_OPERATION)
+REVIEW_EXTRACTION_OPERATION = "b67_case_pdf_review_extraction"
+B67_CASE_PDF_RPC_OPERATIONS = (
+    CANDIDATES_OPERATION,
+    READ_OPERATION,
+    REVIEW_EXTRACTION_OPERATION,
+)
 
 _OPERATION_KEYS = {
     CANDIDATES_OPERATION: frozenset({"workspace_ref", "project_id", "query"}),
     READ_OPERATION: frozenset({"workspace_ref", "project_id", "file_id"}),
+    REVIEW_EXTRACTION_OPERATION: frozenset(
+        {"workspace_ref", "project_id", "file_id", "extraction"}
+    ),
 }
 _REQUIRED_KEYS = {
     CANDIDATES_OPERATION: frozenset({"workspace_ref", "project_id"}),
     READ_OPERATION: frozenset({"workspace_ref", "project_id", "file_id"}),
+    REVIEW_EXTRACTION_OPERATION: frozenset(
+        {"workspace_ref", "project_id", "file_id", "extraction"}
+    ),
 }
 
 PUBLIC_B67_CASE_PDF_FETCH_ROUTE = False
@@ -74,10 +85,17 @@ async def drive_case_pdf_rpc(
                 project_id=project_id,
                 query=query,
             )
-        return await service.read(
+        if operation == READ_OPERATION:
+            return await service.read(
+                workspace_ref=workspace_ref,
+                project_id=project_id,
+                file_id=body.get("file_id"),
+            )
+        return await service.review_browser_extraction(
             workspace_ref=workspace_ref,
             project_id=project_id,
             file_id=body.get("file_id"),
+            extraction=body.get("extraction"),
         )
     except DriveCasePdfError as exc:
         return _error(exc.code, exc.safe_message, exc.status_code)
@@ -107,6 +125,7 @@ __all__ = [
     "B67_CASE_PDF_RPC_VERSION",
     "CANDIDATES_OPERATION",
     "READ_OPERATION",
+    "REVIEW_EXTRACTION_OPERATION",
     "B67_CASE_PDF_RPC_OPERATIONS",
     "PUBLIC_B67_CASE_PDF_FETCH_ROUTE",
     "drive_case_pdf_rpc",

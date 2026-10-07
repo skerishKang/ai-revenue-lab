@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import base64
+import hashlib
 import json
 import pathlib
 
@@ -392,3 +393,96 @@ def test_service_and_rpc_snapshots_lock_authority_posture() -> None:
     assert rpc["public_fetch_route"] is False
     assert rpc["browser_drive_authority"] is False
     assert rpc["raw_credentials_present"] is False
+
+
+def browser_extraction(*, source_bytes=PDF_BYTES):
+    text = "page one evidence"
+    return {
+        "ok": True,
+        "contract_version": "b67-browser-pdf-extraction.v1",
+        "parser": "pdfjs-dist",
+        "parser_version": "6.3.289",
+        "source_sha256": hashlib.sha256(source_bytes).hexdigest(),
+        "page_count": 2,
+        "pages": [
+            {
+                "page_number": 1,
+                "text": text,
+                "text_chars": len(text),
+                "native_text": True,
+            },
+            {
+                "page_number": 2,
+                "text": "",
+                "text_chars": 0,
+                "native_text": False,
+            },
+        ],
+        "total_text_chars": len(text),
+        "native_text_state": "mixed",
+        "ocr_candidate_pages": [2],
+    }
+
+
+def test_review_browser_extraction_reauthorizes_and_refetches_current_drive_bytes():
+    service, port, provider, _ = run(make_service())
+    body = run(
+        service.review_browser_extraction(
+            workspace_ref=WORKSPACE_REF,
+            project_id=PROJECT_ID,
+            file_id=FILE_ID,
+            extraction=browser_extraction(),
+        )
+    )
+    assert body["ok"] is True
+    assert body["source_freshness"] == "current"
+    assert body["page_count"] == 2
+    assert body["indexed_page_count"] == 1
+    assert body["blank_page_count"] == 1
+    assert body["segments"][0]["locator"] == {
+        "kind": "page",
+        "value": "1",
+        "precision": "exact",
+    }
+    assert provider.calls == [WORKSPACE_REF]
+    assert [kind for kind, _ in port.calls] == ["json", "bytes"]
+    assert "source_ref" not in json.dumps(body)
+    assert BINDING_REF not in json.dumps(body)
+
+
+def test_review_browser_extraction_rejects_changed_drive_bytes():
+    changed = b"%PDF-1.7\nchanged evidence!!\n%%EOF"
+    metadata = {**PDF_METADATA, "version": 8, "size": len(changed)}
+    service, _port, _provider, _ = run(
+        make_service(port=FakeDrivePort(metadata=metadata, content=changed))
+    )
+    with pytest.raises(Exception) as caught:
+        run(
+            service.review_browser_extraction(
+                workspace_ref=WORKSPACE_REF,
+                project_id=PROJECT_ID,
+                file_id=FILE_ID,
+                extraction=browser_extraction(),
+            )
+        )
+    assert getattr(caught.value, "code", None) == "browser_pdf_source_changed"
+
+
+def test_review_rpc_closed_schema_rejects_browser_authority_fields():
+    service, _port, _provider, _ = run(make_service())
+    payload = {
+        "workspace_ref": WORKSPACE_REF,
+        "project_id": PROJECT_ID,
+        "file_id": FILE_ID,
+        "extraction": browser_extraction(),
+        "source_ref": "drive:caller",
+    }
+    body = run(
+        drive_case_pdf_rpc(
+            service,
+            operation="b67_case_pdf_review_extraction",
+            payload=payload,
+        )
+    )
+    assert body["ok"] is False
+    assert body["error"]["code"] == "invalid_request"
