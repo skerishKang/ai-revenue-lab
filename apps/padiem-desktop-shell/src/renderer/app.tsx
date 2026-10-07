@@ -16,7 +16,14 @@
  * state is still the connection truth the renderer reports.
  */
 
-import { useCallback, useEffect, useRef, useState, type ReactElement } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type ReactElement,
+} from 'react';
 
 import { requireShellApi, RendererAuthorityError, type PadiemShellApi } from './api.js';
 import {
@@ -28,6 +35,7 @@ import {
   progressSummaryText,
   readinessBodyText,
   readinessStateText,
+  sessionCountText,
   translate,
   type ShellLocale,
   type ShellStringKey,
@@ -1212,6 +1220,209 @@ const WORKBENCH_NAV_ICON: Readonly<Record<WorkbenchNavSection, string>> = Object
   sessions: '❐',
 });
 
+/* ── #3606 — workbench interaction layer ──────────────────────────────────
+ *
+ * Presentation and interaction only. The tab strip, the rail collapse and the
+ * shortcuts below change nothing about authority: they re-use the existing
+ * canonical conversation projection and the existing allowlisted actions, and
+ * every new piece of state is renderer-local.
+ */
+
+/** Bounded, UI-only shortcuts. None of them executes anything. */
+export const WORKBENCH_SHORTCUTS = Object.freeze({
+  search: 'Ctrl/Cmd+K',
+  toggleLeftRail: 'Ctrl/Cmd+B',
+  toggleRightRail: 'Ctrl/Cmd+Shift+B',
+  dismiss: 'Escape',
+});
+
+export type WorkbenchShortcut = 'search' | 'toggle-left-rail' | 'toggle-right-rail' | 'dismiss';
+
+/**
+ * Resolve a keydown into a workbench shortcut, or null.
+ *
+ * Deliberately narrow: only these four gestures are recognised, so the shell can
+ * never capture an execution, approval, Git or process shortcut. The rail
+ * toggles are ignored while the user is typing, so a text field keeps its own
+ * Ctrl/Cmd+B behaviour; Escape is a focus/layout dismiss only.
+ */
+export function resolveWorkbenchShortcut(input: {
+  key: string;
+  ctrlKey: boolean;
+  metaKey: boolean;
+  altKey: boolean;
+  shiftKey: boolean;
+  targetIsTextField: boolean;
+}): WorkbenchShortcut | null {
+  const key = input.key.length === 1 ? input.key.toLowerCase() : input.key;
+  if (key === 'Escape' && !input.ctrlKey && !input.metaKey && !input.altKey && !input.shiftKey) {
+    return 'dismiss';
+  }
+  if (input.altKey) return null;
+  if (!input.ctrlKey && !input.metaKey) return null;
+  if (key === 'k' && !input.shiftKey) return 'search';
+  if (key === 'b' && !input.shiftKey) {
+    return input.targetIsTextField ? null : 'toggle-left-rail';
+  }
+  if (key === 'b' && input.shiftKey) {
+    return input.targetIsTextField ? null : 'toggle-right-rail';
+  }
+  return null;
+}
+
+/** A canonical timestamp rendered in the user's language. Never invented. */
+export function formatSessionStamp(locale: ShellLocale, iso: string): string {
+  const parsed = new Date(iso);
+  if (Number.isNaN(parsed.getTime())) return '';
+  return new Intl.DateTimeFormat(locale === 'ko' ? 'ko-KR' : 'en-US', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(parsed);
+}
+
+/** Stable DOM ids the rail toggles and the tab strip point at. */
+export const WORKBENCH_RAIL_IDS = Object.freeze({
+  left: 'workbench-left-rail',
+  right: 'workbench-tools-rail',
+  taskPanel: 'workbench-task-panel',
+});
+
+/**
+ * #3606 — one rail collapse/expand control.
+ *
+ * A real button with an accessible name, `aria-expanded` for the current state
+ * and `aria-controls` naming the region it collapses. It only flips local view
+ * state; nothing is sent anywhere.
+ */
+export function WorkbenchRailToggle(props: {
+  side: 'left' | 'right';
+  collapsed: boolean;
+  onToggle: () => void;
+  locale: ShellLocale;
+}): ReactElement {
+  const { side, collapsed, onToggle, locale } = props;
+  const t = (key: ShellStringKey): string => translate(locale, key);
+  const label = t(side === 'left' ? 'rail.leftToggle' : 'rail.rightToggle');
+  const shortcut =
+    side === 'left' ? WORKBENCH_SHORTCUTS.toggleLeftRail : WORKBENCH_SHORTCUTS.toggleRightRail;
+  return (
+    <button
+      type="button"
+      className="workbench-rail-toggle"
+      data-rail-toggle={side}
+      data-rail-state={collapsed ? 'collapsed' : 'expanded'}
+      aria-controls={side === 'left' ? WORKBENCH_RAIL_IDS.left : WORKBENCH_RAIL_IDS.right}
+      aria-expanded={!collapsed}
+      aria-label={`${label} ${collapsed ? t('rail.expand') : t('rail.collapse')}`}
+      title={`${label} (${shortcut})`}
+      onClick={onToggle}
+    >
+      <span aria-hidden="true">{side === 'left' ? '▤' : '▥'}</span>
+    </button>
+  );
+}
+
+/**
+ * #3606 — compact task/session tab strip above the centre workspace.
+ *
+ * Every tab is an existing canonical conversation, and selecting one runs the
+ * same allowlisted action the left session list uses. There is no "New task"
+ * tab, no renderer-minted id, no tab close that could be read as a server-side
+ * delete, and no persistent tab authority.
+ */
+export function TaskTabStrip(props: {
+  conversations: CanonicalConversationListResponse | null;
+  selectedConversationId: string | null;
+  onSelectConversation: (conversationId: string) => void;
+  locale: ShellLocale;
+  advanced: boolean;
+}): ReactElement {
+  const { conversations, selectedConversationId, locale, advanced } = props;
+  const t = (key: ShellStringKey): string => translate(locale, key);
+  const canonical = conversations !== null && conversations.ok;
+  const items = canonical ? conversations.conversations : [];
+  const activeIndex = items.findIndex((item) => item.id === selectedConversationId);
+  const rovingIndex = activeIndex >= 0 ? activeIndex : 0;
+  const tabId = (index: number): string => `workbench-task-tab-${index}`;
+
+  const onKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>): void => {
+    if (items.length === 0) return;
+    const current = activeIndex >= 0 ? activeIndex : 0;
+    let next: number | null = null;
+    if (event.key === 'ArrowRight') next = (current + 1) % items.length;
+    else if (event.key === 'ArrowLeft') next = (current - 1 + items.length) % items.length;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = items.length - 1;
+    if (next === null) return;
+    event.preventDefault();
+    const target = items[next];
+    if (target === undefined) return;
+    props.onSelectConversation(target.id);
+    document.getElementById(tabId(next))?.focus();
+  };
+
+  if (items.length === 0) {
+    return (
+      <div
+        className="workbench-tabs workbench-tabs-empty"
+        data-tab-source={canonical ? 'canonical' : 'canonical-required'}
+        data-tab-count={canonical ? '0' : undefined}
+        data-tab-empty="true"
+      >
+        <span className="workbench-tabs-empty-text">
+          {canonical ? t('tabs.none') : t('sessions.pending')}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="workbench-tabs"
+      data-tab-source="canonical"
+      data-tab-count={String(items.length)}
+    >
+      <div
+        className="workbench-tablist"
+        role="tablist"
+        aria-label={t('tabs.label')}
+        onKeyDown={onKeyDown}
+      >
+        {items.map((item, index) => {
+          const isActive = index === activeIndex;
+          const title = item.title || t('desktop.conversationUntitled');
+          return (
+            <button
+              key={item.id}
+              id={tabId(index)}
+              type="button"
+              role="tab"
+              className={isActive ? 'workbench-tab active' : 'workbench-tab'}
+              data-conversation-id={item.id}
+              data-tab-active={isActive ? 'true' : 'false'}
+              aria-selected={isActive}
+              aria-controls={WORKBENCH_RAIL_IDS.taskPanel}
+              tabIndex={index === rovingIndex ? 0 : -1}
+              title={title}
+              onClick={() => props.onSelectConversation(item.id)}
+            >
+              <span className="workbench-tab-title">{title}</span>
+            </button>
+          );
+        })}
+      </div>
+      {advanced ? (
+        <p className="workbench-tabs-note" data-advanced="true">
+          {t('tabs.authorityNote')}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 /**
  * Left task/workspace navigation.
  *
@@ -1279,17 +1490,26 @@ export function SessionListPanel(props: {
   const { conversations, selectedConversationId, locale, advanced } = props;
   const t = (key: ShellStringKey): string => translate(locale, key);
   const canonical = conversations !== null && conversations.ok;
+  const items = canonical ? conversations.conversations : [];
   return (
     <section
       className="panel workbench-session-panel"
       data-session-source={canonical ? 'canonical' : 'canonical-required'}
     >
-      <h2>{t('sessions.title')}</h2>
+      <div className="workbench-panel-head">
+        <h2>{t('sessions.title')}</h2>
+        {canonical ? (
+          <span className="workbench-panel-count" data-session-count={String(items.length)}>
+            {sessionCountText(locale, items.length)}
+          </span>
+        ) : null}
+      </div>
       <p className="subtitle">{t('sessions.explainer')}</p>
-      {canonical && conversations.conversations.length > 0 ? (
+      {canonical && items.length > 0 ? (
         <nav className="workbench-session-list" aria-label={t('desktop.conversationListLabel')}>
-          {conversations.conversations.map((item) => {
+          {items.map((item) => {
             const isSelected = selectedConversationId === item.id;
+            const stamp = formatSessionStamp(locale, item.updatedAt);
             return (
               <button
                 key={item.id}
@@ -1298,10 +1518,23 @@ export function SessionListPanel(props: {
                   isSelected ? 'workbench-session-entry selected' : 'workbench-session-entry'
                 }
                 data-conversation-id={item.id}
+                data-session-selected={isSelected ? 'true' : 'false'}
                 aria-current={isSelected ? 'true' : undefined}
                 onClick={() => props.onSelectConversation(item.id)}
               >
-                {item.title || t('desktop.conversationUntitled')}
+                <span className="workbench-session-title">
+                  {item.title || t('desktop.conversationUntitled')}
+                </span>
+                {stamp === '' ? null : (
+                  <time
+                    className="workbench-session-stamp"
+                    dateTime={item.updatedAt}
+                    data-updated-at={item.updatedAt}
+                    title={t('sessions.updated')}
+                  >
+                    {stamp}
+                  </time>
+                )}
               </button>
             );
           })}
@@ -1470,13 +1703,86 @@ export function ShellView(props: {
   const locale = preferences.locale;
   const t = (key: ShellStringKey): string => translate(locale, key);
   const visibility = visibilityFor(preferences.view);
-  // #3598 — which navigation section is open is local view state. No IPC, and
-  // it never changes the canonical connection or readiness state.
+  // #3598/#3606 — which navigation section is open and whether the two rails are
+  // collapsed are local view state. No IPC, and none of it can change the
+  // canonical connection, readiness, filesystem or search authority.
   const [section, setSection] = useState<WorkbenchNavSection>(DEFAULT_WORKBENCH_SECTION);
+  const [leftCollapsed, setLeftCollapsed] = useState(false);
+  const [rightCollapsed, setRightCollapsed] = useState(false);
+  // Read inside the window keydown listener without re-binding it every render.
+  const settingsOpenRef = useRef(props.settingsOpen);
+  settingsOpenRef.current = props.settingsOpen;
+  const closeSettingsRef = useRef(props.onCloseSettings);
+  closeSettingsRef.current = props.onCloseSettings;
+
+  // Opening a navigation section always brings the rail back, so a collapsed
+  // rail never hides the surface the user just asked for.
+  const selectSection = useCallback((next: WorkbenchNavSection): void => {
+    setSection(next);
+    setLeftCollapsed(false);
+  }, []);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent): void => {
+      const target = event.target as HTMLElement | null;
+      const targetIsTextField =
+        target !== null &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable === true);
+      const shortcut = resolveWorkbenchShortcut({
+        key: event.key,
+        ctrlKey: event.ctrlKey,
+        metaKey: event.metaKey,
+        altKey: event.altKey,
+        shiftKey: event.shiftKey,
+        targetIsTextField,
+      });
+      if (shortcut === null) return;
+      if (shortcut === 'search') {
+        event.preventDefault();
+        setLeftCollapsed(false);
+        setSection('search');
+        return;
+      }
+      if (shortcut === 'toggle-left-rail') {
+        event.preventDefault();
+        setLeftCollapsed((collapsed) => !collapsed);
+        return;
+      }
+      if (shortcut === 'toggle-right-rail') {
+        event.preventDefault();
+        setRightCollapsed((collapsed) => !collapsed);
+        return;
+      }
+      // Escape is a focus/layout dismiss only: nothing is executed or cancelled.
+      if (targetIsTextField) target?.blur();
+      if (settingsOpenRef.current) closeSettingsRef.current();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []);
+
   const workspaceName =
     state.workspaceRoot?.selected === true && state.workspaceRoot.rootName
       ? state.workspaceRoot.rootName
       : t('topbar.noWorkspace');
+  const deviceState = state.status?.deviceState ?? 'UNKNOWN';
+  const readinessState = state.health
+    ? state.health.state
+    : state.status
+      ? state.status.runnerState
+      : 'UNKNOWN';
+  const selectedConversationId = state.selectedConversation?.id ?? null;
+  const canonicalConversations =
+    state.conversationList !== null && state.conversationList.ok
+      ? state.conversationList.conversations
+      : [];
+  const activeTabIndex = canonicalConversations.findIndex(
+    (item) => item.id === selectedConversationId,
+  );
+  const taskPanelLabelledBy =
+    activeTabIndex >= 0 ? `workbench-task-tab-${activeTabIndex}` : 'desktop-conversation-title';
   return (
     <main
       className="shell workbench"
@@ -1484,6 +1790,8 @@ export function ShellView(props: {
       data-view={preferences.view}
       data-theme-preference={preferences.theme}
       data-workbench-ia="zcode-derived"
+      data-left-rail={leftCollapsed ? 'collapsed' : 'expanded'}
+      data-right-rail={rightCollapsed ? 'collapsed' : 'expanded'}
     >
       <header className="workbench-topbar">
         <div className="workbench-topbar-context">
@@ -1501,21 +1809,38 @@ export function ShellView(props: {
             </span>
           </span>
         </div>
-        <button className="settings-trigger" onClick={props.onToggleSettings}>
-          {t('app.settings')}
-        </button>
+        <div className="workbench-topbar-actions">
+          <WorkbenchRailToggle
+            side="left"
+            collapsed={leftCollapsed}
+            onToggle={() => setLeftCollapsed((collapsed) => !collapsed)}
+            locale={locale}
+          />
+          <WorkbenchRailToggle
+            side="right"
+            collapsed={rightCollapsed}
+            onToggle={() => setRightCollapsed((collapsed) => !collapsed)}
+            locale={locale}
+          />
+          <button className="settings-trigger" onClick={props.onToggleSettings}>
+            {t('app.settings')}
+          </button>
+        </div>
       </header>
       <div className="workbench-body workspace-shell-layout" data-desktop-workspace="stage-b">
         <aside
+          id={WORKBENCH_RAIL_IDS.left}
           className="workbench-left workspace-rail workspace-project-rail"
           data-left-section={section}
+          data-rail="left"
+          data-rail-state={leftCollapsed ? 'collapsed' : 'expanded'}
         >
-          <WorkbenchNavRail active={section} onSelect={setSection} locale={locale} />
+          <WorkbenchNavRail active={section} onSelect={selectSection} locale={locale} />
           <div className="workbench-left-panel">
             {section === 'sessions' ? (
               <SessionListPanel
                 conversations={state.conversationList}
-                selectedConversationId={state.selectedConversation?.id ?? null}
+                selectedConversationId={selectedConversationId}
                 onSelectConversation={(conversationId) =>
                   void actions.selectConversation(conversationId)
                 }
@@ -1537,49 +1862,94 @@ export function ShellView(props: {
             )}
           </div>
         </aside>
-        <section className="workbench-center workspace-main" data-center-role="claw-workspace">
-          <ConversationWorkspacePanel
-            locale={locale}
-            advanced={visibility.developerFacts}
+        <div className="workbench-center workspace-main" data-center-role="claw-workspace">
+          <TaskTabStrip
             conversations={state.conversationList}
-            selectedConversation={state.selectedConversation}
-            showList={false}
+            selectedConversationId={selectedConversationId}
             onSelectConversation={(conversationId) => void actions.selectConversation(conversationId)}
-          />
-          <RunActivityPanel
             locale={locale}
             advanced={visibility.developerFacts}
-            runs={state.runList}
           />
-        </section>
-        <aside className="workbench-tools workspace-rail workspace-local-rail">
+          <section
+            id={WORKBENCH_RAIL_IDS.taskPanel}
+            className="workbench-task-panel"
+            role="tabpanel"
+            aria-labelledby={taskPanelLabelledBy}
+          >
+            <ConversationWorkspacePanel
+              locale={locale}
+              advanced={visibility.developerFacts}
+              conversations={state.conversationList}
+              selectedConversation={state.selectedConversation}
+              showList={false}
+              onSelectConversation={(conversationId) =>
+                void actions.selectConversation(conversationId)
+              }
+            />
+            <RunActivityPanel
+              locale={locale}
+              advanced={visibility.developerFacts}
+              runs={state.runList}
+            />
+          </section>
+        </div>
+        <aside
+          id={WORKBENCH_RAIL_IDS.right}
+          className="workbench-tools workspace-rail workspace-local-rail"
+          data-rail="right"
+          data-rail-state={rightCollapsed ? 'collapsed' : 'expanded'}
+        >
           <div className="workspace-rail-title">{t('desktop.localTitle')}</div>
-          <ConnectionPanel
-            status={state.status}
-            busy={state.busy}
-            actions={actions}
-            locale={locale}
-            advanced={visibility.developerFacts}
-          />
-          <RunnerPanel
-            status={state.status}
-            health={state.health}
-            busy={state.busy}
-            actions={actions}
-            locale={locale}
-            advanced={visibility.developerFacts}
-          />
-          <ToolsStatusPanel
-            runs={state.runList}
-            locale={locale}
-            advanced={visibility.developerFacts}
-          />
-          <PairingPanel
-            pairing={state.pairing}
-            locale={locale}
-            advanced={visibility.rawPairingSeamText}
-          />
-          <LogPanel log={state.log} locale={locale} advanced={visibility.boundedLogInternals} />
+          {/* #3606 — the collapsed rail is a real summary strip: the same
+              canonical connection/readiness values, never an invented count. */}
+          <div className="workbench-tools-summary" data-tools-summary="compact">
+            <span
+              className="workbench-mini-chip"
+              data-mini-role="connection"
+              data-canonical-state={deviceState}
+              aria-label={`${t('connection.title')}: ${deviceStateText(locale, deviceState)}`}
+              title={`${t('connection.title')}: ${deviceStateText(locale, deviceState)}`}
+            >
+              {deviceStateText(locale, deviceState)}
+            </span>
+            <span
+              className="workbench-mini-chip"
+              data-mini-role="readiness"
+              data-canonical-state={readinessState}
+              aria-label={`${t('readiness.title')}: ${readinessStateText(locale, readinessState)}`}
+              title={`${t('readiness.title')}: ${readinessStateText(locale, readinessState)}`}
+            >
+              {readinessStateText(locale, readinessState)}
+            </span>
+          </div>
+          <div className="workbench-tools-detail">
+            <ConnectionPanel
+              status={state.status}
+              busy={state.busy}
+              actions={actions}
+              locale={locale}
+              advanced={visibility.developerFacts}
+            />
+            <RunnerPanel
+              status={state.status}
+              health={state.health}
+              busy={state.busy}
+              actions={actions}
+              locale={locale}
+              advanced={visibility.developerFacts}
+            />
+            <ToolsStatusPanel
+              runs={state.runList}
+              locale={locale}
+              advanced={visibility.developerFacts}
+            />
+            <PairingPanel
+              pairing={state.pairing}
+              locale={locale}
+              advanced={visibility.rawPairingSeamText}
+            />
+            <LogPanel log={state.log} locale={locale} advanced={visibility.boundedLogInternals} />
+          </div>
         </aside>
       </div>
       <footer className="workbench-footer">

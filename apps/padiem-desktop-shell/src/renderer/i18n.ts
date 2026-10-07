@@ -178,6 +178,14 @@ export type ShellStringKey =
   | 'composer.modeLocal'
   | 'composer.computerAccess'
   | 'desktop.conversationSelectHintNav'
+  | 'tabs.label'
+  | 'tabs.none'
+  | 'tabs.authorityNote'
+  | 'rail.leftToggle'
+  | 'rail.rightToggle'
+  | 'rail.collapse'
+  | 'rail.expand'
+  | 'sessions.updated'
   | 'app.bridgeUnavailable';
 
 const KO: Record<ShellStringKey, string> = {
@@ -323,6 +331,14 @@ const KO: Record<ShellStringKey, string> = {
   'composer.modeLocal': '이 컴퓨터',
   'composer.computerAccess': '컴퓨터 접근',
   'desktop.conversationSelectHintNav': '탐색에서 세션을 열고 이어볼 대화를 고르면 여기에 표시됩니다.',
+  'tabs.label': '작업 탭',
+  'tabs.none': '표시할 작업 탭이 없습니다',
+  'tabs.authorityNote': '탭은 Padiem의 기존 대화를 그대로 가리킵니다. Desktop은 대화를 만들거나 지우지 않습니다.',
+  'rail.leftToggle': '탐색 레일',
+  'rail.rightToggle': '도구 레일',
+  'rail.collapse': '접기',
+  'rail.expand': '펼치기',
+  'sessions.updated': '최근 갱신',
   'app.bridgeUnavailable': 'Padiem 데스크톱이 지금 연결할 수 없습니다. 앱을 다시 시작해 주세요.',
 };
 
@@ -469,6 +485,14 @@ const EN: Record<ShellStringKey, string> = {
   'composer.modeLocal': 'This computer',
   'composer.computerAccess': 'Computer access',
   'desktop.conversationSelectHintNav': 'Open Sessions in the navigation and pick a conversation to continue it here.',
+  'tabs.label': 'Task tabs',
+  'tabs.none': 'No task tabs yet',
+  'tabs.authorityNote': 'Tabs point at the existing Padiem conversations. Desktop neither creates nor deletes a conversation.',
+  'rail.leftToggle': 'Navigation rail',
+  'rail.rightToggle': 'Tools rail',
+  'rail.collapse': 'Collapse',
+  'rail.expand': 'Expand',
+  'sessions.updated': 'Updated',
   'app.bridgeUnavailable': 'Padiem Desktop cannot connect right now. Restart the app and try again.',
 };
 
@@ -609,6 +633,16 @@ export function approvalsSummaryText(locale: ShellLocale, waiting: number): stri
 
 export function artifactsSummaryText(locale: ShellLocale, count: number): string {
   return locale === 'ko' ? `결과 파일 ${count}건` : `${count} result files`;
+}
+
+/**
+ * #3606 — a real count of the canonical sessions the projection returned.
+ *
+ * This is the size of the server's own list, never an unread/pinned/grouped
+ * number that the projection does not carry.
+ */
+export function sessionCountText(locale: ShellLocale, total: number): string {
+  return locale === 'ko' ? `세션 ${total}` : `${total} sessions`;
 }
 
 export const LOCALE_CHANGES_NO_AUTHORITY = true;
