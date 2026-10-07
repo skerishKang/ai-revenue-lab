@@ -10,3 +10,16 @@
 # Git thinks is text, a 3-way merge silently emits corrupt PDF bytes with no conflict.
 packages/padiem-ai-core/tests/fixtures/b66_e2e_corpus/*.pdf binary
 tools/b66_generic/tests/fixtures/*.pdf binary
+
+# #3648: the Engine frozen-source canaries hash these four working-copy files against pinned
+# SHA-256 digests. They are stored LF, so core.autocrlf=true materialized them CRLF and the
+# canaries reported unmodified sources as drifted. eol=lf fixes only materialization, so the
+# canary still hashes raw bytes and still fails on real content drift — which is why this was
+# preferred over reading the git object store (that passes on a drifted working tree) or
+# normalizing before hashing (that cannot see a commit that stores CRLF).
+# Keep in step with PINNED_SHA256 in apps/padiem-ai-engine/tests: a pin with no line here is a
+# silent Windows false failure.
+packages/padiem-ai-core/padiem_ai_core/document_normalization.py text eol=lf
+packages/padiem-ai-core/padiem_ai_core/document_semantics.py text eol=lf
+packages/padiem-ai-core/tests/test_document_semantics.py text eol=lf
+packages/padiem-ai-core/tests/test_document_normalization.py text eol=lf
