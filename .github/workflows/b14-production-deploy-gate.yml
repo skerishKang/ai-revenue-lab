@@ -306,8 +306,12 @@ jobs:
           fi
           # Canonical safe-id contract, recorded before the value is written
           # anywhere, so a rejected string can neither reach the CLI nor forge an
-          # evidence line.
-          python3 "${cli}" validate-version-id --version-id "${ROLLBACK_TARGET}"
+          # evidence line. The --version-id=FORM is load-bearing: with a space,
+          # argparse reads a canonical-but-leading-hyphen id such as
+          # "-safe-version" as an option and refuses it before the predicate ever
+          # runs, so the gate would reject ids the canonical grammar accepts.
+          python3 "${cli}" validate-version-id \
+            --version-id="${ROLLBACK_TARGET}"
           record "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}"
           record "ROLLBACK_TARGET_EXPLICIT=YES"
           record "IMPLICIT_PREVIOUS_VERSION_SELECTION=NO"
@@ -356,7 +360,7 @@ jobs:
             # The open-window verdict is only a continue/stop signal; the closed
             # window below is what publishes a decision, so nothing is lost here.
             if python3 "${class_cli}" evaluate \
-              --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+              --class ROLLBACK --pre-version="${pre_version}" --target-version="${ROLLBACK_TARGET}" \
               --observations "${observations}" --window-open >/dev/null; then
               open_rc=0
             else
@@ -375,8 +379,11 @@ jobs:
           # final, and a ROLLBACK is final only when the served version EQUALS the
           # named target. A timed-out window, a refused read, a split-traffic
           # deployment and a wrong served version all close as FAIL here.
+          # The version-id flags keep the =FORM for the same reason as above: a
+          # pre-version read from the resolver is as much a canonical id as a
+          # dispatched target is, and it may start with a hyphen too.
           if final_out="$(python3 "${class_cli}" evaluate \
-            --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+            --class ROLLBACK --pre-version="${pre_version}" --target-version="${ROLLBACK_TARGET}" \
             --observations "${observations}")"; then
             final_rc=0
           else

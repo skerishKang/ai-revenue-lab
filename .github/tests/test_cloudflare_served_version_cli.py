@@ -169,6 +169,21 @@ def test_cli_is_thin_and_contains_no_network_or_mutation_authority() -> None:
 
 
 def _validate(version_id: str) -> subprocess.CompletedProcess[str]:
+    # The `--version-id=<value>` form is the contract under test, not a style
+    # choice: `--version-id <value>` makes argparse read a canonical id that
+    # starts with a hyphen as an option, so it refuses values the canonical
+    # predicate accepts (rc=2 usage error instead of rc=1 version-id).
+    return subprocess.run(
+        [sys.executable, str(CLI), "validate-version-id", f"--version-id={version_id}"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+
+def _validate_space_form(version_id: str) -> subprocess.CompletedProcess[str]:
+    """The form that was removed, kept only to prove it was the defect."""
     return subprocess.run(
         [sys.executable, str(CLI), "validate-version-id", "--version-id", version_id],
         cwd=ROOT,
@@ -178,12 +193,26 @@ def _validate(version_id: str) -> subprocess.CompletedProcess[str]:
     )
 
 
-@pytest.mark.parametrize("version_id", [ACTIVE, "a", "ver-A", "ver_A.1", "9" * 64])
+@pytest.mark.parametrize(
+    "version_id", [ACTIVE, "a", "ver-A", "ver_A.1", "9" * 64, "-safe-version", "-", "--help"]
+)
 def test_validate_version_id_accepts_exactly_the_canonical_charset(version_id: str) -> None:
     result = _validate(version_id)
     assert result.returncode == 0
     assert result.stdout == "VERSION_ID_SAFE=YES\n"
     assert result.stderr == ""
+
+
+def test_a_leading_hyphen_id_reaches_the_predicate_and_not_argparse() -> None:
+    """Regression: the space-separated form lost accepted values before #3704 fix."""
+    accepted = _validate("-safe-version")
+    assert accepted.returncode == 0, accepted.stderr
+    assert accepted.stdout == "VERSION_ID_SAFE=YES\n"
+    # Same value, old invocation: argparse consumes it as an option and the
+    # canonical contract is never consulted.
+    broken = _validate_space_form("-safe-version")
+    assert broken.returncode != 0
+    assert "VERSION_ID_SAFE=YES" not in broken.stdout
 
 
 @pytest.mark.parametrize(
@@ -195,6 +224,12 @@ def test_validate_version_id_accepts_exactly_the_canonical_charset(version_id: s
         BAD_ID_SENTINEL,
         "../../ETC-PASSWD-SENTINEL",
         "lead\ttab",
+        # Option-shaped values must be refused by the canonical predicate, which
+        # answers rc=1 REASON=version-id. An argparse usage error would be rc=2
+        # and would mean the value never reached the contract at all.
+        "-bad id;rm",
+        "--version-id=X",
+        "-x y",
     ],
 )
 def test_validate_version_id_refuses_with_the_bounded_reason(version_id: str) -> None:
@@ -213,10 +248,24 @@ def test_validate_version_id_never_echoes_the_candidate() -> None:
 
 @pytest.mark.parametrize(
     "version_id",
-    [ACTIVE, "a", "9" * 64, "", "ver A", "9" * 65, "../x", "id\nMUTATION_CLASS=ROLLBACK"],
+    [
+        ACTIVE,
+        "a",
+        "9" * 64,
+        "",
+        "ver A",
+        "9" * 65,
+        "../x",
+        "id\nMUTATION_CLASS=ROLLBACK",
+        "-safe-version",
+        "-",
+        "--help",
+        "--version-id=X",
+        "-bad id;rm",
+    ],
 )
 def test_validate_version_id_delegates_to_the_canonical_predicate(version_id: str) -> None:
-    """Reuse, not a second contract: the adapter must agree with the primitive."""
+    """CLI_ACCEPTANCE == is_safe_version_id(), over option-like values included."""
     assert (_validate(version_id).returncode == 0) is primitive.is_safe_version_id(version_id)
 
 

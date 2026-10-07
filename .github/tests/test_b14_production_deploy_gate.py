@@ -666,6 +666,21 @@ def test_rollback_step_parses_no_envelope_in_shell() -> None:
         assert forbidden not in run, f"shell-side envelope parsing survived: {forbidden}"
 
 
+def test_rollback_validates_the_target_in_the_unambiguous_form() -> None:
+    """Every canonical id the step hands to an adapter uses the unambiguous form.
+
+    `--flag "${VALUE}"` makes argparse read a value that begins with `-` as an
+    option and refuse it with a usage error before the canonical predicate is
+    consulted, so the gate would reject ids its own grammar accepts. Asserted over
+    all three id-carrying flags, because a pre-version comes out of the resolver
+    under the same grammar as a dispatched target.
+    """
+    run = _rollback_run()
+    for flag in ("--version-id", "--pre-version", "--target-version"):
+        assert flag + '="${' in run, flag
+        assert flag + ' "${' not in run, f"{flag} still passes its value as a token"
+
+
 def test_rollback_step_order_is_refuse_validate_capture_mutate_prove() -> None:
     """The order is the guarantee, so it is asserted as an order."""
     run = _rollback_run()
@@ -742,6 +757,46 @@ def test_rollback_passes_only_when_the_named_target_is_serving(tmp_path) -> None
     assert out.evidence["ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS"] == "NO"
     assert "stub-token-must-not-be-echoed" not in out.output + out.evidence_text
     assert "stub-account-must-not-be-echoed" not in out.output + out.evidence_text
+
+
+def test_rollback_accepts_a_canonical_leading_hyphen_target(tmp_path) -> None:
+    """A target the canonical grammar accepts must survive the whole step.
+
+    Cloudflare issues UUID version ids, so this is contract parity rather than an
+    expected production value: the gate must refuse exactly what the predicate
+    refuses and accept exactly what it accepts.
+    """
+    target = "-safe-version"
+    out = _run_rollback_step(
+        tmp_path,
+        bodies={
+            1: _envelope_body([_served(PRE_VERSION)]),
+            "default": _envelope_body([_served(target)]),
+        },
+        target=target,
+    )
+    assert out.exit_code == 0, out.output
+    assert "VERSION_ID_SAFE=NO" not in out.output
+    assert out.evidence["ROLLBACK_TARGET_VERSION_ID"] == target
+    assert out.evidence["POST_ROLLBACK_SERVED_VERSION_ID"] == target
+    assert out.evidence["MUTATION_EVIDENCE_REASON"] == "ROLLBACK_TARGET_OBSERVED"
+    assert f"rollback {target}" in out.npx_argv
+
+
+def test_rollback_accepts_a_canonical_leading_hyphen_pre_version(tmp_path) -> None:
+    """The pre-mutation read carries the same grammar, so it must survive too."""
+    pre = "-pre-version"
+    out = _run_rollback_step(
+        tmp_path,
+        bodies={
+            1: _envelope_body([_served(pre)]),
+            "default": _envelope_body([_served(TARGET_VERSION)]),
+        },
+    )
+    assert out.exit_code == 0, out.output
+    assert out.evidence["PRE_ROLLBACK_SERVED_VERSION_ID"] == pre
+    assert out.evidence["POST_ROLLBACK_SERVED_VERSION_ID"] == TARGET_VERSION
+    assert out.evidence["MUTATION_EVIDENCE_REASON"] == "ROLLBACK_TARGET_OBSERVED"
 
 
 def test_rollback_keeps_reading_while_the_target_is_not_yet_serving(tmp_path) -> None:
