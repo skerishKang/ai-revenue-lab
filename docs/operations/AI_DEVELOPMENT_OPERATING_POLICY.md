@@ -275,6 +275,7 @@ Technology scans run in parallel with already-approved in-flight implementation.
 Record:
 
 - repository/default branch;
+- machine identity (`MACHINE_IDENTITY`) when the work can run on more than one machine; follow `MULTI_MACHINE_LOCAL_WORKTREE_POLICY.md`;
 - exact current base SHA;
 - branch;
 - Issue/owner/work-order authority;

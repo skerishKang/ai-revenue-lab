@@ -13,6 +13,7 @@ Canonical operating documents:
 - `docs/operations/DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
 - `docs/operations/LOCAL_DOCKER_AVOIDANCE_POLICY.md`
 - `docs/operations/GITHUB_REPORT_HANDOFF_POLICY.md`
+- `docs/operations/MULTI_MACHINE_LOCAL_WORKTREE_POLICY.md`
 - `docs/operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 
 ## Search / adopt before build
@@ -227,6 +228,7 @@ Do not turn every available/automatically-triggered test into a required gate. D
 ## Non-negotiable rules
 
 - Re-read current remote state immediately before mutation, review, and merge.
+- Treat local clones and worktrees as machine-local working copies; the freshly fetched remote head is the only cross-machine source of truth. Follow `docs/operations/MULTI_MACHINE_LOCAL_WORKTREE_POLICY.md`.
 - Record repository, exact base SHA, branch, allowed paths, forbidden paths, non-goals, and acceptance criteria before implementation.
 - Do not directly modify `main` for ordinary development.
 - Do not include unrelated dirty files or out-of-scope files.
