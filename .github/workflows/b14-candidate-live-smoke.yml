@@ -85,6 +85,11 @@ jobs:
 
       - name: Run model-evaluation harness and shared fixture contracts
         shell: bash
+        env:
+          # pytest collects apps/padiem-chat/tests from the repo root, so its
+          # conftest (which imports app.model_policy) needs the app package on
+          # sys.path. The suite itself stays network-free and offline.
+          PYTHONPATH: apps/padiem-chat
         run: |
           set -euo pipefail
           python -m pytest -q \
