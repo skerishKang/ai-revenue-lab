@@ -162,12 +162,16 @@ def test_i_b66_structured_extraction_budget_independent() -> None:
     assert "GLOBAL_4096_ORIGIN=EARLY_B14_PILOT_VALIDATION" in core_source
     # no B66-specific budget logic was introduced into Core
     assert "b66" not in core_source.lower()
-    # B66 conversation module on this branch carries no output-limit widening
-    conversation = pathlib.Path(__file__).resolve().parents[2] / "apps" / "padiem-chat" / "app" / "b66_quote_conversation.py"
-    if conversation.exists():
-        source = conversation.read_text(encoding="utf-8")
-        assert "PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING" not in source
-        assert "ModelOutputCapability" not in source
+    # B66 conversation module on this branch carries no output-limit widening.
+    # parents[3] is the monorepo root: tests -> padiem-ai-core -> packages -> root.
+    conversation = (
+        pathlib.Path(__file__).resolve().parents[3]
+        / "apps" / "padiem-chat" / "app" / "b66_quote_conversation.py"
+    )
+    assert conversation.is_file(), f"B66 conversation source is missing: {conversation}"
+    source = conversation.read_text(encoding="utf-8")
+    assert "PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING" not in source
+    assert "ModelOutputCapability" not in source
 
 
 # ── J. response byte/time guards unchanged ──
