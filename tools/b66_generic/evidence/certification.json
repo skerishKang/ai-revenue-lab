@@ -1,0 +1,35 @@
+{
+ "template": "second_unrelated_quotation",
+ "page_index": 1,
+ "gates": {
+  "BASELINE_BYTE_IDENTICAL": true,
+  "PAGE_GEOMETRY": true,
+  "PAGE_COUNT": true,
+  "TEXT_POSITION": true,
+  "FONT_FAMILY": true,
+  "FONT_SIZE": true,
+  "TEXT_SPACING_BASELINE": true,
+  "WRAP_SHRINK": true,
+  "LAYOUT_GEOMETRY": true,
+  "TABLE_LINES_BORDERS": true,
+  "LOGO_GEOMETRY": true,
+  "STAMP_GEOMETRY": true,
+  "STAMP_ALPHA": true,
+  "ASSET_LAYERING": true,
+  "REFERENCE_VALUE_PARITY": true,
+  "REFERENCE_VALUE_PARITY_detail": {
+   "quote_number": true,
+   "recipient": true,
+   "project_name": true,
+   "issue_date_serial": true,
+   "items": true
+  },
+  "RASTER_SIMILARITY": {
+   "72dpi": 0,
+   "150dpi": 0,
+   "300dpi": 0
+  }
+ },
+ "CRITICAL_GATES_PASS": true,
+ "SECOND_TEMPLATE_CERTIFICATION": "PASS"
+}

@@ -198,6 +198,9 @@ function buildAccountEnv() {
     },
     B66QuoteAppBridge: {
       getDraft: () => Core.createProductionDraft(),
+      privateStateReadable: () => true,
+      getHistoryEnvelope: () => History.normalizeEnvelope(null),
+      writeHistoryEnvelope: () => false,
       replaceDraft: (next, opts) => {
         appCalls.push("replaceDraft" + (opts && opts.requireTaxReview ? ":taxReview" : ""));
         replaceDrafts.push(next);
@@ -255,6 +258,18 @@ function buildEasyEnv() {
     QuoteCore: Core, QuoteHistory: History, B66FileIntake: FileIntake,
     B66QuoteAppBridge: {
       getDraft: () => Core.createProductionDraft(),
+      privateStateReadable: () => true,
+      /* app.js owner 게이트 미러: 최근 견적 저장소 접근은 이 스텁을 통해서만 일어난다 */
+      getHistoryEnvelope: () => History.normalizeEnvelope(
+        JSON.parse(context.localStorage.getItem(History.HISTORY_STORAGE_KEY) || "null")
+      ),
+      writeHistoryEnvelope: (envelope) => {
+        context.localStorage.setItem(
+          History.HISTORY_STORAGE_KEY,
+          JSON.stringify(History.normalizeEnvelope(envelope))
+        );
+        return true;
+      },
       replaceDraft: (next) => { replaceDrafts.push(next); return { ok: true, draft: next }; },
       createFreshDraft: (source) => {
         const fresh = Core.createProductionDraft();

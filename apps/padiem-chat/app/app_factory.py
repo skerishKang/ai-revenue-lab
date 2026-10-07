@@ -14,6 +14,13 @@ from .b66_quote_conversation import B66QuoteConversationInterpreter
 from .b66_company_profile import CompanyProfileStore, D1CompanyProfileStore
 from .b66_company_profile_routes import b66_company_profile_get, b66_company_profile_put
 from .b66_quote_asset_routes import b66_quote_asset_detail
+from .b66_quote_history_routes import (
+    b66_quote_history_delete,
+    b66_quote_history_detail,
+    b66_quote_history_list,
+    b66_quote_history_save,
+)
+from .b66_quote_history_store import D1QuoteHistoryStore
 from .b66_quote_assets import B66QuoteAssetStore, D1B66QuoteAssetMetadataStore
 from .b66_certified_quote_bundle import B66CertifiedQuoteBundleStore
 from .b66_certified_pdf_routes import b66_certified_pdf
@@ -169,6 +176,7 @@ def create_app(
     approved_memory_store: ApprovedMemoryStore | None = None,
     b66_saved_quote_skill_store: SavedQuoteSkillStore | None = None,
     b66_company_profile_store: CompanyProfileStore | None = None,
+    b66_quote_history_store=None,
     b66_quote_asset_store=None,
     b66_certified_quote_bundle_store=None,
     b66_quote_interpreter=None,
@@ -260,6 +268,18 @@ def create_app(
         ),
         Route("/api/b66/quote/interpret", b66_quote_interpret, methods=["POST"]),
         Route("/api/b66/quote/pdf", b66_certified_pdf, methods=["POST"]),
+        Route("/api/b66/quotes", b66_quote_history_list, methods=["GET"]),
+        Route("/api/b66/quotes", b66_quote_history_save, methods=["POST"]),
+        Route(
+            "/api/b66/quotes/{quote_history_id}",
+            b66_quote_history_detail,
+            methods=["GET"],
+        ),
+        Route(
+            "/api/b66/quotes/{quote_history_id}",
+            b66_quote_history_delete,
+            methods=["DELETE"],
+        ),
         Route("/api/claw/manual-intake/preview", claw_manual_intake_preview, methods=["POST"]),
         Route("/api/claw/manual-intake/execute", claw_manual_intake_execute, methods=["POST"]),
         # #3539: the generic Claw composer runs through the canonical #3382 P01
@@ -452,6 +472,18 @@ def create_app(
         except Exception:
             _b66_company_profile_store = None
     app.state.b66_company_profile_store = _b66_company_profile_store
+
+    # B66 #3405 (Slice A): durable account/workspace-scoped quotation history.
+    # Server authority only — browser-local quoteBeta.history.v1 is untouched.
+    # A stored record is a normalized QuoteDraft snapshot, never a total
+    # authority; QuoteCore recalculates on load.
+    _b66_quote_history_store = b66_quote_history_store
+    if _b66_quote_history_store is None and d1_binding is not None:
+        try:
+            _b66_quote_history_store = D1QuoteHistoryStore(d1_binding)
+        except Exception:
+            _b66_quote_history_store = None
+    app.state.b66_quote_history_store = _b66_quote_history_store
 
     # B66 #3402: private logo/stamp bytes reuse the existing private workspace
     # R2 binding, while D1 stores only owner/workspace-scoped metadata. No
