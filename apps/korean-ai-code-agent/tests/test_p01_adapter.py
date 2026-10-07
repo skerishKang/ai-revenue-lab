@@ -623,7 +623,10 @@ class ClawP01ProfileContractTests(unittest.TestCase):
     )
     def test_profile_pins_plus_route_from_shared_contract(self) -> None:
         profile = _agent_profile()
-        self.assertEqual(profile.model_policy, {"model": PLUS_ROUTE_MODEL})
+        self.assertEqual(
+            profile.model_policy,
+            {"model": PLUS_ROUTE_MODEL, "max_retries": 0},
+        )
         self.assertEqual(profile.allowed_tools, ())
         self.assertEqual(profile.required_capabilities, ())
 
@@ -633,7 +636,10 @@ class ClawP01ProfileContractTests(unittest.TestCase):
     )
     def test_plus_tier_resolves_to_the_declared_route(self) -> None:
         profile = _agent_profile(ProductTierLabel.PLUS)
-        self.assertEqual(profile.model_policy, {"model": PLUS_ROUTE_MODEL})
+        self.assertEqual(
+            profile.model_policy,
+            {"model": PLUS_ROUTE_MODEL, "max_retries": 0},
+        )
 
     def test_pro_tier_fails_closed_while_hold(self) -> None:
         with self.assertRaises(P01AdapterError) as caught:
