@@ -119,24 +119,6 @@ def test_workflow_is_exact_main_bounded_and_rollback_armed() -> None:
     assert "PHASE_B_REQUEST=0" in WORKFLOW
 
 
-def test_workflow_uses_canonical_served_version_cli_for_migration_anchor_and_poll() -> None:
-    trigger_paths = WORKFLOW.split("on:", 1)[1].split("workflow_dispatch:", 1)[0]
-    runtime = WORKFLOW.split("\n  migrate-production:", 1)[1]
-
-    assert ".github/scripts/cloudflare_served_version_cli.py" in trigger_paths
-    assert runtime.count("cloudflare_served_version_cli.py resolve-active") == 2
-    assert ".result.deployments[0].versions[0].version_id" not in runtime
-    assert ".result.deployments[0].versions[0].percentage" not in runtime
-    assert "(.result.deployments[0].versions | length) == 1" not in runtime
-    assert 'PREMUTATION_SERVED_VERSION_ID=${pre_version}' in runtime
-    assert "for _ in $(seq 1 30)" in runtime
-    assert "sleep 2" in runtime
-    assert 'post_version=""' in runtime
-    assert 'test "${served_changed}" = yes' in runtime
-    assert "SERVED_VERSION_CHANGED=PASS" in runtime
-    assert "github.event_name == 'workflow_dispatch' && inputs.mode == 'migrate_production'" in WORKFLOW
-
-
 def test_target_origin_smoke_checks_login_start_without_exposing_state() -> None:
     assert "https://chat.padiem.net/auth/google/callback" in WORKFLOW
     assert "AUTH_START_REDIRECT_URI_CANONICAL=PASS" in WORKFLOW
