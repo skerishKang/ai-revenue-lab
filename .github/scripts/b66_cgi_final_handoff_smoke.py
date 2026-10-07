@@ -74,6 +74,10 @@ def _send(page, text: str) -> None:
 
 def _click_chip(page, label: str) -> None:
     locator = page.locator("#easyChipRow button", has_text=label)
+    try:
+        locator.wait_for(state="visible", timeout=5000)
+    except Exception as exc:
+        raise SmokeFailure("chip_missing_" + label) from exc
     if locator.count() != 1:
         _fail("chip_not_unique_" + label)
     locator.click()
