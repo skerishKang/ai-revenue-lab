@@ -579,12 +579,15 @@ test('#3598 both rails collapse at narrow widths and the centre stays primary', 
   const css = readFileSync(path.join(rendererDir, 'shell.css'), 'utf8');
   assert.match(css, /@media \(max-width: 1180px\)/);
   assert.match(css, /@media \(max-width: 960px\)/);
-  assert.match(css, /@media \(max-width: 720px\)/);
-  // The rails are collapsed by hiding labels/badges and by stacking the tools
-  // rail below the centre, so the centre pane never shrinks to a strip.
+  assert.match(css, /@media \(max-width: 820px\)/);
+  // The navigation rail collapses to an icon strip (labels/badges hidden) and
+  // the tools rail leaves the side to stack under the centre, so the centre
+  // pane never shrinks to a strip.
   assert.match(css, /\.workbench-nav-label,[\s\S]{0,80}display: none;/);
   assert.match(css, /\.workbench-tools \{[\s\S]{0,200}grid-column: 1 \/ -1;/);
   assert.match(css, /\.workbench-body \{[\s\S]{0,120}grid-template-columns: minmax\(0, 1fr\);/);
+  // A panel must never be crushed into the collapsed icon column.
+  assert.doesNotMatch(css, /grid-template-columns: 72px/);
   // Minimum usable width: the composer and the top bar both reflow.
   assert.match(css, /\.workbench-composer \{[\s\S]{0,120}grid-template-columns: minmax\(0, 1fr\);/);
 });

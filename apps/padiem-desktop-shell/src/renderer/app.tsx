@@ -16,7 +16,7 @@
  * state is still the connection truth the renderer reports.
  */
 
-import { useCallback, useEffect, useState, type ReactElement } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactElement } from 'react';
 
 import { requireShellApi, RendererAuthorityError, type PadiemShellApi } from './api.js';
 import {
@@ -556,6 +556,17 @@ export function WorkspacePanel(props: {
 }): ReactElement {
   const { root, listing, search, selectedEntry, actions, locale, advanced } = props;
   const focusSearch = props.focusSearch === true;
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const focusRequestedRef = useRef(false);
+  // #3598 — the Search navigation opens this surface, so the bounded #3583 field
+  // takes focus once. Only on the transition into the request, so the shell's
+  // periodic refresh can never steal focus from a user who is typing.
+  useEffect(() => {
+    if (focusSearch && !focusRequestedRef.current) {
+      searchInputRef.current?.focus();
+    }
+    focusRequestedRef.current = focusSearch;
+  }, [focusSearch]);
   const t = (key: ShellStringKey): string => translate(locale, key);
   const selected = root?.selected === true;
   const directory = listing?.directory ?? '';
@@ -641,6 +652,7 @@ export function WorkspacePanel(props: {
               placeholder={t('workspace.searchPlaceholder')}
               disabled={!selected}
               autoFocus={focusSearch}
+              ref={searchInputRef}
             />
           </form>
           {searchActive && search && !search.ok ? (

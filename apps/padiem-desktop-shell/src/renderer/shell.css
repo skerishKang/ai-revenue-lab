@@ -487,6 +487,29 @@ button.workspace-entry:hover:not(:disabled) {
   min-height: 0;
 }
 
+/* The rails are narrow, so the embedded panels run denser than they do in a
+   full-width surface. */
+.workbench-left .panel,
+.workbench-tools .panel {
+  padding: 12px 13px;
+}
+
+.workbench-left-panel .workspace-heading {
+  flex-direction: column;
+  gap: 8px;
+}
+
+.workbench-left-panel .workspace-heading .row button {
+  min-height: 30px;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.workbench-left-panel .panel h2,
+.workbench-tools .panel h2 {
+  margin-bottom: 6px;
+}
+
 /* The workspace browser now lives in a bounded rail, so its own scroll rules
    replace the old full-height project-rail behaviour. */
 .workspace-project-rail .workspace-panel {
@@ -737,9 +760,23 @@ button.workbench-session-entry:hover:not(:disabled) {
 
 /* ── responsive: the rails collapse, the centre stays primary ───────────── */
 
+/* The navigation rail collapses to a compact icon strip rather than to a thin
+   column — a panel crushed into 72px is unusable, so the workspace/session
+   panel keeps a real width and only the labels go away. */
 @media (max-width: 1180px) {
   .workbench-body {
-    grid-template-columns: 72px minmax(0, 1fr) minmax(224px, 272px);
+    grid-template-columns: minmax(212px, 248px) minmax(0, 1fr) minmax(224px, 272px);
+  }
+
+  .workbench-nav-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2px;
+  }
+
+  .workbench-nav-item {
+    width: auto;
+    padding: 5px 9px;
   }
 
   .workbench-nav-label,
@@ -747,19 +784,15 @@ button.workbench-session-entry:hover:not(:disabled) {
     display: none;
   }
 
-  .workbench-nav-item {
-    justify-content: center;
-    padding: 6px;
-  }
-
   .workbench-nav-icon {
     width: auto;
   }
 }
 
+/* The tools/status rail leaves the side and stacks under the centre. */
 @media (max-width: 960px) {
   .workbench-body {
-    grid-template-columns: 72px minmax(0, 1fr);
+    grid-template-columns: minmax(196px, 236px) minmax(0, 1fr);
   }
 
   .workbench-tools {
@@ -770,7 +803,8 @@ button.workbench-session-entry:hover:not(:disabled) {
   }
 }
 
-@media (max-width: 720px) {
+/* Single column: navigation strip, centre, then the status rail. */
+@media (max-width: 820px) {
   .workbench-body {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -778,15 +812,6 @@ button.workbench-session-entry:hover:not(:disabled) {
   .workbench-left {
     border-right: 0;
     border-bottom: 1px solid var(--border);
-  }
-
-  .workbench-nav-list {
-    flex-direction: row;
-    overflow-x: auto;
-  }
-
-  .workbench-nav-item {
-    width: auto;
   }
 
   .workbench-tools {
