@@ -64,13 +64,13 @@ MAX_CLAW_GENERAL_MESSAGE_CHARS = 8_000
 MAX_CLAW_GENERAL_MESSAGES = 40
 _CLAW_GENERAL_ROLES = frozenset({"user", "assistant"})
 
-# Successor-pending product HOLD (#3568/#3566): these adapter codes mean the
+# NO_EXECUTABLE_ROUTE product HOLD (#3568/#3566): these adapter codes mean the
 # run was refused before any Engine/B14/provider dispatch because the selected
 # tier has no executable route yet. They are product states, not engine
 # failures, so they must not surface as a generic 502 engine error.
 _MODEL_HOLD_ERROR_CODES = frozenset({"tier_hold", "max_tier_hold"})
 _MODEL_HOLD_USER_MESSAGE = (
-    "AI 모델 전환 준비 중입니다. 곧 사용할 수 있도록 준비하겠습니다."
+    "선택한 AI 모델을 현재 사용할 수 없습니다. 다른 모델을 선택해 주세요."
 )
 
 # #3655 one-shot canary evidence seam. The final Production canary needs the
@@ -302,13 +302,29 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         else:
             _clear_reservation()
         if exc.code in _MODEL_HOLD_ERROR_CODES:
-            # Successor-pending product HOLD (#3568): the run never dispatched,
-            # so the user sees a bounded "model unavailable" state instead of a
+            # NO_EXECUTABLE_ROUTE product HOLD (#3568): the run never dispatched,
+            # so the user sees a bounded model-unavailable state instead of a
             # generic engine failure. Same code family as the pre-dispatch
-            # tier_unavailable projection used by the other tiers. The HOLD
-            # projection is a product state and never carries evidence
-            # headers, even when evidence mode is requested.
-            return _error(503, "tier_unavailable", _MODEL_HOLD_USER_MESSAGE)
+            # tier_unavailable projection used by the other tiers. Evidence
+            # mode (#3655 seam) carries only the route-minted Claw run id on
+            # this path — no orchestration ref, selected route, provider
+            # attempts, or fallback, because no orchestration run materialized.
+            # The HOLD projection stays 503 and never becomes an
+            # engine_execution_failed.
+            hold_headers = dict(_NO_STORE_HEADERS)
+            if evidence_requested:
+                hold_headers.update(_claw_evidence_response_headers(run.run_id, None))
+            return JSONResponse(
+                {
+                    "ok": False,
+                    "error": {
+                        "code": "tier_unavailable",
+                        "message": _MODEL_HOLD_USER_MESSAGE,
+                    },
+                },
+                status_code=503,
+                headers=hold_headers,
+            )
         failure_headers = dict(_NO_STORE_HEADERS)
         if evidence_requested:
             # The outcome never materialized, so only the route-minted Claw run
