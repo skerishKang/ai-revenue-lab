@@ -34,9 +34,10 @@ Padiem has already selected the target routes for the current MVP.
 Padiem Plus
   model = padiem-profile/plus-hold
   executable = NO (HOLD_PENDING_SUCCESSOR, owner decision #3568)
-  Space Bunny retired from the executable Plus route; historical/manual
-  route metadata only. No successor is selected yet (#3554) and no older
-  route may be silently promoted as fallback.
+  Space Bunny fully retired (owner final retirement decision 2026-10-07):
+  no product/manual/auto/fallback execution; historical metadata only.
+  No successor is selected yet (#3554) and no older route may be silently
+  promoted as fallback.
 
 Padiem Pro
   model = padiem-profile/pro-hold
@@ -48,14 +49,16 @@ Padiem Max
 
 Declared data, not a product route
   agnes-ai/agnes-3.0-flash     HOLD_AS_DATA_ONLY, historical Plus route
-  kilo/stealth-space-bunny-alpha  HOLD_AS_DATA_ONLY, retired Plus primary
-                                 (#3568); historical metadata only
+  kilo/stealth-space-bunny-alpha  HOLD_AS_DATA_ONLY, retired Plus route,
+                                 historical metadata only (#3568, fully
+                                 retired 2026-10-07: absent from the B14
+                                 catalog/KILO_FREE_ROUTES)
   poolside/laguna-s-2.1        HOLD_AS_DATA_ONLY, historical routing/fixed-chain evidence
 ```
 
 The earlier mappings `Plus = agnes-ai/agnes-3.0-flash` and, before that, `Plus = kilo/poolside-laguna-s-2.1-free` / `Pro = kilo/nvidia-nemotron-3-ultra-550b-a55b-free` are superseded as current Padiem tier routes. Historical provider registrations/data do not authorize fallback.
 
-**Retirement boundary (closed 2026-10-06):** Kilo's public catalog listed `stealth/space-bunny-alpha` with `expiration_date=2026-10-05`. The owner decision #3568 then retired Space Bunny from the executable Padiem Plus route; main now declares Plus as `HOLD_PENDING_SUCCESSOR` with no executable route (#3569). Successor selection/proof is tracked in #3554; do not silently restore an older route.
+**Retirement boundary (closed 2026-10-06, extended 2026-10-07):** Kilo's public catalog listed `stealth/space-bunny-alpha` with `expiration_date=2026-10-05`. The owner decision #3568 then retired Space Bunny from the executable Padiem Plus route; main declares Plus as `HOLD_PENDING_SUCCESSOR` with no executable route (#3569). The owner final retirement decision (2026-10-07) removed the lane from the B14 catalog and `KILO_FREE_ROUTES` entirely, so it no longer executes anywhere and cannot even be manually resolved. Successor selection/proof is tracked in #3554; do not silently restore an older route.
 
 Current success criteria are therefore:
 

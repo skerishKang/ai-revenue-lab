@@ -77,11 +77,9 @@ def test_trigger_stays_narrow_to_the_declaration_file() -> None:
 
 
 def test_chat_current_route_expectation_is_derived_not_restated() -> None:
-    # Chat must mirror the shared contract declaration instead of retaining a
-    # stale provider/model literal — including the #3579 successor selection.
-    plus_route = active_route_for(ProductTierLabel.PLUS)
-    assert plus_route is not None
-    assert plus_route.model_id == "kilo/inclusionai-ling-3.1-flash"
+    # A successor-pending product may have zero executable routes. Chat must mirror
+    # that declaration instead of retaining a stale provider/model literal.
+    assert active_route_for(ProductTierLabel.PLUS) is None
     assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID
     assert set(EXECUTABLE_B14_MODEL_IDS) == {
         route.model_id
@@ -89,7 +87,7 @@ def test_chat_current_route_expectation_is_derived_not_restated() -> None:
         for route in get_tier(tier).routes
         if route.status is ProductRouteStatus.EXECUTABLE
     }
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset({LOW_B14_MODEL_ID})
+    assert EXECUTABLE_B14_MODEL_IDS == frozenset()
 
 
 def test_owner_policy_invariants_are_not_traded_for_coverage() -> None:
