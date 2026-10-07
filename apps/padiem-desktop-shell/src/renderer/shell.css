@@ -353,35 +353,773 @@ button.workspace-entry:hover:not(:disabled) {
   font-size: 13px;
 }
 
-.workspace-shell-layout {
-  display: grid;
-  grid-template-columns: minmax(230px, 280px) minmax(360px, 1fr) minmax(240px, 300px);
-  gap: 14px;
-  align-items: stretch;
-  min-height: 590px;
+/* ── #3598 — ZCode-derived desktop workbench shell ────────────────────────
+ *
+ * A dense three-pane desktop workbench, not a dashboard: the task/workspace
+ * navigation rail on the left, the Claw task workspace in the centre, the
+ * tools/status rail on the right and the task composer pinned to the bottom.
+ * The centre pane is the only pane that grows; both rails are bounded and
+ * scroll on their own. At narrow widths the rails collapse so the centre
+ * workspace stays primary.
+ */
+
+.workbench {
+  position: relative;
+  box-sizing: border-box;
+  height: 100vh;
+  min-height: 100vh;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.workspace-rail {
+.workbench-topbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.workbench-topbar-context {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.workbench-brand {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.workbench-current-task {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
   min-width: 0;
 }
 
-.workspace-rail .panel {
-  margin-bottom: 12px;
+.workbench-title {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 650;
+  max-width: 46ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+.workbench-context {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.workbench-context-label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.workbench-context-value {
+  color: var(--text);
+  font-weight: 600;
+  max-width: 28ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* #3606 — the two side rails are sized through variables, so the collapse state
+   and the responsive breakpoints can each adjust them independently instead of
+   fighting over `grid-template-columns`. */
+.workbench {
+  --wb-left: minmax(224px, 272px);
+  --wb-right: minmax(248px, 312px);
+}
+
+.workbench-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: var(--wb-left) minmax(0, 1fr) var(--wb-right);
+  gap: 0;
+  align-items: stretch;
+}
+
+.workbench-left,
+.workbench-tools {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
+  background: var(--surface-muted);
+}
+
+.workbench-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-right: 1px solid var(--border);
+}
+
+.workbench-tools {
+  border-left: 1px solid var(--border);
+}
+
+.workbench-center {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.workbench-task-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+
+.workbench-left-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* The rails are narrow, so the embedded panels run denser than they do in a
+   full-width surface. */
+.workbench-left .panel,
+.workbench-tools .panel {
+  padding: 12px 13px;
+}
+
+.workbench-left-panel .workspace-heading {
+  flex-direction: column;
+  gap: 8px;
+}
+
+.workbench-left-panel .workspace-heading .row button {
+  min-height: 30px;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.workbench-left-panel .panel h2,
+.workbench-tools .panel h2 {
+  margin-bottom: 6px;
+}
+
+/* The workspace browser now lives in a bounded rail, so its own scroll rules
+   replace the old full-height project-rail behaviour. */
 .workspace-project-rail .workspace-panel {
   box-sizing: border-box;
-  height: 100%;
+  height: auto;
   margin-bottom: 0;
 }
 
 .workspace-project-rail .workspace-list {
-  max-height: 390px;
-  overflow-y: auto;
+  max-height: none;
+  overflow-y: visible;
 }
 
-.workspace-main {
+.workbench-center .conversation-workspace {
+  min-height: 420px;
+  height: auto;
+}
+
+.workbench-center .run-activity {
+  margin-top: 0;
+}
+
+/* ── left navigation ────────────────────────────────────────────────────── */
+
+.workbench-nav-rail {
+  flex: 0 0 auto;
+}
+
+.workbench-nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.workbench-nav-item {
+  width: 100%;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 9px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  text-align: left;
+}
+
+button.workbench-nav-item:hover:not(:disabled) {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+.workbench-nav-item.active {
+  background: var(--surface);
+  border-color: var(--accent);
+  font-weight: 650;
+}
+
+.workbench-nav-icon {
+  flex: 0 0 auto;
+  width: 16px;
+  text-align: center;
+  opacity: 0.85;
+}
+
+.workbench-nav-label {
+  flex: 1 1 auto;
   min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workbench-nav-badge {
+  flex: 0 0 auto;
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 10.5px;
+  white-space: nowrap;
+}
+
+/* ── left session list ──────────────────────────────────────────────────── */
+
+.workbench-session-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 8px;
+}
+
+.workbench-session-entry {
+  width: 100%;
+  min-height: 30px;
+  padding: 5px 9px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+button.workbench-session-entry:hover:not(:disabled) {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+.workbench-session-entry.selected {
+  background: var(--surface);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+/* ── right tools rail ───────────────────────────────────────────────────── */
+
+.workbench-tools-panel .workbench-tool + .workbench-tool {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.workbench-tool-name {
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--text);
+}
+
+.workbench-tool-value {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.workbench-tool .row {
+  margin-top: 7px;
+}
+
+.workbench-tool .row button {
+  min-height: 28px;
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+/* ── bottom composer ────────────────────────────────────────────────────── */
+
+.workbench-footer {
+  flex: 0 0 auto;
+  background: var(--surface);
+}
+
+.workbench-footer > .notice {
+  margin: 0;
+  padding: 8px 16px 0;
+  border-top: 0;
+}
+
+.workbench-composer {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: end;
+  gap: 6px 12px;
+  padding: 10px 16px 12px;
+  border-top: 1px solid var(--border);
+}
+
+.workbench-composer-status {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.workbench-chip {
+  padding: 2px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+.workbench-composer-input {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  min-width: 0;
+}
+
+.workbench-task-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 40px;
+  max-height: 120px;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-muted);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.workbench-task-input:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+.workbench-composer-send {
+  flex: 0 0 auto;
+}
+
+.workbench-composer-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 11.5px;
+}
+
+/* ── settings overlay ───────────────────────────────────────────────────── */
+
+.workbench-settings-overlay {
+  position: absolute;
+  top: 52px;
+  right: 16px;
+  z-index: 20;
+  width: min(420px, calc(100% - 32px));
+  max-height: calc(100% - 120px);
+  overflow-y: auto;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.35);
+  border-radius: 14px;
+}
+
+.workbench-settings-overlay .settings {
+  margin-bottom: 0;
+}
+
+/* ── responsive: the rails collapse, the centre stays primary ───────────── */
+
+/* The navigation rail collapses to a compact icon strip rather than to a thin
+   column — a panel crushed into 72px is unusable, so the workspace/session
+   panel keeps a real width and only the labels go away. */
+@media (max-width: 1180px) {
+  .workbench {
+    --wb-left: minmax(212px, 248px);
+    --wb-right: minmax(224px, 272px);
+  }
+
+  .workbench-nav-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2px;
+  }
+
+  .workbench-nav-item {
+    width: auto;
+    padding: 5px 9px;
+  }
+
+  .workbench-nav-label,
+  .workbench-nav-badge {
+    display: none;
+  }
+
+  .workbench-nav-icon {
+    width: auto;
+  }
+}
+
+/* The tools/status rail leaves the side and stacks under the centre. */
+@media (max-width: 960px) {
+  .workbench {
+    --wb-left: minmax(196px, 236px);
+  }
+
+  .workbench-body {
+    grid-template-columns: var(--wb-left) minmax(0, 1fr);
+  }
+
+  .workbench-tools {
+    grid-column: 1 / -1;
+    max-height: 38vh;
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+}
+
+/* Single column: navigation strip, centre, then the status rail. */
+@media (max-width: 820px) {
+  .workbench-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .workbench-left {
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .workbench-tools {
+    grid-column: auto;
+    max-height: none;
+  }
+
+  .workbench-topbar {
+    flex-wrap: wrap;
+  }
+
+  .workbench-composer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .workbench-composer-status {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+/* ── #3606 — collapsed rails ─────────────────────────────────────────────── */
+
+/* Attribute selectors outrank the plain `.workbench` rules inside the media
+   queries above, so a collapsed rail stays collapsed at every width. */
+.workbench[data-left-rail='collapsed'] {
+  --wb-left: 52px;
+}
+
+.workbench[data-right-rail='collapsed'] {
+  --wb-right: 52px;
+}
+
+.workbench[data-left-rail='collapsed'] .workbench-left-panel {
+  display: none;
+}
+
+/* The collapsed rails are icon/summary strips, so their padding shrinks with
+   them — otherwise a three-character state word would wrap in a 52px column. */
+.workbench[data-left-rail='collapsed'] .workbench-left {
+  padding: 8px 6px;
+}
+
+.workbench[data-right-rail='collapsed'] .workbench-tools {
+  padding: 8px 5px;
+}
+
+.workbench[data-left-rail='collapsed'] .workbench-nav-list {
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.workbench[data-left-rail='collapsed'] .workbench-nav-item {
+  width: 100%;
+  justify-content: center;
+  padding: 6px;
+}
+
+.workbench[data-left-rail='collapsed'] .workbench-nav-label,
+.workbench[data-left-rail='collapsed'] .workbench-nav-badge {
+  display: none;
+}
+
+.workbench[data-right-rail='collapsed'] .workbench-tools .workspace-rail-title,
+.workbench[data-right-rail='collapsed'] .workbench-tools-detail {
+  display: none;
+}
+
+/* The collapsed right rail is a real summary strip: the same canonical
+   connection/readiness values, never an invented count. */
+.workbench-tools-summary {
+  display: none;
+}
+
+.workbench[data-right-rail='collapsed'] .workbench-tools-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.workbench-mini-chip {
+  display: block;
+  padding: 4px 3px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 10.5px;
+  line-height: 1.25;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* ── #3606 — task/session tab strip ──────────────────────────────────────── */
+
+.workbench-tabs {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 0 2px 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.workbench-tablist {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.workbench-tab {
+  flex: 0 0 auto;
+  max-width: 200px;
+  min-height: 26px;
+  padding: 3px 10px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-align: left;
+}
+
+button.workbench-tab:hover:not(:disabled) {
+  background: var(--surface-muted);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.workbench-tab.active {
+  background: var(--surface);
+  border-color: var(--accent);
+  color: var(--text);
+  font-weight: 650;
+}
+
+.workbench-tab-title {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workbench-tabs-empty {
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.workbench-tabs-note {
+  margin: 0;
+  color: var(--text-muted);
+  font: 11px/1.5 Consolas, monospace;
+}
+
+/* ── #3606 — density pass: workbench chrome, not dashboard chrome ─────────── */
+
+.workbench-topbar {
+  padding: 6px 14px;
+  gap: 12px;
+}
+
+.workbench-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.workbench-rail-toggle {
+  min-height: 26px;
+  padding: 2px 9px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.workbench-title {
+  font-size: 14px;
+}
+
+.workbench .panel {
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+.workbench .panel h2 {
+  font-size: 11.5px;
+  margin-bottom: 6px;
+}
+
+.workbench-left .panel,
+.workbench-tools .panel {
+  padding: 10px 12px;
+}
+
+.workbench .state-badge {
+  padding: 2px 9px;
+  font-size: 12px;
+}
+
+.workbench .guidance {
+  margin: 6px 0 8px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.workbench .conversation-workspace,
+.workbench .run-activity {
+  border-radius: 10px;
+}
+
+.workbench .conversation-workspace-header {
+  min-height: 34px;
+  padding: 0 12px;
+}
+
+.workbench .run-activity-header {
+  min-height: 32px;
+  padding: 0 12px;
+}
+
+.workbench .workspace-rail-title {
+  padding: 0 2px 6px;
+  font-size: 11px;
+}
+
+/* ── #3606 — session navigation ─────────────────────────────────────────── */
+
+.workbench-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.workbench-panel-count {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.workbench-session-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-height: 28px;
+  padding: 4px 8px;
+}
+
+.workbench-session-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workbench-session-stamp {
+  color: var(--text-muted);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Visually hidden but present for assistive technology. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.workspace-rail-title {
+  padding: 2px 2px 9px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .conversation-workspace {
@@ -623,72 +1361,12 @@ button.workspace-entry:hover:not(:disabled) {
   font: 12px/1.55 Consolas, monospace;
 }
 
-.workspace-rail-title {
-  padding: 2px 2px 9px;
-  color: var(--text-muted);
-  font-size: 12px;
-  font-weight: 650;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.advanced-diagnostics-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 14px;
-  margin-top: 14px;
-}
-
-.advanced-diagnostics-grid > .panel {
-  margin-bottom: 0;
-}
-
-@media (max-width: 1080px) {
-  .workspace-shell-layout {
-    grid-template-columns: minmax(220px, 270px) minmax(360px, 1fr);
-  }
-
-  .workspace-local-rail {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 14px;
-  }
-
-  .workspace-local-rail .workspace-rail-title {
-    grid-column: 1 / -1;
-    padding-bottom: 0;
-  }
-
-  .workspace-local-rail .panel {
-    margin-bottom: 0;
-  }
-}
-
+/* #3598 — the old stage-b layout containers are gone; the shell is now the
+   `.workbench` grid above. Only the error view still uses the plain `.shell`
+   padding, so the narrow-width padding override is scoped to it. */
 @media (max-width: 780px) {
-  .shell {
+  .shell:not(.workbench) {
     padding: 16px;
   }
-
-  .workspace-shell-layout,
-  .advanced-diagnostics-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .workspace-local-rail {
-    grid-column: auto;
-    display: block;
-  }
-
-  .workspace-local-rail .panel {
-    margin-bottom: 12px;
-  }
-
-  .conversation-workspace {
-    min-height: 420px;
-  }
-
-  .workspace-project-rail .workspace-panel {
-    height: auto;
-  }
 }
+

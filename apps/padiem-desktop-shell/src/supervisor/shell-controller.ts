@@ -39,6 +39,7 @@ import {
   type ShellStatus,
   type WorkspaceListResponse,
   type WorkspaceRootResponse,
+  type WorkspaceSearchResponse,
 } from '../contract/ipc.js';
 import type { LocalWorkspaceController } from '../workspace/local-workspace.js';
 import {
@@ -126,6 +127,7 @@ export class ShellController {
       'padiem:shell:workspace-choose-root': () => this.workspaceChooseRoot(),
       'padiem:shell:workspace-list': (request) => this.workspaceList(request),
       'padiem:shell:workspace-clear-root': () => this.workspaceClearRoot(),
+      'padiem:shell:workspace-search': (request) => this.workspaceSearch(request),
       'padiem:shell:conversation-list': () => this.conversationList(),
       'padiem:shell:conversation-read': (request) => this.conversationRead(request),
       'padiem:shell:run-list': () => this.runList(),
@@ -411,6 +413,28 @@ export class ShellController {
       });
     }
     return this.#workspace.clearRoot();
+  }
+
+  /** #3583 — bounded workspace file search; fails closed without a controller. */
+  async workspaceSearch(request: unknown): Promise<WorkspaceSearchResponse> {
+    if (this.#workspace === null) {
+      return Object.freeze({
+        ok: false,
+        root: Object.freeze({
+          selected: false,
+          rootName: null,
+          rootPath: null,
+          reason: 'current' as const,
+        }),
+        query: '',
+        matches: Object.freeze([]),
+        truncated: false,
+        scannedEntries: 0,
+        maxResults: 50,
+        errorCode: 'root_not_selected' as const,
+      });
+    }
+    return this.#workspace.search(request);
   }
 
   /** #3436 B2b — canonical conversation list projection. */
