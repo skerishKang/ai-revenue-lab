@@ -375,3 +375,13 @@ check(!/(space-bunny|sensenova|openai|anthropic|kilo\/)/i.test(source), "browser
 check(!/FileReader|FormData|indexedDB/i.test(source), "RAW_SOURCE_FILE_BROWSER_PERSISTENCE=0");
 
 console.log("quote-skill contracts: PASS");
+// The downstream structured builder must not convert absent/boolean facts to 0/1.
+for (const field of ["qty", "unitPrice"]) {
+  for (const bad of [null, undefined, true, false, "", " ", -1, Infinity, NaN]) {
+    const item = { name: "Synthetic item", qty: 2, unitPrice: 400, [field]: bad };
+    eq(Skill.buildDraft(skill, input({ items: [item] })).ok, false,
+      "invalid supplied " + field + " must not coerce to a final quote: " + String(bad));
+  }
+}
+check(Skill.buildDraft(skill, input({ items: [{ name: "Synthetic free item", qty: 2, unitPrice: 0 }] })).ok,
+  "an explicit zero price remains valid");

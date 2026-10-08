@@ -399,15 +399,15 @@ def test_normalizer_accepts_variable_fields_and_rejects_calculated_or_template_o
     assert "unitPrice" not in partial_summary["items"][0]
     assert partial_summary["items"][0].get("unitPrice") != 0
 
-    with pytest.raises(B66QuoteConversationError, match="incomplete_item"):
-        normalize_conversation_output(
-            {
-                "recipient": {"company": "ABC건설"},
-                "items": [{"name": "요약 공사", "qty": None, "unitPrice": 1000}],
-                "detailGroups": [],
-                "missing": [],
-            }
-        )
+    partial_quantity = normalize_conversation_output(
+        {
+            "recipient": {"company": "ABC건설"},
+            "items": [{"name": "요약 공사", "qty": None, "unitPrice": 1000}],
+            "detailGroups": [],
+            "missing": [],
+        }
+    ).safe_dict()
+    assert partial_quantity["items"] == [{"name": "요약 공사", "unitPrice": 1000}]
 
     with pytest.raises(B66QuoteConversationError, match="unsupported_output_field|forbidden_output_field"):
         normalize_conversation_output(
@@ -823,3 +823,55 @@ async def test_interpreter_fails_truthfully_without_retrying_model():
     assert failing.calls == 1
     print("MALFORMED_OUTPUT_MODEL_CALLS=1")
     print("PROVIDER_FAILURE_MODEL_CALLS=1")
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("field", ["name", "qty", "unitPrice"])
+@pytest.mark.parametrize("scope", ["summary", "detail"])
+@pytest.mark.parametrize("absence", ["omitted", "null"])
+async def test_required_partial_facts_remain_absent_and_request_only_missing(field, scope, absence):
+    item = {"name": "Synthetic item", "qty": 4, "unitPrice": 1200}
+    if absence == "null":
+        item[field] = None
+    else:
+        item.pop(field)
+    raw = {"recipient": {"person": "Synthetic recipient"}, "missing": ["memo", "taxMode"]}
+    if scope == "summary":
+        raw["items"] = [item]
+    else:
+        raw["items"] = [{"name": "Synthetic summary", "qty": 1, "unitPrice": None}]
+        raw["detailGroups"] = [{"summaryIndex": 1, "items": [item]}]
+
+    class PartialClient:
+        calls = 0
+
+        async def complete(self, *args, **kwargs):
+            self.calls += 1
+            return {"answer": json.dumps(raw)}
+
+    client = PartialClient()
+    result = await B66QuoteConversationInterpreter(client).interpret(message="Synthetic request", skill=_skill())
+    actual = result.items[0] if scope == "summary" else result.detail_groups[0]["items"][0]
+    assert field not in actual
+    assert actual == {key: value for key, value in item.items() if value is not None}
+    assert result.missing == (field,)
+    assert result.recipient["person"] == "Synthetic recipient"
+    assert client.calls == 1
+
+
+@pytest.mark.parametrize("field,invalid", [
+    ("name", True), ("qty", True), ("qty", False), ("qty", -1), ("qty", 0),
+    ("qty", float("inf")), ("qty", float("nan")), ("unitPrice", True),
+    ("unitPrice", False), ("unitPrice", -1), ("unitPrice", float("inf")),
+    ("unitPrice", float("nan")),
+])
+@pytest.mark.parametrize("scope", ["summary", "detail"])
+def test_invalid_supplied_partial_facts_still_fail_closed(field, invalid, scope):
+    item = {"name": "Synthetic item", "qty": 4, "unitPrice": 1200, field: invalid}
+    raw = {"recipient": {"person": "Synthetic recipient"}}
+    if scope == "summary":
+        raw["items"] = [item]
+    else:
+        raw["items"] = [{"name": "Synthetic summary", "qty": 1, "unitPrice": 0}]
+        raw["detailGroups"] = [{"summaryIndex": 1, "items": [item]}]
+    with pytest.raises(B66QuoteConversationError, match="invalid_text|invalid_number"):
+        normalize_conversation_output(raw)

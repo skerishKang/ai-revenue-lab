@@ -510,6 +510,8 @@ def test_b66_free_first_authority_exact_model_generates_existing_quote_projectio
 
     class ExactClient:
         exact = []
+        def ensure_registered_quote_runtime_available(self):
+            pass
         async def complete_registered_quote_model(
             self, messages, *, model, additional_system_context
         ):

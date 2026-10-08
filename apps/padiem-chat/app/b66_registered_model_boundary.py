@@ -13,6 +13,8 @@ from dataclasses import dataclass
 import re
 from typing import Any, Awaitable, Callable, Protocol
 
+from .b14_client import ChatRuntimeError
+
 
 _SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}\Z")
 _QUOTE_CAPABILITIES = frozenset(("chat",))
@@ -24,6 +26,7 @@ class B66ModelRouteError(Exception):
     """Closed-vocabulary internal error; never includes user/provider data."""
 
     CODES = frozenset((
+        "runtime_unavailable",
         "selection_unconfigured",
         "selection_unavailable",
         "selection_ambiguous",
@@ -140,6 +143,9 @@ class B14QuoteExactModelExecutor:
     def __init__(self, client: Any) -> None:
         self._client = client
 
+    def ensure_runtime_available(self) -> None:
+        self._client.ensure_registered_quote_runtime_available()
+
     async def execute_quote_text(
         self,
         *,
@@ -183,6 +189,13 @@ class B66RegisteredModelCompletion:
         self._executor = executor
         self._refund_pre_dispatch = refund_pre_dispatch
 
+    async def _refund_before_dispatch(self) -> None:
+        if self._refund_pre_dispatch is not None:
+            try:
+                await self._refund_pre_dispatch()
+            except Exception:
+                pass  # A refund failure must not hide the bounded route error.
+
     async def complete(
         self,
         messages: list[dict[str, str]],
@@ -191,6 +204,7 @@ class B66RegisteredModelCompletion:
         attachments: tuple[Any, ...] = (),
     ) -> dict[str, Any]:
         if self._resolver is None or self._executor is None:
+            await self._refund_before_dispatch()
             raise B66ModelRouteError("selection_unconfigured")
         # The B66 quote route and interpreter own bounded text/schema checks.
         # This lane must never receive images, product-tier override or tools.
@@ -209,20 +223,24 @@ class B66RegisteredModelCompletion:
                 and not isinstance(additional_system_context, str)
             )
         ):
+            await self._refund_before_dispatch()
             raise B66ModelRouteError("selection_unavailable")
 
         requirements = B66QuoteTaskRequirements()
         try:
+            # The concrete Worker executor checks mock/live/binding readiness
+            # before registry reads. Pure trusted offline executors need no I/O.
+            runtime_check = getattr(self._executor, "ensure_runtime_available", None)
+            if callable(runtime_check):
+                runtime_check()
             candidate = await self._resolver.resolve_quote_model(requirements)
             selected = validate_authorized_route(candidate, requirements)
         except Exception as exc:
             # A denied local policy/readiness decision did not dispatch B14.
             # Preserve B62/Claw usage accounting without charging denied B66.
-            if self._refund_pre_dispatch is not None:
-                try:
-                    await self._refund_pre_dispatch()
-                except Exception:
-                    pass  # Never hide the bounded model decision error.
+            await self._refund_before_dispatch()
+            if isinstance(exc, ChatRuntimeError):
+                raise B66ModelRouteError("runtime_unavailable") from None
             if isinstance(exc, B66ModelRouteError):
                 raise
             raise B66ModelRouteError("selection_unavailable") from None
@@ -235,6 +253,10 @@ class B66RegisteredModelCompletion:
                 additional_system_context=additional_system_context,
                 requirements=requirements,
             )
+        except ChatRuntimeError:
+            # Keep the existing bounded provider timeout/server/shape class.
+            # The HTTP route projects only its closed diagnostic vocabulary.
+            raise
         except Exception:
             raise B66ModelRouteError("provider_execution_failed") from None
         if not isinstance(result, dict) or not isinstance(result.get("answer"), str):

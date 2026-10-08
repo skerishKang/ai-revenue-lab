@@ -237,9 +237,11 @@ def test_module_has_no_worker_or_automatic_policy_runtime_imports():
 def test_b14_explicit_quote_route_calls_core_once_without_b62_default(monkeypatch):
     from app.b14_client import B14Client
     from app.config import Settings
-    client = B14Client(Settings(runtime_mode="b14", b14_base_url="https://b14.internal"))
+    client = B14Client(Settings(runtime_mode="b14", b14_base_url="https://b14.internal", live_enabled=True))
     calls = []
-    async def fake_complete(messages, *, skill, model, additional_system_context):
+    async def fake_complete(messages, *, skill, model, additional_system_context, max_retries, before_dispatch):
+        assert max_retries == 0
+        assert callable(before_dispatch)
         calls.append((skill.task_type,model))
         return {"answer":"{}","route":{"mode":"manual","model":model}}
     monkeypatch.setattr(client,"_complete_text",fake_complete)
@@ -255,7 +257,7 @@ def test_b14_explicit_quote_route_calls_core_once_without_b62_default(monkeypatc
 def test_b14_explicit_quote_route_does_not_dispatch_invalid_models(monkeypatch,model):
     from app.b14_client import B14Client, ChatRuntimeError
     from app.config import Settings
-    client = B14Client(Settings(runtime_mode="b14", b14_base_url="https://b14.internal"))
+    client = B14Client(Settings(runtime_mode="b14", b14_base_url="https://b14.internal", live_enabled=True))
     calls=[]
     async def bad(*a,**kw):
         calls.append(True)
@@ -273,6 +275,8 @@ def test_exact_selected_route_adapter_only_uses_explicit_b14_method():
     class Fake:
         def __init__(self):
             self.calls=[]
+        def ensure_registered_quote_runtime_available(self):
+            pass
         async def complete_registered_quote_model(self,messages,*,model,additional_system_context):
             self.calls.append(model)
             return {"answer":"{}","route":{"mode":"manual","model":model}}
@@ -338,6 +342,7 @@ def test_real_b14_core_quote_payload_is_exact_one_attempt_no_external_fallback()
     assert payload["model"] == model
     assert payload["business14"]["task_type"] == "document"
     assert payload["business14"]["max_attempts"] == 1
+    assert payload["business14"]["max_retries"] == 0
     assert payload["business14"]["allow_external_fallback"] is False
     assert payload["business14"].get("provider_order") is None
     assert "credential" not in payload

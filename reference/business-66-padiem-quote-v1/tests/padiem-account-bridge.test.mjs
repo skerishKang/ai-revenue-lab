@@ -334,6 +334,25 @@ try {
   assert.equal(oversizedPdf.status, 413);
   assert.equal(calls.length, pdfCalls);
 
+  for (const failure of [
+    { status: 429, code: "rate_limited", headers: { "Retry-After": "60" } },
+    { status: 503, code: "quote_model_unavailable", headers: {
+      "X-B66-Model-Selection-Status": "ambiguous", "X-B66-Interpret-Failure-Stage": "model_selection"
+    } }
+  ]) {
+    const boundaryEnv = { ...env, PADIEM_CHAT_SERVICE: { fetch: async () => json({ ok: false, error: { code: failure.code } }, {
+      status: failure.status, headers: { ...failure.headers, "X-Internal-Debug": "must-not-relay" }
+    }) } };
+    const forwarded = await worker.fetch(new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/quote/interpret", {
+      method: "POST", headers: { "Content-Type": "application/json", "Cookie": "padiem_session=boundary-test", "Origin": "https://quick-quote-kr.pages.dev" },
+      body: JSON.stringify({ saved_skill_id: "b66skill_" + "c".repeat(32), message: "synthetic" })
+    }), boundaryEnv);
+    assert.equal(forwarded.status, failure.status);
+    for (const [name, value] of Object.entries(failure.headers)) assert.equal(forwarded.headers.get(name), value);
+    assert.match(forwarded.headers.get("cache-control"), /no-store/);
+    assert.equal(forwarded.headers.get("X-Internal-Debug"), null);
+  }
+  console.log("B66_QUOTA_AND_SELECTION_DIAGNOSTIC_RELAY=PASS");
   console.log("PADIEM_ACCOUNT_BRIDGE_RUNTIME=PASS");
   console.log("ARBITRARY_UPSTREAM_PROXY=0");
   console.log("AUTHORIZATION_HEADER_FORWARD=0");
