@@ -44,10 +44,11 @@ QuoteCore remains the sole calculation authority. The renderer does not become a
 |---|---|---|
 | Product / Saved Quote Skill | #3180 | overall product epic |
 | Source analysis | #3542 | source facts -> ANALYZED candidate |
-| Reproduction / certification / compiler generalization | #3595 | pre-execution fidelity gate; generic compiler proven on a second unrelated template |
+| Reproduction / certification / compiler generalization | #3595 | source certification/generalization proven (including a second unrelated template); parent issue #3595 remains OPEN for tracking disposition |
 | Template registration source formats | #3586 | XLSX now; HWPX future; legacy XLS/HWP rejected |
 | Quote shell / single composer UX | #3536 | product UX |
 | Native XLSX output | #3496 | optional editable output; not PDF critical path |
+| B66 quote-model decision authority | [Model Change Owner Approval Policy](../../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md), #3554 and #3760 | owner's corrected no-free/paid-filter instruction is in Draft PR #3796; current free-first source is not yet reconciled |
 
 Historical renderer experiments are evidence, not current authority: #3545, #3574, #3578, #3581 and #3584.
 
@@ -62,7 +63,10 @@ CGI_TEMPLATE_REUSABLE = YES
 GENERIC_ANALYZER_COMPILER = PROVEN
 SECOND_UNRELATED_TEMPLATE = CERTIFIED
 SOURCE_PRODUCT_INTEGRATION = MERGED
-PRODUCT_INTEGRATION = PRODUCTION_ACTIVATION_PENDING
+PRODUCTION_GUIDED_BROWSER_PREVIEW_AND_PDF = PASS
+PRODUCTION_COMPLETE_FREEFORM = HTTP_502_UPSTREAM_TIMEOUT
+PRODUCTION_PARTIAL_FOLLOWUP = NOT_TESTED
+CUSTOMER_READY = NO
 ```
 
 The runtime renderer consumes compiled template data without CGI/customer literals, and the
@@ -71,9 +75,20 @@ different second quotation (landscape, left-aligned header block, gapped item co
 `[소계]/[V.A.T]/[총계]` totals, no camera object, 80 vs 23 source merges) was compiled and
 certified by the same generic code path with no document-specific cell/path literal
 (`tools/b66_generic/`, with evidence under `tools/b66_generic/evidence/`). The authenticated
-Saved Quote Skill -> QuoteCore -> certified PDF download path is source-integration validated;
-customer handoff is not complete until the reviewed private CGI bundle is provisioned and the
-Production account path passes authenticated E2E.
+Saved Quote Skill -> QuoteCore -> certified PDF download path is source-integration validated.
+
+The latest recorded authorized CGI Production browser E2E passed login, the assigned Saved
+Quote Skill, Guided QuoteCore entry/calculation, certified preview and an actual downloaded
+browser PDF. The first Complete Freeform interpretation instead returned HTTP 502 classified
+as upstream_timeout on one POST, with no retry/fallback; Partial Freeform/follow-up was not
+reached. The exact selected model and timeout origin were not proven. These are
+run-specific Production observations, not proof that the current deployed revision passes
+all customer scenarios. The full CGI customer handoff remains incomplete (CUSTOMER_READY=NO).
+See #3751 and #3733 for the protected-run evidence and remaining acceptance gates.
+
+The separate source certification/generalization evidence is PROVEN, but its parent
+tracking issue #3595 is still OPEN; the proof result must not be confused with the
+GitHub issue's closure state.
 
 ## Source formats: intake capability vs template-registration policy
 
@@ -106,5 +121,6 @@ Do not insert Excel, Google Sheets, HanCell or another office engine into every 
 
 - [SOURCE_TEMPLATE_FIDELITY.md](SOURCE_TEMPLATE_FIDELITY.md) — source analysis, reproduction, certification, PDF/image fidelity implementation, current CGI architecture and development-model operating guidance.
 - This README — product boundary, current authority map and current status.
+- [MODEL_CHANGE_OWNER_APPROVAL_POLICY.md](../../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md) — repository-wide owner/model authority. The owner's B66 correction removing the free/paid eligibility restriction is recorded in Draft PR #3796; the current merged policy document and B66 executable free-first filter have not yet been reconciled. This README does not select, activate or authorize a replacement model route.
 
 Implementation/demo references such as `reference/business-66-padiem-quote-v1/` remain useful source/evidence, but they are not the canonical B66 product-policy authority.
