@@ -510,6 +510,7 @@ function buildEasyEnv({ ready, profile }) {
         }, { companyProfile: runtimeProfile });
         return Promise.resolve(built.ok ? { ok: true, draft: built.draft } : { ok: false, code: built.code });
       },
+      supportedItemRows: () => 3,
       errorText: (code) => "runtime error: " + code
     },
     CustomEvent: class {
@@ -632,6 +633,40 @@ async function harnessB() {
   assert.equal(guidedDraft.meta.validDays, CGI_SKILL.fixedDefaults.validDays,
     "guided build keeps the approved Skill validity");
   assert.equal(guidedDraft.tax.mode, "EXCLUSIVE", "guided per-quote tax answer wins over the Skill default");
+
+  /* The supported CGI guide ends at three real rows and keeps an extra
+     typed '추가' on the existing step, so no invisible fourth row is accepted. */
+  const cappedGuided = buildEasyEnv({ ready: true });
+  await flush();
+  clickStarter(cappedGuided, "guidedStarter");
+  await flush();
+  const cappedAnswer = async (text) => {
+    cappedGuided.getElement("easyComposer").value = text;
+    clickStarter(cappedGuided, "easySend");
+    await flush();
+  };
+  await cappedAnswer("Synthetic buyer");
+  await cappedAnswer("없음");
+  for (let i = 1; i <= 3; i += 1) {
+    await cappedAnswer("Synthetic item " + i);
+    await cappedAnswer(String(i));
+    await cappedAnswer("100");
+    if (i < 3) await cappedAnswer("추가");
+  }
+  assert.equal(cappedGuided.getElement("easyChipRow").children.filter((node) => node.textContent === "품목 추가").length, 0, "CGI guide offers no fourth item chip");
+  await cappedAnswer("추가");
+  await cappedAnswer("다음");
+  await cappedAnswer("별도");
+  await cappedAnswer("없음");
+  await cappedAnswer("현재");
+  const cappedBuildChips = chipsWith(cappedGuided, "견적서 만들기");
+  assert.ok(cappedBuildChips.length, "three-item guide completes normally after refusing extra input");
+  cappedBuildChips[cappedBuildChips.length - 1].listeners.click[0]();
+  await flush();
+  assert.equal(cappedGuided.runtimeCalls.buildFromFacts.length, 1);
+  assert.equal(cappedGuided.runtimeCalls.buildFromFacts[0].items.length, 3);
+  assert.equal(cappedGuided.replaceDrafts[0].items.length, 3);
+  console.log("CGI_GUIDED_THREE_ITEM_BOUND=PASS");
 
   /* B4. partial canonical CompanyProfile 로도 guided 가 정상 견적을 만든다 */
   const partialEnv = buildEasyEnv({ ready: true, profile: PARTIAL_CGI_PROFILE });

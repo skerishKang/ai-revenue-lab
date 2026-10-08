@@ -760,8 +760,20 @@
     setInput(processGuidedInput, "예: 1,500,000 또는 150만원");
   }
 
+  function guidedItemLimit() {
+    const bridge = window.B66QuoteRuntimeBridge;
+    return bridge && typeof bridge.supportedItemRows === "function" ? bridge.supportedItemRows() : null;
+  }
+
   function askMoreItems() {
     guided.step = "moreItems";
+    const limit = guidedItemLimit();
+    if (Number.isInteger(limit) && limit > 0 && guided.draft.items.length >= limit) {
+      addMessage("assistant", "CGI 기본 견적서는 품목을 최대 " + limit + "개까지 지원합니다. 다음으로 진행해 주세요.");
+      setChips([{ label: "다음으로", action: () => processGuidedInput("다음") }]);
+      setInput(processGuidedInput, "다음");
+      return;
+    }
     addMessage("assistant", "다른 품목도 추가할까요?");
     setChips([
       { label: "품목 추가", action: () => processGuidedInput("추가") },
@@ -856,7 +868,7 @@
         break;
 
       case "itemName":
-        guided.draft.items.push({ id: "item-" + (guided.draft.items.length + 1), name: text, qty: 1, unitPrice: 0 });
+        guided.draft.items.push({ id: "item-" + (guided.draft.items.length + 1), name: text });
         guided.currentItem = guided.draft.items.length - 1;
         askQty();
         break;
@@ -887,6 +899,8 @@
 
       case "moreItems":
         if (/추가|더|예|네/u.test(text)) {
+          const limit = guidedItemLimit();
+          if (Number.isInteger(limit) && limit > 0 && guided.draft.items.length >= limit) { askMoreItems(); return; }
           addMessage("assistant", "좋아요. 추가할 품목명을 적어 주세요.");
           guided.step = "itemName";
           setChips([]);

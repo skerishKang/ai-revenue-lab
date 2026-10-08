@@ -60,8 +60,8 @@ ALLOWLISTED_CLASSES = (
 # ``X-B66-Upstream-Class`` allowlist. Each entry records the status the code
 # actually carries and why it is not an upstream class on this lane.
 EXCLUDED_CLASSES = (
-    # Unreachable from the B66 lane: the quote route never binds a request tier,
-    # so policy resolution always returns the executable Padiem Plus default.
+    # In real Production B62 Plus is HOLD; this synthetic diagnostic fixture
+    # is not proof that model_profile_unassigned is unreachable from B66.
     (503, "model_profile_unassigned"),
     # Reachable only when the quote text itself begins with a slash alias; these
     # are product policy rejections, not upstream failures.
@@ -310,11 +310,8 @@ def test_binding_class_is_reachable_from_the_production_composed_client():
     assert error.status_code == 503
     assert error.code in ALLOWLISTED_CLASSES
 
-    # Why ``model_profile_unassigned`` is excluded from the allowlist is fixed by
-    # the two facts below: no request tier is bound on the B66 lane, and the
-    # resolved default route is executable. Together they make the
-    # non-executable-policy branch unreachable for an ordinary Korean quote
-    # message, so this lane can only produce the binding class before dispatch.
+    # Synthetic Plus fixture in conftest permits this binding-path test.
+    # Real HOLD is proved separately by test_unassigned_profile_gate.py.
     assert resolve_request_model_policy([{"role": "user", "content": message}]).model_id == (
         DEFAULT_B14_MODEL_ID
     )
@@ -322,7 +319,7 @@ def test_binding_class_is_reachable_from_the_production_composed_client():
     assert DEFAULT_B14_MODEL_ID in EXECUTABLE_B14_MODEL_IDS
 
     print("UPSTREAM_BINDING_UNAVAILABLE_REACHABLE_FROM_PRODUCTION_COMPOSITION=YES")
-    print("MODEL_PROFILE_UNASSIGNED_REACHABLE_FROM_B66_TEXT=NO")
+    print("B66_SYNTHETIC_PLUS_FIXTURE_ONLY=YES")
 
 
 def test_real_binding_class_reaches_the_route_as_one_bounded_header():
@@ -458,3 +455,105 @@ def test_422_rejection_does_not_claim_502_provenance():
     assert "X-B66-Interpret-Failure-Stage" not in response.headers
     assert "X-B66-Interpret-Exception-Family" not in response.headers
     assert UPSTREAM_CLASS_HEADER not in response.headers
+from app.b66_registered_model_boundary import (
+    B14AuthorizedModelRoute, B66ModelRouteError,
+    B66RegisteredModelCompletion,
+    B14QuoteExactModelExecutor,
+)
+from app.b66_b14_free_first_resolver import B14FreeFirstQuoteModelResolver
+
+
+def test_b66_trusted_registry_failure_is_503_not_generic_502():
+    class NoEligibleRegistry:
+        calls = []
+        async def get_json(self, path):
+            self.calls.append(path)
+            return 200, json.dumps({
+                "catalog": [], "registered_routes": [], "providers": [],
+                "provider_mode": "live",
+            }).encode()
+    reg = NoEligibleRegistry()
+    class ProviderCannotRun:
+        calls = 0
+        async def execute_quote_text(self, **kwargs):
+            self.calls += 1
+            raise AssertionError("provider must not be called")
+    provider = ProviderCannotRun()
+    interpreter = B66QuoteConversationInterpreter(
+        B66RegisteredModelCompletion(
+            resolver=B14FreeFirstQuoteModelResolver(reg),
+            executor=provider,
+        )
+    )
+    response = _post(_client(interpreter), "CGI 견적 고객 입력")
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "quote_model_unavailable"
+    assert response.headers["X-B66-Model-Selection-Status"] == "unavailable"
+    assert provider.calls == 0
+    assert reg.calls == ["/api/pilot/models", "/api/pilot/provider-readiness"]
+    _assert_no_values_leak(response, "CGI 견적 고객 입력")
+
+
+def test_b66_free_first_authority_exact_model_generates_existing_quote_projection():
+    class Resolver:
+        calls = 0
+        async def resolve_quote_model(self, requirements):
+            self.calls += 1
+            return B14AuthorizedModelRoute(
+                model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                route_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                owner_policy_id="b66.quote.free-first.registered.v1",
+                registered=True, enabled=True, authorized=True,
+                credential_ready=True, route_count=1,
+                capabilities=frozenset({"chat", "free"}),
+            )
+
+    class ExactClient:
+        exact = []
+        def ensure_registered_quote_runtime_available(self):
+            pass
+        async def complete_registered_quote_model(
+            self, messages, *, model, additional_system_context
+        ):
+            self.exact.append(model)
+            return {
+                "answer": json.dumps({"recipient": {"company": "기업 고객"}},
+                                     ensure_ascii=False),
+                "route": {"mode": "manual", "model": model},
+            }
+        async def complete(self, *args, **kwargs):
+            raise AssertionError("B62 HOLD route used")
+
+    resolver, client = Resolver(), ExactClient()
+    interpreter = B66QuoteConversationInterpreter(
+        B66RegisteredModelCompletion(
+            resolver=resolver, executor=B14QuoteExactModelExecutor(client)
+        )
+    )
+    response = _post(_client(interpreter), "CGI 견적 고객 요청")
+    assert response.status_code == 200
+    assert response.json()["ok"] is True
+    assert resolver.calls == 1
+    assert client.exact == ["kilo/nvidia-nemotron-3-ultra-550b-a55b-free"]
+
+
+def test_b66_model_selection_refunds_only_prior_to_any_dispatch():
+    class Unconfigured:
+        async def resolve_quote_model(self, requirements):
+            raise B66ModelRouteError("selection_unavailable")
+    class Forbidden:
+        async def execute_quote_text(self, **kwargs):
+            raise AssertionError("must not dispatch")
+    refunded = []
+    async def refund():
+        refunded.append(True)
+        return True
+    interpreter = B66QuoteConversationInterpreter(
+        B66RegisteredModelCompletion(
+            resolver=Unconfigured(), executor=Forbidden(),
+            refund_pre_dispatch=refund,
+        )
+    )
+    response = _post(_client(interpreter))
+    assert response.status_code == 503
+    assert refunded == [True]

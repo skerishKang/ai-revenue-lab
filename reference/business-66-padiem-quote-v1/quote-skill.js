@@ -384,6 +384,10 @@
       var spec = boundedString(entry.spec, 240, "").trim();
       var unit = boundedString(entry.unit, 80, "").trim();
       var note = boundedString(entry.note, 500, "").trim();
+      // Missing/null/boolean facts must never coerce to a fabricated 0 or 1.
+      if (![entry.qty, entry.unitPrice].every(function (value) {
+        return typeof value === "number" || (typeof value === "string" && /^-?(?:0|[1-9]\d*)(?:\.\d+)?$/.test(value.trim()));
+      })) return null;
       var qty = Number(entry.qty);
       var unitPrice = Number(entry.unitPrice);
       if (!name || !Number.isFinite(qty) || qty <= 0 || !Number.isFinite(unitPrice) || unitPrice < 0) return null;
