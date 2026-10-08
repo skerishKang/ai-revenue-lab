@@ -4,7 +4,6 @@ on:
   pull_request:
     paths:
       - ".github/workflows/b62-public-origin-migration-gate.yml"
-      - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/workflows/b62-google-auth-production-activation-gate.yml"
       - ".github/workflows/b62-production-code-deploy-gate.yml"
       - ".github/scripts/b62_public_origin_migration.py"
@@ -165,9 +164,10 @@ jobs:
 
           curl -fsS "${auth[@]}" "${api}/settings" -o "${pre}"
           curl -fsS "${auth[@]}" "${api}/deployments" -o "${pre_deploy}"
-          pre_version="$(python .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${pre_deploy}")"
+          jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${pre_deploy}" >/dev/null
 
           python .github/scripts/b62_public_origin_migration.py prestate --before "${pre}"
+          pre_version="$(jq -r '.result.deployments[0].versions[0].version_id' "${pre_deploy}")"
           test -n "${pre_version}"
           echo "PREMUTATION_SERVED_VERSION_ID=${pre_version}"
 
@@ -254,10 +254,8 @@ jobs:
           served_changed=no
           for _ in $(seq 1 30); do
             post_deploy="${RUNNER_TEMP}/b62-origin-post-deploy.json"
-            if curl -fsS "${auth[@]}" "${api}/deployments" -o "${post_deploy}"; then
-              if ! post_version="$(python .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${post_deploy}")"; then
-                post_version=""
-              fi
+            if curl -fsS "${auth[@]}" "${api}/deployments" -o "${post_deploy}" &&                jq -e '.success == true and (.result.deployments[0].versions | length) == 1 and .result.deployments[0].versions[0].percentage == 100' "${post_deploy}" >/dev/null 2>&1; then
+              post_version="$(jq -r '.result.deployments[0].versions[0].version_id' "${post_deploy}")"
               if [ -n "${post_version}" ] && [ "${post_version}" != "${pre_version}" ]; then
                 served_changed=yes
                 echo "POST_MIGRATION_SERVED_VERSION_ID=${post_version}"
