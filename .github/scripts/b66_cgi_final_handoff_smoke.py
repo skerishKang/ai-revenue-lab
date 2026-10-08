@@ -313,6 +313,80 @@ def _is_direct_provider(url: str) -> bool:
     )
 
 
+class _ClawOutboundGuard:
+    """Pre-network one-shot enforcement; never dispatch a second model request.
+
+    Playwright's route callback executes before an HTTP request reaches the
+    network. A blocked request is counted as a violation and aborted, not
+    merely discovered later in the request observer.
+    """
+
+    def __init__(self) -> None:
+        self.claw_posts = 0
+        self.blocked_duplicate_posts = 0
+        self.blocked_direct_provider = 0
+        self.blocked_untrusted_claw = 0
+        self.blocked_wrong_model = 0
+
+    def route_request(self, route, request) -> None:
+        if _is_direct_provider(request.url):
+            self.blocked_direct_provider += 1
+            route.abort("blockedbyclient")
+            return
+
+        parsed = urlparse(request.url)
+        if request.method == "POST" and parsed.path == CLAW_GENERAL_PATH:
+            expected = urlparse(CLAW_TARGET_URL)
+            if parsed.scheme != expected.scheme or parsed.netloc != expected.netloc:
+                self.blocked_untrusted_claw += 1
+                route.abort("blockedbyclient")
+                return
+            if self.claw_posts >= MAX_CLAW_GENERAL_POSTS:
+                self.blocked_duplicate_posts += 1
+                route.abort("blockedbyclient")
+                return
+            try:
+                payload = request.post_data_json
+            except Exception:
+                payload = None
+            if not isinstance(payload, dict) or payload.get("model_id") != CLAW_OWNER_SELECTED_MODEL_ID:
+                self.blocked_wrong_model += 1
+                route.abort("blockedbyclient")
+                return
+            self.claw_posts += 1
+        route.continue_()
+
+    def violation_reason(self) -> str | None:
+        if self.blocked_duplicate_posts:
+            return "blocked_second_claw_post"
+        if self.blocked_direct_provider:
+            return "blocked_browser_direct_provider"
+        if self.blocked_untrusted_claw:
+            return "blocked_untrusted_claw_target"
+        if self.blocked_wrong_model:
+            return "blocked_unapproved_model"
+        return None
+
+    def assert_clean(self) -> None:
+        reason = self.violation_reason()
+        if reason:
+            _fail(reason)
+
+
+# Product authority: message-lifecycle.js sets article.dataset.lifecycle
+# after the terminal SSE frame is applied; disappearance of .typing alone
+# does not establish a completed user-visible answer.
+CLAW_ASSISTANT_COMPLETED_JS = """before => {
+  const messages = Array.from(document.querySelectorAll('#messageList .assistant-message'));
+  if (messages.length !== before + 1) return false;
+  const latest = messages[messages.length - 1];
+  const content = latest.querySelector('.assistant-content');
+  return latest.dataset.lifecycle === 'completed'
+    && Boolean(content && (content.innerText || '').trim().length > 0)
+    && !latest.querySelector('.error-box');
+}"""
+
+
 def _send(page, text: str) -> None:
     page.locator("#easyComposer").fill(text)
     page.locator("#easySend").click()
@@ -850,7 +924,7 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
         return 21
 
     claw_posts = 0
-    direct_provider_requests = 0
+    guard = _ClawOutboundGuard()
     submit_ms = 0
     complete_ms = 0
     response_status = 0
@@ -867,21 +941,21 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
             browser = pw.chromium.launch(headless=True)
             context = browser.new_context(
                 viewport={"width": 1440, "height": 1100},
+                # Prevent service workers from bypassing Playwright's route guard.
+                service_workers="block",
                 # #3655: opt this one canary request flow into the chat route's
                 # bounded evidence headers; the normal user surface is unchanged.
                 extra_http_headers={CLAW_EVIDENCE_REQUEST_HEADER: CLAW_EVIDENCE_MARKER},
             )
+            # Intercept every browser HTTP request before egress; unlike a
+            # page.on("request") observer this can abort model calls in advance.
+            def guarded_route(route) -> None:
+                nonlocal claw_posts
+                guard.route_request(route, route.request)
+                claw_posts = guard.claw_posts
+
+            context.route("**/*", guarded_route)
             page = context.new_page()
-
-            def observe_request(request) -> None:
-                nonlocal claw_posts, direct_provider_requests
-                parsed = urlparse(request.url)
-                if request.method == "POST" and parsed.path == CLAW_GENERAL_PATH:
-                    claw_posts += 1
-                if _is_direct_provider(request.url):
-                    direct_provider_requests += 1
-
-            page.on("request", observe_request)
             stage = "load_chat"
             page.goto(CLAW_TARGET_URL, wait_until="domcontentloaded", timeout=30000)
 
@@ -987,33 +1061,23 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
             if not sse_content_type:
                 _fail("claw_general_not_sse")
 
-            stage = "assistant"
+            stage = "assistant_terminal_lifecycle"
             page.wait_for_function(
-                """before => {
-                  const items = Array.from(document.querySelectorAll('#messageList .assistant-message'));
-                  if (items.length <= before) return false;
-                  const last = items[items.length - 1];
-                  const content = last.querySelector('.assistant-content');
-                  return Boolean(content && (content.innerText || '').trim().length > 0);
-                }""",
+                CLAW_ASSISTANT_COMPLETED_JS,
                 arg=before_assistants,
                 timeout=120000,
             )
-            page.wait_for_function(
-                "() => !document.querySelector('#messageList .assistant-message:last-of-type .typing')",
-                timeout=120000,
-            )
-            time.sleep(1.0)
 
+            stage = "assistant_projection"
             after_assistants = page.locator("#messageList .assistant-message").count()
             assistant_projection_count = after_assistants - before_assistants
 
             if claw_posts != MAX_CLAW_GENERAL_POSTS:
                 _fail("claw_post_count_" + str(claw_posts))
+            guard.assert_clean()
             if page.locator("#messageList .error-box").count() != before_errors:
                 _fail("visible_error_box")
-            if direct_provider_requests != 0:
-                _fail("browser_direct_provider_request")
+            stage = "evidence_contract"
             # #3655 evidence bounds: the measured dispatch/fallback/projection
             # counts are load-bearing acceptance evidence, not printed claims.
             if assistant_projection_count != 1:
@@ -1114,6 +1178,17 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
         print("COMPLETE_MS=" + str(int(time.time() * 1000)))
         print("CLAW_GENERAL_POSTS=" + str(claw_posts))
         print("CLAW_GENERAL_HTTP=" + (str(response_status) if response_status else "NONE"))
+        blocked_reason = guard.violation_reason()
+        if blocked_reason:
+            print("FAIL_STAGE=pre_network_guard")
+            print("PASSWORD_OUTPUT=0")
+            print("COOKIE_OUTPUT=0")
+            print("TOKEN_OUTPUT=0")
+            print("RAW_PROMPT_OUTPUT=0")
+            print("RAW_RESPONSE_OUTPUT=0")
+            print("RETRY=0")
+            print("B54_CLAW_OWNER_ONE_SHOT=FAIL_" + blocked_reason)
+            return 23
         if evidence_headers.get("x-padiem-claw-run-id"):
             print("CLAW_RUN_REF=" + evidence_headers["x-padiem-claw-run-id"])
         print("ENGINE_ADMISSION_RESULT=" + admission_result)

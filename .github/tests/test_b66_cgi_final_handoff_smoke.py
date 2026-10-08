@@ -7,6 +7,8 @@ from contextlib import redirect_stdout
 import json
 from pathlib import Path
 import re
+import shutil
+import subprocess
 import sys
 import unittest
 
@@ -297,6 +299,130 @@ class B66InterpretFailureEvidenceTests(unittest.TestCase):
         self.assertEqual(module.MAX_INTERPRET_POSTS, 3)
         self.assertEqual(module.RETRY, 0)
         self.assertEqual(module.FALLBACK, 0)
+
+
+class ClawOneShotPreNetworkTests(unittest.TestCase):
+    """#3523: failure controls must abort before requests leave Chromium."""
+
+    class Request:
+        def __init__(self, method: str, url: str, body=None) -> None:
+            self.method = method
+            self.url = url
+            self.post_data_json = body
+
+    class Route:
+        def __init__(self) -> None:
+            self.actions: list[str] = []
+
+        def continue_(self) -> None:
+            self.actions.append("network")
+
+        def abort(self, reason: str) -> None:
+            self.actions.append("abort:" + reason)
+
+    def dispatch(self, guard, method, url, body=None):
+        route = self.Route()
+        guard.route_request(route, self.Request(method, url, body))
+        return route.actions
+
+    def test_first_approved_post_continues_exactly_once(self):
+        g = module._ClawOutboundGuard()
+        url = module.CLAW_TARGET_URL.rstrip("/") + module.CLAW_GENERAL_PATH
+        actions = self.dispatch(g, "POST", url, {"model_id": module.CLAW_OWNER_SELECTED_MODEL_ID})
+        self.assertEqual(actions, ["network"])
+        self.assertEqual(g.claw_posts, 1)
+        self.assertEqual(self.dispatch(
+            g, "POST", module.CLAW_TARGET_URL.rstrip("/") + "/api/auth/password/login",
+            {"username": "stub"},
+        ), ["network"])
+        self.assertEqual(g.claw_posts, 1)
+        g.assert_clean()
+
+    def test_second_post_aborted_before_network_and_detected(self):
+        g = module._ClawOutboundGuard()
+        url = module.CLAW_TARGET_URL.rstrip("/") + module.CLAW_GENERAL_PATH
+        payload = {"model_id": module.CLAW_OWNER_SELECTED_MODEL_ID}
+        self.assertEqual(self.dispatch(g, "POST", url, payload), ["network"])
+        self.assertEqual(self.dispatch(g, "POST", url, payload), ["abort:blockedbyclient"])
+        self.assertEqual(g.claw_posts, 1)
+        self.assertEqual(g.blocked_duplicate_posts, 1)
+        with self.assertRaisesRegex(module.SmokeFailure, "blocked_second_claw_post"):
+            g.assert_clean()
+
+    def test_wrong_or_missing_model_aborted_with_zero_posts(self):
+        url = module.CLAW_TARGET_URL.rstrip("/") + module.CLAW_GENERAL_PATH
+        for body in ({}, {"model_id": "unapproved/model"}, None, "text"):
+            with self.subTest(body=body):
+                g = module._ClawOutboundGuard()
+                self.assertEqual(self.dispatch(g, "POST", url, body), ["abort:blockedbyclient"])
+                self.assertEqual(g.claw_posts, 0)
+                with self.assertRaisesRegex(module.SmokeFailure, "blocked_unapproved_model"):
+                    g.assert_clean()
+
+    def test_direct_provider_aborted_but_google_fonts_css_allowed(self):
+        g = module._ClawOutboundGuard()
+        self.assertEqual(self.dispatch(g, "GET", "https://fonts.googleapis.com/css2?family=Manrope"), ["network"])
+        self.assertEqual(self.dispatch(g, "POST", "https://generativelanguage.googleapis.com/v1/models"), ["abort:blockedbyclient"])
+        self.assertEqual(self.dispatch(g, "POST", "https://api.openai.com/v1/chat/completions"), ["abort:blockedbyclient"])
+        self.assertEqual(g.blocked_direct_provider, 2)
+        with self.assertRaisesRegex(module.SmokeFailure, "blocked_browser_direct_provider"):
+            g.assert_clean()
+
+    def test_off_origin_claw_post_blocked_and_not_counted(self):
+        g = module._ClawOutboundGuard()
+        self.assertEqual(self.dispatch(
+            g, "POST", "https://evil.invalid/api/claw/general",
+            {"model_id": module.CLAW_OWNER_SELECTED_MODEL_ID},
+        ), ["abort:blockedbyclient"])
+        self.assertEqual(g.claw_posts, 0)
+        with self.assertRaisesRegex(module.SmokeFailure, "blocked_untrusted_claw_target"):
+            g.assert_clean()
+
+    def test_claw_runtime_installs_pre_network_route_guard(self):
+        text = SCRIPT.read_text(encoding="utf-8")
+        owner = text[text.index("def run_claw_owner_one_shot("):text.index("\ndef self_test(")]
+        self.assertIn('context.route("**/*", guarded_route)', owner)
+        self.assertIn('service_workers="block"', owner)
+        self.assertIn("guard.route_request(route, route.request)", owner)
+        self.assertIn("guard.assert_clean()", owner)
+        self.assertNotIn('page.on("request", observe_request)', owner)
+        self.assertNotIn("assistant-message:last-of-type .typing", owner)
+
+    @unittest.skipUnless(shutil.which("node"), "Node required to evaluate terminal predicate")
+    def test_terminal_lifecycle_js_negative_controls(self):
+        # Execute the same JavaScript predicate the actual browser waits on.
+        # DOM stubs distinguish nonempty text from the authoritative lifecycle.
+        js = r"""
+const predicate = eval('(' + process.argv[1] + ')');
+function caseOf(status, content, error, count) {
+  const article = {
+    dataset: { lifecycle: status },
+    querySelector(selector) {
+      if (selector === '.assistant-content') return { innerText: content };
+      if (selector === '.error-box') return error ? {} : null;
+      return null;
+    }
+  };
+  global.document = { querySelectorAll() {
+    return Array(count).fill(article);
+  }};
+  return predicate(0);
+}
+const assert = require('node:assert/strict');
+assert.equal(caseOf('completed', '정상 답변', false, 1), true);
+assert.equal(caseOf('streaming', '정상 답변', false, 1), false);
+assert.equal(caseOf('failed', '정상 답변', false, 1), false);
+assert.equal(caseOf('cancelled', '정상 답변', false, 1), false);
+assert.equal(caseOf('completed', '  ', false, 1), false);
+assert.equal(caseOf('completed', '정상 답변', true, 1), false);
+assert.equal(caseOf('completed', '정상 답변', false, 0), false);
+assert.equal(caseOf('completed', '정상 답변', false, 2), false);
+"""
+        completed = subprocess.run(
+            ["node", "-e", js, module.CLAW_ASSISTANT_COMPLETED_JS],
+            capture_output=True, text=True, check=False, timeout=10,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
 
 
 class CanaryEvidenceSeamTests(unittest.TestCase):
