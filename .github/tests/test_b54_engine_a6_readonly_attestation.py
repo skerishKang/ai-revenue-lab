@@ -477,3 +477,23 @@ def test_drive_attestation_and_guard_contract_remain_intact() -> None:
     # The Drive flag keeps its own independent default and its own verifier.
     assert "_verify_drive_runtime_bindings" in guard
     assert "_verify_a6_runtime_bindings" in guard
+
+
+def test_3771_a6_readonly_served_version_uses_single_argv_token() -> None:
+    # #3748: CLI accepts a canonical leading-hyphen ID only via = form.
+    runs = [
+        str(step["run"])
+        for step in _live_job()["steps"]
+        if "run" in step and "b54_engine_served_version_guard.py verify" in step["run"]
+    ]
+    assert len(runs) == 1
+    run = runs[0]
+    correct = '--active-version="${active_version}"'
+    ambiguous = '--active-version "${active_version}"'
+    assert correct in run and ambiguous not in run
+    assert "--require-a6-runtime-bindings" in run
+
+    # Mutation-negative: restoring the ambiguous form cannot satisfy the guard.
+    broken = run.replace(correct, ambiguous, 1)
+    assert broken != run and correct not in broken
+    assert ambiguous in broken

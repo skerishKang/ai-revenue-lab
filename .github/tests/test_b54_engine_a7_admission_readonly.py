@@ -209,3 +209,25 @@ def test_source_contract_locks_admission_bound_composition_and_authenticated_use
     for value in required:
         assert value in text
 
+
+
+def test_3771_a7_readonly_served_version_uses_single_argv_token() -> None:
+    # #3748: the admitted Engine version ID must reach canonical argparse intact.
+    data = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
+    steps = data["jobs"]["served-a7-readonly"]["steps"]
+    runs = [
+        str(step["run"])
+        for step in steps
+        if "run" in step and "b54_engine_served_version_guard.py verify" in step["run"]
+    ]
+    assert len(runs) == 1
+    run = runs[0]
+    correct = '--active-version="${active_version}"'
+    ambiguous = '--active-version "${active_version}"'
+    assert correct in run and ambiguous not in run
+    assert "--inspect-engine-admission-binding" in run
+
+    # Mutation-negative: an old two-token invocation no longer satisfies the guard.
+    broken = run.replace(correct, ambiguous, 1)
+    assert broken != run and correct not in broken
+    assert ambiguous in broken
