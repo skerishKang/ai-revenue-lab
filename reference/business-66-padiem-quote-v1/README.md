@@ -151,6 +151,6 @@ node tests/padiem-account-bridge.test.mjs
 - [B66 공식 대표 문서](../../docs/products/b66/README.md) — 현재 제품 정책·작업 범위·권위 지도.
 - [B66 PDF 재현 기술 기준](../../docs/products/b66/SOURCE_TEMPLATE_FIDELITY.md) — 원본 분석·인증·PDF 일치성.
 - [초기 Quote Beta README 원본 이력](../../docs/history/2026-10-08/B66_QUOTE_BETA_REFERENCE_README.snapshot.md) — 지금 문서를 대체하기 전 기록; 현행 정책 아님.
-- [DEMO_GUIDE.md](DEMO_GUIDE.md) — 별도 초기 시연 가이드로, 현재 소스·고객 E2E보다 우선하지 않음. 독립 검토 대상.
+- [초기 데모 운영 가이드(과거 기록)](../../docs/history/2026-10-08/B66_QUOTE_BETA_DEMO_GUIDE.snapshot.md) — 과거 시연 절차의 원본 보관본이며 현행 고객 사용 안내가 아님. 보관 경로는 별도 Draft PR #3803에서 추가됨.
 
 다른 문서의 과거 모델·데모 가정을 이 폴더의 현행 실행 권한으로 해석하지 마세요.
