@@ -227,7 +227,7 @@ jobs:
           curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
           verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify \
             --version-settings "${version_detail}" \
-            --active-version "${active_version}" \
+            --active-version="${active_version}" \
             --inspect-engine-admission-binding)"
           printf '%s\n' "${verify_out}" | grep -E '^CONTROL_PLANE_ENGINE_ADMISSION_SERVED_BINDING=(ABSENT|PRESENT:service)$'
           printf '%s\n' "${verify_out}" | grep -E '^ENGINE_ADMISSION_BINDING_TARGET_VALIDATED=(NOT_APPLICABLE|YES)$'

@@ -175,7 +175,14 @@
     const contentType = (response.headers.get("content-type") || "").toLowerCase();
     if (!response.ok || !contentType.startsWith("text/event-stream")) {
       const data = await response.json().catch(() => null);
-      throw errorFor(data, "AI 작업을 처리하지 못했습니다. 다시 시도해 주세요.");
+      const error = errorFor(data, "AI 작업을 처리하지 못했습니다. 다시 시도해 주세요.");
+      // #3566: preserve ONLY the closed, source-owned rate-limit classification
+      // for Claw presentation. Never trust a provider message as the category.
+      if (response.status === 502 && data?.error?.code === "engine_execution_failed" &&
+          data?.error?.detail === "engine_provider_rate_limited") {
+        error.clawFailureDetail = "engine_provider_rate_limited";
+      }
+      throw error;
     }
     return response;
   }

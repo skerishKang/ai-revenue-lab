@@ -248,6 +248,16 @@
     retry.type = "button";
     retry.className = "retry-button";
     retry.textContent = actionLabel;
+    // #3566: the general Claw P01 lane may already have dispatched before a
+    // terminal Engine error. Do not offer a one-click replay (even manual)
+    // until the operator checks existing results. Ordinary Chat retains its
+    // established retry behavior; this guard is Claw-general only.
+    if (clawGeneralRequest) {
+      const hint = document.createElement("p");
+      hint.textContent = uiT("claw-general-check-runs");
+      box.append(strong, p, hint);
+      return box;
+    }
     retry.addEventListener("click", async () => {
       article.remove();
       conversationState.setConversationId(retryContext.conversationId);
@@ -1339,7 +1349,9 @@
       if (requestEpoch !== conversationEpoch) return false;
       renderError(
         article,
-        error instanceof Error ? error.message : uiT("try-again"),
+        clawGeneralRequest && error?.clawFailureDetail === "engine_provider_rate_limited"
+          ? uiT("claw-general-provider-limit")
+          : (error instanceof Error ? error.message : uiT("try-again")),
         outboundMessages,
         skill,
         attachment,

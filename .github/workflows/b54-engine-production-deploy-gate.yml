@@ -80,7 +80,7 @@ jobs:
           test -n "${active_version}"
           version_detail="${RUNNER_TEMP}/version-pre.json"
           curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
-          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify --version-settings "${version_detail}" --active-version "${active_version}" --require-drive-runtime-bindings)"
+          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify --version-settings "${version_detail}" --active-version="${active_version}" --require-drive-runtime-bindings)"
           printf '%s\n' "${verify_out}"
           overlay_expected="$(printf '%s\n' "${verify_out}" | sed -n 's/^B54_ENGINE_OVERLAY_EXPECTED=//p')"
           test "${overlay_expected}" = 'YES' || test "${overlay_expected}" = 'NO'
@@ -123,20 +123,165 @@ jobs:
           echo 'PROVIDER_CALLS=0'
           echo 'REAL_USER_DATA=0'
 
+      # #3758: durable pre-mutation rollback anchor for the Engine deploy path.
+      #
+      # #3742 closed this gap for B14: the pre-deploy served version existed
+      # only as a run-log line / GITHUB_ENV value (here B54_ENGINE_ACTIVE_VERSION)
+      # that no artifact carried. When the deploy command starts and fails --
+      # exactly the run that creates the need to roll back -- the version an
+      # operator must return to was recoverable from nothing durable, while the
+      # rollback branch (#3737 / PR #3744) demands an explicit target. This
+      # step is read-only, mutates no Worker state, and does not reinterpret
+      # the pre/post served-version guards around it.
+      #
+      # Position is the contract. After the served-version secret guard and the
+      # A7 Control Plane admission readiness step, so the anchor names the
+      # version serving the code this dispatch is about to replace; and
+      # immediately before the mutating command, so the read is as fresh as
+      # the gate can make it. A refused read ends the job here, which is what
+      # makes DEPLOY_EXECUTED=NO true rather than merely printed.
+      - name: Pre-deploy canonical served-version rollback anchor
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          B54_TARGET_SHA: ${{ github.event.inputs.target_sha }}
+        run: |
+          set -euo pipefail
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/padiem-ai-engine"
+
+          # Durable, bounded evidence: version ids and verdict tokens only.
+          # Never a token, an account id, a header or a response envelope,
+          # which is why the raw deployments file stays out of the published
+          # artifact path. Two files, two phases:
+          #   b54-engine-anchor.txt        -> PRE-MUTATION anchor artifact,
+          #                                   uploaded as a hard precondition
+          #                                   of the deploy command below
+          #   b54-engine-deploy-evidence.txt -> final outcome artifact,
+          #                                   published after the job settles
+          evidence="${RUNNER_TEMP}/b54-engine-deploy-evidence.txt"
+          anchor="${RUNNER_TEMP}/b54-engine-anchor.txt"
+          : > "${evidence}"
+          : > "${anchor}"
+          record() {
+            printf '%s\n' "$1"
+            printf '%s\n' "$1" >> "${evidence}"
+          }
+          anchor_record() {
+            printf '%s\n' "$1"
+            printf '%s\n' "$1" >> "${anchor}"
+          }
+          anchor_fail() {
+            echo 'B54_PRE_DEPLOY_ANCHOR=FAIL' >&2
+            echo "REASON=$1" >&2
+            # The refusal is itself durable evidence, and DEPLOY_EXECUTED=NO is
+            # the one fact a failed anchor may still assert truthfully: the
+            # deploy command below is never reached. No version id and no PASS
+            # token is recorded for a version that was not actually confirmed.
+            record "DEPLOY_EXECUTED=NO"
+            exit 1
+          }
+          anchor_record "MUTATION_CLASS=DEPLOY"
+          anchor_record "B54_ENGINE_WORKER_SCRIPT=padiem-ai-engine"
+          anchor_record "RAW_DEPLOYMENTS_ENVELOPE_INCLUDED=NO"
+          anchor_record "SECRET_VALUES_INCLUDED=NO"
+          anchor_record "ACCOUNT_ID_INCLUDED=NO"
+          record "MUTATION_CLASS=DEPLOY"
+          record "RAW_DEPLOYMENTS_ENVELOPE_INCLUDED=NO"
+          record "SECRET_VALUES_INCLUDED=NO"
+          record "ACCOUNT_ID_INCLUDED=NO"
+
+          # (1) Canonical pre-mutation read. GET-only. The whole envelope is
+          # handed to the shared resolver (#3656); no shell-side envelope rule
+          # and no second served-version authority exist here.
+          pre_deployments="${RUNNER_TEMP}/deployments-anchor-pre.json"
+          if ! curl -fsS --max-time 30 \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "${base}/deployments" -o "${pre_deployments}"; then
+            anchor_fail "pre-deploy deployments read failed"
+          fi
+
+          # (2) Only a successful canonical resolution is an anchor: a real
+          # active deployment, a single version, 100% traffic and a safe id.
+          # Malformed, split, ambiguous and unreadable envelopes all reach
+          # anchor_fail. The CLI prints the safe id on stdout and a bounded
+          # REASON on stderr, and never echoes a rejected candidate.
+          if ! pre_version="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments="${pre_deployments}")"; then
+            anchor_fail "canonical resolver refused the pre-deploy deployments read"
+          fi
+          if [ -z "${pre_version}" ]; then
+            anchor_fail "canonical resolver returned no served version id"
+          fi
+
+          anchor_record "PRE_DEPLOY_SERVED_VERSION_ID=${pre_version}"
+          anchor_record "PRE_MUTATION_VERSION_CAPTURED=YES"
+          anchor_record "SOURCE_MAIN_SHA=${B54_TARGET_SHA}"
+          anchor_record "ROLLBACK_ANCHOR_AVAILABLE=YES"
+          anchor_record "ANCHOR_PREPARED_BEFORE_DEPLOY=YES"
+          # Mirror the anchor into the final outcome evidence as well, so the
+          # post-run artifact can stand alone if the run survives to publish.
+          record "PRE_DEPLOY_SERVED_VERSION_ID=${pre_version}"
+          record "PRE_MUTATION_VERSION_CAPTURED=YES"
+          record "SOURCE_MAIN_SHA=${B54_TARGET_SHA}"
+          record "ROLLBACK_ANCHOR_AVAILABLE=YES"
+          record "ANCHOR_PREPARED_BEFORE_DEPLOY=YES"
+          echo 'B54_PRE_DEPLOY_ANCHOR=PASS'
+
+      # #3758 round 2 (CENTRAL review): the anchor is only a rollback anchor if
+      # it is OUTSIDE the runner before the mutating command starts. A
+      # RUNNER_TEMP file plus an after-the-fact always() upload loses the
+      # anchor when the runner dies during the deploy. So the pre-mutation
+      # anchor artifact is uploaded HERE, and its success is a hard
+      # precondition: no upload, no deploy. `if: always()` is meaningless on
+      # this step -- it runs in the middle of the job and must fail the job on
+      # any refusal. The final outcome evidence is a SEPARATE artifact
+      # published at the end of the job; a missing final artifact then means
+      # the run died mid-flight and the deploy outcome is UNKNOWN -- never a
+      # silent success, never a claimed non-deploy.
+      - name: Publish the pre-mutation rollback anchor artifact (hard deploy precondition)
+        uses: actions/upload-artifact@v4
+        with:
+          name: b54-engine-rollback-anchor-${{ github.run_id }}
+          path: ${{ runner.temp }}/b54-engine-anchor.txt
+          if-no-files-found: error
+          retention-days: 90
+
       - name: Deploy engine to production
         working-directory: apps/padiem-ai-engine
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
+          set -euo pipefail
           # f88 lesson: exit 0 (or wrangler's "No targets deployed" version
           # report) proves only that the deploy COMMAND ran, never that the
           # served deployment is healthy. This step therefore emits command
           # evidence only; the final production PASS marker is emitted by the
           # post-deploy served-version guard below, after served-version
           # evidence exists.
-          uv run pywrangler deploy
-          echo 'B54_ENGINE_DEPLOY_COMMAND=EXIT_ZERO'
+          #
+          # #3758: the ATTEMPT is recorded BEFORE the mutating command, not
+          # after it. Under `set -euo pipefail` anything written after a
+          # failed command is lost exactly when it matters most -- a deploy
+          # that started and failed can still have mutated Production, and an
+          # artifact carrying no attempt line would read identically to one
+          # where the anchor refused and nothing ever happened. On failure
+          # DEPLOY_EXECUTED is recorded as UNKNOWN, never NO: whether
+          # Production actually changed is not knowable from an exit code.
+          printf 'DEPLOY_ATTEMPTED=YES\n' >> "${RUNNER_TEMP}/b54-engine-deploy-evidence.txt"
+          echo 'DEPLOY_ATTEMPTED=YES'
+          # pywrangler deploy itself is unchanged and stays the single deploy
+          # authority; only the evidence around it is recorded.
+          if uv run pywrangler deploy 2>&1 | tee "${RUNNER_TEMP}/b54-engine-deploy.log"; then
+            # Reached only on success, so DEPLOY_EXECUTED=YES can never be
+            # recorded for a deploy that did not complete.
+            printf 'DEPLOY_EXECUTED=YES\n' >> "${RUNNER_TEMP}/b54-engine-deploy-evidence.txt"
+            echo 'B54_ENGINE_DEPLOY_COMMAND=EXIT_ZERO'
+          else
+            printf 'DEPLOY_EXECUTED=UNKNOWN\n' >> "${RUNNER_TEMP}/b54-engine-deploy-evidence.txt"
+            echo 'DEPLOY_EXECUTED=UNKNOWN'
+            echo 'B54_ENGINE_DEPLOY_COMMAND=FAIL' >&2
+            exit 1
+          fi
 
       # f88 lesson: the post-deploy served-version guard runs BEFORE the
       # health smoke, so the exact served version is recorded as evidence even
@@ -210,7 +355,7 @@ jobs:
           fi
           verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify \
             --version-settings "${version_detail}" \
-            --active-version "${active_version}" \
+            --active-version="${active_version}" \
             --require-drive-runtime-bindings \
             --inspect-engine-admission-binding \
             "${overlay_args[@]}")"
@@ -243,6 +388,25 @@ jobs:
           grep -q '"b14_service_bound":true' /tmp/health.json
           grep -q 'orchestration_run' /tmp/health.json
           echo 'B54_ENGINE_PRODUCTION_SMOKE=PASS'
+
+      # #3758 round 2 (CENTRAL review): publish the bounded run-outcome
+      # evidence. `if: always()` is the #3704/#3742 precedent -- a run that
+      # stopped before deploying is exactly the case the anchor is needed
+      # for -- and `if-no-files-found: error` keeps a missing artifact from
+      # reading as a silent PASS. This artifact is deliberately SEPARATE from
+      # the pre-mutation anchor artifact above: if the runner dies during the
+      # deploy, this final artifact never appears, and the rollback anchor is
+      # already safe in its own upload from before the mutation. A run with a
+      # pre-mutation anchor but no final outcome artifact is read as
+      # DEPLOY_EXECUTED=UNKNOWN, never as a success or a non-deploy.
+      - name: Publish the bounded run-outcome evidence artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b54-engine-production-deploy-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/b54-engine-deploy-evidence.txt
+          if-no-files-found: error
+          retention-days: 90
 
   smoke-idempotency:
     # A7 activation reconciliation (#3340): authenticated-user entitlement is now

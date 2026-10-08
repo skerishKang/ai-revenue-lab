@@ -1258,3 +1258,66 @@ def test_rollback_step_body_cannot_resolve_adapters_from_the_worker_directory(tm
     assert "can't open file" in out.output or "No such file" in out.output
     assert "b54_engine_served_version_guard.py" in out.output
     assert "B54_ENGINE_PRODUCTION_ROLLBACK=PASS" not in out.output
+
+
+# #3766 (parent #3748): the two Engine CODE_DEPLOY guard calls must pass a
+# canonical served-version id as one argparse token, including leading '-'.
+# The rollback arm has its own completed =form contract (#3737).
+
+
+def _3766_assert_deploy_guard_argv(run: str) -> None:
+    assert run.count("b54_engine_served_version_guard.py verify") == 1
+    assert '--active-version="${active_version}"' in run
+    assert '--active-version "${active_version}"' not in run
+
+
+def test_3766_pre_and_post_deploy_guards_preserve_canonical_argv_parity() -> None:
+    wf = yaml.safe_load(_workflow_text())
+    steps = wf["jobs"]["deploy-production-engine"]["steps"]
+    for name in ("Pre-deploy served-version secret guard", "Post-deploy served-version secret guard"):
+        step = next(step for step in steps if step.get("name") == name)
+        _3766_assert_deploy_guard_argv(step["run"])
+
+
+def test_3766_reintroducing_space_form_breaks_both_guard_contracts() -> None:
+    wf = yaml.safe_load(_workflow_text())
+    steps = wf["jobs"]["deploy-production-engine"]["steps"]
+    for name in ("Pre-deploy served-version secret guard", "Post-deploy served-version secret guard"):
+        run = next(step["run"] for step in steps if step.get("name") == name)
+        broken = run.replace('--active-version="${active_version}"', '--active-version "${active_version}"')
+        assert broken != run
+        with pytest.raises(AssertionError):
+            _3766_assert_deploy_guard_argv(broken)
+
+
+def test_3766_real_guard_accepts_leading_hyphen_served_version_with_drive_bindings() -> None:
+    helper = _load_helper()
+    version_id = "-canonical-safe-v1"
+    payload = _version_detail(_drive_runtime_bindings(), version_id=version_id)
+    result, stdout = _invoke(
+        helper,
+        lambda p: [
+            "verify", "--version-settings", p,
+            f"--active-version={version_id}", "--require-drive-runtime-bindings",
+        ],
+        payload,
+    )
+    assert result == 0, stdout
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=PASS" in stdout
+    assert "DRIVE_RUNTIME_BINDINGS_VALIDATED=YES" in stdout
+    assert SENTINEL not in stdout
+
+    # The parser accepted the id, but the canonical guard must still refuse a
+    # version-detail identity mismatch; no false success or fallback.
+    wrong, evidence = _invoke(
+        helper,
+        lambda p: [
+            "verify", "--version-settings", p,
+            "--active-version=-different-safe-v1", "--require-drive-runtime-bindings",
+        ],
+        payload,
+    )
+    assert wrong == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in evidence
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=PASS" not in evidence
+    assert SENTINEL not in evidence

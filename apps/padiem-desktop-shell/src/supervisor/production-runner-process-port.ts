@@ -69,6 +69,14 @@ export const DESKTOP_MATERIAL_EVENT = 'desktop_device_session_material';
 export const BROWSER_OPEN_REDEMPTION_EVENT = 'browser_open_redemption';
 
 /**
+ * #3669 — the resident's bounded browser-control lease answer event. The two
+ * lease request kinds (resolve / consume) share this one event tag and this
+ * one dedicated slot; the kind is carried on the response itself and routed
+ * in the port module's closed parser, never here.
+ */
+export const BROWSER_CONTROL_LEASE_EVENT = 'browser_control_lease';
+
+/**
  * Recognises one redemption answer by its literal event tag. It is a recognition
  * helper only: the schema authority stays `parseBrowserOpenRedemptionLine` in the
  * port module, so this file cannot widen that contract.
@@ -86,9 +94,30 @@ function asBrowserOpenRedemptionResponse(line: string): Record<string, unknown> 
     return null;
   }
 }
+
+/**
+ * #3669 — recognition helper for the bounded lease answer (both kinds share
+ * the event tag). Schema authority stays `parseBrowserControlLeaseLine` in
+ * the port module.
+ */
+function asBrowserControlLeaseResponse(line: string): Record<string, unknown> | null {
+  if (line.length === 0 || line.length > MAX_BROWSER_CONTROL_LEASE_LINE_CHARS) return null;
+  if (!line.startsWith('{') || !line.includes(BROWSER_CONTROL_LEASE_EVENT)) return null;
+  try {
+    const parsed: unknown = JSON.parse(line);
+    if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+    const record = parsed as Record<string, unknown>;
+    if (record['event'] !== BROWSER_CONTROL_LEASE_EVENT) return null;
+    return record;
+  } catch {
+    return null;
+  }
+}
 export const MAX_MATERIAL_LINE_CHARS = 65_536;
 /** #3611 — the redemption answer is bounded correlation only. */
 export const MAX_BROWSER_OPEN_REDEMPTION_LINE_CHARS = 2_048;
+/** #3669 — the lease answer is the bounded 14-key lease shape plus correlation. */
+export const MAX_BROWSER_CONTROL_LEASE_LINE_CHARS = 2_048;
 
 function asMaterialResponse(line: string): Record<string, unknown> | null {
   if (line.length === 0 || line.length > MAX_MATERIAL_LINE_CHARS) return null;
@@ -153,6 +182,11 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
   // different schemas and different consumers, and sharing a slot would let one
   // overwrite the other. Also volatile and cleared on read and on exit.
   #browserOpenRedemptionLine: string | null = null;
+  // #3669: a third, dedicated bounded slot for the browser-control lease
+  // answer. Both lease request kinds share this one slot — the kind is routed
+  // in the port module's closed parser, and a settled resident can never hand
+  // out a stale lease answer. Volatile, cleared on read and on exit.
+  #browserControlLeaseLine: string | null = null;
 
   constructor(child: ChildProcess, maxLines: number) {
     this.#child = child;
@@ -178,11 +212,15 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
         // as material.
         const material = asMaterialResponse(line);
         const redemption = asBrowserOpenRedemptionResponse(line);
+        const lease = asBrowserControlLeaseResponse(line);
         const storedLine = material === null ? line : redactedMaterialLine(material);
         if (stream === 'stdout' && material !== null) this.#materialLine = line;
         // The redemption answer carries only bounded correlation, so it stays in
         // the retained buffer; it holds no secret to redact.
         if (stream === 'stdout' && redemption !== null) this.#browserOpenRedemptionLine = line;
+        // Same for the lease answer: bounded correlation plus the 14-key lease
+        // shape only — approval/evidence refs are opaque, no secret to redact.
+        if (stream === 'stdout' && lease !== null) this.#browserControlLeaseLine = line;
         this.#lines.push(storedLine);
         if (this.#lines.length > this.#maxLines) this.#lines.shift();
         this.#lastLineAtMs = atMs;
@@ -217,6 +255,9 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
     // The same rule for the redemption answer: a dead resident cannot have
     // redeemed anything, so its slot dies with it.
     this.#browserOpenRedemptionLine = null;
+    // And for the lease answer: a dead resident can neither resolve nor
+    // consume a durable lease, so its slot dies with it too.
+    this.#browserControlLeaseLine = null;
     for (const listener of [...this.#listeners]) {
       listener(result);
     }
@@ -306,6 +347,16 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
   takeBrowserOpenRedemptionLine(): string | null {
     const line = this.#browserOpenRedemptionLine;
     this.#browserOpenRedemptionLine = null;
+    return line;
+  }
+
+  /**
+   * #3669: one-shot read of the bounded browser-control lease answer (both
+   * kinds), then cleared. Holder of the last bounded answer only.
+   */
+  takeBrowserControlLeaseLine(): string | null {
+    const line = this.#browserControlLeaseLine;
+    this.#browserControlLeaseLine = null;
     return line;
   }
 
@@ -442,6 +493,16 @@ export class NodeRunnerProcessPort implements RunnerProcessPort {
    */
   takeResidentBrowserOpenRedemptionLine(): string | null {
     if (this.#residentHandle) return this.#residentHandle.takeBrowserOpenRedemptionLine();
+    return null;
+  }
+
+  /**
+   * #3669: the live resident's bounded browser-control lease answer
+   * (both request kinds share the event tag), one-shot. A settled resident
+   * yields null.
+   */
+  takeResidentBrowserControlLeaseLine(): string | null {
+    if (this.#residentHandle) return this.#residentHandle.takeBrowserControlLeaseLine();
     return null;
   }
 
