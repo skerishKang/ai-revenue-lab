@@ -97,6 +97,13 @@ class BrokerBindingState(str, Enum):
     REVOKED = "revoked"
 
 
+class BrokerCommandCapability(str, Enum):
+    """The persisted execution lane. Legacy commands are process-only."""
+
+    PROCESS_EXECUTE = "process.execute"
+    BROWSER_CONTROL = "browser.control"
+
+
 class BrokerCommandState(str, Enum):
     QUEUED = "queued"
     ADMITTED = "admitted"
@@ -198,6 +205,7 @@ class BrokerCommandRecord:
     issued_at: datetime
     expires_at: datetime
     revision_ref: str
+    capability: BrokerCommandCapability = BrokerCommandCapability.PROCESS_EXECUTE
     state: BrokerCommandState = BrokerCommandState.QUEUED
     admission_ref: str | None = None
     evidence_ref: str | None = None
@@ -222,6 +230,8 @@ class BrokerCommandRecord:
             raise ControlPlaneContractError("invalid_broker_command", "command lifetime must be positive and at most 900 seconds")
         object.__setattr__(self, "issued_at", issued)
         object.__setattr__(self, "expires_at", expires)
+        if not isinstance(self.capability, BrokerCommandCapability):
+            raise ControlPlaneContractError("invalid_broker_command", "capability must be a closed BrokerCommandCapability")
         if not isinstance(self.state, BrokerCommandState):
             raise ControlPlaneContractError("invalid_broker_command", "state must be BrokerCommandState")
         for name in ("admission_ref", "evidence_ref", "admitted_session_id"):
@@ -260,6 +270,11 @@ class BrokerCommandRecord:
     def safe_dict(self) -> dict[str, Any]:
         return {
             "command_id": self.command_id,
+            # Keep the existing process.execute safe projection EXACT for all
+            # closed-schema legacy HTTP/IPC consumers. Browser work is never
+            # emitted through those routes; its new fact stays distinguishable.
+            **({"capability": self.capability.value}
+               if self.capability is BrokerCommandCapability.BROWSER_CONTROL else {}),
             "run_id": self.run_id,
             "tool_request_ref": self.tool_request_ref,
             "binding_ref": self.binding_ref,
@@ -510,7 +525,10 @@ class InMemoryLocalAgentBrokerAuthority:
         request_fingerprint: str,
         now: datetime,
         ttl_seconds: int = 300,
+        capability: BrokerCommandCapability = BrokerCommandCapability.PROCESS_EXECUTE,
     ) -> BrokerCommandRecord:
+        if not isinstance(capability, BrokerCommandCapability):
+            raise ControlPlaneContractError("invalid_broker_command", "unsupported command capability")
         now = _aware("now", now)
         binding = self._binding(binding_ref, now=now)
         command_id = _ref("command_id", command_id)
@@ -522,6 +540,7 @@ class InMemoryLocalAgentBrokerAuthority:
                 tool_request_ref=tool_request_ref,
                 request_fingerprint=request_fingerprint,
                 ttl_seconds=ttl_seconds,
+                capability=capability,
             )
         ttl = _ttl("ttl_seconds", ttl_seconds, minimum=1, maximum=MAX_COMMAND_TTL_SECONDS)
         sequence = self._last_sequence_by_binding.get(binding.binding_ref, 0) + 1
@@ -537,6 +556,7 @@ class InMemoryLocalAgentBrokerAuthority:
             issued_at=now,
             expires_at=now + timedelta(seconds=ttl),
             revision_ref=revision_ref,
+            capability=capability,
         )
         self._commands[command_id] = command
         self._last_sequence_by_binding[binding.binding_ref] = sequence
@@ -551,6 +571,7 @@ class InMemoryLocalAgentBrokerAuthority:
         tool_request_ref: str,
         request_fingerprint: str,
         ttl_seconds: int,
+        capability: BrokerCommandCapability,
     ) -> BrokerCommandRecord:
         """Return the canonical command for an exact enqueue retry; fail closed otherwise.
 
@@ -565,6 +586,7 @@ class InMemoryLocalAgentBrokerAuthority:
             _ref("tool_request_ref", tool_request_ref),
             _digest("request_fingerprint", request_fingerprint),
             _ttl("ttl_seconds", ttl_seconds, minimum=1, maximum=MAX_COMMAND_TTL_SECONDS),
+            capability,
         )
         persisted = (
             existing.binding_ref,
@@ -572,6 +594,7 @@ class InMemoryLocalAgentBrokerAuthority:
             existing.tool_request_ref,
             existing.request_fingerprint,
             int((existing.expires_at - existing.issued_at).total_seconds()),
+            existing.capability,
         )
         if retried != persisted:
             raise ControlPlaneContractError(
@@ -602,6 +625,7 @@ class InMemoryLocalAgentBrokerAuthority:
             if item.binding_ref == binding.binding_ref
             and item.credential_generation == binding.credential_generation
             and item.state is BrokerCommandState.QUEUED
+            and item.capability is BrokerCommandCapability.PROCESS_EXECUTE
             and item.sequence > after_sequence
             and item.issued_at <= now < item.expires_at
         ]
@@ -633,6 +657,8 @@ class InMemoryLocalAgentBrokerAuthority:
             raise ControlPlaneContractError("broker_command_scope_mismatch", "command does not belong to this device binding")
         if command.credential_generation != binding.credential_generation:
             raise ControlPlaneContractError("stale_broker_command_generation", "command belongs to a stale credential generation")
+        if command.capability is not BrokerCommandCapability.PROCESS_EXECUTE:
+            raise ControlPlaneContractError("broker_command_capability_mismatch", "browser.control requires separately approved work-ticket admission")
         if command.state is not BrokerCommandState.QUEUED:
             raise ControlPlaneContractError("broker_command_replay", "command has already been admitted or acknowledged")
         if now < command.issued_at or now >= command.expires_at:

@@ -8,6 +8,7 @@ from typing import Any, Protocol
 from .contracts import ControlPlaneContractError
 from .local_agent_broker import (
     BrokerBindingState,
+    BrokerCommandCapability,
     BrokerCommandRecord,
     BrokerCommandState,
     BrokerDeviceBinding,
@@ -62,8 +63,9 @@ _SESSION_KEYS = frozenset(
 _COMMAND_KEYS = frozenset(
     {
         "command_id",
+        "capability",
         "run_id",
-        "tool_request_ref",
+        "tool_request_ref" ,
         "binding_ref",
         "credential_generation",
         "sequence",
@@ -193,6 +195,7 @@ def _session_wire(value: BrokerDeviceSession) -> dict[str, Any]:
 def _command_wire(value: BrokerCommandRecord) -> dict[str, Any]:
     return {
         "command_id": value.command_id,
+        "capability": value.capability.value,
         "run_id": value.run_id,
         "tool_request_ref": value.tool_request_ref,
         "binding_ref": value.binding_ref,
@@ -308,11 +311,18 @@ class LocalAgentBrokerStateJsonCodec:
 
         commands: list[BrokerCommandRecord] = []
         for raw in _array(top["commands"], "commands"):
-            item = _closed(raw, _COMMAND_KEYS, "broker command wire")
+            # Historical v2 snapshots had no capability discriminator and
+            # exclusively contained process.execute. Recognize only that one
+            # exact legacy shape, never silently default an unknown object.
+            if type(raw) is dict and frozenset(raw) == _COMMAND_KEYS - {"capability"}:
+                item = {**raw, "capability": BrokerCommandCapability.PROCESS_EXECUTE.value}
+            else:
+                item = _closed(raw, _COMMAND_KEYS, "broker command wire")
             try:
                 state = BrokerCommandState(_text(item["state"], "command state", maximum=32))
+                capability = BrokerCommandCapability(_text(item["capability"], "command capability", maximum=32))
             except ValueError as exc:
-                raise _wire_error("invalid_local_agent_broker_state_wire", "unknown broker command state") from exc
+                raise _wire_error("invalid_local_agent_broker_state_wire", "unknown broker command state or capability") from exc
             commands.append(
                 BrokerCommandRecord(
                     command_id=_text(item["command_id"], "command_id"),
@@ -325,6 +335,7 @@ class LocalAgentBrokerStateJsonCodec:
                     issued_at=_utc(item["issued_at"], "command issued_at"),
                     expires_at=_utc(item["expires_at"], "command expires_at"),
                     state=state,
+                    capability=capability,
                     admission_ref=_optional_text(item["admission_ref"], "admission_ref"),
                     evidence_ref=_optional_text(item["evidence_ref"], "evidence_ref"),
                     admitted_session_id=_optional_text(item["admitted_session_id"], "admitted_session_id"),
