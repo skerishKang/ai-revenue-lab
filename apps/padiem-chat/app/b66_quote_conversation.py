@@ -594,13 +594,15 @@ class B66QuoteConversationInterpreter:
             raise B66QuoteConversationError("invalid_message")
         prompt = _conversation_prompt(skill)
         try:
-            kwargs = {"additional_system_context": prompt, "attachments": ()}
-            # Legacy isolated quote parser clients retain their original call
-            # shape. Production B66 requires the separate selected model ID.
-            if model_id is not None:
-                kwargs["model_id"] = model_id
+            # Legacy isolated quote parser clients keep their original
+            # completion shape. Production B66 passes the selected exact ID
+            # as a separate keyword, never extracted from customer text.
+            selected_kw = {"model_id": model_id} if model_id is not None else {}
             result = await self._client.complete(
-                [{"role": "user", "content": clean}], **kwargs
+                [{"role": "user", "content": clean}],
+                additional_system_context=prompt,
+                attachments=(),
+                **selected_kw,
             )
         except Exception as exc:
             # First-MVP resilience boundary (#3391): keep every existing
