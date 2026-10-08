@@ -64,3 +64,13 @@ secret_name = "PADIEM_ATRIA_API_KEY"
 binding = "PADIEM_EXLAB_API_KEY"
 store_id = "f0b09ca04a7b43248154c773704a5616"
 secret_name = "PADIEM_EXLAB_API_KEY"
+
+# #3554 owner-selected Google AI Studio routes. The binding name matches
+# GOOGLE_CREDENTIAL_BINDING in app/pilot/google_provider.py; the Secrets Store
+# value is owner-managed and never committed here. Registration is
+# metadata-only: without the store secret the Google routes stay present but
+# resolve no credential and fail closed (platform_secrets.resolve_secret).
+[[secrets_store_secrets]]
+binding = "PADIEM_GEMINI_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_GEMINI_API_KEY"
