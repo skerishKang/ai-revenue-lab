@@ -106,6 +106,21 @@ def _reported_changes(result: Any) -> int | None:
     return None
 
 
+def _reported_success(result: Any) -> bool | None:
+    """Whether D1 says the statement itself ran, or None when it does not say.
+
+    Only an explicit ``success: false`` counts as a failure. The flag is absent in some
+    D1Result shapes and in most doubles, and a missing answer must stay a read-back
+    classification rather than becoming a fabricated storage fault.
+    """
+
+    for key in ("success", "ok", "succeeded"):
+        value = result.get(key) if isinstance(result, Mapping) else getattr(result, key, None)
+        if isinstance(value, bool):
+            return value
+    return None
+
+
 class CloudflareD1ConnectorGrantStore:
     """Durable connector grant store backed by a trusted D1-like binding."""
 
@@ -404,12 +419,21 @@ class CloudflareD1ConnectorGrantStore:
                     now,
                 ).run()
             )
-        except ServiceContractError:
-            raise
         except Exception:
+            # Nothing raised inside the binding is trusted, not even an exception that
+            # already looks like a ServiceContractError: its code and message belong to
+            # the adapter and could carry whatever the adapter put there, so every fault
+            # is normalised to this route's own generic 503.
             raise _activation_unavailable(
                 "Calendar grant activation storage is unavailable."
             ) from None
+
+        if _reported_success(written) is False:
+            # A statement that reports failure is never a success, even when the row that
+            # is already stored carries this identity and the read-back would look correct.
+            raise _activation_unavailable(
+                "Calendar grant activation storage is unavailable."
+            )
 
         # The refusal decision lives inside the statement above, so two workspaces
         # activating at the same instant cannot both win and neither can clobber the winner.

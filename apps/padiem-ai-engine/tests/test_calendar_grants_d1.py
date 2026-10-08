@@ -478,6 +478,84 @@ def test_genuine_storage_fault_stays_unavailable_not_refused() -> None:
     assert exc_info.value.status_code == 503
 
 
+# --- the fault path belongs to this route, not to whatever the adapter raised ----
+
+
+class ForwardingFaultD1Binding(MutableFakeD1Binding):
+    """A binding that raises a ServiceContractError of its own while writing.
+
+    The adapter picks that code and message, so they may not be repeated to the caller:
+    an exception that merely looks like a safe service error is still outside this contract.
+    """
+
+    def run(self):
+        raise ServiceContractError(
+            "adapter_internal_code",
+            f"adapter detail {WS_ALPHA_BINDING} {WS_ALPHA_ACTOR}",
+            status_code=400,
+        )
+
+
+def test_binding_service_contract_fault_is_normalised_and_never_forwarded() -> None:
+    binding = ForwardingFaultD1Binding(rows=[calendar_row()])
+    with pytest.raises(ServiceContractError) as exc_info:
+        run(CloudflareD1ConnectorGrantStore(binding).activate_calendar_read_grant(
+            binding_ref=WS_BETA_BINDING, actor_ref=WS_BETA_ACTOR
+        ))
+    error = exc_info.value
+    assert error.code == "calendar_grant_activation_unavailable"
+    assert error.status_code == 503
+    projected = f"{error.code} {error} {error.safe_message}"
+    for foreign in (
+        "adapter_internal_code",
+        "adapter detail",
+        WS_ALPHA_BINDING,
+        WS_ALPHA_ACTOR,
+        WS_BETA_BINDING,
+        WS_BETA_ACTOR,
+    ):
+        assert foreign not in projected, "an adapter's own error must not reach the caller"
+    assert binding._rows[0]["binding_ref"] == BINDING_REF
+
+
+class FailedWriteD1Binding(MutableFakeD1Binding):
+    """Reports the statement failed while still claiming it changed a row."""
+
+    def run(self):
+        return {"success": False, "meta": {"changes": 1}}
+
+
+def test_failed_write_on_the_same_identity_is_never_a_success() -> None:
+    # The stored row already matches the caller, so a store that only reads the row count
+    # would call this a completed activation.
+    binding = FailedWriteD1Binding(rows=[calendar_row()])
+    with pytest.raises(ServiceContractError) as exc_info:
+        run(CloudflareD1ConnectorGrantStore(binding).activate_calendar_read_grant(
+            binding_ref=BINDING_REF, actor_ref=ACTOR_REF
+        ))
+    assert exc_info.value.code == "calendar_grant_activation_unavailable"
+    assert exc_info.value.status_code == 503
+    assert len(binding._rows) == 1
+    assert binding._rows[0]["binding_ref"] == BINDING_REF
+
+
+class FlaglessD1Binding(MutableFakeD1Binding):
+    """A result shape that carries no success flag at all."""
+
+    def run(self):
+        super().run()
+        return {"meta": {"changes": 1}}
+
+
+def test_absent_success_flag_is_not_read_as_a_failure() -> None:
+    binding = FlaglessD1Binding()
+    grant = run(CloudflareD1ConnectorGrantStore(binding).activate_calendar_read_grant(
+        binding_ref=BINDING_REF, actor_ref=ACTOR_REF
+    ))
+    assert grant.binding_ref == BINDING_REF
+    assert grant.actor_ref == ACTOR_REF
+
+
 # --- the guard is Calendar-only; unrelated connector behaviour is intact -----
 
 
