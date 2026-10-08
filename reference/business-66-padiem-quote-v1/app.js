@@ -861,6 +861,16 @@
   }
 
   function applySkillToForm(skill) {
+    // The authenticated CGI Saved Quote Skill is solely owned by the server
+    // bridge. A local skill section refresh/selection must not clear or replace
+    // it during Guided/free-form drafting. The explicit account lifecycle
+    // clearServerSkill() remains the only way to remove its authority.
+    if (skillUiState.serverSkill &&
+        skillUiState.serverSkill.id === skillUiState.activeSkillId &&
+        window.B66BrowserPdf &&
+        window.B66BrowserPdf.isCgiSkill(skillUiState.activeSkillId)) {
+      return true;
+    }
     skillUiState.serverSkill = null;
     skillUiState.serverSlotSources = {};
     if (!skill || !SkillUi) {
