@@ -5,6 +5,7 @@ on:
     paths:
       - 'apps/living-learning/**'
       - 'packages/padiem-ai-core/**'
+      - 'scripts/experiments/benchmark_padiem_search_providers.py'
       - '.github/workflows/living-learning-padiem-core-ci.yml'
   workflow_dispatch:
 
