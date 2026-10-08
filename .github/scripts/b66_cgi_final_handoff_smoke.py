@@ -42,6 +42,32 @@ CLAW_GENERAL_PATH = "/api/claw/general"
 CLAW_SYNTHETIC_PROMPT = "테스트입니다. 한 문장으로 정상 작동 중이라고 답해주세요."
 MAX_CLAW_GENERAL_POSTS = 1
 
+# #3751: interpretation errors have two independent 502 owners. Mirror the
+# exact product-owned header vocabulary; .github/tests checks it against the
+# canonical B66 route without importing app dependencies.
+B66_INTERPRET_ERROR_CODES = frozenset({
+    "quote_interpretation_failed",
+    "padiem_service_unavailable",
+})
+B66_UPSTREAM_CLASS_VOCABULARY = frozenset({
+    "upstream_timeout",
+    "upstream_busy",
+    "upstream_response_too_large",
+    "malformed_upstream",
+    "upstream_malformed_json",
+    "upstream_unexpected_shape",
+    "upstream_missing_content",
+    "upstream_non_text_content",
+    "upstream_empty_answer",
+    "upstream_unavailable",
+    "provider_auth_error",
+    "provider_route_error",
+    "provider_server_error",
+    "upstream_execution_failed",
+    "upstream_error",
+    "upstream_binding_unavailable",
+})
+
 # #3655 one-shot canary evidence seam. The request marker opts the ONE canary
 # request into the chat route's bounded evidence headers; the normal user
 # surface is unchanged. Playwright lowercases response header names.
@@ -126,6 +152,61 @@ def _bounded_evidence_headers(headers: object) -> dict[str, str]:
             continue
         extracted[name] = value
     return extracted
+
+
+def _bounded_b66_interpret_failure(
+    body_text: object, headers: object
+) -> tuple[str, str, str]:
+    """Return only two enumerated error codes and a canonical upstream class.
+
+    Deliberately neither returns nor logs response.body, message, customer
+    content, URL, IDs, raw headers, model/provider payloads or trace text.
+    Unexpected shapes, non-JSON, oversized envelopes and unrecognized header
+    values are all opaque rather than a new diagnostic vocabulary.
+    """
+    code = "UNCLASSIFIED"
+    upstream_class = "UNCLASSIFIED"
+    if isinstance(body_text, str) and len(body_text) <= 8192:
+        try:
+            data = json.loads(body_text)
+            error = data.get("error") if isinstance(data, dict) else None
+            candidate = error.get("code") if isinstance(error, dict) else None
+            if isinstance(candidate, str) and candidate in B66_INTERPRET_ERROR_CODES:
+                code = candidate
+        except (ValueError, TypeError):
+            pass
+
+    if code == "quote_interpretation_failed":
+        layer = "B66_INTERPRETER_ROUTE"
+        if hasattr(headers, "get"):
+            candidate = headers.get("x-b66-upstream-class")
+            if (
+                isinstance(candidate, str)
+                and candidate in B66_UPSTREAM_CLASS_VOCABULARY
+            ):
+                upstream_class = candidate
+    elif code == "padiem_service_unavailable":
+        layer = "PAGES_UPSTREAM_PROXY"
+    else:
+        layer = "UNCLASSIFIED"
+
+    return code, layer, upstream_class
+
+
+def _print_bounded_b66_interpret_failure(response: object) -> None:
+    """Observe existing failure response; NEVER create a new provider request."""
+    body_text = None
+    headers = getattr(response, "headers", None)
+    try:
+        content_type = headers.get("content-type", "") if hasattr(headers, "get") else ""
+        if isinstance(content_type, str) and "application/json" in content_type.lower():
+            body_text = response.text()  # type: ignore[attr-defined]
+    except Exception:
+        pass
+    code, layer, upstream_class = _bounded_b66_interpret_failure(body_text, headers)
+    print("B66_INTERPRET_ERROR_CODE=" + code, flush=True)
+    print("B66_INTERPRET_ERROR_LAYER=" + layer, flush=True)
+    print("B66_INTERPRET_UPSTREAM_CLASS=" + upstream_class, flush=True)
 
 
 def _bounded_error_class(body_text: object) -> tuple[str | None, str | None]:
@@ -487,6 +568,7 @@ def _complete_free_form(page, counters: Counters) -> None:
         _send(page, COMPLETE_TEXT)
     response = info.value
     if response.status != 200:
+        _print_bounded_b66_interpret_failure(response)
         _fail("complete_interpret_http_" + str(response.status))
 
     page.wait_for_function(
@@ -532,6 +614,7 @@ def _partial_followup(page, counters: Counters) -> None:
         _send(page, PARTIAL_TEXT)
     first = info.value
     if first.status != 200:
+        _print_bounded_b66_interpret_failure(first)
         _fail("partial_interpret_http_" + str(first.status))
 
     page.wait_for_function(
@@ -565,6 +648,7 @@ def _partial_followup(page, counters: Counters) -> None:
         _send(page, FOLLOWUP_TEXT)
     second = info.value
     if second.status != 200:
+        _print_bounded_b66_interpret_failure(second)
         _fail("followup_interpret_http_" + str(second.status))
 
     page.wait_for_function(
