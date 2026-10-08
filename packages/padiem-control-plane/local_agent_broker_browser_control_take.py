@@ -228,34 +228,44 @@ class CloudflareDurableObjectBrowserControlTakeStore:
             raise TypeError("canonical browser.control take correlation required")
         moment = iso(utc(now, "browser_control_take_now"))
 
-        def operation() -> dict[str, Any]:
-            found = rows(self._sql.exec(
-                "SELECT session_ref,binding_ref,request_id,run_ref,workspace_ref,"
-                "owner_ref,device_ref,request_fingerprint,admission_ref,revision_ref,"
-                "expires_at,material_text,taken_at "
-                "FROM local_agent_browser_control_command_take WHERE command_ref = ?",
-                scope.command_ref,
-            ))
-            if len(found) != 1:
-                raise ValueError("browser.control approved command unavailable")
-            record = found[0]
-            if row_value(record, "taken_at") is not None:
-                raise ValueError("browser.control approved command already taken")
-            if any(row_value(record, key) != getattr(scope, key) for key in _TAKE_COLUMNS if key != "command_ref"):
-                raise ValueError("browser.control approved command correlation mismatch")
-            if moment >= iso(parse_iso(row_value(record, "expires_at"), "command_expiry")):
-                raise ValueError("browser.control approved command expired")
-            material = self._checked_material(row_value(record, "material_text"), scope)
-            updated = rows_written(self._sql.exec(
-                "UPDATE local_agent_browser_control_command_take SET taken_at = ? "
-                "WHERE command_ref = ? AND taken_at IS NULL AND expires_at = ?",
-                moment, scope.command_ref, row_value(record, "expires_at"),
-            ))
-            if updated != 1:
-                raise ValueError("browser.control command already consumed or expired")
-            return material
+        return self._storage.transactionSync(
+            lambda: self._take_in_existing_transaction(scope, moment=moment)
+        )
 
-        return self._storage.transactionSync(operation)
+    def _take_in_existing_transaction(
+        self, scope: BrowserControlCommandTakeCorrelation, *, moment: str
+    ) -> dict[str, Any]:
+        """Only for a Broker-owned outer transaction that already rechecked
+        live device/session/command/P01 provenance. Never an RPC surface.
+        """
+        if not isinstance(scope, BrowserControlCommandTakeCorrelation):
+            raise TypeError("canonical browser.control take correlation required")
+        parsed_moment = iso(parse_iso(moment, "browser_control_take_now"))
+        found = rows(self._sql.exec(
+            "SELECT session_ref,binding_ref,request_id,run_ref,workspace_ref,"
+            "owner_ref,device_ref,request_fingerprint,admission_ref,revision_ref,"
+            "expires_at,material_text,taken_at "
+            "FROM local_agent_browser_control_command_take WHERE command_ref = ?",
+            scope.command_ref,
+        ))
+        if len(found) != 1:
+            raise ValueError("browser.control approved command unavailable")
+        record = found[0]
+        if row_value(record, "taken_at") is not None:
+            raise ValueError("browser.control approved command already taken")
+        if any(row_value(record, key) != getattr(scope, key) for key in _TAKE_COLUMNS if key != "command_ref"):
+            raise ValueError("browser.control approved command correlation mismatch")
+        if parsed_moment >= iso(parse_iso(row_value(record, "expires_at"), "command_expiry")):
+            raise ValueError("browser.control approved command expired")
+        material = self._checked_material(row_value(record, "material_text"), scope)
+        updated = rows_written(self._sql.exec(
+            "UPDATE local_agent_browser_control_command_take SET taken_at = ? "
+            "WHERE command_ref = ? AND taken_at IS NULL AND expires_at = ?",
+            parsed_moment, scope.command_ref, row_value(record, "expires_at"),
+        ))
+        if updated != 1:
+            raise ValueError("browser.control command already consumed or expired")
+        return material
 
 
 # No registration API, Service Binding, HTTP endpoint, resident command
