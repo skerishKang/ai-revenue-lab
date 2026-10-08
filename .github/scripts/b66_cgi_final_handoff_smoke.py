@@ -302,14 +302,29 @@ def _pdf_download_probe(page, counters: Counters) -> None:
                 loaded: !!im?.complete,
                 width: im?.naturalWidth === 1190,
                 height: im?.naturalHeight === 1682,
-                shown: !!preview && preview.hidden === false
+                shown: !!preview && preview.hidden === false,
+                paper: !!document.getElementById('quotePaper'),
+                cgiHost: !!document.getElementById('cgiV2Content'),
+                cgiLayout: document.getElementById('quotePaper')?.dataset.layoutVariant === 'cgi-v2',
+                skillSelect: !!document.getElementById('padiemSavedSkillSelect')?.value,
+                ownerSkill: window.B66BrowserPdf?.isCgiSkill?.(
+                    document.getElementById('padiemSavedSkillSelect')?.value) === true,
+                serverMatch: window.B66QuoteSkillBridge?.serverSkillId?.() ===
+                    document.getElementById('padiemSavedSkillSelect')?.value,
+                activeMatch: window.B66QuoteSkillBridge?.activeSkillId?.() ===
+                    document.getElementById('padiemSavedSkillSelect')?.value,
+                scriptLoaded: !!window.B66BrowserPdf
             };
         }""")
         if not isinstance(flags, dict):
             raise SmokeFailure("cgi_preview_image_unavailable") from exc
         status = "_".join(
             name + str(int(flags.get(name) is True))
-            for name in ("element", "src", "loaded", "width", "height", "shown")
+            for name in (
+                "element", "src", "loaded", "width", "height", "shown",
+                "paper", "cgiHost", "cgiLayout", "skillSelect", "ownerSkill",
+                "serverMatch", "activeMatch", "scriptLoaded"
+            )
         )
         raise SmokeFailure("cgi_preview_image_" + status) from exc
     print("SMOKE_STAGE=PDF_PREVIEW_IMAGE_READY", flush=True)
