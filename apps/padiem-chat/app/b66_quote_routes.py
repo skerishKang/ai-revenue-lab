@@ -310,15 +310,15 @@ async def b66_saved_skill_detail(request: Request) -> JSONResponse:
 async def b66_quote_models(request: Request) -> JSONResponse:
     """Authenticated, no-store registered model choices; never chooses one."""
     if _owner(request) is None:
-        return _error(401, "unauthorized", "???? ?????.")
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
     resolver = getattr(request.app.state, "b66_quote_model_resolver", None)
     list_fn = getattr(resolver, "list_selectable_models", None)
     if not callable(list_fn):
-        return _error(503, "quote_model_unavailable", "AI ?? ??? ??? ? ????.")
+        return _error(503, "quote_model_unavailable", "AI 모델 목록을 확인할 수 없습니다.")
     try:
         models = await list_fn()
     except Exception:
-        return _error(503, "quote_model_unavailable", "AI ?? ??? ??? ? ????.")
+        return _error(503, "quote_model_unavailable", "AI 모델 목록을 확인할 수 없습니다.")
     # An optional OWNER-configured default may prefill the UI. It never
     # silently selects a backend route and must be among currently permitted,
     # credential-ready exact IDs. No default is configured by this change.
@@ -344,9 +344,9 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     message = data.get("message")
     model_id = data.get("model_id")
     if not isinstance(model_id, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}", model_id):
-        return _error(400, "model_selection_required", "??? AI ??? ??? ???.")
+        return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
     if model_id in {"b14/auto"} or model_id.startswith("padiem-profile/"):
-        return _error(400, "model_selection_required", "??? AI ??? ??? ???.")
+        return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
     if not isinstance(saved_skill_id, str) or not saved_skill_id:
         return _error(400, "invalid_saved_skill_id", "내 견적서 ID가 필요합니다.")
     if (
