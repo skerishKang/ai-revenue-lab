@@ -719,6 +719,7 @@ class LocalAgentBrokerDurableRuntime:
             if result.get("ok") is True:
                 command_id = result["command"]["command_id"]
                 self.material_store.purge_command(command_id)
+                self.browser_control_take_store.purge_command(command_id)
                 self.browser_engine_join_store.purge_command(command_id)
             return result
         return self.transaction(operation)
@@ -735,6 +736,7 @@ class LocalAgentBrokerDurableRuntime:
             if result.get("ok") is True:
                 command_id = result["command"]["command_id"]
                 self.material_store.purge_command(command_id)
+                self.browser_control_take_store.purge_command(command_id)
                 self.browser_engine_join_store.purge_command(command_id)
             return result
         return self.transaction(operation)

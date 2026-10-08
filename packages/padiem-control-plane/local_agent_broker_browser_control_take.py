@@ -239,6 +239,18 @@ class CloudflareDurableObjectBrowserControlTakeStore:
         if written != 1:
             raise ValueError("browser.control approved command was not persisted")
 
+    def purge_command(self, command_ref: str) -> int:
+        """Purge terminal browser material/tombstone inside Broker DO txn.
+
+        Only a canonical terminal Broker lifecycle may invoke this method.
+        Used-command-id ledger still prohibits old command id reissuance.
+        """
+        command = safe_ref(command_ref, "command_ref")
+        return rows_written(self._sql.exec(
+            "DELETE FROM local_agent_browser_control_command_take WHERE command_ref=?",
+            command,
+        ))
+
     def purge_binding(self, binding_ref: str) -> int:
         """Destroy pending and taken command material on canonical revoke/rotate.
 
@@ -344,10 +356,16 @@ class CloudflareDurableObjectBrowserControlTakeStore:
         """Broker-owned atomic single-use CAS, after live P01 revalidation."""
         material, expiry = self._inspect_approved_material(scope, moment=moment)
         parsed_moment = iso(parse_iso(moment, "browser_control_take_now"))
+        # The action (especially browser.type text) must not remain at rest
+        # after an authorized one-shot take. Preserve a durable non-replayable
+        # tombstone, but scrub the raw material IN THE SAME atomic CAS.
+        # Schema intentionally requires a nonempty material_text, so use a
+        # closed, non-executable marker and reject it on every future take.
         updated = rows_written(self._sql.exec(
-            "UPDATE local_agent_browser_control_command_take SET taken_at = ? "
+            "UPDATE local_agent_browser_control_command_take "
+            "SET taken_at = ?, material_text = ? "
             "WHERE command_ref = ? AND taken_at IS NULL AND expires_at = ?",
-            parsed_moment, scope.command_ref, expiry,
+            parsed_moment, '{"consumed":true}', scope.command_ref, expiry,
         ))
         if updated != 1:
             raise ValueError("browser.control command already consumed or expired")

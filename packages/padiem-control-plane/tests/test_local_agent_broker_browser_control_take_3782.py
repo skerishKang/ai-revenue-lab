@@ -398,3 +398,74 @@ def test_action_parameter_bounds_refuse_before_atomic_take(verb, changes):
     with pytest.raises(ValueError):
         ledger.take(scope, now=NOW)
     assert taken_count(storage) == 0
+
+def test_one_shot_type_scrubs_sensitive_text_in_same_cas_and_keeps_tombstone():
+    """An approved browser.type action must not retain the input text after take."""
+    secret = "private-form-input-3782-should-not-stay-at-rest"
+    action = payload()
+    action["context"]["allowedActionClasses"] = ["type"]
+    action["action"] = {
+        "action": "type",
+        "browserSessionRef": action["context"]["browserSessionRef"],
+        "originRef": action["context"]["originScope"],
+        "elementRef": "el-0001",
+        "text": secret,
+    }
+    storage, ledger, scope = fixture(action=action)
+    before = storage.connection.execute(
+        "SELECT material_text,taken_at FROM local_agent_browser_control_command_take "
+        "WHERE command_ref=?", (scope.command_ref,),
+    ).fetchone()
+    assert secret in before[0] and before[1] is None
+    assert ledger.take(scope, now=NOW) == action
+    after = storage.connection.execute(
+        "SELECT material_text,taken_at FROM local_agent_browser_control_command_take "
+        "WHERE command_ref=?", (scope.command_ref,),
+    ).fetchone()
+    assert after[0] == '{"consumed":true}'
+    assert secret not in after[0] and after[1] is not None
+    assert taken_count(storage) == 1
+    restarted = CloudflareDurableObjectBrowserControlTakeStore(storage)
+    with pytest.raises(ValueError, match="already taken"):
+        restarted.take(scope, now=NOW + timedelta(seconds=1))
+    assert storage.connection.execute(
+        "SELECT material_text FROM local_agent_browser_control_command_take"
+    ).fetchone()[0] == '{"consumed":true}'
+
+
+def test_rejected_take_never_scrubs_untaken_command_or_changes_one_shot_state():
+    secret = "private-input-denied-3782"
+    action = payload()
+    action["context"]["allowedActionClasses"] = ["type"]
+    action["action"] = {
+        "action": "type",
+        "browserSessionRef": action["context"]["browserSessionRef"],
+        "originRef": action["context"]["originScope"],
+        "elementRef": "el-0001",
+        "text": secret,
+    }
+    storage, ledger, scope = fixture(action=action)
+    with pytest.raises(ValueError):
+        ledger.take(replace(scope, admission_ref="forged.admission"), now=NOW)
+    before = storage.connection.execute(
+        "SELECT material_text,taken_at FROM local_agent_browser_control_command_take"
+    ).fetchone()
+    assert secret in before[0] and before[1] is None
+    assert ledger.take(scope, now=NOW) == action
+    assert secret not in storage.connection.execute(
+        "SELECT material_text FROM local_agent_browser_control_command_take"
+    ).fetchone()[0]
+
+
+def test_terminal_purge_removes_browser_take_tombstone_only_for_exact_command():
+    storage, ledger, scope = fixture()
+    assert ledger.take(scope, now=NOW) == payload(scope)
+    assert ledger.purge_command(scope.command_ref) == 1
+    assert ledger.purge_command(scope.command_ref) == 0
+    assert taken_count(storage) == 0
+    for invalid in ("", "../traversal", "x" * 257):
+        with pytest.raises(ValueError):
+            ledger.purge_command(invalid)
+    restarted = CloudflareDurableObjectBrowserControlTakeStore(storage)
+    with pytest.raises(ValueError, match="unavailable"):
+        restarted.take(scope, now=NOW + timedelta(seconds=1))

@@ -346,3 +346,19 @@ def test_canonical_terminal_ack_cleans_seeded_original_join_in_same_durable_obje
     assert restarted._storage.connection.execute(
         "SELECT count(*) FROM local_agent_browser_engine_original_join"
     ).fetchone()[0] == 0
+
+def test_terminal_lifecycle_also_purges_browser_action_material():
+    """Both terminal transitions purge the browser take and original association."""
+    from pathlib import Path
+
+    source = (
+        Path(__file__).resolve().parents[1] / "local_agent_broker_durable_runtime.py"
+    ).read_text(encoding="utf-8")
+    for name in ("acknowledge", "reconcile_expired_command"):
+        branch = source.split(f"    def {name}(self, payload: dict) -> dict:", 1)[1]
+        branch = branch.split("        return self.transaction(operation)", 1)[0]
+        assert "self.browser_control_take_store.purge_command(command_id)" in branch
+        assert "self.browser_engine_join_store.purge_command(command_id)" in branch
+        assert branch.index("self.browser_control_take_store.purge_command(command_id)") < branch.index(
+            "self.browser_engine_join_store.purge_command(command_id)"
+        )
