@@ -46,7 +46,10 @@ from app.attachment_admission_service import (
     MAX_ADMISSION_REQUEST_BODY_BYTES,
     AttachmentAdmissionEngineService,
 )
-from app.auth_session_scope_authority import AuthSessionScopeAuthority
+from app.browser_control_owner_ticket_issue_service import (
+    BROWSER_P01_TICKET_ISSUE_PATH,
+    MAX_TICKET_ISSUE_BODY_BYTES,
+)
 from app.cloudflare_request_body import (
     RequestBodyReadError,
     RequestBodyTooLarge,
@@ -1118,6 +1121,8 @@ class Default(legacy_worker.Default):
             return await self._fetch_document_admission(request, path)
         if path in {TOOL_EXECUTE_PATH, TOOL_RESUME_PATH, TOOL_CANCEL_PATH}:
             return await self._fetch_tool(request, path)
+        if path == BROWSER_P01_TICKET_ISSUE_PATH:
+            return await self._fetch_browser_p01_ticket(request, path)
         return await super().fetch(request)
 
     def _fetch_authority_diagnostic(self, request: Any) -> Any:
@@ -1442,6 +1447,40 @@ class Default(legacy_worker.Default):
         if isinstance(prepared, ServiceResponse):
             return legacy_worker._json_response(prepared)
         return legacy_worker._ndjson_response(services.multimodal_streaming, prepared)
+
+    async def _fetch_browser_p01_ticket(self, request: Any, path: str) -> Any:
+        """Only the canonical Engine authenticated app caller may issue.
+
+        This path has no handler in deployed composition until the separate
+        owner D1 and current first-party USER session are configured. Never
+        authenticate with the generic process.execute #3140 P01 fixture.
+        """
+        method = str(getattr(request, "method", ""))
+        headers = getattr(request, "headers", None)
+        content_type = headers.get("content-type") if headers is not None else None
+        body, body_error = await _read_bounded_post_body(
+            request,
+            max_bytes=MAX_TICKET_ISSUE_BODY_BYTES,
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env, headers, body,
+        )
+        if auth_error is not None:
+            return auth_error
+        services = await self.engine_services_factory(self.env)
+        if services.browser_p01_ticket_issue is None:
+            return legacy_worker._error_response(
+                "browser_ticket_issuer_unavailable",
+                "The independent human P01 ticket issuer is not provisioned.",
+                503,
+            )
+        result = await services.browser_p01_ticket_issue.handle(
+            method=method, path=path, content_type=content_type, body=body,
+        )
+        return legacy_worker._json_response(result)
 
     async def _fetch_tool(self, request: Any, path: str) -> Any:
         """E7 tool execution/continuation route: source-wired, fail-closed.

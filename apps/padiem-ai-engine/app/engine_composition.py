@@ -14,6 +14,9 @@ from dataclasses import dataclass
 from app.agent_skill_service import AgentSkillEngineService
 from app.attachment_admission_service import AttachmentAdmissionEngineService
 from app.auth_session_scope_authority import AuthSessionScopeAuthority
+from app.browser_control_owner_ticket_issue_service import (
+    BrowserControlOwnerTicketIssueEngineService,
+)
 from app.document_admission_service import DocumentAdmissionEngineService
 from app.document_context_service import DocumentContextEngineService
 from app.idempotency_replay_service import IdempotencyReplayEngineService
@@ -49,6 +52,9 @@ class EngineServices:
     multimodal_streaming: MultimodalStreamingEngineService | None = None
     documents: DocumentContextEngineService | None = None
     tool_execution: ToolExecutionEngineService | None = None
+    # #3782 private signed-caller browser ticket issuance; absent until the
+    # independent owner D1 and genuine canonical USER session are provisioned.
+    browser_p01_ticket_issue: BrowserControlOwnerTicketIssueEngineService | None = None
     # #1964 source slice: replay stays fail-closed until the trusted durable
     # idempotency adapter is explicitly composed.
     idempotency_replay: IdempotencyReplayEngineService | None = None
@@ -85,6 +91,12 @@ class EngineServices:
         ):
             raise ValueError(
                 "engine service 'documents' must be DocumentContextEngineService or None"
+            )
+        if self.browser_p01_ticket_issue is not None and not isinstance(
+            self.browser_p01_ticket_issue, BrowserControlOwnerTicketIssueEngineService
+        ):
+            raise ValueError(
+                "engine service 'browser_p01_ticket_issue' must be canonical or None"
             )
         if self.tool_execution is not None and not isinstance(
             self.tool_execution, ToolExecutionEngineService
