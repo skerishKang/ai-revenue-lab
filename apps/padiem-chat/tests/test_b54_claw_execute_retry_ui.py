@@ -127,11 +127,14 @@ def test_no_automatic_or_timer_driven_execution() -> None:
     # No hidden POST path: no XHR stream and no background flush of the form.
     for token in ("XMLHttpRequest", "sendBeacon", "keepalive", "location.reload", "localStorage", "sessionStorage"):
         assert token not in app
-    # A cooldown, and an uncertain dispatch of the same content, both strictly
-    # gate the single execute entry point.
+    # A cooldown, and an unresolved dispatch of the request currently composed,
+    # both strictly gate the single execute entry point.
     assert "if (clawRetryRemaining() > 0) return; // explicit retry only after the pre-dispatch cooldown" in app
-    assert "if (clawExecuteUncertain) return; // #3382: no same-content re-send after an uncertain outcome" in app
-    assert "const blocked = busy || clawRetryRemaining() > 0 || clawExecuteUncertain;" in app
+    assert "if (clawCurrentDispatchIsUncertain()) return; // #3382: no re-send of an unresolved request" in app
+    assert "const blocked = busy || clawRetryRemaining() > 0 || clawCurrentDispatchIsUncertain();" in app
+    # Identity-based, never a released-once boolean: one edit must not clear it.
+    assert "clawExecuteUncertain" not in app
+    assert "clawUncertainKeys.add(clawLastDispatchKey)" in app
 
 
 def test_uncertain_latch_keys_on_wire_content_not_unused_form_fields() -> None:
@@ -743,9 +746,17 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   if (execPosts().length !== afterNetwork) fail("NETWORK_FAILURE_REPLAYED");
 
   // 16) #3382: after an uncertain outcome the SAME content must not be re-sent.
-  //     Case 15 left the form latched on "네트워크 오류 확인"; forced clicks on
-  //     both execute entry points must produce zero additional POSTs.
+  //     Case 15 left the form unresolved on its own body; forced clicks on both
+  //     execute entry points must produce zero additional POSTs. The whole wire
+  //     body is captured, because identity is the request, not one field.
+  const applyBody = (b) => {
+    byId.messageInput.value = b.content;
+    byId.clawChannel.value = b.channel;
+    byId.clawAction.value = b.action;
+    byId.clawSender.value = b.sender_hint || "";
+  };
   const afterLatch = execPosts().length;
+  const uncertainA = Object.assign({}, lastExec().body);
   if (byId.clawExecuteButton.disabled !== true) fail("UNCERTAIN_LATCH_LEFT_EXECUTE_ENABLED");
   byId.clawExecuteButton.click();
   byId.clawRetryButton.click();
@@ -758,7 +769,7 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
     byId.clawRetryHint.hidden === false;
   if (!checks.SAME_CONTENT_RESEND_BLOCKED_AFTER_UNCERTAIN_OUTCOME) fail("SAME_CONTENT_RESEND_BLOCKED_AFTER_UNCERTAIN_OUTCOME");
 
-  // 17) The latch gates the manual-execute lane only. The draft/preview submit
+  // 17) The block gates the manual-execute lane only. The draft/preview submit
   //     stays available on the unchanged form, so ordinary work is not blocked.
   const previewBefore = requests.filter((r) => r.url === "/api/claw/manual-intake/preview").length;
   byId.clawManualForm.requestSubmit();
@@ -769,17 +780,31 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
     byId.clawExecuteButton.disabled === true;
   if (!checks.PREVIEW_STAYS_AVAILABLE_WHILE_EXECUTE_IS_LATCHED) fail("PREVIEW_STAYS_AVAILABLE_WHILE_EXECUTE_IS_LATCHED");
 
-  // 18) A definite outcome releases the latch: new work, one POST, buttons live.
-  byId.messageInput.value = "성공하면 해제된다";
+  // 18) Directive 2: a DIFFERENT request is new work and runs normally.
+  byId.messageInput.value = "새 작업 B";
   executeCall = () => jsonResponse(200, { ok: true, result: { title: "quote", result_text: "ran", artifact: null } });
   expectedPosts += 1;
   byId.clawExecuteButton.click();
   await tick(80);
-  checks.LATCH_RELEASES_ON_DEFINITE_SUCCESS =
-    execPosts().length === afterLatch + 1 &&
+  const afterB = execPosts().length;
+  checks.NEW_WORK_RUNS_AFTER_UNCERTAIN_OUTCOME =
+    afterB === afterLatch + 1 &&
+    lastExec().body.content === "새 작업 B" &&
     byId.clawExecuteButton.disabled === false &&
     byId.clawRetryHint.hidden === true;
-  if (!checks.LATCH_RELEASES_ON_DEFINITE_SUCCESS) fail("LATCH_RELEASES_ON_DEFINITE_SUCCESS");
+  if (!checks.NEW_WORK_RUNS_AFTER_UNCERTAIN_OUTCOME) fail("NEW_WORK_RUNS_AFTER_UNCERTAIN_OUTCOME: " + JSON.stringify(lastExec().body));
+
+  // 19) Directive 1: editing to B then RESTORING A re-blocks A. B's success is a
+  //     definite outcome for B only; A's dispatch is still unresolved, so a latch
+  //     that released on the first edit would let the identical POST through here.
+  applyBody(uncertainA);
+  byId.clawExecuteButton.click();
+  byId.clawRetryButton.click();
+  await tick(120);
+  checks.RESTORING_UNCERTAIN_CONTENT_REBLOCKS_IT =
+    execPosts().length === afterB &&
+    byId.clawExecuteButton.disabled === true;
+  if (!checks.RESTORING_UNCERTAIN_CONTENT_REBLOCKS_IT) fail("RESTORING_UNCERTAIN_CONTENT_REBLOCKS_IT");
 
   // 19) CTO review of #3382: the model ID field is not part of the execute
   //     request, so rotating it alone must NOT release the latch, while a change
@@ -813,6 +838,61 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   if (!checks.WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE) {
     fail("WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE: " + JSON.stringify(lastExec().body));
   }
+
+  // 20) Directive 3: when TWO requests both fail ambiguously, both stay blocked
+  //     and a freshly composed third request still runs.
+  executeCall = () => jsonResponse(502, { ok: false, error: { code: "engine_execution_failed" } });
+  byId.clawChannel.value = "email";
+  byId.messageInput.value = "둘 다 502 P";
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  const uncertainP = Object.assign({}, lastExec().body);
+  byId.messageInput.value = "둘 다 502 Q";
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  const uncertainQ = Object.assign({}, lastExec().body);
+  const afterPQ = execPosts().length;
+  applyBody(uncertainP);
+  byId.clawExecuteButton.click();
+  await tick(60);
+  applyBody(uncertainQ);
+  byId.clawExecuteButton.click();
+  await tick(60);
+  checks.TWO_UNCERTAIN_REQUESTS_BOTH_STAY_BLOCKED =
+    execPosts().length === afterPQ && byId.clawExecuteButton.disabled === true;
+  if (!checks.TWO_UNCERTAIN_REQUESTS_BOTH_STAY_BLOCKED) fail("TWO_UNCERTAIN_REQUESTS_BOTH_STAY_BLOCKED");
+
+  // 21) Directive 4: uncertainty belongs to the request that failed, not to the
+  //     form. Composing B while A is still in flight must let B run after A dies,
+  //     and A must stay blocked afterwards.
+  let settlePending = null;
+  executeCall = () => new Promise((res) => { settlePending = res; });
+  byId.messageInput.value = "in flight A";
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(40);
+  const inFlightA = Object.assign({}, lastExec().body);
+  byId.messageInput.value = "in flight B";
+  settlePending(jsonResponse(502, { ok: false, error: { code: "engine_execution_failed" } }));
+  await tick(80);
+  checks.IN_FLIGHT_FAILURE_LEAVES_OTHER_COMPOSITION_USABLE =
+    byId.clawExecuteButton.disabled === false;
+  if (!checks.IN_FLIGHT_FAILURE_LEAVES_OTHER_COMPOSITION_USABLE) fail("IN_FLIGHT_FAILURE_LEAVES_OTHER_COMPOSITION_USABLE");
+  executeCall = () => jsonResponse(200, { ok: true, result: { title: "quote", result_text: "ran", artifact: null } });
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  const afterInFlight = execPosts().length;
+  applyBody(inFlightA);
+  byId.clawExecuteButton.click();
+  await tick(60);
+  checks.IN_FLIGHT_B_RUNS_WHILE_A_STAYS_BLOCKED =
+    execPosts().length === afterInFlight &&
+    lastExec().body.content === "in flight B" &&
+    byId.clawExecuteButton.disabled === true;
+  if (!checks.IN_FLIGHT_B_RUNS_WHILE_A_STAYS_BLOCKED) fail("IN_FLIGHT_B_RUNS_WHILE_A_STAYS_BLOCKED");
 
   // No dispatched execute POST exists that no user action asked for.
   checks.EXECUTE_POST_COUNT_MATCHES_USER_ACTIONS = execPosts().length === expectedPosts;
@@ -879,9 +959,13 @@ def test_behavioral_execute_recovery_journey() -> None:
         "EDITING_COMPOSING_RELEASES_UNCERTAIN_LATCH",
         "SAME_CONTENT_RESEND_BLOCKED_AFTER_UNCERTAIN_OUTCOME",
         "PREVIEW_STAYS_AVAILABLE_WHILE_EXECUTE_IS_LATCHED",
-        "LATCH_RELEASES_ON_DEFINITE_SUCCESS",
+        "NEW_WORK_RUNS_AFTER_UNCERTAIN_OUTCOME",
+        "RESTORING_UNCERTAIN_CONTENT_REBLOCKS_IT",
         "MODEL_ID_ONLY_CHANGE_KEEPS_LATCH",
         "WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE",
+        "TWO_UNCERTAIN_REQUESTS_BOTH_STAY_BLOCKED",
+        "IN_FLIGHT_FAILURE_LEAVES_OTHER_COMPOSITION_USABLE",
+        "IN_FLIGHT_B_RUNS_WHILE_A_STAYS_BLOCKED",
     ):
         assert checks.get(name) is True, name
 

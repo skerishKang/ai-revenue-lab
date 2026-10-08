@@ -1643,9 +1643,11 @@
   let clawRetryTimer = null;
   // #3382: an ambiguous manual-execute failure may already have reached Engine,
   // and a P01 request carries no idempotency key, so the surface cannot tell
-  // "never ran" from "already ran". Same-content re-send stays blocked until the
-  // user composes different work; the draft/preview and chat lanes are not gated.
-  let clawExecuteUncertain = false;
+  // "never ran" from "already ran". Uncertainty is tracked PER REQUEST IDENTITY,
+  // not as one flag: composing different work unblocks only that new request, and
+  // restoring an uncertain one re-blocks it. The draft/preview and chat lanes are
+  // never gated by this set.
+  const clawUncertainKeys = new Set();
   let clawLastDispatchKey = "";
   // In-flight elapsed wait state (#2763). Owned by the wait block below.
   let clawWaitStartedAt = 0;
@@ -1788,7 +1790,7 @@
       // cannot be ruled out, both block the one manual-execute entry point. The
       // draft/preview button and the chat lane stay available: they are separate
       // requests with their own server-side bounds.
-      const blocked = busy || clawRetryRemaining() > 0 || clawExecuteUncertain;
+      const blocked = busy || clawRetryRemaining() > 0 || clawCurrentDispatchIsUncertain();
       clawExecuteButton.disabled = blocked;
       clawExecuteButton.setAttribute("aria-busy", busyVal);
       clawExecuteButton.setAttribute("aria-disabled", String(blocked));
@@ -1852,12 +1854,15 @@
     ]);
   }
 
-  // Only content the execute request actually carries can release the latch: a
-  // different draft, channel, action, sender, tier or conversation.
+  // Availability is derived from the request the form would send RIGHT NOW, so it
+  // is re-evaluated on every edit rather than released once by an edit event.
+  function clawCurrentDispatchIsUncertain() {
+    return clawUncertainKeys.size > 0
+      && clawUncertainKeys.has(clawExecuteWireKey(clawVisibleExecutePayload()));
+  }
+
   function noteClawContentEdited() {
-    if (!clawExecuteUncertain) return;
-    if (clawExecuteWireKey(clawVisibleExecutePayload()) === clawLastDispatchKey) return;
-    clawExecuteUncertain = false;
+    if (clawUncertainKeys.size === 0) return;
     setClawButtonsBusy(clawInFlight);
   }
 
@@ -1956,10 +1961,10 @@
     if (!clawRetryHint) return;
     stopClawRetryTimer();
     clawRetrySeconds = 0;
-    // The request may already be running, so the same content must not be
-    // re-sent from this surface. The finally block releases the busy flag, so
-    // without this latch the execute button would reopen on an uncertain run.
-    clawExecuteUncertain = true;
+    // The request may already be running, so its exact content is recorded as
+    // uncertain. The finally block releases the busy flag, so without this the
+    // execute button would reopen on an unresolved run.
+    if (clawLastDispatchKey) clawUncertainKeys.add(clawLastDispatchKey);
     if (clawRetryBox) clawRetryBox.hidden = true;
     if (clawRetryCopy) clawRetryCopy.textContent = "";
     if (clawRetryButton) {
@@ -3655,7 +3660,7 @@
   async function runClawExecution() {
     if (clawInFlight) return;
     if (clawRetryRemaining() > 0) return; // explicit retry only after the pre-dispatch cooldown
-    if (clawExecuteUncertain) return; // #3382: no same-content re-send after an uncertain outcome
+    if (clawCurrentDispatchIsUncertain()) return; // #3382: no re-send of an unresolved request
     const executePayload = clawVisibleExecutePayload();
     const body = executePayload.content;
     if (!body) {
@@ -3701,9 +3706,6 @@
       });
       const data = await response.json().catch(() => null);
       if (data && data.ok && data.result) {
-        // A definite outcome resolves the previous uncertainty: this surface now
-        // knows the run reached its terminal state instead of guessing at it.
-        clawExecuteUncertain = false;
         const result = data.result;
         // Server-echoed canonical handle only (#2916): reuse it as the single
         // session authority; never build a second id here.
