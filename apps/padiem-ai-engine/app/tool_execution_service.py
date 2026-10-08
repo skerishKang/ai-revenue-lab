@@ -52,6 +52,9 @@ from padiem_ai_core.tool_runtime import (
     ToolRuntimeError,
 )
 
+from app.browser_control_approval_validation import (
+    validate_browser_control_approval_arguments,
+)
 from app.browser_control_p01_receipt import CloudflareD1BrowserControlP01ReceiptStore
 from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
 from app.orchestration_service import (
@@ -432,6 +435,14 @@ class ToolExecutionEngineService:
         authority = binding.resolve_authority(wire.agent_id)
         entry = binding.resolve_tool(wire.tool_id)
         effective = binding.effective_resources(entry)
+        if entry.runtime_tool_id == "browser.control":
+            try:
+                validate_browser_control_approval_arguments(wire.arguments)
+            except ValueError as exc:
+                raise EngineToolProjectionError(
+                    "invalid_tool_arguments",
+                    "Browser control approval scope is invalid.",
+                ) from exc
         if json_size(wire.arguments) > effective.argument_bytes:
             raise EngineToolProjectionError(
                 "tool_arguments_too_large",
