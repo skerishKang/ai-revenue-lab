@@ -202,9 +202,12 @@ def test_actual_quote_core_budget_reaches_b14_gateway_with_one_provider_timeout(
     Restoring the missing max_retries defect makes this same gateway call three
     times. The differential control proves max_attempts=1 alone is insufficient.
     """
+    # Test actual product/Core/gateway retry budgets with a synthetic exact ID,
+    # NOT the owner-excluded historical NVIDIA catalog route.
+    synthetic_model = "test-fixture/b66-quote-budget"
     binding = Binding()
     asyncio.run(B14Client(settings(), service_transport=binding).complete_registered_quote_model(
-        MESSAGES, model=MODEL,
+        MESSAGES, model=synthetic_model,
     ))
     payload = binding.calls[0][1]
     assert payload["business14"]["max_retries"] == 0
@@ -217,6 +220,10 @@ import asyncio, json, os, sys
 os.environ["B14_PROVIDER_MODE"] = "live"  # Readiness metadata only.
 from app.pilot import gateway
 from app.pilot.errors import UpstreamTimeout
+from dataclasses import replace
+import app.pilot.catalog as cat
+from app.pilot.b14_runtime_config import runtime_config
+runtime_config.provider_mode = "live"
 calls = []
 async def provider_double(**kwargs):
     calls.append(kwargs["model_id"])
@@ -227,6 +234,14 @@ async def zero_sleep(seconds):
 gateway.plat.call_platform_chat_completions = provider_double
 gateway.asyncio.sleep = zero_sleep
 payload = json.loads(sys.stdin.read())
+# A synthetic route is registered ONLY inside this local subprocess.
+# It cannot turn a real excluded route into a positive customer fixture.
+historical = cat.CATALOG_BY_ID["kilo/nvidia-nemotron-3-ultra-550b-a55b-free"]
+cat.CATALOG_BY_ID[payload["model"]] = replace(
+    historical, model_id=payload["model"],
+    upstream_model="test-fixture/b66-quote-response",
+    display_name="Synthetic quote budget transport route"
+)
 async def run():
     results = []
     for restore_defect in (False, True):

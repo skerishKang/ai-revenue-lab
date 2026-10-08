@@ -3,7 +3,8 @@
 The lane stayed registered after #2096 only because fixed_chain_v1 pinned it;
 #2097 refreshed the chain and unregistered the lane. These tests pin the
 fail-closed retirement behavior for both retired Kilo free lanes. The
-keyless-platform boundary test moved to the live Laguna free lane.
+keyless-platform boundary is exercised using a synthetic route, never
+with the OWNER-excluded Kilo Laguna model.
 """
 
 from __future__ import annotations
@@ -64,6 +65,7 @@ def test_retired_lane_is_never_in_b14_auto_pool() -> None:
 
 @pytest.mark.asyncio
 async def test_laguna_free_lane_uses_fixed_keyless_kilo_boundary(monkeypatch) -> None:
+    # Synthetic test-only route: Kilo Laguna is explicitly OWNER-excluded.
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     captured: dict[str, object] = {}
 
@@ -75,7 +77,7 @@ async def test_laguna_free_lane_uses_fixed_keyless_kilo_boundary(monkeypatch) ->
             200,
             json={
                 "id": "laguna-free-boundary-test",
-                "model": KILO_LAGUNA_UPSTREAM_MODEL,
+                "model": "test-fixture/kilo-keyless-response",
                 "choices": [
                     {
                         "message": {"role": "assistant", "content": "경계 테스트 응답"},
@@ -87,8 +89,8 @@ async def test_laguna_free_lane_uses_fixed_keyless_kilo_boundary(monkeypatch) ->
         )
 
     response = await plat.call_platform_chat_completions(
-        model_id=KILO_LAGUNA_MODEL_ID,
-        upstream_model=KILO_LAGUNA_UPSTREAM_MODEL,
+        model_id="test-fixture/kilo-keyless-chat",
+        upstream_model="test-fixture/kilo-keyless-response",
         provider="Kilo Gateway / Poolside",
         platform_provider_id="kilo",
         messages=[{"role": "user", "content": "합성 테스트"}],
@@ -98,6 +100,6 @@ async def test_laguna_free_lane_uses_fixed_keyless_kilo_boundary(monkeypatch) ->
 
     assert captured["url"] == f"{KILO_BASE_ORIGIN}/chat/completions"
     assert captured["authorization"] is None
-    assert captured["body"]["model"] == KILO_LAGUNA_UPSTREAM_MODEL
-    assert response["model"] == KILO_LAGUNA_UPSTREAM_MODEL
+    assert captured["body"]["model"] == "test-fixture/kilo-keyless-response"
+    assert response["model"] == "test-fixture/kilo-keyless-response"
     assert response["choices"][0]["message"]["content"] == "경계 테스트 응답"

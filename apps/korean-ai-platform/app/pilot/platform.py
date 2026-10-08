@@ -39,6 +39,7 @@ from app.pilot.errors import (
 )
 from app.pilot.sensenova_provider import is_transient_busy_429
 from app.pilot.b14_runtime_config import runtime_config
+from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
 from app.pilot.stream_types import StreamEvent, StreamUsage
 from app.pilot.platform_secrets import (
     CredentialSource,
@@ -174,6 +175,31 @@ def _raise_upstream_error(
     raise MalformedUpstreamResponse()
 
 
+def _require_owner_allowed_live_model(
+    model_id: str, upstream_model: str, platform_provider_id: str
+) -> None:
+    """Last pre-network gate, even for callers that bypass Router Core.
+
+    Both the public exact ID and fixed upstream/provider tuple are checked.
+    A benign-looking model ID must not disguise an excluded upstream route.
+    Historical direct Poolside (distinct from Kilo Laguna) is not inferred
+    excluded or approved by this function.
+    """
+    upstream = upstream_model.strip().casefold()
+    owner_excluded_upstream = (
+        "nemotron" in upstream
+        or ("poolside" in upstream and "laguna" in upstream
+            and platform_provider_id == "kilo")
+        or ("qwen" in upstream and platform_provider_id == "b-ai")
+        or "motif-3" in upstream
+        or "gpt-5.6-luna" in upstream
+    )
+    if excluded_from_owner_customer_selection(model_id) or owner_excluded_upstream:
+        raise PilotNotConfigured(
+            "OWNER가 제외한 모델은 이 실행 경로에서 사용할 수 없습니다."
+        )
+
+
 async def call_platform_chat_completions(
     *,
     model_id: str,
@@ -203,6 +229,9 @@ async def call_platform_chat_completions(
         )
         return _mock_response(model_id, upstream_model, provider)
 
+    _require_owner_allowed_live_model(
+        model_id, upstream_model, platform_provider_id
+    )
     headers = _request_headers(spec, model_id=model_id)
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
     body: dict[str, Any] = {
@@ -337,6 +366,9 @@ async def stream_platform_chat_completions(
             yield event
         return
 
+    _require_owner_allowed_live_model(
+        model_id, upstream_model, platform_provider_id
+    )
     headers = _request_headers(spec, model_id=model_id)
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
     body: dict[str, Any] = {
@@ -535,6 +567,7 @@ from app.pilot.infron_provider import register_infron_provider
 from app.pilot.inception_provider import register_inception_provider
 from app.pilot.atria_provider import register_atria_provider
 from app.pilot.experiential_provider import register_experiential_provider
+from app.pilot.google_provider import register_google_provider
 
 register_poolside_provider()
 register_kilo_provider()
@@ -545,3 +578,4 @@ register_infron_provider()
 register_inception_provider()
 register_atria_provider()
 register_experiential_provider()
+register_google_provider()

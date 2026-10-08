@@ -12,8 +12,8 @@ from app.pilot.b14_runtime_config import runtime_config as rcfg
 
 STREAM_URL = "/api/pilot/v1/chat/completions/stream-preview"
 CHAT_URL = "/api/pilot/v1/chat/completions"
-MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
-MODEL_UPSTREAM = "nvidia/nemotron-3-ultra-550b-a55b:free"
+MODEL = "test-fixture/kilo-stream-gateway"
+MODEL_UPSTREAM = "test-fixture/kilo-stream-response"
 LIVE_DUMMY_KEY = "unit-live-key-abcdef1234567890"
 
 
@@ -31,6 +31,21 @@ class _ChunkStream(httpx.AsyncByteStream):
 
     async def aclose(self) -> None:
         self.closed = True
+
+
+@pytest.fixture(autouse=True)
+def _synthetic_catalog_stream_route():
+    """Test-only manual route. No excluded real model reaches live stream tests."""
+    from dataclasses import replace
+    import app.pilot.catalog as cat
+    orig=cat.CATALOG_BY_ID
+    old=orig["kilo/nvidia-nemotron-3-ultra-550b-a55b-free"]
+    cat.CATALOG_BY_ID={**orig,MODEL:replace(old,model_id=MODEL,
+        upstream_model=MODEL_UPSTREAM,display_name="Synthetic stream route")}
+    try:
+        yield
+    finally:
+        cat.CATALOG_BY_ID=orig
 
 
 @pytest.fixture(autouse=True)

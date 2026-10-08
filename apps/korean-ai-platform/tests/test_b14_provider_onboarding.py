@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import httpx
 import pytest
@@ -12,6 +12,7 @@ from starlette.testclient import TestClient
 from app.factory import create_app
 from app.pilot.catalog import CATALOG_BY_ID, CATALOG_MODELS, get_catalog_by_id
 from app.pilot.errors import PilotNotConfigured
+from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
 from app.pilot.platform import call_platform_chat_completions, stream_platform_chat_completions
 from app.pilot.platform_secrets import get_platform_provider
 
@@ -201,6 +202,15 @@ async def test_candidate_secret_isolated_from_other_provider(candidate, monkeypa
 async def test_candidate_direct_request_uses_fixed_origin_bearer_and_actual_model(
     candidate, monkeypatch
 ):
+    # These provider-transport tests are not evidence the historically
+    # registered OWNER-excluded model is authorized for live execution.
+    # Use a synthetic identity with the same provider and auth boundary.
+    if excluded_from_owner_customer_selection(candidate.model_id):
+        candidate=replace(
+            candidate,
+            model_id=f"test-fixture/{candidate.provider_id}-chat",
+            upstream_model=f"test-fixture/{candidate.provider_id}-response",
+        )
     secret = f"{candidate.provider_id}-direct-proof-1234567890abcdef"
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setenv(candidate.binding, secret)
@@ -236,6 +246,15 @@ async def test_candidate_direct_request_uses_fixed_origin_bearer_and_actual_mode
 @pytest.mark.asyncio
 @pytest.mark.parametrize("candidate", CANDIDATES, ids=lambda c: c.provider_id)
 async def test_candidate_streaming_uses_exact_model_and_actual_model_evidence(candidate, monkeypatch):
+    # These provider-transport tests are not evidence the historically
+    # registered OWNER-excluded model is authorized for live execution.
+    # Use a synthetic identity with the same provider and auth boundary.
+    if excluded_from_owner_customer_selection(candidate.model_id):
+        candidate=replace(
+            candidate,
+            model_id=f"test-fixture/{candidate.provider_id}-chat",
+            upstream_model=f"test-fixture/{candidate.provider_id}-response",
+        )
     secret = f"{candidate.provider_id}-stream-proof-1234567890abcdef"
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setenv(candidate.binding, secret)
