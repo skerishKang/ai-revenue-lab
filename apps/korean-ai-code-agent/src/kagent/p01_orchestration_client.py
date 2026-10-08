@@ -32,6 +32,7 @@ from padiem_control_plane.product_tier_routes import (
 from .p01_adapter import (
     P01AdapterError,
     P01DispatchClass,
+    validate_explicit_b14_model_id,
     P01_FAILURE_DETAIL_AUTHENTICATION,
     P01_FAILURE_DETAIL_AUTHORIZATION,
     P01_FAILURE_DETAIL_CONTRACT,
@@ -77,11 +78,25 @@ def _padiem_executable_route_ids() -> frozenset[str]:
     return frozenset(ids)
 
 
-# Padiem v1 executable product routes (#2212): the only model policies the
-# P01 wire accepts, consumed read-only from the shared declaration contract
-# so Claw never owns an independent route literal. Any other model_policy is
-# refused as authority pinning.
+# Padiem v1 executable routes are the *implicit* product-tier authority.
+# #3554 adds a bounded explicit user-choice lane (max_retries=0), not an
+# alternate provider catalog: B14 alone resolves/denies the exact model ID.
+# All additional authority fields or implicit/auto choices remain forbidden.
 PADIEM_EXECUTABLE_MODEL_IDS = _padiem_executable_route_ids()
+
+
+def _registered_b14_candidate_syntax(value: object) -> bool:
+    """Only syntax-check explicit user choice; B14 owns catalog resolution.
+
+    The P01 wire admits this path only with max_retries=0 and a single model.
+    A nonregistered exact ID is rejected by B14, never replaced by fallback.
+    """
+    try:
+        validate_explicit_b14_model_id(value)
+        return True
+    except P01AdapterError:
+        return False
+
 
 # The Engine client is injected structurally (any object exposing async
 # ``orchestrate(request)``); production uses ``PadiemAiEngineClient``.
@@ -287,7 +302,10 @@ class P01EngineOrchestrationClient:
             )
             or (
                 set(model_policy) == {"model", "max_retries"}
-                and model_policy["model"] in PADIEM_EXECUTABLE_MODEL_IDS
+                and (
+                    model_policy["model"] in PADIEM_EXECUTABLE_MODEL_IDS
+                    or _registered_b14_candidate_syntax(model_policy["model"])
+                )
                 and isinstance(model_retries, int)
                 and not isinstance(model_retries, bool)
                 and model_retries == 0
