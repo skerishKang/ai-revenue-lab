@@ -26,6 +26,22 @@ class DocumentationNavigationHubTests(unittest.TestCase):
                 self.assertIn("SCOPE = NAVIGATION_ONLY", content)
                 self.assertIn("DOC_STATUS = CANONICAL", content)
 
+    def test_hub_unicode_and_markdown_integrity(self):
+        for name in HUBS:
+            with self.subTest(name=name):
+                content = (ROOT / name).read_text(encoding="utf-8")
+                heading = content.splitlines()[0]
+                self.assertTrue(any("\uac00" <= c <= "\ud7a3" for c in heading))
+                self.assertNotIn("??", content)
+                self.assertIn("~~~text", content)
+                self.assertEqual(content.count("~~~"), 2)
+                self.assertNotIn("\\\\", content[:150])
+
+        root_index = (ROOT / "docs/README.md").read_text(encoding="utf-8")
+        self.assertIn("\uBB38\uC11C \uD0D0\uC0C9", root_index)
+        nav = root_index.split("## Start here", 1)[0]
+        self.assertNotIn("??", nav)
+
     def test_root_links_to_each_hub_once(self):
         content = (ROOT / "docs/README.md").read_text(encoding="utf-8")
         for name in HUBS:
