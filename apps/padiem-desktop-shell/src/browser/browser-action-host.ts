@@ -236,11 +236,22 @@ export class BrowserActionHost {
       throw actionError(code, 'bounded observation for the action target failed');
     }
     if (observation.originRef !== lease.originScope) {
-      // The view moved off the leased origin. This refusal is read-only:
-      // INPUT_COMMAND_COUNT=0 and no slot is consumed. The canonical store's
-      // cross-origin revoke is the backstop for any consume that did carry a
-      // mismatched observed origin; the host never relies on it for checks.
-      throw actionError('origin_scope_exceeded', 'the view left the leased origin');
+      // #3669 source review: a freshly observed cross-origin navigation must
+      // invalidate the lease DURABLY, not merely refuse this one action. The
+      // existing canonical PHASE B checks the observed origin and atomically
+      // revokes without consuming a slot. Never dispatch Input.* on this path.
+      try {
+        await this.#leaseAuthority.consume({
+          browserSessionRef: request.browserSessionRef,
+          action: request.action,
+          observedOrigin: observation.originRef,
+        });
+      } catch (error) {
+        throw this.#authorityRefusal(error);
+      }
+      // If a broken authority unexpectedly accepted the wrong origin, still
+      // refuse all input; do not treat success as permission to act.
+      throw actionError('host_unavailable', 'the canonical authority accepted a mismatched observed origin');
     }
 
     let element: BoundedObservationElement | undefined;
@@ -335,7 +346,9 @@ export class BrowserActionHost {
     if (error instanceof Error) {
       const code = (error as { code?: unknown }).code;
       if (typeof code === 'string' && AUTHORITY_ERROR_CODES.has(code)) {
-        return error;
+        // Only the closed code crosses to the Desktop consumer. Even a valid
+        // code can arrive with sensitive P01 or broker material in its message.
+        return actionError(code, 'the canonical action lease authority refused this request');
       }
     }
     return actionError('lease_invalid', 'the canonical action lease authority refused this request');

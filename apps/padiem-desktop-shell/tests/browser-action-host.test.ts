@@ -122,6 +122,7 @@ function harnessFactory(
     readonly lease?: Record<string, unknown>;
     readonly resolveThrows?: Error;
     readonly consumeRefusalCode?: string;
+    readonly consumeRefusalMessage?: string;
     readonly now?: () => Date;
   } = {},
 ): HostHarness {
@@ -146,27 +147,29 @@ function harnessFactory(
     ops,
   };
   const clock = options.now ?? (() => new Date('2026-10-08T09:00:00.000Z'));
-  // The fake authority emulates the canonical durable store: PHASE A is
-  // read-only; PHASE B is the single owner of the budget/idle/cross-origin
-  // slot facts (check order mirrors the store: cross-origin, idle, budget).
-  const state = { resolveCalls: 0, consumeCalls: 0, consumed: 0, lastConsumeAtMs: 0 };
+  // The fake authority emulates canonical slot counting and cross-origin
+  // durable invalidation. PHASE A can also durably revoke an idle lease, but
+  // never increments a slot (the store regression proves restart persistence).
+  const state = { resolveCalls: 0, consumeCalls: 0, consumed: 0, lastConsumeAtMs: 0, revoked: false };
   const leaseAuthority: BrowserActionLeaseAuthority = {
     configured: true,
     resolve: async () => {
       state.resolveCalls += 1;
       if (options.resolveThrows) throw options.resolveThrows;
+      if (state.revoked) throw Object.assign(new Error('durable authority revoked the lease'), { code: 'lease_invalid' });
       return options.lease ?? validLease();
     },
     consume: async (input) => {
       state.consumeCalls += 1;
       if (options.consumeRefusalCode !== undefined) {
-        throw Object.assign(new Error('canonical lease refusal'), {
+        throw Object.assign(new Error(options.consumeRefusalMessage ?? 'canonical lease refusal'), {
           code: options.consumeRefusalCode,
         });
       }
       const lease = options.lease ?? validLease();
       if (input.observedOrigin !== lease.originScope) {
         // The store revokes with reason=cross_origin and refuses; no increment.
+        state.revoked = true;
         throw Object.assign(new Error('cross origin'), { code: 'origin_scope_exceeded' });
       }
       const nowMs = clock().getTime();
@@ -260,9 +263,25 @@ test('a refusing canonical lease authority collapses into lease_invalid without 
     },
   );
   assert.equal(coded.binding.ops.length, 0);
+
+  // Known refusal codes must not launder authority error text to the Desktop.
+  const codedSecret = harnessFactory({
+    elements: DEFAULT_ELEMENTS,
+    consumeRefusalCode: 'origin_scope_exceeded',
+    consumeRefusalMessage: 'internal P01 evidence with secret marker: p01-secret-must-not-escape',
+  });
+  await assert.rejects(
+    () => codedSecret.host.execute(clickRequest('el-0001')),
+    (error: unknown) => {
+      assert.equal(errorCode(error), 'origin_scope_exceeded');
+      assert.ok(!(error as Error).message.includes('p01-secret-must-not-escape'));
+      return true;
+    },
+  );
+  assert.equal(codedSecret.binding.ops.length, 0);
 });
 
-test('expired leases and scope mismatches refuse read-only, without consuming', async () => {
+test('expired leases and request scope mismatches refuse without consuming; observed site exits revoke durably', async () => {
   const expired = harnessFactory({
     elements: DEFAULT_ELEMENTS,
     lease: validLease({ expiresAtIso: '2026-10-08T08:00:00.000Z' }),
@@ -289,7 +308,18 @@ test('expired leases and scope mismatches refuse read-only, without consuming', 
     (error: unknown) => errorCode(error) === 'origin_scope_exceeded',
   );
   assert.equal(viewMoved.binding.ops.length, 0);
-  assert.equal(viewMoved.authority.consumeCalls, 0);
+  // Site exit must reach the trusted durable PHASE B revoke, but must not
+  // consume an action slot or dispatch a single Input.* operation.
+  assert.equal(viewMoved.authority.consumeCalls, 1);
+  assert.equal(viewMoved.authority.consumed, 0);
+  // The next attempt is refused by the now-revoked authority even if a page
+  // later returns to the approved origin (without any new P01 decision).
+  await assert.rejects(
+    () => viewMoved.host.execute(clickRequest('el-0001')),
+    (error: unknown) => errorCode(error) === 'lease_invalid',
+  );
+  assert.equal(viewMoved.authority.consumeCalls, 1);
+  assert.equal(viewMoved.binding.ops.length, 0);
 
   const uncovered = harnessFactory({
     elements: DEFAULT_ELEMENTS,

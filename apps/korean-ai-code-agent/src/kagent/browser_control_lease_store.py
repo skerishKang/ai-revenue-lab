@@ -781,7 +781,7 @@ class BrowserControlLeaseStore:
         assert created is not None
         return created, True
 
-    # --- PHASE A: read-only resolve ------------------------------------------
+    # --- PHASE A: slot-free resolve (idle refusal durably revokes) ------------
 
     def resolve_lease(
         self,
@@ -790,13 +790,13 @@ class BrowserControlLeaseStore:
         browser_session_ref: str,
         now: datetime,
     ) -> BrowserControlLeaseProjection:
-        """PHASE A of the two-phase provider: confirm, never mutate.
+        """PHASE A of the two-phase provider: validate without consuming a slot.
 
-        The projection is returned only when the lease is derivable-active at
-        `now` (not revoked, not expired, budget remaining, idle window
-        satisfied, session bound). No slot is consumed and no row is written.
-        An idle observation *refuses* here — the durable revoke for idle
-        belongs to `consume_action`, the single owner of the revoke write.
+        Healthy resolves are read-only. An observed idle breach is terminal:
+        revoke that row under one BEGIN IMMEDIATE transaction before refusing,
+        so no return to an earlier system clock (or restart) can revive it.
+        No action slot is consumed and no lease is renewed. PHASE B remains
+        the only authority allowed to increment consumed_actions.
         """
 
         fingerprint = _digest(request_fingerprint, "request_fingerprint")
@@ -823,7 +823,25 @@ class BrowserControlLeaseStore:
         if projection.consumed_actions > 0 and (
             moment - projection.last_consumed_at
         ).total_seconds() > LEASE_IDLE_SECONDS:
-            # Read-only here: surface the idle fact, let consume own the revoke.
+            # #3669 review: PHASE A is the only path reached for an already-idle
+            # lease. Under the write lock, re-check the latest row before a
+            # monotone revoke; an in-flight consume may have refreshed activity.
+            self._db.execute("BEGIN IMMEDIATE")
+            try:
+                current = self._select(fingerprint)
+                if (
+                    current is not None
+                    and current.browser_session_ref == session_ref
+                    and current.revoked_at is None
+                    and current.consumed_actions > 0
+                    and current.last_consumed_at is not None
+                    and (moment - current.last_consumed_at).total_seconds() > LEASE_IDLE_SECONDS
+                ):
+                    self._revoke_in_transaction(current, reason="idle_expired", now=moment)
+                self._db.execute("COMMIT")
+            except Exception:
+                self._db.execute("ROLLBACK")
+                raise
             raise BrowserControlLeaseRefusal(
                 "lease_idle_exceeded", "the lease went idle beyond the bounded idle window"
             )

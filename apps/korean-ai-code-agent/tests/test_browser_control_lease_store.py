@@ -484,3 +484,42 @@ class TestMultiprocessLastSlotRace(StoreBase):
 
 if __name__ == "__main__":  # pragma: no cover
     unittest.main()
+
+
+class TestIdleResolveDurableReview(StoreBase):
+    """#3669: idle refusal at PHASE A must not leave a reusable lease."""
+
+    def test_first_idle_refusal_revokes_without_spending_slot_and_survives_restart(self) -> None:
+        with self.store() as store:
+            store.issue_from_p01(make_issuance(max_actions=3))
+            first = consume(store, now=NOW)
+            self.assertEqual(first.consumed_actions, 1)
+            idle_at = NOW + timedelta(seconds=121)
+            with self.assertRaises(BrowserControlLeaseRefusal) as ctx:
+                store.resolve_lease(FP, browser_session_ref="run/session-1", now=idle_at)
+            self.assertEqual(refusal_code(ctx.exception), "lease_idle_exceeded")
+            row = store.get(FP)
+            self.assertEqual(row.revoked_at, idle_at)
+            self.assertEqual(row.revoke_reason, "idle_expired")
+            self.assertEqual(row.consumed_actions, 1)
+        # Roll the wall clock backwards on a fresh process: the durable row,
+        # not the process-local timer, still denies every action.
+        with self.store() as store:
+            earlier = NOW + timedelta(seconds=1)
+            with self.assertRaises(BrowserControlLeaseRefusal) as ctx:
+                store.resolve_lease(FP, browser_session_ref="run/session-1", now=earlier)
+            self.assertEqual(refusal_code(ctx.exception), "lease_revoked")
+            with self.assertRaises(BrowserControlLeaseRefusal) as ctx:
+                consume(store, now=earlier)
+            self.assertEqual(refusal_code(ctx.exception), "lease_revoked")
+            self.assertEqual(store.get(FP).consumed_actions, 1)
+
+    def test_active_resolve_remains_read_only_before_idle_limit(self) -> None:
+        with self.store() as store:
+            store.issue_from_p01(make_issuance(max_actions=3))
+            consume(store, now=NOW)
+            projection = store.resolve_lease(
+                FP, browser_session_ref="run/session-1", now=NOW + timedelta(seconds=120)
+            )
+            self.assertEqual(projection.consumed_actions, 1)
+            self.assertIsNone(store.get(FP).revoked_at)
