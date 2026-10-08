@@ -1,6 +1,6 @@
 """Registered-route truth for the Business 14 /models surface (#1933 S1).
 
-The public ``catalog`` key stays a static 1-entry auto lane while
+The public ``catalog`` key preserves a historic 1-entry route snapshot while
 ``registered_routes`` reveals every exact-ID route in CATALOG_BY_ID without
 prices or secrets.
 """
@@ -57,7 +57,7 @@ def test_registered_routes_are_price_and_secret_free(client):
         assert isinstance(entry["owner_excluded"], bool)
 
 
-def test_only_public_catalog_lane_is_auto_eligible(client):
+def test_legacy_public_catalog_route_is_owner_excluded_from_auto(client):
     routes = _registered_routes(client)
     public = [r for r in routes if r["public"]]
     explicit = [r for r in routes if r["explicit_only"]]
@@ -74,15 +74,15 @@ def test_only_public_catalog_lane_is_auto_eligible(client):
     assert all(not r["auto_eligible"] for r in explicit)
 
 
-def test_all_kilo_routes_are_free_and_only_public_is_auto_eligible(client):
+def test_all_registered_kilo_routes_are_not_customer_auto_eligible(client):
     kilo_routes = [
         r for r in _registered_routes(client) if r["provider_id"] == "kilo"
     ]
 
     # #2097: two of the four original Kilo free lanes are retired/unregistered.
     # The owner final retirement decision (2026-10-07) retired the Space Bunny
-    # lane too, so two kilo free lanes are registered; only the public catalog
-    # lane stays auto eligible.
+    # lane too. Both remaining Kilo entries are historical free registrations,
+    # neither customer-auto-eligible under the latest owner exclusion.
     assert len(kilo_routes) == 2
     assert all(r["free"] is True for r in kilo_routes)
     assert sum(r["auto_eligible"] for r in kilo_routes) == 0
@@ -122,6 +122,11 @@ def test_poolside_route_is_explicit_only_and_not_free(client):
     assert entry["free"] is False
     assert entry["public"] is False
     assert entry["explicit_only"] is True
+    # A separately registered direct Poolside route is NOT the Kilo identity.
+    # owner_excluded=False is NOT equivalent to owner-approved=True.
+    assert entry["owner_excluded"] is False
+    assert entry["auto_eligible"] is False
+
 
 def test_owner_excluded_registered_routes_are_never_auto_eligible(client):
     """Owner exclusion overrides free/public route metadata."""
@@ -144,8 +149,9 @@ def test_other_registered_routes_are_not_implicitly_excluded(client):
         if model_id not in {
             "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
             "kilo/poolside-laguna-s-2.1-free",
-                "b-ai/qwen3.8-flash",
+            "b-ai/qwen3.8-flash",
             "infron/motif/motif-3",
             "experiential/gpt-5.6-luna",
         }:
+            # Negative on a blocklist is NOT positive customer authorization.
             assert route["owner_excluded"] is False
