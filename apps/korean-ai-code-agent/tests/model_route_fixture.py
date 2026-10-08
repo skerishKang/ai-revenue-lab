@@ -85,6 +85,20 @@ def canonical_plus_route_model() -> str | None:
     return route.model_id
 
 
+def contract_model_id() -> str:
+    """The model id the execution contract under test resolves Plus to.
+
+    Equal to what :func:`plus_route_for_test` yields and to
+    ``SyntheticPlusRouteTestCase.plus_route_model``: the route an owner actually
+    declared when one exists, otherwise the test-only synthetic identity. A test
+    module can therefore bind its expectation at import time without freezing the
+    current all-HOLD state, and without a model-gated ``SkipTest``.
+    """
+
+    declared = canonical_plus_route_model()
+    return declared if declared is not None else synthetic_model_id()
+
+
 def _resolver(route: tier_routes.ProductTierRoute):
     def _active_route_for(label: tier_routes.ProductTierLabel):
         return route if label is tier_routes.ProductTierLabel.PLUS else None
