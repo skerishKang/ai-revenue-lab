@@ -15,6 +15,7 @@ from padiem_control_plane.local_agent_broker_state import (
 )
 from padiem_control_plane.local_agent_broker_state_wire import SerializedLocalAgentBrokerStatePort
 
+from local_agent_broker_browser_control_take import CloudflareDurableObjectBrowserControlTakeStore
 from local_agent_broker_material_store import CloudflareDurableObjectCommandMaterialStore, closed_mapping
 from local_agent_broker_sql_state import (
     CloudflareDurableObjectHttpSessionState,
@@ -63,6 +64,9 @@ class LocalAgentBrokerDurableRuntime:
             state_port=self.state_port,
             authority_ref=self.authority_ref(),
         )
+        # #3782: internal-only, canonical-DO-backed browser.control one-shot
+        # ledger. There is NO issuer, private RPC or device/renderer route yet.
+        self.browser_control_take_store = CloudflareDurableObjectBrowserControlTakeStore(storage)
 
     def authority_ref(self) -> str:
         return safe_ref(str(self._env.LOCAL_AGENT_BROKER_AUTHORITY_REF), "authority_ref")
