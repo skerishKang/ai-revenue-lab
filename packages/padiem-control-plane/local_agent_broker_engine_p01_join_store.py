@@ -118,6 +118,20 @@ class DurableBrokerOriginalEngineJoinStore:
         except (ValueError, TypeError, KeyError):
             raise ValueError("original Engine association corrupted") from None
 
+    def purge_command(self, command_ref: str) -> int:
+        """Delete terminal command's original association inside Broker DO CAS.
+
+        The canonical one-shot command id is permanently non-reusable under
+        Broker's existing used-command-id ledger. Terminal cleanup removes
+        linkability and prevents stale Engine approval metadata retention.
+        """
+        from local_agent_broker_sql_state import safe_ref
+
+        return rows_written(self._sql.exec(
+            "DELETE FROM local_agent_browser_engine_original_join WHERE command_ref=?",
+            safe_ref(command_ref, "command_ref"),
+        ))
+
     def purge_binding(self, binding_ref: str) -> int:
         """Rotation/revocation must permanently destroy the old join."""
         from local_agent_broker_sql_state import safe_ref

@@ -218,3 +218,131 @@ def test_persisted_original_join_is_used_by_real_async_broker_cas():
             scope=scope, credential=DEVICE_CREDENTIAL, now=NOW,
         ))
     assert taken_count(storage) == 1
+
+
+def test_terminal_command_purge_removes_only_corresponding_engine_association():
+    """Synthetic rows; deletion is exact and restart-safe, not a P01 grant."""
+    from dataclasses import replace
+
+    storage, broker, scope, issuer = prepared()
+    bind(broker, scope)
+    other_scope = replace(scope, command_ref="command.3782.sibling")
+    other_join = replace(issuer.join, command_ref=other_scope.command_ref)
+    storage.transactionSync(lambda: broker.browser_engine_join_store._register_in_existing_transaction(
+        scope=other_scope, original=other_join, now=NOW,
+        expires_at=NOW + timedelta(seconds=60),
+    ))
+    assert count(storage) == 2
+    assert storage.transactionSync(
+        lambda: broker.browser_engine_join_store.purge_command(scope.command_ref)
+    ) == 1
+    assert count(storage) == 1
+    assert broker.browser_engine_join_store.resolve_for_admitted_command(
+        scope=other_scope, now=NOW,
+    ) == other_join
+    restarted = LocalAgentBrokerDurableRuntime(storage=storage, env=_Env())
+    with pytest.raises(ValueError, match="not registered"):
+        restarted.browser_engine_join_store.resolve_for_admitted_command(
+            scope=scope, now=NOW,
+        )
+    assert restarted.browser_engine_join_store.purge_command(scope.command_ref) == 0
+    assert count(storage) == 1
+
+
+def test_terminal_cleanup_rejects_bad_ids_without_broad_delete():
+    storage, broker, scope, _issuer = prepared()
+    bind(broker, scope)
+    for bad in ("", "../other", "x" * 257, None):
+        with pytest.raises(ValueError):
+            broker.browser_engine_join_store.purge_command(bad)
+    assert count(storage) == 1
+
+
+def test_terminal_acknowledge_and_reconcile_use_exact_atomic_join_purge():
+    """Source invariant: both terminal lifecycle paths purge in the DO txn."""
+    from pathlib import Path
+
+    source = (
+        Path(__file__).resolve().parents[1] / "local_agent_broker_durable_runtime.py"
+    ).read_text(encoding="utf-8")
+    for method in ("acknowledge", "reconcile_expired_command"):
+        block = source.split(f"    def {method}(self, payload: dict) -> dict:", 1)[1]
+        block = block.split("        return self.transaction(operation)", 1)[0]
+        assert "self.material_store.purge_command(command_id)" in block
+        assert "self.browser_engine_join_store.purge_command(command_id)" in block
+        assert block.index("self.material_store.purge_command(command_id)") < block.index(
+            "self.browser_engine_join_store.purge_command(command_id)"
+        )
+        assert "if result.get(\"ok\") is True:" in block
+    worker = (
+        Path(__file__).resolve().parents[1] / "local_agent_broker_worker.py"
+    ).read_text(encoding="utf-8")
+    assert "purge_command(" not in worker
+    assert "original_engine_join" not in worker
+
+
+def test_canonical_terminal_ack_cleans_seeded_original_join_in_same_durable_object(tmp_path):
+    """Real Broker enqueue/admit/ack; the linked row is synthetic test data.
+
+    The ordinary process.execute route is reused only to exercise the shared
+    terminal lifecycle. This does NOT assert browser.control is producible.
+    """
+    from test_local_agent_broker_enqueue_material_atomicity import (
+        BASE,
+        _ack_payload,
+        _admit_payload,
+        _enqueue_payload,
+        _material_body,
+        _register_and_open,
+        _runtime,
+    )
+
+    file = tmp_path / "broker-original-terminal.sqlite3"
+    broker = _runtime(file)
+    _register_and_open(broker)
+    command_id = "command.original.cleanup"
+    enqueued = broker.enqueue_command_with_material(
+        _enqueue_payload(command_id, now=BASE + timedelta(seconds=2)),
+        _material_body(command_id),
+    )
+    assert enqueued["ok"] is True
+    command = enqueued["command"]
+    assert broker.admit_command(
+        _admit_payload(command, at=BASE + timedelta(seconds=3)),
+    )["ok"] is True
+
+    # Simulate an existing association whose owner was verified earlier.
+    # The terminal code must clean by exact canonical command ID only.
+    broker._storage.sql.exec(
+        "INSERT INTO local_agent_browser_engine_original_join "
+        "(command_ref,binding_ref,request_fingerprint,admission_ref,"
+        "revision_ref,expires_at,join_json) VALUES (?,?,?,?,?,?,?)",
+        command_id, command["binding_ref"], command["request_fingerprint"],
+        "admission." + command_id, command["revision_ref"],
+        (BASE + timedelta(minutes=4)).isoformat(), "{}",
+    )
+    assert broker._storage.connection.execute(
+        "SELECT count(*) FROM local_agent_browser_engine_original_join"
+    ).fetchone()[0] == 1
+    bad = _ack_payload(command, at=BASE + timedelta(seconds=4))
+    bad["admission_ref"] = "admission.foreign"
+    try:
+        refused = broker.acknowledge(bad)
+        assert refused.get("ok") is not True
+    except ValueError:
+        pass
+    assert broker._storage.connection.execute(
+        "SELECT count(*) FROM local_agent_browser_engine_original_join"
+    ).fetchone()[0] == 1
+
+    assert broker.acknowledge(
+        _ack_payload(command, at=BASE + timedelta(seconds=5)),
+    )["ok"] is True
+    assert broker._storage.connection.execute(
+        "SELECT count(*) FROM local_agent_browser_engine_original_join"
+    ).fetchone()[0] == 0
+    del broker
+    restarted = _runtime(file)
+    assert restarted._storage.connection.execute(
+        "SELECT count(*) FROM local_agent_browser_engine_original_join"
+    ).fetchone()[0] == 0

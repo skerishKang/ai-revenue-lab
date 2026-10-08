@@ -717,7 +717,9 @@ class LocalAgentBrokerDurableRuntime:
             )
             result = self.facade().acknowledge(payload)
             if result.get("ok") is True:
-                self.material_store.purge_command(result["command"]["command_id"])
+                command_id = result["command"]["command_id"]
+                self.material_store.purge_command(command_id)
+                self.browser_engine_join_store.purge_command(command_id)
             return result
         return self.transaction(operation)
 
@@ -731,7 +733,9 @@ class LocalAgentBrokerDurableRuntime:
         def operation() -> dict:
             result = self.facade().reconcile_expired_command(payload)
             if result.get("ok") is True:
-                self.material_store.purge_command(result["command"]["command_id"])
+                command_id = result["command"]["command_id"]
+                self.material_store.purge_command(command_id)
+                self.browser_engine_join_store.purge_command(command_id)
             return result
         return self.transaction(operation)
 
