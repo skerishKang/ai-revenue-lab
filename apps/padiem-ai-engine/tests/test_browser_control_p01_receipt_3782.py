@@ -10,23 +10,36 @@ import sqlite3
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
+from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
 from app.browser_control_p01_receipt import (
     ENGINE_BROWSER_CONTROL_P01_RECEIPT_PRODUCER_WIRED,
     ENGINE_BROWSER_CONTROL_P01_RECEIPT_READER_WIRED,
     CloudflareD1BrowserControlP01ReceiptStore,
     EngineApprovedBrowserControlP01Receipt,
 )
-from app.continuation_d1 import _pause_json
+from app.continuation_d1 import (
+    CloudflareD1IdentityBoundContinuationStore,
+    _identity_json,
+    _pause_json,
+)
+from app.continuation_identity import ContinuationExecutionIdentity
+from app.tool_execution_service import (
+    ToolExecutionEngineService,
+    _PendingToolContinuation,
+)
 from padiem_ai_core.agent_approval import (
     AgentApprovalError,
     ApprovalOutcome,
     ApprovalPause,
     ApprovalRequirement,
     VerifiedApprovalDecision,
+    tool_invocation_digest,
 )
+from padiem_ai_core.tool_runtime import ToolInvocation
 
 NOW = datetime(2026, 10, 8, 11, 0, tzinfo=timezone.utc)
 APP_ID = "padiem.browser.test"
@@ -47,6 +60,10 @@ class _Statement:
     async def first(self):
         cursor = self._db.execute(self._sql, self._params)
         row = cursor.fetchone()
+        # D1 UPDATE...RETURNING is committed as one statement. The local
+        # SQLite fake must not leave an open transaction before D1.batch().
+        if self._sql.lstrip().upper().startswith(("UPDATE ", "INSERT ", "DELETE ")):
+            self._db.commit()
         return dict(row) if row else None
 
     async def run(self):
@@ -413,3 +430,171 @@ def test_wrong_decision_or_tool_cannot_commit_browser_receipt(db):
     with pytest.raises((ValueError, AgentApprovalError)):
         _atomic_commit(store, p=pause(tool_id="process.execute"))
     assert _status(db) == ("claimed", "claim_browser.3782")
+
+
+AGENT = "agent.browser.test.3782"
+CANONICAL_TOOL = "tool:browser:control@1"
+
+
+def setup(*, with_receipts=True, wrong_tool=False, mismatch_digest=False):
+    db = _D1()
+    moment = datetime.now(timezone.utc)
+    invocation = ToolInvocation(
+        tool_id="browser.control",
+        arguments={"browser_session_ref": "browser.3782", "origin_scope": "https://example.org"},
+    )
+    canonical_digest = tool_invocation_digest(invocation)
+    p = replace(
+        pause(),
+        agent_runtime_id=AGENT,
+        tool_id="process.execute" if wrong_tool else "browser.control",
+        approval_scope=("process.execute",) if wrong_tool else ("browser.control",),
+        invocation_sha256="f" * 64 if mismatch_digest else canonical_digest,
+        created_at=moment - timedelta(seconds=5),
+        expires_at=moment + timedelta(minutes=4),
+    )
+    # Populate the canonical D1 identity required by its real record decoder.
+    identity = ContinuationExecutionIdentity(
+        request_fingerprint="a" * 64, plan_fingerprint=None,
+        subject_id="owner.3782", recovery_policy_fingerprint=None,
+        max_retries=0, require_evidence=True, require_verification=True,
+    )
+    db.db.execute(
+        "INSERT INTO padiem_engine_continuations "
+        "(app_id,continuation_ref,pause_json,execution_identity_json,state,"
+        "claim_token,cancel_reason,cancel_event_fingerprint,created_at,updated_at,expires_at)"
+        " VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+        (APP_ID, CONT_REF, _pause_json(p),
+         _identity_json(identity), "active", None, None, None,
+         moment.isoformat(), moment.isoformat(), p.expires_at.isoformat()),
+    )
+    db.db.commit()
+    continuation = CloudflareD1IdentityBoundContinuationStore(db)
+    receipts = CloudflareD1BrowserControlP01ReceiptStore(db)
+
+    def resolve_binding(app_id):
+        if app_id != APP_ID:
+            return None
+        return SimpleNamespace(
+            app_id=APP_ID,
+            resolve_authority=lambda agent_id: SimpleNamespace(agent_id=agent_id),
+            resolve_tool=lambda tool_id: SimpleNamespace(
+                runtime_tool_id="process.execute" if wrong_tool else "browser.control",
+            ),
+        )
+    service = ToolExecutionEngineService(
+        tool_binding_resolver=resolve_binding,
+        approval_decision_verifier=AuthenticatedFirstPartyApprovalDecisionVerifier(),
+        continuation_store=continuation,
+        browser_control_p01_receipts=receipts if with_receipts else None,
+    )
+    service._pending[p.pause_id] = _PendingToolContinuation(
+        app_id=APP_ID, canonical_agent_id=AGENT,
+        canonical_tool_id=CANONICAL_TOOL, invocation=invocation,
+    )
+    decision = {
+        "decision_id": "dec.browser.3782",
+        "pause_id": p.pause_id,
+        "outcome": "approved",
+        "authority_ref": "p01.trusted.fixture",
+        "evidence_ref": "evidence.test.3782",
+        "decided_at": moment.isoformat(),
+    }
+    request = {"app_id": APP_ID, "continuation_ref": CONT_REF, "decision": decision}
+    return db, service, receipts, request
+
+
+def db_state(db):
+    row = db.db.execute(
+        "SELECT state,claim_token FROM padiem_engine_continuations "
+        "WHERE app_id=? AND continuation_ref=?", (APP_ID, CONT_REF),
+    ).fetchone()
+    count = db.db.execute("SELECT COUNT(*) FROM padiem_engine_browser_control_p01_receipts").fetchone()[0]
+    return tuple(row), count
+
+
+def test_first_party_verified_p01_resume_atomically_records_without_browser_handler():
+    db, service, receipts, request = setup()
+    try:
+        first = run(service.resume_payload(request))
+        assert first.status_code == 200, first.body
+        assert first.body["tool"]["status"] == "approval_recorded"
+        assert first.body["tool"]["browser_action_executed"] is False
+        assert first.body["tool"]["broker_command_dispatched"] is False
+        assert db_state(db) == (("consumed", None), 1)
+        saved = run(receipts.resolve_active(
+            app_id=APP_ID, continuation_ref=CONT_REF, now=datetime.now(timezone.utc),
+        ))
+        assert saved is not None
+        assert saved.invocation_sha256 == tool_invocation_digest(
+            ToolInvocation(tool_id="browser.control", arguments={
+                "browser_session_ref": "browser.3782", "origin_scope": "https://example.org",
+            })
+        )
+        again = run(service.resume_payload(request))
+        assert again.status_code != 200
+        assert db_state(db) == (("consumed", None), 1)
+    finally:
+        db.db.close()
+
+
+def test_unwired_product_default_fails_closed_without_claim_or_receipt():
+    db, service, _receipts, request = setup(with_receipts=False)
+    try:
+        result = run(service.resume_payload(request))
+        assert result.status_code == 503
+        assert result.body["error"]["code"] == "browser_control_p01_receipt_unavailable"
+        assert db_state(db) == (("active", None), 0)
+    finally:
+        db.db.close()
+
+
+@pytest.mark.parametrize("mutation", ["denied", "wrong_pause", "wrong_app", "digest_drift", "wrong_tool"])
+def test_wrong_first_party_decision_or_canonical_identity_cannot_store(mutation):
+    db, service, _receipts, request = setup(
+        wrong_tool=mutation == "wrong_tool",
+        mismatch_digest=mutation == "digest_drift",
+    )
+    try:
+        if mutation == "denied":
+            request["decision"]["outcome"] = "denied"
+        elif mutation == "wrong_pause":
+            request["decision"]["pause_id"] = "pause.other"
+        elif mutation == "wrong_app":
+            request["app_id"] = "another.owner.app"
+        result = run(service.resume_payload(request))
+        assert result.status_code != 200
+        assert db_state(db)[1] == 0
+    finally:
+        db.db.close()
+
+
+def test_non_matching_or_untrusted_d1_adapter_cannot_be_injected():
+    db, _service, receipts, _request = setup()
+    other = _D1()
+    try:
+        other_store = CloudflareD1IdentityBoundContinuationStore(other)
+        with pytest.raises(ValueError, match="SAME trusted Engine D1"):
+            ToolExecutionEngineService(
+                continuation_store=other_store, browser_control_p01_receipts=receipts,
+            )
+    finally:
+        db.db.close()
+        other.db.close()
+
+
+def test_browser_receipt_atomic_failure_releases_claim_and_never_issues_receipt():
+    db, service, _receipts, request = setup()
+    # Simulate transient D1 batch write failure after the Engine claim.
+    original = db.batch
+    async def failed_batch(statements):
+        raise RuntimeError("synthetic D1 write outage")
+    db.batch = failed_batch
+    try:
+        result = run(service.resume_payload(request))
+        assert result.status_code == 503
+        assert db_state(db)[1] == 0
+        assert db_state(db)[0][0] in ("active", "expired")
+    finally:
+        db.batch = original
+        db.db.close()
