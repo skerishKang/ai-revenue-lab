@@ -38,6 +38,20 @@
       model.coreTotals && !((model.coreTotals.detailGroups || []).length);
   }
 
+  function certifiedPreviewModel(model, skillId, approvedFingerprint) {
+    // Presentation-only override for the exact owner-assigned, source-certified
+    // CGI skill; NEVER alter the saved internal template or QuoteCore totals.
+    if (!isCgiSkill(skillId) || !model || model.derivedBy !== "quote-core" ||
+        !model.template || model.template.approved !== true ||
+        model.template.fallbackReason ||
+        typeof approvedFingerprint !== "string" || !approvedFingerprint ||
+        model.template.fingerprint !== approvedFingerprint ||
+        model.certifiedPreviewBaseUrl !== PREVIEW_URL) return model;
+    return Object.assign({}, model, { layoutVariant: "cgi-v2" });
+  }
+
+  function isCgiSkill(id) { return id === CGI_SKILL_ID; }
+
   function project(model, preview) {
     if (!Renderer || typeof Renderer.buildCgiCertifiedDrawOps !== "function" ||
         !sameProjection(model, preview) || preview.certifiedPreviewBaseUrl !== PREVIEW_URL)
@@ -158,7 +172,8 @@
     CGI_SKILL_ID: CGI_SKILL_ID,
     CGI_BASE_SHA256: CGI_BASE_SHA256,
     PREVIEW_URL: PREVIEW_URL,
-    isCgiSkill: function (id) { return id === CGI_SKILL_ID; },
+    isCgiSkill: isCgiSkill,
+    certifiedPreviewModel: certifiedPreviewModel,
     project: project,
     encodeJpegPdf: encodeJpegPdf,
     makePdf: makePdf
