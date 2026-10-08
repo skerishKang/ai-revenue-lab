@@ -19,12 +19,6 @@ from app.browser_control_owner_p01_ticket_issuer import (
     AuthenticatedEngineBrowserP01TicketIssuer,
     CurrentCanonicalHumanSession,
 )
-from padiem_control_plane import (
-    AuthSessionSnapshot,
-    AuthSessionState,
-    CanonicalSubjectRef,
-    SubjectType,
-)
 from test_browser_control_owner_p01_ticket_issuer_3782 import (
     _OwnerD1,
 )
@@ -56,17 +50,18 @@ class _Shadow:
 
 class _Cp:
     def __init__(self):
-        self.snapshot = AuthSessionSnapshot(
-            session_id=SESSION, product_id="b62",
-            subject=CanonicalSubjectRef(
-                subject_type=SubjectType.USER,
-                subject_id=SUBJECT,
-            ),
-            issued_at=NOW - timedelta(minutes=3),
-            expires_at=NOW + timedelta(minutes=10),
-            state=AuthSessionState.ACTIVE, revision=3,
-            tenant_id=TENANT,
-        ).to_public_dict()
+        # Canonical CP public-dict wire contract; no dependency on the
+        # independent Control Plane package in Engine standalone CI.
+        self.snapshot = {
+            "session_id": SESSION,
+            "product_id": "b62",
+            "subject": {"subject_type": "user", "subject_id": SUBJECT},
+            "issued_at": (NOW - timedelta(minutes=3)).isoformat(),
+            "expires_at": (NOW + timedelta(minutes=10)).isoformat(),
+            "state": "active",
+            "revision": 3,
+            "tenant_id": TENANT,
+        }
         self.calls = 0
 
     async def resolve_auth_session(self, *, session_id):
