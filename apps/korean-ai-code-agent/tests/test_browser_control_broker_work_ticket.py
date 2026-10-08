@@ -75,7 +75,7 @@ def ticket() -> AuthenticatedBrowserControlWorkTicket:
     pause = ApprovalPause(
         pause_id="pause.3782", run_id=lease.run_ref,
         agent_runtime_id="runtime.3782", tool_id=BROWSER_CONTROL_TOOL_ID,
-        invocation_sha256=fp, requirement=ApprovalRequirement.USER_CONFIRMATION,
+        invocation_sha256=lease.approval_invocation_sha256(), requirement=ApprovalRequirement.USER_CONFIRMATION,
         step_index=1, created_at=MINUS, expires_at=PLUS,
         approval_scope=(BROWSER_CONTROL_TOOL_ID,),
     )

@@ -51,7 +51,9 @@ from padiem_ai_core.agent_approval import (
     ContinuationStatus,
     VerifiedApprovalDecision,
     resolve_approval_pause,
+    tool_invocation_digest,
 )
+from padiem_ai_core.tool_runtime import ToolInvocation
 
 from .browser_control_actions import (
     LEASE_ELIGIBLE_ACTIONS,
@@ -199,6 +201,31 @@ class BrowserControlLeaseRequest:
         }
         encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
         return hashlib.sha256(encoded).hexdigest()
+
+    def tool_invocation(self) -> ToolInvocation:
+        """Canonical Core invocation for a genuine P01 browser-control pause.
+
+        The broker/session request fingerprint remains a distinct stable
+        correlation identifier; only Core's actual tool-invocation digest
+        binds the approval pause. This constructor issues NO approval.
+        """
+        return ToolInvocation(
+            tool_id=BROWSER_CONTROL_TOOL_ID,
+            arguments={
+                "browser_session_ref": self.browser_session_ref,
+                "run_ref": self.run_ref,
+                "workspace_ref": self.workspace_ref,
+                "owner_ref": self.owner_ref,
+                "device_id": self.device_id,
+                "origin_scope": self.origin_scope,
+                "allowed_action_classes": list(self.allowed_action_classes),
+                "ttl_seconds": self.ttl_seconds,
+                "max_actions": self.max_actions,
+            },
+        )
+
+    def approval_invocation_sha256(self) -> str:
+        return tool_invocation_digest(self.tool_invocation())
 
     def target_ref(self) -> str:
         """Bounded, URL-free reference for the local permission record."""
@@ -710,7 +737,7 @@ class BrowserControlLeaseAuthority:
             raise BrowserControlLeaseRefusal(
                 "p01_approval_invalid", "the approval pause run does not match the session run"
             )
-        if pause.invocation_sha256 != request.fingerprint():
+        if pause.invocation_sha256 != request.approval_invocation_sha256():
             raise BrowserControlLeaseRefusal(
                 "p01_approval_invalid",
                 "the P01 approval does not bind this exact control session request",

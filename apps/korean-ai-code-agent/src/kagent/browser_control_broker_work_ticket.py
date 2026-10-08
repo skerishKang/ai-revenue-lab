@@ -96,7 +96,7 @@ class AuthenticatedBrowserControlWorkTicket:
         if not (
             e.approval_pause.run_id == l.run_ref
             and e.permission_request.run_id == l.run_ref
-            and e.approval_pause.invocation_sha256 == l.fingerprint()
+            and e.approval_pause.invocation_sha256 == l.approval_invocation_sha256()
             and BROWSER_CONTROL_TOOL_ID in e.approval_pause.approval_scope
             and e.permission_request.target_ref == l.target_ref()
             and e.approval_decision.outcome is ApprovalOutcome.APPROVED

@@ -92,7 +92,7 @@ def evidence(item: BrowserControlLeaseRequest):
         run_id=item.run_ref,
         agent_runtime_id="runtime_3669",
         tool_id=BROWSER_CONTROL_TOOL_ID,
-        invocation_sha256=item.fingerprint(),
+        invocation_sha256=item.approval_invocation_sha256(),
         requirement=ApprovalRequirement.USER_CONFIRMATION,
         step_index=1,
         created_at=NOW - timedelta(seconds=5),
