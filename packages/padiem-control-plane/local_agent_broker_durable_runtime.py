@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import inspect
 import json
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable, TypeVar
@@ -71,8 +72,9 @@ class LocalAgentBrokerDurableRuntime:
         # Production Broker Worker deliberately supplies no P01 source.
         # Only a service-identity-authenticated first-party composition may
         # inject the canonical Engine decision owner in a later gate.
-        if p01_approval_source is not None and not callable(
-            getattr(p01_approval_source, "resolve_approved_command", None)
+        if p01_approval_source is not None and not any(
+            callable(getattr(p01_approval_source, method, None))
+            for method in ("resolve_approved_command", "resolve_approved_command_async")
         ):
             raise ValueError("canonical first-party P01 approval resolver required")
         self._p01_approval_source = p01_approval_source
@@ -282,6 +284,115 @@ class LocalAgentBrokerDurableRuntime:
                 raise ValueError("browser.control approved material changed after P01 lookup")
             return self.browser_control_take_store._take_in_existing_transaction(
                 scope, moment=iso(current)
+            )
+        return self.transaction(operation)
+
+    async def _bind_browser_material_to_admitted_command_async(
+        self, *, scope: BrowserControlCommandTakeCorrelation,
+        credential: bytes, material: dict[str, Any], now: datetime,
+    ) -> dict[str, Any]:
+        """Private asynchronous Engine P01 preflight, then existing DO CAS.
+
+        An authenticated Engine Service Binding is asynchronous on Worker.
+        NEVER await inside Durable Object transactionSync or use asyncio.run.
+        This is NOT a new HTTP endpoint or source of browser permissions.
+        """
+        current = utc(now, "browser_control_registration_now")
+        source = self._p01_approval_source
+        resolver = getattr(source, "resolve_approved_command_async", None)
+        if not callable(resolver):
+            raise ValueError("asynchronous authenticated browser P01 source not wired")
+        self._require_live_admitted_browser_command(
+            scope=scope, credential=credential, now=current,
+        )
+        if type(material) is not dict:
+            raise ValueError("browser.control material must be a closed mapping")
+        self.browser_control_take_store._checked_material(
+            json.dumps(material, sort_keys=True, separators=(",", ":"),
+                       ensure_ascii=False, allow_nan=False), scope,
+        )
+        max_ttl = material["context"]["ttlSeconds"]
+        result = resolver(scope=scope, now=current)
+        if not inspect.isawaitable(result):
+            raise ValueError("asynchronous trusted P01 lookup must be awaitable")
+        verified = await result
+        if type(verified) is not AuthenticatedBrowserControlP01Approval:
+            raise ValueError("authenticated Engine P01 resolver returned no current approval")
+        expected = browser_control_tool_invocation_digest(material)
+        verified.assert_matches(
+            scope=scope, expected_invocation_sha256=expected, now=current,
+        )
+
+        def operation() -> dict[str, Any]:
+            command, authenticated = self._require_live_admitted_browser_command(
+                scope=scope, credential=credential, now=current,
+            )
+            verified.assert_matches(
+                scope=scope, expected_invocation_sha256=expected, now=current,
+            )
+            if command.evidence_ref != verified.evidence_ref:
+                raise ValueError("browser.control Engine approval evidence mismatch")
+            expiry = min(
+                verified.expires_at, command.expires_at,
+                parse_iso(authenticated["session_expires_at"], "session_expiry"),
+                current + timedelta(seconds=max_ttl),
+            )
+            if expiry <= current:
+                raise ValueError("browser.control registration approval expired")
+            self.browser_control_take_store._register_in_existing_transaction(
+                scope, material, expires_at=expiry,
+            )
+            return {
+                "stored": True, "command_ref": scope.command_ref,
+                "binding_ref": scope.binding_ref,
+                "request_fingerprint": scope.request_fingerprint,
+                "expires_at": iso(expiry), "raw_approval_payload": False,
+                "raw_device_credential": False, "action_executed": False,
+            }
+        return self.transaction(operation)
+
+    async def _take_authenticated_browser_control_command_async(
+        self, *, scope: BrowserControlCommandTakeCorrelation,
+        credential: bytes, now: datetime,
+    ) -> dict[str, Any]:
+        """Read current Engine P01 OUTSIDE lock, then durable one-shot take."""
+        current = utc(now, "browser_control_take_now")
+        source = self._p01_approval_source
+        resolver = getattr(source, "resolve_approved_command_async", None)
+        if not callable(resolver):
+            raise ValueError("asynchronous authenticated browser P01 source not wired")
+        command, _ = self._require_live_admitted_browser_command(
+            scope=scope, credential=credential, now=current,
+        )
+        material = self.browser_control_take_store._read_approved_material(
+            scope, moment=iso(current),
+        )
+        expected = browser_control_tool_invocation_digest(material)
+        result = resolver(scope=scope, now=current)
+        if not inspect.isawaitable(result):
+            raise ValueError("asynchronous trusted P01 lookup must be awaitable")
+        verified = await result
+        if type(verified) is not AuthenticatedBrowserControlP01Approval:
+            raise ValueError("authenticated Engine P01 resolver returned no current approval")
+        verified.assert_matches(
+            scope=scope, expected_invocation_sha256=expected, now=current,
+        )
+        if command.evidence_ref != verified.evidence_ref:
+            raise ValueError("browser.control live Engine P01 evidence mismatch")
+
+        def operation() -> dict[str, Any]:
+            live, _ = self._require_live_admitted_browser_command(
+                scope=scope, credential=credential, now=current,
+            )
+            if live.evidence_ref != verified.evidence_ref:
+                raise ValueError("browser.control Engine P01 evidence revoked or changed")
+            current_material = self.browser_control_take_store._read_approved_material(
+                scope, moment=iso(current),
+            )
+            if current_material != material:
+                raise ValueError("browser.control command changed after Engine P01 lookup")
+            return self.browser_control_take_store._take_in_existing_transaction(
+                scope, moment=iso(current),
             )
         return self.transaction(operation)
 
