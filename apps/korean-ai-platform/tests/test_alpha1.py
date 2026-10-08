@@ -68,21 +68,34 @@ def _legacy_live_transport_synthetic_model(request, monkeypatch):
     import app.pilot.catalog as cat
     mock_id="test-fixture/kilo-protocol-chat"
     mock_upstream="test-fixture/kilo-protocol-response"
-    old_map=cat.CATALOG_BY_ID
-    historical=old_map["kilo/nvidia-nemotron-3-ultra-550b-a55b-free"]
-    cat.CATALOG_BY_ID={
-        **old_map,
-        mock_id:replace(historical,model_id=mock_id,
-                        upstream_model=mock_upstream,
-                        display_name="Synthetic Kilo protocol fixture"),
-    }
+    from app.pilot import platform_secrets as ps
+    # A test-only keyless provider and synthetic ID preserve protocol coverage,
+    # with NO registration of owner-retired Kilo IDs or provider.
+    mock_provider="test-fixture"
+    historical=next(iter(cat.CATALOG_BY_ID.values()))
+    synthetic=replace(
+        historical,model_id=mock_id,upstream_model=mock_upstream,
+        display_name="Synthetic streaming protocol fixture",
+        provider="Synthetic test-only gateway",
+        platform_provider_id=mock_provider,
+        capabilities=frozenset({"chat","free"}),
+        input_price_usd_per_1m=0.0,
+        output_price_usd_per_1m=0.0,
+    )
+    spec=ps.PlatformProviderSpec(
+        provider_id=mock_provider,
+        credential_source=ps.CredentialSource.NONE,
+        credential_binding_name="",
+        base_origin="https://synthetic-gateway.example/v1",
+        allowed_hosts=("synthetic-gateway.example",),
+    )
+    monkeypatch.setitem(cat.CATALOG_BY_ID,mock_id,synthetic)
+    monkeypatch.setitem(ps._PLATFORM_PROVIDERS,mock_provider,spec)
     current=sys.modules[__name__]
     monkeypatch.setattr(current,"KILO_MODEL",mock_id)
     monkeypatch.setattr(current,"KILO_UPSTREAM",mock_upstream)
-    try:
-        yield
-    finally:
-        cat.CATALOG_BY_ID=old_map
+    monkeypatch.setattr(current,"KILO_PROVIDER","Synthetic test-only gateway")
+    yield
 
 
 @pytest.fixture()
@@ -166,7 +179,7 @@ def _secondary_catalog_model(
         region="외부",
         sort_order=20,
         credential_source="platform_secret",
-        platform_provider_id="kilo",
+        platform_provider_id="test-fixture",
         source="kilo_official_gateway_models",
         source_checked_at="2026-09-06",
     )
@@ -262,15 +275,14 @@ class TestKeyRedaction:
 
 class TestManualRoute:
     def test_manual_route_known_model(self):
-        d = resolve_manual_route("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
+        d = resolve_manual_route("agnes-ai/agnes-3.0-flash")
         assert d.route_mode == "manual"
-        assert d.selected_model == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
-        assert d.selected_upstream_model == KILO_UPSTREAM
-        assert d.selected_provider == KILO_PROVIDER
+        assert d.selected_model == "agnes-ai/agnes-3.0-flash"
+        assert d.selected_upstream_model == get_catalog_by_id("agnes-ai/agnes-3.0-flash").upstream_model
+        assert d.selected_provider == get_catalog_by_id("agnes-ai/agnes-3.0-flash").provider
         assert "manual_selection" in d.reason_codes
         assert "external_fallback_disabled" in d.reason_codes
-        # Keyless platform route: the Kilo free tier is anonymous, so no
-        # stored secret is required and the route is always credential-ready.
+        # Owner-approved Agnes route: dummy secret is provided by _reset_config.
         assert d.credential_available is True
 
     def test_manual_route_unknown_model_no_safe_route(self):
@@ -280,24 +292,24 @@ class TestManualRoute:
         assert exc_info.value.upstream_called is False
 
     def test_manual_route_no_upstream_call(self):
-        d = resolve_manual_route("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
+        d = resolve_manual_route("agnes-ai/agnes-3.0-flash")
         assert d.evidence_status == "resolved_not_called"
 
     def test_manual_route_no_fallback_by_default(self):
-        d = resolve_manual_route("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
+        d = resolve_manual_route("agnes-ai/agnes-3.0-flash")
         assert d.fallback_allowed is False
         assert d.eligible_fallback == []
         assert d.max_attempts == 1
         assert "external_fallback_disabled" in d.reason_codes
 
     def test_manual_route_explicit_fallback_enabled(self, two_model_catalog):
-        d = resolve_manual_route("kilo/nvidia-nemotron-3-ultra-550b-a55b-free", allow_external_fallback=True)
+        d = resolve_manual_route("agnes-ai/agnes-3.0-flash", allow_external_fallback=True)
         assert d.fallback_allowed is True
         assert len(d.eligible_fallback) > 0
 
     def test_manual_route_id_is_candidate_specific(self):
-        d = resolve_manual_route("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
-        assert d.selected_route_id == "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        d = resolve_manual_route("agnes-ai/agnes-3.0-flash")
+        assert d.selected_route_id == "platform:agnes-ai/agnes-3.0-flash"
 
 
 # ============================================================================
@@ -615,7 +627,7 @@ class TestLiveAdapter:
         rcfg.provider_mode = "live"
         rcfg.api_key = ""
         async def fake_upstream(request):
-            assert str(request.url) == "https://api.kilo.ai/api/gateway/chat/completions"
+            assert str(request.url) == "https://synthetic-gateway.example/v1/chat/completions"
             assert request.headers.get("authorization") is None
             body = json.loads(request.content)
             assert body["model"] == KILO_UPSTREAM
@@ -633,7 +645,7 @@ class TestLiveAdapter:
             model_id=KILO_MODEL,
             upstream_model=KILO_UPSTREAM,
             provider=KILO_PROVIDER,
-            platform_provider_id="kilo",
+            platform_provider_id="test-fixture",
             transport=httpx.MockTransport(fake_upstream),
         )
         assert result["_live"] is True
@@ -653,7 +665,7 @@ class TestLiveAdapter:
                 model_id=KILO_MODEL,
                 upstream_model=KILO_UPSTREAM,
                 provider=KILO_PROVIDER,
-                platform_provider_id="kilo",
+                platform_provider_id="test-fixture",
                 transport=httpx.MockTransport(fake_bad),
             )
 
@@ -671,7 +683,7 @@ class TestLiveAdapter:
                 model_id=KILO_MODEL,
                 upstream_model=KILO_UPSTREAM,
                 provider=KILO_PROVIDER,
-                platform_provider_id="kilo",
+                platform_provider_id="test-fixture",
                 transport=httpx.MockTransport(fake_401),
             )
 
@@ -688,7 +700,7 @@ class TestLiveAdapter:
                 model_id=KILO_MODEL,
                 upstream_model=KILO_UPSTREAM,
                 provider=KILO_PROVIDER,
-                platform_provider_id="kilo",
+                platform_provider_id="test-fixture",
                 transport=httpx.MockTransport(fake_timeout),
             )
 
@@ -706,7 +718,7 @@ class TestLiveAdapter:
                 model_id=KILO_MODEL,
                 upstream_model=KILO_UPSTREAM,
                 provider=KILO_PROVIDER,
-                platform_provider_id="kilo",
+                platform_provider_id="test-fixture",
                 transport=httpx.MockTransport(fake_429),
             )
 
@@ -724,7 +736,7 @@ class TestLiveAdapter:
                 model_id=KILO_MODEL,
                 upstream_model=KILO_UPSTREAM,
                 provider=KILO_PROVIDER,
-                platform_provider_id="kilo",
+                platform_provider_id="test-fixture",
                 transport=httpx.MockTransport(fake_500),
             )
 
@@ -747,7 +759,7 @@ class TestLiveAdapter:
             model_id=KILO_MODEL,
             upstream_model=KILO_UPSTREAM,
             provider=KILO_PROVIDER,
-            platform_provider_id="kilo",
+            platform_provider_id="test-fixture",
             transport=httpx.MockTransport(fake_ok),
         )
         assert result["_live"] is True
@@ -904,8 +916,10 @@ class TestEndpoints:
         catalog = data.get("catalog", [])
         assert len(catalog) >= len(CATALOG_MODELS)  # includes b14/auto
         ids = {m["id"] for m in catalog}
-        assert "b14/auto" in ids
-        assert "kilo/nvidia-nemotron-3-ultra-550b-a55b-free" in ids
+        assert "b14/auto" not in ids
+        assert "kilo/nvidia-nemotron-3-ultra-550b-a55b-free" not in ids
+        from app.pilot.model_registry_file import installed_model_ids
+        assert ids == installed_model_ids()
 
     def test_legacy_models_still_work(self, client):
         from app.pilot.config import pilot_settings
@@ -931,15 +945,18 @@ class TestEndpoints:
 class TestCatalog:
     def test_catalog_minimum_models(self):
         ids = {m.model_id for m in CATALOG_MODELS}
-        # Decision #1933 pins a single-route Kilo Gateway catalog; the
-        # deleted multi-provider entries are exercised by two_model_catalog.
-        assert ids == {KILO_MODEL}
+        # Historical public auto/free catalog has no route; live registry is JSON.
+        assert ids == set()
+        from app.pilot.model_registry_file import installed_model_ids
+        from app.pilot.catalog import CATALOG_BY_ID
+        assert installed_model_ids() == frozenset(CATALOG_BY_ID)
 
     def test_all_catalog_models_enabled(self):
         assert all(m.enabled for m in CATALOG_MODELS)
 
     def test_catalog_by_id_lookup(self):
-        assert get_catalog_by_id("kilo/nvidia-nemotron-3-ultra-550b-a55b-free") is not None
+        assert get_catalog_by_id("kilo/nvidia-nemotron-3-ultra-550b-a55b-free") is None
+        assert get_catalog_by_id("agnes-ai/agnes-3.0-flash") is not None
         assert get_catalog_by_id("nonexistent") is None
 
     def test_filter_by_capability(self):
@@ -948,17 +965,18 @@ class TestCatalog:
 
     def test_select_by_optimize_cost_first_free(self):
         sorted_models = select_by_optimize(CATALOG_MODELS, "cost", True)
-        assert sorted_models[0].model_id == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert sorted_models == []  # no approved customer auto/free model
 
     def test_select_by_optimize_korean_high_score(self):
         sorted_models = select_by_optimize(CATALOG_MODELS, "korean", True)
-        assert sorted_models[0].korean_score >= 4
+        assert sorted_models == []  # cannot fabricate a cost/performance winner
 
     def test_list_catalog_summaries_shape(self):
         summaries = list_catalog_summaries()
         assert len(summaries) == len(CATALOG_MODELS)
-        assert "model_id" in summaries[0]
-        assert "input_price_usd_per_1m" in summaries[0]
+        assert summaries == []
+        from app.pilot.model_registry_file import read_registry
+        assert all("id" in m and "input_price_usd_per_1m" in m for m in read_registry()["models"])
 
 
 # ============================================================================
@@ -1242,7 +1260,7 @@ class TestFreeRouterExactRoute:
             model_id=KILO_MODEL,
             upstream_model=KILO_MODEL,
             provider=KILO_PROVIDER,
-            platform_provider_id="kilo",
+            platform_provider_id="test-fixture",
             transport=httpx.MockTransport(handler),
         )
         assert captured[0]["model"] == KILO_MODEL
@@ -1295,7 +1313,7 @@ class TestFallbackFailClosed:
                 model_id=KILO_MODEL,
                 upstream_model=KILO_MODEL,
                 provider=KILO_PROVIDER,
-                platform_provider_id="kilo",
+                platform_provider_id="test-fixture",
                 transport=httpx.MockTransport(handler),
             )
         assert exc_info.value.code == expected_code
@@ -1580,7 +1598,7 @@ class TestStreamedResponseLimit:
                 model_id=KILO_MODEL,
                 upstream_model=KILO_UPSTREAM,
                 provider=KILO_PROVIDER,
-                platform_provider_id="kilo",
+                platform_provider_id="test-fixture",
                 transport=httpx.MockTransport(handler),
             ):
                 pass
@@ -1663,7 +1681,7 @@ class TestManualRouteDefaultFallback:
         """manual model, no business14 → no fallback, one attempt."""
         resp = client.post(
             "/api/pilot/router/resolve",
-            json={"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": "agnes-ai/agnes-3.0-flash", "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 200
         data = resp.json()
@@ -1671,14 +1689,14 @@ class TestManualRouteDefaultFallback:
         assert data["fallback_allowed"] is False
         assert data["eligible_fallback"] == []
         assert data["max_attempts"] == 1
-        assert data["selected_route_id"] == "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert data["selected_route_id"] == "platform:agnes-ai/agnes-3.0-flash"
 
     def test_manual_model_empty_business14_resolve(self, client):
         """manual model, empty business14 → no fallback, one attempt."""
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
-                "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                "model": "agnes-ai/agnes-3.0-flash",
                 "messages": [{"role": "user", "content": "hi"}],
                 "business14": {},
             },
@@ -1688,14 +1706,14 @@ class TestManualRouteDefaultFallback:
         assert data["fallback_allowed"] is False
         assert data["eligible_fallback"] == []
         assert data["max_attempts"] == 1
-        assert data["selected_route_id"] == "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert data["selected_route_id"] == "platform:agnes-ai/agnes-3.0-flash"
 
     def test_manual_model_explicit_false_resolve(self, client):
         """manual model, allow_external_fallback=false → no fallback, one attempt."""
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
-                "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                "model": "agnes-ai/agnes-3.0-flash",
                 "messages": [{"role": "user", "content": "hi"}],
                 "business14": {"allow_external_fallback": False},
             },
@@ -1711,7 +1729,7 @@ class TestManualRouteDefaultFallback:
         resp = client.post(
             "/api/pilot/router/resolve",
             json={
-                "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                "model": "agnes-ai/agnes-3.0-flash",
                 "messages": [{"role": "user", "content": "hi"}],
                 "business14": {"allow_external_fallback": True},
             },
@@ -1721,7 +1739,7 @@ class TestManualRouteDefaultFallback:
         assert data["fallback_allowed"] is True
         assert len(data["eligible_fallback"]) > 0
         assert data["max_attempts"] > 1
-        assert data["selected_route_id"] == "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert data["selected_route_id"] == "platform:agnes-ai/agnes-3.0-flash"
 
     def test_manual_model_no_business14_chat_one_attempt(self, client):
         """manual model, no business14 → only 1 upstream call, no fallback."""
@@ -1941,11 +1959,11 @@ class TestActualRouteId:
     def test_manual_resolve_route_id(self, client):
         resp = client.post(
             "/api/pilot/router/resolve",
-            json={"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free", "messages": [{"role": "user", "content": "hi"}]},
+            json={"model": "agnes-ai/agnes-3.0-flash", "messages": [{"role": "user", "content": "hi"}]},
         )
         assert resp.status_code == 200
         data = resp.json()
-        assert data["selected_route_id"] == "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert data["selected_route_id"] == "platform:agnes-ai/agnes-3.0-flash"
 
     def test_primary_success_route_id(self, client):
         """Primary candidate success: selected_route_id = primary candidate route_id."""
@@ -2093,7 +2111,7 @@ class TestKeylessLiveSmoke:
                 model_id=KILO_MODEL,
                 upstream_model=KILO_UPSTREAM,
                 provider=KILO_PROVIDER,
-                platform_provider_id="kilo",
+                platform_provider_id="test-fixture",
                 transport=httpx.MockTransport(handler),
             )
 
