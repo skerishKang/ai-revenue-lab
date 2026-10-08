@@ -321,6 +321,15 @@ class CanaryEvidenceSeamTests(unittest.TestCase):
         self.assertEqual(module._canonical_admission_result("engine_provider_timeout"), "UNPROVEN")
         self.assertEqual(module._canonical_admission_result(None), "UNPROVEN")
 
+    def test_owner_selected_model_is_bound_to_the_exact_claw_post(self):
+        self.assertEqual(module.CLAW_OWNER_SELECTED_MODEL_ID, "agnes-ai/agnes-3.0-flash")
+        source = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn('page.locator("#clawModelIdInput")', source)
+        self.assertIn("model_input.fill(CLAW_OWNER_SELECTED_MODEL_ID)", source)
+        self.assertIn("response.request.post_data_json", source)
+        self.assertIn('submitted.get("model_id") != CLAW_OWNER_SELECTED_MODEL_ID', source)
+        self.assertIn("EXPLICIT_MODEL_ID_IN_CLAW_POST=PASS", source)
+
     def test_one_shot_bounds_are_unchanged(self):
         self.assertEqual(module.MAX_CLAW_GENERAL_POSTS, 1)
         self.assertEqual(module.RETRY, 0)
