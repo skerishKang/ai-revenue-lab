@@ -1140,16 +1140,18 @@ def test_workflow_uses_served_version_never_settings_plane() -> None:
     assert "/settings" not in text
     assert "SETTINGS_PLANE_ONLY_ACCEPTANCE=NO" in text
     assert "SERVED_VERSION_READBACK=YES" in text
-    # PRE-MUTATION: deployments shape is pinned and the served version id is
-    # captured before the single overlay PUT.
-    assert "jq -e '.success == true'" in text
-    assert "(.result.deployments | type == \"array\" and length > 0)" in text
-    assert "(.result.deployments[0].versions | type == \"array\" and length == 1)" in text
-    assert ".result.deployments[0].versions[0].percentage == 100" in text
+    # PRE-MUTATION: the shared Engine guard is the sole deployments-envelope
+    # / served-version shape authority before the single overlay PUT.
+    assert text.count("b54_engine_served_version_guard.py resolve-active") >= 3
+    assert ".result.deployments[0].versions[0].version_id" not in text
+    assert ".result.deployments[0].versions[0].percentage" not in text
     assert "PREMUTATION_SERVED_VERSION_ID" in text
     assert 'echo "PREMUTATION_SERVED_VERSION_ID=${active_version}" >> "${GITHUB_ENV}"' in text
-    # POST-MUTATION: poll deployments to a single 100-percent version, capture
-    # the post id, and emit whether the secret PUT rotated the served version.
+    # POST-MUTATION: keep the same bounded poll, but every acceptable
+    # observation is resolved by the same canonical Engine guard.
+    assert "for _ in $(seq 1 30)" in text
+    assert "sleep 2" in text
+    assert "2>/dev/null" in text
     assert "POSTMUTATION_SERVED_VERSION_ID" in text
     assert "SERVED_VERSION_CHANGED_BY_SECRET_PUT=YES" in text
     assert "SERVED_VERSION_CHANGED_BY_SECRET_PUT=NO" in text
@@ -1270,6 +1272,8 @@ def test_workflow_never_touches_b62_live_config_or_padiem_chat() -> None:
     assert "deploy-production-engine" not in text
     pr_paths = re.search(r"pull_request:\s*\n\s*paths:\n((?:\s+- .*\n)+)", text)
     assert pr_paths is not None
+    assert "b54_engine_served_version_guard.py" in pr_paths.group(1)
+    assert "cloudflare_served_version.py" in pr_paths.group(1)
     for line in pr_paths.group(1).splitlines():
         assert "b62" not in line
 

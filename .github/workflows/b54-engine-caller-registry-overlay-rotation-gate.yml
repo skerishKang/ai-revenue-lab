@@ -70,6 +70,7 @@ on:
       - ".github/workflows/b54-engine-caller-registry-overlay-rotation-gate.yml"
       - ".github/scripts/b54_engine_caller_registry_overlay_rotation.py"
       - ".github/scripts/b54_engine_served_version_guard.py"
+      - ".github/scripts/cloudflare_served_version.py"
       - ".github/tests/test_b54_engine_caller_registry_overlay_rotation_gate.py"
       - ".github/tests/test_b54_p01_overlay_caller_id_parity.py"
   workflow_dispatch:
@@ -196,19 +197,14 @@ jobs:
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"
           deployments="${RUNNER_TEMP}/b54-engine-overlay-deployments-pre.json"
           curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/deployments" -o "${deployments}"
-          # Served-version authority: exactly one deployment entry with exactly
-          # one version at 100 percent. A settings GET, a secret PUT response,
-          # or a version-upload/latest read is never accepted as proof.
-          jq -e '.success == true' "${deployments}" >/dev/null
-          jq -e '(.result.deployments | type == "array" and length > 0)' "${deployments}" >/dev/null
-          jq -e '(.result.deployments[0].versions | type == "array" and length == 1)' "${deployments}" >/dev/null
-          jq -e '.result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
-          readback_version="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
+          # Served-version authority is owned by the shared Engine guard, which
+          # delegates the Cloudflare envelope/version-shape contract to the
+          # canonical resolver. A settings GET, secret PUT response, or
+          # version-upload/latest read is never accepted as proof.
           resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
           printf '%s\n' "${resolve_out}"
           active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
           test -n "${active_version}"
-          test "${active_version}" = "${readback_version}"
           version_detail="${RUNNER_TEMP}/b54-engine-overlay-version-pre.json"
           curl -fsS "${auth[@]}" "${api}/workers/scripts/${ENGINE_WORKER}/versions/${active_version}" -o "${version_detail}"
           # Evidence must reach the log BEFORE the exit status is evaluated:
@@ -346,16 +342,10 @@ jobs:
           deployments="${RUNNER_TEMP}/b54-engine-overlay-deployments-pre.json"
           curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
             "${api}/workers/scripts/${ENGINE_WORKER}/deployments" -o "${deployments}"
-          jq -e '.success == true' "${deployments}" >/dev/null
-          jq -e '(.result.deployments | type == "array" and length > 0)' "${deployments}" >/dev/null
-          jq -e '(.result.deployments[0].versions | type == "array" and length == 1)' "${deployments}" >/dev/null
-          jq -e '.result.deployments[0].versions[0].percentage == 100' "${deployments}" >/dev/null
-          readback_version="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
           resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
           printf '%s\n' "${resolve_out}"
           active_version="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
           test -n "${active_version}"
-          test "${active_version}" = "${readback_version}"
           # Fresh eligibility re-check and legacy trio NAME/TYPE capture on the
           # EXACT version about to be mutated. Evidence is printed before the
           # exit status is evaluated so a REFUSE_* disposition stays auditable.
@@ -455,25 +445,20 @@ jobs:
           for _ in $(seq 1 30); do
             deployments="${RUNNER_TEMP}/b54-engine-overlay-deployments-post.json"
             if curl -fsS -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-              "${api}/workers/scripts/${ENGINE_WORKER}/deployments" -o "${deployments}" &&
-              jq -e '(.success == true)
-                and ((.result.deployments | type == "array") and (.result.deployments | length > 0))
-                and ((.result.deployments[0].versions | type == "array") and (.result.deployments[0].versions | length == 1))
-                and (.result.deployments[0].versions[0].percentage == 100)' \
-                "${deployments}" >/dev/null; then
-              candidate="$(jq -r '.result.deployments[0].versions[0].version_id' "${deployments}")"
-              if [ -n "${candidate}" ] && [ "${candidate}" != "null" ]; then
-                post_version="${candidate}"
-                break
+              "${api}/workers/scripts/${ENGINE_WORKER}/deployments" -o "${deployments}"; then
+              resolve_out=""
+              if resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}" 2>/dev/null)"; then
+                candidate="$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')"
+                if [ -n "${candidate}" ]; then
+                  post_version="${candidate}"
+                  break
+                fi
               fi
             fi
             sleep 2
           done
           test -n "${post_version}"
           POSTMUTATION_SERVED_VERSION_ID="${post_version}"
-          resolve_out="$(python3 .github/scripts/b54_engine_served_version_guard.py resolve-active --deployments "${deployments}")"
-          printf '%s\n' "${resolve_out}"
-          test "$(printf '%s\n' "${resolve_out}" | sed -n 's/^ENGINE_ACTIVE_VERSION_ID=//p')" = "${POSTMUTATION_SERVED_VERSION_ID}"
           if [ "${POSTMUTATION_SERVED_VERSION_ID}" = "${PREMUTATION_SERVED_VERSION_ID}" ]; then
             echo 'SERVED_VERSION_CHANGED_BY_SECRET_PUT=NO'
           else

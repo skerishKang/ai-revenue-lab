@@ -72,6 +72,12 @@ globalThis.fetch = async (target, init = {}) => {
       headers: { "Content-Type": "image/png", "Cache-Control": "private, no-store" }
     });
   }
+  if (url.includes("/api/b66/quote/preview-base?saved_skill_id=")) {
+    return new Response(new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]), {
+      status: 200,
+      headers: { "Content-Type": "image/png", "Cache-Control": "private, no-store" }
+    });
+  }
   if (url.endsWith("/api/b66/quote/pdf")) {
     return new Response("%PDF-1.7\nsynthetic-test", {
       status: 200,
@@ -180,6 +186,24 @@ try {
   assert.equal(calls[4].url, "https://chat.padiem.net/api/b66/assets/" + ASSET_ID);
   assert.equal(calls[3].headers.get("cookie"), "padiem_session=opaque-test-token");
 
+  const previewSkillId = "b66skill_" + "c".repeat(32);
+  const previewBase = await worker.fetch(
+    new Request(
+      "https://quick-quote-kr.pages.dev/api/padiem/b66/quote/preview-base?saved_skill_id=" + previewSkillId,
+      { headers: { "Cookie": "padiem_session=opaque-test-token" } }
+    ),
+    env
+  );
+  assert.equal(previewBase.status, 200);
+  assert.equal(previewBase.headers.get("content-type"), "image/png");
+  assert.equal(calls.length, 6);
+  assert.equal(
+    calls[5].url,
+    "https://chat.padiem.net/api/b66/quote/preview-base?saved_skill_id=" + previewSkillId
+  );
+  assert.equal(calls[5].headers.get("accept"), "image/png,application/json");
+  assert.equal(calls[5].headers.get("cookie"), "padiem_session=opaque-test-token");
+
   const upstreamFailure = await worker.fetch(
     new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/quote/interpret", {
       method: "POST",
@@ -198,8 +222,8 @@ try {
   assert.equal(upstreamFailure.status, 502);
   assert.equal(upstreamFailure.headers.get("x-b66-upstream-class"), "upstream_timeout");
   assert.equal(upstreamFailure.headers.get("x-internal-debug"), null);
-  assert.equal(calls.length, 6);
-  assert.equal(calls[5].url, "https://chat.padiem.net/api/b66/quote/interpret");
+  assert.equal(calls.length, 7);
+  assert.equal(calls[6].url, "https://chat.padiem.net/api/b66/quote/interpret");
 
   const countBeforeDeny = calls.length;
   for (const request of [

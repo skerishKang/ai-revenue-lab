@@ -1180,7 +1180,12 @@
       authority,
       {
         taxReviewRequired,
-        slotSources: serverSkillActive ? skillUiState.serverSlotSources : {}
+        slotSources: serverSkillActive ? skillUiState.serverSlotSources : {},
+        certifiedPreviewBaseUrl: serverSkillActive &&
+            window.B66QuoteRuntimeBridge &&
+            typeof window.B66QuoteRuntimeBridge.certifiedPreviewBaseUrl === "function"
+          ? window.B66QuoteRuntimeBridge.certifiedPreviewBaseUrl(skillUiState.activeSkillId)
+          : ""
       }
     );
     if (model) TemplateRenderer.applyRenderModel(document, model);
