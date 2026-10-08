@@ -471,6 +471,97 @@ class P01LoopbackBrowserControlEvidenceClient:
         )
 
 
+
+# #3778: only the broker's real per-command approval may configure the
+# browser.control evidence client. Pairing acceptance from #3140 is NOT a
+# browser.control work ticket, even though the route URL is shared.
+_PAIRING_ACCEPTANCE_COMMAND_ID = "command.3140.p01.1"
+_PAIRING_ACCEPTANCE_REQUEST_ID = "request.3140.p01.1"
+
+
+@dataclass(frozen=True, slots=True)
+class BrowserControlP01CommandCorrelation:
+    """Trusted per-work-ticket facts received from canonical broker admission.
+
+    None of these fields is a grant, a model decision or a browser action.
+    The server must authenticate the command and approval; this class only
+    closes the request/response correlation and refuses the pairing sentinel.
+    """
+
+    command_id: str
+    request_id: str
+    binding_ref: str
+    request_fingerprint: str
+    run_ref: str
+
+    def __post_init__(self) -> None:
+        for field_name in ("command_id", "request_id", "binding_ref", "run_ref"):
+            object.__setattr__(self, field_name, _ref(getattr(self, field_name), field_name))
+        object.__setattr__(
+            self, "request_fingerprint", _digest(self.request_fingerprint, "request_fingerprint")
+        )
+        if self.command_id == _PAIRING_ACCEPTANCE_COMMAND_ID or (
+            self.request_id == _PAIRING_ACCEPTANCE_REQUEST_ID
+        ):
+            raise ContractError("browser.control requires a separate real P01 work-ticket command")
+
+
+class P01PerCommandBrowserControlEvidenceClient(P01LoopbackBrowserControlEvidenceClient):
+    """Strict per-command adapter to the existing canonical P01 evidence route.
+
+    Requires response echoes of the three authenticated broker correlations,
+    plus the exact run/fingerprint. An old #3140 pairing-only or incomplete
+    envelope cannot issue a browser-control lease. No new endpoint exists.
+    """
+
+    def __init__(
+        self,
+        *,
+        correlation: BrowserControlP01CommandCorrelation,
+        base_url: str,
+        opener: Any = None,
+    ) -> None:
+        if not isinstance(correlation, BrowserControlP01CommandCorrelation):
+            raise ContractError("canonical per-command browser.control correlation is required")
+        self._correlation = correlation
+        super().__init__(
+            base_url=base_url,
+            binding_ref=correlation.binding_ref,
+            request_id=correlation.request_id,
+            command_id=correlation.command_id,
+            opener=opener,
+        )
+
+    def _fetch(self, fingerprint: str) -> dict[str, Any]:
+        if fingerprint != self._correlation.request_fingerprint:
+            raise BrowserControlLeaseRefusal(
+                "p01_approval_invalid", "the work-ticket digest does not match this browser session"
+            )
+        envelope = super()._fetch(fingerprint)
+        for key, value in (
+            ("command_id", self._correlation.command_id),
+            ("request_id", self._correlation.request_id),
+            ("binding_ref", self._correlation.binding_ref),
+        ):
+            if envelope.get(key) != value:
+                raise BrowserControlLeaseRefusal(
+                    "p01_approval_invalid", "the canonical P01 evidence command does not match"
+                )
+        return envelope
+
+    def resolve(self, request_fingerprint: str) -> BrowserControlAuthorityEvidence:
+        evidence = super().resolve(request_fingerprint)
+        if (
+            evidence.approval_pause.run_id != self._correlation.run_ref
+            or evidence.permission_request.run_id != self._correlation.run_ref
+            or evidence.command_id != self._correlation.command_id
+        ):
+            raise BrowserControlLeaseRefusal(
+                "p01_approval_invalid", "the canonical browser-control approval run does not match"
+            )
+        return evidence
+
+
 class BrowserControlLeaseAuthority:
     """The trusted agent-side admission authority for bounded control sessions.
 
