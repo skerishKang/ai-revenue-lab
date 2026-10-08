@@ -828,7 +828,7 @@ def test_convergence_verifies_secrets_only_on_the_converged_version() -> None:
     # pre-deploy id, so the stale version cannot satisfy the step.
     detail = guard_run.index("versions/${active_version}")
     assert guard_run.index("${pre_version}") < detail
-    assert "--active-version \"${active_version}\"" in guard_run
+    assert '--active-version="${active_version}"' in guard_run
 
 
 def test_post_deploy_guard_reuses_the_canonical_resolver_only() -> None:
