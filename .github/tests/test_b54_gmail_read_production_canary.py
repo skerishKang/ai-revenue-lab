@@ -5,15 +5,119 @@ import importlib.util
 import io
 import json
 import pathlib
+import subprocess
+import sys
+import tempfile
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT_PATH = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a14_gmail_read_production_canary.py"
+WORKFLOW_PATH = ROOT / ".github" / "workflows" / "b54-gmail-read-production-canary.yml"
+SERVED_VERSION_GUARD_PATH = ROOT / ".github" / "scripts" / "b54_engine_served_version_guard.py"
+SERVED_VERSION_RESOLVER_PATH = ROOT / ".github" / "scripts" / "cloudflare_served_version.py"
+
+# #3809 (parent #3748): the resolved served version id must reach the canonical
+# argparse surface as ONE token. The canonical grammar accepts a leading hyphen,
+# so the separated form lets argparse consume the id as an option and abort with
+# a usage error before the predicate is ever consulted.
+#
+# This workflow's contract job does NOT install PyYAML, so the workflow is read
+# as text here rather than parsed. The guard invocation is a single command line,
+# with shell line-continuations joined when present.
+CANONICAL_ACTIVE_VERSION_ARGV = '--active-version="${active_version}"'
+SEPARATED_ACTIVE_VERSION_ARGV = '--active-version "${active_version}"'
+CANONICAL_VERSION_ID_GRAMMAR = r"grep -Eq '^[A-Za-z0-9._-]{1,64}$'"
+LEADING_HYPHEN_VERSION_ID = "-canonical-safe-v1"
+REGISTRY_BINDING_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
+CONNECTOR_GRANTS_BINDING_NAME = "ENGINE_CONNECTOR_GRANTS"
+CONNECTOR_GRANTS_DATABASE_ID = "6b77ad02-bc27-488f-bb97-6325f6750cba"
+GOOGLE_OAUTH_BINDING_NAME = "CONTROL_PLANE_GOOGLE_OAUTH"
+GOOGLE_OAUTH_SERVICE = "padiem-google-oauth-state"
+SENTINEL = "sentinel-secret-value-must-never-appear"
 
 spec = importlib.util.spec_from_file_location("a14_gmail_read_production_canary", SCRIPT_PATH)
 assert spec is not None and spec.loader is not None
 canary = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(canary)
+
+_resolver_spec = importlib.util.spec_from_file_location(
+    "cloudflare_served_version", SERVED_VERSION_RESOLVER_PATH
+)
+assert _resolver_spec is not None and _resolver_spec.loader is not None
+served_version = importlib.util.module_from_spec(_resolver_spec)
+_resolver_spec.loader.exec_module(served_version)
+
+
+def workflow_text() -> str:
+    return WORKFLOW_PATH.read_text(encoding="utf-8")
+
+
+def served_version_guard_commands() -> list[str]:
+    """Every command in this workflow that invokes the canonical served-version guard.
+
+    Shell line-continuations are joined so a reformatted multi-line invocation is
+    still measured as one command.
+    """
+    lines = workflow_text().splitlines()
+    commands: list[str] = []
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        if "b54_engine_served_version_guard.py verify" not in line:
+            index += 1
+            continue
+        chunk = [line]
+        while chunk[-1].rstrip().endswith("\\") and index + 1 < len(lines):
+            index += 1
+            chunk.append(lines[index])
+        commands.append("\n".join(chunk))
+        index += 1
+    return commands
+
+
+def assert_canonical_active_version_argv(command: str) -> None:
+    """The #3809 contract: one canonical argv token, never a separated pair."""
+    assert command.count("b54_engine_served_version_guard.py verify") == 1
+    assert CANONICAL_ACTIVE_VERSION_ARGV in command
+    assert SEPARATED_ACTIVE_VERSION_ARGV not in command
+
+
+def leading_hyphen_version_detail() -> dict:
+    """Minimal canonical version-detail payload whose id starts with a hyphen.
+
+    Carries exactly the bindings the real Gmail canary guard call requires, so the
+    probe exercises the shipped `--require-drive-runtime-bindings` path too.
+    """
+    return {
+        "success": True,
+        "result": {
+            "id": LEADING_HYPHEN_VERSION_ID,
+            "resources": {
+                "bindings": [
+                    {"name": REGISTRY_BINDING_NAME, "type": "secret_text", "text": SENTINEL},
+                    {
+                        "name": CONNECTOR_GRANTS_BINDING_NAME,
+                        "type": "d1",
+                        "id": CONNECTOR_GRANTS_DATABASE_ID,
+                    },
+                    {
+                        "name": GOOGLE_OAUTH_BINDING_NAME,
+                        "type": "service",
+                        "service": GOOGLE_OAUTH_SERVICE,
+                    },
+                ]
+            },
+        },
+    }
+
+
+def run_guard_cli(argv: list[str]) -> subprocess.CompletedProcess:
+    """Invoke the real guard CLI as a subprocess. Never touches Cloudflare or a provider."""
+    return subprocess.run(
+        [sys.executable, str(SERVED_VERSION_GUARD_PATH), *argv],
+        capture_output=True,
+        text=True,
+    )
 
 
 class GmailReadProductionCanaryTests(unittest.TestCase):
@@ -189,6 +293,103 @@ class GmailReadProductionCanaryTests(unittest.TestCase):
         self.assertIn("GMAIL_READ_CANARY=FAIL_NETWORK", output)
         self.assertNotIn("sensitive transport failure", output)
         self.assertIn("NETWORK_RETRY_COUNT=0", output)
+
+
+class GmailReadProductionCanaryWorkflowContractTests(unittest.TestCase):
+    """#3809 (parent #3748): the canonical served-version argv contract."""
+
+    def test_3809_gmail_canary_passes_the_active_version_as_one_canonical_argv_token(self) -> None:
+        """The sole served-version guard call must use the `=` form."""
+
+        commands = served_version_guard_commands()
+        self.assertEqual(len(commands), 1)
+        command = commands[0]
+        assert_canonical_active_version_argv(command)
+        # The guard call itself is otherwise untouched: same payload, same
+        # reviewed binding requirement, same silence.
+        self.assertIn('--version-settings "${version_detail}"', command)
+        self.assertIn("--require-drive-runtime-bindings", command)
+        self.assertIn(">/dev/null", command)
+
+    def test_3809_canonical_predicate_and_version_equality_are_preserved(self) -> None:
+        """The fix must not relax the grammar or the exact-version equality gate."""
+
+        text = workflow_text()
+        self.assertIn(CANONICAL_VERSION_ID_GRAMMAR, text)
+        self.assertIn('test "${active_version}" = "${EXPECTED_ENGINE_VERSION}"', text)
+        self.assertIn("ENGINE_EXPECTED_VERSION_ACTIVE=PASS", text)
+        # The canonical grammar is the shared resolver's, not a local re-derivation.
+        self.assertEqual(served_version.SERVED_VERSION_ID_RE.pattern, r"^[A-Za-z0-9._-]{1,64}$")
+        self.assertTrue(served_version.is_safe_version_id(LEADING_HYPHEN_VERSION_ID))
+
+    def test_3809_reintroducing_the_separated_argv_form_fails_the_contract(self) -> None:
+        """Negative control: the pre-#3809 form can no longer satisfy the contract."""
+
+        commands = served_version_guard_commands()
+        self.assertEqual(len(commands), 1)
+        command = commands[0]
+        # The shipped workflow must already carry the `=` form for this control to
+        # mean anything; a reverted file fails here, before the mutation is built.
+        assert_canonical_active_version_argv(command)
+        broken = command.replace(CANONICAL_ACTIVE_VERSION_ARGV, SEPARATED_ACTIVE_VERSION_ARGV, 1)
+        self.assertNotEqual(broken, command)
+        self.assertNotIn(CANONICAL_ACTIVE_VERSION_ARGV, broken)
+        self.assertIn(SEPARATED_ACTIVE_VERSION_ARGV, broken)
+        with self.assertRaises(AssertionError):
+            assert_canonical_active_version_argv(broken)
+
+    def test_3809_real_guard_cli_accepts_a_leading_hyphen_id_only_in_the_equals_form(self) -> None:
+        """CLI acceptance == is_safe_version_id() over an option-shaped id (#3748 item 2)."""
+
+        with tempfile.TemporaryDirectory() as tmp:
+            detail = pathlib.Path(tmp) / "gmail-canary-engine-version.json"
+            detail.write_text(json.dumps(leading_hyphen_version_detail()), encoding="utf-8")
+
+            # `=` form: argparse accepts the id, so the canonical predicate decides.
+            accepted = run_guard_cli(
+                [
+                    "verify",
+                    "--version-settings",
+                    str(detail),
+                    f"--active-version={LEADING_HYPHEN_VERSION_ID}",
+                    "--require-drive-runtime-bindings",
+                ]
+            )
+            self.assertEqual(accepted.returncode, 0, accepted.stderr)
+            self.assertIn("B54_ENGINE_SERVED_VERSION_GUARD=PASS", accepted.stdout)
+            self.assertIn("DRIVE_RUNTIME_BINDINGS_VALIDATED=YES", accepted.stdout)
+            self.assertNotIn("usage:", accepted.stderr.lower())
+            self.assertNotIn(SENTINEL, accepted.stdout + accepted.stderr)
+
+            # Separated form: argparse eats the id as an option and aborts first.
+            rejected = run_guard_cli(
+                [
+                    "verify",
+                    "--version-settings",
+                    str(detail),
+                    "--active-version",
+                    LEADING_HYPHEN_VERSION_ID,
+                    "--require-drive-runtime-bindings",
+                ]
+            )
+            self.assertEqual(rejected.returncode, 2)
+            self.assertIn("usage:", rejected.stderr.lower())
+            self.assertNotIn("B54_ENGINE_SERVED_VERSION_GUARD=PASS", rejected.stdout)
+
+            # Mismatch: the parser accepted the id, but the guard still fails closed.
+            mismatch = run_guard_cli(
+                [
+                    "verify",
+                    "--version-settings",
+                    str(detail),
+                    "--active-version=-different-safe-v1",
+                    "--require-drive-runtime-bindings",
+                ]
+            )
+            self.assertEqual(mismatch.returncode, 1)
+            self.assertIn("B54_ENGINE_SERVED_VERSION_GUARD=FAIL", mismatch.stderr)
+            self.assertNotIn("B54_ENGINE_SERVED_VERSION_GUARD=PASS", mismatch.stdout)
+            self.assertNotIn(SENTINEL, mismatch.stdout + mismatch.stderr)
 
 
 if __name__ == "__main__":
