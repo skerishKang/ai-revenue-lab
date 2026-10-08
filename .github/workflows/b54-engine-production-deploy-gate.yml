@@ -343,6 +343,27 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # An OWNER-selected per-request model does not change the canonical
+          # Padiem text-primary HOLD. An A12 primary-model smoke must not
+          # initiate a provider call without a declared primary (#3554/#3566).
+          # Import/invalid-declaration failures are fatal, never a silent skip.
+          a12_primary_state="$(python - <<'PY'
+          from padiem_ai_core.model_primary import TEXT_PRIMARY_MODEL_ID
+          if TEXT_PRIMARY_MODEL_ID is None:
+              print("HOLD")
+          elif isinstance(TEXT_PRIMARY_MODEL_ID, str) and TEXT_PRIMARY_MODEL_ID.strip():
+              print("ACTIVE")
+          else:
+              raise SystemExit("invalid canonical text primary")
+          PY
+          )"
+          if [ "$a12_primary_state" = 'HOLD' ]; then
+            echo 'A12_STREAM_REPLAY_SMOKE=SKIPPED_NO_PRIMARY_MODEL'
+            echo 'A12_PROVIDER_CALLS=0'
+            echo 'A12_SKIP_REASON=CANONICAL_TEXT_PRIMARY_HOLD'
+            exit 0
+          fi
+          test "$a12_primary_state" = 'ACTIVE'
           python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py | tee /tmp/a12_smoke.log
           # An external provider 5xx is recorded as SKIPPED_UPSTREAM, never as a
           # pass: the mandatory Engine-side stages (S0 manifest, S3 conflict)

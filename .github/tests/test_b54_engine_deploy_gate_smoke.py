@@ -192,6 +192,23 @@ def test_smoke_job_runs_the_a11_script_and_requires_its_verdict() -> None:
     assert A11_SMOKE_SCRIPT.is_file(), "a11 smoke script must exist in the repo"
 
 
+def test_a12_owner_hold_suppresses_implicit_provider_smoke() -> None:
+    script = next(
+        step["run"]
+        for step in _workflow()["jobs"]["smoke-idempotency"]["steps"]
+        if step.get("name") == "Run A12 streaming idempotency replay smoke"
+    )
+    assert "from padiem_ai_core.model_primary import TEXT_PRIMARY_MODEL_ID" in script
+    assert "if TEXT_PRIMARY_MODEL_ID is None:" in script
+    assert "A12_STREAM_REPLAY_SMOKE=SKIPPED_NO_PRIMARY_MODEL" in script
+    assert "A12_PROVIDER_CALLS=0" in script
+    assert "invalid canonical text primary" in script
+    assert script.index("A12_PROVIDER_CALLS=0") < script.index(
+        "python apps/padiem-ai-engine/scripts/a12_stream_replay_production_smoke.py"
+    )
+    assert "A12_STREAM_REPLAY_SMOKE=(PASS|SKIPPED_UPSTREAM)" in script
+
+
 def test_smoke_job_runs_a7_a10_a11_a12_in_deterministic_order() -> None:
     # Static order contract: A7 -> A10 -> A11 -> A12 inside smoke-idempotency.
     wf = _workflow()
