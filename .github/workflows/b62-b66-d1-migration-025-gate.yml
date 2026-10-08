@@ -156,6 +156,7 @@ jobs:
           import json, sys
           sql = """SELECT name, type, sql FROM sqlite_master WHERE name IN ('b66_quote_history','idx_b66_quote_history_owner_workspace_updated') ORDER BY name;
           PRAGMA table_info(b66_quote_history);
+          PRAGMA index_list(b66_quote_history);
           PRAGMA index_info(idx_b66_quote_history_owner_workspace_updated);
           PRAGMA index_xinfo(idx_b66_quote_history_owner_workspace_updated);
           PRAGMA foreign_key_list(b66_quote_history);"""
@@ -261,6 +262,7 @@ jobs:
           import json, sys
           sql = """SELECT name, type, sql FROM sqlite_master WHERE name IN ('b66_quote_history','idx_b66_quote_history_owner_workspace_updated') ORDER BY name;
           PRAGMA table_info(b66_quote_history);
+          PRAGMA index_list(b66_quote_history);
           PRAGMA index_info(idx_b66_quote_history_owner_workspace_updated);
           PRAGMA index_xinfo(idx_b66_quote_history_owner_workspace_updated);
           PRAGMA foreign_key_list(b66_quote_history);"""
@@ -345,6 +347,7 @@ jobs:
           import json, sys
           sql = """SELECT name, type, sql FROM sqlite_master WHERE name IN ('b66_quote_history','idx_b66_quote_history_owner_workspace_updated') ORDER BY name;
           PRAGMA table_info(b66_quote_history);
+          PRAGMA index_list(b66_quote_history);
           PRAGMA index_info(idx_b66_quote_history_owner_workspace_updated);
           PRAGMA index_xinfo(idx_b66_quote_history_owner_workspace_updated);
           PRAGMA foreign_key_list(b66_quote_history);"""

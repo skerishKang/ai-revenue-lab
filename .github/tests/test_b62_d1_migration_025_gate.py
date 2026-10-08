@@ -43,25 +43,55 @@ def _table_sql() -> str:
     )"""
 
 
+def _index_sql(*, unique: bool = False, table: str = "b66_quote_history", partial: bool = False) -> str:
+    keyword = "CREATE UNIQUE INDEX" if unique else "CREATE INDEX"
+    clause = " WHERE user_id IS NOT NULL" if partial else ""
+    return (
+        f"{keyword} idx_b66_quote_history_owner_workspace_updated "
+        f"ON {table} (user_id, workspace_id, updated_at DESC){clause}"
+    )
+
+
+def _index_list_row(*, unique: int = 0, partial: int = 0) -> dict:
+    return {
+        "name": "idx_b66_quote_history_owner_workspace_updated",
+        "unique": unique,
+        "origin": "c",
+        "partial": partial,
+    }
+
+
 def _payload(*, state: str):
     if state == "missing":
-        return {"success": True, "result": [_result([]) for _ in range(5)]}
+        return {"success": True, "result": [_result([]) for _ in range(6)]}
 
     table_sql = _table_sql()
+    index_sql = _index_sql()
+    index_list = [_index_list_row()]
+
     if state == "drift":
         table_sql = table_sql.replace(
             "REFERENCES users(id) ON DELETE CASCADE",
             "REFERENCES users(id) ON DELETE SET NULL",
         )
+    elif state == "foreign_table_index":
+        # index name matches, but it is owned by another table (absent from index_list)
+        index_sql = _index_sql(table="other_table")
+        index_list = [_index_list_row()]
+        index_list[0]["name"] = "idx_other_table_owner_workspace_updated"
+    elif state == "unique_index":
+        index_sql = _index_sql(unique=True)
+        index_list = [_index_list_row(unique=1)]
+    elif state == "partial_index":
+        index_sql = _index_sql(partial=True)
+        index_list = [_index_list_row(partial=1)]
+
     objects = [
         {"name": "b66_quote_history", "type": "table", "sql": table_sql},
         {
             "name": "idx_b66_quote_history_owner_workspace_updated",
             "type": "index",
-            "sql": (
-                "CREATE INDEX idx_b66_quote_history_owner_workspace_updated "
-                "ON b66_quote_history (user_id, workspace_id, updated_at DESC)"
-            ),
+            "sql": index_sql,
         },
     ]
     columns = [
@@ -81,9 +111,33 @@ def _payload(*, state: str):
         "result": [
             _result(objects),
             _result(columns),
+            _result(index_list),
             _result(index_columns),
             _result(index_detail),
             _result(foreign_keys),
+        ],
+    }
+
+
+def _sqlite_payload(db) -> dict:
+    """Build the gate's six query results from a real SQLite database."""
+
+    def rows(sql: str) -> list[dict]:
+        return [dict(row) for row in db.execute(sql).fetchall()]
+
+    return {
+        "success": True,
+        "result": [
+            _result(rows(
+                "SELECT name, type, sql FROM sqlite_master WHERE name IN "
+                "('b66_quote_history','idx_b66_quote_history_owner_workspace_updated') "
+                "ORDER BY name"
+            )),
+            _result(rows("PRAGMA table_info(b66_quote_history)")),
+            _result(rows("PRAGMA index_list(b66_quote_history)")),
+            _result(rows("PRAGMA index_info(idx_b66_quote_history_owner_workspace_updated)")),
+            _result(rows("PRAGMA index_xinfo(idx_b66_quote_history_owner_workspace_updated)")),
+            _result(rows("PRAGMA foreign_key_list(b66_quote_history)")),
         ],
     }
 
@@ -103,16 +157,40 @@ def test_classifier_rejects_primary_key_index_and_direction_drift() -> None:
     assert helper.classify_schema(composite_pk) == "drift"
 
     wrong_order = _payload(state="exact")
-    wrong_order["result"][2]["results"][0]["name"] = "workspace_id"
+    wrong_order["result"][3]["results"][0]["name"] = "workspace_id"
     assert helper.classify_schema(wrong_order) == "drift"
 
     ascending_updated_at = _payload(state="exact")
-    ascending_updated_at["result"][3]["results"][2]["desc"] = 0
+    ascending_updated_at["result"][4]["results"][2]["desc"] = 0
     assert helper.classify_schema(ascending_updated_at) == "drift"
 
     bad_fk = _payload(state="exact")
-    bad_fk["result"][4]["results"][0]["on_delete"] = "NO ACTION"
+    bad_fk["result"][5]["results"][0]["on_delete"] = "NO ACTION"
     assert helper.classify_schema(bad_fk) == "drift"
+
+
+def test_classifier_rejects_foreign_unique_and_partial_index() -> None:
+    helper = _load_helper()
+
+    # FOREIGN_TABLE_INDEX: name matches but the index is owned by another table.
+    foreign = _payload(state="foreign_table_index")
+    assert helper.classify_schema(foreign) == "drift"
+    # the same defect proved by the sqlite_master SQL alone (index_list still names it)
+    foreign_sql_only = _payload(state="exact")
+    foreign_sql_only["result"][0]["results"][1]["sql"] = _index_sql(table="other_table")
+    assert helper.classify_schema(foreign_sql_only) == "drift"
+
+    # UNIQUE_INDEX: proved by the index SQL and, independently, by index_list.unique.
+    assert helper.classify_schema(_payload(state="unique_index")) == "drift"
+    unique_flag_only = _payload(state="exact")
+    unique_flag_only["result"][2]["results"][0]["unique"] = 1
+    assert helper.classify_schema(unique_flag_only) == "drift"
+
+    # PARTIAL_INDEX: proved by the index SQL and, independently, by index_list.partial.
+    assert helper.classify_schema(_payload(state="partial_index")) == "drift"
+    partial_flag_only = _payload(state="exact")
+    partial_flag_only["result"][2]["results"][0]["partial"] = 1
+    assert helper.classify_schema(partial_flag_only) == "drift"
 
 
 def test_classifier_accepts_schema_created_by_migration() -> None:
@@ -136,6 +214,7 @@ def test_classifier_accepts_schema_created_by_migration() -> None:
         ).fetchall()
     ]
     columns = [dict(row) for row in db.execute("PRAGMA table_info(b66_quote_history)").fetchall()]
+    index_list = [dict(row) for row in db.execute("PRAGMA index_list(b66_quote_history)").fetchall()]
     index_columns = [
         dict(row)
         for row in db.execute(
@@ -157,12 +236,69 @@ def test_classifier_accepts_schema_created_by_migration() -> None:
         "result": [
             _result(objects),
             _result(columns),
+            _result(index_list),
             _result(index_columns),
             _result(index_detail),
             _result(foreign_keys),
         ],
     }
     assert helper.classify_schema(payload) == "exact"
+
+
+def test_classifier_rejects_real_sqlite_foreign_unique_and_partial_index() -> None:
+    """Independent reproduction of the three CENTRAL defects against real SQLite."""
+    helper = _load_helper()
+    migration = MIGRATION.read_text(encoding="utf-8")
+
+    def fresh_db():
+        db = sqlite3.connect(":memory:")
+        db.row_factory = sqlite3.Row
+        db.executescript(
+            """
+            PRAGMA foreign_keys=ON;
+            CREATE TABLE users (id TEXT PRIMARY KEY);
+            """
+        )
+        db.executescript(migration)
+        return db
+
+    # control: the reviewed migration index classifies exact
+    assert helper.classify_schema(_sqlite_payload(fresh_db())) == "exact"
+
+    # FOREIGN_TABLE_INDEX: same name, wrong owning table -> DRIFT
+    foreign = fresh_db()
+    foreign.executescript(
+        """
+        DROP INDEX idx_b66_quote_history_owner_workspace_updated;
+        CREATE TABLE other_table (user_id TEXT, workspace_id TEXT, updated_at TEXT);
+        CREATE INDEX idx_b66_quote_history_owner_workspace_updated
+        ON other_table (user_id, workspace_id, updated_at DESC);
+        """
+    )
+    assert helper.classify_schema(_sqlite_payload(foreign)) == "drift"
+
+    # UNIQUE_INDEX -> DRIFT
+    unique = fresh_db()
+    unique.executescript(
+        """
+        DROP INDEX idx_b66_quote_history_owner_workspace_updated;
+        CREATE UNIQUE INDEX idx_b66_quote_history_owner_workspace_updated
+        ON b66_quote_history (user_id, workspace_id, updated_at DESC);
+        """
+    )
+    assert helper.classify_schema(_sqlite_payload(unique)) == "drift"
+
+    # PARTIAL_INDEX -> DRIFT
+    partial = fresh_db()
+    partial.executescript(
+        """
+        DROP INDEX idx_b66_quote_history_owner_workspace_updated;
+        CREATE INDEX idx_b66_quote_history_owner_workspace_updated
+        ON b66_quote_history (user_id, workspace_id, updated_at DESC)
+        WHERE user_id IS NOT NULL;
+        """
+    )
+    assert helper.classify_schema(_sqlite_payload(partial)) == "drift"
 
 
 def test_migration_is_additive_and_preserves_existing_rows() -> None:
@@ -230,8 +366,9 @@ def test_workflow_is_pr_safe_and_migration_specific() -> None:
     # 3. schema is checked against the live PADIEM_CHAT_DB binding.
     assert "PADIEM_CHAT_DB" in workflow
     assert "workers/scripts/${B62_WORKER}/settings" in workflow
-    # 4. table, columns, primary key, foreign key and index order + DESC.
+    # 4. table, columns, primary key, foreign key, and index ownership + order + DESC.
     assert "table_info(b66_quote_history)" in workflow
+    assert "index_list(b66_quote_history)" in workflow
     assert "index_info(idx_b66_quote_history_owner_workspace_updated)" in workflow
     assert "index_xinfo(idx_b66_quote_history_owner_workspace_updated)" in workflow
     assert "foreign_key_list(b66_quote_history)" in workflow
@@ -270,7 +407,9 @@ def test_workflow_is_pr_safe_and_migration_specific() -> None:
 if __name__ == "__main__":
     test_schema_classifier_missing_exact_drift()
     test_classifier_rejects_primary_key_index_and_direction_drift()
+    test_classifier_rejects_foreign_unique_and_partial_index()
     test_classifier_accepts_schema_created_by_migration()
+    test_classifier_rejects_real_sqlite_foreign_unique_and_partial_index()
     test_migration_is_additive_and_preserves_existing_rows()
     test_migration_contract_is_additive_and_allows_foreign_keys_pragma()
     test_workflow_is_pr_safe_and_migration_specific()

@@ -4,6 +4,17 @@
 Bounded, read-only classifier for the #3405 durable quote-history table.
 It proves the migration 025 contract from `sqlite_master` plus `PRAGMA`
 metadata only; it never reads application rows and never mutates anything.
+
+Beyond the column / primary-key / foreign-key contract it also proves the
+index is the *reviewed* index:
+
+* it is owned by ``b66_quote_history`` (present in ``PRAGMA index_list`` for
+  that table, and its ``sqlite_master`` SQL names that table);
+* it is not a UNIQUE index; and
+* it is not a partial index (no ``WHERE`` clause).
+
+A foreign-table index, a UNIQUE index or a partial index that happens to share
+the expected name/columns/direction is classified as ``drift``.
 """
 
 from __future__ import annotations
@@ -53,19 +64,43 @@ def _as_int(value: object) -> int | None:
     return None
 
 
+def _index_is_reviewed(index: object, index_list: list[dict[str, object]]) -> bool:
+    """Prove the index is the reviewed non-unique, non-partial table index."""
+    # 1. owned by b66_quote_history: it must be listed for that table, exactly once.
+    owned = [row for row in index_list if row.get("name") == INDEX]
+    if len(owned) != 1:
+        return False
+    entry = owned[0]
+    if _as_int(entry.get("unique")) != 0:
+        return False
+    if _as_int(entry.get("partial")) != 0:
+        return False
+
+    # 2. sqlite_master SQL: same table, not UNIQUE, no WHERE (partial) clause.
+    index_sql = _normalized_sql(index.get("sql"))
+    if f"on {TABLE}" not in index_sql:
+        return False
+    if re.search(r"\bunique\b", index_sql):
+        return False
+    if re.search(r"\bwhere\b", index_sql):
+        return False
+    return True
+
+
 def classify_schema(payload: object) -> str:
     """Return missing, exact or drift without reading application rows."""
     if not isinstance(payload, dict) or payload.get("success") is not True:
         raise SchemaEvidenceError("Cloudflare D1 response is not successful")
     result = payload.get("result")
-    if not isinstance(result, list) or len(result) != 5:
-        raise SchemaEvidenceError("expected exactly five schema query results")
+    if not isinstance(result, list) or len(result) != 6:
+        raise SchemaEvidenceError("expected exactly six schema query results")
 
     objects = _results(result[0])
     columns = _results(result[1])
-    index_columns = _results(result[2])
-    index_detail = _results(result[3])
-    foreign_keys = _results(result[4])
+    index_list = _results(result[2])
+    index_columns = _results(result[3])
+    index_detail = _results(result[4])
+    foreign_keys = _results(result[5])
 
     by_name = {
         row.get("name"): row
@@ -79,6 +114,7 @@ def classify_schema(payload: object) -> str:
         table is None
         and index is None
         and not columns
+        and not index_list
         and not index_columns
         and not index_detail
         and not foreign_keys
@@ -89,11 +125,15 @@ def classify_schema(payload: object) -> str:
     if index is None or index.get("type") != "index":
         return "drift"
 
-    # 1. eleven columns, exact names and order
+    # 1. the index is the reviewed index of this table (owned, non-unique, non-partial)
+    if not _index_is_reviewed(index, index_list):
+        return "drift"
+
+    # 2. eleven columns, exact names and order
     if tuple(str(row.get("name", "")) for row in columns) != COLUMNS:
         return "drift"
 
-    # 2. single-column primary key on id
+    # 3. single-column primary key on id
     pk = tuple(
         str(row.get("name", ""))
         for row in sorted(columns, key=lambda row: _as_int(row.get("pk")) or 0)
@@ -102,18 +142,18 @@ def classify_schema(payload: object) -> str:
     if pk != PRIMARY_KEY:
         return "drift"
 
-    # 3. index column order
+    # 4. index column order
     if tuple(str(row.get("name", "")) for row in index_columns) != INDEX_COLUMNS:
         return "drift"
 
-    # 4. index sort direction, including updated_at DESC (index_xinfo key columns)
+    # 5. index sort direction, including updated_at DESC (index_xinfo key columns)
     key_rows = [row for row in index_detail if _as_int(row.get("key")) == 1]
     if tuple(str(row.get("name", "")) for row in key_rows) != INDEX_COLUMNS:
         return "drift"
     if tuple(_as_int(row.get("desc")) for row in key_rows) != INDEX_DESCENDING:
         return "drift"
 
-    # 5. additive table contract fragments
+    # 6. additive table contract fragments
     table_sql = _normalized_sql(table.get("sql"))
     required = (
         "id text primary key",
@@ -131,7 +171,7 @@ def classify_schema(payload: object) -> str:
     if any(fragment not in table_sql for fragment in required):
         return "drift"
 
-    # 6. foreign key user_id -> users(id) ON DELETE CASCADE
+    # 7. foreign key user_id -> users(id) ON DELETE CASCADE
     if len(foreign_keys) != 1:
         return "drift"
     fk = foreign_keys[0]
