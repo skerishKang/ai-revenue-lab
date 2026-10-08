@@ -309,6 +309,20 @@ export class HeadlessRunnerSupervisor implements RunnerSupervisor {
       : null;
   }
 
+  /**
+   * #3669 — the live resident's bounded browser-control lease answer
+   * (both request kinds share the event tag), one-shot, or null. Read only by
+   * the main-process lease authority.
+   */
+  takeResidentBrowserControlLeaseLine(): string | null {
+    const port = this.#port as {
+      takeResidentBrowserControlLeaseLine?: () => string | null;
+    };
+    return port.takeResidentBrowserControlLeaseLine
+      ? port.takeResidentBrowserControlLeaseLine()
+      : null;
+  }
+
   residentSnapshot(): { pid: number | null; running: boolean; startedAtMs: number | null } {
     const handle = this.#residentHandle;
     return {
