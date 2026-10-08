@@ -226,3 +226,102 @@ class CloudflareD1BrowserControlP01ReceiptStore:
             isinstance(result, Mapping)
             and result.get("meta", {}).get("changes") == 1
         )
+
+    async def commit_claimed_browser_approval(
+        self, *,
+        app_id: str,
+        continuation_ref: str,
+        claim_token: str,
+        pause: ApprovalPause,
+        decision: VerifiedApprovalDecision,
+        now: datetime,
+    ) -> EngineApprovedBrowserControlP01Receipt:
+        """Atomic D1 claim -> CONSUMED + approved receipt, NO tool execution.
+
+        Intended ONLY for a future service-identity authenticated first-party
+        Engine owner that has ALREADY independently verified the decision.
+        A caller-supplied decision instance is NOT authentication. This
+        source method is NOT wired to Engine/Worker routes.
+
+        The claim token is retained only BETWEEN these transaction statements
+        (never outside the atomic D1 batch) to prohibit replay of consumed work.
+        """
+        if not callable(getattr(self._binding, "batch", None)):
+            raise TypeError("atomic canonical D1 batch is required")
+        token = _ref(claim_token, "claim_token")
+        if not token.startswith("claim_"):
+            raise ValueError("canonical Engine continuation claim required")
+        receipt = EngineApprovedBrowserControlP01Receipt.from_verified_engine_decision(
+            app_id=app_id, continuation_ref=continuation_ref,
+            pause=pause, decision=decision, now=now,
+        )
+        moment = _aware(now, "now").isoformat()
+
+        predicate = (
+            "app_id=? AND continuation_ref=? "
+            "AND json_extract(pause_json,'$.pause_id')=? "
+            "AND json_extract(pause_json,'$.run_id')=? "
+            "AND json_extract(pause_json,'$.invocation_sha256')=? "
+            "AND json_extract(pause_json,'$.tool_id')='browser.control' "
+            "AND json_array_length(json_extract(pause_json,'$.approval_scope'))=1 "
+            "AND json_extract(pause_json,'$.approval_scope[0]')='browser.control' "
+            "AND json_extract(pause_json,'$.expires_at')=?"
+        )
+        identity = (
+            receipt.app_id, receipt.continuation_ref, receipt.pause_id,
+            receipt.run_id, receipt.invocation_sha256, receipt.expires_at.isoformat(),
+        )
+        # Step 1: conditional CAS preserving claim inside this transaction.
+        update = self._binding.prepare(
+            f"UPDATE {CONTINUATIONS} SET state='consumed',updated_at=? "
+            f"WHERE {predicate} AND state='claimed' "
+            "AND claim_token=? AND expires_at>?"
+        ).bind(moment, *identity, token, moment)
+        # Step 2: an already-consumed row has a NULL claim_token, so cannot
+        # produce a new receipt. Duplicate evidence aborts the whole D1 batch.
+        insert = self._binding.prepare(
+            f"INSERT INTO {TABLE} (app_id,continuation_ref,pause_id,decision_id,"
+            "evidence_ref,authority_ref,run_id,invocation_sha256,approved_at,expires_at) "
+            "SELECT c.app_id,c.continuation_ref,?,?,?,?,?,?,?,? "
+            f"FROM {CONTINUATIONS} c WHERE c.app_id=? AND c.continuation_ref=? "
+            "AND c.state='consumed' AND c.claim_token=? "
+            "AND json_extract(c.pause_json,'$.pause_id')=? "
+            "AND json_extract(c.pause_json,'$.run_id')=? "
+            "AND json_extract(c.pause_json,'$.invocation_sha256')=? "
+            "AND json_extract(c.pause_json,'$.tool_id')='browser.control' "
+            "AND json_array_length(json_extract(c.pause_json,'$.approval_scope'))=1 "
+            "AND json_extract(c.pause_json,'$.approval_scope[0]')='browser.control' "
+            "AND json_extract(c.pause_json,'$.expires_at')=?"
+        ).bind(
+            receipt.pause_id, receipt.decision_id, receipt.evidence_ref,
+            receipt.authority_ref, receipt.run_id, receipt.invocation_sha256,
+            receipt.approved_at.isoformat(), receipt.expires_at.isoformat(),
+            receipt.app_id, receipt.continuation_ref, token, receipt.pause_id,
+            receipt.run_id, receipt.invocation_sha256, receipt.expires_at.isoformat(),
+        )
+        # Step 3: clear claim only when matching receipt exists.
+        finish = self._binding.prepare(
+            f"UPDATE {CONTINUATIONS} SET claim_token=NULL WHERE {predicate} "
+            "AND state='consumed' AND claim_token=? "
+            f"AND EXISTS (SELECT 1 FROM {TABLE} r "
+            "WHERE r.app_id=? AND r.continuation_ref=? AND r.decision_id=? "
+            "AND r.pause_id=? AND r.invocation_sha256=?)"
+        ).bind(
+            *identity, token, receipt.app_id, receipt.continuation_ref,
+            receipt.decision_id, receipt.pause_id, receipt.invocation_sha256,
+        )
+        try:
+            outcomes = await _maybe_await(self._binding.batch([update, insert, finish]))
+        except Exception:  # noqa: BLE001 - D1 failure must never mint approval
+            raise ValueError("atomic Engine P01 receipt commit failed") from None
+        if (
+            type(outcomes) is not list
+            or len(outcomes) != 3
+            or any(
+                not isinstance(result, Mapping)
+                or result.get("meta", {}).get("changes") != 1
+                for result in outcomes
+            )
+        ):
+            raise ValueError("atomic Engine P01 receipt claim not completed")
+        return receipt

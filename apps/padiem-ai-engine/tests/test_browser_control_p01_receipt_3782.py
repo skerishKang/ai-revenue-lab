@@ -66,6 +66,20 @@ class _D1:
     def prepare(self, sql):
         return _Statement(self.db, sql)
 
+    async def batch(self, statements):
+        """Test-only SQLite D1 batch: one transaction, rollback on any error."""
+        try:
+            self.db.execute("BEGIN")
+            outcomes = []
+            for statement in statements:
+                result = self.db.execute(statement._sql, statement._params)
+                outcomes.append({"meta": {"changes": result.rowcount}})
+            self.db.commit()
+            return outcomes
+        except Exception:
+            self.db.rollback()
+            raise
+
 
 @pytest.fixture
 def db():
@@ -285,3 +299,117 @@ def test_engine_receipt_migration_is_idempotent_in_synthetic_sqlite(db):
         )
         if col[1] == "invocation_sha256"
     ]) == 1
+
+
+def _claim(db, *, state="claimed", token="claim_browser.3782", p=None, ref=CONT_REF):
+    seed(db, p, state=state, continuation_ref=ref)
+    db.db.execute(
+        "UPDATE padiem_engine_continuations SET claim_token=? "
+        "WHERE app_id=? AND continuation_ref=?",
+        (token, APP_ID, ref),
+    )
+    db.db.commit()
+
+
+def _status(db, ref=CONT_REF):
+    row = db.db.execute(
+        "SELECT state, claim_token FROM padiem_engine_continuations "
+        "WHERE app_id=? AND continuation_ref=?", (APP_ID, ref),
+    ).fetchone()
+    return tuple(row) if row else None
+
+
+def _atomic_commit(store, *, token="claim_browser.3782", p=None, d=None, ref=CONT_REF):
+    p = p or pause()
+    return run(store.commit_claimed_browser_approval(
+        app_id=APP_ID, continuation_ref=ref, claim_token=token,
+        pause=p, decision=d or decision(p), now=NOW,
+    ))
+
+
+def test_claim_and_receipt_are_one_atomic_d1_transaction(db):
+    _claim(db)
+    store = CloudflareD1BrowserControlP01ReceiptStore(db)
+    assert run(store.resolve_active(app_id=APP_ID, continuation_ref=CONT_REF, now=NOW)) is None
+    receipt = _atomic_commit(store)
+    assert _status(db) == ("consumed", None)
+    assert receipt == approved()
+    assert run(store.resolve_active(app_id=APP_ID, continuation_ref=CONT_REF, now=NOW)) == receipt
+    with pytest.raises(ValueError, match="not completed"):
+        _atomic_commit(store)
+    assert _status(db) == ("consumed", None)
+
+
+@pytest.mark.parametrize("bad_state", ["active", "consumed", "cancelled", "expired", "cancelling"])
+def test_no_claim_cannot_atomically_commit_receipt(db, bad_state):
+    _claim(db, state=bad_state, token=None)
+    store = CloudflareD1BrowserControlP01ReceiptStore(db)
+    with pytest.raises(ValueError, match="not completed"):
+        _atomic_commit(store)
+    assert _status(db) == (bad_state, None)
+    assert run(store.resolve_active(app_id=APP_ID, continuation_ref=CONT_REF, now=NOW)) is None
+
+
+def test_wrong_claim_token_has_zero_consumption_and_zero_receipt(db):
+    _claim(db)
+    store = CloudflareD1BrowserControlP01ReceiptStore(db)
+    with pytest.raises(ValueError, match="not completed"):
+        _atomic_commit(store, token="claim_other.3782")
+    assert _status(db) == ("claimed", "claim_browser.3782")
+    assert run(store.resolve_active(app_id=APP_ID, continuation_ref=CONT_REF, now=NOW)) is None
+    assert _atomic_commit(store) == approved()
+
+
+@pytest.mark.parametrize("pause_change", [
+    {"run_id": "run.other"},
+    {"invocation_sha256": "b" * 64},
+    {"approval_scope": ("process.execute",)},
+    {"expires_at": NOW + timedelta(minutes=1)},
+])
+def test_pause_drift_rolls_back_claimed_state(db, pause_change):
+    _claim(db)
+    store = CloudflareD1BrowserControlP01ReceiptStore(db)
+    try:
+        _atomic_commit(store, p=pause(**pause_change))
+    except (ValueError, AgentApprovalError):
+        pass
+    else:
+        pytest.fail("pause drift was accepted")
+    assert _status(db) == ("claimed", "claim_browser.3782")
+    assert run(store.resolve_active(app_id=APP_ID, continuation_ref=CONT_REF, now=NOW)) is None
+
+
+def test_duplicate_decision_causes_transaction_rollback_on_second_claim(db):
+    _claim(db)
+    _claim(db, ref="cont_secondary.3782")
+    store = CloudflareD1BrowserControlP01ReceiptStore(db)
+    _atomic_commit(store)
+    with pytest.raises(ValueError, match="commit failed"):
+        _atomic_commit(store, ref="cont_secondary.3782")
+    assert _status(db, "cont_secondary.3782") == ("claimed", "claim_browser.3782")
+    assert run(store.resolve_active(
+        app_id=APP_ID, continuation_ref="cont_secondary.3782", now=NOW,
+    )) is None
+
+
+def test_no_d1_batch_never_downgrades_to_multi_transaction_write(db):
+    _claim(db)
+    original_batch = db.batch
+    db.batch = None
+    try:
+        with pytest.raises(TypeError, match="batch is required"):
+            _atomic_commit(CloudflareD1BrowserControlP01ReceiptStore(db))
+    finally:
+        db.batch = original_batch
+    assert _status(db) == ("claimed", "claim_browser.3782")
+
+
+def test_wrong_decision_or_tool_cannot_commit_browser_receipt(db):
+    _claim(db)
+    store = CloudflareD1BrowserControlP01ReceiptStore(db)
+    with pytest.raises((ValueError, AgentApprovalError)):
+        _atomic_commit(store, d=decision(outcome=ApprovalOutcome.DENIED))
+    assert _status(db) == ("claimed", "claim_browser.3782")
+    with pytest.raises((ValueError, AgentApprovalError)):
+        _atomic_commit(store, p=pause(tool_id="process.execute"))
+    assert _status(db) == ("claimed", "claim_browser.3782")
