@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-"""B66's approved free-first selector over B14's existing trusted registry.
+"""B66 owner-allowed registered-model selector over B14's trusted registry.
 
-There is no new registry or provider connection here. Both fixed, bounded GETs
-go through the existing B14 Service Binding. The caller supplies no model ID.
-No provider inference/fallback occurs on failure or ambiguity.
+The historical file/class names are preserved for import compatibility; their
+old free-first qualification is retired by the B66 owner price-filter decision.
+Only two fixed, bounded GETs traverse B14's existing Service Binding, with no
+customer-supplied model hint. Multiple eligible models fail closed (no auto
+priority, no provider inference and no retry/fallback).
 """
 
 import json
@@ -18,13 +20,13 @@ from .b66_registered_model_boundary import (
 
 _MODELS_PATH = "/api/pilot/models"
 _READINESS_PATH = "/api/pilot/provider-readiness"
-_OWNER_POLICY = "b66.quote.free-first.registered.v1"
+_OWNER_POLICY = "OWNER_REGISTERED_AND_ALLOWED"
 _MAX_REGISTRY_BODY = 131072
 _MAX_REGISTRY_ROWS = 256
 
 
 def _excluded_by_owner(model_id: str) -> bool:
-    """Refuse owner-excluded model families for B66's customer auto selection.
+    """Refuse owner-excluded model families for B66's product-specific selection.
 
     These are exclusions, not replacement/model choice. Keep legacy B14 registry
     metadata unchanged until broader dependency and entitlement review.
@@ -100,32 +102,39 @@ def _qualified_routes(
         if not isinstance(mid, str) or not isinstance(pid, str) or mid in seen:
             raise B66ModelRouteError("selection_ambiguous")
         seen.add(mid)
-        # Most recent owner exclusion overrides stale B14 registry/free metadata.
-        # Never select these for B66 even when B14 marks them auto_eligible.
-        if _excluded_by_owner(mid):
+        # Both the local owner exclusion and B14's explicit exclusion claim
+        # must permit the exact route. Missing owner_excluded fails closed.
+        if _excluded_by_owner(mid) or route.get("owner_excluded") is not False:
             continue
-        # This policy is free-first and free-only until paid-budget authority
-        # exists. Explicit-only/manual routes do not become automatic.
-        if (
-            route.get("free") is not True
-            or route.get("auto_eligible") is not True
-            or route.get("explicit_only") is not False
-        ):
-            continue
+        # B14 free/public/auto_eligible/explicit_only flags belong to its
+        # general-purpose auto router. They are NOT B66 eligibility gates.
+        # B66 can use a paid or manual-pin registered route ONLY when the
+        # exact route is owner-allowed, chat-capable and live-ready; two such
+        # candidates remain ambiguous and must not be auto-ranked.
         info = catalog_by_id.get(mid)
         provider = providers_by_id.get(pid)
-        if info is None or provider is None:
+        if provider is None:
             continue
-        if info.get("provider_id") != pid:
+        # Display catalog omits manual-pin registrations; consume exact
+        # capabilities attested in the trusted B14 registered-route record.
+        # A present display summary must not contradict the provider.
+        if info is not None and info.get("provider_id") != pid:
             continue
-        tags = info.get("tags")
+        tags = route.get("capabilities")
         if (
             not isinstance(tags, list)
             or not all(isinstance(tag, str) for tag in tags)
             or not requirements.required_capabilities.issubset(frozenset(tags))
-            or "free" not in tags
         ):
             continue
+        if info is not None:
+            summary_tags = info.get("tags")
+            if (
+                not isinstance(summary_tags, list)
+                or not all(isinstance(tag, str) for tag in summary_tags)
+                or not requirements.required_capabilities.issubset(frozenset(summary_tags))
+            ):
+                continue
         enabled_models = provider.get("models")
         if (
             not isinstance(enabled_models, list)
@@ -151,7 +160,11 @@ def _qualified_routes(
 
 
 class B14FreeFirstQuoteModelResolver:
-    """B14 supplies all model and credential facts; B66 only applies policy."""
+    """B14 supplies registration and readiness; B66 applies owner eligibility.
+
+    This compatibility class retains its old import name without the old
+    free-first behavior. No generic B14 auto-route flags are modified.
+    """
 
     def __init__(self, registry_transport: B14RegisteredModelView | None) -> None:
         self._transport = registry_transport

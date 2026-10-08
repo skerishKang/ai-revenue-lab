@@ -494,18 +494,18 @@ def test_b66_trusted_registry_failure_is_503_not_generic_502():
     _assert_no_values_leak(response, "CGI 견적 고객 입력")
 
 
-def test_b66_free_first_authority_exact_model_generates_existing_quote_projection():
+def test_b66_owner_allowed_exact_model_generates_existing_quote_projection():
     class Resolver:
         calls = 0
         async def resolve_quote_model(self, requirements):
             self.calls += 1
             return B14AuthorizedModelRoute(
-                model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-                route_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-                owner_policy_id="b66.quote.free-first.registered.v1",
+                model_id="test-fixture/quote-projection",
+                route_id="test-fixture/quote-projection",
+                owner_policy_id="OWNER_REGISTERED_AND_ALLOWED",
                 registered=True, enabled=True, authorized=True,
                 credential_ready=True, route_count=1,
-                capabilities=frozenset({"chat", "free"}),
+                capabilities=frozenset({"chat"}),
             )
 
     class ExactClient:
@@ -534,7 +534,7 @@ def test_b66_free_first_authority_exact_model_generates_existing_quote_projectio
     assert response.status_code == 200
     assert response.json()["ok"] is True
     assert resolver.calls == 1
-    assert client.exact == ["kilo/nvidia-nemotron-3-ultra-550b-a55b-free"]
+    assert client.exact == ["test-fixture/quote-projection"]
 
 
 def test_b66_model_selection_refunds_only_prior_to_any_dispatch():

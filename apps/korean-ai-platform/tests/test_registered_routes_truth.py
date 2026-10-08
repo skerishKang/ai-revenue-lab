@@ -43,6 +43,7 @@ def test_registered_routes_are_price_and_secret_free(client):
             "id",
             "provider_id",
             "upstream_model",
+            "capabilities",
             "free",
             "public",
             "explicit_only",
@@ -50,6 +51,12 @@ def test_registered_routes_are_price_and_secret_free(client):
             "owner_excluded",
         }
         assert entry["upstream_model"]
+        assert isinstance(entry["capabilities"], list)
+        assert entry["capabilities"] == sorted(entry["capabilities"])
+        assert all(isinstance(tag, str) for tag in entry["capabilities"])
+        assert entry["capabilities"] == sorted(
+            CATALOG_BY_ID[entry["id"]].capabilities
+        )
         assert isinstance(entry["free"], bool)
         assert isinstance(entry["public"], bool)
         assert isinstance(entry["explicit_only"], bool)

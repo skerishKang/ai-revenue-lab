@@ -838,8 +838,10 @@ class Default(WorkerEntrypoint):
                     stream_transport=stream_transport,
                     require_service_binding=settings.runtime_mode == "b14",
                 )
-                # #3760: quote extraction selects one exact, evidenced-free
-                # route from B14's already-registered authority. Never pass
+                # #3760 owner correction: quote extraction selects one exact,
+                # owner-allowed, chat-capable and live-ready B14 registered
+                # model; pricing and generic B14 auto flags do not qualify it.
+                # Never pass
                 # ordinary quote text into the B62 Plus/Pro/Max HOLD resolver;
                 # never synthesize b14/auto or a hidden retry/fallback.
                 _worker_app.state.b66_quote_interpreter = B66QuoteConversationInterpreter(

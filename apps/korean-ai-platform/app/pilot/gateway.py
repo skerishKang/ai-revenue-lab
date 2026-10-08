@@ -384,6 +384,7 @@ def _registered_route_dicts() -> list[dict]:
             "id": model.model_id,
             "provider_id": model.platform_provider_id,
             "upstream_model": model.upstream_model,
+            "capabilities": sorted(model.capabilities),
             "free": is_free,
             "public": is_public,
             "explicit_only": not is_public,
