@@ -1169,12 +1169,17 @@
     const banner = $("skillPreviewBanner");
     if (banner) banner.hidden = true;
     const previewProfile = previewTemplateProfile();
-    const authority = previewProfile || renderTemplateAuthority();
     const serverSkillActive = Boolean(
       !previewProfile &&
       skillUiState.serverSkill &&
       skillUiState.serverSkill.id === skillUiState.activeSkillId
     );
+    const ownerCgi = Boolean(serverSkillActive && window.B66BrowserPdf &&
+      window.B66BrowserPdf.isCgiSkill(skillUiState.activeSkillId));
+    // Certified CGI source authority is the owner-assigned approved skill, not
+    // an unrelated previously selected generic/template-management profile.
+    const cgiProfile = ownerCgi ? activeSkillProfile() : null;
+    const authority = ownerCgi ? cgiProfile : (previewProfile || renderTemplateAuthority());
     const model = TemplateRenderer.buildRenderModel(
       draft,
       authority,
@@ -1191,11 +1196,9 @@
     // An assigned CGI may carry the earlier generic layout variant. The
     // approved saved skill still owns every fact and its fingerprint; only the
     // exact certified CGI presentation is selected for the browser preview.
-    const ownerCgi = serverSkillActive && window.B66BrowserPdf &&
-      window.B66BrowserPdf.isCgiSkill(skillUiState.activeSkillId);
-    const certifiedModel = ownerCgi && model
+    const certifiedModel = ownerCgi && model && cgiProfile
       ? window.B66BrowserPdf.certifiedPreviewModel(model, skillUiState.activeSkillId,
-          (activeSkillProfile() || {}).fingerprint)
+          cgiProfile.fingerprint)
       : model;
     if (certifiedModel) TemplateRenderer.applyRenderModel(document, certifiedModel);
 
