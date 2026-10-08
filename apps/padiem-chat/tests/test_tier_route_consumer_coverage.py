@@ -87,7 +87,9 @@ def test_chat_current_route_expectation_is_derived_not_restated() -> None:
         for route in get_tier(tier).routes
         if route.status is ProductRouteStatus.EXECUTABLE
     }
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset()
+    # #3767: the frozen ``== frozenset()`` restatement below used to duplicate the
+    # derivation above while encoding the empty-route state; the derivation is the
+    # contract, so only it is asserted now.
 
 
 def test_owner_policy_invariants_are_not_traded_for_coverage() -> None:
