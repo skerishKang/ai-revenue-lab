@@ -27,3 +27,20 @@ SCOPE = NAVIGATION_ONLY
 5. **역사화:** 이전 버전의 근거는 [역사 인덱스](../history/README.md)에서 식별하되, 운영 상태라고 표시하지 않습니다.
 
 [단계별 개발 안내](../lifecycle/README.md) · [공통 정책](../common/README.md) · [사업별 문서](../businesses/README.md)
+
+## Documentation integrity CI
+
+The existing [Operations Policy Guard](../../.github/workflows/operations-policy-guard.yml) runs `python -m pytest -q docs/operations/tests` on every pull request with read-only repository access. No extra workflow, secret, Production target, or manual dispatch is necessary.
+
+The [documentation authority checker](../operations/scripts/document_authority_integrity.py) and [negative/mutation regression tests](../operations/tests/test_document_authority_integrity.py) enforce a bounded set of **current-reader entrypoints** (root documentation, common/lifecycle/business/model/history/evidence hubs, and B53/B54/B66). They fail for copied volatile model IDs or status flags, duplicated owner-only policy declarations, stale Google-registration claims, missing/traversal links, or removed CI collection. Model roster changes belong to the owner decision record and executable B14 source, not duplicated business README tables.
+
+The separate [historical integrity test](../operations/tests/test_lifecycle_evidence_taxonomy.py) retains byte-hash verification of the eight existing historical records. This check protects those recorded files and requires a deliberately reviewed baseline amendment if a legitimate archival change is approved; it is not a claim that newly added future archives are automatically indexed.
+
+**Scope and interpretation:** the checker covers those selected entrypoints, not all repository Markdown or every external URL. A green guard proves only these static rules at the exact CI revision, not model usability, independent validation, merger authorization, or Production readiness.
+
+To run the same local checker without external services:
+
+~~~bash
+python docs/operations/scripts/document_authority_integrity.py
+python -m pytest -q docs/operations/tests/test_document_authority_integrity.py
+~~~
