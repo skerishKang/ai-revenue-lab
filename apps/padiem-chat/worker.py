@@ -38,6 +38,7 @@ from app.desktop_conversation_authority import (
     build_desktop_device_session_authority_with_diagnostic,
 )
 from app.claw_p01_composition import (
+    build_claw_engine_client_with_diagnostic,
     build_claw_p01_adapter,
     build_claw_p01_lanes_with_diagnostic,
 )
@@ -867,6 +868,19 @@ class Default(WorkerEntrypoint):
                     self.env,
                     request_factory=Request,
                 )
+                # #3782: same authenticated Engine Service Binding as ordinary
+                # P01, but only when B62 has BOTH current CP identity and its
+                # product shadow pointer. The owner route is NOT registered;
+                # absent authorities never become a synthetic approval.
+                if identity_authority is not None and identity_shadow_store is not None:
+                    (
+                        _worker_app.state.browser_control_owner_ticket_engine_client,
+                        _,
+                    ) = build_claw_engine_client_with_diagnostic(
+                        self.env, request_factory=Request,
+                    )
+                else:
+                    _worker_app.state.browser_control_owner_ticket_engine_client = None
                 # #3094: compose the concrete canonical local-access source
                 # from a trusted broker-authority binding only. When the
                 # trusted runtime is absent (today's deploy) the composition

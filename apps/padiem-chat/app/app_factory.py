@@ -369,6 +369,10 @@ def create_app(
     # a non-authoritative shadow pointer used to reach the current canonical session.
     app.state.control_plane_identity_authority = control_plane_identity_authority
     app.state.identity_shadow_store = identity_shadow_store
+    # #3782: no browser owner ticket request route in the product app.
+    # A trusted Worker may compose its Engine client after CP session binding;
+    # this default is never an approval source or browser execution grant.
+    app.state.browser_control_owner_ticket_engine_client = None
     # #3190: owner-gated Project Drive case-folder routes. A missing client fails
     # closed with 503; there is no global/network fallback.
     app.state.drive_case_folder_engine_client = drive_case_folder_engine_client

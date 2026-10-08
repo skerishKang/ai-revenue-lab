@@ -65,6 +65,7 @@ def _setup(monkeypatch, *, signed_in=True, engine=True, cp=True, reply=None):
 def test_not_registered_in_product_app_factory():
     client = _client(_HandoffStore())
     assert owner_route.BROWSER_CONTROL_OWNER_TICKET_REQUEST_ROUTE_WIRED is False
+    assert client.app.state.browser_control_owner_ticket_engine_client is None
     assert all(getattr(r, "path", None) != PATH for r in client.app.router.routes)
 
 
