@@ -1,0 +1,268 @@
+"""#3760 B66 free-first selection from existing B14 authority, NO provider calls."""
+import asyncio
+import json
+
+import pytest
+
+from app.b66_b14_free_first_resolver import B14FreeFirstQuoteModelResolver
+from app.b66_registered_model_boundary import (
+    B66ModelRouteError,
+    B66QuoteTaskRequirements,
+)
+
+
+MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+PID = "kilo"
+
+
+def records(*, free=True, auto_eligible=True, credential=True, enabled=True,
+            ready=True, provider_mode="live", capabilities=("chat", "coding", "free")):
+    return (
+        {
+            "registered_routes": [{
+                "id": MODEL,
+                "provider_id": PID,
+                "free": free,
+                "explicit_only": not auto_eligible,
+                "auto_eligible": auto_eligible,
+            }],
+            "catalog": [{
+                "id": MODEL,
+                "provider_id": PID,
+                "tags": ["alpha", *capabilities],
+            }],
+        },
+        {
+            "provider_mode": provider_mode,
+            "providers": [{
+                "provider_id": PID,
+                "enabled": enabled,
+                "credential_ready": credential,
+                "route_ready": ready,
+                "models": [MODEL],
+            }],
+        },
+    )
+
+
+class FakeB14ReadOnlyRegistry:
+    def __init__(self, models, readiness, *,
+                 first_status=200, second_status=200, raises=False):
+        self.models = models
+        self.readiness = readiness
+        self.first_status = first_status
+        self.second_status = second_status
+        self.raises = raises
+        self.paths = []
+        self.provider_execution_calls = 0
+
+    async def get_json(self, path):
+        self.paths.append(path)
+        if self.raises:
+            raise RuntimeError("PRIVATE B14 READ ERROR: token=secret")
+        if path == "/api/pilot/models":
+            return self.first_status, json.dumps(self.models).encode("utf-8")
+        if path == "/api/pilot/provider-readiness":
+            return self.second_status, json.dumps(self.readiness).encode("utf-8")
+        raise AssertionError("unknown path")
+
+
+def select(fake, requirements=None):
+    return asyncio.run(B14FreeFirstQuoteModelResolver(fake).resolve_quote_model(
+        requirements or B66QuoteTaskRequirements()
+    ))
+
+
+def deny(fake, expected="selection_unavailable"):
+    with pytest.raises(B66ModelRouteError) as err:
+        select(fake)
+    assert err.value.code == expected
+    assert "secret" not in str(err.value)
+    assert fake.provider_execution_calls == 0
+
+
+def test_one_registered_free_chat_and_live_credential_selects_exact_id():
+    fake = FakeB14ReadOnlyRegistry(*records())
+    selected = select(fake)
+    assert selected.model_id == MODEL
+    assert selected.route_id == MODEL
+    assert selected.route_count == 1
+    assert selected.owner_policy_id == "b66.quote.free-first.registered.v1"
+    assert selected.credential_ready is True
+    assert selected.capabilities.issuperset(frozenset(("chat",)))
+    assert fake.paths == [
+        "/api/pilot/models", "/api/pilot/provider-readiness",
+    ]
+    assert fake.provider_execution_calls == 0
+
+
+@pytest.mark.parametrize(("changes", "expected"), [
+    ({"free": False}, "selection_unavailable"),
+    ({"auto_eligible": False}, "selection_unavailable"),
+    ({"credential": False}, "selection_unavailable"),
+    ({"enabled": False}, "selection_unavailable"),
+    ({"ready": False}, "selection_unavailable"),
+    ({"provider_mode": "mock"}, "selection_unavailable"),
+    ({"capabilities": ("coding", "free")}, "selection_unavailable"),
+    ({"capabilities": ("chat", "coding")}, "selection_unavailable"),
+])
+def test_no_paid_or_unready_or_non_chat_or_manual_only_selection(changes, expected):
+    deny(FakeB14ReadOnlyRegistry(*records(**changes)), expected)
+
+
+def test_b14_credentials_are_not_a_user_quote_or_model_hint():
+    fake = FakeB14ReadOnlyRegistry(*records())
+    selected = select(fake)
+    assert selected.model_id == MODEL
+    assert "password" not in str(fake.paths)
+    assert "company" not in str(fake.paths)
+
+
+def test_multiple_free_routes_have_no_arbitrary_order_or_fallback():
+    registry, readiness = records()
+    twin = "kilo/another-free-chat"
+    registry["registered_routes"].append({
+        "id": twin, "provider_id": PID, "free": True,
+        "auto_eligible": True, "explicit_only": False,
+    })
+    registry["catalog"].append({
+        "id": twin, "provider_id": PID, "tags": ["alpha", "free", "chat"],
+    })
+    readiness["providers"][0]["models"].append(twin)
+    deny(FakeB14ReadOnlyRegistry(registry, readiness), "selection_ambiguous")
+
+
+@pytest.mark.parametrize("malformation", [
+    "duplicated_model",
+    "missing_catalog",
+    "duplicate_provider",
+    "provider_mismatch",
+    "bad_readiness_models",
+])
+def test_registry_contradiction_never_dispatches(malformation):
+    registry, readiness = records()
+    if malformation == "duplicated_model":
+        registry["registered_routes"].append(registry["registered_routes"][0].copy())
+    elif malformation == "missing_catalog":
+        registry["catalog"] = []
+    elif malformation == "duplicate_provider":
+        readiness["providers"].append(readiness["providers"][0].copy())
+    elif malformation == "provider_mismatch":
+        registry["catalog"][0]["provider_id"] = "untrusted"
+    else:
+        readiness["providers"][0]["models"] = None
+    deny(FakeB14ReadOnlyRegistry(registry, readiness),
+         "selection_ambiguous" if malformation == "duplicated_model"
+         else "selection_unavailable")
+
+
+@pytest.mark.parametrize("first_status,second_status", [
+    (503, 200), (200, 500), (401, 200),
+])
+def test_registry_and_readiness_must_both_be_http_200(first_status, second_status):
+    deny(FakeB14ReadOnlyRegistry(
+        *records(), first_status=first_status, second_status=second_status,
+    ))
+
+
+def test_b14_service_read_exception_does_not_leak_or_retry():
+    fake = FakeB14ReadOnlyRegistry(*records(), raises=True)
+    deny(fake)
+    assert fake.paths == ["/api/pilot/models"]
+
+
+def test_unconfigured_resolver_never_dispatches():
+    with pytest.raises(B66ModelRouteError, match="selection_unconfigured"):
+        select(None)
+
+
+def test_untrusted_task_contract_denied_before_registry():
+    fake = FakeB14ReadOnlyRegistry(*records())
+    from dataclasses import replace
+    with pytest.raises(B66ModelRouteError, match="selection_unavailable"):
+        select(fake, replace(B66QuoteTaskRequirements(), task_type="coding"))
+    assert fake.paths == []
+
+
+def test_quote_text_is_not_part_of_trusted_resolver_api():
+    import inspect
+    signature = inspect.signature(B14FreeFirstQuoteModelResolver.resolve_quote_model)
+    assert tuple(signature.parameters) == ("self", "requirements")
+    assert "message" not in signature.parameters
+    assert "model_id" not in signature.parameters
+
+
+def test_cloudflare_service_binding_uses_only_two_exact_get_read_paths():
+    """Execute the actual worker transport class in isolation; zero Internet."""
+    import ast
+    from pathlib import Path
+
+    worker_path = Path(__file__).resolve().parents[1] / "worker.py"
+    tree = ast.parse(worker_path.read_text("utf-8"))
+    node = next(
+        item for item in tree.body
+        if isinstance(item, ast.ClassDef)
+        and item.name == "CloudflareB14ServiceTransport"
+    )
+    captured = []
+
+    class Request:
+        def __init__(self, url, **kwargs):
+            captured.append((url, kwargs))
+            self.js_object = self
+
+    class Response:
+        status = 200
+
+    class Binding:
+        async def fetch(self, request):
+            return Response()
+
+    async def read_body(response, *, max_bytes):
+        assert max_bytes == 131072
+        return b'{"registered_routes":[],"catalog":[]}'
+
+    class TooLarge(Exception):
+        pass
+
+    class BadRead(Exception):
+        pass
+
+    module = ast.Module(body=[
+        ast.ImportFrom(module="__future__", names=[
+            ast.alias(name="annotations")], level=0),
+        node,
+    ], type_ignores=[])
+    ns = {
+        "Request": Request,
+        "json": json,
+        "MAX_B14_RESPONSE_BYTES": 1024 * 1024,
+        "read_bounded_service_binding_body": read_body,
+        "ServiceBindingResponseTooLarge": TooLarge,
+        "ServiceBindingResponseError": BadRead,
+    }
+    exec(compile(ast.fix_missing_locations(module), str(worker_path), "exec"), ns)
+    transport = ns["CloudflareB14ServiceTransport"](Binding())
+
+    async def scenario():
+        for path in ("/api/pilot/models", "/api/pilot/provider-readiness"):
+            status, raw = await transport.get_json(path)
+            assert status == 200
+            assert b"registered_routes" in raw
+        for path in ("https://attacker.invalid", "/api/pilot/admin", "/"):
+            with pytest.raises(ValueError):
+                await transport.get_json(path)
+    asyncio.run(scenario())
+    assert captured == [
+        ("https://b14.internal/api/pilot/models", {"method": "GET"}),
+        ("https://b14.internal/api/pilot/provider-readiness", {"method": "GET"}),
+    ]
+
+
+def test_production_worker_b66_wiring_uses_free_first_authority_not_b62_tier():
+    from pathlib import Path
+    worker = (Path(__file__).resolve().parents[1] / "worker.py").read_text("utf-8")
+    assert "B14FreeFirstQuoteModelResolver(service_transport)" in worker
+    assert "B14QuoteExactModelExecutor(" in worker
+    assert "refund_pre_dispatch=_refund_active_reservation" in worker
+    assert "B66RegisteredModelCompletion(" in worker

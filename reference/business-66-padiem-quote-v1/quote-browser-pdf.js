@@ -9,6 +9,7 @@
   }
 })(typeof self !== "undefined" ? self : this, function (Renderer) {
   "use strict";
+  var MAX_ITEM_ROWS = Renderer.CGI_MAX_ITEM_ROWS;
   var CGI_SKILL_ID = "b66skill_2eb55d822407f626b7a75c8c88d32c40";
   var CGI_BASE_SHA256 = "462f66f6e32a7409edafef09fed5a10fd99549738df38180d430c04ef99d0de9";
   var PREVIEW_URL = "/api/padiem/b66/quote/preview-base?saved_skill_id=" + CGI_SKILL_ID;
@@ -57,8 +58,8 @@
         !sameProjection(model, preview) || preview.certifiedPreviewBaseUrl !== PREVIEW_URL)
       fail("browser_pdf_projection_mismatch");
     var rows = (model.items || []).filter(function (r) { return r && r.filler !== true; });
-    if (rows.length > 3 || !Array.isArray(model.coreTotals.effectiveItems) ||
-        model.coreTotals.effectiveItems.length > 3) fail("browser_pdf_unsupported_rows");
+    if (rows.length > MAX_ITEM_ROWS || !Array.isArray(model.coreTotals.effectiveItems) ||
+        model.coreTotals.effectiveItems.length > MAX_ITEM_ROWS) fail("browser_pdf_unsupported_rows");
     var ops = Renderer.buildCgiCertifiedDrawOps(preview);
     if (!Array.isArray(ops) || !ops.length || ops.length > 40 ||
         ops.some(function (op) {
@@ -170,6 +171,7 @@
 
   return Object.freeze({
     CGI_SKILL_ID: CGI_SKILL_ID,
+    MAX_ITEM_ROWS: MAX_ITEM_ROWS,
     CGI_BASE_SHA256: CGI_BASE_SHA256,
     PREVIEW_URL: PREVIEW_URL,
     isCgiSkill: isCgiSkill,

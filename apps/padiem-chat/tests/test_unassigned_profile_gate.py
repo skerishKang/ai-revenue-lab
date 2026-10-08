@@ -156,3 +156,25 @@ def test_mock_chat_remains_available_without_provider_dispatch():
         assert calls == 0
 
     asyncio.run(scenario())
+
+def test_b66_current_product_default_is_hold_before_any_dispatch():
+    """Real B62 HOLD, not the synthetic Plus used in unrelated tests."""
+    from app.b66_quote_conversation import B66QuoteConversationInterpreter
+    async def scenario():
+        calls = []
+        class NoProvider:
+            async def post_json(self, url, payload):
+                calls.append(True)
+                raise AssertionError("PROVIDER_MUST_NOT_RUN")
+        client = DispatchAwareB14Client(
+            live_settings(), service_transport=NoProvider(), require_service_binding=True,
+        )
+        with pytest.raises(ChatRuntimeError) as error:
+            await B66QuoteConversationInterpreter(client).interpret(
+                message="거래처 견적 100개",
+                skill={"variableSchema":{"recipient":True,"items":True},"fixedDefaults":{}},
+            )
+        assert error.value.code=="model_profile_unassigned"
+        assert error.value.status_code==503
+        assert calls==[]
+    asyncio.run(scenario())

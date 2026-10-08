@@ -12,11 +12,12 @@ const History = require(path.join(SRC, "quote-history.js"));
 const FileIntake = require(path.join(SRC, "file-intake.js"));
 const Template = require(path.join(SRC, "quote-template.js"));
 const SavedQuoteSkill = require(path.join(SRC, "quote-skill.js"));
+const BrowserPdf = require(path.join(SRC, "quote-browser-pdf.js"));
 const accountSource = fs.readFileSync(path.join(SRC, "padiem-account.js"), "utf8");
 const easySource = fs.readFileSync(path.join(SRC, "easy-mode.js"), "utf8");
 
 const NOW = "2026-10-04T09:00:00.000Z";
-const SKILL_ID = "b66skill_" + "2".repeat(32);
+const SKILL_ID = BrowserPdf.CGI_SKILL_ID;
 const TURN1_TEXT = "대한건설에 배관 100미터 견적 만들어줘";
 const TURN2_TEXT = "18000원";
 
@@ -122,7 +123,8 @@ const jsonResponse = (data, status) => ({
 });
 
 /* ── harness A: real padiem-account.js runtime ── */
-function buildAccountEnv() {
+function buildAccountEnv(options) {
+  const config = options || {};
   const elements = new Map();
   const appCalls = [];
   const replaceDrafts = [];
@@ -150,6 +152,7 @@ function buildAccountEnv() {
   const context = vm.createContext({
     setTimeout, clearTimeout, console,
     QuoteCore: Core, QuoteTemplate: Template, SavedQuoteSkill,
+    B66BrowserPdf: config.generic ? { isCgiSkill: () => false } : BrowserPdf,
     btoa: (value) => value,
     fetch: async (url, options) => {
       const target = String(url);
@@ -172,6 +175,11 @@ function buildAccountEnv() {
       if (target.endsWith("/api/padiem/b66/quote/interpret")) {
         const body = JSON.parse(opts.body || "{}");
         interpretBodies.push(body.message);
+        if (config.candidates) {
+          const candidate = config.candidates[interpretBodies.length - 1];
+          assert.ok(candidate, "one fixture per interpretation turn");
+          return jsonResponse({ ok: true, candidate: JSON.parse(JSON.stringify(candidate)), company_profile: CGI_PROFILE });
+        }
         /* 첫 턴은 단가 없는 partial, 이후는 답변 반영된 완전한 candidate 다. */
         if (interpretBodies.length === 1) {
           return jsonResponse({
@@ -424,6 +432,124 @@ const assistantTexts = (env) => {
   assert.ok(resetBridge.pendingQuote(), "pending exists before reset");
   resetBridge.clearPending();
   assert.equal(resetBridge.pendingQuote(), null, "explicit reset clears the pending conversation");
+
+  /* Missing name/quantity/price all use the same precise, bounded path.
+     The follow-up provider fixture deliberately returns only the answered fact:
+     prior recipient and item facts must survive without defaults or a retype. */
+  for (const field of ["name", "qty", "unitPrice"]) {
+    const priorItem = { name: "Synthetic item", qty: 5, unitPrice: 700 };
+    const answeredValue = priorItem[field];
+    delete priorItem[field];
+    const sequence = buildAccountEnv({ candidates: [
+      { recipient: { person: "Synthetic recipient" }, items: [priorItem], missing: [field] },
+      { recipient: {}, items: [{ [field]: answeredValue }], missing: ["recipient", "items"] }
+    ] });
+    await flush();
+    const runtime = sequence.context.B66QuoteRuntimeBridge;
+    const firstTurn = await runtime.interpret("Synthetic item request");
+    assert.equal(firstTurn.code, "incomplete_request");
+    assert.deepEqual(firstTurn.missing, [field]);
+    assert.equal(firstTurn.question, { name: "품목명을 알려 주세요.", qty: "수량은 몇 개인가요?", unitPrice: "단가는 얼마인가요?" }[field]);
+    assert.equal(sequence.allocations(), 1);
+    const completed = await runtime.interpret(String(answeredValue));
+    assert.equal(completed.ok, true, "minimal " + field + " answer completes the preserved facts");
+    assert.equal(completed.draft.recipient.person, "Synthetic recipient");
+    assert.equal(completed.draft.items[0].name, "Synthetic item");
+    assert.equal(completed.draft.items[0].qty, 5);
+    assert.equal(completed.draft.items[0].unitPrice, 700);
+    assert.equal(sequence.allocations(), 1);
+    assert.equal(sequence.interpretBodies.length, 2, "one request per turn, including a number-only quantity answer");
+    assert.ok(sequence.interpretBodies[1].includes(firstTurn.question), "question identifies the meaning of a bare numeric answer");
+  }
+
+  const multi = buildAccountEnv({ candidates: [
+    { recipient: { company: "Synthetic buyer", person: "Known person" }, items: [
+      { name: "First item", qty: 3, unitPrice: 400 }, { name: "Second item", unitPrice: 800 }
+    ], missing: ["qty"] },
+    { recipient: {}, items: [{ qty: 7 }], missing: ["recipient", "name", "unitPrice"] }
+  ] });
+  await flush();
+  const multiBridge = multi.context.B66QuoteRuntimeBridge;
+  const multiFirst = await multiBridge.interpret("Synthetic multiple item request");
+  assert.equal(multiFirst.question, "2번째 품목(Second item): 수량은 몇 개인가요?");
+  const multiSecond = await multiBridge.interpret("7");
+  assert.equal(multiSecond.ok, true);
+  assert.equal(multiSecond.draft.items.length, 2);
+  assert.equal(multiSecond.draft.items[0].qty, 3, "known first quantity is unchanged");
+  assert.equal(multiSecond.draft.items[1].qty, 7, "bare answer fills the specifically asked second item");
+  assert.equal(multiSecond.draft.items[1].unitPrice, 800);
+  assert.equal(multiSecond.draft.recipient.person, "Known person");
+  assert.equal(multi.interpretBodies.length, 2);
+
+  const repeatedNames = buildAccountEnv({ candidates: [
+    { recipient: { company: "Synthetic buyer" }, items: [
+      { name: "Same item", qty: 3, unitPrice: 400 }, { name: "Same item", unitPrice: 800 }
+    ], missing: ["qty"] },
+    { recipient: {}, items: [{ name: "Same item", qty: 7 }], missing: ["recipient", "unitPrice"] }
+  ] });
+  await flush();
+  const repeatBridge = repeatedNames.context.B66QuoteRuntimeBridge;
+  const repeatFirst = await repeatBridge.interpret("Synthetic repeated-name request");
+  assert.equal(repeatFirst.question, "2번째 품목(Same item): 수량은 몇 개인가요?");
+  const repeatSecond = await repeatBridge.interpret("7");
+  assert.equal(repeatSecond.ok, true);
+  assert.equal(repeatSecond.draft.items.length, 2, "duplicate names do not append a hidden third item");
+  assert.equal(repeatSecond.draft.items[0].qty, 3);
+  assert.equal(repeatSecond.draft.items[1].qty, 7);
+
+  const detailPartial = buildAccountEnv({ generic: true, candidates: [
+    { recipient: { person: "Known recipient" }, items: [{ name: "Summary", qty: 1, unitPrice: 0 }],
+      detailGroups: [{ id: "detail-group-1", summaryItemId: "item-1", items: [{ name: "Detail item", qty: 2 }] }], missing: ["unitPrice"] },
+    { recipient: {}, items: [{ name: "Summary", qty: 1, unitPrice: 0 }],
+      detailGroups: [{ id: "detail-group-1", summaryItemId: "item-1", items: [{ unitPrice: 50 }] }], missing: ["recipient", "name", "qty"] }
+  ] });
+  await flush();
+  const detailPartialBridge = detailPartial.context.B66QuoteRuntimeBridge;
+  const detailFirst = await detailPartialBridge.interpret("Synthetic generic detail request");
+  assert.equal(detailFirst.question, "1번째 상세그룹의 1번째 품목: 단가는 얼마인가요?");
+  const detailSecond = await detailPartialBridge.interpret("50");
+  assert.equal(detailSecond.ok, true, "generic detail missing price preserves the existing structured contract");
+  assert.equal(detailSecond.draft.detailGroups[0].items[0].name, "Detail item");
+  assert.equal(detailSecond.draft.detailGroups[0].items[0].qty, 2);
+  assert.equal(detailSecond.draft.detailGroups[0].items[0].unitPrice, 50);
+  assert.equal(detailSecond.draft.recipient.person, "Known recipient");
+
+  const fourItems = [1, 2, 3, 4].map((i) => ({ name: "Synthetic item " + i, qty: i, unitPrice: 100 }));
+  const oversize = buildAccountEnv({ candidates: [{ recipient: { person: "Synthetic buyer" }, items: fourItems, missing: [] }] });
+  await flush();
+  const oversizeBridge = oversize.context.B66QuoteRuntimeBridge;
+  const rejected = await oversizeBridge.interpret("Synthetic four-item request");
+  assert.equal(rejected.ok, false);
+  assert.equal(rejected.code, "cgi_unsupported_rows");
+  assert.ok(oversizeBridge.errorText(rejected.code).includes("3개"));
+  assert.equal(oversize.allocations(), 0, "oversize request is rejected before accepting a pending/final quote");
+  assert.equal(oversizeBridge.pendingQuote(), null);
+  const guidedOversize = await oversizeBridge.buildFromFacts({ recipient: { person: "Synthetic buyer" }, items: fourItems });
+  assert.equal(guidedOversize.code, "cgi_unsupported_rows");
+  assert.equal(oversize.allocations(), 0, "structured oversize facts rejected before allocation");
+  const threeSupported = await oversizeBridge.buildFromFacts({ recipient: { person: "Synthetic buyer" }, items: fourItems.slice(0, 3) });
+  assert.equal(threeSupported.ok, true, "all three CGI rows remain supported");
+  assert.equal(threeSupported.draft.items.length, 3);
+
+  const detailed = buildAccountEnv({ candidates: [{ recipient: { person: "Synthetic buyer" },
+    items: [{ name: "Summary", qty: 1, unitPrice: 0 }],
+    detailGroups: [{ summaryItemId: "item-1", items: [{ name: "Detail", qty: 1, unitPrice: 100 }] }], missing: [] }] });
+  await flush();
+  const detailRejected = await detailed.context.B66QuoteRuntimeBridge.interpret("Synthetic detail request");
+  assert.equal(detailRejected.code, "cgi_unsupported_details");
+  assert.equal(detailed.allocations(), 0, "unsupported detail output is explicit before accepting a CGI draft");
+  assert.ok(detailed.context.B66QuoteRuntimeBridge.errorText(detailRejected.code).includes("상세내역"));
+
+  const generic = buildAccountEnv({ generic: true, candidates: [{ recipient: { person: "Synthetic buyer" }, items: fourItems, missing: [] }] });
+  await flush();
+  const genericBuilt = await generic.context.B66QuoteRuntimeBridge.interpret("Synthetic generic request");
+  assert.equal(genericBuilt.ok, true, "CGI row scope does not become a generic QuoteCore cap");
+  assert.equal(genericBuilt.draft.items.length, 4);
+
+  console.log("MISSING_NAME_QUANTITY_PRICE_BOUNDED_FOLLOWUP=PASS");
+  console.log("MULTIPLE_ITEM_QUANTITY_ANSWER_MAPPING=PASS");
+  console.log("CGI_INPUT_SCOPE_NO_ACCEPTED_HIDDEN_ROWS=PASS");
+  console.log("CGI_DETAILS_UNSUPPORTED_BEFORE_ACCEPTANCE=PASS");
 
   console.log("PARTIAL_ITEM_FACTS_PRESERVED=YES");
   console.log("MISSING_UNIT_PRICE_CAN_ENTER_FOLLOWUP=YES");

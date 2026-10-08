@@ -188,6 +188,8 @@ async function handlePadiemBridge(request, url, env) {
     "X-B66-Rejection-Path",
     "X-B66-Rejection-Type",
     "X-B66-Upstream-Class",
+    "X-B66-Model-Selection-Status",
+    "Retry-After",
     "X-B66-Interpret-Failure-Stage",
     "X-B66-Interpret-Exception-Family"
   ]) {

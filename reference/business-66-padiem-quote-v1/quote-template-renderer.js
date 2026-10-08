@@ -21,6 +21,7 @@
 
   var RENDER_MODEL_SCHEMA_VERSION = 1;
   var CALCULATION_AUTHORITY = "quote-core";
+  var CGI_ROW_BASELINES = Object.freeze([353.61, 375.31, 397.13]);
   var PAGE_RULE_STYLE_ID = "quote-template-page";
   var ASSET_ID_PATTERN = /^b66asset_[0-9a-f]{32}$/;
   var DATA_IMAGE_PATTERN = /^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/;
@@ -551,6 +552,10 @@
     if (!isPlainObject(model) || model.layoutVariant !== "cgi-v2" ||
         !model.template || model.template.approved !== true || model.derivedBy !== CALCULATION_AUTHORITY ||
         !CERTIFIED_PREVIEW_URL.test(model.certifiedPreviewBaseUrl || "")) return null;
+    var rows = (Array.isArray(model.items) ? model.items : []).filter(function (item) {
+      return item && item.filler !== true;
+    });
+    if (rows.length > CGI_ROW_BASELINES.length) return null;
     var ops = [];
     function emit(key, text, x, baselineY, size, options) {
       var value = String(text == null ? "" : text);
@@ -571,15 +576,13 @@
       emit("date-m", dateParts[1], 135.96, 169.38, 10.13);
       emit("date-d", dateParts[2], 162.70, 169.38, 10.13);
     }
-    emit("recipient", recipient.company, 84.99, 211.53, 10.13, bold);
+    emit("recipient", recipient.company || recipient.person, 84.99, 211.53, 10.13, bold);
     emit("project-head", meta.projectName, 84.99, 253.68, 9.351, bold);
     emit("project-row", meta.projectName, 55.29, 331.92, 9.832, bold);
 
-    var rowY = [353.61, 375.31, 397.13];
+    var rowY = CGI_ROW_BASELINES;
     var amountRight = [520.29, 519.63, 519.63];
-    (Array.isArray(model.items) ? model.items : []).filter(function (item) {
-      return item && item.filler !== true;
-    }).slice(0, 3).forEach(function (item, index) {
+    rows.forEach(function (item, index) {
       var values = isPlainObject(item.values) ? item.values : {};
       emit("item-name-" + index, values.name, 55.29, rowY[index], 9.832);
       emit("item-qty-" + index, values.qty, 0, rowY[index], 9.832, right(341.83));
@@ -930,6 +933,7 @@
   return {
     RENDER_MODEL_SCHEMA_VERSION: RENDER_MODEL_SCHEMA_VERSION,
     CALCULATION_AUTHORITY: CALCULATION_AUTHORITY,
+    CGI_MAX_ITEM_ROWS: CGI_ROW_BASELINES.length,
     PAGE_RULE_STYLE_ID: PAGE_RULE_STYLE_ID,
     STYLE_VARIABLE_MAP: STYLE_VARIABLE_MAP,
     escapeHtml: escapeHtml,
