@@ -143,14 +143,14 @@ node tests/padiem-account-bridge.test.mjs
 이는 **당시 특정 실행의 결과**이며 최신 서비스 버전의 재검증 결과를
 대신하지 않습니다. 모델의 무료·유료 여부, 제공자 선택·권한은
 [현행 소유자 정책](../../docs/operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md)
-및 명시적 승인에 따릅니다. 가격 필터 제거 문서 PR #3796은
-아직 Draft이므로 실행 코드 반영 여부를 따로 검증해야 합니다.
+및 명시적 승인에 따릅니다. 가격 필터 제거에 대한 소유자 결정의 문서 반영은
+PR #3796에서 다루며, 실행 코드 반영·Production 적용 여부는 별도로 검증해야 합니다.
 
 ## 7. 문서 책임과 이전 기록
 
 - [B66 공식 대표 문서](../../docs/products/b66/README.md) — 현재 제품 정책·작업 범위·권위 지도.
 - [B66 PDF 재현 기술 기준](../../docs/products/b66/SOURCE_TEMPLATE_FIDELITY.md) — 원본 분석·인증·PDF 일치성.
 - [초기 Quote Beta README 원본 이력](../../docs/history/2026-10-08/B66_QUOTE_BETA_REFERENCE_README.snapshot.md) — 지금 문서를 대체하기 전 기록; 현행 정책 아님.
-- [초기 데모 운영 가이드(과거 기록)](../../docs/history/2026-10-08/B66_QUOTE_BETA_DEMO_GUIDE.snapshot.md) — 과거 시연 절차의 원본 보관본이며 현행 고객 사용 안내가 아님. 보관 경로는 별도 Draft PR #3803에서 추가됨.
+- [초기 데모 운영 가이드(과거 기록)](../../docs/history/2026-10-08/B66_QUOTE_BETA_DEMO_GUIDE.snapshot.md) — 과거 시연 절차의 원본 보관본이며 현행 고객 사용 안내가 아님. 해당 보관본은 별도 PR #3803에서 관리하므로, 두 PR의 참조 관계를 함께 검증해야 합니다.
 
 다른 문서의 과거 모델·데모 가정을 이 폴더의 현행 실행 권한으로 해석하지 마세요.
