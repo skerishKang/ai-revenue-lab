@@ -7,9 +7,19 @@ from __future__ import annotations
 
 import asyncio
 import json
+import sys
 from datetime import datetime
+from pathlib import Path
 
 import pytest
+
+# Engine standalone CI intentionally installs Engine + Core, not the separately
+# packaged first-party Python client. Import that repo-local client only for
+# this transport contract test; do NOT widen Production dependencies.
+_CLIENT_ROOT = Path(__file__).resolve().parents[1] / "clients" / "python"
+if str(_CLIENT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_CLIENT_ROOT))
+
 from padiem_ai_engine_client import (
     ENGINE_BROWSER_CONTROL_BROKER_RECEIPT_READ_PATH,
     ENGINE_INTERNAL_ORIGIN,
