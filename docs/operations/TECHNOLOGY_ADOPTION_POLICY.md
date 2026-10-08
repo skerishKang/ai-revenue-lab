@@ -352,3 +352,44 @@ NEW_TECH_CAN_REPLACE_PRIMARY_AFTER_CONFORMANCE=YES
 PREVIOUS_IMPLEMENTATION_MAY_REMAIN_FALLBACK=YES
 IRREVERSIBLE_REWRITE_BY_DEFAULT=NO
 ```
+
+<!-- AGENT_RUNTIME_REUSE_FIRST_20261009 -->
+## 16. Agent, coding-runtime, browser and Desktop source-reuse enforcement (2026-10-09)
+
+This section applies the existing canonical search-before-build policy to Padiem Claw (Web/Desktop), P01/Engine/Core/B14 integration work, browser/computer-use, skill/MCP tooling and comparable commodity agent machinery. It is **not** a new model-selection policy or a general freeze.
+
+Before any **new substantial** implementation of an agent loop, task/worktree manager, terminal/file/browser runtime, plugin/skill/MCP host, model/provider adapter, session/checkpoint primitive or desktop workbench, the owner of the work order checks:
+1. The already-merged Padiem implementation and its contracts, not merely file-name similarities.
+2. Official pinned upstream source for credible candidates (e.g. ZCode, OpenCode, OpenClaw, Browser Use, Kilo Code), with the exact package/subsystem actually proposed for reuse.
+3. Direct-code reuse versus reference/pattern value, including SDK/API stability, local/Windows/Cloudflare Worker/runtime compatibility, license/NOTICE/transitive dependencies, data egress, process isolation and maintenance cost.
+4. Which single **Padiem-owned** adapter/authority remains authoritative for account/workspace/session, approvals/P01, credential routing/B14, usage/entitlement, canonical task/run persistence and connector writes.
+5. Shared offline conformance, bounded resource/egress guard, rollback/switch mechanism and source-proven cheaper/faster delivery than rewriting.
+
+Use a time-bounded, component-by-component matrix. A whole-program fork or wholesale replacement is neither forbidden nor presumed compatible; it requires its own independent migration decision and proof of Padiem authority separation. An existing upstream UI is **not** proof of a production-ready API integration. The software repository's root license alone is insufficient to clear third-party vendored portions, model artifacts, branding or SaaS/hosted services.
+
+Existing verified lineage: ZCode Desktop substrate was audited under #3436 (now closed; ADAPT_PARTIAL). A pinned derived workspace-file-search component is attributed in `apps/padiem-desktop-shell/THIRD_PARTY_NOTICES.md`. The future larger Desktop adoption gate is #3583, sequenced after #3523 Golden Path; do not redo #3436 or treat the existing partial import as wholesale ZCode runtime adoption.
+
+Governance:
+- #2996 is the one agent-technology radar/intake authority. Do not create per-library child issues by default.
+- #3523 FINISH-FIRST remains the current primary axis. Approved LOCAL2 manual-intake safety, LOCAL3 backend synthetic test planning and LOCAL6 Calendar isolation work continue unless an independently verified security/licensing hazard requires an explicit stop.
+- OWNER alone chooses which models to use; no candidate code import may silently select a model, create a second B14 catalog, auto-retry/fallback, call a provider, or alter quotas.
+- READ-ONLY landscape work may run in a background lane; implementation, package installs, provider calls, license procurement and Production changes each retain their pre-existing authorization gates.
+
+Required audit output before proposing a swap:
+
+```text
+COMPONENT_SLOT=
+CURRENT_PADIEM_SOURCE_AND_CONTRACT=
+UPSTREAM_REPOSITORY_AND_IMMUTABLE_PIN=
+EXACT_UPSTREAM_FILES_OR_PACKAGE=
+SOURCE_AND_LICENSE_VERIFIED=YES|NO
+CANDIDATE_MODE=ADOPT|ADAPT|EMBED|SIDECAR|REFERENCE_ONLY|REJECT
+PADIEM_AUTHORITY_BOUNDARY_PRESERVED=YES|NO
+RUNTIME_AND_EGRESS_RISK=
+TESTS_AND_PARITY_PROOF=
+MIGRATION_ROLLBACK=
+DISPOSITION=RETAIN|ADAPT|REPLACE_LATER|REJECT
+OWNER_MODEL_SELECTION_CHANGED=NO
+```
+
+If the existing parent contains an accepted technology decision, do not reopen it merely for a fresh policy checkbox. Record any materially new evidence under #2996 and seek CENTRAL review before an implementation change.
