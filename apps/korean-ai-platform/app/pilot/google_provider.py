@@ -99,53 +99,5 @@ _GOOGLE_MODELS: tuple[tuple[str, str, str, int, float, float, frozenset[str], in
 
 
 def register_google_provider() -> None:
-    """Idempotently register Google AI Studio and the four owner-selected routes."""
-
-    if get_platform_provider(GOOGLE_PROVIDER_ID) is None:
-        register_platform_provider(
-            PlatformProviderSpec(
-                provider_id=GOOGLE_PROVIDER_ID,
-                credential_source=CredentialSource.PLATFORM_SECRET,
-                credential_binding_name=GOOGLE_CREDENTIAL_BINDING,
-                base_origin=GOOGLE_BASE_ORIGIN,
-                allowed_hosts=(GOOGLE_ALLOWED_HOST,),
-                enabled=True,
-            )
-        )
-
-    for (
-        model_id,
-        upstream_model,
-        display_name,
-        context_window,
-        input_price,
-        output_price,
-        capabilities,
-        sort_order,
-    ) in _GOOGLE_MODELS:
-        if model_id in CATALOG_BY_ID:
-            continue
-        model = CatalogModel(
-            model_id=model_id,
-            upstream_model=upstream_model,
-            display_name=display_name,
-            provider="Google AI Studio",
-            provider_type="platform",
-            input_price_usd_per_1m=input_price,
-            output_price_usd_per_1m=output_price,
-            currency="usd",
-            context_window=context_window,
-            korean_score=0,
-            latency_ms=0,
-            capabilities=capabilities,
-            region="외부",
-            sort_order=sort_order,
-            credential_source="platform_secret",
-            platform_provider_id=GOOGLE_PROVIDER_ID,
-            source="google_ai_studio_official_catalog (2026-10-08 read)",
-            source_checked_at=GOOGLE_SOURCE_CHECKED_AT,
-            snapshot_state="configured_snapshot",
-        )
-        # Manual-pin capable: exact-ID lookup table only. Do not append to
-        # CATALOG_MODELS (the legacy public/b14-auto routing surface).
-        CATALOG_BY_ID[model.model_id] = model
+    """Historic API kept only to fail closed; models are installed from b14_models.json."""
+    raise RuntimeError("legacy provider registration disabled: edit b14_models.json")
