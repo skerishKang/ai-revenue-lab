@@ -419,6 +419,11 @@ class CloudflareD1ConnectorGrantStore:
                     now,
                 ).run()
             )
+            # Reading the answer is part of trusting the adapter. A D1Result whose ``meta``
+            # attribute or ``to_py()`` throws is a storage fault, not a contract outcome,
+            # so the interpretation happens inside the same normalising boundary.
+            succeeded = _reported_success(written)
+            changes = _reported_changes(written)
         except Exception:
             # Nothing raised inside the binding is trusted, not even an exception that
             # already looks like a ServiceContractError: its code and message belong to
@@ -428,9 +433,10 @@ class CloudflareD1ConnectorGrantStore:
                 "Calendar grant activation storage is unavailable."
             ) from None
 
-        if _reported_success(written) is False:
-            # A statement that reports failure is never a success, even when the row that
-            # is already stored carries this identity and the read-back would look correct.
+        if succeeded is False:
+            # A statement that reports failure is never a success, and never a refusal
+            # either: a result carrying both ``success: false`` and ``changes: 0`` means
+            # the adapter failed, so this stays ahead of the zero-change branch.
             raise _activation_unavailable(
                 "Calendar grant activation storage is unavailable."
             )
@@ -438,7 +444,6 @@ class CloudflareD1ConnectorGrantStore:
         # The refusal decision lives inside the statement above, so two workspaces
         # activating at the same instant cannot both win and neither can clobber the winner.
         # The read-back only classifies an outcome the write already committed or rejected.
-        changes = _reported_changes(written)
         if changes == 0:
             raise _activation_refused()
 

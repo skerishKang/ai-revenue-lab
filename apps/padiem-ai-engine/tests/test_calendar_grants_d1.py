@@ -556,6 +556,109 @@ def test_absent_success_flag_is_not_read_as_a_failure() -> None:
     assert grant.actor_ref == ACTOR_REF
 
 
+# --- reading a D1 answer that faults while it is being read -------------------
+
+
+INTERNAL_DETAIL = "adapter internals bind:google-calendar-alpha actor:alpha-owner"
+
+
+class _ThrowingMeta:
+    def to_py(self):
+        raise RuntimeError(INTERNAL_DETAIL)
+
+
+class ThrowingMetaResult:
+    """A D1Result-shaped object whose ``meta`` attribute faults on access."""
+
+    @property
+    def meta(self):
+        raise RuntimeError(INTERNAL_DETAIL)
+
+
+class ThrowingToPyResult:
+    """A meta object that only faults when Python Workers materialises it."""
+
+    meta = _ThrowingMeta()
+
+
+class ThrowingAttributeResult:
+    """A proxy that faults on any attribute read at all."""
+
+    def __getattr__(self, name):
+        raise RuntimeError(INTERNAL_DETAIL)
+
+
+class ConstantResultD1Binding(MutableFakeD1Binding):
+    """Returns a fixed run() answer without writing, so the classification is what runs."""
+
+    def __init__(self, rows=None, *, result=None):
+        super().__init__(rows=rows)
+        self._result = result
+
+    def run(self):
+        return self._result
+
+
+@pytest.mark.parametrize(
+    "result",
+    [ThrowingMetaResult(), ThrowingToPyResult(), ThrowingAttributeResult()],
+    ids=["meta_attribute", "meta_to_py", "any_attribute"],
+)
+def test_interpreting_a_faulty_d1_result_is_normalised_and_never_forwarded(result) -> None:
+    binding = ConstantResultD1Binding(rows=[calendar_row()], result=result)
+    with pytest.raises(ServiceContractError) as exc_info:
+        run(CloudflareD1ConnectorGrantStore(binding).activate_calendar_read_grant(
+            binding_ref=BINDING_REF, actor_ref=ACTOR_REF
+        ))
+    error = exc_info.value
+    assert error.code == "calendar_grant_activation_unavailable"
+    assert error.status_code == 503
+    projected = f"{error.code} {error} {error.safe_message}"
+    for foreign in (
+        INTERNAL_DETAIL,
+        "adapter internals",
+        WS_ALPHA_BINDING,
+        WS_ALPHA_ACTOR,
+        BINDING_REF,
+        ACTOR_REF,
+    ):
+        assert foreign not in projected, "a fault while reading the answer must stay generic"
+    assert len(binding._rows) == 1
+    assert binding._rows[0]["binding_ref"] == BINDING_REF
+
+
+def test_failed_write_with_zero_changes_is_a_fault_not_a_refusal() -> None:
+    # A foreign holder would make the zero-change answer a 409. Reporting the statement
+    # itself as failed outranks that, because the adapter never reached a decision.
+    binding = ConstantResultD1Binding(
+        rows=[calendar_row()],
+        result={"success": False, "meta": {"changes": 0}},
+    )
+    with pytest.raises(ServiceContractError) as exc_info:
+        run(CloudflareD1ConnectorGrantStore(binding).activate_calendar_read_grant(
+            binding_ref=WS_BETA_BINDING, actor_ref=WS_BETA_ACTOR
+        ))
+    assert exc_info.value.code == "calendar_grant_activation_unavailable"
+    assert exc_info.value.status_code == 503
+    assert len(binding._rows) == 1
+    assert binding._rows[0]["binding_ref"] == BINDING_REF
+
+
+def test_successful_statement_with_a_row_count_still_refuses_a_second_holder() -> None:
+    # Pins the other side of that ordering: success: true plus changes: 0 is the statement's
+    # own identity refusal, not a storage fault.
+    binding = ConstantResultD1Binding(
+        rows=[calendar_row()],
+        result={"success": True, "meta": {"changes": 0}},
+    )
+    with pytest.raises(ServiceContractError) as exc_info:
+        run(CloudflareD1ConnectorGrantStore(binding).activate_calendar_read_grant(
+            binding_ref=WS_BETA_BINDING, actor_ref=WS_BETA_ACTOR
+        ))
+    assert exc_info.value.code == _ACTIVATION_REFUSED_CODE
+    assert exc_info.value.status_code == 409
+
+
 # --- the guard is Calendar-only; unrelated connector behaviour is intact -----
 
 
