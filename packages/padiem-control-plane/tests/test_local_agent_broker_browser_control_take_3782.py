@@ -239,3 +239,162 @@ def test_datetime_expiry_with_offset_is_still_consumable_before_expiry():
     )
     assert ledger.take(scope, now=NOW) == payload(scope)
     assert taken_count(storage) == 1
+
+
+@pytest.mark.parametrize("operation", ["rotate", "revoke"])
+def test_broker_credential_rotation_and_revoke_atomically_purge_control_material(operation):
+    import base64
+
+    from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
+
+    class Env:
+        LOCAL_AGENT_BROKER_AUTHORITY_REF = "broker.3782.lifecycle"
+        LOCAL_AGENT_BROKER_PEPPER = "broker-browser-control-3782-pepper"
+
+    storage, ledger, scope = fixture()
+    runtime = LocalAgentBrokerDurableRuntime(storage=storage, env=Env())
+    encoded = base64.b64encode(b"browser-control-test-credential").decode("ascii")
+    registered = runtime.register_binding({
+        "binding_ref": scope.binding_ref,
+        "device_id": scope.device_ref,
+        "account_ref": "account.3782.1",
+        "workspace_ref": scope.workspace_ref,
+        "credential_b64": encoded,
+        "now": (NOW - timedelta(seconds=10)).isoformat(),
+    })
+    assert registered["ok"] is True
+    assert storage.connection.execute(
+        "SELECT COUNT(*) FROM local_agent_browser_control_command_take"
+    ).fetchone()[0] == 1
+    if operation == "rotate":
+        result = runtime.rotate_credential({
+            "binding_ref": scope.binding_ref,
+            "expected_generation": 1,
+            "new_credential_b64": base64.b64encode(b"new-test-credential-3782").decode("ascii"),
+            "now": NOW.isoformat(),
+        })
+    else:
+        result = runtime.revoke_binding({
+            "binding_ref": scope.binding_ref,
+            "now": NOW.isoformat(),
+        })
+    assert result["ok"] is True
+    assert storage.connection.execute(
+        "SELECT COUNT(*) FROM local_agent_browser_control_command_take"
+    ).fetchone()[0] == 0
+    with pytest.raises(ValueError, match="unavailable"):
+        ledger.take(scope, now=NOW)
+
+
+def test_rejected_rotation_does_not_delete_approved_material():
+    import base64
+
+    from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
+
+    class Env:
+        LOCAL_AGENT_BROKER_AUTHORITY_REF = "broker.3782.failed-rotation"
+        LOCAL_AGENT_BROKER_PEPPER = "broker-browser-control-failed-rotation"
+
+    storage, ledger, scope = fixture()
+    runtime = LocalAgentBrokerDurableRuntime(storage=storage, env=Env())
+    result = runtime.register_binding({
+        "binding_ref": scope.binding_ref,
+        "device_id": scope.device_ref,
+        "account_ref": "account.3782.1",
+        "workspace_ref": scope.workspace_ref,
+        "credential_b64": base64.b64encode(b"browser-control-failed-credential").decode("ascii"),
+        "now": (NOW - timedelta(seconds=10)).isoformat(),
+    })
+    assert result["ok"] is True
+    bad = runtime.rotate_credential({
+        "binding_ref": scope.binding_ref,
+        "expected_generation": 9,
+        "new_credential_b64": base64.b64encode(b"new-credential-3782").decode("ascii"),
+        "now": NOW.isoformat(),
+    })
+    assert bad["ok"] is False
+    assert storage.connection.execute(
+        "SELECT COUNT(*) FROM local_agent_browser_control_command_take"
+    ).fetchone()[0] == 1
+    # The ledger still enforces one-shot before any product execution.
+    assert ledger.take(scope, now=NOW) == payload(scope)
+
+
+@pytest.mark.parametrize("verb", ["scroll", "focus", "click", "type", "select"])
+def test_exact_bounded_browser_action_variants_can_be_taken_once(verb):
+    item = payload()
+    item["context"]["allowedActionClasses"] = [verb]
+    action = {
+        "action": verb, "browserSessionRef": "browser.3782.1",
+        "originRef": "https://example.com",
+    }
+    if verb == "scroll":
+        action.update(dx=-10_000, dy=10_000)
+    else:
+        action["elementRef"] = "el-0001"
+    if verb == "type":
+        action["text"] = "안녕하세요"
+    if verb == "select":
+        action["optionIndex"] = 1023
+    item["action"] = action
+    storage, ledger, scope = fixture(action=item)
+    assert ledger.take(scope, now=NOW) == item
+    assert taken_count(storage) == 1
+
+
+@pytest.mark.parametrize(("part", "name", "invalid"), [
+    ("action", "dx", 10),
+    ("action", "elementRef", "el-12345"),
+    ("action", "elementRef", "el-ffff"),
+    ("action", "extra", "javascript_evaluate"),
+    ("context", "originScope", "https://example.com/path"),
+    ("context", "originScope", "https://example.com@other.example"),
+    ("context", "ttlSeconds", True),
+    ("context", "ttlSeconds", 901),
+    ("context", "maxActions", 101),
+    ("context", "maxActions", 0),
+    ("context", "allowedActionClasses", ["click", "click"]),
+    ("context", "allowedActionClasses", ["click", "submit"]),
+    ("context", "browserSessionRef", "invalid session"),
+    ("root", "hostLeaseRef", ""),
+    ("root", "hostLeaseRef", "bad ref with spaces"),
+])
+def test_malformed_action_or_broadened_context_does_not_burn_slot(part, name, invalid):
+    item = payload()
+    target = item if part == "root" else item[part]
+    target[name] = invalid
+    storage, ledger, scope = fixture(action=item)
+    with pytest.raises(ValueError):
+        ledger.take(scope, now=NOW)
+    assert taken_count(storage) == 0
+
+
+@pytest.mark.parametrize(("verb", "changes"), [
+    ("type", {"text": ""}),
+    ("type", {"text": "x" * 257}),
+    ("type", {"text": "press\nenter"}),
+    ("select", {"optionIndex": True}),
+    ("select", {"optionIndex": -1}),
+    ("select", {"optionIndex": 1024}),
+    ("scroll", {"dx": True}),
+    ("scroll", {"dy": 10_001}),
+])
+def test_action_parameter_bounds_refuse_before_atomic_take(verb, changes):
+    item = payload()
+    item["context"]["allowedActionClasses"] = [verb]
+    action = {
+        "action": verb, "browserSessionRef": "browser.3782.1",
+        "originRef": "https://example.com",
+    }
+    if verb == "type":
+        action.update(elementRef="el-0001", text="safe")
+    elif verb == "select":
+        action.update(elementRef="el-0001", optionIndex=0)
+    else:
+        action.update(dx=0, dy=0)
+    action.update(changes)
+    item["action"] = action
+    storage, ledger, scope = fixture(action=item)
+    with pytest.raises(ValueError):
+        ledger.take(scope, now=NOW)
+    assert taken_count(storage) == 0

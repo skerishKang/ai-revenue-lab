@@ -94,6 +94,7 @@ class LocalAgentBrokerDurableRuntime:
             result = self.facade().rotate_credential(payload)
             if result.get("ok") is True:
                 self.material_store.purge_binding(result["binding"]["binding_ref"])
+                self.browser_control_take_store.purge_binding(result["binding"]["binding_ref"])
             return result
         return self.transaction(operation)
 
@@ -102,6 +103,7 @@ class LocalAgentBrokerDurableRuntime:
             result = self.facade().revoke_binding(payload)
             if result.get("ok") is True:
                 self.material_store.purge_binding(result["binding"]["binding_ref"])
+                self.browser_control_take_store.purge_binding(result["binding"]["binding_ref"])
             return result
         return self.transaction(operation)
 

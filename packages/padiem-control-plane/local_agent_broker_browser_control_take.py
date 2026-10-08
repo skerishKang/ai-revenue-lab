@@ -12,6 +12,7 @@ Refusals never release action material; a lost take response is NOT retryable.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
@@ -39,6 +40,71 @@ _CONTEXT_KEYS = frozenset({
     "workspaceRef", "ownerRef", "originScope", "allowedActionClasses",
     "ttlSeconds", "maxActions",
 })
+_SAFE_DESKTOP_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,255}$")
+_ELEMENT_REF = re.compile(r"^el-[0-9]{4}$")
+_BARE_ORIGIN = re.compile(r"^https?://[a-z0-9.-]+(?::[0-9]{1,5})?$")
+_ACTION_KEYS = {
+    "scroll": frozenset({"action", "browserSessionRef", "originRef", "dx", "dy"}),
+    "focus": frozenset({"action", "browserSessionRef", "originRef", "elementRef"}),
+    "click": frozenset({"action", "browserSessionRef", "originRef", "elementRef"}),
+    "type": frozenset({"action", "browserSessionRef", "originRef", "elementRef", "text"}),
+    "select": frozenset({"action", "browserSessionRef", "originRef", "elementRef", "optionIndex"}),
+}
+_LEASE_ELIGIBLE = frozenset(_ACTION_KEYS)
+
+
+def _safe_desktop_ref(value: Any) -> bool:
+    return isinstance(value, str) and bool(_SAFE_DESKTOP_REF.fullmatch(value))
+
+
+def _valid_action_and_context(context: dict, action: dict, material: dict) -> bool:
+    """Minimum canonical browser-control input structure before burning a slot.
+
+    Desktop and KAgent remain the execution and element-role authorities.
+    This guard prevents malformed material or widened action objects from
+    spending a durable command slot before reaching those validators.
+    """
+    if not (_safe_desktop_ref(material.get("hostLeaseRef"))
+            and all(_safe_desktop_ref(context.get(k)) for k in (
+                "browserSessionRef", "deviceRef", "runRef", "workspaceRef", "ownerRef"
+            ))):
+        return False
+    origin = context.get("originScope")
+    if not isinstance(origin, str) or len(origin) > 255 or not _BARE_ORIGIN.fullmatch(origin):
+        return False
+    actions = context.get("allowedActionClasses")
+    if (type(actions) is not list or not 1 <= len(actions) <= 5
+            or len({a for a in actions if isinstance(a, str)}) != len(actions)
+            or any(type(a) is not str or a not in _LEASE_ELIGIBLE for a in actions)):
+        return False
+    for name, cap in (("ttlSeconds", 900), ("maxActions", 100)):
+        value = context.get(name)
+        if type(value) is not int or not 1 <= value <= cap:
+            return False
+    verb = action.get("action")
+    if type(verb) is not str or verb not in _ACTION_KEYS:
+        return False
+    if (frozenset(action) != _ACTION_KEYS[verb]
+            or action.get("originRef") != origin
+            or action.get("browserSessionRef") != context["browserSessionRef"]):
+        return False
+    if verb == "scroll":
+        if any(type(action[axis]) is not int or abs(action[axis]) > 10_000 for axis in ("dx", "dy")):
+            return False
+    else:
+        if not isinstance(action.get("elementRef"), str) or not _ELEMENT_REF.fullmatch(action["elementRef"]):
+            return False
+        if verb == "type":
+            value = action["text"]
+            if (type(value) is not str or not 1 <= len(value) <= 256
+                    or any(ord(c) < 32 or ord(c) == 127 for c in value)):
+                return False
+        if verb == "select" and (type(action["optionIndex"]) is not int
+                                 or not 0 <= action["optionIndex"] <= 1023):
+            return False
+    return len(json.dumps(action, separators=(",", ":"), ensure_ascii=False).encode("utf-8")) <= 2048
+
+
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS local_agent_browser_control_command_take (
     command_ref TEXT PRIMARY KEY,
@@ -100,6 +166,19 @@ class CloudflareDurableObjectBrowserControlTakeStore:
         self._sql = sql
         self._sql.exec(_SCHEMA)
 
+    def purge_binding(self, binding_ref: str) -> int:
+        """Destroy pending and taken command material on canonical revoke/rotate.
+
+        Called inside the parent Broker DO transaction; no independent grant
+        or new HTTP/Worker method is introduced. An old binding can never
+        recover its action material after rotation or revocation.
+        """
+        binding = safe_ref(binding_ref, "binding_ref")
+        return rows_written(self._sql.exec(
+            "DELETE FROM local_agent_browser_control_command_take WHERE binding_ref = ?",
+            binding,
+        ))
+
     @staticmethod
     def _checked_material(material_text: Any, scope: BrowserControlCommandTakeCorrelation) -> dict:
         if not isinstance(material_text, str):
@@ -128,8 +207,7 @@ class CloudflareDurableObjectBrowserControlTakeStore:
             or context["ownerRef"] != scope.owner_ref
             or action.get("browserSessionRef") != context["browserSessionRef"]
             or action.get("originRef") != context["originScope"]
-            or type(context["allowedActionClasses"]) is not list
-            or action.get("action") not in ("scroll", "focus", "click", "type", "select")
+            or not _valid_action_and_context(context, action, material)
             or action.get("action") not in context["allowedActionClasses"]
         ):
             raise ValueError("browser.control action material does not match approved scope")
