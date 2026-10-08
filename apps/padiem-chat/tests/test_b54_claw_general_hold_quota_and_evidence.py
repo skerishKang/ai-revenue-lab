@@ -8,18 +8,25 @@ that refusal (503 ``tier_unavailable``, adapter not called). This module pins th
 
 - the usage gate is never evaluated, so a HOLD can never consume or reserve
   quota (#2226 fail-closed);
-- no Engine/B14/provider call is made;
-- no Claw run is minted before the refusal, so the #3655 evidence seam stays
+- no canonical P01 dispatch happens (the composed adapter is never awaited);
+- no Claw run is minted before the refusal — asserted at the real call seam
+  (``app.claw_general_routes.create_claw_run``), not inferred from the absence
+  of evidence headers (#3754 review round 1) — so the #3655 evidence seam stays
   closed even under the one-shot marker;
 - the same holds for the Max tier, not only Plus.
 
-The branch is only reachable while ``active_route_for()`` yields no executable
-route, so this module restores the authoritative resolver for the route module,
-mirroring the mechanism ``test_3739_claw_explicit_model_selection.py``
-established. No conftest change and no source change.
+The branch is only reachable while the route resolver yields no executable
+route, so this module installs its own module-local HOLD resolver through the
+same seams ``tests/conftest.py`` already uses. That reproduces the HOLD
+condition *inside the test*; it does not assert anything about the real product
+policy, so the file keeps passing whichever way model registration moves
+(#3754 review round 1: the former precondition pinned the live resolver to
+permanent HOLD). No conftest change and no source change.
 
-No live Engine/B14/provider call: the P01 adapter is an in-process stub and a
-B14 client spy proves no dispatch happens.
+No live Engine/B14/provider call: the P01 adapter is an in-process stub and its
+``execute`` is the actual dispatch boundary this file spies on. The previous
+``app.state.b14_client`` mock was removed: that client is not on the Claw
+general dispatch path at all, so counting its calls proved nothing.
 """
 
 from __future__ import annotations
@@ -30,14 +37,15 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from starlette.testclient import TestClient
 
+import app.claw_general_routes as general_routes_module
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
 from padiem_control_plane import product_tier_routes
 
-# Capture the authoritative resolver before the Chat suite autouse fixture
-# replaces it with a synthetic route for unrelated tests.
-ORIGINAL_ACTIVE_ROUTE_FOR = product_tier_routes.active_route_for
+# Capture the route module's real mint entry point before any test patches it,
+# so the spy can delegate (the seam stays behavioural, not just a counter).
+REAL_CREATE_CLAW_RUN = general_routes_module.create_claw_run
 
 GENERAL_ROUTE_PATH = "/api/claw/general"
 SIGNED_IN_USER_ID = "usr_" + "7" * 32
@@ -50,13 +58,29 @@ _EVIDENCE_HEADERS_ALL = (
     "x-padiem-fallback-used",
 )
 
+_HOLDABLE_TIERS = (
+    product_tier_routes.ProductTierLabel.PLUS,
+    product_tier_routes.ProductTierLabel.PRO,
+    product_tier_routes.ProductTierLabel.MAX,
+)
+
 
 @pytest.fixture(autouse=True)
-def _preserve_the_real_route_hold(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Undo the Chat suite's synthetic Plus route for this hold-specific file."""
-    import app.claw_general_routes as general_module
+def module_hold_resolver(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Reproduce the no-executable-route HOLD for every tier, module-locally.
 
-    monkeypatch.setattr(general_module, "active_route_for", ORIGINAL_ACTIVE_ROUTE_FOR)
+    This is a test-local HOLD reproduction, not a claim about the product: the
+    real resolver (and real model registration) stays untouched. The seams are
+    the same ones ``tests/conftest.py`` patches — the control-plane module and
+    the by-value reference ``claw_general_routes`` imported — so the route under
+    test resolves through this fixture's HOLD resolver and nothing else.
+    """
+
+    def _hold_route_for(label: product_tier_routes.ProductTierLabel):
+        return None
+
+    monkeypatch.setattr(product_tier_routes, "active_route_for", _hold_route_for)
+    monkeypatch.setattr(general_routes_module, "active_route_for", _hold_route_for)
 
 
 def _settings() -> Settings:
@@ -109,28 +133,23 @@ def _payload(**extra) -> dict:
     return payload
 
 
-def test_precondition_all_tiers_hold_with_no_executable_route() -> None:
-    """Guard: this file is only meaningful while the real resolver HOLDs."""
-    for label in (
-        product_tier_routes.ProductTierLabel.PLUS,
-        product_tier_routes.ProductTierLabel.PRO,
-        product_tier_routes.ProductTierLabel.MAX,
-    ):
-        assert ORIGINAL_ACTIVE_ROUTE_FOR(label) is None
+def test_module_hold_resolver_reproduces_no_executable_route() -> None:
+    """The injected resolver itself yields no executable route for any tier."""
+    for label in _HOLDABLE_TIERS:
+        assert general_routes_module.active_route_for(label) is None
+        assert product_tier_routes.active_route_for(label) is None
 
 
 def test_hold_never_evaluates_the_usage_gate(monkeypatch: pytest.MonkeyPatch) -> None:
     """A HOLD must not touch quota: the gate is ordered after the refusal (#2226)."""
-    import app.claw_general_routes as general_module
-
-    real_gate = general_module._usage_gate_denial
+    real_gate = general_routes_module._usage_gate_denial
     calls: list[object] = []
 
     async def _spied_gate(request):
         calls.append(request)
         return await real_gate(request)
 
-    monkeypatch.setattr(general_module, "_usage_gate_denial", _spied_gate)
+    monkeypatch.setattr(general_routes_module, "_usage_gate_denial", _spied_gate)
 
     with _client(_stub_adapter()) as client:
         resp = client.post(GENERAL_ROUTE_PATH, json=_payload())
@@ -140,30 +159,36 @@ def test_hold_never_evaluates_the_usage_gate(monkeypatch: pytest.MonkeyPatch) ->
     assert calls == [], "the usage gate must not run on the early HOLD path"
 
 
-def test_hold_makes_no_engine_or_provider_call() -> None:
-    adapter = _stub_adapter()
-    with _client(adapter) as client:
-        b14_spy = MagicMock()
-        client.app.state.b14_client = b14_spy
-        resp = client.post(GENERAL_ROUTE_PATH, json=_payload())
+def test_hold_mints_no_claw_run(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The early HOLD is proven before the route mints its Claw run (#3754 r1)."""
+    calls: list[tuple[tuple, dict]] = []
 
-    assert resp.status_code == 503
-    adapter.execute.assert_not_awaited()
-    assert b14_spy.stream_text_auto.call_count == 0
-    assert b14_spy.complete.call_count == 0
+    def _spied_create_claw_run(*args, **kwargs):
+        calls.append((args, kwargs))
+        return REAL_CREATE_CLAW_RUN(*args, **kwargs)
 
+    monkeypatch.setattr(general_routes_module, "create_claw_run", _spied_create_claw_run)
 
-def test_hold_mints_no_claw_run_so_no_evidence_headers() -> None:
     with _client(_stub_adapter()) as client:
         resp = client.post(GENERAL_ROUTE_PATH, json=_payload())
 
     assert resp.status_code == 503
-    for name in _EVIDENCE_HEADERS_ALL:
-        assert name not in resp.headers
+    assert resp.json()["error"]["code"] == "tier_unavailable"
+    assert calls == [], "the early HOLD must not mint a Claw run"
 
 
-def test_hold_under_one_shot_evidence_still_mints_no_run_ref() -> None:
+def test_hold_under_one_shot_evidence_still_mints_no_run(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """The adapter branch mints a run before failing; the early branch must not."""
+    calls: list[tuple[tuple, dict]] = []
+
+    def _spied_create_claw_run(*args, **kwargs):
+        calls.append((args, kwargs))
+        return REAL_CREATE_CLAW_RUN(*args, **kwargs)
+
+    monkeypatch.setattr(general_routes_module, "create_claw_run", _spied_create_claw_run)
+
     with _client(_stub_adapter()) as client:
         resp = client.post(
             GENERAL_ROUTE_PATH,
@@ -173,8 +198,23 @@ def test_hold_under_one_shot_evidence_still_mints_no_run_ref() -> None:
 
     assert resp.status_code == 503
     assert resp.json()["error"]["code"] == "tier_unavailable"
+    assert calls == [], "no Claw run may be minted even in one-shot evidence mode"
     for name in _EVIDENCE_HEADERS_ALL:
         assert name not in resp.headers
+
+
+def test_hold_makes_no_canonical_p01_dispatch() -> None:
+    """The composed adapter is the real dispatch boundary and is never awaited."""
+    adapter = _stub_adapter()
+    with _client(adapter) as client:
+        # The stub handed to create_app is what the route resolves at dispatch
+        # time; this pins the spy to the actual seam, not a detached double.
+        assert client.app.state.claw_p01_adapter is adapter
+        resp = client.post(GENERAL_ROUTE_PATH, json=_payload())
+
+    assert resp.status_code == 503
+    assert resp.json()["error"]["code"] == "tier_unavailable"
+    adapter.execute.assert_not_awaited()
 
 
 def test_hold_applies_to_max_tier_as_well() -> None:
