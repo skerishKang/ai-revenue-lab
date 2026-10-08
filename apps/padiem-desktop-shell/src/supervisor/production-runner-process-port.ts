@@ -75,6 +75,9 @@ export const BROWSER_OPEN_REDEMPTION_EVENT = 'browser_open_redemption';
  * in the port module's closed parser, never here.
  */
 export const BROWSER_CONTROL_LEASE_EVENT = 'browser_control_lease';
+/** #3782 — canonical Broker one-shot browser command, private trusted main only. */
+export const BROWSER_CONTROL_COMMAND_TAKE_EVENT = 'browser_control_command_take';
+export const MAX_BROWSER_CONTROL_COMMAND_TAKE_LINE_CHARS = 8_192;
 
 /**
  * Recognises one redemption answer by its literal event tag. It is a recognition
@@ -118,6 +121,19 @@ export const MAX_MATERIAL_LINE_CHARS = 65_536;
 export const MAX_BROWSER_OPEN_REDEMPTION_LINE_CHARS = 2_048;
 /** #3669 — the lease answer is the bounded 14-key lease shape plus correlation. */
 export const MAX_BROWSER_CONTROL_LEASE_LINE_CHARS = 2_048;
+
+function asBrowserControlCommandTakeResponse(line: string): Record<string, unknown> | null {
+  if (line.length === 0 || line.length > MAX_BROWSER_CONTROL_COMMAND_TAKE_LINE_CHARS) return null;
+  if (!line.startsWith('{') || !line.includes(BROWSER_CONTROL_COMMAND_TAKE_EVENT)) return null;
+  try {
+    const parsed: unknown = JSON.parse(line);
+    if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+    const record = parsed as Record<string, unknown>;
+    return record['event'] === BROWSER_CONTROL_COMMAND_TAKE_EVENT ? record : null;
+  } catch {
+    return null;
+  }
+}
 
 function asMaterialResponse(line: string): Record<string, unknown> | null {
   if (line.length === 0 || line.length > MAX_MATERIAL_LINE_CHARS) return null;
@@ -187,6 +203,12 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
   // in the port module's closed parser, and a settled resident can never hand
   // out a stale lease answer. Volatile, cleared on read and on exit.
   #browserControlLeaseLine: string | null = null;
+  // Exact approved action is private material. Redacted before output retention.
+  #browserControlCommandTakeLine: string | null = null;
+  #stdoutCarry = '';
+  #stderrCarry = '';
+  #stdoutDroppingOversizedLine = false;
+  #stderrDroppingOversizedLine = false;
 
   constructor(child: ChildProcess, maxLines: number) {
     this.#child = child;
@@ -202,9 +224,35 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
     });
     const capture = (stream: 'stdout' | 'stderr') => (chunk: unknown) => {
       const atMs = Date.now();
-      const text = String(chunk);
-      for (const line of text.split(/\r?\n/)) {
+      // Node streams may split a sensitive JSON action across chunks.
+      // Never retain any fragment before a complete line is classified.
+      const complete = (stream === 'stdout' ? this.#stdoutCarry : this.#stderrCarry) + String(chunk);
+      const pieces = complete.split(/\r?\n/);
+      const carry = pieces.pop() ?? '';
+      const wasDropping = stream === 'stdout'
+        ? this.#stdoutDroppingOversizedLine : this.#stderrDroppingOversizedLine;
+      // A previous oversized partial line must be discarded until its NEXT
+      // newline: otherwise the trailing fragment could leak secret text.
+      const completeLines = wasDropping && pieces.length > 0 ? pieces.slice(1) : pieces;
+      let dropping = wasDropping && pieces.length === 0;
+      // A peer that never sends a newline cannot grow an unbounded buffer.
+      const oversizedTail = carry.length > MAX_MATERIAL_LINE_CHARS;
+      if (oversizedTail) dropping = true;
+      const nextCarry = oversizedTail ? '' : carry;
+      if (stream === 'stdout') {
+        this.#stdoutCarry = nextCarry;
+        this.#stdoutDroppingOversizedLine = dropping;
+      } else {
+        this.#stderrCarry = nextCarry;
+        this.#stderrDroppingOversizedLine = dropping;
+      }
+      for (const line of completeLines) {
         if (line.length === 0) continue;
+        if (line.length > MAX_MATERIAL_LINE_CHARS) {
+          this.#lines.push('{"redacted":true,"reason":"oversized-output-line"}');
+          if (this.#lines.length > this.#maxLines) this.#lines.shift();
+          continue;
+        }
         // #3436 B2d: a material response is redacted out of the retained
         // buffers at capture time. The material slot is fed by STDOUT ONLY —
         // the resident's response authority is stdout, so a material-like
@@ -213,7 +261,13 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
         const material = asMaterialResponse(line);
         const redemption = asBrowserOpenRedemptionResponse(line);
         const lease = asBrowserControlLeaseResponse(line);
-        const storedLine = material === null ? line : redactedMaterialLine(material);
+        const commandTake = asBrowserControlCommandTakeResponse(line);
+        // Even invalid/oversized command-take responses are sensitive; no
+        // raw action, text, URL or selector may enter retained output.
+        const isCommandTake = line.includes(BROWSER_CONTROL_COMMAND_TAKE_EVENT);
+        const storedLine = isCommandTake
+          ? JSON.stringify({ event: BROWSER_CONTROL_COMMAND_TAKE_EVENT, redacted: true })
+          : material === null ? line : redactedMaterialLine(material);
         if (stream === 'stdout' && material !== null) this.#materialLine = line;
         // The redemption answer carries only bounded correlation, so it stays in
         // the retained buffer; it holds no secret to redact.
@@ -221,6 +275,7 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
         // Same for the lease answer: bounded correlation plus the 14-key lease
         // shape only — approval/evidence refs are opaque, no secret to redact.
         if (stream === 'stdout' && lease !== null) this.#browserControlLeaseLine = line;
+        if (stream === 'stdout' && commandTake !== null) this.#browserControlCommandTakeLine = line;
         this.#lines.push(storedLine);
         if (this.#lines.length > this.#maxLines) this.#lines.shift();
         this.#lastLineAtMs = atMs;
@@ -258,6 +313,11 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
     // And for the lease answer: a dead resident can neither resolve nor
     // consume a durable lease, so its slot dies with it too.
     this.#browserControlLeaseLine = null;
+    this.#browserControlCommandTakeLine = null;
+    this.#stdoutCarry = '';
+    this.#stderrCarry = '';
+    this.#stdoutDroppingOversizedLine = false;
+    this.#stderrDroppingOversizedLine = false;
     for (const listener of [...this.#listeners]) {
       listener(result);
     }
@@ -357,6 +417,13 @@ class NodeRunnerProcessHandle implements RunnerProcessHandle {
   takeBrowserControlLeaseLine(): string | null {
     const line = this.#browserControlLeaseLine;
     this.#browserControlLeaseLine = null;
+    return line;
+  }
+
+  /** #3782 private one-shot response; never sent to renderer or logs. */
+  takeBrowserControlCommandTakeLine(): string | null {
+    const line = this.#browserControlCommandTakeLine;
+    this.#browserControlCommandTakeLine = null;
     return line;
   }
 
@@ -504,6 +571,11 @@ export class NodeRunnerProcessPort implements RunnerProcessPort {
   takeResidentBrowserControlLeaseLine(): string | null {
     if (this.#residentHandle) return this.#residentHandle.takeBrowserControlLeaseLine();
     return null;
+  }
+
+  /** #3782 one-shot private approved browser command from the live resident. */
+  takeResidentBrowserControlCommandTakeLine(): string | null {
+    return this.#residentHandle?.takeBrowserControlCommandTakeLine() ?? null;
   }
 
   /** #3140 stall diagnosis: the resident's per-stream observation, or null. */

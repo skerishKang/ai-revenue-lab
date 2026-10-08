@@ -35,6 +35,7 @@ import { LocalWorkspaceController } from '../workspace/local-workspace.js';
 import { createElectronBrowserOpenViewOwner } from '../browser/browser-open-electron-view.js';
 import { createTrustedMainBrowserActionOwner } from '../browser/browser-action-trusted-main.js';
 import { createTrustedBrowserControlCommandIngress } from '../browser/browser-control-canonical-command-ingress.js';
+import { createResidentApprovedBrowserControlCommandPort } from '../conversation/resident-browser-control-command-take.js';
 import { composeTrustedBrowserOpen } from '../browser/browser-open-composition.js';
 import { createResidentBrowserOpenRedemptionPort } from '../conversation/resident-browser-open-redemption.js';
 import {
@@ -243,6 +244,16 @@ export const browserControl = createTrustedMainBrowserActionOwner({
  */
 export const approvedBrowserControlCommands = createTrustedBrowserControlCommandIngress({
   browserControl,
+  approvedCommands: createResidentApprovedBrowserControlCommandPort({
+    boundary: {
+      sendResidentLine: (line: string) => supervisor.sendResidentLine(line),
+      takeResidentBrowserControlCommandTakeLine: () =>
+        supervisor.takeResidentBrowserControlCommandTakeLine(),
+      residentRunning: () => supervisor.residentSnapshot().running,
+    },
+    // Product Broker/HUMAN-P01 authority is not installed; strictly OFF.
+    sourceConfigured: false,
+  }),
 });
 
 export const controller = new ShellController({
