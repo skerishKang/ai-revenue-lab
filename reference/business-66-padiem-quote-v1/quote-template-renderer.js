@@ -545,6 +545,63 @@
     overlay.appendChild(el);
   }
 
+  // Single approved CGI text projection drives BOTH DOM preview and client PDF.
+  // No calculation authority is introduced; all fields come from QuoteCore projection.
+  function buildCgiCertifiedDrawOps(model) {
+    if (!isPlainObject(model) || model.layoutVariant !== "cgi-v2" ||
+        !model.template || model.template.approved !== true || model.derivedBy !== CALCULATION_AUTHORITY ||
+        !CERTIFIED_PREVIEW_URL.test(model.certifiedPreviewBaseUrl || "")) return null;
+    var ops = [];
+    function emit(key, text, x, baselineY, size, options) {
+      var value = String(text == null ? "" : text);
+      if (!value) return;
+      ops.push({ key: key, text: value, x: x, baselineY: baselineY,
+        size: size, options: options || {} });
+    }
+    var facts = isPlainObject(model.facts) ? model.facts : {};
+    var meta = isPlainObject(facts.meta) ? facts.meta : {};
+    var recipient = isPlainObject(facts.recipient) ? facts.recipient : {};
+    var bold = { bold: true };
+    var right = function (x, isBold) { return { rightX: x, bold: isBold === true }; };
+
+    emit("quote-number", meta.quoteNo, 97.52, 148.30, 10.13);
+    var dateParts = String(meta.issueDate || "").split("-");
+    if (dateParts.length === 3) {
+      emit("date-y", dateParts[0], 97.52, 169.38, 10.13);
+      emit("date-m", dateParts[1], 135.96, 169.38, 10.13);
+      emit("date-d", dateParts[2], 162.70, 169.38, 10.13);
+    }
+    emit("recipient", recipient.company, 84.99, 211.53, 10.13, bold);
+    emit("project-head", meta.projectName, 84.99, 253.68, 9.351, bold);
+    emit("project-row", meta.projectName, 55.29, 331.92, 9.832, bold);
+
+    var rowY = [353.61, 375.31, 397.13];
+    var amountRight = [520.29, 519.63, 519.63];
+    (Array.isArray(model.items) ? model.items : []).filter(function (item) {
+      return item && item.filler !== true;
+    }).slice(0, 3).forEach(function (item, index) {
+      var values = isPlainObject(item.values) ? item.values : {};
+      emit("item-name-" + index, values.name, 55.29, rowY[index], 9.832);
+      emit("item-qty-" + index, values.qty, 0, rowY[index], 9.832, right(341.83));
+      emit("item-unit-price-" + index, cgiMoneyText(values.unitPrice), 0, rowY[index], 9.832, right(426.62));
+      emit("item-amount-" + index, cgiMoneyText(values.amount), 0, rowY[index], 9.832, right(amountRight[index]));
+    });
+
+    emit("subtotal", cgiMoneyText(model.totals && model.totals.subtotalText), 0, 532.70, 9.832, right(520.34, true));
+    emit("vat-rate", facts.taxRateText || "", 0, 554.39, 9.832, right(243.77));
+    emit("vat", cgiMoneyText(model.totals && model.totals.vatText), 0, 554.39, 9.832, right(519.98, true));
+    emit("grand", cgiMoneyText(model.totals && model.totals.grandText), 0, 576.09, 9.832, right(520.34, true));
+
+    var written = String(model.writtenTotalText || "");
+    var grandText = cgiMoneyText(model.totals && model.totals.grandText);
+    if (written && grandText) written += " ( \\" + grandText + " )";
+    emit(
+      "written-total", written, 26.03, 289.00, 11.75,
+      { fontFamily: 'GulimChe, Gulim, "???", "??", monospace', bold: true }
+    );
+    return ops;
+  }
+
   function applyCgiCertifiedPreview(doc, model) {
     var url = typeof model.certifiedPreviewBaseUrl === "string" ? model.certifiedPreviewBaseUrl : "";
     var section = ensureCgiCertifiedPreview(doc);
@@ -565,47 +622,11 @@
     if (paper && typeof paper.setAttribute === "function") paper.setAttribute("data-certified-preview", "true");
     overlay.textContent = "";
 
-    var facts = isPlainObject(model.facts) ? model.facts : {};
-    var meta = isPlainObject(facts.meta) ? facts.meta : {};
-    var recipient = isPlainObject(facts.recipient) ? facts.recipient : {};
-    var bold = { bold: true };
-    var right = function (x, isBold) { return { rightX: x, bold: isBold === true }; };
-
-    addCgiCertifiedText(doc, overlay, "quote-number", meta.quoteNo, 97.52, 148.30, 10.13);
-    var dateParts = String(meta.issueDate || "").split("-");
-    if (dateParts.length === 3) {
-      addCgiCertifiedText(doc, overlay, "date-y", dateParts[0], 97.52, 169.38, 10.13);
-      addCgiCertifiedText(doc, overlay, "date-m", dateParts[1], 135.96, 169.38, 10.13);
-      addCgiCertifiedText(doc, overlay, "date-d", dateParts[2], 162.70, 169.38, 10.13);
-    }
-    addCgiCertifiedText(doc, overlay, "recipient", recipient.company, 84.99, 211.53, 10.13, bold);
-    addCgiCertifiedText(doc, overlay, "project-head", meta.projectName, 84.99, 253.68, 9.351, bold);
-    addCgiCertifiedText(doc, overlay, "project-row", meta.projectName, 55.29, 331.92, 9.832, bold);
-
-    var rowY = [353.61, 375.31, 397.13];
-    var amountRight = [520.29, 519.63, 519.63];
-    (Array.isArray(model.items) ? model.items : []).filter(function (item) {
-      return item && item.filler !== true;
-    }).slice(0, 3).forEach(function (item, index) {
-      var values = isPlainObject(item.values) ? item.values : {};
-      addCgiCertifiedText(doc, overlay, "item-name-" + index, values.name, 55.29, rowY[index], 9.832);
-      addCgiCertifiedText(doc, overlay, "item-qty-" + index, values.qty, 0, rowY[index], 9.832, right(341.83));
-      addCgiCertifiedText(doc, overlay, "item-unit-price-" + index, cgiMoneyText(values.unitPrice), 0, rowY[index], 9.832, right(426.62));
-      addCgiCertifiedText(doc, overlay, "item-amount-" + index, cgiMoneyText(values.amount), 0, rowY[index], 9.832, right(amountRight[index]));
+    var operations = buildCgiCertifiedDrawOps(model);
+    if (!operations) return false;
+    operations.forEach(function (op) {
+      addCgiCertifiedText(doc, overlay, op.key, op.text, op.x, op.baselineY, op.size, op.options);
     });
-
-    addCgiCertifiedText(doc, overlay, "subtotal", cgiMoneyText(model.totals && model.totals.subtotalText), 0, 532.70, 9.832, right(520.34, true));
-    addCgiCertifiedText(doc, overlay, "vat-rate", facts.taxRateText || "", 0, 554.39, 9.832, right(243.77));
-    addCgiCertifiedText(doc, overlay, "vat", cgiMoneyText(model.totals && model.totals.vatText), 0, 554.39, 9.832, right(519.98, true));
-    addCgiCertifiedText(doc, overlay, "grand", cgiMoneyText(model.totals && model.totals.grandText), 0, 576.09, 9.832, right(520.34, true));
-
-    var written = String(model.writtenTotalText || "");
-    var grandText = cgiMoneyText(model.totals && model.totals.grandText);
-    if (written && grandText) written += " ( \\" + grandText + " )";
-    addCgiCertifiedText(
-      doc, overlay, "written-total", written, 26.03, 289.00, 11.75,
-      { fontFamily: 'GulimChe, Gulim, "???", "??", monospace', bold: true }
-    );
     return true;
   }
 
@@ -916,6 +937,7 @@
     buildPageStyleVariables: buildPageStyleVariables,
     buildPageRule: buildPageRule,
     applyCgiV2: applyCgiV2,
+    buildCgiCertifiedDrawOps: buildCgiCertifiedDrawOps,
     formatIssueDate: formatIssueDate,
     buildRenderModel: buildRenderModel,
     buildCertifiedPdfRenderModel: buildCertifiedPdfRenderModel,
