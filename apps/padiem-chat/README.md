@@ -1,6 +1,6 @@
 # Padiem Chat · Business 62
 
-**2026-10-08 latest OWNER model decision (not a live B14 execution claim):** selected Google AI Studio IDs: gemini-3.1-flash-lite, gemini-3.5-flash-lite, gemma-4-26b-a4b-it, gemma-4-31b-it. OWNER-excluded: Kilo Poolside Laguna, B.AI Qwen, Motif 3, GPT-5.6 Luna, NVIDIA Nemotron. Customer name = 파디엠플러스 + individual model name. The Google four are in LOCAL unmerged source, NOT current main/Production. Do not treat the older Space Bunny, Ling, Poolside, Nemotron or fixed-chain histories as current approval; Space Bunny is retired. Image input/understanding test evidence is not verified image generation, and Gemma 4 31B image-input evidence is inconclusive. See [owner model decision ledger](../../docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md).
+Current OWNER model decisions, exclusions, name policy and distinct B14 source/Production evidence: [owner model decision ledger](../../docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md). This product guide does not duplicate the model roster or grant route/Production activation.
 
 
 ```text
@@ -72,12 +72,12 @@ packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py
 Current product mapping on the verified source revision:
 
 ```text
-Padiem Plus = HOLD / padiem-profile/plus-hold  (merged runtime only; owner Google model choice exists)
+Padiem Plus = HOLD / padiem-profile/plus-hold  (product declaration; independent B14 Google registration is source-merged)
 Padiem Pro  = HOLD / padiem-profile/pro-hold    (owner decision #2601)
 Padiem Max  = HOLD / padiem-profile/max-hold
 
 DEFAULT PRODUCT IDENTITY = Padiem Plus
-DEFAULT MODEL EXECUTION  = UNAVAILABLE pending source integration/authorization; owner selection already recorded
+DEFAULT MODEL EXECUTION = UNAVAILABLE pending separately authorized product-route integration and credential-backed live readiness
 ```
 
 `poolside/laguna-s-2.1` is declared `HOLD_AS_DATA_ONLY`: it is retained as product data and as
