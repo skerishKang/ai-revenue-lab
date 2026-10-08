@@ -468,6 +468,10 @@ class P01LoopbackBrowserControlEvidenceClient:
             local_policy_ref=envelope["local_policy_ref"],
             expires_at=datetime.fromisoformat(envelope["expires_at"]),
             command_id=envelope.get("command_id") or (self._command_id or None),
+            # Server-owned admission/revision values are copied only if present.
+            # Never synthesize them from client command IDs or local pairing.
+            admission_ref=envelope.get("admission_ref"),
+            revision_ref=envelope.get("revision_ref"),
         )
 
 

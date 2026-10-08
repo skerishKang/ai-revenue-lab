@@ -558,6 +558,40 @@ class TestLoopbackEvidenceClient(AuthorityBase):
         evidence = client.resolve(request.fingerprint())
         self.assertEqual(evidence.command_id, "command.3669")
 
+    def test_server_owned_admission_and_revision_are_copied_only_when_present(self) -> None:
+        request = make_request()
+        client = P01LoopbackBrowserControlEvidenceClient(
+            base_url="", binding_ref="binding.3669", request_id="request.3669",
+            opener=lambda body: {"envelope": self._envelope(
+                request,
+                command_id="command.3669",
+                admission_ref="admission.3669",
+                revision_ref="revision.3669",
+            )},
+        )
+        evidence = client.resolve(request.fingerprint())
+        self.assertEqual(evidence.admission_ref, "admission.3669")
+        self.assertEqual(evidence.revision_ref, "revision.3669")
+
+        missing = P01LoopbackBrowserControlEvidenceClient(
+            base_url="", binding_ref="binding.3669", request_id="request.3669",
+            opener=lambda body: {"envelope": self._envelope(request)},
+        ).resolve(request.fingerprint())
+        self.assertIsNone(missing.admission_ref)
+        self.assertIsNone(missing.revision_ref)
+
+    def test_malformed_server_owned_admission_revision_refuses(self) -> None:
+        request = make_request()
+        for key in ("admission_ref", "revision_ref"):
+            client = P01LoopbackBrowserControlEvidenceClient(
+                base_url="", binding_ref="binding.3669", request_id="request.3669",
+                opener=lambda body, key=key: {
+                    "envelope": self._envelope(request, **{key: "invalid ref!"})
+                },
+            )
+            with self.subTest(key=key), self.assertRaises(ContractError):
+                client.resolve(request.fingerprint())
+
     def test_a_mismatched_envelope_fingerprint_refuses(self) -> None:
         request = make_request()
         client = P01LoopbackBrowserControlEvidenceClient(
