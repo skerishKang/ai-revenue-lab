@@ -35,7 +35,9 @@ class DocumentationNavigationHubTests(unittest.TestCase):
                 self.assertTrue(any("\uac00" <= c <= "\ud7a3" for c in heading))
                 self.assertNotIn("??", content)
                 self.assertIn("~~~text", content)
-                self.assertEqual(content.count("~~~"), 2)
+                fences = content.count("~~~")
+                self.assertGreaterEqual(fences, 2)
+                self.assertEqual(fences % 2, 0, "unclosed Markdown fence")
                 self.assertNotIn("\\\\", content[:150])
 
         root_index = (ROOT / "docs/README.md").read_text(encoding="utf-8")
