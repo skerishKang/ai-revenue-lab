@@ -209,10 +209,12 @@ check(!account.includes("localStorage") && !account.includes("sessionStorage"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: server-assigned skill is memory-only cache");
 check(account.includes("{ companyProfile: profile }") &&
       account.includes("{ companyProfile: state.companyProfile }") &&
-      account.includes("bridge.setServerSkill(skill, slotSources)") &&
+      account.includes("bridge.setServerSkill(skill, slotSources, savedSkillId)") &&
+      account.includes("row.saved_skill_id !== savedSkillId") &&
       account.includes("B66QuoteRuntimeBridge"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: server skill + authorized private assets feed canonical browser QuoteCore/renderer path");
-check(app.includes("function setServerSkill(skill, slotSources)") &&
+check(app.includes("function setServerSkill(skill, slotSources, savedSkillId)") &&
+      app.includes("serverSavedSkillId") &&
       app.includes("function clearServerSkill()") &&
       app.includes("serverSlotSources"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: app exposes non-persistent server skill + transient private asset seam");

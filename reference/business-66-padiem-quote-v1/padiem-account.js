@@ -211,6 +211,7 @@
     if (
       !result.response.ok ||
       !row ||
+      row.saved_skill_id !== savedSkillId ||
       !skill ||
       skill.approved !== true ||
       skill.fingerprint !== row.skill_fingerprint
@@ -236,7 +237,7 @@
     /* Skill 이 바뀌면 진행 중이던 견적의 문맥은 새 Skill 로 이어질 수 없다. */
     clearPendingQuote();
     const bridge = window.B66QuoteSkillBridge;
-    if (!bridge || typeof bridge.setServerSkill !== "function" || !bridge.setServerSkill(skill, slotSources)) {
+    if (!bridge || typeof bridge.setServerSkill !== "function" || !bridge.setServerSkill(skill, slotSources, savedSkillId)) {
       clearServerSkill();
       setQuoteStatus("내 견적서 렌더러를 준비하지 못했습니다.", "error");
       return false;
