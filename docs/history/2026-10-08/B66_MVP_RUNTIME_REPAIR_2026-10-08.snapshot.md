@@ -1,3 +1,31 @@
+# Historical archive — B66 MVP runtime repair (2026-10-08)
+
+```text
+DOCUMENT_STATUS = HISTORICAL_ARCHIVE
+CURRENT_OPERATING_POLICY = NO
+CURRENT_B66_MODEL_SELECTION_AUTHORITY = NO
+ORIGINAL_PATH = docs/products/b66/MVP_RUNTIME_REPAIR_2026-10-08.md
+SNAPSHOT_BASE_MAIN = e784c9c5f60fd04698b8ccd994ad74c4e39efd23
+```
+
+This file preserves a **past implementation and verification report**, not the
+current B66 release state, owner approval, or model-routing policy.
+The historical **registered/free-first** references below do **not** override
+the owner's latest explicit instruction: eligibility must not be restricted
+by free/paid price category. The policy-document correction is still a
+**Draft PR #3796**; runtime source and current deployment have separate
+readiness/approval gates. Do not treat the recorded test counts, PR status
+or Production observations below as current-state attestations.
+
+For the current B66 product and PDF fidelity contracts, consult
+[the product README](../../products/b66/README.md) and
+[the fidelity contract](../../products/b66/SOURCE_TEMPLATE_FIDELITY.md).
+For owner model authority, consult
+[the model policy](../../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md).
+The **original report is reproduced byte-for-byte below this notice**.
+
+---
+
 # B66 MVP runtime repair — 2026-10-08
 
 **Owner model decision reconciliation (2026-10-08):** The B66-specific free-first selection rule here does not authorize old B14 catalog entries excluded by the owner (Kilo Poolside Laguna, B.AI Qwen, Motif 3, GPT-5.6 Luna, NVIDIA Nemotron). See [B14 owner model decision ledger](../../operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md). Protected Production CGI Guided PDF passed, while Complete Freeform returned HTTP 502/upstream_timeout on one interpreter POST and no retries/fallback; selected exact model ID was not observed. Partial follow-up remains untested and CUSTOMER_READY=NO. Source fix evidence and real Production completion are separate.
