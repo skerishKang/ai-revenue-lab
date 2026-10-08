@@ -76,6 +76,89 @@ jobs:
         with:
           node-version: '22'
 
+      # #3742: durable pre-mutation rollback anchor for the normal deploy path.
+      #
+      # #3704 proved that a B14 ROLLBACK lands on the version it names, but its
+      # PRE_ROLLBACK_SERVED_VERSION_ID is produced inside the rollback job. When
+      # the deploy path runs, nothing records what was serving BEFORE deploy.sh
+      # touched Production, so the version a rollback would have to return to is
+      # only a run-log line that no artifact carries. This step closes exactly
+      # that gap: it is read-only, it mutates no Worker state, and it does not
+      # reinterpret the post-deploy check that follows.
+      #
+      # Position is the contract. After the exact-main assertion, so the anchor
+      # names the version serving the code this dispatch is about to replace;
+      # and immediately before deploy.sh, so the read is as fresh as the gate
+      # can make it. A refused read ends the job here, which is what makes
+      # DEPLOY_EXECUTED=NO true rather than merely printed.
+      - name: Pre-deploy canonical served-version rollback anchor
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          B14_TARGET_SHA: ${{ github.event.inputs.target_sha }}
+          # No working-directory on this step: the canonical adapter is
+          # addressed from the workspace root, the way the rollback branch
+          # addresses it.
+          B14_SERVED_VERSION_SCRIPTS: ${{ github.workspace }}/.github/scripts
+        run: |
+          set -euo pipefail
+          cli="${B14_SERVED_VERSION_SCRIPTS}/cloudflare_served_version_cli.py"
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/ai-revenue-korean-ai-platform"
+
+          # Durable, bounded evidence: version ids and verdict tokens only.
+          # Never a token, an account id, a header or a response envelope, which
+          # is why the raw deployments file stays out of the published path.
+          evidence="${RUNNER_TEMP}/b14-deploy-evidence.txt"
+          : > "${evidence}"
+          record() {
+            printf '%s\n' "$1"
+            printf '%s\n' "$1" >> "${evidence}"
+          }
+          anchor_fail() {
+            echo 'B14_PRE_DEPLOY_ANCHOR=FAIL' >&2
+            echo "REASON=$1" >&2
+            # The refusal is itself durable evidence, and DEPLOY_EXECUTED=NO is
+            # the one fact a failed anchor may still assert truthfully: the
+            # deploy command below is never reached. No version id and no PASS
+            # token is recorded for a version that was not actually confirmed.
+            record "DEPLOY_EXECUTED=NO"
+            exit 1
+          }
+          record "MUTATION_CLASS=DEPLOY"
+          record "B14_WORKER_SCRIPT=ai-revenue-korean-ai-platform"
+          record "RAW_DEPLOYMENTS_ENVELOPE_INCLUDED=NO"
+          record "SECRET_VALUES_INCLUDED=NO"
+          record "ACCOUNT_ID_INCLUDED=NO"
+
+          # (1) Canonical pre-mutation read. GET-only. The whole envelope is
+          # handed to the shared resolver (#3656); no shell-side envelope rule
+          # and no second served-version authority exist here.
+          pre_deployments="${RUNNER_TEMP}/deployments-pre-deploy.json"
+          if ! curl -fsS --max-time 30 \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            "${base}/deployments" -o "${pre_deployments}"; then
+            anchor_fail "pre-deploy deployments read failed"
+          fi
+
+          # (2) Only a successful canonical resolution is an anchor: a real
+          # active deployment, a single version, 100% traffic and a safe id.
+          # Malformed, split, ambiguous and unreadable envelopes all reach
+          # anchor_fail. The CLI prints the safe id on stdout and a bounded
+          # REASON on stderr, and never echoes a rejected candidate.
+          if ! pre_version="$(python3 "${cli}" resolve-active --deployments="${pre_deployments}")"; then
+            anchor_fail "canonical resolver refused the pre-deploy deployments read"
+          fi
+          if [ -z "${pre_version}" ]; then
+            anchor_fail "canonical resolver returned no served version id"
+          fi
+
+          record "PRE_DEPLOY_SERVED_VERSION_ID=${pre_version}"
+          record "PRE_MUTATION_VERSION_CAPTURED=YES"
+          record "SOURCE_MAIN_SHA=${B14_TARGET_SHA}"
+          record "ROLLBACK_ANCHOR_AVAILABLE=YES"
+          record "ANCHOR_PREPARED_BEFORE_DEPLOY=YES"
+          echo 'B14_PRE_DEPLOY_ANCHOR=PASS'
+
       - name: Deploy B14 via canonical pipeline (deploy.sh)
         working-directory: apps/korean-ai-platform
         env:
@@ -84,6 +167,11 @@ jobs:
         run: |
           set -euo pipefail
           bash ./deploy.sh 2>&1 | tee /tmp/b14-deploy.log
+          # #3742: the anchor above is what makes this mutation reversible, so
+          # the same artifact records that the mutation happened. deploy.sh
+          # itself is unchanged and stays the single source of truth for how
+          # B14 is deployed.
+          printf 'DEPLOY_EXECUTED=YES\n' >> "${RUNNER_TEMP}/b14-deploy-evidence.txt"
           echo 'B14_CANONICAL_PIPELINE_DEPLOY=PASS'
 
       - name: Post-deploy verification (version 100% + engine binding + Kilo catalog marker)
@@ -186,6 +274,19 @@ jobs:
           PY
 
           echo 'B14_PRODUCTION_DEPLOY_SMOKE=PASS'
+
+      # #3742: publish the bounded pre-mutation anchor. `if: always()` is the
+      # #3704 precedent -- a run that stopped before deploying is exactly the
+      # case the anchor is needed for -- and `if-no-files-found: error` keeps a
+      # missing artifact from reading as a silent PASS.
+      - name: Publish the bounded pre-mutation anchor evidence artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: b14-production-deploy-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/b14-deploy-evidence.txt
+          if-no-files-found: error
+          retention-days: 90
 
   # #1933 S2-c: one-shot removal of the dead Worker secret OPENROUTER_API_KEY.
   # After S2-b no code path reads this key; the value is inert. Separate
