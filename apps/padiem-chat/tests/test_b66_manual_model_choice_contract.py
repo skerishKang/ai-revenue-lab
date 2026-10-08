@@ -101,3 +101,23 @@ def test_dual_b66_ui_sends_exact_user_choice_and_no_implicit_default():
     assert 'id="padiemQuoteModelSelect"' in html
     worker = (root / "reference/business-66-padiem-quote-v1/_worker.js").read_text(encoding="utf-8")
     assert "/api/padiem/b66/quote/models" in worker
+
+
+def test_b66_manual_selection_errors_have_readable_korean_messages():
+    """Prevent Windows console encoding from shipping literal question marks."""
+    from test_b66_quote_runtime import _client, _Interpreter, _Store, SAVED_ID
+    response = _client(_Store(), _Interpreter()).post(
+        "/api/b66/quote/interpret",
+        json={"saved_skill_id": SAVED_ID, "message": "synthetic"},
+    )
+    assert response.status_code == 400
+    assert response.json()["error"]["message"] == "사용할 AI 모델을 선택해 주세요."
+    denied = _client(_Store(), _Interpreter(), signed_in=False)
+    response = denied.get("/api/b66/quote/models")
+    assert response.status_code == 401
+    assert response.json()["error"]["message"] == "로그인이 필요합니다."
+    source = (
+        Path(__file__).resolve().parents[1] / "app" / "b66_quote_routes.py"
+    ).read_text(encoding="utf-8")
+    assert '"????' not in source
+    assert '"AI ??' not in source
