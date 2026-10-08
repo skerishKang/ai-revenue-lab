@@ -23,3 +23,11 @@ packages/padiem-ai-core/padiem_ai_core/document_normalization.py text eol=lf
 packages/padiem-ai-core/padiem_ai_core/document_semantics.py text eol=lf
 packages/padiem-ai-core/tests/test_document_semantics.py text eol=lf
 packages/padiem-ai-core/tests/test_document_normalization.py text eol=lf
+
+# #3404: the pinned Gemini Live bundle is a generated artifact that voice-sdk/PROVENANCE.json
+# pins by SHA-256 and byte count, and `build-voice-sdk.mjs --check` proves CI can reproduce it
+# byte-for-byte. Under core.autocrlf=true a checkout would materialize it CRLF, so the rebuild
+# (which esbuild always writes with LF) would report drift for a file nobody changed — the same
+# failure class as the #3645 PDF fixtures and the #3648 canaries. `binary` also keeps Git from
+# line-merging a generated bundle: two edits to one bundle must conflict, not interleave.
+reference/business-66-padiem-quote-v1/vendor/*.js binary
