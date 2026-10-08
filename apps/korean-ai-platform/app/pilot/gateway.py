@@ -58,6 +58,7 @@ from app.pilot import provider as prv
 from app.pilot import router_core as rcore
 from app.pilot import platform as plat
 from app.pilot.routing_policy import B14_AUTO_CHAIN, ROUTING_POLICY_ID
+from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
 
 # ---------------------------------------------------------------------------
 # Bounded same-route retry for retryable upstream failures (#1982)
@@ -378,6 +379,7 @@ def _registered_route_dicts() -> list[dict]:
     for model in sorted(CATALOG_BY_ID.values(), key=lambda m: m.model_id):
         is_public = model.model_id in public_ids
         is_free = is_evidenced_free(model)
+        owner_excluded = excluded_from_owner_customer_selection(model.model_id)
         entries.append({
             "id": model.model_id,
             "provider_id": model.platform_provider_id,
@@ -385,7 +387,10 @@ def _registered_route_dicts() -> list[dict]:
             "free": is_free,
             "public": is_public,
             "explicit_only": not is_public,
-            "auto_eligible": is_public and is_free,
+            # Preserve registry provenance but never present owner-excluded
+            # models as auto-eligible for B66 or another product consumer.
+            "owner_excluded": owner_excluded,
+            "auto_eligible": is_public and is_free and not owner_excluded,
         })
     return entries
 
