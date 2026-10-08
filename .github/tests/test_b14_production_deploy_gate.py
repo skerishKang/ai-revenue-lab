@@ -1130,7 +1130,7 @@ printf 'JOB_FAILED=%s\\n' "${job_failed}"
 
 
 class _DeployChain:
-    def __init__(self, result, evidence_text: str, deploy_invoked: bool) -> None:
+    def __init__(self, result, evidence_text: str, deploy_invocations: str | None) -> None:
         self.output = (result.stdout or "") + (result.stderr or "")
         if "HARNESS_ABORT=" in self.output:
             raise AssertionError(f"stub transport did not resolve: {self.output}")
@@ -1147,15 +1147,26 @@ class _DeployChain:
         self.evidence = dict(
             line.split("=", 1) for line in evidence_text.splitlines() if "=" in line
         )
-        self.deploy_invoked = deploy_invoked
+        # One line per deploy.sh invocation, so "never reached" and "reached and
+        # failed" are distinguishable counts rather than a bare boolean.
+        self.deploy_calls = (
+            len([ln for ln in deploy_invocations.splitlines() if ln.strip()])
+            if deploy_invocations
+            else 0
+        )
 
     @property
     def mutated(self) -> bool:
-        return self.deploy_invoked
+        return self.deploy_calls > 0
 
 
 def _run_deploy_chain(
-    tmp_path, *, body, curl_fail: bool = False, deploy_fail: bool = False
+    tmp_path,
+    *,
+    body,
+    curl_fail: bool = False,
+    deploy_fail: bool = False,
+    deploy_run_override: str | None = None,
 ) -> _DeployChain:
     root = tmp_path / "lane"
     stub = root / "bin"
@@ -1175,10 +1186,15 @@ def _run_deploy_chain(
     app.mkdir(parents=True, exist_ok=True)
     (app / "deploy.sh").write_text(_STUB_DEPLOY_SH, encoding="utf-8", newline="\n")
 
+    deploy_body = (
+        _step(DEPLOY_STEP)["run"]
+        if deploy_run_override is None
+        else deploy_run_override
+    )
     chain = (
         ("00-premutation", _step(PREMUTATION_STEP)["run"], workspace),
         ("01-anchor", _step(ANCHOR_STEP)["run"], workspace),
-        ("02-deploy", _step(DEPLOY_STEP)["run"], app),
+        ("02-deploy", deploy_body, app),
     )
     for name, run, cwd in chain:
         expanded = run.replace("${{ github.event.inputs.target_sha }}", TARGET_SHA)
@@ -1222,15 +1238,24 @@ def _run_deploy_chain(
     return _DeployChain(
         result,
         evidence_file.read_text(encoding="utf-8") if evidence_file.exists() else "",
-        invocations.exists(),
+        invocations.read_text(encoding="utf-8") if invocations.exists() else None,
     )
 
 
 def _assert_no_mutation(out: _DeployChain) -> None:
-    """PRODUCTION_MUTATION=0 for every refused-anchor shape."""
+    """PRODUCTION_MUTATION=0 for every refused-anchor shape.
+
+    A refusal is the one case where DEPLOY_EXECUTED=NO is truthful, because the
+    deploy step provably never ran -- hence deploy.sh calls == 0 and no attempt
+    line at all.
+    """
     assert out.failed is True, out.output
     assert out.mutated is False, "deploy.sh ran without a confirmed anchor"
+    assert out.deploy_calls == 0, "deploy.sh was invoked without a confirmed anchor"
     assert out.evidence["DEPLOY_EXECUTED"] == "NO"
+    assert "DEPLOY_ATTEMPTED" not in out.evidence, (
+        "an attempt was recorded even though the anchor refused"
+    )
     # A version that was never confirmed must not be recorded, and no PASS token
     # may be emitted for an anchor that does not exist.
     assert "PRE_DEPLOY_SERVED_VERSION_ID" not in out.evidence
@@ -1278,6 +1303,7 @@ def test_anchor_evidence_artifact_is_durable_and_bounded(tmp_path) -> None:
     assert out.evidence["SOURCE_MAIN_SHA"] == TARGET_SHA
     assert out.evidence["ROLLBACK_ANCHOR_AVAILABLE"] == "YES"
     assert out.evidence["ANCHOR_PREPARED_BEFORE_DEPLOY"] == "YES"
+    assert out.evidence["DEPLOY_ATTEMPTED"] == "YES"
     assert out.evidence["DEPLOY_EXECUTED"] == "YES"
 
 
@@ -1318,6 +1344,85 @@ def test_anchor_reads_the_documented_rest_endpoint() -> None:
 
 def test_anchor_reuses_the_canonical_authority_only() -> None:
     _assert_anchor_authority(_anchor_run())
+
+
+# -- deploy attempt vs deploy outcome (CENTRAL review round 1) --------------
+#
+# `set -euo pipefail` ends the deploy step the moment deploy.sh exits non-zero,
+# so evidence written AFTER the command is lost exactly when it matters: a
+# deploy that started and failed can still have mutated Production, and an
+# artifact with no attempt line would read identically to one where the anchor
+# refused and deploy.sh was never reached. The attempt is therefore recorded
+# before the command, and a failed deploy records UNKNOWN -- never YES, and
+# never NO.
+
+
+def _assert_deploy_attempt_evidence(run: str) -> None:
+    assert "DEPLOY_ATTEMPTED=YES" in run, "the deploy attempt is not recorded"
+    assert run.index("DEPLOY_ATTEMPTED=YES") < run.index("bash ./deploy.sh"), (
+        "the attempt must be recorded BEFORE the mutating command"
+    )
+    assert run.index("bash ./deploy.sh") < run.index("DEPLOY_EXECUTED=YES"), (
+        "execution may only be recorded once the command has succeeded"
+    )
+    # A failed deploy is not knowably a non-mutation, so this step must never
+    # assert NO. Only the anchor step may, and only when it refused.
+    assert "DEPLOY_EXECUTED=NO" not in run, (
+        "a failed deploy must not be asserted as 'not executed'"
+    )
+
+
+def test_deploy_attempt_is_recorded_before_the_mutating_command() -> None:
+    _assert_deploy_attempt_evidence(_deploy_run())
+
+
+def test_successful_deploy_records_attempt_then_execution(tmp_path) -> None:
+    """Success: ATTEMPTED=YES, EXECUTED=YES, success marker=PASS."""
+    out = _run_deploy_chain(tmp_path, body=_envelope_body([_served(ANCHOR_VERSION)]))
+    assert out.failed is False, out.output
+    assert out.deploy_calls == 1
+    assert out.evidence["DEPLOY_ATTEMPTED"] == "YES"
+    assert out.evidence["DEPLOY_EXECUTED"] == "YES"
+    assert "B14_CANONICAL_PIPELINE_DEPLOY=PASS" in out.output
+    assert "B14_CANONICAL_PIPELINE_DEPLOY=FAIL" not in out.output
+    lines = out.evidence_text.splitlines()
+    assert lines.index("DEPLOY_ATTEMPTED=YES") < lines.index("DEPLOY_EXECUTED=YES")
+
+
+def test_failed_deploy_records_the_attempt_and_no_success(tmp_path) -> None:
+    """deploy.sh failed: ATTEMPTED=YES, EXECUTED=UNKNOWN, no success marker.
+
+    The anchor must survive a failed deploy -- after a deploy that started and
+    failed, the pre-mutation version is exactly the version to return to.
+    """
+    out = _run_deploy_chain(
+        tmp_path, body=_envelope_body([_served(ANCHOR_VERSION)]), deploy_fail=True
+    )
+    assert out.failed is True, out.output
+    assert out.deploy_calls == 1, "deploy.sh was attempted; the artifact must say so"
+    assert out.evidence["DEPLOY_ATTEMPTED"] == "YES"
+    # Neither a false success nor a false "nothing happened".
+    assert out.evidence["DEPLOY_EXECUTED"] == "UNKNOWN"
+    assert out.evidence["DEPLOY_EXECUTED"] != "YES"
+    assert out.evidence["DEPLOY_EXECUTED"] != "NO"
+    assert "B14_CANONICAL_PIPELINE_DEPLOY=PASS" not in out.output
+    assert out.evidence["PRE_DEPLOY_SERVED_VERSION_ID"] == ANCHOR_VERSION
+    assert out.evidence["MUTATION_CLASS"] == "DEPLOY"
+    assert out.evidence_text.strip() != "", "the anchor artifact must still be publishable"
+    lines = out.evidence_text.splitlines()
+    assert lines.index("DEPLOY_ATTEMPTED=YES") < lines.index("DEPLOY_EXECUTED=UNKNOWN")
+
+
+def test_anchor_refusal_records_no_attempt_and_no_execution(tmp_path) -> None:
+    """Anchor refused: ATTEMPTED absent, EXECUTED=NO, deploy.sh calls=0."""
+    out = _run_deploy_chain(
+        tmp_path,
+        body=_envelope_body([_served(ANCHOR_VERSION, 50), _served(WRONG_VERSION, 50)]),
+    )
+    _assert_no_mutation(out)
+    assert out.deploy_calls == 0
+    assert "DEPLOY_ATTEMPTED" not in out.evidence
+    assert out.evidence["DEPLOY_EXECUTED"] == "NO"
 
 
 # -- 3 to 6: every refused read is a fail-closed non-mutation ---------------
@@ -1518,3 +1623,82 @@ def test_negative_control_a_mutating_anchor_goes_red() -> None:
     run = _anchor_run() + "\n          npx wrangler@4 deploy"
     with pytest.raises(AssertionError):
         _assert_anchor_authority(run)
+
+
+def _deploy_run_without_attempt() -> str:
+    return "\n".join(
+        line for line in _deploy_run().splitlines() if "DEPLOY_ATTEMPTED" not in line
+    )
+
+
+# The deploy step exactly as it stood before this correction: no attempt record,
+# and the only evidence line placed AFTER the command, where `set -euo pipefail`
+# destroys it the moment deploy.sh exits non-zero.
+_PRE_CORRECTION_DEPLOY_RUN = """set -euo pipefail
+bash ./deploy.sh 2>&1 | tee /tmp/b14-deploy.log
+printf 'DEPLOY_EXECUTED=YES\\n' >> "${RUNNER_TEMP}/b14-deploy-evidence.txt"
+echo 'B14_CANONICAL_PIPELINE_DEPLOY=PASS'
+"""
+
+
+def test_negative_control_removing_the_attempt_record_goes_red() -> None:
+    with pytest.raises(AssertionError):
+        _assert_deploy_attempt_evidence(_deploy_run_without_attempt())
+
+
+def test_negative_control_recording_the_attempt_after_the_command_goes_red() -> None:
+    """The original defect's shape: written after the command, so a failure eats it.
+
+    Both attempt lines move, not just the printf -- an echo left above the
+    command would satisfy the ordering check while still producing nothing
+    durable once the step aborts.
+    """
+    lines = _deploy_run().splitlines()
+    attempt = [line for line in lines if "DEPLOY_ATTEMPTED" in line]
+    rest = [line for line in lines if "DEPLOY_ATTEMPTED" not in line]
+    moved = "\n".join(rest + attempt)
+    with pytest.raises(AssertionError):
+        _assert_deploy_attempt_evidence(moved)
+
+
+def test_negative_control_asserting_no_execution_on_failure_goes_red() -> None:
+    run = _deploy_run() + (
+        "\n          printf 'DEPLOY_EXECUTED=NO\\n' >> "
+        '"${RUNNER_TEMP}/b14-deploy-evidence.txt"'
+    )
+    with pytest.raises(AssertionError):
+        _assert_deploy_attempt_evidence(run)
+
+
+def test_negative_control_a_failed_deploy_without_the_attempt_line_loses_the_evidence(
+    tmp_path,
+) -> None:
+    """Execution-level restatement of the defect this correction removes.
+
+    With the attempt line removed, a deploy that started and failed leaves an
+    artifact that is indistinguishable from an anchor refusal: no attempt, no
+    execution, and no way to tell Production may have been touched. The
+    corrected step is run alongside it and must differ on exactly this point.
+    """
+    broken = _run_deploy_chain(
+        tmp_path / "broken",
+        body=_envelope_body([_served(ANCHOR_VERSION)]),
+        deploy_fail=True,
+        deploy_run_override=_PRE_CORRECTION_DEPLOY_RUN,
+    )
+    assert broken.deploy_calls == 1
+    assert "DEPLOY_ATTEMPTED" not in broken.evidence, (
+        "the defect is present: a deploy was attempted and the artifact cannot say so"
+    )
+    # Worse than UNKNOWN: the pre-correction step aborts before writing
+    # anything at all, so the artifact cannot distinguish this from a refusal.
+    assert "DEPLOY_EXECUTED" not in broken.evidence
+
+    fixed = _run_deploy_chain(
+        tmp_path / "fixed",
+        body=_envelope_body([_served(ANCHOR_VERSION)]),
+        deploy_fail=True,
+    )
+    assert fixed.deploy_calls == 1
+    assert fixed.evidence["DEPLOY_ATTEMPTED"] == "YES"
+    assert fixed.evidence["DEPLOY_EXECUTED"] == "UNKNOWN"

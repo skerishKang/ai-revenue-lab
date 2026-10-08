@@ -166,13 +166,33 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -euo pipefail
-          bash ./deploy.sh 2>&1 | tee /tmp/b14-deploy.log
-          # #3742: the anchor above is what makes this mutation reversible, so
-          # the same artifact records that the mutation happened. deploy.sh
-          # itself is unchanged and stays the single source of truth for how
-          # B14 is deployed.
-          printf 'DEPLOY_EXECUTED=YES\n' >> "${RUNNER_TEMP}/b14-deploy-evidence.txt"
-          echo 'B14_CANONICAL_PIPELINE_DEPLOY=PASS'
+          # #3742: the ATTEMPT is recorded before the mutating command, not
+          # after it. `set -euo pipefail` ends this step the moment deploy.sh
+          # exits non-zero, so anything written after the command is lost
+          # exactly when it matters most -- and a deploy that started and
+          # failed can still have mutated Production. An artifact carrying no
+          # attempt line would then read identically to one where the anchor
+          # refused and nothing ever happened.
+          printf 'DEPLOY_ATTEMPTED=YES\n' >> "${RUNNER_TEMP}/b14-deploy-evidence.txt"
+          echo 'DEPLOY_ATTEMPTED=YES'
+          # deploy.sh itself is unchanged and stays the single source of truth
+          # for how B14 is deployed; only the evidence around it is recorded.
+          if bash ./deploy.sh 2>&1 | tee /tmp/b14-deploy.log; then
+            # Reached only on success, so DEPLOY_EXECUTED=YES can never be
+            # recorded for a deploy that did not complete.
+            printf 'DEPLOY_EXECUTED=YES\n' >> "${RUNNER_TEMP}/b14-deploy-evidence.txt"
+            echo 'B14_CANONICAL_PIPELINE_DEPLOY=PASS'
+          else
+            # The command ran and failed. Whether Production actually changed
+            # is not knowable from an exit code, so the artifact records
+            # UNKNOWN: never YES, and never NO -- NO would assert that no
+            # mutation happened, which is the one claim this gate cannot make
+            # once deploy.sh has been started.
+            printf 'DEPLOY_EXECUTED=UNKNOWN\n' >> "${RUNNER_TEMP}/b14-deploy-evidence.txt"
+            echo 'DEPLOY_EXECUTED=UNKNOWN'
+            echo 'B14_CANONICAL_PIPELINE_DEPLOY=FAIL' >&2
+            exit 1
+          fi
 
       - name: Post-deploy verification (version 100% + engine binding + Kilo catalog marker)
         working-directory: apps/korean-ai-platform
