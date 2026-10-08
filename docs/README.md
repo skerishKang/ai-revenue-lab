@@ -3,7 +3,7 @@
 ```text
 DOC_STATUS = CANONICAL_ENTRYPOINT
 OWNER = repository documentation governance
-LAST_VERIFIED = 2026-10-07
+LAST_VERIFIED = 2026-10-08
 ```
 
 `docs/` is the entrypoint for **current documentation authority**. Dated audits, issue-specific designs, phase documents and Git history remain evidence; file existence alone does not make them current architecture or runtime truth.
@@ -19,6 +19,7 @@ LAST_VERIFIED = 2026-10-07
 7. `governance/DOCUMENTATION_AUTHORITY_MODEL.md` — document precedence/freshness
 8. `governance/LEGACY_AI_TERMINOLOGY_MAP.md` — legacy terminology interpretation
 9. `products/b66/README.md` — B66 Padiem Quote canonical product entrypoint
+10. `operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md` — dated owner model selection vs runtime status
 
 Audit trail:
 
@@ -90,13 +91,15 @@ S2 source presence proves only the bounded embedded runtime contract, not live E
 
 ## Padiem tier terminology
 
-Current product-level documentation uses:
+**Current owner choice is NOT the same as current merged runtime availability.** See [B14 latest owner model decision ledger](operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md).
 
 ```text
-Padiem Plus = Laguna
-Padiem Pro  = Nemotron
-Padiem Max  = HOLD
-USER_VISIBLE_AUTO = NO
+OWNER_CUSTOMER_NAME = 파디엠플러스 + individual model name
+OWNER_GOOGLE_FOUR = gemini-3.1-flash-lite, gemini-3.5-flash-lite, gemma-4-26b-a4b-it, gemma-4-31b-it
+OWNER_EXCLUDED = Kilo Poolside Laguna, B.AI Qwen, Motif 3, GPT-5.6 Luna, NVIDIA Nemotron
+MERGED_SOURCE_PLUS = padiem-profile/plus-hold (LOCAL Google registration not merged)
+MERGED_SOURCE_PRO  = padiem-profile/pro-hold
+MERGED_SOURCE_MAX  = padiem-profile/max-hold
 SILENT_FALLBACK = NO
 ```
 
@@ -107,7 +110,7 @@ Exact route IDs and executability must be verified from current Control Plane de
 When documents disagree:
 
 ```text
-1. current merged source / executable contract / manifest for volatile runtime facts
+1. latest OWNER decision for which models may be offered (#3554 + dated ledger); merged source/executable contract for which route actually works
 2. canonical architecture + registries
 3. current component/product README and product contract
 4. accepted ADR
