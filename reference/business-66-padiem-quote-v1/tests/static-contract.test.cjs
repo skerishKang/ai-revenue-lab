@@ -123,6 +123,7 @@ check(account.includes("function declaredAssetRefs(") &&
       account.includes("MAX_PRIVATE_ASSET_BYTES = 256 * 1024"),
   "PRIVATE_ACCOUNT_ASSET_LOAD=PASS: standalone account bridge resolves only bounded private quote assets");
 check(app.includes("serverSlotSources") &&
+      app.includes("const cgiProfile = ownerCgi ? activeSkillProfile() : null;") &&
       app.includes("slotSources: serverSkillActive ? skillUiState.serverSlotSources : {}"),
   "PRIVATE_ACCOUNT_ASSET_RENDER=PASS: only active server-assigned Skill gets transient private assets");
 check(templateStore.includes('return "private_asset_requires_account_skill"'),
@@ -673,9 +674,10 @@ check(!/FileReader|FormData|indexedDB/i.test(template + templateStore + template
   "RAW_SOURCE_FILE_PERSISTENCE=0: template modules never touch raw file bytes");
 check(app.includes("TemplateRenderer.buildRenderModel(") &&
       app.includes("const previewProfile = previewTemplateProfile();") &&
-      app.includes("const authority = previewProfile || renderTemplateAuthority();") &&
+      app.includes("const authority = ownerCgi ? cgiProfile : (previewProfile || renderTemplateAuthority());") &&
       app.includes("function renderTemplateAuthority()") &&
       app.includes("return explicitTemplateProfile() || activeSkillProfile() || activeTemplateProfile();") &&
+      app.includes("const cgiProfile = ownerCgi ? activeSkillProfile() : null;") &&
       app.includes("slotSources: serverSkillActive ? skillUiState.serverSlotSources : {}"),
   "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: direct mode renders through approved template/skill authority with transient private assets");
 check(!app.includes("vatSummaryLabel"),
@@ -826,7 +828,7 @@ check(app.includes("TEMPLATE_ACTIONS") && app.includes("window.B66QuoteTemplateB
       app.includes("templateUiState"),
   "TEMPLATE_SELECTOR_LIVE=YES: the app wires selection, preview and management actions");
 check(app.includes("const previewProfile = previewTemplateProfile();") &&
-      app.includes("const authority = previewProfile || renderTemplateAuthority();") &&
+      app.includes("const authority = ownerCgi ? cgiProfile : (previewProfile || renderTemplateAuthority());") &&
       app.includes("return explicitTemplateProfile() || activeSkillProfile() || activeTemplateProfile();") &&
       app.includes("return profile && Template.isApprovedProfile(profile) ? profile : null;") &&
       app.includes("candidate && candidate.approved") &&
