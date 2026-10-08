@@ -24,18 +24,14 @@ The default presentation is an embedded right-side panel/drawer, but the product
 
 ## Platform topology
 
-```text
-Host website/app
-  -> B53 Padiem Sidecar product + customer configuration
-  -> Product/Customer Adapter
-  -> IP-SIDECAR (shared embedded runtime)
-  -> IP-ENGINE
-  -> IP-CORE
-  -> B14 Korean AI Platform
-  -> Provider / Model
-```
+~~~text
+Host website / application
+  -> B53 Sidecar product + customer configuration
+  -> Product / customer adapter
+  -> IP-SIDECAR embedded shell and context boundary
+~~~
 
-Shared Control Plane remains the authority for canonical tenant/account identity, entitlement, usage, billing and shared audit policy.
+This is the **B53-specific embedding boundary**. The common downstream path through IP-ENGINE, IP-CORE and B14, together with IP-CONTROL identity and entitlement ownership, is maintained in the [canonical vertical stack](../../architecture/PADIEM_AI_VERTICAL_STACK.md) and [common authority index](../../common/README.md). B53 does not redefine generic platform roles or Provider/model routing.
 
 ## Why B53 now
 
@@ -62,6 +58,10 @@ B62 Padiem Chat remains the standalone general AI frontdoor. B54 Padiem Claw rem
 - [Pricing and Commercialization](PRICING_AND_COMMERCIALIZATION.md)
 - [Adoption and Reuse Matrix](ADOPTION_AND_REUSE_MATRIX.md)
 - [Roadmap](ROADMAP.md)
+
+## Shared development and approval references
+
+The product-specific onboarding, host adapter and rollout documents above remain B53 authority. Cross-business engineering stages, independent validation, merge approval and release/rollback rules follow the [shared lifecycle index](../../lifecycle/README.md); common platform ownership rules follow the [shared architecture index](../../common/README.md). No phase, test result or deployment is approved by these links alone.
 
 ## Standing rules
 

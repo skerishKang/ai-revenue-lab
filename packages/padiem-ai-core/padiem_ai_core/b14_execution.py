@@ -50,6 +50,14 @@ MAX_B14_MODEL_CHARS = 200
 _TASK_TYPES = frozenset({"general", "korean", "coding", "document", "batch"})
 _OPTIMIZE_FOR = frozenset({"balanced", "cost", "latency", "korean"})
 _MESSAGE_ROLES = frozenset({"system", "user", "assistant"})
+# B14's own enumerated rate-limit classes (apps/korean-ai-platform app/pilot/errors.py).
+# The 429 body is provider-controlled text, so only these exact values may reach the
+# diagnostic channel; anything else degrades to None instead of carrying a payload string.
+_B14_RATE_LIMIT_DIAGNOSTIC_CODES = frozenset({
+    "upstream_rate_limited",
+    "upstream_rate_limited_busy",
+    "kilo_free_rate_limited",
+})
 
 
 def _normalize_base_url(value: str) -> str:
@@ -173,6 +181,22 @@ def _safe_reason_codes(value: Any) -> tuple[str, ...]:
         if text is not None and text not in result:
             result.append(text)
     return tuple(result)
+
+
+def _b14_rate_limit_diagnostic(raw: bytes) -> str | None:
+    # The status alone cannot tell a provider free-tier exhaustion from a transient
+    # capacity 429, and B14 already answers with one of its enumerated codes.
+    try:
+        data = json.loads(bytes(raw).decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    if not isinstance(data, Mapping):
+        return None
+    error = data.get("error")
+    if not isinstance(error, Mapping):
+        return None
+    code = error.get("code")
+    return code if isinstance(code, str) and code in _B14_RATE_LIMIT_DIAGNOSTIC_CODES else None
 
 
 @dataclass(frozen=True, slots=True)
@@ -533,6 +557,7 @@ class B14ExecutionClient:
                 "Business 14 is rate limiting requests.",
                 upstream_status_code=status_code,
                 retryable=True,
+                diagnostic_class=_b14_rate_limit_diagnostic(raw),
             )
         if 400 <= status_code < 500:
             raise B14ExecutionError(

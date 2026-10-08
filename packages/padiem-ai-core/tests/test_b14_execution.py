@@ -15,6 +15,7 @@ from padiem_ai_core.b14_execution import (
     B14ExecutionConfig,
     B14ExecutionError,
     B14RoutingOptions,
+    _b14_rate_limit_diagnostic,
 )
 
 
@@ -359,6 +360,59 @@ def test_rate_limit_is_normalized_and_retryable() -> None:
     assert info.value.code == "upstream_rate_limited"
     assert info.value.retryable is True
     assert "PRIVATE-UPSTREAM-BODY" not in json.dumps(info.value.to_public_dict())
+    assert info.value.diagnostic_class is None
+
+
+@pytest.mark.parametrize(
+    "b14_code",
+    ["upstream_rate_limited", "upstream_rate_limited_busy", "kilo_free_rate_limited"],
+)
+def test_rate_limit_retains_b14s_own_subclass_without_changing_the_public_class(
+    b14_code: str,
+) -> None:
+    async def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            429,
+            json={"error": {"code": b14_code, "message": "PRIVATE-B14-MESSAGE", "attempt_count": 2}},
+        )
+
+    client = B14ExecutionClient(
+        B14ExecutionConfig(base_url="https://b14.example"),
+        httpx.MockTransport(handler),
+    )
+    with pytest.raises(B14ExecutionError) as info:
+        run(client.execute(request_fixture()))
+    # The collapsed public class, status and retry decision must not move.
+    assert info.value.code == "upstream_rate_limited"
+    assert info.value.upstream_status_code == 429
+    assert info.value.retryable is True
+    # Only B14's enumerated sub-class is retained as provenance.
+    assert info.value.diagnostic_class == b14_code
+    assert "PRIVATE-B14-MESSAGE" not in json.dumps(info.value.to_public_dict())
+    assert "PRIVATE-B14-MESSAGE" not in str(info.value.diagnostic_class)
+
+
+@pytest.mark.parametrize(
+    "body",
+    [
+        b"",
+        b"not json",
+        b"\xff\xfe",
+        b"[]",
+        b"{}",
+        b'{"secret": "PRIVATE-UPSTREAM-BODY"}',
+        b'{"error": null}',
+        b'{"error": "upstream_rate_limited"}',
+        b'{"error": {}}',
+        b'{"error": {"code": 429}}',
+        b'{"error": {"code": "UPSTREAM_RATE_LIMITED"}}',
+        b'{"error": {"code": "upstream_server_error"}}',
+        b'{"error": {"code": "kilo_free_rate_limited PRIVATE-KEY"}}',
+        b'{"error": {"message": "PRIVATE-B14-MESSAGE"}}',
+    ],
+)
+def test_untrusted_rate_limit_body_degrades_the_diagnostic_to_closed(body: bytes) -> None:
+    assert _b14_rate_limit_diagnostic(body) is None
 
 
 @pytest.mark.parametrize(

@@ -80,7 +80,7 @@ Canonical docs may link to these facts but should avoid duplicating them in many
 
 ## 4A. Federated document navigation (additive indexing rule)
 
-The [documentation root index](../README.md) routes readers to stable navigation indexes for [common](../common/README.md), [lifecycle](../lifecycle/README.md), [businesses](../businesses/README.md), [models](../models/README.md) and [history](../history/README.md).
+The [documentation root index](../README.md) routes readers to stable navigation indexes for [common](../common/README.md), [lifecycle](../lifecycle/README.md), [businesses](../businesses/README.md), [models](../models/README.md), [history](../history/README.md), and [evidence](../evidence/README.md).
 
 These navigation pages **do not establish a second source of truth**. Each one links to its existing owner:
 

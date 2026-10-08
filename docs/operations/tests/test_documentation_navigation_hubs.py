@@ -14,6 +14,7 @@ HUBS = (
     "docs/businesses/README.md",
     "docs/models/README.md",
     "docs/history/README.md",
+    "docs/evidence/README.md",
 )
 LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 
@@ -44,10 +45,13 @@ class DocumentationNavigationHubTests(unittest.TestCase):
 
     def test_root_links_to_each_hub_once(self):
         content = (ROOT / "docs/README.md").read_text(encoding="utf-8")
+        # Count inside the navigation table only: deep links elsewhere in the
+        # repository entrypoint are valid, not duplicate authority declarations.
+        nav = content.split("## Start here", 1)[0]  # root navigation lives before first standard section
         for name in HUBS:
             with self.subTest(name=name):
                 rel = name.removeprefix("docs/")
-                self.assertEqual(content.count(f"({rel})"), 1)
+                self.assertEqual(nav.count(f"({rel})"), 1)
 
     def test_hub_links_resolve_to_current_repo_files(self):
         for name in HUBS:

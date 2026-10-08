@@ -28,13 +28,21 @@ class TestOwnerModelDocTruth(unittest.TestCase):
         for p in ("AGENTS.md","docs/README.md","apps/korean-ai-platform/README.md","apps/korean-ai-platform/docs/README.md","apps/korean-ai-platform/docs/B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md","apps/padiem-chat/README.md"):
             with self.subTest(file=p):
                 self.assertIn("B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md",read(p))
-    def test_root_current_tier_never_old_mapping(self):
-        s=read("docs/README.md").split("## Padiem tier terminology",1)[1].split("## Documentation authority order",1)[0]
-        self.assertNotIn("Padiem Plus = Laguna",s)
-        self.assertNotIn("Padiem Pro  = Nemotron",s)
+    def test_root_model_index_links_to_authority_not_copied_inventory(self):
+        s=read("docs/README.md").split("## Padiem model authority",1)[1].split("## Documentation authority order",1)[0]
+        self.assertIn("(models/README.md)", s)
+        self.assertIn("B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md", s)
+        self.assertIn("MODEL_CHANGE_OWNER_APPROVAL_POLICY.md", s)
+        self.assertIn("product_tier_routes.py", s)
         for item in GOOGLE + EXCLUDED:
-            self.assertIn(item,s)
-        self.assertIn("MERGED_SOURCE_PLUS",s)
+            with self.subTest(model=item):
+                self.assertNotIn(item, s)
+        self.assertNotIn("MERGED_SOURCE_PLUS", s)
+        self.assertNotIn("registration not merged", s)
+
+    def test_b54_and_b66_reference_shared_model_index(self):
+        self.assertIn("(../../docs/models/README.md)", read("apps/korean-ai-code-agent/README.md"))
+        self.assertIn("(../../models/README.md)", read("docs/products/b66/README.md"))
     def test_current_charter_no_unselected_successor_claim(self):
         s=read("apps/korean-ai-platform/docs/B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md").split("## 2. Current Padiem request",1)[1].split("## 3. Auto-routing rule",1)[0]
         self.assertIn("B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md", s)

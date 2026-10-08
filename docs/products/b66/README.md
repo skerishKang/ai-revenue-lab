@@ -48,9 +48,13 @@ QuoteCore remains the sole calculation authority. The renderer does not become a
 | Template registration source formats | #3586 | XLSX now; HWPX future; legacy XLS/HWP rejected |
 | Quote shell / single composer UX | #3536 | product UX |
 | Native XLSX output | #3496 | optional editable output; not PDF critical path |
-| B66 quote-model decision authority | [Model Change Owner Approval Policy](../../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md), #3554 and #3760 | owner's corrected no-free/paid-filter instruction is in Draft PR #3796; current free-first source is not yet reconciled |
+| B66 quote-model decision authority | [Single model authority index](../../models/README.md) and #3554 / #3760 | owner-approved no-price-filter versus legacy free-first source mismatch unresolved; no routing activation here |
 
 Historical renderer experiments are evidence, not current authority: #3545, #3574, #3578, #3581 and #3584.
+
+## Shared platform and release rules
+
+The quotation workflow, QuoteCore calculations and template certification remain B66-specific responsibilities. The common [architecture and ownership index](../../common/README.md) provides shared platform boundaries, and the [development lifecycle index](../../lifecycle/README.md) points to the repository-wide validation, approval and deployment contracts. Neither link changes the current customer readiness or permits a Production release.
 
 ## Current CGI result
 
@@ -121,6 +125,6 @@ Do not insert Excel, Google Sheets, HanCell or another office engine into every 
 
 - [SOURCE_TEMPLATE_FIDELITY.md](SOURCE_TEMPLATE_FIDELITY.md) — source analysis, reproduction, certification, PDF/image fidelity implementation, current CGI architecture and development-model operating guidance.
 - This README — product boundary, current authority map and current status.
-- [MODEL_CHANGE_OWNER_APPROVAL_POLICY.md](../../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md) — repository-wide owner/model authority. The owner's B66 correction removing the free/paid eligibility restriction is recorded in Draft PR #3796; the current merged policy document and B66 executable free-first filter have not yet been reconciled. This README does not select, activate or authorize a replacement model route.
+- [Model decision and runtime evidence index](../../models/README.md) ? unified entrypoint to owner policy, B14 catalog, product route declarations and execution evidence. B66 owner-approved no-price-filter decision and still-merged free-first resolver remain **unreconciled**; see separate docs-only [PR #3796](https://github.com/skerishKang/ai-revenue-lab/pull/3796). Neither this README nor that Draft PR activates a model.
 
 Implementation/demo references such as `reference/business-66-padiem-quote-v1/` remain useful source/evidence, but they are not the canonical B66 product-policy authority.
