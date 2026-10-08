@@ -135,7 +135,7 @@ async def test_platform_adapter_has_no_openrouter_policy(monkeypatch):
             200,
             json={
                 "id": "r1",
-                "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+                "model": "test-fixture/kilo-no-openrouter-upstream",
                 "choices": [
                     {"message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}
                 ],
@@ -149,8 +149,8 @@ async def test_platform_adapter_has_no_openrouter_policy(monkeypatch):
     monkeypatch.setattr(rcfg, "provider_mode", "live")
     monkeypatch.setattr(rcfg, "api_key", "")
     result = await plat.call_platform_chat_completions(
-        model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-        upstream_model="nvidia/nemotron-3-ultra-550b-a55b:free",
+        model_id="test-fixture/kilo-no-openrouter",
+        upstream_model="test-fixture/kilo-no-openrouter-upstream",
         provider="Kilo Gateway / NVIDIA",
         platform_provider_id="kilo",
         messages=[{"role": "user", "content": "hi"}],

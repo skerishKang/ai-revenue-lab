@@ -39,6 +39,52 @@ KILO_UPSTREAM = "nvidia/nemotron-3-ultra-550b-a55b:free"
 KILO_PROVIDER = "Kilo Gateway / NVIDIA"
 
 
+# #3789: these named historical live-*transport* tests exercise protocol
+# semantics, not the retired NVIDIA route's customer execution authority.
+# A synthetic test-only identity preserves those assertions without bypassing
+# the product's live owner-exclusion check or touching catalog source.
+@pytest.fixture(autouse=True)
+def _legacy_live_transport_synthetic_model(request, monkeypatch):
+    cls=getattr(request.node.cls, "__name__", "")
+    name=request.node.name.split("[")[0]
+    migrate=(
+        cls in {"TestLiveAdapter","TestStreamedResponseLimit","TestKeylessLiveSmoke"}
+        or (cls=="TestFreeRouterExactRoute" and name=="test_free_router_request_body_exact_and_actual_model_preserved")
+        or (cls=="TestFallbackFailClosed" and name=="test_client_errors_raise_and_no_fallback")
+        or (cls=="TestManualRouteDefaultFallback" and name in {
+            "test_manual_model_no_business14_chat_one_attempt",
+            "test_manual_model_explicit_true_429_fallback",
+            "test_manual_model_explicit_true_401_no_fallback",
+            "test_manual_model_explicit_true_404_no_fallback",
+            "test_manual_model_explicit_true_malformed_no_fallback",
+            "test_manual_model_explicit_true_unknown_error_no_fallback",
+        })
+    )
+    if not migrate:
+        yield
+        return
+    import sys
+    from dataclasses import replace
+    import app.pilot.catalog as cat
+    mock_id="test-fixture/kilo-protocol-chat"
+    mock_upstream="test-fixture/kilo-protocol-response"
+    old_map=cat.CATALOG_BY_ID
+    historical=old_map["kilo/nvidia-nemotron-3-ultra-550b-a55b-free"]
+    cat.CATALOG_BY_ID={
+        **old_map,
+        mock_id:replace(historical,model_id=mock_id,
+                        upstream_model=mock_upstream,
+                        display_name="Synthetic Kilo protocol fixture"),
+    }
+    current=sys.modules[__name__]
+    monkeypatch.setattr(current,"KILO_MODEL",mock_id)
+    monkeypatch.setattr(current,"KILO_UPSTREAM",mock_upstream)
+    try:
+        yield
+    finally:
+        cat.CATALOG_BY_ID=old_map
+
+
 @pytest.fixture()
 def app():
     return create_app()
@@ -135,7 +181,7 @@ def two_model_catalog(monkeypatch):
     original_by_id = cat.CATALOG_BY_ID
     extra = _secondary_catalog_model()
     cat.CATALOG_MODELS = [*original_models, extra]
-    cat.CATALOG_BY_ID = {m.model_id: m for m in cat.CATALOG_MODELS}
+    cat.CATALOG_BY_ID = {**original_by_id, extra.model_id: extra}
     try:
         yield extra
     finally:
@@ -1183,7 +1229,7 @@ class TestFreeRouterExactRoute:
     async def test_free_router_request_body_exact_and_actual_model_preserved(self):
         _set_live()
         captured = []
-        concrete_free_model = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        concrete_free_model = KILO_MODEL
 
         async def handler(request):
             captured.append(json.loads(request.read()))
@@ -1193,15 +1239,15 @@ class TestFreeRouterExactRoute:
             messages=[{"role": "user", "content": "안녕"}],
             temperature=0.2,
             max_tokens=16,
-            model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-            upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+            model_id=KILO_MODEL,
+            upstream_model=KILO_MODEL,
             provider=KILO_PROVIDER,
             platform_provider_id="kilo",
             transport=httpx.MockTransport(handler),
         )
-        assert captured[0]["model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert captured[0]["model"] == KILO_MODEL
         assert "provider" not in captured[0]
-        assert result["_requested_upstream_model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert result["_requested_upstream_model"] == KILO_MODEL
         assert result["_actual_response_model"] == concrete_free_model
         assert result["model"] == concrete_free_model
 
@@ -1246,8 +1292,8 @@ class TestFallbackFailClosed:
                 messages=[{"role": "user", "content": "hi"}],
                 temperature=0.2,
                 max_tokens=16,
-                model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-                upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                model_id=KILO_MODEL,
+                upstream_model=KILO_MODEL,
                 provider=KILO_PROVIDER,
                 platform_provider_id="kilo",
                 transport=httpx.MockTransport(handler),
@@ -1699,7 +1745,7 @@ class TestManualRouteDefaultFallback:
         try:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
-                json={"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free", "messages": [{"role": "user", "content": "hi"}]},
+                json={"model": KILO_MODEL, "messages": [{"role": "user", "content": "hi"}]},
             )
         finally:
             plat.call_platform_chat_completions = original
@@ -1737,7 +1783,7 @@ class TestManualRouteDefaultFallback:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={
-                    "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                    "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
                     "business14": {"allow_external_fallback": True},
                 },
@@ -1770,7 +1816,7 @@ class TestManualRouteDefaultFallback:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={
-                    "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                    "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
                     "business14": {"allow_external_fallback": True},
                 },
@@ -1800,7 +1846,7 @@ class TestManualRouteDefaultFallback:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={
-                    "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                    "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
                     "business14": {"allow_external_fallback": True},
                 },
@@ -1830,7 +1876,7 @@ class TestManualRouteDefaultFallback:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={
-                    "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                    "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
                     "business14": {"allow_external_fallback": True},
                 },
@@ -1859,7 +1905,7 @@ class TestManualRouteDefaultFallback:
             resp = client.post(
                 "/api/pilot/v1/chat/completions",
                 json={
-                    "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+                    "model": KILO_MODEL,
                     "messages": [{"role": "user", "content": "hi"}],
                     "business14": {"allow_external_fallback": True},
                 },

@@ -59,14 +59,14 @@ async def test_platform_adapter_omits_unspecified_max_tokens(monkeypatch) -> Non
             200,
             json={
                 "id": "synthetic",
-                "model": KILO_NEMOTRON_UPSTREAM_MODEL,
+                "model": "test-fixture/kilo-token-budget-upstream",
                 "choices": [{"message": {"role": "assistant", "content": "ok"}}],
             },
         )
 
     await call_platform_chat_completions(
-        model_id=KILO_NEMOTRON_MODEL_ID,
-        upstream_model=KILO_NEMOTRON_UPSTREAM_MODEL,
+        model_id="test-fixture/kilo-token-budget",
+        upstream_model="test-fixture/kilo-token-budget-upstream",
         provider="Kilo Gateway / NVIDIA",
         platform_provider_id=KILO_PROVIDER_ID,
         messages=[{"role": "user", "content": "hello"}],
@@ -87,14 +87,14 @@ async def test_platform_adapter_preserves_explicit_max_tokens(monkeypatch) -> No
             200,
             json={
                 "id": "synthetic",
-                "model": KILO_NEMOTRON_UPSTREAM_MODEL,
+                "model": "test-fixture/kilo-token-budget-upstream",
                 "choices": [{"message": {"role": "assistant", "content": "ok"}}],
             },
         )
 
     await call_platform_chat_completions(
-        model_id=KILO_NEMOTRON_MODEL_ID,
-        upstream_model=KILO_NEMOTRON_UPSTREAM_MODEL,
+        model_id="test-fixture/kilo-token-budget",
+        upstream_model="test-fixture/kilo-token-budget-upstream",
         provider="Kilo Gateway / NVIDIA",
         platform_provider_id=KILO_PROVIDER_ID,
         messages=[{"role": "user", "content": "hello"}],
