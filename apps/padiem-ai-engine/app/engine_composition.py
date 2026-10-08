@@ -14,6 +14,9 @@ from dataclasses import dataclass
 from app.agent_skill_service import AgentSkillEngineService
 from app.attachment_admission_service import AttachmentAdmissionEngineService
 from app.auth_session_scope_authority import AuthSessionScopeAuthority
+from app.browser_control_broker_original_read import (
+    AuthenticatedEngineBrowserOriginalRead,
+)
 from app.browser_control_broker_receipt_read import (
     AuthenticatedBrowserP01ReceiptReadEngineService,
 )
@@ -67,6 +70,8 @@ class EngineServices:
     # Broker may only READ the already-consumed original Engine P01 receipt.
     # No production authority binding or registered device RPC.
     browser_p01_broker_receipt_read: AuthenticatedBrowserP01ReceiptReadEngineService | None = None
+    # Original Engine D1 admission + current consumed P01: Broker-only read.
+    browser_p01_broker_original_read: AuthenticatedEngineBrowserOriginalRead | None = None
     # #1964 source slice: replay stays fail-closed until the trusted durable
     # idempotency adapter is explicitly composed.
     idempotency_replay: IdempotencyReplayEngineService | None = None
@@ -104,6 +109,10 @@ class EngineServices:
             raise ValueError(
                 "engine service 'documents' must be DocumentContextEngineService or None"
             )
+        if self.browser_p01_broker_original_read is not None and type(
+            self.browser_p01_broker_original_read
+        ) is not AuthenticatedEngineBrowserOriginalRead:
+            raise ValueError("Broker original admission requires canonical Engine D1 reader")
         if self.browser_p01_broker_receipt_read is not None and type(
             self.browser_p01_broker_receipt_read
         ) is not AuthenticatedBrowserP01ReceiptReadEngineService:

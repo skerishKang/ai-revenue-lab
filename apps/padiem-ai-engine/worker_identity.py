@@ -49,6 +49,10 @@ from app.attachment_admission_service import (
 from app.browser_control_broker_caller_scope import (
     authenticate_broker_p01_receipt_reader,
 )
+from app.browser_control_broker_original_read import (
+    BROWSER_CONTROL_BROKER_ORIGINAL_READ_PATH,
+    MAX_BROKER_ORIGINAL_QUERY_BYTES,
+)
 from app.browser_control_broker_receipt_read import (
     BROWSER_CONTROL_BROKER_RECEIPT_READ_PATH,
     MAX_BROWSER_RECEIPT_QUERY_BYTES,
@@ -1138,6 +1142,8 @@ class Default(legacy_worker.Default):
             return await self._fetch_browser_owner_p01_resume(request, path)
         if path == BROWSER_CONTROL_BROKER_RECEIPT_READ_PATH:
             return await self._fetch_browser_broker_receipt_read(request, path)
+        if path == BROWSER_CONTROL_BROKER_ORIGINAL_READ_PATH:
+            return await self._fetch_browser_broker_original_read(request, path)
         return await super().fetch(request)
 
     def _fetch_authority_diagnostic(self, request: Any) -> Any:
@@ -1493,6 +1499,42 @@ class Default(legacy_worker.Default):
                 503,
             )
         result = await services.browser_p01_ticket_issue.handle(
+            method=method, path=path, content_type=content_type, body=body,
+        )
+        return legacy_worker._json_response(result)
+
+    async def _fetch_browser_broker_original_read(self, request: Any, path: str) -> Any:
+        """Private original D1 admission read, double-gated to Broker audience."""
+        method = str(getattr(request, "method", ""))
+        headers = getattr(request, "headers", None)
+        content_type = headers.get("content-type") if headers is not None else None
+        body, body_error = await _read_bounded_post_body(
+            request, max_bytes=MAX_BROKER_ORIGINAL_QUERY_BYTES,
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env, headers, body,
+        )
+        if auth_error is not None:
+            return auth_error
+        # Authenticated B54 Engine caller must NEVER impersonate Broker.
+        app_id = legacy_worker._read_requested_app_id(body)
+        if not authenticate_broker_p01_receipt_reader(
+            env=self.env, headers=headers, requested_app_id=app_id,
+        ):
+            return legacy_worker._error_response(
+                "browser_p01_broker_caller_denied",
+                "Broker-only original Engine admission read is unavailable.", 403,
+            )
+        services = await self.engine_services_factory(self.env)
+        if services.browser_p01_broker_original_read is None:
+            return legacy_worker._error_response(
+                "browser_p01_original_reader_unavailable",
+                "Original Engine P01 admission reader is not provisioned.", 503,
+            )
+        result = await services.browser_p01_broker_original_read.handle(
             method=method, path=path, content_type=content_type, body=body,
         )
         return legacy_worker._json_response(result)
