@@ -80,8 +80,11 @@ class LocalAgentBrokerDurableRuntime:
             for method in ("resolve_approved_command", "resolve_approved_command_async")
         ):
             raise ValueError("canonical first-party P01 approval resolver required")
-        if original_engine_join_source is not None and not callable(
-            getattr(original_engine_join_source, "resolve_original_admission", None)
+        if original_engine_join_source is not None and not (
+            callable(getattr(original_engine_join_source, "resolve_original_admission", None))
+            or callable(
+                getattr(original_engine_join_source, "resolve_original_admission_async", None)
+            )
         ):
             raise ValueError("independent original Engine admission resolver required")
         self._original_engine_join_source = original_engine_join_source
@@ -435,6 +438,54 @@ class LocalAgentBrokerDurableRuntime:
             join.assert_matches(scope)
             if command.evidence_ref != join.user_p01_evidence_ref:
                 raise ValueError("original Engine evidence not bound to Broker admission")
+            expiry = min(
+                command.expires_at,
+                parse_iso(authenticated["session_expires_at"], "session_expiry"),
+            )
+            self.browser_engine_join_store._register_in_existing_transaction(
+                scope=scope, original=join, expires_at=expiry, now=current,
+            )
+            return {
+                "stored": True,
+                "command_ref": scope.command_ref,
+                "browser_action_executed": False,
+                "engine_approval_recorded": False,
+            }
+        return self.transaction(operation)
+
+    async def _bind_original_browser_engine_join_async(
+        self, *, scope: BrowserControlCommandTakeCorrelation,
+        credential: bytes, now: datetime,
+    ) -> dict[str, Any]:
+        """Read independent original Engine D1 OUTSIDE DO lock, then durable CAS.
+
+        Only the injected first-party server association owner may select an
+        Engine continuation. Browser/user payload, approval, and local action
+        cannot be supplied. No RPC or production source is wired by default.
+        """
+        current = utc(now, "original_engine_join_now")
+        source = self._original_engine_join_source
+        resolver = getattr(source, "resolve_original_admission_async", None)
+        if not callable(resolver):
+            raise ValueError("asynchronous independent Engine original admission source not wired")
+        self._require_live_admitted_browser_command(
+            scope=scope, credential=credential, now=current,
+        )
+        pending = resolver(scope=scope, now=current)
+        if not inspect.isawaitable(pending):
+            raise ValueError("original Engine verification must use async authenticated I/O")
+        join = await pending
+        if type(join) is not BrokerEngineP01Join:
+            raise ValueError("independent authenticated Engine original admission absent")
+        join.assert_matches(scope)
+
+        def operation() -> dict[str, Any]:
+            command, authenticated = self._require_live_admitted_browser_command(
+                scope=scope, credential=credential, now=current,
+            )
+            join.assert_matches(scope)
+            if command.evidence_ref != join.user_p01_evidence_ref:
+                raise ValueError("original Engine P01 evidence not bound to Broker command")
             expiry = min(
                 command.expires_at,
                 parse_iso(authenticated["session_expires_at"], "session_expiry"),
