@@ -20,8 +20,8 @@ from app.pilot.b14_runtime_config import runtime_config as rcfg
 from app.pilot.stream_types import StreamEvent
 from app.pilot import platform as plat
 
-KILO_MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
-KILO_UPSTREAM = "nvidia/nemotron-3-ultra-550b-a55b:free"
+KILO_MODEL = "test-fixture/kilo-sse-transport"
+KILO_UPSTREAM = "test-fixture/kilo-sse-response"
 KILO_PROVIDER = "Kilo Gateway / NVIDIA"
 KILO_CHAT_URL = "https://api.kilo.ai/api/gateway/chat/completions"
 

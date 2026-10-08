@@ -120,6 +120,11 @@ async def test_kilo_completed_calls_send_no_authorization_header(
     upstream_model: str,
     provider: str,
 ) -> None:
+    # Registered Kilo identities above are now OWNER-excluded; this test
+    # exercises the keyless provider transport with synthetic exact IDs.
+    mock_lane="a" if "NVIDIA" in provider else "b"
+    model_id=f"test-fixture/kilo-provider-{mock_lane}"
+    upstream_model=f"test-fixture/kilo-response-{mock_lane}"
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setenv("AGNES_API_KEY", "ags_live_abcdefghijklmnopqrstuvwxyz1234")
     captured: dict[str, object] = {}
@@ -165,8 +170,8 @@ async def test_kilo_stream_sends_no_authorization_and_requires_done(monkeypatch)
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     captured: dict[str, object] = {}
     payload = (
-        b'data: {"id":"k1","model":"nvidia/nemotron-3-ultra-550b-a55b:free","choices":[{"delta":{"content":"a"},"finish_reason":null}]}\n\n'
-        b'data: {"id":"k1","model":"nvidia/nemotron-3-ultra-550b-a55b:free","choices":[{"delta":{"content":"b"},"finish_reason":"stop"}]}\n\n'
+        b'data: {"id":"k1","model":"test-fixture/kilo-transport-response","choices":[{"delta":{"content":"a"},"finish_reason":null}]}\n\n'
+        b'data: {"id":"k1","model":"test-fixture/kilo-transport-response","choices":[{"delta":{"content":"b"},"finish_reason":"stop"}]}\n\n'
         b"data: [DONE]\n\n"
     )
 
@@ -179,8 +184,8 @@ async def test_kilo_stream_sends_no_authorization_and_requires_done(monkeypatch)
     events = [
         event
         async for event in plat.stream_platform_chat_completions(
-            model_id=KILO_NEMOTRON_MODEL_ID,
-            upstream_model=KILO_NEMOTRON_UPSTREAM_MODEL,
+            model_id="test-fixture/kilo-transport-response",
+            upstream_model="test-fixture/kilo-transport-response",
             provider="Kilo Gateway / NVIDIA",
             platform_provider_id="kilo",
             messages=[{"role": "user", "content": "안녕하세요"}],
@@ -206,8 +211,8 @@ async def test_kilo_rate_limit_maps_to_bounded_provider_error(monkeypatch) -> No
 
     with pytest.raises(KiloFreeRateLimited) as exc_info:
         await plat.call_platform_chat_completions(
-            model_id=KILO_NEMOTRON_MODEL_ID,
-            upstream_model=KILO_NEMOTRON_UPSTREAM_MODEL,
+            model_id="test-fixture/kilo-transport-response",
+            upstream_model="test-fixture/kilo-transport-response",
             provider="Kilo Gateway / NVIDIA",
             platform_provider_id="kilo",
             messages=[{"role": "user", "content": "hi"}],

@@ -203,7 +203,7 @@ async def test_live_platform_body_preserves_validated_multimodal_array():
             200,
             json={
                 "id": "live-test",
-                "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
+                "model": "test-fixture/kilo-multimodal-upstream",
                 "choices": [{"index": 0, "message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}],
                 "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
             },
@@ -215,13 +215,13 @@ async def test_live_platform_body_preserves_validated_multimodal_array():
         messages=messages,
         temperature=0.2,
         max_tokens=100,
-        model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-        upstream_model="nvidia/nemotron-3-ultra-550b-a55b:free",
+        model_id="test-fixture/kilo-multimodal",
+        upstream_model="test-fixture/kilo-multimodal-upstream",
         provider="Kilo Gateway / NVIDIA",
         platform_provider_id="kilo",
         transport=httpx.MockTransport(handler),
     )
     assert result["choices"][0]["message"]["content"] == "ok"
     assert captured["json"]["messages"] == messages
-    assert captured["json"]["model"] == "nvidia/nemotron-3-ultra-550b-a55b:free"
+    assert captured["json"]["model"] == "test-fixture/kilo-multimodal-upstream"
     assert "provider" not in captured["json"]

@@ -131,3 +131,41 @@ def test_google_selected_route_keeps_its_own_missing_key_gate(monkeypatch):
 def test_separate_direct_poolside_is_not_inferred_owner_excluded():
     assert excluded_from_owner_customer_selection(POOLSIDE_MODEL_ID) is False
     # False here is NOT equivalent to verified customer approval.
+
+
+@pytest.mark.parametrize("provider,upstream", [
+    ("kilo", "nvidia/nemotron-3-ultra-550b-a55b:free"),
+    ("kilo", "poolside/laguna-s-2.1:free"),
+    ("b-ai", "qwen3.8-flash"),
+    ("infron", "motif/motif-3"),
+    ("experiential", "gpt-5.6-luna"),
+])
+def test_spoofed_safe_public_id_cannot_evoke_owner_excluded_upstream(
+    provider,upstream,monkeypatch
+):
+    """No alias can execute an excluded provider/model tuple."""
+    monkeypatch.setenv("PADIEM_GEMINI_API_KEY","synthetic_key_abcdefghij")
+    calls=[]
+    def unexpected(request):
+        calls.append(request)
+        raise AssertionError("excluded upstream was called")
+    async def invoke():
+        return await call_platform_chat_completions(
+            model_id="test-fixture/neutral-safe-id",
+            upstream_model=upstream,
+            provider=provider,
+            platform_provider_id=provider,
+            messages=[{"role":"user","content":"fixture"}],
+            transport=httpx.MockTransport(unexpected),
+        )
+    with pytest.raises(PilotNotConfigured):
+        asyncio.run(invoke())
+    assert calls==[]
+
+
+def test_direct_poolside_upstream_not_implicitly_excluded():
+    """Separate Poolside provider identity is not covered by Kilo exclusion."""
+    from app.pilot.platform import _require_owner_allowed_live_model
+    _require_owner_allowed_live_model(
+        "poolside/laguna-s-2.1","poolside/laguna-s-2.1","poolside"
+    )
