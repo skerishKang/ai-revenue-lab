@@ -1,5 +1,8 @@
 # Web CTO Final Review
 
+> **HISTORICAL REPORT — NOT CURRENT MODEL APPROVAL.** **2026-10-08 latest OWNER model decision (not a live B14 execution claim):** selected Google AI Studio IDs: gemini-3.1-flash-lite, gemini-3.5-flash-lite, gemma-4-26b-a4b-it, gemma-4-31b-it. OWNER-excluded: Kilo Poolside Laguna, B.AI Qwen, Motif 3, GPT-5.6 Luna, NVIDIA Nemotron. Customer name = 파디엠플러스 + individual model name. The Google four are in LOCAL unmerged source, NOT current main/Production. Do not treat the older Space Bunny, Ling, Poolside, Nemotron or fixed-chain histories as current approval; Space Bunny is retired. Image input/understanding test evidence is not verified image generation, and Gemma 4 31B image-input evidence is inconclusive. See [owner model decision ledger](B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md).
+
+
 ## Current remote identity
 
 - Repository: `skerishKang/ai-revenue-lab`

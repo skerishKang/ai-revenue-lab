@@ -26,49 +26,20 @@ B14
 
 B14 is not merely a thin gateway for the current Padiem models. The current profile is the first concrete customer/product configuration on top of the broader Router Platform.
 
-## 2. Current Padiem request
+## 2. Current Padiem request — latest owner choice versus merged source
 
-Padiem has already selected the target routes for the current MVP.
+**2026-10-08 latest OWNER model decision (not a live B14 execution claim):** selected Google AI Studio IDs: gemini-3.1-flash-lite, gemini-3.5-flash-lite, gemma-4-26b-a4b-it, gemma-4-31b-it. OWNER-excluded: Kilo Poolside Laguna, B.AI Qwen, Motif 3, GPT-5.6 Luna, NVIDIA Nemotron. Customer name = 파디엠플러스 + individual model name. The Google four are in LOCAL unmerged source, NOT current main/Production. Do not treat the older Space Bunny, Ling, Poolside, Nemotron or fixed-chain histories as current approval; Space Bunny is retired. Image input/understanding test evidence is not verified image generation, and Gemma 4 31B image-input evidence is inconclusive. See [owner model decision ledger](../../../docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md).
+
+**Merged source still reports Plus/Pro/Max HOLD; this is not evidence of a missing owner selection.** The four Google model registrations are local-only at E:/padiem-wt-plus-model-select and not yet merged or proven Production-ready. Do not silently activate, register, bill or fall back to any other model. The 2026-10-07 owner Agnes/Ling experiment and the older Laguna/Nemotron mappings are historical; no single global primary is required by #3554.
 
 ```text
-Padiem Plus
-  model = padiem-profile/plus-hold
-  executable = NO (HOLD_PENDING_SUCCESSOR, owner decision #3568)
-  Space Bunny fully retired (owner final retirement decision 2026-10-07):
-  no product/manual/auto/fallback execution; historical metadata only.
-  No successor is selected yet (#3554) and no older route may be silently
-  promoted as fallback.
-
-Padiem Pro
-  model = padiem-profile/pro-hold
-  executable = NO (owner decision #2601)
-
-Padiem Max
-  model = padiem-profile/max-hold
-  executable = NO
-
-Declared data, not a product route
-  agnes-ai/agnes-3.0-flash     HOLD_AS_DATA_ONLY, historical Plus route
-  kilo/stealth-space-bunny-alpha  HOLD_AS_DATA_ONLY, retired Plus route,
-                                 historical metadata only (#3568, fully
-                                 retired 2026-10-07: absent from the B14
-                                 catalog/KILO_FREE_ROUTES)
-  poolside/laguna-s-2.1        HOLD_AS_DATA_ONLY, historical routing/fixed-chain evidence
+CURRENT_MERGED_PLUS = padiem-profile/plus-hold
+CURRENT_MERGED_PRO  = padiem-profile/pro-hold
+CURRENT_MERGED_MAX  = padiem-profile/max-hold
+OWNER_GOOGLE_SET_SELECTED = YES
+GOOGLE_MODEL_SOURCE_MERGED = NO
+GOOGLE_PRODUCTION_READY = NOT_VERIFIED
 ```
-
-The earlier mappings `Plus = agnes-ai/agnes-3.0-flash` and, before that, `Plus = kilo/poolside-laguna-s-2.1-free` / `Pro = kilo/nvidia-nemotron-3-ultra-550b-a55b-free` are superseded as current Padiem tier routes. Historical provider registrations/data do not authorize fallback.
-
-**Retirement boundary (closed 2026-10-06, extended 2026-10-07):** Kilo's public catalog listed `stealth/space-bunny-alpha` with `expiration_date=2026-10-05`. The owner decision #3568 then retired Space Bunny from the executable Padiem Plus route; main declares Plus as `HOLD_PENDING_SUCCESSOR` with no executable route (#3569). The owner final retirement decision (2026-10-07) removed the lane from the B14 catalog and `KILO_FREE_ROUTES` entirely, so it no longer executes anywhere and cannot even be manually resolved. Successor selection/proof is tracked in #3554; do not silently restore an older route.
-
-Current success criteria are therefore:
-
-1. the exact requested route is declared consistently;
-2. B14 confirms it is registered and executable;
-3. the correct provider/model is actually called;
-4. Chat/Claw can use the route reliably;
-5. provider/runtime failures are normalized truthfully;
-6. retired/unregistered/unsupported routes fail closed;
-7. no secret value is exposed to a product/browser contract.
 
 ## 3. Auto-routing rule
 
@@ -83,7 +54,7 @@ They are not contradictory.
 
 Padiem v1 currently requests explicit routes, so user-visible Auto, omitted-model auto selection, and silent fallback are out of scope for that profile.
 
-The gateway's own `b14/auto` resolution (`app/pilot/routing_policy.py`, `fixed_chain_v1`) is an internal compatibility path, not a product selector. Poolside Laguna appearing as that chain's second position is precisely the data-only status the shared product declaration records for it; it does not authorize a user-visible Padiem Poolside route, and while Poolside is data-only Padiem Chat exposes no `/poolside` selector (removed in #2814).
+The gateway's own `b14/auto` resolution (`app/pilot/routing_policy.py`, `fixed_chain_v1`) is an internal compatibility path, not a product selector. Older Poolside second-position data is HISTORICAL, not owner approval; the OWNER excluded Kilo Poolside Laguna. Padiem Chat has no `/poolside` selector (#2814), and no B66 selection rule may infer an excluded route.
 
 B14 itself may later support automatic provider/model choice, cost-aware routing, latency-aware routing, capability-aware routing, availability-aware routing, and bounded multi-provider fallback as generic Router Platform features.
 
@@ -137,7 +108,7 @@ For Padiem Profile v1:
 
 - user-facing plan labels are `Padiem Plus`, `Padiem Pro`, `Padiem Max`;
 - user-visible `Auto` is not part of the profile;
-- Plus uses the explicit route from the shared declaration and is currently the only executable product tier;
+- owner-selected Plus model choices exist but current merged source remains HOLD; this charter does not prove any executable Plus route;
 - Pro and Max resolve to HOLD sentinels and fail closed before Provider dispatch;
 - Max remains HOLD until separately evidenced/approved;
 - product code must not substitute a different route because the chosen route failed;
@@ -214,7 +185,10 @@ They are not current model/catalog authority.
 If a historical document conflicts with current source or this charter:
 
 ```text
-CURRENT SOURCE + THIS CHARTER > HISTORICAL PHASE DOCUMENT
+OWNER LATEST MODEL CHOICE = APPROVED MODEL IDENTITY
+CURRENT SOURCE / RUNTIME = REAL EXECUTION AVAILABILITY
+THIS CHARTER = ARCHITECTURE ONLY
+HISTORICAL PHASE DOCUMENT = PROVENANCE
 ```
 
 Do not rewrite history solely to make old experiments look current. Instead label them as historical and keep current authority centralized here and in the top-level B14 README.
