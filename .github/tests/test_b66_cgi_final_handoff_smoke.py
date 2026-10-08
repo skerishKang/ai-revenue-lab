@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import importlib.util
+import ast
+import io
+from contextlib import redirect_stdout
 import json
 from pathlib import Path
 import re
@@ -60,6 +63,114 @@ class FinalHandoffSmokeContractTests(unittest.TestCase):
             module.INTERPRET_PATH,
             "/api/padiem/b66/quote/interpret",
         )
+
+
+class B66InterpretFailureEvidenceTests(unittest.TestCase):
+    """Only already-emitted errors from the one preauthorized request."""
+
+    @staticmethod
+    def _upstream_route_vocabulary():
+        source = (
+            Path(__file__).parents[2] / "apps" / "padiem-chat" / "app"
+            / "b66_quote_routes.py"
+        ).read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        for node in tree.body:
+            if isinstance(node, ast.Assign) and any(
+                isinstance(target, ast.Name)
+                and target.id == "_UPSTREAM_CLASS_ALLOWLIST"
+                for target in node.targets
+            ):
+                assert isinstance(node.value, ast.Call)
+                assert isinstance(node.value.args[0], (ast.Set, ast.Tuple))
+                return {v.value for v in node.value.args[0].elts}
+        raise AssertionError("B66 canonical upstream class vocabulary absent")
+
+    def test_exact_allowlist_matches_real_b66_route(self):
+        self.assertEqual(
+            module.B66_UPSTREAM_CLASS_VOCABULARY,
+            self._upstream_route_vocabulary()
+        )
+        self.assertEqual(module.B66_INTERPRET_ERROR_CODES, {
+            "quote_interpretation_failed", "padiem_service_unavailable"
+        })
+
+    def test_known_interpreter_failure_classified_without_leaking_message(self):
+        body = json.dumps({
+            "error": {
+                "code": "quote_interpretation_failed",
+                "message": "PRIVATE QUOTE CUSTOMER VALUES HERE",
+                "debug": {"token": "NO LEAK"}
+            }
+        })
+        result = module._bounded_b66_interpret_failure(
+            body, {
+                "x-b66-upstream-class": "upstream_timeout",
+                "set-cookie": "SECRET",
+            }
+        )
+        self.assertEqual(result, (
+            "quote_interpretation_failed", "B66_INTERPRETER_ROUTE", "upstream_timeout"
+        ))
+        self.assertNotIn("PRIVATE", str(result))
+        self.assertNotIn("SECRET", str(result))
+
+    def test_pages_proxy_is_distinct_from_b66_interpreter(self):
+        body = json.dumps({"error": {"code": "padiem_service_unavailable"}})
+        self.assertEqual(module._bounded_b66_interpret_failure(
+            body, {"x-b66-upstream-class": "provider_server_error"}
+        ), ("padiem_service_unavailable", "PAGES_UPSTREAM_PROXY", "UNCLASSIFIED"))
+
+    def test_malformed_or_unlisted_payload_and_header_are_opaque(self):
+        for body in (
+            None, "{not json", json.dumps({"error": {"code": "PRIVATE"}}),
+            json.dumps({"error": {"code": "quote_interpretation_failed"}}) + "X" * 8192,
+            json.dumps({"error": {"message": "contains private input"}}),
+        ):
+            self.assertEqual(
+                module._bounded_b66_interpret_failure(
+                    body, {"x-b66-upstream-class": "PRIVATE or customer text"}
+                ),
+                ("UNCLASSIFIED", "UNCLASSIFIED", "UNCLASSIFIED"),
+            )
+        valid_body = '{"error":{"code":"quote_interpretation_failed"}}'
+        self.assertEqual(module._bounded_b66_interpret_failure(
+            valid_body, {"x-b66-upstream-class": "private.example.com"}
+        ), ("quote_interpretation_failed", "B66_INTERPRETER_ROUTE", "UNCLASSIFIED"))
+
+    def test_prints_only_enumerated_fields_and_never_raw_response(self):
+        class SyntheticResponse:
+            headers = {"content-type": "application/json",
+                       "x-b66-upstream-class": "upstream_binding_unavailable",
+                       "cookie": "NEVER_PRINT"}
+            def text(self):
+                return json.dumps({"error": {
+                    "code": "quote_interpretation_failed",
+                    "message": "NEVER_PRINT",
+                    "customer": {"company": "NEVER_PRINT"}
+                }})
+        output = io.StringIO()
+        with redirect_stdout(output):
+            module._print_bounded_b66_interpret_failure(SyntheticResponse())
+        lines = output.getvalue().splitlines()
+        self.assertEqual(lines, [
+            "B66_INTERPRET_ERROR_CODE=quote_interpretation_failed",
+            "B66_INTERPRET_ERROR_LAYER=B66_INTERPRETER_ROUTE",
+            "B66_INTERPRET_UPSTREAM_CLASS=upstream_binding_unavailable",
+        ])
+        self.assertNotIn("NEVER_PRINT", output.getvalue())
+
+    def test_diagnostics_are_fail_only_and_budget_unchanged(self):
+        source = SCRIPT.read_text(encoding="utf-8")
+        for variable in ("response", "first", "second"):
+            self.assertIn(
+                f"if {variable}.status != 200:\n"
+                f"        _print_bounded_b66_interpret_failure({variable})",
+                source
+            )
+        self.assertEqual(module.MAX_INTERPRET_POSTS, 3)
+        self.assertEqual(module.RETRY, 0)
+        self.assertEqual(module.FALLBACK, 0)
 
 
 class CanaryEvidenceSeamTests(unittest.TestCase):
