@@ -547,6 +547,60 @@ class B14Client:
             "attachments": [attachment.public_dict()],
         }
 
+    async def complete_registered_quote_model(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        model: str,
+        additional_system_context: str | None = None,
+    ) -> dict[str, Any]:
+        """B66 trusted exact route -> common Core/B14, NOT B62 tier policy.
+
+        The internal caller must first obtain an owner-policy-authorized route
+        from B14 registration authority. B14 validates the actual executable
+        model and credential; this method NEVER chooses a model or a fallback.
+        """
+        if (
+            not isinstance(model, str)
+            or not model.strip()
+            or model == "b14/auto"
+            or model.startswith("padiem-profile/")
+            or not all(c.isascii() and (c.isalnum() or c in "._:/-") for c in model)
+            or len(model) > 256
+        ):
+            raise ChatRuntimeError(
+                422, "model_route_unavailable", "??? AI ??? ??? ? ????."
+            )
+        if (
+            not isinstance(messages, list)
+            or len(messages) != 1
+            or not isinstance(messages[0], dict)
+            or set(messages[0]) != {"role", "content"}
+            or messages[0].get("role") != "user"
+            or not isinstance(messages[0].get("content"), str)
+            or not messages[0]["content"].strip()
+        ):
+            raise ChatRuntimeError(422, "invalid_request", "?? ?? ??? ???? ????.")
+        if self.require_service_binding and self.service_transport is None:
+            raise ChatRuntimeError(
+                503, "upstream_binding_unavailable", "AI ??? ???? ?????."
+            )
+        quote_task = TaskMode(
+            id="b66_quote_extract_v1",
+            title="B66 quote extraction",
+            short_description="Structured quotation fields",
+            system_instruction=None,
+            task_type="document",
+            optimize_for="korean",
+            max_tokens=None,
+        )
+        return await self._complete_text(
+            [dict(messages[0])],
+            skill=quote_task,
+            model=model,
+            additional_system_context=_bounded_context(additional_system_context),
+        )
+
     async def complete(
         self,
         messages: list[dict[str, str]],

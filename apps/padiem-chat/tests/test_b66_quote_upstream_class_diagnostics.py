@@ -60,8 +60,8 @@ ALLOWLISTED_CLASSES = (
 # ``X-B66-Upstream-Class`` allowlist. Each entry records the status the code
 # actually carries and why it is not an upstream class on this lane.
 EXCLUDED_CLASSES = (
-    # Unreachable from the B66 lane: the quote route never binds a request tier,
-    # so policy resolution always returns the executable Padiem Plus default.
+    # In real Production B62 Plus is HOLD; this synthetic diagnostic fixture
+    # is not proof that model_profile_unassigned is unreachable from B66.
     (503, "model_profile_unassigned"),
     # Reachable only when the quote text itself begins with a slash alias; these
     # are product policy rejections, not upstream failures.
@@ -310,11 +310,8 @@ def test_binding_class_is_reachable_from_the_production_composed_client():
     assert error.status_code == 503
     assert error.code in ALLOWLISTED_CLASSES
 
-    # Why ``model_profile_unassigned`` is excluded from the allowlist is fixed by
-    # the two facts below: no request tier is bound on the B66 lane, and the
-    # resolved default route is executable. Together they make the
-    # non-executable-policy branch unreachable for an ordinary Korean quote
-    # message, so this lane can only produce the binding class before dispatch.
+    # Synthetic Plus fixture in conftest permits this binding-path test.
+    # Real HOLD is proved separately by test_unassigned_profile_gate.py.
     assert resolve_request_model_policy([{"role": "user", "content": message}]).model_id == (
         DEFAULT_B14_MODEL_ID
     )
@@ -322,7 +319,7 @@ def test_binding_class_is_reachable_from_the_production_composed_client():
     assert DEFAULT_B14_MODEL_ID in EXECUTABLE_B14_MODEL_IDS
 
     print("UPSTREAM_BINDING_UNAVAILABLE_REACHABLE_FROM_PRODUCTION_COMPOSITION=YES")
-    print("MODEL_PROFILE_UNASSIGNED_REACHABLE_FROM_B66_TEXT=NO")
+    print("B66_SYNTHETIC_PLUS_FIXTURE_ONLY=YES")
 
 
 def test_real_binding_class_reaches_the_route_as_one_bounded_header():

@@ -148,6 +148,19 @@ class DispatchAwareB14Client(B14Client):
         async for event in super().stream_text_auto(messages, *args, **kwargs):
             yield event
 
+    async def complete_registered_quote_model(self, messages, *, model, additional_system_context=None):
+        """Bypass only B62 tier HOLD for a trusted, exact B66 model decision."""
+        if self.settings.runtime_mode != "mock":
+            if self.require_service_binding and self.service_transport is None:
+                await _refund_active_reservation()
+            else:
+                _clear_reservation()
+        return await super().complete_registered_quote_model(
+            messages,
+            model=model,
+            additional_system_context=additional_system_context,
+        )
+
     async def complete(self, messages, *args, **kwargs):
         await self._reject_non_executable_policy(messages)
         if (
