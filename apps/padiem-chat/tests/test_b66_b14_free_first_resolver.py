@@ -11,8 +11,9 @@ from app.b66_registered_model_boundary import (
 )
 
 
-MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
-PID = "kilo"
+# Test-only synthetic route: no real provider/model is selected by fixtures.
+MODEL = "test-fixture/eligible-free-chat"
+PID = "test-fixture"
 
 
 def records(*, free=True, auto_eligible=True, credential=True, enabled=True,
@@ -80,6 +81,52 @@ def deny(fake, expected="selection_unavailable"):
     assert "secret" not in str(err.value)
     assert fake.provider_execution_calls == 0
 
+
+
+
+@pytest.mark.parametrize(("excluded_model", "provider_id"), [
+    ("kilo/nvidia-nemotron-3-ultra-550b-a55b-free", "kilo"),
+    ("kilo/nvidia-nemotron-new-variant-free", "kilo"),
+    ("kilo/poolside-laguna-s-2.1-free", "kilo"),
+    ("poolside/laguna-s-2.1", "poolside"),
+    ("b-ai/qwen3.8-flash", "b-ai"),
+    ("infron/motif/motif-3", "infron"),
+    ("experiential/gpt-5.6-luna", "experiential"),
+])
+def test_owner_excluded_registered_free_ready_route_never_selected(
+    excluded_model, provider_id
+):
+    registry, readiness = records()
+    registry["registered_routes"][0]["id"] = excluded_model
+    registry["registered_routes"][0]["provider_id"] = provider_id
+    registry["catalog"][0]["id"] = excluded_model
+    registry["catalog"][0]["provider_id"] = provider_id
+    readiness["providers"][0]["provider_id"] = provider_id
+    readiness["providers"][0]["models"] = [excluded_model]
+    fake = FakeB14ReadOnlyRegistry(registry, readiness)
+    deny(fake, "selection_unavailable")
+    assert fake.paths == ["/api/pilot/models", "/api/pilot/provider-readiness"]
+
+
+def test_excluded_candidate_cannot_poison_single_allowed_fixture_selection():
+    registry, readiness = records()
+    excluded = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+    registry["registered_routes"].append({
+        "id": excluded, "provider_id": "kilo", "free": True,
+        "auto_eligible": True, "explicit_only": False,
+    })
+    registry["catalog"].append({
+        "id": excluded, "provider_id": "kilo", "tags": ["alpha", "chat", "free"],
+    })
+    readiness["providers"].append({
+        "provider_id": "kilo", "enabled": True, "credential_ready": True,
+        "route_ready": True, "models": [excluded],
+    })
+    fake = FakeB14ReadOnlyRegistry(registry, readiness)
+    selected = select(fake)
+    assert selected.model_id == MODEL
+    assert selected.model_id != excluded
+    assert fake.provider_execution_calls == 0
 
 def test_one_registered_free_chat_and_live_credential_selects_exact_id():
     fake = FakeB14ReadOnlyRegistry(*records())

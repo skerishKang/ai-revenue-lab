@@ -23,6 +23,23 @@ _MAX_REGISTRY_BODY = 131072
 _MAX_REGISTRY_ROWS = 256
 
 
+def _excluded_by_owner(model_id: str) -> bool:
+    """Refuse owner-excluded model families for B66's customer auto selection.
+
+    These are exclusions, not replacement/model choice. Keep legacy B14 registry
+    metadata unchanged until broader dependency and entitlement review.
+    See #3554 and docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md.
+    """
+    normalized = model_id.strip().casefold()
+    return (
+        "nemotron" in normalized  # NVIDIA Nemotron, all registered versions
+        or ("poolside" in normalized and "laguna" in normalized)
+        or (normalized.startswith("b-ai/") and "qwen" in normalized)
+        or "motif-3" in normalized
+        or "gpt-5.6-luna" in normalized
+    )
+
+
 class B14RegisteredModelView(Protocol):
     async def get_json(self, path: str) -> tuple[int, bytes]: ...
 
@@ -83,6 +100,10 @@ def _qualified_routes(
         if not isinstance(mid, str) or not isinstance(pid, str) or mid in seen:
             raise B66ModelRouteError("selection_ambiguous")
         seen.add(mid)
+        # Most recent owner exclusion overrides stale B14 registry/free metadata.
+        # Never select these for B66 even when B14 marks them auto_eligible.
+        if _excluded_by_owner(mid):
+            continue
         # This policy is free-first and free-only until paid-budget authority
         # exists. Explicit-only/manual routes do not become automatic.
         if (
