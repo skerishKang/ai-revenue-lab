@@ -78,6 +78,20 @@ SUPERSEDES = implicit document precedence
 
 Canonical docs may link to these facts but should avoid duplicating them in many places.
 
+## 4A. Federated document navigation (additive indexing rule)
+
+The [documentation root index](../README.md) routes readers to stable navigation indexes for [common](../common/README.md), [lifecycle](../lifecycle/README.md), [businesses](../businesses/README.md), [models](../models/README.md) and [history](../history/README.md).
+
+These navigation pages **do not establish a second source of truth**. Each one links to its existing owner:
+
+- Business identity and numbering: [Business Registry](../portfolio/BUSINESS_REGISTRY.md).
+- Ownership, approval, and model decisions: existing canonical operating policy and owner decision records.
+- Executable model IDs, capabilities and route availability: current B14 catalog, provider modules, Control Plane contracts, and exact execution evidence.
+- Business-specific UX and state: the relevant product source and canonical product document.
+- Historical phases and incidents: immutable historical evidence, not a current runtime assertion.
+
+A change to a volatile model/route/Production fact **does not require synchronized prose edits across every business document**. Edit the actual authority; navigate to it from dependent documents. Preserve historical records verbatim. Any file moves, policy changes, model dispatch changes, merge, and Production rollout require their usual separate review gates.
+
 ## 5. Snapshot recognition
 
 다음 특징이 있으면 기본적으로 snapshot으로 취급합니다.
