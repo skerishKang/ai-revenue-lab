@@ -152,9 +152,23 @@ async def test_platform_adapter_has_no_openrouter_policy(monkeypatch):
         model_id="test-fixture/kilo-no-openrouter",
         upstream_model="test-fixture/kilo-no-openrouter-upstream",
         provider="Kilo Gateway / NVIDIA",
-        platform_provider_id="kilo",
+        platform_provider_id="test-fixture",
         messages=[{"role": "user", "content": "hi"}],
         transport=httpx.MockTransport(handler),
     )
     assert result["_live"] is True
     assert "provider" not in seen["parsed"]
+
+@pytest.fixture(autouse=True)
+def _test_only_keyless_adapter_provider(monkeypatch):
+    """Only this test module can use a generic mocked provider, never owner-retired Kilo."""
+    from app.pilot import platform_secrets as ps
+    provider = ps.PlatformProviderSpec(
+        provider_id="test-fixture",
+        credential_source=ps.CredentialSource.NONE,
+        credential_binding_name="",
+        base_origin="https://test-fixture.example/v1",
+        allowed_hosts=("test-fixture.example",),
+    )
+    monkeypatch.setitem(ps._PLATFORM_PROVIDERS, "test-fixture", provider)
+    yield

@@ -68,7 +68,7 @@ async def test_platform_adapter_omits_unspecified_max_tokens(monkeypatch) -> Non
         model_id="test-fixture/kilo-token-budget",
         upstream_model="test-fixture/kilo-token-budget-upstream",
         provider="Kilo Gateway / NVIDIA",
-        platform_provider_id=KILO_PROVIDER_ID,
+        platform_provider_id="test-fixture",
         messages=[{"role": "user", "content": "hello"}],
         transport=httpx.MockTransport(handler),
     )
@@ -96,7 +96,7 @@ async def test_platform_adapter_preserves_explicit_max_tokens(monkeypatch) -> No
         model_id="test-fixture/kilo-token-budget",
         upstream_model="test-fixture/kilo-token-budget-upstream",
         provider="Kilo Gateway / NVIDIA",
-        platform_provider_id=KILO_PROVIDER_ID,
+        platform_provider_id="test-fixture",
         messages=[{"role": "user", "content": "hello"}],
         max_tokens=2048,
         transport=httpx.MockTransport(handler),
@@ -131,3 +131,17 @@ async def test_legacy_byok_adapter_also_omits_unspecified_max_tokens() -> None:
     )
 
     assert "max_tokens" not in seen["body"]
+
+@pytest.fixture(autouse=True)
+def _test_only_keyless_adapter_provider(monkeypatch):
+    """Only this test module can use a generic mocked provider, never owner-retired Kilo."""
+    from app.pilot import platform_secrets as ps
+    provider = ps.PlatformProviderSpec(
+        provider_id="test-fixture",
+        credential_source=ps.CredentialSource.NONE,
+        credential_binding_name="",
+        base_origin="https://test-fixture.example/v1",
+        allowed_hosts=("test-fixture.example",),
+    )
+    monkeypatch.setitem(ps._PLATFORM_PROVIDERS, "test-fixture", provider)
+    yield

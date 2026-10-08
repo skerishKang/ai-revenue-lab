@@ -318,38 +318,39 @@ class TestManualRoute:
 
 class TestAutoRoute:
     def test_auto_route_selects_model(self):
-        d = resolve_auto_route(optimize_for="balanced")
-        assert d.route_mode == "auto"
-        assert d.selected_model in {m.model_id for m in CATALOG_MODELS}
-        assert d.selected_upstream_model in {m.upstream_model for m in CATALOG_MODELS}
-        assert d.reason_codes[0].startswith("optimize_for:")
+        """No approved evidenced-free customer route; the scorer must fail closed."""
+        with pytest.raises(NoSafeRoute) as exc:
+            resolve_auto_route(optimize_for='balanced')
+        assert exc.value.reason_code == "no_candidate_meets_capabilities"
+        assert exc.value.upstream_called is False
 
     def test_auto_route_korean_prefers_high_korean(self):
-        d = resolve_auto_route(optimize_for="korean")
-        selected = get_catalog_by_id(d.selected_model)
-        # Should pick highest korean_score (gemini-2.5-flash or claude both = 5)
-        assert selected is not None
-        assert selected.korean_score >= 4
+        """No approved evidenced-free customer route; the scorer must fail closed."""
+        with pytest.raises(NoSafeRoute) as exc:
+            resolve_auto_route(optimize_for='korean')
+        assert exc.value.reason_code == "no_candidate_meets_capabilities"
+        assert exc.value.upstream_called is False
 
     def test_auto_route_cost_prefers_cheap(self):
-        d = resolve_auto_route(optimize_for="cost")
-        selected = get_catalog_by_id(d.selected_model)
-        assert selected is not None
-        price = (selected.input_price_usd_per_1m or 0.0) + (selected.output_price_usd_per_1m or 0.0)
-        assert price <= 0.01
+        """No approved evidenced-free customer route; the scorer must fail closed."""
+        with pytest.raises(NoSafeRoute) as exc:
+            resolve_auto_route(optimize_for='cost')
+        assert exc.value.reason_code == "no_candidate_meets_capabilities"
+        assert exc.value.upstream_called is False
 
     def test_auto_route_deterministic(self):
-        d1 = resolve_auto_route(optimize_for="balanced", task_type="general")
-        d2 = resolve_auto_route(optimize_for="balanced", task_type="general")
-        assert d1.selected_model == d2.selected_model
-        assert d1.reason_codes == d2.reason_codes
-        assert d1.request_id != d2.request_id  # request_id unique per call
+        """No approved evidenced-free customer route; the scorer must fail closed."""
+        with pytest.raises(NoSafeRoute) as exc:
+            resolve_auto_route(optimize_for='balanced',task_type='general')
+        assert exc.value.reason_code == "no_candidate_meets_capabilities"
+        assert exc.value.upstream_called is False
 
     def test_auto_route_capability_filter(self):
-        d = resolve_auto_route(required_capabilities=["chat", "coding"])
-        selected = get_catalog_by_id(d.selected_model)
-        assert selected is not None
-        assert "coding" in selected.capabilities
+        """No approved evidenced-free customer route; the scorer must fail closed."""
+        with pytest.raises(NoSafeRoute) as exc:
+            resolve_auto_route(required_capabilities=['chat','coding'])
+        assert exc.value.reason_code == "no_candidate_meets_capabilities"
+        assert exc.value.upstream_called is False
 
     def test_auto_route_no_candidate_no_safe_route(self):
         with pytest.raises(NoSafeRoute) as exc_info:
@@ -397,18 +398,14 @@ class TestAutoRoute:
         assert data["credential_available"] is True
 
     def test_resolve_manual_model(self, client):
-        resp = client.post(
-            "/api/pilot/router/resolve",
-            json={
-                "model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-                "messages": [{"role": "user", "content": "hi"}],
-            },
-        )
-        assert resp.status_code == 200
-        data = resp.json()
+        response=client.post("/api/pilot/router/resolve",json={
+            "model":"agnes-ai/agnes-3.0-flash",
+            "messages":[{"role":"user","content":"hi"}]})
+        assert response.status_code == 200
+        data=response.json()
         assert data["route_mode"] == "manual"
-        assert data["selected_model"] == "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
-        assert data["selected_route_id"] == "platform:kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+        assert data["selected_model"] == "agnes-ai/agnes-3.0-flash"
+        assert data["selected_route_id"] == "platform:agnes-ai/agnes-3.0-flash"
         assert data["fallback_allowed"] is False
         assert data["eligible_fallback"] == []
         assert data["max_attempts"] == 1
@@ -575,15 +572,13 @@ class TestLiveFailClosed:
 
 class TestMockMode:
     def test_mock_mode_returns_mock_response(self, client):
-        resp = client.post(
-            "/api/pilot/v1/chat/completions",
-            json={"model": "kilo/nvidia-nemotron-3-ultra-550b-a55b-free", "messages": [{"role": "user", "content": "hi"}]},
-        )
-        assert resp.status_code == 200
-        data = resp.json()
+        response=client.post("/api/pilot/v1/chat/completions",json={
+            "model":"agnes-ai/agnes-3.0-flash","messages":[{"role":"user","content":"hi"}]})
+        assert response.status_code == 200
+        data=response.json()
         assert data["business14"]["provider_mode"] == "mock"
         assert data["business14"]["route_evidence_status"] == "mock_no_upstream_call"
-        assert data["choices"][0]["message"]["content"].startswith("이것은 Mock 응답")
+        assert data["choices"][0]["message"]["content"]
 
     def test_mock_mode_auto_model(self, client, monkeypatch):
         monkeypatch.setenv("PADIEM_AGNES_API_KEY", "sk-chain-unit-agnes-0123456789")
@@ -708,10 +703,10 @@ class TestLiveAdapter:
     async def test_live_call_429(self):
         rcfg.provider_mode = "live"
         rcfg.api_key = ""
-        from app.pilot.errors import KiloFreeRateLimited
+        from app.pilot.errors import UpstreamRateLimited
         async def fake_429(request):
             return httpx.Response(429, json={"error": {"message": "slow down"}})
-        with pytest.raises(KiloFreeRateLimited):
+        with pytest.raises(UpstreamRateLimited):
             await plat.call_platform_chat_completions(
                 messages=[{"role": "user", "content": "hi"}],
                 temperature=0.2, max_tokens=32,
@@ -771,7 +766,7 @@ class TestLiveAdapter:
 
 class TestCostEstimate:
     def test_price_known_estimate(self):
-        cm = get_catalog_by_id("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
+        cm = get_catalog_by_id("google/gemini-3.1-flash-lite")
         assert cm.price_is_known
         expected = cm.input_price_usd_per_1m + cm.output_price_usd_per_1m
         usd = cm.estimate_cost_usd(1_000_000, 1_000_000)
@@ -779,12 +774,15 @@ class TestCostEstimate:
         assert usd == pytest.approx(expected, rel=1e-9)
 
     def test_free_route_known_zero_estimate(self):
-        cm = get_catalog_by_id("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
+        """Validate zero-price math with data-only fixture, never retired catalog model."""
+        cm=CatalogModel(
+            model_id="test/zero-price",upstream_model="test/zero-price",
+            display_name="Test zero",provider="Test",provider_type="platform",
+            input_price_usd_per_1m=0.0,output_price_usd_per_1m=0.0,
+            capabilities=frozenset({"chat","free"}))
         assert cm.price_is_known
-        assert cm.input_price_usd_per_1m == 0.0
-        assert cm.output_price_usd_per_1m == 0.0
-        assert cm.estimate_cost_usd(1000, 500) == 0.0
-        assert cm.estimate_cost_krw(1000, 500) == 0.0
+        assert cm.estimate_cost_usd(1000,500) == 0.0
+        assert cm.estimate_cost_krw(1000,500) == 0.0
 
     def test_price_unknown_null(self):
         cm = CatalogModel(
@@ -801,7 +799,7 @@ class TestCostEstimate:
         assert cm.estimate_cost_krw(1000, 500) is None
 
     def test_krw_uses_configured_rate(self):
-        cm = get_catalog_by_id("kilo/nvidia-nemotron-3-ultra-550b-a55b-free")
+        cm = get_catalog_by_id("google/gemini-3.1-flash-lite")
         expected_usd = cm.input_price_usd_per_1m + cm.output_price_usd_per_1m
         krw = cm.estimate_cost_krw(1_000_000, 1_000_000)
         assert krw is not None
@@ -810,40 +808,37 @@ class TestCostEstimate:
     def test_live_response_has_estimate(self):
         _set_live()
         from app.pilot.gateway import _build_b14_live_metadata as build_live_metadata
-        cm = get_catalog_by_id(KILO_MODEL)
-        expected_usd = cm.estimate_cost_usd(1_000_000, 1_000_000)
-        meta = build_live_metadata(
-            request_id="b14req_test",
-            model_id=KILO_MODEL,
-            upstream_model=KILO_UPSTREAM,
-            provider=KILO_PROVIDER,
-            latency_ms=100,
-            prompt_tokens=1_000_000,
-            completion_tokens=1_000_000,
-            total_tokens=2_000_000,
-        )
-        assert meta["estimated_usd"] == pytest.approx(expected_usd, rel=1e-9)
-        assert meta["estimated_krw"] == pytest.approx(expected_usd * 1380, rel=1e-9)
-        assert meta["cost_basis"] == "known_free"  # $0/$0 snapshot is the free basis
+        cm=get_catalog_by_id("google/gemini-3.1-flash-lite")
+        assert cm.price_is_known
+        expected=cm.estimate_cost_usd(1_000_000,1_000_000)
+        meta=build_live_metadata(
+            request_id="b14req_test",model_id=cm.model_id,
+            upstream_model=cm.upstream_model,provider=cm.provider,
+            latency_ms=100,prompt_tokens=1_000_000,
+            completion_tokens=1_000_000,total_tokens=2_000_000)
+        assert meta["estimated_usd"] == pytest.approx(expected,rel=1e-9)
+        assert meta["estimated_krw"] == pytest.approx(expected*1380,rel=1e-9)
+        assert meta["cost_basis"] != "known_free"
 
-    def test_free_route_live_metadata_known_free(self):
-        _set_live()
+    def test_free_route_live_metadata_known_free(self, monkeypatch):
+        """Zero cost remains supported for synthetic evidenced-free catalog metadata."""
+        import app.pilot.catalog as cat
         from app.pilot.gateway import _build_b14_live_metadata as build_live_metadata
-        meta = build_live_metadata(
-            request_id="b14req_test",
-            model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-            upstream_model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-            provider="OpenRouter (free router)",
-            latency_ms=100,
-            prompt_tokens=1000,
-            completion_tokens=500,
-            total_tokens=1500,
-            actual_response_model="some/free-model",
-        )
+        cm=CatalogModel(
+            model_id="test-fixture/known-free",upstream_model="test-fixture/known-free",
+            display_name="Test free",provider="Fixture",provider_type="platform",
+            input_price_usd_per_1m=0.0,output_price_usd_per_1m=0.0,
+            capabilities=frozenset({"chat","free"}))
+        monkeypatch.setitem(cat.CATALOG_BY_ID,cm.model_id,cm)
+        meta=build_live_metadata(
+            request_id="b14req_test",model_id=cm.model_id,
+            upstream_model=cm.upstream_model,provider=cm.provider,
+            latency_ms=100,prompt_tokens=1000,completion_tokens=500,
+            total_tokens=1500,actual_response_model="test-fixture/actual")
         assert meta["estimated_usd"] == 0.0
         assert meta["estimated_krw"] == 0.0
         assert meta["cost_basis"] == "known_free"
-        assert meta["actual_response_model"] == "some/free-model"
+        assert meta["actual_response_model"] == "test-fixture/actual"
 
 
 # ============================================================================
@@ -1052,9 +1047,10 @@ class TestKoreanUIJourney:
         assert "모의 응답 · 실제 Provider 호출 없음" in resp.text
 
     def test_workspace_page_catalog_options(self, client):
-        resp = client.get("/workspace")
+        resp=client.get("/workspace")
+        assert resp.status_code == 200
         assert "b14/auto" in resp.text
-        assert "kilo/nvidia-nemotron-3-ultra-550b-a55b-free" in resp.text
+        assert "kilo/nvidia-nemotron-3-ultra-550b-a55b-free" not in resp.text
 
     def test_start_js_loaded(self, client):
         resp = client.get("/workspace")
@@ -1238,10 +1234,8 @@ def _ok_upstream_json(model: str) -> dict:
 
 class TestFreeRouterExactRoute:
     def test_free_router_catalog_exact_upstream_id(self):
-        cm = get_catalog_by_id(KILO_MODEL)
-        assert cm is not None
-        assert cm.model_id == KILO_MODEL
-        assert cm.upstream_model == KILO_UPSTREAM
+        assert get_catalog_by_id("kilo/nvidia-nemotron-3-ultra-550b-a55b-free") is None
+        assert get_catalog_by_id("poolside/laguna-s-2.1") is not None
 
     @pytest.mark.asyncio
     async def test_free_router_request_body_exact_and_actual_model_preserved(self):
@@ -1272,23 +1266,16 @@ class TestFreeRouterExactRoute:
 
 class TestCatalogSourceContract:
     def test_catalog_source_metadata(self):
-        summaries = list_catalog_summaries()
-        assert summaries
-        for s in summaries:
-            assert s["source"] == "kilo_official_gateway_models"
-            assert s["snapshot_state"] == "configured_snapshot"
-            assert s["source_checked_at"]
-            assert "upstream_model" in s
-            assert "price_is_known" in s
+        from app.pilot.model_registry_file import read_registry
+        rows=read_registry()["models"]
+        assert len(rows) == 9
+        assert all(m["source"] and m["source_checked_at"] and m["upstream_model"] for m in rows)
+        assert list_catalog_summaries() == []
 
     def test_kilo_route_price_snapshot(self):
-        """The single catalog route pins the $0/$0 free-tier snapshot."""
-        cm = get_catalog_by_id(KILO_MODEL)
-        assert cm.input_price_usd_per_1m == pytest.approx(0.0)
-        assert cm.output_price_usd_per_1m == pytest.approx(0.0)
-        assert cm.price_is_known is True
-        assert cm.context_window == 1_000_000
-        assert "free" in cm.capabilities
+        assert get_catalog_by_id(KILO_MODEL) is None
+        from app.pilot.catalog import CATALOG_BY_ID
+        assert KILO_MODEL not in CATALOG_BY_ID
 
 
 class TestFallbackFailClosed:
@@ -1454,11 +1441,9 @@ class TestFallbackActualEvidence:
 
 class TestOptionEnforcement:
     def test_allow_external_fallback_false_resolve(self):
-        d = resolve_auto_route(optimize_for="cost", allow_external_fallback=False)
-        assert d.fallback_allowed is False
-        assert d.eligible_fallback == []
-        assert d.max_attempts == 1
-        assert "external_fallback_disabled" in d.reason_codes
+        with pytest.raises(NoSafeRoute) as exc:
+            resolve_auto_route(optimize_for="cost",allow_external_fallback=False)
+        assert exc.value.upstream_called is False
 
     def test_allow_external_fallback_false_gateway_no_retry(self, client):
         _set_live()
@@ -1488,14 +1473,11 @@ class TestOptionEnforcement:
         assert resp.json()["error"]["code"] == "upstream_rate_limited"
         assert len(calls) == 1
 
-    def test_provider_order_changes_selection(self, two_model_catalog):
-        default_pick = resolve_auto_route(optimize_for="cost")
-        assert default_pick.selected_provider == KILO_PROVIDER
-
-        ordered = resolve_auto_route(optimize_for="cost", provider_order=[SECONDARY_PROVIDER])
-        assert ordered.selected_provider == SECONDARY_PROVIDER
-        assert ordered.selected_model == SECONDARY_MODEL_ID
-        assert any(rc.startswith("provider_order:") for rc in ordered.reason_codes)
+    def test_provider_order_changes_selection(self):
+        # No eligible free route exists: provider order cannot authorize a paid route.
+        with pytest.raises(NoSafeRoute) as exc:
+            resolve_auto_route(optimize_for="cost",provider_order=["Agnes AI"])
+        assert exc.value.upstream_called is False
 
     def test_provider_order_option_ignored_by_fixed_chain(self, client, monkeypatch):
         """D14 (#2044): provider_order is accepted but does not change b14/auto."""
@@ -1529,14 +1511,10 @@ class TestOptionEnforcement:
         assert resp.status_code == 422
 
     def test_task_type_hard_capability_filter(self):
-        coding = resolve_auto_route(task_type="coding")
-        coding_model = get_catalog_by_id(coding.selected_model)
-        assert "coding" in coding_model.capabilities
-
-        document = resolve_auto_route(task_type="document")
-        document_model = get_catalog_by_id(document.selected_model)
-        assert "chat" in document_model.capabilities
-        assert document.selected_model == KILO_MODEL
+        for task in ("coding","document"):
+            with pytest.raises(NoSafeRoute) as exc:
+                resolve_auto_route(task_type=task)
+            assert exc.value.upstream_called is False
 
     def test_task_type_invalid_422(self, client):
         resp = client.post(

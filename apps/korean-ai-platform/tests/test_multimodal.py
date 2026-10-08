@@ -166,7 +166,7 @@ def test_manual_text_only_model_fails_before_openrouter_call(client, monkeypatch
     monkeypatch.setattr(plat, "call_platform_chat_completions", should_not_call)
     response = post_image(
         client,
-        model="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+        model="agnes-ai/agnes-3.0-flash",
         business14={"allow_external_fallback": True},
     )
     assert response.status_code == 503
@@ -218,10 +218,24 @@ async def test_live_platform_body_preserves_validated_multimodal_array():
         model_id="test-fixture/kilo-multimodal",
         upstream_model="test-fixture/kilo-multimodal-upstream",
         provider="Kilo Gateway / NVIDIA",
-        platform_provider_id="kilo",
+        platform_provider_id="test-fixture",
         transport=httpx.MockTransport(handler),
     )
     assert result["choices"][0]["message"]["content"] == "ok"
     assert captured["json"]["messages"] == messages
     assert captured["json"]["model"] == "test-fixture/kilo-multimodal-upstream"
     assert "provider" not in captured["json"]
+
+@pytest.fixture(autouse=True)
+def _test_only_keyless_adapter_provider(monkeypatch):
+    """Only this test module can use a generic mocked provider, never owner-retired Kilo."""
+    from app.pilot import platform_secrets as ps
+    provider = ps.PlatformProviderSpec(
+        provider_id="test-fixture",
+        credential_source=ps.CredentialSource.NONE,
+        credential_binding_name="",
+        base_origin="https://test-fixture.example/v1",
+        allowed_hosts=("test-fixture.example",),
+    )
+    monkeypatch.setitem(ps._PLATFORM_PROVIDERS, "test-fixture", provider)
+    yield
