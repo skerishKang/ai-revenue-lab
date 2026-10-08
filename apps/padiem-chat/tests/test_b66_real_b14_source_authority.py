@@ -32,21 +32,34 @@ GOOGLE_IDS = {
 }
 
 # Child process is the B14 package named 'app'; the parent stays B66's
-# same-named 'app'. No import-path collision, credentials or provider calls.
+# same-named 'app'. No import-path collision, credentials, HTML-template dependency or provider calls.
 B14_SOURCE_SCRIPT = r"""
 import json
-from starlette.testclient import TestClient
-from app.factory import create_app
+import asyncio
+import builtins
 
-with TestClient(create_app()) as client:
-    models = client.get("/api/pilot/models")
-    readiness = client.get("/api/pilot/provider-readiness")
-    assert models.status_code == 200
-    assert readiness.status_code == 200
-    print("B66_SOURCE_GETS=" + json.dumps({
-        "models": models.json(),
-        "readiness": readiness.json(),
-    }, separators=(",", ":"), ensure_ascii=True))
+# B62's locked CI need not install B14 HTML templates to test quote routes.
+# Reproduce the exact metadata builders behind B14's two GET endpoints,
+# without importing B14 app.factory / jinja2 or making an HTTP request.
+original_import = builtins.__import__
+def reject_html_template_dependency(name, *args, **kwargs):
+    if name == "jinja2" or name.startswith("jinja2."):
+        raise ModuleNotFoundError("JINJA2_NOT_REQUIRED_FOR_B66_READ")
+    return original_import(name, *args, **kwargs)
+builtins.__import__ = reject_html_template_dependency
+
+from app.pilot.gateway import _registered_route_dicts, _catalog_summary_dicts
+from app.pilot.provider_readiness import provider_readiness
+
+models = {
+    "registered_routes": _registered_route_dicts(),
+    "catalog": _catalog_summary_dicts(),
+}
+readiness = json.loads(asyncio.run(provider_readiness(None)).body)
+print("B66_SOURCE_GETS=" + json.dumps({
+    "models": models,
+    "readiness": readiness,
+}, separators=(",", ":"), ensure_ascii=True))
 """
 
 
@@ -76,10 +89,10 @@ def b14_source_gets():
         timeout=25,
         check=False,
     )
-    assert child.returncode == 0, "B14 internal source GET smoke failed"
+    assert child.returncode == 0, "B14 internal metadata builder smoke failed"
     markers = [line for line in child.stdout.splitlines()
                if line.startswith("B66_SOURCE_GETS=")]
-    assert len(markers) == 1, "B14 source metadata was not produced exactly once"
+    assert len(markers) == 1, "B14 metadata builder output was not produced exactly once"
     payload = json.loads(markers[0].split("=", 1)[1])
     assert set(payload) == {"models", "readiness"}
     assert isinstance(payload["models"].get("registered_routes"), list)
