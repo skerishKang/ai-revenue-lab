@@ -6,6 +6,9 @@ import io
 import json
 import pathlib
 import re
+import subprocess
+import sys
+import tempfile
 import unittest
 
 import yaml
@@ -13,11 +16,31 @@ import yaml
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCRIPT_PATH = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a17_slack_read_production_canary.py"
 WORKFLOW_PATH = ROOT / ".github" / "workflows" / "b54-slack-read-production-canary.yml"
+SERVED_VERSION_GUARD_PATH = ROOT / ".github" / "scripts" / "b54_engine_served_version_guard.py"
+SERVED_VERSION_RESOLVER_PATH = ROOT / ".github" / "scripts" / "cloudflare_served_version.py"
+
+# #3817 (parent #3748): the resolved served version id must reach the canonical
+# argparse surface as ONE token. The canonical grammar accepts a leading hyphen,
+# so the separated form lets argparse consume the id as an option and abort with
+# a usage error before the predicate is ever consulted.
+CANONICAL_ACTIVE_VERSION_ARGV = '--active-version="${active_version}"'
+SEPARATED_ACTIVE_VERSION_ARGV = '--active-version "${active_version}"'
+CANONICAL_VERSION_ID_GRAMMAR = r"grep -Eq '^[A-Za-z0-9._-]{1,64}$'"
+LEADING_HYPHEN_VERSION_ID = "-canonical-safe-v1"
+REGISTRY_BINDING_NAME = "PADIEM_ENGINE_CALLER_REGISTRY_V1"
+SENTINEL = "sentinel-secret-value-must-never-appear"
 
 spec = importlib.util.spec_from_file_location("a17_slack_read_production_canary", SCRIPT_PATH)
 assert spec is not None and spec.loader is not None
 canary = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(canary)
+
+_resolver_spec = importlib.util.spec_from_file_location(
+    "cloudflare_served_version", SERVED_VERSION_RESOLVER_PATH
+)
+assert _resolver_spec is not None and _resolver_spec.loader is not None
+served_version = importlib.util.module_from_spec(_resolver_spec)
+_resolver_spec.loader.exec_module(served_version)
 
 
 def workflow_text() -> str:
@@ -31,6 +54,48 @@ def workflow_document() -> dict:
 def workflow_triggers() -> dict:
     document = workflow_document()
     return document.get("on", document.get(True))
+
+
+def served_version_guard_run_bodies() -> list[str]:
+    """Every workflow step body that invokes the canonical served-version guard."""
+    document = workflow_document()
+    return [
+        str(step["run"])
+        for job in document["jobs"].values()
+        for step in job.get("steps", [])
+        if "run" in step and "b54_engine_served_version_guard.py verify" in step["run"]
+    ]
+
+
+def assert_canonical_active_version_argv(run: str) -> None:
+    """The #3817 contract: one canonical argv token, never a separated pair."""
+    assert run.count("b54_engine_served_version_guard.py verify") == 1
+    assert CANONICAL_ACTIVE_VERSION_ARGV in run
+    assert SEPARATED_ACTIVE_VERSION_ARGV not in run
+
+
+def leading_hyphen_version_detail() -> dict:
+    """Minimal canonical version-detail payload whose id starts with a hyphen."""
+    return {
+        "success": True,
+        "result": {
+            "id": LEADING_HYPHEN_VERSION_ID,
+            "resources": {
+                "bindings": [
+                    {"name": REGISTRY_BINDING_NAME, "type": "secret_text", "text": SENTINEL}
+                ]
+            },
+        },
+    }
+
+
+def run_guard_cli(argv: list[str]) -> subprocess.CompletedProcess:
+    """Invoke the real guard CLI as a subprocess. Never touches Cloudflare or a provider."""
+    return subprocess.run(
+        [sys.executable, str(SERVED_VERSION_GUARD_PATH), *argv],
+        capture_output=True,
+        text=True,
+    )
 
 
 class SlackReadProductionCanaryTests(unittest.TestCase):
@@ -335,6 +400,95 @@ class SlackReadProductionCanaryWorkflowContractTests(unittest.TestCase):
         self.assertIn("ENGINE_EXPECTED_VERSION_ACTIVE=PASS", text)
         self.assertIn("ENGINE_VERSION_ID_OUTPUT=0", text)
         self.assertIn("b54_engine_served_version_guard.py", text)
+
+    # --- #3817 (parent #3748): canonical version argv -------------------------
+
+    def test_3817_canary_passes_the_active_version_as_one_canonical_argv_token(self) -> None:
+        """The sole served-version guard call must use the `=` form."""
+
+        runs = served_version_guard_run_bodies()
+        self.assertEqual(len(runs), 1)
+        run = runs[0]
+        assert_canonical_active_version_argv(run)
+        # The guard call itself is otherwise untouched: same payload, same silence.
+        self.assertIn('--version-settings "${version_detail}"', run)
+        self.assertIn(">/dev/null", run)
+
+    def test_3817_canonical_predicate_and_version_equality_are_preserved(self) -> None:
+        """The fix must not relax the grammar or the exact-version equality gate."""
+
+        text = workflow_text()
+        self.assertIn(CANONICAL_VERSION_ID_GRAMMAR, text)
+        self.assertIn('test "${active_version}" = "${EXPECTED_ENGINE_VERSION}"', text)
+        self.assertIn("ENGINE_EXPECTED_VERSION_ACTIVE=PASS", text)
+        # The canonical grammar is the shared resolver's, not a local re-derivation.
+        self.assertEqual(served_version.SERVED_VERSION_ID_RE.pattern, r"^[A-Za-z0-9._-]{1,64}$")
+        self.assertTrue(served_version.is_safe_version_id(LEADING_HYPHEN_VERSION_ID))
+
+    def test_3817_reintroducing_the_separated_argv_form_fails_the_contract(self) -> None:
+        """Negative control: the pre-#3817 form can no longer satisfy the contract."""
+
+        runs = served_version_guard_run_bodies()
+        self.assertEqual(len(runs), 1)
+        run = runs[0]
+        # The shipped workflow must already carry the `=` form for this control to
+        # mean anything; a reverted file fails here, before the mutation is built.
+        assert_canonical_active_version_argv(run)
+        broken = run.replace(CANONICAL_ACTIVE_VERSION_ARGV, SEPARATED_ACTIVE_VERSION_ARGV, 1)
+        self.assertNotEqual(broken, run)
+        self.assertNotIn(CANONICAL_ACTIVE_VERSION_ARGV, broken)
+        self.assertIn(SEPARATED_ACTIVE_VERSION_ARGV, broken)
+        with self.assertRaises(AssertionError):
+            assert_canonical_active_version_argv(broken)
+
+    def test_3817_real_guard_cli_accepts_a_leading_hyphen_id_only_in_the_equals_form(self) -> None:
+        """CLI acceptance == is_safe_version_id() over an option-shaped id (#3748 item 2)."""
+
+        with tempfile.TemporaryDirectory() as tmp:
+            detail = pathlib.Path(tmp) / "slack-canary-engine-version.json"
+            detail.write_text(json.dumps(leading_hyphen_version_detail()), encoding="utf-8")
+
+            # `=` form: argparse accepts the id, so the canonical predicate decides.
+            accepted = run_guard_cli(
+                [
+                    "verify",
+                    "--version-settings",
+                    str(detail),
+                    f"--active-version={LEADING_HYPHEN_VERSION_ID}",
+                ]
+            )
+            self.assertEqual(accepted.returncode, 0, accepted.stderr)
+            self.assertIn("B54_ENGINE_SERVED_VERSION_GUARD=PASS", accepted.stdout)
+            self.assertNotIn("usage:", accepted.stderr.lower())
+            self.assertNotIn(SENTINEL, accepted.stdout + accepted.stderr)
+
+            # Separated form: argparse eats the id as an option and aborts first.
+            rejected = run_guard_cli(
+                [
+                    "verify",
+                    "--version-settings",
+                    str(detail),
+                    "--active-version",
+                    LEADING_HYPHEN_VERSION_ID,
+                ]
+            )
+            self.assertEqual(rejected.returncode, 2)
+            self.assertIn("usage:", rejected.stderr.lower())
+            self.assertNotIn("B54_ENGINE_SERVED_VERSION_GUARD=PASS", rejected.stdout)
+
+            # Mismatch: the parser accepted the id, but the guard still fails closed.
+            mismatch = run_guard_cli(
+                [
+                    "verify",
+                    "--version-settings",
+                    str(detail),
+                    "--active-version=-different-safe-v1",
+                ]
+            )
+            self.assertEqual(mismatch.returncode, 1)
+            self.assertIn("B54_ENGINE_SERVED_VERSION_GUARD=FAIL", mismatch.stderr)
+            self.assertNotIn("B54_ENGINE_SERVED_VERSION_GUARD=PASS", mismatch.stdout)
+            self.assertNotIn(SENTINEL, mismatch.stdout + mismatch.stderr)
 
     def test_slack_readiness_observation_is_name_type_only(self) -> None:
         text = workflow_text()

@@ -18,8 +18,11 @@ class TestOwnerModelDocTruth(unittest.TestCase):
         for item in GOOGLE + EXCLUDED:
             with self.subTest(item=item):
                 self.assertIn(item,s)
-        self.assertIn("LOCAL ONLY / NOT MERGED",s)
-        self.assertIn("image NOT VERIFIED",s)
+        self.assertIn("SOURCE MERGED / LIVE NOT PROVEN", s)
+        self.assertIn("PR #3788", s)
+        self.assertIn("image NOT VERIFIED", s)
+        self.assertNotIn("google_provider.py absent", s)
+        self.assertNotIn("LOCAL ONLY / NOT MERGED", s)
     def test_entrypoints_refer_to_current_owner_ledger(self):
         for p in ("AGENTS.md","docs/README.md","apps/korean-ai-platform/README.md","apps/korean-ai-platform/docs/README.md","apps/korean-ai-platform/docs/B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md","apps/padiem-chat/README.md"):
             with self.subTest(file=p):
@@ -33,11 +36,40 @@ class TestOwnerModelDocTruth(unittest.TestCase):
         self.assertIn("MERGED_SOURCE_PLUS",s)
     def test_current_charter_no_unselected_successor_claim(self):
         s=read("apps/korean-ai-platform/docs/B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md").split("## 2. Current Padiem request",1)[1].split("## 3. Auto-routing rule",1)[0]
-        for item in GOOGLE + EXCLUDED:
-            self.assertIn(item,s)
-        self.assertIn("CURRENT_MERGED_PLUS",s)
-        self.assertIn("GOOGLE_MODEL_SOURCE_MERGED = NO",s)
+        self.assertIn("B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md", s)
+        self.assertIn("CURRENT_MERGED_PLUS", s)
+        self.assertIn("GOOGLE_SOURCE_AUTHORITY = apps/korean-ai-platform/app/pilot/google_provider.py", s)
+        self.assertNotIn("GOOGLE_MODEL_SOURCE_MERGED = NO", s)
         self.assertNotIn("No successor is selected yet",s)
+    def test_google_registration_is_current_merged_source_not_production_evidence(self):
+        provider = read("apps/korean-ai-platform/app/pilot/google_provider.py")
+        platform = read("apps/korean-ai-platform/app/pilot/platform.py")
+        for model_id in GOOGLE:
+            with self.subTest(model_id=model_id):
+                self.assertIn('"google/' + model_id + '"', provider)
+        self.assertIn('GOOGLE_BASE_ORIGIN = "https://generativelanguage.googleapis.com/v1beta/openai"', provider)
+        self.assertIn('GOOGLE_CREDENTIAL_BINDING = "PADIEM_GEMINI_API_KEY"', provider)
+        self.assertIn("register_google_provider()", platform)
+        self.assertIn("CATALOG_BY_ID[model.model_id] = model", provider)
+        self.assertIn("GOOGLE_PRODUCTION_READY = NOT_VERIFIED",
+                      read("apps/korean-ai-platform/docs/B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md"))
+
+    def test_current_entrypoints_never_claim_google_source_unmerged(self):
+        paths = (
+            "apps/korean-ai-platform/README.md",
+            "apps/korean-ai-platform/docs/README.md",
+            "apps/korean-ai-platform/docs/B14_ROUTER_PLATFORM_AND_PADIEM_PROFILE.md",
+            "apps/padiem-chat/README.md",
+            "docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md",
+        )
+        for p in paths:
+            with self.subTest(file=p):
+                s = read(p)
+                self.assertNotIn("LOCAL ONLY / NOT MERGED", s)
+                self.assertNotIn("LOCAL unmerged source, NOT current main", s)
+                self.assertNotIn("google_provider.py absent", s)
+                self.assertNotIn("GOOGLE_MODEL_SOURCE_MERGED = NO", s)
+
     def test_hold_describes_runtime_not_owner_indecision(self):
         for p in ("apps/korean-ai-platform/README.md","apps/padiem-chat/README.md"):
             with self.subTest(file=p):
