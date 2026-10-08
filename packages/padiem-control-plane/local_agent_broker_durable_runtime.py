@@ -22,6 +22,8 @@ from local_agent_broker_browser_p01_source import (
     CanonicalBrowserControlP01ApprovalSource,
     browser_control_tool_invocation_digest,
 )
+from local_agent_broker_engine_p01_bridge import BrokerEngineP01Join
+from local_agent_broker_engine_p01_join_store import DurableBrokerOriginalEngineJoinStore
 from local_agent_broker_browser_control_take import (
     BrowserControlCommandTakeCorrelation,
     CloudflareDurableObjectBrowserControlTakeStore,
@@ -68,6 +70,7 @@ class LocalAgentBrokerDurableRuntime:
     def __init__(
         self, *, storage: Any, env: Any,
         p01_approval_source: CanonicalBrowserControlP01ApprovalSource | None = None,
+        original_engine_join_source: Any | None = None,
     ) -> None:
         # Production Broker Worker deliberately supplies no P01 source.
         # Only a service-identity-authenticated first-party composition may
@@ -77,6 +80,11 @@ class LocalAgentBrokerDurableRuntime:
             for method in ("resolve_approved_command", "resolve_approved_command_async")
         ):
             raise ValueError("canonical first-party P01 approval resolver required")
+        if original_engine_join_source is not None and not callable(
+            getattr(original_engine_join_source, "resolve_original_admission", None)
+        ):
+            raise ValueError("independent original Engine admission resolver required")
+        self._original_engine_join_source = original_engine_join_source
         self._p01_approval_source = p01_approval_source
         self._storage = storage
         self._env = env
@@ -91,6 +99,7 @@ class LocalAgentBrokerDurableRuntime:
         # #3782: internal-only, canonical-DO-backed browser.control one-shot
         # ledger. There is NO issuer, private RPC or device/renderer route yet.
         self.browser_control_take_store = CloudflareDurableObjectBrowserControlTakeStore(storage)
+        self.browser_engine_join_store = DurableBrokerOriginalEngineJoinStore(storage)
 
     def authority_ref(self) -> str:
         return safe_ref(str(self._env.LOCAL_AGENT_BROKER_AUTHORITY_REF), "authority_ref")
@@ -396,6 +405,51 @@ class LocalAgentBrokerDurableRuntime:
             )
         return self.transaction(operation)
 
+    def _bind_original_browser_engine_join(
+        self, *, scope: BrowserControlCommandTakeCorrelation,
+        credential: bytes, now: datetime,
+    ) -> dict[str, Any]:
+        """Internal first-party Engine admission join, no user-provided mapping.
+
+        The separate original-admission owner supplies the typed association,
+        never a raw RPC or Desktop request. The canonical Broker command,
+        evidence and device credential are rechecked under the same DO lock.
+        Product composition does NOT install this owner by default.
+        """
+        current = utc(now, "original_engine_join_now")
+        source = self._original_engine_join_source
+        if source is None:
+            raise ValueError("original Engine admission source not wired")
+        self._require_live_admitted_browser_command(
+            scope=scope, credential=credential, now=current,
+        )
+        join = source.resolve_original_admission(scope=scope, now=current)
+        if type(join) is not BrokerEngineP01Join:
+            raise ValueError("trusted original Engine association unavailable")
+        join.assert_matches(scope)
+
+        def operation() -> dict[str, Any]:
+            command, authenticated = self._require_live_admitted_browser_command(
+                scope=scope, credential=credential, now=current,
+            )
+            join.assert_matches(scope)
+            if command.evidence_ref != join.user_p01_evidence_ref:
+                raise ValueError("original Engine evidence not bound to Broker admission")
+            expiry = min(
+                command.expires_at,
+                parse_iso(authenticated["session_expires_at"], "session_expiry"),
+            )
+            self.browser_engine_join_store._register_in_existing_transaction(
+                scope=scope, original=join, expires_at=expiry, now=current,
+            )
+            return {
+                "stored": True,
+                "command_ref": scope.command_ref,
+                "browser_action_executed": False,
+                "engine_approval_recorded": False,
+            }
+        return self.transaction(operation)
+
     def register_binding(self, payload: dict) -> dict:
         return self.transaction(lambda: self.facade().register_binding(payload))
 
@@ -405,6 +459,7 @@ class LocalAgentBrokerDurableRuntime:
             if result.get("ok") is True:
                 self.material_store.purge_binding(result["binding"]["binding_ref"])
                 self.browser_control_take_store.purge_binding(result["binding"]["binding_ref"])
+                self.browser_engine_join_store.purge_binding(result["binding"]["binding_ref"])
             return result
         return self.transaction(operation)
 
@@ -414,6 +469,7 @@ class LocalAgentBrokerDurableRuntime:
             if result.get("ok") is True:
                 self.material_store.purge_binding(result["binding"]["binding_ref"])
                 self.browser_control_take_store.purge_binding(result["binding"]["binding_ref"])
+                self.browser_engine_join_store.purge_binding(result["binding"]["binding_ref"])
             return result
         return self.transaction(operation)
 
