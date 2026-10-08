@@ -46,6 +46,10 @@ from app.attachment_admission_service import (
     MAX_ADMISSION_REQUEST_BODY_BYTES,
     AttachmentAdmissionEngineService,
 )
+from app.browser_control_owner_p01_resume import (
+    BROWSER_CONTROL_OWNER_P01_RESUME_PATH,
+    MAX_OWNER_RESUME_BODY_BYTES,
+)
 from app.browser_control_owner_ticket_issue_service import (
     BROWSER_P01_TICKET_ISSUE_PATH,
     MAX_TICKET_ISSUE_BODY_BYTES,
@@ -1123,6 +1127,8 @@ class Default(legacy_worker.Default):
             return await self._fetch_tool(request, path)
         if path == BROWSER_P01_TICKET_ISSUE_PATH:
             return await self._fetch_browser_p01_ticket(request, path)
+        if path == BROWSER_CONTROL_OWNER_P01_RESUME_PATH:
+            return await self._fetch_browser_owner_p01_resume(request, path)
         return await super().fetch(request)
 
     def _fetch_authority_diagnostic(self, request: Any) -> Any:
@@ -1478,6 +1484,39 @@ class Default(legacy_worker.Default):
                 503,
             )
         result = await services.browser_p01_ticket_issue.handle(
+            method=method, path=path, content_type=content_type, body=body,
+        )
+        return legacy_worker._json_response(result)
+
+    async def _fetch_browser_owner_p01_resume(self, request: Any, path: str) -> Any:
+        """Private authenticated service caller, never user-submitted approval.
+
+        The service reads its ORIGINAL Engine continuation and the independent
+        logged-in human's current owner-D1 approval. The Product Worker does
+        NOT inject the resolver until the separate release gate.
+        """
+        method = str(getattr(request, "method", ""))
+        headers = getattr(request, "headers", None)
+        content_type = headers.get("content-type") if headers is not None else None
+        body, body_error = await _read_bounded_post_body(
+            request, max_bytes=MAX_OWNER_RESUME_BODY_BYTES,
+        )
+        if body_error is not None:
+            return body_error
+        assert body is not None
+        auth_error = legacy_worker._authenticate_non_health_request(
+            self.env, headers, body,
+        )
+        if auth_error is not None:
+            return auth_error
+        services = await self.engine_services_factory(self.env)
+        if services.browser_p01_owner_resume is None:
+            return legacy_worker._error_response(
+                "browser_owner_p01_resume_unavailable",
+                "Independent user-approved browser continuation is unavailable.",
+                503,
+            )
+        result = await services.browser_p01_owner_resume.handle(
             method=method, path=path, content_type=content_type, body=body,
         )
         return legacy_worker._json_response(result)

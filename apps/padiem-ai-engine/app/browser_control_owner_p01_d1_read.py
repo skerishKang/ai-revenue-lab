@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import inspect
 from collections.abc import Mapping
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from padiem_ai_core.agent_approval import ApprovalOutcome, VerifiedApprovalDecision
@@ -44,6 +44,88 @@ class IndependentOwnerP01D1Reader:
             raise ValueError("human P01 read requires independent owner D1 binding")
         self._owner = owner_p01_binding
 
+    async def approved_original(
+        self, record: IdentityBoundContinuationRecord,
+    ) -> IndependentlyAuthenticatedBrowserControlP01 | None:
+        """Derive the decision ONLY from the current independent owner DB.
+
+        Unlike the historical resume submission, this has no caller-supplied
+        decision, authority reference, or approval outcome. The final __call__
+        performs the full independent ticket/decision joined revalidation.
+        """
+        if type(record) is not IdentityBoundContinuationRecord or record.state != "active":
+            return None
+        original, identity, pause = (
+            record.original_admission, record.execution_identity, record.pause,
+        )
+        if (
+            original is None or identity is None
+            or original.app_id != record.app_id
+            or original.subject_id != identity.subject_id
+            or original.request_fingerprint != identity.request_fingerprint
+            or pause.tool_id != "browser.control"
+            or pause.approval_scope != ("browser.control",)
+            or pause.requirement.value != "user_confirmation"
+        ):
+            return None
+        now = datetime.now(UTC)
+        if pause.created_at > now or pause.expires_at <= now:
+            return None
+        sql = (
+            "SELECT r.decision_id,r.pause_id,r.authority_ref,r.evidence_ref,"
+            "r.decided_at,r.expires_at,r.authenticated_owner_session_ref "
+            "FROM padiem_browser_control_owner_p01_decisions r "
+            "JOIN padiem_browser_control_owner_p01_tickets t "
+            "ON t.app_id=r.app_id AND t.continuation_ref=r.continuation_ref "
+            "AND t.pause_id=r.pause_id AND t.engine_owner_subject_id=r.owner_subject_id "
+            "AND t.engine_run_id=r.run_id AND t.invocation_sha256=r.invocation_sha256 "
+            "AND t.original_request_fingerprint=r.original_request_fingerprint "
+            "AND t.original_admission_decision_id=r.original_admission_decision_id "
+            "AND t.expires_at=r.expires_at "
+            "AND t.tool_id='browser.control' AND t.approval_scope='browser.control' "
+            "AND t.revoked_at IS NULL AND t.server_issued_at<=r.decided_at "
+            "WHERE r.app_id=? AND r.continuation_ref=? AND r.pause_id=? "
+            "AND r.owner_subject_id=? AND r.run_id=? AND r.invocation_sha256=? "
+            "AND r.original_request_fingerprint=? AND r.original_admission_decision_id=? "
+            "AND r.outcome='approved' AND r.revoked_at IS NULL "
+            "AND r.expires_at>? LIMIT 1"
+        )
+        try:
+            row = self._owner.prepare(sql).bind(
+                record.app_id, record.continuation_ref, pause.pause_id,
+                identity.subject_id, pause.run_id, pause.invocation_sha256,
+                original.request_fingerprint, original.decision_id, now.isoformat(),
+            ).first()
+            if inspect.isawaitable(row):
+                row = await row
+            if not isinstance(row, Mapping):
+                return None
+            if (
+                row.get("pause_id") != pause.pause_id
+                or type(row.get("authenticated_owner_session_ref")) is not str
+                or not row["authenticated_owner_session_ref"]
+            ):
+                return None
+            expires = datetime.fromisoformat(row["expires_at"])
+            if (
+                expires.tzinfo is None or expires.utcoffset() is None
+                or expires > pause.expires_at or expires <= now
+            ):
+                return None
+            decision = VerifiedApprovalDecision(
+                decision_id=row["decision_id"],
+                pause_id=pause.pause_id,
+                outcome=ApprovalOutcome.APPROVED,
+                authority_ref=row["authority_ref"],
+                evidence_ref=row["evidence_ref"],
+                decided_at=datetime.fromisoformat(row["decided_at"]),
+            )
+            # An owner-ticket revocation between the lookup and this
+            # verification refuses the resume. Never cache a decision.
+            return await self(record, decision)
+        except Exception:  # noqa: BLE001 - malformed owner D1 is not user consent
+            return None
+
     async def __call__(
         self,
         record: IdentityBoundContinuationRecord,
@@ -70,7 +152,7 @@ class IndependentOwnerP01D1Reader:
             or pause.pause_id != decision.pause_id
         ):
             return None
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         if (
             now >= pause.expires_at
             or decision.decided_at > now

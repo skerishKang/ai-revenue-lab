@@ -14,6 +14,9 @@ from dataclasses import dataclass
 from app.agent_skill_service import AgentSkillEngineService
 from app.attachment_admission_service import AttachmentAdmissionEngineService
 from app.auth_session_scope_authority import AuthSessionScopeAuthority
+from app.browser_control_owner_p01_resume import (
+    IndependentlyApprovedBrowserControlEngineResume,
+)
 from app.browser_control_owner_ticket_issue_service import (
     BrowserControlOwnerTicketIssueEngineService,
 )
@@ -55,6 +58,9 @@ class EngineServices:
     # #3782 private signed-caller browser ticket issuance; absent until the
     # independent owner D1 and genuine canonical USER session are provisioned.
     browser_p01_ticket_issue: BrowserControlOwnerTicketIssueEngineService | None = None
+    # #3782 only independent owner D1-approved, original-run Engine CAS resume.
+    # Uncomposed; no browser input/approved command side effects here.
+    browser_p01_owner_resume: IndependentlyApprovedBrowserControlEngineResume | None = None
     # #1964 source slice: replay stays fail-closed until the trusted durable
     # idempotency adapter is explicitly composed.
     idempotency_replay: IdempotencyReplayEngineService | None = None
@@ -92,6 +98,10 @@ class EngineServices:
             raise ValueError(
                 "engine service 'documents' must be DocumentContextEngineService or None"
             )
+        if self.browser_p01_owner_resume is not None and type(
+            self.browser_p01_owner_resume
+        ) is not IndependentlyApprovedBrowserControlEngineResume:
+            raise ValueError("engine service browser_p01_owner_resume must be canonical or None")
         if self.browser_p01_ticket_issue is not None and not isinstance(
             self.browser_p01_ticket_issue, BrowserControlOwnerTicketIssueEngineService
         ):
