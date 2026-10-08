@@ -39,7 +39,10 @@ from kagent.p01_adapter import (
 from kagent.p01_orchestration_client import PADIEM_EXECUTABLE_MODEL_IDS
 from kagent.p01_run_flow import p01_adapter_from_environment
 
-_MODEL_EXECUTION_AVAILABLE = bool(PADIEM_EXECUTABLE_MODEL_IDS)
+# #3767: the end-to-end adapter contract runs against the bounded test-only
+# synthetic Plus route while the declaration holds the tier, so the flow is
+# exercised with a fake transport instead of being skipped.
+from model_route_fixture import with_synthetic_plus_route
 
 _FAKE_CREDENTIAL = "b54-order-credential-" + ("0" * 28)
 _COMPLETED_RUN_ID = "order_run_001"
@@ -421,7 +424,7 @@ class OrderFlowTests(unittest.TestCase):
         )
         self.assertEqual(code, 0)
 
-    @unittest.skipUnless(_MODEL_EXECUTION_AVAILABLE, "successor model route not selected")
+    @with_synthetic_plus_route
     def test_end_to_end_through_real_adapter_and_fake_transport(self) -> None:
         transport = CorrelatedTransport()
         adapter = p01_adapter_from_environment(

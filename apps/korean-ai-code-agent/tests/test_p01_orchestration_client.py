@@ -61,7 +61,10 @@ import kagent.p01_orchestration_client as p01_orchestration_client_module
 from kagent.runs import ClawRun
 
 
-_MODEL_EXECUTION_AVAILABLE = active_route_for(ProductTierLabel.PLUS) is not None
+# #3767: this module used to skip its whole execution port while the canonical
+# declaration held Plus. It now runs against the bounded test-only synthetic Plus
+# route (model_route_fixture); the transports are fakes, so no provider is called.
+from model_route_fixture import SyntheticPlusRouteTestCase  # noqa: E402
 
 _FAKE_CREDENTIAL = "b54-test-credential-" + ("0" * 32)
 _COMPLETED_RUN_ID = "orch_test_001"
@@ -218,8 +221,7 @@ def _client(transport: FakeEngineTransport) -> PadiemAiEngineClient:
     )
 
 
-@unittest.skipUnless(_MODEL_EXECUTION_AVAILABLE, "successor model route not selected")
-class P01EngineOrchestrationClientTests(unittest.TestCase):
+class P01EngineOrchestrationClientTests(SyntheticPlusRouteTestCase):
     def run_port(self, transport: FakeEngineTransport, request):
         port = P01EngineOrchestrationClient(_client(transport))
         return asyncio.run(port.run(request))
@@ -451,7 +453,35 @@ class P01EngineOrchestrationClientTests(unittest.TestCase):
         with self.assertRaises(P01AdapterError) as ctx:
             self.run_port(transport, request)
         self.assertEqual(ctx.exception.code, "p01_engine_request_failed")
-        self.assertEqual(ctx.exception.failure_detail, P01_FAILURE_DETAIL_DOWNSTREAM)
+        # #3767: this assertion predates the provider-specific detail split and
+        # pinned the generic downstream bucket while the test never executed.
+        # ``upstream_rate_limited`` is the provider rate-limit lane, so the
+        # bounded detail is that lane's constant -- and the detail is still
+        # drawn from the closed product vocabulary, never from Engine text.
+        self.assertEqual(
+            ctx.exception.failure_detail,
+            P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+        )
+        self.assertIn(
+            ctx.exception.failure_detail,
+            frozenset(
+                {
+                    P01_FAILURE_DETAIL_AUTHENTICATION,
+                    P01_FAILURE_DETAIL_AUTHORIZATION,
+                    P01_FAILURE_DETAIL_CONTRACT,
+                    P01_FAILURE_DETAIL_DOWNSTREAM,
+                    P01_FAILURE_DETAIL_ENGINE_ADMISSION,
+                    P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION,
+                    P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
+                    P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+                    P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED,
+                    P01_FAILURE_DETAIL_PROVIDER_SERVER_ERROR,
+                    P01_FAILURE_DETAIL_PROVIDER_TIMEOUT,
+                    P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE,
+                    P01_FAILURE_DETAIL_TRANSPORT,
+                }
+            ),
+        )
         self.assertNotIn("provider", ctx.exception.safe_message.lower())
         self.assertNotIn("secret", ctx.exception.safe_message.lower())
 
