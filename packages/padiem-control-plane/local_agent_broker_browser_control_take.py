@@ -11,6 +11,7 @@ Refusals never release action material; a lost take response is NOT retryable.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from dataclasses import dataclass
@@ -165,6 +166,78 @@ class CloudflareDurableObjectBrowserControlTakeStore:
         self._storage = storage
         self._sql = sql
         self._sql.exec(_SCHEMA)
+
+    def _register_in_existing_transaction(
+        self,
+        scope: BrowserControlCommandTakeCorrelation,
+        material: dict[str, Any],
+        *,
+        expires_at: datetime,
+    ) -> None:
+        """Persist already-approved browser work only under the Broker outer txn.
+
+        This is a storage writer, NOT a grant or an exposed registration RPC.
+        Caller must have rechecked the live admitted Broker command and a
+        separate, authenticated P01 browser.control decision. The product P01
+        issuer remains unconnected.
+        """
+        if not isinstance(scope, BrowserControlCommandTakeCorrelation):
+            raise TypeError("typed browser.control registration scope required")
+        expiry = iso(utc(expires_at, "browser_control_registration_expiry"))
+        if type(material) is not dict:
+            raise ValueError("browser.control registration material must be a mapping")
+        try:
+            material_text = json.dumps(
+                material, sort_keys=True, separators=(",", ":"),
+                ensure_ascii=False, allow_nan=False,
+            )
+        except (ValueError, TypeError) as exc:
+            raise ValueError("browser.control registration material invalid") from exc
+        self._checked_material(material_text, scope)
+        # Recompute the canonical #3669 session fingerprint rather than
+        # trusting context.requestFingerprint copied from the material.
+        # This binds the exact origin, owner, run, device, action classes,
+        # TTL and budget to the already-admitted canonical command.
+        context = material["context"]
+        canonical = {
+            "capability": "browser.control",
+            "browser_session_ref": context["browserSessionRef"],
+            "run_ref": context["runRef"],
+            "workspace_ref": context["workspaceRef"],
+            "owner_ref": context["ownerRef"],
+            "device_id": context["deviceRef"],
+            "origin_scope": context["originScope"],
+            "allowed_action_classes": context["allowedActionClasses"],
+            "ttl_seconds": context["ttlSeconds"],
+            "max_actions": context["maxActions"],
+        }
+        if context["allowedActionClasses"] != sorted(context["allowedActionClasses"]):
+            raise ValueError("browser.control session allowed actions are not canonical")
+        encoded = json.dumps(canonical, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        if hashlib.sha256(encoded).hexdigest() != scope.request_fingerprint:
+            raise ValueError("browser.control material session fingerprint mismatch")
+        fields = tuple(getattr(scope, field) for field in _TAKE_COLUMNS)
+        existing = rows(self._sql.exec(
+            "SELECT session_ref,binding_ref,request_id,run_ref,workspace_ref,"
+            "owner_ref,device_ref,request_fingerprint,admission_ref,revision_ref,"
+            "expires_at,material_text,taken_at "
+            "FROM local_agent_browser_control_command_take WHERE command_ref = ?",
+            scope.command_ref,
+        ))
+        if existing:
+            # A registration retry must never resurrect taken work, replace
+            # pending bytes, adjust authority or prolong an expiry.
+            raise ValueError("browser.control registration command already exists")
+        written = rows_written(self._sql.exec(
+            "INSERT INTO local_agent_browser_control_command_take "
+            "(command_ref,session_ref,binding_ref,request_id,run_ref,"
+            "workspace_ref,owner_ref,device_ref,request_fingerprint,"
+            "admission_ref,revision_ref,expires_at,material_text,taken_at) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,NULL)",
+            *fields, expiry, material_text,
+        ))
+        if written != 1:
+            raise ValueError("browser.control approved command was not persisted")
 
     def purge_binding(self, binding_ref: str) -> int:
         """Destroy pending and taken command material on canonical revoke/rotate.

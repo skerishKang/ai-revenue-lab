@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import base64
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Callable, TypeVar
 
 from padiem_control_plane.contracts import ControlPlaneContractError
@@ -91,71 +91,124 @@ class LocalAgentBrokerDurableRuntime:
             raise RuntimeError("SQLite-backed Durable Object transactionSync is required")
         return transaction_sync(operation)
 
-    def _take_authenticated_browser_control_command(
-        self, *, scope: BrowserControlCommandTakeCorrelation,
-        credential: bytes, now: datetime,
-    ) -> dict[str, Any]:
-        """PRIVATE internal boundary: canonical live device + admitted browser work.
-
-        The durable row must have been registered by an independently
-        authenticated P01 issuer. That issuer and device RPC remain UNWIRED.
-        Neither a raw caller claim nor the #3140 process approval is sufficient.
-        """
+    def _require_live_admitted_browser_command(
+        self, *,
+        scope: BrowserControlCommandTakeCorrelation,
+        credential: bytes,
+        now: datetime,
+    ) -> tuple[Any, dict[str, Any]]:
+        """One canonical device/session/admission verifier, used under DO txn."""
         if not isinstance(scope, BrowserControlCommandTakeCorrelation):
             raise TypeError("canonical typed browser-control correlation required")
         if not isinstance(credential, bytes) or not credential:
             raise ValueError("live device credential required")
-        current = utc(now, "browser_control_take_now")
+        current = utc(now, "browser_control_now")
+        authenticated = StateBackedLocalAgentBindingAuthenticator(
+            pepper=str(self._env.LOCAL_AGENT_BROKER_PEPPER).encode("utf-8"),
+            authority_ref=self.authority_ref(),
+            state_port=self.state_port,
+        ).authenticate_device_session(
+            session_id=scope.session_ref,
+            binding_ref=scope.binding_ref,
+            credential=credential,
+            now=current,
+        )
+        if (
+            authenticated["authenticated"] is not True
+            or authenticated["session_id"] != scope.session_ref
+            or authenticated["binding_ref"] != scope.binding_ref
+            or authenticated["device_id"] != scope.device_ref
+            or authenticated["workspace_ref"] != scope.workspace_ref
+        ):
+            raise ValueError("browser.control current device scope mismatch")
 
+        snapshot = self.state_port.load(authority_ref=self.authority_ref()).snapshot
+        matches = [item for item in snapshot.commands if item.command_id == scope.command_ref]
+        if len(matches) != 1:
+            raise ValueError("browser.control canonical broker command unavailable")
+        command = matches[0]
+        if not (
+            command.capability is BrokerCommandCapability.BROWSER_CONTROL
+            and command.state is BrokerCommandState.ADMITTED
+            and command.credential_generation == authenticated["credential_generation"]
+            and command.binding_ref == scope.binding_ref
+            and command.admitted_session_id == scope.session_ref
+            and command.run_id == scope.run_ref
+            and command.request_id == scope.request_id
+            and command.request_fingerprint == scope.request_fingerprint
+            and command.admission_ref == scope.admission_ref
+            and command.revision_ref == scope.revision_ref
+            and command.admitted_at is not None
+            and command.issued_at <= command.admitted_at <= current < command.expires_at
+        ):
+            raise ValueError("browser.control live admitted command correlation mismatch")
+        return command, authenticated
+
+    def _bind_browser_material_to_admitted_command(
+        self, *,
+        scope: BrowserControlCommandTakeCorrelation,
+        credential: bytes,
+        material: dict[str, Any],
+        p01_evidence_ref: str,
+        p01_expires_at: datetime,
+        now: datetime,
+    ) -> dict[str, Any]:
+        """Internal-only atomic persistence AFTER a separately verified P01.
+
+        This DOES NOT authenticate P01 or mint an approved decision. Only the
+        later canonical trusted issuer can supply those facts. Without that
+        producer and a private authenticated transport no product can call
+        this method. Never accept raw client JSON as approval.
+        """
+        current = utc(now, "browser_control_registration_now")
+        evidence_ref = safe_ref(p01_evidence_ref, "p01_evidence_ref")
+        approval_expiry = utc(p01_expires_at, "p01_expires_at")
         def operation() -> dict[str, Any]:
-            authenticated = StateBackedLocalAgentBindingAuthenticator(
-                pepper=str(self._env.LOCAL_AGENT_BROKER_PEPPER).encode("utf-8"),
-                authority_ref=self.authority_ref(),
-                state_port=self.state_port,
-            ).authenticate_device_session(
-                session_id=scope.session_ref,
-                binding_ref=scope.binding_ref,
-                credential=credential,
-                now=current,
+            command, authenticated = self._require_live_admitted_browser_command(
+                scope=scope, credential=credential, now=current
             )
-            if (
-                authenticated["authenticated"] is not True
-                or authenticated["session_id"] != scope.session_ref
-                or authenticated["binding_ref"] != scope.binding_ref
-                or authenticated["device_id"] != scope.device_ref
-                or authenticated["workspace_ref"] != scope.workspace_ref
-            ):
-                raise ValueError("browser.control current device scope mismatch")
+            if command.evidence_ref != evidence_ref:
+                raise ValueError("browser.control P01 evidence does not match canonical admission")
+            context = material.get("context") if type(material) is dict else None
+            if type(context) is not dict:
+                raise ValueError("browser.control material context missing")
+            max_ttl = context.get("ttlSeconds")
+            if type(max_ttl) is not int or not 1 <= max_ttl <= 900:
+                raise ValueError("browser.control requested TTL invalid")
+            expiry = min(
+                approval_expiry, command.expires_at,
+                parse_iso(authenticated["session_expires_at"], "session_expiry"),
+                current + timedelta(seconds=max_ttl),
+            )
+            if expiry <= current:
+                raise ValueError("browser.control registration approval expired")
+            self.browser_control_take_store._register_in_existing_transaction(
+                scope, material, expires_at=expiry,
+            )
+            return {
+                "stored": True, "command_ref": scope.command_ref,
+                "binding_ref": scope.binding_ref, "request_fingerprint": scope.request_fingerprint,
+                "expires_at": iso(expiry), "raw_approval_payload": False,
+                "raw_device_credential": False, "action_executed": False,
+            }
+        return self.transaction(operation)
 
-            snapshot = self.state_port.load(
-                authority_ref=self.authority_ref()
-            ).snapshot
-            commands = [
-                command for command in snapshot.commands
-                if command.command_id == scope.command_ref
-            ]
-            if len(commands) != 1:
-                raise ValueError("browser.control canonical broker command unavailable")
-            command = commands[0]
-            if not (
-                command.capability is BrokerCommandCapability.BROWSER_CONTROL
-                and command.state is BrokerCommandState.ADMITTED
-                and command.credential_generation == authenticated["credential_generation"]
-                and command.binding_ref == scope.binding_ref
-                and command.admitted_session_id == scope.session_ref
-                and command.run_id == scope.run_ref
-                and command.request_id == scope.request_id
-                and command.request_fingerprint == scope.request_fingerprint
-                and command.admission_ref == scope.admission_ref
-                and command.revision_ref == scope.revision_ref
-                and command.admitted_at is not None
-                and command.issued_at <= command.admitted_at <= current < command.expires_at
-            ):
-                raise ValueError("browser.control live admitted command correlation mismatch")
+    def _take_authenticated_browser_control_command(
+        self, *, scope: BrowserControlCommandTakeCorrelation,
+        credential: bytes, now: datetime,
+    ) -> dict[str, Any]:
+        """Broker live-device + admitted browser command + one-shot CAS.
+
+        Separate P01 issuance and device transport remain UNWIRED.
+        """
+        current = utc(now, "browser_control_take_now")
+        def operation() -> dict[str, Any]:
+            self._require_live_admitted_browser_command(
+                scope=scope, credential=credential, now=current
+            )
             return self.browser_control_take_store._take_in_existing_transaction(
                 scope, moment=iso(current)
             )
-
         return self.transaction(operation)
 
     def register_binding(self, payload: dict) -> dict:
