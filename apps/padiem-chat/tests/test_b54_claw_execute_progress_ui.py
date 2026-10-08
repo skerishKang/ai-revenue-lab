@@ -401,6 +401,19 @@ function makeEl(tag) {
   el.click = () => (el.listeners.click || []).forEach((fn) => fn({ preventDefault() {}, target: el, key: "" }));
   el.requestSubmit = () => (el.listeners.submit || []).forEach((fn) => fn({ preventDefault() {} }));
   el.matches = () => false;
+  // Assigning .value must model a real user edit: the app separates a new draft
+  // from a re-send of uncertain work by listening to input/change, so the shim
+  // fires those listeners (otherwise a composed-new-task click is not a click
+  // a real user could have made).
+  let rawValue = "";
+  Object.defineProperty(el, "value", {
+    get: () => rawValue,
+    set: (v) => {
+      rawValue = v;
+      (el.listeners.input || []).forEach((fn) => fn({ type: "input", target: el }));
+      (el.listeners.change || []).forEach((fn) => fn({ type: "change", target: el }));
+    },
+  });
   return el;
 }
 

@@ -127,9 +127,11 @@ def test_no_automatic_or_timer_driven_execution() -> None:
     # No hidden POST path: no XHR stream and no background flush of the form.
     for token in ("XMLHttpRequest", "sendBeacon", "keepalive", "location.reload", "localStorage", "sessionStorage"):
         assert token not in app
-    # A cooldown strictly gates the single execute entry point.
+    # A cooldown, and an uncertain dispatch of the same content, both strictly
+    # gate the single execute entry point.
     assert "if (clawRetryRemaining() > 0) return; // explicit retry only after the pre-dispatch cooldown" in app
-    assert "const blocked = busy || clawRetryRemaining() > 0;" in app
+    assert "if (clawExecuteUncertain) return; // #3382: no same-content re-send after an uncertain outcome" in app
+    assert "const blocked = busy || clawRetryRemaining() > 0 || clawExecuteUncertain;" in app
 
 
 def test_ambiguous_failures_get_guidance_instead_of_a_retry_affordance() -> None:
@@ -266,6 +268,17 @@ function makeEl(tag) {
   el.click = () => (el.listeners.click || []).forEach((fn) => fn({ preventDefault() {}, target: el, key: "" }));
   el.requestSubmit = () => (el.listeners.submit || []).forEach((fn) => fn({ preventDefault() {} }));
   el.matches = () => false;
+  // Assigning .value must model a real user edit: the app separates a new draft
+  // from a re-send by listening to input/change, so the shim fires those.
+  let rawValue = "";
+  Object.defineProperty(el, "value", {
+    get: () => rawValue,
+    set: (v) => {
+      rawValue = v;
+      (el.listeners.input || []).forEach((fn) => fn({ type: "input", target: el }));
+      (el.listeners.change || []).forEach((fn) => fn({ type: "change", target: el }));
+    },
+  });
   return el;
 }
 
@@ -654,7 +667,11 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   if (!checks.NO_AUTOMATIC_POST_AFTER_AMBIGUOUS_FAILURE) fail("NO_AUTOMATIC_POST_AFTER_AMBIGUOUS_FAILURE");
 
   // 14) A pre-dispatch 503 (workspace scope/storage/identity) is not ambiguous:
-  //     it keeps its own bounded copy and makes no run-replay claim.
+  //     it keeps its own bounded copy and makes no run-replay claim. Composing
+  //     different work is what releases case 13's uncertain-dispatch latch.
+  byId.messageInput.value = "503 경로 확인";
+  checks.EDITING_COMPOSING_RELEASES_UNCERTAIN_LATCH = byId.clawExecuteButton.disabled === false;
+  if (!checks.EDITING_COMPOSING_RELEASES_UNCERTAIN_LATCH) fail("EDITING_COMPOSING_RELEASES_UNCERTAIN_LATCH");
   executeCall = () => jsonResponse(503, { ok: false, error: { code: "workspace_scope_unavailable" } });
   expectedPosts += 1;
   byId.clawExecuteButton.click();
@@ -683,6 +700,45 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   if (!checks.NETWORK_FAILURE_IS_AMBIGUOUS_AND_NOT_REPLAYED) fail("NETWORK_FAILURE_IS_AMBIGUOUS_AND_NOT_REPLAYED");
   await tick(1500);
   if (execPosts().length !== afterNetwork) fail("NETWORK_FAILURE_REPLAYED");
+
+  // 16) #3382: after an uncertain outcome the SAME content must not be re-sent.
+  //     Case 15 left the form latched on "네트워크 오류 확인"; forced clicks on
+  //     both execute entry points must produce zero additional POSTs.
+  const afterLatch = execPosts().length;
+  if (byId.clawExecuteButton.disabled !== true) fail("UNCERTAIN_LATCH_LEFT_EXECUTE_ENABLED");
+  byId.clawExecuteButton.click();
+  byId.clawRetryButton.click();
+  await tick(120);
+  checks.SAME_CONTENT_RESEND_BLOCKED_AFTER_UNCERTAIN_OUTCOME =
+    execPosts().length === afterLatch &&
+    byId.clawExecuteButton.disabled === true &&
+    byId.clawExecuteButton.getAttribute("aria-disabled") === "true" &&
+    byId.clawRetryButton.disabled === true &&
+    byId.clawRetryHint.hidden === false;
+  if (!checks.SAME_CONTENT_RESEND_BLOCKED_AFTER_UNCERTAIN_OUTCOME) fail("SAME_CONTENT_RESEND_BLOCKED_AFTER_UNCERTAIN_OUTCOME");
+
+  // 17) The latch gates the manual-execute lane only. The draft/preview submit
+  //     stays available on the unchanged form, so ordinary work is not blocked.
+  const previewBefore = requests.filter((r) => r.url === "/api/claw/manual-intake/preview").length;
+  byId.clawManualForm.requestSubmit();
+  await tick(80);
+  checks.PREVIEW_STAYS_AVAILABLE_WHILE_EXECUTE_IS_LATCHED =
+    requests.filter((r) => r.url === "/api/claw/manual-intake/preview").length === previewBefore + 1 &&
+    execPosts().length === afterLatch &&
+    byId.clawExecuteButton.disabled === true;
+  if (!checks.PREVIEW_STAYS_AVAILABLE_WHILE_EXECUTE_IS_LATCHED) fail("PREVIEW_STAYS_AVAILABLE_WHILE_EXECUTE_IS_LATCHED");
+
+  // 18) A definite outcome releases the latch: new work, one POST, buttons live.
+  byId.messageInput.value = "성공하면 해제된다";
+  executeCall = () => jsonResponse(200, { ok: true, result: { title: "quote", result_text: "ran", artifact: null } });
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  checks.LATCH_RELEASES_ON_DEFINITE_SUCCESS =
+    execPosts().length === afterLatch + 1 &&
+    byId.clawExecuteButton.disabled === false &&
+    byId.clawRetryHint.hidden === true;
+  if (!checks.LATCH_RELEASES_ON_DEFINITE_SUCCESS) fail("LATCH_RELEASES_ON_DEFINITE_SUCCESS");
 
   // No dispatched execute POST exists that no user action asked for.
   checks.EXECUTE_POST_COUNT_MATCHES_USER_ACTIONS = execPosts().length === expectedPosts;
@@ -746,6 +802,10 @@ def test_behavioral_execute_recovery_journey() -> None:
         "NO_AUTOMATIC_POST_AFTER_AMBIGUOUS_FAILURE",
         "PRE_DISPATCH_503_IS_NOT_AMBIGUOUS",
         "NETWORK_FAILURE_IS_AMBIGUOUS_AND_NOT_REPLAYED",
+        "EDITING_COMPOSING_RELEASES_UNCERTAIN_LATCH",
+        "SAME_CONTENT_RESEND_BLOCKED_AFTER_UNCERTAIN_OUTCOME",
+        "PREVIEW_STAYS_AVAILABLE_WHILE_EXECUTE_IS_LATCHED",
+        "LATCH_RELEASES_ON_DEFINITE_SUCCESS",
     ):
         assert checks.get(name) is True, name
 
@@ -766,6 +826,9 @@ def test_behavioral_execute_posts_stay_within_existing_authority() -> None:
         "/api/claw/memory",
         "/api/claw/inbox/tasks",
         "/api/claw/manual-intake/execute",
+        # Registered draft route (app_factory.py:296), exercised to prove the
+        # execute latch does not collateral-block the preview lane.
+        "/api/claw/manual-intake/preview",
     }
     urls = {r["url"].split("?")[0] for r in payload["requests"]}
     assert urls <= allowed, urls - allowed
