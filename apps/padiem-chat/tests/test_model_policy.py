@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import sys
 
 import pytest
 
@@ -34,6 +35,7 @@ from app.model_policy import (
     resolve_request_model_policy,
     resolve_tier_policy,
 )
+from padiem_control_plane import product_tier_routes as tier_routes
 from padiem_control_plane.product_tier_routes import (
     MAX_HOLD_MODEL_ID as CONTRACT_MAX_HOLD_MODEL_ID,
     PLUS_HOLD_MODEL_ID as CONTRACT_PLUS_HOLD_MODEL_ID,
@@ -41,6 +43,33 @@ from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
     active_route_for,
 )
+
+
+def _declared_executable_model_ids() -> frozenset[str]:
+    """The executable set the canonical declaration implies, derived not restated.
+
+    #3767: this module used to assert ``EXECUTABLE_B14_MODEL_IDS == frozenset()``,
+    which encodes today's empty-route state rather than a durable contract and
+    would have to be edited -- or silently missed -- the moment an owner selects
+    a model. The product-side set must instead agree with the declaration,
+    whichever state the declaration is in.
+    """
+
+    return frozenset(
+        route.model_id
+        for label in ProductTierLabel
+        if (route := active_route_for(label)) is not None and route.model_id
+    )
+
+
+def _module_tier_identity(label: ProductTierLabel) -> str:
+    """The Chat product identity the module derives for one tier."""
+
+    return {
+        ProductTierLabel.PLUS: LOW_B14_MODEL_ID,
+        ProductTierLabel.PRO: MEDIUM_B14_MODEL_ID,
+        ProductTierLabel.MAX: HIGH_B14_MODEL_ID,
+    }[label]
 
 
 def test_three_product_tier_identities_remain_known_while_all_routes_hold() -> None:
@@ -65,7 +94,7 @@ def test_three_product_tier_identities_remain_known_while_all_routes_hold() -> N
         MEDIUM_B14_MODEL_ID: PADIEM_PRO,
         HIGH_B14_MODEL_ID: PADIEM_MAX,
     }
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset()
+    assert EXECUTABLE_B14_MODEL_IDS == _declared_executable_model_ids()
     assert DEFAULT_B14_MODEL_ID == LOW_B14_MODEL_ID
     assert policy.model_id == LOW_B14_MODEL_ID
     assert policy.profile == "low"
@@ -115,7 +144,7 @@ def test_poolside_alias_is_not_a_fallback() -> None:
     with pytest.raises(ModelPolicyError) as info:
         resolve_model_policy([{"role": "user", "content": "/poolside 질문"}])
     assert info.value.code == "unknown_model_alias"
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset()
+    assert EXECUTABLE_B14_MODEL_IDS == _declared_executable_model_ids()
     assert model_policy_is_executable("poolside/laguna-s-2.1") is False
 
 
@@ -167,12 +196,63 @@ def test_tier_assignment_is_distinct_from_route_executability() -> None:
 
 
 def test_route_identities_are_derived_from_shared_contract() -> None:
-    assert active_route_for(ProductTierLabel.PLUS) is None
-    assert active_route_for(ProductTierLabel.PRO) is None
-    assert active_route_for(ProductTierLabel.MAX) is None
-    assert LOW_B14_MODEL_ID == CONTRACT_PLUS_HOLD_MODEL_ID
+    # #3767: the expectations are derived from the canonical declaration instead
+    # of asserting the all-routes-HOLD state, which is a snapshot rather than a
+    # contract once an owner selects a model.
+    declared_plus = active_route_for(ProductTierLabel.PLUS)
+    expected_plus = (
+        declared_plus.model_id
+        if declared_plus is not None and declared_plus.model_id
+        else CONTRACT_PLUS_HOLD_MODEL_ID
+    )
+    # Plus is the tier whose identity module source derives from the declaration...
+    assert LOW_B14_MODEL_ID == expected_plus
+    # ...while Pro and Max are pinned to their HOLD identity in module source, so
+    # they keep failing closed even if the declaration later gains a route.
     assert MEDIUM_B14_MODEL_ID == CONTRACT_PRO_HOLD_MODEL_ID
     assert HIGH_B14_MODEL_ID == CONTRACT_MAX_HOLD_MODEL_ID
+
+
+def test_a_declared_route_is_the_only_thing_that_makes_a_tier_executable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The executability derivation follows the canonical declaration.
+
+    A test-controlled declaration is injected here. No production route is
+    registered, no model is registered, and no provider lane is named: the point
+    is that the derivation answers the declaration rather than the state that
+    happened to hold when this module was written (#3767).
+    """
+
+    assert EXECUTABLE_B14_MODEL_IDS == _declared_executable_model_ids()
+
+    synthetic_route = tier_routes.ProductTierRoute(
+        route_id="test.plus.synthetic.v1",
+        status=tier_routes.ProductRouteStatus.EXECUTABLE,
+        model_family="test",
+        provider_id="test",
+        model_id=CONTRACT_PLUS_HOLD_MODEL_ID,
+        evidence="test-only synthetic Plus route (#3767)",
+    )
+
+    def _active_route_for(label: tier_routes.ProductTierLabel):
+        return synthetic_route if label is tier_routes.ProductTierLabel.PLUS else None
+
+    monkeypatch.setattr(tier_routes, "active_route_for", _active_route_for)
+    monkeypatch.setattr(model_policy_module, "active_route_for", _active_route_for)
+    monkeypatch.setattr(sys.modules[__name__], "active_route_for", _active_route_for)
+
+    assert model_policy_module._contract_executable_ids() == frozenset(
+        {synthetic_route.model_id}
+    )
+    assert _declared_executable_model_ids() == frozenset({synthetic_route.model_id})
+    assert model_policy_module._contract_route_or_hold_id(
+        tier_routes.ProductTierLabel.PLUS, CONTRACT_PLUS_HOLD_MODEL_ID
+    ) == synthetic_route.model_id
+    # Only Plus is declared: a tier without a route keeps its HOLD identity.
+    assert model_policy_module._contract_route_or_hold_id(
+        tier_routes.ProductTierLabel.MAX, CONTRACT_MAX_HOLD_MODEL_ID
+    ) == CONTRACT_MAX_HOLD_MODEL_ID
 
 
 def test_model_policy_source_contains_no_provider_route_literals() -> None:
@@ -185,10 +265,17 @@ def test_model_policy_source_contains_no_provider_route_literals() -> None:
     assert "EXECUTABLE_B14_MODEL_IDS = _contract_executable_ids()" in source
 
 
-def test_no_product_profile_is_executable_until_successor_selection() -> None:
-    assert EXECUTABLE_B14_MODEL_IDS == frozenset()
-    assert model_policy_is_executable(DEFAULT_B14_MODEL_ID) is False
+def test_product_profiles_follow_the_canonical_route_declaration() -> None:
+    assert EXECUTABLE_B14_MODEL_IDS == _declared_executable_model_ids()
     assert DEFAULT_B14_MODEL_ID == PROFILE_MODEL_IDS[DEFAULT_CHAT_PROFILE]
+    declared_plus = active_route_for(ProductTierLabel.PLUS)
+    if declared_plus is None or not declared_plus.model_id:
+        # No route is declared, so the Plus profile must stay non-executable.
+        assert model_policy_is_executable(DEFAULT_B14_MODEL_ID) is False
+    else:
+        # A route is declared, so the default profile is that exact route.
+        assert DEFAULT_B14_MODEL_ID == declared_plus.model_id
+        assert model_policy_is_executable(DEFAULT_B14_MODEL_ID) is True
     assert RETIRED_B14_MODEL_IDS == frozenset(
         {
             "kilo/minimax-minimax-m3-free",
@@ -217,10 +304,26 @@ def test_browser_tier_identity_resolves_without_execution(
     assert policy.messages == messages
 
 
-@pytest.mark.parametrize("tier_id", ["plus", "pro", "max"])
-def test_browser_held_tiers_fail_closed(tier_id: str) -> None:
+@pytest.mark.parametrize(
+    ("tier_id", "module_identity"),
+    [
+        ("plus", LOW_B14_MODEL_ID),
+        ("pro", MEDIUM_B14_MODEL_ID),
+        ("max", HIGH_B14_MODEL_ID),
+    ],
+)
+def test_browser_tier_fails_closed_until_its_route_is_executable(
+    tier_id: str,
+    module_identity: str,
+) -> None:
+    messages = [{"role": "user", "content": "HOLD 등급 테스트"}]
+    if module_identity in EXECUTABLE_B14_MODEL_IDS:
+        # An owner declared this tier's route, so the browser tier must resolve
+        # to that exact identity instead of failing closed.
+        assert resolve_tier_policy(messages, tier_id).model_id == module_identity
+        return
     with pytest.raises(ModelPolicyError) as info:
-        resolve_tier_policy([{"role": "user", "content": "HOLD 등급 테스트"}], tier_id)
+        resolve_tier_policy(messages, tier_id)
     assert info.value.code == "tier_unavailable"
 
 
