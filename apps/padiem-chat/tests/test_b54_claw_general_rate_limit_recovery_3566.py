@@ -95,12 +95,14 @@ async function run() {
     [502,"engine_execution_failed","provider raw text"],
   ]) {
     response = parse(status,code,detail);
+    let rejected = false;
     try {
       await win.PadiemChatTransport.requestClawGeneral({}, null);
-      throw Error("expected rejection");
     } catch (e) {
+      rejected = true;
       assert(e.clawFailureDetail === undefined, "fail closed for spoofed detail");
     }
+    assert(rejected, "bad responses must always reject");
   }
   assert(posts.length === 5, "one POST per explicit invocation, no retry/fallback");
   assert(posts.every(p=>p.url==="/api/claw/general" && p.method==="POST"),
