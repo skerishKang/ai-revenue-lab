@@ -77,6 +77,7 @@ jobs:
           test -f "${SOURCE_DIR}/voice-sdk/package.json"
           test -f "${SOURCE_DIR}/voice-sdk/package-lock.json"
           test -f "${SOURCE_DIR}/voice-sdk/build-voice-sdk.mjs"
+          test -f "${SOURCE_DIR}/voice-sdk/verify-worker-bundle.mjs"
           test -f "${SOURCE_DIR}/voice-sdk/PROVENANCE.json"
           test -f "${SOURCE_DIR}/voice-sdk/licenses/google-genai.APACHE-2.0.txt"
           test -f "${SOURCE_DIR}/vendor/genai-live-2.24.0.js"
@@ -250,6 +251,9 @@ jobs:
           npm ci --ignore-scripts --no-audit --no-fund
           # The committed artifact must be byte-identical to what the lockfile produces.
           node build-voice-sdk.mjs --check
+          # PR CI cannot deploy (no Cloudflare credentials), so the Pages bundling of
+          # _worker.js -> voice-gemini.js is proven offline with the same pinned esbuild.
+          node verify-worker-bundle.mjs
           echo "VOICE_SDK_LOCKED_INSTALL=YES"
           echo "VOICE_SDK_INSTALL_SCRIPTS=NO"
           echo "VOICE_SDK_RUNTIME_CDN=NO"
@@ -288,6 +292,7 @@ jobs:
           node --check voice-gemini.js
           node --check voice-sdk/build-voice-sdk.mjs
           node --check voice-sdk/src/genai-live.mjs
+          node --check voice-sdk/verify-worker-bundle.mjs
           node tests/quote-core.test.cjs
           node tests/quote-extraction.test.cjs
           node tests/quote-history.test.cjs

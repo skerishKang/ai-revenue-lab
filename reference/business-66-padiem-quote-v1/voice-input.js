@@ -141,29 +141,70 @@
       startedUtterances += 1;
     }
 
+    /* The handshake is awaited, so "not live yet" does not mean "idle": without this pair
+       of guards a second press opened a second session, and a stop issued during the
+       handshake was undone when the late connect resolved. `attempt` is the authority —
+       anything started before a stop, a new attempt, or a failure is inert. */
+    let connecting = false;
+    let attempt = 0;
+
+    function releaseCapture() {
+      if (audio && typeof audio.stop === "function") audio.stop();
+      if (transport && typeof transport.close === "function") transport.close();
+    }
+
     async function start() {
       if (live) return { started: false, reason: "already_listening" };
+      if (connecting) return { started: false, reason: "already_connecting" };
       if (!transport || !audio) throw new Error("voice_transport_unavailable");
+      const mine = ++attempt;
+      connecting = true;
       setState(STATE.TRANSCRIBING);
       try {
         await transport.connect({
           onTurnEnd: () => {
+            if (mine !== attempt) return;
             if (state === STATE.B66_PROCESSING) return;
             setState(STATE.WAITING_NEXT_TURN);
             beginTurn();
           },
           onReconnected: () => {
-            if (live) beginTurn();
+            if (mine === attempt && live) beginTurn();
           },
-          onError: (error) => fail(error)
+          onError: (error) => {
+            /* A frame from an abandoned attempt must not announce a failure the user
+               already resolved by pressing stop. */
+            if (mine !== attempt) return;
+            fail(error);
+          }
         });
+        if (mine !== attempt) {
+          /* stop() (or a newer attempt) already ran, and this session only finished
+             opening now: close it instead of resuming, and stay in the state the user
+             left it in. */
+          releaseCapture();
+          connecting = false;
+          return { started: false, reason: "stopped_while_connecting" };
+        }
         await audio.start();
+        if (mine !== attempt) {
+          releaseCapture();
+          connecting = false;
+          return { started: false, reason: "stopped_while_connecting" };
+        }
         live = true;
+        connecting = false;
         beginTurn();
         setState(STATE.LISTENING);
         return { started: true, utterance: startedUtterances };
       } catch (error) {
+        const stopped = mine !== attempt;
         live = false;
+        connecting = false;
+        if (stopped) {
+          releaseCapture();
+          return { started: false, reason: "stopped_while_connecting" };
+        }
         return fail(error);
       }
     }
@@ -174,8 +215,7 @@
       /* A failure mid-session must not leave the microphone hot or the session half
          open. Teardown is unconditional here, and any staged text stays exactly as
          editable text so the user can still send or discard it by hand. */
-      if (audio && typeof audio.stop === "function") audio.stop();
-      if (transport && typeof transport.close === "function") transport.close();
+      releaseCapture();
       if (machine && typeof machine.reset === "function") machine.reset();
       setState(STATE.ERROR);
       onNotice({ code: String(code), fatal: true });
@@ -184,9 +224,12 @@
 
     function stop(options) {
       const opts2 = options || {};
+      /* Invalidating the attempt first is what makes a connect that has not landed yet
+         arrive inert rather than resurrecting LISTENING. */
+      attempt += 1;
+      connecting = false;
       live = false;
-      if (audio && typeof audio.stop === "function") audio.stop();
-      if (transport && typeof transport.close === "function") transport.close();
+      releaseCapture();
       if (machine && typeof machine.reset === "function") machine.reset();
       if (opts2.discard && lastStaged && typeof host.clearStagedText === "function") {
         host.clearStagedText(lastStaged.utteranceId);
@@ -224,6 +267,7 @@
       getState: () => state,
       getMode: () => mode,
       isLive: () => live,
+      isConnecting: () => connecting,
       submittedCount: () => submitted.length,
       utteranceCount: () => startedUtterances
     };
@@ -319,7 +363,10 @@
 
     if (mic) {
       mic.addEventListener("click", async () => {
-        if (busy() || controller.isLive()) {
+        /* Connecting counts as running for the button: a press during the handshake is a
+           cancel, not a second attempt, so the icon cannot show a live mic with two
+           sessions behind it. */
+        if (busy() || controller.isLive() || controller.isConnecting()) {
           const stopped = controller.stop({ discard: false });
           if (mic) mic.setAttribute("aria-pressed", "false");
           return stopped;

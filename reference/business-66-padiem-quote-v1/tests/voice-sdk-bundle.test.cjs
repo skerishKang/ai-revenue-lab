@@ -117,6 +117,40 @@ function main() {
   assert.equal(fs.existsSync(path.join(SRC, "node_modules")), false,
     "no node_modules at the app root: the app itself remains dependency-free");
 
+  /* --- the Pages bundling question is answered offline, in CI ------------ *
+     PR CI cannot deploy, so the one deploy-time risk (whether _worker.js resolves its
+     relative import under Pages' bundler) has to be proven without credentials. */
+  assert.ok(fs.existsSync(path.join(SDK_DIR, "verify-worker-bundle.mjs")),
+    "the offline worker bundling proof exists");
+  const verifySource = read(path.join(SDK_DIR, "verify-worker-bundle.mjs"));
+  assert.equal(verifySource.includes("PAGES_DEPLOY_PERFORMED=NO"), true);
+  assert.equal(verifySource.includes("CLOUDFLARE_CREDENTIALS_USED=NO"), true);
+  /* Prose in that file explains why no deploy happens, so the guard reads code only. */
+  const verifyCode = verifySource
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/^\s*\/\/.*$/gm, "");
+  for (const forbidden of ["wrangler", "api.cloudflare.com", "fetch(", "FormData"]) {
+    assert.equal(verifyCode.includes(forbidden), false,
+      `the verifier must stay offline and credential-free: found ${forbidden}`);
+  }
+
+  const workflow = read(path.join(SRC, "..", "..", ".github", "workflows", "b66-neutral-pages-beta.yml"));
+  const wiring = [
+    "npm ci --ignore-scripts",
+    "node build-voice-sdk.mjs --check",
+    "node verify-worker-bundle.mjs",
+    "node tests/voice-sdk-bundle.test.cjs",
+    "node --check voice-stt.js",
+    "node --check voice-gemini.js",
+    'test -f "${SOURCE_DIR}/vendor/genai-live-2.24.0.js"',
+    'test -f "${SOURCE_DIR}/voice-sdk/PROVENANCE.json"'
+  ];
+  for (const line of wiring) {
+    assert.ok(workflow.includes(line), `CI must run: ${line}`);
+  }
+  assert.ok(/- name: Rebuild the pinned voice SDK bundle/.test(workflow),
+    "the locked install and reproducibility check are a named CI step");
+
   console.log("B66_VOICE_SDK_BUNDLE=PASS");
   console.log(`SDK_EXACT_VERSION=${manifest.dependencies["@google/genai"]}`);
   console.log(`VOICE_SDK_BYTES=${provenance.artifact.bytes}`);

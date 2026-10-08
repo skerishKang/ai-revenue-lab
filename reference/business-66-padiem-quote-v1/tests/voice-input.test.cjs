@@ -112,6 +112,83 @@ function fakeAudio() {
   };
 }
 
+/* A transport whose connect() stays pending until the test releases it, which is the
+   window CENTRAL reproduced both defects inside: a second press, or a stop, while the
+   session handshake is still open. */
+function slowTransport() {
+  let release;
+  const gate = new Promise((resolve) => { release = resolve; });
+  const transport = {
+    connects: 0,
+    closes: 0,
+    handlers: null,
+    connect(handlers) {
+      transport.connects += 1;
+      transport.handlers = handlers;
+      return gate.then(() => ({ connected: true }));
+    },
+    sendAudio() {},
+    close() { transport.closes += 1; },
+    release() { release(); }
+  };
+  return transport;
+}
+
+function countingAudio() {
+  return {
+    starts: 0,
+    stops: 0,
+    async start() { this.starts += 1; return { started: true }; },
+    stop() { this.stops += 1; }
+  };
+}
+
+function setupSlow(mode) {
+  const { Stt, Voice } = loadVoiceModules();
+  const host = createHost();
+  const machine = Stt.createTranscriptMachine({ nextId: Stt.createIdSource(null) });
+  const transport = slowTransport();
+  const audio = countingAudio();
+  const notices = [];
+  const controller = Voice.createVoiceController({
+    host, machine, mode, transport, audio,
+    onNotice: (notice) => notices.push(notice)
+  });
+  return { Stt, Voice, host, machine, transport, audio, controller, notices };
+}
+
+/* The minimum DOM surface createDomBindings needs, so a physical double press is
+   tested through the same handler the page uses. */
+function fakeElement() {
+  const listeners = [];
+  return {
+    listeners,
+    attrs: {},
+    pressed: [],
+    addEventListener(type, handler) { if (type === "click") listeners.push(handler); },
+    setAttribute(name, value) { this.attrs[name] = value; if (name === "aria-pressed") this.pressed.push(value); },
+    getAttribute(name) { return this.attrs[name]; },
+    classList: { toggle() {} }
+  };
+}
+
+function fakeDocument() {
+  const elements = {
+    easyVoiceMic: fakeElement(),
+    easyVoiceStatus: fakeElement(),
+    easyVoiceModeReview: fakeElement(),
+    easyVoiceModeAuto: fakeElement()
+  };
+  elements.easyVoiceStatus.hidden = true;
+  elements.easyVoiceStatus.textContent = "";
+  elements.easyVoiceStatus.append = undefined;
+  return {
+    elements,
+    addEventListener() {},
+    getElementById: (id) => elements[id] || null
+  };
+}
+
 function setup(mode, extra) {
   const { Stt, Voice } = loadVoiceModules();
   const host = createHost(extra || {});
@@ -405,6 +482,91 @@ async function main() {
       "the drop is announced, never silent");
   }
 
+  /* --- CENTRAL defect 1: a press while connecting must not double-connect -- */
+  {
+    const t = setupSlow("REVIEW");
+    const first = t.controller.start();
+    /* Do not await the second press before releasing the handshake: an unfixed
+       implementation leaves it pending, and a pending await is how a suite goes
+       silently green. Record what it settles to instead. */
+    let secondOutcome = "PENDING";
+    const second = t.controller.start().then(
+      (result) => { secondOutcome = result; },
+      (error) => { secondOutcome = { thrown: String(error && error.message) }; }
+    );
+    t.transport.release();
+    const firstResult = await first;
+    await second;
+    assert.equal(firstResult.started, true, "the original attempt completes");
+    assert.deepEqual(secondOutcome, { started: false, reason: "already_connecting" },
+      "a press while connecting opens no second session");
+    assert.equal(t.transport.connects, 1, "connect() ran exactly once for two presses");
+    assert.equal(t.audio.starts, 1, "audio.start() ran exactly once for two presses");
+    assert.equal(t.controller.getState(), "LISTENING");
+  }
+
+  /* --- CENTRAL defect 1 through the page handler: double click ------------- */
+  {
+    const base = setupSlow("REVIEW");
+    const doc = fakeDocument();
+    base.Voice.createDomBindings({
+      document: doc, host: base.host, controller: base.controller
+    });
+    const click = () => doc.elements.easyVoiceMic.listeners[0]();
+    const first = click();
+    const second = click();
+    base.transport.release();
+    await first;
+    await second;
+    assert.equal(base.transport.connects, 1, "two physical presses open one session");
+    assert.equal(base.audio.starts, 0,
+      "the second press reads as a stop, so capture never opens twice");
+    assert.equal(base.controller.getState(), "STOPPED", "and the page ends stopped, not listening");
+    const pressed = doc.elements.easyVoiceMic.pressed;
+    assert.equal(pressed[0], "true", "the first press arms the microphone");
+    assert.equal(pressed.filter((value) => value === "true").length, 1,
+      "only the first press ever marks the microphone as live");
+    assert.equal(pressed.slice(1).every((value) => value === "false"), true,
+      "after the cancel the icon only ever reads off, so it cannot lie");
+  }
+
+  /* --- CENTRAL defect 2: stop during connect must not return to LISTENING -- */
+  {
+    const t = setupSlow("REVIEW");
+    const pending = t.controller.start();
+    t.controller.stop({ discard: false });
+    assert.equal(t.controller.getState(), "STOPPED", "stop is authoritative immediately");
+    t.transport.release();
+    const result = await pending;
+    assert.equal(result.started, false, "a connect that lands after stop does not start");
+    assert.equal(result.reason, "stopped_while_connecting");
+    assert.equal(t.controller.getState(), "STOPPED",
+      "the delayed handshake must not resurrect LISTENING");
+    assert.equal(t.controller.isLive(), false);
+    assert.equal(t.audio.starts, 0, "capture is never opened for an abandoned attempt");
+    assert.ok(t.transport.closes >= 2,
+      "the session that arrived late is closed, not leaked");
+    /* and the mic is genuinely usable again afterwards */
+    const retry = await t.controller.start();
+    assert.equal(retry.started, true, "a later press starts a fresh session");
+    assert.equal(t.transport.connects, 2);
+  }
+
+  /* --- a failure that lands after stop is reported as the stop ------------- */
+  {
+    const t = setupSlow("REVIEW");
+    const pending = t.controller.start();
+    t.controller.stop({ discard: false });
+    t.transport.handlers.onError({ code: "voice_connection_closed" });
+    assert.equal(t.controller.getState(), "STOPPED", "stop wins over a late error immediately");
+    assert.deepEqual(t.notices.map((n) => n.code), [],
+      "and the abandoned attempt raises no false alarm");
+    t.transport.release();
+    const result = await pending;
+    assert.equal(result.started, false, "the abandoned attempt never reports success");
+    assert.equal(t.controller.getState(), "STOPPED");
+  }
+
   /* --- the announced notice for each failure family is real text ---------- */
   {
     const { Voice } = loadVoiceModules();
@@ -423,8 +585,20 @@ async function main() {
   console.log("B66_VOICE_INPUT=PASS");
 }
 
-main().catch((error) => {
-  console.error("B66_VOICE_INPUT=FAIL");
-  console.error(error && error.stack ? error.stack : String(error));
+/* A pending await that never settles would end the process with no output and exit code 0,
+   which is a silent false green. The watchdog turns "it hung" into a loud failure. */
+const watchdog = setTimeout(() => {
+  console.error("B66_VOICE_INPUT=TIMEOUT");
+  console.error("MEANING=main() never settled; an await has neither resolved nor rejected");
   process.exit(1);
-});
+}, 30000);
+
+main().then(
+  () => clearTimeout(watchdog),
+  (error) => {
+    clearTimeout(watchdog);
+    console.error("B66_VOICE_INPUT=FAIL");
+    console.error(error && error.stack ? error.stack : String(error));
+    process.exit(1);
+  }
+);

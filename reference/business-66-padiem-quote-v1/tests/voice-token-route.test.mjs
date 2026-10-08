@@ -334,8 +334,20 @@ async function main() {
   console.log("B66_VOICE_TOKEN_ROUTE=PASS");
 }
 
-main().catch((error) => {
-  console.error("B66_VOICE_TOKEN_ROUTE=FAIL");
-  console.error(error && error.stack ? error.stack : String(error));
+/* A pending await that never settles would end the process with no output and exit code 0,
+   which is a silent false green. The watchdog turns "it hung" into a loud failure. */
+const watchdog = setTimeout(() => {
+  console.error("B66_VOICE_TOKEN_ROUTE=TIMEOUT");
+  console.error("MEANING=main() never settled; an await has neither resolved nor rejected");
   process.exit(1);
-});
+}, 30000);
+
+main().then(
+  () => clearTimeout(watchdog),
+  (error) => {
+    clearTimeout(watchdog);
+    console.error("B66_VOICE_TOKEN_ROUTE=FAIL");
+    console.error(error && error.stack ? error.stack : String(error));
+    process.exit(1);
+  }
+);
