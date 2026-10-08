@@ -46,6 +46,9 @@ from app.attachment_admission_service import (
     MAX_ADMISSION_REQUEST_BODY_BYTES,
     AttachmentAdmissionEngineService,
 )
+from app.browser_control_broker_caller_scope import (
+    authenticate_broker_p01_receipt_reader,
+)
 from app.browser_control_broker_receipt_read import (
     BROWSER_CONTROL_BROKER_RECEIPT_READ_PATH,
     MAX_BROWSER_RECEIPT_QUERY_BYTES,
@@ -1495,7 +1498,7 @@ class Default(legacy_worker.Default):
         return legacy_worker._json_response(result)
 
     async def _fetch_browser_broker_receipt_read(self, request: Any, path: str) -> Any:
-        """Authenticated Broker's exact original-run READ. Never user approval."""
+        """Authenticated Broker-only original-run READ. Never user approval."""
         method = str(getattr(request, "method", ""))
         headers = getattr(request, "headers", None)
         content_type = headers.get("content-type") if headers is not None else None
@@ -1510,6 +1513,19 @@ class Default(legacy_worker.Default):
         )
         if auth_error is not None:
             return auth_error
+        # Existing service registry authentication above is required, but is
+        # insufficient: B54's Engine identity MUST NOT read Broker-only P01.
+        # This closed audience authenticates the same canonical credential and
+        # app binding again, matching a server-provisioned Broker caller id.
+        app_id = legacy_worker._read_requested_app_id(body)
+        if not authenticate_broker_p01_receipt_reader(
+            env=self.env, headers=headers, requested_app_id=app_id,
+        ):
+            return legacy_worker._error_response(
+                "browser_p01_broker_caller_denied",
+                "Broker-only Engine approval receipt reader is unavailable.",
+                403,
+            )
         services = await self.engine_services_factory(self.env)
         if services.browser_p01_broker_receipt_read is None:
             return legacy_worker._error_response(
