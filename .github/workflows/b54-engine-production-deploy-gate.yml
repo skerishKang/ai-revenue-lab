@@ -80,7 +80,7 @@ jobs:
           test -n "${active_version}"
           version_detail="${RUNNER_TEMP}/version-pre.json"
           curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
-          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify --version-settings "${version_detail}" --active-version "${active_version}" --require-drive-runtime-bindings)"
+          verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify --version-settings "${version_detail}" --active-version="${active_version}" --require-drive-runtime-bindings)"
           printf '%s\n' "${verify_out}"
           overlay_expected="$(printf '%s\n' "${verify_out}" | sed -n 's/^B54_ENGINE_OVERLAY_EXPECTED=//p')"
           test "${overlay_expected}" = 'YES' || test "${overlay_expected}" = 'NO'
@@ -355,7 +355,7 @@ jobs:
           fi
           verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify \
             --version-settings "${version_detail}" \
-            --active-version "${active_version}" \
+            --active-version="${active_version}" \
             --require-drive-runtime-bindings \
             --inspect-engine-admission-binding \
             "${overlay_args[@]}")"
