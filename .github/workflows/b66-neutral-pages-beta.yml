@@ -74,6 +74,13 @@ jobs:
           test -f "${SOURCE_DIR}/voice-stt.js"
           test -f "${SOURCE_DIR}/voice-input.js"
           test -f "${SOURCE_DIR}/voice-gemini.js"
+          test -f "${SOURCE_DIR}/voice-sdk/package.json"
+          test -f "${SOURCE_DIR}/voice-sdk/package-lock.json"
+          test -f "${SOURCE_DIR}/voice-sdk/build-voice-sdk.mjs"
+          test -f "${SOURCE_DIR}/voice-sdk/PROVENANCE.json"
+          test -f "${SOURCE_DIR}/voice-sdk/licenses/google-genai.APACHE-2.0.txt"
+          test -f "${SOURCE_DIR}/vendor/genai-live-2.24.0.js"
+          test -f "${SOURCE_DIR}/THIRD_PARTY_NOTICES.md"
           test -f "${SOURCE_DIR}/tests/padiem-account-bridge.test.mjs"
           test -f "${SOURCE_DIR}/tests/account-scope-3480.test.cjs"
           test -f "${SOURCE_DIR}/embed.html"
@@ -234,6 +241,19 @@ jobs:
           echo "B66_PRODUCT_SOURCE=PASS"
           echo "PADIEM_ACCOUNT_ENTRY=PASS"
 
+      - name: Rebuild the pinned voice SDK bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "${SOURCE_DIR}/voice-sdk"
+          # Locked install at the exact pins, with no dependency lifecycle scripts run.
+          npm ci --ignore-scripts --no-audit --no-fund
+          # The committed artifact must be byte-identical to what the lockfile produces.
+          node build-voice-sdk.mjs --check
+          echo "VOICE_SDK_LOCKED_INSTALL=YES"
+          echo "VOICE_SDK_INSTALL_SCRIPTS=NO"
+          echo "VOICE_SDK_RUNTIME_CDN=NO"
+
       - name: Run B66 contracts
         shell: bash
         working-directory: ${{ env.SOURCE_DIR }}
@@ -266,6 +286,8 @@ jobs:
           node --check voice-stt.js
           node --check voice-input.js
           node --check voice-gemini.js
+          node --check voice-sdk/build-voice-sdk.mjs
+          node --check voice-sdk/src/genai-live.mjs
           node tests/quote-core.test.cjs
           node tests/quote-extraction.test.cjs
           node tests/quote-history.test.cjs
@@ -300,6 +322,7 @@ jobs:
           node tests/voice-input.test.cjs
           node tests/voice-easy-mode-host.test.cjs
           node tests/voice-token-route.test.mjs
+          node tests/voice-sdk-bundle.test.cjs
           node tests/three-pane-shell-contract.test.cjs
 
       - name: Run B66 server intake adapter contracts

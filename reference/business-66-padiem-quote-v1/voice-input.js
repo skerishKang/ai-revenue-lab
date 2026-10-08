@@ -79,6 +79,13 @@
 
     function deliver(committed) {
       if (!committed || !committed.utteranceId) return null;
+      /* A transcript that lands after the session was torn down has no place in the
+         conversation: it is neither staged nor submitted, and the drop is announced
+         rather than silently swallowed. */
+      if (!live && (state === STATE.ERROR || state === STATE.STOPPED)) {
+        onNotice({ code: "late_transcript_dropped", utteranceId: committed.utteranceId });
+        return null;
+      }
       if (wasSubmitted(committed.utteranceId)) {
         onNotice({ code: "duplicate_utterance_suppressed", utteranceId: committed.utteranceId });
         return null;
@@ -119,6 +126,14 @@
         onPreview({ text: payload && payload.text, utteranceId: payload && payload.utteranceId, staged: false });
         if (state !== STATE.B66_PROCESSING && state !== STATE.REVIEW_READY) setState(STATE.LISTENING);
       });
+      /* An ended turn with no transcript is announced, never guessed at and never
+         auto-submitted: B66 keeps no second-provider audio recovery, so the honest
+         outcome is that the user is asked to say it again. The next turn is opened by
+         the transport's onTurnEnd, which fires for empty turns too, so this handler
+         only reports. */
+      machine.on("empty", (payload) => {
+        onNotice({ code: "turn_empty", utteranceId: payload && payload.utteranceId });
+      });
     }
 
     function beginTurn() {
@@ -156,6 +171,12 @@
     function fail(error) {
       live = false;
       const code = (error && (error.code || error.reason)) || "voice_unavailable";
+      /* A failure mid-session must not leave the microphone hot or the session half
+         open. Teardown is unconditional here, and any staged text stays exactly as
+         editable text so the user can still send or discard it by hand. */
+      if (audio && typeof audio.stop === "function") audio.stop();
+      if (transport && typeof transport.close === "function") transport.close();
+      if (machine && typeof machine.reset === "function") machine.reset();
       setState(STATE.ERROR);
       onNotice({ code: String(code), fatal: true });
       return { started: false, reason: String(code) };
@@ -229,8 +250,22 @@
     microphone_denied: "마이크 권한이 없어 텍스트로 입력해 주세요.",
     voice_config_unavailable: "음성 전사 설정이 아직 없어 텍스트로 입력해 주세요.",
     voice_token_unavailable: "음성 연결 자격을 받지 못해 텍스트로 입력해 주세요.",
+    voice_token_missing: "음성 연결 자격을 받지 못해 텍스트로 입력해 주세요.",
+    voice_token_unparsable: "음성 연결 응답을 읽을 수 없어 텍스트로 입력해 주세요.",
+    sdk_unavailable: "음성 인식 구성요소를 불러올 수 없어 텍스트로 입력해 주세요.",
+    sdk_live_unsupported: "이 브라우저에서는 음성 인식을 사용할 수 없어 텍스트로 입력해 주세요.",
+    voice_connection_failed: "음성 연결이 끊겨 텍스트로 입력해 주세요.",
     voice_connection_closed: "음성 연결이 끊겨 텍스트로 입력해 주세요.",
-    fallback_browser_stt: "브라우저 음성 인식으로 이어갑니다. 인식 정확도는 다를 수 있습니다."
+    fallback_browser_stt: "브라우저 음성 인식으로 이어갑니다. 인식 정확도는 다를 수 있습니다.",
+    browser_stt_unavailable: "브라우저 음성 인식도 사용할 수 없어 텍스트로 입력해 주세요.",
+    browser_stt_not_allowed: "마이크 권한이 차단되어 음성 입력을 이어가지 못합니다. 텍스트로 입력해 주세요.",
+    browser_stt_network: "브라우저 음성 인식에 네트워크 오류가 발생했습니다. 텍스트로 입력해 주세요.",
+    browser_stt_service_not_allowed: "브라우저 음성 인식 서비스를 사용할 수 없습니다. 텍스트로 입력해 주세요.",
+    browser_stt_language_not_supported: "이 언어는 브라우저 음성 인식을 지원하지 않습니다. 텍스트로 입력해 주세요.",
+    browser_stt_restart_limit: "브라우저 음성 인식이 계속 중단되어 종료합니다. 텍스트로 입력해 주세요.",
+    /* §5: an empty turn is never presented as a success and never recovered silently. */
+    turn_empty: "이번 발화는 음성이 잡히지 않았습니다. 자동으로 보내지 않았으니 다시 말씀해 주세요.",
+    late_transcript_dropped: "음성 입력을 멈춘 뒤 도착한 전사는 보내지 않았습니다."
   };
 
   function textOf(value, limit) {
@@ -350,14 +385,14 @@
       return stt.createFallbackChainTransport({
         machine,
         onNotice: (notice) => bindings.current && bindings.current.onNotice(notice),
-        primaryFactory: (context) => stt.createLiveTransport({
+        /* The Live session is opened by the pinned same-origin SDK bundle, never by a
+           hand-assembled socket. The loader is injectable so tests never touch a network. */
+        primaryFactory: (context) => stt.createSdkLiveTransport({
           machine: context.machine,
           onNotice: context.onNotice,
           tokenEndpoint: opts.tokenEndpoint || "/api/b66/voice/token",
           fetcher: typeof win.fetch === "function" ? win.fetch.bind(win) : null,
-          socketFactory: typeof win.WebSocket === "function"
-            ? (url) => new win.WebSocket(url)
-            : null
+          sdkLoader: opts.sdkLoader
         }),
         fallbackFactory: typeof stt.createBrowserFallbackTransport === "function" && Recognizer
           ? (context) => stt.createBrowserFallbackTransport({

@@ -1,16 +1,38 @@
-/* B66 voice lane (#3404) — Gemini Live grant minting.
+/* B66 voice lane (#3404) — Gemini ephemeral grant minting.
    This module lives apart from _worker.js on purpose: the Pages contract forbids
    credential vocabulary inside the bridge worker (tests/pages-live-intake.test.mjs),
-   and that invariant is worth more than saving a file. Everything that has to know
-   the long-lived key is here, and the key is only ever placed in one request header. */
+   and that invariant is worth more than saving a file. Everything that has to know the
+   long-lived key is here, and the key is only ever placed in one request header.
 
-const GEMINI_AUTH_TOKEN_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/auth_tokens";
-const GEMINI_LIVE_WS_BASE = "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent";
+   The grant is minted on the v1alpha surface because that is the version the pinned
+   browser SDK pairs with an `auth_tokens/` key: it selects the constrained Live session
+   (BidiGenerateContentConstrained) for exactly that shape. The browser never rebuilds a
+   websocket URL, so none is returned here either. */
+
+const GEMINI_AUTH_TOKEN_ENDPOINT = "https://generativelanguage.googleapis.com/v1alpha/auth_tokens";
 const MAX_VOICE_TOKEN_BODY_BYTES = 512;
 const STT_MODEL_NAME = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,99}$/;
 const STT_LANGUAGE_TAG = /^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/;
-const VOICE_TOKEN_SESSION_SECONDS = 1800;
-const VOICE_TOKEN_NEW_SESSION_SECONDS = 60;
+const VOICE_TOKEN_SESSION_SECONDS = 1800;      /* global-classroom live-token.ts:47 */
+const VOICE_TOKEN_NEW_SESSION_SECONDS = 60;    /* global-classroom live-token.ts:48 */
+
+/* The credential may only ever travel to this one origin+path. An operator-set
+   B66_STT_TOKEN_URL that differs is a misconfiguration, not a hint, so it fails closed
+   instead of silently falling back. */
+function allowedTokenEndpoint(value) {
+  if (!value) return GEMINI_AUTH_TOKEN_ENDPOINT;
+  const wanted = new URL(GEMINI_AUTH_TOKEN_ENDPOINT);
+  let candidate = null;
+  try {
+    candidate = new URL(String(value));
+  } catch (_) {
+    return null;
+  }
+  if (candidate.protocol !== wanted.protocol || candidate.host !== wanted.host) return null;
+  if (candidate.pathname !== wanted.pathname) return null;
+  if (candidate.username || candidate.password || candidate.search || candidate.hash) return null;
+  return candidate.toString();
+}
 
 async function readStoredValue(env, bindingName) {
   const binding = env && env[bindingName];
@@ -38,14 +60,15 @@ function configuration(env) {
     .filter((tag) => STT_LANGUAGE_TAG.test(tag))
     .slice(0, 8);
   const silence = Number((env && env.B66_STT_SILENCE_MS) || 650);
+  const tokenEndpoint = allowedTokenEndpoint((env && env.B66_STT_TOKEN_URL) || "");
+  if (!tokenEndpoint) return null;
   return {
     model,
     languages,
     silenceDurationMs: Number.isFinite(silence) && silence >= 200 && silence <= 10000
       ? Math.round(silence)
       : 650,
-    tokenEndpoint: String((env && env.B66_STT_TOKEN_URL) || GEMINI_AUTH_TOKEN_ENDPOINT),
-    websocketBase: String((env && env.B66_STT_WS_BASE_URL) || GEMINI_LIVE_WS_BASE)
+    tokenEndpoint
   };
 }
 
@@ -106,16 +129,24 @@ export async function handleVoiceToken(request, env, context) {
   }
 
   const mintedAt = new Date().toISOString();
+  /* The wire shape is the one the pinned SDK sends for `authTokens.create`
+     (createAuthTokenParametersToMldev → config wrapper; liveConnectConstraints carries
+     setup.model and the constrained config), with the model name prefixed exactly as its
+     tModel transformer does. */
   const payload = {
-    uses: 1,
-    expireTime: isoFromSeconds(VOICE_TOKEN_SESSION_SECONDS),
-    newSessionExpireTime: isoFromSeconds(VOICE_TOKEN_NEW_SESSION_SECONDS),
-    liveConnectConstraints: {
-      model: "models/" + config.model,
-      config: {
-        responseModalities: ["TEXT"],
-        inputAudioTranscription: { languageCodes: config.languages, mode: "VERBATIM" },
-        realtimeInputConfig: { automaticActivityDetection: { silenceDurationMs: config.silenceDurationMs } }
+    config: {
+      uses: 1,
+      expireTime: isoFromSeconds(VOICE_TOKEN_SESSION_SECONDS),
+      newSessionExpireTime: isoFromSeconds(VOICE_TOKEN_NEW_SESSION_SECONDS),
+      liveConnectConstraints: {
+        setup: {
+          model: config.model.indexOf("models/") === 0 ? config.model : "models/" + config.model
+        },
+        config: {
+          responseModalities: ["TEXT"],
+          inputAudioTranscription: { languageCodes: config.languages, mode: "VERBATIM" },
+          realtimeInputConfig: { automaticActivityDetection: { silenceDurationMs: config.silenceDurationMs } }
+        }
       }
     }
   };
@@ -157,13 +188,13 @@ export async function handleVoiceToken(request, env, context) {
   return new Response(JSON.stringify({
     ok: true,
     token,
-    websocketUrl: config.websocketBase,
     model: config.model,
+    apiVersion: "v1alpha",
     languageCodes: config.languages,
     transcriptionMode: "VERBATIM",
     silenceDurationMs: config.silenceDurationMs,
     singleUse: true,
-    expiresAt: payload.expireTime,
+    expiresAt: payload.config.expireTime,
     mintedAt
   }), { status: 200, headers });
 }
@@ -172,6 +203,6 @@ export const VOICE_TEST_EXPORTS = {
   configuration,
   readStoredValue,
   grantName,
-  GEMINI_AUTH_TOKEN_ENDPOINT,
-  GEMINI_LIVE_WS_BASE
+  allowedTokenEndpoint,
+  GEMINI_AUTH_TOKEN_ENDPOINT
 };

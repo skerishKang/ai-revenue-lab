@@ -355,16 +355,76 @@ async function main() {
     assert.equal(started[0].audio.channelCount, 1);
     assert.equal(started[0].audio.echoCancellation, true, "echo cancellation must be on");
     assert.equal(started[0].audio.noiseSuppression, true);
-    const encoded = Stt.arrayBufferToBase64(Stt.float32ToInt16Le(new Float32Array([0, 0.5, -0.5, 1])).buffer);
+    const encoded = Stt.arrayBufferToBase64(Stt.float32ToInt16(new Float32Array([0, 0.5, -0.5, 1])).buffer);
     assert.equal(typeof encoded, "string");
     assert.ok(encoded.length > 0);
     audio.stop();
+  }
+
+  /* --- an empty turn is announced and never sent -------------------------- *
+     CENTRAL §5: no auto-submit, an explicit notice, no claim that an older
+     utterance was recovered. */
+  {
+    const t = setup("AUTO");
+    await t.controller.start();
+    t.machine.handleServerContent({ serverContent: { turnComplete: true } });
+    assert.equal(t.host.log.length, 0, "nothing was transcribed, so nothing was sent");
+    assert.deepEqual(t.notices.map((n) => n.code), ["turn_empty"], "the user is told the turn was empty");
+    assert.equal(t.controller.submittedCount(), 0);
+    assert.equal(t.host.value, "", "no stale text is presented as this turn's result");
+    /* a following real utterance still behaves normally */
+    t.machine.openTurn();
+    t.machine.handleServerContent({
+      serverContent: { inputTranscription: { text: "배관 100미터", finished: true } }
+    });
+    assert.deepEqual(t.host.log, ["INPUT:배관 100미터"], "the next utterance is unaffected");
+  }
+
+  /* --- a mid-session failure tears the mic and the session down ------------ */
+  {
+    const t = setup("AUTO");
+    await t.controller.start();
+    t.machine.handleServerContent({
+      serverContent: { inputTranscription: { text: "배관 100미터", finished: true } }
+    });
+    assert.deepEqual(t.host.log, ["INPUT:배관 100미터"], "the first utterance went through");
+    t.transport.handlers.onError({ code: "voice_connection_closed" });
+    assert.equal(t.controller.getState(), "ERROR");
+    assert.equal(t.controller.isLive(), false);
+    assert.deepEqual(t.audio.calls, ["start", "stop"], "the microphone is released on failure");
+    assert.deepEqual(t.transport.calls, ["connect", "close"], "the session is closed on failure");
+    /* and a late frame from the dead session cannot smuggle a second submit */
+    t.machine.openTurn();
+    t.machine.handleServerContent({
+      serverContent: { inputTranscription: { text: "미터당 18000원", finished: true } }
+    });
+    assert.equal(t.host.log.length, 1, "no auto-submit after the session died");
+    assert.equal(t.host.value, "", "and the late text is not staged either");
+    assert.equal(t.controller.submittedCount(), 1);
+    assert.ok(t.notices.map((n) => n.code).includes("late_transcript_dropped"),
+      "the drop is announced, never silent");
+  }
+
+  /* --- the announced notice for each failure family is real text ---------- */
+  {
+    const { Voice } = loadVoiceModules();
+    for (const code of ["turn_empty", "browser_stt_not_allowed", "browser_stt_network",
+      "browser_stt_service_not_allowed", "browser_stt_language_not_supported",
+      "browser_stt_restart_limit", "sdk_unavailable", "sdk_live_unsupported",
+      "voice_token_unavailable", "voice_token_missing", "voice_connection_failed",
+      "voice_connection_closed", "fallback_browser_stt", "late_transcript_dropped",
+      "auto_submit_skipped_busy", "auto_submit_deferred_pending", "duplicate_utterance_suppressed"]) {
+      assert.equal(typeof Voice.NOTICE_TEXT[code], "string", `${code} has an announcement`);
+      assert.ok(Voice.NOTICE_TEXT[code].length > 8, `${code} announcement is not a placeholder`);
+      assert.equal(Voice.NOTICE_TEXT[code].includes("http"), false, `${code} says no URLs`);
+    }
   }
 
   console.log("B66_VOICE_INPUT=PASS");
 }
 
 main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
+  console.error("B66_VOICE_INPUT=FAIL");
+  console.error(error && error.stack ? error.stack : String(error));
+  process.exit(1);
 });

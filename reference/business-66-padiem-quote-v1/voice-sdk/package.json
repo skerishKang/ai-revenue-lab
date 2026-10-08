@@ -1,0 +1,21 @@
+{
+  "name": "@ai-revenue-lab/b66-voice-sdk-build",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Locked, offline, deterministic build of the Gemini Live SDK bundle served to B66 Padiem Quote (#3404). Nothing here runs at page load; the produced artifact is a static same-origin file.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "node build-voice-sdk.mjs",
+    "check": "node build-voice-sdk.mjs --check"
+  },
+  "dependencies": {
+    "@google/genai": "2.24.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

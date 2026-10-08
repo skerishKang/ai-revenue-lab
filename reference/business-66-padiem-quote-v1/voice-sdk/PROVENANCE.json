@@ -1,0 +1,37 @@
+{
+  "purpose": "B66 Padiem Quote voice input (#3404) — pinned Gemini Live SDK, same-origin static artifact",
+  "generatedBy": "voice-sdk/build-voice-sdk.mjs",
+  "sdk": {
+    "name": "@google/genai",
+    "version": "2.24.0",
+    "entry": "@google/genai/web",
+    "license": "Apache-2.0",
+    "licenseFile": "voice-sdk/licenses/google-genai.APACHE-2.0.txt"
+  },
+  "bundler": {
+    "name": "esbuild",
+    "version": "0.25.12",
+    "targets": [
+      "chrome111",
+      "edge111",
+      "firefox115",
+      "safari16.4"
+    ],
+    "minify": false,
+    "legalComments": "none"
+  },
+  "inlinedDependencies": {
+    "p-retry": "4.6.2",
+    "retry": "0.13.1"
+  },
+  "reference": {
+    "product": "skerishKang/global-classroom",
+    "sha": "299c8e7830f6e4aa0c5202ca5591f240487c5c38",
+    "note": "version taken from the reference app package-lock resolution; B66 does not depend on that repository at runtime"
+  },
+  "artifact": {
+    "path": "vendor/genai-live-2.24.0.js",
+    "sha256": "18fb1456b794228b2202b94c8fea109997aab5517cc14cf33944acd90468e520",
+    "bytes": 905666
+  }
+}
