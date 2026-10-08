@@ -10,6 +10,7 @@
   <script src="./theme-init.js"></script>
   <meta name="description" data-locale-content="meta-description" content="누구나 바로 사용할 수 있는 파디엠의 기본 AI 인터페이스" />
   <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./owner-model-preview.css" />
   <link rel="stylesheet" href="./attachments.css" />
   <link rel="stylesheet" href="./history.css" />
   <link rel="stylesheet" href="./projects.css" />
@@ -681,7 +682,7 @@
           <textarea id="messageInput" rows="1" data-locale-placeholder="input" placeholder="무엇이든 물어보세요" autocomplete="off" maxlength="8000"></textarea>
           <div class="composer-actions">
             <div class="composer-tools">
-              <button class="model-pill composer-tier-trigger" type="button" data-locale-aria-label="mode" aria-label="AI 등급"><span class="status-spark" aria-hidden="true">✦</span><span>Padiem Plus</span></button>
+              <button class="model-pill composer-tier-trigger" id="ownerModelPreviewOpen" type="button" aria-haspopup="dialog" aria-controls="ownerModelPreviewDialog" aria-expanded="false" data-locale-aria-label="owner-model-preview-open" aria-label="파디엠플러스 모델 현황"><span class="status-spark" aria-hidden="true">✦</span><span data-locale-key="owner-model-preview-open">파디엠플러스 모델 현황</span></button>
               <input id="attachmentFileInput" type="file" hidden />
               <button type="button" class="tool-button" id="attachmentButton" title="파일 첨부"><span aria-hidden="true">＋</span><span>파일</span></button>
               <button type="button" class="tool-button" disabled id="webSearchButton" aria-disabled="true" aria-pressed="false" title="웹 검색" hidden><span aria-hidden="true">⌕</span><span>웹 검색</span></button>
@@ -771,6 +772,17 @@
     </section>
   </dialog>
 
+  <!-- #3790: partial owner-confirmed model NAME inventory; read-only, not an executable chooser. -->
+  <dialog id="ownerModelPreviewDialog" class="owner-model-preview" aria-labelledby="ownerModelPreviewTitle" aria-describedby="ownerModelPreviewScope">
+    <div class="owner-model-preview-head">
+      <h2 id="ownerModelPreviewTitle" data-locale-key="owner-model-preview-title">파디엠플러스 모델 현황</h2>
+      <button type="button" id="ownerModelPreviewClose" class="owner-model-preview-close" data-locale-aria-label="owner-model-preview-close" aria-label="닫기">×</button>
+    </div>
+    <p id="ownerModelPreviewScope" data-locale-key="owner-model-preview-scope">확인된 Google 모델 일부입니다. 전체 선정 목록은 아니며, 아직 고객 실행은 제공되지 않습니다.</p>
+    <p id="ownerModelPreviewStatus" role="status" aria-live="polite"></p>
+    <ul id="ownerModelPreviewList" class="owner-model-preview-list" aria-label="모델 현황"></ul>
+    <p data-locale-key="owner-model-preview-no-activation">모델을 표시해도 자동 선택·호출·결제가 발생하지 않습니다.</p>
+  </dialog>
   <template id="userMessageTemplate"><article class="message user-message"><div class="message-bubble"></div></article></template>
   <template id="assistantMessageTemplate"><article class="message assistant-message"><div class="assistant-avatar" aria-hidden="true">P</div><div class="assistant-body"><div class="assistant-meta"><span>Padiem Chat</span><span class="demo-label" data-runtime-label data-locale-key="answer-preparing">답변 준비 중</span></div><div class="assistant-content"></div></div></article></template>
   <script src="./theme.js"></script>
@@ -784,6 +796,7 @@
   <script src="./message-lifecycle.js"></script>
   <script src="./calendar.js"></script>
   <script src="./app.js"></script>
+  <script src="./owner-model-preview.js"></script>
   <script src="./b66-quote-runtime.js"></script>
   <script src="./product-capabilities.js"></script>
   <script src="./a11y.js"></script>
