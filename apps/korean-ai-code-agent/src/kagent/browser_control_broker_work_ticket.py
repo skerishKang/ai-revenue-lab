@@ -17,8 +17,10 @@ from .browser_control_actions import BrowserControlActionRequest
 from .browser_control_lease_authority import (
     BROWSER_CONTROL_TOOL_ID,
     BrowserControlAuthorityEvidence,
+    BrowserControlLeaseAuthority,
     BrowserControlLeaseRequest,
     BrowserControlP01CommandCorrelation,
+    P01PerCommandBrowserControlEvidenceClient,
 )
 from .contracts import ContractError
 from .local_agent_pairing import (
@@ -116,6 +118,36 @@ class AuthenticatedBrowserControlWorkTicket:
             and e.approval_decision.decided_at <= now < e.expires_at
         ):
             raise ContractError("browser.control work ticket or approval has expired")
+
+    def verify_current_p01(
+        self, authority: BrowserControlLeaseAuthority, *, now: datetime,
+    ) -> BrowserControlAuthorityEvidence:
+        """Re-read authentic per-command P01 evidence, without issuing a lease.
+
+        A locally constructed "approved" evidence object is not authorization.
+        Require the strict canonical work-ticket P01 route adapter, exact
+        Broker command correlation, live approval/expiry and local DENY check.
+        This is a read-only admission step; no durable take or Input.* occurs.
+        """
+        self.validate_at(now)
+        if not isinstance(authority, BrowserControlLeaseAuthority):
+            raise ContractError("canonical browser-control P01 authority is required")
+        port = authority._evidence_port
+        if (
+            not isinstance(port, P01PerCommandBrowserControlEvidenceClient)
+            or port._correlation != self.correlation
+        ):
+            raise ContractError("distinct per-command canonical P01 evidence source required")
+        verified = authority.verify_existing_p01(self.lease_request, now=now)
+        if verified != self.evidence:
+            raise ContractError("work-ticket evidence differs from current verified P01 evidence")
+        if (
+            verified.command_id != self.command.command_id
+            or verified.admission_ref != self.admission.admission_ref
+            or verified.revision_ref != self.command.revision_ref
+        ):
+            raise ContractError("verified P01 evidence does not bind Broker admission")
+        return verified
 
     def safe_dict(self) -> dict[str, str | bool]:
         """No action text, page bytes, raw evidence, credentials or URL."""

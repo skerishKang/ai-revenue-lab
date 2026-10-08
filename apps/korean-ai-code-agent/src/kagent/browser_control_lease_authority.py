@@ -635,14 +635,15 @@ class BrowserControlLeaseAuthority:
 
     # --- issuance ----------------------------------------------------------
 
-    def issue_from_p01(
-        self,
-        request: BrowserControlLeaseRequest,
-        *,
-        now: datetime,
-    ) -> tuple[BrowserControlLeaseProjection, bool]:
-        """Validate canonical P01 evidence and idempotently land the lease row."""
+    def verify_existing_p01(
+        self, request: BrowserControlLeaseRequest, *, now: datetime,
+    ) -> BrowserControlAuthorityEvidence:
+        """Read-only canonical P01 + current local policy validation.
 
+        This shares the exact checks used by issuance, but creates NO lease,
+        writes NO approval record, and consumes NO browser action. A caller
+        must still independently authenticate the upstream evidence port.
+        """
         if not isinstance(request, BrowserControlLeaseRequest):
             raise ContractError("request must be BrowserControlLeaseRequest")
         moment = _aware(now, "now")
@@ -654,7 +655,6 @@ class BrowserControlLeaseAuthority:
             raise BrowserControlLeaseRefusal(
                 "lease_correlation_mismatch", "session request workspace does not match this device"
             )
-
         fingerprint = request.fingerprint()
         evidence = self._evidence_port.resolve(fingerprint)
         if not isinstance(evidence, BrowserControlAuthorityEvidence):
@@ -665,11 +665,24 @@ class BrowserControlLeaseAuthority:
             )
         if evidence.expires_at <= moment:
             raise BrowserControlLeaseRefusal(
-                "p01_approval_expired", "the P01 evidence has expired before issuance"
+                "p01_approval_expired", "the P01 evidence has expired before validation"
             )
         self._validate_evidence_binding(request=request, evidence=evidence)
         self._validate_p01_approval(request=request, evidence=evidence, now=moment)
         self._recompute_local_policy(evidence=evidence)
+        return evidence
+
+    def issue_from_p01(
+        self,
+        request: BrowserControlLeaseRequest,
+        *,
+        now: datetime,
+    ) -> tuple[BrowserControlLeaseProjection, bool]:
+        """Validate canonical P01 evidence and idempotently land the lease row."""
+
+        moment = _aware(now, "now")
+        evidence = self.verify_existing_p01(request, now=moment)
+        fingerprint = request.fingerprint()
 
         # Expiry cap (CENTRAL ruling §4): requested TTL, canonical evidence
         # expiry and the P01 pause expiry — the minimum of the three, and no
