@@ -92,6 +92,10 @@ Production deployment. The selected model and CGI rendering must still pass
 separate source/CI/deploy/real-customer validation gates. Issue #3751 stays
 open and CUSTOMER_READY remains NO until proven.
 
+## 0B. Current owner-selected model facts and historical-issue precedence (2026-10-08)
+
+See [B14 owner model decision ledger](B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md) for exact Google AI Studio IDs, the owner's customer-visible 파디엠플러스+개별모델명 rule, the five excluded models, source-vs-local-vs-Production status and B66 evidence. This is an evidence pointer only; sections 0, 0A, 1, 5, 8 and 10 keep their existing authorization and fail-closed boundaries. Old Space Bunny/Ling/Agnes/Nemotron catalog snapshots and B14 auto chains are historical, never a substitute for the more recent explicit owner decision. Unmerged local registration does not prove B14 live capability. The excluded five MUST NOT be implicitly re-approved by older catalog data or B66 free-first auto selection.
+
 ## 1. Rule
 
 Provider/model selection is an **owner-only decision boundary**.

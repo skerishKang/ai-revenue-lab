@@ -1,5 +1,8 @@
 # B66 MVP runtime repair — 2026-10-08
 
+**Owner model decision reconciliation (2026-10-08):** The B66-specific free-first selection rule here does not authorize old B14 catalog entries excluded by the owner (Kilo Poolside Laguna, B.AI Qwen, Motif 3, GPT-5.6 Luna, NVIDIA Nemotron). See [B14 owner model decision ledger](../../operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md). Protected Production CGI Guided PDF passed, while Complete Freeform returned HTTP 502/upstream_timeout on one interpreter POST and no retries/fallback; selected exact model ID was not observed. Partial follow-up remains untested and CUSTOMER_READY=NO. Source fix evidence and real Production completion are separate.
+
+
 Work contract: owner requested direct repair of the independently reproduced B66 MVP failures. This slice updates Draft PR #3762, preserving its approved registered/free-first policy and the existing CGI browser PDF delivery path.
 
 ```text

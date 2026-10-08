@@ -8,6 +8,7 @@
 - Deployment authority: `DIRECT_PRODUCTION_DEPLOYMENT_AND_ROLLBACK_POLICY.md`
 - Technology adoption authority: `TECHNOLOGY_ADOPTION_POLICY.md`
 - Model/provider decision authority: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
+- Dated B14 owner decision/evidence ledger: `B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md` (historical issue and implementation status; not a second approval gate)
 
 ## 1. Purpose
 
