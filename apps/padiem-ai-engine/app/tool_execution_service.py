@@ -56,6 +56,7 @@ from app.browser_control_approval_validation import (
     validate_browser_control_approval_arguments,
 )
 from app.browser_control_p01_receipt import CloudflareD1BrowserControlP01ReceiptStore
+from app.browser_control_pause_identity import TrustedBrowserControlPauseIdentity
 from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
 from app.orchestration_service import (
     ApprovalDecisionVerifier,
@@ -138,6 +139,10 @@ class ToolExecutionEngineService:
         approval_decision_verifier: ApprovalDecisionVerifier | None = None,
         continuation_store: ContinuationStore | None = None,
         browser_control_p01_receipts: CloudflareD1BrowserControlP01ReceiptStore | None = None,
+        browser_control_original_admission: (
+            Callable[[str, TrustedToolAuthority, ToolInvocation], TrustedBrowserControlPauseIdentity | None]
+            | None
+        ) = None,
     ) -> None:
         if tool_binding_resolver is not None and not callable(tool_binding_resolver):
             raise ValueError("tool_binding_resolver must be callable")
@@ -165,6 +170,12 @@ class ToolExecutionEngineService:
             or browser_control_p01_receipts._binding is not continuation_store._binding
         ):
             raise ValueError("browser.control P01 receipt requires the SAME trusted Engine D1 binding")
+        if browser_control_original_admission is not None and (
+            browser_control_p01_receipts is None
+            or not callable(browser_control_original_admission)
+        ):
+            raise ValueError("browser.control original admission requires same trusted D1 receipt source")
+        self._browser_control_original_admission = browser_control_original_admission
         self._browser_control_p01_receipts = browser_control_p01_receipts
         self._pending: dict[str, _PendingToolContinuation] = {}
 
@@ -394,23 +405,38 @@ class ToolExecutionEngineService:
         )
         if pause is None:
             return None
+        issue_kwargs: dict[str, Any] = {
+            "app_id": app_id,
+            "pause": pause,
+            "plan_id": None,
+            "request_fingerprint": f"toolinv:{pause.invocation_sha256}",
+        }
+        if invocation.tool_id == "browser.control" and (
+            type(self._continuation_store) is CloudflareD1IdentityBoundContinuationStore
+        ):
+            provider = self._browser_control_original_admission
+            if self._browser_control_p01_receipts is None or provider is None:
+                return None  # No owner-supplied trusted admission: no P01 pause.
+            try:
+                original = provider(app_id, authority, invocation)
+                if type(original) is not TrustedBrowserControlPauseIdentity:
+                    return None
+                original.assert_matches(app_id)
+            except (TypeError, ValueError):
+                return None
+            issue_kwargs = {
+                "app_id": app_id,
+                "pause": pause,
+                "execution_identity": original.execution_identity,
+                "original_admission": original.original_admission,
+            }
+        continuation_ref = await self._continuation_call("issue", **issue_kwargs)
         self._pending[pause.pause_id] = _PendingToolContinuation(
             app_id=app_id,
             canonical_agent_id=authority.canonical_agent_id,
             canonical_tool_id=canonical_tool_id,
             invocation=invocation,
         )
-        try:
-            continuation_ref = await self._continuation_call(
-                "issue",
-                app_id=app_id,
-                pause=pause,
-                plan_id=None,
-                request_fingerprint=f"toolinv:{pause.invocation_sha256}",
-            )
-        except ServiceContractError:
-            self._pending.pop(pause.pause_id, None)
-            raise
         return ServiceResponse(
             status_code=202,
             body={

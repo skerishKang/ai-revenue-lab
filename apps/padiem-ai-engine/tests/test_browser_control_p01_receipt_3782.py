@@ -15,18 +15,26 @@ from typing import Any
 
 import pytest
 from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
+from app.browser_control_approval_binding import (
+    BROWSER_P01_AGENT_ID,
+    BROWSER_P01_APP_ID,
+    BROWSER_P01_CANONICAL_TOOL_ID,
+    build_inert_browser_control_approval_binding,
+)
 from app.browser_control_p01_receipt import (
     ENGINE_BROWSER_CONTROL_P01_RECEIPT_PRODUCER_WIRED,
     ENGINE_BROWSER_CONTROL_P01_RECEIPT_READER_WIRED,
     CloudflareD1BrowserControlP01ReceiptStore,
     EngineApprovedBrowserControlP01Receipt,
 )
+from app.browser_control_pause_identity import TrustedBrowserControlPauseIdentity
 from app.continuation_d1 import (
     CloudflareD1IdentityBoundContinuationStore,
     _identity_json,
     _pause_json,
 )
 from app.continuation_identity import ContinuationExecutionIdentity
+from app.execution_admission_resume import OriginalAdmissionBinding
 from app.tool_execution_service import (
     ToolExecutionEngineService,
     _PendingToolContinuation,
@@ -598,3 +606,162 @@ def test_browser_receipt_atomic_failure_releases_claim_and_never_issues_receipt(
     finally:
         db.batch = original
         db.db.close()
+
+
+# #3782: real Engine Core ToolRuntime P01 pause -> trusted run admission
+# -> D1 continuation issue -> first-party decision -> atomic P01 receipt.
+# The fake admission in this test is TEST ONLY and cannot authorize Production.
+_BROWSER_ARGS = {
+    "browser_session_ref": "browser.3782",
+    "run_ref": "run.3782",
+    "workspace_ref": "workspace.3782",
+    "owner_ref": "owner.3782",
+    "device_id": "device.3782",
+    "origin_scope": "https://example.org",
+    "allowed_action_classes": ["click", "focus"],
+    "ttl_seconds": 60,
+    "max_actions": 1,
+}
+
+
+def _trusted_browser_identity(*, app_id=BROWSER_P01_APP_ID, subject="owner.3782"):
+    identity = ContinuationExecutionIdentity(
+        request_fingerprint="d" * 64,
+        plan_fingerprint=None,
+        subject_id=subject,
+        recovery_policy_fingerprint=None,
+        max_retries=0,
+        require_evidence=True,
+        require_verification=True,
+    )
+    admission = OriginalAdmissionBinding(
+        decision_id="decision.real.owner.fixture",
+        app_id=app_id,
+        subject_id=subject,
+        authority_ref="authority.real.owner.fixture",
+        policy_revision="policy.v1",
+        request_fingerprint=identity.request_fingerprint,
+    )
+    return TrustedBrowserControlPauseIdentity(
+        execution_identity=identity,
+        original_admission=admission,
+    )
+
+
+def _make_browser_d1_issue_service(db, *, provider_enabled=True, supplied=None):
+    binding = build_inert_browser_control_approval_binding()
+    continuation = CloudflareD1IdentityBoundContinuationStore(db)
+    receipts = CloudflareD1BrowserControlP01ReceiptStore(db)
+    def owner_provider(app_id, authority, invocation):
+        assert app_id == BROWSER_P01_APP_ID
+        assert authority.canonical_agent_id == BROWSER_P01_AGENT_ID
+        assert invocation.tool_id == "browser.control"
+        return _trusted_browser_identity() if supplied is None else supplied
+    service = ToolExecutionEngineService(
+        tool_binding_resolver=lambda app_id: (
+            binding if app_id == BROWSER_P01_APP_ID else None
+        ),
+        approval_decision_verifier=AuthenticatedFirstPartyApprovalDecisionVerifier(),
+        continuation_store=continuation,
+        browser_control_p01_receipts=receipts,
+        browser_control_original_admission=owner_provider if provider_enabled else None,
+    )
+    request = {
+        "app_id": BROWSER_P01_APP_ID,
+        "agent_id": BROWSER_P01_AGENT_ID,
+        "tool_id": BROWSER_P01_CANONICAL_TOOL_ID,
+        "arguments": dict(_BROWSER_ARGS),
+    }
+    return service, continuation, receipts, request
+
+
+def test_real_core_pause_issues_identity_bound_d1_and_atomic_receipt(db):
+    service, continuation, receipts, request = _make_browser_d1_issue_service(db)
+    paused = run(service.execute_payload(request))
+    assert paused.status_code == 202, paused.body
+    ref = paused.body["tool"]["continuation_ref"]
+    stored = run(continuation.resolve(app_id=BROWSER_P01_APP_ID, continuation_ref=ref))
+    assert stored.pause.tool_id == "browser.control"
+    assert stored.execution_identity == _trusted_browser_identity().execution_identity
+    assert stored.original_admission == _trusted_browser_identity().original_admission
+    assert stored.pause.invocation_sha256 == tool_invocation_digest(
+        ToolInvocation(tool_id="browser.control", arguments=_BROWSER_ARGS)
+    )
+    assert stored.state == "active"
+    assert run(receipts.resolve_active(
+        app_id=BROWSER_P01_APP_ID, continuation_ref=ref, now=datetime.now(timezone.utc),
+    )) is None
+    result = run(service.resume_payload({
+        "app_id": BROWSER_P01_APP_ID,
+        "continuation_ref": ref,
+        "decision": {
+            "decision_id": "decision.browser.test",
+            "pause_id": stored.pause.pause_id,
+            "outcome": "approved",
+            "authority_ref": "authority.test.firstparty",
+            "evidence_ref": "evidence.browser.test",
+            "decided_at": datetime.now(timezone.utc).isoformat(),
+        },
+    }))
+    assert result.status_code == 200, result.body
+    assert result.body["tool"]["status"] == "approval_recorded"
+    assert result.body["tool"]["browser_action_executed"] is False
+    assert result.body["tool"]["broker_command_dispatched"] is False
+    active = run(receipts.resolve_active(
+        app_id=BROWSER_P01_APP_ID, continuation_ref=ref, now=datetime.now(timezone.utc),
+    ))
+    assert active is not None
+    assert active.invocation_sha256 == stored.pause.invocation_sha256
+    rows = db.db.execute(
+        "SELECT state,claim_token FROM padiem_engine_continuations WHERE "
+        "app_id=? AND continuation_ref=?", (BROWSER_P01_APP_ID, ref),
+    ).fetchone()
+    assert tuple(rows) == ("consumed", None)
+
+
+@pytest.mark.parametrize("failure", [
+    "no_provider", "wrong_app", "wrong_subject", "wrong_fingerprint",
+    "missing_subject", "wrong_type",
+])
+def test_d1_browser_pause_refuses_untrusted_identity_without_row(db, failure):
+    trusted = _trusted_browser_identity()
+    replacement = trusted
+    if failure == "wrong_app":
+        replacement = replace(trusted, original_admission=replace(
+            trusted.original_admission, app_id="other.app",
+        ))
+    elif failure == "wrong_subject":
+        replacement = replace(trusted, original_admission=replace(
+            trusted.original_admission, subject_id="another.subject",
+        ))
+    elif failure == "wrong_fingerprint":
+        replacement = replace(trusted, original_admission=replace(
+            trusted.original_admission, request_fingerprint="e" * 64,
+        ))
+    elif failure == "missing_subject":
+        replacement = replace(trusted, execution_identity=replace(
+            trusted.execution_identity, subject_id=None,
+        ))
+    elif failure == "wrong_type":
+        replacement = {"approval": "approved"}
+    service, _cont, _receipts, request = _make_browser_d1_issue_service(
+        db, provider_enabled=failure != "no_provider", supplied=replacement,
+    )
+    response = run(service.execute_payload(request))
+    assert response.status_code == 503, response.body
+    assert service._pending == {}
+    assert db.db.execute(
+        "SELECT COUNT(*) FROM padiem_engine_continuations"
+    ).fetchone()[0] == 0
+    assert db.db.execute(
+        "SELECT COUNT(*) FROM padiem_engine_browser_control_p01_receipts"
+    ).fetchone()[0] == 0
+
+
+def test_original_admission_provider_cannot_be_set_without_receipt_store(db):
+    original = _trusted_browser_identity()
+    with pytest.raises(ValueError, match="same trusted D1 receipt"):
+        ToolExecutionEngineService(
+            continuation_store=CloudflareD1IdentityBoundContinuationStore(db),
+            browser_control_original_admission=lambda app, auth, inv: original,
+        )
