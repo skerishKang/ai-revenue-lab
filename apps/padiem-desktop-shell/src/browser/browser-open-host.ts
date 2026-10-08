@@ -142,6 +142,12 @@ export interface BrowserOpenViewPort {
     readonly hostLeaseRef: string;
     readonly approvedUrl: string;
     readonly expiresAtIso: string;
+    /** Trusted P01-approved open identity, never sourced from the renderer. */
+    readonly controlCorrelation?: {
+      readonly runRef: string;
+      readonly workspaceRef: string;
+      readonly ownerRef: string;
+    };
     /**
      * Per-navigation gate. The port must call this for every navigation and
      * redirect and prevent the navigation when it returns false.
@@ -373,6 +379,11 @@ export class BrowserOpenHost {
           hostLeaseRef: grant.hostLeaseRef,
           approvedUrl: request.normalizedUrl,
           expiresAtIso: grant.expiresAtIso,
+          controlCorrelation: {
+            runRef: request.runRef,
+            workspaceRef: request.workspaceRef,
+            ownerRef: request.ownerRef,
+          },
           onNavigationAttempt: (candidate: unknown) =>
             isNavigationPermitted(candidate, request.normalizedUrl),
         }),
