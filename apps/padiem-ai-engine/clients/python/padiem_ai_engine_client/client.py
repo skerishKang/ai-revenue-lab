@@ -24,12 +24,14 @@ ENGINE_ORCHESTRATE_PATH = "/internal/v1/orchestrate"
 ENGINE_ORCHESTRATE_RESUME_PATH = "/internal/v1/orchestrate/resume"
 ENGINE_ORCHESTRATE_CANCEL_PATH = "/internal/v1/orchestrate/cancel"
 ENGINE_MULTIMODAL_ATTACHMENTS_PATH = "/internal/v1/multimodal/attachments"
+ENGINE_BROWSER_CONTROL_OWNER_TICKET_PATH = "/internal/v1/browser-control/owner-ticket/issue"
 
 _ENGINE_CALLER_HEADER = "X-Padiem-Engine-Caller"
 _ENGINE_CREDENTIAL_HEADER = "X-Padiem-Engine-Credential"
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 _IDEMPOTENCY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$")
 _CONTINUATION_RE = re.compile(r"^cont_[A-Za-z0-9_-]{8,123}$")
+_BROWSER_TICKET_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,255}$")
 _ATTACHMENT_REF_RE = re.compile(r"^att_[A-Za-z0-9_-]{16,120}$")
 
 # Canonical image attachment admission (#3210). Engine surfaces remain the
@@ -514,6 +516,53 @@ class PadiemAiEngineClient:
             _attachment_admission_payload(self.app_id, request),
         )
         return _attachment_projection(body)
+
+
+    async def issue_browser_control_owner_ticket(
+        self, *, continuation_ref: str, product_user_id: str, auth_session_ref: str,
+    ) -> str:
+        """Request only a PENDING human ticket, never a user approval or browser grant.
+
+        The caller MUST derive product_user_id/session from an ACTIVE B62
+        server-verified canonical identity, not from the browser or an LLM.
+        Engine independently rechecks original P01 pause and owner D1.
+        """
+        if (
+            type(continuation_ref) is not str
+            or _CONTINUATION_RE.fullmatch(continuation_ref) is None
+            or type(product_user_id) is not str
+            or not product_user_id.startswith("usr_")
+            or _BROWSER_TICKET_ID_RE.fullmatch(product_user_id) is None
+            or type(auth_session_ref) is not str
+            or _BROWSER_TICKET_ID_RE.fullmatch(auth_session_ref) is None
+        ):
+            raise PadiemAiEngineClientError(
+                "invalid_browser_ticket_request", "Invalid pending browser ticket reference"
+            )
+        result = await self._post(
+            ENGINE_BROWSER_CONTROL_OWNER_TICKET_PATH,
+            {
+                "app_id": self.app_id,
+                "continuation_ref": continuation_ref,
+                "product_user_id": product_user_id,
+                "auth_session_ref": auth_session_ref,
+            },
+        )
+        if (
+            set(result) != {
+                "ok", "ticket_ref", "owner_approval_recorded",
+                "browser_action_executed",
+            }
+            or result["ok"] is not True
+            or result["owner_approval_recorded"] is not False
+            or result["browser_action_executed"] is not False
+            or type(result["ticket_ref"]) is not str
+            or _BROWSER_TICKET_ID_RE.fullmatch(result["ticket_ref"]) is None
+        ):
+            raise PadiemAiEngineClientError(
+                "invalid_engine_response", "Pending browser ticket response is invalid"
+            )
+        return result["ticket_ref"]
 
     async def health(self) -> dict[str, Any]:
         response = await self._transport.request(
