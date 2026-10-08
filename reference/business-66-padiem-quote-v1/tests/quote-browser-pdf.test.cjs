@@ -1,5 +1,6 @@
 ﻿const assert = require("node:assert/strict");
 const fs = require("node:fs");
+const vm = require("node:vm");
 const path = require("node:path");
 const Renderer = require("../quote-template-renderer.js");
 const Browser = require("../quote-browser-pdf.js");
@@ -27,7 +28,60 @@ function rejection(modify, expected) {
   assert.throws(() => Browser.project(model, shown),
     (err) => err.code === expected, expected);
 }
+function verifyLiveRenderAuthority() {
+  const app = fs.readFileSync(path.join(__dirname, "..", "app.js"), "utf8");
+  const begin = app.indexOf("  function render() {");
+  const end = app.indexOf("\n  /*", begin + 20);
+  assert.ok(begin > 0 && end > begin, "actual render() source must be extractable");
+  const renderSource = app.slice(begin, end).trim();
+  const cgiProfile = { id: "assigned-approved", fingerprint: "fingerprint-assigned", approved: true };
+  const genericProfile = { id: "previous-generic", fingerprint: "fingerprint-generic", approved: true };
+  const profilePreview = { id: "management-preview", fingerprint: "fingerprint-preview", approved: true };
+  function probe({ skillId, serverSkillId, previewMode = false }) {
+    const selected = [], applied = [];
+    const ctx = {
+      $: () => null,
+      previewTemplateProfile: () => previewMode ? profilePreview : null,
+      renderTemplateAuthority: () => genericProfile,
+      skillUiState: { activeSkillId: skillId, serverSkill: { id: serverSkillId }, serverSlotSources: {} },
+      activeSkillProfile: () => cgiProfile,
+      TemplateRenderer: {
+        buildRenderModel: (_draft, authority, options) => {
+          selected.push(authority);
+          return { derivedBy: "quote-core", template: authority, certifiedPreviewBaseUrl: options.certifiedPreviewBaseUrl };
+        },
+        applyRenderModel: (_doc, model) => applied.push(model)
+      },
+      draft: {}, taxReviewRequired: false,
+      window: {
+        B66BrowserPdf: {
+          isCgiSkill: (id) => id === Browser.CGI_SKILL_ID,
+          certifiedPreviewModel: (model, _id, fp) => ({ ...model, layoutVariant: "cgi-v2", boundFingerprint: fp })
+        },
+        B66QuoteRuntimeBridge: { certifiedPreviewBaseUrl: (id) => id }
+      },
+      document: { querySelectorAll: () => [] },
+      Core: { computeDraftTotals: () => null },
+      saveDraft() {}
+    };
+    vm.runInNewContext("(" + renderSource + ")", ctx)();
+    return { selected, applied };
+  }
+  const owner = probe({ skillId: Browser.CGI_SKILL_ID, serverSkillId: Browser.CGI_SKILL_ID });
+  assert.equal(owner.selected[0].id, cgiProfile.id, "authenticated CGI must use assigned approved profile");
+  assert.equal(owner.applied[0].layoutVariant, "cgi-v2");
+  assert.equal(owner.applied[0].boundFingerprint, cgiProfile.fingerprint);
+  const other = probe({ skillId: "b66skill_" + "e".repeat(32), serverSkillId: "b66skill_" + "e".repeat(32) });
+  assert.equal(other.selected[0].id, genericProfile.id, "other templates must keep existing precedence");
+  const notServer = probe({ skillId: Browser.CGI_SKILL_ID, serverSkillId: "b66skill_" + "e".repeat(32) });
+  assert.equal(notServer.selected[0].id, genericProfile.id, "browser may not assert nonassigned skill");
+  const management = probe({ skillId: Browser.CGI_SKILL_ID, serverSkillId: Browser.CGI_SKILL_ID, previewMode: true });
+  assert.equal(management.selected[0].id, profilePreview.id, "intentional template management preview stays isolated");
+  console.log("B66_CGI_ACTUAL_RENDER_AUTHORITY=PASS");
+}
+
 async function verify() {
+  verifyLiveRenderAuthority();
   assert.equal(Browser.isCgiSkill(Browser.CGI_SKILL_ID), true);
   assert.equal(Browser.isCgiSkill("b66skill_" + "a".repeat(32)), false);
   assert.equal(Browser.CGI_BASE_SHA256.length, 64);
@@ -47,6 +101,18 @@ async function verify() {
     template: { ...oldScreen.template, approved: false } },
     Browser.CGI_SKILL_ID, base.template.fingerprint).layoutVariant, "",
     "unapproved profile must never enter certified mode");
+  // Regression: a prior generic template is a *different fingerprint*.
+  // CGI preview must select the approved assigned source profile, not this
+  // unrelated template; the owner fingerprint gate remains fail-closed.
+  const genericSelected = { id:"generic", approved:true, fingerprint:"generic-other" };
+  // The opt-in must not magically validate a mismatched generic profile.
+  assert.equal(Browser.certifiedPreviewModel({ ...oldScreen, template:genericSelected },
+    Browser.CGI_SKILL_ID, base.template.fingerprint).layoutVariant, "");
+  const appSource = fs.readFileSync(require("node:path").join(__dirname, "..", "app.js"), "utf8");
+  assert.ok(appSource.includes("const authority = ownerCgi ? cgiProfile : (previewProfile || renderTemplateAuthority());"),
+    "CGI must bypass unrelated previously selected generic authority");
+  assert.ok(appSource.includes("cgiProfile.fingerprint"),
+    "certified preview must retain owner-assigned fingerprint gate");
   const ops = Browser.project(base, approvedScreen);
   assert.ok(ops.length >= 14 && ops.length <= 40);
   const get = (key) => ops.find((op) => op.key === key);
