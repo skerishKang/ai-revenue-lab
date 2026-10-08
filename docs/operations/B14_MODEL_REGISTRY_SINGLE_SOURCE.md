@@ -44,3 +44,13 @@ B14 고정 auto 및 구버전 제품 HOLD는 사용자 지정 모델이 아닙�
 - B62 source authority verifies nine registered model IDs and five completely unregistered Owner-deleted IDs; no public/free/auto route is authorized for B66.
 - B62 retry-budget fixture copies the schema of a surviving Agnes model in an isolated child with mocked provider dispatch and test-only key; the max_retries=0 execution guard still ensures exactly one provider attempt.
 - Verification: focused B62 21 passed, local B14 full 995 passed, desktop Alpha browser 28 passed, mobile Alpha browser 6 passed. Exact-head Linux CI and independent approval remain mandatory prior to Ready/merge.
+
+## 2026-10-09 Owner-authorized Step 5 registration — stacked, NOT merged
+
+- New exact B14 model ID: kilo/stepfun/step-5-preview-free, proxying Kilo Gateway model stepfun/step-5-preview-free.
+- Stacked source PR adds one to the previous nine, making ten source-registered models and seven provider entries; this section supersedes earlier 9/6 snapshots **only after both PR #3819 and its Step 5 child PR are reviewed/merged**.
+- The Kilo source is explicitly keyless on the verified free anonymous gateway. No credentials have been added; no paid or fallback path is enabled. Unit prices and future anonymous availability are NOT guaranteed.
+- Step 5 appears first in the manual evaluation picker but is not an Auto router primary or a Plus/Pro/Max assignment. All five previous Owner-deleted model IDs remain absent.
+- The platform adapter now forbids bypassing the exact registered Kilo model/upstream tuple, and tests the Kilo free HTTP 429 contract as one failed attempt, not as a silent retry.
+- Actual quote-implementation trial evidence: [ten-case test report](../experiments/STEPFUN_STEP5_B14_QUOTE_10CASE_2026-10-09.md). Ten real requests were rejected with KiloFreeRateLimited; no quality grade, PDF fidelity result, or customer readiness can be inferred.
+- Production, direct model availability and B66 customer route remain separately gated. The unmerged Step 5 priority documentation is tracked by PR #3830.

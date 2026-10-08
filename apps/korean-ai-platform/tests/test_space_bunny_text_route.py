@@ -107,7 +107,7 @@ def test_space_bunny_absent_from_auto_chain_and_fallback() -> None:
 def test_platform_adapter_has_no_space_bunny_auth_special_case() -> None:
     import inspect
     assert "KILO_SPACE_BUNNY" not in inspect.getsource(plat._request_headers)
-    assert ps.get_platform_provider("kilo") is None
+    assert get_catalog_by_id("kilo/stepfun/step-5-preview-free") is not None
     assert get_catalog_by_id(KILO_SPACE_BUNNY_MODEL_ID) is None
 
 def test_owner_removed_all_remaining_kilo_free_routes() -> None:
@@ -115,7 +115,7 @@ def test_owner_removed_all_remaining_kilo_free_routes() -> None:
     for mid in (KILO_NEMOTRON_MODEL_ID,KILO_LAGUNA_MODEL_ID,
                 KILO_HY3_MODEL_ID,KILO_MINIMAX_M3_MODEL_ID):
         assert get_catalog_by_id(mid) is None
-    assert ps.get_platform_provider("kilo") is None
+    assert get_catalog_by_id("kilo/stepfun/step-5-preview-free") is not None
 
 def test_business_66_browser_sources_carry_no_model_or_provider_identity() -> None:
     sources = _browser_sources()

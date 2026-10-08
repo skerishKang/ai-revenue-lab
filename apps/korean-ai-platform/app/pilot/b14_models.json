@@ -55,9 +55,35 @@
       "credential_source": "platform_secret",
       "credential_binding_name": "PADIEM_SENSENOVA_API_KEY",
       "enabled": true
+    },
+    "kilo": {
+      "base_origin": "https://api.kilo.ai/api/gateway",
+      "allowed_hosts": [
+        "api.kilo.ai"
+      ],
+      "credential_source": "none",
+      "credential_binding_name": "",
+      "enabled": true
     }
   },
   "models": [
+    {
+      "id": "kilo/stepfun/step-5-preview-free",
+      "provider_id": "kilo",
+      "upstream_model": "stepfun/step-5-preview-free",
+      "display_name": "StepFun: Step 5 Preview Free (Kilo Gateway)",
+      "provider_name": "Kilo Gateway / StepFun",
+      "capabilities": [
+        "chat",
+        "coding"
+      ],
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "Kilo Code free discovery and Kilo Gateway no-key HTTP 200 live probe 2026-10-09; prices and limits unverified",
+      "source_checked_at": "2026-10-09",
+      "enabled": true
+    },
     {
       "id": "agnes-ai/agnes-3.0-flash",
       "provider_id": "agnes-ai",

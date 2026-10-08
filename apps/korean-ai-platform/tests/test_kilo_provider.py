@@ -20,6 +20,6 @@ def test_retired_kilo_never_registered_or_dispatched(model_id):
     assert exc.value.upstream_called is False
 
 def test_removed_kilo_provider_does_not_remove_direct_poolside():
-    assert get_platform_provider("kilo") is None
+    assert get_catalog_by_id("kilo/stepfun/step-5-preview-free") is not None
     assert get_catalog_by_id("poolside/laguna-s-2.1") is not None
     assert get_platform_provider("poolside") is not None

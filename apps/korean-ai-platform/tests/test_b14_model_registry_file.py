@@ -21,14 +21,15 @@ def _invalid(tmp_path, mutate):
     with pytest.raises(ModelRegistryError):
         read_registry(path)
 
-def test_nine_models_delete_five():
+def test_ten_models_delete_five_and_include_owner_selected_step5():
     reg=read_registry()
     ids={m["id"] for m in reg["models"]}
-    assert len(ids)==9
+    assert len(ids)==10
     assert installed_model_ids()==frozenset(ids)==frozenset(CATALOG_BY_ID)
     assert ids.isdisjoint(RETIRED)
     assert not any(get_catalog_by_id(mid) for mid in RETIRED)
     assert "poolside/laguna-s-2.1" in ids
+    assert "kilo/stepfun/step-5-preview-free" in ids
 
 def test_b14_get_models_matches_json_exact():
     reg=read_registry()
@@ -55,8 +56,8 @@ def test_only_json_providers_are_registered():
         "from app.pilot.platform_secrets import list_platform_providers;"
         "ids={p.provider_id for p in list_platform_providers()};"
         "assert ids==set(read_registry()['providers']);"
-        "assert ids.isdisjoint({'kilo','b-ai','infron','experiential'});"
-        "assert len(CATALOG_BY_ID)==9"
+        "assert ids.isdisjoint({'b-ai','infron','experiential'});"
+        "assert len(CATALOG_BY_ID)==10"
     )
     result=subprocess.run([sys.executable,"-c",child],capture_output=True,text=True,check=False)
     assert result.returncode == 0, result.stderr
@@ -88,7 +89,7 @@ def test_model_add_delete_group_change_is_json_only(tmp_path):
     parsed["models"].pop()
     parsed["groups"]["plus"].clear()
     path.write_text(json.dumps(parsed),encoding="utf-8")
-    assert len(read_registry(path)["models"])==9
+    assert len(read_registry(path)["models"])==10
 
 @pytest.mark.parametrize("module,fn", [
  ("poolside_provider","register_poolside_provider"),
@@ -126,3 +127,38 @@ def test_workspace_manual_selector_uses_json_registered_models():
     for retired in RETIRED:
         assert 'value="'+retired+'"' not in html
     assert html.count('data-provider=') >= len(models)
+
+def test_step5_is_an_explicit_keyless_kilo_route_only():
+    from app.pilot.platform_secrets import CredentialSource, get_platform_provider
+    reg=read_registry()
+    model=next(x for x in reg["models"] if x["id"]=="kilo/stepfun/step-5-preview-free")
+    assert model["upstream_model"]=="stepfun/step-5-preview-free"
+    assert model["capabilities"]==["chat","coding"]
+    assert "free" not in model["capabilities"]  # no unapproved Auto/free-first promotion
+    spec=get_platform_provider("kilo")
+    assert spec is not None and spec.credential_source==CredentialSource.NONE
+    assert spec.base_origin=="https://api.kilo.ai/api/gateway"
+    assert spec.allowed_hosts==("api.kilo.ai",)
+    assert reg["groups"]=={"plus":[],"pro":[],"max":[]}
+    for old in RETIRED:
+        assert old not in CATALOG_BY_ID
+
+@pytest.mark.asyncio
+async def test_new_kilo_route_cannot_dispatch_a_different_upstream(monkeypatch):
+    import httpx
+    from app.pilot.errors import PilotNotConfigured
+    from app.pilot.platform import call_platform_chat_completions
+    monkeypatch.setenv("B14_PROVIDER_MODE","live")
+    calls=[]
+    def forbidden(req):
+        calls.append(req)
+        raise AssertionError("unregistered Kilo path must not send HTTP")
+    with pytest.raises(PilotNotConfigured):
+        await call_platform_chat_completions(
+            model_id="kilo/stepfun/step-5-preview-free",
+            upstream_model="stepfun/unapproved-model",
+            provider="Kilo Gateway",
+            platform_provider_id="kilo",
+            messages=[{"role":"user","content":"test"}],
+            transport=httpx.MockTransport(forbidden))
+    assert calls == []

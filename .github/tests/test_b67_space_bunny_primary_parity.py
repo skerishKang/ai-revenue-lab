@@ -58,8 +58,9 @@ def test_kilo_catalog_fully_retires_space_bunny_to_historical_metadata() -> None
     assert "KILO_FREE_ROUTES: tuple[_KiloFreeRoute, ...] = ()" in kilo_text
     data=json.loads(B14_JSON.read_text(encoding="utf-8"))
     ids={m["id"] for m in data["models"]}
-    assert len(ids)==9
-    assert "kilo" not in data["providers"]
+    assert len(ids)==10
+    assert "kilo" in data["providers"]
+    assert "kilo/stepfun/step-5-preview-free" in ids
     assert ids.isdisjoint({
         "kilo/stealth-space-bunny-alpha",
         "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
