@@ -18,7 +18,9 @@ import { randomUUID } from 'node:crypto';
 import { BrowserWindow } from 'electron';
 
 import { BROWSER_OPEN_MAX_REDIRECTS } from './browser-open-contracts.js';
+import { isNavigationPermitted, isPermittedPublicUrl } from './public-url-policy.js';
 import type { BrowserOpenViewPort, BrowserOpenViewSession } from './browser-open-host.js';
+import type { TrustedControlView } from './browser-action-trusted-main.js';
 
 export const BROWSER_OPEN_VIEW_KIND = 'desktop-trusted-main-ephemeral-view';
 
@@ -28,25 +30,52 @@ function ephemeralPartitionName(): string {
   return `browser-open-${randomUUID()}`;
 }
 
-export function createElectronBrowserOpenViewPort(): BrowserOpenViewPort {
+export function createElectronBrowserOpenViewOwner(): {
+  readonly port: BrowserOpenViewPort;
+  readonly findActiveControlView: (hostLeaseRef: string) => TrustedControlView | null;
+} {
   // Lease-scoped registry. `close(hostLeaseRef)` is how the host destroys a view
   // whose `open` never resolved, so teardown does not depend on this binding's
   // lease timer firing.
-  const views = new Map<string, BrowserWindow>();
+  const views = new Map<string, {
+    window: BrowserWindow;
+    expiresAtMs: number;
+    approvedUrl: string;
+    ready: boolean;
+    correlation: { runRef: string; workspaceRef: string; ownerRef: string } | null;
+    expiryTimer: ReturnType<typeof setTimeout> | null;
+  }>();
 
   const destroy = (hostLeaseRef: string): void => {
-    const window = views.get(hostLeaseRef);
-    if (window === undefined) return;
+    const active = views.get(hostLeaseRef);
+    if (active === undefined) return;
     views.delete(hostLeaseRef);
-    if (!window.isDestroyed()) window.destroy();
+    if (active.expiryTimer !== null) clearTimeout(active.expiryTimer);
+    if (!active.window.isDestroyed()) active.window.destroy();
   };
 
-  return {
+  const findActiveControlView = (hostLeaseRef: string): TrustedControlView | null => {
+    const active = views.get(hostLeaseRef);
+    if (!active || !active.ready || !active.correlation ||
+        Date.now() >= active.expiresAtMs ||
+        active.window.isDestroyed() || active.window.webContents.isDestroyed()) return null;
+    // Re-check the CURRENT URL even after the open receipt: same-origin SPA
+    // navigation or a trusted view redirect must not widen the approved URL.
+    const currentUrl = active.window.webContents.getURL();
+    if (!isPermittedPublicUrl(currentUrl) ||
+        !isNavigationPermitted(currentUrl, active.approvedUrl)) return null;
+    return { webContents: active.window.webContents, ...active.correlation };
+  };
+
+  const port: BrowserOpenViewPort = {
     configured: true,
     async close(hostLeaseRef: string): Promise<void> {
       destroy(hostLeaseRef);
     },
     async open(input): Promise<BrowserOpenViewSession> {
+      // The hostLeaseRef is one-shot. Reusing a live key must never replace a
+      // view whose timer and close callback own the previous lease.
+      if (views.has(input.hostLeaseRef)) throw new Error('duplicate canonical browser open view ref');
       const window = new BrowserWindow({
         width: 1024,
         height: 720,
@@ -97,7 +126,17 @@ export function createElectronBrowserOpenViewPort(): BrowserOpenViewPort {
         loadFailed = true;
       });
 
-      views.set(input.hostLeaseRef, window);
+      // No control access until canonical redemption, public URL policy,
+      // completed navigation and the trusted open correlations all succeed.
+      const active = {
+        window, expiresAtMs, approvedUrl: input.approvedUrl, ready: false,
+        correlation: input.controlCorrelation ?? null,
+        expiryTimer: null as ReturnType<typeof setTimeout> | null,
+      };
+      views.set(input.hostLeaseRef, active);
+      window.on('closed', () => {
+        if (views.get(input.hostLeaseRef)?.window === window) destroy(input.hostLeaseRef);
+      });
 
       const close = async (): Promise<void> => {
         destroy(input.hostLeaseRef);
@@ -107,17 +146,21 @@ export function createElectronBrowserOpenViewPort(): BrowserOpenViewPort {
         destroy(input.hostLeaseRef);
       }, Math.max(0, expiresAtMs - Date.now()));
       if (typeof expiryTimer.unref === 'function') expiryTimer.unref();
+      active.expiryTimer = expiryTimer;
 
       try {
         await window.loadURL(input.approvedUrl);
       } catch {
         loadFailed = !navigationBlocked;
-      } finally {
-        clearTimeout(expiryTimer);
       }
+      // Do not clear the lease timer on success: the view must be destroyed
+      // at grant expiry, including after a trusted control handoff.
 
       const currentUrl = window.isDestroyed() ? '' : window.webContents.getURL();
       const finalUrl = navigationBlocked || loadFailed || currentUrl === '' ? null : currentUrl;
+      active.ready = finalUrl !== null && !window.isDestroyed() &&
+        Date.now() < expiresAtMs && isPermittedPublicUrl(finalUrl) &&
+        isNavigationPermitted(finalUrl, input.approvedUrl);
 
       return {
         navigationBlocked,
@@ -131,6 +174,12 @@ export function createElectronBrowserOpenViewPort(): BrowserOpenViewPort {
       };
     },
   };
+  return Object.freeze({ port, findActiveControlView });
+}
+
+/** Legacy open-only factory: callers receive no trusted control-view lookup. */
+export function createElectronBrowserOpenViewPort(): BrowserOpenViewPort {
+  return createElectronBrowserOpenViewOwner().port;
 }
 
 /**
