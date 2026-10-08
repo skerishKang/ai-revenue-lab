@@ -673,9 +673,9 @@
               <button id="removeAttachment" class="attachment-remove" type="button" data-locale-aria-label="attachment-remove" aria-label="첨부 파일 제거">×</button>
             </div>
           </div>
-          <label for="clawModelIdInput" class="claw-model-choice">실행 모델 ID (B14 등록 모델)
-            <input id="clawModelIdInput" type="text" maxlength="128" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="예: agnes-ai/agnes-3.0-flash" aria-describedby="clawModelChoiceHint" />
-            <small id="clawModelChoiceHint">Claw Plus 전용 · 매 실행마다 하나만 선택 · 자동 fallback 없음</small>
+          <label for="clawModelIdInput" class="claw-model-choice"><span data-locale-key="claw-model-choice-label">실행 모델 ID (B14 등록 모델)</span>
+            <input id="clawModelIdInput" type="text" maxlength="128" autocomplete="off" autocapitalize="off" spellcheck="false" data-locale-placeholder="claw-model-choice-placeholder" placeholder="예: agnes-ai/agnes-3.0-flash" aria-describedby="clawModelChoiceHint" />
+            <small id="clawModelChoiceHint" data-locale-key="claw-model-choice-hint">Claw Plus 전용 · 실행마다 하나만 선택 · 자동 fallback 없음</small>
           </label>
           <label for="messageInput" class="sr-only" data-locale-key="message-input-label">메시지 입력</label>
           <textarea id="messageInput" rows="1" data-locale-placeholder="input" placeholder="무엇이든 물어보세요" autocomplete="off" maxlength="8000"></textarea>

@@ -1312,7 +1312,7 @@
       if (clawGeneralRequest && attachments) {
         // #3554: text-only P01 model choice must never be sent to a
         // standalone direct-B14 completed-request path.
-        throw new Error("Claw 모델 선택에서는 현재 텍스트 요청만 지원합니다.");
+        throw new Error(uiT("claw-model-text-only-error"));
       }
       if (attachments) payload.attachments = attachments;
       if (contextSnapshot.conversationId) payload.conversation_id = contextSnapshot.conversationId;
@@ -1378,7 +1378,8 @@
     // generic Claw submit cannot silently fall back to /api/chat/stream.
     const clawGeneralRequest = clawGeneralRequestActive();
     contextSnapshot.selectedModelId =
-      clawGeneralRequest && clawModelIdInput ? clawModelIdInput.value.trim() : "";
+      clawGeneralRequest && typeof clawModelIdInput !== "undefined" && clawModelIdInput
+        ? clawModelIdInput.value.trim() : "";
     showConversation();
     addUserMessage(prompt, attachmentSnapshot);
     input.value = "";
