@@ -88,6 +88,44 @@ function fakeRecognizer() {
   };
 }
 
+function deferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((res, rej) => { resolve = res; reject = rej; });
+  return { promise, resolve, reject };
+}
+
+/* A fake bundle whose live.connect() stays pending, so a session can arrive after the
+   caller has already cancelled — the case that must leak nothing. */
+function pendingSdk() {
+  const calls = { clients: [], connects: [], sent: [], sessions: [] };
+  const pending = deferred();
+  class GoogleGenAI {
+    constructor(options) {
+      calls.clients.push(options);
+      this.live = {
+        connect: async (params) => {
+          calls.connects.push(params);
+          const session = {
+            closed: 0,
+            sendRealtimeInput: (input) => { calls.sent.push(input); },
+            close: () => { session.closed += 1; }
+          };
+          calls.sessions.push(session);
+          calls.params = params;
+          return pending.promise;
+        }
+      };
+    }
+  }
+  return {
+    calls,
+    module: { GoogleGenAI },
+    settle() { return pending.resolve(calls.sessions[calls.sessions.length - 1]); },
+    fail(error) { return pending.reject(error); }
+  };
+}
+
 function fakeTimers() {
   const due = [];
   return {
@@ -104,6 +142,71 @@ async function tick() {
 
 async function main() {
   const Stt = loadStt();
+
+  /* --- CENTRAL 1A: a cancellation is never answered by switching engines -- */
+  {
+    const machine = Stt.createTranscriptMachine({});
+    let fallbackUses = 0;
+    const notices = [];
+    const errors = [];
+    const chain = Stt.createFallbackChainTransport({
+      machine,
+      onNotice: (notice) => notices.push(notice.code),
+      primaryFactory: () => ({
+        connect() {
+          const error = new Error("cancelled");
+          error.code = "voice_connect_cancelled";
+          return Promise.reject(error);
+        },
+        sendAudio: () => ({ sent: false }),
+        close() {}
+      }),
+      fallbackFactory: () => {
+        fallbackUses += 1;
+        return {
+          connect: () => Promise.resolve({ connected: true }),
+          sendAudio: () => ({ sent: false }),
+          close() {}
+        };
+      }
+    });
+    await assert.rejects(
+      chain.connect({ onError: (e) => errors.push(e.code), onTurnEnd: () => {}, onReconnected: () => {} }),
+      (error) => error.code === "voice_connect_cancelled"
+    );
+    assert.equal(fallbackUses, 0, "a cancelled handshake does not buy a browser engine");
+    assert.deepEqual(notices, [], "and nothing is announced as a downgrade");
+    assert.deepEqual(errors, [],
+      "a rejected connect is reported once, through the rejection, not also as a callback");
+  }
+
+  {
+    const machine = Stt.createTranscriptMachine({});
+    let fallbackUses = 0;
+    const notices = [];
+    const chain = Stt.createFallbackChainTransport({
+      machine,
+      onNotice: (notice) => notices.push(notice.code),
+      primaryFactory: () => ({
+        connect(handlers) { chain.handlers = handlers; return Promise.resolve({ connected: true }); },
+        sendAudio: () => ({ sent: true }),
+        close() {}
+      }),
+      fallbackFactory: () => {
+        fallbackUses += 1;
+        return {
+          connect: () => Promise.resolve({ connected: true }),
+          sendAudio: () => ({ sent: false }),
+          close() {}
+        };
+      }
+    });
+    await chain.connect({ onError: () => {}, onTurnEnd: () => {}, onReconnected: () => {} });
+    chain.handlers.onError({ code: "voice_connect_cancelled" });
+    await tick();
+    assert.equal(fallbackUses, 0, "a cancellation reported mid-session also stops there");
+    assert.deepEqual(notices, []);
+  }
 
   /* --- this lane must not hand-assemble the protocol --------------------- *
      These assertions are about OUR source, not about what the service accepts:
@@ -293,6 +396,148 @@ async function main() {
       "a used grant cannot be replayed, so the second connect asks for a new one");
     assert.equal(sdk.calls.clients.length, 2, "each session gets its own client and key");
     assert.equal(sdk.calls.connects.length, 2);
+  }
+
+  /* --- CENTRAL 1A: a cancel during the grant must not reach the SDK ------ */
+  {
+    const gate = deferred();
+    const sdk = fakeSdk();
+    let loaderCalls = 0;
+    const transport = Stt.createSdkLiveTransport({
+      machine: Stt.createTranscriptMachine({}),
+      fetcher: () => gate.promise.then(() => grant()),
+      sdkLoader: () => { loaderCalls += 1; return Promise.resolve(sdk.module); }
+    });
+    const pending = transport.connect({ onTurnEnd: () => {}, onError: () => {} });
+    let settled = "PENDING";
+    pending.then((value) => { settled = { resolved: value }; },
+      (error) => { settled = { code: error.code }; });
+    transport.close();
+    gate.resolve();
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.deepEqual(settled, { code: "voice_connect_cancelled" },
+      "the cancelled attempt reports cancellation, not a session");
+    assert.equal(loaderCalls, 0, "the SDK bundle is not even loaded for a cancelled attempt");
+    assert.equal(sdk.calls.clients.length, 0, "no client constructed");
+    assert.equal(sdk.calls.connects.length, 0, "no Live session opened");
+  }
+
+  /* --- CENTRAL 1A: a session that lands after the cancel is closed ------- */
+  {
+    const sdk = pendingSdk();
+    const transport = Stt.createSdkLiveTransport({
+      machine: Stt.createTranscriptMachine({}),
+      fetcher: () => Promise.resolve(grant()),
+      sdkLoader: () => Promise.resolve(sdk.module)
+    });
+    const pending = transport.connect({ onTurnEnd: () => {}, onError: () => {} });
+    let outcome = "PENDING";
+    pending.then((value) => { outcome = { resolved: value }; },
+      (error) => { outcome = { code: error.code }; });
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(sdk.calls.connects.length, 1, "the Live session request is in flight");
+    transport.close();
+    sdk.settle();
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(sdk.calls.sessions.length, 1, "the late session did arrive");
+    assert.equal(sdk.calls.sessions[0].closed, 1, "and it is closed immediately, never adopted");
+    assert.equal(transport.isLive(), false, "the transport does not consider itself live");
+    assert.deepEqual(outcome, { code: "voice_connect_cancelled" });
+    assert.equal(transport.sendAudio({ data: "AA==" }).sent, false);
+    assert.equal(sdk.calls.sent.length, 0, "nothing was sent into the leaked session");
+  }
+
+  /* --- CENTRAL 1A: a closed session's error must not start browser STT --- */
+  {
+    const machine = Stt.createTranscriptMachine({});
+    const sdk = fakeSdk();
+    let fallbackUses = 0;
+    const notices = [];
+    const transport = Stt.createSdkLiveTransport({
+      machine,
+      fetcher: () => Promise.resolve(grant()),
+      sdkLoader: () => Promise.resolve(sdk.module)
+    });
+    const chain = Stt.createFallbackChainTransport({
+      machine,
+      onNotice: (notice) => notices.push(notice.code),
+      primaryFactory: () => transport,
+      fallbackFactory: (context) => {
+        fallbackUses += 1;
+        return {
+          connect: () => Promise.resolve({ connected: true }),
+          sendAudio: () => ({ sent: false }),
+          close: () => ({ closed: true })
+        };
+      }
+    });
+    await chain.connect({ onTurnEnd: () => {}, onReconnected: () => {}, onError: () => {} });
+    chain.close();
+    sdk.calls.connects[0].callbacks.onerror(new Error("socket closed after cancel"));
+    sdk.calls.connects[0].callbacks.onclose({ reason: "cancelled" });
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(fallbackUses, 0, "a cancelled session does not buy a fallback");
+    assert.deepEqual(notices, [], "and announces nothing");
+  }
+
+  /* --- CENTRAL 1C: stop while getUserMedia is awaited -------------------- */
+  {
+    const gate = deferred();
+    const tracks = [{ stopped: 0, stop() { this.stopped += 1; } }];
+    const stream = { getTracks: () => tracks };
+    const chunks = [];
+    let contextsCreated = 0;
+    const audio = Stt.createPcmSource({
+      mediaStreamFactory: () => gate.promise.then(() => stream),
+      audioContextFactory: () => { contextsCreated += 1; return Promise.resolve({ state: "running", destination: {}, createMediaStreamSource: () => ({ connect() {}, disconnect() {} }), createScriptProcessor: () => ({ onaudioprocess: null, connect() {}, disconnect() {} }), close() {} }); },
+      onChunk: (chunk) => chunks.push(chunk)
+    });
+    const pending = audio.start();
+    let startedResult = "PENDING";
+    pending.then((value) => { startedResult = value; });
+    audio.stop();
+    gate.resolve();
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.deepEqual(startedResult, { started: false, reason: "stopped_before_capture" },
+      "the late getUserMedia does not resurrect capture");
+    assert.equal(tracks[0].stopped, 1, "the late MediaStream is released immediately");
+    assert.equal(contextsCreated, 0, "and no AudioContext is even built for an abandoned start");
+    assert.equal(chunks.length, 0, "no warm-up or frame is emitted");
+    assert.equal(audio.isRunning(), false);
+  }
+
+  /* --- CENTRAL 1C: stop while the AudioContext is awaited ---------------- */
+  {
+    const tracks = [{ stopped: 0, stop() { this.stopped += 1; } }];
+    const stream = { getTracks: () => tracks };
+    const ctxGate = deferred();
+    const chunks = [];
+    const context = {
+      state: "running",
+      closed: 0,
+      createMediaStreamSource: () => ({ connect() {}, disconnect() {} }),
+      createScriptProcessor: () => ({ onaudioprocess: null, connect() {}, disconnect() {} }),
+      close() { this.closed += 1; },
+      destination: {}
+    };
+    const audio = Stt.createPcmSource({
+      mediaStreamFactory: () => Promise.resolve(stream),
+      audioContextFactory: () => ctxGate.promise.then(() => context),
+      onChunk: (chunk) => chunks.push(chunk)
+    });
+    const pending = audio.start();
+    let startedResult = "PENDING";
+    pending.then((value) => { startedResult = value; });
+    await new Promise((resolve) => setImmediate(resolve));
+    audio.stop();
+    ctxGate.resolve();
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.deepEqual(startedResult, { started: false, reason: "stopped_before_capture" },
+      "a context that arrives after stop is not adopted");
+    assert.equal(tracks[0].stopped, 1, "the microphone acquired earlier is released");
+    assert.equal(context.closed, 1, "and the late context is closed");
+    assert.equal(chunks.length, 0, "no frame is emitted");
+    assert.equal(audio.isRunning(), false);
   }
 
   /* --- an empty turn is reported, never committed ------------------------ */

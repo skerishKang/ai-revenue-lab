@@ -141,16 +141,46 @@
       startedUtterances += 1;
     }
 
-    /* The handshake is awaited, so "not live yet" does not mean "idle": without this pair
-       of guards a second press opened a second session, and a stop issued during the
-       handshake was undone when the late connect resolved. `attempt` is the authority —
-       anything started before a stop, a new attempt, or a failure is inert. */
+    /* The handshake is awaited, so "not live yet" does not mean "idle": without these
+       guards a second press opened a second session, a stop issued during the handshake
+       was undone when the late connect resolved, and a retired attempt could tear down the
+       resources a newer attempt owns. `attempt` is the ownership token: a task may only
+       change shared state while it still holds it, and it may never touch capture or
+       sessions after it loses it — the transport and the PCM source release their own late
+       arrivals for exactly that reason. */
     let connecting = false;
+    let connectingAttempt = 0;
     let attempt = 0;
+    /* Why each retired attempt stopped, so a late result reports the truth to its own
+       caller instead of the reason that happened to be written last. */
+    const voids = [];
+
+    function voidAttempt(reason) {
+      voids.push({ id: attempt, reason: String(reason) });
+      if (voids.length > 16) voids.shift();
+      attempt += 1;
+      connecting = false;
+      connectingAttempt = 0;
+    }
+
+    function voidReasonFor(mine) {
+      for (let index = voids.length - 1; index >= 0; index -= 1) {
+        if (voids[index].id === mine) return voids[index].reason;
+      }
+      return "stopped_while_connecting";
+    }
 
     function releaseCapture() {
       if (audio && typeof audio.stop === "function") audio.stop();
       if (transport && typeof transport.close === "function") transport.close();
+    }
+
+    /* A retired attempt gives up its flags and nothing else. */
+    function retire(mine) {
+      if (connectingAttempt === mine) {
+        connecting = false;
+        connectingAttempt = 0;
+      }
     }
 
     async function start() {
@@ -159,52 +189,51 @@
       if (!transport || !audio) throw new Error("voice_transport_unavailable");
       const mine = ++attempt;
       connecting = true;
+      connectingAttempt = mine;
       setState(STATE.TRANSCRIBING);
+      const stillMine = () => attempt === mine;
       try {
         await transport.connect({
           onTurnEnd: () => {
-            if (mine !== attempt) return;
+            if (!stillMine()) return;
             if (state === STATE.B66_PROCESSING) return;
             setState(STATE.WAITING_NEXT_TURN);
             beginTurn();
           },
           onReconnected: () => {
-            if (mine === attempt && live) beginTurn();
+            if (stillMine() && live) beginTurn();
           },
           onError: (error) => {
-            /* A frame from an abandoned attempt must not announce a failure the user
-               already resolved by pressing stop. */
-            if (mine !== attempt) return;
+            /* An error from an abandoned attempt must not announce a failure the user has
+               already resolved by pressing stop or starting again. */
+            if (!stillMine()) return;
             fail(error);
           }
         });
-        if (mine !== attempt) {
-          /* stop() (or a newer attempt) already ran, and this session only finished
-             opening now: close it instead of resuming, and stay in the state the user
-             left it in. */
-          releaseCapture();
-          connecting = false;
-          return { started: false, reason: "stopped_while_connecting" };
+        if (!stillMine()) {
+          retire(mine);
+          return { started: false, reason: voidReasonFor(mine) };
         }
         await audio.start();
-        if (mine !== attempt) {
-          releaseCapture();
-          connecting = false;
-          return { started: false, reason: "stopped_while_connecting" };
+        if (!stillMine()) {
+          /* The PCM source releases a stream or context that lands after its own epoch was
+             retired, so this branch must not stop or close anything: capture here belongs
+             to a newer attempt. */
+          retire(mine);
+          return { started: false, reason: voidReasonFor(mine) };
         }
         live = true;
         connecting = false;
+        connectingAttempt = 0;
         beginTurn();
         setState(STATE.LISTENING);
         return { started: true, utterance: startedUtterances };
       } catch (error) {
-        const stopped = mine !== attempt;
+        const mineStill = stillMine();
+        const reason = voidReasonFor(mine);
         live = false;
-        connecting = false;
-        if (stopped) {
-          releaseCapture();
-          return { started: false, reason: "stopped_while_connecting" };
-        }
+        retire(mine);
+        if (!mineStill) return { started: false, reason };
         return fail(error);
       }
     }
@@ -212,9 +241,12 @@
     function fail(error) {
       live = false;
       const code = (error && (error.code || error.reason)) || "voice_unavailable";
-      /* A failure mid-session must not leave the microphone hot or the session half
-         open. Teardown is unconditional here, and any staged text stays exactly as
-         editable text so the user can still send or discard it by hand. */
+      /* A fatal error voids the attempt, so a handshake that has not landed yet cannot
+         quietly bring the microphone up afterwards. */
+      voidAttempt(String(code));
+      /* Teardown is unconditional here: no microphone may stay hot and no session half
+         open. Staged text stays exactly as editable text so the user can still send or
+         discard it by hand. */
       releaseCapture();
       if (machine && typeof machine.reset === "function") machine.reset();
       setState(STATE.ERROR);
@@ -226,8 +258,7 @@
       const opts2 = options || {};
       /* Invalidating the attempt first is what makes a connect that has not landed yet
          arrive inert rather than resurrecting LISTENING. */
-      attempt += 1;
-      connecting = false;
+      voidAttempt("stopped_while_connecting");
       live = false;
       releaseCapture();
       if (machine && typeof machine.reset === "function") machine.reset();
@@ -361,19 +392,27 @@
       return { shown: true };
     }
 
+    /* The newest click owns the icon. An attempt that was superseded or cancelled while its
+       handshake was open must not write a stale state over the current one. */
+    let clickSeq = 0;
+
     if (mic) {
       mic.addEventListener("click", async () => {
         /* Connecting counts as running for the button: a press during the handshake is a
            cancel, not a second attempt, so the icon cannot show a live mic with two
            sessions behind it. */
         if (busy() || controller.isLive() || controller.isConnecting()) {
+          clickSeq += 1;
           const stopped = controller.stop({ discard: false });
           if (mic) mic.setAttribute("aria-pressed", "false");
           return stopped;
         }
+        const mine = ++clickSeq;
         if (mic) mic.setAttribute("aria-pressed", "true");
         const started = await controller.start();
-        if (!started.started && mic) mic.setAttribute("aria-pressed", "false");
+        if (!started.started && mic && clickSeq === mine) {
+          mic.setAttribute("aria-pressed", "false");
+        }
         return started;
       });
     }

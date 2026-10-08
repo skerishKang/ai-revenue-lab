@@ -289,6 +289,10 @@
     let processor = null;
     let sourceNode = null;
     let running = false;
+    /* Acquisition is awaited, so a stop can land between "asked for the microphone" and
+       "got the microphone". Every start owns a generation; a resource that arrives under a
+       retired generation is released instead of adopted. */
+    let epoch = 0;
 
     function chunkOf(samples) {
       return {
@@ -297,23 +301,66 @@
       };
     }
 
+    function releaseTracks(acquired) {
+      if (acquired && typeof acquired.getTracks === "function") {
+        acquired.getTracks().forEach((track) => {
+          if (track && typeof track.stop === "function") {
+            try { track.stop(); } catch (_) { /* already stopped */ }
+          }
+        });
+      }
+    }
+
+    function releaseContext(context) {
+      if (context && typeof context.close === "function") {
+        try { context.close(); } catch (_) { /* already closed */ }
+      }
+    }
+
     async function start() {
       if (running) return { started: false, reason: "already_running" };
       if (typeof mediaStreamFactory !== "function" || typeof audioContextFactory !== "function") {
         throw new Error("audio_capture_unavailable");
       }
+      const mine = ++epoch;
       /* useInterviewLive.ts:567-584 */
-      stream = await mediaStreamFactory({
-        audio: {
-          channelCount: 1,
-          sampleRate: sampleRate,
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
-        },
-        video: false
-      });
-      audioContext = await audioContextFactory({ sampleRate });
+      let acquired = null;
+      try {
+        acquired = await mediaStreamFactory({
+          audio: {
+            channelCount: 1,
+            sampleRate: sampleRate,
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          },
+          video: false
+        });
+      } catch (error) {
+        if (mine !== epoch) return { started: false, reason: "stopped_before_capture" };
+        throw error;
+      }
+      if (mine !== epoch) {
+        releaseTracks(acquired);
+        return { started: false, reason: "stopped_before_capture" };
+      }
+      let context = null;
+      try {
+        context = await audioContextFactory({ sampleRate });
+      } catch (error) {
+        if (mine !== epoch) {
+          releaseTracks(acquired);
+          return { started: false, reason: "stopped_before_capture" };
+        }
+        throw error;
+      }
+      if (mine !== epoch) {
+        releaseTracks(acquired);
+        releaseContext(context);
+        return { started: false, reason: "stopped_before_capture" };
+      }
+      stream = acquired;
+      audioContext = context;
       if (audioContext.state === "suspended" && typeof audioContext.resume === "function") {
         await audioContext.resume();
       }
@@ -340,6 +387,7 @@
     /* Teardown is best-effort per resource and never aborts halfway: a mic left hot after a
        failure is worse than a redundant disconnect call. */
     function stop() {
+      epoch += 1;
       running = false;
       const report = { tracksStopped: 0, processorClosed: false, contextClosed: false };
       if (processor) {
@@ -438,9 +486,19 @@
       live.handlers = handlers;
       live.closed = false;
       live.connects += 1;
+      /* Each connect owns its own sequence. A newer connect supersedes an older one, so a
+         handshake that lands late can neither adopt nor tear down the session that now
+         belongs to the newer attempt. */
+      const mySeq = live.connects;
+      const abandoned = () => live.closed || live.connects !== mySeq;
 
       const granted = await fetchGrant();
+      /* The caller may have cancelled while the grant was in flight. Nothing upstream
+         is paid for or opened past this point in that case: no bundle load, no client,
+         no session. */
+      if (abandoned()) throw coded("voice_connect_cancelled", "connect cancelled");
       const sdk = await sdkLoader();
+      if (abandoned()) throw coded("voice_connect_cancelled", "connect cancelled");
       if (!sdk || typeof sdk.GoogleGenAI !== "function") {
         throw coded("sdk_unavailable", "gemini live sdk bundle unavailable");
       }
@@ -464,7 +522,7 @@
         callbacks: {
           onopen: () => {},
           onmessage: (message) => {
-            if (live.closed) return;
+            if (abandoned()) return;
             const outcome = machine.handleServerContent(message);
             if (outcome.turnEnded && live.handlers && live.handlers.onTurnEnd) {
               /* The session stays open: one grant authorizes one Live session and a session
@@ -474,14 +532,17 @@
             }
           },
           onerror: (error) => {
+            /* A socket that reports after the caller cancelled, or after a newer attempt
+               took over, must not buy a fallback or alarm the new session's owner. */
+            if (abandoned()) return;
             if (live.handlers && live.handlers.onError) {
               live.handlers.onError(coded("voice_connection_failed",
                 (error && error.message) || String(error)));
             }
           },
           onclose: (reason) => {
+            if (abandoned()) return;
             live.session = null;
-            if (live.closed) return;
             if (live.handlers && live.handlers.onError) {
               live.handlers.onError(coded("voice_connection_closed",
                 (reason && reason.reason) || "connection closed"));
@@ -489,6 +550,14 @@
           }
         }
       });
+
+      if (abandoned()) {
+        /* The caller gave up, or a newer attempt is in flight, while this handshake was
+           open: the session that just landed is closed here rather than adopted, so no
+           microphone is ever attached to it and the newer session is left alone. */
+        try { session.close(); } catch (_) { /* already closed */ }
+        throw coded("voice_connect_cancelled", "connect cancelled");
+      }
 
       live.session = session;
       return {
@@ -520,7 +589,14 @@
       return { closed: true };
     }
 
-    return { connect, sendAudio, close, connects: () => live.connects, model: () => live.model };
+    return {
+      connect,
+      sendAudio,
+      close,
+      isLive: () => Boolean(live.session),
+      connects: () => live.connects,
+      model: () => live.model
+    };
   }
 
   /* SpeechRecognition error codes are hyphenated ("not-allowed"); the announcement table
@@ -651,6 +727,14 @@
     return { connect, sendAudio: () => ({ sent: false }), close, restarts: () => live.restarts };
   }
 
+  /* A cancellation is the user's decision, not an engine failure: it must never be
+     answered by quietly switching engines. */
+  const CANCELLATION_CODES = ["voice_connect_cancelled", "browser_stt_cancelled"];
+
+  function isCancellation(code) {
+    return CANCELLATION_CODES.indexOf(String(code)) !== -1;
+  }
+
   /* Downgrade exactly once, and say so: a different recognition engine producing the
      transcript is a visible change, never a silent one. The turn in progress is discarded on
      the way over, so audio captured before the failure cannot be replayed into the next
@@ -669,7 +753,7 @@
         onNotice: handlers.onNotice,
         onError: (error) => {
           const code = (error && error.code) || "voice_connection_closed";
-          if (isFallback || usedFallback) {
+          if (isFallback || usedFallback || isCancellation(code)) {
             if (handlers.onError) handlers.onError(error);
             return;
           }
@@ -712,9 +796,12 @@
           const result = await primary.connect(wrap(handlers, false));
           return Object.assign({ via: "live" }, result);
         } catch (error) {
+          const code = (error && error.code) || "voice_connection_failed";
+          /* A cancelled handshake is not an engine failure: no fallback, no notice. */
+          if (isCancellation(code)) throw error;
           let recovered = null;
           try {
-            recovered = await downgrade(handlers, (error && error.code) || "voice_connection_failed");
+            recovered = await downgrade(handlers, code);
           } catch (_) {
             recovered = null;
           }

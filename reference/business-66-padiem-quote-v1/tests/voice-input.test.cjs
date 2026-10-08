@@ -157,6 +157,44 @@ function setupSlow(mode) {
   return { Stt, Voice, host, machine, transport, audio, controller, notices };
 }
 
+/* Each connect() call gets its own gate, so a test can land attempt 1 after attempt 2 has
+   already started — the ordering CENTRAL asked to be proven safe. */
+function steppableTransport() {
+  const gates = [];
+  const handlers = [];
+  const transport = {
+    connects: 0,
+    closes: 0,
+    handlers,
+    connect(handlers2) {
+      const gate = { resolve: null };
+      const promise = new Promise((resolve) => { gate.resolve = resolve; });
+      gates.push(gate);
+      handlers.push(handlers2);
+      transport.connects += 1;
+      return promise.then(() => ({ connected: true }));
+    },
+    sendAudio() {},
+    close() { transport.closes += 1; },
+    settle(index) { gates[index].resolve(); }
+  };
+  return transport;
+}
+
+function setupSteps(mode) {
+  const { Stt, Voice } = loadVoiceModules();
+  const host = createHost();
+  const machine = Stt.createTranscriptMachine({ nextId: Stt.createIdSource(null) });
+  const transport = steppableTransport();
+  const audio = countingAudio();
+  const notices = [];
+  const controller = Voice.createVoiceController({
+    host, machine, mode, transport, audio,
+    onNotice: (notice) => notices.push(notice)
+  });
+  return { Stt, Voice, host, machine, transport, audio, controller, notices };
+}
+
 /* The minimum DOM surface createDomBindings needs, so a physical double press is
    tested through the same handler the page uses. */
 function fakeElement() {
@@ -544,8 +582,10 @@ async function main() {
       "the delayed handshake must not resurrect LISTENING");
     assert.equal(t.controller.isLive(), false);
     assert.equal(t.audio.starts, 0, "capture is never opened for an abandoned attempt");
-    assert.ok(t.transport.closes >= 2,
-      "the session that arrived late is closed, not leaked");
+    /* Exactly one close: the user's stop. The session that lands late is closed by the
+       transport that opened it — proven in tests/voice-stt.test.cjs, because after stop the
+       controller no longer owns these resources and must not reach in. */
+    assert.equal(t.transport.closes, 1, "the retired attempt does not close on behalf of others");
     /* and the mic is genuinely usable again afterwards */
     const retry = await t.controller.start();
     assert.equal(retry.started, true, "a later press starts a fresh session");
@@ -565,6 +605,73 @@ async function main() {
     const result = await pending;
     assert.equal(result.started, false, "the abandoned attempt never reports success");
     assert.equal(t.controller.getState(), "STOPPED");
+  }
+
+  /* --- CENTRAL 1B: a superseded attempt may not disturb the newer one ----- */
+  {
+    const t = setupSteps("REVIEW");
+    const first = t.controller.start();
+    t.controller.stop({ discard: false });
+    /* What the user's own stop already did; a retired attempt must add nothing here. */
+    const closesAfterUserStop = t.transport.closes;
+    const stopsAfterUserStop = t.audio.stops;
+    assert.ok(closesAfterUserStop >= 1, "the stop itself closed the transport");
+    const second = t.controller.start();
+    t.transport.settle(0);
+    const firstResult = await first;
+    assert.deepEqual(firstResult, { started: false, reason: "stopped_while_connecting" });
+    assert.equal(t.transport.closes, closesAfterUserStop,
+      "only the user's stop closed a session; the retired attempt did not kill the new one");
+    assert.equal(t.audio.stops, stopsAfterUserStop,
+      "and it did not stop the new attempt's capture either");
+    assert.equal(t.controller.getState(), "TRANSCRIBING",
+      "the newer attempt is still connecting, not cancelled by the older one");
+    assert.equal(t.controller.isConnecting(), true, "and still owns the connecting flag");
+    t.transport.settle(1);
+    const secondResult = await second;
+    assert.equal(secondResult.started, true, "the newer attempt completes normally");
+    assert.equal(t.audio.starts, 1, "capture started exactly once, for the newer attempt");
+    assert.equal(t.controller.getState(), "LISTENING");
+    assert.equal(t.controller.isLive(), true);
+  }
+
+  /* --- CENTRAL 1B: a retired click may not rewrite the microphone icon --- */
+  {
+    const base = setupSteps("REVIEW");
+    const doc = fakeDocument();
+    base.Voice.createDomBindings({
+      document: doc, host: base.host, controller: base.controller
+    });
+    const mic = doc.elements.easyVoiceMic;
+    const click = () => mic.listeners[mic.listeners.length - 1]();
+    const attempt1 = click();
+    base.controller.stop({ discard: false });
+    const attempt3 = click();
+    base.transport.settle(0);
+    await attempt1;
+    assert.equal(mic.attrs["aria-pressed"], "true",
+      "the retired first click did not write a false over the live session's icon");
+    base.transport.settle(1);
+    await attempt3;
+    assert.equal(mic.attrs["aria-pressed"], "true", "and the current session still reads live");
+    assert.equal(base.controller.isLive(), true);
+  }
+
+  /* --- CENTRAL 1C: a fatal error during connect voids that attempt ------- */
+  {
+    const t = setupSteps("REVIEW");
+    const pending = t.controller.start();
+    let outcome = "PENDING";
+    pending.then((value) => { outcome = value; });
+    t.transport.handlers[0].onError({ code: "voice_connection_closed" });
+    assert.equal(t.controller.getState(), "ERROR", "the error is reported immediately");
+    t.transport.settle(0);
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(t.controller.getState(), "ERROR",
+      "and the late handshake completion cannot return to LISTENING");
+    assert.deepEqual(outcome, { started: false, reason: "voice_connection_closed" });
+    assert.equal(t.audio.starts, 0, "capture is never opened after the fatal error");
+    assert.equal(t.controller.isLive(), false);
   }
 
   /* --- the announced notice for each failure family is real text ---------- */
