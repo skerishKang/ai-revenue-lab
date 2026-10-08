@@ -128,7 +128,6 @@ def test_owner_excluded_registered_routes_are_never_auto_eligible(client):
     excluded = {
         "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
         "kilo/poolside-laguna-s-2.1-free",
-        "poolside/laguna-s-2.1",
         "b-ai/qwen3.8-flash",
         "infron/motif/motif-3",
         "experiential/gpt-5.6-luna",
@@ -145,8 +144,7 @@ def test_other_registered_routes_are_not_implicitly_excluded(client):
         if model_id not in {
             "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
             "kilo/poolside-laguna-s-2.1-free",
-            "poolside/laguna-s-2.1",
-            "b-ai/qwen3.8-flash",
+                "b-ai/qwen3.8-flash",
             "infron/motif/motif-3",
             "experiential/gpt-5.6-luna",
         }:
