@@ -52,7 +52,7 @@ Padiem product/profile declaration
 
 | Padiem tier | Route | Status |
 |---|---|---|
-| Plus | `padiem-profile/plus-hold` | HOLD / non-executable while a successor model is explicitly selected and proven (#3568) |
+| Plus | `padiem-profile/plus-hold` | Merged-source HOLD; owner already selected Google four, but registration is local-only/unmerged and live use unverified |
 | Pro | `padiem-profile/pro-hold` | HOLD / non-executable (owner decision #2601) |
 | Max | `padiem-profile/max-hold` | HOLD / non-executable |
 
