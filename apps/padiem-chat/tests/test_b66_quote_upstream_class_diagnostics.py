@@ -398,3 +398,63 @@ def test_bounded_rejection_contract_is_unchanged_for_model_errors():
 
     print("BOUNDED_REJECTION_CONTRACT=UNCHANGED")
     print("UPSTREAM_CLASS_HEADER_NOT_ON_422=PASS")
+
+
+def test_502_interpreter_exception_provenance_is_bounded_without_raw_values():
+    # One fake backend completion per trial, no network/provider runtime.
+    failure_cases = (
+        (TypeError("private company alpha; token=secret"), "type_error"),
+        (ValueError("private company beta; token=secret"), "value_error"),
+        (RuntimeError("private company gamma; token=secret"), "runtime_error"),
+        (KeyError("private company delta; token=secret"), "unexpected_exception"),
+        (ChatRuntimeError(422, "invalid_request", "private user message"),
+         "chat_runtime_non_upstream"),
+    )
+    for exception, family in failure_cases:
+        provider = _RaisingClient(exception)
+        response = _post(_client(B66QuoteConversationInterpreter(provider)))
+        assert response.status_code == 502
+        assert response.json()["error"]["code"] == "quote_interpretation_failed"
+        assert response.headers["X-B66-Interpret-Failure-Stage"] == "interpreter_exception"
+        assert response.headers["X-B66-Interpret-Exception-Family"] == family
+        assert UPSTREAM_CLASS_HEADER not in response.headers
+        _assert_no_values_leak(
+            response, "private company", "token=secret", "user message"
+        )
+        assert provider.calls == 1
+    print("B66_502_EXCEPTION_FAMILIES_ENUM_ONLY=PASS")
+
+
+def test_502_allowlisted_upstream_stage_keeps_existing_single_header():
+    provider = _RaisingClient(ChatRuntimeError(
+        502, "upstream_timeout", "private quote content"
+    ))
+    response = _post(_client(B66QuoteConversationInterpreter(provider)))
+    assert response.status_code == 502
+    assert response.headers[UPSTREAM_CLASS_HEADER] == "upstream_timeout"
+    assert response.headers["X-B66-Interpret-Failure-Stage"] == "interpreter_exception"
+    assert "X-B66-Interpret-Exception-Family" not in response.headers
+    _assert_no_values_leak(response, "private quote content")
+
+
+def test_502_invalid_projection_has_distinct_stage_no_exception_family():
+    class InvalidProjection:
+        async def interpret(self, *, message, skill):
+            return {"internal_message": "DO_NOT_RELAY_PRIVATE_CONTENT"}
+
+    response = _post(_client(InvalidProjection()))
+    assert response.status_code == 502
+    assert response.json()["error"]["code"] == "quote_interpretation_failed"
+    assert response.headers["X-B66-Interpret-Failure-Stage"] == "projection_missing_safe_dict"
+    assert "X-B66-Interpret-Exception-Family" not in response.headers
+    assert UPSTREAM_CLASS_HEADER not in response.headers
+    _assert_no_values_leak(response, "DO_NOT_RELAY_PRIVATE_CONTENT")
+
+
+def test_422_rejection_does_not_claim_502_provenance():
+    provider = _AnswerClient(5)
+    response = _post(_client(B66QuoteConversationInterpreter(provider)))
+    assert response.status_code == 422
+    assert "X-B66-Interpret-Failure-Stage" not in response.headers
+    assert "X-B66-Interpret-Exception-Family" not in response.headers
+    assert UPSTREAM_CLASS_HEADER not in response.headers

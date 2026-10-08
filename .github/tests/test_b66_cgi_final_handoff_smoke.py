@@ -47,6 +47,34 @@ class FinalHandoffSmokeContractTests(unittest.TestCase):
             )
         )
 
+    def test_google_fonts_css_is_not_a_direct_model_provider(self):
+        # Public GET-only browser observation: fonts.googleapis.com/css2.
+        self.assertFalse(module._is_direct_provider(
+            "https://fonts.googleapis.com/css2?family=Manrope:wght@400"
+        ))
+        self.assertFalse(module._is_direct_provider(
+            "https://fonts.googleapis.com/css?family=Manrope"
+        ))
+        # This exemption must not expand to any other Google API route.
+        self.assertTrue(module._is_direct_provider(
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini:generateContent"
+        ))
+        self.assertTrue(module._is_direct_provider(
+            "https://aiplatform.googleapis.com/v1/projects/p/locations/l"
+        ))
+        self.assertTrue(module._is_direct_provider(
+            "https://fonts.googleapis.com/v1/models/gemini:generateContent"
+        ))
+        self.assertTrue(module._is_direct_provider(
+            "https://www.googleapis.com/v1/models/gemini:generateContent"
+        ))
+        self.assertTrue(module._is_direct_provider(
+            "https://api.openai.com/v1/chat/completions"
+        ))
+        self.assertTrue(module._is_direct_provider(
+            "https://api.anthropic.com/v1/messages"
+        ))
+
     def test_final_handoff_uses_real_certified_pdf_download_not_window_print(self):
         source = SCRIPT.read_text(encoding="utf-8")
         self.assertIn("page.expect_download", source)
@@ -85,6 +113,65 @@ class B66InterpretFailureEvidenceTests(unittest.TestCase):
                 assert isinstance(node.value.args[0], (ast.Set, ast.Tuple))
                 return {v.value for v in node.value.args[0].elts}
         raise AssertionError("B66 canonical upstream class vocabulary absent")
+
+    def test_502_failure_stage_and_family_vocab_mirrors_canonical_route(self):
+        source = (
+            Path(__file__).parents[2] / "apps" / "padiem-chat" / "app"
+            / "b66_quote_routes.py"
+        ).read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        names = {
+            "_B66_INTERPRET_FAILURE_STAGES": module.B66_INTERPRET_FAILURE_STAGES,
+            "_B66_INTERPRET_EXCEPTION_FAMILIES": module.B66_INTERPRET_EXCEPTION_FAMILIES,
+        }
+        for node in tree.body:
+            if not isinstance(node, ast.Assign):
+                continue
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id in names:
+                    self.assertIsInstance(node.value, ast.Call)
+                    self.assertIsInstance(node.value.args[0], ast.Set)
+                    self.assertEqual(
+                        {item.value for item in node.value.args[0].elts},
+                        names.pop(target.id)
+                    )
+        self.assertEqual(names, {}, "route and smoke vocabulary must stay synchronized")
+
+    def test_502_new_provenance_markers_fail_only_and_no_privacy_leak(self):
+        response_body = json.dumps({"error": {
+            "code": "quote_interpretation_failed",
+            "message": "PRIVATE_QUOTE_TOKEN_NEVER_PRINT",
+        }})
+        cases = (
+            ({"x-b66-interpret-failure-stage": "interpreter_exception",
+              "x-b66-interpret-exception-family": "type_error"},
+             ("interpreter_exception", "type_error")),
+            ({"x-b66-interpret-failure-stage": "projection_missing_safe_dict",
+              "x-b66-interpret-exception-family": "type_error"},
+             ("projection_missing_safe_dict", "UNCLASSIFIED")),
+            ({"x-b66-interpret-failure-stage": "company-name-private",
+              "x-b66-interpret-exception-family": "company-name-private"},
+             ("UNCLASSIFIED", "UNCLASSIFIED")),
+        )
+        for raw_headers, expected in cases:
+            class Response:
+                headers = {
+                    "content-type": "application/json",
+                    **raw_headers,
+                    "set-cookie": "PRIVATE_QUOTE_TOKEN_NEVER_PRINT",
+                }
+                def text(self):
+                    return response_body
+            output = io.StringIO()
+            with redirect_stdout(output):
+                module._print_bounded_b66_interpret_failure(Response())
+            lines = output.getvalue().splitlines()
+            self.assertEqual(lines[-2:], [
+                "B66_INTERPRET_FAILURE_STAGE=" + expected[0],
+                "B66_INTERPRET_EXCEPTION_FAMILY=" + expected[1],
+            ])
+            self.assertNotIn("PRIVATE_QUOTE_TOKEN_NEVER_PRINT", output.getvalue())
+            self.assertNotIn("company-name-private", output.getvalue())
 
     def test_exact_allowlist_matches_real_b66_route(self):
         self.assertEqual(
@@ -157,6 +244,8 @@ class B66InterpretFailureEvidenceTests(unittest.TestCase):
             "B66_INTERPRET_ERROR_CODE=quote_interpretation_failed",
             "B66_INTERPRET_ERROR_LAYER=B66_INTERPRETER_ROUTE",
             "B66_INTERPRET_UPSTREAM_CLASS=upstream_binding_unavailable",
+            "B66_INTERPRET_FAILURE_STAGE=UNCLASSIFIED",
+            "B66_INTERPRET_EXCEPTION_FAMILY=UNCLASSIFIED",
         ])
         self.assertNotIn("NEVER_PRINT", output.getvalue())
 
@@ -259,6 +348,15 @@ class CanaryEvidenceSeamTests(unittest.TestCase):
         self.assertEqual(module._canonical_admission_result("engine_admission_denied"), "DENIED")
         self.assertEqual(module._canonical_admission_result("engine_provider_timeout"), "UNPROVEN")
         self.assertEqual(module._canonical_admission_result(None), "UNPROVEN")
+
+    def test_owner_selected_model_is_bound_to_the_exact_claw_post(self):
+        self.assertEqual(module.CLAW_OWNER_SELECTED_MODEL_ID, "agnes-ai/agnes-3.0-flash")
+        source = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn('page.locator("#clawModelIdInput")', source)
+        self.assertIn("model_input.fill(CLAW_OWNER_SELECTED_MODEL_ID)", source)
+        self.assertIn("response.request.post_data_json", source)
+        self.assertIn('submitted.get("model_id") != CLAW_OWNER_SELECTED_MODEL_ID', source)
+        self.assertIn("EXPLICIT_MODEL_ID_IN_CLAW_POST=PASS", source)
 
     def test_one_shot_bounds_are_unchanged(self):
         self.assertEqual(module.MAX_CLAW_GENERAL_POSTS, 1)

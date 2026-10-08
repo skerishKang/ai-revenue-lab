@@ -40,6 +40,8 @@ FOLLOWUP_TEXT = "미터당 18000원"
 CLAW_TARGET_URL = "https://chat.padiem.net/"
 CLAW_GENERAL_PATH = "/api/claw/general"
 CLAW_SYNTHETIC_PROMPT = "테스트입니다. 한 문장으로 정상 작동 중이라고 답해주세요."
+# #3554: prior owner-selected, existing B14 registered model; no auto-selection.
+CLAW_OWNER_SELECTED_MODEL_ID = "agnes-ai/agnes-3.0-flash"
 MAX_CLAW_GENERAL_POSTS = 1
 
 # #3751: interpretation errors have two independent 502 owners. Mirror the
@@ -49,6 +51,18 @@ B66_INTERPRET_ERROR_CODES = frozenset({
     "quote_interpretation_failed",
     "padiem_service_unavailable",
 })
+B66_INTERPRET_FAILURE_STAGES = frozenset({
+    "interpreter_exception",
+    "projection_missing_safe_dict",
+})
+B66_INTERPRET_EXCEPTION_FAMILIES = frozenset({
+    "chat_runtime_non_upstream",
+    "type_error",
+    "value_error",
+    "runtime_error",
+    "unexpected_exception",
+})
+
 B66_UPSTREAM_CLASS_VOCABULARY = frozenset({
     "upstream_timeout",
     "upstream_busy",
@@ -207,6 +221,21 @@ def _print_bounded_b66_interpret_failure(response: object) -> None:
     print("B66_INTERPRET_ERROR_CODE=" + code, flush=True)
     print("B66_INTERPRET_ERROR_LAYER=" + layer, flush=True)
     print("B66_INTERPRET_UPSTREAM_CLASS=" + upstream_class, flush=True)
+    failure_stage = "UNCLASSIFIED"
+    exception_family = "UNCLASSIFIED"
+    if code == "quote_interpretation_failed" and hasattr(headers, "get"):
+        candidate = headers.get("x-b66-interpret-failure-stage")
+        if isinstance(candidate, str) and candidate in B66_INTERPRET_FAILURE_STAGES:
+            failure_stage = candidate
+            if candidate == "interpreter_exception" and upstream_class == "UNCLASSIFIED":
+                family = headers.get("x-b66-interpret-exception-family")
+                if (
+                    isinstance(family, str)
+                    and family in B66_INTERPRET_EXCEPTION_FAMILIES
+                ):
+                    exception_family = family
+    print("B66_INTERPRET_FAILURE_STAGE=" + failure_stage, flush=True)
+    print("B66_INTERPRET_EXCEPTION_FAMILY=" + exception_family, flush=True)
 
 
 def _bounded_error_class(body_text: object) -> tuple[str | None, str | None]:
@@ -253,7 +282,16 @@ def _canonical_admission_result(detail: str | None) -> str:
 
 
 def _is_direct_provider(url: str) -> bool:
-    host = (urlparse(url).hostname or "").lower()
+    parsed = urlparse(url)
+    host = (parsed.hostname or "").lower()
+    # #3566: the chat shell imports a Manrope CSS stylesheet from Google Fonts.
+    # fonts.googleapis.com/css2 is a static font resource, NOT a model API.
+    # The legacy suffix-only googleapis.com rule incorrectly marked every
+    # normal page load as a direct AI provider call and failed the canary after
+    # an HTTP 200 + visible answer. Exempt only the exact stylesheet endpoints;
+    # real Google model APIs and every other googleapis path remain blocked.
+    if host == "fonts.googleapis.com" and parsed.path in ("/css", "/css2"):
+        return False
     return (
         host.endswith("kilo.ai")
         or host.endswith("openrouter.ai")
@@ -888,6 +926,14 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
             print("CLAW_WORKSPACE=PASS")
 
             stage = "compose"
+            # A deployed Claw Plus model must be explicitly chosen per request.
+            # Verify the input before permitting the sole model dispatch.
+            model_input = page.locator("#clawModelIdInput")
+            model_input.wait_for(state="visible", timeout=15000)
+            model_input.fill(CLAW_OWNER_SELECTED_MODEL_ID)
+            if model_input.input_value() != CLAW_OWNER_SELECTED_MODEL_ID:
+                _fail("owner_model_selection_not_bound")
+            print("OWNER_SELECTED_MODEL_ID=" + CLAW_OWNER_SELECTED_MODEL_ID)
             before_assistants = page.locator("#messageList .assistant-message").count()
             before_errors = page.locator("#messageList .error-box").count()
             page.locator("#messageInput").fill(CLAW_SYNTHETIC_PROMPT)
@@ -908,6 +954,11 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
 
             response = claw_info.value
             stage = "response"
+            # Inspect the submitted JSON locally, never print prompt/body bytes.
+            submitted = response.request.post_data_json
+            if not isinstance(submitted, dict) or submitted.get("model_id") != CLAW_OWNER_SELECTED_MODEL_ID:
+                _fail("owner_model_id_not_threaded_to_claw_post")
+            print("EXPLICIT_MODEL_ID_IN_CLAW_POST=PASS")
             response_status = response.status
             content_type = (response.headers.get("content-type") or "").lower()
             sse_content_type = content_type.startswith("text/event-stream")

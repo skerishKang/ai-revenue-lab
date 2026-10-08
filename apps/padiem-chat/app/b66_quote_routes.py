@@ -101,6 +101,33 @@ def _upstream_class_headers(exc: BaseException) -> dict[str, str]:
     return {"X-B66-Upstream-Class": code}
 
 
+# Closed-vocabulary 502 provenance diagnostics for CGI freeform (#3751).
+# Do not expose exceptions/messages/provider payloads/user input in headers.
+_B66_INTERPRET_FAILURE_STAGES = frozenset({
+    "interpreter_exception",
+    "projection_missing_safe_dict",
+})
+_B66_INTERPRET_EXCEPTION_FAMILIES = frozenset({
+    "chat_runtime_non_upstream",
+    "type_error",
+    "value_error",
+    "runtime_error",
+    "unexpected_exception",
+})
+
+
+def _bounded_interpret_exception_family(exc: BaseException) -> str:
+    if isinstance(exc, ChatRuntimeError):
+        return "chat_runtime_non_upstream"
+    if isinstance(exc, TypeError):
+        return "type_error"
+    if isinstance(exc, ValueError):
+        return "value_error"
+    if isinstance(exc, RuntimeError):
+        return "runtime_error"
+    return "unexpected_exception"
+
+
 def _rejection_diagnostic_headers(exc: BaseException) -> dict[str, str]:
     headers: dict[str, str] = {}
     reason = getattr(exc, "message", None)
@@ -286,11 +313,22 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
         response = _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
         for header_name, header_value in _upstream_class_headers(exc).items():
             response.headers[header_name] = header_value
+        response.headers["X-B66-Interpret-Failure-Stage"] = "interpreter_exception"
+        # A recognized upstream class already identifies the failure; the
+        # broader family is needed only when no upstream class is available.
+        if "X-B66-Upstream-Class" not in response.headers:
+            response.headers["X-B66-Interpret-Exception-Family"] = (
+                _bounded_interpret_exception_family(exc)
+            )
         return response
 
     safe_dict = getattr(projection, "safe_dict", None)
     if not callable(safe_dict):
-        return _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
+        response = _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
+        response.headers["X-B66-Interpret-Failure-Stage"] = (
+            "projection_missing_safe_dict"
+        )
+        return response
     candidate = safe_dict()
 
     company_profile = None
