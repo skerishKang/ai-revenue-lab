@@ -11,7 +11,7 @@ Plus/Pro/Max HOLD and no import of Claw's coding AgentProfile.
 
 from dataclasses import dataclass
 import re
-from typing import Any, Protocol
+from typing import Any, Awaitable, Callable, Protocol
 
 
 _SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}\Z")
@@ -177,9 +177,11 @@ class B66RegisteredModelCompletion:
         *,
         resolver: TrustedB14QuoteModelResolver | None = None,
         executor: ExactB14QuoteTextExecutor | None = None,
+        refund_pre_dispatch: Callable[[], Awaitable[bool]] | None = None,
     ) -> None:
         self._resolver = resolver
         self._executor = executor
+        self._refund_pre_dispatch = refund_pre_dispatch
 
     async def complete(
         self,
@@ -212,9 +214,18 @@ class B66RegisteredModelCompletion:
         requirements = B66QuoteTaskRequirements()
         try:
             candidate = await self._resolver.resolve_quote_model(requirements)
+            selected = validate_authorized_route(candidate, requirements)
         except Exception as exc:
+            # A denied local policy/readiness decision did not dispatch B14.
+            # Preserve B62/Claw usage accounting without charging denied B66.
+            if self._refund_pre_dispatch is not None:
+                try:
+                    await self._refund_pre_dispatch()
+                except Exception:
+                    pass  # Never hide the bounded model decision error.
+            if isinstance(exc, B66ModelRouteError):
+                raise
             raise B66ModelRouteError("selection_unavailable") from None
-        selected = validate_authorized_route(candidate, requirements)
 
         # One dispatcher invocation, never a client-side retry/fallback.
         try:

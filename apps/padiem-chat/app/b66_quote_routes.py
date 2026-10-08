@@ -21,6 +21,7 @@ from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
 from .b14_client import ChatRuntimeError
+from .b66_registered_model_boundary import B66ModelRouteError
 from .b66_quote_conversation import (
     B66QuoteConversationError,
     MAX_CONVERSATION_CHARS,
@@ -304,6 +305,19 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     try:
         value = interpret_fn(message=message.strip(), skill=skill)
         projection = await value if inspect.isawaitable(value) else value
+    except B66ModelRouteError as exc:
+        # B14 model authority unavailable/ambiguous is not a provider 5xx.
+        # Closed vocabulary only; never return messages, customer data or
+        # provider catalog bodies.
+        response = _error(
+            503,
+            "quote_model_unavailable",
+            "?? ??? ? ?? ?? AI ??? ????. ?? ? ?? ??? ???.",
+        )
+        response.headers["X-B66-Model-Selection-Status"] = (
+            "ambiguous" if exc.code == "selection_ambiguous" else "unavailable"
+        )
+        return response
     except B66QuoteConversationError as exc:
         response = _error(422, "quote_input_unrecognized", "견적 입력값을 확인해 주세요.")
         for header_name, header_value in _rejection_diagnostic_headers(exc).items():
