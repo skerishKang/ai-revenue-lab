@@ -1,3 +1,33 @@
+# B66 Quote Beta demo guide — historical snapshot (2026-10-08)
+
+```text
+DOCUMENT_STATUS = HISTORICAL_ARCHIVE
+CURRENT_CUSTOMER_RUNBOOK = NO
+CURRENT_OPERATING_POLICY = NO
+SOURCE_DOCUMENT = reference/business-66-padiem-quote-v1/DEMO_GUIDE.md
+SNAPSHOT_BASE_MAIN = a43db8163a86fad3d6eb2a83ee127157a27d3526
+```
+
+The original guide below is preserved byte-for-byte as **historical demo
+evidence**, NOT as current customer instructions, certified-PDF procedure, or
+Proof of Production readiness.
+
+Its claims about no authentication/server persistence, image upload, AI
+interpretation, and browser print-to-PDF describe an earlier demo phase and
+must not override the source-verified present-day contracts.
+
+For the current product and source-backed implementation guidance consult
+[B66 product policy](../../products/b66/README.md) and
+[the implementation README](../../../reference/business-66-padiem-quote-v1/README.md).
+For the latest documented CGI customer-run outcome, see issues #3751 and #3733:
+Guided PDF passed, Complete Freeform returned HTTP 502, Partial follow-up was
+untested, and CUSTOMER_READY=NO. These are run-specific observations, not a
+fresh live check.
+
+**The untouched original guide follows.**
+
+---
+
 # B66 · Quote Beta — 데모 운영 가이드 (DEMO GUIDE)
 
 대상: 고객에게 견적 데모를 시연하는 운영자
