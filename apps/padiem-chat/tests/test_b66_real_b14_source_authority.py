@@ -194,23 +194,33 @@ def test_one_synthetic_ready_google_manual_pin_can_be_validated_without_catalog(
     """Source only: neither provider credentials nor an actual upstream call."""
     data = json.loads(json.dumps(b14_source_gets))
     mid = sorted(GOOGLE_IDS)[0]  # fixture only; not a B66 selection policy
-    assert mid not in {m["id"] for m in data["models"]["catalog"]}
-    for provider in data["readiness"]["providers"]:
-        allowed = mid in provider.get("models", [])
-        provider["enabled"] = allowed
-        provider["credential_ready"] = allowed
-        provider["route_ready"] = allowed
-        provider["models"] = [mid] if allowed else []
-    transport = SourceMetadataTransport(data)
-    selected = asyncio.run(
-        B14FreeFirstQuoteModelResolver(transport).resolve_quote_model(
-            B66QuoteTaskRequirements(selected_model_id=mid)
+    assert mid in {route["id"] for route in data["models"]["registered_routes"]}
+    # B14 JSON registry may now project ALL registered models in the public
+    # display catalog (#3819); the older model registry omitted manual pins.
+    # Exact-ID execution must succeed in BOTH formats, without making the
+    # presence of a display summary an eligibility requirement.
+    for catalog_present in (True, False):
+        variant = json.loads(json.dumps(data))
+        if not catalog_present:
+            variant["models"]["catalog"] = [
+                row for row in variant["models"]["catalog"] if row["id"] != mid
+            ]
+        for provider in variant["readiness"]["providers"]:
+            allowed = mid in provider.get("models", [])
+            provider["enabled"] = allowed
+            provider["credential_ready"] = allowed
+            provider["route_ready"] = allowed
+            provider["models"] = [mid] if allowed else []
+        transport = SourceMetadataTransport(variant)
+        selected = asyncio.run(
+            B14FreeFirstQuoteModelResolver(transport).resolve_quote_model(
+                B66QuoteTaskRequirements(selected_model_id=mid)
+            )
         )
-    )
-    assert selected.model_id == mid
-    assert selected.owner_policy_id == "OWNER_REGISTERED_AND_ALLOWED"
-    assert transport.get_paths == list(B14_GETS)
-    assert transport.provider_posts == 0
+        assert selected.model_id == mid
+        assert selected.owner_policy_id == "OWNER_REGISTERED_AND_ALLOWED"
+        assert transport.get_paths == list(B14_GETS)
+        assert transport.provider_posts == 0
 
 
 def test_live_mode_not_customer_authority_and_no_default_replacement(b14_source_gets):
