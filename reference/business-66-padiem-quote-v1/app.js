@@ -837,7 +837,7 @@
   /* ── 내 견적서: 선택된 승인 Skill 의 내부 profile 이 미리보기 layout authority.
      template store/selection 을 건드리지 않으며, 실패 시 내장으로 fallback. ── */
 
-  const skillUiState = { activeSkillId: null, serverSkill: null, serverSlotSources: {} };
+  const skillUiState = { activeSkillId: null, serverSkill: null, serverSavedSkillId: null, serverSlotSources: {} };
   let skillUiApi = null;
 
   function activeSkillProfile() {
@@ -846,7 +846,7 @@
       let skill = null;
       if (
         skillUiState.serverSkill &&
-        skillUiState.serverSkill.id === skillUiState.activeSkillId
+        skillUiState.serverSavedSkillId === skillUiState.activeSkillId
       ) {
         skill = SavedSkill.normalizeSkill(skillUiState.serverSkill);
       } else if (SkillStore && typeof localStorage !== "undefined") {
@@ -861,7 +861,18 @@
   }
 
   function applySkillToForm(skill) {
+    // The authenticated CGI Saved Quote Skill is solely owned by the server
+    // bridge. A local skill section refresh/selection must not clear or replace
+    // it during Guided/free-form drafting. The explicit account lifecycle
+    // clearServerSkill() remains the only way to remove its authority.
+    if (skillUiState.serverSkill &&
+        skillUiState.serverSavedSkillId === skillUiState.activeSkillId &&
+        window.B66BrowserPdf &&
+        window.B66BrowserPdf.isCgiSkill(skillUiState.activeSkillId)) {
+      return true;
+    }
     skillUiState.serverSkill = null;
+    skillUiState.serverSavedSkillId = null;
     skillUiState.serverSlotSources = {};
     if (!skill || !SkillUi) {
       skillUiState.activeSkillId = null;
@@ -885,17 +896,24 @@
     return true;
   }
 
-  function setServerSkill(skill, slotSources) {
+  function setServerSkill(skill, slotSources, savedSkillId) {
     if (!SavedSkill || !Template) return false;
     const normalized = SavedSkill.normalizeSkill(skill);
     if (!normalized || normalized.approved !== true) return false;
     const profile = Template.normalizeTemplate(normalized.internalTemplate);
     if (!profile || !Template.isApprovedProfile(profile)) return false;
+    // The authenticated assignment ID (b66skill_...) is distinct from the
+    // semantic skill.id. Do not rewrite the immutable skill or fingerprint.
+    const isCgiAssignment = Boolean(window.B66BrowserPdf &&
+      window.B66BrowserPdf.isCgiSkill(savedSkillId));
+    if (isCgiAssignment && !/^b66skill_[0-9a-f]{32}$/.test(savedSkillId)) return false;
+    const ownerId = isCgiAssignment ? savedSkillId : normalized.id;
     skillUiState.serverSkill = normalized;
+    skillUiState.serverSavedSkillId = ownerId;
     skillUiState.serverSlotSources = slotSources && typeof slotSources === "object"
       ? slotSources
       : {};
-    skillUiState.activeSkillId = normalized.id;
+    skillUiState.activeSkillId = ownerId;
     renderTemplateUi();
     render();
     return true;
@@ -904,9 +922,10 @@
   function clearServerSkill() {
     const activeWasServer = Boolean(
       skillUiState.serverSkill &&
-      skillUiState.serverSkill.id === skillUiState.activeSkillId
+      skillUiState.serverSavedSkillId === skillUiState.activeSkillId
     );
     skillUiState.serverSkill = null;
+    skillUiState.serverSavedSkillId = null;
     skillUiState.serverSlotSources = {};
     if (activeWasServer) skillUiState.activeSkillId = null;
     renderTemplateUi();
@@ -1172,7 +1191,7 @@
     const serverSkillActive = Boolean(
       !previewProfile &&
       skillUiState.serverSkill &&
-      skillUiState.serverSkill.id === skillUiState.activeSkillId
+      skillUiState.serverSavedSkillId === skillUiState.activeSkillId
     );
     const ownerCgi = Boolean(serverSkillActive && window.B66BrowserPdf &&
       window.B66BrowserPdf.isCgiSkill(skillUiState.activeSkillId));
@@ -1333,7 +1352,7 @@
         window.B66BrowserPdf.isCgiSkill(skillUiState.activeSkillId);
       const profile = activeSkillProfile();
       const previewModel = certifiedBrowserPdf && profile && skillUiState.serverSkill &&
-          skillUiState.serverSkill.id === skillUiState.activeSkillId
+          skillUiState.serverSavedSkillId === skillUiState.activeSkillId
         ? window.B66BrowserPdf.certifiedPreviewModel(
             TemplateRenderer.buildRenderModel(draft, profile, {
               taxReviewRequired,
@@ -1680,6 +1699,7 @@
     taxReviewRequired = false;
     suppressNextDraftSave = true;
     skillUiState.serverSkill = null;
+    skillUiState.serverSavedSkillId = null;
     skillUiState.serverSlotSources = {};
     skillUiState.activeSkillId = null;
     templateUiState.previewTemplateId = null;
@@ -1815,7 +1835,7 @@
   }
   window.B66QuoteSkillBridge = Object.freeze({
     activeSkillId: () => skillUiState.activeSkillId,
-    serverSkillId: () => (skillUiState.serverSkill ? skillUiState.serverSkill.id : null),
+    serverSkillId: () => (skillUiState.serverSkill ? skillUiState.serverSavedSkillId : null),
     serverSlotSourceKeys: () => Object.keys(skillUiState.serverSlotSources || {}).sort(),
     applySkill: applySkillToForm,
     setServerSkill,

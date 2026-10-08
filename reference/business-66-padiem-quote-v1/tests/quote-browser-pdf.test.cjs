@@ -28,6 +28,92 @@ function rejection(modify, expected) {
   assert.throws(() => Browser.project(model, shown),
     (err) => err.code === expected, expected);
 }
+function verifyOwnerSkillPersistence() {
+  const src = fs.readFileSync(path.join(__dirname, "..", "app.js"), "utf8");
+  const start = src.indexOf("  function applySkillToForm(skill) {");
+  const end = src.indexOf("\n  function setServerSkill(", start + 15);
+  assert.ok(start >= 0 && end > start);
+  const source = src.slice(start, end).trim();
+  function probe(skillId, requested) {
+    const protectedSkill = { id: "semantic-skill-internal", approved: true };
+    const privateSlots = { logo: { rendered: true } };
+    const status = {
+      serverSkill: protectedSkill,
+      serverSavedSkillId: skillId,
+      serverSlotSources: privateSlots,
+      activeSkillId: skillId
+    };
+    let rendered = 0, toasted = 0;
+    const ctx = {
+      skillUiState: status,
+      window: { B66BrowserPdf: Browser },
+      SkillUi: { formValuesFromSkill() { throw new Error("owner selection unexpectedly called local UI"); } },
+      render() { rendered++; },
+      toast() { toasted++; }
+    };
+    const apply = vm.runInNewContext("(" + source + ")", ctx);
+    const response = apply(requested);
+    return { response, status, protectedSkill, privateSlots, rendered, toasted };
+  }
+  const unchanged = probe(Browser.CGI_SKILL_ID, null);
+  assert.equal(unchanged.response, true);
+  assert.equal(unchanged.status.serverSkill, unchanged.protectedSkill);
+  assert.equal(unchanged.status.serverSlotSources, unchanged.privateSlots);
+  assert.equal(unchanged.status.activeSkillId, Browser.CGI_SKILL_ID);
+  assert.equal(unchanged.status.serverSavedSkillId, Browser.CGI_SKILL_ID);
+  assert.notEqual(unchanged.status.serverSkill.id, unchanged.status.serverSavedSkillId);
+  assert.equal(unchanged.rendered, 0, "no transient fallback render");
+  assert.equal(unchanged.toasted, 0, "no confusing local-skill toast");
+  const blocked = probe(Browser.CGI_SKILL_ID, { id: "b66skill_" + "d".repeat(32) });
+  assert.equal(blocked.status.serverSkill, blocked.protectedSkill, "foreign local skill cannot replace active CGI");
+  const other = probe("b66skill_" + "d".repeat(32), null);
+  assert.equal(other.status.serverSkill, null, "non-CGI still follows existing local reset semantics");
+  assert.equal(other.status.serverSavedSkillId, null);
+  console.log("CGI_ASSIGNED_SKILL_STICKY_WHILE_SIGNED_IN=PASS");
+  console.log("NON_CGI_LOCAL_SKILL_RESET_UNCHANGED=PASS");
+}
+
+function verifyAssignedRowIdentity() {
+  const src = fs.readFileSync(path.join(__dirname, "..", "app.js"), "utf8");
+  const start = src.indexOf("  function setServerSkill(");
+  const end = src.indexOf("\n  function clearServerSkill()", start);
+  assert.ok(start > 0 && end > start, "actual setServerSkill source required");
+  const target = src.slice(start, end).trim();
+  function probe(savedId) {
+    const semantic = { id: "approved-cgi-semantic-id", approved: true,
+      fingerprint: "sha-owned-skill", internalTemplate: { approved:true, fingerprint:"approved-profile-fp" } };
+    const state = { serverSkill:null, serverSavedSkillId:null, activeSkillId:null,
+      serverSlotSources: {} };
+    const suppliedSlots = { logo: "private-reference-only" };
+    let renders = 0;
+    const sandbox = {
+      skillUiState:state,
+      window:{ B66BrowserPdf:Browser },
+      SavedSkill:{ normalizeSkill(v){return v;} },
+      Template:{ normalizeTemplate(v){return v;}, isApprovedProfile(v){return v.approved === true;} },
+      renderTemplateUi(){}, render(){renders++;}
+    };
+    const fn=vm.runInNewContext("(" + target + ")", sandbox);
+    assert.equal(fn(semantic,suppliedSlots,savedId),true);
+    return {state,semantic,suppliedSlots,renders};
+  }
+  const cgi=probe(Browser.CGI_SKILL_ID);
+  assert.equal(cgi.state.serverSavedSkillId,Browser.CGI_SKILL_ID);
+  assert.equal(cgi.state.activeSkillId,Browser.CGI_SKILL_ID);
+  assert.equal(cgi.state.serverSkill,cgi.semantic);
+  assert.equal(cgi.semantic.id,"approved-cgi-semantic-id","semantic ID must remain intact");
+  assert.equal(cgi.state.serverSlotSources,cgi.suppliedSlots);
+  assert.equal(cgi.renders,1);
+  const other=probe("b66skill_" + "e".repeat(32));
+  assert.equal(other.state.activeSkillId,other.semantic.id,"non-CGI remains on established legacy semantic ID");
+  assert.equal(other.state.serverSavedSkillId,other.semantic.id);
+  const account=fs.readFileSync(path.join(__dirname, "..", "padiem-account.js"),"utf8");
+  assert.ok(account.includes("bridge.setServerSkill(skill, slotSources, savedSkillId)"));
+  assert.ok(account.includes("row.saved_skill_id !== savedSkillId"));
+  console.log("B66_CGI_ROW_ID_NE_SEMANTIC_SKILL_ID=PASS");
+  console.log("B66_CGI_OWNER_ID_USED_END_TO_END=PASS");
+}
+
 function verifyLiveRenderAuthority() {
   const app = fs.readFileSync(path.join(__dirname, "..", "app.js"), "utf8");
   const begin = app.indexOf("  function render() {");
@@ -43,7 +129,8 @@ function verifyLiveRenderAuthority() {
       $: () => null,
       previewTemplateProfile: () => previewMode ? profilePreview : null,
       renderTemplateAuthority: () => genericProfile,
-      skillUiState: { activeSkillId: skillId, serverSkill: { id: serverSkillId }, serverSlotSources: {} },
+      skillUiState: { activeSkillId: skillId, serverSavedSkillId: serverSkillId,
+        serverSkill: { id: "internal-skill-is-not-a-db-row-id" }, serverSlotSources: {} },
       activeSkillProfile: () => cgiProfile,
       TemplateRenderer: {
         buildRenderModel: (_draft, authority, options) => {
@@ -81,6 +168,8 @@ function verifyLiveRenderAuthority() {
 }
 
 async function verify() {
+  verifyAssignedRowIdentity();
+  verifyOwnerSkillPersistence();
   verifyLiveRenderAuthority();
   assert.equal(Browser.isCgiSkill(Browser.CGI_SKILL_ID), true);
   assert.equal(Browser.isCgiSkill("b66skill_" + "a".repeat(32)), false);
