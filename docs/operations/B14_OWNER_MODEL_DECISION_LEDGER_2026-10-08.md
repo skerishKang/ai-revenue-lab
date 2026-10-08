@@ -28,6 +28,7 @@ PRODUCTION_DEPLOY=NO
 - First comparison targets: instruction adherence, coding/repair correctness, Korean-language accuracy, multi-step agent/tool reliability, output stability, latency, rate limits, and actual cost. Record comparable test evidence before declaring a performance winner.
 - This is an **OWNER-ranked trial candidate**, not a new customer-facing B14 execution route. PR #3819's nine-model JSON registry and five owner-deleted models remain separate; this ledger **does not add Step 5** to that registry, assign Plus/Pro/Max, alter the Kilo Code global default, or activate a product auto-router. Any actual onboarding or production route needs a source change and its own safe approval/testing.
 - Continue one owner-selected exact model per execution. Never silently switch to another provider or a paid route. Issue #3554 owns this owner experiment decision, while #2698's intelligent auto-router remains deferred.
+- Initial two-task trial evidence: [Step 5 vs Dots 3 free routes — 2026-10-09](../experiments/STEPFUN_STEP5_P1_2026-10-09_TRIAL.md). Step 5 Python 8/8 but quotation arithmetic wrong; two concurrent provider rejects followed by successful sequential calls. Evaluation P1 retained, performance winner not verified.
 
 ---
 
