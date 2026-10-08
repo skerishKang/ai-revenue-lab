@@ -47,6 +47,10 @@ class FinalHandoffSmokeContractTests(unittest.TestCase):
     def test_final_handoff_uses_real_certified_pdf_download_not_window_print(self):
         source = SCRIPT.read_text(encoding="utf-8")
         self.assertIn("page.expect_download", source)
+        self.assertIn("cgi_browser_pdf_not_active", source)
+        self.assertIn("cgi_browser_pdf_used_server", source)
+        self.assertIn("CERTIFIED_BROWSER_PDF_DOWNLOADS=3", source)
+        self.assertIn('print("PDF_POSTS=0")', source)
         self.assertIn('body.startswith(b"%PDF-")', source)
         self.assertNotIn("window.print =", source)
 
