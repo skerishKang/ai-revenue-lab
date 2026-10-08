@@ -1,8 +1,9 @@
 """#3760/#3751: B66 against REAL B14 source GET metadata (zero upstream).
 
-Unlike hand-written registry fixtures, these tests obtain B14's actual
-/api/pilot/models and /api/pilot/provider-readiness response shapes from an
-isolated TestClient child process, then invoke the genuine B66 quote resolver.
+Unlike hand-written registry fixtures, these tests execute the real source
+metadata builders behind B14's /api/pilot/models and
+/api/pilot/provider-readiness GET endpoints in an isolated child process,
+then invoke the genuine B66 quote resolver. No TestClient/HTTP GET is issued.
 
 This is a SOURCE integration test, not deployed B14/provider readiness proof.
 """
