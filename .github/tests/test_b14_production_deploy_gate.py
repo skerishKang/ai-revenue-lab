@@ -11,6 +11,7 @@ and that deploy.sh itself remains syntactically valid (bash -n).
 
 from __future__ import annotations
 
+import copy
 import json
 import os
 import re
@@ -20,6 +21,7 @@ import sys
 import textwrap
 from pathlib import Path
 
+import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -959,3 +961,744 @@ def test_contract_ci_reruns_when_a_canonical_adapter_changes() -> None:
     )
 
 
+# ---------------------------------------------------------------------------
+# #3742: the normal deploy path must anchor what was serving BEFORE deploy.sh.
+#
+# #3704 gave the ROLLBACK lane a durable pre-mutation anchor, but that anchor is
+# produced inside the rollback job. The deploy path -- the mutation that creates
+# the need to roll back -- still had none, so the version to return to existed
+# only as a run-log line that no artifact carried.
+#
+# The static tests pin the contract's shape. The tests after them execute the
+# real step bodies with curl/npx/sleep/git and deploy.sh replaced on PATH,
+# because "the job prints a PASS token" and "the job cannot deploy until a
+# served version has actually been confirmed" are different claims -- only the
+# second one is the guarantee #3523 asks for.
+# ---------------------------------------------------------------------------
+
+DEPLOY_JOB = "deploy-production-b14"
+PREMUTATION_STEP = "Premutation exact-main and account assertions"
+ANCHOR_STEP = "Pre-deploy canonical served-version rollback anchor"
+DEPLOY_STEP = "Deploy B14 via canonical pipeline (deploy.sh)"
+POST_DEPLOY_STEP = (
+    "Post-deploy verification (version 100% + engine binding + Kilo catalog marker)"
+)
+ARTIFACT_STEP = "Publish the bounded pre-mutation anchor evidence artifact"
+
+ANCHOR_VERSION = "aaaaaaaa-0000-0000-0000-000000000000"
+TARGET_SHA = "1234567890abcdef1234567890abcdef12345678"
+
+# The account id is pinned publicly in the workflow; the token is a sentinel.
+# Both are asserted absent from the artifact, which is a stronger check than
+# asserting a placeholder's absence.
+ACCOUNT_ID = "9be14bb7b8974e65d0afba647ab16932"
+TOKEN = "stub-token-must-not-be-echoed"
+
+
+def _deploy_steps() -> list:
+    return _workflow()["jobs"][DEPLOY_JOB]["steps"]
+
+
+def _step(name: str) -> dict:
+    for step in _deploy_steps():
+        if step.get("name") == name:
+            return step
+    raise AssertionError(f"the deploy job has no step named {name!r}")
+
+
+def _anchor_run() -> str:
+    return _step(ANCHOR_STEP)["run"]
+
+
+def _deploy_run() -> str:
+    return _step(DEPLOY_STEP)["run"]
+
+
+# -- contract predicates ----------------------------------------------------
+# Each one raises AssertionError on violation, so the negative controls at the
+# bottom can assert that a mutated workflow is genuinely rejected rather than
+# merely different.
+
+
+def _assert_step_order(steps) -> None:
+    """exact-main -> canonical read -> anchor prepared -> deploy.sh -> post-deploy."""
+    names = [s.get("name", "") for s in steps]
+    for required in (
+        PREMUTATION_STEP,
+        ANCHOR_STEP,
+        DEPLOY_STEP,
+        POST_DEPLOY_STEP,
+        ARTIFACT_STEP,
+    ):
+        assert required in names, f"missing deploy-job step: {required}"
+    assert names.index(PREMUTATION_STEP) < names.index(ANCHOR_STEP), (
+        "the anchor must be read after the exact-main assertion"
+    )
+    assert names.index(ANCHOR_STEP) < names.index(DEPLOY_STEP), (
+        "the pre-deploy read must run before deploy.sh"
+    )
+    assert names.index(DEPLOY_STEP) < names.index(POST_DEPLOY_STEP)
+    assert names.index(POST_DEPLOY_STEP) < names.index(ARTIFACT_STEP)
+
+
+def _assert_anchor_authority(run: str) -> None:
+    assert "cloudflare_served_version_cli.py" in run, "canonical adapter not reused"
+    assert "resolve-active" in run
+    # A second served-version authority could disagree with the canonical one.
+    assert "b54_engine_served_version_guard.py" not in run, (
+        "the Engine-branded adapter must not be borrowed into B14"
+    )
+    # INLINE_JQ_NEW=0 / SECOND_VERSION_AUTHORITY=0.
+    for forbidden in ("jq", 'result["deployments"]', ".versions[", "python3 -c"):
+        assert forbidden not in run, f"shell-side envelope parsing survived: {forbidden}"
+    # The step sits before the mutation, so it must be structurally incapable of
+    # performing one.
+    for mutating in ("wrangler", "deploy.sh", "npx "):
+        assert mutating not in run, f"the pre-mutation read must stay read-only: {mutating}"
+
+
+def _assert_artifact_contract(steps) -> None:
+    uploads = [
+        s for s in steps if str(s.get("uses", "")).startswith("actions/upload-artifact")
+    ]
+    assert len(uploads) == 1, "the deploy path publishes exactly one evidence artifact"
+    upload = uploads[0]
+    assert upload["if"] == "always()", (
+        "a run that stopped before deploying is exactly the case the anchor is needed for"
+    )
+    assert upload["with"]["retention-days"] == 90
+    assert upload["with"]["if-no-files-found"] == "error", (
+        "a missing artifact must never read as a silent PASS"
+    )
+    assert upload["with"]["path"].endswith("b14-deploy-evidence.txt")
+    assert "deployments" not in upload["with"]["path"], (
+        "raw envelopes are not a publishable artifact"
+    )
+
+
+# -- execution harness ------------------------------------------------------
+
+_STUB_GIT = """#!/usr/bin/env bash
+# The premutation step calls `git rev-parse` and `git fetch`. Both are stubbed so
+# no network and no real repository state can influence the ordering proof.
+if [ "$1" = "rev-parse" ]; then
+  printf '%s\\n' "${GIT_HEAD_SHA:-}"
+  exit 0
+fi
+exit 0
+"""
+
+_STUB_DEPLOY_SH = """#!/usr/bin/env bash
+printf 'DEPLOY_SH_INVOKED\\n' >> "${RUNNER_TEMP}/deploy-invocations.txt"
+printf 'Current Version ID: %s\\n' \
+  "${DEPLOY_EMITS_VERSION:-11111111-2222-3333-4444-555555555555}"
+if [ -n "${DEPLOY_FAIL:-}" ]; then exit 1; fi
+exit 0
+"""
+
+# Reproduces the deploy job's own semantics: steps run in declared order from the
+# workspace root unless the step declares a working-directory, and the job stops
+# at the first failing step. That last part is what turns "deploy.sh never ran"
+# from an assumption into an observed consequence.
+_DEPLOY_DRIVER = """#!/usr/bin/env bash
+set -uo pipefail
+for stubbed in curl npx sleep git; do
+  chmod +x "${STUB_DIR}/${stubbed}"
+done
+STUB_NATIVE="$(cd "${STUB_DIR}" && pwd)"
+export PATH="${STUB_NATIVE}:${PATH}"
+for stubbed in curl npx sleep git; do
+  resolved="$(command -v "${stubbed}" || true)"
+  if [ "${resolved}" != "${STUB_NATIVE}/${stubbed}" ]; then
+    printf 'HARNESS_ABORT=%s=%s\\n' "${stubbed}" "${resolved}"
+    exit 8
+  fi
+done
+cd "${GITHUB_WORKSPACE}" || exit 9
+job_failed=0
+for step in "${STEPS_DIR}"/[0-9][0-9]-*.sh; do
+  bash "${step}"
+  rc=$?
+  printf 'STEP_EXIT_%s=%s\\n' "$(basename "${step}" .sh)" "${rc}"
+  if [ "${rc}" -ne 0 ]; then
+    job_failed=1
+    break
+  fi
+done
+printf 'JOB_FAILED=%s\\n' "${job_failed}"
+"""
+
+
+class _DeployChain:
+    def __init__(self, result, evidence_text: str, deploy_invocations: str | None) -> None:
+        self.output = (result.stdout or "") + (result.stderr or "")
+        if "HARNESS_ABORT=" in self.output:
+            raise AssertionError(f"stub transport did not resolve: {self.output}")
+        # The stub prints nothing a real client prints. This fails loudly if a
+        # request ever reached the network instead of the stub.
+        assert "The requested URL returned error" not in self.output, (
+            "a real HTTP response was observed; the deploy chain must only ever "
+            "talk to the stub transport in tests"
+        )
+        marker = re.search(r"JOB_FAILED=(\d+)", self.output)
+        assert marker, f"the chain never reported: {self.output[-500:]}"
+        self.failed = marker.group(1) == "1"
+        self.evidence_text = evidence_text
+        self.evidence = dict(
+            line.split("=", 1) for line in evidence_text.splitlines() if "=" in line
+        )
+        # One line per deploy.sh invocation, so "never reached" and "reached and
+        # failed" are distinguishable counts rather than a bare boolean.
+        self.deploy_calls = (
+            len([ln for ln in deploy_invocations.splitlines() if ln.strip()])
+            if deploy_invocations
+            else 0
+        )
+
+    @property
+    def mutated(self) -> bool:
+        return self.deploy_calls > 0
+
+
+def _run_deploy_chain(
+    tmp_path,
+    *,
+    body,
+    curl_fail: bool = False,
+    deploy_fail: bool = False,
+    deploy_run_override: str | None = None,
+) -> _DeployChain:
+    root = tmp_path / "lane"
+    stub = root / "bin"
+    runner_temp = root / "runner-temp"
+    workspace = root / "workspace"
+    steps_dir = root / "steps"
+    for directory in (stub, runner_temp, workspace, steps_dir):
+        directory.mkdir(parents=True, exist_ok=True)
+    for name, text in (
+        ("curl", _STUB_CURL),
+        ("npx", _STUB_NPX),
+        ("sleep", _STUB_SLEEP),
+        ("git", _STUB_GIT),
+    ):
+        (stub / name).write_text(text, encoding="utf-8", newline="\n")
+    app = workspace / "apps" / "korean-ai-platform"
+    app.mkdir(parents=True, exist_ok=True)
+    (app / "deploy.sh").write_text(_STUB_DEPLOY_SH, encoding="utf-8", newline="\n")
+
+    deploy_body = (
+        _step(DEPLOY_STEP)["run"]
+        if deploy_run_override is None
+        else deploy_run_override
+    )
+    chain = (
+        ("00-premutation", _step(PREMUTATION_STEP)["run"], workspace),
+        ("01-anchor", _step(ANCHOR_STEP)["run"], workspace),
+        ("02-deploy", deploy_body, app),
+    )
+    for name, run, cwd in chain:
+        expanded = run.replace("${{ github.event.inputs.target_sha }}", TARGET_SHA)
+        (steps_dir / f"{name}.sh").write_text(
+            f'cd "{_native(cwd)}" || exit 9\n{expanded}',
+            encoding="utf-8",
+            newline="\n",
+        )
+    driver = root / "driver.sh"
+    driver.write_text(_DEPLOY_DRIVER, encoding="utf-8", newline="\n")
+
+    env = {
+        **os.environ,
+        "STUB_DIR": _native(stub),
+        "STEPS_DIR": _native(steps_dir),
+        "RUNNER_TEMP": _native(runner_temp),
+        "GITHUB_WORKSPACE": _native(workspace),
+        "B14_SERVED_VERSION_SCRIPTS": _native(SCRIPTS_DIR),
+        "B14_TARGET_SHA": TARGET_SHA,
+        "GIT_HEAD_SHA": TARGET_SHA,
+        "CLOUDFLARE_API_TOKEN": TOKEN,
+        "CLOUDFLARE_ACCOUNT_ID": ACCOUNT_ID,
+        "BODY_1": body,
+        "BODY_DEFAULT": body,
+    }
+    if curl_fail:
+        env["CURL_FAIL"] = "1"
+    if deploy_fail:
+        env["DEPLOY_FAIL"] = "1"
+
+    result = subprocess.run(
+        [_bash(), _native(driver)],
+        cwd=_native(ROOT),
+        env=env,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    evidence_file = runner_temp / "b14-deploy-evidence.txt"
+    invocations = runner_temp / "deploy-invocations.txt"
+    return _DeployChain(
+        result,
+        evidence_file.read_text(encoding="utf-8") if evidence_file.exists() else "",
+        invocations.read_text(encoding="utf-8") if invocations.exists() else None,
+    )
+
+
+def _assert_no_mutation(out: _DeployChain) -> None:
+    """PRODUCTION_MUTATION=0 for every refused-anchor shape.
+
+    A refusal is the one case where DEPLOY_EXECUTED=NO is truthful, because the
+    deploy step provably never ran -- hence deploy.sh calls == 0 and no attempt
+    line at all.
+    """
+    assert out.failed is True, out.output
+    assert out.mutated is False, "deploy.sh ran without a confirmed anchor"
+    assert out.deploy_calls == 0, "deploy.sh was invoked without a confirmed anchor"
+    assert out.evidence["DEPLOY_EXECUTED"] == "NO"
+    assert "DEPLOY_ATTEMPTED" not in out.evidence, (
+        "an attempt was recorded even though the anchor refused"
+    )
+    # A version that was never confirmed must not be recorded, and no PASS token
+    # may be emitted for an anchor that does not exist.
+    assert "PRE_DEPLOY_SERVED_VERSION_ID" not in out.evidence
+    assert "PRE_MUTATION_VERSION_CAPTURED" not in out.evidence
+    assert "ROLLBACK_ANCHOR_AVAILABLE" not in out.evidence
+    assert "B14_PRE_DEPLOY_ANCHOR=PASS" not in out.output
+    assert "B14_CANONICAL_PIPELINE_DEPLOY=PASS" not in out.output
+
+
+# -- 1 and 7: the read runs before deploy.sh, and the artifact proves it -----
+
+
+def test_deploy_job_step_order_matches_the_mutation_contract() -> None:
+    """Static half of the ordering guarantee.
+
+    The execution test below drives the steps in the contract's order by name, so
+    it cannot detect a workflow that declares them in the wrong order. This is
+    the assertion that does.
+    """
+    _assert_step_order(_deploy_steps())
+
+
+def test_pre_deploy_read_runs_before_deploy_sh(tmp_path) -> None:
+    out = _run_deploy_chain(tmp_path, body=_envelope_body([_served(ANCHOR_VERSION)]))
+    assert out.failed is False, out.output
+    assert out.mutated is True
+    assert "B14_PRE_DEPLOY_ANCHOR=PASS" in out.output
+    assert "B14_CANONICAL_PIPELINE_DEPLOY=PASS" in out.output
+    # The anchor line is written by the pre-deploy step and DEPLOY_EXECUTED=YES
+    # by the deploy step, so the artifact's own line order is the execution
+    # order -- the read really did happen before the mutation.
+    lines = out.evidence_text.splitlines()
+    assert lines.index(f"PRE_DEPLOY_SERVED_VERSION_ID={ANCHOR_VERSION}") < lines.index(
+        "DEPLOY_EXECUTED=YES"
+    )
+
+
+def test_anchor_evidence_artifact_is_durable_and_bounded(tmp_path) -> None:
+    _assert_artifact_contract(_deploy_steps())
+    out = _run_deploy_chain(tmp_path, body=_envelope_body([_served(ANCHOR_VERSION)]))
+    assert out.evidence["MUTATION_CLASS"] == "DEPLOY"
+    assert out.evidence["B14_WORKER_SCRIPT"] == "ai-revenue-korean-ai-platform"
+    assert out.evidence["PRE_DEPLOY_SERVED_VERSION_ID"] == ANCHOR_VERSION
+    assert out.evidence["PRE_MUTATION_VERSION_CAPTURED"] == "YES"
+    assert out.evidence["SOURCE_MAIN_SHA"] == TARGET_SHA
+    assert out.evidence["ROLLBACK_ANCHOR_AVAILABLE"] == "YES"
+    assert out.evidence["ANCHOR_PREPARED_BEFORE_DEPLOY"] == "YES"
+    assert out.evidence["DEPLOY_ATTEMPTED"] == "YES"
+    assert out.evidence["DEPLOY_EXECUTED"] == "YES"
+
+
+# -- 2: only a valid active version becomes the anchor ----------------------
+
+
+def test_only_a_valid_active_version_becomes_the_anchor(tmp_path) -> None:
+    out = _run_deploy_chain(tmp_path, body=_envelope_body([_served(ANCHOR_VERSION)]))
+    assert out.failed is False, out.output
+    assert out.evidence["PRE_DEPLOY_SERVED_VERSION_ID"] == ANCHOR_VERSION
+
+
+def test_anchor_accepts_a_canonical_leading_hyphen_version(tmp_path) -> None:
+    """An id the canonical grammar accepts must survive the whole step.
+
+    Cloudflare issues UUID version ids, so this is contract parity rather than
+    an expected production value: the gate must accept exactly what the canonical
+    predicate accepts.
+    """
+    version = "-pre-version"
+    out = _run_deploy_chain(tmp_path, body=_envelope_body([_served(version)]))
+    assert out.failed is False, out.output
+    assert out.evidence["PRE_DEPLOY_SERVED_VERSION_ID"] == version
+    assert out.mutated is True
+
+
+def test_anchor_reads_the_documented_rest_endpoint() -> None:
+    run = _anchor_run()
+    # The URL is composed the way the rollback branch composes it -- a `base`
+    # variable plus a relative path -- so both halves are asserted.
+    assert "/workers/scripts/ai-revenue-korean-ai-platform" in run
+    assert '"${base}/deployments"' in run
+    assert "api.cloudflare.com/client/v4/accounts" in run
+    assert "wrangler@4 deployments list" not in run, (
+        "the undocumented wrangler bare-list must not be the served-version source"
+    )
+
+
+def test_anchor_reuses_the_canonical_authority_only() -> None:
+    _assert_anchor_authority(_anchor_run())
+
+
+# -- deploy attempt vs deploy outcome (CENTRAL review round 1) --------------
+#
+# `set -euo pipefail` ends the deploy step the moment deploy.sh exits non-zero,
+# so evidence written AFTER the command is lost exactly when it matters: a
+# deploy that started and failed can still have mutated Production, and an
+# artifact with no attempt line would read identically to one where the anchor
+# refused and deploy.sh was never reached. The attempt is therefore recorded
+# before the command, and a failed deploy records UNKNOWN -- never YES, and
+# never NO.
+
+
+def _assert_deploy_attempt_evidence(run: str) -> None:
+    assert "DEPLOY_ATTEMPTED=YES" in run, "the deploy attempt is not recorded"
+    assert run.index("DEPLOY_ATTEMPTED=YES") < run.index("bash ./deploy.sh"), (
+        "the attempt must be recorded BEFORE the mutating command"
+    )
+    assert run.index("bash ./deploy.sh") < run.index("DEPLOY_EXECUTED=YES"), (
+        "execution may only be recorded once the command has succeeded"
+    )
+    # A failed deploy is not knowably a non-mutation, so this step must never
+    # assert NO. Only the anchor step may, and only when it refused.
+    assert "DEPLOY_EXECUTED=NO" not in run, (
+        "a failed deploy must not be asserted as 'not executed'"
+    )
+
+
+def test_deploy_attempt_is_recorded_before_the_mutating_command() -> None:
+    _assert_deploy_attempt_evidence(_deploy_run())
+
+
+def test_successful_deploy_records_attempt_then_execution(tmp_path) -> None:
+    """Success: ATTEMPTED=YES, EXECUTED=YES, success marker=PASS."""
+    out = _run_deploy_chain(tmp_path, body=_envelope_body([_served(ANCHOR_VERSION)]))
+    assert out.failed is False, out.output
+    assert out.deploy_calls == 1
+    assert out.evidence["DEPLOY_ATTEMPTED"] == "YES"
+    assert out.evidence["DEPLOY_EXECUTED"] == "YES"
+    assert "B14_CANONICAL_PIPELINE_DEPLOY=PASS" in out.output
+    assert "B14_CANONICAL_PIPELINE_DEPLOY=FAIL" not in out.output
+    lines = out.evidence_text.splitlines()
+    assert lines.index("DEPLOY_ATTEMPTED=YES") < lines.index("DEPLOY_EXECUTED=YES")
+
+
+def test_failed_deploy_records_the_attempt_and_no_success(tmp_path) -> None:
+    """deploy.sh failed: ATTEMPTED=YES, EXECUTED=UNKNOWN, no success marker.
+
+    The anchor must survive a failed deploy -- after a deploy that started and
+    failed, the pre-mutation version is exactly the version to return to.
+    """
+    out = _run_deploy_chain(
+        tmp_path, body=_envelope_body([_served(ANCHOR_VERSION)]), deploy_fail=True
+    )
+    assert out.failed is True, out.output
+    assert out.deploy_calls == 1, "deploy.sh was attempted; the artifact must say so"
+    assert out.evidence["DEPLOY_ATTEMPTED"] == "YES"
+    # Neither a false success nor a false "nothing happened".
+    assert out.evidence["DEPLOY_EXECUTED"] == "UNKNOWN"
+    assert out.evidence["DEPLOY_EXECUTED"] != "YES"
+    assert out.evidence["DEPLOY_EXECUTED"] != "NO"
+    assert "B14_CANONICAL_PIPELINE_DEPLOY=PASS" not in out.output
+    assert out.evidence["PRE_DEPLOY_SERVED_VERSION_ID"] == ANCHOR_VERSION
+    assert out.evidence["MUTATION_CLASS"] == "DEPLOY"
+    assert out.evidence_text.strip() != "", "the anchor artifact must still be publishable"
+    lines = out.evidence_text.splitlines()
+    assert lines.index("DEPLOY_ATTEMPTED=YES") < lines.index("DEPLOY_EXECUTED=UNKNOWN")
+
+
+def test_anchor_refusal_records_no_attempt_and_no_execution(tmp_path) -> None:
+    """Anchor refused: ATTEMPTED absent, EXECUTED=NO, deploy.sh calls=0."""
+    out = _run_deploy_chain(
+        tmp_path,
+        body=_envelope_body([_served(ANCHOR_VERSION, 50), _served(WRONG_VERSION, 50)]),
+    )
+    _assert_no_mutation(out)
+    assert out.deploy_calls == 0
+    assert "DEPLOY_ATTEMPTED" not in out.evidence
+    assert out.evidence["DEPLOY_EXECUTED"] == "NO"
+
+
+# -- 3 to 6: every refused read is a fail-closed non-mutation ---------------
+
+
+def test_malformed_or_missing_envelope_never_mutates(tmp_path) -> None:
+    shapes = {
+        "bare_list": json.dumps([{"versions": [_served(ANCHOR_VERSION)]}]),
+        "no_success_wrapper": json.dumps(
+            {"deployments": [_deployment(ANCHOR_VERSION, 100)]}
+        ),
+        "empty_body": "",
+        "not_json": "not-json",
+        "empty_deployments": _envelope_body([]),
+    }
+    for label, body in shapes.items():
+        out = _run_deploy_chain(tmp_path / label, body=body)
+        _assert_no_mutation(out)
+
+
+def test_split_traffic_never_mutates(tmp_path) -> None:
+    out = _run_deploy_chain(
+        tmp_path,
+        body=_envelope_body([_served(ANCHOR_VERSION, 50), _served(WRONG_VERSION, 50)]),
+    )
+    _assert_no_mutation(out)
+
+
+def test_active_version_not_at_full_traffic_never_mutates(tmp_path) -> None:
+    out = _run_deploy_chain(tmp_path, body=_envelope_body([_served(ANCHOR_VERSION, 90)]))
+    _assert_no_mutation(out)
+
+
+def test_unsafe_version_id_never_mutates(tmp_path) -> None:
+    out = _run_deploy_chain(
+        tmp_path, body=_envelope_body([_served("bad id;echo " + TOKEN)])
+    )
+    _assert_no_mutation(out)
+    assert "bad id" not in out.output, "a refused candidate must not be reflected"
+    assert TOKEN not in out.output
+
+
+def test_resolver_failure_never_mutates(tmp_path) -> None:
+    out = _run_deploy_chain(
+        tmp_path, body=_envelope_body([_served(ANCHOR_VERSION)]), curl_fail=True
+    )
+    _assert_no_mutation(out)
+
+
+# -- 8: no secret, account id or envelope in the artifact -------------------
+
+
+def test_anchor_artifact_carries_no_secret_and_no_envelope(tmp_path) -> None:
+    out = _run_deploy_chain(tmp_path, body=_envelope_body([_served(ANCHOR_VERSION)]))
+    for forbidden in (TOKEN, ACCOUNT_ID, "Authorization", "Bearer"):
+        assert forbidden not in out.evidence_text, f"{forbidden} leaked into the artifact"
+        assert forbidden not in out.output, f"{forbidden} leaked into the run log"
+    for envelope_token in ("success", "versions", "result"):
+        assert envelope_token not in out.evidence_text, (
+            f"an envelope body leaked into the artifact: {envelope_token}"
+        )
+    assert out.evidence["RAW_DEPLOYMENTS_ENVELOPE_INCLUDED"] == "NO"
+    assert out.evidence["SECRET_VALUES_INCLUDED"] == "NO"
+    assert out.evidence["ACCOUNT_ID_INCLUDED"] == "NO"
+    # Every line the artifact can carry is written through `record`, so no
+    # credential-shaped literal can reach it.
+    for literal in re.findall(r'record "[^"]*"', _anchor_run()):
+        for forbidden in ("CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID", "Authorization"):
+            assert forbidden not in literal, f"recorded literal names a secret: {literal}"
+
+
+# -- 9: the existing deploy / post-deploy / rollback contracts survive ------
+
+
+def test_deploy_and_post_deploy_semantics_are_preserved() -> None:
+    run = _deploy_run()
+    assert "bash ./deploy.sh" in run, "deploy.sh must remain the canonical pipeline"
+    assert "B14_CANONICAL_PIPELINE_DEPLOY=PASS" in run
+    text = _workflow_text()
+    for preserved in (
+        "POST_DEPLOY_VERSION_AT_100=PASS",
+        "ENGINE_B14_BOUND_SMOKE=PASS",
+        "B14_KILO_CATALOG_MARKER=PASS",
+        "B14_PRODUCTION_DEPLOY_SMOKE=PASS",
+        "/workers/scripts/ai-revenue-korean-ai-platform/deployments",
+    ):
+        assert preserved in text, f"post-deploy contract lost: {preserved}"
+
+
+def test_the_rollback_contract_from_3704_is_untouched() -> None:
+    jobs = _workflow()["jobs"]
+    rollback = jobs["rollback-production-b14"]
+    assert rollback["if"] == (
+        "github.event.inputs.confirmation == 'ROLLBACK_B14_TO_PREVIOUS_VERSION'"
+    )
+    # #3704's shape, unchanged: one bounded step plus one always() artifact.
+    steps = rollback["steps"]
+    assert len([s for s in steps if "run" in s]) == 1
+    assert (
+        len(
+            [
+                s
+                for s in steps
+                if str(s.get("uses", "")).startswith("actions/upload-artifact")
+            ]
+        )
+        == 1
+    )
+    assert "PRE_ROLLBACK_SERVED_VERSION_ID" in steps[2]["run"]
+    # The deploy job must still be unable to roll anything back on its own.
+    assert "ROLLBACK" not in jobs[DEPLOY_JOB]["if"]
+
+
+# -- negative controls ------------------------------------------------------
+# A contract test that still passes when the guarantee is removed proves
+# nothing. Each control below deletes or inverts exactly one property and
+# asserts the matching predicate goes RED.
+
+
+def _mutated_steps(mutator) -> list:
+    jobs = copy.deepcopy(_workflow()["jobs"])
+    steps = jobs[DEPLOY_JOB]["steps"]
+    mutator(steps)
+    return steps
+
+
+def _find(steps, name: str) -> dict:
+    return next(s for s in steps if s.get("name") == name)
+
+
+def test_negative_control_removing_the_pre_read_goes_red() -> None:
+    def mutator(steps) -> None:
+        steps[:] = [s for s in steps if s.get("name") != ANCHOR_STEP]
+
+    with pytest.raises(AssertionError):
+        _assert_step_order(_mutated_steps(mutator))
+
+
+def test_negative_control_reordering_the_pre_read_after_deploy_goes_red() -> None:
+    def mutator(steps) -> None:
+        anchor = _find(steps, ANCHOR_STEP)
+        steps.remove(anchor)
+        steps.insert(steps.index(_find(steps, DEPLOY_STEP)) + 1, anchor)
+
+    with pytest.raises(AssertionError):
+        _assert_step_order(_mutated_steps(mutator))
+
+
+def test_negative_control_moving_the_pre_read_before_exact_main_goes_red() -> None:
+    def mutator(steps) -> None:
+        anchor = _find(steps, ANCHOR_STEP)
+        steps.remove(anchor)
+        steps.insert(steps.index(_find(steps, PREMUTATION_STEP)), anchor)
+
+    with pytest.raises(AssertionError):
+        _assert_step_order(_mutated_steps(mutator))
+
+
+def test_negative_control_removing_the_artifact_step_goes_red() -> None:
+    def mutator(steps) -> None:
+        steps[:] = [s for s in steps if s.get("name") != ARTIFACT_STEP]
+
+    with pytest.raises(AssertionError):
+        _assert_artifact_contract(_mutated_steps(mutator))
+
+
+def test_negative_control_artifact_without_always_goes_red() -> None:
+    def mutator(steps) -> None:
+        _find(steps, ARTIFACT_STEP)["if"] = "success()"
+
+    with pytest.raises(AssertionError):
+        _assert_artifact_contract(_mutated_steps(mutator))
+
+
+def test_negative_control_silent_missing_artifact_goes_red() -> None:
+    def mutator(steps) -> None:
+        _find(steps, ARTIFACT_STEP)["with"]["if-no-files-found"] = "warn"
+
+    with pytest.raises(AssertionError):
+        _assert_artifact_contract(_mutated_steps(mutator))
+
+
+def test_negative_control_a_second_version_authority_goes_red() -> None:
+    run = _anchor_run().replace(
+        "cloudflare_served_version_cli.py", "b54_engine_served_version_guard.py"
+    )
+    with pytest.raises(AssertionError):
+        _assert_anchor_authority(run)
+
+
+def test_negative_control_inline_envelope_parsing_goes_red() -> None:
+    run = _anchor_run() + '\n          jq -r ".result.deployments[0]"'
+    with pytest.raises(AssertionError):
+        _assert_anchor_authority(run)
+
+
+def test_negative_control_a_mutating_anchor_goes_red() -> None:
+    run = _anchor_run() + "\n          npx wrangler@4 deploy"
+    with pytest.raises(AssertionError):
+        _assert_anchor_authority(run)
+
+
+def _deploy_run_without_attempt() -> str:
+    return "\n".join(
+        line for line in _deploy_run().splitlines() if "DEPLOY_ATTEMPTED" not in line
+    )
+
+
+# The deploy step exactly as it stood before this correction: no attempt record,
+# and the only evidence line placed AFTER the command, where `set -euo pipefail`
+# destroys it the moment deploy.sh exits non-zero.
+_PRE_CORRECTION_DEPLOY_RUN = """set -euo pipefail
+bash ./deploy.sh 2>&1 | tee /tmp/b14-deploy.log
+printf 'DEPLOY_EXECUTED=YES\\n' >> "${RUNNER_TEMP}/b14-deploy-evidence.txt"
+echo 'B14_CANONICAL_PIPELINE_DEPLOY=PASS'
+"""
+
+
+def test_negative_control_removing_the_attempt_record_goes_red() -> None:
+    with pytest.raises(AssertionError):
+        _assert_deploy_attempt_evidence(_deploy_run_without_attempt())
+
+
+def test_negative_control_recording_the_attempt_after_the_command_goes_red() -> None:
+    """The original defect's shape: written after the command, so a failure eats it.
+
+    Both attempt lines move, not just the printf -- an echo left above the
+    command would satisfy the ordering check while still producing nothing
+    durable once the step aborts.
+    """
+    lines = _deploy_run().splitlines()
+    attempt = [line for line in lines if "DEPLOY_ATTEMPTED" in line]
+    rest = [line for line in lines if "DEPLOY_ATTEMPTED" not in line]
+    moved = "\n".join(rest + attempt)
+    with pytest.raises(AssertionError):
+        _assert_deploy_attempt_evidence(moved)
+
+
+def test_negative_control_asserting_no_execution_on_failure_goes_red() -> None:
+    run = _deploy_run() + (
+        "\n          printf 'DEPLOY_EXECUTED=NO\\n' >> "
+        '"${RUNNER_TEMP}/b14-deploy-evidence.txt"'
+    )
+    with pytest.raises(AssertionError):
+        _assert_deploy_attempt_evidence(run)
+
+
+def test_negative_control_a_failed_deploy_without_the_attempt_line_loses_the_evidence(
+    tmp_path,
+) -> None:
+    """Execution-level restatement of the defect this correction removes.
+
+    With the attempt line removed, a deploy that started and failed leaves an
+    artifact that is indistinguishable from an anchor refusal: no attempt, no
+    execution, and no way to tell Production may have been touched. The
+    corrected step is run alongside it and must differ on exactly this point.
+    """
+    broken = _run_deploy_chain(
+        tmp_path / "broken",
+        body=_envelope_body([_served(ANCHOR_VERSION)]),
+        deploy_fail=True,
+        deploy_run_override=_PRE_CORRECTION_DEPLOY_RUN,
+    )
+    assert broken.deploy_calls == 1
+    assert "DEPLOY_ATTEMPTED" not in broken.evidence, (
+        "the defect is present: a deploy was attempted and the artifact cannot say so"
+    )
+    # Worse than UNKNOWN: the pre-correction step aborts before writing
+    # anything at all, so the artifact cannot distinguish this from a refusal.
+    assert "DEPLOY_EXECUTED" not in broken.evidence
+
+    fixed = _run_deploy_chain(
+        tmp_path / "fixed",
+        body=_envelope_body([_served(ANCHOR_VERSION)]),
+        deploy_fail=True,
+    )
+    assert fixed.deploy_calls == 1
+    assert fixed.evidence["DEPLOY_ATTEMPTED"] == "YES"
+    assert fixed.evidence["DEPLOY_EXECUTED"] == "UNKNOWN"
