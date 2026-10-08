@@ -86,6 +86,65 @@ class B66InterpretFailureEvidenceTests(unittest.TestCase):
                 return {v.value for v in node.value.args[0].elts}
         raise AssertionError("B66 canonical upstream class vocabulary absent")
 
+    def test_502_failure_stage_and_family_vocab_mirrors_canonical_route(self):
+        source = (
+            Path(__file__).parents[2] / "apps" / "padiem-chat" / "app"
+            / "b66_quote_routes.py"
+        ).read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        names = {
+            "_B66_INTERPRET_FAILURE_STAGES": module.B66_INTERPRET_FAILURE_STAGES,
+            "_B66_INTERPRET_EXCEPTION_FAMILIES": module.B66_INTERPRET_EXCEPTION_FAMILIES,
+        }
+        for node in tree.body:
+            if not isinstance(node, ast.Assign):
+                continue
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id in names:
+                    self.assertIsInstance(node.value, ast.Call)
+                    self.assertIsInstance(node.value.args[0], ast.Set)
+                    self.assertEqual(
+                        {item.value for item in node.value.args[0].elts},
+                        names.pop(target.id)
+                    )
+        self.assertEqual(names, {}, "route and smoke vocabulary must stay synchronized")
+
+    def test_502_new_provenance_markers_fail_only_and_no_privacy_leak(self):
+        response_body = json.dumps({"error": {
+            "code": "quote_interpretation_failed",
+            "message": "PRIVATE_QUOTE_TOKEN_NEVER_PRINT",
+        }})
+        cases = (
+            ({"x-b66-interpret-failure-stage": "interpreter_exception",
+              "x-b66-interpret-exception-family": "type_error"},
+             ("interpreter_exception", "type_error")),
+            ({"x-b66-interpret-failure-stage": "projection_missing_safe_dict",
+              "x-b66-interpret-exception-family": "type_error"},
+             ("projection_missing_safe_dict", "UNCLASSIFIED")),
+            ({"x-b66-interpret-failure-stage": "company-name-private",
+              "x-b66-interpret-exception-family": "company-name-private"},
+             ("UNCLASSIFIED", "UNCLASSIFIED")),
+        )
+        for raw_headers, expected in cases:
+            class Response:
+                headers = {
+                    "content-type": "application/json",
+                    **raw_headers,
+                    "set-cookie": "PRIVATE_QUOTE_TOKEN_NEVER_PRINT",
+                }
+                def text(self):
+                    return response_body
+            output = io.StringIO()
+            with redirect_stdout(output):
+                module._print_bounded_b66_interpret_failure(Response())
+            lines = output.getvalue().splitlines()
+            self.assertEqual(lines[-2:], [
+                "B66_INTERPRET_FAILURE_STAGE=" + expected[0],
+                "B66_INTERPRET_EXCEPTION_FAMILY=" + expected[1],
+            ])
+            self.assertNotIn("PRIVATE_QUOTE_TOKEN_NEVER_PRINT", output.getvalue())
+            self.assertNotIn("company-name-private", output.getvalue())
+
     def test_exact_allowlist_matches_real_b66_route(self):
         self.assertEqual(
             module.B66_UPSTREAM_CLASS_VOCABULARY,
@@ -157,6 +216,8 @@ class B66InterpretFailureEvidenceTests(unittest.TestCase):
             "B66_INTERPRET_ERROR_CODE=quote_interpretation_failed",
             "B66_INTERPRET_ERROR_LAYER=B66_INTERPRETER_ROUTE",
             "B66_INTERPRET_UPSTREAM_CLASS=upstream_binding_unavailable",
+            "B66_INTERPRET_FAILURE_STAGE=UNCLASSIFIED",
+            "B66_INTERPRET_EXCEPTION_FAMILY=UNCLASSIFIED",
         ])
         self.assertNotIn("NEVER_PRINT", output.getvalue())
 

@@ -48,6 +48,8 @@ globalThis.fetch = async (target, init = {}) => {
           status: 502,
           headers: {
             "X-B66-Upstream-Class": "upstream_timeout",
+            "X-B66-Interpret-Failure-Stage": "interpreter_exception",
+            "X-B66-Interpret-Exception-Family": "type_error",
             "X-Internal-Debug": "must-not-relay"
           }
         }
@@ -221,6 +223,8 @@ try {
   );
   assert.equal(upstreamFailure.status, 502);
   assert.equal(upstreamFailure.headers.get("x-b66-upstream-class"), "upstream_timeout");
+  assert.equal(upstreamFailure.headers.get("x-b66-interpret-failure-stage"), "interpreter_exception");
+  assert.equal(upstreamFailure.headers.get("x-b66-interpret-exception-family"), "type_error");
   assert.equal(upstreamFailure.headers.get("x-internal-debug"), null);
   assert.equal(calls.length, 7);
   assert.equal(calls[6].url, "https://chat.padiem.net/api/b66/quote/interpret");
