@@ -35,6 +35,8 @@ from kagent.browser_control_lease_authority import (
     NEW_APPROVAL_STORE,
     NEW_DURABLE_LEASE_STORE,
     P01LoopbackBrowserControlEvidenceClient,
+    P01PerCommandBrowserControlEvidenceClient,
+    BrowserControlP01CommandCorrelation,
     RENDERER_LEASE_MINTING,
     STEP_UP_EXECUTION,
     BrowserControlAuthorityEvidence,
@@ -590,6 +592,158 @@ class TestLoopbackEvidenceClient(AuthorityBase):
         projection, issued = authority.issue_from_p01(request, now=NOW)
         self.assertTrue(issued)
         self.assertEqual(projection.approval_ref, "p01_authority.3669")
+
+
+
+class Test3778PerCommandP01Evidence(AuthorityBase):
+    """The #3140 connection approval cannot silently become browser.control."""
+
+    @staticmethod
+    def correlation(request: BrowserControlLeaseRequest) -> BrowserControlP01CommandCorrelation:
+        return BrowserControlP01CommandCorrelation(
+            command_id="command.3778.browser.control",
+            request_id="request.3778.browser.control",
+            binding_ref="binding.3778.canonical",
+            request_fingerprint=request.fingerprint(),
+            run_ref=request.run_ref,
+        )
+
+    def envelope(self, request: BrowserControlLeaseRequest, **overrides: Any) -> dict[str, Any]:
+        base = TestLoopbackEvidenceClient._envelope(None, request)
+        base.update(
+            command_id="command.3778.browser.control",
+            request_id="request.3778.browser.control",
+            binding_ref="binding.3778.canonical",
+        )
+        base.update(overrides)
+        return base
+
+    def test_pairing_command_and_request_sentinels_cannot_be_reused(self) -> None:
+        req = make_request()
+        for command_id, request_id in (
+            ("command.3140.p01.1", "request.3778.browser.control"),
+            ("command.3778.browser.control", "request.3140.p01.1"),
+        ):
+            with self.assertRaises(ContractError):
+                BrowserControlP01CommandCorrelation(
+                    command_id=command_id,
+                    request_id=request_id,
+                    binding_ref="binding.3778.canonical",
+                    request_fingerprint=req.fingerprint(),
+                    run_ref=req.run_ref,
+                )
+
+    def test_real_distinct_command_echo_and_p01_scope_issue_one_lease(self) -> None:
+        req = make_request()
+        bodies: list[dict[str, Any]] = []
+
+        def opener(body: bytes) -> dict[str, Any]:
+            bodies.append(json.loads(body))
+            return {"envelope": self.envelope(req)}
+
+        client = P01PerCommandBrowserControlEvidenceClient(
+            correlation=self.correlation(req), base_url="", opener=opener,
+        )
+        authority = BrowserControlLeaseAuthority(
+            device=DEVICE, permission_profile=self.profile, store=self.store,
+            evidence_port=client,
+        )
+        lease, issued = authority.issue_from_p01(req, now=NOW)
+        self.assertTrue(issued)
+        self.assertEqual(lease.request_fingerprint, req.fingerprint())
+        self.assertEqual(
+            bodies,
+            [{
+                "command_id": "command.3778.browser.control",
+                "request_id": "request.3778.browser.control",
+                "binding_ref": "binding.3778.canonical",
+                "request_fingerprint": req.fingerprint(),
+            }],
+        )
+
+    def test_mismatched_command_request_binding_or_run_refuses_without_issuance(self) -> None:
+        req = make_request()
+        for change in (
+            {"command_id": "command.other"},
+            {"request_id": "request.other"},
+            {"binding_ref": "binding.other"},
+            {"request_fingerprint": "e" * 64},
+        ):
+            client = P01PerCommandBrowserControlEvidenceClient(
+                correlation=self.correlation(req),
+                base_url="",
+                opener=lambda body, change=change: {
+                    "envelope": self.envelope(req, **change)
+                },
+            )
+            with self.assertRaises((BrowserControlLeaseRefusal, ContractError)):
+                client.resolve(req.fingerprint())
+        client = P01PerCommandBrowserControlEvidenceClient(
+            correlation=self.correlation(req),
+            base_url="",
+            opener=lambda body: {"envelope": self.envelope(req, approval_pause={
+                **self.envelope(req)["approval_pause"], "run_id": "other_run"
+            })},
+        )
+        # The canonical P01 envelope validator may reject the mismatched run
+        # even earlier than the stricter per-command adapter. Both fail closed.
+        with self.assertRaises((BrowserControlLeaseRefusal, ContractError)):
+            client.resolve(req.fingerprint())
+        self.assertIsNone(self.store.get(req.fingerprint()))
+
+    def test_a_different_requested_fingerprint_must_not_contact_broker(self) -> None:
+        req = make_request()
+        calls: list[bytes] = []
+        client = P01PerCommandBrowserControlEvidenceClient(
+            correlation=self.correlation(req), base_url="",
+            opener=lambda body: calls.append(body) or {"envelope": self.envelope(req)},
+        )
+        with self.assertRaises(BrowserControlLeaseRefusal):
+            client.resolve("b" * 64)
+        self.assertEqual(calls, [])
+
+    def test_resident_only_accepts_a_matching_per_command_correlation(self) -> None:
+        from unittest.mock import patch
+        from kagent.local_agent_resident_process import _browser_control_lease_authority
+        req = make_request()
+        correlation = self.correlation(req)
+        with tempfile.TemporaryDirectory() as base:
+            for match in (False, True):
+                name = "match" if match else "mismatch"
+                root = os.path.join(base, name)
+                os.mkdir(root)
+                with patch.dict(os.environ, {"PADIEM_AGENT_BROKER_URL": "http://127.0.0.1:1234"}):
+                    authority = _browser_control_lease_authority(
+                        device=DEVICE, credential_dir=root, root_source="env",
+                        redeemed_device_binding_ref=(
+                            correlation.binding_ref if match else "binding.other"
+                        ),
+                        approved_command_correlation=correlation,
+                    )
+                try:
+                    self.assertIsInstance(
+                        authority._evidence_port,
+                        P01PerCommandBrowserControlEvidenceClient
+                        if match else UnconfiguredBrowserControlEvidencePort,
+                    )
+                finally:
+                    authority._store.close()
+
+    def test_resident_pairing_factory_does_not_arm_browser_control(self) -> None:
+        from unittest.mock import patch
+        from kagent.local_agent_resident_process import _browser_control_lease_authority
+        with tempfile.TemporaryDirectory() as root:
+            with patch.dict(os.environ, {"PADIEM_AGENT_BROKER_URL": "http://127.0.0.1:1234"}):
+                authority = _browser_control_lease_authority(
+                    device=DEVICE, credential_dir=root, root_source="env",
+                    redeemed_device_binding_ref="binding.3778.canonical",
+                    approved_command_correlation=None,
+                )
+            self.assertIsInstance(
+                authority._evidence_port, UnconfiguredBrowserControlEvidencePort
+            )
+            authority._store.close()
+
 
 
 class TestModuleFacts(unittest.TestCase):
