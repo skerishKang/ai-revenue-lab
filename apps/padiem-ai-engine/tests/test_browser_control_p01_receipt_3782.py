@@ -27,6 +27,7 @@ from app.browser_control_human_approval import (
 from app.browser_control_p01_receipt import (
     ENGINE_BROWSER_CONTROL_P01_RECEIPT_PRODUCER_WIRED,
     ENGINE_BROWSER_CONTROL_P01_RECEIPT_READER_WIRED,
+    AdmittedBrowserControlP01ReceiptQuery,
     CloudflareD1BrowserControlP01ReceiptStore,
     EngineApprovedBrowserControlP01Receipt,
 )
@@ -874,3 +875,141 @@ def test_independent_user_approval_mismatch_rejects_without_consuming(db, mutate
     assert run(receipts.resolve_active(
         app_id=BROWSER_P01_APP_ID, continuation_ref=ref, now=datetime.now(timezone.utc),
     )) is None
+
+
+
+def _consumed_admitted_browser_receipt(db):
+    """Synthetic trusted test source; not a real approval issuer."""
+    service, continuation, receipts, request = _make_browser_d1_issue_service(db)
+    paused = run(service.execute_payload(request))
+    assert paused.status_code == 202, paused.body
+    ref = paused.body["tool"]["continuation_ref"]
+    record = run(continuation.resolve(app_id=BROWSER_P01_APP_ID, continuation_ref=ref))
+    decision_wire = {
+        "decision_id": "decision.browser.test",
+        "pause_id": record.pause.pause_id,
+        "outcome": "approved",
+        "authority_ref": "authority.test.firstparty",
+        "evidence_ref": "evidence.browser.test",
+        "decided_at": datetime.now(timezone.utc).isoformat(),
+    }
+    result = run(service.resume_payload({
+        "app_id": BROWSER_P01_APP_ID,
+        "continuation_ref": ref,
+        "decision": decision_wire,
+    }))
+    assert result.status_code == 200, result.body
+    original = record.original_admission
+    assert original is not None
+    query = AdmittedBrowserControlP01ReceiptQuery(
+        app_id=record.app_id,
+        continuation_ref=ref,
+        user_subject_id=record.execution_identity.subject_id,
+        original_request_fingerprint=record.execution_identity.request_fingerprint,
+        original_admission_decision_id=original.decision_id,
+        run_id=record.pause.run_id,
+        invocation_sha256=record.pause.invocation_sha256,
+        user_approval_evidence_ref=decision_wire["evidence_ref"],
+    )
+    return receipts, query
+
+
+def test_exact_user_and_original_run_admission_resolves_current_receipt_in_one_read(db):
+    receipts, query = _consumed_admitted_browser_receipt(db)
+    result = run(receipts.resolve_active(
+        app_id=query.app_id, continuation_ref=query.continuation_ref,
+        now=datetime.now(timezone.utc), admitted=query,
+    ))
+    assert result is not None
+    assert result.invocation_sha256 == query.invocation_sha256
+    assert result.evidence_ref == query.user_approval_evidence_ref
+    assert result.run_id == query.run_id
+    assert run(receipts.resolve_admitted(
+        query=query, now=datetime.now(timezone.utc),
+    )) == result
+    with pytest.raises(ValueError, match="trusted original Engine admission"):
+        run(receipts.resolve_admitted(
+            query={"app_id": query.app_id},
+            now=datetime.now(timezone.utc),
+        ))
+    assert run(receipts.revoke(
+        app_id=query.app_id, continuation_ref=query.continuation_ref,
+        now=datetime.now(timezone.utc),
+    ))
+    assert run(receipts.resolve_active(
+        app_id=query.app_id, continuation_ref=query.continuation_ref,
+        now=datetime.now(timezone.utc), admitted=query,
+    )) is None
+
+
+@pytest.mark.parametrize("field,replacement", [
+    ("app_id", "another.app"),
+    ("continuation_ref", "cont_wrong.3782"),
+    ("user_subject_id", "another.user"),
+    ("original_request_fingerprint", "f" * 64),
+    ("original_admission_decision_id", "another.decision"),
+    ("run_id", "another.run"),
+    ("invocation_sha256", "f" * 64),
+    ("user_approval_evidence_ref", "another.evidence"),
+])
+def test_admitted_read_refuses_cross_owner_and_different_execution(
+    db, field, replacement,
+):
+    receipts, query = _consumed_admitted_browser_receipt(db)
+    drift = replace(query, **{field: replacement})
+    if field in ("app_id", "continuation_ref"):
+        with pytest.raises(ValueError, match="canonical admitted"):
+            run(receipts.resolve_active(
+                app_id=query.app_id, continuation_ref=query.continuation_ref,
+                now=datetime.now(timezone.utc), admitted=drift,
+            ))
+    else:
+        assert run(receipts.resolve_active(
+            app_id=query.app_id, continuation_ref=query.continuation_ref,
+            now=datetime.now(timezone.utc), admitted=drift,
+        )) is None
+    assert run(receipts.resolve_active(
+        app_id=query.app_id, continuation_ref=query.continuation_ref,
+        now=datetime.now(timezone.utc), admitted=query,
+    )) is not None
+
+
+def test_admitted_read_invalidated_by_changed_original_identity(db):
+    receipts, query = _consumed_admitted_browser_receipt(db)
+    assert run(receipts.resolve_active(
+        app_id=query.app_id, continuation_ref=query.continuation_ref,
+        now=datetime.now(timezone.utc), admitted=query,
+    )) is not None
+    db.db.execute(
+        "UPDATE padiem_engine_continuations SET "
+        "execution_identity_json=json_set(execution_identity_json,"
+        "'$.original_admission_binding.request_fingerprint',?) "
+        "WHERE app_id=? AND continuation_ref=?",
+        ("f" * 64, query.app_id, query.continuation_ref),
+    )
+    db.db.commit()
+    assert run(receipts.resolve_active(
+        app_id=query.app_id, continuation_ref=query.continuation_ref,
+        now=datetime.now(timezone.utc), admitted=query,
+    )) is None
+
+
+@pytest.mark.parametrize("invalid", [
+    {"invocation_sha256": "A" * 64},
+    {"original_request_fingerprint": "not-sha"},
+    {"user_subject_id": ""},
+])
+def test_admitted_read_query_requires_exact_server_bound_identifiers(invalid):
+    values = {
+        "app_id": "app.3782",
+        "continuation_ref": "cont_3782",
+        "user_subject_id": "owner.3782",
+        "original_request_fingerprint": "a" * 64,
+        "original_admission_decision_id": "decision.3782",
+        "run_id": "run.3782",
+        "invocation_sha256": "b" * 64,
+        "user_approval_evidence_ref": "evidence.3782",
+    }
+    values.update(invalid)
+    with pytest.raises(ValueError):
+        AdmittedBrowserControlP01ReceiptQuery(**values)

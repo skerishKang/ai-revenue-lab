@@ -170,9 +170,43 @@ class CloudflareD1BrowserControlP01ReceiptStore:
 
     async def resolve_active(
         self, *, app_id: str, continuation_ref: str, now: datetime,
+        admitted: AdmittedBrowserControlP01ReceiptQuery | None = None,
     ) -> EngineApprovedBrowserControlP01Receipt | None:
-        """Return only a still-valid, non-revoked consumed canonical receipt."""
+        """Return current evidence, optionally constrained to an exact original run.
+
+        The extra original-admission conditions belong to the SAME D1 SELECT.
+        A typed query does not authenticate the service invoking this method.
+        """
         current = _aware(now, "now")
+        extra_sql = ""
+        extra_params: tuple[Any, ...] = ()
+        if admitted is not None:
+            if (
+                type(admitted) is not AdmittedBrowserControlP01ReceiptQuery
+                or admitted.app_id != app_id
+                or admitted.continuation_ref != continuation_ref
+            ):
+                raise ValueError("canonical admitted Engine P01 query required")
+            extra_sql = (
+                " AND r.run_id=? AND r.invocation_sha256=? AND r.evidence_ref=? "
+                "AND json_extract(c.execution_identity_json,'$.subject_id')=? "
+                "AND json_extract(c.execution_identity_json,'$.request_fingerprint')=? "
+                "AND json_extract(c.execution_identity_json,"
+                "'$.original_admission_binding.app_id')=? "
+                "AND json_extract(c.execution_identity_json,"
+                "'$.original_admission_binding.subject_id')=? "
+                "AND json_extract(c.execution_identity_json,"
+                "'$.original_admission_binding.request_fingerprint')=? "
+                "AND json_extract(c.execution_identity_json,"
+                "'$.original_admission_binding.decision_id')=?"
+            )
+            extra_params = (
+                admitted.run_id, admitted.invocation_sha256,
+                admitted.user_approval_evidence_ref, admitted.user_subject_id,
+                admitted.original_request_fingerprint, admitted.app_id,
+                admitted.user_subject_id, admitted.original_request_fingerprint,
+                admitted.original_admission_decision_id,
+            )
         row = await self._first(
             f"SELECT r.app_id,r.continuation_ref,r.pause_id,r.decision_id,r.evidence_ref,"
             "r.authority_ref,r.run_id,r.invocation_sha256,r.approved_at,r.expires_at "
@@ -186,9 +220,10 @@ class CloudflareD1BrowserControlP01ReceiptStore:
             "AND json_extract(c.pause_json,'$.tool_id')='browser.control' "
             "AND json_array_length(json_extract(c.pause_json,'$.approval_scope'))=1 "
             "AND json_extract(c.pause_json,'$.approval_scope[0]')='browser.control' "
-            "AND json_extract(c.pause_json,'$.expires_at')=r.expires_at",
+            "AND json_extract(c.pause_json,'$.expires_at')=r.expires_at"
+            + extra_sql,
             _ref(app_id, "app_id"), _ref(continuation_ref, "continuation_ref"),
-            current.isoformat(),
+            current.isoformat(), *extra_params,
         )
         if row is None:
             return None
@@ -210,6 +245,24 @@ class CloudflareD1BrowserControlP01ReceiptStore:
             return record
         except (KeyError, TypeError, ValueError):
             raise ValueError("canonical Engine P01 receipt corrupted") from None
+
+    async def resolve_admitted(
+        self, *, query: AdmittedBrowserControlP01ReceiptQuery, now: datetime,
+    ) -> EngineApprovedBrowserControlP01Receipt | None:
+        """Read-only internal Broker-bridge candidate, never a bearer grant.
+
+        Requires an explicitly supplied original Engine admission and the
+        exact P01 invocation/evidence. The caller still MUST authenticate its
+        service identity and the real per-command Broker/P01 relationship.
+        """
+        if type(query) is not AdmittedBrowserControlP01ReceiptQuery:
+            raise ValueError("trusted original Engine admission correlation required")
+        return await self.resolve_active(
+            app_id=query.app_id,
+            continuation_ref=query.continuation_ref,
+            now=now,
+            admitted=query,
+        )
 
     async def revoke(
         self, *, app_id: str, continuation_ref: str, now: datetime,
@@ -325,3 +378,35 @@ class CloudflareD1BrowserControlP01ReceiptStore:
         ):
             raise ValueError("atomic Engine P01 receipt claim not completed")
         return receipt
+
+
+
+@dataclass(frozen=True, slots=True)
+class AdmittedBrowserControlP01ReceiptQuery:
+    """Private server-owned read correlation, NEVER accepted from client JSON.
+
+    original_request_fingerprint is the *Engine admitted execution* SHA,
+    not automatically the Broker command material/request fingerprint.
+    A future first-party bridge must independently prove the relationship.
+    """
+
+    app_id: str
+    continuation_ref: str
+    user_subject_id: str
+    original_request_fingerprint: str
+    original_admission_decision_id: str
+    run_id: str
+    invocation_sha256: str
+    user_approval_evidence_ref: str
+
+    def __post_init__(self) -> None:
+        for name in (
+            "app_id", "continuation_ref", "user_subject_id",
+            "original_admission_decision_id", "run_id",
+            "user_approval_evidence_ref",
+        ):
+            _ref(getattr(self, name), name)
+        for name in ("original_request_fingerprint", "invocation_sha256"):
+            value = getattr(self, name)
+            if type(value) is not str or _SHA.fullmatch(value) is None:
+                raise ValueError(f"{name} requires lowercase canonical SHA256")
