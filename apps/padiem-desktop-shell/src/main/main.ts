@@ -34,6 +34,7 @@ import { resolveRunnerHostMode } from './runner-host-mode.js';
 import { LocalWorkspaceController } from '../workspace/local-workspace.js';
 import { createElectronBrowserOpenViewOwner } from '../browser/browser-open-electron-view.js';
 import { createTrustedMainBrowserActionOwner } from '../browser/browser-action-trusted-main.js';
+import { createTrustedBrowserControlCommandIngress } from '../browser/browser-control-canonical-command-ingress.js';
 import { composeTrustedBrowserOpen } from '../browser/browser-open-composition.js';
 import { createResidentBrowserOpenRedemptionPort } from '../conversation/resident-browser-open-redemption.js';
 import {
@@ -232,6 +233,16 @@ export const browserControl = createTrustedMainBrowserActionOwner({
       supervisor.takeResidentBrowserControlLeaseLine(),
     residentRunning: () => supervisor.residentSnapshot().running,
   },
+});
+
+/**
+ * #3775: typed product action ingress assembled from the trusted-main bridge.
+ * It remains UNCONFIGURED until the canonical broker can atomically deliver
+ * per-command browser.control P01 evidence (not the #3140 pairing command).
+ * No renderer IPC and no synthetic approval context is constructed here.
+ */
+export const approvedBrowserControlCommands = createTrustedBrowserControlCommandIngress({
+  browserControl,
 });
 
 export const controller = new ShellController({
