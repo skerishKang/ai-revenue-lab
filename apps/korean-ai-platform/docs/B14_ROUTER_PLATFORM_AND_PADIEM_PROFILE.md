@@ -28,16 +28,16 @@ B14 is not merely a thin gateway for the current Padiem models. The current prof
 
 ## 2. Current Padiem request — latest owner choice versus merged source
 
-**2026-10-08 latest OWNER model decision (not a live B14 execution claim):** selected Google AI Studio IDs: gemini-3.1-flash-lite, gemini-3.5-flash-lite, gemma-4-26b-a4b-it, gemma-4-31b-it. OWNER-excluded: Kilo Poolside Laguna, B.AI Qwen, Motif 3, GPT-5.6 Luna, NVIDIA Nemotron. Customer name = 파디엠플러스 + individual model name. The Google four are in LOCAL unmerged source, NOT current main/Production. Do not treat the older Space Bunny, Ling, Poolside, Nemotron or fixed-chain histories as current approval; Space Bunny is retired. Image input/understanding test evidence is not verified image generation, and Gemma 4 31B image-input evidence is inconclusive. See [owner model decision ledger](../../../docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md).
+For current OWNER-approved/excluded model identities, customer-facing naming and source-versus-Production evidence, consult the [owner model decision ledger](../../../docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md). Current exact model registration and capabilities are governed by B14 google_provider.py and platform.py source, not by a copied list in this charter.
 
-**Merged source still reports Plus/Pro/Max HOLD; this is not evidence of a missing owner selection.** The four Google model registrations are local-only at E:/padiem-wt-plus-model-select and not yet merged or proven Production-ready. Do not silently activate, register, bill or fall back to any other model. The 2026-10-07 owner Agnes/Ling experiment and the older Laguna/Nemotron mappings are historical; no single global primary is required by #3554.
+The merged Control Plane product declaration still reports Plus/Pro/Max HOLD; this does not mean the OWNER has not selected models. Google four manual-pin B14 registrations are source-merged by PR #3788, but Product Plus activation and credential-backed Production readiness remain unproven. Do not silently activate, bill, or fall back. Historical fixed chains are not a single-primary mandate (#3554).
 
 ```text
 CURRENT_MERGED_PLUS = padiem-profile/plus-hold
 CURRENT_MERGED_PRO  = padiem-profile/pro-hold
 CURRENT_MERGED_MAX  = padiem-profile/max-hold
 OWNER_GOOGLE_SET_SELECTED = YES
-GOOGLE_MODEL_SOURCE_MERGED = NO
+GOOGLE_SOURCE_AUTHORITY = apps/korean-ai-platform/app/pilot/google_provider.py
 GOOGLE_PRODUCTION_READY = NOT_VERIFIED
 ```
 

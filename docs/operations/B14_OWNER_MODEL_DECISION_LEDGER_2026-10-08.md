@@ -2,24 +2,24 @@
 
 **Authority status:** owner decision record and current snapshot; documentation only. This ledger takes precedence over older historical examples in issues #1933, #2107, #2698, #3143, #3209, #3570, and #3589 for reporting current owner choices. It does NOT replace B14 catalog execution permission, activate a model, authorize Production, or override MODEL_CHANGE_OWNER_APPROVAL_POLICY.md. The owner controls new selection and activation.
 
-**Snapshot:** remote main was fresh-read on 2026-10-08; local unmerged work found at E:/padiem-wt-plus-model-select. Source and production may diverge. Recheck exact-main, exact model ID and live readiness before declaring any model executable.
+**Snapshot reconciliation (2026-10-08):** B14 Google four manual-pin model registrations were merged by PR #3788 at SHA bcb05bb7fea9a31b72d805e7237441e045883b1b. Separate LOCAL product naming/tier drafts are not thereby merged. Source registration is not a Plus product route or proof of Production readiness; recheck exact-main B14 catalog, Control Plane declaration and credential-backed live evidence.
 
 ## 1. Customer-visible names (owner decision)
 
-Exact owner wording: 파디엠플러스모델명, meaning 파디엠플러스 plus the INDIVIDUAL MODEL NAME. Never replace model identity with bare Padiem Plus / Pro / Max product tiers. Current unmerged local product_tier_routes.py instead builds English 'Padiem Plus - {model display name}'; this is not yet reconciled to the owner's Korean instruction. Do NOT infer that a separator, spacing, Pro/Max branding, or a tier-wide default is approved by this wording; fix literal product display contract against the recorded owner instruction.
+Exact owner wording: 파디엠플러스모델명, meaning 파디엠플러스 plus the INDIVIDUAL MODEL NAME. Historical unmerged LOCAL English naming proposals are not current merged UI behavior or owner-approved Korean naming. Do not invent separator, spacing, Pro/Max branding, tier-wide default or a single primary.
 
 ## 2. Explicitly chosen Google AI Studio four-model set
 
-Owner conversation record (2026-10-07 18:46 KST) names the four actual model IDs below. The local 2026-10-08 google_provider.py names the same four, with Google AI Studio origin generativelanguage.googleapis.com/v1beta and the binding NAME PADIEM_GEMINI_API_KEY. The local Google module is untracked; it is absent from current merged main. These models were tested for TEXT and IMAGE INPUT / UNDERSTANDING. This evidence does not establish IMAGE GENERATION or EDITING support.
+The owner chose the four exact Google AI Studio IDs below. PR #3788 merged their B14 manual-pin registration in apps/korean-ai-platform/app/pilot/google_provider.py, wired by platform.py. Its source uses Google's OpenAI-compatible origin /v1beta/openai, the existing B14 Bearer /chat/completions contract and PADIEM_GEMINI_API_KEY as a credential binding NAME only. This is SOURCE MERGED, not evidence of a Plus product route, live credential or Production call. The tests cover TEXT and IMAGE INPUT/UNDERSTANDING, NOT IMAGE GENERATION or EDITING.
 
-| Provider | Upstream ID | Intended product model ID in unmerged local code | Text / image input evidence from LOCAL | Customer model part |
+| Provider | Upstream ID | B14 manual-pin model ID (merged source) | Text / image input evidence from LOCAL | Customer model part |
 | --- | --- | --- | --- | --- |
 | Google AI Studio | gemini-3.1-flash-lite | google/gemini-3.1-flash-lite | text 7/7; image 5/5 | Gemini 3.1 Flash Lite |
 | Google AI Studio | gemini-3.5-flash-lite | google/gemini-3.5-flash-lite | text 7/7; image 5/5 | Gemini 3.5 Flash Lite |
 | Google AI Studio | gemma-4-26b-a4b-it | google/gemma-4-26b-a4b-it | text 7/7; image 5/5 | Gemma 4 26B |
 | Google AI Studio | gemma-4-31b-it | google/gemma-4-31b-it | text 7/7; image NOT VERIFIED (provider capacity); text 49.0s vs B14 20.0s budget | Gemma 4 31B |
 
-All 7/7 and 5/5 claims are prior LOCAL synthetic fixture measurements, not a current Production or independently repeated live result. Preview ID gemini-3.1-flash-lite-preview is not in the selected four. Local provider wiring should be reviewed before any activation: the local google_provider.py specifies Google native origin/x-goog-api-key while generic app/pilot/platform.py currently constructs /chat/completions with Bearer semantics; registry declaration is not executable integration proof.
+All 7/7 and 5/5 claims are prior synthetic-fixture measurements, not independently repeated Production/live results. Preview ID gemini-3.1-flash-lite-preview is not selected. PR #3788 corrected the LOCAL native x-goog-api-key vs B14 Bearer protocol mismatch by using the compatible Google /v1beta/openai origin. Source+network-free tests prove registration wiring, NOT Production availability. Gemma 4 31B remains text-only in merged source because image input was unverified and the earlier 49.0s text result exceeded the 20.0s B14 default budget.
 
 ## 3. Other model history versus current approval
 
@@ -42,15 +42,15 @@ These five must not be represented as owner-approved selectable Padiem Plus mode
 
 ## 5. B14 registration truth table (as of this snapshot)
 
-| Scope | Owner intent | Current main evidence | Local unmerged evidence | State |
+| Scope | Owner intent | Current B14 source | Other evidence / limitation | State |
 | --- | --- | --- | --- | --- |
-| Google four exact IDs | chosen | google_provider.py absent | module declaring four CATALOG_BY_ID exact IDs | LOCAL ONLY / NOT MERGED |
-| Google capability | text and image-input tests | no integrated four-model source proved | 3 image proven on local fixture, one inconclusive | PARTIAL |
-| Google provider live | execute via governed B14 only | NOT VERIFIED | protocol/credential binding mismatch to inspect | NOT PROVEN |
+| Google four exact IDs | chosen | PR #3788 merged four exact CATALOG_BY_ID manual-pin registrations | Not appended to CATALOG_MODELS or generic b14/auto; Plus tier remains HOLD | SOURCE MERGED / LIVE NOT PROVEN |
+| Google capability | text and image-input tests | Three with image input tags; Gemma 4 31B text-only | Prior synthetic fixture only; no image generation proof | SOURCE CAPABILITIES DECLARED / LIVE NOT PROVEN |
+| Google provider live | governed B14 execution only | OpenAI-compatible Google origin and Bearer adapter wired | Credential-backed live/Production E2E NOT VERIFIED | NOT PROVEN |
 | Individual customer names | 파디엠플러스 + model name | old generic tier branding | English 'Padiem Plus - ' generator | DISPLAY MISMATCH |
 | Five excluded | no customer approval | historic NVIDIA catalog entry | Kilo Poolside excluded; separate direct Poolside draft authorization unverified | EXCLUSION + UNVERIFIED AUTHORITY |
 | Claw explicit registered model | permitted | PR #3743 merged | n/a | SOURCE MERGED, LIVE NOT PROVEN |
-| B66 automatic quote selection | narrow B66-only free-first, unique qualified ID, attempts <=1, retry/fallback 0 | PR #3762 merged | n/a | SOURCE MERGED, E2E NOT READY |
+| B66 quote selector | Owner rejects free/paid eligibility filter; one attempt and no silent retry/fallback | Legacy free-first source remains merged from PR #3762 | Draft policy PR #3796 is separate; runtime policy/source mismatch and E2E issue #3751 remain unresolved | POLICY/SOURCE MISMATCH OPEN |
 | B14 admin Control Center | later design | #2107 open DESIGN ONLY | n/a | NOT BUILT |
 
 ## 6. B66 CGI Production evidence and distinct incident
@@ -59,7 +59,7 @@ Login PASS; Guided CGI quote + browser PDF PASS; complete freeform HTTP 502 / up
 
 ## 7. Safe work order; no source or Production change authorized by this ledger
 
-(1) Preserve existing local drafts/worktrees. (2) Complete provenance/classification for remaining models; remove five excluded from customer execution proposals. (3) Reconcile customer-visible per-model naming without inventing global primary. (4) Correct native Google protocol adapter and validate catalog/provider/auth/capabilities with network-free tests, then owner-authorized live canary. (5) Verify B14 registration and Chat/Claw/B66 authorization separately. (6) Diagnose B66 timeout using exact selected model evidence; no silent retry/fallback or billing expansion. (7) Independently review, merge and deploy only at explicit owner gates.
+(1) Preserve existing local drafts/worktrees. (2) Keep owner exclusions authoritative. (3) Reconcile Korean per-model display in a separate product UI slice. (4) Preserve the merged Google OpenAI-compatible adapter; independently prove credential-backed live readiness before release. (5) Verify B14 source registration separately from Chat/Claw/B66 route activation. (6) Diagnose B66 timeout using exact model evidence, with no silent retry/fallback. (7) Review, merge and deploy only at explicit owner gates.
 
 ## 8. Evidence and authority links
 
@@ -69,5 +69,5 @@ Login PASS; Guided CGI quote + browser PDF PASS; complete freeform HTTP 502 / up
 - Issue #3751 and #3760; PR #3762: B66 runtime and Production gate.
 - PR #3593: Space Bunny retirement; PR #3597: GLM changes still Draft.
 - PR #3743 / #3750: merged Claw choice and owner policy.
-- LOCAL unmerged: E:/padiem-wt-plus-model-select/apps/korean-ai-platform/app/pilot/google_provider.py; .../app/pilot/platform.py; packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py.
+- PR #3788 MERGED: Google B14 source registration in google_provider.py and platform.py. Product naming/tier proposals in E:/padiem-wt-plus-model-select are separate, unmerged LOCAL work; neither proves Production. Draft PR #3796 addresses B66 no-price-filter policy text only, not runtime.
 - Historic snapshot only: issues #1933, #3143, #3209, #3570, #3589.
