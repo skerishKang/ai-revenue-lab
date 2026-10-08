@@ -101,21 +101,16 @@ PRODUCTION_ACTIVE = NO
 
 S2 source presence proves only the bounded embedded runtime contract, not live Engine or Provider connectivity.
 
-## Padiem tier terminology
+## Padiem model authority
 
-**Current owner choice is NOT the same as current merged runtime availability.** See [B14 latest owner model decision ledger](operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md).
+Current model selections, excluded providers/models and customer naming are **not duplicated in this repository index**. Follow the [single model entrypoint](models/README.md), then the [owner decision ledger](operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md) and [owner approval policy](operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md) for the relevant decision.
 
-```text
-OWNER_CUSTOMER_NAME = 파디엠플러스 + individual model name
-OWNER_GOOGLE_FOUR = gemini-3.1-flash-lite, gemini-3.5-flash-lite, gemma-4-26b-a4b-it, gemma-4-31b-it
-OWNER_EXCLUDED = Kilo Poolside Laguna, B.AI Qwen, Motif 3, GPT-5.6 Luna, NVIDIA Nemotron
-MERGED_SOURCE_PLUS = padiem-profile/plus-hold (LOCAL Google registration not merged)
-MERGED_SOURCE_PRO  = padiem-profile/pro-hold
-MERGED_SOURCE_MAX  = padiem-profile/max-hold
-SILENT_FALLBACK = NO
-```
+- **Exact registration and capabilities:** current [B14 provider/catalog source](../apps/korean-ai-platform/app/pilot/catalog.py), [provider registration modules](../apps/korean-ai-platform/app/pilot/platform.py) and associated tests.
+- **Product-tier declaration and HOLD state:** current [Control Plane product routes](../packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py).
+- **Product consumers:** [B62](../apps/padiem-chat/README.md), [B54](../apps/korean-ai-code-agent/README.md), [B66](products/b66/README.md) each document their own boundaries, not another model roster.
+- **Live readiness:** exact deployment, credential readiness, and protected E2E evidence; source registration alone never proves a usable Production route.
 
-Exact route IDs and executability must be verified from current Control Plane declaration and B14 catalog/source. Historical LOW/MEDIUM/HIGH wording is not current route authority.
+A model addition or retirement updates its actual owner-approved authority and B14/Control Plane source as applicable. This index is deliberately stable; do not paste a new model inventory or a model status snapshot here.
 
 ## Documentation authority order
 

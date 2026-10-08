@@ -147,7 +147,7 @@ Claw does not own Padiem Plus/Pro/Max route truth. Current shared Padiem tier de
 packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py
 ```
 
-B14 remains final executability and actual Provider/model execution authority. Any B54 adapter may consume an accepted route/profile but must not redefine the route catalog.
+B14 remains final executability and actual Provider/model execution authority. Any B54 adapter may consume an accepted route/profile but must not redefine the route catalog. Model decisions, owner exclusions, exact B14 catalog registrations and Production-evidence authorities are linked from the [single model entrypoint](../../docs/models/README.md); B54 does not copy a current model roster.
 
 ## Historical detail
 
