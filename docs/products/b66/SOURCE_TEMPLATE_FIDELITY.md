@@ -12,9 +12,9 @@ SCOPE = source-derived quotation templates, document/image fidelity implementati
 
 This contract applies when B66 learns or reproduces an existing quotation document and must preserve its visual/document behavior.
 
-Typical scope:
+Technical capabilities described here (not an upload allowlist):
 
-- PDF/XLSX/HWPX source analysis;
+- source-document analysis on supported PDF/XLSX/HWPX paths, only where the relevant intake/parser has been separately enabled;
 - page/layout reproduction;
 - fonts, spacing, baselines and wrapping;
 - table/vector geometry;
@@ -25,17 +25,18 @@ Typical scope:
 
 This is **not** a general software-development model-ranking policy and is not a B14 runtime model-routing policy.
 
+**Technical analysis scope does not grant customer template-registration
+permission.** Under #3586 and the [B66 product entrypoint](README.md), the
+current reusable-template allowlist is **XLSX = ACCEPT**, **HWPX = FUTURE**,
+**XLS/HWP = REJECT**. PDF/DOCX/PPTX/images may be handled by separately
+supported intake or reference-comparison paths, but this document does not
+make them accepted reusable-template registration formats.
+
 ## 2. Lifecycle
 
-```text
-SOURCE
-  -> ANALYSIS
-  -> Canonical Quote Template candidate
-  -> REPRODUCTION
-  -> CERTIFICATION
-  -> CERTIFIED | CERTIFIED_WITH_TOLERANCE | REJECTED
-  -> EXECUTION
-```
+The product-level lifecycle is owned by the [B66 product entrypoint](README.md).
+This document contains the **technical stage gates**, not a second independent
+definition of the product flow.
 
 ### ANALYSIS
 
@@ -105,16 +106,10 @@ Silent tolerance is forbidden.
 
 ## 3. Execution contract
 
-Only a certified template enters normal repeat generation.
-
-```text
-new user facts
--> approved Saved Quote Skill
--> QuoteDraft
--> QuoteCore
--> certified Canonical Quote Template
--> deterministic Preview / PDF
-```
+Only a certified template enters normal repeat generation. The authoritative
+Saved Quote Skill -> QuoteDraft -> QuoteCore -> certified-template -> Preview/PDF
+product flow is maintained in [README.md](README.md). The following are
+**fidelity-specific execution gates**:
 
 ```text
 SOURCE_DOCUMENT_REQUIRED_AT_REPEAT_RUNTIME = NO
@@ -128,10 +123,13 @@ Material changes to renderer geometry, typography/font resolution, page behavior
 
 ## 4. Reference authority
 
-For a source-derived template:
+For an explicitly supported source-derived template, the mechanically
+inspectable source is design evidence, and the reference PDF is the visual
+oracle. This distinction does **not** expand the customer template
+registration allowlist (#3586):
 
 ```text
-SOURCE_XLSX/HWPX/etc.
+SUPPORTED_SOURCE_DOCUMENT
 = structural/design evidence where mechanically inspectable
 
 REFERENCE_PDF
@@ -205,7 +203,23 @@ COMPILED_FONT_RESOURCE_CHECKS = 63/63 PASS
 RUNTIME_CGI_LITERAL = 0
 MAX_TEST_PDF_BYTES = 20047904
 FULL_PRODUCT_WRANGLER_DRY_RUN = PASS
-PRODUCTION_ACTIVATION = PENDING
+PRODUCTION_VERIFICATION_SCOPE = SOURCE_ONLY
+```
+
+Separately, the latest recorded authorized CGI Production browser E2E
+(run 37741635545; see #3751 and #3733) passed login, assigned Saved Quote
+Skill, Guided QuoteCore values, certified preview, and an actual downloaded
+browser PDF. Complete Freeform interpretation failed with HTTP 502 classified
+as upstream_timeout (one POST, zero retry/fallback); Partial Freeform/follow-up
+was not tested. The exact model selected and timeout origin were not proven.
+This is **run-specific historical Production evidence**, not proof that the
+current served revision passes end-to-end.
+
+```text
+PRODUCTION_GUIDED_BROWSER_PREVIEW_AND_PDF = PASS_ON_RECORDED_RUN
+PRODUCTION_COMPLETE_FREEFORM = HTTP_502_UPSTREAM_TIMEOUT
+PRODUCTION_PARTIAL_FOLLOWUP = NOT_TESTED
+CUSTOMER_READY = NO
 ```
 
 The Worker integration is independently re-certified rather than automatically
@@ -261,80 +275,16 @@ Historical candidates included HTML/Chromium, Google Sheets, native workbook/Exc
 
 A slower editable-document compiler may remain an optional output path while a faster certified renderer handles Preview/PDF.
 
-## 7. Development-model operating guidance — document/image fidelity only
+## 7. Historical development-model evidence (archived)
 
-This section records an **empirical development workflow** from the B66 document-fidelity work. It does not define a global coding-model hierarchy and does not change B14/provider/runtime routing.
-
-```text
-DEVELOPMENT_WORKFLOW_ONLY = YES
-GENERAL_CODING_POLICY = NO
-PRODUCT_RUNTIME_MODEL_ROUTING = NO
-```
-
-### When the document/image fidelity problem is new
-
-Use a premium high-reasoning model first when:
-
-- the correct renderer/representation is unknown;
-- several technically plausible rendering paths exist;
-- root cause is visual/PDF-internal rather than a simple code defect;
-- fidelity is blocked by layout, font, graphics-state, alpha/layering or document-format semantics.
-
-Current operational shorthand:
-
-```text
-GPT-class premium lane
--> one-pass-first architecture / golden-method discovery
-```
-
-This is a preference, not a guarantee.
-
-### When a golden method already exists or premium capacity is unavailable
-
-Use GLM/other free or low-cost models with review-assisted multi-pass execution.
-
-```text
-PASS 1
--> implementation
-
-CENTRAL review
--> classify measured failures
--> give invariants / experiments, not merely "try again"
-
-PASS 2+
--> root-cause correction
--> rerun the same gates
-```
-
-Current empirical interpretation from CGI:
-
-```text
-GPT-class result
-= reached the successful PDF-native solution class quickly
-
-GLM 5.3 Flash
-= weaker first pass
-  but reached a comparable CGI final result after bounded review/correction
-```
-
-Do **not** generalize this into "GPT always succeeds once" or "GLM always succeeds twice." It is only an operating heuristic for source-derived document/image fidelity work.
-
-Escalate from the low-cost lane when the same failure class repeats after two reviewed passes without material progress, or when a new solution class is clearly required.
-
-### Cost decision
-
-For these fidelity tasks, evaluate:
-
-```text
-EFFECTIVE_COST
-=
-MODEL_COST
-+ ITERATION_TIME
-+ HUMAN_REVIEW_TIME
-+ FAILURE_RISK
-```
-
-A free model is not operationally cheaper when repeated attempts consume more critical-path time than one premium pass. Conversely, once a golden method and validator exist, low-cost models are appropriate for repeated implementations and bounded corrections.
+The former development-model and cost heuristics are not normative fidelity
+criteria or B66 customer-model policy. Their complete historical wording is
+preserved in the [dated archive](../../history/2026-10-08/B66_DOCUMENT_FIDELITY_DEVELOPMENT_MODEL_HEURISTICS.snapshot.md)
+(marked HISTORICAL_ARCHIVE / CURRENT_OPERATING_POLICY=NO).
+Model policy belongs exclusively to the
+[owner model policy](../../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md).
+The owner's free/paid B66 eligibility correction is currently in **Draft PR
+#3796**, not in merged runtime source.
 
 ## 8. Golden-method rule
 
