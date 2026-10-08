@@ -52,6 +52,10 @@ QuoteCore remains the sole calculation authority. The renderer does not become a
 
 Historical renderer experiments are evidence, not current authority: #3545, #3574, #3578, #3581 and #3584.
 
+## Shared platform and release rules
+
+The quotation workflow, QuoteCore calculations and template certification remain B66-specific responsibilities. The common [architecture and ownership index](../../common/README.md) provides shared platform boundaries, and the [development lifecycle index](../../lifecycle/README.md) points to the repository-wide validation, approval and deployment contracts. Neither link changes the current customer readiness or permits a Production release.
+
 ## Current CGI result
 
 The CGI reference quotation has reached a certified template result inside its declared scope:
