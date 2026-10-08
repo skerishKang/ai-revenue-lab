@@ -31,7 +31,23 @@ async function verify() {
   assert.equal(Browser.isCgiSkill(Browser.CGI_SKILL_ID), true);
   assert.equal(Browser.isCgiSkill("b66skill_" + "a".repeat(32)), false);
   assert.equal(Browser.CGI_BASE_SHA256.length, 64);
-  const ops = Browser.project(base, preview);
+  const oldScreen = { ...clone(preview), layoutVariant: "" };
+  const approvedScreen = Browser.certifiedPreviewModel(oldScreen, Browser.CGI_SKILL_ID, base.template.fingerprint);
+  assert.equal(approvedScreen.layoutVariant, "cgi-v2");
+  assert.equal(oldScreen.layoutVariant, "", "source approved profile is never mutated");
+  assert.equal(approvedScreen.template.fingerprint, base.template.fingerprint);
+  assert.equal(Browser.certifiedPreviewModel(oldScreen, "b66skill_" + "a".repeat(32),
+    base.template.fingerprint), oldScreen, "other skills must not switch layout");
+  assert.equal(Browser.certifiedPreviewModel(oldScreen, Browser.CGI_SKILL_ID,
+    "forged-fingerprint"), oldScreen, "template fingerprint is required");
+  assert.equal(Browser.certifiedPreviewModel({ ...oldScreen, certifiedPreviewBaseUrl: "/evil" },
+    Browser.CGI_SKILL_ID, base.template.fingerprint).layoutVariant, "",
+    "invalid preview source cannot enter certified mode");
+  assert.equal(Browser.certifiedPreviewModel({ ...oldScreen,
+    template: { ...oldScreen.template, approved: false } },
+    Browser.CGI_SKILL_ID, base.template.fingerprint).layoutVariant, "",
+    "unapproved profile must never enter certified mode");
+  const ops = Browser.project(base, approvedScreen);
   assert.ok(ops.length >= 14 && ops.length <= 40);
   const get = (key) => ops.find((op) => op.key === key);
   assert.equal(get("recipient").text, "대한건설");
