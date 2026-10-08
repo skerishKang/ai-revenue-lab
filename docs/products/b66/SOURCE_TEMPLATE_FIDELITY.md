@@ -119,6 +119,13 @@ QUOTECORE_CALCULATION_AUTHORITY = YES
 STRUCTURED_TEMPLATE_RENDER_MODEL_CALLS = 0
 ```
 
+Once certified, PDF output is produced by executing the verified deterministic
+renderer/converter, not by asking an AI model to recreate the page layout.
+This applies to the certified PDF-native path; any separately approved
+HTML-to-PDF path likewise runs existing conversion code without model
+inference. Model reasoning can assist source analysis, initial implementation
+or debugging, but is **not** a repeat-PDF rendering dependency.
+
 Material changes to renderer geometry, typography/font resolution, page behavior, asset placement/alpha/layering, table structure or wrapping require certification applicability review.
 
 ## 4. Reference authority
@@ -275,18 +282,7 @@ Historical candidates included HTML/Chromium, Google Sheets, native workbook/Exc
 
 A slower editable-document compiler may remain an optional output path while a faster certified renderer handles Preview/PDF.
 
-## 7. Historical development-model evidence (archived)
-
-The former development-model and cost heuristics are not normative fidelity
-criteria or B66 customer-model policy. Their complete historical wording is
-preserved in the [dated archive](../../history/2026-10-08/B66_DOCUMENT_FIDELITY_DEVELOPMENT_MODEL_HEURISTICS.snapshot.md)
-(marked HISTORICAL_ARCHIVE / CURRENT_OPERATING_POLICY=NO).
-Model policy belongs exclusively to the
-[owner model policy](../../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md).
-The owner's free/paid B66 eligibility correction is currently in **Draft PR
-#3796**, not in merged runtime source.
-
-## 8. Golden-method rule
+## 7. Golden-method rule
 
 When a difficult document problem is solved, preserve the reusable method as:
 
@@ -297,9 +293,9 @@ When a difficult document problem is solved, preserve the reusable method as:
 - negative/rejection tests;
 - root-cause evidence.
 
-The goal is not to pay the premium model for the same discovery repeatedly.
+The goal is to reuse a proven solution instead of rediscovering and revalidating the same method repeatedly.
 
-## 9. Historical issue map
+## 8. Historical issue map
 
 These issues remain evidence but are no longer competing authorities for current CGI renderer direction:
 
