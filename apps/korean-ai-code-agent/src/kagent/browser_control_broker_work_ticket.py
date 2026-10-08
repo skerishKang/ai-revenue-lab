@@ -15,6 +15,7 @@ from padiem_control_plane.local_agent_broker import BrokerCommandAdmission
 
 from .browser_control_actions import BrowserControlActionRequest
 from .browser_control_lease_authority import (
+    BROWSER_CONTROL_TOOL_ID,
     BrowserControlAuthorityEvidence,
     BrowserControlLeaseRequest,
     BrowserControlP01CommandCorrelation,
@@ -96,6 +97,8 @@ class AuthenticatedBrowserControlWorkTicket:
             e.approval_pause.run_id == l.run_ref
             and e.permission_request.run_id == l.run_ref
             and e.approval_pause.invocation_sha256 == l.fingerprint()
+            and BROWSER_CONTROL_TOOL_ID in e.approval_pause.approval_scope
+            and e.permission_request.target_ref == l.target_ref()
             and e.approval_decision.outcome is ApprovalOutcome.APPROVED
             and e.approval_pause.pause_id == e.approval_decision.pause_id
             and action.browser_session_ref == l.browser_session_ref

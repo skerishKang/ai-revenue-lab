@@ -151,6 +151,10 @@ class Test3782BrokerControlWorkTicket(unittest.TestCase):
         )
         bad = (
             replace(t, evidence=denied),
+            replace(t, evidence=replace(t.evidence, permission_request=replace(
+                t.evidence.permission_request, target_ref="target.other"))),
+            replace(t, evidence=replace(t.evidence, approval_pause=replace(
+                t.evidence.approval_pause, approval_scope=("process.execute",)))),
             replace(t, action=replace(t.action, origin_ref="https://other.example")),
             replace(t, action=replace(t.action, browser_session_ref="browser.session.other")),
             replace(t, lease_request=replace(t.lease_request, allowed_action_classes=("scroll",))),
