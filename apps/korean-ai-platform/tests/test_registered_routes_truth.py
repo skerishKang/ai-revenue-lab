@@ -66,8 +66,9 @@ def test_only_public_catalog_lane_is_auto_eligible(client):
     assert public[0]["auto_eligible"] is True
     # #2097: minimax + hy3 retirement unregistered two explicit-only lanes.
     # The owner final retirement decision (2026-10-07) retired the Space Bunny
-    # lane too: nine manual-pin lanes remain (9 total).
-    assert len(explicit) == 9
+    # lane too: nine earlier manual-pin routes plus four Google owner-selected
+    # manual-pin routes (13 total); public auto lane remains unchanged.
+    assert len(explicit) == 13
     assert all(not r["auto_eligible"] for r in explicit)
 
 

@@ -535,6 +535,7 @@ from app.pilot.infron_provider import register_infron_provider
 from app.pilot.inception_provider import register_inception_provider
 from app.pilot.atria_provider import register_atria_provider
 from app.pilot.experiential_provider import register_experiential_provider
+from app.pilot.google_provider import register_google_provider
 
 register_poolside_provider()
 register_kilo_provider()
@@ -545,3 +546,4 @@ register_infron_provider()
 register_inception_provider()
 register_atria_provider()
 register_experiential_provider()
+register_google_provider()
