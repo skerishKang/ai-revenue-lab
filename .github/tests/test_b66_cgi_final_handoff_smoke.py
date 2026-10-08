@@ -173,13 +173,50 @@ class B66InterpretFailureEvidenceTests(unittest.TestCase):
             self.assertNotIn("PRIVATE_QUOTE_TOKEN_NEVER_PRINT", output.getvalue())
             self.assertNotIn("company-name-private", output.getvalue())
 
+    def test_new_b66_503_model_and_runtime_errors_have_bounded_diagnostics(self):
+        cases = (
+            ("quote_model_unavailable", "model_selection"),
+            ("quote_runtime_unavailable", "runtime_unavailable"),
+            ("quote_interpretation_failed", "provider_execution"),
+            ("quote_interpretation_failed", "provider_response"),
+        )
+        for code, stage in cases:
+            body = json.dumps({"error": {
+                "code": code,
+                "message": "CUSTOMER_PRIVATE_QUOTE_MESSAGE",
+            }})
+            self.assertEqual(
+                module._bounded_b66_interpret_failure(body, {
+                    "x-b66-upstream-class": "upstream_error"
+                    if stage == "provider_execution" else "private-route-value",
+                })[0],
+                code,
+            )
+            class SyntheticResponse:
+                headers = {
+                    "content-type": "application/json",
+                    "x-b66-interpret-failure-stage": stage,
+                    "x-b66-interpret-exception-family": "PRIVATE_FAMILY",
+                    "set-cookie": "CUSTOMER_PRIVATE_QUOTE_MESSAGE",
+                }
+                def text(self):
+                    return body
+            output = io.StringIO()
+            with redirect_stdout(output):
+                module._print_bounded_b66_interpret_failure(SyntheticResponse())
+            recorded = output.getvalue()
+            self.assertIn("B66_INTERPRET_FAILURE_STAGE=" + stage, recorded)
+            self.assertNotIn("CUSTOMER_PRIVATE_QUOTE_MESSAGE", recorded)
+            self.assertNotIn("PRIVATE_FAMILY", recorded)
+
     def test_exact_allowlist_matches_real_b66_route(self):
         self.assertEqual(
             module.B66_UPSTREAM_CLASS_VOCABULARY,
             self._upstream_route_vocabulary()
         )
         self.assertEqual(module.B66_INTERPRET_ERROR_CODES, {
-            "quote_interpretation_failed", "padiem_service_unavailable"
+            "quote_interpretation_failed", "quote_runtime_unavailable",
+            "quote_model_unavailable", "padiem_service_unavailable"
         })
 
     def test_known_interpreter_failure_classified_without_leaking_message(self):

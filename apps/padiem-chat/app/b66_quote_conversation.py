@@ -36,7 +36,7 @@ _ALLOWED_ITEM = frozenset({"name", "spec", "unit", "qty", "unitPrice", "note"})
 _ALLOWED_DETAIL_GROUP = frozenset({"summaryIndex", "title", "items"})
 _ALLOWED_DETAIL_ITEM = frozenset({"name", "spec", "unit", "qty", "unitPrice", "note", "section"})
 _ALLOWED_MISSING = frozenset(
-    {"recipient", "quoteNo", "issueDate", "items", "memo", "taxMode", "unitPrice"}
+    {"recipient", "quoteNo", "issueDate", "items", "memo", "taxMode", "name", "qty", "unitPrice"}
 )
 _FORBIDDEN_KEYS = frozenset(
     {
@@ -333,16 +333,13 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
         qty = _optional_number(entry.get("qty"), positive=True, path=f"{item_path}.qty")
         unit_price = _optional_number(entry.get("unitPrice"), positive=False, path=f"{item_path}.unitPrice")
         note = _optional_text(entry.get("note"), limit=MAX_ITEM_NAME_CHARS, path=f"{item_path}.note")
-        if name is None or qty is None:
-            raise B66QuoteConversationError(
-                "incomplete_item",
-                path=f"{item_path}.{'name' if name is None else 'qty'}",
-                observed_type="null",
-            )
-        item: dict[str, Any] = {
-            "name": name,
-            "qty": qty,
-        }
+        # Absent facts are partial input, not invalid facts. Preserve only
+        # supplied values; neither the model nor this boundary supplies 0/1.
+        item: dict[str, Any] = {}
+        if name is not None:
+            item["name"] = name
+        if qty is not None:
+            item["qty"] = qty
         if unit_price is None:
             missing_summary_prices.add(item_index)
         else:
@@ -409,16 +406,10 @@ def normalize_conversation_output(raw: Any) -> B66QuoteConversationProjection:
             unit_price = _optional_number(child.get("unitPrice"), positive=False, path=f"{child_path}.unitPrice")
             note = _optional_text(child.get("note"), limit=MAX_ITEM_NAME_CHARS, path=f"{child_path}.note")
             section = _optional_text(child.get("section"), limit=MAX_ITEM_NAME_CHARS, path=f"{child_path}.section")
-            if name is None or qty is None or unit_price is None:
-                missing_field = "name" if name is None else ("qty" if qty is None else "unitPrice")
-                raise B66QuoteConversationError(
-                    "incomplete_detail_item", path=f"{child_path}.{missing_field}", observed_type="null"
-                )
-            child_item: dict[str, int | float | str] = {
-                "name": name,
-                "qty": qty,
-                "unitPrice": unit_price,
-            }
+            child_item: dict[str, int | float | str] = {}
+            for key, value in (("name", name), ("qty", qty), ("unitPrice", unit_price)):
+                if value is not None:
+                    child_item[key] = value
             if spec is not None:
                 child_item["spec"] = spec
             if unit is not None:
@@ -567,11 +558,16 @@ def _server_missing_fields(
     # quote-number pattern when the user does not explicitly say them.
     if schema.get("items") is True and not projection.items:
         missing.append("items")
-    # 요약 단가가 없는 partial item 은 그대로 두고 추가 입력을 요청한다
-    # (모델이 값을 계산하거나 0 으로 채우게 하지 않는다).
     if schema.get("items") is True and projection.items:
-        if any("unitPrice" not in item for item in projection.items):
-            missing.append("unitPrice")
+        # Summary and detail facts share the same partial-input contract.
+        # A linked summary price is derived by QuoteCore; every other absent
+        # required fact must be supplied before a final draft can be built.
+        required_items = list(projection.items) + [
+            item for group in projection.detail_groups for item in group["items"]
+        ]
+        for field in ("name", "qty", "unitPrice"):
+            if any(field not in item for item in required_items):
+                missing.append(field)
     return tuple(missing)
 
 
