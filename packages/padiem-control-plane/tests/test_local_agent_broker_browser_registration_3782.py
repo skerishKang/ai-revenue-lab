@@ -131,7 +131,9 @@ def test_internal_registration_then_authenticated_take_across_restart():
     assert result["expires_at"] == (NOW + timedelta(seconds=45)).isoformat().replace("+00:00", "Z")
     assert result["raw_approval_payload"] is False
     assert registered_rows(storage) == 1
-    restarted = LocalAgentBrokerDurableRuntime(storage=storage, env=_Env())
+    restarted = LocalAgentBrokerDurableRuntime(
+        storage=storage, env=_Env(), p01_approval_source=broker._p01_approval_source
+    )
     assert take(restarted, scope) == wire
     assert taken_count(storage) == 1
     with pytest.raises(ValueError, match="already taken"):
@@ -390,4 +392,101 @@ def test_broker_rechecks_credential_rotation_after_p01_lookup():
     with pytest.raises(ControlPlaneContractError):
         register(broker, scope, wire)
     assert source.calls == 1
+    assert registered_rows(storage) == 0
+
+
+@pytest.mark.parametrize("invalid", [
+    "denied", "revoked_scope", "expired", "evidence_replaced",
+    "different_session", "different_invocation", "local_denied",
+])
+def test_p01_revocation_between_registration_and_take_never_burns_command(invalid):
+    """Registration is NOT enough: P01 must still be live at the one-shot take."""
+    storage, broker, scope, wire = empty_fixture()
+    register(broker, scope, wire)
+    source = broker._p01_approval_source
+    original = source.grant
+    changes = {
+        "denied": {"decision_outcome": "denied"},
+        "revoked_scope": {"approval_scope": ("process.execute",)},
+        "expired": {"expires_at": NOW},
+        "evidence_replaced": {"evidence_ref": "evidence.replaced"},
+        "different_session": {"request_fingerprint": "f" * 64},
+        "different_invocation": {"approval_invocation_sha256": "e" * 64},
+        "local_denied": {"local_permission_result": "denied"},
+    }
+    source.grant = replace(original, **changes[invalid])
+    with pytest.raises(ValueError):
+        take(broker, scope)
+    assert taken_count(storage) == 0
+    source.grant = original
+    assert take(broker, scope) == wire
+    assert taken_count(storage) == 1
+
+
+def test_no_p01_source_after_restart_fails_closed_at_take():
+    storage, broker, scope, wire = empty_fixture()
+    register(broker, scope, wire)
+    no_source = LocalAgentBrokerDurableRuntime(storage=storage, env=_Env())
+    with pytest.raises(ValueError, match="P01 source not wired"):
+        take(no_source, scope)
+    assert taken_count(storage) == 0
+    assert take(broker, scope) == wire
+
+
+def test_p01_source_unavailable_after_registration_does_not_consume():
+    storage, broker, scope, wire = empty_fixture()
+    register(broker, scope, wire)
+    source = broker._p01_approval_source
+    original = source.resolve_approved_command
+    def unavailable(*, scope, now):
+        raise ValueError("trusted P01 issuer unavailable")
+    source.resolve_approved_command = unavailable
+    with pytest.raises(ValueError, match="P01 issuer unavailable"):
+        take(broker, scope)
+    assert taken_count(storage) == 0
+    source.resolve_approved_command = original
+    assert take(broker, scope) == wire
+
+
+def test_action_mutation_during_p01_lookup_cannot_escape_exact_material_cas():
+    """Stored action cannot be swapped while P01 is being revalidated."""
+    storage, broker, scope, wire = empty_fixture()
+    register(broker, scope, wire)
+    source = broker._p01_approval_source
+    original = source.resolve_approved_command
+
+    def tamper_during_lookup(*, scope, now):
+        rewritten = json.loads(json.dumps(wire))
+        rewritten["action"]["elementRef"] = "el-0099"
+        storage.sql.exec(
+            "UPDATE local_agent_browser_control_command_take SET material_text = ? "
+            "WHERE command_ref = ?",
+            json.dumps(rewritten, sort_keys=True, separators=(",", ":")),
+            scope.command_ref,
+        )
+        return original(scope=scope, now=now)
+
+    source.resolve_approved_command = tamper_during_lookup
+    with pytest.raises(ValueError, match="material changed"):
+        take(broker, scope)
+    assert taken_count(storage) == 0
+
+
+def test_binding_revocation_during_p01_take_lookup_cannot_consume():
+    storage, broker, scope, wire = empty_fixture()
+    register(broker, scope, wire)
+    source = broker._p01_approval_source
+    original = source.resolve_approved_command
+
+    def revoke_during_lookup(*, scope, now):
+        result = broker.revoke_binding({
+            "binding_ref": scope.binding_ref,
+            "now": (now + timedelta(milliseconds=1)).isoformat(),
+        })
+        assert result["ok"] is True
+        return original(scope=scope, now=now)
+
+    source.resolve_approved_command = revoke_during_lookup
+    with pytest.raises(ControlPlaneContractError):
+        take(broker, scope)
     assert registered_rows(storage) == 0

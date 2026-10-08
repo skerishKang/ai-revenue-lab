@@ -11,6 +11,10 @@ from dataclasses import replace
 from datetime import timedelta
 
 import pytest
+from local_agent_broker_browser_p01_source import (
+    AuthenticatedBrowserControlP01Approval,
+    browser_control_tool_invocation_digest,
+)
 from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
 from padiem_control_plane.contracts import ControlPlaneContractError
 from padiem_control_plane.local_agent_broker import (
@@ -29,6 +33,36 @@ from test_local_agent_broker_browser_control_take_3782 import (
 DEVICE_CREDENTIAL = b"device-browser-command-credential-3782"
 
 
+class _FixtureP01Source:
+    """Test-only synthetic approved evidence, NEVER a product P01 issuer."""
+
+    def __init__(self, scope):
+        self.calls = 0
+        self.grant = AuthenticatedBrowserControlP01Approval(
+            command_ref=scope.command_ref,
+            binding_ref=scope.binding_ref,
+            request_id=scope.request_id,
+            run_ref=scope.run_ref,
+            request_fingerprint=scope.request_fingerprint,
+            admission_ref=scope.admission_ref,
+            revision_ref=scope.revision_ref,
+            evidence_ref="p01.evidence.test.3782",
+            pause_ref="pause.fixture.take.3782",
+            decision_ref="decision.fixture.take.3782",
+            approval_tool_id="browser.control",
+            approval_invocation_sha256=browser_control_tool_invocation_digest(payload(scope)),
+            approval_scope=("browser.control",),
+            decision_outcome="approved",
+            local_permission_result="require_p01_approval",
+            decided_at=NOW - timedelta(seconds=10),
+            expires_at=NOW + timedelta(seconds=100),
+        )
+
+    def resolve_approved_command(self, *, scope, now):
+        self.calls += 1
+        return self.grant
+
+
 class _Env:
     LOCAL_AGENT_BROKER_AUTHORITY_REF = "broker.browser-authenticated-take.3782"
     LOCAL_AGENT_BROKER_PEPPER = "browser-authenticated-take-2026-secure-pepper"
@@ -40,8 +74,10 @@ def _encoded(value):
 
 def prepared(*, capability=BrokerCommandCapability.BROWSER_CONTROL, state=BrokerCommandState.ADMITTED):
     storage = _Storage()
-    broker = LocalAgentBrokerDurableRuntime(storage=storage, env=_Env())
     scope = correlation()
+    broker = LocalAgentBrokerDurableRuntime(
+        storage=storage, env=_Env(), p01_approval_source=_FixtureP01Source(scope)
+    )
     bound = broker.register_binding({
         "binding_ref": scope.binding_ref, "device_id": scope.device_ref,
         "account_ref": "account.3782.1", "workspace_ref": scope.workspace_ref,
@@ -117,7 +153,9 @@ def test_authentic_broker_take_is_one_shot_and_restart_refuses():
     storage, broker, scope = prepared()
     assert take(broker, scope) == payload(scope)
     assert taken_count(storage) == 1
-    restarted = LocalAgentBrokerDurableRuntime(storage=storage, env=_Env())
+    restarted = LocalAgentBrokerDurableRuntime(
+        storage=storage, env=_Env(), p01_approval_source=broker._p01_approval_source
+    )
     with pytest.raises(ValueError, match="already taken"):
         take(restarted, scope)
     assert taken_count(storage) == 1

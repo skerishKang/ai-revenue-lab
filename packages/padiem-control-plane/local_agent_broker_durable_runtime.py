@@ -247,10 +247,39 @@ class LocalAgentBrokerDurableRuntime:
         Separate P01 issuance and device transport remain UNWIRED.
         """
         current = utc(now, "browser_control_take_now")
+        source = self._p01_approval_source
+        if source is None:
+            raise ValueError("real authenticated browser.control P01 source not wired")
+
+        # No first-party P01 lookup under DO transactionSync; recheck all
+        # live Broker claims after the lookup and before one-shot CAS.
+        command, _ = self._require_live_admitted_browser_command(
+            scope=scope, credential=credential, now=current
+        )
+        material = self.browser_control_take_store._read_approved_material(
+            scope, moment=iso(current)
+        )
+        expected_digest = browser_control_tool_invocation_digest(material)
+        resolved = source.resolve_approved_command(scope=scope, now=current)
+        if type(resolved) is not AuthenticatedBrowserControlP01Approval:
+            raise ValueError("canonical P01 resolver supplied no verified approval")
+        resolved.assert_matches(
+            scope=scope, expected_invocation_sha256=expected_digest, now=current
+        )
+        if command.evidence_ref != resolved.evidence_ref:
+            raise ValueError("browser.control live P01 evidence reference mismatch")
+
         def operation() -> dict[str, Any]:
-            self._require_live_admitted_browser_command(
+            current_command, _ = self._require_live_admitted_browser_command(
                 scope=scope, credential=credential, now=current
             )
+            if current_command.evidence_ref != resolved.evidence_ref:
+                raise ValueError("browser.control P01 evidence revoked or changed")
+            current_material = self.browser_control_take_store._read_approved_material(
+                scope, moment=iso(current)
+            )
+            if current_material != material:
+                raise ValueError("browser.control approved material changed after P01 lookup")
             return self.browser_control_take_store._take_in_existing_transaction(
                 scope, moment=iso(current)
             )

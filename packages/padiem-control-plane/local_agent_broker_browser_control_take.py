@@ -305,12 +305,10 @@ class CloudflareDurableObjectBrowserControlTakeStore:
             lambda: self._take_in_existing_transaction(scope, moment=moment)
         )
 
-    def _take_in_existing_transaction(
+    def _inspect_approved_material(
         self, scope: BrowserControlCommandTakeCorrelation, *, moment: str
-    ) -> dict[str, Any]:
-        """Only for a Broker-owned outer transaction that already rechecked
-        live device/session/command/P01 provenance. Never an RPC surface.
-        """
+    ) -> tuple[dict[str, Any], str]:
+        """Read-only scoped snapshot: never an external product interface."""
         if not isinstance(scope, BrowserControlCommandTakeCorrelation):
             raise TypeError("canonical browser.control take correlation required")
         parsed_moment = iso(parse_iso(moment, "browser_control_take_now"))
@@ -328,13 +326,28 @@ class CloudflareDurableObjectBrowserControlTakeStore:
             raise ValueError("browser.control approved command already taken")
         if any(row_value(record, key) != getattr(scope, key) for key in _TAKE_COLUMNS if key != "command_ref"):
             raise ValueError("browser.control approved command correlation mismatch")
-        if parsed_moment >= iso(parse_iso(row_value(record, "expires_at"), "command_expiry")):
+        expiry = row_value(record, "expires_at")
+        if parsed_moment >= iso(parse_iso(expiry, "command_expiry")):
             raise ValueError("browser.control approved command expired")
-        material = self._checked_material(row_value(record, "material_text"), scope)
+        return self._checked_material(row_value(record, "material_text"), scope), expiry
+
+    def _read_approved_material(
+        self, scope: BrowserControlCommandTakeCorrelation, *, moment: str
+    ) -> dict[str, Any]:
+        """Broker-only P01 preflight. No take, no lock, no grant."""
+        material, _ = self._inspect_approved_material(scope, moment=moment)
+        return material
+
+    def _take_in_existing_transaction(
+        self, scope: BrowserControlCommandTakeCorrelation, *, moment: str
+    ) -> dict[str, Any]:
+        """Broker-owned atomic single-use CAS, after live P01 revalidation."""
+        material, expiry = self._inspect_approved_material(scope, moment=moment)
+        parsed_moment = iso(parse_iso(moment, "browser_control_take_now"))
         updated = rows_written(self._sql.exec(
             "UPDATE local_agent_browser_control_command_take SET taken_at = ? "
             "WHERE command_ref = ? AND taken_at IS NULL AND expires_at = ?",
-            parsed_moment, scope.command_ref, row_value(record, "expires_at"),
+            parsed_moment, scope.command_ref, expiry,
         ))
         if updated != 1:
             raise ValueError("browser.control command already consumed or expired")
