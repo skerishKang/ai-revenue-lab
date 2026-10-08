@@ -26,6 +26,9 @@ function bridgeMutationOriginAllowed(request, url) {
 }
 
 const VOICE_TOKEN_PATH = "/api/b66/voice/token";
+/* The reused Global Classroom engine asks for its own upstream route name. Same handler,
+   same verified-session gate, one mint path — only the spelling is shared. */
+const GEMINI_LIVE_TOKEN_PATH = "/api/live-token";
 
 function jsonError(code, status) {
   return new Response(JSON.stringify({ ok: false, error: { code } }), {
@@ -214,7 +217,7 @@ export default {
     if (url.pathname === INTAKE_PATH) {
       return handleIntake(request);
     }
-    if (url.pathname === VOICE_TOKEN_PATH) {
+    if (url.pathname === VOICE_TOKEN_PATH || url.pathname === GEMINI_LIVE_TOKEN_PATH) {
       return handleVoiceToken(request, env, {
         jsonError,
         chatOrigin: PADIEM_CHAT_ORIGIN,

@@ -1264,10 +1264,10 @@
   recordProductState("home", { replace: true });
 
   /* Hand the composer to the voice lane last, so the existing UI is fully wired
-     before any mic affordance can appear. The module owns every network call. */
-  if (window.B66VoiceInput && typeof window.B66VoiceInput.init === "function") {
+     before any mic affordance can appear. The reused engine owns every network call. */
+  if (window.B66VoiceBridge && typeof window.B66VoiceBridge.init === "function") {
     try {
-      window.B66VoiceInput.init({ document, window, host: voiceHost });
+      window.B66VoiceBridge.init({ document, window, host: voiceHost });
     } catch (_) {
       const toggle = $("easyVoiceModeToggle");
       const mic = $("easyVoiceMic");

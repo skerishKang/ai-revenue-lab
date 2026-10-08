@@ -301,6 +301,55 @@ async function main() {
     stub.restore();
   }
 
+  /* --- the upstream spelling is the same gated route, and there is no
+       transcribe route to reach a second provider -------------------------- */
+  {
+    const stub = stubFetch((url) => (url.includes("/api/auth/status")
+      ? jsonResponse({ ok: true, authenticated: true, session_state: "signed_in" })
+      : jsonResponse({ token: { name: "alias-grant" } })));
+    const alias = await worker.fetch(new Request("https://quick-quote-kr.pages.dev/api/live-token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Origin: "https://quick-quote-kr.pages.dev", Cookie: SESSION_COOKIE },
+      body: JSON.stringify({ model: "gemini-3.5-transcribe-live" })
+    }), baseEnv());
+    assert.equal(alias.status, 200, "the reused engine's own route name still works");
+    assert.equal((await alias.json()).token, "alias-grant");
+    assert.ok(stub.calls.some((call) => call.url.includes("/api/auth/status")),
+      "the alias is session-verified exactly like the B66 route");
+
+    const anonymous = await worker.fetch(new Request("https://quick-quote-kr.pages.dev/api/live-token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Origin: "https://quick-quote-kr.pages.dev" },
+      body: "{}"
+    }), baseEnv());
+    assert.equal(anonymous.status, 401, "the alias cannot be used to buy a session");
+    stub.restore();
+  }
+
+  {
+    let assetPath = null;
+    const env = baseEnv({
+      ASSETS: { fetch: async (request) => { assetPath = new URL(request.url).pathname; return new Response("nope", { status: 404 }); } }
+    });
+    const previous = globalThis.fetch;
+    globalThis.fetch = async (input) => {
+      const url = typeof input === "string" ? input : String(input.url || input);
+      if (url.includes("/api/auth/status")) {
+        return jsonResponse({ ok: true, authenticated: true, session_state: "signed_in" });
+      }
+      return jsonResponse({ token: { name: "should-not-happen" } });
+    };
+    const transcribe = await worker.fetch(new Request("https://quick-quote-kr.pages.dev/api/transcribe", {
+      method: "POST",
+      headers: { Origin: "https://quick-quote-kr.pages.dev", Cookie: SESSION_COOKIE },
+      body: "{}"
+    }), env);
+    globalThis.fetch = previous;
+    assert.equal(transcribe.status, 404, "B66 registers no transcribe route");
+    assert.equal(assetPath, "/api/transcribe",
+      "it falls through to static assets, so the reused engine's paid fallback has no backend here");
+  }
+
   /* --- oversized bodies ------------------------------------------------- */
   {
     const stub = stubFetch(() => jsonResponse({}));

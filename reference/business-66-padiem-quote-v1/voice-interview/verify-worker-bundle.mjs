@@ -1,17 +1,18 @@
 /**
- * #3404 — prove that the Pages Worker bundles before anyone deploys it.
+ * #3404 — prove the Pages Worker bundles, without a deploy.
  *
  * PR CI cannot run `wrangler pages deploy` (no Cloudflare credentials), so the one
- * deploy-time risk this lane carries — whether `_worker.js` can resolve its relative
- * import of `voice-gemini.js` under Pages' own bundler — is otherwise unverified until a
- * real deploy. Pages bundles a `_worker.js` with esbuild, the same tool this repository
- * already pins for the voice SDK, so the resolution question can be answered offline.
+ * deploy-time risk this lane carries — whether `_worker.js` resolves its relative import of
+ * `voice-gemini.js` under Pages' own bundler — is otherwise unverified until a real deploy.
+ * Pages bundles `_worker.js` with esbuild, the same tool already pinned for the voice
+ * artifact, so the resolution question is answered offline instead.
  *
- *   node voice-sdk/verify-worker-bundle.mjs
+ *   node voice-interview/verify-worker-bundle.mjs
  *
- * Nothing is deployed, uploaded or written outside a temp directory.
+ * Nothing is deployed, uploaded or written outside a temp directory, and no credential is
+ * read.
  */
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -56,6 +57,7 @@ async function main() {
       .map((match) => match[1])
       .filter((spec) => !spec.startsWith('./') && !spec.startsWith('../'));
     if (leftovers.length) problems.push('UNRESOLVED_IMPORT=' + leftovers.join(','));
+    if (/from\s+['"]node:/.test(bundled)) problems.push('NODE_BUILTIN_IN_WORKER_BUNDLE');
     if (problems.length) {
       problems.forEach((problem) => console.error('B66_WORKER_BUNDLE=' + problem));
       console.error('ENTRY=' + workerEntry);
