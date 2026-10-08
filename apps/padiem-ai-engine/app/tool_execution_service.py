@@ -55,8 +55,12 @@ from padiem_ai_core.tool_runtime import (
 from app.browser_control_approval_validation import (
     validate_browser_control_approval_arguments,
 )
+from app.browser_control_human_approval import (
+    IndependentlyAuthenticatedBrowserControlP01,
+)
 from app.browser_control_p01_receipt import CloudflareD1BrowserControlP01ReceiptStore
 from app.browser_control_pause_identity import TrustedBrowserControlPauseIdentity
+from app.continuation_binding import IdentityBoundContinuationRecord
 from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
 from app.orchestration_service import (
     ApprovalDecisionVerifier,
@@ -143,6 +147,11 @@ class ToolExecutionEngineService:
             Callable[[str, TrustedToolAuthority, ToolInvocation], TrustedBrowserControlPauseIdentity | None]
             | None
         ) = None,
+        browser_control_human_p01_resolver: (
+            Callable[[IdentityBoundContinuationRecord, VerifiedApprovalDecision],
+                     IndependentlyAuthenticatedBrowserControlP01 | None]
+            | None
+        ) = None,
     ) -> None:
         if tool_binding_resolver is not None and not callable(tool_binding_resolver):
             raise ValueError("tool_binding_resolver must be callable")
@@ -175,6 +184,13 @@ class ToolExecutionEngineService:
             or not callable(browser_control_original_admission)
         ):
             raise ValueError("browser.control original admission requires same trusted D1 receipt source")
+        if browser_control_human_p01_resolver is not None and (
+            browser_control_p01_receipts is None
+            or type(continuation_store) is not CloudflareD1IdentityBoundContinuationStore
+            or not callable(browser_control_human_p01_resolver)
+        ):
+            raise ValueError("browser.control human P01 requires trusted same-D1 continuation")
+        self._browser_control_human_p01_resolver = browser_control_human_p01_resolver
         self._browser_control_original_admission = browser_control_original_admission
         self._browser_control_p01_receipts = browser_control_p01_receipts
         self._pending: dict[str, _PendingToolContinuation] = {}
@@ -759,6 +775,37 @@ class ToolExecutionEngineService:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
         except ServiceContractError as exc:
             return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+
+        human_source = self._browser_control_human_p01_resolver
+        if human_source is None or type(record) is not IdentityBoundContinuationRecord:
+            return _service_error(
+                "browser_control_human_p01_unavailable",
+                "Independent user-approved P01 evidence is required.",
+                status_code=503,
+            )
+        try:
+            # This source MUST verify a real user decision at a separate,
+            # server-owned P01 authority. The generic Engine first-party
+            # service identity verifier does NOT establish human consent.
+            attestation = human_source(record, decision)
+            if inspect.isawaitable(attestation):
+                attestation = await attestation
+            if type(attestation) is not IndependentlyAuthenticatedBrowserControlP01:
+                raise ValueError("authenticated user P01 evidence not available")
+            attestation.assert_matches(
+                record=record,
+                decision=decision,
+                now=datetime.now(timezone.utc),
+            )
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            # Denial, revoked user consent, and source outages all fail closed.
+            return _service_error(
+                "browser_control_human_p01_unavailable",
+                "Independent user-approved P01 evidence could not be verified.",
+                status_code=503,
+            )
 
         try:
             claimed = await self._continuation_call(

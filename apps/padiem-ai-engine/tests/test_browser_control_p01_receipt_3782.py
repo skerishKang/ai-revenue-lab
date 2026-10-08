@@ -21,6 +21,9 @@ from app.browser_control_approval_binding import (
     BROWSER_P01_CANONICAL_TOOL_ID,
     build_inert_browser_control_approval_binding,
 )
+from app.browser_control_human_approval import (
+    IndependentlyAuthenticatedBrowserControlP01,
+)
 from app.browser_control_p01_receipt import (
     ENGINE_BROWSER_CONTROL_P01_RECEIPT_PRODUCER_WIRED,
     ENGINE_BROWSER_CONTROL_P01_RECEIPT_READER_WIRED,
@@ -444,7 +447,24 @@ AGENT = "agent.browser.test.3782"
 CANONICAL_TOOL = "tool:browser:control@1"
 
 
-def setup(*, with_receipts=True, wrong_tool=False, mismatch_digest=False):
+def _fixture_human_p01(record, decision):
+    """TEST-ONLY stand-in: real product human-identity source is NOT present."""
+    original = record.original_admission
+    assert original is not None
+    return IndependentlyAuthenticatedBrowserControlP01(
+        app_id=record.app_id,
+        continuation_ref=record.continuation_ref,
+        user_subject_id=record.execution_identity.subject_id,
+        run_id=record.pause.run_id,
+        invocation_sha256=record.pause.invocation_sha256,
+        original_request_fingerprint=original.request_fingerprint,
+        original_admission_decision_id=original.decision_id,
+        decision=decision,
+        user_approval_evidence_ref=decision.evidence_ref,
+    )
+
+
+def setup(*, with_receipts=True, wrong_tool=False, mismatch_digest=False, with_human_source=True):
     db = _D1()
     moment = datetime.now(timezone.utc)
     invocation = ToolInvocation(
@@ -473,7 +493,14 @@ def setup(*, with_receipts=True, wrong_tool=False, mismatch_digest=False):
         "claim_token,cancel_reason,cancel_event_fingerprint,created_at,updated_at,expires_at)"
         " VALUES (?,?,?,?,?,?,?,?,?,?,?)",
         (APP_ID, CONT_REF, _pause_json(p),
-         _identity_json(identity), "active", None, None, None,
+         _identity_json(identity, OriginalAdmissionBinding(
+             decision_id="decision.original.fixture",
+             app_id=APP_ID,
+             subject_id=identity.subject_id,
+             authority_ref="authority.original.fixture",
+             policy_revision="policy.v1",
+             request_fingerprint=identity.request_fingerprint,
+         )), "active", None, None, None,
          moment.isoformat(), moment.isoformat(), p.expires_at.isoformat()),
     )
     db.db.commit()
@@ -495,6 +522,9 @@ def setup(*, with_receipts=True, wrong_tool=False, mismatch_digest=False):
         approval_decision_verifier=AuthenticatedFirstPartyApprovalDecisionVerifier(),
         continuation_store=continuation,
         browser_control_p01_receipts=receipts if with_receipts else None,
+        browser_control_human_p01_resolver=(
+            _fixture_human_p01 if with_receipts and with_human_source else None
+        ),
     )
     service._pending[p.pause_id] = _PendingToolContinuation(
         app_id=APP_ID, canonical_agent_id=AGENT,
@@ -665,6 +695,7 @@ def _make_browser_d1_issue_service(db, *, provider_enabled=True, supplied=None):
         continuation_store=continuation,
         browser_control_p01_receipts=receipts,
         browser_control_original_admission=owner_provider if provider_enabled else None,
+        browser_control_human_p01_resolver=_fixture_human_p01,
     )
     request = {
         "app_id": BROWSER_P01_APP_ID,
@@ -765,3 +796,81 @@ def test_original_admission_provider_cannot_be_set_without_receipt_store(db):
             continuation_store=CloudflareD1IdentityBoundContinuationStore(db),
             browser_control_original_admission=lambda app, auth, inv: original,
         )
+
+
+def test_generic_service_authenticated_approval_cannot_record_human_p01(db):
+    service, continuation, receipts, request = _make_browser_d1_issue_service(db)
+    # The real first-party submission converter alone cannot establish consent.
+    service._browser_control_human_p01_resolver = None
+    paused = run(service.execute_payload(request))
+    assert paused.status_code == 202, paused.body
+    ref = paused.body["tool"]["continuation_ref"]
+    before = run(continuation.resolve(app_id=BROWSER_P01_APP_ID, continuation_ref=ref))
+    result = run(service.resume_payload({
+        "app_id": BROWSER_P01_APP_ID,
+        "continuation_ref": ref,
+        "decision": {
+            "decision_id": "decision.browser.test", "pause_id": before.pause.pause_id,
+            "outcome": "approved", "authority_ref": "service.identity.only",
+            "evidence_ref": "unverified.user.approval",
+            "decided_at": datetime.now(timezone.utc).isoformat(),
+        },
+    }))
+    assert result.status_code == 503, result.body
+    assert result.body["error"]["code"] == "browser_control_human_p01_unavailable"
+    assert run(continuation.resolve(app_id=BROWSER_P01_APP_ID, continuation_ref=ref)).state == "active"
+    assert run(receipts.resolve_active(
+        app_id=BROWSER_P01_APP_ID, continuation_ref=ref, now=datetime.now(timezone.utc),
+    )) is None
+
+
+@pytest.mark.parametrize("mutated", [
+    "missing", "dict", "different_app", "other_user", "other_run",
+    "other_invocation", "other_original_request", "other_original_admission",
+    "other_decision", "other_evidence", "exception",
+])
+def test_independent_user_approval_mismatch_rejects_without_consuming(db, mutated):
+    service, continuation, receipts, request = _make_browser_d1_issue_service(db)
+    paused = run(service.execute_payload(request))
+    assert paused.status_code == 202
+    ref = paused.body["tool"]["continuation_ref"]
+    stored = run(continuation.resolve(app_id=BROWSER_P01_APP_ID, continuation_ref=ref))
+    if mutated == "missing":
+        service._browser_control_human_p01_resolver = None
+    elif mutated == "exception":
+        def unavailable(record, decision):
+            raise RuntimeError("trusted approval service down")
+        service._browser_control_human_p01_resolver = unavailable
+    else:
+        def malformed(record, decision):
+            valid = _fixture_human_p01(record, decision)
+            edits = {
+                "different_app": {"app_id": "some.other.app"},
+                "other_user": {"user_subject_id": "wrong.owner"},
+                "other_run": {"run_id": "wrong.run"},
+                "other_invocation": {"invocation_sha256": "f" * 64},
+                "other_original_request": {"original_request_fingerprint": "f" * 64},
+                "other_original_admission": {"original_admission_decision_id": "wrong.decision"},
+                "other_decision": {"decision": replace(decision, decision_id="wrong.decision")},
+                "other_evidence": {"user_approval_evidence_ref": "evidence.other"},
+            }
+            if mutated == "dict":
+                return {"decision": "approved"}
+            return replace(valid, **edits[mutated])
+        service._browser_control_human_p01_resolver = malformed
+    result = run(service.resume_payload({
+        "app_id": BROWSER_P01_APP_ID,
+        "continuation_ref": ref,
+        "decision": {
+            "decision_id": "decision.browser.test", "pause_id": stored.pause.pause_id,
+            "outcome": "approved", "authority_ref": "test.service.identity",
+            "evidence_ref": "evidence.browser.test",
+            "decided_at": datetime.now(timezone.utc).isoformat(),
+        },
+    }))
+    assert result.status_code == 503, result.body
+    assert result.body["error"]["code"] == "browser_control_human_p01_unavailable"
+    assert run(continuation.resolve(app_id=BROWSER_P01_APP_ID, continuation_ref=ref)).state == "active"
+    assert run(receipts.resolve_active(
+        app_id=BROWSER_P01_APP_ID, continuation_ref=ref, now=datetime.now(timezone.utc),
+    )) is None
