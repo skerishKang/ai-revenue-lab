@@ -282,7 +282,16 @@ def _canonical_admission_result(detail: str | None) -> str:
 
 
 def _is_direct_provider(url: str) -> bool:
-    host = (urlparse(url).hostname or "").lower()
+    parsed = urlparse(url)
+    host = (parsed.hostname or "").lower()
+    # #3566: the chat shell imports a Manrope CSS stylesheet from Google Fonts.
+    # fonts.googleapis.com/css2 is a static font resource, NOT a model API.
+    # The legacy suffix-only googleapis.com rule incorrectly marked every
+    # normal page load as a direct AI provider call and failed the canary after
+    # an HTTP 200 + visible answer. Exempt only the exact stylesheet endpoints;
+    # real Google model APIs and every other googleapis path remain blocked.
+    if host == "fonts.googleapis.com" and parsed.path in ("/css", "/css2"):
+        return False
     return (
         host.endswith("kilo.ai")
         or host.endswith("openrouter.ai")
