@@ -48,7 +48,10 @@ from app.worker_config import (
     p01_engine_binding_diagnostic,
     p01_engine_config_from_worker_bindings,
 )
-_MODEL_EXECUTION_AVAILABLE = active_route_for(ProductTierLabel.PLUS) is not None
+# #3767: the autouse ``tests/conftest.py`` fixture installs a bounded test-only
+# Plus route for this module, so the composition contracts below always execute
+# instead of skipping on the current all-HOLD declaration. The production HOLD
+# posture stays asserted in the dedicated policy modules.
 
 from kagent.contracts import ClawTaskIntent, ExecutionMode
 from kagent.p01_adapter import P01_AGENT_ID, P01_APP_ID, P01CoreOrchestrationAdapter
@@ -170,7 +173,6 @@ class _FakeEngineServiceBinding:
         )
 
 
-@pytest.mark.skipif(not _MODEL_EXECUTION_AVAILABLE, reason="successor model route not selected")
 def test_plus_production_composition_reaches_engine_service_binding_once() -> None:
     """Regression for #2617's pre-Engine boundary using the real production composition stack."""
     binding = _FakeEngineServiceBinding()
@@ -204,8 +206,12 @@ def test_plus_production_composition_reaches_engine_service_binding_once() -> No
     payload = json.loads(str(request.options["body"]))
     assert payload["app_id"] == P01_APP_ID
     assert payload["agent"]["id"] == P01_AGENT_ID
+    # #3382/#3566 one-shot canary contract: the P01 lane pins B14's same-route
+    # retry ceiling to zero, so the production composition must carry that
+    # ceiling to the wire. The suspension of this test had hidden the drift.
     assert payload["agent"]["model_policy"] == {
-        "model": active_route_for(ProductTierLabel.PLUS).model_id
+        "model": active_route_for(ProductTierLabel.PLUS).model_id,
+        "max_retries": 0,
     }
     assert payload["agent"]["task_type"] == "coding"
     assert payload["agent"]["required_capabilities"] == []
