@@ -137,6 +137,8 @@ def test_bai_credential_is_isolated_from_other_providers(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_bai_uses_fixed_origin_exact_model_and_bearer(monkeypatch):
+    # Owner-excluded Qwen is NOT a successful live fixture. Preserve the
+    # B.AI origin/key transport contract with a synthetic ID only.
     secret = "sk-bai-direct-proof-1234567890abcdef"
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setenv(BAI_CREDENTIAL_BINDING, secret)
@@ -145,12 +147,12 @@ async def test_bai_uses_fixed_origin_exact_model_and_bearer(monkeypatch):
         assert str(request.url) == f"{BAI_BASE_ORIGIN}/chat/completions"
         assert request.headers["Authorization"] == f"Bearer {secret}"
         body = json.loads(request.content)
-        assert body["model"] == BAI_QWEN_UPSTREAM_MODEL
+        assert body["model"] == "test-fixture/bai-provider-response"
         return httpx.Response(
             200,
             json={
                 "id": "bai_test",
-                "model": BAI_QWEN_UPSTREAM_MODEL,
+                "model": "test-fixture/bai-provider-response",
                 "choices": [
                     {
                         "index": 0,
@@ -163,8 +165,8 @@ async def test_bai_uses_fixed_origin_exact_model_and_bearer(monkeypatch):
         )
 
     result = await call_platform_chat_completions(
-        model_id=BAI_QWEN_MODEL_ID,
-        upstream_model=BAI_QWEN_UPSTREAM_MODEL,
+        model_id="test-fixture/bai-provider-chat",
+        upstream_model="test-fixture/bai-provider-response",
         provider="B.AI / Alibaba Qwen",
         platform_provider_id=BAI_PROVIDER_ID,
         messages=[{"role": "user", "content": "hello"}],
@@ -172,32 +174,34 @@ async def test_bai_uses_fixed_origin_exact_model_and_bearer(monkeypatch):
     )
 
     assert result["_live"] is True
-    assert result["model"] == BAI_QWEN_UPSTREAM_MODEL
+    assert result["model"] == "test-fixture/bai-provider-response"
     assert secret not in repr(result)
 
 
 @pytest.mark.asyncio
 async def test_bai_streaming_contract_via_generic_adapter(monkeypatch):
+    # Owner-excluded Qwen is NOT a successful live fixture. Preserve the
+    # B.AI origin/key transport contract with a synthetic ID only.
     secret = "sk-bai-stream-proof-1234567890abcdef"
     monkeypatch.setenv("B14_PROVIDER_MODE", "live")
     monkeypatch.setenv(BAI_CREDENTIAL_BINDING, secret)
 
     payload = (
-        b'data: {"id":"q1","model":"qwen3.8-flash","choices":[{"delta":{"content":"ok"},"finish_reason":"stop"}]}\n\n'
+        b'data: {"id":"q1","model":"test-fixture/bai-provider-response","choices":[{"delta":{"content":"ok"},"finish_reason":"stop"}]}\n\n'
         b"data: [DONE]\n\n"
     )
 
     def handler(request: httpx.Request) -> httpx.Response:
         body = json.loads(request.content)
         assert body["stream"] is True
-        assert body["model"] == BAI_QWEN_UPSTREAM_MODEL
+        assert body["model"] == "test-fixture/bai-provider-response"
         return httpx.Response(200, content=payload)
 
     events = [
         e
         async for e in stream_platform_chat_completions(
-            model_id=BAI_QWEN_MODEL_ID,
-            upstream_model=BAI_QWEN_UPSTREAM_MODEL,
+            model_id="test-fixture/bai-provider-chat",
+            upstream_model="test-fixture/bai-provider-response",
             provider="B.AI / Alibaba Qwen",
             platform_provider_id=BAI_PROVIDER_ID,
             messages=[{"role": "user", "content": "hi"}],
