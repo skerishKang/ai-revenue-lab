@@ -16,6 +16,8 @@ Canonical operating documents:
 - `docs/operations/MULTI_MACHINE_LOCAL_WORKTREE_POLICY.md`
 - `docs/operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 
+For any model/provider question, start at [the shared model documentation index](docs/models/README.md); do not rely on a product README's copied model list as live registry/route evidence. The index points separately to OWNER policy, B14 source, product route declarations and Production verification. It does not grant model-change authority.
+
 Latest owner B14 model-selection reference: `docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md`. An older B14 source/catalog entry proves only that it exists in that source, not that the OWNER approves it. Distinguish selection from registration and Production availability; the ledger is NOT a second approval policy.
 
 ## Search / adopt before build

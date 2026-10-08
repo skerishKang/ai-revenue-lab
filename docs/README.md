@@ -8,6 +8,18 @@ LAST_VERIFIED = 2026-10-08
 
 `docs/` is the entrypoint for **current documentation authority**. Dated audits, issue-specific designs, phase documents and Git history remain evidence; file existence alone does not make them current architecture or runtime truth.
 
+## 문서 탐색 — 하나의 사실 원천 참조
+
+| 구분 | 공식 진입점 | 역할 |
+|---|---|---|
+| 공통 | [공통 정책 및 아키텍처](common/README.md) | 기존 권위 문서로 연결 |
+| 단계별 | [기획·개발·검증·배포·운영](lifecycle/README.md) | 단계별 승인·증거 기준 |
+| 사업별 | [사업 문서](businesses/README.md) | Business Registry 및 각 제품 문서 |
+| 모델 | [모델 공식 진입점](models/README.md) | 소유자 결정, B14 등록, 제품 라우트 및 실행 증거 구분 |
+| 역사 | [역사 기록](history/README.md) | 과거 스냅샷과 현재 사실 구분 |
+
+**원칙:** 변동성 높은 모델 ID·등록 상태·Production SHA는 여러 제품 README에 복사하지 않습니다. 실제 원천이 변경되면 참조 문서가 이를 연결합니다. 기존 [문서 권위 규칙](governance/DOCUMENTATION_AUTHORITY_MODEL.md)은 그대로 유지합니다.
+
 ## Start here
 
 1. `architecture/PADIEM_AI_VERTICAL_STACK.md` — canonical product-to-Provider topology
