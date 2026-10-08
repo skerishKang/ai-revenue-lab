@@ -17,6 +17,7 @@ LAST_VERIFIED = 2026-10-08
 | 사업별 | [사업 문서](businesses/README.md) | Business Registry 및 각 제품 문서 |
 | 모델 | [모델 공식 진입점](models/README.md) | 소유자 결정, B14 등록, 제품 라우트 및 실행 증거 구분 |
 | 역사 | [역사 기록](history/README.md) | 과거 스냅샷과 현재 사실 구분 |
+| 증거 | [증거 유형 및 검증 자료](evidence/README.md) | 검증 기준과 과거 기록의 출처 구분 |
 
 **원칙:** 변동성 높은 모델 ID·등록 상태·Production SHA는 여러 제품 README에 복사하지 않습니다. 실제 원천이 변경되면 참조 문서가 이를 연결합니다. 기존 [문서 권위 규칙](governance/DOCUMENTATION_AUTHORITY_MODEL.md)은 그대로 유지합니다.
 

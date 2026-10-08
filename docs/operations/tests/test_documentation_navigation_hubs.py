@@ -14,6 +14,7 @@ HUBS = (
     "docs/businesses/README.md",
     "docs/models/README.md",
     "docs/history/README.md",
+    "docs/evidence/README.md",
 )
 LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 
