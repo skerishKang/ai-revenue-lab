@@ -14,6 +14,9 @@ from dataclasses import dataclass
 from app.agent_skill_service import AgentSkillEngineService
 from app.attachment_admission_service import AttachmentAdmissionEngineService
 from app.auth_session_scope_authority import AuthSessionScopeAuthority
+from app.browser_control_broker_receipt_read import (
+    AuthenticatedBrowserP01ReceiptReadEngineService,
+)
 from app.browser_control_owner_p01_resume import (
     IndependentlyApprovedBrowserControlEngineResume,
 )
@@ -61,6 +64,9 @@ class EngineServices:
     # #3782 only independent owner D1-approved, original-run Engine CAS resume.
     # Uncomposed; no browser input/approved command side effects here.
     browser_p01_owner_resume: IndependentlyApprovedBrowserControlEngineResume | None = None
+    # Broker may only READ the already-consumed original Engine P01 receipt.
+    # No production authority binding or registered device RPC.
+    browser_p01_broker_receipt_read: AuthenticatedBrowserP01ReceiptReadEngineService | None = None
     # #1964 source slice: replay stays fail-closed until the trusted durable
     # idempotency adapter is explicitly composed.
     idempotency_replay: IdempotencyReplayEngineService | None = None
@@ -98,6 +104,10 @@ class EngineServices:
             raise ValueError(
                 "engine service 'documents' must be DocumentContextEngineService or None"
             )
+        if self.browser_p01_broker_receipt_read is not None and type(
+            self.browser_p01_broker_receipt_read
+        ) is not AuthenticatedBrowserP01ReceiptReadEngineService:
+            raise ValueError("browser P01 Broker read requires canonical Engine receipt reader")
         if self.browser_p01_owner_resume is not None and type(
             self.browser_p01_owner_resume
         ) is not IndependentlyApprovedBrowserControlEngineResume:
