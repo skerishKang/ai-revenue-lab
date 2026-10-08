@@ -136,9 +136,12 @@ jobs:
           test "${active_version}" = "${EXPECTED_ENGINE_VERSION}"
           version_detail="${RUNNER_TEMP}/slack-canary-engine-version.json"
           curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
+          # #3817 (parent #3748): one canonical argv token. The grammar accepts a
+          # leading hyphen, which argparse would read as an option in the
+          # separated form, so the canonical predicate would never run.
           python3 .github/scripts/b54_engine_served_version_guard.py verify \
             --version-settings "${version_detail}" \
-            --active-version "${active_version}" >/dev/null
+            --active-version="${active_version}" >/dev/null
           # Canonical Slack readiness observation: NAME/TYPE only. The Engine
           # owns the Slack bot token secret plus the server-derived public and
           # private channel partitions; none of their values may be emitted.
