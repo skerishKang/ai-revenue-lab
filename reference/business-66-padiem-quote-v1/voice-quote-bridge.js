@@ -52,13 +52,13 @@
     };
 
     let mode = opts.mode === MODE.AUTO ? MODE.AUTO : MODE.REVIEW;
-    let api = null;
     let enginePromise = null;
     let running = false;
-    let starting = false;
-    /* Every stop or new attempt advances this. An async return that carries an older number
-       belongs to a session the user already gave up on, so it may not start a microphone,
-       light a button or send a transcript. */
+    /* One record per microphone attempt, numbered by `attempt`. The bridge only ever talks to
+       `current`; a record that is no longer current owns its own engine handle, its own mount
+       and its own publish sink, so a superseded session can neither open a microphone nor
+       write a status line nor stop the session that replaced it. */
+    let current = null;
     let attempt = 0;
     let announcedBrowser = false;
     const submitted = [];
@@ -190,65 +190,98 @@
       });
     }
 
-    function ensureMounted() {
+    function mountRoot(rec) {
+      if (opts.container) return opts.container;
+      const holder = doc.createElement("div");
+      holder.hidden = true;
+      (doc.body || doc.documentElement).appendChild(holder);
+      /* Only a holder this layer created is its to remove, and only once its attempt is done. */
+      rec.root = holder;
+      return holder;
+    }
+
+    /* A sink is stamped with the record that created it, so whatever an old session still has
+       queued arrives as stale instead of being delivered as if it belonged to the live one. */
+    function publishFor(rec, event) {
+      if (rec !== current) return { handled: false, reason: "stale_attempt" };
+      return publish(event);
+    }
+
+    function dispose(rec) {
+      if (rec.disposed) return;
+      rec.disposed = true;
+      if (rec.handle && typeof rec.handle.unmount === "function") rec.handle.unmount();
+      if (rec.root && typeof rec.root.remove === "function") rec.root.remove();
+      rec.handle = null;
+      rec.root = null;
+      rec.api = null;
+      if (current === rec) current = null;
+    }
+
+    function release(rec) {
+      if (rec.api) rec.api.stop();
+      dispose(rec);
+    }
+
+    function ensureMounted(rec) {
       return loadArtifact().then((engine) => {
-        if (api) return api;
-        const root = opts.container || doc.getElementById("b66VoiceMountRoot") || (() => {
-          const holder = doc.createElement("div");
-          holder.id = "b66VoiceMountRoot";
-          holder.hidden = true;
-          (doc.body || doc.documentElement).appendChild(holder);
-          return holder;
-        })();
-        const created = engine.createApi({ publish });
+        const created = engine.createApi({ publish: (event) => publishFor(rec, event) });
+        rec.api = created;
         const doMount = mount || engine.mount;
-        doMount(created, root);
-        api = created;
+        rec.handle = doMount(created, mountRoot(rec)) || null;
         return waitForMount(created).then(() => created);
       });
     }
 
     function start() {
-      if (running || starting) return Promise.resolve({ started: false, reason: "already_running" });
-      const mine = attempt + 1;
-      attempt = mine;
-      starting = true;
+      if (current && (current.connecting || running)) {
+        return Promise.resolve({ started: false, reason: "already_running" });
+      }
+      if (current) release(current);
+      attempt += 1;
+      const rec = { id: attempt, api: null, handle: null, root: null, connecting: true, disposed: false };
+      current = rec;
       announcedBrowser = false;
       onStatus(STATUS_TEXT.loading);
-      const stillMine = () => attempt === mine;
-      return ensureMounted().then((mounted) => {
-        if (!stillMine()) throw new Error("voice_start_cancelled");
+      return ensureMounted(rec).then((mounted) => {
+        if (current !== rec) throw new Error("voice_start_cancelled");
         return mounted.start();
       }).then(() => {
-        if (stillMine()) {
-          starting = false;
+        if (current === rec) {
+          rec.connecting = false;
           setRunning(true);
           onStatus(STATUS_TEXT.listening);
           return { started: true };
         }
-        /* The connection completed after the user stopped: hand the session straight back
-           to the engine's own stop() instead of adopting it. */
-        if (api) api.stop();
+        release(rec);
         return { started: false, reason: "voice_start_cancelled" };
       }).catch((error) => {
-        const cancelled = !stillMine();
-        starting = false;
+        rec.connecting = false;
+        if (current !== rec) {
+          /* A failure of a session nobody is waiting for any more is that session's news
+             alone: it may not clear the replacement's state or rewrite its status line. */
+          release(rec);
+          return { started: false, reason: "voice_start_cancelled" };
+        }
         setRunning(false);
-        if (!cancelled) onStatus(STATUS_TEXT.unavailable);
-        return {
-          started: false,
-          reason: cancelled ? "voice_start_cancelled" : String((error && error.message) || "voice_unavailable")
-        };
+        onStatus(STATUS_TEXT.unavailable);
+        dispose(rec);
+        return { started: false, reason: String((error && error.message) || "voice_unavailable") };
       });
     }
 
     function stop() {
       /* Mic control stays the upstream hook's own stop(); it releases the stream, the
          AudioContext and the session. This layer only reflects that and stops routing. */
-      attempt += 1;
-      if (api) api.stop();
+      const rec = current;
+      current = null;
+      if (rec) {
+        if (rec.api) rec.api.stop();
+        /* An attempt still connecting keeps its mount until its promise returns, so the
+           session it opens late has its own handle to close — as itself, never as B's. */
+        if (!rec.connecting) dispose(rec);
+      }
       setRunning(false);
-      starting = false;
       onStatus(STATUS_TEXT.stopped);
       return { stopped: true };
     }
@@ -267,7 +300,7 @@
       setMode,
       getMode: () => mode,
       isRunning: () => running,
-      isStarting: () => starting,
+      isStarting: () => Boolean(current && current.connecting),
       onStateChange: (listener) => stateListeners.push(listener),
       submittedCount: () => submitted.length
     };

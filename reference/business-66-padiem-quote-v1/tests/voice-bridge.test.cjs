@@ -11,11 +11,18 @@ const SRC = path.join(__dirname, "..");
 
 function loadBridge() {
   const elements = {};
+  const removed = [];
   const doc = {
     elements,
+    removed,
     head: { children: [], appendChild(node) { this.children.push(node); if (node.onload) node.onload(); } },
-    body: { appendChild() {} },
-    createElement: (tag) => ({ tag, hidden: false, id: "", attrs: {}, setAttribute(k, v) { this.attrs[k] = v; }, appendChild() {} }),
+    body: { children: [], appendChild(node) { this.children.push(node); } },
+    createElement: (tag) => ({
+      tag, hidden: false, id: "", attrs: {}, removedFrom: null,
+      setAttribute(k, v) { this.attrs[k] = v; },
+      appendChild() {},
+      remove() { this.removedFrom = doc.body; removed.push(this); }
+    }),
     getElementById: (id) => elements[id] || null,
     addEventListener() {}
   };
@@ -89,6 +96,36 @@ function fakeEngine(state) {
     mount: (api) => { state.mounts += 1; state.api = api; return { unmount() {} }; }
   });
 }
+
+/* Stands in for the artifact the way the real seam behaves: every mount creates its own api
+   and its own publish sink, an engine start that the harness releases by hand, and stops
+   counted per api instance — so an old attempt can only ever disturb its own resources. */
+function attemptEngine(state) {
+  return () => Promise.resolve({
+    createApi: ({ publish }) => {
+      const sink = { publish, starts: 0, stops: 0, releases: [], unmounted: false };
+      state.sinks.push(sink);
+      return {
+        publish,
+        setEngine() {},
+        start: () => {
+          sink.starts += 1;
+          return new Promise((resolve, reject) => { sink.releases.push({ resolve, reject }); });
+        },
+        stop: () => { sink.stops += 1; return { stopped: true }; },
+        isMounted: () => true
+      };
+    },
+    mount: (api) => {
+      const sink = state.sinks[state.sinks.length - 1];
+      state.mounts += 1;
+      state.api = api;
+      return { unmount() { sink.unmounted = true; state.unmounts += 1; } };
+    }
+  });
+}
+
+const tick = () => new Promise((resolve) => setImmediate(resolve));
 
 async function main() {
   /* --- the artifact is not loaded until the user asks for the microphone ---------- */
@@ -217,6 +254,10 @@ async function main() {
     assert.equal(host.log.length, 0, "a stopped session cannot auto-submit into the quote");
     assert.equal(host.value, "", "and its late transcript is not staged into the composer either");
     assert.equal(bridge.submittedCount(), 0, "the stale utterance is not recorded as anything sent");
+    /* The same through the layer's own public surface, not just the engine sink. */
+    bridge.publish({ kind: "final", text: "다른 경로로 들어온 전사", utteranceId: "late-2" });
+    assert.equal(host.log.length, 0, "no caller can smuggle a send into a stopped session");
+    assert.equal(host.value, "", "and nothing lands in the composer that way either");
     state.api.publish({ kind: "interim", text: "뒤늦게 도착한 중간 전사" });
     assert.equal(bridge.isRunning(), false, "a stale echo cannot claim the microphone is live again");
     assert.equal(/듣는 중/.test(doc.elements.easyVoiceStatus.textContent), false,
@@ -224,6 +265,127 @@ async function main() {
     await bridge.start();
     bridge.publish({ kind: "final", text: "배관 100미터", utteranceId: "fresh-1" });
     assert.deepEqual(host.log, ["INPUT:배관 100미터"], "the next real session still works normally");
+  }
+
+  /* --- the live session's own idle report closes the button ------------------------ */
+  {
+    const { Bridge, doc } = loadBridge();
+    const host = createHost();
+    const state = { starts: 0, stops: 0, mounts: 0 };
+    const bridge = Bridge.createVoiceBridge({
+      document: doc, window: {}, host, engineLoader: fakeEngine(state)
+    });
+    Bridge.bindDom(bridge, doc);
+    const mic = doc.elements.easyVoiceMic;
+    await mic.click();
+    assert.equal(mic.getAttribute("aria-pressed"), "true", "the live attempt reads on");
+    state.api.publish({ kind: "engine", status: "idle", backend: "gemini" });
+    assert.equal(bridge.isRunning(), false, "the engine's own idle report closes the session");
+    assert.equal(mic.getAttribute("aria-pressed"), "false", "and the button follows it");
+    assert.match(doc.elements.easyVoiceStatus.textContent, /멈췄습니다/);
+  }
+
+  /* --- start(A) -> stop(A) -> start(B): A's late completion cannot invade B ------- */
+  {
+    const { Bridge, doc } = loadBridge();
+    const host = createHost();
+    const state = { sinks: [], mounts: 0, unmounts: 0, api: null };
+    const bridge = Bridge.createVoiceBridge({
+      document: doc, window: {}, host, mode: "AUTO", engineLoader: attemptEngine(state)
+    });
+    const a = bridge.start();
+    await tick();
+    bridge.stop();
+    const b = bridge.start();
+    await tick();
+    assert.equal(state.sinks.length, 2, "the replacement attempt owns its own engine session");
+
+    state.sinks[0].releases[0].resolve();
+    const aResult = await a;
+    assert.equal(aResult.started, false, "the superseded attempt reports nothing started");
+    await tick();
+    assert.equal(state.sinks[1].stops, 0, "and it cannot stop the session B is using");
+    /* Its mount survives exactly as long as its own unsettled promise, so the session that
+       opens late still has a handle of its own to close — and then it is gone. */
+    assert.equal(state.sinks[0].unmounted, true, "the stopped attempt released its own mount");
+    assert.equal(doc.removed.length, 1, "and only its own mount holder left the page");
+    assert.equal(doc.body.children.length - doc.removed.length, 1, "B's mount is the one still attached");
+
+    state.sinks[1].releases[0].resolve();
+    await b;
+    assert.equal(bridge.isRunning(), true, "B is listening");
+    state.sinks[1].publish({ kind: "final", text: "배관 100미터", utteranceId: "uB" });
+    assert.deepEqual(host.log, ["INPUT:배관 100미터"], "B's own transcript still reaches the quote");
+  }
+
+  /* --- A의 지연 실패는 B의 세션과 상태줄을 덮어쓸 수 없음 ------------------------- */
+  {
+    const { Bridge, doc } = loadBridge();
+    const host = createHost();
+    const state = { sinks: [], mounts: 0, unmounts: 0, api: null };
+    const bridge = Bridge.createVoiceBridge({
+      document: doc, window: {}, host, mode: "AUTO", engineLoader: attemptEngine(state)
+    });
+    const a = bridge.start();
+    await tick();
+    bridge.stop();
+    const b = bridge.start();
+    await tick();
+    state.sinks[1].releases[0].resolve();
+    await b;
+    assert.equal(bridge.isRunning(), true, "B is listening");
+    const statusBefore = doc.elements.easyVoiceStatus.textContent;
+
+    state.sinks[0].releases[0].reject(new Error("late A failure"));
+    const aResult = await a;
+    assert.equal(aResult.started, false, "the superseded attempt still reports failure");
+    await tick();
+    assert.equal(bridge.isRunning(), true, "A's late failure cannot drop B's session");
+    assert.equal(doc.elements.easyVoiceStatus.textContent, statusBefore,
+      "and it cannot rewrite the status line B is standing on");
+    assert.equal(state.sinks[1].stops, 0, "B's engine was never stopped by A");
+  }
+
+  /* --- A의 지연 final/fatal/refused cannot be delivered as if it were B's ---------- */
+  {
+    const { Bridge, doc } = loadBridge();
+    const host = createHost();
+    const state = { sinks: [], mounts: 0, unmounts: 0, api: null };
+    const bridge = Bridge.createVoiceBridge({
+      document: doc, window: {}, host, mode: "AUTO", engineLoader: attemptEngine(state)
+    });
+    const a = bridge.start();
+    await tick();
+    state.sinks[0].releases[0].resolve();
+    await a;
+    bridge.stop();
+    const b = bridge.start();
+    await tick();
+    state.sinks[1].releases[0].resolve();
+    await b;
+    assert.equal(bridge.isRunning(), true, "B is the live session");
+
+    /* Everything A still has queued arrives now, through A's own sink. */
+    state.sinks[0].publish({ kind: "final", text: "이전 세션의 늦은 전사", utteranceId: "uA" });
+    assert.equal(host.log.length, 0, "a superseded transcript cannot auto-submit into the quote");
+    assert.equal(host.value, "", "and it cannot enter B's composer either");
+    const statusBefore = doc.elements.easyVoiceStatus.textContent;
+    state.sinks[0].publish({ kind: "interim", text: "이전 세션의 중간 전사" });
+    assert.equal(doc.elements.easyVoiceStatus.textContent, statusBefore,
+      "a superseded preview cannot rewrite B's status line");
+    state.sinks[0].publish({ kind: "fatal", message: "이전 세션 치명 오류" });
+    assert.equal(bridge.isRunning(), true, "a superseded fatal cannot stop B");
+    assert.equal(state.sinks[1].stops, 0, "and it cannot reach B's engine");
+    assert.equal(doc.elements.easyVoiceStatus.textContent.includes("이전 세션 치명 오류"), false,
+      "nor can it put its own reason on B's status line");
+    state.sinks[0].publish({ kind: "refused", message: "이전 세션의 groq 거부" });
+    assert.equal(bridge.isRunning(), true, "a superseded refusal cannot tear B down");
+    assert.equal(state.sinks[1].stops, 0);
+    assert.equal(host.log.length, 0, "and still nothing was sent");
+
+    /* B's own events are unaffected by all of that. */
+    state.sinks[1].publish({ kind: "final", text: "단가 18000원", utteranceId: "uB" });
+    assert.deepEqual(host.log, ["INPUT:단가 18000원"], "B's own transcript still works");
   }
 
   /* --- the first press waits for React's own mount pass -------------------------- */
