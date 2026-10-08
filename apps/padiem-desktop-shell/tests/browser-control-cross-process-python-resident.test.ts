@@ -165,3 +165,113 @@ test('Windows real Python Resident -> supervised private pipe -> trusted ingress
     'raw private take is dropped on supervised process exit');
   // Real product security posture is not affected by this TEST source.
 });
+
+
+/** Real SQLite Durable Object CAS in a supervised Python child, with synthetic
+ * already-admitted P01 fixture only. No network, actual user or browser Input.
+ */
+test('Windows canonical Broker SQLite CAS -> Python Resident -> trusted main; replay fails closed', {
+  skip: !pythonAvailable && 'Windows Python required',
+  timeout: 20_000,
+}, async () => {
+  const root = path.resolve(process.cwd(), '..', '..');
+  const sourcePaths = [
+    path.join(root, 'apps', 'korean-ai-code-agent', 'src'),
+    path.join(root, 'packages', 'padiem-control-plane'),
+    path.join(root, 'packages', 'padiem-control-plane', 'tests'),
+    path.join(root, 'packages', 'padiem-ai-core'),
+  ].join(path.delimiter);
+  const supervisor = new NodeRunnerProcessPort();
+  const child = await supervisor.spawnResident({
+    executablePath: pythonExe,
+    args: ['-u', path.join(process.cwd(), 'tests', 'broker_resident_3782.py')],
+    cwd: process.cwd(),
+    env: {
+      PATH: process.env.PATH || '',
+      SystemRoot: process.env.SystemRoot || '',
+      USERPROFILE: process.env.USERPROFILE || '',
+      LOCALAPPDATA: process.env.LOCALAPPDATA || '',
+      APPDATA: process.env.APPDATA || '',
+      PYTHONPATH: sourcePaths,
+      PYTHONIOENCODING: 'utf-8',
+    },
+    shell: false, stdio: 'pipe',
+  });
+  const ref = 'command.3782.1';
+  const summary: string[] = [];
+  const boundary = {
+    sendResidentLine: (line: string) => child.sendLine?.(line) === true,
+    takeResidentBrowserControlCommandTakeLine: () => {
+      const raw = supervisor.takeResidentBrowserControlCommandTakeLine();
+      if (raw !== null) {
+        try {
+          const r = JSON.parse(raw) as { ok?: unknown; reason?: unknown };
+          summary.push(r.ok === true ? 'ok' : String(r.reason ?? 'unknown_refusal'));
+        } catch {
+          summary.push('not_json');
+        }
+      }
+      return raw;
+    },
+    residentRunning: () => child.isAlive(),
+  };
+  const source = () => createResidentApprovedBrowserControlCommandPort({
+    boundary, sourceConfigured: true, timeoutMs: 8_000, pollIntervalMs: 10,
+  });
+  const count = { bind: 0, execute: 0, close: 0 };
+  const ingress = createTrustedBrowserControlCommandIngress({
+    approvedCommands: source(),
+    browserControl: {
+      bindApprovedView: (lease, ctx) => {
+        count.bind++;
+        assert.equal(lease, 'hostlease.3782.1');
+        assert.equal(ctx.originScope, 'https://example.com');
+        assert.equal(ctx.browserSessionRef, 'browser.3782.1');
+        return {
+          configured: true,
+          execute: async act => {
+            count.execute++;
+            assert.deepEqual(act, {
+              action: 'click', elementRef: 'el-0001',
+              browserSessionRef: 'browser.3782.1',
+              originRef: 'https://example.com',
+            });
+            return { type: 'safe_fixture_only' } as unknown as BoundedActionReceipt;
+          },
+          close: async () => { count.close++; },
+        };
+      },
+    },
+  });
+  try {
+    // Wrong broker owner correlation must fail without spending the good slot.
+    await assert.rejects(() => source().takeApprovedCommand('command.3782.other'));
+    assert.deepEqual(summary, ['command_take_refused']);
+    assert.deepEqual(count, { bind: 0, execute: 0, close: 0 });
+    let receipt: BoundedActionReceipt;
+    try {
+      receipt = await ingress.executeApprovedCommand(ref);
+    } catch {
+      assert.fail('G2 first take refused: ' + JSON.stringify({
+        summary,
+        alive: child.isAlive(),
+        stderrLines: supervisor.residentObservation()?.stderr_lines ?? null,
+        category: supervisor.residentObservation()?.stderr_tail?.filter(s => s.includes('BROKER_TEST_CATEGORY')).slice(-1),
+      }));
+      return;
+    }
+    assert.equal((receipt as unknown as {type:string}).type, 'safe_fixture_only');
+    assert.deepEqual(count, { bind: 1, execute: 1, close: 1 });
+    await assert.rejects(() => source().takeApprovedCommand(ref));
+    assert.deepEqual(summary, ['command_take_refused', 'ok', 'command_take_refused']);
+    assert.deepEqual(count, { bind: 1, execute: 1, close: 1 });
+    const retained = JSON.stringify(supervisor.boundedResidentOutput().lines);
+    assert.ok(retained.includes('redacted'));
+    assert.ok(!retained.includes('device-browser-command-credential-3782'));
+    assert.ok(!retained.includes('hostlease.3782.1'));
+  } finally {
+    child.kill();
+    await child.waitForExit(3_000);
+  }
+  assert.equal(supervisor.takeResidentBrowserControlCommandTakeLine(), null);
+});
