@@ -29,6 +29,9 @@
   <script src="xlsx-export.js" defer></script>
   <script src="quote-skill-ui.js" defer></script>
   <script src="app.js" defer></script>
+  <!-- #3404: loaded before easy-mode.js, which hands the composer to the voice lane. -->
+  <script src="voice-stt.js" defer></script>
+  <script src="voice-input.js" defer></script>
   <script src="easy-mode.js" defer></script>
   <script src="company-profile-settings.js" defer></script>
   <script src="quote-browser-pdf.js" defer></script>
@@ -133,7 +136,15 @@
         <div class="easy-chip-row" id="easyChipRow" aria-label="빠른 답변"></div>
         <div class="easy-composer">
           <textarea id="easyComposer" rows="1" placeholder="필요한 내용을 편하게 입력하세요" aria-label="견적서 대화 입력"></textarea>
+          <button class="easy-voice" id="easyVoiceMic" type="button" aria-pressed="false" aria-label="내용을 한번에 말하기">음성</button>
           <button class="easy-send" id="easySend" type="button" aria-label="보내기">↑</button>
+        </div>
+        <!-- #3404: the voice lane lives inside the existing composer, so there is no
+             second input surface and no separate quote-start menu. -->
+        <p class="easy-voice-status" id="easyVoiceStatus" role="status" aria-live="polite" hidden></p>
+        <div class="easy-voice-mode" id="easyVoiceModeToggle" role="group" aria-label="음성 입력 방식">
+          <button type="button" id="easyVoiceModeReview" class="is-active" aria-pressed="true">검토 후 전송</button>
+          <button type="button" id="easyVoiceModeAuto" aria-pressed="false">말하면 자동 전송</button>
         </div>
         <p class="easy-composer-note" id="easyComposerNote">바로 입력해도 질문이 시작됩니다. 문장을 알아듣는 기능은 준비 중이라, 필요한 값은 하나씩 여쭤봅니다.</p>
       </div>

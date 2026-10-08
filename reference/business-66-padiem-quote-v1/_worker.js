@@ -1,3 +1,5 @@
+import { handleVoiceToken } from "./voice-gemini.js";
+
 const PADIEM_CHAT_ORIGIN = "https://chat.padiem.net";
 const INTAKE_PATH = "/api/v1/quote/intake";
 const PADIEM_PREFIX = "/api/padiem";
@@ -22,6 +24,8 @@ function bridgeMutationOriginAllowed(request, url) {
   if (!carriesSessionCookie(request.headers.get("cookie"))) return true;
   return request.headers.get("origin") === url.origin;
 }
+
+const VOICE_TOKEN_PATH = "/api/b66/voice/token";
 
 function jsonError(code, status) {
   return new Response(JSON.stringify({ ok: false, error: { code } }), {
@@ -207,6 +211,14 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === INTAKE_PATH) {
       return handleIntake(request);
+    }
+    if (url.pathname === VOICE_TOKEN_PATH) {
+      return handleVoiceToken(request, env, {
+        jsonError,
+        chatOrigin: PADIEM_CHAT_ORIGIN,
+        carriesSessionCookie,
+        allowedMutation: (req) => bridgeMutationOriginAllowed(req, url)
+      });
     }
     if (url.pathname === PADIEM_PREFIX || url.pathname.startsWith(PADIEM_PREFIX + "/")) {
       return handlePadiemBridge(request, url, env);

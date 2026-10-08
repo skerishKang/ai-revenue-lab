@@ -71,6 +71,9 @@ jobs:
           test -f "${SOURCE_DIR}/padiem-account.css"
           test -f "${SOURCE_DIR}/shell-layout.js"
           test -f "${SOURCE_DIR}/cgi-template-v2.js"
+          test -f "${SOURCE_DIR}/voice-stt.js"
+          test -f "${SOURCE_DIR}/voice-input.js"
+          test -f "${SOURCE_DIR}/voice-gemini.js"
           test -f "${SOURCE_DIR}/tests/padiem-account-bridge.test.mjs"
           test -f "${SOURCE_DIR}/tests/account-scope-3480.test.cjs"
           test -f "${SOURCE_DIR}/embed.html"
@@ -78,7 +81,7 @@ jobs:
           test -f "${SOURCE_DIR}/quote-embed-browser.js"
           test -f "${SOURCE_DIR}/quote-embed.css"
           test -f "apps/b66-quote-adapter/app/file_intake.py"
-          for js_file in _worker.js app.js quote-account-scope.js file-intake.js easy-mode.js quote-template.js quote-template-store.js quote-template-renderer.js quote-template-selection.js quote-template-ui.js quote-template-candidate.js quote-template-cloner.js quote-skill.js quote-skill-store.js quote-skill-candidate.js quote-skill-registration.js quote-template-registration.js quote-registration-session.js quote-skill-ui.js padiem-account.js shell-layout.js cgi-template-v2.js quote-embed-bridge.js quote-embed-browser.js; do
+          for js_file in _worker.js app.js quote-account-scope.js file-intake.js easy-mode.js quote-template.js quote-template-store.js quote-template-renderer.js quote-template-selection.js quote-template-ui.js quote-template-candidate.js quote-template-cloner.js quote-skill.js quote-skill-store.js quote-skill-candidate.js quote-skill-registration.js quote-template-registration.js quote-registration-session.js quote-skill-ui.js padiem-account.js shell-layout.js cgi-template-v2.js quote-embed-bridge.js quote-embed-browser.js voice-stt.js voice-input.js voice-gemini.js; do
             node --check "${SOURCE_DIR}/${js_file}"
           done
           echo "B66_SHIP_GUARD=PASS"
@@ -260,6 +263,9 @@ jobs:
           node --check cgi-template-v2.js
           node --check quote-embed-bridge.js
           node --check quote-embed-browser.js
+          node --check voice-stt.js
+          node --check voice-input.js
+          node --check voice-gemini.js
           node tests/quote-core.test.cjs
           node tests/quote-extraction.test.cjs
           node tests/quote-history.test.cjs
@@ -290,6 +296,10 @@ jobs:
           node tests/pages-live-intake.test.mjs
           node tests/padiem-account-bridge.test.mjs
           node tests/cgi-v2.test.cjs
+          node tests/voice-stt.test.cjs
+          node tests/voice-input.test.cjs
+          node tests/voice-easy-mode-host.test.cjs
+          node tests/voice-token-route.test.mjs
           node tests/three-pane-shell-contract.test.cjs
 
       - name: Run B66 server intake adapter contracts
