@@ -26,7 +26,7 @@ from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
-from .claw_memory_routes import _resolve_memory_workspace
+from .control_plane_identity_shadow import resolve_refreshed_session
 
 SAFE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,255}$")
 SHA = re.compile(r"^[0-9a-f]{64}$")
@@ -140,13 +140,26 @@ async def record_first_party_browser_control_approval(
     # A server-generated opaque reference attests that the user click went
     # through the signed-in owner route, not a client-supplied session cookie.
     confirmation = "owner_confirmation_" + secrets.token_hex(16)
+    # Single-statement INSERT .. SELECT over the CURRENT independently
+    # server-issued ticket. The prior read-only loader is NOT sufficient:
+    # a revoked, expired, replaced or foreign ticket must never approve
+    # between load and write (TOCTOU). No service may submit just a dataclass.
     sql = (
         f"INSERT INTO {TABLE} "
         "(app_id,continuation_ref,pause_id,owner_subject_id,run_id,"
         "invocation_sha256,original_request_fingerprint,"
         "original_admission_decision_id,decision_id,authority_ref,evidence_ref,"
-        "decided_at,expires_at,revoked_at,outcome,authenticated_owner_session_ref)"
-        " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+        "decided_at,expires_at,revoked_at,outcome,authenticated_owner_session_ref) "
+        "SELECT ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? "
+        "FROM padiem_browser_control_owner_p01_tickets t "
+        "WHERE t.ticket_ref=? AND t.session_user_id=? AND t.workspace_ref=? "
+        "AND t.engine_owner_subject_id=? AND t.app_id=? AND t.continuation_ref=? "
+        "AND t.pause_id=? AND t.engine_run_id=? "
+        "AND t.tool_id='browser.control' AND t.approval_scope='browser.control' "
+        "AND t.invocation_sha256=? AND t.original_request_fingerprint=? "
+        "AND t.original_admission_decision_id=? AND t.expires_at=? "
+        "AND t.revoked_at IS NULL AND t.server_issued_at<=? "
+        "AND t.expires_at>? AND t.expires_at>t.server_issued_at"
     )
     params = (
         ticket.app_id, ticket.continuation_ref, ticket.pause_id,
@@ -155,7 +168,13 @@ async def record_first_party_browser_control_approval(
         ticket.original_admission_decision_id, submission["decision_id"],
         submission["authority_ref"], submission["evidence_ref"], decided,
         expiry, None, "approved", confirmation,
+        ticket.ticket_ref, authenticated_user_id, authenticated_workspace_ref,
+        ticket.engine_owner_subject_id, ticket.app_id, ticket.continuation_ref,
+        ticket.pause_id, ticket.engine_run_id, ticket.invocation_sha256,
+        ticket.original_request_fingerprint, ticket.original_admission_decision_id,
+        expiry, stamp.isoformat(), stamp.isoformat(),
     )
+
     try:
         outcome = owner_binding.prepare(sql).bind(*params).run()
         if inspect.isawaitable(outcome):
@@ -208,7 +227,24 @@ async def browser_control_owner_p01_decision(request: Request) -> JSONResponse:
     ):
         return _error(503, "browser_p01_owner_unavailable")
     try:
-        workspace = await _resolve_memory_workspace(request, uid)
+        # The browser permission is higher authority than ordinary Claw
+        # memory. Require the ACTIVE canonical Control Plane USER identity:
+        # no legacy owner:<uid> tenant fallback and no stale session shadow.
+        shadow = getattr(request.app.state, "identity_shadow_store", None)
+        authority = getattr(request.app.state, "control_plane_identity_authority", None)
+        if shadow is None or authority is None:
+            return _error(503, "browser_p01_canonical_identity_unavailable")
+        current_session = await resolve_refreshed_session(
+            authority=authority, store=shadow, product_user_id=uid,
+        )
+        workspace = current_session.tenant_id
+        canonical_subject = current_session.subject.subject_id
+        if (
+            type(workspace) is not str or SAFE.fullmatch(workspace) is None
+            or type(canonical_subject) is not str
+            or SAFE.fullmatch(canonical_subject) is None
+        ):
+            return _error(503, "browser_p01_canonical_identity_unavailable")
         ticket = loader(
             user_id=uid, workspace_ref=workspace, ticket_ref=wire["ticket_ref"]
         )
@@ -217,6 +253,7 @@ async def browser_control_owner_p01_decision(request: Request) -> JSONResponse:
         if (
             type(ticket) is not ServerAdmittedBrowserControlOwnerTicket
             or ticket.ticket_ref != wire["ticket_ref"]
+            or ticket.engine_owner_subject_id != canonical_subject
         ):
             return _error(404, "browser_p01_ticket_unavailable")
         await record_first_party_browser_control_approval(

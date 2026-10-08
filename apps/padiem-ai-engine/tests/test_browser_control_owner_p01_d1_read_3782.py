@@ -111,6 +111,26 @@ def _seed_owner(db, record, decision):
     original = record.original_admission
     assert original is not None
     p = record.pause
+    # Separate first-party ticket source must exist for EVERY owner-approved
+    # record, even inside this hermetic Engine resolver test. A bare record
+    # inserted without issuer evidence can never pass the joined read.
+    db.db.execute(
+        "INSERT INTO padiem_browser_control_owner_p01_tickets "
+        "(ticket_ref,session_user_id,workspace_ref,engine_owner_subject_id,"
+        "app_id,continuation_ref,pause_id,engine_run_id,tool_id,approval_scope,"
+        "invocation_sha256,original_request_fingerprint,"
+        "original_admission_decision_id,expires_at,revoked_at,"
+        "server_issued_at,server_issuer_ref) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        (
+            "ticket.owner.3782", "user.authenticated.3782", "workspace.3782",
+            record.execution_identity.subject_id, record.app_id,
+            record.continuation_ref, p.pause_id, p.run_id,
+            "browser.control", "browser.control", p.invocation_sha256,
+            original.request_fingerprint, original.decision_id,
+            p.expires_at.isoformat(), None, p.created_at.isoformat(),
+            "engine.issuer.3782",
+        ),
+    )
     db.db.execute(
         "INSERT INTO padiem_browser_control_owner_p01_decisions "
         "(app_id,continuation_ref,pause_id,owner_subject_id,run_id,"
@@ -296,3 +316,51 @@ def test_independent_owner_d1_read_is_consumed_by_actual_engine_resume_without_e
     finally:
         human_db.close()
         engine_db.db.close()
+
+
+@pytest.mark.parametrize("column,replacement", [
+    ("revoked_at", datetime.now(timezone.utc).isoformat()),
+    ("engine_owner_subject_id", "other.owner"),
+    ("engine_run_id", "torun.other"),
+    ("invocation_sha256", "f" * 64),
+    ("original_request_fingerprint", "f" * 64),
+    ("original_admission_decision_id", "different.admission"),
+    ("approval_scope", "process.execute"),
+    ("server_issued_at", (datetime.now(timezone.utc) + timedelta(minutes=1)).isoformat()),
+])
+def test_independent_ticket_revoked_or_changed_after_user_click_blocks_engine(
+    column, replacement,
+):
+    db = _OwnerD1()
+    try:
+        record, decision = _fixtures()
+        _seed_owner(db, record, decision)
+        assert _read(db, record, decision) is not None
+        if column == "approval_scope":
+            with pytest.raises(sqlite3.IntegrityError):
+                db.db.execute(
+                    "UPDATE padiem_browser_control_owner_p01_tickets SET approval_scope=?",
+                    (replacement,),
+                )
+            db.db.rollback()
+            return
+        db.db.execute(
+            f"UPDATE padiem_browser_control_owner_p01_tickets SET {column}=?",
+            (replacement,),
+        )
+        db.db.commit()
+        assert _read(db, record, decision) is None
+    finally:
+        db.close()
+
+
+def test_owner_approved_row_without_authentic_ticket_does_not_authorize_engine():
+    db = _OwnerD1()
+    try:
+        record, decision = _fixtures()
+        _seed_owner(db, record, decision)
+        db.db.execute("DELETE FROM padiem_browser_control_owner_p01_tickets")
+        db.db.commit()
+        assert _read(db, record, decision) is None
+    finally:
+        db.close()

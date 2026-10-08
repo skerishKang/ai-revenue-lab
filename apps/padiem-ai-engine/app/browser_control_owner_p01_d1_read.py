@@ -81,19 +81,33 @@ class IndependentOwnerP01D1Reader:
         # This is the ENTIRE read authority. Caller-supplied decision fields
         # never authorize a row unless the independent user-owned D1 ALSO
         # confirms the same human, original admission, pause and exact action.
+        # Same D1 SELECT proves not only the user's approved record, but
+        # that the distinct authenticated ticket issuer STILL recognizes the
+        # exact original run and has NOT revoked the pending browser ticket.
+        # No separate read/revocation race between ticket and approved row.
         sql = (
-            "SELECT app_id,continuation_ref,pause_id,owner_subject_id,run_id,"
-            "invocation_sha256,original_request_fingerprint,"
-            "original_admission_decision_id,decision_id,authority_ref,"
-            "evidence_ref,decided_at,expires_at,revoked_at,outcome "
-            f"FROM {_OWNER_TABLE} "
-            "WHERE app_id=? AND continuation_ref=? AND pause_id=? "
-            "AND owner_subject_id=? AND run_id=? AND invocation_sha256=? "
-            "AND original_request_fingerprint=? AND original_admission_decision_id=? "
-            "AND decision_id=? AND authority_ref=? AND evidence_ref=? "
-            "AND decided_at=? AND outcome='approved' AND revoked_at IS NULL "
-            "AND expires_at>? LIMIT 1"
+            "SELECT r.app_id,r.continuation_ref,r.pause_id,r.owner_subject_id,"
+            "r.run_id,r.invocation_sha256,r.original_request_fingerprint,"
+            "r.original_admission_decision_id,r.decision_id,r.authority_ref,"
+            "r.evidence_ref,r.decided_at,r.expires_at,r.revoked_at,r.outcome "
+            f"FROM {_OWNER_TABLE} r "
+            "JOIN padiem_browser_control_owner_p01_tickets t "
+            "ON t.app_id=r.app_id AND t.continuation_ref=r.continuation_ref "
+            "AND t.pause_id=r.pause_id AND t.engine_owner_subject_id=r.owner_subject_id "
+            "AND t.engine_run_id=r.run_id AND t.invocation_sha256=r.invocation_sha256 "
+            "AND t.original_request_fingerprint=r.original_request_fingerprint "
+            "AND t.original_admission_decision_id=r.original_admission_decision_id "
+            "AND t.expires_at=r.expires_at "
+            "AND t.tool_id='browser.control' AND t.approval_scope='browser.control' "
+            "AND t.revoked_at IS NULL AND t.server_issued_at<=r.decided_at "
+            "WHERE r.app_id=? AND r.continuation_ref=? AND r.pause_id=? "
+            "AND r.owner_subject_id=? AND r.run_id=? AND r.invocation_sha256=? "
+            "AND r.original_request_fingerprint=? AND r.original_admission_decision_id=? "
+            "AND r.decision_id=? AND r.authority_ref=? AND r.evidence_ref=? "
+            "AND r.decided_at=? AND r.outcome='approved' AND r.revoked_at IS NULL "
+            "AND r.expires_at>? LIMIT 1"
         )
+
         params = (
             record.app_id, record.continuation_ref, pause.pause_id,
             identity.subject_id, pause.run_id, pause.invocation_sha256,
