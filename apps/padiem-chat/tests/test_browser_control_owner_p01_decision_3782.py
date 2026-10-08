@@ -291,7 +291,7 @@ def test_current_ticket_must_exist_in_independent_owner_d1_even_for_valid_datacl
     ("invocation_sha256", "f" * 64),
     ("original_request_fingerprint", "f" * 64),
     ("original_admission_decision_id", "decision.other"),
-    ("expires_at", (datetime.now(timezone.utc) - timedelta(seconds=3)).isoformat()),
+    ("expires_at", "expired_relative_to_current_test_execution"),
     ("revoked_at", datetime.now(timezone.utc).isoformat()),
 ])
 def test_loaded_ticket_changed_or_revoked_before_atomic_write_never_approves(column, value):
@@ -306,6 +306,11 @@ def test_loaded_ticket_changed_or_revoked_before_atomic_write_never_approves(col
             user_id=OWNER, workspace_ref=WORKSPACE, ticket_ref=original.ticket_ref
         ))
         assert loaded == original
+        # An expiry computed at MODULE IMPORT can precede the seeded
+        # server_issued_at after a long CI suite startup, violating the D1
+        # CHECK rather than testing the intended post-load expiration.
+        if column == "expires_at":
+            value = (datetime.now(timezone.utc) - timedelta(seconds=1)).isoformat()
         owner.db.execute(
             f"UPDATE padiem_browser_control_owner_p01_tickets SET {column}=?",
             (value,),
