@@ -2,8 +2,55 @@
 
 - Status: **CANONICAL REPOSITORY OPERATING POLICY**
 - Effective: 2026-10-06
+- Last reconciled: 2026-10-08 (#3554, #3523)
 - Owner authority: Product Owner
 - Tracking issue: #3571
+
+## 0. Scope clarification — per-execution user choice is not a model decision
+
+Additive clarification. It **narrows an ambiguity** in sections 1-3 and **weakens no**
+owner gate. Sections 5, 8 and 10 are unchanged and remain fully in force.
+
+An end user selecting, per execution, one model that is **already registered and allowed in the
+B14 catalog** is product runtime input, not an agent/owner model decision. The agent, Web CTO,
+worker, validator and reviewer do not choose, rank, benchmark or pre-approve that choice, and no
+repository development step is gated on it.
+
+    PER_EXECUTION_USER_MODEL_CHOICE=NOT_A_MODEL_POLICY_CHANGE
+    MODEL_DECISION_REQUIRED_FOR_PER_EXECUTION_USER_CHOICE=NO
+    STOP_AND_ASK_OWNER_FOR_PER_EXECUTION_USER_CHOICE=NO
+    REPEATED_OWNER_APPROVAL_FOR_REGISTERED_MODEL_USE=NOT_REQUIRED
+    SINGLE_PRIMARY_REQUIRED=NO
+    SUCCESSOR_SELECTION_REQUIRED_BEFORE_MVP=NO
+    GLOBAL_REPRESENTATIVE_MODEL_REQUIRED=NO
+    BENCHMARK_REQUIRED_BEFORE_OWNER_USE=NO
+    MODEL_COMPARISON=OPTIONAL
+    EXACT_MODEL_ID_AND_EXECUTION_PERMISSION_VERIFIED_BY=B14
+
+The following remain `OWNER_ONLY` and are unchanged by this section:
+
+- registering or activating a **new** model/provider, or changing the active route set;
+- credential/secret/binding mutation;
+- automatic routing and fallback policy changes;
+- Production mutation and live canary activation.
+
+Any choice that is unregistered, disallowed, ambiguous, or automatically substituted **fails
+closed**. No silent fallback is permitted on any path:
+
+    UNREGISTERED_OR_DISALLOWED_MODEL=FAIL_CLOSED
+    NO_MODEL_SELECTED=FAIL_CLOSED
+    SILENT_FALLBACK=PROHIBITED
+
+Historical single-primary, Agnes, and Space Bunny records are provenance only and create no
+current requirement:
+
+    HISTORICAL_MODEL_DECISIONS=PROVENANCE_ONLY
+    NO_SUCCESSOR_SELECTION_AS_PRECONDITION=YES
+
+If a model-dependent canary needs a model, the OWNER supplies the choice at that time. Absence of
+an OWNER choice blocks only that canary; it is not a repository or source-development blocker.
+Per AGENTS.md, `AGENTS.md` and `AI_DEVELOPMENT_OPERATING_POLICY.md` already point here, so this
+section is the single canonical statement and is not duplicated into those documents.
 
 ## 1. Rule
 
@@ -37,6 +84,9 @@ This policy applies to any change or investigation whose purpose is to decide or
 
 Merely encountering a model-related defect does **not** authorize model work.
 
+Per-execution selection of an already registered/allowed model by an end user is outside this
+list; see section 0.
+
 ## 3. Required behavior when model work becomes relevant
 
 When an agent discovers that progress may depend on a model/provider decision, it must stop model work and report:
@@ -51,6 +101,10 @@ When an agent discovers that progress may depend on a model/provider decision, i
     LIVE_MODEL_COMPARISON_PERFORMED=NO
 
 Then ask the Product Owner what to do.
+
+Do **not** report `MODEL_DECISION_REQUIRED=YES` for a per-execution user choice of an already
+registered/allowed model (section 0). That reporting duty is reserved for an actual agent, worker,
+validator or reviewer model decision.
 
 The agent may continue unrelated or model-independent product work.
 
