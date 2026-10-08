@@ -1188,7 +1188,16 @@
           : ""
       }
     );
-    if (model) TemplateRenderer.applyRenderModel(document, model);
+    // An assigned CGI may carry the earlier generic layout variant. The
+    // approved saved skill still owns every fact and its fingerprint; only the
+    // exact certified CGI presentation is selected for the browser preview.
+    const ownerCgi = serverSkillActive && window.B66BrowserPdf &&
+      window.B66BrowserPdf.isCgiSkill(skillUiState.activeSkillId);
+    const certifiedModel = ownerCgi && model
+      ? window.B66BrowserPdf.certifiedPreviewModel(model, skillUiState.activeSkillId,
+          (activeSkillProfile() || {}).fingerprint)
+      : model;
+    if (certifiedModel) TemplateRenderer.applyRenderModel(document, certifiedModel);
 
     /* 입력 폼의 금액 셀은 견적서 render projection 과 별개로 QuoteCore 파생값을 그대로 쓴다. */
     const totals = Core.computeDraftTotals(draft);
@@ -1317,7 +1326,20 @@
     pdfDownloadPending = true;
     button.disabled = true;
     try {
-      const result = await bridge.downloadPdf(model);
+      const certifiedBrowserPdf = window.B66BrowserPdf &&
+        window.B66BrowserPdf.isCgiSkill(skillUiState.activeSkillId);
+      const profile = activeSkillProfile();
+      const previewModel = certifiedBrowserPdf && profile && skillUiState.serverSkill &&
+          skillUiState.serverSkill.id === skillUiState.activeSkillId
+        ? window.B66BrowserPdf.certifiedPreviewModel(
+            TemplateRenderer.buildRenderModel(draft, profile, {
+              taxReviewRequired,
+              slotSources: skillUiState.serverSlotSources,
+              certifiedPreviewBaseUrl: bridge.certifiedPreviewBaseUrl(skillUiState.activeSkillId)
+            }),
+            skillUiState.activeSkillId, profile.fingerprint)
+        : null;
+      const result = await bridge.downloadPdf(model, previewModel);
       if (result && result.ok === true) toast("PDF 견적서를 다운로드했습니다.");
       else toast(result && result.message ? result.message : "PDF 다운로드에 실패했습니다. 잠시 후 다시 시도해 주세요.", 4200);
     } catch (_) {

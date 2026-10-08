@@ -272,53 +272,74 @@ def _assert_quote(
 
 
 def _pdf_download_probe(page, counters: Counters) -> None:
-    before = counters.pdf_posts
-    responses = []
-
-    def capture_response(response) -> None:
-        try:
-            if (
-                response.request.method == "POST"
-                and urlparse(response.url).path == PDF_PATH
-            ):
-                responses.append(response)
-        except Exception:
-            return
-
-    page.on("response", capture_response)
+    print("SMOKE_STAGE=PDF_PROBE_START", flush=True)
+    # CGI client-raster mode is the only accepted current customer download.
+    # Previously this smoke REQUIRED 3 backend PDF POSTs; now it MUST see ZERO.
+    # No fallback to the 503 Cloudflare renderer or deferred Modal.
+    if not page.evaluate("""() => {
+        const selected = document.getElementById('padiemSavedSkillSelect');
+        const exporter = window.B66BrowserPdf;
+        const readiness = window.B66QuoteRuntimeBridge?.readiness?.();
+        return Boolean(selected && exporter && exporter.isCgiSkill(selected.value) &&
+            readiness?.ready === true);
+    }"""):
+        _fail("cgi_browser_pdf_not_active")
+    print("SMOKE_STAGE=PDF_PREVIEW_IMAGE_WAIT", flush=True)
     try:
-        try:
-            with page.expect_download(timeout=30000) as download_info:
-                page.locator("#printPdf").click()
-            download = download_info.value
-        except Exception as exc:
-            if responses:
-                status = int(responses[-1].status)
-                if status != 200:
-                    raise SmokeFailure("pdf_http_" + str(status)) from exc
-                raise SmokeFailure("pdf_download_missing_after_http_200") from exc
-            raise SmokeFailure("pdf_response_or_download_missing") from exc
-    finally:
-        page.remove_listener("response", capture_response)
-
-    if not responses:
-        _fail("pdf_response_missing")
-    response = responses[-1]
-    if response.status != 200:
-        _fail("pdf_http_" + str(response.status))
-    media_type = (response.headers.get("content-type") or "").split(";", 1)[0].strip().lower()
-    if media_type != "application/pdf":
-        _fail("pdf_content_type_mismatch")
-    body = response.body()
-    if not isinstance(body, bytes) or not body.startswith(b"%PDF-"):
-        _fail("pdf_bytes_invalid")
-    if counters.pdf_posts != before + 1:
-        _fail("pdf_request_budget_mismatch")
+        page.wait_for_function("""() => {
+            const image = document.getElementById('cgiCertifiedPreviewBase');
+            return image && image.complete && image.naturalWidth === 1190 &&
+                image.naturalHeight === 1682;
+        }""", timeout=15000)
+    except Exception as exc:
+        # Bounded booleans only: never print user data, URLs, cookies, tokens or responses.
+        flags = page.evaluate("""() => {
+            const im = document.getElementById('cgiCertifiedPreviewBase');
+            const preview = document.getElementById('cgiCertifiedPreview');
+            return {
+                element: !!im,
+                src: !!im?.getAttribute('src'),
+                loaded: !!im?.complete,
+                width: im?.naturalWidth === 1190,
+                height: im?.naturalHeight === 1682,
+                shown: !!preview && preview.hidden === false
+            };
+        }""")
+        if not isinstance(flags, dict):
+            raise SmokeFailure("cgi_preview_image_unavailable") from exc
+        status = "_".join(
+            name + str(int(flags.get(name) is True))
+            for name in ("element", "src", "loaded", "width", "height", "shown")
+        )
+        raise SmokeFailure("cgi_preview_image_" + status) from exc
+    print("SMOKE_STAGE=PDF_PREVIEW_IMAGE_READY", flush=True)
+    before = counters.pdf_posts
+    if before != 0:
+        _fail("unexpected_server_pdf_post")
+    try:
+        with page.expect_download(timeout=30000) as download_info:
+            page.locator("#printPdf").click()
+        download = download_info.value
+        print("SMOKE_STAGE=PDF_DOWNLOAD_EVENT", flush=True)
+    except Exception as exc:
+        raise SmokeFailure("browser_pdf_download_missing") from exc
+    if counters.pdf_posts != before:
+        _fail("cgi_browser_pdf_used_server")
     if not str(download.suggested_filename or "").lower().endswith(".pdf"):
         _fail("pdf_filename_invalid")
+    # Reading the downloaded artifact is bounded; raw bytes never printed.
+    from pathlib import Path
+    body = Path(download.path()).read_bytes()
+    if not isinstance(body, bytes) or not body.startswith(b"%PDF-"):
+        _fail("browser_pdf_bytes_invalid")
+    if not (100_000 <= len(body) <= 4_000_000):
+        _fail("browser_pdf_bytes_bounds")
+    if b"/MediaBox [0 0 595 841]" not in body or b"/DCTDecode" not in body:
+        _fail("browser_pdf_a4_image_contract_missing")
 
 
 def _open_result_and_download(page, counters: Counters) -> None:
+    print("SMOKE_STAGE=RESULT_OPEN", flush=True)
     _click_chip(page, "견적서 확인하기")
     page.locator("#directView").wait_for(state="visible", timeout=10000)
     _pdf_download_probe(page, counters)
@@ -392,6 +413,7 @@ def _login(page, username: str, password: str) -> None:
 
 def _guided(page, counters: Counters) -> None:
     before = counters.interpret_posts
+    print("SMOKE_STAGE=GUIDED_START", flush=True)
     page.locator("#guidedStarter").click()
 
     _send(page, "\uac00\uc774\ub4dc\ud14c\uc2a4\ud2b8\uac74\uc124")
@@ -426,6 +448,7 @@ def _guided(page, counters: Counters) -> None:
     )
     if counters.interpret_posts != before:
         _fail("guided_used_interpret")
+    print("SMOKE_STAGE=GUIDED_VALIDATED_BEFORE_PDF", flush=True)
     _open_result_and_download(page, counters)
     print("GUIDED=PASS")
     print("GUIDED_INTERPRET_POSTS=0")
@@ -616,8 +639,8 @@ def run_live(username: str, password: str) -> int:
 
             if counters.interpret_posts != MAX_INTERPRET_POSTS:
                 _fail("final_interpret_budget_mismatch")
-            if counters.pdf_posts != MAX_PDF_POSTS:
-                _fail("final_pdf_budget_mismatch")
+            if counters.pdf_posts != 0:
+                _fail("cgi_browser_pdf_server_post_detected")
             if counters.direct_provider_requests != 0:
                 _fail("browser_direct_provider_request")
 
@@ -627,9 +650,9 @@ def run_live(username: str, password: str) -> int:
 
         print("INTERPRET_POSTS=3")
         print("MAX_INTERPRET_POSTS=3")
-        print("PDF_POSTS=3")
+        print("PDF_POSTS=0")
         print("MAX_PDF_POSTS=3")
-        print("CERTIFIED_PDF_DOWNLOADS=3")
+        print("CERTIFIED_BROWSER_PDF_DOWNLOADS=3")
         print("BROWSER_DIRECT_PROVIDER_CALLS=0")
         print("RETRY=0")
         print("FALLBACK_FANOUT=0")

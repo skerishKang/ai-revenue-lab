@@ -47,7 +47,7 @@ function verifyProjection() {
   return model;
 }
 
-function accountHarness({ authenticated = true, withSkill = true } = {}) {
+function accountHarness({ authenticated = true, withSkill = true, cgiExport = false } = {}) {
   const elements = new Map();
   const calls = [];
   const downloads = [];
@@ -66,7 +66,9 @@ function accountHarness({ authenticated = true, withSkill = true } = {}) {
   });
   const getElement = (id) => { if (!elements.has(id)) elements.set(id, makeElement(id)); return elements.get(id); };
   const skill = { id: "synthetic-skill", name: "Synthetic Skill", approved: true, fingerprint: "synthetic-skill-fingerprint", internalTemplate: profile };
-  const row = { saved_skill_id: SKILL_ID, skill_name: skill.name, skill, skill_fingerprint: skill.fingerprint };
+  const rowId = cgiExport ? "b66skill_2eb55d822407f626b7a75c8c88d32c40" : SKILL_ID;
+  const row = { saved_skill_id: rowId, skill_name: skill.name, skill, skill_fingerprint: skill.fingerprint };
+  const browserCalls = [];
   const json = (data) => new Response(JSON.stringify(data), { headers: { "Content-Type": "application/json" } });
   const context = vm.createContext({
     Blob, Uint8Array, setTimeout, clearTimeout,
@@ -75,13 +77,20 @@ function accountHarness({ authenticated = true, withSkill = true } = {}) {
     CustomEvent: class { constructor(type, options) { this.type = type; this.detail = options.detail; } },
     SavedQuoteSkill: { normalizeSkill: (value) => value },
     B66QuoteAppBridge: { createFreshDraft: () => Core.createProductionDraft() },
+    B66BrowserPdf: cgiExport ? {
+      isCgiSkill: (id) => id === rowId,
+      async makePdf(renderModel, previewModel) {
+        browserCalls.push({ renderModel, previewModel });
+        return new Uint8Array(Buffer.from("%PDF-1.4\nCI browser proof"));
+      }
+    } : undefined,
     B66QuoteSkillBridge: { setServerSkill: () => true, clearServerSkill() {} },
     document: { readyState: "complete", body: makeElement("body"), getElementById: getElement, createElement: makeElement, dispatchEvent() {}, addEventListener() {} },
     fetch: async (url, opts = {}) => {
       calls.push({ url: String(url), opts });
       if (String(url).endsWith("/auth/status")) return json({ authenticated, session_state: authenticated ? "signed_in" : "signed_out", user: {}, methods: {} });
       if (String(url).includes("/saved-skills?")) return json({ skills: withSkill ? [row] : [] });
-      if (String(url).endsWith("/saved-skills/" + SKILL_ID)) return json({ saved_skill: row });
+      if (String(url).endsWith("/saved-skills/" + rowId)) return json({ saved_skill: row });
       if (String(url).endsWith("/company-profile")) return json({ company_profile: { company: "Synthetic Supplier" } });
       if (String(url).includes("/assets/")) return new Response(new Uint8Array([137, 80, 78, 71]), { headers: { "Content-Type": "image/png" } });
       if (String(url).endsWith("/quote/pdf")) return responseFactory();
@@ -91,7 +100,7 @@ function accountHarness({ authenticated = true, withSkill = true } = {}) {
   });
   context.window = context;
   new vm.Script(source("padiem-account.js")).runInContext(context);
-  return { bridge: context.B66QuoteRuntimeBridge, calls, downloads, blobs, revoked, elements, setResponse: (fn) => { responseFactory = fn; } };
+  return { bridge: context.B66QuoteRuntimeBridge, calls, downloads, blobs, revoked, elements, browserCalls, setResponse: (fn) => { responseFactory = fn; } };
 }
 
 async function verifyAccountDownload(model) {
@@ -165,6 +174,28 @@ async function verifyAccountDownload(model) {
   assert.equal(racing.downloads.length, 0);
 }
 
+async function verifyCgiBrowserPath(model) {
+  const harness = accountHarness({ cgiExport: true });
+  await flush();
+  const view = { layoutVariant: "cgi-v2", template: model.template };
+  const result = await harness.bridge.downloadPdf(model, view);
+  assert.equal(result.ok, true);
+  assert.equal(harness.browserCalls.length, 1);
+  assert.equal(harness.browserCalls[0].previewModel, view);
+  assert.equal(harness.downloads.length, 1);
+  assert.equal(harness.blobs[0].type, "application/pdf");
+  assert.equal(harness.calls.some((call) => call.url.endsWith("/quote/pdf")), false,
+    "CGI must NEVER silently call old Worker");
+  const invalid = clone(model);
+  invalid.template.fingerprint = "tampered";
+  const count = harness.browserCalls.length;
+  assert.equal((await harness.bridge.downloadPdf(invalid, view)).code, "pdf_skill_mismatch");
+  assert.equal(harness.browserCalls.length, count);
+  assert.equal(harness.downloads.length, 1);
+  console.log("CGI_BROWSER_ACCOUNT_DOWNLOAD=PASS");
+  console.log("CGI_OLD_PDF_ENDPOINT_CALLS=0");
+}
+
 async function verifyAppButton(model) {
   const app = source("app.js");
   assert.equal(app.includes("window.print()"), false);
@@ -177,7 +208,7 @@ async function verifyAppButton(model) {
   const button = { disabled: false, addEventListener(type, fn) { handler = fn; } };
   const context = vm.createContext({
     draft, taxReviewRequired: false,
-    $: () => button,
+    $: (id) => id === "printPdf" ? button : { addEventListener() {} },
     printReadinessFailure: () => readinessFailure,
     focusTaxReview: () => { taxFocused++; }, focusReadinessTarget() {}, toast() {},
     activeSkillProfile: () => profile,
@@ -201,6 +232,7 @@ async function verifyAppButton(model) {
 (async () => {
   const model = verifyProjection();
   await verifyAccountDownload(model);
+  await verifyCgiBrowserPath(model);
   await verifyAppButton(model);
   console.log("CERTIFIED_PDF_FRONTEND_CONTRACT=PASS");
   console.log("QUOTE_CORE_FINAL_VALUES_PRESERVED=PASS");
