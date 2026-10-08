@@ -91,8 +91,9 @@ def test_no_retired_kilo_route_can_make_poolside_ready(monkeypatch):
         models=client.get("/api/pilot/models")
     assert readiness.status_code == 200
     data=readiness.json()
-    assert data["status"] == "not_ready"
-    assert not [e for e in data["providers"] if e["provider_id"] == "kilo"]
+    assert data["status"] == "ready"  # unrelated, owner-approved keyless Step 5
+    assert [e for e in data["providers"] if e["provider_id"] == "kilo"
+            and e["models"] == ["kilo/stepfun/step-5-preview-free"]]
     poolside=_provider(data,POOLSIDE_PROVIDER_ID)
     assert poolside["credential_ready"] is False
     assert poolside["route_ready"] is False

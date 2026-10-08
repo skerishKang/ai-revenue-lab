@@ -42,7 +42,7 @@ def test_retired_free_ids_are_absent_from_fixed_chain_v1() -> None:
 
 def test_owner_removed_remaining_kilo_free_routes_from_catalog() -> None:
     from app.pilot.platform_secrets import get_platform_provider
-    assert get_platform_provider("kilo") is None
+    assert get_catalog_by_id("kilo/stepfun/step-5-preview-free") is not None
     for model_id in (KILO_NEMOTRON_MODEL_ID,KILO_LAGUNA_MODEL_ID):
         assert get_catalog_by_id(model_id) is None
         assert model_id not in {m.model_id for m in get_catalog_models()}

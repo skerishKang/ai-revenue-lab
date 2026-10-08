@@ -198,6 +198,14 @@ def _require_owner_allowed_live_model(
         raise PilotNotConfigured(
             "OWNER가 제외한 모델은 이 실행 경로에서 사용할 수 없습니다."
         )
+    if platform_provider_id == "kilo":
+        from .catalog import get_catalog_by_id
+        model = get_catalog_by_id(model_id)
+        if (model is None or model.platform_provider_id != "kilo"
+                or model.upstream_model != upstream_model):
+            raise PilotNotConfigured(
+                "Kilo execution is limited to an exact registered JSON model/upstream tuple."
+            )
 
 
 async def call_platform_chat_completions(

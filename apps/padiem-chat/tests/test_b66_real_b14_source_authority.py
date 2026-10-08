@@ -155,7 +155,7 @@ def test_real_b14_source_registered_routes_and_google_manual_only(b14_source_get
         "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
         "kilo/poolside-laguna-s-2.1-free",
     }
-    assert len(rows) == 9
+    assert len(rows) == 10
     assert removed.isdisjoint(by_id)
     assert all(not row["auto_eligible"] for row in rows)
     assert all(not row["owner_excluded"] for row in rows)
@@ -184,7 +184,7 @@ def test_live_mode_not_customer_authority_and_no_default_replacement(b14_source_
     public = [row for row in rows if row.get("public") is True]
     # The historical single Kilo public route was deleted by Owner.
     assert public == []
-    assert len(rows) == 9
+    assert len(rows) == 10
     assert all(not row["auto_eligible"] for row in rows)
     assert not any(row["id"].startswith("google/") and row["auto_eligible"]
                    for row in rows)

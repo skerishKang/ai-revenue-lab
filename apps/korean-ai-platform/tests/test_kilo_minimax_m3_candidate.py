@@ -71,8 +71,8 @@ async def test_retired_kilo_laguna_never_calls_transport(monkeypatch) -> None:
         raise AssertionError("retired provider must not dispatch")
     with pytest.raises(PilotNotConfigured):
         await plat.call_platform_chat_completions(
-            model_id="test-fixture/kilo-keyless-chat",
-            upstream_model="test-fixture/kilo-keyless-response",
+            model_id="kilo/poolside-laguna-s-2.1-free",
+            upstream_model="poolside/laguna-s-2.1:free",
             provider="Kilo Gateway / Poolside",
             platform_provider_id="kilo",
             messages=[{"role":"user","content":"fixture"}],

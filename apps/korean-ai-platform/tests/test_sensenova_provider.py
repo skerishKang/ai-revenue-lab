@@ -91,7 +91,7 @@ def test_provider_spec_pinned_origin_and_binding():
 def test_retired_kilo_secondary_route_unregistered():
     from app.pilot.kilo_provider import KILO_MODEL_ID
     assert get_catalog_by_id(KILO_MODEL_ID) is None
-    assert get_platform_provider("kilo") is None
+    assert get_catalog_by_id("kilo/stepfun/step-5-preview-free") is not None
     assert get_catalog_by_id(SENSENOVA_MODEL_ID) is not None
 
 @pytest.mark.asyncio
