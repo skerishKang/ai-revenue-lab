@@ -66,19 +66,19 @@ import type { BoundedObservationElement, BoundedPageObservation } from './browse
 /**
  * #3669 — the canonical lease admission port, two phases.
  *
- * PHASE A (`resolve`) is READ-ONLY: it returns the canonical lease shape —
+ * PHASE A (`resolve`) is slot-free: it returns the canonical lease shape —
  * the 14-key desktop lease dict, re-validated by `assertBoundedActionLease`
- * — and mutates no durable state. PHASE B (`consume`) is the single atomic
- * durable slot write for one action, called exactly once immediately before
- * input-synthesis dispatch; it carries the observed origin from the fresh
- * observation and resolves to the new durable consumed-actions count.
+ * — and may persist an idle revoke. PHASE B (`consume`) is the canonical
+ * atomic gate: it spends a slot before an approved
+ * input-synthesis dispatch, or revokes a cross-origin observation
+ * without consuming a slot or dispatching input.
  *
  * Unwired, every action refuses. Budget, idle and replay correctness live in
  * the canonical durable store on the agent side — never in this host.
  */
 export interface BrowserActionLeaseAuthority {
   readonly configured: boolean;
-  /** PHASE A — the read-only resolve. Never consumes a slot. */
+  /** PHASE A — slot-free resolve (durable idle revocation is allowed). */
   resolve(input: {
     readonly browserSessionRef: string;
     readonly action: LeaseEligibleAction;

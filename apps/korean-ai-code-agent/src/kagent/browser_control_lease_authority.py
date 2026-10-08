@@ -28,8 +28,9 @@ Every later resolve for the same fingerprint returns the existing row; a
 fingerprint bound to different correlations fails closed.
 
 The two-phase consumption contract (CENTRAL ruling §5) lives on the store:
-PHASE A `resolve_lease` is read-only and never increments; PHASE B
-`consume_action` is the one atomic durable slot write. This module only
+PHASE A `resolve_lease` never increments an action slot; active resolves are
+read-only, while an idle refusal durably revokes the stale lease. PHASE B
+`consume_action` is the one atomic durable action-slot write. This module only
 delegates both, plus the explicit `revoke_lease` primitive.
 """
 
@@ -647,7 +648,7 @@ class BrowserControlLeaseAuthority:
                 "local_policy_denied", "local policy denied the browser.control session"
             )
 
-    # --- PHASE A: read-only resolve with idempotent lazy issuance ----------
+    # --- PHASE A: slot-free resolve, idle revoke, lazy issuance ------------
 
     def resolve_or_issue(
         self,
@@ -658,8 +659,9 @@ class BrowserControlLeaseAuthority:
     ) -> BrowserControlLeaseProjection:
         """PHASE A entrypoint for the trusted transport.
 
-        An existing row is returned read-only (any correlation drift or
-        expired/revoked/idle fact refuses); a missing row is lazily issued
+        An existing active row is returned read-only; an idle row is durably
+        revoked on refusal, while correlation drift and expired/revoked facts
+        also refuse. A missing row is lazily issued
         from the canonical P01 evidence exactly once. Idempotent: a second
         resolve for the same fingerprint returns the same row and mints
         nothing.
