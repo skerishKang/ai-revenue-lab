@@ -610,8 +610,10 @@
     var overlay = doc.getElementById("cgiCertifiedPreviewOverlay");
     var cgiContent = doc.getElementById("cgiV2Content");
     var paper = doc.getElementById("quotePaper");
-    if (!url || !CERTIFIED_PREVIEW_URL.test(url) || !image || !overlay) {
+    var operations = buildCgiCertifiedDrawOps(model);
+    if (!url || !CERTIFIED_PREVIEW_URL.test(url) || !image || !overlay || !operations) {
       section.hidden = true;
+      if (cgiContent) cgiContent.hidden = false;
       if (paper && typeof paper.removeAttribute === "function") paper.removeAttribute("data-certified-preview");
       return false;
     }
@@ -622,8 +624,6 @@
     if (paper && typeof paper.setAttribute === "function") paper.setAttribute("data-certified-preview", "true");
     overlay.textContent = "";
 
-    var operations = buildCgiCertifiedDrawOps(model);
-    if (!operations) return false;
     operations.forEach(function (op) {
       addCgiCertifiedText(doc, overlay, op.key, op.text, op.x, op.baselineY, op.size, op.options);
     });
