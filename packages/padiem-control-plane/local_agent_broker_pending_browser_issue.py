@@ -49,6 +49,10 @@ CREATE TABLE IF NOT EXISTS local_agent_browser_pending_owner_ticket (
   revision_ref TEXT NOT NULL,
   engine_app_id TEXT NOT NULL,
   engine_continuation_ref TEXT NOT NULL,
+  engine_run_ref TEXT NOT NULL,
+  original_request_fingerprint TEXT NOT NULL,
+  original_admission_decision_id TEXT NOT NULL,
+  browser_invocation_sha256 TEXT NOT NULL,
   expires_at TEXT NOT NULL,
   retired_at TEXT NULL
 )
@@ -142,13 +146,17 @@ class DurableBrokerPendingBrowserTicketStore:
             "INSERT INTO local_agent_browser_pending_owner_ticket "
             "(ticket_ref,command_ref,binding_ref,workspace_ref,device_ref,owner_ref,"
             "broker_run_ref,broker_request_fingerprint,revision_ref,engine_app_id,"
-            "engine_continuation_ref,expires_at,retired_at) "
-            "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,NULL)",
+            "engine_continuation_ref,engine_run_ref,original_request_fingerprint,"
+            "original_admission_decision_id,browser_invocation_sha256,expires_at,retired_at) "
+            "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,NULL)",
             ticket.ticket_ref, command.command_id, ticket.binding_ref,
             ticket.workspace_ref, ticket.device_ref, ticket.owner_ref,
             ticket.broker_run_ref, ticket.browser_request_fingerprint,
             command.revision_ref, ticket.engine_app_id,
-            ticket.engine_continuation_ref, iso(ticket.expires_at),
+            ticket.engine_continuation_ref, ticket.engine_run_ref,
+            ticket.original_request_fingerprint,
+            ticket.original_admission_decision_id, ticket.browser_invocation_sha256,
+            iso(ticket.expires_at),
         ))
         if count != 1:
             raise ValueError("original pending owner ticket association was not committed")
@@ -195,6 +203,62 @@ class DurableBrokerPendingBrowserTicketStore:
             revision_ref=scope.revision_ref,
             engine_app_id=row_value(data, "engine_app_id"),
             engine_continuation_ref=row_value(data, "engine_continuation_ref"),
+        )
+
+    def resolve_for_queued_command(
+        self, *, command: BrokerCommandRecord, now: datetime,
+    ) -> AuthenticatedPendingBrowserWorkTicket:
+        """Exact stored Engine binding for a still-queued canonical command.
+
+        Returns recorded facts, NEVER an approved decision. The separate
+        authenticated Engine D1 read must prove the actual HUMAN P01 before
+        Broker transitions this queued command.
+        """
+        if type(command) is not BrokerCommandRecord or (
+            command.capability is not BrokerCommandCapability.BROWSER_CONTROL
+            or command.state is not BrokerCommandState.QUEUED
+        ):
+            raise ValueError("original pending browser ticket requires queued browser command")
+        current = utc(now, "now")
+        if not command.issued_at <= current < command.expires_at:
+            raise ValueError("pending browser command expired")
+        found = rows(self._sql.exec(
+            "SELECT ticket_ref,binding_ref,workspace_ref,device_ref,owner_ref,"
+            "broker_run_ref,broker_request_fingerprint,revision_ref,engine_app_id,"
+            "engine_continuation_ref,engine_run_ref,original_request_fingerprint,"
+            "original_admission_decision_id,browser_invocation_sha256,"
+            "expires_at,retired_at FROM local_agent_browser_pending_owner_ticket "
+            "WHERE command_ref=?", command.command_id,
+        ))
+        if len(found) != 1:
+            raise ValueError("pending owner-issued browser ticket unavailable")
+        row = found[0]
+        if (
+            row_value(row, "retired_at") is not None
+            or parse_iso(row_value(row, "expires_at"), "ticket_expiry") <= current
+            or row_value(row, "binding_ref") != command.binding_ref
+            or row_value(row, "broker_run_ref") != command.run_id
+            or row_value(row, "broker_request_fingerprint") != command.request_fingerprint
+            or row_value(row, "revision_ref") != command.revision_ref
+            or command.expires_at > parse_iso(row_value(row, "expires_at"), "ticket_expiry")
+        ):
+            raise ValueError("pending browser ticket no longer matches canonical command")
+        return AuthenticatedPendingBrowserWorkTicket(
+            ticket_ref=row_value(row, "ticket_ref"),
+            binding_ref=row_value(row, "binding_ref"),
+            workspace_ref=row_value(row, "workspace_ref"),
+            device_ref=row_value(row, "device_ref"),
+            owner_ref=row_value(row, "owner_ref"),
+            broker_run_ref=row_value(row, "broker_run_ref"),
+            tool_request_ref=command.tool_request_ref,
+            browser_request_fingerprint=row_value(row, "broker_request_fingerprint"),
+            engine_app_id=row_value(row, "engine_app_id"),
+            engine_continuation_ref=row_value(row, "engine_continuation_ref"),
+            engine_run_ref=row_value(row, "engine_run_ref"),
+            original_request_fingerprint=row_value(row, "original_request_fingerprint"),
+            original_admission_decision_id=row_value(row, "original_admission_decision_id"),
+            browser_invocation_sha256=row_value(row, "browser_invocation_sha256"),
+            expires_at=parse_iso(row_value(row, "expires_at"), "ticket_expiry"),
         )
 
     def retire_command(self, command_ref: str, *, now: datetime) -> int:

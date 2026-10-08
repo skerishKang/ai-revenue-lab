@@ -645,6 +645,42 @@ class InMemoryLocalAgentBrokerAuthority:
         request_id: str,
         now: datetime,
     ) -> BrokerCommandAdmission:
+        """Legacy public admission is strictly process.execute."""
+        return self._admit_typed_command(
+            admission_ref=admission_ref, evidence_ref=evidence_ref,
+            session_id=session_id, binding_ref=binding_ref, credential=credential,
+            command_id=command_id, request_fingerprint=request_fingerprint,
+            request_id=request_id, now=now,
+            capability=BrokerCommandCapability.PROCESS_EXECUTE,
+        )
+
+    def _admit_browser_control_command(
+        self, *,
+        admission_ref: str, evidence_ref: str, session_id: str,
+        binding_ref: str, credential: bytes, command_id: str,
+        request_fingerprint: str, request_id: str, now: datetime,
+    ) -> BrokerCommandAdmission:
+        """Private Broker-only transition; caller MUST first verify human P01.
+
+        This low-level state method grants NO authority to issue approvals and
+        is intentionally absent from generic RPC/device-side facade.
+        """
+        return self._admit_typed_command(
+            admission_ref=admission_ref, evidence_ref=evidence_ref,
+            session_id=session_id, binding_ref=binding_ref, credential=credential,
+            command_id=command_id, request_fingerprint=request_fingerprint,
+            request_id=request_id, now=now,
+            capability=BrokerCommandCapability.BROWSER_CONTROL,
+        )
+
+    def _admit_typed_command(
+        self, *, admission_ref: str, evidence_ref: str, session_id: str,
+        binding_ref: str, credential: bytes, command_id: str,
+        request_fingerprint: str, request_id: str, now: datetime,
+        capability: BrokerCommandCapability,
+    ) -> BrokerCommandAdmission:
+        if type(capability) is not BrokerCommandCapability:
+            raise ControlPlaneContractError("invalid_broker_command", "invalid admission capability")
         now = _aware("now", now)
         binding = self._authenticate(binding_ref, credential, now=now)
         session = self._session(session_id, binding=binding, now=now)
@@ -657,8 +693,8 @@ class InMemoryLocalAgentBrokerAuthority:
             raise ControlPlaneContractError("broker_command_scope_mismatch", "command does not belong to this device binding")
         if command.credential_generation != binding.credential_generation:
             raise ControlPlaneContractError("stale_broker_command_generation", "command belongs to a stale credential generation")
-        if command.capability is not BrokerCommandCapability.PROCESS_EXECUTE:
-            raise ControlPlaneContractError("broker_command_capability_mismatch", "browser.control requires separately approved work-ticket admission")
+        if command.capability is not capability:
+            raise ControlPlaneContractError("broker_command_capability_mismatch", "Broker command admission requires its exact capability lane")
         if command.state is not BrokerCommandState.QUEUED:
             raise ControlPlaneContractError("broker_command_replay", "command has already been admitted or acknowledged")
         if now < command.issued_at or now >= command.expires_at:

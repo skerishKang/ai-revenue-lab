@@ -679,6 +679,23 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
         now=now,
         )
 
+    def _admit_browser_control_command(
+        self, *,
+        admission_ref: str, evidence_ref: str, session_id: str,
+        binding_ref: str, credential: bytes, command_id: str,
+        request_fingerprint: str, request_id: str, now: datetime,
+    ) -> BrokerCommandAdmission:
+        """Internal typed browser admission; never offered by Broker HTTP/RPC."""
+        return self._mutate(
+            lambda authority: authority._admit_browser_control_command(
+                admission_ref=admission_ref, evidence_ref=evidence_ref,
+                session_id=session_id, binding_ref=binding_ref, credential=credential,
+                command_id=command_id, request_fingerprint=request_fingerprint,
+                request_id=request_id, now=now,
+            ),
+            now=now,
+        )
+
     def acknowledge(
         self,
         *,

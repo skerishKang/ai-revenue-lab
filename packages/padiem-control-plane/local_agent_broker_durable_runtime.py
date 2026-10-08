@@ -77,6 +77,8 @@ class LocalAgentBrokerDurableRuntime:
         p01_approval_source: CanonicalBrowserControlP01ApprovalSource | None = None,
         original_engine_join_source: Any | None = None,
         pending_browser_ticket_source: Any | None = None,
+        pending_browser_engine_client: Any | None = None,
+        browser_admission_clock: Callable[[], datetime] | None = None,
     ) -> None:
         # Production Broker Worker deliberately supplies no P01 source.
         # Only a service-identity-authenticated first-party composition may
@@ -97,6 +99,21 @@ class LocalAgentBrokerDurableRuntime:
             getattr(pending_browser_ticket_source, "resolve_active_pending_browser_ticket_async", None)
         ):
             raise ValueError("independent current first-party pending browser ticket source required")
+        if pending_browser_engine_client is not None and not (
+            type(getattr(pending_browser_engine_client, "app_id", None)) is str
+            and callable(getattr(
+                pending_browser_engine_client,
+                "read_browser_control_original_admission", None,
+            ))
+        ):
+            raise ValueError("authenticated original Engine P01 read client required")
+        if browser_admission_clock is not None and not callable(browser_admission_clock):
+            raise TypeError("trusted server admission clock required")
+        self._pending_browser_engine_client = pending_browser_engine_client
+        self._browser_admission_clock = (
+            browser_admission_clock if browser_admission_clock is not None
+            else lambda: datetime.now(timezone.utc)
+        )
         self._pending_browser_ticket_source = pending_browser_ticket_source
         self._original_engine_join_source = original_engine_join_source
         self._p01_approval_source = p01_approval_source
@@ -585,6 +602,181 @@ class LocalAgentBrokerDurableRuntime:
                 "command_admitted": False,
                 "browser_action_executed": False,
             }
+        return self.transaction(operation)
+
+    def _require_current_pending_browser_ticket(
+        self, *, command_ref: str, binding_ref: str,
+        session_ref: str, credential: bytes, now: datetime,
+    ) -> tuple[Any, AuthenticatedPendingBrowserWorkTicket, dict[str, Any]]:
+        """Current canonical device + queued browser command + original ticket.
+
+        A pending ticket is NOT a human decision. No caller supplies owner,
+        original Engine continuation or approval evidence at this boundary.
+        """
+        current = utc(now, "pending_browser_admission_now")
+        command_ref = safe_ref(command_ref, "command_ref")
+        binding_ref = safe_ref(binding_ref, "binding_ref")
+        session_ref = safe_ref(session_ref, "session_ref")
+        if type(credential) is not bytes or not credential:
+            raise ValueError("live device credential required")
+        authenticated = StateBackedLocalAgentBindingAuthenticator(
+            pepper=str(self._env.LOCAL_AGENT_BROKER_PEPPER).encode("utf-8"),
+            authority_ref=self.authority_ref(),
+            state_port=self.state_port,
+        ).authenticate_device_session(
+            session_id=session_ref, binding_ref=binding_ref,
+            credential=credential, now=current,
+        )
+        if (
+            authenticated["authenticated"] is not True
+            or authenticated["session_id"] != session_ref
+            or authenticated["binding_ref"] != binding_ref
+        ):
+            raise ValueError("pending browser command current device session required")
+        snapshot = self.state_port.load(authority_ref=self.authority_ref()).snapshot
+        matches = [c for c in snapshot.commands if c.command_id == command_ref]
+        if len(matches) != 1:
+            raise ValueError("canonical pending browser command unavailable")
+        command = matches[0]
+        if not (
+            command.capability is BrokerCommandCapability.BROWSER_CONTROL
+            and command.state is BrokerCommandState.QUEUED
+            and command.binding_ref == binding_ref
+            and command.credential_generation == authenticated["credential_generation"]
+            and command.issued_at <= current < command.expires_at
+        ):
+            raise ValueError("pending browser command cannot be admitted")
+        ticket = self.browser_pending_ticket_store.resolve_for_queued_command(
+            command=command, now=current,
+        )
+        if (
+            ticket.binding_ref != binding_ref
+            or ticket.device_ref != authenticated["device_id"]
+            or ticket.workspace_ref != authenticated["workspace_ref"]
+        ):
+            raise ValueError("pending browser ticket current device scope mismatch")
+        return command, ticket, authenticated
+
+    async def _admit_pending_browser_command_from_original_engine_async(
+        self, *, command_ref: str, binding_ref: str, session_ref: str,
+        credential: bytes, now: datetime,
+    ) -> dict[str, Any]:
+        """SOURCE ONLY: actual Engine human-P01 receipt -> Broker browser admission.
+
+        The trusted Engine Service Binding reads an independently human-approved,
+        unrevoked ORIGINAL consumed continuation. It returns no browser action.
+        Broker never accepts caller-submitted outcome, evidence, owner, Engine
+        continuation, invocation digest or request fingerprint on this path.
+        No Worker/product transport exposes this private method today.
+        """
+        current = utc(now, "browser_admit_now")
+        client = self._pending_browser_engine_client
+        if client is None:
+            raise ValueError("authenticated original Engine human P01 client not wired")
+        _queued, ticket, _auth = self._require_current_pending_browser_ticket(
+            command_ref=command_ref, binding_ref=binding_ref,
+            session_ref=session_ref, credential=credential, now=current,
+        )
+        if client.app_id != ticket.engine_app_id:
+            raise ValueError("authenticated Engine client is not original app owner")
+        fetched = client.read_browser_control_original_admission(
+            continuation_ref=ticket.engine_continuation_ref,
+        )
+        if not inspect.isawaitable(fetched):
+            raise ValueError("Engine P01 verification requires authenticated asynchronous I/O")
+        original = await fetched
+        required = {
+            "app_id", "continuation_ref", "user_subject_id",
+            "original_request_fingerprint", "original_admission_decision_id",
+            "run_id", "invocation_sha256", "user_approval_evidence_ref",
+        }
+        if type(original) is not dict or set(original) != required or not all(
+            type(value) is str for value in original.values()
+        ):
+            raise ValueError("independent current human P01 original Engine receipt missing")
+        if (
+            original["app_id"] != ticket.engine_app_id
+            or original["continuation_ref"] != ticket.engine_continuation_ref
+            or original["user_subject_id"] != ticket.owner_ref
+            or original["original_request_fingerprint"] != ticket.original_request_fingerprint
+            or original["original_admission_decision_id"] != ticket.original_admission_decision_id
+            or original["run_id"] != ticket.engine_run_ref
+            or original["invocation_sha256"] != ticket.browser_invocation_sha256
+        ):
+            raise ValueError("original Engine P01 approval does not match pending browser ticket")
+        evidence = safe_ref(original["user_approval_evidence_ref"], "user_approval_evidence_ref")
+        # An asynchronous Engine lookup may outlive the original request time.
+        # Revalidate against the trusted server clock AFTER await, not only
+        # the time that preceded the external read.
+        after_lookup = max(current, utc(self._browser_admission_clock(), "broker_server_now"))
+
+        def operation() -> dict[str, Any]:
+            command, current_ticket, authenticated = self._require_current_pending_browser_ticket(
+                command_ref=command_ref, binding_ref=binding_ref,
+                session_ref=session_ref, credential=credential, now=after_lookup,
+            )
+            if current_ticket != ticket:
+                raise ValueError("original browser owner ticket changed after P01 read")
+            broker = StateBackedLocalAgentBrokerAuthority(
+                pepper=str(self._env.LOCAL_AGENT_BROKER_PEPPER).encode("utf-8"),
+                authority_ref=self.authority_ref(), state_port=self.state_port,
+            )
+            admission = broker._admit_browser_control_command(
+                admission_ref="browser.adm." + secrets.token_hex(20),
+                evidence_ref=evidence,
+                session_id=session_ref, binding_ref=binding_ref,
+                credential=credential, command_id=command.command_id,
+                request_fingerprint=command.request_fingerprint,
+                request_id="browser.req." + secrets.token_hex(20),
+                now=after_lookup,
+            )
+            scope = BrowserControlCommandTakeCorrelation(
+                command_ref=command.command_id,
+                session_ref=session_ref, binding_ref=binding_ref,
+                request_id=admission.request_id, run_ref=command.run_id,
+                workspace_ref=current_ticket.workspace_ref,
+                owner_ref=current_ticket.owner_ref,
+                device_ref=current_ticket.device_ref,
+                request_fingerprint=command.request_fingerprint,
+                admission_ref=admission.admission_ref,
+                revision_ref=command.revision_ref,
+            )
+            join = BrokerEngineP01Join(
+                command_ref=command.command_id,
+                binding_ref=binding_ref,
+                request_id=admission.request_id,
+                run_ref=command.run_id,
+                broker_request_fingerprint=command.request_fingerprint,
+                admission_ref=admission.admission_ref,
+                revision_ref=command.revision_ref,
+                engine_app_id=current_ticket.engine_app_id,
+                engine_continuation_ref=current_ticket.engine_continuation_ref,
+                engine_run_id=current_ticket.engine_run_ref,
+                engine_user_subject_id=current_ticket.owner_ref,
+                engine_request_sha256=current_ticket.original_request_fingerprint,
+                engine_original_admission_decision_id=current_ticket.original_admission_decision_id,
+                browser_invocation_sha256=current_ticket.browser_invocation_sha256,
+                user_p01_evidence_ref=evidence,
+            )
+            self.browser_engine_join_store._register_in_existing_transaction(
+                scope=scope, original=join, now=after_lookup,
+                expires_at=min(
+                    command.expires_at,
+                    parse_iso(authenticated["session_expires_at"], "session_expiry"),
+                    current_ticket.expires_at,
+                ),
+            )
+            return {
+                "admitted": True, "command_ref": command.command_id,
+                "binding_ref": binding_ref, "request_id": admission.request_id,
+                "admission_ref": admission.admission_ref,
+                "revision_ref": command.revision_ref,
+                "capability": "browser.control",
+                "human_approval_evidence_recorded": True,
+                "action_material_registered": False,
+                "browser_action_executed": False,
+            }
+
         return self.transaction(operation)
 
     def register_binding(self, payload: dict) -> dict:
