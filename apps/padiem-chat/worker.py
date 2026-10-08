@@ -881,6 +881,11 @@ class Default(WorkerEntrypoint):
                     )
                 else:
                     _worker_app.state.browser_control_owner_ticket_engine_client = None
+                # Same approved internal P01 Engine caller. User-click route
+                # still unregistered, and real owner D1 remains unbound.
+                _worker_app.state.browser_control_owner_resume_engine_client = (
+                    _worker_app.state.browser_control_owner_ticket_engine_client
+                )
                 # #3094: compose the concrete canonical local-access source
                 # from a trusted broker-authority binding only. When the
                 # trusted runtime is absent (today's deploy) the composition

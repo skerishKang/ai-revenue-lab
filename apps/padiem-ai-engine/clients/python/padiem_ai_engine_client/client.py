@@ -25,6 +25,7 @@ ENGINE_ORCHESTRATE_RESUME_PATH = "/internal/v1/orchestrate/resume"
 ENGINE_ORCHESTRATE_CANCEL_PATH = "/internal/v1/orchestrate/cancel"
 ENGINE_MULTIMODAL_ATTACHMENTS_PATH = "/internal/v1/multimodal/attachments"
 ENGINE_BROWSER_CONTROL_OWNER_TICKET_PATH = "/internal/v1/browser-control/owner-ticket/issue"
+ENGINE_BROWSER_CONTROL_OWNER_RESUME_PATH = "/internal/v1/browser-control/owner-p01/resume"
 
 _ENGINE_CALLER_HEADER = "X-Padiem-Engine-Caller"
 _ENGINE_CREDENTIAL_HEADER = "X-Padiem-Engine-Credential"
@@ -563,6 +564,53 @@ class PadiemAiEngineClient:
                 "invalid_engine_response", "Pending browser ticket response is invalid"
             )
         return result["ticket_ref"]
+
+    async def resume_browser_control_owner_approval(
+        self, *, continuation_ref: str,
+    ) -> bool:
+        """Only request Engine to RE-READ independent user P01 and complete CAS.
+
+        A signed-in B54 owner click must already have been recorded in the
+        independent Owner D1. No caller-supplied decision/authority/action is
+        carried. A 200 without an exact Engine approval-recorded response is
+        NOT successful resumption and never authorizes a browser action.
+        """
+        if (
+            type(continuation_ref) is not str
+            or _CONTINUATION_RE.fullmatch(continuation_ref) is None
+        ):
+            raise PadiemAiEngineClientError(
+                "invalid_browser_resume_request", "Invalid original continuation"
+            )
+        payload = await self._post(
+            ENGINE_BROWSER_CONTROL_OWNER_RESUME_PATH,
+            {"app_id": self.app_id, "continuation_ref": continuation_ref},
+        )
+        tool = payload.get("tool")
+        required = {
+            "contract_version", "agent_id", "canonical_tool_id", "run_id",
+            "status", "continuation_ref", "browser_action_executed",
+            "broker_command_dispatched",
+        }
+        if (
+            set(payload) != {"ok", "tool"}
+            or payload["ok"] is not True
+            or not isinstance(tool, Mapping)
+            or set(tool) != required
+            or tool["status"] != "approval_recorded"
+            or tool["canonical_tool_id"] != "tool:padiem:browser_control@1"
+            or tool["continuation_ref"] != continuation_ref
+            or tool["browser_action_executed"] is not False
+            or tool["broker_command_dispatched"] is not False
+            or any(
+                type(tool[k]) is not str or not tool[k] or len(tool[k]) > 256
+                for k in ("contract_version", "agent_id", "run_id")
+            )
+        ):
+            raise PadiemAiEngineClientError(
+                "invalid_engine_response", "Owner-approved Engine continuation is invalid"
+            )
+        return True
 
     async def health(self) -> dict[str, Any]:
         response = await self._transport.request(

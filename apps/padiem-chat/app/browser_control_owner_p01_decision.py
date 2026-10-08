@@ -21,6 +21,7 @@ from kagent.p01_approval_continuation import (
     P01AdapterError,
     build_first_party_decision_submission,
 )
+from padiem_ai_engine_client import PadiemAiEngineClient
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
@@ -264,6 +265,28 @@ async def browser_control_owner_p01_decision(request: Request) -> JSONResponse:
             engine_continuation_binding=engine_binding,
             now=datetime.now(timezone.utc),
         )
+        # ONLY after the authenticated user-click row is durably recorded:
+        # Engine independently reads that owner D1 row and the original
+        # admission; no submitted approval evidence is forwarded to Engine.
+        # This source-only client/route is absent from live product composition.
+        completed = False
+        resume_client = getattr(
+            request.app.state, "browser_control_owner_resume_engine_client", None,
+        )
+        if (
+            type(resume_client) is PadiemAiEngineClient
+            and resume_client.app_id == ticket.app_id
+        ):
+            try:
+                completed = (
+                    await resume_client.resume_browser_control_owner_approval(
+                        continuation_ref=ticket.continuation_ref,
+                    )
+                ) is True
+            except Exception:  # noqa: BLE001 - durable click != Engine completion
+                # A transport failure must never make a user click look like
+                # completed Engine approval. The one-shot owner decision remains.
+                completed = False
     except (P01AdapterError, ValueError):
         return _error(404, "browser_p01_ticket_unavailable")
     except Exception:  # noqa: BLE001 - auth/ticket store outage fail closed
@@ -271,6 +294,6 @@ async def browser_control_owner_p01_decision(request: Request) -> JSONResponse:
     return JSONResponse(
         {"ok": True, "status": "owner_approval_evidence_recorded",
          "browser_action_executed": False,
-         "engine_approval_completed": False},
+         "engine_approval_completed": completed},
         headers=NO_STORE,
     )

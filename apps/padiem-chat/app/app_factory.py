@@ -373,6 +373,7 @@ def create_app(
     # A trusted Worker may compose its Engine client after CP session binding;
     # this default is never an approval source or browser execution grant.
     app.state.browser_control_owner_ticket_engine_client = None
+    app.state.browser_control_owner_resume_engine_client = None
     # #3190: owner-gated Project Drive case-folder routes. A missing client fails
     # closed with 503; there is no global/network fallback.
     app.state.drive_case_folder_engine_client = drive_case_folder_engine_client
