@@ -52,49 +52,74 @@ an OWNER choice blocks only that canary; it is not a repository or source-develo
 Per AGENTS.md, `AGENTS.md` and `AI_DEVELOPMENT_OPERATING_POLICY.md` already point here, so this
 section is the single canonical statement and is not duplicated into those documents.
 
-## 0A. Owner-approved B66 quote selection v1 (2026-10-08, #3760)
+## 0A. Owner-corrected B66 registered-model selection (2026-10-08, #3760)
 
-The Product Owner specifically approved an **automatic model-resolution rule for
-B66 quotation-field extraction**, separate from the per-execution **user** model
-choice in section 0. This is a narrow, versioned **product-specific** decision,
-not a generic B14 Auto Router V2 (#2698) activation and not a relaxation of
-the owner gate for future model policies.
+The Product Owner has clarified that B66 quotation-field extraction may use
+models **already registered in B14 and allowed by the owner**, regardless of
+whether the model is labeled free or paid. The owner has credits available for
+registered-model usage. Neither model pricing nor a free-only catalog label is
+a B66 model-eligibility gate. Do not demand a new model choice or a separate
+free-versus-paid approval for each use of an already permitted registered model.
+Registration alone does not override explicit owner exclusions.
 
-    B66_QUOTE_MODEL_POLICY=b66.quote.free-first.registered.v1
+This is a narrow, product-specific B66 **user-selected exact-model** rule,
+consistent with the per-execution choice in section 0. The user chooses one
+owner-allowed registered model for each quotation interpretation request.
+A configured optional default may prefill the user-facing model dropdown,
+but it is not a hidden model pick, a mandatory primary, or an auto-router.
+The user can override the prefilled default. Generic B14 Auto Router V2
+(#2698) and automatic fallback remain deferred.
+
+    B66_QUOTE_MODEL_POLICY=OWNER_REGISTERED_AND_ALLOWED
     B66_MODEL_AUTHORITY=B14_REGISTERED_AND_RUNTIME_READY
     B66_MODEL_TASK=document_quote_field_extraction
-    B66_MODEL_QUALIFICATION=EVIDENCED_FREE_AND_CHAT_AND_LIVE_READY
-    B66_ROUTE_CHOICE=UNIQUE_QUALIFIED_EXACT_MODEL_ID
-    B66_MISSING_OR_AMBIGUOUS_ROUTE=FAIL_CLOSED
+    B66_MODEL_QUALIFICATION=OWNER_ALLOWED_AND_CHAT_AND_LIVE_READY
+    B66_MODEL_PRICE_FILTER=NONE
+    B66_ROUTE_CHOICE=USER_SELECTED_EXACT_MODEL_ID
+    B66_USER_SELECTION_PER_EXECUTION=YES
+    B66_DEFAULT_MODEL_OPTIONAL=YES
+    B66_AUTOMATIC_MODEL_PICKER=OFF
+    B66_MISSING_OR_INVALID_SELECTION=FAIL_CLOSED
     B66_PROVIDER_ATTEMPTS_MAX=1
     B66_RETRY=NO
     B66_AUTOMATIC_FALLBACK=NO
-    B66_PAID_AUTO_SPEND=NO
     B66_NO_MODEL_SELECTED=FAIL_CLOSED
     B62_PLUS_PRO_MAX_HOLD=UNCHANGED
     CLAW_USER_SELECTED_MODELS=UNCHANGED
     B14_AUTO_ROUTER_V2=DEFERRED
 
-B66's trusted server reads the **existing** B14 model registry and provider
-readiness through its fixed internal Service Binding, with no customer text in
-those reads. Only a single explicitly registered, public auto-eligible, free
-(zero-price evidence), chat-capable, enabled and ready model may execute under
-this v1 policy. The B14 engine revalidates the selected exact model ID at
-dispatch. An additional free route with equal eligibility blocks selection
-pending a new owner policy; the product does not invent a tie-break. Paid
-routes also remain blocked from **automatic** selection until the owner
-approves an explicit bounded paid spend policy. Free-model errors never
-trigger an alternative model attempt.
+B66's trusted server uses the **existing** B14 registered-model authority and
+provider-readiness boundary. A model is eligible based on the owner's
+permission, registration, quote-extraction capability and actual execution
+readiness, **not** a free/paid flag or a zero-price claim. B14 remains the
+final authority to validate the exact model ID and provider execution.
+Multiple eligible models are **not ambiguous** when the authenticated user
+supplies an exact model_id: only that ID is checked and sent to B14.
+If no exact ID was selected, or the requested route is unavailable or
+disallowed, the product fails closed. No invisible free-first ordering, first
+option preference, model ranking, server-side arbitrary selection, or
+substitution is permitted. One failed model execution never tries another.
+Any configured default is displayed as a changeable selection, never a
+hidden backend selection or a global primary requirement.
 
-This authorization does not itself approve provider/secret registry mutations,
-non-B66 product policy changes, an unbounded canary, or an unguarded
-Production deployment. The selected model and CGI rendering must still pass
-separate source/CI/deploy/real-customer validation gates. Issue #3751 stays
-open and CUSTOMER_READY remains NO until proven.
+**Implementation status:** historical merged B66 runtime and historical
+issue comments still describe free-first/automatic selection and are
+superseded by this user-choice rule. Draft PR #3831 is the separate
+source/UI/API reconciliation for registered-model choice; it is not merged
+and provides no Production authorization. The B14 JSON registry refactor
+Draft PR #3819 is also separate and overlapping source files require
+explicit re-review before either PR merges.
+
+This authorization does not independently approve new provider/secret
+registrations, previously excluded models, other products' routing changes,
+an unbounded canary or an unguarded Production deployment. The selected model
+and CGI rendering must still pass separate implementation, CI, deployment and
+customer-validation gates. Issue #3751 remains open; CUSTOMER_READY=NO until
+its actual Production acceptance requirements pass.
 
 ## 0B. Current owner-selected model facts and historical-issue precedence (2026-10-08)
 
-See [B14 owner model decision ledger](B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md) for exact Google AI Studio IDs, the owner's customer-visible 파디엠플러스+개별모델명 rule, the five excluded models, source-vs-local-vs-Production status and B66 evidence. This is an evidence pointer only; sections 0, 0A, 1, 5, 8 and 10 keep their existing authorization and fail-closed boundaries. Old Space Bunny/Ling/Agnes/Nemotron catalog snapshots and B14 auto chains are historical, never a substitute for the more recent explicit owner decision. Unmerged local registration does not prove B14 live capability. The excluded five MUST NOT be implicitly re-approved by older catalog data or B66 free-first auto selection.
+See [B14 owner model decision ledger](B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md) for exact Google AI Studio IDs, the owner's customer-visible 파디엠플러스+개별모델명 rule, the five excluded models, source-vs-local-vs-Production status and B66 evidence. This is an evidence pointer only; sections 0, 0A, 1, 5, 8 and 10 keep their existing authorization and fail-closed boundaries. Old Space Bunny/Ling/Agnes/Nemotron catalog snapshots and B14 auto chains are historical, never a substitute for the more recent explicit owner decision. Unmerged local registration does not prove B14 live capability. The excluded five MUST NOT be implicitly re-approved by older catalog data or any B66 model selection.
 
 ## 1. Rule
 
