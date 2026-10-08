@@ -68,7 +68,12 @@ def _payload(*, state: str):
 
     table_sql = _table_sql()
     index_sql = _index_sql()
-    index_list = [_index_list_row()]
+    # Real SQLite lists the reviewed index (origin='c') plus the id primary-key
+    # autoindex (origin='pk'); the PK autoindex must be allowed.
+    index_list = [
+        _index_list_row(),
+        {"name": "sqlite_autoindex_b66_quote_history_1", "unique": 1, "origin": "pk", "partial": 0},
+    ]
 
     if state == "drift":
         table_sql = table_sql.replace(
@@ -101,11 +106,23 @@ def _payload(*, state: str):
     ]
     index_columns = [{"name": name} for name in ("user_id", "workspace_id", "updated_at")]
     index_detail = [
-        {"name": "user_id", "desc": 0, "key": 1},
-        {"name": "workspace_id", "desc": 0, "key": 1},
-        {"name": "updated_at", "desc": 1, "key": 1},
-        {"name": None, "desc": 0, "key": 0},
+        {"name": "user_id", "desc": 0, "key": 1, "coll": "BINARY"},
+        {"name": "workspace_id", "desc": 0, "key": 1, "coll": "BINARY"},
+        {"name": "updated_at", "desc": 1, "key": 1, "coll": "BINARY"},
+        {"name": None, "desc": 0, "key": 0, "coll": "BINARY"},
     ]
+    if state == "collate_nocase":
+        # index column written as `user_id COLLATE NOCASE`
+        index_detail[0]["coll"] = "NOCASE"
+    elif state == "extra_unique_index":
+        # an added CREATE UNIQUE INDEX that migration 025 does not contain
+        index_list = index_list + [
+            {"name": "uq_quote_no", "unique": 1, "origin": "c", "partial": 0},
+        ]
+    elif state == "extra_plain_index":
+        index_list = index_list + [
+            {"name": "idx_b66_quote_history_issue_date", "unique": 0, "origin": "c", "partial": 0},
+        ]
     foreign_keys = [{"table": "users", "from": "user_id", "to": "id", "on_delete": "CASCADE"}]
     return {
         "success": True,
@@ -150,8 +167,12 @@ def _approved_table_ddl() -> str:
     return match.group(0)
 
 
-def _db_with(ddl: str):
-    """Build a real SQLite database from an explicit table DDL plus the reviewed index."""
+def _db_with(ddl: str, *, index_collate: str = "", extra_sql: str = ""):
+    """Build a real SQLite database from an explicit table DDL plus the reviewed index.
+
+    ``index_collate`` changes the reviewed index's first-column collation;
+    ``extra_sql`` adds further statements (e.g. another index) after it.
+    """
     db = sqlite3.connect(":memory:")
     db.row_factory = sqlite3.Row
     db.executescript(
@@ -161,10 +182,13 @@ def _db_with(ddl: str):
         """
     )
     db.executescript(ddl)
+    collate = f" COLLATE {index_collate}" if index_collate else ""
     db.executescript(
         "CREATE INDEX idx_b66_quote_history_owner_workspace_updated "
-        "ON b66_quote_history (user_id, workspace_id, updated_at DESC);"
+        f"ON b66_quote_history (user_id{collate}, workspace_id, updated_at DESC);"
     )
+    if extra_sql:
+        db.executescript(extra_sql)
     return db
 
 
@@ -356,6 +380,60 @@ def test_classifier_rejects_extra_constraints_real_sqlite() -> None:
         assert helper.classify_schema(_sqlite_payload(_db_with(ddl))) == "drift", name
 
 
+def test_classifier_rejects_index_collation_and_extra_index_real_sqlite() -> None:
+    """Added index COLLATE, and extra (UNIQUE) indexes absent from 025, must be drift."""
+    helper = _load_helper()
+    base = _approved_table_ddl()
+
+    # control: the reviewed migration index classifies exact (and its PK autoindex is allowed)
+    assert helper.classify_schema(_sqlite_payload(_db_with(base))) == "exact"
+
+    # 1. index column written as `user_id COLLATE NOCASE` -> DRIFT
+    nocase = _db_with(base, index_collate="NOCASE")
+    assert helper.classify_schema(_sqlite_payload(nocase)) == "drift"
+
+    # 2. an added CREATE UNIQUE INDEX that migration 025 does not contain -> DRIFT
+    extra_unique = _db_with(
+        base,
+        extra_sql="CREATE UNIQUE INDEX uq_quote_no ON b66_quote_history (quote_no);",
+    )
+    assert helper.classify_schema(_sqlite_payload(extra_unique)) == "drift"
+
+    # 3. any added plain index is likewise DRIFT
+    extra_plain = _db_with(
+        base,
+        extra_sql="CREATE INDEX idx_extra_issue_date ON b66_quote_history (issue_date);",
+    )
+    assert helper.classify_schema(_sqlite_payload(extra_plain)) == "drift"
+
+    # 4. a UNIQUE column constraint (origin='u' autoindex) is also DRIFT
+    unique_constraint = sqlite3.connect(":memory:")
+    unique_constraint.row_factory = sqlite3.Row
+    unique_constraint.executescript(
+        """
+        PRAGMA foreign_keys=ON;
+        CREATE TABLE users (id TEXT PRIMARY KEY);
+        """
+    )
+    unique_constraint.executescript(
+        base.replace("quote_no TEXT,", "quote_no TEXT UNIQUE,")
+    )
+    unique_constraint.executescript(
+        "CREATE INDEX idx_b66_quote_history_owner_workspace_updated "
+        "ON b66_quote_history (user_id, workspace_id, updated_at DESC);"
+    )
+    assert helper.classify_schema(_sqlite_payload(unique_constraint)) == "drift"
+
+
+def test_classifier_rejects_index_defects_in_synthetic_payload() -> None:
+    """The synthetic fixture path proves the same two index defects without SQLite."""
+    helper = _load_helper()
+    assert helper.classify_schema(_payload(state="exact")) == "exact"
+    assert helper.classify_schema(_payload(state="collate_nocase")) == "drift"
+    assert helper.classify_schema(_payload(state="extra_unique_index")) == "drift"
+    assert helper.classify_schema(_payload(state="extra_plain_index")) == "drift"
+
+
 def test_migration_is_additive_and_preserves_existing_rows() -> None:
     db = sqlite3.connect(":memory:")
     db.executescript(
@@ -466,6 +544,8 @@ if __name__ == "__main__":
     test_classifier_accepts_schema_created_by_migration()
     test_classifier_rejects_real_sqlite_foreign_unique_and_partial_index()
     test_classifier_rejects_extra_constraints_real_sqlite()
+    test_classifier_rejects_index_collation_and_extra_index_real_sqlite()
+    test_classifier_rejects_index_defects_in_synthetic_payload()
     test_migration_is_additive_and_preserves_existing_rows()
     test_migration_contract_is_additive_and_allows_foreign_keys_pragma()
     test_workflow_is_pr_safe_and_migration_specific()

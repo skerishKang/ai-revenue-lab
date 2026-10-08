@@ -20,6 +20,18 @@ The index is likewise proven to be the *reviewed* index:
   that table, and its ``sqlite_master`` SQL names that table);
 * it is not a UNIQUE index; and
 * it is not a partial index (no ``WHERE`` clause).
+
+Two further index properties are proven from ``PRAGMA`` metadata:
+
+* **no extra index** — apart from the reviewed index, the only index allowed on
+  the table is the one SQLite creates for the ``id`` primary key (``origin =
+  'pk'``). Any other index (``origin = 'c'`` with a different name, or ``origin
+  = 'u'`` from a UNIQUE constraint) is drift; this rejects an added
+  ``CREATE UNIQUE INDEX ... (quote_no)`` that the reviewed migration does not
+  contain; and
+* **default collation** — every key column of the reviewed index must use the
+  ``BINARY`` collation, so an index column written as ``user_id COLLATE NOCASE``
+  is drift.
 """
 
 from __future__ import annotations
@@ -38,6 +50,8 @@ COLUMNS = (
 PRIMARY_KEY = ("id",)
 INDEX_COLUMNS = ("user_id", "workspace_id", "updated_at")
 INDEX_DESCENDING = (0, 0, 1)
+# The reviewed index uses SQLite's default BINARY collation on every key column.
+INDEX_COLLATIONS = ("BINARY", "BINARY", "BINARY")
 
 # The reviewed migration 025 CREATE TABLE body, normalized (whitespace collapsed,
 # lowercased) and split into its top-level definitions. Matched exactly.
@@ -121,7 +135,13 @@ def _table_definition_parts(table_sql: str) -> tuple[str, ...] | None:
 
 
 def _index_is_reviewed(index: object, index_list: list[dict[str, object]]) -> bool:
-    """Prove the index is the reviewed non-unique, non-partial table index."""
+    """Prove the table carries only the reviewed non-unique, non-partial index.
+
+    The reviewed index must be owned by ``b66_quote_history`` exactly once; every
+    *other* index on the table must be the primary-key autoindex SQLite creates
+    for ``id TEXT PRIMARY KEY`` (``origin = 'pk'``). Any other index — a second
+    ``CREATE INDEX`` or a UNIQUE constraint/``CREATE UNIQUE INDEX`` — is drift.
+    """
     # 1. owned by b66_quote_history: it must be listed for that table, exactly once.
     owned = [row for row in index_list if row.get("name") == INDEX]
     if len(owned) != 1:
@@ -132,7 +152,14 @@ def _index_is_reviewed(index: object, index_list: list[dict[str, object]]) -> bo
     if _as_int(entry.get("partial")) != 0:
         return False
 
-    # 2. sqlite_master SQL: same table, not UNIQUE, no WHERE (partial) clause.
+    # 2. no extra index: every other index must be the id primary-key autoindex.
+    for row in index_list:
+        if row.get("name") == INDEX:
+            continue
+        if str(row.get("origin")) != "pk":
+            return False
+
+    # 3. sqlite_master SQL: same table, not UNIQUE, no WHERE (partial) clause.
     index_sql = _normalized_sql(index.get("sql"))
     if f"on {TABLE}" not in index_sql:
         return False
@@ -215,7 +242,14 @@ def classify_schema(payload: object) -> str:
     if tuple(_as_int(row.get("desc")) for row in key_rows) != INDEX_DESCENDING:
         return "drift"
 
-    # 7. foreign key user_id -> users(id) ON DELETE CASCADE
+    # 7. index collation: every key column must use the default BINARY collation,
+    #    so a column written as `user_id COLLATE NOCASE` is drift.
+    if tuple(
+        str(row.get("coll", "")).strip().upper() for row in key_rows
+    ) != INDEX_COLLATIONS:
+        return "drift"
+
+    # 8. foreign key user_id -> users(id) ON DELETE CASCADE
     if len(foreign_keys) != 1:
         return "drift"
     fk = foreign_keys[0]
