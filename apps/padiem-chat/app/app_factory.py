@@ -9,6 +9,10 @@ from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
 from .auth import GoogleOAuthClient
+from .browser_control_owner_p01_composition import (
+    BrowserControlOwnerP01Composition,
+    routes_for_owner_p01_composition,
+)
 from .auth_abuse import AuthAbuseGate, AuthAbuseStore, D1AuthAbuseStore
 from .b66_quote_conversation import B66QuoteConversationInterpreter
 from .b66_company_profile import CompanyProfileStore, D1CompanyProfileStore
@@ -196,6 +200,7 @@ def create_app(
     local_task_result_source=None,
     desktop_device_session_authority=None,
     auth_abuse_store: AuthAbuseStore | None = None,
+    browser_control_owner_p01: BrowserControlOwnerP01Composition | None = None,
 ) -> Starlette:
     resolved = settings or Settings.from_env()
     routes = [
@@ -352,6 +357,18 @@ def create_app(
         Route("/api/calendar/appointments", calendar_appointments_create, methods=["POST"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
+    # #3782: only a trusted caller's complete independently validated
+    # server-owned Owner D1/Engine/Control Plane bundle may opt in. The
+    # actual Worker passes NOTHING here; normal Product stays OFF.
+    if browser_control_owner_p01 is not None:
+        if type(browser_control_owner_p01) is not BrowserControlOwnerP01Composition:
+            raise TypeError("canonical owner browser P01 composition required")
+        browser_control_owner_p01.assert_installable(
+            chat_d1=d1_binding,
+            identity_authority=control_plane_identity_authority,
+            identity_shadow=identity_shadow_store,
+        )
+        routes[0:0] = list(routes_for_owner_p01_composition())
     app = Starlette(routes=routes)
     # #3476: added before telemetry deliberately — Starlette prepends each
     # middleware, so the later-added telemetry layer stays outermost and keeps
@@ -369,11 +386,28 @@ def create_app(
     # a non-authoritative shadow pointer used to reach the current canonical session.
     app.state.control_plane_identity_authority = control_plane_identity_authority
     app.state.identity_shadow_store = identity_shadow_store
-    # #3782: no browser owner ticket request route in the product app.
-    # A trusted Worker may compose its Engine client after CP session binding;
-    # this default is never an approval source or browser execution grant.
-    app.state.browser_control_owner_ticket_engine_client = None
-    app.state.browser_control_owner_resume_engine_client = None
+    # Source-only opt-in. Runtime Worker never supplies the required bundle;
+    # no published browser.owner P01 route or credentials in Production.
+    app.state.browser_control_owner_ticket_engine_client = (
+        browser_control_owner_p01.engine_client
+        if browser_control_owner_p01 is not None else None
+    )
+    app.state.browser_control_owner_resume_engine_client = (
+        browser_control_owner_p01.engine_client
+        if browser_control_owner_p01 is not None else None
+    )
+    app.state.browser_control_owner_ticket_loader = (
+        browser_control_owner_p01.ticket_loader
+        if browser_control_owner_p01 is not None else None
+    )
+    app.state.browser_control_owner_p01_d1 = (
+        browser_control_owner_p01.owner_d1
+        if browser_control_owner_p01 is not None else None
+    )
+    app.state.browser_control_engine_d1 = (
+        browser_control_owner_p01.engine_continuation_d1
+        if browser_control_owner_p01 is not None else None
+    )
     # #3190: owner-gated Project Drive case-folder routes. A missing client fails
     # closed with 503; there is no global/network fallback.
     app.state.drive_case_folder_engine_client = drive_case_folder_engine_client
