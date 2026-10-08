@@ -39,6 +39,7 @@ from app.pilot.errors import (
 )
 from app.pilot.sensenova_provider import is_transient_busy_429
 from app.pilot.b14_runtime_config import runtime_config
+from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
 from app.pilot.stream_types import StreamEvent, StreamUsage
 from app.pilot.platform_secrets import (
     CredentialSource,
@@ -174,6 +175,14 @@ def _raise_upstream_error(
     raise MalformedUpstreamResponse()
 
 
+def _require_owner_allowed_live_model(model_id: str) -> None:
+    """Final B14 provider egress gate. No credential resolution or network I/O."""
+    if excluded_from_owner_customer_selection(model_id):
+        raise PilotNotConfigured(
+            "OWNER가 제외한 모델은 이 실행 경로에서 사용할 수 없습니다."
+        )
+
+
 async def call_platform_chat_completions(
     *,
     model_id: str,
@@ -203,6 +212,7 @@ async def call_platform_chat_completions(
         )
         return _mock_response(model_id, upstream_model, provider)
 
+    _require_owner_allowed_live_model(model_id)
     headers = _request_headers(spec, model_id=model_id)
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
     body: dict[str, Any] = {
@@ -337,6 +347,7 @@ async def stream_platform_chat_completions(
             yield event
         return
 
+    _require_owner_allowed_live_model(model_id)
     headers = _request_headers(spec, model_id=model_id)
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
     body: dict[str, Any] = {
