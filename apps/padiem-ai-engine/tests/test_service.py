@@ -205,6 +205,68 @@ async def test_invalid_core_model_policy_fails_before_b14(policy) -> None:
     assert b14.calls == []
 
 
+# #3566 / #3382: inert, syntactically valid identifiers used only to prove the
+# Engine forwards the selected model verbatim. The B14 catalog stays the later
+# availability authority, so nothing below claims these are registered models.
+_EXPLICIT_INERT_MODEL_IDS = ("testowner/example-model.v1", "z9/provider:route_second/2")
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("model_id", _EXPLICIT_INERT_MODEL_IDS)
+async def test_explicit_model_id_reaches_the_b14_request_without_rewrite(
+    model_id: str,
+) -> None:
+    payload = valid_payload()
+    payload["agent"]["model_policy"] = {"model": model_id, "max_retries": 0}
+    b14 = FakeB14()
+    service = EngineService(
+        runtime_factory=lambda app_id: ExecutionRuntime(app_id=app_id, b14_client=b14),
+        b14_service_bound=True,
+    )
+
+    response = await service.execute_payload(payload)
+
+    assert response.status_code == 200
+    assert len(b14.calls) == 1
+    request = b14.calls[0]
+    assert request.model == model_id
+    body = request.to_payload()
+    assert body["model"] == model_id
+    # The P01 single-dispatch pin survives the Core request translation.
+    assert body["business14"]["max_retries"] == 0
+    assert "b14/auto" not in json.dumps(body, ensure_ascii=False)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("policy", "expected_code"),
+    [
+        # Engine request parsing owns the explicit-model shape check (app/service.py::_model_policy).
+        ({"max_retries": 0}, "invalid_request"),
+        ({"model": ""}, "invalid_request"),
+        ({"model": "   "}, "invalid_request"),
+        ({"model": None}, "invalid_request"),
+        ({"model": 42}, "invalid_request"),
+        # Unknown policy authority reaches Core, which refuses it.
+        ({"model": "testowner/example-model.v1", "unknown": True}, "invalid_execution_request"),
+    ],
+)
+async def test_missing_or_invalid_model_policy_fails_before_b14(policy, expected_code) -> None:
+    payload = valid_payload()
+    payload["agent"]["model_policy"] = policy
+    b14 = FakeB14()
+    service = EngineService(
+        runtime_factory=lambda app_id: ExecutionRuntime(app_id=app_id, b14_client=b14),
+        b14_service_bound=True,
+    )
+
+    response = await service.execute_payload(payload)
+
+    assert response.status_code == 400
+    assert response.body["error"]["code"] == expected_code
+    assert b14.calls == []
+
+
 @pytest.mark.asyncio
 async def test_missing_b14_service_binding_fails_before_runtime() -> None:
     runtime = FakeRuntime(value=result())
