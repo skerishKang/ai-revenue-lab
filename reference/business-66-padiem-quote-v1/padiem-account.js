@@ -9,6 +9,7 @@
     authenticated: false,
     user: null,
     skills: [],
+    quoteModels: [],
     loadedSkill: null,
     companyProfile: null,
     companyProfileLoaded: false,
@@ -147,6 +148,9 @@
     state.authenticated = false;
     state.user = null;
     state.skills = [];
+    state.quoteModels = [];
+    const modelSelect = byId("padiemQuoteModelSelect");
+    if (modelSelect) modelSelect.replaceChildren();
     state.companyProfile = null;
     state.companyProfileLoaded = false;
     clearPendingQuote();
@@ -246,6 +250,41 @@
     return true;
   }
 
+  async function loadQuoteModels() {
+    const select = byId("padiemQuoteModelSelect");
+    if (!select) return;
+    state.quoteModels = [];
+    select.replaceChildren();
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "\uBAA8\uB378\uC744 \uC120\uD0DD\uD558\uC138\uC694";
+    select.append(placeholder);
+    select.disabled = true;
+    try {
+      const result = await api("/b66/quote/models");
+      if (!result.response.ok || !result.data || result.data.ok !== true ||
+          !Array.isArray(result.data.models)) return;
+      const safeId = /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$/;
+      const records = result.data.models.filter((row) =>
+        row && typeof row.model_id === "string" && safeId.test(row.model_id) &&
+        typeof row.name === "string"
+      );
+      records.forEach((row) => {
+        const option = document.createElement("option");
+        option.value = row.model_id;
+        option.textContent = row.name;
+        select.append(option);
+      });
+      state.quoteModels = records.map((row) => row.model_id);
+      const configured = result.data.default_model_id;
+      select.value = typeof configured === "string" && state.quoteModels.includes(configured)
+        ? configured : "";
+      select.disabled = records.length === 0;
+    } catch (_) {
+      select.disabled = true;
+    }
+  }
+
   async function loadSkills() {
     const result = await api("/b66/saved-skills?limit=20");
     if (!result.response.ok || !result.data || !Array.isArray(result.data.skills)) {
@@ -323,7 +362,7 @@
     state.authenticated = true;
     state.user = owner;
     renderSignedIn();
-    await Promise.all([loadSkills(), loadCompanyProfile()]);
+    await Promise.all([loadSkills(), loadCompanyProfile(), loadQuoteModels()]);
     document.dispatchEvent(new CustomEvent("b66:runtime-changed", { detail: runtimeReadiness() }));
     return { authenticated: true };
   }
@@ -619,6 +658,11 @@
     }
 
     /* 진행 중인 견적이 있으면 원문과 합쳐 한 번에 다시 해석한다(서버는 stateless). */
+    const modelSelect = byId("padiemQuoteModelSelect");
+    const modelId = modelSelect && modelSelect.value;
+    if (!modelId || !state.quoteModels.includes(modelId)) {
+      return { ok: false, code: "model_selection_required" };
+    }
     let message = text;
     let allocated = null;
     const pending = state.pendingQuote;
@@ -640,7 +684,7 @@
       const result = await api("/b66/quote/interpret", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({ saved_skill_id: state.loadedSkill.savedSkillId, message })
+        body: JSON.stringify({ saved_skill_id: state.loadedSkill.savedSkillId, message, model_id: modelId })
       });
       const data = result.data;
       if (!result.response.ok || !data || data.ok !== true || !data.candidate) {

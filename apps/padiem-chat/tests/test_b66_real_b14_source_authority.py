@@ -121,12 +121,12 @@ class SourceMetadataTransport:
         raise AssertionError("B66 source eligibility must never execute a provider")
 
 
-def attempt_selection(payload):
+def attempt_selection(payload, model_id=None):
     transport = SourceMetadataTransport(payload)
     with pytest.raises(B66ModelRouteError) as result:
         asyncio.run(
             B14FreeFirstQuoteModelResolver(transport).resolve_quote_model(
-                B66QuoteTaskRequirements()
+                B66QuoteTaskRequirements(selected_model_id=model_id or sorted(GOOGLE_IDS)[0])
             )
         )
     assert transport.get_paths == list(B14_GETS)
@@ -145,6 +145,7 @@ def test_real_b14_source_registered_routes_and_google_manual_only(b14_source_get
         assert by_id[mid]["explicit_only"] is True
         assert by_id[mid]["auto_eligible"] is False
         assert by_id[mid]["owner_excluded"] is False
+        assert "chat" in by_id[mid]["capabilities"]
     assert readiness["provider_mode"] == "live"  # local fixture, not Production
 
     # Removed models must be absent, not merely tagged owner-excluded/public.
@@ -163,11 +164,11 @@ def test_real_b14_source_registered_routes_and_google_manual_only(b14_source_get
     assert not any(row["free"] for row in rows)
 
 
-def test_b66_free_first_selector_refuses_actual_b14_source_snapshot(b14_source_gets):
+def test_b66_owner_allowed_selector_refuses_actual_unready_b14_source_snapshot(b14_source_gets):
     assert attempt_selection(b14_source_gets) == "selection_unavailable"
 
 
-def test_all_providers_synthetically_ready_still_cannot_authorize_excluded_auto(
+def test_all_providers_synthetically_ready_still_fail_closed_for_ambiguous_owner_routes(
     b14_source_gets,
 ):
     """Separate simulated readiness from actual Production credential proof."""
@@ -176,7 +177,40 @@ def test_all_providers_synthetically_ready_still_cannot_authorize_excluded_auto(
         provider["enabled"] = True
         provider["credential_ready"] = True
         provider["route_ready"] = True
-    assert attempt_selection(data) == "selection_unavailable"
+    # Multiple owner-allowed routes must never receive a hidden price rank or
+    # generic B14 public/auto route preference.
+    # Ambiguity across models is not relevant when an exact user model was supplied.
+    # No implicit choice is made; absence of selected_model_id is rejected separately.
+    transport = SourceMetadataTransport(data)
+    selected = asyncio.run(B14FreeFirstQuoteModelResolver(transport).resolve_quote_model(
+        B66QuoteTaskRequirements(selected_model_id=sorted(GOOGLE_IDS)[0])
+    ))
+    assert selected.model_id == sorted(GOOGLE_IDS)[0]
+
+
+def test_one_synthetic_ready_google_manual_pin_can_be_validated_without_catalog(
+    b14_source_gets,
+):
+    """Source only: neither provider credentials nor an actual upstream call."""
+    data = json.loads(json.dumps(b14_source_gets))
+    mid = sorted(GOOGLE_IDS)[0]  # fixture only; not a B66 selection policy
+    assert mid not in {m["id"] for m in data["models"]["catalog"]}
+    for provider in data["readiness"]["providers"]:
+        allowed = mid in provider.get("models", [])
+        provider["enabled"] = allowed
+        provider["credential_ready"] = allowed
+        provider["route_ready"] = allowed
+        provider["models"] = [mid] if allowed else []
+    transport = SourceMetadataTransport(data)
+    selected = asyncio.run(
+        B14FreeFirstQuoteModelResolver(transport).resolve_quote_model(
+            B66QuoteTaskRequirements(selected_model_id=mid)
+        )
+    )
+    assert selected.model_id == mid
+    assert selected.owner_policy_id == "OWNER_REGISTERED_AND_ALLOWED"
+    assert transport.get_paths == list(B14_GETS)
+    assert transport.provider_posts == 0
 
 
 def test_live_mode_not_customer_authority_and_no_default_replacement(b14_source_gets):

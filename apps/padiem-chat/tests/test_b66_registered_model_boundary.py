@@ -68,6 +68,7 @@ def run(client, text="?? ?? ?? ?? /model:a-private-key"):
         [{"role": "user", "content": text}],
         additional_system_context="private saved skill prompt",
         attachments=(),
+        model_id="test-owner-catalog/quote-capable",
     ))
 
 
@@ -99,7 +100,7 @@ def test_one_authorized_exact_model_through_b14_stub_preserves_b66_payload():
     assert output == {"answer": executor.answer}
     assert len(resolver.calls) == len(executor.calls) == 1
     request = resolver.calls[0]
-    assert request == B66QuoteTaskRequirements()
+    assert request == replace(B66QuoteTaskRequirements(), selected_model_id="test-owner-catalog/quote-capable")
     assert request.task_id == "b66.quote.variable_extraction.v1"
     assert request.task_type == "document"  # not Claw's coding profile
     assert request.required_capabilities == frozenset(("chat",))

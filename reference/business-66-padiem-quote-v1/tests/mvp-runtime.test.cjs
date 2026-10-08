@@ -19,6 +19,7 @@ const easySource = fs.readFileSync(path.join(SRC, "easy-mode.js"), "utf8");
 
 const NOW = "2026-10-04T09:00:00.000Z";
 const SKILL_ID = "b66skill_" + "1".repeat(32);
+const SELECTED_MODEL_ID = "test-fixture/b66-manual-chat";
 
 const tick = () => new Promise((resolve) => setImmediate(resolve));
 async function flush() {
@@ -184,8 +185,15 @@ function buildAccountEnv({ signedIn, withSkill, withProfile, profile }) {
       if (!withProfile) return jsonResponse({ error: { message: "profile unavailable" } }, 404);
       return jsonResponse({ company_profile: runtimeProfile });
     }
+    if (target.endsWith("/api/padiem/b66/quote/models")) {
+      return jsonResponse({
+        ok: true, models: [{ model_id: SELECTED_MODEL_ID, name: "Synthetic Model" }],
+        default_model_id: null
+      });
+    }
     if (target.endsWith("/api/padiem/b66/quote/interpret")) {
       const body = JSON.parse(opts.body || "{}");
+      assert.equal(body.model_id, SELECTED_MODEL_ID, "exact user model_id forwarded to the server");
       if (!body.message || !body.saved_skill_id) {
         return jsonResponse({ ok: false, error: { code: "quote_input_unrecognized" } }, 422);
       }
@@ -248,6 +256,13 @@ function buildAccountEnv({ signedIn, withSkill, withProfile, profile }) {
   return { context, elements, getElement, httpCalls, appCalls, replaceDrafts, storage };
 }
 
+function manuallyChooseModel(env) {
+  const dropdown = env.getElement("padiemQuoteModelSelect");
+  assert.equal(dropdown.value, "", "no hidden model default in B66");
+  assert.ok(dropdown.children.some((option) => option.value === SELECTED_MODEL_ID));
+  dropdown.value = SELECTED_MODEL_ID; // real customer would choose this ID
+}
+
 async function harnessA() {
   /* signed out: primary action 은 authoritative quote 를 만들 수 없다 */
   const signedOut = buildAccountEnv({ signedIn: false, withSkill: true, withProfile: true });
@@ -261,6 +276,7 @@ async function harnessA() {
   /* signed in + skill + profile: readiness ready, interpret builds canonical draft */
   const env = buildAccountEnv({ signedIn: true, withSkill: true, withProfile: true });
   await flush();
+  manuallyChooseModel(env);
   const bridge = env.context.window.B66QuoteRuntimeBridge;
   const readiness = bridge.readiness();
   const diag = JSON.stringify({
@@ -303,6 +319,7 @@ async function harnessA() {
     profile: PARTIAL_CGI_PROFILE
   });
   await flush();
+  manuallyChooseModel(partialEnv);
   const partialBridge = partialEnv.context.window.B66QuoteRuntimeBridge;
   assert.equal(partialBridge.readiness().ready, true, "PARTIAL_COMPANY_PROFILE_ACCEPTED=YES");
   const partialFreeForm = await partialBridge.interpret(INTERPRET_TEXT);

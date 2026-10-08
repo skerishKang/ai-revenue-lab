@@ -18,6 +18,7 @@ const easySource = fs.readFileSync(path.join(SRC, "easy-mode.js"), "utf8");
 
 const NOW = "2026-10-04T09:00:00.000Z";
 const SKILL_ID = BrowserPdf.CGI_SKILL_ID;
+const SELECTED_MODEL_ID = "test-fixture/b66-selected-chat";
 const TURN1_TEXT = "대한건설에 배관 100미터 견적 만들어줘";
 const TURN2_TEXT = "18000원";
 
@@ -172,8 +173,19 @@ function buildAccountEnv(options) {
       if (target.endsWith("/api/padiem/b66/company-profile")) {
         return jsonResponse({ company_profile: CGI_PROFILE });
       }
+      if (target.endsWith("/api/padiem/b66/quote/models")) {
+        // Registered selection in a test fixture; user still explicitly
+        // selects the exact model before generating a quote.
+        return jsonResponse({
+          ok: true,
+          models: [{ model_id: SELECTED_MODEL_ID, name: "Synthetic Test Model" }],
+          default_model_id: null
+        });
+      }
       if (target.endsWith("/api/padiem/b66/quote/interpret")) {
         const body = JSON.parse(opts.body || "{}");
+        assert.equal(body.model_id, SELECTED_MODEL_ID,
+          "explicit user choice is submitted independently of quote text");
         interpretBodies.push(body.message);
         if (config.candidates) {
           const candidate = config.candidates[interpretBodies.length - 1];
@@ -355,6 +367,13 @@ function buildEasyEnv() {
   return { context, getElement, created, runtimeCalls, replaceDrafts, windowListeners };
 }
 
+const manuallyChooseModel = (env) => {
+  const select = env.getElement("padiemQuoteModelSelect");
+  assert.equal(select.disabled, false, "B66 model options are ready");
+  assert.ok(select.children.some((row) => row.value === SELECTED_MODEL_ID));
+  select.value = SELECTED_MODEL_ID; // explicit user action, never an implicit backend auto route
+};
+
 const clickStarter = (env, id) => {
   const element = env.getElement(id);
   const handler = (element.listeners.click || [])[0];
@@ -378,6 +397,11 @@ const assistantTexts = (env) => {
   await flush();
   const bridge = env.context.window.B66QuoteRuntimeBridge;
   assert.equal(bridge.readiness().ready, true, "runtime ready for follow-up probe");
+  const selectedModel = env.getElement("padiemQuoteModelSelect");
+  assert.equal(selectedModel.value, "", "without owner default, no automatic model choice");
+  assert.equal(selectedModel.disabled, false, "ready registered models are selectable");
+  manuallyChooseModel(env); // fixture simulates a real user action
+
 
   /* TURN 1: partial facts preserved, one allocation, no final quote */
   const first = await bridge.interpret(TURN1_TEXT);
@@ -427,6 +451,7 @@ const assistantTexts = (env) => {
   /* explicit Home / logout reset the pending conversation */
   const resetEnv = buildAccountEnv();
   await flush();
+  manuallyChooseModel(resetEnv);
   const resetBridge = resetEnv.context.window.B66QuoteRuntimeBridge;
   await resetBridge.interpret(TURN1_TEXT);
   assert.ok(resetBridge.pendingQuote(), "pending exists before reset");
@@ -445,6 +470,7 @@ const assistantTexts = (env) => {
       { recipient: {}, items: [{ [field]: answeredValue }], missing: ["recipient", "items"] }
     ] });
     await flush();
+    manuallyChooseModel(sequence);
     const runtime = sequence.context.B66QuoteRuntimeBridge;
     const firstTurn = await runtime.interpret("Synthetic item request");
     assert.equal(firstTurn.code, "incomplete_request");
@@ -469,6 +495,7 @@ const assistantTexts = (env) => {
     { recipient: {}, items: [{ qty: 7 }], missing: ["recipient", "name", "unitPrice"] }
   ] });
   await flush();
+  manuallyChooseModel(multi);
   const multiBridge = multi.context.B66QuoteRuntimeBridge;
   const multiFirst = await multiBridge.interpret("Synthetic multiple item request");
   assert.equal(multiFirst.question, "2번째 품목(Second item): 수량은 몇 개인가요?");
@@ -488,6 +515,7 @@ const assistantTexts = (env) => {
     { recipient: {}, items: [{ name: "Same item", qty: 7 }], missing: ["recipient", "unitPrice"] }
   ] });
   await flush();
+  manuallyChooseModel(repeatedNames);
   const repeatBridge = repeatedNames.context.B66QuoteRuntimeBridge;
   const repeatFirst = await repeatBridge.interpret("Synthetic repeated-name request");
   assert.equal(repeatFirst.question, "2번째 품목(Same item): 수량은 몇 개인가요?");
@@ -504,6 +532,7 @@ const assistantTexts = (env) => {
       detailGroups: [{ id: "detail-group-1", summaryItemId: "item-1", items: [{ unitPrice: 50 }] }], missing: ["recipient", "name", "qty"] }
   ] });
   await flush();
+  manuallyChooseModel(detailPartial);
   const detailPartialBridge = detailPartial.context.B66QuoteRuntimeBridge;
   const detailFirst = await detailPartialBridge.interpret("Synthetic generic detail request");
   assert.equal(detailFirst.question, "1번째 상세그룹의 1번째 품목: 단가는 얼마인가요?");
@@ -517,6 +546,7 @@ const assistantTexts = (env) => {
   const fourItems = [1, 2, 3, 4].map((i) => ({ name: "Synthetic item " + i, qty: i, unitPrice: 100 }));
   const oversize = buildAccountEnv({ candidates: [{ recipient: { person: "Synthetic buyer" }, items: fourItems, missing: [] }] });
   await flush();
+  manuallyChooseModel(oversize);
   const oversizeBridge = oversize.context.B66QuoteRuntimeBridge;
   const rejected = await oversizeBridge.interpret("Synthetic four-item request");
   assert.equal(rejected.ok, false);
@@ -535,6 +565,7 @@ const assistantTexts = (env) => {
     items: [{ name: "Summary", qty: 1, unitPrice: 0 }],
     detailGroups: [{ summaryItemId: "item-1", items: [{ name: "Detail", qty: 1, unitPrice: 100 }] }], missing: [] }] });
   await flush();
+  manuallyChooseModel(detailed);
   const detailRejected = await detailed.context.B66QuoteRuntimeBridge.interpret("Synthetic detail request");
   assert.equal(detailRejected.code, "cgi_unsupported_details");
   assert.equal(detailed.allocations(), 0, "unsupported detail output is explicit before accepting a CGI draft");
@@ -542,6 +573,7 @@ const assistantTexts = (env) => {
 
   const generic = buildAccountEnv({ generic: true, candidates: [{ recipient: { person: "Synthetic buyer" }, items: fourItems, missing: [] }] });
   await flush();
+  manuallyChooseModel(generic);
   const genericBuilt = await generic.context.B66QuoteRuntimeBridge.interpret("Synthetic generic request");
   assert.equal(genericBuilt.ok, true, "CGI row scope does not become a generic QuoteCore cap");
   assert.equal(genericBuilt.draft.items.length, 4);

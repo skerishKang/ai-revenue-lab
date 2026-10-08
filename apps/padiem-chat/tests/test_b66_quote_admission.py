@@ -51,7 +51,7 @@ def client_for(*, binding=None, resolver=None, interpreter=None, **overrides):
 
 def post(client, **overrides):
     return client.post("/api/b66/quote/interpret", json={
-        "saved_skill_id": SAVED_ID, "message": "SYNTHETIC PRIVATE QUOTE", **overrides,
+        "saved_skill_id": SAVED_ID, "model_id": MODEL, "message": "SYNTHETIC PRIVATE QUOTE", **overrides,
     })
 
 

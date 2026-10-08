@@ -122,7 +122,7 @@ def _client(interpreter) -> TestClient:
 def _post(client: TestClient, message: str):
     return client.post(
         "/api/b66/quote/interpret",
-        json={"saved_skill_id": SAVED_ID, "message": message},
+        json={"saved_skill_id": SAVED_ID, "model_id": "test-fixture/quote-projection", "message": message},
     )
 
 
