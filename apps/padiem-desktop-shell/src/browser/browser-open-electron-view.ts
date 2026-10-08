@@ -18,6 +18,7 @@ import { randomUUID } from 'node:crypto';
 import { BrowserWindow } from 'electron';
 
 import { BROWSER_OPEN_MAX_REDIRECTS } from './browser-open-contracts.js';
+import { isNavigationPermitted, isPermittedPublicUrl } from './public-url-policy.js';
 import type { BrowserOpenViewPort, BrowserOpenViewSession } from './browser-open-host.js';
 import type { TrustedControlView } from './browser-action-trusted-main.js';
 
@@ -39,6 +40,7 @@ export function createElectronBrowserOpenViewOwner(): {
   const views = new Map<string, {
     window: BrowserWindow;
     expiresAtMs: number;
+    approvedUrl: string;
     ready: boolean;
     correlation: { runRef: string; workspaceRef: string; ownerRef: string } | null;
     expiryTimer: ReturnType<typeof setTimeout> | null;
@@ -57,6 +59,11 @@ export function createElectronBrowserOpenViewOwner(): {
     if (!active || !active.ready || !active.correlation ||
         Date.now() >= active.expiresAtMs ||
         active.window.isDestroyed() || active.window.webContents.isDestroyed()) return null;
+    // Re-check the CURRENT URL even after the open receipt: same-origin SPA
+    // navigation or a trusted view redirect must not widen the approved URL.
+    const currentUrl = active.window.webContents.getURL();
+    if (!isPermittedPublicUrl(currentUrl) ||
+        !isNavigationPermitted(currentUrl, active.approvedUrl)) return null;
     return { webContents: active.window.webContents, ...active.correlation };
   };
 
@@ -122,7 +129,7 @@ export function createElectronBrowserOpenViewOwner(): {
       // No control access until canonical redemption, public URL policy,
       // completed navigation and the trusted open correlations all succeed.
       const active = {
-        window, expiresAtMs, ready: false,
+        window, expiresAtMs, approvedUrl: input.approvedUrl, ready: false,
         correlation: input.controlCorrelation ?? null,
         expiryTimer: null as ReturnType<typeof setTimeout> | null,
       };
@@ -151,7 +158,9 @@ export function createElectronBrowserOpenViewOwner(): {
 
       const currentUrl = window.isDestroyed() ? '' : window.webContents.getURL();
       const finalUrl = navigationBlocked || loadFailed || currentUrl === '' ? null : currentUrl;
-      active.ready = finalUrl !== null && !window.isDestroyed() && Date.now() < expiresAtMs;
+      active.ready = finalUrl !== null && !window.isDestroyed() &&
+        Date.now() < expiresAtMs && isPermittedPublicUrl(finalUrl) &&
+        isNavigationPermitted(finalUrl, input.approvedUrl);
 
       return {
         navigationBlocked,

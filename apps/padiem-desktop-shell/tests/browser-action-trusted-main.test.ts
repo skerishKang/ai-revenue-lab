@@ -165,6 +165,8 @@ test('source-only product wiring has no renderer IPC or local authority', () => 
   assert.match(main, /takeResidentBrowserControlLeaseLine\(\)/);
   assert.match(main, /findActiveControlView: browserOpenViewOwner.findActiveControlView/);
   assert.match(opener, /active.ready = finalUrl !== null/);
+  assert.match(opener, /isNavigationPermitted\(currentUrl, active.approvedUrl\)/);
+  assert.match(opener, /isNavigationPermitted\(finalUrl, input.approvedUrl\)/);
   assert.doesNotMatch(opener, /clearTimeout\(expiryTimer\)/);
   assert.doesNotMatch(main, /ipcMain\.handle\(['"]browser/);
 });
