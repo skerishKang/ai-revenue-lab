@@ -52,6 +52,46 @@ an OWNER choice blocks only that canary; it is not a repository or source-develo
 Per AGENTS.md, `AGENTS.md` and `AI_DEVELOPMENT_OPERATING_POLICY.md` already point here, so this
 section is the single canonical statement and is not duplicated into those documents.
 
+## 0A. Owner-approved B66 quote selection v1 (2026-10-08, #3760)
+
+The Product Owner specifically approved an **automatic model-resolution rule for
+B66 quotation-field extraction**, separate from the per-execution **user** model
+choice in section 0. This is a narrow, versioned **product-specific** decision,
+not a generic B14 Auto Router V2 (#2698) activation and not a relaxation of
+the owner gate for future model policies.
+
+    B66_QUOTE_MODEL_POLICY=b66.quote.free-first.registered.v1
+    B66_MODEL_AUTHORITY=B14_REGISTERED_AND_RUNTIME_READY
+    B66_MODEL_TASK=document_quote_field_extraction
+    B66_MODEL_QUALIFICATION=EVIDENCED_FREE_AND_CHAT_AND_LIVE_READY
+    B66_ROUTE_CHOICE=UNIQUE_QUALIFIED_EXACT_MODEL_ID
+    B66_MISSING_OR_AMBIGUOUS_ROUTE=FAIL_CLOSED
+    B66_PROVIDER_ATTEMPTS_MAX=1
+    B66_RETRY=NO
+    B66_AUTOMATIC_FALLBACK=NO
+    B66_PAID_AUTO_SPEND=NO
+    B66_NO_MODEL_SELECTED=FAIL_CLOSED
+    B62_PLUS_PRO_MAX_HOLD=UNCHANGED
+    CLAW_USER_SELECTED_MODELS=UNCHANGED
+    B14_AUTO_ROUTER_V2=DEFERRED
+
+B66's trusted server reads the **existing** B14 model registry and provider
+readiness through its fixed internal Service Binding, with no customer text in
+those reads. Only a single explicitly registered, public auto-eligible, free
+(zero-price evidence), chat-capable, enabled and ready model may execute under
+this v1 policy. The B14 engine revalidates the selected exact model ID at
+dispatch. An additional free route with equal eligibility blocks selection
+pending a new owner policy; the product does not invent a tie-break. Paid
+routes also remain blocked from **automatic** selection until the owner
+approves an explicit bounded paid spend policy. Free-model errors never
+trigger an alternative model attempt.
+
+This authorization does not itself approve provider/secret registry mutations,
+non-B66 product policy changes, an unbounded canary, or an unguarded
+Production deployment. The selected model and CGI rendering must still pass
+separate source/CI/deploy/real-customer validation gates. Issue #3751 stays
+open and CUSTOMER_READY remains NO until proven.
+
 ## 1. Rule
 
 Provider/model selection is an **owner-only decision boundary**.
