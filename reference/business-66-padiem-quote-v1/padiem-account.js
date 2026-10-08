@@ -395,6 +395,8 @@
       case "cgi_unsupported_rows": return "CGI 기본 견적서는 품목을 최대 3개까지 지원합니다. 품목을 3개 이하로 줄여 주세요.";
       case "cgi_unsupported_details": return "CGI 기본 견적서는 현재 요약 품목만 PDF로 만들 수 있습니다. 상세내역은 지원하지 않으므로 요약 품목의 수량과 단가를 알려 주세요.";
       case "cgi_scope_unavailable": return "CGI 견적서의 지원 범위를 확인하지 못했습니다. 새로고침 후 다시 시도해 주세요.";
+      case "model_selection_unavailable":
+        return "견적을 해석할 AI 모델이 아직 준비되지 않았습니다. 질문받으며 만들기는 계속 이용할 수 있습니다.";
       case "interpret_unavailable": return "해석 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.";
       default: return "견적 요청을 해석하지 못했습니다.";
     }
@@ -644,6 +646,14 @@
       });
       const data = result.data;
       if (!result.response.ok || !data || data.ok !== true || !data.candidate) {
+        // #3751: model readiness is NOT an invalid customer quote. Never
+        // turn this into a Guided fallback or another model/provider request.
+        // Match only the exact server-owned closed-vocabulary failure pair;
+        // do not trust arbitrary upstream message text for this distinction.
+        if (result.response.status === 503 && data && data.error &&
+            data.error.code === "quote_model_unavailable") {
+          return { ok: false, code: "model_selection_unavailable" };
+        }
         return { ok: false, code: "interpret_failed", detail: safeMessage(data, "") };
       }
       const candidate = allocated ? mergePendingCandidate(allocated.lastCandidate, data.candidate) : data.candidate;

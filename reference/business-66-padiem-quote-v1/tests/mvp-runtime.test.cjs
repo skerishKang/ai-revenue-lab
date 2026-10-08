@@ -384,6 +384,54 @@ async function harnessA() {
   assert.equal(incomplete.code, "incomplete_request", "incomplete sentence is reported truthfully");
   assert.deepEqual(incomplete.missing, ["unitPrice"], "missing fields surface to the UI");
 
+  /* #3751 — B66 model-selection 503 is NOT a malformed quote or a
+     license to retry/silently fall back. The input and budget remain intact. */
+  const unavailable = buildAccountEnv({ signedIn: true, withSkill: true, withProfile: true });
+  await flush();
+  const unavailableBridge = unavailable.context.window.B66QuoteRuntimeBridge;
+  const originalInput = "테스트건설에 배관 10미터, 미터당 18000원";
+  unavailable.getElement("padiemQuoteRequest").value = originalInput;
+  let modelUnavailableCalls = 0;
+  const originalFetchUnavailable = unavailable.context.fetch;
+  unavailable.context.fetch = async (url, options) => {
+    if (String(url).endsWith("/api/padiem/b66/quote/interpret")) {
+      modelUnavailableCalls += 1;
+      return jsonResponse({
+        ok: false, error: {
+          code: "quote_model_unavailable",
+          message: "untrusted synthetic server error must not reach status"
+        }
+      }, 503);
+    }
+    return originalFetchUnavailable(url, options);
+  };
+  const unavailableResult = await unavailableBridge.interpret(originalInput);
+  assert.equal(unavailableResult.ok, false);
+  assert.equal(unavailableResult.code, "model_selection_unavailable");
+  assert.match(unavailableBridge.errorText(unavailableResult.code), /AI 모델이 아직 준비되지 않았습니다/);
+  assert.doesNotMatch(unavailableBridge.errorText(unavailableResult.code), /untrusted/);
+  assert.equal(modelUnavailableCalls, 1, "exactly one B66 interpret POST");
+  assert.equal(unavailable.replaceDrafts.length, 0, "not an approved QuoteDraft");
+  assert.equal(unavailableBridge.pendingQuote(), null, "no partial state fabricated by 503");
+  assert.equal(unavailable.getElement("padiemQuoteRequest").value, originalInput, "customer text retained");
+  assert.ok(!unavailable.appCalls.includes("createFreshDraft:free-form"),
+    "model absence must not allocate a quote number or silently start Guided");
+
+  /* A 502 timeout is NOT mislabeled as 503 selection failure. */
+  unavailable.context.fetch = async (url, options) => {
+    if (String(url).endsWith("/api/padiem/b66/quote/interpret")) {
+      modelUnavailableCalls += 1;
+      return jsonResponse({ ok: false, error: { code: "quote_interpretation_failed" } }, 502);
+    }
+    return originalFetchUnavailable(url, options);
+  };
+  const actualUpstreamFailure = await unavailableBridge.interpret(originalInput);
+  assert.equal(actualUpstreamFailure.code, "interpret_failed");
+  assert.equal(modelUnavailableCalls, 2, "one attempt per user invocation, no retry");
+  assert.equal(unavailable.replaceDrafts.length, 0);
+  assert.equal(unavailable.getElement("padiemQuoteRequest").value, originalInput);
+  assert.equal(unavailableBridge.pendingQuote(), null);
+
   /* profile 없음: demo fallback 없이 실패 */
   const noProfile = buildAccountEnv({ signedIn: true, withSkill: true, withProfile: false });
   await flush();
