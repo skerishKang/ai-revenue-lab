@@ -186,11 +186,22 @@ class ClosedDispatcherTests(unittest.TestCase):
             emit=lambda line: None,
         )
 
-    def test_exactly_two_request_kinds_are_accepted(self) -> None:
-        self.assertEqual(len(DESKTOP_REQUEST_KINDS), 2)
-        self.assertEqual(DESKTOP_REQUEST_KIND_COUNT, 2)
+    def test_exactly_four_request_kinds_are_accepted(self) -> None:
+        # #3611 grew the closed set from two to four with #3669 (the two
+        # canonical browser-control lease phases). The kinds stay a closed
+        # literal set; nothing is a wildcard or a generic dispatch.
+        self.assertEqual(len(DESKTOP_REQUEST_KINDS), 4)
+        self.assertEqual(DESKTOP_REQUEST_KIND_COUNT, 4)
         self.assertEqual(
-            DESKTOP_REQUEST_KINDS, frozenset({MATERIAL_REQUEST_KIND, REDEMPTION_REQUEST_KIND})
+            DESKTOP_REQUEST_KINDS,
+            frozenset(
+                {
+                    MATERIAL_REQUEST_KIND,
+                    REDEMPTION_REQUEST_KIND,
+                    "browser_control_lease_resolve",
+                    "browser_control_lease_consume",
+                }
+            ),
         )
         self.assertFalse(GENERIC_COMMAND_DISPATCH)
         self.assertEqual(SECOND_STDIN_READER_THREAD, 0)
