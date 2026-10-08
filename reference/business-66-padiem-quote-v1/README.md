@@ -31,6 +31,48 @@ The user-facing primary concept is the Saved Quote Skill ("내 견적서"),
 not template picking. `QuoteTemplateProfile` remains the internal
 renderer data underneath an approved Skill.
 
+## Canonical source-analysis contract (#3542)
+
+For source-derived onboarding, B66 must **analyze the original document before compiling the reusable Skill/Template**.
+
+```text
+existing XLSX/PDF
+-> Source Analysis Record (#3542)
+   - structure / layout
+   - font family / size / emphasis
+   - merged cells / row heights / column widths
+   - fills / borders / alignment / number formats
+   - print/page settings
+   - embedded logo/stamp/image/drawing assets + placement
+   - provenance / unknowns / unsupported features
+-> Saved Quote Skill Candidate
+-> linked QuoteTemplateProfile Candidate
+-> review/correction
+-> explicit approval
+-> account assignment
+```
+
+If an image/object is extractable from the source, reuse the original asset rather than redrawing it. If exact source metadata is unavailable or a feature cannot be reconstructed, mark it as approximation/unsupported instead of inventing source truth.
+
+After approval, repeat use does **not** analyze the source again:
+
+```text
+new conversation / structured facts
+-> approved Saved Quote Skill
+-> QuoteDraft
+-> QuoteCore
+-> approved QuoteTemplateProfile
+-> deterministic preview / PDF / XLSX where supported
+```
+
+```text
+SOURCE_REANALYSIS_PER_REPEAT=0
+SOURCE_FILE_REQUIRED_AT_REPEAT_RUNTIME=NO
+NATURAL_LANGUAGE_MODEL_SCOPE=VARIABLE_FACT_EXTRACTION_ONLY
+```
+
+Current manual-registration fallback remains supported when full source analysis is unavailable, but that fallback must not be treated as proof that the source fidelity analysis is complete.
+
 ## Run
 
 No build step and no credentials are required.
@@ -69,7 +111,7 @@ reference/business-66-padiem-quote-v1/
 ├─ quote-skill-store.js          승인 Skill 전용 browser-local store (원본 바이트 저장 없음)
 ├─ quote-skill-candidate.js      Skill 후보/검토/명시 승인 (지문 binding)
 ├─ quote-skill-registration.js   기존 견적서 추출값 → Skill 후보 seam (fixed/variable 분리)
-├─ quote-template-registration.js  업로드 견적서 → layout 후보/보정/preview/승인 (자동 분석 없음, 수동 보정)
+├─ quote-template-registration.js  업로드 견적서 → layout 후보/보정/preview/승인 (현재 수동 fallback; canonical source analysis는 #3542)
 ├─ quote-registration-session.js   6단계 등록 wizard 세션 + template/skill atomic commit
 ├─ quote-skill-ui.js             "내 견적서" 메인 UI + 등록 wizard + 관리 (DOM API 렌더, innerHTML 없음)
 ├─ easy-mode.js                  AI 없는 질문형 Easy Mode + 최근 견적/이어하기/파일 선택 UX
@@ -144,15 +186,15 @@ Repeat customers register the quotation they already use instead of picking temp
 [내가 쓰던 견적서 등록]
 1. 견적서 선택 (이미지와 지원 문서는 서버 분석을 시도하며, parser authority 미가용/분석 실패 시 수동 확인; 원본 바이트 브라우저 저장 없음)
 2. 회사정보/업무값 확인 (이미지 extraction 결과를 기본 초안으로 사용하고 사람이 수정 가능)
-3. 견적서 모양 확인 (기본 초안 + "자동으로 분석하지 않으므로 비교해 수정" 안내)
+3. 견적서 모양 확인 (source-analysis 결과가 있으면 그 구조/스타일/자산을 우선 사용; #3542 미가용 시에는 수동 approximation임을 명확히 표시하고 비교·수정)
 4. 필요한 부분 수정 + 미리보기 (저장 없음)
 5. 최종 확인 → [이 모양 사용] → [내 견적서로 저장] (두 명시 승인 분리)
 6. 저장 완료 → [이 견적서로 작성]
 ```
 
 Repeat generation reuses the approved Skill/profile deterministically:
-new recipient/items/qty/unit price → QuoteDraft → QuoteCore → existing
-renderer. No source re-analysis, no model calls, same input same render.
+new recipient/items/qty/unit price → QuoteDraft → QuoteCore → approved
+QuoteTemplateProfile/renderer. No source re-analysis, no source-file dependency, no renderer model calls; same structured input must produce the same semantic render.
 The old template picker remains under "고급: 기존 양식 직접 관리" without
 breaking existing approved-profile users.
 
