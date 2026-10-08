@@ -53,6 +53,8 @@ REJECT_CANDIDATE
 | AI provider/model execution | B14 provider/model routing | OWN_AUTHORITY for routing; providers are replaceable | Provider adapters/models intentionally replaceable | CONTINUOUS |
 | Cross-runtime AI transport | IP-ENGINE contracts | OWN_AUTHORITY | Hosting/transport implementation can evolve behind contract | RETAIN |
 | HTTP application runtime | Starlette/httpx/uvicorn + Workers runtime where applicable | REPLACEABLE_COMPONENT | Not current bottleneck | SCAN_DEFERRED |
+| Browser Control P01/admission/replay and audit authority | Engine/P01/Control Plane/Broker + trusted Desktop owner | OWN_AUTHORITY | Never outsource human approval, binding, origin/budget/time checks or Broker durable one-shot state; see [browser decision](PADIEM_BROWSER_EXECUTION_ADAPTER_DECISION_3782.md) | RETAIN #3782 |
+| Browser action observation and input execution | Existing bounded Electron/CDP observation + Input.* binding | REPLACEABLE_COMPONENT | Retain current embedded Desktop primary; optional Playwright MCP / Browser Use pilot only after #2996 exact-source, license, Windows and conformance audit; [scope/decision](PADIEM_BROWSER_EXECUTION_ADAPTER_DECISION_3782.md) | RETAIN_CURRENT; SCAN_DEFERRED #2996 #3782 |
 | Browser/E2E verification | Playwright where configured | REPLACEABLE_COMPONENT | Tooling only; switch if materially better | SCAN_DEFERRED |
 | Cloud runtime/storage | Cloudflare Workers / D1 / R2 in current products | REPLACEABLE_INFRASTRUCTURE with high migration cost | Evaluate only when cost/capability/reliability justifies migration | SCAN_DEFERRED |
 | Drive/Gmail/Telegram/Slack/Calendar integrations | external provider APIs through Padiem connector boundaries | EXTERNAL_SERVICE | Already adopt-first; SDK/API may change while connector contract stays stable | CONTINUOUS |
@@ -137,3 +139,23 @@ OR NEW_PRODUCT_REQUIREMENT
 ```
 
 A scan should normally produce no more than three finalists and one recommended primary.
+
+<!-- AGENT_RUNTIME_CANDIDATE_INVENTORY_20261009 -->
+## 2026-10-09 agent runtime / Desktop / browser reusability crosswalk
+
+This is a **candidate/source inventory**, not authorization to replace Padiem runtimes or choose models. For actual engineering ownership see the capability registry; for the live delivery priority see #3523; source-intake findings and LOCAL1's review belong to #2996.
+
+| Replaceable implementation slot | Current Padiem implementation or boundary | Candidate upstream (GitHub root license) | Verified disposition / next proof |
+|---|---|---|---|
+| Windows Desktop shell / local workspace primitives | `apps/padiem-desktop-shell` + Padiem local broker / agent contracts #1633–#1636 | [ZCode](https://github.com/zai-org/ZCode) (Apache-2.0) | **Partial reuse already landed**: `THIRD_PARTY_NOTICES.md` documents pinned `workspaceFileSearch.ts` adaptation; #3436 CLOSED `ADAPT_PARTIAL`. Whole runtime remains NOT imported/approved; future #3583 gated after #3523. |
+| Agent loop / tools / skills / MCP / sessions | B54/P01/Engine/Core contracts plus in-repo kagent implementations | [OpenCode](https://github.com/anomalyco/opencode) (MIT), [OpenClaw](https://github.com/openclaw/openclaw) (MIT), [Kilo Code](https://github.com/Kilo-Org/kilocode) (MIT) | **CANDIDATE / NO IMPORT DECISION**. LOCAL1 to compare exact pinned subsystems and adapter/parity risks; no second account, task, approval, connector or model authority. |
+| Browser action execution / computer-use primitive | Existing Padiem Broker + P01 command tickets, #3775/#3782; Chrome/browsers are outside authorization authority | [Browser Use](https://github.com/browser-use/browser-use) (MIT), ZCode (Apache-2.0) | **CANDIDATE / NO IMPORT DECISION**. Native/browser runtime and sandbox/egress constraints require exact audit; retain Padiem per-command approval and fail-closed broker. #3783 ongoing PR ownership unchanged. |
+| Provider/model integration implementation | B14 catalog and provider adapters, Engine/Core service contracts | OpenCode/ZCode/Kilo Code upstream provider configurations as possible **reference implementations** | **REFERENCE ONLY unless explicit B14 adapter parity proves safe**. OWNER chooses models; never transplant upstream account/provider/router/telemetry/credential authority. |
+
+License values above are root GitHub repository metadata verified on 2026-10-09, **not** package-by-package redistribution clearance, transitive-asset licensing, hosted-service rights or license conclusions for a fork. For any chosen submodule, pin immutable commit, audit actual dependencies and notices, and record the legal/technical disposition before copy/embedding.
+
+Proof to distinguish `already adopted` from `may be adopted`:
+- ZCode code provenance: `apps/padiem-desktop-shell/THIRD_PARTY_NOTICES.md` pins `zai-org/ZCode@29628c9acdb81b703bbd4080c207a0e7ce5e276e` and exact file path; this does **not** imply the local Agent runtime was imported.
+- #3436 / #3583 govern ZCode Desktop disposition; do not create a competing Desktop authority or overwrite an already accepted decision.
+- #2996 collects reuse matrices; #3523 remains the only currently active user-visible Golden Path target.
+- Component swap criteria: stable adapter + shared offline conformance + verified license/security + rollback. A code-level 429/502 transport failure or workspace-isolation defect is not automatically fixed by importing another agent.

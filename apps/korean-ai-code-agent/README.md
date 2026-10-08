@@ -21,31 +21,14 @@ Canonical platform references:
 
 ## Current architecture boundary
 
-```text
-Padiem Claw product UX / CLI / future first-party surfaces
-        │
-        ▼
-B54 task / run / repository / workspace adapter
-        │
-        ▼
-IP-ENGINE · Padiem AI Engine
-cross-runtime trusted service boundary
-        │
-        ▼
-IP-CORE · Padiem AI Core
-Agent / Tool / Skill / approval / recovery / orchestration semantics
-        │
-        ▼
-B14 · Korean AI Platform
-Provider / model routing and execution
-        │
-        ▼
-Provider / Model
+~~~text
+Padiem Claw UX / CLI
+  -> B54 task / run / repository / workspace adapter
+~~~
 
-IP-CONTROL = identity / tenant / entitlement / usage / audit where integrated
-```
+This diagram describes the **B54-owned product boundary only**. The shared IP-ENGINE, IP-CORE, B14 and IP-CONTROL stack is defined once in the [canonical vertical stack](../../docs/architecture/PADIEM_AI_VERTICAL_STACK.md) and [shared ownership guide](../../docs/common/README.md); B54 consumes those services without defining a competing execution topology.
 
-`P01` is a legacy identifier for the shared Core concept. Current documentation uses **IP-CORE**. Historical documents may retain `P01` only as dated evidence.
+P01 is a legacy identifier for the shared Core concept. Current documentation uses **IP-CORE**; historic evidence may retain P01.
 
 ## Running the tests locally
 
@@ -125,6 +108,8 @@ queued
 ```
 
 This is a product-facing lifecycle projection. Shared execution, approval, recovery and orchestration semantics remain IP-CORE-owned and cross-runtime projection remains IP-ENGINE-owned.
+
+Shared design, validation and merge/Production authorities are indexed in the [development lifecycle guide](../../docs/lifecycle/README.md). The [common architecture index](../../docs/common/README.md) owns cross-business platform references; the following safety defaults are the **B54-specific** execution contract, not a new repository-wide approval policy.
 
 ## Safety defaults
 
