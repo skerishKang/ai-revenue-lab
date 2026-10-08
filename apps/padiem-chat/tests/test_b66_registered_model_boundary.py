@@ -285,3 +285,59 @@ def test_exact_selected_route_adapter_only_uses_explicit_b14_method():
     ))
     assert response=={"answer":"{}"}
     assert fake.calls==["test-owner-catalog/quote-capable"]
+
+
+def test_real_b14_core_quote_payload_is_exact_one_attempt_no_external_fallback():
+    """Exercise the actual B14/Core execution request without provider I/O."""
+    import json
+    from app.config import Settings
+    from app.dispatch_quota import DispatchAwareB14Client
+
+    model = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
+
+    class InMemoryBinding:
+        def __init__(self):
+            self.calls = []
+
+        async def post_json(self, url, payload):
+            self.calls.append((url, payload))
+            return 200, json.dumps({
+                "choices": [{
+                    "message": {
+                        "role": "assistant",
+                        "content": json.dumps({"recipient": {"company": "CGI"}}),
+                    }
+                }],
+                "business14": {
+                    "request_id": "b14req_quotetest",
+                    "route_mode": "manual",
+                    "selected_model": model,
+                    "selected_provider": "Kilo Gateway",
+                },
+            }).encode("utf-8")
+
+    service = InMemoryBinding()
+    client = DispatchAwareB14Client(
+        Settings(
+            runtime_mode="b14",
+            b14_base_url="https://b14.internal",
+            live_enabled=True,
+        ),
+        service_transport=service,
+        require_service_binding=True,
+    )
+    output = asyncio.run(client.complete_registered_quote_model(
+        [{"role": "user", "content": "CGI 견적"}],
+        model=model,
+        additional_system_context="trusted saved-skill schema",
+    ))
+    assert output["route"]["model"] == model
+    assert len(service.calls) == 1
+    url, payload = service.calls[0]
+    assert url == "https://b14.internal/api/pilot/v1/chat/completions"
+    assert payload["model"] == model
+    assert payload["business14"]["task_type"] == "document"
+    assert payload["business14"]["max_attempts"] == 1
+    assert payload["business14"]["allow_external_fallback"] is False
+    assert payload["business14"].get("provider_order") is None
+    assert "credential" not in payload
