@@ -5,6 +5,7 @@
   const messageList = document.getElementById("messageList");
   const form = document.getElementById("composerForm");
   const input = document.getElementById("messageInput");
+  const clawModelIdInput = document.getElementById("clawModelIdInput");
   const sendButton = document.getElementById("sendButton");
   const cancelStreamButton = document.getElementById("cancelStreamButton");
   const newChatButton = document.getElementById("newChatButton");
@@ -247,6 +248,16 @@
     retry.type = "button";
     retry.className = "retry-button";
     retry.textContent = actionLabel;
+    // #3566: the general Claw P01 lane may already have dispatched before a
+    // terminal Engine error. Do not offer a one-click replay (even manual)
+    // until the operator checks existing results. Ordinary Chat retains its
+    // established retry behavior; this guard is Claw-general only.
+    if (clawGeneralRequest) {
+      const hint = document.createElement("p");
+      hint.textContent = uiT("claw-general-check-runs");
+      box.append(strong, p, hint);
+      return box;
+    }
     retry.addEventListener("click", async () => {
       article.remove();
       conversationState.setConversationId(retryContext.conversationId);
@@ -1293,6 +1304,11 @@
     renderTyping(article);
     try {
       const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };
+      // #3554: exactly one explicit B14 model per Claw submit; no auto/default
+      // selection. The submit-time snapshot survives the Claw→chat shell flip.
+      if (clawGeneralRequest && contextSnapshot.selectedModelId) {
+        payload.model_id = contextSnapshot.selectedModelId;
+      }
       // #3539: the routing decision arrives as a submit-time snapshot. It is
       // NEVER re-derived from live shell state here, because showConversation()
       // has already flipped shell.dataset.state to "chat" by the time this runs
@@ -1303,6 +1319,11 @@
       // keeps /api/chat/stream unchanged, and the explicit manual form submits
       // through clawManualForm below, never here.
       const attachments = attachmentPayload(attachment);
+      if (clawGeneralRequest && attachments) {
+        // #3554: text-only P01 model choice must never be sent to a
+        // standalone direct-B14 completed-request path.
+        throw new Error(uiT("claw-model-text-only-error"));
+      }
       if (attachments) payload.attachments = attachments;
       if (contextSnapshot.conversationId) payload.conversation_id = contextSnapshot.conversationId;
       if (contextSnapshot.project) payload.project_id = contextSnapshot.project.id;
@@ -1328,7 +1349,9 @@
       if (requestEpoch !== conversationEpoch) return false;
       renderError(
         article,
-        error instanceof Error ? error.message : uiT("try-again"),
+        clawGeneralRequest && error?.clawFailureDetail === "engine_provider_rate_limited"
+          ? uiT("claw-general-provider-limit")
+          : (error instanceof Error ? error.message : uiT("try-again")),
         outboundMessages,
         skill,
         attachment,
@@ -1366,6 +1389,9 @@
     // shell state. The immutable snapshot is threaded through requestAnswer so a
     // generic Claw submit cannot silently fall back to /api/chat/stream.
     const clawGeneralRequest = clawGeneralRequestActive();
+    contextSnapshot.selectedModelId =
+      clawGeneralRequest && typeof clawModelIdInput !== "undefined" && clawModelIdInput
+        ? clawModelIdInput.value.trim() : "";
     showConversation();
     addUserMessage(prompt, attachmentSnapshot);
     input.value = "";

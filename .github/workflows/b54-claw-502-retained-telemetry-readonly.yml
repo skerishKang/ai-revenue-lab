@@ -14,6 +14,7 @@ on:
   pull_request:
     paths:
       - ".github/workflows/b54-claw-502-retained-telemetry-readonly.yml"
+      - ".github/scripts/cloudflare_served_version_cli.py"
   push:
     branches:
       - main
@@ -94,6 +95,31 @@ jobs:
           cloudflare_account_api = 'api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"'
           if cloudflare_account_api not in network_region:
               raise SystemExit("Cloudflare account API authority missing")
+
+          pull_paths = text.split("pull_request:", 1)[1].split("push:", 1)[0]
+          push_paths = text.split("push:", 1)[1].split("permissions:", 1)[0]
+          served = text.split("\n      - name: Read active served versions", 1)[1].split("\n      - name: Query retained Workers telemetry", 1)[0]
+          if ".github/scripts/cloudflare_served_version_cli.py" not in pull_paths:
+              raise SystemExit("canonical CLI missing from PR trigger")
+          if ".github/scripts/cloudflare_served_version_cli.py" in push_paths:
+              raise SystemExit("generic CLI must not widen historical main-push telemetry trigger")
+          if served.count("cloudflare_served_version_cli.py") != 1:
+              raise SystemExit("served-version loop must delegate to canonical CLI exactly once")
+          if served.count("resolve-active --deployments") != 1:
+              raise SystemExit("canonical resolve-active call missing")
+          for legacy in (
+              'versions = deps[0].get("versions", [])',
+              'versions[0].get("percentage")',
+              'versions[0].get("version_id")',
+          ):
+              if legacy in served:
+                  raise SystemExit(f"legacy inline served-version resolver remains: {legacy}")
+          for label in ("B62_ACTIVE_VERSION", "ENGINE_ACTIVE_VERSION", "B14_ACTIVE_VERSION"):
+              if label not in served:
+                  raise SystemExit(f"served-version label missing: {label}")
+
+          print("CANONICAL_SERVED_VERSION_CLI=YES")
+          print("MAIN_PUSH_TRIGGER_WIDENING=NO")
           print("B54_CLAW_502_TELEMETRY_SOURCE=PASS")
           print("PRODUCT_REQUESTS=0")
           print("PROVIDER_CALLS=0")
@@ -154,26 +180,14 @@ jobs:
           for worker in padiem-chat padiem-ai-engine ai-revenue-korean-ai-platform; do
             out="${RUNNER_TEMP}/deploy-${worker}.json"
             curl -fsS "${auth[@]}" "${api}/workers/scripts/${worker}/deployments" -o "${out}"
-            python - "${worker}" "${out}" <<'PY'
-          import json, re, sys
-          worker, path = sys.argv[1], sys.argv[2]
-          payload = json.load(open(path, encoding="utf-8"))
-          deps = payload.get("result", {}).get("deployments", []) if payload.get("success") is True else []
-          if not deps:
-              raise SystemExit(f"{worker}: no active deployment")
-          versions = deps[0].get("versions", [])
-          if len(versions) != 1 or versions[0].get("percentage") != 100:
-              raise SystemExit(f"{worker}: active deployment is not exactly one version at 100%")
-          version = versions[0].get("version_id") or versions[0].get("version")
-          if not isinstance(version, str) or not re.fullmatch(r"[A-Za-z0-9._-]{1,128}", version):
-              raise SystemExit(f"{worker}: unsafe version id")
-          label = {
-              "padiem-chat": "B62_ACTIVE_VERSION",
-              "padiem-ai-engine": "ENGINE_ACTIVE_VERSION",
-              "ai-revenue-korean-ai-platform": "B14_ACTIVE_VERSION",
-          }[worker]
-          print(f"{label}={version}")
-          PY
+            version="$(python .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${out}")"
+            case "${worker}" in
+              padiem-chat) label="B62_ACTIVE_VERSION" ;;
+              padiem-ai-engine) label="ENGINE_ACTIVE_VERSION" ;;
+              ai-revenue-korean-ai-platform) label="B14_ACTIVE_VERSION" ;;
+              *) echo "unexpected worker: ${worker}" >&2; exit 1 ;;
+            esac
+            printf '%s=%s\n' "${label}" "${version}"
           done
           echo "SERVED_VERSION_READBACK=PASS"
           echo "PRODUCTION_MUTATION=0"

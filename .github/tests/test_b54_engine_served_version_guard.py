@@ -18,9 +18,15 @@ import contextlib
 import importlib.util
 import io
 import json
+import os
+import re
+import shutil
+import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
+import pytest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -812,10 +818,16 @@ def test_rollback_job_proves_served_version_equals_the_explicit_target() -> None
     # by the shared mutation-evidence primitive, never by shell comparison:
     # #2752 supersedes #2748's inline `[ "${served_version}" = "${TARGET}" ]`.
     assert "b54_engine_served_version_guard.py resolve-active" in rollback_block
-    assert 'validate-version-id --version-id "${ROLLBACK_TARGET}"' in rollback_block
+    # #3737: these two assertions used to pin the space-separated form, which
+    # meant the suite was documenting the defect -- argparse reads a canonical
+    # leading-hyphen id as an option, so the predicate was never consulted.
+    assert 'validate-version-id --version-id="${ROLLBACK_TARGET}"' in rollback_block
     assert "cloudflare_mutation_evidence.py evaluate" in rollback_block
     assert "--class ROLLBACK" in rollback_block
-    assert '--target-version "${ROLLBACK_TARGET}"' in rollback_block
+    assert '--target-version="${ROLLBACK_TARGET}"' in rollback_block
+    assert '--pre-version="${pre_version}"' in rollback_block
+    for ambiguous in ('--version-id "${', '--target-version "${', '--pre-version "${'):
+        assert ambiguous not in rollback_block, f"ambiguous argv form survived: {ambiguous}"
     assert 'if [ "${served_version}" = "${ROLLBACK_TARGET}" ]; then' not in rollback_block
     # A baseline is taken before the mutation, and the step is settled by a
     # decision made with the window CLOSED, so a not-yet-final verdict can never
@@ -857,18 +869,38 @@ def test_bare_rollback_pass_marker_appears_exactly_once() -> None:
 # --- validate-version-id: the canonical charset rule as a CLI surface (#2748) ---
 
 def _validate(helper, version_id: str) -> tuple[int, str]:
-    import contextlib
-    import io
-
+    # The `=` form is the contract (#3737): as two separate tokens, argparse
+    # consumes a value that begins with `-` as an option and exits with a usage
+    # error before is_safe_version_id is ever reached.
     stdout, stderr = io.StringIO(), io.StringIO()
     with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
-        code = helper.main(["validate-version-id", "--version-id", version_id])
+        code = helper.main(["validate-version-id", f"--version-id={version_id}"])
     return code, stdout.getvalue() + stderr.getvalue()
+
+
+def test_validate_version_id_as_a_separate_token_bypasses_the_predicate() -> None:
+    """The removed invocation form, kept as the reason the =FORM is required."""
+    helper = _load_helper()
+    assert helper.is_safe_version_id("-safe-version") is True
+    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+        with pytest.raises(SystemExit) as stop:
+            helper.main(["validate-version-id", "--version-id", "-safe-version"])
+    # 2 is argparse's usage error: the canonical contract was never consulted.
+    assert stop.value.code == 2
 
 
 def test_validate_version_id_accepts_canonical_ids() -> None:
     helper = _load_helper()
-    for version_id in ("ver-A", "a", "9" * 64, "11111111-1111-1111-1111-111111111111"):
+    for version_id in (
+        "ver-A",
+        "a",
+        "9" * 64,
+        "11111111-1111-1111-1111-111111111111",
+        # Legal under ^[A-Za-z0-9._-]{1,64}$, so they must reach the predicate.
+        "-safe-version",
+        "-",
+        "--help",
+    ):
         code, out = _validate(helper, version_id)
         assert code == 0, version_id
         assert "B54_ENGINE_VERSION_ID_VALIDATION=PASS" in out
@@ -879,10 +911,413 @@ def test_validate_version_id_rejects_unsafe_ids_without_echoing_them() -> None:
     # An unsafe id is the exact untrusted string this rule exists to keep out of
     # CI logs and GITHUB_ENV, so the rejection must not print the value back.
     helper = _load_helper()
-    for version_id in ("", "   ", "ver A; rm -rf /", "a:b", "9" * 65, "ver\nPASS"):
+    for version_id in (
+        "",
+        "   ",
+        "ver A; rm -rf /",
+        "a:b",
+        "9" * 65,
+        "ver\nPASS",
+        # Option-shaped but unsafe: refused by the predicate (rc=1), not argparse.
+        "-bad id;rm",
+        "--version-id=X",
+    ):
         code, out = _validate(helper, version_id)
         assert code == 1, version_id
         assert "unsafe charset" in out
         if version_id:
             assert version_id not in out
         assert "B54_ENGINE_VERSION_ID_VALIDATION=PASS" not in out
+
+
+# ---------------------------------------------------------------------------
+# #3737: the rollback step has to RUN, not merely read correctly.
+#
+# Neither defect is visible to string assertions. A step-level working-directory
+# that contradicts the body only shows up when the body executes, and an argv form
+# argparse misreads only shows up in a real process. So these tests execute the
+# step body extracted from the workflow, with only `curl`, `npx` and `sleep`
+# replaced on PATH: the repository's real guard and the real mutation-evidence
+# primitive do all resolving and deciding.
+#
+# The step runs from the real repository root, because that cwd is what the fix
+# restores -- adapter path resolution is part of what is under test here.
+# ---------------------------------------------------------------------------
+
+PRE_VERSION = "aaaaaaaa-0000-0000-0000-000000000000"
+TARGET_VERSION = "bbbbbbbb-1111-1111-1111-111111111111"
+WRONG_VERSION = "cccccccc-2222-2222-2222-222222222222"
+ENGINE_WORKER_DIR = ROOT / "apps" / "padiem-ai-engine"
+
+_STUB_CURL = """#!/usr/bin/env bash
+set -uo pipefail
+out=""
+prev=""
+for arg in "$@"; do
+  if [ "${prev}" = "-o" ]; then out="${arg}"; fi
+  prev="${arg}"
+done
+count="${RUNNER_TEMP}/curl-call-count"
+n=0
+if [ -f "${count}" ]; then n="$(cat "${count}")"; fi
+n=$((n + 1))
+printf '%s' "${n}" > "${count}"
+if [ -n "${CURL_FAIL:-}" ]; then exit 22; fi
+var="BODY_${n}"
+body="${!var:-${BODY_DEFAULT:-}}"
+printf '%s' "${body}" > "${out}"
+"""
+
+_STUB_NPX = """#!/usr/bin/env bash
+printf '%s\\n' "$*" >> "${RUNNER_TEMP}/npx-argv.txt"
+if [ -n "${NPX_FAIL:-}" ]; then exit 1; fi
+exit 0
+"""
+
+_STUB_SLEEP = """#!/usr/bin/env bash
+exit 0
+"""
+
+# PATH must be prepended in the shell's own native form: a drive-letter entry is
+# opened fine but skipped during command lookup, which would silently leave the
+# real `curl` in place and turn a test into a live provider request.
+_DRIVER = """#!/usr/bin/env bash
+set -uo pipefail
+chmod +x "${STUB_DIR}/curl" "${STUB_DIR}/npx" "${STUB_DIR}/sleep"
+STUB_NATIVE="$(cd "${STUB_DIR}" && pwd)"
+export PATH="${STUB_NATIVE}:${PATH}"
+for stubbed in curl npx sleep; do
+  resolved="$(command -v "${stubbed}" || true)"
+  if [ "${resolved}" != "${STUB_NATIVE}/${stubbed}" ]; then
+    printf 'HARNESS_ABORT=%s=%s\\n' "${stubbed}" "${resolved}"
+    exit 8
+  fi
+done
+if [ -n "${STEP_CWD:-}" ]; then
+  cd "${STEP_CWD}" || exit 9
+fi
+bash "${STEP_SCRIPT}"
+printf 'STEP_EXIT=%s\\n' "$?"
+"""
+
+
+def _bash() -> str:
+    # CI (ubuntu) always has /bin/bash. Locally on Windows, resolve Git Bash
+    # explicitly because subprocess does not go through the shell's PATH.
+    bash = shutil.which("bash")
+    if bash is not None:
+        return bash
+    git = shutil.which("git")
+    if git is not None:
+        candidate = Path(git).resolve().parents[2] / "bin" / "bash.exe"
+        if candidate.exists():
+            return str(candidate)
+    raise AssertionError("bash not found; these contracts execute the real bash step")
+
+
+def _native(path) -> str:
+    """A path form both MSYS bash and a Windows interpreter can open."""
+    return str(path).replace("\\", "/")
+
+
+def _rollback_step() -> dict:
+    data = yaml.safe_load(_workflow_text())
+    steps = data["jobs"]["rollback-production-engine"]["steps"]
+    run_steps = [s for s in steps if "run" in s]
+    assert len(run_steps) == 1, "the rollback branch is one bounded step by contract"
+    return run_steps[0]
+
+
+def _rollback_step_body() -> str:
+    return _rollback_step()["run"]
+
+
+def _served(version_id: str, percentage: int = 100) -> dict:
+    return {"version_id": version_id, "percentage": percentage}
+
+
+def _deployments_body(versions: list) -> str:
+    """The documented Cloudflare deployments envelope the real guard consumes."""
+    return json.dumps(
+        {
+            "success": True,
+            "errors": [],
+            "messages": [],
+            "result": {
+                "deployments": [
+                    {
+                        "id": "d1",
+                        "source": "wrangler",
+                        "strategy": "percentage",
+                        "versions": versions,
+                    }
+                ]
+            },
+        }
+    )
+
+
+class _RollbackRun:
+    def __init__(self, result: subprocess.CompletedProcess, npx_argv) -> None:
+        self.output = (result.stdout or "") + (result.stderr or "")
+        if "HARNESS_ABORT=" in self.output:
+            raise AssertionError(f"stub transport did not resolve: {self.output}")
+        marker = re.search(r"STEP_EXIT=(\d+)", self.output)
+        assert marker, f"the step never reported an exit code: {self.output[-400:]}"
+        assert "The requested URL returned error" not in self.output, (
+            "a real HTTP response was observed; this step must only ever reach the stub"
+        )
+        self.exit_code = int(marker.group(1))
+        self.npx_argv = npx_argv
+
+    @property
+    def mutated(self) -> bool:
+        return self.npx_argv is not None
+
+    def token(self, name: str) -> str:
+        match = re.search(rf"^{name}=(.*)$", self.output, re.MULTILINE)
+        assert match, f"{name} missing from {self.output}"
+        return match.group(1)
+
+
+def _run_rollback_step(
+    tmp_path,
+    *,
+    bodies: dict,
+    target: str = TARGET_VERSION,
+    from_cwd=None,
+    **flags,
+) -> _RollbackRun:
+    root = tmp_path / "lane"
+    stub = root / "bin"
+    runner_temp = root / "runner-temp"
+    stub.mkdir(parents=True, exist_ok=True)
+    runner_temp.mkdir(parents=True, exist_ok=True)
+    for name, body in (("curl", _STUB_CURL), ("npx", _STUB_NPX), ("sleep", _STUB_SLEEP)):
+        (stub / name).write_text(body, encoding="utf-8", newline="\n")
+    step_script = root / "step.sh"
+    step_script.write_text(_rollback_step_body(), encoding="utf-8", newline="\n")
+    driver = root / "driver.sh"
+    driver.write_text(_DRIVER, encoding="utf-8", newline="\n")
+
+    env = {
+        **os.environ,
+        "STUB_DIR": _native(stub),
+        "RUNNER_TEMP": _native(runner_temp),
+        "STEP_SCRIPT": _native(step_script),
+        "GITHUB_WORKSPACE": _native(ROOT),
+        "ROLLBACK_TARGET": target,
+        "CLOUDFLARE_API_TOKEN": "stub-token-must-not-be-echoed",
+        "CLOUDFLARE_ACCOUNT_ID": "stub-account-must-not-be-echoed",
+    }
+    if from_cwd is not None:
+        env["STEP_CWD"] = _native(from_cwd)
+    for index, body in bodies.items():
+        env[f"BODY_{index}"] = body
+    env["BODY_DEFAULT"] = bodies.get("default", bodies.get(1, ""))
+    for flag in ("curl_fail", "npx_fail"):
+        if flags.get(flag):
+            env[flag.upper()] = "1"
+
+    result = subprocess.run(
+        [_bash(), _native(driver)],
+        cwd=_native(ROOT),
+        env=env,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    argv_file = runner_temp / "npx-argv.txt"
+    return _RollbackRun(
+        result,
+        argv_file.read_text(encoding="utf-8") if argv_file.exists() else None,
+    )
+
+
+def test_rollback_step_does_not_declare_a_contradicting_working_directory() -> None:
+    """The defect's shape, pinned so it cannot come back silently."""
+    step = _rollback_step()
+    assert "working-directory" not in step, (
+        "a step-level working-directory contradicts the body's own cd pair and "
+        "makes .github/scripts/... unresolvable (#3737)"
+    )
+    body = step["run"]
+    assert "cd apps/padiem-ai-engine" in body
+    assert 'cd "$GITHUB_WORKSPACE"' in body
+    assert ".github/scripts/b54_engine_served_version_guard.py" in body
+
+
+def test_rollback_step_passes_and_names_the_explicit_target(tmp_path) -> None:
+    out = _run_rollback_step(
+        tmp_path,
+        bodies={
+            1: _deployments_body([_served(PRE_VERSION)]),
+            "default": _deployments_body([_served(TARGET_VERSION)]),
+        },
+    )
+    assert out.exit_code == 0, out.output
+    assert out.token("ROLLBACK_TARGET_VERSION_ID") == TARGET_VERSION
+    assert out.token("PRE_ROLLBACK_SERVED_VERSION_ID") == PRE_VERSION
+    assert out.token("POST_ROLLBACK_SERVED_VERSION_ID") == TARGET_VERSION
+    assert out.token("POST_ROLLBACK_CONVERGENCE_READS") == "1"
+    assert out.token("MUTATION_EVIDENCE_REASON") == "ROLLBACK_TARGET_OBSERVED"
+    assert "B54_ENGINE_PRODUCTION_ROLLBACK=PASS" in out.output
+    assert "ROLLBACK_COMMAND_EXIT_ZERO_AS_FINAL_PASS=NO" in out.output
+    assert f"rollback {TARGET_VERSION}" in out.npx_argv
+    assert "stub-token-must-not-be-echoed" not in out.output
+
+
+def test_rollback_step_accepts_a_canonical_leading_hyphen_target(tmp_path) -> None:
+    """The whole step, not just the predicate: a legal id must survive to Wrangler."""
+    target = "-safe-version"
+    out = _run_rollback_step(
+        tmp_path,
+        bodies={
+            1: _deployments_body([_served(PRE_VERSION)]),
+            "default": _deployments_body([_served(target)]),
+        },
+        target=target,
+    )
+    assert out.exit_code == 0, out.output
+    assert "B54_ENGINE_VERSION_ID_VALIDATION=PASS" in out.output
+    assert out.token("ROLLBACK_TARGET_VERSION_ID") == target
+    assert out.token("POST_ROLLBACK_SERVED_VERSION_ID") == target
+    assert f"rollback {target}" in out.npx_argv
+
+
+def test_rollback_step_accepts_a_canonical_leading_hyphen_pre_version(tmp_path) -> None:
+    pre = "-pre-version"
+    out = _run_rollback_step(
+        tmp_path,
+        bodies={
+            1: _deployments_body([_served(pre)]),
+            "default": _deployments_body([_served(TARGET_VERSION)]),
+        },
+    )
+    assert out.exit_code == 0, out.output
+    assert out.token("PRE_ROLLBACK_SERVED_VERSION_ID") == pre
+    assert out.token("POST_ROLLBACK_SERVED_VERSION_ID") == TARGET_VERSION
+
+
+def test_rollback_step_fails_closed_when_a_different_version_is_serving(tmp_path) -> None:
+    out = _run_rollback_step(
+        tmp_path,
+        bodies={
+            1: _deployments_body([_served(PRE_VERSION)]),
+            "default": _deployments_body([_served(WRONG_VERSION)]),
+        },
+    )
+    assert out.exit_code != 0
+    assert "B54_ENGINE_PRODUCTION_ROLLBACK=PASS" not in out.output
+    assert "POST_ROLLBACK_SERVED_EQUALS_TARGET=FAIL" in out.output
+    assert out.token("POST_ROLLBACK_CONVERGENCE_READS") == "30"
+    assert out.mutated is True
+
+
+def test_rollback_step_refuses_an_unnamed_target_without_mutating(tmp_path) -> None:
+    out = _run_rollback_step(tmp_path, bodies={}, target="")
+    assert out.exit_code != 0
+    assert out.mutated is False
+    assert "ROLLBACK_TARGET_EXPLICIT=NO" in out.output
+    assert "REASON=rollback_version_id is required" in out.output
+
+
+def test_rollback_step_refuses_a_hostile_target_and_never_echoes_it(tmp_path) -> None:
+    out = _run_rollback_step(
+        tmp_path,
+        bodies={1: _deployments_body([_served(PRE_VERSION)])},
+        target="bad version;echo stub-token",
+    )
+    assert out.exit_code != 0
+    assert out.mutated is False
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in out.output
+    assert "bad version" not in out.output
+
+
+def test_rollback_step_body_cannot_resolve_adapters_from_the_worker_directory(tmp_path) -> None:
+    """The #3737 pre-fix failure, reproduced rather than described.
+
+    Running the same body from apps/padiem-ai-engine is exactly what the removed
+    step-level `working-directory` did: the adapter path does not exist there, so
+    the step aborts before any mutation and the rollback can never run.
+    """
+    assert not (ENGINE_WORKER_DIR / ".github").exists()
+    out = _run_rollback_step(
+        tmp_path,
+        bodies={
+            1: _deployments_body([_served(PRE_VERSION)]),
+            "default": _deployments_body([_served(TARGET_VERSION)]),
+        },
+        from_cwd=ENGINE_WORKER_DIR,
+    )
+    assert out.exit_code != 0
+    assert out.mutated is False, "the broken cwd must not reach a mutating command"
+    # CPython names the path it could not open in its own words, so the check is
+    # on the interpreter's message plus the adapter's filename, not on a
+    # separator-specific spelling of the path.
+    assert "can't open file" in out.output or "No such file" in out.output
+    assert "b54_engine_served_version_guard.py" in out.output
+    assert "B54_ENGINE_PRODUCTION_ROLLBACK=PASS" not in out.output
+
+
+# #3766 (parent #3748): the two Engine CODE_DEPLOY guard calls must pass a
+# canonical served-version id as one argparse token, including leading '-'.
+# The rollback arm has its own completed =form contract (#3737).
+
+
+def _3766_assert_deploy_guard_argv(run: str) -> None:
+    assert run.count("b54_engine_served_version_guard.py verify") == 1
+    assert '--active-version="${active_version}"' in run
+    assert '--active-version "${active_version}"' not in run
+
+
+def test_3766_pre_and_post_deploy_guards_preserve_canonical_argv_parity() -> None:
+    wf = yaml.safe_load(_workflow_text())
+    steps = wf["jobs"]["deploy-production-engine"]["steps"]
+    for name in ("Pre-deploy served-version secret guard", "Post-deploy served-version secret guard"):
+        step = next(step for step in steps if step.get("name") == name)
+        _3766_assert_deploy_guard_argv(step["run"])
+
+
+def test_3766_reintroducing_space_form_breaks_both_guard_contracts() -> None:
+    wf = yaml.safe_load(_workflow_text())
+    steps = wf["jobs"]["deploy-production-engine"]["steps"]
+    for name in ("Pre-deploy served-version secret guard", "Post-deploy served-version secret guard"):
+        run = next(step["run"] for step in steps if step.get("name") == name)
+        broken = run.replace('--active-version="${active_version}"', '--active-version "${active_version}"')
+        assert broken != run
+        with pytest.raises(AssertionError):
+            _3766_assert_deploy_guard_argv(broken)
+
+
+def test_3766_real_guard_accepts_leading_hyphen_served_version_with_drive_bindings() -> None:
+    helper = _load_helper()
+    version_id = "-canonical-safe-v1"
+    payload = _version_detail(_drive_runtime_bindings(), version_id=version_id)
+    result, stdout = _invoke(
+        helper,
+        lambda p: [
+            "verify", "--version-settings", p,
+            f"--active-version={version_id}", "--require-drive-runtime-bindings",
+        ],
+        payload,
+    )
+    assert result == 0, stdout
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=PASS" in stdout
+    assert "DRIVE_RUNTIME_BINDINGS_VALIDATED=YES" in stdout
+    assert SENTINEL not in stdout
+
+    # The parser accepted the id, but the canonical guard must still refuse a
+    # version-detail identity mismatch; no false success or fallback.
+    wrong, evidence = _invoke(
+        helper,
+        lambda p: [
+            "verify", "--version-settings", p,
+            "--active-version=-different-safe-v1", "--require-drive-runtime-bindings",
+        ],
+        payload,
+    )
+    assert wrong == 1
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in evidence
+    assert "B54_ENGINE_SERVED_VERSION_GUARD=PASS" not in evidence
+    assert SENTINEL not in evidence

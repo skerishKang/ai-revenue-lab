@@ -21,6 +21,7 @@ from starlette.testclient import TestClient
 
 import app
 from app.app_factory import create_app
+from app.b66_certified_preview import B66CertifiedPreviewStore, CGI_PREVIEW_OBJECT_KEY
 from app.auth import SESSION_COOKIE, create_session_token
 from app.b66_certified_quote_bundle import (
     BUNDLE_SCHEMA, MAX_BUNDLE_ZIP_BYTES,
@@ -438,3 +439,76 @@ def test_factory_reuses_r2_for_read_only_bundle_store():
     assert isinstance(store, B66CertifiedQuoteBundleStore)
     assert store.r2_bucket is r2
     assert not hasattr(store, "put_bundle")
+
+class _PreviewService:
+    def __init__(self, body=b"\x89PNG\r\n\x1a\nsynthetic-preview"):
+        self.body = body
+        self.calls = []
+
+    async def get_preview(self, **kwargs):
+        self.calls.append(kwargs)
+        return self.body
+
+
+def test_preview_route_requires_auth_and_exact_owner_skill(renderer):
+    skills = _Skills()
+    preview = _PreviewService()
+    anonymous = _client(
+        skills=skills, signed_in=False, b66_certified_preview_store=preview
+    )
+    response = anonymous.get(
+        "/api/b66/quote/preview-base", params={"saved_skill_id": SAVED_ID}
+    )
+    assert response.status_code == 401
+    assert preview.calls == []
+
+    other = _client(
+        skills=skills, user=USER_B, b66_certified_preview_store=preview
+    )
+    response = other.get(
+        "/api/b66/quote/preview-base", params={"saved_skill_id": SAVED_ID}
+    )
+    assert response.status_code == 404
+    assert preview.calls == []
+
+
+def test_preview_route_streams_only_verified_private_png(renderer):
+    preview = _PreviewService()
+    client = _client(
+        skills=_Skills(), b66_certified_preview_store=preview
+    )
+    response = client.get(
+        "/api/b66/quote/preview-base", params={"saved_skill_id": SAVED_ID}
+    )
+    assert response.status_code == 200
+    assert response.content.startswith(b"\x89PNG\r\n\x1a\n")
+    assert response.headers["content-type"] == "image/png"
+    assert response.headers["cache-control"].startswith("private, no-store")
+    assert preview.calls == [{
+        "skill_fingerprint": SKILL_HASH,
+        "profile_fingerprint": PROFILE_HASH,
+    }]
+
+
+@pytest.mark.asyncio
+async def test_preview_store_is_exact_fingerprint_and_hash_bound(monkeypatch):
+    import app.b66_certified_preview as preview_module
+
+    body = b"\x89PNG\r\n\x1a\nverified-preview"
+    monkeypatch.setattr(
+        preview_module, "CGI_PREVIEW_SHA256", hashlib.sha256(body).hexdigest()
+    )
+    obj = _R2Object(body)
+    r2 = _R2(obj)
+    store = B66CertifiedPreviewStore(r2)
+
+    assert await store.get_preview(
+        skill_fingerprint=preview_module.CGI_SKILL_FINGERPRINT,
+        profile_fingerprint=preview_module.CGI_PROFILE_FINGERPRINT,
+    ) == body
+    assert r2.calls == [CGI_PREVIEW_OBJECT_KEY]
+    assert await store.get_preview(
+        skill_fingerprint="9" * 64,
+        profile_fingerprint=preview_module.CGI_PROFILE_FINGERPRINT,
+    ) is None
+    assert r2.calls == [CGI_PREVIEW_OBJECT_KEY]

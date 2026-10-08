@@ -49,6 +49,27 @@ DEFAULT_P01_TIMEOUT_SECONDS = 20.0
 # lane's contract check. Both the factory and the Engine client reuse this
 # validator, so a subject that bypasses the factory still fails closed.
 _CANONICAL_SUBJECT_RE = re.compile(r"^sub_[0-9a-f]{32}$")
+_EXPLICIT_B14_MODEL_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$")
+
+
+def validate_explicit_b14_model_id(value: object) -> str:
+    """Validate syntax only; the existing B14 catalog owns model availability.
+
+    Explicit choice is per execution, never b14/auto or a product HOLD sentinel.
+    Unknown model IDs fail closed in B14 rather than falling back to another route.
+    """
+    if (
+        not isinstance(value, str)
+        or not _EXPLICIT_B14_MODEL_ID_RE.fullmatch(value)
+        or value == "b14/auto"
+        or value.startswith("padiem-profile/")
+    ):
+        raise P01AdapterError(
+            "invalid_selected_model",
+            "Explicit model ID must identify a single registered B14 model.",
+            dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+        )
+    return value
 
 
 def validate_canonical_subject_id(subject_id: object) -> str:
@@ -86,6 +107,11 @@ P01_FAILURE_DETAIL_PROVIDER_UNAVAILABLE = "engine_provider_unavailable"
 P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION = "engine_provider_authorization_failed"
 P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED = "engine_provider_request_rejected"
 P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE = "engine_provider_bad_response"
+# #3566 evidence rule: the Engine's trusted-admission gate fails closed with
+# enumerated entitlement/admission codes; retaining the admission class lets
+# the final canary record ENGINE_ADMISSION_RESULT instead of collapsing it
+# into the downstream bucket.
+P01_FAILURE_DETAIL_ENGINE_ADMISSION = "engine_admission_denied"
 P01_FAILURE_DETAILS = frozenset(
     {
         P01_FAILURE_DETAIL_AUTHENTICATION,
@@ -101,6 +127,7 @@ P01_FAILURE_DETAILS = frozenset(
         P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION,
         P01_FAILURE_DETAIL_PROVIDER_REQUEST_REJECTED,
         P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
+        P01_FAILURE_DETAIL_ENGINE_ADMISSION,
     }
 )
 
@@ -172,6 +199,13 @@ class ClawOrchestrationOutcome:
     pause_id: str | None = None
     pause_expires_at: str | None = None
     trusted_request: dict[str, object] | None = None
+    # #3655 canary evidence: bounded refs threaded from the Engine result's
+    # existing B14 route metadata (selected_route_id / attempt_count /
+    # fallback_used). Server-side only — safe_dict does not project them —
+    # and the chat route grammar-checks each value before any header emit.
+    selected_route_id: str | None = None
+    provider_attempt_count: int | None = None
+    fallback_used: bool | None = None
 
     def safe_dict(self) -> dict[str, object]:
         # pause_id / pause_expires_at / trusted_request stay server-side only;
@@ -243,16 +277,20 @@ def _trusted_p01_request_snapshot(bundle: P01RequestBundle) -> dict[str, object]
     return json_safe
 
 
-def _agent_profile(product_tier: ProductTierLabel = ProductTierLabel.PLUS) -> AgentProfile:
+def _agent_profile(
+    product_tier: ProductTierLabel = ProductTierLabel.PLUS,
+    *,
+    selected_model_id: str | None = None,
+) -> AgentProfile:
     """Return the conservative B54 product profile consumed by P01.
 
     The model route is derived from the canonical Padiem v1 product-tier
     declaration (padiem_control_plane.product_tier_routes), shared with
     B62 Padiem Chat.  B14 remains provider/model execution authority.
 
-    Plus → HOLD_PENDING_SUCCESSOR (#3568: Space Bunny retired, successor not selected)
-    Pro  → HOLD / fail-closed
-    Max  → HOLD / fail-closed
+    Plus without a requested model → HOLD (#3568).
+    Plus with an explicit single B14 model → user-selected MVP lane (#3554);
+    B14 retains registered-provider authorization. Pro/Max stay HOLD.
     """
     try:
         route = active_route_for(product_tier)
@@ -263,7 +301,18 @@ def _agent_profile(product_tier: ProductTierLabel = ProductTierLabel.PLUS) -> Ag
             dispatch_class=P01DispatchClass.NOT_DISPATCHED,
         ) from exc
 
-    if route is None or route.model_id is None:
+    if selected_model_id is not None and product_tier is not ProductTierLabel.PLUS:
+        raise P01AdapterError(
+            "explicit_model_tier_unsupported",
+            "Explicit model choice is currently limited to the Plus MVP lane.",
+            dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+        )
+    chosen_model = (
+        validate_explicit_b14_model_id(selected_model_id)
+        if selected_model_id is not None
+        else (route.model_id if route is not None else None)
+    )
+    if chosen_model is None:
         code = "max_tier_hold" if product_tier is ProductTierLabel.MAX else "tier_hold"
         raise P01AdapterError(
             code,
@@ -290,7 +339,7 @@ def _agent_profile(product_tier: ProductTierLabel = ProductTierLabel.PLUS) -> Ag
         # provider at most once. `max_retries=0` pins B14's same-route retry
         # ceiling to zero; the port refuses any other budget, so widening
         # requires a fresh explicit owner decision.
-        model_policy={"model": route.model_id, "max_retries": 0},
+        model_policy={"model": chosen_model, "max_retries": 0},
         max_steps=1,
         output_contract={},
     )
@@ -348,6 +397,7 @@ class P01RequestFactory:
         lease: SandboxLease | None = None,
         product_tier: ProductTierLabel | None = None,
         subject_id: str | None = None,
+        selected_model_id: str | None = None,
     ) -> P01RequestBundle:
         if run.terminal:
             raise P01AdapterError(
@@ -395,7 +445,10 @@ class P01RequestFactory:
 
         trace_id = _trace_id_for(run)
         execution_request = ExecutionRequest(
-            agent=_agent_profile(product_tier or self._product_tier),
+            agent=_agent_profile(
+                product_tier or self._product_tier,
+                selected_model_id=selected_model_id,
+            ),
             messages=({"role": "user", "content": run.intent.task},),
             session_id=run.run_id,
             additional_system_context=None,
@@ -647,6 +700,7 @@ class P01CoreOrchestrationAdapter:
         lease: SandboxLease | None = None,
         product_tier: ProductTierLabel | None = None,
         subject_id: str | None = None,
+        selected_model_id: str | None = None,
     ) -> ClawOrchestrationOutcome:
         try:
             bundle = self._factory.build(
@@ -654,6 +708,7 @@ class P01CoreOrchestrationAdapter:
                 lease=lease,
                 product_tier=product_tier,
                 subject_id=subject_id,
+                selected_model_id=selected_model_id,
             )
             projector = ClawOrchestrationProjector(
                 run,
@@ -741,6 +796,11 @@ class P01CoreOrchestrationAdapter:
                 p01_run_id=projector.p01_run_id,
                 p01_event_count=projector.event_count,
                 continuation_ref=None,
+                # #3655: thread the existing B14 route metadata through for
+                # the canary evidence seam; None values stay None.
+                selected_route_id=result.execution_result.route.selected_route_id,
+                provider_attempt_count=result.execution_result.route.attempt_count,
+                fallback_used=result.execution_result.route.fallback_used,
             )
         except asyncio.CancelledError:
             self._cancel_run_if_possible(run)

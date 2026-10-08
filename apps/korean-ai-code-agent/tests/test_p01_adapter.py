@@ -51,7 +51,14 @@ PLUS_ROUTE_MODEL = _PLUS_ROUTE.model_id if _PLUS_ROUTE is not None else None
 
 class _ResultFactory:
     @staticmethod
-    def result(request, kinds, *, answer: str = "완료 답변", messages: dict | None = None):
+    def result(
+        request,
+        kinds,
+        *,
+        answer: str = "완료 답변",
+        messages: dict | None = None,
+        route: B14RouteMetadata | None = None,
+    ):
         p01_run_id = "orch_test_001"
         events = []
         for sequence, kind in enumerate(kinds, start=1):
@@ -78,7 +85,7 @@ class _ResultFactory:
             terminal_status = RunStatus.FAILED
         execution_result = ExecutionResult(
             answer=answer,
-            route=B14RouteMetadata(),
+            route=route or B14RouteMetadata(),
             metadata=RunMetadata(
                 trace_id=request.context.trace_id,
                 app_id=request.app_id,
@@ -111,12 +118,14 @@ class _FakeRunner:
         messages: dict | None = None,
         continuation_ref: str | None = None,
         force_pause_wire: bool | None = None,
+        route: B14RouteMetadata | None = None,
     ):
         self.kinds = kinds
         self.answer = answer
         self.messages = messages
         self.continuation_ref = continuation_ref
         self.force_pause_wire = force_pause_wire
+        self.route = route
         self.requests = []
 
     async def run(self, request):
@@ -126,6 +135,7 @@ class _FakeRunner:
             self.kinds,
             answer=self.answer,
             messages=self.messages,
+            route=self.route,
         )
         ends_paused = bool(
             self.kinds
@@ -650,3 +660,60 @@ class ClawP01ProfileContractTests(unittest.TestCase):
         with self.assertRaises(P01AdapterError) as caught:
             _agent_profile(ProductTierLabel.MAX)
         self.assertEqual(caught.exception.code, "max_tier_hold")
+
+
+@unittest.skipIf(PLUS_ROUTE_MODEL is None, "P01 execution requires a selected model route")
+class P01RouteEvidenceThreadingTests(unittest.IsolatedAsyncioTestCase):
+    """#3655: the completed outcome threads bounded B14 route refs for the canary.
+
+    The refs ride the outcome server-side only; ``safe_dict`` never projects
+    them, and the chat route grammar-checks each before any header emit.
+    """
+
+    def _local_run(self, run_id: str) -> ClawRun:
+        intent = ClawTaskIntent(
+            task_id=f"task_{run_id}",
+            task="경로 증거를 확인해줘",
+            repository_ref="repo",
+            execution_mode=ExecutionMode.LOCAL,
+        )
+        return ClawRun.create(run_id, intent)
+
+    async def test_completed_outcome_threads_bounded_route_evidence(self) -> None:
+        runner = _FakeRunner(
+            [
+                OrchestrationEventKind.RUN_STARTED,
+                OrchestrationEventKind.CONTEXT_PREPARED,
+                OrchestrationEventKind.RUN_COMPLETED,
+            ],
+            answer="완료",
+            route=B14RouteMetadata(
+                selected_route_id="plus.agnes-3.0-flash.v1",
+                attempt_count=1,
+                fallback_used=False,
+            ),
+        )
+        run = self._local_run("run_route_evidence")
+        outcome = await P01CoreOrchestrationAdapter(runner).execute(run)
+        self.assertEqual(outcome.selected_route_id, "plus.agnes-3.0-flash.v1")
+        self.assertEqual(outcome.provider_attempt_count, 1)
+        self.assertIs(outcome.fallback_used, False)
+        rendered = outcome.safe_dict()
+        self.assertNotIn("selected_route_id", rendered)
+        self.assertNotIn("provider_attempt_count", rendered)
+        self.assertNotIn("fallback_used", rendered)
+
+    async def test_completed_outcome_without_route_metadata_keeps_none(self) -> None:
+        runner = _FakeRunner(
+            [
+                OrchestrationEventKind.RUN_STARTED,
+                OrchestrationEventKind.CONTEXT_PREPARED,
+                OrchestrationEventKind.RUN_COMPLETED,
+            ],
+            answer="완료",
+        )
+        run = self._local_run("run_route_none")
+        outcome = await P01CoreOrchestrationAdapter(runner).execute(run)
+        self.assertIsNone(outcome.selected_route_id)
+        self.assertIsNone(outcome.provider_attempt_count)
+        self.assertIsNone(outcome.fallback_used)

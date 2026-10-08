@@ -13,6 +13,24 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 CLI = ROOT / ".github" / "scripts" / "cloudflare_served_version_cli.py"
 ACTIVE = "11111111-1111-1111-1111-111111111111"
+BAD_ID_SENTINEL = "bad id;echo STUB-CREDENTIAL-SENTINEL"
+
+
+def _load_primitive():
+    """The canonical resolver the adapter delegates to, loaded the way guards do."""
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "cloudflare_served_version",
+        CLI.parent / "cloudflare_served_version.py",
+    )
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+primitive = _load_primitive()
 
 
 def _run(tmp_path: Path, payload: object) -> subprocess.CompletedProcess[str]:
@@ -141,3 +159,119 @@ def test_cli_is_thin_and_contains_no_network_or_mutation_authority() -> None:
         "CLOUDFLARE_API_TOKEN",
     ):
         assert forbidden not in source
+
+
+# --- validate-version-id (#3704) -------------------------------------------
+#
+# A rollback target is typed by a dispatcher, so it is untrusted input. This
+# subcommand exists so a gate can apply the canonical safe-id contract without
+# either borrowing another lane's branded adapter or inlining its own rule.
+
+
+def _validate(version_id: str) -> subprocess.CompletedProcess[str]:
+    # The `--version-id=<value>` form is the contract under test, not a style
+    # choice: `--version-id <value>` makes argparse read a canonical id that
+    # starts with a hyphen as an option, so it refuses values the canonical
+    # predicate accepts (rc=2 usage error instead of rc=1 version-id).
+    return subprocess.run(
+        [sys.executable, str(CLI), "validate-version-id", f"--version-id={version_id}"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+
+def _validate_space_form(version_id: str) -> subprocess.CompletedProcess[str]:
+    """The form that was removed, kept only to prove it was the defect."""
+    return subprocess.run(
+        [sys.executable, str(CLI), "validate-version-id", "--version-id", version_id],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+
+@pytest.mark.parametrize(
+    "version_id", [ACTIVE, "a", "ver-A", "ver_A.1", "9" * 64, "-safe-version", "-", "--help"]
+)
+def test_validate_version_id_accepts_exactly_the_canonical_charset(version_id: str) -> None:
+    result = _validate(version_id)
+    assert result.returncode == 0
+    assert result.stdout == "VERSION_ID_SAFE=YES\n"
+    assert result.stderr == ""
+
+
+def test_a_leading_hyphen_id_reaches_the_predicate_and_not_argparse() -> None:
+    """Regression: the space-separated form lost accepted values before #3704 fix."""
+    accepted = _validate("-safe-version")
+    assert accepted.returncode == 0, accepted.stderr
+    assert accepted.stdout == "VERSION_ID_SAFE=YES\n"
+    # Same value, old invocation: argparse consumes it as an option and the
+    # canonical contract is never consulted.
+    broken = _validate_space_form("-safe-version")
+    assert broken.returncode != 0
+    assert "VERSION_ID_SAFE=YES" not in broken.stdout
+
+
+@pytest.mark.parametrize(
+    "version_id",
+    [
+        "",
+        "ver A",
+        "9" * 65,
+        BAD_ID_SENTINEL,
+        "../../ETC-PASSWD-SENTINEL",
+        "lead\ttab",
+        # Option-shaped values must be refused by the canonical predicate, which
+        # answers rc=1 REASON=version-id. An argparse usage error would be rc=2
+        # and would mean the value never reached the contract at all.
+        "-bad id;rm",
+        "--version-id=X",
+        "-x y",
+    ],
+)
+def test_validate_version_id_refuses_with_the_bounded_reason(version_id: str) -> None:
+    result = _validate(version_id)
+    assert result.returncode == 1
+    assert result.stdout == ""
+    assert result.stderr == "VERSION_ID_SAFE=NO\nREASON=version-id\n"
+
+
+def test_validate_version_id_never_echoes_the_candidate() -> None:
+    """The rejected string must not be reflected into CI output (#2752 blocker 3)."""
+    result = _validate(BAD_ID_SENTINEL)
+    assert result.returncode == 1
+    assert BAD_ID_SENTINEL not in result.stdout + result.stderr
+
+
+@pytest.mark.parametrize(
+    "version_id",
+    [
+        ACTIVE,
+        "a",
+        "9" * 64,
+        "",
+        "ver A",
+        "9" * 65,
+        "../x",
+        "id\nMUTATION_CLASS=ROLLBACK",
+        "-safe-version",
+        "-",
+        "--help",
+        "--version-id=X",
+        "-bad id;rm",
+    ],
+)
+def test_validate_version_id_delegates_to_the_canonical_predicate(version_id: str) -> None:
+    """CLI_ACCEPTANCE == is_safe_version_id(), over option-like values included."""
+    assert (_validate(version_id).returncode == 0) is primitive.is_safe_version_id(version_id)
+
+
+def test_validate_version_id_adds_no_second_charset_rule() -> None:
+    source = CLI.read_text(encoding="utf-8")
+    assert "is_safe_version_id" in source
+    for forbidden in ("re.compile", "A-Za-z0-9", "^\\", "{1,64}"):
+        assert forbidden not in source, f"the adapter grew its own charset rule: {forbidden}"
+

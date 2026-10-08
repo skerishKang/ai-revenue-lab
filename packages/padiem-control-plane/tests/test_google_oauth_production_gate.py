@@ -52,6 +52,16 @@ def test_google_oauth_gate_preserves_private_workers_and_local_agent_boundary():
     assert "PRODUCTION_MUTATION=0" in source
 
 
+def test_google_oauth_gate_reuses_canonical_served_version_cli():
+    source = GATE.read_text(encoding="utf-8")
+    trigger_paths = source.split("on:", 1)[1].split("workflow_dispatch:", 1)[0]
+
+    assert ".github/scripts/cloudflare_served_version_cli.py" in trigger_paths
+    assert source.count("cloudflare_served_version_cli.py resolve-active") == 2
+    assert ".result.deployments[0].versions[0].percentage == 100" not in source
+    assert "(.result.deployments[0].versions | length) == 1" not in source
+
+
 def test_google_oauth_gate_never_commits_runtime_google_credentials():
     source = GATE.read_text(encoding="utf-8")
 

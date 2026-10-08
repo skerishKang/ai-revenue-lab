@@ -42,6 +42,7 @@ from kagent.p01_adapter import (
     P01_FAILURE_DETAIL_AUTHORIZATION,
     P01_FAILURE_DETAIL_CONTRACT,
     P01_FAILURE_DETAIL_DOWNSTREAM,
+    P01_FAILURE_DETAIL_ENGINE_ADMISSION,
     P01_FAILURE_DETAIL_PROVIDER_AUTHORIZATION,
     P01_FAILURE_DETAIL_PROVIDER_BAD_RESPONSE,
     P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
@@ -655,6 +656,27 @@ class P01SingleDispatchRetryBudgetTests(unittest.TestCase):
         self.assertEqual(ctx.exception.code, "p01_authority_pinning")
         self.assertEqual(transport.requests, [])
 
+    def test_owner_explicit_models_use_exact_ids_without_auto_fallback(self) -> None:
+        # Non-tier B14 catalog identities are allowed only with explicit
+        # max_retries=0; B14 remains final catalog/provider authority.
+        for model_id in ("agnes-ai/agnes-3.0-flash", "poolside/laguna-s-2.1"):
+            with self.subTest(model_id=model_id):
+                transport = self._run_port({"model": model_id, "max_retries": 0})
+                self.assertEqual(len(transport.requests), 1)
+                payload = json.loads(transport.requests[0]["body"].decode("utf-8"))
+                self.assertEqual(
+                    payload["agent"]["model_policy"],
+                    {"model": model_id, "max_retries": 0},
+                )
+
+    def test_invalid_explicit_or_automatic_choices_are_rejected(self) -> None:
+        for model_id in ("b14/auto", "padiem-profile/plus-hold", "../bad"):
+            with self.subTest(model_id=model_id):
+                self._refused({"model": model_id, "max_retries": 0})
+        # A non-tier route must never bypass authority pinning by omitting the
+        # one-shot budget (the legacy no-retry-key path remains tier-only).
+        self._refused({"model": "agnes-ai/agnes-3.0-flash"})
+
     def test_single_dispatch_budget_is_pinned_on_the_wire(self) -> None:
         transport = self._run_port({"model": "test/model", "max_retries": 0})
         payload = json.loads(transport.requests[0]["body"].decode("utf-8"))
@@ -700,6 +722,24 @@ class EngineProviderFailureDetailTests(unittest.TestCase):
         for code, expected in cases.items():
             with self.subTest(code=code):
                 self.assertEqual(_engine_failure_detail(code), expected)
+
+    def test_engine_admission_denial_is_retained(self) -> None:
+        # #3655: the Engine's enumerated trusted-admission denial codes must
+        # surface as ENGINE_ADMISSION_RESULT=DENIED, not the downstream bucket.
+        for code in (
+            "missing_entitlement",
+            "entitlement_denied",
+            "entitlement_expired",
+            "entitlement_app_mismatch",
+            "entitlement_subject_mismatch",
+            "invalid_admission",
+            "invalid_admission_request",
+        ):
+            with self.subTest(code=code):
+                self.assertEqual(
+                    _engine_failure_detail(code),
+                    P01_FAILURE_DETAIL_ENGINE_ADMISSION,
+                )
 
     def test_engine_boundary_and_unknown_codes_keep_their_buckets(self) -> None:
         self.assertEqual(

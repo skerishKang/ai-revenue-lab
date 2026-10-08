@@ -206,6 +206,8 @@ def test_no_apply_on_pr() -> None:
     # the PR trigger only ever runs the static source-contract job
     pr_paths = trigger.split("pull_request:", 1)[1].split("workflow_dispatch:", 1)[0]
     assert "b54-engine-caller-credential-regeneration-gate.yml" in pr_paths
+    assert "b54_engine_served_version_guard.py" in pr_paths
+    assert "cloudflare_served_version.py" in pr_paths
     assert "test_b54_engine_caller_credential_regeneration_gate.py" in pr_paths
     source_job = _job(text, "source-contract")
     assert "APPLY_EXECUTED=NO" in source_job
@@ -376,6 +378,8 @@ def test_reuse_without_duplication() -> None:
     assert SMOKE_GATE in text
     # the canonical served-version guard script is reused, not re-implemented
     assert text.count("b54_engine_served_version_guard.py") >= 4
+    assert ".result.deployments[0].versions" not in text
+    assert ".result.deployments[0].versions[0].percentage" not in text
     # no inline Cloudflare secret PUT and no wrangler
     lowered = text.lower()
     assert "-x put" not in lowered and "--request put" not in lowered

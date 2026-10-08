@@ -211,6 +211,7 @@
     if (
       !result.response.ok ||
       !row ||
+      row.saved_skill_id !== savedSkillId ||
       !skill ||
       skill.approved !== true ||
       skill.fingerprint !== row.skill_fingerprint
@@ -236,7 +237,7 @@
     /* Skill 이 바뀌면 진행 중이던 견적의 문맥은 새 Skill 로 이어질 수 없다. */
     clearPendingQuote();
     const bridge = window.B66QuoteSkillBridge;
-    if (!bridge || typeof bridge.setServerSkill !== "function" || !bridge.setServerSkill(skill, slotSources)) {
+    if (!bridge || typeof bridge.setServerSkill !== "function" || !bridge.setServerSkill(skill, slotSources, savedSkillId)) {
       clearServerSkill();
       setQuoteStatus("내 견적서 렌더러를 준비하지 못했습니다.", "error");
       return false;
@@ -604,7 +605,13 @@
     return filename;
   }
 
-  async function downloadPdf(renderModel) {
+  function certifiedPreviewBaseUrl(savedSkillId) {
+    const id = String(savedSkillId || "");
+    if (!/^b66skill_[0-9a-f]{32}$/.test(id)) return "";
+    return API + "/b66/quote/preview-base?saved_skill_id=" + encodeURIComponent(id);
+  }
+
+  async function downloadPdf(renderModel, previewModel) {
     const readiness = runtimeReadiness();
     if (!readiness.ready) return pdfFailure(notReadyCode(readiness), interpretErrorText(notReadyCode(readiness)));
     if (state.pendingQuote) return pdfFailure("pending_quote", "진행 중인 견적 내용을 완성한 뒤 PDF로 저장해 주세요.");
@@ -630,6 +637,42 @@
     const body = JSON.stringify({ saved_skill_id: loaded.savedSkillId, render_model: renderModel });
     if (new window.Blob([body]).size > 32 * 1024) {
       return pdfFailure("pdf_request_too_large", "견적 내용이 PDF 양식의 지원 범위를 초과했습니다.");
+    }
+    // Certified CGI only: browser-local PDF first, never silently reroute to the
+    // Cloudflare Worker or Modal when the private base/projection fails.
+    const browserPdf = window.B66BrowserPdf;
+    if (browserPdf && browserPdf.isCgiSkill(loaded.savedSkillId)) {
+      try {
+        const bytes = await browserPdf.makePdf(renderModel, previewModel);
+        if (!state.authenticated || state.loadedSkill !== loaded || selected.value !== loaded.savedSkillId ||
+            state.pendingQuote || loaded.fingerprint !== loaded.skill.fingerprint) {
+          return pdfFailure("pdf_skill_changed");
+        }
+        if (!(bytes instanceof Uint8Array) || bytes.length < 5 || bytes[0] !== 37 ||
+            bytes[1] !== 80 || bytes[2] !== 68 || bytes[3] !== 70 || bytes[4] !== 45) {
+          return pdfFailure("pdf_bytes_invalid");
+        }
+        const filename = pdfFilename(null, renderModel.facts && renderModel.facts.meta &&
+          renderModel.facts.meta.quoteNo);
+        const blobUrl = window.URL.createObjectURL(new window.Blob([bytes], { type: "application/pdf" }));
+        const anchor = document.createElement("a");
+        try {
+          anchor.href = blobUrl;
+          anchor.download = filename;
+          anchor.hidden = true;
+          document.body.appendChild(anchor);
+          anchor.click();
+        } finally {
+          anchor.remove();
+          window.setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+        }
+        return { ok: true, filename };
+      } catch (_) {
+        return pdfFailure("browser_pdf_unavailable", "CGI 브라우저 PDF를 만들지 못했습니다. 다시 확인해 주세요.");
+      }
+    }
+    if (!browserPdf && loaded.savedSkillId === "b66skill_2eb55d822407f626b7a75c8c88d32c40") {
+      return pdfFailure("browser_pdf_unavailable");
     }
     try {
       const response = await window.fetch(API + "/b66/quote/pdf", {
@@ -675,6 +718,7 @@
     interpret: interpretRequest,
     buildFromFacts: buildQuoteFromFacts,
     downloadPdf,
+    certifiedPreviewBaseUrl,
     pendingQuote: () => pendingQuote(),
     clearPending: () => { clearPendingQuote(); },
     getCompanyProfile: () => (state.companyProfile ? JSON.parse(JSON.stringify(state.companyProfile)) : null),

@@ -48,6 +48,8 @@ globalThis.fetch = async (target, init = {}) => {
           status: 502,
           headers: {
             "X-B66-Upstream-Class": "upstream_timeout",
+            "X-B66-Interpret-Failure-Stage": "interpreter_exception",
+            "X-B66-Interpret-Exception-Family": "type_error",
             "X-Internal-Debug": "must-not-relay"
           }
         }
@@ -67,6 +69,12 @@ globalThis.fetch = async (target, init = {}) => {
     );
   }
   if (url.endsWith("/api/b66/assets/" + ASSET_ID)) {
+    return new Response(new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]), {
+      status: 200,
+      headers: { "Content-Type": "image/png", "Cache-Control": "private, no-store" }
+    });
+  }
+  if (url.includes("/api/b66/quote/preview-base?saved_skill_id=")) {
     return new Response(new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]), {
       status: 200,
       headers: { "Content-Type": "image/png", "Cache-Control": "private, no-store" }
@@ -149,7 +157,8 @@ try {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Cookie": "padiem_session=opaque-test-token"
+        "Cookie": "padiem_session=opaque-test-token",
+        "Origin": "https://quick-quote-kr.pages.dev"
       },
       body: JSON.stringify({
         saved_skill_id: "b66skill_" + "c".repeat(32),
@@ -165,6 +174,7 @@ try {
   assert.equal(rejectedQuote.headers.get("x-internal-debug"), null);
   assert.equal(calls.length, 4);
   assert.equal(calls[3].url, "https://chat.padiem.net/api/b66/quote/interpret");
+  assert.equal(calls[3].headers.get("origin"), "https://chat.padiem.net");
 
   const privateAsset = await worker.fetch(
     new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/assets/" + ASSET_ID, {
@@ -178,12 +188,31 @@ try {
   assert.equal(calls[4].url, "https://chat.padiem.net/api/b66/assets/" + ASSET_ID);
   assert.equal(calls[3].headers.get("cookie"), "padiem_session=opaque-test-token");
 
+  const previewSkillId = "b66skill_" + "c".repeat(32);
+  const previewBase = await worker.fetch(
+    new Request(
+      "https://quick-quote-kr.pages.dev/api/padiem/b66/quote/preview-base?saved_skill_id=" + previewSkillId,
+      { headers: { "Cookie": "padiem_session=opaque-test-token" } }
+    ),
+    env
+  );
+  assert.equal(previewBase.status, 200);
+  assert.equal(previewBase.headers.get("content-type"), "image/png");
+  assert.equal(calls.length, 6);
+  assert.equal(
+    calls[5].url,
+    "https://chat.padiem.net/api/b66/quote/preview-base?saved_skill_id=" + previewSkillId
+  );
+  assert.equal(calls[5].headers.get("accept"), "image/png,application/json");
+  assert.equal(calls[5].headers.get("cookie"), "padiem_session=opaque-test-token");
+
   const upstreamFailure = await worker.fetch(
     new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/quote/interpret", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Cookie": "padiem_session=opaque-test-token"
+        "Cookie": "padiem_session=opaque-test-token",
+        "Origin": "https://quick-quote-kr.pages.dev"
       },
       body: JSON.stringify({
         saved_skill_id: "b66skill_" + "c".repeat(32),
@@ -194,9 +223,11 @@ try {
   );
   assert.equal(upstreamFailure.status, 502);
   assert.equal(upstreamFailure.headers.get("x-b66-upstream-class"), "upstream_timeout");
+  assert.equal(upstreamFailure.headers.get("x-b66-interpret-failure-stage"), "interpreter_exception");
+  assert.equal(upstreamFailure.headers.get("x-b66-interpret-exception-family"), "type_error");
   assert.equal(upstreamFailure.headers.get("x-internal-debug"), null);
-  assert.equal(calls.length, 6);
-  assert.equal(calls[5].url, "https://chat.padiem.net/api/b66/quote/interpret");
+  assert.equal(calls.length, 7);
+  assert.equal(calls[6].url, "https://chat.padiem.net/api/b66/quote/interpret");
 
   const countBeforeDeny = calls.length;
   for (const request of [
@@ -267,7 +298,7 @@ try {
 
   const pdf = await worker.fetch(new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/quote/pdf", {
     method: "POST",
-    headers: { "Content-Type": "application/json", "Cookie": "padiem_session=pdf-test", "Authorization": "Bearer forged" },
+    headers: { "Content-Type": "application/json", "Cookie": "padiem_session=pdf-test", "Origin": "https://quick-quote-kr.pages.dev", "Authorization": "Bearer forged" },
     body: JSON.stringify({ saved_skill_id: "b66skill_" + "c".repeat(32), render_model: { derivedBy: "quote-core" } })
   }), env);
   assert.equal(pdf.status, 200);
@@ -280,7 +311,23 @@ try {
   assert.equal(calls.at(-1).headers.get("cookie"), "padiem_session=pdf-test");
   assert.equal(calls.at(-1).headers.get("authorization"), null);
   assert.equal(calls.at(-1).headers.get("accept"), "application/pdf,application/json");
+  assert.equal(calls.at(-1).headers.get("origin"), "https://chat.padiem.net");
   const pdfCalls = calls.length;
+  const beforeOriginDeny = calls.length;
+  for (const originHeaders of [
+    { "Content-Type": "application/json", "Cookie": "padiem_session=origin-test", "Origin": "https://evil.example" },
+    { "Content-Type": "application/json", "Cookie": "padiem_session=origin-test" }
+  ]) {
+    const deniedOrigin = await worker.fetch(new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/quote/pdf", {
+      method: "POST",
+      headers: originHeaders,
+      body: JSON.stringify({ saved_skill_id: "b66skill_" + "c".repeat(32), render_model: { derivedBy: "quote-core" } })
+    }), env);
+    assert.equal(deniedOrigin.status, 403);
+    assert.equal((await deniedOrigin.json()).error.code, "padiem_origin_rejected");
+  }
+  assert.equal(calls.length, beforeOriginDeny);
+
   const oversizedPdf = await worker.fetch(new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/quote/pdf", {
     method: "POST", headers: { "Content-Type": "application/json" }, body: "x".repeat(33 * 1024)
   }), env);

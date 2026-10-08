@@ -22,8 +22,44 @@
   const SkillStore = window.SavedQuoteSkillStore || null;
   const SkillUi = window.SavedQuoteSkillUi || null;
   const AccountScope = window.QuoteAccountScope || null;
+  const ServerHistory = window.B66QuoteHistoryServer || null;
   const TAX_REVIEW_STORAGE_KEY = "quoteBeta.taxReview.v1";
   const TAX_REVIEW_SCHEMA_VERSION = 1;
+
+  /* ── 최근 견적 server authority(#3405 Slice B) ──
+     signed-in 동안 최근 견적 authority 는 서버다. browser local
+     quoteBeta.history.v1 은 offline convenience cache 로만 유지되며,
+     서버 실패가 localStorage 로 조용히 대체되는 일은 없다.
+
+     계정 사실(sign-in)과 client 가용성은 분리한다:
+       SIGNED_IN + CLIENT_AVAILABLE -> server
+       SIGNED_IN + CLIENT_MISSING   -> bounded ERROR (local fallback 금지)
+       SIGNED_OUT                   -> bounded local/offline history
+     client 부재로 signed-in authority 가 local 로 내려가면 안 된다. */
+  const HISTORY_CLIENT_UNAVAILABLE = "history_client_unavailable";
+  let serverHistorySignedIn = false;
+  let serverSaveInFlight = false;
+  let serverQuoteNoCandidates = [];
+
+  /* canonical #3480 projection 이 확정한 계정 사실만 사용한다 */
+  function serverHistoryRequired() {
+    return serverHistorySignedIn === true;
+  }
+
+  /* server client 모듈과 그 계약 함수의 존재 여부만 본다 */
+  function serverHistoryAvailable() {
+    return Boolean(ServerHistory && AccountScope &&
+      typeof ServerHistory.listQuotes === "function" &&
+      typeof ServerHistory.getQuote === "function" &&
+      typeof ServerHistory.saveQuote === "function" &&
+      typeof ServerHistory.deleteQuote === "function" &&
+      typeof ServerHistory.draftToHistorySnapshot === "function" &&
+      typeof ServerHistory.historySnapshotToDraft === "function");
+  }
+
+  function serverHistoryActive() {
+    return serverHistoryRequired() && serverHistoryAvailable();
+  }
 
   /* ── 계정 경계(#3480) ──
      브라우저 로컬 private 상태는 canonical 인증 projection 이 소유권을 확정한 뒤에만
@@ -240,6 +276,12 @@
     const envelope = loadHistoryEnvelope();
     const candidates = envelope ? envelope.entries.map((entry) => entry.draft) : [];
     if (History.isMeaningfulDraft(draft)) candidates.push(draft);
+    /* server history 의 견적번호도 오늘 번호 중복 방지 후보로 반영한다.
+       후보는 반드시 QuoteCore 가 정규화할 수 있는 형태여야 한다
+       (allocateQuoteNo 는 후보마다 Core.normalizeDraft 를 거치므로
+       schemaVersion 없는 최소형은 조용히 버려진다). 그래서 서버 스냅샷
+       경계(historySnapshotToDraft)를 거쳐 오늘 번호만 후보로 남긴다. */
+    serverQuoteNoCandidates.forEach((candidate) => candidates.push(candidate));
     return candidates;
   }
 
@@ -282,8 +324,52 @@
     });
   }
 
-  function saveCurrentToHistory() {
+  async function saveCurrentToHistory() {
     if (!History) return { ok: false, error: "history_unavailable" };
+    if (serverHistoryRequired()) {
+      if (!serverHistoryAvailable()) {
+        /* signed-in + client 부재: server authority 실패다. local 쓰기 0. */
+        return { ok: false, error: HISTORY_CLIENT_UNAVAILABLE, authority: "server" };
+      }
+      /* signed-in: 서버가 authority 다. 서버 실패 시 local 쓰기로 대체하지
+         않는다(NO_SILENT_LOCAL_FALLBACK). 성공 시에만 local cache 를 갱신한다. */
+      if (serverSaveInFlight) return { ok: false, error: "save_in_progress", authority: "server" };
+      serverSaveInFlight = true;
+      try {
+        const snapshot = ServerHistory.draftToHistorySnapshot(draft);
+        if (!snapshot) return { ok: false, error: "history_unavailable", authority: "server" };
+        const quoteNo = String(draft.meta.quoteNo || "").trim();
+        const existing = await ServerHistory.listQuotes();
+        const existingIds = existing.ok
+          ? existing.quotes
+              .filter((row) => row.quoteNo && quoteNo && row.quoteNo === quoteNo)
+              .map((row) => row.quoteHistoryId)
+              .slice(0, 5)
+          : [];
+        const saved = await ServerHistory.saveQuote(snapshot);
+        if (!saved.ok) {
+          return { ok: false, error: saved.code || "history_save_failed", authority: "server" };
+        }
+        /* 같은 견적번호의 이전 기록은 최신 저장으로 대체한다(local upsert 계약과
+           동일한 의미). POST 가 먼저 성공한 뒤라서 실패해도 중복만 남는다. */
+        let replaced = existingIds.length > 0;
+        for (const oldId of existingIds) {
+          if (oldId === saved.quote.quoteHistoryId) continue;
+          await ServerHistory.deleteQuote(oldId);
+        }
+        const envelope = History.upsertEntryByQuoteNo(loadHistoryEnvelope(), draft, {
+          id: saved.quote.quoteHistoryId
+        });
+        writePrivateItem(History.HISTORY_STORAGE_KEY, JSON.stringify(envelope));
+        toast(replaced
+          ? "같은 견적번호의 최근 견적을 최신 내용으로 업데이트했습니다."
+          : "이 견적을 최근 견적에 저장했습니다.");
+        window.dispatchEvent(new CustomEvent("b66:history-changed"));
+        return { ok: true, authority: "server", updated: replaced, envelope: cloneDraft(envelope) };
+      } finally {
+        serverSaveInFlight = false;
+      }
+    }
     const before = loadHistoryEnvelope();
     const quoteNo = String(draft.meta.quoteNo || "").trim();
     const existed = Boolean(before && before.entries.some((entry) =>
@@ -298,6 +384,73 @@
       : "이 견적을 최근 견적에 저장했습니다.");
     window.dispatchEvent(new CustomEvent("b66:history-changed"));
     return { ok: true, updated: existed, envelope: cloneDraft(envelope) };
+  }
+
+  /* signed-in 최근 견적 목록: 서버 authority 만 돌려준다. 서버 실패는
+     ok=false 로 bounded error state 를 유도할 뿐, local envelope 을
+     대신 돌려주지 않는다. */
+  async function listRecentQuotes() {
+    if (!History) return { ok: false, authority: "local", error: "history_unavailable" };
+    if (!serverHistoryRequired()) {
+      return { ok: true, authority: "local", envelope: loadHistoryEnvelope() };
+    }
+    if (!serverHistoryAvailable()) {
+      /* signed-in 인데 server client 가 없다: local 로 내려가지 않고 bounded error */
+      serverQuoteNoCandidates = [];
+      return { ok: false, authority: "server", error: HISTORY_CLIENT_UNAVAILABLE };
+    }
+    const result = await ServerHistory.listQuotes();
+    if (!result.ok) {
+      serverQuoteNoCandidates = [];
+      return { ok: false, authority: "server", error: result.code || "history_read_failed" };
+    }
+    serverQuoteNoCandidates = result.quotes
+      .filter((row) => row.quoteNo)
+      .map((row) => ServerHistory.historySnapshotToDraft({
+        schema: ServerHistory.SNAPSHOT_SCHEMA,
+        quotationNo: row.quoteNo,
+        issueDate: row.issueDate
+      }))
+      .filter(Boolean);
+    const hydrated = await Promise.all(result.quotes.map(async (row) => {
+      const detail = await ServerHistory.getQuote(row.quoteHistoryId);
+      if (!detail.ok) return null;
+      const restored = ServerHistory.historySnapshotToDraft(detail.quote.snapshot);
+      if (!restored) return null;
+      return {
+        id: row.quoteHistoryId,
+        savedAt: row.updatedAt || row.createdAt,
+        draft: restored,
+        totalsAuthority: detail.quote.totalsAuthority,
+        quoteCoreRecalculationRequired: detail.quote.quoteCoreRecalculationRequired
+      };
+    }));
+    const entries = hydrated.filter(Boolean);
+    const envelope = History.normalizeEnvelope({
+      schemaVersion: History.HISTORY_SCHEMA_VERSION,
+      entries
+    });
+    return { ok: true, authority: "server", envelope, requested: result.quotes.length };
+  }
+
+  /* signed-in 삭제는 서버 성공 후에만 UI 에 반영된다(NO_OPTIMISTIC_DELETE).
+     실패하면 행을 그대로 유지하고 bounded error 로 돌아온다. */
+  async function deleteRecentQuote(quoteHistoryId) {
+    if (!serverHistoryRequired()) {
+      return { ok: false, authority: "local", error: "history_unavailable" };
+    }
+    if (!serverHistoryAvailable()) {
+      /* signed-in + client 부재: server authority 실패다. local 삭제 0. */
+      return { ok: false, authority: "server", error: HISTORY_CLIENT_UNAVAILABLE };
+    }
+    const result = await ServerHistory.deleteQuote(quoteHistoryId);
+    if (!result.ok) {
+      return { ok: false, authority: "server", error: result.code || "history_delete_failed" };
+    }
+    const envelope = History.deleteEntry(loadHistoryEnvelope(), quoteHistoryId);
+    writePrivateItem(History.HISTORY_STORAGE_KEY, JSON.stringify(envelope));
+    window.dispatchEvent(new CustomEvent("b66:history-changed"));
+    return { ok: true, authority: "server", deleted: quoteHistoryId };
   }
 
   /* ── 공통 유틸 ── */
@@ -684,7 +837,7 @@
   /* ── 내 견적서: 선택된 승인 Skill 의 내부 profile 이 미리보기 layout authority.
      template store/selection 을 건드리지 않으며, 실패 시 내장으로 fallback. ── */
 
-  const skillUiState = { activeSkillId: null, serverSkill: null, serverSlotSources: {} };
+  const skillUiState = { activeSkillId: null, serverSkill: null, serverSavedSkillId: null, serverSlotSources: {} };
   let skillUiApi = null;
 
   function activeSkillProfile() {
@@ -693,7 +846,7 @@
       let skill = null;
       if (
         skillUiState.serverSkill &&
-        skillUiState.serverSkill.id === skillUiState.activeSkillId
+        skillUiState.serverSavedSkillId === skillUiState.activeSkillId
       ) {
         skill = SavedSkill.normalizeSkill(skillUiState.serverSkill);
       } else if (SkillStore && typeof localStorage !== "undefined") {
@@ -708,7 +861,18 @@
   }
 
   function applySkillToForm(skill) {
+    // The authenticated CGI Saved Quote Skill is solely owned by the server
+    // bridge. A local skill section refresh/selection must not clear or replace
+    // it during Guided/free-form drafting. The explicit account lifecycle
+    // clearServerSkill() remains the only way to remove its authority.
+    if (skillUiState.serverSkill &&
+        skillUiState.serverSavedSkillId === skillUiState.activeSkillId &&
+        window.B66BrowserPdf &&
+        window.B66BrowserPdf.isCgiSkill(skillUiState.activeSkillId)) {
+      return true;
+    }
     skillUiState.serverSkill = null;
+    skillUiState.serverSavedSkillId = null;
     skillUiState.serverSlotSources = {};
     if (!skill || !SkillUi) {
       skillUiState.activeSkillId = null;
@@ -732,17 +896,24 @@
     return true;
   }
 
-  function setServerSkill(skill, slotSources) {
+  function setServerSkill(skill, slotSources, savedSkillId) {
     if (!SavedSkill || !Template) return false;
     const normalized = SavedSkill.normalizeSkill(skill);
     if (!normalized || normalized.approved !== true) return false;
     const profile = Template.normalizeTemplate(normalized.internalTemplate);
     if (!profile || !Template.isApprovedProfile(profile)) return false;
+    // The authenticated assignment ID (b66skill_...) is distinct from the
+    // semantic skill.id. Do not rewrite the immutable skill or fingerprint.
+    const isCgiAssignment = Boolean(window.B66BrowserPdf &&
+      window.B66BrowserPdf.isCgiSkill(savedSkillId));
+    if (isCgiAssignment && !/^b66skill_[0-9a-f]{32}$/.test(savedSkillId)) return false;
+    const ownerId = isCgiAssignment ? savedSkillId : normalized.id;
     skillUiState.serverSkill = normalized;
+    skillUiState.serverSavedSkillId = ownerId;
     skillUiState.serverSlotSources = slotSources && typeof slotSources === "object"
       ? slotSources
       : {};
-    skillUiState.activeSkillId = normalized.id;
+    skillUiState.activeSkillId = ownerId;
     renderTemplateUi();
     render();
     return true;
@@ -751,9 +922,10 @@
   function clearServerSkill() {
     const activeWasServer = Boolean(
       skillUiState.serverSkill &&
-      skillUiState.serverSkill.id === skillUiState.activeSkillId
+      skillUiState.serverSavedSkillId === skillUiState.activeSkillId
     );
     skillUiState.serverSkill = null;
+    skillUiState.serverSavedSkillId = null;
     skillUiState.serverSlotSources = {};
     if (activeWasServer) skillUiState.activeSkillId = null;
     renderTemplateUi();
@@ -1016,21 +1188,38 @@
     const banner = $("skillPreviewBanner");
     if (banner) banner.hidden = true;
     const previewProfile = previewTemplateProfile();
-    const authority = previewProfile || renderTemplateAuthority();
     const serverSkillActive = Boolean(
       !previewProfile &&
       skillUiState.serverSkill &&
-      skillUiState.serverSkill.id === skillUiState.activeSkillId
+      skillUiState.serverSavedSkillId === skillUiState.activeSkillId
     );
+    const ownerCgi = Boolean(serverSkillActive && window.B66BrowserPdf &&
+      window.B66BrowserPdf.isCgiSkill(skillUiState.activeSkillId));
+    // Certified CGI source authority is the owner-assigned approved skill, not
+    // an unrelated previously selected generic/template-management profile.
+    const cgiProfile = ownerCgi ? activeSkillProfile() : null;
+    const authority = ownerCgi ? cgiProfile : (previewProfile || renderTemplateAuthority());
     const model = TemplateRenderer.buildRenderModel(
       draft,
       authority,
       {
         taxReviewRequired,
-        slotSources: serverSkillActive ? skillUiState.serverSlotSources : {}
+        slotSources: serverSkillActive ? skillUiState.serverSlotSources : {},
+        certifiedPreviewBaseUrl: serverSkillActive &&
+            window.B66QuoteRuntimeBridge &&
+            typeof window.B66QuoteRuntimeBridge.certifiedPreviewBaseUrl === "function"
+          ? window.B66QuoteRuntimeBridge.certifiedPreviewBaseUrl(skillUiState.activeSkillId)
+          : ""
       }
     );
-    if (model) TemplateRenderer.applyRenderModel(document, model);
+    // An assigned CGI may carry the earlier generic layout variant. The
+    // approved saved skill still owns every fact and its fingerprint; only the
+    // exact certified CGI presentation is selected for the browser preview.
+    const certifiedModel = ownerCgi && model && cgiProfile
+      ? window.B66BrowserPdf.certifiedPreviewModel(model, skillUiState.activeSkillId,
+          cgiProfile.fingerprint)
+      : model;
+    if (certifiedModel) TemplateRenderer.applyRenderModel(document, certifiedModel);
 
     /* 입력 폼의 금액 셀은 견적서 render projection 과 별개로 QuoteCore 파생값을 그대로 쓴다. */
     const totals = Core.computeDraftTotals(draft);
@@ -1159,7 +1348,20 @@
     pdfDownloadPending = true;
     button.disabled = true;
     try {
-      const result = await bridge.downloadPdf(model);
+      const certifiedBrowserPdf = window.B66BrowserPdf &&
+        window.B66BrowserPdf.isCgiSkill(skillUiState.activeSkillId);
+      const profile = activeSkillProfile();
+      const previewModel = certifiedBrowserPdf && profile && skillUiState.serverSkill &&
+          skillUiState.serverSavedSkillId === skillUiState.activeSkillId
+        ? window.B66BrowserPdf.certifiedPreviewModel(
+            TemplateRenderer.buildRenderModel(draft, profile, {
+              taxReviewRequired,
+              slotSources: skillUiState.serverSlotSources,
+              certifiedPreviewBaseUrl: bridge.certifiedPreviewBaseUrl(skillUiState.activeSkillId)
+            }),
+            skillUiState.activeSkillId, profile.fingerprint)
+        : null;
+      const result = await bridge.downloadPdf(model, previewModel);
       if (result && result.ok === true) toast("PDF 견적서를 다운로드했습니다.");
       else toast(result && result.message ? result.message : "PDF 다운로드에 실패했습니다. 잠시 후 다시 시도해 주세요.", 4200);
     } catch (_) {
@@ -1200,9 +1402,11 @@
     toast("이메일 전송은 다음 단계에서 Gmail/메일 연동으로 붙입니다.");
   });
 
-  $("saveHistory").addEventListener("click", () => {
-    const result = saveCurrentToHistory();
-    if (!result.ok) toast("최근 견적 저장에 실패했습니다.");
+  $("saveHistory").addEventListener("click", async () => {
+    const result = await saveCurrentToHistory();
+    if (!result.ok && result.error !== "save_in_progress") {
+      toast("최근 견적 저장에 실패했습니다.");
+    }
   });
 
   $("resetLocalData").addEventListener("click", resetBrowserLocalData);
@@ -1495,6 +1699,7 @@
     taxReviewRequired = false;
     suppressNextDraftSave = true;
     skillUiState.serverSkill = null;
+    skillUiState.serverSavedSkillId = null;
     skillUiState.serverSlotSources = {};
     skillUiState.activeSkillId = null;
     templateUiState.previewTemplateId = null;
@@ -1512,6 +1717,10 @@
   }
 
   function applyAccountScopeDetail(detail) {
+    /* server authority 는 계정 projection 이 바뀔 때마다 재확정한다.
+       후보 캐시도 비워 이전 계정의 견적번호가 다음 계정에 새지 않는다. */
+    serverHistorySignedIn = Boolean(detail && detail.authenticated === true);
+    serverQuoteNoCandidates = [];
     const action = detail && detail.action ? detail.action : null;
     const readable = Boolean(detail && detail.privateStateReadable);
     if (detail && detail.authenticated === true) clearTransientPublicTemplateSelection();
@@ -1577,6 +1786,9 @@
         JSON.stringify(History.normalizeEnvelope(envelope))
       );
     },
+    listRecentQuotes,
+    deleteRecentQuote,
+    recentListAuthority: () => (serverHistoryRequired() ? "server" : "local"),
     focusTaxReview,
     toast
   });
@@ -1623,7 +1835,7 @@
   }
   window.B66QuoteSkillBridge = Object.freeze({
     activeSkillId: () => skillUiState.activeSkillId,
-    serverSkillId: () => (skillUiState.serverSkill ? skillUiState.serverSkill.id : null),
+    serverSkillId: () => (skillUiState.serverSkill ? skillUiState.serverSavedSkillId : null),
     serverSlotSourceKeys: () => Object.keys(skillUiState.serverSlotSources || {}).sort(),
     applySkill: applySkillToForm,
     setServerSkill,

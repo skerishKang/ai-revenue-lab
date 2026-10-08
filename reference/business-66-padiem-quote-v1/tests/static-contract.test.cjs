@@ -123,6 +123,7 @@ check(account.includes("function declaredAssetRefs(") &&
       account.includes("MAX_PRIVATE_ASSET_BYTES = 256 * 1024"),
   "PRIVATE_ACCOUNT_ASSET_LOAD=PASS: standalone account bridge resolves only bounded private quote assets");
 check(app.includes("serverSlotSources") &&
+      app.includes("const cgiProfile = ownerCgi ? activeSkillProfile() : null;") &&
       app.includes("slotSources: serverSkillActive ? skillUiState.serverSlotSources : {}"),
   "PRIVATE_ACCOUNT_ASSET_RENDER=PASS: only active server-assigned Skill gets transient private assets");
 check(templateStore.includes('return "private_asset_requires_account_skill"'),
@@ -182,6 +183,12 @@ check(!html.includes('class="badge"') && !html.includes("Padiem 로그인") &&
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: topbar carries no stale badge or vendor-branded login label");
 check(worker.includes('PADIEM_CHAT_ORIGIN = "https://chat.padiem.net"'),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: canonical Padiem upstream fixed");
+check(worker.includes('bridgeMutationOriginAllowed(request, url)') &&
+      worker.includes('request.headers.get("origin") === url.origin') &&
+      worker.includes('jsonError("padiem_origin_rejected", 403)'),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: cookie-authenticated mutations fail closed on cross-origin callers");
+check(worker.includes('headers.set("Origin", PADIEM_CHAT_ORIGIN)'),
+  "PADIEM_ACCOUNT_BRIDGE_CONTRACT: guarded mutations stamp the canonical Padiem Chat Origin upstream");
 [
   "/api/padiem/auth/status",
   "/api/padiem/auth/password/login",
@@ -202,10 +209,12 @@ check(!account.includes("localStorage") && !account.includes("sessionStorage"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: server-assigned skill is memory-only cache");
 check(account.includes("{ companyProfile: profile }") &&
       account.includes("{ companyProfile: state.companyProfile }") &&
-      account.includes("bridge.setServerSkill(skill, slotSources)") &&
+      account.includes("bridge.setServerSkill(skill, slotSources, savedSkillId)") &&
+      account.includes("row.saved_skill_id !== savedSkillId") &&
       account.includes("B66QuoteRuntimeBridge"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: server skill + authorized private assets feed canonical browser QuoteCore/renderer path");
-check(app.includes("function setServerSkill(skill, slotSources)") &&
+check(app.includes("function setServerSkill(skill, slotSources, savedSkillId)") &&
+      app.includes("serverSavedSkillId") &&
       app.includes("function clearServerSkill()") &&
       app.includes("serverSlotSources"),
   "PADIEM_ACCOUNT_BRIDGE_CONTRACT: app exposes non-persistent server skill + transient private asset seam");
@@ -569,7 +578,9 @@ check(easy.includes('"b66:local-data-reset"') &&
 
 /* 결정론적 계산 잔여 계약 (원본에서 승계) */
 check(core.includes("Math.round(qty * price)"), "deterministic item amount");
-check(!app.includes("window.print()") && app.includes("bridge.downloadPdf(model)"),
+check(!app.includes("window.print()") && app.includes("bridge.downloadPdf(model, previewModel)") &&
+      html.includes('src="quote-browser-pdf.js"') &&
+      account.includes("browserPdf.makePdf(renderModel, previewModel)"),
   "certified PDF download replaces the final browser print action");
 check(app.includes("localStorage"), "browser-local persistence");
 
@@ -665,9 +676,10 @@ check(!/FileReader|FormData|indexedDB/i.test(template + templateStore + template
   "RAW_SOURCE_FILE_PERSISTENCE=0: template modules never touch raw file bytes");
 check(app.includes("TemplateRenderer.buildRenderModel(") &&
       app.includes("const previewProfile = previewTemplateProfile();") &&
-      app.includes("const authority = previewProfile || renderTemplateAuthority();") &&
+      app.includes("const authority = ownerCgi ? cgiProfile : (previewProfile || renderTemplateAuthority());") &&
       app.includes("function renderTemplateAuthority()") &&
       app.includes("return explicitTemplateProfile() || activeSkillProfile() || activeTemplateProfile();") &&
+      app.includes("const cgiProfile = ownerCgi ? activeSkillProfile() : null;") &&
       app.includes("slotSources: serverSkillActive ? skillUiState.serverSlotSources : {}"),
   "QUOTE_TEMPLATE_RENDERER_DETERMINISTIC: direct mode renders through approved template/skill authority with transient private assets");
 check(!app.includes("vatSummaryLabel"),
@@ -818,7 +830,7 @@ check(app.includes("TEMPLATE_ACTIONS") && app.includes("window.B66QuoteTemplateB
       app.includes("templateUiState"),
   "TEMPLATE_SELECTOR_LIVE=YES: the app wires selection, preview and management actions");
 check(app.includes("const previewProfile = previewTemplateProfile();") &&
-      app.includes("const authority = previewProfile || renderTemplateAuthority();") &&
+      app.includes("const authority = ownerCgi ? cgiProfile : (previewProfile || renderTemplateAuthority());") &&
       app.includes("return explicitTemplateProfile() || activeSkillProfile() || activeTemplateProfile();") &&
       app.includes("return profile && Template.isApprovedProfile(profile) ? profile : null;") &&
       app.includes("candidate && candidate.approved") &&
@@ -1243,3 +1255,57 @@ const assertGateClosed = (label, observed, googleNavExpected) => {
   console.error(error && error.message ? error.message : error);
   process.exitCode = 1;
 });
+
+/* SERVER_HISTORY_CONTRACT (#3405 Slice B) — signed-in server quote-history authority.
+   Structural wiring only. Behavioral contracts (DELETE_CONFIRM,
+   NO_OPTIMISTIC_DELETE, COPY_AS_NEW, QUOTECORE_RECALCULATION,
+   NO_SILENT_LOCAL_FALLBACK, FOREIGN_ACCOUNT_ACCESS) are owned by
+   tests/history-server-behavior.test.cjs, which drives the real app.js /
+   easy-mode.js and clicks the real buttons; this file must not print them. */
+check(require("fs").existsSync(path.join(__dirname, "..", "quote-history-server.js")),
+  "SERVER_HISTORY_CONTRACT: quote-history-server.js ships in the reference app");
+check(html.includes('src="quote-history-server.js"'),
+  "SERVER_HISTORY_CONTRACT: index.html includes the server history client");
+check(worker.includes("/api/padiem/b66/quotes"),
+  "SERVER_HISTORY_CONTRACT: B66 Pages worker proxies the canonical quote-history API");
+check(worker.includes("B66_QUOTE_ROW") && worker.includes('"/api/padiem/b66/quotes/"'),
+  "SERVER_HISTORY_CONTRACT: worker bounds quote-history row ids before upstream");
+check(app.includes("ServerHistory.draftToHistorySnapshot") && app.includes("ServerHistory.historySnapshotToDraft"),
+  "SERVER_HISTORY_CONTRACT: app converts drafts through the server snapshot boundary");
+check(app.includes("serverHistoryActive()") && app.includes("serverHistorySignedIn"),
+  "SERVER_HISTORY_CONTRACT: server authority is active only while signed in");
+check(app.includes('authority: "server"') && app.includes("history_read_failed") && app.includes("history_save_failed"),
+  "SERVER_HISTORY_CONTRACT: server errors stay on the server authority path");
+check(easy.includes("readRecentHistory()") && easy.includes("App.listRecentQuotes"),
+  "SERVER_HISTORY_CONTRACT: Easy history surface reads through the server-aware bridge");
+check(easy.includes("renderHistoryPending()") && easy.includes("renderHistoryError"),
+  "SERVER_HISTORY_CONTRACT: history renderer distinguishes pending and bounded-error states");
+check(!app.includes("localStorage.setItem(" + JSON.stringify("quoteBeta.history.v1")) ||
+      app.includes('authority: "server"'),
+  "SERVER_HISTORY_CONTRACT: server success may update the local cache, but failure does not silently use it as authority");
+check(!app.includes("History.copyAsNew(entry, { now: new Date() })") ||
+      app.includes("ServerHistory.draftToHistorySnapshot"),
+  "SERVER_HISTORY_CONTRACT: copy/new authority stays QuoteCore + server snapshot, not persisted totals");
+/* the behavioral probe must not regress into a bridge stub */
+const behaviorProbe = fs.readFileSync(path.join(__dirname, "history-server-behavior.test.cjs"), "utf8");
+check(!/B66QuoteAppBridge:\s*\{/.test(behaviorProbe),
+  "SERVER_HISTORY_CONTRACT: the behavioral probe never substitutes its own B66QuoteAppBridge stub");
+check(/INDEX_HTML[\s\S]{0,400}SCRIPT_TAGS/.test(behaviorProbe) &&
+      /recentQuoteStarter/.test(behaviorProbe),
+  "SERVER_HISTORY_CONTRACT: the behavioral probe boots the real scripts and opens the real recent view");
+check(!/\|\|\s*true\b/.test(behaviorProbe) && !/\|\|\s*===\s*/.test(behaviorProbe) &&
+      !/!==[^;()]*\|\|\s*===/.test(behaviorProbe),
+  "SERVER_HISTORY_CONTRACT: the behavioral probe has no tautological assertion");
+
+/* WORK 7: the behavioral probes must actually run in CI, not merely exist */
+const workflowPath = path.join(__dirname, "..", "..", "..", ".github", "workflows", "b66-neutral-pages-beta.yml");
+const workflowText = fs.readFileSync(workflowPath, "utf8");
+check(workflowText.includes("node tests/history-behavior.test.cjs"),
+  "CI_WIRING: b66-neutral-pages-beta.yml executes history-behavior.test.cjs");
+check(workflowText.includes("node tests/history-server-behavior.test.cjs"),
+  "CI_WIRING: b66-neutral-pages-beta.yml executes history-server-behavior.test.cjs");
+
+console.log("SERVER_HISTORY_CONTRACT=PASS");
+console.log("SERVER_HISTORY_STRUCTURAL_CONTRACT=PASS");
+console.log("BEHAVIOR_CONTRACTS_OWNED_BY=tests/history-server-behavior.test.cjs");
+console.log("CI_WIRING=PASS");
