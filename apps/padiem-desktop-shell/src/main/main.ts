@@ -32,7 +32,8 @@ import { acquireSingleInstanceOwnership } from './single-instance.js';
 import { PairingHandoffConsumer } from './pairing-handoff-consumer.js';
 import { resolveRunnerHostMode } from './runner-host-mode.js';
 import { LocalWorkspaceController } from '../workspace/local-workspace.js';
-import { createElectronBrowserOpenViewPort } from '../browser/browser-open-electron-view.js';
+import { createElectronBrowserOpenViewOwner } from '../browser/browser-open-electron-view.js';
+import { createTrustedMainBrowserActionOwner } from '../browser/browser-action-trusted-main.js';
 import { composeTrustedBrowserOpen } from '../browser/browser-open-composition.js';
 import { createResidentBrowserOpenRedemptionPort } from '../conversation/resident-browser-open-redemption.js';
 import {
@@ -202,8 +203,10 @@ export const canonicalRuns = new CanonicalRunController();
  * with the agent that owns the store. The desktop never becomes the replay
  * authority, and no second socket, listener or reader is introduced.
  */
+const browserOpenViewOwner = createElectronBrowserOpenViewOwner();
+
 export const browserOpen = composeTrustedBrowserOpen({
-  view: createElectronBrowserOpenViewPort(),
+  view: browserOpenViewOwner.port,
   redemption: createResidentBrowserOpenRedemptionPort({
     boundary: {
       sendResidentLine: (line: string) => supervisor.sendResidentLine(line),
@@ -212,6 +215,23 @@ export const browserOpen = composeTrustedBrowserOpen({
       residentRunning: () => supervisor.residentSnapshot().running,
     },
   }),
+});
+
+/**
+ * #3669: real trusted-main source bridge. The view comes only from the
+ * existing, ephemeral browser.open owner; canonical PHASE A/PHASE B answers
+ * come over the existing resident pipe. There is intentionally NO renderer
+ * IPC or user-facing browser.control activation here: only a separately
+ * P01-approved context can call bindApprovedView from trusted main code.
+ */
+export const browserControl = createTrustedMainBrowserActionOwner({
+  findActiveControlView: browserOpenViewOwner.findActiveControlView,
+  residentBoundary: {
+    sendResidentLine: (line: string) => supervisor.sendResidentLine(line),
+    takeResidentBrowserControlLeaseLine: () =>
+      supervisor.takeResidentBrowserControlLeaseLine(),
+    residentRunning: () => supervisor.residentSnapshot().running,
+  },
 });
 
 export const controller = new ShellController({
