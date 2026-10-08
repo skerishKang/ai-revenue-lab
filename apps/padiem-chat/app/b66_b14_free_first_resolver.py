@@ -5,11 +5,13 @@ from __future__ import annotations
 The historical file/class names are preserved for import compatibility; their
 old free-first qualification is retired by the B66 owner price-filter decision.
 Only two fixed, bounded GETs traverse B14's existing Service Binding, with no
-customer-supplied model hint. Multiple eligible models fail closed (no auto
-priority, no provider inference and no retry/fallback).
+untrusted model information inside quote text. Selection requires a distinct
+explicit model_id from the authenticated user; no implicit default or fallback.
 """
 
 import json
+import re
+from dataclasses import replace
 from typing import Any, Protocol
 
 from .b66_registered_model_boundary import (
@@ -23,6 +25,7 @@ _READINESS_PATH = "/api/pilot/provider-readiness"
 _OWNER_POLICY = "OWNER_REGISTERED_AND_ALLOWED"
 _MAX_REGISTRY_BODY = 131072
 _MAX_REGISTRY_ROWS = 256
+_SAFE_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}\Z")
 
 
 def _excluded_by_owner(model_id: str) -> bool:
@@ -102,6 +105,8 @@ def _qualified_routes(
         if not isinstance(mid, str) or not isinstance(pid, str) or mid in seen:
             raise B66ModelRouteError("selection_ambiguous")
         seen.add(mid)
+        if requirements.selected_model_id is not None and mid != requirements.selected_model_id:
+            continue
         # Both the local owner exclusion and B14's explicit exclusion claim
         # must permit the exact route. Missing owner_excluded fails closed.
         if _excluded_by_owner(mid) or route.get("owner_excluded") is not False:
@@ -172,7 +177,9 @@ class B14FreeFirstQuoteModelResolver:
     async def resolve_quote_model(
         self, requirements: B66QuoteTaskRequirements
     ) -> B14AuthorizedModelRoute | None:
-        if requirements != B66QuoteTaskRequirements():
+        if not isinstance(requirements.selected_model_id, str) or not _SAFE_ID.fullmatch(requirements.selected_model_id):
+            raise B66ModelRouteError("selection_unconfigured")
+        if replace(requirements, selected_model_id=None) != B66QuoteTaskRequirements():
             raise B66ModelRouteError("selection_unavailable")
         if self._transport is None:
             raise B66ModelRouteError("selection_unconfigured")
@@ -191,3 +198,35 @@ class B14FreeFirstQuoteModelResolver:
         if len(eligible) != 1:
             raise B66ModelRouteError("selection_ambiguous")
         return eligible[0]
+
+    async def list_selectable_models(self) -> list[dict[str, str]]:
+        """Authenticated B66 UI options only; 2 fixed GETs, zero provider POSTs.
+
+        Only owner-permitted, ready chat routes are offered; the API never
+        chooses a model or returns a secret, provider URL, or price metadata.
+        """
+        if self._transport is None:
+            raise B66ModelRouteError("selection_unconfigured")
+        try:
+            registry = _parse_bounded_response(*await self._transport.get_json(_MODELS_PATH))
+            readiness = _parse_bounded_response(*await self._transport.get_json(_READINESS_PATH))
+            routes = _qualified_routes(registry, readiness, B66QuoteTaskRequirements())
+        except B66ModelRouteError:
+            raise
+        except Exception:
+            raise B66ModelRouteError("selection_unavailable") from None
+        ids = [row.model_id for row in routes]
+        if len(ids) != len(set(ids)):
+            raise B66ModelRouteError("selection_ambiguous")
+        return [
+            {"model_id": row.model_id, "name": row.model_id.split("/")[-1]}
+            for row in sorted(routes, key=lambda row: row.model_id)
+        ]
+
+
+class B66ExplicitQuoteModelResolver(B14FreeFirstQuoteModelResolver):
+    """Preferred B66 owner-authorized, user-selected registered model resolver.
+
+    The former class name is retained solely for existing source imports/tests.
+    Its previous free-first/automatic behavior is no longer implemented.
+    """

@@ -9,7 +9,7 @@ injections this lane fails closed before any dispatch. No coupling to B62's
 Plus/Pro/Max HOLD and no import of Claw's coding AgentProfile.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import re
 from typing import Any, Awaitable, Callable, Protocol
 
@@ -50,7 +50,7 @@ class B66ModelRouteError(Exception):
 
 @dataclass(frozen=True, slots=True)
 class B66QuoteTaskRequirements:
-    """Stable product requirements, never a customer-supplied model hint."""
+    """Stable quote task, with an explicitly selected exact B14 model ID."""
 
     task_id: str = _TASK_NAME
     task_type: str = "document"
@@ -59,6 +59,7 @@ class B66QuoteTaskRequirements:
     max_attempts: int = 1
     max_retries: int = 0
     allow_external_fallback: bool = False
+    selected_model_id: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -117,6 +118,8 @@ def validate_authorized_route(
         raise B66ModelRouteError("model_identity_invalid")
     if type(selection.route_count) is not int or selection.route_count != 1:
         raise B66ModelRouteError("selection_ambiguous")
+    if requirements.selected_model_id is not None and selection.model_id != requirements.selected_model_id:
+        raise B66ModelRouteError("model_not_authorized")
     if selection.registered is not True:
         raise B66ModelRouteError("model_not_registered")
     if selection.enabled is not True:
@@ -155,8 +158,9 @@ class B14QuoteExactModelExecutor:
         requirements: B66QuoteTaskRequirements,
     ) -> dict[str, Any]:
         if (
-            requirements != B66QuoteTaskRequirements()
+            replace(requirements, selected_model_id=None) != B66QuoteTaskRequirements()
             or route.model_id in _FORBIDDEN_MODEL_IDS
+            or route.model_id != requirements.selected_model_id
         ):
             raise B66ModelRouteError("model_identity_invalid")
         return await self._client.complete_registered_quote_model(
@@ -202,6 +206,7 @@ class B66RegisteredModelCompletion:
         skill: Any | None = None,
         additional_system_context: str | None = None,
         attachments: tuple[Any, ...] = (),
+        model_id: str | None = None,
     ) -> dict[str, Any]:
         if self._resolver is None or self._executor is None:
             await self._refund_before_dispatch()
@@ -226,7 +231,10 @@ class B66RegisteredModelCompletion:
             await self._refund_before_dispatch()
             raise B66ModelRouteError("selection_unavailable")
 
-        requirements = B66QuoteTaskRequirements()
+        if not _safe_id(model_id) or model_id in _FORBIDDEN_MODEL_IDS or model_id.startswith("padiem-profile/"):
+            await self._refund_before_dispatch()
+            raise B66ModelRouteError("selection_unconfigured")
+        requirements = replace(B66QuoteTaskRequirements(), selected_model_id=model_id)
         try:
             # The concrete Worker executor checks mock/live/binding readiness
             # before registry reads. Pure trusted offline executors need no I/O.

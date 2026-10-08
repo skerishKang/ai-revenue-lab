@@ -1,5 +1,6 @@
 """#3760 B66 owner-allowed B14 registered selection, NO provider calls."""
 import asyncio
+from dataclasses import replace
 import json
 
 import pytest
@@ -71,10 +72,10 @@ class FakeB14ReadOnlyRegistry:
         raise AssertionError("unknown path")
 
 
-def select(fake, requirements=None):
-    return asyncio.run(B14FreeFirstQuoteModelResolver(fake).resolve_quote_model(
-        requirements or B66QuoteTaskRequirements()
-    ))
+def select(fake, requirements=None, model_id=MODEL):
+    request = requirements or B66QuoteTaskRequirements()
+    request = replace(request, selected_model_id=model_id)
+    return asyncio.run(B14FreeFirstQuoteModelResolver(fake).resolve_quote_model(request))
 
 
 def deny(fake, expected="selection_unavailable"):
@@ -216,7 +217,11 @@ def test_multiple_paid_and_manual_routes_have_no_arbitrary_order_or_fallback():
         "id": twin, "provider_id": PID, "tags": ["alpha", "chat"],
     })
     readiness["providers"][0]["models"].append(twin)
-    deny(FakeB14ReadOnlyRegistry(registry, readiness), "selection_ambiguous")
+    # User-selected exact model remains valid even with other ready models.
+    chosen = select(FakeB14ReadOnlyRegistry(registry, readiness))
+    assert chosen.model_id == MODEL
+    chosen_twin = select(FakeB14ReadOnlyRegistry(registry, readiness), model_id=twin)
+    assert chosen_twin.model_id == twin
 
 
 @pytest.mark.parametrize("malformation", [
@@ -349,7 +354,7 @@ def test_cloudflare_service_binding_uses_only_two_exact_get_read_paths():
 def test_production_worker_b66_wiring_uses_owner_allowed_authority_not_b62_tier():
     from pathlib import Path
     worker = (Path(__file__).resolve().parents[1] / "worker.py").read_text("utf-8")
-    assert "B14FreeFirstQuoteModelResolver(service_transport)" in worker
+    assert "B66ExplicitQuoteModelResolver(service_transport)" in worker
     assert "B14QuoteExactModelExecutor(" in worker
     assert "refund_pre_dispatch=_refund_active_reservation" in worker
     assert "B66RegisteredModelCompletion(" in worker

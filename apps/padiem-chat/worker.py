@@ -47,7 +47,7 @@ from app.b66_registered_model_boundary import (
     B14QuoteExactModelExecutor,
     B66RegisteredModelCompletion,
 )
-from app.b66_b14_free_first_resolver import B14FreeFirstQuoteModelResolver
+from app.b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
 from app.config import ConfigError
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.calendar_read_activation_engine import CloudflareCalendarReadActivationEngineClient
@@ -838,15 +838,17 @@ class Default(WorkerEntrypoint):
                     stream_transport=stream_transport,
                     require_service_binding=settings.runtime_mode == "b14",
                 )
-                # #3760 owner correction: quote extraction selects one exact,
+                # #3760 owner correction: quote extraction validates one user-selected,
                 # owner-allowed, chat-capable and live-ready B14 registered
                 # model; pricing and generic B14 auto flags do not qualify it.
                 # Never pass
                 # ordinary quote text into the B62 Plus/Pro/Max HOLD resolver;
                 # never synthesize b14/auto or a hidden retry/fallback.
+                quote_model_resolver = B66ExplicitQuoteModelResolver(service_transport)
+                _worker_app.state.b66_quote_model_resolver = quote_model_resolver
                 _worker_app.state.b66_quote_interpreter = B66QuoteConversationInterpreter(
                     B66RegisteredModelCompletion(
-                        resolver=B14FreeFirstQuoteModelResolver(service_transport),
+                        resolver=quote_model_resolver,
                         executor=B14QuoteExactModelExecutor(
                             _worker_app.state.b14_client
                         ),

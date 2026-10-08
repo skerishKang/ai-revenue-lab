@@ -169,9 +169,9 @@ async def _authorize_quote_usage(request: Request, uid: str) -> JSONResponse | N
         )
 
 
-async def _interpret_reserved(interpret_fn, *, message: str, skill: dict):
+async def _interpret_reserved(interpret_fn, *, message: str, skill: dict, model_id: str):
     try:
-        value = interpret_fn(message=message, skill=skill)
+        value = interpret_fn(message=message, skill=skill, model_id=model_id)
         return await value if inspect.isawaitable(value) else value
     finally:
         # The dispatch adapter marks the receipt before the actual B14 POST.
@@ -307,6 +307,29 @@ async def b66_saved_skill_detail(request: Request) -> JSONResponse:
     return JSONResponse({"ok": True, "saved_skill": skill}, headers=_NO_STORE)
 
 
+async def b66_quote_models(request: Request) -> JSONResponse:
+    """Authenticated, no-store registered model choices; never chooses one."""
+    if _owner(request) is None:
+        return _error(401, "unauthorized", "???? ?????.")
+    resolver = getattr(request.app.state, "b66_quote_model_resolver", None)
+    list_fn = getattr(resolver, "list_selectable_models", None)
+    if not callable(list_fn):
+        return _error(503, "quote_model_unavailable", "AI ?? ??? ??? ? ????.")
+    try:
+        models = await list_fn()
+    except Exception:
+        return _error(503, "quote_model_unavailable", "AI ?? ??? ??? ? ????.")
+    # An optional OWNER-configured default may prefill the UI. It never
+    # silently selects a backend route and must be among currently permitted,
+    # credential-ready exact IDs. No default is configured by this change.
+    proposed_default = getattr(request.app.state, "b66_quote_default_model_id", None)
+    default = proposed_default if (
+        isinstance(proposed_default, str)
+        and any(row["model_id"] == proposed_default for row in models)
+    ) else None
+    return JSONResponse({"ok": True, "models": models, "default_model_id": default}, headers=_NO_STORE)
+
+
 async def b66_quote_interpret(request: Request) -> JSONResponse:
     _clear_reservation()
     uid = _owner(request)
@@ -315,10 +338,15 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     data = await _json(request)
     if isinstance(data, JSONResponse):
         return data
-    if set(data) - {"saved_skill_id", "message"}:
+    if set(data) - {"saved_skill_id", "message", "model_id"}:
         return _error(400, "unsupported_field", "지원되지 않는 요청 필드가 있습니다.")
     saved_skill_id = data.get("saved_skill_id")
     message = data.get("message")
+    model_id = data.get("model_id")
+    if not isinstance(model_id, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}", model_id):
+        return _error(400, "model_selection_required", "??? AI ??? ??? ???.")
+    if model_id in {"b14/auto"} or model_id.startswith("padiem-profile/"):
+        return _error(400, "model_selection_required", "??? AI ??? ??? ???.")
     if not isinstance(saved_skill_id, str) or not saved_skill_id:
         return _error(400, "invalid_saved_skill_id", "내 견적서 ID가 필요합니다.")
     if (
@@ -355,7 +383,7 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     if denied is not None:
         return denied
     try:
-        projection = await _interpret_reserved(interpret_fn, message=message.strip(), skill=skill)
+        projection = await _interpret_reserved(interpret_fn, message=message.strip(), skill=skill, model_id=model_id)
     except B66ModelRouteError as exc:
         return _model_route_error_response(exc)
     except B66QuoteConversationError as exc:

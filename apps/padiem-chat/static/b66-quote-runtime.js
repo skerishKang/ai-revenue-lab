@@ -41,6 +41,7 @@
 
   let runtime = null;
   let skills = [];
+  let modelIds = [];
   let initialized = false;
   let refreshPromise = null;
   let currentRequestId = null;
@@ -177,6 +178,14 @@
     message.placeholder = copy().requestPlaceholder;
     messageLabel.append(messageText, message);
 
+    const modelLabel = el("label", "b66-quote-field");
+    const modelText = el("span", "", "AI model");
+    modelText.dataset.b66QuoteModelLabel = "true";
+    const modelSelect = document.createElement("select");
+    modelSelect.id = "b66QuoteModelSelect";
+    modelSelect.required = true;
+    modelLabel.append(modelText, modelSelect);
+
     const submit = el("button", "b66-quote-generate", copy().generate);
     submit.id = "b66QuoteGenerate";
     submit.type = "submit";
@@ -194,7 +203,7 @@
     frame.referrerPolicy = "no-referrer";
     frame.setAttribute("sandbox", "allow-scripts allow-same-origin allow-modals");
 
-    form.append(selectLabel, messageLabel, submit, status);
+    form.append(selectLabel, modelLabel, messageLabel, submit, status);
     panel.append(header, form, frame);
     dialog.append(panel);
     document.body.append(dialog);
@@ -250,6 +259,35 @@
     if (!node) return;
     node.textContent = text;
     node.dataset.state = state || "";
+  }
+
+  async function refreshModels() {
+    const select = document.getElementById("b66QuoteModelSelect");
+    if (!select) return;
+    modelIds = [];
+    select.replaceChildren();
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = document.documentElement.lang === "en"
+      ? "Select a model" : "\uBAA8\uB378\uC744 \uC120\uD0DD\uD558\uC138\uC694";
+    select.append(placeholder);
+    select.disabled = true;
+    const response = await readJson("/api/b66/quote/models");
+    if (!response.response.ok || !response.data || !Array.isArray(response.data.models)) return;
+    const safe = /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$/;
+    response.data.models.forEach((record) => {
+      if (!record || typeof record.model_id !== "string" ||
+          !safe.test(record.model_id) || typeof record.name !== "string") return;
+      const option = document.createElement("option");
+      option.value = record.model_id;
+      option.textContent = record.name;
+      select.append(option);
+      modelIds.push(record.model_id);
+    });
+    const configured = response.data.default_model_id;
+    select.value = typeof configured === "string" && modelIds.includes(configured)
+      ? configured : "";
+    select.disabled = modelIds.length === 0;
   }
 
   function populateSkills() {
@@ -364,6 +402,7 @@
         }
         skills = safeSkills(listResult.data);
         populateSkills();
+        await refreshModels();
         return skills.length > 0;
       } catch (_) {
         runtime = null;
@@ -401,8 +440,11 @@
     const frame = document.getElementById("b66QuoteFrame");
     if (!runtime || !select || !message || !submit || !frame) return;
     const savedSkillId = select.value;
+    const modelSelect = document.getElementById("b66QuoteModelSelect");
+    const modelId = modelSelect && modelSelect.value;
     const requestText = message.value.trim();
-    if (!/^b66skill_[0-9a-f]{32}$/.test(savedSkillId) || !requestText) {
+    if (!/^b66skill_[0-9a-f]{32}$/.test(savedSkillId) || !requestText ||
+        !modelId || !modelIds.includes(modelId)) {
       setStatus(c.failed, "error");
       return;
     }
@@ -414,7 +456,7 @@
       const interpreted = await readJson("/api/b66/quote/interpret", {
         method: "POST",
         headers: { "Accept": "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify({ saved_skill_id: savedSkillId, message: requestText })
+        body: JSON.stringify({ saved_skill_id: savedSkillId, message: requestText, model_id: modelId })
       });
       if (!interpreted.response.ok || !interpreted.data || interpreted.data.ok !== true) {
         throw new Error("interpret_failed");

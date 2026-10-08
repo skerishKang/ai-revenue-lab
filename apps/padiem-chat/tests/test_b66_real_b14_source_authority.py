@@ -121,12 +121,12 @@ class SourceMetadataTransport:
         raise AssertionError("B66 source eligibility must never execute a provider")
 
 
-def attempt_selection(payload):
+def attempt_selection(payload, model_id=None):
     transport = SourceMetadataTransport(payload)
     with pytest.raises(B66ModelRouteError) as result:
         asyncio.run(
             B14FreeFirstQuoteModelResolver(transport).resolve_quote_model(
-                B66QuoteTaskRequirements()
+                B66QuoteTaskRequirements(selected_model_id=model_id or sorted(GOOGLE_IDS)[0])
             )
         )
     assert transport.get_paths == list(B14_GETS)
@@ -170,7 +170,13 @@ def test_all_providers_synthetically_ready_still_fail_closed_for_ambiguous_owner
         provider["route_ready"] = True
     # Multiple owner-allowed routes must never receive a hidden price rank or
     # generic B14 public/auto route preference.
-    assert attempt_selection(data) == "selection_ambiguous"
+    # Ambiguity across models is not relevant when an exact user model was supplied.
+    # No implicit choice is made; absence of selected_model_id is rejected separately.
+    transport = SourceMetadataTransport(data)
+    selected = asyncio.run(B14FreeFirstQuoteModelResolver(transport).resolve_quote_model(
+        B66QuoteTaskRequirements(selected_model_id=sorted(GOOGLE_IDS)[0])
+    ))
+    assert selected.model_id == sorted(GOOGLE_IDS)[0]
 
 
 def test_one_synthetic_ready_google_manual_pin_can_be_validated_without_catalog(
@@ -189,7 +195,7 @@ def test_one_synthetic_ready_google_manual_pin_can_be_validated_without_catalog(
     transport = SourceMetadataTransport(data)
     selected = asyncio.run(
         B14FreeFirstQuoteModelResolver(transport).resolve_quote_model(
-            B66QuoteTaskRequirements()
+            B66QuoteTaskRequirements(selected_model_id=mid)
         )
     )
     assert selected.model_id == mid
