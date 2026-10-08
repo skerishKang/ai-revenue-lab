@@ -49,6 +49,18 @@ B66_INTERPRET_ERROR_CODES = frozenset({
     "quote_interpretation_failed",
     "padiem_service_unavailable",
 })
+B66_INTERPRET_FAILURE_STAGES = frozenset({
+    "interpreter_exception",
+    "projection_missing_safe_dict",
+})
+B66_INTERPRET_EXCEPTION_FAMILIES = frozenset({
+    "chat_runtime_non_upstream",
+    "type_error",
+    "value_error",
+    "runtime_error",
+    "unexpected_exception",
+})
+
 B66_UPSTREAM_CLASS_VOCABULARY = frozenset({
     "upstream_timeout",
     "upstream_busy",
@@ -207,6 +219,21 @@ def _print_bounded_b66_interpret_failure(response: object) -> None:
     print("B66_INTERPRET_ERROR_CODE=" + code, flush=True)
     print("B66_INTERPRET_ERROR_LAYER=" + layer, flush=True)
     print("B66_INTERPRET_UPSTREAM_CLASS=" + upstream_class, flush=True)
+    failure_stage = "UNCLASSIFIED"
+    exception_family = "UNCLASSIFIED"
+    if code == "quote_interpretation_failed" and hasattr(headers, "get"):
+        candidate = headers.get("x-b66-interpret-failure-stage")
+        if isinstance(candidate, str) and candidate in B66_INTERPRET_FAILURE_STAGES:
+            failure_stage = candidate
+            if candidate == "interpreter_exception" and upstream_class == "UNCLASSIFIED":
+                family = headers.get("x-b66-interpret-exception-family")
+                if (
+                    isinstance(family, str)
+                    and family in B66_INTERPRET_EXCEPTION_FAMILIES
+                ):
+                    exception_family = family
+    print("B66_INTERPRET_FAILURE_STAGE=" + failure_stage, flush=True)
+    print("B66_INTERPRET_EXCEPTION_FAMILY=" + exception_family, flush=True)
 
 
 def _bounded_error_class(body_text: object) -> tuple[str | None, str | None]:
