@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+from copy import deepcopy
+from fnmatch import fnmatchcase
 from pathlib import Path
+
+import pytest
+import yaml
 
 
 REPO = Path(__file__).resolve().parents[3]
@@ -41,3 +46,171 @@ def test_repository_wide_test_scope_policy_is_canonical() -> None:
     assert "TEST_COUNT != CONFIDENCE" in text
     assert "OBSERVATIONAL_NONBLOCKING_CHECK" in text
     assert "AUTOMATIC_WHOLE_REPOSITORY_SUITE=NO" in text
+
+
+# #3769 / #3753 / #3764: permanent guard under the existing #3527
+# Operations Policy Guard's always-run "docs/operations/tests" collection.
+# This intentionally DOES NOT edit the CI workflow or the shared guard YAML:
+# PR #3682 owns the latter insertion point.
+B62_CHAT_CI = WORKFLOWS / "b62-padiem-chat-ci.yml"
+B62_CHAT_EXPECTED_PATHS = (
+    "apps/padiem-chat/**",
+    "apps/korean-ai-platform/**",
+    "packages/padiem-ai-core/**",
+    "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py",
+    "reference/business-62-padiem-chat-v1/**",
+    ".github/scripts/b62_cloudflare_*.py",
+    ".github/workflows/b62-padiem-chat-ci.yml",
+    ".github/workflows/b62-cloudflare-worker-deploy.yml",
+)
+B62_CHAT_EXPECTED_JOBS = {"b62-test", "b14-multimodal-test"}
+
+
+def _b62_chat_ci_document() -> dict:
+    document = yaml.safe_load(B62_CHAT_CI.read_text(encoding="utf-8"))
+    assert isinstance(document, dict)
+    return document
+
+
+def _b62_chat_ci_events(document: dict) -> dict:
+    # PyYAML 1.1 treats the unquoted GitHub Actions key 'on' as boolean True.
+    events = document.get("on", document.get(True))
+    assert isinstance(events, dict), "B62 Chat CI must declare event triggers"
+    return events
+
+
+def _assert_b62_chat_ci_parity(document: dict) -> None:
+    """Pin both event scopes to #3764, not merely to one another.
+
+    If both trigger arrays drift in the same way, simple equality would pass.
+    An independent eight-path source-contract pin must also reject that case.
+    """
+    events = _b62_chat_ci_events(document)
+    assert set(events) == {"push", "pull_request", "workflow_dispatch"}
+    assert events["workflow_dispatch"] is None
+
+    push, review = events["push"], events["pull_request"]
+    assert isinstance(push, dict) and isinstance(review, dict)
+    assert set(push) == {"branches", "paths"}, "no wider push controls"
+    assert push["branches"] == ["main"], "only main may trigger push CI"
+    assert set(review) == {"paths"}, "preserve review trigger semantics"
+    for name, block in (("push", push), ("pull_request", review)):
+        paths = block["paths"]
+        assert isinstance(paths, list)
+        assert len(paths) == 8 and len(set(paths)) == 8, name
+        assert tuple(paths) == B62_CHAT_EXPECTED_PATHS, (
+            f"{name} changed #3764 dependency trigger paths"
+        )
+    assert push["paths"] == review["paths"], "main and PR coverage diverged"
+    assert set(document["jobs"]) == B62_CHAT_EXPECTED_JOBS, (
+        "preserve B62's two existing CI jobs"
+    )
+
+
+def _b62_chat_segment_glob(pattern: str, path: str) -> bool:
+    """GitHub path-filter glob subset needed for the eight retained entries.
+
+    Segment-wise fnmatch prevents a single '*' from crossing '/'.
+    '**' matches zero or more complete path segments.
+    """
+    patterns, parts = pattern.split("/"), path.split("/")
+
+    def walk(i: int, j: int) -> bool:
+        if i == len(patterns):
+            return j == len(parts)
+        if patterns[i] == "**":
+            return any(walk(i + 1, k) for k in range(j, len(parts) + 1))
+        return (
+            j < len(parts)
+            and fnmatchcase(parts[j], patterns[i])
+            and walk(i + 1, j + 1)
+        )
+
+    return walk(0, 0)
+
+
+def _b62_chat_ci_path_triggers(path: str, event: str, branch: str = "main") -> bool:
+    document = _b62_chat_ci_document()
+    events = _b62_chat_ci_events(document)
+    assert event in ("push", "pull_request")
+    if event == "push" and branch not in events["push"]["branches"]:
+        return False
+    return any(_b62_chat_segment_glob(p, path) for p in events[event]["paths"])
+
+
+def test_b62_chat_ci_push_and_pr_share_exact_eight_path_contract() -> None:
+    """Existing #3527 policy job runs this test on every PR."""
+    _assert_b62_chat_ci_parity(_b62_chat_ci_document())
+
+
+@pytest.mark.parametrize("event", ("push", "pull_request"))
+@pytest.mark.parametrize("index", range(8))
+def test_b62_chat_ci_deleted_dependency_path_is_rejected(event: str, index: int) -> None:
+    document = deepcopy(_b62_chat_ci_document())
+    del _b62_chat_ci_events(document)[event]["paths"][index]
+    with pytest.raises(AssertionError):
+        _assert_b62_chat_ci_parity(document)
+
+
+@pytest.mark.parametrize("event", ("push", "pull_request"))
+@pytest.mark.parametrize("index", range(8))
+def test_b62_chat_ci_modified_dependency_path_is_rejected(event: str, index: int) -> None:
+    document = deepcopy(_b62_chat_ci_document())
+    paths = _b62_chat_ci_events(document)[event]["paths"]
+    paths[index] = paths[index] + ".drift"
+    with pytest.raises(AssertionError):
+        _assert_b62_chat_ci_parity(document)
+
+
+@pytest.mark.parametrize("index", range(8))
+def test_b62_chat_ci_matching_two_sided_drift_is_rejected(index: int) -> None:
+    """Equality alone cannot catch a shared accidental narrowing."""
+    document = deepcopy(_b62_chat_ci_document())
+    events = _b62_chat_ci_events(document)
+    for event in ("push", "pull_request"):
+        events[event]["paths"][index] = "docs/incorrect-ci-scope/**"
+    with pytest.raises(AssertionError):
+        _assert_b62_chat_ci_parity(document)
+
+
+@pytest.mark.parametrize("branches", ([], ["release"], ["main", "develop"], None))
+def test_b62_chat_ci_main_only_branch_gate_cannot_drift(branches: object) -> None:
+    document = deepcopy(_b62_chat_ci_document())
+    _b62_chat_ci_events(document)["push"]["branches"] = branches
+    with pytest.raises(AssertionError):
+        _assert_b62_chat_ci_parity(document)
+
+
+@pytest.mark.parametrize("event", ("push", "pull_request"))
+def test_b62_chat_ci_dependency_globs_match_only_intended_scope(event: str) -> None:
+    included = (
+        "apps/padiem-chat/app/main.py",
+        "apps/padiem-chat/static/app.js",
+        "apps/korean-ai-platform/app/pilot/router_core.py",
+        "packages/padiem-ai-core/padiem_ai_core/b14_execution.py",
+        "packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py",
+        "reference/business-62-padiem-chat-v1/template.json",
+        ".github/scripts/b62_cloudflare_deployed_parity.py",
+        ".github/workflows/b62-padiem-chat-ci.yml",
+        ".github/workflows/b62-cloudflare-worker-deploy.yml",
+    )
+    excluded = (
+        "README.md",
+        "docs/operations/TEST_SCOPE_AND_DELIVERY_POLICY.md",
+        "apps/personal-video-archive/app.py",
+        "tools/b66_generic/analyze.py",
+        "apps/padiem-chat-extra/app/main.py",
+        "packages/padiem-ai-core-extra/padiem_ai_core/a.py",
+        "packages/padiem-control-plane/padiem_control_plane/product_tier_routes_v2.py",
+        "reference/business-62-padiem-chat-v1-old/template.json",
+        ".github/scripts/b62_preview_smoke.py",
+        ".github/scripts/nested/b62_cloudflare_guard.py",
+        ".github/workflows/b62-browser-persistence-audit.yml",
+    )
+    for path in included:
+        assert _b62_chat_ci_path_triggers(path, event), path
+    for path in excluded:
+        assert not _b62_chat_ci_path_triggers(path, event), path
+    if event == "push":
+        for path in included:
+            assert not _b62_chat_ci_path_triggers(path, event, "feature"), path
