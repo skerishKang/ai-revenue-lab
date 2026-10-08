@@ -52,54 +52,29 @@ def test_retired_lane_manual_resolve_fails_closed(
 
 
 def test_retired_lane_is_never_in_b14_auto_pool() -> None:
-    auto = resolve_auto_route(
-        task_type="general",
-        required_capabilities=["chat"],
-        optimize_for="balanced",
-        allow_external_fallback=True,
-    )
-    auto_pool = {auto.selected_model, *(item["model_id"] for item in auto.eligible_fallback)}
+    from app.pilot.catalog import CATALOG_MODELS, CATALOG_BY_ID
+    assert not CATALOG_MODELS
     for model_id, _ in RETIRED_LANES:
-        assert model_id not in auto_pool
-
+        assert model_id not in CATALOG_BY_ID
+    with pytest.raises(NoSafeRoute) as exc:
+        resolve_auto_route(task_type="general",required_capabilities=["free"],
+                           optimize_for="balanced",allow_external_fallback=True)
+    assert exc.value.upstream_called is False
 
 @pytest.mark.asyncio
-async def test_laguna_free_lane_uses_fixed_keyless_kilo_boundary(monkeypatch) -> None:
-    # Synthetic test-only route: Kilo Laguna is explicitly OWNER-excluded.
-    monkeypatch.setenv("B14_PROVIDER_MODE", "live")
-    captured: dict[str, object] = {}
-
-    def handler(request: httpx.Request) -> httpx.Response:
-        captured["url"] = str(request.url)
-        captured["authorization"] = request.headers.get("Authorization")
-        captured["body"] = json.loads(request.content)
-        return httpx.Response(
-            200,
-            json={
-                "id": "laguna-free-boundary-test",
-                "model": "test-fixture/kilo-keyless-response",
-                "choices": [
-                    {
-                        "message": {"role": "assistant", "content": "경계 테스트 응답"},
-                        "finish_reason": "stop",
-                    }
-                ],
-                "usage": {"prompt_tokens": 2, "completion_tokens": 3, "total_tokens": 5},
-            },
-        )
-
-    response = await plat.call_platform_chat_completions(
-        model_id="test-fixture/kilo-keyless-chat",
-        upstream_model="test-fixture/kilo-keyless-response",
-        provider="Kilo Gateway / Poolside",
-        platform_provider_id="kilo",
-        messages=[{"role": "user", "content": "합성 테스트"}],
-        max_tokens=None,
-        transport=httpx.MockTransport(handler),
-    )
-
-    assert captured["url"] == f"{KILO_BASE_ORIGIN}/chat/completions"
-    assert captured["authorization"] is None
-    assert captured["body"]["model"] == "test-fixture/kilo-keyless-response"
-    assert response["model"] == "test-fixture/kilo-keyless-response"
-    assert response["choices"][0]["message"]["content"] == "경계 테스트 응답"
+async def test_retired_kilo_laguna_never_calls_transport(monkeypatch) -> None:
+    from app.pilot.errors import PilotNotConfigured
+    monkeypatch.setenv("B14_PROVIDER_MODE","live")
+    called=[]
+    def handler(request):
+        called.append(request)
+        raise AssertionError("retired provider must not dispatch")
+    with pytest.raises(PilotNotConfigured):
+        await plat.call_platform_chat_completions(
+            model_id="test-fixture/kilo-keyless-chat",
+            upstream_model="test-fixture/kilo-keyless-response",
+            provider="Kilo Gateway / Poolside",
+            platform_provider_id="kilo",
+            messages=[{"role":"user","content":"fixture"}],
+            transport=httpx.MockTransport(handler))
+    assert not called

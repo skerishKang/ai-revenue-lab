@@ -52,52 +52,8 @@ BAI_SOURCE_CHECKED_AT = "2026-09-08"
 
 
 def register_bai_provider() -> None:
-    """Idempotently register B.AI and the manual-pin qwen3.8-flash route."""
-
-    if get_platform_provider(BAI_PROVIDER_ID) is None:
-        register_platform_provider(
-            PlatformProviderSpec(
-                provider_id=BAI_PROVIDER_ID,
-                credential_source=CredentialSource.PLATFORM_SECRET,
-                credential_binding_name=BAI_CREDENTIAL_BINDING,
-                base_origin=BAI_BASE_ORIGIN,
-                allowed_hosts=(BAI_ALLOWED_HOST,),
-                enabled=True,
-            )
-        )
-
-    if BAI_QWEN_MODEL_ID in CATALOG_BY_ID:
-        return
-
-    model = CatalogModel(
-        model_id=BAI_QWEN_MODEL_ID,
-        upstream_model=BAI_QWEN_UPSTREAM_MODEL,
-        display_name="B.AI: Qwen3.8 Flash",
-        provider="B.AI / Alibaba Qwen",
-        provider_type="platform",
-        # Credits-denominated pricing (with a time-limited 0-Credits promo) is
-        # not a USD rate: never fabricate price or a permanent free claim.
-        input_price_usd_per_1m=None,
-        output_price_usd_per_1m=None,
-        currency="usd",
-        # Official page: hosted production model with "a default 1M-token
-        # context window".
-        context_window=1_000_000,
-        korean_score=0,
-        latency_ms=0,
-        capabilities=frozenset({"chat", "coding", "long_context"}),
-        region="외부",
-        sort_order=79,
-        credential_source="platform_secret",
-        platform_provider_id=BAI_PROVIDER_ID,
-        source="bai_official_llmservice_docs",
-        source_checked_at=BAI_SOURCE_CHECKED_AT,
-        snapshot_state="configured_snapshot",
-    )
-
-    # Manual-pin capable: exact-ID lookup table only. Do not append to
-    # CATALOG_MODELS (the legacy public/b14-auto routing surface).
-    CATALOG_BY_ID[model.model_id] = model
+    """Historic API kept only to fail closed; models are installed from b14_models.json."""
+    raise RuntimeError("legacy provider registration disabled: edit b14_models.json")
 
 
 

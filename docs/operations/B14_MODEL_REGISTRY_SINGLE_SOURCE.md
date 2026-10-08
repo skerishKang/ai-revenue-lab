@@ -30,3 +30,8 @@ B66/Claw/Engine은 별도 모델 등록부를 만들지 않습니다. 단 B66의
 B14 고정 auto 및 구버전 제품 HOLD는 사용자 지정 모델이 아닙니다. 임의 선택, 재시도, 유료 모델 무단 전환 금지.
 테스트: cd apps/korean-ai-platform && uv run python -m pytest tests/test_b14_model_registry_file.py tests/test_registered_routes_truth.py -q
 기존 Owner 승인·유료·배포 정책은 여전히 MODEL_CHANGE_OWNER_APPROVAL_POLICY.md 및 B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md가 관할합니다.
+
+## 2026-10-08 migration follow-up
+- All ten legacy register_*_provider Python functions now fail closed (RuntimeError); adding a provider/model must edit the JSON, not invoke a legacy function.
+- app/pilot/__init__.py no longer registers Poolside on import. KILO_FREE_ROUTES has no executable entries. Historical model ID constants may remain for retirement audits; they do not create routes.
+- PR #3819 remains DRAFT. Focused tests: 121 passed. Full B14 tests: 875 passed, 81 failed, 38 errors (Windows local, UTF-8 mode). Do not Ready/merge or deploy until full regression and cross-product CI gates pass.

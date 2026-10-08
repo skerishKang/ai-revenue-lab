@@ -60,55 +60,8 @@ def is_transient_busy_429(body_text: str) -> bool:
 
 
 def register_sensenova_provider() -> None:
-    """Idempotently register the owner-provisioned SenseNova direct route.
-
-    The credential source is PLATFORM_SECRET with the env binding name only;
-    the key value lives in the Worker secret store and is resolved at
-    request time by the platform adapter.
-    """
-
-    if get_platform_provider(SENSENOVA_PROVIDER_ID) is None:
-        register_platform_provider(
-            PlatformProviderSpec(
-                provider_id=SENSENOVA_PROVIDER_ID,
-                credential_source=CredentialSource.PLATFORM_SECRET,
-                credential_binding_name=SENSENOVA_CREDENTIAL_BINDING,
-                base_origin=SENSENOVA_BASE_ORIGIN,
-                allowed_hosts=(SENSENOVA_ALLOWED_HOST,),
-                enabled=True,
-            )
-        )
-
-    if SENSENOVA_MODEL_ID in CATALOG_BY_ID:
-        return
-
-    model = CatalogModel(
-        model_id=SENSENOVA_MODEL_ID,
-        upstream_model=SENSENOVA_UPSTREAM_MODEL,
-        display_name="SenseNova: 6.8 Flash Lite (owner plan)",
-        provider="SenseNova",
-        provider_type="platform",
-        # Owner-plan cost: no per-token price is fabricated.
-        input_price_usd_per_1m=None,
-        output_price_usd_per_1m=None,
-        currency="usd",
-        context_window=256_000,
-        korean_score=0,
-        latency_ms=0,
-        capabilities=frozenset({"chat", "coding"}),
-        region="외부",
-        sort_order=85,
-        credential_source="platform_secret",
-        platform_provider_id=SENSENOVA_PROVIDER_ID,
-        source="sensenova_token_api_measured",
-        source_checked_at=SENSENOVA_SOURCE_CHECKED_AT,
-        snapshot_state="configured_snapshot",
-    )
-
-    # Manual-pin capable: registered in the exact-ID lookup table only.
-    # Not appended to CATALOG_MODELS, so b14/auto and the legacy public
-    # summary surface are untouched; the owner pins this route explicitly.
-    CATALOG_BY_ID[model.model_id] = model
+    """Historic API kept only to fail closed; models are installed from b14_models.json."""
+    raise RuntimeError("legacy provider registration disabled: edit b14_models.json")
 
 
 

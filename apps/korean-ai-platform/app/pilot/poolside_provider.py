@@ -33,55 +33,8 @@ POOLSIDE_CREDENTIAL_BINDING = "PADIEM_POOLSIDE_API_KEY"
 
 
 def register_poolside_provider() -> None:
-    """Idempotently register Poolside and explicit-only Laguna S 2.1.
-
-    Pricing remains unknown in the durable model metadata even though Poolside's
-    official models page currently advertises limited-time free access. This
-    deliberately avoids turning a time-limited promotion into a permanent
-    ``free`` capability claim.
-    """
-
-    if get_platform_provider(POOLSIDE_PROVIDER_ID) is None:
-        register_platform_provider(
-            PlatformProviderSpec(
-                provider_id=POOLSIDE_PROVIDER_ID,
-                credential_source=CredentialSource.PLATFORM_SECRET,
-                credential_binding_name=POOLSIDE_CREDENTIAL_BINDING,
-                base_origin=POOLSIDE_BASE_ORIGIN,
-                allowed_hosts=("inference.poolside.ai",),
-                enabled=True,
-            )
-        )
-
-    if POOLSIDE_MODEL_ID in CATALOG_BY_ID:
-        return
-
-    model = CatalogModel(
-        model_id=POOLSIDE_MODEL_ID,
-        upstream_model=POOLSIDE_UPSTREAM_MODEL,
-        display_name="Poolside: Laguna S 2.1",
-        provider="Poolside",
-        provider_type="platform",
-        input_price_usd_per_1m=None,
-        output_price_usd_per_1m=None,
-        currency="usd",
-        context_window=1_000_000,
-        korean_score=0,
-        latency_ms=0,
-        capabilities=frozenset({"chat", "coding", "long_context"}),
-        region="외부",
-        sort_order=80,
-        credential_source="platform_secret",
-        platform_provider_id=POOLSIDE_PROVIDER_ID,
-        source="poolside_official_models_page",
-        source_checked_at="2026-08-28",
-        snapshot_state="configured_snapshot",
-    )
-    ensure_free_tag_requires_known_zero_price(model)
-
-    # Exact manual lookup only. Do not append to CATALOG_MODELS: that list is
-    # still the legacy OpenRouter public/auto-routing surface.
-    CATALOG_BY_ID[model.model_id] = model
+    """Historic API kept only to fail closed; models are installed from b14_models.json."""
+    raise RuntimeError("legacy provider registration disabled: edit b14_models.json")
 
 
 

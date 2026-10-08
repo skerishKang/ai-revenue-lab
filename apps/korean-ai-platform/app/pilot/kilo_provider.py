@@ -105,24 +105,7 @@ class _KiloFreeRoute:
     source_checked_at: str = "2026-09-02"
 
 
-KILO_FREE_ROUTES = (
-    _KiloFreeRoute(
-        model_id=KILO_NEMOTRON_MODEL_ID,
-        upstream_model=KILO_NEMOTRON_UPSTREAM_MODEL,
-        display_name="Kilo: NVIDIA Nemotron 3 Ultra (free)",
-        provider="Kilo Gateway / NVIDIA",
-        context_window=1_000_000,
-        sort_order=90,
-    ),
-    _KiloFreeRoute(
-        model_id=KILO_LAGUNA_MODEL_ID,
-        upstream_model=KILO_LAGUNA_UPSTREAM_MODEL,
-        display_name="Kilo: Poolside Laguna S 2.1 (free)",
-        provider="Kilo Gateway / Poolside",
-        context_window=262_144,
-        sort_order=91,
-    ),
-)
+KILO_FREE_ROUTES: tuple[_KiloFreeRoute, ...] = ()
 # Historical note: the Space Bunny lane (kilo/stealth-space-bunny-alpha,
 # sort_order 92, capabilities {chat, coding, free, image}, context_window 0)
 # was removed from KILO_FREE_ROUTES by the owner final retirement decision
@@ -131,56 +114,8 @@ KILO_FREE_ROUTES = (
 
 
 def register_kilo_provider() -> None:
-    """Idempotently register the explicit Kilo free routes.
-
-    The shared Kilo Provider spec stays keyless so all registered free lanes
-    preserve their existing anonymous contract. No retired lane (including
-    Space Bunny) is registered here, and no lane carries a model-scoped auth
-    special-case in the platform adapter.
-    """
-
-    if get_platform_provider(KILO_PROVIDER_ID) is None:
-        register_platform_provider(
-            PlatformProviderSpec(
-                provider_id=KILO_PROVIDER_ID,
-                credential_source=CredentialSource.NONE,
-                credential_binding_name="",
-                base_origin=KILO_BASE_ORIGIN,
-                allowed_hosts=(KILO_ALLOWED_HOST,),
-                enabled=True,
-            )
-        )
-
-    for route in KILO_FREE_ROUTES:
-        if route.model_id in CATALOG_BY_ID:
-            continue
-
-        model = CatalogModel(
-            model_id=route.model_id,
-            upstream_model=route.upstream_model,
-            display_name=route.display_name,
-            provider=route.provider,
-            provider_type="platform",
-            input_price_usd_per_1m=0.0,
-            output_price_usd_per_1m=0.0,
-            currency="usd",
-            context_window=route.context_window,
-            korean_score=0,
-            latency_ms=0,
-            capabilities=route.capabilities,
-            region="외부",
-            sort_order=route.sort_order,
-            credential_source="platform_secret",
-            platform_provider_id=KILO_PROVIDER_ID,
-            source="kilo_official_gateway_models",
-            source_checked_at=route.source_checked_at,
-            snapshot_state="configured_snapshot",
-        )
-        ensure_free_tag_requires_known_zero_price(model)
-
-        # Explicit-only. Do not append to CATALOG_MODELS / b14-auto. The owner
-        # explicitly rejected provider-side auto/free routing for this lane.
-        CATALOG_BY_ID[model.model_id] = model
+    """Historic API kept only to fail closed; models are installed from b14_models.json."""
+    raise RuntimeError("legacy provider registration disabled: edit b14_models.json")
 
 
 
