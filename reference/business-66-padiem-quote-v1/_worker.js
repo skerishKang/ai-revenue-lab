@@ -52,6 +52,7 @@ function padiemTarget(url, method) {
     ["/api/padiem/auth/logout", ["POST", "/api/auth/logout"]],
     ["/api/padiem/b66/company-profile", ["GET", "/api/b66/company-profile"]],
     ["/api/padiem/b66/quote/interpret", ["POST", "/api/b66/quote/interpret"]],
+    ["/api/padiem/b66/quote/preview-base", ["GET", "/api/b66/quote/preview-base"]],
     ["/api/padiem/b66/quote/pdf", ["POST", "/api/b66/quote/pdf"]]
   ]);
   if (exact.has(path)) {
@@ -124,7 +125,9 @@ async function handlePadiemBridge(request, url, env) {
   }
 
   const headers = new Headers({
-    "Accept": upstreamPath === "/api/b66/quote/pdf" ? "application/pdf,application/json" : "application/json"
+    "Accept": upstreamPath === "/api/b66/quote/pdf"
+      ? "application/pdf,application/json"
+      : (upstreamPath === "/api/b66/quote/preview-base" ? "image/png,application/json" : "application/json")
   });
   headers.set("X-B66-Origin", url.origin);
   if (MUTATING_METHODS.has(request.method)) headers.set("Origin", PADIEM_CHAT_ORIGIN);
@@ -146,6 +149,7 @@ async function handlePadiemBridge(request, url, env) {
   }
 
   const target = new URL(upstreamPath, PADIEM_CHAT_ORIGIN);
+  if (upstreamPath === "/api/b66/quote/preview-base") target.search = url.search;
   const init = {
     method: request.method,
     headers,

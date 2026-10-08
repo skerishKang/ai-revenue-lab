@@ -604,6 +604,12 @@
     return filename;
   }
 
+  function certifiedPreviewBaseUrl(savedSkillId) {
+    const id = String(savedSkillId || "");
+    if (!/^b66skill_[0-9a-f]{32}$/.test(id)) return "";
+    return API + "/b66/quote/preview-base?saved_skill_id=" + encodeURIComponent(id);
+  }
+
   async function downloadPdf(renderModel) {
     const readiness = runtimeReadiness();
     if (!readiness.ready) return pdfFailure(notReadyCode(readiness), interpretErrorText(notReadyCode(readiness)));
@@ -675,6 +681,7 @@
     interpret: interpretRequest,
     buildFromFacts: buildQuoteFromFacts,
     downloadPdf,
+    certifiedPreviewBaseUrl,
     pendingQuote: () => pendingQuote(),
     clearPending: () => { clearPendingQuote(); },
     getCompanyProfile: () => (state.companyProfile ? JSON.parse(JSON.stringify(state.companyProfile)) : null),
