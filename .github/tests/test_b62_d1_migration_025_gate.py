@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import re
 import sqlite3
 from pathlib import Path
 
@@ -140,6 +141,31 @@ def _sqlite_payload(db) -> dict:
             _result(rows("PRAGMA foreign_key_list(b66_quote_history)")),
         ],
     }
+
+
+def _approved_table_ddl() -> str:
+    sql = MIGRATION.read_text(encoding="utf-8")
+    match = re.search(r"CREATE TABLE IF NOT EXISTS b66_quote_history \(.*?\n\);", sql, re.S)
+    assert match is not None, "could not extract the reviewed 025 table DDL"
+    return match.group(0)
+
+
+def _db_with(ddl: str):
+    """Build a real SQLite database from an explicit table DDL plus the reviewed index."""
+    db = sqlite3.connect(":memory:")
+    db.row_factory = sqlite3.Row
+    db.executescript(
+        """
+        PRAGMA foreign_keys=ON;
+        CREATE TABLE users (id TEXT PRIMARY KEY);
+        """
+    )
+    db.executescript(ddl)
+    db.executescript(
+        "CREATE INDEX idx_b66_quote_history_owner_workspace_updated "
+        "ON b66_quote_history (user_id, workspace_id, updated_at DESC);"
+    )
+    return db
 
 
 def test_schema_classifier_missing_exact_drift() -> None:
@@ -301,6 +327,35 @@ def test_classifier_rejects_real_sqlite_foreign_unique_and_partial_index() -> No
     assert helper.classify_schema(_sqlite_payload(partial)) == "drift"
 
 
+def test_classifier_rejects_extra_constraints_real_sqlite() -> None:
+    """Added NOT NULL / CHECK / DEFAULT clauses not in migration 025 must be drift."""
+    helper = _load_helper()
+    base = _approved_table_ddl()
+
+    # control: the reviewed definition alone is exact
+    assert helper.classify_schema(_sqlite_payload(_db_with(base))) == "exact"
+
+    variants = {
+        # 1. added column constraint absent from migration 025
+        "extra_not_null": base.replace("quote_no TEXT,", "quote_no TEXT NOT NULL,"),
+        # 2. added column CHECK (e.g. CHECK (0))
+        "extra_column_check": base.replace(
+            "snapshot_json TEXT NOT NULL,",
+            "snapshot_json TEXT NOT NULL CHECK (0),",
+        ),
+        # 3. added column DEFAULT
+        "extra_default": base.replace("sender_json TEXT,", "sender_json TEXT DEFAULT 'x',"),
+        # 4. added table-level CHECK
+        "extra_table_check": base.replace(
+            "updated_at TEXT NOT NULL\n);",
+            "updated_at TEXT NOT NULL,\n    CHECK (0)\n);",
+        ),
+    }
+    for name, ddl in variants.items():
+        assert ddl != base, f"{name}: replacement did not apply"
+        assert helper.classify_schema(_sqlite_payload(_db_with(ddl))) == "drift", name
+
+
 def test_migration_is_additive_and_preserves_existing_rows() -> None:
     db = sqlite3.connect(":memory:")
     db.executescript(
@@ -410,6 +465,7 @@ if __name__ == "__main__":
     test_classifier_rejects_foreign_unique_and_partial_index()
     test_classifier_accepts_schema_created_by_migration()
     test_classifier_rejects_real_sqlite_foreign_unique_and_partial_index()
+    test_classifier_rejects_extra_constraints_real_sqlite()
     test_migration_is_additive_and_preserves_existing_rows()
     test_migration_contract_is_additive_and_allows_foreign_keys_pragma()
     test_workflow_is_pr_safe_and_migration_specific()

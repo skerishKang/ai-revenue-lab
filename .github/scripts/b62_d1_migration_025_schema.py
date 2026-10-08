@@ -5,16 +5,21 @@ Bounded, read-only classifier for the #3405 durable quote-history table.
 It proves the migration 025 contract from `sqlite_master` plus `PRAGMA`
 metadata only; it never reads application rows and never mutates anything.
 
-Beyond the column / primary-key / foreign-key contract it also proves the
-index is the *reviewed* index:
+The table contract is matched **exactly**, not by substring: the CREATE TABLE
+body is split into its top-level definitions and compared, one by one, to the
+reviewed migration 025 definition. Any added constraint that the reviewed
+migration does not contain is therefore drift, including
+
+* an added ``NOT NULL`` (e.g. ``quote_no TEXT NOT NULL``),
+* an added column or table ``CHECK`` (e.g. ``CHECK (0)``),
+* an added ``DEFAULT`` or any other extra column/table clause.
+
+The index is likewise proven to be the *reviewed* index:
 
 * it is owned by ``b66_quote_history`` (present in ``PRAGMA index_list`` for
   that table, and its ``sqlite_master`` SQL names that table);
 * it is not a UNIQUE index; and
 * it is not a partial index (no ``WHERE`` clause).
-
-A foreign-table index, a UNIQUE index or a partial index that happens to share
-the expected name/columns/direction is classified as ``drift``.
 """
 
 from __future__ import annotations
@@ -33,6 +38,22 @@ COLUMNS = (
 PRIMARY_KEY = ("id",)
 INDEX_COLUMNS = ("user_id", "workspace_id", "updated_at")
 INDEX_DESCENDING = (0, 0, 1)
+
+# The reviewed migration 025 CREATE TABLE body, normalized (whitespace collapsed,
+# lowercased) and split into its top-level definitions. Matched exactly.
+TABLE_DEFINITION = (
+    "id text primary key",
+    "user_id text not null references users(id) on delete cascade",
+    "workspace_id text not null",
+    "quote_no text",
+    "issue_date text",
+    "saved_skill_id text",
+    "skill_fingerprint text",
+    "snapshot_json text not null",
+    "sender_json text",
+    "created_at text not null",
+    "updated_at text not null",
+)
 
 
 class SchemaEvidenceError(RuntimeError):
@@ -62,6 +83,41 @@ def _as_int(value: object) -> int | None:
     if isinstance(value, str) and re.fullmatch(r"-?\d+", value.strip()):
         return int(value.strip())
     return None
+
+
+def _table_definition_parts(table_sql: str) -> tuple[str, ...] | None:
+    """Split the CREATE TABLE body into its top-level definitions.
+
+    Commas inside a nested clause (e.g. ``CHECK (x IN (1, 2))``) do not split.
+    Returns None when the statement is not a recognizable CREATE TABLE.
+    """
+    match = re.search(
+        rf"create table (?:if not exists )?{re.escape(TABLE)}\s*\((.*)\)\s*$",
+        table_sql,
+        re.S,
+    )
+    if match is None:
+        return None
+    body = match.group(1)
+    parts: list[str] = []
+    depth = 0
+    buffer: list[str] = []
+    for char in body:
+        if char == "(":
+            depth += 1
+        elif char == ")":
+            depth -= 1
+        if char == "," and depth == 0:
+            parts.append("".join(buffer))
+            buffer = []
+        else:
+            buffer.append(char)
+    parts.append("".join(buffer))
+    return tuple(
+        re.sub(r"\s+", " ", part).strip().lower()
+        for part in parts
+        if part.strip()
+    )
 
 
 def _index_is_reviewed(index: object, index_list: list[dict[str, object]]) -> bool:
@@ -129,11 +185,17 @@ def classify_schema(payload: object) -> str:
     if not _index_is_reviewed(index, index_list):
         return "drift"
 
-    # 2. eleven columns, exact names and order
+    # 2. the CREATE TABLE body matches the reviewed migration 025 definition exactly;
+    #    any added NOT NULL / CHECK / DEFAULT / extra clause is drift.
+    definition = _table_definition_parts(_normalized_sql(table.get("sql")))
+    if definition is None or definition != TABLE_DEFINITION:
+        return "drift"
+
+    # 3. eleven columns, exact names and order
     if tuple(str(row.get("name", "")) for row in columns) != COLUMNS:
         return "drift"
 
-    # 3. single-column primary key on id
+    # 4. single-column primary key on id
     pk = tuple(
         str(row.get("name", ""))
         for row in sorted(columns, key=lambda row: _as_int(row.get("pk")) or 0)
@@ -142,33 +204,15 @@ def classify_schema(payload: object) -> str:
     if pk != PRIMARY_KEY:
         return "drift"
 
-    # 4. index column order
+    # 5. index column order
     if tuple(str(row.get("name", "")) for row in index_columns) != INDEX_COLUMNS:
         return "drift"
 
-    # 5. index sort direction, including updated_at DESC (index_xinfo key columns)
+    # 6. index sort direction, including updated_at DESC (index_xinfo key columns)
     key_rows = [row for row in index_detail if _as_int(row.get("key")) == 1]
     if tuple(str(row.get("name", "")) for row in key_rows) != INDEX_COLUMNS:
         return "drift"
     if tuple(_as_int(row.get("desc")) for row in key_rows) != INDEX_DESCENDING:
-        return "drift"
-
-    # 6. additive table contract fragments
-    table_sql = _normalized_sql(table.get("sql"))
-    required = (
-        "id text primary key",
-        "user_id text not null references users(id) on delete cascade",
-        "workspace_id text not null",
-        "quote_no text",
-        "issue_date text",
-        "saved_skill_id text",
-        "skill_fingerprint text",
-        "snapshot_json text not null",
-        "sender_json text",
-        "created_at text not null",
-        "updated_at text not null",
-    )
-    if any(fragment not in table_sql for fragment in required):
         return "drift"
 
     # 7. foreign key user_id -> users(id) ON DELETE CASCADE
