@@ -371,8 +371,12 @@ jobs:
         with:
           version: '0.12.5'
 
+      # #3737: this step runs from the workspace root, which is what its own
+      # `cd apps/padiem-ai-engine` / `cd "$GITHUB_WORKSPACE"` pair already assumes.
+      # A step-level working-directory made the two contradict each other: the
+      # body's `.github/scripts/...` adapter calls could not resolve and the step
+      # aborted before any mutation, so the Engine rollback could never execute.
       - name: Rollback engine worker to previous version
-        working-directory: apps/padiem-ai-engine
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -393,8 +397,11 @@ jobs:
           fi
           # Canonical safe-version-id contract (same charset rule the resolver
           # uses) so an owner typo or a hostile string never reaches the CLI.
+          # The =FORM is load-bearing: the canonical grammar accepts a leading
+          # hyphen, and a separate token would be read by argparse as an option
+          # and refused before the predicate is ever consulted.
           python3 .github/scripts/b54_engine_served_version_guard.py \
-            validate-version-id --version-id "${ROLLBACK_TARGET}"
+            validate-version-id --version-id="${ROLLBACK_TARGET}"
           echo "ROLLBACK_TARGET_VERSION_ID=${ROLLBACK_TARGET}"
           echo 'ROLLBACK_TARGET_EXPLICIT=YES'
           echo 'IMPLICIT_PREVIOUS_VERSION_SELECTION=NO'
@@ -437,7 +444,7 @@ jobs:
               printf 'reject -\n' >> "${observations}"
             fi
             if evidence_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
-              --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+              --class ROLLBACK --pre-version="${pre_version}" --target-version="${ROLLBACK_TARGET}" \
               --observations "${observations}" --window-open)"; then
               evidence_rc=0
             else
@@ -454,7 +461,7 @@ jobs:
           # Re-decide with the window CLOSED: the verdict that ends this step
           # must be one the primitive itself considers final.
           if ! final_out="$(python3 .github/scripts/cloudflare_mutation_evidence.py evaluate \
-            --class ROLLBACK --pre-version "${pre_version}" --target-version "${ROLLBACK_TARGET}" \
+            --class ROLLBACK --pre-version="${pre_version}" --target-version="${ROLLBACK_TARGET}" \
             --observations "${observations}")"; then
             echo 'POST_ROLLBACK_SERVED_EQUALS_TARGET=FAIL' >&2
             printf '%s\n' "${final_out}" >&2
