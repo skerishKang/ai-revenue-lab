@@ -47,6 +47,34 @@ class FinalHandoffSmokeContractTests(unittest.TestCase):
             )
         )
 
+    def test_google_fonts_css_is_not_a_direct_model_provider(self):
+        # Public GET-only browser observation: fonts.googleapis.com/css2.
+        self.assertFalse(module._is_direct_provider(
+            "https://fonts.googleapis.com/css2?family=Manrope:wght@400"
+        ))
+        self.assertFalse(module._is_direct_provider(
+            "https://fonts.googleapis.com/css?family=Manrope"
+        ))
+        # This exemption must not expand to any other Google API route.
+        self.assertTrue(module._is_direct_provider(
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini:generateContent"
+        ))
+        self.assertTrue(module._is_direct_provider(
+            "https://aiplatform.googleapis.com/v1/projects/p/locations/l"
+        ))
+        self.assertTrue(module._is_direct_provider(
+            "https://fonts.googleapis.com/v1/models/gemini:generateContent"
+        ))
+        self.assertTrue(module._is_direct_provider(
+            "https://www.googleapis.com/v1/models/gemini:generateContent"
+        ))
+        self.assertTrue(module._is_direct_provider(
+            "https://api.openai.com/v1/chat/completions"
+        ))
+        self.assertTrue(module._is_direct_provider(
+            "https://api.anthropic.com/v1/messages"
+        ))
+
     def test_final_handoff_uses_real_certified_pdf_download_not_window_print(self):
         source = SCRIPT.read_text(encoding="utf-8")
         self.assertIn("page.expect_download", source)
