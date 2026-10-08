@@ -88,7 +88,6 @@ def deny(fake, expected="selection_unavailable"):
     ("kilo/nvidia-nemotron-3-ultra-550b-a55b-free", "kilo"),
     ("kilo/nvidia-nemotron-new-variant-free", "kilo"),
     ("kilo/poolside-laguna-s-2.1-free", "kilo"),
-    ("poolside/laguna-s-2.1", "poolside"),
     ("b-ai/qwen3.8-flash", "b-ai"),
     ("infron/motif/motif-3", "infron"),
     ("experiential/gpt-5.6-luna", "experiential"),

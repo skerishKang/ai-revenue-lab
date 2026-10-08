@@ -33,7 +33,7 @@ def _excluded_by_owner(model_id: str) -> bool:
     normalized = model_id.strip().casefold()
     return (
         "nemotron" in normalized  # NVIDIA Nemotron, all registered versions
-        or ("poolside" in normalized and "laguna" in normalized)
+        or (normalized.startswith("kilo/") and "poolside" in normalized and "laguna" in normalized)
         or (normalized.startswith("b-ai/") and "qwen" in normalized)
         or "motif-3" in normalized
         or "gpt-5.6-luna" in normalized
