@@ -264,19 +264,19 @@ def _browser_control_lease_authority(
     device: Any,
     credential_dir: str,
     root_source: str,
-    acceptance_command_id: str = "",
-    acceptance_binding_ref: str = "",
-    acceptance_request_id: str = "",
+    redeemed_device_binding_ref: str = "",
+    approved_command_correlation: Any = None,
     observer: Any = None,
 ) -> Any:
     """Compose the canonical `browser.control` lease slice, fail-closed by default (#3669).
 
     CENTRAL ruling DECISION=B: a *separate* canonical durable lease store sits
     next to the run store — the `DurableRunStore` itself is not touched. Only
-    when a real shell-supplied root (root_source=env) and a configured broker
-    boundary exist is the existing canonical P01 evidence route wired;
-    otherwise the authority keeps its fail-closed default evidence port, so an
-    unrouted resident can never mint a lease.
+    when a real shell-supplied root (root_source=env), an authenticated
+    per-command browser.control work ticket, and a configured broker boundary
+    ALL exist can the canonical P01 evidence route be wired. The #3140
+    acceptance command is ONLY pairing/runner evidence, never this grant.
+    Otherwise the authority keeps its fail-closed evidence port.
 
         DESKTOP_DURABLE_LEASE_AUTHORITY=NO
         NEW_APPROVAL_STORE=0
@@ -287,7 +287,8 @@ def _browser_control_lease_authority(
 
     from .browser_control_lease_authority import (
         BrowserControlLeaseAuthority,
-        P01LoopbackBrowserControlEvidenceClient,
+        BrowserControlP01CommandCorrelation,
+        P01PerCommandBrowserControlEvidenceClient,
     )
     from .browser_control_lease_store import BrowserControlLeaseStore
     from .local_agent_permissions import default_device_permission_profile
@@ -299,10 +300,12 @@ def _browser_control_lease_authority(
     if (
         root_source != "env"
         or not broker_url
-        or not acceptance_command_id
-        or not acceptance_binding_ref
-        or not acceptance_request_id
+        or not isinstance(approved_command_correlation, BrowserControlP01CommandCorrelation)
+        or not redeemed_device_binding_ref
+        or approved_command_correlation.binding_ref != redeemed_device_binding_ref
     ):
+        # Ambient #3140 pairing IDs are not accepted by this factory.
+        # Only a distinct canonical broker-issued work-ticket can configure it.
         return BrowserControlLeaseAuthority(
             device=device,
             permission_profile=permission_profile,
@@ -312,11 +315,9 @@ def _browser_control_lease_authority(
         device=device,
         permission_profile=permission_profile,
         store=store,
-        evidence_port=P01LoopbackBrowserControlEvidenceClient(
+        evidence_port=P01PerCommandBrowserControlEvidenceClient(
             base_url=broker_url,
-            binding_ref=acceptance_binding_ref,
-            request_id=acceptance_request_id,
-            command_id=acceptance_command_id,
+            correlation=approved_command_correlation,
         ),
     )
 
@@ -996,9 +997,11 @@ def main(argv: list[str] | None = None) -> int:
             device=lease_device,
             credential_dir=entry.credential_dir,
             root_source=lease_root_source,
-            acceptance_command_id=ACCEPTANCE_COMMAND_ID,
-            acceptance_binding_ref=redeemed["binding"].binding_ref,
-            acceptance_request_id=ACCEPTANCE_REQUEST_ID,
+            redeemed_device_binding_ref=redeemed["binding"].binding_ref,
+            # No ambient #3140 pairing command or request ID is supplied to
+            # browser.control. This remains unconfigured until canonical
+            # per-command Broker/P01 material arrives via a separate ingress.
+            approved_command_correlation=None,
             observer=_observe_phase,
         )
         lease_resolve, lease_consume = _lease_authority_callables(lease_authority)
