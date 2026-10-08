@@ -556,6 +556,88 @@ async function main() {
     assert.equal(state.starts, 2, "one more press can open a fresh session");
   }
 
+  /* --- press A → cancel → press B, B settles first, A settles late ---------------- */
+  {
+    const { Bridge, doc } = loadBridge();
+    const host = createHost();
+    const state = { sinks: [], mounts: 0, unmounts: 0, api: null };
+    const bridge = Bridge.createVoiceBridge({
+      document: doc, window: {}, host, engineLoader: attemptEngine(state)
+    });
+    Bridge.bindDom(bridge, doc);
+    const mic = doc.elements.easyVoiceMic;
+    const a = mic.click();
+    await tick();
+    assert.equal(mic.getAttribute("aria-pressed"), "true", "the press that is connecting reads on");
+    mic.click();
+    await tick();
+    assert.equal(mic.getAttribute("aria-pressed"), "false", "the press that cancelled reads off");
+    const b = mic.click();
+    await tick();
+    assert.equal(mic.getAttribute("aria-pressed"), "true", "the replacement press reads on again");
+
+    state.sinks[1].releases[0].resolve();
+    await b;
+    assert.equal(bridge.isRunning(), true, "B is the live session");
+    state.sinks[0].releases[0].reject(new Error("late A failure"));
+    const aResult = await a;
+    await tick();
+    assert.equal(aResult.started, false, "A still reports its own cancellation");
+    assert.equal(mic.getAttribute("aria-pressed"), "true",
+      "but a superseded promise cannot darken the button of the session that is live");
+    assert.equal(bridge.isRunning(), true, "B was never touched");
+  }
+
+  /* --- A settles while B is still connecting, and B then goes live ----------------- */
+  {
+    const { Bridge, doc } = loadBridge();
+    const host = createHost();
+    const state = { sinks: [], mounts: 0, unmounts: 0, api: null };
+    const bridge = Bridge.createVoiceBridge({
+      document: doc, window: {}, host, engineLoader: attemptEngine(state)
+    });
+    Bridge.bindDom(bridge, doc);
+    const mic = doc.elements.easyVoiceMic;
+    const a = mic.click();
+    await tick();
+    mic.click();
+    await tick();
+    const b = mic.click();
+    await tick();
+    assert.equal(mic.getAttribute("aria-pressed"), "true", "B is connecting");
+
+    state.sinks[0].releases[0].reject(new Error("late A failure"));
+    const aResult = await a;
+    await tick();
+    assert.equal(aResult.started, false);
+    assert.equal(mic.getAttribute("aria-pressed"), "true",
+      "A finishing first cannot switch off a connection that is still in flight");
+
+    state.sinks[1].releases[0].resolve();
+    await b;
+    assert.equal(bridge.isRunning(), true, "B is live");
+    assert.equal(mic.getAttribute("aria-pressed"), "true", "and its button stayed on throughout");
+  }
+
+  /* --- a press whose own attempt really did fail still switches the button off ---- */
+  {
+    const { Bridge, doc } = loadBridge();
+    const host = createHost();
+    const state = { sinks: [], mounts: 0, unmounts: 0, api: null };
+    const bridge = Bridge.createVoiceBridge({
+      document: doc, window: {}, host, engineLoader: attemptEngine(state)
+    });
+    Bridge.bindDom(bridge, doc);
+    const mic = doc.elements.easyVoiceMic;
+    const a = mic.click();
+    await tick();
+    state.sinks[0].releases[0].reject(new Error("voice_engine_not_mounted"));
+    const result = await a;
+    assert.equal(result.started, false, "the failure is reported");
+    assert.equal(mic.getAttribute("aria-pressed"), "false",
+      "and the button of the attempt that actually failed does switch off");
+  }
+
   /* --- the shipped artifact is the reused engine, not a local rewrite ------------ */
   {
     const { Bridge } = loadBridge();

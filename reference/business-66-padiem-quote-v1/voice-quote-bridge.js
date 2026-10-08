@@ -332,7 +332,13 @@
         }
         mic.setAttribute("aria-pressed", "true");
         return bridge.start().then((result) => {
-          if (!result.started) mic.setAttribute("aria-pressed", "false");
+          /* The optimistic read is only this press's to undo, and only while the button still
+             describes it. A promise that settles after the page replaced the attempt belongs to
+             a session nobody is showing any more, so it may not darken a live or connecting
+             microphone. */
+          if (!result.started && !bridge.isRunning() && !bridge.isStarting()) {
+            mic.setAttribute("aria-pressed", "false");
+          }
           return result;
         });
       });
