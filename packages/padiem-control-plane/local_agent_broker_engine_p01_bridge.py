@@ -64,6 +64,7 @@ class BrokerEngineP01Join:
     revision_ref: str
     engine_app_id: str
     engine_continuation_ref: str
+    engine_run_id: str
     engine_user_subject_id: str
     engine_request_sha256: str
     engine_original_admission_decision_id: str
@@ -74,7 +75,7 @@ class BrokerEngineP01Join:
         for name in (
             "command_ref", "binding_ref", "request_id", "run_ref",
             "admission_ref", "revision_ref", "engine_app_id",
-            "engine_continuation_ref", "engine_user_subject_id",
+            "engine_continuation_ref", "engine_run_id", "engine_user_subject_id",
             "engine_original_admission_decision_id", "user_p01_evidence_ref",
         ):
             _ref(getattr(self, name), name)
@@ -221,7 +222,7 @@ class SourceOnlyBrokerEngineBrowserP01Bridge:
             user_subject_id=joined.engine_user_subject_id,
             original_request_fingerprint=joined.engine_request_sha256,
             original_admission_decision_id=joined.engine_original_admission_decision_id,
-            run_id=joined.run_ref,
+            run_id=joined.engine_run_id,
             invocation_sha256=joined.browser_invocation_sha256,
             user_approval_evidence_ref=joined.user_p01_evidence_ref,
         )

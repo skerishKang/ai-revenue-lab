@@ -83,6 +83,7 @@ def _harness():
         revision_ref=scope.revision_ref,
         engine_app_id="app.engine.browser.3782",
         engine_continuation_ref="cont_engine_browser.3782",
+        engine_run_id="torun.engine.browser.3782",
         engine_user_subject_id=scope.owner_ref,
         engine_request_sha256=ENGINE_SHA,
         engine_original_admission_decision_id="decision.original.engine.3782",
@@ -96,7 +97,7 @@ def _harness():
         decision_id="decision.engine.3782",
         evidence_ref=EVIDENCE_REF,
         authority_ref="authority.human.3782",
-        run_id=scope.run_ref,
+        run_id=join.engine_run_id,
         invocation_sha256=digest,
         approved_at=NOW - timedelta(seconds=12),
         expires_at=NOW + timedelta(seconds=44),
@@ -131,7 +132,7 @@ def expected_query(join):
         user_subject_id=join.engine_user_subject_id,
         original_request_fingerprint=join.engine_request_sha256,
         original_admission_decision_id=join.engine_original_admission_decision_id,
-        run_id=join.run_ref,
+        run_id=join.engine_run_id,
         invocation_sha256=join.browser_invocation_sha256,
         user_approval_evidence_ref=join.user_p01_evidence_ref,
     )
@@ -140,6 +141,7 @@ def expected_query(join):
 def test_three_authority_join_then_actual_durable_broker_one_shot_take():
     storage, broker, scope, material, join, engine, local = _harness()
     assert ENGINE_SHA != scope.request_fingerprint
+    assert join.result.engine_run_id != scope.run_ref
     result = register(broker, scope, material)
     assert result["stored"] is True
     assert result["action_executed"] is False
@@ -190,6 +192,7 @@ def test_other_command_or_user_mapping_never_reads_engine_or_registers(
 @pytest.mark.parametrize("wrong_field,replacement", [
     ("engine_app_id", "another.engine.app"),
     ("engine_continuation_ref", "cont_other.engine"),
+    ("engine_run_id", "torun.other.engine"),
     ("engine_request_sha256", "e" * 64),
     ("engine_original_admission_decision_id", "decision.other.engine"),
     ("browser_invocation_sha256", "e" * 64),
@@ -272,3 +275,160 @@ def test_hard_missing_engine_authority_fails_closed_without_registration():
     assert join.calls == engine.calls == 1
     assert local.calls == 0
     assert taken_count(storage) == 0
+
+
+def test_real_engine_d1_approved_receipt_drives_broker_cas_with_distinct_run_ids():
+    """Hermetic cross-package D1 integration; approval owner is TEST-ONLY.
+
+    Skip for minimal control-plane-only distributions without Engine. This
+    exercises the REAL Engine D1 query and real Broker transaction/take, not
+    an EnginePort stub. NO real human P01 issuer or cross-service auth exists.
+    """
+    import asyncio
+
+    pytest.importorskip("app.browser_control_p01_receipt")
+    pytest.importorskip("test_browser_control_p01_receipt_3782")
+    from app.browser_control_p01_receipt import (
+        AdmittedBrowserControlP01ReceiptQuery,
+        CloudflareD1BrowserControlP01ReceiptStore,
+    )
+    from app.continuation_d1 import _identity_json
+    from app.continuation_identity import ContinuationExecutionIdentity
+    from app.execution_admission_resume import OriginalAdmissionBinding
+    from padiem_ai_core.agent_approval import (
+        ApprovalOutcome,
+        VerifiedApprovalDecision,
+    )
+    from test_browser_control_p01_receipt_3782 import (
+        _D1,
+        pause,
+        seed,
+    )
+
+    storage, broker, scope, wire, join_port, _stub_engine, local_port = _harness()
+    join = join_port.result
+    assert join.engine_run_id != scope.run_ref
+    assert join.engine_request_sha256 != scope.request_fingerprint
+    db = _D1()
+    try:
+        stamp = NOW
+        p = replace(
+            pause(),
+            pause_id="pause.cross.stack.3782",
+            run_id=join.engine_run_id,
+            invocation_sha256=join.browser_invocation_sha256,
+            created_at=stamp - timedelta(seconds=30),
+            expires_at=stamp + timedelta(seconds=100),
+        )
+        seed(
+            db, p, state="claimed", app_id=join.engine_app_id,
+            continuation_ref=join.engine_continuation_ref,
+        )
+        # Original execution identity is server-derived and separate
+        # from the Broker session fingerprint.
+        identity = ContinuationExecutionIdentity(
+            request_fingerprint=join.engine_request_sha256,
+            plan_fingerprint=None,
+            subject_id=scope.owner_ref,
+            recovery_policy_fingerprint=None,
+            max_retries=0,
+            require_evidence=True,
+            require_verification=True,
+        )
+        original = OriginalAdmissionBinding(
+            decision_id=join.engine_original_admission_decision_id,
+            app_id=join.engine_app_id,
+            subject_id=scope.owner_ref,
+            authority_ref="authority.engine.original.test",
+            policy_revision="rev.engine.original.test",
+            request_fingerprint=join.engine_request_sha256,
+        )
+        db.db.execute(
+            "UPDATE padiem_engine_continuations "
+            "SET claim_token=?, execution_identity_json=? "
+            "WHERE app_id=? AND continuation_ref=?",
+            ("claim_cross.stack.3782", _identity_json(identity, original),
+             join.engine_app_id, join.engine_continuation_ref),
+        )
+        db.db.commit()
+        approved = VerifiedApprovalDecision(
+            decision_id="decision.cross.stack.3782",
+            pause_id=p.pause_id,
+            outcome=ApprovalOutcome.APPROVED,
+            authority_ref="p01.test.human.authority",
+            evidence_ref=join.user_p01_evidence_ref,
+            decided_at=stamp - timedelta(seconds=4),
+        )
+        receipts = CloudflareD1BrowserControlP01ReceiptStore(db)
+        asyncio.run(receipts.commit_claimed_browser_approval(
+            app_id=join.engine_app_id,
+            continuation_ref=join.engine_continuation_ref,
+            claim_token="claim_cross.stack.3782",
+            pause=p, decision=approved, now=stamp,
+        ))
+
+        class _ActualD1EnginePort:
+            def __init__(self):
+                self.reads = 0
+
+            def resolve_admitted(self, *, query, now):
+                self.reads += 1
+                read = AdmittedBrowserControlP01ReceiptQuery(
+                    app_id=query.app_id,
+                    continuation_ref=query.continuation_ref,
+                    user_subject_id=query.user_subject_id,
+                    original_request_fingerprint=query.original_request_fingerprint,
+                    original_admission_decision_id=query.original_admission_decision_id,
+                    run_id=query.run_id,
+                    invocation_sha256=query.invocation_sha256,
+                    user_approval_evidence_ref=query.user_approval_evidence_ref,
+                )
+                r = asyncio.run(receipts.resolve_admitted(query=read, now=now))
+                return (
+                    AuthenticatedEngineP01ReceiptProjection(
+                        app_id=r.app_id, continuation_ref=r.continuation_ref,
+                        pause_id=r.pause_id, decision_id=r.decision_id,
+                        evidence_ref=r.evidence_ref, authority_ref=r.authority_ref,
+                        run_id=r.run_id, invocation_sha256=r.invocation_sha256,
+                        approved_at=r.approved_at, expires_at=r.expires_at,
+                    ) if r is not None else None
+                )
+
+        real_port = _ActualD1EnginePort()
+        bridge = SourceOnlyBrokerEngineBrowserP01Bridge(
+            join_port=join_port, engine_port=real_port,
+            local_port=local_port,
+        )
+        broker = LocalAgentBrokerDurableRuntime(
+            storage=storage, env=_Env(), p01_approval_source=bridge,
+        )
+        registered = broker._bind_browser_material_to_admitted_command(
+            scope=scope, credential=DEVICE_CREDENTIAL, material=wire, now=NOW,
+        )
+        assert registered["stored"] is True
+        assert take(broker, scope) == wire
+        assert real_port.reads == 2
+        assert taken_count(storage) == 1
+
+        # A revoked receipt cannot be re-read for a different future
+        # authenticated Broker command.
+        assert asyncio.run(receipts.revoke(
+            app_id=join.engine_app_id,
+            continuation_ref=join.engine_continuation_ref,
+            now=NOW,
+        ))
+        assert asyncio.run(receipts.resolve_admitted(
+            query=AdmittedBrowserControlP01ReceiptQuery(
+                app_id=join.engine_app_id,
+                continuation_ref=join.engine_continuation_ref,
+                user_subject_id=scope.owner_ref,
+                original_request_fingerprint=join.engine_request_sha256,
+                original_admission_decision_id=join.engine_original_admission_decision_id,
+                run_id=join.engine_run_id,
+                invocation_sha256=join.browser_invocation_sha256,
+                user_approval_evidence_ref=join.user_p01_evidence_ref,
+            ),
+            now=NOW,
+        )) is None
+    finally:
+        db.db.close()
