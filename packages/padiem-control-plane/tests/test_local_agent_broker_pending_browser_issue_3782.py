@@ -75,6 +75,7 @@ def _setup(tmp_path: Path, *, ticket=None):
     source = _VerifiedPendingTicketFixture(ticket if ticket is not None else _ticket())
     broker = LocalAgentBrokerDurableRuntime(
         storage=initial._storage, env=_Env(), pending_browser_ticket_source=source,
+        browser_admission_clock=lambda: CURRENT,
     )
     return storage_file, broker, source
 
@@ -155,6 +156,7 @@ def test_pending_ticket_cannot_be_minted_twice_or_reused_after_restart(tmp_path)
     restarted = _runtime(storage_file)
     again = LocalAgentBrokerDurableRuntime(
         storage=restarted._storage, env=_Env(), pending_browser_ticket_source=source,
+            browser_admission_clock=lambda: CURRENT,
     )
     with pytest.raises(ValueError, match="already issued"):
         _issue(again)

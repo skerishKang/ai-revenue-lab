@@ -48,6 +48,7 @@ def _prepared():
     source = _AsyncEngineP01(original._p01_approval_source, storage)
     broker = LocalAgentBrokerDurableRuntime(
         storage=storage, env=_Env(), p01_approval_source=source,
+        browser_admission_clock=lambda: NOW,
     )
     return storage, broker, scope, wire, source
 
@@ -73,6 +74,7 @@ def test_async_original_engine_p01_then_actual_broker_durable_take_across_restar
     assert registered_rows(storage) == 1
     reopened = LocalAgentBrokerDurableRuntime(
         storage=storage, env=_Env(), p01_approval_source=source,
+        browser_admission_clock=lambda: NOW,
     )
     assert _take(reopened, scope) == material
     assert source.calls == 2

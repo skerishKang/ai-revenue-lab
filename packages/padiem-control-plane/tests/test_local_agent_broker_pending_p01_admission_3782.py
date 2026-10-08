@@ -254,6 +254,7 @@ def test_one_human_approval_evidence_cannot_admit_a_second_broker_command(tmp_pa
     second_issuer = LocalAgentBrokerDurableRuntime(
         storage=broker._storage, env=_Env(),
         pending_browser_ticket_source=second_source,
+        browser_admission_clock=lambda: CURRENT,
     )
     second = _issue(second_issuer, ticket_ref="ticket.second.3782")
     assert first["command_ref"] != second["command_ref"]

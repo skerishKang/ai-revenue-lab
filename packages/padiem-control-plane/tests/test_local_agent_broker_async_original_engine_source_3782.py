@@ -82,6 +82,7 @@ def _prepared():
     )
     broker = LocalAgentBrokerDurableRuntime(
         storage=storage, env=_Env(), original_engine_join_source=source,
+        browser_admission_clock=lambda: NOW,
     )
     return storage, broker, scope, material, join, receipt, local, assoc, engine
 
@@ -127,6 +128,7 @@ def test_authenticated_original_d1_async_maps_into_durable_broker_join_after_res
     )
     active = LocalAgentBrokerDurableRuntime(
         storage=storage, env=_Env(), p01_approval_source=approved,
+        browser_admission_clock=lambda: NOW,
     )
     assert asyncio.run(active._bind_browser_material_to_admitted_command_async(
         scope=scope, credential=DEVICE_CREDENTIAL, material=material, now=NOW,

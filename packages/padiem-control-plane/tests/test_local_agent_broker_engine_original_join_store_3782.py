@@ -186,6 +186,7 @@ def test_persisted_original_join_is_used_by_real_async_broker_cas():
     owner = _OriginalEngineOwner(join.result)
     persisted = LocalAgentBrokerDurableRuntime(
         storage=storage, env=_Env(), original_engine_join_source=owner,
+        browser_admission_clock=lambda: NOW,
     )
     assert bind(persisted, scope)["stored"] is True
     assert owner.calls == 1
@@ -196,6 +197,7 @@ def test_persisted_original_join_is_used_by_real_async_broker_cas():
     )
     broker = LocalAgentBrokerDurableRuntime(
         storage=storage, env=_Env(), p01_approval_source=bridge,
+        browser_admission_clock=lambda: NOW,
     )
     import asyncio
 
@@ -206,6 +208,7 @@ def test_persisted_original_join_is_used_by_real_async_broker_cas():
     assert accepted["action_executed"] is False
     restarted = LocalAgentBrokerDurableRuntime(
         storage=storage, env=_Env(), p01_approval_source=bridge,
+        browser_admission_clock=lambda: NOW,
     )
     assert asyncio.run(restarted._take_authenticated_browser_control_command_async(
         scope=scope, credential=DEVICE_CREDENTIAL, now=NOW,

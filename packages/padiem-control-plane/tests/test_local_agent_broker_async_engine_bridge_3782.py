@@ -66,6 +66,7 @@ def _system():
     )
     broker = LocalAgentBrokerDurableRuntime(
         storage=storage, env=_Env(), p01_approval_source=bridge,
+        browser_admission_clock=lambda: NOW,
     )
     return storage, broker, scope, material, join, local, client
 
@@ -91,6 +92,7 @@ def test_three_original_authorities_async_register_restart_take_once():
     assert join.calls == len(client.calls) == local.calls == 1
     restarted = LocalAgentBrokerDurableRuntime(
         storage=storage, env=_Env(), p01_approval_source=broker._p01_approval_source,
+        browser_admission_clock=lambda: NOW,
     )
     assert _take(restarted, scope) == material
     assert taken_count(storage) == 1

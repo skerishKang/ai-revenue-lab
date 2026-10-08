@@ -357,19 +357,22 @@ class LocalAgentBrokerDurableRuntime:
         if not inspect.isawaitable(result):
             raise ValueError("asynchronous trusted P01 lookup must be awaitable")
         verified = await result
+        # The authenticated Engine read is asynchronous: the original timestamp
+        # cannot authorize a command after its P01, device session or TTL expires.
+        after_lookup = max(current, utc(self._browser_admission_clock(), "broker_server_now"))
         if type(verified) is not AuthenticatedBrowserControlP01Approval:
             raise ValueError("authenticated Engine P01 resolver returned no current approval")
         expected = browser_control_tool_invocation_digest(material)
         verified.assert_matches(
-            scope=scope, expected_invocation_sha256=expected, now=current,
+            scope=scope, expected_invocation_sha256=expected, now=after_lookup,
         )
 
         def operation() -> dict[str, Any]:
             command, authenticated = self._require_live_admitted_browser_command(
-                scope=scope, credential=credential, now=current,
+                scope=scope, credential=credential, now=after_lookup,
             )
             verified.assert_matches(
-                scope=scope, expected_invocation_sha256=expected, now=current,
+                scope=scope, expected_invocation_sha256=expected, now=after_lookup,
             )
             if command.evidence_ref != verified.evidence_ref:
                 raise ValueError("browser.control Engine approval evidence mismatch")
@@ -413,27 +416,31 @@ class LocalAgentBrokerDurableRuntime:
         if not inspect.isawaitable(result):
             raise ValueError("asynchronous trusted P01 lookup must be awaitable")
         verified = await result
+        after_lookup = max(current, utc(self._browser_admission_clock(), "broker_server_now"))
         if type(verified) is not AuthenticatedBrowserControlP01Approval:
             raise ValueError("authenticated Engine P01 resolver returned no current approval")
         verified.assert_matches(
-            scope=scope, expected_invocation_sha256=expected, now=current,
+            scope=scope, expected_invocation_sha256=expected, now=after_lookup,
         )
         if command.evidence_ref != verified.evidence_ref:
             raise ValueError("browser.control live Engine P01 evidence mismatch")
 
         def operation() -> dict[str, Any]:
             live, _ = self._require_live_admitted_browser_command(
-                scope=scope, credential=credential, now=current,
+                scope=scope, credential=credential, now=after_lookup,
+            )
+            verified.assert_matches(
+                scope=scope, expected_invocation_sha256=expected, now=after_lookup,
             )
             if live.evidence_ref != verified.evidence_ref:
                 raise ValueError("browser.control Engine P01 evidence revoked or changed")
             current_material = self.browser_control_take_store._read_approved_material(
-                scope, moment=iso(current),
+                scope, moment=iso(after_lookup),
             )
             if current_material != material:
                 raise ValueError("browser.control command changed after Engine P01 lookup")
             return self.browser_control_take_store._take_in_existing_transaction(
-                scope, moment=iso(current),
+                scope, moment=iso(after_lookup),
             )
         return self.transaction(operation)
 
@@ -504,13 +511,14 @@ class LocalAgentBrokerDurableRuntime:
         if not inspect.isawaitable(pending):
             raise ValueError("original Engine verification must use async authenticated I/O")
         join = await pending
+        after_lookup = max(current, utc(self._browser_admission_clock(), "broker_server_now"))
         if type(join) is not BrokerEngineP01Join:
             raise ValueError("independent authenticated Engine original admission absent")
         join.assert_matches(scope)
 
         def operation() -> dict[str, Any]:
             command, authenticated = self._require_live_admitted_browser_command(
-                scope=scope, credential=credential, now=current,
+                scope=scope, credential=credential, now=after_lookup,
             )
             join.assert_matches(scope)
             if command.evidence_ref != join.user_p01_evidence_ref:
@@ -550,11 +558,12 @@ class LocalAgentBrokerDurableRuntime:
         if not inspect.isawaitable(pending):
             raise ValueError("first-party pending browser ticket requires authenticated async I/O")
         ticket = await pending
+        after_lookup = max(current, utc(self._browser_admission_clock(), "broker_server_now"))
         if type(ticket) is not AuthenticatedPendingBrowserWorkTicket:
             raise ValueError("independent authenticated browser ticket unavailable")
-        if ticket.ticket_ref != ticket_ref or ticket.expires_at <= current:
+        if ticket.ticket_ref != ticket_ref or ticket.expires_at <= after_lookup:
             raise ValueError("pending original browser ticket not current or not requested")
-        lifetime = min(300, int((ticket.expires_at - current).total_seconds()))
+        lifetime = min(300, int((ticket.expires_at - after_lookup).total_seconds()))
         if lifetime < 1:
             raise ValueError("pending original browser ticket expires too soon")
 
@@ -571,7 +580,7 @@ class LocalAgentBrokerDurableRuntime:
                 binding.state is not BrokerBindingState.ACTIVE
                 or binding.device_id != ticket.device_ref
                 or binding.workspace_ref != ticket.workspace_ref
-                or not binding.issued_at <= current < binding.credential_expires_at
+                or not binding.issued_at <= after_lookup < binding.credential_expires_at
             ):
                 raise ValueError("pending browser ticket device scope revoked or changed")
             broker = StateBackedLocalAgentBrokerAuthority(
@@ -587,10 +596,10 @@ class LocalAgentBrokerDurableRuntime:
                 run_id=ticket.broker_run_ref,
                 tool_request_ref=ticket.tool_request_ref,
                 request_fingerprint=ticket.browser_request_fingerprint,
-                now=current, ttl_seconds=lifetime,
+                now=after_lookup, ttl_seconds=lifetime,
             )
             self.browser_pending_ticket_store._register_in_existing_transaction(
-                ticket=ticket, command=command, now=current,
+                ticket=ticket, command=command, now=after_lookup,
             )
             return {
                 "issued": True,
