@@ -32,13 +32,13 @@ All 7/7 and 5/5 claims are prior LOCAL synthetic fixture measurements, not a cur
 
 ## 4. Five OWNER-EXCLUDED models: final exclusion overrides old entries
 
-1. Kilo Poolside Laguna (including Kilo Poolside Laguna free route and direct Poolside Laguna dependency as applicable).
+1. Kilo Poolside Laguna (the Kilo route `kilo/poolside-laguna-s-2.1-free`). The owner statement alone does **not** establish an inclusion or exclusion decision for a separately registered direct Poolside provider route `poolside/laguna-s-2.1`; that route's final customer approval remains UNCONFIRMED.
 2. B.AI Qwen.
 3. Motif 3.
 4. GPT-5.6 Luna.
 5. NVIDIA Nemotron, including Nemotron 3 Ultra.
 
-These five must not be represented as owner-approved selectable Padiem Plus models. Inspect B14 registry and B66 eligibility before changing runtime; do not delete provider metadata blindly. Specifically, merged main catalog.py still contains a historical NVIDIA Nemotron entry; the unmerged LOCAL Plus selectable set still incorrectly marks direct poolside/laguna-s-2.1 EXECUTABLE. Treat both as source/policy mismatch, not owner reapproval. Future remediation must verify existing dependencies and prevent excluded routes becoming auto/manual/fallback eligible under customer products, preserving unrelated provider integrations.
+These five must not be represented as owner-approved selectable Padiem Plus models. Inspect B14 registry and B66 eligibility before changing runtime; do not delete provider metadata blindly. Specifically, merged main catalog.py still contains a historical NVIDIA Nemotron entry; the unmerged LOCAL Plus selectable set declares direct poolside/laguna-s-2.1 EXECUTABLE but its separate owner authorization has not been recovered. Treat the NVIDIA entry as an exclusion conflict and the separate Poolside draft as an authorization-UNCONFIRMED state, not as owner approval or rejection. Future remediation must verify existing dependencies and prevent excluded routes becoming auto/manual/fallback eligible under customer products, preserving unrelated provider integrations.
 
 ## 5. B14 registration truth table (as of this snapshot)
 
@@ -48,7 +48,7 @@ These five must not be represented as owner-approved selectable Padiem Plus mode
 | Google capability | text and image-input tests | no integrated four-model source proved | 3 image proven on local fixture, one inconclusive | PARTIAL |
 | Google provider live | execute via governed B14 only | NOT VERIFIED | protocol/credential binding mismatch to inspect | NOT PROVEN |
 | Individual customer names | 파디엠플러스 + model name | old generic tier branding | English 'Padiem Plus - ' generator | DISPLAY MISMATCH |
-| Five excluded | no customer approval | historic NVIDIA catalog entry | Poolside wrongly executable in selectable draft | SOURCE CONFLICT |
+| Five excluded | no customer approval | historic NVIDIA catalog entry | Kilo Poolside excluded; separate direct Poolside draft authorization unverified | EXCLUSION + UNVERIFIED AUTHORITY |
 | Claw explicit registered model | permitted | PR #3743 merged | n/a | SOURCE MERGED, LIVE NOT PROVEN |
 | B66 automatic quote selection | narrow B66-only free-first, unique qualified ID, attempts <=1, retry/fallback 0 | PR #3762 merged | n/a | SOURCE MERGED, E2E NOT READY |
 | B14 admin Control Center | later design | #2107 open DESIGN ONLY | n/a | NOT BUILT |
