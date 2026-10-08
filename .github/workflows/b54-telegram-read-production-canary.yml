@@ -118,7 +118,10 @@ jobs:
           test "${active_version}" = "${EXPECTED_ENGINE_VERSION}"
           version_detail="${RUNNER_TEMP}/telegram-canary-engine-version.json"
           curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
-          python3 .github/scripts/b54_engine_served_version_guard.py verify --version-settings "${version_detail}" --active-version "${active_version}" --require-drive-runtime-bindings >/dev/null
+          # #3823 (parent #3748): one canonical argv token. The grammar accepts a
+          # leading hyphen, which argparse would read as an option in the
+          # separated form, so the canonical predicate would never run.
+          python3 .github/scripts/b54_engine_served_version_guard.py verify --version-settings "${version_detail}" --active-version="${active_version}" --require-drive-runtime-bindings >/dev/null
           echo "ENGINE_EXPECTED_VERSION_ACTIVE=PASS"
           echo "ENGINE_EXPECTED_VERSION=${EXPECTED_ENGINE_VERSION}"
           echo 'ENGINE_VERSION_ID_OUTPUT=0'
