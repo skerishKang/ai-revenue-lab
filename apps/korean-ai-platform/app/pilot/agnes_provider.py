@@ -84,4 +84,5 @@ def register_agnes_provider() -> None:
     CATALOG_BY_ID[model.model_id] = model
 
 
-register_agnes_provider()
+
+# No import-time registration: canonical b14_models.json owns runtime models.

@@ -555,27 +555,5 @@ def _parse_sse_frame(frame: bytes) -> StreamEvent | None:
     )
 
 
-# ---------------------------------------------------------------------------
-# Provider onboarding — generic, one registration per Provider.
-# ---------------------------------------------------------------------------
-from app.pilot.poolside_provider import register_poolside_provider
-from app.pilot.kilo_provider import register_kilo_provider
-from app.pilot.sensenova_provider import register_sensenova_provider
-from app.pilot.agnes_provider import register_agnes_provider
-from app.pilot.bai_provider import register_bai_provider
-from app.pilot.infron_provider import register_infron_provider
-from app.pilot.inception_provider import register_inception_provider
-from app.pilot.atria_provider import register_atria_provider
-from app.pilot.experiential_provider import register_experiential_provider
-from app.pilot.google_provider import register_google_provider
-
-register_poolside_provider()
-register_kilo_provider()
-register_sensenova_provider()
-register_agnes_provider()
-register_bai_provider()
-register_infron_provider()
-register_inception_provider()
-register_atria_provider()
-register_experiential_provider()
-register_google_provider()
+# Model/provider registration is sourced exclusively from b14_models.json.
+# Loaded by catalog.py; do not call legacy module-local register_* functions here.

@@ -59,6 +59,7 @@ from app.pilot import router_core as rcore
 from app.pilot import platform as plat
 from app.pilot.routing_policy import B14_AUTO_CHAIN, ROUTING_POLICY_ID
 from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
+from app.pilot.model_registry_file import group_model_ids
 
 # ---------------------------------------------------------------------------
 # Bounded same-route retry for retryable upstream failures (#1982)
@@ -396,39 +397,23 @@ def _registered_route_dicts() -> list[dict]:
 
 
 def _catalog_summary_dicts() -> list[dict]:
-    """Return catalog models as display dicts with extra Alpha fields."""
-    result = []
-    for m in list_catalog_summaries():
-        model = get_catalog_by_id(m["model_id"])
-        result.append({
-            "id": m["model_id"],
-            "name": m["name"],
-            "provider_id": model.platform_provider_id if model else "unknown",
-            "provider_name": m["provider"],
-            "pilot_available": True,
+    """All approved exact models from B14 JSON, with no synthetic auto option."""
+    return [
+        {
+            "id": m.model_id,
+            "name": m.display_name,
+            "provider_id": m.platform_provider_id,
+            "provider_name": m.provider,
+            "pilot_available": m.enabled,
             "input_krw_per_1k": None,
             "output_krw_per_1k": None,
-            "tags": ["alpha"] + list(m["capabilities"]),
-            "input_price_usd_per_1m": m["input_price_usd_per_1m"],
-            "output_price_usd_per_1m": m["output_price_usd_per_1m"],
-            "korean_score": m["korean_score"],
-            "context_window": m["context_window"],
-        })
-    result.insert(0, {
-        "id": "b14/auto",
-        "name": "Business 14 자동 선택",
-        "provider_id": "b14",
-        "provider_name": "B14 Router",
-        "pilot_available": True,
-        "input_krw_per_1k": None,
-        "output_krw_per_1k": None,
-        "tags": ["alpha", "auto"],
-        "input_price_usd_per_1m": 0,
-        "output_price_usd_per_1m": 0,
-        "korean_score": 0,
-        "context_window": 0,
-    })
-    return result
+            "tags": sorted(m.capabilities),
+            "input_price_usd_per_1m": m.input_price_usd_per_1m,
+            "output_price_usd_per_1m": m.output_price_usd_per_1m,
+            "context_window": m.context_window,
+        }
+        for m in sorted(CATALOG_BY_ID.values(), key=lambda m: m.model_id) if m.enabled
+    ]
 
 
 @router.route("/health", methods=["GET"])
@@ -514,6 +499,7 @@ async def pilot_models(request: Request):
             "mode": "multi-provider",
             "catalog": _catalog_summary_dicts(),
             "registered_routes": _registered_route_dicts(),
+            "model_groups": group_model_ids(),
         })
 
     if state == PilotConfigurationState.INVALID_REGISTRY:
@@ -539,6 +525,7 @@ async def pilot_models(request: Request):
             "mode": "single-provider",
             "catalog": _catalog_summary_dicts(),
             "registered_routes": _registered_route_dicts(),
+            "model_groups": group_model_ids(),
         })
 
     return JSONResponse({
@@ -546,6 +533,7 @@ async def pilot_models(request: Request):
         "configured": False,
         "catalog": _catalog_summary_dicts(),
         "registered_routes": _registered_route_dicts(),
+            "model_groups": group_model_ids(),
     })
 
 

@@ -58,4 +58,5 @@ def register_inception_provider() -> None:
     CATALOG_BY_ID[model.model_id] = model
 
 
-register_inception_provider()
+
+# No import-time registration: canonical b14_models.json owns runtime models.

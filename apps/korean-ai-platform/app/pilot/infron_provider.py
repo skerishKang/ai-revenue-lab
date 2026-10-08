@@ -66,4 +66,5 @@ def register_infron_provider() -> None:
     CATALOG_BY_ID[model.model_id] = model
 
 
-register_infron_provider()
+
+# No import-time registration: canonical b14_models.json owns runtime models.

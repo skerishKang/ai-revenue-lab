@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "comment": "Single owner-approved B14 model register; groups are intentionally empty until assigned by owner. Never store API key values.",
+  "providers": {
+    "agnes-ai": {
+      "base_origin": "https://apihub.agnes-ai.com/v1",
+      "allowed_hosts": [
+        "apihub.agnes-ai.com"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_AGNES_API_KEY",
+      "enabled": true
+    },
+    "atria": {
+      "base_origin": "https://api.atria-asi.ai/v1",
+      "allowed_hosts": [
+        "api.atria-asi.ai"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_ATRIA_API_KEY",
+      "enabled": true
+    },
+    "google": {
+      "base_origin": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "allowed_hosts": [
+        "generativelanguage.googleapis.com"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_GEMINI_API_KEY",
+      "enabled": true
+    },
+    "inception": {
+      "base_origin": "https://api.inceptionlabs.ai/v1",
+      "allowed_hosts": [
+        "api.inceptionlabs.ai"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_INCEPTION_MERCURY_API_KEY",
+      "enabled": true
+    },
+    "poolside": {
+      "base_origin": "https://inference.poolside.ai/v1",
+      "allowed_hosts": [
+        "inference.poolside.ai"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_POOLSIDE_API_KEY",
+      "enabled": true
+    },
+    "sensenova": {
+      "base_origin": "https://token.sensenova.ai/v1",
+      "allowed_hosts": [
+        "token.sensenova.ai"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_SENSENOVA_API_KEY",
+      "enabled": true
+    }
+  },
+  "models": [
+    {
+      "id": "agnes-ai/agnes-3.0-flash",
+      "provider_id": "agnes-ai",
+      "upstream_model": "agnes-3.0-flash",
+      "display_name": "Agnes: 3.0 Flash",
+      "provider_name": "Agnes AI",
+      "capabilities": [
+        "chat",
+        "coding"
+      ],
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "agnes_official_public_docs (#917 intake record)",
+      "source_checked_at": "2026-08-27",
+      "enabled": true
+    },
+    {
+      "id": "atria/Atria-Dawn-Preview",
+      "provider_id": "atria",
+      "upstream_model": "Atria-Dawn-Preview",
+      "display_name": "Atria: Dawn Preview",
+      "provider_name": "Atria",
+      "capabilities": [
+        "chat"
+      ],
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "atria_official_origin_and_model",
+      "source_checked_at": "2026-09-18",
+      "enabled": true
+    },
+    {
+      "id": "google/gemini-3.1-flash-lite",
+      "provider_id": "google",
+      "upstream_model": "gemini-3.1-flash-lite",
+      "display_name": "Google: Gemini 3.1 Flash Lite",
+      "provider_name": "Google AI Studio",
+      "capabilities": [
+        "chat",
+        "coding",
+        "image"
+      ],
+      "context_window": 1048576,
+      "input_price_usd_per_1m": 0.25,
+      "output_price_usd_per_1m": 1.5,
+      "source": "google_ai_studio_official_catalog (2026-10-08 read)",
+      "source_checked_at": "2026-10-08",
+      "enabled": true
+    },
+    {
+      "id": "google/gemini-3.5-flash-lite",
+      "provider_id": "google",
+      "upstream_model": "gemini-3.5-flash-lite",
+      "display_name": "Google: Gemini 3.5 Flash Lite",
+      "provider_name": "Google AI Studio",
+      "capabilities": [
+        "chat",
+        "coding",
+        "image"
+      ],
+      "context_window": 1048576,
+      "input_price_usd_per_1m": 0.3,
+      "output_price_usd_per_1m": 2.5,
+      "source": "google_ai_studio_official_catalog (2026-10-08 read)",
+      "source_checked_at": "2026-10-08",
+      "enabled": true
+    },
+    {
+      "id": "google/gemma-4-26b-a4b-it",
+      "provider_id": "google",
+      "upstream_model": "gemma-4-26b-a4b-it",
+      "display_name": "Google: Gemma 4 26B",
+      "provider_name": "Google AI Studio",
+      "capabilities": [
+        "chat",
+        "image"
+      ],
+      "context_window": 262144,
+      "input_price_usd_per_1m": 0.09,
+      "output_price_usd_per_1m": 0.3,
+      "source": "google_ai_studio_official_catalog (2026-10-08 read)",
+      "source_checked_at": "2026-10-08",
+      "enabled": true
+    },
+    {
+      "id": "google/gemma-4-31b-it",
+      "provider_id": "google",
+      "upstream_model": "gemma-4-31b-it",
+      "display_name": "Google: Gemma 4 31B",
+      "provider_name": "Google AI Studio",
+      "capabilities": [
+        "chat"
+      ],
+      "context_window": 262144,
+      "input_price_usd_per_1m": 0.09,
+      "output_price_usd_per_1m": 0.34,
+      "source": "google_ai_studio_official_catalog (2026-10-08 read)",
+      "source_checked_at": "2026-10-08",
+      "enabled": true
+    },
+    {
+      "id": "inception/mercury-2.5",
+      "provider_id": "inception",
+      "upstream_model": "mercury-2.5",
+      "display_name": "Inception: Mercury 2.5",
+      "provider_name": "Inception",
+      "capabilities": [
+        "chat"
+      ],
+      "context_window": 0,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "inception_official_origin_and_model",
+      "source_checked_at": "2026-09-18",
+      "enabled": true
+    },
+    {
+      "id": "poolside/laguna-s-2.1",
+      "provider_id": "poolside",
+      "upstream_model": "poolside/laguna-s-2.1",
+      "display_name": "Poolside: Laguna S 2.1",
+      "provider_name": "Poolside",
+      "capabilities": [
+        "chat",
+        "coding",
+        "long_context"
+      ],
+      "context_window": 1000000,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "poolside_official_models_page",
+      "source_checked_at": "2026-08-28",
+      "enabled": true
+    },
+    {
+      "id": "sensenova/sensenova-6.8-flash-lite",
+      "provider_id": "sensenova",
+      "upstream_model": "sensenova-6.8-flash-lite",
+      "display_name": "SenseNova: 6.8 Flash Lite (owner plan)",
+      "provider_name": "SenseNova",
+      "capabilities": [
+        "chat",
+        "coding"
+      ],
+      "context_window": 256000,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "sensenova_token_api_measured",
+      "source_checked_at": "2026-09-06",
+      "enabled": true
+    }
+  ],
+  "groups": {
+    "plus": [],
+    "pro": [],
+    "max": []
+  }
+}
