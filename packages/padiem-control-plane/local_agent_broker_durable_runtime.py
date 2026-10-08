@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import json
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable, TypeVar
 
@@ -15,6 +16,11 @@ from padiem_control_plane.local_agent_broker_state import (
 )
 from padiem_control_plane.local_agent_broker_state_wire import SerializedLocalAgentBrokerStatePort
 
+from local_agent_broker_browser_p01_source import (
+    AuthenticatedBrowserControlP01Approval,
+    CanonicalBrowserControlP01ApprovalSource,
+    browser_control_tool_invocation_digest,
+)
 from local_agent_broker_browser_control_take import (
     BrowserControlCommandTakeCorrelation,
     CloudflareDurableObjectBrowserControlTakeStore,
@@ -58,7 +64,18 @@ def _iso_utc(value: datetime) -> str:
 class LocalAgentBrokerDurableRuntime:
     """Cloud-platform-neutral composition for the durable Local Agent broker authority."""
 
-    def __init__(self, *, storage: Any, env: Any) -> None:
+    def __init__(
+        self, *, storage: Any, env: Any,
+        p01_approval_source: CanonicalBrowserControlP01ApprovalSource | None = None,
+    ) -> None:
+        # Production Broker Worker deliberately supplies no P01 source.
+        # Only a service-identity-authenticated first-party composition may
+        # inject the canonical Engine decision owner in a later gate.
+        if p01_approval_source is not None and not callable(
+            getattr(p01_approval_source, "resolve_approved_command", None)
+        ):
+            raise ValueError("canonical first-party P01 approval resolver required")
+        self._p01_approval_source = p01_approval_source
         self._storage = storage
         self._env = env
         self.backend = CloudflareDurableObjectSerializedStateBackend(storage)
@@ -149,34 +166,62 @@ class LocalAgentBrokerDurableRuntime:
         scope: BrowserControlCommandTakeCorrelation,
         credential: bytes,
         material: dict[str, Any],
-        p01_evidence_ref: str,
-        p01_expires_at: datetime,
         now: datetime,
     ) -> dict[str, Any]:
-        """Internal-only atomic persistence AFTER a separately verified P01.
+        """PRIVATE atomic binding ONLY after the injected trusted P01 resolver.
 
-        This DOES NOT authenticate P01 or mint an approved decision. Only the
-        later canonical trusted issuer can supply those facts. Without that
-        producer and a private authenticated transport no product can call
-        this method. Never accept raw client JSON as approval.
+        No client-supplied approval reference, timestamp or decision parameter
+        exists. Production leaves the resolver unconfigured and denies this
+        registration until a first-party authenticated Engine P01 source is
+        actually wired at the Broker composition root.
         """
         current = utc(now, "browser_control_registration_now")
-        evidence_ref = safe_ref(p01_evidence_ref, "p01_evidence_ref")
-        approval_expiry = utc(p01_expires_at, "p01_expires_at")
+        source = self._p01_approval_source
+        if source is None:
+            raise ValueError("real authenticated browser.control P01 source not wired")
+
+        # Never query the first-party P01 authority while holding the
+        # Durable Object transactionSync lock. Read-only preflight prevents
+        # invalid device/session claims from reaching the evidence owner.
+        # Canonical live authority is rechecked IN the transaction below,
+        # so revoke/rotation between lookup and persistence fails closed.
+        self._require_live_admitted_browser_command(
+            scope=scope, credential=credential, now=current
+        )
+        if type(material) is not dict:
+            raise ValueError("browser.control material must be a closed mapping")
+        self.browser_control_take_store._checked_material(
+            json.dumps(material, sort_keys=True, separators=(",", ":"),
+                       ensure_ascii=False, allow_nan=False), scope
+        )
+        context = material["context"]
+        max_ttl = context["ttlSeconds"]
+        # This resolver is injected ONLY by the trusted Broker composition;
+        # never take a decision/evidence/expiry from a raw client request.
+        resolved = source.resolve_approved_command(scope=scope, now=current)
+        if type(resolved) is not AuthenticatedBrowserControlP01Approval:
+            raise ValueError("canonical P01 resolver supplied no verified approval")
+        resolved.assert_matches(
+            scope=scope,
+            expected_invocation_sha256=browser_control_tool_invocation_digest(material),
+            now=current,
+        )
+
         def operation() -> dict[str, Any]:
             command, authenticated = self._require_live_admitted_browser_command(
                 scope=scope, credential=credential, now=current
             )
-            if command.evidence_ref != evidence_ref:
-                raise ValueError("browser.control P01 evidence does not match canonical admission")
-            context = material.get("context") if type(material) is dict else None
-            if type(context) is not dict:
-                raise ValueError("browser.control material context missing")
-            max_ttl = context.get("ttlSeconds")
-            if type(max_ttl) is not int or not 1 <= max_ttl <= 900:
-                raise ValueError("browser.control requested TTL invalid")
+            # Checked again after the external/first-party approval lookup:
+            # no stale authorization may survive a concurrent revoke.
+            resolved.assert_matches(
+                scope=scope,
+                expected_invocation_sha256=browser_control_tool_invocation_digest(material),
+                now=current,
+            )
+            if command.evidence_ref != resolved.evidence_ref:
+                raise ValueError("browser.control verified P01 evidence mismatch")
             expiry = min(
-                approval_expiry, command.expires_at,
+                resolved.expires_at, command.expires_at,
                 parse_iso(authenticated["session_expires_at"], "session_expiry"),
                 current + timedelta(seconds=max_ttl),
             )

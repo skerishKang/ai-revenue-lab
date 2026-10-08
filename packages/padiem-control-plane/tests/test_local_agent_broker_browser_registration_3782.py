@@ -11,6 +11,11 @@ from dataclasses import replace
 from datetime import timedelta
 
 import pytest
+from local_agent_broker_browser_p01_source import (
+    AuthenticatedBrowserControlP01Approval,
+    browser_control_tool_invocation_digest,
+)
+from local_agent_broker_durable_runtime import LocalAgentBrokerDurableRuntime
 from padiem_control_plane.contracts import ControlPlaneContractError
 from padiem_control_plane.local_agent_broker import (
     BrokerCommandCapability,
@@ -26,6 +31,31 @@ from test_local_agent_broker_browser_authenticated_take_3782 import (
 from test_local_agent_broker_browser_control_take_3782 import payload, taken_count
 
 EVIDENCE_REF = "p01.evidence.test.3782"
+
+
+class _VerifiedFixtureP01Source:
+    """Test-only synthetic source. Never instantiate from a product transport."""
+
+    def __init__(self, scope, wire):
+        self.calls = 0
+        self.grant = AuthenticatedBrowserControlP01Approval(
+            command_ref=scope.command_ref, binding_ref=scope.binding_ref,
+            request_id=scope.request_id, run_ref=scope.run_ref,
+            request_fingerprint=scope.request_fingerprint,
+            admission_ref=scope.admission_ref, revision_ref=scope.revision_ref,
+            evidence_ref=EVIDENCE_REF, pause_ref="pause.fixture.3782",
+            decision_ref="decision.fixture.3782", approval_tool_id="browser.control",
+            approval_invocation_sha256=browser_control_tool_invocation_digest(wire),
+            approval_scope=("browser.control",), decision_outcome="approved",
+            local_permission_result="require_p01_approval",
+            decided_at=NOW - timedelta(seconds=10),
+            expires_at=NOW + timedelta(seconds=45),
+        )
+
+    def resolve_approved_command(self, *, scope, now):
+        self.calls += 1
+        return self.grant
+
 
 
 def valid_scope():
@@ -69,14 +99,17 @@ def empty_fixture(*, capability=BrokerCommandCapability.BROWSER_CONTROL, state=B
         original.command_ref,
     )
     wire = payload(scope)
+    broker = LocalAgentBrokerDurableRuntime(
+        storage=storage, env=_Env(),
+        p01_approval_source=_VerifiedFixtureP01Source(scope, wire),
+    )
     return storage, broker, scope, wire
 
 
 def register(broker, initial_scope, wire, **overrides):
     args = {
         "scope": initial_scope, "credential": DEVICE_CREDENTIAL,
-        "material": wire, "p01_evidence_ref": EVIDENCE_REF,
-        "p01_expires_at": NOW + timedelta(seconds=45), "now": NOW,
+        "material": wire, "now": NOW,
     }
     args.update(overrides)
     return broker._bind_browser_material_to_admitted_command(**args)
@@ -156,9 +189,11 @@ def test_registration_requires_live_authenticated_admission_and_p01_copy(kind):
     if kind == "wrong_credential":
         overrides["credential"] = b"wrong"
     elif kind == "wrong_evidence":
-        overrides["p01_evidence_ref"] = "p01.other"
+        source = broker._p01_approval_source
+        source.grant = replace(source.grant, evidence_ref="p01.other")
     elif kind == "expired_approval":
-        overrides["p01_expires_at"] = NOW
+        source = broker._p01_approval_source
+        source.grant = replace(source.grant, expires_at=NOW)
     elif kind == "wrong_binding":
         overrides["scope"] = replace(scope, binding_ref="binding.wrong")
     elif kind == "wrong_run":
@@ -198,4 +233,161 @@ def test_no_public_registration_rpc_or_fake_product_issuer():
     assert not hasattr(broker, "register_browser_control_command")
     assert not hasattr(broker, "register_browser_control_work_ticket")
     assert not hasattr(broker, "take_browser_control_rpc")
+    assert registered_rows(storage) == 0
+
+
+def test_unwired_product_broker_does_not_accept_any_approval_strings():
+    """The actual Worker constructs without a resolver; never default-approve."""
+    storage, _fixture_broker, scope, wire = empty_fixture()
+    product_broker = LocalAgentBrokerDurableRuntime(storage=storage, env=_Env())
+    assert product_broker._p01_approval_source is None
+    with pytest.raises(ValueError, match="P01 source not wired"):
+        register(product_broker, scope, wire)
+    assert registered_rows(storage) == 0
+
+
+@pytest.mark.parametrize("invalid", [
+    "wrong_tool", "denied", "wrong_pause_scope", "wrong_digest",
+    "wrong_p01_command", "wrong_p01_run", "wrong_p01_binding",
+    "wrong_admission", "wrong_revision", "denied_local_policy",
+    "invalid_local_policy", "future_decision", "expired",
+    "wrong_evidence", "missing_pause", "missing_decision",
+])
+def test_injected_p01_source_cannot_widen_authority_or_claim_other_scope(invalid):
+    storage, broker, scope, wire = empty_fixture()
+    source = broker._p01_approval_source
+    grant = source.grant
+    drift = {
+        "wrong_tool": {"approval_tool_id": "process.execute"},
+        "denied": {"decision_outcome": "denied"},
+        "wrong_pause_scope": {"approval_scope": ("process.execute",)},
+        "wrong_digest": {"approval_invocation_sha256": "0" * 64},
+        "wrong_p01_command": {"command_ref": "command.other"},
+        "wrong_p01_run": {"run_ref": "run.other"},
+        "wrong_p01_binding": {"binding_ref": "binding.other"},
+        "wrong_admission": {"admission_ref": "admission.other"},
+        "wrong_revision": {"revision_ref": "revision.other"},
+        "denied_local_policy": {"local_permission_result": "denied"},
+        "invalid_local_policy": {"local_permission_result": "owner_override"},
+        "future_decision": {"decided_at": NOW + timedelta(seconds=1)},
+        "expired": {"expires_at": NOW},
+        "wrong_evidence": {"evidence_ref": "evidence.other"},
+        "missing_pause": {"pause_ref": ""},
+        "missing_decision": {"decision_ref": ""},
+    }
+    source.grant = replace(grant, **drift[invalid])
+    with pytest.raises(ValueError):
+        register(broker, scope, wire)
+    assert source.calls == 1
+    assert registered_rows(storage) == 0
+    assert taken_count(storage) == 0
+
+
+def test_invalid_material_is_rejected_before_trusted_p01_source_is_queried():
+    storage, broker, scope, wire = empty_fixture()
+    wire["action"]["action"] = "navigate"  # not lease-eligible
+    with pytest.raises(ValueError):
+        register(broker, scope, wire)
+    assert broker._p01_approval_source.calls == 0
+    assert registered_rows(storage) == 0
+
+
+def test_wrong_device_credential_is_rejected_before_p01_source_is_queried():
+    storage, broker, scope, wire = empty_fixture()
+    with pytest.raises(ControlPlaneContractError):
+        register(broker, scope, wire, credential=b"bogus-credential")
+    assert broker._p01_approval_source.calls == 0
+    assert registered_rows(storage) == 0
+
+
+def test_untrusted_mapping_cannot_substitute_for_source_resolved_grant():
+    storage, broker, scope, wire = empty_fixture()
+    source = broker._p01_approval_source
+    source.grant = dict(source.grant.__dict__) if hasattr(source.grant, "__dict__") else {
+        "decision_outcome": "approved", "approval_tool_id": "browser.control",
+    }
+    with pytest.raises(ValueError, match="no verified approval"):
+        register(broker, scope, wire)
+    assert registered_rows(storage) == 0
+
+
+def test_injected_approval_source_requires_closed_resolver_method():
+    storage, _broker, _scope, _wire = empty_fixture()
+    with pytest.raises(ValueError, match="canonical first-party"):
+        LocalAgentBrokerDurableRuntime(
+            storage=storage, env=_Env(),
+            p01_approval_source={"outcome": "approved"},
+        )
+
+
+def test_core_p01_tool_digest_matches_broker_canonical_projection():
+    """Uses actual Core/KAgent libraries on Windows; skipped when unavailable in
+    standalone Control Plane CI, which must remain independently installable.
+    """
+    from importlib.util import find_spec
+
+    if find_spec("padiem_ai_core") is None or find_spec("kagent") is None:
+        pytest.skip("optional cross-package parity requires KAgent and Core")
+    from kagent.browser_control_lease_authority import BrowserControlLeaseRequest
+
+    _storage, _broker, scope, wire = empty_fixture()
+    ctx = wire["context"]
+    req = BrowserControlLeaseRequest(
+        browser_session_ref=ctx["browserSessionRef"],
+        run_ref=ctx["runRef"],
+        workspace_ref=ctx["workspaceRef"],
+        owner_ref=ctx["ownerRef"],
+        device_id=ctx["deviceRef"],
+        origin_scope=ctx["originScope"],
+        allowed_action_classes=tuple(ctx["allowedActionClasses"]),
+        ttl_seconds=ctx["ttlSeconds"],
+        max_actions=ctx["maxActions"],
+    )
+    assert req.fingerprint() == scope.request_fingerprint
+    assert req.approval_invocation_sha256() == browser_control_tool_invocation_digest(wire)
+
+
+def test_broker_rechecks_revocation_after_first_party_p01_lookup():
+    """The P01 resolver runs OUTSIDE transactionSync, and a concurrent revoke
+    before the registration CAS cannot register otherwise-valid material.
+    """
+    storage, broker, scope, wire = empty_fixture()
+    source = broker._p01_approval_source
+    original = source.resolve_approved_command
+
+    def revoke_during_p01_lookup(*, scope, now):
+        result = broker.revoke_binding({
+            "binding_ref": scope.binding_ref,
+            "now": (now + timedelta(milliseconds=1)).isoformat(),
+        })
+        assert result["ok"] is True
+        return original(scope=scope, now=now)
+
+    source.resolve_approved_command = revoke_during_p01_lookup
+    with pytest.raises(ControlPlaneContractError):
+        register(broker, scope, wire)
+    assert source.calls == 1
+    assert registered_rows(storage) == 0
+
+
+def test_broker_rechecks_credential_rotation_after_p01_lookup():
+    storage, broker, scope, wire = empty_fixture()
+    source = broker._p01_approval_source
+    original = source.resolve_approved_command
+    from test_local_agent_broker_browser_authenticated_take_3782 import _encoded
+
+    def rotate_during_p01_lookup(*, scope, now):
+        result = broker.rotate_credential({
+            "binding_ref": scope.binding_ref,
+            "expected_generation": 1,
+            "new_credential_b64": _encoded(b"new-different-credential-3782"),
+            "now": (now + timedelta(milliseconds=1)).isoformat(),
+        })
+        assert result["ok"] is True
+        return original(scope=scope, now=now)
+
+    source.resolve_approved_command = rotate_during_p01_lookup
+    with pytest.raises(ControlPlaneContractError):
+        register(broker, scope, wire)
+    assert source.calls == 1
     assert registered_rows(storage) == 0

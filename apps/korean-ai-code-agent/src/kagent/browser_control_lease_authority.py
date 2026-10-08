@@ -143,10 +143,10 @@ def _aware(value: Any, field_name: str) -> datetime:
 class BrowserControlLeaseRequest:
     """One trusted `browser.control` session request, bounded like its approval.
 
-    The request fingerprint is the *exact* binding the P01 approval was made
-    over: the pause's `invocation_sha256` must equal it, so an approval for a
-    different session (origin, budget, window, correlations) can never be
-    redeemed here.
+    The request fingerprint is the canonical session/Broker correlation.
+    P01 approval is bound separately to the Core ToolInvocation digest of
+    these same exact fields, not to the session fingerprint: an approval for
+    another origin, budget, device or run can never be redeemed here.
     """
 
     browser_session_ref: str
@@ -185,7 +185,7 @@ class BrowserControlLeaseRequest:
         return LocalCapability.BROWSER_CONTROL
 
     def fingerprint(self) -> str:
-        """The canonical session-request digest the P01 pause was issued against."""
+        """Stable browser session/Broker correlation, NOT the P01 invocation digest."""
 
         payload = {
             "capability": self.capability.value,
