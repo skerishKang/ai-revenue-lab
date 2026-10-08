@@ -1815,25 +1815,48 @@
     return clawRetrySeconds > 0 ? clawRetrySeconds : 0;
   }
 
-  // Identity of exactly the content the single execute entry point would send.
-  // Comparing it lets genuinely new work through while an identical re-send
-  // after an uncertain outcome stays blocked.
-  function clawExecuteContentKey() {
-    return [
-      (input.value || "").trim(),
-      clawModelIdInput ? clawModelIdInput.value.trim() : "",
-      clawChannel?.value || "other",
-      clawAction?.value || "quote",
-      (clawSender?.value || "").trim(),
-      conversationState.getConversationId() || "",
-    ].join(" | ");
+  // The manual-execute lane's duplicate check compares WIRE CONTENT, so the
+  // request shape is assembled in exactly one place and reused by both the
+  // dispatch and the comparison. Canonical conversation reuse (#2916): forward
+  // only the exact handle this page already owns; the browser never mints one.
+  // The model ID field is deliberately absent — /api/claw/manual-intake/execute
+  // does not read it (it selects the conversation lane only), so changing it
+  // cannot make the next run a different request.
+  function clawVisibleExecutePayload() {
+    const body = (input.value || "").trim();
+    const channelValue = clawChannel?.value || "other";
+    const actionValue = clawAction?.value || "quote";
+    const senderText = (clawSender?.value || "").trim();
+    const activeConversationId = conversationState.getConversationId();
+    const executePayload = {
+      content: body,
+      channel: channelValue,
+      action: actionValue,
+      sender_hint: senderText || null,
+      tier: selectedProductTier(),
+    };
+    if (typeof activeConversationId === "string" && activeConversationId) {
+      executePayload.conversation_id = activeConversationId;
+    }
+    return executePayload;
   }
 
-  // A different draft, a different model id, a different channel/action/sender
-  // or a new conversation all count as new work and release the latch.
+  function clawExecuteWireKey(payload) {
+    return JSON.stringify([
+      payload.content,
+      payload.channel,
+      payload.action,
+      payload.sender_hint ?? null,
+      payload.tier,
+      payload.conversation_id ?? null,
+    ]);
+  }
+
+  // Only content the execute request actually carries can release the latch: a
+  // different draft, channel, action, sender, tier or conversation.
   function noteClawContentEdited() {
     if (!clawExecuteUncertain) return;
-    if (clawExecuteContentKey() === clawLastDispatchKey) return;
+    if (clawExecuteWireKey(clawVisibleExecutePayload()) === clawLastDispatchKey) return;
     clawExecuteUncertain = false;
     setClawButtonsBusy(clawInFlight);
   }
@@ -3633,7 +3656,8 @@
     if (clawInFlight) return;
     if (clawRetryRemaining() > 0) return; // explicit retry only after the pre-dispatch cooldown
     if (clawExecuteUncertain) return; // #3382: no same-content re-send after an uncertain outcome
-    const body = (input.value || "").trim();
+    const executePayload = clawVisibleExecutePayload();
+    const body = executePayload.content;
     if (!body) {
       clearClawArtifact();
       if (clawResultCard) clawResultCard.hidden = true;
@@ -3651,28 +3675,10 @@
       setClawAreaState("error");
       return;
     }
-    const channelValue = clawChannel?.value || "other";
-    const actionValue = clawAction?.value || "quote";
-    const senderText = (clawSender?.value || "").trim();
-    // Canonical conversation reuse (#2916): forward only the exact handle this
-    // page already owns. The browser never mints one; with no active
-    // conversation the field is omitted and legacy payload bytes are kept.
-    const activeConversationId = conversationState.getConversationId();
-    const executePayload = {
-      content: body,
-      channel: channelValue,
-      action: actionValue,
-      sender_hint: senderText || null,
-      tier: selectedProductTier(),
-    };
-    if (typeof activeConversationId === "string" && activeConversationId) {
-      executePayload.conversation_id = activeConversationId;
-    }
-
     clearClawRecovery();
-    // Remember what this dispatch carried, so a later ambiguous failure can tell
-    // an identical re-send apart from new work.
-    clawLastDispatchKey = clawExecuteContentKey();
+    // Remember the exact bytes this dispatch carried, so a later ambiguous
+    // failure can tell an identical re-send apart from new work.
+    clawLastDispatchKey = clawExecuteWireKey(executePayload);
     renderClawRequestEcho(body);
     setClawButtonsBusy(true);
     // Explicit user dispatch is the only thing that may start a wait timer.

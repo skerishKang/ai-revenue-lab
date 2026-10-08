@@ -134,6 +134,32 @@ def test_no_automatic_or_timer_driven_execution() -> None:
     assert "const blocked = busy || clawRetryRemaining() > 0 || clawExecuteUncertain;" in app
 
 
+def test_uncertain_latch_keys_on_wire_content_not_unused_form_fields() -> None:
+    app = _app_source()
+    start = app.index("function clawVisibleExecutePayload()")
+    builder = app[start: app.index("function noteClawContentEdited(", start)]
+    # One shape, shared by the dispatch and the duplicate comparison.
+    assert builder.count("function clawVisibleExecutePayload()") == 1
+    assert builder.count("function clawExecuteWireKey(") == 1
+    for wire_field in (
+        "payload.content",
+        "payload.channel",
+        "payload.action",
+        "payload.sender_hint",
+        "payload.tier",
+        "payload.conversation_id",
+    ):
+        assert wire_field in builder, wire_field
+    # The model ID selector never reaches this request. Counting it as new work
+    # was the bypass CTO review found on #3382, so it must stay out of the key.
+    assert "clawModelIdInput" not in builder
+    assert "const executePayload = clawVisibleExecutePayload();" in app
+    # One assembly point only: a second inline literal is how the key and the
+    # wire bytes diverge again.
+    assert app.count("const executePayload = {") == 1
+    assert "clawLastDispatchKey = clawExecuteWireKey(executePayload);" in app
+
+
 def test_ambiguous_failures_get_guidance_instead_of_a_retry_affordance() -> None:
     app = _app_source()
     assert "function isAmbiguousClawFailure(data, response)" in app
@@ -172,9 +198,21 @@ def test_retry_target_is_the_visible_form_not_a_hidden_snapshot() -> None:
     assert "clawRetrySnapshot" not in app
     body = app[app.index("async function runClawExecution()"):]
     body = body[: body.index("if (clawExecuteButton) {")]
-    assert "const body = (input.value || \"\").trim();" in body
-    assert "const channelValue = clawChannel?.value || \"other\";" in body
-    assert "const senderText = (clawSender?.value || \"\").trim();" in body
+    # #3382 moved request assembly into one builder shared with the duplicate
+    # check, so the live-DOM reads are asserted on the builder itself. The entry
+    # point must still derive everything at click time and hold no snapshot.
+    assert "const executePayload = clawVisibleExecutePayload();" in body
+    assert "const body = executePayload.content;" in body
+    builder = app[app.index("function clawVisibleExecutePayload()"):]
+    builder = builder[: builder.index("\n  }")]
+    for live_read in (
+        "(input.value || \"\").trim()",
+        "clawChannel?.value || \"other\"",
+        "clawAction?.value || \"quote\"",
+        "(clawSender?.value || \"\").trim()",
+        "conversationState.getConversationId()",
+    ):
+        assert live_read in builder, live_read
     # The user's request text is preserved on failure: nothing clears the input.
     assert "input.value = \"\";" not in body
 
@@ -303,6 +341,9 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
   "clawInboxEmpty","clawInboxList","clawInboxRetry","clawRunHistory","clawRunHistoryRefresh",
   "clawRunHistoryLoading","clawRunHistoryError","clawRunHistoryList","clawRunHistoryEmpty",
   "clawRetryHint","clawRetryBox","clawRetryCopy","clawRetryButton",
+  // index.html:677 declares this input; the execute request never carries it, so
+  // the duplicate guard must treat changing it as NOT new work.
+  "clawModelIdInput",
 ].forEach((id) => add(id, "div"));
 
 // Mirror the declared markup: the recovery nodes start hidden/disabled.
@@ -740,6 +781,39 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
     byId.clawRetryHint.hidden === true;
   if (!checks.LATCH_RELEASES_ON_DEFINITE_SUCCESS) fail("LATCH_RELEASES_ON_DEFINITE_SUCCESS");
 
+  // 19) CTO review of #3382: the model ID field is not part of the execute
+  //     request, so rotating it alone must NOT release the latch, while a change
+  //     to real wire content still composes exactly one new run.
+  byId.messageInput.value = "모델 ID 우회 확인";
+  executeCall = () => jsonResponse(502, { ok: false, error: { code: "engine_execution_failed" } });
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  const afterBypassTry = execPosts().length;
+  if (lastExec().body.model_id !== undefined) fail("EXECUTE_REQUEST_CARRIES_MODEL_ID");
+  byId.clawModelIdInput.value = "agnes-ai/agnes-3.0-flash";
+  byId.clawExecuteButton.click();
+  byId.clawRetryButton.click();
+  await tick(120);
+  checks.MODEL_ID_ONLY_CHANGE_KEEPS_LATCH =
+    execPosts().length === afterBypassTry &&
+    byId.clawExecuteButton.disabled === true &&
+    byId.clawRetryButton.disabled === true;
+  if (!checks.MODEL_ID_ONLY_CHANGE_KEEPS_LATCH) fail("MODEL_ID_ONLY_CHANGE_KEEPS_LATCH");
+  byId.clawChannel.value = "email";
+  executeCall = () => jsonResponse(200, { ok: true, result: { title: "quote", result_text: "ran", artifact: null } });
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  checks.WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE =
+    execPosts().length === afterBypassTry + 1 &&
+    lastExec().body.channel === "email" &&
+    lastExec().body.content === "모델 ID 우회 확인" &&
+    lastExec().body.model_id === undefined;
+  if (!checks.WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE) {
+    fail("WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE: " + JSON.stringify(lastExec().body));
+  }
+
   // No dispatched execute POST exists that no user action asked for.
   checks.EXECUTE_POST_COUNT_MATCHES_USER_ACTIONS = execPosts().length === expectedPosts;
   if (!checks.EXECUTE_POST_COUNT_MATCHES_USER_ACTIONS) {
@@ -806,6 +880,8 @@ def test_behavioral_execute_recovery_journey() -> None:
         "SAME_CONTENT_RESEND_BLOCKED_AFTER_UNCERTAIN_OUTCOME",
         "PREVIEW_STAYS_AVAILABLE_WHILE_EXECUTE_IS_LATCHED",
         "LATCH_RELEASES_ON_DEFINITE_SUCCESS",
+        "MODEL_ID_ONLY_CHANGE_KEEPS_LATCH",
+        "WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE",
     ):
         assert checks.get(name) is True, name
 
