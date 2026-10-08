@@ -49,11 +49,17 @@ MAX_CLAW_GENERAL_POSTS = 1
 # canonical B66 route without importing app dependencies.
 B66_INTERPRET_ERROR_CODES = frozenset({
     "quote_interpretation_failed",
+    "quote_runtime_unavailable",
+    "quote_model_unavailable",
     "padiem_service_unavailable",
 })
 B66_INTERPRET_FAILURE_STAGES = frozenset({
     "interpreter_exception",
     "projection_missing_safe_dict",
+    "runtime_unavailable",
+    "model_selection",
+    "provider_execution",
+    "provider_response",
 })
 B66_INTERPRET_EXCEPTION_FAMILIES = frozenset({
     "chat_runtime_non_upstream",
@@ -199,6 +205,8 @@ def _bounded_b66_interpret_failure(
                 and candidate in B66_UPSTREAM_CLASS_VOCABULARY
             ):
                 upstream_class = candidate
+    elif code in {"quote_runtime_unavailable", "quote_model_unavailable"}:
+        layer = "B66_INTERPRETER_ROUTE"
     elif code == "padiem_service_unavailable":
         layer = "PAGES_UPSTREAM_PROXY"
     else:
@@ -223,7 +231,11 @@ def _print_bounded_b66_interpret_failure(response: object) -> None:
     print("B66_INTERPRET_UPSTREAM_CLASS=" + upstream_class, flush=True)
     failure_stage = "UNCLASSIFIED"
     exception_family = "UNCLASSIFIED"
-    if code == "quote_interpretation_failed" and hasattr(headers, "get"):
+    if code in {
+        "quote_interpretation_failed",
+        "quote_runtime_unavailable",
+        "quote_model_unavailable",
+    } and hasattr(headers, "get"):
         candidate = headers.get("x-b66-interpret-failure-stage")
         if isinstance(candidate, str) and candidate in B66_INTERPRET_FAILURE_STAGES:
             failure_stage = candidate
