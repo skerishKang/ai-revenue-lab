@@ -9,6 +9,7 @@ from .contracts import ControlPlaneContractError
 from .local_agent_broker import (
     BrokerBindingState,
     BrokerCommandAdmission,
+    BrokerCommandCapability,
     BrokerCommandRecord,
     BrokerCommandState,
     BrokerDeviceBinding,
@@ -567,6 +568,40 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
         now: datetime,
         ttl_seconds: int = 300,
     ) -> BrokerCommandRecord:
+        """Existing public/generic Broker path remains PROCESS_EXECUTE only."""
+        return self._enqueue_typed_command(
+            command_id=command_id, binding_ref=binding_ref, run_id=run_id,
+            tool_request_ref=tool_request_ref, request_fingerprint=request_fingerprint,
+            now=now, ttl_seconds=ttl_seconds,
+            capability=BrokerCommandCapability.PROCESS_EXECUTE,
+        )
+
+    def _enqueue_browser_control_command(
+        self,
+        *,
+        command_id: str, binding_ref: str, run_id: str,
+        tool_request_ref: str, request_fingerprint: str,
+        now: datetime, ttl_seconds: int,
+    ) -> BrokerCommandRecord:
+        """#3782 private source-only browser lane; NEVER exposed by generic RPC.
+
+        Caller MUST be the Broker DO's separately verified, server-side work
+        ticket issuance transaction. This helper authenticates no human.
+        """
+        return self._enqueue_typed_command(
+            command_id=command_id, binding_ref=binding_ref, run_id=run_id,
+            tool_request_ref=tool_request_ref, request_fingerprint=request_fingerprint,
+            now=now, ttl_seconds=ttl_seconds,
+            capability=BrokerCommandCapability.BROWSER_CONTROL,
+        )
+
+    def _enqueue_typed_command(
+        self, *, command_id: str, binding_ref: str, run_id: str,
+        tool_request_ref: str, request_fingerprint: str,
+        now: datetime, ttl_seconds: int, capability: BrokerCommandCapability,
+    ) -> BrokerCommandRecord:
+        if type(capability) is not BrokerCommandCapability:
+            raise ValueError("canonical Broker command capability required")
         # #3123: the used-command-id ledger is the exact, durable record of
         # every command_id this authority has ever minted. An id that is used
         # but no longer live has had its record compacted; it must be refused
@@ -590,6 +625,7 @@ class StateBackedLocalAgentBrokerAuthority(InMemoryLocalAgentBrokerAuthority):
                 request_fingerprint=request_fingerprint,
                 now=now,
                 ttl_seconds=ttl_seconds,
+                capability=capability,
             ),
         now=now,
         )

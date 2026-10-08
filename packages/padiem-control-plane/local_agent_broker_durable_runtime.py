@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import inspect
 import json
+import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable, TypeVar
 
@@ -24,6 +25,10 @@ from local_agent_broker_browser_p01_source import (
 )
 from local_agent_broker_engine_p01_bridge import BrokerEngineP01Join
 from local_agent_broker_engine_p01_join_store import DurableBrokerOriginalEngineJoinStore
+from local_agent_broker_pending_browser_issue import (
+    AuthenticatedPendingBrowserWorkTicket,
+    DurableBrokerPendingBrowserTicketStore,
+)
 from local_agent_broker_browser_control_take import (
     BrowserControlCommandTakeCorrelation,
     CloudflareDurableObjectBrowserControlTakeStore,
@@ -71,6 +76,7 @@ class LocalAgentBrokerDurableRuntime:
         self, *, storage: Any, env: Any,
         p01_approval_source: CanonicalBrowserControlP01ApprovalSource | None = None,
         original_engine_join_source: Any | None = None,
+        pending_browser_ticket_source: Any | None = None,
     ) -> None:
         # Production Broker Worker deliberately supplies no P01 source.
         # Only a service-identity-authenticated first-party composition may
@@ -87,6 +93,11 @@ class LocalAgentBrokerDurableRuntime:
             )
         ):
             raise ValueError("independent original Engine admission resolver required")
+        if pending_browser_ticket_source is not None and not callable(
+            getattr(pending_browser_ticket_source, "resolve_active_pending_browser_ticket_async", None)
+        ):
+            raise ValueError("independent current first-party pending browser ticket source required")
+        self._pending_browser_ticket_source = pending_browser_ticket_source
         self._original_engine_join_source = original_engine_join_source
         self._p01_approval_source = p01_approval_source
         self._storage = storage
@@ -103,6 +114,7 @@ class LocalAgentBrokerDurableRuntime:
         # ledger. There is NO issuer, private RPC or device/renderer route yet.
         self.browser_control_take_store = CloudflareDurableObjectBrowserControlTakeStore(storage)
         self.browser_engine_join_store = DurableBrokerOriginalEngineJoinStore(storage)
+        self.browser_pending_ticket_store = DurableBrokerPendingBrowserTicketStore(storage)
 
     def authority_ref(self) -> str:
         return safe_ref(str(self._env.LOCAL_AGENT_BROKER_AUTHORITY_REF), "authority_ref")
@@ -501,6 +513,80 @@ class LocalAgentBrokerDurableRuntime:
             }
         return self.transaction(operation)
 
+    async def _issue_pending_browser_command_from_current_ticket_async(
+        self, *, ticket_ref: str, now: datetime,
+    ) -> dict[str, Any]:
+        """SOURCE-ONLY: trusted pending owner ticket -> canonical Browser command.
+
+        The first-party issuer must independently resolve active Engine P01,
+        signed-in owner, workspace, ticket and device BEFORE returning a
+        closed ticket. The generic Broker RPC and Worker expose none of this.
+        An unapproved pending ticket MUST NOT become an admitted/taken command.
+        """
+        current = utc(now, "browser_ticket_issue_now")
+        ticket_ref = safe_ref(ticket_ref, "ticket_ref")
+        source = self._pending_browser_ticket_source
+        resolver = getattr(source, "resolve_active_pending_browser_ticket_async", None)
+        if not callable(resolver):
+            raise ValueError("authenticated current browser work-ticket issuer not wired")
+        pending = resolver(ticket_ref=ticket_ref, now=current)
+        if not inspect.isawaitable(pending):
+            raise ValueError("first-party pending browser ticket requires authenticated async I/O")
+        ticket = await pending
+        if type(ticket) is not AuthenticatedPendingBrowserWorkTicket:
+            raise ValueError("independent authenticated browser ticket unavailable")
+        if ticket.ticket_ref != ticket_ref or ticket.expires_at <= current:
+            raise ValueError("pending original browser ticket not current or not requested")
+        lifetime = min(300, int((ticket.expires_at - current).total_seconds()))
+        if lifetime < 1:
+            raise ValueError("pending original browser ticket expires too soon")
+
+        def operation() -> dict[str, Any]:
+            # Re-read canonical persisted Broker scope AFTER external Engine
+            # lookup, inside the same DO transaction that mints a command,
+            # and require an active, matching device binding.
+            snapshot = self.state_port.load(authority_ref=self.authority_ref()).snapshot
+            bound = [b for b in snapshot.bindings if b.binding_ref == ticket.binding_ref]
+            if len(bound) != 1:
+                raise ValueError("pending browser ticket has no canonical device binding")
+            binding = bound[0]
+            if (
+                binding.state is not BrokerBindingState.ACTIVE
+                or binding.device_id != ticket.device_ref
+                or binding.workspace_ref != ticket.workspace_ref
+                or not binding.issued_at <= current < binding.credential_expires_at
+            ):
+                raise ValueError("pending browser ticket device scope revoked or changed")
+            broker = StateBackedLocalAgentBrokerAuthority(
+                pepper=str(self._env.LOCAL_AGENT_BROKER_PEPPER).encode("utf-8"),
+                authority_ref=self.authority_ref(),
+                state_port=self.state_port,
+            )
+            # The used-id ledger and revision/sequence are canonical; neither
+            # comes from a tool, browser, user input, ticket, or local device.
+            command = broker._enqueue_browser_control_command(
+                command_id="browser.cmd." + secrets.token_hex(20),
+                binding_ref=ticket.binding_ref,
+                run_id=ticket.broker_run_ref,
+                tool_request_ref=ticket.tool_request_ref,
+                request_fingerprint=ticket.browser_request_fingerprint,
+                now=current, ttl_seconds=lifetime,
+            )
+            self.browser_pending_ticket_store._register_in_existing_transaction(
+                ticket=ticket, command=command, now=current,
+            )
+            return {
+                "issued": True,
+                "command_ref": command.command_id,
+                "binding_ref": command.binding_ref,
+                "revision_ref": command.revision_ref,
+                "capability": command.capability.value,
+                "approval_recorded": False,
+                "command_admitted": False,
+                "browser_action_executed": False,
+            }
+        return self.transaction(operation)
+
     def register_binding(self, payload: dict) -> dict:
         return self.transaction(lambda: self.facade().register_binding(payload))
 
@@ -511,6 +597,9 @@ class LocalAgentBrokerDurableRuntime:
                 self.material_store.purge_binding(result["binding"]["binding_ref"])
                 self.browser_control_take_store.purge_binding(result["binding"]["binding_ref"])
                 self.browser_engine_join_store.purge_binding(result["binding"]["binding_ref"])
+                self.browser_pending_ticket_store.retire_binding(
+                    result["binding"]["binding_ref"], now=parse_iso(payload["now"], "now"),
+                )
             return result
         return self.transaction(operation)
 
@@ -521,6 +610,9 @@ class LocalAgentBrokerDurableRuntime:
                 self.material_store.purge_binding(result["binding"]["binding_ref"])
                 self.browser_control_take_store.purge_binding(result["binding"]["binding_ref"])
                 self.browser_engine_join_store.purge_binding(result["binding"]["binding_ref"])
+                self.browser_pending_ticket_store.retire_binding(
+                    result["binding"]["binding_ref"], now=parse_iso(payload["now"], "now"),
+                )
             return result
         return self.transaction(operation)
 
@@ -721,6 +813,9 @@ class LocalAgentBrokerDurableRuntime:
                 self.material_store.purge_command(command_id)
                 self.browser_control_take_store.purge_command(command_id)
                 self.browser_engine_join_store.purge_command(command_id)
+                self.browser_pending_ticket_store.retire_command(
+                    command_id, now=parse_iso(payload["now"], "now"),
+                )
             return result
         return self.transaction(operation)
 
@@ -738,6 +833,9 @@ class LocalAgentBrokerDurableRuntime:
                 self.material_store.purge_command(command_id)
                 self.browser_control_take_store.purge_command(command_id)
                 self.browser_engine_join_store.purge_command(command_id)
+                self.browser_pending_ticket_store.retire_command(
+                    command_id, now=parse_iso(payload["now"], "now"),
+                )
             return result
         return self.transaction(operation)
 
