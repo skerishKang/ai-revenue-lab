@@ -35,3 +35,12 @@ B14 고정 auto 및 구버전 제품 HOLD는 사용자 지정 모델이 아닙�
 - All ten legacy register_*_provider Python functions now fail closed (RuntimeError); adding a provider/model must edit the JSON, not invoke a legacy function.
 - app/pilot/__init__.py no longer registers Poolside on import. KILO_FREE_ROUTES has no executable entries. Historical model ID constants may remain for retirement audits; they do not create routes.
 - PR #3819 remains DRAFT. Focused tests: 121 passed. Full B14 tests: 875 passed, 81 failed, 38 errors (Windows local, UTF-8 mode). Do not Ready/merge or deploy until full regression and cross-product CI gates pass.
+
+## 2026-10-09 browser/B62 integration regression contract
+
+- B14 app/pilot/workspace.py Start-screen manual model dropdown and its JavaScript b14CatalogModels use nine CATALOG_BY_ID entries installed from canonical b14_models.json, NOT historical empty CATALOG_MODELS.
+- The standalone Alpha UI still has a legacy b14/auto option. This task does not authorize that option as a new Plus/Pro/Max group, nor does it implement a B66 manual selector. Group membership remains Owner-only.
+- The Alpha browser smoke test selects approved agnes-ai/agnes-3.0-flash and supplies a dummy credential ONLY to the mock child process; no real API calls.
+- B62 source authority verifies nine registered model IDs and five completely unregistered Owner-deleted IDs; no public/free/auto route is authorized for B66.
+- B62 retry-budget fixture copies the schema of a surviving Agnes model in an isolated child with mocked provider dispatch and test-only key; the max_retries=0 execution guard still ensures exactly one provider attempt.
+- Verification: focused B62 21 passed, local B14 full 995 passed, desktop Alpha browser 28 passed, mobile Alpha browser 6 passed. Exact-head Linux CI and independent approval remain mandatory prior to Ready/merge.

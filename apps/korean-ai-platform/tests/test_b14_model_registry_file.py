@@ -112,3 +112,17 @@ def test_legacy_python_registration_cannot_reinstall_a_model(module,fn):
         getattr(importlib.import_module("app.pilot."+module),fn)()
     assert set(CATALOG_BY_ID)==before_ids
     assert {p.provider_id for p in list_platform_providers()}==before_provider_ids
+
+
+def test_workspace_manual_selector_uses_json_registered_models():
+    from html import unescape
+    with TestClient(create_app()) as client:
+        response=client.get("/workspace")
+    assert response.status_code == 200
+    html=unescape(response.text)
+    models=read_registry()["models"]
+    for row in models:
+        assert 'value="'+row["id"]+'"' in html
+    for retired in RETIRED:
+        assert 'value="'+retired+'"' not in html
+    assert html.count('data-provider=') >= len(models)

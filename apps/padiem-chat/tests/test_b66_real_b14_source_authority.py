@@ -147,11 +147,20 @@ def test_real_b14_source_registered_routes_and_google_manual_only(b14_source_get
         assert by_id[mid]["owner_excluded"] is False
     assert readiness["provider_mode"] == "live"  # local fixture, not Production
 
-    # The only public-auto route in legacy source is owner-excluded. No
-    # credential can authorize it for B66 merely by being registered/free.
+    # Removed models must be absent, not merely tagged owner-excluded/public.
+    removed = {
+        "b-ai/qwen3.8-flash",
+        "experiential/gpt-5.6-luna",
+        "infron/motif/motif-3",
+        "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+        "kilo/poolside-laguna-s-2.1-free",
+    }
+    assert len(rows) == 9
+    assert removed.isdisjoint(by_id)
     assert all(not row["auto_eligible"] for row in rows)
-    assert any(row["owner_excluded"] for row in rows)
-    assert any(row["owner_excluded"] and row["free"] for row in rows)
+    assert all(not row["owner_excluded"] for row in rows)
+    assert not any(row.get("public") is True for row in rows)
+    assert not any(row["free"] for row in rows)
 
 
 def test_b66_free_first_selector_refuses_actual_b14_source_snapshot(b14_source_gets):
@@ -173,9 +182,10 @@ def test_all_providers_synthetically_ready_still_cannot_authorize_excluded_auto(
 def test_live_mode_not_customer_authority_and_no_default_replacement(b14_source_gets):
     rows = b14_source_gets["models"]["registered_routes"]
     public = [row for row in rows if row.get("public") is True]
-    assert len(public) == 1
-    assert public[0]["owner_excluded"] is True
-    assert public[0]["auto_eligible"] is False
+    # The historical single Kilo public route was deleted by Owner.
+    assert public == []
+    assert len(rows) == 9
+    assert all(not row["auto_eligible"] for row in rows)
     assert not any(row["id"].startswith("google/") and row["auto_eligible"]
                    for row in rows)
     # This test is not a model activation. It never reads secrets or sends
