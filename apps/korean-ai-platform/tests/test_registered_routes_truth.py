@@ -47,12 +47,14 @@ def test_registered_routes_are_price_and_secret_free(client):
             "public",
             "explicit_only",
             "auto_eligible",
+            "owner_excluded",
         }
         assert entry["upstream_model"]
         assert isinstance(entry["free"], bool)
         assert isinstance(entry["public"], bool)
         assert isinstance(entry["explicit_only"], bool)
         assert isinstance(entry["auto_eligible"], bool)
+        assert isinstance(entry["owner_excluded"], bool)
 
 
 def test_only_public_catalog_lane_is_auto_eligible(client):
@@ -63,7 +65,8 @@ def test_only_public_catalog_lane_is_auto_eligible(client):
     assert len(public) == len(CATALOG_MODELS) == 1
     assert public[0]["id"] == KILO_NEMOTRON_MODEL_ID
     assert public[0]["provider_id"] == "kilo"
-    assert public[0]["auto_eligible"] is True
+    assert public[0]["owner_excluded"] is True
+    assert public[0]["auto_eligible"] is False
     # #2097: minimax + hy3 retirement unregistered two explicit-only lanes.
     # The owner final retirement decision (2026-10-07) retired the Space Bunny
     # lane too: nine manual-pin lanes remain (9 total).
@@ -82,7 +85,8 @@ def test_all_kilo_routes_are_free_and_only_public_is_auto_eligible(client):
     # lane stays auto eligible.
     assert len(kilo_routes) == 2
     assert all(r["free"] is True for r in kilo_routes)
-    assert sum(r["auto_eligible"] for r in kilo_routes) == 1
+    assert sum(r["auto_eligible"] for r in kilo_routes) == 0
+    assert all(r["owner_excluded"] for r in kilo_routes)
 
 
 def test_poolside_and_sensenova_stay_out_of_public_catalog(client):
@@ -118,3 +122,32 @@ def test_poolside_route_is_explicit_only_and_not_free(client):
     assert entry["free"] is False
     assert entry["public"] is False
     assert entry["explicit_only"] is True
+
+def test_owner_excluded_registered_routes_are_never_auto_eligible(client):
+    """Owner exclusion overrides free/public route metadata."""
+    excluded = {
+        "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+        "kilo/poolside-laguna-s-2.1-free",
+        "poolside/laguna-s-2.1",
+        "b-ai/qwen3.8-flash",
+        "infron/motif/motif-3",
+        "experiential/gpt-5.6-luna",
+    }
+    rows = {r["id"]: r for r in _registered_routes(client)}
+    assert excluded.issubset(rows)
+    for model_id in excluded:
+        assert rows[model_id]["owner_excluded"] is True
+        assert rows[model_id]["auto_eligible"] is False
+
+def test_other_registered_routes_are_not_implicitly_excluded(client):
+    rows = {r["id"]: r for r in _registered_routes(client)}
+    for model_id, route in rows.items():
+        if model_id not in {
+            "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
+            "kilo/poolside-laguna-s-2.1-free",
+            "poolside/laguna-s-2.1",
+            "b-ai/qwen3.8-flash",
+            "infron/motif/motif-3",
+            "experiential/gpt-5.6-luna",
+        }:
+            assert route["owner_excluded"] is False
