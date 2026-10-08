@@ -31,15 +31,22 @@ function loadBridge() {
     });
   };
   ["easyVoiceMic", "easyVoiceStatus", "easyVoiceModeReview", "easyVoiceModeAuto"].forEach(makeEl);
+  const net = { calls: [] };
   const sandbox = {
     window: {}, document: doc, console, Date, Math, Number, String, Boolean, Object, Array,
     JSON, Error, Promise, Set, Map, RegExp, Symbol,
-    setTimeout, clearTimeout
+    setTimeout, clearTimeout,
+    /* The connection layer may never talk to the network itself: the engine owns the token
+       route, and the Groq refusal must not cost a request. */
+    fetch: (target) => {
+      net.calls.push(String(target && target.url ? target.url : target));
+      return Promise.reject(new Error("harness_network_disabled"));
+    }
   };
   sandbox.globalThis = sandbox;
   vm.createContext(sandbox);
   vm.runInContext(fs.readFileSync(path.join(SRC, "voice-quote-bridge.js"), "utf8"), sandbox);
-  return { Bridge: sandbox.window.B66VoiceBridge, doc, sandbox };
+  return { Bridge: sandbox.window.B66VoiceBridge, doc, sandbox, net };
 }
 
 function createHost() {
@@ -110,6 +117,7 @@ async function main() {
     const bridge = Bridge.createVoiceBridge({
       document: doc, window: {}, host, mode: "REVIEW", engineLoader: fakeEngine(state)
     });
+    await bridge.start();
     bridge.publish({ kind: "interim", text: "대한건설에" });
     assert.equal(host.value, "", "interim is preview only, never input");
     assert.match(doc.elements.easyVoiceStatus.textContent, /듣는 중/);
@@ -127,6 +135,7 @@ async function main() {
     const bridge = Bridge.createVoiceBridge({
       document: doc, window: {}, host, mode: "AUTO", engineLoader: fakeEngine(state)
     });
+    await bridge.start();
     bridge.publish({ kind: "final", text: "배관 100미터", utteranceId: "u1" });
     assert.deepEqual(host.log, ["INPUT:배관 100미터"], "one auto-submit through the existing path");
     bridge.publish({ kind: "final", text: "배관 100미터", utteranceId: "u1" });
@@ -150,12 +159,71 @@ async function main() {
     const bridge = Bridge.createVoiceBridge({
       document: doc, window: {}, host, mode: "AUTO", engineLoader: fakeEngine(state)
     });
+    await bridge.start();
     host.stageText("직접 입력한 문구");
     bridge.publish({ kind: "final", text: "배관 100미터", utteranceId: "u9" });
     assert.equal(host.log.length, 0, "an unsent draft is never auto-submitted");
     assert.match(doc.elements.easyVoiceStatus.textContent, /아직 보내지 않은/);
     assert.equal(host.value.includes("배관 100미터"), true,
       "the transcript is still staged so the user can review the blend");
+  }
+
+  /* --- a press while the connection is still open cancels that attempt ------------ */
+  {
+    const { Bridge, doc } = loadBridge();
+    const host = createHost();
+    const state = { starts: 0, stops: 0, mounts: 0, release: null };
+    const api = {
+      publish: () => {}, setEngine() {},
+      /* The upstream start is the unsettled one: connect resolves only when the harness lets it. */
+      start: () => { state.starts += 1; return new Promise((resolve) => { state.release = resolve; }); },
+      stop: () => { state.stops += 1; return { stopped: true }; },
+      isMounted: () => true
+    };
+    const engine = { createApi: () => api, mount: () => { state.mounts += 1; return { unmount() {} }; } };
+    const bridge = Bridge.createVoiceBridge({
+      document: doc, window: {}, host, engineLoader: () => Promise.resolve(engine)
+    });
+    Bridge.bindDom(bridge, doc);
+    const mic = doc.elements.easyVoiceMic;
+    const firstPress = mic.click();
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(bridge.isStarting(), true, "the bridge knows an attempt is in flight");
+    assert.equal(state.starts, 1, "the engine is already connecting");
+    const secondPress = mic.click();
+    assert.deepEqual(secondPress, { stopped: true },
+      "a second press cancels the connecting attempt instead of queueing another one");
+    assert.equal(mic.getAttribute("aria-pressed"), "false", "and the button reads off again");
+    state.release();
+    const firstResult = await firstPress;
+    assert.equal(firstResult.started, false, "the cancelled attempt never reports a started session");
+    assert.equal(bridge.isRunning(), false, "and it cannot light the microphone afterwards");
+    assert.equal(state.starts, 1, "the engine was asked to start exactly once");
+    /* One stop from the press itself, one from the session that arrived after it. */
+    assert.equal(state.stops, 2, "the late session is released through the engine's own stop()");
+  }
+
+  /* --- a transcript that arrives after stop cannot reach the quote ---------------- */
+  {
+    const { Bridge, doc } = loadBridge();
+    const host = createHost();
+    const state = { starts: 0, stops: 0, mounts: 0 };
+    const bridge = Bridge.createVoiceBridge({
+      document: doc, window: {}, host, mode: "AUTO", engineLoader: fakeEngine(state)
+    });
+    await bridge.start();
+    bridge.stop();
+    state.api.publish({ kind: "final", text: "단가 18000원", utteranceId: "late-1" });
+    assert.equal(host.log.length, 0, "a stopped session cannot auto-submit into the quote");
+    assert.equal(host.value, "", "and its late transcript is not staged into the composer either");
+    assert.equal(bridge.submittedCount(), 0, "the stale utterance is not recorded as anything sent");
+    state.api.publish({ kind: "interim", text: "뒤늦게 도착한 중간 전사" });
+    assert.equal(bridge.isRunning(), false, "a stale echo cannot claim the microphone is live again");
+    assert.equal(/듣는 중/.test(doc.elements.easyVoiceStatus.textContent), false,
+      "and it cannot rewrite the status into listening either");
+    await bridge.start();
+    bridge.publish({ kind: "final", text: "배관 100미터", utteranceId: "fresh-1" });
+    assert.deepEqual(host.log, ["INPUT:배관 100미터"], "the next real session still works normally");
   }
 
   /* --- the first press waits for React's own mount pass -------------------------- */
@@ -241,7 +309,7 @@ async function main() {
 
   /* --- an unapproved fallback is refused, not ridden ----------------------------- */
   {
-    const { Bridge, doc } = loadBridge();
+    const { Bridge, doc, net } = loadBridge();
     const host = createHost();
     const state = { starts: 0, stops: 0, mounts: 0 };
     const bridge = Bridge.createVoiceBridge({
@@ -252,6 +320,12 @@ async function main() {
     assert.equal(state.stops, 1, "the refusal stops the engine session");
     assert.equal(host.log.length, 0, "and nothing is sent on the way out");
     assert.match(doc.elements.easyVoiceStatus.textContent, /추가 음성 서비스/);
+    /* Stopping before the recorder can hand over a blob is what keeps the refused provider
+       free: upstream posts its fallback audio only while the session is still desired. */
+    assert.deepEqual(net.calls, [], "the refusal path costs no request, /api/transcribe included");
+    state.api.publish({ kind: "engine", status: "live", backend: "groq" });
+    assert.equal(bridge.isRunning(), false, "a groq echo after the refusal cannot reopen the session");
+    assert.deepEqual(net.calls, [], "and it still costs no request");
   }
 
   /* --- a browser that cannot load the artifact keeps the text path --------------- */
@@ -312,6 +386,7 @@ async function main() {
     /* The engine reports its own fatal error without being asked to stop. */
     state.api.publish({ kind: "fatal", message: "브라우저 음성 인식 오류: not-allowed" });
     assert.equal(bridge.isRunning(), false, "the bridge stops believing in the session");
+    assert.equal(state.stops, 1, "the dead session is released through the engine's own stop()");
     assert.equal(mic.getAttribute("aria-pressed"), "false",
       "and the microphone button cannot keep claiming a session that just died");
     assert.match(doc.elements.easyVoiceStatus.textContent, /not-allowed/, "the engine's own reason is shown");

@@ -56,6 +56,10 @@
     let enginePromise = null;
     let running = false;
     let starting = false;
+    /* Every stop or new attempt advances this. An async return that carries an older number
+       belongs to a session the user already gave up on, so it may not start a microphone,
+       light a button or send a transcript. */
+    let attempt = 0;
     let announcedBrowser = false;
     const submitted = [];
     const stateListeners = [];
@@ -98,6 +102,8 @@
     /* One submit per final transcript. An empty utterance id (the engine had none yet)
         falls back to the text so a repeated final still cannot send twice. */
     function onFinal(event) {
+      /* Only a session this bridge still considers open may reach the composer. */
+      if (!running) return { staged: false, reason: "session_not_active" };
       const text = String(event.text || "").trim();
       if (!text) {
         onStatus(STATUS_TEXT.review);
@@ -135,26 +141,23 @@
           onFinal(event);
           return { handled: true };
         case "interim":
-          /* Preview only: interim text never enters the composer, so it can never become
-             authoritative input. */
-          if (String(event.text || "").trim()) setRunning(true);
+          /* Preview only, and only for the live attempt: a stale echo must not make the
+             bridge believe it is listening again. */
+          if (!running) return { handled: true };
           onStatus(STATUS_TEXT.listening);
           return { handled: true };
         case "utterance":
           return { handled: true };
-        case "engine": {
-          /* An idle echo that arrives after a failed attempt says nothing about stopping;
-             rewriting the status here would hide the reason the microphone never opened. */
-          const wasRunning = running;
+        case "engine":
+          if (!running) return { handled: true };
           setRunning(event.status === "live");
           if (event.backend === "browser" && !announcedBrowser) {
             announcedBrowser = true;
             onStatus(STATUS_TEXT.browser);
           }
           if (event.backend === "groq") onStatus(STATUS_TEXT.refused);
-          if (wasRunning && !running && event.status === "idle") onStatus(STATUS_TEXT.stopped);
+          if (!running) onStatus(STATUS_TEXT.stopped);
           return { handled: true };
-        }
         case "refused":
           /* The engine reported a fallback the owner has not approved: stop, and say so. */
           stop();
@@ -164,7 +167,9 @@
           if (event.message) onStatus(event.message);
           return { handled: true };
         case "fatal":
-          setRunning(false);
+          /* The engine says this session is over: release it through the same path the
+             button uses, so nothing is left half-open, then show its own reason. */
+          stop();
           onStatus(event.message || STATUS_TEXT.unavailable);
           return { handled: true };
         default:
@@ -205,25 +210,42 @@
 
     function start() {
       if (running || starting) return Promise.resolve({ started: false, reason: "already_running" });
+      const mine = attempt + 1;
+      attempt = mine;
       starting = true;
       announcedBrowser = false;
       onStatus(STATUS_TEXT.loading);
-      return ensureMounted().then((mounted) => mounted.start()).then(() => {
-        starting = false;
-        setRunning(true);
-        onStatus(STATUS_TEXT.listening);
-        return { started: true };
+      const stillMine = () => attempt === mine;
+      return ensureMounted().then((mounted) => {
+        if (!stillMine()) throw new Error("voice_start_cancelled");
+        return mounted.start();
+      }).then(() => {
+        if (stillMine()) {
+          starting = false;
+          setRunning(true);
+          onStatus(STATUS_TEXT.listening);
+          return { started: true };
+        }
+        /* The connection completed after the user stopped: hand the session straight back
+           to the engine's own stop() instead of adopting it. */
+        if (api) api.stop();
+        return { started: false, reason: "voice_start_cancelled" };
       }).catch((error) => {
+        const cancelled = !stillMine();
         starting = false;
         setRunning(false);
-        onStatus(STATUS_TEXT.unavailable);
-        return { started: false, reason: String((error && error.message) || "voice_unavailable") };
+        if (!cancelled) onStatus(STATUS_TEXT.unavailable);
+        return {
+          started: false,
+          reason: cancelled ? "voice_start_cancelled" : String((error && error.message) || "voice_unavailable")
+        };
       });
     }
 
     function stop() {
       /* Mic control stays the upstream hook's own stop(); it releases the stream, the
          AudioContext and the session. This layer only reflects that and stops routing. */
+      attempt += 1;
       if (api) api.stop();
       setRunning(false);
       starting = false;
@@ -245,6 +267,7 @@
       setMode,
       getMode: () => mode,
       isRunning: () => running,
+      isStarting: () => starting,
       onStateChange: (listener) => stateListeners.push(listener),
       submittedCount: () => submitted.length
     };
@@ -269,7 +292,7 @@
 
     if (mic) {
       mic.addEventListener("click", () => {
-        if (bridge.isRunning()) {
+        if (bridge.isRunning() || bridge.isStarting()) {
           bridge.stop();
           mic.setAttribute("aria-pressed", "false");
           return { stopped: true };
