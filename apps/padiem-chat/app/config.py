@@ -135,9 +135,9 @@ class Settings:
         live = _strict_bool(live_enabled, name="PADIEM_CHAT_LIVE_ENABLED")
 
         web = str(web_provider or "off").strip().lower()
-        if web not in {"off", "mock", "firecrawl", "daum", "tinyfish"}:
+        if web not in {"off", "mock", "firecrawl", "daum", "tinyfish", "tinyfish_daum"}:
             raise ConfigError(
-                "PADIEM_CHAT_WEB_PROVIDER must be off, mock, firecrawl, daum, or tinyfish"
+                "PADIEM_CHAT_WEB_PROVIDER must be off, mock, firecrawl, daum, tinyfish, or tinyfish_daum"
             )
         raw_firecrawl_key = "" if firecrawl_api_key is None else str(firecrawl_api_key).strip()
         firecrawl_key = raw_firecrawl_key or None
@@ -145,13 +145,14 @@ class Settings:
             raise ConfigError("FIRECRAWL_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=firecrawl")
         raw_daum_key = "" if daum_rest_api_key is None else str(daum_rest_api_key).strip()
         daum_key = raw_daum_key or None
-        if web == "daum" and daum_key is None:
+        if web in {"daum", "tinyfish_daum"} and daum_key is None:
             raise ConfigError("PADIEM_CHAT_DAUM_REST_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=daum")
-        # #3622: TinyFish is server-key-only. Selecting it without a key fails
-        # closed here so there is no keyless fallback and no silent provider swap.
+        # #3385: TinyFish-first / Daum-after-quota is explicitly Owner-approved.
+        # Both credentials are required; missing binding is never a reason to
+        # silently switch provider or treat a failed production search as off.
         raw_tinyfish_key = "" if tinyfish_api_key is None else str(tinyfish_api_key).strip()
         tinyfish_key = raw_tinyfish_key or None
-        if web == "tinyfish" and tinyfish_key is None:
+        if web in {"tinyfish", "tinyfish_daum"} and tinyfish_key is None:
             raise ConfigError("TINYFISH_API_KEY is required when PADIEM_CHAT_WEB_PROVIDER=tinyfish")
 
         try:
@@ -241,14 +242,22 @@ class Settings:
 
     @classmethod
     def from_env(cls) -> "Settings":
+        runtime_mode = os.getenv("PADIEM_CHAT_RUNTIME_MODE", "mock")
+        # A real B14 session defaults to the Owner's two-provider search policy.
+        # An explicitly configured provider (including "off") wins; mock and
+        # offline default to off, preserving zero-network development runs.
+        configured_provider = os.getenv("PADIEM_CHAT_WEB_PROVIDER")
+        default_provider = (
+            "tinyfish_daum" if runtime_mode.strip().lower() == "b14" else "off"
+        )
         return cls.from_values(
-            runtime_mode=os.getenv("PADIEM_CHAT_RUNTIME_MODE", "mock"),
+            runtime_mode=runtime_mode,
             b14_base_url=os.getenv("PADIEM_CHAT_B14_BASE_URL"),
             b66_quote_base_url=os.getenv("PADIEM_CHAT_B66_QUOTE_BASE_URL"),
             timeout_seconds=os.getenv("PADIEM_CHAT_TIMEOUT_SECONDS", "20"),
             completed_timeout_seconds=os.getenv("PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS", "50"),
             live_enabled=os.getenv("PADIEM_CHAT_LIVE_ENABLED", "false"),
-            web_provider=os.getenv("PADIEM_CHAT_WEB_PROVIDER", "off"),
+            web_provider=(default_provider if configured_provider is None else configured_provider),
             firecrawl_api_key=os.getenv("FIRECRAWL_API_KEY"),
             daum_rest_api_key=os.getenv("PADIEM_CHAT_DAUM_REST_API_KEY"),
             tinyfish_api_key=os.getenv("TINYFISH_API_KEY"),
