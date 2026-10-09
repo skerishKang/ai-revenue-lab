@@ -12,12 +12,16 @@ check(html.includes('<script src="shell-layout.js" defer></script>'),
   "canonical page loads three-pane shell after account/runtime scripts");
 check(html.includes('id="easyComposer"') && html.includes('id="easySend"'),
   "single chat composer remains primary conversational input");
-check(html.includes('id="padiemQuoteRequest"') && html.includes('id="padiemQuoteGenerate"'),
-  "legacy runtime controls remain in DOM for existing authority code");
+check(!html.includes('id="padiemQuoteRequest"') && !html.includes('id="padiemQuoteGenerate"'),
+  "duplicate legacy quote input and send action are removed");
 check(shell.includes('skillHost.appendChild(skillSelect)'),
   "rail moves actual Saved Quote Skill selector");
 check(shell.includes('templateHost.appendChild(templateSelect)'),
   "rail moves actual Quote Template selector");
+check(shell.includes('modelHost.appendChild(modelSelect)'),
+  "rail moves the one authoritative selected-model control, no hidden fallback");
+check(shell.includes('b66:open-recent-quotes') && shell.includes('b66:open-file-intake'),
+  "rail secondary navigation activates the canonical Easy view actions");
 check(shell.includes('id="shellNewQuote"') && shell.includes('clickExisting("newQuote")'),
   "rail exposes an explicit new-quote action");
 check(shell.includes('account.appendChild(accountButton)'),

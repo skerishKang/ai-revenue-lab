@@ -40,7 +40,7 @@
     var newSection = document.createElement("section");
     newSection.className = "shell-rail-section";
     newSection.innerHTML =
-      '<h2>새 견적 · 템플릿</h2>' +
+      '<h2>새 견적</h2>' +
       '<button type="button" class="shell-rail-item shell-new-quote" id="shellNewQuote">' +
       '<span class="shell-rail-icon" aria-hidden="true">＋</span>' +
       '<span><strong>새 견적 시작</strong><small>내용을 비우고 대화에서 새 견적을 시작합니다.</small></span>' +
@@ -50,22 +50,30 @@
       '<span><strong>배정된 내 견적서</strong>' +
       '<small id="shellTemplateName">로그인한 계정의 Saved Skill을 불러옵니다.</small></span>' +
       '</div>' +
-      '<label class="shell-picker-label">내 견적서<select-host id="shellSkillSelect"></select-host></label>' +
-      '<label class="shell-picker-label">출력 양식<select-host id="shellQuoteTemplateSelect"></select-host></label>' +
       '<p class="shell-runtime-status" id="shellRuntimeStatus" role="status" aria-live="polite"></p>';
     menu.appendChild(newSection);
 
+    var managementSection = document.createElement("section");
+    managementSection.className = "shell-rail-section";
+    managementSection.innerHTML =
+      '<h2>견적서 관리</h2>' +
+      '<label class="shell-picker-label">배정된 내 견적서<select-host id="shellSkillSelect"></select-host></label>' +
+      '<label class="shell-picker-label">출력 양식<select-host id="shellQuoteTemplateSelect"></select-host></label>' +
+      '<label class="shell-picker-label" id="shellModelControl" hidden>견적 해석 AI 모델<select-host id="shellModelSelect"></select-host></label>';
+    menu.appendChild(managementSection);
 
     var historySection = document.createElement("section");
     historySection.className = "shell-rail-section";
-    historySection.innerHTML = '<h2>기존 견적서 · 지난 대화</h2>';
+    historySection.innerHTML = '<h2>최근 견적</h2>';
     var recent = makeButton(
       "shellRecentQuote",
       "↶",
       "최근 견적 불러오기",
-      "이 브라우저에 저장한 견적을 엽니다"
+      "로그인 계정 또는 이 브라우저의 최근 견적을 엽니다"
     );
-    recent.addEventListener("click", function () { clickExisting("recentQuoteStarter"); });
+    recent.addEventListener("click", function () {
+      document.dispatchEvent(new CustomEvent("b66:open-recent-quotes"));
+    });
     historySection.appendChild(recent);
     menu.appendChild(historySection);
 
@@ -78,7 +86,9 @@
       "파일에서 불러오기",
       "PDF·사진·문서를 선택합니다"
     );
-    file.addEventListener("click", function () { clickExisting("fileStarter"); });
+    file.addEventListener("click", function () {
+      document.dispatchEvent(new CustomEvent("b66:open-file-intake"));
+    });
     importSection.appendChild(file);
     menu.appendChild(importSection);
 
@@ -93,9 +103,11 @@
 
     var skillSelect = byId("padiemSavedSkillSelect");
     var templateSelect = byId("templateSelect");
+    var modelSelect = byId("padiemQuoteModelSelect");
     var skillStatus = byId("padiemQuoteStatus");
     var skillHost = byId("shellSkillSelect");
     var templateHost = byId("shellQuoteTemplateSelect");
+    var modelHost = byId("shellModelSelect");
     if (skillSelect && skillHost) {
       skillHost.appendChild(skillSelect);
       function syncTemplateName() {
@@ -116,6 +128,19 @@
     }
     if (templateSelect && templateHost) {
       templateHost.appendChild(templateSelect);
+    }
+    if (modelSelect && modelHost) {
+      // Move the one authoritative B14 picker; never clone the select or choose a model.
+      modelHost.appendChild(modelSelect);
+      var modelControl = byId("shellModelControl");
+      function syncModelControl(event) {
+        var signedIn = event && event.detail
+          ? event.detail.authenticated === true
+          : byId("padiemAccountPanel") && !byId("padiemAccountPanel").hidden;
+        if (modelControl) modelControl.hidden = !signedIn;
+      }
+      document.addEventListener("b66:auth-changed", syncModelControl);
+      syncModelControl();
     }
     var newQuoteButton = byId("shellNewQuote");
     if (newQuoteButton) {
