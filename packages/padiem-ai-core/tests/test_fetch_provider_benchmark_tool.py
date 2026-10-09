@@ -20,6 +20,45 @@ spec.loader.exec_module(benchmark)
 CORPUS = ROOT / "docs/experiments/PADIEM_FETCH_PROVIDER_BENCHMARK_URLS_v1.tsv"
 
 
+@pytest.fixture(autouse=True)
+def _deny_network(monkeypatch):
+    """Lowest-level network deny, installed before every test in this file.
+
+    Patching a call site whose default argument already captured the network
+    function is not enough — that is exactly how one unintended outbound POST
+    slipped through during development — so sockets and ``urlopen`` are denied
+    directly.
+    """
+    import socket
+
+    def _deny(*args, **kwargs):
+        raise AssertionError("network access is denied in fetch benchmark tests")
+
+    monkeypatch.setattr(socket, "socket", _deny)
+    monkeypatch.setattr(socket, "create_connection", _deny)
+    monkeypatch.setattr(benchmark, "urlopen", _deny)
+    yield
+
+
+def _write_fixture(path: Path, ids, *, status: int = 200, body: dict | None = None) -> None:
+    payload = body or {
+        "results": [{"url": "https://www.example.com/", "final_url": "https://www.example.com/", "text": "body"}],
+        "errors": [],
+    }
+    lines = [
+        json.dumps(
+            {
+                "url_id": url_id,
+                "status": status,
+                "headers": {"content-type": "application/json; charset=utf-8"},
+                "body_b64": base64.b64encode(json.dumps(payload, ensure_ascii=False).encode("utf-8")).decode("ascii"),
+            }
+        )
+        for url_id in ids
+    ]
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def _case(url_id: str = "EN-EDGE-01"):
     return next(case for case in benchmark.load_corpus(CORPUS) if case.id == url_id)
 
@@ -257,3 +296,108 @@ def test_live_output_cannot_be_written_inside_repository():
 def test_allow_network_and_fixture_are_mutually_exclusive():
     with pytest.raises(SystemExit):
         benchmark.main(["--provider", "tinyfish", "--allow-network", "--fixture", "x.jsonl"])
+
+
+def test_offline_replay_with_full_coverage_makes_zero_transport_calls(monkeypatch, tmp_path):
+    monkeypatch.setenv("TINYFISH_API_KEY", "synthetic-tf-value")
+    monkeypatch.setenv("FIRECRAWL_API_KEY", "synthetic-fc-value")
+    calls = []
+
+    def transport(*args, **kwargs):
+        calls.append(args)
+        raise AssertionError("offline replay must never reach the transport")
+
+    monkeypatch.setattr(benchmark, "_perform_request", transport)
+    ids = [case.id for case in benchmark.load_corpus(CORPUS)]
+    fixture = tmp_path / "fx.jsonl"
+    _write_fixture(fixture, ids)
+    output = tmp_path / "out.jsonl"
+
+    rc = benchmark.main(["--provider", "tinyfish", "--fixture", str(fixture), "--output", str(output)])
+
+    assert rc == 0
+    assert calls == []
+    records = [json.loads(line) for line in output.read_text(encoding="utf-8").splitlines()]
+    assert len(records) == 16
+    assert all(record["error"] is None and record["mode"] == "OFFLINE_REPLAY" for record in records)
+
+
+def test_offline_replay_rejects_incomplete_fixture_coverage(monkeypatch, tmp_path, capsys):
+    monkeypatch.setenv("TINYFISH_API_KEY", "synthetic-tf-value")
+    monkeypatch.setenv("FIRECRAWL_API_KEY", "synthetic-fc-value")
+    ids = [case.id for case in benchmark.load_corpus(CORPUS)]
+    assert len(ids) == 16
+    fixture = tmp_path / "fx.jsonl"
+    _write_fixture(fixture, ids[:15])  # one selected URL is uncovered
+    output = tmp_path / "out.jsonl"
+
+    rc = benchmark.main(["--provider", "tinyfish", "--fixture", str(fixture), "--output", str(output)])
+
+    assert rc == 2
+    printed = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
+    assert printed["error"] == "MISSING_FIXTURE"
+    assert printed["missing_url_ids"] == [ids[15]]
+    assert printed["request_count"] == 0
+    assert not output.exists()  # no false OFFLINE_REPLAY success record was written
+
+
+def test_offline_replay_rejects_duplicate_fixture_ids(monkeypatch, tmp_path, capsys):
+    monkeypatch.setenv("TINYFISH_API_KEY", "synthetic-tf-value")
+    fixture = tmp_path / "fx.jsonl"
+    _write_fixture(fixture, ["EN-EDGE-01", "EN-EDGE-01"])
+    output = tmp_path / "out.jsonl"
+
+    rc = benchmark.main(["--provider", "tinyfish", "--fixture", str(fixture), "--output", str(output)])
+
+    assert rc == 2
+    printed = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
+    assert printed["error"] == "INVALID_FIXTURE"
+    assert not output.exists()
+
+
+def test_offline_replay_rejects_a_missing_fixture_file(monkeypatch, tmp_path, capsys):
+    monkeypatch.setenv("TINYFISH_API_KEY", "synthetic-tf-value")
+    output = tmp_path / "out.jsonl"
+
+    rc = benchmark.main(
+        ["--provider", "tinyfish", "--fixture", str(tmp_path / "absent.jsonl"), "--output", str(output)]
+    )
+
+    assert rc == 2
+    printed = json.loads(capsys.readouterr().out.strip().splitlines()[-1])
+    assert printed["error"] == "INVALID_FIXTURE"
+    assert not output.exists()
+
+
+@pytest.mark.parametrize(
+    "row",
+    [
+        '{"status": 200}',                              # no url_id
+        '{"url_id": "", "status": 200}',                # empty url_id
+        '{"url_id": "EN-EDGE-01", "status": "x"}',      # non-integer status
+        '{"url_id": "EN-EDGE-01", "body": 5}',          # non-string body
+        '{"url_id": "EN-EDGE-01", "headers": []}',      # non-object headers
+        '["not", "an", "object"]',                      # not a JSON object
+        "{not json",                                    # malformed JSON
+    ],
+)
+def test_load_fixtures_rejects_malformed_rows(tmp_path, row):
+    fixture = tmp_path / "fx.jsonl"
+    fixture.write_text(row + "\n", encoding="utf-8")
+    with pytest.raises(ValueError):
+        benchmark.load_fixtures(fixture)
+
+
+def test_run_case_offline_never_reaches_the_live_transport(monkeypatch):
+    monkeypatch.setenv("TINYFISH_API_KEY", "synthetic-tf-value")
+    calls = []
+
+    def transport(*args, **kwargs):
+        calls.append(args)
+        raise AssertionError("offline mode must not reach the transport")
+
+    with pytest.raises(benchmark.MissingFixture):
+        benchmark.run_case(
+            benchmark.PROVIDERS["tinyfish"], _case(), transport=transport, offline=True
+        )
+    assert calls == []

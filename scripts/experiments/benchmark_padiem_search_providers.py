@@ -19,7 +19,7 @@ import re
 import socket
 import sys
 import time
-from typing import Any, Iterable
+from typing import Any, Callable, Iterable
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urlsplit
 from urllib.request import Request, urlopen
@@ -428,14 +428,16 @@ def run_case(
     *,
     limit: int = MAX_RESULTS,
     timeout: float = DEFAULT_TIMEOUT_SECONDS,
-    transport=_perform_request,
+    transport: Callable[..., tuple[int, bytes]] | None = None,
 ) -> dict[str, Any]:
     credential = os.environ.get(spec.credential_env, "").strip()
     if not credential:
         raise MissingCredential(f"{spec.credential_env} is not configured")
     method, url, headers, body = _request_for(spec, case, credential, limit)
     started = time.perf_counter()
-    status, raw = transport(method, url, headers, body, timeout)
+    # Resolve the transport at call time (never as a captured default argument),
+    # so a test can inject a transport without any risk of reaching the network.
+    status, raw = (transport or _perform_request)(method, url, headers, body, timeout)
     latency_ms = round((time.perf_counter() - started) * 1000, 1)
     data = _decode_json(raw)
     results = _normalize_items(spec.provider, data, limit)

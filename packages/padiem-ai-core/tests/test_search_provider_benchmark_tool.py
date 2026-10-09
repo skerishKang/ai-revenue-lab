@@ -17,6 +17,27 @@ sys.modules[spec.name] = benchmark
 spec.loader.exec_module(benchmark)
 
 
+@pytest.fixture(autouse=True)
+def _deny_network(monkeypatch):
+    """Lowest-level outbound-network deny, installed before every test here.
+
+    Patching a call site whose default argument already captured the network
+    function is not enough — one unintended outbound POST slipped through that
+    way during development — so the outbound choke points are denied directly.
+    ``socket.socket`` itself is left alone because asyncio's event loop builds
+    its self-pipe with ``socket.socketpair``.
+    """
+    import socket
+
+    def _deny(*args, **kwargs):
+        raise AssertionError("network access is denied in search benchmark tests")
+
+    monkeypatch.setattr(socket, "create_connection", _deny)
+    monkeypatch.setattr(socket, "getaddrinfo", _deny)
+    monkeypatch.setattr(benchmark, "urlopen", _deny)
+    yield
+
+
 def test_frozen_corpus_shape():
     cases = benchmark.load_corpus(ROOT / "docs/experiments/PADIEM_SEARCH_PROVIDER_BENCHMARK_CORPUS_v1.tsv")
     assert len(cases) == 60
@@ -144,23 +165,26 @@ def test_http_402_free_quota_exhaustion_is_distinct(monkeypatch):
 
 
 def test_live_run_aborts_on_free_quota_exhaustion(monkeypatch, tmp_path):
-    def deny_network(*args, **kwargs):
-        raise AssertionError("network must be denied in this test")
+    monkeypatch.setenv("TAVILY_API_KEY", "not-logged")
+    calls = []
 
-    def raise_402(*args, **kwargs):
+    def raise_402(method, url, headers, body, timeout):
+        calls.append(url)
         raise benchmark.BenchmarkHttpError(402)
 
-    # `run_case` captures `_perform_request` as a default argument, so patching
-    # the module attribute alone would NOT deny the network. Patch the runner
-    # entry point and the low-level `urlopen` the real transport uses, so this
-    # test is network-denied by construction.
-    monkeypatch.setattr(benchmark, "run_case", raise_402)
-    monkeypatch.setattr(benchmark, "urlopen", deny_network)
+    # Transport-injection through the real `run_case` path (not by patching
+    # `run_case` itself); the autouse fixture denies sockets/urlopen underneath.
+    monkeypatch.setattr(benchmark, "_perform_request", raise_402)
     output = tmp_path / "search-live.jsonl"
     rc = benchmark.main(
-        ["--provider", "tavily", "--query-id", "KR-NEWS-01", "--allow-network", "--output", str(output)]
+        [
+            "--provider", "tavily",
+            "--query-id", "KR-NEWS-01", "--query-id", "KR-NEWS-02",
+            "--allow-network", "--output", str(output),
+        ]
     )
     assert rc == 2
+    assert len(calls) == 1  # the run stops on the first 402; no second request
 
 
 def test_dry_run_never_calls_network(monkeypatch, capsys):
