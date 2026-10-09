@@ -59,6 +59,14 @@
 
 - **실측 PASS:** 합성 등록 PR #4033의 정확한 HEAD에서 7개 워크플로 PASS, 가장 긴 워크플로 44초. 임시 PR은 병합 없이 종료됨.
 - **오프라인 PASS:** 분류기의 PR/main push 이벤트 모의 시험. 실제 새 모델만 추가한 main push의 B14 Alpha 검증이 완료됐다는 의미는 아님.
-- **후속 결함 OPEN:** [#4042](https://github.com/skerishKang/ai-revenue-lab/issues/4042) — 기존 provider 모델 추가에 무관한 Worker allowlist 및 Wrangler 인증 바인딩 메타데이터가 함께 추가된 경우 빠른 경로로 분류될 수 있음. 실제 코드를 이용한 오프라인 재현은 `model_registration_only=True`였으나 기대값은 `False`다. 정확한 신규 제공업체별 허용 범위, 승인된 Store 메타데이터 검증, 부정 테스트를 보강한 후 전체 CI 통과가 필요하다.
+- **후속 결함 재현 및 수정 대상:** [#4042](https://github.com/skerishKang/ai-revenue-lab/issues/4042) — 기존 provider 모델 추가에 무관한 Worker allowlist 및 Wrangler 인증 바인딩 메타데이터가 함께 추가된 경우 빠른 경로로 분류될 수 있음. 실제 코드를 이용한 오프라인 재현은 `model_registration_only=True`였으나 기대값은 `False`다. 정확한 신규 제공업체별 허용 범위, 승인된 Store 메타데이터 검증, 부정 테스트를 보강한 후 전체 CI 통과가 필요하다.
 - **범위 구분:** 모델 등록 CI 속도는 모델 품질·유료 API 실호출·키 유효성·Production 배포를 보증하지 않는다. 변경이 병합됐다는 사실과 배포됐다는 사실을 별도로 확인한다.
 - **상위 이슈:** [#3989](https://github.com/skerishKang/ai-revenue-lab/issues/3989)는 저장소 전체 CI 최적화로 계속 OPEN이다.
+
+## #4042 — 모델 등록 빠른 경로의 인증 메타데이터 차단 규칙
+
+- **기존 제공업체 신규 모델:** 등록소의 append-only 추가만 허용한다. 동일 PR에서 Worker 자격증명 허용목록이나 Wrangler Secret Store 메타데이터를 수정하면 `full`을 선택한다.
+- **신규 제공업체 등록:** 신규 provider에 실제 append 모델이 있어야 한다. Worker에 추가한 credential alias는 신규 provider의 alias 집합과 중복 없이 정확히 같아야 한다. 기존 provider가 이미 사용하는 alias를 재사용할 수 없다.
+- **Wrangler 변경:** 신규 provider별 완전한 `[[secrets_store_secrets]]` 블록(바인딩명/스토어 ID/secret_name)을 정확히 하나씩 추가해야 한다. 허용된 기존 스토어 메타데이터 ID를 유지하고, 추가 블록·미승인 스토어·중복/누락 필드를 거부한다.
+- 분류 실패 시 기존 `full` 경로로 전환하며 해당 모델을 자동 활성화하거나 Secret 값을 참조하지 않는다. CI 합격과 실제 자격증명·모델 품질·Production 배포는 서로 별개의 조건이다.
+- 이 규칙은 [#4042](https://github.com/skerishKang/ai-revenue-lab/issues/4042)의 **전체 CI 검증 및 병합을 전제로 하는 코드 규약**이다. 이전 44초 실측은 변경 전 버전의 합성 PR에 대한 측정치로서, 이 보강 이후의 성능을 재측정한 값은 아니다.
