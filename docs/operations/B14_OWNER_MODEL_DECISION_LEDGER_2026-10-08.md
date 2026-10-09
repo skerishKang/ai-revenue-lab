@@ -4,6 +4,34 @@
 
 **Snapshot reconciliation (2026-10-08):** B14 Google four manual-pin model registrations were merged by PR #3788 at SHA bcb05bb7fea9a31b72d805e7237441e045883b1b. Separate LOCAL product naming/tier drafts are not thereby merged. Source registration is not a Plus product route or proof of Production readiness; recheck exact-main B14 catalog, Control Plane declaration and credential-backed live evidence.
 
+## 2026-10-09 OWNER evaluation priority — StepFun Step 5 Preview Free
+
+**Latest OWNER decision (experimental order, not measured quality ranking):**
+
+~~~text
+OWNER_STEP5_EVALUATION_PRIORITY=1
+PRIORITY_SCOPE=MODEL_TRIAL_ORDER
+CANDIDATE_NAME=StepFun Step 5 Preview Free
+VERIFIED_KILO_MODEL_ID=kilo/stepfun/step-5-preview-free
+UPSTREAM_DIRECT_MODEL_ID=step-5-preview
+CURRENT_BEST_MODEL_VERIFIED=NO
+B14_SOURCE_REGISTRATION_BY_THIS_DOC=NO
+AUTO_SELECTION_ACTIVATION=NO
+SILENT_FALLBACK=NO
+PLUS_PRO_MAX_MAPPING_CHANGE=NO
+PRODUCTION_DEPLOY=NO
+~~~
+
+- The owner explicitly put **StepFun Step 5 Preview Free first for further model trials**. Earlier Step 3.7 Flash candidate order no longer overrides this decision. No claim that Step 3.7 is globally unavailable or technically retired is established by the Step 5 smoke alone.
+- On 2026-10-09 the existing Kilo Code connection invoked exact "kilo/stepfun/step-5-preview-free" once, returned "STEP5_OK" and "2+2 = 4", exited with code 0, and recorded cost "$0". This proves one successful response through the Kilo free route, **not** superiority in coding, Korean reasoning, multi-step agent work, latency, tool use or sustained availability.
+- StepFun publicly advertises Step 5 Preview on https://platform.stepfun.ai/; its own direct OpenAI-compatible API and Kilo's proxy route are distinct provider integrations. Do not substitute the direct ID for the tested Kilo exact route without a separate validation.
+- First comparison targets: instruction adherence, coding/repair correctness, Korean-language accuracy, multi-step agent/tool reliability, output stability, latency, rate limits, and actual cost. Record comparable test evidence before declaring a performance winner.
+- This is an **OWNER-ranked trial candidate**, not a new customer-facing B14 execution route. PR #3819's nine-model JSON registry and five owner-deleted models remain separate; this ledger **does not add Step 5** to that registry, assign Plus/Pro/Max, alter the Kilo Code global default, or activate a product auto-router. Any actual onboarding or production route needs a source change and its own safe approval/testing.
+- Continue one owner-selected exact model per execution. Never silently switch to another provider or a paid route. Issue #3554 owns this owner experiment decision, while #2698's intelligent auto-router remains deferred.
+- Initial two-task trial evidence: [Step 5 vs Dots 3 free routes — 2026-10-09](../experiments/STEPFUN_STEP5_P1_2026-10-09_TRIAL.md). Step 5 Python 8/8 but quotation arithmetic wrong; two concurrent provider rejects followed by successful sequential calls. Evaluation P1 retained, performance winner not verified.
+
+---
+
 ## 1. Customer-visible names (owner decision)
 
 Exact owner wording: 파디엠플러스모델명, meaning 파디엠플러스 plus the INDIVIDUAL MODEL NAME. Historical unmerged LOCAL English naming proposals are not current merged UI behavior or owner-approved Korean naming. Do not invent separator, spacing, Pro/Max branding, tier-wide default or a single primary.
