@@ -5,6 +5,7 @@ on:
     paths:
       - ".github/workflows/b54-engine-a7-authenticated-user-canary.yml"
       - ".github/tests/test_b54_engine_a7_authenticated_canary.py"
+      - ".github/tests/test_b54_engine_a7_canary_negative_gate.py"
       - "apps/padiem-ai-engine/scripts/a7_authenticated_user_production_canary.py"
       - "apps/padiem-ai-engine/app/execution_admission_service.py"
       - "apps/padiem-ai-engine/app/tenant_auth.py"
@@ -72,6 +73,7 @@ jobs:
           set -euo pipefail
           python -m py_compile apps/padiem-ai-engine/scripts/a7_authenticated_user_production_canary.py
           python -m pytest -q .github/tests/test_b54_engine_a7_authenticated_canary.py
+          python -m pytest -q .github/tests/test_b54_engine_a7_canary_negative_gate.py
           echo "A7_AUTHENTICATED_USER_CANARY_SOURCE=PASS"
           echo "PRODUCTION_MUTATION=0"
 
