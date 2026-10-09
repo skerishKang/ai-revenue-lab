@@ -39,8 +39,6 @@ def allowed_file(path: str) -> bool:
     if path in {
         ".github/tests/test_b66_quote_model_benchmark.py",
         ".github/tests/test_b67_space_bunny_primary_parity.py",
-        ".github/scripts/b14_owner_evaluation_registry.py",
-        "apps/korean-ai-platform/scripts/check_b14_worker_bundle.py",
     }:
         return True
     return False

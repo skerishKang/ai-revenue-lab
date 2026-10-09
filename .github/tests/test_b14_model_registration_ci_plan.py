@@ -92,6 +92,8 @@ class TestRegistryChangeSet(unittest.TestCase):
         self.assertFalse(lane.additions_only(None,lane.WRANGLER))
         self.assertFalse(lane.allowed_file("apps/korean-ai-platform/app/pilot/platform.py"))
         self.assertFalse(lane.allowed_file("apps/padiem-chat/worker.py"))
+        self.assertFalse(lane.allowed_file("apps/korean-ai-platform/scripts/check_b14_worker_bundle.py"))
+        self.assertFalse(lane.allowed_file(".github/scripts/b14_owner_evaluation_registry.py"))
 
     def test_fast_path_requires_registry_append_and_exact_changed_set(self):
         a,b=appended()
