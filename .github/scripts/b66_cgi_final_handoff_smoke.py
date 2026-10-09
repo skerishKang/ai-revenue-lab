@@ -631,6 +631,12 @@ def _login(page, username: str, password: str) -> None:
     print("SMOKE_STAGE=LOGIN_READY")
 
 
+def _require_b14_completion(response, stage: str) -> None:
+    """HTTP 200 is not sufficient: deterministic rescue is not model E2E."""
+    if response.headers.get("x-b66-result-origin") != "registered_model_completion":
+        _fail(stage + "_not_registered_model_completion")
+
+
 _B66_EXACT_MODEL_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$")
 
 
@@ -733,6 +739,7 @@ def _complete_free_form(page, counters: Counters) -> None:
     if response.status != 200:
         _print_bounded_b66_interpret_failure(response)
         _fail("complete_interpret_http_" + str(response.status))
+    _require_b14_completion(response, "complete")
 
     page.wait_for_function(
         """() => {
@@ -779,6 +786,7 @@ def _partial_followup(page, counters: Counters) -> None:
     if first.status != 200:
         _print_bounded_b66_interpret_failure(first)
         _fail("partial_interpret_http_" + str(first.status))
+    _require_b14_completion(first, "partial")
 
     page.wait_for_function(
         """() => {
@@ -813,6 +821,7 @@ def _partial_followup(page, counters: Counters) -> None:
     if second.status != 200:
         _print_bounded_b66_interpret_failure(second)
         _fail("followup_interpret_http_" + str(second.status))
+    _require_b14_completion(second, "followup")
 
     page.wait_for_function(
         """() => {
