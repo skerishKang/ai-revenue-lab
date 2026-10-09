@@ -187,6 +187,11 @@ function buildAccountEnv(options) {
         assert.equal(body.model_id, SELECTED_MODEL_ID,
           "explicit user choice is submitted independently of quote text");
         interpretBodies.push(body.message);
+        if (config.unrecognizedModelOutput ||
+            config.unrecognizedResponseTurn === interpretBodies.length) {
+          return jsonResponse({ ok: false, error: { code: "quote_input_unrecognized",
+            message: "견적 입력값을 확인해 주세요." } }, 422);
+        }
         if (config.candidates) {
           const candidate = config.candidates[interpretBodies.length - 1];
           assert.ok(candidate, "one fixture per interpretation turn");
@@ -577,6 +582,50 @@ const assistantTexts = (env) => {
   const genericBuilt = await generic.context.B66QuoteRuntimeBridge.interpret("Synthetic generic request");
   assert.equal(genericBuilt.ok, true, "CGI row scope does not become a generic QuoteCore cap");
   assert.equal(genericBuilt.draft.items.length, 4);
+
+  /* If the model emitted malformed output, ask for clarification rather than
+     showing an opaque technical error or fabricating a price. */
+  const unclear = buildAccountEnv({ unrecognizedModelOutput: true });
+  await flush();
+  manuallyChooseModel(unclear);
+  const unclearBridge = unclear.context.B66QuoteRuntimeBridge;
+  const unclearResult = await unclearBridge.interpret("부픔 ㅇㅇ몇개 견적");
+  assert.equal(unclearResult.ok, false);
+  assert.equal(unclearResult.code, "needs_clarification");
+  assert.ok(unclearResult.question.includes("거래처명"));
+  assert.equal(unclear.allocations(), 0);
+  assert.equal(unclearBridge.pendingQuote(), null);
+  assert.equal(unclear.replaceDrafts.length, 0);
+  assert.ok(!JSON.stringify(unclearResult).includes("invalid_missing_fields"));
+  console.log("MALFORMED_MODEL_OUTPUT_FRIENDLY_CLARIFICATION=PASS");
+
+  const typoFollowup = buildAccountEnv({
+    unrecognizedResponseTurn: 2,
+    candidates: [
+      Object.assign({ missing: ["unitPrice"] }, PARTIAL_CANDIDATE),
+      null,
+      Object.assign({ missing: [] }, COMPLETE_CANDIDATE)
+    ]
+  });
+  await flush();
+  manuallyChooseModel(typoFollowup);
+  const typoBridge = typoFollowup.context.B66QuoteRuntimeBridge;
+  const pendingBeforeTypo = await typoBridge.interpret(TURN1_TEXT);
+  assert.equal(pendingBeforeTypo.code, "incomplete_request");
+  const stableNumber = typoBridge.pendingQuote().quoteNo;
+  const misunderstood = await typoBridge.interpret("1만팔처너");
+  assert.equal(misunderstood.code, "incomplete_request",
+    "a misspelled clarification is not a discarded quote");
+  assert.ok(misunderstood.question.includes("단가는 얼마인가요?"));
+  assert.equal(typoBridge.pendingQuote().quoteNo, stableNumber);
+  assert.equal(typoFollowup.allocations(), 1);
+  const corrected = await typoBridge.interpret(TURN2_TEXT);
+  assert.equal(corrected.ok, true);
+  assert.equal(corrected.draft.meta.quoteNo, stableNumber);
+  assert.equal(corrected.draft.items[0].unitPrice, 18000);
+  assert.equal(typoFollowup.allocations(), 1);
+  assert.equal(typoFollowup.interpretBodies.length, 3);
+  console.log("FOLLOWUP_TYPO_PRESERVES_CONFIRMED_FACTS=PASS");
 
   console.log("MISSING_NAME_QUANTITY_PRICE_BOUNDED_FOLLOWUP=PASS");
   console.log("MULTIPLE_ITEM_QUANTITY_ANSWER_MAPPING=PASS");

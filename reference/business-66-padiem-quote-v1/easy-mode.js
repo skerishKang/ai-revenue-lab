@@ -318,11 +318,13 @@
       if (!result || result.ok !== true || !result.draft) {
         /* 정보가 부족하면 무엇이 없는지 한 가지만 되묻고 같은 견적을 이어간다.
            Guided 로 강제 전환하지 않는다 (#3391). */
-        if (result && result.code === "incomplete_request") {
+        if (result && (result.code === "incomplete_request" || result.code === "needs_clarification")) {
           addMessage("assistant", typeof result.question === "string" && result.question.trim()
             ? result.question
             : "견적에 필요한 값을 조금 더 알려 주세요.");
-          setInput(submitFreeFormText, "답변을 적어 주세요");
+          setInput(submitFreeFormText, result.code === "needs_clarification"
+            ? "견적 내용을 다시 적어 주세요"
+            : "답변을 적어 주세요");
           return;
         }
         const detail = result && bridge && typeof bridge.errorText === "function"
