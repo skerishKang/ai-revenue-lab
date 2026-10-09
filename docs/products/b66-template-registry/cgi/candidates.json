@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "family": "cgi-fixed-one-page",
+  "selection_date": "2026-10-09",
+  "preferred_candidate": "sol61-certified",
+  "approval_state": "SOURCE_SELECTED_REVIEW_PENDING",
+  "production_deployed": false,
+  "private_assets_in_git": false,
+  "private_storage": "external restricted vault; not a git path",
+  "max_certified_items": 3,
+  "candidates": [
+    {
+      "id": "sol61-certified",
+      "built_by_model": "gpt-6.1-sol",
+      "codex_session": "01a11436-f13e-7551-8e30-a989d9b9afbb",
+      "template_sha256": "515835253e61d87a189af8f9176b250122f017f7921cb60c234c9bba791fc690",
+      "historical_text_retained_after_mutation": false,
+      "baseline_pixel_differences_150dpi": 0,
+      "shared_mutation_cases_passed": 3,
+      "certified_mutation_cases_from_prior_report": 15,
+      "role": "preferred_after_security_comparison"
+    },
+    {
+      "id": "glm53-alternative",
+      "built_by_model": "glm-5.3-flash",
+      "template_sha256": "0a7346680d40a8ae7a2338b53afe073b9d4cbf044c2126d113e70b233e2eddd1",
+      "historical_text_retained_after_mutation": true,
+      "baseline_pixel_differences_150dpi": 0,
+      "shared_mutation_cases_passed": 3,
+      "certified_mutation_cases_from_prior_report": 12,
+      "role": "archive_only_not_customer_output"
+    }
+  ],
+  "review_required": [
+    "private_source_bundle_integrity",
+    "independent_render_and_layout",
+    "no_legacy_source_text_in_generated_pdf",
+    "private_R2_artifact_provisioning",
+    "authenticated_B66_saved_skill_route",
+    "deterministic_quote_core_totals",
+    "browser_preview_pdf_download_E2E",
+    "reject_unsupported_4plus_items"
+  ],
+  "auto_activate": false,
+  "allow_paid_model_fallback": false
+}
