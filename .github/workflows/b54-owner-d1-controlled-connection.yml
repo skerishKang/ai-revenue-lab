@@ -169,7 +169,7 @@ jobs:
           code="$(curl -sS --max-time 45 -w '%{http_code}' \
             -o "${RUNNER_TEMP}/patch-result.json" -X PATCH \
             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-            -F "settings=$@{RUNNER_TEMP}/candidate.json;type=application/json" \
+            -F "settings=@${RUNNER_TEMP}/candidate.json;type=application/json" \
             "${api}")"
           exit_code=$?
           set -e
