@@ -94,6 +94,35 @@ def _digest(value: object) -> str:
     return hashlib.sha256(data.encode("utf-8")).hexdigest()
 
 
+def build_candidate(
+    bindings: list[dict], version_id: str, owner_id: str, annotations: dict
+) -> dict:
+    """Construct and validate the immutable-version-pinned candidate in memory."""
+    if not is_safe_version_id(version_id) or version_id == "latest":
+        raise ReleasePreflightError("PINNED_VERSION_INVALID")
+    owner_id = _canonical_uuid(owner_id)
+    names = [b["name"] for b in bindings]
+    if OWNER_BINDING in names or len(names) != len(set(names)):
+        raise ReleasePreflightError("BINDING_COLLISION")
+    inheritance = [
+        {"type": "inherit", "name": name, "version_id": version_id}
+        for name in names
+    ]
+    candidate = {"bindings": inheritance + [
+        {"type": "d1", "name": OWNER_BINDING, "database_id": owner_id}
+    ], "annotations": dict(annotations)}
+    if (
+        len(candidate["bindings"]) != len(bindings) + 1
+        or any(set(x) != {"type", "name", "version_id"} or x["version_id"] != version_id
+               or x["type"] != "inherit" for x in inheritance)
+        or candidate["bindings"][-1]["type"] != "d1"
+        or candidate["bindings"][-1]["name"] != OWNER_BINDING
+        or candidate["bindings"][-1]["database_id"] != owner_id
+    ):
+        raise ReleasePreflightError("CANDIDATE_NOT_PINNED")
+    return candidate
+
+
 def _snapshot(
     worker: str,
     expected_count: int,
@@ -156,13 +185,8 @@ def _snapshot(
 
     # Cloudflare PATCH /settings supports a named binding inherited from an
     # explicit immutable version. No POST/PATCH request is assembled or sent here.
-    inherited = [{"type": "inherit", "name": name, "version_id": before_id} for name in names]
-    candidate = {"bindings": inherited + [
-        {"type": "d1", "name": OWNER_BINDING, "database_id": owner_id},
-    ], "annotations": writable}
-    if len(candidate["bindings"]) != expected_count + 1 or any(
-        b.get("version_id") != before_id for b in inherited
-    ):
+    candidate = build_candidate(bindings, before_id, owner_id, writable)
+    if len(candidate["bindings"]) != expected_count + 1:
         raise ReleasePreflightError("CANDIDATE_NOT_PINNED")
 
     future = copy.deepcopy(version_payload)
