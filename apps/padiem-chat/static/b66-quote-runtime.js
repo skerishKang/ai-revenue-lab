@@ -604,3 +604,4 @@
     ensureUi();
   }
 })();
+/* #3989 PARALLEL+SCOPED isolated CI proof — DO NOT MERGE */
