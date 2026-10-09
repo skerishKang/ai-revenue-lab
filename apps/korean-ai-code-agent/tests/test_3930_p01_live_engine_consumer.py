@@ -13,16 +13,20 @@ class StreamingFixture:
     def __init__(self, events, result, error=None):
         self.events, self.result, self.error = events, result, error
         self.calls = []
+        self.closed = False
     async def orchestrate(self, request):
         raise AssertionError("completed route not authorized")
     async def stream_orchestration(self, request):
         self.calls.append(request)
-        for event in self.events:
-            yield {"event": event}
-        if self.error:
-            raise self.error
-        if self.result is not None:
-            yield {"orchestration": self.result}
+        try:
+            for event in self.events:
+                yield {"event": event}
+            if self.error:
+                raise self.error
+            if self.result is not None:
+                yield {"orchestration": self.result}
+        finally:
+            self.closed = True
 
 class TestLiveP01Consumer(SyntheticPlusRouteTestCase):
     def fixture(self, pause=False):
@@ -103,3 +107,11 @@ class TestLiveP01Consumer(SyntheticPlusRouteTestCase):
             self.assertEqual(exc.dispatch_class, P01DispatchClass.NOT_DISPATCHED)
         else:
             self.fail("expected opt-in denial")
+
+    def test_invalid_event_closes_upstream(self):
+        request, result, events = self.fixture()
+        events[1]["kind"] = "unknown_lifecycle"
+        fixture = StreamingFixture(events, result)
+        with self.assertRaises(P01AdapterError):
+            asyncio.run(P01EngineOrchestrationClient(fixture).run_stream(request))
+        self.assertTrue(fixture.closed)
