@@ -22,12 +22,12 @@ from b62_owner_d1_release_transaction import (
     TransactionError,
     assert_exact_worker_code,
     build_rollback_deployment,
-    verify_promotion_equivalence,
     main,
     prepare,
     validate_patch_settings,
     verify,
     verify_patch_response,
+    verify_promotion_equivalence,
     verify_rollback_target,
 )
 
@@ -275,7 +275,7 @@ def test_operational_workflow_enforces_durable_anchor_before_any_patch():
     assert "b62_owner_d1_release_transaction.py prepare" in text
     assert "b62_owner_d1_release_transaction.py verify" in text
     assert text.count("-X PATCH") == 1
-    assert text.count("-X POST") == 1
+    assert text.count("-X POST") == 2  # one independent promotion, one rollback
     assert "NO_AUTOMATIC_PATCH_RETRY=YES" in text
     assert "ROLLOUT" not in text
     rollback = wf["jobs"]["rollback"]["steps"]
