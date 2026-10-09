@@ -96,7 +96,7 @@ globalThis.fetch = async (target, init = {}) => {
       headers: { "Location": "https://accounts.google.com/o/oauth2/auth?provider=google" }
     });
   }
-  if (url.endsWith("/auth/google/callback")) {
+  if (new URL(url).pathname === "/auth/google/callback") {
     return new Response(null, { status: 302, headers: { "Location": "/" } });
   }
   throw new Error("unexpected upstream: " + url);
