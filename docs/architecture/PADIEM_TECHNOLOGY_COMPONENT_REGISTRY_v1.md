@@ -53,6 +53,8 @@ REJECT_CANDIDATE
 | AI provider/model execution | B14 provider/model routing | OWN_AUTHORITY for routing; providers are replaceable | Provider adapters/models intentionally replaceable | CONTINUOUS |
 | Cross-runtime AI transport | IP-ENGINE contracts | OWN_AUTHORITY | Hosting/transport implementation can evolve behind contract | RETAIN |
 | HTTP application runtime | Starlette/httpx/uvicorn + Workers runtime where applicable | REPLACEABLE_COMPONENT | Not current bottleneck | SCAN_DEFERRED |
+| Browser Control P01/admission/replay and audit authority | Engine/P01/Control Plane/Broker + trusted Desktop owner | OWN_AUTHORITY | Never outsource human approval, binding, origin/budget/time checks or Broker durable one-shot state; see [browser decision](PADIEM_BROWSER_EXECUTION_ADAPTER_DECISION_3782.md) | RETAIN #3782 |
+| Browser action observation and input execution | Existing bounded Electron/CDP observation + Input.* binding | REPLACEABLE_COMPONENT | **Retain Electron/CDP as embedded primary** (Windows contract 44/44); **Playwright MCP 0.0.83 selected only as optional future existing-Chrome/Edge pilot**, not integrated or authorized; Stagehand v4 and Browser Use agent deferred. Windows 3/3 per SDK smoke is not AI quality/security conformance; [binding decision/evidence](PADIEM_BROWSER_EXECUTION_ADAPTER_DECISION_3782.md) | RETAIN_CURRENT; OPTIONAL_PLAYWRIGHT_MCP_PILOT_SELECTED_NOT_WIRED #2996 #3782 |
 | Browser/E2E verification | Playwright where configured | REPLACEABLE_COMPONENT | Tooling only; switch if materially better | SCAN_DEFERRED |
 | Cloud runtime/storage | Cloudflare Workers / D1 / R2 in current products | REPLACEABLE_INFRASTRUCTURE with high migration cost | Evaluate only when cost/capability/reliability justifies migration | SCAN_DEFERRED |
 | Drive/Gmail/Telegram/Slack/Calendar integrations | external provider APIs through Padiem connector boundaries | EXTERNAL_SERVICE | Already adopt-first; SDK/API may change while connector contract stays stable | CONTINUOUS |
@@ -137,3 +139,27 @@ OR NEW_PRODUCT_REQUIREMENT
 ```
 
 A scan should normally produce no more than three finalists and one recommended primary.
+
+<!-- AGENT_RUNTIME_CANDIDATE_INVENTORY_20261009 -->
+## 2026-10-09 agent runtime / Desktop / browser reusability crosswalk
+
+This is a **candidate/source inventory**, not authorization to replace Padiem runtimes or choose models. For actual engineering ownership see the capability registry; for the live delivery priority see #3523; source-intake findings and LOCAL1's review belong to #2996.
+
+| Replaceable implementation slot | Current Padiem implementation or boundary | Candidate upstream (GitHub root license) | Verified disposition / next proof |
+|---|---|---|---|
+| Windows Desktop shell / local workspace primitives | `apps/padiem-desktop-shell` + Padiem local broker / agent contracts #1633–#1636 | [ZCode](https://github.com/zai-org/ZCode) (Apache-2.0) | **Partial reuse already landed**: `THIRD_PARTY_NOTICES.md` documents pinned `workspaceFileSearch.ts` adaptation; #3436 CLOSED `ADAPT_PARTIAL`. Whole runtime remains NOT imported/approved; future #3583 gated after #3523. |
+| Agent loop / tools / skills / MCP / sessions | B54/P01/Engine/Core contracts plus in-repo kagent implementations | [OpenCode](https://github.com/anomalyco/opencode) (MIT), [OpenClaw](https://github.com/openclaw/openclaw) (MIT), [Kilo Code](https://github.com/Kilo-Org/kilocode) (MIT) | **RETAIN** current Padiem agent-loop/durable authority. LOCAL1 pinned source audit completed under #2996; OpenCode, Kilo and OpenClaw remain pattern/reference candidates only; no whole-runtime import approved. |
+| Browser action execution / computer-use primitive | Existing Padiem Broker + P01 command tickets, #3775/#3782; Chrome/browsers are outside authorization authority | [Browser Use](https://github.com/browser-use/browser-use) (MIT), ZCode (Apache-2.0) | **RETAIN CURRENT ELECTRON/CDP** per #3829/#3782. Browser Use remains NOT SELECTED: tagged default telemetry, vendor model fallback unless explicitly injected, and Windows/egress conformance need independent review. Playwright MCP source/runtime pin remains UNVERIFIED. #3783 ownership unchanged. |
+| Provider/model integration implementation | B14 catalog and provider adapters, Engine/Core service contracts | OpenCode/ZCode/Kilo Code upstream provider configurations as possible **reference implementations** | **ADAPT PATTERN ONLY** (provider-as-data vs protocol module); #3819 OPEN/DRAFT already owns the B14 JSON registry migration. No imported second registry/router, no model-list/group decision, no production activation. |
+
+**Audit completed; source-of-truth links:** [LOCAL1 pinned-source evidence](https://github.com/skerishKang/ai-revenue-lab/issues/2996#issuecomment-6064222379) and [CENTRAL CTO adjudication](https://github.com/skerishKang/ai-revenue-lab/issues/2996#issuecomment-6064323208). This crosswalk records only the current disposition; those issue records retain the detailed per-file evidence and uncertainty. OPEN/CANDIDATE does not authorize dependency import.
+
+**License and source-pin qualifications:** OpenClaw's optional external Lightpanda browser engine is AGPL-3.0-or-later, despite the MIT adapter/root; the optional component requires topology-specific legal review before inclusion, not a blanket claim about OpenClaw. Browser Use 0.13.11 has default-on telemetry; authenticated artifact upload is separately gated and default secret/data exfiltration is not established. GitHub Release target_commitish is not a verified immutable source commit (OpenCode v1.18.35 differs from its tag); resolve git tag refs and peel annotated tags. A package.json private:true flag blocks npm publishing, not MIT source reuse in itself. Any future selected module still requires transitive license/NOTICE, outbound network, credential, Windows and authority review.
+
+License values above are root GitHub repository metadata verified on 2026-10-09, **not** package-by-package redistribution clearance, transitive-asset licensing, hosted-service rights or license conclusions for a fork. For any chosen submodule, pin immutable commit, audit actual dependencies and notices, and record the legal/technical disposition before copy/embedding.
+
+Proof to distinguish `already adopted` from `may be adopted`:
+- ZCode code provenance: `apps/padiem-desktop-shell/THIRD_PARTY_NOTICES.md` pins `zai-org/ZCode@29628c9acdb81b703bbd4080c207a0e7ce5e276e` and exact file path; this does **not** imply the local Agent runtime was imported.
+- #3436 / #3583 govern ZCode Desktop disposition; do not create a competing Desktop authority or overwrite an already accepted decision.
+- #2996 collects reuse matrices; #3523 remains the only currently active user-visible Golden Path target.
+- Component swap criteria: stable adapter + shared offline conformance + verified license/security + rollback. A code-level 429/502 transport failure or workspace-isolation defect is not automatically fixed by importing another agent.

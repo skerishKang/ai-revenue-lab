@@ -97,6 +97,72 @@ def _filename(model: dict[str, Any]) -> str:
     return "quote-" + (safe or "quotation") + ".pdf"
 
 
+async def b66_certified_preview_base(request: Request) -> Response:
+    if not auth_ready(request):
+        return _error(401, "unauthorized")
+    try:
+        uid = current_user_id(request)
+    except Exception:
+        uid = None
+    if not uid:
+        return _error(401, "unauthorized")
+    if set(request.query_params.keys()) != {"saved_skill_id"}:
+        return _error(400, "unsupported_field")
+    try:
+        saved_skill_id = validate_row_id(request.query_params.get("saved_skill_id"))
+    except SavedQuoteSkillStoreError:
+        return _error(400, "invalid_saved_skill_id")
+
+    skill_store = getattr(request.app.state, "b66_saved_quote_skill_store", None)
+    get_skill = getattr(skill_store, "get_skill", None)
+    preview_store = getattr(request.app.state, "b66_certified_preview_store", None)
+    get_preview = getattr(preview_store, "get_preview", None)
+    if not callable(get_skill) or not callable(get_preview):
+        return _error(503, "certified_preview_unavailable")
+
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace_id = None
+    if workspace_id is None:
+        return _error(503, "workspace_authority_unavailable")
+
+    try:
+        value = get_skill(user_id=uid, workspace_id=workspace_id, saved_skill_id=saved_skill_id)
+        saved = await value if inspect.isawaitable(value) else value
+    except Exception:
+        return _error(503, "saved_quote_skill_read_failed")
+    if saved is None:
+        return _error(404, "saved_quote_skill_not_found")
+
+    profile_fingerprint = (
+        _approved_profile(saved, saved_skill_id=saved_skill_id, workspace_id=workspace_id)
+        if isinstance(saved, dict) else None
+    )
+    if profile_fingerprint is None:
+        return _error(503, "saved_quote_skill_invalid")
+
+    try:
+        value = get_preview(
+            skill_fingerprint=saved["skill_fingerprint"],
+            profile_fingerprint=profile_fingerprint,
+        )
+        body = await value if inspect.isawaitable(value) else value
+    except Exception:
+        return _error(503, "certified_preview_unavailable")
+    if body is None:
+        return _error(404, "certified_preview_not_found")
+
+    return Response(
+        body,
+        media_type="image/png",
+        headers={
+            **_NO_STORE,
+            "Content-Disposition": 'inline; filename="cgi-certified-preview.png"',
+        },
+    )
+
+
 async def b66_certified_pdf(request: Request) -> Response:
     if not auth_ready(request):
         return _error(401, "unauthorized")

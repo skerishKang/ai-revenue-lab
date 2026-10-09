@@ -1398,6 +1398,56 @@ body.b66-three-pane .shell-preview-host .quote-detail-page {
 }
 
 /* ── CGI quotation v2: measured legacy form promoted into canonical renderer ── */
+.quote-paper[data-layout-variant="cgi-v2"][data-certified-preview="true"] {
+  width: 595pt;
+  min-width: 595pt;
+  height: 841pt;
+  min-height: 841pt;
+  padding: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.quote-paper[data-layout-variant="cgi-v2"][data-certified-preview="true"] .cgi-v2-content {
+  display: none !important;
+}
+.cgi-certified-preview {
+  position: relative;
+  width: 595pt;
+  height: 841pt;
+  overflow: hidden;
+  background: #fff;
+}
+.cgi-certified-preview-base {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 595pt;
+  height: 841pt;
+  object-fit: fill;
+  user-select: none;
+  pointer-events: none;
+}
+.cgi-certified-preview-overlay {
+  position: absolute;
+  inset: 0;
+  width: 595pt;
+  height: 841pt;
+  pointer-events: none;
+}
+.cgi-certified-field {
+  position: absolute;
+  z-index: 2;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: #000;
+  line-height: 1;
+  white-space: nowrap;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  text-rendering: geometricPrecision;
+}
+
 .quote-paper[data-layout-variant="cgi-v2"] {
   position: relative;
   padding: var(--quote-page-margin, 10mm);
@@ -1595,6 +1645,9 @@ body.b66-three-pane .shell-preview-host .quote-detail-page {
   font-size: 11px;
   font-weight: 750;
 }
+/* Recently saved quotes are reached from the secondary left rail, not a second home CTA. */
+body.b66-three-pane #recentQuoteStarter { display: none !important; }
+.shell-picker-label[hidden] { display: none !important; }
 .shell-picker-label select-host {
   display: block;
 }

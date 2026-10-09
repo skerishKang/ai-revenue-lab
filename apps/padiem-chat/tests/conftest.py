@@ -148,6 +148,12 @@ def _synthetic_plus_route_for_non_policy_contracts(
 
     # A few tests imported immutable policy sets directly at module load time.
     module = request.module
+    if hasattr(module, "active_route_for"):
+        # #3767: a module that resolved the route by value at import time would
+        # otherwise keep answering from the untouched declaration and defeat the
+        # synthetic route this fixture installs. The genuine HOLD modules are
+        # excluded above by ``_HOLD_POLICY_MODULES``.
+        monkeypatch.setattr(module, "active_route_for", _active_route_for, raising=False)
     if hasattr(module, "EXECUTABLE_B14_MODEL_IDS"):
         monkeypatch.setattr(
             module,

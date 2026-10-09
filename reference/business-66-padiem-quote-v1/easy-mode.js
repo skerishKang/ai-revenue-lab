@@ -31,6 +31,8 @@
   let selectedFile = null;
   let lastEasyView = "home";
   let restoringProductHistory = false;
+  let interpretationInFlight = false;
+  let accountScopeRevision = 0;
   const PRODUCT_HISTORY_KEY = "b66View";
 
   const QUARANTINE_ACTIONS = AccountScope
@@ -90,6 +92,23 @@
     return envelope || History.normalizeEnvelope(null);
   }
 
+  /* 최근 견적 읽기는 authority-aware 다(#3405 Slice B). signed-in 동안에는
+     app.js 가 서버 목록을 돌려주고, 서버 실패는 local envelope 로 대체되지
+     않는다. bridge 가 아직 없으면 기존 local 경로를 유지한다. */
+  function readRecentHistory() {
+    if (App && typeof App.listRecentQuotes === "function") {
+      return App.listRecentQuotes().catch(() => (
+        { ok: false, authority: "server", error: "history_read_failed" }
+      ));
+    }
+    return Promise.resolve({ ok: true, authority: "local", envelope: readHistory() });
+  }
+
+  function serverAuthorityRecent() {
+    return Boolean(App && typeof App.recentListAuthority === "function" &&
+      App.recentListAuthority() === "server");
+  }
+
   function writeHistory(envelope) {
     if (App.writeHistoryEnvelope(envelope)) {
       window.dispatchEvent(new CustomEvent("b66:history-changed"));
@@ -138,6 +157,8 @@
     $("easyComposerNote").textContent =
       "보내면 CGI 기본 견적서로 바로 만들어 드립니다. 단계별로 답하려면 '질문받으며 만들기'를 선택하세요.";
     inputHandler = (text) => startHomeInterpretation(text);
+    composer.disabled = false;
+    sendButton.disabled = false;
     refreshStarters();
   }
 
@@ -218,7 +239,11 @@
   function refreshStarters() {
     const activeDraft = App.getDraft();
     $("resumeDraftStarter").hidden = !History.isMeaningfulDraft(activeDraft);
-    $("recentQuoteStarter").hidden = readHistory().entries.length === 0;
+    /* server authority 동안에는 local cache 가 비어 있어도 최근 견적에
+       접근할 수 있어야 한다(서버 목록이 authority). */
+    $("recentQuoteStarter").hidden = serverAuthorityRecent()
+      ? false
+      : readHistory().entries.length === 0;
 
     let hint = document.getElementById("easyResumeHint");
     if (accountSignedIn) {
@@ -268,6 +293,8 @@
   }
 
   function runPrimaryInterpretation(rawText) {
+    // A second click/Enter must not launch a second B14 interpretation attempt.
+    if (interpretationInFlight) return;
     const text = safeText(rawText, 4000);
     if (!text) return;
     const bridge = window.B66QuoteRuntimeBridge;
@@ -276,10 +303,18 @@
       addMessage("assistant", runtimeNotReadyMessage(readiness));
       return;
     }
+    const requestScopeRevision = accountScopeRevision;
+    interpretationInFlight = true;
     addMessage("user", text);
     addMessage("assistant", "CGI 기본 견적서로 작성하고 있습니다…");
     disableInput("견적을 만드는 동안에는 입력을 잠시 멈춥니다.");
-    Promise.resolve(bridge.interpret(text)).then((result) => {
+    Promise.resolve().then(() => {
+      // Closing/switching the owner before the dispatch microtask must cancel the call.
+      if (requestScopeRevision !== accountScopeRevision) return null;
+      return bridge.interpret(text);
+    }).then((result) => {
+      // Results from a signed-out/quarantined owner must never update the next account.
+      if (requestScopeRevision !== accountScopeRevision) return;
       if (!result || result.ok !== true || !result.draft) {
         /* 정보가 부족하면 무엇이 없는지 한 가지만 되묻고 같은 견적을 이어간다.
            Guided 로 강제 전환하지 않는다 (#3391). */
@@ -309,8 +344,11 @@
       }
       addResultReview(result.draft, false);
     }).catch(() => {
+      if (requestScopeRevision !== accountScopeRevision) return;
       addMessage("assistant", "해석 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.");
       setInput(submitFreeFormText, "다시 한 문장으로 적어 주세요");
+    }).finally(() => {
+      if (requestScopeRevision === accountScopeRevision) interpretationInFlight = false;
     });
   }
 
@@ -409,8 +447,8 @@
     lastEasyView = "recent";
     if (!options || options.history !== false) recordProductState("recent");
     startConversation();
-    addMessage("assistant", "이 브라우저에 저장한 최근 견적입니다. 불러오거나 복사해서 새 견적으로 사용할 수 있어요.");
-    renderHistory();
+    addMessage("assistant", "최근 견적을 불러오는 중...");
+    renderHistoryPending();
     setChips([
       { label: "질문받으며 새로 만들기", action: startGuided },
       { label: "처음으로", action: showHome }
@@ -418,13 +456,65 @@
     setInput(() => {}, "최근 견적은 아래 버튼으로 선택하세요");
     composer.disabled = true;
     sendButton.disabled = true;
+    readRecentHistory().then((result) => {
+      if (lastEasyView !== "recent") return;
+      addMessage("assistant", recentHistoryIntroText(result));
+      renderHistory(result);
+    });
   }
 
-  function renderHistory() {
-    const envelope = readHistory();
-    const metadata = History.listMetadata(envelope);
+  function recentHistoryIntroText(result) {
+    if (!result || result.ok !== true) {
+      return "최근 견적을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
+    }
+    return result.authority === "server"
+      ? "계정에 저장된 최근 견적입니다. 불러오거나 복사해서 새 견적으로 사용할 수 있어요."
+      : "이 브라우저에 저장한 최근 견적입니다. 불러오거나 복사해서 새 견적으로 사용할 수 있어요.";
+  }
+
+  function renderHistoryPending() {
     historyPanel.innerHTML = "";
     historyPanel.hidden = false;
+    const pending = document.createElement("p");
+    pending.className = "easy-history-empty";
+    pending.textContent = "최근 견적을 불러오는 중...";
+    historyPanel.appendChild(pending);
+  }
+
+  /* 최근 견적 실패 화면: 서버 실패를 local 기록으로 대체하지 않고 bounded
+     error 상태만 보여준다(NO_SILENT_LOCAL_FALLBACK). */
+  function renderHistoryError() {
+    historyPanel.innerHTML = "";
+    historyPanel.hidden = false;
+    const error = document.createElement("p");
+    error.className = "easy-history-empty";
+    error.textContent = "최근 견적을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
+    const retry = document.createElement("button");
+    retry.type = "button";
+    retry.textContent = "다시 시도";
+    retry.addEventListener("click", () => {
+      if (lastEasyView !== "recent") return;
+      renderHistoryPending();
+      readRecentHistory().then((result) => {
+        if (lastEasyView !== "recent") return;
+        renderHistory(result);
+      });
+    });
+    historyPanel.append(error, retry);
+  }
+
+  function renderHistory(result) {
+    const outcome = result || { ok: true, authority: "local", envelope: readHistory() };
+    historyPanel.innerHTML = "";
+    historyPanel.hidden = false;
+
+    if (outcome.ok !== true) {
+      renderHistoryError();
+      return;
+    }
+
+    const envelope = outcome.envelope || History.normalizeEnvelope(null);
+    const metadata = History.listMetadata(envelope);
 
     if (metadata.length === 0) {
       const empty = document.createElement("p");
@@ -485,6 +575,10 @@
       remove.className = "danger";
       remove.textContent = "삭제";
       remove.addEventListener("click", () => {
+        if (outcome.authority === "server") {
+          deleteServerHistoryEntry(meta.id);
+          return;
+        }
         if (!window.confirm("이 최근 견적을 이 브라우저에서 삭제할까요?")) return;
         if (writeHistory(History.deleteEntry(readHistory(), meta.id))) {
           renderHistory();
@@ -495,6 +589,34 @@
       actions.append(load, copy, remove);
       card.append(info, actions);
       historyPanel.appendChild(card);
+    });
+  }
+
+  /* server row 삭제: 명시적 확인 후 서버 성공에만 목록을 다시 읽어
+     반영한다. 실패 시 행은 그대로 유지된다(NO_OPTIMISTIC_DELETE). */
+  function deleteServerHistoryEntry(entryId) {
+    if (!window.confirm("이 최근 견적을 계정에서 삭제할까요?")) return;
+    const deletion = App && typeof App.deleteRecentQuote === "function"
+      ? App.deleteRecentQuote(entryId)
+      : Promise.resolve({ ok: false, authority: "server", error: "history_unavailable" });
+    deletion.then((result) => {
+      if (!result || result.ok !== true) {
+        App.toast("최근 견적 삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+        return;
+      }
+      refreshRecentHistory();
+      refreshStarters();
+    }).catch(() => {
+      App.toast("최근 견적 삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    });
+  }
+
+  function refreshRecentHistory() {
+    if (lastEasyView !== "recent") return;
+    renderHistoryPending();
+    readRecentHistory().then((result) => {
+      if (lastEasyView !== "recent") return;
+      renderHistory(result);
     });
   }
 
@@ -655,8 +777,20 @@
     setInput(processGuidedInput, "예: 1,500,000 또는 150만원");
   }
 
+  function guidedItemLimit() {
+    const bridge = window.B66QuoteRuntimeBridge;
+    return bridge && typeof bridge.supportedItemRows === "function" ? bridge.supportedItemRows() : null;
+  }
+
   function askMoreItems() {
     guided.step = "moreItems";
+    const limit = guidedItemLimit();
+    if (Number.isInteger(limit) && limit > 0 && guided.draft.items.length >= limit) {
+      addMessage("assistant", "CGI 기본 견적서는 품목을 최대 " + limit + "개까지 지원합니다. 다음으로 진행해 주세요.");
+      setChips([{ label: "다음으로", action: () => processGuidedInput("다음") }]);
+      setInput(processGuidedInput, "다음");
+      return;
+    }
     addMessage("assistant", "다른 품목도 추가할까요?");
     setChips([
       { label: "품목 추가", action: () => processGuidedInput("추가") },
@@ -751,7 +885,7 @@
         break;
 
       case "itemName":
-        guided.draft.items.push({ id: "item-" + (guided.draft.items.length + 1), name: text, qty: 1, unitPrice: 0 });
+        guided.draft.items.push({ id: "item-" + (guided.draft.items.length + 1), name: text });
         guided.currentItem = guided.draft.items.length - 1;
         askQty();
         break;
@@ -782,6 +916,8 @@
 
       case "moreItems":
         if (/추가|더|예|네/u.test(text)) {
+          const limit = guidedItemLimit();
+          if (Number.isInteger(limit) && limit > 0 && guided.draft.items.length >= limit) { askMoreItems(); return; }
           addMessage("assistant", "좋아요. 추가할 품목명을 적어 주세요.");
           guided.step = "itemName";
           setChips([]);
@@ -1057,14 +1193,16 @@
       refreshStarters();
       return;
     }
-    /* 계정 경계가 바뀌면 진행 중 private 문맥과 파일 intake 를 버린다 (#3480). */
+    // In-flight interpretation belongs to the old owner and cannot complete into this scope.
+    accountScopeRevision += 1;
+    interpretationInFlight = false;
+    /* 계정 경계가 바뀌면 private 텍스트/답변/진행 중 문맥을 화면에서도
+       모두 지운다 (#3480, #3536). 응답이 늦게 와도 revision guard 가 폐기한다. */
+    guided = null;
     guidedSnapshot = null;
     selectedFile = null;
-    if (lastEasyView === "recent") {
-      setWorkspaceMode("easy", { history: false });
-      showHome({ history: false });
-    }
-    refreshStarters();
+    setWorkspaceMode("easy", { history: false });
+    showHome({ history: false });
   });
 
   document.addEventListener("b66:auth-changed", (event) => {
@@ -1082,6 +1220,11 @@
   document.addEventListener("b66:open-file-intake", () => {
     setWorkspaceMode("easy", { history: false });
     startFileIntake();
+  });
+
+  document.addEventListener("b66:open-recent-quotes", () => {
+    setWorkspaceMode("easy", { history: false });
+    showRecentHistory();
   });
 
   document.addEventListener("b66:open-easy-chat", () => {

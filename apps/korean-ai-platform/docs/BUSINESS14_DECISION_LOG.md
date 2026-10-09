@@ -1,5 +1,7 @@
 # Business 14 Decision Log
 
+> This is a chronological decision log: any previous statement using 'current' refers to the date of THAT entry. For latest model selection see [2026-10-08 owner ledger](../../../docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md). Do not reactivate historical routes.
+
 This document records product-direction decisions for Business 14 so later implementation does not overwrite the original business hypothesis through accumulated feature work.
 
 ## 2026-07-22 — Original opportunity identified
@@ -294,3 +296,7 @@ SUCCESSOR_AUTHORITY=#3554
 Agnes, Poolside and other historical provider registrations remain available only according to their current catalog/declaration status. None becomes a product fallback merely because Space Bunny retires.
 
 Related output-generation policy is separate: #3551 owns omitted `max_tokens` semantics and #3553 owns the explicit hard-ceiling/model-capability review.
+
+## 2026-10-08 — Owner Google four, excluded five, and per-model display names
+
+**2026-10-08 latest OWNER model decision (not a live B14 execution claim):** selected Google AI Studio IDs: gemini-3.1-flash-lite, gemini-3.5-flash-lite, gemma-4-26b-a4b-it, gemma-4-31b-it. OWNER-excluded: Kilo Poolside Laguna, B.AI Qwen, Motif 3, GPT-5.6 Luna, NVIDIA Nemotron. Customer name = 파디엠플러스 + individual model name. The Google four are in LOCAL unmerged source, NOT current main/Production. Do not treat the older Space Bunny, Ling, Poolside, Nemotron or fixed-chain histories as current approval; Space Bunny is retired. Image input/understanding test evidence is not verified image generation, and Gemma 4 31B image-input evidence is inconclusive. See [owner model decision ledger](../../../docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md). Owner choices are separate from merged/source/Production readiness; historical Space Bunny, Ling, Agnes and Poolside decisions above are not current global primary/fallback. B66 upstream_timeout does not identify which model was called.

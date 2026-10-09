@@ -1,4 +1,4 @@
-name: B14 Comparative Model Benchmark (source gate)
+name: B14 Historical Comparative Model Benchmark (registry-gated)
 
 # Source-only gate for #2676. Pull requests run contract tests and the exact
 # 5x6 call-cap proof. A future CENTRAL-authorized workflow_dispatch can execute
@@ -7,6 +7,12 @@ name: B14 Comparative Model Benchmark (source gate)
 on:
   pull_request:
     paths:
+      - '.github/scripts/b14_owner_evaluation_registry.py'
+      - '.github/tests/test_b14_owner_evaluation_registry.py'
+      - 'apps/korean-ai-platform/app/pilot/b14_models.json'
+      - 'docs/operations/B14_B66_QUOTE_MODEL_EVALUATION_PROTOCOL.md'
+      - 'docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md'
+      - 'docs/operations/B14_MODEL_REGISTRY_SINGLE_SOURCE.md'
       - '.github/scripts/b14_model_evaluation_live.py'
       - '.github/tests/test_b14_model_evaluation_live.py'
       - '.github/scripts/b14_model_evaluation.py'
@@ -19,16 +25,13 @@ on:
         description: 'Exact current main SHA authorized for this one-shot benchmark'
         required: true
       candidate_selector:
-        description: 'Manual-pin selector (all-five or one candidate)'
+        description: 'Legacy fixture; surviving exact registered choices only'
         required: true
         type: choice
         options:
-          - all-five
           - agnes
-          - motif
           - mercury
           - atria
-          - luna
       expected_b14_version:
         description: 'Exact B14 Worker version that must still be serving 100%'
         required: true
@@ -74,7 +77,7 @@ jobs:
 
       - name: Run comparative benchmark source tests
         shell: bash
-        run: python -m pytest -q .github/tests/test_b14_model_evaluation_live.py .github/tests/test_b14_model_evaluation.py
+        run: python -m pytest -q .github/tests/test_b14_owner_evaluation_registry.py .github/tests/test_b14_model_evaluation_live.py .github/tests/test_b14_model_evaluation.py
 
       - name: Re-run shared fixture and served-version contracts
         shell: bash
@@ -148,6 +151,13 @@ jobs:
           git fetch origin main
           test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
           echo 'LIVE_EXACT_MAIN=PASS'
+
+      - name: Owner registry evaluation preflight (no network)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/b14_owner_evaluation_registry.py --legacy-check "${CANDIDATE_SELECTOR}"
+          echo 'LEGACY_RETIRED_MODEL_DISPATCH_BLOCKED=YES'
 
       - name: GET-only B14 served-version guard (canonical resolver)
         shell: bash

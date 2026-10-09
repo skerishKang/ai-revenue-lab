@@ -9,6 +9,7 @@
   <script src="quote-core.js" defer></script>
   <script src="quote-extraction.js" defer></script>
   <script src="quote-history.js" defer></script>
+  <script src="quote-history-server.js" defer></script>
 <script src="quote-account-scope.js" defer></script>
   <script src="quote-template.js" defer></script>
   <script src="cgi-template-v2.js" defer></script>
@@ -30,6 +31,7 @@
   <script src="app.js" defer></script>
   <script src="easy-mode.js" defer></script>
   <script src="company-profile-settings.js" defer></script>
+  <script src="quote-browser-pdf.js" defer></script>
   <script src="padiem-account.js" defer></script>
   <script src="shell-layout.js" defer></script>
 </head>
@@ -55,10 +57,13 @@
         <label>배정된 내 견적서
           <select id="padiemSavedSkillSelect"></select>
         </label>
-        <label>견적 내용
-          <textarea id="padiemQuoteRequest" rows="3" maxlength="4000" placeholder="예: ABC건설에 배관 20개, 개당 3만원으로 견적서 만들어줘"></textarea>
+        <!-- #3536: the sole free-form input and send action live at easyComposer/easySend.
+             The registered-model picker is moved to the left rail by shell-layout.js. -->
+        <label>사용할 AI 모델
+          <select id="padiemQuoteModelSelect" aria-label="사용할 AI 모델" required>
+            <option value="">모델을 선택하세요</option>
+          </select>
         </label>
-        <button id="padiemQuoteGenerate" type="button">견적 만들기</button>
       </div>
       <p class="padiem-quote-status" id="padiemQuoteStatus" role="status" aria-live="polite"></p>
     </section>

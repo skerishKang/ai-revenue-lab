@@ -1,5 +1,8 @@
 # Padiem Chat · Business 62
 
+Current OWNER model decisions, exclusions, name policy and distinct B14 source/Production evidence: [owner model decision ledger](../../docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md). This product guide does not duplicate the model roster or grant route/Production activation.
+
+
 ```text
 DOC_STATUS = CURRENT_PRODUCT
 BUSINESS_ID = B62
@@ -69,12 +72,12 @@ packages/padiem-control-plane/padiem_control_plane/product_tier_routes.py
 Current product mapping on the verified source revision:
 
 ```text
-Padiem Plus = HOLD / padiem-profile/plus-hold  (#3568; successor pending)
+Padiem Plus = HOLD / padiem-profile/plus-hold  (product declaration; independent B14 Google registration is source-merged)
 Padiem Pro  = HOLD / padiem-profile/pro-hold    (owner decision #2601)
 Padiem Max  = HOLD / padiem-profile/max-hold
 
 DEFAULT PRODUCT IDENTITY = Padiem Plus
-DEFAULT MODEL EXECUTION  = UNAVAILABLE until successor selection
+DEFAULT MODEL EXECUTION = UNAVAILABLE pending separately authorized product-route integration and credential-backed live readiness
 ```
 
 `poolside/laguna-s-2.1` is declared `HOLD_AS_DATA_ONLY`: it is retained as product data and as

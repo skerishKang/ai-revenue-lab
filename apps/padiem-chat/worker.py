@@ -43,13 +43,22 @@ from app.claw_p01_composition import (
 )
 from app.claw_task_alert_store import D1ClawTaskAlertStore
 from app.b66_quote_conversation import B66QuoteConversationInterpreter
+from app.b66_registered_model_boundary import (
+    B14QuoteExactModelExecutor,
+    B66RegisteredModelCompletion,
+)
+from app.b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
 from app.config import ConfigError
 from app.connector_workspace_truth import CloudflareGoogleOAuthWorkspaceTruth
 from app.calendar_read_activation_engine import CloudflareCalendarReadActivationEngineClient
 from app.calendar_read_state_engine import CloudflareCalendarReadStateEngineClient
 from app.control_plane_identity_shadow import D1IdentityShadowStore
 from app.control_plane_identity_worker import CloudflareControlPlaneIdentityAuthority
-from app.dispatch_quota import DispatchAwareB14Client, DispatchAwareUsageCounterStore
+from app.dispatch_quota import (
+    DispatchAwareB14Client,
+    DispatchAwareUsageCounterStore,
+    _refund_active_reservation,
+)
 from app.grounding import GroundedChatService
 from app.history import D1HistoryStore
 from app.claw_local_task_result_composition import (
@@ -210,6 +219,27 @@ class CloudflareB14ServiceTransport:
         if binding is None:
             raise ValueError("B14 service binding is required")
         self.binding = binding
+
+    async def get_json(self, path: str) -> tuple[int, bytes]:
+        """Read only two fixed B14 model authority endpoints over Service Binding."""
+        if path not in (
+            "/api/pilot/models",
+            "/api/pilot/provider-readiness",
+        ):
+            raise ValueError("unsupported B14 model-authority read endpoint")
+        request = Request(
+            "https://b14.internal" + path,
+            method="GET",
+        )
+        response = await self.binding.fetch(request.js_object)
+        status = int(response.status)
+        try:
+            body = await read_bounded_service_binding_body(
+                response, max_bytes=131072,
+            )
+        except (ServiceBindingResponseTooLarge, ServiceBindingResponseError):
+            raise RuntimeError("bounded B14 model authority read unavailable") from None
+        return status, body
 
     async def post_json(self, url: str, payload: dict[str, Any]) -> tuple[int, bytes]:
         request = Request(
@@ -808,12 +838,22 @@ class Default(WorkerEntrypoint):
                     stream_transport=stream_transport,
                     require_service_binding=settings.runtime_mode == "b14",
                 )
-                # #3391: create_app composed the B66 quote interpreter against
-                # the pre-composition B14 client. Rebind it to the Production
-                # DispatchAwareB14Client so quote interpretation always rides
-                # the same composed authority as chat.
+                # #3760 owner correction: quote extraction validates one user-selected,
+                # owner-allowed, chat-capable and live-ready B14 registered
+                # model; pricing and generic B14 auto flags do not qualify it.
+                # Never pass
+                # ordinary quote text into the B62 Plus/Pro/Max HOLD resolver;
+                # never synthesize b14/auto or a hidden retry/fallback.
+                quote_model_resolver = B66ExplicitQuoteModelResolver(service_transport)
+                _worker_app.state.b66_quote_model_resolver = quote_model_resolver
                 _worker_app.state.b66_quote_interpreter = B66QuoteConversationInterpreter(
-                    _worker_app.state.b14_client
+                    B66RegisteredModelCompletion(
+                        resolver=quote_model_resolver,
+                        executor=B14QuoteExactModelExecutor(
+                            _worker_app.state.b14_client
+                        ),
+                        refund_pre_dispatch=_refund_active_reservation,
+                    )
                 )
                 _worker_app.state.grounded_chat = GroundedChatService(
                     _worker_app.state.b14_client,

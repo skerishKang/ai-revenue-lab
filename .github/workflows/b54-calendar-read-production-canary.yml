@@ -131,9 +131,12 @@ jobs:
           test "${active_version}" = "${EXPECTED_ENGINE_VERSION}"
           version_detail="${RUNNER_TEMP}/calendar-canary-engine-version.json"
           curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
+          # #3807 (parent #3748): one canonical argv token. The grammar accepts a
+          # leading hyphen, which argparse would read as an option in the
+          # separated form, so the canonical predicate would never run.
           python3 .github/scripts/b54_engine_served_version_guard.py verify \
             --version-settings "${version_detail}" \
-            --active-version "${active_version}" >/dev/null
+            --active-version="${active_version}" >/dev/null
           # Canonical Calendar readiness observation: NAME/TYPE only. The
           # Control Plane owns the long-lived Google credential, so the Engine
           # must carry the Engine Calendar allowlist plus the Control Plane

@@ -1,8 +1,12 @@
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Awaitable, Callable
 from dataclasses import dataclass
 from typing import Any, Protocol
+
+# Core completion transports use real httpx's type family, also on Workers.
+# Worker execution still uses the existing Service Binding transport.
+import httpx as execution_httpx
 
 from . import httpx_compat as httpx
 
@@ -46,12 +50,49 @@ class B14ServiceTransport(Protocol):
 class _CoreTransportAdapter:
     """Adapt the existing B62 Service Binding transport to Core without Cloudflare types."""
 
-    def __init__(self, transport: B14ServiceTransport):
+    def __init__(
+        self,
+        transport: B14ServiceTransport,
+        *,
+        before_dispatch: Callable[[], Awaitable[None]] | None = None,
+    ):
         self._transport = transport
+        self._before_dispatch = before_dispatch
 
     async def post_json(self, url: str, payload: dict[str, Any]) -> B14TransportResponse:
+        if self._before_dispatch is not None:
+            await self._before_dispatch()
         status_code, body = await self._transport.post_json(url, payload)
+        if self._before_dispatch is not None and status_code == 504:
+            # B66 keeps the bounded timeout category through Core's existing
+            # timeout translation; no provider body is inspected or relayed.
+            raise TimeoutError("B14 quote execution timed out")
         return B14TransportResponse(status_code=status_code, body=body)
+
+
+class _BeforeDispatchHTTPTransport(execution_httpx.AsyncBaseTransport):
+    """Mark B66 direct-HTTP dispatch after Core/HTTP request serialization."""
+
+    def __init__(
+        self,
+        transport: execution_httpx.AsyncBaseTransport,
+        before_dispatch: Callable[[], Awaitable[None]],
+    ):
+        self._transport = transport
+        self._before_dispatch = before_dispatch
+
+    async def handle_async_request(
+        self, request: execution_httpx.Request
+    ) -> execution_httpx.Response:
+        await self._before_dispatch()
+        response = await self._transport.handle_async_request(request)
+        if response.status_code == 504:
+            await response.aclose()
+            raise execution_httpx.ReadTimeout("B14 quote execution timed out", request=request)
+        return response
+
+    async def aclose(self) -> None:
+        await self._transport.aclose()
 
 
 @dataclass(frozen=True, slots=True)
@@ -209,6 +250,7 @@ def _agent_profile(
     skill: TaskMode,
     model: str,
     required_capabilities: tuple[str, ...],
+    max_retries: int | None = None,
 ) -> AgentProfile:
     """Convert B62-owned TaskMode/model policy into the locked Core contract."""
 
@@ -232,6 +274,7 @@ def _agent_profile(
             "temperature": 0.2,
             "allow_external_fallback": False,
             "max_attempts": 1,
+            **({"max_retries": max_retries} if max_retries is not None else {}),
         },
     )
 
@@ -243,12 +286,14 @@ def _execution_request(
     model: str,
     required_capabilities: tuple[str, ...],
     additional_system_context: str | None,
+    max_retries: int | None = None,
 ) -> ExecutionRequest:
     return ExecutionRequest(
         agent=_agent_profile(
             skill=skill,
             model=model,
             required_capabilities=required_capabilities,
+            max_retries=max_retries,
         ),
         messages=tuple(dict(message) for message in messages),
         additional_system_context=_bounded_context(additional_system_context),
@@ -304,12 +349,21 @@ class B14Client:
     def _completion_config(self) -> B14ExecutionConfig:
         return self._config(self.settings.completed_timeout_seconds)
 
-    def _completion_transport(self):
+    def _completion_transport(
+        self, *, before_dispatch: Callable[[], Awaitable[None]] | None = None
+    ):
         execution_transport = self.transport
         if self.service_transport is not None:
             execution_transport = B14PostJSONTransport(
-                _CoreTransportAdapter(self.service_transport),
+                _CoreTransportAdapter(
+                    self.service_transport, before_dispatch=before_dispatch
+                ),
                 timeout_seconds=self.settings.completed_timeout_seconds,
+            )
+        elif before_dispatch is not None:
+            execution_transport = _BeforeDispatchHTTPTransport(
+                execution_transport or execution_httpx.AsyncHTTPTransport(),
+                before_dispatch,
             )
         return execution_transport
 
@@ -462,6 +516,8 @@ class B14Client:
         skill: TaskMode,
         model: str,
         additional_system_context: str | None,
+        max_retries: int | None = None,
+        before_dispatch: Callable[[], Awaitable[None]] | None = None,
     ) -> dict[str, Any]:
         request = _execution_request(
             messages,
@@ -469,10 +525,11 @@ class B14Client:
             model=model,
             required_capabilities=("chat",),
             additional_system_context=additional_system_context,
+            max_retries=max_retries,
         )
         core_client = B14ExecutionClient(
             self._completion_config(),
-            transport=self._completion_transport(),
+            transport=self._completion_transport(before_dispatch=before_dispatch),
         )
         runtime = ExecutionRuntime(
             app_id="padiem-chat",
@@ -546,6 +603,80 @@ class B14Client:
             "skill": task_mode_public_metadata(skill),
             "attachments": [attachment.public_dict()],
         }
+
+    def ensure_registered_quote_runtime_available(self) -> None:
+        """Check the B66 live boundary without selecting or contacting a model."""
+        if (
+            self.settings.runtime_mode != "b14"
+            or self.settings.live_enabled is not True
+            or self.settings.b14_base_url is None
+        ):
+            raise ChatRuntimeError(
+                503, "quote_runtime_unavailable",
+                "견적 AI 해석 기능이 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.",
+            )
+        if self.require_service_binding and self.service_transport is None:
+            raise ChatRuntimeError(
+                503, "upstream_binding_unavailable",
+                "AI 내부 연결이 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.",
+            )
+
+    async def _prepare_registered_quote_dispatch(self) -> None:
+        """Dispatch-aware clients consume their reservation at this last boundary."""
+
+    async def complete_registered_quote_model(
+        self,
+        messages: list[dict[str, str]],
+        *,
+        model: str,
+        additional_system_context: str | None = None,
+    ) -> dict[str, Any]:
+        """B66 trusted exact route -> common Core/B14, NOT B62 tier policy.
+
+        The internal caller must first obtain an owner-policy-authorized route
+        from B14 registration authority. B14 validates the actual executable
+        model and credential; this method NEVER chooses a model or a fallback.
+        """
+        self.ensure_registered_quote_runtime_available()
+        if (
+            not isinstance(model, str)
+            or not model.strip()
+            or model == "b14/auto"
+            or model.startswith("padiem-profile/")
+            or not all(c.isascii() and (c.isalnum() or c in "._:/-") for c in model)
+            or len(model) > 256
+        ):
+            raise ChatRuntimeError(
+                422, "model_route_unavailable", "견적 AI 모델 경로를 확인할 수 없습니다."
+            )
+        if (
+            not isinstance(messages, list)
+            or len(messages) != 1
+            or not isinstance(messages[0], dict)
+            or set(messages[0]) != {"role", "content"}
+            or messages[0].get("role") != "user"
+            or not isinstance(messages[0].get("content"), str)
+            or not messages[0]["content"].strip()
+        ):
+            raise ChatRuntimeError(422, "invalid_request", "견적 입력 형식을 확인해 주세요.")
+        quote_task = TaskMode(
+            id="b66_quote_extract_v1",
+            title="B66 quote extraction",
+            short_description="Structured quotation fields",
+            system_instruction=None,
+            task_type="document",
+            optimize_for="korean",
+            max_tokens=None,
+        )
+        bounded_context = _bounded_context(additional_system_context)
+        return await self._complete_text(
+            [dict(messages[0])],
+            skill=quote_task,
+            model=model,
+            additional_system_context=bounded_context,
+            max_retries=0,
+            before_dispatch=self._prepare_registered_quote_dispatch,
+        )
 
     async def complete(
         self,

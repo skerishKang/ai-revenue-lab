@@ -21,12 +21,14 @@ from starlette.responses import JSONResponse
 
 from .auth_routes import auth_ready, current_user_id
 from .b14_client import ChatRuntimeError
+from .b66_registered_model_boundary import B66ModelRouteError
 from .b66_quote_conversation import (
     B66QuoteConversationError,
     MAX_CONVERSATION_CHARS,
 )
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .claw_memory_routes import _resolve_memory_workspace
+from .dispatch_quota import _clear_reservation, _refund_active_reservation
 
 MAX_BODY_BYTES = 16 * 1024
 MAX_LIST_LIMIT = 20
@@ -50,21 +52,10 @@ _REJECTION_TYPE_RE = re.compile(r"^[a-z]{1,16}$")
 # narrower internal ``upstream_class``. Raw exception text, provider payloads,
 # model output and customer values are never part of this header.
 #
-# Every value here is reachable on this lane today, which is what keeps "header
-# present" meaningful. Broad Core/provider classes come from
-# ``b14_client._chat_error``; the five ``upstream_*content/shape/json/empty*``
-# values are bounded internal refinements of the existing malformed-answer
-# public contract. ``upstream_binding_unavailable`` is raised by the
-# Production-composed ``DispatchAwareB14Client.complete`` itself when the required B14 Service
-# Binding is absent (``require_service_binding`` True with
-# ``service_transport`` None, as composed in ``worker.py``).
-#
-# Deliberately outside the allowlist: request/policy classes such as
-# ``model_profile_unassigned`` (unreachable here — the B66 lane never binds a
-# request tier, so policy resolution always yields the executable Padiem Plus
-# default), ``tier_unavailable`` / ``unknown_model_alias`` (only for a quote text
-# that literally begins with a slash alias) and ``invalid_request`` (Core
-# request-contract rejection, not an upstream class).
+# These classes come from the existing B14/Core execution boundary. Runtime
+# readiness and registered-model selection failures have separate diagnostics;
+# neither is reported as a provider failure. No default chat tier is selected
+# by this exact registered quote lane.
 _UPSTREAM_CLASS_ALLOWLIST = frozenset(
     {
         "upstream_timeout",
@@ -101,6 +92,37 @@ def _upstream_class_headers(exc: BaseException) -> dict[str, str]:
     return {"X-B66-Upstream-Class": code}
 
 
+# Closed-vocabulary failure provenance diagnostics for CGI freeform (#3751).
+# Do not expose exceptions/messages/provider payloads/user input in headers.
+_B66_INTERPRET_FAILURE_STAGES = frozenset({
+    "interpreter_exception",
+    "projection_missing_safe_dict",
+    "runtime_unavailable",
+    "model_selection",
+    "provider_execution",
+    "provider_response",
+})
+_B66_INTERPRET_EXCEPTION_FAMILIES = frozenset({
+    "chat_runtime_non_upstream",
+    "type_error",
+    "value_error",
+    "runtime_error",
+    "unexpected_exception",
+})
+
+
+def _bounded_interpret_exception_family(exc: BaseException) -> str:
+    if isinstance(exc, ChatRuntimeError):
+        return "chat_runtime_non_upstream"
+    if isinstance(exc, TypeError):
+        return "type_error"
+    if isinstance(exc, ValueError):
+        return "value_error"
+    if isinstance(exc, RuntimeError):
+        return "runtime_error"
+    return "unexpected_exception"
+
+
 def _rejection_diagnostic_headers(exc: BaseException) -> dict[str, str]:
     headers: dict[str, str] = {}
     reason = getattr(exc, "message", None)
@@ -121,6 +143,60 @@ def _error(status: int, code: str, message: str) -> JSONResponse:
         status_code=status,
         headers=_NO_STORE,
     )
+
+
+async def _authorize_quote_usage(request: Request, uid: str) -> JSONResponse | None:
+    if not getattr(request.app.state, "usage_gate_enforced", False):
+        return None
+    gate = getattr(request.app.state, "usage_gate", None)
+    authorize = getattr(gate, "authorize", None)
+    try:
+        if not callable(authorize):
+            raise RuntimeError("usage gate unavailable")
+        decision = await authorize(
+            raw_ip=request.headers.get("cf-connecting-ip"), user_id=uid
+        )
+        if decision.allowed:
+            return None
+        response = _error(decision.status_code, decision.code, decision.user_message)
+        if decision.retry_after_seconds is not None:
+            response.headers["Retry-After"] = str(decision.retry_after_seconds)
+        return response
+    except Exception:
+        await _refund_active_reservation()
+        return _error(
+            503, "live_abuse_gate_unavailable", "AI 사용 한도를 확인할 수 없습니다. 잠시 후 다시 이용해 주세요."
+        )
+
+
+async def _interpret_reserved(interpret_fn, *, message: str, skill: dict, model_id: str):
+    try:
+        value = interpret_fn(message=message, skill=skill, model_id=model_id)
+        return await value if inspect.isawaitable(value) else value
+    finally:
+        # The dispatch adapter marks the receipt before the actual B14 POST.
+        # Only a provable pre-dispatch failure may refund this request's buckets.
+        await _refund_active_reservation()
+
+
+def _model_route_error_response(exc: B66ModelRouteError) -> JSONResponse:
+    if exc.code == "runtime_unavailable":
+        response = _error(503, "quote_runtime_unavailable", "견적 대화 기능을 사용할 수 없습니다.")
+        response.headers["X-B66-Interpret-Failure-Stage"] = "runtime_unavailable"
+    elif exc.code in {"provider_execution_failed", "provider_response_invalid", "provider_route_mismatch"}:
+        response = _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
+        execution_failed = exc.code == "provider_execution_failed"
+        response.headers["X-B66-Upstream-Class"] = "upstream_error" if execution_failed else "malformed_upstream"
+        response.headers["X-B66-Interpret-Failure-Stage"] = "provider_execution" if execution_failed else "provider_response"
+    else:
+        response = _error(
+            503, "quote_model_unavailable", "견적에 사용할 AI 모델을 준비하지 못했습니다. 잠시 후 다시 이용해 주세요."
+        )
+        response.headers["X-B66-Model-Selection-Status"] = (
+            "ambiguous" if exc.code == "selection_ambiguous" else "unavailable"
+        )
+        response.headers["X-B66-Interpret-Failure-Stage"] = "model_selection"
+    return response
 
 
 def _owner(request: Request) -> str | None:
@@ -231,17 +307,46 @@ async def b66_saved_skill_detail(request: Request) -> JSONResponse:
     return JSONResponse({"ok": True, "saved_skill": skill}, headers=_NO_STORE)
 
 
+async def b66_quote_models(request: Request) -> JSONResponse:
+    """Authenticated, no-store registered model choices; never chooses one."""
+    if _owner(request) is None:
+        return _error(401, "unauthorized", "로그인이 필요합니다.")
+    resolver = getattr(request.app.state, "b66_quote_model_resolver", None)
+    list_fn = getattr(resolver, "list_selectable_models", None)
+    if not callable(list_fn):
+        return _error(503, "quote_model_unavailable", "AI 모델 목록을 확인할 수 없습니다.")
+    try:
+        models = await list_fn()
+    except Exception:
+        return _error(503, "quote_model_unavailable", "AI 모델 목록을 확인할 수 없습니다.")
+    # An optional OWNER-configured default may prefill the UI. It never
+    # silently selects a backend route and must be among currently permitted,
+    # credential-ready exact IDs. No default is configured by this change.
+    proposed_default = getattr(request.app.state, "b66_quote_default_model_id", None)
+    default = proposed_default if (
+        isinstance(proposed_default, str)
+        and any(row["model_id"] == proposed_default for row in models)
+    ) else None
+    return JSONResponse({"ok": True, "models": models, "default_model_id": default}, headers=_NO_STORE)
+
+
 async def b66_quote_interpret(request: Request) -> JSONResponse:
+    _clear_reservation()
     uid = _owner(request)
     if uid is None:
         return _error(401, "unauthorized", "로그인이 필요합니다.")
     data = await _json(request)
     if isinstance(data, JSONResponse):
         return data
-    if set(data) - {"saved_skill_id", "message"}:
+    if set(data) - {"saved_skill_id", "message", "model_id"}:
         return _error(400, "unsupported_field", "지원되지 않는 요청 필드가 있습니다.")
     saved_skill_id = data.get("saved_skill_id")
     message = data.get("message")
+    model_id = data.get("model_id")
+    if not isinstance(model_id, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}", model_id):
+        return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
+    if model_id in {"b14/auto"} or model_id.startswith("padiem-profile/"):
+        return _error(400, "model_selection_required", "사용할 AI 모델을 선택해 주세요.")
     if not isinstance(saved_skill_id, str) or not saved_skill_id:
         return _error(400, "invalid_saved_skill_id", "내 견적서 ID가 필요합니다.")
     if (
@@ -274,9 +379,13 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     if not isinstance(skill, dict):
         return _error(503, "saved_quote_skill_invalid", "내 견적서 데이터를 확인할 수 없습니다.")
 
+    denied = await _authorize_quote_usage(request, uid)
+    if denied is not None:
+        return denied
     try:
-        value = interpret_fn(message=message.strip(), skill=skill)
-        projection = await value if inspect.isawaitable(value) else value
+        projection = await _interpret_reserved(interpret_fn, message=message.strip(), skill=skill, model_id=model_id)
+    except B66ModelRouteError as exc:
+        return _model_route_error_response(exc)
     except B66QuoteConversationError as exc:
         response = _error(422, "quote_input_unrecognized", "견적 입력값을 확인해 주세요.")
         for header_name, header_value in _rejection_diagnostic_headers(exc).items():
@@ -286,11 +395,22 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
         response = _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
         for header_name, header_value in _upstream_class_headers(exc).items():
             response.headers[header_name] = header_value
+        response.headers["X-B66-Interpret-Failure-Stage"] = "interpreter_exception"
+        # A recognized upstream class already identifies the failure; the
+        # broader family is needed only when no upstream class is available.
+        if "X-B66-Upstream-Class" not in response.headers:
+            response.headers["X-B66-Interpret-Exception-Family"] = (
+                _bounded_interpret_exception_family(exc)
+            )
         return response
 
     safe_dict = getattr(projection, "safe_dict", None)
     if not callable(safe_dict):
-        return _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
+        response = _error(502, "quote_interpretation_failed", "견적 요청을 해석하지 못했습니다.")
+        response.headers["X-B66-Interpret-Failure-Stage"] = (
+            "projection_missing_safe_dict"
+        )
+        return response
     candidate = safe_dict()
 
     company_profile = None

@@ -13,6 +13,12 @@ on:
       - ".github/scripts/b62_claw_live_config_activation.py"
       - ".github/scripts/b62_d1_migration_008_schema.py"
       - ".github/tests/test_b62_binding_state_guard.py"
+      - ".github/scripts/b62_owner_d1_release_preflight.py"
+      - ".github/tests/test_b62_owner_d1_release_preflight.py"
+      - ".github/workflows/b54-owner-d1-controlled-connection.yml"
+      - ".github/scripts/b62_owner_d1_release_transaction.py"
+      - ".github/tests/test_b62_owner_d1_release_transaction.py"
+      - "docs/operations/OWNER_P01_D1_PROTECTED_RELEASE_RUNBOOK.md"
       - ".github/tests/test_b62_deploy_prereq_rollback_contracts.py"
       - ".github/tests/test_b62_served_version_secret_guard.py"
       - "apps/padiem-chat/tests/test_b62_production_deploy_config.py"
@@ -27,6 +33,7 @@ on:
         options:
           - repository_preflight
           - cloudflare_readonly
+          - owner_d1_release_preflight
           - deploy_production_code
           - rollback_production_code
       target_sha:
@@ -106,6 +113,20 @@ jobs:
           python -m pip install --disable-pip-version-check --quiet pytest
           python -m pytest .github/tests/test_b62_served_version_secret_guard.py -q
           echo "B62_SERVED_VERSION_SECRET_GUARD_TESTS=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
+      # PR-only CI: this contract tests the separate manual Owner D1 release.
+      # It NEVER dispatches apply/rollback or reads production credentials.
+      - name: Owner D1 protected release contract regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check --quiet pytest pyyaml
+          python3 -m pytest \
+            .github/tests/test_b62_owner_d1_release_transaction.py \
+            .github/tests/test_b62_owner_d1_release_preflight.py \
+            .github/tests/test_b62_binding_state_guard.py -q
+          echo "OWNER_D1_PROTECTED_RELEASE_SOURCE_CI=PASS"
           echo "PRODUCTION_MUTATION=0"
 
       - name: Gate source contract
@@ -822,3 +843,117 @@ jobs:
             echo "- public origin: \`${B62_PUBLIC_BASE_URL}\`"
             echo "- secret values printed: never"
           } >> "${GITHUB_STEP_SUMMARY}"
+
+  # #3782: read-only Owner D1 release preparation IN THE EXISTING B62 gate.
+  # No PATCH, no deployment, no secret mutation and no new deployment authority.
+  # This is a dated preparation artifact, NOT the fresh durable rollback anchor
+  # that a future separately approved mutating release must upload BEFORE write.
+  owner-d1-release-preflight:
+    needs: [source-contract, cloudflare-readonly]
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'owner_d1_release_preflight' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    concurrency:
+      group: owner-d1-release-preflight-readonly
+      cancel-in-progress: false
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Checkout exact current main for Owner D1 preparation
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Fail closed on source and hosting account drift
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${{ inputs.target_sha }}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${{ inputs.target_sha }}"
+          test "${CLOUDFLARE_ACCOUNT_ID}" = '9be14bb7b8974e65d0afba647ab16932'
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          echo 'OWNER_D1_READONLY_EXACT_MAIN=PASS'
+          echo 'OWNER_D1_ACCOUNT_MATCH=PASS'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: GET only — independent D1 and exact served Worker versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"
+          for name in owner chat engine; do
+            case "${name}" in
+              owner) database='padiem-browser-owner-p01' ;;
+              chat) database='padiem-chat-db' ;;
+              engine) database='padiem-engine' ;;
+            esac
+            curl -fsS --max-time 30 "${auth[@]}" --get --data-urlencode "name=${database}" \
+              "${base}/d1/database" -o "${RUNNER_TEMP}/owner-d1-database-${name}.json"
+          done
+          for label in engine chat; do
+            if [ "${label}" = 'engine' ]; then worker='padiem-ai-engine'; else worker='padiem-chat'; fi
+            api="${base}/workers/scripts/${worker}"
+            curl -fsS --max-time 30 "${auth[@]}" "${api}/deployments" \
+              -o "${RUNNER_TEMP}/owner-d1-${label}-before.json"
+            version="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active \
+              --deployments "${RUNNER_TEMP}/owner-d1-${label}-before.json")"
+            test -n "${version}"
+            curl -fsS --max-time 30 "${auth[@]}" "${api}/versions/${version}" \
+              -o "${RUNNER_TEMP}/owner-d1-${label}-version.json"
+            curl -fsS --max-time 30 "${auth[@]}" "${api}/settings" \
+              -o "${RUNNER_TEMP}/owner-d1-${label}-settings.json"
+            curl -fsS --max-time 30 "${auth[@]}" "${api}/deployments" \
+              -o "${RUNNER_TEMP}/owner-d1-${label}-after.json"
+          done
+          echo 'OWNER_D1_CLOUDFLARE_READONLY_FETCH=PASS'
+          echo 'CLOUDFLARE_PATCH_CALLS=0'
+          echo 'PRODUCTION_MUTATION=0'
+
+      - name: Validate pinned inherit and write bounded preparation evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="${RUNNER_TEMP}/owner-d1-release-preparation-safe-anchor.json"
+          test ! -e "${output}"
+          python3 .github/scripts/b62_owner_d1_release_preflight.py \
+            --main-sha "${{ inputs.target_sha }}" \
+            --d1-owner "${RUNNER_TEMP}/owner-d1-database-owner.json" \
+            --d1-chat "${RUNNER_TEMP}/owner-d1-database-chat.json" \
+            --d1-engine "${RUNNER_TEMP}/owner-d1-database-engine.json" \
+            --engine-before "${RUNNER_TEMP}/owner-d1-engine-before.json" \
+            --engine-after "${RUNNER_TEMP}/owner-d1-engine-after.json" \
+            --engine-version "${RUNNER_TEMP}/owner-d1-engine-version.json" \
+            --engine-settings "${RUNNER_TEMP}/owner-d1-engine-settings.json" \
+            --chat-before "${RUNNER_TEMP}/owner-d1-chat-before.json" \
+            --chat-after "${RUNNER_TEMP}/owner-d1-chat-after.json" \
+            --chat-version "${RUNNER_TEMP}/owner-d1-chat-version.json" \
+            --chat-settings "${RUNNER_TEMP}/owner-d1-chat-settings.json" \
+            --output "${output}"
+          echo 'OWNER_D1_PREFLIGHT_PRODUCTION_MUTATION=0'
+          echo 'OWNER_D1_FRESH_PREMUTATION_ROLLBACK_ANCHOR=NOT_CLAIMED'
+
+      - name: Publish bounded GET-only preparation anchor outside the runner
+        uses: actions/upload-artifact@v4
+        with:
+          name: owner-d1-preflight-anchor-${{ github.run_id }}
+          path: ${{ runner.temp }}/owner-d1-release-preparation-safe-anchor.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Stop without any Worker release or settings mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'OWNER_D1_PREFLIGHT_ANCHOR_PUBLISHED=YES'
+          echo 'OWNER_D1_MUTATION=0'
+          echo 'PATCH_SETTINGS_EXECUTED=NO'
+          echo 'LIVE_OWNER_D1_BINDINGS_ADDED=NO'
+          echo 'NEXT_RELEASE_REQUIRES_FRESH_DURABLE_PREMUTATION_ANCHOR=YES'

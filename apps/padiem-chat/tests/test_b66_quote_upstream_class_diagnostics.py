@@ -60,8 +60,8 @@ ALLOWLISTED_CLASSES = (
 # ``X-B66-Upstream-Class`` allowlist. Each entry records the status the code
 # actually carries and why it is not an upstream class on this lane.
 EXCLUDED_CLASSES = (
-    # Unreachable from the B66 lane: the quote route never binds a request tier,
-    # so policy resolution always returns the executable Padiem Plus default.
+    # In real Production B62 Plus is HOLD; this synthetic diagnostic fixture
+    # is not proof that model_profile_unassigned is unreachable from B66.
     (503, "model_profile_unassigned"),
     # Reachable only when the quote text itself begins with a slash alias; these
     # are product policy rejections, not upstream failures.
@@ -201,7 +201,7 @@ def _client(interpreter) -> TestClient:
 def _post(client: TestClient, message: str = "견적 입력 진단"):
     return client.post(
         "/api/b66/quote/interpret",
-        json={"saved_skill_id": SAVED_ID, "message": message},
+        json={"saved_skill_id": SAVED_ID, "model_id": "test-fixture/quote-projection", "message": message},
     )
 
 
@@ -310,11 +310,8 @@ def test_binding_class_is_reachable_from_the_production_composed_client():
     assert error.status_code == 503
     assert error.code in ALLOWLISTED_CLASSES
 
-    # Why ``model_profile_unassigned`` is excluded from the allowlist is fixed by
-    # the two facts below: no request tier is bound on the B66 lane, and the
-    # resolved default route is executable. Together they make the
-    # non-executable-policy branch unreachable for an ordinary Korean quote
-    # message, so this lane can only produce the binding class before dispatch.
+    # Synthetic Plus fixture in conftest permits this binding-path test.
+    # Real HOLD is proved separately by test_unassigned_profile_gate.py.
     assert resolve_request_model_policy([{"role": "user", "content": message}]).model_id == (
         DEFAULT_B14_MODEL_ID
     )
@@ -322,24 +319,17 @@ def test_binding_class_is_reachable_from_the_production_composed_client():
     assert DEFAULT_B14_MODEL_ID in EXECUTABLE_B14_MODEL_IDS
 
     print("UPSTREAM_BINDING_UNAVAILABLE_REACHABLE_FROM_PRODUCTION_COMPOSITION=YES")
-    print("MODEL_PROFILE_UNASSIGNED_REACHABLE_FROM_B66_TEXT=NO")
+    print("B66_SYNTHETIC_PLUS_FIXTURE_ONLY=YES")
 
 
-def test_real_binding_class_reaches_the_route_as_one_bounded_header():
-    """End-to-end: the real unbound Production client -> route -> one header."""
-
+def test_generic_b14_legacy_client_is_not_a_valid_b66_exact_selected_route():
+    """Old generic client cannot satisfy the per-request exact-model lane."""
     interpreter = B66QuoteConversationInterpreter(_unbound_production_client())
     response = _post(_client(interpreter))
-
     assert response.status_code == 502
-    body = response.json()
-    assert body["ok"] is False
-    assert body["error"]["code"] == "quote_interpretation_failed"
-    assert body["error"]["message"] == "견적 요청을 해석하지 못했습니다."
-    assert _upstream_class_values(response) == ["upstream_binding_unavailable"]
+    assert response.json()["error"]["code"] == "quote_interpretation_failed"
+    assert _upstream_class_values(response) == []
     assert not [name for name in response.headers if name.startswith("X-B66-Rejection-")]
-
-    print("REAL_BINDING_CLASS_HEADER_RELAY=PASS")
 
 
 def test_generic_runtime_error_carries_no_upstream_class_header():
@@ -398,3 +388,165 @@ def test_bounded_rejection_contract_is_unchanged_for_model_errors():
 
     print("BOUNDED_REJECTION_CONTRACT=UNCHANGED")
     print("UPSTREAM_CLASS_HEADER_NOT_ON_422=PASS")
+
+
+def test_502_interpreter_exception_provenance_is_bounded_without_raw_values():
+    # One fake backend completion per trial, no network/provider runtime.
+    failure_cases = (
+        (TypeError("private company alpha; token=secret"), "type_error"),
+        (ValueError("private company beta; token=secret"), "value_error"),
+        (RuntimeError("private company gamma; token=secret"), "runtime_error"),
+        (KeyError("private company delta; token=secret"), "unexpected_exception"),
+        (ChatRuntimeError(422, "invalid_request", "private user message"),
+         "chat_runtime_non_upstream"),
+    )
+    for exception, family in failure_cases:
+        provider = _RaisingClient(exception)
+        response = _post(_client(B66QuoteConversationInterpreter(provider)))
+        assert response.status_code == 502
+        assert response.json()["error"]["code"] == "quote_interpretation_failed"
+        assert response.headers["X-B66-Interpret-Failure-Stage"] == "interpreter_exception"
+        assert response.headers["X-B66-Interpret-Exception-Family"] == family
+        assert UPSTREAM_CLASS_HEADER not in response.headers
+        _assert_no_values_leak(
+            response, "private company", "token=secret", "user message"
+        )
+        assert provider.calls == 1
+    print("B66_502_EXCEPTION_FAMILIES_ENUM_ONLY=PASS")
+
+
+def test_502_allowlisted_upstream_stage_keeps_existing_single_header():
+    provider = _RaisingClient(ChatRuntimeError(
+        502, "upstream_timeout", "private quote content"
+    ))
+    response = _post(_client(B66QuoteConversationInterpreter(provider)))
+    assert response.status_code == 502
+    assert response.headers[UPSTREAM_CLASS_HEADER] == "upstream_timeout"
+    assert response.headers["X-B66-Interpret-Failure-Stage"] == "interpreter_exception"
+    assert "X-B66-Interpret-Exception-Family" not in response.headers
+    _assert_no_values_leak(response, "private quote content")
+
+
+def test_502_invalid_projection_has_distinct_stage_no_exception_family():
+    class InvalidProjection:
+        async def interpret(self, *, message, skill, model_id=None):
+            return {"internal_message": "DO_NOT_RELAY_PRIVATE_CONTENT"}
+
+    response = _post(_client(InvalidProjection()))
+    assert response.status_code == 502
+    assert response.json()["error"]["code"] == "quote_interpretation_failed"
+    assert response.headers["X-B66-Interpret-Failure-Stage"] == "projection_missing_safe_dict"
+    assert "X-B66-Interpret-Exception-Family" not in response.headers
+    assert UPSTREAM_CLASS_HEADER not in response.headers
+    _assert_no_values_leak(response, "DO_NOT_RELAY_PRIVATE_CONTENT")
+
+
+def test_422_rejection_does_not_claim_502_provenance():
+    provider = _AnswerClient(5)
+    response = _post(_client(B66QuoteConversationInterpreter(provider)))
+    assert response.status_code == 422
+    assert "X-B66-Interpret-Failure-Stage" not in response.headers
+    assert "X-B66-Interpret-Exception-Family" not in response.headers
+    assert UPSTREAM_CLASS_HEADER not in response.headers
+from app.b66_registered_model_boundary import (
+    B14AuthorizedModelRoute, B66ModelRouteError,
+    B66RegisteredModelCompletion,
+    B14QuoteExactModelExecutor,
+)
+from app.b66_b14_free_first_resolver import B14FreeFirstQuoteModelResolver
+
+
+def test_b66_trusted_registry_failure_is_503_not_generic_502():
+    class NoEligibleRegistry:
+        calls = []
+        async def get_json(self, path):
+            self.calls.append(path)
+            return 200, json.dumps({
+                "catalog": [], "registered_routes": [], "providers": [],
+                "provider_mode": "live",
+            }).encode()
+    reg = NoEligibleRegistry()
+    class ProviderCannotRun:
+        calls = 0
+        async def execute_quote_text(self, **kwargs):
+            self.calls += 1
+            raise AssertionError("provider must not be called")
+    provider = ProviderCannotRun()
+    interpreter = B66QuoteConversationInterpreter(
+        B66RegisteredModelCompletion(
+            resolver=B14FreeFirstQuoteModelResolver(reg),
+            executor=provider,
+        )
+    )
+    response = _post(_client(interpreter), "CGI 견적 고객 입력")
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "quote_model_unavailable"
+    assert response.headers["X-B66-Model-Selection-Status"] == "unavailable"
+    assert provider.calls == 0
+    assert reg.calls == ["/api/pilot/models", "/api/pilot/provider-readiness"]
+    _assert_no_values_leak(response, "CGI 견적 고객 입력")
+
+
+def test_b66_owner_allowed_exact_model_generates_existing_quote_projection():
+    class Resolver:
+        calls = 0
+        async def resolve_quote_model(self, requirements):
+            self.calls += 1
+            return B14AuthorizedModelRoute(
+                model_id="test-fixture/quote-projection",
+                route_id="test-fixture/quote-projection",
+                owner_policy_id="OWNER_REGISTERED_AND_ALLOWED",
+                registered=True, enabled=True, authorized=True,
+                credential_ready=True, route_count=1,
+                capabilities=frozenset({"chat"}),
+            )
+
+    class ExactClient:
+        exact = []
+        def ensure_registered_quote_runtime_available(self):
+            pass
+        async def complete_registered_quote_model(
+            self, messages, *, model, additional_system_context
+        ):
+            self.exact.append(model)
+            return {
+                "answer": json.dumps({"recipient": {"company": "기업 고객"}},
+                                     ensure_ascii=False),
+                "route": {"mode": "manual", "model": model},
+            }
+        async def complete(self, *args, **kwargs):
+            raise AssertionError("B62 HOLD route used")
+
+    resolver, client = Resolver(), ExactClient()
+    interpreter = B66QuoteConversationInterpreter(
+        B66RegisteredModelCompletion(
+            resolver=resolver, executor=B14QuoteExactModelExecutor(client)
+        )
+    )
+    response = _post(_client(interpreter), "CGI 견적 고객 요청")
+    assert response.status_code == 200
+    assert response.json()["ok"] is True
+    assert resolver.calls == 1
+    assert client.exact == ["test-fixture/quote-projection"]
+
+
+def test_b66_model_selection_refunds_only_prior_to_any_dispatch():
+    class Unconfigured:
+        async def resolve_quote_model(self, requirements):
+            raise B66ModelRouteError("selection_unavailable")
+    class Forbidden:
+        async def execute_quote_text(self, **kwargs):
+            raise AssertionError("must not dispatch")
+    refunded = []
+    async def refund():
+        refunded.append(True)
+        return True
+    interpreter = B66QuoteConversationInterpreter(
+        B66RegisteredModelCompletion(
+            resolver=Unconfigured(), executor=Forbidden(),
+            refund_pre_dispatch=refund,
+        )
+    )
+    response = _post(_client(interpreter))
+    assert response.status_code == 503
+    assert refunded == [True]

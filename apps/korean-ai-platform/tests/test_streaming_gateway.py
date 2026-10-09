@@ -12,8 +12,8 @@ from app.pilot.b14_runtime_config import runtime_config as rcfg
 
 STREAM_URL = "/api/pilot/v1/chat/completions/stream-preview"
 CHAT_URL = "/api/pilot/v1/chat/completions"
-MODEL = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
-MODEL_UPSTREAM = "nvidia/nemotron-3-ultra-550b-a55b:free"
+MODEL = "test-fixture/kilo-stream-gateway"
+MODEL_UPSTREAM = "test-fixture/kilo-stream-response"
 LIVE_DUMMY_KEY = "unit-live-key-abcdef1234567890"
 
 
@@ -31,6 +31,30 @@ class _ChunkStream(httpx.AsyncByteStream):
 
     async def aclose(self) -> None:
         self.closed = True
+
+
+@pytest.fixture(autouse=True)
+def _synthetic_catalog_stream_route(monkeypatch):
+    """Isolated synthetic keyless fixture; NEVER restore owner-deleted Kilo IDs."""
+    from dataclasses import replace
+    import app.pilot.catalog as cat
+    from app.pilot import platform_secrets as ps
+    base = next(iter(cat.CATALOG_BY_ID.values()))
+    fixture = replace(
+        base, model_id=MODEL, upstream_model=MODEL_UPSTREAM,
+        display_name="Synthetic SSE test-only model",
+        provider="Fixture Test Provider", platform_provider_id="test-fixture",
+        capabilities=frozenset({"chat", "free"}),
+        input_price_usd_per_1m=0.0, output_price_usd_per_1m=0.0,
+    )
+    spec = ps.PlatformProviderSpec(
+        provider_id="test-fixture",credential_source=ps.CredentialSource.NONE,
+        credential_binding_name="",base_origin="https://stream-fixture.example/v1",
+        allowed_hosts=("stream-fixture.example",),
+    )
+    monkeypatch.setitem(cat.CATALOG_BY_ID,MODEL,fixture)
+    monkeypatch.setitem(ps._PLATFORM_PROVIDERS,"test-fixture",spec)
+    yield
 
 
 @pytest.fixture(autouse=True)
@@ -205,7 +229,7 @@ def test_legacy_non_catalog_route_is_rejected_before_network():
         (401, 401, "upstream_auth_failed"),
         (403, 401, "upstream_auth_failed"),
         # The Kilo Gateway route reports its own quota code for 429.
-        (429, 429, "kilo_free_rate_limited"),
+        (429, 429, "upstream_rate_limited"),
         (500, 502, "upstream_server_error"),
         (400, 502, "malformed_upstream_response"),
         (422, 502, "upstream_client_error"),

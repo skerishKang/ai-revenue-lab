@@ -1,5 +1,8 @@
 # Business 14 Documentation Index
 
+Current OWNER model decisions, exclusions, name policy and distinct B14 source/Production evidence: [owner model decision ledger](../../../docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md). This product guide does not duplicate the model roster or grant route/Production activation.
+
+
 This index separates **current authority** from **historical phase evidence** so old model lists, routing chains, credential assumptions, or pilot constraints cannot accidentally become current runtime policy.
 
 ## Current authority
@@ -26,7 +29,7 @@ CURRENT SOURCE + TESTS
 B14 = General AI Router Platform
 Padiem Routing Profile v1 = first product/customer-specific profile
 
-Plus = HOLD / padiem-profile/plus-hold  (#3568; successor pending)
+Plus = HOLD / padiem-profile/plus-hold  (MERGED SOURCE; owner Google selection completed)
 Pro  = HOLD / padiem-profile/pro-hold
 Max  = HOLD / padiem-profile/max-hold
 
@@ -36,7 +39,7 @@ PADIEM_SILENT_FALLBACK = NO
 B14_GENERIC_AUTOROUTER = VALID_FUTURE_CAPABILITY
 ```
 
-The shared Padiem profile declaration and B14 execution authority are separate. Product code declares intent; B14 decides whether that route is executable. Space Bunny is now historical/manual route metadata only and is not the Padiem Plus execution route. Plus remains HOLD until a successor is explicitly selected and proven under #3554/#3568.
+The shared Padiem profile declaration and B14 execution authority are separate. Google exact-ID registration is source-merged via PR #3788, while the Plus product declaration remains HOLD. Source registration does not prove credential-backed execution, a customer-visible route or Production readiness. Historical Space Bunny is retired.
 
 `poolside/laguna-s-2.1` is `HOLD_AS_DATA_ONLY` in that declaration — product data and `b14/auto` fixed-chain second-position evidence, not a Padiem tier route — and the historical `kilo/poolside-laguna-s-2.1-free` / `kilo/nvidia-nemotron-3-ultra-550b-a55b-free` mapping is superseded, so no index in this folder may be read as reinstating it.
 

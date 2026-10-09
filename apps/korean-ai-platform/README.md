@@ -1,5 +1,8 @@
 # Korean AI Platform — Business 14
 
+Current OWNER model decisions, exclusions, name policy and distinct B14 source/Production evidence: [owner model decision ledger](../../docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md). This product guide does not duplicate the model roster or grant route/Production activation.
+
+
 ## Current authority
 
 Business 14 (**B14**) is Padiem's **general AI Router Platform**: a Korean-first provider/model execution layer that can register multiple providers and models, validate executable routes, bind credentials safely, dispatch requests, normalize provider behavior, and evolve toward capability/cost/latency/availability-aware routing.
@@ -14,7 +17,7 @@ Padiem Routing Profile v1 = first product/customer-specific routing profile
 Padiem has already selected the routes it wants for the current MVP. Therefore Padiem Profile v1 does not require a generic automatic best-model router to be active.
 
 ```text
-Padiem Plus = HOLD / padiem-profile/plus-hold (#3568; successor pending)
+Padiem Plus = HOLD / padiem-profile/plus-hold (product route declaration; Google B14 source registration is independently merged)
 Padiem Pro  = HOLD / padiem-profile/pro-hold
 Padiem Max  = HOLD / padiem-profile/max-hold
 
@@ -49,7 +52,7 @@ Padiem product/profile declaration
 
 | Padiem tier | Route | Status |
 |---|---|---|
-| Plus | `padiem-profile/plus-hold` | HOLD / non-executable while a successor model is explicitly selected and proven (#3568) |
+| Plus | padiem-profile/plus-hold | Product HOLD, while separate B14 source registration exists; exact executable status requires B14 and live evidence |
 | Pro | `padiem-profile/pro-hold` | HOLD / non-executable (owner decision #2601) |
 | Max | `padiem-profile/max-hold` | HOLD / non-executable |
 
@@ -63,7 +66,7 @@ Product-declaration data that is **not** a product route:
 
 Retired historical routes such as MiniMax M3 and Tencent HY3 must not re-enter the executable catalog or a Padiem tier through stale documentation, fallback, or compatibility defaults.
 
-**Current successor boundary:** Space Bunny is fully retired (owner final retirement decision, 2026-10-07): no product execution, no manual execution, no auto route, no fallback. Its B14 route registration is removed (absent from `KILO_FREE_ROUTES` and from the catalog, declared in `RETIRED_KILO_FREE_MODEL_IDS`), and only its historical identity constants survive as metadata. Padiem Plus stays HOLD until a successor is explicitly selected, registered, proven, and activated. No older route may be silently promoted as fallback (#3568/#3554).
+**Current successor boundary:** Space Bunny is fully retired. B14 Google manual-pin registration has merged in PR #3788, but the shared Plus product declaration remains HOLD. No Google Plus route, credential-backed Production execution, or release is proven. Older routes may not be silently promoted (#3568/#3554).
 
 ## Router Platform roadmap
 

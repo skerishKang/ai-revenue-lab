@@ -40,7 +40,53 @@ FOLLOWUP_TEXT = "미터당 18000원"
 CLAW_TARGET_URL = "https://chat.padiem.net/"
 CLAW_GENERAL_PATH = "/api/claw/general"
 CLAW_SYNTHETIC_PROMPT = "테스트입니다. 한 문장으로 정상 작동 중이라고 답해주세요."
+# #3554: prior owner-selected, existing B14 registered model; no auto-selection.
+CLAW_OWNER_SELECTED_MODEL_ID = "agnes-ai/agnes-3.0-flash"
 MAX_CLAW_GENERAL_POSTS = 1
+
+# #3751: interpretation errors have two independent 502 owners. Mirror the
+# exact product-owned header vocabulary; .github/tests checks it against the
+# canonical B66 route without importing app dependencies.
+B66_INTERPRET_ERROR_CODES = frozenset({
+    "quote_interpretation_failed",
+    "quote_runtime_unavailable",
+    "quote_model_unavailable",
+    "padiem_service_unavailable",
+})
+B66_INTERPRET_FAILURE_STAGES = frozenset({
+    "interpreter_exception",
+    "projection_missing_safe_dict",
+    "runtime_unavailable",
+    "model_selection",
+    "provider_execution",
+    "provider_response",
+})
+B66_INTERPRET_EXCEPTION_FAMILIES = frozenset({
+    "chat_runtime_non_upstream",
+    "type_error",
+    "value_error",
+    "runtime_error",
+    "unexpected_exception",
+})
+
+B66_UPSTREAM_CLASS_VOCABULARY = frozenset({
+    "upstream_timeout",
+    "upstream_busy",
+    "upstream_response_too_large",
+    "malformed_upstream",
+    "upstream_malformed_json",
+    "upstream_unexpected_shape",
+    "upstream_missing_content",
+    "upstream_non_text_content",
+    "upstream_empty_answer",
+    "upstream_unavailable",
+    "provider_auth_error",
+    "provider_route_error",
+    "provider_server_error",
+    "upstream_execution_failed",
+    "upstream_error",
+    "upstream_binding_unavailable",
+})
 
 # #3655 one-shot canary evidence seam. The request marker opts the ONE canary
 # request into the chat route's bounded evidence headers; the normal user
@@ -128,6 +174,82 @@ def _bounded_evidence_headers(headers: object) -> dict[str, str]:
     return extracted
 
 
+def _bounded_b66_interpret_failure(
+    body_text: object, headers: object
+) -> tuple[str, str, str]:
+    """Return only two enumerated error codes and a canonical upstream class.
+
+    Deliberately neither returns nor logs response.body, message, customer
+    content, URL, IDs, raw headers, model/provider payloads or trace text.
+    Unexpected shapes, non-JSON, oversized envelopes and unrecognized header
+    values are all opaque rather than a new diagnostic vocabulary.
+    """
+    code = "UNCLASSIFIED"
+    upstream_class = "UNCLASSIFIED"
+    if isinstance(body_text, str) and len(body_text) <= 8192:
+        try:
+            data = json.loads(body_text)
+            error = data.get("error") if isinstance(data, dict) else None
+            candidate = error.get("code") if isinstance(error, dict) else None
+            if isinstance(candidate, str) and candidate in B66_INTERPRET_ERROR_CODES:
+                code = candidate
+        except (ValueError, TypeError):
+            pass
+
+    if code == "quote_interpretation_failed":
+        layer = "B66_INTERPRETER_ROUTE"
+        if hasattr(headers, "get"):
+            candidate = headers.get("x-b66-upstream-class")
+            if (
+                isinstance(candidate, str)
+                and candidate in B66_UPSTREAM_CLASS_VOCABULARY
+            ):
+                upstream_class = candidate
+    elif code in {"quote_runtime_unavailable", "quote_model_unavailable"}:
+        layer = "B66_INTERPRETER_ROUTE"
+    elif code == "padiem_service_unavailable":
+        layer = "PAGES_UPSTREAM_PROXY"
+    else:
+        layer = "UNCLASSIFIED"
+
+    return code, layer, upstream_class
+
+
+def _print_bounded_b66_interpret_failure(response: object) -> None:
+    """Observe existing failure response; NEVER create a new provider request."""
+    body_text = None
+    headers = getattr(response, "headers", None)
+    try:
+        content_type = headers.get("content-type", "") if hasattr(headers, "get") else ""
+        if isinstance(content_type, str) and "application/json" in content_type.lower():
+            body_text = response.text()  # type: ignore[attr-defined]
+    except Exception:
+        pass
+    code, layer, upstream_class = _bounded_b66_interpret_failure(body_text, headers)
+    print("B66_INTERPRET_ERROR_CODE=" + code, flush=True)
+    print("B66_INTERPRET_ERROR_LAYER=" + layer, flush=True)
+    print("B66_INTERPRET_UPSTREAM_CLASS=" + upstream_class, flush=True)
+    failure_stage = "UNCLASSIFIED"
+    exception_family = "UNCLASSIFIED"
+    if code in {
+        "quote_interpretation_failed",
+        "quote_runtime_unavailable",
+        "quote_model_unavailable",
+    } and hasattr(headers, "get"):
+        candidate = headers.get("x-b66-interpret-failure-stage")
+        if isinstance(candidate, str) and candidate in B66_INTERPRET_FAILURE_STAGES:
+            failure_stage = candidate
+            if candidate == "interpreter_exception" and upstream_class == "UNCLASSIFIED":
+                family = headers.get("x-b66-interpret-exception-family")
+                if (
+                    isinstance(family, str)
+                    and family in B66_INTERPRET_EXCEPTION_FAMILIES
+                ):
+                    exception_family = family
+    print("B66_INTERPRET_FAILURE_STAGE=" + failure_stage, flush=True)
+    print("B66_INTERPRET_EXCEPTION_FAMILY=" + exception_family, flush=True)
+
+
 def _bounded_error_class(body_text: object) -> tuple[str | None, str | None]:
     """Extract ONLY the bounded error code/detail from a Claw error body.
 
@@ -172,7 +294,16 @@ def _canonical_admission_result(detail: str | None) -> str:
 
 
 def _is_direct_provider(url: str) -> bool:
-    host = (urlparse(url).hostname or "").lower()
+    parsed = urlparse(url)
+    host = (parsed.hostname or "").lower()
+    # #3566: the chat shell imports a Manrope CSS stylesheet from Google Fonts.
+    # fonts.googleapis.com/css2 is a static font resource, NOT a model API.
+    # The legacy suffix-only googleapis.com rule incorrectly marked every
+    # normal page load as a direct AI provider call and failed the canary after
+    # an HTTP 200 + visible answer. Exempt only the exact stylesheet endpoints;
+    # real Google model APIs and every other googleapis path remain blocked.
+    if host == "fonts.googleapis.com" and parsed.path in ("/css", "/css2"):
+        return False
     return (
         host.endswith("kilo.ai")
         or host.endswith("openrouter.ai")
@@ -180,6 +311,80 @@ def _is_direct_provider(url: str) -> bool:
         or host.endswith("anthropic.com")
         or host.endswith("openai.com")
     )
+
+
+class _ClawOutboundGuard:
+    """Pre-network one-shot enforcement; never dispatch a second model request.
+
+    Playwright's route callback executes before an HTTP request reaches the
+    network. A blocked request is counted as a violation and aborted, not
+    merely discovered later in the request observer.
+    """
+
+    def __init__(self) -> None:
+        self.claw_posts = 0
+        self.blocked_duplicate_posts = 0
+        self.blocked_direct_provider = 0
+        self.blocked_untrusted_claw = 0
+        self.blocked_wrong_model = 0
+
+    def route_request(self, route, request) -> None:
+        if _is_direct_provider(request.url):
+            self.blocked_direct_provider += 1
+            route.abort("blockedbyclient")
+            return
+
+        parsed = urlparse(request.url)
+        if request.method == "POST" and parsed.path == CLAW_GENERAL_PATH:
+            expected = urlparse(CLAW_TARGET_URL)
+            if parsed.scheme != expected.scheme or parsed.netloc != expected.netloc:
+                self.blocked_untrusted_claw += 1
+                route.abort("blockedbyclient")
+                return
+            if self.claw_posts >= MAX_CLAW_GENERAL_POSTS:
+                self.blocked_duplicate_posts += 1
+                route.abort("blockedbyclient")
+                return
+            try:
+                payload = request.post_data_json
+            except Exception:
+                payload = None
+            if not isinstance(payload, dict) or payload.get("model_id") != CLAW_OWNER_SELECTED_MODEL_ID:
+                self.blocked_wrong_model += 1
+                route.abort("blockedbyclient")
+                return
+            self.claw_posts += 1
+        route.continue_()
+
+    def violation_reason(self) -> str | None:
+        if self.blocked_duplicate_posts:
+            return "blocked_second_claw_post"
+        if self.blocked_direct_provider:
+            return "blocked_browser_direct_provider"
+        if self.blocked_untrusted_claw:
+            return "blocked_untrusted_claw_target"
+        if self.blocked_wrong_model:
+            return "blocked_unapproved_model"
+        return None
+
+    def assert_clean(self) -> None:
+        reason = self.violation_reason()
+        if reason:
+            _fail(reason)
+
+
+# Product authority: message-lifecycle.js sets article.dataset.lifecycle
+# after the terminal SSE frame is applied; disappearance of .typing alone
+# does not establish a completed user-visible answer.
+CLAW_ASSISTANT_COMPLETED_JS = """before => {
+  const messages = Array.from(document.querySelectorAll('#messageList .assistant-message'));
+  if (messages.length !== before + 1) return false;
+  const latest = messages[messages.length - 1];
+  const content = latest.querySelector('.assistant-content');
+  return latest.dataset.lifecycle === 'completed'
+    && Boolean(content && (content.innerText || '').trim().length > 0)
+    && !latest.querySelector('.error-box');
+}"""
 
 
 def _send(page, text: str) -> None:
@@ -272,53 +477,89 @@ def _assert_quote(
 
 
 def _pdf_download_probe(page, counters: Counters) -> None:
-    before = counters.pdf_posts
-    responses = []
-
-    def capture_response(response) -> None:
-        try:
-            if (
-                response.request.method == "POST"
-                and urlparse(response.url).path == PDF_PATH
-            ):
-                responses.append(response)
-        except Exception:
-            return
-
-    page.on("response", capture_response)
+    print("SMOKE_STAGE=PDF_PROBE_START", flush=True)
+    # CGI client-raster mode is the only accepted current customer download.
+    # Previously this smoke REQUIRED 3 backend PDF POSTs; now it MUST see ZERO.
+    # No fallback to the 503 Cloudflare renderer or deferred Modal.
+    if not page.evaluate("""() => {
+        const selected = document.getElementById('padiemSavedSkillSelect');
+        const exporter = window.B66BrowserPdf;
+        const readiness = window.B66QuoteRuntimeBridge?.readiness?.();
+        return Boolean(selected && exporter && exporter.isCgiSkill(selected.value) &&
+            readiness?.ready === true);
+    }"""):
+        _fail("cgi_browser_pdf_not_active")
+    print("SMOKE_STAGE=PDF_PREVIEW_IMAGE_WAIT", flush=True)
     try:
-        try:
-            with page.expect_download(timeout=30000) as download_info:
-                page.locator("#printPdf").click()
-            download = download_info.value
-        except Exception as exc:
-            if responses:
-                status = int(responses[-1].status)
-                if status != 200:
-                    raise SmokeFailure("pdf_http_" + str(status)) from exc
-                raise SmokeFailure("pdf_download_missing_after_http_200") from exc
-            raise SmokeFailure("pdf_response_or_download_missing") from exc
-    finally:
-        page.remove_listener("response", capture_response)
-
-    if not responses:
-        _fail("pdf_response_missing")
-    response = responses[-1]
-    if response.status != 200:
-        _fail("pdf_http_" + str(response.status))
-    media_type = (response.headers.get("content-type") or "").split(";", 1)[0].strip().lower()
-    if media_type != "application/pdf":
-        _fail("pdf_content_type_mismatch")
-    body = response.body()
-    if not isinstance(body, bytes) or not body.startswith(b"%PDF-"):
-        _fail("pdf_bytes_invalid")
-    if counters.pdf_posts != before + 1:
-        _fail("pdf_request_budget_mismatch")
+        page.wait_for_function("""() => {
+            const image = document.getElementById('cgiCertifiedPreviewBase');
+            return image && image.complete && image.naturalWidth === 1190 &&
+                image.naturalHeight === 1682;
+        }""", timeout=15000)
+    except Exception as exc:
+        # Bounded booleans only: never print user data, URLs, cookies, tokens or responses.
+        flags = page.evaluate("""() => {
+            const im = document.getElementById('cgiCertifiedPreviewBase');
+            const preview = document.getElementById('cgiCertifiedPreview');
+            return {
+                element: !!im,
+                src: !!im?.getAttribute('src'),
+                loaded: !!im?.complete,
+                width: im?.naturalWidth === 1190,
+                height: im?.naturalHeight === 1682,
+                shown: !!preview && preview.hidden === false,
+                paper: !!document.getElementById('quotePaper'),
+                cgiHost: !!document.getElementById('cgiV2Content'),
+                cgiLayout: document.getElementById('quotePaper')?.dataset.layoutVariant === 'cgi-v2',
+                skillSelect: !!document.getElementById('padiemSavedSkillSelect')?.value,
+                ownerSkill: window.B66BrowserPdf?.isCgiSkill?.(
+                    document.getElementById('padiemSavedSkillSelect')?.value) === true,
+                serverMatch: window.B66QuoteSkillBridge?.serverSkillId?.() ===
+                    document.getElementById('padiemSavedSkillSelect')?.value,
+                activeMatch: window.B66QuoteSkillBridge?.activeSkillId?.() ===
+                    document.getElementById('padiemSavedSkillSelect')?.value,
+                scriptLoaded: !!window.B66BrowserPdf
+            };
+        }""")
+        if not isinstance(flags, dict):
+            raise SmokeFailure("cgi_preview_image_unavailable") from exc
+        status = "_".join(
+            name + str(int(flags.get(name) is True))
+            for name in (
+                "element", "src", "loaded", "width", "height", "shown",
+                "paper", "cgiHost", "cgiLayout", "skillSelect", "ownerSkill",
+                "serverMatch", "activeMatch", "scriptLoaded"
+            )
+        )
+        raise SmokeFailure("cgi_preview_image_" + status) from exc
+    print("SMOKE_STAGE=PDF_PREVIEW_IMAGE_READY", flush=True)
+    before = counters.pdf_posts
+    if before != 0:
+        _fail("unexpected_server_pdf_post")
+    try:
+        with page.expect_download(timeout=30000) as download_info:
+            page.locator("#printPdf").click()
+        download = download_info.value
+        print("SMOKE_STAGE=PDF_DOWNLOAD_EVENT", flush=True)
+    except Exception as exc:
+        raise SmokeFailure("browser_pdf_download_missing") from exc
+    if counters.pdf_posts != before:
+        _fail("cgi_browser_pdf_used_server")
     if not str(download.suggested_filename or "").lower().endswith(".pdf"):
         _fail("pdf_filename_invalid")
+    # Reading the downloaded artifact is bounded; raw bytes never printed.
+    from pathlib import Path
+    body = Path(download.path()).read_bytes()
+    if not isinstance(body, bytes) or not body.startswith(b"%PDF-"):
+        _fail("browser_pdf_bytes_invalid")
+    if not (100_000 <= len(body) <= 4_000_000):
+        _fail("browser_pdf_bytes_bounds")
+    if b"/MediaBox [0 0 595 841]" not in body or b"/DCTDecode" not in body:
+        _fail("browser_pdf_a4_image_contract_missing")
 
 
 def _open_result_and_download(page, counters: Counters) -> None:
+    print("SMOKE_STAGE=RESULT_OPEN", flush=True)
     _click_chip(page, "견적서 확인하기")
     page.locator("#directView").wait_for(state="visible", timeout=10000)
     _pdf_download_probe(page, counters)
@@ -392,6 +633,7 @@ def _login(page, username: str, password: str) -> None:
 
 def _guided(page, counters: Counters) -> None:
     before = counters.interpret_posts
+    print("SMOKE_STAGE=GUIDED_START", flush=True)
     page.locator("#guidedStarter").click()
 
     _send(page, "\uac00\uc774\ub4dc\ud14c\uc2a4\ud2b8\uac74\uc124")
@@ -426,6 +668,7 @@ def _guided(page, counters: Counters) -> None:
     )
     if counters.interpret_posts != before:
         _fail("guided_used_interpret")
+    print("SMOKE_STAGE=GUIDED_VALIDATED_BEFORE_PDF", flush=True)
     _open_result_and_download(page, counters)
     print("GUIDED=PASS")
     print("GUIDED_INTERPRET_POSTS=0")
@@ -449,6 +692,7 @@ def _complete_free_form(page, counters: Counters) -> None:
         _send(page, COMPLETE_TEXT)
     response = info.value
     if response.status != 200:
+        _print_bounded_b66_interpret_failure(response)
         _fail("complete_interpret_http_" + str(response.status))
 
     page.wait_for_function(
@@ -494,6 +738,7 @@ def _partial_followup(page, counters: Counters) -> None:
         _send(page, PARTIAL_TEXT)
     first = info.value
     if first.status != 200:
+        _print_bounded_b66_interpret_failure(first)
         _fail("partial_interpret_http_" + str(first.status))
 
     page.wait_for_function(
@@ -527,6 +772,7 @@ def _partial_followup(page, counters: Counters) -> None:
         _send(page, FOLLOWUP_TEXT)
     second = info.value
     if second.status != 200:
+        _print_bounded_b66_interpret_failure(second)
         _fail("followup_interpret_http_" + str(second.status))
 
     page.wait_for_function(
@@ -616,8 +862,8 @@ def run_live(username: str, password: str) -> int:
 
             if counters.interpret_posts != MAX_INTERPRET_POSTS:
                 _fail("final_interpret_budget_mismatch")
-            if counters.pdf_posts != MAX_PDF_POSTS:
-                _fail("final_pdf_budget_mismatch")
+            if counters.pdf_posts != 0:
+                _fail("cgi_browser_pdf_server_post_detected")
             if counters.direct_provider_requests != 0:
                 _fail("browser_direct_provider_request")
 
@@ -627,9 +873,9 @@ def run_live(username: str, password: str) -> int:
 
         print("INTERPRET_POSTS=3")
         print("MAX_INTERPRET_POSTS=3")
-        print("PDF_POSTS=3")
+        print("PDF_POSTS=0")
         print("MAX_PDF_POSTS=3")
-        print("CERTIFIED_PDF_DOWNLOADS=3")
+        print("CERTIFIED_BROWSER_PDF_DOWNLOADS=3")
         print("BROWSER_DIRECT_PROVIDER_CALLS=0")
         print("RETRY=0")
         print("FALLBACK_FANOUT=0")
@@ -678,7 +924,7 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
         return 21
 
     claw_posts = 0
-    direct_provider_requests = 0
+    guard = _ClawOutboundGuard()
     submit_ms = 0
     complete_ms = 0
     response_status = 0
@@ -695,21 +941,21 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
             browser = pw.chromium.launch(headless=True)
             context = browser.new_context(
                 viewport={"width": 1440, "height": 1100},
+                # Prevent service workers from bypassing Playwright's route guard.
+                service_workers="block",
                 # #3655: opt this one canary request flow into the chat route's
                 # bounded evidence headers; the normal user surface is unchanged.
                 extra_http_headers={CLAW_EVIDENCE_REQUEST_HEADER: CLAW_EVIDENCE_MARKER},
             )
+            # Intercept every browser HTTP request before egress; unlike a
+            # page.on("request") observer this can abort model calls in advance.
+            def guarded_route(route) -> None:
+                nonlocal claw_posts
+                guard.route_request(route, route.request)
+                claw_posts = guard.claw_posts
+
+            context.route("**/*", guarded_route)
             page = context.new_page()
-
-            def observe_request(request) -> None:
-                nonlocal claw_posts, direct_provider_requests
-                parsed = urlparse(request.url)
-                if request.method == "POST" and parsed.path == CLAW_GENERAL_PATH:
-                    claw_posts += 1
-                if _is_direct_provider(request.url):
-                    direct_provider_requests += 1
-
-            page.on("request", observe_request)
             stage = "load_chat"
             page.goto(CLAW_TARGET_URL, wait_until="domcontentloaded", timeout=30000)
 
@@ -766,6 +1012,14 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
             print("CLAW_WORKSPACE=PASS")
 
             stage = "compose"
+            # A deployed Claw Plus model must be explicitly chosen per request.
+            # Verify the input before permitting the sole model dispatch.
+            model_input = page.locator("#clawModelIdInput")
+            model_input.wait_for(state="visible", timeout=15000)
+            model_input.fill(CLAW_OWNER_SELECTED_MODEL_ID)
+            if model_input.input_value() != CLAW_OWNER_SELECTED_MODEL_ID:
+                _fail("owner_model_selection_not_bound")
+            print("OWNER_SELECTED_MODEL_ID=" + CLAW_OWNER_SELECTED_MODEL_ID)
             before_assistants = page.locator("#messageList .assistant-message").count()
             before_errors = page.locator("#messageList .error-box").count()
             page.locator("#messageInput").fill(CLAW_SYNTHETIC_PROMPT)
@@ -786,6 +1040,11 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
 
             response = claw_info.value
             stage = "response"
+            # Inspect the submitted JSON locally, never print prompt/body bytes.
+            submitted = response.request.post_data_json
+            if not isinstance(submitted, dict) or submitted.get("model_id") != CLAW_OWNER_SELECTED_MODEL_ID:
+                _fail("owner_model_id_not_threaded_to_claw_post")
+            print("EXPLICIT_MODEL_ID_IN_CLAW_POST=PASS")
             response_status = response.status
             content_type = (response.headers.get("content-type") or "").lower()
             sse_content_type = content_type.startswith("text/event-stream")
@@ -802,33 +1061,23 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
             if not sse_content_type:
                 _fail("claw_general_not_sse")
 
-            stage = "assistant"
+            stage = "assistant_terminal_lifecycle"
             page.wait_for_function(
-                """before => {
-                  const items = Array.from(document.querySelectorAll('#messageList .assistant-message'));
-                  if (items.length <= before) return false;
-                  const last = items[items.length - 1];
-                  const content = last.querySelector('.assistant-content');
-                  return Boolean(content && (content.innerText || '').trim().length > 0);
-                }""",
+                CLAW_ASSISTANT_COMPLETED_JS,
                 arg=before_assistants,
                 timeout=120000,
             )
-            page.wait_for_function(
-                "() => !document.querySelector('#messageList .assistant-message:last-of-type .typing')",
-                timeout=120000,
-            )
-            time.sleep(1.0)
 
+            stage = "assistant_projection"
             after_assistants = page.locator("#messageList .assistant-message").count()
             assistant_projection_count = after_assistants - before_assistants
 
             if claw_posts != MAX_CLAW_GENERAL_POSTS:
                 _fail("claw_post_count_" + str(claw_posts))
+            guard.assert_clean()
             if page.locator("#messageList .error-box").count() != before_errors:
                 _fail("visible_error_box")
-            if direct_provider_requests != 0:
-                _fail("browser_direct_provider_request")
+            stage = "evidence_contract"
             # #3655 evidence bounds: the measured dispatch/fallback/projection
             # counts are load-bearing acceptance evidence, not printed claims.
             if assistant_projection_count != 1:
@@ -929,6 +1178,17 @@ def run_claw_owner_one_shot(username: str, password: str) -> int:
         print("COMPLETE_MS=" + str(int(time.time() * 1000)))
         print("CLAW_GENERAL_POSTS=" + str(claw_posts))
         print("CLAW_GENERAL_HTTP=" + (str(response_status) if response_status else "NONE"))
+        blocked_reason = guard.violation_reason()
+        if blocked_reason:
+            print("FAIL_STAGE=pre_network_guard")
+            print("PASSWORD_OUTPUT=0")
+            print("COOKIE_OUTPUT=0")
+            print("TOKEN_OUTPUT=0")
+            print("RAW_PROMPT_OUTPUT=0")
+            print("RAW_RESPONSE_OUTPUT=0")
+            print("RETRY=0")
+            print("B54_CLAW_OWNER_ONE_SHOT=FAIL_" + blocked_reason)
+            return 23
         if evidence_headers.get("x-padiem-claw-run-id"):
             print("CLAW_RUN_REF=" + evidence_headers["x-padiem-claw-run-id"])
         print("ENGINE_ADMISSION_RESULT=" + admission_result)

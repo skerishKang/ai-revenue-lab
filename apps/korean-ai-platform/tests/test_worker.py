@@ -84,10 +84,12 @@ class TestWranglerConfig:
         # Owner decision 2026-09-18: Agnes+Poolside Secrets Store bindings
         # re-registered; both declarations are metadata-only (store_id,
         # secret_name) with no secret values committed here.
+        # #3554: the PADIEM_GEMINI_API_KEY binding follows the same
+        # metadata-only contract, raising the declared store binding count to 9.
         assert "[[unsafe.bindings]]" not in content
         assert 'type = "secrets_store_secret"' not in content
-        assert content.count("[[secrets_store_secrets]]") == 8
-        assert content.count('store_id = "f0b09ca04a7b43248154c773704a5616"') == 8
+        assert content.count("[[secrets_store_secrets]]") == 9
+        assert content.count('store_id = "f0b09ca04a7b43248154c773704a5616"') == 9
         assert 'binding = "PADIEM_AGNES_API_KEY"' in content
         assert 'secret_name = "PADIEM_AGNES_API_KEY"' in content
         assert 'binding = "PADIEM_POOLSIDE_API_KEY"' in content
@@ -100,6 +102,7 @@ class TestWranglerConfig:
             "PADIEM_INCEPTION_MERCURY_API_KEY",
             "PADIEM_ATRIA_API_KEY",
             "PADIEM_EXLAB_API_KEY",
+            "PADIEM_GEMINI_API_KEY",
         ):
             assert f'binding = "{binding}"' in content
             assert f'secret_name = "{binding}"' in content
@@ -170,3 +173,65 @@ def test_kilo_secret_store_binding_is_metadata_only_and_env_bridged():
     assert 'secret_name = "KILO_API_KEY"' not in content
     assert "PADIEM_KILO_API_KEY =" not in content
     assert '"PADIEM_KILO_API_KEY"' in worker
+
+def test_gemini_secret_store_binding_is_metadata_only_and_matches_provider():
+    """#3554: the Google AI Studio credential binding is declared metadata-only.
+
+    The binding name must equal GOOGLE_CREDENTIAL_BINDING so the registered
+    Google provider resolves the store secret by that exact name; no secret
+    value is ever committed, and the store_id stays the shared approved one.
+    """
+    content = WRANGLER_TOML.read_text()
+    provider = (Path(__file__).resolve().parent.parent / "app" / "pilot" / "google_provider.py").read_text()
+    assert '[[secrets_store_secrets]]' in content
+    assert 'binding = "PADIEM_GEMINI_API_KEY"' in content
+    assert 'store_id = "f0b09ca04a7b43248154c773704a5616"' in content
+    assert 'secret_name = "PADIEM_GEMINI_API_KEY"' in content
+    assert "PADIEM_GEMINI_API_KEY =" not in content
+    # The declared binding must be the one the provider spec requires.
+    assert 'GOOGLE_CREDENTIAL_BINDING = "PADIEM_GEMINI_API_KEY"' in provider
+    import json as _json
+    registry = _json.loads((Path(__file__).resolve().parent.parent / "app" / "pilot" / "b14_models.json").read_text(encoding="utf-8"))
+    assert registry["providers"]["google"]["credential_binding_name"] == "PADIEM_GEMINI_API_KEY"
+    assert len([m for m in registry["models"] if m["provider_id"] == "google"]) == 4
+
+
+def test_worker_projects_every_enabled_platform_secret_registry_binding():
+    """A declared Wrangler binding is unusable unless Worker explicitly
+    collects and mirrors it into the application's environment.
+
+    This checks ALL active providers, not a one-off Google-only literal.
+    """
+    import ast
+    import json
+
+    registry = json.loads(
+        (WRANGLER_TOML.parent / "app" / "pilot" / "b14_models.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    required = {
+        entry["credential_binding_name"]
+        for entry in registry["providers"].values()
+        if entry["enabled"] and entry["credential_source"] == "platform_secret"
+    }
+    worker_ast = ast.parse(WORKER_SRC.read_text(encoding="utf-8"))
+    assignments = [
+        node for node in worker_ast.body
+        if isinstance(node, ast.Assign)
+        and any(isinstance(t, ast.Name) and t.id == "_ENV_KEYS" for t in node.targets)
+    ]
+    assert len(assignments) == 1
+    value = assignments[0].value
+    assert isinstance(value, ast.Call)
+    assert isinstance(value.func, ast.Name) and value.func.id == "frozenset"
+    assert len(value.args) == 1
+    allowlist = ast.literal_eval(value.args[0])
+    assert required <= allowlist, (
+        "Worker missing required provider Secret bindings: "
+        + ", ".join(sorted(required - allowlist))
+    )
+    assert "PADIEM_GEMINI_API_KEY" in required
+    assert "await collect_env_overrides(self.env, _ENV_KEYS)" in WORKER_SRC.read_text(
+        encoding="utf-8"
+    )

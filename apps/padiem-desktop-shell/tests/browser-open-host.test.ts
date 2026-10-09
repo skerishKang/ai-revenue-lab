@@ -155,6 +155,7 @@ class FakeView implements BrowserOpenViewPort {
   finalUrlOverride: string | null = null;
   calls: Array<{ hostLeaseRef: string; approvedUrl: string }> = [];
   gate: ((candidate: unknown) => boolean) | null = null;
+  controlCorrelation: {runRef: string; workspaceRef: string; ownerRef: string} | null = null;
   closeCount = 0;
   /** Leases torn down, whether through a session or the lease-scoped teardown. */
   closedLeases: string[] = [];
@@ -168,9 +169,11 @@ class FakeView implements BrowserOpenViewPort {
     hostLeaseRef: string;
     approvedUrl: string;
     expiresAtIso: string;
+    controlCorrelation?: {runRef: string; workspaceRef: string; ownerRef: string};
     onNavigationAttempt: (candidate: unknown) => boolean;
   }): Promise<BrowserOpenViewSession> {
     this.calls.push({ hostLeaseRef: input.hostLeaseRef, approvedUrl: input.approvedUrl });
+    this.controlCorrelation = input.controlCorrelation ?? null;
     this.gate = input.onNavigationAttempt;
     if (this.behavior === 'hang') {
       return await new Promise<BrowserOpenViewSession>(() => undefined);
@@ -223,6 +226,11 @@ test('#3611 a permitted open loads through the injected view and returns a bound
   assert.equal(receipt.p01ApprovalRef, 'decision_3611');
   assert.equal(receipt.admissionRef, 'admission_3611');
   assert.deepEqual(view.calls, [{ hostLeaseRef: 'host_lease_3611', approvedUrl: APPROVED_URL }]);
+  // The view owner cannot mint identity: these values are copied only from
+  // the canonical P01-approved open request, after durable redemption.
+  assert.deepEqual(view.controlCorrelation, {
+    runRef: 'run_3611', workspaceRef: 'workspace_3611', ownerRef: 'owner_3611',
+  });
   // A loaded view stays visible for the user; the port owns the lease-bounded teardown.
   assert.equal(view.closeCount, 0);
 });

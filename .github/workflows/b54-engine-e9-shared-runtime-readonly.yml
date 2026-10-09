@@ -136,7 +136,7 @@ jobs:
           curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
           verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify \
             --version-settings "${version_detail}" \
-            --active-version "${active_version}" \
+            --active-version="${active_version}" \
             --require-approval-runtime-bindings \
             --require-a6-activation-runtime-bindings)"
           printf '%s\n' "${verify_out}" | grep -Fx 'ENGINE_CONTINUATION_SERVED_BINDING=PRESENT:d1'

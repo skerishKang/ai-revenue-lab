@@ -6,8 +6,9 @@ exists only so shell/YAML consumers can reuse those rules instead of
 reimplementing result.deployments[0].versions[0] with jq.
 
 It performs no network calls and no mutation. On success, stdout contains only
-the safe served-version id. Failures expose only a bounded status/reason
-vocabulary and never echo response payloads.
+the safe served-version id, or for ``validate-version-id`` the single
+``VERSION_ID_SAFE=YES`` token. Failures expose only a bounded status/reason
+vocabulary and never echo response payloads or a rejected candidate.
 """
 
 from __future__ import annotations
@@ -18,7 +19,9 @@ from pathlib import Path
 import sys
 
 from cloudflare_served_version import (
+    ServedVersionReason,
     ServedVersionResolutionError,
+    is_safe_version_id,
     resolve_served_version_id,
 )
 
@@ -45,7 +48,31 @@ def main(argv: list[str] | None = None) -> int:
         help="Cloudflare deployments API response JSON file",
     )
 
+    # A rollback target is typed by a dispatcher, so it is untrusted input and it
+    # must clear the same contract the resolver applies to a served id before it
+    # reaches a mutating command. This subcommand reuses is_safe_version_id; it
+    # adds no charset rule of its own.
+    validate = sub.add_parser(
+        "validate-version-id",
+        help="accept a caller-supplied version id under the canonical safe-id contract",
+    )
+    validate.add_argument(
+        "--version-id",
+        required=True,
+        help="candidate version id",
+    )
+
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
+
+    if args.command == "validate-version-id":
+        # The candidate is never echoed, in either direction: a rejected string
+        # must not be reflected into CI output (#2752 review blocker 3).
+        if is_safe_version_id(args.version_id):
+            print("VERSION_ID_SAFE=YES")
+            return 0
+        print("VERSION_ID_SAFE=NO", file=sys.stderr)
+        print(f"REASON={ServedVersionReason.VERSION_ID}", file=sys.stderr)
+        return 1
 
     try:
         payload = _load_payload(args.deployments)

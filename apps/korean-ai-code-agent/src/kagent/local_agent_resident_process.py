@@ -239,6 +239,158 @@ def _browser_open_authority(
     )
 
 
+def _resident_device(*, entry: "BrokerEntry", binding: Any, execution_root: str) -> LocalAgentDeviceProfile:
+    """The single trusted device view every resident lane composes against.
+
+    #3669: the browser.open slice and the browser.control lease slice must
+    describe the same machine, so the device is built in exactly one place
+    from the redeemed binding and the shell-supplied root — never a second,
+    hard-coded view.
+    """
+
+    return LocalAgentDeviceProfile(
+        device_id=entry.device_id,
+        # #3140 review item 3: the workspace is whatever the redeemed binding
+        # says. A hard-coded workspace would let a device from one workspace
+        # present as a device of another.
+        workspace_ref=binding.workspace_ref,
+        platform=LocalAgentPlatform.WINDOWS,
+        roots=(LocalRoot(root_ref=EXECUTION_ROOT_REF, windows_path=execution_root),),
+    )
+
+
+def _browser_control_lease_authority(
+    *,
+    device: Any,
+    credential_dir: str,
+    root_source: str,
+    redeemed_device_binding_ref: str = "",
+    approved_command_correlation: Any = None,
+    observer: Any = None,
+) -> Any:
+    """Compose the canonical `browser.control` lease slice, fail-closed by default (#3669).
+
+    CENTRAL ruling DECISION=B: a *separate* canonical durable lease store sits
+    next to the run store — the `DurableRunStore` itself is not touched. Only
+    when a real shell-supplied root (root_source=env), an authenticated
+    per-command browser.control work ticket, and a configured broker boundary
+    ALL exist can the canonical P01 evidence route be wired. The #3140
+    acceptance command is ONLY pairing/runner evidence, never this grant.
+    Otherwise the authority keeps its fail-closed evidence port.
+
+        DESKTOP_DURABLE_LEASE_AUTHORITY=NO
+        NEW_APPROVAL_STORE=0
+        NEW_DURABLE_LEASE_STORE=1
+    """
+
+    import os
+
+    from .browser_control_lease_authority import (
+        BrowserControlLeaseAuthority,
+        BrowserControlP01CommandCorrelation,
+        P01PerCommandBrowserControlEvidenceClient,
+    )
+    from .browser_control_lease_store import BrowserControlLeaseStore
+    from .local_agent_permissions import default_device_permission_profile
+
+    lease_store_path = os.path.join(credential_dir, "browser-control-leases.sqlite3")
+    store = BrowserControlLeaseStore(lease_store_path, observer=observer)
+    permission_profile = default_device_permission_profile(device=device)
+    broker_url = os.environ.get("PADIEM_AGENT_BROKER_URL")
+    if (
+        root_source != "env"
+        or not broker_url
+        or not isinstance(approved_command_correlation, BrowserControlP01CommandCorrelation)
+        or not redeemed_device_binding_ref
+        or approved_command_correlation.binding_ref != redeemed_device_binding_ref
+    ):
+        # Ambient #3140 pairing IDs are not accepted by this factory.
+        # Only a distinct canonical broker-issued work-ticket can configure it.
+        return BrowserControlLeaseAuthority(
+            device=device,
+            permission_profile=permission_profile,
+            store=store,
+        )
+    return BrowserControlLeaseAuthority(
+        device=device,
+        permission_profile=permission_profile,
+        store=store,
+        evidence_port=P01PerCommandBrowserControlEvidenceClient(
+            base_url=broker_url,
+            correlation=approved_command_correlation,
+        ),
+    )
+
+
+def _lease_authority_callables(lease_authority: Any) -> tuple[Callable[..., dict[str, Any]], Callable[..., int]]:
+    """The two bounded dispatcher callables: PHASE A resolve, PHASE B consume.
+
+    Each call reconstructs the bounded request from the wire fields only,
+    stamps the store against the process's real UTC clock, and returns the
+    bounded projection (or the new durable count). Every refusal the
+    authority raises is a closed-vocabulary code the responder maps onto the
+    wire — no error text, no page content and no approval payload crosses the
+    pipe.
+    """
+
+    from .browser_control_lease_authority import BrowserControlLeaseRequest
+
+    def lease_resolve(
+        *,
+        request_fingerprint: str,
+        browser_session_ref: str,
+        device_ref: str,
+        run_ref: str,
+        workspace_ref: str,
+        owner_ref: str,
+        origin_scope: str,
+        allowed_action_classes: list[str],
+        ttl_seconds: int,
+        max_actions: int,
+    ) -> dict[str, Any]:
+        request = BrowserControlLeaseRequest(
+            browser_session_ref=browser_session_ref,
+            run_ref=run_ref,
+            workspace_ref=workspace_ref,
+            owner_ref=owner_ref,
+            device_id=device_ref,
+            origin_scope=origin_scope,
+            allowed_action_classes=tuple(allowed_action_classes),
+            ttl_seconds=ttl_seconds,
+            max_actions=max_actions,
+        )
+        projection = lease_authority.resolve_or_issue(
+            request,
+            now=datetime.now(timezone.utc).replace(microsecond=0),
+            provided_fingerprint=request_fingerprint,
+        )
+        return projection.wire_lease_dict()
+
+    def lease_consume(
+        *,
+        request_fingerprint: str,
+        browser_session_ref: str,
+        run_ref: str,
+        workspace_ref: str,
+        owner_ref: str,
+        action: str,
+        observed_origin: str,
+    ) -> int:
+        projection = lease_authority.consume_action(
+            request_fingerprint,
+            browser_session_ref=browser_session_ref,
+            run_ref=run_ref,
+            workspace_ref=workspace_ref,
+            owner_ref=owner_ref,
+            action=action,
+            observed_origin=observed_origin,
+            now=datetime.now(timezone.utc).replace(microsecond=0),
+        )
+        return int(projection.consumed_actions)
+
+    return lease_resolve, lease_consume
+
+
 class _FetchedP01EvidenceClient:
     """Fetch the lane's canonical P01 acceptance envelope, bounded by 4 keys.
 
@@ -672,14 +824,8 @@ def build_resident_host(
         root_ref=EXECUTION_ROOT_REF,
         profile_ref=EXECUTION_PROFILE_REF,
     )
-    device = LocalAgentDeviceProfile(
-        device_id=entry.device_id,
-        # #3140 review item 3: the workspace is whatever the redeemed binding
-        # says. A hard-coded workspace would let a device from one workspace
-        # present as a device of another.
-        workspace_ref=binding.workspace_ref,
-        platform=LocalAgentPlatform.WINDOWS,
-        roots=(LocalRoot(root_ref=EXECUTION_ROOT_REF, windows_path=execution_root),),
+    device = _resident_device(
+        entry=entry, binding=binding, execution_root=execution_root
     )
     # #3140 stall diagnosis: the composition seam is the widest silent step in
     # the resident's own path, so each bounded construction reports itself.
@@ -839,18 +985,41 @@ def main(argv: list[str] | None = None) -> int:
         _emit(event="host_built", **_phase_stamp(), **RESIDENT_PROCESS_CONTRACT)
         _emit(event="connect_start", **_phase_stamp(), **RESIDENT_PROCESS_CONTRACT)
         host.start()
-        # #3436 B2d + #3611: one bounded dispatcher, one reader thread, exactly
-        # two literal request kinds, on the supervised stdio boundary the
-        # resident already shares with the shell. It starts only after the
+        # #3669 DECISION=B: the canonical browser.control lease slice gets its
+        # own durable store in the same credential-dir family as the run store,
+        # on the same redeemed device. No broker, pairing or resident state is
+        # changed — only the store file and the evidence port.
+        lease_execution_root, lease_root_source = trusted_execution_root()
+        lease_device = _resident_device(
+            entry=entry, binding=redeemed["binding"], execution_root=lease_execution_root
+        )
+        lease_authority = _browser_control_lease_authority(
+            device=lease_device,
+            credential_dir=entry.credential_dir,
+            root_source=lease_root_source,
+            redeemed_device_binding_ref=redeemed["binding"].binding_ref,
+            # No ambient #3140 pairing command or request ID is supplied to
+            # browser.control. This remains unconfigured until canonical
+            # per-command Broker/P01 material arrives via a separate ingress.
+            approved_command_correlation=None,
+            observer=_observe_phase,
+        )
+        lease_resolve, lease_consume = _lease_authority_callables(lease_authority)
+        # #3436 B2d + #3611 + #3669: one bounded dispatcher, one reader thread,
+        # exactly four literal request kinds, on the supervised stdio boundary
+        # the resident already shares with the shell. It starts only after the
         # handoff was consumed and the host is online, projects state the host
         # already holds (no session is opened, no credential minted or stored),
-        # and owns the agent side of the browser-open redemption.
+        # and owns the agent side of the browser-open redemption and of the
+        # browser-control lease (PHASE A resolve + PHASE B consume).
         #
         # A second reader on this same stdin would race this one, so the
-        # redemption kind is added here instead of in a new thread.
+        # redemption and lease kinds are added here instead of in a new thread.
         material_responder = ResidentDesktopMaterialResponder(
             material_projection=host.current_desktop_session_material,
             redemption=host.redeem_desktop_browser_open,
+            lease_resolve=lease_resolve,
+            lease_consume=lease_consume,
         )
         material_responder.start()
         _emit(

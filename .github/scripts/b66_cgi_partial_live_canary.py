@@ -23,6 +23,7 @@ BASE_URL = "https://quick-quote-kr.pages.dev"
 PARTIAL_TEXT = "대한건설에 배관 100미터, 부가세 별도"
 MAX_BODY_BYTES = 64 * 1024
 MAX_INTERPRET_POSTS = 1
+SELECTED_MODEL_ENV = "B66_CGI_CANARY_SELECTED_MODEL_ID"
 USER_AGENT = "padiem-b66-cgi-partial-canary/1.0 (+github-actions)"
 RETRY = 0
 FALLBACK = 0
@@ -52,6 +53,26 @@ ALLOWED_PUBLIC_ERRORS = frozenset(
 ALLOWED_MISSING_FIELDS = frozenset(
     {"recipient.company", "items[0].name", "items[0].qty", "items[0].unitPrice"}
 )
+
+
+def selected_model_id(value: object, models: object) -> str:
+    """A single explicit operator-chosen, currently selectable B14 exact ID."""
+    if (
+        not isinstance(value, str)
+        or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}", value) is None
+        or value == "b14/auto"
+        or value.startswith("padiem-profile/")
+    ):
+        raise ValueError("explicit_exact_model_id_required")
+    if not isinstance(models, list) or len(models) > 256:
+        raise ValueError("selectable_model_list_unavailable")
+    matching = [
+        row for row in models
+        if isinstance(row, dict) and row.get("model_id") == value
+    ]
+    if len(matching) != 1:
+        raise ValueError("selected_model_unavailable_or_ambiguous")
+    return value
 
 
 @dataclass(frozen=True)
@@ -99,6 +120,10 @@ def _json_request(
 ) -> SafeHttpResult:
     data = None
     headers = {"Accept": "application/json", "User-Agent": USER_AGENT}
+    # The Pages CGI bridge requires same-origin Origin on mutations carrying
+    # an authenticated session cookie. Missing Origin is a pre-dispatch 403.
+    if method.upper() in {"POST", "PUT", "PATCH", "DELETE"}:
+        headers["Origin"] = BASE_URL
     if payload is not None:
         data = json.dumps(
             payload,
@@ -178,6 +203,9 @@ def _print_summary(summary: dict[str, Any]) -> None:
         "SAFE_ITEM_MATCH",
         "SAFE_QTY_MATCH",
         "UNIT_PRICE_NULL",
+        "MODEL_OPTIONS_HTTP",
+        "MODEL_SELECTION_RESULT",
+        "SELECTED_MODEL_ID",
         "INTERPRET_POSTS",
         "LIVE_PROVIDER_CALLS_EXECUTED",
         "COOKIE_OUTPUT",
@@ -250,13 +278,37 @@ def run_live(username: str, password: str) -> int:
         print("B66_CGI_PARTIAL_CANARY=FAIL_SAVED_SKILL_ID")
         return 6
 
+    models_result = _json_request(opener, "/api/padiem/b66/quote/models")
+    model_options = _decode_json(models_result.body) or {}
+    summary["MODEL_OPTIONS_HTTP"] = models_result.status
+    if models_result.status != 200 or model_options.get("ok") is not True:
+        _print_summary(summary)
+        print("B66_CGI_PARTIAL_CANARY=FAIL_MODEL_OPTIONS")
+        return 7
+    try:
+        chosen_model_id = selected_model_id(
+            os.environ.get(SELECTED_MODEL_ENV), model_options.get("models")
+        )
+    except ValueError as exc:
+        summary["MODEL_SELECTION_RESULT"] = str(exc)
+        _print_summary(summary)
+        print("B66_CGI_PARTIAL_CANARY=FAIL_MODEL_SELECTION")
+        return 8
+    summary["SELECTED_MODEL_ID"] = chosen_model_id
+
     summary["INTERPRET_POSTS"] = 1
-    summary["LIVE_PROVIDER_CALLS_EXECUTED"] = 1
+    # An HTTP request can be rejected by Pages/CGI before any provider call.
+    # Do not present an attempted CGI POST as a confirmed provider dispatch.
+    summary["LIVE_PROVIDER_CALLS_EXECUTED"] = "UNVERIFIED"
     interpreted = _json_request(
         opener,
         "/api/padiem/b66/quote/interpret",
         method="POST",
-        payload={"saved_skill_id": saved_skill_id, "message": PARTIAL_TEXT},
+        payload={
+            "saved_skill_id": saved_skill_id,
+            "message": PARTIAL_TEXT,
+            "model_id": chosen_model_id,
+        },
     )
     summary["INTERPRET_HTTP"] = interpreted.status
     summary["X_B66_UPSTREAM_CLASS"] = sanitize_upstream_class(

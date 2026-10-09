@@ -6,12 +6,15 @@ from app.pilot.capability_routing import (
 from app.pilot import catalog as _catalog
 
 def _model(model_id: str):
+    # Existing exact JSON models are authoritative; test-only Gemini fixtures
+    # may still be scoped into the legacy scorer list.
     return next(
-        model for model in _catalog.CATALOG_MODELS if model.model_id == model_id
+        (model for model in _catalog.CATALOG_MODELS if model.model_id == model_id),
+        _catalog.get_catalog_by_id(model_id),
     )
 
 def test_chat_capability_is_eligible_from_configured_legacy_tag():
-    result = evaluate_model_capabilities(_model("kilo/nvidia-nemotron-3-ultra-550b-a55b-free"), ["chat"])
+    result = evaluate_model_capabilities(_model("agnes-ai/agnes-3.0-flash"), ["chat"])
     assert result.eligible is True
     assert result.requirements.unsupported == ()
     assert result.requirements.unknown == ()
@@ -24,7 +27,7 @@ def test_legacy_image_requirement_maps_to_canonical_vision(gemini_catalog_entry)
     assert result.requirements.unknown == ()
 
 def test_unknown_streaming_capability_is_not_treated_as_supported():
-    result = evaluate_model_capabilities(_model("kilo/nvidia-nemotron-3-ultra-550b-a55b-free"), ["streaming"])
+    result = evaluate_model_capabilities(_model("agnes-ai/agnes-3.0-flash"), ["streaming"])
     assert result.eligible is False
     assert ModelCapability.STREAMING in result.requirements.unknown
     assert ModelCapability.STREAMING not in result.requirements.unsupported

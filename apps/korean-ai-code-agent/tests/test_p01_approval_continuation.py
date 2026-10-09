@@ -55,6 +55,13 @@ from kagent.p01_resume import (
     B54_MINTS_VERIFIED_APPROVAL_DECISION,
 )
 
+# #3767: test-only synthetic Plus route. This module used to raise SkipTest at
+# import while every product tier is held, which left the approve/deny,
+# continuation and Engine-error boundaries unverified. The synthetic route is
+# never registered anywhere and every transport below is a fake, so no provider
+# is called; a route an owner actually declares is used as declared instead.
+from model_route_fixture import SyntheticPlusRouteTestCase, contract_model_id  # noqa: E402
+
 NOW = datetime(2026, 9, 23, 12, 0, tzinfo=timezone.utc)
 RUN_ID = "run_2961_decision"
 TRACE_ID = "claw_2961_trace"
@@ -63,9 +70,11 @@ CONTINUATION_REF = "cont_EngineOpaqueRef_01"
 NEXT_CONTINUATION_REF = "cont_EngineOpaqueRef_02"
 PAUSE_ID = "pause_engine_001"
 NEXT_PAUSE_ID = "pause_engine_002"
-if not PADIEM_EXECUTABLE_MODEL_IDS:
-    raise unittest.SkipTest("P01 approval continuation requires a selected executable model route")
-MODEL_ID = sorted(PADIEM_EXECUTABLE_MODEL_IDS)[0]
+MODEL_ID = contract_model_id()
+# The declared set may still be empty while every tier is held; the fixtures
+# below install the synthetic route, and the HOLD posture itself stays asserted
+# in ``test_p01_adapter`` rather than restated here.
+assert MODEL_ID in PADIEM_EXECUTABLE_MODEL_IDS or not PADIEM_EXECUTABLE_MODEL_IDS
 
 # Exactly the fields the canonical Engine resume wire accepts for the agent.
 _TRUSTED_AGENT_KEYS = frozenset(
@@ -232,7 +241,7 @@ class _FakeEngineResumeClient:
         return _wire(self._result, self._continuation_ref)
 
 
-class ReconstructTrustedResumeRequestTests(unittest.TestCase):
+class ReconstructTrustedResumeRequestTests(SyntheticPlusRouteTestCase):
     def test_reconstructs_exactly_from_the_persisted_snapshot(self) -> None:
         request = _reconstruct()
 
@@ -450,7 +459,7 @@ class ContinuationClientTests(unittest.TestCase):
                 self.assertFalse(hasattr(continuation, forbidden))
 
 
-class ApprovalContinuationServiceTests(unittest.IsolatedAsyncioTestCase):
+class ApprovalContinuationServiceTests(SyntheticPlusRouteTestCase, unittest.IsolatedAsyncioTestCase):
     async def _decide(
         self,
         client: _FakeEngineResumeClient,

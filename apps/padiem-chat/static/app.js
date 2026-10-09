@@ -5,6 +5,7 @@
   const messageList = document.getElementById("messageList");
   const form = document.getElementById("composerForm");
   const input = document.getElementById("messageInput");
+  const clawModelIdInput = document.getElementById("clawModelIdInput");
   const sendButton = document.getElementById("sendButton");
   const cancelStreamButton = document.getElementById("cancelStreamButton");
   const newChatButton = document.getElementById("newChatButton");
@@ -247,6 +248,16 @@
     retry.type = "button";
     retry.className = "retry-button";
     retry.textContent = actionLabel;
+    // #3566: the general Claw P01 lane may already have dispatched before a
+    // terminal Engine error. Do not offer a one-click replay (even manual)
+    // until the operator checks existing results. Ordinary Chat retains its
+    // established retry behavior; this guard is Claw-general only.
+    if (clawGeneralRequest) {
+      const hint = document.createElement("p");
+      hint.textContent = uiT("claw-general-check-runs");
+      box.append(strong, p, hint);
+      return box;
+    }
     retry.addEventListener("click", async () => {
       article.remove();
       conversationState.setConversationId(retryContext.conversationId);
@@ -1293,6 +1304,11 @@
     renderTyping(article);
     try {
       const payload = { messages: outboundMessages, mode: "auto", tier: selectedProductTier(), skill };
+      // #3554: exactly one explicit B14 model per Claw submit; no auto/default
+      // selection. The submit-time snapshot survives the Claw→chat shell flip.
+      if (clawGeneralRequest && contextSnapshot.selectedModelId) {
+        payload.model_id = contextSnapshot.selectedModelId;
+      }
       // #3539: the routing decision arrives as a submit-time snapshot. It is
       // NEVER re-derived from live shell state here, because showConversation()
       // has already flipped shell.dataset.state to "chat" by the time this runs
@@ -1303,6 +1319,11 @@
       // keeps /api/chat/stream unchanged, and the explicit manual form submits
       // through clawManualForm below, never here.
       const attachments = attachmentPayload(attachment);
+      if (clawGeneralRequest && attachments) {
+        // #3554: text-only P01 model choice must never be sent to a
+        // standalone direct-B14 completed-request path.
+        throw new Error(uiT("claw-model-text-only-error"));
+      }
       if (attachments) payload.attachments = attachments;
       if (contextSnapshot.conversationId) payload.conversation_id = contextSnapshot.conversationId;
       if (contextSnapshot.project) payload.project_id = contextSnapshot.project.id;
@@ -1328,7 +1349,9 @@
       if (requestEpoch !== conversationEpoch) return false;
       renderError(
         article,
-        error instanceof Error ? error.message : uiT("try-again"),
+        clawGeneralRequest && error?.clawFailureDetail === "engine_provider_rate_limited"
+          ? uiT("claw-general-provider-limit")
+          : (error instanceof Error ? error.message : uiT("try-again")),
         outboundMessages,
         skill,
         attachment,
@@ -1366,6 +1389,9 @@
     // shell state. The immutable snapshot is threaded through requestAnswer so a
     // generic Claw submit cannot silently fall back to /api/chat/stream.
     const clawGeneralRequest = clawGeneralRequestActive();
+    contextSnapshot.selectedModelId =
+      clawGeneralRequest && typeof clawModelIdInput !== "undefined" && clawModelIdInput
+        ? clawModelIdInput.value.trim() : "";
     showConversation();
     addUserMessage(prompt, attachmentSnapshot);
     input.value = "";
@@ -1615,6 +1641,14 @@
   // Pre-dispatch execute recovery state (#2760). Owned by the recovery block below.
   let clawRetrySeconds = 0;
   let clawRetryTimer = null;
+  // #3382: an ambiguous manual-execute failure may already have reached Engine,
+  // and a P01 request carries no idempotency key, so the surface cannot tell
+  // "never ran" from "already ran". Uncertainty is tracked PER REQUEST IDENTITY,
+  // not as one flag: composing different work unblocks only that new request, and
+  // restoring an uncertain one re-blocks it. The draft/preview and chat lanes are
+  // never gated by this set.
+  const clawUncertainKeys = new Set();
+  let clawLastDispatchKey = "";
   // In-flight elapsed wait state (#2763). Owned by the wait block below.
   let clawWaitStartedAt = 0;
   let clawWaitTimer = null;
@@ -1752,9 +1786,11 @@
       clawGenerateBtn.setAttribute("aria-disabled", String(busy));
     }
     if (clawExecuteButton) {
-      // A running pre-dispatch cooldown also blocks the primary button, so the
-      // surface never offers a dispatch the server has already refused.
-      const blocked = busy || clawRetryRemaining() > 0;
+      // A running pre-dispatch cooldown, and an ambiguous outcome whose dispatch
+      // cannot be ruled out, both block the one manual-execute entry point. The
+      // draft/preview button and the chat lane stay available: they are separate
+      // requests with their own server-side bounds.
+      const blocked = busy || clawRetryRemaining() > 0 || clawCurrentDispatchIsUncertain();
       clawExecuteButton.disabled = blocked;
       clawExecuteButton.setAttribute("aria-busy", busyVal);
       clawExecuteButton.setAttribute("aria-disabled", String(blocked));
@@ -1779,6 +1815,55 @@
 
   function clawRetryRemaining() {
     return clawRetrySeconds > 0 ? clawRetrySeconds : 0;
+  }
+
+  // The manual-execute lane's duplicate check compares WIRE CONTENT, so the
+  // request shape is assembled in exactly one place and reused by both the
+  // dispatch and the comparison. Canonical conversation reuse (#2916): forward
+  // only the exact handle this page already owns; the browser never mints one.
+  // The model ID field is deliberately absent — /api/claw/manual-intake/execute
+  // does not read it (it selects the conversation lane only), so changing it
+  // cannot make the next run a different request.
+  function clawVisibleExecutePayload() {
+    const body = (input.value || "").trim();
+    const channelValue = clawChannel?.value || "other";
+    const actionValue = clawAction?.value || "quote";
+    const senderText = (clawSender?.value || "").trim();
+    const activeConversationId = conversationState.getConversationId();
+    const executePayload = {
+      content: body,
+      channel: channelValue,
+      action: actionValue,
+      sender_hint: senderText || null,
+      tier: selectedProductTier(),
+    };
+    if (typeof activeConversationId === "string" && activeConversationId) {
+      executePayload.conversation_id = activeConversationId;
+    }
+    return executePayload;
+  }
+
+  function clawExecuteWireKey(payload) {
+    return JSON.stringify([
+      payload.content,
+      payload.channel,
+      payload.action,
+      payload.sender_hint ?? null,
+      payload.tier,
+      payload.conversation_id ?? null,
+    ]);
+  }
+
+  // Availability is derived from the request the form would send RIGHT NOW, so it
+  // is re-evaluated on every edit rather than released once by an edit event.
+  function clawCurrentDispatchIsUncertain() {
+    return clawUncertainKeys.size > 0
+      && clawUncertainKeys.has(clawExecuteWireKey(clawVisibleExecutePayload()));
+  }
+
+  function noteClawContentEdited() {
+    if (clawUncertainKeys.size === 0) return;
+    setClawButtonsBusy(clawInFlight);
   }
 
   // Closed parse: integer seconds only, positive, clamped to one documented
@@ -1876,6 +1961,10 @@
     if (!clawRetryHint) return;
     stopClawRetryTimer();
     clawRetrySeconds = 0;
+    // The request may already be running, so its exact content is recorded as
+    // uncertain. The finally block releases the busy flag, so without this the
+    // execute button would reopen on an unresolved run.
+    if (clawLastDispatchKey) clawUncertainKeys.add(clawLastDispatchKey);
     if (clawRetryBox) clawRetryBox.hidden = true;
     if (clawRetryCopy) clawRetryCopy.textContent = "";
     if (clawRetryButton) {
@@ -1885,6 +1974,7 @@
     clawRetryHint.dataset.localeKey = "claw-error-check-runs";
     clawRetryHint.textContent = clawT("claw-error-check-runs");
     clawRetryHint.hidden = false;
+    setClawButtonsBusy(clawInFlight);
   }
 
   // ── In-flight elapsed wait (#2763) ──────────────────────────────────────
@@ -3565,12 +3655,14 @@
 
   // Single execute entry point. The primary button and the post-cooldown retry
   // button both funnel through here, so a retry can never bypass the
-  // single-flight or pre-dispatch cooldown guards and the payload is always
-  // rebuilt from the currently visible form at click time.
+  // single-flight, pre-dispatch cooldown or uncertain-dispatch guards and the
+  // payload is always rebuilt from the currently visible form at click time.
   async function runClawExecution() {
     if (clawInFlight) return;
     if (clawRetryRemaining() > 0) return; // explicit retry only after the pre-dispatch cooldown
-    const body = (input.value || "").trim();
+    if (clawCurrentDispatchIsUncertain()) return; // #3382: no re-send of an unresolved request
+    const executePayload = clawVisibleExecutePayload();
+    const body = executePayload.content;
     if (!body) {
       clearClawArtifact();
       if (clawResultCard) clawResultCard.hidden = true;
@@ -3588,25 +3680,10 @@
       setClawAreaState("error");
       return;
     }
-    const channelValue = clawChannel?.value || "other";
-    const actionValue = clawAction?.value || "quote";
-    const senderText = (clawSender?.value || "").trim();
-    // Canonical conversation reuse (#2916): forward only the exact handle this
-    // page already owns. The browser never mints one; with no active
-    // conversation the field is omitted and legacy payload bytes are kept.
-    const activeConversationId = conversationState.getConversationId();
-    const executePayload = {
-      content: body,
-      channel: channelValue,
-      action: actionValue,
-      sender_hint: senderText || null,
-      tier: selectedProductTier(),
-    };
-    if (typeof activeConversationId === "string" && activeConversationId) {
-      executePayload.conversation_id = activeConversationId;
-    }
-
     clearClawRecovery();
+    // Remember the exact bytes this dispatch carried, so a later ambiguous
+    // failure can tell an identical re-send apart from new work.
+    clawLastDispatchKey = clawExecuteWireKey(executePayload);
     renderClawRequestEcho(body);
     setClawButtonsBusy(true);
     // Explicit user dispatch is the only thing that may start a wait timer.
@@ -3707,6 +3784,13 @@
       void runClawExecution();
     });
   }
+  // #3382: composing different work — new text, model id, channel, action,
+  // sender or conversation — is what releases the uncertain-dispatch latch.
+  [input, clawModelIdInput, clawChannel, clawAction, clawSender].forEach((node) => {
+    if (!node || typeof node.addEventListener !== "function") return;
+    node.addEventListener("input", noteClawContentEdited);
+    node.addEventListener("change", noteClawContentEdited);
+  });
   // Approved-memory review UI (#2340)
   const clawApprovedMemory = document.getElementById("clawApprovedMemory");
   const clawApprovedRefresh = document.getElementById("clawApprovedRefresh");

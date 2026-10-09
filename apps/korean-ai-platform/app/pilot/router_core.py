@@ -47,6 +47,7 @@ from app.pilot.catalog import (
     select_by_optimize,
 )
 from app.pilot.b14_runtime_config import runtime_config
+from app.pilot.owner_model_exclusions import excluded_from_owner_customer_selection
 from app.pilot.errors import NoSafeRoute, RoutingError
 
 
@@ -181,6 +182,14 @@ def resolve_manual_route(
     candidates populated (subject to error-allow-list in the gateway).
     """
     request_id = _new_request_id()
+    # Owner exclusions override historical B14 registration in live mode.
+    # Preserve mock fixture compatibility; this never authorizes a model.
+    if runtime_config.is_live and excluded_from_owner_customer_selection(model_id):
+        raise NoSafeRoute(
+            reason_code="owner_model_excluded",
+            message="OWNER가 제외한 모델은 실행할 수 없습니다.",
+            upstream_called=False,
+        )
     cm = get_catalog_by_id(model_id)
 
     if cm is None:
@@ -222,6 +231,7 @@ def resolve_manual_route(
             }
             for m in all_models
             if m.model_id != model_id
+            and not excluded_from_owner_customer_selection(m.model_id)
         ][:3]  # limit to top 3 fallback candidates
 
     reason_codes = ["manual_selection"]
@@ -297,6 +307,14 @@ def resolve_auto_route(
         task_type=None,
     )
 
+    # Do not let a scorer library produce excluded candidates for a live call.
+    # Historical mock tests remain bounded and do not reach a provider.
+    if runtime_config.is_live:
+        source_candidates = [
+            m for m in source_candidates
+            if not excluded_from_owner_customer_selection(m.model_id)
+        ]
+
     requested = list(required_capabilities or [])
     plan_tags = [value for value in requested if value == "free"]
     execution_requirements = [value for value in requested if value != "free"]
@@ -329,6 +347,11 @@ def resolve_auto_route(
     secret_missing_ids: set[str] = set()
 
     all_models = get_catalog_models()
+    if runtime_config.is_live:
+        all_models = [
+            m for m in all_models
+            if not excluded_from_owner_customer_selection(m.model_id)
+        ]
     candidates = []
     for m in all_models:
         if m in canonical_candidates:

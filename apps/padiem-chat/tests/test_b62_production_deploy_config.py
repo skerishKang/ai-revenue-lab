@@ -435,3 +435,72 @@ def test_main_cli_reports_version_metadata_preservation(tmp_path, capsys):
         assert rc == 0
         assert expected in capsys.readouterr().out
         output_path.unlink()
+
+
+# #3782: source-only candidate, never a second production deployment path.
+_OWNER_D1_ID = "01d0560b-58f4-4052-991d-dc935f5ecca0"
+
+
+def test_owner_d1_candidate_addition_reuses_live_config_without_changing_anything_else(tmp_path):
+    import tomllib
+
+    module = _load_module()
+    live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+    config = module.build_production_config(live, _write_repo_config(tmp_path), PUBLIC_URL)
+    candidate = module.build_production_config(
+        live, _write_repo_config(tmp_path), PUBLIC_URL, _OWNER_D1_ID
+    )
+    standard = tomllib.loads(config)
+    added = tomllib.loads(candidate)
+    assert len(added["d1_databases"]) == len(standard["d1_databases"]) + 1
+    assert added["d1_databases"][-1] == {
+        "binding": "BROWSER_CONTROL_OWNER_P01_D1",
+        "database_name": "padiem-browser-owner-p01",
+        "database_id": _OWNER_D1_ID,
+    }
+    assert {key: value for key, value in added.items() if key != "d1_databases"} == {
+        key: value for key, value in standard.items() if key != "d1_databases"
+    }
+    assert added["d1_databases"][:-1] == standard["d1_databases"]
+    module.verify_mutation_zero(candidate, live)
+    assert "PADIEM_CHAT_QUOTA_SALT" not in candidate
+
+
+def test_owner_d1_candidate_refuses_alias_name_collision_and_invalid_uuid(tmp_path):
+    module = _load_module()
+    repo_config = _write_repo_config(tmp_path)
+    for bad in ("not-id", "", "00000000-0000-0000-0000-000000000000", _OWNER_D1_ID.upper()):
+        live = module.parse_live_bindings(_settings_payload(_production_bindings()))
+        with pytest.raises(module.ProductionConfigError):
+            module.build_production_config(live, repo_config, PUBLIC_URL, bad)
+
+    for collision in (
+        {"type": "d1", "name": "BROWSER_CONTROL_OWNER_P01_D1", "id": "aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa"},
+        {"type": "d1", "name": "UNEXPECTED_ALIAS", "id": _OWNER_D1_ID},
+        {"type": "secret_text", "name": "BROWSER_CONTROL_OWNER_P01_D1"},
+    ):
+        live = module.parse_live_bindings(_settings_payload(_production_bindings() + [collision]))
+        with pytest.raises(module.ProductionConfigError, match="already exists|aliases"):
+            module.build_production_config(live, repo_config, PUBLIC_URL, _OWNER_D1_ID)
+
+
+def test_owner_d1_candidate_cli_is_explicit_and_not_used_by_normal_deploy(tmp_path, capsys):
+    module = _load_module()
+    import tomllib
+
+    before_path = tmp_path / "settings.json"
+    before_path.write_text(json.dumps(_settings_payload(_production_bindings())), encoding="utf-8")
+    target = tmp_path / "candidate.toml"
+    assert module.main([
+        "--settings", str(before_path), "--repo-config", str(_write_repo_config(tmp_path)),
+        "--public-base-url", PUBLIC_URL, "--output", str(target),
+        "--owner-d1-database-id", _OWNER_D1_ID,
+    ]) == 0
+    printed = capsys.readouterr().out
+    assert "OWNER_P01_D1_CANDIDATE_ADDITION=1" in printed
+    assert _OWNER_D1_ID not in printed
+    assert tomllib.loads(target.read_text(encoding="utf-8"))["d1_databases"][-1]["database_id"] == _OWNER_D1_ID
+
+    workflow = _read_workflow()
+    assert "--owner-d1-database-id" not in workflow
+    assert "BINDINGS_PRESERVED_EXACTLY=PASS" in workflow

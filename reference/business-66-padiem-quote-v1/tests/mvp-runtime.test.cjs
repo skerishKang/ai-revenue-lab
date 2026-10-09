@@ -19,6 +19,7 @@ const easySource = fs.readFileSync(path.join(SRC, "easy-mode.js"), "utf8");
 
 const NOW = "2026-10-04T09:00:00.000Z";
 const SKILL_ID = "b66skill_" + "1".repeat(32);
+const SELECTED_MODEL_ID = "test-fixture/b66-manual-chat";
 
 const tick = () => new Promise((resolve) => setImmediate(resolve));
 async function flush() {
@@ -184,8 +185,15 @@ function buildAccountEnv({ signedIn, withSkill, withProfile, profile }) {
       if (!withProfile) return jsonResponse({ error: { message: "profile unavailable" } }, 404);
       return jsonResponse({ company_profile: runtimeProfile });
     }
+    if (target.endsWith("/api/padiem/b66/quote/models")) {
+      return jsonResponse({
+        ok: true, models: [{ model_id: SELECTED_MODEL_ID, name: "Synthetic Model" }],
+        default_model_id: null
+      });
+    }
     if (target.endsWith("/api/padiem/b66/quote/interpret")) {
       const body = JSON.parse(opts.body || "{}");
+      assert.equal(body.model_id, SELECTED_MODEL_ID, "exact user model_id forwarded to the server");
       if (!body.message || !body.saved_skill_id) {
         return jsonResponse({ ok: false, error: { code: "quote_input_unrecognized" } }, 422);
       }
@@ -248,6 +256,13 @@ function buildAccountEnv({ signedIn, withSkill, withProfile, profile }) {
   return { context, elements, getElement, httpCalls, appCalls, replaceDrafts, storage };
 }
 
+function manuallyChooseModel(env) {
+  const dropdown = env.getElement("padiemQuoteModelSelect");
+  assert.equal(dropdown.value, "", "no hidden model default in B66");
+  assert.ok(dropdown.children.some((option) => option.value === SELECTED_MODEL_ID));
+  dropdown.value = SELECTED_MODEL_ID; // real customer would choose this ID
+}
+
 async function harnessA() {
   /* signed out: primary action 은 authoritative quote 를 만들 수 없다 */
   const signedOut = buildAccountEnv({ signedIn: false, withSkill: true, withProfile: true });
@@ -261,6 +276,7 @@ async function harnessA() {
   /* signed in + skill + profile: readiness ready, interpret builds canonical draft */
   const env = buildAccountEnv({ signedIn: true, withSkill: true, withProfile: true });
   await flush();
+  manuallyChooseModel(env);
   const bridge = env.context.window.B66QuoteRuntimeBridge;
   const readiness = bridge.readiness();
   const diag = JSON.stringify({
@@ -303,6 +319,7 @@ async function harnessA() {
     profile: PARTIAL_CGI_PROFILE
   });
   await flush();
+  manuallyChooseModel(partialEnv);
   const partialBridge = partialEnv.context.window.B66QuoteRuntimeBridge;
   assert.equal(partialBridge.readiness().ready, true, "PARTIAL_COMPANY_PROFILE_ACCEPTED=YES");
   const partialFreeForm = await partialBridge.interpret(INTERPRET_TEXT);
@@ -510,6 +527,7 @@ function buildEasyEnv({ ready, profile }) {
         }, { companyProfile: runtimeProfile });
         return Promise.resolve(built.ok ? { ok: true, draft: built.draft } : { ok: false, code: built.code });
       },
+      supportedItemRows: () => 3,
       errorText: (code) => "runtime error: " + code
     },
     CustomEvent: class {
@@ -632,6 +650,40 @@ async function harnessB() {
   assert.equal(guidedDraft.meta.validDays, CGI_SKILL.fixedDefaults.validDays,
     "guided build keeps the approved Skill validity");
   assert.equal(guidedDraft.tax.mode, "EXCLUSIVE", "guided per-quote tax answer wins over the Skill default");
+
+  /* The supported CGI guide ends at three real rows and keeps an extra
+     typed '추가' on the existing step, so no invisible fourth row is accepted. */
+  const cappedGuided = buildEasyEnv({ ready: true });
+  await flush();
+  clickStarter(cappedGuided, "guidedStarter");
+  await flush();
+  const cappedAnswer = async (text) => {
+    cappedGuided.getElement("easyComposer").value = text;
+    clickStarter(cappedGuided, "easySend");
+    await flush();
+  };
+  await cappedAnswer("Synthetic buyer");
+  await cappedAnswer("없음");
+  for (let i = 1; i <= 3; i += 1) {
+    await cappedAnswer("Synthetic item " + i);
+    await cappedAnswer(String(i));
+    await cappedAnswer("100");
+    if (i < 3) await cappedAnswer("추가");
+  }
+  assert.equal(cappedGuided.getElement("easyChipRow").children.filter((node) => node.textContent === "품목 추가").length, 0, "CGI guide offers no fourth item chip");
+  await cappedAnswer("추가");
+  await cappedAnswer("다음");
+  await cappedAnswer("별도");
+  await cappedAnswer("없음");
+  await cappedAnswer("현재");
+  const cappedBuildChips = chipsWith(cappedGuided, "견적서 만들기");
+  assert.ok(cappedBuildChips.length, "three-item guide completes normally after refusing extra input");
+  cappedBuildChips[cappedBuildChips.length - 1].listeners.click[0]();
+  await flush();
+  assert.equal(cappedGuided.runtimeCalls.buildFromFacts.length, 1);
+  assert.equal(cappedGuided.runtimeCalls.buildFromFacts[0].items.length, 3);
+  assert.equal(cappedGuided.replaceDrafts[0].items.length, 3);
+  console.log("CGI_GUIDED_THREE_ITEM_BOUND=PASS");
 
   /* B4. partial canonical CompanyProfile 로도 guided 가 정상 견적을 만든다 */
   const partialEnv = buildEasyEnv({ ready: true, profile: PARTIAL_CGI_PROFILE });

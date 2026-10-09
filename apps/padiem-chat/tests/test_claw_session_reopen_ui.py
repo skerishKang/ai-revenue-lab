@@ -85,6 +85,12 @@ def _execute_body(app: str) -> str:
     return body[: body.index("if (clawExecuteButton) {")]
 
 
+def _payload_source(app: str) -> str:
+    """The single place the execute request shape is assembled."""
+    start = app.index("function clawVisibleExecutePayload()")
+    return app[start : app.index("\n  }", start)]
+
+
 # ── static structural contracts: execute payload ───────────────────────────
 
 
@@ -99,17 +105,28 @@ def test_execute_payload_forwards_the_active_conversation_exactly_once() -> None
     assert app.count("if (typeof activeConversationId === \"string\" && activeConversationId) {") == 1
     assert app.count("executePayload.conversation_id = activeConversationId;") == 1
     assert app.count("body: JSON.stringify(executePayload),") == 1
-    # The forward lives inside the single execute entry point, between the
-    # sender read and the dispatch.
-    assert "const activeConversationId = conversationState.getConversationId();" in body
-    assert "executePayload.conversation_id = activeConversationId;" in body
+    # #3382: the shape is assembled once, in clawVisibleExecutePayload(), and the
+    # single execute entry point only consumes it. That keeps the duplicate-run
+    # key and the dispatched bytes from ever drifting apart.
+    assert "const executePayload = clawVisibleExecutePayload();" in body
     assert "body: JSON.stringify(executePayload)," in body
-    # Payload construction sits after the body guard and before dispatch.
+    payload = _payload_source(app)
+    assert "const activeConversationId = conversationState.getConversationId();" in payload
+    assert "executePayload.conversation_id = activeConversationId;" in payload
+    # Construction order: cooldown/body guards precede the build, the build
+    # precedes the wait timer, and inside it the conversation read precedes the
+    # literal and the guarded forward.
+    # Construction order: the cooldown guard precedes the build, and the wait
+    # timer still starts only after the built payload passed the body check.
     guard_at = body.index("if (clawRetryRemaining() > 0) return;")
+    built_at = body.index("const executePayload = clawVisibleExecutePayload();")
     body_check_at = body.index("if (!body) {")
-    payload_at = body.index("const executePayload = {")
     wait_at = body.index("beginClawWait();")
-    assert guard_at < body_check_at < payload_at < wait_at
+    assert guard_at < built_at < body_check_at < wait_at
+    read_at = payload.index("const activeConversationId = conversationState.getConversationId();")
+    literal_at = payload.index("const executePayload = {")
+    forward_at = payload.index("if (typeof activeConversationId")
+    assert read_at < literal_at < forward_at
     # Base fields keep their legacy shape so omitting conversation_id leaves
     # byte-identical legacy payloads for consumers that predate this issue.
     for field in (
@@ -119,18 +136,26 @@ def test_execute_payload_forwards_the_active_conversation_exactly_once() -> None
         "sender_hint: senderText || null,",
         "tier: selectedProductTier(),",
     ):
-        assert field in body, field
+        assert field in payload, field
+
+
+def test_execute_payload_is_built_in_exactly_one_place() -> None:
+    """The duplicate guard and the wire bytes must not own two definitions."""
+    app = _app_source()
+    assert app.count("function clawVisibleExecutePayload()") == 1
+    assert app.count("const executePayload = clawVisibleExecutePayload();") == 1
+    assert app.count("const executePayload = {") == 1
 
 
 def test_execute_omits_the_field_without_an_active_conversation() -> None:
     """The omit path must be structural: no empty-string sentinel, no null field."""
     app = _app_source()
-    body = _execute_body(app)
+    payload = _payload_source(app)
     # Assignment happens only inside the non-empty-string guard — there is no
     # unconditional `conversation_id:` key in the base payload.
-    base = body[body.index("const executePayload = {") : body.index("if (typeof activeConversationId")]
+    base = payload[payload.index("const executePayload = {") : payload.index("if (typeof activeConversationId")]
     assert "conversation_id" not in base
-    assert "executePayload.conversation_id = activeConversationId;" in body
+    assert "executePayload.conversation_id = activeConversationId;" in payload
 
 
 def test_preview_path_stays_free_of_conversation_authority() -> None:

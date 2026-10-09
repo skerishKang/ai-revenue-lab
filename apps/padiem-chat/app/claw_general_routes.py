@@ -35,6 +35,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from padiem_control_plane.product_tier_routes import (
+    ProductTierLabel,
     ProductTierRoutesError,
     active_route_for,
 )
@@ -45,6 +46,7 @@ from kagent.p01_adapter import (
     P01DispatchClass,
     P01_FAILURE_DETAIL_CONTRACT,
     P01_FAILURE_DETAIL_UNKNOWN,
+    validate_explicit_b14_model_id,
 )
 from kagent.p01_run_flow import create_claw_run
 
@@ -63,6 +65,15 @@ MAX_CLAW_GENERAL_BODY_BYTES = 64 * 1024  # 64 KiB
 MAX_CLAW_GENERAL_MESSAGE_CHARS = 8_000
 MAX_CLAW_GENERAL_MESSAGES = 40
 _CLAW_GENERAL_ROLES = frozenset({"user", "assistant"})
+
+# NO_EXECUTABLE_ROUTE product HOLD (#3568/#3566): these adapter codes mean the
+# run was refused before any Engine/B14/provider dispatch because the selected
+# tier has no executable route yet. They are product states, not engine
+# failures, so they must not surface as a generic 502 engine error.
+_MODEL_HOLD_ERROR_CODES = frozenset({"tier_hold", "max_tier_hold"})
+_MODEL_HOLD_USER_MESSAGE = (
+    "선택한 AI 모델을 현재 사용할 수 없습니다. 다른 모델을 선택해 주세요."
+)
 
 # #3655 one-shot canary evidence seam. The final Production canary needs the
 # existing correlation/route refs projected to the caller, but the normal user
@@ -225,11 +236,20 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     product_tier = _BROWSER_TIER_MAP.get(raw_tier.strip().lower())
     if product_tier is None:
         return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
+    raw_model = data.get("model_id")
+    selected_model_id: str | None = None
+    if raw_model is not None:
+        try:
+            selected_model_id = validate_explicit_b14_model_id(raw_model)
+        except P01AdapterError:
+            return _error(422, "invalid_selected_model", "등록된 B14 모델 ID 하나를 선택해 주세요.")
+        if product_tier is not ProductTierLabel.PLUS:
+            return _error(422, "explicit_model_tier_unsupported", "모델 직접 선택은 현재 Plus에서만 지원됩니다.")
     try:
         tier_route = active_route_for(product_tier)
     except ProductTierRoutesError:
         return _error(503, "tier_unavailable", "AI 등급 설정을 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.")
-    if tier_route is None or not tier_route.model_id:
+    if selected_model_id is None and (tier_route is None or not tier_route.model_id):
         return _error(503, "tier_unavailable", "선택한 AI 등급은 현재 준비 중입니다. 다른 등급을 선택해 주세요.")
 
     # #3382/#3539: the canonical USER subject is resolved SERVER-SIDE before the
@@ -284,14 +304,39 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     )
 
     try:
-        outcome = await adapter.execute(
-            run, product_tier=product_tier, subject_id=subject_id
-        )
+        dispatch_args = {"product_tier": product_tier, "subject_id": subject_id}
+        if selected_model_id is not None:
+            dispatch_args["selected_model_id"] = selected_model_id
+        outcome = await adapter.execute(run, **dispatch_args)
     except P01AdapterError as exc:
         if exc.dispatch_class == P01DispatchClass.NOT_DISPATCHED:
             await _refund_active_reservation()
         else:
             _clear_reservation()
+        if exc.code in _MODEL_HOLD_ERROR_CODES:
+            # NO_EXECUTABLE_ROUTE product HOLD (#3568): the run never dispatched,
+            # so the user sees a bounded model-unavailable state instead of a
+            # generic engine failure. Same code family as the pre-dispatch
+            # tier_unavailable projection used by the other tiers. Evidence
+            # mode (#3655 seam) carries only the route-minted Claw run id on
+            # this path — no orchestration ref, selected route, provider
+            # attempts, or fallback, because no orchestration run materialized.
+            # The HOLD projection stays 503 and never becomes an
+            # engine_execution_failed.
+            hold_headers = dict(_NO_STORE_HEADERS)
+            if evidence_requested:
+                hold_headers.update(_claw_evidence_response_headers(run.run_id, None))
+            return JSONResponse(
+                {
+                    "ok": False,
+                    "error": {
+                        "code": "tier_unavailable",
+                        "message": _MODEL_HOLD_USER_MESSAGE,
+                    },
+                },
+                status_code=503,
+                headers=hold_headers,
+            )
         failure_headers = dict(_NO_STORE_HEADERS)
         if evidence_requested:
             # The outcome never materialized, so only the route-minted Claw run

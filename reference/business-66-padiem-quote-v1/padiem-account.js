@@ -9,6 +9,7 @@
     authenticated: false,
     user: null,
     skills: [],
+    quoteModels: [],
     loadedSkill: null,
     companyProfile: null,
     companyProfileLoaded: false,
@@ -147,6 +148,9 @@
     state.authenticated = false;
     state.user = null;
     state.skills = [];
+    state.quoteModels = [];
+    const modelSelect = byId("padiemQuoteModelSelect");
+    if (modelSelect) modelSelect.replaceChildren();
     state.companyProfile = null;
     state.companyProfileLoaded = false;
     clearPendingQuote();
@@ -211,6 +215,7 @@
     if (
       !result.response.ok ||
       !row ||
+      row.saved_skill_id !== savedSkillId ||
       !skill ||
       skill.approved !== true ||
       skill.fingerprint !== row.skill_fingerprint
@@ -236,13 +241,48 @@
     /* Skill 이 바뀌면 진행 중이던 견적의 문맥은 새 Skill 로 이어질 수 없다. */
     clearPendingQuote();
     const bridge = window.B66QuoteSkillBridge;
-    if (!bridge || typeof bridge.setServerSkill !== "function" || !bridge.setServerSkill(skill, slotSources)) {
+    if (!bridge || typeof bridge.setServerSkill !== "function" || !bridge.setServerSkill(skill, slotSources, savedSkillId)) {
       clearServerSkill();
       setQuoteStatus("내 견적서 렌더러를 준비하지 못했습니다.", "error");
       return false;
     }
     setQuoteStatus("배정된 양식을 불러왔습니다. 거래처·품목·수량·단가를 한 문장으로 입력해 주세요.", "ready");
     return true;
+  }
+
+  async function loadQuoteModels() {
+    const select = byId("padiemQuoteModelSelect");
+    if (!select) return;
+    state.quoteModels = [];
+    select.replaceChildren();
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "\uBAA8\uB378\uC744 \uC120\uD0DD\uD558\uC138\uC694";
+    select.append(placeholder);
+    select.disabled = true;
+    try {
+      const result = await api("/b66/quote/models");
+      if (!result.response.ok || !result.data || result.data.ok !== true ||
+          !Array.isArray(result.data.models)) return;
+      const safeId = /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$/;
+      const records = result.data.models.filter((row) =>
+        row && typeof row.model_id === "string" && safeId.test(row.model_id) &&
+        typeof row.name === "string"
+      );
+      records.forEach((row) => {
+        const option = document.createElement("option");
+        option.value = row.model_id;
+        option.textContent = row.name;
+        select.append(option);
+      });
+      state.quoteModels = records.map((row) => row.model_id);
+      const configured = result.data.default_model_id;
+      select.value = typeof configured === "string" && state.quoteModels.includes(configured)
+        ? configured : "";
+      select.disabled = records.length === 0;
+    } catch (_) {
+      select.disabled = true;
+    }
   }
 
   async function loadSkills() {
@@ -322,7 +362,7 @@
     state.authenticated = true;
     state.user = owner;
     renderSignedIn();
-    await Promise.all([loadSkills(), loadCompanyProfile()]);
+    await Promise.all([loadSkills(), loadCompanyProfile(), loadQuoteModels()]);
     document.dispatchEvent(new CustomEvent("b66:runtime-changed", { detail: runtimeReadiness() }));
     return { authenticated: true };
   }
@@ -391,6 +431,10 @@
       case "company_profile_not_ready": return "회사 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
       case "incomplete_request": return "거래처와 품목·수량·단가를 조금 더 알려 주세요.";
       case "empty_request": return "견적 내용을 입력해 주세요.";
+      case "model_selection_required": return "좌측 견적서 관리에서 사용할 AI 모델을 먼저 선택해 주세요.";
+      case "cgi_unsupported_rows": return "CGI 기본 견적서는 품목을 최대 3개까지 지원합니다. 품목을 3개 이하로 줄여 주세요.";
+      case "cgi_unsupported_details": return "CGI 기본 견적서는 현재 요약 품목만 PDF로 만들 수 있습니다. 상세내역은 지원하지 않으므로 요약 품목의 수량과 단가를 알려 주세요.";
+      case "cgi_scope_unavailable": return "CGI 견적서의 지원 범위를 확인하지 못했습니다. 새로고침 후 다시 시도해 주세요.";
       case "interpret_unavailable": return "해석 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.";
       default: return "견적 요청을 해석하지 못했습니다.";
     }
@@ -438,11 +482,11 @@
   const MAX_PENDING_TURNS = 4;
   const MAX_PENDING_TEXT = 4000;
   const MISSING_QUESTIONS = {
+    name: "품목명을 알려 주세요.",
+    qty: "수량은 몇 개인가요?",
     unitPrice: "단가는 얼마인가요?",
     recipient: "받는 업체 또는 담당자를 알려 주세요.",
-    items: "품목명, 수량, 단가를 알려 주세요.",
-    memo: "납기나 결제 조건 등 덧붙일 내용이 있나요?",
-    taxMode: "부가세는 어떻게 할까요?"
+    items: "품목명, 수량, 단가를 알려 주세요."
   };
 
   function clearPendingQuote() {
@@ -458,18 +502,126 @@
     } : null;
   }
 
-  function missingQuestion(missing) {
+  function supportedItemRows() {
+    const pdf = window.B66BrowserPdf;
+    const loaded = state.loadedSkill;
+    if (!pdf || typeof pdf.isCgiSkill !== "function" || !loaded || !pdf.isCgiSkill(loaded.savedSkillId)) return null;
+    return Number.isInteger(pdf.MAX_ITEM_ROWS) && pdf.MAX_ITEM_ROWS > 0 ? pdf.MAX_ITEM_ROWS : 0;
+  }
+
+  function candidateScopeFailure(candidate) {
+    const limit = supportedItemRows();
+    if (limit === null) return null;
+    if (limit === 0) return { ok: false, code: "cgi_scope_unavailable" };
+    if (Array.isArray(candidate.items) && candidate.items.length > limit) {
+      return { ok: false, code: "cgi_unsupported_rows" };
+    }
+    if (Array.isArray(candidate.detailGroups) && candidate.detailGroups.length) {
+      return { ok: false, code: "cgi_unsupported_details" };
+    }
+    return null;
+  }
+
+  function absentFact(value) {
+    return value === undefined || value === null || (typeof value === "string" && !value.trim());
+  }
+
+  function requiredMissingTargets(candidate) {
+    const schema = state.loadedSkill.skill.variableSchema;
+    const targets = [];
+    const recipient = candidate.recipient || {};
+    if (schema.recipient === true && absentFact(recipient.company) && absentFact(recipient.person)) {
+      targets.push({ field: "recipient" });
+    }
+    if (schema.items !== true) return targets;
+    const items = Array.isArray(candidate.items) ? candidate.items : [];
+    if (!items.length) targets.push({ field: "items" });
+    const groups = Array.isArray(candidate.detailGroups) ? candidate.detailGroups : [];
+    items.forEach((item, itemIndex) => {
+      ["name", "qty", "unitPrice"].forEach((field) => {
+        const linked = field === "unitPrice" && groups.some((group) => group.summaryItemId === "item-" + (itemIndex + 1));
+        if (!linked && absentFact((item || {})[field])) targets.push({ field, itemIndex });
+      });
+    });
+    groups.forEach((group, groupIndex) => {
+      (Array.isArray(group.items) ? group.items : []).forEach((item, detailIndex) => {
+        ["name", "qty", "unitPrice"].forEach((field) => {
+          if (absentFact((item || {})[field])) targets.push({ field, groupIndex, detailIndex });
+        });
+      });
+    });
+    return targets;
+  }
+
+  function missingQuestion(missing, candidate) {
+    const targets = candidate ? requiredMissingTargets(candidate) : [];
+    const target = targets[0];
+    if (target && target.groupIndex !== undefined) {
+      return (target.groupIndex + 1) + "번째 상세그룹의 " + (target.detailIndex + 1) + "번째 품목: " + MISSING_QUESTIONS[target.field];
+    }
+    if (target && target.itemIndex !== undefined && candidate.items.length > 1) {
+      const item = candidate.items[target.itemIndex];
+      const name = typeof item.name === "string" && item.name.trim() ? "(" + item.name + ")" : "";
+      return (target.itemIndex + 1) + "번째 품목" + name + ": " + MISSING_QUESTIONS[target.field];
+    }
     const list = Array.isArray(missing) ? missing : [];
     for (const key of list) {
-      const question = MISSING_QUESTIONS[key];
-      if (question) return question;
+      if (MISSING_QUESTIONS[key]) return MISSING_QUESTIONS[key];
     }
     return "견적에 필요한 값을 조금 더 알려 주세요.";
   }
 
-  function combinePendingText(previousText, followUp) {
-    const combined = previousText + "\n" + followUp;
+  function combinePendingText(pending, followUp) {
+    const question = missingQuestion(pending.missing, pending.lastCandidate);
+    const combined = pending.originalText + "\n추가 질문: " + question + "\n답변: " + followUp;
     return combined.length <= MAX_PENDING_TEXT ? combined : null;
+  }
+
+  function preserveKnownFacts(previous, current) {
+    const merged = Object.assign({}, current || {});
+    Object.keys(previous || {}).forEach((key) => {
+      if (!absentFact(previous[key])) merged[key] = previous[key];
+    });
+    return merged;
+  }
+
+  function mergePendingCandidate(previous, current) {
+    const merged = preserveKnownFacts(previous, current);
+    merged.recipient = preserveKnownFacts(previous.recipient, current.recipient);
+    const priorItems = Array.isArray(previous.items) ? previous.items : [];
+    const nextItems = Array.isArray(current.items) ? current.items : [];
+    const target = requiredMissingTargets(previous)[0];
+    merged.items = priorItems.map((item) => Object.assign({}, item));
+    nextItems.forEach((item, index) => {
+      const matches = priorItems.map((prior, i) => !absentFact(item.name) && prior.name === item.name ? i : -1).filter((i) => i >= 0);
+      let priorIndex = matches.length === 1 ? matches[0] : -1;
+      if (priorIndex < 0 && nextItems.length === priorItems.length) priorIndex = index;
+      if (priorIndex < 0 && nextItems.length === 1 && target && target.itemIndex !== undefined &&
+          (absentFact(item.name) || absentFact(priorItems[target.itemIndex].name) || item.name === priorItems[target.itemIndex].name)) priorIndex = target.itemIndex;
+      if (priorIndex >= 0) merged.items[priorIndex] = preserveKnownFacts(priorItems[priorIndex], item);
+      else merged.items.push(Object.assign({}, item));
+    });
+    const priorGroups = Array.isArray(previous.detailGroups) ? previous.detailGroups : [];
+    const nextGroups = Array.isArray(current.detailGroups) ? current.detailGroups : [];
+    merged.detailGroups = priorGroups.map((group) => Object.assign({}, group, {
+      items: group.items.map((item) => Object.assign({}, item))
+    }));
+    nextGroups.forEach((group) => {
+      const groupIndex = priorGroups.findIndex((prior) => prior.summaryItemId === group.summaryItemId);
+      if (groupIndex < 0) { merged.detailGroups.push(group); return; }
+      const prior = priorGroups[groupIndex];
+      const children = prior.items.map((item) => Object.assign({}, item));
+      group.items.forEach((item, index) => {
+        const matches = prior.items.map((old, i) => !absentFact(item.name) && old.name === item.name ? i : -1).filter((i) => i >= 0);
+        let priorIndex = matches.length === 1 ? matches[0] : -1;
+        if (priorIndex < 0 && group.items.length === prior.items.length) priorIndex = index;
+        if (priorIndex < 0 && group.items.length === 1 && target && target.groupIndex === groupIndex) priorIndex = target.detailIndex;
+        if (priorIndex >= 0) children[priorIndex] = preserveKnownFacts(prior.items[priorIndex], item);
+        else children.push(item);
+      });
+      merged.detailGroups[groupIndex] = Object.assign(preserveKnownFacts(prior, group), { items: children });
+    });
+    return merged;
   }
 
   function startPendingQuote(text, candidate) {
@@ -507,6 +659,11 @@
     }
 
     /* 진행 중인 견적이 있으면 원문과 합쳐 한 번에 다시 해석한다(서버는 stateless). */
+    const modelSelect = byId("padiemQuoteModelSelect");
+    const modelId = modelSelect && modelSelect.value;
+    if (!modelId || !state.quoteModels.includes(modelId)) {
+      return { ok: false, code: "model_selection_required" };
+    }
     let message = text;
     let allocated = null;
     const pending = state.pendingQuote;
@@ -514,7 +671,7 @@
       if (pending.turns >= MAX_PENDING_TURNS) {
         clearPendingQuote();
       } else {
-        const combined = combinePendingText(pending.originalText, text);
+        const combined = combinePendingText(pending, text);
         if (combined) {
           message = combined;
           allocated = pending;
@@ -528,21 +685,25 @@
       const result = await api("/b66/quote/interpret", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({ saved_skill_id: state.loadedSkill.savedSkillId, message })
+        body: JSON.stringify({ saved_skill_id: state.loadedSkill.savedSkillId, message, model_id: modelId })
       });
       const data = result.data;
       if (!result.response.ok || !data || data.ok !== true || !data.candidate) {
         return { ok: false, code: "interpret_failed", detail: safeMessage(data, "") };
       }
-      const candidate = data.candidate;
-      if (Array.isArray(candidate.missing) && candidate.missing.length) {
+      const candidate = allocated ? mergePendingCandidate(allocated.lastCandidate, data.candidate) : data.candidate;
+      const scopeFailure = candidateScopeFailure(candidate);
+      if (scopeFailure) { clearPendingQuote(); return scopeFailure; }
+      const missing = requiredMissingTargets(candidate).map((target) => target.field);
+      candidate.missing = missing.filter((field, index) => missing.indexOf(field) === index);
+      if (candidate.missing.length) {
         /* 알려진 값은 보관하고, 없는 값 하나만 구체적으로 되묻는다. */
         const pendingQuoteState = updatePendingQuote(message, candidate);
         return {
           ok: false,
           code: "incomplete_request",
           missing: candidate.missing.slice(0, 8),
-          question: missingQuestion(candidate.missing),
+          question: missingQuestion(candidate.missing, candidate),
           pending: pendingQuoteState ? pendingQuote() : null
         };
       }
@@ -561,6 +722,8 @@
     const readiness = runtimeReadiness();
     if (!readiness.ready) return { ok: false, code: notReadyCode(readiness) };
     if (!facts || typeof facts !== "object") return { ok: false, code: "invalid_structured_input" };
+    const scopeFailure = candidateScopeFailure(facts);
+    if (scopeFailure) return scopeFailure;
     const input = {
       recipient: facts.recipient,
       items: facts.items,
@@ -604,7 +767,13 @@
     return filename;
   }
 
-  async function downloadPdf(renderModel) {
+  function certifiedPreviewBaseUrl(savedSkillId) {
+    const id = String(savedSkillId || "");
+    if (!/^b66skill_[0-9a-f]{32}$/.test(id)) return "";
+    return API + "/b66/quote/preview-base?saved_skill_id=" + encodeURIComponent(id);
+  }
+
+  async function downloadPdf(renderModel, previewModel) {
     const readiness = runtimeReadiness();
     if (!readiness.ready) return pdfFailure(notReadyCode(readiness), interpretErrorText(notReadyCode(readiness)));
     if (state.pendingQuote) return pdfFailure("pending_quote", "진행 중인 견적 내용을 완성한 뒤 PDF로 저장해 주세요.");
@@ -630,6 +799,42 @@
     const body = JSON.stringify({ saved_skill_id: loaded.savedSkillId, render_model: renderModel });
     if (new window.Blob([body]).size > 32 * 1024) {
       return pdfFailure("pdf_request_too_large", "견적 내용이 PDF 양식의 지원 범위를 초과했습니다.");
+    }
+    // Certified CGI only: browser-local PDF first, never silently reroute to the
+    // Cloudflare Worker or Modal when the private base/projection fails.
+    const browserPdf = window.B66BrowserPdf;
+    if (browserPdf && browserPdf.isCgiSkill(loaded.savedSkillId)) {
+      try {
+        const bytes = await browserPdf.makePdf(renderModel, previewModel);
+        if (!state.authenticated || state.loadedSkill !== loaded || selected.value !== loaded.savedSkillId ||
+            state.pendingQuote || loaded.fingerprint !== loaded.skill.fingerprint) {
+          return pdfFailure("pdf_skill_changed");
+        }
+        if (!(bytes instanceof Uint8Array) || bytes.length < 5 || bytes[0] !== 37 ||
+            bytes[1] !== 80 || bytes[2] !== 68 || bytes[3] !== 70 || bytes[4] !== 45) {
+          return pdfFailure("pdf_bytes_invalid");
+        }
+        const filename = pdfFilename(null, renderModel.facts && renderModel.facts.meta &&
+          renderModel.facts.meta.quoteNo);
+        const blobUrl = window.URL.createObjectURL(new window.Blob([bytes], { type: "application/pdf" }));
+        const anchor = document.createElement("a");
+        try {
+          anchor.href = blobUrl;
+          anchor.download = filename;
+          anchor.hidden = true;
+          document.body.appendChild(anchor);
+          anchor.click();
+        } finally {
+          anchor.remove();
+          window.setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+        }
+        return { ok: true, filename };
+      } catch (_) {
+        return pdfFailure("browser_pdf_unavailable", "CGI 브라우저 PDF를 만들지 못했습니다. 다시 확인해 주세요.");
+      }
+    }
+    if (!browserPdf && loaded.savedSkillId === "b66skill_2eb55d822407f626b7a75c8c88d32c40") {
+      return pdfFailure("browser_pdf_unavailable");
     }
     try {
       const response = await window.fetch(API + "/b66/quote/pdf", {
@@ -675,45 +880,13 @@
     interpret: interpretRequest,
     buildFromFacts: buildQuoteFromFacts,
     downloadPdf,
+    certifiedPreviewBaseUrl,
     pendingQuote: () => pendingQuote(),
+    supportedItemRows: () => supportedItemRows(),
     clearPending: () => { clearPendingQuote(); },
     getCompanyProfile: () => (state.companyProfile ? JSON.parse(JSON.stringify(state.companyProfile)) : null),
     errorText: interpretErrorText
   });
-
-  async function generate() {
-    const message = byId("padiemQuoteRequest");
-    const button = byId("padiemQuoteGenerate");
-    if (!message || !state.authenticated) return;
-    const requestText = message.value.trim();
-    if (!requestText) {
-      setQuoteStatus("견적 내용을 입력해 주세요.", "error");
-      message.focus();
-      return;
-    }
-    if (button) button.disabled = true;
-    setQuoteStatus("견적 내용을 정리하고 있습니다.", "working");
-    try {
-      const result = await interpretRequest(requestText);
-      if (!result.ok) {
-        setQuoteStatus(interpretErrorText(result.code), result.code === "incomplete_request" ? "missing" : "error");
-        return;
-      }
-      const app = window.B66QuoteAppBridge;
-      const replaced = app ? app.replaceDraft(result.draft, { toast: "내 견적서로 작성했습니다." }) : null;
-      if (!replaced || replaced.ok !== true) {
-        setQuoteStatus("견적 화면에 반영하지 못했습니다.", "error");
-        return;
-      }
-      const direct = byId("directModeButton");
-      if (direct) direct.click();
-      setQuoteStatus("견적서가 준비되었습니다. 내용을 확인한 뒤 PDF로 저장하세요.", "ready");
-    } catch (_) {
-      setQuoteStatus("견적 연결을 확인해 주세요.", "error");
-    } finally {
-      if (button) button.disabled = false;
-    }
-  }
 
   async function startGoogleSignIn() {
     const button = byId("googleSigninButton");
@@ -842,12 +1015,13 @@
     const loginForm = byId("padiemLoginForm");
     const logoutButton = byId("padiemLogout");
     const select = byId("padiemSavedSkillSelect");
-    const generateButton = byId("padiemQuoteGenerate");
 
     if (accountButton) accountButton.addEventListener("click", () => {
       if (state.authenticated) {
-        const panel = byId("padiemAccountPanel");
-        if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+        // The legacy account panel is not a visible destination in the 3-pane UI.
+        // Open the existing account/settings controls instead of scrolling to it.
+        const settings = byId("settingsButton");
+        if (settings) settings.click();
       } else {
         openAuthDialog();
       }
@@ -857,7 +1031,6 @@
     if (loginForm) loginForm.addEventListener("submit", passwordSignIn);
     if (logoutButton) logoutButton.addEventListener("click", logout);
     if (select) select.addEventListener("change", changeSkill);
-    if (generateButton) generateButton.addEventListener("click", generate);
     refreshAuth();
   }
 

@@ -244,6 +244,7 @@ jobs:
           node --check quote-template.js
           node --check quote-template-store.js
           node --check quote-template-renderer.js
+          node --check quote-browser-pdf.js
           node --check quote-template-selection.js
           node --check quote-template-ui.js
           node --check quote-template-candidate.js
@@ -263,6 +264,10 @@ jobs:
           node tests/quote-core.test.cjs
           node tests/quote-extraction.test.cjs
           node tests/quote-history.test.cjs
+          node tests/history-behavior.test.cjs
+          node tests/quote-history-server.test.cjs
+          node tests/history-server-behavior.test.cjs
+          node tests/quote-history-bridge-origin.test.mjs
           node tests/account-scope-3480.test.cjs
           node tests/production-draft-safety.test.cjs
           node tests/file-intake.test.cjs
@@ -285,6 +290,9 @@ jobs:
           node tests/quote-skill-live-analysis.test.cjs
           node tests/pages-live-intake.test.mjs
           node tests/padiem-account-bridge.test.mjs
+          node tests/quote-browser-pdf.test.cjs
+          node tests/missing-field-followup.test.cjs
+          node tests/mvp-runtime.test.cjs
           node tests/cgi-v2.test.cjs
           node tests/three-pane-shell-contract.test.cjs
 
