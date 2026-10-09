@@ -531,6 +531,21 @@ class DaumWebProvider:
         return await extractor.fetch(safe_url)
 
 
+def _tinyfish_transport_kind(exc: httpx.HTTPError) -> str:
+    """Fixed error class only: never serialize exception messages or request data."""
+    for error_type, kind in (
+        (httpx.ConnectError, "CONNECT"),
+        (httpx.ReadError, "READ"),
+        (httpx.WriteError, "WRITE"),
+        (httpx.RemoteProtocolError, "REMOTE_PROTOCOL"),
+        (httpx.LocalProtocolError, "LOCAL_PROTOCOL"),
+        (httpx.ProxyError, "PROXY"),
+    ):
+        if isinstance(exc, error_type):
+            return kind
+    return "OTHER"
+
+
 class TinyFishWebProvider:
     """TinyFish Search/Fetch provider (#3385 source child, #3622).
 
@@ -607,6 +622,7 @@ class TinyFishWebProvider:
             # Bounded operator-only diagnostic. No URLs, queries, tokens, headers
             # or exception details ever appear in Worker logs.
             print("TINYFISH_EGRESS_FAILURE=TRANSPORT", flush=True)
+            print("TINYFISH_EGRESS_KIND=" + _tinyfish_transport_kind(exc), flush=True)
             raise WebRuntimeError("web_unavailable", "web provider transport failed", 502) from exc
 
         if status in {401, 403}:
