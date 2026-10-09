@@ -43,8 +43,8 @@
 | 4 | `google/gemma-4-31b-it` | **F1 Dense 30.7B·출력 32,768 / F2 30RPM·16K TPM·14.4K RPD / Minimal 원본 1/10·내용 5/10 / High 원본 0/10·내용 0/10 / B14 504** |
 | 5 | `poolside/laguna-s-2.1` (Poolside 직접 API, Kilo 제외) | **F1 공식 118B/활성8B·1M / F2 계정한도 UNKNOWN / 직접 기본 9/10(10.89s), 추론 끔 8/10(4.63s), 켬 8/10(9.56s) / B14 9/10 HTTP200 / 실제 AI→PDF PASS** |
 | 6 | `sensenova/sensenova-6.8-flash-lite` | **F1 제공자 262,144/65,536 · F2 계정 한도 UNKNOWN · B14 10/10 · 직접 기본 10/10 · 리즈닝 none 10/10 2633ms; low 10/10 6528ms; medium 10/10 6278ms; high 10/10 6503ms · 12품목 로컬 PDF PASS** |
-| 7 | `inception/mercury-2.5` | **IN_PROGRESS / B14_PREFLIGHT_HTTP403 / DIRECT_TIMEOUT_PARTIAL** — 운영 health/models GET 403 → B14 POST 0회, direct QKR-001/002 HTTP200(내용 PASS 1/2), QKR-003 65초 timeout 후 중단, 나머지 7 미시도, F2 계정 RPM·TPM·RPD 및 F6 PDF UNKNOWN/NOT_TESTED. [상세](B14_FINAL_MERCURY_2_5_2026-10-09.md) |
-| 8 | `atria/Atria-Dawn-Preview` | `NOT_STARTED` |
+| 7 | `inception/mercury-2.5` | **IN_PROGRESS / UNSTABLE_TIMEOUT_REPEATED / FOLLOWUP_DEFERRED** — 직접 인사 100토큰은 `length`로 무응답, 800토큰 PASS; QKR-003 재시험 HTTP200·PASS, QKR-004 45초 timeout 재발 후 즉시 중단. 고유 QKR-001~004 중 답변 3건·정답 2건, 나머지 6 미시험. 운영 B14 health/models GET403로 B14 POST 0회; PDF 미시험. [상세](B14_FINAL_MERCURY_2_5_2026-10-09.md) |
+| 8 | `atria/Atria-Dawn-Preview` | **IN_PROGRESS / DIRECT_LATENCY_UNSTABLE / B14_PREFLIGHT_HTTP403 / FOLLOWUP_DEFERRED** — 직접 짧은 대화 HTTP200·17.86초; QKR-001 non-stream 50초 timeout/stream 31.63초 PASS; QKR-002 stream 65초 미완료; reasoning none 요청 422; 나머지 QKR-003~010 미시험, PDF 미시험. 실측 로컬 계정 RPM 헤더 50, 실제 TPM·RPD UNKNOWN. [상세](B14_FINAL_ATRIA_DAWN_PREVIEW_2026-10-09.md) |
 | 9 | `agnes-ai/agnes-3.0-flash` | **ERROR_B14_HTTP429 / DEFERRED / 후순위** — 운영 B14에서 짧은 대화와 견적 추출 모두 429, 로컬 직접 API/로컬 B14는 200. 기존 품질 기록은 유지하며 운영 오류 해결 후 재평가. 최종 승인·자동 대체 없음. [상세](B14_FINAL_AGNES_3_0_FLASH_2026-10-09.md), [장애 #3913](https://github.com/skerishKang/ai-revenue-lab/issues/3913) |
 
 **2026-10-09 Owner 우선순위 변경:** Agnes는 운영 B14 HTTP429 재현에 따라 `ERROR_B14_HTTP429 / DEFERRED`로 평가 대기열 **마지막(9번)**에 배치. 다음 순서는 Mercury 2.5(7번) → Atria(8번) → 장애 해결 후 Agnes(9번). 위 표는 **평가 작업 순서**이며, B14 서비스의 모델 등록·노출·사용자 수동 선택·기본값을 변경하지 않는다. 기존 Agnes 직접 API 품질 점수도 삭제·유용하지 않는다.
@@ -221,3 +221,13 @@ EVIDENCE = <source SHA, dated real-call markers, tested PDF evidence>
 - 운영 B14 GET health/models **HTTP403**로 preflight 단계 차단: **실서비스 B14 POST 0회**. 모델 자체 403/429를 관측했다고 주장하지 않는다.
 - 로컬 직접 Inception API QKR 신규 3회: **2/3 HTTP200, 정답 1/2**, QKR-001 프로젝트명 오류, QKR-002 PASS, QKR-003 65초 timeout 후 중단·잔여 7 미시도. F2 실제 플랜/한도, reasoning 제어 및 F6 PDF 미검증.
 - [Mercury 독립 상세](B14_FINAL_MERCURY_2_5_2026-10-09.md). 모델 우선순위는 사용자 명시 선택 기준이며 무단 자동 대체 금지.
+
+## 2026-10-09 Mercury / Atria 후속 완료 — owner 지시 순차 진행
+
+- **Mercury 2.5(7번):** 첫 시도의 QKR-003 65초 timeout 이후 짧은 인사(800토큰) HTTP200/PASS, QKR-003 재시험 HTTP200/엄격 PASS. 그러나 QKR-004 45초 timeout이 다시 발생해 추가 호출 중단. 원본 고유 QKR-001~004 중 답변이 완성된 세 견적의 strict 2/3. **`UNSTABLE_TIMEOUT_REPEATED / FOLLOWUP_DEFERRED`**; reasoning 모드별·12품목 PDF 미완료.
+- **Atria Dawn Preview(8번):** 새로 직접 API 평가 시작. 인사 HTTP200(17,859ms); QKR-001 비스트리밍 50,328ms timeout, 스트리밍 HTTP200/엄격 PASS(31,625ms, 첫 조각 27,031ms); QKR-002 스트리밍 65,000ms 안에 완료되지 않음(첫 조각 59,204ms), `reasoning_effort=none` 시험은 HTTP422. 첫 성공 응답의 로컬 계정 `x-rpm-limit=50`, 남음 49. **`DIRECT_LATENCY_UNSTABLE / FOLLOWUP_DEFERRED`**; 전체 견적 10개 중 채점 가능한 결과 1개, 12품목 PDF 미완료.
+- 두 모델 모두 **운영 B14 GET health/models 403**으로 exact-model 운영 경유 POST 0회. GET 403을 제공자 자체 실패로 혼동하지 않는다.
+- **Agnes(9번)**는 이전 Owner 결정에 따라 `ERROR_B14_HTTP429 / DEFERRED` 후순위 유지. 삭제·무단 기본값 변경·자동 fallback 없음.
+- 모델별 실제 완전 응답의 견적 내용 점수와 운영 가용성을 분리한다. 단발성 타임아웃은 단정하지 않으나 반복 타임아웃에 무한 추가 호출하지 않는다. **세 모델 모두 최종 승인 아님**.
+
+세부 증거: [Mercury](B14_FINAL_MERCURY_2_5_2026-10-09.md), [Atria](B14_FINAL_ATRIA_DAWN_PREVIEW_2026-10-09.md), [Agnes](B14_FINAL_AGNES_3_0_FLASH_2026-10-09.md).

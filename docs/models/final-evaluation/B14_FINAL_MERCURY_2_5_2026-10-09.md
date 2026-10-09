@@ -68,3 +68,25 @@
 **다음 단계:** B14 GET 403 접근 조건 별도 해소 → exact-model direct/B14 재개 가능 여부 검증 → 계정 실제 RPM/TPM/RPD와 2.5 reasoning 값 권위 자료 확보 → 제한된 추가 QKR 및 PDF. 무단 반복 호출이나 자동 모델 대체는 하지 않는다.
 
 **Owner 우선순위:** Mercury 2.5(7번) → Atria Dawn Preview(8번) → `ERROR_B14_HTTP429 / DEFERRED` Agnes 3.0 Flash(9번). 이 순서 변경은 오직 평가 문서이며 B14 제품의 노출·등록 순서를 강제로 바꾸지 않는다.
+
+## 2026-10-09 Mercury 2.5 추가 호출 및 종료 판정
+
+Owner 지시: 짧은 대화 → 이전 QKR-003 타임아웃 1회 재검증 → 성공 시 뒤 문항을 순차 평가하고, 반복 타임아웃이면 중단.
+
+| 실행 단계 | 설정 | HTTP | 응답/정답 | 지연 |
+|---|---|---|---|---:|
+| 짧은 인사 | max_tokens=100 | 200 | 출력 본문 없음, `finish_reason=length`, 총 105토큰 | 1,844ms |
+| 짧은 인사 출력 한도 보정 | max_tokens=800 | **200** | **대화 응답 PASS**, `finish_reason=stop` | **5,875ms** |
+| QKR-003 재시험 | max_tokens=1800 | **200** | **견적 내용 엄격 PASS** | **5,641ms** |
+| QKR-004 첫 시험 | max_tokens=1800 | **응답 없음** | **TimeoutError / 45,078ms**, 내용 채점 불가 | **45,078ms** |
+| QKR-005~010 | — | 미호출 | NOT_TESTED | — |
+
+- 초기 평가와 합쳐 **서로 다른 견적 문항 4개**(QKR-001~004)를 다루었다. QKR-001은 HTTP200·프로젝트명 불일치, QKR-002는 HTTP200·PASS, QKR-003은 첫 호출 timeout 후 재시험 PASS, QKR-004는 timeout. 최초/추가 호출 총수와 고유 문항 수를 혼동하지 않는다.
+- **정상적으로 답변한 고유 견적 3문항 중 2문항 엄격 PASS(2/3)**. QKR-003의 최초 타임아웃과 QKR-004 타임아웃은 답변 정확도에 포함하지 않는다.
+- **가용성: 불안정**. 이전 QKR-003의 65초 timeout에 이어 QKR-004에서도 45초 timeout 재발. 해당 시점에 추가 호출을 즉시 중단했으며, 고유 문항 QKR-005~010 및 실제 PDF는 미검증.
+- 대화 max_tokens=100 실패는 인증이나 제공자 오류가 아니라 **출력 예산을 추론에 사용해 길이 제한으로 끝난 사례**이다. 800토큰으로 늘리자 회복됐다.
+- 제공자 reasoning 사용량이 큰 만큼 **짧은 대화의 출력예산 설정이 중요**하다. `reasoning_effort` 별 API 수락·비교는 이번 추가 시험에서는 수행하지 않았으며 파라미터 가용성을 추정하지 않는다.
+- B14 운영 GET health/models는 추가 재조회에서도 모두 **HTTP403**, 따라서 **B14 upstream Mercury POST는 0건**이다.
+- **Owner-directed status: `IN_PROGRESS / UNSTABLE_TIMEOUT_REPEATED / B14_PREFLIGHT_403`.** 모델을 삭제·승인하지 않고, 추가 대량 시험 없이 다음 순서 Atria Dawn Preview로 이동. 원인 확정이나 전체 성능 점수 추정 금지.
+
+비공개 로컬 메타데이터 증거: `E:\b14-mercury25-FOLLOWUP-20261009.json`, `E:\b14-mercury25-FOLLOWUP-TOKENS-20261009.json`. 비밀값·실제 응답 원문은 Git에 기록하지 않음.
