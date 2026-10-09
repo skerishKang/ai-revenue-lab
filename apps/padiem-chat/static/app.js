@@ -176,10 +176,12 @@
     if (tasksNav) tasksNav.setAttribute("aria-current", state === "claw" && inboxKind === "tasks" ? "page" : "false");
     if (alertsNav) alertsNav.setAttribute("aria-current", state === "claw" && inboxKind === "alerts" ? "page" : "false");
   }
-  function showConversation() {
+  function showConversation({ preserveClaw = false } = {}) {
     emptyState.hidden = true;
     messageList.hidden = false;
-    shell.dataset.state = "chat";
+    // #3931: Keep an in-flight Claw conversation in the Claw workspace.
+    // Saved Chat conversations and ordinary Chat sends still use Chat.
+    if (!preserveClaw) shell.dataset.state = "chat";
     setNavActive();
   }
   function addUserMessage(text, attachment) {
@@ -198,6 +200,10 @@
   function addAssistantShell(label) {
     const fragment = document.getElementById("assistantMessageTemplate").content.cloneNode(true);
     const article = fragment.querySelector(".assistant-message");
+    // #3931: identify the product whose conversation is currently rendered.
+    // The shared shell is not evidence that a Claw run came from Chat.
+    const productLabel = article.querySelector("[data-assistant-product]");
+    if (productLabel) productLabel.textContent = shell.dataset.state === "claw" ? "Padiem Claw" : "Padiem Chat";
     article.querySelector("[data-runtime-label]").textContent = label;
     messageList.appendChild(fragment);
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
@@ -1220,6 +1226,10 @@
     // The decision is an immutable snapshot taken before showConversation()
     // mutates shell.dataset.state, so it is never re-derived from live state.
     const clawGeneralRequest = !!(route && route.clawGeneral);
+    // #3930: no fabricated stages. Only validated server-emitted P01 envelopes
+    // can change the runtime label; a legacy delta/done stream retains its
+    // existing truthful response status.
+    const canonicalEventProjection = clawGeneralRequest ? window.PadiemClawRunEventProjection?.create?.() : null;
     const response = clawGeneralRequest
       ? await chatTransport.requestClawGeneral(payload, signal)
       : await chatTransport.requestStreaming(payload, signal);
@@ -1230,6 +1240,17 @@
     let terminalError = false;
     try {
       await chatTransport.readSseEvents(response, async (frame) => {
+        if (frame.event === "p01_event") {
+          if (!clawGeneralRequest || !canonicalEventProjection) return false;
+          let envelope;
+          try { envelope = JSON.parse(frame.data); } catch (_) { return false; }
+          const projected = canonicalEventProjection.consume(envelope);
+          if (!projected.accepted) return false;
+          const label = window.PadiemClawRunEventProjection.label(projected.kind, document.documentElement.lang);
+          const marker = article.querySelector("[data-runtime-label]");
+          if (label && marker) marker.textContent = label;
+          return false;
+        }
         if (!["delta", "done", "error"].includes(frame.event)) return false;
         let data;
         try {
@@ -1374,7 +1395,7 @@
   // #3539: the generic B54 Claw composer runs on the canonical P01 Engine lane.
   // This predicate documents the product state that selects the lane: the Claw
   // shell with the explicit manual form hidden. It must be read at submit time,
-  // BEFORE showConversation() flips shell.dataset.state to "chat".
+  // BEFORE any conversation presentation transition.
   function clawGeneralRequestActive() {
     return shell.dataset.state === "claw" && !(clawManualForm && !clawManualForm.hidden);
   }
@@ -1385,14 +1406,14 @@
     if (selectedSkill) conversationState.setSkill(selectedSkill);
     const attachmentSnapshot = selectedAttachment;
     const contextSnapshot = { conversationId: conversationState.getConversationId(), project: activeProject };
-    // #3539: snapshot the routing decision BEFORE showConversation() resets the
-    // shell state. The immutable snapshot is threaded through requestAnswer so a
-    // generic Claw submit cannot silently fall back to /api/chat/stream.
+    // #3539: snapshot the canonical lane before changing presentation;
+    // #3931: keep a general Claw request in the same Claw conversation.
+    // Neither UI state nor the selected model ID may authorize fallback.
     const clawGeneralRequest = clawGeneralRequestActive();
     contextSnapshot.selectedModelId =
       clawGeneralRequest && typeof clawModelIdInput !== "undefined" && clawModelIdInput
         ? clawModelIdInput.value.trim() : "";
-    showConversation();
+    showConversation({ preserveClaw: clawGeneralRequest });
     addUserMessage(prompt, attachmentSnapshot);
     input.value = "";
     const outbound = conversationState.outboundWithUser(prompt);

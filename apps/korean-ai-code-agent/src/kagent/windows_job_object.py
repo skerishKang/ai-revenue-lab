@@ -29,6 +29,7 @@ import ctypes
 from ctypes import wintypes
 import os
 import subprocess
+import time
 from typing import Any, Self
 
 from .contracts import ContractError
@@ -53,6 +54,8 @@ JOB_OBJECT_UNAVAILABLE_ERROR = "windows job object containment is unavailable on
 
 _JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x00002000
 _JOB_OBJECT_EXTENDED_LIMIT_INFORMATION_CLASS = 9
+_JOB_OBJECT_BASIC_ACCOUNTING_INFORMATION_CLASS = 1
+_MAX_REAP_WAIT_SECONDS = 5.0
 # JOBOBJECT_EXTENDED_LIMIT_INFORMATION uses SIZE_T for all four trailing
 # memory fields. On x64 that makes the native SDK layout 144 bytes. Keep the
 # exact Windows ABI size explicit here because this module is importable on
@@ -104,6 +107,21 @@ class _JobObjectExtendedLimitInformation(ctypes.Structure):
     ]
 
 
+class _JobObjectBasicAccountingInformation(ctypes.Structure):
+    """Win32 JOBOBJECT_BASIC_ACCOUNTING_INFORMATION (48-byte ABI)."""
+
+    _fields_ = [
+        ("TotalUserTime", ctypes.c_int64),
+        ("TotalKernelTime", ctypes.c_int64),
+        ("ThisPeriodTotalUserTime", ctypes.c_int64),
+        ("ThisPeriodTotalKernelTime", ctypes.c_int64),
+        ("TotalPageFaultCount", wintypes.DWORD),
+        ("TotalProcesses", wintypes.DWORD),
+        ("ActiveProcesses", wintypes.DWORD),
+        ("TotalTerminatedProcesses", wintypes.DWORD),
+    ]
+
+
 class _ThreadEntry32(ctypes.Structure):
     _fields_ = [
         ("dwSize", wintypes.DWORD),
@@ -135,6 +153,11 @@ def _kernel32() -> Any:
             wintypes.DWORD,
         ]
         library.SetInformationJobObject.restype = wintypes.BOOL
+        library.QueryInformationJobObject.argtypes = [
+            wintypes.HANDLE, ctypes.c_int, ctypes.c_void_p, wintypes.DWORD,
+            ctypes.POINTER(wintypes.DWORD),
+        ]
+        library.QueryInformationJobObject.restype = wintypes.BOOL
         library.AssignProcessToJobObject.argtypes = [wintypes.HANDLE, wintypes.HANDLE]
         library.AssignProcessToJobObject.restype = wintypes.BOOL
         library.TerminateJobObject.argtypes = [wintypes.HANDLE, wintypes.UINT]
@@ -283,6 +306,35 @@ class WindowsJobObject:
         if terminated:
             self._terminated = True
         return terminated
+
+    def wait_for_empty(self, *, timeout_seconds: float = _MAX_REAP_WAIT_SECONDS) -> bool:
+        """Boundedly observe the native Job Object until every descendant exits.
+
+        Closing a kill-on-close handle *initiates* termination, but is not a
+        synchronous wait for all child cwd/file handles to be released. Query
+        the existing canonical Job Object while its handle is still valid.
+        No PID polling, new Job Object, global sleep or execution authority.
+        """
+        if self._closed or not 0 < timeout_seconds <= _MAX_REAP_WAIT_SECONDS:
+            return False
+        library = _kernel32()
+        deadline = time.monotonic() + timeout_seconds
+        while True:
+            accounting = _JobObjectBasicAccountingInformation()
+            if not library.QueryInformationJobObject(
+                self._handle,
+                _JOB_OBJECT_BASIC_ACCOUNTING_INFORMATION_CLASS,
+                ctypes.byref(accounting),
+                ctypes.sizeof(accounting),
+                None,
+            ):
+                return False
+            if accounting.ActiveProcesses == 0:
+                return True
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                return False
+            time.sleep(min(remaining, 0.025))
 
     def close(self) -> None:
         """Close the job handle. ``KILL_ON_JOB_CLOSE`` reaps any remaining tree member."""

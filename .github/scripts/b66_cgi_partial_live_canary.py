@@ -21,6 +21,9 @@ from typing import Any
 
 BASE_URL = "https://quick-quote-kr.pages.dev"
 PARTIAL_TEXT = "대한건설에 배관 100미터, 부가세 별도"
+APPROX_QUANTITY_TEXT = "대한건설에 배관 대충 100개 정도, 가격은 적당히"
+CASE_ENV = "B66_CGI_CANARY_CASE"
+ALLOWED_CASES = frozenset({"partial", "approx_qty"})
 MAX_BODY_BYTES = 64 * 1024
 MAX_INTERPRET_POSTS = 1
 SELECTED_MODEL_ENV = "B66_CGI_CANARY_SELECTED_MODEL_ID"
@@ -190,8 +193,36 @@ def _bounded_diagnostic(value: Any) -> str:
     return text[:80] if re.fullmatch(r"[A-Za-z0-9_.\[\]-]{1,80}", text) else "PRESENT_REDACTED"
 
 
+def selected_case(value: object) -> str:
+    if not isinstance(value, str) or value not in ALLOWED_CASES:
+        raise ValueError("explicit_valid_canary_case_required")
+    return value
+
+
+def _canary_contract_satisfied(
+    case: str, *, response_status: int, origin: str,
+    candidate: object, summary: dict[str, Any],
+) -> bool:
+    if case not in ALLOWED_CASES or not isinstance(candidate, dict):
+        return False
+    if response_status != 200 or origin != MODEL_COMPLETION_ORIGIN:
+        return False
+    if summary.get("SAFE_RECIPIENT_MATCH") != "TRUE" or summary.get("SAFE_ITEM_MATCH") != "TRUE":
+        return False
+    if summary.get("UNIT_PRICE_NULL") != "TRUE":
+        return False
+    missing = sanitize_missing(candidate.get("missing"))
+    if case == "approx_qty":
+        return (
+            "qty" in missing and "unitPrice" in missing
+            and summary.get("APPROX_QTY_NULL") == "TRUE"
+        )
+    return missing == ("unitPrice",) and summary.get("SAFE_QTY_MATCH") == "TRUE"
+
+
 def _print_summary(summary: dict[str, Any]) -> None:
     order = (
+        "CANARY_CASE",
         "LOGIN_HTTP",
         "AUTH_HTTP",
         "AUTHENTICATED",
@@ -210,6 +241,7 @@ def _print_summary(summary: dict[str, Any]) -> None:
         "SAFE_ITEM_MATCH",
         "SAFE_QTY_MATCH",
         "UNIT_PRICE_NULL",
+        "APPROX_QTY_NULL",
         "MODEL_OPTIONS_HTTP",
         "MODEL_SELECTION_RESULT",
         "SELECTED_MODEL_ID",
@@ -227,6 +259,13 @@ def _print_summary(summary: dict[str, Any]) -> None:
 
 
 def run_live(username: str, password: str) -> int:
+    # Fail closed before any authentication or model request if the caller did
+    # not explicitly choose one of the two network-bounded safety probes.
+    try:
+        case = selected_case(os.getenv(CASE_ENV))
+    except ValueError:
+        print("B66_CGI_PARTIAL_CANARY=FAIL_CASE_SELECTION")
+        return 8
     if not username or not password:
         print("B66_CGI_PARTIAL_CANARY=FAIL_CREDENTIAL_UNAVAILABLE")
         return 2
@@ -234,6 +273,7 @@ def run_live(username: str, password: str) -> int:
     jar = http.cookiejar.CookieJar()
     opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
     summary: dict[str, Any] = {
+        "CANARY_CASE": case,
         "COOKIE_OUTPUT": 0,
         "PASSWORD_OUTPUT": 0,
         "TOKEN_OUTPUT": 0,
@@ -313,7 +353,7 @@ def run_live(username: str, password: str) -> int:
         method="POST",
         payload={
             "saved_skill_id": saved_skill_id,
-            "message": PARTIAL_TEXT,
+            "message": PARTIAL_TEXT if case == "partial" else APPROX_QUANTITY_TEXT,
             "model_id": chosen_model_id,
         },
     )
@@ -357,18 +397,16 @@ def run_live(username: str, password: str) -> int:
         summary["SAFE_ITEM_MATCH"] = str(item.get("name") == "배관").upper()
         summary["SAFE_QTY_MATCH"] = str(item.get("qty") == 100).upper()
         summary["UNIT_PRICE_NULL"] = str(item.get("unitPrice") is None).upper()
+        summary["APPROX_QTY_NULL"] = str(item.get("qty") is None).upper()
 
     _print_summary(summary)
 
-    accepted = (
-        interpreted.status == 200
-        and summary["X_B66_RESULT_ORIGIN"] == MODEL_COMPLETION_ORIGIN
-        and isinstance(candidate, dict)
-        and sanitize_missing(candidate.get("missing")) == ("unitPrice",)
-        and summary.get("SAFE_RECIPIENT_MATCH") == "TRUE"
-        and summary.get("SAFE_ITEM_MATCH") == "TRUE"
-        and summary.get("SAFE_QTY_MATCH") == "TRUE"
-        and summary.get("UNIT_PRICE_NULL") == "TRUE"
+    accepted = _canary_contract_satisfied(
+        case,
+        response_status=interpreted.status,
+        origin=summary["X_B66_RESULT_ORIGIN"],
+        candidate=candidate,
+        summary=summary,
     )
     print("B66_CGI_PARTIAL_CANARY=" + ("PASS" if accepted else "FAIL"))
     return 0 if accepted else 7
@@ -385,6 +423,8 @@ def self_test() -> int:
     assert sanitize_public_error("raw-secret") == "ABSENT_OR_UNKNOWN"
     assert sanitize_missing(["unitPrice"]) == ("unitPrice",)
     assert MODEL_COMPLETION_ORIGIN != FALLBACK_ORIGIN
+    assert selected_case("partial") == "partial"
+    assert selected_case("approx_qty") == "approx_qty"
     assert sanitize_missing(["private.foo"]) == ("UNKNOWN_FIELD",)
     assert _bounded_diagnostic("items[0].unitPrice") == "items[0].unitPrice"
     assert _bounded_diagnostic("raw value with spaces") == "PRESENT_REDACTED"

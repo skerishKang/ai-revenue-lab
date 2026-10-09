@@ -114,6 +114,66 @@ class FinalHandoffSmokeContractTests(unittest.TestCase):
         self.assertIn("B66_CGI_SELECTED_MODEL_ID:", workflow)
         self.assertNotIn("DEFAULT_MODEL_ID = ", script)
 
+    def test_duration_buckets_are_bounded_and_deterministic(self):
+        cases = [
+            (0.0, "LT_1S"),
+            (0.99, "LT_1S"),
+            (1.0, "1_5S"),
+            (4.9, "1_5S"),
+            (5.0, "5_15S"),
+            (14.9, "5_15S"),
+            (15.0, "15_30S"),
+            (29.9, "15_30S"),
+            (30.0, "30_60S"),
+            (59.9, "30_60S"),
+            (60.0, "GE_60S"),
+            (-1, "UNCLASSIFIED"),
+            (float("nan"), "UNCLASSIFIED"),
+            (float("inf"), "UNCLASSIFIED"),
+            ("5.0", "UNCLASSIFIED"),
+            (True, "UNCLASSIFIED"),
+        ]
+        for value, expected in cases:
+            with self.subTest(value=value):
+                self.assertEqual(module._bounded_latency_bucket(value), expected)
+
+    def test_correlation_header_is_only_grammar_checked_pages_ray(self):
+        class Response:
+            def __init__(self, headers):
+                self.headers = headers
+        for raw, expected in [
+            ("a1b2c3d4e5f61234-ICN", "a1b2c3d4e5f61234-ICN"),
+            ("a" * 500, "UNAVAILABLE"),
+            ("unsafe\nTOKEN=abc", "UNAVAILABLE"),
+            ("", "UNAVAILABLE"),
+            (None, "UNAVAILABLE"),
+        ]:
+            with self.subTest(raw=raw):
+                value = Response({"cf-ray": raw})
+                with redirect_stdout(io.StringIO()) as stream:
+                    module._print_bounded_interpret_timing("partial", 12, value)
+                output = stream.getvalue()
+                self.assertIn("B66_INTERPRET_TIMING_STAGE=PARTIAL", output)
+                self.assertIn("B66_INTERPRET_CLIENT_DURATION_BUCKET=5_15S", output)
+                self.assertIn("B66_PAGES_CF_RAY=" + expected, output)
+                self.assertNotIn("TOKEN=abc", output)
+        with self.assertRaisesRegex(module.SmokeFailure, "invalid_interpret_stage"):
+            module._print_bounded_interpret_timing("unknown", 2, Response({}))
+
+    def test_all_three_real_interpret_stages_emit_latency_evidence_once(self):
+        src = SCRIPT.read_text(encoding="utf-8")
+        for stage in ("complete", "partial", "followup"):
+            with self.subTest(stage=stage):
+                self.assertEqual(
+                    src.count('_print_bounded_interpret_timing("' + stage + '"'), 1
+                )
+        self.assertEqual(
+            src.count("started_interpret = time.monotonic()"), 3
+        )
+        self.assertIn("MAX_INTERPRET_POSTS = 3", src)
+        self.assertIn("RETRY = 0", src)
+        self.assertIn("FALLBACK = 0", src)
+
     def test_exact_acceptance_inputs(self):
         self.assertEqual(
             module.COMPLETE_TEXT,
