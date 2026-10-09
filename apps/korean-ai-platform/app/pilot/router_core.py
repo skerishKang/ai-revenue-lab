@@ -199,13 +199,6 @@ def resolve_manual_route(
             upstream_called=False,
         )
 
-    if runtime_config.is_live and model_id == "experiential/qwen3.8-flash-next-uncensored":
-        raise NoSafeRoute(
-            reason_code="model_data_policy_pending",
-            message="ExLab model data-policy clearance is pending.",
-            upstream_called=False,
-        )
-
     if not cm.enabled:
         raise NoSafeRoute(
             reason_code="model_disabled",

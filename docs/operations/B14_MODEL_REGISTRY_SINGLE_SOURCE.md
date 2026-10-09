@@ -1,15 +1,10 @@
 # B14 중앙 모델 레지스트리 — 단일 원본 운영 계약
 
-> **CURRENT SOURCE AS OF 2026-10-10:** Owner-added ExLab
-> `experiential/qwen3.8-flash-next-uncensored` is the tenth canonical B14
-> model (seven providers), with existing `PADIEM_EXLAB_API_KEY` binding.
-> Previous nine-model references below refer to historical benchmark cohorts,
-> not the current registry. ExLab model is listed for manual selection but
-> **live dispatch is explicitly blocked** until ExLab model data policy review
-> and a separate release approval; no automatic fallback, customer activation,
-> changed tiers or Production deployment. Old B.AI Qwen and ExLab Luna remain
-> retired. See
-> `docs/models/final-evaluation/B14_EXLAB_QWEN38_NEXT_UNCENSORED_2026-10-10.md`.
+> **OWNER CORRECTION 2026-10-10:** `experiential/qwen3.8-flash-next-uncensored` is the tenth canonical B14 model (seven providers).
+> The Owner authorizes manually selected live evaluation during the ExLab free promotion. Data retention is not an Owner-imposed blocker.
+> Do not reintroduce `model_data_policy_pending` or the last-egress privacy refusal.
+> The existing Secret Store binding name is `PADIEM_EXLAB_API_KEY`; a successful credential-backed completion still requires measurement.
+> Auto selection, silent fallback and tier/default mutation remain unapproved. Old B.AI Qwen and ExLab Luna stay excluded.
 
 
 기준일: 2026-10-08. 실 모델 및 제공자 등록 원본은 apps/korean-ai-platform/app/pilot/b14_models.json 하나입니다.
