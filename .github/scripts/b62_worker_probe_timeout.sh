@@ -10,7 +10,7 @@ EOF
 
 uv run --locked python tests/worker_runtime_probe_origin.py --port 9099 > /tmp/b62-timeout-origin.log 2>&1 &
 ORIGIN_PID=$!
-npx --yes wrangler@4.130.0 dev --config .runtime-timeout-probe.toml --port 8787 > /tmp/b62-timeout-workerd.log 2>&1 &
+npx --yes wrangler@4.130.0 dev --config .runtime-timeout-probe.toml --port 8787 --inspector-port 9231 > /tmp/b62-timeout-workerd.log 2>&1 &
 WORKER_PID=$!
 
 cleanup() {
