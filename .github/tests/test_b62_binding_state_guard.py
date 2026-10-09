@@ -426,3 +426,19 @@ def test_owner_immutable_cli_cannot_bypass_runtime_safety_by_omitting_flag(tmp_p
     after.write_text(json.dumps(changed), encoding="utf-8")
     assert mod.main(args) == 0
     assert "OWNER_P01_D1_SERVED_RESOURCE_INTEGRITY=PASS" in capsys.readouterr().out
+
+
+def test_same_account_secrets_store_binding_identity_must_be_preserved():
+    binding = {
+        "type": "secrets_store_secret", "name": "TINYFISH_API_KEY",
+        "store_id": "f0b09ca04a7b43248154c773704a5616",
+        "secret_name": "PADIEM_TINY_FISH_API_KEY",
+    }
+    before = settings(*base_bindings(), binding)
+    mod.assert_preserved(before, settings(binding, *base_bindings()))
+    for attr in ("store_id", "secret_name"):
+        changed = {**binding, attr: "different"}
+        with pytest.raises(mod.BindingStateError, match="drift"):
+            mod.assert_preserved(before, settings(*base_bindings(), changed))
+    with pytest.raises(mod.BindingStateError):
+        mod.assert_preserved(before, settings(*base_bindings()))

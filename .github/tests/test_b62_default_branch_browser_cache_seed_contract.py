@@ -23,7 +23,7 @@ class BrowserCacheSeedContract(unittest.TestCase):
         seed_key = next(line.strip() for line in text.splitlines() if line.strip().startswith("key: "))
         pr_workflows = []
         for file in WORKFLOWS.glob("b62-*.yml"):
-            if file.name == "b62-browser-cache-seed.yml":
+            if file.name in ("b62-browser-cache-seed.yml", "b62-browser-qa-unified.yml"):
                 continue
             data = file.read_text(encoding="utf-8")
             if "Cache pinned Playwright Chromium" in data:
