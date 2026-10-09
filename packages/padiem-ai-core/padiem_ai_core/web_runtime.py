@@ -604,6 +604,9 @@ class TinyFishWebProvider:
         except httpx.TimeoutException as exc:
             raise WebRuntimeError("web_timeout", "web provider timed out", 504) from exc
         except httpx.HTTPError as exc:
+            # Bounded operator-only diagnostic. No URLs, queries, tokens, headers
+            # or exception details ever appear in Worker logs.
+            print("TINYFISH_EGRESS_FAILURE=TRANSPORT", flush=True)
             raise WebRuntimeError("web_unavailable", "web provider transport failed", 502) from exc
 
         if status in {401, 403}:
@@ -617,6 +620,7 @@ class TinyFishWebProvider:
         if status == 429:
             raise WebRuntimeError("web_busy", "web provider is rate limited", 503)
         if status >= 500:
+            print("TINYFISH_EGRESS_FAILURE=UPSTREAM_5XX", flush=True)
             raise WebRuntimeError("web_unavailable", "web provider is unavailable", 502)
         if status < 200 or status >= 300:
             raise WebRuntimeError("web_request_failed", "web provider rejected the request", 502)
