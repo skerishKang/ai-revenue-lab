@@ -913,6 +913,48 @@ def _partial_followup(page, counters: Counters, selected_model_id: str) -> None:
     print("FOLLOWUP_PRINT_OR_PDF=PASS")
 
 
+def _logout_after_verified_pdf_handoff(page) -> None:
+    """Invoke existing canonical logout despite the hidden legacy 3-pane button.
+
+    This is TEST CLEANUP, not a test of visually clicking the legacy account
+    panel. A real DOM click runs the production app's registered logout handler.
+    The handler itself waits for the authoritative /auth/status signed-out
+    result before projecting the '로그인' button. Never treat POST alone as
+    proof of logout; do not silently leave a live browser session behind.
+    """
+    try:
+        if page.locator("#padiemLogout").count() != 1:
+            _fail("logout_control_missing")
+        with page.expect_response(
+            lambda response: (
+                response.request.method == "POST"
+                and urlparse(response.url).path == "/api/padiem/auth/logout"
+            ),
+            timeout=15000,
+        ) as info:
+            # The legacy logout button remains DOM-attached but is not
+            # Playwright-actionable when the 3-pane shell hides its panel.
+            page.evaluate("() => document.getElementById('padiemLogout').click()")
+        if not 200 <= info.value.status < 300:
+            _fail("logout_http_not_2xx")
+        page.wait_for_function(
+            """() => {
+              const button = document.getElementById('padiemAccountButton');
+              const bridge = window.B66QuoteRuntimeBridge;
+              const state = bridge && typeof bridge.readiness === 'function'
+                ? bridge.readiness() : null;
+              return !!button && button.textContent.trim() === '로그인'
+                && !!state && state.authenticated === false;
+            }""",
+            timeout=15000,
+        )
+    except SmokeFailure:
+        raise
+    except Exception as exc:
+        raise SmokeFailure("logout_canonical_cleanup_unverified") from exc
+    print("CANONICAL_LOGOUT_AFTER_PDF=PASS", flush=True)
+
+
 def run_live(username: str, password: str, selected_model_id: str) -> int:
     if not username or not password:
         print("B66_FINAL_HANDOFF_SMOKE=FAIL_CREDENTIAL_UNAVAILABLE")
@@ -963,7 +1005,7 @@ def run_live(username: str, password: str, selected_model_id: str) -> int:
             if counters.direct_provider_requests != 0:
                 _fail("browser_direct_provider_request")
 
-            page.locator("#padiemLogout").click()
+            _logout_after_verified_pdf_handoff(page)
             context.close()
             browser.close()
 
