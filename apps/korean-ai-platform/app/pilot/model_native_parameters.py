@@ -51,6 +51,11 @@ class UnsupportedModelParameter(ValueError):
 
 def validate_native_parameters(model_id: str, raw: dict[str, Any]) -> dict[str, Any]:
     """Preserve only explicit, documented options for the chosen exact B14 ID."""
+    unknown = set(raw) - OPTIONAL_FIELDS
+    if unknown:
+        raise UnsupportedModelParameter(
+            f"unsupported model-native fields: {', '.join(sorted(unknown))}"
+        )
     allowed = _SUPPORTED.get(model_id, {})
     result: dict[str, Any] = {}
     for name in OPTIONAL_FIELDS:

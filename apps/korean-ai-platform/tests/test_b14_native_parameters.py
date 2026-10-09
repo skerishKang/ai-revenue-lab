@@ -49,6 +49,11 @@ def test_model_native_google_reasoning_only_when_explicit():
         request("google/gemini-3.1-flash-lite", reasoning_effort="none")
 
 
+def test_unknown_native_field_is_not_silently_discarded():
+    with pytest.raises(UnsupportedModelParameter, match="unsupported model-native fields"):
+        validate_native_parameters("google/gemini-3.1-flash-lite", {"thinking": {"type": "enabled"}})
+
+
 def test_native_sensenova_exact_documented_sampling():
     native = request(
         "sensenova/sensenova-6.8-flash-lite",

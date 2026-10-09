@@ -273,10 +273,12 @@ def _validate_body(raw: Any) -> dict:
     # Model-native overrides are opt-in. Reject unsupported vendor fields
     # instead of silently dropping or guessing an original-model default.
     from .model_native_parameters import (
-        UnsupportedModelParameter, validate_native_parameters,
+        OPTIONAL_FIELDS, UnsupportedModelParameter, validate_native_parameters,
     )
     try:
-        native_options = validate_native_parameters(model, raw)
+        native_options = validate_native_parameters(
+            model, {key: raw[key] for key in OPTIONAL_FIELDS if key in raw}
+        )
     except UnsupportedModelParameter as exc:
         raise _InvalidBody(str(exc)) from exc
 
