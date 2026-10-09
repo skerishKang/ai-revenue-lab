@@ -21,8 +21,8 @@ from b62_owner_d1_release_preflight import OWNER_BINDING
 from b62_owner_d1_release_transaction import (
     TransactionError,
     assert_exact_worker_code,
-    verify_promotion_equivalence,
     build_rollback_deployment,
+    verify_promotion_equivalence,
     main,
     prepare,
     validate_patch_settings,
@@ -257,7 +257,7 @@ def test_operational_workflow_enforces_durable_anchor_before_any_patch():
     wf = yaml.safe_load(text)
     triggers = wf.get("on", wf.get(True))
     assert list(triggers) == ["workflow_dispatch"]
-    assert set(wf["jobs"]) == {"apply", "rollback"}
+    assert set(wf["jobs"]) == {"apply", "rollback", "promote_latest"}
     assert wf["concurrency"]["cancel-in-progress"] is False
     for job in wf["jobs"].values():
         assert job["environment"] == "production"
@@ -600,6 +600,7 @@ def test_standard_prepare_remains_strict_when_latest_differs(worker):
 
 def _promotion_versions():
     original = _engine()[3]
+    original["result"]["resources"]["script"]["last_deployed_from"] = "wrangler"
     latest = copy.deepcopy(original)
     latest["result"]["id"] = "newer-undeployed-version"
     latest["result"]["resources"]["script"]["etag"] = "platform-reissued-content-etag"
