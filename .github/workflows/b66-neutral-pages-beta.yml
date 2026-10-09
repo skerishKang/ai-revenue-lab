@@ -369,6 +369,8 @@ jobs:
           node tests/pages-live-intake.test.mjs
           node tests/padiem-account-bridge.test.mjs
           node tests/quote-browser-pdf.test.cjs
+          # #3760: certified PDF regression must enforce explicit B14 model choice.
+          node tests/quote-certified-pdf.test.cjs
           node tests/missing-field-followup.test.cjs
           node tests/mvp-runtime.test.cjs
           node tests/cgi-v2.test.cjs
