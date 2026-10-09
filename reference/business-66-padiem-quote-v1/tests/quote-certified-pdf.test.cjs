@@ -66,7 +66,7 @@ function accountHarness({ authenticated = true, withSkill = true, cgiExport = fa
     remove() {}, setAttribute() {}, removeAttribute() {}, focus() {}, scrollIntoView() {}
   });
   const getElement = (id) => { if (!elements.has(id)) elements.set(id, makeElement(id)); return elements.get(id); };
-  const skill = { id: "synthetic-skill", name: "Synthetic Skill", approved: true, fingerprint: "synthetic-skill-fingerprint", internalTemplate: profile };
+  const skill = { id: "synthetic-skill", name: "Synthetic Skill", approved: true, fingerprint: "synthetic-skill-fingerprint", internalTemplate: profile, variableSchema: { recipient: true, items: true } };
   const rowId = cgiExport ? "b66skill_2eb55d822407f626b7a75c8c88d32c40" : SKILL_ID;
   const row = { saved_skill_id: rowId, skill_name: skill.name, skill, skill_fingerprint: skill.fingerprint };
   const browserCalls = [];
@@ -99,7 +99,7 @@ function accountHarness({ authenticated = true, withSkill = true, cgiExport = fa
         default_model_id: null
       });
       if (String(url).endsWith("/quote/pdf")) return responseFactory();
-      if (String(url).endsWith("/quote/interpret")) return json({ ok: true, candidate: { missing: ["unitPrice"] } });
+      if (String(url).endsWith("/quote/interpret")) return json({ ok: true, candidate: { recipient: { company: "Synthetic Recipient" }, items: [{ name: "Synthetic Item", qty: 1, unitPrice: null }], missing: ["unitPrice"] } });
       throw new Error("unexpected test endpoint");
     }
   });
