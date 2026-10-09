@@ -4331,6 +4331,16 @@
         if (artifact.document_id) downloadClawArtifact(artifact.document_id, artifact.filename || "");
       });
       artifactRow.append(filename, downloadBtn);
+      // #3935: a history artifact reference does not make a failed, cancelled,
+      // approval-paused or unknown run completed. Keep its original badge and
+      // existing click-to-check download; never auto-retry or claim delivery.
+      if (run.status !== "completed") {
+        const caveat = document.createElement("p");
+        caveat.className = "claw-run-card-partial-note";
+        caveat.setAttribute("role", "note");
+        caveat.textContent = clawT("claw-runs-artifact-unverified");
+        artifactRow.appendChild(caveat);
+      }
       // #3932: old owner-scoped run receipts lack byte_length. Display a
       // truthful click-to-check PDF action, then use the existing authenticated
       // 10MiB PDF byte route. Never preview DOCX/XLSX or inferred filenames.
