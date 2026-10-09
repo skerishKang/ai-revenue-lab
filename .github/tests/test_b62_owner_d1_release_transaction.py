@@ -1,6 +1,7 @@
 """Protected Owner D1 apply/rollback gate: no real Cloudflare mutation in tests."""
 from __future__ import annotations
 
+import base64
 import copy
 import importlib.util
 import json
@@ -19,6 +20,7 @@ if str(SCRIPTS) not in sys.path:
 from b62_owner_d1_release_preflight import OWNER_BINDING
 from b62_owner_d1_release_transaction import (
     TransactionError,
+    assert_exact_worker_code,
     main,
     prepare,
     validate_patch_settings,
@@ -38,6 +40,18 @@ WORKFLOW = ROOT / ".github/workflows/b54-owner-d1-controlled-connection.yml"
 
 def _latest(version: str) -> dict:
     return {"success": True, "result": {"items": [{"id": version}]}}
+
+
+def _module_response(version_id: str, *, body: bytes = b"unchanged python source") -> dict:
+    return {"success": True, "result": {
+        "id": version_id,
+        "modules": [
+            {"name": "main.py", "content_type": "text/x-python",
+             "content_base64": base64.b64encode(body).decode("ascii")},
+            {"name": "entry.mjs", "content_type": "application/javascript+module",
+             "content_base64": base64.b64encode(b"export default {};").decode("ascii")},
+        ],
+    }}
 
 
 def _engine():
@@ -132,12 +146,15 @@ def test_verify_real_served_post_is_only_owner_binding_plus_resource_parity(work
     settings = {"success": True, "result": {
         "bindings": copy.deepcopy(post["result"]["resources"]["bindings"])
     }}
-    assert verify(version, post, fixture._deploy("new-live-version"), settings,
-                  OWNER, anchor) == "new-live-version"
+    assert verify(
+        version, post, fixture._deploy("new-live-version"), settings,
+        OWNER, anchor, _module_response(version["result"]["id"]),
+        _module_response("new-live-version"),
+    ) == "new-live-version"
 
 
 @pytest.mark.parametrize("change", [
-    "unchanged_active", "wrong_version_id", "changed_script", "dropped_secret",
+    "unchanged_active", "wrong_version_id", "changed_handler", "dropped_secret",
     "changed_annotations", "wrong_settings", "wrong_owner_id",
 ])
 def test_post_failures_cannot_report_connected(change):
@@ -158,8 +175,8 @@ def test_post_failures_cannot_report_connected(change):
         served = fixture._deploy("engine-version")
     elif change == "wrong_version_id":
         post["result"]["id"] = "not-the-served-version"
-    elif change == "changed_script":
-        post["result"]["resources"]["script"]["etag"] = "unexpected"
+    elif change == "changed_handler":
+        post["result"]["resources"]["script"]["handlers"] = ["changed"]
     elif change == "dropped_secret":
         post["result"]["resources"]["bindings"].pop(10)
     elif change == "changed_annotations":
@@ -169,7 +186,11 @@ def test_post_failures_cannot_report_connected(change):
     elif change == "wrong_owner_id":
         owner = fixture.ENGINE_DB
     with pytest.raises(TransactionError):
-        verify(pre, post, served, settings, owner, anchor)
+        verify(
+            pre, post, served, settings, owner, anchor,
+            _module_response(pre["result"]["id"]),
+            _module_response("new-live-version"),
+        )
 
 
 @pytest.mark.parametrize("worker", ["engine", "chat"])
@@ -440,3 +461,117 @@ def test_final_json_rejects_substituted_other_canonical_d1_uuid():
     patch["bindings"][-1]["database_id"] = fixture.CHAT_DB
     with pytest.raises(TransactionError, match="PATCH_SETTINGS_OWNER_D1_ID_MISMATCH"):
         validate_patch_settings(patch, old_version, OWNER)
+
+
+@pytest.mark.parametrize("worker", ["engine", "chat"])
+def test_real_api_changed_etag_and_upload_source_with_identical_bytes_is_accepted(worker):
+    args = _engine() if worker == "engine" else _chat()
+    original = args[3]
+    _, anchor = _prepare(worker)
+    after = copy.deepcopy(original)
+    after["result"]["id"] = "new-live-version"
+    after["result"]["resources"]["bindings"].append(
+        {"type": "d1", "name": OWNER_BINDING, "database_id": OWNER}
+    )
+    after["result"]["resources"]["script"]["etag"] = "cloudflare-reissued-etag"
+    after["result"]["resources"]["script"]["last_deployed_from"] = "api"
+    settings = {"success": True, "result": {
+        "bindings": copy.deepcopy(after["result"]["resources"]["bindings"])
+    }}
+    old_code = _module_response(original["result"]["id"])
+    new_code = _module_response(after["result"]["id"])
+    assert assert_exact_worker_code(
+        old_code, new_code, original["result"]["id"], after["result"]["id"]
+    ) == 2
+    assert verify(
+        original, after, fixture._deploy("new-live-version"),
+        settings, OWNER, anchor, old_code, new_code
+    ) == "new-live-version"
+
+
+@pytest.mark.parametrize("tamper", [
+    "content", "new_module", "remove_module", "mime", "different_version",
+    "empty_modules", "invalid_base64", "duplicate_name", "extra_field",
+])
+def test_exact_module_guard_rejects_all_code_and_evidence_drift(tamper):
+    old_code = _module_response("original-version")
+    new_code = _module_response("new-version")
+    if tamper == "content":
+        new_code["result"]["modules"][0]["content_base64"] = base64.b64encode(
+            b"malicious-different-code"
+        ).decode("ascii")
+    elif tamper == "new_module":
+        new_code["result"]["modules"].append({
+            "name": "rogue.py", "content_type": "text/x-python",
+            "content_base64": base64.b64encode(b"print(9)").decode("ascii"),
+        })
+    elif tamper == "remove_module":
+        new_code["result"]["modules"].pop()
+    elif tamper == "mime":
+        new_code["result"]["modules"][0]["content_type"] = "text/plain"
+    elif tamper == "different_version":
+        new_code["result"]["id"] = "wrong-version"
+    elif tamper == "empty_modules":
+        new_code["result"]["modules"] = []
+    elif tamper == "invalid_base64":
+        new_code["result"]["modules"][0]["content_base64"] = "invalid%"
+    elif tamper == "duplicate_name":
+        new_code["result"]["modules"][1]["name"] = "main.py"
+    else:
+        new_code["result"]["modules"][0]["source_map"] = "unexpected"
+    with pytest.raises(TransactionError):
+        assert_exact_worker_code(old_code, new_code, "original-version", "new-version")
+
+
+def test_changed_etag_with_changed_module_bytes_never_accepted():
+    args = _engine()
+    original = args[3]
+    _, anchor = _prepare("engine")
+    after = copy.deepcopy(original)
+    after["result"]["id"] = "new-live-version"
+    after["result"]["resources"]["bindings"].append(
+        {"type": "d1", "name": OWNER_BINDING, "database_id": OWNER}
+    )
+    after["result"]["resources"]["script"]["etag"] = "different-hash"
+    after["result"]["resources"]["script"]["last_deployed_from"] = "api"
+    settings = {"success": True, "result": {
+        "bindings": copy.deepcopy(after["result"]["resources"]["bindings"])
+    }}
+    with pytest.raises(TransactionError, match="CODE_MODULE_CONTENT_DRIFT"):
+        verify(original, after, fixture._deploy("new-live-version"), settings,
+               OWNER, anchor, _module_response(original["result"]["id"]),
+               _module_response("new-live-version", body=b"changed code"))
+
+
+def test_matching_modules_never_override_drift_in_other_script_metadata():
+    args = _engine()
+    original = args[3]
+    _, anchor = _prepare("engine")
+    after = copy.deepcopy(original)
+    after["result"]["id"] = "new-live-version"
+    after["result"]["resources"]["bindings"].append(
+        {"type": "d1", "name": OWNER_BINDING, "database_id": OWNER}
+    )
+    after["result"]["resources"]["script"]["etag"] = "different"
+    after["result"]["resources"]["script"]["handlers"] = ["other"]
+    settings = {"success": True, "result": {
+        "bindings": copy.deepcopy(after["result"]["resources"]["bindings"])
+    }}
+    with pytest.raises(TransactionError, match="CODE_SCRIPT_OTHER_METADATA_DRIFT"):
+        verify(original, after, fixture._deploy("new-live-version"), settings,
+               OWNER, anchor, _module_response(original["result"]["id"]),
+               _module_response("new-live-version"))
+
+
+def test_production_workflow_gets_explicit_version_modules_and_never_uses_mutable_content():
+    text = WORKFLOW.read_text(encoding="utf-8")
+    step = text.split("      - name: Verify new 100-percent served version and ALL existing resources", 1)[1]
+    step = step.split("      - name: Fail closed on ambiguous or failed mutation", 1)[0]
+    assert "/workers/workers/${OWNER_WORKER}/versions" in step
+    assert "${OWNER_D1_PRE_VERSION}?include=modules" in step
+    assert "${fresh}?include=modules" in step
+    assert '--pre-modules "${RUNNER_TEMP}/version-modules-pre.json"' in step
+    assert '--post-modules "${RUNNER_TEMP}/version-modules-post.json"' in step
+    assert "rm -f" in step
+    assert "/scripts/${OWNER_WORKER}/content" not in step
+    assert "actions/upload-artifact" not in step
