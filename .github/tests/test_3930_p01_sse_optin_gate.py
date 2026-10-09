@@ -35,7 +35,6 @@ def fixtures(flag=None, *, version_id=PRE, source=SHA):
         b("IDENTITY_AUTHORITY_SERVICE", "service", service="identity"),
         b("PADIEM_CHAT_SESSION_SECRET", "secret_text"),
         b("PADIEM_CHAT_QUOTA_SALT", "secret_text"),
-        b("PADIEM_CLAW_P01_LIVE_CANARY_SUBJECT_ID", "secret_text"),
         b("OTHER_PROTECTED_SECRET", "secret_text", value=PRIVATE),
     ]
     if flag is not None:
@@ -102,9 +101,9 @@ def test_true_flag_is_noop_and_second_patch_is_not_authorized():
     must_fail(lambda: gate.verify(*before, *before, SHA), "NEW_SERVED_VERSION_NOT_OBSERVED")
 
 
-def test_refuses_wrong_type_duplicate_absent_canary_and_stale_lineage():
+def test_refuses_wrong_type_duplicate_required_secret_and_stale_lineage():
     s, d, v = fixtures()
-    for name in ("PADIEM_CLAW_P01_LIVE_CANARY_SUBJECT_ID", "P01_ENGINE_CREDENTIAL"):
+    for name in ("P01_ENGINE_CREDENTIAL", "IDENTITY_AUTHORITY_SERVICE"):
         x = copy.deepcopy((s,d,v))
         x[0]["result"]["bindings"] = [q for q in x[0]["result"]["bindings"] if q["name"] != name]
         x[2]["resources"]["bindings"] = [q for q in x[2]["resources"]["bindings"] if q["name"] != name]

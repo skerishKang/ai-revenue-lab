@@ -55,7 +55,6 @@ def _call(adapter, headers=HEADERS, enabled=True, payload=None):
     with patch("app.b54_canonical_session.resolve_current_b54_canonical_session",
                new=AsyncMock(return_value=SimpleNamespace(auth_session=SimpleNamespace(subject=SimpleNamespace(subject_id=SUBJECT))))):
         with _client(adapter) as client:
-            client.app.state.claw_live_sse_canary_subject_id = SUBJECT
             client.app.state.claw_live_sse_enabled = enabled
             result = client.post("/api/claw/general", json=payload or _payload(), headers=headers)
     return result
