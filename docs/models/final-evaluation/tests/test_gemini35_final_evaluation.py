@@ -13,7 +13,8 @@ class FinalGemini35EvidenceTests(unittest.TestCase):
         for needle in ["gemini-3.5-flash-lite","1,048,576","65,536","minimal / low / medium / high","15","250,000","500","10/10","9/10","QKR-008","14,187","NOT_TESTED"]:
             with self.subTest(needle=needle):self.assertIn(needle,report)
         self.assertIn(REPORT.name,ledger)
-        self.assertIn("F5 내용 10/10",ledger)
+        self.assertIn("Minimal 10/10",ledger)
+        self.assertIn("40/40 HTTP 200",ledger)
     def test_owner_free_tier_snapshot_matches_report(self):
         data=json.loads(QUOTA.read_text(encoding="utf-8"))
         match=[x for x in data["models"] if x["display_name"]=="Gemini 3.5 Flash Lite"]

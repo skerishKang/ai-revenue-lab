@@ -24,7 +24,9 @@ class Gemini35ReasoningPdfFollowup(unittest.TestCase):
         text=FOLLOW.read_text(encoding="utf-8")
         for value in ("500,000원","50,000원","550,000원","6,500,000원","650,000원","7,150,000원","12/12","PDF"):
             self.assertIn(value,text)
-        self.assertIn("하단 문구",text)
+        self.assertIn("하단 안내 문구",text)
+        self.assertIn("40/40 HTTP 200",text)
+        self.assertIn("High 출력 예산 분리 시험",text)
         self.assertIn("2페이지",text)
         self.assertIn("IN_PROGRESS",text)
     def test_extra_failures_not_substituted_for_initial_sample(self):
