@@ -1,0 +1,69 @@
+.owner-model-preview {
+  width: min(480px, calc(100vw - 32px));
+  max-height: min(70vh, 700px);
+  overflow-y: auto;
+  border: 1px solid var(--line, #dedee8);
+  border-radius: 18px;
+  padding: 24px;
+  color: var(--text, #222);
+  background: var(--panel, white);
+  box-shadow: 0 20px 65px rgba(10, 10, 30, .17);
+}
+.owner-model-preview::backdrop {
+  background: rgba(15, 13, 30, .48);
+}
+.owner-model-preview-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 20px;
+}
+.owner-model-preview-head h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+.owner-model-preview-close {
+  border: 0;
+  background: transparent;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+.owner-model-preview > p {
+  color: var(--muted, #666);
+  font-size: .88rem;
+  margin: 12px 0;
+}
+.owner-model-preview-list {
+  padding: 0;
+  margin: 16px 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+.owner-model-preview-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--line, #dedee8);
+  border-radius: 12px;
+  padding: 12px;
+  cursor: default;
+}
+.owner-model-preview-names {
+  display: grid;
+  gap: 2px;
+}
+.owner-model-preview-prefix {
+  font-size: .8rem;
+  color: var(--muted, #666);
+}
+.owner-model-preview-name {
+  font-size: .98rem;
+  font-weight: 650;
+}
+.owner-model-preview-hold {
+  flex: none;
+  color: var(--muted, #666);
+  font-size: .8rem;
+}

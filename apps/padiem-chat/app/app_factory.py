@@ -125,6 +125,7 @@ from .project_routes import project_detail, projects_collection
 from .request_telemetry import RequestTelemetryMiddleware
 from .same_origin_guard import SameOriginGuardMiddleware
 from .saved_output_routes import output_detail, outputs_collection
+from .owner_model_preview_routes import owner_model_name_preview
 from .saved_outputs import SavedOutputStore
 from .tier_identity_client import PadiemTierB14Client
 from .usage_gate import UsageCounterStore, UsageGate
@@ -209,6 +210,7 @@ def create_app(
     resolved = settings or Settings.from_env()
     routes = [
         Route("/health", health, methods=["GET"]),
+        Route("/api/models/owner-name-preview", owner_model_name_preview, methods=["GET"]),
         Route("/api/auth/status", auth_status, methods=["GET"]),
         Route("/auth/google/start", google_start, methods=["GET"]),
         Route("/auth/google/callback", google_callback, methods=["GET"]),
