@@ -58,6 +58,15 @@ def test_service_environment_drift_is_rejected():
         mod.assert_preserved(before, settings(*changed))
 
 
+def test_service_entrypoint_drift_is_rejected():
+    before = settings({"type": "service", "name": "ENGINE_SERVICE",
+                       "service": "padiem-ai-engine", "entrypoint": "First"})
+    after = settings({"type": "service", "name": "ENGINE_SERVICE",
+                      "service": "padiem-ai-engine", "entrypoint": "Second"})
+    with pytest.raises(mod.BindingStateError, match="binding authority drift"):
+        mod.assert_preserved(before, after)
+
+
 def test_d1_id_drift_is_rejected():
     before = settings(*base_bindings())
     changed = base_bindings()
