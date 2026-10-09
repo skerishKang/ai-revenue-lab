@@ -9,12 +9,15 @@ infer image-generation support here.
 """
 from __future__ import annotations
 
+import re
+
 
 def excluded_from_owner_customer_selection(model_id: str) -> bool:
     """Match owner-excluded model families across their existing registered IDs.
 
     Families: Kilo Poolside Laguna, B.AI Qwen, Motif 3,
-    GPT-5.6 Luna and NVIDIA Nemotron. Do not exclude unrelated models.
+    GPT-5.6 Luna, NVIDIA Nemotron and Owner-retired StepFun Step 3.7 Flash.
+    StepFun Step 5 Preview Free is a separate candidate and stays unblocked.
     """
     normalized = model_id.strip().casefold()
     return (
@@ -23,4 +26,5 @@ def excluded_from_owner_customer_selection(model_id: str) -> bool:
         or (normalized.startswith("b-ai/") and "qwen" in normalized)
         or "motif-3" in normalized
         or "gpt-5.6-luna" in normalized
+        or re.search(r"(?:^|[/\-])stepfun[/\-]step-3[.]7-flash(?=$|[:/\-])", normalized) is not None
     )
