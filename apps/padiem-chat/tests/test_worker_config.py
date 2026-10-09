@@ -228,7 +228,8 @@ def test_worker_package_is_mock_first_static_bound_and_no_fake_d1_id():
     assert 'PADIEM_CHAT_RUNTIME_MODE = "mock"' in wrangler
     assert 'PADIEM_CHAT_LIVE_ENABLED = "false"' in wrangler
     assert "database_id" not in wrangler
-    assert "settings_from_worker_bindings(self.env)" in worker
+    assert "settings_from_worker_bindings(self.env, resolved_web_keys=web_keys)" in worker
+    assert "await resolve_web_secrets_store_keys(self.env)" in worker
     assert "D1HistoryStore" in worker and "PADIEM_CHAT_DB" not in worker
     assert "D1UsageCounterStore" in worker
     assert "UsageGate(settings, usage_store)" in worker

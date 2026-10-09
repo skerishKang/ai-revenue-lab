@@ -74,3 +74,44 @@ PRODUCTION_MUTATION=0
 ISSUE_3385=CLOSED_SOURCE_COMPLETE
 ISSUE_3523=OPEN_LIVE_GOLDEN_PATH
 ```
+
+## Same-account Secrets Store → Chat Worker binding activation (2026-10-10)
+
+The served `padiem-chat` Worker and the Owner's existing active public-web keys
+are in the **same Charliekant Cloudflare account**. No key issue, copying,
+rotation or cross-account migration is necessary.
+
+| Worker alias | Existing Secrets Store secret name |
+| --- | --- |
+| `TINYFISH_API_KEY` | `PADIEM_TINY_FISH_API_KEY` |
+| `PADIEM_CHAT_DAUM_REST_API_KEY` | `PADIEM_KAKAO_API_KEY` |
+
+Both records are in the existing store ID `f0b09ca04a7b43248154c773704a5616`.
+Cloudflare's official *same-account* binding syntax is:
+
+```toml
+[[secrets_store_secrets]]
+binding = "TINYFISH_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_TINY_FISH_API_KEY"
+
+[[secrets_store_secrets]]
+binding = "PADIEM_CHAT_DAUM_REST_API_KEY"
+store_id = "f0b09ca04a7b43248154c773704a5616"
+secret_name = "PADIEM_KAKAO_API_KEY"
+```
+
+The Python Worker resolves selected bindings via async `.get()`, preserving
+direct `secret_text` string compatibility. Mock/off never calls the store.
+Public query only: never send private Drive/PDF, history or credentials.
+
+Deploy in authority order: (1) merge source + adapter + guard tests;
+(2) establish exact Charliekant served-version and all-binding readback;
+(3) add these two *existing* records to the Worker bindings (Cloudflare
+Dashboard > Worker Settings > Bindings > Secrets Store, or verified equivalent);
+(4) deploy exact approved main through the canonical B62/#3523 gate,
+which preserves the existing Engine/identity/D1/secret set; (5) read back
+the actually served version and name/type inventory; (6) bounded public
+TinyFish nominal + simulated 402/429 Daum failover. **Do not** claim live
+Search from source, account inventory or settings-plane metadata alone.
+Existing live deadman policy and model selection are unchanged.

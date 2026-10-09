@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
-SUPPORTED_TYPES = {"assets", "service", "d1", "r2_bucket", "plain_text", "secret_text"}
+SUPPORTED_TYPES = {"assets", "service", "d1", "r2_bucket", "plain_text", "secret_text", "secrets_store_secret"}
 OWNER_P01_D1_BINDING = "BROWSER_CONTROL_OWNER_P01_D1"
 
 
@@ -79,6 +79,12 @@ def canonical_binding(raw: object) -> tuple[object, ...]:
             name,
             _required_text(raw, "bucket_name"),
             _optional_text(raw, "jurisdiction"),
+        )
+    if kind == "secrets_store_secret":
+        return (
+            kind, name,
+            _required_text(raw, "store_id"),
+            _required_text(raw, "secret_name"),
         )
     if kind == "plain_text":
         text = raw.get("text")
