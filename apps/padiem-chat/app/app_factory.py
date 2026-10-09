@@ -47,6 +47,7 @@ from .auth_routes import (
 from .auto_grounding import AutoGroundingService
 from .chat_routes import api_chat, api_chat_stream
 from .claw_general_routes import claw_general_execute, claw_general_capabilities
+from .claw_artifact_preview_routes import claw_artifact_inline_preview
 from .claw_routes import (
     claw_approval_decision,
     claw_manual_intake_artifact,
@@ -315,6 +316,8 @@ def create_app(
             methods=["POST"],
         ),
         Route("/api/claw/manual-intake/artifact/{document_id}", claw_manual_intake_artifact, methods=["GET"]),
+        # #3932 preview is a separate GET; existing download remains attachment-only.
+        Route("/api/claw/manual-intake/artifact/{document_id}/preview", claw_artifact_inline_preview, methods=["GET"]),
         Route("/api/claw/telegram/ingest/{binding_ref}", claw_telegram_ingest, methods=["POST"]),
         Route("/api/claw/runs", claw_runs_history, methods=["GET"]),
         Route("/api/claw/approvals/decision", claw_approval_decision, methods=["POST"]),
