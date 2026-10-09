@@ -14,6 +14,7 @@ import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from uuid import UUID
 
 from b62_binding_state_guard import (
     BindingStateError,
@@ -217,6 +218,12 @@ def verify_rollback_target(anchor: dict, version: object, expected_worker: str) 
 def build_rollback_deployment(version_id: str) -> dict:
     """Cloudflare POST /deployments body, pinned to one known Worker Version."""
     if not isinstance(version_id, str) or not is_safe_version_id(version_id):
+        raise TransactionError("ROLLBACK_DEPLOYMENT_VERSION_INVALID")
+    try:
+        parsed = UUID(version_id)
+    except (ValueError, TypeError) as exc:
+        raise TransactionError("ROLLBACK_DEPLOYMENT_VERSION_INVALID") from exc
+    if str(parsed) != version_id or parsed.int == 0:
         raise TransactionError("ROLLBACK_DEPLOYMENT_VERSION_INVALID")
     return {
         "strategy": "percentage",
