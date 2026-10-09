@@ -15,9 +15,11 @@ import json
 import re
 import sys
 import tomllib
+from uuid import UUID
 from pathlib import Path
 
 EXPECTED_WORKER = "padiem-chat"
+OWNER_P01_D1_BINDING = "BROWSER_CONTROL_OWNER_P01_D1"
 SUPPORTED_BINDING_TYPES = {"assets", "service", "d1", "r2_bucket", "plain_text", "secret_text", "version_metadata"}
 REQUIRED_VARS = ("PADIEM_CHAT_RUNTIME_MODE", "PADIEM_CHAT_LIVE_ENABLED")
 PUBLIC_BASE_URL_VAR = "PADIEM_CHAT_PUBLIC_BASE_URL"
@@ -111,6 +113,7 @@ def build_production_config(
     live: dict[str, object],
     repo_config_path: Path,
     public_base_url: str,
+    owner_d1_database_id: str | None = None,
 ) -> str:
     try:
         repo = tomllib.loads(repo_config_path.read_text(encoding="utf-8"))
@@ -207,6 +210,29 @@ def build_production_config(
             lines.append(f"environment = {_toml_string(environment)}")
         lines.append("")
 
+    if owner_d1_database_id is not None:
+        # This opt-in merely builds a candidate config; it does not deploy.
+        try:
+            parsed = UUID(owner_d1_database_id)
+        except (TypeError, ValueError, AttributeError) as exc:
+            raise ProductionConfigError("Owner D1 ID must be a UUID") from exc
+        if str(parsed) != owner_d1_database_id or parsed.int == 0:
+            raise ProductionConfigError("Owner D1 ID must be a nonzero canonical UUID")
+        all_names = (
+            [item["name"] for item in live["assets"]]
+            + [item["name"] for item in live["services"]]
+            + [item["name"] for item in live["d1"]]
+            + [item["name"] for item in live["r2"]]
+            + list(live["vars"])
+            + list(live["secret_names"])
+        )
+        if live["version_metadata"] is not None:
+            all_names.append(live["version_metadata"]["name"])
+        if OWNER_P01_D1_BINDING in all_names:
+            raise ProductionConfigError("Owner D1 binding already exists in live settings")
+        if any(entry.get("id") == owner_d1_database_id for entry in live["d1"]):
+            raise ProductionConfigError("Owner D1 aliases a live D1 database")
+
     for database in live["d1"]:
         database_id = database.get("id")
         if not isinstance(database_id, str) or not database_id:
@@ -216,6 +242,13 @@ def build_production_config(
         lines.append("[[d1_databases]]")
         lines.append(f"binding = {_toml_string(str(database['name']))}")
         lines.append(f"database_id = {_toml_string(database_id)}")
+        lines.append("")
+
+    if owner_d1_database_id is not None:
+        lines.append("[[d1_databases]]")
+        lines.append(f"binding = {_toml_string(OWNER_P01_D1_BINDING)}")
+        lines.append('database_name = "padiem-browser-owner-p01"')
+        lines.append(f"database_id = {_toml_string(owner_d1_database_id)}")
         lines.append("")
 
     for bucket in live["r2"]:
@@ -295,12 +328,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--repo-config", required=True, type=Path)
     parser.add_argument("--public-base-url", required=True)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--owner-d1-database-id", help="candidate-only approved D1 UUID; never deploys")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
 
     try:
         payload = json.loads(args.settings.read_text(encoding="utf-8"))
         live = parse_live_bindings(payload)
-        config_text = build_production_config(live, args.repo_config, args.public_base_url)
+        config_text = build_production_config(live, args.repo_config, args.public_base_url, args.owner_d1_database_id)
         verify_mutation_zero(config_text, live)
     except (ProductionConfigError, OSError, json.JSONDecodeError) as exc:
         print(f"B62_PRODUCTION_CONFIG_GENERATED=FAIL\nREASON={exc}", file=sys.stderr)
@@ -317,6 +351,7 @@ def main(argv: list[str] | None = None) -> int:
     assert isinstance(secret_names, list)
     assert isinstance(plain_vars, dict)
     print("B62_PRODUCTION_CONFIG_GENERATED=PASS")
+    print(f"OWNER_P01_D1_CANDIDATE_ADDITION={int(args.owner_d1_database_id is not None)}")
     print(f"SERVICE_BINDINGS={len(live['services'])}")
     print(f"D1_BINDINGS={len(live['d1'])}")
     print(f"R2_BINDINGS={len(live['r2'])}")
