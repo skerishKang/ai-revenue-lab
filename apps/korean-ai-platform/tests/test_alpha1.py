@@ -1268,7 +1268,8 @@ class TestCatalogSourceContract:
     def test_catalog_source_metadata(self):
         from app.pilot.model_registry_file import read_registry
         rows=read_registry()["models"]
-        assert len(rows) == 11
+        from app.pilot.catalog import CATALOG_BY_ID
+        assert len(rows) == len(CATALOG_BY_ID)
         assert all(m["source"] and m["source_checked_at"] and m["upstream_model"] for m in rows)
         assert list_catalog_summaries() == []
 

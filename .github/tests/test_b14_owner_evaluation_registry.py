@@ -28,10 +28,13 @@ ELEVEN={
     "sensenova/sensenova-6.8-flash-lite",
 }
 
-def test_current_roster_is_eleven_registered_models_only():
+def test_current_roster_contains_all_prior_owner_registered_models():
     got=load_current_models()
-    assert set(got)==ELEVEN
-    assert len(got)==11
+    canonical=json.loads(CANONICAL_REGISTRY.read_text(encoding="utf8"))
+    ids={model["id"] for model in canonical["models"]}
+    assert ELEVEN <= set(got)
+    assert set(got)==ids
+    assert len(got)==len(canonical["models"])
     assert not (set(got)&OWNER_RETIRED)
     assert authorize_exact_models(tuple(got))==tuple(got)
     assert got["poolside/laguna-s-2.1"]["provider_id"]=="poolside"

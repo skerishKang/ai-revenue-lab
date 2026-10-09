@@ -28,10 +28,12 @@ def raw_for(case):
     }
 
 
-def test_authority_current_eleven_only():
+def test_authority_current_owner_registry_only():
     models=m.approved_models()
-    assert len(models)==11
-    assert len(set(models))==11
+    canonical=json.loads((ROOT/"apps/korean-ai-platform/app/pilot/b14_models.json").read_text(encoding="utf8"))
+    expected={item["id"] for item in canonical["models"]}
+    assert len(set(models))==len(models)
+    assert set(models)==expected
     assert not any(name.startswith("kilo/") for name in models)
     assert any(name.startswith("poolside/") for name in models)
     with pytest.raises(ValueError):
