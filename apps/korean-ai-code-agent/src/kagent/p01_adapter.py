@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable, Mapping
+from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
@@ -704,6 +704,7 @@ class P01CoreOrchestrationAdapter:
         product_tier: ProductTierLabel | None = None,
         subject_id: str | None = None,
         selected_model_id: str | None = None,
+        on_event: Callable[[OrchestrationEvent], Awaitable[None]] | None = None,
     ) -> ClawOrchestrationOutcome:
         try:
             bundle = self._factory.build(
@@ -718,7 +719,39 @@ class P01CoreOrchestrationAdapter:
                 trace_id=bundle.context.trace_id,
                 app_id=bundle.orchestration_request.app_id,
             )
-            port_result = await self._runner.run(bundle.orchestration_request)
+            # #3930: live events are opt-in. Existing execute()/run() remains
+            # byte-for-byte compatible when no observer was provided.
+            live_terminal: OrchestrationEvent | None = None
+            if on_event is None:
+                port_result = await self._runner.run(bundle.orchestration_request)
+            else:
+                run_stream = getattr(self._runner, "run_stream", None)
+                if not callable(run_stream):
+                    raise P01AdapterError(
+                        "p01_stream_unavailable",
+                        "The canonical P01 runner has no live stream capability.",
+                        dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+                    )
+                terminal_kinds = {
+                    OrchestrationEventKind.RUN_COMPLETED,
+                    OrchestrationEventKind.RUN_FAILED,
+                    OrchestrationEventKind.RUN_CANCELLED,
+                    OrchestrationEventKind.APPROVAL_PAUSED,
+                }
+
+                async def project_live_event(event: OrchestrationEvent) -> None:
+                    nonlocal live_terminal
+                    # Source-only Core event: never expose its message/metadata
+                    # directly from this server-owned observer boundary.
+                    projector.consume(event)
+                    if event.kind in terminal_kinds:
+                        live_terminal = event
+                    else:
+                        await on_event(event)
+
+                port_result = await run_stream(
+                    bundle.orchestration_request, on_event=project_live_event
+                )
             approval_pause_wire: EngineApprovalPauseWire | None = None
             if isinstance(port_result, P01PausedWireResult):
                 approval_pause_wire = port_result.wire
@@ -796,6 +829,16 @@ class P01CoreOrchestrationAdapter:
                     dispatch_class=P01DispatchClass.DISPATCHED,
                     failure_detail=P01_FAILURE_DETAIL_CONTRACT,
                 )
+
+            if on_event is not None:
+                if live_terminal is None or not result.events or result.events[-1] != live_terminal:
+                    raise P01AdapterError(
+                        "p01_live_terminal_mismatch",
+                        "Live P01 event did not match the verified terminal result.",
+                        dispatch_class=P01DispatchClass.DISPATCHED,
+                        failure_detail=P01_FAILURE_DETAIL_CONTRACT,
+                    )
+                await on_event(live_terminal)
 
             answer = (
                 redact_secrets(result.execution_result.answer)
