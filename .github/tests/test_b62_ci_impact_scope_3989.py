@@ -121,10 +121,11 @@ class B62ScopeTests(unittest.TestCase):
         self.assertIn("name: Core tests with Tool Runtime dev dependency", text)
         self.assertIn("name: Real Worker/Pyodide probes (all four, parallel, fail-closed)", text)
         self.assertIn("run: bash ../../.github/scripts/b62_worker_probe_parallel.sh", text)
-        # Avoid four parallel cold npx installs sharing ~/.npm/_npx.
-        self.assertIn("run: npx --yes wrangler@4.130.0 --version", text)
-        self.assertLess(text.index("run: npx --yes wrangler@4.130.0 --version"),
-                        text.index("run: bash ../../.github/scripts/b62_worker_probe_parallel.sh"))
+        # Main owns pinned Wrangler prewarming within its parallel runner.
+        runner = (ROOT / ".github/scripts/b62_worker_probe_parallel.sh").read_text(encoding="utf-8")
+        self.assertIn("npx --yes wrangler@4.130.0 --version", runner)
+        self.assertLess(runner.index("npx --yes wrangler@4.130.0 --version"),
+                        runner.index("for index in 0 1 2 3; do"))
         self.assertIn("scope: ${{ steps.classify-b62.outputs.scope }}", text)
         self.assertIn("B62_CI_IMPACT_SCOPE=", SCRIPT.read_text(encoding="utf-8"))
 

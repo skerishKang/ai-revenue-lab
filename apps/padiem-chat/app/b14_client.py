@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from collections.abc import AsyncIterator, Awaitable, Callable
+from collections.abc import AsyncIterator, Awaitable, Callable, Mapping
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Any, Protocol
 
 # Core completion transports use real httpx's type family, also on Workers.
@@ -45,6 +46,36 @@ PADIEM_IDENTITY_INSTRUCTION = (
 
 class B14ServiceTransport(Protocol):
     async def post_json(self, url: str, payload: dict[str, Any]) -> tuple[int, bytes]: ...
+
+
+def _native_model_parameter_contract_present() -> bool:
+    """Measure whether the INSTALLED shared Core can carry the #3977 fields.
+
+    `supports_native_model_parameters` is a claim about the code that will
+    actually build this request, so it is probed rather than asserted: a Core
+    build that rejects or ignores ``model_parameters`` reports False, and B66
+    then refuses an explicit reasoning level before dispatch instead of quietly
+    dropping the customer's choice. This never infers capability from a model
+    name; which served model accepts which value stays B14 authority.
+    """
+    try:
+        from padiem_ai_core.b14_execution import B14ChatRequest
+
+        probe = B14ChatRequest(
+            messages=({"role": "user", "content": "capability probe"},),
+            model="native-parameter-contract-probe",
+            model_parameters={"reasoning_effort": "low"},
+        )
+        payload = probe.to_payload()
+    except Exception:
+        return False
+    return payload.get("reasoning_effort") == "low" and "model_parameters" not in payload
+
+
+@lru_cache(maxsize=1)
+def _native_model_parameter_transport() -> bool:
+    """The installed Core is fixed for the process, so the probe is cached once."""
+    return _native_model_parameter_contract_present()
 
 
 class _CoreTransportAdapter:
@@ -251,6 +282,7 @@ def _agent_profile(
     model: str,
     required_capabilities: tuple[str, ...],
     max_retries: int | None = None,
+    model_parameters: Mapping[str, Any] | None = None,
 ) -> AgentProfile:
     """Convert B62-owned TaskMode/model policy into the locked Core contract."""
 
@@ -275,6 +307,14 @@ def _agent_profile(
             "allow_external_fallback": False,
             "max_attempts": 1,
             **({"max_retries": max_retries} if max_retries is not None else {}),
+            # Only an explicitly requested native parameter enters the policy.
+            # Nothing here synthesizes a level the caller never asked for, and an
+            # absent choice leaves the request exactly as it was before (#3977).
+            **(
+                {"model_parameters": dict(model_parameters)}
+                if model_parameters
+                else {}
+            ),
         },
     )
 
@@ -287,6 +327,7 @@ def _execution_request(
     required_capabilities: tuple[str, ...],
     additional_system_context: str | None,
     max_retries: int | None = None,
+    model_parameters: Mapping[str, Any] | None = None,
 ) -> ExecutionRequest:
     return ExecutionRequest(
         agent=_agent_profile(
@@ -294,6 +335,7 @@ def _execution_request(
             model=model,
             required_capabilities=required_capabilities,
             max_retries=max_retries,
+            model_parameters=model_parameters,
         ),
         messages=tuple(dict(message) for message in messages),
         additional_system_context=_bounded_context(additional_system_context),
@@ -518,6 +560,7 @@ class B14Client:
         additional_system_context: str | None,
         max_retries: int | None = None,
         before_dispatch: Callable[[], Awaitable[None]] | None = None,
+        model_parameters: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
         request = _execution_request(
             messages,
@@ -526,6 +569,7 @@ class B14Client:
             required_capabilities=("chat",),
             additional_system_context=additional_system_context,
             max_retries=max_retries,
+            model_parameters=model_parameters,
         )
         core_client = B14ExecutionClient(
             self._completion_config(),
@@ -604,6 +648,16 @@ class B14Client:
             "attachments": [attachment.public_dict()],
         }
 
+    @property
+    def supports_native_model_parameters(self) -> bool:
+        """Whether validated #3977 native parameters reach the wire from here.
+
+        Read by the B66 boundary before it commits a customer's explicit
+        reasoning level. It reflects the installed Core contract, measured once,
+        and is never inferred from a model name or forced True.
+        """
+        return _native_model_parameter_transport()
+
     def ensure_registered_quote_runtime_available(self) -> None:
         """Check the B66 live boundary without selecting or contacting a model."""
         if (
@@ -630,6 +684,7 @@ class B14Client:
         *,
         model: str,
         additional_system_context: str | None = None,
+        model_parameters: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
         """B66 trusted exact route -> common Core/B14, NOT B62 tier policy.
 
@@ -659,6 +714,10 @@ class B14Client:
             or not messages[0]["content"].strip()
         ):
             raise ChatRuntimeError(422, "invalid_request", "견적 입력 형식을 확인해 주세요.")
+        if model_parameters is not None and not isinstance(model_parameters, Mapping):
+            raise ChatRuntimeError(
+                422, "invalid_request", "견적 모델 파라미터 형식을 확인해 주세요."
+            )
         quote_task = TaskMode(
             id="b66_quote_extract_v1",
             title="B66 quote extraction",
@@ -669,6 +728,13 @@ class B14Client:
             max_tokens=None,
         )
         bounded_context = _bounded_context(additional_system_context)
+        # An omitted parameter set stays the exact pre-#3906 call, so every
+        # existing quote caller keeps its shape. Only a customer's explicit
+        # choice adds a hop; field spelling is validated by the shared Core and
+        # per-model capability by B14, never guessed here (#3977).
+        native_kwargs: dict[str, Any] = (
+            {"model_parameters": dict(model_parameters)} if model_parameters else {}
+        )
         return await self._complete_text(
             [dict(messages[0])],
             skill=quote_task,
@@ -676,6 +742,7 @@ class B14Client:
             additional_system_context=bounded_context,
             max_retries=0,
             before_dispatch=self._prepare_registered_quote_dispatch,
+            **native_kwargs,
         )
 
     async def complete(

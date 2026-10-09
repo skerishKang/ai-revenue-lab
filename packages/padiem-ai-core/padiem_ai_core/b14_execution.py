@@ -319,6 +319,50 @@ class B14RoutingOptions:
         return out
 
 
+# ── Provider-native optional request parameters (#3977) ──────────────────────
+# The shared Core owns the WIRE NAME and the accepted SPELLING of these
+# documented fields. It deliberately owns neither which served model accepts
+# which value, nor any default for a field the caller left out: that is B14
+# capability authority (apps/korean-ai-platform/app/pilot/model_native_parameters.py),
+# re-checked on the request body at the gateway. An unlisted field or a value
+# outside the closed vocabulary fails closed here instead of reaching a paid
+# provider, and nothing is ever silently dropped, downgraded or invented.
+REASONING_EFFORT_VALUES = frozenset({"minimal", "low", "medium", "high"})
+
+_NATIVE_PARAMETER_RULES: dict[str, frozenset[str]] = {
+    "reasoning_effort": REASONING_EFFORT_VALUES,
+}
+NATIVE_MODEL_PARAMETER_FIELDS = frozenset(_NATIVE_PARAMETER_RULES)
+
+
+def _normalize_model_parameters(
+    raw: object,
+) -> Mapping[str, Any]:
+    """Validate explicit provider-native overrides; empty stays empty."""
+    if raw is None:
+        return MappingProxyType({})
+    if not isinstance(raw, Mapping):
+        raise ValueError("model_parameters must be a mapping")
+    unknown = {key for key in raw if key not in NATIVE_MODEL_PARAMETER_FIELDS}
+    if unknown:
+        # Never forward a field this contract does not name: an invented key
+        # would either be dropped unnoticed or accepted by a different vendor.
+        raise ValueError(
+            "unsupported model_parameters fields: " + ", ".join(sorted(map(str, unknown)))
+        )
+    validated: dict[str, Any] = {}
+    for name, rule in _NATIVE_PARAMETER_RULES.items():
+        if name not in raw or raw[name] is None:
+            continue
+        value = raw[name]
+        if not isinstance(value, str) or value not in rule:
+            raise ValueError(
+                f"{name} must be one of " + ", ".join(sorted(rule))
+            )
+        validated[name] = value
+    return MappingProxyType(validated)
+
+
 @dataclass(frozen=True, slots=True)
 class B14ChatRequest:
     messages: tuple[Mapping[str, Any], ...]
@@ -329,6 +373,12 @@ class B14ChatRequest:
     temperature: float = 0.2
     max_tokens: int | None = None
     routing: B14RoutingOptions = field(default_factory=B14RoutingOptions)
+    # Validated provider-native overrides. They are transmitted as TOP-LEVEL
+    # request fields, never as a nested ``model_parameters`` object, because
+    # that is the shape the B14 gateway and the vendor APIs document (#3977).
+    # An empty mapping contributes nothing, so an unspecified request keeps its
+    # exact pre-#3977 layout.
+    model_parameters: Mapping[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "messages", _normalize_messages(self.messages))
@@ -366,6 +416,10 @@ class B14ChatRequest:
         if not isinstance(self.routing, B14RoutingOptions):
             raise ValueError("routing must be B14RoutingOptions")
 
+        object.__setattr__(
+            self, "model_parameters", _normalize_model_parameters(self.model_parameters)
+        )
+
     def to_payload(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
             "model": self.model,
@@ -374,6 +428,9 @@ class B14ChatRequest:
         }
         if self.max_tokens is not None:
             payload["max_tokens"] = self.max_tokens
+        # Documented native fields go at the TOP LEVEL of the request body.
+        for name in sorted(self.model_parameters):
+            payload[name] = self.model_parameters[name]
         routing = self.routing.to_dict()
         if routing:
             payload["business14"] = routing

@@ -65,10 +65,11 @@ B62_CHAT_EXPECTED_PATHS = (
     "reference/business-62-padiem-chat-v1/**",
     ".github/scripts/b62_cloudflare_*.py",
     ".github/scripts/b14_model_registration_ci_plan.py",
-    # #3989: changing the scoped classifier or its proof suite reruns the full
-    # B62 workflow, with fail-closed classification and stable status contexts.
+    # #3989 scoped Chat CI source/guard changes always trigger FULL lane.
     ".github/scripts/b62_ci_impact_scope_3989.py",
     ".github/tests/test_b62_ci_impact_scope_3989.py",
+    ".github/scripts/b62_worker_probe_*.sh",
+    ".github/tests/test_3989_b62_worker_probe_parallel.py",
     ".github/workflows/b62-padiem-chat-ci.yml",
     ".github/workflows/b62-cloudflare-worker-deploy.yml",
 )

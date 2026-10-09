@@ -14,6 +14,8 @@ from .b14_execution import (
     B14ExecutionResult,
     B14RouteMetadata,
     B14RoutingOptions,
+    NATIVE_MODEL_PARAMETER_FIELDS,
+    _normalize_model_parameters,
 )
 from .contracts import (
     AgentProfile,
@@ -38,6 +40,9 @@ _MODEL_POLICY_FIELDS = frozenset(
         "provider_order",
         "max_attempts",
         "max_retries",
+        # #3977: explicitly requested provider-native overrides. Absent means
+        # no such field is sent; there is no synthesized value in this layer.
+        "model_parameters",
     }
 )
 
@@ -171,6 +176,29 @@ def _normalize_model_policy(
         max_retries=max_retries,
     )
     return model.strip(), float(temperature), routing
+
+
+def _native_model_parameters(agent: AgentProfile) -> Mapping[str, Any]:
+    """Return the caller's explicit provider-native overrides, validated.
+
+    #3977: this layer checks the closed wire vocabulary only. Whether the
+    exact served model accepts a value is B14 capability authority and is
+    re-validated on the request body at the gateway, so a value can never be
+    invented, widened or quietly discarded here. An omitted policy key yields an
+    empty mapping, which contributes nothing to the request.
+    """
+    raw = agent.model_policy.get("model_parameters")
+    if raw is None:
+        return MappingProxyType({})
+    if not isinstance(raw, Mapping):
+        raise ValueError("model_policy.model_parameters must be a mapping")
+    unknown = {key for key in raw if key not in NATIVE_MODEL_PARAMETER_FIELDS}
+    if unknown:
+        raise ValueError(
+            "unsupported model_policy.model_parameters fields: "
+            + ", ".join(sorted(map(str, unknown)))
+        )
+    return _normalize_model_parameters(raw)
 
 
 def _error_class_for_b14(code: str) -> ErrorClass:
@@ -392,6 +420,7 @@ class ExecutionRuntime:
         try:
             system_instruction = _compose_system_instruction(request)
             model, temperature, routing = _normalize_model_policy(request.agent)
+            model_parameters = _native_model_parameters(request.agent)
             messages = request.messages
             if system_instruction is not None:
                 messages = (
@@ -404,6 +433,7 @@ class ExecutionRuntime:
                 temperature=temperature,
                 max_tokens=request.agent.max_tokens,
                 routing=routing,
+                model_parameters=model_parameters,
             )
         except ValueError:
             metadata = self._metadata(

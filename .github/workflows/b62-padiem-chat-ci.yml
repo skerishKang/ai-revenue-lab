@@ -20,6 +20,9 @@ on:
       - ".github/scripts/b14_model_registration_ci_plan.py"
       - ".github/scripts/b62_ci_impact_scope_3989.py"
       - ".github/tests/test_b62_ci_impact_scope_3989.py"
+      # CI implementation itself: probe runner/test changes require real B62 checks.
+      - ".github/scripts/b62_worker_probe_*.sh"
+      - ".github/tests/test_3989_b62_worker_probe_parallel.py"
       - ".github/workflows/b62-padiem-chat-ci.yml"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   pull_request:
@@ -36,6 +39,9 @@ on:
       - ".github/scripts/b14_model_registration_ci_plan.py"
       - ".github/scripts/b62_ci_impact_scope_3989.py"
       - ".github/tests/test_b62_ci_impact_scope_3989.py"
+      # CI implementation itself: probe runner/test changes require real B62 checks.
+      - ".github/scripts/b62_worker_probe_*.sh"
+      - ".github/tests/test_3989_b62_worker_probe_parallel.py"
       - ".github/workflows/b62-padiem-chat-ci.yml"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   workflow_dispatch:
@@ -158,8 +164,7 @@ jobs:
       - name: B62 tests
         run: uv run --locked python -m pytest -q
       - name: Core tests with Tool Runtime dev dependency
-        # Core and dependency/config changes still use full regression; only
-        # proven Chat-only Python or static edits can omit invariant Core tests.
+        # Shared Core source/dependency changes always use original full CI.
         if: ${{ needs.registry-ci-plan.outputs.scope != 'chat_only' && needs.registry-ci-plan.outputs.scope != 'static_only' }}
         working-directory: packages/padiem-ai-core
         run: uv run --extra dev python -m pytest -q
@@ -173,14 +178,8 @@ jobs:
         run: git diff --exit-code -- uv.lock pylock.toml
       - name: Verify Worker probe concurrency and failure propagation contract
         run: uv run --locked python -m unittest discover -s ../../.github/tests -p test_3989_b62_worker_probe_parallel.py -q
-      - name: Prewarm pinned Wrangler before concurrent probes
-        # Four concurrent npx cold installs collide inside ~/.npm/_npx
-        # (EEXIST wrangler2/esbuild). Install once, then share the cache.
-        if: ${{ needs.registry-ci-plan.outputs.scope != 'static_only' }}
-        run: npx --yes wrangler@4.130.0 --version
       - name: Real Worker/Pyodide probes (all four, parallel, fail-closed)
-        # Static assets do not change Python Worker transport/P01/R2 behavior;
-        # any Python/Worker/unknown change keeps all four parallel probes.
+        # Retain all parallel probes on Python/Worker/mixed/unknown changes.
         if: ${{ needs.registry-ci-plan.outputs.scope != 'static_only' }}
         run: bash ../../.github/scripts/b62_worker_probe_parallel.sh
       - name: Prove Core vendored for Python Worker
