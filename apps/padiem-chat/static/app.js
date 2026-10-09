@@ -200,6 +200,10 @@
   function addAssistantShell(label) {
     const fragment = document.getElementById("assistantMessageTemplate").content.cloneNode(true);
     const article = fragment.querySelector(".assistant-message");
+    // #3931: identify the product whose conversation is currently rendered.
+    // The shared shell is not evidence that a Claw run came from Chat.
+    const productLabel = article.querySelector("[data-assistant-product]");
+    if (productLabel) productLabel.textContent = shell.dataset.state === "claw" ? "Padiem Claw" : "Padiem Chat";
     article.querySelector("[data-runtime-label]").textContent = label;
     messageList.appendChild(fragment);
     PadiemChatLifecycle.set(article, MESSAGE_LIFECYCLE.STREAMING);
