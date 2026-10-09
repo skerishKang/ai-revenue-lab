@@ -103,3 +103,20 @@ def test_acceptance_code_has_no_live_provider_mutations_or_private_paths():
         assert forbidden not in source
     assert "BLOCKED_REAL_E2E" in source
     assert "NOT_INDEPENDENTLY_VERIFIED" in source
+
+
+def test_source_only_cli_exits_nonzero_even_with_all_eight_claimed_component_scenes():
+    import subprocess
+    import sys
+    import json
+
+    cli = ROOT / "scripts" / "hark_3936_acceptance.py"
+    result = subprocess.run(
+        [sys.executable, str(cli), "--tested-scenes", *SCENES],
+        capture_output=True, text=True, encoding="utf-8", timeout=15, check=False,
+    )
+    assert result.returncode == 3
+    report = json.loads(result.stdout)
+    assert report["local_component_evidence_count"] == 8
+    assert report["disposition"] == "BLOCKED_REAL_E2E"
+    assert "HARK_3936_STATUS=BLOCKED_REAL_E2E" in result.stderr

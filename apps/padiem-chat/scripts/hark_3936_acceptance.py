@@ -79,7 +79,9 @@ def main() -> int:
     else:
         print(result, end="")
     print("HARK_3936_STATUS=BLOCKED_REAL_E2E", file=sys.stderr)
-    return 0 if fixture_error is None else 1
+    # Never return successful exit status for a purported #3936 live release gate.
+    # A source-only report is a useful artifact, not real E2E acceptance.
+    return 3 if fixture_error is None else 2
 
 
 if __name__ == "__main__":

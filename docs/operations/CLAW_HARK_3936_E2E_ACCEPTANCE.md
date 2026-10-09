@@ -62,7 +62,9 @@ python apps/padiem-chat/scripts/hark_3936_acceptance.py `
   --output 'E:\private\hark-3936-local-evidence.json'
 ```
 
-The verifier never prints private paths or copies screenshots. The output
+The verifier exits with **code 3** for a valid but BLOCKED real-E2E inventory,
+and **code 2** for an invalid/missing private fixture. No invocation exits 0
+until a separately authorized end-to-end verifier is implemented. The output
 contains only status, scene identifiers, expected dummy financial figures and
 SHA hashes. Do not put evidence reports, screenshots, secrets, user names,
 authorization headers or customer workbooks in GitHub.
