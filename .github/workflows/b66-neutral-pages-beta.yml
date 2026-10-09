@@ -339,6 +339,7 @@ jobs:
           node --check cgi-template-v2.js
           node --check quote-embed-bridge.js
           node --check quote-embed-browser.js
+          node --check quote-import-atomic.js
           node --check quote-drive-contract.js
           node --check quote-drive-client.js
           node --check quote-drive-ui.js
@@ -383,6 +384,8 @@ jobs:
           node tests/quote-drive-ui.test.cjs
           node tests/quote-drive-integration.test.cjs
           node tests/quote-drive-account-flow.test.cjs
+          node tests/quote-import-atomic.test.cjs
+          node tests/quote-drive-import-safety.test.cjs
 
       - name: Run B66 server intake adapter contracts
         shell: bash

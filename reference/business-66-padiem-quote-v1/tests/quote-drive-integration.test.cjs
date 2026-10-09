@@ -640,6 +640,25 @@ const keepFile = (h, id, name, mimeType) => {
     mark("S17_OTHER_TEMPLATE_PROTECTS_EDITOR", "PASS (see quote-drive-account-flow.test.cjs)");
   }
 
+  /* 시나리오 18 — 불러오기 실패는 편집기 내용·템플릿을 바꾸지 않는다(원자성) */
+  {
+    const atomicSource = readModule("quote-import-atomic.js");
+    assert.ok(htmlSource.includes('src="quote-import-atomic.js"'), "S18_ATOMIC_SCRIPT_LOADED");
+    assert.ok(atomicSource.indexOf("beforeApply") !== -1, "S18_COMMIT_POINT_GUARD_PRESENT");
+    assert.ok(atomicSource.indexOf("restore") !== -1, "S18_ROLLBACK_PRESENT");
+    /* UI 는 원자적 브리지 연산만 사용한다(2단계 replaceDraft 직접 호출 금지) */
+    assert.ok(/bridge\.applyImportedDraft\(/.test(uiSource), "S18_UI_USES_ATOMIC_BRIDGE");
+    assert.ok(!/bridge\.replaceDraft\(/.test(uiSource), "S18_UI_NO_DIRECT_REPLACE_DRAFT");
+    /* 복구가 확인되지 않으면 보존을 주장하지 않는다 */
+    assert.ok(/result\.preserved === true/.test(uiSource), "S18_UI_BRANCHES_ON_PRESERVED");
+    assert.ok(/복구했다고 확인하지 못했습니다/.test(uiSource), "S18_UI_HARD_FAILURE_MESSAGE");
+    assert.ok(appSource.includes("applyImportedDraft"), "S18_BRIDGE_EXPOSES_ATOMIC_APPLY");
+    assert.ok(appSource.includes("snapshotEditorState"), "S18_BRIDGE_SNAPSHOTS_EDITOR");
+    assert.ok(appSource.includes("restoreEditorState"), "S18_BRIDGE_RESTORES_EDITOR");
+    mark("S18_IMPORT_FAILURE_PRESERVES_EDITOR",
+      "PASS (see quote-import-atomic.test.cjs, quote-drive-import-safety.test.cjs)");
+  }
+
   console.log(scenario.join("\n"));
   console.log("SLICE_E_OFFLINE_TESTED=PASS");
   console.log("CROSS_BROWSER_DRIVE_REOPEN=NOT_TESTED");

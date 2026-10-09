@@ -1372,6 +1372,78 @@
     }
   });
 
+  /* ── #3871 불러오기 원자성: 편집기 상태 스냅샷과 복구 ──
+     불러오기 실패가 작성 중 내용과 선택된 승인 템플릿을 바꾸면 안 된다.
+     스냅샷은 draft·세금 검토 상태·항목 시퀀스·템플릿 선택·승인 Skill 상태를 담는다. */
+  function snapshotEditorState() {
+    let templateSelectionRaw = null;
+    try {
+      const storage = templateStorage();
+      templateSelectionRaw = storage && TemplateSelection
+        ? storage.getItem(TemplateSelection.SELECTION_STORAGE_KEY)
+        : null;
+    } catch (_) {
+      templateSelectionRaw = null;
+    }
+    return {
+      draft: cloneDraft(draft),
+      taxReviewRequired: taxReviewRequired === true,
+      itemSeq: itemSeq,
+      transientPublicTemplateSelection: transientPublicTemplateSelection
+        ? {
+            quoteNo: transientPublicTemplateSelection.quoteNo,
+            templateId: transientPublicTemplateSelection.templateId
+          }
+        : null,
+      templateSelectionRaw: typeof templateSelectionRaw === "string" ? templateSelectionRaw : null,
+      skillState: {
+        activeSkillId: skillUiState.activeSkillId,
+        serverSkill: skillUiState.serverSkill ? cloneDraft(skillUiState.serverSkill) : null,
+        serverSavedSkillId: skillUiState.serverSavedSkillId,
+        serverSlotSources: cloneDraft(skillUiState.serverSlotSources || {})
+      }
+    };
+  }
+
+  /* 복구 성공 여부를 boolean 으로만 보고한다. 실패를 감추지 않는다. */
+  function restoreEditorState(snapshot) {
+    if (!snapshot || typeof snapshot !== "object") return false;
+    try {
+      const restored = replaceDraft(snapshot.draft);
+      if (!restored || restored.ok !== true) return false;
+      taxReviewRequired = snapshot.taxReviewRequired === true;
+      persistTaxReviewRequired(taxReviewRequired);
+      if (Number.isFinite(snapshot.itemSeq)) itemSeq = snapshot.itemSeq;
+      transientPublicTemplateSelection = snapshot.transientPublicTemplateSelection
+        ? {
+            quoteNo: snapshot.transientPublicTemplateSelection.quoteNo,
+            templateId: snapshot.transientPublicTemplateSelection.templateId
+          }
+        : null;
+      const storage = templateStorage();
+      if (storage && TemplateSelection) {
+        if (typeof snapshot.templateSelectionRaw === "string") {
+          storage.setItem(TemplateSelection.SELECTION_STORAGE_KEY, snapshot.templateSelectionRaw);
+        } else {
+          storage.removeItem(TemplateSelection.SELECTION_STORAGE_KEY);
+        }
+      }
+      const skillState = snapshot.skillState || {};
+      skillUiState.activeSkillId = skillState.activeSkillId || null;
+      skillUiState.serverSkill = skillState.serverSkill || null;
+      skillUiState.serverSavedSkillId = skillState.serverSavedSkillId || null;
+      skillUiState.serverSlotSources = skillState.serverSlotSources || {};
+      renderItems();
+      fillInputsFromDraft();
+      renderTaxReviewState();
+      renderTemplateUi();
+      render();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   /* ── #3871 외부 저장소(고객 본인 Google Drive) 저장용 PDF 바이트 ──
      화면 다운로드 흐름과 동일하게 인증된 CGI 브라우저 렌더러만 사용한다.
      새 렌더러·새 템플릿·모델 호출은 없다. 바이트만 돌려주고 파일로 저장하지 않는다. */
@@ -1790,6 +1862,39 @@
     getDraft: () => cloneDraft(draft),
     replaceDraft,
     certifiedPdfBytes: certifiedPdfBytesForStorage,
+    /* #3871: 불러오기 적용을 원자적으로 처리한다.
+       사전 검증(정규화·승인 템플릿 권위·내용 지문) → 스냅샷 → 적용 직전 가드
+       → 적용 → 되읽기 검증 → 실패 시 복구. 복구가 확인되지 않으면 preserved=false 다. */
+    applyImportedDraft: (nextDraft, options) => {
+      const opts = options || {};
+      const Atomic = window.B66QuoteImportAtomic;
+      if (!Atomic || typeof Atomic.applyImport !== "function") {
+        return {
+          ok: false, code: "import_helper_unavailable", applied: false,
+          restored: false, preserved: false, draft: null
+        };
+      }
+      return Atomic.applyImport({
+        nextDraft: nextDraft,
+        template: opts.template || null,
+        resolveActiveTemplate: () => {
+          const profile = activeSkillProfile() || activeTemplateProfile();
+          if (!profile) return null;
+          return {
+            savedSkillId: skillUiState.serverSavedSkillId || skillUiState.activeSkillId || null,
+            fingerprint: profile.fingerprint || null
+          };
+        },
+        expectedFingerprint: typeof opts.expectedFingerprint === "string" ? opts.expectedFingerprint : null,
+        fingerprint: opts.fingerprint,
+        normalize: (value) => Core.normalizeDraft(value),
+        readDraft: () => cloneDraft(draft),
+        writeDraft: (value) => replaceDraft(value),
+        snapshot: snapshotEditorState,
+        restore: restoreEditorState,
+        beforeApply: opts.beforeApply
+      });
+    },
     /* #3871: 불러오기가 작성 중인 견적을 덮어쓸 수 있는지 판단하는 근거. */
     hasMeaningfulDraft: () => Boolean(History && typeof History.isMeaningfulDraft === "function"
       ? History.isMeaningfulDraft(draft)

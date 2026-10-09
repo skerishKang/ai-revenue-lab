@@ -4,6 +4,7 @@ const Core = require("../quote-core.js");
 const Contract = require("../quote-drive-contract.js");
 const Client = require("../quote-drive-client.js");
 const Ui = require("../quote-drive-ui.js");
+const { createEditorBridge } = require("./quote-editor-stub.cjs");
 
 const JSON_MIME = Contract.JSON_MIME;
 const PDF_MIME = Contract.PDF_MIME;
@@ -169,27 +170,25 @@ function harness(options) {
     loadScript: async () => { throw new Error("no network in test"); }
   }));
 
-  const bridgeCalls = [];
-  const current = { draft: opts.draft || draftFixture() };
-  const bridge = {
-    getDraft: () => { bridgeCalls.push("getDraft"); return current.draft; },
-    replaceDraft: (draft) => {
-      bridgeCalls.push("replaceDraft");
-      if (opts.replaceFails === true) return { ok: false, error: "invalid_draft" };
-      if (opts.replaceThrows === true) throw new Error("boom");
-      current.draft = Core.normalizeDraft(draft);
-      return { ok: true, draft: current.draft };
-    },
-    certifiedPdfBytes: async () => (opts.pdfOk === false
-      ? { ok: false, code: "pdf_source_unavailable" }
-      : { ok: true, bytes: opts.pdfBytes ? opts.pdfBytes() : pdfBytes(), fileName: "a.pdf" }),
-    activeTemplateReference: () => (opts.templateRef === undefined ? TEMPLATE : opts.templateRef),
-    listApprovedSkills: () => (opts.approvedSkills === undefined ? APPROVED : opts.approvedSkills),
-    toast: () => {}
-  };
+  /* 편집기 + 브리지 스텁은 실제 제품 모듈(quote-import-atomic.js)을 그대로 사용한다. */
+  const editorHarness = createEditorBridge({
+    draft: opts.draft || draftFixture(),
+    activeTemplate: opts.templateRef === undefined ? TEMPLATE : opts.templateRef,
+    approvedSkills: opts.approvedSkills === undefined ? APPROVED : opts.approvedSkills,
+    hasMeaningfulDraft: opts.hasMeaningfulDraft !== false,
+    writeBehavior: opts.writeBehavior,
+    restoreFails: opts.restoreFails === true,
+    pdfOk: opts.pdfOk,
+    pdfBytes: opts.pdfBytes
+  });
+  const bridge = editorHarness.bridge;
+  const current = editorHarness.editor;
+  const bridgeCalls = editorHarness.calls;
 
   return {
     doc, client, state, bridgeCalls, bridge, current,
+    editor: editorHarness.editor,
+    writes: editorHarness.writes,
     async connect() {
       const pending = client.connect();
       await flush();
@@ -403,7 +402,7 @@ function harness(options) {
     assert.ok(ui.statusText().indexOf("선택해 주세요") !== -1, "FILE_LIST_PRESENTED");
     ui.click("confirmOpen");
     await settle();
-    assert.ok(h.bridgeCalls.indexOf("replaceDraft") !== -1, "DRAFT_APPLIED_TO_EDITOR");
+    assert.equal(h.writes().length, 1, "DRAFT_APPLIED_TO_EDITOR");
     assert.deepEqual(h.current.draft, loaded, "LOADED_DRAFT_IDENTICAL");
     assert.ok(ui.statusText().indexOf("다시 계산") !== -1, "RECALCULATION_EXPLAINED");
   }
@@ -429,7 +428,7 @@ function harness(options) {
     await settle();
     ui.click("confirmOpen");
     await settle();
-    assert.equal(h.bridgeCalls.indexOf("replaceDraft"), -1, "UNRESOLVED_TEMPLATE_NOT_APPLIED");
+    assert.equal(h.writes().length, 0, "UNRESOLVED_TEMPLATE_NOT_APPLIED");
     assert.ok(ui.statusText().indexOf("자동 대체하지 않았습니다") !== -1, "TEMPLATE_BLOCK_EXPLAINED");
   }
 
@@ -447,24 +446,29 @@ function harness(options) {
       },
       media: media
     };
-    for (const mode of ["replaceFails", "replaceThrows"]) {
-      const h = harness(Object.assign({}, base, { [mode]: true }));
+    for (const mode of ["fail", "throw"]) {
+      const h = harness(Object.assign({}, base, { writeBehavior: { mode: mode } }));
       await h.connect();
+      const before = JSON.parse(JSON.stringify(h.current.draft));
+      const beforeTemplate = JSON.parse(JSON.stringify(h.current.template));
       const ui = h.mount();
       ui.click("open");
       await settle();
       ui.click("confirmOpen");
       await settle();
       assert.equal(ui.statusTone(), "error", "APPLY_FAILURE_IS_ERROR: " + mode);
-      assert.ok(ui.statusText().indexOf("적용하지 못했습니다") !== -1, "APPLY_FAILURE_MESSAGE: " + mode);
+      assert.ok(ui.statusText().indexOf("그대로 유지됩니다") !== -1, "APPLY_FAILURE_MESSAGE: " + mode);
+      assert.deepEqual(h.current.draft, before, "APPLY_FAILURE_KEEPS_OLD_DRAFT: " + mode);
+      assert.deepEqual(h.current.template, beforeTemplate, "APPLY_FAILURE_KEEPS_TEMPLATE: " + mode);
     }
   }
 
-  /* ── 12. 편집기 반영 내용이 다르면 성공으로 표시하지 않는다 ── */
+  /* ── 12. 편집기 반영 내용이 다르면 오류 표시 + 기존 내용·템플릿 보존(강화) ── */
   {
     const loaded = draftFixture();
     const media = packageTextFor(loaded, "pkg-ui-4");
     const h = harness({
+      writeBehavior: { mode: "mismatch" },
       files: [{ id: "json-4", name: "d.json", mimeType: JSON_MIME, trashed: false, owners: [{ me: true }] }],
       metadataById: {
         "json-4": {
@@ -475,18 +479,18 @@ function harness(options) {
       media: media
     });
     await h.connect();
+    const before = JSON.parse(JSON.stringify(h.current.draft));
+    const beforeTemplate = JSON.parse(JSON.stringify(h.current.template));
     const ui = h.mount();
-    h.bridge.replaceDraft = (draft) => {
-      h.bridgeCalls.push("replaceDraft");
-      h.current.draft = Core.normalizeDraft(Object.assign({}, draft, { memo: "다른 내용" }));
-      return { ok: true };
-    };
     ui.click("open");
     await settle();
     ui.click("confirmOpen");
     await settle();
     assert.equal(ui.statusTone(), "error", "READBACK_MISMATCH_IS_ERROR");
-    assert.ok(ui.statusText().indexOf("정확히 반영되지 않았습니다") !== -1, "READBACK_MISMATCH_MESSAGE");
+    assert.ok(ui.statusText().indexOf("그대로 유지됩니다") !== -1, "READBACK_MISMATCH_MESSAGE");
+    assert.deepEqual(h.current.draft, before, "READBACK_MISMATCH_KEEPS_OLD_DRAFT");
+    assert.deepEqual(h.current.template, beforeTemplate, "READBACK_MISMATCH_KEEPS_TEMPLATE");
+    assert.ok(h.bridgeCalls.indexOf("restore:ok") !== -1, "ROLLBACK_WAS_PERFORMED");
   }
 
   /* ── 13. 사용자가 취소하면 편집 중 견적을 바꾸지 않는다 ── */
@@ -509,7 +513,7 @@ function harness(options) {
     await settle();
     ui.click("confirmOpen");
     await settle();
-    assert.equal(h.bridgeCalls.indexOf("replaceDraft"), -1, "CANCEL_DOES_NOT_REPLACE_DRAFT");
+    assert.equal(h.writes().length, 0, "CANCEL_DOES_NOT_REPLACE_DRAFT");
     assert.ok(ui.statusText().indexOf("취소") !== -1, "CANCEL_EXPLAINED");
   }
 
@@ -626,7 +630,7 @@ function harness(options) {
     h.client.openPicker = async () => ({ ok: true, code: "picked", picked: [{ id: "picked-1", name: "picked.json" }] });
     ui.click("picker");
     await settle();
-    assert.ok(h.bridgeCalls.indexOf("replaceDraft") !== -1, "PICKER_PATH_OPENS_FILE");
+    assert.equal(h.writes().length, 1, "PICKER_PATH_OPENS_FILE");
     assert.deepEqual(h.current.draft, loaded, "PICKER_LOADED_DRAFT_IDENTICAL");
   }
 
@@ -654,7 +658,7 @@ function harness(options) {
     assert.ok(ui.statusText().indexOf("목록에서 선택") !== -1, "PICKER_FALLBACK_EXPLAINED");
     ui.click("confirmOpen");
     await settle();
-    assert.ok(h.bridgeCalls.indexOf("replaceDraft") !== -1, "FALLBACK_LIST_PATH_WORKS");
+    assert.equal(h.writes().length, 1, "FALLBACK_LIST_PATH_WORKS");
   }
 
   console.log("B66_DRIVE_UI=PASS");

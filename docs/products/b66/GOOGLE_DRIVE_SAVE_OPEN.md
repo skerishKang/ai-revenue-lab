@@ -32,6 +32,7 @@ PRODUCTION_DEPLOYMENT=NOT_PERFORMED
 | `reference/business-66-padiem-quote-v1/quote-drive-contract.js` | 버전 명시 JSON 스키마, 내용 지문, 필드 단위 무손실 검증, JSON·PDF 연결 매니페스트, 파일명/중복 규칙, 크기·형식·스키마 검증, 부분 실패 결과 모델과 재시도 쌍 고정, QuoteCore 재계산 |
 | `reference/business-66-padiem-quote-v1/quote-drive-client.js` | Google OAuth(GIS) + Drive API v3 통신, 최소 권한 `drive.file`, Picker, **소유권 fail-closed 검증**, 페이지 전체 조회, 세션 epoch, 부분 실패 복구 |
 | `reference/business-66-padiem-quote-v1/quote-drive-ui.js` | **1회성 시작 훅(자동 mount)**, 저장/불러오기/연결 상태/부분 성공 표시, **B66 로그아웃·계정 전환 시 Drive 토큰 폐기**, 승인 템플릿 확인 후에만 편집기 적용, Picker 경로 |
+| `reference/business-66-padiem-quote-v1/quote-import-atomic.js` | **불러오기 적용 원자성** — 사전 검증(정규화·승인 템플릿 권위·내용 지문) → 스냅샷 → 적용 직전 가드(계정 권위·세션 세대) → 적용 → 되읽기 검증 → 실패 시 복구. 편집기를 직접 만지지 않고 주입된 훅만 사용한다 |
 | `reference/business-66-padiem-quote-v1/app.js` | 외부 저장용 인증 PDF 바이트 seam(`certifiedPdfBytes`)과 승인 Skill 목록(`listApprovedSkills`) 추가. 기존 다운로드 경로는 변경 없음 |
 
 ## 시작 훅 (고객이 실제로 버튼을 본다)
@@ -95,6 +96,8 @@ totals             = null            (저장된 합계는 쓰지도 읽지도 �
 | 파일 안의 신원 주장 필드 | `unsupported_package_field`(허용 목록 밖) |
 | 견적 본문 변조 | `content_fingerprint_mismatch` |
 | 편집 데이터 손실 | `quote_lossy_round_trip`, `draft_lossy_round_trip` |
+| 적용 직전 계정/세션 변경 | `drive_session_changed`, `drive_not_connected`, `apply_guard_rejected` |
+| 적용 실패·복구 결과 | `replace_failed`, `replace_exception`, `apply_verification_failed`, `snapshot_unavailable`, `import_helper_unavailable` |
 | 소유 정보 없음/비어 있음 | `drive_file_ownership_unverified` |
 | 다른 계정 소유 | `drive_file_not_owned_by_connected_account` |
 | 다운로드 불가 | `drive_file_not_downloadable` |
@@ -197,9 +200,29 @@ pair = { packageId, createdAt, jsonName, pdfName, baseName, renamed,
 - **편집 중 내용 보호**: 현재 견적에 작성 중인 내용이 있으면(`hasMeaningfulDraft`)
   명시적 확인을 받은 경우에만 교체한다. 확인 수단이 없으면 교체하지 않는다(fail-safe).
   빈 편집기이고 양식이 같을 때만 확인 없이 적용한다.
-- `replaceDraft` 가 실패/예외를 돌려주면 성공으로 표시하지 않는다.
-- 적용 뒤 `getDraft()` 로 되읽어 내용 지문이 일치할 때만 성공을 표시한다.
 - 파일 선택기는 `appId`/`developerKey` 가 설정된 경우에만 열리고, 없으면 목록 선택으로 대체한다.
+
+### 적용 원자성 — 실패해도 작성 중 내용과 템플릿이 그대로 남는다
+
+`B66QuoteAppBridge.applyImportedDraft()` 가 `quote-import-atomic.js` 로 다음 순서를 강제한다.
+
+```text
+1 가져올 draft 정규화            실패 → invalid_draft            (변이 없음)
+2 승인 템플릿 권위 사전 확인      불일치 → template_authority_mismatch (변이 없음)
+3 내용 지문 사전 확인            불일치 → content_fingerprint_mismatch (변이 없음)
+4 기존 상태 스냅샷 + 기존 내용 지문 기록
+5 적용 직전 가드(계정 권위·세션 세대) 거부 → apply_guard_rejected (변이 없음)
+6 적용
+7 되읽어 지문 검증               불일치 → apply_verification_failed
+8 실패 시 복구 → 복구 결과를 지문으로 재확인
+```
+
+- 스냅샷은 **draft · 세금 검토 상태 · 항목 시퀀스 · 템플릿 선택 · 승인 Skill 상태**를 담는다.
+- 적용 직전 가드는 `beforeApply` 로 **B66 계정 권위와 Drive 세션 세대를 커밋 지점에서** 확인한다.
+- `replaceDraft` 가 예외를 던지거나(일부 변이 후 예외 포함) 실패를 반환하면 복구한다.
+- 결과 필드: `applied`(반영 여부), `restored`(복구 시도 성공), `preserved`(복구 후 지문이 기존과 동일).
+- **복구에 실패했거나 기존 지문을 확인할 수 없으면 `preserved=false`** 이며, 화면은
+  "복구했다고 확인하지 못했습니다" 로 **보존을 주장하지 않는다**.
 
 ## 운영 배포 전 필요한 승인 항목 (CENTRAL)
 

@@ -11,6 +11,7 @@ const Core = require("../quote-core.js");
 const Contract = require("../quote-drive-contract.js");
 const Client = require("../quote-drive-client.js");
 const Ui = require("../quote-drive-ui.js");
+const { createEditorBridge } = require("./quote-editor-stub.cjs");
 
 const CLIENT_ID = "test-client-id.apps.googleusercontent.com";
 const JSON_MIME = Contract.JSON_MIME;
@@ -154,24 +155,23 @@ function harness(options) {
   });
   const client = Object.assign({}, frozen);
 
-  const bridgeCalls = [];
-  const current = { draft: opts.draft || draftFixture() };
-  const bridge = {
-    getDraft: () => { bridgeCalls.push("getDraft"); return current.draft; },
-    replaceDraft: (draft) => {
-      bridgeCalls.push("replaceDraft");
-      current.draft = Core.normalizeDraft(draft);
-      return { ok: true, draft: current.draft };
-    },
-    certifiedPdfBytes: async () => ({ ok: true, bytes: new Uint8Array(512).fill(0), fileName: "a.pdf" }),
-    activeTemplateReference: () => (opts.activeTemplate === undefined ? TEMPLATE_A : opts.activeTemplate),
-    listApprovedSkills: () => (opts.approvedSkills === undefined ? APPROVED_BOTH : opts.approvedSkills),
-    hasMeaningfulDraft: () => opts.hasMeaningfulDraft === true,
-    toast: () => {}
-  };
+  /* 편집기 + 브리지 스텁은 실제 제품 모듈(quote-import-atomic.js)을 그대로 사용한다. */
+  const editorHarness = createEditorBridge({
+    draft: opts.draft || draftFixture(),
+    activeTemplate: opts.activeTemplate === undefined ? TEMPLATE_A : opts.activeTemplate,
+    approvedSkills: opts.approvedSkills === undefined ? APPROVED_BOTH : opts.approvedSkills,
+    hasMeaningfulDraft: opts.hasMeaningfulDraft === true,
+    writeBehavior: opts.writeBehavior,
+    restoreFails: opts.restoreFails === true
+  });
+  const bridge = editorHarness.bridge;
+  const current = editorHarness.editor;
+  const bridgeCalls = editorHarness.calls;
 
   return {
     doc, client, state, calls, gis, bridgeCalls, current, bridge,
+    editor: editorHarness.editor,
+    writes: editorHarness.writes,
     mount(extra) {
       const base = { document: doc, client: client, bridge: bridge, contract: Contract };
       if (opts.confirm !== undefined) base.confirm = opts.confirm;
@@ -375,7 +375,7 @@ function harness(options) {
     await settle();
     ui.click("confirmOpen");
     await settle();
-    assert.equal(h.bridgeCalls.indexOf("replaceDraft"), -1, "OTHER_TEMPLATE_NOT_APPLIED");
+    assert.equal(h.writes().length, 0, "OTHER_TEMPLATE_NOT_APPLIED");
     assert.deepEqual(h.current.draft, beforeDraft, "EXISTING_EDITOR_CONTENT_PROTECTED");
     assert.equal(ui.statusTone(), "warn", "OTHER_TEMPLATE_STATUS_TONE");
     assert.ok(ui.statusText().indexOf("다른 승인 양식") !== -1, "OTHER_TEMPLATE_EXPLAINED");
@@ -407,7 +407,7 @@ function harness(options) {
     await settle();
     ui.click("confirmOpen");
     await settle();
-    assert.equal(h.bridgeCalls.indexOf("replaceDraft"), -1, "NO_CONFIRM_MEANS_NO_REPLACE");
+    assert.equal(h.writes().length, 0, "NO_CONFIRM_MEANS_NO_REPLACE");
     assert.deepEqual(h.current.draft, beforeDraft, "CONTENT_KEPT_WITHOUT_CONFIRM");
     assert.ok(ui.statusText().indexOf("취소") !== -1, "PROTECTIVE_CANCEL_EXPLAINED");
   }
@@ -436,7 +436,7 @@ function harness(options) {
     await settle();
     ui.click("confirmOpen");
     await settle();
-    assert.ok(h.bridgeCalls.indexOf("replaceDraft") !== -1, "BLANK_EDITOR_APPLIES_WITHOUT_PROMPT");
+    assert.equal(h.writes().length, 1, "BLANK_EDITOR_APPLIES_WITHOUT_PROMPT");
     assert.deepEqual(h.current.draft, loaded, "LOADED_DRAFT_IDENTICAL");
   }
 
@@ -465,7 +465,7 @@ function harness(options) {
     await settle();
     ui.click("confirmOpen");
     await settle();
-    assert.ok(h.bridgeCalls.indexOf("replaceDraft") !== -1, "CONFIRMED_REPLACE_APPLIES");
+    assert.equal(h.writes().length, 1, "CONFIRMED_REPLACE_APPLIES");
     assert.deepEqual(h.current.draft, loaded, "CONFIRMED_DRAFT_IDENTICAL");
   }
 

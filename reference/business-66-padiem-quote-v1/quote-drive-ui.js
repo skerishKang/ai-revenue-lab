@@ -462,8 +462,8 @@
         setStatus(opened.message || ("선택한 파일을 불러올 수 없습니다. (" + opened.code + ")"), "error");
         return;
       }
-      if (!bridge || typeof bridge.replaceDraft !== "function" || typeof bridge.getDraft !== "function") {
-        setStatus("불러온 견적을 편집기에 적용할 수 없습니다.", "error");
+      if (!bridge || typeof bridge.applyImportedDraft !== "function") {
+        setStatus("불러온 견적을 안전하게 적용할 수 없습니다. (import_helper_unavailable)", "error");
         return;
       }
 
@@ -507,39 +507,59 @@
         return;
       }
 
-      /* 적용 결과를 반드시 확인한다. 실패를 성공으로 표시하지 않는다. */
-      var applied = null;
-      try {
-        applied = bridge.replaceDraft(opened.draft);
-      } catch (err) {
-        applied = { ok: false, error: "replace_failed" };
-      }
-      if (!applied || applied.ok !== true) {
-        setStatus("불러온 견적을 편집기에 적용하지 못했습니다. (" +
-          ((applied && applied.error) || "replace_failed") + ")", "error");
+      /* 3) 실제 적용 직전 재확인: B66 계정 권위와 Drive 세션 세대.
+         여기서 확인에 실패하면 편집기를 건드리지 않는다. */
+      if (superseded(epoch)) return;
+      if (client.session().connected !== true) {
+        setStatus("B66 계정이 변경되어 불러오기를 취소했습니다. 작성 중인 견적은 그대로입니다.", "warn");
         return;
       }
 
-      var readBack = null;
-      try {
-        readBack = bridge.getDraft();
-      } catch (err) {
-        readBack = null;
-      }
-      var templateRef = typeof bridge.activeTemplateReference === "function" ? bridge.activeTemplateReference() : null;
-      var expected = opened.contentFingerprint;
-      var actual = Contract && typeof Contract.contentFingerprint === "function"
-        ? Contract.contentFingerprint(readBack, templateRef)
-        : null;
-      if (!readBack || !actual || (expected && actual !== expected)) {
-        setStatus("불러온 견적이 편집기에 정확히 반영되지 않았습니다. 다시 시도해 주세요.", "error");
+      if (typeof bridge.applyImportedDraft !== "function") {
+        setStatus("불러온 견적을 안전하게 적용할 수 없습니다. (import_helper_unavailable)", "error");
         return;
       }
 
-      var grand = opened.totals ? opened.totals.grand : null;
-      var message = "견적을 불러왔습니다. 금액은 QuoteCore로 다시 계산했습니다.";
-      if (grand !== null && typeof grand === "number") message += " 합계 " + String(grand);
-      setStatus(message, "ok");
+      /* 4) 원자적 적용: 사전 검증 → 스냅샷 → 가드 → 적용 → 되읽기 검증 → 실패 시 복구.
+         실패했을 때 기존 내용·템플릿이 그대로인지 여부를 결과로 구분해 표시한다. */
+      var result = null;
+      try {
+        result = bridge.applyImportedDraft(opened.draft, {
+          template: importedTemplate,
+          expectedFingerprint: opened.contentFingerprint,
+          fingerprint: function (value) {
+            return Contract && typeof Contract.contentFingerprint === "function"
+              ? Contract.contentFingerprint(value, importedTemplate)
+              : null;
+          },
+          beforeApply: function () {
+            if (client.session().epoch !== epoch) return { ok: false, code: "drive_session_changed" };
+            if (client.session().connected !== true) return { ok: false, code: "drive_not_connected" };
+            return { ok: true };
+          }
+        });
+      } catch (err) {
+        result = { ok: false, code: "apply_exception", applied: false, restored: false, preserved: false };
+      }
+
+      if (result && result.ok === true) {
+        var grand = opened.totals ? opened.totals.grand : null;
+        var message = "견적을 불러왔습니다. 금액은 QuoteCore로 다시 계산했습니다.";
+        if (grand !== null && typeof grand === "number") message += " 합계 " + String(grand);
+        setStatus(message, "ok");
+        return;
+      }
+
+      var code = (result && result.code) || "apply_failed";
+      if (result && result.preserved === true) {
+        /* 복구가 지문으로 확인된 경우에만 보존을 주장한다. */
+        setStatus("견적을 불러오지 못했습니다. 작성 중이던 견적과 선택한 양식은 그대로 유지됩니다. (" +
+          code + ")", "error");
+        return;
+      }
+      /* 복구가 확인되지 않았으면 보존을 주장하지 않는다. */
+      setStatus("견적을 불러오지 못했고, 작성 중이던 내용을 복구했다고 확인하지 못했습니다. " +
+        "견적 내용과 선택된 양식을 확인해 주세요. (" + code + ")", "error");
     }
 
     async function onConfirmOpen() {
