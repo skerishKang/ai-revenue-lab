@@ -586,5 +586,3 @@ def test_zero_byte_module_is_hashed_and_compared_as_valid_content():
     after["result"]["modules"][0]["content_base64"] = base64.b64encode(b"now nonempty").decode()
     with pytest.raises(TransactionError, match="CODE_MODULE_CONTENT_DRIFT"):
         assert_exact_worker_code(before, after, "original-version", "new-version")
-
-
