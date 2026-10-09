@@ -18,6 +18,8 @@ on:
       - "reference/business-62-padiem-chat-v1/**"
       - ".github/scripts/b62_cloudflare_*.py"
       - ".github/scripts/b14_model_registration_ci_plan.py"
+      - ".github/scripts/b62_ci_impact_scope_3989.py"
+      - ".github/tests/test_b62_ci_impact_scope_3989.py"
       # CI implementation itself: probe runner/test changes require real B62 checks.
       - ".github/scripts/b62_worker_probe_*.sh"
       - ".github/tests/test_3989_b62_worker_probe_parallel.py"
@@ -35,6 +37,8 @@ on:
       - "reference/business-62-padiem-chat-v1/**"
       - ".github/scripts/b62_cloudflare_*.py"
       - ".github/scripts/b14_model_registration_ci_plan.py"
+      - ".github/scripts/b62_ci_impact_scope_3989.py"
+      - ".github/tests/test_b62_ci_impact_scope_3989.py"
       # CI implementation itself: probe runner/test changes require real B62 checks.
       - ".github/scripts/b62_worker_probe_*.sh"
       - ".github/tests/test_3989_b62_worker_probe_parallel.py"
@@ -55,6 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       lane: ${{ steps.classify.outputs.lane }}
+      scope: ${{ steps.classify-b62.outputs.scope }}
     steps:
       - uses: actions/checkout@v4
       - name: Test CI lane fail-closed rules
@@ -64,6 +69,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: python .github/scripts/b14_model_registration_ci_plan.py
+      - name: Test B62 scoped-regression fail-closed contract
+        run: python -m unittest discover -s .github/tests -p test_b62_ci_impact_scope_3989.py -q
+      - name: Classify B62 unchanged-dependency CI scope
+        id: classify-b62
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python .github/scripts/b62_ci_impact_scope_3989.py
 
   b62-registry-contract:
     name: B62 B14 registry-only contract
@@ -152,6 +164,8 @@ jobs:
       - name: B62 tests
         run: uv run --locked python -m pytest -q
       - name: Core tests with Tool Runtime dev dependency
+        # Shared Core source/dependency changes always use original full CI.
+        if: ${{ needs.registry-ci-plan.outputs.scope != 'chat_only' && needs.registry-ci-plan.outputs.scope != 'static_only' }}
         working-directory: packages/padiem-ai-core
         run: uv run --extra dev python -m pytest -q
       - name: Verify locked host dependency versions
@@ -165,6 +179,8 @@ jobs:
       - name: Verify Worker probe concurrency and failure propagation contract
         run: uv run --locked python -m unittest discover -s ../../.github/tests -p test_3989_b62_worker_probe_parallel.py -q
       - name: Real Worker/Pyodide probes (all four, parallel, fail-closed)
+        # Retain all parallel probes on Python/Worker/mixed/unknown changes.
+        if: ${{ needs.registry-ci-plan.outputs.scope != 'static_only' }}
         run: bash ../../.github/scripts/b62_worker_probe_parallel.sh
       - name: Prove Core vendored for Python Worker
         run: |
