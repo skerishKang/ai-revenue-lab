@@ -18,6 +18,8 @@ on:
       - "reference/business-62-padiem-chat-v1/**"
       - ".github/scripts/b62_cloudflare_*.py"
       - ".github/scripts/b14_model_registration_ci_plan.py"
+      - ".github/scripts/b62_ci_impact_scope_3989.py"
+      - ".github/tests/test_b62_ci_impact_scope_3989.py"
       - ".github/workflows/b62-padiem-chat-ci.yml"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   pull_request:
@@ -32,6 +34,8 @@ on:
       - "reference/business-62-padiem-chat-v1/**"
       - ".github/scripts/b62_cloudflare_*.py"
       - ".github/scripts/b14_model_registration_ci_plan.py"
+      - ".github/scripts/b62_ci_impact_scope_3989.py"
+      - ".github/tests/test_b62_ci_impact_scope_3989.py"
       - ".github/workflows/b62-padiem-chat-ci.yml"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   workflow_dispatch:
@@ -49,6 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       lane: ${{ steps.classify.outputs.lane }}
+      scope: ${{ steps.classify-b62.outputs.scope }}
     steps:
       - uses: actions/checkout@v4
       - name: Test CI lane fail-closed rules
@@ -58,6 +63,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: python .github/scripts/b14_model_registration_ci_plan.py
+      - name: Test B62 scoped-regression fail-closed contract
+        run: python -m unittest discover -s .github/tests -p test_b62_ci_impact_scope_3989.py -q
+      - name: Classify B62 unchanged-dependency CI scope
+        id: classify-b62
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python .github/scripts/b62_ci_impact_scope_3989.py
 
   b62-registry-contract:
     name: B62 B14 registry-only contract
@@ -146,6 +158,9 @@ jobs:
       - name: B62 tests
         run: uv run --locked python -m pytest -q
       - name: Core tests with Tool Runtime dev dependency
+        # Chat-only edits cannot change shared Core source. Unknown/mixed scope
+        # falls back to the original full suite, including this Core check.
+        if: ${{ needs.registry-ci-plan.outputs.scope != 'chat_only' && needs.registry-ci-plan.outputs.scope != 'static_only' }}
         working-directory: packages/padiem-ai-core
         run: uv run --extra dev python -m pytest -q
       - name: Verify locked host dependency versions
@@ -157,6 +172,7 @@ jobs:
       - name: Prove sync did not mutate committed locks
         run: git diff --exit-code -- uv.lock pylock.toml
       - name: Real Worker/Pyodide timeout runtime probe
+        if: ${{ needs.registry-ci-plan.outputs.scope != 'static_only' }}
         run: |
           set -euo pipefail
           cat > .runtime-timeout-probe.toml <<'EOF'
@@ -218,6 +234,7 @@ jobs:
           print("WORKER_TIMEOUT_RUNTIME_PASS")
           PY
       - name: Real Worker/Pyodide web transport runtime probe
+        if: ${{ needs.registry-ci-plan.outputs.scope != 'static_only' }}
         run: |
           set -euo pipefail
           cat > .runtime-web-transport-probe.toml <<'EOF'
@@ -282,6 +299,7 @@ jobs:
           print("WORKER_WEB_TRANSPORT_PASS")
           PY
       - name: Real Worker/Pyodide P01 Engine-binding composition probe
+        if: ${{ needs.registry-ci-plan.outputs.scope != 'static_only' }}
         run: |
           set -euo pipefail
           cat > .runtime-p01-binding-probe.toml <<'EOF'
@@ -342,6 +360,7 @@ jobs:
           print("WORKER_P01_BINDING_COMPOSITION_PASS")
           PY
       - name: Real Worker/Pyodide R2 ObjectBody read probe
+        if: ${{ needs.registry-ci-plan.outputs.scope != 'static_only' }}
         run: |
           set -euo pipefail
           cat > .runtime-r2-read-probe.toml <<'EOF'
