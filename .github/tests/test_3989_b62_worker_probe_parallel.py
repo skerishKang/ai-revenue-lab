@@ -64,7 +64,7 @@ class WorkerProbeParallelContract(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="b62-npx-prewarm-") as directory:
             temp = Path(directory)
             fake = temp / "npx"
-            fake.write_text("#!/bin/sh\\nexit 17\\n", encoding="utf-8")
+            fake.write_text("#!/bin/sh\nexit 17\n", encoding="utf-8")
             fake.chmod(0o755)
             env = os.environ.copy()
             env["PATH"] = str(temp) + os.pathsep + env.get("PATH", "")
