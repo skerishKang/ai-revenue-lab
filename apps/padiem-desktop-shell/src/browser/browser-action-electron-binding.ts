@@ -59,11 +59,18 @@ export function createElectronBrowserActionBinding(
   const runOp = async (op: ActionDispatchOp): Promise<void> => {
     switch (op.kind) {
       case 'click':
+        // Real Chromium needs a pointer move before press/release. Hermetic
+        // tests with mocked CDP accepted the old pair, but Electron did not
+        // deliver an actual click without this pointer state transition.
+        await sendAllowed('Input.dispatchMouseEvent', {
+          type: 'mouseMoved', x: op.x, y: op.y, button: 'none', buttons: 0,
+        });
         await sendAllowed('Input.dispatchMouseEvent', {
           type: 'mousePressed',
           x: op.x,
           y: op.y,
           button: 'left',
+          buttons: 1,
           clickCount: 1,
         });
         await sendAllowed('Input.dispatchMouseEvent', {
@@ -71,18 +78,22 @@ export function createElectronBrowserActionBinding(
           x: op.x,
           y: op.y,
           button: 'left',
+          buttons: 0,
           clickCount: 1,
         });
         return;
       case 'focus':
-        // Focus without activation: press ON the target (mousedown focuses),
-        // then release OUTSIDE it so no click is completed on the target or on
-        // whatever sits under the release point.
+        // Focus without activation: move+press ON the target (mousedown
+        // focuses), then release OUTSIDE it so a click is never completed.
+        await sendAllowed('Input.dispatchMouseEvent', {
+          type: 'mouseMoved', x: op.x, y: op.y, button: 'none', buttons: 0,
+        });
         await sendAllowed('Input.dispatchMouseEvent', {
           type: 'mousePressed',
           x: op.x,
           y: op.y,
           button: 'left',
+          buttons: 1,
           clickCount: 1,
         });
         await sendAllowed('Input.dispatchMouseEvent', {
@@ -90,6 +101,7 @@ export function createElectronBrowserActionBinding(
           x: op.releaseX,
           y: op.releaseY,
           button: 'left',
+          buttons: 0,
           clickCount: 1,
         });
         return;
