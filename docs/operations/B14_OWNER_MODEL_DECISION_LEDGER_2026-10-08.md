@@ -10,7 +10,7 @@
 
 - Owner explicitly requested `experiential/qwen3.8-flash-next-uncensored`, the ExLab gateway upstream `qwen3.8-flash-next-uncensored`. Canonical B14 source now has **10 registered models / 7 platform providers**; the prior nine-model discussions are historical snapshots. This is separate from retired B.AI Qwen (`b-ai/qwen3.8-flash`) and retired ExLab GPT-5.6 Luna.
 - The existing Cloudflare Secrets Store binding name `PADIEM_EXLAB_API_KEY` is reused, without reading or changing its value. No automatic fallback, tier assignment or Production deployment.
-- **Live call safety:** vendor data-controls documentation regarding uncensored-model retention conflicts with current exact-model ZDR public metadata. The new ExLab model is source-registered but explicitly **blocked at the manual resolver and last pre-egress boundary** pending clarified data policy and a separate Owner-cleared activation gate. Treat `SOURCE_REGISTERED` differently from `CUSTOMER_READY`.
+- **Owner correction 2026-10-10:** The Owner expressly accepts ExLab data-retention concerns for the current free-promotion live evaluation and did not request a special release hold. Remove `model_data_policy_pending` and matching last-egress refusal from PR #3961. Preserve manual-only selection, normal credential and network error controls, no automatic model selection, silent fallback or default/tier mutation. Live Worker success is not established by mocked tests.
 
 ## 0C. Owner final retirement — Thinking Machines Inkling Small (2026-10-10, newest)
 
