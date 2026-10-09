@@ -468,6 +468,7 @@ def test_real_api_changed_etag_and_upload_source_with_identical_bytes_is_accepte
     args = _engine() if worker == "engine" else _chat()
     original = args[3]
     _, anchor = _prepare(worker)
+    original["result"]["resources"]["script"]["last_deployed_from"] = "wrangler"
     after = copy.deepcopy(original)
     after["result"]["id"] = "new-live-version"
     after["result"]["resources"]["bindings"].append(
