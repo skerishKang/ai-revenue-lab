@@ -58,6 +58,7 @@ def canonical_binding(raw: object) -> tuple[object, ...]:
             name,
             _required_text(raw, "service"),
             _optional_text(raw, "environment"),
+            _optional_text(raw, "entrypoint"),
         )
     if kind == "d1":
         # GET /settings uses "id"; GET /versions/{version} uses "database_id".
