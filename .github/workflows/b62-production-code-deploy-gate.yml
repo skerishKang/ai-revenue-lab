@@ -6,6 +6,8 @@ on:
       - ".github/workflows/b62-production-code-deploy-gate.yml"
       - ".github/scripts/b62_cloudflare_production_deploy_config.py"
       - ".github/scripts/b62_public_origin_504_guard.py"
+      - ".github/scripts/b62_cloudflare_504_readonly_get.sh"
+      - ".github/tests/test_b62_cloudflare_504_readonly_get.py"
       - ".github/tests/test_b62_public_origin_504_gate.py"
       - ".github/scripts/b62_binding_state_guard.py"
       - ".github/scripts/b62_served_version_secret_guard.py"
@@ -111,6 +113,12 @@ jobs:
       - name: Test 504-only public-origin proof with negative controls
         shell: bash
         run: python .github/tests/test_b62_public_origin_504_gate.py
+
+      - name: Validate B62 Cloudflare read-only 504 retry contract
+        shell: bash
+        run: |
+          bash -n .github/scripts/b62_cloudflare_504_readonly_get.sh
+          python .github/tests/test_b62_cloudflare_504_readonly_get.py
 
       - name: Run served-version secret set guard regressions
         shell: bash
@@ -297,16 +305,16 @@ jobs:
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
 
           settings="${RUNNER_TEMP}/b62-settings-readonly.json"
-          curl -fsS "${auth[@]}" "${api}/settings" -o "${settings}"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/settings" "${settings}"
           jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
 
           deployments="${RUNNER_TEMP}/b62-deployments-readonly.json"
-          curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/deployments" "${deployments}"
           active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           test -n "${active}"
 
           versions="${RUNNER_TEMP}/b62-versions-readonly.json"
-          curl -fsS "${auth[@]}" "${api}/versions?page=1&per_page=1" -o "${versions}"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions?page=1&per_page=1" "${versions}"
           latest="$(jq -r '.result.items[0].id // empty' "${versions}")"
           # #2451 item 7 / child #2898: the latest==active equality authority is the
           # canonical lineage primitive. It publishes LATEST_VERSION_EQUALS_ACTIVE_VERSION
@@ -424,15 +432,15 @@ jobs:
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
           settings="${RUNNER_TEMP}/b62-settings-before.json"
-          curl -fsS "${auth[@]}" "${api}/settings" -o "${settings}"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/settings" "${settings}"
           jq -e '.success == true' "${settings}" >/dev/null
           deployments="${RUNNER_TEMP}/b62-deployments-before.json"
-          curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/deployments" "${deployments}"
           active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           test "${active}" = "${READONLY_ACTIVE_VERSION}"
           echo "PREMUTATION_ACTIVE_VERSION_STABLE=PASS"
           detail="${RUNNER_TEMP}/b62-version-before.json"
-          curl -fsS "${auth[@]}" "${api}/versions/${active}" -o "${detail}"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions/${active}" "${detail}"
           etag_before="$(jq -er '.result.resources.script.etag' "${detail}")"
           {
             echo "PREVIOUS_VERSION_ID=${active}"
@@ -583,12 +591,12 @@ jobs:
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
           for attempt in $(seq 1 12); do
             deployments="${RUNNER_TEMP}/b62-deployments-after.json"
-            curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
+            bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/deployments" "${deployments}"
             if ! active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"; then
               active=""
             fi
             versions="${RUNNER_TEMP}/b62-versions-after.json"
-            curl -fsS "${auth[@]}" "${api}/versions?page=1&per_page=1" -o "${versions}"
+            bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions?page=1&per_page=1" "${versions}"
             latest="$(jq -r '.result.items[0].id // empty' "${versions}")"
             if [ -n "${latest}" ] && [ "${latest}" = "${active}" ]; then
               break
@@ -601,7 +609,7 @@ jobs:
           echo "DEPLOYED_VERSION_ID=${active}" >> "${GITHUB_ENV}"
 
           settings="${RUNNER_TEMP}/b62-settings-after.json"
-          curl -fsS "${auth[@]}" "${api}/settings" -o "${settings}"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/settings" "${settings}"
           jq -e '.success == true and (.result.bindings | type == "array")' "${settings}" >/dev/null
 
           normalized_before="${RUNNER_TEMP}/b62-settings-before-normalized.json"
@@ -644,7 +652,7 @@ jobs:
           PY
 
           detail="${RUNNER_TEMP}/b62-version-after.json"
-          curl -fsS "${auth[@]}" "${api}/versions/${active}" -o "${detail}"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions/${active}" "${detail}"
           etag_after="$(jq -er '.result.resources.script.etag' "${detail}")"
           test "${etag_after}" != "${PREVIOUS_SCRIPT_ETAG}"
           echo "SCRIPT_ETAG_CHANGED=PASS"
@@ -726,7 +734,7 @@ jobs:
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
           deployments="${RUNNER_TEMP}/b62-rollback-precheck.json"
-          curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/deployments" "${deployments}"
           active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"
           if [ "${active}" = "${PREVIOUS_VERSION_ID}" ]; then
             echo "ROLLBACK_NOT_REQUIRED_ACTIVE_VERSION_UNCHANGED"
@@ -740,7 +748,7 @@ jobs:
           echo "ROLLBACK_POST_ATTEMPTED=YES"
           for attempt in $(seq 1 12); do
             deployments="${RUNNER_TEMP}/b62-auto-rollback-state.json"
-            curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
+            bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/deployments" "${deployments}"
             if ! active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"; then
               active=""
             fi
@@ -800,7 +808,7 @@ jobs:
           found=0
           for page in 1 2 3 4; do
             versions="${RUNNER_TEMP}/b62-versions-page-${page}.json"
-            curl -fsS "${auth[@]}" "${api}/versions?page=${page}&per_page=25" -o "${versions}"
+            bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions?page=${page}&per_page=25" "${versions}"
             if jq -e --arg id "${PREVIOUS_VERSION_ID}" '.result.items[] | select(.id == $id)' "${versions}" >/dev/null; then
               found=1
               break
@@ -808,7 +816,7 @@ jobs:
           done
           test "${found}" = "1"
           detail="${RUNNER_TEMP}/b62-rollback-target.json"
-          curl -fsS "${auth[@]}" "${api}/versions/${PREVIOUS_VERSION_ID}" -o "${detail}"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions/${PREVIOUS_VERSION_ID}" "${detail}"
           etag="$(jq -er '.result.resources.script.etag' "${detail}")"
           echo "ROLLBACK_TARGET_ETAG=${etag}" >> "${GITHUB_ENV}"
           echo "B62_ROLLBACK_TARGET_FOUND=PASS"
@@ -824,7 +832,7 @@ jobs:
             -o "${RUNNER_TEMP}/b62-rollback-deploy.json"
           for attempt in $(seq 1 12); do
             deployments="${RUNNER_TEMP}/b62-rollback-state.json"
-            curl -fsS "${auth[@]}" "${api}/deployments" -o "${deployments}"
+            bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/deployments" "${deployments}"
             if ! active="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active --deployments "${deployments}")"; then
               active=""
             fi
@@ -844,7 +852,7 @@ jobs:
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
           detail="${RUNNER_TEMP}/b62-rollback-readback.json"
-          curl -fsS "${auth[@]}" "${api}/versions/${PREVIOUS_VERSION_ID}" -o "${detail}"
+          bash .github/scripts/b62_cloudflare_504_readonly_get.sh "${api}/versions/${PREVIOUS_VERSION_ID}" "${detail}"
           etag="$(jq -er '.result.resources.script.etag' "${detail}")"
           test "${etag}" = "${ROLLBACK_TARGET_ETAG}"
           health_status="$(curl -sS -o /dev/null -w '%{http_code}' "${B62_PUBLIC_BASE_URL}/health")"
