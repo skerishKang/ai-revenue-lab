@@ -516,7 +516,7 @@ def test_tinyfish_fetch_posts_url_and_unwraps_envelope() -> None:
     assert seen["method"] == "POST"
     assert seen["url"] == TINYFISH_FETCH_ORIGIN
     assert seen["headers"]["x-api-key"] == "tf-secret"  # type: ignore[index]
-    assert seen["body"] == {"url": "https://example.com/start"}  # type: ignore[comparison-overlap]
+    assert seen["body"] == {"urls": ["https://example.com/start"]}  # type: ignore[comparison-overlap]
     assert evidence.url == "https://example.com/final"
     assert evidence.snippet == "page body content"
     assert evidence.provider == "tinyfish"
@@ -538,6 +538,62 @@ def test_tinyfish_fetch_accepts_result_envelope_and_content_alias() -> None:
     evidence = run(provider.fetch("https://example.com/start"))
     assert evidence.url == "https://example.com/b"
     assert evidence.snippet == "plain body"
+
+
+def test_tinyfish_fetch_reads_published_results_envelope() -> None:
+    seen: dict[str, object] = {}
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        seen["body"] = json.loads(request.content)
+        return httpx.Response(
+            200,
+            json={
+                "results": [
+                    {
+                        "url": "https://example.com/",
+                        "final_url": "https://example.com/final#ignored",
+                        "title": "Example Domain",
+                        "description": "short description",
+                        "language": "en",
+                        "format": "markdown",
+                        "text": "# Example Domain\n\nThis domain is for examples.",
+                    }
+                ],
+                "errors": [],
+            },
+        )
+
+    provider = TinyFishWebProvider(
+        WebRuntimeConfig(provider="tinyfish", tinyfish_api_key="tf-secret"),
+        httpx.MockTransport(handler),
+    )
+    evidence = run(provider.fetch("https://example.com/start#strip"))
+
+    assert seen["body"] == {"urls": ["https://example.com/start"]}  # type: ignore[comparison-overlap]
+    assert evidence.url == "https://example.com/final"
+    assert evidence.snippet == "# Example Domain This domain is for examples."
+    assert evidence.title == "Example Domain"
+    assert evidence.provider == "tinyfish"
+    assert evidence.source_type == "fetch"
+    assert "tf-secret" not in json.dumps(evidence.to_public_dict())
+
+
+def test_tinyfish_fetch_empty_results_fails_closed() -> None:
+    async def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={"results": [], "errors": [{"url": "https://example.com/", "error": "timeout"}]},
+        )
+
+    provider = TinyFishWebProvider(
+        WebRuntimeConfig(provider="tinyfish", tinyfish_api_key="tf-secret"),
+        httpx.MockTransport(handler),
+    )
+    with pytest.raises(WebRuntimeError) as info:
+        run(provider.fetch("https://example.com/start"))
+    assert info.value.code == "web_request_failed"
+    assert "timeout" not in info.value.message
+    assert "tf-secret" not in info.value.message
 
 
 def test_tinyfish_fetch_unknown_shape_fails_closed() -> None:
@@ -592,6 +648,7 @@ def test_tinyfish_fetch_private_returned_url_fails_closed() -> None:
     [
         (401, "web_auth"),
         (403, "web_auth"),
+        (402, "web_quota_exhausted"),
         (429, "web_busy"),
         (500, "web_unavailable"),
         (503, "web_unavailable"),

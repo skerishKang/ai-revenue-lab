@@ -88,7 +88,12 @@ class BenchmarkHttpError(BenchmarkError):
     def __init__(self, status: int):
         super().__init__(f"provider returned HTTP {status}")
         self.status = status
-        if status == 429:
+        # 402 = the provider's free allowance is exhausted (TinyFish documents
+        # HTTP 402 / `INSUFFICIENT_CREDITS`). It must abort the run like 429 so a
+        # live benchmark can never silently spend past the free quota.
+        if status == 402:
+            self.code = "HTTP_402"
+        elif status == 429:
             self.code = "HTTP_429"
         elif 400 <= status < 500:
             self.code = "HTTP_4XX"
@@ -556,7 +561,7 @@ def main(argv: list[str] | None = None) -> int:
                     "results": [],
                 }
                 print(json.dumps(record, ensure_ascii=False, sort_keys=True), file=handle, flush=True)
-                if exc.code in {"MISSING_CREDENTIAL", "HTTP_429"}:
+                if exc.code in {"MISSING_CREDENTIAL", "HTTP_402", "HTTP_429"}:
                     return 2
                 continue
             print(json.dumps(record, ensure_ascii=False, sort_keys=True), file=handle, flush=True)

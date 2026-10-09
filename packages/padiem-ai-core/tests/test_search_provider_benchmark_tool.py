@@ -130,6 +130,39 @@ def test_http_429_is_distinct(monkeypatch):
     assert exc.value.code == "HTTP_429"
 
 
+def test_http_402_free_quota_exhaustion_is_distinct(monkeypatch):
+    monkeypatch.setenv("TAVILY_API_KEY", "not-logged")
+
+    def transport(*args, **kwargs):
+        raise benchmark.BenchmarkHttpError(402)
+
+    case = benchmark.QueryCase("Q", "en", "test", "CURRENT", "test query")
+    with pytest.raises(benchmark.BenchmarkHttpError) as exc:
+        benchmark.run_case(benchmark.PROVIDERS["tavily"], case, transport=transport)
+    assert exc.value.code == "HTTP_402"
+    assert exc.value.code != "HTTP_4XX"
+
+
+def test_live_run_aborts_on_free_quota_exhaustion(monkeypatch, tmp_path):
+    def deny_network(*args, **kwargs):
+        raise AssertionError("network must be denied in this test")
+
+    def raise_402(*args, **kwargs):
+        raise benchmark.BenchmarkHttpError(402)
+
+    # `run_case` captures `_perform_request` as a default argument, so patching
+    # the module attribute alone would NOT deny the network. Patch the runner
+    # entry point and the low-level `urlopen` the real transport uses, so this
+    # test is network-denied by construction.
+    monkeypatch.setattr(benchmark, "run_case", raise_402)
+    monkeypatch.setattr(benchmark, "urlopen", deny_network)
+    output = tmp_path / "search-live.jsonl"
+    rc = benchmark.main(
+        ["--provider", "tavily", "--query-id", "KR-NEWS-01", "--allow-network", "--output", str(output)]
+    )
+    assert rc == 2
+
+
 def test_dry_run_never_calls_network(monkeypatch, capsys):
     monkeypatch.setenv("EXA_API_KEY", "secret")
     monkeypatch.setattr(benchmark, "_perform_request", lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("network")))

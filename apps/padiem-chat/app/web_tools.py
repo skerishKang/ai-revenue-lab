@@ -87,6 +87,8 @@ def _runtime_error_message(exc: WebRuntimeError) -> str:
         return "웹 도구 설정을 확인할 수 없습니다."
     if exc.code == "web_busy":
         return "웹 검색 사용량이 많습니다. 잠시 후 다시 시도해 주세요."
+    if exc.code == "web_quota_exhausted":
+        return "웹 검색 무료 사용량이 모두 소진되었습니다. 잠시 후 다시 시도해 주세요."
     if exc.code == "web_request_failed":
         return "웹 요청을 처리하지 못했습니다."
     if exc.code == "web_malformed":
