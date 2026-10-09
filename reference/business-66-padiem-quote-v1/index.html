@@ -22,10 +22,10 @@
   <script src="quote-template-selection.js" defer></script>
   <script src="quote-template-ui.js" defer></script>
   <script src="quote-template-candidate.js" defer></script>
+  <script src="file-intake.js" defer></script>
   <script src="quote-template-cloner.js" defer></script>
   <script src="quote-template-registration.js" defer></script>
   <script src="quote-registration-session.js" defer></script>
-  <script src="file-intake.js" defer></script>
   <script src="xlsx-export.js" defer></script>
   <script src="quote-skill-ui.js" defer></script>
   <script src="app.js" defer></script>
@@ -319,10 +319,11 @@
                 id="templateCloneFile"
                 type="file"
                 hidden
-                accept=".pdf,.docx,.pptx,.xlsx,.hwpx,.jpg,.jpeg,.png,.webp,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/hwp+zip,image/jpeg,image/png,image/webp"
+                accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 aria-label="본뜰 견적서 파일 선택"
               >
             </div>
+            <p class="template-manage-note">재사용 양식 등록은 Excel .xlsx만 지원합니다. .xls는 Excel에서 .xlsx로 저장한 뒤 선택하세요. HWPX는 추후 지원합니다.</p>
             <div class="template-cloner" id="templateClonerPanel" hidden>
               <h3>견적서 양식 본뜨기</h3>
               <p class="template-cloner-status" id="templateClonerStatus" role="status" aria-live="polite"></p>

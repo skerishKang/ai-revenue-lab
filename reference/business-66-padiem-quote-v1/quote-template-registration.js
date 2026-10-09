@@ -19,7 +19,8 @@
       require("./quote-template-candidate.js"),
       require("./quote-template-store.js"),
       require("./quote-template-renderer.js"),
-      require("./quote-core.js")
+      require("./quote-core.js"),
+      require("./file-intake.js")
     );
   } else {
     root.QuoteTemplateRegistration = factory(
@@ -27,10 +28,11 @@
       root.QuoteTemplateCandidate,
       root.QuoteTemplateStore,
       root.QuoteTemplateRenderer,
-      root.QuoteCore
+      root.QuoteCore,
+      root.B66FileIntake
     );
   }
-})(typeof self !== "undefined" ? self : this, function (Template, Candidate, Store, Renderer, Core) {
+})(typeof self !== "undefined" ? self : this, function (Template, Candidate, Store, Renderer, Core, FileIntake) {
   "use strict";
 
   if (!Template) throw new Error("QuoteTemplate is required");
@@ -38,6 +40,7 @@
   if (!Store) throw new Error("QuoteTemplateStore is required");
   if (!Renderer) throw new Error("QuoteTemplateRenderer is required");
   if (!Core) throw new Error("QuoteCore is required");
+  if (!FileIntake) throw new Error("B66FileIntake is required");
 
   var MAX_SOURCE_NAME_CHARS = 160;
   var MAX_FILENAME_CHARS = 255;
@@ -91,6 +94,18 @@
     var opts = options || {};
     var source = normalizeSourceInfo(sourceInfo);
     if (!source) return fail("invalid_source_info");
+    /* Saved Quote Skill fact-extraction wizard accepts reference documents
+       (PDF, DOCX, image, etc.) but seeds the built-in/manual-review layout.
+       It must not be mistaken for approved source-faithful template cloning.
+       Source-template registration itself remains XLSX only. */
+    var accepted = opts.sourceMode === "fact_reference"
+      ? FileIntake.classifyFile({
+          name: source.filename, type: source.mediaType, size: source.byteSize
+        })
+      : FileIntake.validateTemplateSourcePreflight({
+          ok: true, filename: source.filename, mediaType: source.mediaType, byteSize: source.byteSize
+        });
+    if (!accepted.ok) return fail(accepted.error || "template_source_format_not_allowed");
     var base = sanitizeFileBase(source.filename);
     var content = cloneJson(Template.builtInTemplate().content);
     var injected = Candidate.injectCandidate({
