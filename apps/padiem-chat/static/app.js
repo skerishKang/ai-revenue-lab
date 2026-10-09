@@ -1245,6 +1245,7 @@
           if (!clawGeneralRequest || !canonicalEventProjection) return false;
           let envelope;
           try { envelope = JSON.parse(frame.data); } catch (_) { return false; }
+          if (envelope.delivery !== "live" && envelope.delivery !== "post_execution") return false;
           const projected = canonicalEventProjection.consume(envelope);
           if (!projected.accepted) return false;
           const label = window.PadiemClawRunEventProjection.label(projected.kind, document.documentElement.lang);
