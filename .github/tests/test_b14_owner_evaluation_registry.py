@@ -40,10 +40,35 @@ def test_current_roster_is_nine_registered_models_only():
     "kilo/poolside-laguna-s-2.1",
     "kilo/nvidia-nemotron-3-ultra-550b-a55b:free",
     "kilo/stepfun/step-5-preview-free",
+    "kilo/stepfun/step-3.7-flash:free",
+    "kilo/stepfun-step-3.7-flash-free",
 ])
 def test_retired_discovered_or_draft_routes_cannot_be_evaluated(deleted):
     with pytest.raises(ValueError):
         authorize_exact_models((deleted,))
+
+def test_stepfun_37_retirement_is_not_overridden_by_a_future_registry(tmp_path):
+    canonical=json.loads(CANONICAL_REGISTRY.read_text(encoding="utf-8"))
+    # Even a future accidentally introduced provider/registration must fail
+    # before an eval caller reaches credentials or network.
+    canonical["providers"]["kilo"]={
+        "base_origin":"https://api.kilo.ai/api/gateway",
+        "credential_source":"none",
+        "enabled":True,
+    }
+    for mid,upstream in (
+        ("kilo/stepfun/step-3.7-flash","stepfun/step-3.7-flash"),
+        ("kilo/stepfun-step-3.7-flash-free","stepfun/step-3.7-flash"),
+    ):
+        data=json.loads(json.dumps(canonical))
+        data["models"].append({
+            "id":mid,"provider_id":"kilo","upstream_model":upstream,"enabled":True
+        })
+        path=tmp_path/(str(len(mid))+".json")
+        path.write_text(json.dumps(data),encoding="utf-8")
+        with pytest.raises(ValueError,match="owner_retired_model_in_registry"):
+            load_current_models(path)
+
 
 def test_no_duplicate_batch_or_implicit_auto():
     one = next(iter(load_current_models()))

@@ -19,6 +19,9 @@ OWNER_RETIRED = frozenset({
     "infron/motif/motif-3",
     "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
     "kilo/poolside-laguna-s-2.1-free",
+    "kilo/stepfun/step-3.7-flash",
+    "kilo/stepfun-step-3.7-flash",
+    "stepfun/step-3.7-flash",
 })
 # Historical #2676 benchmark selectors. These must NOT form an independent
 # evaluation allowlist after the 2026-10-08 Owner registry migration.
@@ -38,7 +41,10 @@ def _disallowed_model_id(model_id: str) -> bool:
     lowered = model_id.lower()
     # The Owner removed ALL Kilo-routed Laguna aliases, regardless of how
     # upstream model discovery spells the free route. Direct Poolside differs.
-    return lowered.startswith("kilo/") and "poolside" in lowered and "laguna" in lowered
+    if lowered.startswith("kilo/") and "poolside" in lowered and "laguna" in lowered:
+        return True
+    # Owner removed Step 3.7 Flash from *all* candidate routes. Step 5 stays.
+    return ("stepfun/step-3.7-flash" in lowered or "stepfun-step-3.7-flash" in lowered)
 
 
 def load_current_models(path: Path = CANONICAL_REGISTRY) -> dict[str, dict[str, Any]]:
