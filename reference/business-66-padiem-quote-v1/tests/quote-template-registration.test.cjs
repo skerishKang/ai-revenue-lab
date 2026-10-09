@@ -14,8 +14,8 @@ const NOW = "2026-09-30T03:00:00.000Z";
 
 function sourceInfo(overrides) {
   return Object.assign({
-    filename: "synthetic-company-quotation.pdf",
-    mediaType: "application/pdf",
+    filename: "synthetic-company-quotation.xlsx",
+    mediaType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     byteSize: 3544
   }, overrides || {});
 }
@@ -43,7 +43,7 @@ check(TemplateRegistration.DRAFT_NOTE.includes("자동으로 분석하지 않") 
       TemplateRegistration.DRAFT_NOTE.includes("비교") &&
       !/완전히 학습|AI가/.test(TemplateRegistration.DRAFT_NOTE),
   "honest copy: default draft + no auto-analysis + compare-and-correct");
-eq(seeded.candidate.provenance.sourceName, "synthetic-company-quotation.pdf", "source filename is provenance only");
+eq(seeded.candidate.provenance.sourceName, "synthetic-company-quotation.xlsx", "source filename is provenance only");
 check(!JSON.stringify(seeded.candidate).includes("base64"), "no source bytes enter the candidate");
 eq(seeded.candidate.review.warnings.map((w) => w.code), ["manual_layout_review_required"], "manual review is required, not assumed");
 eq(registerCheckInvalidSource(), "invalid_source_info", "missing filename fails closed");

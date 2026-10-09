@@ -16,7 +16,7 @@ This protocol evaluates **one optional operation only: B14 interpretation of new
 1. Fresh-read exact-main B14 canonical JSON. The command below must return current nine IDs. Any Owner-approved future addition/removal changes the JSON and passes model-registration gates before being evaluable.
 2. List of names from Kilo CLI, web search, provider dashboard, historical issue or synthetic fixture is DISCOVERY ONLY. It never authorizes testing or silently changes a provider. Do not treat a free alias as interchangeable with the direct API.
 3. The current Laguna route is Poolside direct: model ID poolside/laguna-s-2.1, upstream poolside/laguna-s-2.1, HTTPS origin https://inference.poolside.ai/v1. It requires an actual direct Poolside API credential for a live trial. Kilo Laguna aliases are retired, even if the CLI advertises them.
-4. Other Owner-excluded models: B.AI Qwen, Motif 3, GPT-5.6 Luna, NVIDIA Nemotron. An old evaluation script fixture containing those names is historical test evidence, NOT runtime authority. StepFun #3835 is a separate Draft, not among the current nine.
+4. Other Owner-excluded models: B.AI Qwen, Motif 3, GPT-5.6 Luna, NVIDIA Nemotron, and **StepFun Step 3.7 Flash (all direct/Kilo aliases)**. An old evaluation script fixture containing these names is historical test evidence, NOT runtime authority. StepFun **Step 5 Preview Free** (#3835 historical Draft, #3947 direct free evaluation) is a different candidate, not among the current nine.
 5. The nine models are registered, not automatically API-ready. Plus/Pro/Max groups are empty; a registration entry cannot imply pricing, a selected user plan, a paid fallback or a customer release.
 
 Read-only commands from the repository root:

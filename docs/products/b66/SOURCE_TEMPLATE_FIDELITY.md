@@ -316,3 +316,27 @@ These issues remain evidence but are no longer competing authorities for current
 - #3584 — Google-native asset/camera normalization experiment.
 
 Current decisions should be read from this document plus #3542/#3595, not reconstructed by combining older experiment threads.
+
+## #3586 reusable template registration upload allowlist (2026-10-10)
+
+The reusable source-template registration entrypoint accepts only XLSX
+(OOXML, bounded source metadata) at this stage. Legacy XLS and HWP
+are rejected with actionable conversion guidance; HWPX is a future
+candidate, not currently registerable. The browser chooser and the
+template-cloner/registration entrypoints independently revalidate file
+extension, declared MIME, and size. Forged preflight.ok does not confer
+registration authority. This is a local metadata preflight and candidate
+boundary, not a claim that live server-side XLSX upload or source
+compiler has been deployed.
+
+General B66 quote-fact extraction intake may separately accept PDF,
+DOCX, PPTX, HWPX and images. Private original custody via #3884 may
+accept a separately justified format list for storage; custody alone
+never certifies or registers a reusable template. The original source
+is not mutated here. Server-side upload/content signature validation
+and R2/D1 custody authority remain in #3884, and heavy compilation
+remains in #3708; #3595 certification is mandatory before repeat-ready
+execution. No Production settings or customer data are changed by
+this source-only guard.
+
+The existing Saved Quote Skill wizard accepts broader fact-reference documents with explicit sourceMode=fact_reference, but only seeds a manually reviewed built-in layout; a PDF reference is not certified as an identical reusable source template.
