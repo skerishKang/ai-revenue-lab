@@ -1,9 +1,15 @@
-"""B66 #3839 multi-item preservation contract (LOCAL2 data-path only).
+"""TEST-ONLY READ-ONLY inventory for B66 #3839 (LOCAL2 data-path).
 
-This module does NOT render PDF, select models, call providers, mutate D1
-history authority, or modify the LOCAL1-owned Sol renderer. It records the
-exact resource-based cutoffs already enforced on the B66 input path so Sol
-multi-page work can prove in-scope item arrays are preserved verbatim.
+DO NOT import this module from production routes, workers, or renderers.
+It creates no runtime authority, no PDF rendering, no model/provider call,
+no D1 mutation, and no LOCAL1 Sol change. Tests import it only to pin the
+already-enforced cutoffs and to document where 4+ rows fail closed.
+
+Python-owned cutoffs are mirrored here for readability, but every value is
+pinned by tests against its owning source module. A drift in any owner
+must fail tests instead of silently forking a parallel policy source.
+JS-owned cutoffs are documented with exact file/line provenance and pinned
+by tests that read those JS sources.
 """
 
 from __future__ import annotations
@@ -11,17 +17,41 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-EXTRACTION_MAX_ITEMS = 100
-SAVED_SKILL_SEMANTIC_MAX_ITEMS = 100
-SERVER_CONVERSATION_MAX_ITEMS = 100
-SERVER_HISTORY_MAX_ITEMS = 200
-SERVER_HISTORY_SNAPSHOT_BYTES = 128 * 1024
-SAVED_SKILL_ENVELOPE_BYTES = 96 * 1024
-CERTIFIED_PDF_REQUEST_BYTES = 32 * 1024
-CERTIFIED_PDF_RESPONSE_BYTES = 32 * 1024 * 1024
-CERTIFIED_SOL_MAX_ITEM_ROWS = 3
-BUNDLE_SUPPORTED_SCOPE_MAX_ITEM_ROWS = 100
+# Values below are expected current-source truth. Tests pin every Python
+# value against its owning module; JS values are pinned by tests that read
+# the exact owning JS sources. Never edit production behavior by changing
+# this inventory: change the owning source and let tests expose the drift.
+EXPECTED_EXTRACTION_MAX_ITEMS = 100
+EXPECTED_SAVED_SKILL_SEMANTIC_MAX_ITEMS = 100
+EXPECTED_SERVER_CONVERSATION_MAX_ITEMS = 100
+EXPECTED_SERVER_HISTORY_MAX_ITEMS = 200
+EXPECTED_SERVER_HISTORY_SNAPSHOT_BYTES = 128 * 1024
+EXPECTED_SAVED_SKILL_ENVELOPE_BYTES = 96 * 1024
+EXPECTED_CERTIFIED_PDF_REQUEST_BYTES = 32 * 1024
+EXPECTED_CERTIFIED_PDF_RESPONSE_BYTES = 32 * 1024 * 1024
+EXPECTED_CERTIFIED_SOL_MAX_ITEM_ROWS = 3
+EXPECTED_BUNDLE_SUPPORTED_SCOPE_MAX_ITEM_ROWS = 100
+
+# Backwards-compatible aliases for the first review round. New callers
+# should prefer the EXPECTED_* names so a parallel-policy fork is obvious.
+EXTRACTION_MAX_ITEMS = EXPECTED_EXTRACTION_MAX_ITEMS
+SAVED_SKILL_SEMANTIC_MAX_ITEMS = EXPECTED_SAVED_SKILL_SEMANTIC_MAX_ITEMS
+SERVER_CONVERSATION_MAX_ITEMS = EXPECTED_SERVER_CONVERSATION_MAX_ITEMS
+SERVER_HISTORY_MAX_ITEMS = EXPECTED_SERVER_HISTORY_MAX_ITEMS
+SERVER_HISTORY_SNAPSHOT_BYTES = EXPECTED_SERVER_HISTORY_SNAPSHOT_BYTES
+SAVED_SKILL_ENVELOPE_BYTES = EXPECTED_SAVED_SKILL_ENVELOPE_BYTES
+CERTIFIED_PDF_REQUEST_BYTES = EXPECTED_CERTIFIED_PDF_REQUEST_BYTES
+CERTIFIED_PDF_RESPONSE_BYTES = EXPECTED_CERTIFIED_PDF_RESPONSE_BYTES
+CERTIFIED_SOL_MAX_ITEM_ROWS = EXPECTED_CERTIFIED_SOL_MAX_ITEM_ROWS
+BUNDLE_SUPPORTED_SCOPE_MAX_ITEM_ROWS = (
+    EXPECTED_BUNDLE_SUPPORTED_SCOPE_MAX_ITEM_ROWS
+)
 PROBE_ITEM_COUNTS = (1, 3, 4, 10, 25, 100, 101)
+# 101 is intentionally an isolated-history probe only. Full-pipeline input
+# remains eligible only through 100 because extraction/skill/intake reject
+# 101 before history is reached.
+FULL_PIPELINE_ELIGIBLE_MAX_ITEMS = 100
+ISOLATED_HISTORY_ONLY_COUNTS = (101,)
 
 
 @dataclass(frozen=True, slots=True)
@@ -67,23 +97,49 @@ B66_MULTI_ITEM_CUTOFFS: tuple[B66MultiItemCutoff, ...] = (
 
 
 def classify_probe_count(count: int) -> dict[str, bool]:
-    """Classify one probe count against current data-path truth."""
+    """Classify one probe count against current data-path truth.
+
+    The returned object is a test-only inventory verdict, not live routing.
+    ``history_snapshot_accepts_isolated`` deliberately differs from
+    ``full_pipeline_input_eligible`` at 101: history alone can persist 101,
+    while full-pipeline input is rejected upstream at 100.
+    """
     if not isinstance(count, int) or isinstance(count, bool) or count < 1:
         raise ValueError("probe count must be a positive integer")
     return {
-        "extraction_accepts": count <= EXTRACTION_MAX_ITEMS,
-        "skill_semantics_accepts": count <= SAVED_SKILL_SEMANTIC_MAX_ITEMS,
-        "server_intake_accepts": count <= SERVER_CONVERSATION_MAX_ITEMS,
-        "history_items_accept": count <= SERVER_HISTORY_MAX_ITEMS,
-        "sol_certified_accepts": count <= CERTIFIED_SOL_MAX_ITEM_ROWS,
-        "requires_sol_extension": count > CERTIFIED_SOL_MAX_ITEM_ROWS,
+        "extraction_accepts": count <= EXPECTED_EXTRACTION_MAX_ITEMS,
+        "skill_semantics_accepts": (
+            count <= EXPECTED_SAVED_SKILL_SEMANTIC_MAX_ITEMS
+        ),
+        "server_intake_accepts": (
+            count <= EXPECTED_SERVER_CONVERSATION_MAX_ITEMS
+        ),
+        "history_items_accept": count <= EXPECTED_SERVER_HISTORY_MAX_ITEMS,
+        "full_pipeline_input_eligible": (
+            count <= FULL_PIPELINE_ELIGIBLE_MAX_ITEMS
+        ),
+        "isolated_history_only": count in ISOLATED_HISTORY_ONLY_COUNTS,
+        "sol_certified_accepts": (
+            count <= EXPECTED_CERTIFIED_SOL_MAX_ITEM_ROWS
+        ),
+        "requires_sol_extension": (
+            count > EXPECTED_CERTIFIED_SOL_MAX_ITEM_ROWS
+        ),
         "requires_glm_or_html_fallback": False,
     }
 
 
 def sol_input_output_contract() -> dict[str, object]:
-    """Return the LOCAL1-ready Sol input/output contract for #3839."""
+    """Return a DESIGN/INTERFACE manifest for the LOCAL1 Sol handoff.
+
+    This only declares fields; it does not execute QuoteCore, Saved Skill,
+    or Sol integration. Actual 4+ row Sol PDF behavior stays LOCAL1-owned
+    and unverified here.
+    """
     return {
+        "kind": "design_interface_manifest_only",
+        "implemented_sol_integration": False,
+        "verified_sol_multipage_pdf": False,
         "input": {
             "structured_quote_draft": True,
             "quote_core_effective_items": True,
@@ -121,7 +177,19 @@ __all__ = [
     "CERTIFIED_PDF_REQUEST_BYTES",
     "CERTIFIED_PDF_RESPONSE_BYTES",
     "CERTIFIED_SOL_MAX_ITEM_ROWS",
+    "EXPECTED_BUNDLE_SUPPORTED_SCOPE_MAX_ITEM_ROWS",
+    "EXPECTED_CERTIFIED_PDF_REQUEST_BYTES",
+    "EXPECTED_CERTIFIED_PDF_RESPONSE_BYTES",
+    "EXPECTED_CERTIFIED_SOL_MAX_ITEM_ROWS",
+    "EXPECTED_EXTRACTION_MAX_ITEMS",
+    "EXPECTED_SAVED_SKILL_ENVELOPE_BYTES",
+    "EXPECTED_SAVED_SKILL_SEMANTIC_MAX_ITEMS",
+    "EXPECTED_SERVER_CONVERSATION_MAX_ITEMS",
+    "EXPECTED_SERVER_HISTORY_MAX_ITEMS",
+    "EXPECTED_SERVER_HISTORY_SNAPSHOT_BYTES",
     "EXTRACTION_MAX_ITEMS",
+    "FULL_PIPELINE_ELIGIBLE_MAX_ITEMS",
+    "ISOLATED_HISTORY_ONLY_COUNTS",
     "PROBE_ITEM_COUNTS",
     "SAVED_SKILL_ENVELOPE_BYTES",
     "SAVED_SKILL_SEMANTIC_MAX_ITEMS",
