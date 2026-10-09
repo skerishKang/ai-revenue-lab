@@ -104,6 +104,68 @@ class TestRegistryChangeSet(unittest.TestCase):
         self.assertFalse(lane.model_registration_only(files(lane.REGISTRY),a,a))
         self.assertFalse(lane.model_registration_only(files(lane.REGISTRY)*101,a,b))
 
+    def test_existing_provider_rejects_unrelated_worker_and_store(self):
+        old,new=appended()
+        new["providers"].pop("example-provider")
+        new["models"][-1].update(
+            id="google/new-exact-model", provider_id="google", upstream_model="new-exact-model"
+        )
+        changed=files(lane.REGISTRY,lane.WRANGLER,lane.WORKER)
+        changed[1]["patch"]=(
+            '@@ -1,0 +1,4 @@\n+[[secrets_store_secrets]]'
+            '\n+binding = "PADIEM_UNRELATED_API_KEY"'
+            '\n+store_id = "00000000000000000000000000000000"'
+            '\n+secret_name = "PADIEM_UNRELATED_API_KEY"'
+        )
+        changed[2]["patch"]='@@ -1,0 +1 @@\n+    "PADIEM_UNRELATED_API_KEY",'
+        self.assertFalse(lane.model_registration_only(changed,old,new))
+        self.assertFalse(lane.model_registration_only(changed[:2],old,new))
+        self.assertFalse(lane.model_registration_only([changed[0],changed[2]],old,new))
+
+    def test_new_provider_exact_metadata_and_invalid_variants(self):
+        old,new=appended()
+        changed=files(lane.REGISTRY,lane.WRANGLER,lane.WORKER)
+        changed[1]["patch"]=(
+            '@@ -1,0 +1,4 @@\n+[[secrets_store_secrets]]'
+            '\n+binding = "PADIEM_EXAMPLE_API_KEY"'
+            '\n+store_id = "'+lane.APPROVED_STORE_ID+'"'
+            '\n+secret_name = "PADIEM_EXAMPLE_API_KEY"'
+        )
+        changed[2]["patch"]='@@ -1,0 +1 @@\n+    "PADIEM_EXAMPLE_API_KEY",'
+        self.assertTrue(lane.model_registration_only(changed,old,new))
+        bad_store=copy.deepcopy(changed)
+        bad_store[1]["patch"]=bad_store[1]["patch"].replace(
+            lane.APPROVED_STORE_ID,"00000000000000000000000000000000"
+        )
+        self.assertFalse(lane.model_registration_only(bad_store,old,new))
+        extra_worker=copy.deepcopy(changed)
+        extra_worker[2]["patch"]+='\n+    "PADIEM_UNRELATED_API_KEY",'
+        self.assertFalse(lane.model_registration_only(extra_worker,old,new))
+        duplicate_worker=copy.deepcopy(changed)
+        duplicate_worker[2]["patch"]+='\n+    "PADIEM_EXAMPLE_API_KEY",'
+        self.assertFalse(lane.model_registration_only(duplicate_worker,old,new))
+        extra_table=copy.deepcopy(changed)
+        extra_table[1]["patch"]+=(
+            '\n+[[secrets_store_secrets]]'
+            '\n+binding = "PADIEM_UNRELATED_API_KEY"'
+            '\n+store_id = "'+lane.APPROVED_STORE_ID+'"'
+            '\n+secret_name = "PADIEM_UNRELATED_API_KEY"'
+        )
+        self.assertFalse(lane.model_registration_only(extra_table,old,new))
+        duplicate_key=copy.deepcopy(changed)
+        duplicate_key[1]["patch"]+='\n+binding = "PADIEM_EXAMPLE_API_KEY"'
+        self.assertFalse(lane.model_registration_only(duplicate_key,old,new))
+        incomplete=copy.deepcopy(changed)
+        incomplete[1]["patch"]=incomplete[1]["patch"].replace(
+            '+secret_name = "PADIEM_EXAMPLE_API_KEY"',''
+        )
+        self.assertFalse(lane.model_registration_only(incomplete,old,new))
+        unused_provider=copy.deepcopy(new)
+        unused_provider["models"][-1].update(
+            id="google/new-exact-model",provider_id="google",upstream_model="new-exact-model"
+        )
+        self.assertFalse(lane.model_registration_only(changed,old,unused_provider))
+
     def test_existing_provider_can_append_without_new_secret(self):
         a,b=appended()
         b["providers"].pop("example-provider")

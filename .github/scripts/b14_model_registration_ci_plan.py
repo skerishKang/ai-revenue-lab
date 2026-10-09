@@ -25,6 +25,9 @@ BINDING_LINE = re.compile(r'^\s*(binding|secret_name)\s*=\s*"PADIEM_[A-Z0-9_]+_A
 STORE_LINE = re.compile(r'^\s*store_id\s*=\s*"[0-9a-f]{32}"\s*$')
 
 
+APPROVED_STORE_ID = "f0b09ca04a7b43248154c773704a5616"
+
+
 def allowed_file(path: str) -> bool:
     if path in CODE_PATHS:
         return True
@@ -134,24 +137,80 @@ def model_registration_only(changed_files: list[dict], base: dict, head: dict) -
         if row["filename"] in (WRANGLER, WORKER):
             if not additions_only(row.get("patch"), row["filename"]):
                 return False
-    # Metadata of newly added provider must be wired to the same exact name.
+    # Existing-provider model additions must not broaden Worker credential access.
     new_provider_ids = set(head["providers"]) - set(base["providers"])
-    if new_provider_ids:
-        if WORKER not in paths or WRANGLER not in paths:
+    if not new_provider_ids:
+        return WORKER not in paths and WRANGLER not in paths
+
+    # Every new provider must actually own at least one appended model.
+    appended_providers = {
+        model["provider_id"] for model in head["models"][len(base["models"]):]
+    }
+    if not new_provider_ids.issubset(appended_providers):
+        return False
+    if WORKER not in paths or WRANGLER not in paths:
+        return False
+
+    aliases = []
+    for pid in new_provider_ids:
+        alias = head["providers"][pid].get("credential_binding_name")
+        if not isinstance(alias, str) or not SECRET_LINE.fullmatch(f'    "{alias}",'):
             return False
-        added_worker = changed_files[paths.index(WORKER)]["patch"]
-        added_wrangler = changed_files[paths.index(WRANGLER)]["patch"]
-        for pid in new_provider_ids:
-            binding = head["providers"][pid].get("credential_binding_name")
-            if not isinstance(binding, str) or not SECRET_LINE.fullmatch(f'    "{binding}",'):
-                return False
-            if f'+    "{binding}",' not in added_worker:
-                return False
-            if f'+binding = "{binding}"' not in added_wrangler:
-                return False
-            if f'+secret_name = "{binding}"' not in added_wrangler:
-                return False
-    return True
+        aliases.append(alias)
+    if len(set(aliases)) != len(aliases):
+        return False
+    old_aliases = {
+        spec.get("credential_binding_name")
+        for spec in base["providers"].values()
+    }
+    if set(aliases).intersection(old_aliases):
+        return False
+
+    worker_patch = changed_files[paths.index(WORKER)]["patch"]
+    wrangler_patch = changed_files[paths.index(WRANGLER)]["patch"]
+    new_worker_lines = [
+        line[1:].strip() for line in worker_patch.splitlines()
+        if line.startswith("+") and not line.startswith("+++")
+    ]
+    if len(new_worker_lines) != len(aliases):
+        return False
+    if set(new_worker_lines) != {f'"{alias}",' for alias in aliases}:
+        return False
+
+    # New Secret Store bindings must be exact, complete and have no extras.
+    # The existing authorized store is public metadata, never a key value.
+    blocks = []
+    for line in wrangler_patch.splitlines():
+        if not line.startswith("+") or line.startswith("+++"):
+            continue
+        item = line[1:].strip()
+        if not item or item.startswith("#"):
+            continue
+        if item == "[[secrets_store_secrets]]":
+            blocks.append({})
+            continue
+        if not blocks or "=" not in item:
+            return False
+        key, value = (v.strip() for v in item.split("=", 1))
+        if key not in {"binding", "store_id", "secret_name"} or key in blocks[-1]:
+            return False
+        if not (len(value) >= 2 and value.startswith('"') and value.endswith('"')):
+            return False
+        blocks[-1][key] = value[1:-1]
+    if len(blocks) != len(aliases):
+        return False
+
+    seen = set()
+    for block in blocks:
+        if set(block) != {"binding", "store_id", "secret_name"}:
+            return False
+        alias = block["binding"]
+        if alias not in aliases or alias in seen:
+            return False
+        if block["secret_name"] != alias or block["store_id"] != APPROVED_STORE_ID:
+            return False
+        seen.add(alias)
+    return seen == set(aliases)
 
 
 def api_json(url: str, token: str):
