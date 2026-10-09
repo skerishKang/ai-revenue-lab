@@ -3,40 +3,35 @@
 The existing ``test_b54_engine_a7_authenticated_canary.py`` asserts the canary's
 *source text* and the CP-minted ``sub_`` subject regex. Nothing executed the
 canary's own fail-closed branches, so a regression that let the probe proceed on
-a missing or malformed protected subject — or that echoed the subject — would
-have shipped silently.
+a missing/unsafe explicit model id, a missing or malformed protected subject, or
+that echoed either value, would have shipped silently.
 
-Two independent gate families are covered, both network-free:
+This module runs the real script as a subprocess with a deliberately
+unreachable ``ENGINE_BASE_URL``. That makes the assertions decisive and
+network-free:
 
-1. the model-primary HOLD gate. ``padiem_ai_core.model_primary`` currently
-   declares ``TEXT_PRIMARY_MODEL_ID = None`` (#3568 successor pending), so the
-   canary must stop at ``BLOCKED_NO_PRIMARY_MODEL`` before any request. This test
-   pins that behaviour so the hold cannot silently become a dispatch.
-2. the protected-subject gate. A synthetic model-primary shim is injected on
-   ``PYTHONPATH`` so the subject branches are reachable, then absent / malformed
-   / shape-valid-but-unvalidated subjects are exercised.
+* a genuine fail-closed verdict is produced *before* any request, so the run
+  ends with the exact gate code and no transport failure;
+* if a gate ever regressed, the run would instead reach the network and report
+  a transport failure (or a PASS), failing the test.
 
-Both families point ``ENGINE_BASE_URL`` at a deliberately unreachable address.
-That makes the assertions decisive: a genuine fail-closed verdict is produced
-*before* any request, so the run ends with the exact gate code; if a gate ever
-regressed, the run would instead reach the network and fail differently.
-
-No credentials, no provider call, no Production contact. All values synthetic.
+Per #3523 the run's model is an **explicit Owner-selected input**: there is no
+canonical primary, no default and no fallback. Every value here is synthetic;
+no credentials, no provider call, no Production contact.
 """
 
 from __future__ import annotations
 
+import importlib.util
 import os
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "apps" / "padiem-ai-engine" / "scripts" / "a7_authenticated_user_production_canary.py"
-CORE_PACKAGE = ROOT / "packages" / "padiem-ai-core"
 
 # Unreachable on purpose: if the canary reaches the network at all, the run
 # fails differently and the assertions below go red.
@@ -45,43 +40,22 @@ UNREACHABLE_ENGINE = "http://127.0.0.1:1"
 SYNTHETIC_CALLER_ID = "synthetic-a7-caller"
 SYNTHETIC_CALLER_SECRET = "synthetic-a7-credential-never-real"
 SYNTHETIC_SUBJECT = "sub_" + "0123456789abcdef" * 2
-SYNTHETIC_MODEL_ID = "synthetic-a7-model"
+# Two distinct valid registered-model id shapes.
+MODEL_SHAPE_A = "synthetic-a7-model"
+MODEL_SHAPE_B = "vendor/family-2.1:2026-10"
 
 TRANSPORT_FAILURE_MARKER = "A7 authenticated canary transport failed"
 
 
-def _shim_path() -> Path:
-    """A throwaway ``padiem_ai_core`` that declares a synthetic primary model.
-
-    Injected only so the subject gate is reachable while the real package is on
-    HOLD. It shadows the real package purely by ``PYTHONPATH`` order.
-    """
-    temp = Path(tempfile.mkdtemp(prefix="a7-model-shim-"))
-    package = temp / "padiem_ai_core"
-    package.mkdir()
-    (package / "__init__.py").write_text("", encoding="utf-8")
-    (package / "model_primary.py").write_text(
-        f'TEXT_PRIMARY_MODEL_ID = "{SYNTHETIC_MODEL_ID}"\n', encoding="utf-8"
-    )
-    return temp
-
-
-def _run_canary(*, subject: str | None, caller_id: str | None = SYNTHETIC_CALLER_ID,
-                caller_secret: str | None = SYNTHETIC_CALLER_SECRET,
-                shim: bool = False):
-    python_path = [str(CORE_PACKAGE)]
-    if shim:
-        python_path.insert(0, str(_shim_path()))
-    existing = os.environ.get("PYTHONPATH", "")
-    if existing:
-        python_path.append(existing)
-
+def _run_canary(*, model_id: str | None = MODEL_SHAPE_A,
+                subject: str | None = SYNTHETIC_SUBJECT,
+                caller_id: str | None = SYNTHETIC_CALLER_ID,
+                caller_secret: str | None = SYNTHETIC_CALLER_SECRET):
     env = {
         "PATH": os.environ.get("PATH", ""),
         "SYSTEMROOT": os.environ.get("SYSTEMROOT", ""),
         "ENGINE_BASE_URL": UNREACHABLE_ENGINE,
         "GITHUB_RUN_ID": "synthetic-3298",
-        "PYTHONPATH": os.pathsep.join(python_path),
     }
     if caller_id is not None:
         env["CALLER_ID"] = caller_id
@@ -89,6 +63,8 @@ def _run_canary(*, subject: str | None, caller_id: str | None = SYNTHETIC_CALLER
         env["CALLER_SECRET"] = caller_secret
     if subject is not None:
         env["PADIEM_A7_CANARY_SUBJECT_ID"] = subject
+    if model_id is not None:
+        env["A7_CANARY_MODEL_ID"] = model_id
     return subprocess.run(
         [sys.executable, str(SCRIPT)],
         capture_output=True,
@@ -105,46 +81,102 @@ def _combined(result) -> str:
     return result.stdout + result.stderr
 
 
-# ── 1. model-primary HOLD gate ──────────────────────────────────────────
+def _canary_module():
+    spec = importlib.util.spec_from_file_location("a7_canary_under_test", SCRIPT)
+    module = importlib.util.module_from_spec(spec)
+    assert spec and spec.loader
+    spec.loader.exec_module(module)
+    return module
 
-def test_model_primary_hold_blocks_before_any_request() -> None:
-    """#3568 leaves TEXT_PRIMARY_MODEL_ID unset; the canary must hold, not dispatch.
 
-    Judged from the probe's own output rather than an in-process import, so the
-    assertion holds under any interpreter that can run the script.
-    """
-    result = _run_canary(subject=SYNTHETIC_SUBJECT)
-    combined = _combined(result)
-    if "ModuleNotFoundError" in combined:
-        pytest.skip("real padiem_ai_core dependencies unavailable in this interpreter")
-    if "BLOCKED_NO_PRIMARY_MODEL" not in combined:
-        pytest.skip("a successor primary model is selected; HOLD gate not applicable")
+# ── 1. explicit model id is required ────────────────────────────────────
+
+@pytest.mark.parametrize("model_id", [None, ""])
+def test_missing_explicit_model_id_skips_before_any_request(model_id) -> None:
+    result = _run_canary(model_id=model_id)
     assert result.returncode == 2
-    assert "A7_AUTHENTICATED_USER_CANARY=PASS" not in combined
-    assert TRANSPORT_FAILURE_MARKER not in combined
+    assert "A7_AUTHENTICATED_USER_CANARY=SKIPPED_MISSING_EXPLICIT_MODEL_ID" in result.stderr
+    assert "A7_AUTHENTICATED_USER_CANARY=PASS" not in _combined(result)
+    assert TRANSPORT_FAILURE_MARKER not in _combined(result)
 
 
-# ── 2. absent protected input ───────────────────────────────────────────
+@pytest.mark.parametrize(
+    "bad_model",
+    [
+        " leading-space",
+        "trailing-space ",
+        "embedded space",
+        "with\tTab",
+        "with\nNewline",
+        "-leading-hyphen",
+        ".leading-dot",
+        "x" * 129,               # over the bounded length
+        "model,other",           # comma could smuggle a fallback list
+        "model|other",
+        "model;other",
+    ],
+)
+def test_invalid_explicit_model_id_fails_closed_before_any_request(bad_model) -> None:
+    result = _run_canary(model_id=bad_model)
+    assert result.returncode == 1
+    assert "A7_AUTHENTICATED_USER_CANARY=FAIL_INVALID_EXPLICIT_MODEL_ID" in result.stderr
+    assert "A7_AUTHENTICATED_USER_CANARY=PASS" not in _combined(result)
+    # no health and no orchestrate request is attempted
+    assert TRANSPORT_FAILURE_MARKER not in _combined(result)
+
+
+@pytest.mark.parametrize("good_model", [MODEL_SHAPE_A, MODEL_SHAPE_B])
+def test_two_valid_model_shapes_both_pass_the_gate(good_model) -> None:
+    """Distinct valid shapes are accepted; the gate is shape-based, not fixed."""
+    result = _run_canary(model_id=good_model)
+    combined = _combined(result)
+    assert "SKIPPED_MISSING_EXPLICIT_MODEL_ID" not in combined
+    assert "FAIL_INVALID_EXPLICIT_MODEL_ID" not in combined
+    # it moved past the configuration gates and therefore reached the network
+    assert TRANSPORT_FAILURE_MARKER in combined or result.returncode != 2
+
+
+# ── 2. the exact chosen id is the one sent ──────────────────────────────
+
+@pytest.mark.parametrize("chosen", [MODEL_SHAPE_A, MODEL_SHAPE_B])
+def test_payload_carries_exactly_the_chosen_model_with_no_fallback(chosen) -> None:
+    module = _canary_module()
+    payload = module._payload(SYNTHETIC_SUBJECT, chosen)
+    policy = payload["agent"]["model_policy"]
+    assert policy == {"model": chosen}
+    assert payload["subject_id"] == SYNTHETIC_SUBJECT
+    # exactly one model, no fallback list and no secondary
+    assert "fallback" not in repr(payload).lower()
+    assert "models" not in policy
+    assert payload["max_retries"] == 0
+
+
+def test_payload_builder_requires_both_values() -> None:
+    module = _canary_module()
+    with pytest.raises(TypeError):
+        module._payload(SYNTHETIC_SUBJECT)          # model missing
+    with pytest.raises(TypeError):
+        module._payload(model_id=MODEL_SHAPE_A)     # subject missing
+
+
+# ── 3. protected subject gates ──────────────────────────────────────────
 
 @pytest.mark.parametrize(
     "kwargs",
     [
-        {"subject": None},                                       # subject secret absent
-        {"subject": ""},                                         # subject secret empty
-        {"subject": SYNTHETIC_SUBJECT, "caller_secret": None},    # caller credential absent
-        {"subject": SYNTHETIC_SUBJECT, "caller_id": None},        # caller id absent
+        {"subject": None},
+        {"subject": ""},
+        {"subject": SYNTHETIC_SUBJECT, "caller_secret": None},
+        {"subject": SYNTHETIC_SUBJECT, "caller_id": None},
     ],
 )
 def test_absent_protected_input_skips_before_any_request(kwargs) -> None:
-    result = _run_canary(shim=True, **kwargs)
+    result = _run_canary(**kwargs)
     assert result.returncode == 2
     assert "A7_AUTHENTICATED_USER_CANARY=SKIPPED_MISSING_PROTECTED_INPUT" in result.stderr
     assert "A7_AUTHENTICATED_USER_CANARY=PASS" not in _combined(result)
-    # fail-closed happens before dispatch, so the network is never touched
     assert TRANSPORT_FAILURE_MARKER not in _combined(result)
 
-
-# ── 3. malformed subject reference ──────────────────────────────────────
 
 @pytest.mark.parametrize(
     "bad_subject",
@@ -161,7 +193,7 @@ def test_absent_protected_input_skips_before_any_request(kwargs) -> None:
     ],
 )
 def test_malformed_subject_fails_closed_before_any_request(bad_subject) -> None:
-    result = _run_canary(subject=bad_subject, shim=True)
+    result = _run_canary(subject=bad_subject)
     assert result.returncode == 1
     assert "A7_AUTHENTICATED_USER_CANARY=FAIL_INVALID_SUBJECT_REFERENCE" in result.stderr
     assert "A7_AUTHENTICATED_USER_CANARY=PASS" not in _combined(result)
@@ -170,13 +202,9 @@ def test_malformed_subject_fails_closed_before_any_request(bad_subject) -> None:
 
 # ── 4. false match: shape-valid but not server-validated ────────────────
 
-def test_regex_valid_synthetic_subject_is_never_a_local_pass() -> None:
-    """A shape-valid subject must still be validated by the server.
-
-    With an unreachable Engine the probe cannot obtain a server verdict, so it
-    must not report PASS, and it must not fall back to trusting the local shape.
-    """
-    result = _run_canary(subject=SYNTHETIC_SUBJECT, shim=True)
+def test_regex_valid_synthetic_inputs_are_never_a_local_pass() -> None:
+    """Shape-valid inputs must still be validated by the server."""
+    result = _run_canary()
     assert result.returncode != 0
     combined = _combined(result)
     assert "A7_AUTHENTICATED_USER_CANARY=PASS" not in combined
@@ -191,16 +219,18 @@ def test_regex_valid_synthetic_subject_is_never_a_local_pass() -> None:
     [None, SYNTHETIC_SUBJECT, "sub_" + "a" * 31, "someone@example.com"],
 )
 def test_subject_and_caller_secret_are_never_echoed(subject) -> None:
-    result = _run_canary(subject=subject, shim=True)
+    result = _run_canary(subject=subject)
     combined = _combined(result)
     assert SYNTHETIC_CALLER_SECRET not in combined
     if subject:
         assert subject not in combined
 
 
-def test_canary_source_never_prints_the_subject() -> None:
+def test_source_never_prints_the_subject_or_the_model() -> None:
     source = SCRIPT.read_text(encoding="utf-8")
     assert "print(CANARY_SUBJECT_ID" not in source
     assert 'print(f"{CANARY_SUBJECT_ID}' not in source
+    assert "print(CANARY_MODEL_ID" not in source
+    assert 'print(f"{CANARY_MODEL_ID}' not in source
     # the subject only ever travels inside the request payload
-    assert source.count("_payload(CANARY_SUBJECT_ID)") == 1
+    assert source.count("_payload(CANARY_SUBJECT_ID, CANARY_MODEL_ID)") == 1

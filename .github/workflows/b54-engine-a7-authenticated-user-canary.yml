@@ -12,7 +12,6 @@ on:
       - "apps/padiem-ai-engine/app/control_plane_trust_client.py"
       - "packages/padiem-control-plane/engine_admission_authority_worker.py"
       - "packages/padiem-control-plane/padiem_control_plane/engine_entitlement_producer.py"
-      - "packages/padiem-ai-core/padiem_ai_core/model_primary.py"
   workflow_dispatch:
     inputs:
       mode:
@@ -29,6 +28,11 @@ on:
         type: string
       expected_served_version:
         description: "Exact Engine served version expected for live canary"
+        required: false
+        default: ""
+        type: string
+      model_id:
+        description: "Explicit Owner-selected registered model id for this live run (no default, no fallback)"
         required: false
         default: ""
         type: string
@@ -91,6 +95,9 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
       ENGINE_BASE_URL: https://engine.padiem.net
       EXPECTED_SERVED_VERSION: ${{ inputs.expected_served_version }}
+      # #3523: explicit per-run Owner-selected registered model. Never inherited
+      # from a primary/default and never substituted by a fallback.
+      A7_CANARY_MODEL_ID: ${{ inputs.model_id }}
       GITHUB_RUN_ID: ${{ github.run_id }}
     steps:
       - name: Checkout exact approved main
@@ -109,9 +116,18 @@ jobs:
           test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
           test -n "${CALLER_SECRET}"
           test -n "${PADIEM_A7_CANARY_SUBJECT_ID}"
+          # #3523: the live run must carry one explicit Owner-selected model id.
+          # There is no inherited, default or dynamically resolved model.
+          test -n "${A7_CANARY_MODEL_ID}"
+          echo "${A7_CANARY_MODEL_ID}" | grep -Eq '^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$' || {
+            echo "EXPLICIT_MODEL_ID_UNSAFE" >&2
+            exit 1
+          }
           echo "::add-mask::${PADIEM_A7_CANARY_SUBJECT_ID}"
           echo "SUBJECT_SOURCE=PROTECTED_ENV_SECRET"
           echo "RAW_SUBJECT_OUTPUT=0"
+          echo "MODEL_SELECTION=EXPLICIT_OWNER_SUPPLIED"
+          echo "MODEL_DEFAULT_OR_FALLBACK=0"
           echo "CANARY_EXACT_MAIN=PASS"
 
       - name: GET-only exact served-version A7 binding preflight
@@ -144,8 +160,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install canonical model-primary package
-        run: python -m pip install --quiet -e packages/padiem-ai-core
+      # The probe is stdlib-only by design: it no longer imports the canonical
+      # model-primary package, so no model dependency is installed here.
 
       - name: Run one bounded authenticated USER canary
         shell: bash
@@ -156,6 +172,8 @@ jobs:
           grep -q '^CANONICAL_IDENTITY_REVALIDATION=PASS$' "${RUNNER_TEMP}/a7-authenticated-canary.log"
           grep -q '^ADMISSION_LIFECYCLE_FAIL_CLOSED=PASS$' "${RUNNER_TEMP}/a7-authenticated-canary.log"
           grep -q '^EXECUTION_COMPLETED=PASS$' "${RUNNER_TEMP}/a7-authenticated-canary.log"
+          grep -q '^MODEL_SELECTION=EXPLICIT_OWNER_SUPPLIED$' "${RUNNER_TEMP}/a7-authenticated-canary.log"
+          grep -q '^MODEL_DEFAULT_OR_FALLBACK=0$' "${RUNNER_TEMP}/a7-authenticated-canary.log"
           grep -q '^RAW_SUBJECT_OUTPUT=0$' "${RUNNER_TEMP}/a7-authenticated-canary.log"
           echo "LIVE_PROVIDER_CALL_MAX=1"
           echo "CP_USAGE_MUTATION=BOUNDED"

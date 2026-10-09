@@ -29,9 +29,29 @@ def _live_runs() -> str:
     return "\n".join(str(step.get("run", "")) for step in _live_job()["steps"])
 
 
-def test_canary_source_uses_canonical_primary_and_protected_subject_only() -> None:
+def test_canary_source_takes_an_explicit_per_run_model_and_protected_subject() -> None:
+    """#3523: no canonical-primary dependency, no default, no fallback.
+
+    The run's model is supplied explicitly per execution and passed through
+    verbatim. A single-primary requirement must not be reintroduced here.
+    """
     source = SCRIPT.read_text(encoding="utf-8")
-    assert "from padiem_ai_core.model_primary import TEXT_PRIMARY_MODEL_ID" in source
+    # no primary-model import or requirement survives
+    assert "padiem_ai_core" not in source
+    assert "TEXT_PRIMARY_MODEL_ID" not in source
+    assert "PINNED_MODEL" not in source
+    assert "BLOCKED_NO_PRIMARY_MODEL" not in source
+    # the model is an explicit per-run input, passed through verbatim
+    assert 'os.environ.get("A7_CANARY_MODEL_ID", "")' in source
+    assert "_payload(CANARY_SUBJECT_ID, CANARY_MODEL_ID)" in source
+    assert '"model_policy": {"model": model_id}' in source
+    # the payload builder requires both values, so neither can be defaulted
+    assert "def _payload(subject_id: str, model_id: str)" in source
+    # selection provenance is reported without ever emitting the id itself
+    assert "MODEL_SELECTION=EXPLICIT_OWNER_SUPPLIED" in source
+    assert "MODEL_DEFAULT_OR_FALLBACK=0" in source
+    assert "print(CANARY_MODEL_ID" not in source
+    # protected subject handling is unchanged
     assert '"subject_id": subject_id' in source
     assert '"max_tokens": 8' in source
     assert "PADIEM_A7_CANARY_SUBJECT_ID" in source
@@ -40,6 +60,29 @@ def test_canary_source_uses_canonical_primary_and_protected_subject_only() -> No
     assert "print(CANARY_SUBJECT_ID" not in source
     assert "CUSTOM_PAYLOAD_JSON" not in source
     assert not re.search(r"(space-bunny|sensenova|openai|anthropic)", source, re.I)
+
+
+def test_live_workflow_requires_an_explicit_model_id_with_no_silent_choice() -> None:
+    """The live job must carry one explicit Owner-selected model id."""
+    trigger = _workflow()["trigger"]
+    inputs = trigger["workflow_dispatch"]["inputs"]
+    assert "model_id" in inputs
+    assert inputs["model_id"]["default"] == ""
+    assert inputs["model_id"]["required"] is False
+
+    live = _live_job()
+    assert live["env"]["A7_CANARY_MODEL_ID"] == "${{ inputs.model_id }}"
+    runs = _live_runs()
+    # explicit id is validated before any request, and no inherited model exists
+    assert "test -n \"${A7_CANARY_MODEL_ID}\"" in runs
+    assert "EXPLICIT_MODEL_ID_UNSAFE" in runs
+    assert "'^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$'" in runs
+    assert "MODEL_SELECTION=EXPLICIT_OWNER_SUPPLIED" in runs
+    assert "MODEL_DEFAULT_OR_FALLBACK=0" in runs
+    # the obsolete primary-package install step must be gone
+    assert "padiem-ai-core" not in runs
+    # existing guards stay in place
+    assert "RUN_A7_AUTHENTICATED_USER_CANARY_FROM_EXACT_MAIN" in str(live["if"])
 
 
 def test_a7_subject_guard_matches_real_control_plane_mint_contract() -> None:
