@@ -47,3 +47,25 @@ LOCAL3's pinned Search comparison: TinyFish **14/14**, Daum **14/14**. TinyFish 
 **Production verification is separate:** read the served B54 config without exposing secrets; verify provider selection, actual two-key binding existence, exact deployed revision and rollback; only then assert that the deployed service follows this Owner-approved priority. Retain #3523 until its complete authenticated Claw E2E is proven.
 
 Issue #3966 is managed independently by the Owner; this policy does not modify or close it.
+
+
+## 2026-10-10 served Worker read-only checkpoint — source merged, live Search NOT activated
+
+- **Source:** #3975 was squash merged into main `08580ef3be78279057598322c31a630ddc741981` after **24/24 successful exact-head CI workflows**; prior cancellation-only CI was rerun to completion. All search-routing logic, tests, default rules and policy above are *repository source*.
+- **Live read-only evidence:** [B62 Cloudflare live-config run 37973006625](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37973006625) completed successfully on exact merge SHA, with `PRODUCTION_MUTATION=0` and `B62_CLAW_LIVE_CONFIG_DISPOSITION=ALREADY_EXACT` for existing Engine/identity/R2 service bindings. That result does **not** attest to web search provider readiness.
+- **Current served binding inventory:** padiem-chat Worker is **not bound** to `TINYFISH_API_KEY`, `PADIEM_CHAT_DAUM_REST_API_KEY` or `PADIEM_CHAT_WEB_PROVIDER`. The run intentionally showed only binding names and types, not secret/plain-text values. Do not assert live Search activation, active B14 mode, or model/Claw readiness from this output.
+- **Existing secret location:** authorized read-only metadata inventory confirmed **both keys already exist** in Cloudflare Secrets Store in a *different Cloudflare account* from the padiem-chat Worker (existing source labels `PADIEM_TINY_FISH_API_KEY` and `PADIEM_KAKAO_API_KEY`). There is no need to generate, purchase or replace either provider credential. This is a **binding/account-scope mismatch**, not a claim that the Owner lost credentials.
+- **Official Cloudflare behavior:** Secrets Store is account-scoped; its secret values cannot be decrypted/read back through API or dashboard after storage. Workers Secrets Store bindings require account-side deployment authority and are retrieved asynchronously using `get()`, unlike the current synchronous Chat string config. A direct cross-account reuse path was not verified. Avoid inventing one or secretly copying values via GitHub logs/repository. Sources: [Cloudflare Secrets Store](https://developers.cloudflare.com/secrets-store/manage-secrets/), [Workers integration](https://developers.cloudflare.com/secrets-store/integrations/workers/).
+- **Next acceptance under #3523:** only via approved private credential-placement path, bind the **existing** values into the Padiem Worker account with appropriate Worker-compatible bindings and no secret output; perform exact served Worker configuration/readback, preserve `PADIEM_CHAT_LIVE_ENABLED` deadman policy, and then use bounded live/public Search with TinyFish nominal + 402/429 Daum switch. Production code deploy requires independent P01/identity/D1/secret-set gates. No automatic activation or code deployment was performed at this checkpoint.
+
+```text
+WEB_SEARCH_SOURCE_MERGED=YES
+WEB_SEARCH_OWNER_PRIORITY=TINYFISH_THEN_DAUM_ON_402_429
+WEB_SEARCH_CREDENTIALS_EXIST=YES_OTHER_ACCOUNT
+WEB_SEARCH_SERVED_BINDINGS=ABSENT
+WEB_SEARCH_LIVE_ACTIVATED=NO
+WEB_SEARCH_DEFAULT_B14_DEADMAN_BYPASS=NO
+PRODUCTION_MUTATION=0
+ISSUE_3385=CLOSED_SOURCE_COMPLETE
+ISSUE_3523=OPEN_LIVE_GOLDEN_PATH
+```
