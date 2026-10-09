@@ -97,6 +97,13 @@ jobs:
       - name: Run import-origin preflight contract tests
         run: python -m pytest -q .github/tests/test_verify_import_origin.py
 
+      # #3679: the generic B66 analyzer reads customer workbooks, and nothing else in CI ever
+      # executes it. This suite is stdlib-only (no PyMuPDF, no local packages), so the archive
+      # bounds and the refusals they produce are enforced on every pull request at the cost of one
+      # already-running job.
+      - name: Run bounded archive contract tests for the generic analyzer
+        run: python -m pytest -q tools/b66_generic/tests/test_b66_generic_archive_bounds.py
+
       - name: Record guard scope
         run: |
           echo 'OPERATIONS_POLICY_GUARD=PASSED'
@@ -106,6 +113,7 @@ jobs:
           echo 'CROSS_LANE_DEPENDENCY_GUARD=ENFORCED'
           echo 'FROZEN_SOURCE_PIN_GUARD=ENFORCED'
           echo 'IMPORT_ORIGIN_PREFLIGHT=ENFORCED_IN_CORE_CONFTEST'
+          echo 'BOUNDED_ARCHIVE_CONTRACT_B66_GENERIC=ENFORCED'
           echo 'PRODUCTION_MUTATION=NO'
 
   pr-contract:
