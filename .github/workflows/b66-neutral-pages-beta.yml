@@ -71,6 +71,19 @@ jobs:
           test -f "${SOURCE_DIR}/padiem-account.css"
           test -f "${SOURCE_DIR}/shell-layout.js"
           test -f "${SOURCE_DIR}/cgi-template-v2.js"
+          test -f "${SOURCE_DIR}/voice-quote-bridge.js"
+          test -f "${SOURCE_DIR}/voice-gemini.js"
+          test -f "${SOURCE_DIR}/voice-interview/package.json"
+          test -f "${SOURCE_DIR}/voice-interview/package-lock.json"
+          test -f "${SOURCE_DIR}/voice-interview/build-voice-interview.mjs"
+          test -f "${SOURCE_DIR}/voice-interview/bridge.mjs"
+          test -f "${SOURCE_DIR}/voice-interview/verify-worker-bundle.mjs"
+          test -f "${SOURCE_DIR}/voice-interview/PROVENANCE.json"
+          test -f "${SOURCE_DIR}/voice-interview/upstream/hooks/useInterviewLive.ts"
+          test -f "${SOURCE_DIR}/voice-interview/upstream/utils/audioUtils.ts"
+          test -f "${SOURCE_DIR}/voice-interview/licenses/google-genai.APACHE-2.0.txt"
+          test -f "${SOURCE_DIR}/vendor/b66-voice-interview-299c8e78.js"
+          test -f "${SOURCE_DIR}/THIRD_PARTY_NOTICES.md"
           test -f "${SOURCE_DIR}/tests/padiem-account-bridge.test.mjs"
           test -f "${SOURCE_DIR}/tests/account-scope-3480.test.cjs"
           test -f "${SOURCE_DIR}/embed.html"
@@ -78,7 +91,7 @@ jobs:
           test -f "${SOURCE_DIR}/quote-embed-browser.js"
           test -f "${SOURCE_DIR}/quote-embed.css"
           test -f "apps/b66-quote-adapter/app/file_intake.py"
-          for js_file in _worker.js app.js quote-account-scope.js file-intake.js easy-mode.js quote-template.js quote-template-store.js quote-template-renderer.js quote-template-selection.js quote-template-ui.js quote-template-candidate.js quote-template-cloner.js quote-skill.js quote-skill-store.js quote-skill-candidate.js quote-skill-registration.js quote-template-registration.js quote-registration-session.js quote-skill-ui.js padiem-account.js shell-layout.js cgi-template-v2.js quote-embed-bridge.js quote-embed-browser.js; do
+          for js_file in _worker.js app.js quote-account-scope.js file-intake.js easy-mode.js quote-template.js quote-template-store.js quote-template-renderer.js quote-template-selection.js quote-template-ui.js quote-template-candidate.js quote-template-cloner.js quote-skill.js quote-skill-store.js quote-skill-candidate.js quote-skill-registration.js quote-template-registration.js quote-registration-session.js quote-skill-ui.js padiem-account.js shell-layout.js cgi-template-v2.js quote-embed-bridge.js quote-embed-browser.js voice-quote-bridge.js voice-gemini.js; do
             node --check "${SOURCE_DIR}/${js_file}"
           done
           echo "B66_SHIP_GUARD=PASS"
@@ -231,6 +244,25 @@ jobs:
           echo "B66_PRODUCT_SOURCE=PASS"
           echo "PADIEM_ACCOUNT_ENTRY=PASS"
 
+      - name: Rebuild the reused Global Classroom voice engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "${SOURCE_DIR}/voice-interview"
+          # Locked install at the exact pins, with no dependency lifecycle scripts run.
+          npm ci --ignore-scripts --no-audit --no-fund
+          # The committed artifact must be byte-identical to what the lockfile produces,
+          # and the vendored upstream files must still be unmodified copies.
+          node build-voice-interview.mjs --check
+          # PR CI cannot deploy (no Cloudflare credentials), so the Pages bundling of
+          # _worker.js -> voice-gemini.js is proven offline with the same pinned esbuild.
+          node verify-worker-bundle.mjs
+          echo "VOICE_LOCKED_INSTALL=YES"
+          echo "VOICE_INSTALL_SCRIPTS=NO"
+          echo "VOICE_OFFLINE_BUILD=YES"
+          echo "VOICE_RUNTIME_CDN=NO"
+          echo "VOICE_UPSTREAM_UNMODIFIED=YES"
+
       - name: Run B66 contracts
         shell: bash
         working-directory: ${{ env.SOURCE_DIR }}
@@ -261,6 +293,11 @@ jobs:
           node --check cgi-template-v2.js
           node --check quote-embed-bridge.js
           node --check quote-embed-browser.js
+          node --check voice-quote-bridge.js
+          node --check voice-gemini.js
+          node --check voice-interview/build-voice-interview.mjs
+          node --check voice-interview/bridge.mjs
+          node --check voice-interview/verify-worker-bundle.mjs
           node tests/quote-core.test.cjs
           node tests/quote-extraction.test.cjs
           node tests/quote-history.test.cjs
@@ -294,6 +331,9 @@ jobs:
           node tests/missing-field-followup.test.cjs
           node tests/mvp-runtime.test.cjs
           node tests/cgi-v2.test.cjs
+          node tests/voice-bridge.test.cjs
+          node tests/voice-token-route.test.mjs
+          node tests/voice-reuse-bundle.test.cjs
           node tests/three-pane-shell-contract.test.cjs
 
       - name: Run B66 server intake adapter contracts

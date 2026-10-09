@@ -1,0 +1,23 @@
+{
+  "name": "@ai-revenue-lab/b66-voice-interview-build",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Locked, offline, deterministic build that bundles the Global Classroom interview voice engine (vendored unmodified) with React and @google/genai into one same-origin artifact for B66 Padiem Quote (#3404). Nothing here runs at page load.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "node build-voice-interview.mjs",
+    "check": "node build-voice-interview.mjs --check"
+  },
+  "dependencies": {
+    "@google/genai": "2.24.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.12"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

@@ -1,3 +1,5 @@
+import { handleVoiceToken } from "./voice-gemini.js";
+
 const PADIEM_CHAT_ORIGIN = "https://chat.padiem.net";
 const INTAKE_PATH = "/api/v1/quote/intake";
 const PADIEM_PREFIX = "/api/padiem";
@@ -22,6 +24,11 @@ function bridgeMutationOriginAllowed(request, url) {
   if (!carriesSessionCookie(request.headers.get("cookie"))) return true;
   return request.headers.get("origin") === url.origin;
 }
+
+const VOICE_TOKEN_PATH = "/api/b66/voice/token";
+/* The reused Global Classroom engine asks for its own upstream route name. Same handler,
+   same verified-session gate, one mint path — only the spelling is shared. */
+const GEMINI_LIVE_TOKEN_PATH = "/api/live-token";
 
 function jsonError(code, status) {
   return new Response(JSON.stringify({ ok: false, error: { code } }), {
@@ -210,6 +217,14 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === INTAKE_PATH) {
       return handleIntake(request);
+    }
+    if (url.pathname === VOICE_TOKEN_PATH || url.pathname === GEMINI_LIVE_TOKEN_PATH) {
+      return handleVoiceToken(request, env, {
+        jsonError,
+        chatOrigin: PADIEM_CHAT_ORIGIN,
+        carriesSessionCookie,
+        allowedMutation: (req) => bridgeMutationOriginAllowed(req, url)
+      });
     }
     if (url.pathname === PADIEM_PREFIX || url.pathname.startsWith(PADIEM_PREFIX + "/")) {
       return handlePadiemBridge(request, url, env);

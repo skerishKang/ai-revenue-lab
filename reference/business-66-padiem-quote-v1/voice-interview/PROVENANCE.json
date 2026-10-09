@@ -1,0 +1,74 @@
+{
+  "purpose": "B66 Padiem Quote voice input (#3404) — the Global Classroom interview engine, reused unmodified",
+  "generatedBy": "voice-interview/build-voice-interview.mjs",
+  "upstream": {
+    "repo": "skerishKang/global-classroom",
+    "sha": "299c8e7830f6e4aa0c5202ca5591f240487c5c38",
+    "files": [
+      "upstream/hooks/useInterviewLive.ts",
+      "upstream/utils/audioUtils.ts",
+      "upstream/utils/interviewTranslationSessions.ts",
+      "upstream/utils/interviewTranslationRouter.ts"
+    ],
+    "editPolicy": "UNMODIFIED — any local change to these files is drift, not maintenance",
+    "deployedComparison": "production bundle /assets/index-BhOzGF71.js of https://7-global-classroom.netlify.app matched this source on 10/10 engine fingerprint probes (model ids, pcm mime, token route, fallback copy), 3 negative probes correctly absent"
+  },
+  "upstreamFiles": {
+    "upstream/hooks/useInterviewLive.ts": {
+      "bytes": 22263,
+      "sha256": "f126871626579b73e575471e4323d703a6c642c942c1c1e130a39bb947177977"
+    },
+    "upstream/utils/audioUtils.ts": {
+      "bytes": 4015,
+      "sha256": "df6bd4a3e11a18c8b6899fc2fdeed7bf6a4cdb756dea873c64b5b904d7249d8f"
+    },
+    "upstream/utils/interviewTranslationSessions.ts": {
+      "bytes": 14505,
+      "sha256": "25d7eb49abeeb3e0cb83f6edbb892bae44845ccd5bf1f4d04b1108dc7aabd9d9"
+    },
+    "upstream/utils/interviewTranslationRouter.ts": {
+      "bytes": 4907,
+      "sha256": "aea3dd5cbc4e213a8449b4fc8b78bab43512982d30439fff5221ea3b9929c34b"
+    }
+  },
+  "dependencies": {
+    "@google/genai": "2.24.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "p-retry": "4.6.2",
+    "retry": "0.13.1"
+  },
+  "bundler": {
+    "name": "esbuild",
+    "version": "0.25.12",
+    "targets": [
+      "chrome111",
+      "edge111",
+      "firefox115",
+      "safari16.4"
+    ],
+    "minify": true
+  },
+  "writtenHere": [
+    "bridge.mjs"
+  ],
+  "disabledUpstreamFeatures": {
+    "translation": "translationTargets: [] — no Live Translate session or token",
+    "groqFallback": "refused by the mount layer; no /api/transcribe route exists on B66",
+    "languageDetection": "not wired; the engine languageCode is the only source"
+  },
+  "licenses": {
+    "@google/genai": "Apache-2.0 (voice-interview/licenses/google-genai.APACHE-2.0.txt)",
+    "react": "MIT (voice-interview/licenses/react.MIT.txt)",
+    "react-dom": "MIT (voice-interview/licenses/react-dom.MIT.txt)",
+    "p-retry": "MIT (voice-interview/licenses/p-retry.MIT.txt)",
+    "retry": "MIT (voice-interview/licenses/retry.LICENSE.txt)",
+    "global-classroom sources": "see THIRD_PARTY_NOTICES.md"
+  },
+  "artifact": {
+    "path": "vendor/b66-voice-interview-299c8e78.js",
+    "sha256": "7e32c50951bb301cc705d2a236ded493aa4a1bb4c553806e4a92216c760c20b6",
+    "bytes": 600424,
+    "loadedAt": "lazy — the browser fetches it only when the microphone is pressed"
+  }
+}

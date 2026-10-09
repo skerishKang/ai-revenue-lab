@@ -29,6 +29,7 @@
   let guidedSnapshot = null;
   let accountSignedIn = false;
   let selectedFile = null;
+  let voiceStaged = null;
   let lastEasyView = "home";
   let restoringProductHistory = false;
   const PRODUCT_HISTORY_KEY = "b66View";
@@ -215,6 +216,10 @@
     composer.disabled = false;
     sendButton.disabled = false;
     composer.placeholder = placeholder || "답변을 입력하세요";
+    /* The voice lane may not auto-send while B66 is composing an answer, so the
+       moment the composer becomes submit-able again is published rather than
+       polled. No payload: the event is a signal, not a data channel. */
+    document.dispatchEvent(new CustomEvent("b66:easy-input-ready"));
     setTimeout(() => composer.focus(), 0);
   }
 
@@ -222,6 +227,7 @@
     inputHandler = null;
     composer.disabled = true;
     sendButton.disabled = true;
+    document.dispatchEvent(new CustomEvent("b66:easy-busy"));
     if (note) $("easyComposerNote").textContent = note;
   }
 
@@ -229,8 +235,49 @@
     const text = safeText(composer.value);
     if (!text || !inputHandler) return;
     composer.value = "";
+    voiceStaged = null;
     inputHandler(text);
   }
+
+  /* Voice hands its final transcript to the SAME composer and the SAME submit path a
+     person uses: no second interpreter, no second QuoteCore, and no numeric
+     correction. Typed text is preserved and the transcript is appended to it. */
+  const voiceHost = {
+    stageText(text) {
+      const value = safeText(text, 4000);
+      if (!value) return { staged: false, reason: "empty_transcript" };
+      const existing = safeText(composer.value, 4000);
+      composer.value = existing ? existing + " " + value : value;
+      composer.style.height = "auto";
+      composer.style.height = Math.min(composer.scrollHeight, 160) + "px";
+      voiceStaged = { text: composer.value };
+      return { staged: true, length: composer.value.length };
+    },
+    clearStagedText() {
+      if (!voiceStaged) return { cleared: false };
+      if (composer.value === voiceStaged.text) composer.value = "";
+      voiceStaged = null;
+      return { cleared: true };
+    },
+    canSubmit() {
+      return !composer.disabled && !sendButton.disabled && Boolean(inputHandler);
+    },
+    /* True while a transcript this module staged is still unsent, so a later
+       utterance cannot be merged into it by an automatic send. Any manual edit of
+       the composer hands control back to the person. */
+    hasUnsentStagedText() {
+      return Boolean(voiceStaged) && composer.value === voiceStaged.text;
+    },
+    submitStaged() {
+      if (!voiceHost.canSubmit()) return { submitted: false, reason: "input_not_ready" };
+      submitComposer();
+      return { submitted: true };
+    },
+    note(text) {
+      const target = $("easyComposerNote");
+      if (target) target.textContent = safeText(text, 240);
+    }
+  };
 
   function refreshStarters() {
     const activeDraft = App.getDraft();
@@ -1215,4 +1262,18 @@
   setWorkspaceMode("easy", { history: false });
   showHome({ history: false });
   recordProductState("home", { replace: true });
+
+  /* Hand the composer to the voice lane last, so the existing UI is fully wired
+     before any mic affordance can appear. The reused engine owns every network call. */
+  if (window.B66VoiceBridge && typeof window.B66VoiceBridge.init === "function") {
+    try {
+      window.B66VoiceBridge.init({ document, window, host: voiceHost });
+    } catch (_) {
+      const toggle = $("easyVoiceModeToggle");
+      const mic = $("easyVoiceMic");
+      if (mic) mic.disabled = true;
+      if (toggle) toggle.disabled = true;
+      voiceHost.note("음성 입력을 이 브라우저에서 사용할 수 없습니다. 텍스트로 계속해 주세요.");
+    }
+  }
 })();
