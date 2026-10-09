@@ -430,6 +430,7 @@
       case "skill_not_ready": return "배정된 내 견적서를 확인하지 못했습니다.";
       case "company_profile_not_ready": return "회사 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
       case "incomplete_request": return "거래처와 품목·수량·단가를 조금 더 알려 주세요.";
+      case "needs_clarification": return "입력 내용을 정확하게 이해하지 못했습니다. 거래처명·품목명·수량·단가를 확인해 다시 알려 주세요.";
       case "empty_request": return "견적 내용을 입력해 주세요.";
       case "model_selection_required": return "좌측 견적서 관리에서 사용할 AI 모델을 먼저 선택해 주세요.";
       case "cgi_unsupported_rows": return "CGI 기본 견적서는 품목을 최대 3개까지 지원합니다. 품목을 3개 이하로 줄여 주세요.";
@@ -689,6 +690,30 @@
       });
       const data = result.data;
       if (!result.response.ok || !data || data.ok !== true || !data.candidate) {
+        // A 422 describes rejected MODEL output, not a customer typo.
+        // No trusted candidate exists: ask the customer to restate the full
+        // request instead of exposing schema errors or inventing prices.
+        if (result.response.status === 422 && data && data.error &&
+            data.error.code === "quote_input_unrecognized") {
+          // If this is an answer to a specific question, preserve already
+          // verified facts and ask for that answer again, at most four turns.
+          if (state.pendingQuote && state.pendingQuote.turns < MAX_PENDING_TURNS) {
+            state.pendingQuote.turns += 1;
+            return {
+              ok: false,
+              code: "incomplete_request",
+              question: "방금 답변을 정확히 이해하지 못했습니다. " +
+                missingQuestion(state.pendingQuote.missing, state.pendingQuote.lastCandidate),
+              pending: pendingQuote()
+            };
+          }
+          clearPendingQuote();
+          return {
+            ok: false,
+            code: "needs_clarification",
+            question: "표현이 불분명한 부분이 있습니다. 거래처명, 품목명, 수량과 단가를 확인해 견적 내용을 다시 알려 주세요."
+          };
+        }
         return { ok: false, code: "interpret_failed", detail: safeMessage(data, "") };
       }
       const candidate = allocated ? mergePendingCandidate(allocated.lastCandidate, data.candidate) : data.candidate;
