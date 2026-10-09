@@ -21,11 +21,13 @@ from b62_owner_d1_release_preflight import OWNER_BINDING
 from b62_owner_d1_release_transaction import (
     TransactionError,
     assert_exact_worker_code,
+    build_rollback_deployment,
     main,
     prepare,
     validate_patch_settings,
     verify,
     verify_patch_response,
+    verify_promotion_equivalence,
     verify_rollback_target,
 )
 
@@ -255,7 +257,7 @@ def test_operational_workflow_enforces_durable_anchor_before_any_patch():
     wf = yaml.safe_load(text)
     triggers = wf.get("on", wf.get(True))
     assert list(triggers) == ["workflow_dispatch"]
-    assert set(wf["jobs"]) == {"apply", "rollback"}
+    assert set(wf["jobs"]) == {"apply", "rollback", "promote_latest"}
     assert wf["concurrency"]["cancel-in-progress"] is False
     for job in wf["jobs"].values():
         assert job["environment"] == "production"
@@ -273,7 +275,7 @@ def test_operational_workflow_enforces_durable_anchor_before_any_patch():
     assert "b62_owner_d1_release_transaction.py prepare" in text
     assert "b62_owner_d1_release_transaction.py verify" in text
     assert text.count("-X PATCH") == 1
-    assert text.count("-X POST") == 1
+    assert text.count("-X POST") == 2  # one independent promotion, one rollback
     assert "NO_AUTOMATIC_PATCH_RETRY=YES" in text
     assert "ROLLOUT" not in text
     rollback = wf["jobs"]["rollback"]["steps"]
@@ -586,3 +588,203 @@ def test_zero_byte_module_is_hashed_and_compared_as_valid_content():
     after["result"]["modules"][0]["content_base64"] = base64.b64encode(b"now nonempty").decode()
     with pytest.raises(TransactionError, match="CODE_MODULE_CONTENT_DRIFT"):
         assert_exact_worker_code(before, after, "original-version", "new-version")
+
+
+@pytest.mark.parametrize("worker", ["engine", "chat"])
+def test_standard_prepare_remains_strict_when_latest_differs(worker):
+    args = list(_engine() if worker == "engine" else _chat())
+    args[5]["result"]["items"][0]["id"] = "newer-undeployed-version"
+    with pytest.raises(TransactionError, match="LATEST_AND_SERVED_DIFFER"):
+        prepare(worker, MAIN, *args)
+
+
+def _promotion_versions():
+    original = _engine()[3]
+    original["result"]["resources"]["script"]["last_deployed_from"] = "wrangler"
+    latest = copy.deepcopy(original)
+    latest["result"]["id"] = "newer-undeployed-version"
+    latest["result"]["resources"]["script"]["etag"] = "platform-reissued-content-etag"
+    latest["result"]["resources"]["script"]["last_deployed_from"] = "api"
+    pre_modules = _module_response(original["result"]["id"])
+    latest_modules = _module_response("newer-undeployed-version")
+    return original, latest, pre_modules, latest_modules
+
+
+def test_owner_latest_promotion_requires_full_code_and_resources():
+    old, target, pre_modules, target_modules = _promotion_versions()
+    assert verify_promotion_equivalence(
+        old, target, pre_modules, target_modules, "newer-undeployed-version"
+    ) == 2
+    bad_code = copy.deepcopy(target_modules)
+    bad_code["result"]["modules"][0]["content_base64"] = base64.b64encode(
+        b"different-and-harmful"
+    ).decode("ascii")
+    with pytest.raises(TransactionError, match="CODE_MODULE_CONTENT_DRIFT"):
+        verify_promotion_equivalence(
+            old, target, pre_modules, bad_code, "newer-undeployed-version"
+        )
+    bad_secret = copy.deepcopy(target)
+    bad_secret["result"]["resources"]["bindings"].pop()
+    with pytest.raises(TransactionError, match="PROMOTION_BINDING_AUTHORITY_DRIFT"):
+        verify_promotion_equivalence(
+            old, bad_secret, pre_modules, target_modules, "newer-undeployed-version"
+        )
+    bad_runtime = copy.deepcopy(target)
+    bad_runtime["result"]["resources"]["script_runtime"]["compatibility_date"] = "2000-01-01"
+    with pytest.raises(TransactionError, match="PROMOTION_RESOURCE_DRIFT"):
+        verify_promotion_equivalence(
+            old, bad_runtime, pre_modules, target_modules, "newer-undeployed-version"
+        )
+    bad_handlers = copy.deepcopy(target)
+    bad_handlers["result"]["resources"]["script"]["handlers"] = ["unrelated"]
+    with pytest.raises(TransactionError, match="PROMOTION_SCRIPT_METADATA_DRIFT"):
+        verify_promotion_equivalence(
+            old, bad_handlers, pre_modules, target_modules, "newer-undeployed-version"
+        )
+    wrong_id = copy.deepcopy(target)
+    wrong_id["result"]["id"] = "unexpected"
+    with pytest.raises(TransactionError, match="PROMOTION_TARGET_VERSION_MISMATCH"):
+        verify_promotion_equivalence(
+            old, wrong_id, pre_modules, target_modules, "newer-undeployed-version"
+        )
+
+
+def test_pre_promotion_snapshot_pins_original_version_and_requires_engine_only():
+    args = list(_engine())
+    args[5]["result"]["items"][0]["id"] = "newer-undeployed-version"
+    patch, anchor = prepare(
+        "engine", MAIN, *args,
+        promotion_latest_version="newer-undeployed-version"
+    )
+    assert len(patch["bindings"]) == 19
+    assert anchor["rollback_version_id"] == "engine-version"
+    assert anchor["promotion_target_version_id"] == "newer-undeployed-version"
+    assert anchor["latest_matches_served"] is False
+    assert anchor["first_mutation_not_yet_attempted"] is True
+    assert "database_id" not in anchor
+    assert OWNER not in json.dumps(anchor)
+    assert build_rollback_deployment("023e105f-2a42-4f8b-a1c1-73f6a2a30c0f") == {
+        "strategy": "percentage",
+        "versions": [{"version_id": "023e105f-2a42-4f8b-a1c1-73f6a2a30c0f", "percentage": 100}],
+    }
+    with pytest.raises(TransactionError, match="PROMOTION_ALREADY_SERVED"):
+        prepare("engine", MAIN, *(_engine()), promotion_latest_version="engine-version")
+    chat = list(_chat())
+    chat[5]["result"]["items"][0]["id"] = "newer-undeployed-version"
+    with pytest.raises(TransactionError, match="LATEST_AND_SERVED_DIFFER"):
+        prepare("chat", MAIN, *chat, promotion_latest_version="newer-undeployed-version")
+
+
+def test_protected_latest_promotion_workflow_orders_anchor_and_single_post():
+    wf = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
+    jobs = wf["jobs"]
+    assert set(jobs) == {"apply", "rollback", "promote_latest"}
+    assert jobs["promote_latest"]["environment"] == "production"
+    assert "inputs.worker == 'engine'" in jobs["promote_latest"]["if"]
+    assert "inputs.confirmation" in jobs["promote_latest"]["if"]
+    entries = jobs["promote_latest"]["steps"]
+    names = [e.get("name", "") for e in entries]
+    upload = next(i for i,n in enumerate(names) if "Persist original served rollback anchor" in n)
+    mutate = next(i for i,n in enumerate(names) if "Promote exact verified latest" in n)
+    assert upload < mutate
+    assert entries[upload]["with"]["if-no-files-found"] == "error"
+    assert "actions/upload-artifact@v4" in entries[upload]["uses"]
+    commands = "\n".join(e.get("run", "") for e in entries)
+    assert commands.count("-X POST") == 1
+    assert commands.count("-X PATCH") == 0
+    assert "prepare-promotion" in commands and "verify-promotion" in commands
+    assert "include=modules" in commands
+    assert "latest-promotion-request.json" in commands
+    assert "owner-prewrite-rollback-anchor.json" in commands
+    assert "NO_AUTOMATIC_PATCH_RETRY=YES" in WORKFLOW.read_text(encoding="utf-8")
+
+
+def test_latest_promotion_cli_keeps_code_evidence_ephemeral(tmp_path,capsys):
+    d,before,after,pre,settings,latest,peer,peer_version=_engine()
+    latest["result"]["items"][0]["id"]="newer-undeployed-version"
+    target=copy.deepcopy(pre)
+    target["result"]["id"]="newer-undeployed-version"
+    target["result"]["resources"]["script"]["etag"]="changed-platform-etag"
+    payloads={
+        "d1-owner":d[fixture.mod.OWNER_NAME],"d1-chat":d["padiem-chat-db"],
+        "d1-engine":d["padiem-engine"],
+        "before":before,"after":after,"version":pre,"settings":settings,
+        "latest":latest,"latest-version":target,
+        "peer-deployments":peer,"peer-version":peer_version,
+        "pre-modules":_module_response("engine-version"),
+        "latest-modules":_module_response("newer-undeployed-version"),
+    }
+    params=["prepare-promotion","--main-sha",MAIN,
+            "--expected-latest-version","newer-undeployed-version"]
+    for name,obj in payloads.items():
+        path=tmp_path/(name+".json")
+        path.write_text(json.dumps(obj),encoding="utf-8")
+        params.extend(["--"+name,str(path)])
+    anchor=tmp_path/"anchor.json"
+    request=tmp_path/"request.json"
+    params.extend(["--anchor",str(anchor),"--request",str(request)])
+    # This fixture intentionally uses a non-UUID Version ID: promotion request
+    # must fail closed rather than creating an unsafe deployment.
+    assert main(params)==2
+    assert not anchor.exists() and not request.exists()
+    assert OWNER not in capsys.readouterr().err
+
+
+def test_prepare_promotion_writes_exact_real_uuid_payload_and_fresh_anchor(tmp_path, capsys):
+    d, before, after, original, settings, latest, peer, peer_version = _engine()
+    latest_id = "023e105f-2a42-4f8b-a1c1-73f6a2a30c0f"
+    latest["result"]["items"][0]["id"] = latest_id
+    target = copy.deepcopy(original)
+    target["result"]["id"] = latest_id
+    target["result"]["resources"]["script"]["etag"] = "cloudflare-new-version-etag"
+    original_modules = _module_response(original["result"]["id"])
+    target_modules = _module_response(latest_id)
+    payloads = {
+        "d1-owner": d[fixture.mod.OWNER_NAME],
+        "d1-chat": d["padiem-chat-db"], "d1-engine": d["padiem-engine"],
+        "before": before, "after": after, "version": original,
+        "settings": settings, "latest": latest, "latest-version": target,
+        "peer-deployments": peer, "peer-version": peer_version,
+        "pre-modules": original_modules, "latest-modules": target_modules,
+    }
+    args = ["prepare-promotion", "--main-sha", MAIN,
+            "--expected-latest-version", latest_id]
+    filepaths = {}
+    for name, payload in payloads.items():
+        path = tmp_path / (name + ".json")
+        path.write_text(json.dumps(payload), encoding="utf-8")
+        args.extend(["--" + name, str(path)])
+        filepaths[name] = path
+    anchor = tmp_path / "prewrite-anchor.json"
+    request = tmp_path / "promotion-request.json"
+    args.extend(["--anchor", str(anchor), "--request", str(request)])
+    assert main(args) == 0
+    assert OWNER not in capsys.readouterr().out
+    assert json.loads(request.read_text(encoding="utf-8")) == {
+        "strategy": "percentage",
+        "versions": [{"version_id": latest_id, "percentage": 100}],
+    }
+    pinned = json.loads(anchor.read_text(encoding="utf-8"))
+    assert pinned["rollback_version_id"] == "engine-version"
+    assert pinned["promotion_target_version_id"] == latest_id
+    assert pinned["first_mutation_not_yet_attempted"] is True
+    assert OWNER not in json.dumps(pinned)
+    assert main(args) == 2
+    assert "OUTPUT_EXISTS" in capsys.readouterr().err
+    post = tmp_path / "post-version.json"
+    post.write_text(json.dumps(target), encoding="utf-8")
+    served = tmp_path / "post-deployment.json"
+    served.write_text(json.dumps(fixture._deploy(latest_id)), encoding="utf-8")
+    verify_args = ["verify-promotion",
+                   "--pre", str(filepaths["version"]),
+                   "--target", str(filepaths["latest-version"]),
+                   "--post", str(post),
+                   "--deployments", str(served),
+                   "--pre-modules", str(filepaths["pre-modules"]),
+                   "--target-modules", str(filepaths["latest-modules"]),
+                   "--expected-latest-version", latest_id]
+    assert main(verify_args) == 0
+    assert "OWNER_D1_LATEST_VERSION_PROMOTION=VERIFIED" in capsys.readouterr().out
+    post.write_text(json.dumps(original), encoding="utf-8")
+    assert main(verify_args) == 2
+    assert OWNER not in capsys.readouterr().err
