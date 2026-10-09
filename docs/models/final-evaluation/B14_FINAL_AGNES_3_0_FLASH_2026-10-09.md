@@ -103,3 +103,17 @@ Agnes 직접 API에서 **QKR-008 실제 정확도 PASS**가 나온 추출 JSON�
 - `E:\b14-agnes30-PDF-20261009\rendered\QKR-008-Agnes30-QuoteCore.pdf` (PDF 2페이지)
 
 독립 라운드 외 B66 과거 벤치마크 점수는 이 표에 이월하지 않았다.
+
+## 2026-10-09 추가 확인 — 12분 휴지 후 B14/직접 API 1회씩 재검증
+
+**목적:** 10 RPM 같은 단순 분당 호출 한도만으로 B14 최초 429 현상을 설명할 수 있는지 검증. 평가 모델은 계속 사용자가 명시한 `agnes-ai/agnes-3.0-flash` 한 가지로 고정.
+
+- 마지막 로컬 Agnes 추론 평가 증거 기록부터 **약 12.6분 경과** 확인 (19:59:59 KST → 약 20:12 KST). 이 간격은 **이번 평가 스크립트 기록 기준**이며, 계정의 모든 가능한 외부 트래픽 부재를 증명하지 않는다.
+- B14 GET preflight: 배포 9개 모델 ID와 소스 일치, `agnes-ai` registered/has_key, `b14-live` 확인.
+- B14 `POST /api/pilot/v1/chat/completions` **QKR-001 정확히 1회**, `max_retries=0`, `max_attempts=1`, `allow_external_fallback=false`, `temperature=0`, `max_tokens=1800`: **HTTP429**, `upstream_rate_limited`, **1,266ms**, 추가 요청 0.
+- 직후 로컬의 직접 제공자 `POST https://apihub.agnes-ai.com/v1/chat/completions` **QKR-001 정확히 1회**, 동일한 정답용 원문·temperature·max_tokens 및 `agnes-3.0-flash`: **HTTP200**, 엄격 견적 내용 **PASS**, 반환 모델 ID 일치, **3,609ms / 466 총 토큰**.
+- **실측 판단:** 관측된 평가 요청의 단순 60초 RPM 초과만으로 두 경로의 차이를 설명하기 어렵다. B14의 429는 유지되며 로컬 직접 호출은 성공했다. B14 Secret과 로컬 키의 동일성·키별 한도·계정 플랜·사용량·제공자 출발지 정책은 **미확인**. 같은 키/계정이라고 단정하지 않는다.
+- B14가 제공자의 원본 HTTP429 상세 사유 및 Retry-After를 평가 응답에 보존하지 않으므로 `upstream_rate_limited` 하나만으로 세부 제한 원인을 특정할 수 없다.
+- **다음 진단 우선순위:** Agnes 관리 콘솔에서 **B14용 API 키**와 로컬 키의 계정·키 유형·쿼터 상태를 값 노출 없이 각각 비교. 필요 시 제공자 지원팀에 실제 실패 시각과 요청 ID 등 비밀이 아닌 정보로 문의. 코드·Secret 변경, 무단 배포, 추가 POST 없이 우선 확인.
+
+로컬 증거: `E:\b14-agnes30-RPM-ISOLATED-ONE-SHOT-20261009.json`, `E:\b14-agnes30-RPM-ISOLATED-DIRECT-COMPARISON-20261009.json`. 키 및 모델 원문 응답은 저장하지 않음. **기존 B14 실패 판정은 유지하며, 새 호출은 종전 F4 시도 통계와 독립된 follow-up으로 기록.**

@@ -44,6 +44,11 @@ class Agnes30FinalEvaluationGuard(unittest.TestCase):
         for value in ("12/12", "6,500,000원", "650,000원", "7,150,000원", "133,454", "48자", "NOT_TESTED"):
             self.assertIn(value, self.report)
 
+    def test_isolated_b14_and_direct_one_shot_comparison(self):
+        for value in ("12.6분", "1,266ms", "3,609ms", "466 총 토큰", "max_retries=0", "upstream_rate_limited", "동일성", "2026-10-09 추가 확인"):
+            self.assertIn(value, self.report)
+        self.assertIn("12.6분 휴지 후 B14 429/로컬 PASS", self.ledger)
+
     def test_ledger_single_model_link(self):
         self.assertIn("B14_FINAL_AGNES_3_0_FLASH_2026-10-09.md", self.ledger)
         self.assertIn("| 7 | `agnes-ai/agnes-3.0-flash` |", self.ledger)
