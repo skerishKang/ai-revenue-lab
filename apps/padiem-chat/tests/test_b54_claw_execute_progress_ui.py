@@ -176,7 +176,14 @@ def test_exactly_one_explicit_dispatch_path_starts_the_wait() -> None:
     body_check = execute_body.index("if (!body) {")
     start = execute_body.index("beginClawWait();")
     assert guard < body_check < start
-    assert 'const body = (input.value || "").trim();' in execute_body
+    # #3382: the body comes from the live form through the single builder the
+    # duplicate check shares, so assert the read at its new home instead of
+    # pinning the old call-site literal.
+    assert "const executePayload = clawVisibleExecutePayload();" in execute_body
+    assert "const body = executePayload.content;" in execute_body
+    builder = app[app.index("function clawVisibleExecutePayload()"):]
+    builder = builder[: builder.index("\n  }")]
+    assert '(input.value || "").trim()' in builder
 
 
 def test_wait_timer_lifecycle_is_closed() -> None:
@@ -401,6 +408,19 @@ function makeEl(tag) {
   el.click = () => (el.listeners.click || []).forEach((fn) => fn({ preventDefault() {}, target: el, key: "" }));
   el.requestSubmit = () => (el.listeners.submit || []).forEach((fn) => fn({ preventDefault() {} }));
   el.matches = () => false;
+  // Assigning .value must model a real user edit: the app separates a new draft
+  // from a re-send of uncertain work by listening to input/change, so the shim
+  // fires those listeners (otherwise a composed-new-task click is not a click
+  // a real user could have made).
+  let rawValue = "";
+  Object.defineProperty(el, "value", {
+    get: () => rawValue,
+    set: (v) => {
+      rawValue = v;
+      (el.listeners.input || []).forEach((fn) => fn({ type: "input", target: el }));
+      (el.listeners.change || []).forEach((fn) => fn({ type: "change", target: el }));
+    },
+  });
   return el;
 }
 
