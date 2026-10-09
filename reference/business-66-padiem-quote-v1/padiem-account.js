@@ -10,6 +10,7 @@
     user: null,
     skills: [],
     quoteModels: [],
+    quoteReasoningByModel: {},
     loadedSkill: null,
     companyProfile: null,
     companyProfileLoaded: false,
@@ -149,8 +150,14 @@
     state.user = null;
     state.skills = [];
     state.quoteModels = [];
+    state.quoteReasoningByModel = {};
     const modelSelect = byId("padiemQuoteModelSelect");
     if (modelSelect) modelSelect.replaceChildren();
+    const reasoningSelect = byId("padiemQuoteReasoningSelect");
+    if (reasoningSelect) {
+      reasoningSelect.replaceChildren();
+      reasoningSelect.disabled = true;
+    }
     state.companyProfile = null;
     state.companyProfileLoaded = false;
     clearPendingQuote();
@@ -255,6 +262,7 @@
     if (!select) return;
     state.quoteModels = [];
     select.replaceChildren();
+    select.addEventListener("change", syncReasoningOptions);
     const placeholder = document.createElement("option");
     placeholder.value = "";
     placeholder.textContent = "\uBAA8\uB378\uC744 \uC120\uD0DD\uD558\uC138\uC694";
@@ -276,13 +284,71 @@
         select.append(option);
       });
       state.quoteModels = records.map((row) => row.model_id);
+      state.quoteReasoningByModel = {};
+      records.forEach((row) => {
+        state.quoteReasoningByModel[row.model_id] = Array.isArray(row.reasoning_levels)
+          ? row.reasoning_levels.filter((level) => level &&
+              typeof level.value === "string" && /^[a-z0-9-]{1,32}$/.test(level.value) &&
+              typeof level.label === "string")
+          : [];
+      });
       const configured = result.data.default_model_id;
       select.value = typeof configured === "string" && state.quoteModels.includes(configured)
         ? configured : "";
       select.disabled = records.length === 0;
+      syncReasoningOptions();
     } catch (_) {
       select.disabled = true;
+      state.quoteReasoningByModel = {};
+      syncReasoningOptions();
     }
+  }
+
+  /* #3906: the reasoning control only ever offers the levels the selected model
+     actually supports. Switching models re-validates the current choice, so a
+     level that the new model does not support can never be submitted. The
+     provider default is always first and is the initial choice; no recommended
+     level is auto-applied and nothing is persisted per user. */
+  function reasoningOptionsForModel(modelId) {
+    if (typeof modelId !== "string" || !state.quoteModels.includes(modelId)) return [];
+    const levels = state.quoteReasoningByModel[modelId];
+    if (!Array.isArray(levels) || !levels.length) return [];
+    const fallback = [{ value: "default", label: "\uAE30\uBCF8(\uC81C\uACF5\uC790 \uAE30\uBCF8\uAC12)" }];
+    const allowed = /^[a-z0-9-]{1,32}$/;
+    const valid = levels.filter((level) => level &&
+      typeof level.value === "string" && allowed.test(level.value) &&
+      typeof level.label === "string" && level.label.length <= 80);
+    if (!valid.length) return fallback;
+    return valid.slice().sort((a, b) => (a.value === "default" ? -1 : b.value === "default" ? 1 : 0));
+  }
+
+  /* #3906: the reasoning choice actually being offered for this exact model.
+     Returns "" when the control has no option for the model, so the request
+     keeps the pre-#3906 shape instead of inventing an unsupported level. */
+  function selectedReasoningLevel(modelId) {
+    const reasoningSelect = byId("padiemQuoteReasoningSelect");
+    if (!reasoningSelect) return "";
+    const options = reasoningOptionsForModel(modelId);
+    if (!options.length) return "";
+    const current = reasoningSelect.value;
+    return options.some((level) => level.value === current) ? current : "";
+  }
+
+  function syncReasoningOptions() {
+    const modelSelect = byId("padiemQuoteModelSelect");
+    const reasoningSelect = byId("padiemQuoteReasoningSelect");
+    if (!modelSelect || !reasoningSelect) return;
+    const options = reasoningOptionsForModel(modelSelect.value);
+    reasoningSelect.replaceChildren();
+    options.forEach((level) => {
+      const option = document.createElement("option");
+      option.value = level.value;
+      option.textContent = level.label;
+      reasoningSelect.append(option);
+    });
+    const defaultFirst = options.some((level) => level.value === "default");
+    reasoningSelect.value = defaultFirst ? "default" : (options[0] ? options[0].value : "");
+    reasoningSelect.disabled = options.length === 0;
   }
 
   async function loadSkills() {
@@ -692,11 +758,22 @@
       }
     }
 
+    /* #3906: forward the user's explicit reasoning choice alongside the exact
+       model. Omission keeps the pre-#3906 byte layout; the field is only sent
+       when the control actually offers a level for THIS model. */
+    const payload = {
+      saved_skill_id: state.loadedSkill.savedSkillId,
+      message,
+      model_id: modelId
+    };
+    const reasoningLevel = selectedReasoningLevel(modelId);
+    if (reasoningLevel) payload.reasoning_level = reasoningLevel;
+
     try {
       const result = await api("/b66/quote/interpret", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({ saved_skill_id: state.loadedSkill.savedSkillId, message, model_id: modelId })
+        body: JSON.stringify(payload)
       });
       const data = result.data;
       if (!result.response.ok || !data || data.ok !== true || !data.candidate) {
