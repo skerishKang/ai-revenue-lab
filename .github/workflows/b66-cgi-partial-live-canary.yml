@@ -16,6 +16,13 @@ on:
         description: "Operator-selected exact eligible B14 model ID; no default"
         required: true
         type: string
+      quote_case:
+        description: "Explicit one-call quote probe: partial or approximate quantity confirmation"
+        required: true
+        type: choice
+        options:
+          - partial
+          - approx_qty
       confirmation:
         description: "Type RUN_B66_CGI_PARTIAL_LIVE_CANARY_ONCE"
         required: true
@@ -67,6 +74,8 @@ jobs:
           script=.github/scripts/b66_cgi_partial_live_canary.py
           grep -Fq 'MAX_INTERPRET_POSTS = 1' "$script"
           grep -Fq 'SELECTED_MODEL_ENV = "B66_CGI_CANARY_SELECTED_MODEL_ID"' "$script"
+          grep -Fq 'CASE_ENV = "B66_CGI_CANARY_CASE"' "$script"
+          grep -Fq 'APPROX_QUANTITY_TEXT = ' "$script"
           grep -Fq '"model_id": chosen_model_id' "$script"
           grep -Fq 'padiem-b66-cgi-partial-canary/1.0 (+github-actions)' "$script"
           grep -Fq 'RETRY = 0' "$script"
@@ -91,6 +100,7 @@ jobs:
       TARGET_SHA: ${{ inputs.target_sha }}
       B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
       B66_CGI_CANARY_SELECTED_MODEL_ID: ${{ inputs.selected_model_id }}
+      B66_CGI_CANARY_CASE: ${{ inputs.quote_case }}
       B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
     steps:
       - name: Checkout exact approved main
