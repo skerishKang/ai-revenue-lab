@@ -268,8 +268,11 @@ def main(argv: list[str] | None = None) -> int:
                 "padiem-chat-db": _read(args.d1_chat),
                 "padiem-engine": _read(args.d1_engine),
             })
+            anchor = _read(args.anchor)
+            if anchor.get("worker") != WORKERS[args.worker][0]:
+                raise TransactionError("ANCHOR_WORKER_MISMATCH")
             verify(_read(args.pre), _read(args.post), _read(args.deployments),
-                   _read(args.settings), ids[OWNER_NAME], _read(args.anchor))
+                   _read(args.settings), ids[OWNER_NAME], anchor)
             print("OWNER_D1_POST_SERVED_RESOURCES=PASS")
         else:
             verify_rollback_target(
