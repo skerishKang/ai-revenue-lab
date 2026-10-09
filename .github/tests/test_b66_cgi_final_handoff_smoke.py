@@ -85,6 +85,7 @@ class FinalHandoffSmokeContractTests(unittest.TestCase):
         class FakeReply:
             def __init__(self, status):
                 self.status = status
+                self.url = "https://quick-quote-kr.pages.dev/api/padiem/auth/logout"
                 self.request = type("Request", (), {
                     "method": "POST", "url": "https://quick-quote-kr.pages.dev/api/padiem/auth/logout"
                 })()
