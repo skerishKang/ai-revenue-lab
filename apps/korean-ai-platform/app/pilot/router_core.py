@@ -199,6 +199,13 @@ def resolve_manual_route(
             upstream_called=False,
         )
 
+    if runtime_config.is_live and model_id == "experiential/qwen3.8-flash-next-uncensored":
+        raise NoSafeRoute(
+            reason_code="model_data_policy_pending",
+            message="ExLab model data-policy clearance is pending.",
+            upstream_called=False,
+        )
+
     if not cm.enabled:
         raise NoSafeRoute(
             reason_code="model_disabled",
@@ -232,6 +239,7 @@ def resolve_manual_route(
             for m in all_models
             if m.model_id != model_id
             and not excluded_from_owner_customer_selection(m.model_id)
+            and m.model_id != "experiential/qwen3.8-flash-next-uncensored"
         ][:3]  # limit to top 3 fallback candidates
 
     reason_codes = ["manual_selection"]
@@ -313,6 +321,7 @@ def resolve_auto_route(
         source_candidates = [
             m for m in source_candidates
             if not excluded_from_owner_customer_selection(m.model_id)
+            and m.model_id != "experiential/qwen3.8-flash-next-uncensored"
         ]
 
     requested = list(required_capabilities or [])
@@ -351,6 +360,7 @@ def resolve_auto_route(
         all_models = [
             m for m in all_models
             if not excluded_from_owner_customer_selection(m.model_id)
+            and m.model_id != "experiential/qwen3.8-flash-next-uncensored"
         ]
     candidates = []
     for m in all_models:

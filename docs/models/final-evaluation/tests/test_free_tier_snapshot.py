@@ -28,7 +28,7 @@ class GoogleFreeTierSnapshotTests(unittest.TestCase):
 
     def test_four_b14_google_ids_are_only_active_registry_links(self):
         registered={x["id"] for x in self.registered["models"]}
-        self.assertEqual(len(registered),9)
+        self.assertEqual(len(registered),10)
         self.assertTrue(set(self.data["b14_registered_google_display_mapping"]).issubset(registered))
         expected={
           "google/gemini-3.1-flash-lite":(15,250000,500),

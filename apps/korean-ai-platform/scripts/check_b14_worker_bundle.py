@@ -29,8 +29,8 @@ except ModelRegistryError:
     assert not SHOULD_EXIST, "JSON was present but registry could not load"
 else:
     assert SHOULD_EXIST, "missing JSON silently loaded from elsewhere"
-    assert len(data["models"]) == 9, len(data["models"])
-    assert len(data["providers"]) == 6, len(data["providers"])
+    assert len(data["models"]) == 10, len(data["models"])
+    assert len(data["providers"]) == 7, len(data["providers"])
 """
     script = "SHOULD_EXIST = " + repr(should_exist) + "\n" + script
     env = os.environ.copy()
@@ -65,9 +65,9 @@ def verify(source: Path, bundle_dir: Path) -> None:
     built = packaged.read_bytes()
     assert built == before, "bundled JSON differs from canonical source"
     registry = json.loads(built)
-    assert len(registry["models"]) == 9
-    assert len(registry["providers"]) == 6
-    assert len({m["id"] for m in registry["models"]}) == 9
+    assert len(registry["models"]) == 10
+    assert len(registry["providers"]) == 7
+    assert len({m["id"] for m in registry["models"]}) == 10
     print(f"B14_BUNDLE_JSON=PASS size={len(built)} sha256={hashlib.sha256(built).hexdigest()}")
     _subprocess_registry_probe(bundle_dir, should_exist=True)
     print("B14_BUNDLE_IMPORT=PASS")

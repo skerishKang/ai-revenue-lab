@@ -23,7 +23,7 @@ class ModelFollowup20261009Guard(unittest.TestCase):
         for order,mid in [(7,"inception/mercury-2.5"),(8,"atria/Atria-Dawn-Preview"),(9,"agnes-ai/agnes-3.0-flash")]:
             self.assertIn(f"| {order} | `{mid}` |",self.ledger)
             self.assertEqual(sum(x.startswith(f"| {order} | `{mid}` |") for x in self.ledger.splitlines()),1)
-        self.assertEqual(len(self.registry["models"]),9)
+        self.assertEqual(len(self.registry["models"]),10)
         ids={m["id"] for m in self.registry["models"]}
         self.assertIn("inception/mercury-2.5",ids)
         self.assertIn("atria/Atria-Dawn-Preview",ids)

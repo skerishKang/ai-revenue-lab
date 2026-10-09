@@ -28,10 +28,10 @@ def raw_for(case):
     }
 
 
-def test_authority_current_nine_only():
+def test_authority_current_ten_only():
     models=m.approved_models()
-    assert len(models)==9
-    assert len(set(models))==9
+    assert len(models)==10
+    assert len(set(models))==10
     assert not any(name.startswith("kilo/") for name in models)
     assert any(name.startswith("poolside/") for name in models)
     with pytest.raises(ValueError):

@@ -21,10 +21,10 @@ def _invalid(tmp_path, mutate):
     with pytest.raises(ModelRegistryError):
         read_registry(path)
 
-def test_nine_models_delete_five():
+def test_ten_models_keep_five_retired():
     reg=read_registry()
     ids={m["id"] for m in reg["models"]}
-    assert len(ids)==9
+    assert len(ids)==10
     assert installed_model_ids()==frozenset(ids)==frozenset(CATALOG_BY_ID)
     assert ids.isdisjoint(RETIRED)
     assert not any(get_catalog_by_id(mid) for mid in RETIRED)
@@ -55,8 +55,9 @@ def test_only_json_providers_are_registered():
         "from app.pilot.platform_secrets import list_platform_providers;"
         "ids={p.provider_id for p in list_platform_providers()};"
         "assert ids==set(read_registry()['providers']);"
-        "assert ids.isdisjoint({'kilo','b-ai','infron','experiential'});"
-        "assert len(CATALOG_BY_ID)==9"
+        "assert ids.isdisjoint({'kilo','b-ai','infron'});"
+        "assert 'experiential' in ids;"
+        "assert len(CATALOG_BY_ID)==10"
     )
     result=subprocess.run([sys.executable,"-c",child],capture_output=True,text=True,check=False)
     assert result.returncode == 0, result.stderr
@@ -88,7 +89,7 @@ def test_model_add_delete_group_change_is_json_only(tmp_path):
     parsed["models"].pop()
     parsed["groups"]["plus"].clear()
     path.write_text(json.dumps(parsed),encoding="utf-8")
-    assert len(read_registry(path)["models"])==9
+    assert len(read_registry(path)["models"])==10
 
 @pytest.mark.parametrize("module,fn", [
  ("poolside_provider","register_poolside_provider"),

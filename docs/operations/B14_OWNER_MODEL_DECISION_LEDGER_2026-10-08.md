@@ -6,6 +6,12 @@
 
 **Snapshot reconciliation (2026-10-08):** B14 Google four manual-pin model registrations were merged by PR #3788 at SHA bcb05bb7fea9a31b72d805e7237441e045883b1b. Separate LOCAL product naming/tier drafts are not thereby merged. Source registration is not a Plus product route or proof of Production readiness; recheck exact-main B14 catalog, Control Plane declaration and credential-backed live evidence.
 
+## 0D. Owner-selected ExLab Qwen3.8 Flash Next Uncensored (2026-10-10)
+
+- Owner explicitly requested `experiential/qwen3.8-flash-next-uncensored`, the ExLab gateway upstream `qwen3.8-flash-next-uncensored`. Canonical B14 source now has **10 registered models / 7 platform providers**; the prior nine-model discussions are historical snapshots. This is separate from retired B.AI Qwen (`b-ai/qwen3.8-flash`) and retired ExLab GPT-5.6 Luna.
+- The existing Cloudflare Secrets Store binding name `PADIEM_EXLAB_API_KEY` is reused, without reading or changing its value. No automatic fallback, tier assignment or Production deployment.
+- **Live call safety:** vendor data-controls documentation regarding uncensored-model retention conflicts with current exact-model ZDR public metadata. The new ExLab model is source-registered but explicitly **blocked at the manual resolver and last pre-egress boundary** pending clarified data policy and a separate Owner-cleared activation gate. Treat `SOURCE_REGISTERED` differently from `CUSTOMER_READY`.
+
 ## 0C. Owner final retirement — Thinking Machines Inkling Small (2026-10-10, newest)
 
 - **REMOVE / DO NOT EVALUATE / DO NOT REGISTER / DO NOT RECOMMEND:** Thinking Machines **Inkling Small**, exact public Kilo free ID `thinkingmachines/inkling-small:free`, direct upstream and Kilo aliases. The Owner explicitly rejected this small-capacity candidate; do not propose it again as the next model or place it in B14/Claw/B62/B66 candidate, manual selection, Auto, fallback or recurring benchmark queues.
