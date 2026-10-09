@@ -14,6 +14,7 @@ import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from uuid import UUID
 
 from b62_binding_state_guard import (
     BindingStateError,
@@ -214,6 +215,22 @@ def verify_rollback_target(anchor: dict, version: object, expected_worker: str) 
     return result["id"]
 
 
+def build_rollback_deployment(version_id: str) -> dict:
+    """Cloudflare POST /deployments body, pinned to one known Worker Version."""
+    if not isinstance(version_id, str) or not is_safe_version_id(version_id):
+        raise TransactionError("ROLLBACK_DEPLOYMENT_VERSION_INVALID")
+    try:
+        parsed = UUID(version_id)
+    except (ValueError, TypeError) as exc:
+        raise TransactionError("ROLLBACK_DEPLOYMENT_VERSION_INVALID") from exc
+    if str(parsed) != version_id or parsed.int == 0:
+        raise TransactionError("ROLLBACK_DEPLOYMENT_VERSION_INVALID")
+    return {
+        "strategy": "percentage",
+        "versions": [{"version_id": version_id, "percentage": 100}],
+    }
+
+
 def _write_new(path: Path, payload: object) -> None:
     fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
     with os.fdopen(fd, "w", encoding="utf-8") as handle:
@@ -240,6 +257,9 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--anchor", required=True, type=Path)
     r.add_argument("--version", required=True, type=Path)
     r.add_argument("--worker", choices=tuple(WORKERS), required=True)
+    deployment = sub.add_parser("build-rollback-deployment")
+    deployment.add_argument("--version-id", required=True)
+    deployment.add_argument("--output", required=True, type=Path)
     args = parser.parse_args(argv)
     try:
         if args.mode == "prepare":
@@ -274,11 +294,14 @@ def main(argv: list[str] | None = None) -> int:
             verify(_read(args.pre), _read(args.post), _read(args.deployments),
                    _read(args.settings), ids[OWNER_NAME], anchor)
             print("OWNER_D1_POST_SERVED_RESOURCES=PASS")
-        else:
+        elif args.mode == "verify-rollback-target":
             verify_rollback_target(
                 _read(args.anchor), _read(args.version), WORKERS[args.worker][0]
             )
             print("OWNER_D1_ROLLBACK_TARGET_ANCHORED=PASS")
+        else:
+            _write_new(args.output, build_rollback_deployment(args.version_id))
+            print("OWNER_D1_ROLLBACK_DEPLOYMENT_PAYLOAD=OFFICIAL_SCHEMA_PASS")
     except (TransactionError, ReleasePreflightError, BindingStateError, OSError, ValueError) as exc:
         reason = str(exc) if isinstance(exc, TransactionError) else "INVALID_RELEASE_EVIDENCE"
         print("OWNER_D1_RELEASE_GUARD=FAIL;REASON=" + reason, file=sys.stderr)
