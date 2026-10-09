@@ -6,6 +6,8 @@
 **공식 제공자 upstream:** `mercury-2.5`
 **상태:** **IN_PROGRESS / B14_PREFLIGHT_HTTP403 / DIRECT_TIMEOUT_PARTIAL** — 최종 승인 및 고객 Production 동작 검증 아님.
 
+**상태 업데이트(2026-10-09): PRODUCTION_B14_QUOTE_STRICT_PASS / DIRECT_TIMEOUT_UNSTABLE / F6_NOT_TESTED** — B14 GET 403은 클라이언트 Cloudflare Error1010이며 제공자 거부가 아님. 현재 B14 명시적 Mercury 대화·견적 QKR-002 HTTP200 확인. 초기 preflight 403 관측은 아래에 보존.
+
 ## F1 — 제공자 공식 문서
 
 - 공식 제공자: [Inception Models](https://www.inceptionlabs.ai/models), [Mercury 2.5 발표](https://www.inceptionlabs.ai/blog/introducing-mercury-2-5) (2026-09-08).
@@ -90,3 +92,11 @@ Owner 지시: 짧은 대화 → 이전 QKR-003 타임아웃 1회 재검증 → �
 - **Owner-directed status: `IN_PROGRESS / UNSTABLE_TIMEOUT_REPEATED / B14_PREFLIGHT_403`.** 모델을 삭제·승인하지 않고, 추가 대량 시험 없이 다음 순서 Atria Dawn Preview로 이동. 원인 확정이나 전체 성능 점수 추정 금지.
 
 비공개 로컬 메타데이터 증거: `E:\b14-mercury25-FOLLOWUP-20261009.json`, `E:\b14-mercury25-FOLLOWUP-TOKENS-20261009.json`. 비밀값·실제 응답 원문은 Git에 기록하지 않음.
+
+## 2026-10-09 B14 Production 실호출 검증
+
+- `PADIEM-Source-Eval/1.0` 식별 UA 사용 시 `GET /api/pilot/health`, `GET /api/pilot/models` HTTP200. 기존 Python 기본 UA의 403은 Cloudflare **Error1010 / browser_signature_banned**. 본 모델 upstream 403이 아님.
+- 운영 B14 Mercury 명시적 선택·재시도 0·fallback false: **짧은 인사 HTTP200 (2,532ms), 실제 대화 답변 있음, route identity PASS, attempt 1.**
+- 운영 B14 QKR-002 동일 exact route: **HTTP200 / 3,563ms / 엄격 견적 정답 PASS / route identity PASS / attempt 1 / fallback false**.
+- 표본 두 건이 10문항 전체 검증이나 추론 지원·고객 PDF 통합 성공을 뜻하지 않는다. 직접 provider 경로의 QKR-004 45초 timeout 기록도 그대로 유지한다.
+- **현재 판정: B14_STANDARD_CHAT_AND_QUOTE_PROVEN_SAMPLED / FULL_FINAL_APPROVAL_NOT_YET**.

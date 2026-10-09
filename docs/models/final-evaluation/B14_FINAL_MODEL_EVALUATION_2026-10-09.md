@@ -43,8 +43,8 @@
 | 4 | `google/gemma-4-31b-it` | **F1 Dense 30.7B·출력 32,768 / F2 30RPM·16K TPM·14.4K RPD / Minimal 원본 1/10·내용 5/10 / High 원본 0/10·내용 0/10 / B14 504** |
 | 5 | `poolside/laguna-s-2.1` (Poolside 직접 API, Kilo 제외) | **F1 공식 118B/활성8B·1M / F2 계정한도 UNKNOWN / 직접 기본 9/10(10.89s), 추론 끔 8/10(4.63s), 켬 8/10(9.56s) / B14 9/10 HTTP200 / 실제 AI→PDF PASS** |
 | 6 | `sensenova/sensenova-6.8-flash-lite` | **F1 제공자 262,144/65,536 · F2 계정 한도 UNKNOWN · B14 10/10 · 직접 기본 10/10 · 리즈닝 none 10/10 2633ms; low 10/10 6528ms; medium 10/10 6278ms; high 10/10 6503ms · 12품목 로컬 PDF PASS** |
-| 7 | `inception/mercury-2.5` | **IN_PROGRESS / UNSTABLE_TIMEOUT_REPEATED / FOLLOWUP_DEFERRED** — 직접 인사 100토큰은 `length`로 무응답, 800토큰 PASS; QKR-003 재시험 HTTP200·PASS, QKR-004 45초 timeout 재발 후 즉시 중단. 고유 QKR-001~004 중 답변 3건·정답 2건, 나머지 6 미시험. 운영 B14 health/models GET403로 B14 POST 0회; PDF 미시험. [상세](B14_FINAL_MERCURY_2_5_2026-10-09.md) |
-| 8 | `atria/Atria-Dawn-Preview` | **IN_PROGRESS / DIRECT_LATENCY_UNSTABLE / B14_PREFLIGHT_HTTP403 / FOLLOWUP_DEFERRED** — 직접 짧은 대화 HTTP200·17.86초; QKR-001 non-stream 50초 timeout/stream 31.63초 PASS; QKR-002 stream 65초 미완료; reasoning none 요청 422; 나머지 QKR-003~010 미시험, PDF 미시험. 실측 로컬 계정 RPM 헤더 50, 실제 TPM·RPD UNKNOWN. [상세](B14_FINAL_ATRIA_DAWN_PREVIEW_2026-10-09.md) |
+| 7 | `inception/mercury-2.5` | **PRODUCTION_B14_CHAT_HTTP200 / QUOTE_QKR002_STRICT_PASS / IN_PROGRESS** — 평가 클라이언트 403은 Cloudflare Error1010(기본 User-Agent 차단); 명시적 평가 UA로 B14 GET200·키 확인, 실제 B14 모델 명시 인사 2,532ms HTTP200 및 QKR-002 3,563ms HTTP200/엄격 PASS, 각 1회·fallback 없음. 직접 API에서는 간헐 timeout 재발, 10문항·고객 PDF 미완료. [상세](B14_FINAL_MERCURY_2_5_2026-10-09.md) |
+| 8 | `atria/Atria-Dawn-Preview` | **PRODUCTION_B14_CHAT_HTTP200 / STREAM_PREVIEW_QKR001_STRICT_PASS / IN_PROGRESS** — GET403은 평가 클라이언트 Error1010; B14 인사 6,078ms HTTP200, 일반 QKR-001 HTTP504/`upstream_timeout` 10,563ms, **수동 스트리밍 Preview** QKR-001 HTTP200/엄격 PASS 50,640ms(첫 조각 43,531ms). 직접 API 지연 반복, 고객 표준채팅의 스트리밍 자동 연결·PDF 미검증. [상세](B14_FINAL_ATRIA_DAWN_PREVIEW_2026-10-09.md) |
 | 9 | `agnes-ai/agnes-3.0-flash` | **ERROR_B14_HTTP429 / DEFERRED / 후순위** — 운영 B14에서 짧은 대화와 견적 추출 모두 429, 로컬 직접 API/로컬 B14는 200. 기존 품질 기록은 유지하며 운영 오류 해결 후 재평가. 최종 승인·자동 대체 없음. [상세](B14_FINAL_AGNES_3_0_FLASH_2026-10-09.md), [장애 #3913](https://github.com/skerishKang/ai-revenue-lab/issues/3913) |
 
 **2026-10-09 Owner 우선순위 변경:** Agnes는 운영 B14 HTTP429 재현에 따라 `ERROR_B14_HTTP429 / DEFERRED`로 평가 대기열 **마지막(9번)**에 배치. 다음 순서는 Mercury 2.5(7번) → Atria(8번) → 장애 해결 후 Agnes(9번). 위 표는 **평가 작업 순서**이며, B14 서비스의 모델 등록·노출·사용자 수동 선택·기본값을 변경하지 않는다. 기존 Agnes 직접 API 품질 점수도 삭제·유용하지 않는다.
@@ -231,3 +231,16 @@ EVIDENCE = <source SHA, dated real-call markers, tested PDF evidence>
 - 모델별 실제 완전 응답의 견적 내용 점수와 운영 가용성을 분리한다. 단발성 타임아웃은 단정하지 않으나 반복 타임아웃에 무한 추가 호출하지 않는다. **세 모델 모두 최종 승인 아님**.
 
 세부 증거: [Mercury](B14_FINAL_MERCURY_2_5_2026-10-09.md), [Atria](B14_FINAL_ATRIA_DAWN_PREVIEW_2026-10-09.md), [Agnes](B14_FINAL_AGNES_3_0_FLASH_2026-10-09.md).
+
+## 2026-10-09 운영 B14 GET403 원인 확정 및 Mercury/Atria 실서비스 검증
+
+- **원인 확인:** Python `urllib` 기본 `User-Agent` 요청은 Cloudflare의 **HTTP403 / error_code 1010 / error_name browser_signature_banned** 에러를 반환했다. 같은 IP·URL에서 공식 사용자 정의 평가 식별 `User-Agent: PADIEM-Source-Eval/1.0` 요청은 **HTTP200**. 이 403은 B14 모델의 거부 응답이나 API Secret 문제라는 증거가 아니다.
+- **배포 수정 여부:** Cloudflare WAF·Browser Integrity Check·Secrets Store·서비스 코드·모델 등록부 **변경 없음**. 공식 평가 스크립트의 `PADIEM-Source-Eval/1.0` UA 사용 방식을 검증했다. 무차별 WAF 비활성화 금지.
+- 운영 `GET /health`, `/api/pilot/health`, `/api/pilot/models`, `/api/pilot/provider-readiness` **HTTP200**; Mercury/Atria registered, has_key 및 exact upstream mapping 확인.
+- **Mercury 2.5:** B14 수동 선택 `POST /api/pilot/v1/chat/completions` 인사 **HTTP200 / 2,532ms**, QKR-002 **HTTP200 / 3,563ms / strict PASS**. 모델 ID, 단일 attempt, fallback false 확인.
+- **Atria Dawn Preview:** 같은 B14 일반 채팅 인사 **HTTP200 / 6,078ms**, QKR-001 비스트리밍 **HTTP504 / upstream_timeout / 10,563ms**. 별도 수동 선택 `POST /api/pilot/v1/chat/completions/stream-preview` QKR-001은 **HTTP200 / 50,640ms / 첫 조각 43,531ms / strict PASS**, 단일 attempt/fallback false. **Preview-only** 스트리밍 성공이 고객 기본 채팅 E2E 성공을 의미하지 않는다.
+- 두 모델 모두 전체 신규 QKR-001~010 완료, 사용자 저장 양식 PDF F6, 제품 최종 `FINAL_PASS`는 **NOT_TESTED / 미승인**. 현재 사용 후보 간 성능/가용성은 모델 직접 시험 및 이 B14 표본에서만 비교한다.
+- **Agnes 3.0 Flash의 운영 B14 HTTP429 문제(#3913)는 별개이며 여전히 후순위 오류 보류**. B14 GET403 원인 해결을 Agnes 외부 429 해결로 오인하지 않는다.
+
+공식 문서: [Cloudflare Error 1010](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1010/), [Browser Integrity Check](https://developers.cloudflare.com/waf/tools/browser-integrity-check/).
+증거(키·생성 원문 없음): `E:\b14-mercury-atria-PRODUCTION-GREETINGS-20261009.json`, `E:\b14-mercury-atria-PRODUCTION-QUOTES-20261009.json`, `E:\b14-ATRIA-PRODUCTION-STREAM-QKR001-20261009.json`.

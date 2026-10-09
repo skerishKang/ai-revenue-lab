@@ -51,7 +51,7 @@ class ModelFollowup20261009Guard(unittest.TestCase):
                   "65,000ms","59,204ms","1,093ms","HTTP422","1/1",
                   "QKR-003~010","NOT_TESTED","B14 provider POST 0회"):
             self.assertIn(v,self.atria)
-        self.assertIn("IN_PROGRESS / DIRECT_LATENCY_UNSTABLE",self.ledger)
+        self.assertIn("PRODUCTION_B14_CHAT_HTTP200 / STREAM_PREVIEW_QKR001_STRICT_PASS",self.ledger)
         self.assertIn("B14_FINAL_ATRIA_DAWN_PREVIEW_2026-10-09.md",self.ledger)
         self.assertNotIn("**FINAL_PASS**",self.atria)
 

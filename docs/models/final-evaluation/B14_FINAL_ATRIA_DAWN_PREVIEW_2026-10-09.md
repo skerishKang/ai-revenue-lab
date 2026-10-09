@@ -6,6 +6,8 @@
 **제공자 exact 모델:** `Atria-Dawn-Preview`
 **종합 판정:** **IN_PROGRESS / DIRECT_LATENCY_UNSTABLE / B14_PREFLIGHT_HTTP403 / F6_NOT_TESTED** — 미승인·고객 Production 미검증.
 
+**상태 업데이트(2026-10-09): PRODUCTION_B14_STREAM_PREVIEW_QUOTE_PASS / STANDARD_QUOTE_UPSTREAM_TIMEOUT / F6_NOT_TESTED** — 기본 클라이언트 UA 403은 Cloudflare Error1010, 별도 제공자 응답 아님. 현재 B14 대화 HTTP200 및 수동 스트리밍 Preview 견적 HTTP200 확인. 기본 비스트리밍 QKR001은 HTTP504.
+
 ## F1 — 공식 모델 능력
 
 출처: [Atria 개발자 공식 문서](https://api.atria-asi.ai/docs), [모델 공식 카드](https://huggingface.co/internlm/Atria-Dawn-Preview).
@@ -74,3 +76,12 @@
 - `E:\\b14-atria-dawn-REASONING-NONE-QKR002-20261009.json`
 
 Owner 모델 선택 원칙 유지: 사용자 명시 선택, 자동 fallback 없음, 운영 등록부·서비스 배포 미변경.
+
+## 2026-10-09 B14 Production 실호출 검증
+
+- `PADIEM-Source-Eval/1.0` UA로 B14 GET health/models HTTP200, 등록 모델/Worker Secret 존재 확인. 앞선 GET403은 Cloudflare **Error1010 / browser_signature_banned**, **Atria 모델 403 아님**.
+- 운영 B14 `atria/Atria-Dawn-Preview` 수동 선택 짧은 대화 **HTTP200 / 6,078ms**, route identity PASS, attempt 1, fallback false.
+- 운영 B14 표준 `POST /api/pilot/v1/chat/completions` QKR-001 **HTTP504 / `upstream_timeout` / 10,563ms**, 내용 미채점.
+- 운영 B14 별도 `/api/pilot/v1/chat/completions/stream-preview` QKR-001 **HTTP200 / 50,640ms / 첫 조각 43,531ms / 종료 [DONE] / 엄격 견적 PASS / selected route PASS / attempt 1 / fallback false**.
+- **Preview-only API**로서 고객 UI 기본 채팅의 스트리밍 연동·응답시간 SLA 충족·최종 PDF E2E는 여전히 NOT_TESTED. 일반 모델 호출의 504는 해결되지 않았다.
+- **현재 판정: LIVE_STREAMING_SAMPLE_PASS / STANDARD_REQUEST_TIMEOUT_UNRESOLVED / FINAL_APPROVAL_NOT_YET**.
