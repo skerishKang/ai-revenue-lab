@@ -318,7 +318,7 @@ def test_final_multipart_settings_payload_is_direct_object(worker, old_count):
     args = _engine() if worker == "engine" else _chat()
     patch, anchor = _prepare(worker)
     old_version = args[3]
-    assert validate_patch_settings(patch, old_version) == OWNER
+    assert validate_patch_settings(patch, old_version, OWNER) == OWNER
     assert set(patch) == {"bindings", "annotations"}
     assert len(patch["bindings"]) == old_count + 1
     assert all(item["version_id"] == anchor["rollback_version_id"]
@@ -348,7 +348,7 @@ def test_final_multipart_payload_rejects_wrong_or_unexpected_fields(mutation):
     else:
         bad["annotations"]["workers/message"] = "unapproved"
     with pytest.raises(TransactionError):
-        validate_patch_settings(bad, old_version)
+        validate_patch_settings(bad, old_version, OWNER)
 
 
 @pytest.mark.parametrize("worker", ["engine", "chat"])
@@ -361,22 +361,22 @@ def test_http_200_patch_response_requires_added_owner_binding(worker):
             {"type": "d1", "name": OWNER_BINDING, "database_id": OWNER}
         ]
     }}
-    verify_patch_response(before, success, patch)
+    verify_patch_response(before, success, patch, OWNER)
     # Observed real Cloudflare 2026-10-09 behavior: HTTP 200, success true,
     # a new served version, but the response had NO Owner D1 binding.
     no_op = {"success": True, "result": {
         "bindings": copy.deepcopy(before["result"]["resources"]["bindings"])
     }}
     with pytest.raises(TransactionError, match="PATCH_RESPONSE_D1_NOT_APPLIED"):
-        verify_patch_response(before, no_op, patch)
+        verify_patch_response(before, no_op, patch, OWNER)
     other_id = copy.deepcopy(success)
     other_id["result"]["bindings"][-1]["database_id"] = fixture.CHAT_DB
     with pytest.raises(TransactionError, match="PATCH_RESPONSE_D1_NOT_APPLIED"):
-        verify_patch_response(before, other_id, patch)
+        verify_patch_response(before, other_id, patch, OWNER)
     missing_existing = copy.deepcopy(success)
     missing_existing["result"]["bindings"].pop(0)
     with pytest.raises(TransactionError, match="PATCH_RESPONSE_D1_NOT_APPLIED"):
-        verify_patch_response(before, missing_existing, patch)
+        verify_patch_response(before, missing_existing, patch, OWNER)
 
 
 def test_verify_patch_response_cli_uses_actual_file_and_safe_diagnostics(tmp_path, capsys):
@@ -391,10 +391,17 @@ def test_verify_patch_response_cli_uses_actual_file_and_safe_diagnostics(tmp_pat
         "bindings": copy.deepcopy(args[3]["result"]["resources"]["bindings"])
     }}
     response_path.write_text(json.dumps(no_op), encoding="utf-8")
+    database_paths = []
+    for label, name in (("owner", fixture.mod.OWNER_NAME),
+                        ("chat", "padiem-chat-db"),
+                        ("engine", "padiem-engine")):
+        path = tmp_path / f"database-{label}.json"
+        path.write_text(json.dumps(args[0][name]), encoding="utf-8")
+        database_paths.extend([f"--d1-{label}", str(path)])
     command = ["verify-patch-response",
                "--before", str(pre_path),
                "--candidate", str(proposal_path),
-               "--response", str(response_path)]
+               "--response", str(response_path), *database_paths]
     assert main(command) == 2
     stderr = capsys.readouterr().err
     assert "PATCH_RESPONSE_D1_NOT_APPLIED" in stderr
@@ -420,7 +427,16 @@ def test_workflow_checks_actual_cloudflare_patch_response_binding():
     assert '-F "settings=@${RUNNER_TEMP}/candidate.json;type=application/json"' in patch
     assert "verify-patch-response" in patch
     assert "--before" in patch and "--candidate" in patch and "--response" in patch
+    assert all(f"--d1-{name}" in patch for name in ("owner", "chat", "engine"))
     assert patch.index("jq -e '.success == true'") < patch.index("verify-patch-response")
     assert patch.index("verify-patch-response") < patch.index(
         "OWNER_D1_PATCH_RESPONSE=OWNER_BINDING_ADDED_PENDING_SERVED_VERIFICATION"
     )
+
+
+def test_final_json_rejects_substituted_other_canonical_d1_uuid():
+    old_version = _engine()[3]
+    patch, _ = _prepare("engine")
+    patch["bindings"][-1]["database_id"] = fixture.CHAT_DB
+    with pytest.raises(TransactionError, match="PATCH_SETTINGS_OWNER_D1_ID_MISMATCH"):
+        validate_patch_settings(patch, old_version, OWNER)
