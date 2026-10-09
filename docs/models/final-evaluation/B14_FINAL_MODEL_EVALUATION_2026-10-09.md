@@ -37,10 +37,10 @@
 
 | 평가 순서 | exact 모델 ID | 신규 최종 평가 진행 상태 |
 |---:|---|---|
-| 1 | `google/gemini-3.1-flash-lite` | **F1 확인·F3 소스 파일럿 테스트 PASS, 실제 호출·최종 견적/PDF 미검증** |
-| 2 | `google/gemini-3.5-flash-lite` | `NOT_STARTED` |
-| 3 | `google/gemma-4-26b-a4b-it` | `NOT_STARTED` |
-| 4 | `google/gemma-4-31b-it` | `NOT_STARTED` |
+| 1 | `google/gemini-3.1-flash-lite` | **F1 확인 / F2 무료 한도 확인 / F3 LOCAL_PASS / F4 HTTP200 10/10 / F5 엄격 7/10 / F6 NOT_TESTED** |
+| 2 | `google/gemini-3.5-flash-lite` | **F2 무료 한도 확인 / 그 외 신규 최종 평가 NOT_STARTED** |
+| 3 | `google/gemma-4-26b-a4b-it` | **F2 화면 표시명 기준 무료 한도 기록 / 그 외 신규 최종 평가 NOT_STARTED** |
+| 4 | `google/gemma-4-31b-it` | **F2 화면 표시명 기준 무료 한도 기록 / 그 외 신규 최종 평가 NOT_STARTED** |
 | 5 | `poolside/laguna-s-2.1` (**직접 API**) | `NOT_STARTED` |
 | 6 | `sensenova/sensenova-6.8-flash-lite` | `NOT_STARTED` |
 | 7 | `agnes-ai/agnes-3.0-flash` | `NOT_STARTED` |
@@ -68,19 +68,24 @@
 
 공식 문서: [Gemini 3.1 모델 카드](https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite), [OpenAI 호환](https://ai.google.dev/gemini-api/docs/openai), [Gemini 3 리즈닝](https://ai.google.dev/gemini-api/docs/gemini-3).
 
-### F2 — Google 프로젝트 실제 한도: 미확인
+### F2 — Google AI Studio 무료 티어 할당량: 사용자 제공 화면에서 확인 (2026-10-09)
 
-| 값 | 이번 평가 상태 |
-|---|---|
-| 실제 프로젝트 Free / Paid 티어 | **UNKNOWN** |
-| Gemini 3.1 활성 RPM | **UNKNOWN** |
-| Gemini 3.1 활성 입력 TPM | **UNKNOWN** |
-| Gemini 3.1 활성 RPD | **UNKNOWN** |
-| 실제 현재 사용량과 추가 제한 | **UNKNOWN** |
+사용자가 Google AI Studio의 **무료 티어 Rate limits 실제 표**를 제공했다. 이 라운드에 기록할 수 있는 계정 화면 기준 수치가 확보됐다. 이전의 전체 'UNKNOWN' 표시는 더 이상 현재 자료에 맞지 않는다.
 
-Google의 한도는 **API 키 개수가 아니라 프로젝트 단위**이며, RPM·입력 TPM·RPD 중 한도 하나를 넘어도 제한이 발생할 수 있다. 실제 수치는 [Google AI Studio Rate Limits](https://aistudio.google.com/rate-limit)에서 그 키가 연결된 프로젝트 기준으로 확인한다. 공식 규칙: [Gemini API Rate limits](https://ai.google.dev/gemini-api/docs/rate-limits).
+| B14 exact Google 모델 | 화면 표시명 | RPM | 분당 입력 TPM | RPD |
+|---|---|---:|---:|---:|
+| google/gemini-3.1-flash-lite | Gemini 3.1 Flash Lite | **15** | **250,000** | **500** |
+| google/gemini-3.5-flash-lite | Gemini 3.5 Flash Lite | **15** | **250,000** | **500** |
+| google/gemma-4-26b-a4b-it | Gemma 4 26B | **30** | **16,000** | **14,400** |
+| google/gemma-4-31b-it | Gemma 4 31B | **30** | **16,000** | **14,400** |
 
-**주의할 기술적 구분:** `65,536`은 모델의 최대 출력 능력이다. 무료 프로젝트가 매 호출마다 그만큼 허용한다는 뜻이 아니다.
+- **이용 등급: 무료(Free)** — 사용자가 무료 티어 화면이라고 확인했다.
+- 화면의 '0 / 15'는 **사용 0 / 허용 15**이다. 캡처 시점 네 모델 모두 요청량·입력 토큰·일일 요청의 사용량은 0으로 표시돼 있다.
+- **RPM, 입력 TPM, RPD는 실제 무료 티어의 이용 한도**이지, 모델의 최대 출력 토큰이나 컨텍스트 한도가 아니다. 출력 최대치 65,536토큰 및 B14 명시적 출력 예산 4,096과 혼동하지 않는다.
+- 같은 화면의 Gemma 4는 26B/31B로 표기된다. B14의 exact upstream ID와 무료 티어 화면 표시명이 동일 모델을 가리키는지는 별도 API 매핑으로 확인한다.
+- 프로젝트 ID가 제공되지 않았으므로 **B14 Worker의 현재 API 키와 동일 프로젝트인지 여부는 미확인**이다. 수치 자체는 사용자가 제시한 AI Studio 무료 티어 표에 근거한 이번 프로젝트 평가 자료로 기록한다.
+- 전체 **45개 모델, 21개 도구**의 모든 행은 [AI Studio 무료 티어 한도 전체 표](GOOGLE_AI_STUDIO_FREE_TIER_QUOTAS_2026-10-09.md)와 [구조화 JSON](GOOGLE_AI_STUDIO_FREE_TIER_QUOTAS_2026-10-09.json)에 분리 저장했다. 검색/지도 그라운딩은 추론 RPM·TPM·RPD와 별도다.
+- 한도는 **2026-10-09 캡처 기준**이다. 향후 계정 변경 및 한도 조정 시 날짜와 출처를 새로 기재한다.
 
 ### F3 — B14 토큰·리즈닝 소스 파일럿: 모의 테스트만 완료
 
@@ -98,16 +103,38 @@ Google의 한도는 **API 키 개수가 아니라 프로젝트 단위**이며, R
 
 위 결과는 **로컬 소스와 모의 HTTP 요청 테스트 결과**다. `main` 병합, Production 배포, 실제 Google 리즈닝 4단계 수락, 계정 한도 검증은 이 결과로 입증되지 않는다. 모든 모델의 요청 최대값을 일괄 확대하지 않았다.
 
-### F4–F6 — 이번 신규 최종 평가에서 아직 실행하지 않은 시험
+### F4–F5 — 이번 신규 최종 라운드 실제 Gemini 3.1 견적 10건 (2026-10-09)
 
-| 관문 | 상태 | 다음 측정 |
+**이번 평가에서 새로 10회 요청을 실행했다.** 과거의 41회 비교 점수를 가져온 것이 아니다. exact route google/gemini-3.1-flash-lite, upstream gemini-3.1-flash-lite에 합성 QKR-001~010 각각 단 1회; max_tokens=1,800, temperature=0, 호출 시작 간 최소 8초 간격; 자동 재시도·다른 모델 대체 없음.
+
+| 항목 | 이번 라운드 결과 |
+|---|---|
+| 실제 Google 제공자 요청 | **10건** |
+| HTTP 200 / 429 / 504 | **10 / 0 / 0** |
+| 필드·품목 내용 일치 | **8/10** |
+| 경로 메타데이터 검증까지 포함한 엄격 통과 | **7/10** |
+| QKR-002 | 내용은 정확. 경로 메타데이터 일치 검증 **실패**, HTTP 200, 24,764ms |
+| QKR-004 | project_name 필드 오류, HTTP 200, 1,483ms |
+| QKR-007 | project_name 및 일부 품목 필드 오류, HTTP 200, 2,093ms |
+| 최소·평균·최대 응답시간 | **1,359 / 5,968 / 24,764ms** |
+| 실제 리즈닝 4단계 호출 검증 | **NOT_TESTED** (시범 변경 브랜치의 모의 HTTP 검증만 통과) |
+| 최종 PDF 생성 연결 | **NOT_TESTED** (별도 B66 레이아웃 보정 중) |
+
+QKR-002의 메타데이터 검증 실패는 다른 모델로 대체됐다는 확증이 아니다. 정확한 실패 필드를 확인해야 한다. **모델의 추출 정확성 8/10과 시스템의 엄격 검증 7/10을 혼동하지 않는다.**
+
+로컬 검증 기록: Padiem-Command-Center의 E:\b14-gemini31-FINAL-20261009-safe-results.json (합성 시험, 메타데이터만 기록).
+
+### Gemini 3.1 최종 검증 잔여 작업
+
+| 관문 | 현재 상태 | 다음 검증 |
 |---|---|---|
-| F2 | `UNKNOWN` | 실제 프로젝트의 티어·RPM·TPM·RPD |
-| F3 실제 업스트림 적합성 | `NOT_TESTED` | 선택 리즈닝 4단계 제한 호출·응답·usage·finish_reason |
-| F4 모델 호출 안정성 | `NOT_TESTED` | 표본 수·429/504 분리·지연 |
-| F5 10개 견적 추출 | `NOT_TESTED` | 동일 QKR 시험 **이번 평가에서 새로** 시행 |
-| F6 고객용 PDF E2E | `NOT_TESTED` | 저장된 견적 양식으로 PDF까지 연결 |
-| **최종 모델 판정** | **IN_PROGRESS** | F1–F6 종합 후 Owner가 채택 판단 |
+| F1 공식 모델 사양 | CONFIRMED | 신규 모델 사양 변경 시 재확인 |
+| F2 무료 티어 RPM·입력 TPM·RPD | **CONFIRMED_FROM_OWNER_AI_STUDIO_SNAPSHOT** | 실제 Worker 키가 같은 프로젝트 소속인지 확인 |
+| F3 소스 파라미터 검증 | LOCAL_PASS | 실제 Gemini 요청에서 리즈닝 4단계 수락 여부 확인 |
+| F4 신규 호출 | HTTP200 10/10 | QKR-002 경로 메타데이터 불일치 원인 조사 |
+| F5 견적 추출 | CONTENT_MATCH 8/10 / STRICT_PASS 7/10 | QKR-004/007 오류 수정 및 재평가 |
+| F6 고객용 견적 PDF | NOT_TESTED | B66 레이아웃 수정 후 저장 양식으로 최종 PDF E2E |
+| **최종 모델 판정** | **IN_PROGRESS** | 모든 관문 충족 시 Owner 최종 평가 |
 
 ## 5. 이후 모델에도 동일하게 기록하는 형식
 
