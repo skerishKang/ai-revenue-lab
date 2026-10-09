@@ -186,7 +186,7 @@ def test_b66_worker_binding_and_csp_share_one_validated_origin():
     assert settings.b66_quote_base_url == "https://quote.example.test"
 
     default_csp = response_headers_for_path("/")["Content-Security-Policy"]
-    assert "frame-src 'none'" in default_csp
+    assert "frame-src blob:" in default_csp
 
     enabled_csp = response_headers_for_path(
         "/",
@@ -197,7 +197,7 @@ def test_b66_worker_binding_and_csp_share_one_validated_origin():
         for part in enabled_csp.split(";")
         if part.strip().startswith("frame-src ")
     ]
-    assert frame_directives == ["frame-src https://quote.example.test"]
+    assert frame_directives == ["frame-src blob: https://quote.example.test"]
 
 
 def test_security_headers_and_api_auth_no_store():

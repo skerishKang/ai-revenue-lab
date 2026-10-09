@@ -2180,9 +2180,9 @@
     }
   }
 
-  // A generated document exposes exactly one action: the bounded download.
-  // There is no in-browser open/preview capability, so no second control may
-  // exist that would only repeat this same route behind a false "open" label (#2771).
+  // A generated document always retains its original bounded download action.
+  // #3932 preview is separate and only appears for an actual PDF receipt,
+  // with fresh server-side tenant validation and real PDF bytes.
   function setClawDocumentAction(enabled, documentId, filename) {
     const btn = clawResultDocx;
     if (!btn) return;
@@ -2200,12 +2200,16 @@
     delete btn.dataset.filename;
   }
 
+  let clawPdfPreviewController = null;
   function clearClawArtifact() {
+    clawPdfPreviewController?.clear();
     if (clawArtifactMeta) clawArtifactMeta.hidden = true;
     if (clawArtifactName) clawArtifactName.textContent = "";
     if (clawArtifactSize) clawArtifactSize.textContent = "";
     if (clawResultSuccessNote) clawResultSuccessNote.hidden = true;
     setClawDocumentAction(false);
+    const downloadLabel = clawResultDocx?.querySelector?.('[data-locale-key="claw-result-docx"]');
+    if (downloadLabel) downloadLabel.textContent = clawT("claw-result-docx");
   }
 
   function formatClawBytes(bytes) {
@@ -2227,6 +2231,17 @@
     if (clawArtifactMeta) clawArtifactMeta.hidden = false;
     if (clawResultSuccessNote) clawResultSuccessNote.hidden = false;
     setClawDocumentAction(true, artifact.document_id, artifact.filename);
+    const downloadLabel = clawResultDocx?.querySelector?.('[data-locale-key="claw-result-docx"]');
+    if (downloadLabel) downloadLabel.textContent = artifact.media_type === "application/pdf"
+      ? clawT("claw-result-pdf")
+      : clawT("claw-result-docx");
+    if (!clawPdfPreviewController && clawArtifactMeta && window.PadiemClawPdfPreview?.create) {
+      clawPdfPreviewController = window.PadiemClawPdfPreview.create({
+        mount: clawArtifactMeta,
+        onError: (message) => setClawStatus(message, "error"),
+      });
+    }
+    clawPdfPreviewController?.set(artifact);
   }
 
   function safeClawErrorMessage(data, response) {

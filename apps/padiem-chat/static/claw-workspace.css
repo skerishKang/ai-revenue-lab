@@ -1240,3 +1240,64 @@
 @media (max-width: 920px) {
   .claw-automation-rule-edit { width: 100%; margin: 8px 0 0 0; }
 }
+
+/* #3932 Real PDF bytes only: visible action is conditional on server receipt. */
+.claw-pdf-preview-action {
+  min-height: 40px;
+  margin-inline-start: 8px;
+  padding: 6px 12px;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.claw-pdf-preview-action:focus-visible,
+.claw-pdf-preview-head button:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
+}
+.claw-pdf-preview-modal {
+  position: fixed;
+  width: min(92vw, 980px);
+  height: min(88dvh, 820px);
+  max-width: 92vw;
+  max-height: 88dvh;
+  padding: 0;
+  border: 1px solid var(--border, #ccc);
+  border-radius: 14px;
+  color: var(--text, inherit);
+  background: var(--surface, #fff);
+  overflow: hidden;
+}
+.claw-pdf-preview-modal::backdrop { background: rgba(0, 0, 0, 0.72); }
+.claw-pdf-preview-head {
+  min-height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+}
+.claw-pdf-preview-head strong {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.claw-pdf-preview-head button {
+  min-height: 44px;
+  min-width: 60px;
+  font: inherit;
+  cursor: pointer;
+}
+.claw-pdf-preview-modal iframe {
+  display: block;
+  width: 100%;
+  height: calc(100% - 58px);
+  border: 0;
+}
+@media (max-width: 600px) {
+  .claw-pdf-preview-modal { width: 100vw; max-width: 100vw; height: 92dvh; max-height: 92dvh; border-radius: 8px; }
+  .claw-pdf-preview-head { padding: 8px; }
+}
