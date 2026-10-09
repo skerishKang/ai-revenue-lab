@@ -16,6 +16,8 @@ on:
       - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/scripts/cloudflare_served_version_lineage.py"
       - ".github/tests/test_cloudflare_served_version_lineage.py"
+      - ".github/scripts/b62_code_deploy_served_preflight.py"
+      - ".github/tests/test_b62_code_deploy_served_preflight.py"
       - ".github/scripts/b62_claw_live_config_activation.py"
       - ".github/scripts/b62_d1_migration_008_schema.py"
       - ".github/tests/test_b62_binding_state_guard.py"
@@ -135,6 +137,14 @@ jobs:
           echo "B62_SERVED_VERSION_SECRET_GUARD_TESTS=PASS"
           echo "PRODUCTION_MUTATION=0"
 
+      - name: Validate new-main upload-vs-served release preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pytest .github/tests/test_b62_code_deploy_served_preflight.py -q
+          echo "NEW_MAIN_DEPLOY_PREFLIGHT_TESTS=PASS"
+          echo "PRODUCTION_MUTATION=0"
+
       # PR-only CI: this contract tests the separate manual Owner D1 release.
       # It NEVER dispatches apply/rollback or reads production credentials.
       - name: Owner D1 protected release contract regressions
@@ -209,7 +219,7 @@ jobs:
           assert 'test "${latest}" = "${active}"' not in readonly_job
           assert "cloudflare_served_version_lineage.py" in readonly_job
           assert "b62_code_deploy_served_preflight.py" in readonly_job
-          assert 'if [ "${{ inputs.mode }}" = "deploy_production_code" ]; then' in readonly_job
+          assert 'if [ "$' + '{{ inputs.mode }}' + '" = "deploy_production_code" ]; then' in readonly_job
           assert 'echo "latest_version=${latest}" >> "${GITHUB_OUTPUT}"' in readonly_job
           assert 'echo "LATEST_VERSION_EQUALS_ACTIVE_VERSION' not in readonly_job
           assert 'echo "active_version=${active}" >> "${GITHUB_OUTPUT}"' in readonly_job
