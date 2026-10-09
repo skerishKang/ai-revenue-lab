@@ -318,7 +318,7 @@ class GoogleWorkspaceWorkingCopyTests(unittest.TestCase):
             with self.assertRaises(WorkspaceCopyError):NativeEdit(**kwargs)
 
     def test_invalid_pdf_output_metadata_refused_before_any_copy(self):
-        for filename in ("bad/../output.pdf", "missing_extension", ".env.pdf"):
+        for filename in ("bad/../output.pdf", "missing_extension", "bad\\name.pdf"):
             app,p=setup()
             with self.assertRaises(WorkspaceCopyError):
                 invoke(app,pdf_filename=filename)
