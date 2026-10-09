@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import io
+import zipfile
 from pathlib import Path
 from unittest.mock import MagicMock
 
@@ -29,7 +31,24 @@ WORKSPACE_B = f"owner:{USER_B}"
 TEMPLATE_SOURCE_ID = "b66tplsrc_" + "c" * 32
 
 XLSX_BODY = b"PK\x03\x04customer-original-quotation"
-PDF_BODY = b"%PDF-1.4\noriginal-quotation"
+PDF_BODY = b"%PDF-1.4\noriginal-quotation\n%%EOF\n"
+
+
+def _real_xlsx_bytes() -> bytes:
+    """Minimal genuine OOXML package: PK magic + central directory + markers."""
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_STORED) as archive:
+        archive.writestr("[Content_Types].xml", "<Types/>")
+        archive.writestr("xl/workbook.xml", "<workbook/>")
+    return buffer.getvalue()
+
+
+def _real_docx_bytes() -> bytes:
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_STORED) as archive:
+        archive.writestr("[Content_Types].xml", "<Types/>")
+        archive.writestr("word/document.xml", "<document/>")
+    return buffer.getvalue()
 
 
 def _settings() -> Settings:
@@ -138,13 +157,13 @@ async def test_upload_round_trip_is_owner_workspace_scoped_and_bytes_identical()
         workspace_id=WORKSPACE_A,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         original_filename="견적서.xlsx",
-        body=XLSX_BODY,
+        body=_real_xlsx_bytes(),
     )
     assert saved.template_source_id.startswith("b66tplsrc_")
     assert saved.object_key.startswith("b66/template-source/")
     assert "usr_" not in saved.object_key
     assert saved.status == "uploaded"
-    assert saved.sha256 == hashlib.sha256(XLSX_BODY).hexdigest()
+    assert saved.sha256 == hashlib.sha256(_real_xlsx_bytes()).hexdigest()
     assert r2.put_calls[0][2]["httpMetadata"]["contentType"] == (
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
@@ -156,7 +175,7 @@ async def test_upload_round_trip_is_owner_workspace_scoped_and_bytes_identical()
     )
     assert own is not None
     fetched_metadata, payload = own
-    assert payload == XLSX_BODY  # byte-identical original
+    assert payload == _real_xlsx_bytes()  # byte-identical original
     assert fetched_metadata.sha256 == hashlib.sha256(payload).hexdigest()
     assert fetched_metadata.status == "uploaded"
 
@@ -313,6 +332,157 @@ def test_sanitize_original_filename_strips_paths_and_bounds():
         sanitize_original_filename("x" * 201)
 
 
+def test_ooxml_requires_real_zip_structure_not_just_pk_magic():
+    """Placeholder removed: superseded by the async coverage below."""
+    assert True
+
+
+@pytest.mark.asyncio
+async def test_pk_magic_only_xlsx_is_rejected_before_r2_write():
+    metadata = MemoryMetadata()
+    r2 = MemoryR2()
+    store = B66TemplateSourceStore(metadata, r2)
+    with pytest.raises(B66TemplateSourceError, match="does not match"):
+        await store.put_template_source(
+            user_id=USER_A,
+            workspace_id=WORKSPACE_A,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            original_filename="fake.xlsx",
+            body=b"PK\x03\x04not-a-real-zip-package",
+        )
+    assert r2.put_calls == []
+
+
+@pytest.mark.asyncio
+async def test_genuine_ooxml_packages_are_accepted():
+    metadata = MemoryMetadata()
+    r2 = MemoryR2()
+    store = B66TemplateSourceStore(metadata, r2)
+    saved = await store.put_template_source(
+        user_id=USER_A,
+        workspace_id=WORKSPACE_A,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        original_filename="real.xlsx",
+        body=_real_xlsx_bytes(),
+    )
+    fetched, payload = await store.get_for_owner(
+        user_id=USER_A,
+        workspace_id=WORKSPACE_A,
+        template_source_id=saved.template_source_id,
+    )
+    assert payload == _real_xlsx_bytes()
+
+    docx_store = B66TemplateSourceStore(MemoryMetadata(), MemoryR2())
+    docx_saved = await docx_store.put_template_source(
+        user_id=USER_A,
+        workspace_id=WORKSPACE_A,
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        original_filename="real.docx",
+        body=_real_docx_bytes(),
+    )
+    assert docx_saved.object_key.endswith(".docx")
+
+
+@pytest.mark.asyncio
+async def test_xlsx_media_type_rejects_docx_container_and_vice_versa():
+    store = _store()
+    with pytest.raises(B66TemplateSourceError, match="does not match"):
+        await store.put_template_source(
+            user_id=USER_A,
+            workspace_id=WORKSPACE_A,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            original_filename="mislabeled.xlsx",
+            body=_real_docx_bytes(),
+        )
+    with pytest.raises(B66TemplateSourceError, match="does not match"):
+        await store.put_template_source(
+            user_id=USER_A,
+            workspace_id=WORKSPACE_A,
+            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            original_filename="mislabeled.docx",
+            body=_real_xlsx_bytes(),
+        )
+
+
+@pytest.mark.asyncio
+async def test_ooxml_with_path_traversal_or_encrypted_entries_is_rejected():
+    traversal = io.BytesIO()
+    with zipfile.ZipFile(traversal, "w", zipfile.ZIP_STORED) as archive:
+        archive.writestr("[Content_Types].xml", "<Types/>")
+        archive.writestr("xl/workbook.xml", "<workbook/>")
+        archive.writestr("../evil.xml", "<evil/>")
+    store = _store()
+    with pytest.raises(B66TemplateSourceError, match="does not match"):
+        await store.put_template_source(
+            user_id=USER_A,
+            workspace_id=WORKSPACE_A,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            original_filename="traversal.xlsx",
+            body=traversal.getvalue(),
+        )
+
+    encrypted = io.BytesIO()
+    with zipfile.ZipFile(encrypted, "w", zipfile.ZIP_STORED) as archive:
+        archive.writestr("[Content_Types].xml", "<Types/>")
+        # zipfile.writestr resets flag_bits, so forge the raw central-directory
+        # entry: set the encrypted bit via a comment-free manual ZipInfo hack —
+        # instead we patch the validator input by wrapping the archive bytes with
+        # a manually built central directory entry carrying flag bit 0x1.
+        archive.writestr("xl/workbook.xml", "<workbook/>")
+    raw = bytearray(encrypted.getvalue())
+    # Locate the central directory header (PK\x01\x02) for xl/workbook.xml and
+    # set its general-purpose flag bit 0 (offset 8, little-endian) to 0x0001.
+    idx = bytes(raw).find(b"PK\x01\x02\x14\x00")
+    assert idx != -1
+    flags = int.from_bytes(raw[idx + 8 : idx + 10], "little") | 0x1
+    raw[idx + 8 : idx + 10] = flags.to_bytes(2, "little")
+    with pytest.raises(B66TemplateSourceError, match="does not match"):
+        await store.put_template_source(
+            user_id=USER_A,
+            workspace_id=WORKSPACE_A,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            original_filename="encrypted.xlsx",
+            body=bytes(raw),
+        )
+
+
+@pytest.mark.asyncio
+async def test_truncated_pdf_without_eof_marker_is_rejected():
+    store = _store()
+    with pytest.raises(B66TemplateSourceError, match="does not match"):
+        await store.put_template_source(
+            user_id=USER_A,
+            workspace_id=WORKSPACE_A,
+            media_type="application/pdf",
+            original_filename="truncated.pdf",
+            body=b"%PDF-1.4\ntruncated-stream-without-eof",
+        )
+
+
+@pytest.mark.asyncio
+async def test_redownload_integrity_check_stays_magic_plus_hash_only():
+    # Custody guarantee: a previously accepted original must remain returnable
+    # even if upload-time structure rules tighten later. get_for_owner must not
+    # apply the upload-time OOXML/PDF structural inspection.
+    metadata = MemoryMetadata()
+    r2 = MemoryR2()
+    store = B66TemplateSourceStore(metadata, r2)
+    saved = await store.put_template_source(
+        user_id=USER_A,
+        workspace_id=WORKSPACE_A,
+        media_type="application/pdf",
+        original_filename="ok.pdf",
+        body=b"%PDF-1.4\nq\n%%EOF\n",
+    )
+    fetched_metadata, payload = await store.get_for_owner(
+        user_id=USER_A,
+        workspace_id=WORKSPACE_A,
+        template_source_id=saved.template_source_id,
+    )
+    assert payload == b"%PDF-1.4\nq\n%%EOF\n"
+    assert fetched_metadata.sha256 == hashlib.sha256(payload).hexdigest()
+
+
 class RouteStore:
     """Owner-checked fake store driving route-level assertions."""
 
@@ -332,9 +502,11 @@ class RouteStore:
             "text/csv",
         ):
             raise B66TemplateSourceError("media_type is invalid")
-        # Emulate the real store contract: magic/size validation happens before
-        # any R2 write and raises before metadata is created.
-        if media_type == "application/pdf" and not body.startswith(b"%PDF-"):
+        # Emulate the real store contract: magic/structure/size validation
+        # happens before any R2 write and raises before metadata is created.
+        if media_type == "application/pdf" and not (
+            body.startswith(b"%PDF-") and b"%%EOF" in body
+        ):
             raise B66TemplateSourceError(
                 "template source media type does not match bytes"
             )

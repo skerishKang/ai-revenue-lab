@@ -18,9 +18,11 @@ custody policy (docs/products/b66/TEMPLATE_CUSTODY_POLICY.md) governs.
 from __future__ import annotations
 
 import hashlib
+import io
 import inspect
 import re
 import uuid
+import zipfile
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
@@ -28,6 +30,16 @@ from typing import Any
 MAX_B66_TEMPLATE_SOURCE_BYTES = 10 * 1024 * 1024
 MAX_TEMPLATE_SOURCE_LIST = 50
 MAX_ORIGINAL_FILENAME_CHARS = 200
+# OOXML containers (XLSX/DOCX) are ZIP packages, not bare ZIP magic. These caps
+# bound central-directory inspection only; this slice never decompresses entries,
+# so a stored file is inert until a future analysis/rendering slice enforces its
+# own bounded extraction. Legacy BIFF .xls is deliberately NOT in the allowed
+# media set (owner decision pending); it would need its own validator.
+MAX_OOXML_ENTRIES = 512
+_OOXML_REQUIRED_ENTRY = {
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xl/workbook.xml",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "word/document.xml",
+}
 
 TEMPLATE_SOURCE_MEDIA_TYPES: dict[str, str] = {
     "application/pdf": ".pdf",
@@ -150,6 +162,53 @@ def _magic_matches(media_type: str, body: bytes) -> bool:
     return False
 
 
+_ABSOLUTE_ZIP_NAME_RE = re.compile(r"^[A-Za-z]:[\\/]")
+
+
+def _zip_entry_name_is_safe(name: str) -> bool:
+    if not name or name.startswith("/") or "\\" in name:
+        return False
+    if _ABSOLUTE_ZIP_NAME_RE.match(name):
+        return False
+    return ".." not in name.split("/")
+
+
+def _structure_matches(media_type: str, body: bytes) -> bool:
+    """Upload-time container inspection beyond the magic prefix.
+
+    XLSX/DOCX must be a real ZIP package with the OOXML structural markers, so
+    PK-prefixed payloads are not accepted as documents on magic bytes alone.
+    PDF must carry an EOF marker, catching truncated transfers. Central-directory
+    inspection only: no entry is ever decompressed here. Re-download intentionally
+    re-checks magic + hash only, so an accepted original stays returnable even if
+    these upload-time rules are tightened later (custody guarantee).
+    """
+    if media_type == "application/pdf":
+        return b"%%EOF" in body
+    required = _OOXML_REQUIRED_ENTRY.get(media_type)
+    if required is None:
+        # text/csv: no container structure beyond the magic/text checks.
+        return True
+    try:
+        with zipfile.ZipFile(io.BytesIO(body)) as archive:
+            infos = archive.infolist()
+    except (zipfile.BadZipFile, OSError, ValueError):
+        return False
+    if not infos or len(infos) > MAX_OOXML_ENTRIES:
+        return False
+    names: list[str] = []
+    for info in infos:
+        if info.flag_bits & 0x1:  # encrypted entries are rejected, never opened
+            return False
+        if not _zip_entry_name_is_safe(info.filename):
+            return False
+        names.append(info.filename)
+    name_set = set(names)
+    if "[Content_Types].xml" not in name_set or required not in name_set:
+        return False
+    return True
+
+
 def _payload(value: object, *, media_type: str) -> bytes:
     if not isinstance(value, (bytes, bytearray, memoryview)):
         raise B66TemplateSourceError("template source body must be bytes")
@@ -157,6 +216,8 @@ def _payload(value: object, *, media_type: str) -> bytes:
     if not body or len(body) > MAX_B66_TEMPLATE_SOURCE_BYTES:
         raise B66TemplateSourceError("template source body size is invalid")
     if not _magic_matches(media_type, body):
+        raise B66TemplateSourceError("template source media type does not match bytes")
+    if not _structure_matches(media_type, body):
         raise B66TemplateSourceError("template source media type does not match bytes")
     return body
 
@@ -404,6 +465,7 @@ __all__ = [
     "B66TemplateSourceStore",
     "D1B66TemplateSourceMetadataStore",
     "MAX_B66_TEMPLATE_SOURCE_BYTES",
+    "MAX_OOXML_ENTRIES",
     "MAX_TEMPLATE_SOURCE_LIST",
     "TEMPLATE_SOURCE_MEDIA_TYPES",
     "sanitize_original_filename",
