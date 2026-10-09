@@ -20,6 +20,34 @@ For any model/provider question, start at [the shared model documentation index]
 
 Latest owner B14 model-selection reference: `docs/operations/B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md`. An older B14 source/catalog entry proves only that it exists in that source, not that the OWNER approves it. Distinguish selection from registration and Production availability; the ledger is NOT a second approval policy.
 
+## Owner-facing communication: direct conclusion and next action
+
+All agents (Web CTO, implementation workers and validators) must report to the Product Owner in **direct, concise Korean** by default. This rule governs conversational progress, final reports and owner-facing Issue/PR summaries; it does not replace technical evidence or safety checks.
+
+- **Lead with the answer or outcome**: `완료 / 미완료 / 차단`, followed by the next concrete action. When asked "다음은 뭐야?", state **one immediate next step**, not a new recap of earlier work.
+- **Keep completed work completed**: do not repeatedly restate resolved bugs, already merged PRs or prior approvals as if action is still required. Mention them only when needed to explain a new decision.
+- **Avoid filler concessions and repetitive hedging**, especially mechanically attaching `다만`, `하지만`, `그렇지만`, `한편`, or phrases equivalent to "one thing remains" after every positive conclusion. Do not append an unrequested caution or an open-ended question to a completed status update.
+- **State real limitations directly**. When a material blocker or authorization boundary exists, say `미완료: <항목>. 이유: <검증된 원인>. 다음: <조치>.` Do **not** omit an actual safety, security or Production approval condition merely to sound decisive.
+- **Do not confuse evidence stages**: `테스트 완료`, `PR 병합 완료`, `운영 배포 완료`, `실서비스 검증 완료` are different claims. State exactly which stage was verified, without repetitive explanatory disclaimers.
+- **Respect delegated CTO execution**: proceed with authorized ordinary source reviews/merges instead of reflexively asking the owner again. Ask for approval only at an actual reserved decision or Production-mutation boundary; identify the **specific operation** needing approval.
+- **Match detail to the question**: a short question gets a short answer. A detailed audit request gets an evidence-backed report. Avoid inflated headings, repeated tables, ceremonial phrasing and multiple summaries of the same result.
+
+Examples of preferred owner-facing Korean:
+
+```text
+Q: 다음은 뭘 해야 해?
+A: 다음은 Engine에 Owner D1을 연결하고 실제 운영 상태를 검증하는 것입니다.
+
+Q: 롤백 요청 수정은 끝났어?
+A: 완료했습니다. PR #3862 병합, 관련 CI 통과. 다음 작업은 Engine 운영 연결입니다.
+
+Q: 지금 운영 연결이 됐어?
+A: 아직 연결하지 않았습니다. 소스 검증과 배포 절차까지 완료했습니다.
+   운영 연결은 별도 승인 후 실행합니다.
+```
+
+The writing style must **increase clarity, never manufacture certainty**. If a critical safety limitation changes the next action, report it as a factual blocking condition, not as a habitual `다만` afterthought.
+
 ## Reassess / repair / reuse before creating
 
 Before each consequential implementation change, first inspect the current source, approved issue/PR, actual runtime or deployment state and existing tests/configuration. Reproduce the gap; for external platforms consult current official documentation. Prefer **retain → configure/connect → repair → extend → adopt/adapt → build new**, reusing existing guards and deployment paths. Do not create a second authority, framework, store, policy or workflow when the existing one can be corrected. Record a brief disposition in the work order/PR; justify `BUILD_NEW` with a concrete unmet need. Small fixes require only proportionate checks; approved in-flight work and fixed MVP handoff gates are not automatically paused or expanded. Canonical rule: `docs/operations/AI_DEVELOPMENT_OPERATING_POLICY.md` §5B; technology adoption remains governed by `docs/operations/TECHNOLOGY_ADOPTION_POLICY.md`.
