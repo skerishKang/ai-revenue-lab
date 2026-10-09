@@ -36,3 +36,28 @@ Source of truth: `.github/tests/test_3989_engine_living_learning_ci_scope.py` (G
 ## Environment and deployment
 
 This change modifies only CI workflow trigger metadata, a CI test and this operations document. No live provider calls, Secrets Store edits, Production mutation or product service code changes are authorized.
+
+## Actual isolated before/after — 2026-10-10 KST
+
+Two separate **Draft PRs never merged** changed the exact same harmless one-file path, `apps/living-learning/CI_3989_TEMP_PROBE.md`, with identical file content. The only intended trigger difference was #4051's Engine workflow path restriction. Both PRs finished with all their triggered GitHub workflows **SUCCESS**.
+
+| Measured metric | Before: [PR #4052](https://github.com/skerishKang/ai-revenue-lab/pull/4052) | After: [PR #4053](https://github.com/skerishKang/ai-revenue-lab/pull/4053) | Interpretation |
+| --- | ---: | ---: | --- |
+| Workflow runs triggered | 4 | 3 | **1 fewer** (25% reduction) |
+| Non-skipped successful jobs | 5 | 4 | Engine full CI job removed |
+| Sum of successful job elapsed seconds | 270 s | 136 s | **134 s less**, 49.6% reduction in measured job elapsed time |
+| Longest completed workflow elapsed time | 151 s | 88 s | **63 s less**, 41.7% reduction in observed critical path |
+| Engine full CI triggered | YES | **NO** | Targeted deduplication |
+| Living Learning Core full CI | PASS, 76 s | PASS, 88 s | Regression retained |
+| Operations Policy Guard | PASS | PASS | Governance retained |
+| B62 Unified Browser QA plan | PASS | PASS | Existing orchestrator retained |
+
+**Before actual workflows:** Engine [37999424303](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37999424303) 151s; LL [37999424294](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37999424294) 76s; Operations [37999424373](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37999424373) 34s; B62 QA [37999424330](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37999424330) 15s.
+
+**After actual workflows:** LL [37999595342](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37999595342) 88s; Operations [37999595372](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37999595372) 37s; B62 QA [37999595476](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37999595476) 13s. **No Padiem AI Engine CI run** was created on that head.
+
+Job times use GitHub REST `jobs[].completed_at - jobs[].started_at` for non-skipped jobs. Workflow times use `workflow_runs[].updated_at - created_at`. Neither metric is a claim about GitHub billing rounding or total developer time. Draft PRs were not product/deployment changes.
+
+**Implementation gate:** [PR #4051](https://github.com/skerishKang/ai-revenue-lab/pull/4051) exact-head 5/5 workflows PASS and merge `fbe4549abc33991f3874cbc75757aa5b3387f666`. Engine full run 37999366120 PASS (116s) and Living Learning CI run 37999366071 PASS (87s); source-only matrix guard enforced in Operations Policy Guard.
+
+**Further #3989 umbrella work:** cross-product-wide routing, LOCAL2's independent [B62 browser QA PR #4046](https://github.com/skerishKang/ai-revenue-lab/pull/4046), required branch-check inventory (GitHub branch protection GET returned 403 to this integration), representative B62 frontend 22-run baseline comparison, and consolidated repository-wide queue/cache measurements remain separate. Do not close #3989 based on this isolated LL/Engine slice.
