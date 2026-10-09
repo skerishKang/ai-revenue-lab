@@ -3,6 +3,17 @@
 GitHub API failure, oversized PR, or missing changed-file context runs *all*
 lanes; never silently skip regression tests due to classifier uncertainty.
 This is non-privileged PR CI and reads public/accessible PR file metadata only.
+
+Lane ownership is per product surface, not "anything under apps/". A lane that
+drives a B62 flow depends on the shared Chat app (factory, auth, session,
+storage, worker, static bundle) and on its own QA script - not on another
+product's leaf modules. `apps/padiem-chat/app/b66_*` and the B66 quote runtime
+are therefore excluded from every lane (#3989): they cannot change a B62 flow,
+and the mandatory B62 Padiem Chat CI still runs the whole Chat suite plus the
+Worker bundle dry-run for those files, so an import or composition break stays
+a hard failure. The exclusions are ordered after their positives in the
+manifest, and `.github/tests/test_3989_ci_scope.py` pins the boundary, the
+mixed-change behaviour and the fail-open states.
 """
 
 from __future__ import annotations

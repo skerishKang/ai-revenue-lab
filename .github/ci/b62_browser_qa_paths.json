@@ -8,14 +8,18 @@
       ".github/scripts/b62_accessibility_browser_qa.py",
       ".github/scripts/b62_small_type_accessibility_qa.py",
       ".github/scripts/b62_confirm_dialog_browser_qa.py",
-      ".github/scripts/b62_product_confirm_helpers.py"
+      ".github/scripts/b62_product_confirm_helpers.py",
+      "!apps/padiem-chat/app/b66_*",
+      "!apps/padiem-chat/static/b66-quote-runtime.js"
     ],
     "auth-history-browser-qa": [
       "apps/padiem-chat/**",
       "!apps/padiem-chat/tests/**",
       "!apps/padiem-chat/worker.py",
       ".github/scripts/b62_auth_history_browser_qa.py",
-      ".github/scripts/b62_account_session_browser_qa.py"
+      ".github/scripts/b62_account_session_browser_qa.py",
+      "!apps/padiem-chat/app/b66_*",
+      "!apps/padiem-chat/static/b66-quote-runtime.js"
     ],
     "browser-qa": [
       "apps/padiem-chat/static/**",
@@ -31,44 +35,58 @@
       ".github/scripts/b62_product_surface_certification_browser_qa.py",
       ".github/scripts/b62_product_surface_certification_evidence_qa.py",
       ".github/scripts/b62_post_certification_browser_qa.py",
-      ".github/scripts/b62_visual_timing.py"
+      ".github/scripts/b62_visual_timing.py",
+      "!apps/padiem-chat/app/b66_*",
+      "!apps/padiem-chat/static/b66-quote-runtime.js"
     ],
     "conversation-delete-browser-qa": [
       "apps/padiem-chat/**",
       "!apps/padiem-chat/tests/**",
       "!apps/padiem-chat/worker.py",
-      ".github/scripts/b62_conversation_delete_browser_qa.py"
+      ".github/scripts/b62_conversation_delete_browser_qa.py",
+      "!apps/padiem-chat/app/b66_*",
+      "!apps/padiem-chat/static/b66-quote-runtime.js"
     ],
     "conversation-export-browser-qa": [
       "apps/padiem-chat/**",
       "!apps/padiem-chat/tests/**",
       "!apps/padiem-chat/worker.py",
-      ".github/scripts/b62_conversation_export_browser_qa.py"
+      ".github/scripts/b62_conversation_export_browser_qa.py",
+      "!apps/padiem-chat/app/b66_*",
+      "!apps/padiem-chat/static/b66-quote-runtime.js"
     ],
     "deep-research-browser-qa": [
       "apps/padiem-chat/**",
       "!apps/padiem-chat/tests/**",
       "!apps/padiem-chat/worker.py",
       "packages/padiem-ai-core/**",
-      ".github/scripts/b62_deep_research_browser_qa.py"
+      ".github/scripts/b62_deep_research_browser_qa.py",
+      "!apps/padiem-chat/app/b66_*",
+      "!apps/padiem-chat/static/b66-quote-runtime.js"
     ],
     "document-browser-qa": [
       "apps/padiem-chat/**",
       "!apps/padiem-chat/tests/**",
       "!apps/padiem-chat/worker.py",
-      ".github/scripts/b62_document_browser_qa.py"
+      ".github/scripts/b62_document_browser_qa.py",
+      "!apps/padiem-chat/app/b66_*",
+      "!apps/padiem-chat/static/b66-quote-runtime.js"
     ],
     "error-retry-browser-qa": [
       "apps/padiem-chat/**",
       "!apps/padiem-chat/tests/**",
       "!apps/padiem-chat/worker.py",
-      ".github/scripts/b62_error_retry_browser_qa.py"
+      ".github/scripts/b62_error_retry_browser_qa.py",
+      "!apps/padiem-chat/app/b66_*",
+      "!apps/padiem-chat/static/b66-quote-runtime.js"
     ],
     "image-browser-qa": [
       "apps/padiem-chat/**",
       "!apps/padiem-chat/tests/**",
       "!apps/padiem-chat/worker.py",
-      ".github/scripts/b62_image_browser_qa.py"
+      ".github/scripts/b62_image_browser_qa.py",
+      "!apps/padiem-chat/app/b66_*",
+      "!apps/padiem-chat/static/b66-quote-runtime.js"
     ],
     "mobile-touch-target-qa": [
       "apps/padiem-chat/static/padiem-first-use.css",
@@ -78,38 +96,50 @@
       "apps/padiem-chat/**",
       "!apps/padiem-chat/tests/**",
       "!apps/padiem-chat/worker.py",
-      ".github/scripts/b62_project_delete_browser_qa.py"
+      ".github/scripts/b62_project_delete_browser_qa.py",
+      "!apps/padiem-chat/app/b66_*",
+      "!apps/padiem-chat/static/b66-quote-runtime.js"
     ],
     "project-files-browser-qa": [
       "apps/padiem-chat/**",
       "!apps/padiem-chat/tests/**",
       "!apps/padiem-chat/worker.py",
-      ".github/scripts/b62_project_files_browser_qa.py"
+      ".github/scripts/b62_project_files_browser_qa.py",
+      "!apps/padiem-chat/app/b66_*",
+      "!apps/padiem-chat/static/b66-quote-runtime.js"
     ],
     "projects-browser-qa": [
       "apps/padiem-chat/**",
       "!apps/padiem-chat/tests/**",
       "!apps/padiem-chat/worker.py",
-      ".github/scripts/b62_projects_browser_qa.py"
+      ".github/scripts/b62_projects_browser_qa.py",
+      "!apps/padiem-chat/app/b66_*",
+      "!apps/padiem-chat/static/b66-quote-runtime.js"
     ],
     "saved-outputs-browser-qa": [
       "apps/padiem-chat/**",
       "!apps/padiem-chat/tests/**",
       "!apps/padiem-chat/worker.py",
-      ".github/scripts/b62_saved_outputs_browser_qa.py"
+      ".github/scripts/b62_saved_outputs_browser_qa.py",
+      "!apps/padiem-chat/app/b66_*",
+      "!apps/padiem-chat/static/b66-quote-runtime.js"
     ],
     "structured-answer-browser-qa": [
       "apps/padiem-chat/**",
       "!apps/padiem-chat/tests/**",
       "!apps/padiem-chat/worker.py",
-      ".github/scripts/b62_structured_answer_browser_qa.py"
+      ".github/scripts/b62_structured_answer_browser_qa.py",
+      "!apps/padiem-chat/app/b66_*",
+      "!apps/padiem-chat/static/b66-quote-runtime.js"
     ],
     "web-search-browser-qa": [
       "apps/padiem-chat/**",
       "!apps/padiem-chat/tests/**",
       "!apps/padiem-chat/worker.py",
       "packages/padiem-ai-core/**",
-      ".github/scripts/b62_web_search_browser_qa.py"
+      ".github/scripts/b62_web_search_browser_qa.py",
+      "!apps/padiem-chat/app/b66_*",
+      "!apps/padiem-chat/static/b66-quote-runtime.js"
     ]
   }
 }
