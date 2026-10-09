@@ -159,6 +159,7 @@ def test_canonical_composition_still_reuses_existing_authorities() -> None:
     ):
         assert marker in source
 
+
 def test_e9_workflow_uses_unambiguous_safe_version_argv() -> None:
     """An option-shaped canonical id must reach the real CLI, not argparse's option parser."""
     workflow = WORKFLOW.read_text(encoding="utf-8")
