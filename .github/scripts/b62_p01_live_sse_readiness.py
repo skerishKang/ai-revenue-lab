@@ -29,6 +29,7 @@ EXPECTED_TYPES = {
     "PADIEM_CHAT_DB": "d1",
     "PADIEM_CHAT_SESSION_SECRET": "secret_text",
     "PADIEM_CHAT_QUOTA_SALT": "secret_text",
+    "PADIEM_CLAW_P01_LIVE_CANARY_SUBJECT_ID": "secret_text",
 }
 SOURCE_MARKER = re.compile(r"^B62 production code ([0-9a-f]{40})$")
 SHA = re.compile(r"^[0-9a-f]{40}$")
