@@ -33,8 +33,7 @@ https://api.fetch.tinyfish.ai`` with an ``X-API-Key`` header and a JSON body
 ``{"results": [{"url", "final_url", "title", "description", "language", "format",
 "text"}], "errors": []}``. This runner implements that documented contract so the
 Fetch leg can be measured independently; the Core ``TinyFishWebProvider.fetch``
-sends ``{"url": <str>}`` and expects a ``data``/``result`` envelope, so its wire
-shape does not match the published contract (reported, not silently rewritten).
+is aligned to the same contract by the stacked #3957 change.
 """
 
 from __future__ import annotations
@@ -142,7 +141,12 @@ class BenchmarkHttpError(FetchBenchmarkError):
     def __init__(self, status: int):
         super().__init__(f"provider returned HTTP {status}")
         self.status = status
-        if status == 429:
+        # 402 = the provider's free allowance is exhausted (TinyFish documents
+        # HTTP 402 / `INSUFFICIENT_CREDITS`). It must abort the run like 429 so a
+        # live benchmark can never silently spend past the free quota.
+        if status == 402:
+            self.code = "HTTP_402"
+        elif status == 429:
             self.code = "HTTP_429"
         elif 400 <= status < 500:
             self.code = "HTTP_4XX"
@@ -269,9 +273,9 @@ def _request_for(spec: FetchProviderSpec, case: FetchCase, credential: str) -> t
     headers = {"Accept": "application/json", "Content-Type": "application/json"}
     if spec.provider == "tinyfish":
         headers["X-API-Key"] = credential
-        # Published Fetch API request field is `urls` (array, max 10 URLs). This is
-        # the documented wire contract, not the `{"url": <str>}` shape the Core
-        # `TinyFishWebProvider.fetch` currently sends; see the runner docstring.
+        # Published Fetch API request field is `urls` (array, max 10 URLs). Core
+        # `TinyFishWebProvider.fetch` sends the same shape after the stacked
+        # #3957 alignment; see the runner docstring.
         payload = {"urls": [case.url]}
     elif spec.provider == "firecrawl":
         headers["Authorization"] = f"Bearer {credential}"
@@ -652,7 +656,7 @@ def main(argv: list[str] | None = None) -> int:
                 record = _error_record(spec, case, exc)
                 record["mode"] = mode
                 print(json.dumps(record, ensure_ascii=False, sort_keys=True), file=handle, flush=True)
-                if exc.code in {"MISSING_CREDENTIAL", "MISSING_FIXTURE", "HTTP_429"}:
+                if exc.code in {"MISSING_CREDENTIAL", "MISSING_FIXTURE", "HTTP_402", "HTTP_429"}:
                     return 2
                 continue
             record["mode"] = mode

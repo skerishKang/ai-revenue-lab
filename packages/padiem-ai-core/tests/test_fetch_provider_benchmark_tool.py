@@ -196,6 +196,38 @@ def test_http_429_is_distinct(monkeypatch):
     assert info.value.code == "HTTP_429"
 
 
+def test_http_402_free_quota_exhaustion_is_distinct(monkeypatch):
+    monkeypatch.setenv("TINYFISH_API_KEY", "tf-key")
+
+    def transport(*args, **kwargs):
+        raise benchmark.BenchmarkHttpError(402)
+
+    with pytest.raises(benchmark.BenchmarkHttpError) as info:
+        benchmark.run_case(benchmark.PROVIDERS["tinyfish"], _case(), transport=transport)
+    assert info.value.code == "HTTP_402"
+    assert info.value.code != "HTTP_4XX"
+
+
+def test_live_run_aborts_on_free_quota_exhaustion(monkeypatch, tmp_path):
+    monkeypatch.setenv("TINYFISH_API_KEY", "tf-key")
+
+    def deny_network(*args, **kwargs):
+        raise AssertionError("network must be denied in this test")
+
+    def raise_402(*args, **kwargs):
+        raise benchmark.BenchmarkHttpError(402)
+
+    # `run_case` resolves `_perform_request` at call time; `urlopen` is denied as
+    # well, so this test can never reach the network.
+    monkeypatch.setattr(benchmark, "_perform_request", raise_402)
+    monkeypatch.setattr(benchmark, "urlopen", deny_network)
+    output = tmp_path / "fetch-live.jsonl"
+    rc = benchmark.main(
+        ["--provider", "tinyfish", "--url-id", "EN-EDGE-01", "--allow-network", "--output", str(output)]
+    )
+    assert rc == 2
+
+
 def test_offline_replay_handles_non_utf8_body():
     case = _case()
     fixture = _fixture({"data": {"markdown": "안녕하세요 본문"}}, encoding="cp949")
