@@ -52,10 +52,16 @@ def test_exact_served_version_and_opt_in_only_marks_preflight_not_actual_canary(
 
 
 def test_actual_observed_configuration_blocks_on_source_and_missing_flag():
-    out=gate.assess(status(DEPLOYED),version(flag=None),target_sha=MAIN)
+    observed=version(flag=None)
+    observed["resources"]["bindings"]=[
+        b for b in observed["resources"]["bindings"]
+        if b["name"]!="PADIEM_CLAW_P01_LIVE_CANARY_SUBJECT_ID"
+    ]
+    out=gate.assess(status(DEPLOYED),observed,target_sha=MAIN)
     assert out["disposition"]=="CANARY_BLOCKED"
     assert set(out["blockers"])=={
-        "SERVED_SOURCE_OUTDATED","MISSING_PADIEM_CLAW_P01_LIVE_SSE_ENABLED"
+        "SERVED_SOURCE_OUTDATED","MISSING_PADIEM_CLAW_P01_LIVE_SSE_ENABLED",
+        "MISSING_PADIEM_CLAW_P01_LIVE_CANARY_SUBJECT_ID"
     }
     assert "do-not-print-me" not in repr(out)
 
