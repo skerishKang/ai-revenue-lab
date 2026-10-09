@@ -431,6 +431,7 @@
       case "company_profile_not_ready": return "회사 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.";
       case "incomplete_request": return "거래처와 품목·수량·단가를 조금 더 알려 주세요.";
       case "empty_request": return "견적 내용을 입력해 주세요.";
+      case "model_selection_required": return "좌측 견적서 관리에서 사용할 AI 모델을 먼저 선택해 주세요.";
       case "cgi_unsupported_rows": return "CGI 기본 견적서는 품목을 최대 3개까지 지원합니다. 품목을 3개 이하로 줄여 주세요.";
       case "cgi_unsupported_details": return "CGI 기본 견적서는 현재 요약 품목만 PDF로 만들 수 있습니다. 상세내역은 지원하지 않으므로 요약 품목의 수량과 단가를 알려 주세요.";
       case "cgi_scope_unavailable": return "CGI 견적서의 지원 범위를 확인하지 못했습니다. 새로고침 후 다시 시도해 주세요.";
@@ -887,40 +888,6 @@
     errorText: interpretErrorText
   });
 
-  async function generate() {
-    const message = byId("padiemQuoteRequest");
-    const button = byId("padiemQuoteGenerate");
-    if (!message || !state.authenticated) return;
-    const requestText = message.value.trim();
-    if (!requestText) {
-      setQuoteStatus("견적 내용을 입력해 주세요.", "error");
-      message.focus();
-      return;
-    }
-    if (button) button.disabled = true;
-    setQuoteStatus("견적 내용을 정리하고 있습니다.", "working");
-    try {
-      const result = await interpretRequest(requestText);
-      if (!result.ok) {
-        setQuoteStatus(interpretErrorText(result.code), result.code === "incomplete_request" ? "missing" : "error");
-        return;
-      }
-      const app = window.B66QuoteAppBridge;
-      const replaced = app ? app.replaceDraft(result.draft, { toast: "내 견적서로 작성했습니다." }) : null;
-      if (!replaced || replaced.ok !== true) {
-        setQuoteStatus("견적 화면에 반영하지 못했습니다.", "error");
-        return;
-      }
-      const direct = byId("directModeButton");
-      if (direct) direct.click();
-      setQuoteStatus("견적서가 준비되었습니다. 내용을 확인한 뒤 PDF로 저장하세요.", "ready");
-    } catch (_) {
-      setQuoteStatus("견적 연결을 확인해 주세요.", "error");
-    } finally {
-      if (button) button.disabled = false;
-    }
-  }
-
   async function startGoogleSignIn() {
     const button = byId("googleSigninButton");
     if (button) button.disabled = true;
@@ -1048,12 +1015,13 @@
     const loginForm = byId("padiemLoginForm");
     const logoutButton = byId("padiemLogout");
     const select = byId("padiemSavedSkillSelect");
-    const generateButton = byId("padiemQuoteGenerate");
 
     if (accountButton) accountButton.addEventListener("click", () => {
       if (state.authenticated) {
-        const panel = byId("padiemAccountPanel");
-        if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+        // The legacy account panel is not a visible destination in the 3-pane UI.
+        // Open the existing account/settings controls instead of scrolling to it.
+        const settings = byId("settingsButton");
+        if (settings) settings.click();
       } else {
         openAuthDialog();
       }
@@ -1063,7 +1031,6 @@
     if (loginForm) loginForm.addEventListener("submit", passwordSignIn);
     if (logoutButton) logoutButton.addEventListener("click", logout);
     if (select) select.addEventListener("change", changeSkill);
-    if (generateButton) generateButton.addEventListener("click", generate);
     refreshAuth();
   }
 
