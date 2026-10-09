@@ -250,6 +250,46 @@ def _print_bounded_b66_interpret_failure(response: object) -> None:
     print("B66_INTERPRET_EXCEPTION_FAMILY=" + exception_family, flush=True)
 
 
+_CF_RAY_GRAMMAR = re.compile(r"^[0-9a-fA-F]{8,32}-[A-Za-z]{3,5}$")
+
+
+def _bounded_latency_bucket(elapsed_seconds: object) -> str:
+    """Only bounded timing categories; no free-text diagnostics or payloads."""
+    if isinstance(elapsed_seconds, bool) or not isinstance(elapsed_seconds, (int, float)):
+        return "UNCLASSIFIED"
+    if not 0 <= elapsed_seconds < 3600:
+        return "UNCLASSIFIED"
+    if elapsed_seconds < 1:
+        return "LT_1S"
+    if elapsed_seconds < 5:
+        return "1_5S"
+    if elapsed_seconds < 15:
+        return "5_15S"
+    if elapsed_seconds < 30:
+        return "15_30S"
+    if elapsed_seconds < 60:
+        return "30_60S"
+    return "GE_60S"
+
+
+def _print_bounded_interpret_timing(
+    stage: str, elapsed_seconds: object, response: object
+) -> None:
+    """Read already delivered response once; never call a model or reveal PII.
+
+    CF-Ray is the browser-visible Pages edge identifier only. It does NOT
+    establish a direct B14 provider attempt, and the time includes UI send.
+    """
+    if stage not in ("complete", "partial", "followup"):
+        _fail("invalid_interpret_stage")
+    headers = getattr(response, "headers", None)
+    raw_ray = headers.get("cf-ray") if hasattr(headers, "get") else None
+    pages_ray = raw_ray if isinstance(raw_ray, str) and _CF_RAY_GRAMMAR.fullmatch(raw_ray) else "UNAVAILABLE"
+    print("B66_INTERPRET_TIMING_STAGE=" + stage.upper(), flush=True)
+    print("B66_INTERPRET_CLIENT_DURATION_BUCKET=" + _bounded_latency_bucket(elapsed_seconds), flush=True)
+    print("B66_PAGES_CF_RAY=" + pages_ray, flush=True)
+
+
 def _bounded_error_class(body_text: object) -> tuple[str | None, str | None]:
     """Extract ONLY the bounded error code/detail from a Claw error body.
 
@@ -728,6 +768,7 @@ def _complete_free_form(page, counters: Counters, selected_model_id: str) -> Non
     page.locator("#freeChatStarter").click()
 
     before = counters.interpret_posts
+    started_interpret = time.monotonic()
     with page.expect_response(
         lambda response: (
             response.request.method == "POST"
@@ -737,6 +778,7 @@ def _complete_free_form(page, counters: Counters, selected_model_id: str) -> Non
     ) as info:
         _send(page, COMPLETE_TEXT)
     response = info.value
+    _print_bounded_interpret_timing("complete", time.monotonic() - started_interpret, response)
     if response.status != 200:
         _print_bounded_b66_interpret_failure(response)
         _fail("complete_interpret_http_" + str(response.status))
@@ -776,6 +818,7 @@ def _partial_followup(page, counters: Counters, selected_model_id: str) -> None:
     page.locator("#freeChatStarter").click()
 
     before = counters.interpret_posts
+    started_interpret = time.monotonic()
     with page.expect_response(
         lambda response: (
             response.request.method == "POST"
@@ -785,6 +828,7 @@ def _partial_followup(page, counters: Counters, selected_model_id: str) -> None:
     ) as info:
         _send(page, PARTIAL_TEXT)
     first = info.value
+    _print_bounded_interpret_timing("partial", time.monotonic() - started_interpret, first)
     if first.status != 200:
         _print_bounded_b66_interpret_failure(first)
         _fail("partial_interpret_http_" + str(first.status))
@@ -811,6 +855,7 @@ def _partial_followup(page, counters: Counters, selected_model_id: str) -> None:
     if not isinstance(pending_issue_date, str) or not pending_issue_date:
         _fail("pending_issue_date_missing")
 
+    started_interpret = time.monotonic()
     with page.expect_response(
         lambda response: (
             response.request.method == "POST"
@@ -820,6 +865,7 @@ def _partial_followup(page, counters: Counters, selected_model_id: str) -> None:
     ) as info:
         _send(page, FOLLOWUP_TEXT)
     second = info.value
+    _print_bounded_interpret_timing("followup", time.monotonic() - started_interpret, second)
     if second.status != 200:
         _print_bounded_b66_interpret_failure(second)
         _fail("followup_interpret_http_" + str(second.status))
