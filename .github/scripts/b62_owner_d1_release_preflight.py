@@ -206,7 +206,7 @@ def _snapshot(
         "base_version": before_id,
         "existing_bindings": expected_count,
         "planned_bindings": expected_count + 1,
-        "pinned_inherit_count": len(inherited),
+        "pinned_inherit_count": len(candidate["bindings"]) - 1,
         "candidate_additions": 1,
         "script_metadata_digest": _digest(script),
         "runtime_metadata_digest": _digest(runtime),
