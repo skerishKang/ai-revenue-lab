@@ -247,8 +247,12 @@ class Settings:
         # An explicitly configured provider (including "off") wins; mock and
         # offline default to off, preserving zero-network development runs.
         configured_provider = os.getenv("PADIEM_CHAT_WEB_PROVIDER")
+        live_enabled = os.getenv("PADIEM_CHAT_LIVE_ENABLED", "false")
         default_provider = (
-            "tinyfish_daum" if runtime_mode.strip().lower() == "b14" else "off"
+            "tinyfish_daum"
+            if runtime_mode.strip().lower() == "b14"
+            and live_enabled.strip().lower() == "true"
+            else "off"
         )
         return cls.from_values(
             runtime_mode=runtime_mode,
