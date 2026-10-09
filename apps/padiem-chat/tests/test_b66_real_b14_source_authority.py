@@ -25,6 +25,24 @@ from app.b66_registered_model_boundary import B66ModelRouteError, B66QuoteTaskRe
 REPO = Path(__file__).resolve().parents[3]
 B14_APP_DIR = REPO / "apps" / "korean-ai-platform"
 B14_GETS = ("/api/pilot/models", "/api/pilot/provider-readiness")
+
+
+def assert_exact_current_b14_model_roster(rows):
+    """Require exact canonical, duplicate-free source routes, with no hardcoded size.
+
+    B14 may add/remove owner-approved exact IDs without requiring unrelated B62
+    test fixture changes. Unauthorized or missing IDs must still fail closed.
+    """
+    source = json.loads(
+        (B14_APP_DIR / "app" / "pilot" / "b14_models.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    expected = {model["id"] for model in source["models"]}
+    actual = {row["id"] for row in rows}
+    assert len(expected) == len(source["models"]), "duplicate canonical model ID"
+    assert len(actual) == len(rows), "duplicate B14 source GET route"
+    assert actual == expected, "B14 source GET differs from canonical owner registry"
 GOOGLE_IDS = {
     "google/gemini-3.1-flash-lite",
     "google/gemini-3.5-flash-lite",
@@ -102,6 +120,20 @@ def b14_source_gets():
     return payload
 
 
+def test_dynamic_registry_roster_guard_rejects_missing_duplicate_and_unknown(b14_source_gets):
+    """Changing canonical owner roster must not weaken actual B62 boundary."""
+    rows = b14_source_gets["models"]["registered_routes"]
+    assert_exact_current_b14_model_roster(rows)
+    with pytest.raises(AssertionError, match="differs"):
+        assert_exact_current_b14_model_roster(rows[:-1])
+    with pytest.raises(AssertionError, match="duplicate"):
+        assert_exact_current_b14_model_roster(rows + [dict(rows[0])])
+    with pytest.raises(AssertionError, match="differs"):
+        assert_exact_current_b14_model_roster(rows + [{
+            "id": "unapproved/not-in-owner-registry"
+        }])
+
+
 class SourceMetadataTransport:
     def __init__(self, payload):
         self.payload = payload
@@ -156,7 +188,7 @@ def test_real_b14_source_registered_routes_and_google_manual_only(b14_source_get
         "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
         "kilo/poolside-laguna-s-2.1-free",
     }
-    assert len(rows) == 10
+    assert_exact_current_b14_model_roster(rows)
     assert removed.isdisjoint(by_id)
     assert all(not row["auto_eligible"] for row in rows)
     assert all(not row["owner_excluded"] for row in rows)
@@ -228,7 +260,7 @@ def test_live_mode_not_customer_authority_and_no_default_replacement(b14_source_
     public = [row for row in rows if row.get("public") is True]
     # The historical single Kilo public route was deleted by Owner.
     assert public == []
-    assert len(rows) == 10
+    assert_exact_current_b14_model_roster(rows)
     assert all(not row["auto_eligible"] for row in rows)
     assert not any(row["id"].startswith("google/") and row["auto_eligible"]
                    for row in rows)
