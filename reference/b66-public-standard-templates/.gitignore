@@ -1,0 +1,17 @@
+# Public standard templates may include owner-authorized reference PDF/XLSX,
+# but never OS-licensed raw fonts, secrets, customer exports or Python cache.
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.ttf
+**/*.ttc
+**/*.otf
+**/*.woff
+**/*.woff2
+**/*.pem
+**/*.key
+**/*.p12
+**/.env
+**/output/
+**/customer-uploads/
+**/private/

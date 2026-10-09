@@ -106,6 +106,7 @@ hidden fallback, PDF production release or skipped visual/customer E2E gates.
 | Template registration source formats | #3586 | XLSX now; HWPX future; legacy XLS/HWP rejected |
 | Quote shell / single composer UX | #3536 | product UX |
 | **Quotation storage / customer-owned Drive** | [QUOTE_STORAGE_STRATEGY.md](QUOTE_STORAGE_STRATEGY.md), #3405, #3871 | **Existing signed-in D1 history is unchanged; customer Google Drive save/reopen is a new optional feature, not yet implemented.** Pricing/quotas not approved. |
+| **Public standard template + private customer custody** | [TEMPLATE_CUSTODY_POLICY.md](TEMPLATE_CUSTODY_POLICY.md), [CGI public standard v1](../../../reference/b66-public-standard-templates/cgi/v1/README.md), #3883, #3884 | Owner-authorized CGI source / Sol renderer and GLM comparator tracked separately in Git; customer originals remain private in R2 (future full custody/return E2E). No automatic release. |
 | Native XLSX output | #3496 | optional editable output; not PDF critical path |
 | B66 quote-model decision authority | [Single model authority index](../../models/README.md), [Owner approval policy §0A](../../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md), #3760 | **Owner policy corrected and merged (#3796):** user selects one exact registered, allowed, ready B14 model per run; optional visible/replaceable default only if configured; no free/paid filter, backend automatic selection or fallback. Matching B66 UI/API implementation was merged via #3831; no claim of served Production readiness or accepted customer E2E follows from that merge. |
 
@@ -188,6 +189,7 @@ Do not insert Excel, Google Sheets, HanCell or another office engine into every 
 
 ## Canonical documentation
 
+- [TEMPLATE_CUSTODY_POLICY.md](TEMPLATE_CUSTODY_POLICY.md) — shared public standard-template library vs customer-private immutable source/template/quote data, D1 + R2 authority, customer download and encryption design, #3883/#3884.
 - [QUOTE_STORAGE_STRATEGY.md](QUOTE_STORAGE_STRATEGY.md) — Owner-approved B66 storage decision: keep browser cache and current account-bound D1 quote history; add optional customer-owned Google Drive JSON+PDF save/reopen separately (#3871); do not change #3405, QuoteCore, the approved renderer, model selection or present billing rules.
 - [SOURCE_TEMPLATE_FIDELITY.md](SOURCE_TEMPLATE_FIDELITY.md) — source analysis, reproduction, certification, PDF/image fidelity implementation, current CGI architecture and development-model operating guidance.
 - This README — product boundary, current authority map and current status.
