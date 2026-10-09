@@ -11,7 +11,7 @@ from typing import Any
 
 from starlette.responses import StreamingResponse
 from kagent.p01_adapter import P01AdapterError, P01DispatchClass
-from padiem_ai_core import OrchestrationEvent
+from padiem_ai_core.orchestration_events import OrchestrationEvent
 
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 
