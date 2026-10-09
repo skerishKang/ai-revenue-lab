@@ -46,7 +46,7 @@ from .auth_routes import (
 )
 from .auto_grounding import AutoGroundingService
 from .chat_routes import api_chat, api_chat_stream
-from .claw_general_routes import claw_general_execute
+from .claw_general_routes import claw_general_execute, claw_general_capabilities
 from .claw_routes import (
     claw_approval_decision,
     claw_manual_intake_artifact,
@@ -307,6 +307,7 @@ def create_app(
         # #3539: the generic Claw composer runs through the canonical #3382 P01
         # Engine lane. It is a distinct B54 product boundary from manual-intake
         # and has no direct-B14 (/api/chat/stream) fallback.
+        Route("/api/claw/general/capabilities", claw_general_capabilities, methods=["GET"]),
         Route("/api/claw/general", claw_general_execute, methods=["POST"]),
         Route(
             "/api/claw/manual-intake/quote-compare",
@@ -434,6 +435,8 @@ def create_app(
     # composition root from trusted bindings; None means unconfigured and the
     # execute route fails closed before any transport.
     app.state.claw_p01_adapter = claw_p01_adapter
+    # Explicit trusted server opt-in; no browser-provided activation authority.
+    app.state.claw_live_sse_enabled = False
     # #2961 owner approval decision lane: the same composed Engine client, used
     # only to submit a server-derived decision to the canonical resume route.
     # None keeps the decision route fail-closed before any Engine transport.
