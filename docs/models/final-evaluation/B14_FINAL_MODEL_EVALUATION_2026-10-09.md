@@ -42,7 +42,7 @@
 | 3 | `google/gemma-4-26b-a4b-it` | **공식 사양·Free 30RPM/16K TPM/14.4K RPD, 직접 Minimal 8/10(3.26s)·High 엄격 JSON 0/10(20.62s), B14 504, 로컬 PDF 12품목 2페이지** |
 | 4 | `google/gemma-4-31b-it` | **F1 Dense 30.7B·출력 32,768 / F2 30RPM·16K TPM·14.4K RPD / Minimal 원본 1/10·내용 5/10 / High 원본 0/10·내용 0/10 / B14 504** |
 | 5 | `poolside/laguna-s-2.1` (Poolside 직접 API, Kilo 제외) | **F1 공식 118B/활성8B·1M / F2 계정한도 UNKNOWN / 직접 기본 9/10(10.89s), 추론 끔 8/10(4.63s), 켬 8/10(9.56s) / B14 9/10 HTTP200 / 실제 AI→PDF PASS** |
-| 6 | \`sensenova/sensenova-6.8-flash-lite\` | **F1 제공자 262,144/65,536 · F2 계정 한도 UNKNOWN · B14 10/10 · 직접 기본 10/10 · 리즈닝 none 10/10 2633ms; low 10/10 6528ms; medium 10/10 6278ms; high 10/10 6503ms · 12품목 로컬 PDF PASS** |
+| 6 | `sensenova/sensenova-6.8-flash-lite` | **F1 제공자 262,144/65,536 · F2 계정 한도 UNKNOWN · B14 10/10 · 직접 기본 10/10 · 리즈닝 none 10/10 2633ms; low 10/10 6528ms; medium 10/10 6278ms; high 10/10 6503ms · 12품목 로컬 PDF PASS** |
 | 7 | `agnes-ai/agnes-3.0-flash` | `NOT_STARTED` |
 | 8 | `inception/mercury-2.5` | `NOT_STARTED` |
 | 9 | `atria/Atria-Dawn-Preview` | `NOT_STARTED` |
