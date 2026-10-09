@@ -100,7 +100,7 @@ def test_post_deploy_verification_is_blocking() -> None:
     assert "POST_DEPLOY_VERSION_AT_100=PASS" in text
     assert '"b14_service_bound":true' in text
     assert "ENGINE_B14_BOUND_SMOKE=PASS" in text
-    assert "B14_KILO_CATALOG_MARKER=PASS" in text
+    assert "B14_OWNER_JSON_CATALOG_PARITY=PASS" in text
     # Verification runs inside the deploy job (needs: semantics via same job).
     deploy = _workflow()["jobs"]["deploy-production-b14"]
     step_names = [step.get("name", "") for step in deploy["steps"]]
@@ -981,7 +981,7 @@ PREMUTATION_STEP = "Premutation exact-main and account assertions"
 ANCHOR_STEP = "Pre-deploy canonical served-version rollback anchor"
 DEPLOY_STEP = "Deploy B14 via canonical pipeline (deploy.sh)"
 POST_DEPLOY_STEP = (
-    "Post-deploy verification (version 100% + engine binding + Kilo catalog marker)"
+    "Post-deploy verification (version 100% + engine binding + exact owner JSON registry)"
 )
 ARTIFACT_STEP = "Publish the bounded pre-mutation anchor evidence artifact"
 
@@ -1505,7 +1505,7 @@ def test_deploy_and_post_deploy_semantics_are_preserved() -> None:
     for preserved in (
         "POST_DEPLOY_VERSION_AT_100=PASS",
         "ENGINE_B14_BOUND_SMOKE=PASS",
-        "B14_KILO_CATALOG_MARKER=PASS",
+        "B14_OWNER_JSON_CATALOG_PARITY=PASS",
         "B14_PRODUCTION_DEPLOY_SMOKE=PASS",
         "/workers/scripts/ai-revenue-korean-ai-platform/deployments",
     ):
@@ -1702,3 +1702,14 @@ def test_negative_control_a_failed_deploy_without_the_attempt_line_loses_the_evi
     assert fixed.deploy_calls == 1
     assert fixed.evidence["DEPLOY_ATTEMPTED"] == "YES"
     assert fixed.evidence["DEPLOY_EXECUTED"] == "UNKNOWN"
+
+
+def test_post_deploy_matches_owner_json_registry_without_legacy_model_marker() -> None:
+    text = _workflow_text()
+    assert "app/pilot/b14_models.json" in text
+    assert "owner_registry['models']" in text
+    assert "for key in ('catalog', 'registered_routes')" in text
+    assert "set(deployed) == set(expected)" in text
+    assert "B14_OWNER_JSON_CATALOG_PARITY=PASS" in text
+    assert "B14_KILO_CATALOG_MARKER" not in text
+    assert "mid.startswith('kilo/')" not in text
