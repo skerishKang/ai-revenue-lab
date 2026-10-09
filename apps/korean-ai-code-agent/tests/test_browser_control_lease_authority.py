@@ -14,6 +14,7 @@ import json
 import os
 import tempfile
 import unittest
+from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -22,6 +23,7 @@ from padiem_ai_core.agent_approval import (
     ApprovalPause,
     ApprovalRequirement,
     VerifiedApprovalDecision,
+    tool_invocation_digest,
 )
 
 from kagent.browser_control_lease_authority import (
@@ -109,7 +111,7 @@ def make_evidence(
         run_id=request.run_ref,
         agent_runtime_id="runtime_3669",
         tool_id=BROWSER_CONTROL_TOOL_ID,
-        invocation_sha256=request.fingerprint(),
+        invocation_sha256=request.approval_invocation_sha256(),
         requirement=ApprovalRequirement.USER_CONFIRMATION,
         step_index=1,
         created_at=NOW - timedelta(seconds=5),
@@ -164,6 +166,61 @@ class AuthorityBase(unittest.TestCase):
 
 
 class TestApprovedIssuance(AuthorityBase):
+    def test_genuine_engine_tool_invocation_digest_binds_p01_pause(self) -> None:
+        request = make_request()
+        invocation = request.tool_invocation()
+        self.assertEqual(invocation.tool_id, BROWSER_CONTROL_TOOL_ID)
+        self.assertEqual(
+            request.approval_invocation_sha256(),
+            tool_invocation_digest(invocation),
+        )
+        self.assertNotEqual(
+            request.fingerprint(),
+            request.approval_invocation_sha256(),
+        )
+        self.assertEqual(
+            invocation.arguments_copy()["origin_scope"], request.origin_scope
+        )
+        self.assertEqual(
+            invocation.arguments_copy()["allowed_action_classes"],
+            list(request.allowed_action_classes),
+        )
+        self.assertEqual(
+            request.approval_invocation_sha256(),
+            make_request().approval_invocation_sha256(),
+        )
+
+    def test_old_session_fingerprint_cannot_impersonate_engine_p01_digest(self) -> None:
+        request = make_request()
+        original = make_evidence(request)
+        old_pause = replace(
+            original.approval_pause,
+            invocation_sha256=request.fingerprint(),
+        )
+        fake = replace(original, approval_pause=old_pause)
+        authority = self.make_authority(fake)
+        with self.assertRaises(BrowserControlLeaseRefusal) as caught:
+            authority.issue_from_p01(request, now=NOW)
+        self.assertEqual(caught.exception.code, "p01_approval_invalid")
+        self.assertIsNone(self.store.get(request.fingerprint()))
+
+    def test_p01_digest_changes_with_any_approved_session_scope(self) -> None:
+        original = make_request()
+        for changed in (
+            make_request(owner_ref="owner_other"),
+            make_request(origin_scope="https://other.example"),
+            make_request(allowed_action_classes=("scroll",)),
+            make_request(max_actions=original.max_actions + 1),
+            make_request(ttl_seconds=original.ttl_seconds - 1),
+            make_request(browser_session_ref="different.session"),
+            make_request(device_id="other.device"),
+        ):
+            with self.subTest(changed=changed):
+                self.assertNotEqual(
+                    original.approval_invocation_sha256(),
+                    changed.approval_invocation_sha256(),
+                )
+
     def test_an_approved_p01_issues_the_durable_lease_exactly_once(self) -> None:
         request = make_request()
         evidence = make_evidence(request)
@@ -328,7 +385,7 @@ class TestCorrelationMatrix(AuthorityBase):
                 run_id="run_other",
                 agent_runtime_id=evidence.approval_pause.agent_runtime_id,
                 tool_id=BROWSER_CONTROL_TOOL_ID,
-                invocation_sha256=request.fingerprint(),
+                invocation_sha256=request.approval_invocation_sha256(),
                 requirement=ApprovalRequirement.USER_CONFIRMATION,
                 step_index=1,
                 created_at=NOW - timedelta(seconds=5),
@@ -409,7 +466,7 @@ class TestCorrelationMatrix(AuthorityBase):
                     run_id=request.run_ref,
                     agent_runtime_id=evidence.approval_pause.agent_runtime_id,
                     tool_id="browser.open",
-                    invocation_sha256=request.fingerprint(),
+                    invocation_sha256=request.approval_invocation_sha256(),
                     requirement=ApprovalRequirement.USER_CONFIRMATION,
                     step_index=1,
                     created_at=NOW - timedelta(seconds=5),
@@ -490,7 +547,7 @@ class TestLoopbackEvidenceClient(AuthorityBase):
             "run_id": request.run_ref,
             "agent_runtime_id": "runtime_3669",
             "tool_id": BROWSER_CONTROL_TOOL_ID,
-            "invocation_sha256": request.fingerprint(),
+            "invocation_sha256": request.approval_invocation_sha256(),
             "requirement": "user_confirmation",
             "step_index": 1,
             "created_at": (NOW - timedelta(seconds=5)).isoformat(),
@@ -557,6 +614,40 @@ class TestLoopbackEvidenceClient(AuthorityBase):
         )
         evidence = client.resolve(request.fingerprint())
         self.assertEqual(evidence.command_id, "command.3669")
+
+    def test_server_owned_admission_and_revision_are_copied_only_when_present(self) -> None:
+        request = make_request()
+        client = P01LoopbackBrowserControlEvidenceClient(
+            base_url="", binding_ref="binding.3669", request_id="request.3669",
+            opener=lambda body: {"envelope": self._envelope(
+                request,
+                command_id="command.3669",
+                admission_ref="admission.3669",
+                revision_ref="revision.3669",
+            )},
+        )
+        evidence = client.resolve(request.fingerprint())
+        self.assertEqual(evidence.admission_ref, "admission.3669")
+        self.assertEqual(evidence.revision_ref, "revision.3669")
+
+        missing = P01LoopbackBrowserControlEvidenceClient(
+            base_url="", binding_ref="binding.3669", request_id="request.3669",
+            opener=lambda body: {"envelope": self._envelope(request)},
+        ).resolve(request.fingerprint())
+        self.assertIsNone(missing.admission_ref)
+        self.assertIsNone(missing.revision_ref)
+
+    def test_malformed_server_owned_admission_revision_refuses(self) -> None:
+        request = make_request()
+        for key in ("admission_ref", "revision_ref"):
+            client = P01LoopbackBrowserControlEvidenceClient(
+                base_url="", binding_ref="binding.3669", request_id="request.3669",
+                opener=lambda body, key=key: {
+                    "envelope": self._envelope(request, **{key: "invalid ref!"})
+                },
+            )
+            with self.subTest(key=key), self.assertRaises(ContractError):
+                client.resolve(request.fingerprint())
 
     def test_a_mismatched_envelope_fingerprint_refuses(self) -> None:
         request = make_request()

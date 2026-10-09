@@ -66,10 +66,20 @@ LEASE_RESOLVE_REQUEST_KIND = "browser_control_lease_resolve"
 LEASE_CONSUME_REQUEST_KIND = "browser_control_lease_consume"
 LEASE_RESPONSE_EVENT = "browser_control_lease"
 
+# #3782 — approved browser action material is returned ONLY after a future
+# server-authenticated Broker one-shot take. No route/provider exists by default.
+COMMAND_TAKE_REQUEST_KIND = "browser_control_command_take"
+COMMAND_TAKE_CONTRACT_VERSION = "claw-browser-control-command-take.v1"
+COMMAND_TAKE_RESPONSE_EVENT = "browser_control_command_take"
+MAX_COMMAND_TAKE_RESPONSE_LINE_CHARS = 8_192
+MAX_COMMAND_TAKE_REQUEST_REF_CHARS = 256
+
+
 #: The complete, closed set of request kinds this pipe accepts. Anything else is
 #: refused without a guess — there is no generic command dispatch here.
 DESKTOP_REQUEST_KINDS = frozenset(
-    {MATERIAL_REQUEST_KIND, REDEMPTION_REQUEST_KIND, LEASE_RESOLVE_REQUEST_KIND, LEASE_CONSUME_REQUEST_KIND}
+    {MATERIAL_REQUEST_KIND, REDEMPTION_REQUEST_KIND, LEASE_RESOLVE_REQUEST_KIND,
+     LEASE_CONSUME_REQUEST_KIND, COMMAND_TAKE_REQUEST_KIND}
 )
 
 #: Exactly the correlation the Desktop redemption port already needs. No raw URL,
@@ -198,6 +208,20 @@ def parse_desktop_request(raw: str) -> dict[str, Any]:
                 raise ContractError("redemption request correlation is not a bounded string")
             payload[field] = value
         return {"kind": REDEMPTION_REQUEST_KIND, "payload": payload}
+    if kind == COMMAND_TAKE_REQUEST_KIND:
+        if parsed.get("contract_version") != COMMAND_TAKE_CONTRACT_VERSION:
+            raise ContractError("unsupported approved command take contract")
+        if set(parsed) != {"contract_version", "request", "commandRef"}:
+            raise ContractError("approved command take requires exact correlation")
+        command_ref = parsed.get("commandRef")
+        if (
+            type(command_ref) is not str
+            or not command_ref
+            or len(command_ref) > MAX_COMMAND_TAKE_REQUEST_REF_CHARS
+            or any(c not in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._:/@+-" for c in command_ref)
+        ):
+            raise ContractError("approved browser command ref invalid")
+        return {"kind": COMMAND_TAKE_REQUEST_KIND, "payload": {"commandRef": command_ref}}
     if kind == LEASE_RESOLVE_REQUEST_KIND:
         payload = parse_lease_resolve_request(parsed)
         return {"kind": LEASE_RESOLVE_REQUEST_KIND, "payload": payload}
@@ -291,6 +315,32 @@ def _lease_action_classes(value: Any, field: str) -> list[str]:
         if not isinstance(entry, str) or entry not in LEASE_ELIGIBLE_ACTIONS:
             raise ContractError(f"{field} carries a non-lease-eligible class")
     return value
+
+
+def approved_browser_command_take_response_line(
+    *, command_ref: str, command: dict[str, Any] | None = None,
+    reason: str | None = None,
+) -> str:
+    """One-shot private material answer; no P01, credentials or arbitrary wire."""
+    if command is not None and (
+        type(command) is not dict
+        or set(command) != {"commandRef", "hostLeaseRef", "capability", "context", "action"}
+        or command.get("commandRef") != command_ref
+        or command.get("capability") != "browser.control"
+    ):
+        raise ContractError("canonical browser command material malformed")
+    body = {
+        "event": COMMAND_TAKE_RESPONSE_EVENT,
+        "contract_version": COMMAND_TAKE_CONTRACT_VERSION,
+        "command_ref": command_ref,
+        "ok": command is not None,
+        "reason": None if command is not None else (reason or "command_take_refused"),
+        "command": command,
+    }
+    line = json.dumps(body, sort_keys=True, separators=(",", ":"))
+    if len(line) > MAX_COMMAND_TAKE_RESPONSE_LINE_CHARS:
+        raise ContractError("approved browser command response too large")
+    return line
 
 
 def redemption_response_line(**fields: Any) -> str:
@@ -478,16 +528,15 @@ class ResidentDesktopMaterialResponder:
     handoff before redemption, and this daemon loop reads only what comes after
     it.
 
-    It answers exactly four literal request kinds — ``desktop_device_session_material``
-    (#3436 B2d), ``browser_open_redemption`` (#3611), and the two phases of the
-    canonical browser-control lease, ``browser_control_lease_resolve`` /
-    ``browser_control_lease_consume`` (#3669). Every line produces
-    exactly one bounded response line, and an unrecognised kind is refused rather
-    than guessed at. There is deliberately **one** reader thread: a second thread
-    reading the same stdin would race this one and misroute replies.
+    It answers five literal request kinds: session material (#3436),
+    browser.open redemption (#3611), two browser.control lease phases (#3669),
+    and #3782's private approved-command take. The latter is UNAVAILABLE
+    until a real per-command HUMAN P01 Broker owner is installed. Each line
+    produces one bounded response, unknown kinds fail closed, and there is
+    exactly one stdin reader thread.
 
         READER_THREADS=1
-        REQUEST_KINDS=4
+        REQUEST_KINDS=5
         GENERIC_COMMAND_DISPATCH=NO
         UNKNOWN_KIND=FAIL_CLOSED
     """
@@ -499,6 +548,7 @@ class ResidentDesktopMaterialResponder:
         redemption: Callable[..., None] | None = None,
         lease_resolve: Callable[..., dict[str, Any]] | None = None,
         lease_consume: Callable[..., int] | None = None,
+        approved_command_take: Callable[[str], dict[str, Any]] | None = None,
         reader: Any | None = None,
         emit: Callable[[str], None] | None = None,
     ) -> None:
@@ -513,6 +563,9 @@ class ResidentDesktopMaterialResponder:
         self._projection = material_projection
         self._redemption = redemption
         self._lease_resolve = lease_resolve
+        if approved_command_take is not None and not callable(approved_command_take):
+            raise ContractError("approved_command_take must be callable when supplied")
+        self._approved_command_take = approved_command_take
         self._lease_consume = lease_consume
         self._reader = reader if reader is not None else sys.stdin
         self._emit = emit if emit is not None else self._write_stdout_line
@@ -565,6 +618,8 @@ class ResidentDesktopMaterialResponder:
             return material_refusal_line(str(exc))
         if request["kind"] == REDEMPTION_REQUEST_KIND:
             return self._respond_redemption(request["payload"])
+        if request["kind"] == COMMAND_TAKE_REQUEST_KIND:
+            return self._respond_command_take(request["payload"])
         if request["kind"] == LEASE_RESOLVE_REQUEST_KIND:
             return self._respond_lease_resolve(request["payload"])
         if request["kind"] == LEASE_CONSUME_REQUEST_KIND:
@@ -576,6 +631,26 @@ class ResidentDesktopMaterialResponder:
         except Exception:
             return material_refusal_line("material_refused")
         return material_response_line(projection)
+
+    def _respond_command_take(self, payload: dict[str, str]) -> str:
+        command_ref = payload["commandRef"]
+        # Product runtime intentionally DOES NOT supply this callable until
+        # the real per-command P01 source, Broker device authentication and
+        # durable one-shot CAS are all configured. No test grant is production.
+        if self._approved_command_take is None:
+            return approved_browser_command_take_response_line(
+                command_ref=command_ref, reason="command_take_unavailable"
+            )
+        try:
+            result = self._approved_command_take(command_ref)
+            return approved_browser_command_take_response_line(
+                command_ref=command_ref, command=result,
+            )
+        except Exception:
+            # Broker outage or malformed action material: no fallback grant.
+            return approved_browser_command_take_response_line(
+                command_ref=command_ref, reason="command_take_refused"
+            )
 
     def _respond_redemption(self, payload: dict[str, str]) -> str:
         """Delegate the one atomic durable transition, then answer.

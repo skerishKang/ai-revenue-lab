@@ -51,7 +51,9 @@ from padiem_ai_core.agent_approval import (
     ContinuationStatus,
     VerifiedApprovalDecision,
     resolve_approval_pause,
+    tool_invocation_digest,
 )
+from padiem_ai_core.tool_runtime import ToolInvocation
 
 from .browser_control_actions import (
     LEASE_ELIGIBLE_ACTIONS,
@@ -141,10 +143,10 @@ def _aware(value: Any, field_name: str) -> datetime:
 class BrowserControlLeaseRequest:
     """One trusted `browser.control` session request, bounded like its approval.
 
-    The request fingerprint is the *exact* binding the P01 approval was made
-    over: the pause's `invocation_sha256` must equal it, so an approval for a
-    different session (origin, budget, window, correlations) can never be
-    redeemed here.
+    The request fingerprint is the canonical session/Broker correlation.
+    P01 approval is bound separately to the Core ToolInvocation digest of
+    these same exact fields, not to the session fingerprint: an approval for
+    another origin, budget, device or run can never be redeemed here.
     """
 
     browser_session_ref: str
@@ -183,7 +185,7 @@ class BrowserControlLeaseRequest:
         return LocalCapability.BROWSER_CONTROL
 
     def fingerprint(self) -> str:
-        """The canonical session-request digest the P01 pause was issued against."""
+        """Stable browser session/Broker correlation, NOT the P01 invocation digest."""
 
         payload = {
             "capability": self.capability.value,
@@ -199,6 +201,31 @@ class BrowserControlLeaseRequest:
         }
         encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
         return hashlib.sha256(encoded).hexdigest()
+
+    def tool_invocation(self) -> ToolInvocation:
+        """Canonical Core invocation for a genuine P01 browser-control pause.
+
+        The broker/session request fingerprint remains a distinct stable
+        correlation identifier; only Core's actual tool-invocation digest
+        binds the approval pause. This constructor issues NO approval.
+        """
+        return ToolInvocation(
+            tool_id=BROWSER_CONTROL_TOOL_ID,
+            arguments={
+                "browser_session_ref": self.browser_session_ref,
+                "run_ref": self.run_ref,
+                "workspace_ref": self.workspace_ref,
+                "owner_ref": self.owner_ref,
+                "device_id": self.device_id,
+                "origin_scope": self.origin_scope,
+                "allowed_action_classes": list(self.allowed_action_classes),
+                "ttl_seconds": self.ttl_seconds,
+                "max_actions": self.max_actions,
+            },
+        )
+
+    def approval_invocation_sha256(self) -> str:
+        return tool_invocation_digest(self.tool_invocation())
 
     def target_ref(self) -> str:
         """Bounded, URL-free reference for the local permission record."""
@@ -468,6 +495,10 @@ class P01LoopbackBrowserControlEvidenceClient:
             local_policy_ref=envelope["local_policy_ref"],
             expires_at=datetime.fromisoformat(envelope["expires_at"]),
             command_id=envelope.get("command_id") or (self._command_id or None),
+            # Server-owned admission/revision values are copied only if present.
+            # Never synthesize them from client command IDs or local pairing.
+            admission_ref=envelope.get("admission_ref"),
+            revision_ref=envelope.get("revision_ref"),
         )
 
 
@@ -604,14 +635,15 @@ class BrowserControlLeaseAuthority:
 
     # --- issuance ----------------------------------------------------------
 
-    def issue_from_p01(
-        self,
-        request: BrowserControlLeaseRequest,
-        *,
-        now: datetime,
-    ) -> tuple[BrowserControlLeaseProjection, bool]:
-        """Validate canonical P01 evidence and idempotently land the lease row."""
+    def verify_existing_p01(
+        self, request: BrowserControlLeaseRequest, *, now: datetime,
+    ) -> BrowserControlAuthorityEvidence:
+        """Read-only canonical P01 + current local policy validation.
 
+        This shares the exact checks used by issuance, but creates NO lease,
+        writes NO approval record, and consumes NO browser action. A caller
+        must still independently authenticate the upstream evidence port.
+        """
         if not isinstance(request, BrowserControlLeaseRequest):
             raise ContractError("request must be BrowserControlLeaseRequest")
         moment = _aware(now, "now")
@@ -623,7 +655,6 @@ class BrowserControlLeaseAuthority:
             raise BrowserControlLeaseRefusal(
                 "lease_correlation_mismatch", "session request workspace does not match this device"
             )
-
         fingerprint = request.fingerprint()
         evidence = self._evidence_port.resolve(fingerprint)
         if not isinstance(evidence, BrowserControlAuthorityEvidence):
@@ -634,11 +665,24 @@ class BrowserControlLeaseAuthority:
             )
         if evidence.expires_at <= moment:
             raise BrowserControlLeaseRefusal(
-                "p01_approval_expired", "the P01 evidence has expired before issuance"
+                "p01_approval_expired", "the P01 evidence has expired before validation"
             )
         self._validate_evidence_binding(request=request, evidence=evidence)
         self._validate_p01_approval(request=request, evidence=evidence, now=moment)
         self._recompute_local_policy(evidence=evidence)
+        return evidence
+
+    def issue_from_p01(
+        self,
+        request: BrowserControlLeaseRequest,
+        *,
+        now: datetime,
+    ) -> tuple[BrowserControlLeaseProjection, bool]:
+        """Validate canonical P01 evidence and idempotently land the lease row."""
+
+        moment = _aware(now, "now")
+        evidence = self.verify_existing_p01(request, now=moment)
+        fingerprint = request.fingerprint()
 
         # Expiry cap (CENTRAL ruling §4): requested TTL, canonical evidence
         # expiry and the P01 pause expiry — the minimum of the three, and no
@@ -706,7 +750,7 @@ class BrowserControlLeaseAuthority:
             raise BrowserControlLeaseRefusal(
                 "p01_approval_invalid", "the approval pause run does not match the session run"
             )
-        if pause.invocation_sha256 != request.fingerprint():
+        if pause.invocation_sha256 != request.approval_invocation_sha256():
             raise BrowserControlLeaseRefusal(
                 "p01_approval_invalid",
                 "the P01 approval does not bind this exact control session request",

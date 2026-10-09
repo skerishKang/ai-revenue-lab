@@ -189,7 +189,9 @@ function harnessFactory(
     observation,
     binding,
     leaseAuthority,
-    ...(options.now === undefined ? {} : { now: options.now }),
+    // Keep the trusted action host on the SAME deterministic clock as the
+    // synthetic lease authority. Wall-clock time would expire 2026 test leases.
+    now: clock,
   });
   return {
     host,

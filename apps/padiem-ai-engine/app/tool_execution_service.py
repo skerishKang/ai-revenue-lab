@@ -28,25 +28,40 @@ The Engine performs transport, trusted-binding lookup and safe projection only:
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Callable, Mapping
-from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
 import inspect
 import json
 import secrets
+from collections.abc import Callable, Mapping
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from padiem_ai_core.agent_approval import (
     AgentApprovalError,
     ApprovalPause,
+    ContinuationStatus,
     VerifiedApprovalDecision,
     approval_pause_from_tool_error,
     resolve_approval_pause,
-    ContinuationStatus,
+    tool_invocation_digest,
 )
 from padiem_ai_core.tool_lifecycle import ToolLifecycleEvent, ToolLifecycleKind
-from padiem_ai_core.tool_runtime import ToolExecutionResult, ToolInvocation, ToolRuntimeError
+from padiem_ai_core.tool_runtime import (
+    ToolExecutionResult,
+    ToolInvocation,
+    ToolRuntimeError,
+)
 
+from app.browser_control_approval_validation import (
+    validate_browser_control_approval_arguments,
+)
+from app.browser_control_human_approval import (
+    IndependentlyAuthenticatedBrowserControlP01,
+)
+from app.browser_control_p01_receipt import CloudflareD1BrowserControlP01ReceiptStore
+from app.browser_control_pause_identity import TrustedBrowserControlPauseIdentity
+from app.continuation_binding import IdentityBoundContinuationRecord
+from app.continuation_d1 import CloudflareD1IdentityBoundContinuationStore
 from app.orchestration_service import (
     ApprovalDecisionVerifier,
     ContinuationRecord,
@@ -61,11 +76,11 @@ from app.service import (
     _service_error,
 )
 from app.tool_projection import (
+    ENGINE_TOOL_CONTRACT_VERSION,
     MAX_PENDING_TOOL_CONTINUATIONS,
     TOOL_CANCEL_PATH,
     TOOL_EXECUTE_PATH,
     TOOL_RESUME_PATH,
-    ENGINE_TOOL_CONTRACT_VERSION,
     EngineToolBinding,
     EngineToolProjectionError,
     TrustedToolAuthority,
@@ -127,6 +142,16 @@ class ToolExecutionEngineService:
         tool_binding_resolver: Callable[[str], EngineToolBinding | None] | None = None,
         approval_decision_verifier: ApprovalDecisionVerifier | None = None,
         continuation_store: ContinuationStore | None = None,
+        browser_control_p01_receipts: CloudflareD1BrowserControlP01ReceiptStore | None = None,
+        browser_control_original_admission: (
+            Callable[[str, TrustedToolAuthority, ToolInvocation], TrustedBrowserControlPauseIdentity | None]
+            | None
+        ) = None,
+        browser_control_human_p01_resolver: (
+            Callable[[IdentityBoundContinuationRecord, VerifiedApprovalDecision],
+                     IndependentlyAuthenticatedBrowserControlP01 | None]
+            | None
+        ) = None,
     ) -> None:
         if tool_binding_resolver is not None and not callable(tool_binding_resolver):
             raise ValueError("tool_binding_resolver must be callable")
@@ -148,6 +173,26 @@ class ToolExecutionEngineService:
         self._approval_decision_verifier = approval_decision_verifier
         self._continuation_store = continuation_store
         self._continuation_store_is_explicit = continuation_store is not None
+        if browser_control_p01_receipts is not None and (
+            type(browser_control_p01_receipts) is not CloudflareD1BrowserControlP01ReceiptStore
+            or type(continuation_store) is not CloudflareD1IdentityBoundContinuationStore
+            or browser_control_p01_receipts._binding is not continuation_store._binding
+        ):
+            raise ValueError("browser.control P01 receipt requires the SAME trusted Engine D1 binding")
+        if browser_control_original_admission is not None and (
+            browser_control_p01_receipts is None
+            or not callable(browser_control_original_admission)
+        ):
+            raise ValueError("browser.control original admission requires same trusted D1 receipt source")
+        if browser_control_human_p01_resolver is not None and (
+            browser_control_p01_receipts is None
+            or type(continuation_store) is not CloudflareD1IdentityBoundContinuationStore
+            or not callable(browser_control_human_p01_resolver)
+        ):
+            raise ValueError("browser.control human P01 requires trusted same-D1 continuation")
+        self._browser_control_human_p01_resolver = browser_control_human_p01_resolver
+        self._browser_control_original_admission = browser_control_original_admission
+        self._browser_control_p01_receipts = browser_control_p01_receipts
         self._pending: dict[str, _PendingToolContinuation] = {}
 
     # ------------------------------------------------------------------
@@ -372,26 +417,42 @@ class ToolExecutionEngineService:
             step_index=1,
             created_at=created_at,
             expires_at=created_at + timedelta(seconds=_APPROVAL_PAUSE_SECONDS),
+            approval_scope=("browser.control",) if invocation.tool_id == "browser.control" else (),
         )
         if pause is None:
             return None
+        issue_kwargs: dict[str, Any] = {
+            "app_id": app_id,
+            "pause": pause,
+            "plan_id": None,
+            "request_fingerprint": f"toolinv:{pause.invocation_sha256}",
+        }
+        if invocation.tool_id == "browser.control" and (
+            type(self._continuation_store) is CloudflareD1IdentityBoundContinuationStore
+        ):
+            provider = self._browser_control_original_admission
+            if self._browser_control_p01_receipts is None or provider is None:
+                return None  # No owner-supplied trusted admission: no P01 pause.
+            try:
+                original = provider(app_id, authority, invocation)
+                if type(original) is not TrustedBrowserControlPauseIdentity:
+                    return None
+                original.assert_matches(app_id)
+            except (TypeError, ValueError):
+                return None
+            issue_kwargs = {
+                "app_id": app_id,
+                "pause": pause,
+                "execution_identity": original.execution_identity,
+                "original_admission": original.original_admission,
+            }
+        continuation_ref = await self._continuation_call("issue", **issue_kwargs)
         self._pending[pause.pause_id] = _PendingToolContinuation(
             app_id=app_id,
             canonical_agent_id=authority.canonical_agent_id,
             canonical_tool_id=canonical_tool_id,
             invocation=invocation,
         )
-        try:
-            continuation_ref = await self._continuation_call(
-                "issue",
-                app_id=app_id,
-                pause=pause,
-                plan_id=None,
-                request_fingerprint=f"toolinv:{pause.invocation_sha256}",
-            )
-        except ServiceContractError:
-            self._pending.pop(pause.pause_id, None)
-            raise
         return ServiceResponse(
             status_code=202,
             body={
@@ -416,6 +477,14 @@ class ToolExecutionEngineService:
         authority = binding.resolve_authority(wire.agent_id)
         entry = binding.resolve_tool(wire.tool_id)
         effective = binding.effective_resources(entry)
+        if entry.runtime_tool_id == "browser.control":
+            try:
+                validate_browser_control_approval_arguments(wire.arguments)
+            except ValueError as exc:
+                raise EngineToolProjectionError(
+                    "invalid_tool_arguments",
+                    "Browser control approval scope is invalid.",
+                ) from exc
         if json_size(wire.arguments) > effective.argument_bytes:
             raise EngineToolProjectionError(
                 "tool_arguments_too_large",
@@ -564,6 +633,18 @@ class ToolExecutionEngineService:
                 metadata={"terminal_state": "expired"},
             )
 
+        if record.pause.tool_id == "browser.control":
+            # User approval is *not* an instruction to execute a browser
+            # action in Engine. This path can only atomically record a
+            # verified approval against the immutable server continuation.
+            return await self._complete_browser_control_p01(
+                app_id=app_id,
+                continuation_ref=continuation_ref,
+                record=record,
+                pending=pending,
+                decision=decision,
+            )
+
         claimed = await self._continuation_call(
             "claim", app_id=app_id, continuation_ref=continuation_ref
         )
@@ -643,6 +724,146 @@ class ToolExecutionEngineService:
         tool_body["continuation_ref"] = continuation_ref
         body["tool"] = tool_body
         return ServiceResponse(status_code=response.status_code, body=body)
+
+    async def _complete_browser_control_p01(
+        self, *,
+        app_id: str,
+        continuation_ref: str,
+        record: ContinuationRecord,
+        pending: _PendingToolContinuation,
+        decision: VerifiedApprovalDecision,
+    ) -> ServiceResponse:
+        """Verified P01 -> atomic Engine receipt, with zero browser execution.
+
+        The trusted Worker has NOT wired the P01 receipt adapter or a browser
+        runtime provider. This source seam is disabled until both canonical D1
+        adapters and an independently authenticated Engine user decision
+        are present. No new HTTP route or ToolAuthorizationContext is minted.
+        """
+        receipts = self._browser_control_p01_receipts
+        if receipts is None:
+            return _service_error(
+                "browser_control_p01_receipt_unavailable",
+                "Trusted browser control approval receipt storage is unavailable.",
+                status_code=503,
+            )
+        if not (
+            record.pause.tool_id == "browser.control"
+            and record.pause.approval_scope == ("browser.control",)
+            and pending.app_id == app_id
+            and pending.invocation.tool_id == "browser.control"
+            and tool_invocation_digest(pending.invocation) == record.pause.invocation_sha256
+        ):
+            return _service_error(
+                "continuation_identity_mismatch",
+                "Browser control approval does not match the original invocation.",
+                status_code=409,
+            )
+        try:
+            # Only the trusted, original Engine binding; never tool/args from
+            # a browser, model, or caller's resume payload.
+            binding = self._resolve_binding(app_id)
+            binding.resolve_authority(pending.canonical_agent_id)
+            entry = binding.resolve_tool(pending.canonical_tool_id)
+            if entry.runtime_tool_id != "browser.control":
+                raise ServiceContractError(
+                    "continuation_identity_mismatch",
+                    "Browser control tool binding changed during approval.",
+                    status_code=409,
+                )
+        except EngineToolProjectionError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+
+        human_source = self._browser_control_human_p01_resolver
+        if human_source is None or type(record) is not IdentityBoundContinuationRecord:
+            return _service_error(
+                "browser_control_human_p01_unavailable",
+                "Independent user-approved P01 evidence is required.",
+                status_code=503,
+            )
+        try:
+            # This source MUST verify a real user decision at a separate,
+            # server-owned P01 authority. The generic Engine first-party
+            # service identity verifier does NOT establish human consent.
+            attestation = human_source(record, decision)
+            if inspect.isawaitable(attestation):
+                attestation = await attestation
+            if type(attestation) is not IndependentlyAuthenticatedBrowserControlP01:
+                raise ValueError("authenticated user P01 evidence not available")
+            attestation.assert_matches(
+                record=record,
+                decision=decision,
+                now=datetime.now(timezone.utc),
+            )
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            # Denial, revoked user consent, and source outages all fail closed.
+            return _service_error(
+                "browser_control_human_p01_unavailable",
+                "Independent user-approved P01 evidence could not be verified.",
+                status_code=503,
+            )
+
+        try:
+            claimed = await self._continuation_call(
+                "claim", app_id=app_id, continuation_ref=continuation_ref
+            )
+        except ServiceContractError as exc:
+            return _service_error(exc.code, exc.safe_message, status_code=exc.status_code)
+        if not isinstance(claimed, ContinuationRecord) or claimed.claim_token is None:
+            return _service_error(
+                "continuation_claim_failed",
+                "Canonical browser control approval claim unavailable.",
+                status_code=503,
+            )
+        token = claimed.claim_token
+        if (
+            claimed.pause != record.pause
+            or claimed.pause.tool_id != "browser.control"
+            or claimed.pause.invocation_sha256 != tool_invocation_digest(pending.invocation)
+        ):
+            await self._release_quietly(app_id, continuation_ref, token)
+            return _service_error(
+                "continuation_identity_mismatch",
+                "Browser control approval claim changed.",
+                status_code=409,
+            )
+        try:
+            receipt = await receipts.commit_claimed_browser_approval(
+                app_id=app_id, continuation_ref=continuation_ref,
+                claim_token=token, pause=claimed.pause, decision=decision,
+                now=datetime.now(timezone.utc),
+            )
+        except asyncio.CancelledError:
+            await self._release_quietly(app_id, continuation_ref, token)
+            raise
+        except (AgentApprovalError, TypeError, ValueError):
+            await self._release_quietly(app_id, continuation_ref, token)
+            return _service_error(
+                "browser_control_p01_receipt_unavailable",
+                "Browser control approval was not durably recorded.",
+                status_code=503,
+            )
+        self._pending.pop(record.pause.pause_id, None)
+        return ServiceResponse(
+            status_code=200,
+            body={
+                "ok": True,
+                "tool": {
+                    "contract_version": ENGINE_TOOL_CONTRACT_VERSION,
+                    "agent_id": pending.canonical_agent_id,
+                    "canonical_tool_id": pending.canonical_tool_id,
+                    "run_id": receipt.run_id,
+                    "status": "approval_recorded",
+                    "continuation_ref": continuation_ref,
+                    "browser_action_executed": False,
+                    "broker_command_dispatched": False,
+                },
+            },
+        )
 
     async def _consume_denied(
         self, app_id: str, continuation_ref: str, record: ContinuationRecord

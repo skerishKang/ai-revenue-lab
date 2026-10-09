@@ -4,6 +4,7 @@ import json
 import re
 from typing import Any
 
+from padiem_control_plane.local_agent_broker import BrokerCommandCapability
 from padiem_control_plane.local_agent_broker_http import LocalAgentMaterialResolutionRequest
 from padiem_control_plane.local_agent_broker_state_wire import SerializedLocalAgentBrokerStatePort
 from local_agent_broker_sql_state import iso, parse_iso, positive_int, row_value, rows, rows_written, safe_ref
@@ -74,6 +75,8 @@ class CloudflareDurableObjectCommandMaterialStore:
         return matches[0]
 
     def _validate_wire(self, wire: Any, *, command: Any) -> tuple[dict[str, Any], str]:
+        if command.capability is not BrokerCommandCapability.PROCESS_EXECUTE:
+            raise ValueError("process.execute material cannot be bound to browser.control")
         wire = closed_mapping(wire, _MATERIAL_WIRE_KEYS, "command material wire")
         if wire["contract_version"] != "claw-local-command-material.v2":
             raise ValueError("unsupported Local Agent command material contract version")

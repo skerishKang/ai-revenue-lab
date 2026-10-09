@@ -159,8 +159,10 @@ test('main composition leaves canonical command ingress unconfigured; no IPC exp
     path.join(sourceRoot, '..', '..', 'korean-ai-code-agent', 'src', 'kagent', 'local_agent_resident_process.py'),
     'utf8',
   );
-  assert.match(main, /createTrustedBrowserControlCommandIngress\(\{\s*browserControl,\s*\}\)/);
-  assert.doesNotMatch(main, /approvedCommands:\s*\{/);
+  assert.match(main, /createTrustedBrowserControlCommandIngress\(\{\s*browserControl,/);
+  assert.match(main, /approvedCommands:\s*createResidentApprovedBrowserControlCommandPort\(/);
+  assert.match(main, /sourceConfigured:\s*false/);
+  assert.doesNotMatch(main, /executeApprovedCommand\(/);
   assert.doesNotMatch(source, /ipcMain|ipcRenderer|contextBridge|from ['"]electron['"]/);
   assert.match(resident, /ACCEPTANCE_COMMAND_ID\s*=\s*["']command\.3140\.p01\.1["']/);
 });

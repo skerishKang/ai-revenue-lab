@@ -186,12 +186,11 @@ class ClosedDispatcherTests(unittest.TestCase):
             emit=lambda line: None,
         )
 
-    def test_exactly_four_request_kinds_are_accepted(self) -> None:
-        # #3611 grew the closed set from two to four with #3669 (the two
-        # canonical browser-control lease phases). The kinds stay a closed
-        # literal set; nothing is a wildcard or a generic dispatch.
-        self.assertEqual(len(DESKTOP_REQUEST_KINDS), 4)
-        self.assertEqual(DESKTOP_REQUEST_KIND_COUNT, 4)
+    def test_exactly_five_request_kinds_are_accepted(self) -> None:
+        # #3782 adds one private, Broker-authenticated browser command take
+        # to the original four kinds; nothing is a wildcard or generic RPC.
+        self.assertEqual(len(DESKTOP_REQUEST_KINDS), 5)
+        self.assertEqual(DESKTOP_REQUEST_KIND_COUNT, 5)
         self.assertEqual(
             DESKTOP_REQUEST_KINDS,
             frozenset(
@@ -200,6 +199,7 @@ class ClosedDispatcherTests(unittest.TestCase):
                     REDEMPTION_REQUEST_KIND,
                     "browser_control_lease_resolve",
                     "browser_control_lease_consume",
+                    "browser_control_command_take",
                 }
             ),
         )

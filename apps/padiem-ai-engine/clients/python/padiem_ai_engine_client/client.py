@@ -24,12 +24,17 @@ ENGINE_ORCHESTRATE_PATH = "/internal/v1/orchestrate"
 ENGINE_ORCHESTRATE_RESUME_PATH = "/internal/v1/orchestrate/resume"
 ENGINE_ORCHESTRATE_CANCEL_PATH = "/internal/v1/orchestrate/cancel"
 ENGINE_MULTIMODAL_ATTACHMENTS_PATH = "/internal/v1/multimodal/attachments"
+ENGINE_BROWSER_CONTROL_OWNER_TICKET_PATH = "/internal/v1/browser-control/owner-ticket/issue"
+ENGINE_BROWSER_CONTROL_OWNER_RESUME_PATH = "/internal/v1/browser-control/owner-p01/resume"
+ENGINE_BROWSER_CONTROL_BROKER_RECEIPT_READ_PATH = "/internal/v1/browser-control/broker/approved-receipt/read"
+ENGINE_BROWSER_CONTROL_BROKER_ORIGINAL_READ_PATH = "/internal/v1/browser-control/broker/original-admission/read"
 
 _ENGINE_CALLER_HEADER = "X-Padiem-Engine-Caller"
 _ENGINE_CREDENTIAL_HEADER = "X-Padiem-Engine-Credential"
 _SAFE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
 _IDEMPOTENCY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{0,255}$")
 _CONTINUATION_RE = re.compile(r"^cont_[A-Za-z0-9_-]{8,123}$")
+_BROWSER_TICKET_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,255}$")
 _ATTACHMENT_REF_RE = re.compile(r"^att_[A-Za-z0-9_-]{16,120}$")
 
 # Canonical image attachment admission (#3210). Engine surfaces remain the
@@ -514,6 +519,231 @@ class PadiemAiEngineClient:
             _attachment_admission_payload(self.app_id, request),
         )
         return _attachment_projection(body)
+
+
+    async def issue_browser_control_owner_ticket(
+        self, *, continuation_ref: str, product_user_id: str, auth_session_ref: str,
+    ) -> str:
+        """Request only a PENDING human ticket, never a user approval or browser grant.
+
+        The caller MUST derive product_user_id/session from an ACTIVE B62
+        server-verified canonical identity, not from the browser or an LLM.
+        Engine independently rechecks original P01 pause and owner D1.
+        """
+        if (
+            type(continuation_ref) is not str
+            or _CONTINUATION_RE.fullmatch(continuation_ref) is None
+            or type(product_user_id) is not str
+            or not product_user_id.startswith("usr_")
+            or _BROWSER_TICKET_ID_RE.fullmatch(product_user_id) is None
+            or type(auth_session_ref) is not str
+            or _BROWSER_TICKET_ID_RE.fullmatch(auth_session_ref) is None
+        ):
+            raise PadiemAiEngineClientError(
+                "invalid_browser_ticket_request", "Invalid pending browser ticket reference"
+            )
+        result = await self._post(
+            ENGINE_BROWSER_CONTROL_OWNER_TICKET_PATH,
+            {
+                "app_id": self.app_id,
+                "continuation_ref": continuation_ref,
+                "product_user_id": product_user_id,
+                "auth_session_ref": auth_session_ref,
+            },
+        )
+        if (
+            set(result) != {
+                "ok", "ticket_ref", "owner_approval_recorded",
+                "browser_action_executed",
+            }
+            or result["ok"] is not True
+            or result["owner_approval_recorded"] is not False
+            or result["browser_action_executed"] is not False
+            or type(result["ticket_ref"]) is not str
+            or _BROWSER_TICKET_ID_RE.fullmatch(result["ticket_ref"]) is None
+        ):
+            raise PadiemAiEngineClientError(
+                "invalid_engine_response", "Pending browser ticket response is invalid"
+            )
+        return result["ticket_ref"]
+
+    async def resume_browser_control_owner_approval(
+        self, *, continuation_ref: str,
+    ) -> bool:
+        """Only request Engine to RE-READ independent user P01 and complete CAS.
+
+        A signed-in B54 owner click must already have been recorded in the
+        independent Owner D1. No caller-supplied decision/authority/action is
+        carried. A 200 without an exact Engine approval-recorded response is
+        NOT successful resumption and never authorizes a browser action.
+        """
+        if (
+            type(continuation_ref) is not str
+            or _CONTINUATION_RE.fullmatch(continuation_ref) is None
+        ):
+            raise PadiemAiEngineClientError(
+                "invalid_browser_resume_request", "Invalid original continuation"
+            )
+        payload = await self._post(
+            ENGINE_BROWSER_CONTROL_OWNER_RESUME_PATH,
+            {"app_id": self.app_id, "continuation_ref": continuation_ref},
+        )
+        tool = payload.get("tool")
+        required = {
+            "contract_version", "agent_id", "canonical_tool_id", "run_id",
+            "status", "continuation_ref", "browser_action_executed",
+            "broker_command_dispatched",
+        }
+        if (
+            set(payload) != {"ok", "tool"}
+            or payload["ok"] is not True
+            or not isinstance(tool, Mapping)
+            or set(tool) != required
+            or tool["status"] != "approval_recorded"
+            or tool["canonical_tool_id"] != "tool:padiem:browser_control@1"
+            or tool["continuation_ref"] != continuation_ref
+            or tool["browser_action_executed"] is not False
+            or tool["broker_command_dispatched"] is not False
+            or any(
+                type(tool[k]) is not str or not tool[k] or len(tool[k]) > 256
+                for k in ("contract_version", "agent_id", "run_id")
+            )
+        ):
+            raise PadiemAiEngineClientError(
+                "invalid_engine_response", "Owner-approved Engine continuation is invalid"
+            )
+        return True
+
+    async def read_browser_control_original_admission(
+        self, *, continuation_ref: str,
+    ) -> dict[str, str]:
+        """Only Broker audience may read consumed current ORIGINAL Engine P01.
+
+        No caller-supplied original hash, subject, decision, browser action or
+        Broker command is allowed. Independent Broker-origin join provenance
+        remains required; this typed projection is NOT a browser grant.
+        """
+        if (
+            type(continuation_ref) is not str
+            or _CONTINUATION_RE.fullmatch(continuation_ref) is None
+        ):
+            raise PadiemAiEngineClientError(
+                "invalid_browser_original_request", "Invalid original Engine continuation"
+            )
+        reply = await self._post(
+            ENGINE_BROWSER_CONTROL_BROKER_ORIGINAL_READ_PATH,
+            {"app_id": self.app_id, "continuation_ref": continuation_ref},
+        )
+        row = reply.get("original")
+        keys = frozenset({
+            "app_id", "continuation_ref", "user_subject_id",
+            "original_request_fingerprint", "original_admission_decision_id",
+            "run_id", "invocation_sha256", "user_approval_evidence_ref",
+        })
+        if (
+            set(reply) != {
+                "ok", "original", "browser_action_executed", "broker_command_dispatched",
+            }
+            or reply["ok"] is not True
+            or reply["browser_action_executed"] is not False
+            or reply["broker_command_dispatched"] is not False
+            or type(row) is not dict
+            or set(row) != keys
+            or row["app_id"] != self.app_id
+            or row["continuation_ref"] != continuation_ref
+            or any(type(row[k]) is not str or _BROWSER_TICKET_ID_RE.fullmatch(row[k]) is None
+                   for k in ("user_subject_id", "original_admission_decision_id",
+                             "run_id", "user_approval_evidence_ref"))
+            or any(type(row[k]) is not str or re.fullmatch(r"[0-9a-f]{64}", row[k]) is None
+                   for k in ("original_request_fingerprint", "invocation_sha256"))
+        ):
+            raise PadiemAiEngineClientError(
+                "invalid_engine_response", "Invalid original Engine browser admission"
+            )
+        return dict(row)
+
+    async def read_browser_control_broker_receipt(
+        self, *, continuation_ref: str,
+        user_subject_id: str, original_request_fingerprint: str,
+        original_admission_decision_id: str, run_id: str,
+        invocation_sha256: str, user_approval_evidence_ref: str,
+    ) -> dict[str, Any]:
+        """Service-authenticated exact Engine read for canonical Broker join.
+
+        This does NOT mint human approval, register a Broker command, or grant
+        local Windows permission. The separate Broker mapping authority must
+        supply all eight ORIGINAL run dimensions; user/model/browser inputs
+        cannot constitute that authority. Product B54 transport does not
+        allowlist this Broker-only path.
+        """
+        fields = {
+            "continuation_ref": continuation_ref,
+            "user_subject_id": user_subject_id,
+            "original_admission_decision_id": original_admission_decision_id,
+            "run_id": run_id,
+            "user_approval_evidence_ref": user_approval_evidence_ref,
+        }
+        if (
+            type(continuation_ref) is not str
+            or _CONTINUATION_RE.fullmatch(continuation_ref) is None
+            or any(type(x) is not str or _BROWSER_TICKET_ID_RE.fullmatch(x) is None
+                   for x in fields.values())
+            or any(type(x) is not str or re.fullmatch(r"[0-9a-f]{64}", x) is None
+                   for x in (original_request_fingerprint, invocation_sha256))
+        ):
+            raise PadiemAiEngineClientError(
+                "invalid_browser_receipt_query", "Invalid admitted Engine browser P01 query"
+            )
+        reply = await self._post(
+            ENGINE_BROWSER_CONTROL_BROKER_RECEIPT_READ_PATH,
+            {
+                "app_id": self.app_id,
+                **fields,
+                "original_request_fingerprint": original_request_fingerprint,
+                "invocation_sha256": invocation_sha256,
+            },
+        )
+        row = reply.get("receipt")
+        required = frozenset({
+            "app_id", "continuation_ref", "pause_id", "decision_id",
+            "evidence_ref", "authority_ref", "run_id", "invocation_sha256",
+            "approved_at", "expires_at",
+        })
+        if (
+            set(reply) != {
+                "ok", "receipt", "browser_action_executed", "broker_command_dispatched",
+            }
+            or reply["ok"] is not True
+            or reply["browser_action_executed"] is not False
+            or reply["broker_command_dispatched"] is not False
+            or not isinstance(row, Mapping)
+            or set(row) != required
+            or any(type(row[k]) is not str for k in required)
+            or row["app_id"] != self.app_id
+            or row["continuation_ref"] != continuation_ref
+            or row["run_id"] != run_id
+            or row["invocation_sha256"] != invocation_sha256
+            or row["evidence_ref"] != user_approval_evidence_ref
+            or any(_BROWSER_TICKET_ID_RE.fullmatch(row[k]) is None for k in (
+                "pause_id", "decision_id", "authority_ref",
+            ))
+        ):
+            raise PadiemAiEngineClientError(
+                "invalid_engine_response", "Invalid approved Engine browser receipt projection"
+            )
+        try:
+            approved = datetime.fromisoformat(row["approved_at"])
+            expires = datetime.fromisoformat(row["expires_at"])
+            if (
+                approved.utcoffset() is None or expires.utcoffset() is None
+                or expires <= approved or len(row["invocation_sha256"]) != 64
+            ):
+                raise ValueError("invalid receipt time")
+        except (TypeError, ValueError):
+            raise PadiemAiEngineClientError(
+                "invalid_engine_response", "Invalid Engine approval time"
+            ) from None
+        return dict(row)
 
     async def health(self) -> dict[str, Any]:
         response = await self._transport.request(

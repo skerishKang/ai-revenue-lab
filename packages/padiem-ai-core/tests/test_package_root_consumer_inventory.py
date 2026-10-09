@@ -105,6 +105,22 @@ EXPECTED_RUNTIME_ROOT_IMPORTS = {
             "compile_agent_profile",
         }
     ),
+    "apps/padiem-ai-engine/app/browser_control_approval_binding.py": frozenset(
+        {
+            "AgentExecutionBudget",
+            "ApprovalPolicy",
+            "BoundedAgentDefinition",
+            "ToolAuthorizationContext",
+            "ToolRegistrySnapshot",
+            "ToolResourcePolicy",
+            "ToolRuntime",
+            "ToolRuntimeBinding",
+            "ToolSideEffect",
+            "ToolSpec",
+            "TrustedAgentRuntimePolicy",
+            "compile_agent_profile",
+        }
+    ),
     "apps/padiem-ai-engine/app/cloudflare_transport.py": frozenset(
         {
             "B14_CHAT_COMPLETIONS_PATH",

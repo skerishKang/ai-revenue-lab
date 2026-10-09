@@ -323,6 +323,16 @@ export class HeadlessRunnerSupervisor implements RunnerSupervisor {
       : null;
   }
 
+  /** #3782: main-only approved command answer, always one-shot and volatile. */
+  takeResidentBrowserControlCommandTakeLine(): string | null {
+    const port = this.#port as {
+      takeResidentBrowserControlCommandTakeLine?: () => string | null;
+    };
+    return port.takeResidentBrowserControlCommandTakeLine
+      ? port.takeResidentBrowserControlCommandTakeLine()
+      : null;
+  }
+
   residentSnapshot(): { pid: number | null; running: boolean; startedAtMs: number | null } {
     const handle = this.#residentHandle;
     return {

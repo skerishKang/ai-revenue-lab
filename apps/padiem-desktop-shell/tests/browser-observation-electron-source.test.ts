@@ -231,3 +231,65 @@ test('origin reduction keeps scheme/host/port only and never path, query or cred
   assert.equal(boundedOriginFromUrl('file:///etc/passwd'), null);
   assert.equal(boundedOriginFromUrl('not a url'), null);
 });
+
+test('real Chromium AX shape: geometry only from DOM.getBoxModel, never DOM contents', async () => {
+  const calls: Array<{method:string;params:unknown}> = [];
+  let attached = false;
+  const wc: ObservationWebContentsLike = {
+    getURL: () => 'http://127.0.0.1:3000/browser',
+    debugger: {
+      attach: () => { attached = true; },
+      detach: () => { attached = false; },
+      sendCommand: async (method, params) => {
+        assert.equal(attached, true);
+        calls.push({method, params});
+        if (method === 'Accessibility.getFullAXTree') return { nodes: [
+          {nodeId: '1', role: {value: 'RootWebArea'}, name: {value: 'local only'}},
+          {nodeId: '2', backendDOMNodeId: 17, role: {value: 'button'},
+            name: {value: 'Open tab'}, properties: []},
+          {nodeId: '3', backendDOMNodeId: 18, role: {value: 'textbox'},
+            name: {value: 'Password'}, properties: [
+              {name: 'textInputType', value: {value: 'password'}},
+            ], value: 'TOP_SECRET_MUST_NEVER_LEAK'},
+        ]};
+        assert.equal(method, 'DOM.getBoxModel');
+        assert.ok((params as {backendNodeId:number}).backendNodeId === 17 ||
+          (params as {backendNodeId:number}).backendNodeId === 18);
+        return {model: {border: [55, 50, 185, 50, 185, 105, 55, 105]}};
+      },
+    },
+  };
+  const source = createElectronBrowserObservationSource(wc);
+  const snap = await source.snapshot();
+  assert.deepEqual(snap.elements.map(x => x.role), ['button', 'textbox']);
+  assert.deepEqual(snap.elements[0]?.bounds, {x:55, y:50, width:130, height:55});
+  assert.equal(snap.elements[1]?.credentialField, true);
+  assert.equal(snap.elements[1]?.name, '');
+  assert.deepEqual(calls.map(x => x.method), [
+    'Accessibility.getFullAXTree', 'DOM.getBoxModel', 'DOM.getBoxModel',
+  ]);
+  assert.ok(!JSON.stringify(snap).includes('TOP_SECRET_MUST_NEVER_LEAK'));
+  assert.ok(!JSON.stringify(snap).includes('backendDOMNodeId'));
+  await source.close();
+});
+
+test('malformed or detached geometry is never exposed as a clickable target', async () => {
+  let attached = false;
+  const wc: ObservationWebContentsLike = {
+    getURL: () => 'https://example.com',
+    debugger: {
+      attach: () => { attached=true; },
+      detach: () => { attached=false; },
+      sendCommand: async method => {
+        if (method === 'Accessibility.getFullAXTree') return {nodes:[
+          {role:{value:'button'},name:{value:'unsafe'},backendDOMNodeId:72},
+        ]};
+        if (method === 'DOM.getBoxModel') return {model:{border:[0,0,0,0,0,0,0,0]}};
+        throw new Error('unexpected command');
+      },
+    },
+  };
+  const snap = await createElectronBrowserObservationSource(wc).snapshot();
+  assert.deepEqual(snap.elements, []);
+  assert.equal(attached,false);
+});

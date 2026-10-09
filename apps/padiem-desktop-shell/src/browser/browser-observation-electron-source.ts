@@ -6,11 +6,13 @@
  * slice). It never imports Electron itself: the handle is structural, so the
  * extraction mapping stays hermetic and unit-testable.
  *
- * Extraction is the Chromium accessibility tree over CDP
- * (`Accessibility.getFullAXTree` only). Deliberate properties:
+ * Extraction is the Chromium accessibility tree plus geometry-only CDP lookup.
+ * Real Chromium AX nodes do NOT carry bounds; `DOM.getBoxModel` is allowed
+ * ONLY for an AX node's numeric backendDOMNodeId to obtain a bounded quad.
+ * Never request node descriptions/HTML/attributes/text. Deliberate properties:
  *
  *   JAVASCRIPT_EVALUATE      never (no script-evaluation primitive exists here)
- *   RAW_DOM                  never (no DOM.* commands; node handles are dropped)
+ *   RAW_DOM                  never (only DOM.getBoxModel geometry, no DOM content)
  *   SCREENSHOT / PDF         never (no page-capture or page-export path exists)
  *   COOKIES / STORAGE        never (no cookies / storage access exists)
  *   FORM / PASSWORD VALUES   never (`value` is never read — see the mapping)
@@ -54,6 +56,7 @@ interface CdpAxProperty {
 
 interface CdpAxNode {
   readonly nodeId?: string;
+  readonly backendDOMNodeId?: number;
   readonly ignored?: boolean;
   readonly role?: CdpAxValue;
   readonly name?: CdpAxValue;
@@ -67,8 +70,9 @@ interface CdpAxTree {
   readonly nodes?: readonly CdpAxNode[];
 }
 
-/** The one CDP command this slice may ever send. */
-const ALLOWED_DEBUGGER_COMMANDS = Object.freeze(['Accessibility.getFullAXTree'] as const);
+/** Closed commands: AX metadata + box geometry only. No DOM content/JS/CDP escape. */
+const ALLOWED_DEBUGGER_COMMANDS = Object.freeze(['Accessibility.getFullAXTree', 'DOM.getBoxModel'] as const);
+const MAX_GEOMETRY_LOOKUPS = 64;
 
 /** AX properties projected into bounded state flags (allowlist lives in the contract). */
 const STATE_PROPERTY_FLAGS = Object.freeze({
@@ -152,12 +156,31 @@ function mapInteractionFlags(role: string): string[] {
  * accessed; unclassifiable nodes are dropped here so the contract layer only
  * sees well-formed source elements.
  */
-function mapAxNode(node: CdpAxNode): ObservationSourceElement | null {
+type SafeBox = { x: number; y: number; width: number; height: number };
+
+/** CDP box-model border quad only; never inspect content, attributes or DOM handles. */
+function geometryFromBoxModel(raw: unknown): SafeBox | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const model = (raw as { model?: unknown }).model;
+  if (!model || typeof model !== 'object') return null;
+  const quad = (model as { border?: unknown }).border;
+  if (!Array.isArray(quad) || quad.length !== 8) return null;
+  if (!quad.every((v: unknown) => typeof v === 'number' && Number.isFinite(v))) return null;
+  const x = Math.min(quad[0], quad[2], quad[4], quad[6]);
+  const y = Math.min(quad[1], quad[3], quad[5], quad[7]);
+  const width = Math.max(quad[0], quad[2], quad[4], quad[6]) - x;
+  const height = Math.max(quad[1], quad[3], quad[5], quad[7]) - y;
+  return width > 0 && height > 0 && width <= 16384 && height <= 16384
+    ? { x, y, width, height }
+    : null;
+}
+
+function mapAxNode(node: CdpAxNode, geometry?: { x: number; y: number; width: number; height: number }): ObservationSourceElement | null {
   if (!node || typeof node !== 'object' || node.ignored === true) return null;
   const role = axString(node.role);
   if (role === null) return null;
   const name = axString(node.name) ?? '';
-  const raw = node.bounds;
+  const raw = node.bounds ?? geometry;
   const bounds =
     raw && typeof raw === 'object'
       ? {
@@ -218,8 +241,30 @@ export function createElectronBrowserObservationSource(
         const tree = (await sendAllowed('Accessibility.getFullAXTree', {})) as CdpAxTree | null;
         const nodes = tree && typeof tree === 'object' ? (tree.nodes ?? []) : [];
         const elements: ObservationSourceElement[] = [];
+        let geometryLookups = 0;
         for (const node of nodes) {
-          const mapped = mapAxNode(node);
+          let geometry: SafeBox | undefined;
+          // Real Chromium AX tree has no pixel bounds. Ask only for the box
+          // geometry of a clickable/typeable AX node (never inspect DOM text).
+          const role = axString(node?.role);
+          if (
+            node && node.ignored !== true && node.bounds === undefined &&
+            role !== null && mapInteractionFlags(role).length > 0 &&
+            Number.isSafeInteger(node.backendDOMNodeId) &&
+            (node.backendDOMNodeId ?? 0) > 0 &&
+            geometryLookups < MAX_GEOMETRY_LOOKUPS
+          ) {
+            geometryLookups += 1;
+            try {
+              const result = await sendAllowed('DOM.getBoxModel', {
+                backendNodeId: node.backendDOMNodeId,
+              });
+              geometry = geometryFromBoxModel(result) ?? undefined;
+            } catch {
+              // Detached/hidden boxes do not grant a click target.
+            }
+          }
+          const mapped = mapAxNode(node, geometry);
           if (mapped !== null) elements.push(mapped);
         }
         return Object.freeze({ origin: originRef, elements: Object.freeze(elements) });
