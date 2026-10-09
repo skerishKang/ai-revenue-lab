@@ -168,6 +168,52 @@ def assert_one_owner_d1_added(before: object, after: object, owner_database_id: 
         raise BindingStateError("binding authority drift detected; expected only approved Owner D1 addition")
 
 
+def assert_owner_version_integrity(before: object, after: object, owner_database_id: str) -> None:
+    """Require immutable served-version code/runtime parity alongside one D1 addition.
+
+    A binding-only equality check cannot prove that a PATCH or deployment
+    preserved Python Worker code, assets, compatibility flags or runtime config.
+    Compare the exact original and candidate immutable version resources, never
+    mutable Worker settings. Fail closed on missing version/resource evidence.
+    """
+
+    def version_resources(payload: object) -> tuple[str, dict[str, object]]:
+        if not isinstance(payload, dict) or payload.get("success") is not True:
+            raise BindingStateError("immutable Worker version evidence missing")
+        result = payload.get("result")
+        if not isinstance(result, dict) or "bindings" in result:
+            raise BindingStateError("immutable Worker version result required")
+        version_id = result.get("id")
+        resources = result.get("resources")
+        if not isinstance(version_id, str) or not version_id:
+            raise BindingStateError("Worker version identity missing")
+        if not isinstance(resources, dict):
+            raise BindingStateError("Worker version resources missing")
+        script = resources.get("script")
+        runtime = resources.get("script_runtime")
+        if not isinstance(script, dict) or not isinstance(script.get("etag"), str) or not script["etag"]:
+            raise BindingStateError("Worker script content identity missing")
+        if not isinstance(runtime, dict):
+            raise BindingStateError("Worker runtime identity missing")
+        if not isinstance(runtime.get("compatibility_date"), str) or not runtime["compatibility_date"]:
+            raise BindingStateError("Worker runtime compatibility identity missing")
+        if "bindings" not in resources:
+            raise BindingStateError("Worker immutable binding resources missing")
+        return version_id, resources
+
+    before_id, old = version_resources(before)
+    after_id, new = version_resources(after)
+    if before_id == after_id:
+        raise BindingStateError("Worker served version did not change")
+    # Compare every non-binding resource, including opaque assets descriptors;
+    # no raw script, settings, secrets, or fingerprints reach diagnostics.
+    if old.keys() != new.keys():
+        raise BindingStateError("Worker non-binding resource structure drift")
+    if any(old[key] != new[key] for key in old if key != "bindings"):
+        raise BindingStateError("Worker script, assets, or runtime authority drift")
+    assert_one_owner_d1_added(before, after, owner_database_id)
+
+
 def _load(path: Path) -> object:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
@@ -181,13 +227,23 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--after", required=True, type=Path)
     parser.add_argument("--expected-add-owner-d1", action="store_true")
     parser.add_argument("--owner-d1-database-id")
+    parser.add_argument("--require-served-resource-integrity", action="store_true")
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)
     try:
         if args.expected_add_owner_d1:
             if args.owner_d1_database_id is None:
                 raise BindingStateError("additive mode requires explicit Owner D1 ID")
-            assert_one_owner_d1_added(_load(args.before), _load(args.after), args.owner_d1_database_id)
+            if args.require_served_resource_integrity:
+                assert_owner_version_integrity(
+                    _load(args.before), _load(args.after), args.owner_d1_database_id
+                )
+            else:
+                assert_one_owner_d1_added(
+                    _load(args.before), _load(args.after), args.owner_d1_database_id
+                )
         else:
+            if args.require_served_resource_integrity:
+                raise BindingStateError("served resource verification requires additive mode")
             if args.owner_d1_database_id is not None:
                 raise BindingStateError("Owner D1 ID is not accepted in standard equality mode")
             assert_preserved(_load(args.before), _load(args.after))
@@ -198,6 +254,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.expected_add_owner_d1:
         print("OWNER_P01_D1_EXACTLY_ONE_ADDITION=PASS")
         print("EXISTING_WORKER_BINDINGS_PRESERVED=PASS")
+        if args.require_served_resource_integrity:
+            print("OWNER_P01_D1_SERVED_RESOURCE_INTEGRITY=PASS")
     else:
         print("B62_BINDING_AUTHORITY_PRESERVED=PASS")
     print("SECRET_VALUES_READ=0")
