@@ -177,6 +177,20 @@ jobs:
             "${api}")"
           exit_code=$?
           set -e
+          # Only bounded numeric transport diagnostics. Never print raw
+          # Cloudflare response bodies, authorization headers or secrets.
+          echo "OWNER_D1_PATCH_CURL_EXIT=${exit_code}"
+          if [[ "${code}" =~ ^[0-9]{3}$ ]]; then
+            echo "OWNER_D1_PATCH_HTTP_STATUS=${code}"
+          else
+            echo 'OWNER_D1_PATCH_HTTP_STATUS=UNAVAILABLE'
+          fi
+          error_codes='UNAVAILABLE'
+          if [ -s "${RUNNER_TEMP}/patch-result.json" ]; then
+            error_codes="$(jq -er '[.errors[]?.code | select(type == "number")] | map(tostring) | join(",")' \
+              "${RUNNER_TEMP}/patch-result.json" 2>/dev/null)" || error_codes='UNAVAILABLE'
+          fi
+          echo "OWNER_D1_PATCH_ERROR_CODES=${error_codes:-NONE}"
           if [ "${exit_code}" -ne 0 ] || [ "${code}" != "200" ]; then
             echo 'OWNER_D1_PATCH_OUTCOME=UNVERIFIED_OR_REJECTED;NO_RETRY=YES'
             exit 1
