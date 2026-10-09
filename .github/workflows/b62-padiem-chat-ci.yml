@@ -173,6 +173,11 @@ jobs:
         run: git diff --exit-code -- uv.lock pylock.toml
       - name: Verify Worker probe concurrency and failure propagation contract
         run: uv run --locked python -m unittest discover -s ../../.github/tests -p test_3989_b62_worker_probe_parallel.py -q
+      - name: Prewarm pinned Wrangler before concurrent probes
+        # Four concurrent npx cold installs collide inside ~/.npm/_npx
+        # (EEXIST wrangler2/esbuild). Install once, then share the cache.
+        if: ${{ needs.registry-ci-plan.outputs.scope != 'static_only' }}
+        run: npx --yes wrangler@4.130.0 --version
       - name: Real Worker/Pyodide probes (all four, parallel, fail-closed)
         # Static assets do not change Python Worker transport/P01/R2 behavior;
         # any Python/Worker/unknown change keeps all four parallel probes.
