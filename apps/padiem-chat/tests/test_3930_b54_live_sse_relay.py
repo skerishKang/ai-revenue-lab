@@ -4,7 +4,7 @@ from __future__ import annotations
 import asyncio
 import json
 from types import SimpleNamespace
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, patch
 
 from padiem_ai_core.orchestration_events import (
     OrchestrationEventKind, public_orchestration_event,
@@ -16,6 +16,8 @@ from test_b54_claw_general_p01_routing import (
 )
 
 HEADERS = {"X-Padiem-Claw-Live": "p01-events-v1"}
+SUBJECT = "sub_" + "9" * 32
+
 
 
 def _event(sequence, kind):
@@ -29,7 +31,7 @@ def _event(sequence, kind):
 
 
 def _streaming_adapter(status="completed", error=None):
-    adapter = _make_adapter()
+    adapter = _make_adapter(subject_lane=True)
     adapter._runner = SimpleNamespace(run_stream=lambda *args, **kwargs: None)
 
     async def execute(run, *, on_event, **kwargs):
@@ -50,9 +52,12 @@ def _streaming_adapter(status="completed", error=None):
 
 
 def _call(adapter, headers=HEADERS, enabled=True, payload=None):
-    with _client(adapter) as client:
-        client.app.state.claw_live_sse_enabled = enabled
-        result = client.post("/api/claw/general", json=payload or _payload(), headers=headers)
+    with patch("app.b54_canonical_session.resolve_current_b54_canonical_session",
+               new=AsyncMock(return_value=SimpleNamespace(auth_session=SimpleNamespace(subject=SimpleNamespace(subject_id=SUBJECT))))):
+        with _client(adapter) as client:
+            client.app.state.claw_live_sse_canary_subject_id = SUBJECT
+            client.app.state.claw_live_sse_enabled = enabled
+            result = client.post("/api/claw/general", json=payload or _payload(), headers=headers)
     return result
 
 
@@ -92,7 +97,7 @@ def test_live_passes_explicit_tier_subject_and_user_model_only_once():
     adapter = _streaming_adapter()
     _call(adapter)
     assert adapter._seen_kwargs["product_tier"] is not None
-    assert adapter._seen_kwargs["subject_id"] is None
+    assert adapter._seen_kwargs["subject_id"] == SUBJECT
     assert "selected_model_id" not in adapter._seen_kwargs
 
 

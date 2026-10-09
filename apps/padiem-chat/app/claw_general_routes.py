@@ -51,6 +51,7 @@ from kagent.p01_adapter import (
 from kagent.p01_run_flow import create_claw_run
 
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .claw_live_canary import canary_allowed
 from .claw_routes import (
     _BROWSER_TIER_MAP,
     _NO_STORE_HEADERS,
@@ -218,9 +219,16 @@ async def claw_general_capabilities(request: Request) -> JSONResponse:
         and getattr(request.app.state, "claw_live_sse_enabled", False) is True
         and callable(getattr(runner, "run_stream", None))
     )
+    # A public capability response must never authorize all signed-in users.
+    # Only the CP-minted canonical subject can match the server canary.
     if enabled and getattr(adapter, "subject_identity_lane", False) is True:
         from .b54_canonical_session import resolve_current_b54_canonical_session
-        enabled = await resolve_current_b54_canonical_session(request) is not None
+        session = await resolve_current_b54_canonical_session(request)
+        enabled = session is not None and canary_allowed(
+            request.app.state, session.auth_session.subject.subject_id
+        )
+    else:
+        enabled = False
     return JSONResponse(
         {"live_events_available": bool(enabled)},
         headers=_NO_STORE_HEADERS,
@@ -311,6 +319,15 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             )
         subject_id = b54_session.auth_session.subject.subject_id
 
+    live_requested = (
+        request.headers.get(CLAW_LIVE_REQUEST_HEADER, "").strip()
+        == CLAW_LIVE_REQUEST_MARKER
+    )
+    if live_requested and not canary_allowed(request.app.state, subject_id):
+        # Admission is pre-quota, pre-Engine and cannot be broadened by
+        # a forged browser header or a stale GET capability response.
+        return _error(503, "claw_live_stream_unavailable", "Claw 실시간 실행 상태를 사용할 수 없습니다.")
+
     denial = await _usage_gate_denial(request)
     if denial is not None:
         return denial
@@ -336,10 +353,6 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     # #3930: An explicitly requested live SSE relay requires BOTH the reviewed
     # server authority and the canonical P01 stream port. No silent fallback to
     # completed requests, direct B14, or an unapproved UI mode is permitted.
-    live_requested = (
-        request.headers.get(CLAW_LIVE_REQUEST_HEADER, "").strip()
-        == CLAW_LIVE_REQUEST_MARKER
-    )
     if live_requested:
         runner = getattr(adapter, "_runner", None)
         if (
