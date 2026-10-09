@@ -12,10 +12,10 @@ WORKFLOW = ROOT / ".github/workflows/b62-padiem-chat-ci.yml"
 SCRIPTS = ROOT / ".github/scripts"
 RUNNER = SCRIPTS / "b62_worker_probe_parallel.sh"
 PROBES = {
-    "timeout": ("WORKER_TIMEOUT_RUNTIME_PASS", 8787, ".runtime-timeout-probe.toml"),
-    "web_transport": ("WORKER_WEB_TRANSPORT_PASS", 8788, ".runtime-web-transport-probe.toml"),
-    "p01_binding": ("WORKER_P01_BINDING_COMPOSITION_PASS", 8789, ".runtime-p01-binding-probe.toml"),
-    "r2_read": ("WORKER_R2_OBJECTBODY_READ_PASS", 8790, ".runtime-r2-read-probe.toml"),
+    "timeout": ("WORKER_TIMEOUT_RUNTIME_PASS", 8787, 9231, ".runtime-timeout-probe.toml"),
+    "web_transport": ("WORKER_WEB_TRANSPORT_PASS", 8788, 9232, ".runtime-web-transport-probe.toml"),
+    "p01_binding": ("WORKER_P01_BINDING_COMPOSITION_PASS", 8789, 9233, ".runtime-p01-binding-probe.toml"),
+    "r2_read": ("WORKER_R2_OBJECTBODY_READ_PASS", 8790, 9234, ".runtime-r2-read-probe.toml"),
 }
 
 
@@ -28,10 +28,13 @@ class WorkerProbeParallelContract(unittest.TestCase):
         self.assertIn("Prove Core vendored for Python Worker", workflow)
         self.assertIn("Python Worker bundle dry-run", workflow)
         self.assertNotIn("      - name: Real Worker/Pyodide timeout runtime probe", workflow)
-        for name, (marker, port, config) in PROBES.items():
+        self.assertEqual(len({item[1] for item in PROBES.values()}), 4)
+        self.assertEqual(len({item[2] for item in PROBES.values()}), 4)
+        for name, (marker, port, inspector, config) in PROBES.items():
             script = (SCRIPTS / f"b62_worker_probe_{name}.sh").read_text(encoding="utf-8")
             self.assertIn("npx --yes wrangler@4.130.0 dev", script)
             self.assertIn(f"--port {port}", script)
+            self.assertIn(f"--inspector-port {inspector}", script)
             self.assertIn(config, script)
             self.assertIn("trap cleanup EXIT", script)
             self.assertIn(marker, script)
