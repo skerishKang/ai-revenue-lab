@@ -62,7 +62,7 @@ jobs:
         run: uv sync --group dev --frozen
       - name: B14 model registry + credential isolation + pilot contracts
         run: |
-          uv run python -m pytest -q             tests/test_b14_model_registry_file.py             tests/test_registered_routes_truth.py             tests/test_b14_native_parameters.py             tests/test_kira_qwen38_free_onboarding.py             tests/test_worker.py
+          uv run python -m pytest -q             tests/test_b14_model_registry_file.py             tests/test_registered_routes_truth.py             tests/test_b14_native_parameters.py             tests/test_worker.py             tests/test_*_onboarding.py tests/test_*_registration.py
 
   alpha:
     name: Locked Alpha contract
