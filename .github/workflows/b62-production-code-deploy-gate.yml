@@ -5,6 +5,8 @@ on:
     paths:
       - ".github/workflows/b62-production-code-deploy-gate.yml"
       - ".github/scripts/b62_cloudflare_production_deploy_config.py"
+      - ".github/scripts/b62_cloudflare_rollback_deployment_request.py"
+      - ".github/tests/test_b62_cloudflare_rollback_deployment_request.py"
       - ".github/scripts/b62_public_origin_504_guard.py"
       - ".github/scripts/b62_cloudflare_504_readonly_get.sh"
       - ".github/tests/test_b62_cloudflare_504_readonly_get.py"
@@ -109,6 +111,10 @@ jobs:
       - name: Repository wrangler config must stay mock-only
         shell: bash
         run: python .github/scripts/b62_cloudflare_mock_config_guard.py apps/padiem-chat/wrangler.toml
+
+      - name: Prove Cloudflare rollback deployment request shape
+        shell: bash
+        run: python .github/tests/test_b62_cloudflare_rollback_deployment_request.py
 
       - name: Test 504-only public-origin proof with negative controls
         shell: bash
@@ -742,8 +748,11 @@ jobs:
             echo "ROLLBACK_EFFECT=NONE_VERIFIED"
             exit 0
           fi
+          rollback_request="${RUNNER_TEMP}/b62-auto-rollback-request.json"
+          python3 .github/scripts/b62_cloudflare_rollback_deployment_request.py \
+            --version-id "${PREVIOUS_VERSION_ID}" --output "${rollback_request}"
           curl -fsS "${auth[@]}" -X POST "${api}/deployments" \
-            -d "{\"version_id\": \"${PREVIOUS_VERSION_ID}\", \"percentage\": 100}" \
+            -d "@${rollback_request}" \
             -o "${RUNNER_TEMP}/b62-auto-rollback.json"
           echo "ROLLBACK_POST_ATTEMPTED=YES"
           for attempt in $(seq 1 12); do
@@ -827,8 +836,11 @@ jobs:
           set -euo pipefail
           auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json")
           api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${B62_WORKER}"
+          rollback_request="${RUNNER_TEMP}/b62-manual-rollback-request.json"
+          python3 .github/scripts/b62_cloudflare_rollback_deployment_request.py \
+            --version-id "${PREVIOUS_VERSION_ID}" --output "${rollback_request}"
           curl -fsS "${auth[@]}" -X POST "${api}/deployments" \
-            -d "{\"version_id\": \"${PREVIOUS_VERSION_ID}\", \"percentage\": 100}" \
+            -d "@${rollback_request}" \
             -o "${RUNNER_TEMP}/b62-rollback-deploy.json"
           for attempt in $(seq 1 12); do
             deployments="${RUNNER_TEMP}/b62-rollback-state.json"
