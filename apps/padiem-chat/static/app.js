@@ -1222,6 +1222,10 @@
     // The decision is an immutable snapshot taken before showConversation()
     // mutates shell.dataset.state, so it is never re-derived from live state.
     const clawGeneralRequest = !!(route && route.clawGeneral);
+    // #3930: no fabricated stages. Only validated server-emitted P01 envelopes
+    // can change the runtime label; a legacy delta/done stream retains its
+    // existing truthful response status.
+    const canonicalEventProjection = clawGeneralRequest ? window.PadiemClawRunEventProjection?.create?.() : null;
     const response = clawGeneralRequest
       ? await chatTransport.requestClawGeneral(payload, signal)
       : await chatTransport.requestStreaming(payload, signal);
@@ -1232,6 +1236,17 @@
     let terminalError = false;
     try {
       await chatTransport.readSseEvents(response, async (frame) => {
+        if (frame.event === "p01_event") {
+          if (!clawGeneralRequest || !canonicalEventProjection) return false;
+          let envelope;
+          try { envelope = JSON.parse(frame.data); } catch (_) { return false; }
+          const projected = canonicalEventProjection.consume(envelope);
+          if (!projected.accepted) return false;
+          const label = window.PadiemClawRunEventProjection.label(projected.kind, document.documentElement.lang);
+          const marker = article.querySelector("[data-runtime-label]");
+          if (label && marker) marker.textContent = label;
+          return false;
+        }
         if (!["delta", "done", "error"].includes(frame.event)) return false;
         let data;
         try {
