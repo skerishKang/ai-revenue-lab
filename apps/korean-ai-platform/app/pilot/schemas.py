@@ -62,7 +62,7 @@ class ChatMessage:
 class PilotChatRequest:
     model: str = ""
     messages: list[dict[str, str]] | list[ChatMessage] = field(default_factory=list)
-    temperature: float | None = 0.2
+    temperature: float | None = None
     max_tokens: int | None = None
     stream: bool | None = False
     tools: list[dict[str, Any]] | None = None
@@ -78,8 +78,8 @@ class PilotChatRequest:
         if self.temperature is not None and (self.temperature < 0.0 or self.temperature > 2.0):
             _raise("temperature must be between 0.0 and 2.0")
 
-        if self.max_tokens is not None and (self.max_tokens < 1 or self.max_tokens > 4096):
-            _raise("max_tokens must be between 1 and 4096")
+        if self.max_tokens is not None and (isinstance(self.max_tokens, bool) or not isinstance(self.max_tokens, int) or self.max_tokens < 1 or self.max_tokens > 2147483647):
+            _raise("max_tokens must be a positive 32-bit integer")
 
         if len(self.messages) < 1:
             _raise("at least one message is required")

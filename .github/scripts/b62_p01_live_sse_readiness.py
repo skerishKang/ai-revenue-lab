@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""#3930 read-only served P01 live SSE canary readiness, no mutation.
+"""#3930 read-only served P01 live SSE public-rollout readiness, no mutation.
 
 Accepts only Wrangler current deployment status and current version view JSON.
 Never emits credential values, user sessions or unknown binding values.
@@ -29,7 +29,6 @@ EXPECTED_TYPES = {
     "PADIEM_CHAT_DB": "d1",
     "PADIEM_CHAT_SESSION_SECRET": "secret_text",
     "PADIEM_CHAT_QUOTA_SALT": "secret_text",
-    "PADIEM_CLAW_P01_LIVE_CANARY_SUBJECT_ID": "secret_text",
 }
 SOURCE_MARKER = re.compile(r"^B62 production code ([0-9a-f]{40})$")
 SHA = re.compile(r"^[0-9a-f]{40}$")
@@ -93,13 +92,13 @@ def assess(active: Any, version: Any, *, target_sha: str) -> dict[str, Any]:
                 elif found.get("type") != "plain_text" or found.get("text") != exact:
                     blockers.append(f"NOT_READY_{name}")
     return {
-        "disposition": "CANARY_PREFLIGHT_READY" if not blockers else "CANARY_BLOCKED",
+        "disposition": "LIVE_PREFLIGHT_READY" if not blockers else "LIVE_BLOCKED",
         "blockers": sorted(set(blockers)),
         "active_version_id": version_id,
         "deployed_source_sha": source_sha,
         "provider_requests": 0,
         "settings_mutations": 0,
-        "user_canary_executed": False,
+        "authenticated_e2e_executed": False,
     }
 
 
@@ -115,7 +114,7 @@ def main() -> int:
         target_sha=a.target_sha,
     )
     print(json.dumps(result, sort_keys=True, separators=(",", ":")))
-    return 0 if result["disposition"] == "CANARY_PREFLIGHT_READY" else 2
+    return 0 if result["disposition"] == "LIVE_PREFLIGHT_READY" else 2
 
 
 if __name__ == "__main__":

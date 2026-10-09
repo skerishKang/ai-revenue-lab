@@ -44,24 +44,19 @@ def version(*, flag="true", source_id=VERSION):
 
 def test_exact_served_version_and_opt_in_only_marks_preflight_not_actual_canary():
     out=gate.assess(status(),version(),target_sha=MAIN)
-    assert out["disposition"]=="CANARY_PREFLIGHT_READY"
+    assert out["disposition"]=="LIVE_PREFLIGHT_READY"
     assert out["blockers"]==[]
     assert out["provider_requests"]==0
     assert out["settings_mutations"]==0
-    assert out["user_canary_executed"] is False
+    assert out["authenticated_e2e_executed"] is False
 
 
 def test_actual_observed_configuration_blocks_on_source_and_missing_flag():
     observed=version(flag=None)
-    observed["resources"]["bindings"]=[
-        b for b in observed["resources"]["bindings"]
-        if b["name"]!="PADIEM_CLAW_P01_LIVE_CANARY_SUBJECT_ID"
-    ]
     out=gate.assess(status(DEPLOYED),observed,target_sha=MAIN)
-    assert out["disposition"]=="CANARY_BLOCKED"
+    assert out["disposition"]=="LIVE_BLOCKED"
     assert set(out["blockers"])=={
-        "SERVED_SOURCE_OUTDATED","MISSING_PADIEM_CLAW_P01_LIVE_SSE_ENABLED",
-        "MISSING_PADIEM_CLAW_P01_LIVE_CANARY_SUBJECT_ID"
+        "SERVED_SOURCE_OUTDATED","MISSING_PADIEM_CLAW_P01_LIVE_SSE_ENABLED"
     }
     assert "do-not-print-me" not in repr(out)
 
@@ -71,7 +66,7 @@ def test_absent_or_false_explicit_flag_never_promotes_chat_live_flag():
                           ("false","NOT_READY_PADIEM_CLAW_P01_LIVE_SSE_ENABLED")):
         out=gate.assess(status(),version(flag=flag),target_sha=MAIN)
         assert expected in out["blockers"]
-        assert out["disposition"]=="CANARY_BLOCKED"
+        assert out["disposition"]=="LIVE_BLOCKED"
 
 
 def test_core_authority_dependency_cannot_be_faked_by_live_flag():

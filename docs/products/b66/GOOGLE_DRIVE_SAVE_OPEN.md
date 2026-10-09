@@ -30,8 +30,8 @@ PRODUCTION_DEPLOYMENT=NOT_PERFORMED
 | 파일 | 역할 |
 |---|---|
 | `reference/business-66-padiem-quote-v1/quote-drive-contract.js` | 버전 명시 JSON 스키마, 내용 지문, 필드 단위 무손실 검증, JSON·PDF 연결 매니페스트, 파일명/중복 규칙, 크기·형식·스키마 검증, 부분 실패 결과 모델과 재시도 쌍 고정, QuoteCore 재계산 |
-| `reference/business-66-padiem-quote-v1/quote-drive-client.js` | Google OAuth(GIS) + Drive API v3 통신, 최소 권한 `drive.file`, Picker, **소유권 fail-closed 검증**, 페이지 전체 조회, 세션 epoch, 부분 실패 복구 |
-| `reference/business-66-padiem-quote-v1/quote-drive-ui.js` | **1회성 시작 훅(자동 mount)**, 저장/불러오기/연결 상태/부분 성공 표시, **B66 로그아웃·계정 전환 시 Drive 토큰 폐기**, 승인 템플릿 확인 후에만 편집기 적용, Picker 경로 |
+| `reference/business-66-padiem-quote-v1/quote-drive-client.js` | Google OAuth(GIS) + Drive API v3 통신, 최소 권한 `drive.file`, Picker, **소유권 fail-closed 검증**, 페이지 전체 조회, 세션 epoch, 부분 실패 복구, **연결 해제 시 Google `/revoke` 미호출(프로젝트 단위 철회 방지)** |
+| `reference/business-66-padiem-quote-v1/quote-drive-ui.js` | **1회성 시작 훅(자동 mount)**, 저장/불러오기/연결 상태/부분 성공 표시, **B66 로그아웃·계정 전환 시 이 브라우저 Drive 세션만 비움(Google 전역 revoke 없음)**, 승인 템플릿 확인 후에만 편집기 적용, Picker 경로 |
 | `reference/business-66-padiem-quote-v1/quote-import-atomic.js` | **불러오기 적용 원자성** — 사전 검증(정규화·승인 템플릿 권위·내용 지문) → 스냅샷 → 적용 직전 가드(계정 권위·세션 세대) → 적용 → 되읽기 검증 → 실패 시 복구. 편집기를 직접 만지지 않고 주입된 훅만 사용한다 |
 | `reference/business-66-padiem-quote-v1/app.js` | 외부 저장용 인증 PDF 바이트 seam(`certifiedPdfBytes`)과 승인 Skill 목록(`listApprovedSkills`) 추가. 기존 다운로드 경로는 변경 없음 |
 
@@ -118,30 +118,44 @@ totals             = null            (저장된 합계는 쓰지도 읽지도 �
 
 - Drive 토큰은 모듈 메모리 클로저에만 존재하며 어떤 브라우저 저장소에도 기록하지 않는다.
 - Drive 세션은 **B66 계정 권위가 유지되는 동안에만** 보존한다.
+- **Google 계정 차원의 권한 부여는 철회하지 않는다.** 아래 "비움"은 이 브라우저 메모리의
+  Drive 토큰·스코프를 지우는 것을 뜻한다. Google `/revoke` 는 호출하지 않는다(§revoke-safety).
 
 | 신호 | 처리 |
 |---|---|
 | `b66:auth-changed` `authenticated=true` (로그인·세션 갱신, action 없음) | **세션 유지** — 계정 전환으로 오인하지 않는다 |
 | `b66:account-scope-changed` action `owner_bound` / `same_account_resume` | **세션 유지** |
-| `b66:auth-changed` `authenticated=false` | 즉시 폐기 (`b66_signed_out`) |
-| `b66:account-scope-changed` `authenticated=false` | 즉시 폐기 (`b66_account_authority_lost`) |
-| action `quarantined_foreign_owner` / `quarantined_malformed_owner` | 즉시 폐기 (`b66_account_changed`) |
-| action `authenticated_owner_unusable` / `unresolved` | 즉시 폐기 |
-| action 을 알 수 없음(예: 저장소 읽기 실패) | 안전하게 폐기 |
+| `b66:auth-changed` `authenticated=false` | 로컬 세션 즉시 비움 (`b66_signed_out`) |
+| `b66:account-scope-changed` `authenticated=false` | 로컬 세션 즉시 비움 (`b66_account_authority_lost`) |
+| action `quarantined_foreign_owner` / `quarantined_malformed_owner` | 로컬 세션 즉시 비움 (`b66_account_changed`) |
+| action `authenticated_owner_unusable` / `unresolved` | 로컬 세션 즉시 비움 |
+| action 을 알 수 없음(예: 저장소 읽기 실패) | 안전하게 비움 |
 
 - 다른 계정으로 로그인한 경우에는 뒤이어 오는 `account-scope-changed`(`quarantined_foreign_owner`)가
-  계정 변경을 알려 준다. 따라서 `auth-changed` 만으로 폐기할 필요가 없다.
-- **폐기는 세션이 연결되어 있지 않아도 항상 수행한다.** 그래야 OAuth 팝업이 떠 있는 동안의
-  로그아웃/계정 전환이 뒤늦게 도착한 토큰을 무효화한다.
-- 폐기할 Drive 세션이나 보류 작업이 없으면 화면에 경고를 띄우지 않는다(로그아웃 상태의
+  계정 변경을 알려 준다. 따라서 `auth-changed` 만으로 비울 필요가 없다.
+- **비움은 세션이 연결되어 있지 않아도 항상 수행한다.** 그래야 OAuth 팝업이 떠 있는 동안의
+  로그아웃/계정 전환이 뒤늦게 도착한 토큰을 무효화한다(세대(epoch) 증가).
+- 비울 Drive 세션이나 보류 작업이 없으면 화면에 경고를 띄우지 않는다(로그아웃 상태의
   페이지 로드마다 알림이 반복되지 않는다).
+
+### revoke-safety (프로젝트 단위 철회 방지)
+
+Google 토큰 철회는 OAuth 클라이언트가 아니라 **프로젝트 단위**로 적용된다.
+같은 프로젝트를 쓰는 다른 파디엠 Google 기능(로그인 등)까지 무효화하지 않도록,
+일반 연결 해제/로그아웃/계정 전환/늦은 콜백에서는 Google `/revoke` 를 **호출하지 않는다**.
+
+- 일반 연결 해제 버튼: 메모리 토큰·스코프 삭제 + 세대 증가, 네트워크 요청 없음.
+- 로그아웃·계정 전환: 동일(로컬 세션만 비움).
+- UI 안내 문구: "이 브라우저의 Google Drive 연결을 해제했습니다. … Google 계정의 Drive 권한
+  부여 자체는 철회되지 않습니다." — 로컬 해제와 전역 동의 철회를 구분해 표시한다.
+- 프로젝트 전체 권한 철회는 이 슬라이스 범위 밖이며 별도 명시 동작 + 영향 범위 검토가 필요하다.
 
 ### OAuth 팝업과의 경합(보안)
 
 ```text
 connect() 시작 → 세대(epoch) 캡처
    ↓ 팝업 대기 중 B66 로그아웃/계정 전환 → 세대 증가
-콜백 도착 → 세대 불일치 → 토큰을 저장하지 않고 즉시 폐기 요청
+콜백 도착 → 세대 불일치 → 토큰을 저장하지 않고 폐기(Google /revoke 미호출)
           → 결과 drive_auth_superseded, 세션 없음
 ```
 
@@ -227,9 +241,11 @@ pair = { packageId, createdAt, jsonName, pdfName, baseName, renamed,
 ## 운영 배포 전 필요한 승인 항목 (CENTRAL)
 
 ```text
-GOOGLE_OAUTH_CLIENT_ID=REQUIRED_OWNER_APPROVAL   저장소에 값 없음(window.B66_DRIVE_CLIENT_ID 로 주입)
-AUTHORIZED_JAVASCRIPT_ORIGINS=REQUIRED           Pages 배포 오리진 등록
-DRIVE_PICKER_APP_ID_AND_DEVELOPER_KEY=REQUIRED   Picker 사용 시(window.B66_DRIVE_PICKER_APP_ID / _DEVELOPER_KEY)
+OAUTH_CLIENT_REUSE_FIRST=YES                      기존 Padiem Chat Production 웹 클라이언트 재사용 우선(새 B66 전용 클라이언트는 기본 전제 아님)
+AUTHORIZED_JAVASCRIPT_ORIGIN_ADD=REQUIRED_OWNER_APPROVAL   https://quick-quote-kr.pages.dev 를 그 클라이언트에 등록
+B66_DRIVE_CLIENT_ID=REQUIRED_OWNER_APPROVAL       저장소에 값 없음(window.B66_DRIVE_CLIENT_ID 로 주입, 시크릿 아님)
+DRIVE_PICKER_APP_ID_AND_DEVELOPER_KEY=OPTIONAL    Picker 사용 시(window.B66_DRIVE_PICKER_APP_ID / _DEVELOPER_KEY)
+OAUTH_CONSENT_PUBLISH=OWNER_DECISION              현재 '테스트 중' · 테스트 사용자 0명
 LIVE_DRIVE_E2E=NOT_TESTED
 CROSS_BROWSER_REOPEN=NOT_TESTED
 REAL_PHONE=NOT_TESTED
@@ -237,6 +253,7 @@ REAL_PHONE=NOT_TESTED
 
 권한은 `https://www.googleapis.com/auth/drive.file` 하나만 요청한다.
 전체 드라이브 목록 권한(`drive.readonly` 등)은 요청하지 않는다.
+Google Cloud Console 실측 근거는 `GOOGLE_DRIVE_LIVE_VERIFICATION.md` §1.1 참조.
 
 ## 검증 상태
 
@@ -248,6 +265,7 @@ SLICE_B=SOURCE_IMPLEMENTED · OFFLINE_TESTED · LIVE NOT_TESTED
 SLICE_C=SOURCE_IMPLEMENTED · OFFLINE_TESTED · LIVE NOT_TESTED
 SLICE_D=SOURCE_IMPLEMENTED · OFFLINE_TESTED
 SLICE_E=OFFLINE_TESTED(확장 시나리오)
+REVOKE_SAFETY=SOURCE_IMPLEMENTED · OFFLINE_TESTED (routine Google /revoke = 0)
 CROSS_BROWSER_DRIVE_REOPEN=NOT_TESTED
 REAL_PHONE=NOT_TESTED
 PRODUCTION_DEPLOYMENT=NOT_PERFORMED

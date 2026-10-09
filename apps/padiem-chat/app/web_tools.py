@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from typing import Protocol
 
 from . import httpx_compat as httpx
@@ -257,6 +258,42 @@ class TinyFishWebProvider:
         return _from_core_evidence(item)
 
 
+class TinyFishDaumWebProvider:
+    """Owner-approved priority: TinyFish, then Daum on quota/rate exhaustion only.
+
+    Two bounded Search calls maximum. Each search result retains its real
+    provider provenance. Failed fetch is never replaced by a Daum or Firecrawl
+    scraper (Daum has no native page-fetch endpoint).
+    """
+
+    def __init__(self, settings: Settings, transport: httpx.AsyncBaseTransport | None = None):
+        if settings.web_provider != "tinyfish_daum":
+            raise ValueError("TinyFish/Daum priority requires explicit provider configuration")
+        if not settings.tinyfish_api_key or not settings.daum_rest_api_key:
+            raise ValueError("TinyFish/Daum priority requires both server-side API keys")
+        self._primary = TinyFishWebProvider(
+            replace(settings, web_provider="tinyfish"), transport=transport
+        )
+        # Firecrawl is not allowed into the secondary search/fetch path.
+        self._secondary = DaumWebProvider(
+            replace(settings, web_provider="daum", firecrawl_api_key=None),
+            transport=transport,
+        )
+
+    async def search(self, query: str, limit: int = 5) -> list[Evidence]:
+        try:
+            return await self._primary.search(query, limit=limit)
+        except WebToolError as exc:
+            # HTTP 402 = allowance/credit failure; HTTP 429 = rate allowance.
+            # Other provider errors and genuine zero-results do NOT switch.
+            if exc.code not in {"web_quota_exhausted", "web_busy"}:
+                raise
+        return await self._secondary.search(query, limit=limit)
+
+    async def fetch(self, url: str) -> Evidence:
+        return await self._primary.fetch(url)
+
+
 def create_web_provider(
     settings: Settings,
     transport: httpx.AsyncBaseTransport | None = None,
@@ -271,6 +308,8 @@ def create_web_provider(
         provider = DaumWebProvider(settings, transport=transport)
     elif settings.web_provider == "tinyfish":
         provider = TinyFishWebProvider(settings, transport=transport)
+    elif settings.web_provider == "tinyfish_daum":
+        provider = TinyFishDaumWebProvider(settings, transport=transport)
     else:
         raise RuntimeError("unreachable web provider configuration")
 

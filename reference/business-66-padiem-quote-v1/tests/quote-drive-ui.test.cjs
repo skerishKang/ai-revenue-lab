@@ -159,12 +159,14 @@ function harness(options) {
     picker: undefined
   };
   /* 실제 클라이언트는 Object.freeze 이므로, 테스트에서 Picker 만 바꿔 끼울 수 있도록
-     같은 클로저를 공유하는 얇은 래퍼를 쓴다(세션 상태는 동일하다). */
+     같은 클로저를 공유하는 얇은 래퍼를 쓴다(세션 상태는 동일하다).
+     모든 fetch 호출을 기록해 Google /revoke 가 절대 나가지 않는지 검증한다. */
+  const calls = [];
   const client = Object.assign({}, Client.create({
     clientId: opts.clientId === undefined ? CLIENT_ID : opts.clientId,
     appId: opts.appId || "",
     developerKey: opts.developerKey || "",
-    fetch: fetchImpl,
+    fetch: async (url, init) => { calls.push(String(url)); return fetchImpl(url, init); },
     google: google,
     gapi: null,
     loadScript: async () => { throw new Error("no network in test"); }
@@ -186,9 +188,10 @@ function harness(options) {
   const bridgeCalls = editorHarness.calls;
 
   return {
-    doc, client, state, bridgeCalls, bridge, current,
+    doc, client, state, calls, bridgeCalls, bridge, current,
     editor: editorHarness.editor,
     writes: editorHarness.writes,
+    revokeCalls: () => calls.filter((url) => url.indexOf("oauth2.googleapis.com/revoke") !== -1),
     async connect() {
       const pending = client.connect();
       await flush();
@@ -540,6 +543,7 @@ function harness(options) {
     assert.equal(ui.openDisabled(), true, "B66_LOGOUT_DISABLES_OPEN");
     assert.equal(ui.session().lastErrorCode, "b66_signed_out", "B66_LOGOUT_REASON_RECORDED");
     assert.ok(ui.statusText().indexOf("해제") !== -1, "B66_LOGOUT_STATUS");
+    assert.equal(h.revokeCalls().length, 0, "B66_LOGOUT_NO_GOOGLE_REVOKE");
   }
 
   /* ── 15. A→B 계정 전환도 Drive 세션을 폐기한다 ── */
@@ -555,6 +559,7 @@ function harness(options) {
     });
     await settle();
     assert.equal(ui.session().connected, false, "ACCOUNT_SWITCH_CLEARS_DRIVE_SESSION");
+    assert.equal(h.revokeCalls().length, 0, "ACCOUNT_SWITCH_NO_GOOGLE_REVOKE");
 
     await h.connect();
     const ui2 = h.mount();
@@ -609,6 +614,7 @@ function harness(options) {
     assert.equal(ui.session().connected, false, "LOGOUT_APPLIED");
     assert.equal(ui.saveDisabled(), true, "SAVE_DISABLED_AFTER_LOGOUT");
     assert.ok(ui.statusText().indexOf("해제") !== -1, "LOGOUT_STATUS");
+    assert.equal(h.revokeCalls().length, 0, "DISCONNECT_BUTTON_NO_GOOGLE_REVOKE");
   }
 
   /* ── 18. Picker 설정이 있으면 선택기 경로가 열린다 ── */
@@ -765,8 +771,9 @@ function harness(options) {
   console.log("UI_APPLY_FAILURE_NOT_SUCCESS=PASS");
   console.log("UI_READBACK_VERIFIED=PASS");
   console.log("UI_CANCEL_PRESERVES_CURRENT_DRAFT=PASS");
-  console.log("UI_B66_LOGOUT_REVOKES_DRIVE_TOKEN=PASS");
-  console.log("UI_ACCOUNT_SWITCH_REVOKES_DRIVE_TOKEN=PASS");
+  console.log("UI_B66_LOGOUT_CLEARS_LOCAL_DRIVE_SESSION=PASS");
+  console.log("UI_ACCOUNT_SWITCH_CLEARS_LOCAL_DRIVE_SESSION=PASS");
+  console.log("UI_ROUTINE_GOOGLE_REVOKE_CALLS=0");
   console.log("UI_IN_FLIGHT_DISCARDED_ON_ACCOUNT_CHANGE=PASS");
   console.log("UI_PICKER_PATH_WIRED=PASS");
   console.log("READINESS_REPORT_NAMES_MISSING_CONFIG=PASS");

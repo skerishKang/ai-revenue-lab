@@ -18,21 +18,71 @@ PRODUCTION_MUTATION=0
 
 ## 1. 현재 차단 사유 (2026-10-10 기준 조사 결과)
 
-### 1.1 B66 전용 브라우저 OAuth 클라이언트가 없다
+### 1.1 OAuth 클라이언트 재사용 인벤토리 (2026-10-10 LOCAL3 read-only 실측)
 
-| 조사 대상 | 결과 | B66 고객 Drive 에 재사용 가능? |
+Google Cloud Console 을 **읽기 전용**으로 확인했다. 값(클라이언트 ID/시크릿)은 이 문서에 기록하지 않는다.
+확인한 계정은 파디엠 운영 계정 두 개다.
+
+| 계정 | 프로젝트 | OAuth 클라이언트 | 유형 | 승인된 JS 원본 | 승인된 리디렉션 URI | Drive API | `drive.file` 스코프 | 게시 상태 |
+|---|---|---|---|---|---|---|---|---|
+| padiemipu | `padiem-danjion` | `Padiem Chat Production` | 웹 애플리케이션 | **없음** | `…charliekant.workers.dev/auth/google/callback`, `chat.padiem.net/auth/google/callback` | 사용 설정 | 등록됨 | 테스트 중 |
+| padiemipu | `padiem-danjion` | `DanjiOn Drive Production` | 웹 애플리케이션 | **없음** | (서버 측) | 사용 설정 | 등록됨 | 테스트 중 |
+| padiemipu | `padiem-danjion` | `DanjiOn Production` | 웹 애플리케이션 | **없음** | (서버 측) | 사용 설정 | 등록됨 | 테스트 중 |
+| charliekant | `my-project-padiem` | `Padiem Production Web` | 웹 애플리케이션 | **없음** | `oauth.padiem.net/v1/google/callback` | 사용 설정 | 없음 | 테스트 중 |
+
+`Padiem Chat Production` 은 B66 로그인 브리지(`/api/padiem/auth/google/start`)가 사용하는
+`PADIEM_CHAT_GOOGLE_CLIENT_ID` 후보이며, `openid email profile` 서버 측 authorization-code 흐름을 쓴다.
+
+핵심 관측:
+
+- 파디엠의 기존 Web OAuth 클라이언트는 **모두 `웹 애플리케이션` 유형**이다 → B66 Drive GIS 재사용 후보로 적격.
+- 그러나 **어느 클라이언트에도 승인된 JavaScript 원본이 없다.** B66 Drive 는 브라우저 GIS
+  (`initTokenClient`)를 쓰므로 JS 원본 등록이 필수다.
+- `padiem-danjion` 프로젝트에는 **`drive.file` 스코프가 이미 등록**되어 있고 **Google Drive API 가 사용 설정**되어 있다.
+- `padiem-danjion` 프로젝트는 `Padiem Chat Production`(로그인), `DanjiOn Drive Production`, `DanjiOn Production` 을
+  **같은 OAuth 프로젝트에 공유**한다. 따라서 이 프로젝트의 토큰을 `/revoke` 하면 위 세 제품의 부여가 함께 무효화된다
+  (§1.2 참조). 새 클라이언트를 같은 프로젝트에 만들어도 이 위험은 사라지지 않는다.
+
+```text
+EXISTING_PADIEM_WEB_OAUTH_CLIENT_REUSE=ELIGIBLE (웹 애플리케이션 유형 확인)
+AUTHORIZED_JS_ORIGIN=MISSING (quick-quote-kr.pages.dev 가 어느 파디엠 클라이언트에도 미등록)
+DRIVE_API_ENABLED=YES (padiem-danjion, my-project-padiem)
+DRIVE_FILE_SCOPE_REGISTERED=YES (padiem-danjion)
+OAUTH_APP_PUBLISH_STATUS=TESTING (외부 · padiem-danjion 테스트 사용자 0명)
+GOOGLE_CONSOLE_WRITE=0
+```
+
+### 1.2 프로젝트 단위 revoke 위험 (소스 수정으로 제거함)
+
+Google 의 토큰 철회는 클라이언트가 아니라 **OAuth 프로젝트 단위**로 적용된다.
+`padiem-danjion` 처럼 여러 제품이 한 프로젝트를 공유하면, Drive 연결 해제 시 `/revoke` 를 호출하는 것만으로
+같은 프로젝트의 로그인·다른 제품 부여까지 무효화된다.
+
+이 슬라이스에서 `quote-drive-client.js` 의 일반 연결 해제/로그아웃/계정 전환/늦은 팝업 콜백에서
+Google `/revoke` 호출을 **전부 제거**했다(메모리 토큰·스코프만 삭제 + 세대(epoch) 증가).
+자세한 검증은 §1.3.
+
+```text
+PROJECT_WIDE_REVOKE_RISK=CONFIRMED_BY_CONSOLE_AND_GOOGLE_DOCS
+ROUTINE_GOOGLE_REVOKE_CALLS=0 (소스 · 회귀 테스트로 고정)
+```
+
+### 1.3 연결 해제 안전성 (revoke-safety) 게이트
+
+| 항목 | 요구 | 검증 |
 |---|---|---|
-| `B66_DRIVE_CLIENT_ID` (브라우저 전역) | 저장소·배포 어디에도 값 없음 | — (이 값이 필요함) |
-| `production` 환경 시크릿 `GOOGLE_OAUTH_CLIENT_ID` / `_SECRET` / `_ALLOWED_ORIGIN` / `_SEAL_KEY` | 존재함 | **불가** — B54/Engine **서버 측** OAuth(엣지 오리진·seal key·connect ticket)이며, B66 Pages 오리진이 승인 origin 으로 등록되어 있지 않다. 고객 개인 Drive 권위로 임의 전용 금지 |
-| `production` 환경 시크릿 `PADIEM_CHAT_GOOGLE_CLIENT_ID` / `_SECRET` | 존재함 | **불가** — Padiem Chat 제품 OAuth |
-| `.github/scripts/b54_oauth_browser_canary_contract.py` | 읽기 전용 `drive.readonly` 카나리 | **불가** — write 스코프(`drive.file` 포함)를 계약이 명시적으로 거부한다 |
-| `apps/korean-ai-code-agent/.../google_drive_artifact_upload.py` | `SOURCE_ONLY`, `PRODUCTION_DRIVE_WRITE_ACTIVATED=False` | **불가** — 활성화되지 않았고 커넥터는 별도 승인 호스트가 주입한다 |
-| B67 case-folder 브라우저 카나리 | 명시 승인 + 로컬 CDP 브라우저 필요 | **불가** — B67 케이스 폴더 흐름 |
+| 일반 Drive 연결 해제 | Google `/revoke` 0회, 메모리 토큰·스코프 즉시 제거 | `tests/quote-drive-revoke-safety.test.cjs` |
+| B66 로그아웃 | 로컬 Drive 세션만 비움, `/revoke` 0회 | `quote-drive-revoke-safety` · `quote-drive-ui` · `quote-drive-account-flow` |
+| 계정 전환 | 즉시 격리, `/revoke` 0회, 이전 계정 접근 거부 | 위 동일 |
+| 취소·지연 팝업 콜백 | 토큰 미저장, `/revoke` 0회 | 위 동일 |
+| 재연결 | 같은 owner 로 정상 재연결 | 위 동일 |
+| 스코프 | `drive.file` 단일 | `quote-drive-client` · `quote-drive-revoke-safety` |
+| 영구(프로젝트 단위) 권한 철회 | 이 슬라이스 범위 밖(별도 승인 필요) | — |
 
-결론: **B66 고객 Drive 용 브라우저 GIS 클라이언트가 저장소에 존재하지 않는다.**
-기존 값을 재사용하면 제품 경계를 침범하므로, 승인된 신규(또는 B66 전용 등록) 클라이언트가 필요하다.
+프로젝트 전체 권한 철회가 필요하면 별도 명시 동작 + 영향 범위 검토 + Owner 승인을 거쳐야 한다.
+일반 로그아웃을 Google 계정 전체 동의 철회로 바꾸지 않는다. UI 안내 문구도 이 구분을 반영한다.
 
-### 1.2 프로덕션 번들에 아직 이 기능이 없다
+### 1.4 프로덕션 번들에 아직 이 기능이 없다
 
 `quick-quote-kr` Pages 프로젝트의 프로덕션 배포는 `workflow_dispatch` 게이트에서만 수행된다
 (`b66-neutral-pages-beta.yml` 의 deploy 단계는 `if: github.event_name == 'workflow_dispatch'`).
@@ -47,25 +97,37 @@ curl -fsS "https://quick-quote-kr.pages.dev/" | grep -c 'quote-drive-ui.js'   # 
 
 따라서 라이브 검증 전에 **승인된 프로덕션 릴리스 1회**가 필요하다(Production 활성화 = CENTRAL 보고 대상).
 
-## 2. 선행 조건 (정확히 이 값들만 필요)
+## 2. 선행 조건 (재사용 우선)
 
 ```text
-REQUIRED_1=B66_DRIVE_CLIENT_ID
-  형식: <project-number>-<hash>.apps.googleusercontent.com
-  종류: OAuth 2.0 클라이언트 ID (웹 애플리케이션)
-  승인된 JavaScript origin: B66 배포 오리진과 정확히 일치해야 한다
-    (예: https://quick-quote-kr.pages.dev)
-  스코프: https://www.googleapis.com/auth/drive.file  하나만
+REUSE_FIRST=YES
+  기존 파디엠 Web OAuth 클라이언트(Padiem Chat Production)를 우선 재사용한다.
+  새 B66 전용 클라이언트 생성은 기본 전제가 아니다. 재사용이 부적합하거나
+  자격증명 분리를 의도적으로 선택할 때만 새 클라이언트를 만든다.
+
+REQUIRED_1=승인된 JavaScript origin 등록 (기존 클라이언트에)
+  대상: Padiem Chat Production (또는 Owner 가 지정한 기존 웹 클라이언트)
+  추가할 값: https://quick-quote-kr.pages.dev
+  주의: 이 변경은 Google Cloud 소유자 승인이 필요하며 이 슬라이스에서 수행하지 않는다.
+  등록 후 B66 Pages 환경변수 B66_DRIVE_CLIENT_ID 에 그 클라이언트 ID 를 넣는다.
+  (클라이언트 시크릿은 쓰지 않는다 — 브라우저 GIS 는 공개 클라이언트 ID 만 필요하다.)
 
 REQUIRED_2=승인된 프로덕션 릴리스 1회
   b66-neutral-pages-beta.yml workflow_dispatch (target_sha=main 정확한 SHA, confirmation 입력)
 
-OPTIONAL_3=B66_DRIVE_PICKER_APP_ID + B66_DRIVE_PICKER_DEVELOPER_KEY
+REQUIRED_3=OAuth 동의 화면 점검
+  현재 padiem-danjion 앱은 게시 상태 '테스트 중'이다. B66 오리진에서 실제 승인을 받으려면
+  Owner 가 테스트 사용자에 검증 계정을 추가하거나 앱 게시를 결정해야 한다.
+  drive.file 스코프는 이미 등록되어 있다(민감하지 않은 범위).
+
+OPTIONAL_4=B66_DRIVE_PICKER_APP_ID + B66_DRIVE_PICKER_DEVELOPER_KEY
   Google Picker 를 쓰는 경우에만. 없으면 앱이 제공하는 목록 선택으로 동작한다.
 
 TEST_ASSETS=격리된 테스트 Google 계정 1개 + 테스트 견적 1건
   실제 고객 문서·계정을 사용하지 않는다.
 ```
+
+금지: 같은 프로젝트에서 `/revoke` 를 호출해 다른 제품(Padiem Chat 로그인·DanjiOn)의 부여를 무효화하지 않는다(§1.3).
 
 ## 2b. 설정 전달 경로 (구현됨 — 운영자가 실행할 절차)
 

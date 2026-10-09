@@ -1,8 +1,8 @@
 """Shared B14 optional max_tokens contract (#3551).
 
 Omitted generation limits must stay omitted end-to-end. Product-specific callers
-may still provide an explicit bounded value; the existing explicit 1..4096
-validation is intentionally unchanged in this PR.
+may provide an explicit requested output budget. The historical global 4096
+ceiling is removed by #3977; actual output limits are provider-specific.
 """
 
 from __future__ import annotations

@@ -208,8 +208,9 @@ async def call_platform_chat_completions(
     provider: str,
     platform_provider_id: str,
     messages: list[dict[str, str]],
-    temperature: float | None = 0.2,
+    temperature: float | None = None,
     max_tokens: int | None = None,
+    model_parameters: dict[str, Any] | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> dict[str, Any]:
     """Completed-JSON call to a fixed platform Provider.
@@ -245,6 +246,17 @@ async def call_platform_chat_completions(
     # explicit limit; None intentionally delegates to the provider/model default.
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
+    # Re-validate direct adapter calls too. A caller must not bypass the
+    # exact-model vendor API allow-list by skipping the gateway.
+    if model_parameters:
+        from .model_native_parameters import (
+            UnsupportedModelParameter, validate_native_parameters,
+        )
+        from .errors import InvalidRequest
+        try:
+            body.update(validate_native_parameters(model_id, model_parameters))
+        except UnsupportedModelParameter as exc:
+            raise InvalidRequest(str(exc)) from exc
 
     client_kwargs: dict[str, Any] = {
         "timeout": httpx.Timeout(
@@ -334,8 +346,9 @@ async def stream_platform_chat_completions(
     provider: str,
     platform_provider_id: str,
     messages: list[dict[str, str]],
-    temperature: float | None = 0.2,
+    temperature: float | None = None,
     max_tokens: int | None = None,
+    model_parameters: dict[str, Any] | None = None,
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> Any:
     """Streaming call to a fixed platform Provider (OpenAI-compatible SSE).
@@ -383,6 +396,17 @@ async def stream_platform_chat_completions(
     # explicit limit; None intentionally delegates to the provider/model default.
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
+    # Re-validate direct adapter calls too. A caller must not bypass the
+    # exact-model vendor API allow-list by skipping the gateway.
+    if model_parameters:
+        from .model_native_parameters import (
+            UnsupportedModelParameter, validate_native_parameters,
+        )
+        from .errors import InvalidRequest
+        try:
+            body.update(validate_native_parameters(model_id, model_parameters))
+        except UnsupportedModelParameter as exc:
+            raise InvalidRequest(str(exc)) from exc
 
     client_kwargs: dict[str, Any] = {
         "timeout": httpx.Timeout(

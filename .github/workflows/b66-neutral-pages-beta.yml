@@ -386,6 +386,8 @@ jobs:
           node tests/quote-drive-ui.test.cjs
           node tests/quote-drive-integration.test.cjs
           node tests/quote-drive-account-flow.test.cjs
+          # #3871: routine Drive disconnect/logout/account switch must never call Google /revoke.
+          node tests/quote-drive-revoke-safety.test.cjs
           node tests/quote-import-atomic.test.cjs
           node tests/quote-drive-import-safety.test.cjs
           node tests/drive-config.test.cjs

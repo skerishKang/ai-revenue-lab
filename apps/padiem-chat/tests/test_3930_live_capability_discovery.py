@@ -28,7 +28,6 @@ def _canary_client(adapter):
     with patch("app.b54_canonical_session.resolve_current_b54_canonical_session",
                new=AsyncMock(return_value=SimpleNamespace(auth_session=SimpleNamespace(subject=SimpleNamespace(subject_id=SUBJECT))))):
         with _client(adapter) as client:
-            client.app.state.claw_live_sse_canary_subject_id = SUBJECT
             yield client
 
 def test_capability_disabled_and_no_dispatch_or_quota():

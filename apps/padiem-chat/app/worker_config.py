@@ -115,14 +115,25 @@ def binding_value(env: Any, key: str) -> Any:
 
 
 def settings_from_worker_bindings(env: Any) -> Settings:
+    runtime_mode = binding_value(env, "PADIEM_CHAT_RUNTIME_MODE") or "mock"
+    live_enabled = binding_value(env, "PADIEM_CHAT_LIVE_ENABLED") or "false"
+    explicit_web_provider = binding_value(env, "PADIEM_CHAT_WEB_PROVIDER")
+    # Source default only when real public B14 execution has been explicitly armed.
+    # Mock and B14 deadman-switch-off modes retain zero-network off default.
+    default_web_provider = (
+        "tinyfish_daum"
+        if str(runtime_mode).strip().lower() == "b14"
+        and str(live_enabled).strip().lower() == "true"
+        else "off"
+    )
     return Settings.from_values(
-        runtime_mode=binding_value(env, "PADIEM_CHAT_RUNTIME_MODE") or "mock",
+        runtime_mode=runtime_mode,
         b14_base_url=binding_value(env, "PADIEM_CHAT_B14_BASE_URL"),
         b66_quote_base_url=binding_value(env, "PADIEM_CHAT_B66_QUOTE_BASE_URL"),
         timeout_seconds=binding_value(env, "PADIEM_CHAT_TIMEOUT_SECONDS") or "20",
         completed_timeout_seconds=binding_value(env, "PADIEM_CHAT_COMPLETED_TIMEOUT_SECONDS") or "50",
-        live_enabled=binding_value(env, "PADIEM_CHAT_LIVE_ENABLED") or "false",
-        web_provider=binding_value(env, "PADIEM_CHAT_WEB_PROVIDER") or "off",
+        live_enabled=live_enabled,
+        web_provider=default_web_provider if explicit_web_provider is None else explicit_web_provider,
         firecrawl_api_key=binding_value(env, "FIRECRAWL_API_KEY"),
         daum_rest_api_key=binding_value(env, "PADIEM_CHAT_DAUM_REST_API_KEY"),
         tinyfish_api_key=binding_value(env, "TINYFISH_API_KEY"),
