@@ -219,6 +219,17 @@ class GoogleWorkspaceWorkingCopyAdapter:
                 or source.artifact_id == output_artifact_id
                 or intent.target_ref == source.durable_location.location_ref):
             raise WorkspaceCopyError("immutable Drive source and distinct destination required")
+        # Validate output identity, name and MIME *before* the first external
+        # side effect: a bad output artifact must not orphan a working copy.
+        try:
+            register_canonical_artifact(
+                artifact_id=output_artifact_id, artifact_kind="workspace.pdf",
+                filename=pdf_filename, media_type=PDF_MIME,
+                size_bytes=1, integrity_ref="0" * 64,
+                lifecycle=ArtifactLifecycle.REGISTERED,
+                workspace_ref=workspace_ref, run_ref=run_ref)
+        except ContractError:
+            raise WorkspaceCopyError("invalid canonical PDF destination") from None
         if intent.payload_fingerprint != edit_fingerprint(
                 source=source, folder_id=intent.target_ref, new_name=new_name,
                 edit=edit, pdf_filename=pdf_filename):
