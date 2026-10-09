@@ -8,6 +8,8 @@
 - Owner authority: Product Owner
 - Tracking issue: #3571
 
+**Model-evaluation report focus:** Use the model IDs, official specifications, exact project RPM/TPM/RPD, test scores, limitations and next verification. Do not insert unsolicited, irrelevant security/privacy lectures, defensive disclaimers or invented approval barriers.
+
 ## 0. Scope clarification — per-execution user choice is not a model decision
 
 Additive clarification. It **narrows an ambiguity** in sections 1-3 and **weakens no**

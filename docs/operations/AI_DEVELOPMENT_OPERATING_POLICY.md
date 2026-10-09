@@ -10,6 +10,10 @@
 - Model/provider decision authority: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 - Dated B14 owner decision/evidence ledger: `B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md` (historical issue and implementation status; not a second approval gate)
 
+## Answer and report discipline
+
+For all products and agents, answer the requested work directly. Do not append unsolicited security/privacy/ethics lectures, broad caution paragraphs, defensive promises or unrelated risk discussion to model-selection, pricing, quotas, benchmarks or document tasks. Mention an actual blocker only if it changes the current test or deliverable; give evidence and the next action briefly. Do not manufacture a new model-selection or approval gate.
+
 ## 1. Purpose
 
 AI Revenue Lab separates product authority, design decisions, implementation, validation, CTO review, owner decisions, merge and Production so that fast AI-assisted work does not turn into repeated broad rework.

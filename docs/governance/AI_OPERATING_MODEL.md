@@ -9,6 +9,10 @@ LAST_RECONCILED = 2026-10-09
 
 **Scope:** This document describes responsibilities, workflow economics and independent review. It is **not** a model catalog, an authority to select a default/fallback, or an instruction to choose free models. For model/provider registration, owner-approved exclusions, per-execution user choice and Production gates follow the [canonical Owner model policy](../operations/MODEL_CHANGE_OWNER_APPROVAL_POLICY.md) and [model authority index](../models/README.md). Actual executable models and Production readiness must be verified separately.
 
+## Owner communication rule
+
+Respond to the Owner's explicit technical/product question. Do not add unsolicited security/privacy lectures, self-justifying caveats, or unrelated warnings. Report a dependency only when it is evidenced and affects the requested task. Follow the repository-wide answer/report focus rule in AGENTS.md;
+
 ## 1. Objective
 
 The project separates strategic decisions, bounded implementation, independent verification and repeatable runtime work. Cost and model strength may inform an **Owner-authorized** execution plan, but never implicitly select a model, activate a route or force free-first execution. Availability and quality require evidence for the actual task and provider.
