@@ -23,6 +23,7 @@ async function call(pathname, options) {
   const opts = options || {};
   const assets = [];
   const upstream = [];
+  const upstreamUrls = [];
   const env = Object.assign({}, opts.env || {}, {
     ASSETS: {
       async fetch(request) {
@@ -37,6 +38,7 @@ async function call(pathname, options) {
     PADIEM_CHAT_SERVICE: {
       async fetch(request) {
         upstream.push(new URL(request.url).pathname);
+        upstreamUrls.push(request.url);
         return new Response(JSON.stringify({ ok: true }), {
           status: 200,
           headers: { "Content-Type": "application/json; charset=utf-8" }
@@ -48,7 +50,7 @@ async function call(pathname, options) {
   const request = new Request(ORIGIN + pathname, { method: method });
   const response = await (await worker()).fetch(request, env);
   const body = method === "HEAD" ? "" : await response.text();
-  return { response, body, assets, upstream };
+  return { response, body, assets, upstream, upstreamUrls };
 }
 
 function headerValue(response, name) {
@@ -219,6 +221,19 @@ function headerValue(response, name) {
     assert.equal(bridged.body.indexOf(VALID_CLIENT_ID), -1, "PADIEM_BRIDGE_HAS_NO_CONFIG_LEAK");
   }
 
+  /* ── 10b. OAuth 콜백 쿼리(state/code)가 프록시에서 조용히 버려지지 않는다 ──
+     쿼리를 떨어뜨리면 백엔드가 query_state=None 으로 보고 invalid_oauth_state 를 반환한다. */
+  {
+    const state = "state-token-abc123";
+    const code = "4/0AX-example-code";
+    const callback = await call("/api/padiem/auth/google/callback?state=" + state + "&code=" + code);
+    assert.equal(callback.response.status, 200, "OAUTH_CALLBACK_PROXIED");
+    assert.deepEqual(callback.upstream, ["/auth/google/callback"], "OAUTH_CALLBACK_UPSTREAM_PATH");
+    const upstreamUrl = new URL(callback.upstreamUrls[0]);
+    assert.equal(upstreamUrl.searchParams.get("state"), state, "OAUTH_CALLBACK_STATE_FORWARDED");
+    assert.equal(upstreamUrl.searchParams.get("code"), code, "OAUTH_CALLBACK_CODE_FORWARDED");
+  }
+
   /* ── 11. 생성된 설정 파일은 정적 폴백과 같은 전역 이름을 쓴다 ── */
   {
     const fs = require("node:fs");
@@ -240,6 +255,7 @@ function headerValue(response, name) {
   console.log("EXACT_PATH_ONLY=PASS");
   console.log("EXACT_ASSET_UNCHANGED=PASS");
   console.log("EXISTING_ROUTES_UNCHANGED=PASS");
+  console.log("OAUTH_CALLBACK_QUERY_FORWARDED=PASS");
 })().catch((error) => {
   console.error("B66_DRIVE_CONFIG_WORKER=FAIL");
   console.error(error && error.stack ? error.stack : error);

@@ -228,7 +228,12 @@ async function handlePadiemBridge(request, url, env) {
   }
 
   const target = new URL(upstreamPath, PADIEM_CHAT_ORIGIN);
-  if (upstreamPath === "/api/b66/quote/preview-base") target.search = url.search;
+  /* 쿼리 문자열을 조용히 버리지 않는다. preview-base 는 조회 파라미터를,
+     OAuth 콜백은 state/code 를 쿼리로 받는다. 쿼리를 떨어뜨리면 백엔드가
+     query_state=None 으로 보고 invalid_oauth_state 를 반환한다. */
+  if (upstreamPath === "/api/b66/quote/preview-base" || upstreamPath === "/auth/google/callback") {
+    target.search = url.search;
+  }
   const init = {
     method: request.method,
     headers,

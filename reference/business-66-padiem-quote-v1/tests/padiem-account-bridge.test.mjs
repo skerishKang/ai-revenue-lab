@@ -96,7 +96,7 @@ globalThis.fetch = async (target, init = {}) => {
       headers: { "Location": "https://accounts.google.com/o/oauth2/auth?provider=google" }
     });
   }
-  if (url.endsWith("/auth/google/callback")) {
+  if (new URL(url).pathname.endsWith("/auth/google/callback")) {
     return new Response(null, { status: 302, headers: { "Location": "/" } });
   }
   throw new Error("unexpected upstream: " + url);
@@ -255,6 +255,12 @@ try {
   );
   assert.equal(googleCallback.status, 302);
   assert.equal(googleCallback.headers.get("location"), "/");
+  /* 콜백 쿼리(state/code)를 프록시가 버리면 백엔드가 invalid_oauth_state 로 거부한다. */
+  assert.equal(
+    calls[calls.length - 1].url,
+    "https://chat.padiem.net/auth/google/callback?code=x&state=y",
+    "OAUTH_CALLBACK_QUERY_FORWARDED"
+  );
 
   let serviceCalls = 0;
   const serviceEnv = {
