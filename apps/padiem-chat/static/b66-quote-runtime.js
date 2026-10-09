@@ -604,3 +604,4 @@
     ensureUi();
   }
 })();
+/* #3989 CI scope test-only probe. DO NOT MERGE. */
