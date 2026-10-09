@@ -14,7 +14,15 @@ model, fallback order, or credential fails closed.
 
 from __future__ import annotations
 
+from collections.abc import Awaitable, Callable
 from typing import Any
+
+from padiem_ai_core.orchestration_events import (
+    OrchestrationEvent,
+    OrchestrationEventError,
+    OrchestrationEventKind,
+    orchestration_event_from_public,
+)
 
 from padiem_ai_core import (
     OrchestrationError,
@@ -266,6 +274,125 @@ class P01EngineOrchestrationClient:
                 failure_detail=P01_FAILURE_DETAIL_CONTRACT,
             ) from exc
         self._validate_correlation(request, result)
+        if approval_pause_wire is not None:
+            return P01PausedWireResult(result=result, wire=approval_pause_wire)
+        return result
+
+
+    async def run_stream(
+        self,
+        request: OrchestrationRequest,
+        *,
+        on_event: Callable[[OrchestrationEvent], Awaitable[None]] | None = None,
+    ) -> OrchestrationResult | P01PausedWireResult:
+        """Opt-in, canonical P01 Engine event consumer (#3930).
+
+        Only intermediate events may reach an observer before completion. A
+        terminal event is withheld until the Engine's EOF-validated result,
+        Core reconstruction and full event-sequence equivalence all succeed.
+        This method does not activate streaming in the existing run() lane.
+        """
+        payload = self._build_payload(request)
+        stream_method = getattr(self._client, "stream_orchestration", None)
+        if not callable(stream_method):
+            raise P01AdapterError(
+                "p01_engine_stream_unavailable",
+                "Engine streaming is not configured for this P01 client.",
+                dispatch_class=P01DispatchClass.NOT_DISPATCHED,
+            )
+        stream_events: list[OrchestrationEvent] = []
+        stream_run_id: str | None = None
+        terminal_raw: dict[str, Any] | None = None
+        terminal_kinds = frozenset({
+            OrchestrationEventKind.RUN_COMPLETED,
+            OrchestrationEventKind.RUN_FAILED,
+            OrchestrationEventKind.RUN_CANCELLED,
+            OrchestrationEventKind.APPROVAL_PAUSED,
+        })
+
+        def fail(code: str) -> P01AdapterError:
+            return P01AdapterError(
+                code,
+                "Engine streaming lifecycle did not match canonical P01 evidence.",
+                dispatch_class=P01DispatchClass.DISPATCHED,
+                failure_detail=P01_FAILURE_DETAIL_CONTRACT,
+            )
+
+        try:
+            async for record in stream_method(payload):
+                if not isinstance(record, dict) or len(record) != 1:
+                    raise fail("p01_stream_invalid_record")
+                if "event" in record and terminal_raw is None:
+                    try:
+                        event = orchestration_event_from_public(record["event"])
+                    except (OrchestrationEventError, ValueError, TypeError) as exc:
+                        raise fail("p01_stream_invalid_event") from exc
+                    if len(stream_events) >= 128:
+                        raise fail("p01_stream_event_budget")
+                    if not stream_events:
+                        if event.sequence != 1 or event.kind is not OrchestrationEventKind.RUN_STARTED:
+                            raise fail("p01_stream_missing_start")
+                        stream_run_id = event.run_id
+                    else:
+                        prior = stream_events[-1]
+                        if (
+                            event.sequence != prior.sequence + 1
+                            or any(event.event_id == e.event_id for e in stream_events)
+                            or prior.kind in terminal_kinds
+                        ):
+                            raise fail("p01_stream_sequence_violation")
+                    if (
+                        event.run_id != stream_run_id
+                        or event.app_id != request.app_id
+                        or event.trace_id != request.context.trace_id
+                    ):
+                        raise fail("p01_stream_correlation_mismatch")
+                    stream_events.append(event)
+                    if on_event is not None and event.kind not in terminal_kinds:
+                        await on_event(event)
+                elif "orchestration" in record and terminal_raw is None:
+                    if not stream_events or stream_events[-1].kind not in terminal_kinds:
+                        raise fail("p01_stream_missing_terminal_event")
+                    if not isinstance(record["orchestration"], dict):
+                        raise fail("p01_stream_invalid_result")
+                    terminal_raw = record["orchestration"]
+                else:
+                    raise fail("p01_stream_trailing_record")
+        except P01AdapterError:
+            raise
+        except PadiemAiEngineClientError as exc:
+            # An Engine request that reached its transport is UNKNOWN,
+            # never refunded or automatically retried after a partial stream.
+            raise P01AdapterError(
+                "p01_engine_stream_failed",
+                "Engine streaming failed before a verified terminal result.",
+                dispatch_class=P01DispatchClass.UNKNOWN,
+                failure_detail=_engine_failure_detail(exc.code),
+            ) from exc
+        except Exception as exc:
+            raise P01AdapterError(
+                "p01_engine_stream_failed",
+                "Engine streaming ended without safe P01 verification.",
+                dispatch_class=P01DispatchClass.UNKNOWN,
+                failure_detail=P01_FAILURE_DETAIL_TRANSPORT,
+            ) from exc
+
+        if terminal_raw is None:
+            raise fail("p01_stream_missing_result")
+        try:
+            core_payload, approval_pause_wire = split_engine_approval_pause_wire(terminal_raw)
+            result = orchestration_result_from_public(core_payload)
+        except (EngineApprovalPauseWireError, OrchestrationError) as exc:
+            raise fail("p01_stream_invalid_result") from exc
+        self._validate_correlation(request, result)
+        if (
+            len(result.events) != len(stream_events)
+            or any(actual.to_public_dict() != streamed.to_public_dict()
+                   for actual, streamed in zip(result.events, stream_events))
+        ):
+            raise fail("p01_stream_event_result_mismatch")
+        if on_event is not None:
+            await on_event(stream_events[-1])
         if approval_pause_wire is not None:
             return P01PausedWireResult(result=result, wire=approval_pause_wire)
         return result
