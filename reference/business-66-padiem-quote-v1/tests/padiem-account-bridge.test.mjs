@@ -352,6 +352,35 @@ try {
     assert.match(forwarded.headers.get("cache-control"), /no-store/);
     assert.equal(forwarded.headers.get("X-Internal-Debug"), null);
   }
+  for (const [sourceOrigin, expected] of [
+    ["registered_model_completion", "registered_model_completion"],
+    ["deterministic_fallback", "deterministic_fallback"],
+    ["forged-raw-secret", null]
+  ]) {
+    const originEnv = {
+      ...env,
+      PADIEM_CHAT_SERVICE: {
+        fetch: async () => json(
+          { ok: true, candidate: { items: [{ name: "Synthetic Item" }] } },
+          { status: 200, headers: {
+            "X-B66-Result-Origin": sourceOrigin,
+            "X-Internal-Debug": "must-not-relay"
+          } }
+        )
+      }
+    };
+    const forwarded = await worker.fetch(new Request("https://quick-quote-kr.pages.dev/api/padiem/b66/quote/interpret", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Cookie": "padiem_session=synthetic", "Origin": "https://quick-quote-kr.pages.dev" },
+      body: JSON.stringify({ saved_skill_id: "b66skill_" + "c".repeat(32), model_id: "google/gemini-3.5-flash-lite", message: "synthetic" })
+    }), originEnv);
+    assert.equal(forwarded.status, 200);
+    assert.equal(forwarded.headers.get("x-b66-result-origin"), expected);
+    assert.equal(forwarded.headers.get("x-internal-debug"), null);
+    assert.match(forwarded.headers.get("cache-control"), /no-store/);
+    assert.equal((await forwarded.json()).candidate.items[0].name, "Synthetic Item");
+  }
+  console.log("B66_RESULT_ORIGIN_HEADER_RELAY=PASS");
   console.log("B66_QUOTA_AND_SELECTION_DIAGNOSTIC_RELAY=PASS");
   console.log("PADIEM_ACCOUNT_BRIDGE_RUNTIME=PASS");
   console.log("ARBITRARY_UPSTREAM_PROXY=0");
