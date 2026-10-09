@@ -102,8 +102,19 @@ def canonical_state(payload: object) -> tuple[tuple[object, ...], ...]:
         if not isinstance(identity, str) or not identity or not isinstance(resources, dict):
             raise BindingStateError("version payload identity or resources missing")
         bindings = resources.get("bindings")
+    if isinstance(bindings, dict):
+        # Version resources may be keyed by binding name. Match the canonical
+        # Engine served-version guard: an embedded name must agree with its key.
+        entries = []
+        for key, value in bindings.items():
+            if not isinstance(key, str) or not key or not isinstance(value, dict):
+                raise BindingStateError("malformed keyed version binding")
+            if "name" in value and value["name"] != key:
+                raise BindingStateError("version binding key/name disagreement")
+            entries.append({**value, "name": key})
+        bindings = entries
     if not isinstance(bindings, list):
-        raise BindingStateError("Worker payload has no bindings array")
+        raise BindingStateError("Worker payload has no bindings collection")
 
     canonical = [canonical_binding(binding) for binding in bindings]
     names = [entry[1] for entry in canonical]
