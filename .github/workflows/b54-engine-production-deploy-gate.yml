@@ -212,6 +212,11 @@ jobs:
             anchor_fail "canonical resolver returned no served version id"
           fi
 
+          # The earlier served-version metadata snapshot must still name the
+          # exact version about to be replaced. Refuse drift before upload.
+          if [ "${pre_version}" != "${B54_ENGINE_ACTIVE_VERSION}" ]; then
+            anchor_fail "served version drifted since the pre-deploy binding snapshot"
+          fi
           anchor_record "PRE_DEPLOY_SERVED_VERSION_ID=${pre_version}"
           anchor_record "PRE_MUTATION_VERSION_CAPTURED=YES"
           anchor_record "SOURCE_MAIN_SHA=${B54_TARGET_SHA}"
@@ -349,6 +354,14 @@ jobs:
           echo 'POST_DEPLOY_SERVED_VERSION_CONVERGED=PASS'
           version_detail="${RUNNER_TEMP}/version-post.json"
           curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
+          # Existing shared binding authority: compare immutable served versions,
+          # not the mutable /settings plane or only a few required names.
+          # This is an equality gate for CODE redeploys. A future separately
+          # authorized Owner D1 addition needs a reviewed additive-only contract.
+          python3 .github/scripts/b62_binding_state_guard.py \
+            --before "${RUNNER_TEMP}/version-pre.json" \
+            --after "${version_detail}"
+          echo 'B54_ENGINE_FULL_BINDING_SET_PRESERVED=PASS'
           overlay_args=()
           if [ "${B54_ENGINE_OVERLAY_EXPECTED}" = 'YES' ]; then
             overlay_args+=( --expect-overlay )
