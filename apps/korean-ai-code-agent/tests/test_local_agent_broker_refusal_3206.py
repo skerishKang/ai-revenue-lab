@@ -193,7 +193,8 @@ class _OwnerSurface:
             TrustedLocalAgentHttpAuthContext,
         )
 
-        self.broker = LoopbackPairingBroker()
+        # #3650: the host principal is now injected, never defaulted.
+        self.broker = LoopbackPairingBroker(account_ref="account.1", workspace_ref="workspace.1")
         self.statuses: list[int] = []
         owner = self
 

@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 import threading
 import time
@@ -36,6 +37,38 @@ from .contracts import ContractError
 #: request boundaries, so a client-side stall can be attributed to a leg.
 _OWNER_EMIT_LOCK = threading.Lock()
 _OWNER_STARTED_MONOTONIC = time.monotonic()
+
+#: #3650 — the non-Production host has NO hardcoded browser principal. The
+#: authenticated test account/workspace the Web leg speaks for is injected at
+#: host startup; a host started without one refuses to start rather than fall
+#: back to any default principal. The canonical mint
+#: (``_handle_pairing_challenge``) still enforces body==authenticated scope, so
+#: a challenge can only ever be minted for the principal this host was started
+#: with — never for a caller-asserted one.
+PRINCIPAL_ACCOUNT_ENV = "PADIEM_3140_ACCOUNT_REF"
+PRINCIPAL_WORKSPACE_ENV = "PADIEM_3140_WORKSPACE_REF"
+_PRINCIPAL_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
+
+
+def _validated_principal(value: Any, label: str) -> str:
+    if not isinstance(value, str) or not _PRINCIPAL_PATTERN.fullmatch(value):
+        raise ContractError(
+            f"the non-Production {label} principal must be a bounded safe reference"
+        )
+    return value
+
+
+def principal_from_env(environ: Any = None) -> tuple[str, str]:
+    """Read the injected test principal from the environment, fail-closed.
+
+    There is deliberately no fallback: a missing or malformed principal is a
+    startup refusal, not a default account.
+    """
+
+    env = os.environ if environ is None else environ
+    account = _validated_principal(env.get(PRINCIPAL_ACCOUNT_ENV), "account")
+    workspace = _validated_principal(env.get(PRINCIPAL_WORKSPACE_ENV), "workspace")
+    return account, workspace
 
 
 def _owner_emit(**fields: Any) -> None:
@@ -206,9 +239,14 @@ class _Nonces:
 
 
 class LoopbackPairingBroker:
-    """One broker + pairing authority, plus the request port both legs use."""
+    """One broker + pairing authority, plus the request port both legs use.
 
-    def __init__(self) -> None:
+    #3650: the authenticated browser principal this host speaks for is injected
+    at construction. There is no default principal — a host without an explicit
+    one cannot be built, so no run can silently pair against ``account.1``.
+    """
+
+    def __init__(self, *, account_ref: str, workspace_ref: str) -> None:
         from padiem_control_plane.local_agent_broker import InMemoryLocalAgentBrokerAuthority
         from padiem_control_plane.local_agent_broker_pairing import (
             InMemoryBrokerPairingAuthority,
@@ -221,6 +259,8 @@ class LoopbackPairingBroker:
             TrustedLocalAgentHttpAuthContext,
         )
 
+        self.account_ref = _validated_principal(account_ref, "account")
+        self.workspace_ref = _validated_principal(workspace_ref, "workspace")
         self.clock = _Clock()
         self.authority = InMemoryLocalAgentBrokerAuthority(
             pepper=BROKER_PEPPER, authority_ref=AUTHORITY_REF
@@ -263,15 +303,15 @@ class LoopbackPairingBroker:
         # without a response: the observed handoff_ack failure in run2/run3.
         self._device_auth = TrustedLocalAgentHttpAuthContext(
             principal_ref="device.3140.resident",
-            account_ref="account.1",
-            workspace_ref="workspace.1",
+            account_ref=self.account_ref,
+            workspace_ref=self.workspace_ref,
             authenticated=False,
             tls_verified=True,
         )
         self._authenticated_device_auth = TrustedLocalAgentHttpAuthContext(
             principal_ref="device.3140.resident",
-            account_ref="account.1",
-            workspace_ref="workspace.1",
+            account_ref=self.account_ref,
+            workspace_ref=self.workspace_ref,
             authenticated=True,
             tls_verified=True,
         )
@@ -546,8 +586,8 @@ class LoopbackPairingBroker:
 
         body = json.dumps(
             {
-                "account_ref": "account.1",
-                "workspace_ref": "workspace.1",
+                "account_ref": self.account_ref,
+                "workspace_ref": self.workspace_ref,
                 "now": now.isoformat(),
                 "ttl_seconds": 300,
             }
@@ -558,9 +598,9 @@ class LoopbackPairingBroker:
             content_type="application/json",
             body=body,
             auth=TrustedLocalAgentHttpAuthContext(
-                principal_ref="principal.browser.3140",
-                account_ref="account.1",
-                workspace_ref="workspace.1",
+                principal_ref=self.account_ref,
+                account_ref=self.account_ref,
+                workspace_ref=self.workspace_ref,
                 authenticated=True,
                 tls_verified=True,
             ),
@@ -773,6 +813,25 @@ def main(argv: list[str] | None = None) -> int:
     if arguments[:1] not in (["--issue-handoff"], ["--web-issue"]):
         sys.stderr.write("usage: python -m kagent.local_agent_broker_pairing_handoff_entry --issue-handoff\n")
         return 2
+    # #3650: the authenticated test principal is injected at startup. No
+    # environment, no challenge — there is no default account to fall back to.
+    try:
+        account_ref, workspace_ref = principal_from_env()
+    except ContractError as exc:
+        sys.stderr.write(
+            json.dumps(
+                {
+                    "ok": False,
+                    "error": "principal_not_injected",
+                    "detail": str(exc),
+                    "required": [PRINCIPAL_ACCOUNT_ENV, PRINCIPAL_WORKSPACE_ENV],
+                },
+                sort_keys=True,
+                separators=(",", ":"),
+            )
+            + "\n"
+        )
+        return 2
     # #3140: the web leg issues through the running owner when one is
     # configured, so the challenge belongs to the authority the resident will
     # redeem at. A private instance is only the single-process fallback.
@@ -785,10 +844,12 @@ def main(argv: list[str] | None = None) -> int:
 
     broker_url = os.environ.get("PADIEM_AGENT_BROKER_URL")
     if broker_url:
+        import urllib.error
+
         body = json.dumps(
             {
-                "account_ref": "account.1",
-                "workspace_ref": "workspace.1",
+                "account_ref": account_ref,
+                "workspace_ref": workspace_ref,
                 "now": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
                 "ttl_seconds": 300,
             },
@@ -799,10 +860,24 @@ def main(argv: list[str] | None = None) -> int:
             f"{broker_url}{PAIRING_CHALLENGE_ROUTE}", data=body,
             headers={"Content-Type": "application/json"}, method="POST",
         )
-        with urllib.request.urlopen(request, timeout=10) as response:
-            issued = json.loads(response.read().decode("utf-8"))
+        try:
+            with urllib.request.urlopen(request, timeout=10) as response:
+                issued = json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            # A canonical refusal (scope_mismatch, auth, TLS) is a bounded
+            # failure, never a traceback and never a retry: the code the owner
+            # refused stays unprinted, so nothing half-issued escapes.
+            sys.stderr.write(
+                json.dumps(
+                    {"ok": False, "error": "challenge_refused", "status": exc.code},
+                    sort_keys=True,
+                    separators=(",", ":"),
+                )
+                + "\n"
+            )
+            return 1
     else:
-        broker = LoopbackPairingBroker()
+        broker = LoopbackPairingBroker(account_ref=account_ref, workspace_ref=workspace_ref)
         issued = broker.web_issue_challenge(
             now=datetime.now(timezone.utc).replace(microsecond=0)
         )
@@ -821,22 +896,26 @@ def main(argv: list[str] | None = None) -> int:
     return 0
 
 
-def serve(host: str = "127.0.0.1", port: int = 0) -> int:
-    """Own the one non-Production broker authority and serve it.
+def create_owner_server(
+    broker: LoopbackPairingBroker,
+    *,
+    host: str = "127.0.0.1",
+    port: int = 0,
+) -> tuple[Any, str]:
+    """Build the owner's loopback HTTP server around the one broker instance.
 
-    This process is the owner: it holds the single broker and pairing authority
-    both legs reach. It binds loopback only and is never a public ingress.
+    #3650: the packaged ``serve()`` process and the non-Production evidence
+    composition both build from this one function, so the route and principal
+    wiring is never duplicated, and any host built this way speaks for the
+    principal its broker was constructed with. Loopback-only, never a public
+    ingress; this is the exact server #3140 has always served.
     """
 
     import http.server
-    import threading
     import urllib.parse
 
     if host not in _LOOPBACK_HOSTS:
         raise ValueError("non-Production broker owner must bind to loopback")
-
-    broker = LoopbackPairingBroker()
-    holder = {"url": ""}
 
     class Handler(http.server.BaseHTTPRequestHandler):
         def do_POST(self) -> None:  # noqa: N802 — BaseHTTPRequestHandler surface
@@ -984,13 +1063,15 @@ def serve(host: str = "127.0.0.1", port: int = 0) -> int:
         )
 
         # The same per-route principal rule the real broker enforces: the Web
-        # session issues as an authenticated browser, the pairing redeem presents
-        # an *unauthenticated* device principal with a possession proof, and
-        # every post-pairing route is the authenticated device.
+        # session issues as an authenticated browser principal — the one this
+        # host was started with (#3650), never a caller-asserted one — the
+        # pairing redeem presents an *unauthenticated* device principal with a
+        # possession proof, and every post-pairing route is the authenticated
+        # device.
         if "pairings/challenge" in route:
             return TrustedLocalAgentHttpAuthContext(
-                principal_ref="principal.browser.3140",
-                account_ref="account.1", workspace_ref="workspace.1",
+                principal_ref=broker.account_ref,
+                account_ref=broker.account_ref, workspace_ref=broker.workspace_ref,
                 authenticated=True, tls_verified=True,
             )
         if "pairings/redeem" in route:
@@ -998,10 +1079,41 @@ def serve(host: str = "127.0.0.1", port: int = 0) -> int:
         return broker._authenticated_device_auth
 
     server = http.server.HTTPServer((host, port), Handler)
-    holder["url"] = f"http://{host}:{server.server_address[1]}"
+    return server, f"http://{host}:{server.server_address[1]}"
+
+
+def serve(host: str = "127.0.0.1", port: int = 0) -> int:
+    """Own the one non-Production broker authority and serve it.
+
+    This process is the owner: it holds the single broker and pairing authority
+    both legs reach. It binds loopback only and is never a public ingress.
+    """
+
+    # #3650: the owner refuses to start without an injected test principal.
+    # Fail-closed here means a run can never silently pair against a default account;
+    # the bounded refusal names the required variables only.
+    try:
+        account_ref, workspace_ref = principal_from_env()
+    except ContractError as exc:
+        sys.stderr.write(
+            json.dumps(
+                {
+                    "ok": False,
+                    "error": "principal_not_injected",
+                    "detail": str(exc),
+                    "required": [PRINCIPAL_ACCOUNT_ENV, PRINCIPAL_WORKSPACE_ENV],
+                },
+                sort_keys=True,
+                separators=(",", ":"),
+            )
+            + "\n"
+        )
+        return 2
+    broker = LoopbackPairingBroker(account_ref=account_ref, workspace_ref=workspace_ref)
+    server, url = create_owner_server(broker, host=host, port=port)
     sys.stdout.write(
         json.dumps(
-            {"broker_url": holder["url"], "owner_process": True,
+            {"broker_url": url, "owner_process": True,
              "public_inbound_port": 0},
             sort_keys=True, separators=(",", ":"),
         )
