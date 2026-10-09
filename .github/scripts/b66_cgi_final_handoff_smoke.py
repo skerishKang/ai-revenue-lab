@@ -722,8 +722,9 @@ def _guided(page, counters: Counters) -> None:
     print("GUIDED_PRINT_OR_PDF=PASS")
 
 
-def _complete_free_form(page, counters: Counters) -> None:
+def _complete_free_form(page, counters: Counters, selected_model_id: str) -> None:
     _reset_browser_local_quote_state(page)
+    _select_customer_quote_model(page, selected_model_id)
     page.locator("#freeChatStarter").click()
 
     before = counters.interpret_posts
@@ -769,8 +770,9 @@ def _complete_free_form(page, counters: Counters) -> None:
     print("COMPLETE_PRINT_OR_PDF=PASS")
 
 
-def _partial_followup(page, counters: Counters) -> None:
+def _partial_followup(page, counters: Counters, selected_model_id: str) -> None:
     _reset_browser_local_quote_state(page)
+    _select_customer_quote_model(page, selected_model_id)
     page.locator("#freeChatStarter").click()
 
     before = counters.interpret_posts
@@ -903,11 +905,10 @@ def run_live(username: str, password: str, selected_model_id: str) -> int:
             print("CGI_LOGIN=PASS")
             print("ASSIGNED_SAVED_SKILL_COUNT=1")
             print("RUNTIME_READINESS=PASS")
-            _select_customer_quote_model(page, selected_model_id)
 
             _guided(page, counters)
-            _complete_free_form(page, counters)
-            _partial_followup(page, counters)
+            _complete_free_form(page, counters, selected_model_id)
+            _partial_followup(page, counters, selected_model_id)
 
             if counters.interpret_posts != MAX_INTERPRET_POSTS:
                 _fail("final_interpret_budget_mismatch")
