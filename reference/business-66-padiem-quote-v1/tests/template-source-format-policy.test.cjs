@@ -108,6 +108,10 @@ assert.equal(SkillWizard.start({
   filename:"reference.pdf",mediaType:"application/pdf",byteSize:1024
 },{sourceMode:"fact_reference"}).ok,true);
 const html = fs.readFileSync(path.join(basedir,"index.html"),"utf8");
+assert.ok(html.indexOf('src="file-intake.js"') !== -1 &&
+  html.indexOf('src="file-intake.js"') < html.indexOf('src="quote-template-cloner.js"') &&
+  html.indexOf('src="file-intake.js"') < html.indexOf('src="quote-template-registration.js"'),
+  "Browser defer script order loads source-format guard before its dependents");
 const chooser = html.match(/id="templateCloneFile"[\s\S]*?accept="([^"]+)"/);
 assert.ok(chooser,"registration chooser exists");
 assert.equal(chooser[1],".xlsx,"+xlsxMime);
