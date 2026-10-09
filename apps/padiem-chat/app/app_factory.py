@@ -437,7 +437,6 @@ def create_app(
     app.state.claw_p01_adapter = claw_p01_adapter
     # Explicit trusted server opt-in; no browser-provided activation authority.
     app.state.claw_live_sse_enabled = False
-    app.state.claw_live_sse_canary_subject_id = None
     # #2961 owner approval decision lane: the same composed Engine client, used
     # only to submit a server-derived decision to the canonical resume route.
     # None keeps the decision route fail-closed before any Engine transport.

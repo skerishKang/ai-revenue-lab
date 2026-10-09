@@ -871,17 +871,10 @@ class Default(WorkerEntrypoint):
                     self.env,
                     request_factory=Request,
                 )
-                from app.claw_live_canary import valid_canonical_subject
-
-                canary_subject = getattr(self.env, "PADIEM_CLAW_P01_LIVE_CANARY_SUBJECT_ID", None)
-                _worker_app.state.claw_live_sse_canary_subject_id = (
-                    canary_subject if valid_canonical_subject(canary_subject) else None
-                )
                 _worker_app.state.claw_live_sse_enabled = (
                     settings.runtime_mode == "b14"
                     and getattr(self.env, "PADIEM_CLAW_P01_LIVE_SSE_ENABLED", None) == "true"
                     and getattr(_worker_app.state.claw_p01_adapter, "subject_identity_lane", False) is True
-                    and _worker_app.state.claw_live_sse_canary_subject_id is not None
                 )
                 # #3094: compose the concrete canonical local-access source
                 # from a trusted broker-authority binding only. When the
