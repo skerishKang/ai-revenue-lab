@@ -655,12 +655,16 @@ function harness(options) {
     await h.approve();
     await pending;
     const out = await h.client.disconnect();
-    assert.equal(out.revoked, true, "TOKEN_REVOKED_ON_LOGOUT");
+    /* 일반 연결 해제는 로컬 메모리 세션만 지운다. Google /revoke 는 호출하지 않는다. */
+    assert.equal(out.revoked, false, "NO_GOOGLE_REVOKE_ON_LOGOUT");
+    assert.equal(out.googleRevoke, false, "LOGOUT_IS_LOCAL_ONLY");
     assert.equal(h.client.session().connected, false, "LOGOUT_CLEARS_SESSION");
     assert.equal((await h.client.openQuoteFile("file-1")).code, "drive_not_connected", "LOGOUT_BLOCKS_OPEN");
     assert.equal((await h.client.savePair({ draft: draftFixture(), pdfBytes: pdfBytes() })).code,
       "drive_not_connected", "LOGOUT_BLOCKS_SAVE");
     assert.equal(uploadCalls(h).length, 0, "NO_UPLOAD_AFTER_LOGOUT");
+    assert.equal(h.calls.filter((call) => call.url.indexOf("oauth2.googleapis.com/revoke") !== -1).length, 0,
+      "ROUTINE_LOGOUT_ISSUES_ZERO_REVOKE");
 
     const second = h.client.connect({ prompt: "select_account" });
     await flush();
@@ -756,9 +760,9 @@ function harness(options) {
     assert.equal(result.ok, false, "LATE_TOKEN_NOT_ACCEPTED");
     assert.equal(result.code, "drive_auth_superseded", "DRIVE_AUTH_SUPERSEDED");
     assert.equal(h.client.session().connected, false, "NO_SESSION_AFTER_LATE_TOKEN");
+    /* 늦은 토큰은 저장하지 않고 폐기한다. Google /revoke 로 프로젝트 전체 권한을 건드리지 않는다. */
     const revoked = h.calls.filter((call) => call.url.indexOf("oauth2.googleapis.com/revoke") !== -1);
-    assert.equal(revoked.length, 1, "LATE_TOKEN_REVOKED");
-    assert.ok(revoked[0].url.indexOf("stub-access-token") !== -1, "REVOKE_TARGETS_LATE_TOKEN");
+    assert.equal(revoked.length, 0, "LATE_TOKEN_NOT_REVOKED_VIA_GOOGLE");
     assert.equal((await h.client.listQuoteFiles()).code, "drive_not_connected", "STILL_SIGNED_OUT");
   }
 
@@ -819,9 +823,11 @@ function harness(options) {
   console.log("TEMPLATE_AUTHORITY_REQUIRED_ON_OPEN=PASS");
   console.log("OTHER_GOOGLE_ACCOUNT_ACCESS=DENIED");
   console.log("LOGOUT_BLOCKS_ACCESS=PASS");
+  console.log("ROUTINE_GOOGLE_REVOKE_CALLS=0");
   console.log("ACCOUNT_SWITCH_DISCARDS_IN_FLIGHT=PASS");
   console.log("CONNECT_IN_PROGRESS_GUARD=PASS");
   console.log("LATE_TOKEN_AFTER_LOGOUT_REJECTED=PASS");
+  console.log("LATE_TOKEN_NOT_REVOKED_VIA_GOOGLE=PASS");
   console.log("TOKEN_EXPIRED_SURFACED=PASS");
   console.log("ONLY_GOOGLE_ENDPOINTS=PASS");
   console.log("MODEL_CALLS_FOR_STORAGE=0");

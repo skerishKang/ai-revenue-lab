@@ -5,7 +5,9 @@
    원칙
    - 저장 위치는 항상 사용자가 명시적으로 고른다. 자동 저장·자동 동기화 없음.
    - 성공/실패/부분 성공을 정확히 표시한다. 부분 성공을 성공으로 표시하지 않는다.
-   - B66 로그아웃·계정 전환은 Drive 세션을 즉시 폐기한다(토큰 격리).
+   - B66 로그아웃·계정 전환은 이 브라우저의 Drive 세션(메모리 토큰)을 즉시 비운다.
+     Google 계정 차원의 권한 부여는 철회하지 않는다(프로젝트 단위 철회가 다른 파디엠
+     Google 기능에 영향을 주지 않도록). 안내 문구도 이 구분을 그대로 반영한다.
    - 계정이 바뀐 뒤 도착한 in-flight 응답은 편집기나 상태를 갱신하지 못한다.
    - PDF 는 기존 인증된 렌더러(app.js certifiedPdfBytes)에서만 얻는다.
    - 불러오기는 승인된 템플릿 권위가 확인된 경우에만 편집기에 적용한다.
@@ -224,19 +226,22 @@
     }
 
     /* ── B66 로그아웃 / 계정 전환 격리 ──
-       계정 권위가 실제로 상실되거나 다른 owner 로 바뀐 경우에만 Drive 토큰을 폐기한다.
+       계정 권위가 실제로 상실되거나 다른 owner 로 바뀐 경우에만 Drive 세션을 비운다.
        - b66:auth-changed(authenticated=true) 는 로그인/상태 갱신이므로 세션을 유지한다.
          (다른 계정으로 바뀐 경우는 뒤이어 오는 account-scope-changed 가 알려 준다.)
-       - 계정 변경·로그아웃·owner 확인 불가일 때만 폐기한다.
-       폐기는 세션이 연결되어 있지 않아도 항상 수행해 세대(epoch)를 올린다.
-       그래야 OAuth 팝업 도중 발생한 로그아웃이 뒤늦은 토큰 연결을 막는다. */
-    function revokeDrive(reason, message) {
+       - 계정 변경·로그아웃·owner 확인 불가일 때만 비운다.
+       비우기는 세션이 연결되어 있지 않아도 항상 수행해 세대(epoch)를 올린다.
+       그래야 OAuth 팝업 도중 발생한 로그아웃이 뒤늦은 토큰 연결을 막는다.
+
+       여기서 하는 일은 **이 브라우저의 Drive 세션(메모리 토큰)만 지우는 것**이다.
+       Google 계정 차원의 권한 부여를 철회(revoke)하지 않는다. 이름도 그에 맞춘다. */
+    function clearDriveSession(reason, message) {
       var session = client.session();
       var hadWork = session.connected === true || Boolean(pendingOutcome) || fileIndex.length > 0 ||
         session.connectPending === true;
       clearPending();
       clearSelection();
-      /* 토큰이 없어도 호출한다: 세대만 증가시키고 네트워크 요청은 하지 않는다. */
+      /* 토큰이 없어도 호출한다: 세대만 증가시키고 Google /revoke 는 요청하지 않는다. */
       client.disconnect({ reason: reason });
       renderConnection({ silent: true });
       if (hadWork) setStatus(message, "warn");
@@ -250,22 +255,26 @@
       if (source === "auth-changed") {
         /* 정상 로그인·세션 갱신: Drive 연결을 건드리지 않는다. */
         if (authenticated) return false;
-        return revokeDrive("b66_signed_out",
-          "B66 계정에서 로그아웃되어 Google Drive 연결을 해제했습니다.");
+        return clearDriveSession("b66_signed_out",
+          "B66 계정에서 로그아웃되어 이 브라우저의 Google Drive 연결을 해제했습니다. " +
+          "(Google 계정의 Drive 권한 부여 자체는 철회되지 않습니다.)");
       }
 
       if (!authenticated) {
-        return revokeDrive("b66_account_authority_lost",
-          "B66 계정 인증이 해제되어 Google Drive 연결을 해제했습니다.");
+        return clearDriveSession("b66_account_authority_lost",
+          "B66 계정 인증이 해제되어 이 브라우저의 Google Drive 연결을 해제했습니다. " +
+          "(Google 계정의 Drive 권한 부여 자체는 철회되지 않습니다.)");
       }
       if (DRIVE_SESSION_KEEP_ACTIONS.indexOf(action) !== -1) return false;
       if (DRIVE_SESSION_DROP_ACTIONS.indexOf(action) !== -1) {
-        return revokeDrive("b66_account_changed",
-          "B66 계정이 변경되어 Google Drive 연결을 해제했습니다.");
+        return clearDriveSession("b66_account_changed",
+          "B66 계정이 변경되어 이 브라우저의 Google Drive 연결을 해제했습니다. " +
+          "(Google 계정의 Drive 권한 부여 자체는 철회되지 않습니다.)");
       }
       /* action 을 알 수 없는 경우(예: 저장소 읽기 실패)는 안전하게 폐기한다. */
-      return revokeDrive("b66_account_scope_unresolved",
-        "B66 계정 상태를 확인할 수 없어 Google Drive 연결을 해제했습니다.");
+      return clearDriveSession("b66_account_scope_unresolved",
+        "B66 계정 상태를 확인할 수 없어 이 브라우저의 Google Drive 연결을 해제했습니다. " +
+        "(Google 계정의 Drive 권한 부여 자체는 철회되지 않습니다.)");
     }
 
     function onScopeChanged(event) {
@@ -284,7 +293,8 @@
         clearPending();
         clearSelection();
         renderConnection({ silent: true });
-        setStatus("Google Drive 연결을 해제했습니다. 저장된 파일은 그대로 남아 있습니다.", "info");
+        setStatus("이 브라우저의 Google Drive 연결을 해제했습니다. 저장된 파일은 그대로 남아 있고, " +
+          "Google 계정의 Drive 권한 부여 자체는 철회되지 않습니다.", "info");
         return;
       }
       busy = true;
