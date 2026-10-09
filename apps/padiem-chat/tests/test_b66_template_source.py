@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import asyncio
 import base64
 import hashlib
 import io
+import json
 import zipfile
 from pathlib import Path
 from unittest.mock import MagicMock
@@ -17,10 +19,16 @@ from app.auth import SESSION_COOKIE, create_session_token
 from app.b66_template_source import (
     B66TemplateSourceError,
     B66TemplateSourceMetadata,
+    B66TemplateSourceOrphanError,
     B66TemplateSourceStore,
     D1B66TemplateSourceMetadataStore,
     MAX_B66_TEMPLATE_SOURCE_BYTES,
     sanitize_original_filename,
+)
+from app.b66_template_source_routes import MAX_TEMPLATE_SOURCE_REQUEST_BYTES
+from app.bounded_request_body import (
+    RequestBodyTooLarge,
+    read_bounded_request_body,
 )
 from app.config import Settings
 
@@ -253,6 +261,166 @@ async def test_metadata_failure_cleans_private_r2_object():
     key = r2.put_calls[0][0]
     assert key in r2.delete_calls
     assert key not in r2.objects
+
+
+class DeletingFailsR2(MemoryR2):
+    def __init__(self):
+        super().__init__()
+        self.fail_delete = False
+
+    async def delete(self, key):
+        if self.fail_delete:
+            raise RuntimeError("synthetic r2 delete failure")
+        await super().delete(key)
+
+
+@pytest.mark.asyncio
+async def test_d1_and_r2_both_failing_raises_orphan_never_success():
+    metadata = MemoryMetadata()
+    metadata.fail_insert = True
+    r2 = DeletingFailsR2()
+    r2.fail_delete = True
+    store = B66TemplateSourceStore(metadata, r2)
+
+    with pytest.raises(B66TemplateSourceOrphanError) as excinfo:
+        await store.put_template_source(
+            user_id=USER_A,
+            workspace_id=WORKSPACE_A,
+            media_type="application/pdf",
+            original_filename="form.pdf",
+            body=PDF_BODY,
+        )
+    # Diagnostics carry only the server-minted key; no customer content.
+    orphan_key = excinfo.value.object_key
+    assert orphan_key.startswith("b66/template-source/")
+    assert PDF_BODY not in orphan_key.encode("utf-8", errors="ignore")
+    assert "usr_" not in orphan_key
+    # The orphan object still exists in the private bucket: failure was not
+    # treated as success, and an operator can reclaim exactly this key.
+    assert orphan_key in r2.objects
+    # It is also NOT silently reported as the plain storage error string that
+    # routes map to client-facing messages.
+    assert str(excinfo.value).startswith("template source storage failed and cleanup")
+
+
+@pytest.mark.asyncio
+async def test_orphan_subclass_is_still_a_storage_error_for_routes():
+    assert issubclass(B66TemplateSourceOrphanError, B66TemplateSourceError)
+
+
+class SizeReportingR2Object(R2Object):
+    def __init__(self, body, size=None, properties=None):
+        super().__init__(body)
+        if size is not None:
+            self.size = size
+        if properties is not None:
+            self.properties = properties
+
+
+class SizeReportingR2(MemoryR2):
+    def __init__(self, reported_size=None, reported_properties=None):
+        super().__init__()
+        self.reported_size = reported_size
+        self.reported_properties = reported_properties
+
+    async def get(self, key):
+        body = self.objects.get(key)
+        if body is None:
+            return None
+        return SizeReportingR2Object(
+            body, size=self.reported_size, properties=self.reported_properties
+        )
+
+
+def _pdf_metadata(*, body, template_source_id=TEMPLATE_SOURCE_ID, user_id=USER_A,
+                  workspace_id=WORKSPACE_A, filename="form.pdf"):
+    return B66TemplateSourceMetadata(
+        template_source_id=template_source_id,
+        user_id=user_id,
+        workspace_id=workspace_id,
+        media_type="application/pdf",
+        original_filename=filename,
+        object_key=f"b66/template-source/{template_source_id}.pdf",
+        byte_length=len(body),
+        sha256=hashlib.sha256(body).hexdigest(),
+        status="uploaded",
+        created_at="2026-10-09T00:00:00.000Z",
+        updated_at="2026-10-09T00:00:00.000Z",
+    )
+
+
+@pytest.mark.asyncio
+async def test_download_refuses_object_whose_reported_size_disagrees():
+    metadata = MemoryMetadata()
+    body = PDF_BODY
+    store_meta = _pdf_metadata(body=body)
+    metadata.rows[(USER_A, WORKSPACE_A, TEMPLATE_SOURCE_ID)] = store_meta
+    r2 = SizeReportingR2(reported_size=len(body) + 1024)
+    r2.objects[store_meta.object_key] = body
+    store = B66TemplateSourceStore(metadata, r2)
+
+    with pytest.raises(B66TemplateSourceError, match="integrity check failed"):
+        await store.get_for_owner(
+            user_id=USER_A,
+            workspace_id=WORKSPACE_A,
+            template_source_id=TEMPLATE_SOURCE_ID,
+        )
+
+
+@pytest.mark.asyncio
+async def test_download_refuses_object_over_custody_ceiling_before_read():
+    metadata = MemoryMetadata()
+    body = PDF_BODY
+    store_meta = _pdf_metadata(body=body)
+    metadata.rows[(USER_A, WORKSPACE_A, TEMPLATE_SOURCE_ID)] = store_meta
+    r2 = SizeReportingR2(reported_size=MAX_B66_TEMPLATE_SOURCE_BYTES + 1)
+    r2.objects[store_meta.object_key] = body
+    store = B66TemplateSourceStore(metadata, r2)
+
+    with pytest.raises(B66TemplateSourceError, match="integrity check failed"):
+        await store.get_for_owner(
+            user_id=USER_A,
+            workspace_id=WORKSPACE_A,
+            template_source_id=TEMPLATE_SOURCE_ID,
+        )
+
+
+@pytest.mark.asyncio
+async def test_download_accepts_object_with_matching_reported_size():
+    metadata = MemoryMetadata()
+    body = PDF_BODY
+    store_meta = _pdf_metadata(body=body)
+    metadata.rows[(USER_A, WORKSPACE_A, TEMPLATE_SOURCE_ID)] = store_meta
+    r2 = SizeReportingR2(reported_size=len(body))
+    r2.objects[store_meta.object_key] = body
+    store = B66TemplateSourceStore(metadata, r2)
+
+    result = await store.get_for_owner(
+        user_id=USER_A,
+        workspace_id=WORKSPACE_A,
+        template_source_id=TEMPLATE_SOURCE_ID,
+    )
+    assert result is not None
+    assert result[1] == body
+
+
+@pytest.mark.asyncio
+async def test_download_without_reported_size_still_verifies_hash():
+    # Compatibility: objects without a size attribute skip the pre-read guard
+    # and remain protected by the SHA-256 authority.
+    metadata = MemoryMetadata()
+    body = PDF_BODY
+    store_meta = _pdf_metadata(body=body)
+    metadata.rows[(USER_A, WORKSPACE_A, TEMPLATE_SOURCE_ID)] = store_meta
+    r2 = MemoryR2()
+    r2.objects[store_meta.object_key] = body
+    store = B66TemplateSourceStore(metadata, r2)
+    result = await store.get_for_owner(
+        user_id=USER_A,
+        workspace_id=WORKSPACE_A,
+        template_source_id=TEMPLATE_SOURCE_ID,
+    )
+    assert result is not None and result[1] == body
 
 
 @pytest.mark.asyncio
@@ -726,6 +894,125 @@ def test_migration_026_stores_metadata_only():
     lowered = migration.lower()
     for forbidden in (" blob", "base64", "template_bytes", "file_bytes", "content"):
         assert forbidden not in lowered
+
+
+def test_upload_request_ceiling_rejects_oversized_bodies_with_413():
+    store = RouteStore()
+    client = _client(store=store)
+    # Declared-length path: a body crossing the route ceiling is rejected 413
+    # before any parsing or store call, even though it is not valid JSON.
+    raw = b"x" * (MAX_TEMPLATE_SOURCE_REQUEST_BYTES + 1)
+    response = client.post(
+        "/api/b66/template-sources",
+        content=raw,
+        headers={
+            "Content-Type": "application/json",
+            "Content-Length": str(len(raw)),
+        },
+    )
+    assert response.status_code == 413
+    assert response.json()["error"]["code"] == "template_source_request_too_large"
+    assert store.upload_calls == []
+
+
+def test_upload_base64_expansion_beyond_ceiling_rejected_with_413():
+    store = RouteStore()
+    client = _client(store=store)
+    # A PDF whose decoded size is inside the 10 MiB file limit minus headroom
+    # but whose base64 JSON envelope crosses the route ceiling is rejected 413
+    # during reception, before the payload is decoded.
+    oversized = _upload_payload(
+        media_type="application/pdf",
+        filename="huge.pdf",
+        body=b"%PDF-1.4\n" + b"x" * (MAX_B66_TEMPLATE_SOURCE_BYTES + 16384) + b"\n%%EOF\n",
+    )
+    raw = json.dumps(oversized).encode("utf-8")
+    assert len(raw) > MAX_TEMPLATE_SOURCE_REQUEST_BYTES
+    response = client.post(
+        "/api/b66/template-sources",
+        content=raw,
+        headers={"Content-Type": "application/json"},
+    )
+    assert response.status_code == 413
+    assert response.json()["error"]["code"] == "template_source_request_too_large"
+    assert store.upload_calls == []
+
+
+def test_upload_ceiling_boundary_value_still_passes_validation():
+    # A body just under the ceiling but with an invalid payload type still
+    # reaches JSON validation (400 media type), proving the ceiling does not
+    # swallow legitimate requests.
+    store = RouteStore()
+    client = _client(store=store)
+    boundary = _upload_payload(media_type="application/zip")
+    raw = json.dumps(boundary).encode("utf-8")
+    assert len(raw) < MAX_TEMPLATE_SOURCE_REQUEST_BYTES
+    response = client.post(
+        "/api/b66/template-sources",
+        content=raw,
+        headers={"Content-Type": "application/json"},
+    )
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "template_source_media_type_invalid"
+
+
+def test_upload_rejects_malformed_json_with_400():
+    store = RouteStore()
+    client = _client(store=store)
+    response = client.post(
+        "/api/b66/template-sources",
+        content=b"{definitely-not-json",
+        headers={"Content-Type": "application/json"},
+    )
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "template_source_body_invalid"
+    assert store.upload_calls == []
+
+
+def test_bounded_reader_rejects_missing_content_length_incrementally():
+    # Direct unit coverage of the reader contract for a chunked/missing-length
+    # stream that crosses the ceiling mid-reception.
+    request = MagicMock()
+    request.headers = {}  # no content-length: incremental counting applies
+
+    async def stream():
+        yield b"x" * 1024
+        yield b"y" * MAX_TEMPLATE_SOURCE_REQUEST_BYTES
+
+    request.stream = stream
+    with pytest.raises(RequestBodyTooLarge):
+        asyncio.run(
+            read_bounded_request_body(request, max_bytes=MAX_TEMPLATE_SOURCE_REQUEST_BYTES)
+        )
+
+
+def test_bounded_reader_rejects_declared_content_length_over_limit():
+    request = MagicMock()
+    request.headers = {"content-length": str(MAX_TEMPLATE_SOURCE_REQUEST_BYTES + 1)}
+
+    async def stream():
+        yield b"never-read"  # pragma: no cover - must not be consumed
+
+    request.stream = stream
+    with pytest.raises(RequestBodyTooLarge):
+        asyncio.run(
+            read_bounded_request_body(request, max_bytes=MAX_TEMPLATE_SOURCE_REQUEST_BYTES)
+        )
+
+
+def test_bounded_reader_allows_body_at_exact_ceiling():
+    request = MagicMock()
+    request.headers = {"content-length": str(MAX_TEMPLATE_SOURCE_REQUEST_BYTES)}
+    payload = b"z" * MAX_TEMPLATE_SOURCE_REQUEST_BYTES
+
+    async def stream():
+        yield payload
+
+    request.stream = stream
+    result = asyncio.run(
+        read_bounded_request_body(request, max_bytes=MAX_TEMPLATE_SOURCE_REQUEST_BYTES)
+    )
+    assert result == payload
 
 
 def test_routes_are_registered_and_composition_fails_closed():

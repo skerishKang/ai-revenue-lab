@@ -13,6 +13,24 @@ There is deliberately no compile/approve route in this slice.
 Sensitive-field application-level encryption (#3884 threat model) is NOT part
 of this slice; transport TLS + R2 at-rest provider encryption apply, and the
 custody policy (docs/products/b66/TEMPLATE_CUSTODY_POLICY.md) governs.
+
+Operator orphan recovery (bounded procedure, no customer data involved)
+---------------------------------------------------------------------
+When an upload fails after the R2 write and the cleanup delete also fails,
+``B66TemplateSourceOrphanError`` is raised carrying only the server-minted
+R2 object key. Recovery is a trusted server-side action, never a browser
+route:
+
+1. Capture the orphan object key from the trusted operator surface that
+   handles ``B66TemplateSourceOrphanError`` (it is under the server-minted
+   ``b66/template-source/`` prefix and contains no customer identifiers).
+2. Verify the key has no row in the ``b66_template_source`` D1 table (object
+   keys are UNIQUE there, so an orphan is exactly a key without a row).
+3. Delete the object from the private bucket by that exact key, or leave it
+   for a scheduled private-bucket lifecycle rule scoped to the same prefix.
+4. Never paste the key, filename, or bytes into chat channels, issues, or
+   general application logs; customer content must not leave the custody
+   boundary during recovery.
 """
 
 from __future__ import annotations
@@ -59,6 +77,21 @@ _OBJECT_KEY_PREFIX = "b66/template-source/"
 
 class B66TemplateSourceError(RuntimeError):
     pass
+
+
+class B66TemplateSourceOrphanError(B66TemplateSourceError):
+    """A private R2 object could not be cleaned up after a failed custody write.
+
+    Deliberately distinct from the plain storage error: the upload failed AND a
+    customer payload object may remain in the private bucket. Callers must not
+    treat this as a normal client-facing failure; it marks an operator-recovery
+    situation. The exception carries only the server-minted object key — never
+    customer content — and must never be echoed to browsers or general logs.
+    """
+
+    def __init__(self, object_key: str) -> None:
+        super().__init__("template source storage failed and cleanup failed")
+        self.object_key = object_key
 
 
 @dataclass(frozen=True, slots=True)
@@ -365,6 +398,20 @@ async def _read_r2_bytes(obj: Any) -> bytes:
     return bytes(getattr(obj, "body", obj))
 
 
+def _r2_object_size(obj: Any) -> int | None:
+    """Best-effort pre-read size from the R2 object metadata, if exposed."""
+    for attr in ("size", "byteLength"):
+        value = getattr(obj, attr, None)
+        if isinstance(value, int) and not isinstance(value, bool):
+            return value
+    props = getattr(obj, "properties", None)
+    if isinstance(props, dict):
+        value = props.get("size")
+        if isinstance(value, int) and not isinstance(value, bool):
+            return value
+    return None
+
+
 class B66TemplateSourceStore:
     def __init__(self, metadata_store: D1B66TemplateSourceMetadataStore, r2_bucket: Any) -> None:
         if metadata_store is None:
@@ -415,12 +462,21 @@ class B66TemplateSourceStore:
                 await result
             await self.metadata_store.insert(metadata)
         except Exception as exc:
+            # No-orphan policy: if the metadata write failed, the R2 object must
+            # go. A failed cleanup is never treated as success — it raises the
+            # orphan subtype so a trusted operator surface can identify and
+            # reclaim the leftover object. The diagnostics carry only the
+            # server-minted object key; never customer content, owner ids, or
+            # browser-facing messages.
+            cleanup_failed = False
             try:
                 cleanup = self.r2_bucket.delete(object_key)
                 if inspect.isawaitable(cleanup):
                     await cleanup
             except Exception:
-                pass
+                cleanup_failed = True
+            if cleanup_failed:
+                raise B66TemplateSourceOrphanError(object_key) from exc
             raise B66TemplateSourceError("template source storage failed") from exc
         return metadata
 
@@ -447,7 +503,20 @@ class B66TemplateSourceStore:
                 obj = await obj
             if obj is None:
                 return None
+            # Pre-read size guard: refuse before materializing when the stored
+            # object reports a size that disagrees with the D1-recorded
+            # byte_length or exceeds the custody ceiling. The real integrity
+            # authority stays the SHA-256 check below; this only prevents
+            # reading an oversized object into memory.
+            reported = _r2_object_size(obj)
+            if reported is not None and (
+                reported != metadata.byte_length
+                or reported > MAX_B66_TEMPLATE_SOURCE_BYTES
+            ):
+                raise B66TemplateSourceError("template source integrity check failed")
             payload = await _read_r2_bytes(obj)
+        except B66TemplateSourceError:
+            raise
         except Exception as exc:
             raise B66TemplateSourceError("template source read failed") from exc
         if (
@@ -462,6 +531,7 @@ class B66TemplateSourceStore:
 __all__ = [
     "B66TemplateSourceError",
     "B66TemplateSourceMetadata",
+    "B66TemplateSourceOrphanError",
     "B66TemplateSourceStore",
     "D1B66TemplateSourceMetadataStore",
     "MAX_B66_TEMPLATE_SOURCE_BYTES",
