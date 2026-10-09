@@ -51,6 +51,7 @@ REFERENCE_DIR = (
     / "reference"
     / "business-66-padiem-quote-v1"
 )
+RENDERER_DIR = Path(__file__).resolve().parents[3] / "apps" / "b66-pdf-renderer"
 
 
 def _items(count: int) -> list[dict[str, object]]:
@@ -107,6 +108,23 @@ def test_js_cutoffs_read_from_owning_sources():
     assert "var MAX_ITEM_ROWS = Renderer.CGI_MAX_ITEM_ROWS;" in bundle
     assert EXPECTED_BUNDLE_SUPPORTED_SCOPE_MAX_ITEM_ROWS == 100
 
+
+
+def test_standalone_bundle_scope_pins_owner_file_not_inventory():
+    text = (RENDERER_DIR / "bundle.py").read_text(encoding="utf-8")
+    # apps/b66-pdf-renderer/bundle.py:180-181 owns the real bundle rule.
+    # Extract its literal upper bound so a future owner edit fails this test.
+    match = re.search(
+        r'or type\(scope\.get\("max_item_rows"\)\) is not int\s*\n'
+        r'\s+or not 1 <= scope\["max_item_rows"\] <= (\d+)',
+        text,
+    )
+    assert match is not None, "bundle.py owner rule not found at lines 180-181"
+    assert int(match.group(1)) == EXPECTED_BUNDLE_SUPPORTED_SCOPE_MAX_ITEM_ROWS
+    assert EXPECTED_BUNDLE_SUPPORTED_SCOPE_MAX_ITEM_ROWS == 100
+    assert EXPECTED_BUNDLE_SUPPORTED_SCOPE_MAX_ITEM_ROWS <= (
+        FULL_PIPELINE_ELIGIBLE_MAX_ITEMS
+    )
 
 
 def test_probe_matrix_marks_101_as_history_only_not_full_pipeline():

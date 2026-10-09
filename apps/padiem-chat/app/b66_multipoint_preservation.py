@@ -17,10 +17,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-# Values below are expected current-source truth. Tests pin every Python
-# value against its owning module; JS values are pinned by tests that read
-# the exact owning JS sources. Never edit production behavior by changing
-# this inventory: change the owning source and let tests expose the drift.
+# Values below are expected current-source truth. Python values owned by
+# apps/padiem-chat are pinned by tests against their owning modules; the
+# standalone apps/b66-pdf-renderer bundle rule is pinned by a test that
+# reads that exact file. JS values are pinned by tests that read the exact
+# owning JS sources. Never edit production behavior by changing this
+# inventory: change the owning source and let tests expose the drift.
 EXPECTED_EXTRACTION_MAX_ITEMS = 100
 EXPECTED_SAVED_SKILL_SEMANTIC_MAX_ITEMS = 100
 EXPECTED_SERVER_CONVERSATION_MAX_ITEMS = 100
