@@ -1,0 +1,329 @@
+name: B54 Owner D1 Protected Connection
+
+# Exact-owner-release only. Merge MUST NOT dispatch. Existing code-deploy
+# gates remain authoritative and untouched. One Worker/one dispatch only.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        required: true
+        options: [apply, rollback]
+      worker:
+        type: choice
+        required: true
+        options: [engine, chat]
+      target_sha:
+        description: Exact main SHA
+        type: string
+        required: true
+      expected_active_version:
+        description: Exact currently served Worker version
+        type: string
+        required: true
+      anchor_run_id:
+        description: Rollback only - successful prewrite anchor run ID
+        type: string
+        required: false
+      confirmation:
+        description: Owner-authorized one-time operation phrase
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: b54-owner-d1-protected-single-release
+  cancel-in-progress: false
+
+env:
+  OWNER_WORKER: ${{ inputs.worker == 'engine' && 'padiem-ai-engine' || 'padiem-chat' }}
+  PEER_WORKER: ${{ inputs.worker == 'engine' && 'padiem-chat' || 'padiem-ai-engine' }}
+
+jobs:
+  apply:
+    if: ${{ inputs.mode == 'apply' && inputs.confirmation == 'CONNECT_OWNER_P01_D1_FROM_EXACT_MAIN' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Require exact main, account, and owner release intent
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${{ inputs.target_sha }}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${{ inputs.target_sha }}"
+          test "${CLOUDFLARE_ACCOUNT_ID}" = '9be14bb7b8974e65d0afba647ab16932'
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          test -z "${{ inputs.anchor_run_id }}"
+          python3 .github/scripts/cloudflare_served_version_cli.py validate-version-id \
+            --version-id "${{ inputs.expected_active_version }}"
+          echo 'OWNER_D1_EXACT_MAIN_AND_OWNER_AUTH=PASS'
+
+      - name: GET-only snapshot of D1, served Worker and peer
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          account="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}"
+          for entry in owner:padiem-browser-owner-p01 chat:padiem-chat-db engine:padiem-engine; do
+            label="${entry%%:*}"
+            db="${entry#*:}"
+            curl -fsS --max-time 30 "${auth[@]}" --get --data-urlencode "name=${db}" \
+              "${account}/d1/database" -o "${RUNNER_TEMP}/d1-${label}.json"
+          done
+          api="${account}/workers/scripts/${OWNER_WORKER}"
+          peer="${account}/workers/scripts/${PEER_WORKER}"
+          curl -fsS --max-time 30 "${auth[@]}" "${api}/deployments" \
+            -o "${RUNNER_TEMP}/before.json"
+          pre="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active \
+            --deployments "${RUNNER_TEMP}/before.json")"
+          test "${pre}" = "${{ inputs.expected_active_version }}"
+          curl -fsS --max-time 30 "${auth[@]}" "${api}/versions/${pre}" \
+            -o "${RUNNER_TEMP}/version-pre.json"
+          curl -fsS --max-time 30 "${auth[@]}" "${api}/settings" \
+            -o "${RUNNER_TEMP}/settings-pre.json"
+          curl -fsS --max-time 30 "${auth[@]}" "${api}/versions?page=1&per_page=1" \
+            -o "${RUNNER_TEMP}/latest.json"
+          curl -fsS --max-time 30 "${auth[@]}" "${peer}/deployments" \
+            -o "${RUNNER_TEMP}/peer-deployments.json"
+          peer_version="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active \
+            --deployments "${RUNNER_TEMP}/peer-deployments.json")"
+          curl -fsS --max-time 30 "${auth[@]}" "${peer}/versions/${peer_version}" \
+            -o "${RUNNER_TEMP}/peer-version.json"
+          curl -fsS --max-time 30 "${auth[@]}" "${api}/deployments" \
+            -o "${RUNNER_TEMP}/after.json"
+          echo "OWNER_D1_PRE_VERSION=${pre}" >> "${GITHUB_ENV}"
+          echo 'OWNER_D1_SOURCE_SNAPSHOT=GET_ONLY'
+
+      - name: Build pinned inherit PATCH candidate and fresh rollback anchor
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 .github/scripts/b62_owner_d1_release_transaction.py prepare \
+            --worker "${{ inputs.worker }}" --main-sha "${{ inputs.target_sha }}" \
+            --d1-owner "${RUNNER_TEMP}/d1-owner.json" \
+            --d1-chat "${RUNNER_TEMP}/d1-chat.json" \
+            --d1-engine "${RUNNER_TEMP}/d1-engine.json" \
+            --before "${RUNNER_TEMP}/before.json" --after "${RUNNER_TEMP}/after.json" \
+            --version "${RUNNER_TEMP}/version-pre.json" \
+            --settings "${RUNNER_TEMP}/settings-pre.json" \
+            --latest "${RUNNER_TEMP}/latest.json" \
+            --peer-deployments "${RUNNER_TEMP}/peer-deployments.json" \
+            --peer-version "${RUNNER_TEMP}/peer-version.json" \
+            --candidate "${RUNNER_TEMP}/candidate.json" \
+            --anchor "${RUNNER_TEMP}/owner-prewrite-rollback-anchor.json"
+
+      # HARD precondition: the version reference must survive runner failure.
+      - name: Persist rollback anchor outside runner BEFORE Cloudflare mutation
+        uses: actions/upload-artifact@v4
+        with:
+          name: owner-d1-rollback-anchor-${{ github.run_id }}
+          path: ${{ runner.temp }}/owner-prewrite-rollback-anchor.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Reconfirm anchored served and latest versions immediately before mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${OWNER_WORKER}"
+          curl -fsS --max-time 30 "${auth[@]}" "${base}/deployments" \
+            -o "${RUNNER_TEMP}/at-write-deployments.json"
+          now="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active \
+            --deployments "${RUNNER_TEMP}/at-write-deployments.json")"
+          test "${now}" = "${OWNER_D1_PRE_VERSION}"
+          curl -fsS --max-time 30 "${auth[@]}" "${base}/versions?page=1&per_page=1" \
+            -o "${RUNNER_TEMP}/at-write-latest.json"
+          jq -e --arg id "${OWNER_D1_PRE_VERSION}" \
+            '.success == true and .result.items[0].id == $id' \
+            "${RUNNER_TEMP}/at-write-latest.json" >/dev/null
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${{ inputs.target_sha }}"
+          echo 'OWNER_D1_ANCHOR_PUBLISHED_AND_BASE_STABLE=PASS'
+
+      - name: PATCH existing Worker settings ONE time
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'OWNER_PATCH_ATTEMPTED=YES' >> "${GITHUB_ENV}"
+          echo 'OWNER_D1_SINGLE_PATCH_ATTEMPT=YES'
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${OWNER_WORKER}/settings"
+          set +e
+          code="$(curl -sS --max-time 45 -w '%{http_code}' \
+            -o "${RUNNER_TEMP}/patch-result.json" -X PATCH \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -F "settings=@${RUNNER_TEMP}/candidate.json;type=application/json" \
+            "${api}")"
+          exit_code=$?
+          set -e
+          if [ "${exit_code}" -ne 0 ] || [ "${code}" != "200" ]; then
+            echo 'OWNER_D1_PATCH_OUTCOME=UNVERIFIED_OR_REJECTED;NO_RETRY=YES'
+            exit 1
+          fi
+          jq -e '.success == true' "${RUNNER_TEMP}/patch-result.json" >/dev/null
+          echo 'OWNER_D1_PATCH_RESPONSE=ACCEPTED_NOT_YET_SERVED_VERIFIED'
+
+      - name: Verify new 100-percent served version and ALL existing resources
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          base="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${OWNER_WORKER}"
+          fresh=''
+          for n in $(seq 1 15); do
+            curl -fsS --max-time 30 "${auth[@]}" "${base}/deployments" \
+              -o "${RUNNER_TEMP}/post-deployments.json"
+            value="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active \
+              --deployments "${RUNNER_TEMP}/post-deployments.json")"
+            if [ "${value}" != "${OWNER_D1_PRE_VERSION}" ]; then fresh="${value}"; break; fi
+            sleep 3
+          done
+          test -n "${fresh}" || { echo 'OWNER_D1_POST_VERSION_NOT_SERVING=STOP'; exit 1; }
+          curl -fsS --max-time 30 "${auth[@]}" "${base}/versions/${fresh}" \
+            -o "${RUNNER_TEMP}/version-post.json"
+          curl -fsS --max-time 30 "${auth[@]}" "${base}/settings" \
+            -o "${RUNNER_TEMP}/settings-post.json"
+          python3 .github/scripts/b62_owner_d1_release_transaction.py verify \
+            --worker "${{ inputs.worker }}" \
+            --pre "${RUNNER_TEMP}/version-pre.json" \
+            --post "${RUNNER_TEMP}/version-post.json" \
+            --deployments "${RUNNER_TEMP}/post-deployments.json" \
+            --settings "${RUNNER_TEMP}/settings-post.json" \
+            --d1-owner "${RUNNER_TEMP}/d1-owner.json" \
+            --d1-chat "${RUNNER_TEMP}/d1-chat.json" \
+            --d1-engine "${RUNNER_TEMP}/d1-engine.json" \
+            --anchor "${RUNNER_TEMP}/owner-prewrite-rollback-anchor.json"
+          if [ "${OWNER_WORKER}" = 'padiem-chat' ]; then
+            health="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 \
+              https://chat.padiem.net/health)"
+            test "${health}" = '200'
+          fi
+          echo 'OWNER_D1_FULL_SERVED_PARITY=PASS'
+          echo 'OWNER_D1_ONE_WORKER_CONNECTED=VERIFIED'
+
+      - name: Fail closed on ambiguous or failed mutation
+        if: failure()
+        shell: bash
+        run: |
+          echo "PATCH_ATTEMPTED=${OWNER_PATCH_ATTEMPTED:-NO}"
+          echo 'NO_AUTOMATIC_PATCH_RETRY=YES'
+          echo 'AUTOMATIC_ROLLBACK_ON_AMBIGUOUS_CONCURRENT_STATE=NO'
+          echo 'INSPECT_STATE_THEN_USE_EXPLICIT_ANCHORED_ROLLBACK=YES'
+          echo 'ANCHOR_SOURCE_RUN_ID=${{ github.run_id }}'
+
+  rollback:
+    if: ${{ inputs.mode == 'rollback' && inputs.confirmation == 'ROLLBACK_OWNER_P01_D1_TO_ANCHORED_VERSION' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
+
+      - name: Verify exact rollback authority before requesting old artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "${{ inputs.target_sha }}"
+          git fetch --no-tags --depth=1 origin main
+          test "$(git rev-parse origin/main)" = "${{ inputs.target_sha }}"
+          test "${CLOUDFLARE_ACCOUNT_ID}" = '9be14bb7b8974e65d0afba647ab16932'
+          test -n "${CLOUDFLARE_API_TOKEN}"
+          [[ "${{ inputs.anchor_run_id }}" =~ ^[0-9]+$ ]]
+          python3 .github/scripts/cloudflare_served_version_cli.py validate-version-id \
+            --version-id "${{ inputs.expected_active_version }}"
+          echo 'OWNER_D1_ROLLBACK_OWNER_AUTH=PASS'
+
+      - name: Download original pre-mutation external rollback anchor
+        uses: actions/download-artifact@v4
+        with:
+          name: owner-d1-rollback-anchor-${{ inputs.anchor_run_id }}
+          run-id: ${{ inputs.anchor_run_id }}
+          repository: ${{ github.repository }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ runner.temp }}/rollback-anchor
+
+      - name: Verify rollback target equals original externally pinned Worker version
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${OWNER_WORKER}"
+          anchor="${RUNNER_TEMP}/rollback-anchor/owner-prewrite-rollback-anchor.json"
+          test -s "${anchor}"
+          target="$(jq -er '.rollback_version_id' "${anchor}")"
+          python3 .github/scripts/cloudflare_served_version_cli.py validate-version-id --version-id "${target}"
+          curl -fsS --max-time 30 "${auth[@]}" "${api}/versions/${target}" \
+            -o "${RUNNER_TEMP}/rollback-target.json"
+          python3 .github/scripts/b62_owner_d1_release_transaction.py verify-rollback-target \
+            --anchor "${anchor}" --version "${RUNNER_TEMP}/rollback-target.json" \
+            --worker "${{ inputs.worker }}"
+          curl -fsS --max-time 30 "${auth[@]}" "${api}/deployments" \
+            -o "${RUNNER_TEMP}/rollback-served-before.json"
+          served="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active \
+            --deployments "${RUNNER_TEMP}/rollback-served-before.json")"
+          test "${served}" = "${{ inputs.expected_active_version }}"
+          test "${served}" != "${target}"
+          echo "OWNER_D1_ROLLBACK_TARGET=${target}" >> "${GITHUB_ENV}"
+          echo 'OWNER_D1_ORIGINAL_VERSION_ANCHOR=PASS'
+
+      - name: Roll back to exact pinned original with one deployment POST
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H 'Content-Type: application/json')
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${OWNER_WORKER}"
+          curl -fsS --max-time 30 "${auth[@]}" "${api}/deployments" \
+            -o "${RUNNER_TEMP}/rollback-recheck.json"
+          current="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active \
+            --deployments "${RUNNER_TEMP}/rollback-recheck.json")"
+          test "${current}" = "${{ inputs.expected_active_version }}"
+          echo 'OWNER_D1_ROLLBACK_ATTEMPTED=YES'
+          curl -fsS --max-time 45 "${auth[@]}" -X POST "${api}/deployments" \
+            --data "{\"version_id\":\"${OWNER_D1_ROLLBACK_TARGET}\",\"percentage\":100}" \
+            -o "${RUNNER_TEMP}/rollback-result.json"
+          jq -e '.success == true' "${RUNNER_TEMP}/rollback-result.json" >/dev/null
+
+      - name: Verify 100-percent restored served version and Chat health
+        shell: bash
+        run: |
+          set -euo pipefail
+          auth=(-H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}")
+          api="https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${OWNER_WORKER}"
+          seen=''
+          for n in $(seq 1 15); do
+            curl -fsS --max-time 30 "${auth[@]}" "${api}/deployments" -o "${RUNNER_TEMP}/rollback-after.json"
+            seen="$(python3 .github/scripts/cloudflare_served_version_cli.py resolve-active \
+              --deployments "${RUNNER_TEMP}/rollback-after.json")"
+            if [ "${seen}" = "${OWNER_D1_ROLLBACK_TARGET}" ]; then break; fi
+            sleep 3
+          done
+          test "${seen}" = "${OWNER_D1_ROLLBACK_TARGET}"
+          if [ "${OWNER_WORKER}" = 'padiem-chat' ]; then
+            code="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 15 https://chat.padiem.net/health)"
+            test "${code}" = '200'
+          fi
+          echo 'OWNER_D1_EXACT_VERSION_ROLLBACK=PASS'
