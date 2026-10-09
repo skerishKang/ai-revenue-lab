@@ -29,6 +29,91 @@ class FinalHandoffSmokeContractTests(unittest.TestCase):
         self.assertEqual(module.RETRY, 0)
         self.assertEqual(module.FALLBACK, 0)
 
+    def test_manual_quote_model_is_selected_only_when_exactly_ready(self):
+        class Select:
+            def __init__(self):
+                self.selected = ""
+            def select_option(self, *, value):
+                self.selected = value
+            def input_value(self):
+                return self.selected
+
+        class Page:
+            def __init__(self):
+                self.select = Select()
+                self.requested = []
+            def locator(self, key):
+                assert key == "#padiemQuoteModelSelect"
+                return self.select
+            def wait_for_function(self, script, *, arg, timeout):
+                assert "select.disabled" in script
+                assert "option.value === expected" in script
+                assert timeout == 15000
+                self.requested.append(arg)
+
+        page = Page()
+        with redirect_stdout(io.StringIO()) as captured:
+            module._select_customer_quote_model(
+                page, "google/gemini-3.5-flash-lite"
+            )
+        self.assertEqual(page.requested, ["google/gemini-3.5-flash-lite"])
+        self.assertEqual(page.select.selected, "google/gemini-3.5-flash-lite")
+        self.assertIn("B66_EXPLICIT_MODEL_SELECTED=PASS", captured.getvalue())
+        self.assertNotIn("google/gemini", captured.getvalue(), "no model ID output")
+
+    def test_missing_or_legacy_automatic_model_fails_before_browser_dispatch(self):
+        class ForbiddenPage:
+            def locator(self, *_):
+                raise AssertionError("no browser calls before selecting exact ID")
+        for identifier in ("", "b14/auto", "padiem-profile/plus", "bad id"):
+            with self.subTest(identifier=identifier):
+                with self.assertRaises(module.SmokeFailure):
+                    module._select_customer_quote_model(ForbiddenPage(), identifier)
+
+    def test_quote_model_dropdown_unavailable_fails_closed(self):
+        class UnavailablePage:
+            def locator(self, _):
+                return object()
+            def wait_for_function(self, *_args, **_kwargs):
+                raise RuntimeError("not selectable")
+        with self.assertRaisesRegex(module.SmokeFailure, "selected_quote_model_not_ready"):
+            module._select_customer_quote_model(
+                UnavailablePage(), "google/gemini-3.5-flash-lite"
+            )
+
+    def test_final_handoff_requires_model_completion_not_fallback(self):
+        class Response:
+            def __init__(self, origin):
+                self.headers = {} if origin is None else {"x-b66-result-origin": origin}
+        module._require_b14_completion(Response("registered_model_completion"), "complete")
+        for origin in (None, "", "deterministic_fallback", "user_selected"):
+            with self.subTest(origin=origin):
+                with self.assertRaisesRegex(
+                    module.SmokeFailure, "complete_not_registered_model_completion"
+                ):
+                    module._require_b14_completion(Response(origin), "complete")
+        script = SCRIPT.read_text(encoding="utf-8")
+        self.assertIn('_require_b14_completion(response, "complete")', script)
+        self.assertIn('_require_b14_completion(first, "partial")', script)
+        self.assertIn('_require_b14_completion(second, "followup")', script)
+
+    def test_final_handoff_entry_never_selects_model_implicitly(self):
+        script = SCRIPT.read_text(encoding="utf-8")
+        workflow = (
+            Path(__file__).parents[1] / "workflows"
+            / "b66-cgi-final-handoff-smoke.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn('os.getenv("B66_CGI_SELECTED_MODEL_ID", "")', script)
+        self.assertIn("_select_customer_quote_model(page, selected_model_id)", script)
+        self.assertIn("def _complete_free_form(page, counters: Counters, selected_model_id: str)", script)
+        self.assertIn("def _partial_followup(page, counters: Counters, selected_model_id: str)", script)
+        self.assertIn("_complete_free_form(page, counters, selected_model_id)", script)
+        self.assertIn("_partial_followup(page, counters, selected_model_id)", script)
+        self.assertEqual(script.count("_reset_browser_local_quote_state(page)\n    _select_customer_quote_model(page, selected_model_id)"), 2)
+        self.assertIn("selected_model_id:", workflow)
+        self.assertIn("B66_CGI_SELECTED_MODEL_ID:", workflow)
+        self.assertNotIn("DEFAULT_MODEL_ID = ", script)
+
     def test_exact_acceptance_inputs(self):
         self.assertEqual(
             module.COMPLETE_TEXT,

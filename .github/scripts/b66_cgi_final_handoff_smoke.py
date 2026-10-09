@@ -631,6 +631,51 @@ def _login(page, username: str, password: str) -> None:
     print("SMOKE_STAGE=LOGIN_READY")
 
 
+def _require_b14_completion(response, stage: str) -> None:
+    """HTTP 200 is not sufficient: deterministic rescue is not model E2E."""
+    if response.headers.get("x-b66-result-origin") != "registered_model_completion":
+        _fail(stage + "_not_registered_model_completion")
+
+
+_B66_EXACT_MODEL_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$")
+
+
+def _select_customer_quote_model(page, selected_model_id: str) -> None:
+    """Explicitly select ONE operator-authorized, served B14 model.
+
+    Never invent a default or infer readiness from local/source B14 registry.
+    No network interpret call occurs until the currently served customer
+    dropdown contains this exact selected ID and is enabled.
+    """
+    if (
+        not isinstance(selected_model_id, str)
+        or not _B66_EXACT_MODEL_RE.fullmatch(selected_model_id)
+        or selected_model_id == "b14/auto"
+        or selected_model_id.startswith("padiem-profile/")
+    ):
+        _fail("explicit_quote_model_required")
+    try:
+        selector = page.locator("#padiemQuoteModelSelect")
+        page.wait_for_function(
+            """(expected) => {
+              const select = document.querySelector('#padiemQuoteModelSelect');
+              return !!select && !select.disabled &&
+                Array.from(select.options).some(option => option.value === expected);
+            }""",
+            arg=selected_model_id,
+            timeout=15000,
+        )
+        selector.select_option(value=selected_model_id)
+        if selector.input_value() != selected_model_id:
+            _fail("quote_model_selection_mismatch")
+    except SmokeFailure:
+        raise
+    except Exception as exc:
+        raise SmokeFailure("selected_quote_model_not_ready") from exc
+    print("B66_EXPLICIT_MODEL_SELECTED=PASS")
+    print("B66_MODEL_AUTO_SELECTION=0")
+
+
 def _guided(page, counters: Counters) -> None:
     before = counters.interpret_posts
     print("SMOKE_STAGE=GUIDED_START", flush=True)
@@ -677,8 +722,9 @@ def _guided(page, counters: Counters) -> None:
     print("GUIDED_PRINT_OR_PDF=PASS")
 
 
-def _complete_free_form(page, counters: Counters) -> None:
+def _complete_free_form(page, counters: Counters, selected_model_id: str) -> None:
     _reset_browser_local_quote_state(page)
+    _select_customer_quote_model(page, selected_model_id)
     page.locator("#freeChatStarter").click()
 
     before = counters.interpret_posts
@@ -694,6 +740,7 @@ def _complete_free_form(page, counters: Counters) -> None:
     if response.status != 200:
         _print_bounded_b66_interpret_failure(response)
         _fail("complete_interpret_http_" + str(response.status))
+    _require_b14_completion(response, "complete")
 
     page.wait_for_function(
         """() => {
@@ -723,8 +770,9 @@ def _complete_free_form(page, counters: Counters) -> None:
     print("COMPLETE_PRINT_OR_PDF=PASS")
 
 
-def _partial_followup(page, counters: Counters) -> None:
+def _partial_followup(page, counters: Counters, selected_model_id: str) -> None:
     _reset_browser_local_quote_state(page)
+    _select_customer_quote_model(page, selected_model_id)
     page.locator("#freeChatStarter").click()
 
     before = counters.interpret_posts
@@ -740,6 +788,7 @@ def _partial_followup(page, counters: Counters) -> None:
     if first.status != 200:
         _print_bounded_b66_interpret_failure(first)
         _fail("partial_interpret_http_" + str(first.status))
+    _require_b14_completion(first, "partial")
 
     page.wait_for_function(
         """() => {
@@ -774,6 +823,7 @@ def _partial_followup(page, counters: Counters) -> None:
     if second.status != 200:
         _print_bounded_b66_interpret_failure(second)
         _fail("followup_interpret_http_" + str(second.status))
+    _require_b14_completion(second, "followup")
 
     page.wait_for_function(
         """() => {
@@ -817,7 +867,7 @@ def _partial_followup(page, counters: Counters) -> None:
     print("FOLLOWUP_PRINT_OR_PDF=PASS")
 
 
-def run_live(username: str, password: str) -> int:
+def run_live(username: str, password: str, selected_model_id: str) -> int:
     if not username or not password:
         print("B66_FINAL_HANDOFF_SMOKE=FAIL_CREDENTIAL_UNAVAILABLE")
         return 2
@@ -857,8 +907,8 @@ def run_live(username: str, password: str) -> int:
             print("RUNTIME_READINESS=PASS")
 
             _guided(page, counters)
-            _complete_free_form(page, counters)
-            _partial_followup(page, counters)
+            _complete_free_form(page, counters, selected_model_id)
+            _partial_followup(page, counters, selected_model_id)
 
             if counters.interpret_posts != MAX_INTERPRET_POSTS:
                 _fail("final_interpret_budget_mismatch")
@@ -1308,6 +1358,7 @@ def main(argv: list[str] | None = None) -> int:
     return run_live(
         os.getenv("B66_CGI_ALPHA_USERNAME", ""),
         os.getenv("B66_CGI_ALPHA_PASSWORD", ""),
+        os.getenv("B66_CGI_SELECTED_MODEL_ID", ""),
     )
 
 
