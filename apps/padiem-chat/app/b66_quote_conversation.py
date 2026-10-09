@@ -129,6 +129,10 @@ class B66QuoteConversationProjection:
     missing: tuple[str, ...]
     project_name: str | None = None
     detail_groups: tuple[dict[str, Any], ...] = ()
+    # Server-owned provenance only. Never read from or serialize to quote facts.
+    # "registered_model_completion" proves a validated B14 completion reached
+    # this interpreter, NOT by itself a Google/provider-side POST receipt.
+    result_origin: str = "unattributed"
 
     def safe_dict(self) -> dict[str, Any]:
         return {
@@ -627,6 +631,7 @@ class B66QuoteConversationInterpreter:
             return replace(
                 projection,
                 missing=_server_missing_fields(projection, skill),
+                result_origin="deterministic_fallback",
             )
         if not isinstance(result, dict):
             raise B66QuoteConversationError("invalid_model_output")
@@ -637,4 +642,5 @@ class B66QuoteConversationInterpreter:
         return replace(
             projection,
             missing=_server_missing_fields(projection, skill),
+            result_origin="registered_model_completion",
         )

@@ -188,9 +188,12 @@ async function handlePadiemBridge(request, url, env) {
     "X-B66-Model-Selection-Status",
     "Retry-After",
     "X-B66-Interpret-Failure-Stage",
-    "X-B66-Interpret-Exception-Family"
+    "X-B66-Interpret-Exception-Family",
+    "X-B66-Result-Origin"
   ]) {
     const value = upstream.headers.get(name);
+    if (name === "X-B66-Result-Origin" &&
+        !["registered_model_completion", "deterministic_fallback"].includes(value)) continue;
     if (value) responseHeaders.set(name, value);
   }
   relaySetCookies(upstream.headers, responseHeaders);
