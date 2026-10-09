@@ -1790,6 +1790,10 @@
     getDraft: () => cloneDraft(draft),
     replaceDraft,
     certifiedPdfBytes: certifiedPdfBytesForStorage,
+    /* #3871: 불러오기가 작성 중인 견적을 덮어쓸 수 있는지 판단하는 근거. */
+    hasMeaningfulDraft: () => Boolean(History && typeof History.isMeaningfulDraft === "function"
+      ? History.isMeaningfulDraft(draft)
+      : false),
     /* #3871: 불러온 견적의 템플릿 권위를 현재 인증된 승인 Skill 목록으로 확인한다.
        목록에 없는 Skill 을 다른 양식으로 자동 대체하지 않는다. */
     listApprovedSkills: () => {

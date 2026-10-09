@@ -100,6 +100,8 @@ totals             = null            (저장된 합계는 쓰지도 읽지도 �
 | 다운로드 불가 | `drive_file_not_downloadable` |
 | 휴지통 / 없음 / 권한 없음 | `drive_file_trashed`, `drive_file_not_found`, `drive_file_access_denied` |
 | 로그아웃·미연결 | `drive_not_connected` |
+| 연결 진행 중 중복 시작 | `drive_connect_in_progress` |
+| 팝업 대기 중 계정 변경으로 폐기된 연결 | `drive_auth_superseded` |
 | 토큰 만료 / 401 | `drive_token_expired` |
 | 계정 변경으로 취소된 in-flight 응답 | `drive_session_changed` |
 | 이름 점검 불가/불완전 | `naming_check_unavailable`, `naming_check_incomplete` |
@@ -112,9 +114,35 @@ totals             = null            (저장된 합계는 쓰지도 읽지도 �
 ## 계정 격리
 
 - Drive 토큰은 모듈 메모리 클로저에만 존재하며 어떤 브라우저 저장소에도 기록하지 않는다.
-- B66 계정 권위가 유지되는 상태(`owner_bound`, `same_account_resume`)에서만 세션을 보존한다.
-- `b66:auth-changed`(로그아웃) 또는 `b66:account-scope-changed`(다른 owner·격리·미인증)가 오면
-  **즉시 토큰을 폐기하고** 보류 중인 부분 저장과 파일 선택을 지운다.
+- Drive 세션은 **B66 계정 권위가 유지되는 동안에만** 보존한다.
+
+| 신호 | 처리 |
+|---|---|
+| `b66:auth-changed` `authenticated=true` (로그인·세션 갱신, action 없음) | **세션 유지** — 계정 전환으로 오인하지 않는다 |
+| `b66:account-scope-changed` action `owner_bound` / `same_account_resume` | **세션 유지** |
+| `b66:auth-changed` `authenticated=false` | 즉시 폐기 (`b66_signed_out`) |
+| `b66:account-scope-changed` `authenticated=false` | 즉시 폐기 (`b66_account_authority_lost`) |
+| action `quarantined_foreign_owner` / `quarantined_malformed_owner` | 즉시 폐기 (`b66_account_changed`) |
+| action `authenticated_owner_unusable` / `unresolved` | 즉시 폐기 |
+| action 을 알 수 없음(예: 저장소 읽기 실패) | 안전하게 폐기 |
+
+- 다른 계정으로 로그인한 경우에는 뒤이어 오는 `account-scope-changed`(`quarantined_foreign_owner`)가
+  계정 변경을 알려 준다. 따라서 `auth-changed` 만으로 폐기할 필요가 없다.
+- **폐기는 세션이 연결되어 있지 않아도 항상 수행한다.** 그래야 OAuth 팝업이 떠 있는 동안의
+  로그아웃/계정 전환이 뒤늦게 도착한 토큰을 무효화한다.
+- 폐기할 Drive 세션이나 보류 작업이 없으면 화면에 경고를 띄우지 않는다(로그아웃 상태의
+  페이지 로드마다 알림이 반복되지 않는다).
+
+### OAuth 팝업과의 경합(보안)
+
+```text
+connect() 시작 → 세대(epoch) 캡처
+   ↓ 팝업 대기 중 B66 로그아웃/계정 전환 → 세대 증가
+콜백 도착 → 세대 불일치 → 토큰을 저장하지 않고 즉시 폐기 요청
+          → 결과 drive_auth_superseded, 세션 없음
+```
+
+- 연결이 진행 중일 때 중복 시작은 `drive_connect_in_progress` 로 거부한다.
 - 세션 epoch 이 바뀐 뒤 도착한 in-flight 응답은 편집기나 화면 상태를 갱신하지 못한다
   (`drive_session_changed`).
 
@@ -163,6 +191,12 @@ pair = { packageId, createdAt, jsonName, pdfName, baseName, renamed,
 
 - 승인 템플릿 권위를 확인할 수 없으면(`none`/`unresolved`/`inactive`/`mismatch`)
   **편집기에 적용하지 않고** 안내를 표시한다. 다른 양식으로 자동 대체하지 않는다.
+- **다른 승인 템플릿의 견적**: 불러온 견적의 승인 양식(`savedSkillId` + `fingerprint`)이 지금 편집기에
+  선택된 양식과 다르면 **편집 내용을 바꾸지 않고** 안내를 표시한다. 양식을 자동으로 전환하지 않는다.
+  사용자가 해당 양식을 선택한 뒤 다시 열어야 한다.
+- **편집 중 내용 보호**: 현재 견적에 작성 중인 내용이 있으면(`hasMeaningfulDraft`)
+  명시적 확인을 받은 경우에만 교체한다. 확인 수단이 없으면 교체하지 않는다(fail-safe).
+  빈 편집기이고 양식이 같을 때만 확인 없이 적용한다.
 - `replaceDraft` 가 실패/예외를 돌려주면 성공으로 표시하지 않는다.
 - 적용 뒤 `getDraft()` 로 되읽어 내용 지문이 일치할 때만 성공을 표시한다.
 - 파일 선택기는 `appId`/`developerKey` 가 설정된 경우에만 열리고, 없으면 목록 선택으로 대체한다.

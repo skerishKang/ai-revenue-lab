@@ -382,6 +382,7 @@ jobs:
           node tests/quote-drive-client.test.cjs
           node tests/quote-drive-ui.test.cjs
           node tests/quote-drive-integration.test.cjs
+          node tests/quote-drive-account-flow.test.cjs
 
       - name: Run B66 server intake adapter contracts
         shell: bash

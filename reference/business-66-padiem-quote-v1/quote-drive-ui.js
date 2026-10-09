@@ -33,6 +33,13 @@
 
   /* B66 계정 권위가 유지되는 상태에서만 Drive 세션을 보존한다. */
   var DRIVE_SESSION_KEEP_ACTIONS = ["owner_bound", "same_account_resume"];
+  /* 권위가 실제로 상실/변경된 상태. 이 상태에서만 Drive 토큰을 폐기한다. */
+  var DRIVE_SESSION_DROP_ACTIONS = [
+    "quarantined_foreign_owner",
+    "quarantined_malformed_owner",
+    "authenticated_owner_unusable",
+    "unresolved"
+  ];
 
   function resolveGlobal(name) {
     if (typeof window !== "undefined" && window[name]) return window[name];
@@ -175,21 +182,48 @@
     }
 
     /* ── B66 로그아웃 / 계정 전환 격리 ──
-       B66 계정 권위가 유지되는 상태가 아니면 Drive 토큰을 즉시 폐기한다. */
+       계정 권위가 실제로 상실되거나 다른 owner 로 바뀐 경우에만 Drive 토큰을 폐기한다.
+       - b66:auth-changed(authenticated=true) 는 로그인/상태 갱신이므로 세션을 유지한다.
+         (다른 계정으로 바뀐 경우는 뒤이어 오는 account-scope-changed 가 알려 준다.)
+       - 계정 변경·로그아웃·owner 확인 불가일 때만 폐기한다.
+       폐기는 세션이 연결되어 있지 않아도 항상 수행해 세대(epoch)를 올린다.
+       그래야 OAuth 팝업 도중 발생한 로그아웃이 뒤늦은 토큰 연결을 막는다. */
+    function revokeDrive(reason, message) {
+      var session = client.session();
+      var hadWork = session.connected === true || Boolean(pendingOutcome) || fileIndex.length > 0 ||
+        session.connectPending === true;
+      clearPending();
+      clearSelection();
+      /* 토큰이 없어도 호출한다: 세대만 증가시키고 네트워크 요청은 하지 않는다. */
+      client.disconnect({ reason: reason });
+      renderConnection({ silent: true });
+      if (hadWork) setStatus(message, "warn");
+      return hadWork;
+    }
+
     function applyAccountAuthority(detail, source) {
       var authenticated = Boolean(detail && detail.authenticated === true);
       var action = detail && typeof detail.action === "string" ? detail.action : null;
-      var keep = authenticated && DRIVE_SESSION_KEEP_ACTIONS.indexOf(action) !== -1;
-      if (source === "auth-changed" && !authenticated) keep = false;
-      if (keep) return false;
-      var session = client.session();
-      if (!session.connected && !pendingOutcome && !fileIndex.length) return false;
-      clearPending();
-      clearSelection();
-      client.disconnect({ reason: "b66_account_authority_changed" });
-      renderConnection({ silent: true });
-      setStatus("B66 계정이 로그아웃되었거나 변경되어 Google Drive 연결을 해제했습니다.", "warn");
-      return true;
+
+      if (source === "auth-changed") {
+        /* 정상 로그인·세션 갱신: Drive 연결을 건드리지 않는다. */
+        if (authenticated) return false;
+        return revokeDrive("b66_signed_out",
+          "B66 계정에서 로그아웃되어 Google Drive 연결을 해제했습니다.");
+      }
+
+      if (!authenticated) {
+        return revokeDrive("b66_account_authority_lost",
+          "B66 계정 인증이 해제되어 Google Drive 연결을 해제했습니다.");
+      }
+      if (DRIVE_SESSION_KEEP_ACTIONS.indexOf(action) !== -1) return false;
+      if (DRIVE_SESSION_DROP_ACTIONS.indexOf(action) !== -1) {
+        return revokeDrive("b66_account_changed",
+          "B66 계정이 변경되어 Google Drive 연결을 해제했습니다.");
+      }
+      /* action 을 알 수 없는 경우(예: 저장소 읽기 실패)는 안전하게 폐기한다. */
+      return revokeDrive("b66_account_scope_unresolved",
+        "B66 계정 상태를 확인할 수 없어 Google Drive 연결을 해제했습니다.");
     }
 
     function onScopeChanged(event) {
@@ -214,12 +248,30 @@
       busy = true;
       connectButton.disabled = true;
       try {
-        var epoch = epochNow();
         var result = await client.connect();
-        if (superseded(epoch)) return;
+        if (result && result.code === "drive_auth_superseded") {
+          /* 팝업 대기 중 계정이 바뀌었다: 토큰을 받지 않았고 연결도 만들지 않는다. */
+          clearPending();
+          clearSelection();
+          renderConnection({ silent: true });
+          setStatus(result.message || "B66 계정이 변경되어 Google 계정 연결을 취소했습니다.", "warn");
+          return;
+        }
         if (!result.ok) {
+          /* 연결 실패는 세대 비교로 판단하지 않는다. 클라이언트가 실패를 처리하면서
+             세대를 올리기 때문에 계정 변경으로 오인할 수 있다. 계정 변경은
+             drive_auth_superseded 로만 보고된다. */
           renderConnection({ silent: true });
           setStatus(result.message || "Google 계정 연결에 실패했습니다.", "error");
+          return;
+        }
+        /* 성공 콜백 자체가 세대를 올리므로 epoch 비교로 판단하지 않는다.
+           연결이 끝난 뒤 계정이 바뀌었는지는 세션 상태로 확인한다. */
+        if (client.session().connected !== true) {
+          clearPending();
+          clearSelection();
+          renderConnection({ silent: true });
+          setStatus("B66 계정이 변경되어 Google 계정 연결을 취소했습니다.", "warn");
           return;
         }
         renderConnection();
@@ -414,11 +466,44 @@
         setStatus("불러온 견적을 편집기에 적용할 수 없습니다.", "error");
         return;
       }
-      var confirmed = typeof opts.confirm === "function"
-        ? opts.confirm("현재 작성 중인 견적을 바꾸고 이 견적을 불러올까요?")
+
+      /* 1) 승인 템플릿 권위 보호:
+         이 견적이 사용한 승인 양식이 지금 편집기에 선택된 양식과 다르면
+         편집 내용을 바꾸지 않고, 다른 양식으로 자동 전환하지도 않는다. */
+      var importedTemplate = opened.template && opened.template.resolved ? opened.template.resolved : null;
+      var activeTemplate = typeof bridge.activeTemplateReference === "function"
+        ? bridge.activeTemplateReference()
+        : null;
+      var templateMatches = Boolean(
+        importedTemplate && activeTemplate &&
+        importedTemplate.savedSkillId && activeTemplate.savedSkillId &&
+        importedTemplate.savedSkillId === activeTemplate.savedSkillId &&
+        importedTemplate.fingerprint && activeTemplate.fingerprint &&
+        importedTemplate.fingerprint === activeTemplate.fingerprint
+      );
+      if (!templateMatches) {
+        setStatus(
+          "이 견적은 다른 승인 양식" +
+          (importedTemplate && importedTemplate.label ? "(" + importedTemplate.label + ")" : "") +
+          "을 사용합니다. 현재 선택된 양식과 달라 편집 내용을 바꾸지 않았습니다. " +
+          "왼쪽 메뉴에서 이 견적의 양식을 선택한 뒤 다시 열어 주세요.",
+          "warn"
+        );
+        return;
+      }
+
+      /* 2) 편집 중 내용 보호: 작성 중인 내용이 있으면 명시적 확인 없이는 바꾸지 않는다. */
+      var hasContent = typeof bridge.hasMeaningfulDraft === "function"
+        ? bridge.hasMeaningfulDraft() === true
         : true;
+      var confirmed = true;
+      if (hasContent) {
+        confirmed = typeof opts.confirm === "function"
+          ? opts.confirm("현재 작성 중인 견적 내용을 이 견적으로 바꿉니다. 계속할까요?") === true
+          : false;
+      }
       if (confirmed !== true) {
-        setStatus("불러오기를 취소했습니다.", "info");
+        setStatus("불러오기를 취소했습니다. 작성 중인 견적은 그대로 유지됩니다.", "info");
         return;
       }
 
@@ -581,6 +666,7 @@
     CONFIG_APP_ID_GLOBAL: CONFIG_APP_ID_GLOBAL,
     CONFIG_DEVELOPER_KEY_GLOBAL: CONFIG_DEVELOPER_KEY_GLOBAL,
     DRIVE_SESSION_KEEP_ACTIONS: DRIVE_SESSION_KEEP_ACTIONS.slice(),
+    DRIVE_SESSION_DROP_ACTIONS: DRIVE_SESSION_DROP_ACTIONS.slice(),
     configString: configString,
     mount: mount,
     bootstrap: bootstrap,

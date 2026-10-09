@@ -712,7 +712,53 @@ function harness(options) {
     assert.equal(picked.code, "picker_unavailable", "PICKER_UNAVAILABLE_IS_EXPLICIT");
   }
 
-  /* ── 25. 통신 대상은 Google 뿐이다(모델 호출 0) ── */
+  /* ── 25. 연결이 진행 중이면 중복 시작을 거부한다 ── */
+  {
+    const h = harness();
+    const first = h.client.connect();
+    await flush();
+    assert.equal(h.client.session().connectPending, true, "CONNECT_PENDING_FLAG");
+    const second = await h.client.connect();
+    assert.equal(second.ok, false, "SECOND_CONNECT_REFUSED");
+    assert.equal(second.code, "drive_connect_in_progress", "CONNECT_IN_PROGRESS_CODE");
+    await h.approve();
+    const result = await first;
+    assert.equal(result.ok, true, "FIRST_CONNECT_SUCCEEDS");
+    assert.equal(h.client.session().connectPending, false, "CONNECT_PENDING_CLEARED");
+  }
+
+  /* ── 26. OAuth 팝업 도중 B66 로그아웃 → 뒤늦은 토큰을 받지 않는다(보안) ── */
+  {
+    const h = harness();
+    const pending = h.client.connect();
+    await flush();
+    assert.equal(h.client.session().connectPending, true, "POPUP_PENDING");
+    /* 팝업이 떠 있는 동안 B66 로그아웃/계정 전환 */
+    await h.client.disconnect({ reason: "b66_signed_out" });
+    await h.approve();
+    const result = await pending;
+    assert.equal(result.ok, false, "LATE_TOKEN_NOT_ACCEPTED");
+    assert.equal(result.code, "drive_auth_superseded", "DRIVE_AUTH_SUPERSEDED");
+    assert.equal(h.client.session().connected, false, "NO_SESSION_AFTER_LATE_TOKEN");
+    const revoked = h.calls.filter((call) => call.url.indexOf("oauth2.googleapis.com/revoke") !== -1);
+    assert.equal(revoked.length, 1, "LATE_TOKEN_REVOKED");
+    assert.ok(revoked[0].url.indexOf("stub-access-token") !== -1, "REVOKE_TARGETS_LATE_TOKEN");
+    assert.equal((await h.client.listQuoteFiles()).code, "drive_not_connected", "STILL_SIGNED_OUT");
+  }
+
+  /* ── 27. 팝업 도중 계정 전환 후에도 연결이 만들어지지 않는다 ── */
+  {
+    const h = harness();
+    const pending = h.client.connect();
+    await flush();
+    await h.client.disconnect({ reason: "b66_account_changed" });
+    await h.approve();
+    const result = await pending;
+    assert.equal(result.code, "drive_auth_superseded", "SWITCH_SUPERSEDES_CONNECT");
+    assert.equal(h.client.session().connected, false, "NO_SESSION_AFTER_SWITCH");
+  }
+
+  /* ── 28. 통신 대상은 Google 뿐이다(모델 호출 0) ── */
   {
     const draft = draftFixture();
     const text = packageTextFor(draft, "pkg-network", TEMPLATE);
@@ -757,6 +803,8 @@ function harness(options) {
   console.log("OTHER_GOOGLE_ACCOUNT_ACCESS=DENIED");
   console.log("LOGOUT_BLOCKS_ACCESS=PASS");
   console.log("ACCOUNT_SWITCH_DISCARDS_IN_FLIGHT=PASS");
+  console.log("CONNECT_IN_PROGRESS_GUARD=PASS");
+  console.log("LATE_TOKEN_AFTER_LOGOUT_REJECTED=PASS");
   console.log("TOKEN_EXPIRED_SURFACED=PASS");
   console.log("ONLY_GOOGLE_ENDPOINTS=PASS");
   console.log("MODEL_CALLS_FOR_STORAGE=0");

@@ -159,6 +159,7 @@
       lastErrorCode: null,
       epoch: 0
     };
+    var connectPending = false;
 
     function googleObject() {
       return resolveGlobal("google", config.google);
@@ -188,11 +189,15 @@
         expired: session.connected === true && session.expiresAt <= deps.now() + EXPIRY_SKEW_MS,
         connectedAt: session.connectedAt,
         lastErrorCode: session.lastErrorCode,
-        epoch: session.epoch
+        epoch: session.epoch,
+        connectPending: connectPending === true
       };
     }
 
+    /* 세대(epoch)는 세션 정리 때마다 증가한다. 연결 전이라도 반드시 증가해야
+       팝업 대기 중 발생한 로그아웃이 뒤늦은 토큰 연결을 막을 수 있다. */
     function clearSession(reasonCode) {
+      connectPending = false;
       session.connected = false;
       session.accessToken = "";
       session.scopes = [];
@@ -229,11 +234,22 @@
       return google;
     }
 
-    /* ── 연결: 고객이 버튼을 눌러 명시적으로 시작한다 ── */
+    /* ── 연결: 고객이 버튼을 눌러 명시적으로 시작한다 ──
+       시작 시점의 세대(epoch)를 캡처한다. 팝업이 떠 있는 동안 B66 계정 권위가
+       바뀌면(로그아웃/계정 전환) 늦게 도착한 토큰을 저장하지 않고 즉시 폐기한다. */
     function connect(options) {
       var opts = options || {};
       if (!isConfigured()) return Promise.resolve(notConfigured());
+      if (connectPending) {
+        return Promise.resolve({
+          ok: false,
+          code: "drive_connect_in_progress",
+          message: "이미 Google 계정 연결이 진행 중입니다."
+        });
+      }
       var prompt = typeof opts.prompt === "string" && opts.prompt ? opts.prompt : "";
+      var startedEpoch = session.epoch;
+      connectPending = true;
 
       return ensureGis().then(function (google) {
         return new Promise(function (resolve) {
@@ -246,6 +262,26 @@
               callback: function (response) {
                 if (settled) return;
                 settled = true;
+                connectPending = false;
+                /* 팝업 대기 중 B66 계정 권위가 바뀌었다면 이 토큰은 받지 않는다. */
+                if (session.epoch !== startedEpoch) {
+                  var lateToken = response && response.access_token ? String(response.access_token) : "";
+                  if (lateToken && deps.fetchImpl) {
+                    try {
+                      var revoke = deps.fetchImpl(
+                        DRIVE_REVOKE_ENDPOINT + "?token=" + encodeURIComponent(lateToken),
+                        { method: "POST" }
+                      );
+                      if (revoke && typeof revoke.catch === "function") revoke.catch(function () {});
+                    } catch (err) { /* 폐기 실패해도 토큰은 저장되지 않는다 */ }
+                  }
+                  resolve({
+                    ok: false,
+                    code: "drive_auth_superseded",
+                    message: "B66 계정이 변경되어 Google 계정 연결을 취소했습니다."
+                  });
+                  return;
+                }
                 if (!response || response.error || !response.access_token) {
                   clearSession("drive_auth_failed");
                   var denied = response && (response.error === "access_denied" ||
@@ -273,6 +309,7 @@
               }
             });
           } catch (err) {
+            connectPending = false;
             resolve({ ok: false, code: "gis_unavailable", message: "Google 로그인 스크립트를 불러오지 못했습니다." });
             return;
           }
@@ -281,17 +318,21 @@
           } catch (err) {
             if (!settled) {
               settled = true;
+              connectPending = false;
               resolve({ ok: false, code: "drive_auth_failed", message: "Google 계정 연결을 시작하지 못했습니다." });
             }
           }
         });
       }).catch(function () {
+        connectPending = false;
         return { ok: false, code: "gis_unavailable", message: "Google 로그인 스크립트를 불러오지 못했습니다." };
       });
     }
 
     /* ── 연결 해제: 토큰 폐기 + 메모리 세션 완전 삭제(계정 전환 격리) ──
-       B66 로그아웃/계정 전환에서도 같은 경로를 쓴다. */
+       B66 로그아웃/계정 전환에서도 같은 경로를 쓴다.
+       연결된 토큰이 없어도 항상 세대(epoch)를 증가시킨다. 그래야 OAuth 팝업이 떠 있는
+       동안 발생한 로그아웃이 뒤늦게 도착한 토큰을 무효화한다. */
     async function disconnect(options) {
       var opts = options || {};
       var token = session.accessToken;

@@ -613,6 +613,33 @@ const keepFile = (h, id, name, mimeType) => {
     mark("BROWSER_LOCAL_CONTINUES", "PASS");
   }
 
+  /* 시나리오 16 — 로그인 버튼부터 로그아웃·계정 전환까지 실제 흐름 계약 */
+  {
+    /* 정상 로그인/상태 갱신은 세션을 유지하고, 권위 상실·변경만 폐기한다. */
+    assert.deepEqual(Ui.DRIVE_SESSION_KEEP_ACTIONS.slice(), ["owner_bound", "same_account_resume"],
+      "S16_KEEP_ACTIONS");
+    ["quarantined_foreign_owner", "quarantined_malformed_owner",
+      "authenticated_owner_unusable", "unresolved"].forEach((action) => {
+      assert.ok(Ui.DRIVE_SESSION_DROP_ACTIONS.indexOf(action) !== -1, "S16_DROP_ACTION: " + action);
+    });
+    /* 팝업 대기 중 계정 변경이 뒤늦은 토큰을 막는다. */
+    assert.ok(/startedEpoch/.test(clientSource), "S16_CONNECT_CAPTURES_EPOCH");
+    assert.ok(/drive_auth_superseded/.test(clientSource), "S16_LATE_TOKEN_REJECTED_CODE");
+    assert.ok(/connectPending/.test(clientSource), "S16_CONNECT_IN_PROGRESS_GUARD");
+    /* 폐기는 세션이 없어도 세대를 올린다. */
+    assert.ok(/client\.disconnect\(\{ reason: reason \}\)/.test(uiSource), "S16_ALWAYS_BUMPS_EPOCH");
+    mark("S16_LOGIN_TO_SWITCH_FLOW", "PASS (see quote-drive-account-flow.test.cjs)");
+  }
+
+  /* 시나리오 17 — 다른 승인 템플릿 견적 불러오기는 편집 내용을 보호한다 */
+  {
+    assert.ok(/templateMatches/.test(uiSource), "S17_TEMPLATE_MATCH_CHECK_PRESENT");
+    assert.ok(/hasMeaningfulDraft/.test(uiSource), "S17_EDITOR_CONTENT_CHECK_PRESENT");
+    assert.ok(appSource.includes("hasMeaningfulDraft"), "S17_BRIDGE_EXPOSES_EDITOR_CONTENT_STATE");
+    assert.ok(!/opts\.confirm\([^)]*\)\s*:\s*true/.test(uiSource), "S17_NO_DEFAULT_TRUE_CONFIRM");
+    mark("S17_OTHER_TEMPLATE_PROTECTS_EDITOR", "PASS (see quote-drive-account-flow.test.cjs)");
+  }
+
   console.log(scenario.join("\n"));
   console.log("SLICE_E_OFFLINE_TESTED=PASS");
   console.log("CROSS_BROWSER_DRIVE_REOPEN=NOT_TESTED");

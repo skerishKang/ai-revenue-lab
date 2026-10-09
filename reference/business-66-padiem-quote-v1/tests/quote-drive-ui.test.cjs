@@ -532,7 +532,7 @@ function harness(options) {
     assert.equal(ui.retryVisible(), false, "B66_LOGOUT_CLEARS_PENDING_PAIR");
     assert.equal(ui.saveDisabled(), true, "B66_LOGOUT_DISABLES_SAVE");
     assert.equal(ui.openDisabled(), true, "B66_LOGOUT_DISABLES_OPEN");
-    assert.equal(ui.session().lastErrorCode, "b66_account_authority_changed", "B66_LOGOUT_REASON_RECORDED");
+    assert.equal(ui.session().lastErrorCode, "b66_signed_out", "B66_LOGOUT_REASON_RECORDED");
     assert.ok(ui.statusText().indexOf("해제") !== -1, "B66_LOGOUT_STATUS");
   }
 
