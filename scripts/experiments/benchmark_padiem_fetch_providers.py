@@ -137,13 +137,33 @@ class TransportError(FetchBenchmarkError):
     code = "TRANSPORT_ERROR"
 
 
+class FetchUrlError(FetchBenchmarkError):
+    """TinyFish HTTP-200 envelope carrying an individual URL failure.
+
+    Never reflect the provider's untrusted freeform error text. The envelope HTTP
+    status remains separate from the per-URL resource status.
+    """
+
+    def __init__(self, resource_status: int | None, *, http_status: int | None):
+        self.resource_status = resource_status
+        self.http_status = http_status
+        if resource_status == 404:
+            self.code = "FETCH_URL_NOT_FOUND"
+        elif resource_status == 402:
+            self.code = "FETCH_URL_QUOTA_EXHAUSTED"
+        elif resource_status == 429:
+            self.code = "FETCH_URL_RATE_LIMITED"
+        else:
+            self.code = "FETCH_URL_ERROR"
+        super().__init__(self.code)
+
+
 class BenchmarkHttpError(FetchBenchmarkError):
     def __init__(self, status: int):
         super().__init__(f"provider returned HTTP {status}")
         self.status = status
-        # 402 = the provider's free allowance is exhausted (TinyFish documents
-        # HTTP 402 / `INSUFFICIENT_CREDITS`). It must abort the run like 429 so a
-        # live benchmark can never silently spend past the free quota.
+        # HTTP 402 is a hard-stop signal regardless of its cause; do not infer
+        # actual account billing or exhausted free allowance from a status code.
         if status == 402:
             self.code = "HTTP_402"
         elif status == 429:
@@ -302,8 +322,21 @@ def _decode_json(raw: bytes) -> tuple[dict[str, Any], str, bool]:
     raise MalformedResponse("provider returned malformed JSON")
 
 
-def _normalize_fetch(provider: str, data: dict[str, Any]) -> NormalizedFetch:
+def _normalize_fetch(
+    provider: str, data: dict[str, Any], *, http_status: int | None = None
+) -> NormalizedFetch:
     if provider == "tinyfish":
+        # Fetch may return HTTP 200 with results=[] and structured per-URL
+        # failures, e.g. errors=[{"error":"page_not_found","status":404}].
+        # This is a valid envelope and a failed URL, NOT malformed JSON.
+        results = data.get("results")
+        if isinstance(results, list) and not results:
+            errors = data.get("errors")
+            if isinstance(errors, list) and len(errors) == 1 and isinstance(errors[0], dict):
+                entry = errors[0]
+                raw_status = entry.get("status")
+                resource_status = raw_status if type(raw_status) is int and 400 <= raw_status <= 599 else None
+                raise FetchUrlError(resource_status, http_status=http_status)
         payload: Any = data
         for list_key in TINYFISH_RESULT_LIST_KEYS:
             candidate = payload.get(list_key)
@@ -464,7 +497,7 @@ def run_case(
         raise BenchmarkHttpError(status)
 
     data, encoding, decode_ok = _decode_json(raw)
-    normalized = _normalize_fetch(spec.provider, data)
+    normalized = _normalize_fetch(spec.provider, data, http_status=status)
     return _record(
         spec, case, http_status=status, latency_ms=latency_ms, response_bytes=len(raw),
         content_type=response_headers.get("content-type", ""), payload_encoding=encoding,
@@ -473,10 +506,14 @@ def run_case(
 
 
 def _error_record(spec: FetchProviderSpec, case: FetchCase, exc: FetchBenchmarkError) -> dict[str, Any]:
-    return _record(
-        spec, case, http_status=getattr(exc, "status", None), latency_ms=None, response_bytes=0,
+    record = _record(
+        spec, case, http_status=getattr(exc, "http_status", getattr(exc, "status", None)),
+        latency_ms=None, response_bytes=0,
         content_type="", payload_encoding=None, decode_ok=False, normalized=None, error=exc.code,
     )
+    if isinstance(exc, FetchUrlError):
+        record["resource_status"] = exc.resource_status
+    return record
 
 
 def select_cases(
@@ -656,7 +693,8 @@ def main(argv: list[str] | None = None) -> int:
                 record = _error_record(spec, case, exc)
                 record["mode"] = mode
                 print(json.dumps(record, ensure_ascii=False, sort_keys=True), file=handle, flush=True)
-                if exc.code in {"MISSING_CREDENTIAL", "MISSING_FIXTURE", "HTTP_402", "HTTP_429"}:
+                if exc.code in {"MISSING_CREDENTIAL", "MISSING_FIXTURE", "HTTP_402", "HTTP_429",
+                                "FETCH_URL_QUOTA_EXHAUSTED", "FETCH_URL_RATE_LIMITED"}:
                     return 2
                 continue
             record["mode"] = mode
