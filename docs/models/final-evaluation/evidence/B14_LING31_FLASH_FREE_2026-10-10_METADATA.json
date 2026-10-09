@@ -1,0 +1,28 @@
+{
+  "round": "LING31-FREE-20261010-V1",
+  "date": "2026-10-10",
+  "exact_requested_model": "inclusionai/ling-3.1-flash",
+  "catalog_http": 200,
+  "catalog_free_prompt_and_completion_price": true,
+  "catalog_context_window": 262144,
+  "route": "anonymous_direct_Kilo_Gateway_not_B14",
+  "b14_registered": false,
+  "automatic_fallback": false,
+  "retry_count": 0,
+  "requests": 1,
+  "responses_http200": 0,
+  "http429": 1,
+  "accuracy_assessable": false,
+  "rate_limit_origin": "UNVERIFIED",
+  "retry_after_seconds": "ABSENT",
+  "case": {
+    "case_id": "QKR-001",
+    "http_status": 429,
+    "elapsed_ms": 938,
+    "error_category": "rate_limited",
+    "strict": "UNAVAILABLE",
+    "real_model_answer_received": false
+  },
+  "historical_ling_primary_fallback": "SUPERSEDED_BY_OWNER_MANUAL_MODEL_SELECTION",
+  "stepfun_37_flash_retirement": "PRESERVED"
+}
