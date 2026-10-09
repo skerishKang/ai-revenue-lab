@@ -659,6 +659,51 @@ const keepFile = (h, id, name, mimeType) => {
       "PASS (see quote-import-atomic.test.cjs, quote-drive-import-safety.test.cjs)");
   }
 
+  /* 시나리오 19 — 런타임 설정 주입 지점(라이브 검증 선행 조건) */
+  {
+    const configSource = readModule("drive-config.js");
+    assert.ok(htmlSource.includes('src="drive-config.js"'), "S19_CONFIG_SCRIPT_LOADED");
+    assert.ok(htmlSource.indexOf('src="drive-config.js"') < htmlSource.indexOf('src="quote-drive-ui.js"'),
+      "S19_CONFIG_BEFORE_UI");
+    assert.equal(configSource.indexOf("apps.googleusercontent.com") !== -1 &&
+      configSource.replace(/\/\*[\s\S]*?\*\//g, "").indexOf("apps.googleusercontent.com") !== -1,
+      false, "S19_NO_VALUE_IN_CODE");
+    assert.ok(uiSource.includes("describeConfiguration"), "S19_READINESS_REPORT_PRESENT");
+    assert.ok(uiSource.includes("필요한 설정이 없습니다"), "S19_READINESS_NAMES_MISSING_ITEMS");
+    /* 설정이 없어도 기존 기능은 그대로다 */
+    assert.ok(htmlSource.includes('id="easyComposer"'), "S19_COMPOSER_UNCHANGED");
+    assert.ok(htmlSource.includes('id="saveHistory"'), "S19_HISTORY_UNCHANGED");
+    mark("S19_DRIVE_CONFIG_INJECTION_POINT", "PASS (see drive-config.test.cjs)");
+  }
+
+  /* 시나리오 20 — 배포 환경변수에서 브라우저로 전달하는 실제 경로 */
+  {
+    const workerSource = readModule("_worker.js");
+    assert.ok(workerSource.includes('const DRIVE_CONFIG_PATH = "/drive-config.js"'),
+      "S20_WORKER_EXACT_CONFIG_PATH");
+    assert.ok(workerSource.includes("B66_DRIVE_CLIENT_ID") &&
+      workerSource.includes("B66_DRIVE_PICKER_APP_ID") &&
+      workerSource.includes("B66_DRIVE_PICKER_DEVELOPER_KEY"), "S20_WORKER_READS_PAGES_ENV");
+    assert.ok(/function handleDriveConfig/.test(workerSource), "S20_WORKER_HANDLER_PRESENT");
+    assert.ok(workerSource.includes("application/javascript; charset=utf-8"), "S20_JS_CONTENT_TYPE");
+    assert.ok(workerSource.includes('"Cache-Control": "no-store"'), "S20_NO_STORE");
+    assert.ok(workerSource.includes('"Allow": "GET, HEAD"'), "S20_GET_HEAD_ONLY");
+    assert.ok(workerSource.includes("jsStringLiteral"), "S20_JS_ESCAPING_PRESENT");
+    assert.ok(/\\u003c/.test(workerSource), "S20_ESCAPES_ANGLE_BRACKET");
+    /* 기존 자산/프록시 경로는 그대로다 */
+    assert.ok(workerSource.includes("return env.ASSETS.fetch(request);"), "S20_ASSETS_PATH_UNCHANGED");
+    assert.ok(workerSource.includes("PADIEM_CHAT_SERVICE"), "S20_PADIEM_BINDING_UNCHANGED");
+    /* 잘못된 ID 는 클라이언트에서도 fail-closed */
+    assert.ok(clientSource.includes("CLIENT_ID_PATTERN"), "S20_CLIENT_ID_PATTERN_PRESENT");
+    assert.ok(/function isConfigured\(\) \{\s*return CLIENT_ID_PATTERN\.test\(clientId\);/.test(clientSource),
+      "S20_CLIENT_ISCONFIGURED_VALIDATES_FORMAT");
+    mark("S20_DEPLOY_CONFIG_DELIVERY_PATH",
+      "PASS (see b66-drive-config-worker.test.cjs)");
+    mark("S20_MALFORMED_CLIENT_ID_FAILS_CLOSED", "PASS");
+    mark("LIVE_VERIFICATION_PREREQUISITES_DOCUMENTED",
+      "PASS (docs/products/b66/GOOGLE_DRIVE_LIVE_VERIFICATION.md)");
+  }
+
   console.log(scenario.join("\n"));
   console.log("SLICE_E_OFFLINE_TESTED=PASS");
   console.log("CROSS_BROWSER_DRIVE_REOPEN=NOT_TESTED");

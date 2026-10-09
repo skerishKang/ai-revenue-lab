@@ -31,6 +31,8 @@
   var DRIVE_REVOKE_ENDPOINT = "https://oauth2.googleapis.com/revoke";
   var SCOPE_DRIVE_FILE = "https://www.googleapis.com/auth/drive.file";
   var DEFAULT_SCOPES = [SCOPE_DRIVE_FILE];
+  /* 승인된 공개 브라우저 클라이언트 ID 의 형식. 비어 있지 않다는 이유로 연결을 허용하지 않는다. */
+  var CLIENT_ID_PATTERN = /^[0-9A-Za-z._-]{6,200}\.apps\.googleusercontent\.com$/;
   var LIST_FIELDS = "nextPageToken, files(id,name,mimeType,size,trashed,modifiedTime,owners,capabilities)";
   var FILE_FIELDS = "id,name,mimeType,size,trashed,modifiedTime,owners,capabilities";
   var MAX_LIST_PAGE_SIZE = 100;
@@ -169,12 +171,13 @@
       return resolveGlobal("gapi", config.gapi);
     }
 
+    /* 형식이 맞는 클라이언트 ID 가 있어야만 연결을 시작할 수 있다(fail-closed). */
     function isConfigured() {
-      return Boolean(clientId);
+      return CLIENT_ID_PATTERN.test(clientId);
     }
 
     function pickerReady() {
-      return Boolean(clientId && appId && developerKey);
+      return isConfigured() && Boolean(appId) && Boolean(developerKey);
     }
 
     function notConfigured() {
@@ -956,6 +959,7 @@
   return Object.freeze({
     SCOPE_DRIVE_FILE: SCOPE_DRIVE_FILE,
     DEFAULT_SCOPES: DEFAULT_SCOPES.slice(),
+    CLIENT_ID_PATTERN: CLIENT_ID_PATTERN,
     DRIVE_FILES_ENDPOINT: DRIVE_FILES_ENDPOINT,
     DRIVE_UPLOAD_ENDPOINT: DRIVE_UPLOAD_ENDPOINT,
     MAX_LIST_PAGES: MAX_LIST_PAGES,

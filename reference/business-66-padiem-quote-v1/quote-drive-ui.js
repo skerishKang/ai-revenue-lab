@@ -70,6 +70,42 @@
     });
   }
 
+  /* B66QuoteDriveClient.CLIENT_ID_PATTERN 과 동일해야 한다(교차 일치 테스트로 고정). */
+  var CLIENT_ID_PATTERN = /^[0-9A-Za-z._-]{6,200}\.apps\.googleusercontent\.com$/;
+
+  /* 런타임 설정 준비 상태를 정확히 보고한다.
+     운영자가 "무엇이 없는지" 를 화면에서 바로 알 수 있어야 실제 연결 검증을 시작할 수 있다.
+     값 자체는 절대 노출하지 않고 이름과 형식만 다룬다. */
+  function describeConfiguration(options) {
+    var opts = options || {};
+    var clientId = configString(opts.clientId, CONFIG_GLOBAL);
+    var appId = configString(opts.appId, CONFIG_APP_ID_GLOBAL);
+    var developerKey = configString(opts.developerKey, CONFIG_DEVELOPER_KEY_GLOBAL);
+    var missing = [];
+    var invalid = [];
+
+    if (!clientId) missing.push(CONFIG_GLOBAL);
+    else if (!CLIENT_ID_PATTERN.test(clientId)) invalid.push(CONFIG_GLOBAL);
+
+    /* Picker 는 선택 사항이다. 없으면 목록 선택 경로로 대체된다. */
+    if (!appId) missing.push(CONFIG_APP_ID_GLOBAL);
+    if (!developerKey) missing.push(CONFIG_DEVELOPER_KEY_GLOBAL);
+
+    var clientIdUsable = Boolean(clientId) && CLIENT_ID_PATTERN.test(clientId);
+    return {
+      /* Drive 저장·불러오기를 시작할 수 있는가 */
+      configured: clientIdUsable,
+      clientIdPresent: Boolean(clientId),
+      clientIdShapeValid: clientIdUsable,
+      /* 파일 선택기(선택 사항) */
+      pickerReady: Boolean(appId && developerKey),
+      missing: missing,
+      invalid: invalid,
+      /* Drive 자체를 막는 항목만 */
+      blocking: invalid.concat(clientIdUsable ? [] : [CONFIG_GLOBAL])
+    };
+  }
+
   function mount(options) {
     var opts = options || {};
     var doc = opts.document || (typeof document !== "undefined" ? document : null);
@@ -151,6 +187,7 @@
     function renderConnection(options) {
       var silent = Boolean(options && options.silent === true);
       var session = client.session();
+      /* 클라이언트가 형식까지 검증한 값만 연결 가능으로 본다. 빈 문자열이 아님만으로 열지 않는다. */
       var configured = client.isConfigured();
       var connected = session.connected === true;
       connectButton.textContent = connected ? "Google Drive 연결 해제" : "내 Google Drive 연결";
@@ -159,7 +196,12 @@
       pickerButton.hidden = !(configured && connected && client.pickerReady());
       if (silent) return;
       if (!configured) {
-        setStatus("Google Drive 연결 설정이 준비되지 않았습니다. 견적 작성과 PDF 다운로드는 그대로 사용할 수 있습니다.", "info");
+        var readiness = describeConfiguration(opts);
+        var reason = readiness.invalid.length
+          ? "설정값 형식이 올바르지 않습니다: " + readiness.invalid.join(", ")
+          : "필요한 설정이 없습니다: " + readiness.blocking.join(", ");
+        setStatus("Google Drive 연결 설정이 준비되지 않았습니다. (" + reason + ") " +
+          "견적 작성과 PDF 다운로드는 그대로 사용할 수 있습니다.", "info");
       } else if (!connected) {
         setStatus("연결된 Google 계정이 없습니다. 저장·불러오기를 하려면 먼저 연결해 주세요.", "info");
       } else {
@@ -688,6 +730,8 @@
     DRIVE_SESSION_KEEP_ACTIONS: DRIVE_SESSION_KEEP_ACTIONS.slice(),
     DRIVE_SESSION_DROP_ACTIONS: DRIVE_SESSION_DROP_ACTIONS.slice(),
     configString: configString,
+    CLIENT_ID_PATTERN: CLIENT_ID_PATTERN,
+    describeConfiguration: describeConfiguration,
     mount: mount,
     bootstrap: bootstrap,
     installStartHook: installStartHook,
