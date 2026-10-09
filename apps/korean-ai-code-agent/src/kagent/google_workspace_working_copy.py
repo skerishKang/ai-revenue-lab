@@ -214,6 +214,7 @@ class GoogleWorkspaceWorkingCopyAdapter:
                 or required not in self.binding.granted_capabilities):
             raise WorkspaceCopyError("Workspace WRITE scope/identity unavailable")
         if (source.lifecycle is not ArtifactLifecycle.DURABLE
+                or source.media_type != mime
                 or source.durable_location is None
                 or source.durable_location.location_kind != "google_drive"
                 or source.artifact_id == output_artifact_id
