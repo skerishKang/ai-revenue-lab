@@ -104,7 +104,7 @@ jobs:
           curl -fsS "${auth[@]}" "${base}/versions/${active_version}" -o "${version_detail}"
           verify_out="$(python3 .github/scripts/b54_engine_served_version_guard.py verify \
             --version-settings "${version_detail}" \
-            --active-version "${active_version}" \
+            --active-version="${active_version}" \
             --expect-overlay \
             --inspect-engine-admission-binding)"
           printf '%s\n' "${verify_out}"
