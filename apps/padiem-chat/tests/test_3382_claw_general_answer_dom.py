@@ -27,6 +27,11 @@ from starlette.testclient import TestClient
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
+from kagent.p01_adapter import (
+    P01AdapterError,
+    P01DispatchClass,
+    P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+)
 
 APP_DIR = Path(__file__).resolve().parents[1]
 STATIC = APP_DIR / "static"
@@ -61,7 +66,7 @@ class _AuthStore:
         return None
 
 
-def _adapter(answer: str | None) -> MagicMock:
+def _outcome(answer: str | None) -> MagicMock:
     projection = MagicMock()
     projection.status = MagicMock(value="completed")
     projection.run_id = "run_answer_dom"
@@ -70,19 +75,22 @@ def _adapter(answer: str | None) -> MagicMock:
     outcome.answer = answer
     outcome.p01_run_id = "p01_answer_dom"
     outcome.p01_event_count = 1
+    return outcome
+
+
+def _capture_server(
+    *,
+    answer: str | None = ANSWER_WITH_MARKUP,
+    raises: BaseException | None = None,
+    model_id: str | None = None,
+) -> tuple[int, str, str]:
+    """Drive the real route once and return (status, content-type, raw body)."""
     adapter = MagicMock()
     adapter.subject_identity_lane = False
-    adapter.execute = AsyncMock(return_value=outcome)
-    return adapter
-
-
-def _capture_server_stream(answer: str | None) -> tuple[int, str, str]:
-    """Return (status, content-type, raw body) from the real route for one submit."""
-    app = create_app(
-        settings=_settings(),
-        history_store=_AuthStore(),
-        claw_p01_adapter=_adapter(answer),
+    adapter.execute = (
+        AsyncMock(side_effect=raises) if raises is not None else AsyncMock(return_value=_outcome(answer))
     )
+    app = create_app(settings=_settings(), history_store=_AuthStore(), claw_p01_adapter=adapter)
     client = TestClient(app, base_url="https://chat.example.test")
     client.cookies.set(
         SESSION_COOKIE,
@@ -90,12 +98,19 @@ def _capture_server_stream(answer: str | None) -> tuple[int, str, str]:
         domain="chat.example.test",
         path="/",
     )
+    payload: dict = {
+        "messages": [{"role": "user", "content": "견적 상태를 알려줘."}],
+        "tier": "plus",
+    }
+    if model_id is not None:
+        payload["model_id"] = model_id
     with client:
-        response = client.post(
-            GENERAL_ROUTE_PATH,
-            json={"messages": [{"role": "user", "content": "견적 상태를 알려줘."}], "tier": "plus"},
-        )
+        response = client.post(GENERAL_ROUTE_PATH, json=payload)
     return response.status_code, response.headers.get("content-type", ""), response.text
+
+
+def _capture_server_stream(answer: str | None) -> tuple[int, str, str]:
+    return _capture_server(answer=answer)
 
 
 # ── client harness ───────────────────────────────────────────────────────────
@@ -223,6 +238,8 @@ function buildSandbox(sseCase) {
   const requests = [];
   const lifecycleSets = [];
   const committed = [];
+  const conversationIds = [];
+  let currentConversationId = null;
 
   const doc = {
     documentElement: { lang: "ko", classList: { add() {}, remove() {}, contains() { return false; } } },
@@ -304,7 +321,13 @@ function buildSandbox(sseCase) {
     addEventListener: () => {},
     fetch: async (url, opts) => {
       const method = ((opts && opts.method) || "GET").toUpperCase();
-      requests.push({ url: String(url), method });
+      requests.push({
+        url: String(url),
+        method,
+        // The wire body is recorded, not just the URL: asserting the lane alone
+        // would miss a payload that drops the user's selection.
+        body: opts && opts.body ? String(opts.body) : null,
+      });
       if (String(url).startsWith("/api/claw/general")) {
         if (sseCase.mode === "stream") return streamResponse(sseCase.raw);
         return jsonResponses(sseCase.status, sseCase.body);
@@ -323,7 +346,9 @@ function buildSandbox(sseCase) {
     },
     PadiemConfirmDialog: { confirm: async () => true },
     PadiemChatConversationState: {
-      reset() {}, setConversationId() {}, getConversationId: () => null,
+      reset() {},
+      setConversationId: (id) => conversationIds.push(id),
+      getConversationId: () => currentConversationId,
       outboundWithUser: (text) => [{ role: "user", content: text }],
       commitAssistant: (messages, answer) => committed.push(answer),
       setSkill() {}, getSkill: () => "auto",
@@ -343,7 +368,7 @@ function buildSandbox(sseCase) {
   // production PadiemChatTransport, not a stand-in.
   vm.runInContext(TRANSPORT, sandbox, { filename: "chat-transport.js" });
   vm.runInContext(APP, sandbox, { filename: "app.js" });
-  return { sandbox, byId, doc, requests, lifecycleSets, committed };
+  return { sandbox, byId, doc, requests, lifecycleSets, committed, conversationIds };
 }
 
 const tick = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -356,10 +381,28 @@ function collectAnswerDom(byId) {
   const content = article.querySelector(".assistant-content");
   const label = article.querySelector("[data-runtime-label]");
   const paragraphs = (content.children || []).map((c) => ({ tag: c.tagName, text: c.textContent, html: c.innerHTML }));
+  const texts = [];
+  const walk = (node) => (node.children || []).forEach((c) => {
+    if (c.textContent) texts.push(c.textContent);
+    walk(c);
+  });
+  walk(content);
   return {
     label: label ? label.textContent : null,
     childTags: (content.children || []).map((c) => c.tagName),
     paragraphText: paragraphs.filter((p) => p.tag === "P").map((p) => p.text).join("\n"),
+    // Every text node under the answer content, so an error surface can be
+    // asserted to carry the bounded copy rather than an answer.
+    texts,
+    buttons: (() => {
+      const found = [];
+      const scan = (node) => (node.children || []).forEach((c) => {
+        if (c.tagName === "BUTTON") found.push(c.textContent);
+        scan(c);
+      });
+      scan(article);
+      return found;
+    })(),
     // innerHTML is read on every node that receives answer text, not just the
     // container: assigning the answer as HTML on the paragraph is the injection.
     containerInnerHTML: content.innerHTML,
@@ -370,8 +413,11 @@ function collectAnswerDom(byId) {
 (async () => {
   const results = [];
   for (const sseCase of CASES) {
-    const { byId, requests, lifecycleSets, committed } = buildSandbox(sseCase);
+    const { byId, requests, lifecycleSets, committed, conversationIds } = buildSandbox(sseCase);
     byId.messageInput.value = sseCase.prompt || "견적 상태를 알려줘.";
+    // The real Claw model field (index.html:677): a user selection has to be set
+    // where the user sets it, or the wire assertion would only prove nothing.
+    if (typeof sseCase.modelId === "string") byId.clawModelIdInput.value = sseCase.modelId;
     byId.composerForm.requestSubmit();
     await tick(400);
     results.push({
@@ -380,6 +426,7 @@ function collectAnswerDom(byId) {
       answerDom: collectAnswerDom(byId),
       lifecycleSets,
       committed,
+      conversationIds,
       errorSurface: byId.runtimeNote ? byId.runtimeNote.textContent : "",
       sendButtonDisabled: byId.sendButton ? byId.sendButton.disabled : null,
     });
@@ -472,3 +519,159 @@ def test_empty_answer_fails_closed_at_the_route_instead_of_rendering_blank_succe
     assert "completed" not in result["lifecycleSets"], result["lifecycleSets"]
     dom = result["answerDom"]
     assert (dom["paragraphText"] if dom else "") == "", dom
+
+
+# ── Phase 2 acceptance supplements (CENTRAL review of #3846) ────────────────
+#
+# Cases labelled "harness-authored" carry SSE frames no production route emits
+# (EOF-before-done, error-after-delta, duplicate done, done-with-handle). They
+# exist to exercise the real reader's terminal contract and are not claimed to be
+# server output. Everything else is captured from the real route.
+
+TEST_ONLY_MODEL_ID = "test-only/3382-ui-contract-model"
+CONVERSATION_HANDLE = "conv_" + "3" * 32
+
+
+def _frames(*pairs) -> str:
+    return "".join("event: %s\ndata: %s\n\n" % (event, data) for event, data in pairs)
+
+
+def _lane_only(result: dict) -> list[str]:
+    """Dispatch URLs only: the claim is about lanes that send work, so GET boot
+    traffic (auth status, history) is deliberately excluded rather than allowed in."""
+    return sorted({r["url"] for r in result["requests"] if r["method"] == "POST"})
+
+
+def _general_posts(result: dict) -> list[dict]:
+    return [r for r in result["requests"] if r["url"] == GENERAL_ROUTE_PATH]
+
+
+def test_a_syntactically_valid_user_selection_is_accepted_by_the_route() -> None:
+    """UI-contract scope only: not registration, entitlement or provider readiness."""
+    status, content_type, raw = _capture_server(answer=ANSWER_WITH_MARKUP, model_id=TEST_ONLY_MODEL_ID)
+    assert status == 200 and content_type.startswith("text/event-stream"), raw[:400]
+    assert ANSWER_WITH_MARKUP in raw
+
+
+def test_user_selected_model_id_reaches_the_wire_request_exactly_once() -> None:
+    _status, _ctype, raw = _capture_server(answer=ANSWER_WITH_MARKUP, model_id=TEST_ONLY_MODEL_ID)
+    result = _run_client([{"name": "selection", "mode": "stream", "raw": raw, "modelId": TEST_ONLY_MODEL_ID}])[0]
+
+    general = _general_posts(result)
+    assert len(general) == 1, result["requests"]
+    assert general[0]["method"] == "POST"
+    sent = json.loads(general[0]["body"])
+    assert sent["model_id"] == TEST_ONLY_MODEL_ID, sent
+    assert general[0]["body"].count(TEST_ONLY_MODEL_ID) == 1, general[0]["body"]
+    # The selection must not smuggle a second lane in behind the answer.
+    assert _lane_only(result) == [GENERAL_ROUTE_PATH], _lane_only(result)
+    assert result["answerDom"]["paragraphText"] == ANSWER_WITH_MARKUP, result["answerDom"]
+
+
+def test_no_selection_sends_no_model_id_field() -> None:
+    """The control that keeps the wire assertion above from being vacuous."""
+    _status, _ctype, raw = _capture_server(answer=ANSWER_WITH_MARKUP)
+    result = _run_client([{"name": "no-selection", "mode": "stream", "raw": raw}])[0]
+    general = _general_posts(result)
+    assert len(general) == 1, result["requests"]
+    assert "model_id" not in json.loads(general[0]["body"]), general[0]["body"]
+    assert result["answerDom"]["paragraphText"] == ANSWER_WITH_MARKUP
+
+
+def test_502_engine_failure_shows_bounded_error_and_never_dispatches_again() -> None:
+    failure = P01AdapterError(
+        "engine_execution_failed",
+        "Engine 실행에 실패했습니다.",
+        dispatch_class=P01DispatchClass.DISPATCHED,
+    )
+    status, _ctype, raw = _capture_server(raises=failure)
+    assert status == 502, raw[:400]
+    body = json.loads(raw)
+    assert body["error"]["code"] == "engine_execution_failed", body
+
+    result = _run_client([{"name": "502", "mode": "json", "status": status, "body": body}])[0]
+    assert len(_general_posts(result)) == 1, "an error must not cause a second dispatch"
+    assert _lane_only(result) == [GENERAL_ROUTE_PATH], _lane_only(result)
+    assert result["committed"] == [], result["committed"]
+    assert "completed" not in result["lifecycleSets"], result["lifecycleSets"]
+    dom = result["answerDom"]
+    assert dom["paragraphText"] == "", dom
+    assert dom["label"] == "connection-error", dom
+    assert dom["buttons"] == [], "the Claw error surface must offer no one-click replay"
+
+
+def test_502_provider_rate_limit_gets_the_bounded_classification_copy() -> None:
+    failure = P01AdapterError(
+        "engine_execution_failed",
+        "Engine 실행에 실패했습니다.",
+        dispatch_class=P01DispatchClass.DISPATCHED,
+        failure_detail=P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED,
+    )
+    status, _ctype, raw = _capture_server(raises=failure)
+    assert status == 502, raw[:400]
+    body = json.loads(raw)
+    assert body["error"]["detail"] == P01_FAILURE_DETAIL_PROVIDER_RATE_LIMITED, body
+
+    result = _run_client([{"name": "rate-limited", "mode": "json", "status": status, "body": body}])[0]
+    dom = result["answerDom"]
+    assert "claw-general-provider-limit" in dom["texts"], dom
+    assert "completed" not in result["lifecycleSets"], result["lifecycleSets"]
+    assert result["committed"] == [], result["committed"]
+    assert len(_general_posts(result)) == 1
+
+
+def test_stream_that_ends_without_a_done_frame_never_completes() -> None:
+    """harness-authored: a partial stream must not be presented as a finished answer."""
+    raw = _frames(("delta", json.dumps({"delta": "부분 응답"})))
+    result = _run_client([{"name": "eof", "mode": "stream", "raw": raw}])[0]
+    assert result["committed"] == [], result["committed"]
+    assert "completed" not in result["lifecycleSets"], result["lifecycleSets"]
+    assert result["answerDom"]["label"] == "connection-error", result["answerDom"]
+    assert len(_general_posts(result)) == 1
+
+
+def test_error_frame_after_a_real_delta_is_terminal_and_uncommitted() -> None:
+    """harness-authored error frame following a delivered delta."""
+    raw = _frames(
+        ("delta", json.dumps({"delta": "일부 텍스트 "})),
+        ("error", json.dumps({"error": {"code": "engine_execution_failed", "message": "실패"}})),
+    )
+    result = _run_client([{"name": "error-frame", "mode": "stream", "raw": raw}])[0]
+    assert result["committed"] == [], result["committed"]
+    assert "completed" not in result["lifecycleSets"], result["lifecycleSets"]
+    assert len(_general_posts(result)) == 1
+
+
+def test_duplicate_done_frame_commits_the_answer_only_once() -> None:
+    """harness-authored second done frame; the reader must not double-commit."""
+    raw = _frames(
+        ("delta", json.dumps({"delta": ANSWER_WITH_MARKUP})),
+        ("done", json.dumps({"done": True})),
+        ("done", json.dumps({"done": True})),
+    )
+    result = _run_client([{"name": "dup-done", "mode": "stream", "raw": raw}])[0]
+    assert result["committed"] == [ANSWER_WITH_MARKUP], result["committed"]
+
+
+def test_real_done_frame_carries_no_conversation_handle_and_the_client_invents_none() -> None:
+    """Measured limitation of the general lane, recorded rather than papered over."""
+    _status, _ctype, raw = _capture_server(answer=ANSWER_WITH_MARKUP)
+    assert any(line.startswith("data: ") and '"done"' in line for line in raw.splitlines()), raw[:400]
+    assert "conversation_id" not in raw, "the route does not return a handle today"
+
+    result = _run_client([{"name": "no-handle", "mode": "stream", "raw": raw}])[0]
+    assert result["conversationIds"] == [], result["conversationIds"]
+    assert result["committed"] == [ANSWER_WITH_MARKUP], result["committed"]
+
+
+def test_done_frame_conversation_handle_updates_canonical_state_exactly_once() -> None:
+    """harness-authored done frame carrying a handle: the production reader and
+    app.js must adopt it once and still commit the answer exactly once."""
+    raw = _frames(
+        ("delta", json.dumps({"delta": ANSWER_WITH_MARKUP})),
+        ("done", json.dumps({"done": True, "conversation_id": CONVERSATION_HANDLE})),
+    )
+    result = _run_client([{"name": "handle", "mode": "stream", "raw": raw}])[0]
+    assert result["conversationIds"] == [CONVERSATION_HANDLE], result["conversationIds"]
+    assert result["committed"] == [ANSWER_WITH_MARKUP], result["committed"]
+    assert "completed" in result["lifecycleSets"], result["lifecycleSets"]
