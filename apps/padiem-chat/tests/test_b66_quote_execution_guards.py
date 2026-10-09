@@ -79,7 +79,7 @@ def test_exact_quote_off_guard_has_zero_dispatch_before_registry_and_refunds(run
     async def run():
         await reserve(store)
         with pytest.raises(B66ModelRouteError, match="runtime_unavailable"):
-            await facade.complete(MESSAGES)
+            await facade.complete(MESSAGES, model_id=MODEL)
         assert await _refund_active_reservation() is False
         with pytest.raises(ChatRuntimeError) as caught:
             await client.complete_registered_quote_model(MESSAGES, model=MODEL)
@@ -138,7 +138,7 @@ def test_exact_quote_provider_failure_preserves_class_and_consumes_once(status, 
     async def run():
         await reserve(store)
         with pytest.raises(ChatRuntimeError) as caught:
-            await facade.complete(MESSAGES)
+            await facade.complete(MESSAGES, model_id=MODEL)
         assert caught.value.code == code
         assert "PRIVATE" not in str(caught.value)
         assert await _refund_active_reservation() is False

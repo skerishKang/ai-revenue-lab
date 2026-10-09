@@ -1,5 +1,6 @@
-"""#3760 B66 free-first selection from existing B14 authority, NO provider calls."""
+"""#3760 B66 owner-allowed B14 registered selection, NO provider calls."""
 import asyncio
+from dataclasses import replace
 import json
 
 import pytest
@@ -12,18 +13,21 @@ from app.b66_registered_model_boundary import (
 
 
 # Test-only synthetic route: no real provider/model is selected by fixtures.
-MODEL = "test-fixture/eligible-free-chat"
+MODEL = "test-fixture/eligible-registered-chat"
 PID = "test-fixture"
 
 
 def records(*, free=True, auto_eligible=True, credential=True, enabled=True,
-            ready=True, provider_mode="live", capabilities=("chat", "coding", "free")):
+            ready=True, provider_mode="live", owner_excluded=False,
+            capabilities=("chat", "coding", "free")):
     return (
         {
             "registered_routes": [{
                 "id": MODEL,
                 "provider_id": PID,
                 "free": free,
+                "owner_excluded": owner_excluded,
+                "capabilities": list(capabilities),
                 "explicit_only": not auto_eligible,
                 "auto_eligible": auto_eligible,
             }],
@@ -68,10 +72,10 @@ class FakeB14ReadOnlyRegistry:
         raise AssertionError("unknown path")
 
 
-def select(fake, requirements=None):
-    return asyncio.run(B14FreeFirstQuoteModelResolver(fake).resolve_quote_model(
-        requirements or B66QuoteTaskRequirements()
-    ))
+def select(fake, requirements=None, model_id=MODEL):
+    request = requirements or B66QuoteTaskRequirements()
+    request = replace(request, selected_model_id=model_id)
+    return asyncio.run(B14FreeFirstQuoteModelResolver(fake).resolve_quote_model(request))
 
 
 def deny(fake, expected="selection_unavailable"):
@@ -112,6 +116,8 @@ def test_excluded_candidate_cannot_poison_single_allowed_fixture_selection():
     excluded = "kilo/nvidia-nemotron-3-ultra-550b-a55b-free"
     registry["registered_routes"].append({
         "id": excluded, "provider_id": "kilo", "free": True,
+        "owner_excluded": True,
+        "capabilities": ["chat"],
         "auto_eligible": True, "explicit_only": False,
     })
     registry["catalog"].append({
@@ -127,13 +133,13 @@ def test_excluded_candidate_cannot_poison_single_allowed_fixture_selection():
     assert selected.model_id != excluded
     assert fake.provider_execution_calls == 0
 
-def test_one_registered_free_chat_and_live_credential_selects_exact_id():
+def test_one_owner_allowed_registered_chat_and_live_credential_selects_exact_id():
     fake = FakeB14ReadOnlyRegistry(*records())
     selected = select(fake)
     assert selected.model_id == MODEL
     assert selected.route_id == MODEL
     assert selected.route_count == 1
-    assert selected.owner_policy_id == "b66.quote.free-first.registered.v1"
+    assert selected.owner_policy_id == "OWNER_REGISTERED_AND_ALLOWED"
     assert selected.credential_ready is True
     assert selected.capabilities.issuperset(frozenset(("chat",)))
     assert fake.paths == [
@@ -142,18 +148,52 @@ def test_one_registered_free_chat_and_live_credential_selects_exact_id():
     assert fake.provider_execution_calls == 0
 
 
+@pytest.mark.parametrize("changes", [
+    {"free": False},
+    {"auto_eligible": False},
+    {"free": False, "auto_eligible": False, "capabilities": ("chat",)},
+    {"capabilities": ("chat", "coding")},
+])
+def test_registered_paid_unknown_price_or_manual_pin_is_eligible_when_unique(changes):
+    registry, readiness = records(**changes)
+    # A trusted B14 manual-pin route is valid for the B66 owner-approved
+    # product lane. This does NOT change B14's generic auto-eligible source.
+    fake = FakeB14ReadOnlyRegistry(registry, readiness)
+    selected = select(fake)
+    assert selected.model_id == MODEL
+    assert selected.owner_policy_id == "OWNER_REGISTERED_AND_ALLOWED"
+    assert fake.provider_execution_calls == 0
+
+
 @pytest.mark.parametrize(("changes", "expected"), [
-    ({"free": False}, "selection_unavailable"),
-    ({"auto_eligible": False}, "selection_unavailable"),
     ({"credential": False}, "selection_unavailable"),
     ({"enabled": False}, "selection_unavailable"),
     ({"ready": False}, "selection_unavailable"),
     ({"provider_mode": "mock"}, "selection_unavailable"),
     ({"capabilities": ("coding", "free")}, "selection_unavailable"),
-    ({"capabilities": ("chat", "coding")}, "selection_unavailable"),
+    ({"owner_excluded": True}, "selection_unavailable"),
 ])
-def test_no_paid_or_unready_or_non_chat_or_manual_only_selection(changes, expected):
+def test_unready_unqualified_or_owner_excluded_is_never_selected(changes, expected):
     deny(FakeB14ReadOnlyRegistry(*records(**changes)), expected)
+
+
+def test_missing_b14_owner_exclusion_attestation_fails_closed():
+    registry, readiness = records()
+    registry["registered_routes"][0].pop("owner_excluded")
+    deny(FakeB14ReadOnlyRegistry(registry, readiness))
+
+
+def test_missing_registered_capabilities_fails_closed():
+    registry, readiness = records()
+    registry["registered_routes"][0].pop("capabilities")
+    deny(FakeB14ReadOnlyRegistry(registry, readiness))
+
+
+def test_manual_pin_without_public_catalog_is_valid_if_single_ready():
+    registry, readiness = records(free=False, auto_eligible=False, capabilities=("chat",))
+    registry["catalog"] = []
+    selected = select(FakeB14ReadOnlyRegistry(registry, readiness))
+    assert selected.model_id == MODEL
 
 
 def test_b14_credentials_are_not_a_user_quote_or_model_hint():
@@ -164,23 +204,29 @@ def test_b14_credentials_are_not_a_user_quote_or_model_hint():
     assert "company" not in str(fake.paths)
 
 
-def test_multiple_free_routes_have_no_arbitrary_order_or_fallback():
+def test_multiple_paid_and_manual_routes_have_no_arbitrary_order_or_fallback():
     registry, readiness = records()
-    twin = "kilo/another-free-chat"
+    twin = "test-fixture/another-paid-chat"
     registry["registered_routes"].append({
-        "id": twin, "provider_id": PID, "free": True,
-        "auto_eligible": True, "explicit_only": False,
+        "id": twin, "provider_id": PID, "free": False,
+        "owner_excluded": False,
+        "capabilities": ["chat"],
+        "auto_eligible": False, "explicit_only": True,
     })
     registry["catalog"].append({
-        "id": twin, "provider_id": PID, "tags": ["alpha", "free", "chat"],
+        "id": twin, "provider_id": PID, "tags": ["alpha", "chat"],
     })
     readiness["providers"][0]["models"].append(twin)
-    deny(FakeB14ReadOnlyRegistry(registry, readiness), "selection_ambiguous")
+    # User-selected exact model remains valid even with other ready models.
+    chosen = select(FakeB14ReadOnlyRegistry(registry, readiness))
+    assert chosen.model_id == MODEL
+    chosen_twin = select(FakeB14ReadOnlyRegistry(registry, readiness), model_id=twin)
+    assert chosen_twin.model_id == twin
 
 
 @pytest.mark.parametrize("malformation", [
     "duplicated_model",
-    "missing_catalog",
+    "missing_capabilities",
     "duplicate_provider",
     "provider_mismatch",
     "bad_readiness_models",
@@ -189,8 +235,8 @@ def test_registry_contradiction_never_dispatches(malformation):
     registry, readiness = records()
     if malformation == "duplicated_model":
         registry["registered_routes"].append(registry["registered_routes"][0].copy())
-    elif malformation == "missing_catalog":
-        registry["catalog"] = []
+    elif malformation == "missing_capabilities":
+        registry["registered_routes"][0].pop("capabilities")
     elif malformation == "duplicate_provider":
         readiness["providers"].append(readiness["providers"][0].copy())
     elif malformation == "provider_mismatch":
@@ -305,10 +351,10 @@ def test_cloudflare_service_binding_uses_only_two_exact_get_read_paths():
     ]
 
 
-def test_production_worker_b66_wiring_uses_free_first_authority_not_b62_tier():
+def test_production_worker_b66_wiring_uses_owner_allowed_authority_not_b62_tier():
     from pathlib import Path
     worker = (Path(__file__).resolve().parents[1] / "worker.py").read_text("utf-8")
-    assert "B14FreeFirstQuoteModelResolver(service_transport)" in worker
+    assert "B66ExplicitQuoteModelResolver(service_transport)" in worker
     assert "B14QuoteExactModelExecutor(" in worker
     assert "refund_pre_dispatch=_refund_active_reservation" in worker
     assert "B66RegisteredModelCompletion(" in worker

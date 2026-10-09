@@ -93,6 +93,7 @@ class _RecordingComposedClient:
         skill=None,
         additional_system_context=None,
         attachments=(),
+        model_id=None,
     ):
         self.calls.append(messages)
         return {
@@ -150,7 +151,7 @@ def test_worker_composition_rebinds_b66_interpreter_to_production_client():
     )
     response = client.post(
         "/api/b66/quote/interpret",
-        json={"saved_skill_id": SAVED_ID, "message": PARTIAL_MESSAGE},
+        json={"saved_skill_id": SAVED_ID, "model_id": "test-fixture/quote-projection", "message": PARTIAL_MESSAGE},
     )
 
     assert response.status_code == 200

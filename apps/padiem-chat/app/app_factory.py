@@ -27,6 +27,7 @@ from .b66_certified_preview import B66CertifiedPreviewStore
 from .b66_certified_pdf_routes import b66_certified_pdf, b66_certified_preview_base
 from .b66_quote_routes import (
     b66_quote_interpret,
+    b66_quote_models,
     b66_runtime_config,
     b66_saved_skill_detail,
     b66_saved_skills,
@@ -279,6 +280,7 @@ def create_app(
             methods=["GET"],
         ),
         Route("/api/b66/quote/interpret", b66_quote_interpret, methods=["POST"]),
+        Route("/api/b66/quote/models", b66_quote_models, methods=["GET"]),
         Route("/api/b66/quote/preview-base", b66_certified_preview_base, methods=["GET"]),
         Route("/api/b66/quote/pdf", b66_certified_pdf, methods=["POST"]),
         Route("/api/b66/quotes", b66_quote_history_list, methods=["GET"]),
