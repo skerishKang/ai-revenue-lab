@@ -1265,10 +1265,10 @@
   max-width: 92vw;
   max-height: 88dvh;
   padding: 0;
-  border: 1px solid var(--border, #ccc);
+  border: 1px solid var(--line);
   border-radius: 14px;
-  color: var(--text, inherit);
-  background: var(--surface, #fff);
+  color: var(--text);
+  background: var(--card-bg);
   overflow: hidden;
 }
 .claw-pdf-preview-modal::backdrop { background: rgba(0, 0, 0, 0.72); }
