@@ -206,6 +206,9 @@ class ClawOrchestrationOutcome:
     selected_route_id: str | None = None
     provider_attempt_count: int | None = None
     fallback_used: bool | None = None
+    # #3930: post-execution, correlation-validated P01 event evidence only.
+    # Not live streaming; never export raw message, metadata or tool arguments.
+    p01_event_history: tuple[dict[str, object], ...] = ()
 
     def safe_dict(self) -> dict[str, object]:
         # pause_id / pause_expires_at / trusted_request stay server-side only;
@@ -730,6 +733,27 @@ class P01CoreOrchestrationAdapter:
             self._validate_result_correlation(run, bundle, result)
             for event in result.events:
                 projector.consume(event)
+            # A completed Engine response carries only retrospectively available
+            # canonical events. Never call these live stages; bound the export and
+            # erase free-form event text/metadata at this server trust boundary.
+            history: tuple[dict[str, object], ...] = ()
+            if 0 < len(result.events) <= 128:
+                seen_ids: set[str] = set()
+                clean_events: list[dict[str, object]] = []
+                for event in result.events:
+                    if event.event_id in seen_ids:
+                        continue  # projector already validated identical replay
+                    seen_ids.add(event.event_id)
+                    clean_events.append({
+                        "event_id": event.event_id,
+                        "run_id": event.run_id,
+                        "trace_id": event.trace_id,
+                        "app_id": event.app_id,
+                        "kind": event.kind.value,
+                        "sequence": event.sequence,
+                        "timestamp_iso": event.timestamp_iso,
+                    })
+                history = tuple(clean_events)
 
             if not run.terminal and run.status is not ClawRunStatus.WAITING_APPROVAL:
                 raise P01AdapterError(
@@ -801,6 +825,7 @@ class P01CoreOrchestrationAdapter:
                 selected_route_id=result.execution_result.route.selected_route_id,
                 provider_attempt_count=result.execution_result.route.attempt_count,
                 fallback_used=result.execution_result.route.fallback_used,
+                p01_event_history=history,
             )
         except asyncio.CancelledError:
             self._cancel_run_if_possible(run)
