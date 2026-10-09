@@ -8,7 +8,7 @@ compatibility_flags = ["python_workers"]
 workers_dev = true
 EOF
 
-npx --yes wrangler@4.130.0 dev --config .runtime-r2-read-probe.toml --port 8790 > /tmp/b62-r2-read-workerd.log 2>&1 &
+npx --yes wrangler@4.130.0 dev --config .runtime-r2-read-probe.toml --port 8790 --inspector-port 9234 > /tmp/b62-r2-read-workerd.log 2>&1 &
 WORKER_PID=$!
 
 cleanup() {
