@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
+const { spawnSync } = require("node:child_process");
 const Runner = require("./run-b66-contracts.cjs");
 
 const root = fs.mkdtempSync(path.join(os.tmpdir(), "b66-test-discovery-"));
@@ -50,6 +51,38 @@ try {
     }),
     /B66_COMMAND_FAILED/
   );
+  // Real subprocess negative canaries (no products or credentials mutated).
+  // Broken tests and malformed JS must fail the canonical runner, not just a
+  // fake injected callback. Isolated temp files are deleted in finally.
+  const invokeRealQuietly = (args, cwd) => {
+    const child = spawnSync(process.execPath, args, {
+      cwd, shell: false, encoding: "utf8", timeout: 10000
+    });
+    if (child.error || child.signal || child.status !== 0) {
+      throw new Error("B66_COMMAND_FAILED: " + args.join(" "));
+    }
+  };
+  const failingTest = path.join(tests, "zz-negative-canary.test.cjs");
+  fs.writeFileSync(failingTest, "throw new Error('deliberate_test_failure');\\n".replace(/\\n/g, "\n"));
+  try {
+    assert.throws(() => Runner.runSuite("--tests", {
+      sourceDir: root, testsDir: tests, invoke: invokeRealQuietly
+    }), /B66_COMMAND_FAILED: tests[/\\]zz-negative-canary\.test\.cjs/);
+    console.log("B66_REAL_TEST_FAILURE_PROPAGATES=PASS");
+  } finally {
+    fs.unlinkSync(failingTest);
+  }
+  const brokenSource = path.join(root, "zz-negative-canary.js");
+  fs.writeFileSync(brokenSource, "const invalid = ;\n");
+  try {
+    assert.throws(() => Runner.runSuite("--syntax", {
+      sourceDir: root, testsDir: tests, invoke: invokeRealQuietly
+    }), /B66_COMMAND_FAILED: --check zz-negative-canary\.js/);
+    console.log("B66_REAL_SYNTAX_FAILURE_PROPAGATES=PASS");
+  } finally {
+    fs.unlinkSync(brokenSource);
+  }
+
   console.log("B66_TEST_DISCOVERY_NEGATIVE_AND_POSITIVE=PASS");
 } finally {
   fs.rmSync(root, { recursive: true, force: true });
