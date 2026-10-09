@@ -16,6 +16,13 @@ Three execution modes:
                         from a JSONL fixture, used for offline measurement)
 * ``--allow-network`` -> live provider POST (requires an explicit credential env var)
 
+``--fixture`` is network-denied by construction, not by convention: the selected
+URL set must be fully covered by the fixture file *before* iteration starts, and
+``run_case(offline=True)`` cannot reach the live transport even when a valid
+provider credential is present in the process environment. A missing id exits
+non-zero with ``MISSING_FIXTURE``; an unreadable, malformed, or duplicate-id
+fixture exits with ``INVALID_FIXTURE``. Neither path writes a success record.
+
 Fetch-capable providers are TinyFish and Firecrawl. Daum is inventoried but has no
 page-fetch endpoint in Core (``DaumWebProvider.fetch`` raises ``web_fetch_unavailable``),
 so it is reported as fetch-unsupported rather than silently dropped.
@@ -105,6 +112,18 @@ class MissingCredential(FetchBenchmarkError):
 
 class FetchUnsupported(FetchBenchmarkError):
     code = "FETCH_UNSUPPORTED"
+
+
+class MissingFixture(FetchBenchmarkError):
+    """Offline replay was requested but a selected URL has no fixture entry."""
+
+    code = "MISSING_FIXTURE"
+
+
+class InvalidFixture(FetchBenchmarkError):
+    """The fixture file is unreadable, malformed, or carries duplicate ids."""
+
+    code = "INVALID_FIXTURE"
 
 
 class ResponseTooLarge(FetchBenchmarkError):
@@ -398,11 +417,16 @@ def run_case(
     timeout: float = DEFAULT_TIMEOUT_SECONDS,
     transport: Transport | None = None,
     fixture: dict[str, Any] | None = None,
+    offline: bool = False,
 ) -> dict[str, Any]:
     """Fetch one URL and return a normalized, secret-free measurement record.
 
     ``fixture`` replays a synthetic response (offline, no network). Otherwise a
     real credential is required and ``transport`` performs the network call.
+
+    ``offline=True`` is a hard invariant: the live transport is unreachable and a
+    missing fixture raises ``MissingFixture`` instead of falling back to the
+    network. A fixture passed without ``offline`` still replays offline.
     """
     if not spec.fetch_supported:
         return _record(
@@ -411,19 +435,23 @@ def run_case(
             normalized=None, error=FetchUnsupported.code,
         )
 
-    if fixture is None:
-        credential = os.environ.get(spec.credential_env, "").strip()
-        if not credential:
-            raise MissingCredential(f"{spec.credential_env} is not configured")
-        method, url, headers, body = _request_for(spec, case, credential)
-        status, raw, response_headers = (transport or _perform_request)(method, url, headers, body, timeout)
-        latency_ms: float | None = None
-    else:
+    if offline or fixture is not None:
+        # Offline replay: the network is never reachable from this branch, even
+        # when a valid provider credential is present in the process environment.
+        if fixture is None:
+            raise MissingFixture(f"no offline fixture for url id {case.id}")
         status = int(fixture.get("status", 200))
         raw = base64.b64decode(fixture.get("body_b64", "")) if fixture.get("body_b64") else (
             fixture.get("body", "").encode("utf-8")
         )
         response_headers = {k.lower(): v for k, v in (fixture.get("headers") or {}).items()}
+        latency_ms: float | None = None
+    else:
+        credential = os.environ.get(spec.credential_env, "").strip()
+        if not credential:
+            raise MissingCredential(f"{spec.credential_env} is not configured")
+        method, url, headers, body = _request_for(spec, case, credential)
+        status, raw, response_headers = (transport or _perform_request)(method, url, headers, body, timeout)
         latency_ms = None
 
     if len(raw) > MAX_RESPONSE_BYTES:
@@ -470,15 +498,38 @@ def select_cases(
 
 
 def load_fixtures(path: Path) -> dict[str, dict[str, Any]]:
+    """Load an offline fixture file, rejecting malformed and duplicate rows.
+
+    Raises ``ValueError`` for a row that is not a JSON object, that has no
+    non-empty string ``url_id``, that repeats an ``url_id``, or that carries a
+    non-integer ``status`` / non-string body. Whitespace-only lines are ignored.
+    Raises ``OSError`` when the file itself cannot be read.
+    """
     fixtures: dict[str, dict[str, Any]] = {}
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for lineno, line in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         line = line.strip()
         if not line:
             continue
-        entry = json.loads(line)
-        if not isinstance(entry, dict) or not entry.get("url_id"):
-            raise ValueError("fixture entries must be JSON objects with a url_id")
-        fixtures[str(entry["url_id"])] = entry
+        try:
+            entry = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"fixture line {lineno} is not valid JSON") from exc
+        if not isinstance(entry, dict):
+            raise ValueError(f"fixture line {lineno} must be a JSON object")
+        url_id = entry.get("url_id")
+        if not isinstance(url_id, str) or not url_id.strip():
+            raise ValueError(f"fixture line {lineno} must carry a non-empty string url_id")
+        url_id = url_id.strip()
+        if url_id in fixtures:
+            raise ValueError(f"duplicate fixture url_id: {url_id}")
+        if "status" in entry and (isinstance(entry["status"], bool) or not isinstance(entry["status"], int)):
+            raise ValueError(f"fixture {url_id} status must be an integer")
+        for key in ("body_b64", "body"):
+            if key in entry and not isinstance(entry[key], str):
+                raise ValueError(f"fixture {url_id} {key} must be a string")
+        if "headers" in entry and not isinstance(entry["headers"], dict):
+            raise ValueError(f"fixture {url_id} headers must be an object")
+        fixtures[url_id] = entry
     return fixtures
 
 
@@ -525,6 +576,48 @@ def main(argv: list[str] | None = None) -> int:
     cases = select_cases(load_corpus(args.corpus), set(args.url_id), set(args.category), args.max_urls)
     spec = PROVIDERS[args.provider]
 
+    fixtures: dict[str, dict[str, Any]] = {}
+    if args.fixture:
+        try:
+            fixtures = load_fixtures(args.fixture)
+        except (OSError, ValueError) as exc:
+            print(
+                json.dumps(
+                    {
+                        "mode": "OFFLINE_REPLAY",
+                        "provider": spec.provider,
+                        "error": InvalidFixture.code,
+                        "detail": str(exc)[:200],
+                        "request_count": 0,
+                        "retries": 0,
+                        "production_mutation": 0,
+                    },
+                    ensure_ascii=False,
+                    sort_keys=True,
+                )
+            )
+            return 2
+        # Coverage is validated BEFORE any iteration, so an incomplete fixture
+        # can never fall through to the live transport for a missing id.
+        missing = [case.id for case in cases if case.id not in fixtures]
+        if missing:
+            print(
+                json.dumps(
+                    {
+                        "mode": "OFFLINE_REPLAY",
+                        "provider": spec.provider,
+                        "error": MissingFixture.code,
+                        "missing_url_ids": missing,
+                        "request_count": 0,
+                        "retries": 0,
+                        "production_mutation": 0,
+                    },
+                    ensure_ascii=False,
+                    sort_keys=True,
+                )
+            )
+            return 2
+
     if not args.allow_network and not args.fixture:
         print(
             json.dumps(
@@ -545,18 +638,21 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 0
 
-    fixtures = load_fixtures(args.fixture) if args.fixture else {}
-    mode = "OFFLINE_REPLAY" if args.fixture else "LIVE"
+    offline = bool(args.fixture)
+    mode = "OFFLINE_REPLAY" if offline else "LIVE"
     handle, should_close = _output_handle(args.output)
     try:
         for case in cases:
             try:
-                record = run_case(spec, case, timeout=args.timeout, fixture=fixtures.get(case.id))
+                record = run_case(
+                    spec, case, timeout=args.timeout,
+                    fixture=fixtures.get(case.id), offline=offline,
+                )
             except FetchBenchmarkError as exc:
                 record = _error_record(spec, case, exc)
                 record["mode"] = mode
                 print(json.dumps(record, ensure_ascii=False, sort_keys=True), file=handle, flush=True)
-                if exc.code in {"MISSING_CREDENTIAL", "HTTP_429"}:
+                if exc.code in {"MISSING_CREDENTIAL", "MISSING_FIXTURE", "HTTP_429"}:
                     return 2
                 continue
             record["mode"] = mode
