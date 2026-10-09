@@ -26,3 +26,24 @@
 분류 소스: `.github/scripts/b14_model_registration_ci_plan.py`. 오프라인 회귀: `.github/tests/test_b14_model_registration_ci_plan.py`.
 
 **주의:** CI가 빨라졌다는 이유로 모든 모델 API 파라미터나 품질 점수를 검증 완료로 해석하지 않는다. 공용 등록 JSON의 실제 실행에서의 권위는 유지한다.
+
+## 합성 모델 등록 PR 실제 GitHub Actions 측정 (2026-10-10)
+
+- 운영 `main`의 모델 등록소는 수정하지 않음. 폐기 예정인 **DRAFT** [PR #4033](https://github.com/skerishKang/ai-revenue-lab/pull/4033)에만 기존 Google provider의 비실재 합성 정확 모델 ID `google/padiem-ci-synthetic-probe-261010`를 12번째로 추가하고 기존 모델 목록·설정·그룹·Secret 값을 유지함. 이 PR은 **병합 금지**.
+- 빠른 레인 실측 HEAD: `a4d5cfa81af0b7c93d798f0ce16b38cd03cc4286`. 분류기가 `model_registration_only`를 출력하였고 B14/B62 전체 CI는 정상 skip, B14 집중 테스트·B62 등록소 테스트·Worker 번들·정책·견적 계약·평가 소스 계약은 통과함. 요구 상태 `Locked Alpha contract`와 `b62-test` 둘 다 SUCCESS.
+- 워크플로 실제 실행 시간(각 run의 `updated_at - created_at`, 초; 동일 PR 내 병렬 실행이며 합산 runner 시간과는 다름):
+
+| GitHub workflow | Run ID | 실측 경과 시간 | 결과 |
+| --- | --- | ---: | --- |
+| B62 Padiem Chat CI | [37996092750](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37996092750) | **44초** | SUCCESS |
+| Validate B14 Alpha | [37996092701](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37996092701) | 36초 | SUCCESS |
+| B14 Python Worker JSON Bundle Preflight | [37996092690](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37996092690) | 38초 | SUCCESS |
+| Operations Policy Guard | [37996092736](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37996092736) | 37초 | SUCCESS |
+| B14 Historical Comparative Model Benchmark | [37996092760](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37996092760) | 17초 | SUCCESS |
+| B66 Quote Interpretation Benchmark | [37996092742](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37996092742) | 18초 | SUCCESS |
+| B62 Unified Browser QA | [37996092702](https://github.com/skerishKang/ai-revenue-lab/actions/runs/37996092702) | 12초 | SUCCESS |
+
+- 동일 SHA의 가장 늦게 끝난 워크플로 기준 **44초**로, 사전 정의한 2~3분 목표는 **이 합성 append-only PR에 한해 달성**. 기존 B62 전체 테스트 사례 [#4024](https://github.com/skerishKang/ai-revenue-lab/pull/4024)는 **8분 08초**였지만 서로 다른 변경 유형이므로 엄밀한 A/B 비교가 아님. 사람이 소요하는 실제 제공업체 등록·API 품질평가·배포는 이 44초에 포함되지 않음.
+- 첫 검증에서 발견된 기존 고정 목록 결함 2건(평가 CLI가 정확히 11개여야 한다는 주장, Google 모델이 정확히 4개여야 한다는 주장)은 [PR #4035](https://github.com/skerishKang/ai-revenue-lab/pull/4035)로 수정. 원래 Owner가 승인한 기존 모델을 subset으로 계속 강제하면서 canonical 동적 개수를 허용. #4035는 별도 전체 CI 필수.
+- `main push`의 분류는 `.github/scripts/b14_model_registration_ci_plan.py::classify_github`의 `push` 이벤트 분기 및 GitHub compare API를 통해 구현되어 있으며, #4027 병합 push의 mixed 변경은 **전체 레인**으로 동작한 것을 관찰. **빠른 모델 append-only 실제 main push는 의도적으로 시행하지 않았으므로 별도 실측 PASS로 주장하지 않는다**.
+- 범용 CI fanout 및 Pending 방지는 상위 [#3989](https://github.com/skerishKang/ai-revenue-lab/issues/3989) 추적을 유지한다. 이 검증을 위해 운영 Secret·실제 모델·Production Deploy Gate는 변경하지 않았다.
