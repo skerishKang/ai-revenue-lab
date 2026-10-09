@@ -193,6 +193,7 @@ def _require_owner_allowed_live_model(
         or ("qwen" in upstream and platform_provider_id == "b-ai")
         or "motif-3" in upstream
         or "gpt-5.6-luna" in upstream
+        or excluded_from_owner_customer_selection(upstream_model)
     )
     if excluded_from_owner_customer_selection(model_id) or owner_excluded_upstream:
         raise PilotNotConfigured(
