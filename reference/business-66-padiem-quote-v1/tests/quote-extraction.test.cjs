@@ -102,6 +102,23 @@ fail({ source: { kind: "image" }, items: "not-array" }, "invalid_items");
 fail({ source: { kind: "image" }, items: [null] }, "invalid_item_0");
 fail({ source: { kind: "image" }, items: [{ qty: -1 }] }, "invalid_item_qty");
 fail({ source: { kind: "image" }, items: [{ unitPrice: "12a3" }] }, "invalid_item_unit_price");
+const koreanDate = ok({
+  source: { kind: "text" },
+  quote: { issueDate: "2026년 10월 9일" }
+});
+assert.equal(koreanDate.quote.issueDate, "2026-10-09",
+  "unambiguous Korean date spelling is normalized to existing ISO schema");
+assert.equal(ok({ source: { kind: "text" }, quote: { issueDate: "2024년2월29일" } }).quote.issueDate,
+  "2024-02-29", "valid Korean leap day is preserved");
+assert.equal(ok({ source: { kind: "text" }, quote: { issueDate: "2026-10-09" } }).quote.issueDate,
+  "2026-10-09", "existing ISO date stays unchanged");
+assert.equal(ok({ source: { kind: "text" }, quote: { issueDate: null } }).quote.issueDate,
+  null, "missing dates are never invented");
+fail({ source: { kind: "text" }, quote: { issueDate: "2026년 2월 29일" } }, "invalid_issue_date");
+fail({ source: { kind: "text" }, quote: { issueDate: "2026년 13월 1일" } }, "invalid_issue_date");
+fail({ source: { kind: "text" }, quote: { issueDate: "내일" } }, "invalid_issue_date");
+fail({ source: { kind: "text" }, quote: { issueDate: "2026/10/09" } }, "invalid_issue_date");
+
 fail({ source: { kind: "image" }, quote: { issueDate: "2026-13-40" } }, "invalid_issue_date");
 fail({ source: { kind: "image" }, quote: { validDays: 0 } }, "invalid_valid_days");
 fail({
