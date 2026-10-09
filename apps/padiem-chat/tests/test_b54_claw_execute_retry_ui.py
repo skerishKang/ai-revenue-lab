@@ -127,9 +127,40 @@ def test_no_automatic_or_timer_driven_execution() -> None:
     # No hidden POST path: no XHR stream and no background flush of the form.
     for token in ("XMLHttpRequest", "sendBeacon", "keepalive", "location.reload", "localStorage", "sessionStorage"):
         assert token not in app
-    # A cooldown strictly gates the single execute entry point.
+    # A cooldown, and an unresolved dispatch of the request currently composed,
+    # both strictly gate the single execute entry point.
     assert "if (clawRetryRemaining() > 0) return; // explicit retry only after the pre-dispatch cooldown" in app
-    assert "const blocked = busy || clawRetryRemaining() > 0;" in app
+    assert "if (clawCurrentDispatchIsUncertain()) return; // #3382: no re-send of an unresolved request" in app
+    assert "const blocked = busy || clawRetryRemaining() > 0 || clawCurrentDispatchIsUncertain();" in app
+    # Identity-based, never a released-once boolean: one edit must not clear it.
+    assert "clawExecuteUncertain" not in app
+    assert "clawUncertainKeys.add(clawLastDispatchKey)" in app
+
+
+def test_uncertain_latch_keys_on_wire_content_not_unused_form_fields() -> None:
+    app = _app_source()
+    start = app.index("function clawVisibleExecutePayload()")
+    builder = app[start: app.index("function noteClawContentEdited(", start)]
+    # One shape, shared by the dispatch and the duplicate comparison.
+    assert builder.count("function clawVisibleExecutePayload()") == 1
+    assert builder.count("function clawExecuteWireKey(") == 1
+    for wire_field in (
+        "payload.content",
+        "payload.channel",
+        "payload.action",
+        "payload.sender_hint",
+        "payload.tier",
+        "payload.conversation_id",
+    ):
+        assert wire_field in builder, wire_field
+    # The model ID selector never reaches this request. Counting it as new work
+    # was the bypass CTO review found on #3382, so it must stay out of the key.
+    assert "clawModelIdInput" not in builder
+    assert "const executePayload = clawVisibleExecutePayload();" in app
+    # One assembly point only: a second inline literal is how the key and the
+    # wire bytes diverge again.
+    assert app.count("const executePayload = {") == 1
+    assert "clawLastDispatchKey = clawExecuteWireKey(executePayload);" in app
 
 
 def test_ambiguous_failures_get_guidance_instead_of_a_retry_affordance() -> None:
@@ -170,9 +201,21 @@ def test_retry_target_is_the_visible_form_not_a_hidden_snapshot() -> None:
     assert "clawRetrySnapshot" not in app
     body = app[app.index("async function runClawExecution()"):]
     body = body[: body.index("if (clawExecuteButton) {")]
-    assert "const body = (input.value || \"\").trim();" in body
-    assert "const channelValue = clawChannel?.value || \"other\";" in body
-    assert "const senderText = (clawSender?.value || \"\").trim();" in body
+    # #3382 moved request assembly into one builder shared with the duplicate
+    # check, so the live-DOM reads are asserted on the builder itself. The entry
+    # point must still derive everything at click time and hold no snapshot.
+    assert "const executePayload = clawVisibleExecutePayload();" in body
+    assert "const body = executePayload.content;" in body
+    builder = app[app.index("function clawVisibleExecutePayload()"):]
+    builder = builder[: builder.index("\n  }")]
+    for live_read in (
+        "(input.value || \"\").trim()",
+        "clawChannel?.value || \"other\"",
+        "clawAction?.value || \"quote\"",
+        "(clawSender?.value || \"\").trim()",
+        "conversationState.getConversationId()",
+    ):
+        assert live_read in builder, live_read
     # The user's request text is preserved on failure: nothing clears the input.
     assert "input.value = \"\";" not in body
 
@@ -266,6 +309,17 @@ function makeEl(tag) {
   el.click = () => (el.listeners.click || []).forEach((fn) => fn({ preventDefault() {}, target: el, key: "" }));
   el.requestSubmit = () => (el.listeners.submit || []).forEach((fn) => fn({ preventDefault() {} }));
   el.matches = () => false;
+  // Assigning .value must model a real user edit: the app separates a new draft
+  // from a re-send by listening to input/change, so the shim fires those.
+  let rawValue = "";
+  Object.defineProperty(el, "value", {
+    get: () => rawValue,
+    set: (v) => {
+      rawValue = v;
+      (el.listeners.input || []).forEach((fn) => fn({ type: "input", target: el }));
+      (el.listeners.change || []).forEach((fn) => fn({ type: "change", target: el }));
+    },
+  });
   return el;
 }
 
@@ -290,6 +344,9 @@ function add(id, tag) { const e = makeEl(tag); e.id = id; byId[id] = e; return e
   "clawInboxEmpty","clawInboxList","clawInboxRetry","clawRunHistory","clawRunHistoryRefresh",
   "clawRunHistoryLoading","clawRunHistoryError","clawRunHistoryList","clawRunHistoryEmpty",
   "clawRetryHint","clawRetryBox","clawRetryCopy","clawRetryButton",
+  // index.html:677 declares this input; the execute request never carries it, so
+  // the duplicate guard must treat changing it as NOT new work.
+  "clawModelIdInput",
 ].forEach((id) => add(id, "div"));
 
 // Mirror the declared markup: the recovery nodes start hidden/disabled.
@@ -654,7 +711,11 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   if (!checks.NO_AUTOMATIC_POST_AFTER_AMBIGUOUS_FAILURE) fail("NO_AUTOMATIC_POST_AFTER_AMBIGUOUS_FAILURE");
 
   // 14) A pre-dispatch 503 (workspace scope/storage/identity) is not ambiguous:
-  //     it keeps its own bounded copy and makes no run-replay claim.
+  //     it keeps its own bounded copy and makes no run-replay claim. Composing
+  //     different work is what releases case 13's uncertain-dispatch latch.
+  byId.messageInput.value = "503 경로 확인";
+  checks.EDITING_COMPOSING_RELEASES_UNCERTAIN_LATCH = byId.clawExecuteButton.disabled === false;
+  if (!checks.EDITING_COMPOSING_RELEASES_UNCERTAIN_LATCH) fail("EDITING_COMPOSING_RELEASES_UNCERTAIN_LATCH");
   executeCall = () => jsonResponse(503, { ok: false, error: { code: "workspace_scope_unavailable" } });
   expectedPosts += 1;
   byId.clawExecuteButton.click();
@@ -683,6 +744,155 @@ const emitWindow = (type) => (winListeners[type] || []).forEach((fn) => fn({ typ
   if (!checks.NETWORK_FAILURE_IS_AMBIGUOUS_AND_NOT_REPLAYED) fail("NETWORK_FAILURE_IS_AMBIGUOUS_AND_NOT_REPLAYED");
   await tick(1500);
   if (execPosts().length !== afterNetwork) fail("NETWORK_FAILURE_REPLAYED");
+
+  // 16) #3382: after an uncertain outcome the SAME content must not be re-sent.
+  //     Case 15 left the form unresolved on its own body; forced clicks on both
+  //     execute entry points must produce zero additional POSTs. The whole wire
+  //     body is captured, because identity is the request, not one field.
+  const applyBody = (b) => {
+    byId.messageInput.value = b.content;
+    byId.clawChannel.value = b.channel;
+    byId.clawAction.value = b.action;
+    byId.clawSender.value = b.sender_hint || "";
+  };
+  const afterLatch = execPosts().length;
+  const uncertainA = Object.assign({}, lastExec().body);
+  if (byId.clawExecuteButton.disabled !== true) fail("UNCERTAIN_LATCH_LEFT_EXECUTE_ENABLED");
+  byId.clawExecuteButton.click();
+  byId.clawRetryButton.click();
+  await tick(120);
+  checks.SAME_CONTENT_RESEND_BLOCKED_AFTER_UNCERTAIN_OUTCOME =
+    execPosts().length === afterLatch &&
+    byId.clawExecuteButton.disabled === true &&
+    byId.clawExecuteButton.getAttribute("aria-disabled") === "true" &&
+    byId.clawRetryButton.disabled === true &&
+    byId.clawRetryHint.hidden === false;
+  if (!checks.SAME_CONTENT_RESEND_BLOCKED_AFTER_UNCERTAIN_OUTCOME) fail("SAME_CONTENT_RESEND_BLOCKED_AFTER_UNCERTAIN_OUTCOME");
+
+  // 17) The block gates the manual-execute lane only. The draft/preview submit
+  //     stays available on the unchanged form, so ordinary work is not blocked.
+  const previewBefore = requests.filter((r) => r.url === "/api/claw/manual-intake/preview").length;
+  byId.clawManualForm.requestSubmit();
+  await tick(80);
+  checks.PREVIEW_STAYS_AVAILABLE_WHILE_EXECUTE_IS_LATCHED =
+    requests.filter((r) => r.url === "/api/claw/manual-intake/preview").length === previewBefore + 1 &&
+    execPosts().length === afterLatch &&
+    byId.clawExecuteButton.disabled === true;
+  if (!checks.PREVIEW_STAYS_AVAILABLE_WHILE_EXECUTE_IS_LATCHED) fail("PREVIEW_STAYS_AVAILABLE_WHILE_EXECUTE_IS_LATCHED");
+
+  // 18) Directive 2: a DIFFERENT request is new work and runs normally.
+  byId.messageInput.value = "새 작업 B";
+  executeCall = () => jsonResponse(200, { ok: true, result: { title: "quote", result_text: "ran", artifact: null } });
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  const afterB = execPosts().length;
+  checks.NEW_WORK_RUNS_AFTER_UNCERTAIN_OUTCOME =
+    afterB === afterLatch + 1 &&
+    lastExec().body.content === "새 작업 B" &&
+    byId.clawExecuteButton.disabled === false &&
+    byId.clawRetryHint.hidden === true;
+  if (!checks.NEW_WORK_RUNS_AFTER_UNCERTAIN_OUTCOME) fail("NEW_WORK_RUNS_AFTER_UNCERTAIN_OUTCOME: " + JSON.stringify(lastExec().body));
+
+  // 19) Directive 1: editing to B then RESTORING A re-blocks A. B's success is a
+  //     definite outcome for B only; A's dispatch is still unresolved, so a latch
+  //     that released on the first edit would let the identical POST through here.
+  applyBody(uncertainA);
+  byId.clawExecuteButton.click();
+  byId.clawRetryButton.click();
+  await tick(120);
+  checks.RESTORING_UNCERTAIN_CONTENT_REBLOCKS_IT =
+    execPosts().length === afterB &&
+    byId.clawExecuteButton.disabled === true;
+  if (!checks.RESTORING_UNCERTAIN_CONTENT_REBLOCKS_IT) fail("RESTORING_UNCERTAIN_CONTENT_REBLOCKS_IT");
+
+  // 19) CTO review of #3382: the model ID field is not part of the execute
+  //     request, so rotating it alone must NOT release the latch, while a change
+  //     to real wire content still composes exactly one new run.
+  byId.messageInput.value = "모델 ID 우회 확인";
+  executeCall = () => jsonResponse(502, { ok: false, error: { code: "engine_execution_failed" } });
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  const afterBypassTry = execPosts().length;
+  if (lastExec().body.model_id !== undefined) fail("EXECUTE_REQUEST_CARRIES_MODEL_ID");
+  byId.clawModelIdInput.value = "agnes-ai/agnes-3.0-flash";
+  byId.clawExecuteButton.click();
+  byId.clawRetryButton.click();
+  await tick(120);
+  checks.MODEL_ID_ONLY_CHANGE_KEEPS_LATCH =
+    execPosts().length === afterBypassTry &&
+    byId.clawExecuteButton.disabled === true &&
+    byId.clawRetryButton.disabled === true;
+  if (!checks.MODEL_ID_ONLY_CHANGE_KEEPS_LATCH) fail("MODEL_ID_ONLY_CHANGE_KEEPS_LATCH");
+  byId.clawChannel.value = "email";
+  executeCall = () => jsonResponse(200, { ok: true, result: { title: "quote", result_text: "ran", artifact: null } });
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  checks.WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE =
+    execPosts().length === afterBypassTry + 1 &&
+    lastExec().body.channel === "email" &&
+    lastExec().body.content === "모델 ID 우회 확인" &&
+    lastExec().body.model_id === undefined;
+  if (!checks.WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE) {
+    fail("WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE: " + JSON.stringify(lastExec().body));
+  }
+
+  // 20) Directive 3: when TWO requests both fail ambiguously, both stay blocked
+  //     and a freshly composed third request still runs.
+  executeCall = () => jsonResponse(502, { ok: false, error: { code: "engine_execution_failed" } });
+  byId.clawChannel.value = "email";
+  byId.messageInput.value = "둘 다 502 P";
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  const uncertainP = Object.assign({}, lastExec().body);
+  byId.messageInput.value = "둘 다 502 Q";
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  const uncertainQ = Object.assign({}, lastExec().body);
+  const afterPQ = execPosts().length;
+  applyBody(uncertainP);
+  byId.clawExecuteButton.click();
+  await tick(60);
+  applyBody(uncertainQ);
+  byId.clawExecuteButton.click();
+  await tick(60);
+  checks.TWO_UNCERTAIN_REQUESTS_BOTH_STAY_BLOCKED =
+    execPosts().length === afterPQ && byId.clawExecuteButton.disabled === true;
+  if (!checks.TWO_UNCERTAIN_REQUESTS_BOTH_STAY_BLOCKED) fail("TWO_UNCERTAIN_REQUESTS_BOTH_STAY_BLOCKED");
+
+  // 21) Directive 4: uncertainty belongs to the request that failed, not to the
+  //     form. Composing B while A is still in flight must let B run after A dies,
+  //     and A must stay blocked afterwards.
+  let settlePending = null;
+  executeCall = () => new Promise((res) => { settlePending = res; });
+  byId.messageInput.value = "in flight A";
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(40);
+  const inFlightA = Object.assign({}, lastExec().body);
+  byId.messageInput.value = "in flight B";
+  settlePending(jsonResponse(502, { ok: false, error: { code: "engine_execution_failed" } }));
+  await tick(80);
+  checks.IN_FLIGHT_FAILURE_LEAVES_OTHER_COMPOSITION_USABLE =
+    byId.clawExecuteButton.disabled === false;
+  if (!checks.IN_FLIGHT_FAILURE_LEAVES_OTHER_COMPOSITION_USABLE) fail("IN_FLIGHT_FAILURE_LEAVES_OTHER_COMPOSITION_USABLE");
+  executeCall = () => jsonResponse(200, { ok: true, result: { title: "quote", result_text: "ran", artifact: null } });
+  expectedPosts += 1;
+  byId.clawExecuteButton.click();
+  await tick(80);
+  const afterInFlight = execPosts().length;
+  applyBody(inFlightA);
+  byId.clawExecuteButton.click();
+  await tick(60);
+  checks.IN_FLIGHT_B_RUNS_WHILE_A_STAYS_BLOCKED =
+    execPosts().length === afterInFlight &&
+    lastExec().body.content === "in flight B" &&
+    byId.clawExecuteButton.disabled === true;
+  if (!checks.IN_FLIGHT_B_RUNS_WHILE_A_STAYS_BLOCKED) fail("IN_FLIGHT_B_RUNS_WHILE_A_STAYS_BLOCKED");
 
   // No dispatched execute POST exists that no user action asked for.
   checks.EXECUTE_POST_COUNT_MATCHES_USER_ACTIONS = execPosts().length === expectedPosts;
@@ -746,6 +956,16 @@ def test_behavioral_execute_recovery_journey() -> None:
         "NO_AUTOMATIC_POST_AFTER_AMBIGUOUS_FAILURE",
         "PRE_DISPATCH_503_IS_NOT_AMBIGUOUS",
         "NETWORK_FAILURE_IS_AMBIGUOUS_AND_NOT_REPLAYED",
+        "EDITING_COMPOSING_RELEASES_UNCERTAIN_LATCH",
+        "SAME_CONTENT_RESEND_BLOCKED_AFTER_UNCERTAIN_OUTCOME",
+        "PREVIEW_STAYS_AVAILABLE_WHILE_EXECUTE_IS_LATCHED",
+        "NEW_WORK_RUNS_AFTER_UNCERTAIN_OUTCOME",
+        "RESTORING_UNCERTAIN_CONTENT_REBLOCKS_IT",
+        "MODEL_ID_ONLY_CHANGE_KEEPS_LATCH",
+        "WIRE_CONTENT_CHANGE_RELEASES_LATCH_AND_DISPATCHES_ONCE",
+        "TWO_UNCERTAIN_REQUESTS_BOTH_STAY_BLOCKED",
+        "IN_FLIGHT_FAILURE_LEAVES_OTHER_COMPOSITION_USABLE",
+        "IN_FLIGHT_B_RUNS_WHILE_A_STAYS_BLOCKED",
     ):
         assert checks.get(name) is True, name
 
@@ -766,6 +986,9 @@ def test_behavioral_execute_posts_stay_within_existing_authority() -> None:
         "/api/claw/memory",
         "/api/claw/inbox/tasks",
         "/api/claw/manual-intake/execute",
+        # Registered draft route (app_factory.py:296), exercised to prove the
+        # execute latch does not collateral-block the preview lane.
+        "/api/claw/manual-intake/preview",
     }
     urls = {r["url"].split("?")[0] for r in payload["requests"]}
     assert urls <= allowed, urls - allowed
