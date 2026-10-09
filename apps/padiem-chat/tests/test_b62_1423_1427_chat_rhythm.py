@@ -5,7 +5,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = ROOT.parents[1]
 ALIGNMENT_CSS = (ROOT / "static/padiem-glass-gutter-alignment.css").read_text(encoding="utf-8")
 GUTTER_QA = (REPO_ROOT / ".github/scripts/b62_chat_gutter_visual_qa.py").read_text(encoding="utf-8")
-VISUAL_WORKFLOW = (REPO_ROOT / ".github/workflows/b62-browser-visual-qa.yml").read_text(encoding="utf-8")
+VISUAL_WORKFLOW = (REPO_ROOT / ".github/workflows/b62-browser-qa-unified.yml").read_text(encoding="utf-8")
 
 
 def test_1423_outer_surfaces_stay_wide_while_prose_has_readable_measure() -> None:

@@ -66,6 +66,17 @@ def choose_lanes(
     }
 
 
+def choose_manual_lanes(
+    lane: str, patterns_by_job: dict[str, list[str]]
+) -> dict[str, bool]:
+    """Manually dispatch one original QA job or explicitly select all."""
+    if lane == "all":
+        return {job: True for job in patterns_by_job}
+    if lane not in patterns_by_job:
+        raise ValueError("Invalid manual B62 QA lane selection")
+    return {job: job == lane for job in patterns_by_job}
+
+
 def fetch_changed_paths(event: dict, environ: dict[str, str]) -> set[str] | None:
     pr = event.get("pull_request") or {}
     number = pr.get("number") or event.get("number")
@@ -112,12 +123,18 @@ def fetch_changed_paths(event: dict, environ: dict[str, str]) -> set[str] | None
 
 def main() -> int:
     patterns = load_paths()
-    try:
-        event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8"))
-        changed = fetch_changed_paths(event, os.environ)
-    except (KeyError, ValueError, OSError, json.JSONDecodeError):
+    manual = os.environ.get("GITHUB_EVENT_NAME") == "workflow_dispatch"
+    if manual:
+        lane = os.environ.get("B62_MANUAL_LANE", "")
+        chosen = choose_manual_lanes(lane, patterns)
         changed = None
-    chosen = choose_lanes(changed, patterns)
+    else:
+        try:
+            event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8"))
+            changed = fetch_changed_paths(event, os.environ)
+        except (KeyError, ValueError, OSError, json.JSONDecodeError):
+            changed = None
+        chosen = choose_lanes(changed, patterns)
     output = os.environ.get("GITHUB_OUTPUT")
     if not output:
         raise RuntimeError("GITHUB_OUTPUT is missing: cannot report QA selection")
@@ -126,16 +143,20 @@ def main() -> int:
         for job, selected in chosen.items():
             safe_name = job.replace("-", "_")
             out.write(f"{safe_name}={'true' if selected else 'false'}\n")
+    selection_label = (
+        ("manual lane " + lane) if manual
+        else ("fallback all" if changed is None else "PR file list")
+    )
     summary = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary:
         with open(summary, "a", encoding="utf-8") as out:
             out.write("### B62 Browser QA selection\n\n")
-            out.write(f"Changed-file classifier: {'fallback all' if changed is None else 'PR file list'}\n\n")
+            out.write(f"Changed-file classifier: {selection_label}\n\n")
             for job, selected in chosen.items():
                 out.write(f"- {job}: {'RUN' if selected else 'SKIP'}\n")
     print(
         "B62_QA_PATH_PLAN=",
-        "fallback-all" if changed is None else "filtered",
+        "manual-" + lane if manual else ("fallback-all" if changed is None else "filtered"),
         "RUN=",
         sum(chosen.values()),
         "TOTAL=",

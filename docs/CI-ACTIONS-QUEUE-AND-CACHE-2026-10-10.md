@@ -60,3 +60,28 @@ The improvement reduces independent workflow runs but does not reduce the number
 5. Rollback is to revert this single PR in full: restore 16 old PR triggers and remove unified YAML, ownership manifest and classifier in one step.
 
 The separate self-hosted GitHub Actions runner issue #3990 is not activated.
+
+## Stage 2c: Remove sixteen redundant manual-only B62 QA YAML files
+
+The 16 browser QA jobs were moved into b62-browser-qa-unified.yml (PR #4000).
+The old individual workflow YAMLs were retained only for manual dispatch.
+GitHub manual execution history: 15 of 16 had zero runs; one visual browser
+QA had seven, so equivalent manual selection must be retained.
+
+The unified workflow now also accepts workflow_dispatch with one lane input:
+all or any of the original 16 QA job IDs. Manual dispatch selects the chosen
+job (or all 16). PR events still use the original per-job changed-file
+ownership manifest. Unknown manual inputs fail closed. The 16 legacy workflow
+YAMLs are deleted. All job bodies, caching, runner images, test commands,
+artifact uploads and PR check contexts are preserved in the unified workflow.
+
+This reduces tracked workflow definitions by sixteen but DOES NOT reduce the
+already unified count of independent PR-triggered workflow runs further.
+To execute the formerly separate visual QA on main:
+
+    gh workflow run b62-browser-qa-unified.yml --repo skerishKang/ai-revenue-lab --ref main -f lane=browser-qa
+
+Use -f lane=all or any of the original 16 job IDs for other manual runs.
+Previously dispatched standalone workflow names are retired for future use.
+Rollback as one revert of the cleanup PR. Production, migrations, authority,
+credentials and deployment gates are excluded from this cleanup.

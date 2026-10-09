@@ -18,52 +18,41 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
     def setUp(self):
         self.paths = planner.load_paths()
 
-    def test_all_original_qas_migrated_to_one_dispatcher(self):
+    def test_one_workflow_owns_all_16_original_jobs_and_manual_selection(self):
         self.assertEqual(len(self.paths), 16)
         master = MASTER.read_text(encoding="utf-8")
         self.assertIn("  pull_request:", master)
+        self.assertIn("  workflow_dispatch:", master)
         self.assertIn("  pull-requests: read", master)
         self.assertIn("cancel-in-progress: true", master)
         self.assertIn("python .github/scripts/b62_browser_qa_path_plan.py", master)
+        self.assertIn("B62_MANUAL_LANE:", master)
         self.assertIn("needs: plan", master)
+        self.assertIn("          - all", master)
         for job, patterns in self.paths.items():
             with self.subTest(job=job):
-                old_files = [
-                    p for p in FOLDER.glob("b62-*.yml")
-                    if p.name != MASTER.name
-                    and ("\n  " + job + ":\n") in p.read_text(encoding="utf-8")
-                ]
-                self.assertEqual(len(old_files), 1)
-                original = old_files[0].read_text(encoding="utf-8")
-                self.assertIn("  workflow_dispatch:", original)
-                self.assertNotIn("\n  pull_request:", original)
-                self.assertIn("cancel-in-progress: true", original)
-                self.assertIn("Cache pinned Playwright Chromium", original)
                 self.assertIn("\n  " + job + ":\n", master)
                 self.assertIn("needs.plan.outputs." + job.replace("-", "_"), master)
-                self.assertIn(old_files[0].relative_to(ROOT).as_posix(), patterns)
+                self.assertIn("          - " + job + "\n", master)
+                self.assertIn("Cache pinned Playwright Chromium", master)
+        self.assertEqual(master.count("Cache pinned Playwright Chromium"), 16)
+        # No standalone QA workflow is retained just for a duplicate manual trigger.
+        self.assertEqual(
+            [file.name for file in FOLDER.glob("b62-*-browser-qa.yml")],
+            [],
+        )
 
-    def test_original_job_steps_and_environment_are_identical(self):
-        import re
-        master = MASTER.read_text(encoding="utf-8")
-        for job in self.paths:
-            with self.subTest(job=job):
-                originals = [
-                    p for p in FOLDER.glob("b62-*.yml")
-                    if p.name != MASTER.name
-                    and ("\n  " + job + ":\n") in p.read_text(encoding="utf-8")
-                ]
-                self.assertEqual(len(originals), 1)
-                old_text = originals[0].read_text(encoding="utf-8")
-                regex = r"(?ms)^  " + re.escape(job) + r":\n(.*?)(?=^  [a-z][a-z0-9_-]*:\n|\Z)"
-                before = re.search(regex, old_text)
-                after = re.search(regex, master)
-                self.assertIsNotNone(before)
-                self.assertIsNotNone(after)
-                new_lines = after.group(1).splitlines()
-                self.assertEqual(new_lines[0], "    needs: plan")
-                self.assertIn("needs.plan.outputs." + job.replace("-", "_"), new_lines[1])
-                self.assertEqual("\n".join(new_lines[2:]).strip(), before.group(1).strip())
+    def test_targeted_manual_dispatch_matches_original_one_job_behavior(self):
+        for lane in self.paths:
+            with self.subTest(lane=lane):
+                actual = planner.choose_manual_lanes(lane, self.paths)
+                self.assertEqual([job for job, enabled in actual.items() if enabled], [lane])
+        self.assertTrue(all(planner.choose_manual_lanes("all", self.paths).values()))
+        for invalid in ("", "ALL", "unknown-job", " b62 ", "production-deploy"):
+            with self.subTest(invalid=invalid):
+                with self.assertRaises(ValueError):
+                    planner.choose_manual_lanes(invalid, self.paths)
+
     def test_runtime_changes_select_affected_lanes(self):
         chosen = planner.choose_lanes({"apps/padiem-chat/static/app.js"}, self.paths)
         self.assertEqual(sum(chosen.values()), 15)
@@ -111,9 +100,10 @@ class B62UnifiedBrowserQAContract(unittest.TestCase):
                 {"pull_request": {"number": 123, "changed_files": 20}}, env
             ))
 
-    def test_github_workflow_path_is_selected(self):
-        self.assertTrue(planner.path_matches(".github/workflows/b62-browser-visual-qa.yml",
-                                              self.paths["browser-qa"]))
+    def test_own_dispatcher_changes_trigger_all_lane_checks(self):
+        for path in planner.PLAN_FILES:
+            self.assertTrue(all(planner.choose_lanes({path}, self.paths).values()))
+
 
 
 if __name__ == "__main__":
