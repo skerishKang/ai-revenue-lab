@@ -3,6 +3,31 @@ name: B62 Unified Browser QA
 # One PR workflow run instead of 16; names of the original 16 QA jobs remain intact.
 on:
   pull_request:
+  workflow_dispatch:
+    inputs:
+      lane:
+        description: Select one B62 browser QA lane, or all
+        required: true
+        type: choice
+        default: all
+        options:
+          - all
+          - accessibility-browser-qa
+          - auth-history-browser-qa
+          - browser-qa
+          - conversation-delete-browser-qa
+          - conversation-export-browser-qa
+          - deep-research-browser-qa
+          - document-browser-qa
+          - error-retry-browser-qa
+          - image-browser-qa
+          - mobile-touch-target-qa
+          - project-delete-browser-qa
+          - project-files-browser-qa
+          - projects-browser-qa
+          - saved-outputs-browser-qa
+          - structured-answer-browser-qa
+          - web-search-browser-qa
 
 permissions:
   contents: read
@@ -41,6 +66,7 @@ jobs:
         id: classify
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          B62_MANUAL_LANE: ${{ inputs.lane }}
         run: python .github/scripts/b62_browser_qa_path_plan.py
 
   accessibility-browser-qa:

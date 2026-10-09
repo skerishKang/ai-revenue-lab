@@ -21,15 +21,11 @@ class BrowserCacheSeedContract(unittest.TestCase):
         self.assertNotIn("secrets.", text)
         self.assertNotIn("wrangler", text.lower())
         seed_key = next(line.strip() for line in text.splitlines() if line.strip().startswith("key: "))
-        pr_workflows = []
-        for file in WORKFLOWS.glob("b62-*.yml"):
-            if file.name in ("b62-browser-cache-seed.yml", "b62-browser-qa-unified.yml"):
-                continue
-            data = file.read_text(encoding="utf-8")
-            if "Cache pinned Playwright Chromium" in data:
-                pr_workflows.append(file)
-                self.assertIn(seed_key, data, file.name)
-        self.assertEqual(len(pr_workflows), 16)
+        unified = (WORKFLOWS / "b62-browser-qa-unified.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertEqual(unified.count(seed_key), 16)
+        self.assertEqual(unified.count("Cache pinned Playwright Chromium"), 16)
 
 
 if __name__ == "__main__":

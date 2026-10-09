@@ -31,17 +31,7 @@ ANSWER = "제품 표면 인증용 결정론적 응답입니다."
 
 REQUIRED_EXACT_HEAD_WORKFLOWS = (
     "B62 Padiem Chat CI",
-    "B62 Browser Visual QA",
-    "B62 Accessibility Browser QA",
-    "B62 Auth History Browser QA",
-    "B62 Saved Outputs Browser QA",
-    "B62 Projects Browser QA",
-    "B62 Project Files Browser QA",
-    "B62 Document Browser QA",
-    "B62 Image Browser QA",
-    "B62 Error Retry Browser QA",
-    "B62 Conversation Export Browser QA",
-    "B62 Conversation Delete Browser QA",
+    "B62 Unified Browser QA",
     "P01 Deployment Boundary Guard",
 )
 

@@ -22,47 +22,26 @@ def test_b62_browser_qa_does_not_fan_out_for_tests_or_worker_entrypoint_only() -
     it must explicitly exclude those two non-browser surfaces.
     """
 
-    browser_workflows = sorted(WORKFLOWS.glob("b62-*-browser-qa.yml"))
-    assert browser_workflows, "expected B62 browser QA workflows"
-
-    # The #3989 PR orchestrator retains all original positive/negative paths
-    # in a canonical manifest; manual workflow_dispatch files no longer own
-    # pull_request filtering. This guard must inspect the effective policy,
-    # not mistake manual-only workflow YAML for missing path exclusions.
     manifest_path = REPO / ".github" / "ci" / "b62_browser_qa_paths.json"
-    manifest = (
-        json.loads(manifest_path.read_text(encoding="utf-8"))["jobs"]
-        if manifest_path.exists()
-        else {}
-    )
-    for path in browser_workflows:
-        document = yaml.safe_load(path.read_text(encoding="utf-8"))
-        events = document.get("on", document.get(True))
-        assert isinstance(events, dict), path.name
-        if "pull_request" in events:
-            paths = events["pull_request"]["paths"]
-        else:
-            assert set(events) == {"workflow_dispatch"}, (
-                f"{path.name} has no PR trigger but is not a manual-only QA"
-            )
-            jobs = list(document["jobs"])
-            assert len(jobs) == 1, path.name
-            assert jobs[0] in manifest, (
-                f"{path.name} lost its delegated PR path filter"
-            )
-            paths = manifest[jobs[0]]
-        assert isinstance(paths, list), path.name
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))["jobs"]
+    assert len(manifest) == 16
+    unified = (WORKFLOWS / "b62-browser-qa-unified.yml").read_text(encoding="utf-8")
+    assert not list(WORKFLOWS.glob("b62-*-browser-qa.yml"))
+    for job, paths in manifest.items():
+        assert f"  {job}:" in unified, job
+        assert isinstance(paths, list), job
         if "apps/padiem-chat/**" not in paths:
             continue
         assert "!apps/padiem-chat/tests/**" in paths, (
-            f"{path.name} broadly watches apps/padiem-chat/** but does not "
+            f"{job} broadly watches apps/padiem-chat/** but does not "
             "exclude tests-only changes"
         )
         assert "!apps/padiem-chat/worker.py" in paths, (
-            f"{path.name} broadly watches apps/padiem-chat/** but does not "
+            f"{job} broadly watches apps/padiem-chat/** but does not "
             "exclude the Cloudflare Worker entrypoint that this browser QA "
             "does not execute"
         )
+
 
 def test_repository_wide_test_scope_policy_is_canonical() -> None:
     policy = REPO / "docs" / "operations" / "TEST_SCOPE_AND_DELIVERY_POLICY.md"
