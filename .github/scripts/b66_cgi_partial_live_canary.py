@@ -50,8 +50,10 @@ ALLOWED_UPSTREAM_CLASSES = frozenset(
 ALLOWED_PUBLIC_ERRORS = frozenset(
     {"quote_interpretation_failed", "quote_input_unrecognized"}
 )
+# The B66 server derives canonical missing field names (not indexed UI paths).
+# See b66_quote_conversation._server_missing_fields.
 ALLOWED_MISSING_FIELDS = frozenset(
-    {"recipient.company", "items[0].name", "items[0].qty", "items[0].unitPrice"}
+    {"recipient", "items", "name", "qty", "unitPrice"}
 )
 
 
@@ -351,7 +353,7 @@ def run_live(username: str, password: str) -> int:
     accepted = (
         interpreted.status == 200
         and isinstance(candidate, dict)
-        and sanitize_missing(candidate.get("missing")) == ("items[0].unitPrice",)
+        and sanitize_missing(candidate.get("missing")) == ("unitPrice",)
         and summary.get("SAFE_RECIPIENT_MATCH") == "TRUE"
         and summary.get("SAFE_ITEM_MATCH") == "TRUE"
         and summary.get("SAFE_QTY_MATCH") == "TRUE"
@@ -370,7 +372,7 @@ def self_test() -> int:
     assert sanitize_upstream_class("secret-provider-detail") == "ABSENT_OR_UNKNOWN"
     assert sanitize_public_error("quote_interpretation_failed") == "quote_interpretation_failed"
     assert sanitize_public_error("raw-secret") == "ABSENT_OR_UNKNOWN"
-    assert sanitize_missing(["items[0].unitPrice"]) == ("items[0].unitPrice",)
+    assert sanitize_missing(["unitPrice"]) == ("unitPrice",)
     assert sanitize_missing(["private.foo"]) == ("UNKNOWN_FIELD",)
     assert _bounded_diagnostic("items[0].unitPrice") == "items[0].unitPrice"
     assert _bounded_diagnostic("raw value with spaces") == "PRESENT_REDACTED"

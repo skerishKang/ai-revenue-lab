@@ -93,13 +93,24 @@ class CanaryContractTests(unittest.TestCase):
 
     def test_missing_fields_are_bounded(self):
         self.assertEqual(
-            module.sanitize_missing(["items[0].unitPrice"]),
-            ("items[0].unitPrice",),
+            module.sanitize_missing(["unitPrice"]),
+            ("unitPrice",),
         )
         self.assertEqual(
             module.sanitize_missing(["private.raw.field"]),
             ("UNKNOWN_FIELD",),
         )
+
+    def test_missing_fields_follow_current_server_contract(self):
+        source = (SCRIPT.parents[2] / "apps" / "padiem-chat" / "app" /
+                  "b66_quote_conversation.py").read_text(encoding="utf8")
+        self.assertIn('for field in ("name", "qty", "unitPrice"):', source)
+        self.assertIn('missing.append(field)', source)
+        self.assertEqual(module.ALLOWED_MISSING_FIELDS,
+                         frozenset({"recipient", "items", "name", "qty", "unitPrice"}))
+        # Older indexed diagnostic labels are not returned by this server.
+        self.assertEqual(module.sanitize_missing(["items[0].unitPrice"]),
+                         ("UNKNOWN_FIELD",))
 
     def test_free_text_diagnostic_is_redacted(self):
         self.assertEqual(
