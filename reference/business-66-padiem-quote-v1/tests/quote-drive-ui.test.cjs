@@ -304,6 +304,79 @@ function harness(options) {
     }
   }
 
+  /* ── 3c. #3871: 실제 브라우저 시작 경로(installStartHook→bootstrap)에서도
+     작성 중 견적 교체 확인 대화상자가 배선된다. 승인하면 교체가 적용되고,
+     취소하면 기존 견적이 그대로 보존된다(편집기를 비우라고 안내하지 않는다). ── */
+  {
+    const incoming = JSON.parse(JSON.stringify(draftFixture()));
+    incoming.meta.quoteNo = "PQ-REPLACE-1";
+    incoming.items = [{ id: "item-1", name: "교체 품목", qty: 3, unitPrice: 200000 }];
+    const media = packageTextFor(incoming, "pkg-replace");
+
+    async function openViaStartHook(confirmImpl) {
+      const h = harness({
+        hasMeaningfulDraft: true,
+        files: [{ id: "json-1", name: "saved.json", mimeType: JSON_MIME, trashed: false, owners: [{ me: true }] }],
+        metadataById: {
+          "json-1": {
+            id: "json-1", name: "saved.json", mimeType: JSON_MIME,
+            size: Buffer.byteLength(media, "utf8"), trashed: false,
+            owners: [{ me: true }], capabilities: { canDownload: true }
+          }
+        },
+        media: media
+      });
+      await h.connect();
+      const prompts = [];
+      const scope = {
+        document: h.doc,
+        B66QuoteAppBridge: h.bridge,
+        /* 시작 훅은 전역 팩토리로 클라이언트를 만든다 — 하네스 클라이언트를 돌려준다. */
+        B66QuoteDriveClient: { create: () => h.client },
+        B66QuoteDriveContract: Contract,
+        B66_DRIVE_CLIENT_ID: CLIENT_ID,
+        confirm: (message) => { prompts.push(message); return confirmImpl(message); }
+      };
+      scope.document.readyState = "complete";
+      Ui.resetBootstrapForTest();
+      const originalWindow = globalThis.window;
+      const originalDocument = globalThis.document;
+      globalThis.window = scope;
+      globalThis.document = h.doc;
+      try {
+        assert.equal(Ui.installStartHook(scope, Ui), true, "START_HOOK_INSTALLED_FOR_CONFIRM");
+        await settle();
+      } finally {
+        if (originalWindow === undefined) delete globalThis.window; else globalThis.window = originalWindow;
+        if (originalDocument === undefined) delete globalThis.document; else globalThis.document = originalDocument;
+      }
+      const handle = scope.B66QuoteDriveUiInstance;
+      assert.ok(handle && handle.ok === true, "START_HOOK_CONFIRM_MOUNTED");
+      handle.click("open");
+      await settle();
+      handle.click("confirmOpen");
+      await settle();
+      Ui.resetBootstrapForTest();
+      return { h, handle, prompts };
+    }
+
+    /* 승인 경로: 대화상자가 실제로 뜨고, 교체가 적용된다. */
+    const approved = await openViaStartHook(() => true);
+    assert.equal(approved.prompts.length, 1, "START_HOOK_APPROVE_PROMPTED");
+    assert.ok(approved.prompts[0].indexOf("계속할까요") !== -1, "START_HOOK_PROMPT_MESSAGE");
+    assert.ok(approved.h.writes().length >= 1, "START_HOOK_APPROVE_APPLIES_REPLACE");
+    assert.equal(approved.h.current.draft.meta.quoteNo, "PQ-REPLACE-1", "START_HOOK_APPROVE_DRAFT_REPLACED");
+    assert.ok(approved.handle.statusText().indexOf("견적을 불러왔습니다") !== -1, "START_HOOK_APPROVE_STATUS");
+
+    /* 취소 경로: 대화상자는 뜨지만 기존 견적이 보존된다. */
+    const cancelled = await openViaStartHook(() => false);
+    assert.equal(cancelled.prompts.length, 1, "START_HOOK_CANCEL_PROMPTED");
+    assert.equal(cancelled.h.writes().length, 0, "START_HOOK_CANCEL_NO_REPLACE");
+    assert.equal(cancelled.h.current.draft.meta.quoteNo, "PQ-20261009-011", "START_HOOK_CANCEL_DRAFT_UNCHANGED");
+    assert.ok(cancelled.handle.statusText().indexOf("취소") !== -1, "START_HOOK_CANCEL_STATUS");
+    console.log("DRIVE_OPEN_CONFIRM_WIRED_APPROVE_CANCEL=PASS");
+  }
+
   /* ── 5. 연결 후 정상 저장 → 성공 메시지 ── */
   {
     const h = harness({ uploads: [{ mimeType: JSON_MIME }, { mimeType: PDF_MIME }] });
