@@ -4221,12 +4221,16 @@
   // exposes to the signed-in owner and never mints its own run/history truth.
   const clawRunHistory = document.getElementById("clawRunHistory");
   const clawRunHistoryRefresh = document.getElementById("clawRunHistoryRefresh");
+  const clawRunHistoryExpand = document.getElementById("clawRunHistoryExpand");
   const clawRunHistoryLoading = document.getElementById("clawRunHistoryLoading");
   const clawRunHistoryError = document.getElementById("clawRunHistoryError");
   const clawRunHistoryList = document.getElementById("clawRunHistoryList");
   const clawRunHistoryEmpty = document.getElementById("clawRunHistoryEmpty");
 
   let clawRunHistoryInFlight = false;
+  // #3932: server caps owner-scoped history at MAX_CLAW_RUNS=30.
+  // Expanding is a read-only, explicit user action, not pagination authority.
+  let clawRunHistoryLimit = 10;
   let pendingClawRunFocusId = "";
   let clawRunHistoryVisibilityEpoch = 0;
   const clawRunHistoryPdfControllers = new Set();
@@ -4364,11 +4368,12 @@
     if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = false;
     if (clawRunHistoryList) clawRunHistoryList.hidden = true;
     if (clawRunHistoryEmpty) clawRunHistoryEmpty.hidden = true;
+    if (clawRunHistoryExpand) clawRunHistoryExpand.hidden = true;
     // On refresh, retire the old cards before dropping their DOM and PDF Blob.
     clearClawRunHistoryPdfPreviews();
     if (clawRunHistoryList) clawRunHistoryList.replaceChildren();
     try {
-      const response = await fetch("/api/claw/runs?limit=10", { headers: { "Accept": "application/json" }, cache: "no-store" });
+      const response = await fetch(`/api/claw/runs?limit=${clawRunHistoryLimit}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
       // A response begun before logout/workspace departure is not a license
       // to paint old owner file cards into a newer authenticated session.
@@ -4384,6 +4389,10 @@
         return;
       }
       if (clawRunHistoryList) clawRunHistoryList.hidden = false;
+      // Equal to the requested limit suggests (but does not prove) older runs.
+      // Never invent a count or claim further runs exist until the next GET.
+      if (clawRunHistoryExpand) clawRunHistoryExpand.hidden =
+        clawRunHistoryLimit !== 10 || data.runs.length < 10;
       data.runs.forEach((run) => {
         if (!run || typeof run.run_id !== "string") return;
         clawRunHistoryList?.appendChild(renderClawRunCard(run));
@@ -4397,7 +4406,10 @@
         }
       }
     } catch (error) {
+      if (visibilityEpoch !== clawRunHistoryVisibilityEpoch ||
+          authState.authenticated !== true || clawRunHistory.hidden) return;
       if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = true;
+      if (clawRunHistoryExpand) clawRunHistoryExpand.hidden = true;
       setClawRunHistoryStatus(error instanceof Error ? error.message : clawT("claw-runs-error"));
     }
   }
@@ -4422,12 +4434,23 @@
     if (show) loadClawRunHistory();
     else {
       clawRunHistoryVisibilityEpoch += 1;
+      clawRunHistoryLimit = 10;
+      if (clawRunHistoryExpand) clawRunHistoryExpand.hidden = true;
       clearClawRunHistoryPdfPreviews();
     }
   }
 
   if (clawRunHistoryRefresh) {
     clawRunHistoryRefresh.addEventListener("click", () => loadClawRunHistory());
+  }
+  if (clawRunHistoryExpand) {
+    clawRunHistoryExpand.addEventListener("click", () => {
+      if (clawRunHistoryInFlight || clawRunHistoryLimit !== 10 ||
+          authState.authenticated !== true || clawRunHistory.hidden) return;
+      clawRunHistoryLimit = 30;
+      clawRunHistoryExpand.hidden = true;
+      void loadClawRunHistory();
+    });
   }
 
   // ---------------------------------------------------------------------------
