@@ -1312,7 +1312,7 @@
             return true;
           }
           const message = clawGeneralRequest
-            ? window.PadiemClawRecoveryTruth.copy("unknown", document.documentElement.lang)
+            ? (window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang) || uiT("claw-general-check-runs"))
             : data && data.error && typeof data.error.message === "string"
               ? data.error.message : uiT("stream-continue-failed");
           if (!paragraph) throw chatTransport.errorFor(data, message);
@@ -1363,7 +1363,7 @@
       if (paragraph) {
         if (clawGeneralRequest) {
           renderStreamError(article,
-            window.PadiemClawRecoveryTruth.copy("unknown", document.documentElement.lang),
+            (window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang) || uiT("claw-general-check-runs")),
             outboundMessages, skill, contextSnapshot, true);
         } else {
           // Preserve the original standalone Chat catch path and its existing
@@ -1450,7 +1450,7 @@
         clawGeneralRequest && error?.clawFailureDetail === "engine_provider_rate_limited"
           ? uiT("claw-general-provider-limit")
           : clawGeneralRequest
-            ? window.PadiemClawRecoveryTruth.copy("unknown", document.documentElement.lang)
+            ? (window.PadiemClawRecoveryTruth?.copy?.("unknown", document.documentElement.lang) || uiT("claw-general-check-runs"))
             : (error instanceof Error ? error.message : uiT("try-again")),
         outboundMessages,
         skill,
