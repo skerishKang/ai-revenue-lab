@@ -25,6 +25,16 @@ from app.b66_registered_model_boundary import B66ModelRouteError, B66QuoteTaskRe
 REPO = Path(__file__).resolve().parents[3]
 B14_APP_DIR = REPO / "apps" / "korean-ai-platform"
 B14_GETS = ("/api/pilot/models", "/api/pilot/provider-readiness")
+
+
+def _registered_ids_from_owner_registry() -> set[str]:
+    """Follow B14's current owner-approved JSON, not a stale fixed model count."""
+    registry_path = B14_APP_DIR / "app" / "pilot" / "b14_models.json"
+    payload = json.loads(registry_path.read_text(encoding="utf-8"))
+    models = payload["models"]
+    ids = {row["id"] for row in models}
+    assert len(ids) == len(models), "Owner registry contains duplicate model IDs"
+    return ids
 GOOGLE_IDS = {
     "google/gemini-3.1-flash-lite",
     "google/gemini-3.5-flash-lite",
@@ -156,7 +166,7 @@ def test_real_b14_source_registered_routes_and_google_manual_only(b14_source_get
         "kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
         "kilo/poolside-laguna-s-2.1-free",
     }
-    assert len(rows) == 10
+    assert set(by_id) == _registered_ids_from_owner_registry()
     assert removed.isdisjoint(by_id)
     assert all(not row["auto_eligible"] for row in rows)
     assert all(not row["owner_excluded"] for row in rows)
@@ -228,7 +238,7 @@ def test_live_mode_not_customer_authority_and_no_default_replacement(b14_source_
     public = [row for row in rows if row.get("public") is True]
     # The historical single Kilo public route was deleted by Owner.
     assert public == []
-    assert len(rows) == 10
+    assert {row["id"] for row in rows} == _registered_ids_from_owner_registry()
     assert all(not row["auto_eligible"] for row in rows)
     assert not any(row["id"].startswith("google/") and row["auto_eligible"]
                    for row in rows)
