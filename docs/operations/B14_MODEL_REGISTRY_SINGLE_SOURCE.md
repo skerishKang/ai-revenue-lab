@@ -1,3 +1,7 @@
+<!-- B14_OFFICIAL_PARAMETER_AUDIT_20261010 -->
+> **2026-10-10 최신 해석:** [B14 공식 파라미터·재시험 판단 감사](../models/final-evaluation/B14_OFFICIAL_PARAMETER_REVALIDATION_2026-10-10.md)를 먼저 확인하세요. 현재 canonical 등록은 **10모델/7제공자**입니다. 아래 '9개'는 2026-10-09 역사적 현황입니다. 기존 평가에서 사용한 temperature=0 및 공통 max_tokens는 공식 권장 설정으로 간주하지 않습니다. 공식 공급사 기본값/추론/출력 예산을 검증하는 별도 재시험과 B14 전달 검증 전에는 최종 성능 우열로 사용하지 않습니다. 모델 자동 선택, 대체 라우팅 또는 운영 배포를 승인하는 문서가 아닙니다.
+<!-- /B14_OFFICIAL_PARAMETER_AUDIT_20261010 -->
+
 # B14 중앙 모델 레지스트리 — 단일 원본 운영 계약
 
 > **OWNER CORRECTION 2026-10-10:** `experiential/qwen3.8-flash-next-uncensored` is the tenth canonical B14 model (seven providers).
