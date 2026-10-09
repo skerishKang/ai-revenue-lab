@@ -557,6 +557,16 @@
   function missingQuestion(missing, candidate) {
     const targets = candidate ? requiredMissingTargets(candidate) : [];
     const target = targets[0];
+    if (target && target.field === "qty" && state.pendingQuote) {
+      // #3916: never accept an estimate as a final numeric quantity.
+      // Server also removes unconfirmed qty from the normalized candidate.
+      const original = state.pendingQuote.originalText.split("\n추가 질문:", 1)[0];
+      const unit = "(?:미터|박스|세트|묶음|kg|KG|mm|cm|m2|EA|ea|개|대|장|톤|식|본|롤|통|병|쌍|건|벌|포|m|M|㎡)";
+      const rough = new RegExp("(?:약|대략|대충|한)\\s*\\d[\\d,.]*\\s*" + unit + "|\\d[\\d,.]*\\s*(?:~|～|∼|-)\\s*\\d[\\d,.]*\\s*" + unit + "|\\d[\\d,.]*\\s*" + unit + "\\s*(?:정도|쯤|내외|가량|안팎)");
+      if (rough.test(original)) {
+        return "대략적으로 말씀하신 수량을 확인해야 합니다. 최종 수량을 정확한 숫자와 단위로 다시 알려 주세요.";
+      }
+    }
     if (target && target.groupIndex !== undefined) {
       return (target.groupIndex + 1) + "번째 상세그룹의 " + (target.detailIndex + 1) + "번째 품목: " + MISSING_QUESTIONS[target.field];
     }
