@@ -261,7 +261,22 @@
     if (clawGeneralRequest) {
       const hint = document.createElement("p");
       hint.textContent = uiT("claw-general-check-runs");
-      box.append(strong, p, hint);
+      // #3935: navigation only. This button opens the existing owner-scoped
+      // GET /api/claw/runs history and never replays the failed P01 POST.
+      const openRuns = document.createElement("button");
+      openRuns.type = "button";
+      openRuns.className = "claw-inbox-retry claw-check-runs-button";
+      openRuns.textContent = uiT("claw-general-open-runs");
+      openRuns.disabled = authState.authenticated !== true;
+      openRuns.addEventListener("click", () => {
+        if (authState.authenticated !== true) return;
+        openClawWorkspace(); // refresh is handled by existing owner-scoped history UI
+        const history = document.getElementById("clawRunHistory");
+        if (!history || history.hidden) return;
+        history.scrollIntoView?.({ block: "start", behavior: "smooth" });
+        history.querySelector?.("#clawRunHistoryRefresh")?.focus?.();
+      });
+      box.append(strong, p, hint, openRuns);
       return box;
     }
     retry.addEventListener("click", async () => {
