@@ -19,20 +19,20 @@
       "sha256": "ab5b92e38f54dcff5d1d4280dabcf8c5461dafd588886bf55592cc8d7da8d4b4"
     },
     "glm53/template/quote_template.json": {
-      "bytes": 24562,
-      "sha256": "01ad88a938036b3b9c25bb4b0b39c9ee9099e288511f73cf462da4c6a79c3cd3"
+      "bytes": 23506,
+      "sha256": "b40a597025ebb9a7be49d66fb135c88b7a93e90cf7788229f20a74a2f4b6e6fd"
     },
     "sol61/certificate.json": {
-      "bytes": 3326,
-      "sha256": "126510adda348750a635d35f52a3d3377163ffd3d9082d1e9400d5538df12066"
+      "bytes": 3255,
+      "sha256": "2a5b987463ab32bb1dbd40c9ae139916b0eba203a7238ae17d78e9727e0c9084"
     },
     "sol61/engine/font_support.py": {
       "bytes": 11312,
       "sha256": "2683db32f6b3d403350ab6dfc9f531055d5ed48a6d8e88700180e06d70329f42"
     },
     "sol61/engine/quote_template.py": {
-      "bytes": 29214,
-      "sha256": "a70f56caf422578dec60f75458034652f2976691b52d02433fa3f3c919341116"
+      "bytes": 28756,
+      "sha256": "0bffb86cbd40531c793cb3e105d8137bedd69bef172bb6625ad77ed4ffb939d5"
     },
     "sol61/engine/slots.cjs": {
       "bytes": 4619,
@@ -67,8 +67,8 @@
       "sha256": "0bc1197cc2d424606e824d15288b9bc16c2d8bfb5755b314cd02f7b0edeb4b87"
     },
     "sol61/template/template.json": {
-      "bytes": 2661024,
-      "sha256": "872e4d5e02c63edd285dfa5d0b56fbcd14909ece00663a4616d87621f673208a"
+      "bytes": 2571513,
+      "sha256": "b280e1ad11ccbcfa7da6416c05fe0ae3802e570bb01045bed7c35d754524aa08"
     },
     "source/original-public.xlsx": {
       "bytes": 104487,
@@ -79,8 +79,6 @@
       "sha256": "ab5b92e38f54dcff5d1d4280dabcf8c5461dafd588886bf55592cc8d7da8d4b4"
     }
   },
-  "unrelated_customer_uploaded_templates_in_public_git": false,
-  "standard_reference_includes_owner_authorized_source_values": true,
   "glm53_scope": "comparison_only_not_customer_safe_retains_old_text",
   "historical_sol_certificate_refers_to_original_private_bundle": true,
   "name": "CGI standard quotation template (Kim Beom-shin)",
@@ -97,5 +95,7 @@
   "source_original_xlsx_retained_in_private_vault": true,
   "source_original_xlsx_sha256": "9fcabb7294b4feba4fa0c769452fd6527ebba1d9f94a8c761d4bc40dd99f12f5",
   "source_vault_immutable": true,
-  "system_font_binaries_in_git": false
+  "standard_reference_includes_owner_authorized_source_values": true,
+  "system_font_binaries_in_git": false,
+  "unrelated_customer_uploaded_templates_in_public_git": false
 }
