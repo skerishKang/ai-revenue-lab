@@ -131,6 +131,7 @@ def _snapshot(
     version_payload: object,
     settings_payload: object,
     owner_id: str,
+    existing_database_id: str,
 ) -> dict:
     try:
         before_id = resolve_served_version_id(deployments_before)
@@ -175,6 +176,26 @@ def _snapshot(
     )
     if any(services.get(name) != target for name, target in needed.items()):
         raise ReleasePreflightError("TRUSTED_SERVICE_AUTHORITY_DRIFT")
+    secrets = {b["name"] for b in bindings if b.get("type") == "secret_text"}
+    essential_secret = (
+        "P01_ENGINE_CREDENTIAL" if worker == "padiem-chat"
+        else "PADIEM_ENGINE_CALLER_REGISTRY_V1"
+    )
+    if essential_secret not in secrets:
+        raise ReleasePreflightError("P01_CALLER_SECRET_MISSING")
+    existing_d1s = {
+        b["name"]: b.get("database_id") or b.get("id")
+        for b in bindings if b.get("type") == "d1"
+    }
+    if worker == "padiem-chat":
+        if existing_d1s != {"PADIEM_CHAT_DB": existing_database_id}:
+            raise ReleasePreflightError("PRIMARY_D1_AUTHORITY_DRIFT")
+    elif (
+        existing_d1s.get("ENGINE_CONTINUATION") != existing_database_id
+        or len(existing_d1s) != 6
+        or set(existing_d1s.values()) != {existing_database_id}
+    ):
+        raise ReleasePreflightError("ENGINE_CONTINUATION_D1_AUTHORITY_DRIFT")
 
     annotations = version.get("annotations")
     if not isinstance(annotations, dict) or set(annotations) - OBSERVED_ANNOTATIONS:
@@ -231,7 +252,11 @@ def prepare_release(
     output = []
     for worker, count in EXPECTED_WORKERS:
         before, after, detail, settings = workers[worker]
-        output.append(_snapshot(worker, count, before, after, detail, settings, ids[OWNER_NAME]))
+        expected_primary = ids["padiem-chat-db" if worker == "padiem-chat" else "padiem-engine"]
+        output.append(_snapshot(
+            worker, count, before, after, detail, settings, ids[OWNER_NAME],
+            expected_primary,
+        ))
     return {
         "mode": "OWNER_D1_GET_ONLY_PREPARATION",
         "source_main": main_sha,
