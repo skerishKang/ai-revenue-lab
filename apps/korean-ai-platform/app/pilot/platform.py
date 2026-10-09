@@ -149,6 +149,54 @@ def _request_headers(
     )
 
 
+def _log_agnes_429_evidence(
+    provider_id: str, status: int, headers: httpx.Headers, body_text: str
+) -> None:
+    """Log only allow-listed 429 metadata, never a response body or credential.
+
+    A 429 may be account quota, provider capacity, or an intermediary edge.
+    Content type and Cloudflare headers are *signals*, not proof of WAF blocking.
+    This diagnostic must not affect the existing fail-closed error contract.
+    """
+    if provider_id != "agnes-ai" or status != 429:
+        return
+
+    media_type = headers.get("content-type", "").split(";", 1)[0].strip().lower()
+    media = "json" if "json" in media_type else (
+        "html" if "html" in media_type else "other"
+    )
+    reason = "unclassified"
+    if media == "json":
+        try:
+            data = json.loads(body_text[:4096])
+            error = data.get("error") if isinstance(data, dict) else None
+            if isinstance(error, dict):
+                identifiers = " ".join(
+                    str(error.get(field, "")).lower()[:100]
+                    for field in ("code", "type")
+                )
+                if "quota" in identifiers or "balance" in identifiers:
+                    reason = "quota"
+                elif "rate" in identifiers or "too_many" in identifiers:
+                    reason = "rate_limit"
+                elif "busy" in identifiers or "capacity" in identifiers:
+                    reason = "capacity"
+                elif "block" in identifiers or "waf" in identifiers:
+                    reason = "policy"
+        except (ValueError, TypeError):
+            pass
+
+    logger.warning(
+        "agnes_upstream_429_provenance media=%s reason_group=%s "
+        "retry_after_present=%s cf_ray_present=%s server_cloudflare=%s",
+        media,
+        reason,
+        bool(headers.get("retry-after")),
+        bool(headers.get("cf-ray")),
+        headers.get("server", "").strip().lower() == "cloudflare",
+    )
+
+
 def _raise_upstream_error(
     status: int, provider_id: str = "", body_text: str = ""
 ) -> None:
@@ -277,6 +325,9 @@ async def call_platform_chat_completions(
         raise UpstreamServerError()
 
     if response.status_code < 200 or response.status_code >= 300:
+        _log_agnes_429_evidence(
+            platform_provider_id, response.status_code, response.headers, response.text
+        )
         _raise_upstream_error(
             response.status_code, platform_provider_id, response.text
         )
@@ -411,6 +462,9 @@ async def stream_platform_chat_completions(
                     # Read the small error body so provider-specific 429
                     # normalization (#2003) can inspect it.
                     error_body = (await response.aread()).decode("utf-8", "replace")
+                    _log_agnes_429_evidence(
+                        platform_provider_id, response.status_code, response.headers, error_body
+                    )
                     _raise_upstream_error(
                         response.status_code, platform_provider_id, error_body
                     )
