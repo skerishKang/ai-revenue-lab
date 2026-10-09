@@ -227,5 +227,55 @@ class TelegramDocumentTransportTests(unittest.TestCase):
         self.assertEqual(result["result"], {})
 
 
+    def test_existing_adapter_to_real_port_multipart_success(self):
+        """Executable #3666 adapter -> new multipart port -> bounded receipt."""
+        import test_telegram_artifact_delivery as fixture
+
+        adapter, _, trusted_binding, material = fixture._adapter(send=self.port)
+        request = fixture._request()
+        conn = FakeConnection()
+        with patch("kagent.telegram_document_transport.http.client.HTTPSConnection",
+                   return_value=conn), patch(
+            "kagent.telegram_document_transport.ssl.create_default_context",
+            return_value=object(),
+        ):
+            receipt = adapter.deliver(request)
+        self.assertEqual(receipt.terminal_status.value, "succeeded")
+        self.assertEqual(receipt.external_side_effect_count, 1)
+        self.assertTrue(receipt.correlates_with(request))
+        self.assertEqual(len(conn.requests), 1)
+        self.assertIn(material.document_bytes, conn.requests[0][2])
+        self.assertEqual(trusted_binding.token_calls, 1)
+        self.assertEqual(trusted_binding.chat_id_calls, 1)
+        self.assertTrue(conn.closed)
+        self.assertNotIn(fixture.PROVIDER_TOKEN.decode("ascii"), str(receipt.public_projection()))
+        self.assertNotIn(str(fixture.PROVIDER_CHAT_ID), str(receipt.public_projection()))
+
+    def test_existing_adapter_maps_transport_rate_limit_to_canonical_receipt(self):
+        """No local retry: reuse #3631/#3666 failed_retryable taxonomy."""
+        import test_telegram_artifact_delivery as fixture
+
+        adapter, _, _, _ = fixture._adapter(send=self.port)
+        response = FakeResponse(
+            status=429,
+            body=json.dumps({"ok": False, "error_code": 429,
+                             "description": "private token could appear here",
+                             "parameters": {"retry_after": 18}}).encode("utf-8"),
+        )
+        conn = FakeConnection(response)
+        with patch("kagent.telegram_document_transport.http.client.HTTPSConnection",
+                   return_value=conn), patch(
+            "kagent.telegram_document_transport.ssl.create_default_context",
+            return_value=object(),
+        ):
+            receipt = adapter.deliver(fixture._request())
+        self.assertEqual(receipt.terminal_status.value, "failed_retryable")
+        self.assertEqual(receipt.external_side_effect_count, 0)
+        self.assertEqual(receipt.retry_count, 0)
+        self.assertEqual(len(conn.requests), 1)
+        self.assertTrue(conn.closed)
+        self.assertNotIn("private token", str(receipt.public_projection()))
+
+
 if __name__ == "__main__":
     unittest.main()
