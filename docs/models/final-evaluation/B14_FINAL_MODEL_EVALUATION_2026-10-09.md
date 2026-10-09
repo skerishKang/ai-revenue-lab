@@ -1,3 +1,7 @@
+<!-- OWNER_MODEL_PRIORITY_20261010 -->
+> **최신 Owner 평가 우선순위(2026-10-10):** [현재 모델 평가 우선순위](B14_OWNER_EVALUATION_PRIORITY_2026-10-10.md)에서 **Atria·Agnes는 운영 안정성 문제가 확인된 후순위 모델**입니다. [Atria #3922](https://github.com/skerishKang/ai-revenue-lab/issues/3922), [Agnes #3913](https://github.com/skerishKang/ai-revenue-lab/issues/3913)은 **보류 종료**했으며 **장애 해결 완료로 판정한 것이 아닙니다.** 아래 2026-10-09의 9모델 평가 순서와 429/504 기록은 역사적 증거이고, 2026-10-10 현재 등록 10개 모델의 최종 품질 순위·기본 모델·자동선택 정책이 아닙니다.
+<!-- /OWNER_MODEL_PRIORITY_20261010 -->
+
 <!-- B14_OFFICIAL_PARAMETER_AUDIT_20261010 -->
 > **2026-10-10 최신 해석:** [B14 공식 파라미터·재시험 판단 감사](B14_OFFICIAL_PARAMETER_REVALIDATION_2026-10-10.md)를 먼저 확인하세요. 아래 과거 실측·우열·추천은 **기록 당시 파라미터에서의 결과**로만 유지합니다. 기존 평가에서 사용한 temperature=0 및 공통 max_tokens는 공식 권장 설정으로 간주하지 않습니다. 공식 공급사 기본값/추론/출력 예산을 검증하는 별도 재시험과 B14 전달 검증 전에는 최종 성능 우열로 사용하지 않습니다. 모델 자동 선택, 대체 라우팅 또는 운영 배포를 승인하는 문서가 아닙니다.
 <!-- /B14_OFFICIAL_PARAMETER_AUDIT_20261010 -->
