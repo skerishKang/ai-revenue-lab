@@ -1,5 +1,8 @@
 # B14 모델·서빙 제공업체 네이티브 API 파라미터 실행 계약
 
+> **현재 소유권·미완료 경계 (2026-10-10):** 기존 B14 네이티브 필드 검증/Provider 전송 [PR #3984](https://github.com/skerishKang/ai-revenue-lab/pull/3984)은 **MERGED**. 그러나 B66 #3906의 선택 UI→B62 Chat→공유 Core→B14 HTTP 실제 전달은 완료되지 않았으며, [#3977](https://github.com/skerishKang/ai-revenue-lab/issues/3977)의 새 담당은 **LOCAL1**이다. **LOCAL2는 B66 #3906·CI #3989**, LOCAL1은 Core #3977·별도 Sol #3839, LOCAL3는 Drive #3871. 오래된 충돌 Draft #3988과 구 B66+Core 혼합 브랜치 `9ec0e049`는 병합 대상으로 승인되지 않았다. 생략된 값은 생략 유지, 내부 `model_parameters`는 공개 HTTP에 중첩하지 않고 native `reasoning_effort`를 **최상위 JSON**으로 검증 전송한다. 원래 공급자 실호출/Production 수용은 별도 증거가 필요하다.
+
+
 **2026-10-10 / 이슈 #3977 / 기준 [B14 역할](../architecture/B14_MODEL_PROVIDER_EXECUTION_AUTHORITY_2026-10-10.md)**
 
 ## 실제 변경 사항
@@ -33,6 +36,6 @@
 - `test_b14_native_parameters.py`: 등록 10개 숨은 기본값 0건, 공식 지원 옵션/거부, 수동 고출력 요청값 보존, MockTransport **completed + SSE** 파라미터 비교, ExLab 변형 모델 추측 금지, UI 숨은 주입 방지.
 - 이 검증은 **네트워크 없는 코드/MockTransport 검증**이다. 실제 Provider와 B14 Production POST, 실제 견적 10문항, B66 견적/PDF 연결을 통과했다고 주장하지 않는다.
 - 기존 10문항 historical `temperature=0` 점수는 별도 실험 조건 기록으로 유지. 공식 설정 재시험은 [#2676](https://github.com/skerishKang/ai-revenue-lab/issues/2676)에서 새 조건으로 진행한다.
-- 사용자의 B66 추론 수준 UI는 Owner 승인된 [#3906](https://github.com/skerishKang/ai-revenue-lab/issues/3906) LOCAL1 범위로 유지한다. B14는 해당 정식 지원 옵션이 도착할 때 정확하게 전달하는 역할만 수행한다.
+- 사용자 B66 추론 수준 UI는 Owner 승인 [#3906](https://github.com/skerishKang/ai-revenue-lab/issues/3906) **LOCAL2** 담당이고, 관련 PR #3998은 **MERGED**. 이후 B66→Core→B14 실제 연결은 [#3977](https://github.com/skerishKang/ai-revenue-lab/issues/3977) 현재 **LOCAL1**의 공유 Core 작업에 의존한다. B14는 근거 있는 정확한 모델/제공업체 명시 옵션만 전달한다.
 
 **소스 병합 ≠ Cloudflare Production 배포 ≠ 10모델 실추론 성공**. 운영 배포·Secret Store 변경·추론 비용 지출은 이 문서만으로 승인되지 않는다.
