@@ -47,17 +47,20 @@ class Agnes30FinalEvaluationGuard(unittest.TestCase):
     def test_isolated_b14_and_direct_one_shot_comparison(self):
         for value in ("12.6분", "1,266ms", "3,609ms", "466 총 토큰", "max_retries=0", "upstream_rate_limited", "동일성", "2026-10-09 추가 확인"):
             self.assertIn(value, self.report)
-        self.assertIn("12.6분 휴지 후 B14 429/로컬 PASS", self.ledger)
+        self.assertIn("12분 휴지 후 B14/직접 API 1회씩 재검증", self.report)
 
     def test_short_conversation_429_is_not_quote_complexity(self):
         for v in ("짧은 일반 대화 A/B", "1,328ms", "2,922ms", "94토큰", "max_attempts=1", "코드 결함으로 확정하지 않는다"):
             self.assertIn(v, self.report)
-        self.assertIn("짧은 일반 대화도 B14 429/로컬 PASS", self.ledger)
+        self.assertIn("짧은 일반 대화 A/B 추가 검증", self.report)
 
     def test_ledger_single_model_link(self):
         self.assertIn("B14_FINAL_AGNES_3_0_FLASH_2026-10-09.md", self.ledger)
-        self.assertIn("| 7 | `agnes-ai/agnes-3.0-flash` |", self.ledger)
-        self.assertIn("RATE_LIMIT_BLOCKED", self.ledger)
+        self.assertIn("| 9 | `agnes-ai/agnes-3.0-flash` |", self.ledger)
+        self.assertIn("ERROR_B14_HTTP429 / DEFERRED", self.ledger)
+        self.assertIn("| 7 | `inception/mercury-2.5` |", self.ledger)
+        self.assertIn("| 8 | `atria/Atria-Dawn-Preview` |", self.ledger)
+        self.assertIn("Owner 우선순위 변경", self.ledger)
 
 if __name__ == "__main__":
     unittest.main()

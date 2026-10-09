@@ -43,10 +43,11 @@
 | 4 | `google/gemma-4-31b-it` | **F1 Dense 30.7B·출력 32,768 / F2 30RPM·16K TPM·14.4K RPD / Minimal 원본 1/10·내용 5/10 / High 원본 0/10·내용 0/10 / B14 504** |
 | 5 | `poolside/laguna-s-2.1` (Poolside 직접 API, Kilo 제외) | **F1 공식 118B/활성8B·1M / F2 계정한도 UNKNOWN / 직접 기본 9/10(10.89s), 추론 끔 8/10(4.63s), 켬 8/10(9.56s) / B14 9/10 HTTP200 / 실제 AI→PDF PASS** |
 | 6 | `sensenova/sensenova-6.8-flash-lite` | **F1 제공자 262,144/65,536 · F2 계정 한도 UNKNOWN · B14 10/10 · 직접 기본 10/10 · 리즈닝 none 10/10 2633ms; low 10/10 6528ms; medium 10/10 6278ms; high 10/10 6503ms · 12품목 로컬 PDF PASS** |
-| 7 | `agnes-ai/agnes-3.0-flash` | **IN_PROGRESS / RATE_LIMIT_BLOCKED** — B14 첫 요청 429(0/1 HTTP200), Agnes 직접 10/10 HTTP200·견적 정확도 8/10(3,569ms/477토큰), Thinking Off 5/5(2,563ms/399토큰)·On 5/5(7,053ms/717토큰), 11번째 비교 호출 429 중단, 12품목 QuoteCore PDF PASS(2페이지)·12.6분 휴지 후 B14 429/로컬 PASS 재확인, 짧은 일반 대화도 B14 429/로컬 PASS 각 1회, F2 계정 한도 및 고객 저장 PDF E2E UNKNOWN/NOT_TESTED. [상세](B14_FINAL_AGNES_3_0_FLASH_2026-10-09.md) |
-| 8 | `inception/mercury-2.5` | `NOT_STARTED` |
-| 9 | `atria/Atria-Dawn-Preview` | `NOT_STARTED` |
+| 7 | `inception/mercury-2.5` | **IN_PROGRESS / B14_PREFLIGHT_HTTP403 / DIRECT_TIMEOUT_PARTIAL** — 운영 health/models GET 403 → B14 POST 0회, direct QKR-001/002 HTTP200(내용 PASS 1/2), QKR-003 65초 timeout 후 중단, 나머지 7 미시도, F2 계정 RPM·TPM·RPD 및 F6 PDF UNKNOWN/NOT_TESTED. [상세](B14_FINAL_MERCURY_2_5_2026-10-09.md) |
+| 8 | `atria/Atria-Dawn-Preview` | `NOT_STARTED` |
+| 9 | `agnes-ai/agnes-3.0-flash` | **ERROR_B14_HTTP429 / DEFERRED / 후순위** — 운영 B14에서 짧은 대화와 견적 추출 모두 429, 로컬 직접 API/로컬 B14는 200. 기존 품질 기록은 유지하며 운영 오류 해결 후 재평가. 최종 승인·자동 대체 없음. [상세](B14_FINAL_AGNES_3_0_FLASH_2026-10-09.md), [장애 #3913](https://github.com/skerishKang/ai-revenue-lab/issues/3913) |
 
+**2026-10-09 Owner 우선순위 변경:** Agnes는 운영 B14 HTTP429 재현에 따라 `ERROR_B14_HTTP429 / DEFERRED`로 평가 대기열 **마지막(9번)**에 배치. 다음 순서는 Mercury 2.5(7번) → Atria(8번) → 장애 해결 후 Agnes(9번). 위 표는 **평가 작업 순서**이며, B14 서비스의 모델 등록·노출·사용자 수동 선택·기본값을 변경하지 않는다. 기존 Agnes 직접 API 품질 점수도 삭제·유용하지 않는다.
 **추가 평가 후보:** ZCode에 별도로 등록된 `stepfun/step-5-preview-free`는 현재 B14 9개에는 속하지 않는다. B14 경유 없이 로컬 단일 모델 호출을 검증하고 필요하면 별도 후보로 평가한다. 기존 9개 운영 모델 목록과 혼합·자동 대체하지 않는다.
 
 표의 순서는 작업 순서이지 성능 순위나 기본 모델 우선순위가 아니다.
@@ -213,3 +214,10 @@ EVIDENCE = <source SHA, dated real-call markers, tested PDF evidence>
 - 실제 모델 12품목 응답→QuoteCore→PDF: **12품목·총 715만원 PASS**, 2페이지 공통 하단 안내 문구 이월.
 - 현재 연결된 SenseNova 계정의 RPM/TPM/RPD 값과 B14 리즈닝 명시적 전달은 별도 확인 대상.
 - 상세: [SenseNova 6.8 Flash Lite 최종 평가](B14_FINAL_SENSENOVA_6_8_FLASH_LITE_2026-10-09.md).
+
+## 2026-10-09 Mercury 2.5 — 순번 7 독립 평가 착수
+
+- Owner의 Agnes 후순위 이동 결정에 따라 Inception Mercury 2.5를 다음 평가 모델로 명시 선택. 공식 API upstream `mercury-2.5`, 공식 260K 컨텍스트·추론·구조화 출력 확인.
+- 운영 B14 GET health/models **HTTP403**로 preflight 단계 차단: **실서비스 B14 POST 0회**. 모델 자체 403/429를 관측했다고 주장하지 않는다.
+- 로컬 직접 Inception API QKR 신규 3회: **2/3 HTTP200, 정답 1/2**, QKR-001 프로젝트명 오류, QKR-002 PASS, QKR-003 65초 timeout 후 중단·잔여 7 미시도. F2 실제 플랜/한도, reasoning 제어 및 F6 PDF 미검증.
+- [Mercury 독립 상세](B14_FINAL_MERCURY_2_5_2026-10-09.md). 모델 우선순위는 사용자 명시 선택 기준이며 무단 자동 대체 금지.
