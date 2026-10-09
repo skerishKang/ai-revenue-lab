@@ -159,6 +159,12 @@ def model_registration_only(changed_files: list[dict], base: dict, head: dict) -
         aliases.append(alias)
     if len(set(aliases)) != len(aliases):
         return False
+    old_aliases = {
+        spec.get("credential_binding_name")
+        for spec in base["providers"].values()
+    }
+    if set(aliases).intersection(old_aliases):
+        return False
 
     worker_patch = changed_files[paths.index(WORKER)]["patch"]
     wrangler_patch = changed_files[paths.index(WRANGLER)]["patch"]
