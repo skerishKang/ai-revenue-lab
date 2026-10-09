@@ -258,3 +258,42 @@ def test_workflow_merge_never_auto_deploys_and_existing_gates_are_unchanged():
     assert "OWNER_D1_PATCH_ATTEMPTED=YES" not in text  # one named attempt in command
     assert "owner-d1-rollback-anchor-" in text
     assert "old_name" not in text
+
+
+def test_cloudflare_official_rollback_deployment_schema(tmp_path, capsys):
+    """POST /deployments requires strategy and a versions ARRAY (not flat fields)."""
+    from b62_owner_d1_release_transaction import build_rollback_deployment
+
+    version_id = "023e105f-2a42-4f8b-a1c1-73f6a2a30c0f"
+    expected = {
+        "strategy": "percentage",
+        "versions": [{"version_id": version_id, "percentage": 100}],
+    }
+    assert build_rollback_deployment(version_id) == expected
+    for bad in ("latest", "", "invalid", "../versions"):
+        with pytest.raises(TransactionError):
+            build_rollback_deployment(bad)
+
+    output = tmp_path / "rollback-deployment.json"
+    assert main(["build-rollback-deployment", "--version-id", version_id,
+                 "--output", str(output)]) == 0
+    assert json.loads(output.read_text(encoding="utf-8")) == expected
+    assert "OWNER_D1_ROLLBACK_DEPLOYMENT_PAYLOAD=OFFICIAL_SCHEMA_PASS" in capsys.readouterr().out
+    assert main(["build-rollback-deployment", "--version-id", version_id,
+                 "--output", str(output)]) == 2
+    assert "INVALID_RELEASE_EVIDENCE" in capsys.readouterr().err
+
+
+def test_rollback_workflow_uses_verified_cloudflare_deployment_schema():
+    text = WORKFLOW.read_text(encoding="utf-8")
+    rollback_step = text.split(
+        "      - name: Roll back to exact pinned original with one deployment POST", 1
+    )[1].split("      - name: Verify 100-percent restored served version", 1)[0]
+    assert "b62_owner_d1_release_transaction.py build-rollback-deployment" in rollback_step
+    assert "--version-id" in rollback_step and "OWNER_D1_ROLLBACK_TARGET" in rollback_step
+    assert '--data-binary "@${RUNNER_TEMP}/rollback-request.json"' in rollback_step
+    assert '"strategy"' not in rollback_step  # JSON envelope comes from tested builder.
+    assert '{{--"version_id":' not in rollback_step
+    assert rollback_step.count("-X POST") == 1
+    assert rollback_step.index("build-rollback-deployment") < rollback_step.index("OWNER_D1_ROLLBACK_ATTEMPTED=YES")
+    assert rollback_step.index("OWNER_D1_ROLLBACK_ATTEMPTED=YES") < rollback_step.index("-X POST")
