@@ -493,6 +493,34 @@ const assistantTexts = (env) => {
     assert.ok(sequence.interpretBodies[1].includes(firstTurn.question), "question identifies the meaning of a bare numeric answer");
   }
 
+  /* #3916: an estimated customer quantity is not silently finalized.
+     The server withholds qty; the browser keeps the quote and asks for an
+     exact numerical correction before creating the final draft. */
+  const estimated = buildAccountEnv({ candidates: [
+    { recipient: { company: "대한건설" }, items: [{ name: "배관", unitPrice: 2000 }] },
+    { recipient: { company: "대한건설" }, items: [{ name: "배관", qty: 120, unitPrice: 2000 }] }
+  ] });
+  await flush();
+  manuallyChooseModel(estimated);
+  const estimatedBridge = estimated.context.B66QuoteRuntimeBridge;
+  const estimateFirst = await estimatedBridge.interpret("대한건설 배관 대충 100개 정도, 단가 2000원");
+  assert.equal(estimateFirst.ok, false);
+  assert.equal(estimateFirst.code, "incomplete_request");
+  assert.deepEqual(estimateFirst.missing, ["qty"]);
+  assert.match(estimateFirst.question, /최종 수량을 정확한 숫자와 단위/);
+  assert.equal(estimated.allocations(), 1);
+  assert.equal(estimated.replaceDrafts.length, 0, "unconfirmed quantity cannot create final draft");
+  const estimatedNumber = estimatedBridge.pendingQuote().quoteNo;
+  const estimateSecond = await estimatedBridge.interpret("120개");
+  assert.equal(estimateSecond.ok, true, "explicit revised quantity completes pending quote");
+  assert.equal(estimateSecond.draft.meta.quoteNo, estimatedNumber);
+  assert.equal(estimateSecond.draft.items[0].qty, 120);
+  assert.equal(estimated.allocations(), 1, "no extra allocation when confirming quantity");
+  assert.equal(estimated.interpretBodies.length, 2, "one POST per turn");
+  assert.ok(estimated.interpretBodies[1].includes("120개"));
+  assert.equal(estimatedBridge.pendingQuote(), null);
+  console.log("APPROXIMATE_QUANTITY_CONFIRMATION_UI=PASS");
+
   const multi = buildAccountEnv({ candidates: [
     { recipient: { company: "Synthetic buyer", person: "Known person" }, items: [
       { name: "First item", qty: 3, unitPrice: 400 }, { name: "Second item", unitPrice: 800 }
