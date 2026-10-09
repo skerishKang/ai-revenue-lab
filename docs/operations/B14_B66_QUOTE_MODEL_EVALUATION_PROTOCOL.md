@@ -46,6 +46,20 @@ Test dimensions (with golden expected structured QuoteDraft records, not model-m
 
 Before customers use any candidate: inspect genuine successful responses, confirm no silent fallback and schema parity with QuoteCore. Only Owner may designate a default or approve release. Rankings must be based on real comparable live data, not intuition.
 
+## 2026-10-09 executable ten-case Korean quote extraction benchmark
+
+- Golden synthetic fixture: `.github/fixtures/b66_quote_interpret_v1.json` (10 prompts covering single/multiple item rows up to 12, corrections, missing unit prices, total-vs-unit-price ambiguity, Korean amounts, zero cost, date, and untrusted text).
+- Read-only model/GET preflight and offline scoring implementation: `.github/scripts/b66_quote_model_benchmark.py`. It reads the **current exact nine-model central JSON**, then uses the **real B66 `quote-extraction.js` normalizer** to score recipient company, project, issue date, ordered items, quantities and unit prices. It never sends an inference POST, computes a total, recreates a template or executes paid fallback.
+- Tests: `.github/tests/test_b66_quote_model_benchmark.py`; PR/main automated job `.github/workflows/b66-quote-model-benchmark.yml` is **OFFLINE ONLY**. Imported responses are explicitly labeled `IMPORTED_RESPONSE_NOT_ATTESTED_LIVE` and cannot produce a purported verified live model ranking.
+- Read-only 2026-10-09 Production discovery: exact-main source catalog 9 models but served `GET /api/pilot/models` returned **11** entries, including the five Owner-deleted IDs and retired Space Bunny, while all four current Google registrations were absent. The read-only GET guard correctly returns `BLOCKED_REGISTRY_DRIFT`, exit 4, `live_post_count=0`. Release blocker: [#3842](https://github.com/skerishKang/ai-revenue-lab/issues/3842), including the Worker JSON packaging failure. This source-only benchmark does not remedy that deployment issue and MUST NOT silently score that stale Worker as the nine approved models.
+- No locally provisioned direct provider credential bindings were found for the 6 registered providers on the test PC (presence checks only). **Actual inference quality per model: NOT TESTED**, not failed. After separately approved canonical B14 deployment and credential readiness, use one explicit owner-selected exact model at a time with bounded real inputs, no retry/fallback, and preserve measured availability and error codes independently of quality.
+
+Offline commands from the repository root:
+
+    python .github/scripts/b66_quote_model_benchmark.py --list
+    python .github/scripts/b66_quote_model_benchmark.py --preflight-live-get
+    python .github/scripts/b66_quote_model_benchmark.py --model agnes-ai/agnes-3.0-flash --prompt QKR-001
+    python -m pytest .github/tests/test_b66_quote_model_benchmark.py -q
 ## Stage 2. Rendering quality is assessed separately
 
 Certified source-derived template fidelity belongs to B66 #3180/#3542/#3595 and multipage development #3839. Existing CGI Sol reference is certified only for a single A4 page of 1-3 rows; the final B66 product requires arbitrary practical item counts and dynamic pages. The chosen repeat-interpretation model does NOT create PDF pages; the existing renderer/compiler executes deterministic code. For exact quote data, compare B66 HTML preview, QuoteCore values, downloadable PDF, page count, confidential source text and visual fidelity. Never classify PDF-code execution as an AI model's inference score.
