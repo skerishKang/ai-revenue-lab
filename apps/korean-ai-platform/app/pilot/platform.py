@@ -185,6 +185,13 @@ def _require_owner_allowed_live_model(
     Historical direct Poolside (distinct from Kilo Laguna) is not inferred
     excluded or approved by this function.
     """
+    # Source-only registration: live dispatch remains denied until the
+    # published model-specific data retention policy is reconciled.
+    if model_id == "experiential/qwen3.8-flash-next-uncensored" or (
+        platform_provider_id == "experiential"
+        and upstream_model == "qwen3.8-flash-next-uncensored"
+    ):
+        raise PilotNotConfigured("ExLab model data-policy clearance is pending.")
     upstream = upstream_model.strip().casefold()
     owner_excluded_upstream = (
         "nemotron" in upstream

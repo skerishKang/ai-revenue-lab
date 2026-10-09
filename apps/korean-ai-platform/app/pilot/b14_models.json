@@ -55,6 +55,15 @@
       "credential_source": "platform_secret",
       "credential_binding_name": "PADIEM_SENSENOVA_API_KEY",
       "enabled": true
+    },
+    "experiential": {
+      "base_origin": "https://api.experientiallabs.ai/v1",
+      "allowed_hosts": [
+        "api.experientiallabs.ai"
+      ],
+      "credential_source": "platform_secret",
+      "credential_binding_name": "PADIEM_EXLAB_API_KEY",
+      "enabled": true
     }
   },
   "models": [
@@ -209,6 +218,23 @@
       "output_price_usd_per_1m": null,
       "source": "sensenova_token_api_measured",
       "source_checked_at": "2026-09-06",
+      "enabled": true
+    },
+    {
+      "id": "experiential/qwen3.8-flash-next-uncensored",
+      "provider_id": "experiential",
+      "upstream_model": "qwen3.8-flash-next-uncensored",
+      "display_name": "ExLab: Qwen3.8 Flash Next Uncensored",
+      "provider_name": "Experiential Labs",
+      "capabilities": [
+        "chat",
+        "coding"
+      ],
+      "context_window": 262144,
+      "input_price_usd_per_1m": null,
+      "output_price_usd_per_1m": null,
+      "source": "experiential_public_model_detail_2026-10-10 (GET /api/models/qwen3.8-flash-next-uncensored)",
+      "source_checked_at": "2026-10-10",
       "enabled": true
     }
   ],

@@ -1,5 +1,17 @@
 # B14 -> B66 current approved-model evaluation protocol (2026-10-09)
 
+> **CURRENT SOURCE AS OF 2026-10-10:** Owner-added ExLab
+> `experiential/qwen3.8-flash-next-uncensored` is the tenth canonical B14
+> model (seven providers), with existing `PADIEM_EXLAB_API_KEY` binding.
+> Previous nine-model references below refer to historical benchmark cohorts,
+> not the current registry. ExLab model is listed for manual selection but
+> **live dispatch is explicitly blocked** until ExLab model data policy review
+> and a separate release approval; no automatic fallback, customer activation,
+> changed tiers or Production deployment. Old B.AI Qwen and ExLab Luna remain
+> retired. See
+> `docs/models/final-evaluation/B14_EXLAB_QWEN38_NEXT_UNCENSORED_2026-10-10.md`.
+
+
 Status: SOURCE-ONLY PROCESS CONTRACT. No credentials provisioned here, no model/provider called, and no customer tier, Production, Auto or fallback approved. Source selection: apps/korean-ai-platform/app/pilot/b14_models.json on current main.
 
 ## Purpose: what to benchmark

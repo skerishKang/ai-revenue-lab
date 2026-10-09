@@ -70,7 +70,7 @@ class TestOwnerModelDocTruth(unittest.TestCase):
                 exact_id="google/"+model_id
                 self.assertIn(exact_id,model_rows)
                 self.assertEqual(model_rows[exact_id]["provider_id"],"google")
-        self.assertEqual(len(model_rows),9)
+        self.assertEqual(len(model_rows),10)
         self.assertNotIn("register_google_provider()", platform)
         catalog=read("apps/korean-ai-platform/app/pilot/catalog.py")
         self.assertIn("from .model_registry_file import install_models",catalog)

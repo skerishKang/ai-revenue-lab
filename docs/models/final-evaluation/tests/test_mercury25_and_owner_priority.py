@@ -33,7 +33,7 @@ class Mercury25NewEvaluationGuard(unittest.TestCase):
 
     def test_exact_model_registry_from_canonical_source(self):
         ids = [m["id"] for m in self.registry["models"]]
-        self.assertEqual(len(ids), 9)
+        self.assertEqual(len(ids), 10)
         m = next(m for m in self.registry["models"] if m["id"] == "inception/mercury-2.5")
         self.assertTrue(m["enabled"])
         self.assertEqual(m["upstream_model"], "mercury-2.5")

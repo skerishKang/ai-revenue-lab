@@ -274,7 +274,6 @@ async def test_candidate_streaming_uses_exact_model_and_actual_model_evidence(ca
 
 @pytest.mark.parametrize("provider_id,model_id", [
     ("infron","infron/motif/motif-3"),
-    ("experiential","experiential/gpt-5.6-luna"),
 ])
 def test_owner_removed_provider_and_model_not_registered_or_dispatchable(provider_id,model_id):
     assert get_platform_provider(provider_id) is None
@@ -283,3 +282,13 @@ def test_owner_removed_provider_and_model_not_registered_or_dispatchable(provide
     with pytest.raises(NoSafeRoute) as exc:
         resolve_manual_route(model_id)
     assert exc.value.upstream_called is False
+
+
+def test_exlab_provider_reused_but_owner_retired_luna_stays_unregistered():
+    spec = get_platform_provider("experiential")
+    assert spec is not None
+    assert spec.base_origin == "https://api.experientiallabs.ai/v1"
+    assert spec.credential_binding_name == "PADIEM_EXLAB_API_KEY"
+    assert get_catalog_by_id("experiential/gpt-5.6-luna") is None
+    with pytest.raises(NoSafeRoute):
+        resolve_manual_route("experiential/gpt-5.6-luna")
