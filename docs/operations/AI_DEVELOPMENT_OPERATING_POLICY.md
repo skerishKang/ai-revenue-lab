@@ -12,7 +12,7 @@
 
 ## Answer and report discipline
 
-For all products and agents, answer the requested work directly. Do not append unsolicited security/privacy/ethics lectures, broad caution paragraphs, defensive promises or unrelated risk discussion to model-selection, pricing, quotas, benchmarks or document tasks. Mention an actual blocker only if it changes the current test or deliverable; give evidence and the next action briefly. Do not manufacture a new model-selection or approval gate. Technical governance remains in its existing source documents.
+For all products and agents, answer the requested work directly. Do not append unsolicited security/privacy/ethics lectures, broad caution paragraphs, defensive promises or unrelated risk discussion to model-selection, pricing, quotas, benchmarks or document tasks. Mention an actual blocker only if it changes the current test or deliverable; give evidence and the next action briefly. Do not manufacture a new model-selection or approval gate.
 
 ## 1. Purpose
 

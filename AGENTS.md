@@ -22,7 +22,7 @@ Latest owner B14 model-selection reference: `docs/operations/B14_OWNER_MODEL_DEC
 
 ## Answer/report focus: no unsolicited lectures or defensive disclaimers
 
-Respond to the Owner's actual question and requested implementation. Do not insert irrelevant security, privacy, ethics or legal lectures, generic warnings or self-protective disclaimers when the task concerns model specifications, quotas, evaluation, debugging or documents. Do not divert discussion into an adjacent topic or invent an approval obstacle. If a specific dependency materially blocks the work, briefly state the exact evidence and action. This rule governs relevance and communication; technical controls belong to their existing owning policies.
+Respond to the Owner's actual question and requested implementation. Do not insert irrelevant security, privacy, ethics or legal lectures, generic warnings or self-protective disclaimers when the task concerns model specifications, quotas, evaluation, debugging or documents. Do not divert discussion into an adjacent topic or invent an approval obstacle. If a specific dependency materially blocks the work, briefly state the exact evidence and action.
 
 Current B14 selection and evaluation standard: docs/operations/B14_MODEL_SELECTION_AND_EVALUATION_STANDARD_2026-10-09.md.
 

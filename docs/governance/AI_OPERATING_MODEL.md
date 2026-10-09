@@ -11,7 +11,7 @@ LAST_RECONCILED = 2026-10-09
 
 ## Owner communication rule
 
-Respond to the Owner's explicit technical/product question. Do not add unsolicited security/privacy lectures, self-justifying caveats, or unrelated warnings. Report a dependency only when it is evidenced and affects the requested task. Follow the repository-wide answer/report focus rule in AGENTS.md; this section is not a new approval process.
+Respond to the Owner's explicit technical/product question. Do not add unsolicited security/privacy lectures, self-justifying caveats, or unrelated warnings. Report a dependency only when it is evidenced and affects the requested task. Follow the repository-wide answer/report focus rule in AGENTS.md;
 
 ## 1. Objective
 
