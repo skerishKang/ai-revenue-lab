@@ -22,6 +22,23 @@ Cloudflare references: [Worker PATCH settings](https://developers.cloudflare.com
 4. Resolve actual 100%-serving version through the shared canonical deployments API resolver, not Wrangler raw-list ordering. Require the **latest uploaded version to equal that served version** (Cloudflare settings PATCH may refuse divergence, e.g. error 10214). Reject traffic splits, unknown versions, unfamiliar binding types, drifted original D1/service/P01 caller credential, or owner binding already present.
 5. Verify Engine-first ordering (Engine transaction requires Chat owner binding absent; Chat transaction requires Engine owner binding already correctly installed), and check no concurrent Worker release is underway. There is a residual external concurrent-mutation race because the Cloudflare endpoint is not known to provide an atomic compare-and-swap; a separate manual operational release freeze remains necessary.
 
+## Recovery after rollback when latest uploaded != 100%-served
+
+Cloudflare's rollback changes the **served deployment**, not the latest uploaded immutable version. After the 2026-10-09 restoration the Engine served original Version 78 while latest uploaded Version 79 remained ahead. The normal `apply` transaction **must** continue rejecting this prestate (`LATEST_AND_SERVED_DIFFER`, possible Cloudflare error `10214`).
+
+The owner separately authorized promoting **only** the verified identical Engine latest version and then reconnecting Owner D1. Use the existing protected manual workflow with the additional **Engine-only** `promote_latest` mode. Do not run a standalone Wrangler deploy or an unanchored API POST.
+
+The two releases are separate, ordered and checked. For the **promotion** dispatch, provide exact latest `main` SHA, current 100%-served Engine version, exact latest uploaded Engine version and confirmation `PROMOTE_VERIFIED_ENGINE_LATEST_FOR_OWNER_D1`; set `worker=engine`, `mode=promote_latest`, `anchor_run_id` empty.
+
+1. Read-only verify three distinct D1 inventories, 100%-served original Engine version, newest uploaded immutable Engine version, all 18 old binding authorities, unchanged peer Chat, immutable source modules for **both exact versions**, runtime/script/assets and writable annotations.
+2. Construct the **official deployment POST** (`strategy=percentage`, one `versions` entry at 100%) pinned to the authorized newest UUID. Save a **fresh** original-Version-78 rollback anchor to GitHub Actions artifacts **before** any write. A failed artifact upload stops all mutations.
+3. Recheck exact `main`, served original and latest uploaded versions. Deploy latest to 100% with **one POST**, no retries. Re-read actual serving version and its immutable detail; verify it equals the prevalidated latest and retained all original code, bindings, runtime, annotations and Chat health.
+4. Stop promotion after success. Only then dispatch the existing, independently anchored **`apply`** job with a new current `main`/100%-served version read. It makes at most one corrected Owner D1 settings PATCH and verifies 18→19 bindings, exact code modules and resources. No Chat connection or Browser Use enablement follows automatically.
+
+If the promotion POST is ambiguous or fails, do **not** retry, do not continue to the Owner D1 PATCH, and do not auto-rollback. Inspect current deployment against the original external anchor, then separately authorize the original exact-Version rollback if needed. The standard rollback mode accepts the newly persisted promotion-run anchor.
+
+**Approval scope:** version promotion and Engine Owner D1 connection only, with separate approved operation contracts; B54 remains unchanged.
+
 ## Apply — one Worker per dispatch
 
 Start only with the exact, owner-confirmed `workflow_dispatch`:
