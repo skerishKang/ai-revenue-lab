@@ -46,10 +46,12 @@ def _version(worker, version_id):
              "service": "padiem-control-plane-identity"},
             *({"name": f"ENGINE_SERVICE_{i}", "type": "service",
                "service": f"other-{i}"} for i in range(3)),
+            {"name": "ENGINE_CONTINUATION", "type": "d1", "database_id": ENGINE_DB},
             *({"name": f"ENGINE_D1_{i}", "type": "d1", "database_id": ENGINE_DB}
-              for i in range(6)),
+              for i in range(5)),
+            {"name": "PADIEM_ENGINE_CALLER_REGISTRY_V1", "type": "secret_text"},
             *({"name": f"ENGINE_SECRET_{i}", "type": "secret_text"}
-              for i in range(8)),
+              for i in range(7)),
         ]
         annotations = {"workers/triggered_by": "api"}
         runtime = {"compatibility_date": "2026-08-25",
@@ -66,7 +68,8 @@ def _version(worker, version_id):
             {"name": "WORKSPACE_R2", "type": "r2_bucket", "bucket_name": "test-files"},
             *({"name": f"PLAIN_{i}", "type": "plain_text", "text": f"value-{i}"}
               for i in range(15)),
-            *({"name": f"CHAT_SECRET_{i}", "type": "secret_text"} for i in range(4)),
+            {"name": "P01_ENGINE_CREDENTIAL", "type": "secret_text"},
+            *({"name": f"CHAT_SECRET_{i}", "type": "secret_text"} for i in range(3)),
         ]
         annotations = {"workers/message": "existing-note",
                        "workers/tag": "existing-tag", "workers/triggered_by": "wrangler"}
@@ -133,7 +136,8 @@ def test_pinned_inherit_candidate_uses_only_explicit_version_ids(worker):
     "settings_drift", "missing_secret", "duplicate_binding",
     "wrong_engine_identity", "unexpected_annotation", "missing_script",
     "missing_compatibility", "owner_present", "bad_db_list",
-    "owner_db_aliased", "wrong_main_sha",
+    "owner_db_aliased", "wrong_main_sha", "missing_caller_secret",
+    "wrong_primary_d1_id", "wrong_engine_continuation_d1",
 ])
 def test_fail_closed_on_changed_trust_or_resource_authority(tamper):
     inventories, workers = _all()
@@ -165,6 +169,19 @@ def test_fail_closed_on_changed_trust_or_resource_authority(tamper):
         inventories[mod.OWNER_NAME]["result"] = []
     elif tamper == "owner_db_aliased":
         inventories["padiem-engine"]["result"][0]["uuid"] = OWNER
+    elif tamper == "missing_caller_secret":
+        workers["padiem-chat"][2]["result"]["resources"]["bindings"][-1]["name"] = "REPLACED"
+        # Keep settings equal to version so the missing secret identity, not
+        # the settings drift check, is the fail-closed mechanism.
+        workers["padiem-chat"][3]["result"]["bindings"][-1]["name"] = "REPLACED"
+        workers["padiem-chat"][2]["result"]["resources"]["bindings"][-4]["name"] = "WRONG_CALLER"
+        workers["padiem-chat"][3]["result"]["bindings"][-4]["name"] = "WRONG_CALLER"
+    elif tamper == "wrong_primary_d1_id":
+        workers["padiem-chat"][2]["result"]["resources"]["bindings"][5]["database_id"] = OWNER
+        workers["padiem-chat"][3]["result"]["bindings"][5]["database_id"] = OWNER
+    elif tamper == "wrong_engine_continuation_d1":
+        workers["padiem-ai-engine"][2]["result"]["resources"]["bindings"][4]["database_id"] = OWNER
+        workers["padiem-ai-engine"][3]["result"]["bindings"][4]["database_id"] = OWNER
     with pytest.raises(mod.ReleasePreflightError):
         mod.prepare_release(inventories, workers, MAIN if tamper != "wrong_main_sha" else "wrong")
 
