@@ -20,6 +20,10 @@ on:
         options:
           - b66_final_handoff
           - b54_claw_owner_one_shot
+      selected_model_id:
+        description: "Exact owner-approved B14 ID to manually select for B66 final handoff (required in b66_final_handoff mode)"
+        required: false
+        type: string
       confirmation:
         description: "Type RUN_B66_CGI_FINAL_HANDOFF_SMOKE"
         required: true
@@ -70,6 +74,8 @@ jobs:
           set -euo pipefail
           script=.github/scripts/b66_cgi_final_handoff_smoke.py
           grep -Fq 'MAX_INTERPRET_POSTS = 3' "$script"
+          grep -Fq -- '_select_customer_quote_model(page, selected_model_id)' "$script"
+          grep -Fq -- 'B66_CGI_SELECTED_MODEL_ID' "$script"
           grep -Fq 'MAX_PDF_POSTS = 3' "$script"
           grep -Fq 'PDF_PATH = "/api/padiem/b66/quote/pdf"' "$script"
           grep -Fq 'page.expect_download' "$script"
@@ -97,6 +103,7 @@ jobs:
     environment: production
     env:
       TARGET_SHA: ${{ inputs.target_sha }}
+      B66_CGI_SELECTED_MODEL_ID: ${{ inputs.selected_model_id }}
       B66_CGI_ALPHA_USERNAME: ${{ vars.B66_CGI_ALPHA_USERNAME }}
       B66_CGI_ALPHA_PASSWORD: ${{ secrets.B66_CGI_ALPHA_PASSWORD }}
     steps:
