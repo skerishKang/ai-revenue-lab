@@ -7,6 +7,7 @@
     FAILED: "failed",
     CANCELLED: "cancelled",
     TIMED_OUT: "timed_out",
+    WAITING_APPROVAL: "waiting_for_approval",
   });
 
   window.PadiemChatLifecycle = Object.freeze({
