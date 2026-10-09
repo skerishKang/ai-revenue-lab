@@ -185,7 +185,9 @@ def _version_module_manifest(payload: object, expected_version: str) -> tuple[tu
         )
         if not isinstance(name, str) or not name or not isinstance(media, str) or not media:
             raise TransactionError("CODE_MODULE_SHAPE_INVALID")
-        if not isinstance(encoded, str) or not encoded:
+        # Cloudflare may return a zero-byte source module as empty base64.
+        # It is valid content; hash b"" rather than rejecting the module.
+        if not isinstance(encoded, str):
             raise TransactionError("CODE_MODULE_SHAPE_INVALID")
         try:
             raw = base64.b64decode(encoded, validate=True)
