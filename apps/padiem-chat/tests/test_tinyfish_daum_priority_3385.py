@@ -105,6 +105,7 @@ async def test_secondary_failure_does_not_make_third_request():
 def test_live_env_default_and_explicit_off_preserved(monkeypatch):
     monkeypatch.setenv("PADIEM_CHAT_RUNTIME_MODE", "b14")
     monkeypatch.setenv("PADIEM_CHAT_B14_BASE_URL", "https://example.com")
+    monkeypatch.setenv("PADIEM_CHAT_LIVE_ENABLED", "true")
     monkeypatch.setenv("TINYFISH_API_KEY", "test-only")
     monkeypatch.setenv("PADIEM_CHAT_DAUM_REST_API_KEY", "test-only")
     monkeypatch.delenv("PADIEM_CHAT_WEB_PROVIDER", raising=False)
@@ -119,8 +120,33 @@ def test_live_env_default_and_explicit_off_preserved(monkeypatch):
 def test_b14_without_both_keys_fails_closed(monkeypatch):
     monkeypatch.setenv("PADIEM_CHAT_RUNTIME_MODE", "b14")
     monkeypatch.setenv("PADIEM_CHAT_B14_BASE_URL", "https://example.com")
+    monkeypatch.setenv("PADIEM_CHAT_LIVE_ENABLED", "true")
     monkeypatch.delenv("PADIEM_CHAT_WEB_PROVIDER", raising=False)
     monkeypatch.delenv("TINYFISH_API_KEY", raising=False)
     monkeypatch.delenv("PADIEM_CHAT_DAUM_REST_API_KEY", raising=False)
     with pytest.raises(ConfigError):
         Settings.from_env()
+
+
+def test_cloudflare_worker_live_binding_default_is_priority():
+    from app.worker_config import settings_from_worker_bindings
+    real = settings_from_worker_bindings({
+        "PADIEM_CHAT_RUNTIME_MODE": "b14",
+        "PADIEM_CHAT_LIVE_ENABLED": "true",
+        "PADIEM_CHAT_B14_BASE_URL": "https://example.com",
+        "TINYFISH_API_KEY": "test-only",
+        "PADIEM_CHAT_DAUM_REST_API_KEY": "test-only",
+    })
+    assert real.web_provider == "tinyfish_daum"
+    armed_off = settings_from_worker_bindings({
+        "PADIEM_CHAT_RUNTIME_MODE": "b14",
+        "PADIEM_CHAT_LIVE_ENABLED": "true",
+        "PADIEM_CHAT_B14_BASE_URL": "https://example.com",
+        "PADIEM_CHAT_WEB_PROVIDER": "off",
+    })
+    assert armed_off.web_provider == "off"
+    unarmed = settings_from_worker_bindings({
+        "PADIEM_CHAT_RUNTIME_MODE": "b14",
+        "PADIEM_CHAT_B14_BASE_URL": "https://example.com",
+    })
+    assert unarmed.web_provider == "off"
