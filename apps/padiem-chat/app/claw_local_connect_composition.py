@@ -101,8 +101,10 @@ class NonprodBrokerPairingConnectPort:
         if not account_ref or not workspace_ref:
             raise ValueError("the nonprod connect port requires an explicit test principal")
         owners = tuple(owner for owner in allowed_owner_ids if isinstance(owner, str) and owner)
-        if not owners:
-            raise ValueError("the nonprod connect port requires a non-empty owner allowlist")
+        if len(owners) != 1:
+            # The broker principal is fixed at composition time. Mapping two
+            # different session owners to that one principal would widen scope.
+            raise ValueError("the nonprod connect port requires exactly one test owner")
         self._base_url = base
         self._account_ref = account_ref
         self._workspace_ref = workspace_ref

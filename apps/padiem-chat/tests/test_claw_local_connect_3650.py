@@ -424,3 +424,45 @@ def test_contract_markers_hold():
     assert composition.LOOPBACK_ONLY is True
     assert composition.CANONICAL_MINT_REUSED_NOT_REIMPLEMENTED is True
     assert composition.PRODUCTION_MUTATION is False
+
+
+def test_malformed_json_cannot_mint_pairing_challenge():
+    """A bad JSON document is never equivalent to a valid empty request."""
+    port = FakeMintPort(result=_canonical_mint())
+    app, settings = _app(port)
+
+    async def drive():
+        transport = httpx.ASGITransport(app=app)
+        token = create_session_token(settings, OWNER)
+        async with httpx.AsyncClient(transport=transport, base_url=BASE_ORIGIN) as client:
+            return await client.post(
+                CLAW_LOCAL_CONNECT_PATH,
+                content="{broken",
+                headers={
+                    "Cookie": f"{SESSION_COOKIE}={token}",
+                    "Origin": BASE_ORIGIN,
+                    "Content-Type": "application/json",
+                },
+            )
+
+    result = _run(drive())
+    assert result.status_code == 400
+    assert result.json()["error"]["code"] == "invalid_conversation_id"
+    assert port.calls == []
+
+
+def test_single_test_principal_cannot_be_shared_between_session_owners():
+    """One fixed broker principal cannot represent two different owners."""
+    args = dict(
+        broker_base_url="http://127.0.0.1:43117",
+        account_ref=ACCOUNT,
+        workspace_ref=WORKSPACE,
+    )
+    assert build_nonprod_claw_local_connect_port(
+        **args, allowed_owner_ids=(OWNER, OTHER)
+    ) is None
+    with pytest.raises(ValueError, match="exactly one test owner"):
+        NonprodBrokerPairingConnectPort(**args, allowed_owner_ids=(OWNER, OTHER))
+    assert build_nonprod_claw_local_connect_port(
+        **args, allowed_owner_ids=(OWNER,)
+    ) is not None

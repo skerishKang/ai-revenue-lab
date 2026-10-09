@@ -244,8 +244,12 @@ async def claw_local_connect(request: Request) -> JSONResponse:
             import json
 
             body = json.loads(raw_body.decode("utf-8"))
+    except (UnicodeDecodeError, ValueError):
+        # A malformed or undecodable request must never mint a challenge.
+        # Silently treating it as an empty request bypasses input validation.
+        return _error(400, _CODE_INVALID_BODY, "요청 본문이 올바르지 않습니다.")
     except Exception:
-        body = None
+        return _error(400, _CODE_INVALID_BODY, "요청 본문을 읽을 수 없습니다.")
     if body is not None and not isinstance(body, Mapping):
         return _error(400, _CODE_INVALID_BODY, "요청 본문이 올바르지 않습니다.")
     conversation_id = _validate_conversation_id(body.get("conversationId") if body else None)
