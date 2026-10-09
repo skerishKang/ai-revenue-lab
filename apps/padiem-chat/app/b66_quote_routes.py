@@ -27,7 +27,9 @@ from .b66_quote_conversation import (
     MAX_CONVERSATION_CHARS,
 )
 from .b66_reasoning_level import (
+    DEFAULT_REASONING_LEVEL,
     reasoning_options_for_model,
+    reasoning_transport_available,
     validate_reasoning_level,
 )
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
@@ -221,6 +223,17 @@ def _model_route_error_response(exc: B66ModelRouteError) -> JSONResponse:
     return response
 
 
+def _reasoning_transport_supported(request: Request) -> bool:
+    """Whether the shared Core transport can carry native model parameters.
+
+    The flag is set by whoever wires the B14/Core client that implements the
+    validated opt-in contract (#3977). Absent or non-True means B66 offers the
+    provider default only and refuses an explicit level before dispatch. It is
+    never inferred, defaulted to True, or read from the request itself.
+    """
+    return getattr(request.app.state, "b66_reasoning_transport_supported", False) is True
+
+
 def _owner(request: Request) -> str | None:
     if not auth_ready(request):
         return None
@@ -357,7 +370,10 @@ async def b66_quote_models(request: Request) -> JSONResponse:
         {
             "model_id": row["model_id"],
             "name": row["name"],
-            "reasoning_levels": reasoning_options_for_model(row["model_id"]),
+            "reasoning_levels": reasoning_options_for_model(
+                row["model_id"],
+                transport_supported=_reasoning_transport_supported(request),
+            ),
         }
         for row in models
     ]
@@ -396,6 +412,21 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
             400,
             "unsupported_reasoning_level",
             "선택한 모델이 지원하지 않는 추론 수준입니다.",
+        )
+    if (
+        accepted_reasoning_level is not None
+        and accepted_reasoning_level != DEFAULT_REASONING_LEVEL
+        and not reasoning_transport_available(
+            model_id, transport_supported=_reasoning_transport_supported(request)
+        )
+    ):
+        # The level is documented for this exact model, but the shared Core
+        # transport that carries it is not available yet. Refuse before any
+        # dispatch instead of silently answering with the provider default.
+        return _error(
+            422,
+            "reasoning_level_unavailable",
+            "선택한 추론 수준을 지금은 전달할 수 없습니다. 기본값으로 진행해 주세요.",
         )
     if not isinstance(saved_skill_id, str) or not saved_skill_id:
         return _error(400, "invalid_saved_skill_id", "내 견적서 ID가 필요합니다.")
