@@ -635,11 +635,17 @@ class TinyFishWebProvider:
     async def search(self, query: str, limit: int = 5) -> list[Evidence]:
         safe_query = _query(query)
         safe_limit = _limit(limit)
+        # TinyFish Search defaults to US/en if location/language are omitted.
+        # An actual Hangul search should use Korean-localized retrieval;
+        # English and other queries retain the provider default.
+        params = {"query": safe_query}
+        if re.search(r"[가-힣]", safe_query):
+            params.update({"location": "KR", "language": "ko"})
         data = await self._request(
             "GET",
             TINYFISH_SEARCH_ORIGIN,
             headers={"X-API-Key": self._api_key, "Accept": "application/json"},
-            params={"query": safe_query},
+            params=params,
         )
         items = data.get("results", [])
         if not isinstance(items, list):
@@ -661,6 +667,9 @@ class TinyFishWebProvider:
             )
             if evidence is not None:
                 result.append(evidence)
+        # Counts only, never raw search results/links, text, query or key.
+        # Distinguishes zero upstream results from unsafe URL rejection.
+        print(f"TINYFISH_RESULT_COUNTS=RAW_{min(len(items), 100)}_SAFE_{len(result)}", flush=True)
         return result
 
     async def fetch(self, url: str) -> Evidence:
