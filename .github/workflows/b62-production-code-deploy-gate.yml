@@ -5,6 +5,8 @@ on:
     paths:
       - ".github/workflows/b62-production-code-deploy-gate.yml"
       - ".github/scripts/b62_cloudflare_production_deploy_config.py"
+      - ".github/scripts/b62_public_origin_504_guard.py"
+      - ".github/tests/test_b62_public_origin_504_gate.py"
       - ".github/scripts/b62_binding_state_guard.py"
       - ".github/scripts/b62_served_version_secret_guard.py"
       - ".github/scripts/cloudflare_served_version_cli.py"
@@ -105,6 +107,10 @@ jobs:
       - name: Repository wrangler config must stay mock-only
         shell: bash
         run: python .github/scripts/b62_cloudflare_mock_config_guard.py apps/padiem-chat/wrangler.toml
+
+      - name: Test 504-only public-origin proof with negative controls
+        shell: bash
+        run: python .github/tests/test_b62_public_origin_504_gate.py
 
       - name: Run served-version secret set guard regressions
         shell: bash
@@ -342,8 +348,15 @@ jobs:
           test "${public_state}" = "expected"
 
           subdomain="${RUNNER_TEMP}/b62-subdomain-readonly.json"
-          curl -fsS "${auth[@]}" "${api}/subdomain" -o "${subdomain}"
-          jq -e '.success == true and .result.enabled == true' "${subdomain}" >/dev/null
+          subdomain_status="$(curl -sS "${auth[@]}" "${api}/subdomain" -o "${subdomain}" -w '%{http_code}' || true)"
+          workers_health="${RUNNER_TEMP}/b62-workers-dev-health-readonly.json"
+          workers_status="$(curl -sS --connect-timeout 8 --max-time 15 "https://${B62_WORKER}.charliekant.workers.dev/health" -o "${workers_health}" -w '%{http_code}' || true)"
+          custom_health="${RUNNER_TEMP}/b62-custom-health-readonly.json"
+          custom_status="$(curl -sS --connect-timeout 8 --max-time 15 "${B62_PUBLIC_BASE_URL}/health" -o "${custom_health}" -w '%{http_code}' || true)"
+          python .github/scripts/b62_public_origin_504_guard.py \
+            --metadata-status "${subdomain_status}" --metadata-body "${subdomain}" \
+            --workers-status "${workers_status}" --workers-body "${workers_health}" \
+            --custom-status "${custom_status}" --custom-body "${custom_health}"
           echo "B62_PUBLIC_ORIGIN=CHAT_PADIEM_NET"
 
           echo "B62_CODE_DEPLOY_READONLY=PASS"
@@ -637,8 +650,15 @@ jobs:
           echo "SCRIPT_ETAG_CHANGED=PASS"
 
           subdomain="${RUNNER_TEMP}/b62-subdomain-after.json"
-          curl -fsS "${auth[@]}" "${api}/subdomain" -o "${subdomain}"
-          jq -e '.success == true and .result.enabled == true' "${subdomain}" >/dev/null
+          subdomain_status="$(curl -sS "${auth[@]}" "${api}/subdomain" -o "${subdomain}" -w '%{http_code}' || true)"
+          workers_health="${RUNNER_TEMP}/b62-workers-dev-health-after.json"
+          workers_status="$(curl -sS --connect-timeout 8 --max-time 15 "https://${B62_WORKER}.charliekant.workers.dev/health" -o "${workers_health}" -w '%{http_code}' || true)"
+          custom_health="${RUNNER_TEMP}/b62-custom-health-after.json"
+          custom_status="$(curl -sS --connect-timeout 8 --max-time 15 "${B62_PUBLIC_BASE_URL}/health" -o "${custom_health}" -w '%{http_code}' || true)"
+          python .github/scripts/b62_public_origin_504_guard.py \
+            --metadata-status "${subdomain_status}" --metadata-body "${subdomain}" \
+            --workers-status "${workers_status}" --workers-body "${workers_health}" \
+            --custom-status "${custom_status}" --custom-body "${custom_health}"
           echo "B62_PUBLIC_ORIGIN_STILL_ENABLED=PASS"
 
       - name: Verify the complete secret set on the served version
