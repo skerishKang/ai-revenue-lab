@@ -19,10 +19,10 @@ if str(SCRIPTS) not in sys.path:
 from b62_owner_d1_release_preflight import OWNER_BINDING
 from b62_owner_d1_release_transaction import (
     TransactionError,
+    main,
     prepare,
     verify,
     verify_rollback_target,
-    main,
 )
 
 s = importlib.util.spec_from_file_location("owner_fixture", TESTS / "test_b62_owner_d1_release_preflight.py")
@@ -108,7 +108,7 @@ def test_prepare_fails_closed_without_side_effect(failure):
     elif failure == "wrong_active_version":
         args[1]["result"]["deployments"][0]["versions"][0]["version_id"] = "foreign"
     elif failure == "wrong_binding_authority":
-        args[3]["result"]["bindings"][0]["service"] = "foreign"
+        args[4]["result"]["bindings"][0]["service"] = "foreign"
     elif failure == "wrong_owner_inventory":
         args[0][fixture.mod.OWNER_NAME]["result"] = []
     elif failure == "unsafe_worker":
@@ -222,7 +222,7 @@ def test_operational_workflow_enforces_durable_anchor_before_any_patch():
     assert list(triggers) == ["workflow_dispatch"]
     assert set(wf["jobs"]) == {"apply", "rollback"}
     assert wf["concurrency"]["cancel-in-progress"] is False
-    for name, job in wf["jobs"].items():
+    for job in wf["jobs"].values():
         assert job["environment"] == "production"
         assert "inputs.confirmation" in job["if"]
         assert "inputs.mode" in job["if"]
