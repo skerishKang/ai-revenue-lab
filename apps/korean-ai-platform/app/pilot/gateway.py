@@ -13,6 +13,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import math
 import time
 import uuid
 from typing import Any
@@ -127,6 +128,8 @@ _VALID_ROLES = frozenset({"system", "user", "assistant"})
 _ALLOWED_CHAT_FIELDS = frozenset({
     "model", "messages", "temperature", "max_tokens", "stream", "tools",
     "business14",
+    "reasoning_effort", "top_p", "top_k", "min_p",
+    "presence_penalty", "repetition_penalty",
 })
 _ALLOWED_MESSAGE_FIELDS = frozenset({"role", "content"})
 _ALLOWED_B14_FIELDS = frozenset({
@@ -241,7 +244,7 @@ def _validate_body(raw: Any) -> dict:
         if isinstance(temp, bool) or not isinstance(temp, (int, float)):
             raise _InvalidBody("temperature must be a number or null")
         temp = float(temp)
-        if temp < 0.0 or temp > 2.0:
+        if not math.isfinite(temp) or temp < 0.0 or temp > 2.0:
             raise _InvalidBody("temperature must be between 0.0 and 2.0")
 
     # max_tokens. None is meaningful: preserve omission so a product may either
@@ -250,8 +253,8 @@ def _validate_body(raw: Any) -> dict:
     if mt is not None:
         if isinstance(mt, bool) or not isinstance(mt, int):
             raise _InvalidBody("max_tokens must be an integer or null")
-        if mt < 1 or mt > 4096:
-            raise _InvalidBody("max_tokens must be between 1 and 4096")
+        if mt < 1 or mt > 2147483647:
+            raise _InvalidBody("max_tokens must be a positive 32-bit integer (provider model limit applies)")
 
     # stream
     st = raw.get("stream")
@@ -267,11 +270,22 @@ def _validate_body(raw: Any) -> dict:
             raise _InvalidBody("tools must be an array or null")
         raise ToolsNotSupported()
 
+    # Model-native overrides are opt-in. Reject unsupported vendor fields
+    # instead of silently dropping or guessing an original-model default.
+    from .model_native_parameters import (
+        UnsupportedModelParameter, validate_native_parameters,
+    )
+    try:
+        native_options = validate_native_parameters(model, raw)
+    except UnsupportedModelParameter as exc:
+        raise _InvalidBody(str(exc)) from exc
+
     return {
         "model": model,
         "messages": validated_messages,
-        "temperature": float(temp) if temp is not None else 0.2,
+        "temperature": float(temp) if temp is not None else None,
         "max_tokens": int(mt) if mt is not None else None,
+        "model_parameters": native_options,
         "business14": _validate_b14_options(raw.get("business14")),
     }
 
@@ -783,6 +797,8 @@ async def _handle_alpha_chat(request_id: str, body: dict) -> JSONResponse:
                 messages=body["messages"],
                 temperature=body.get("temperature"),
                 max_tokens=body.get("max_tokens"),
+                **({"model_parameters": body["model_parameters"]}
+                   if body.get("model_parameters") else {}),
             )
         raise InvalidRequest(
             "non-platform route is not routable (OpenRouter retired, #1933 S2)"
