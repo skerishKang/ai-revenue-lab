@@ -24,6 +24,7 @@ from app.b66_quote_history_store import (
     QuoteHistoryStoreError,
     normalize_quote_draft_snapshot,
     validate_row_id,
+    _public_projection,
 )
 from app.config import Settings
 
@@ -296,6 +297,53 @@ def test_store_failure_is_reported_without_disclosure():
     response = client.get("/api/b66/quotes")
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "quote_history_read_failed"
+
+
+# ── previously persisted malformed detail cannot trigger Worker 1101 ──────
+
+@pytest.mark.parametrize("snapshot_json,sender_json", [
+    ('{"items":[],"unitPrice":NaN}', None),
+    ('{"items":[],"note":"\\ud800"}', None),
+    ('{"items":[]}', '{"company":Infinity}'),
+    ('{"items":[]}', 'not-json'),
+    ('["not-a-quote"]', None),
+])
+def test_malformed_persisted_detail_returns_bounded_error(snapshot_json, sender_json):
+    """A poisoned historical row must not escape JSONResponse as an unhandled 500.
+
+    No live D1 mutation, no customer data read, no accidental other-owner response.
+    """
+    row_id = "b66quote_" + "d" * 32
+
+    class MalformedDetailStore(MemoryQuoteHistoryStore):
+        async def get_quote(self, *, user_id, workspace_id, quote_history_id):
+            if user_id != USER_A or workspace_id != WORKSPACE_A or quote_history_id != row_id:
+                return None
+            return _public_projection({
+                "id": row_id, "quote_no": "SYNTHETIC", "issue_date": "2026-10-09",
+                "saved_skill_id": None, "skill_fingerprint": None,
+                "created_at": "2026-10-09T00:00:00Z", "updated_at": "2026-10-09T00:00:00Z",
+                "snapshot_json": snapshot_json, "sender_json": sender_json,
+            }, include_snapshot=True)
+
+    client = _client(store=MalformedDetailStore())
+    result = client.get(f"/api/b66/quotes/{row_id}")
+    assert result.status_code == 503
+    assert result.json()["error"]["code"] == "quote_history_read_failed"
+    assert "SYNTHETIC" not in result.text
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), float("-inf"), "\ud800"])
+def test_new_snapshot_cannot_persist_non_json_number_or_invalid_unicode(value):
+    unsafe = dict(SNAPSHOT)
+    unsafe["memo"] = value
+    with pytest.raises(QuoteHistoryStoreError):
+        normalize_quote_draft_snapshot(unsafe)
+
+    unsafe_sender = dict(SNAPSHOT)
+    unsafe_sender["sender"] = {"company": value}
+    with pytest.raises(QuoteHistoryStoreError):
+        normalize_quote_draft_snapshot(unsafe_sender)
 
 
 # ── migration regression ────────────────────────────────────────────────

@@ -114,6 +114,10 @@ def _clean_optional_text(value: object, *, label: str, limit: int) -> str | None
         return None
     if len(text) > limit or _CONTROL_RE.search(text):
         raise QuoteHistoryStoreError(f"{label} is invalid")
+    try:
+        text.encode("utf-8")
+    except UnicodeError as exc:
+        raise QuoteHistoryStoreError(f"{label} is invalid") from exc
     return text
 
 
@@ -194,15 +198,25 @@ def normalize_quote_draft_snapshot(payload: object) -> NormalizedQuoteDraftSnaps
             raise QuoteHistoryStoreError(f"snapshot.{key} is invalid")
 
     sender = stripped.get("sender") if isinstance(stripped.get("sender"), dict) else None
-    serialized = json.dumps(snapshot, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
-    if len(serialized.encode("utf-8")) > MAX_SNAPSHOT_JSON_BYTES:
+    # Python's default json.dumps admits NaN/Infinity and lone Unicode surrogates.
+    # Such values can be persisted in D1 and then crash Starlette JSONResponse
+    # (allow_nan=False / UTF-8 encoding) on later detail reads.
+    try:
+        serialized = json.dumps(snapshot, ensure_ascii=False, allow_nan=False,
+                                separators=(",", ":"), sort_keys=True)
+        snapshot_size = len(serialized.encode("utf-8"))
+        sender_json = None
+        sender_size = 0
+        if sender is not None:
+            sender_json = json.dumps(sender, ensure_ascii=False, allow_nan=False,
+                                     separators=(",", ":"), sort_keys=True)
+            sender_size = len(sender_json.encode("utf-8"))
+    except (TypeError, ValueError, UnicodeError, RecursionError) as exc:
+        raise QuoteHistoryStoreError("snapshot is not valid JSON for storage") from exc
+    if snapshot_size > MAX_SNAPSHOT_JSON_BYTES:
         raise QuoteHistoryStoreError("snapshot is too large")
-    sender_json = None
-    if sender is not None:
-        sender_json = json.dumps(sender, ensure_ascii=False,
-                                 separators=(",", ":"), sort_keys=True)
-        if len(sender_json.encode("utf-8")) > MAX_SENDER_JSON_BYTES:
-            raise QuoteHistoryStoreError("snapshot.sender is too large")
+    if sender_size > MAX_SENDER_JSON_BYTES:
+        raise QuoteHistoryStoreError("snapshot.sender is too large")
 
     saved_skill_id = _clean_optional_text(stripped.get("savedSkillId"),
                                           label="saved_skill_id", limit=MAX_SKILL_ID_CHARS)
@@ -263,13 +277,25 @@ def _rows_from_result(result: Any) -> list[dict[str, Any]]:
     return output
 
 
-def _json_or_none(raw: object) -> Any:
-    if not isinstance(raw, str):
-        return None
+def _read_stored_json_object(raw: object, *, max_bytes: int) -> dict[str, Any]:
+    """Refuse an invalid/hostile legacy row before Starlette builds the response.
+
+    Never return NaN/Infinity, a lone UTF-16 surrogate, a non-object snapshot,
+    or a malformed/oversized historical JSON blob. These failures must become
+    the route's existing bounded 503, not an unhandled Worker HTTP 500.
+    """
+    if not isinstance(raw, str) or len(raw) > max_bytes:
+        raise QuoteHistoryStoreError("stored quote JSON is invalid")
     try:
-        return json.loads(raw)
-    except json.JSONDecodeError:
-        return None
+        if len(raw.encode("utf-8")) > max_bytes:
+            raise QuoteHistoryStoreError("stored quote JSON exceeds limit")
+        value = json.loads(raw)
+        if not isinstance(value, dict):
+            raise QuoteHistoryStoreError("stored quote JSON must be an object")
+        json.dumps(value, allow_nan=False, ensure_ascii=False).encode("utf-8")
+    except (TypeError, ValueError, UnicodeError, RecursionError) as exc:
+        raise QuoteHistoryStoreError("stored quote JSON is invalid") from exc
+    return value
 
 
 def _public_projection(row: dict[str, Any], *, include_snapshot: bool) -> dict[str, Any]:
@@ -288,10 +314,20 @@ def _public_projection(row: dict[str, Any], *, include_snapshot: bool) -> dict[s
         "quote_core_recalculation_required": True,
     }
     if include_snapshot:
-        projected["snapshot"] = _json_or_none(row.get("snapshot_json"))
-        sender = _json_or_none(row.get("sender_json"))
-        if sender is not None:
-            projected["sender"] = sender
+        projected["snapshot"] = _read_stored_json_object(
+            row.get("snapshot_json"), max_bytes=MAX_SNAPSHOT_JSON_BYTES
+        )
+        sender_raw = row.get("sender_json")
+        if sender_raw is not None:
+            projected["sender"] = _read_stored_json_object(
+                sender_raw, max_bytes=MAX_SENDER_JSON_BYTES
+            )
+    # A damaged older row can also have malformed text metadata. Catch it
+    # inside the store so the route returns a bounded and non-disclosing error.
+    try:
+        json.dumps(projected, allow_nan=False, ensure_ascii=False).encode("utf-8")
+    except (TypeError, ValueError, UnicodeError, RecursionError) as exc:
+        raise QuoteHistoryStoreError("stored quote projection is invalid") from exc
     return projected
 
 
