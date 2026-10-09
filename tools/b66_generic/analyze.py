@@ -23,6 +23,7 @@ import re
 import stat
 import sys
 import zipfile
+from io import BytesIO
 from pathlib import Path, PurePosixPath
 from xml.etree import ElementTree as ET
 
@@ -269,8 +270,11 @@ def open_bounded_ooxml(path: Path) -> tuple:
     if len(raw) > MAX_BINARY_DOCUMENT_BYTES:
         raise ArchivePolicyError("ooxml_archive_size", "OOXML archive size is out of bounds.")
 
+    # Admit and analyze the *same* bounded bytes used for source.sha256/source.size.
+    # Re-opening the path allows a concurrently replaced workbook to bypass the
+    # raw-size admission gate or make the evidence hash describe different bytes.
     try:
-        archive = zipfile.ZipFile(path)
+        archive = zipfile.ZipFile(BytesIO(raw))
     except (zipfile.BadZipFile, OSError, ValueError) as exc:
         raise ArchivePolicyError("ooxml_malformed", "Malformed OOXML ZIP archive.") from exc
 

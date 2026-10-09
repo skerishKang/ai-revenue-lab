@@ -135,6 +135,29 @@ def test_valid_workbook_is_accepted(tmp_path):
     assert "견적번호" in json.dumps(result["sheets"], ensure_ascii=False)
 
 
+def test_source_evidence_and_archive_are_from_same_bounded_bytes(tmp_path, monkeypatch):
+    """A replaced source path cannot escape the 2 MiB gate after its raw bytes were admitted."""
+
+    original = xlsx_bytes()
+    source = write(tmp_path, original)
+    native_zipfile = zipfile.ZipFile
+    seen = []
+
+    def swap_before_archive_open(file, *args, **kwargs):
+        # Files can change between the raw file read and opening ZIP. The analyzer
+        # must use BytesIO(admitted_raw), not open the source path a second time.
+        seen.append(isinstance(file, BytesIO))
+        source.write_bytes(b"NOT_A_ZIP")
+        return native_zipfile(file, *args, **kwargs)
+
+    monkeypatch.setattr(zipfile, "ZipFile", swap_before_archive_open)
+    result = analyze.analyze_xlsx(source)
+    assert seen == [True], "ZIP must open the admitted raw snapshot, not a mutable path"
+    assert result["sheet_names"] == ["견적서"]
+    assert result["source"]["sha256"] == analyze.sha256_bytes(original)
+    assert result["source"]["size"] == len(original)
+
+
 def test_committed_fixture_analysis_is_unchanged():
     """Golden facts for the public-safe synthetic fixture: the hardening must not move them."""
 
