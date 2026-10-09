@@ -1230,6 +1230,7 @@
     // can change the runtime label; a legacy delta/done stream retains its
     // existing truthful response status.
     const canonicalEventProjection = clawGeneralRequest ? window.PadiemClawRunEventProjection?.create?.() : null;
+    const historicalStages = [];
     const response = clawGeneralRequest
       ? await chatTransport.requestClawGeneral(payload, signal)
       : await chatTransport.requestStreaming(payload, signal);
@@ -1247,6 +1248,12 @@
           const projected = canonicalEventProjection.consume(envelope);
           if (!projected.accepted) return false;
           const label = window.PadiemClawRunEventProjection.label(projected.kind, document.documentElement.lang);
+          if (envelope.delivery === "post_execution") {
+            // The Engine returned a completed run, not an actual live event.
+            // Preserve truth: show these labels only as a retrospective log.
+            if (label && historicalStages.length < 12) historicalStages.push(label);
+            return false;
+          }
           const marker = article.querySelector("[data-runtime-label]");
           if (label && marker) marker.textContent = label;
           return false;
@@ -1285,6 +1292,22 @@
         if (done) throw new Error(uiT("stream-done-duplicate"));
         done = true;
         applyStreamDone(article, data, answer, outboundMessages, contextSnapshot);
+        if (historicalStages.length) {
+          const details = document.createElement("details");
+          details.className = "claw-event-history";
+          const summary = document.createElement("summary");
+          summary.textContent = document.documentElement.lang === "en"
+            ? "Execution history (received after completion)"
+            : "실행 기록 (완료 후 수신)";
+          const stages = document.createElement("ul");
+          for (const label of historicalStages) {
+            const item = document.createElement("li");
+            item.textContent = label;
+            stages.appendChild(item);
+          }
+          details.append(summary, stages);
+          article.querySelector(".assistant-body")?.appendChild(details);
+        }
         return true;
       });
       if (done) return true;
