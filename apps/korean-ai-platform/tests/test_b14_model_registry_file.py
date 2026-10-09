@@ -126,3 +126,24 @@ def test_workspace_manual_selector_uses_json_registered_models():
     for retired in RETIRED:
         assert 'value="'+retired+'"' not in html
     assert html.count('data-provider=') >= len(models)
+
+def test_cloudflare_wrangler_includes_canonical_json_as_text_module(tmp_path):
+    """Official Wrangler module rule, not Python-generated registry fallback."""
+    import tomllib
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    conf = tomllib.loads((root / "wrangler.toml").read_text(encoding="utf-8"))
+    assert conf["main"] == "worker.py"
+    assert conf["find_additional_modules"] is True
+    assert conf["preserve_file_names"] is True
+    assert any(
+        rule.get("type") == "Text"
+        and rule.get("globs") == ["app/pilot/b14_models.json"]
+        and rule.get("fallthrough") is True
+        for rule in conf["rules"]
+    )
+    assert (root / "app/pilot/b14_models.json").is_file()
+    assert not (root / "app/pilot/_b14_models_embedded.py").exists()
+    with pytest.raises(ModelRegistryError, match="invalid B14 JSON registry"):
+        read_registry(tmp_path / "missing-b14_models.json")
