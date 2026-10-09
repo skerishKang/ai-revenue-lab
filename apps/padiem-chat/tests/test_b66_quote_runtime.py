@@ -108,7 +108,7 @@ class _Interpreter:
     def __init__(self):
         self.calls = []
 
-    async def interpret(self, *, message, skill):
+    async def interpret(self, *, message, skill, model_id=None):
         self.calls.append((message, skill))
         return B66QuoteConversationProjection(
             recipient={
@@ -212,7 +212,7 @@ def test_anonymous_cannot_list_read_or_interpret():
     assert client.get(f"/api/b66/saved-skills/{SAVED_ID}").status_code == 401
     assert client.post(
         "/api/b66/quote/interpret",
-        json={"saved_skill_id": SAVED_ID, "message": "ABC건설에 배관 20개"},
+        json={"saved_skill_id": SAVED_ID, "model_id": "test-fixture/quote-projection", "message": "ABC건설에 배관 20개"},
     ).status_code == 401
     assert store.calls == []
     assert interpreter.calls == []
@@ -248,6 +248,7 @@ def test_conversation_interpretation_returns_variable_candidate_only():
         "/api/b66/quote/interpret",
         json={
             "saved_skill_id": SAVED_ID,
+            "model_id": "test-fixture/quote-projection",
             "message": "ABC건설에 배관 20개, 개당 3만원으로 견적 내줘",
         },
     )
@@ -304,7 +305,7 @@ def test_foreign_skill_never_reaches_interpreter():
     client = _client(store, interpreter, user_id=USER_B)
     response = client.post(
         "/api/b66/quote/interpret",
-        json={"saved_skill_id": SAVED_ID, "message": "ABC건설 견적"},
+        json={"saved_skill_id": SAVED_ID, "model_id": "test-fixture/quote-projection", "message": "ABC건설 견적"},
     )
     assert response.status_code == 404
     assert interpreter.calls == []

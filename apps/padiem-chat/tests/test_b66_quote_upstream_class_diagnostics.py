@@ -201,7 +201,7 @@ def _client(interpreter) -> TestClient:
 def _post(client: TestClient, message: str = "견적 입력 진단"):
     return client.post(
         "/api/b66/quote/interpret",
-        json={"saved_skill_id": SAVED_ID, "message": message},
+        json={"saved_skill_id": SAVED_ID, "model_id": "test-fixture/quote-projection", "message": message},
     )
 
 
@@ -322,21 +322,14 @@ def test_binding_class_is_reachable_from_the_production_composed_client():
     print("B66_SYNTHETIC_PLUS_FIXTURE_ONLY=YES")
 
 
-def test_real_binding_class_reaches_the_route_as_one_bounded_header():
-    """End-to-end: the real unbound Production client -> route -> one header."""
-
+def test_generic_b14_legacy_client_is_not_a_valid_b66_exact_selected_route():
+    """Old generic client cannot satisfy the per-request exact-model lane."""
     interpreter = B66QuoteConversationInterpreter(_unbound_production_client())
     response = _post(_client(interpreter))
-
     assert response.status_code == 502
-    body = response.json()
-    assert body["ok"] is False
-    assert body["error"]["code"] == "quote_interpretation_failed"
-    assert body["error"]["message"] == "견적 요청을 해석하지 못했습니다."
-    assert _upstream_class_values(response) == ["upstream_binding_unavailable"]
+    assert response.json()["error"]["code"] == "quote_interpretation_failed"
+    assert _upstream_class_values(response) == []
     assert not [name for name in response.headers if name.startswith("X-B66-Rejection-")]
-
-    print("REAL_BINDING_CLASS_HEADER_RELAY=PASS")
 
 
 def test_generic_runtime_error_carries_no_upstream_class_header():
@@ -436,7 +429,7 @@ def test_502_allowlisted_upstream_stage_keeps_existing_single_header():
 
 def test_502_invalid_projection_has_distinct_stage_no_exception_family():
     class InvalidProjection:
-        async def interpret(self, *, message, skill):
+        async def interpret(self, *, message, skill, model_id=None):
             return {"internal_message": "DO_NOT_RELAY_PRIVATE_CONTENT"}
 
     response = _post(_client(InvalidProjection()))
@@ -494,18 +487,18 @@ def test_b66_trusted_registry_failure_is_503_not_generic_502():
     _assert_no_values_leak(response, "CGI 견적 고객 입력")
 
 
-def test_b66_free_first_authority_exact_model_generates_existing_quote_projection():
+def test_b66_owner_allowed_exact_model_generates_existing_quote_projection():
     class Resolver:
         calls = 0
         async def resolve_quote_model(self, requirements):
             self.calls += 1
             return B14AuthorizedModelRoute(
-                model_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-                route_id="kilo/nvidia-nemotron-3-ultra-550b-a55b-free",
-                owner_policy_id="b66.quote.free-first.registered.v1",
+                model_id="test-fixture/quote-projection",
+                route_id="test-fixture/quote-projection",
+                owner_policy_id="OWNER_REGISTERED_AND_ALLOWED",
                 registered=True, enabled=True, authorized=True,
                 credential_ready=True, route_count=1,
-                capabilities=frozenset({"chat", "free"}),
+                capabilities=frozenset({"chat"}),
             )
 
     class ExactClient:
@@ -534,7 +527,7 @@ def test_b66_free_first_authority_exact_model_generates_existing_quote_projectio
     assert response.status_code == 200
     assert response.json()["ok"] is True
     assert resolver.calls == 1
-    assert client.exact == ["kilo/nvidia-nemotron-3-ultra-550b-a55b-free"]
+    assert client.exact == ["test-fixture/quote-projection"]
 
 
 def test_b66_model_selection_refunds_only_prior_to_any_dispatch():

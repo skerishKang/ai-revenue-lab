@@ -29,7 +29,26 @@ from app.pilot.locale import PLATFORM_SITE_NAME, gettext, locale_from_request, s
 from app.pilot.routing import resolve_configuration, PilotConfigurationState
 from app.pilot.b14_runtime_config import runtime_config
 from app.pilot.platform_secrets import any_platform_secret_present
-from app.pilot.catalog import list_catalog_summaries
+from app.pilot.catalog import CATALOG_BY_ID
+
+def _workspace_catalog_models() -> list[dict]:
+    """Populate the B14 manual picker from the one owner-approved JSON catalog.
+
+    The historical CATALOG_MODELS scorer contains no customer-selectable IDs.
+    Do not infer a Plus/Pro/Max assignment or expose retired model identities.
+    """
+    return [
+        {
+            "id": m.model_id,
+            "model_id": m.model_id,
+            "name": m.display_name,
+            "provider": m.provider,
+            "korean_score": m.korean_score,
+        }
+        for m in sorted(CATALOG_BY_ID.values(), key=lambda m: (m.sort_order, m.model_id))
+        if m.enabled
+    ]
+
 
 logger = logging.getLogger("korean-ai-platform.pilot")
 
@@ -72,7 +91,7 @@ async def workspace_page(request: Request):
         "b14ProviderMode": runtime_config.provider_mode,
         "b14HasKey": any_platform_secret_present(),
         "b14SiteName": PLATFORM_SITE_NAME,
-        "b14CatalogModels": list_catalog_summaries(),
+        "b14CatalogModels": _workspace_catalog_models(),
         "b14AutoModelId": "b14/auto",
     }
 
@@ -90,7 +109,7 @@ async def workspace_page(request: Request):
         ctx["b14_provider_mode"] = runtime_config.provider_mode
         ctx["b14_has_key"] = any_platform_secret_present()
         ctx["b14_site_name"] = PLATFORM_SITE_NAME
-        ctx["b14_catalog_models"] = list_catalog_summaries()
+        ctx["b14_catalog_models"] = _workspace_catalog_models()
         ctx["error"] = {
             "code": "registry_invalid",
             "message": _("error.registry_invalid"),
@@ -111,7 +130,7 @@ async def workspace_page(request: Request):
         ctx["b14_provider_mode"] = runtime_config.provider_mode
         ctx["b14_has_key"] = any_platform_secret_present()
         ctx["b14_site_name"] = PLATFORM_SITE_NAME
-        ctx["b14_catalog_models"] = list_catalog_summaries()
+        ctx["b14_catalog_models"] = _workspace_catalog_models()
         ctx["error"] = None
         resp = render_template(request, "workspace.html", ctx)
         return _maybe_set_locale(request, resp, locale)
@@ -135,7 +154,7 @@ async def workspace_page(request: Request):
     ctx["b14_provider_mode"] = runtime_config.provider_mode
     ctx["b14_has_key"] = any_platform_secret_present()
     ctx["b14_site_name"] = PLATFORM_SITE_NAME
-    ctx["b14_catalog_models"] = list_catalog_summaries()
+    ctx["b14_catalog_models"] = _workspace_catalog_models()
     ctx["error"] = None
 
     resp = render_template(request, "workspace.html", ctx)

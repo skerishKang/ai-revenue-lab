@@ -61,25 +61,10 @@ def test_space_bunny_manual_resolution_fails_closed() -> None:
 
 
 def test_space_bunny_auth_special_case_is_removed() -> None:
-    # SPACE_BUNNY_AUTH_SPECIAL_CASE=REMOVED: the adapter never issues an
-    # Authorization header for the retired lane, even with the historical
-    # binding present in the environment.
-    previous = os.environ.get(KILO_SPACE_BUNNY_CREDENTIAL_BINDING)
-    try:
-        os.environ[KILO_SPACE_BUNNY_CREDENTIAL_BINDING] = (
-            "TEST_ONLY_NOT_A_REAL_CREDENTIAL"
-        )
-        spec = ps.get_platform_provider("kilo")
-        assert spec is not None
-        headers = plat._request_headers(spec, model_id=KILO_SPACE_BUNNY_MODEL_ID)
-        assert headers == {"Content-Type": "application/json"}
-        assert "Authorization" not in headers
-    finally:
-        if previous is None:
-            os.environ.pop(KILO_SPACE_BUNNY_CREDENTIAL_BINDING, None)
-        else:
-            os.environ[KILO_SPACE_BUNNY_CREDENTIAL_BINDING] = previous
-
+    import inspect
+    assert ps.get_platform_provider("kilo") is None
+    assert "KILO_SPACE_BUNNY" not in inspect.getsource(plat._request_headers)
+    assert get_catalog_by_id(KILO_SPACE_BUNNY_MODEL_ID) is None
 
 def test_other_provider_registrations_are_preserved_but_not_secondary() -> None:
     for model_id, provider_id in (

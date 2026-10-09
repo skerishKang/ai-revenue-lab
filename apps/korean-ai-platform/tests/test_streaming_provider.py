@@ -9,7 +9,7 @@ from starlette.testclient import TestClient
 
 from app.factory import create_app
 from app.pilot.errors import (
-    KiloFreeRateLimited,
+    UpstreamRateLimited,
     MalformedUpstreamResponse,
     UpstreamAuthFailed,
     UpstreamClientError,
@@ -23,7 +23,7 @@ from app.pilot import platform as plat
 KILO_MODEL = "test-fixture/kilo-sse-transport"
 KILO_UPSTREAM = "test-fixture/kilo-sse-response"
 KILO_PROVIDER = "Kilo Gateway / NVIDIA"
-KILO_CHAT_URL = "https://api.kilo.ai/api/gateway/chat/completions"
+KILO_CHAT_URL = "https://stream-fixture.example/v1/chat/completions"
 
 
 class FragmentedStream(httpx.AsyncByteStream):
@@ -38,6 +38,18 @@ class FragmentedStream(httpx.AsyncByteStream):
     async def aclose(self) -> None:
         self.closed = True
 
+
+@pytest.fixture(autouse=True)
+def _synthetic_provider_not_a_product_registration(monkeypatch):
+    """A keyless provider exists only for this test's mocked transport."""
+    from app.pilot import platform_secrets as ps
+    spec = ps.PlatformProviderSpec(
+        provider_id="test-fixture",credential_source=ps.CredentialSource.NONE,
+        credential_binding_name="",base_origin="https://stream-fixture.example/v1",
+        allowed_hosts=("stream-fixture.example",),
+    )
+    monkeypatch.setitem(ps._PLATFORM_PROVIDERS,"test-fixture",spec)
+    yield
 
 @pytest.fixture(autouse=True)
 def _reset_platform_mode(monkeypatch):
@@ -69,7 +81,7 @@ async def _collect(*, transport=None, model_id=KILO_MODEL, upstream_model=KILO_U
             model_id=model_id,
             upstream_model=upstream_model,
             provider=KILO_PROVIDER,
-            platform_provider_id="kilo",
+            platform_provider_id="test-fixture",
             transport=transport,
         )
     ]
@@ -109,10 +121,10 @@ async def test_live_stream_parses_fragmented_lf_crlf_usage_done():
         payload = (
             b": keepalive\r\n\r\n"
             b"event: message\r\nid: ignored\r\n"
-            b'data: {"id":"stream-1","model":"nvidia/nemotron-3-ultra-550b-a55b:free","choices":[{"delta":{"content":"\\uc548"},"finish_reason":null}]}\r\n\r\n'
-            b'data: {"id":"stream-1","model":"nvidia/nemotron-3-ultra-550b-a55b:free","choices":[{"delta":{"content":"\\ub155"},"finish_reason":null}]}\n\n'
-            b'data: {"id":"stream-1","model":"nvidia/nemotron-3-ultra-550b-a55b:free","choices":[{"delta":{},"finish_reason":"stop"}]}\r\n\r\n'
-            b'data: {"id":"stream-1","model":"nvidia/nemotron-3-ultra-550b-a55b:free","choices":[],"usage":{"prompt_tokens":3,"completion_tokens":2,"total_tokens":5}}\n\n'
+            b'data: {"id":"stream-1","model":"test-fixture/kilo-sse-response","choices":[{"delta":{"content":"\\uc548"},"finish_reason":null}]}\r\n\r\n'
+            b'data: {"id":"stream-1","model":"test-fixture/kilo-sse-response","choices":[{"delta":{"content":"\\ub155"},"finish_reason":null}]}\n\n'
+            b'data: {"id":"stream-1","model":"test-fixture/kilo-sse-response","choices":[{"delta":{},"finish_reason":"stop"}]}\r\n\r\n'
+            b'data: {"id":"stream-1","model":"test-fixture/kilo-sse-response","choices":[],"usage":{"prompt_tokens":3,"completion_tokens":2,"total_tokens":5}}\n\n'
             b"data: [DONE]\r\n\r\n"
             b"data: this-must-not-be-read\n\n"
         )
@@ -215,7 +227,7 @@ async def test_stream_byte_cap_aborts_before_unbounded_buffering(monkeypatch):
     [
         (401, UpstreamAuthFailed),
         (403, UpstreamAuthFailed),
-        (429, KiloFreeRateLimited),
+        (429, UpstreamRateLimited),
         (500, UpstreamServerError),
         (503, UpstreamServerError),
         (400, MalformedUpstreamResponse),
@@ -261,7 +273,7 @@ async def test_live_keyless_streams_without_key():
         seen["authorization"] = request.headers.get("authorization")
         seen["url"] = str(request.url)
         payload = (
-            b'data: {"id":"s1","model":"nvidia/nemotron-3-ultra-550b-a55b:free",'
+            b'data: {"id":"s1","model":"test-fixture/kilo-sse-response",'
             b'"choices":[{"delta":{"content":"ok"},"finish_reason":null}]}\n\n'
             b"data: [DONE]\n\n"
         )
@@ -285,7 +297,7 @@ async def test_platform_origin_is_fixed_and_ignores_openrouter_base_url():
     async def handler(request):
         seen["url"] = str(request.url)
         payload = (
-            b'data: {"id":"s1","model":"nvidia/nemotron-3-ultra-550b-a55b:free",'
+            b'data: {"id":"s1","model":"test-fixture/kilo-sse-response",'
             b'"choices":[{"delta":{"content":"ok"},"finish_reason":null}]}\n\n'
             b"data: [DONE]\n\n"
         )

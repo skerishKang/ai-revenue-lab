@@ -190,4 +190,7 @@ def test_gemini_secret_store_binding_is_metadata_only_and_matches_provider():
     assert "PADIEM_GEMINI_API_KEY =" not in content
     # The declared binding must be the one the provider spec requires.
     assert 'GOOGLE_CREDENTIAL_BINDING = "PADIEM_GEMINI_API_KEY"' in provider
-    assert 'credential_binding_name=GOOGLE_CREDENTIAL_BINDING' in provider
+    import json as _json
+    registry = _json.loads((Path(__file__).resolve().parent.parent / "app" / "pilot" / "b14_models.json").read_text(encoding="utf-8"))
+    assert registry["providers"]["google"]["credential_binding_name"] == "PADIEM_GEMINI_API_KEY"
+    assert len([m for m in registry["models"] if m["provider_id"] == "google"]) == 4

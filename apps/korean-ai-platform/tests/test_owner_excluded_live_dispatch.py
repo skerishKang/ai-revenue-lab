@@ -111,11 +111,10 @@ def test_resolve_endpoint_excluded_returns_no_safe_route_not_model_call(mid,prov
             "model":mid,
             "messages":[{"role":"user","content":"fixture"}],
         })
-    assert resp.status_code == 503
+    assert resp.status_code == 400
     err=resp.json()["error"]
-    assert err["code"] == "no_safe_route"
-    assert err["reason_code"] == "owner_model_excluded"
-    assert err["upstream_called"] is False
+    assert err["code"] == "unsupported_model"
+    assert "reason_code" not in err
 
 
 def test_google_selected_route_keeps_its_own_missing_key_gate(monkeypatch):

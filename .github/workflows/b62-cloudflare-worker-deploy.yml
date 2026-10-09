@@ -29,6 +29,12 @@ on:
       - ".github/scripts/b62_cloudflare_*.py"
       - ".github/workflows/b62-cloudflare-worker-deploy.yml"
   workflow_dispatch:
+    inputs:
+      allow_initial_mock_deploy:
+        description: "Explicitly authorize INITIAL mock-only Worker creation if absent"
+        type: boolean
+        required: true
+        default: false
 
 permissions:
   contents: read
@@ -65,6 +71,8 @@ jobs:
         run: python .github/scripts/b62_cloudflare_deployed_parity_contract_test.py
       - name: Validate repository mock-only deploy config
         run: python .github/scripts/b62_cloudflare_mock_config_guard.py
+      - name: Guard no implicit initial mock deployment
+        run: python .github/tests/test_b62_initial_mock_manual_gate.py
       - name: Read-only Cloudflare and B14 preflight
         id: preflight
         env:
@@ -88,9 +96,12 @@ jobs:
     # the repository's minimal mock wrangler file must never overwrite them. Existing
     # Workers are read-only preflight targets; production updates are explicit owner/local
     # deployments that preserve the full binding set.
+    # A main push (including PR merge) is preflight ONLY; never auto-create
+    # a missing Worker. Initial mock creation requires explicit manual consent.
     if: >-
-      github.event_name == 'push' &&
+      github.event_name == 'workflow_dispatch' &&
       github.ref == 'refs/heads/main' &&
+      inputs.allow_initial_mock_deploy == true &&
       needs.preflight.outputs.worker_state == 'absent'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -109,13 +120,18 @@ jobs:
       - name: Guard initial Worker creation only
         env:
           WORKER_STATE: ${{ needs.preflight.outputs.worker_state }}
+          INIT_MOCK_APPROVED: ${{ inputs.allow_initial_mock_deploy }}
         run: |
           set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ] || [ "$GITHUB_REF" != "refs/heads/main" ] || [ "$INIT_MOCK_APPROVED" != "true" ]; then
+            echo "Explicit main-branch manual approval is required for initial mock Worker creation." >&2
+            exit 1
+          fi
           if [ "$WORKER_STATE" != "absent" ]; then
             echo "Refusing repository mock deploy over an existing provisioned Worker." >&2
             exit 1
           fi
-          echo "Padiem Chat Worker is absent; guarded initial mock creation is allowed."
+          echo "Padiem Chat Worker is absent; explicitly approved initial mock creation is allowed."
 
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
