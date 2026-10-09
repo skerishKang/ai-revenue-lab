@@ -33,6 +33,8 @@ import io
 import json
 import os
 import re
+import subprocess
+import tempfile
 import sys
 from pathlib import Path
 
@@ -369,6 +371,81 @@ def test_workflow_has_no_mutation_or_forbidden_request_path() -> None:
     # version detail); the deployments READ endpoint is legitimate.
     assert "workers/scripts/${engine_worker}/deployments" in lowered
     assert lowered.count("curl") == 2
+
+
+
+def test_3748_credential_preflight_cli_equals_token() -> None:
+    """Pin the single argv token on the existing GET-only production preflight."""
+    source = _workflow_text()
+    assert source.count('--active-version="${active_version}"') == 1
+    assert '--active-version "${active_version}"' not in source
+    assert "github.event_name == 'workflow_dispatch'" in source
+    assert "inputs.mode == 'credential_equivalence_probe'" in source
+
+
+def test_3748_credential_preflight_real_argparse_parity() -> None:
+    """Test actual CLI argv parsing without any Cloudflare or Engine requests."""
+    guard = ROOT / ".github" / "scripts" / "b54_engine_served_version_guard.py"
+    version_id = "-canonical-safe-v1"
+    assert re.fullmatch(r"[A-Za-z0-9._-]{1,64}", version_id)
+    fixture_secret = "synthetic-3748-never-print"
+    payload = {
+        "success": True,
+        "result": {
+            "id": version_id,
+            "resources": {
+                "bindings": [
+                    {
+                        "name": "PADIEM_ENGINE_CALLER_REGISTRY_V1",
+                        "type": "secret_text",
+                        "text": fixture_secret,
+                    },
+                    {
+                        "name": "PADIEM_ENGINE_CALLER_REGISTRY_V1_OVERLAY",
+                        "type": "secret_text",
+                        "text": "synthetic-overlay-not-for-output",
+                    },
+                ]
+            },
+        },
+    }
+    with tempfile.TemporaryDirectory() as folder:
+        settings = Path(folder) / "version-settings.json"
+        settings.write_text(json.dumps(payload), encoding="utf-8")
+        prefix = [
+            sys.executable, str(guard), "verify",
+            "--version-settings", str(settings),
+        ]
+        suffix = ["--expect-overlay"]
+
+        def run(args: list[str]) -> subprocess.CompletedProcess[str]:
+            return subprocess.run(
+                [*prefix, *args, *suffix],
+                capture_output=True,
+                text=True,
+                timeout=15,
+                check=False,
+            )
+
+        correct = run([f"--active-version={version_id}"])
+        assert correct.returncode == 0, correct.stderr
+        assert "B54_ENGINE_SERVED_VERSION_GUARD=PASS" in correct.stdout
+        assert "ENGINE_V1_SERVED_BINDING=PRESENT:secret_text" in correct.stdout
+        assert "ENGINE_OVERLAY_SERVED_BINDING=PRESENT:secret_text" in correct.stdout
+
+        separated = run(["--active-version", version_id])
+        assert separated.returncode == 2, separated.stderr
+        assert "expected one argument" in separated.stderr
+        assert "B54_ENGINE_SERVED_VERSION_GUARD=PASS" not in separated.stdout
+
+        mismatch = run(["--active-version=-wrong-safe-version"])
+        assert mismatch.returncode == 1, mismatch.stderr
+        assert "B54_ENGINE_SERVED_VERSION_GUARD=FAIL" in mismatch.stderr
+
+        for response in (correct, separated, mismatch):
+            rendered = response.stdout + response.stderr
+            assert fixture_secret not in rendered
+            assert "synthetic-overlay-not-for-output" not in rendered
 
 
 def main() -> int:
